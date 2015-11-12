@@ -13,12 +13,12 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-LIBRARIES = api/api.lib
-LIBRARIES += android_webview/android_webview.lib
-LIBRARIES += base/base.lib
-LIBRARIES += components/components.lib
-LIBRARIES += content/content.lib
-LIBRARIES += content_public/content_public.lib
-LIBRARIES += net/net.lib
-LIBRARIES += media/media.lib
-LIBRARIES += ui/ui.lib
+ELASTOS_LIBS = api/api.lib
+ELASTOS_LIBS += android_webview/android_webview.lib
+ELASTOS_LIBS += base/base.lib
+ELASTOS_LIBS += components/components.lib
+ELASTOS_LIBS += content/content.lib
+ELASTOS_LIBS += content_public/content_public.lib
+ELASTOS_LIBS += net/net.lib
+ELASTOS_LIBS += media/media.lib
+ELASTOS_LIBS += ui/ui.lib

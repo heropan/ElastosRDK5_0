@@ -13,7 +13,6 @@ class AwCancellationSignal
 public:
     static CARAPI_(void*) ElaCancellationSignalCallback_Init();
 
-    //XXXXXXXXXXXXXCancellationSignalXXXXX
 private:
     static CARAPI_(Boolean) IsCanceled(
         /* [in] */ IInterface* obj);
