@@ -2,17 +2,27 @@
 #define __ELASTOS_DROID_APP_CINNERCONNECTION_H__
 
 #include "_Elastos_Droid_App_CInnerConnection.h"
-#include "elastos/droid/app/LoadedPkg.h"
+#include "elastos/core/Object.h"
+
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Content::IComponentName;
 
 namespace Elastos{
 namespace Droid{
 namespace App{
 
 CarClass(CInnerConnection)
+    , public Object
+    , public IIServiceConnection
+    , public IBinder
 {
 public:
-    CARAPI Init(
-        /* [in] */ LoadedPkg::ServiceDispatcher* sd);
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor(
+        /* [in] */ IServiceDispatcher* sd);
 
     CARAPI Connected(
         /* [in] */ IComponentName* name,
@@ -22,7 +32,7 @@ public:
         /* [out] */ String* str);
 
 public:
-    LoadedPkg::ServiceDispatcher* mDispatcher;
+    IServiceDispatcher* mDispatcher;
 };
 
 } // namespace App

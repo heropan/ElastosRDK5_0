@@ -7,7 +7,6 @@
 
 using Elastos::Droid::View::IView;
 
-using Elastos::Core::Object;
 using Elastos::Utility::IMap;
 using Elastos::Utility::IArrayList;
 

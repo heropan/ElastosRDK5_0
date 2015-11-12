@@ -8,7 +8,6 @@
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

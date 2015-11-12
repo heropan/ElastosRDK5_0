@@ -7,12 +7,11 @@
 #include <Elastos.Droid.Core.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ISynchronize;
-using Elastos::Core::Object;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;

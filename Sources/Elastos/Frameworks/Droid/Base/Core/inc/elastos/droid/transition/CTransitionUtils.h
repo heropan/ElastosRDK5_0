@@ -14,7 +14,6 @@ using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 
-using Elastos::Core::Object;
 using Elastos::Core::Singleton;
 
 namespace Elastos {

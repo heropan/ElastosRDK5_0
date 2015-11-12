@@ -10,7 +10,6 @@
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Slogger;
 

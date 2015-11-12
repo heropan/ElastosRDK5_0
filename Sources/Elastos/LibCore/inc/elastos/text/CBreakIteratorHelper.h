@@ -3,6 +3,7 @@
 #define __ELASTOS_TEXT_CBREAKITERATORHELPER_H__
 
 #include "_Elastos_Text_CBreakIteratorHelper.h"
+#include "elastos/core/Singleton.h"
 
 using Elastos::Utility::ILocale;
 
@@ -10,8 +11,13 @@ namespace Elastos {
 namespace Text {
 
 CarClass(CBreakIteratorHelper)
+    , public Singleton
+    , public IBreakIteratorHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI GetAvailableLocales(
         /* [out, callee] */ ArrayOf<ILocale*>** locales);

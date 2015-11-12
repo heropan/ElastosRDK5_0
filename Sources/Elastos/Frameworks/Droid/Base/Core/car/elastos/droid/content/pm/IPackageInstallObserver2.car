@@ -15,7 +15,7 @@ module
      * @hide
      */
     [oneway]
-    interface IPackageInstallObserver2 {
+    interface IIPackageInstallObserver2 {
         OnUserActionRequired(
             [in] IIntent* intent);
 

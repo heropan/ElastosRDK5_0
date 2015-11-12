@@ -179,7 +179,7 @@ private:
     };
 
     class MyContinueTransitionListener
-        : public EnterTransitionCoordinator::ContinueTransitionListener
+        : public ActivityTransitionCoordinator::ContinueTransitionListener
     {
     public:
         MyContinueTransitionListener(

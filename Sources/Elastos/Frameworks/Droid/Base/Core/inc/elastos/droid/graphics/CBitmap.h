@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IDisplayMetrics;
-using Elastos::Core::Object;
 using Elastos::IO::IBuffer;
 using Elastos::IO::IOutputStream;
 

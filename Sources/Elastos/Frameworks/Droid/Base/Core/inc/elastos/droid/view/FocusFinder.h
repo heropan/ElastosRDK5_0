@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IComparator;
 using Elastos::Core::EIID_IComparator;
 using Elastos::Utility::IList;

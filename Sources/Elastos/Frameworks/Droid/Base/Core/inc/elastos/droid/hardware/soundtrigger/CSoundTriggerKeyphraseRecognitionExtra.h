@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Hardware_Soundtrigger_CSoundTriggerKeyphraseRecognitionExtra.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

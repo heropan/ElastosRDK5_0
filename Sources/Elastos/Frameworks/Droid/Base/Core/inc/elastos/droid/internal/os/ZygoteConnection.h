@@ -8,7 +8,6 @@
 
 using Elastos::Droid::Net::ILocalSocket;
 using Elastos::Droid::Net::ICredentials;
-using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IDataOutputStream;

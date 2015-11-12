@@ -16,7 +16,6 @@ using Elastos::Droid::Os::IMessenger;
 using Elastos::Droid::Os::INetworkManagementService;
 using Elastos::Droid::Utility::IArrayMap;
 
-using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::IHashMap;

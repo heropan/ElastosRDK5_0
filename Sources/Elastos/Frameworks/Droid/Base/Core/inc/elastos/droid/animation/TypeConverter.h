@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Animation::ITypeConverter;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

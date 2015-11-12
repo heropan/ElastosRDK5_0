@@ -13,7 +13,6 @@ using Elastos::Droid::View::IViewOnAttachStateChangeListener;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IView;
 
-using Elastos::Core::Object;
 using Elastos::Utility::IArrayList;
 
 namespace Elastos {

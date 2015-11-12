@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 using Elastos::Utility::Etl::List;
 using Org::Xmlpull::V1::IXmlPullParser;

@@ -9,10 +9,9 @@ INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
 
 SOURCES += app.cpp
-SOURCES += ActionBar.cpp
-SOURCES += CActionKeyInfo.cpp
 
 SOURCES += Activity.cpp
+SOURCES += ActivityGroup.cpp
 SOURCES += ActivityManagerNative.cpp
 
 SOURCES += CActivityManager.cpp
@@ -27,20 +26,30 @@ SOURCES += CActivityManagerTaskDescription.cpp
 SOURCES += CActivityManagerTaskThumbnail.cpp
 SOURCES += CActivityManagerWaitResult.cpp
 SOURCES += CActivityManagerStackInfo.cpp
+
 SOURCES += CActivityNonConfigurationInstances.cpp
 SOURCES += CActivityOptions.cpp
 SOURCES += CActivityOptionsHelper.cpp
 SOURCES += CActivityOptionsAnimationStartedListener.cpp
 
+#SOURCES += CActivityThread.cpp
+#SOURCES += CActivityThreadHelper.cpp
+
 SOURCES += ActivityTransitionCoordinator.cpp
 SOURCES += ActivityTransitionState.cpp
 
-#SOURCES += ActivityView.cpp
+SOURCES += ActivityView.cpp
+
+SOURCES += ActionBar.cpp
+SOURCES += CActionKeyInfo.cpp
 
 SOURCES += AppGlobals.cpp
 
+#SOURCES += AppImportanceMonitor.cpp
+
 SOURCES += Application.cpp
 #SOURCES += CApplicationThread.cpp
+#SOURCES += ApplicationPackageManager.cpp
 SOURCES += CApplicationErrorReport.cpp
 SOURCES += CApplicationErrorReportHelper.cpp
 SOURCES += CApplicationErrorReportAnrInfo.cpp
@@ -48,7 +57,6 @@ SOURCES += CApplicationErrorReportBatteryInfo.cpp
 SOURCES += CApplicationErrorReportCrashInfo.cpp
 SOURCES += CApplicationErrorReportRunningServiceInfo.cpp
 
-#SOURCES += AppImportanceMonitor.cpp
 #SOURCES += AppOpsManager.cpp
 
 SOURCES += CBackStackState.cpp
@@ -57,7 +65,7 @@ SOURCES += CBackStackRecordTransitionState.cpp
 SOURCES += CContentProviderHolder.cpp
 
 SOURCES += EnterTransitionCoordinator.cpp
-#SOURCES += ExitTransitionCoordinator.cpp
+SOURCES += ExitTransitionCoordinator.cpp
 
 SOURCES += Fragment.cpp
 SOURCES += CFragmentHelper.cpp
@@ -68,6 +76,19 @@ SOURCES += CFragmentManagerImplHelper.cpp
 SOURCES += CFragmentManagerState.cpp
 SOURCES += CFragmentSavedState.cpp
 SOURCES += FragmentTransaction.cpp
+
+SOURCES += Instrumentation.cpp
+SOURCES += CInstrumentation.cpp
+SOURCES += CInstrumentationHelper.cpp
+SOURCES += CInstrumentationActivityMonitor.cpp
+SOURCES += CInstrumentationActivityResult.cpp
+
+SOURCES += LoadedPkg.cpp
+SOURCES += CInnerReceiver.cpp
+SOURCES += CInnerConnection.cpp
+
+SOURCES += PackageDeleteObserver.cpp
+SOURCES += PackageInstallObserver.cpp
 
 SOURCES += CPendingIntent.cpp
 SOURCES += CPendingIntentFinishedDispatcher.cpp
@@ -87,11 +108,8 @@ SOURCES += CTaskStackBuilderHelper.cpp
 #============================================
 
 #SOURCES += AlertDialog.cpp
-#SOURCES += ApplicationPackageManager.cpp
 #SOURCES += CActionBarLayoutParams.cpp
 
-#SOURCES += CActivityThread.cpp
-#SOURCES += CActivityThreadHelper.cpp
 #SOURCES += CAlarmManager.cpp
 #SOURCES += CAlertDialog.cpp
 #SOURCES += CAlertDialogBuilder.cpp
@@ -103,12 +121,7 @@ SOURCES += CTaskStackBuilderHelper.cpp
 #SOURCES += CDownloadManagerHelper.cpp
 #SOURCES += CDownloadManagerQuery.cpp
 #SOURCES += CDownloadManagerRequest.cpp
-#SOURCES += CInnerConnection.cpp
-#SOURCES += Instrumentation.cpp
-#SOURCES += CInstrumentation.cpp
-#SOURCES += CInstrumentationHelper.cpp
-#SOURCES += CInstrumentationActivityMonitor.cpp
-#SOURCES += CInstrumentationActivityResult.cpp
+
 #SOURCES += COnKeyguardExitResult.cpp
 #SOURCES += CKeyguardManager.cpp
 #SOURCES += CKyeguardManagerKeyguardLock.cpp
@@ -131,8 +144,6 @@ SOURCES += CTaskStackBuilderHelper.cpp
 #SOURCES += CUiModeManager.cpp
 #SOURCES += Dialog.cpp
 #SOURCES += Instrumentation.cpp
-#SOURCES += LoadedPkg.cpp
-#SOURCES += CInnerReceiver.cpp
 #SOURCES += ProgressDialog.cpp
 
 #SOURCES += DialogFragment.cpp

@@ -4,7 +4,6 @@
 #include "_Elastos_Droid_Database_CCursorJoiner.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::EIID_IIterable;

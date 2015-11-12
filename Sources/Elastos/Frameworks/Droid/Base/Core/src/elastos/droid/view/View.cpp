@@ -6142,7 +6142,7 @@ void View::DispatchVisibilityChanged(
  * @param visibility The new visibility of changedView: {@link #VISIBLE},
  * {@link #INVISIBLE} or {@link #GONE}.
  */
-void View::OnVisibilityChanged(
+ECode View::OnVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
@@ -6154,6 +6154,7 @@ void View::OnVisibilityChanged(
             mPrivateFlags |= PFLAG_AWAKEN_SCROLL_BARS_ON_ATTACH;
         }
     }
+    return NOERROR;
 }
 
 /**
@@ -13630,13 +13631,14 @@ ECode View::Layout(
  * @param right Right position, relative to parent
  * @param bottom Bottom position, relative to parent
  */
-void View::OnLayout(
+ECode View::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
+    return NOERROR;
 }
 
 /**

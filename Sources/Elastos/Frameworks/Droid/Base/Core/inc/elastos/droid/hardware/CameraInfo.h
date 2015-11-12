@@ -9,7 +9,6 @@
 #include <camera/Camera.h>
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

@@ -16,7 +16,6 @@ using Elastos::Droid::View::IDisplayInfo;
 using Elastos::Droid::View::IDisplayAdjustments;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::Media::Projection::IMediaProjection;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 

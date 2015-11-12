@@ -11,7 +11,7 @@ module
      * @hide
      */
     [oneway]
-    interface IPackageInstallObserver {
+    interface IIPackageInstallObserver {
         PackageInstalled(
             [in] String packageName,
             [in] Int32 returnCode);

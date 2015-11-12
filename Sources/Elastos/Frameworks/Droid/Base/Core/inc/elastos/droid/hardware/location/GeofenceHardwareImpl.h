@@ -14,7 +14,6 @@ using Elastos::Droid::Location::IIGpsGeofenceHardware;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IArrayList;
 

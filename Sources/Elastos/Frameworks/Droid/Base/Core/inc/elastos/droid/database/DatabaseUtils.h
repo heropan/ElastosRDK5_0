@@ -12,7 +12,6 @@ using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
 using Elastos::Droid::Database::Sqlite::ISQLiteStatement;
 using Elastos::Droid::Database::Sqlite::ISQLiteProgram;
-using Elastos::Core::Object;
 using Elastos::Core::IStringBuilder;
 using Elastos::IO::IPrintStream;
 using Elastos::Text::ICollator;

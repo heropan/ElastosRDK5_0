@@ -6,7 +6,6 @@
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

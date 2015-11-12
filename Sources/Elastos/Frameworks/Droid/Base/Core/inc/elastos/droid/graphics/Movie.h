@@ -7,7 +7,6 @@
 #include <elastos/core/Object.h>
 #include <skia/images/SkMovie.h>
 
-using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_OPENGL_GLSURFACEVIEW_H__
 
 #include "elastos/droid/view/SurfaceView.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 #include "elastos/io/Writer.h"
 #include <elastos/core/StringBuilder.h>
 
@@ -11,7 +11,6 @@ using Elastos::IO::IFlushable;
 using Elastos::IO::ICloseable;
 using Elastos::IO::Writer;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Object;
 using Elastos::Droid::View::SurfaceView;
 using Elastos::Droid::View::ISurfaceHolder;
 using Elastosx::Microedition::Khronos::Egl::IEGL10;

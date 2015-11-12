@@ -12,7 +12,6 @@ using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::View::IHardwareCanvas;
-using Elastos::Core::Object;
 using Elastos::Utility::IArrayList;
 
 namespace Elastos {

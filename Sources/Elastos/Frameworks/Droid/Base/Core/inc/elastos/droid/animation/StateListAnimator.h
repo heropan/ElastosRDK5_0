@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::View::IView;
-using Elastos::Core::Object;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::Etl::List;
 

@@ -10,7 +10,6 @@ using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Content::IContext;
 
-using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 
 namespace Elastos {

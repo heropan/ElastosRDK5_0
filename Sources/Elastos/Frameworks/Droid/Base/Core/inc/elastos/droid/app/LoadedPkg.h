@@ -3,12 +3,10 @@
 #define __ELASTOS_DROID_APP_LOADEDPKG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::IO::IFile;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IIntent;
@@ -23,36 +21,37 @@ using Elastos::Droid::Content::Res::ICompatibilityInfo;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IPendingResult;
-using Elastos::Droid::View::ICompatibilityInfoHolder;
+using Elastos::Droid::View::IDisplayAdjustments;
 
+using Elastos::IO::IFile;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos{
 namespace Droid{
 namespace App{
 
-extern "C" const InterfaceID EIID_LoadedPkg;
-extern "C" const InterfaceID EIID_ReceiverDispatcher;
-
-class CInnerConnection;
-
 class LoadedPkg
-    : public ElRefBase
-    , public IWeakReferenceSource
+    : public Object
+    , public ILoadedPkg
 {
 public:
     class ReceiverDispatcher
-        : public ElRefBase
-        , public IWeakReferenceSource
+        : public Object
+        , public IReceiverDispatcher
     {
     public:
         class Args
-            : public ElRefBase
-            , public IPendingResult
-            , public BroadcastReceiver::PendingResult
+            : public BroadcastReceiver::PendingResult
             , public IRunnable
         {
         public:
-            Args(
+            CAR_INTERFACE_DECL()
+
+            Args();
+
+            virtual ~Args();
+
+            CARAPI constructor(
                 /* [in] */ IIntent* intent,
                 /* [in] */ Int32 resultCode,
                 /* [in] */ const String& resultData,
@@ -64,122 +63,6 @@ public:
 
             CARAPI Run();
 
-            CARAPI_(PInterface) Probe(
-                /* [in]  */ REIID riid);
-
-            CARAPI_(UInt32) AddRef();
-
-            CARAPI_(UInt32) Release();
-
-            CARAPI GetInterfaceID(
-                /* [in] */ IInterface *pObject,
-                /* [out] */ InterfaceID *pIID);
-
-            /**
-             * Version of {@link BroadcastReceiver#setResultCode(int)
-             * BroadcastReceiver.setResultCode(int)} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI SetResultCode(
-                /* [in] */ Int32 code);
-
-            /**
-             * Version of {@link BroadcastReceiver#getResultCode()
-             * BroadcastReceiver.getResultCode()} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI GetResultCode(
-                /* [out] */ Int32* resultCode);
-
-            /**
-             * Version of {@link BroadcastReceiver#setResultData(String)
-             * BroadcastReceiver.setResultData(String)} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI SetResultData(
-                /* [in] */ const String& data);
-
-            /**
-             * Version of {@link BroadcastReceiver#getResultData()
-             * BroadcastReceiver.getResultData()} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI GetResultData(
-                /* [out] */ String* resultData);
-
-            /**
-             * Version of {@link BroadcastReceiver#setResultExtras(Bundle)
-             * BroadcastReceiver.setResultExtras(Bundle)} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI SetResultExtras(
-                /* [in] */ IBundle* extras);
-
-            /**
-             * Version of {@link BroadcastReceiver#getResultExtras(boolean)
-             * BroadcastReceiver.getResultExtras(boolean)} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI GetResultExtras(
-                /* [in] */ Boolean makeMap,
-                /* [out] */ IBundle** resultExtras);
-
-            /**
-             * Version of {@link BroadcastReceiver#setResult(int, String, Bundle)
-             * BroadcastReceiver.setResult(int, String, Bundle)} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI SetResult(
-                /* [in] */ Int32 code,
-                /* [in] */ const String& data,
-                /* [in] */ IBundle* extras);
-
-            /**
-             * Version of {@link BroadcastReceiver#getAbortBroadcast()
-             * BroadcastReceiver.getAbortBroadcast()} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI GetAbortBroadcast(
-                /* [out] */ Boolean* isAborted);
-
-            /**
-             * Version of {@link BroadcastReceiver#abortBroadcast()
-             * BroadcastReceiver.abortBroadcast()} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI AbortBroadcast();
-
-            /**
-             * Version of {@link BroadcastReceiver#clearAbortBroadcast()
-             * BroadcastReceiver.clearAbortBroadcast()} for
-             * asynchronous broadcast handling.
-             */
-            CARAPI ClearAbortBroadcast();
-
-            /**
-             * Finish the broadcast.  The current result will be sent and the
-             * next broadcast will proceed.
-             */
-            CARAPI Finish();
-
-            /** @hide */
-            CARAPI SetExtrasClassLoader(
-                /* [in] */ IClassLoader* cl);
-
-            /** @hide */
-            CARAPI SendFinished(
-                /* [in] */ IIActivityManager* am);
-
-            /** @hide */
-            CARAPI GetSendingUserId(
-                /* [out] */ Int32* userId);
-
-            CARAPI GetOrderedHint(
-                /* [out] */ Boolean* orderedHint);
-
-            CARAPI GetInitialStickyHint(
-                /* [out] */ Boolean* initialStickyHint);
-
         public:
             AutoPtr<IIntent> mCurIntent;
             Boolean mOrdered;
@@ -187,6 +70,8 @@ public:
         };
 
     public:
+        CAR_INTERFACE_DECL()
+
         ReceiverDispatcher(
             /* [in] */ IBroadcastReceiver* receiver,
             /* [in] */ IContext* context,
@@ -194,12 +79,7 @@ public:
             /* [in] */ IInstrumentation* instrumentation,
             /* [in] */ Boolean registered);
 
-        ~ReceiverDispatcher();
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI GetWeakReference(
-            /* [out] */ IWeakReference** weakReference);
+        virtual ~ReceiverDispatcher();
 
         CARAPI Validate(
            /* [in] */ IContext* context,
@@ -234,11 +114,12 @@ public:
     };
 
     class ServiceDispatcher
-        : public ElRefBase
-        , public IWeakReferenceSource
+        : public Object
+        , public IServiceDispatcher
     {
     private:
-        class ConnectionInfo : public ElRefBase
+        class ConnectionInfo
+            : public Object
         {
         public:
             AutoPtr<IBinder> mBinder;
@@ -265,7 +146,7 @@ public:
         };
 
         class DeathMonitor
-            : public ElRefBase
+            : public Object
             , public IProxyDeathRecipient
         {
         public:
@@ -288,9 +169,6 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
-        CARAPI GetWeakReference(
-            /* [out] */ IWeakReference** weakReference);
-
         ServiceDispatcher(
            /* [in] */ IServiceConnection* conn,
            /* [in] */ IContext* context,
@@ -309,7 +187,7 @@ public:
 
         CARAPI_(Int32) GetFlags();
 
-        CARAPI_(void) Connected(
+        CARAPI Connected(
             /* [in] */ IComponentName* name,
             /* [in] */ IBinder* service);
 
@@ -326,7 +204,7 @@ public:
             /* [in] */ IBinder* service);
 
     private:
-        AutoPtr<CInnerConnection> mIServiceConnection;
+        AutoPtr<IIServiceConnection> mIServiceConnection;
         AutoPtr<IServiceConnection> mConnection;
         AutoPtr<IContext> mContext;
         AutoPtr<IHandler> mActivityThread;
@@ -339,8 +217,14 @@ public:
     };
 
 public:
-    LoadedPkg(
-        /* [in] */ CActivityThread* activityThread,
+    CAR_INTERFACE_DECL()
+
+    LoadedPkg();
+
+    virtual ~LoadedPkg();
+
+    CARAPI constructor(
+        /* [in] */ IActivityThread* activityThread,
         /* [in] */ IApplicationInfo* aInfo,
         /* [in] */ ICompatibilityInfo* compatInfo,
         /* [in] */ IActivityThread* mainActivityThread,
@@ -349,19 +233,15 @@ public:
         /* [in] */ Boolean includeCode,
         /* [in] */ Boolean registerPackage);
 
-    LoadedPkg(
-        /* [in] */ CActivityThread* activityThread);
-
-    ~LoadedPkg();
-
-    CAR_INTERFACE_DECL();
+    CARAPI constructor(
+        /* [in] */ IActivityThread* activityThread);
 
     CARAPI_(void) InstallSystemApplicationInfo(
         /* [in] */ IApplicationInfo* info,
         /* [in] */ IClassLoader* classLoader);
 
     AutoPtr<IApplicationInfo> AdjustNativeLibraryPaths(
-        /* [in] */ IApplicationInfo* info)
+        /* [in] */ IApplicationInfo* info);
 
     CARAPI_(AutoPtr<IApplication>) GetApplication();
 
@@ -375,6 +255,12 @@ public:
 
     CARAPI IsSecurityViolation(
         /* [out] */ Boolean* bval);
+
+    CARAPI GetCompatibilityInfo(
+    /* [out] */ ICompatibilityInfo** info);
+
+    CARAPI SetCompatibilityInfo(
+        /* [in] */ ICompatibilityInfo* compatInfo);
 
     CARAPI GetClassLoader(
         /* [out] */ IClassLoader** loader);
@@ -480,7 +366,7 @@ private:
     static const String TAG;
 
     // CActivityThread has this's reference
-    CActivityThread* mActivityThread;
+    IActivityThread* mActivityThread;
     AutoPtr<IApplicationInfo> mApplicationInfo;
     String mAppDir;
     String mResDir;

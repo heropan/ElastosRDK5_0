@@ -216,7 +216,7 @@ static AutoPtr<IBinder> AppOpsManager::sToken;
  * presented to the user as one switch then this can be used to
  * make them all controlled by the same single operation.
  */
-Int32 AppOpsManager::sOpToSwitch[] = new Int32[] {
+Int32 AppOpsManager::sOpToSwitch[] = {
         IAppOpsManager::OP_COARSE_LOCATION,
         IAppOpsManager::OP_COARSE_LOCATION,
         IAppOpsManager::OP_COARSE_LOCATION,
@@ -267,7 +267,7 @@ Int32 AppOpsManager::sOpToSwitch[] = new Int32[] {
         IAppOpsManager::OP_ACTIVATE_VPN,
 };
 
-String AppOpsManager::sOpToString[] = new String[] {
+String AppOpsManager::sOpToString[] = {
         IAppOpsManager::OPSTR_COARSE_LOCATION,
         IAppOpsManager::OPSTR_FINE_LOCATION,
         String(NULL),
@@ -643,83 +643,57 @@ AutoPtr<HashMap<String, Int32> > AppOpsManager::sOpStrToOp = InitOpStrToOp();
 
 CAR_INTERFACE_IMPL(AppOpsManager, Object, IAppOpsManager)
 
-AppOpsManager();
+AppOpsManager::AppOpsManager()
+{}
 
-virtual ~AppOpsManager();
+AppOpsManager::~AppOpsManager()
+{}
 
-/**
- * Retrieve the op switch that controls the given operation.
- * @hide
- */
-Int32 OpToSwitch(
+
+Int32 AppOpsManager::OpToSwitch(
     /* [in] */ Int32 op)
 {
     return sOpToSwitch[op];
 }
 
-/**
- * Retrieve a non-localized name for the operation, for debugging output.
- * @hide
- */
-String OpToName(
+String AppOpsManager::OpToName(
     /* [in] */ Int32 op)
 {
     if (op == OP_NONE) return "NONE";
     return op < sOpNames.length ? sOpNames[op] : ("Unknown(" + op + ")");
 }
 
-/**
- * Retrieve the permission associated with an operation, or null if there is not one.
- * @hide
- */
-String OpToPermission(
+String AppOpsManager::OpToPermission(
     /* [in] */ Int32 op)
 {
     return sOpPerms[op];
 }
 
-/**
- * Retrieve the user restriction associated with an operation, or null if there is not one.
- * @hide
- */
-String OpToRestriction(
+String AppOpsManager::OpToRestriction(
     /* [in] */ Int32 op)
 {
     return sOpRestrictions[op];
 }
 
-/**
- * Retrieve whether the op allows the system (and system ui) to
- * bypass the user restriction.
- * @hide
- */
-Boolean OpAllowSystemBypassRestriction(
+Boolean AppOpsManager::OpAllowSystemBypassRestriction(
     /* [in] */ Int32 op)
 {
     return sOpAllowSystemRestrictionBypass[op];
 }
 
-/**
- * Retrieve the default mode for the operation.
- * @hide
- */
-Int32 OpToDefaultMode(
+Int32 AppOpsManager::OpToDefaultMode(
     /* [in] */ Int32 op)
 {
     return sOpDefaultMode[op];
 }
 
-/**
- * Retrieve whether the op allows itself to be reset.
- * @hide
- */
-Boolean OpAllowsReset(
+Boolean AppOpsManager::OpAllowsReset(
     /* [in] */ Int32 op)
 {
     return !sOpDisableReset[op];
 }
 
-CARAPI constructor(
+CARAPI AppOpsManager::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IIAppOpsService* service)
 {
@@ -733,7 +707,7 @@ CARAPI constructor(
  * @param ops The set of operations you are interested in, or null if you want all of them.
  * @hide
  */
-ECode GetPackagesForOps(
+ECode AppOpsManager::GetPackagesForOps(
     /* [in] */ ArrayOf<Int32>* ops,
     /* [out] */ IList** ops) //List<IAppOpsManager::PackageOps>
 {
@@ -752,7 +726,7 @@ ECode GetPackagesForOps(
  * @param ops The set of operations you are interested in, or null if you want all of them.
  * @hide
  */
-ECode GetOpsForPackage(
+ECode AppOpsManager::GetOpsForPackage(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [in] */ ArrayOf<Int32>* ops,
@@ -766,7 +740,7 @@ ECode GetOpsForPackage(
 }
 
 /** @hide */
-ECode SetMode(
+ECode AppOpsManager::SetMode(
     /* [in] */ Int32 code,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -789,7 +763,7 @@ ECode SetMode(
  * @param exceptionPackages Optional list of packages to exclude from the restriction.
  * @hide
  */
-ECode SetRestriction(
+ECode AppOpsManager::SetRestriction(
     /* [in] */ Int32 code,
     /* [in] */ Int32 usage,
     /* [in] */ Int32 mode,
@@ -803,7 +777,7 @@ ECode SetRestriction(
 }
 
 /** @hide */
-ECode ResetAllModes()
+ECode AppOpsManager::ResetAllModes()
 {
     try {
         mService.resetAllModes();
@@ -817,7 +791,7 @@ ECode ResetAllModes()
  * @param packageName The name of the application to monitor.
  * @param callback Where to report changes.
  */
-ECode StartWatchingMode(
+ECode AppOpsManager::StartWatchingMode(
     /* [in] */ const String& op,
     /* [in] */ const String& packageName,
     /* [in] */ IAppOpsManagerOnOpChangedListener* callback)
@@ -832,7 +806,7 @@ ECode StartWatchingMode(
  * @param callback Where to report changes.
  * @hide
  */
-ECode StartWatchingMode(
+ECode AppOpsManager::StartWatchingMode(
     /* [in] */ Int32 op,
     /* [in] */ const String& packageName,
     /* [in] */ IAppOpsManagerOnOpChangedListener* callback)
@@ -863,7 +837,7 @@ ECode StartWatchingMode(
  * Stop monitoring that was previously started with {@link #startWatchingMode}.  All
  * monitoring associated with this callback will be removed.
  */
-ECode StopWatchingMode(
+ECode AppOpsManager::StopWatchingMode(
     /* [in] */ IAppOpsManagerOnOpChangedListener* callback)
 {
     synchronized (mModeWatchers) {
@@ -877,7 +851,7 @@ ECode StopWatchingMode(
     }
 }
 
-private String BuildSecurityExceptionMsg(
+String AppOpsManager::BuildSecurityExceptionMsg(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
@@ -888,7 +862,7 @@ private String BuildSecurityExceptionMsg(
 /**
  * {@hide}
  */
-CARAPI StrOpToOp(
+CARAPI AppOpsManager::StrOpToOp(
     /* [in] */ const String& op,
     /* [out] */ Int32* result)
 {
@@ -899,7 +873,7 @@ CARAPI StrOpToOp(
     return val;
 }
 
-ECode CheckOp(
+ECode AppOpsManager::CheckOp(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid, .
     /* [in] */ const String& packageName,
@@ -908,7 +882,7 @@ ECode CheckOp(
     return checkOp(strOpToOp(op), uid, packageName);
 }
 
-ECode CheckOpNoThrow(
+ECode AppOpsManager::CheckOpNoThrow(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -917,7 +891,7 @@ ECode CheckOpNoThrow(
     return checkOpNoThrow(strOpToOp(op), uid, packageName);
 }
 
-ECode NoteOp(
+ECode AppOpsManager::NoteOp(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -926,7 +900,7 @@ ECode NoteOp(
     return noteOp(strOpToOp(op), uid, packageName);
 }
 
-ECode NoteOpNoThrow(
+ECode AppOpsManager::NoteOpNoThrow(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -951,7 +925,7 @@ ECode NoteOpNoThrow(
  * causing the app to crash).
  * @throws SecurityException If the app has been configured to crash on this op.
  */
-ECode StartOp(
+ECode AppOpsManager::StartOp(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -964,7 +938,7 @@ ECode StartOp(
  * Like {@link #startOp} but instead of throwing a {@link SecurityException} it
  * returns {@link #MODE_ERRORED}.
  */
-ECode StartOpNoThrow(
+ECode AppOpsManager::StartOpNoThrow(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -979,7 +953,7 @@ ECode StartOpNoThrow(
  * or result; the parameters supplied here must be the exact same ones previously passed
  * in when starting the operation.
  */
-ECode FinishOp(
+ECode AppOpsManager::FinishOp(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
@@ -1004,7 +978,7 @@ ECode FinishOp(
  * @throws SecurityException If the app has been configured to crash on this op.
  * @hide
  */
-ECode CheckOp(
+ECode AppOpsManager::CheckOp(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -1026,7 +1000,7 @@ ECode CheckOp(
  * returns {@link #MODE_ERRORED}.
  * @hide
  */
-ECode CheckOpNoThrow(
+ECode AppOpsManager::CheckOpNoThrow(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -1045,7 +1019,7 @@ ECode CheckOpNoThrow(
  * @throws SecurityException if the package name doesn't belong to the given
  *             UID, or if ownership cannot be verified.
  */
-ECode CheckPackage(
+ECode AppOpsManager::CheckPackage(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
 {
@@ -1063,7 +1037,7 @@ ECode CheckPackage(
  * Like {@link #checkOp} but at a stream-level for audio operations.
  * @hide
  */
-ECode CheckAudioOp(
+ECode AppOpsManager::CheckAudioOp(
     /* [in] */ Int32 op,
     /* [in] */ Int32 stream,
     /* [in] */ Int32 uid,
@@ -1086,7 +1060,7 @@ ECode CheckAudioOp(
  * returns {@link #MODE_ERRORED}.
  * @hide
  */
-ECode CheckAudioOpNoThrow(
+ECode AppOpsManager::CheckAudioOpNoThrow(
     /* [in] */ Int32 op,
     /* [in] */ Int32 stream,
     /* [in] */ Int32 uid,
@@ -1115,7 +1089,7 @@ ECode CheckAudioOpNoThrow(
  * @throws SecurityException If the app has been configured to crash on this op.
  * @hide
  */
-ECode NoteOp(
+ECode AppOpsManager::NoteOp(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -1137,7 +1111,7 @@ ECode NoteOp(
  * returns {@link #MODE_ERRORED}.
  * @hide
  */
-ECode NoteOpNoThrow(
+ECode AppOpsManager::NoteOpNoThrow(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -1150,16 +1124,14 @@ ECode NoteOpNoThrow(
     return MODE_IGNORED;
 }
 
-/** @hide */
-ECode NoteOp(
+ECode AppOpsManager::NoteOp(
     /* [in] */ Int32 op,
     /* [out] */ Int32* result)
 {
     return noteOp(op, Process.myUid(), mContext.getOpPackageName());
 }
 
-/** @hide */
-CARAPI GetToken(
+CARAPI AppOpsManager::GetToken(
     /* [in] */ IIAppOpsService* service,
     /* [out] */ IBinder** binder)
 {
@@ -1176,24 +1148,7 @@ CARAPI GetToken(
     }
 }
 
-/**
- * Report that an application has started executing a long-running operation.  Note that you
- * must pass in both the uid and name of the application to be checked; this function will
- * verify that these two match, and if not, return {@link #MODE_IGNORED}.  If this call
- * succeeds, the last execution time of the operation for this app will be updated to
- * the current time and the operation will be marked as "running".  In this case you must
- * later call {@link #FinishOp(Int32, Int32, String)} to report when the application is no
- * longer performing the operation.
- * @param op The operation to start.  One of the OP_* constants.
- * @param uid The user id of the application attempting to perform the operation.
- * @param packageName The name of the application attempting to perform the operation.
- * @return Returns {@link #MODE_ALLOWED} if the operation is allowed, or
- * {@link #MODE_IGNORED} if it is not allowed and should be silently ignored (without
- * causing the app to crash).
- * @throws SecurityException If the app has been configured to crash on this op.
- * @hide
- */
-ECode StartOp(
+ECode AppOpsManager::StartOp(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -1210,12 +1165,7 @@ ECode StartOp(
     return MODE_IGNORED;
 }
 
-/**
- * Like {@link #startOp} but instead of throwing a {@link SecurityException} it
- * returns {@link #MODE_ERRORED}.
- * @hide
- */
-ECode StartOpNoThrow(
+ECode AppOpsManager::StartOpNoThrow(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
@@ -1228,22 +1178,14 @@ ECode StartOpNoThrow(
     return MODE_IGNORED;
 }
 
-/** @hide */
-ECode StartOp(
+ECode AppOpsManager::StartOp(
     /* [in] */ Int32 op,
     /* [out] */ Int32* result)
 {
     return startOp(op, Process.myUid(), mContext.getOpPackageName());
 }
 
-/**
- * Report that an application is no longer performing an operation that had previously
- * been started with {@link #startOp(Int32, Int32, String)}.  There is no validation of input
- * or result; the parameters supplied here must be the exact same ones previously passed
- * in when starting the operation.
- * @hide
- */
-ECode FinishOp(
+ECode AppOpsManager::FinishOp(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
@@ -1254,8 +1196,7 @@ ECode FinishOp(
     }
 }
 
-/** @hide */
-ECode FinishOp(
+ECode AppOpsManager::FinishOp(
     /* [in] */ Int32 op)
 {
     FinishOp(op, Process.myUid(), mContext.getOpPackageName());

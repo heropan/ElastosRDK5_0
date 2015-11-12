@@ -8,7 +8,6 @@
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

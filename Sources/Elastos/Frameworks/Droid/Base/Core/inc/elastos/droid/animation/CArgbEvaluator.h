@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Animation_CArgbEvaluator.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

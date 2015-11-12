@@ -7,7 +7,6 @@
 #include <utils/RefBase.h>
 
 using Elastos::Droid::Internal::Utility::IVirtualRefBasePtr;
-using Elastos::Core::Object;
 using android::VirtualLightRefBase;
 
 namespace Elastos {

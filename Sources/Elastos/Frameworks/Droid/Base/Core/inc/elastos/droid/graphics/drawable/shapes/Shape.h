@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IOutline;
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 
 namespace Elastos {

@@ -5,9 +5,8 @@
 #include "Elastos.Droid.Commands.Monkey.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/List.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Utility::Etl::List;

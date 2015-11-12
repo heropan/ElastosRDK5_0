@@ -1,12 +1,37 @@
 
 module
 {
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
     interface Elastos.Droid.Content.Res.ICompatibilityInfo;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
+
+    /** @hide */
+    interface IReceiverDispatcher {
+    }
+
+    /** @hide */
+    interface IServiceDispatcher {
+        Connected(
+           [in] IComponentName* name,
+           [in] IBinder* service);
+
+        Death(
+           [in] IComponentName* name,
+           [in] IBinder* service);
+
+        DoConnected(
+           [in] IComponentName* name,
+           [in] IBinder* service);
+
+        DoDeath(
+           [in] IComponentName* name,
+           [in] IBinder* service);
+    }
 
     /**
      * Local state maintained about a currently loaded .apk.

@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IPointF;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

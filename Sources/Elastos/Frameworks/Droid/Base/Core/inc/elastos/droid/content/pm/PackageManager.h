@@ -3,12 +3,12 @@
 #define __ELASTOS_DROID_CONTENT_PM_PACKAGEMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-// #include "elastos/droid/app/PackageInstallObserver.h"
-// #include "elastos/droid/app/PackageDeleteObserver.h"
+#include "elastos/droid/app/PackageInstallObserver.h"
+#include "elastos/droid/app/PackageDeleteObserver.h"
 #include <elastos/core/Object.h>
 
-// using Elastos::Droid::App::PackageInstallObserver;
-// using Elastos::Droid::App::PackageDeleteObserver;
+using Elastos::Droid::App::PackageInstallObserver;
+using Elastos::Droid::App::PackageDeleteObserver;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::IBundle;
@@ -223,14 +223,15 @@ public:
 
 public:
     /** {@hide} */
-    class LegacyPackageInstallObserver /*: public PackageInstallObserver*/
+    class LegacyPackageInstallObserver
+        : public PackageInstallObserver
     {
     private:
-        AutoPtr<IPackageInstallObserver> mLegacy;
+        AutoPtr<IIPackageInstallObserver> mLegacy;
 
     public:
         LegacyPackageInstallObserver(
-            /* [in] */ IPackageInstallObserver* legacy)
+            /* [in] */ IIPackageInstallObserver* legacy)
             : mLegacy(legacy)
         {}
 
@@ -249,11 +250,14 @@ public:
     };
 
     /** {@hide} */
-    class LegacyPackageDeleteObserver /*: public PackageDeleteObserver */{
-        AutoPtr<IPackageDeleteObserver> mLegacy;
+    class LegacyPackageDeleteObserver
+        : public PackageDeleteObserver
+    {
+    public:
+        AutoPtr<IIPackageDeleteObserver> mLegacy;
 
         LegacyPackageDeleteObserver(
-            /* [in] */ IPackageDeleteObserver* legacy)
+            /* [in] */ IIPackageDeleteObserver* legacy)
             : mLegacy(legacy)
         {}
 

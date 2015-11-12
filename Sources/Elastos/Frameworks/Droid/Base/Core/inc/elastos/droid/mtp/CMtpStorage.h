@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Mtp_CMtpStorage.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Storage::IStorageVolume;
 

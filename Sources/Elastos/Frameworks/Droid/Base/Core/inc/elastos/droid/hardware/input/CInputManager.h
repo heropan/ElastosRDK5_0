@@ -18,7 +18,6 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::Media::IAudioAttributes;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 

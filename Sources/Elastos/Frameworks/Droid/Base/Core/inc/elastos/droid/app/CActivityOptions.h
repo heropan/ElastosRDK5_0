@@ -24,8 +24,6 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class ExitTransitionCoordinator;
-
 class AnimationStartedListenerRunnable
     : public Runnable
 {
@@ -464,7 +462,7 @@ public:
     /** @hide */
     static CARAPI MakeSceneTransitionAnimation(
         /* [in] */ IActivity* activity,
-        /* [in] */ ExitTransitionCoordinator* exitCoordinator,
+        /* [in] */ IExitTransitionCoordinator* exitCoordinator,
         /* [in] */ IArrayList* sharedElementNames,
         /* [in] */ Int32 resultCode,
         /* [in] */ IIntent* resultData,

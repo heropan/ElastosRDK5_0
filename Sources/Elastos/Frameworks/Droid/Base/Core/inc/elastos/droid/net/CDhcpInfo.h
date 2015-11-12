@@ -8,7 +8,6 @@
 #include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::CString;
-using Elastos::Core::Object;
 using Elastos::Core::StringBuffer;
 
 namespace Elastos {

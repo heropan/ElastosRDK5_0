@@ -4,12 +4,23 @@
 
 #include <elastos/core/Object.h>
 
+//
+// Runtime
+//
 DEFINE_OBJECT_HASH_FUNC_FOR(IInterface)
 
 //
 // Os
 //
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Os::IBinder)
+
+//
+// Content
+//
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IBroadcastReceiver)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IComponentName)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IContext)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IServiceConnection)
 
 //
 // Accounts

@@ -10,7 +10,6 @@
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IRotationWatcher;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {

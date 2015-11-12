@@ -4878,7 +4878,7 @@ protected:
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 
-    virtual CARAPI_(void) OnVisibilityChanged(
+    virtual CARAPI OnVisibilityChanged(
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 
@@ -4999,7 +4999,7 @@ protected:
 
     virtual CARAPI_(Int32) GetBottomPaddingOffset();
 
-    virtual CARAPI_(void) OnLayout(
+    virtual CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,

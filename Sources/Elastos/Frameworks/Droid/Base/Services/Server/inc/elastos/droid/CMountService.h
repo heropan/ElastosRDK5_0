@@ -16,7 +16,6 @@
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::Core::IInteger32;
-using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::ICountDownLatch;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContext;

@@ -9,7 +9,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IInteger32;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IHashMap;
 using Elastos::Droid::Content::BroadcastReceiver;

@@ -7,29 +7,28 @@
 
 using Elastos::Droid::View::ViewGroup;
 
-// using Elastos::Droid::content.Context;
-// using Elastos::Droid::content.ContextWrapper;
-// using Elastos::Droid::content.IIntentSender;
-// using Elastos::Droid::content.Intent;
-// using Elastos::Droid::content.IntentSender;
-// using Elastos::Droid::graphics.SurfaceTexture;
-// using Elastos::Droid::os.IBinder;
-// using Elastos::Droid::os.RemoteException;
-// using Elastos::Droid::util.AttributeSet;
-// using Elastos::Droid::util.DisplayMetrics;
-// using Elastos::Droid::util.Log;
-// using Elastos::Droid::view.InputDevice;
-// using Elastos::Droid::view.InputEvent;
-// using Elastos::Droid::view.MotionEvent;
-// using Elastos::Droid::view.Surface;
-// using Elastos::Droid::view.TextureView;
-// using Elastos::Droid::view.TextureView.SurfaceTextureListener;
-// using Elastos::Droid::view.View;
-// using Elastos::Droid::view.ViewGroup;
-// using Elastos::Droid::view.WindowManager;
-// import dalvik.system.CloseGuard;
+// using Elastos::Droid::Content::IContext;
+// using Elastos::Droid::Content::IContextWrapper;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentSender;
+using Elastos::Droid::Content::IIIntentSender;
+using Elastos::Droid::Graphics::ISurfaceTexture;
+using Elastos::Droid::Os::IBinder;
+// using Elastos::Droid::View::IInputDevice;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::IMotionEvent;
+// using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::ITextureView;
+// using Elastos::Droid::View::ITextureViewSurfaceTextureListener;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::ISurfaceTextureListener;
+using Elastos::Droid::View::IView;
+// using Elastos::Droid::View::IViewGroup;
+// using Elastos::Droid::View::IWindowManager;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Utility::IDisplayMetrics;
 
-// import java.lang.ref.WeakReference;
+using Elastos::Core::ICloseGuard;
 
 namespace Elastos {
 namespace Droid {
@@ -62,6 +61,9 @@ public:
 
         CARAPI OnAllActivitiesComplete(
             /* [in] */ IBinder* container);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     private:
         AutoPtr<IWeakReference> mActivityViewWeakReference;
@@ -111,6 +113,8 @@ private:
         CARAPI OnSurfaceTextureUpdated(
             /* [in] */ ISurfaceTexture* surfaceTexture);
 
+        CARAPI ToString(
+            /* [out] */ String* str);
     private:
         ActivityView* mHost;
     };
@@ -128,7 +132,7 @@ private:
             /* [in] */ Int32 displayId);
 
         CARAPI SetSurface(
-            /* [in] */ Surface surface,
+            /* [in] */ ISurface* surface,
             /* [in] */ Int32 width,
             /* [in] */ Int32 height,
             /* [in] */ Int32 density);
@@ -154,10 +158,12 @@ private:
             /* [in] */ IInputEvent* event,
             /* [out] */ Boolean* bval);
 
-        CARAPI ReleaseSources();
+        CARAPI ReleaseResources();
 
         void Finalize();
 
+        CARAPI ToString(
+            /* [out] */ String* str);
     private:
         AutoPtr<IActivityContainer> mActivityContainer;
         AutoPtr<ICloseGuard> mGuard;// = CloseGuard.get();
@@ -184,12 +190,12 @@ public:
         /* [in] */ Int32 defStyle);
 
     CARAPI OnVisibilityChanged(
-        /* [in] */ View changedView,
+        /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 
     CARAPI OnTouchEvent(
         /* [in] */ IMotionEvent* event,
-        /* [out] */ Boolean* bval;
+        /* [out] */ Boolean* bval);
 
     CARAPI OnGenericMotionEvent(
         /* [in] */ IMotionEvent* event,
@@ -245,7 +251,7 @@ private:
 
     AutoPtr<IDisplayMetrics> mMetrics;
     AutoPtr<ITextureView> mTextureView;
-    AutoPtr<IActivityContainerWrapper> mActivityContainer;
+    AutoPtr<ActivityContainerWrapper> mActivityContainer;
     AutoPtr<IActivity> mActivity; // TODO weak ref ??
     Int32 mWidth;
     Int32 mHeight;

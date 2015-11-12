@@ -2,15 +2,15 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYTHREAD_H__
 #define __ELASTOS_DROID_APP_CACTIVITYTHREAD_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_App_CActivityThread.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/content/res/CCompatibilityInfo.h"
 #include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/app/CApplicationThread.h"
 #include "elastos/droid/app/CResultInfo.h"
 #include "elastos/droid/app/Activity.h"
-#include "elastos/droid/app/LoadedPkg.h"
+// #include "elastos/droid/app/LoadedPkg.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/os/HandlerBase.h"
@@ -91,39 +91,20 @@ namespace App {
 } // namespace Droid
 } // namespace Elastos
 
-_ETL_NAMESPACE_BEGIN
-
-#define AUTOPTR_CAT_RESOURCESKEY_EQUALTO_FUNC
-template<> struct EqualTo<AutoPtr<Elastos::Droid::App::ResourcesKey> >
-{
-    Boolean operator()(const AutoPtr<Elastos::Droid::App::ResourcesKey> x,
-                       const AutoPtr<Elastos::Droid::App::ResourcesKey> y) const
-    {
-        assert(y != NULL);
-        return x->Equals(y);
-    }
-};
-#endif //AUTOPTR_CAT_RESOURCESKEY_EQUALTO_FUNC
-
-#define AUTOPTR_CAT_RESOURCESKEY_HASH_FUNC
-template<> struct Hash<AutoPtr<Elastos::Droid::App::ResourcesKey> >
-{
-    size_t operator()(const AutoPtr<Elastos::Droid::App::ResourcesKey> s) const
-    {
-        assert(s != NULL);
-        Int32 hashCode = s->GetHashCode();
-        return (size_t)hashCode;
-    }
-};
-#endif
-_ETL_NAMESPACE_END
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-class LoadedPkg;
 
+/**
+ * This manages the execution of the main thread in an
+ * application process, scheduling and executing activities,
+ * broadcasts, and other operations on it as the activity
+ * manager requests.
+ *
+ * {@hide}
+ */
 CarClass(CActivityThread)
 {
 public:
@@ -235,7 +216,7 @@ public:
 
         AutoPtr<IActivityInfo> mActivityInfo;
         AutoPtr<ICompatibilityInfo> mCompatInfo;
-        AutoPtr<LoadedPkg> mPackageInfo;
+        // AutoPtr<LoadedPkg> mPackageInfo;
 
         AutoPtr<IList> mPendingResults;
         AutoPtr<IList> mPendingIntents; //List<IIntent>
@@ -478,7 +459,7 @@ public:
         {}
 
     public:
-        AutoPtr<LoadedPkg> mInfo;
+        // AutoPtr<LoadedPkg> mInfo;
         String mProcessName;
         AutoPtr<IApplicationInfo> mAppInfo;
         AutoPtr<IObjectContainer> mProviders;

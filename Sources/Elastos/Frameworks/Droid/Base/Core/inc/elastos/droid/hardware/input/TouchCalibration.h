@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Hardware::Input::IKeyboardLayout;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

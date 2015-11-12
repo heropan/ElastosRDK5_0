@@ -8,7 +8,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::Handler;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

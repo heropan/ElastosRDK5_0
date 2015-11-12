@@ -11,7 +11,6 @@
 using Elastos::Droid::Os::MessageQueue;
 using Elastos::Droid::Os::NativeMessageQueue;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using android::Vector;
 

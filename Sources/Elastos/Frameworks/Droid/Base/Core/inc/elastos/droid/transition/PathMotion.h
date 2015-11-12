@@ -8,7 +8,6 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

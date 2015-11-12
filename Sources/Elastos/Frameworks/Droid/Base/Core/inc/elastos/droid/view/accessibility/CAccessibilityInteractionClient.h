@@ -14,7 +14,6 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::Utility::IInt64SparseArray;
 using Elastos::Droid::View::Accessibility::IIAccessibilityInteractionConnectionCallback;
-using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::IList;
 

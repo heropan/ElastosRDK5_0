@@ -6,7 +6,6 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {

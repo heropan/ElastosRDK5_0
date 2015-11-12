@@ -3,13 +3,10 @@
 #define __ELASTOS_DROID_APP_INSTRUMENTATION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/Core/Object.h>
+#include "elastos/droid/os/Runnable.h"
+#include <elastos/core/Thread.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::IClassLoader;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IRunnable;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IApplication;
@@ -20,7 +17,9 @@ using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IPersistableBundle;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IIdleHandler;
 using Elastos::Droid::Os::IMessageQueue;
@@ -29,14 +28,23 @@ using Elastos::Droid::Privacy::IPrivacySettingsManager;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
 
+
+using Elastos::Core::IClassLoader;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IRunnable;
+using Elastos::Core::Thread;
+using Elastos::Core::IThread;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 class Instrumentation
+    : public Object
 {
 private:
-    class ActivityWaiter : public ElRefBase
+    class ActivityWaiter
+        : public Object
     {
     public:
         ActivityWaiter(
@@ -50,16 +58,13 @@ private:
     };
 
     class MenuRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
         MenuRunnable(
             /* [in] */ IActivity* activity,
             /* [in] */ Int32 identifier,
             /* [in] */ Int32 flags);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI Run();
 
@@ -73,8 +78,7 @@ private:
     };
 
     class ContextMenuRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
         ContextMenuRunnable(
@@ -95,7 +99,8 @@ private:
         friend class Instrumentation;
     };
 
-    class InstrumentationThread : public ThreadBase
+    class InstrumentationThread
+        : public Thread
     {
     public:
         InstrumentationThread(
@@ -109,25 +114,18 @@ private:
     };
 
     class EmptyRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
         CARAPI Run();
-
-        CAR_INTERFACE_DECL()
     };
 
     class SyncRunnable
-        : public ElRefBase
-        , public IRunnable
-        , public Object
+        : public Runnable
     {
     public:
         SyncRunnable(
             /* [in] */ IRunnable* target);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI Run();
 
@@ -139,15 +137,15 @@ private:
     };
 
     class ActivityGoing
-        : public ElRefBase
+        : public Object
         , public IIdleHandler
     {
     public:
+        CAR_INTERFACE_DECL()
+
         ActivityGoing(
             /* [in] */ ActivityWaiter* waiter,
             /* [in] */ Instrumentation* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI QueueIdle(
             /* [out] */ Boolean* res);
@@ -158,15 +156,14 @@ private:
     };
 
     class Idler
-        : public ElRefBase
+        : public Object
         , public IIdleHandler
-        , public Object
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Idler(
             /* [in] */ IRunnable* callback);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI QueueIdle(
             /* [out] */ Boolean* res);
@@ -179,16 +176,13 @@ private:
     };
 
     class BlockPhoneCallRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
         BlockPhoneCallRunnable(
             /* [in] */ IContext* con)
             : mContext(con)
         {}
-
-        CAR_INTERFACE_DECL()
 
         CARAPI Run();
 
@@ -201,10 +195,7 @@ public:
 
     virtual ~Instrumentation();
 
-    virtual CARAPI Initialize();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI constructor();
 
     /**
      * Called when the instrumentation is starting, before any application code
@@ -1011,8 +1002,7 @@ public:
         /* [in] */ IBinder* contextThread,
         /* [in] */ IIAppTask* appTask,
         /* [in] */ IIntent* intent,
-        /* [in] */ IBundle* options,
-        /* [out] */ IInstrumentationActivityResult** activityResult);
+        /* [in] */ IBundle* options);
 
     virtual CARAPI Init(
         /* [in] */ IActivityThread* thread,

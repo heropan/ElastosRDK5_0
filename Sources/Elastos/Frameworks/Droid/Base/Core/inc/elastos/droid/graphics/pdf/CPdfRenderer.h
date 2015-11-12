@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::Core::Object;
 using Elastos::Core::ICloseGuard;
 
 namespace Elastos {

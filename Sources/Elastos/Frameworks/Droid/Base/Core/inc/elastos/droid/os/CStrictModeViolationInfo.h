@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Os_CStrictModeViolationInfo.h"
 #include "elastos/droid/ext/frameworkdef.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IApplicationErrorReportCrashInfo;
 using Elastos::Droid::Utility::IPrinter;

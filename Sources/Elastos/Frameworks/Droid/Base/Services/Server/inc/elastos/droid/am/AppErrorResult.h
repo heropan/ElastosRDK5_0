@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_APPERRORRESULT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;

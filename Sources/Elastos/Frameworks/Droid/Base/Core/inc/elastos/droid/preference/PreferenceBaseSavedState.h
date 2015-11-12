@@ -8,7 +8,6 @@
 // #include "elastos/droid/view/AbsSavedState.h"
 
 // using Elastos::Droid::View::AbsSavedState;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

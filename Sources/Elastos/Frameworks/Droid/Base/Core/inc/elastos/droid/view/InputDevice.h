@@ -7,7 +7,6 @@
 #include <elastos/core/StringUtils.h>
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::IList;

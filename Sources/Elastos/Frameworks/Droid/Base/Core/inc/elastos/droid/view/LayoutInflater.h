@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Utility::IHashMap;
-using Elastos::Core::Object;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;

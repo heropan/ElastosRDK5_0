@@ -4,7 +4,6 @@
 #include "elastos/droid/database/AbstractCursor.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::IIterable;
 
 namespace Elastos {

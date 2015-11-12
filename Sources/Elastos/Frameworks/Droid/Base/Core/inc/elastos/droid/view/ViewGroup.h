@@ -1282,7 +1282,7 @@ protected:
      */
     virtual CARAPI_(void) DetachAllViewsFromParent();
 
-    virtual CARAPI_(void) OnLayout(
+    virtual CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,

@@ -7,7 +7,6 @@
 // #include "elastos/droid/view/View.h"
 //#include "elastos/droid/view/GestureDetector.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 // using Elastos::Droid::View::View;
 using Elastos::Droid::Content::IContext;

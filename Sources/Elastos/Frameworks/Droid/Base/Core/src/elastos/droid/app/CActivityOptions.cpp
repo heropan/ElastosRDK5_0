@@ -1,6 +1,8 @@
 
 #include "elastos/droid/app/CActivityOptions.h"
+#include "elastos/droid/app/Activity.h"
 #include "elastos/droid/app/CActivityOptionsAnimationStartedListener.h"
+#include "elastos/droid/app/ExitTransitionCoordinator.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/utility/CPairHelper.h"
@@ -335,44 +337,55 @@ ECode CActivityOptions::MakeSceneTransitionAnimation(
         }
     }
 
-    // ExitTransitionCoordinator exit = new ExitTransitionCoordinator(activity, names, names,
-    //         views, false);
-    // opts->mTransitionReceiver = exit;
-    // opts->mSharedElementNames = names;
-    // opts->mIsReturning = false;
-    // opts->mExitCoordinatorIndex =
-    //         activity.mActivityTransitionState.addExitTransitionCoordinator(exit);
-    // return opts;
+    Int32 ival;
+    AutoPtr<ExitTransitionCoordinator> exitCoordinator = new ExitTransitionCoordinator();
+    exitCoordinator->constructor(activity, names, names, views, FALSE);
+    opts->mTransitionReceiver = IResultReceiver::Probe(exitCoordinator);
+    opts->mSharedElementNames = names;
+    opts->mIsReturning = FALSE;
+    opts->mExitCoordinatorIndex =
+        ((Activity*)activity)->mActivityTransitionState->AddExitTransitionCoordinator(
+            IExitTransitionCoordinator::Probe(exitCoordinator), &ival);
+    *options = (IActivityOptions*)opts.Get();
+    REFCOUNT_ADD(*options)
     return NOERROR;
 }
 
 ECode CActivityOptions::MakeSceneTransitionAnimation(
     /* [in] */ IActivity* activity,
-    /* [in] */ ExitTransitionCoordinator* exitCoordinator,
+    /* [in] */ IExitTransitionCoordinator* exitCoordinator,
     /* [in] */ IArrayList* sharedElementNames,
     /* [in] */ Int32 resultCode,
     /* [in] */ IIntent* resultData,
     /* [out] */ IActivityOptions** options)
 {
-    // ActivityOptions opts = new ActivityOptions();
-    // opts.mAnimationType = ANIM_SCENE_TRANSITION;
-    // opts.mSharedElementNames = sharedElementNames;
-    // opts.mTransitionReceiver = exitCoordinator;
-    // opts.mIsReturning = true;
-    // opts.mResultCode = resultCode;
-    // opts.mResultData = resultData;
-    // opts.mExitCoordinatorIndex =
-    //         activity.mActivityTransitionState.addExitTransitionCoordinator(exitCoordinator);
-    // return opts;
+    VALIDATE_NOT_NULL(options)
+    Int32 ival;
+    AutoPtr<CActivityOptions> opts;
+    CActivityOptions::NewByFriend((CActivityOptions**)&opts);
+    opts->mAnimationType = ANIM_SCENE_TRANSITION;
+    opts->mSharedElementNames = sharedElementNames;
+    opts->mTransitionReceiver = IResultReceiver::Probe(exitCoordinator);;
+    opts->mIsReturning = true;
+    opts->mResultCode = resultCode;
+    opts->mResultData = resultData;
+    opts->mExitCoordinatorIndex =
+        ((Activity*)activity)->mActivityTransitionState->AddExitTransitionCoordinator(
+            exitCoordinator, &ival);
+    *options = (IActivityOptions*)opts.Get();
+    REFCOUNT_ADD(*options)
     return NOERROR;
 }
 
 ECode CActivityOptions::MakeTaskLaunchBehind(
     /* [out] */ IActivityOptions** options)
 {
-    // final ActivityOptions opts = new ActivityOptions();
-    // opts.mAnimationType = ANIM_LAUNCH_TASK_BEHIND;
-    // return opts;
+    VALIDATE_NOT_NULL(options)
+    AutoPtr<CActivityOptions> opts;
+    CActivityOptions::NewByFriend((CActivityOptions**)&opts);
+    opts->mAnimationType = ANIM_LAUNCH_TASK_BEHIND;
+    *options = (IActivityOptions*)opts.Get();
+    REFCOUNT_ADD(*options)
     return NOERROR;
 }
 

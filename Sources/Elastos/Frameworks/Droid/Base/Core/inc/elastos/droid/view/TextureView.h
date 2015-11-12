@@ -407,7 +407,7 @@ protected:
 
     AutoPtr<IHardwareLayer> GetHardwareLayer();
 
-    void OnVisibilityChanged(
+    CARAPI OnVisibilityChanged(
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 

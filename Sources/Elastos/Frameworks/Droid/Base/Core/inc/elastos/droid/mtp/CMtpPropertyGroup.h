@@ -7,7 +7,6 @@
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Net::IUri;

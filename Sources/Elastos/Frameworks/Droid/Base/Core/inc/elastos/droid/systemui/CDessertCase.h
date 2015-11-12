@@ -11,7 +11,6 @@
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::SystemUI::IDessertCaseView;
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

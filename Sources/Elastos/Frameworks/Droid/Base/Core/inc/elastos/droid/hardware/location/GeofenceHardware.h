@@ -9,7 +9,6 @@
 using Elastos::Droid::Location::ILocation;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::EIID_IBinder;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Hardware::Location::IGeofenceHardwareCallback);

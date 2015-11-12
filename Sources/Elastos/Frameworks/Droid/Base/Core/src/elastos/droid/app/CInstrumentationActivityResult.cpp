@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CInstrumentationActivityResult, Object, IInstrumentationActivityResult)
+
+CAR_OBJECT_IMPL(CInstrumentationActivityResult)
+
 CInstrumentationActivityResult::CInstrumentationActivityResult()
     : mResultCode(0)
 {

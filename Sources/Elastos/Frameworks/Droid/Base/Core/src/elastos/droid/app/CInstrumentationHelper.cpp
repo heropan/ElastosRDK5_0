@@ -1,6 +1,6 @@
 
 #include "elastos/droid/app/CInstrumentationHelper.h"
-#include "elastos/droid/app/CInstrumentation.h"
+#include "elastos/droid/app/Instrumentation.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +15,7 @@ ECode CInstrumentationHelper::NewApplication(
     /* [in] */ IContext* context,
     /* [out] */ IApplication** app)
 {
-    return CInstrumentation::NewApplication(clazz, context, app);
+    return Instrumentation::NewApplication(clazz, context, app);
 }
 
 ECode CInstrumentationHelper::NewApplication(
@@ -23,14 +23,14 @@ ECode CInstrumentationHelper::NewApplication(
     /* [in] */ IContext* context,
     /* [out] */ IApplication** app)
 {
-    return CInstrumentation::NewApplication(clsid, context, app);
+    return Instrumentation::NewApplication(clsid, context, app);
 }
 
 ECode CInstrumentationHelper::CheckStartActivityResult(
     /* [in] */ Int32 res,
     /* [in] */ IIntent* intent)
 {
-    return CInstrumentation::CheckStartActivityResult(res, intent);
+    return Instrumentation::CheckStartActivityResult(res, intent);
 }
 
 } // namespace App

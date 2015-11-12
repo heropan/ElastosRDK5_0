@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Os_CStrictMode.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IInteger32;

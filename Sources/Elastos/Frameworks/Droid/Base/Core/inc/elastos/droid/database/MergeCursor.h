@@ -5,7 +5,6 @@
 #include "elastos/droid/database/AbstractCursor.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

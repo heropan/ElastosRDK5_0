@@ -5,7 +5,6 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {

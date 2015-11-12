@@ -6,10 +6,9 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/HandlerBase.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 
-using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;

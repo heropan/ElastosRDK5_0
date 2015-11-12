@@ -2,20 +2,29 @@
 #define __ELASTOS_DROID_APP_CINNERRECEIVER_H__
 
 #include "_Elastos_Droid_App_CInnerReceiver.h"
-#include "elastos/droid/app/LoadedPkg.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentReceiver;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 CarClass(CInnerReceiver)
+    , public Object
+    , public IIntentReceiver
+    , public IBinder
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
-        /* [in] */ Handle32 rd,
+        /* [in] */ IReceiverDispatcher* rd,
         /* [in] */ Boolean strong);
 
     CARAPI PerformReceive(
@@ -32,7 +41,7 @@ public:
 
 private:
     AutoPtr<IWeakReference> mDispatcher; // LoadedPkg::ReceiverDispatcher
-    AutoPtr<LoadedPkg::ReceiverDispatcher> mStrongRefRef;
+    AutoPtr<IReceiverDispatcher> mStrongRefRef;
 };
 
 } // namespace App

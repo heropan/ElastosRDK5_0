@@ -4,7 +4,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Core::Object;
 using Elastos::Droid::Net::IWebAddress;
 
 namespace Elastos {

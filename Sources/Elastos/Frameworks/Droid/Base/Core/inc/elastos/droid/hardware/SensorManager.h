@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IHandler;
-using Elastos::Core::Object;
 using Elastos::Utility::IMap;
 
 namespace Elastos {

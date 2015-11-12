@@ -9,7 +9,6 @@
 
 using Elastos::Droid::Collect::ISets;
 
-using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::IHashSet;
 using Elastos::Utility::IIterable;

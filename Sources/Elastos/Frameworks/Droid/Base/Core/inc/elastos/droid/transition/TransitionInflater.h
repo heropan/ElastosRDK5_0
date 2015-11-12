@@ -11,7 +11,6 @@ using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::IArrayMap;
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

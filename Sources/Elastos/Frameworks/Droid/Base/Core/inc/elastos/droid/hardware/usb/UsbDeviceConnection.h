@@ -8,7 +8,6 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::Logging::Logger;
 

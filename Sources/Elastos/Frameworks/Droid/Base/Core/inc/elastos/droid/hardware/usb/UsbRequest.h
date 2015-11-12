@@ -11,7 +11,6 @@
 // using namespace Elastos::IO;
 // using namespace Elastos::Utility::Logging;
 
-using Elastos::Core::Object;
 using Elastos::IO::IByteBuffer;
 using Elastos::Utility::Logging::Logger;
 

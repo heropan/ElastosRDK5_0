@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Mtp_CMtpServer.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 
 namespace Elastos {

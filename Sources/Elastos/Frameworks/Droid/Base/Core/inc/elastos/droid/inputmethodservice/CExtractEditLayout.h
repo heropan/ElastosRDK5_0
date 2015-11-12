@@ -7,7 +7,6 @@
 #include "elastos/droid/view/ActionMode.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 // using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::IButton;

@@ -8,7 +8,6 @@
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Core::Object;
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Etl::HashMap;
 

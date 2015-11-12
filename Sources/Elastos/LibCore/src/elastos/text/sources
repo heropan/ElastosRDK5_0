@@ -23,6 +23,7 @@ SOURCES += AttributedString.cpp
 SOURCES += Bidi.cpp
 SOURCES += CBidiHelper.cpp
 SOURCES += BreakIterator.cpp
+SOURCES += CBreakIteratorHelper.cpp
 SOURCES += ChoiceFormat.cpp
 SOURCES += CChoiceFormatHelper.cpp
 SOURCES += CCollationElementIterator.cpp

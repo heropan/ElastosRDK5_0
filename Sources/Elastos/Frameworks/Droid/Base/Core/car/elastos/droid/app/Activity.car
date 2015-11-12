@@ -44,7 +44,7 @@ module
     interface Elastos.Droid.View.IActionModeCallback;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
     interface Elastos.Droid.Widget.IToolbar;
-    interface Elastos.Droid.Widget.IMediaController;
+    interface Elastos.Droid.Media.Session.IMediaController;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IIntentSender;
@@ -897,11 +897,53 @@ module
         GetVoiceInteractor(
             [out] IVoiceInteractor** result);
 
+        /**
+         * The hook for {@link ActivityThread} to save the state of this activity.
+         *
+         * Calls {@link #onSaveInstanceState(android.os.Bundle)}
+         * and {@link #saveManagedDialogs(android.os.Bundle)}.
+         *
+         * @param outState The bundle to save the state to.
+         */
         PerformSaveInstanceState(
             [in] IBundle* outState);
 
+        /**
+         * The hook for {@link ActivityThread} to save the state of this activity.
+         *
+         * Calls {@link #onSaveInstanceState(android.os.Bundle)}
+         * and {@link #saveManagedDialogs(android.os.Bundle)}.
+         *
+         * @param outState The bundle to save the state to.
+         * @param outPersistentState The bundle to save persistent state to.
+         */
+        PerformSaveInstanceState(
+            [in] IBundle* outState,
+            [in] IPersistableBundle* persist);
+
+        /**
+         * The hook for {@link ActivityThread} to restore the state of this activity.
+         *
+         * Calls {@link #onSaveInstanceState(android.os.Bundle)} and
+         * {@link #restoreManagedDialogs(android.os.Bundle)}.
+         *
+         * @param savedInstanceState contains the saved state
+         */
         PerformRestoreInstanceState(
             [in] IBundle* savedInstanceState);
+
+        /**
+         * The hook for {@link ActivityThread} to restore the state of this activity.
+         *
+         * Calls {@link #onSaveInstanceState(android.os.Bundle)} and
+         * {@link #restoreManagedDialogs(android.os.Bundle)}.
+         *
+         * @param savedInstanceState contains the saved state
+         * @param persistentState contains the persistable saved state
+         */
+        PerformRestoreInstanceState(
+            [in] IBundle* outState,
+            [in] IPersistableBundle* persist);
 
         /**
          * This is the same as {@link #onSaveInstanceState} but is called for activities
@@ -1337,7 +1379,7 @@ module
          * @param toolbar Toolbar to set as the Activity's action bar
          */
         SetActionBar(
-            [out] IToolbar** bar);
+            [in] IToolbar* bar);
 
         /**
          * Set the activity content from a layout resource.  The resource will be
@@ -2917,7 +2959,8 @@ module
          * be done: it is currently visible to the user, it is already being destroyed, it is
          * being finished, it hasn't yet saved its state, etc.
          */
-        ReleaseInstance();
+        ReleaseInstance(
+            [out] Boolean* result);
 
         /**
          * Called when an activity you launched with an activity transition exposes this

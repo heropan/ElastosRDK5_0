@@ -102,6 +102,8 @@ public:
 
     virtual ~Activity();
 
+    CARAPI constructor();
+
     /** Return the intent that started this activity. */
     CARAPI GetIntent(
         /* [out] */ IIntent** intent);
@@ -2980,7 +2982,7 @@ public:
         /* [in] */ ICharSequence* title,
         /* [in] */ IActivity* parent,
         /* [in] */ const String& id,
-        /* [in] */ IInterface* lastNonConfigurationInstance,
+        /* [in] */ IActivityNonConfigurationInstances* lastNonConfigurationInstance,
         /* [in] */ IConfiguration* config,
         /* [in] */ IIVoiceInteractor* voiceInteractor);
 

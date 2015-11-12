@@ -9,7 +9,6 @@
 
 using Elastos::Droid::Utility::IProperty;
 using Elastos::Droid::Graphics::IPointF;
-using Elastos::Core::Object;
 using Elastos::Core::INumber;
 using Elastos::Core::IInteger32;
 using Elastos::Utility::Etl::HashMap;

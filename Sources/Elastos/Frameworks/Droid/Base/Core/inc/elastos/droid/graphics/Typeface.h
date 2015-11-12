@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::Res::IAssetManager;
-using Elastos::Core::Object;
 using Elastos::IO::IFile;
 using Elastos::Utility::IMap;
 using Elastos::Utility::Etl::HashMap;

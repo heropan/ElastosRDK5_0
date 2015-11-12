@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CBreakIteratorHelper, Singleton, IBreakIteratorHelper)
+
+CAR_SINGLETON_IMPL(CBreakIteratorHelper)
+
 ECode CBreakIteratorHelper::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {

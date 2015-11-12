@@ -3,7 +3,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 #include <elautoptr.h>
 #include "CMonkeyFlipEvent.h"
 #include "CMonkeyTouchEvent.h"
@@ -14,7 +14,6 @@
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Object;
 using Elastos::IO::IBufferedReader;
 using Elastos::IO::IPrintWriter;
 using Elastos::Net::IServerSocket;

@@ -293,7 +293,7 @@ AutoPtr<IHardwareLayer> TextureView::GetHardwareLayer()
     return mLayer;
 }
 
-void TextureView::OnVisibilityChanged(
+ECode TextureView::OnVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
@@ -313,6 +313,7 @@ void TextureView::OnVisibilityChanged(
             mSurface->SetOnFrameAvailableListener(NULL);
         }
     }
+    return NOERROR;
 }
 
 void TextureView::UpdateLayer()

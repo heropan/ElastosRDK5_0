@@ -22,7 +22,6 @@ using Elastos::Droid::Utility::IArrayMap;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::Utility::IInt64SparseArray;
 
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;

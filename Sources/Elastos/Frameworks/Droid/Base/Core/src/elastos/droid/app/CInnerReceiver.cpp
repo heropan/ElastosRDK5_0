@@ -2,8 +2,11 @@
 #include "elastos/droid/app/CInnerReceiver.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 // #include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/app/LoadedPkg.h"
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Content::EIID_IIntentReceiver;
 using Elastos::Droid::App::LoadedPkg;
 using Elastos::Utility::Logging::Slogger;
 
@@ -11,12 +14,17 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL_2(CInnerReceiver, Object, IIntentReceiver, IBinder)
+
+CAR_OBJECT_IMPL(CInnerReceiver)
+
 ECode CInnerReceiver::constructor(
-    /* [in] */ Handle32 rd,
+    /* [in] */ IReceiverDispatcher* rd,
     /* [in] */ Boolean strong)
 {
-    ((LoadedPkg::ReceiverDispatcher*)rd)->GetWeakReference((IWeakReference**)&mDispatcher);
-    mStrongRefRef = strong ? (LoadedPkg::ReceiverDispatcher*)rd : NULL;
+    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(rd);
+    wrs->GetWeakReference((IWeakReference**)&mDispatcher);
+    mStrongRefRef = strong ? rd : NULL;
     return NOERROR;
 }
 
@@ -31,9 +39,10 @@ ECode CInnerReceiver::PerformReceive(
 {
     AutoPtr<IInterface> obj;
     mDispatcher->Resolve(EIID_IInterface, (IInterface**)&obj);
+    IReceiverDispatcher* rd = IReceiverDispatcher::Probe(obj);
     AutoPtr<LoadedPkg::ReceiverDispatcher> dispatcher;
-    if (obj != NULL) {
-        dispatcher = (LoadedPkg::ReceiverDispatcher*)obj.Get();
+    if (rd != NULL) {
+        dispatcher = (LoadedPkg::ReceiverDispatcher*)rd;
     }
 
     if (FALSE/*CActivityThread::DEBUG_BROADCAST*/) {
@@ -59,7 +68,8 @@ ECode CInnerReceiver::PerformReceive(
         AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
         //try {
         if (extras != NULL) {
-            extras->SetAllowFds(FALSE);
+            Boolean bval;
+            extras->SetAllowFds(FALSE, &bval);
         }
 
         ECode ec = mgr->FinishReceiver((IBinder*)this->Probe(EIID_IBinder),

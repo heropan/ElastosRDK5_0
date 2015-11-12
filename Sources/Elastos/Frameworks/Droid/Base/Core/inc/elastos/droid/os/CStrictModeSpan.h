@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Os_CStrictModeSpan.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 #include "elastos/droid/os/CStrictMode.h"
 
 namespace Elastos {

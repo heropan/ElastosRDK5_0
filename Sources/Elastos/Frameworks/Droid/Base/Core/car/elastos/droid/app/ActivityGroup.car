@@ -1,6 +1,7 @@
 module
 {
     interface Elastos.Droid.App.ILocalActivityManager;
+    interface Elastos.Droid.App.IActivity;
 
     namespace Elastos {
     namespace Droid {
@@ -18,7 +19,10 @@ module
      * @Involve
      * interface IActivity
      */
+    [local]
     interface IActivityGroup {
+        GetCurrentActivity(
+            [out] IActivity** activity);
 
         GetLocalActivityManager(
             [out] ILocalActivityManager** mgr);

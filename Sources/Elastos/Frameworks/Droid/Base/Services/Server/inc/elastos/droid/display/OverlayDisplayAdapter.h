@@ -8,10 +8,9 @@
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Object;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Graphics::ISurfaceTexture;

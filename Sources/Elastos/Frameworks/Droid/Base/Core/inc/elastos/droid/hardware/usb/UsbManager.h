@@ -9,7 +9,6 @@
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::Core::Object;
 using Elastos::Utility::IMap;
 
 namespace Elastos {

@@ -5,7 +5,6 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;

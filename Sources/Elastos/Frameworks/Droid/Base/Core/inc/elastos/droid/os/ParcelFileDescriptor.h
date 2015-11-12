@@ -9,7 +9,6 @@
 #include <elastos/io/FileOutputStream.h>
 #include "elastos/droid/os/Handler.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::Thread;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IFile;

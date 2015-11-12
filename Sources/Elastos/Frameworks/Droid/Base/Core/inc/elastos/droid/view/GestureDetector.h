@@ -7,7 +7,6 @@
 // #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/view/InputEventConsistencyVerifier.h"
 
-using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Handler;
 

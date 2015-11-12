@@ -5,7 +5,7 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Etl::HashMap;
 

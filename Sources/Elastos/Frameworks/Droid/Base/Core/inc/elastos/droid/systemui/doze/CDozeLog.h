@@ -8,7 +8,6 @@
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Droid::Content::IContext;
 
-using Elastos::Core::Object;
 using Elastos::Core::Singleton;
 using Elastos::IO::IPrintWriter;
 

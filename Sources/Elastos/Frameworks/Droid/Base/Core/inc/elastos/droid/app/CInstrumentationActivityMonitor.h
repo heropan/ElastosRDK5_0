@@ -3,9 +3,8 @@
 #define __ELASTOS_DROID_APP_CINSTRUMENTATIONACTIVITYMONITOR_H__
 
 #include "_Elastos_Droid_App_CInstrumentationActivityMonitor.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
@@ -16,9 +15,15 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-CarClass(CInstrumentationActivityMonitor), public Object
+CarClass(CInstrumentationActivityMonitor)
+    , public Object
+    , public IInstrumentationActivityMonitor
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CInstrumentationActivityMonitor();
 
     /**

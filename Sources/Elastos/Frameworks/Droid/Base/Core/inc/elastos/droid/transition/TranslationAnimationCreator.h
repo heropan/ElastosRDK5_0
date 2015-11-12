@@ -11,7 +11,6 @@ using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Animation::ITimeInterpolator;
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CINSTRUMENTATIONACTIVITYRESULT_H__
 
 #include "_Elastos_Droid_App_CInstrumentationActivityResult.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IIntent;
 
@@ -11,14 +12,20 @@ namespace Droid {
 namespace App {
 
 CarClass(CInstrumentationActivityResult)
+    , public Object
+    , public IInstrumentationActivityResult
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CInstrumentationActivityResult();
 
     /**
-     * Create a new activity result.  See {@link Activity#setResult} for 
-     * more information. 
-     *  
+     * Create a new activity result.  See {@link Activity#setResult} for
+     * more information.
+     *
      * @param resultCode The result code to propagate back to the
      * originating activity, often RESULT_CANCELED or RESULT_OK
      * @param resultData The data to propagate back to the originating

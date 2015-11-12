@@ -3,11 +3,10 @@
 #define __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYADAPTER_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
 
-using Elastos::Core::Object;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;

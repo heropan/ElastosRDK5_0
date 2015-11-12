@@ -7,7 +7,6 @@
 
 using Elastos::Droid::Graphics::IPointF;
 using Elastos::Droid::Graphics::IPath;
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::Utility::IArrayList;
 

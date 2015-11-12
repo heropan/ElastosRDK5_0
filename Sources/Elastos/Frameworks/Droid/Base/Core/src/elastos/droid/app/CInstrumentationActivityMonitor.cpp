@@ -1,5 +1,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/CInstrumentationActivityMonitor.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IComponentName;
@@ -8,6 +9,9 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CInstrumentationActivityMonitor, Object, IInstrumentationActivityMonitor)
+
+CAR_OBJECT_IMPL(CInstrumentationActivityMonitor)
 
 CInstrumentationActivityMonitor::CInstrumentationActivityMonitor()
     : mHits(0)
@@ -161,7 +165,7 @@ ECode CInstrumentationActivityMonitor::Match(
         if (activity != NULL) {
             EGuid clsId;
             IObject::Probe(activity)->GetClassID(&clsId);
-            cls = clsId.pUunm;
+            cls = clsId.mUunm;
         }
         else if (intent->GetComponent((IComponentName**)&cn), cn != NULL) {
             cn->GetClassName(&cls);

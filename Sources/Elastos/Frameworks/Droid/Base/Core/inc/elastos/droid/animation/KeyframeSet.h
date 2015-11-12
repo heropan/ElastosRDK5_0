@@ -7,7 +7,6 @@
 
 using Elastos::Droid::Graphics::IPath;
 using Elastos::Core::ICloneable;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

@@ -7,7 +7,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Hardware::ISensor;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

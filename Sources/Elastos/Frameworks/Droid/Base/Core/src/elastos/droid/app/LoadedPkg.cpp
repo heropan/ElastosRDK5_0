@@ -1,30 +1,32 @@
 
 #include "elastos/droid/app/LoadedPkg.h"
+#include "elastos/droid/app/CInnerReceiver.h"
+#include "elastos/droid/app/CInnerConnection.h"
+//#include "elastos/droid/app/CContextImpl.h"
+//#include "elastos/droid/app/CActivityThread.h"
+//#include "elastos/droid/app/CInstrumentationHelper.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/os/CUserHandle.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/Handler.h"
-#include "elastos/droid/app/CInnerReceiver.h"
-#include "elastos/droid/app/CInstrumentationHelper.h"
-#include "elastos/droid/app/CActivityThread.h"
-#include "elastos/droid/app/ActivityManagerNative.h"
-#include "elastos/droid/app/CContextImpl.h"
-// #include "elastos/droid/app/CInnerConnection.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/content/pm/PackageManager.h"
 #include "elastos/droid/content/pm/CApplicationInfo.h"
-#include "elastos/droid/view/CCompatibilityInfoHolder.h"
+#include "elastos/droid/view/DisplayAdjustments.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Content::EIID_IPendingResult;
+using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Pm::PackageManager;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Pm::CApplicationInfo;
-using Elastos::Droid::App::CInnerReceiver;
-using Elastos::Droid::App::IContextImpl;
-using Elastos::Droid::App::CActivityThread;
-using Elastos::Droid::App::CInstrumentationHelper;
-using Elastos::Droid::View::CCompatibilityInfoHolder;
+using Elastos::Droid::View::DisplayAdjustments;
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::CPathClassLoader;
@@ -37,17 +39,20 @@ namespace Elastos{
 namespace Droid{
 namespace App{
 
-// b74a59a5-260f-4c6a-a7c6-9251d220727e
-extern "C" const InterfaceID EIID_LoadedPkg =
-    { 0xb74a59a5, 0x260f, 0x4c6a, { 0xa7, 0xc6, 0x92, 0x51, 0xd2, 0x20, 0x72, 0x7e } };
-
 const String LoadedPkg::TAG("LoadedPkg");
 
 
 //==============================================================================
 // LoadedPkg::ReceiverDispatcher::Args
 //==============================================================================
-LoadedPkg::ReceiverDispatcher::Args::Args(
+LoadedPkg::ReceiverDispatcher::Args::Args()
+    : mOrdered(FALSE)
+{}
+
+LoadedPkg::ReceiverDispatcher::Args::~Args()
+{}
+
+ECode LoadedPkg::ReceiverDispatcher::Args::constructor(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 resultCode,
     /* [in] */ const String& resultData,
@@ -56,197 +61,103 @@ LoadedPkg::ReceiverDispatcher::Args::Args(
     /* [in] */ Boolean sticky,
     /* [in] */ Int32 sendingUser,
     /* [in] */ ReceiverDispatcher* rd)
-    : PendingResult(resultCode, resultData, resultExtras,
-            rd->mRegistered ? TYPE_REGISTERED : TYPE_UNREGISTERED,
-            ordered, sticky, IBinder::Probe(rd->mIIntentReceiver), sendingUser)
-    , mCurIntent(intent)
-    , mOrdered(ordered)
-    , mHost(rd)
-{}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::Run()
 {
-    AutoPtr<IBroadcastReceiver> receiver = mHost->mReceiver;
-    Boolean ordered = mOrdered;
-    if (CActivityThread::DEBUG_BROADCAST) {
-        Int32 seq = -1;
-        mCurIntent->GetInt32Extra(String("seq"), -1, &seq);
-        String action;
-        mCurIntent->GetAction(&action);
-        Slogger::I(CActivityThread::TAG, "Dispatching broadcast %s seq=%d to %p"
-                , action.string(), seq, mHost->mReceiver.Get());
-        Slogger::I(CActivityThread::TAG, "  mRegistered=%d mOrderedHint=%d", mHost->mRegistered, ordered);
-    }
-
-    AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
-    AutoPtr<IIntent> intent = mCurIntent;
-    mCurIntent = NULL;
-
-    if (receiver == NULL || mHost->mForgotten) {
-        if (mHost->mRegistered && ordered) {
-            if (CActivityThread::DEBUG_BROADCAST) {
-                Slogger::I(CActivityThread::TAG, "Finishing NULL broadcast to %d", mHost->mReceiver.Get());
-            }
-            SendFinished(mgr);
-        }
-        mHost = NULL;
-        return NOERROR;
-    }
-    // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "broadcastReceiveReg");
-    // try {
-//TODO: Need ClassLoader
-    // ClassLoader cl =  mReceiver.getClass().getClassLoader();
-    // intent.setExtrasClassLoader(cl);
-    // setExtrasClassLoader(cl);
-    receiver->SetPendingResult((IPendingResult*)this);
-    ECode ec = receiver->OnReceive(mHost->mContext, intent);
-    if (FAILED(ec)) {
-        if (mHost->mRegistered && ordered) {
-            if (CActivityThread::DEBUG_BROADCAST) {
-                Slogger::I(CActivityThread::TAG, "Finishing failed broadcast to %p", mHost->mReceiver.Get());
-            }
-
-            SendFinished(mgr);
-        }
-        Boolean result;
-        if (mHost->mInstrumentation == NULL ||
-                (mHost->mInstrumentation->OnException(mHost->mReceiver, ec, &result), !result)) {
-            // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
-            Slogger::E(CActivityThread::TAG, "Error receiving broadcast %p in %p ec: 0x%08x", intent.Get(), mHost->mReceiver.Get(), ec);
-            mHost = NULL;
-            return E_RUNTIME_EXCEPTION;
-            // throw new RuntimeException(
-            //     "Error receiving broadcast " + intent
-            //     + " in " + mReceiver, e);
-        }
-    }
-    // } catch (Exception e) {
-    //     if (mRegistered && ordered) {
-    //         // if (ActivityThread.DEBUG_BROADCAST) Slog.i(ActivityThread.TAG,
-    //         //         "Finishing failed broadcast to " + mReceiver);
-    //         SendFinished(mgr);
-    //     }
-    //     if (mInstrumentation == NULL ||
-    //             !mInstrumentation->OnException(mReceiver, e)) {
-    //         // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
-    //         // throw new RuntimeException(
-    //         //     "Error receiving broadcast " + intent
-    //         //     + " in " + mReceiver, e);
-    //         return E_RUNTIME_EXCEPTION;
-    //     }
-    // }
-
-    AutoPtr<IPendingResult> result;
-    receiver->GetPendingResult((IPendingResult**)&result);
-    if (result != NULL) {
-        Finish();
-    }
-
-    // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
-    mHost = NULL;
+    FAIL_RETURN(BroadcastReceiver::PendingResult::constructor(resultCode, resultData, resultExtras,
+        rd->mRegistered ? TYPE_REGISTERED : TYPE_UNREGISTERED,
+        ordered, sticky, IBinder::Probe(rd->mIIntentReceiver), sendingUser))
+    mCurIntent = intent;
+    mOrdered = ordered;
+    mHost = rd;
     return NOERROR;
 }
 
-ECode LoadedPkg::ReceiverDispatcher::Args::SetResultCode(
-    /* [in] */ Int32 code)
+ECode LoadedPkg::ReceiverDispatcher::Args::Run()
 {
-    return BroadcastReceiver::PendingResult::SetResultCode(code);
-}
+//     AutoPtr<IBroadcastReceiver> receiver = mHost->mReceiver;
+//     Boolean ordered = mOrdered;
+//     if (CActivityThread::DEBUG_BROADCAST) {
+//         Int32 seq = -1;
+//         mCurIntent->GetInt32Extra(String("seq"), -1, &seq);
+//         String action;
+//         mCurIntent->GetAction(&action);
+//         Slogger::I(CActivityThread::TAG, "Dispatching broadcast %s seq=%d to %p"
+//                 , action.string(), seq, mHost->mReceiver.Get());
+//         Slogger::I(CActivityThread::TAG, "  mRegistered=%d mOrderedHint=%d", mHost->mRegistered, ordered);
+//     }
 
-ECode LoadedPkg::ReceiverDispatcher::Args::GetResultCode(
-    /* [out] */ Int32* resultCode)
-{
-    return BroadcastReceiver::PendingResult::GetResultCode(resultCode);
-}
+//     AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
+//     AutoPtr<IIntent> intent = mCurIntent;
+//     mCurIntent = NULL;
 
-ECode LoadedPkg::ReceiverDispatcher::Args::SetResultData(
-    /* [in] */ const String& data)
-{
-    return BroadcastReceiver::PendingResult::SetResultData(data);
-}
+//     if (receiver == NULL || mHost->mForgotten) {
+//         if (mHost->mRegistered && ordered) {
+//             if (CActivityThread::DEBUG_BROADCAST) {
+//                 Slogger::I(CActivityThread::TAG, "Finishing NULL broadcast to %d", mHost->mReceiver.Get());
+//             }
+//             SendFinished(mgr);
+//         }
+//         mHost = NULL;
+//         return NOERROR;
+//     }
+//     // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "broadcastReceiveReg");
+//     // try {
+// //TODO: Need ClassLoader
+//     // ClassLoader cl =  mReceiver.getClass().getClassLoader();
+//     // intent.setExtrasClassLoader(cl);
+//     // setExtrasClassLoader(cl);
+//     receiver->SetPendingResult((IPendingResult*)this);
+//     ECode ec = receiver->OnReceive(mHost->mContext, intent);
+//     if (FAILED(ec)) {
+//         if (mHost->mRegistered && ordered) {
+//             if (CActivityThread::DEBUG_BROADCAST) {
+//                 Slogger::I(CActivityThread::TAG, "Finishing failed broadcast to %p", mHost->mReceiver.Get());
+//             }
 
-ECode LoadedPkg::ReceiverDispatcher::Args::GetResultData(
-    /* [out] */ String* resultData)
-{
-    return BroadcastReceiver::PendingResult::GetResultData(resultData);
-}
+//             SendFinished(mgr);
+//         }
+//         Boolean result;
+//         if (mHost->mInstrumentation == NULL ||
+//                 (mHost->mInstrumentation->OnException(mHost->mReceiver, ec, &result), !result)) {
+//             // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+//             Slogger::E(CActivityThread::TAG, "Error receiving broadcast %p in %p ec: 0x%08x", intent.Get(), mHost->mReceiver.Get(), ec);
+//             mHost = NULL;
+//             return E_RUNTIME_EXCEPTION;
+//             // throw new RuntimeException(
+//             //     "Error receiving broadcast " + intent
+//             //     + " in " + mReceiver, e);
+//         }
+//     }
+//     // } catch (Exception e) {
+//     //     if (mRegistered && ordered) {
+//     //         // if (ActivityThread.DEBUG_BROADCAST) Slog.i(ActivityThread.TAG,
+//     //         //         "Finishing failed broadcast to " + mReceiver);
+//     //         SendFinished(mgr);
+//     //     }
+//     //     if (mInstrumentation == NULL ||
+//     //             !mInstrumentation->OnException(mReceiver, e)) {
+//     //         // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+//     //         // throw new RuntimeException(
+//     //         //     "Error receiving broadcast " + intent
+//     //         //     + " in " + mReceiver, e);
+//     //         return E_RUNTIME_EXCEPTION;
+//     //     }
+//     // }
 
-ECode LoadedPkg::ReceiverDispatcher::Args::SetResultExtras(
-    /* [in] */ IBundle* extras)
-{
-    return BroadcastReceiver::PendingResult::SetResultExtras(extras);
-}
+//     AutoPtr<IPendingResult> result;
+//     receiver->GetPendingResult((IPendingResult**)&result);
+//     if (result != NULL) {
+//         Finish();
+//     }
 
-ECode LoadedPkg::ReceiverDispatcher::Args::GetResultExtras(
-    /* [in] */ Boolean makeMap,
-    /* [out] */ IBundle** resultExtras)
-{
-    return BroadcastReceiver::PendingResult::GetResultExtras(makeMap, resultExtras);
+//     // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+//     mHost = NULL;
+    return NOERROR;
 }
-
-ECode LoadedPkg::ReceiverDispatcher::Args::SetResult(
-    /* [in] */ Int32 code,
-    /* [in] */ const String& data,
-    /* [in] */ IBundle* extras)
-{
-    return BroadcastReceiver::PendingResult::SetResult(code, data, extras);
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::GetAbortBroadcast(
-    /* [out] */ Boolean* isAborted)
-{
-    return BroadcastReceiver::PendingResult::GetAbortBroadcast(isAborted);
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::AbortBroadcast()
-{
-    return BroadcastReceiver::PendingResult::AbortBroadcast();
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::ClearAbortBroadcast()
-{
-    return BroadcastReceiver::PendingResult::ClearAbortBroadcast();
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::Finish()
-{
-    return BroadcastReceiver::PendingResult::Finish();
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::SetExtrasClassLoader(
-    /* [in] */ IClassLoader* cl)
-{
-    return BroadcastReceiver::PendingResult::SetExtrasClassLoader(cl);
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::SendFinished(
-    /* [in] */ IIActivityManager* am)
-{
-    return BroadcastReceiver::PendingResult::SendFinished(am);
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::GetSendingUserId(
-    /* [out] */ Int32* userId)
-{
-    return BroadcastReceiver::PendingResult::GetSendingUserId(userId);
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::GetOrderedHint(
-    /* [out] */ Boolean* orderedHint)
-{
-    return BroadcastReceiver::PendingResult::GetOrderedHint(orderedHint);
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::GetInitialStickyHint(
-    /* [out] */ Boolean* initialStickyHint)
-{
-    return BroadcastReceiver::PendingResult::GetInitialStickyHint(initialStickyHint);
-}
-
 
 //==============================================================================
 // LoadedPkg::ReceiverDispatcher
 //==============================================================================
+CAR_INTERFACE_IMPL(LoadedPkg::ReceiverDispatcher, Object, IReceiverDispatcher)
 
 LoadedPkg::ReceiverDispatcher::ReceiverDispatcher(
     /* [in] */ IBroadcastReceiver* receiver,
@@ -268,7 +179,7 @@ LoadedPkg::ReceiverDispatcher::ReceiverDispatcher(
     //     throw new NullPointerException("Handler must not be null");
     // }
     assert(activityThread != NULL);
-    CInnerReceiver::New((Handle32)this, !registered, &mIIntentReceiver);
+    CInnerReceiver::New((IReceiverDispatcher*)this, !registered, &mIIntentReceiver);
     // mLocation = new IntentReceiverLeaked(null);
     // mLocation.fillInStackTrace();
 }
@@ -279,8 +190,6 @@ LoadedPkg::ReceiverDispatcher::~ReceiverDispatcher()
         mIIntentReceiver->Release();
     }
 }
-
-CAR_INTERFACE_IMPL(LoadedPkg::ReceiverDispatcher, IWeakReferenceSource)
 
 ECode LoadedPkg::ReceiverDispatcher::Validate(
    /* [in] */ IContext* context,
@@ -325,28 +234,28 @@ void LoadedPkg::ReceiverDispatcher::PerformReceive(
     /* [in] */ Boolean sticky,
     /* [in] */ Int32 sendingUser)
 {
-    if (CActivityThread::DEBUG_BROADCAST) {
-        Int32 seq = -1;
-        intent->GetInt32Extra(String("seq"), -1, &seq);
-        String action;
-        intent->GetAction(&action);
-        Slogger::I(CActivityThread::TAG, "Enqueueing broadcast %s seq=%d to %p"
-                , action.string(),  seq, mReceiver.Get());
-    }
+    // if (CActivityThread::DEBUG_BROADCAST) {
+    //     Int32 seq = -1;
+    //     intent->GetInt32Extra(String("seq"), -1, &seq);
+    //     String action;
+    //     intent->GetAction(&action);
+    //     Slogger::I(CActivityThread::TAG, "Enqueueing broadcast %s seq=%d to %p"
+    //             , action.string(),  seq, mReceiver.Get());
+    // }
 
-    AutoPtr<Args> args = new Args(intent, resultCode, data, extras, ordered,
-            sticky, sendingUser, this);
-    Boolean result;
-    mActivityThread->Post(args, &result);
-    if (!result) {
-        if (mRegistered && ordered) {
-            AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
-            if (CActivityThread::DEBUG_BROADCAST) {
-                Slogger::I(CActivityThread::TAG, "Finishing sync broadcast to %p", mReceiver.Get());
-            }
-            args->SendFinished(mgr);
-        }
-    }
+    // AutoPtr<Args> args = new Args(intent, resultCode, data, extras, ordered,
+    //         sticky, sendingUser, this);
+    // Boolean result;
+    // mActivityThread->Post(args, &result);
+    // if (!result) {
+    //     if (mRegistered && ordered) {
+    //         AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
+    //         if (CActivityThread::DEBUG_BROADCAST) {
+    //             Slogger::I(CActivityThread::TAG, "Finishing sync broadcast to %p", mReceiver.Get());
+    //         }
+    //         args->SendFinished(mgr);
+    //     }
+    // }
 }
 
 //==============================================================================
@@ -379,7 +288,7 @@ ECode LoadedPkg::ServiceDispatcher::RunConnection::Run()
 // LoadedPkg::ServiceDispatcher::DeathMonitor
 //==============================================================================
 
-CAR_INTERFACE_IMPL(LoadedPkg::ServiceDispatcher::DeathMonitor, IProxyDeathRecipient);
+CAR_INTERFACE_IMPL(LoadedPkg::ServiceDispatcher::DeathMonitor, Object, IProxyDeathRecipient);
 
 LoadedPkg::ServiceDispatcher::DeathMonitor::DeathMonitor(
     /* [in] */ IComponentName* name,
@@ -398,8 +307,9 @@ ECode LoadedPkg::ServiceDispatcher::DeathMonitor::ProxyDied()
     Slogger::W("LoadedPkg::ServiceDispatcher::DeathMonitor", " >> ProxyDied()");
     AutoPtr<IInterface> obj;
     mOwner->Resolve(EIID_IInterface, (IInterface**)&obj);
-    if (obj) {
-        ServiceDispatcher* sd = (ServiceDispatcher*)obj.Get();
+    IServiceDispatcher* sdObj = IServiceDispatcher::Probe(obj);
+    if (sdObj) {
+        ServiceDispatcher* sd = (ServiceDispatcher*)sdObj;
         return sd->Death(mName, mService);
     }
 
@@ -409,7 +319,7 @@ ECode LoadedPkg::ServiceDispatcher::DeathMonitor::ProxyDied()
 //==============================================================================
 // LoadedPkg::ServiceDispatcher
 //==============================================================================
-CAR_INTERFACE_IMPL(LoadedPkg::ServiceDispatcher, IWeakReferenceSource)
+CAR_INTERFACE_IMPL(LoadedPkg::ServiceDispatcher, Object, IServiceDispatcher)
 
 LoadedPkg::ServiceDispatcher::ServiceDispatcher(
     /* [in] */ IServiceConnection* conn,
@@ -423,8 +333,7 @@ LoadedPkg::ServiceDispatcher::ServiceDispatcher(
     , mDied(FALSE)
     , mForgotten(FALSE)
 {
-    CInnerConnection::NewByFriend((CInnerConnection**)&mIServiceConnection);
-    mIServiceConnection->Init(this);
+    CInnerConnection::New((IServiceDispatcher*)this, (IIServiceConnection**)&mIServiceConnection);
 //                mLocation = new ServiceConnectionLeaked(null);
 //                mLocation.fillInStackTrace();
 }
@@ -483,18 +392,19 @@ Int32 LoadedPkg::ServiceDispatcher::GetFlags()
     return mFlags;
 }
 
-void LoadedPkg::ServiceDispatcher::Connected(
+ECode LoadedPkg::ServiceDispatcher::Connected(
     /* [in] */ IComponentName* name,
     /* [in] */ IBinder* service)
 {
     if (mActivityThread != NULL) {
         AutoPtr<RunConnection> con = new RunConnection(this, name, service, 0);
         Boolean result;
-        mActivityThread->Post(con, &result);
+        return mActivityThread->Post(con, &result);
     }
     else {
-        DoConnected(name, service);
+        return DoConnected(name, service);
     }
+    return NOERROR;
 }
 
 ECode LoadedPkg::ServiceDispatcher::DoConnected(
@@ -608,6 +518,8 @@ ECode LoadedPkg::ServiceDispatcher::DoDeath(
 //==============================================================================
 // LoadedPkg
 //==============================================================================
+CAR_INTERFACE_IMPL(LoadedPkg, Object, ILoadedPkg)
+
 AutoPtr<IApplication> LoadedPkg::GetApplication()
 {
     return mApplication;
@@ -617,13 +529,22 @@ LoadedPkg::LoadedPkg()
     : mSecurityViolation(FALSE)
     , mIncludeCode(FALSE)
     , mRegisterPackage(FALSE)
-    , mClientCount(FALSE)
+    , mClientCount(0)
 {
     mDisplayAdjustments = new DisplayAdjustments();
 }
 
-LoadedPkg::LoadedPkg(
-    /* [in] */ CActivityThread* activityThread,
+LoadedPkg::~LoadedPkg()
+{
+    mReceivers.Clear();
+    mUnregisteredReceivers.Clear();
+
+    mServices.Clear();
+    mUnboundServices.Clear();
+}
+
+ECode LoadedPkg::constructor(
+    /* [in] */ IActivityThread* activityThread,
     /* [in] */ IApplicationInfo* inAInfo,
     /* [in] */ ICompatibilityInfo* compatInfo,
     /* [in] */ IActivityThread* mainThread,
@@ -637,7 +558,7 @@ LoadedPkg::LoadedPkg(
 
     mActivityThread = activityThread;
     mApplicationInfo = aInfo;
-    CApplicationInfo* info = (CApplicationInfo*)aInfo;
+    CApplicationInfo* info = (CApplicationInfo*)aInfo.Get();
     mPackageName = info->mPackageName;
     mAppDir = info->mSourceDir;
     mResDir = info->mUid == myUid ? info->mSourceDir : info->mPublicSourceDir;
@@ -664,51 +585,31 @@ LoadedPkg::LoadedPkg(
     mIncludeCode = includeCode;
     mRegisterPackage = registerPackage;
     mDisplayAdjustments->SetCompatibilityInfo(compatInfo);
+    return NOERROR;
 }
 
-LoadedPkg::LoadedPkg(
-    /* [in] */ CActivityThread* activityThread)
+ECode LoadedPkg::constructor(
+    /* [in] */ IActivityThread* activityThread)
 {
     mActivityThread = activityThread;
     CApplicationInfo::New((IApplicationInfo**)&mApplicationInfo);
     String pkgName("android");
-    mApplicationInfo->SetPackageName(pkgName);
+    IPackageItemInfo::Probe(mApplicationInfo)->SetPackageName(pkgName);
     mPackageName = pkgName;
-    mAppDir = NULL;
-    mResDir = NULL;
-    mSplitAppDirs = NULL;
-    mSplitResDirs = NULL;
-    mOverlayDirs = NULL;
-    mSharedLibraries = NULL;
-    mDataDir = NULL;
-    mDataDirFile = NULL;
-    mLibDir = NULL;
-    mBaseClassLoader = NULL;
     mSecurityViolation = FALSE;
     mIncludeCode = TRUE;
     mRegisterPackage = FALSE;
-    systemContext->GetClassLoader((IClassLoader**)&mClassLoader);
-    systemContext->GetResources((IResources**)&mResources);
+    //mClassLoader = ClassLoader.getSystemClassLoader();
+    mResources = CResources::GetSystem();
+    return NOERROR;
 }
 
-LoadedPkg::~LoadedPkg()
-{
-    mReceivers.Clear();
-    mUnregisteredReceivers.Clear();
-
-    mServices.Clear();
-    mUnboundServices.Clear();
-}
-
-/**
- * Sets application info about the system package.
- */
 void LoadedPkg::InstallSystemApplicationInfo(
     /* [in] */ IApplicationInfo* info,
     /* [in] */ IClassLoader* classLoader)
 {
     String pkgName;
-    info->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(info)->GetPackageName(&pkgName);
     assert(pkgName.Equals("android"));
     mApplicationInfo = info;
     mClassLoader = classLoader;
@@ -1040,12 +941,12 @@ ECode LoadedPkg::GetResources(
     *res = NULL;
     VALIDATE_NOT_NULL(mainThread);
 
-    if (mResources == NULL) {
-        CApplicationInfo* cai = (CApplicationInfo*)mApplicationInfo.Get();
-        ((CActivityThread*)mainThread)->GetTopLevelResources(
-            mResDir, mSplitResDirs, mOverlayDirs, cai->mSharedLibraryFiles,
-            IDisplay::DEFAULT_DISPLAY, NULL, this, (IResources**)&mResources);
-    }
+    // if (mResources == NULL) {
+    //     CApplicationInfo* cai = (CApplicationInfo*)mApplicationInfo.Get();
+    //     ((CActivityThread*)mainThread)->GetTopLevelResources(
+    //         mResDir, mSplitResDirs, mOverlayDirs, cai->mSharedLibraryFiles,
+    //         IDisplay::DEFAULT_DISPLAY, NULL, this, (IResources**)&mResources);
+    // }
     *res = mResources.Get();
     REFCOUNT_ADD(*res);
     return NOERROR;
@@ -1077,27 +978,28 @@ ECode LoadedPkg::MakeApplication(
             InitializeJavaContextClassLoader();
         }
 
-        AutoPtr<CContextImpl> appContext = ContextImpl::CreateAppContext(mActivityThread, this);
-        ECode ec = mActivityThread->mInstrumentation->NewApplication(
-                cl, appClass, appContext.Get(), (IApplication**)&app);
-        if (FAILED(ec)) {
-            Slogger::E(TAG, "Unable to instantiate application %s, ec: 0x%08x", appClass.string(), ec);
-            *result = NULL;
-            return E_RUNTIME_EXCEPTION;
-        }
+        assert(0 && "TODO");
+        // AutoPtr<CContextImpl> appContext = ContextImpl::CreateAppContext(mActivityThread, this);
+        // ECode ec = mActivityThread->mInstrumentation->NewApplication(
+        //         cl, appClass, appContext.Get(), (IApplication**)&app);
+        // if (FAILED(ec)) {
+        //     Slogger::E(TAG, "Unable to instantiate application %s, ec: 0x%08x", appClass.string(), ec);
+        //     *result = NULL;
+        //     return E_RUNTIME_EXCEPTION;
+        // }
         // } catch (Exception e) {
         // if (!mActivityThread.mInstrumentation.onException(app, e)) {
         //     throw new RuntimeException(
         //         "Unable to instantiate application " + appClass
         //         + ": " + e.toString(), e);
         // }
-        appContext->SetOuterContext(app);
+        // appContext->SetOuterContext(app);
     }
     else {
         //    try {
         String appSourceDir, packageName;
         mApplicationInfo->GetSourceDir(&appSourceDir);
-        mApplicationInfo->GetPackageName(&packageName);
+        IPackageItemInfo::Probe(mApplicationInfo)->GetPackageName(&packageName);
         StringBuilder sb;
         if (appSourceDir.EndWith(".epk")) {
             sb.Append("/data/elastos/");
@@ -1113,7 +1015,7 @@ ECode LoadedPkg::MakeApplication(
         }
         String path = sb.ToString();
         AutoPtr<IModuleInfo> moduleInfo;
-        if (FAILED(CReflector::AcquireModuleInfo(path.string(), (IModuleInfo**)&moduleInfo))) {
+        if (FAILED(CReflector::AcquireModuleInfo(path, (IModuleInfo**)&moduleInfo))) {
             Slogger::E(TAG, "HandleBindApplication: Cann't Find the Instrumentation path is %s", path.string());
             return E_RUNTIME_EXCEPTION;
         }
@@ -1125,28 +1027,29 @@ ECode LoadedPkg::MakeApplication(
             return E_RUNTIME_EXCEPTION;
         }
 
-        AutoPtr<CContextImpl> appContext;
-        CContextImpl::NewByFriend((CContextImpl**)&appContext);
-        appContext->Init(this, NULL, (CActivityThread*)mActivityThread);
-        AutoPtr<IInstrumentationHelper> helper;
-        CInstrumentationHelper::AcquireSingleton((IInstrumentationHelper**)&helper);
-        ECode ec = helper->NewApplication(classInfo, appContext, (IApplication**)&app);
-        if (FAILED(ec)) {
-            Slogger::E(TAG, "Unable to instantiate application %s, ec: 0x%08x", appClass.string(), ec);
-            *result = NULL;
-            return E_RUNTIME_EXCEPTION;
-        }
-    //    } catch (Exception e) {
-    //        if (!mActivityThread.mInstrumentation.onException(app, e)) {
-    //            throw new RuntimeException(
-    //                "Unable to instantiate application " + appClass
-    //                + ": " + e.toString(), e);
-    //        }
-    //    }
-        appContext->SetOuterContext(app);
+        assert(0 && "TODO");
+    //     AutoPtr<CContextImpl> appContext;
+    //     CContextImpl::NewByFriend((CContextImpl**)&appContext);
+    //     // appContext->Init(this, NULL, (CActivityThread*)mActivityThread);
+    //     AutoPtr<IInstrumentationHelper> helper;
+    //     // CInstrumentationHelper::AcquireSingleton((IInstrumentationHelper**)&helper);
+    //     ECode ec = helper->NewApplication(classInfo, appContext, (IApplication**)&app);
+    //     if (FAILED(ec)) {
+    //         Slogger::E(TAG, "Unable to instantiate application %s, ec: 0x%08x", appClass.string(), ec);
+    //         *result = NULL;
+    //         return E_RUNTIME_EXCEPTION;
+    //     }
+    // //    } catch (Exception e) {
+    // //        if (!mActivityThread.mInstrumentation.onException(app, e)) {
+    // //            throw new RuntimeException(
+    // //                "Unable to instantiate application " + appClass
+    // //                + ": " + e.toString(), e);
+    // //        }
+    // //    }
+    //     appContext->SetOuterContext(app);
     }
 
-    ((CActivityThread*)mActivityThread)->mAllApplications.PushBack(app);
+    // ((CActivityThread*)mActivityThread)->mAllApplications.PushBack(app);
     mApplication = app;
 
     if (instrumentation != NULL) {

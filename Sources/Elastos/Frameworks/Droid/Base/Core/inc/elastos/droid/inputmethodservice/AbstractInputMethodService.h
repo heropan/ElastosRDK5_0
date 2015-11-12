@@ -6,7 +6,6 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::View::IKeyEventCallback;

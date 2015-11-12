@@ -2,7 +2,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/app/LoadedPkg.h"
-#include "elastos/droid/app/CContextImpl.h"
+//#include "elastos/droid/app/CContextImpl.h"
 #include "elastos/droid/app/CInstrumentation.h"
 #include "elastos/droid/app/CActivityManager.h"
 #include "elastos/droid/app/ActivityManagerNative.h"

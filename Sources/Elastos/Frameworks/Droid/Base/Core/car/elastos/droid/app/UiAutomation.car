@@ -104,6 +104,30 @@ module
         const Int32 ROTATION_FREEZE_270 = 3;//Surface.ROTATION_270;
 
         /**
+         * Connects this UiAutomation to the accessibility introspection APIs.
+         *
+         * @hide
+         */
+        Connect();
+
+        /**
+         * Disconnects this UiAutomation from the accessibility introspection APIs.
+         *
+         * @hide
+         */
+        Disconnect();
+
+        /**
+         * The id of the {@link IAccessibilityInteractionConnection} for querying
+         * the screen content. This is here for legacy purposes since some tools use
+         * hidden APIs to introspect the screen.
+         *
+         * @hide
+         */
+        GetConnectionId(
+            [out] Int32* id);
+
+        /**
          * Sets a callback for observing the stream of {@link AccessibilityEvent}s.
          *
          * @param listener The callback.

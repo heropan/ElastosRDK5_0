@@ -6,7 +6,6 @@
 #include "elastos/droid/R.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IResources;

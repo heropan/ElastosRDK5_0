@@ -7,7 +7,6 @@
 #include "elastos/droid/os/Runnable.h"
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

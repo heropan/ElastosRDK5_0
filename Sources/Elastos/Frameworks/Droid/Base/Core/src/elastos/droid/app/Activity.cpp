@@ -210,6 +210,11 @@ Activity::~Activity()
     mManagedCursors.Clear();
 }
 
+ECode Activity::constructor()
+{
+    return NOERROR;
+}
+
 ECode Activity::ToString(
     /* [out] */ String* str)
 {
@@ -4007,7 +4012,7 @@ ECode Activity::Attach(
     /* [in] */ ICharSequence* title,
     /* [in] */ IActivity* parent,
     /* [in] */ const String& id,
-    /* [in] */ IInterface* lastNonConfigurationInstances,
+    /* [in] */ IActivityNonConfigurationInstances* lastNonConfigurationInstances,
     /* [in] */ IConfiguration* config,
     /* [in] */ IIVoiceInteractor* voiceInteractor)
 {
@@ -4051,9 +4056,7 @@ ECode Activity::Attach(
     mTitle = title;
     mParent = parent;
     mEmbeddedID = id;
-    if (lastNonConfigurationInstances) {
-        mLastNonConfigurationInstances = IActivityNonConfigurationInstances::Probe(lastNonConfigurationInstances);
-    }
+    mLastNonConfigurationInstances = lastNonConfigurationInstances;
 
     if (voiceInteractor != NULL) {
         mVoiceInteractor = NULL;

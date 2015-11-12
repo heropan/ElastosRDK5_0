@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Hardware_Soundtrigger_CSoundTriggerModuleProperties.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::IUUID;
 
 namespace Elastos {

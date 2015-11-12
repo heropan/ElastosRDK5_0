@@ -1,24 +1,264 @@
 
 #include "elastos/droid/app/ExitTransitionCoordinator.h"
 #include "elastos/droid/app/Activity.h"
+#include "elastos/droid/app/CActivityOptions.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/animation/ObjectAnimator.h"
+#include "elastos/droid/transition/CTransitionManager.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/drawable/CColorDrawable.h"
 
-using Elastos::Droid::Animation::IAnimator;
-using Elastos::Droid::Animation::IAnimatorListenerAdapter;
-using Elastos::Droid::Graphics::IColor;
-using Elastos::Droid::Graphics::IMatrix;
-using Elastos::Droid::Graphics::IRectF;
-using Elastos::Droid::Graphics::Drawable::IColorDrawable;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Animation::ObjectAnimator;
+using Elastos::Droid::Animation::IAnimator;
+using Elastos::Droid::Animation::IAnimatorListener;
 using Elastos::Droid::Transition::ITransition;
 using Elastos::Droid::Transition::ITransitionManager;
+using Elastos::Droid::Transition::CTransitionManager;
+using Elastos::Droid::Transition::ITransitionListener;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::Graphics::CRectF;
+using Elastos::Droid::Graphics::Drawable::IColorDrawable;
+using Elastos::Droid::Graphics::Drawable::CColorDrawable;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewTreeObserver;
+using Elastos::Droid::View::EIID_IOnPreDrawListener;
+using Elastos::Utility::ICollection;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
+//===================================================================================
+// ExitTransitionCoordinator::SharedElementExitRunnable
+//===================================================================================
+ExitTransitionCoordinator::SharedElementExitRunnable::SharedElementExitRunnable(
+    /* [in] */ ExitTransitionCoordinator* host,
+    /* [in] */ IViewGroup* decorView)
+    : mHost(host)
+    , mDecorView(decorView)
+{}
+
+ECode ExitTransitionCoordinator::SharedElementExitRunnable::Run()
+{
+    mHost->StartSharedElementExit(mDecorView);
+    return NOERROR;
+}
+
+ECode ExitTransitionCoordinator::SharedElementExitRunnable::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ExitTransitionCoordinator::SharedElementExitRunnable");
+    return NOERROR;
+}
+
+//===================================================================================
+// ExitTransitionCoordinator::SharedElementExitTransitionListener
+//===================================================================================
+
+ExitTransitionCoordinator::SharedElementExitTransitionListener::SharedElementExitTransitionListener(
+    /* [in] */ ExitTransitionCoordinator* host)
+    : mHost(host)
+{}
+
+ECode ExitTransitionCoordinator::SharedElementExitTransitionListener::OnTransitionEnd(
+    /* [in] */ ITransition* transition)
+{
+    transition->RemoveListener(ITransitionListener::Probe(this));
+    if (mHost->mExitComplete) {
+        mHost->DelayCancel();
+    }
+    return NOERROR;
+}
+
+ECode ExitTransitionCoordinator::SharedElementExitTransitionListener::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ExitTransitionCoordinator::SharedElementExitTransitionListener");
+    return NOERROR;
+}
+
+//===================================================================================
+// ExitTransitionCoordinator::BeginTransitionRunnable
+//===================================================================================
+ExitTransitionCoordinator::BeginTransitionRunnable::BeginTransitionRunnable(
+    /* [in] */ ExitTransitionCoordinator* host)
+    : mHost(host)
+{
+}
+
+ECode ExitTransitionCoordinator::BeginTransitionRunnable::Run()
+{
+    mHost->BeginTransitions();
+    return NOERROR;
+}
+
+ECode ExitTransitionCoordinator::BeginTransitionRunnable::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ExitTransitionCoordinator::BeginTransitionRunnable");
+    return NOERROR;
+}
+
+//===================================================================================
+// ExitTransitionCoordinator::StartExitTransitionRunnable
+//===================================================================================
+ExitTransitionCoordinator::StartExitTransitionRunnable::StartExitTransitionRunnable(
+    /* [in] */ ExitTransitionCoordinator* host)
+    : mHost(host)
+{
+}
+
+ECode ExitTransitionCoordinator::StartExitTransitionRunnable::Run()
+{
+    mHost->StartExitTransition();
+    return NOERROR;
+}
+
+ECode ExitTransitionCoordinator::StartExitTransitionRunnable::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ExitTransitionCoordinator::StartExitTransitionRunnable");
+    return NOERROR;
+}
+
+//===================================================================================
+// ExitTransitionCoordinator::TranslucentConversionListener
+//===================================================================================
+CAR_INTERFACE_IMPL(ExitTransitionCoordinator::TranslucentConversionListener, Object, ITranslucentConversionListener)
+
+ExitTransitionCoordinator::TranslucentConversionListener::TranslucentConversionListener(
+    /* [in] */ ExitTransitionCoordinator* host)
+    : mHost(host)
+{}
+
+ECode ExitTransitionCoordinator::TranslucentConversionListener::OnTranslucentConversionComplete(
+    /* [in] */ Boolean drawComplete)
+{
+    if (!mHost->mIsCanceled) {
+        mHost->FadeOutBackground();
+    }
+    return NOERROR;
+}
+
+ECode ExitTransitionCoordinator::TranslucentConversionListener::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ExitTransitionCoordinator::TranslucentConversionListener");
+    return NOERROR;
+}
+
+//===================================================================================
+// ExitTransitionCoordinator::SharedElementExitOnPreDrawListener
+//===================================================================================
+CAR_INTERFACE_IMPL(ExitTransitionCoordinator::SharedElementExitOnPreDrawListener, Object, IOnPreDrawListener)
+
+ExitTransitionCoordinator::SharedElementExitOnPreDrawListener::SharedElementExitOnPreDrawListener(
+    /* [in] */ ExitTransitionCoordinator* host,
+    /* [in] */ IArrayList* sharedElementSnapshots,
+    /* [in] */ IView* decorView)
+    : mHost(host)
+    , mSharedElementSnapshots(sharedElementSnapshots)
+    , mDecorView(decorView)
+{}
+
+ECode ExitTransitionCoordinator::SharedElementExitOnPreDrawListener::OnPreDraw(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    AutoPtr<IViewTreeObserver> vto;
+    mDecorView->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    vto->RemoveOnPreDrawListener(IOnPreDrawListener::Probe(this));
+    mHost->SetSharedElementState(mHost->mExitSharedElementBundle, mSharedElementSnapshots);
+    *result = TRUE;
+    return NOERROR;
+}
+
+ECode ExitTransitionCoordinator::SharedElementExitOnPreDrawListener::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ExitTransitionCoordinator::SharedElementExitOnPreDrawListener");
+    return NOERROR;
+}
+
+//===================================================================================
+// ExitTransitionCoordinator::ExitContinueTransitionListener
+//===================================================================================
+
+ExitTransitionCoordinator::ExitContinueTransitionListener::ExitContinueTransitionListener(
+    /* [in] */ ExitTransitionCoordinator* host,
+    /* [in] */ IArrayList* transitioningViews)
+    : ActivityTransitionCoordinator::ContinueTransitionListener((ActivityTransitionCoordinator*)host)
+    , mHost(host)
+    , mTransitioningViews(transitioningViews)
+{
+}
+
+ECode ExitTransitionCoordinator::ExitContinueTransitionListener::OnTransitionEnd(
+    /* [in] */ ITransition* transition)
+{
+    transition->RemoveListener(ITransitionListener::Probe(this));
+    mHost->ExitTransitionComplete();
+    if (mHost->mIsHidden && mTransitioningViews != NULL) {
+        mHost->ShowViews(mTransitioningViews, TRUE);
+    }
+    if (mHost->mSharedElementBundle != NULL) {
+        mHost->DelayCancel();
+    }
+    return ActivityTransitionCoordinator::ContinueTransitionListener::OnTransitionEnd(transition);
+}
+
+ECode ExitTransitionCoordinator::ExitContinueTransitionListener::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ExitTransitionCoordinator::ExitContinueTransitionListener");
+    return NOERROR;
+}
+
+//===================================================================================
+// ExitTransitionCoordinator::SharedElementContinueTransitionListener
+//===================================================================================
+ExitTransitionCoordinator::SharedElementContinueTransitionListener::SharedElementContinueTransitionListener(
+    /* [in] */ ExitTransitionCoordinator* host)
+    : ActivityTransitionCoordinator::ContinueTransitionListener((ActivityTransitionCoordinator*)host)
+    , mHost(host)
+{}
+
+ECode ExitTransitionCoordinator::SharedElementContinueTransitionListener::OnTransitionEnd(
+    /* [in] */ ITransition* transition)
+{
+    transition->RemoveListener(ITransitionListener::Probe(this));
+    mHost->SharedElementTransitionComplete();
+    if (mHost->mIsHidden) {
+        mHost->ShowViews(mHost->mSharedElements, TRUE);
+    }
+    return NOERROR;
+}
+
+ECode ExitTransitionCoordinator::SharedElementContinueTransitionListener::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ExitTransitionCoordinator::SharedElementContinueTransitionListener");
+    return NOERROR;
+}
+
+//===================================================================================
+// ExitTransitionCoordinator
+//===================================================================================
 const String ExitTransitionCoordinator::TAG("ExitTransitionCoordinator");
 const Int64 ExitTransitionCoordinator::MAX_WAIT_MS = 1000;
 
@@ -47,8 +287,8 @@ ECode ExitTransitionCoordinator::constructor(
 {
     AutoPtr<IWindow> window;
     GetWindow((IWindow**)&window);
-    FAIL_RETURN(ActivityTransitionCoordinator::(
-        window, names, GetListener(activity, isReturning), isReturning);
+    FAIL_RETURN(ActivityTransitionCoordinator::constructor(
+        window, names, GetListener(activity, isReturning), isReturning))
     ViewsReady(MapSharedElements(accepted, mapped));
     StripOffscreenViews();
     mIsBackgroundReady = !isReturning;
@@ -69,143 +309,156 @@ void ExitTransitionCoordinator::OnReceiveResult(
     /* [in] */ IBundle* resultData)
 {
     switch (resultCode) {
-        case IActivityTransitionCoordinator::MSG_SET_REMOTE_RECEIVER:
+        case IActivityTransitionCoordinator::MSG_SET_REMOTE_RECEIVER: {
             StopCancel();
-            mResultReceiver = resultData.getParcelable(KEY_REMOTE_RECEIVER);
+            AutoPtr<IParcelable> p;
+            resultData->GetParcelable(KEY_REMOTE_RECEIVER, (IParcelable**)&p);
+            mResultReceiver = IResultReceiver::Probe(p);
             if (mIsCanceled) {
-                mResultReceiver.send(IActivityTransitionCoordinator::MSG_CANCEL, null);
-                mResultReceiver = null;
-            } else {
+                mResultReceiver->Send(IActivityTransitionCoordinator::MSG_CANCEL, NULL);
+                mResultReceiver = NULL;
+            }
+            else {
                 NotifyComplete();
             }
             break;
+        }
         case IActivityTransitionCoordinator::MSG_HIDE_SHARED_ELEMENTS:
             StopCancel();
             if (!mIsCanceled) {
-                hideSharedElements();
+                HideSharedElements();
             }
             break;
         case IActivityTransitionCoordinator::MSG_START_EXIT_TRANSITION:
-            mHandler.removeMessages(IActivityTransitionCoordinator::MSG_CANCEL);
-            startExit();
+            mHandler->RemoveMessages(IActivityTransitionCoordinator::MSG_CANCEL);
+            StartExit();
             break;
         case IActivityTransitionCoordinator::MSG_SHARED_ELEMENT_DESTINATION:
             mExitSharedElementBundle = resultData;
-            sharedElementExitBack();
+            SharedElementExitBack();
             break;
     }
 }
 
 void ExitTransitionCoordinator::StopCancel()
 {
-    if (mHandler != null) {
-        mHandler.removeMessages(IActivityTransitionCoordinator::MSG_CANCEL);
+    if (mHandler != NULL) {
+        mHandler->RemoveMessages(IActivityTransitionCoordinator::MSG_CANCEL);
     }
 }
 
 void ExitTransitionCoordinator::DelayCancel()
 {
-    if (mHandler != null) {
-        mHandler.sendEmptyMessageDelayed(IActivityTransitionCoordinator::MSG_CANCEL, MAX_WAIT_MS);
+    if (mHandler != NULL) {
+        Boolean bval;
+        mHandler->SendEmptyMessageDelayed(
+            IActivityTransitionCoordinator::MSG_CANCEL, MAX_WAIT_MS, &bval);
     }
 }
 
 ECode ExitTransitionCoordinator::ResetViews()
 {
-    if (mTransitioningViews != null) {
-        showViews(mTransitioningViews, true);
+    if (mTransitioningViews != NULL) {
+        ShowViews(mTransitioningViews, TRUE);
     }
-    showViews(mSharedElements, true);
-    mIsHidden = true;
-    ViewGroup decorView = getDecor();
-    if (!mIsReturning && decorView != null) {
-        decorView.suppressLayout(false);
+    ShowViews(mSharedElements, TRUE);
+    mIsHidden = TRUE;
+    AutoPtr<IViewGroup> decorView;
+    GetDecor((IViewGroup**)&decorView);
+    if (!mIsReturning && decorView != NULL) {
+        decorView->SuppressLayout(FALSE);
     }
-    moveSharedElementsFromOverlay();
-    clearState();
+    MoveSharedElementsFromOverlay();
+    ClearState();
+    return NOERROR;
 }
 
 void ExitTransitionCoordinator::SharedElementExitBack()
 {
-    final ViewGroup decorView = getDecor();
-    if (decorView != null) {
-        decorView.suppressLayout(true);
+    AutoPtr<IViewGroup> decorView;
+    GetDecor((IViewGroup**)&decorView);
+    if (decorView != NULL) {
+        decorView->SuppressLayout(TRUE);
     }
-    if (decorView != null && mExitSharedElementBundle != null &&
-            !mExitSharedElementBundle.isEmpty() &&
-            !mSharedElements.isEmpty() && getSharedElementTransition() != null) {
-        startTransition(new Runnable() {
-            ECode ExitTransitionCoordinator::run() {
-                startSharedElementExit(decorView);
-            }
-        });
+    Boolean isEmpty, bval;
+    mSharedElements->IsEmpty(&isEmpty);
+    if (decorView != NULL && mExitSharedElementBundle != NULL
+        && (mExitSharedElementBundle->IsEmpty(&bval), !bval)
+        && !isEmpty && GetSharedElementTransition() != NULL) {
+        AutoPtr<IRunnable> runnable = new SharedElementExitRunnable(this, decorView);
+        StartTransition(runnable);
     } else {
-        sharedElementTransitionComplete();
+        SharedElementTransitionComplete();
     }
 }
 
 void ExitTransitionCoordinator::StartSharedElementExit(
-    /* [in] */ IViewGroup* decorView)
+    /* [in] */ IViewGroup* vgDecorView)
 {
-    Transition transition = getSharedElementExitTransition();
-    transition.addListener(new Transition.TransitionListenerAdapter() {
-        @Override
-        ECode ExitTransitionCoordinator::onTransitionEnd(Transition transition) {
-            transition.removeListener(this);
-            if (mExitComplete) {
-                delayCancel();
-            }
-        }
-    });
-    final ArrayList<View> sharedElementSnapshots = createSnapshots(mExitSharedElementBundle,
-            mSharedElementNames);
-    decorView.getViewTreeObserver()
-            .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public Boolean onPreDraw() {
-                    decorView.getViewTreeObserver().removeOnPreDrawListener(this);
-                    setSharedElementState(mExitSharedElementBundle, sharedElementSnapshots);
-                    return true;
-                }
-            });
-    setGhostVisibility(View.INVISIBLE);
-    scheduleGhostVisibilityChange(View.INVISIBLE);
-    if (mListener != null) {
-        mListener.onSharedElementEnd(mSharedElementNames, mSharedElements,
-                sharedElementSnapshots);
+    IView* decorView = IView::Probe(vgDecorView);
+    AutoPtr<ITransition> transition = GetSharedElementExitTransition();
+    AutoPtr<ITransitionListener> listener = new SharedElementExitTransitionListener(this);
+    transition->AddListener(listener);
+
+    AutoPtr<IArrayList> sharedElementSnapshots = CreateSnapshots(
+        mExitSharedElementBundle, ICollection::Probe(mSharedElementNames));
+    AutoPtr<IViewTreeObserver> vto;
+    decorView->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    AutoPtr<IOnPreDrawListener> onPreDrawlistener = new SharedElementExitOnPreDrawListener(this, sharedElementSnapshots, decorView);
+    vto->AddOnPreDrawListener(onPreDrawlistener);
+
+    SetGhostVisibility(IView::INVISIBLE);
+    ScheduleGhostVisibilityChange(IView::INVISIBLE);
+    if (mListener != NULL) {
+        mListener->OnSharedElementEnd(
+            IList::Probe(mSharedElementNames),
+            IList::Probe(mSharedElements),
+            IList::Probe(sharedElementSnapshots));
     }
-    TransitionManager.beginDelayedTransition(decorView, transition);
-    scheduleGhostVisibilityChange(View.VISIBLE);
-    setGhostVisibility(View.VISIBLE);
-    decorView.invalidate();
+    CTransitionManager::BeginDelayedTransition(vgDecorView, transition);
+    ScheduleGhostVisibilityChange(IView::VISIBLE);
+    SetGhostVisibility(IView::VISIBLE);
+    decorView->Invalidate();
 }
 
 void ExitTransitionCoordinator::HideSharedElements()
 {
-    moveSharedElementsFromOverlay();
+    MoveSharedElementsFromOverlay();
     if (!mIsHidden) {
-        hideViews(mSharedElements);
+        HideViews(mSharedElements);
     }
-    mSharedElementsHidden = true;
-    finishIfNecessary();
+    mSharedElementsHidden = TRUE;
+    FinishIfNecessary();
 }
 
 ECode ExitTransitionCoordinator::StartExit()
 {
     if (!mIsExitStarted) {
-        mIsExitStarted = true;
-        ViewGroup decorView = getDecor();
-        if (decorView != null) {
-            decorView.suppressLayout(true);
+        mIsExitStarted = TRUE;
+        AutoPtr<IViewGroup> decorView;
+        GetDecor((IViewGroup**)&decorView);
+        if (decorView != NULL) {
+            decorView->SuppressLayout(TRUE);
         }
-        moveSharedElementsToOverlay();
-        startTransition(new Runnable() {
-            @Override
-            ECode ExitTransitionCoordinator::run() {
-                beginTransitions();
-            }
-        });
+        MoveSharedElementsToOverlay();
+        AutoPtr<IRunnable> runnable = new BeginTransitionRunnable(this);
+        StartTransition(runnable);
     }
+    return NOERROR;
+}
+
+ExitTransitionCoordinator::MyHandler::MyHandler(
+    /* [in] */ ExitTransitionCoordinator* host)
+    : mHost(host)
+{
+}
+
+ECode ExitTransitionCoordinator::MyHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    mHost->mIsCanceled = TRUE;
+    mHost->Finish();
+    return NOERROR;
 }
 
 ECode ExitTransitionCoordinator::StartExit(
@@ -213,195 +466,232 @@ ECode ExitTransitionCoordinator::StartExit(
     /* [in] */ IIntent* data)
 {
     if (!mIsExitStarted) {
-        mIsExitStarted = true;
-        ViewGroup decorView = getDecor();
-        if (decorView != null) {
-            decorView.suppressLayout(true);
+        mIsExitStarted = TRUE;
+        AutoPtr<IViewGroup> vg;
+        GetDecor((IViewGroup**)&vg);
+        if (vg != NULL) {
+            vg->SuppressLayout(TRUE);
         }
-        mHandler = new Handler() {
-            @Override
-            ECode ExitTransitionCoordinator::handleMessage(Message msg) {
-                mIsCanceled = true;
-                finish();
-            }
-        };
-        delayCancel();
-        moveSharedElementsToOverlay();
-        if (decorView != null && decorView.getBackground() == null) {
-            getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+        AutoPtr<MyHandler> myHandler = new MyHandler(this);
+        myHandler->constructor();
+        mHandler = (IHandler*)myHandler.Get();
+
+        DelayCancel();
+        MoveSharedElementsToOverlay();
+        AutoPtr<IDrawable> background;
+        IView* decorView = IView::Probe(vg);
+        if (decorView != NULL) {
+            decorView->GetBackground((IDrawable**)&background);
         }
-        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(mActivity, this,
-                mAllSharedElementNames, resultCode, data);
-        mActivity.convertToTranslucent(new Activity.TranslucentConversionListener() {
-            @Override
-            ECode ExitTransitionCoordinator::onTranslucentConversionComplete(Boolean drawComplete) {
-                if (!mIsCanceled) {
-                    fadeOutBackground();
-                }
-            }
-        }, options);
-        startTransition(new Runnable() {
-            @Override
-            ECode ExitTransitionCoordinator::run() {
-                startExitTransition();
-            }
-        });
+
+        if (background == NULL) {
+            AutoPtr<IWindow> window;
+            GetWindow((IWindow**)&window);
+            AutoPtr<IDrawable> cd;
+            CColorDrawable::New(IColor::BLACK, (IDrawable**)&cd);
+            window->SetBackgroundDrawable(cd);
+        }
+
+        AutoPtr<IActivityOptions> options;
+        CActivityOptions::MakeSceneTransitionAnimation(mActivity, (IExitTransitionCoordinator*)this,
+            mAllSharedElementNames, resultCode, data, (IActivityOptions**)&options);
+        AutoPtr<ITranslucentConversionListener> listener = new TranslucentConversionListener(this);
+        Boolean bval;
+        mActivity->ConvertToTranslucent(listener, options, &bval);
+
+        AutoPtr<IRunnable> runnable = new StartExitTransitionRunnable(this);
+        StartTransition(runnable);
     }
+
+    return NOERROR;
 }
 
 ECode ExitTransitionCoordinator::Stop()
 {
-    if (mIsReturning && mActivity != null) {
+    if (mIsReturning && mActivity != NULL) {
         // Override the previous ActivityOptions. We don't want the
         // activity to have options since we're essentially canceling the
         // transition and finishing right now.
-        mActivity.convertToTranslucent(null, null);
-        finish();
+        Boolean bval;
+        mActivity->ConvertToTranslucent(NULL, NULL, &bval);
+        Finish();
     }
+    return NOERROR;
 }
 
 void ExitTransitionCoordinator::StartExitTransition()
 {
-    Transition transition = getExitTransition();
-    ViewGroup decorView = getDecor();
-    if (transition != null && decorView != null && mTransitioningViews != null) {
-        TransitionManager.beginDelayedTransition(decorView, transition);
-        mTransitioningViews.get(0).invalidate();
-    } else {
-        transitionStarted();
+    AutoPtr<ITransition> transition = GetExitTransition();
+    AutoPtr<IViewGroup> decorView;
+    GetDecor((IViewGroup**)&decorView);
+    if (transition != NULL && decorView != NULL && mTransitioningViews != NULL) {
+        CTransitionManager::BeginDelayedTransition(decorView, transition);
+        AutoPtr<IInterface> obj;
+        mTransitioningViews->Get(0, (IInterface**)&obj);
+        IView::Probe(obj)->Invalidate();
+    }
+    else {
+        TransitionStarted();
     }
 }
 
+ExitTransitionCoordinator::BackgroundAnimatorListenerAdapter::BackgroundAnimatorListenerAdapter(
+    /* [in] */ ExitTransitionCoordinator* host)
+    : mHost(host)
+{}
+
+ECode ExitTransitionCoordinator::BackgroundAnimatorListenerAdapter::OnAnimationEnd(
+    /* [in] */ IAnimator* animation)
+{
+    mHost->mBackgroundAnimator = NULL;
+    if (!mHost->mIsCanceled) {
+        mHost->mIsBackgroundReady = TRUE;
+        mHost->NotifyComplete();
+    }
+    return NOERROR;
+}
+
+ECode ExitTransitionCoordinator::BackgroundAnimatorListenerAdapter::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ExitTransitionCoordinator::BackgroundAnimatorListenerAdapter");
+    return NOERROR;
+}
+
+
 void ExitTransitionCoordinator::FadeOutBackground()
 {
-    if (mBackgroundAnimator == null) {
-        ViewGroup decor = getDecor();
-        Drawable background;
-        if (decor != null && (background = decor.getBackground()) != null) {
-            background = background.mutate();
-            getWindow().setBackgroundDrawable(background);
-            mBackgroundAnimator = ObjectAnimator.ofInt(background, "alpha", 0);
-            mBackgroundAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                ECode ExitTransitionCoordinator::onAnimationEnd(Animator animation) {
-                    mBackgroundAnimator = null;
-                    if (!mIsCanceled) {
-                        mIsBackgroundReady = true;
-                        NotifyComplete();
-                    }
-                }
-            });
-            mBackgroundAnimator.setDuration(getFadeDuration());
-            mBackgroundAnimator.start();
-        } else {
-            mIsBackgroundReady = true;
+    if (mBackgroundAnimator == NULL) {
+        AutoPtr<IViewGroup> decor;
+        GetDecor((IViewGroup**)&decor);
+        IView* decorView = IView::Probe(decor);
+        AutoPtr<IDrawable> background;
+        if (decorView != NULL && (decorView->GetBackground((IDrawable**)&background), background) != NULL) {
+            background = NULL;
+            AutoPtr<IDrawable> tmp = background;
+            background = NULL;
+            tmp->Mutate((IDrawable**)&background);
+            AutoPtr<IWindow> window;
+            GetWindow((IWindow**)&window);
+            window->SetBackgroundDrawable(background);
+            AutoPtr<ArrayOf<Int32> > args = ArrayOf<Int32>::Alloc(1);
+            args->Set(0, 0);
+            mBackgroundAnimator = ObjectAnimator::OfInt32(background, String("alpha"), args);
+            AutoPtr<IAnimatorListener> listener = new BackgroundAnimatorListenerAdapter(this);
+            IAnimator* animator = IAnimator::Probe(mBackgroundAnimator);
+            animator->AddListener(listener);
+            animator->SetDuration(GetFadeDuration());
+            animator->Start();
+        }
+        else {
+            mIsBackgroundReady = TRUE;
         }
     }
 }
 
 AutoPtr<ITransition> ExitTransitionCoordinator::GetExitTransition()
 {
-    Transition viewsTransition = null;
-    if (mTransitioningViews != null && !mTransitioningViews.isEmpty()) {
-        viewsTransition = configureTransition(getViewsTransition(), true);
+    AutoPtr<ITransition> viewsTransition;
+    Boolean bval;
+    if (mTransitioningViews != NULL && (mTransitioningViews->IsEmpty(&bval), !bval)) {
+        viewsTransition = ConfigureTransition(GetViewsTransition(), TRUE);
     }
-    if (viewsTransition == null) {
-        exitTransitionComplete();
-    } else {
-        final ArrayList<View> transitioningViews = mTransitioningViews;
-        viewsTransition.addListener(new ContinueTransitionListener() {
-            @Override
-            ECode ExitTransitionCoordinator::onTransitionEnd(Transition transition) {
-                transition.removeListener(this);
-                exitTransitionComplete();
-                if (mIsHidden && transitioningViews != null) {
-                    showViews(transitioningViews, true);
-                }
-                if (mSharedElementBundle != null) {
-                    delayCancel();
-                }
-                super.onTransitionEnd(transition);
-            }
-        });
-        viewsTransition.forceVisibility(View.INVISIBLE, false);
+    if (viewsTransition == NULL) {
+        ExitTransitionComplete();
+    }
+    else {
+        AutoPtr<IArrayList> transitioningViews = mTransitioningViews;
+        AutoPtr<ITransitionListener> listener = new ExitContinueTransitionListener(this, transitioningViews);
+        viewsTransition->AddListener(listener);
+        viewsTransition->ForceVisibility(IView::INVISIBLE, FALSE);
     }
     return viewsTransition;
 }
 
 AutoPtr<ITransition> ExitTransitionCoordinator::GetSharedElementExitTransition()
 {
-    Transition sharedElementTransition = null;
-    if (!mSharedElements.isEmpty()) {
-        sharedElementTransition = configureTransition(getSharedElementTransition(), false);
+    AutoPtr<ITransition> sharedElementTransition;
+    Boolean bval;
+    if (!mSharedElements->IsEmpty(&bval)) {
+        sharedElementTransition = ConfigureTransition(GetSharedElementTransition(), FALSE);
     }
-    if (sharedElementTransition == null) {
-        sharedElementTransitionComplete();
-    } else {
-        sharedElementTransition.addListener(new ContinueTransitionListener() {
-            @Override
-            ECode ExitTransitionCoordinator::onTransitionEnd(Transition transition) {
-                transition.removeListener(this);
-                sharedElementTransitionComplete();
-                if (mIsHidden) {
-                    showViews(mSharedElements, true);
-                }
-            }
-        });
-        mSharedElements.get(0).invalidate();
+    if (sharedElementTransition == NULL) {
+        SharedElementTransitionComplete();
+    }
+    else {
+        AutoPtr<ITransitionListener> listener = new SharedElementContinueTransitionListener(this);
+        sharedElementTransition->AddListener(listener);
+        AutoPtr<IInterface> obj;
+        mSharedElements->Get(0, (IInterface**)&obj);
+        IView::Probe(obj)->Invalidate();
     }
     return sharedElementTransition;
 }
 
 void ExitTransitionCoordinator::BeginTransitions()
 {
-    Transition sharedElementTransition = getSharedElementExitTransition();
-    Transition viewsTransition = getExitTransition();
+    AutoPtr<ITransition> sharedElementTransition = GetSharedElementExitTransition();
+    AutoPtr<ITransition> viewsTransition = GetExitTransition();
 
-    Transition transition = mergeTransitions(sharedElementTransition, viewsTransition);
-    ViewGroup decorView = getDecor();
-    if (transition != null && decorView != null) {
-        setGhostVisibility(View.INVISIBLE);
-        scheduleGhostVisibilityChange(View.INVISIBLE);
-        TransitionManager.beginDelayedTransition(decorView, transition);
-        scheduleGhostVisibilityChange(View.VISIBLE);
-        setGhostVisibility(View.VISIBLE);
-        decorView.invalidate();
-    } else {
-        transitionStarted();
+    AutoPtr<ITransition> transition = MergeTransitions(sharedElementTransition, viewsTransition);
+    AutoPtr<IViewGroup> decorView;
+    GetDecor((IViewGroup**)&decorView);
+    if (transition != NULL && decorView != NULL) {
+        SetGhostVisibility(IView::INVISIBLE);
+        ScheduleGhostVisibilityChange(IView::INVISIBLE);
+        CTransitionManager::BeginDelayedTransition(decorView, transition);
+        ScheduleGhostVisibilityChange(IView::VISIBLE);
+        SetGhostVisibility(IView::VISIBLE);
+        IView::Probe(decorView)->Invalidate();
+    }
+    else {
+        TransitionStarted();
     }
 }
 
 void ExitTransitionCoordinator::ExitTransitionComplete()
 {
-    mExitComplete = true;
+    mExitComplete = TRUE;
     NotifyComplete();
 }
 
 Boolean ExitTransitionCoordinator::IsReadyToNotify()
 {
-    return mSharedElementBundle != null && mResultReceiver != null && mIsBackgroundReady;
+    return mSharedElementBundle != NULL && mResultReceiver != NULL && mIsBackgroundReady;
 }
 
 void ExitTransitionCoordinator::SharedElementTransitionComplete()
 {
-    mSharedElementBundle = mExitSharedElementBundle == null
-            ? captureSharedElementState() : captureExitSharedElementsState();
+    mSharedElementBundle = mExitSharedElementBundle == NULL
+            ? CaptureSharedElementState() : CaptureExitSharedElementsState();
     NotifyComplete();
 }
 
 AutoPtr<IBundle> ExitTransitionCoordinator::CaptureExitSharedElementsState()
 {
-    Bundle bundle = new Bundle();
-    RectF bounds = new RectF();
-    Matrix matrix = new Matrix();
-    for (int i = 0; i < mSharedElements.size(); i++) {
-        String name = mSharedElementNames.get(i);
-        Bundle sharedElementState = mExitSharedElementBundle.getBundle(name);
-        if (sharedElementState != null) {
-            bundle.putBundle(name, sharedElementState);
-        } else {
-            View view = mSharedElements.get(i);
-            captureSharedElementState(view, name, bundle, matrix, bounds);
+    AutoPtr<IBundle> bundle;
+    CBundle::New((IBundle**)&bundle);
+    AutoPtr<IRectF> bounds;
+    CRectF::New((IRectF**)&bounds);
+    AutoPtr<IMatrix> matrix;
+    CMatrix::New((IMatrix**)&matrix);
+    Int32 size;
+    mSharedElements->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
+        mSharedElementNames->Get(i, (IInterface**)&obj);
+        String name = Object::ToString(obj);
+        AutoPtr<IBundle> sharedElementState;
+        mExitSharedElementBundle->GetBundle(name, (IBundle**)&sharedElementState);
+        if (sharedElementState != NULL) {
+            bundle->PutBundle(name, sharedElementState);
+        }
+        else {
+            AutoPtr<IInterface> viewObj;
+            mSharedElements->Get(i, (IInterface**)&viewObj);
+            IView* view = IView::Probe(viewObj);
+            CaptureSharedElementState(view, name, bundle, matrix, bounds);
         }
     }
     return bundle;
@@ -409,54 +699,57 @@ AutoPtr<IBundle> ExitTransitionCoordinator::CaptureExitSharedElementsState()
 
 void ExitTransitionCoordinator::NotifyComplete()
 {
-    if (isReadyToNotify()) {
+    if (IsReadyToNotify()) {
         if (!mSharedElementNotified) {
-            mSharedElementNotified = true;
-            delayCancel();
-            mResultReceiver.send(IActivityTransitionCoordinator::MSG_TAKE_SHARED_ELEMENTS, mSharedElementBundle);
+            mSharedElementNotified = TRUE;
+            DelayCancel();
+            mResultReceiver->Send(IActivityTransitionCoordinator::MSG_TAKE_SHARED_ELEMENTS, mSharedElementBundle);
         }
         if (!mExitNotified && mExitComplete) {
-            mExitNotified = true;
-            mResultReceiver.send(IActivityTransitionCoordinator::MSG_EXIT_TRANSITION_COMPLETE, null);
-            mResultReceiver = null; // done talking
-            ViewGroup decorView = getDecor();
-            if (!mIsReturning && decorView != null) {
-                decorView.suppressLayout(false);
+            mExitNotified = TRUE;
+            mResultReceiver->Send(IActivityTransitionCoordinator::MSG_EXIT_TRANSITION_COMPLETE, NULL);
+            mResultReceiver = NULL; // done talking
+            AutoPtr<IViewGroup> decorView;
+            GetDecor((IViewGroup**)&decorView);
+            if (!mIsReturning && decorView != NULL) {
+                decorView->SuppressLayout(FALSE);
             }
-            finishIfNecessary();
+            FinishIfNecessary();
         }
     }
 }
 
 void ExitTransitionCoordinator::FinishIfNecessary()
 {
-    if (mIsReturning && mExitNotified && mActivity != null && (mSharedElements.isEmpty() ||
-            mSharedElementsHidden)) {
-        finish();
+    Boolean bval;
+    if (mIsReturning && mExitNotified && mActivity != NULL
+        && (mSharedElements->IsEmpty(&bval) || mSharedElementsHidden)) {
+        Finish();
     }
     if (!mIsReturning && mExitNotified) {
-        mActivity = null; // don't need it anymore
+        mActivity = NULL; // don't need it anymore
     }
 }
 
 void ExitTransitionCoordinator::Finish()
 {
     StopCancel();
-    if (mActivity != null) {
-        mActivity.mActivityTransitionState.clear();
-        mActivity.finish();
-        mActivity.overridePendingTransition(0, 0);
-        mActivity = null;
+    if (mActivity != NULL) {
+        ((Activity*)mActivity.Get())->mActivityTransitionState->Clear();
+        mActivity->Finish();
+        mActivity->OverridePendingTransition(0, 0);
+        mActivity = NULL;
     }
     // Clear the state so that we can't hold any references accidentally and leak memory.
-    mHandler = null;
-    mSharedElementBundle = null;
-    if (mBackgroundAnimator != null) {
-        mBackgroundAnimator.cancel();
-        mBackgroundAnimator = null;
+    mHandler = NULL;
+    mSharedElementBundle = NULL;
+    if (mBackgroundAnimator != NULL) {
+        IAnimator* animator = IAnimator::Probe(mBackgroundAnimator);
+        animator->Cancel();
+        mBackgroundAnimator = NULL;
     }
-    mExitSharedElementBundle = null;
-    clearState();
+    mExitSharedElementBundle = NULL;
+    ClearState();
 }
 
 Boolean ExitTransitionCoordinator::MoveSharedElementWithParent()
@@ -466,20 +759,38 @@ Boolean ExitTransitionCoordinator::MoveSharedElementWithParent()
 
 AutoPtr<ITransition> ExitTransitionCoordinator::GetViewsTransition()
 {
-    if (mIsReturning) {
-        return getWindow().getReturnTransition();
-    } else {
-        return getWindow().getExitTransition();
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    if (window == NULL) {
+        return NULL;
     }
+
+    AutoPtr<ITransition> transition;
+    if (mIsReturning) {
+        window->GetReturnTransition((ITransition**)&transition);
+    }
+    else {
+        window->GetExitTransition((ITransition**)&transition);
+    }
+    return transition;
 }
 
 AutoPtr<ITransition> ExitTransitionCoordinator::GetSharedElementTransition()
 {
-    if (mIsReturning) {
-        return getWindow().getSharedElementReturnTransition();
-    } else {
-        return getWindow().getSharedElementExitTransition();
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    if (window == NULL) {
+        return NULL;
     }
+
+    AutoPtr<ITransition> transition;
+    if (mIsReturning) {
+        window->GetSharedElementReturnTransition((ITransition**)&transition);
+    }
+    else {
+        window->GetSharedElementExitTransition((ITransition**)&transition);
+    }
+    return transition;
 }
 
 } // namespace App

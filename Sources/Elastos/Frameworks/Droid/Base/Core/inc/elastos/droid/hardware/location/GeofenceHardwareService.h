@@ -12,7 +12,6 @@ using Elastos::Droid::Hardware::Location::IGeofenceHardwareImpl;
 using Elastos::Droid::Location::IIFusedGeofenceHardware;
 using Elastos::Droid::Location::IIGpsGeofenceHardware;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

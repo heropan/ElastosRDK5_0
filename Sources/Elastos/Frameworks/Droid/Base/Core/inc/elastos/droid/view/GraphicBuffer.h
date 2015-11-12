@@ -5,7 +5,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::ICanvas;
 

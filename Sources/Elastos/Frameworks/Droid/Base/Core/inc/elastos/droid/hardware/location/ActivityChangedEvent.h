@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterable;
 

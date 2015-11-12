@@ -12,7 +12,6 @@ using Elastos::Droid::Hardware::Location::IIActivityRecognitionHardwareSink;
 using Elastos::Droid::Os::IRemoteCallbackList;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::EIID_IBinder;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

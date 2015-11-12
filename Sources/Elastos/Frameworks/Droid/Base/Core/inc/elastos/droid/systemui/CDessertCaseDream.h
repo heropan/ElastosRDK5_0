@@ -10,7 +10,6 @@
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Service::Dreams::IDreamService;
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

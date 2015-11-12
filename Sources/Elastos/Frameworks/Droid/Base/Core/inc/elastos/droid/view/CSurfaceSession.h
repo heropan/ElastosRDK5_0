@@ -7,7 +7,6 @@
 
 #include <gui/SurfaceComposerClient.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

@@ -7,7 +7,6 @@
 // #include "elastos/droid/widget/EditText.h"
 
 // using Elastos::Droid::Widget::EditText;
-using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;

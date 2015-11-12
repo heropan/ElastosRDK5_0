@@ -3,7 +3,7 @@
 #define __MYACTIVITYCONTROLLER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 #include "CAm.h"
 #include "elastos/droid/os/Runnable.h"
 
@@ -11,7 +11,6 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Core::IThread;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

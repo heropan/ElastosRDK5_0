@@ -8,7 +8,6 @@
 
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IDisplay;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

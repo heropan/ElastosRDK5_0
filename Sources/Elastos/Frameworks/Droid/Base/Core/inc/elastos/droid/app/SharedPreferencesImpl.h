@@ -7,9 +7,8 @@
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/Map.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileOutputStream;
 using Elastos::Utility::ISet;

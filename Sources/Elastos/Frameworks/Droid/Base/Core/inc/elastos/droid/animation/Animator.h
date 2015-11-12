@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::Etl::List;

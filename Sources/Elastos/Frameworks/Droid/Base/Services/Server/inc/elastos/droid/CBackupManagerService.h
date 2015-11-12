@@ -16,7 +16,6 @@
 
 using Elastos::Core::IRandom;
 using Elastos::Core::IStringBuilder;
-using Elastos::Core::Object;
 using Elastos::Crypto::ISecretKey;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;

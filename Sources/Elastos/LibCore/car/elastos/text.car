@@ -78,6 +78,10 @@ module
         interface IBidiHelper;
     }
 
+    singleton class CBreakIteratorHelper {
+        interface IBreakIteratorHelper;
+    }
+
     [deprecated]
     class CRuleBasedBreakIterator {
         constructor(

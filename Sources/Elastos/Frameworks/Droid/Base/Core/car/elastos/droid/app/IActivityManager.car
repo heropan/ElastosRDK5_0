@@ -93,7 +93,8 @@ module
             [in] Int32 flags,
             [in] IProfilerInfo* profilerInfo,
             [in] IBundle* options,
-            [in] Int32 userId);
+            [in] Int32 userId,
+            [out] Int32* result);
 
         StartActivityAndWait(
             [in] IApplicationThread* caller,

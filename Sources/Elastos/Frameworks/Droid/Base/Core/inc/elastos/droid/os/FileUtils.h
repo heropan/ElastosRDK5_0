@@ -4,7 +4,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/core/Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Core::IComparator;
 using Elastos::Utility::Regex::IPattern;
 using Elastos::IO::IFile;

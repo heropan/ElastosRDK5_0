@@ -7,7 +7,6 @@
 
 using Elastos::Droid::View::IView;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Object;
 using Elastos::Utility::IList;
 
 namespace Elastos {

@@ -6,7 +6,7 @@
 #include <elautoptr.h>
 #include <elastos/utility/etl/List.h>
 #include <Elastos.Droid.Core.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 #include <bmgr.h>
 
 using namespace Elastos;
@@ -14,7 +14,6 @@ using Elastos::Droid::App::Backup::IIBackupManager;
 using Elastos::Droid::App::Backup::IIRestoreSession;
 using Elastos::Droid::App::Backup::IRestoreSet;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Core::Object;
 using Elastos::Droid::App::Backup::IIRestoreObserver;
 
 namespace Elastos {

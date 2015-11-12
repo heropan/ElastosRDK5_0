@@ -2,8 +2,9 @@
 #include "elastos/droid/app/Instrumentation.h"
 #include "elastos/droid/app/Activity.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
+// #include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/app/Fragment.h"
-#include "elastos/droid/app/CActivityThreadHelper.h"
+//#include "elastos/droid/app/UiAutomation.h"
 #include "elastos/droid/app/CInstrumentationActivityMonitor.h"
 #include "elastos/droid/app/CInstrumentationActivityResult.h"
 #include "elastos/droid/content/CComponentName.h"
@@ -14,35 +15,31 @@
 #include "elastos/droid/os/CUserHandleHelper.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/ServiceManager.h"
-#include "elastos/droid/privacy/CPrivacySettingsManager.h"
-#include "elastos/droid/view/CKeyEvent.h"
-#include "elastos/droid/view/CKeyEventHelper.h"
-#include "elastos/droid/view/CViewConfigurationHelper.h"
-#include "elastos/droid/view/CKeyCharacterMapHelper.h"
+// #include "elastos/droid/view/CKeyEvent.h"
+// #include "elastos/droid/view/CKeyEventHelper.h"
+// #include "elastos/droid/view/CViewConfigurationHelper.h"
+// #include "elastos/droid/view/CKeyCharacterMapHelper.h"
 
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/CoreUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CString;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-
-using Elastos::Core::CThread;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::Find;
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::App::Fragment;
-using Elastos::Droid::App::IActivityThreadHelper;
-using Elastos::Droid::App::CActivityThreadHelper;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::Res::CConfiguration;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
 using Elastos::Droid::Hardware::Input::IInputManager;
 using Elastos::Droid::Hardware::Input::IInputManagerHelper;
 using Elastos::Droid::Hardware::Input::CInputManagerHelper;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::IUserHandleHelper;
@@ -52,19 +49,29 @@ using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::EIID_IIdleHandler;
 using Elastos::Droid::Privacy::IIPrivacySettingsManager;
-using Elastos::Droid::Privacy::CPrivacySettingsManager;
 using Elastos::Droid::Privacy::IPrivacySettings;
-using Elastos::Droid::Telephony::ITelephonyManager;
-using Elastos::Droid::View::CKeyEvent;
+// using Elastos::Droid::Telephony::ITelephonyManager;
+using Elastos::Droid::View::IInputEvent;
+// using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IKeyEventHelper;
-using Elastos::Droid::View::CKeyEventHelper;
+// using Elastos::Droid::View::CKeyEventHelper;
 using Elastos::Droid::View::IKeyCharacterMap;
 using Elastos::Droid::View::IKeyCharacterMapHelper;
-using Elastos::Droid::View::CKeyCharacterMapHelper;
+// using Elastos::Droid::View::CKeyCharacterMapHelper;
 using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::View::IViewConfigurationHelper;
-using Elastos::Droid::View::CViewConfigurationHelper;
+// using Elastos::Droid::View::CViewConfigurationHelper;
+
+using Elastos::Core::CString;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CThread;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -105,13 +112,10 @@ ECode Instrumentation::InstrumentationThread::Run()
 // Instrumentation::EmptyRunnable
 //====================================================
 
-CAR_INTERFACE_IMPL(Instrumentation::EmptyRunnable, IRunnable)
-
 Instrumentation::EmptyRunnable::Run()
 {
     return NOERROR;
 }
-
 
 //====================================================
 // Instrumentation::SyncRunnable
@@ -122,8 +126,6 @@ Instrumentation::SyncRunnable::SyncRunnable(
     : mTarget(target)
     , mComplete(FALSE)
 {}
-
-CAR_INTERFACE_IMPL(Instrumentation::SyncRunnable, IRunnable)
 
 Instrumentation::SyncRunnable::Run()
 {
@@ -145,10 +147,11 @@ void Instrumentation::SyncRunnable::WaitForComplete()
     }
 }
 
-
 //====================================================
 // Instrumentation::ActivityGoing
 //====================================================
+
+CAR_INTERFACE_IMPL(Instrumentation::ActivityGoing, Object, IIdleHandler)
 
 Instrumentation::ActivityGoing::ActivityGoing(
     /* [in] */ ActivityWaiter* waiter,
@@ -156,8 +159,6 @@ Instrumentation::ActivityGoing::ActivityGoing(
     : mWaiter(waiter)
     , mHost(host)
 {}
-
-CAR_INTERFACE_IMPL(Instrumentation::ActivityGoing, IIdleHandler)
 
 Instrumentation::ActivityGoing::QueueIdle(
     /* [out] */ Boolean* res)
@@ -172,10 +173,10 @@ Instrumentation::ActivityGoing::QueueIdle(
 
 
 //====================================================
-// Instrumentation::IIdleHandler
+// Instrumentation::Idler
 //====================================================
 
-CAR_INTERFACE_IMPL(Instrumentation::Idler, IIdleHandler)
+CAR_INTERFACE_IMPL(Instrumentation::Idler, Object, IIdleHandler)
 
 Instrumentation::Idler::Idler(
     /* [in] */ IRunnable* callback)
@@ -223,8 +224,6 @@ Instrumentation::MenuRunnable::MenuRunnable(
     , mReturnValue(FALSE)
 {}
 
-CAR_INTERFACE_IMPL(Instrumentation::MenuRunnable, IRunnable)
-
 ECode Instrumentation::MenuRunnable::Run()
 {
     AutoPtr<IWindow> win;
@@ -248,8 +247,6 @@ Instrumentation::ContextMenuRunnable::ContextMenuRunnable(
     , mReturnValue(FALSE)
 {}
 
-CAR_INTERFACE_IMPL(Instrumentation::ContextMenuRunnable, IRunnable)
-
 ECode Instrumentation::ContextMenuRunnable::Run()
 {
     AutoPtr<IWindow> win;
@@ -262,8 +259,6 @@ ECode Instrumentation::ContextMenuRunnable::Run()
 //====================================================
 // Instrumentation::BlockPhoneCallRunnable
 //====================================================
-
-CAR_INTERFACE_IMPL(Instrumentation::BlockPhoneCallRunnable, IRunnable)
 
 Instrumentation::BlockPhoneCallRunnable::Run()
 {
@@ -280,13 +275,12 @@ Instrumentation::BlockPhoneCallRunnable::Run()
     String packageName;
     mContext->GetPackageName(&packageName);
     extras->PutString(String("packageName"), packageName);
-    extras->PutInt32(String("phoneState"), ITelephonyManager::CALL_STATE_IDLE);
+    // extras->PutInt32(String("phoneState"), ITelephonyManager::CALL_STATE_IDLE);
     privacy->PutExtras(extras);
     mContext->SendBroadcast(privacy);
     Slogger::I("PrivacyContext", "sent privacy intent");
     return NOERROR;
 }
-
 
 //====================================================
 // Instrumentation
@@ -301,7 +295,7 @@ Instrumentation::Instrumentation()
 Instrumentation::~Instrumentation()
 {}
 
-ECode Instrumentation::Initialize()
+ECode Instrumentation::constructor()
 {
     return NOERROR;
 }
@@ -314,16 +308,16 @@ ECode Instrumentation::OnCreate(
 
 ECode Instrumentation::Start()
 {
-    if (mRunner != NULL) {
+    if (mRunner.Get() != NULL) {
         Slogger::E(TAG, "Instrumentation already started");
         return E_RUNTIME_EXCEPTION;
     }
     StringBuilder sb("Instr: ");
     AutoPtr<IClassInfo> clsInfo;
     _CObject_ReflectClassInfo(Probe(EIID_IObject), (IClassInfo**)&clsInfo);
-    StringBuf_<512> nameBuf;
-    clsInfo->GetName(&nameBuf);
-    sb += (const char*)nameBuf;
+    String name;
+    clsInfo->GetName(&name);
+    sb += name;
     mRunner = (IThread*)new InstrumentationThread(sb.ToString(), this);
     mRunner->Start();
     return NOERROR;
@@ -365,24 +359,28 @@ ECode Instrumentation::SendStatus(
 
 ECode Instrumentation::Finish(
     /* [in] */ Int32 resultCode,
-    /* [in] */ IBundle* results)
+    /* [in] */ IBundle* inBundle)
 {
-    VALIDATE_NOT_NULL(results)
+    VALIDATE_NOT_NULL(inBundle)
 
+    AutoPtr<IBundle> results = inBundle;
     if (mAutomaticPerformanceSnapshots) {
         EndPerformanceSnapshot();
     }
     if (mPerfMetrics != NULL) {
-        if (results == null) {
-            results = new Bundle();
+        if (results == NULL) {
+            CBundle::New((IBundle**)&results);
         }
         results->PutAll(mPerfMetrics);
     }
-    if (mUiAutomation != null) {
-        mUiAutomation.disconnect();
-        mUiAutomation = null;
+    if (mUiAutomation != NULL) {
+        mUiAutomation->Disconnect();
+        mUiAutomation = NULL;
     }
-    return mThread->FinishInstrumentation(resultCode, results);
+    assert(0 && "TODO");
+    // CActivityThread* at = (CActivityThread*)mThread.Get();
+    // return at->FinishInstrumentation(resultCode, results);
+    return NOERROR;
 }
 
 ECode Instrumentation::SetAutomaticPerformanceSnapshots()
@@ -551,8 +549,9 @@ ECode Instrumentation::StartActivitySync(
         return E_RUNTIME_EXCEPTION;
     }
 
+    IComponentInfo* ci = IComponentInfo::Probe(ai);
     String aiProcName;
-    ai->GetProcessName(&aiProcName);
+    ci->GetProcessName(&aiProcName);
     String myProc;
     mThread->GetProcessName(&myProc);
     if (!aiProcName.Equals(myProc)) {
@@ -568,9 +567,9 @@ ECode Instrumentation::StartActivitySync(
 
     String packageName, aiName;
     AutoPtr<IApplicationInfo> appInfo;
-    ai->GetApplicationInfo((IApplicationInfo**)&appInfo);
-    appInfo->GetPackageName(&packageName);
-    ai->GetName(&aiName);
+    ci->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    IPackageItemInfo::Probe(appInfo)->GetPackageName(&packageName);
+    IPackageItemInfo::Probe(ai)->GetName(&aiName);
     AutoPtr<IComponentName> cn;
     CComponentName::New(packageName, aiName, (IComponentName**)&cn);
     intent->SetComponent(cn);
@@ -727,14 +726,14 @@ ECode Instrumentation::InvokeContextMenuAction(
     //   long press to set metadata for its selected child
 
     AutoPtr<IKeyEvent> downEvent;
-    CKeyEvent::New(IKeyEvent::ACTION_DOWN, IKeyEvent::KEYCODE_DPAD_CENTER, (IKeyEvent**)&downEvent);
+    // CKeyEvent::New(IKeyEvent::ACTION_DOWN, IKeyEvent::KEYCODE_DPAD_CENTER, (IKeyEvent**)&downEvent);
     SendKeySync(downEvent);
 
     // Need to wait for long press
     WaitForIdleSync();
     // try {
     AutoPtr<IViewConfigurationHelper> helper;
-    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+    // CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
     Int32 timeout;
     helper->GetLongPressTimeout(&timeout);
     ECode ec = Thread::Sleep(timeout);
@@ -749,7 +748,7 @@ ECode Instrumentation::InvokeContextMenuAction(
     // }
 
     AutoPtr<IKeyEvent> upEvent;
-    CKeyEvent::New(IKeyEvent::ACTION_UP, IKeyEvent::KEYCODE_DPAD_CENTER, (IKeyEvent**)&upEvent);
+    // CKeyEvent::New(IKeyEvent::ACTION_UP, IKeyEvent::KEYCODE_DPAD_CENTER, (IKeyEvent**)&upEvent);
     SendKeySync(upEvent);
 
     // Wait for context menu to appear
@@ -769,7 +768,7 @@ ECode Instrumentation::SendStringSync(
     }
 
     AutoPtr<IKeyCharacterMapHelper> helper;
-    CKeyCharacterMapHelper::AcquireSingleton((IKeyCharacterMapHelper**)&helper);
+    // CKeyCharacterMapHelper::AcquireSingleton((IKeyCharacterMapHelper**)&helper);
     AutoPtr<IKeyCharacterMap> keyCharacterMap;
     helper->Load(IKeyCharacterMap::VIRTUAL_KEYBOARD, (IKeyCharacterMap**)&keyCharacterMap);
 
@@ -785,7 +784,7 @@ ECode Instrumentation::SendStringSync(
             // possible for an event to become stale before it is injected if it
             // takes too long to inject the preceding ones.
             AutoPtr<IKeyEventHelper> helper;
-            CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
+            // CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
             AutoPtr<IKeyEvent> keyEvent;
             helper->ChangeTimeRepeat((*events)[i], SystemClock::GetUptimeMillis(), 0, (IKeyEvent**)&keyEvent);
             SendKeySync(keyEvent);
@@ -799,17 +798,19 @@ ECode Instrumentation::SendKeySync(
 {
     FAIL_RETURN(ValidateNotAppThread())
 
+    IInputEvent* ie = IInputEvent::Probe(event);
+
     Int64 downTime, eventTime;
     event->GetDownTime(&downTime);
-    event->GetEventTime(&eventTime);
+    ie->GetEventTime(&eventTime);
     Int32 action, code, repeatCount, metaState, deviceId, scancode, source, flags;
     event->GetAction(&action);
     event->GetKeyCode(&code);
     event->GetRepeatCount(&repeatCount);
     event->GetMetaState(&metaState);
-    event->GetDeviceId(&deviceId);
+    ie->GetDeviceId(&deviceId);
     event->GetScanCode(&scancode);
-    event->GetSource(&source);
+    ie->GetSource(&source);
     event->GetFlags(&flags);
     if (source == IInputDevice::SOURCE_UNKNOWN) {
         source = IInputDevice::SOURCE_KEYBOARD;
@@ -821,28 +822,28 @@ ECode Instrumentation::SendKeySync(
         downTime = eventTime;
     }
 
-    AutoPtr<IKeyEvent> newEvent;
-    CKeyEvent::New(downTime, eventTime, action, code, repeatCount, metaState,
-            deviceId, scancode, flags | IKeyEvent::FLAG_FROM_SYSTEM, source,
-            (IKeyEvent**)&newEvent);
+    AutoPtr<IInputEvent> newEvent;
+    // CKeyEvent::New(downTime, eventTime, action, code, repeatCount, metaState,
+    //         deviceId, scancode, flags | IKeyEvent::FLAG_FROM_SYSTEM, source,
+    //         (IInputEvent**)&newEvent);
     Boolean result;
     AutoPtr<IInputManagerHelper> helper;
     CInputManagerHelper::AcquireSingleton((IInputManagerHelper**)&helper);
     AutoPtr<IInputManager> manager;
     helper->GetInstance((IInputManager**)&manager);
     return manager->InjectInputEvent(
-            newEvent, IInputManager::INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH, &result);
+        newEvent, IInputManager::INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH, &result);
 }
 
 ECode Instrumentation::SendKeyDownUpSync(
     /* [in] */ Int32 key)
 {
     AutoPtr<IKeyEvent> downEvent;
-    CKeyEvent::New(IKeyEvent::ACTION_DOWN, key, (IKeyEvent**)&downEvent);
+    // CKeyEvent::New(IKeyEvent::ACTION_DOWN, key, (IKeyEvent**)&downEvent);
     FAIL_RETURN(SendKeySync(downEvent))
 
     AutoPtr<IKeyEvent> upEvent;
-    CKeyEvent::New(IKeyEvent::ACTION_UP, key, (IKeyEvent**)&upEvent);
+    // CKeyEvent::New(IKeyEvent::ACTION_UP, key, (IKeyEvent**)&upEvent);
     return SendKeySync(upEvent);
 }
 
@@ -850,11 +851,11 @@ ECode Instrumentation::SendCharacterSync(
     /* [in] */ Int32 keyCode)
 {
     AutoPtr<IKeyEvent> downEvent;
-    CKeyEvent::New(IKeyEvent::ACTION_DOWN, keyCode, (IKeyEvent**)&downEvent);
+    // CKeyEvent::New(IKeyEvent::ACTION_DOWN, keyCode, (IKeyEvent**)&downEvent);
     FAIL_RETURN(SendKeySync(downEvent))
 
     AutoPtr<IKeyEvent> upEvent;
-    CKeyEvent::New(IKeyEvent::ACTION_UP, keyCode, (IKeyEvent**)&upEvent);
+    // CKeyEvent::New(IKeyEvent::ACTION_UP, keyCode, (IKeyEvent**)&upEvent);
     return SendKeySync(upEvent);
 }
 
@@ -864,9 +865,10 @@ ECode Instrumentation::SendPointerSync(
     VALIDATE_NOT_NULL(event)
     FAIL_RETURN(ValidateNotAppThread())
 
+    IInputEvent* ie = IInputEvent::Probe(event);
     Int32 source;
-    if (event->GetSource(&source), (source & IInputDevice::SOURCE_CLASS_POINTER) == 0) {
-        event->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
+    if (ie->GetSource(&source), (source & IInputDevice::SOURCE_CLASS_POINTER) == 0) {
+        ie->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
     }
 
     Boolean result;
@@ -874,7 +876,7 @@ ECode Instrumentation::SendPointerSync(
     CInputManagerHelper::AcquireSingleton((IInputManagerHelper**)&helper);
     AutoPtr<IInputManager> manager;
     helper->GetInstance((IInputManager**)&manager);
-    return manager->InjectInputEvent(event,
+    return manager->InjectInputEvent(ie,
             IInputManager::INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH, &result);
 }
 
@@ -884,9 +886,10 @@ ECode Instrumentation::SendTrackballEventSync(
     VALIDATE_NOT_NULL(event)
     FAIL_RETURN(ValidateNotAppThread())
 
+    IInputEvent* ie = IInputEvent::Probe(event);
     Int32 source;
-    if (event->GetSource(&source), (source & IInputDevice::SOURCE_CLASS_TRACKBALL) == 0) {
-        event->SetSource(IInputDevice::SOURCE_TRACKBALL);
+    if (ie->GetSource(&source), (source & IInputDevice::SOURCE_CLASS_TRACKBALL) == 0) {
+        ie->SetSource(IInputDevice::SOURCE_TRACKBALL);
     }
 
     Boolean result;
@@ -894,7 +897,7 @@ ECode Instrumentation::SendTrackballEventSync(
     CInputManagerHelper::AcquireSingleton((IInputManagerHelper**)&helper);
     AutoPtr<IInputManager> manager;
     helper->GetInstance((IInputManager**)&manager);
-    return manager->InjectInputEvent(event,
+    return manager->InjectInputEvent(ie,
             IInputManager::INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH, &result);
 }
 
@@ -973,9 +976,9 @@ ECode Instrumentation::NewActivity(
     AutoPtr<IInterface> obj;
     FAIL_RETURN(clazz->CreateObject((IInterface**)&obj))
     IActivity* actObj = IActivity::Probe(obj);
+    Activity* act = (Activity*)actObj;
     AutoPtr<IConfiguration> config;
     CConfiguration::New((IConfiguration**)&config);
-    AutoPtr<Activity> act = (Activity*)actObj.Get()
     FAIL_RETURN(act->Attach(
         context, NULL, THIS_PROBE(IInstrumentation), token, 0, application, intent,
         info, title, parent, id, lastNonConfigurationInstance, config, NULL))
@@ -1020,19 +1023,21 @@ ECode Instrumentation::PrePerformCreate(
             }
         }
     }
-
+    return NOERROR;
+}
 
 ECode Instrumentation::PostPerformCreate(
     /* [in] */ IActivity* activity)
 {
     if (mActivityMonitors != NULL) {
         AutoLock lock(mSync);
+        IContext* ctx = IContext::Probe(activity);
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
         for (it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
             AutoPtr<IIntent> intent;
             activity->GetIntent((IIntent**)&intent);
             Boolean result;
-            (*it)->Match(activity, activity, intent, &result);
+            (*it)->Match(ctx, activity, intent, &result);
         }
     }
     return NOERROR;
@@ -1070,13 +1075,14 @@ ECode Instrumentation::CallActivityOnDestroy(
     activity->PerformDestroy();
 
     if (mActivityMonitors != NULL) {
+        IContext* ctx = IContext::Probe(activity);
         AutoLock lock(mSync);
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
         for (it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
             AutoPtr<IIntent> aIntent;
             activity->GetIntent((IIntent**)&aIntent);
             Boolean result;
-            (*it)->Match(activity, activity, aIntent, &result);
+            (*it)->Match(ctx, activity, aIntent, &result);
         }
     }
     return NOERROR;
@@ -1091,10 +1097,10 @@ ECode Instrumentation::CallActivityOnRestoreInstanceState(
 
 ECode Instrumentation::CallActivityOnRestoreInstanceState(
     /* [in] */ IActivity* activity,
-    /* [in] */ IBundle* savedInstanceState
+    /* [in] */ IBundle* savedInstanceState,
     /* [in] */ IPersistableBundle* persistentState)
 {
-    return activity->PerformRestoreInstanceState(savedInstanceState, persistentState);;
+    return activity->PerformRestoreInstanceState(savedInstanceState, persistentState);
 }
 
 ECode Instrumentation::CallActivityOnPostCreate(
@@ -1144,13 +1150,14 @@ ECode Instrumentation::CallActivityOnResume(
     act->OnResume();
 
     if (mActivityMonitors != NULL) {
+        IContext* ctx = IContext::Probe(activity);
         AutoLock lock(mSync);
         Boolean result;
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
         for(it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
             AutoPtr<IIntent> intent;
             activity->GetIntent((IIntent**)&intent);
-            (*it)->Match(activity, activity, intent, &result);
+            (*it)->Match(ctx, activity, intent, &result);
         }
     }
     return NOERROR;
@@ -1224,20 +1231,19 @@ void Instrumentation::AddValue(
     /* [in] */ IBundle* results)
 {
     Boolean contains;
-    if (results->ContainsKey(key, &contains), contains) {
-        AutoPtr<IObjectContainer> list;
-        results->GetIntegerArrayList(key, (IObjectContainer**)&list);
+    results->ContainsKey(key, &contains);
+    AutoPtr<IInteger32> integer = CoreUtils::Convert(value);
+    if (contains) {
+        AutoPtr<IArrayList> list;
+        results->GetIntegerArrayList(key, (IArrayList**)&list);
         if (list != NULL) {
-            AutoPtr<IInteger32> integer;
-            CInteger32::New(value, (IInteger32**)&integer);
             list->Add(integer);
         }
     }
     else {
-        AutoPtr<IObjectContainer> list;
-        CObjectContainer::New((IObjectContainer**)&list);
-        AutoPtr<IInteger32> integer;
-        CInteger32::New(value, (IInteger32**)&integer);
+        AutoPtr<IArrayList> list;
+        CArrayList::New((IArrayList**)&list);
+        list->Add(integer);
         results->PutIntegerArrayList(key, list);
     }
 }
@@ -1311,10 +1317,10 @@ ECode Instrumentation::ExecStartActivity(
         }
     }
 
-    intent->MigrateExtraStreamToClipData(&bval);
-    intent->PrepareToLeaveProcess();
     Boolean bval;
     intent->MigrateExtraStreamToClipData(&bval);
+    intent->PrepareToLeaveProcess();
+
     AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
     AutoPtr<IContentResolver> resolver;
     who->GetContentResolver((IContentResolver**)&resolver);
@@ -1324,8 +1330,9 @@ ECode Instrumentation::ExecStartActivity(
     who->GetBasePackageName(&packageName);
     if (target != NULL) target->GetID(&resultWho);
     Int32 res;
-    am->StartActivity(whoThread, packageName, intent, type,
-         token, resultWho, requestCode, 0, String(NULL), options, &res);
+    am->StartActivity(
+        whoThread, packageName, intent, type,
+        token, resultWho, requestCode, 0, NULL, options, &res);
     CheckStartActivityResult(res, intent);
     *result = NULL;
     return NOERROR;
@@ -1382,6 +1389,7 @@ ECode Instrumentation::ExecStartActivitiesAsUser(
     who->GetContentResolver((IContentResolver**)&resolver);
     Int32 length = intents->GetLength();
     AutoPtr <ArrayOf<String> > resolvedTypes = ArrayOf<String>::Alloc(length);
+    Boolean bval;
     for (Int32 i = 0; i < length; ++i) {
         (*intents)[i]->MigrateExtraStreamToClipData(&bval);
         (*intents)[i]->PrepareToLeaveProcess();
@@ -1454,8 +1462,8 @@ ECode Instrumentation::ExecStartActivity(
     if (target) target->GetWho(&whoStr);
     who->GetPackageName(&packageName);
     Int32 res;
-    FAIL_RETURN(am->StartActivity(whoThread, packageName, intent, type,
-             token, whoStr, requestCode, 0, String(NULL), options, &res))
+    FAIL_RETURN(am->StartActivity(whoThread, packageName, intent,
+        type, token, whoStr, requestCode, 0, NULL, options, &res))
     return CheckStartActivityResult(res, intent);
 }
 
@@ -1518,7 +1526,7 @@ ECode Instrumentation::ExecStartActivity(
     user->GetIdentifier(&userId);
     Int32 res;
     FAIL_RETURN(am->StartActivityAsUser(whoThread, packageName, intent, type,
-             token, resultWho, requestCode, 0, String(NULL), options, userId, &res))
+             token, resultWho, requestCode, 0, NULL, options, userId, &res))
     return CheckStartActivityResult(res, intent);
 }
 
@@ -1578,8 +1586,9 @@ ECode Instrumentation::ExecStartActivityAsCaller(
     String resultWho;
     if (target != NULL) target->GetID(&resultWho);
     Int32 res;
-    FAIL_RETURN(am->StartActivityAsCaller(whoThread, packageName, intent, type,
-             token, resultWho, requestCode, 0, String(NULL), options, userId, &res))
+    FAIL_RETURN(am->StartActivityAsCaller(
+        whoThread, packageName, intent, type,
+        token, resultWho, requestCode, 0, NULL, options, userId, &res))
     return CheckStartActivityResult(res, intent);
 }
 
@@ -1588,12 +1597,8 @@ ECode Instrumentation::ExecStartActivityFromAppTask(
     /* [in] */ IBinder* contextThread,
     /* [in] */ IIAppTask* appTask,
     /* [in] */ IIntent* intent,
-    /* [in] */ IBundle* options,
-    /* [out] */ IInstrumentationActivityResult** activityResult)
+    /* [in] */ IBundle* options)
 {
-    VALIDATE_NOT_NULL(activityResult)
-    *activityResult = NULL;
-
     AutoPtr<IApplicationThread> whoThread = IApplicationThread::Probe(contextThread);
 
     if (mActivityMonitors != NULL) {
@@ -1611,12 +1616,7 @@ ECode Instrumentation::ExecStartActivityFromAppTask(
                     Boolean isBlock;
                     am->IsBlocking(&isBlock);
                     if (isBlock) {
-                        if(requestCode >= 0 ) {
-                            return am->GetResult(activityResult);
-                        }
-                        else {
-                            return NOERROR;
-                        }
+                        return NOERROR;
                     }
                     break;
                 }
@@ -1628,18 +1628,16 @@ ECode Instrumentation::ExecStartActivityFromAppTask(
     intent->MigrateExtraStreamToClipData(&bval);
     intent->PrepareToLeaveProcess();
 
-
     AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
     AutoPtr<IContentResolver> resolver;
     who->GetContentResolver((IContentResolver**)&resolver);
     String type, packageName;
     who->GetBasePackageName(&packageName);
     intent->ResolveTypeIfNeeded(resolver, &type);
-    String resultWho;
-    if (target != NULL) target->GetID(&resultWho);
     Int32 res;
-    FAIL_RETURN(appTask->StartActivity(IBinder::Probe(whoThread), packageName,
-        intent, type, options, userId, &res))
+    FAIL_RETURN(appTask->StartActivity(
+        IBinder::Probe(whoThread), packageName,
+        intent, type, options, &res))
     return CheckStartActivityResult(res, intent);
 }
 
@@ -1722,7 +1720,7 @@ ECode Instrumentation::CheckStartActivityResult(
 
 ECode Instrumentation::ValidateNotAppThread()
 {
-    if (looper::GetMyLooper() == Looper::GetMainLooper()) {
+    if (Looper::GetMyLooper() == Looper::GetMainLooper()) {
         Slogger::E(TAG, "This method can not be called from the main application thread");
         return E_RUNTIME_EXCEPTION;
     }
@@ -1737,8 +1735,12 @@ ECode Instrumentation::GetUiAutomation(
     *ua = NULL;
     if (mUiAutomationConnection != NULL) {
         if (mUiAutomation == NULL) {
-            mUiAutomation = new UiAutomation(getTargetContext().getMainLooper(),
-                    mUiAutomationConnection);
+            AutoPtr<IContext> ctx;
+            GetTargetContext((IContext**)&ctx);
+            AutoPtr<ILooper> looper;
+            ctx->GetMainLooper((ILooper**)&looper);
+            assert(0 && "TODO");
+            // mUiAutomation = new UiAutomation(looper, mUiAutomationConnection);
             mUiAutomation->Connect();
         }
         *ua = mUiAutomation;

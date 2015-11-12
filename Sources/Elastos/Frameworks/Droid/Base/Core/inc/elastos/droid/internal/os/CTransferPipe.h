@@ -8,7 +8,6 @@
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Object;
 using Elastos::Core::IThread;
 using Elastos::Core::CThread;
 using Elastos::Droid::Os::IBinder;

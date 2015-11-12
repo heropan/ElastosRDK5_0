@@ -2,44 +2,42 @@
 #ifndef __ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__
 #define __ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/app/CContextImpl.h"
 #include "elastos/droid/content/pm/PackageManager.h"
-#include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
+// using Elastos::Droid::Content::IIntent;
+// using Elastos::Droid::Content::IComponentName;
+// using Elastos::Droid::Content::IIntentSender;
+// using Elastos::Droid::Content::Pm::IIPackageManager;
+// using Elastos::Droid::Content::Pm::IPackageManager;
+// using Elastos::Droid::Content::Pm::PackageManager;
+// using Elastos::Droid::Content::Pm::IPackageInfo;
+// using Elastos::Droid::Content::Pm::IPermissionInfo;
+// using Elastos::Droid::Content::Pm::IPermissionGroupInfo;
+// using Elastos::Droid::Content::Pm::IApplicationInfo;
+// using Elastos::Droid::Content::Pm::IActivityInfo;
+// using Elastos::Droid::Content::Pm::IServiceInfo;
+// using Elastos::Droid::Content::Pm::IProviderInfo;
+// using Elastos::Droid::Content::Pm::IFeatureInfo;
+// using Elastos::Droid::Content::Pm::IPermissionInfo;
+// using Elastos::Droid::Content::Pm::IResolveInfo;
+// using Elastos::Droid::Content::Pm::IComponentInfo;
+// using Elastos::Droid::Content::Pm::IInstrumentationInfo;
+// using Elastos::Droid::Content::Pm::IPackageInstallObserver;
+// using Elastos::Droid::Content::Pm::IPackageMoveObserver;
+// using Elastos::Droid::Content::Pm::IPackageDeleteObserver;
+// using Elastos::Droid::Content::Pm::IPackageDataObserver;
+// using Elastos::Droid::Content::Pm::IPackageStatsObserver;
+// using Elastos::Droid::Content::Pm::IManifestDigest;
+// using Elastos::Droid::Content::Pm::IContainerEncryptionParams;
+// using Elastos::Droid::Content::Pm::IVerificationParams;
+// using Elastos::Droid::Content::Pm::IVerifierDeviceIdentity;
+// using Elastos::Droid::Content::Res::IResources;
+// using Elastos::Droid::Content::Res::IXmlResourceParser;
+// using Elastos::Droid::Graphics::Drawable::IDrawable;
+// using Elastos::Droid::Net::IUri;
 
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Content::IIntentSender;
-using Elastos::Droid::Content::Pm::IIPackageManager;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Content::Pm::PackageManager;
-using Elastos::Droid::Content::Pm::IPackageInfo;
-using Elastos::Droid::Content::Pm::IPermissionInfo;
-using Elastos::Droid::Content::Pm::IPermissionGroupInfo;
-using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::Content::Pm::IServiceInfo;
-using Elastos::Droid::Content::Pm::IProviderInfo;
-using Elastos::Droid::Content::Pm::IFeatureInfo;
-using Elastos::Droid::Content::Pm::IPermissionInfo;
-using Elastos::Droid::Content::Pm::IResolveInfo;
-using Elastos::Droid::Content::Pm::IComponentInfo;
-using Elastos::Droid::Content::Pm::IInstrumentationInfo;
-using Elastos::Droid::Content::Pm::IPackageInstallObserver;
-using Elastos::Droid::Content::Pm::IPackageMoveObserver;
-using Elastos::Droid::Content::Pm::IPackageDeleteObserver;
-using Elastos::Droid::Content::Pm::IPackageDataObserver;
-using Elastos::Droid::Content::Pm::IPackageStatsObserver;
-using Elastos::Droid::Content::Pm::IManifestDigest;
-using Elastos::Droid::Content::Pm::IContainerEncryptionParams;
-using Elastos::Droid::Content::Pm::IVerificationParams;
-using Elastos::Droid::Content::Pm::IVerifierDeviceIdentity;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::IXmlResourceParser;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Net::IUri;
+
+// using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -48,7 +46,6 @@ namespace App {
 /*package*/
 class ApplicationPackageManager
     : public PackageManager
-    , public IPackageManager
 {
 public:
     class ResourceName
@@ -87,7 +84,7 @@ public:
 
 public:
     ApplicationPackageManager(
-        /* [in] */ CContextImpl* context,
+        /* [in] */ IContextImpl* context,
         /* [in] */ IIPackageManager* pm);
 
     AutoPtr<IUserManager> GetUserManager();
@@ -130,7 +127,7 @@ public:
     CARAPI QueryPermissionsByGroup(
         /* [in] */ const String& group,
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** permissions);
+        /* [out] */ IList** permissions);
 
     CARAPI GetPermissionGroupInfo(
         /* [in] */ const String& name,
@@ -139,7 +136,7 @@ public:
 
     CARAPI GetAllPermissionGroups(
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** groups);
+        /* [out] */ IList** groups);
 
     CARAPI GetApplicationInfo(
         /* [in] */ const String& packageName,
@@ -254,31 +251,31 @@ public:
     CARAPI QueryIntentActivities(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** resolves);
+        /* [out] */ IList** resolves);
 
     CARAPI QueryIntentActivitiesAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
-        /* [out] */ IObjectContainer** resolves);
+        /* [out] */ IList** resolves);
 
     CARAPI QueryIntentActivityOptions(
         /* [in] */ IComponentName* caller,
         /* [in] */ ArrayOf<IIntent*>* specifics,
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** resolves);
+        /* [out] */ IList** resolves);
 
     CARAPI QueryBroadcastReceivers(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
-        /* [out] */ IObjectContainer** resolves);
+        /* [out] */ IList** resolves);
 
     CARAPI QueryBroadcastReceivers(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** resolves);
+        /* [out] */ IList** resolves);
 
     CARAPI ResolveService(
         /* [in] */ IIntent* intent,
@@ -289,12 +286,12 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
-        /* [out] */ IObjectContainer** resolves);
+        /* [out] */ IList** resolves);
 
     CARAPI QueryIntentServices(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** resolves);
+        /* [out] */ IList** resolves);
 
     CARAPI QueryIntentContentProvidersAsUser(
         /* [in] */ IIntent* intent,
@@ -322,7 +319,7 @@ public:
         /* [in] */ const String& processName,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** providers);
+        /* [out] */ IList** providers);
 
     CARAPI GetInstrumentationInfo(
         /* [in] */ IComponentName* className,
@@ -332,7 +329,7 @@ public:
     CARAPI QueryInstrumentation(
         /* [in] */ const String& targetPackage,
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** instrumentations);
+        /* [out] */ IList** instrumentations);
 
     CARAPI GetDrawable(
         /* [in] */ const String& packageName,
@@ -479,6 +476,12 @@ public:
         /* [in] */ IVerificationParams* verificationParams,
         /* [in] */ IContainerEncryptionParams* encryptionParams);
 
+    CARAPI InstallPackage(
+        /* [in] */ IUri* packageURI,
+        /* [in] */ IPackageInstallObserver* observer,
+        /* [in] */ Int32 flags,
+        /* [in] */ const String& installerPackageName);
+
     CARAPI InstallExistingPackage(
         /* [in] */ const String& packageName,
         /* [out] */ Int32* result);
@@ -539,7 +542,7 @@ public:
 
     CARAPI GetPreferredPackages(
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** packages);
+        /* [out] */ IList** packages);
 
     CARAPI AddPreferredActivity(
         /* [in] */ IIntentFilter* filter,
@@ -571,8 +574,8 @@ public:
         /* [in] */ const String& packageName);
 
     CARAPI GetPreferredActivities(
-        /* [in] */ IObjectContainer* outFilters,
-        /* [in] */ IObjectContainer* outActivities,
+        /* [in] */ IList* outFilters,
+        /* [in] */ IList* outActivities,
         /* [in] */ const String& packageName,
         /* [out] */ Int32* num);
 
@@ -598,17 +601,77 @@ public:
         /* [in] */ const String& packageName,
         /* [out] */ Int32* value);
 
+    //@Override
+    CARAPI SetApplicationHiddenSettingAsUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ Boolean hidden,
+        /* [in] */ IUserHandle* user,
+        /* [out] */ Boolean* result);
+
+    //@Override
+    CARAPI GetApplicationHiddenSettingAsUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ IUserHandle* user,
+        /* [out] */ Boolean* result);
+
+    /** @hide */
+    //@Override
+    CARAPI GetKeySetByAlias(
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& alias,
+        /* [out] */ IKeySet** keySet);
+
+    /** @hide */
+    //@Override
+    CARAPI GetSigningKeySet(
+        /* [in] */ const String& packageName,
+        /* [out] */ IKeySet** keySet);
+
+    /** @hide */
+    //@Override
+    CARAPI IsSignedBy(
+        /* [in] */ const String& packageName,
+        /* [in] */ IKeySet* ks,
+        /* [out] */ Boolean* result);
+
+    /** @hide */
+    //@Override
+    CARAPI IsSignedByExactly(
+        /* [in] */ const String& packageName,
+        /* [in] */ IKeySet* ks,
+        /* [out] */ Boolean* result);
+
     CARAPI GetVerifierDeviceIdentity(
         /* [out] */ IVerifierDeviceIdentity** identity);
 
-    CARAPI GetPackageArchiveInfo(
-        /* [in] */ const String& archiveFilePath,
-        /* [in] */ Int32 flags,
-        /* [out] */ IPackageInfo** info);
+    //@Override
+    CARAPI GetPackageInstaller(
+        /* [out] */ IPackageInstaller** installer);
 
-    CARAPI GetPackageSizeInfo(
+    //@Override
+    CARAPI IsPackageAvailable(
         /* [in] */ const String& packageName,
-        /* [in] */ IPackageStatsObserver* observer);
+        /* [out] */ Boolean* result);
+
+    /**
+     * @hide
+     */
+    CARAPI AddCrossProfileIntentFilter(
+        /* [in] */ IIntentFilter* filter,
+        /* [in] */ Int32 sourceUserId,
+        /* [in] */ Int32 targetUserId,
+        /* [in] */ Int32 flags);
+
+    /**
+     * @hide
+     */
+    CARAPI ClearCrossProfileIntentFilters(
+        /* [in] */ Int32 sourceUserId)
+
+    CARAPI LoadItemIcon(
+        /* [in] */ IPackageItemInfo* itemInfo,
+        /* [in] */ IApplicationInfo* appInfo,
+        /* [out] */ IDrawable** drawable);
 
 private:
     CARAPI_(AutoPtr<IDrawable>) GetCachedIcon(
@@ -628,6 +691,18 @@ private:
         /* [in] */ ResourceName* name,
         /* [in] */ ICharSequence* cs);
 
+    AutoPtr<IDrawable> GetBadgedDrawable(
+        /* [in] */ IDrawable* drawable,
+        /* [in] */ IDrawable* badgeDrawable,
+        /* [in] */ IRect* badgeLocation,
+        /* [in] */ Boolean tryBadgeInPlace);
+
+    Int32 GetBadgeResIdForUser(
+        /* [in] */ Int32 userHandle);
+
+    AutoPtr<IUserInfo> GetUserIfProfile(
+    /* [in] */ Int32 userHandle);
+
 private:
     static const String TAG;
     static const Boolean DEBUG;
@@ -643,7 +718,7 @@ private:
     // @GuardedBy("mLock")
     AutoPtr<IPackageInstaller> mInstaller;
 
-    CContextImpl* mContext;
+    IContextImpl* mContext;
     AutoPtr<IIPackageManager> mPM;
 
     static Object sSync;
@@ -659,31 +734,7 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-_ETL_NAMESPACE_BEGIN
 
-#define AUTOPTR_APM_RESOURCESNAME_HASH_FUNC
-
-template<> struct Hash<AutoPtr<ApplicationPackageManager::ResourceName> >
-{
-    size_t operator()(AutoPtr<ApplicationPackageManager::ResourceName> s) const
-    {
-        assert(s != NULL);
-        return (size_t)s->GetHashCode();
-    }
-};
-
-template<> struct EqualTo<AutoPtr<ApplicationPackageManager::ResourceName> >
-{
-    size_t operator()(
-        const AutoPtr<ApplicationPackageManager::ResourceName> x,
-        const AutoPtr<ApplicationPackageManager::ResourceName> y) const
-    {
-        assert(x != NULL);
-        return x->Equals(y);
-    }
-};
-
-#endif //AUTOPTR_APM_RESOURCESNAME_HASH_FUNC
-_ETL_NAMESPACE_END
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::App::ApplicationPackageManager::ResourceName)
 
 #endif //__ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__

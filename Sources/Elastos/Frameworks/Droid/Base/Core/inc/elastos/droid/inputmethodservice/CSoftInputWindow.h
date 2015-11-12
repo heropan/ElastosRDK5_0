@@ -6,7 +6,6 @@
 // #include "elastos/droid/app/Dialog.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 // using Elastos::Droid::App::Dialog;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;

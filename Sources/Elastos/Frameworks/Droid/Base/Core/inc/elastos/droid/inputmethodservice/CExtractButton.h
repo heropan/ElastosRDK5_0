@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 // #include "elastos/droid/widget/Button.h"
 
-using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 // using Elastos::Droid::Widget::Button;

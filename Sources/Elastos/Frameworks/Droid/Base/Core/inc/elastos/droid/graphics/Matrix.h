@@ -6,7 +6,6 @@
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IStringBuilder;
 using Elastos::IO::IPrintWriter;
 

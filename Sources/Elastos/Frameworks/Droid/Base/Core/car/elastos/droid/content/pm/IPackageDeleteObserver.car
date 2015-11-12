@@ -12,7 +12,7 @@ module
      * {@hide}
      */
     [oneway]
-    interface IPackageDeleteObserver {
+    interface IIPackageDeleteObserver {
         PackageDeleted(
             [in] String packageName,
             [in] Int32 returnCode);

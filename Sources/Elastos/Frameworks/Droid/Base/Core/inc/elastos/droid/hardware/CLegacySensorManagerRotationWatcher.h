@@ -6,7 +6,6 @@
 
 using Elastos::Droid::View::IRotationWatcher;
 using Elastos::Droid::View::EIID_IRotationWatcher;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

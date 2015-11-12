@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Location::ILocation;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

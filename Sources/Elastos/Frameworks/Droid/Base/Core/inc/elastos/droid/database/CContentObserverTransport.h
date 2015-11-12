@@ -5,7 +5,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IUri;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

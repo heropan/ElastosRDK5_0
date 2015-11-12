@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Graphics_CRect.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::IPattern;
 

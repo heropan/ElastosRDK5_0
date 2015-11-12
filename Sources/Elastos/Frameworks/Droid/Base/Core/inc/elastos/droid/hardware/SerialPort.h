@@ -7,7 +7,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::Core::Object;
 using Elastos::IO::IByteBuffer;
 using Elastos::IO::IFileDescriptor;
 

@@ -29,7 +29,7 @@
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <pthread.h>
 

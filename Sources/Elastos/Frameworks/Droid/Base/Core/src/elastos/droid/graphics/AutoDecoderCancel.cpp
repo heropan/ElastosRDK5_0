@@ -3,7 +3,6 @@
 #include <elastos/core/Object.h>
 #include <elastos/core/AutoLock.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::AutoLock;
 
 namespace Elastos {

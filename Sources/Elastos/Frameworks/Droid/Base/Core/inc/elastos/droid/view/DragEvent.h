@@ -6,7 +6,6 @@
 #include <elastos/core/Object.h>
 #include <elastos/core/Mutex.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IClipData;
 using Elastos::Droid::Content::IClipDescription;

@@ -9,7 +9,6 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IComparable;
-using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;

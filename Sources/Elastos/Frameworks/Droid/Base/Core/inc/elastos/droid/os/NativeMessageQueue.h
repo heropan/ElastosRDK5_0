@@ -10,7 +10,6 @@
 #include <utils/Looper.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

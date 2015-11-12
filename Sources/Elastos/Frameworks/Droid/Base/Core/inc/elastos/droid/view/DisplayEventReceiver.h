@@ -5,7 +5,6 @@
 #include "elastos/droid/view/NativeDisplayEventReceiver.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Droid::Os::IMessageQueue;
 using Elastos::Droid::Os::ILooper;
 

@@ -6,7 +6,6 @@
 #include "elastos/droid/graphics/CBitmap.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 using Elastosx::Microedition::Khronos::Opengles::IGL;
 

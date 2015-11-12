@@ -14,7 +14,7 @@
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/os/HandlerBase.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 
 using Elastos::Core::IRunnable;
