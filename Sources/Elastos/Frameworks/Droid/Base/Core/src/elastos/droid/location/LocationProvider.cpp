@@ -58,22 +58,22 @@ Boolean LocationProvider::PropertiesMeetCriteria(
         // that have not finished binding yet
         return FALSE;
     }
-    if (criteria->GetAccuracy(&value), properties->GetAccuracy(&value2), value != ICriteria::Criteria_NO_REQUIREMENT && value < value2) {
+    if ( (criteria->GetAccuracy(&value), value != ICriteria::Criteria_NO_REQUIREMENT) && (properties->GetAccuracy(&value2), value < value2) ){
         return FALSE;
     }
-    if (criteria->GetPowerRequirement(&value), properties->GetPowerRequirement(&value2), value != ICriteria::Criteria_NO_REQUIREMENT && value < value2) {
+    if ( (criteria->GetPowerRequirement(&value), value != ICriteria::Criteria_NO_REQUIREMENT) && (properties->GetPowerRequirement(&value2), value < value2) ) {
         return FALSE;
     }
-    if (criteria->IsAltitudeRequired(&bValue), properties->GetSupportsAltitude(&bValue2), bValue && !bValue2) {
+    if ( (criteria->IsAltitudeRequired(&bValue), bValue) && (properties->GetSupportsAltitude(&bValue2), !bValue2) ) {
             return FALSE;
     }
-    if (criteria->IsSpeedRequired(&bValue), properties->GetSupportsSpeed(&bValue2), bValue && !bValue2) {
+    if ( (criteria->IsSpeedRequired(&bValue), bValue) && (properties->GetSupportsSpeed(&bValue2), !bValue2) ) {
             return FALSE;
     }
-    if (criteria->IsBearingRequired(&bValue), properties->GetSupportsBearing(&bValue2), bValue && ! bValue2) {
+    if ( (criteria->IsBearingRequired(&bValue), bValue) && (properties->GetSupportsBearing(&bValue2), !bValue2) ) {
             return FALSE;
     }
-    if (criteria->IsCostAllowed(&bValue), properties->GetHasMonetaryCost(&bValue2), bValue && ! bValue2) {
+    if ( (criteria->IsCostAllowed(&bValue), bValue) && (properties->GetHasMonetaryCost(&bValue2), !bValue2) ) {
             return FALSE;
     }
     return TRUE;
