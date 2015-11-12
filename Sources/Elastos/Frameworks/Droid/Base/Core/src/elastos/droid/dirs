@@ -1,4 +1,4 @@
-DIRS += graphics
+DIRS += view
 DIRS += accessibilityservice
 DIRS += app
 DIRS += animation

@@ -28,7 +28,8 @@ protected:
      * @hide
      */
     // @Override
-    virtual CARAPI_(AutoPtr<IShader>) Copy();
+    virtual CARAPI Copy(
+        /* [out] */ IShader** shader);
 
 private:
     static CARAPI_(Int64) NativeCreate(

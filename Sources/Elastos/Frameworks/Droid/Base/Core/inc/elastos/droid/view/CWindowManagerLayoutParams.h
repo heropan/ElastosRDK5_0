@@ -5,15 +5,18 @@
 #include "_Elastos_Droid_View_CWindowManagerLayoutParams.h"
 #include "elastos/droid/view/ViewGroupLayoutParams.h"
 
-
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CarClass(CWindowManagerLayoutParams), public ViewGroupLayoutParams
+CarClass(CWindowManagerLayoutParams)
+    , public ViewGroupLayoutParams
+    , public IWindowManagerLayoutParams
+    , public IParcelable
 {
 public:
     /**
@@ -34,7 +37,9 @@ public:
         /* [in] */ Int32 flags);
 
 public:
-    IVIEWGROUPLP_METHODS_DECL();
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
 
     CWindowManagerLayoutParams();
 
@@ -333,6 +338,13 @@ public:
     Float mVerticalMargin;
 
     /**
+     * Positive insets between the drawing surface and window content.
+     *
+     * @hide
+     */
+    AutoPtr<IRect> mSurfaceInsets;
+
+    /**
      * The desired bitmap format.  May be one of the constants in
      * {@link android.graphics.PixelFormat}.  Default is OPAQUE.
      */
@@ -377,6 +389,19 @@ public:
     Float mButtonBrightness;
 
     /**
+     * Define the exit and entry animations used on this window when the device is rotated.
+     * This only has an affect if the incoming and outgoing topmost
+     * opaque windows have the #FLAG_FULLSCREEN bit set and are not covered
+     * by other windows. All other situations default to the
+     * {@link #ROTATION_ANIMATION_ROTATE} behavior.
+     *
+     * @see #ROTATION_ANIMATION_ROTATE
+     * @see #ROTATION_ANIMATION_CROSSFADE
+     * @see #ROTATION_ANIMATION_JUMPCUT
+     */
+    Int32 mRotationAnimation;
+
+    /**
      * Identifier for this window.  This will usually be filled in for
      * you.
      */
@@ -396,6 +421,16 @@ public:
      * will be used.
      */
     Int32 mScreenOrientation;
+
+    /**
+     * The preferred refresh rate for the window.
+     *
+     * This must be one of the supported refresh rates obtained for the display(s) the window
+     * is on.
+     *
+     * @see Display#getSupportedRefreshRates()
+     */
+    Float mPreferredRefreshRate;
 
     /**
      * Control the visibility of the status bar.

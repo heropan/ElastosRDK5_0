@@ -5,18 +5,15 @@
 #include "_Elastos_Droid_View_CViewGroupLayoutParams.h"
 #include "elastos/droid/view/ViewGroupLayoutParams.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CarClass(CViewGroupLayoutParams), public ViewGroupLayoutParams
+CarClass(CViewGroupLayoutParams)
+    , public ViewGroupLayoutParams
 {
 public:
-    IVIEWGROUPLP_METHODS_DECL();
-
-    CARAPI ToString(
-        /* [out] */ String* description);
+    CAR_OBJECT_DECL();
 
     CARAPI constructor();
 

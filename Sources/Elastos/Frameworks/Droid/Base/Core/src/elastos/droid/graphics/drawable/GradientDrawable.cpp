@@ -1086,23 +1086,23 @@ ECode GradientDrawable::UpdateStateFromTypedArray(
     // Extract the theme attributes, if any.
     ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs);
 
-    FAIL_RETURN(a->GetInt32(R::styleable::GradientDrawable_shape, state->mShape, &state->mShape));
-    FAIL_RETURN(a->GetBoolean(R::styleable::GradientDrawable_dither, state->mDither, &state->mDither));
+    a->GetInt32(R::styleable::GradientDrawable_shape, state->mShape, &state->mShape);
+    a->GetBoolean(R::styleable::GradientDrawable_dither, state->mDither, &state->mDither);
 
     if (state->mShape == RING) {
-        FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawable_innerRadius, state->mInnerRadius, &state->mInnerRadius));
+        a->GetDimensionPixelSize(R::styleable::GradientDrawable_innerRadius, state->mInnerRadius, &state->mInnerRadius);
 
         if (state->mInnerRadius == -1) {
-            FAIL_RETURN(a->GetFloat(R::styleable::GradientDrawable_innerRadiusRatio, state->mInnerRadiusRatio, &state->mInnerRadiusRatio));
+            a->GetFloat(R::styleable::GradientDrawable_innerRadiusRatio, state->mInnerRadiusRatio, &state->mInnerRadiusRatio);
         }
 
-        FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawable_thickness, state->mThickness, &state->mThickness));
+        a->GetDimensionPixelSize(R::styleable::GradientDrawable_thickness, state->mThickness, &state->mThickness);
 
         if (state->mThickness == -1) {
-            FAIL_RETURN(a->GetFloat(R::styleable::GradientDrawable_thicknessRatio, state->mThicknessRatio, &state->mThicknessRatio));
+            a->GetFloat(R::styleable::GradientDrawable_thicknessRatio, state->mThicknessRatio, &state->mThicknessRatio);
         }
 
-        FAIL_RETURN(a->GetBoolean(R::styleable::GradientDrawable_useLevel, state->mUseLevelForShape, &state->mUseLevelForShape));
+        a->GetBoolean(R::styleable::GradientDrawable_useLevel, state->mUseLevelForShape, &state->mUseLevelForShape);
     }
     return NOERROR;
 }
@@ -1424,19 +1424,19 @@ ECode GradientDrawable::UpdateGradientDrawableStroke(
     // must be at least 0 or the current stroke width.
     Int32 defaultStrokeWidth = Elastos::Core::Math::Max(0, st->mStrokeWidth);
     Int32 width = 0;
-    FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawableStroke_width, defaultStrokeWidth, &width));
+    a->GetDimensionPixelSize(R::styleable::GradientDrawableStroke_width, defaultStrokeWidth, &width);
     Float dashWidth = 0;
-    FAIL_RETURN(a->GetDimension(R::styleable::GradientDrawableStroke_dashWidth, st->mStrokeDashWidth, &dashWidth));
+    a->GetDimension(R::styleable::GradientDrawableStroke_dashWidth, st->mStrokeDashWidth, &dashWidth);
 
     AutoPtr<IColorStateList> colorStateList;
-    FAIL_RETURN(a->GetColorStateList(R::styleable::GradientDrawableStroke_color, (IColorStateList**)&colorStateList));
+    a->GetColorStateList(R::styleable::GradientDrawableStroke_color, (IColorStateList**)&colorStateList);
     if (colorStateList == NULL) {
         colorStateList = st->mStrokeColorStateList;
     }
 
     if (dashWidth != 0.0f) {
         Float dashGap = 0;
-        FAIL_RETURN(a->GetDimension(R::styleable::GradientDrawableStroke_dashGap, st->mStrokeDashGap, &dashGap));
+        a->GetDimension(R::styleable::GradientDrawableStroke_dashGap, st->mStrokeDashGap, &dashGap);
         FAIL_RETURN(SetStroke(width, colorStateList, dashWidth, dashGap));
     } else {
         FAIL_RETURN(SetStroke(width, colorStateList));
@@ -1458,7 +1458,7 @@ ECode GradientDrawable::UpdateGradientDrawableSolid(
     FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&st->mAttrSolid));
 
     AutoPtr<IColorStateList> colorStateList;
-    FAIL_RETURN(a->GetColorStateList(R::styleable::GradientDrawableSolid_color, (IColorStateList**)&colorStateList));
+    a->GetColorStateList(R::styleable::GradientDrawableSolid_color, (IColorStateList**)&colorStateList);
     if (colorStateList != NULL) {
         FAIL_RETURN(SetColor(colorStateList));
     }
@@ -1481,18 +1481,18 @@ ECode GradientDrawable::UpdateGradientDrawableGradient(
 
     st->mCenterX = GetFloatOrFraction(a, R::styleable::GradientDrawableGradient_centerX, st->mCenterX);
     st->mCenterY = GetFloatOrFraction(a, R::styleable::GradientDrawableGradient_centerY, st->mCenterY);
-    FAIL_RETURN(a->GetBoolean(R::styleable::GradientDrawableGradient_useLevel, st->mUseLevel, &st->mUseLevel));
-    FAIL_RETURN(a->GetInt32(R::styleable::GradientDrawableGradient_type, st->mGradient, &st->mGradient));
+    a->GetBoolean(R::styleable::GradientDrawableGradient_useLevel, st->mUseLevel, &st->mUseLevel);
+    a->GetInt32(R::styleable::GradientDrawableGradient_type, st->mGradient, &st->mGradient);
 
     // TODO: Update these to be themeable.
     Int32 startColor = 0;
-    FAIL_RETURN(a->GetColor(R::styleable::GradientDrawableGradient_startColor, 0, &startColor));
+    a->GetColor(R::styleable::GradientDrawableGradient_startColor, 0, &startColor);
     Boolean hasCenterColor = FALSE;
-    FAIL_RETURN(a->HasValue(R::styleable::GradientDrawableGradient_centerColor, &hasCenterColor));
+    a->HasValue(R::styleable::GradientDrawableGradient_centerColor, &hasCenterColor);
     Int32 centerColor = 0;
-    FAIL_RETURN(a->GetColor(R::styleable::GradientDrawableGradient_centerColor, 0, &centerColor));
+    a->GetColor(R::styleable::GradientDrawableGradient_centerColor, 0, &centerColor);
     Int32 endColor = 0;
-    FAIL_RETURN(a->GetColor(R::styleable::GradientDrawableGradient_endColor, 0, &endColor));
+    a->GetColor(R::styleable::GradientDrawableGradient_endColor, 0, &endColor);
 
     if (hasCenterColor) {
         st->mColors = ArrayOf<Int32>::Alloc(3);
@@ -1513,7 +1513,7 @@ ECode GradientDrawable::UpdateGradientDrawableGradient(
 
     if (st->mGradient == LINEAR_GRADIENT) {
         Float value = 0;
-        FAIL_RETURN(a->GetFloat(R::styleable::GradientDrawableGradient_angle, st->mAngle, &value));
+        a->GetFloat(R::styleable::GradientDrawableGradient_angle, st->mAngle, &value);
         Int32 angle = (Int32) value;
         angle %= 360;
 
@@ -1602,8 +1602,8 @@ ECode GradientDrawable::UpdateGradientDrawableSize(
     // Extract the theme attributes, if any.
     FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&st->mAttrSize));
 
-    FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawableSize_width, st->mWidth, &st->mWidth));
-    FAIL_RETURN(a->GetDimensionPixelSize(R::styleable::GradientDrawableSize_height, st->mHeight, &st->mHeight));
+    a->GetDimensionPixelSize(R::styleable::GradientDrawableSize_width, st->mWidth, &st->mWidth);
+    a->GetDimensionPixelSize(R::styleable::GradientDrawableSize_height, st->mHeight, &st->mHeight);
     return NOERROR;
 }
 

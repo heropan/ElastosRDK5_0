@@ -640,16 +640,16 @@ ECode NinePatchDrawable::UpdateStateFromTypedArray(
 
     // Account for any configuration changes.
     Int32 config = 0;
-    FAIL_RETURN(a->GetChangingConfigurations(&config));
+    a->GetChangingConfigurations(&config);
     state->mChangingConfigurations |= config;
 
     // Extract the theme attributes, if any.
     FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs));
 
-    FAIL_RETURN(a->GetBoolean(R::styleable::NinePatchDrawable_dither, state->mDither, &state->mDither));
+    a->GetBoolean(R::styleable::NinePatchDrawable_dither, state->mDither, &state->mDither);
 
     Int32 srcResId = 0;
-    FAIL_RETURN(a->GetResourceId(R::styleable::NinePatchDrawable_src, 0, &srcResId));
+    a->GetResourceId(R::styleable::NinePatchDrawable_src, 0, &srcResId);
     if (srcResId != 0) {
         AutoPtr<IBitmapFactoryOptions> options;
         CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&options);
@@ -697,17 +697,17 @@ ECode NinePatchDrawable::UpdateStateFromTypedArray(
         state->mOpticalInsets = Insets::Of(opticalInsets);
     }
 
-    FAIL_RETURN(a->GetBoolean(R::styleable::NinePatchDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored));
-    FAIL_RETURN(a->GetFloat(R::styleable::NinePatchDrawable_alpha, state->mBaseAlpha, &state->mBaseAlpha));
+    a->GetBoolean(R::styleable::NinePatchDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored);
+    a->GetFloat(R::styleable::NinePatchDrawable_alpha, state->mBaseAlpha, &state->mBaseAlpha);
 
     Int32 tintMode = 0;
-    FAIL_RETURN(a->GetInt32(R::styleable::NinePatchDrawable_tintMode, -1, &tintMode));
+    a->GetInt32(R::styleable::NinePatchDrawable_tintMode, -1, &tintMode);
     if (tintMode != -1) {
         Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode);
     }
 
     AutoPtr<IColorStateList> tint;
-    FAIL_RETURN(a->GetColorStateList(R::styleable::NinePatchDrawable_tint, (IColorStateList**)&tint));
+    a->GetColorStateList(R::styleable::NinePatchDrawable_tint, (IColorStateList**)&tint);
     if (tint != NULL) {
         state->mTint = tint;
     }

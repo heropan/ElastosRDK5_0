@@ -511,7 +511,7 @@ ECode ShapeDrawable::UpdateStateFromTypedArray(
 
     // Account for any configuration changes.
     Int32 config = 0;
-    FAIL_RETURN(a->GetChangingConfigurations(&config));
+    a->GetChangingConfigurations(&config);
     state->mChangingConfigurations |= config;
 
     // Extract the theme attributes, if any.
@@ -519,28 +519,28 @@ ECode ShapeDrawable::UpdateStateFromTypedArray(
 
     Int32 color = 0;
     paint->GetColor(&color);
-    FAIL_RETURN(a->GetColor(R::styleable::ShapeDrawable_color, color, &color));
+    a->GetColor(R::styleable::ShapeDrawable_color, color, &color);
     paint->SetColor(color);
 
     Boolean dither = FALSE;
     paint->IsDither(&dither);
-    FAIL_RETURN(a->GetBoolean(R::styleable::ShapeDrawable_dither, dither, &dither));
+    a->GetBoolean(R::styleable::ShapeDrawable_dither, dither, &dither);
     paint->SetDither(dither);
 
     Float value = 0;
-    FAIL_RETURN(a->GetDimension(R::styleable::ShapeDrawable_width, state->mIntrinsicWidth, &value));
+    a->GetDimension(R::styleable::ShapeDrawable_width, state->mIntrinsicWidth, &value);
     SetIntrinsicWidth((Int32) value);
-    FAIL_RETURN(a->GetDimension(R::styleable::ShapeDrawable_height, state->mIntrinsicHeight, &value));
+    a->GetDimension(R::styleable::ShapeDrawable_height, state->mIntrinsicHeight, &value);
     SetIntrinsicHeight((Int32) value);
 
     Int32 tintMode = 0;
-    FAIL_RETURN(a->GetInt32(R::styleable::ShapeDrawable_tintMode, -1, &tintMode));
+    a->GetInt32(R::styleable::ShapeDrawable_tintMode, -1, &tintMode);
     if (tintMode != -1) {
         Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode);
     }
 
     AutoPtr<IColorStateList> tint;
-    FAIL_RETURN(a->GetColorStateList(R::styleable::ShapeDrawable_tint, (IColorStateList**)&tint));
+    a->GetColorStateList(R::styleable::ShapeDrawable_tint, (IColorStateList**)&tint);
     if (tint != NULL) {
         state->mTint = tint;
     }
@@ -598,7 +598,8 @@ ECode ShapeDrawable::Mutate(
         AutoPtr<IPaint> paint;
         if (mShapeState->mPaint != NULL) {
             CPaint::New(mShapeState->mPaint, (IPaint**)&paint);
-        } else {
+        }
+        else {
             CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&paint);
         }
         mShapeState->mPaint = paint;
@@ -606,7 +607,8 @@ ECode ShapeDrawable::Mutate(
         AutoPtr<IRect> padding;
         if (mShapeState->mPadding != NULL) {
             CRect::New(mShapeState->mPadding, (IRect**)&padding);
-        } else {
+        }
+        else {
             CRect::New((IRect**)&padding);
         }
         mShapeState->mPadding = padding;

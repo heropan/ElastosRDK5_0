@@ -720,7 +720,7 @@ ECode Drawable::CreateFromResourceStream(
 
     AutoPtr<IBitmap> bm;
     AutoPtr<IBitmapFactory> factory;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
     FAIL_RETURN(factory->DecodeResourceStream(
             res, value, is, pad, opts, (IBitmap**)&bm));
     if (bm != NULL) {
@@ -893,7 +893,7 @@ ECode Drawable::CreateFromPath(
     // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, pathName);
     // try {
     AutoPtr<IBitmapFactory> factory;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
     AutoPtr<IBitmap> bm;
     FAIL_RETURN(factory->DecodeFile(pathName, (IBitmap**)&bm));
     if (bm != NULL) {

@@ -267,11 +267,12 @@ ECode CLayoutTransition::ViewOnLayoutChangeListener::OnLayoutChange(
                 if (keyframeSet->mFirstKeyframe == NULL || keyframeSet->mLastKeyframe == NULL) {
                     keyframeSet->mFirstKeyframe->GetValue((IInterface**)&obj1);
                     keyframeSet->mLastKeyframe->GetValue((IInterface**)&obj2);
-                    if (!(IObject::Probe(obj1)->Equals(obj2, &equals), equals)) {
+                    if (IObject::Probe(obj1)->Equals(obj2, &equals), !equals) {
                         valuesDiffer = TRUE;
                     }
                 }
-            } else {
+            }
+            else {
                 pvh->mKeyframes->GetValue(0, (IInterface**)&obj1);
                 pvh->mKeyframes->GetValue(1, (IInterface**)&obj2);
                 if (!(IObject::Probe(obj1)->Equals(obj2, &equals), equals)) {

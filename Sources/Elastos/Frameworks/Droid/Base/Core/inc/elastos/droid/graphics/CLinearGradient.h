@@ -82,7 +82,8 @@ protected:
      * @hide
      */
     // @Override
-    CARAPI_(AutoPtr<IShader>) Copy();
+    CARAPI Copy(
+        /* [out] */ IShader** shader);
 
 private:
     static const Int32 TYPE_COLORS_AND_POSITIONS;

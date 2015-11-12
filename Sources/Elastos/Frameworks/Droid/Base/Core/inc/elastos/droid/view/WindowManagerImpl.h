@@ -3,15 +3,21 @@
 #define __ELASTOS_DROID_VIEW_WINDOWMANAGERIMPL_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-class WindowManagerImpl : public ElRefBase, public IWindowManager
+class WindowManagerImpl
+    : public Object
+    , public IWindowManager
 {
 public:
+    CAR_INTERFACE_DECL();
+
     WindowManagerImpl(
         /* [in] */ IDisplay* display);
 
@@ -21,8 +27,6 @@ private:
         /* [in] */ IWindow* parentWindow);
 
 public:
-    CAR_INTERFACE_DECL();
-
     CARAPI_(AutoPtr<WindowManagerImpl>) CreateLocalWindowManager(
         /* [in] */ IWindow* parentWindow);
 

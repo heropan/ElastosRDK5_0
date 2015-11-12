@@ -34,8 +34,8 @@ public:
         {
         }
     public:
-        List<Family*> mFamilies;
-        List<Alias*> mAliases;
+        List<AutoPtr<Family> > mFamilies;
+        List<AutoPtr<Alias> > mAliases;
     };
 
     class Font
@@ -78,7 +78,7 @@ public:
     public:
         Family(
             /* [in] */ const String& name,
-            /* [in] */ List<Font*>* fonts,
+            /* [in] */ List<AutoPtr<Font> >* fonts,
             /* [in] */ const String& lang,
             /* [in] */ const String& variant)
             : mName(name)
@@ -90,7 +90,7 @@ public:
 
     public:
         String mName;
-        AutoPtr<List<Font*> > mFonts;
+        AutoPtr<List<AutoPtr<Font> > > mFonts;
         String mLang;
         String mVariant;
     };

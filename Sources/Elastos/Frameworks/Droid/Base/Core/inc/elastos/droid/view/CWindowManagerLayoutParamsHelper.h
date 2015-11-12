@@ -3,14 +3,23 @@
 #define  __ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMSHELPER_H__
 
 #include "_Elastos_Droid_View_CWindowManagerLayoutParamsHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CWindowManagerLayoutParamsHelper)
+    , public Singleton
+    , public IWindowManagerLayoutParamsHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
     CARAPI MayUseInputMethodHelper(
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* mayUse);

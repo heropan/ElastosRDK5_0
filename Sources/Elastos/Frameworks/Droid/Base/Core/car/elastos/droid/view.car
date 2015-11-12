@@ -203,7 +203,7 @@ module
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
     // interface Elastos.Droid.View.InputMethod.ICorrectionInfo;
-    // interface Elastos.Droid.Utility.IAttributeSet;
+    interface Elastos.Droid.Utility.IAttributeSet;
     // namespace Elastos {
     // namespace Droid {
     // namespace Internal {
@@ -656,23 +656,23 @@ module
     //         interface IViewConfigurationHelper;
     //     }
 
-    //     [local]
-    //     class CViewGroupLayoutParams {
-    //         constructor();
+        [local]
+        class CViewGroupLayoutParams {
+            constructor();
 
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] IAttributeSet* attrs);
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-    //         constructor(
-    //             [in] Int32 width,
-    //             [in] Int32 height);
+            constructor(
+                [in] Int32 width,
+                [in] Int32 height);
 
-    //         constructor(
-    //             [in] IViewGroupLayoutParams* source);
+            constructor(
+                [in] IViewGroupLayoutParams* source);
 
-    //         interface IViewGroupLayoutParams;
-    //     }
+            interface IViewGroupLayoutParams;
+        }
 
     //     [local]
     //     class CViewGroupMarginLayoutParams {
@@ -826,40 +826,41 @@ module
     //         interface IBinder;
     //     }
 
-    //     class CWindowManagerLayoutParams {
-    //         constructor();
+        class CWindowManagerLayoutParams {
+            constructor();
 
-    //         constructor(
-    //             [in] Int32 type);
+            constructor(
+                [in] Int32 type);
 
-    //         constructor(
-    //             [in] Int32 type,
-    //             [in] Int32 flags);
+            constructor(
+                [in] Int32 type,
+                [in] Int32 flags);
 
-    //         constructor(
-    //             [in] Int32 type,
-    //             [in] Int32 flags,
-    //             [in] Int32 format);
+            constructor(
+                [in] Int32 type,
+                [in] Int32 flags,
+                [in] Int32 format);
 
-    //         constructor(
-    //             [in] Int32 w,
-    //             [in] Int32 h,
-    //             [in] Int32 type,
-    //             [in] Int32 flags,
-    //             [in] Int32 format);
+            constructor(
+                [in] Int32 w,
+                [in] Int32 h,
+                [in] Int32 type,
+                [in] Int32 flags,
+                [in] Int32 format);
 
-    //         constructor(
-    //             [in] Int32 w,
-    //             [in] Int32 h,
-    //             [in] Int32 xpos,
-    //             [in] Int32 ypos,
-    //             [in] Int32 type,
-    //             [in] Int32 flags,
-    //             [in] Int32 format);
+            constructor(
+                [in] Int32 w,
+                [in] Int32 h,
+                [in] Int32 xpos,
+                [in] Int32 ypos,
+                [in] Int32 type,
+                [in] Int32 flags,
+                [in] Int32 format);
 
-    //         interface IWindowManagerLayoutParams;
-    //         interface IParcelable;
-    //     }
+            interface IWindowManagerLayoutParams;
+            interface IViewGroupLayoutParams;
+            interface IParcelable;
+        }
 
     //     class CEmptyAbsSavedState {
 
@@ -886,9 +887,25 @@ module
     //         interface IParcelable;
     //     }
 
-    //     singleton class CWindowManagerLayoutParamsHelper {
-    //         interface IWindowManagerLayoutParamsHelper;
-    //     }
+        singleton class CWindowManagerLayoutParamsHelper {
+            interface IWindowManagerLayoutParamsHelper;
+        }
+
+        class CWindowAnimationFrameStats {
+            constructor();
+
+            interface IWindowAnimationFrameStats;
+            interface IFrameStats;
+            interface IParcelable;
+        }
+
+        class CWindowContentFrameStats {
+            constructor();
+
+            interface IWindowContentFrameStats;
+            interface IFrameStats;
+            interface IParcelable;
+        }
 
     //     singleton class CWindowManagerGlobal {
     //         interface IWindowManagerGlobal;

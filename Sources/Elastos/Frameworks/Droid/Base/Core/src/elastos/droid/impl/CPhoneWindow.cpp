@@ -4530,11 +4530,6 @@ ECode CPhoneWindow::SetBackgroundDrawableResource(
     return Window::SetBackgroundDrawableResource(resid);
 }
 
-Mutex& CPhoneWindow::GetSelfSyncLock()
-{
-    return _m_syncLock;
-}
-
 /**
  * Prepares the panel to either be opened or chorded. This creates the Menu
  * instance for the panel and populates it via the Activity callbacks.

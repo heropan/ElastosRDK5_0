@@ -17,7 +17,7 @@ namespace Graphics {
 CAR_INTERFACE_IMPL(FontFamily, Object, IFontFamily);
 FontFamily::FontFamily()
 {
-    mNativePtr = nCreateFamily(String(NULL), 0);
+    mNativePtr = NativeCreateFamily(String(NULL), 0);
     if (mNativePtr == 0) {
         // throw new IllegalStateException("error creating native FontFamily");
         assert(0 && "error creating native FontFamily");
@@ -34,7 +34,7 @@ FontFamily::FontFamily(
     } else if (String("elegant").Equals(variant)) {
         varEnum = 2;
     }
-    mNativePtr = nCreateFamily(lang, varEnum);
+    mNativePtr = NativeCreateFamily(lang, varEnum);
     if (mNativePtr == 0) {
         // throw new IllegalStateException("error creating native FontFamily");
         assert(0 && "error creating native FontFamily");
@@ -43,7 +43,7 @@ FontFamily::FontFamily(
 
 FontFamily::~FontFamily()
 {
-    nUnrefFamily(mNativePtr);
+    NativeUnrefFamily(mNativePtr);
 }
 
 ECode FontFamily::AddFont(
@@ -51,7 +51,7 @@ ECode FontFamily::AddFont(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = nAddFont(mNativePtr, path);
+    *result = NativeAddFont(mNativePtr, path);
     return NOERROR;
 }
 
@@ -62,7 +62,7 @@ ECode FontFamily::AddFontWeightStyle(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = nAddFontWeightStyle(mNativePtr, path, weight, style);
+    *result = NativeAddFontWeightStyle(mNativePtr, path, weight, style);
     return NOERROR;
 }
 
@@ -72,22 +72,22 @@ ECode FontFamily::AddFontFromAsset(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = nAddFontFromAsset(mNativePtr, mgr, path);
+    *result = NativeAddFontFromAsset(mNativePtr, mgr, path);
     return NOERROR;
 }
 
-Int64 FontFamily::nCreateFamily(
+Int64 FontFamily::NativeCreateFamily(
     /* [in] */ const String& lang,
     /* [in] */ Int32 variant)
 {
     android::FontLanguage fontLanguage;
-    if (lang != NULL) {
+    if (!lang.IsNull()) {
         fontLanguage = android::FontLanguage(lang.string(), lang.GetLength());
     }
     return (Int64)new android::FontFamily(fontLanguage, variant);
 }
 
-void FontFamily::nUnrefFamily(
+void FontFamily::NativeUnrefFamily(
     /* [in] */ Int64 familyPtr)
 {
     android::FontFamily* fontFamily = reinterpret_cast<android::FontFamily*>(familyPtr);
@@ -104,11 +104,11 @@ static Boolean addSkTypeface(
     return result ? TRUE : FALSE;
 }
 
-Boolean FontFamily::nAddFont(
+Boolean FontFamily::NativeAddFont(
     /* [in] */ Int64 familyPtr,
     /* [in] */ const String& path)
 {
-    if (path == NULL) {
+    if (path.IsNull()) {
         return FALSE;
     }
     SkTypeface* face = SkTypeface::CreateFromFile(path.string());
@@ -120,13 +120,13 @@ Boolean FontFamily::nAddFont(
     return addSkTypeface(fontFamily, face);
 }
 
-Boolean FontFamily::nAddFontWeightStyle(
+Boolean FontFamily::NativeAddFontWeightStyle(
     /* [in] */ Int64 familyPtr,
     /* [in] */ const String& path,
     /* [in] */ Int32 weight,
     /* [in] */ Boolean isItalic)
 {
-    if (path == NULL) {
+    if (path.IsNull()) {
         return FALSE;
     }
     SkTypeface* face = SkTypeface::CreateFromFile(path.string());
@@ -141,12 +141,12 @@ Boolean FontFamily::nAddFontWeightStyle(
     return TRUE;
 }
 
-Boolean FontFamily::nAddFontFromAsset(
+Boolean FontFamily::NativeAddFontFromAsset(
     /* [in] */ Int64 familyPtr,
     /* [in] */ IAssetManager* assetMgr,
     /* [in] */ const String& path)
 {
-    if (assetMgr == NULL || path == NULL) {
+    if (assetMgr == NULL || path.IsNull()) {
         return FALSE;
     }
 

@@ -2,6 +2,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/CRect.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -42,23 +45,61 @@ AutoPtr<Insets> Insets::Of(
     return Of(rObj->mLeft, rObj->mTop, rObj->mRight, rObj->mBottom);
 }
 
-Boolean Insets::Equals(
-    /* [in] */ IInsets* o)
+ECode Insets::Equals(
+    /* [in] */ IInterface* o,
+    /* [out] */ Boolean* e)
 {
-    if ((IInsets*)this == o) return TRUE;
+    VALIDATE_NOT_NULL(e);
+    *e = FALSE;
+    if (THIS_PROBE(IInterface) == IInterface::Probe(o)) {
+        *e = TRUE;
+        return NOERROR;
+    }
 
-    Int32 bottom, left, right, top;
-    o->GetBottom(&bottom);
-    o->GetLeft(&left);
-    o->GetRight(&right);
-    o->GetTop(&top);
+    ClassID id1, id2;
+    GetClassID(&id1);
+    if (o == NULL || id1 != (IObject::Probe(o)->GetClassID(&id2), id2)) {
+        return NOERROR;
+    }
 
-    if (mBottom != bottom) return FALSE;
-    if (mLeft != left) return FALSE;
-    if (mRight != right) return FALSE;
-    if (mTop != top) return FALSE;
+    Insets* insets = (Insets*)IInsets::Probe(o);
 
-    return TRUE;
+    if (mBottom != insets->mBottom) return NOERROR;
+    if (mLeft != insets->mLeft) return NOERROR;
+    if (mRight != insets->mRight) return NOERROR;
+    if (mTop != insets->mTop) return NOERROR;
+
+    *e = TRUE;
+    return NOERROR;
+}
+
+ECode Insets::GetHashCode(
+    /* [out] */ Int32* hc)
+{
+    VALIDATE_NOT_NULL(hc);
+    Int32 result = mLeft;
+    result = 31 * result + mTop;
+    result = 31 * result + mRight;
+    result = 31 * result + mBottom;
+    *hc = result;
+    return NOERROR;
+}
+
+ECode Insets::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    StringBuilder sb;
+    sb.Append("Insets{left=");
+    sb.Append(mLeft);
+    sb.Append(", top=");
+    sb.Append(mTop);
+    sb.Append(", right=");
+    sb.Append(mRight);
+    sb.Append(", bottom=");
+    sb.Append(mBottom);
+    sb.AppendChar('}');
+    return sb.ToString(str);
 }
 
 ECode Insets::GetLeft(

@@ -23,12 +23,16 @@ ECode CBitmapShader::constructor(
     return NOERROR;
 }
 
-AutoPtr<IShader> CBitmapShader::Copy()
+ECode CBitmapShader::Copy(
+    /* [out] */ IShader** shader)
 {
-    AutoPtr<IBitmapShader> copy;
-    CBitmapShader::New(mBitmap, mTileX, mTileY, (IBitmapShader**)&copy);
-    CopyLocalMatrix(IShader::Probe(copy));
-    return IShader::Probe(copy);
+    VALIDATE_NOT_NULL(shader);
+    AutoPtr<IShader> copy;
+    CBitmapShader::New(mBitmap, mTileX, mTileY, (IShader**)&copy);
+    CopyLocalMatrix(copy);
+    *shader = copy;
+    REFCOUNT_ADD(*shader);
+    return NOERROR;
 }
 
 PInterface CBitmapShader::Probe(

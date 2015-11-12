@@ -257,20 +257,12 @@ ECode ObjectAnimator::GetTarget(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
+    *object = NULL;
     if (mTarget == NULL) {
-        *object = NULL;
         return NOERROR;
     }
 
-    IWeakReferenceSource* source = IWeakReferenceSource::Probe(mTarget);
-    if (source != NULL) {
-        AutoPtr<IWeakReference> wr;
-        source->GetWeakReference((IWeakReference**)&wr);
-        *object = wr;
-        REFCOUNT_ADD(*object);
-    }
-
-    return NOERROR;
+    return mTarget->Resolve(EIID_IInterface, object);
 }
 
 ECode ObjectAnimator::SetTarget(
@@ -279,7 +271,10 @@ ECode ObjectAnimator::SetTarget(
     AutoPtr<IInterface> oldTarget;
     GetTarget((IInterface**)&oldTarget);
     if (IInterface::Probe(oldTarget) != IInterface::Probe(target)) {
-        mTarget = target == NULL ? NULL : IWeakReference::Probe(target);/*new WeakReference<Object>(target);*/
+        mTarget = NULL;
+        if (target != NULL) {
+            IWeakReferenceSource::Probe(target)->GetWeakReference((IWeakReference**)&mTarget);
+        }
         // New target should cause re-initialization prior to starting
         mInitialized = FALSE;
     }

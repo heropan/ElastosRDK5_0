@@ -90,11 +90,23 @@ ECode CRect::Equals(
 }
 
 ECode CRect::Equals(
-    /* [in] */ IInterface* r,
+    /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return Equals(IRect::Probe(r), result);
+    *result = FALSE;
+    if (THIS_PROBE(IInterface) == IInterface::Probe(o)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    ClassID id1, id2;
+    GetClassID(&id1);
+    if (o == NULL || id1 != (IObject::Probe(o)->GetClassID(&id2), id2)) return NOERROR;
+
+    CRect* r = (CRect*)IRect::Probe(o);
+    *result = mLeft == r->mLeft && mTop == r->mTop && mRight == r->mRight && mBottom == r->mBottom;
+    return NOERROR;
 }
 
 ECode CRect::GetHashCode(

@@ -263,18 +263,18 @@ public:
     static CARAPI_(Int32) GetBitmapAllocationByteCount(
         /* [in] */ IBitmap* bitmapObj);
 
-    static SkCanvas* GetNativeCanvas(
+    static CARAPI_(SkCanvas*) GetNativeCanvas(
         /* [in] */ ICanvas* canvas);
 
-    static NativePaint* GetNativePaint(
+    static CARAPI_(NativePaint*) GetNativePaint(
         /* [in] */ IPaint* paint);
 
-    static TypefaceImpl* GetNativeTypeface(
+    static CARAPI_(TypefaceImpl*) GetNativeTypeface(
         /* [in] */ IPaint* paint);
 
     // Given the 'native' long held by the Rasterizer.java object, return a
     // ref to its SkRasterizer* (or NULL).
-    static SkRasterizer* RefNativeRasterizer(
+    static CARAPI_(SkRasterizer*) RefNativeRasterizer(
         /* [in] */ Int64 rasterizerHandle);
 };
 

@@ -46,7 +46,8 @@ public:
     /**
      * @hide
      */
-    virtual CARAPI_(AutoPtr<IShader>) Copy();
+    virtual CARAPI Copy(
+        /* [out] */ IShader** shader);
 
 protected:
     /**

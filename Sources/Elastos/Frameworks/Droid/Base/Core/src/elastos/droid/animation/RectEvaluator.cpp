@@ -43,11 +43,7 @@ ECode RectEvaluator::Evaluate(
     endValue->GetBottom(&v2);
     Int32 bottom = v1 + (Int32) ((v2 - v1) * fraction);
     if (mRect == NULL) {
-        AutoPtr<IRect> obj;
-        CRect::New(left, top, right, bottom, (IRect**)&obj);
-        *rect = obj;
-        REFCOUNT_ADD(*rect);
-        return NOERROR;
+        return CRect::New(left, top, right, bottom, (IRect**)&rect);
     }
 
     mRect->Set(left, top, right, bottom);

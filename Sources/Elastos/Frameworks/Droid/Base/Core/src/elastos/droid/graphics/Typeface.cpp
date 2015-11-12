@@ -103,7 +103,10 @@ ECode Typeface::Equals(
         *e = TRUE;
         return NOERROR;
     }
-    if (o == NULL/* || getClass() != o.getClass()*/) {
+
+    ClassID id1, id2;
+    GetClassID(&id1);
+    if (o == NULL || id1 != (IObject::Probe(o)->GetClassID(&id2), id2)) {
         *e = FALSE;
         return NOERROR;
     }
@@ -438,7 +441,7 @@ AutoPtr<IFontFamily> Typeface::MakeFamilyFromParsed(
     /* [in] */ FontListParser::Family* family)
 {
     AutoPtr<FontFamily> fontFamily = new FontFamily(family->mLang, family->mVariant);
-    List<FontListParser::Font*>::Iterator ator = family->mFonts->Begin();
+    List<AutoPtr<FontListParser::Font> >::Iterator ator = family->mFonts->Begin();
     Boolean result = FALSE;
     for (; ator != family->mFonts->End(); ++ator) {
         AutoPtr<FontListParser::Font> font = *ator;
@@ -456,12 +459,12 @@ void Typeface::Init()
     // try {
     ECode ec = NOERROR;
     Int32 i = 0;
-    List<IFontFamily*> familyList;
+    List<AutoPtr<IFontFamily> > familyList;
     AutoPtr<ITypeface> tmp;
-    List<IFontFamily*>::Iterator iter;
+    List<AutoPtr<IFontFamily> >::Iterator iter;
     HashMap<String, AutoPtr<ITypeface> >::Iterator sfIter;
-    List<FontListParser::Alias*>::Iterator aIter;
-    List<FontListParser::Family*>::Iterator ator;
+    List<AutoPtr<FontListParser::Alias> >::Iterator aIter;
+    List<AutoPtr<FontListParser::Family> >::Iterator ator;
     AutoPtr<FontListParser::Config> fontConfig;
     AutoPtr<IFileInputStream> fontsIn;
     ec = CFileInputStream::New(configFilename, (IFileInputStream**)&fontsIn);

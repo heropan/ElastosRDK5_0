@@ -14,16 +14,18 @@ ECode FontListParser::Parse(
     /* [in] */ IInputStream* in,
     /* [out] */ Config** config) /*throws XmlPullParserException, IOException*/
 {
-    // try {
     AutoPtr<IXmlPullParser> parser;
-    FAIL_RETURN(Xml::NewPullParser((IXmlPullParser**)&parser));
-    FAIL_RETURN(parser->SetInput(in, String(NULL)));
     Int32 nextTag = 0;
-    FAIL_RETURN(parser->NextTag(&nextTag));
-    FAIL_RETURN(ReadFamilies(parser, config));
-    // } finally {
-    return in->Close();
-    // }
+    ECode ec = Xml::NewPullParser((IXmlPullParser**)&parser);
+    FAIL_GOTO(ec, error);
+    ec = parser->SetInput(in, String(NULL));
+    FAIL_GOTO(ec, error);
+    ec = parser->NextTag(&nextTag);
+    FAIL_GOTO(ec, error);
+    ec = ReadFamilies(parser, config);
+error:
+    in->Close();
+    return ec;
 }
 
 ECode FontListParser::ReadFamilies(
@@ -31,6 +33,7 @@ ECode FontListParser::ReadFamilies(
     /* [out] */ Config** result) /*throws XmlPullParserException, IOException*/
 {
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
     AutoPtr<Config> config = new Config();
     parser->Require(IXmlPullParser::START_TAG, String(NULL), String("familyset"));
     Int32 next = 0;
@@ -43,11 +46,13 @@ ECode FontListParser::ReadFamilies(
             AutoPtr<Family> f;
             FAIL_RETURN(ReadFamily(parser, (Family**)&f));
             config->mFamilies.PushBack(f);
-        } else if (name.Equals(String("alias"))) {
+        }
+        else if (name.Equals(String("alias"))) {
             AutoPtr<Alias> a;
             FAIL_RETURN(ReadAlias(parser, (Alias**)&a));
             config->mAliases.PushBack(a);
-        } else {
+        }
+        else {
             FAIL_RETURN(Skip(parser));
         }
     }
@@ -68,7 +73,7 @@ ECode FontListParser::ReadFamily(
     FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("lang"), &lang));
     String variant;
     FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("variant"), &variant));
-    AutoPtr<List<Font*> > fonts = new List<Font*>();
+    AutoPtr<List<AutoPtr<Font> > > fonts = new List<AutoPtr<Font> >();
     Int32 next = 0;
     while ((parser->Next(&next), next) != IXmlPullParser::END_TAG) {
         Int32 type = 0;

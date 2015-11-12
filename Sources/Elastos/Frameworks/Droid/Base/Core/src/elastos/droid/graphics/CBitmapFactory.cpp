@@ -520,7 +520,7 @@ static void ScaleDivRange(int32_t* divs, int count, float scale, int maxValue) {
         int highestAvailable = maxValue;
         for (int i = count - 1; i >= 0; i--) {
             divs[i] = highestAvailable;
-            if (i > 0 && divs[i] <= divs[i-1]){
+            if (i > 0 && divs[i] <= divs[i-1]) {
                 // keep shifting
                 highestAvailable = divs[i] - 1;
             } else {

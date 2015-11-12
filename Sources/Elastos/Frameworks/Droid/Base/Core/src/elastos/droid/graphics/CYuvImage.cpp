@@ -237,14 +237,13 @@ Boolean CYuvImage::NativeCompressToJpeg(
     Int32* imgStrides = strides->GetPayload();
 
     YuvToJpegEncoder* encoder = YuvToJpegEncoder::Create(format, imgStrides);
-    Boolean result = FALSE;
-    if (encoder != NULL) {
-        encoder->Encode(strm, yuv, width, height, imgOffsets, quality);
-        delete encoder;
-        result = TRUE;
+    if (encoder == NULL) {
+        return FALSE;
     }
 
-    return result;
+    encoder->Encode(strm, yuv, width, height, imgOffsets, quality);
+    delete encoder;
+    return TRUE;
 }
 
 } // namespace Graphics

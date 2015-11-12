@@ -654,9 +654,6 @@ ECode AnimatorInflater::CreateAnimatorFromXml(
         }
 
         if (parent != NULL) {
-            // if (childAnims == null) {
-            //     childAnims = new ArrayList<Animator>();
-            // }
             childAnims.PushBack(*animator);
         }
     }

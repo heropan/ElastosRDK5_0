@@ -42,11 +42,7 @@ ECode PointFEvaluator::Evaluate(
         return NOERROR;
     }
 
-    AutoPtr<IPointF> obj;
-    CPointF::New(x, y, (IPointF**)&obj);
-    *pf = obj;
-    REFCOUNT_ADD(*pf);
-    return NOERROR;
+    return CPointF::New(x, y, (IPointF**)&pf);
 }
 
 }   //namespace Animation

@@ -195,14 +195,14 @@ Int32 CPicture::NativeGetWidth(
     /* [in] */ Int64 pictureHandle)
 {
     NativePicture* pict = reinterpret_cast<NativePicture*>(pictureHandle);
-    return static_cast<Int32>(pict->width());
+    return static_cast<Int32>(pict->GetWidth());
 }
 
 Int32 CPicture::NativeGetHeight(
     /* [in] */ Int64 pictureHandle)
 {
     NativePicture* pict = reinterpret_cast<NativePicture*>(pictureHandle);
-    return static_cast<Int32>(pict->height());
+    return static_cast<Int32>(pict->GetHeight());
 }
 
 Int64 CPicture::NativeBeginRecording(
@@ -211,7 +211,7 @@ Int64 CPicture::NativeBeginRecording(
     /* [in] */ Int32 h)
 {
     NativePicture* pict = reinterpret_cast<NativePicture*>(pictHandle);
-    NativeCanvas* canvas = pict->beginRecording(w, h);
+    NativeCanvas* canvas = pict->BeginRecording(w, h);
     return reinterpret_cast<Int64>(canvas);
 }
 
@@ -219,7 +219,7 @@ void CPicture::NativeEndRecording(
     /* [in] */ Int64 pictHandle)
 {
     NativePicture* pict = reinterpret_cast<NativePicture*>(pictHandle);
-    pict->endRecording();
+    pict->EndRecording();
 }
 
 void CPicture::NativeDraw(
@@ -230,7 +230,7 @@ void CPicture::NativeDraw(
     NativePicture* picture = reinterpret_cast<NativePicture*>(pictureHandle);
     SkASSERT(canvas);
     SkASSERT(picture);
-    picture->draw(canvas);
+    picture->Draw(canvas);
 }
 
 Boolean CPicture::NativeWriteToStream(
@@ -242,7 +242,7 @@ Boolean CPicture::NativeWriteToStream(
     SkWStream* strm = CreateOutputStreamAdaptor(stream, storage);
 
     if (NULL != strm) {
-        picture->serialize(strm);
+        picture->Serialize(strm);
         delete strm;
         return TRUE;
     }

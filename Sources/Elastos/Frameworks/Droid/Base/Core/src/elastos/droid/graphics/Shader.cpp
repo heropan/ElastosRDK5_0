@@ -48,11 +48,15 @@ void Shader::Init(
     mNativeInstance = ni;
 }
 
-AutoPtr<IShader> Shader::Copy()
+ECode Shader::Copy(
+    /* [out] */ IShader** shader)
 {
+    VALIDATE_NOT_NULL(shader);
     AutoPtr<IShader> copy = new Shader();
     CopyLocalMatrix(copy);
-    return copy;
+    *shader = copy;
+    REFCOUNT_ADD(*shader);
+    return NOERROR;
 }
 
 void Shader::CopyLocalMatrix(

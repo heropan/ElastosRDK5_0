@@ -48,24 +48,24 @@ public:
         /* [out] */ Boolean* result);
 
 private:
-    static CARAPI_(Int64) nCreateFamily(
+    static CARAPI_(Int64) NativeCreateFamily(
         /* [in] */ const String& lang,
         /* [in] */ Int32 variant);
 
-    static CARAPI_(void) nUnrefFamily(
+    static CARAPI_(void) NativeUnrefFamily(
         /* [in] */ Int64 nativePtr);
 
-    static CARAPI_(Boolean) nAddFont(
+    static CARAPI_(Boolean) NativeAddFont(
         /* [in] */ Int64 nativeFamily,
         /* [in] */ const String& path);
 
-    static CARAPI_(Boolean) nAddFontWeightStyle(
+    static CARAPI_(Boolean) NativeAddFontWeightStyle(
         /* [in] */ Int64 nativeFamily,
         /* [in] */ const String& path,
         /* [in] */ Int32 weight,
         /* [in] */ Boolean isItalic);
 
-    static CARAPI_(Boolean) nAddFontFromAsset(
+    static CARAPI_(Boolean) NativeAddFontFromAsset(
         /* [in] */ Int64 nativeFamily,
         /* [in] */ IAssetManager* mgr,
         /* [in] */ const String& path);

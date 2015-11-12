@@ -5,7 +5,6 @@ module
     namespace Droid {
     namespace View {
 
-
     /**
      * This class contains window content frame statistics. For example, a window content
      * is rendred in frames when a view is scrolled. The frame statistics are a snapshot
@@ -45,6 +44,7 @@ module
          * @return The posted time in nanoseconds.
          */
         GetFramePostedTimeNano(
+            [in] Int32 index,
             [out] Int64* nano);
 
         /**
@@ -60,9 +60,9 @@ module
          *         if the frame is not ready yet.
          */
         GetFrameReadyTimeNano(
+            [in] Int32 index,
             [out] Int64* nano);
     }
-
 
     } // namespace View
     } // namepsace Droid
