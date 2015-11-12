@@ -20,7 +20,7 @@ CAccessibilityManagerClient::~CAccessibilityManagerClient()
 {}
 
 ECode CAccessibilityManagerClient::constructor(
-    /* [in] */ Handle32 host)
+    /* [in] */ IAccessibilityManager* host)
 {
     mHost = (CAccessibilityManager*)host;
     return NOERROR;
@@ -37,7 +37,7 @@ ECode CAccessibilityManagerClient::SetState(
     // events when accessibility is off.
     AutoPtr<IMessage> msg;
     mHost->mHandler->ObtainMessage(
-        CAccessibilityManager::MyHandler::MSG_SET_STATE, stateFlags, 0, (IMessage**)&msg);
+            CAccessibilityManager::MyHandler::MSG_SET_STATE, stateFlags, 0, (IMessage**)&msg);
     Boolean result;
     return mHost->mHandler->SendMessage(msg, &result);
 }

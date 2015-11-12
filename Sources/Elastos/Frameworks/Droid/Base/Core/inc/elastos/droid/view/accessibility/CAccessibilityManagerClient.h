@@ -26,7 +26,7 @@ public:
     ~CAccessibilityManagerClient();
 
     CARAPI constructor(
-        /* [in] */ Handle32 host);
+        /* [in] */ IAccessibilityManager* host);
 
     CARAPI SetState(
         /* [in] */ Int32 stateFlags);

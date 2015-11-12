@@ -106,10 +106,8 @@ ECode AccessibilityService::PerformGlobalAction(
     if (connection != NULL) {
         // try {
         ECode ec = connection->PerformGlobalAction(action, result);
-        if (ec == (ECode)E_REMOTE_EXCEPTION) {
-            Logger::W(TAG, "Error while calling performGlobalAction");
-        }
-        return ec;
+        if (SUCCEEDED(ec)) return NOERROR;
+        Logger::W(TAG, "Error while calling performGlobalAction. 0x%08x", ec);
         // } catch (RemoteException re) {
         //     Log.w(TAG, "Error while calling performGlobalAction", re);
         // }
@@ -143,14 +141,13 @@ ECode AccessibilityService::GetServiceInfo(
     if (connection != NULL) {
         // try {
         ECode ec = connection->GetServiceInfo(info);
-        if (ec == (ECode)E_REMOTE_EXCEPTION) {
-            Logger::W(TAG, "Error while getting AccessibilityServiceInfo");
-        }
-        return ec;
+        if (SUCCEEDED(ec)) return NOERROR;
+        Logger::W(TAG, "Error while getting AccessibilityServiceInfo. 0x%08x", ec);
         // } catch (RemoteException re) {
         //     Log.w(TAG, "Error while getting AccessibilityServiceInfo", re);
         // }
     }
+    *info = NULL;
     return NOERROR;
 }
 
@@ -213,7 +210,7 @@ void AccessibilityService::SendServiceInfo()
         // try {
         ECode ec = connection->SetServiceInfo(mInfo);
         if (ec == (ECode)E_REMOTE_EXCEPTION) {
-            Logger::W(TAG, "Error while setting AccessibilityServiceInfo");
+            Logger::W(TAG, "Error while setting AccessibilityServiceInfo. 0x%08x", ec);
         }
         mInfo = NULL;
         client->ClearCache();

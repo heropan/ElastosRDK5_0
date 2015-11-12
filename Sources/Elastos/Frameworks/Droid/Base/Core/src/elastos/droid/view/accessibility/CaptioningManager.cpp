@@ -277,6 +277,7 @@ ECode CaptioningManager::CaptionStyle::GetCustomStyle(
     /* [out] */ ICaptioningManagerCaptionStyle** style)
 {
     VALIDATE_NOT_NULL(style);
+    assert(0 && "TODO");
 
     // AutoPtr<ICaptioningManagerCaptionStyle> defStyle = DEFAULT_CUSTOM;
     // Int32 foregroundColor, result;
@@ -417,6 +418,7 @@ ECode CaptioningManager::IsEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
+    assert(0 && "TODO");
     // Int32 value;
     // Settings::Secure::GetInt32(mContentResolver,
     //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_ENABLED, DEFAULT_ENABLED, &value);
@@ -428,6 +430,7 @@ ECode CaptioningManager::GetRawLocale(
     /* [out] */ String* locale)
 {
     VALIDATE_NOT_NULL(locale);
+    assert(0 && "TODO");
     // Settings::Secure::GetString(mContentResolver,
     //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_LOCALE, locale);
     return NOERROR;
@@ -450,6 +453,8 @@ ECode CaptioningManager::GetLocale(
                 return CLocale::New((*splitLocale)[0], (*splitLocale)[1], locale);
             case 1:
                 return CLocale::New((*splitLocale)[0], locale);
+            default:
+                break;
         }
     }
 
@@ -461,6 +466,7 @@ ECode CaptioningManager::GetFontScale(
     /* [out] */ Float* scale)
 {
     VALIDATE_NOT_NULL(scale);
+    assert(0 && "TODO");
     // Settings::Secure::GetFloat(mContentResolver,
     //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_FONT_SCALE, DEFAULT_FONT_SCALE, scale);
     return NOERROR;
@@ -470,6 +476,7 @@ ECode CaptioningManager::GetRawUserStyle(
     /* [out] */ Int32* style)
 {
     VALIDATE_NOT_NULL(style);
+    assert(0 && "TODO");
     // Settings::Secure::GetInt32(mContentResolver,
     //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_PRESET, DEFAULT_PRESET, style);
     return NOERROR;
@@ -493,7 +500,7 @@ ECode CaptioningManager::GetUserStyle(
 ECode CaptioningManager::AddCaptioningChangeListener(
     /* [in] */ ICaptioningManagerCaptioningChangeListener* listener)
 {
-    synchronized (mListeners) {
+    synchronized(mListeners) {
         Boolean res;
         if (mListeners->IsEmpty(&res), res) {
             RegisterObserver(ISettingsSecure::ACCESSIBILITY_CAPTIONING_ENABLED);
@@ -516,6 +523,7 @@ ECode CaptioningManager::AddCaptioningChangeListener(
 void CaptioningManager::RegisterObserver(
     /* [in] */ const String& key)
 {
+    assert(0 && "TODO");
     // AutoPtr<IUri> uri;
     // Settings::Secure::GetUriFor(key, (IUri**)&uri);
     // mContentResolver->RegisterContentObserver(uri, FALSE, mContentObserver);
@@ -524,7 +532,7 @@ void CaptioningManager::RegisterObserver(
 ECode CaptioningManager::RemoveCaptioningChangeListener(
     /* [in] */ ICaptioningManagerCaptioningChangeListener* listener)
 {
-    synchronized (mListeners) {
+    synchronized(mListeners) {
         mListeners->Remove(listener);
 
         Boolean res;
@@ -539,7 +547,7 @@ void CaptioningManager::NotifyEnabledChanged()
 {
     Boolean enabled;
     IsEnabled(&enabled);
-    synchronized (mListeners) {
+    synchronized(mListeners) {
         Int32 size;
         mListeners->GetSize(&size);
         for(Int32 i = 0; i < size; i++) {
@@ -556,7 +564,7 @@ void CaptioningManager::NotifyUserStyleChanged()
 {
     AutoPtr<ICaptioningManagerCaptionStyle> userStyle;
     GetUserStyle((ICaptioningManagerCaptionStyle**)&userStyle);
-    synchronized (mListeners) {
+    synchronized(mListeners) {
         Int32 size;
         mListeners->GetSize(&size);
         for(Int32 i = 0; i < size; i++) {
@@ -573,7 +581,7 @@ void CaptioningManager::NotifyLocaleChanged()
 {
     AutoPtr<ILocale> locale;
     GetLocale((ILocale**)&locale);
-    synchronized (mListeners) {
+    synchronized(mListeners) {
         Int32 size;
         mListeners->GetSize(&size);
         for(Int32 i = 0; i < size; i++) {
@@ -590,7 +598,7 @@ void CaptioningManager::NotifyFontScaleChanged()
 {
     Float fontScale;
     GetFontScale(&fontScale);
-    synchronized (mListeners) {
+    synchronized(mListeners) {
         Int32 size;
         mListeners->GetSize(&size);
         for(Int32 i = 0; i < size; i++) {

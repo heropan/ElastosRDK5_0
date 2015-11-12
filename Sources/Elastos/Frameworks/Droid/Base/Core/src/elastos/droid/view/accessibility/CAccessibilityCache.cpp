@@ -48,7 +48,7 @@ ECode CAccessibilityCache::constructor()
 ECode CAccessibilityCache::AddWindow(
     /* [in] */ IAccessibilityWindowInfo* window)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         Int32 windowId;
         window->GetId(&windowId);
         if (DEBUG) {
@@ -70,7 +70,7 @@ ECode CAccessibilityCache::AddWindow(
 ECode CAccessibilityCache::OnAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         Int32 eventType;
         event->GetEventType(&eventType);
         switch (eventType) {
@@ -88,7 +88,7 @@ ECode CAccessibilityCache::OnAccessibilityEvent(
                 break;
             }
             case IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED: {
-                synchronized (mLock) {
+                synchronized(mLock) {
                     Int32 windowId;
                     IAccessibilityRecord::Probe(event)->GetWindowId(&windowId);
                     Int64 sourceId;
@@ -200,7 +200,7 @@ ECode CAccessibilityCache::GetWindows(
     VALIDATE_NOT_NULL(list);
     *list = NULL;
 
-    synchronized (mLock) {
+    synchronized(mLock) {
         Int32 windowCount;
         mWindowCache->GetSize(&windowCount);
         if (windowCount > 0) {
@@ -243,7 +243,7 @@ ECode CAccessibilityCache::GetWindow(
     VALIDATE_NOT_NULL(info);
     *info = NULL;
 
-    synchronized (mLock) {
+    synchronized(mLock) {
         AutoPtr<IInterface> obj;
         mWindowCache->Get(windowId, (IInterface**)&obj);
         AutoPtr<IAccessibilityWindowInfo> window = IAccessibilityWindowInfo::Probe(obj);
@@ -409,7 +409,7 @@ void CAccessibilityCache::ClearSubTreeRecursiveLocked(
 
 ECode CAccessibilityCache::CheckIntegrity()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         // Get the root.
         Int32 size1, size2;
         Boolean res;

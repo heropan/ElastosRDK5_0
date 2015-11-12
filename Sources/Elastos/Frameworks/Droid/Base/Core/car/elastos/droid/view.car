@@ -1592,7 +1592,7 @@ module
 
     class CAccessibilityManagerClient {
         constructor(
-            [in] Handle32 host);
+            [in] IAccessibilityManager* host);
 
         interface IIAccessibilityManagerClient;
         interface IBinder;

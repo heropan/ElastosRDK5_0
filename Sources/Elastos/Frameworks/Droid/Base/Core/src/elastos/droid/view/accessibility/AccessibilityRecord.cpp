@@ -548,7 +548,7 @@ ECode AccessibilityRecord::Obtain(
     /* [out] */ IAccessibilityRecord** newInstance)
 {
     VALIDATE_NOT_NULL(newInstance);
-    synchronized (sPoolLock) {
+    synchronized(sPoolLock) {
         if (sPool != NULL) {
             AutoPtr<AccessibilityRecord> record = sPool;
             sPool = sPool->mNext;
@@ -576,7 +576,7 @@ ECode AccessibilityRecord::Recycle()
         // throw new IllegalStateException("Record already recycled!");
     }
     Clear();
-    synchronized (sPoolLock) {
+    synchronized(sPoolLock) {
         if (sPoolSize <= MAX_POOL_SIZE) {
             mNext = sPool;
             sPool = this;
