@@ -1418,17 +1418,11 @@ AutoPtr<IVectorDrawable> VectorDrawable::Create(
 
     AutoPtr<IVectorDrawable> drawable;
     CVectorDrawable::New((IVectorDrawable**)&drawable);
-    if(FAILED(IDrawable::Probe(drawable)->Inflate(resources, parser, attrs))) {
+    if (FAILED(IDrawable::Probe(drawable)->Inflate(resources, parser, attrs))) {
         return NULL;
     }
 
     return drawable;
-    // // } catch (XmlPullParserException e) {
-    // //     Log.e(LOGTAG, "parser error", e);
-    // // } catch (IOException e) {
-    // //     Log.e(LOGTAG, "parser error", e);
-    // // }
-    // return NULL;
 }
 
 Int32 VectorDrawable::ApplyAlpha(

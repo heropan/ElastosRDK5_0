@@ -1,5 +1,4 @@
 
-#include <libcxx/vector>
 #include <minikin/FontCollection.h>
 #include <minikin/FontFamily.h>
 #include <minikin/Layout.h>

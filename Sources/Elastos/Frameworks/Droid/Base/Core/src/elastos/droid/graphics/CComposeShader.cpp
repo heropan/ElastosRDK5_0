@@ -75,28 +75,37 @@ ECode CComposeShader::GetInterfaceID(
     return Shader::GetInterfaceID(object, iid);
 }
 
-AutoPtr<IShader> CComposeShader::Copy()
+ECode CComposeShader::Copy(
+    /* [out] */ IShader** shader)
 {
-    AutoPtr<IComposeShader> copy;
+    VALIDATE_NOT_NULL(shader);
+    AutoPtr<IShader> copy;
     switch (mType) {
-        case TYPE_XFERMODE:
-            CComposeShader::New(((Shader*)(IShader*)mShaderA->Probe(EIID_Shader))->Copy(),
-                    ((Shader*)(IShader*)mShaderB->Probe(EIID_Shader))->Copy(),
-                    mXferMode, (IComposeShader**)&copy);
+        case TYPE_XFERMODE: {
+            AutoPtr<IShader> c1;
+            AutoPtr<IShader> c2;
+            ((Shader*)mShaderA.Get())->Copy((IShader**)&c1);
+            ((Shader*)mShaderB.Get())->Copy((IShader**)&c2);
+            CComposeShader::New(c1, c2, mXferMode, (IShader**)&copy);
+            }
             break;
-        case TYPE_PORTERDUFFMODE:
-            CComposeShader::New(((Shader*)(IShader*)mShaderA->Probe(EIID_Shader))->Copy(),
-                    ((Shader*)(IShader*)mShaderB->Probe(EIID_Shader))->Copy(),
-                    mPorterDuffMode, (IComposeShader**)&copy);
+        case TYPE_PORTERDUFFMODE: {
+            AutoPtr<IShader> c1;
+            AutoPtr<IShader> c2;
+            ((Shader*)mShaderA.Get())->Copy((IShader**)&c1);
+            ((Shader*)mShaderB.Get())->Copy((IShader**)&c2);
+            CComposeShader::New(c1, c2, mPorterDuffMode, (IShader**)&copy);
+            }
             break;
         default:
             // throw new IllegalArgumentException(
             //         "ComposeShader should be created with either Xfermode or PorterDuffMode");
-            assert(0 && "ComposeShader should be created with either Xfermode or PorterDuffMode");
-            // return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    CopyLocalMatrix(IShader::Probe(copy));
-    return IShader::Probe(copy);
+    CopyLocalMatrix(copy);
+    *shader = copy;
+    REFCOUNT_ADD(*shader);
+    return NOERROR;
 }
 
 Int64 CComposeShader::NativeCreate1(

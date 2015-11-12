@@ -58,9 +58,11 @@ ECode CSweepGradient::constructor(
     return NOERROR;
 }
 
-AutoPtr<IShader> CSweepGradient::Copy()
+ECode CSweepGradient::Copy(
+    /* [out] */ IShader** shader)
 {
-    AutoPtr<ISweepGradient> copy;
+    VALIDATE_NOT_NULL(shader);
+    AutoPtr<IShader> copy;
     switch (mType) {
         case TYPE_COLORS_AND_POSITIONS:
             CSweepGradient::New(mCx, mCy, *mColors->Clone(),
@@ -72,10 +74,12 @@ AutoPtr<IShader> CSweepGradient::Copy()
         default:
             // throw new IllegalArgumentException("SweepGradient should be created with either " +
             //         "colors and positions or start color and end color");
-            assert(0 && "colors and positions or start color and end color");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    CopyLocalMatrix(IShader::Probe(copy));
-    return IShader::Probe(copy);
+    CopyLocalMatrix(copy);
+    *shader = copy;
+    REFCOUNT_ADD(*shader);
+    return NOERROR;
 }
 
 PInterface CSweepGradient::Probe(

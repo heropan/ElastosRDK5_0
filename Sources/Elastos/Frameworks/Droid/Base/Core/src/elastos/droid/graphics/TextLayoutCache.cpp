@@ -504,7 +504,7 @@ void TextLayoutShaper::computeValues(const SkPaint* paint, const UChar* chars,
         }
 
         // Default single run case
-        if (useSingleRun){
+        if (useSingleRun) {
 #if DEBUG_GLYPHS
             ALOGD("Using a SINGLE BiDi Run "
                     "-- run-start = %d, run-len = %d, isRTL = %d", start, count, isRTL);

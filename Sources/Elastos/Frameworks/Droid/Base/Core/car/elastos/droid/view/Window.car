@@ -126,6 +126,7 @@ module
          *
          * @see #onPreparePanel
          */
+        // @Nullable
         OnCreatePanelView(
             [in] Int32 featureId,
             [out] IView** view);
@@ -274,6 +275,7 @@ module
          * @param callback Callback to control the lifecycle of this action mode
          * @return The ActionMode that was started, or null if the system should present it
          */
+        // @Nullable
         OnWindowStartingActionMode(
             [in] IActionModeCallback* cb,
             [out] IActionMode** mode);
@@ -297,6 +299,7 @@ module
             [in] IActionMode* mode);
     }
 
+    /** @hide */
     interface IOnWindowDismissedCallback {
         /**
          * Called when a window is dismissed. This informs the callback that the
@@ -321,21 +324,29 @@ module
     interface IWindow {
         /** Flag for the "options panel" feature.  This is enabled by default. */
         const Int32 FEATURE_OPTIONS_PANEL = 0;
+
         /** Flag for the "no title" feature, turning off the title at the top
          *  of the screen. */
         const Int32 FEATURE_NO_TITLE = 1;
+
         /** Flag for the progress indicator feature */
         const Int32 FEATURE_PROGRESS = 2;
+
         /** Flag for having an icon on the left side of the title bar */
         const Int32 FEATURE_LEFT_ICON = 3;
+
         /** Flag for having an icon on the right side of the title bar */
         const Int32 FEATURE_RIGHT_ICON = 4;
+
         /** Flag for indeterminate progress */
         const Int32 FEATURE_INDETERMINATE_PROGRESS = 5;
+
         /** Flag for the context menu.  This is enabled by default. */
         const Int32 FEATURE_CONTEXT_MENU = 6;
+
         /** Flag for custom title. You cannot combine this feature with other title features. */
         const Int32 FEATURE_CUSTOM_TITLE = 7;
+
         /**
          * Flag for enabling the Action Bar.
          * This is enabled by default for some devices. The Action Bar
@@ -343,6 +354,7 @@ module
          * for an on-screen menu button on some devices.
          */
         const Int32 FEATURE_ACTION_BAR = 8;
+
         /**
          * Flag for requesting an Action Bar that overlays window content.
          * Normally an Action Bar will sit in the space above window content, but if this
@@ -363,15 +375,18 @@ module
          * that space.
          */
         const Int32 FEATURE_ACTION_BAR_OVERLAY = 9;
+
         /**
          * Flag for specifying the behavior of action modes when an Action Bar is not present.
          * If overlay is enabled, the action mode UI will be allowed to cover existing window content.
          */
         const Int32 FEATURE_ACTION_MODE_OVERLAY = 10;
+
         /**
          * Flag for requesting a decoration-free window that is dismissed by swiping from the left.
          */
         const Int32 FEATURE_SWIPE_TO_DISMISS = 11;
+
         /**
          * Flag for requesting that window content changes should be represented
          * with scenes and transitions.
@@ -816,6 +831,7 @@ module
          *
          * @return View The current View with focus or null.
          */
+        // @Nullable
         GetCurrentFocus(
             [out] IView** view);
 
@@ -825,12 +841,14 @@ module
          *
          * @return LayoutInflater The shared LayoutInflater.
          */
+        // @NonNull
         GetLayoutInflater(
             [out] ILayoutInflater** inflater);
 
         SetTitle(
             [in] ICharSequence* title);
 
+        // @Deprecated
         SetTitleColor(
             [in] Int32 textColor);
 

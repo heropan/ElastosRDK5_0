@@ -76,7 +76,7 @@ AnimatorSet::DependencyListener::DependencyListener(
 ECode AnimatorSet::DependencyListener::OnAnimationStart(
     /* [in] */ IAnimator* animation)
 {
-    if(mRule == Dependency::WITH) {
+    if (mRule == Dependency::WITH) {
         StartIfReady(animation);
     }
     return NOERROR;
@@ -85,7 +85,7 @@ ECode AnimatorSet::DependencyListener::OnAnimationStart(
 ECode AnimatorSet::DependencyListener::OnAnimationEnd(
     /* [in] */ IAnimator* animation)
 {
-    if(mRule == Dependency::AFTER)
+    if (mRule == Dependency::AFTER)
         StartIfReady(animation);
     return NOERROR;
 }

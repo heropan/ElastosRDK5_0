@@ -1179,6 +1179,12 @@ module
             [in] Int32 userActivityTimeout);
     }
 
+    interface IWindowManagerLayoutParamsHelper {
+        MayUseInputMethodHelper(
+            [in] Int32 flags,
+            [out] Boolean* mayUse);
+    }
+
     /**
      * @Involve
      * interface IViewManager

@@ -172,7 +172,9 @@ public:
         CARAPI Close();
 
     private:
-        Page(
+        Page();
+
+        CARAPI constructor(
             /* [in] */ Int32 index,
             /* [in] */ CPdfRenderer* host);
 

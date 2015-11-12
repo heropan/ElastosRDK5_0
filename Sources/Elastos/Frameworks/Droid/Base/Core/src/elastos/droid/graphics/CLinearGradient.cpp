@@ -158,24 +158,27 @@ Int64 CLinearGradient::NativeCreate2(
     return reinterpret_cast<Int64>(s);
 }
 
-AutoPtr<IShader> CLinearGradient::Copy()
+ECode CLinearGradient::Copy(
+    /* [out] */ IShader** shader)
 {
-    AutoPtr<ILinearGradient> copy;
+    AutoPtr<IShader> copy;
     switch (mType) {
         case TYPE_COLORS_AND_POSITIONS:
             CLinearGradient::New(mX0, mY0, mX1, mY1, *mColors->Clone(),
-                    mPositions != NULL ? mPositions->Clone() : NULL, mTileMode, (ILinearGradient**)&copy);
+                    mPositions != NULL ? mPositions->Clone() : NULL, mTileMode, (IShader**)&copy);
             break;
         case TYPE_COLOR_START_AND_COLOR_END:
-            CLinearGradient::New(mX0, mY0, mX1, mY1, mColor0, mColor1, mTileMode, (ILinearGradient**)&copy);
+            CLinearGradient::New(mX0, mY0, mX1, mY1, mColor0, mColor1, mTileMode, (IShader**)&copy);
             break;
         default:
             // throw new IllegalArgumentException("LinearGradient should be created with either " +
             //         "colors and positions or start color and end color");
-            assert(0 && "colors and positions or start color and end color.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    CopyLocalMatrix(IShader::Probe(copy));
-    return IShader::Probe(copy);
+    CopyLocalMatrix(copy);
+    *shader = copy;
+    REFCOUNT_ADD(*shader);
+    return NOERROR;
 }
 
 } // namespace Graphics

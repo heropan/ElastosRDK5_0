@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_GRAPHICS_CBITMAPFACTORY_H__
 
 #include "_Elastos_Droid_Graphics_CBitmapFactory.h"
-#include <Elastos.CoreLibrary.h>
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Utility::IDisplayMetrics;

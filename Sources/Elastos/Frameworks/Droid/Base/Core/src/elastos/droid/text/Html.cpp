@@ -942,9 +942,7 @@ void HtmlToSpannedConverter::EndFont(
                 }
             }
             else {
-                Int32 c;
-                assert(0 && "TODO");
-                c = Color::GetHtmlColor(f->mColor);
+                Int32 c = Color::GetHtmlColor(f->mColor);
                 if (c != -1) {
                     AutoPtr<IForegroundColorSpan> foregroundColorSpan;
                     // CForegroundColorSpan::New(c | 0xFF000000, (IForegroundColorSpan**)&foregroundColorSpan);

@@ -10,7 +10,6 @@
 #include <skia/core/SkPath.h>
 #include <skia/core/SkMatrix.h>
 #include <skia/pathops/SkPathOps.h>
-#include <libcxx/vector>
 
 using Elastos::Utility::Etl::Map;
 
@@ -820,7 +819,8 @@ ECode CPath::Approximate(
     /* [out] */ ArrayOf<Float>** array)
 {
     VALIDATE_NOT_NULL(array);
-    *array = NativeApproximate(mNativePath, acceptableError);
+    AutoPtr<ArrayOf<Float> > a = NativeApproximate(mNativePath, acceptableError);
+    *array = a;
     REFCOUNT_ADD(*array);
     return NOERROR;
 }
@@ -1217,8 +1217,11 @@ Boolean CPath::NativeOp(
     return ::Op(*p1, *p2, op, r);
 }
 
-static void addMove(std::vector<SkPoint>& segmentPoints, std::vector<float>& lengths,
-        const SkPoint& point) {
+static void addMove(
+    /* [in] */ std::vector<SkPoint>& segmentPoints,
+    /* [in] */ std::vector<float>& lengths,
+    /* [in] */ const SkPoint& point)
+{
     float length = 0;
     if (!lengths.empty()) {
         length = lengths.back();
@@ -1227,8 +1230,11 @@ static void addMove(std::vector<SkPoint>& segmentPoints, std::vector<float>& len
     lengths.push_back(length);
 }
 
-static void addLine(std::vector<SkPoint>& segmentPoints, std::vector<float>& lengths,
-        const SkPoint& toPoint) {
+static void addLine(
+    /* [in] */ std::vector<SkPoint>& segmentPoints,
+    /* [in] */ std::vector<float>& lengths,
+    /* [in] */ const SkPoint& toPoint)
+{
     if (segmentPoints.empty()) {
         segmentPoints.push_back(SkPoint::Make(0, 0));
         lengths.push_back(0);
@@ -1240,7 +1246,13 @@ static void addLine(std::vector<SkPoint>& segmentPoints, std::vector<float>& len
     lengths.push_back(length);
 }
 
-static float cubicCoordinateCalculation(float t, float p0, float p1, float p2, float p3) {
+static float cubicCoordinateCalculation(
+    /* [in] */ float t,
+    /* [in] */ float p0,
+    /* [in] */ float p1,
+    /* [in] */ float p2,
+    /* [in] */ float p3)
+{
     float oneMinusT = 1 - t;
     float oneMinusTSquared = oneMinusT * oneMinusT;
     float oneMinusTCubed = oneMinusTSquared * oneMinusT;
@@ -1250,7 +1262,10 @@ static float cubicCoordinateCalculation(float t, float p0, float p1, float p2, f
             + (3 * oneMinusT * tSquared * p2) + (tCubed * p3);
 }
 
-static SkPoint cubicBezierCalculation(float t, const SkPoint* points) {
+static SkPoint cubicBezierCalculation(
+    /* [in] */ float t,
+    /* [in] */ const SkPoint* points)
+{
     float x = cubicCoordinateCalculation(t, points[0].x(), points[1].x(),
         points[2].x(), points[3].x());
     float y = cubicCoordinateCalculation(t, points[0].y(), points[1].y(),
@@ -1258,12 +1273,20 @@ static SkPoint cubicBezierCalculation(float t, const SkPoint* points) {
     return SkPoint::Make(x, y);
 }
 
-static float quadraticCoordinateCalculation(float t, float p0, float p1, float p2) {
+static float quadraticCoordinateCalculation(
+    /* [in] */ float t,
+    /* [in] */ float p0,
+    /* [in] */ float p1,
+    /* [in] */ float p2)
+{
     float oneMinusT = 1 - t;
     return oneMinusT * ((oneMinusT * p0) + (t * p1)) + t * ((oneMinusT * p1) + (t * p2));
 }
 
-static SkPoint quadraticBezierCalculation(float t, const SkPoint* points) {
+static SkPoint quadraticBezierCalculation(
+    /* [in] */ float t,
+    /* [in] */ const SkPoint* points)
+{
     float x = quadraticCoordinateCalculation(t, points[0].x(), points[1].x(), points[2].x());
     float y = quadraticCoordinateCalculation(t, points[0].y(), points[1].y(), points[2].y());
     return SkPoint::Make(x, y);
@@ -1272,9 +1295,17 @@ static SkPoint quadraticBezierCalculation(float t, const SkPoint* points) {
 typedef SkPoint (*bezierCalculation)(float t, const SkPoint* points);
 // Subdivide a section of the Bezier curve, set the mid-point and the mid-t value.
 // Returns true if further subdivision is necessary as defined by errorSquared.
-static bool subdividePoints(const SkPoint* points, bezierCalculation bezierFunction,
-        float t0, const SkPoint &p0, float t1, const SkPoint &p1,
-        float& midT, SkPoint &midPoint, float errorSquared) {
+static bool subdividePoints(
+    /* [in] */ const SkPoint* points,
+    /* [in] */ bezierCalculation bezierFunction,
+    /* [in] */ float t0,
+    /* [in] */ const SkPoint &p0,
+    /* [in] */ float t1,
+    /* [in] */ const SkPoint &p1,
+    /* [in] */ float& midT,
+    /* [in] */ SkPoint &midPoint,
+    /* [in] */ float errorSquared)
+{
     midT = (t1 + t0) / 2;
     float midX = (p1.x() + p0.x()) / 2;
     float midY = (p1.y() + p0.y()) / 2;
@@ -1293,9 +1324,14 @@ static bool subdividePoints(const SkPoint* points, bezierCalculation bezierFunct
 // the point. It is clearly not the case that we can linearly interpolate at that point.
 // doubleCheckDivision forces a second examination between subdivisions to ensure that linear
 // interpolation works.
-static void addBezier(const SkPoint* points,
-        bezierCalculation bezierFunction, std::vector<SkPoint>& segmentPoints,
-        std::vector<float>& lengths, float errorSquared, bool doubleCheckDivision) {
+static void addBezier(
+    /* [in] */ const SkPoint* points,
+    /* [in] */ bezierCalculation bezierFunction,
+    /* [in] */ std::vector<SkPoint>& segmentPoints,
+    /* [in] */ std::vector<float>& lengths,
+    /* [in] */ float errorSquared,
+    /* [in] */ bool doubleCheckDivision)
+{
     typedef Map<float, SkPoint> PointMap;
     PointMap tToPoint;
 
@@ -1336,8 +1372,13 @@ static void addBezier(const SkPoint* points,
     }
 }
 
-static void createVerbSegments(SkPath::Verb verb, const SkPoint* points,
-    std::vector<SkPoint>& segmentPoints, std::vector<float>& lengths, float errorSquared) {
+static void createVerbSegments(
+    /* [in] */ SkPath::Verb verb,
+    /* [in] */ const SkPoint* points,
+    /* [in] */ std::vector<SkPoint>& segmentPoints,
+    /* [in] */ std::vector<float>& lengths,
+    /* [in] */ float errorSquared)
+{
     switch (verb) {
         case SkPath::kMove_Verb:
             addMove(segmentPoints, lengths, points[0]);

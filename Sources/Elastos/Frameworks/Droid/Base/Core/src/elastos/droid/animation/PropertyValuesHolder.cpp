@@ -1154,15 +1154,14 @@ AutoPtr<IMethodInfo> PropertyValuesHolder::GetPropertyFunction(
             // typeVariants = new Class[1];
             if (*valueType == EIID_IPointF) {
                 length = 1;
-                signature = String("(LElastos/Droid/Graphics/IPointF;)E");
+                signature = "(LElastos/Droid/Graphics/IPointF;)E";
             } else {
-                assert(0 && "TODO: Not support types, please check or add it.");
                 length = 0;
             }
         }
 
         for (Int32 i = 0; i < length; i++) {
-            if (signature == NULL) {
+            if (signature.IsNull()) {
                 signature = GetSignature(typeVariants[i]);
             }
 

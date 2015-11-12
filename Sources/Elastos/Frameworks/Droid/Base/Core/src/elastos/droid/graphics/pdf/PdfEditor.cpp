@@ -1,13 +1,12 @@
 
 #include "elastos/droid/graphics/pdf/PdfEditor.h"
 #include <elastos/droid/system/OsConstants.h>
+#include <elastos/core/Mutex.h>
 #include <elastos/utility/logging/Logger.h>
 #include <fpdfview.h>
 #include <fpdfedit.h>
 #include <fpdfsave.h>
-#include <libcxx/vector>
 #include <utils/Log.h>
-#include <utils/Mutex.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -16,6 +15,7 @@ using Elastos::Droid::System::OsConstants;
 using Elastos::Droid::System::IStructStat;
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
@@ -153,11 +153,11 @@ ECode PdfEditor::ThrowIfPageNotInDocument(
 }
 
 ////////////////////////////////////// Jni ////////////////////
-static android::Mutex sLock;
+static Mutex sLock;
 static int sUnmatchedInitRequestCount = 0;
 static void InitializeLibraryIfNeeded()
 {
-    android::Mutex::Autolock _l(sLock);
+    Mutex::AutoLock _l(sLock);
     if (sUnmatchedInitRequestCount == 0) {
         FPDF_InitLibrary(NULL);
     }
@@ -166,7 +166,7 @@ static void InitializeLibraryIfNeeded()
 
 static void DestroyLibraryIfNeeded()
 {
-    android::Mutex::Autolock _l(sLock);
+    Mutex::AutoLock _l(sLock);
     sUnmatchedInitRequestCount--;
     if (sUnmatchedInitRequestCount == 0) {
        FPDF_DestroyLibrary();
@@ -280,7 +280,6 @@ static int writeBlock(
     }
     return 1;
 }
-
 
 ECode PdfEditor::NativeWrite(
     /* [in] */ Int64 documentPtr,

@@ -103,24 +103,28 @@ ECode CRadialGradient::GetInterfaceID(
     return Shader::GetInterfaceID(object, iid);
 }
 
-AutoPtr<IShader> CRadialGradient::Copy()
+ECode CRadialGradient::Copy(
+    /* [out] */ IShader** shader)
 {
-    AutoPtr<IRadialGradient> copy;
+    VALIDATE_NOT_NULL(shader);
+    AutoPtr<IShader> copy;
     switch (mType) {
         case TYPE_COLORS_AND_POSITIONS:
             CRadialGradient::New(mX, mY, mRadius, *mColors->Clone(),
-                    mPositions != NULL ? mPositions->Clone() : NULL, mTileMode, (IRadialGradient**)&copy);
+                    mPositions != NULL ? mPositions->Clone() : NULL, mTileMode, (IShader**)&copy);
             break;
         case TYPE_COLOR_CENTER_AND_COLOR_EDGE:
-            CRadialGradient::New(mX, mY, mRadius, mCenterColor, mEdgeColor, mTileMode, (IRadialGradient**)&copy);
+            CRadialGradient::New(mX, mY, mRadius, mCenterColor, mEdgeColor, mTileMode, (IShader**)&copy);
             break;
         default:
             // throw new IllegalArgumentException("RadialGradient should be created with either " +
             //         "colors and positions or center color and edge color");
-            assert(0);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    CopyLocalMatrix(IShader::Probe(copy));
-    return IShader::Probe(copy);
+    CopyLocalMatrix(copy);
+    *shader = copy;
+    REFCOUNT_ADD(*shader);
+    return NOERROR;
 }
 
 Int64 CRadialGradient::NativeCreate1(

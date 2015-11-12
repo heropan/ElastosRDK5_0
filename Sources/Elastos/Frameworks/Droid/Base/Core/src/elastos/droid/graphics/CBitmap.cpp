@@ -2197,7 +2197,7 @@ Boolean CBitmap::NativeSameAs(
         void *bm0Addr = bm0->getAddr(0, y);
         void *bm1Addr = bm1->getAddr(0, y);
 
-        if(bm0Addr == NULL || bm1Addr == NULL) {
+        if (bm0Addr == NULL || bm1Addr == NULL) {
             return FALSE;
         }
 
@@ -2212,33 +2212,6 @@ Int64 CBitmap::Ni()
 {
     return mNativeBitmap;
 }
-
-// AutoPtr<IInterface> CBitmap::CreateBitmap(
-//     /* [in] */ Int32 nativeBitmap,
-//     /* [in] */ ArrayOf<Byte>* buffer,
-//     /* [in] */ Boolean isMutable,
-//     /* [in] */ ArrayOf<Byte>* ninePatchChunk,
-//     /* [in] */ Int32 density)
-// {
-//     AutoPtr<IBitmap> aBitmap;
-//     CBitmap::New((Handle32)nativeBitmap, buffer,
-//              isMutable, ninePatchChunk, density, (IBitmap**)&aBitmap);
-//     return aBitmap;
-// }
-
-// AutoPtr<IInterface> CBitmap::CreateBitmap(
-//     /* [in] */ Int32 nativeBitmap,
-//     /* [in] */ ArrayOf<Byte>* buffer,
-//     /* [in] */ Boolean isMutable,
-//     /* [in] */ ArrayOf<Byte>* ninePatchChunk,
-//     /* [in] */ ArrayOf<Int32>* layoutbounds,
-//     /* [in] */ Int32 density)
-// {
-//     AutoPtr<IBitmap> aBitmap;
-//     CBitmap::New((Handle32)nativeBitmap, buffer,
-//              isMutable, ninePatchChunk, layoutbounds, density, (IBitmap**)&aBitmap);
-//     return aBitmap;
-// }
 
 } // namespace Graphics
 } // namepsace Droid

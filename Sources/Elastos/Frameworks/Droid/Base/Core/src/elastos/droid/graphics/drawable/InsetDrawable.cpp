@@ -207,21 +207,21 @@ ECode InsetDrawable::UpdateStateFromTypedArray(
 
     Int32 N = 0, inset = 0, attr = 0;;
     AutoPtr<IDrawable> dr;
-    FAIL_RETURN(a->GetIndexCount(&N));
+    a->GetIndexCount(&N);
     for (Int32 i = 0; i < N; i++) {
         attr = 0;
-        FAIL_RETURN(a->GetIndex(i, &attr));
+        a->GetIndex(i, &attr);
         switch (attr) {
             case R::styleable::InsetDrawable_drawable:
                 dr = NULL;
-                FAIL_RETURN(a->GetDrawable(attr, (IDrawable**)&dr));
+                a->GetDrawable(attr, (IDrawable**)&dr);
                 if (dr != NULL) {
                     state->mDrawable = dr;
                     dr->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
                 }
                 break;
             case R::styleable::InsetDrawable_inset:
-                FAIL_RETURN(a->GetDimensionPixelOffset(attr, Elastos::Core::Math::INT32_MIN_VALUE, &inset));
+                a->GetDimensionPixelOffset(attr, Elastos::Core::Math::INT32_MIN_VALUE, &inset);
                 if (inset != Elastos::Core::Math::INT32_MIN_VALUE) {
                     state->mInsetLeft = inset;
                     state->mInsetTop = inset;
@@ -230,16 +230,16 @@ ECode InsetDrawable::UpdateStateFromTypedArray(
                 }
                 break;
             case R::styleable::InsetDrawable_insetLeft:
-                FAIL_RETURN(a->GetDimensionPixelOffset(attr, state->mInsetLeft, &state->mInsetLeft));
+                a->GetDimensionPixelOffset(attr, state->mInsetLeft, &state->mInsetLeft);
                 break;
             case R::styleable::InsetDrawable_insetTop:
-                FAIL_RETURN(a->GetDimensionPixelOffset(attr, state->mInsetTop, &state->mInsetTop));
+                a->GetDimensionPixelOffset(attr, state->mInsetTop, &state->mInsetTop);
                 break;
             case R::styleable::InsetDrawable_insetRight:
-                FAIL_RETURN(a->GetDimensionPixelOffset(attr, state->mInsetRight, &state->mInsetRight));
+                a->GetDimensionPixelOffset(attr, state->mInsetRight, &state->mInsetRight);
                 break;
             case R::styleable::InsetDrawable_insetBottom:
-                FAIL_RETURN(a->GetDimensionPixelOffset(attr, state->mInsetBottom, &state->mInsetBottom));
+                a->GetDimensionPixelOffset(attr, state->mInsetBottom, &state->mInsetBottom);
                 break;
         }
     }

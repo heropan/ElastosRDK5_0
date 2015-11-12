@@ -891,7 +891,7 @@ ECode Canvas::DrawPaint(
 {
     assert(paint != NULL);
 
-    NativeDrawPaint(mNativeCanvasWrapper, ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint);
+    NativeDrawPaint(mNativeCanvasWrapper, ((Paint*)paint)->mNativePaint);
     return NOERROR;
 }
 
@@ -930,7 +930,7 @@ ECode Canvas::DrawLine(
     /* [in] */ IPaint* paint)
 {
     assert(paint != NULL);
-    Int32 nativePaint = ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint;
+    Int32 nativePaint = ((Paint*)paint)->mNativePaint;
     NativeDrawLine(mNativeCanvasWrapper, startX, startY, stopX, stopY, nativePaint);
     return NOERROR;
 }
@@ -983,7 +983,7 @@ ECode Canvas::DrawRect(
 {
     assert(paint != NULL);
 
-    Int32 nativePaint = ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint;
+    Int32 nativePaint = ((Paint*)paint)->mNativePaint;
     NativeDrawRect(mNativeCanvasWrapper, left, top, right, bottom, nativePaint);
     return NOERROR;
 }
@@ -1022,7 +1022,7 @@ ECode Canvas::DrawCircle(
 {
     assert(paint != NULL);
 
-    Int32 nativePaint = ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint;
+    Int32 nativePaint = ((Paint*)paint)->mNativePaint;
     NativeDrawCircle(mNativeCanvasWrapper, cx, cy, radius, nativePaint);
     return NOERROR;
 }
@@ -1088,7 +1088,7 @@ ECode Canvas::DrawPath(
     assert(paint != NULL);
 
     Int32 nativePath = ((CPath*)path)->Ni();
-    Int32 nativePaint = ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint;
+    Int32 nativePaint = ((Paint*)paint)->mNativePaint;
     NativeDrawPath(mNativeCanvasWrapper, nativePath, nativePaint);
     return NOERROR;
 }
@@ -1150,7 +1150,7 @@ ECode Canvas::DrawBitmap(
     Int32 nativeBitmap = ((CBitmap*)bitmap)->Ni();
     Int32 nativePaint = 0;
     if (paint != NULL) {
-        nativePaint = ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint;
+        nativePaint = ((Paint*)paint)->mNativePaint;
     }
     NativeDrawBitmap(mNativeCanvasWrapper, nativeBitmap, left, top,
             nativePaint, mDensity, mScreenDensity,
@@ -1274,7 +1274,7 @@ ECode Canvas::DrawBitmap(
     }
     Int32 nativePaint = 0;
     if (paint != NULL) {
-        nativePaint = ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint;
+        nativePaint = ((Paint*)paint)->mNativePaint;
     }
     // punch down to native for the actual draw
     NativeDrawBitmap(mNativeCanvasWrapper, colors, offset, stride, x, y, width,
@@ -1310,7 +1310,7 @@ ECode Canvas::DrawBitmap(
     Int32 nativeMatrix = ((CMatrix*)matrix)->Ni();
     Int32 nativePaint = 0;
     if (paint != NULL) {
-        nativePaint = ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint;
+        nativePaint = ((Paint*)paint)->mNativePaint;
     }
     NativeDrawBitmapMatrix(mNativeCanvasWrapper, nativeBitmap, nativeMatrix, nativePaint);
     return NOERROR;
@@ -1357,7 +1357,7 @@ ECode Canvas::DrawBitmapMesh(
     Int32 nativeBitmap = ((CBitmap*)bitmap)->Ni();
     Int32 nativePaint = 0;
     if (paint != NULL) {
-        nativePaint = ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint;
+        nativePaint = ((Paint*)paint)->mNativePaint;
     }
     NativeDrawBitmapMesh(mNativeCanvasWrapper, nativeBitmap, meshWidth, meshHeight,
             verts, vertOffset, colors, colorOffset, nativePaint);

@@ -781,7 +781,7 @@ ECode BitmapDrawable::UpdateStateFromTypedArray(
     FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs));
 
     Int32 srcResId = 0;
-    FAIL_RETURN(a->GetResourceId(R::styleable::BitmapDrawable_src, 0, &srcResId));
+    a->GetResourceId(R::styleable::BitmapDrawable_src, 0, &srcResId);
     if (srcResId != 0) {
         AutoPtr<IBitmapFactory> bmFactory;
         CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
@@ -802,20 +802,20 @@ ECode BitmapDrawable::UpdateStateFromTypedArray(
 
     Boolean value = FALSE;
     Boolean defMipMap = state->mBitmap != NULL ? (state->mBitmap->HasMipMap(&value), value) : FALSE;
-    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_mipMap, defMipMap, &value));
+    a->GetBoolean(R::styleable::BitmapDrawable_mipMap, defMipMap, &value);
     SetMipMap(value);
 
-    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored));
-    FAIL_RETURN(a->GetFloat(R::styleable::BitmapDrawable_alpha, state->mBaseAlpha, &state->mBaseAlpha));
+    a->GetBoolean(R::styleable::BitmapDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored);
+    a->GetFloat(R::styleable::BitmapDrawable_alpha, state->mBaseAlpha, &state->mBaseAlpha);
 
     Int32 tintMode = 0;
-    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tintMode, -1, &tintMode));
+    a->GetInt32(R::styleable::BitmapDrawable_tintMode, -1, &tintMode);
     if (tintMode != -1) {
         Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode);
     }
 
     AutoPtr<IColorStateList> tint;
-    FAIL_RETURN(a->GetColorStateList(R::styleable::BitmapDrawable_tint, (IColorStateList**)&tint));
+    a->GetColorStateList(R::styleable::BitmapDrawable_tint, (IColorStateList**)&tint);
     if (tint != NULL) {
         state->mTint = tint;
     }
@@ -823,34 +823,34 @@ ECode BitmapDrawable::UpdateStateFromTypedArray(
     AutoPtr<IPaint> paint = mBitmapState->mPaint;
     Boolean res = FALSE;
     paint->IsAntiAlias(&res);
-    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_antialias, res, &value));
+    a->GetBoolean(R::styleable::BitmapDrawable_antialias, res, &value);
     paint->SetAntiAlias(value);
     paint->IsFilterBitmap(&res);
-    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_filter, res, &value));
+    a->GetBoolean(R::styleable::BitmapDrawable_filter, res, &value);
     paint->SetFilterBitmap(value);
     paint->IsDither(&res);
-    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_dither, res, &value));
+    a->GetBoolean(R::styleable::BitmapDrawable_dither, res, &value);
     paint->SetDither(value);
 
     Int32 gravity = 0;
-    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_gravity, state->mGravity, &gravity));
+    a->GetInt32(R::styleable::BitmapDrawable_gravity, state->mGravity, &gravity);
     SetGravity(gravity);
 
     Int32 tileMode = 0;
-    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileMode, TILE_MODE_UNDEFINED, &tileMode));
+    a->GetInt32(R::styleable::BitmapDrawable_tileMode, TILE_MODE_UNDEFINED, &tileMode);
     if (tileMode != TILE_MODE_UNDEFINED) {
         ShaderTileMode mode = ParseTileMode(tileMode);
         SetTileModeXY(mode, mode);
     }
 
     Int32 tileModeX = 0;
-    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileModeX, TILE_MODE_UNDEFINED, &tileModeX));
+    a->GetInt32(R::styleable::BitmapDrawable_tileModeX, TILE_MODE_UNDEFINED, &tileModeX);
     if (tileModeX != TILE_MODE_UNDEFINED) {
         SetTileModeX(ParseTileMode(tileModeX));
     }
 
     Int32 tileModeY = 0;
-    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileModeY, TILE_MODE_UNDEFINED, &tileModeY));
+    a->GetInt32(R::styleable::BitmapDrawable_tileModeY, TILE_MODE_UNDEFINED, &tileModeY);
     if (tileModeY != TILE_MODE_UNDEFINED) {
         SetTileModeY(ParseTileMode(tileModeY));
     }
@@ -885,7 +885,8 @@ ECode BitmapDrawable::ApplyTheme(
     // } finally {
         // a.recycle();
     // }
-    return a->Recycle();
+    a->Recycle();
+    return NOERROR;
 }
 
 ShaderTileMode BitmapDrawable::ParseTileMode(

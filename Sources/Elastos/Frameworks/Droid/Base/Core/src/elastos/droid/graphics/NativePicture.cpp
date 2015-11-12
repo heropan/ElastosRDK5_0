@@ -12,22 +12,24 @@ NativePicture::NativePicture(
     /* [in] */ const NativePicture* src)
 {
     if (NULL != src) {
-        mWidth = src->width();
-        mHeight = src->height();
+        mWidth = src->GetWidth();
+        mHeight = src->GetHeight();
         if (NULL != src->mPicture.get()) {
             mPicture.reset(SkRef(src->mPicture.get()));
-        } if (NULL != src->mRecorder.get()) {
-            mPicture.reset(src->makePartialCopy());
         }
-    } else {
+        if (NULL != src->mRecorder.get()) {
+            mPicture.reset(src->MakePartialCopy());
+        }
+    }
+    else {
         mWidth = 0;
         mHeight = 0;
     }
 }
 
-NativeCanvas* NativePicture::beginRecording(
-    /* [in] */ int width,
-    /* [in] */ int height)
+NativeCanvas* NativePicture::BeginRecording(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
 {
     mPicture.reset(NULL);
     mRecorder.reset(new SkPictureRecorder);
@@ -41,7 +43,7 @@ NativeCanvas* NativePicture::beginRecording(
     return NativeCanvas::create_canvas(canvas);
 }
 
-void NativePicture::endRecording()
+void NativePicture::EndRecording()
 {
     if (NULL != mRecorder.get()) {
         mPicture.reset(mRecorder->endRecording());
@@ -49,7 +51,7 @@ void NativePicture::endRecording()
     }
 }
 
-int NativePicture::width() const
+Int32 NativePicture::GetWidth() const
 {
     if (NULL != mPicture.get()) {
         SkASSERT(mPicture->width() == mWidth);
@@ -59,7 +61,7 @@ int NativePicture::width() const
     return mWidth;
 }
 
-int NativePicture::height() const
+Int32 NativePicture::GetHeight() const
 {
     if (NULL != mPicture.get()) {
         SkASSERT(mPicture->width() == mWidth);
@@ -83,25 +85,27 @@ NativePicture* NativePicture::CreateFromStream(
     return newPict;
 }
 
-void NativePicture::serialize(
+void NativePicture::Serialize(
     /* [in] */ SkWStream* stream) const
 {
     if (NULL != mRecorder.get()) {
-        SkAutoTDelete<SkPicture> tempPict(this->makePartialCopy());
+        SkAutoTDelete<SkPicture> tempPict(this->MakePartialCopy());
         tempPict->serialize(stream);
-    } else if (NULL != mPicture.get()) {
+    }
+    else if (NULL != mPicture.get()) {
         mPicture->serialize(stream);
-    } else {
+    }
+    else {
         SkPicture empty;
         empty.serialize(stream);
     }
 }
 
-void NativePicture::draw(
+void NativePicture::Draw(
     /* [in] */ NativeCanvas* canvas)
 {
     if (NULL != mRecorder.get()) {
-        this->endRecording();
+        EndRecording();
         SkASSERT(NULL != mPicture.get());
     }
     if (NULL != mPicture.get()) {
@@ -110,7 +114,7 @@ void NativePicture::draw(
     }
 }
 
-SkPicture* NativePicture::makePartialCopy() const
+SkPicture* NativePicture::MakePartialCopy() const
 {
     SkASSERT(NULL != mRecorder.get());
 

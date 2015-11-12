@@ -2,65 +2,27 @@
 #ifndef __ELASTOS_DROID_VIEW_VIEWGROUPLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_VIEW_VIEWGROUPLAYOUTPARAMS_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::Animation::IAnimationParameters;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 class ViewGroupLayoutParams
+    : public Object
+    , public IViewGroupLayoutParams
 {
 public:
-    /**
-     * Creates a new set of layout parameters. The values are extracted from
-     * the supplied attributes set and context. The XML attributes mapped
-     * to this set of layout parameters are:
-     *
-     * <ul>
-     *   <li><code>layout_width</code>: the width, either an exact value,
-     *   {@link #WRAP_CONTENT}, or {@link #FILL_PARENT} (replaced by
-     *   {@link #MATCH_PARENT} in API Level 8)</li>
-     *   <li><code>layout_height</code>: the height, either an exact value,
-     *   {@link #WRAP_CONTENT}, or {@link #FILL_PARENT} (replaced by
-     *   {@link #MATCH_PARENT} in API Level 8)</li>
-     * </ul>
-     *
-     * @param c the application environment
-     * @param attrs the set of attributes from which to extract the layout
-     *              parameters' values
-     */
-    ViewGroupLayoutParams(
-        /* [in] */ IContext* c,
-        /* [in] */ IAttributeSet* attrs);
-
-    /**
-     * Creates a new set of layout parameters with the specified width
-     * and height.
-     *
-     * @param width the width, either {@link #WRAP_CONTENT},
-     *        {@link #FILL_PARENT} (replaced by {@link #MATCH_PARENT} in
-     *        API Level 8), or a fixed size in pixels
-     * @param height the height, either {@link #WRAP_CONTENT},
-     *        {@link #FILL_PARENT} (replaced by {@link #MATCH_PARENT} in
-     *        API Level 8), or a fixed size in pixels
-     */
-    ViewGroupLayoutParams(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    /**
-     * Copy constructor. Clones the width and height values of the source.
-     *
-     * @param source The layout params to copy from.
-     */
-    ViewGroupLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* source);
+    CAR_INTERFACE_DECL();
 
     /**
      * Used internally by MarginLayoutParams.
@@ -70,15 +32,15 @@ public:
 
     virtual ~ViewGroupLayoutParams();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* c,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IViewGroupLayoutParams* source);
 
     virtual CARAPI SetWidth(
@@ -87,17 +49,17 @@ public:
     virtual CARAPI SetHeight(
         /* [in] */ Int32 height);
 
-    virtual CARAPI_(Int32) GetWidth();
+    virtual CARAPI GetWidth(
+        /* [out] */ Int32* width);
 
-    virtual CARAPI_(Int32) GetHeight();
+    virtual CARAPI GetHeight(
+        /* [out] */ Int32* height);
 
     virtual CARAPI SetLayoutAnimationParameters(
         /* [in] */ IAnimationParameters* ap);
 
     virtual CARAPI GetLayoutAnimationParameters(
         /* [out] */ IAnimationParameters** ap);
-
-    virtual CARAPI_(AutoPtr<IAnimationParameters>) GetLayoutAnimationParameters();
 
     virtual CARAPI ResolveLayoutDirection(
         /* [in] */ Int32 layoutDirection);

@@ -1119,8 +1119,6 @@ protected:
 
     CARAPI_(void) OnActive();
 
-    CARAPI_(Mutex&) GetSelfSyncLock();
-
     CARAPI_(void) CheckCloseActionMenu(
         /* [in] */ IMenu* menu);
 

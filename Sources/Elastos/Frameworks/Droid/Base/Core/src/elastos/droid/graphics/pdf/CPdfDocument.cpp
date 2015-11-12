@@ -3,12 +3,12 @@
 #include "elastos/droid/graphics/NativeCanvas.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
-#include <libcxx/vector>
 #include <skia/core/SkDocument.h>
 #include <skia/core/SkPicture.h>
 #include <skia/core/SkPictureRecorder.h>
 #include <skia/core/SkStream.h>
 #include <skia/core/SkRect.h>
+#include <libcxx/vector>
 
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;
@@ -48,10 +48,8 @@ CPdfDocument::PageInfo::Builder::Builder(
 }
 
 ECode CPdfDocument::PageInfo::Builder::SetContentRect(
-    /* [in] */ IRect* contentRect,
-    /* [out] */ IPdfDocumentPageInfoBuilder** builder)
+    /* [in] */ IRect* contentRect)
 {
-    VALIDATE_NOT_NULL(builder);
     if (contentRect != NULL) {
         Int32 left = 0, right = 0, top = 0, bottom = 0;
         contentRect->Get(&left, &top, &right, &bottom);
@@ -63,8 +61,6 @@ ECode CPdfDocument::PageInfo::Builder::SetContentRect(
         }
     }
     mPageInfo->mContentRect = contentRect;
-    *builder = THIS_PROBE(IPdfDocumentPageInfoBuilder);
-    REFCOUNT_ADD(*builder);
     return NOERROR;
 }
 
@@ -129,9 +125,9 @@ CAR_INTERFACE_IMPL(CPdfDocument::Page, Object, IPdfDocumentPage);
 CPdfDocument::Page::Page(
     /* [in] */ ICanvas* canvas,
     /* [in] */ PageInfo* pageInfo)
+    : mCanvas(canvas)
+    , mPageInfo(pageInfo)
 {
-    mCanvas = canvas;
-    mPageInfo = pageInfo;
 }
 
 ECode CPdfDocument::Page::GetCanvas(
@@ -186,13 +182,17 @@ ECode CPdfDocument::PdfCanvas::SetBitmap(
 ///////////////////////////////////////////// CPdfDocument /////////
 
 
-struct PageRecord {
+struct PageRecord
+{
 
-    PageRecord(int width, int height, const SkRect& contentRect)
-            : mPictureRecorder(new SkPictureRecorder())
-            , mPicture(NULL)
-            , mWidth(width)
-            , mHeight(height) {
+    PageRecord(
+        /* [in] */ int width,
+        /* [in] */ int height,
+        /* [in] */ const SkRect& contentRect)
+        : mPictureRecorder(new SkPictureRecorder())
+        , mPicture(NULL)
+        , mWidth(width)
+        , mHeight(height) {
         mContentRect = contentRect;
     }
 
@@ -210,14 +210,21 @@ struct PageRecord {
     SkRect mContentRect;
 };
 
-class PdfDocument {
+class PdfDocument
+{
 public:
     PdfDocument() {
         mCurrentPage = NULL;
     }
 
-    SkCanvas* startPage(int width, int height,
-            int contentLeft, int contentTop, int contentRight, int contentBottom) {
+    SkCanvas* startPage(
+        /* [in] */ int width,
+        /* [in] */ int height,
+        /* [in] */ int contentLeft,
+        /* [in] */ int contentTop,
+        /* [in] */ int contentRight,
+        /* [in] */ int contentBottom)
+    {
         assert(mCurrentPage == NULL);
 
         SkRect contentRect = SkRect::MakeLTRB(

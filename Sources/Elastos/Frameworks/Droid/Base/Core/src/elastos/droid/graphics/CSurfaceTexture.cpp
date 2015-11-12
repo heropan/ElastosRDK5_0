@@ -59,14 +59,20 @@ ECode CSurfaceTexture::constructor(
     /* [in] */ Boolean singleBufferMode)
 {
     mCreatorLooper = Looper::GetMyLooper();
-    return NativeInit(FALSE, texName, singleBufferMode, THIS_PROBE(IWeakReference));
+    AutoPtr<IWeakReference> wr;
+    IWeakReferenceSource* wrs = THIS_PROBE(IWeakReferenceSource);
+    wrs->GetWeakReference((IWeakReference**)&wr);
+    return NativeInit(FALSE, texName, singleBufferMode, wr);
 }
 
 ECode CSurfaceTexture::constructor(
     /* [in] */ Boolean singleBufferMode)
 {
     mCreatorLooper = Looper::GetMyLooper();
-    return NativeInit(TRUE, 0, singleBufferMode, THIS_PROBE(IWeakReference));
+    AutoPtr<IWeakReference> wr;
+    IWeakReferenceSource* wrs = THIS_PROBE(IWeakReferenceSource);
+    wrs->GetWeakReference((IWeakReference**)&wr);
+    return NativeInit(TRUE, 0, singleBufferMode, wr);
 }
 
 ECode CSurfaceTexture::SetOnFrameAvailableListener(
@@ -79,7 +85,6 @@ ECode CSurfaceTexture::SetOnFrameAvailableListener(
     /* [in] */ /*@Nullable*/ IOnFrameAvailableListener* listener,
     /* [in] */ /*@Nullable*/ IHandler* handler)
 {
-    assert(listener != NULL && handler != NULL);
     if (listener != NULL) {
         // Although we claim the thread is arbitrary, earlier implementation would
         // prefer to send the callback on the creating looper or the main looper
@@ -164,12 +169,7 @@ void CSurfaceTexture::PostEventFromNative(
     /* [in] */ IWeakReference/*<SurfaceTexture>*/* weakSelf)
 {
     AutoPtr<ISurfaceTexture> st;
-    IWeakReferenceSource* source = IWeakReferenceSource::Probe(weakSelf);
-    if (source != NULL) {
-        AutoPtr<IWeakReference> wr;
-        source->GetWeakReference((IWeakReference**)&wr);
-        st = ISurfaceTexture::Probe(wr);
-    }
+    weakSelf->Resolve(EIID_ISurfaceTexture, (IInterface**)&st);
 
     if (st != NULL) {
         AutoPtr<IHandler> handler = ((CSurfaceTexture*)st.Get())->mOnFrameAvailableHandler;

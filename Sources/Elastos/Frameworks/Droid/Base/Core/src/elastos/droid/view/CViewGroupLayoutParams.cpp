@@ -1,13 +1,11 @@
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-IVIEWGROUPLP_METHODS_IMPL(CViewGroupLayoutParams, ViewGroupLayoutParams);
-
+CAR_OBJECT_IMPL(CViewGroupLayoutParams);
 ECode CViewGroupLayoutParams::constructor()
 {
     return NOERROR;
@@ -17,26 +15,20 @@ ECode CViewGroupLayoutParams::constructor(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
-    return ViewGroupLayoutParams::Init(c, attrs);
+    return ViewGroupLayoutParams::constructor(c, attrs);
 }
 
 ECode CViewGroupLayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    return ViewGroupLayoutParams::Init(width, height);
+    return ViewGroupLayoutParams::constructor(width, height);
 }
 
 ECode CViewGroupLayoutParams::constructor(
     /* [in] */ IViewGroupLayoutParams* source)
 {
-    return ViewGroupLayoutParams::Init(source);
-}
-
-ECode CViewGroupLayoutParams::ToString(
-    /* [out] */ String* description)
-{
-    return E_NOT_IMPLEMENTED;
+    return ViewGroupLayoutParams::constructor(source);
 }
 
 } // namespace View

@@ -2,14 +2,19 @@
 #ifndef __ELASTOS_DROID_VIEW_WINDOW_H__
 #define __ELASTOS_DROID_VIEW_WINDOW_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Media::Session::IMediaController;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Transition::IScene;
+using Elastos::Droid::Transition::ITransition;
+using Elastos::Droid::Transition::ITransitionManager;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -17,11 +22,15 @@ namespace View {
 
 extern "C" const InterfaceID EIID_Window;
 
-class Window : public IWindow
+class Window
+    : public Object
+    , public IWindow
 {
     friend class CWindowManagerGlobal;
 
 public:
+    CAR_INTERFACE_DECL();
+
     Window();
 
     Window(
@@ -113,6 +122,13 @@ public:
 
     CARAPI GetCallback(
         /* [out] */ IWindowCallback** cb);
+
+    /** @hide */
+    CARAPI SetOnWindowDismissedCallback(
+        /* [in] */ IOnWindowDismissedCallback* dcb);
+
+    /** @hide */
+    CARAPI DispatchOnWindowDismissed();
 
     /**
      * Take ownership of this window's surface.  The window's view hierarchy
@@ -217,6 +233,10 @@ public:
      * @see #setFlags
      */
     CARAPI AddFlags(
+        /* [in] */ Int32 flags);
+
+    /** @hide */
+    virtual CARAPI_(void) AddPrivateFlags(
         /* [in] */ Int32 flags);
 
     /**
@@ -612,6 +632,28 @@ public:
         /* [out] */ Int32* streamType) = 0;
 
     /**
+     * Sets a {@link MediaController} to send media keys and volume changes to.
+     * If set, this should be preferred for all media keys and volume requests
+     * sent to this window.
+     *
+     * @param controller The controller for the session which should receive
+     *            media keys and volume changes.
+     * @see android.app.Activity#setMediaController(android.media.session.MediaController)
+     */
+    CARAPI SetMediaController(
+        /* [in] */ IMediaController* controller);
+
+    /**
+     * Gets the {@link MediaController} that was previously set.
+     *
+     * @return The controller which should receive events.
+     * @see #setMediaController(android.media.session.MediaController)
+     * @see android.app.Activity#getMediaController()
+     */
+    CARAPI GetMediaController(
+        /* [out] */ IMediaController** controller);
+
+    /**
      * Set extra options that will influence the UI for this window.
      * @param uiOptions Flags specifying extra options for this window.
      */
@@ -631,11 +673,442 @@ public:
     CARAPI AdjustLayoutParamsForSubWindow(
         /* [in] */ IWindowManagerLayoutParams* wp);
 
-protected:
-    static const Int32 DEFAULT_FEATURES;
+    /**
+     * Set the primary icon for this window.
+     *
+     * @param resId resource ID of a drawable to set
+     */
+    CARAPI SetIcon(
+        /* [in] */ Int32 resId);
 
-private:
-    static const String PROPERTY_HARDWARE_UI;
+    /**
+     * Set the default icon for this window.
+     * This will be overridden by any other icon set operation which could come from the
+     * theme or another explicit set.
+     *
+     * @hide
+     */
+    CARAPI SetDefaultIcon(
+        /* [in] */ Int32 resId);
+
+    /**
+     * Set the logo for this window. A logo is often shown in place of an
+     * {@link #setIcon(int) icon} but is generally wider and communicates window title information
+     * as well.
+     *
+     * @param resId resource ID of a drawable to set
+     */
+    CARAPI SetLogo(
+        /* [in] */ Int32 resId);
+
+    /**
+     * Set the default logo for this window.
+     * This will be overridden by any other logo set operation which could come from the
+     * theme or another explicit set.
+     *
+     * @hide
+     */
+    CARAPI SetDefaultLogo(
+        /* [in] */ Int32 resId);
+
+    /**
+     * Set focus locally. The window should have the
+     * {@link WindowManager.LayoutParams#FLAG_LOCAL_FOCUS_MODE} flag set already.
+     * @param hasFocus Whether this window has focus or not.
+     * @param inTouchMode Whether this window is in touch mode or not.
+     */
+    CARAPI SetLocalFocus(
+        /* [in] */ Boolean hasFocus,
+        /* [in] */ Boolean inTouchMode);
+
+    /**
+     * Inject an event to window locally.
+     * @param event A key or touch event to inject to this window.
+     */
+    CARAPI InjectInputEvent(
+        /* [in] */ IInputEvent* event);
+
+    /**
+     * Retrieve the {@link TransitionManager} responsible for  for default transitions
+     * in this window. Requires {@link #FEATURE_CONTENT_TRANSITIONS}.
+     *
+     * <p>This method will return non-null after content has been initialized (e.g. by using
+     * {@link #setContentView}) if {@link #FEATURE_CONTENT_TRANSITIONS} has been granted.</p>
+     *
+     * @return This window's content TransitionManager or null if none is set.
+     */
+    CARAPI GetTransitionManager(
+        /* [out] */ ITransitionManager** tm);
+
+    /**
+     * Set the {@link TransitionManager} to use for default transitions in this window.
+     * Requires {@link #FEATURE_CONTENT_TRANSITIONS}.
+     *
+     * @param tm The TransitionManager to use for scene changes.
+     */
+    CARAPI SetTransitionManager(
+        /* [in] */ ITransitionManager* tm);
+
+    /**
+     * Retrieve the {@link Scene} representing this window's current content.
+     * Requires {@link #FEATURE_CONTENT_TRANSITIONS}.
+     *
+     * <p>This method will return null if the current content is not represented by a Scene.</p>
+     *
+     * @return Current Scene being shown or null
+     */
+    CARAPI GetContentScene(
+        /* [out] */ IScene** scene);
+
+    /**
+     * Sets the Transition that will be used to move Views into the initial scene. The entering
+     * Views will be those that are regular Views or ViewGroups that have
+     * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as entering is governed by changing visibility from
+     * {@link View#INVISIBLE} to {@link View#VISIBLE}. If <code>transition</code> is null,
+     * entering Views will remain unaffected.
+     *
+     * @param transition The Transition to use to move Views into the initial Scene.
+     * @attr ref android.R.styleable#Window_windowEnterTransition
+     */
+    CARAPI SetEnterTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Sets the Transition that will be used to move Views out of the scene when the Window is
+     * preparing to close, for example after a call to
+     * {@link android.app.Activity#finishAfterTransition()}. The exiting
+     * Views will be those that are regular Views or ViewGroups that have
+     * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as entering is governed by changing visibility from
+     * {@link View#VISIBLE} to {@link View#INVISIBLE}. If <code>transition</code> is null,
+     * entering Views will remain unaffected. If nothing is set, the default will be to
+     * use the same value as set in {@link #setEnterTransition(android.transition.Transition)}.
+     *
+     * @param transition The Transition to use to move Views out of the Scene when the Window
+     *                   is preparing to close.
+     * @attr ref android.R.styleable#Window_windowReturnTransition
+     */
+    CARAPI SetReturnTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Sets the Transition that will be used to move Views out of the scene when starting a
+     * new Activity. The exiting Views will be those that are regular Views or ViewGroups that
+     * have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as exiting is governed by changing visibility
+     * from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null, the views will
+     * remain unaffected. Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @param transition The Transition to use to move Views out of the scene when calling a
+     *                   new Activity.
+     * @attr ref android.R.styleable#Window_windowExitTransition
+     */
+    CARAPI SetExitTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Sets the Transition that will be used to move Views in to the scene when returning from
+     * a previously-started Activity. The entering Views will be those that are regular Views
+     * or ViewGroups that have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions
+     * will extend {@link android.transition.Visibility} as exiting is governed by changing
+     * visibility from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null,
+     * the views will remain unaffected. If nothing is set, the default will be to use the same
+     * transition as {@link #setExitTransition(android.transition.Transition)}.
+     * Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @param transition The Transition to use to move Views into the scene when reentering from a
+     *                   previously-started Activity.
+     * @attr ref android.R.styleable#Window_windowReenterTransition
+     */
+    CARAPI SetReenterTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Returns the transition used to move Views into the initial scene. The entering
+     * Views will be those that are regular Views or ViewGroups that have
+     * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as entering is governed by changing visibility from
+     * {@link View#INVISIBLE} to {@link View#VISIBLE}. If <code>transition</code> is null,
+     * entering Views will remain unaffected.  Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @return the Transition to use to move Views into the initial Scene.
+     * @attr ref android.R.styleable#Window_windowEnterTransition
+     */
+    CARAPI GetEnterTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Returns he Transition that will be used to move Views out of the scene when the Window is
+     * preparing to close, for example after a call to
+     * {@link android.app.Activity#finishAfterTransition()}. The exiting
+     * Views will be those that are regular Views or ViewGroups that have
+     * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as entering is governed by changing visibility from
+     * {@link View#VISIBLE} to {@link View#INVISIBLE}.
+     *
+     * @return The Transition to use to move Views out of the Scene when the Window
+     *         is preparing to close.
+     * @attr ref android.R.styleable#Window_windowReturnTransition
+     */
+    CARAPI GetReturnTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Returns the Transition that will be used to move Views out of the scene when starting a
+     * new Activity. The exiting Views will be those that are regular Views or ViewGroups that
+     * have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as exiting is governed by changing visibility
+     * from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null, the views will
+     * remain unaffected. Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @return the Transition to use to move Views out of the scene when calling a
+     * new Activity.
+     * @attr ref android.R.styleable#Window_windowExitTransition
+     */
+    CARAPI GetExitTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Returns the Transition that will be used to move Views in to the scene when returning from
+     * a previously-started Activity. The entering Views will be those that are regular Views
+     * or ViewGroups that have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions
+     * will extend {@link android.transition.Visibility} as exiting is governed by changing
+     * visibility from {@link View#VISIBLE} to {@link View#INVISIBLE}.
+     * Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @return The Transition to use to move Views into the scene when reentering from a
+     *         previously-started Activity.
+     * @attr ref android.R.styleable#Window_windowReenterTransition
+     */
+    CARAPI GetReenterTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Sets the Transition that will be used for shared elements transferred into the content
+     * Scene. Typical Transitions will affect size and location, such as
+     * {@link android.transition.ChangeBounds}. A null
+     * value will cause transferred shared elements to blink to the final position.
+     * Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @param transition The Transition to use for shared elements transferred into the content
+     *                   Scene.
+     * @attr ref android.R.styleable#Window_windowSharedElementEnterTransition
+     */
+    CARAPI SetSharedElementEnterTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Sets the Transition that will be used for shared elements transferred back to a
+     * calling Activity. Typical Transitions will affect size and location, such as
+     * {@link android.transition.ChangeBounds}. A null
+     * value will cause transferred shared elements to blink to the final position.
+     * If no value is set, the default will be to use the same value as
+     * {@link #setSharedElementEnterTransition(android.transition.Transition)}.
+     * Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @param transition The Transition to use for shared elements transferred out of the content
+     *                   Scene.
+     * @attr ref android.R.styleable#Window_windowSharedElementReturnTransition
+     */
+    CARAPI SetSharedElementReturnTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Returns the Transition that will be used for shared elements transferred into the content
+     * Scene. Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @return Transition to use for sharend elements transferred into the content Scene.
+     * @attr ref android.R.styleable#Window_windowSharedElementEnterTransition
+     */
+    CARAPI GetSharedElementEnterTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Returns the Transition that will be used for shared elements transferred back to a
+     * calling Activity. Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @return Transition to use for sharend elements transferred into the content Scene.
+     * @attr ref android.R.styleable#Window_windowSharedElementReturnTransition
+     */
+    CARAPI GetSharedElementReturnTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Sets the Transition that will be used for shared elements after starting a new Activity
+     * before the shared elements are transferred to the called Activity. If the shared elements
+     * must animate during the exit transition, this Transition should be used. Upon completion,
+     * the shared elements may be transferred to the started Activity.
+     * Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @param transition The Transition to use for shared elements in the launching Window
+     *                   prior to transferring to the launched Activity's Window.
+     * @attr ref android.R.styleable#Window_windowSharedElementExitTransition
+     */
+    CARAPI SetSharedElementExitTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Sets the Transition that will be used for shared elements reentering from a started
+     * Activity after it has returned the shared element to it start location. If no value
+     * is set, this will default to
+     * {@link #setSharedElementExitTransition(android.transition.Transition)}.
+     * Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @param transition The Transition to use for shared elements in the launching Window
+     *                   after the shared element has returned to the Window.
+     * @attr ref android.R.styleable#Window_windowSharedElementReenterTransition
+     */
+    CARAPI SetSharedElementReenterTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Returns the Transition to use for shared elements in the launching Window prior
+     * to transferring to the launched Activity's Window.
+     * Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @return the Transition to use for shared elements in the launching Window prior
+     * to transferring to the launched Activity's Window.
+     * @attr ref android.R.styleable#Window_windowSharedElementExitTransition
+     */
+    CARAPI GetSharedElementExitTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Returns the Transition that will be used for shared elements reentering from a started
+     * Activity after it has returned the shared element to it start location.
+     * Requires {@link #FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @return the Transition that will be used for shared elements reentering from a started
+     * Activity after it has returned the shared element to it start location.
+     * @attr ref android.R.styleable#Window_windowSharedElementReenterTransition
+     */
+    CARAPI GetSharedElementReenterTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Controls how the transition set in
+     * {@link #setEnterTransition(android.transition.Transition)} overlaps with the exit
+     * transition of the calling Activity. When true, the transition will start as soon as possible.
+     * When false, the transition will wait until the remote exiting transition completes before
+     * starting.
+     *
+     * @param allow true to start the enter transition when possible or false to
+     *              wait until the exiting transition completes.
+     * @attr ref android.R.styleable#Window_windowAllowEnterTransitionOverlap
+     */
+    CARAPI SetAllowEnterTransitionOverlap(
+        /* [in] */ Boolean allow);
+
+    /**
+     * Returns how the transition set in
+     * {@link #setEnterTransition(android.transition.Transition)} overlaps with the exit
+     * transition of the calling Activity. When true, the transition will start as soon as possible.
+     * When false, the transition will wait until the remote exiting transition completes before
+     * starting.
+     *
+     * @return true when the enter transition should start as soon as possible or false to
+     * when it should wait until the exiting transition completes.
+     * @attr ref android.R.styleable#Window_windowAllowEnterTransitionOverlap
+     */
+    CARAPI GetAllowEnterTransitionOverlap(
+        /* [out] */ Boolean* allow);
+
+    /**
+     * Controls how the transition set in
+     * {@link #setExitTransition(android.transition.Transition)} overlaps with the exit
+     * transition of the called Activity when reentering after if finishes. When true,
+     * the transition will start as soon as possible. When false, the transition will wait
+     * until the called Activity's exiting transition completes before starting.
+     *
+     * @param allow true to start the transition when possible or false to wait until the
+     *              called Activity's exiting transition completes.
+     * @attr ref android.R.styleable#Window_windowAllowReturnTransitionOverlap
+     */
+    CARAPI SetAllowReturnTransitionOverlap(
+        /* [in] */ Boolean allow);
+
+    /**
+     * TODO: remove this.
+     * @hide
+     */
+    CARAPI SetAllowExitTransitionOverlap(
+        /* [in] */ Boolean allow);
+
+    /**
+     * Returns how the transition set in
+     * {@link #setExitTransition(android.transition.Transition)} overlaps with the exit
+     * transition of the called Activity when reentering after if finishes. When true,
+     * the transition will start as soon as possible. When false, the transition will wait
+     * until the called Activity's exiting transition completes before starting.
+     *
+     * @return true when the transition should start when possible or false when it should wait
+     * until the called Activity's exiting transition completes.
+     * @attr ref android.R.styleable#Window_windowAllowReturnTransitionOverlap
+     */
+    CARAPI GetAllowReturnTransitionOverlap(
+        /* [out] */ Boolean* allow);
+
+    /**
+     * TODO: remove this.
+     * @hide
+     */
+    CARAPI GetAllowExitTransitionOverlap(
+        /* [out] */ Boolean* allow);
+
+    /**
+     * Returns the duration, in milliseconds, of the window background fade
+     * when transitioning into or away from an Activity when called with an Activity Transition.
+     * <p>When executing the enter transition, the background starts transparent
+     * and fades in. This requires {@link #FEATURE_ACTIVITY_TRANSITIONS}. The default is
+     * 300 milliseconds.</p>
+     *
+     * @return The duration of the window background fade to opaque during enter transition.
+     * @see #getEnterTransition()
+     * @attr ref android.R.styleable#Window_windowTransitionBackgroundFadeDuration
+     */
+    CARAPI GetTransitionBackgroundFadeDuration(
+        /* [out] */ Int64* duration);
+
+    /**
+     * Sets the duration, in milliseconds, of the window background fade
+     * when transitioning into or away from an Activity when called with an Activity Transition.
+     * <p>When executing the enter transition, the background starts transparent
+     * and fades in. This requires {@link #FEATURE_ACTIVITY_TRANSITIONS}. The default is
+     * 300 milliseconds.</p>
+     *
+     * @param fadeDurationMillis The duration of the window background fade to or from opaque
+     *                           during enter transition.
+     * @see #setEnterTransition(android.transition.Transition)
+     * @attr ref android.R.styleable#Window_windowTransitionBackgroundFadeDuration
+     */
+    CARAPI SetTransitionBackgroundFadeDuration(
+        /* [in] */ Int64 fadeDurationMillis);
+
+    /**
+     * Returns <code>true</code> when shared elements should use an Overlay during
+     * shared element transitions or <code>false</code> when they should animate as
+     * part of the normal View hierarchy. The default value is true.
+     *
+     * @return <code>true</code> when shared elements should use an Overlay during
+     * shared element transitions or <code>false</code> when they should animate as
+     * part of the normal View hierarchy.
+     * @attr ref android.R.styleable#Window_windowSharedElementsUseOverlay
+     */
+    CARAPI GetSharedElementsUseOverlay(
+        /* [out] */ Boolean* shared);
+
+    /**
+     * Sets whether or not shared elements should use an Overlay during shared element transitions.
+     * The default value is true.
+     *
+     * @param sharedElementsUseOverlay <code>true</code> indicates that shared elements should
+     *                                 be transitioned with an Overlay or <code>false</code>
+     *                                 to transition within the normal View hierarchy.
+     * @attr ref android.R.styleable#Window_windowSharedElementsUseOverlay
+     */
+    CARAPI SetSharedElementsUseOverlay(
+        /* [in] */ Boolean sharedElementsUseOverlay);
 
 protected:
     /**
@@ -695,14 +1168,23 @@ protected:
     /** @hide */
     virtual CARAPI_(Boolean) HaveDimAmount();
 
-    virtual CARAPI_(Mutex&) GetSelfSyncLock() = 0;
+    /**
+     * {@hide}
+     */
+    virtual CARAPI_(void) DispatchWindowAttributesChanged(
+        /* [in] */ IWindowManagerLayoutParams* attrs);
 
 private:
-    Boolean IsOutOfBounds(
+    CARAPI_(Boolean) IsOutOfBounds(
         /* [in] */ IContext* context,
         /* [in] */ IMotionEvent* event);
 
+    CARAPI_(void) SetPrivateFlags(
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 mask);
+
 protected:
+    static const Int32 DEFAULT_FEATURES;
     AutoPtr<ITypedArray> mWindowStyle;
     AutoPtr<IWindowManager> mWindowManager;
     AutoPtr<IBinder> mAppToken;
@@ -721,6 +1203,8 @@ protected:
 
     IWindowCallback* mCallback;
 
+    AutoPtr<IOnWindowDismissedCallback> mOnWindowDismissedCallback;
+
     // if mContext is IActiviy, this must not have it's reference
     //
     IContext* mContext;
@@ -736,6 +1220,9 @@ protected:
     Boolean mHasChildren;
     Boolean mCloseOnTouchOutside;
     Boolean mSetCloseOnTouchOutside;
+
+private:
+    static const String PROPERTY_HARDWARE_UI;
 };
 
 } // namespace View

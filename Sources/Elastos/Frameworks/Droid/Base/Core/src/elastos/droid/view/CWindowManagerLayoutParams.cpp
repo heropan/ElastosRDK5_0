@@ -1,23 +1,28 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::Insets;
+using Elastos::Droid::Graphics::IInsets;
+using Elastos::Droid::Graphics::IPixelFormat;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
-using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::Graphics::IPixelFormat;
-using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-IVIEWGROUPLP_METHODS_IMPL(CWindowManagerLayoutParams, ViewGroupLayoutParams);
-
+CAR_OBJECT_IMPL(CWindowManagerLayoutParams);
+CAR_INTERFACE_IMPL_2(CWindowManagerLayoutParams, ViewGroupLayoutParams, IWindowManagerLayoutParams, IParcelable);
 CWindowManagerLayoutParams::CWindowManagerLayoutParams()
     : mX(0)
     , mY(0)
@@ -37,13 +42,16 @@ CWindowManagerLayoutParams::CWindowManagerLayoutParams()
     , mDimAmount(1.0f)
     , mScreenBrightness(BRIGHTNESS_OVERRIDE_NONE)
     , mButtonBrightness(BRIGHTNESS_OVERRIDE_NONE)
+    , mRotationAnimation(ROTATION_ANIMATION_ROTATE)
     , mScreenOrientation(IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED)
+    , mPreferredRefreshRate(0)
     , mSystemUiVisibility(0)
     , mSubtreeSystemUiVisibility(0)
     , mHasSystemUiListeners(FALSE)
     , mInputFeatures(0)
     , mUserActivityTimeout(-1)
 {
+    ASSERT_SUCCEEDED(CRect::New((IRect**)&mSurfaceInsets));
     ASSERT_SUCCEEDED(CString::New(String(""), (ICharSequence**)&mTitle));
 }
 
@@ -141,6 +149,11 @@ ECode CWindowManagerLayoutParams::CopyFrom(
     }
 
     if (mFlags != src->mFlags) {
+        Int32 diff = mFlags ^ src->mFlags;
+        if ((diff & (FLAG_TRANSLUCENT_STATUS | FLAG_TRANSLUCENT_NAVIGATION)) != 0) {
+            *changes |= TRANSLUCENT_FLAGS_CHANGED;
+        }
+
         mFlags = src->mFlags;
         *changes |= FLAGS_CHANGED;
     }
@@ -210,9 +223,19 @@ ECode CWindowManagerLayoutParams::CopyFrom(
         *changes |= BUTTON_BRIGHTNESS_CHANGED;
     }
 
+    if (mRotationAnimation != src->mRotationAnimation) {
+        mRotationAnimation = src->mRotationAnimation;
+        *changes |= ROTATION_ANIMATION_CHANGED;
+    }
+
     if (mScreenOrientation != src->mScreenOrientation) {
         mScreenOrientation = src->mScreenOrientation;
         *changes |= SCREEN_ORIENTATION_CHANGED;
+    }
+
+    if (mPreferredRefreshRate != src->mPreferredRefreshRate) {
+        mPreferredRefreshRate = src->mPreferredRefreshRate;
+        *changes |= PREFERRED_REFRESH_RATE_CHANGED;
     }
 
     if (mSystemUiVisibility != src->mSystemUiVisibility
@@ -237,13 +260,15 @@ ECode CWindowManagerLayoutParams::CopyFrom(
         *changes |= USER_ACTIVITY_TIMEOUT_CHANGED;
     }
 
+    Boolean equals = FALSE;
+    if (!(mSurfaceInsets->Equals(src->mSurfaceInsets, &equals), equals)) {
+        mSurfaceInsets->Set(src->mSurfaceInsets);
+        *changes |= SURFACE_INSETS_CHANGED;
+    }
+
     return NOERROR;
 }
 
-/**
- * Scale the layout params' coordinates and size.
- * @hide
- */
 ECode CWindowManagerLayoutParams::Scale(
     /* [in] */ Float scale)
 {
@@ -261,10 +286,6 @@ ECode CWindowManagerLayoutParams::Scale(
     return NOERROR;
 }
 
-/**
- * Backup the layout parameters used in compatibility mode.
- * @see LayoutParams#restore()
- */
 ECode CWindowManagerLayoutParams::Backup()
 {
     if (mCompatibilityParamsBackup == NULL) {
@@ -279,10 +300,6 @@ ECode CWindowManagerLayoutParams::Backup()
     return NOERROR;
 }
 
-/**
- * Restore the layout params' coordinates, size and gravity
- * @see LayoutParams#backup()
- */
 ECode CWindowManagerLayoutParams::Restore()
 {
     if (mCompatibilityParamsBackup != NULL) {
@@ -395,6 +412,7 @@ ECode CWindowManagerLayoutParams::SetSoftInputMode(
 ECode CWindowManagerLayoutParams::GetSoftInputMode(
     /* [out] */ Int32* mode)
 {
+    VALIDATE_NOT_NULL(mode);
     *mode = mSoftInputMode;
     return NOERROR;
 }
@@ -680,16 +698,24 @@ ECode CWindowManagerLayoutParams::ReadFromParcel(
     source->ReadFloat(&mDimAmount);
     source->ReadFloat(&mScreenBrightness);
     source->ReadFloat(&mButtonBrightness);
+    source->ReadInt32(&mRotationAnimation);
     source->ReadInterfacePtr((Handle32*)&mToken);
     source->ReadString(&mPackageName);
     mTitle = NULL;
     source->ReadInterfacePtr((Handle32*)&mTitle);
     source->ReadInt32(&mScreenOrientation);
+    source->ReadFloat(&mPreferredRefreshRate);
     source->ReadInt32(&mSystemUiVisibility);
     source->ReadInt32(&mSubtreeSystemUiVisibility);
     source->ReadBoolean(&mHasSystemUiListeners);
     source->ReadInt32(&mInputFeatures);
     source->ReadInt64(&mUserActivityTimeout);
+    Int32 left = 0, top = 0, right = 0, bottom = 0;
+    source->ReadInt32(&left);
+    source->ReadInt32(&top);
+    source->ReadInt32(&right);
+    source->ReadInt32(&bottom);
+    mSurfaceInsets->Set(left, top, right, bottom);
 
     return NOERROR;
 }
@@ -718,22 +744,30 @@ ECode CWindowManagerLayoutParams::WriteToParcel(
     dest->WriteFloat(mDimAmount);
     dest->WriteFloat(mScreenBrightness);
     dest->WriteFloat(mButtonBrightness);
+    dest->WriteInt32(mRotationAnimation);
     dest->WriteInterfacePtr((IInterface*)mToken.Get());
     dest->WriteString(mPackageName);
     dest->WriteInterfacePtr((IInterface*)mTitle.Get());
     dest->WriteInt32(mScreenOrientation);
+    dest->WriteFloat(mPreferredRefreshRate);
     dest->WriteInt32(mSystemUiVisibility);
     dest->WriteInt32(mSubtreeSystemUiVisibility);
     dest->WriteBoolean(mHasSystemUiListeners);
     dest->WriteInt32(mInputFeatures);
     dest->WriteInt64(mUserActivityTimeout);
+    Int32 left = 0, top = 0, right = 0, bottom = 0;
+    mSurfaceInsets->Get(&left, &top, &right, &bottom);
+    dest->WriteInt32(left);
+    dest->WriteInt32(top);
+    dest->WriteInt32(right);
+    dest->WriteInt32(bottom);
 
     return NOERROR;
 }
 
 ECode CWindowManagerLayoutParams::constructor()
 {
-    ViewGroupLayoutParams::Init(MATCH_PARENT, MATCH_PARENT);
+    ViewGroupLayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
 
     mType = TYPE_APPLICATION;
     mFormat = IPixelFormat::OPAQUE;
@@ -743,7 +777,7 @@ ECode CWindowManagerLayoutParams::constructor()
 ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 type)
 {
-    ViewGroupLayoutParams::Init(MATCH_PARENT, MATCH_PARENT);
+    ViewGroupLayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
 
     mType = type;
     mFormat = IPixelFormat::OPAQUE;
@@ -754,7 +788,7 @@ ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 type,
     /* [in] */ Int32 flags)
 {
-    ViewGroupLayoutParams::Init(MATCH_PARENT, MATCH_PARENT);
+    ViewGroupLayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
 
     mType = type;
     mFlags = flags;
@@ -767,7 +801,7 @@ ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 format)
 {
-    ViewGroupLayoutParams::Init(MATCH_PARENT, MATCH_PARENT);
+    ViewGroupLayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
 
     mType = type;
     mFlags = flags;
@@ -782,7 +816,7 @@ ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 format)
 {
-    ViewGroupLayoutParams::Init(w, h);
+    ViewGroupLayoutParams::constructor(w, h);
 
     mType = type;
     mFlags = flags;
@@ -799,7 +833,7 @@ ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 format)
 {
-    ViewGroupLayoutParams::Init(w, h);
+    ViewGroupLayoutParams::constructor(w, h);
     mX = xpos;
     mY = ypos;
     mType = type;
@@ -819,98 +853,111 @@ ECode CWindowManagerLayoutParams::ToString(
 {
     VALIDATE_NOT_NULL(description);
     AutoPtr<StringBuilder> sb = new StringBuilder(256);
-    sb->AppendCStr("WM.LayoutParams{");
-    sb->AppendCStr("(");
-    sb->AppendInt32(mX);
-    sb->AppendCStr(",");
-    sb->AppendInt32(mY);
-    sb->AppendCStr(")(");
+    sb->Append("WM.LayoutParams{");
+    sb->Append("(");
+    sb->Append(mX);
+    sb->Append(",");
+    sb->Append(mY);
+    sb->Append(")(");
     if (mWidth == MATCH_PARENT)
-        sb->AppendCStr("fill");
+        sb->Append("fill");
     else if (mWidth == WRAP_CONTENT)
-        sb->AppendCStr("wrap");
+        sb->Append("wrap");
     else
-        sb->AppendInt32(mWidth);
-    sb->AppendCStr("x");
+        sb->Append(mWidth);
+    sb->Append("x");
     if (mHeight == MATCH_PARENT)
-        sb->AppendCStr("fill");
+        sb->Append("fill");
     else if (mHeight == WRAP_CONTENT)
-        sb->AppendCStr("wrap");
+        sb->Append("wrap");
     else
-        sb->AppendInt32(mHeight);
-    sb->AppendCStr(")");
+        sb->Append(mHeight);
+    sb->Append(")");
     if (mHorizontalMargin != 0) {
-        sb->AppendCStr(" hm=");
-        sb->AppendFloat(mHorizontalMargin);
+        sb->Append(" hm=");
+        sb->Append(mHorizontalMargin);
     }
     if (mVerticalMargin != 0) {
-        sb->AppendCStr(" vm=");
-        sb->AppendFloat(mVerticalMargin);
+        sb->Append(" vm=");
+        sb->Append(mVerticalMargin);
     }
     if (mGravity != 0) {
-        sb->AppendCStr(" gr=#");
-        sb->AppendString(StringUtils::Int32ToString(mGravity, 16));
+        sb->Append(" gr=#");
+        sb->Append(StringUtils::ToString(mGravity, 16));
     }
     if (mSoftInputMode != 0) {
-        sb->AppendCStr(" sim=#");
-        sb->AppendString(StringUtils::Int32ToString(mSoftInputMode, 16));
+        sb->Append(" sim=#");
+        sb->Append(StringUtils::ToString(mSoftInputMode, 16));
     }
-    sb->AppendCStr(" ty=");
-    sb->AppendInt32(mType);
-    sb->AppendCStr(" fl=#");
-    sb->AppendString(StringUtils::Int32ToString(mFlags, 16));
+    sb->Append(" ty=");
+    sb->Append(mType);
+    sb->Append(" fl=#");
+    sb->Append(StringUtils::ToString(mFlags, 16));
     if (mPrivateFlags != 0) {
-        sb->AppendCStr(" pfl=0x");
-        sb->AppendString(StringUtils::Int32ToString(mPrivateFlags, 16));
+        if ((mPrivateFlags & PRIVATE_FLAG_COMPATIBLE_WINDOW) != 0) {
+            sb->Append(" compatible=true");
+        }
+        sb->Append(" pfl=0x");
+        sb->Append(StringUtils::ToString(mPrivateFlags, 16));
     }
     if (mFormat != IPixelFormat::OPAQUE) {
-        sb->AppendCStr(" fmt=");
-        sb->AppendInt32(mFormat);
+        sb->Append(" fmt=");
+        sb->Append(mFormat);
     }
     if (mWindowAnimations != 0) {
-        sb->AppendCStr(" wanim=0x");
-        sb->AppendString(StringUtils::Int32ToString(mWindowAnimations, 16));
+        sb->Append(" wanim=0x");
+        sb->Append(StringUtils::ToString(mWindowAnimations, 16));
     }
     if (mScreenOrientation != IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED) {
-        sb->AppendCStr(" or=");
-        sb->AppendInt32(mScreenOrientation);
+        sb->Append(" or=");
+        sb->Append(mScreenOrientation);
     }
     if (mAlpha != 1.0f) {
-        sb->AppendCStr(" alpha=");
-        sb->AppendFloat(mAlpha);
+        sb->Append(" alpha=");
+        sb->Append(mAlpha);
     }
     if (mScreenBrightness != BRIGHTNESS_OVERRIDE_NONE) {
-        sb->AppendCStr(" sbrt=");
-        sb->AppendFloat(mScreenBrightness);
+        sb->Append(" sbrt=");
+        sb->Append(mScreenBrightness);
     }
     if (mButtonBrightness != BRIGHTNESS_OVERRIDE_NONE) {
-        sb->AppendCStr(" bbrt=");
-        sb->AppendFloat(mButtonBrightness);
+        sb->Append(" bbrt=");
+        sb->Append(mButtonBrightness);
     }
-    if ((mFlags & FLAG_COMPATIBLE_WINDOW) != 0) {
-        sb->AppendCStr(" compatible=true");
+    if (mRotationAnimation != ROTATION_ANIMATION_ROTATE) {
+        sb->Append(" rotAnim=");
+        sb->Append(mRotationAnimation);
+    }
+    if (mPreferredRefreshRate != 0) {
+        sb->Append(" preferredRefreshRate=");
+        sb->Append(mPreferredRefreshRate);
     }
     if (mSystemUiVisibility != 0) {
-        sb->AppendCStr(" sysui=0x");
-        sb->AppendString(StringUtils::Int32ToString(mSystemUiVisibility, 16));
+        sb->Append(" sysui=0x");
+        sb->Append(StringUtils::ToString(mSystemUiVisibility, 16));
     }
     if (mSubtreeSystemUiVisibility != 0) {
-        sb->AppendCStr(" vsysui=0x");
-        sb->AppendString(StringUtils::Int32ToString(mSubtreeSystemUiVisibility, 16));
+        sb->Append(" vsysui=0x");
+        sb->Append(StringUtils::ToString(mSubtreeSystemUiVisibility, 16));
     }
     if (mHasSystemUiListeners) {
-        sb->AppendCStr(" sysuil=");
-        sb->AppendBoolean(mHasSystemUiListeners);
+        sb->Append(" sysuil=");
+        sb->Append(mHasSystemUiListeners);
     }
     if (mInputFeatures != 0) {
-        sb->AppendCStr(" if=0x");
-        sb->AppendString(StringUtils::Int32ToString(mInputFeatures, 16));
+        sb->Append(" if=0x");
+        sb->Append(StringUtils::ToString(mInputFeatures, 16));
     }
     if (mUserActivityTimeout >= 0) {
-        sb->AppendCStr(" userActivityTimeout=");
-        sb->AppendInt64(mUserActivityTimeout);
+        sb->Append(" userActivityTimeout=");
+        sb->Append(mUserActivityTimeout);
     }
-    sb->AppendCStr("}");
+    Boolean equals = FALSE;
+    if (mSurfaceInsets->Equals((IInsets*)Insets::NONE, &equals), !equals) {
+        sb->Append(" surfaceInsets=");
+        sb->Append(mSurfaceInsets.Get());
+    }
+    sb->Append("}");
     *description = sb->ToString();
 
     return NOERROR;

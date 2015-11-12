@@ -474,7 +474,6 @@ ECode AnimatedStateListDrawable::Inflate(
     /* [in] */ /*@Nullable*/ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/
 {
     AutoPtr<ITypedArray> a;
-    ECode ec = NOERROR;
     Int32 size = ARRAY_SIZE(R::styleable::AnimatedStateListDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AnimatedStateListDrawable, size);
@@ -485,32 +484,20 @@ ECode AnimatedStateListDrawable::Inflate(
     AutoPtr<StateListState> stateListState = GetStateListState();
     Boolean value = FALSE;
     Int32 ivalue = 0;
-    ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_variablePadding, FALSE, &value);
-    FAIL_GOTO(ec, error);
+    a->GetBoolean(R::styleable::AnimatedStateListDrawable_variablePadding, FALSE, &value);
     stateListState->SetVariablePadding(value);
-    ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_constantSize, FALSE, &value);
-    FAIL_GOTO(ec, error);
+    a->GetBoolean(R::styleable::AnimatedStateListDrawable_constantSize, FALSE, &value);
     stateListState->SetConstantSize(value);
 
-    ec = a->GetInt32(R::styleable::AnimatedStateListDrawable_enterFadeDuration, 0, &ivalue);
-    FAIL_GOTO(ec, error);
+    a->GetInt32(R::styleable::AnimatedStateListDrawable_enterFadeDuration, 0, &ivalue);
     stateListState->SetEnterFadeDuration(ivalue);
-    ec = a->GetInt32(R::styleable::AnimatedStateListDrawable_exitFadeDuration, 0, &ivalue);
-    FAIL_GOTO(ec, error);
+    a->GetInt32(R::styleable::AnimatedStateListDrawable_exitFadeDuration, 0, &ivalue);
     stateListState->SetExitFadeDuration(ivalue);
 
-    ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_dither, TRUE, &value);
-    FAIL_GOTO(ec, error);
+    a->GetBoolean(R::styleable::AnimatedStateListDrawable_dither, TRUE, &value);
     SetDither(value);
-    ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_autoMirrored, FALSE, &value);
-    FAIL_GOTO(ec, error);
+    a->GetBoolean(R::styleable::AnimatedStateListDrawable_autoMirrored, FALSE, &value);
     SetAutoMirrored(value);
-
-error:
-    if (FAILED(ec)) {
-        a->Recycle();
-        return ec;
-    }
     a->Recycle();
 
     Int32 type = 0;

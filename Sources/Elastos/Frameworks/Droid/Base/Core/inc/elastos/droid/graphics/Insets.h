@@ -44,8 +44,17 @@ public:
     static CARAPI_(AutoPtr<Insets>) Of(
         /* [in] */ IRect* r);
 
-    CARAPI_(Boolean) Equals(
-        /* [in] */ IInsets* o);
+    CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* e);
+
+    // @Override
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hc);
+
+    // @Override
+    CARAPI ToString(
+        /* [out] */ String* str);
 
     CARAPI GetLeft(
         /* [out] */ Int32* left);

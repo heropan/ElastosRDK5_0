@@ -1,21 +1,23 @@
 
 #include "elastos/droid/view/Window.h"
 #include "elastos/droid/view/WindowManagerImpl.h"
-#include "elastos/droid/view/CViewConfiguration.h"
+// #include "elastos/droid/view/CViewConfiguration.h"
 #include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::StringUtils;
-using Elastos::Core::CString;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IService;
+using Elastos::Droid::R;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Core::StringUtils;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -26,7 +28,7 @@ extern "C" const InterfaceID EIID_Window =
 const String Window::PROPERTY_HARDWARE_UI("persist.sys.ui.hw");
 const Int32 Window::DEFAULT_FEATURES = (1 << IWindow::FEATURE_OPTIONS_PANEL) | (1 << IWindow::FEATURE_CONTEXT_MENU);
 
-
+CAR_INTERFACE_IMPL(Window, Object, IWindow);
 Window::Window()
     : mForcedWindowFlags(0)
     , mFeatures(DEFAULT_FEATURES)
@@ -99,23 +101,24 @@ ECode Window::GetContext(
 ECode Window::GetWindowStyle(
     /* [out] */ ITypedArray** attrs)
 {
-    AutoLock lock(GetSelfSyncLock());
-
-    if (mWindowStyle == NULL) {
-        AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::Window),
-            ARRAY_SIZE(R::styleable::Window));
-        FAIL_RETURN(mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&mWindowStyle));
+    synchronized (this) {
+        if (mWindowStyle == NULL) {
+            AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+                const_cast<Int32 *>(R::styleable::Window),
+                ARRAY_SIZE(R::styleable::Window));
+            FAIL_RETURN(mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&mWindowStyle));
+        }
+        *attrs = mWindowStyle;
+        REFCOUNT_ADD(*attrs);
     }
-    *attrs = mWindowStyle;
-    REFCOUNT_ADD(*attrs);
+
     return NOERROR;
 }
 
 ECode Window::SetContainer(
     /* [in] */ IWindow* container)
 {
-    mContainer = (Window*)container->Probe(EIID_Window);
+    mContainer = (Window*)container;
     if (mContainer != NULL) {
         // Embedded screens never have a title.
         mFeatures |= 1 << FEATURE_NO_TITLE;
@@ -132,7 +135,7 @@ ECode Window::GetContainer(
     *container = NULL;
 
     if (mContainer != NULL) {
-        *container = (IWindow*)mContainer->Probe(EIID_IWindow);
+        *container = mContainer;
         REFCOUNT_ADD(*container);
     }
     return NOERROR;
@@ -178,8 +181,9 @@ ECode Window::SetWindowManager(
 {
     mAppToken = appToken;
     mAppName = appName;
-    mHardwareAccelerated = hardwareAccelerated
-        || SystemProperties::GetBoolean(PROPERTY_HARDWARE_UI, FALSE);
+    Boolean ph = FALSE;
+    SystemProperties::GetBoolean(PROPERTY_HARDWARE_UI, FALSE, &ph);
+    mHardwareAccelerated = hardwareAccelerated || ph;
     if (wm == NULL) {
         AutoPtr<IInterface> service;
         mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&service);
@@ -291,15 +295,28 @@ ECode Window::GetCallback(
     return NOERROR;
 }
 
+ECode Window::SetOnWindowDismissedCallback(
+    /* [in] */ IOnWindowDismissedCallback* dcb)
+{
+    mOnWindowDismissedCallback = dcb;
+    return NOERROR;
+}
+
+ECode Window::DispatchOnWindowDismissed()
+{
+    if (mOnWindowDismissedCallback != NULL) {
+        mOnWindowDismissedCallback->OnWindowDismissed();
+    }
+    return NOERROR;
+}
+
 ECode Window::SetLayout(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
     mWindowAttributes->mWidth = width;
     mWindowAttributes->mHeight = height;
-    if (mCallback != NULL) {
-        mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-    }
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
     return NOERROR;
 }
 
@@ -307,9 +324,7 @@ ECode Window::SetGravity(
     /* [in] */ Int32 gravity)
 {
     mWindowAttributes->mGravity = gravity;
-    if (mCallback != NULL) {
-        mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-    }
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
     return NOERROR;
 }
 
@@ -317,9 +332,7 @@ ECode Window::SetType(
     /* [in] */ Int32 type)
 {
     mWindowAttributes->mType = type;
-    if (mCallback != NULL) {
-        mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-    }
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
     return NOERROR;
 }
 
@@ -334,9 +347,7 @@ ECode Window::SetFormat(
         mWindowAttributes->mFormat = mDefaultWindowFormat;
         mHaveWindowFormat = FALSE;
     }
-    if (mCallback != NULL) {
-        mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-    }
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
     return NOERROR;
 }
 
@@ -344,9 +355,7 @@ ECode Window::SetWindowAnimations(
     /* [in] */ Int32 resId)
 {
     mWindowAttributes->mWindowAnimations = resId;
-    if (mCallback != NULL) {
-        mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-    }
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
     return NOERROR;
 }
 
@@ -360,9 +369,7 @@ ECode Window::SetSoftInputMode(
     else {
         mHasSoftInputMode = FALSE;
     }
-    if (mCallback != NULL) {
-        mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-    }
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
     return NOERROR;
 }
 
@@ -370,6 +377,12 @@ ECode Window::AddFlags(
     /* [in] */ Int32 flags)
 {
     return SetFlags(flags, flags);
+}
+
+void Window::AddPrivateFlags(
+    /* [in] */ Int32 flags)
+{
+    SetPrivateFlags(flags, flags);
 }
 
 ECode Window::ClearFlags(
@@ -387,10 +400,24 @@ ECode Window::SetFlags(
         mWindowAttributes->mPrivateFlags |= IWindowManagerLayoutParams::PRIVATE_FLAG_SET_NEEDS_MENU_KEY;
     }
     mForcedWindowFlags |= mask;
-    if (mCallback != NULL) {
-        mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-    }
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
     return NOERROR;
+}
+
+void Window::SetPrivateFlags(
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 mask)
+{
+    mWindowAttributes->mPrivateFlags = (mWindowAttributes->mPrivateFlags & ~mask) | (flags & mask);
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
+}
+
+void Window::DispatchWindowAttributesChanged(
+    /* [in] */ IWindowManagerLayoutParams* attrs)
+{
+    if (mCallback != NULL) {
+        mCallback->OnWindowAttributesChanged(attrs);
+    }
 }
 
 ECode Window::SetDimAmount(
@@ -398,9 +425,7 @@ ECode Window::SetDimAmount(
 {
     mWindowAttributes->mDimAmount = amount;
     mHaveDimAmount = TRUE;
-    if (mCallback != NULL) {
-        mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-    }
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
 
     return NOERROR;
 }
@@ -410,9 +435,7 @@ ECode Window::SetAttributes(
 {
     Int32 changes;
     mWindowAttributes->CopyFrom(a, &changes);
-    if (mCallback != NULL) {
-        mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-    }
+    DispatchWindowAttributesChanged(mWindowAttributes.Get());
     return NOERROR;
 }
 
@@ -488,7 +511,8 @@ Boolean Window::IsOutOfBounds(
     Int32 x = (Int32)fX;
     Int32 y = (Int32)fY;
     Int32 slop;
-    CViewConfiguration::Get(context)->GetScaledWindowTouchSlop(&slop);
+    assert(0 && "TODO");
+    // CViewConfiguration::Get(context)->GetScaledWindowTouchSlop(&slop);
     AutoPtr<IView> decorView;
     GetDecorView((IView**)&decorView);
     Int32 width, height;
@@ -557,10 +581,8 @@ ECode Window::FindViewById(
 ECode Window::SetBackgroundDrawableResource(
     /* [in] */ Int32 resid)
 {
-    AutoPtr<IResources> res;
-    mContext->GetResources((IResources**)&res);
     AutoPtr<IDrawable> drawable;
-    FAIL_RETURN(res->GetDrawable(resid, (IDrawable**)&drawable));
+    FAIL_RETURN(mContext->GetDrawable(resid, (IDrawable**)&drawable));
     return SetBackgroundDrawable(drawable);
 }
 
@@ -589,15 +611,27 @@ void Window::SetDefaultWindowFormat(
     mDefaultWindowFormat = format;
     if (!mHaveWindowFormat) {
         mWindowAttributes->mFormat = format;
-        if (mCallback != NULL) {
-            mCallback->OnWindowAttributesChanged(mWindowAttributes.Get());
-        }
+        DispatchWindowAttributesChanged(mWindowAttributes.Get());
     }
 }
 
 Boolean Window::HaveDimAmount()
 {
     return mHaveDimAmount;
+}
+
+ECode Window::SetMediaController(
+    /* [in] */ IMediaController* controller)
+{
+    return NOERROR;
+}
+
+ECode Window::GetMediaController(
+    /* [out] */ IMediaController** controller)
+{
+    VALIDATE_NOT_NULL(controller);
+    *controller = NULL;
+    return NOERROR;
 }
 
 ECode Window::SetUiOptions(
@@ -609,6 +643,246 @@ ECode Window::SetUiOptions(
 ECode Window::SetUiOptions(
     /* [in] */ Int32 uiOptions,
     /* [in] */ Int32 mask)
+{
+    return NOERROR;
+}
+
+ECode Window::SetIcon(
+    /* [in] */ Int32 resId)
+{
+    return NOERROR;
+}
+
+ECode Window::SetDefaultIcon(
+    /* [in] */ Int32 resId)
+{
+    return NOERROR;
+}
+
+ECode Window::SetLogo(
+    /* [in] */ Int32 resId)
+{
+    return NOERROR;
+}
+
+ECode Window::SetDefaultLogo(
+    /* [in] */ Int32 resId)
+{
+    return NOERROR;
+}
+
+ECode Window::SetLocalFocus(
+    /* [in] */ Boolean hasFocus,
+    /* [in] */ Boolean inTouchMode)
+{
+    return NOERROR;
+}
+
+ECode Window::InjectInputEvent(
+    /* [in] */ IInputEvent* event)
+{
+    return NOERROR;
+}
+
+ECode Window::GetTransitionManager(
+    /* [out] */ ITransitionManager** tm)
+{
+    VALIDATE_NOT_NULL(tm);
+    *tm = NULL;
+    return NOERROR;
+}
+
+ECode Window::SetTransitionManager(
+    /* [in] */ ITransitionManager* tm)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Window::GetContentScene(
+    /* [out] */ IScene** scene)
+{
+    VALIDATE_NOT_NULL(scene);
+    *scene = NULL;
+    return NOERROR;
+}
+
+ECode Window::SetEnterTransition(
+    /* [in] */ ITransition* transition)
+{
+    return NOERROR;
+}
+
+ECode Window::SetReturnTransition(
+    /* [in] */ ITransition* transition)
+{
+    return NOERROR;
+}
+
+ECode Window::SetExitTransition(
+    /* [in] */ ITransition* transition)
+{
+    return NOERROR;
+}
+
+ECode Window::SetReenterTransition(
+    /* [in] */ ITransition* transition)
+{
+    return NOERROR;
+}
+
+ECode Window::GetEnterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = NULL;
+    return NOERROR;
+}
+
+ECode Window::GetReturnTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = NULL;
+    return NOERROR;
+}
+
+ECode Window::GetExitTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = NULL;
+    return NOERROR;
+}
+
+ECode Window::GetReenterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = NULL;
+    return NOERROR;
+}
+
+ECode Window::SetSharedElementEnterTransition(
+    /* [in] */ ITransition* transition)
+{
+    return NOERROR;
+}
+
+ECode Window::SetSharedElementReturnTransition(
+    /* [in] */ ITransition* transition)
+{
+    return NOERROR;
+}
+
+ECode Window::GetSharedElementEnterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = NULL;
+    return NOERROR;
+}
+
+ECode Window::GetSharedElementReturnTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = NULL;
+    return NOERROR;
+}
+
+ECode Window::SetSharedElementExitTransition(
+    /* [in] */ ITransition* transition)
+{
+    return NOERROR;
+}
+
+ECode Window::SetSharedElementReenterTransition(
+    /* [in] */ ITransition* transition)
+{
+    return NOERROR;
+}
+
+ECode Window::GetSharedElementExitTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = NULL;
+    return NOERROR;
+}
+
+ECode Window::GetSharedElementReenterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = NULL;
+    return NOERROR;
+}
+
+ECode Window::SetAllowEnterTransitionOverlap(
+    /* [in] */ Boolean allow)
+{
+    return NOERROR;
+}
+
+ECode Window::GetAllowEnterTransitionOverlap(
+    /* [out] */ Boolean* allow)
+{
+    VALIDATE_NOT_NULL(allow);
+    *allow = TRUE;
+    return NOERROR;
+}
+
+ECode Window::SetAllowReturnTransitionOverlap(
+    /* [in] */ Boolean allow)
+{
+    return NOERROR;
+}
+
+ECode Window::SetAllowExitTransitionOverlap(
+    /* [in] */ Boolean allow)
+{
+    return SetAllowReturnTransitionOverlap(allow);
+}
+
+ECode Window::GetAllowReturnTransitionOverlap(
+    /* [out] */ Boolean* allow)
+{
+    VALIDATE_NOT_NULL(allow);
+    *allow = TRUE;
+    return NOERROR;
+}
+
+ECode Window::GetAllowExitTransitionOverlap(
+    /* [out] */ Boolean* allow)
+{
+    VALIDATE_NOT_NULL(allow);
+    return GetAllowReturnTransitionOverlap(allow);
+}
+
+ECode Window::GetTransitionBackgroundFadeDuration(
+    /* [out] */ Int64* duration)
+{
+    VALIDATE_NOT_NULL(duration);
+    *duration = 0;
+    return NOERROR;
+}
+
+ECode Window::SetTransitionBackgroundFadeDuration(
+    /* [in] */ Int64 fadeDurationMillis)
+{
+    return NOERROR;
+}
+
+ECode Window::GetSharedElementsUseOverlay(
+    /* [out] */ Boolean* shared)
+{
+    VALIDATE_NOT_NULL(shared);
+    *shared = TRUE;
+    return NOERROR;
+}
+
+ECode Window::SetSharedElementsUseOverlay(
+    /* [in] */ Boolean sharedElementsUseOverlay)
 {
     return NOERROR;
 }

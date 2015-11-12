@@ -309,7 +309,6 @@ ECode AnimatedVectorDrawable::Inflate(
     Int32 eventType = 0;
     parser->GetEventType(&eventType);
     Float pathErrorScale = 1;
-    ECode ec = NOERROR;
     while (eventType != IXmlPullParser::END_DOCUMENT) {
         if (eventType == IXmlPullParser::START_TAG) {
             String tagName;
@@ -322,11 +321,7 @@ ECode AnimatedVectorDrawable::Inflate(
                 AutoPtr<ITypedArray> a;
                 FAIL_RETURN(ObtainAttributes(res, theme, attrs, layout, (ITypedArray**)&a));
                 Int32 drawableRes = 0;
-                ec = a->GetResourceId(R::styleable::AnimatedVectorDrawable_drawable, 0, &drawableRes);
-                if (FAILED(ec)) {
-                    a->Recycle();
-                    return ec;
-                }
+                a->GetResourceId(R::styleable::AnimatedVectorDrawable_drawable, 0, &drawableRes);
 
                 if (drawableRes != 0) {
                     AutoPtr<IDrawable> dr;
@@ -347,18 +342,10 @@ ECode AnimatedVectorDrawable::Inflate(
                 AutoPtr<ITypedArray> a;
                 FAIL_RETURN(ObtainAttributes(res, theme, attrs, layout, (ITypedArray**)&a));
                 String target;
-                ec = a->GetString(R::styleable::AnimatedVectorDrawableTarget_name, &target);
-                if (FAILED(ec)) {
-                    a->Recycle();
-                    return ec;
-                }
+                a->GetString(R::styleable::AnimatedVectorDrawableTarget_name, &target);
 
                 Int32 id = 0;
-                ec = a->GetResourceId(R::styleable::AnimatedVectorDrawableTarget_animation, 0, &id);
-                if (FAILED(ec)) {
-                    a->Recycle();
-                    return ec;
-                }
+                a->GetResourceId(R::styleable::AnimatedVectorDrawableTarget_animation, 0, &id);
                 if (id != 0) {
                     AutoPtr<IAnimator> objectAnimator;
                     AnimatorInflater::LoadAnimator(res, theme, id, pathErrorScale, (IAnimator**)&objectAnimator);

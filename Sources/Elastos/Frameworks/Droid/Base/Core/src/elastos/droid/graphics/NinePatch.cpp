@@ -3,7 +3,7 @@
 #include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CBitmap.h"
-#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/Canvas.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CRegion.h"
 #include "elastos/droid/graphics/GraphicsNative.h"
@@ -186,8 +186,8 @@ void NinePatch::DrawSoftware(
     /* [in] */ IRectF* location,
     /* [in] */ IPaint* paint)
 {
-    NativeDraw(((CCanvas*)canvas)->GetNativeCanvasWrapper(), location, ((CBitmap*)mBitmap.Get())->Ni(), mNativeChunk,
-            paint != NULL ? ((Paint*)paint)->mNativePaint : 0, ((CCanvas*)canvas)->mDensity, ((CBitmap*)mBitmap.Get())->mDensity);
+    NativeDraw(((Canvas*)canvas)->GetNativeCanvasWrapper(), location, ((CBitmap*)mBitmap.Get())->Ni(), mNativeChunk,
+            paint != NULL ? ((Paint*)paint)->mNativePaint : 0, ((Canvas*)canvas)->mDensity, ((CBitmap*)mBitmap.Get())->mDensity);
 }
 
 void NinePatch::DrawSoftware(
@@ -195,8 +195,8 @@ void NinePatch::DrawSoftware(
     /* [in] */ IRect* location,
     /* [in] */ IPaint* paint)
 {
-    NativeDraw(((CCanvas*)canvas)->GetNativeCanvasWrapper(), location, ((CBitmap*)mBitmap.Get())->Ni(), mNativeChunk,
-            paint != NULL ? ((Paint*)paint)->mNativePaint  : 0, ((CCanvas*)canvas)->mDensity, ((CBitmap*)mBitmap.Get())->mDensity);
+    NativeDraw(((Canvas*)canvas)->GetNativeCanvasWrapper(), location, ((CBitmap*)mBitmap.Get())->Ni(), mNativeChunk,
+            paint != NULL ? ((Paint*)paint)->mNativePaint  : 0, ((Canvas*)canvas)->mDensity, ((CBitmap*)mBitmap.Get())->mDensity);
 }
 
 ECode NinePatch::GetDensity(

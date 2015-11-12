@@ -1089,7 +1089,6 @@ module
         interface IYuvImage;
     }
 
-    [deprecated]
     class COutline {
         constructor();
 

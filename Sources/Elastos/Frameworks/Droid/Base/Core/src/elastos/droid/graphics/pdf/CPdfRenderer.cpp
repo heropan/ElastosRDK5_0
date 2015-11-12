@@ -5,14 +5,13 @@
 #include "elastos/droid/graphics/CPoint.h"
 #include "elastos/droid/graphics/Matrix.h"
 #include <elastos/droid/system/OsConstants.h>
+#include <elastos/core/Mutex.h>
 #include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkMatrix.h>
 #include <fpdfview.h>
 #include <fsdk_rendercontext.h>
-#include <libcxx/vector>
 #include <utils/Log.h>
-#include <utils/Mutex.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -21,6 +20,7 @@ using Elastos::Droid::System::OsConstants;
 using Elastos::Droid::System::IStructStat;
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::Logging::Logger;
 using Libcore::IO::CLibcore;
@@ -35,22 +35,27 @@ namespace Pdf {
 const Int32 CPdfRenderer::Page::RENDER_MODE_FOR_DISPLAY = 1;
 const Int32 CPdfRenderer::Page::RENDER_MODE_FOR_PRINT = 2;
 CAR_INTERFACE_IMPL(CPdfRenderer::Page, Object, IPdfRendererPage);
-CPdfRenderer::Page::Page(
+CPdfRenderer::Page::Page()
+    : mIndex(0)
+    , mWidth(0)
+    , mHeight(0)
+    , mNativePage(0)
+{}
+
+ECode CPdfRenderer::Page::constructor(
     /* [in] */ Int32 index,
     /* [in] */ CPdfRenderer* host)
-    : mHost(host)
 {
+    mHost = host;
     AutoPtr<ICloseGuardHelper> helper;
     CCloseGuardHelper::AcquireSingleton((ICloseGuardHelper**)&helper);
     helper->Get((ICloseGuard**)&mCloseGuard);
 
     AutoPtr<IPoint> size = mHost->mTempPoint;
-    if (FAILED(NativeOpenPageAndGetSize(mHost->mNativeDocument, index, size, &mNativePage))) {
-        assert(0);
-    }
+    FAIL_RETURN(NativeOpenPageAndGetSize(mHost->mNativeDocument, index, size, &mNativePage));
     mIndex = index;
     size->Get(&mWidth, &mHeight);
-    mCloseGuard->Open(String("close"));
+    return mCloseGuard->Open(String("close"));
 }
 
 CPdfRenderer::Page::~Page()
@@ -253,7 +258,8 @@ ECode CPdfRenderer::OpenPage(
     FAIL_RETURN(ThrowIfClosed());
     FAIL_RETURN(ThrowIfPageOpened());
     FAIL_RETURN(ThrowIfPageNotInDocument(index));
-    mCurrentPage = new Page(index, this);
+    mCurrentPage = new Page();
+    ((Page*)mCurrentPage.Get())->constructor(index, this);
     *page = mCurrentPage;
     REFCOUNT_ADD(*page);
     return NOERROR;
@@ -302,20 +308,22 @@ ECode CPdfRenderer::ThrowIfPageNotInDocument(
     return NOERROR;
 }
 
-static android::Mutex sLock;
+static Mutex sLock;
 
 static int sUnmatchedInitRequestCount = 0;
 
-static void InitializeLibraryIfNeeded() {
-    android::Mutex::Autolock _l(sLock);
+static void InitializeLibraryIfNeeded()
+{
+    Mutex::AutoLock _l(sLock);
     if (sUnmatchedInitRequestCount == 0) {
         FPDF_InitLibrary(NULL);
     }
     sUnmatchedInitRequestCount++;
 }
 
-static void DestroyLibraryIfNeeded() {
-    android::Mutex::Autolock _l(sLock);
+static void DestroyLibraryIfNeeded()
+{
+    Mutex::AutoLock _l(sLock);
     sUnmatchedInitRequestCount--;
     if (sUnmatchedInitRequestCount == 0) {
        FPDF_DestroyLibrary();

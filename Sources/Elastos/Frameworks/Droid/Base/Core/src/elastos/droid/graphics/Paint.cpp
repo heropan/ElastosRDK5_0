@@ -221,7 +221,7 @@ void Paint::SetClassVariablesFrom(
     mShader = paint->mShader;
 
     if (paint->mShader != NULL) {
-        mShader = ((Shader*)paint->mShader.Get())->Copy();
+        ((Shader*)paint->mShader.Get())->Copy((IShader**)&mShader);
     } else {
         mShader = NULL;
     }
@@ -1350,7 +1350,7 @@ ECode Paint::GetTextRunAdvances(
                 (advances->GetLength() - (advancesIndex + count)))) < 0) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    if (chars->GetLength() == 0 || count == 0){
+    if (chars->GetLength() == 0 || count == 0) {
         *advance = 0;
         return NOERROR;
     }

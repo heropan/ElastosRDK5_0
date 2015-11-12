@@ -1,39 +1,18 @@
 
 #include "elastos/droid/view/ViewGroupLayoutParams.h"
-#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
 
+CAR_INTERFACE_IMPL(ViewGroupLayoutParams, Object, IViewGroupLayoutParams);
 ViewGroupLayoutParams::~ViewGroupLayoutParams()
 {
 }
-
-ViewGroupLayoutParams::ViewGroupLayoutParams(
-    /* [in] */ IContext* c,
-    /* [in] */ IAttributeSet* attrs)
-    : mWidth(0)
-    , mHeight(0)
-{
-    ASSERT_SUCCEEDED(Init(c, attrs));
-}
-
-ViewGroupLayoutParams::ViewGroupLayoutParams(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height)
-    : mWidth(width)
-    , mHeight(height)
-{}
-
-ViewGroupLayoutParams::ViewGroupLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* source)
-    : mWidth(source->mWidth)
-    , mHeight(source->mHeight)
-{}
 
 ViewGroupLayoutParams::ViewGroupLayoutParams()
     : mWidth(0)
@@ -67,7 +46,7 @@ ECode ViewGroupLayoutParams::SizeToString(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode ViewGroupLayoutParams::Init(
+ECode ViewGroupLayoutParams::constructor(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
@@ -84,7 +63,7 @@ ECode ViewGroupLayoutParams::Init(
     return ec;
 }
 
-ECode ViewGroupLayoutParams::Init(
+ECode ViewGroupLayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
@@ -93,7 +72,7 @@ ECode ViewGroupLayoutParams::Init(
     return NOERROR;
 }
 
-ECode ViewGroupLayoutParams::Init(
+ECode ViewGroupLayoutParams::constructor(
     /* [in] */ IViewGroupLayoutParams* source)
 {
     source->GetWidth(&mWidth);
@@ -115,14 +94,20 @@ ECode ViewGroupLayoutParams::SetHeight(
     return NOERROR;
 }
 
-Int32 ViewGroupLayoutParams::GetWidth()
+ECode ViewGroupLayoutParams::GetWidth(
+    /* [out] */ Int32* width)
 {
-    return mWidth;
+    VALIDATE_NOT_NULL(width);
+    *width = mWidth;
+    return NOERROR;
 }
 
-Int32 ViewGroupLayoutParams::GetHeight()
+ECode ViewGroupLayoutParams::GetHeight(
+    /* [out] */ Int32* height)
 {
-    return mHeight;
+    VALIDATE_NOT_NULL(height);
+    *height = mHeight;
+    return NOERROR;
 }
 
 ECode ViewGroupLayoutParams::SetLayoutAnimationParameters(
@@ -132,18 +117,12 @@ ECode ViewGroupLayoutParams::SetLayoutAnimationParameters(
     return NOERROR;
 }
 
-AutoPtr<IAnimationParameters> ViewGroupLayoutParams::GetLayoutAnimationParameters()
-{
-    return mLayoutAnimationParameters;
-}
-
 ECode ViewGroupLayoutParams::GetLayoutAnimationParameters(
     /* [out] */ IAnimationParameters** ap)
 {
     VALIDATE_NOT_NULL(ap);
     *ap = mLayoutAnimationParameters;
     REFCOUNT_ADD(*ap);
-
     return NOERROR;
 }
 
@@ -156,7 +135,7 @@ ECode ViewGroupLayoutParams::ResolveLayoutDirection(
 ECode ViewGroupLayoutParams::OnDebugDraw(
     /* [in] */ IView* view,
     /* [in] */ ICanvas* canvas,
-    /* [in] */ IPaint* paint);
+    /* [in] */ IPaint* paint)
 {
     return NOERROR;
 }

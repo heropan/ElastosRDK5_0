@@ -96,8 +96,7 @@ public:
              * @param contentRect The content rectangle. Must fit in the page.
              */
             CARAPI SetContentRect(
-                /* [in] */ IRect* contentRect,
-                /* [out] */ IPdfDocumentPageInfoBuilder** builder);
+                /* [in] */ IRect* contentRect);
 
             /**
              * Creates a new {@link PageInfo}.
