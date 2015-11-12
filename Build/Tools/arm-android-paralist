@@ -149,11 +149,11 @@
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/content/res
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/content
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/drm/mobile1
-> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/audiofx
-  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/audiopolicy
-  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/browse
-  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/projection
-  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/session
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/audiofx
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/audiopolicy
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/browse
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/projection
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/session
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/mtp
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable/shapes
