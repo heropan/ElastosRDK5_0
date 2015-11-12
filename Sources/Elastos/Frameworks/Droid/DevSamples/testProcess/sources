@@ -7,11 +7,11 @@ IMPORTS = Elastos.Droid.Core.eco
 SOURCES  = test.cpp
 SOURCES += main.cpp
 
-ELASTOS_LIBS  = $(XDK_USER_LIB)/Elastos.Runtime.lib
-ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.Runtime.eco
-ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-ELASTOS_LIBS += $(XDK_USER_LIB)/Elastos.Droid.lib
-ELASTOS_LIBS += $(XDK_USER_LIB)/tstcom.lib
+LIBRARIES  = $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
+LIBRARIES += $(XDK_USER_LIB)/tstcom.lib
 
 LIBRARIES += -lgcc -lc -lstdc++ -lm -ldl -llog -lz -lutils -lbinder -lmedia
 

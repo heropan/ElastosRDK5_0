@@ -7,8 +7,8 @@ TARGET_TYPE = exe
 
 SOURCES = carcode.cpp
 
-LIBRARIES = ../ElCar/Carc/clsbase/clsbase.lib
-LIBRARIES += ../ElCar/Carc/clsutil/clsutil.lib
+ELASTOS_LIBS = ../ElCar/Carc/clsbase/clsbase.lib
+ELASTOS_LIBS += ../ElCar/Carc/clsutil/clsutil.lib
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
 LIBRARIES += -lz
 else

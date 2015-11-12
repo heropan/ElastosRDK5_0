@@ -17,8 +17,8 @@ SOURCES += parser.cpp
 SOURCES += StringBuilder.cpp
 SOURCES += carc.rc
 
-LIBRARIES = ../clsutil/clsutil.lib
-LIBRARIES += ../clsbase/clsbase.lib
+ELASTOS_LIBS = ../clsutil/clsutil.lib
+ELASTOS_LIBS += ../clsbase/clsbase.lib
 ifeq "$(XDK_TARGET_PLATFORM)" "win32"
 LIBRARIES += $(XDK_USER_LIB)/libz.lib
 

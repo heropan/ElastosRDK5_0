@@ -114,7 +114,7 @@ SOURCES = Elastos.CoreLibrary.car
 SOURCES += AsynchronousCloseMonitor.cpp
 #SOURCES += StrictMath.cpp
 
-ELASTOS_LIBS += $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 ELASTOS_LIBS += ../elastos/core/elastos.core.lib
 ELASTOS_LIBS += ../elastos/io/elastos.io.lib
 ELASTOS_LIBS += ../elastos/droid/system/elastos.droid.system.lib
@@ -140,8 +140,8 @@ ELASTOS_LIBS += ../org/xml/sax/org.xml.sax.lib
 ELASTOS_LIBS += ../org/xmlpull/v1/org.xmlpull.v1.lib
 ELASTOS_LIBS += ../org/kxml2/io/org.kxml2.io.lib
 
-ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.Runtime.eco
-ELASTOS_LIBS += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 #LIBRARIES += $(PREBUILD_LIB)/libm.a
 LIBRARIES += -lcutils -licuuc -licui18n -lm -lssl -lcrypto -lsqlite
 LIBRARIES += -llog -lselinux -lz -lutils -lziparchive -lfdlibm

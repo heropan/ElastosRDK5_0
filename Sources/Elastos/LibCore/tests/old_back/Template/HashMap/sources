@@ -4,6 +4,6 @@ TARGET_TYPE = ecx
 
 SOURCES = test.cpp
 
-ELASTOS_LIBS = $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += -lstdc++
-#ELASTOS_LIBS += $(XDK_USER_LIB)/Elcxx.lib
+#LIBRARIES += $(XDK_USER_LIB)/Elcxx.lib

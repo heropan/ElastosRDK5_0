@@ -20,10 +20,10 @@ SOURCES += memcond.cpp
 SOURCES += funcarg.cpp
 #    sample.rc \
 
-LIBRARIES = ../userfunc/userfunc.lib
-LIBRARIES += ../lubase/lubase.lib
-LIBRARIES += ../../Carc/clsutil/clsutil.lib
-LIBRARIES += ../../Carc/clsbase/clsbase.lib
+ELASTOS_LIBS = ../userfunc/userfunc.lib
+ELASTOS_LIBS += ../lubase/lubase.lib
+ELASTOS_LIBS += ../../Carc/clsutil/clsutil.lib
+ELASTOS_LIBS += ../../Carc/clsbase/clsbase.lib
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
 LIBRARIES += -lz
 else

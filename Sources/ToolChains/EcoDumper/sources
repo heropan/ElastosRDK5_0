@@ -4,6 +4,6 @@ TARGET_TYPE= exe
 
 SOURCES = main.cpp
 
-LIBRARIES += ../../Elastos/Runtime/Library/clsmodule/clsinfo.lib
+ELASTOS_LIBS += ../../Elastos/Runtime/Library/clsmodule/clsinfo.lib
 LIBRARIES += -lz
 LIBRARIES += -lstdc++

@@ -14,10 +14,10 @@ SOURCES = lube.cpp
 SOURCES += cmdarg.cpp
 SOURCES += lube.rc
 
-LIBRARIES = ../lubase/lubase.lib
-LIBRARIES += ../userfunc/userfunc.lib
-LIBRARIES += ../../Carc/clsutil/clsutil.lib
-LIBRARIES += ../../Carc/clsbase/clsbase.lib
+ELASTOS_LIBS = ../lubase/lubase.lib
+ELASTOS_LIBS += ../userfunc/userfunc.lib
+ELASTOS_LIBS += ../../Carc/clsutil/clsutil.lib
+ELASTOS_LIBS += ../../Carc/clsbase/clsbase.lib
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
 LIBRARIES += -lz
 else

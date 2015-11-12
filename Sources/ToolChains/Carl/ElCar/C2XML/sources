@@ -11,7 +11,7 @@ INCLUDES += $(INCLUDESTEMP);
 
 SOURCES = c2xml.cpp
 
-LIBRARIES += ../Carc/clsbase/clsbase.lib
+ELASTOS_LIBS += ../Carc/clsbase/clsbase.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Archiving.zlib.lib
 
 EXTERN_LIBS = msvcrt

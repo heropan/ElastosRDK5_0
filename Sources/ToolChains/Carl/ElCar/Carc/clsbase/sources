@@ -22,6 +22,6 @@ SOURCES += newop.cpp
 SOURCES += type.cpp
 SOURCES += implibs.cpp
 
-LIBRARIES = guidseed/guidseed.lib
-LIBRARIES += ../../../../../Elastos/Runtime/Library/clsmodule/clsinfo.lib
+ELASTOS_LIBS = guidseed/guidseed.lib
+ELASTOS_LIBS += ../../../../../Elastos/Runtime/Library/clsmodule/clsinfo.lib
 
