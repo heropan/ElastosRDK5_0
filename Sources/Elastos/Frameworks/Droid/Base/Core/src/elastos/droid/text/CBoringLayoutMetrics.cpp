@@ -22,6 +22,11 @@ CBoringLayoutMetrics::CBoringLayoutMetrics()
 {
 }
 
+ECode CBoringLayoutMetrics::constructor()
+{
+    return NOERROR;
+}
+
 ECode CBoringLayoutMetrics::GetTop(
     /* [out] */ Int32* top)
 {

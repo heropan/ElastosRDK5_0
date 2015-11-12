@@ -26,6 +26,8 @@ public:
 
     virtual ~DateKeyListener();
 
+    CARAPI constructor();
+
     CARAPI GetInputType(
         /* [out] */ Int32* ret);
 

@@ -4,9 +4,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Text::IBreakIterator;
 using Elastos::Utility::ILocale;
 using Elastos::Core::ICharSequence;
-using Elastos::Text::IBreakIterator;
 
 namespace Elastos {
 namespace Droid {

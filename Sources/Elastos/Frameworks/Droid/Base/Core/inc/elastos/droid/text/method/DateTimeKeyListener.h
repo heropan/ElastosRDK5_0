@@ -22,6 +22,8 @@ class DateTimeKeyListener
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
     CARAPI GetInputType(
         /* [out] */ Int32* ret);
 

@@ -1,4 +1,3 @@
-
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CSCROLLINGMOVEMENTMETHOD_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CSCROLLINGMOVEMENTMETHOD_H__
 
@@ -13,6 +12,7 @@ namespace Method {
 CarClass(CScrollingMovementMethod)
     , public ScrollingMovementMethod
 {
+public:
     CAR_OBJECT_DECL()
 };
 

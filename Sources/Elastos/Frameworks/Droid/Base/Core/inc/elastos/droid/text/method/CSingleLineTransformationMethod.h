@@ -18,6 +18,8 @@ public:
 
     CAR_OBJECT_DECL()
 
+    CARAPI constructor();
+
     static CARAPI GetInstance(
         /* [out] */ ISingleLineTransformationMethod** ret);
 

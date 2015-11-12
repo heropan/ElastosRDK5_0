@@ -4,11 +4,11 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 
+using Elastos::Droid::Text::CSpannedString;
+using Elastos::Droid::Text::ISpannedString;
 using Elastos::Core::CString;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::StringBuilder;
-using Elastos::Droid::Text::ISpannedString;
-using Elastos::Droid::Text::CSpannedString;
 
 namespace Elastos {
 namespace Droid {
@@ -70,7 +70,7 @@ ECode ReplacementTransformationMethod::ReplacementCharSequence::SubSequence(
     GetChars(start, end, c, 0);
 
     StringBuilder sb;
-    sb.Append(const_cast<ArrayOf<Char32>&>(*c));
+    sb.Append(*c);
     AutoPtr<ICharSequence> cs = sb.ToCharSequence();
     *csq = cs;
     REFCOUNT_ADD(*csq);
@@ -198,7 +198,7 @@ ECode ReplacementTransformationMethod::SpannedReplacementCharSequence::construct
     /* [in] */ ArrayOf<Char32>* original,
     /* [in] */ ArrayOf<Char32>* replacement)
 {
-    constructor(source, original, replacement);
+    FAIL_RETURN(ReplacementCharSequence::constructor(ICharSequence::Probe(source), original, replacement));
     mSpanned = source;
     return NOERROR;
 }

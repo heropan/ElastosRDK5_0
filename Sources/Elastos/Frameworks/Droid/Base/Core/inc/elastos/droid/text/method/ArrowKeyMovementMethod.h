@@ -26,6 +26,8 @@ public:
 
     virtual ~ArrowKeyMovementMethod();
 
+    CARAPI constructor();
+
     //@Override
     CARAPI OnTouchEvent(
         /* [in] */ ITextView* widget,

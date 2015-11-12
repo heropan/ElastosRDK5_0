@@ -30,6 +30,11 @@ DialerKeyListener::DialerKeyListener()
 DialerKeyListener::~DialerKeyListener()
 {}
 
+ECode DialerKeyListener::constructor()
+{
+    return NOERROR;
+}
+
 CAR_INTERFACE_IMPL(DialerKeyListener, Object, IDialerKeyListener)
 
 AutoPtr< ArrayOf<Char32> > DialerKeyListener::GetAcceptedChars()
@@ -137,7 +142,7 @@ ECode DialerKeyListener::GetInstance(
         CDialerKeyListener::New((IDialerKeyListener**)&sInstance);
     }
 
-    *ret = sInstance;
+    *ret = sInstance.Get();
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }

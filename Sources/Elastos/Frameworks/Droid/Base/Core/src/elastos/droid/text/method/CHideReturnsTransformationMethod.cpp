@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CHideReturnsTransformationMethod.h"
 #include "elastos/droid/ext/frameworkext.h"
 

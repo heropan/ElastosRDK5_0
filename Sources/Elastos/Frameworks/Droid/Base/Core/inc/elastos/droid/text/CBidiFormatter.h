@@ -20,6 +20,8 @@ public:
 
     CAR_OBJECT_DECL()
 
+    CARAPI constructor();
+
     /**
      * @return Whether the context directionality is RTL
      */

@@ -105,9 +105,7 @@ ECode CharacterPickerDialog::constructor(
     mText = text;
     mOptions = options;
     mInsert = insert;
-    AutoPtr<ILayoutInflaterHelper> lih;
-    CLayoutInflaterHelper::AcquireSingleton((ILayoutInflaterHelper**)&lih);
-    return lih->From(context, (ILayoutInflaterHelper**)&mInflater);
+    return LayoutInflater::From(context, (ILayoutInflaterHelper**)&mInflater);
 }
 
 void CharacterPickerDialog::OnCreate(
@@ -171,7 +169,7 @@ ECode CharacterPickerDialog::OnClick(
 {
     Boolean flag(FALSE);
     if ((v->Equals(mCancelButton, &flag), flag)) {
-        FAIL_RETURN(Dismiss());
+        Dismiss();
     } else if (IButton::Probe(v)) {
         AutoPtr<ICharSequence> result;
         IButton::Probe(v)->GetText((ICharSequence**)&result);

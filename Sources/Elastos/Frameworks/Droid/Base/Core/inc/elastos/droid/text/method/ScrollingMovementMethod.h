@@ -22,6 +22,8 @@ public:
 
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
     //@Override
     CARAPI OnTouchEvent(
         /* [in] */ ITextView* widget,

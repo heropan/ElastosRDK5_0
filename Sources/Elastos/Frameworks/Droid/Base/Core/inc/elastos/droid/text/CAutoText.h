@@ -25,6 +25,8 @@ public:
 
     CAutoText();
 
+    CARAPI constructor();
+
     CARAPI constructor(
         /* [in] */ IResources* resources);
 

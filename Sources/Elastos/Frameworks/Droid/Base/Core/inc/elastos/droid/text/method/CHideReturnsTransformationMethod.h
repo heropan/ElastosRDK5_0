@@ -16,6 +16,7 @@ namespace Method {
 CarClass(CHideReturnsTransformationMethod)
     , public HideReturnsTransformationMethod
 {
+public:
     CAR_OBJECT_DECL()
 };
 

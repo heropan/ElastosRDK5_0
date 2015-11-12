@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CScrollingMovementMethod.h"
 #include "elastos/droid/ext/frameworkext.h"
 

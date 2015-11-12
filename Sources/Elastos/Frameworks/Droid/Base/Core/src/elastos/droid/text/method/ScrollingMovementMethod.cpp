@@ -19,6 +19,11 @@ ScrollingMovementMethod::~ScrollingMovementMethod()
 
 CAR_INTERFACE_IMPL_3(ScrollingMovementMethod, Object, IScrollingMovementMethod, IMovementMethod, IBaseMovementMethod)
 
+ECode ScrollingMovementMethod::constructor()
+{
+    return NOERROR;
+}
+
 Boolean ScrollingMovementMethod::Left(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* buffer)
@@ -100,7 +105,7 @@ Boolean ScrollingMovementMethod::End(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* buffer)
 {
-        return Bottom(widget, buffer);
+    return Bottom(widget, buffer);
 }
 
 ECode ScrollingMovementMethod::OnTouchEvent(

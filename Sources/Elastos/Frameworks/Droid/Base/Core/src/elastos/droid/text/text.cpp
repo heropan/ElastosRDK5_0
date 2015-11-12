@@ -12,6 +12,11 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
+ECode CNoCopySpanConcrete::constructor()
+{
+    return NOERROR;
+}
+
 CAR_INTERFACE_IMPL(CNoCopySpanConcrete, Object, INoCopySpan)
 CAR_OBJECT_IMPL(CNoCopySpanConcrete)
 

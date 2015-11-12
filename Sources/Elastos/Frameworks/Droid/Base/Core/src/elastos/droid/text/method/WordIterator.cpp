@@ -26,7 +26,6 @@ const Int32 WordIterator::WINDOW_WIDTH = 50;
 WordIterator::WordIterator()
     : mString("")
     , mOffsetShift(0)
-    , mIterator(NULL)
 {}
 
 WordIterator::~WordIterator()
