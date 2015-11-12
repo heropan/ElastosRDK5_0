@@ -33,7 +33,6 @@ namespace App {
 
 const Int32 UiAutomationConnection::INITIAL_FROZEN_ROTATION_UNSPECIFIED = -1;
 
-
 CAR_INTERFACE_IMPL_2(UiAutomationConnection, Object, IIUiAutomationConnection, IBinder)
 
 UiAutomationConnection::UiAutomationConnection()
@@ -51,6 +50,11 @@ UiAutomationConnection::UiAutomationConnection()
 
 UiAutomationConnection::~UiAutomationConnection()
 {}
+
+ECode UiAutomationConnection::constructor()
+{
+    return NOERROR;
+}
 
 ECode UiAutomationConnection::Connect(
     /* [in] */ IIAccessibilityServiceClient* client)

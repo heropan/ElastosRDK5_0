@@ -159,6 +159,7 @@ module
     interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Utility.IArrayMap;
+    interface Elastos.Droid.Internal.App.IIAppOpsCallback;
 
 //     using interface Elastos.Core.ICharSequence;
 //     interface Elastos.Droid.Os.ILooper;
@@ -425,25 +426,25 @@ module
         interface IOnWindowDismissedCallback;
     }
 
-    class CActivityView {
-        constructor(
-            [in] IContext* ctx);
+    // class CActivityView {
+    //     constructor(
+    //         [in] IContext* ctx);
 
-        constructor(
-            [in] IContext* ctx,
-            [in] IAttributeSet* attrs);
+    //     constructor(
+    //         [in] IContext* ctx,
+    //         [in] IAttributeSet* attrs);
 
-        constructor(
-            [in] IContext* ctx,
-            [in] IAttributeSet* attrs,
-            [in] Int32 style);
+    //     constructor(
+    //         [in] IContext* ctx,
+    //         [in] IAttributeSet* attrs,
+    //         [in] Int32 style);
 
-        interface IActivityView;
-        interface IViewGroup;
-        interface IViewManager;
-        interface IViewParent;
-        interface IView;
-    }
+    //     interface IActivityView;
+    //     interface IViewGroup;
+    //     interface IViewManager;
+    //     interface IViewParent;
+    //     interface IView;
+    // }
 
     class CActivityViewActivityContainerCallback {
         constructor(
@@ -607,6 +608,13 @@ module
 //         interface IUiModeManager;
 //     }
 
+    //class UiAutomationConnection {
+    //    constructor();
+
+    //    interface IIUiAutomationConnection;
+    //    interface IBinder;
+    //}
+
     class CPendingIntent {
         constructor();
 
@@ -673,6 +681,14 @@ module
 
         interface IApplicationErrorReportRunningServiceInfo;
         interface IParcelable;
+    }
+
+    class CAppOpsManagerAppOpsCallback {
+        constructor(
+            [in] IAppOpsManagerOnOpChangedListener* cb);
+
+        interface IIAppOpsCallback;
+        interface IBinder;
     }
 
 //     [local]

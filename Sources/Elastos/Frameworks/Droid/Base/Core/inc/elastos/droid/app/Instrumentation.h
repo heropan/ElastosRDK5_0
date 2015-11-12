@@ -86,8 +86,6 @@ private:
             /* [in] */ Int32 identifier,
             /* [in] */ Int32 flags);
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Run();
 
     private:
@@ -690,7 +688,7 @@ public:
         /* [in] */ ICharSequence* title,
         /* [in] */ IActivity* parent,
         /* [in] */ const String& id,
-        /* [in] */ IInterface* lastNonConfigurationInstance,
+        /* [in] */ IActivityNonConfigurationInstances* lastNonConfigurationInstance,
         /* [out] */ IActivity** activity);
 
     CARAPI PrePerformCreate(

@@ -968,7 +968,7 @@ ECode Instrumentation::NewActivity(
     /* [in] */ ICharSequence* title,
     /* [in] */ IActivity* parent,
     /* [in] */ const String& id,
-    /* [in] */ IInterface* lastNonConfigurationInstance,
+    /* [in] */ IActivityNonConfigurationInstances* lastNonConfigurationInstance,
     /* [out] */ IActivity** activity)
 {
     VALIDATE_NOT_NULL(activity)

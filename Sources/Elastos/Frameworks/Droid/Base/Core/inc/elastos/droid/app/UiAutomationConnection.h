@@ -1,29 +1,27 @@
-
-
 #ifndef __ELASTOS_DROID_APP_UIAUTOMATION_CONNECTION_H__
 #define __ELASTOS_DROID_APP_UIAUTOMATION_CONNECTION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-// using Elastos::Droid::accessibilityservice.AccessibilityServiceInfo;
-// using Elastos::Droid::accessibilityservice.IAccessibilityServiceClient;
-// using Elastos::Droid::content.Context;
-// using Elastos::Droid::graphics.Bitmap;
-// using Elastos::Droid::hardware.input.InputManager;
-// using Elastos::Droid::os.Binder;
-// using Elastos::Droid::os.IBinder;
-// using Elastos::Droid::os.ParcelFileDescriptor;
-// using Elastos::Droid::os.Process;
-// using Elastos::Droid::os.RemoteException;
-// using Elastos::Droid::os.ServiceManager;
-// using Elastos::Droid::view.IWindowManager;
-// using Elastos::Droid::view.InputEvent;
-// using Elastos::Droid::view.SurfaceControl;
-// using Elastos::Droid::view.WindowAnimationFrameStats;
-// using Elastos::Droid::view.WindowContentFrameStats;
-// using Elastos::Droid::view.accessibility.AccessibilityEvent;
-// using Elastos::Droid::view.accessibility.IAccessibilityManager;
+// using Elastos::Droid::Accessibilityservice.AccessibilityServiceInfo;
+// using Elastos::Droid::Accessibilityservice.IAccessibilityServiceClient;
+// using Elastos::Droid::Content.Context;
+// using Elastos::Droid::Graphics.Bitmap;
+// using Elastos::Droid::Hardware.input.InputManager;
+// using Elastos::Droid::Os::IBinder;
+// using Elastos::Droid::Os::IIBinder;
+// using Elastos::Droid::Os::IParcelFileDescriptor;
+// using Elastos::Droid::Os::IProcess;
+// using Elastos::Droid::Os::IRemoteException;
+// using Elastos::Droid::Os::IServiceManager;
+// using Elastos::Droid::View::IIWindowManager;
+// using Elastos::Droid::View::IInputEvent;
+// using Elastos::Droid::View::ISurfaceControl;
+// using Elastos::Droid::View::IWindowAnimationFrameStats;
+// using Elastos::Droid::View::IWindowContentFrameStats;
+// using Elastos::Droid::View::Iaccessibility.AccessibilityEvent;
+// using Elastos::Droid::View::Iaccessibility.IAccessibilityManager;
 // import libcore.io.IoUtils;
 
 // import java.io.FileOutputStream;
@@ -56,6 +54,8 @@ public:
     UiAutomationConnection();
 
     virtual ~UiAutomationConnection();
+
+    CARAPI constructor();
 
     CARAPI Connect(
         /* [in] */ IIAccessibilityServiceClient* client);

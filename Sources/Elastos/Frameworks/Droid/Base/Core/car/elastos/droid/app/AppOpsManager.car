@@ -19,6 +19,25 @@ module
     }
 
     /**
+     * Callback for notification of changes to operation state.
+     * This allows you to see the raw op codes instead of strings.
+     * @hide
+     */
+    /**
+     * @Involve
+     * interface IAppOpsManagerOnOpChangedListener
+     */
+    interface IAppOpsManagerOnOpChangedInternalListener {
+        OnOpChanged(
+            [in] String op,
+            [in] String packageName);
+
+        OnOpChanged(
+            [in] Int32 op,
+            [in] String packageName);
+    }
+
+    /**
      * @Involve
      * interface IParcelable
      */

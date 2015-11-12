@@ -1,222 +1,275 @@
 
-#include "elastos/droid/app/IAppOpsManager::h"
+#include "elastos/droid/app/AppOpsManager.h"
+#include "elastos/droid/app/CAppOpsManagerAppOpsCallback.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Process.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::App::Usage::UsageStatsManager;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Media::AudioAttributes.AttributeUsage;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IIBinder;
-using Elastos::Droid::Os::IParcel;
-using Elastos::Droid::Os::IParcelable;
-using Elastos::Droid::Os::IProcess;
-using Elastos::Droid::Os::IRemoteException;
-using Elastos::Droid::Os::IUserManager;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Utility::CArrayMap;
 
-using Elastos::Droid::Internal::App::IAppOpsCallback;
-using Elastos::Droid::Internal::App::IAppOpsService;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-/**
- * Class holding all of the operation information associated with an app.
- * @hide
- */
-class PackageOps
-    : public Object
-    , public IAppOpsManagerPackageOps
-    , public IParcelable
-{
-public:
-    PackageOps();
-
-    CARAPI constructor(
-        /* [in] */ const String& packageName,
-        /* [in] */ Int32 uid,
-        /* [in] */ IList* entries)
-    {
-        mPackageName = packageName;
-        mUid = uid;
-        mEntries = entries;
-    }
-
-    CARAPI GetPackageName(
-        /* [out] */ String* str)
-    {
-        return mPackageName;
-    }
-
-    CARAPI GetUid(
-        /* [out] */ Int32* uid)
-    {
-        return mUid;
-    }
-
-    CARAPI GetOps(
-        /* [out] */ IList** ops)
-    {
-        return mEntries;
-    }
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest)
-    {
-        dest.writeString(mPackageName);
-        dest.writeInt(mUid);
-        dest.writeInt(mEntries.size());
-        for (Int32 i=0; i<mEntries.size(); i++) {
-            mEntries.get(i).writeToParcel(dest, flags);
-        }
-    }
-
-    CARAPI ReadFromParcel(
-        /* [out] */ IParcel* source)
-    {
-        mPackageName = source.readString();
-        mUid = source.readInt();
-        mEntries = new ArrayList<OpEntry>();
-        final Int32 N = source.readInt();
-        for (Int32 i=0; i<N; i++) {
-            mEntries.add(OpEntry.CREATOR.createFromParcel(source));
-        }
-    }
-
-private:
-    String mPackageName;
-    Int32 mUid;
-    AutoPtr<IList> mEntries;//List<OpEntry>
-};
-
-/**
- * Class holding the information about one unique operation of an application.
- * @hide
- */
-class OpEntry
-    : public Object
-    , public IAppOpsManagerOpEntry
-    , public IParcelable
-{
-public:
-    OpEntry();
-
-    CARAPI constructor(
-        /* [in] */ Int32 op,
-        /* [in] */ Int32 mode,
-        /* [in] */ Int32 time,
-        /* [in] */ Int32 rejectTime,
-        /* [in] */ Int32 duration)
-    {
-        mOp = op;
-        mMode = mode;
-        mTime = time;
-        mRejectTime = rejectTime;
-        mDuration = duration;
-    }
-
-    CARAPI GetOp(
-        /* [out] */ Int32* op)
-    {
-        return mOp;
-    }
-
-    CARAPI GetMode(
-        /* [out] */ Int32* mode)
-    {
-        return mMode;
-    }
-
-    CARAPI GetTime(
-        /* [out] */ Int64* time)
-    {
-        return mTime;
-    }
-
-    CARAPI GetRejectTime(
-        /* [out] */ Int64* time)
-    {
-        return mRejectTime;
-    }
-
-    CARAPI IsRunning(
-        /* [out] */ Boolean* running)
-    {
-        return mDuration == -1;
-    }
-
-    CARAPI GetDuration(
-        /* [out] */ Int32* duration)
-    {
-        return mDuration == -1 ? (Int32)(System.currentTimeMillis()-mTime) : mDuration;
-    }
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest)
-    {
-        dest.writeInt(mOp);
-        dest.writeInt(mMode);
-        dest.writeLong(mTime);
-        dest.writeLong(mRejectTime);
-        dest.writeInt(mDuration);
-    }
-
-    CARAPI ReadFromParcel(
-        /* [in] */ IParcel* source)
-    {
-        mOp = source.readInt();
-        mMode = source.readInt();
-        mTime = source.readLong();
-        mRejectTime = source.readLong();
-        mDuration = source.readInt();
-    }
-
-private:
-    Int32 mOp;
-    Int32 mMode;
-    Int64 mTime;
-    Int64 mRejectTime;
-    Int32 mDuration;
-};
-
-/**
- * Callback for notification of changes to operation state.
- * This allows you to see the raw op codes instead of strings.
- * @hide
- */
-class OnOpChangedInternalListener
-    : public Object
-    , public IOnOpChangedListener
-{
-public:
-    ECode OnOpChanged(
-        /* [in] */ const String& op,
-        /* [in] */String packageName) { }
-
-    ECode OnOpChanged(
-        /* [in] */ Int32 op,
-        /* [in] */ const String& packageName) { }
-};
 
 //========================================================================
-//
+// AppOpsManager::PackageOps
 //========================================================================
 
+CAR_INTERFACE_IMPL_2(AppOpsManager::PackageOps, Object, IAppOpsManagerPackageOps, IParcelable)
+
+AppOpsManager::PackageOps::PackageOps()
+    : mUid(0)
+{}
+
+AppOpsManager::PackageOps::～PackageOps()
+{}
+
+ECode AppOpsManager::PackageOps::constructor()
+{
+    return NOERROR;
+}
+
+ECode AppOpsManager::PackageOps::constructor(
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 uid,
+    /* [in] */ IList* entries)
+{
+    mPackageName = packageName;
+    mUid = uid;
+    mEntries = entries;
+    return NOERROR;
+}
+
+ECode AppOpsManager::PackageOps::GetPackageName(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = mPackageName;
+    return NOERROR;
+}
+
+ECode AppOpsManager::PackageOps::GetUid(
+    /* [out] */ Int32* uid)
+{
+    VALIDATE_NOT_NULL(uid)
+    *uid = mUid;
+    return NOERROR;
+}
+
+ECode AppOpsManager::PackageOps::GetOps(
+    /* [out] */ IList** ops)
+{
+    VALIDATE_NOT_NULL(ops)
+    *ops = mEntries;
+    REFCOUNT_ADD(*ops)
+    return NOERROR;
+}
+
+ECode AppOpsManager::PackageOps::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    dest->WriteString(mPackageName);
+    dest->WriteInt32(mUid);
+    Int32 size;
+    mEntries->GetSize(&size);
+    dest->WriteInt32(size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
+        mEntries->Get(i, (IInterface**)&obj);
+        IParcelable::Probe(obj)->WriteToParcel(dest);
+    }
+    return NOERROR;
+}
+
+ECode AppOpsManager::PackageOps::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    source->ReadString(&mPackageName);
+    source->ReadInt32(&mUid);
+    CArrayList::New((IArrayList**)&mEntries);
+    Int32 N;
+    source->ReadInt32(&N);
+    for (Int32 i = 0; i < N; i++) {
+        AutoPtr<OpEntry> oe = new OpEntry();
+        oe->ReadFromParcel(source);
+        mEntries->Add(IInterface::Probe(oe));
+    }
+    return NOERROR;
+}
+
+ECode AppOpsManager::PackageOps::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("AppOpsManager::PackageOps");
+    return NOERROR;
+}
+
+//========================================================================
+// AppOpsManager::OpEntry
+//========================================================================
+
+CAR_INTERFACE_IMPL_2(AppOpsManager::OpEntry, Object, IAppOpsManagerOpEntry, IParcelable)
+
+AppOpsManager::OpEntry::OpEntry()
+    : mOp(0)
+    , mMode(0)
+    , mTime(0)
+    , mRejectTime(0)
+    , mDuration(0)
+{
+}
+
+ECode AppOpsManager::OpEntry::constructor()
+{
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::constructor(
+    /* [in] */ Int32 op,
+    /* [in] */ Int32 mode,
+    /* [in] */ Int32 time,
+    /* [in] */ Int32 rejectTime,
+    /* [in] */ Int32 duration)
+{
+    mOp = op;
+    mMode = mode;
+    mTime = time;
+    mRejectTime = rejectTime;
+    mDuration = duration;
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::GetOp(
+    /* [out] */ Int32* op)
+{
+    VALIDATE_NOT_NULL(op)
+    *op = mOp;
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::GetMode(
+    /* [out] */ Int32* mode)
+{
+    VALIDATE_NOT_NULL(mode)
+    *mode = mMode;
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::GetTime(
+    /* [out] */ Int64* time)
+{
+    VALIDATE_NOT_NULL(time)
+    *time = mTime;
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::GetRejectTime(
+    /* [out] */ Int64* time)
+{
+    VALIDATE_NOT_NULL(time)
+    *time = mRejectTime;
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::IsRunning(
+    /* [out] */ Boolean* running)
+{
+    VALIDATE_NOT_NULL(op)
+    *running = mDuration == -1;
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::GetDuration(
+    /* [out] */ Int32* duration)
+{
+    VALIDATE_NOT_NULL(duration)
+    *duration = mDuration;
+    if (mDuration == -1) {
+        Int64 currentTimeMillis;
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
+        system->GetCurrentTimeMillis(&currentTimeMillis);
+        *duration = (Int32)(currentTimeMillis-mTime);
+    }
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    dest->WriteInt32(mOp);
+    dest->WriteInt32(mMode);
+    dest->WriteInt64((mTime);
+    dest->WriteInt64((mRejectTime);
+    dest->WriteInt32(mDuration);
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    source->ReadInt32(&mOp);
+    source->ReadInt32(&mMode);
+    source->ReadInt64(&mTime);
+    source->ReadInt64(&mRejectTime);
+    source->ReadInt32(&mDuration);
+    return NOERROR;
+}
+
+ECode AppOpsManager::OpEntry::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("AppOpsManager::OpEntry");
+    return NOERROR;
+}
+
+//========================================================================
+// AppOpsManager::OnOpChangedInternalListener
+//========================================================================
+CAR_INTERFACE_IMPL_2(OnOpChangedInternalListener, Object, IAppOpsManagerOnOpChangedInternalListener, IAppOpsManagerOnOpChangedListener)
+
+ECode AppOpsManager::OnOpChangedInternalListener::OnOpChanged(
+    /* [in] */ const String& op,
+    /* [in] */ const String& packageName)
+{
+    return NOERROR;
+}
+
+ECode AppOpsManager::OnOpChangedInternalListener::OnOpChanged(
+    /* [in] */ Int32 op,
+    /* [in] */ const String& packageName)
+{
+    return NOERROR;
+}
+
+ECode AppOpsManager::OnOpChangedInternalListener::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("AppOpsManager::OnOpChangedInternalListener");
+    return NOERROR;
+}
+
+//========================================================================
+// AppOpsManager
+//========================================================================
+
+static Object AppOpsManager::sClassLock;
 static AutoPtr<IBinder> AppOpsManager::sToken;
+const Int32 AppOpsManager::sOpLength = 48;
 
-/**
- * This maps each operation to the operation that serves as the
- * switch to determine whether it is allowed.  Generally this is
- * a 1:1 mapping, but for some things (like location) that have
- * multiple low-level operations being tracked that should be
- * presented to the user as one switch then this can be used to
- * make them all controlled by the same single operation.
- */
-Int32 AppOpsManager::sOpToSwitch[] = {
+Int32 AppOpsManager::sOpToSwitch[48] = {
         IAppOpsManager::OP_COARSE_LOCATION,
         IAppOpsManager::OP_COARSE_LOCATION,
         IAppOpsManager::OP_COARSE_LOCATION,
@@ -267,7 +320,7 @@ Int32 AppOpsManager::sOpToSwitch[] = {
         IAppOpsManager::OP_ACTIVATE_VPN,
 };
 
-String AppOpsManager::sOpToString[] = {
+String AppOpsManager::sOpToString[54] = {
         IAppOpsManager::OPSTR_COARSE_LOCATION,
         IAppOpsManager::OPSTR_FINE_LOCATION,
         String(NULL),
@@ -318,11 +371,7 @@ String AppOpsManager::sOpToString[] = {
         IAppOpsManager::OPSTR_ACTIVATE_VPN,
 };
 
-/**
- * This provides a simple name for each operation to be used
- * in debug output.
- */
-String AppOpsManager::sOpNames[] = {
+String AppOpsManager::sOpNames[48] = {
         String("COARSE_LOCATION"),
         String("FINE_LOCATION"),
         String("GPS"),
@@ -373,7 +422,7 @@ String AppOpsManager::sOpNames[] = {
         String("ACTIVATE_VPN"),
 };
 
-String AppOpsManager::sOpPerms[] =  {
+String AppOpsManager::sOpPerms[48] =  {
         Manifest::permission::ACCESS_COARSE_LOCATION,
         Manifest::permission::ACCESS_FINE_LOCATION,
         String(NULL),
@@ -424,7 +473,7 @@ String AppOpsManager::sOpPerms[] =  {
         String(NULL), // no permission for activating vpn
 };
 
-static String sOpRestrictions[] = {
+static String sOpRestrictions[48] = {
         IUserManager::DISALLOW_SHARE_LOCATION, //COARSE_LOCATION
         IUserManager::DISALLOW_SHARE_LOCATION, //FINE_LOCATION
         IUserManager::DISALLOW_SHARE_LOCATION, //GPS
@@ -475,7 +524,7 @@ static String sOpRestrictions[] = {
         IUserManager::DISALLOW_CONFIG_VPN, // ACTIVATE_VPN
 };
 
-Boolean AppOpsManager::sOpAllowSystemRestrictionBypass[] = {
+Boolean AppOpsManager::sOpAllowSystemRestrictionBypass[48] = {
         FALSE, //COARSE_LOCATION
         FALSE, //FINE_LOCATION
         FALSE, //GPS
@@ -526,7 +575,7 @@ Boolean AppOpsManager::sOpAllowSystemRestrictionBypass[] = {
         FALSE, //ACTIVATE_VPN
 };
 
-Int32 AppOpsManager::sOpDefaultMode[] = {
+Int32 AppOpsManager::sOpDefaultMode[48] = {
         IAppOpsManager::MODE_ALLOWED,
         IAppOpsManager::MODE_ALLOWED,
         IAppOpsManager::MODE_ALLOWED,
@@ -577,7 +626,7 @@ Int32 AppOpsManager::sOpDefaultMode[] = {
         IAppOpsManager::MODE_IGNORED, // OP_ACTIVATE_VPN
 };
 
-Boolean AppOpsManager::sOpDisableReset[] = {
+Boolean AppOpsManager::sOpDisableReset[48] = {
         FALSE,
         FALSE,
         FALSE,
@@ -644,11 +693,19 @@ AutoPtr<HashMap<String, Int32> > AppOpsManager::sOpStrToOp = InitOpStrToOp();
 CAR_INTERFACE_IMPL(AppOpsManager, Object, IAppOpsManager)
 
 AppOpsManager::AppOpsManager()
-{}
+{
+}
 
 AppOpsManager::~AppOpsManager()
 {}
 
+ECode AppOpsManager::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("AppOpsManager");
+    return NOERROR;
+}
 
 Int32 AppOpsManager::OpToSwitch(
     /* [in] */ Int32 op)
@@ -659,8 +716,14 @@ Int32 AppOpsManager::OpToSwitch(
 String AppOpsManager::OpToName(
     /* [in] */ Int32 op)
 {
-    if (op == OP_NONE) return "NONE";
-    return op < sOpNames.length ? sOpNames[op] : ("Unknown(" + op + ")");
+    if (op == OP_NONE) return String("NONE");
+    if (op < sOpLength) {
+        return sOpNames[op];
+    }
+    StringBuilder sb("Unknown(");
+    sb += op;
+    sb += ")";
+    return sb.ToString();
 }
 
 String AppOpsManager::OpToPermission(
@@ -693,162 +756,105 @@ Boolean AppOpsManager::OpAllowsReset(
     return !sOpDisableReset[op];
 }
 
-CARAPI AppOpsManager::constructor(
+ECode AppOpsManager::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IIAppOpsService* service)
 {
     mContext = context;
     mService = service;
+    return NOERROR;
 }
 
-/**
- * Retrieve current operation state for all applications.
- *
- * @param ops The set of operations you are interested in, or null if you want all of them.
- * @hide
- */
 ECode AppOpsManager::GetPackagesForOps(
     /* [in] */ ArrayOf<Int32>* ops,
-    /* [out] */ IList** ops) //List<IAppOpsManager::PackageOps>
+    /* [out] */ IList** packages) //List<AppOpsManager::PackageOps>
 {
-    try {
-        return mService.getPackagesForOps(ops);
-    } catch (RemoteException e) {
-    }
-    return null;
+    VALIDATE_NOT_NULL(packages)
+    *packages = NULL;
+
+    return mService->GetPackagesForOps(ops, packages);
 }
 
-/**
- * Retrieve current operation state for one application.
- *
- * @param uid The uid of the application of interest.
- * @param packageName The name of the application of interest.
- * @param ops The set of operations you are interested in, or null if you want all of them.
- * @hide
- */
 ECode AppOpsManager::GetOpsForPackage(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [in] */ ArrayOf<Int32>* ops,
-    /* [out] */ IList** list) //List<IAppOpsManager::PackageOps>
+    /* [out] */ IList** packages) //List<IAppOpsManager::PackageOps>
 {
-    try {
-        return mService.getOpsForPackage(uid, packageName, ops);
-    } catch (RemoteException e) {
-    }
-    return null;
+    VALIDATE_NOT_NULL(packages)
+    *packages = NULL;
+    return mService->GetOpsForPackage(uid, packageName, ops, packages);
 }
 
-/** @hide */
 ECode AppOpsManager::SetMode(
     /* [in] */ Int32 code,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [in] */ Int32 mode)
 {
-    try {
-        mService.setMode(code, uid, packageName, mode);
-    } catch (RemoteException e) {
-    }
+    return mService->SetMode(code, uid, packageName, mode);
 }
 
-/**
- * Set a non-persisted restriction on an audio operation at a stream-level.
- * Restrictions are temporary additional constraints imposed on top of the persisted rules
- * defined by {@link #setMode}.
- *
- * @param code The operation to restrict.
- * @param usage The {@link android.media.AudioAttributes} usage value.
- * @param mode The restriction mode (MODE_IGNORED,MODE_ERRORED) or MODE_ALLOWED to unrestrict.
- * @param exceptionPackages Optional list of packages to exclude from the restriction.
- * @hide
- */
 ECode AppOpsManager::SetRestriction(
     /* [in] */ Int32 code,
     /* [in] */ Int32 usage,
     /* [in] */ Int32 mode,
     /* [in] */ ArrayOf<String>* exceptionPackages)
 {
-    try {
-        final Int32 uid = Binder.getCallingUid();
-        mService.setAudioRestriction(code, usage, uid, mode, exceptionPackages);
-    } catch (RemoteException e) {
-    }
+    Int32 uid = Binder::GetCallingUid();
+    return mService->SetAudioRestriction(code, usage, uid, mode, exceptionPackages);
 }
 
-/** @hide */
 ECode AppOpsManager::ResetAllModes()
 {
-    try {
-        mService.resetAllModes();
-    } catch (RemoteException e) {
-    }
+    return mService->ResetAllModes();
 }
 
-/**
- * Monitor for changes to the operating mode for the given op in the given app package.
- * @param op The operation to monitor, one of OPSTR_*.
- * @param packageName The name of the application to monitor.
- * @param callback Where to report changes.
- */
 ECode AppOpsManager::StartWatchingMode(
     /* [in] */ const String& op,
     /* [in] */ const String& packageName,
     /* [in] */ IAppOpsManagerOnOpChangedListener* callback)
 {
-    startWatchingMode(strOpToOp(op), packageName, callback);
+    Int32 ival;
+    FAIL_RETURN(StrOpToOp(op, &ival))
+    return StartWatchingMode(ival, packageName, callback);
 }
 
-/**
- * Monitor for changes to the operating mode for the given op in the given app package.
- * @param op The operation to monitor, one of OP_*.
- * @param packageName The name of the application to monitor.
- * @param callback Where to report changes.
- * @hide
- */
 ECode AppOpsManager::StartWatchingMode(
     /* [in] */ Int32 op,
     /* [in] */ const String& packageName,
     /* [in] */ IAppOpsManagerOnOpChangedListener* callback)
 {
-    synchronized (mModeWatchers) {
-        IAppOpsCallback cb = mModeWatchers.get(callback);
-        if (cb == null) {
-            cb = new IAppOpsCallback.Stub() {
-                ECode opChanged(Int32 op, String packageName) {
-                    if (callback instanceof OnOpChangedInternalListener) {
-                        ((OnOpChangedInternalListener)callback).onOpChanged(op, packageName);
-                    }
-                    if (sOpToString[op] != null) {
-                        callback.onOpChanged(sOpToString[op], packageName);
-                    }
-                }
-            };
-            mModeWatchers.put(callback, cb);
+    synchronized (mModeWatchersLock) {
+        HashMap<AutoPtr<IAppOpsManagerOnOpChangedListener>, AutoPtr<IIAppOpsCallback> >::Iterator it;
+        AutoPtr<IAppOpsManagerOnOpChangedListener> listener;
+        it = mModeWatchers.Find(listener);
+        AutoPtr<IIAppOpsCallback> cb;
+        if (it == mModeWatchers.End()) {
+            CAppOpsManagerAppOpsCallback::New((IIAppOpsCallback**)&cb);
+            mModeWatchers[listener] = cb;
         }
-        try {
-            mService.startWatchingMode(op, packageName, cb);
-        } catch (RemoteException e) {
+        else {
+            cb = it->mSecond;
         }
+
+        return mService->StartWatchingMode(op, packageName, cb);
     }
+    return NOERROR;
 }
 
-/**
- * Stop monitoring that was previously started with {@link #startWatchingMode}.  All
- * monitoring associated with this callback will be removed.
- */
 ECode AppOpsManager::StopWatchingMode(
     /* [in] */ IAppOpsManagerOnOpChangedListener* callback)
 {
-    synchronized (mModeWatchers) {
-        IAppOpsCallback cb = mModeWatchers.get(callback);
-        if (cb != null) {
-            try {
-                mService.stopWatchingMode(cb);
-            } catch (RemoteException e) {
-            }
+    synchronized (mModeWatchersLock) {
+        HashMap<AutoPtr<IAppOpsManagerOnOpChangedListener>, AutoPtr<IIAppOpsCallback> >::Iterator it;
+        AutoPtr<IAppOpsManagerOnOpChangedListener> listener;
+        it = mModeWatchers.Find(listener);
+        if (it != mModeWatchers.End()) {
+            return mService->StopWatchingMode(it->mSecond);
         }
     }
+    return NOERROR;
 }
 
 String AppOpsManager::BuildSecurityExceptionMsg(
@@ -856,21 +862,29 @@ String AppOpsManager::BuildSecurityExceptionMsg(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
 {
-    return packageName + " from uid " + uid + " not allowed to perform " + sOpNames[op];
+    StringBuilder sb(packageName);
+    sb += " from uid ";
+    sb += uid;
+    sb += " not allowed to perform ";
+    sb += sOpNames[op];
+    return sb.ToString();
 }
 
-/**
- * {@hide}
- */
 CARAPI AppOpsManager::StrOpToOp(
     /* [in] */ const String& op,
     /* [out] */ Int32* result)
 {
-    Integer val = sOpStrToOp.get(op);
-    if (val == null) {
-        throw new IllegalArgumentException("Unknown operation string: " + op);
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+
+    HashMap<String, Int32>::Iterator it = sOpStrToOp->Find(op);
+    if (it == sOpStrToOp->End()) {
+        Logger::E(TAG, "Unknown operation string: %s", op.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return val;
+
+    *result = it->mSecond;
+    return NOERROR;
 }
 
 ECode AppOpsManager::CheckOp(
@@ -879,7 +893,11 @@ ECode AppOpsManager::CheckOp(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    return checkOp(strOpToOp(op), uid, packageName);
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+    Int32 ival;
+    FAIL_RETURN(StrOpToOp(op, &ival))
+    return CheckOp(ival, uid, packageName, result);
 }
 
 ECode AppOpsManager::CheckOpNoThrow(
@@ -888,7 +906,11 @@ ECode AppOpsManager::CheckOpNoThrow(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    return checkOpNoThrow(strOpToOp(op), uid, packageName);
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+    Int32 ival;
+    FAIL_RETURN(StrOpToOp(op, &ival))
+    return CheckOpNoThrow(ival, uid, packageName, result);
 }
 
 ECode AppOpsManager::NoteOp(
@@ -897,7 +919,11 @@ ECode AppOpsManager::NoteOp(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    return noteOp(strOpToOp(op), uid, packageName);
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+    Int32 ival;
+    FAIL_RETURN(StrOpToOp(op, &ival))
+    return NoteOp(ival, uid, packageName, result);
 }
 
 ECode AppOpsManager::NoteOpNoThrow(
@@ -906,137 +932,107 @@ ECode AppOpsManager::NoteOpNoThrow(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    return noteOpNoThrow(strOpToOp(op), uid, packageName);
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+    Int32 ival;
+    FAIL_RETURN(StrOpToOp(op, &ival))
+    return NoteOpNoThrow(ival, uid, packageName, result);
 }
 
-/**
- * Report that an application has started executing a long-running operation.  Note that you
- * must pass in both the uid and name of the application to be checked; this function will
- * verify that these two match, and if not, return {@link #MODE_IGNORED}.  If this call
- * succeeds, the last execution time of the operation for this app will be updated to
- * the current time and the operation will be marked as "running".  In this case you must
- * later call {@link #FinishOp(String, Int32, String)} to report when the application is no
- * longer performing the operation.
- * @param op The operation to start.  One of the OPSTR_* constants.
- * @param uid The user id of the application attempting to perform the operation.
- * @param packageName The name of the application attempting to perform the operation.
- * @return Returns {@link #MODE_ALLOWED} if the operation is allowed, or
- * {@link #MODE_IGNORED} if it is not allowed and should be silently ignored (without
- * causing the app to crash).
- * @throws SecurityException If the app has been configured to crash on this op.
- */
 ECode AppOpsManager::StartOp(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    return startOp(strOpToOp(op), uid, packageName);
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+    Int32 ival;
+    FAIL_RETURN(StrOpToOp(op, &ival))
+    return startOp(ival, uid, packageName, result);
 }
 
-/**
- * Like {@link #startOp} but instead of throwing a {@link SecurityException} it
- * returns {@link #MODE_ERRORED}.
- */
 ECode AppOpsManager::StartOpNoThrow(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    return startOpNoThrow(strOpToOp(op), uid, packageName);
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+    Int32 ival;
+    FAIL_RETURN(StrOpToOp(op, &ival))
+    return startOpNoThrow(ival, uid, packageName, result);
 }
 
-/**
- * Report that an application is no longer performing an operation that had previously
- * been started with {@link #startOp(String, Int32, String)}.  There is no validation of input
- * or result; the parameters supplied here must be the exact same ones previously passed
- * in when starting the operation.
- */
 ECode AppOpsManager::FinishOp(
     /* [in] */ const String& op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
 {
-    FinishOp(strOpToOp(op), uid, packageName);
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+    Int32 ival;
+    FAIL_RETURN(StrOpToOp(op, &ival))
+    return FinishOp(ival, uid, packageName);
 }
 
-/**
- * Do a quick check for whether an application might be able to perform an operation.
- * This is <em>not</em> a security check; you must use {@link #noteOp(Int32, Int32, String)}
- * or {@link #startOp(Int32, Int32, String)} for your actual security checks, which also
- * ensure that the given uid and package name are consistent.  This function can just be
- * used for a quick check to see if an operation has been disabled for the application,
- * as an early reject of some work.  This does not modify the time stamp or other data
- * about the operation.
- * @param op The operation to check.  One of the OP_* constants.
- * @param uid The user id of the application attempting to perform the operation.
- * @param packageName The name of the application attempting to perform the operation.
- * @return Returns {@link #MODE_ALLOWED} if the operation is allowed, or
- * {@link #MODE_IGNORED} if it is not allowed and should be silently ignored (without
- * causing the app to crash).
- * @throws SecurityException If the app has been configured to crash on this op.
- * @hide
- */
 ECode AppOpsManager::CheckOp(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    try {
-        Int32 mode = mService.checkOperation(op, uid, packageName);
-        if (mode == MODE_ERRORED) {
-            throw new SecurityException(buildSecurityExceptionMsg(op, uid, packageName));
-        }
-        return mode;
-    } catch (RemoteException e) {
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+
+    Int32 mode;
+    ECode ec = mService->CheckOperation(op, uid, packageName, &mode);
+    if (FAIL_RETURN(ec)) {
+        return NOERROR;
     }
-    return MODE_IGNORED;
+    if (mode == MODE_ERRORED) {
+        String msg = BuildSecurityExceptionMsg(op, uid, packageName);
+        Logger::E(TAG, "E_SECURITY_EXCEPTION: %s", msg.string());
+        return E_SECURITY_EXCEPTION;
+    }
+
+    *result = mode;
+    return NOERROR;
 }
 
-/**
- * Like {@link #checkOp} but instead of throwing a {@link SecurityException} it
- * returns {@link #MODE_ERRORED}.
- * @hide
- */
 ECode AppOpsManager::CheckOpNoThrow(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    try {
-        return mService.checkOperation(op, uid, packageName);
-    } catch (RemoteException e) {
-    }
-    return MODE_IGNORED;
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+
+    return mService->CheckOperation(op, uid, packageName, result);
 }
 
-/**
- * Do a quick check to validate if a package name belongs to a UID.
- *
- * @throws SecurityException if the package name doesn't belong to the given
- *             UID, or if ownership cannot be verified.
- */
 ECode AppOpsManager::CheckPackage(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
 {
-    try {
-        if (mService.checkPackage(uid, packageName) != MODE_ALLOWED) {
-            throw new SecurityException(
-                    "Package " + packageName + " does not belong to " + uid);
-        }
-    } catch (RemoteException e) {
-        throw new SecurityException("Unable to verify package ownership", e);
+    Int32 mode;
+    ECode ec = mService->CheckPackage(uid, packageName, &mode);
+
+    if (mode != MODE_ALLOWED) {
+        Logger::E(TAG,  "Package %s does not belong to %d",
+            packageName.string(), uid);
+        return E_SECURITY_EXCEPTION;
     }
+
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        return E_SECURITY_EXCEPTION;
+    }
+
+    return ec;
 }
 
-/**
- * Like {@link #checkOp} but at a stream-level for audio operations.
- * @hide
- */
 ECode AppOpsManager::CheckAudioOp(
     /* [in] */ Int32 op,
     /* [in] */ Int32 stream,
@@ -1044,22 +1040,22 @@ ECode AppOpsManager::CheckAudioOp(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    try {
-        final Int32 mode = mService.checkAudioOperation(op, stream, uid, packageName);
-        if (mode == MODE_ERRORED) {
-            throw new SecurityException(buildSecurityExceptionMsg(op, uid, packageName));
-        }
-        return mode;
-    } catch (RemoteException e) {
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+
+    Int32 mode;
+    ECode ec = mService->CheckAudioOperation(op, stream, uid, packageName, &mode);
+    if (mode == MODE_ERRORED) {
+        String msg = BuildSecurityExceptionMsg(op, uid, packageName);
+        Logger::E(TAG, "E_SECURITY_EXCEPTION: %s", msg.string());
+        return E_SECURITY_EXCEPTION;
     }
-    return MODE_IGNORED;
+    FAIL_RETURN(ec)
+
+    *result = mode;
+    return NOERROR;
 }
 
-/**
- * Like {@link #checkAudioOp} but instead of throwing a {@link SecurityException} it
- * returns {@link #MODE_ERRORED}.
- * @hide
- */
 ECode AppOpsManager::CheckAudioOpNoThrow(
     /* [in] */ Int32 op,
     /* [in] */ Int32 stream,
@@ -1067,85 +1063,75 @@ ECode AppOpsManager::CheckAudioOpNoThrow(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    try {
-        return mService.checkAudioOperation(op, stream, uid, packageName);
-    } catch (RemoteException e) {
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+
+    ECode ec = mService->CheckAudioOperation(op, stream, uid, packageName, result);
+    if (FAILED(ec)) {
+        *result = MODE_IGNORED;
     }
-    return MODE_IGNORED;
+    return NOERROR;
 }
 
-/**
- * Make note of an application performing an operation.  Note that you must pass
- * in both the uid and name of the application to be checked; this function will verify
- * that these two match, and if not, return {@link #MODE_IGNORED}.  If this call
- * succeeds, the last execution time of the operation for this app will be updated to
- * the current time.
- * @param op The operation to note.  One of the OP_* constants.
- * @param uid The user id of the application attempting to perform the operation.
- * @param packageName The name of the application attempting to perform the operation.
- * @return Returns {@link #MODE_ALLOWED} if the operation is allowed, or
- * {@link #MODE_IGNORED} if it is not allowed and should be silently ignored (without
- * causing the app to crash).
- * @throws SecurityException If the app has been configured to crash on this op.
- * @hide
- */
 ECode AppOpsManager::NoteOp(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    try {
-        Int32 mode = mService.noteOperation(op, uid, packageName);
-        if (mode == MODE_ERRORED) {
-            throw new SecurityException(buildSecurityExceptionMsg(op, uid, packageName));
-        }
-        return mode;
-    } catch (RemoteException e) {
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+
+    Int32 mode;
+    ECode ec = mService->noteOperation(op, uid, packageName, &mode);
+    if (mode == MODE_ERRORED) {
+        String msg = BuildSecurityExceptionMsg(op, uid, packageName);
+        Logger::E(TAG, "E_SECURITY_EXCEPTION: %s", msg.string());
+        return E_SECURITY_EXCEPTION;
     }
+
     return MODE_IGNORED;
 }
 
-/**
- * Like {@link #noteOp} but instead of throwing a {@link SecurityException} it
- * returns {@link #MODE_ERRORED}.
- * @hide
- */
 ECode AppOpsManager::NoteOpNoThrow(
     /* [in] */ Int32 op,
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    try {
-        return mService.noteOperation(op, uid, packageName);
-    } catch (RemoteException e) {
-    }
-    return MODE_IGNORED;
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+
+    return mService->noteOperation(op, uid, packageName, result);
 }
 
 ECode AppOpsManager::NoteOp(
     /* [in] */ Int32 op,
     /* [out] */ Int32* result)
 {
-    return noteOp(op, Process.myUid(), mContext.getOpPackageName());
+    VALIDATE_NOT_NULL(result)
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
+    return NoteOp(op, Process::MyUid(), pkgName, result);
 }
 
 CARAPI AppOpsManager::GetToken(
     /* [in] */ IIAppOpsService* service,
     /* [out] */ IBinder** binder)
 {
-    synchronized (IAppOpsManager::class) {
-        if (sToken != null) {
-            return sToken;
+    VALIDATE_NOT_NULL(binder)
+    *binder = NULL;
+    synchronized (sClassLock) {
+        if (sToken == NULL) {
+            AutoPtr<IBinder> binder;
+            CBinder::New((IBinder**)&binder);
+            service->GetToken(binder, (IBinder**)&sToken);
         }
-        try {
-            sToken = service.getToken(new Binder());
-        } catch (RemoteException e) {
-            // System is dead, whatevs.
-        }
-        return sToken;
+
+        *binder = sToken;
+        REFCOUNT_ADD(*binder)
     }
+    return NOERROR;
 }
 
 ECode AppOpsManager::StartOp(
@@ -1154,15 +1140,21 @@ ECode AppOpsManager::StartOp(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    try {
-        Int32 mode = mService.startOperation(getToken(mService), op, uid, packageName);
-        if (mode == MODE_ERRORED) {
-            throw new SecurityException(buildSecurityExceptionMsg(op, uid, packageName));
-        }
-        return mode;
-    } catch (RemoteException e) {
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+
+    Int32 mode;
+    AutoPtr<IBinder> token;
+    GetToken(mService, (IBinder**)&token);
+    mService->StartOperation(token, op, uid, packageName, &mode);
+    if (mode == MODE_ERRORED) {
+        String msg = BuildSecurityExceptionMsg(op, uid, packageName);
+        Logger::E(TAG, "E_SECURITY_EXCEPTION: %s", msg.string());
+        return NOERROR;
     }
-    return MODE_IGNORED;
+
+    *result = mode;
+    return NOERROR;
 }
 
 ECode AppOpsManager::StartOpNoThrow(
@@ -1171,18 +1163,22 @@ ECode AppOpsManager::StartOpNoThrow(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    try {
-        return mService.startOperation(getToken(mService), op, uid, packageName);
-    } catch (RemoteException e) {
-    }
-    return MODE_IGNORED;
+    VALIDATE_NOT_NULL(result)
+    *result = MODE_IGNORED;
+
+    AutoPtr<IBinder> token;
+    GetToken(mService, (IBinder**)&token);
+    return mService->StartOperation(token, op, uid, packageName, &result);
 }
 
 ECode AppOpsManager::StartOp(
     /* [in] */ Int32 op,
     /* [out] */ Int32* result)
 {
-    return startOp(op, Process.myUid(), mContext.getOpPackageName());
+    VALIDATE_NOT_NULL(result)
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
+    return StartOp(op, Process::MyUid(), pkgName, result);
 }
 
 ECode AppOpsManager::FinishOp(
@@ -1190,18 +1186,17 @@ ECode AppOpsManager::FinishOp(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
 {
-    try {
-        mService.FinishOperation(getToken(mService), op, uid, packageName);
-    } catch (RemoteException e) {
-    }
+    AutoPtr<IBinder> token;
+    GetToken(mService, (IBinder**)&token);
+    return mService->FinishOperation(token, op, uid, packageName);
 }
 
 ECode AppOpsManager::FinishOp(
     /* [in] */ Int32 op)
 {
-    FinishOp(op, Process.myUid(), mContext.getOpPackageName());
+    String pkgName;
+    return FinishOp(op, Process::MyUid(), pkgName);
 }
-
 
 } // namespace App
 } // namespace Droid

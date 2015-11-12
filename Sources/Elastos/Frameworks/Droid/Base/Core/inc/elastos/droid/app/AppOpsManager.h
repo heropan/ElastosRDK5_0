@@ -4,25 +4,16 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/core/Object.h"
+#include "elastos/utility/etl/HashMap.h"
 
-// using Elastos::Droid::annotation.SystemApi;
-// using Elastos::Droid::app.usage.UsageStatsManager;
-// using Elastos::Droid::content.Context;
-// using Elastos::Droid::media.AudioAttributes.AttributeUsage;
-// using Elastos::Droid::Os::IBinder;
-// using Elastos::Droid::Os::IIBinder;
-// using Elastos::Droid::Os::IParcel;
-// using Elastos::Droid::Os::IParcelable;
-// using Elastos::Droid::Os::IProcess;
-// using Elastos::Droid::Os::IRemoteException;
-// using Elastos::Droid::Os::IUserManager;
-// using Elastos::Droid::util.ArrayMap;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Internal::App::IIAppOpsCallback;
+using Elastos::Droid::Internal::App::IIAppOpsService;
 
-// using Elastos::Droid::Internal::App::IAppOpsCallback;
-// using Elastos::Droid::Internal::App::IAppOpsService;
-
-using Elastos::Utility::IList
+using Elastos::Utility::IList;
 using Elastos::Utility::IArrayList;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -67,7 +58,7 @@ public:
      * Class holding all of the operation information associated with an app.
      * @hide
      */
-    static class PackageOps
+    class PackageOps
         : public Object
         , public IAppOpsManagerPackageOps
         , public IParcelable
@@ -76,6 +67,10 @@ public:
         CAR_INTERFACE_DECL()
 
         PackageOps();
+
+        virtual ~PackageOps();
+
+        CARAPI constructor();
 
         CARAPI constructor(
             /* [in] */ const String& packageName,
@@ -97,6 +92,8 @@ public:
         CARAPI ReadFromParcel(
             /* [out] */ IParcel* source);
 
+        CARAPI ToString(
+            /* [out] */ String* str);
     private:
         String mPackageName;
         Int32 mUid;
@@ -107,7 +104,7 @@ public:
      * Class holding the information about one unique operation of an application.
      * @hide
      */
-    static class OpEntry
+    class OpEntry
         : public Object
         , public IAppOpsManagerOpEntry
         , public IParcelable
@@ -118,6 +115,8 @@ public:
         OpEntry();
 
         virtual ~OpEntry();
+
+        CARAPI constructor();
 
         CARAPI constructor(
             /* [in] */ Int32 op,
@@ -150,6 +149,8 @@ public:
         CARAPI ReadFromParcel(
             /* [in] */ IParcel* source);
 
+        CARAPI ToString(
+            /* [out] */ String* str);
     private:
         Int32 mOp;
         Int32 mMode;
@@ -163,8 +164,9 @@ public:
      * This allows you to see the raw op codes instead of strings.
      * @hide
      */
-    static class OnOpChangedInternalListener
+    class OnOpChangedInternalListener
         : public Object
+        , public IAppOpsManagerOnOpChangedInternalListener
         , public IAppOpsManagerOnOpChangedListener
     {
     public:
@@ -172,11 +174,14 @@ public:
 
         CARAPI OnOpChanged(
             /* [in] */ const String& op,
-            /* [in] */ const String& packageName) { }
+            /* [in] */ const String& packageName);
 
         CARAPI OnOpChanged(
             /* [in] */ Int32 op,
-            /* [in] */ const String& packageName) { }
+            /* [in] */ const String& packageName);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
     };
 
 public:
@@ -185,6 +190,9 @@ public:
     AppOpsManager();
 
     virtual ~AppOpsManager();
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
     /**
      * Retrieve the op switch that controls the given operation.
@@ -248,7 +256,7 @@ public:
      */
     CARAPI GetPackagesForOps(
         /* [in] */ ArrayOf<Int32>* ops,
-        /* [out] */ IList** ops); //List<AppOpsManager.PackageOps>
+        /* [out] */ IList** packages); //List<AppOpsManager.PackageOps>
 
     /**
      * Retrieve current operation state for one application.
@@ -346,7 +354,7 @@ public:
      */
     CARAPI CheckOp(
         /* [in] */ const String& op,
-        /* [in] */ Int32 uid, .
+        /* [in] */ Int32 uid,
         /* [in] */ const String& packageName,
         /* [out] */ Int32* result);
 
@@ -613,9 +621,13 @@ public:
 private:
     AutoPtr<IContext> mContext;
     AutoPtr<IIAppOpsService> mService;
-    AutoPtr<IArrayMap> mModeWatchers;// = new ArrayMap<OnOpChangedListener, IAppOpsCallback>();
+    HashMap<AutoPtr<IAppOpsManagerOnOpChangedListener>, AutoPtr<IIAppOpsCallback> > mModeWatchers;
+    Object mModeWatchersLock;
 
     static AutoPtr<IBinder> sToken;
+    static Object sClassLock;
+
+    static const Int32 sOpLength;
 
     /**
      * This maps each operation to the operation that serves as the

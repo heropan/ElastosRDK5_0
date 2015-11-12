@@ -21,6 +21,7 @@ module
     interface Elastos.Droid.App.IActivityThread;
     interface Elastos.Droid.App.IInstrumentationWatcher;
     interface Elastos.Droid.App.IUiAutomation;
+    interface Elastos.Droid.App.IActivityNonConfigurationInstances;
 
     namespace Elastos {
     namespace Droid {
@@ -647,7 +648,7 @@ module
             [in] ICharSequence* title,
             [in] IActivity* parent,
             [in] String id,
-            [in] IInterface* lastNonConfigurationInstance,
+            [in] IActivityNonConfigurationInstances* lastNonConfigurationInstance,
             [out] IActivity** activity);
 
         /**

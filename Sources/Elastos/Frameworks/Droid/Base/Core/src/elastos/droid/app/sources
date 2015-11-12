@@ -58,6 +58,7 @@ SOURCES += CApplicationErrorReportCrashInfo.cpp
 SOURCES += CApplicationErrorReportRunningServiceInfo.cpp
 
 #SOURCES += AppOpsManager.cpp
+SOURCES += CAppOpsManagerAppOpsCallback.cpp
 
 SOURCES += CBackStackState.cpp
 SOURCES += CBackStackRecordTransitionState.cpp
