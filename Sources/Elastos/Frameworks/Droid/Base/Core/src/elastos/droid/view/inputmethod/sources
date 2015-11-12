@@ -14,19 +14,20 @@ endif
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES += CExtractedTextRequest.cpp
-SOURCES += CExtractedText.cpp
-SOURCES += CCompletionInfo.cpp
 SOURCES += BaseInputConnection.cpp
 SOURCES += CBaseInputConnection.cpp
+SOURCES += CCompletionInfo.cpp
+SOURCES += CCursorAnchorInfo.cpp
+SOURCES += CCorrectionInfo.cpp
+SOURCES += CExtractedTextRequest.cpp
+SOURCES += CExtractedText.cpp
 SOURCES += CEditorInfo.cpp
-SOURCES += CIInputMethodClient.cpp
-SOURCES += CControlledInputConnectionWrapper.cpp
-SOURCES += CInputMethodManager.cpp
+//SOURCES += CIInputMethodClient.cpp
+//SOURCES += CControlledInputConnectionWrapper.cpp
+//SOURCES += CInputMethodManager.cpp
 SOURCES += CInputBinding.cpp
 SOURCES += CInputConnectionWrapper.cpp
-SOURCES += CInputMethodInfo.cpp
-SOURCES += CInputMethodManagerInputMethodCallback.cpp
-SOURCES += CCorrectionInfo.cpp
-SOURCES += CInputMethodSubtype.cpp
-SOURCES += CInputMethodSubtypeHelper.cpp
+//SOURCES += CInputMethodInfo.cpp
+//SOURCES += CInputMethodManagerInputMethodCallback.cpp
+//SOURCES += CInputMethodSubtype.cpp
+//SOURCES += CInputMethodSubtypeHelper.cpp

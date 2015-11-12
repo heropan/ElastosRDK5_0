@@ -55,6 +55,12 @@ ECode CIInputMethodClient::ToString(
     return E_NOT_IMPLEMENTED;
 }
 
+@Override
+public void setUserActionNotificationSequenceNumber(int sequenceNumber) {
+    mH.sendMessage(mH.obtainMessage(MSG_SET_USER_ACTION_NOTIFICATION_SEQUENCE_NUMBER,
+            sequenceNumber, 0));
+}
+
 } // namespace InputMethod
 } // namespace View
 } // namespace Droid

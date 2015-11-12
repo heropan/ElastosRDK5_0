@@ -7,6 +7,13 @@ namespace Droid {
 namespace View {
 namespace InputMethod {
 
+//========================================================================================
+//              CExtractedTextRequest::
+//========================================================================================
+CAR_INTERFACE_IMPL_2(CExtractedTextRequest, Object, IExtractedTextRequest, IParcelable)
+
+CAR_OBJECT_IMPL(CExtractedTextRequest)
+
 CExtractedTextRequest::CExtractedTextRequest()
     : mToken(0)
     , mFlags(0)

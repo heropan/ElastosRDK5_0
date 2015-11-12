@@ -33,13 +33,13 @@ namespace View {
 //              ThreadedRenderer::
 //========================================================================================
 
-String ThreadedRenderer::LOGTAG("ThreadedRenderer");
+const String ThreadedRenderer::LOGTAG("ThreadedRenderer");
 
-Int32 ThreadedRenderer::SYNC_OK = 0;
+const Int32 ThreadedRenderer::SYNC_OK = 0;
 
-Int32 ThreadedRenderer::SYNC_INVALIDATE_REQUIRED = 1 << 0;
+const Int32 ThreadedRenderer::SYNC_INVALIDATE_REQUIRED = 1 << 0;
 
-AutoPtr<ArrayOf<String> > ThreadedRenderer::VISUALIZERS = ArrayOf<String>::Alloc(1);
+const AutoPtr<ArrayOf<String> > ThreadedRenderer::VISUALIZERS = ArrayOf<String>::Alloc(1);
 
 ThreadedRenderer::ThreadedRenderer()
     : mWidth(0)

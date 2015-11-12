@@ -3,12 +3,23 @@
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/ext/frameworkext.h"
 
+#include <elastos/core/StringBuilder.h>
+
 using Elastos::Droid::Text::TextUtils;
+
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
+
+//========================================================================================
+//              CCorrectionInfo::
+//========================================================================================
+CAR_INTERFACE_IMPL_2(CCorrectionInfo, Object, ICorrectionInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CCorrectionInfo)
 
 CCorrectionInfo::CCorrectionInfo()
     : mOffset(0)
@@ -34,7 +45,8 @@ ECode CCorrectionInfo::constructor(
 ECode CCorrectionInfo::GetOffset(
     /* [out] */ Int32* offset)
 {
-    assert(offset != NULL);
+    VALIDATE_NOT_NULL(offset)
+
     *offset = mOffset;
     return NOERROR;
 }
@@ -42,7 +54,8 @@ ECode CCorrectionInfo::GetOffset(
 ECode CCorrectionInfo::GetOldText(
     /* [out] */ ICharSequence** text)
 {
-    assert(text != NULL);
+    VALIDATE_NOT_NULL(text)
+
     *text = mOldText;
     REFCOUNT_ADD(*text);
 
@@ -52,29 +65,55 @@ ECode CCorrectionInfo::GetOldText(
 ECode CCorrectionInfo::GetNewText(
     /* [out] */ ICharSequence** text)
 {
-    assert(text != NULL);
+    VALIDATE_NOT_NULL(text)
+
     *text = mNewText;
     REFCOUNT_ADD(*text);
 
     return NOERROR;
 }
 
+ECode CCorrectionInfo::ToString(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    StringBuilder builder("CorrectionInfo{#");
+    builder += mOffset;
+    builder += " \"";
+
+    String strOldTxt;
+    mOldText->ToString(&strOldTxt);
+    builder += strOldTxt;
+
+    builder += "\" -> \"";
+
+    String strNewTxt;
+    mOldText->ToString(&strNewTxt);
+    builder += strNewTxt;
+
+    builder += "\"}";
+    *result = builder.ToString();
+    return NOERROR;
+}
+
 ECode CCorrectionInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    assert(dest != NULL);
+    VALIDATE_NOT_NULL(dest)
+
     dest->WriteInt32(mOffset);
-    assert(0);
-    //TODO
-    // TextUtils::WriteToParcel(mOldText, dest, flags);
-    // TextUtils::WriteToParcel(mNewText, dest, flags);
+    TextUtils::WriteToParcel(mOldText, dest);
+    TextUtils::WriteToParcel(mNewText, dest);
     return NOERROR;
 }
 
 ECode CCorrectionInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    assert(0);
+    source->ReadInt32(&mOffset);
+    TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&mOldText);
+    TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&mNewText);
     return NOERROR;
 }
 

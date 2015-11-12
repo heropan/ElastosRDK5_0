@@ -93,7 +93,7 @@ public:
     /**
      * {@inheritDoc}
      */
-    Boolean IsOpaque();
+    CARAPI_(Boolean) IsOpaque();
 
     /**
      * Indicates whether the content of this TextureView is opaque. The
@@ -131,7 +131,7 @@ public:
     CARAPI GetLayerType(
         /* [out] */ Int32* type);
 
-    Boolean HasStaticLayer();
+    CARAPI_(Boolean) HasStaticLayer();
 
     /**
      * Calling this method has no effect.
@@ -391,10 +391,10 @@ protected:
      *
      * @param canvas The Canvas to which the View is rendered.
      */
-    void OnDraw(
+    CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
-    void OnSizeChanged(
+    CARAPI_(void) OnSizeChanged(
         /* [in] */ Int32 w,
         /* [in] */ Int32 h,
         /* [in] */ Int32 oldw,
@@ -403,38 +403,38 @@ protected:
     /**
      * @hide
      */
-    void DestroyHardwareResources();
+    CARAPI_(void) DestroyHardwareResources();
 
-    AutoPtr<IHardwareLayer> GetHardwareLayer();
+    CARAPI_(AutoPtr<IHardwareLayer>) GetHardwareLayer();
 
-    CARAPI OnVisibilityChanged(
+    CARAPI_(void) OnVisibilityChanged(
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 
 private:
-    void Init();
+    CARAPI_(void) Init();
 
-    void DestroySurface();
+    CARAPI_(void) DestroySurface();
 
-    void UpdateLayer();
+    CARAPI_(void) UpdateLayer();
 
-    void UpdateLayerAndInvalidate();
+    CARAPI_(void) UpdateLayerAndInvalidate();
 
-    void ApplyUpdate();
+    CARAPI_(void) ApplyUpdate();
 
-    void ApplyTransformMatrix();
+    CARAPI_(void) ApplyTransformMatrix();
 
-    void NativeCreateNativeWindow(
+    CARAPI_(void) NativeCreateNativeWindow(
         /* [in] */ ISurfaceTexture* surface);
 
-    void NativeDestroyNativeWindow();
+    CARAPI_(void) NativeDestroyNativeWindow();
 
-    static Boolean NativeLockCanvas(
+    static CARAPI_(Boolean) NativeLockCanvas(
         /* [in] */ Int64 nativeWindow,
         /* [in] */ ICanvas* canvas,
         /* [in] */ IRect* dirty);
 
-    static void NativeUnlockCanvasAndPost(
+    static CARAPI_(void) NativeUnlockCanvasAndPost(
         /* [in] */ Int64 nativeWindow,
         /* [in] */ ICanvas* canvas);
 
@@ -451,14 +451,16 @@ private:
     AutoPtr<IMatrix> mMatrix;
     Boolean mMatrixChanged;
 
-    AutoPtr<ArrayOf<IInterface*> > mLock;
+//    AutoPtr<ArrayOf<IInterface*> > mLock;
+    Object mLock;
     Boolean mUpdateLayer;
     Boolean mUpdateSurface;
 
     AutoPtr<ICanvas> mCanvas;
     Int32 mSaveCount;
 
-    AutoPtr<ArrayOf<IInterface*> > mNativeWindowLock;
+//    AutoPtr<ArrayOf<IInterface*> > mNativeWindowLock;
+    Object mNativeWindowLock;
     // Set by native code, do not write!
     Int64 mNativeWindow;
 

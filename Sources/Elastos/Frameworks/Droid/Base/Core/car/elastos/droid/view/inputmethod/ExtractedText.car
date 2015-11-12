@@ -14,6 +14,10 @@ module
      * This contains information about a portion of the currently edited text,
      * that the IME should display into its own interface while in extracted mode.
      */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IExtractedText {
         /**
          * Bit for {@link #flags}: set if the text being edited can only be on

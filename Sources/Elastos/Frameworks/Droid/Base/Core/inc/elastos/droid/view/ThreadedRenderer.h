@@ -281,15 +281,15 @@ private:
         /* [in] */ IFileDescriptor* fd);
 
 private:
-    static String LOGTAG;
+    static const String LOGTAG;
 
     // Keep in sync with DrawFrameTask.h SYNC_* flags
     // Nothing interesting to report
-    static Int32 SYNC_OK;
+    static const Int32 SYNC_OK;
     // Needs a ViewRoot invalidate
-    static Int32 SYNC_INVALIDATE_REQUIRED;
+    static const Int32 SYNC_INVALIDATE_REQUIRED;
 
-    static AutoPtr<ArrayOf<String> > VISUALIZERS;
+    static const AutoPtr<ArrayOf<String> > VISUALIZERS;
 
     // Size of the rendered content.
     Int32 mWidth, mHeight;

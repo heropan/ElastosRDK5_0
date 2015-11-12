@@ -165,7 +165,7 @@ ECode CChangeClipBounds::Clone(
     CChangeClipBounds::New((ITransition**)&changes);
 
     CloneImpl(changes);
-    *obj = IInterface::Probe(changes);
+    *obj = changes;
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
@@ -175,9 +175,7 @@ ECode CChangeClipBounds::CloneImpl(
 {
     VALIDATE_NOT_NULL(boundsObj);
 
-    Transition::CloneImpl(ITransition::Probe(boundsObj));
-
-    return NOERROR;
+    return Transition::CloneImpl(ITransition::Probe(boundsObj));
 }
 
 } // namespace Transition

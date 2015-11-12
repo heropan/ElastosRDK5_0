@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_INPUTMETHOD_CCOMPLETIONINFO_H__
 
 #include "_Elastos_Droid_View_InputMethod_CCompletionInfo.h"
-
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 
@@ -12,10 +12,16 @@ namespace Droid {
 namespace View {
 namespace InputMethod {
 
-
 CarClass(CCompletionInfo)
+    , public Object
+    , public ICompletionInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CCompletionInfo();
 
     CARAPI constructor();

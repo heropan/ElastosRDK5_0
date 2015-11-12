@@ -3,6 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTBINDING_H__
 
 #include "_Elastos_Droid_View_InputMethod_CInputBinding.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBinder;
 
@@ -16,8 +17,15 @@ namespace InputMethod {
  * to it.
  */
 CarClass(CInputBinding)
+    , public Object
+    , public IInputBinding
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CInputBinding();
 
     CARAPI constructor();

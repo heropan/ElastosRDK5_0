@@ -5,13 +5,20 @@
 #include "elastos/droid/text/TextUtils.h"
 
 using Elastos::Droid::Os::Build;
-using Elastos::Droid::Text::IInputType;
+using Elastos::Droid::Text::EIID_IInputType;
 using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
+
+//========================================================================================
+//              CEditorInfo::
+//========================================================================================
+CAR_INTERFACE_IMPL_3(CEditorInfo, Object, IEditorInfo, IInputType, IParcelable)
+
+CAR_OBJECT_IMPL(CEditorInfo)
 
 CEditorInfo::CEditorInfo()
     : mInputType(IInputType::TYPE_NULL)

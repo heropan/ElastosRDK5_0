@@ -129,7 +129,7 @@ ECode CChangeScroll::Clone(
     CChangeScroll::New((ITransition**)&changes);
 
     CloneImpl(changes);
-    *obj = IInterface::Probe(changes);
+    *obj = changes;
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
@@ -139,9 +139,7 @@ ECode CChangeScroll::CloneImpl(
 {
     VALIDATE_NOT_NULL(obj);
 
-    Transition::CloneImpl(ITransition::Probe(obj));
-
-    return NOERROR;
+    return Transition::CloneImpl(ITransition::Probe(obj));
 }
 
 } // namespace Transition

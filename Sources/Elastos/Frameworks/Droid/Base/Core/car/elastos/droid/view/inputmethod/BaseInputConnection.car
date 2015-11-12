@@ -81,7 +81,8 @@ module
          */
         CommitText(
             [in] ICharSequence* text,
-            [in] Int32 newCursorPosition);
+            [in] Int32 newCursorPosition,
+            [out] Boolean* result);
 
         /**
          * The default implementation performs the deletion around the current
@@ -176,7 +177,8 @@ module
 
         SetComposingText(
             [in] ICharSequence* text,
-            [in] Int32 newCursorPosition);
+            [in] Int32 newCursorPosition,
+            [out] Boolean* result);
 
         SetComposingRegion(
             [in] Int32 start,

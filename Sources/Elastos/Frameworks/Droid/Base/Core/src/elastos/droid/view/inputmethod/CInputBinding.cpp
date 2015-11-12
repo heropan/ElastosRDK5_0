@@ -10,6 +10,13 @@ namespace Droid {
 namespace View {
 namespace InputMethod {
 
+//========================================================================================
+//              CInputBinding::
+//========================================================================================
+CAR_INTERFACE_IMPL_2(CInputBinding, Object, IInputBinding, IParcelable)
+
+CAR_OBJECT_IMPL(CInputBinding)
+
 CInputBinding::CInputBinding()
     : mUid(0)
     , mPid(0)

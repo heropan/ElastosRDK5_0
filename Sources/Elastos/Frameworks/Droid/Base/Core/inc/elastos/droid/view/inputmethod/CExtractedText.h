@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_VIEW_INPUTMETHOD_CExtractedText_H__
 
 #include "_Elastos_Droid_View_InputMethod_CExtractedText.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 
@@ -11,10 +12,16 @@ namespace Droid {
 namespace View {
 namespace InputMethod {
 
-
 CarClass(CExtractedText)
+    , public Object
+    , public IExtractedText
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CExtractedText();
 
     CARAPI constructor();

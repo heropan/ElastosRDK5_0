@@ -3,10 +3,11 @@
 #define __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTCONNECTIONWRAPPER_H__
 
 #include "_Elastos_Droid_View_InputMethod_CInputConnectionWrapper.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IBundle;
 
 using Elastos::Core::ICharSequence;
-using Elastos::Droid::Os::IBundle;
 
 namespace Elastos {
 namespace Droid {
@@ -18,13 +19,19 @@ namespace InputMethod {
  * and have fun!
  */
 CarClass(CInputConnectionWrapper)
+    , public Object
+    , public IInputConnection
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CInputConnectionWrapper();
 
-    ECode constructor(
+    CARAPI constructor(
         /* [in] */ IInputConnection* target,
-        /* [in] */ Boolean mutables);
+        /* [in] */ Boolean mutble);
 
     CARAPI SetTarget(
         /* [in] */ IInputConnection* target);
@@ -118,6 +125,10 @@ public:
         /* [in] */ const String& action,
         /* [in] */ IBundle* data,
         /* [out] */ Boolean* flag);
+
+    CARAPI RequestCursorUpdates(
+        /* [in] */ Int32 cursorUpdateMode,
+        /* [out] */ Boolean* result);
 
 private:
     AutoPtr<IInputConnection> mTarget;
