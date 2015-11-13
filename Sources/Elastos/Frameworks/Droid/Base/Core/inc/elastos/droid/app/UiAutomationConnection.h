@@ -4,31 +4,15 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-// using Elastos::Droid::Accessibilityservice.AccessibilityServiceInfo;
-// using Elastos::Droid::Accessibilityservice.IAccessibilityServiceClient;
-// using Elastos::Droid::Content.Context;
-// using Elastos::Droid::Graphics.Bitmap;
-// using Elastos::Droid::Hardware.input.InputManager;
-// using Elastos::Droid::Os::IBinder;
-// using Elastos::Droid::Os::IIBinder;
-// using Elastos::Droid::Os::IParcelFileDescriptor;
-// using Elastos::Droid::Os::IProcess;
-// using Elastos::Droid::Os::IRemoteException;
-// using Elastos::Droid::Os::IServiceManager;
-// using Elastos::Droid::View::IIWindowManager;
-// using Elastos::Droid::View::IInputEvent;
-// using Elastos::Droid::View::ISurfaceControl;
-// using Elastos::Droid::View::IWindowAnimationFrameStats;
-// using Elastos::Droid::View::IWindowContentFrameStats;
-// using Elastos::Droid::View::Iaccessibility.AccessibilityEvent;
-// using Elastos::Droid::View::Iaccessibility.IAccessibilityManager;
-// import libcore.io.IoUtils;
-
-// import java.io.FileOutputStream;
-// import java.io.IOException;
-// import java.io.InputStream;
-// import java.io.OutputStream;
-
+using Elastos::Droid::AccessibilityService::IIAccessibilityServiceClient;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::View::IIWindowManager;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::IWindowAnimationFrameStats;
+using Elastos::Droid::View::IWindowContentFrameStats;
+using Elastos::Droid::View::Accessibility::IIAccessibilityManager;
 
 namespace Elastos {
 namespace Droid {
@@ -69,7 +53,7 @@ public:
 
     CARAPI SetRotation(
         /* [in] */ Int32 rotation,
-        /* [out] */ Boolean** result);
+        /* [out] */ Boolean* result);
 
     CARAPI TakeScreenshot(
         /* [in] */ Int32 width,
@@ -107,40 +91,24 @@ private:
 
     Boolean IsConnectedLocked();
 
-    // void throwIfShutdownLocked() {
-    //     if (mIsShutdown) {
-    //         throw new IllegalStateException("Connection shutdown!");
-    //     }
-    // }
+    CARAPI ThrowIfShutdownLocked();
 
-    // void throwIfNotConnectedLocked() {
-    //     if (!isConnectedLocked()) {
-    //         throw new IllegalStateException("Not connected!");
-    //     }
-    // }
+    CARAPI ThrowIfNotConnectedLocked();
 
-    // void throwIfCalledByNotTrustedUidLocked() {
-    //     final Int32 callingUid = Binder.getCallingUid();
-    //     if (callingUid != mOwningUid && mOwningUid != Process.SYSTEM_UID
-    //             && callingUid != 0 /*root*/) {
-    //         throw new SecurityException("Calling from not trusted UID!");
-    //     }
-    // }
+    CARAPI ThrowIfCalledByNotTrustedUidLocked();
 
 private:
-    static const Int32 INITIAL_FROZEN_ROTATION_UNSPECIFIED = -1;
+    static const String TAG;
+    static const Int32 INITIAL_FROZEN_ROTATION_UNSPECIFIED;
 
     AutoPtr<IIWindowManager> mWindowManager;
-    // = IWindowManager.Stub.asInterface(ServiceManager.getService(Service.WINDOW_SERVICE));
-
     AutoPtr<IIAccessibilityManager> mAccessibilityManager;
-    // = IAccessibilityManager.Stub.asInterface(ServiceManager.getService(Service.ACCESSIBILITY_SERVICE));
 
-    Object;
+    Object mLock;
 
-    AutoPtr<IBinder> mToken;// = new Binder();
+    AutoPtr<IBinder> mToken;
 
-    Int32 mInitialFrozenRotation;// = INITIAL_FROZEN_ROTATION_UNSPECIFIED;
+    Int32 mInitialFrozenRotation;
 
     AutoPtr<IIAccessibilityServiceClient> mClient;
 

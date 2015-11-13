@@ -605,7 +605,7 @@ ECode CContextImpl::GetSharedPreferences(
     // }
 
     SharedPreferencesImpl sp;
-    synchronized (ContextImpl.class) {
+    synchronized(ContextImpl.class) {
         if (sSharedPrefs == null) {
             sSharedPrefs = new ArrayMap<String, ArrayMap<String, SharedPreferencesImpl>>();
         }
@@ -784,7 +784,7 @@ ECode CContextImpl::GetFilesDir(
 ECode CContextImpl::GetNoBackupFilesDir(
     /* [out] */ IFile** filesDir)
 {
-    // synchronized (mSync) {
+    // synchronized(mSync) {
     //     if (mNoBackupFilesDir == null) {
     //         mNoBackupFilesDir = new File(getDataDirFile(), "no_backup");
     //     }
@@ -813,7 +813,7 @@ ECode CContextImpl::GetExternalFilesDirs(
     /* [in] */ const String& type,
     /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** filesDirs)
 {
-    synchronized (mSync) {
+    synchronized(mSync) {
         if (mExternalFilesDirs == null) {
             mExternalFilesDirs = Environment.buildExternalStorageAppFilesDirs(getPackageName());
         }
@@ -891,7 +891,7 @@ ECode CContextImpl::GetObbDir(
 ECode CContextImpl::GetObbDirs(
     /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs)
 {
-    synchronized (mSync) {
+    synchronized(mSync) {
         if (mExternalObbDirs == null) {
             mExternalObbDirs = Environment.buildExternalStorageAppObbDirs(getPackageName());
         }
@@ -966,7 +966,7 @@ ECode CContextImpl::GetExternalCacheDir(
 ECode CContextImpl::GetExternalCacheDirs(
     /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs)
 {
-    synchronized (mSync) {
+    synchronized(mSync) {
         if (mExternalCacheDirs == null) {
             mExternalCacheDirs = Environment.buildExternalStorageAppCacheDirs(getPackageName());
         }
@@ -1007,7 +1007,7 @@ ECode CContextImpl::GetExternalCacheDirs(
 ECode CContextImpl::GetExternalMediaDirs(
     /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs)
 {
-    synchronized (mSync) {
+    synchronized(mSync) {
         if (mExternalMediaDirs == null) {
             mExternalMediaDirs = Environment.buildExternalStorageAppMediaDirs(getPackageName());
         }

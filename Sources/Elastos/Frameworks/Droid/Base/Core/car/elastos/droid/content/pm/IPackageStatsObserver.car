@@ -15,7 +15,7 @@ module
      * {@hide}
      */
     [oneway]
-    interface IPackageStatsObserver {
+    interface IIPackageStatsObserver {
         OnGetStatsCompleted(
             [in] IPackageStats* pStats,
             [in] Boolean succeeded);

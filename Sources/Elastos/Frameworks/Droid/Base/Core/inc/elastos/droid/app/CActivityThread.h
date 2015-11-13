@@ -7,22 +7,22 @@
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/content/res/CCompatibilityInfo.h"
 #include "elastos/droid/content/res/CResources.h"
-#include "elastos/droid/app/CApplicationThread.h"
 #include "elastos/droid/app/CResultInfo.h"
 #include "elastos/droid/app/Activity.h"
-// #include "elastos/droid/app/LoadedPkg.h"
-#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/app/LoadedPkg.h"
 #include "elastos/droid/os/Runnable.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IIdleHandler;
+using Elastos::Droid::Os::IDebugMemoryInfo;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIContentProvider;
@@ -55,6 +55,7 @@ using Elastos::Droid::App::Backup::IBackupAgent;
 
 using Elastos::Core::IClassLoader;
 using Elastos::IO::IFile;
+using Elastos::Utility::IList;
 using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {
@@ -109,7 +110,7 @@ CarClass(CActivityThread)
 {
 public:
     class H
-        : public HandlerBase
+        : public Handler
     {
     public:
         H(
@@ -191,14 +192,19 @@ public:
         CARAPI_(Boolean) IsPersistable();
 
         CARAPI ToString(
-            /* [out] */ String* description);
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::ActivityClientRecord");
+            return NOERROR;
+        }
 
     public:
         AutoPtr<IBinder> mToken;
         Int32 mIdent;
         AutoPtr<IIntent> mIntent;
         AutoPtr<IIVoiceInteractor> voiceInteractor;
-        AutoPtr<CBundle> mState;
+        AutoPtr<IBundle> mState;
         AutoPtr<IPersistableBundle> persistentState;
         AutoPtr<IActivity> mActivity;
         AutoPtr<IWindow> mWindow;
@@ -212,7 +218,7 @@ public:
         AutoPtr<IConfiguration> mCreatedConfig;
         AutoPtr<ActivityClientRecord> mNextIdle;
 
-        AutoPtr<CProfilerInfo> mProfilerInfo;
+        AutoPtr<IProfilerInfo> mProfilerInfo;
 
         AutoPtr<IActivityInfo> mActivityInfo;
         AutoPtr<ICompatibilityInfo> mCompatInfo;
@@ -239,6 +245,14 @@ public:
             /* [in] */ IIContentProvider* provider,
             /* [in] */ IContentProvider* localProvider,
             /* [in] */ IContentProviderHolder* holder);
+
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::ProviderClientRecord");
+            return NOERROR;
+        }
     public:
         AutoPtr< ArrayOf<String> > mNames;
         AutoPtr<IIContentProvider> mProvider;
@@ -253,6 +267,14 @@ public:
         NewIntentData()
             : mToken(NULL)
         {}
+
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::NewIntentData");
+            return NOERROR;
+        }
     public:
         List< AutoPtr<IIntent> > mIntents;
         AutoPtr<IBinder> mToken;
@@ -260,11 +282,8 @@ public:
 
     class ReceiverData
         : public BroadcastReceiver::PendingResult
-        , public IPendingResult
     {
     public:
-        CAR_INTERFACE_DECL()
-
         ReceiverData(
             /* [in] */ IIntent* intent,
             /* [in] */ Int32 resultCode,
@@ -274,6 +293,14 @@ public:
             /* [in] */ Boolean sticky,
             /* [in] */ IBinder* token,
             /* [in] */ Int32 sendingUser);
+
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::ReceiverData");
+            return NOERROR;
+        }
 
         /**
          * Version of {@link BroadcastReceiver#setResultCode(int)
@@ -394,10 +421,8 @@ public:
             : mBackupMode(0)
         {}
 
-    public:
         CARAPI ToString(
             /* [out] */ String* description);
-
     public:
         AutoPtr<IApplicationInfo> mAppInfo;
         AutoPtr<ICompatibilityInfo> mCompatInfo;
@@ -408,6 +433,14 @@ public:
         : public Object
     {
     public:
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::CreateServiceData");
+            return NOERROR;
+        }
+
         AutoPtr<IBinder> mToken;
         AutoPtr<IServiceInfo> mInfo;
         AutoPtr<ICompatibilityInfo> mCompatInfo;
@@ -422,6 +455,14 @@ public:
             : mTaskRemoved(FALSE)
             , mRebind(FALSE)
         {}
+
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::BindServiceData");
+            return NOERROR;
+        }
 
         AutoPtr<IBinder> mToken;
         AutoPtr<IIntent> mIntent;
@@ -439,6 +480,14 @@ public:
             , mTaskRemoved(FALSE)
         {}
 
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::ServiceArgsData");
+            return NOERROR;
+        }
+
         AutoPtr<IBinder> mToken;
         AutoPtr<IIntent> mArgs;
         Int32 mStartId;
@@ -455,14 +504,20 @@ public:
             , mEnableOpenGlTrace(FALSE)
             , mRestrictedBackupMode(FALSE)
             , mPersistent(FALSE)
-            , mInitAutoStopProfiler(FALSE)
         {}
 
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::AppBindData");
+            return NOERROR;
+        }
     public:
         // AutoPtr<LoadedPkg> mInfo;
         String mProcessName;
         AutoPtr<IApplicationInfo> mAppInfo;
-        AutoPtr<IObjectContainer> mProviders;
+        AutoPtr<IList> mProviders;
         AutoPtr<IComponentName> mInstrumentationName;
         AutoPtr<IBundle> mInstrumentationArgs;
         AutoPtr<IInstrumentationWatcher> mInstrumentationWatcher;
@@ -471,7 +526,7 @@ public:
         AutoPtr<ICompatibilityInfo> mCompatInfo;
 
         /** Initial values for {@link Profiler}. */
-        AutoPtr<CProfilerInfo> mInitProfilerInfo;
+        AutoPtr<IProfilerInfo> mInitProfilerInfo;
 
         Int32 mDebugMode;
         Boolean mEnableOpenGlTrace;
@@ -491,9 +546,16 @@ public:
             , mHandlingProfiling(FALSE)
         {}
 
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::Profiler");
+            return NOERROR;
+        }
     public:
         CARAPI_(void) SetProfiler(
-            /* [in] */ CProfilerInfo* profilerInfo);
+            /* [in] */ IProfilerInfo* profilerInfo);
 
         CARAPI_(void) StartProfiling();
 
@@ -511,6 +573,14 @@ public:
         : public Object
     {
     public:
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::DumpComponentInfo");
+            return NOERROR;
+        }
+
         AutoPtr<IParcelFileDescriptor> mFd;
         AutoPtr<IBinder> mToken;
         String mPrefix;
@@ -533,6 +603,14 @@ public:
         : public Object
     {
     public:
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::ContextCleanupInfo");
+            return NOERROR;
+        }
+
         AutoPtr<IContextImpl> mContext;
         String mWhat;
         String mWho;
@@ -542,6 +620,14 @@ public:
         : public Object
     {
     public:
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::DumpHeapData");
+            return NOERROR;
+        }
+
         String mPath;
         AutoPtr<IParcelFileDescriptor> mFd;
     };
@@ -550,6 +636,14 @@ public:
         : public Object
     {
     public:
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::UpdateCompatibilityData");
+            return NOERROR;
+        }
+
         String mPkg;
         AutoPtr<ICompatibilityInfo> mInfo;
     };
@@ -562,17 +656,34 @@ public:
             : mRequestType(0)
         {}
 
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::RequestAssistContextExtras");
+            return NOERROR;
+        }
+
         AutoPtr<IBinder> mActivityToken;
         AutoPtr<IBinder> mRequestToken;
         Int32 mRequestType;
     };
 
     class ConfigurationChangedCallbacks
-        : public ElRefBase
+        : public Object
+        , public IComponentCallbacks
         , public IComponentCallbacks2
     {
     public:
         CAR_INTERFACE_DECL()
+
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::ConfigurationChangedCallbacks");
+            return NOERROR;
+        }
 
         ConfigurationChangedCallbacks(
             /* [in] */ IWeakReference* activityThread);
@@ -589,19 +700,30 @@ public:
     };
 
 private:
-    class ProviderKey : public ElRefBase
+    class ProviderKey
+        : public Object
     {
     public:
         ProviderKey(
             /* [in] */ const String& authority,
             /* [in] */ Int32 userId);
 
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::ProviderKey");
+            return NOERROR;
+        }
+
         //@Override
-        CARAPI_(Boolean) Equals(
-            /* [in] */ const ProviderKey* o) const;
+        CARAPI Equals(
+            /* [in] */ IInterface* o,
+            /* [out] */ Boolean* result);
 
         // @Override
-        CARAPI_(Int32) GetHashCode() const;
+        CARAPI GetHashCode(
+            /* [out] */ Int32* hash) const;
 
     public:
         String mAuthority;
@@ -609,7 +731,7 @@ private:
     };
 
     class Idler
-        : public ElRefBase
+        : public Object
         , public IIdleHandler
     {
     public:
@@ -617,6 +739,14 @@ private:
 
         Idler(
             /* [in] */ CActivityThread* owner);
+
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::Idler");
+            return NOERROR;
+        }
 
         CARAPI QueueIdle(
             /* [out] */ Boolean* res);
@@ -632,7 +762,7 @@ private:
 
     public:
         AutoPtr<ActivityClientRecord> mActivity;
-        AutoPtr<CBundle> mState;
+        AutoPtr<IBundle> mState;
         AutoPtr<IPersistableBundle> mPersistentState;
         AutoPtr<ICharSequence> mDescription;
     };
@@ -641,8 +771,6 @@ private:
         : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         ProviderRefCount(
             /* [in] */ IContentProviderHolder* inHolder,
             /* [in] */ ProviderClientRecord* inClient,
@@ -654,6 +782,14 @@ private:
             , mUnstableCount(uCount)
             , mRemovePending(FALSE)
         {}
+
+        CARAPI ToString(
+            /* [out] */ String* description)
+        {
+            VALIDATE_NOT_NULL(description)
+            *description = String("CActivityThread::ProviderRefCount");
+            return NOERROR;
+        }
 
     public:
         AutoPtr<IContentProviderHolder> mHolder;
@@ -945,7 +1081,7 @@ public:
     static CARAPI_(AutoPtr<IActivityThread>) GetSystemMain();
 
     CARAPI InstallSystemProviders(
-        /* [in] */ ArrayOf<IProviderInfo*>* providers);
+        /* [in] */ IList* providers);
 
     CARAPI GetIntCoreSetting(
         /* [in] */ const String& key,
@@ -1029,7 +1165,7 @@ private:
         /* [in] */ IProviderInfo* info);
 
     CARAPI HandleEnterAnimationComplete(
-        /* [in] */ IBinder* token)
+        /* [in] */ IBinder* token);
 
     CARAPI HandleReceiver(
         /* [in] */ ReceiverData* data);
@@ -1162,7 +1298,7 @@ private:
 
     CARAPI InstallContentProviders(
         /* [in] */ IContext* context,
-        /* [in] */ IObjectContainer* providers);
+        /* [in] */ IList* providers);
 
     CARAPI_(void) IncProviderRefLocked(
         /* [in] */ ProviderRefCount* prc,
@@ -1197,13 +1333,14 @@ private:
         /* [in] */ const char* format,
         /* [in] */ ...);
 
-
 public:
     struct HashPK
     {
         size_t operator()(const ProviderKey* s) const
         {
-            return (size_t)s->GetHashCode();
+            Int32 hash;
+            s->GetHashCode(&hash);
+            return (size_t)hash;
         }
     };
 
@@ -1212,7 +1349,10 @@ public:
         Boolean operator()(const ProviderKey* x,
                            const ProviderKey* y) const
         {
-            return x->Equals(y);
+            Boolean equals;
+            IInterface* o = y->Probe(EIID_IInterface);
+            x->Equals(o, &equals);
+            return equals;
         }
     };
 
@@ -1227,7 +1367,7 @@ public:
 
     static AutoPtr<IIPackageManager> sPackageManager;
 
-    AutoPtr<CApplicationThread> mAppThread;
+    AutoPtr<IApplicationThread> mAppThread;
     AutoPtr<ILooper> mLooper;
     AutoPtr<IHandler> mH;
     HashMap<AutoPtr<IBinder>, AutoPtr<ActivityClientRecord> > mActivities;

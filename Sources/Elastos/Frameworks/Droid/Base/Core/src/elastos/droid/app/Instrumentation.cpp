@@ -1059,7 +1059,7 @@ ECode Instrumentation::CallActivityOnDestroy(
       // TODO: the following block causes intermittent hangs when using startActivity
       // temporarily comment out until root cause is fixed (bug 2630683)
 //      if (mWaitingActivities != null) {
-//          synchronized (mSync) {
+//          synchronized(mSync) {
 //              final int N = mWaitingActivities->size();
 //              for (int i=0; i<N; i++) {
 //                  final ActivityWaiter aw = mWaitingActivities->get(i);

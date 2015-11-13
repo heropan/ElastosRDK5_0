@@ -49,7 +49,7 @@ SOURCES += AppGlobals.cpp
 
 SOURCES += Application.cpp
 #SOURCES += CApplicationThread.cpp
-#SOURCES += ApplicationPackageManager.cpp
+SOURCES += ApplicationPackageManager.cpp
 SOURCES += CApplicationErrorReport.cpp
 SOURCES += CApplicationErrorReportHelper.cpp
 SOURCES += CApplicationErrorReportAnrInfo.cpp
@@ -57,7 +57,7 @@ SOURCES += CApplicationErrorReportBatteryInfo.cpp
 SOURCES += CApplicationErrorReportCrashInfo.cpp
 SOURCES += CApplicationErrorReportRunningServiceInfo.cpp
 
-#SOURCES += AppOpsManager.cpp
+SOURCES += AppOpsManager.cpp
 SOURCES += CAppOpsManagerAppOpsCallback.cpp
 
 SOURCES += CBackStackState.cpp
@@ -95,18 +95,26 @@ SOURCES += CPendingIntent.cpp
 SOURCES += CPendingIntentFinishedDispatcher.cpp
 SOURCES += CPendingIntentHelper.cpp
 
+SOURCES += CProfilerInfo.cpp
+
 SOURCES += QueuedWork.cpp
 
 SOURCES += CResultInfo.cpp
 SOURCES += Service.cpp
+SOURCES += SharedElementCallback.cpp
 
 SOURCES += CTaskStackBuilder.cpp
 SOURCES += CTaskStackBuilderHelper.cpp
 
 #SOURCES += UiAutomation.cpp
-#SOURCES += UiAutomationConnection.cpp
+SOURCES += UiAutomationConnection.cpp
 
 #============================================
+
+#SOURCES += RemoteInput.cpp
+#SOURCES += VoiceInteractor.cpp
+#SOURCES += JobSchedulerImpl.cpp
+#SOURCES += CResourcesManager.cpp
 
 #SOURCES += AlertDialog.cpp
 #SOURCES += CActionBarLayoutParams.cpp

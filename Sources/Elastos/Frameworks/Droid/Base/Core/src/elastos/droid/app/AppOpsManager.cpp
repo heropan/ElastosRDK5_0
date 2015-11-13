@@ -2,17 +2,25 @@
 #include "elastos/droid/app/AppOpsManager.h"
 #include "elastos/droid/app/CAppOpsManagerAppOpsCallback.h"
 #include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/CBinder.h"
 #include "elastos/droid/os/Process.h"
+#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/droid/Manifest.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Manifest;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::CBinder;
+using Elastos::Droid::Os::IUserManager;
 using Elastos::Droid::Utility::CArrayMap;
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -30,7 +38,7 @@ AppOpsManager::PackageOps::PackageOps()
     : mUid(0)
 {}
 
-AppOpsManager::PackageOps::～PackageOps()
+AppOpsManager::PackageOps::~PackageOps()
 {}
 
 ECode AppOpsManager::PackageOps::constructor()
@@ -101,7 +109,7 @@ ECode AppOpsManager::PackageOps::ReadFromParcel(
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<OpEntry> oe = new OpEntry();
         oe->ReadFromParcel(source);
-        mEntries->Add(IInterface::Probe(oe));
+        mEntries->Add(TO_IINTERFACE(oe));
     }
     return NOERROR;
 }
@@ -184,7 +192,7 @@ ECode AppOpsManager::OpEntry::GetRejectTime(
 ECode AppOpsManager::OpEntry::IsRunning(
     /* [out] */ Boolean* running)
 {
-    VALIDATE_NOT_NULL(op)
+    VALIDATE_NOT_NULL(running)
     *running = mDuration == -1;
     return NOERROR;
 }
@@ -199,7 +207,7 @@ ECode AppOpsManager::OpEntry::GetDuration(
         AutoPtr<ISystem> system;
         CSystem::AcquireSingleton((ISystem**)&system);
         system->GetCurrentTimeMillis(&currentTimeMillis);
-        *duration = (Int32)(currentTimeMillis-mTime);
+        *duration = (Int32)(currentTimeMillis - mTime);
     }
     return NOERROR;
 }
@@ -209,8 +217,8 @@ ECode AppOpsManager::OpEntry::WriteToParcel(
 {
     dest->WriteInt32(mOp);
     dest->WriteInt32(mMode);
-    dest->WriteInt64((mTime);
-    dest->WriteInt64((mRejectTime);
+    dest->WriteInt64(mTime);
+    dest->WriteInt64(mRejectTime);
     dest->WriteInt32(mDuration);
     return NOERROR;
 }
@@ -237,7 +245,7 @@ ECode AppOpsManager::OpEntry::ToString(
 //========================================================================
 // AppOpsManager::OnOpChangedInternalListener
 //========================================================================
-CAR_INTERFACE_IMPL_2(OnOpChangedInternalListener, Object, IAppOpsManagerOnOpChangedInternalListener, IAppOpsManagerOnOpChangedListener)
+CAR_INTERFACE_IMPL_2(AppOpsManager::OnOpChangedInternalListener, Object, IAppOpsManagerOnOpChangedInternalListener, IAppOpsManagerOnOpChangedListener)
 
 ECode AppOpsManager::OnOpChangedInternalListener::OnOpChanged(
     /* [in] */ const String& op,
@@ -264,9 +272,9 @@ ECode AppOpsManager::OnOpChangedInternalListener::ToString(
 //========================================================================
 // AppOpsManager
 //========================================================================
-
-static Object AppOpsManager::sClassLock;
-static AutoPtr<IBinder> AppOpsManager::sToken;
+const String AppOpsManager::TAG("AppOpsManager");
+Object AppOpsManager::sClassLock;
+AutoPtr<IBinder> AppOpsManager::sToken;
 const Int32 AppOpsManager::sOpLength = 48;
 
 Int32 AppOpsManager::sOpToSwitch[48] = {
@@ -825,13 +833,13 @@ ECode AppOpsManager::StartWatchingMode(
     /* [in] */ const String& packageName,
     /* [in] */ IAppOpsManagerOnOpChangedListener* callback)
 {
-    synchronized (mModeWatchersLock) {
+    synchronized(mModeWatchersLock) {
         HashMap<AutoPtr<IAppOpsManagerOnOpChangedListener>, AutoPtr<IIAppOpsCallback> >::Iterator it;
         AutoPtr<IAppOpsManagerOnOpChangedListener> listener;
         it = mModeWatchers.Find(listener);
         AutoPtr<IIAppOpsCallback> cb;
         if (it == mModeWatchers.End()) {
-            CAppOpsManagerAppOpsCallback::New((IIAppOpsCallback**)&cb);
+            CAppOpsManagerAppOpsCallback::New(listener, (IIAppOpsCallback**)&cb);
             mModeWatchers[listener] = cb;
         }
         else {
@@ -846,7 +854,7 @@ ECode AppOpsManager::StartWatchingMode(
 ECode AppOpsManager::StopWatchingMode(
     /* [in] */ IAppOpsManagerOnOpChangedListener* callback)
 {
-    synchronized (mModeWatchersLock) {
+    synchronized(mModeWatchersLock) {
         HashMap<AutoPtr<IAppOpsManagerOnOpChangedListener>, AutoPtr<IIAppOpsCallback> >::Iterator it;
         AutoPtr<IAppOpsManagerOnOpChangedListener> listener;
         it = mModeWatchers.Find(listener);
@@ -889,7 +897,7 @@ CARAPI AppOpsManager::StrOpToOp(
 
 ECode AppOpsManager::CheckOp(
     /* [in] */ const String& op,
-    /* [in] */ Int32 uid, .
+    /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
@@ -949,7 +957,7 @@ ECode AppOpsManager::StartOp(
     *result = MODE_IGNORED;
     Int32 ival;
     FAIL_RETURN(StrOpToOp(op, &ival))
-    return startOp(ival, uid, packageName, result);
+    return StartOp(ival, uid, packageName, result);
 }
 
 ECode AppOpsManager::StartOpNoThrow(
@@ -962,7 +970,7 @@ ECode AppOpsManager::StartOpNoThrow(
     *result = MODE_IGNORED;
     Int32 ival;
     FAIL_RETURN(StrOpToOp(op, &ival))
-    return startOpNoThrow(ival, uid, packageName, result);
+    return StartOpNoThrow(ival, uid, packageName, result);
 }
 
 ECode AppOpsManager::FinishOp(
@@ -970,8 +978,6 @@ ECode AppOpsManager::FinishOp(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
 {
-    VALIDATE_NOT_NULL(result)
-    *result = MODE_IGNORED;
     Int32 ival;
     FAIL_RETURN(StrOpToOp(op, &ival))
     return FinishOp(ival, uid, packageName);
@@ -988,7 +994,7 @@ ECode AppOpsManager::CheckOp(
 
     Int32 mode;
     ECode ec = mService->CheckOperation(op, uid, packageName, &mode);
-    if (FAIL_RETURN(ec)) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         return NOERROR;
     }
     if (mode == MODE_ERRORED) {
@@ -1083,7 +1089,7 @@ ECode AppOpsManager::NoteOp(
     *result = MODE_IGNORED;
 
     Int32 mode;
-    ECode ec = mService->noteOperation(op, uid, packageName, &mode);
+    ECode ec = mService->NoteOperation(op, uid, packageName, &mode);
     if (mode == MODE_ERRORED) {
         String msg = BuildSecurityExceptionMsg(op, uid, packageName);
         Logger::E(TAG, "E_SECURITY_EXCEPTION: %s", msg.string());
@@ -1101,8 +1107,7 @@ ECode AppOpsManager::NoteOpNoThrow(
 {
     VALIDATE_NOT_NULL(result)
     *result = MODE_IGNORED;
-
-    return mService->noteOperation(op, uid, packageName, result);
+    return mService->NoteOperation(op, uid, packageName, result);
 }
 
 ECode AppOpsManager::NoteOp(
@@ -1121,7 +1126,7 @@ CARAPI AppOpsManager::GetToken(
 {
     VALIDATE_NOT_NULL(binder)
     *binder = NULL;
-    synchronized (sClassLock) {
+    synchronized(sClassLock) {
         if (sToken == NULL) {
             AutoPtr<IBinder> binder;
             CBinder::New((IBinder**)&binder);
@@ -1168,7 +1173,7 @@ ECode AppOpsManager::StartOpNoThrow(
 
     AutoPtr<IBinder> token;
     GetToken(mService, (IBinder**)&token);
-    return mService->StartOperation(token, op, uid, packageName, &result);
+    return mService->StartOperation(token, op, uid, packageName, result);
 }
 
 ECode AppOpsManager::StartOp(

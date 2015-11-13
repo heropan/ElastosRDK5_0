@@ -1,24 +1,25 @@
 #include "elastos/droid/app/SharedElementCallback.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
+// #include "elastos/droid/view/CView.h"
+#include "elastos/droid/transition/CTransitionUtils.h"
+
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
+using Elastos::Droid::Graphics::Drawable::CBitmapDrawable;
+// using Elastos::Droid::View::CView;
+using Elastos::Droid::Transition::ITransitionUtils;
+using Elastos::Droid::Transition::CTransitionUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-// using Elastos::Droid::content.Context;
-// using Elastos::Droid::content.res.Resources;
-// using Elastos::Droid::graphics.Bitmap;
-// using Elastos::Droid::graphics.Canvas;
-// using Elastos::Droid::graphics.Matrix;
-// using Elastos::Droid::graphics.RectF;
-// using Elastos::Droid::graphics.drawable.BitmapDrawable;
-// using Elastos::Droid::os.Parcelable;
-// using Elastos::Droid::transition.TransitionUtils;
-// using Elastos::Droid::view.View;
-
-// import java.util.List;
-// import java.util.Map;
-
-static const AutoPtr<ISharedElementCallback> SharedElementCallback::NULL_CALLBACK = new SharedElementCallback();
+const AutoPtr<ISharedElementCallback> SharedElementCallback::NULL_CALLBACK = new SharedElementCallback();
 
 CAR_INTERFACE_IMPL(SharedElementCallback, Object, ISharedElementCallback)
 
@@ -44,7 +45,6 @@ ECode SharedElementCallback::OnSharedElementEnd(
     return NOERROR;
 }
 
-
 ECode SharedElementCallback::OnRejectSharedElements(
     /* [in] */ IList* rejectedSharedElements) // List<View>
 {
@@ -64,29 +64,47 @@ ECode SharedElementCallback::OnCaptureSharedElementSnapshot(
     /* [in] */ IRectF* screenBounds,
     /* [out] */ IParcelable** parcleable)
 {
-    if (mTempMatrix == null) {
-        mTempMatrix = new Matrix(viewToGlobalMatrix);
-    } else {
-        mTempMatrix.set(viewToGlobalMatrix);
+    VALIDATE_NOT_NULL(parcleable)
+
+    if (mTempMatrix == NULL) {
+        CMatrix::New(viewToGlobalMatrix, (IMatrix**)&mTempMatrix);
     }
-    return TransitionUtils.createViewBitmap(sharedElement, mTempMatrix, screenBounds);
+    else {
+        mTempMatrix->Set(viewToGlobalMatrix);
+    }
+
+    AutoPtr<ITransitionUtils> utils;
+    CTransitionUtils::AcquireSingleton((ITransitionUtils**)&utils);
+    AutoPtr<IBitmap> bmp;
+    utils->CreateViewBitmap(sharedElement, mTempMatrix, screenBounds, (IBitmap**)&bmp);
+    *parcleable = IParcelable::Probe(bmp);
+    REFCOUNT_ADD(*parcleable)
+    return NOERROR;
 }
 
 ECode SharedElementCallback::OnCreateSnapshotView(
     /* [in] */ IContext* context,
     /* [in] */ IParcelable* snapshot,
-    /* [out] */ IView** view)
+    /* [out] */ IView** result)
 {
-    View view = null;
-    if (snapshot instanceof Bitmap) {
-        Bitmap bitmap = (Bitmap) snapshot;
-        view = new View(context);
-        Resources resources = context.getResources();
-        view.setBackground(new BitmapDrawable(resources, bitmap));
-    }
-    return view;
-}
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
+    AutoPtr<IView> view;
+    IBitmap* bitmap = IBitmap::Probe(snapshot);
+    if (bitmap != NULL) {
+        assert(0 && "TODO");
+        // CView::New(context, (IView**)&view);
+        AutoPtr<IResources> resources;
+        context->GetResources((IResources**)&resources);
+        AutoPtr<IDrawable> bd;
+        CBitmapDrawable::New(resources, bitmap, (IDrawable**)&bd);
+        view->SetBackground(bd);
+    }
+    *result = view;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
 
 } // namespace App
 } // namespace Droid

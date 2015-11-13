@@ -23,6 +23,15 @@ ECode Preconditions::CheckNotNull(
 }
 
 ECode Preconditions::CheckNotNull(
+    /* [in] */ const String& reference)
+{
+    if (reference.IsNull()) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    return NOERROR;
+}
+
+ECode Preconditions::CheckNotNull(
     /* [in] */ IInterface* reference,
     /* [in] */ IObject* errorMessage)
 {

@@ -116,7 +116,7 @@ ECode Application::UnregisterActivityLifecycleCallbacks(
 ECode Application::RegisterOnProvideAssistDataListener(
     /* [in] */ IOnProvideAssistDataListener* callback)
 {
-    synchronized (this) {
+    synchronized(this) {
         if (mAssistCallbacks == NULL) {
             mAssistCallbacks = new List<AutoPtr<IOnProvideAssistDataListener> >();
         }
@@ -128,7 +128,7 @@ ECode Application::RegisterOnProvideAssistDataListener(
 ECode Application::UnregisterOnProvideAssistDataListener(
     /* [in] */ IOnProvideAssistDataListener* callback)
 {
-    synchronized (this) {
+    synchronized(this) {
         if (mAssistCallbacks != NULL) {
             mAssistCallbacks->Remove(callback);
         }
@@ -236,7 +236,7 @@ ECode Application::DispatchOnProvideAssistData(
     /* [in] */ IBundle* data)
 {
     AutoPtr<ArrayOf<IOnProvideAssistDataListener*> > callbacks;
-    synchronized (this) {
+    synchronized(this) {
         if (mAssistCallbacks == NULL) {
             return NOERROR;
         }

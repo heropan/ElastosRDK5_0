@@ -61,7 +61,7 @@ ECode PackageManager::GetPackageArchiveInfo(
 
 ECode PackageManager::GetPackageSizeInfo(
     /* [in] */ const String&  packageName,
-    /* [in] */ IPackageStatsObserver* observer)
+    /* [in] */ IIPackageStatsObserver* observer)
 {
     AutoPtr<IUserHandleHelper> helper;
     Int32 id;

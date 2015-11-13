@@ -25,7 +25,7 @@ ECode QueuedWork::SingleThreadExecutor(
 {
     VALIDATE_NOT_NULL(singleThreadExecutor)
     *singleThreadExecutor = NULL;
-    synchronized (sClassLock) {
+    synchronized(sClassLock) {
         if (sSingleThreadExecutor == NULL) {
             AutoPtr<IExecutors> executors;
             CExecutors::AcquireSingleton((IExecutors**)&executors);

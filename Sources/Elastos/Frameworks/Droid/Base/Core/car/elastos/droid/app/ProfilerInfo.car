@@ -36,7 +36,7 @@ module
             [in] Int32 result);
 
         /* Automatically stop the profiler when the app goes idle. */
-        GetAutoStopProfiler(
+        IsAutoStopProfiler(
             [out] Boolean* result);
 
         SetAutoStopProfiler(

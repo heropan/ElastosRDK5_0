@@ -8,7 +8,7 @@
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Content::Pm::IPackageDataObserver;
+using Elastos::Droid::Content::Pm::IIPackageDataObserver;
 using Elastos::Droid::Content::Pm::IConfigurationInfo;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IBundle;
@@ -339,7 +339,7 @@ public:
      */
     CARAPI ClearApplicationUserData(
         /* [in] */ const String& packageName,
-        /* [in] */ IPackageDataObserver* observer,
+        /* [in] */ IIPackageDataObserver* observer,
         /* [out] */ Boolean* result);
 
     /**

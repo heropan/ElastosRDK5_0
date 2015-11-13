@@ -42,7 +42,6 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-
 /**
  * Class for interacting with the device's UI by simulation user actions and
  * introspection of the screen content. It relies on the platform accessibility

@@ -826,7 +826,7 @@ ECode CApplicationThread::UpdateProcessState(
     /* [in] */ Int32 processState,
     /* [in] */ Boolean fromIpc)
 {
-    synchronized (this) {
+    synchronized(this) {
         if (mLastProcessState != processState) {
             mLastProcessState = processState;
             // Update Dalvik state based on ActivityManager.PROCESS_STATE_* constants.

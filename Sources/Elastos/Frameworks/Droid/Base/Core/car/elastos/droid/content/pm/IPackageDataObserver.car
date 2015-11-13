@@ -13,7 +13,7 @@ module
      * {@hide}
      */
      [oneway]
-     interface IPackageDataObserver {
+     interface IIPackageDataObserver {
         OnRemoveCompleted(
             [in] String packageName,
             [in] Boolean succeeded);

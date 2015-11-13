@@ -619,6 +619,8 @@ public:
     static String sOpToString[54];
 
 private:
+    static const String TAG;
+
     AutoPtr<IContext> mContext;
     AutoPtr<IIAppOpsService> mService;
     HashMap<AutoPtr<IAppOpsManagerOnOpChangedListener>, AutoPtr<IIAppOpsCallback> > mModeWatchers;

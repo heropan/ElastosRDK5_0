@@ -73,6 +73,7 @@ module
     merge("app/ProfilerInfo.car");
     merge("app/ProgressDialog.car");
     merge("app/ResultInfo.car");
+    merge("app/ResourcesManager.car");
     merge("app/SearchManager.car");
     merge("app/SearchableInfo.car");
     merge("app/Service.car");
@@ -136,6 +137,7 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IRemoteCallback;
+    interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IIIntentSender;
     interface Elastos.Droid.Content.IIntentSender;
@@ -163,10 +165,7 @@ module
 
 //     using interface Elastos.Core.ICharSequence;
 //     interface Elastos.Droid.Os.ILooper;
-//     interface Elastos.Droid.Os.IParcelFileDescriptor;
-//
 //     interface Elastos.Droid.Content.Pm.IResolveInfo;
-//
 //     interface Elastos.Droid.Content.IContentResolver;
 //     interface Elastos.Droid.Content.IDialogInterface;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
@@ -608,12 +607,12 @@ module
 //         interface IUiModeManager;
 //     }
 
-    //class UiAutomationConnection {
-    //    constructor();
+    class CUiAutomationConnection {
+        constructor();
 
-    //    interface IIUiAutomationConnection;
-    //    interface IBinder;
-    //}
+        interface IIUiAutomationConnection;
+        interface IBinder;
+    }
 
     class CPendingIntent {
         constructor();
@@ -640,6 +639,21 @@ module
 
     singleton class CPendingIntentHelper{
         interface IPendingIntentHelper;
+    }
+
+    /** @hide */
+    class CProfilerInfo {
+
+        constructor();
+
+        constructor(
+            [in] String filename,
+            [in] IParcelFileDescriptor* fd,
+            [in] Int32 interval,
+            [in] Boolean autoStop);
+
+        interface IProfilerInfo;
+        interface IParcelable;
     }
 
     class CApplicationErrorReport {
@@ -719,15 +733,15 @@ module
         interface IParcelable;
     }
 
-//     class CActivityThread {
-//         constructor();
+    class CActivityThread {
+        constructor();
 
-//         interface IActivityThread;
-//     }
+        interface IActivityThread;
+    }
 
-//     singleton class CActivityThreadHelper {
-//         interface IActivityThreadHelper;
-//     }
+    singleton class CActivityThreadHelper {
+        interface IActivityThreadHelper;
+    }
 
 //     class CApplicationThread {
 //         constructor();

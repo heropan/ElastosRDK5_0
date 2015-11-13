@@ -49,7 +49,7 @@ ECode CGlobalsWallpaperManagerCallback::OnWallpaperChanged()
      * to null so if the user requests the wallpaper again then we'll
      * fetch it.
      */
-    synchronized (this) {
+    synchronized(this) {
         mWallpaper = NULL;
         mDefaultWallpaper = NULL;
     }

@@ -1,5 +1,7 @@
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.ILooper;
@@ -196,7 +198,7 @@ module
             [out] Boolean* released);
 
         InstallSystemProviders(
-            [in] ArrayOf<IProviderInfo*>* providers);
+            [in] IList* providers);
 
         GetIntCoreSetting(
             [in] String key,

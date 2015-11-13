@@ -19,7 +19,7 @@ module
     interface Elastos.Droid.Content.Pm.IParceledListSlice;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
     interface Elastos.Droid.Content.Pm.IConfigurationInfo;
-    interface Elastos.Droid.Content.Pm.IPackageDataObserver;
+    interface Elastos.Droid.Content.Pm.IIPackageDataObserver;
     interface Elastos.Droid.Content.Pm.IUserInfo;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.Res.IConfiguration;
@@ -521,7 +521,7 @@ module
 
         ClearApplicationUserData(
             [in] String packageName,
-            [in] IPackageDataObserver* observer,
+            [in] IIPackageDataObserver* observer,
             [in] Int32 userId,
             [out] Boolean* result);
 

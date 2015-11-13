@@ -19,8 +19,8 @@ module
     interface Elastos.Droid.Content.Pm.IPackageCleanItem;
     interface Elastos.Droid.Content.Pm.IVerificationParams;
     interface Elastos.Droid.Content.Pm.IVerifierDeviceIdentity;
-    interface Elastos.Droid.Content.Pm.IPackageStatsObserver;
-    interface Elastos.Droid.Content.Pm.IPackageMoveObserver;
+    interface Elastos.Droid.Content.Pm.IIPackageStatsObserver;
+    interface Elastos.Droid.Content.Pm.IIPackageMoveObserver;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.IIntentFilter;
@@ -255,7 +255,6 @@ module
          */
         GetInstalledPackages(
             [in] Int32 flags,
-            [in] String lastRead,
             [in] Int32 userId,
             [out] IParceledListSlice** slice);
 
@@ -279,7 +278,6 @@ module
          */
         GetInstalledApplications(
             [in] Int32 flags,
-            [in] String lastRead,
             [in] Int32 userId,
             [out] IParceledListSlice** slice);
 
@@ -328,10 +326,12 @@ module
             [out] IList** infos);
 
         InstallPackage(
-            [in] IUri* packageURI,
-            [in] IIPackageInstallObserver* observer,
+            [in] String originPath,
+            [in] IIPackageInstallObserver2* observer,
             [in] Int32 flags,
-            [in] String installerPackageName);
+            [in] String installerPackageName,
+            [in] IVerificationParams* verificationParams,
+            [in] String packageAbiOverride);
 
         InstallPackageAsUser(
             [in] String originPath,
@@ -412,7 +412,8 @@ module
             [in] IIntentFilter* filter,
             [in] Int32 match,
             [in] ArrayOf<IComponentName*>* set,
-            [in] IComponentName* activity);
+            [in] IComponentName* activity,
+            [in] Int32 userId);
 
         ClearPackagePreferredActivities(
             [in] String packageName);
@@ -450,7 +451,7 @@ module
          * is the current "always use this one" setting.
          */
          GetHomeActivities(
-            [out] IList** outHomeCandidates,
+            [in] IList* outHomeCandidates,
             [out] IComponentName** name);
 
         /**
@@ -483,7 +484,8 @@ module
             [in] String packageName,
             [in] Int32 newState,
             [in] Int32 flags,
-            [in] Int32 userId);
+            [in] Int32 userId,
+            [in] String callingPackage);
 
         /**
          * As per android.content.pm.PackageManager#getApplicationEnabledSetting.
@@ -526,7 +528,7 @@ module
          */
         FreeStorageAndNotify(
             [in] Int64 freeStorageSize,
-            [in] IPackageDataObserver* observer);
+            [in] IIPackageDataObserver* observer);
 
         /**
          * Free storage by deleting LRU sorted list of cache files across
@@ -561,7 +563,7 @@ module
          */
         DeleteApplicationCacheFiles(
             [in] String packageName,
-            [in] IPackageDataObserver* observer);
+            [in] IIPackageDataObserver* observer);
 
         /**
          * Clear the user data directory of an application.
@@ -571,7 +573,7 @@ module
          */
         ClearApplicationUserData(
             [in] String packageName,
-            [in] IPackageDataObserver* observer,
+            [in] IIPackageDataObserver* observer,
             [in] Int32 userId);
 
         /**
@@ -585,7 +587,7 @@ module
         GetPackageSizeInfo(
             [in] String packageName,
             [in] Int32 userHandle,
-            [in] IPackageStatsObserver* observer);
+            [in] IIPackageStatsObserver* observer);
 
         /**
          * Get a list of shared libraries that are available on the
@@ -656,7 +658,7 @@ module
 
         MovePackage(
             [in] String packageName,
-            [in] IPackageMoveObserver* observer,
+            [in] IIPackageMoveObserver* observer,
             [in] Int32 flags);
 
         AddPermissionAsync(

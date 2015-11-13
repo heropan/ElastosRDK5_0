@@ -50,7 +50,7 @@ ECode AppImportanceMonitor::ProcessObserver::OnProcessStateChanged(
     /* [in] */ Int32 procState)
 {
     Object& lock = mHost->mAppsLock;
-    synchronized (lock) {
+    synchronized(lock) {
         mHost->UpdateImportanceLocked(pid, uid,
             CActivityManagerRunningAppProcessInfo::procStateToImportance(procState),
             TRUE);
@@ -62,7 +62,7 @@ ECode AppImportanceMonitor::ProcessObserver::OnProcessDied(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 uid)
 {
-    synchronized (mApps) {
+    synchronized(mApps) {
         mHost->UpdateImportanceLocked(pid, uid,
             IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE, TRUE);
     }

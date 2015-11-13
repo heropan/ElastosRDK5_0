@@ -313,7 +313,7 @@ ECode CActivityManager::GetAppTaskThumbnailSize(
     VALIDATE_NOT_NULL(result)
     *result = 0;
 
-    synchronized (this) {
+    synchronized(this) {
         FAIL_RETURN(EnsureAppTaskThumbnailSizeLocked())
         Int32 x, y;
         mAppTaskThumbnailSize->GetX(&x);
@@ -353,7 +353,7 @@ ECode CActivityManager::AddAppTask(
     *value = 0;
 
     AutoPtr<IPoint> size;
-    synchronized (this) {
+    synchronized(this) {
         FAIL_RETURN(EnsureAppTaskThumbnailSizeLocked())
         size = mAppTaskThumbnailSize;
     }
@@ -543,7 +543,7 @@ ECode CActivityManager::GetMemoryInfo(
 
 ECode CActivityManager::ClearApplicationUserData(
     /* [in] */ const String& packageName,
-    /* [in] */ IPackageDataObserver* observer,
+    /* [in] */ IIPackageDataObserver* observer,
     /* [out] */ Boolean* result)
 {
     // try {

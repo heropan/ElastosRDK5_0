@@ -15,11 +15,11 @@ module
     interface Elastos.Droid.Content.Pm.IFeatureInfo;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Content.Pm.IInstrumentationInfo;
-    interface Elastos.Droid.Content.Pm.IPackageDataObserver;
+    interface Elastos.Droid.Content.Pm.IIPackageDataObserver;
     interface Elastos.Droid.Content.Pm.IIPackageDeleteObserver;
     interface Elastos.Droid.Content.Pm.IIPackageInstallObserver;
-    interface Elastos.Droid.Content.Pm.IPackageMoveObserver;
-    interface Elastos.Droid.Content.Pm.IPackageStatsObserver;
+    interface Elastos.Droid.Content.Pm.IIPackageMoveObserver;
+    interface Elastos.Droid.Content.Pm.IIPackageStatsObserver;
     interface Elastos.Droid.Content.Pm.IManifestDigest;
     interface Elastos.Droid.Content.Pm.IContainerEncryptionParams;
     interface Elastos.Droid.Content.Pm.IVerificationParams;
@@ -3687,17 +3687,17 @@ module
          *
          * @param packageName The name of the package
          * @param observer An observer callback to get notified when the operation is finished
-         * android.content.pm.IPackageDataObserver#onRemoveCompleted(String, boolean)
+         * android.content.pm.IIPackageDataObserver#onRemoveCompleted(String, boolean)
          * will be called when that happens.  observer may be null to indicate that
          * no callback is desired.
          *
-         * @sa android.content.pm.IPackageDataObserver#onRemoveCompleted(String, boolean)
+         * @sa android.content.pm.IIPackageDataObserver#onRemoveCompleted(String, boolean)
          *
          * @hide
          */
         ClearApplicationUserData(
             [in] String packageName,
-            [in] IPackageDataObserver* observer);
+            [in] IIPackageDataObserver* observer);
 
         /**
          * Attempts to delete the cache files associated with an application.
@@ -3709,18 +3709,18 @@ module
          * @param packageName The name of the package to delete
          * @param observer An observer callback to get notified when the cache file deletion
          * is complete.
-         * android.content.pm.IPackageDataObserver#onRemoveCompleted(String, boolean)
+         * android.content.pm.IIPackageDataObserver#onRemoveCompleted(String, boolean)
          * will be called when that happens.  observer may be null to indicate that
          * no callback is desired.
          *
          * @sa android.Manifest.permission#DELETE_CACHE_FILES
-         * @sa android.content.pm.IPackageDataObserver#onRemoveCompleted(String, boolean)
+         * @sa android.content.pm.IIPackageDataObserver#onRemoveCompleted(String, boolean)
          *
          * @hide
          */
         DeleteApplicationCacheFiles(
             [in] String packageName,
-            [in] IPackageDataObserver* observer);
+            [in] IIPackageDataObserver* observer);
 
         /**
          * Free storage by deleting LRU sorted list of cache files across
@@ -3746,7 +3746,7 @@ module
          */
         FreeStorageAndNotify(
             [in] Int64 freeStorageSize,
-            [in] IPackageDataObserver* observer);
+            [in] IIPackageDataObserver* observer);
 
         /**
          * Free storage by deleting LRU sorted list of cache files across
@@ -3785,33 +3785,33 @@ module
          * @param userHandle The user whose size information should be retrieved.
          * @param observer An observer callback to get notified when the operation
          * is complete.
-         * android.content.pm.IPackageStatsObserver#onGetStatsCompleted(PackageStats, boolean)
+         * android.content.pm.IIPackageStatsObserver#onGetStatsCompleted(PackageStats, boolean)
          * The observer's callback is invoked with a PackageStats object(containing the
          * code, data and cache sizes of the package) and a boolean value representing
          * the status of the operation. observer may be null to indicate that
          * no callback is desired.
          *
          * @sa android.Manifest.permission#GET_PACKAGE_SIZE
-         * @sa android.content.pm.IPackageStatsObserver#onGetStatsCompleted(PackageStats, boolean)
+         * @sa android.content.pm.IIPackageStatsObserver#onGetStatsCompleted(PackageStats, boolean)
          *
          * @hide
          */
         GetPackageSizeInfo(
             [in] String packageName,
             [in] Int32 userHandle,
-            [in] IPackageStatsObserver* observer);
+            [in] IIPackageStatsObserver* observer);
 
         /**
-         * Like #getPackageSizeInfo(String, int, IPackageStatsObserver), but
+         * Like #getPackageSizeInfo(String, int, IIPackageStatsObserver), but
          * returns the size for the calling user.
          *
-         * @sa #getPackageSizeInfo(String, int, IPackageStatsObserver)
+         * @sa #getPackageSizeInfo(String, int, IIPackageStatsObserver)
          *
          * @hide
          */
         GetPackageSizeInfo(
             [in] String packageName,
-            [in] IPackageStatsObserver* observer);
+            [in] IIPackageStatsObserver* observer);
 
         /**
          * @deprecated This function no longer does anything; it was an old
@@ -4143,7 +4143,7 @@ module
          */
         MovePackage(
             [in] String packageName,
-            [in] IPackageMoveObserver* observer,
+            [in] IIPackageMoveObserver* observer,
             [in] Int32 flags);
 
         /**

@@ -3,41 +3,49 @@
 #define __ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__
 
 #include "elastos/droid/content/pm/PackageManager.h"
+#include <elastos/utility/etl/HashMap.h>
 
-// using Elastos::Droid::Content::IIntent;
-// using Elastos::Droid::Content::IComponentName;
-// using Elastos::Droid::Content::IIntentSender;
-// using Elastos::Droid::Content::Pm::IIPackageManager;
-// using Elastos::Droid::Content::Pm::IPackageManager;
-// using Elastos::Droid::Content::Pm::PackageManager;
-// using Elastos::Droid::Content::Pm::IPackageInfo;
-// using Elastos::Droid::Content::Pm::IPermissionInfo;
-// using Elastos::Droid::Content::Pm::IPermissionGroupInfo;
-// using Elastos::Droid::Content::Pm::IApplicationInfo;
-// using Elastos::Droid::Content::Pm::IActivityInfo;
-// using Elastos::Droid::Content::Pm::IServiceInfo;
-// using Elastos::Droid::Content::Pm::IProviderInfo;
-// using Elastos::Droid::Content::Pm::IFeatureInfo;
-// using Elastos::Droid::Content::Pm::IPermissionInfo;
-// using Elastos::Droid::Content::Pm::IResolveInfo;
-// using Elastos::Droid::Content::Pm::IComponentInfo;
-// using Elastos::Droid::Content::Pm::IInstrumentationInfo;
-// using Elastos::Droid::Content::Pm::IPackageInstallObserver;
-// using Elastos::Droid::Content::Pm::IPackageMoveObserver;
-// using Elastos::Droid::Content::Pm::IPackageDeleteObserver;
-// using Elastos::Droid::Content::Pm::IPackageDataObserver;
-// using Elastos::Droid::Content::Pm::IPackageStatsObserver;
-// using Elastos::Droid::Content::Pm::IManifestDigest;
-// using Elastos::Droid::Content::Pm::IContainerEncryptionParams;
-// using Elastos::Droid::Content::Pm::IVerificationParams;
-// using Elastos::Droid::Content::Pm::IVerifierDeviceIdentity;
-// using Elastos::Droid::Content::Res::IResources;
-// using Elastos::Droid::Content::Res::IXmlResourceParser;
-// using Elastos::Droid::Graphics::Drawable::IDrawable;
-// using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::IUserManager;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IIntentSender;
+using Elastos::Droid::Content::Pm::IIPackageManager;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::PackageManager;
+using Elastos::Droid::Content::Pm::IPackageInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Pm::IPermissionInfo;
+using Elastos::Droid::Content::Pm::IPermissionGroupInfo;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::IUserInfo;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Content::Pm::IProviderInfo;
+using Elastos::Droid::Content::Pm::IFeatureInfo;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
+using Elastos::Droid::Content::Pm::IInstrumentationInfo;
+using Elastos::Droid::Content::Pm::IIPackageInstallObserver;
+using Elastos::Droid::Content::Pm::IIPackageMoveObserver;
+using Elastos::Droid::Content::Pm::IIPackageDeleteObserver;
+using Elastos::Droid::Content::Pm::IIPackageDataObserver;
+using Elastos::Droid::Content::Pm::IIPackageStatsObserver;
+using Elastos::Droid::Content::Pm::IPackageInstaller;
+using Elastos::Droid::Content::Pm::IManifestDigest;
+using Elastos::Droid::Content::Pm::IContainerEncryptionParams;
+using Elastos::Droid::Content::Pm::IVerificationParams;
+using Elastos::Droid::Content::Pm::IVerifierDeviceIdentity;
+using Elastos::Droid::Content::Pm::IKeySet;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IXmlResourceParser;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Net::IUri;
 
-
-// using Elastos::Core::ICharSequence;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::IList;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -231,7 +239,7 @@ public:
     CARAPI GetPackagesHoldingPermissions(
         /* [in] */ ArrayOf<String>* permissions,
         /* [in] */ Int32 flags,
-        /* [out] */ IList** permissions);
+        /* [out] */ IList** result);
 
     CARAPI GetInstalledApplications(
         /* [in] */ Int32 flags,
@@ -398,7 +406,7 @@ public:
         /* [in] */ IUserHandle* user,
         /* [in] */ IRect* badgeLocation,
         /* [in] */ Int32 badgeDensity,
-        /* [out] */ IDrawable** drawable);
+        /* [out] */ IDrawable** result);
 
     CARAPI GetUserBadgeForDensity(
         /* [in] */ IUserHandle* user,
@@ -455,13 +463,13 @@ public:
 
     CARAPI InstallPackage(
         /* [in] */ IUri* packageURI,
-        /* [in] */ IPackageInstallObserver* observer,
+        /* [in] */ IIPackageInstallObserver* observer,
         /* [in] */ Int32 flags,
         /* [in] */ const String& installerPackageName);
 
     CARAPI InstallPackageWithVerification(
         /* [in] */ IUri* packageURI,
-        /* [in] */ IPackageInstallObserver* observer,
+        /* [in] */ IIPackageInstallObserver* observer,
         /* [in] */ Int32 flags,
         /* [in] */ const String& installerPackageName,
         /* [in] */ IUri* verificationURI,
@@ -470,17 +478,11 @@ public:
 
     CARAPI InstallPackageWithVerificationAndEncryption(
         /* [in] */ IUri* packageURI,
-        /* [in] */ IPackageInstallObserver* observer,
+        /* [in] */ IIPackageInstallObserver* observer,
         /* [in] */ Int32 flags,
         /* [in] */ const String& installerPackageName,
         /* [in] */ IVerificationParams* verificationParams,
         /* [in] */ IContainerEncryptionParams* encryptionParams);
-
-    CARAPI InstallPackage(
-        /* [in] */ IUri* packageURI,
-        /* [in] */ IPackageInstallObserver* observer,
-        /* [in] */ Int32 flags,
-        /* [in] */ const String& installerPackageName);
 
     CARAPI InstallExistingPackage(
         /* [in] */ const String& packageName,
@@ -501,7 +503,7 @@ public:
 
     CARAPI MovePackage(
         /* [in] */ const String& packageName,
-        /* [in] */ IPackageMoveObserver* observer,
+        /* [in] */ IIPackageMoveObserver* observer,
         /* [in] */ Int32 flags);
 
     CARAPI GetInstallerPackageName(
@@ -510,20 +512,20 @@ public:
 
     CARAPI DeletePackage(
         /* [in] */ const String& packageName,
-        /* [in] */ IPackageDeleteObserver* observer,
+        /* [in] */ IIPackageDeleteObserver* observer,
         /* [in] */ Int32 flags);
 
     CARAPI ClearApplicationUserData(
         /* [in] */ const String& packageName,
-        /* [in] */ IPackageDataObserver* observer);
+        /* [in] */ IIPackageDataObserver* observer);
 
     CARAPI DeleteApplicationCacheFiles(
         /* [in] */ const String& packageName,
-        /* [in] */ IPackageDataObserver* observer);
+        /* [in] */ IIPackageDataObserver* observer);
 
     CARAPI FreeStorageAndNotify(
         /* [in] */ Int64 freeStorageSize,
-        /* [in] */ IPackageDataObserver* observer);
+        /* [in] */ IIPackageDataObserver* observer);
 
     CARAPI FreeStorage(
         /* [in] */ Int64 freeStorageSize,
@@ -532,7 +534,7 @@ public:
     CARAPI GetPackageSizeInfo(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 userHandle,
-        /* [in] */ IPackageStatsObserver* observer);
+        /* [in] */ IIPackageStatsObserver* observer);
 
     CARAPI AddPackageToPreferred(
         /* [in] */ const String& packageName);
@@ -666,7 +668,7 @@ public:
      * @hide
      */
     CARAPI ClearCrossProfileIntentFilters(
-        /* [in] */ Int32 sourceUserId)
+        /* [in] */ Int32 sourceUserId);
 
     CARAPI LoadItemIcon(
         /* [in] */ IPackageItemInfo* itemInfo,
@@ -703,22 +705,30 @@ private:
     AutoPtr<IUserInfo> GetUserIfProfile(
     /* [in] */ Int32 userHandle);
 
+    CARAPI InstallCommon(
+        /* [in] */ IUri* packageURI,
+        /* [in] */ IPackageInstallObserver* observer,
+        /* [in] */ Int32 flags,
+        /* [in] */ const String& installerPackageName,
+        /* [in] */ IVerificationParams* verificationParams,
+        /* [in] */ IContainerEncryptionParams* encryptionParams);
+
 private:
     static const String TAG;
     static const Boolean DEBUG;
     static const Boolean DEBUG_ICONS;
 
     // Default flags to use with PackageManager when no flags are given.
-    static Int32 sDefaultFlags;// = PackageManager.GET_SHARED_LIBRARY_FILES;
+    static Int32 sDefaultFlags;
 
-    Object mLock;// = new Object();
+    Object mLock;
 
     // @GuardedBy("mLock")
     AutoPtr<IUserManager> mUserManager;
     // @GuardedBy("mLock")
     AutoPtr<IPackageInstaller> mInstaller;
 
-    IContextImpl* mContext;
+    IContext* mContext;
     AutoPtr<IIPackageManager> mPM;
 
     static Object sSync;

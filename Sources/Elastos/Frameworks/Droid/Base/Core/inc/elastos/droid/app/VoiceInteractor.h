@@ -1,23 +1,27 @@
 
+#ifndef __ELASTOS_DROID_APP_VOICE_INTERACTOR_H__
+#define __ELASTOS_DROID_APP_VOICE_INTERACTOR_H__
 
-package android.app;
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::annotation.SystemApi;
-using Elastos::Droid::content.Context;
-using Elastos::Droid::os.Bundle;
-using Elastos::Droid::os.IBinder;
-using Elastos::Droid::os.Looper;
-using Elastos::Droid::os.Message;
-using Elastos::Droid::os.RemoteException;
-using Elastos::Droid::util.ArrayMap;
-using Elastos::Droid::util.Log;
-import com.android.internal.app.IVoiceInteractor;
-import com.android.internal.app.IVoiceInteractorCallback;
-import com.android.internal.app.IVoiceInteractorRequest;
-import com.android.internal.os.HandlerCaller;
-import com.android.internal.os.SomeArgs;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Internal::App::IVoiceInteractor;
+using Elastos::Droid::Internal::App::IVoiceInteractorCallback;
+using Elastos::Droid::Internal::App::IVoiceInteractorRequest;
+using Elastos::Droid::Internal::Os::HandlerCaller;
+using Elastos::Droid::Internal::Os::SomeArgs;
 
-import java.util.ArrayList;
+using Elastos::Utility::IArrayList;
+
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 /**
  * @hide
@@ -42,20 +46,20 @@ import java.util.ArrayList;
  * request, rather than holding on to the activity instance yourself, either explicitly
  * or implicitly through a non-static inner class.
  */
-@SystemApi
-public class VoiceInteractor {
-    static final String TAG = "VoiceInteractor";
-    static final boolean DEBUG = true;
-
-    final IVoiceInteractor mInteractor;
-
-    Context mContext;
-    Activity mActivity;
-
-    final HandlerCaller mHandlerCaller;
-    final HandlerCaller.Callback mHandlerCallerCallback = new HandlerCaller.Callback() {
-        @Override
-        public void executeMessage(Message msg) {
+//@SystemApi
+class VoiceInteractor
+    : public Object
+    , public IVoiceInteractor
+{
+private:
+    class HandlerCallerCallback
+        : public Object
+        , public IHandlerCallerCallback
+    {
+    public:
+        CARAPI ExecuteMessage(
+            /* [in] */ IMessage* msg)
+        {
             SomeArgs args = (SomeArgs)msg.obj;
             Request request;
             switch (msg.what) {
@@ -115,9 +119,13 @@ public class VoiceInteractor {
         }
     };
 
-    final IVoiceInteractorCallback.Stub mCallback = new IVoiceInteractorCallback.Stub() {
+    class VoiceInteractorCallback
+        : Object
+        , public IIVoiceInteractorCallback
+        , public IBinder
+    {
         @Override
-        public void deliverConfirmationResult(IVoiceInteractorRequest request, boolean confirmed,
+        public void deliverConfirmationResult(IVoiceInteractorRequest request, Boolean confirmed,
                 Bundle result) {
             mHandlerCaller.sendMessage(mHandlerCaller.obtainMessageIOO(
                     MSG_CONFIRMATION_RESULT, confirmed ? 1 : 0, request, result));
@@ -136,7 +144,7 @@ public class VoiceInteractor {
         }
 
         @Override
-        public void deliverCommandResult(IVoiceInteractorRequest request, boolean complete,
+        public void deliverCommandResult(IVoiceInteractorRequest request, Boolean complete,
                 Bundle result) {
             mHandlerCaller.sendMessage(mHandlerCaller.obtainMessageIOO(
                     MSG_COMMAND_RESULT, complete ? 1 : 0, request, result));
@@ -149,13 +157,7 @@ public class VoiceInteractor {
         }
     };
 
-    final ArrayMap<IBinder, Request> mActiveRequests = new ArrayMap<IBinder, Request>();
 
-    static final int MSG_CONFIRMATION_RESULT = 1;
-    static final int MSG_COMPLETE_VOICE_RESULT = 2;
-    static final int MSG_ABORT_VOICE_RESULT = 3;
-    static final int MSG_COMMAND_RESULT = 4;
-    static final int MSG_CANCEL_RESULT = 5;
 
     public static abstract class Request {
         IVoiceInteractorRequest mRequestInterface;
@@ -198,7 +200,7 @@ public class VoiceInteractor {
 
         abstract IVoiceInteractorRequest submit(IVoiceInteractor interactor,
                 String packageName, IVoiceInteractorCallback callback) throws RemoteException;
-    }
+    };
 
     public static class ConfirmationRequest extends Request {
         final CharSequence mPrompt;
@@ -209,7 +211,7 @@ public class VoiceInteractor {
          * VoiceInteractionService.  This allows an Activity to complete an unsafe operation that
          * would require the user to touch the screen when voice interaction mode is not enabled.
          * The result of the confirmation will be returned through an asynchronous call to
-         * either {@link #onConfirmationResult(boolean, android.os.Bundle)} or
+         * either {@link #onConfirmationResult(Boolean, android.os.Bundle)} or
          * {@link #onCancel()}.
          *
          * <p>In some cases this may be a simple yes / no confirmation or the confirmation could
@@ -225,14 +227,14 @@ public class VoiceInteractor {
             mExtras = extras;
         }
 
-        public void onConfirmationResult(boolean confirmed, Bundle result) {
+        public void onConfirmationResult(Boolean confirmed, Bundle result) {
         }
 
         IVoiceInteractorRequest submit(IVoiceInteractor interactor, String packageName,
                 IVoiceInteractorCallback callback) throws RemoteException {
             return interactor.startConfirmation(packageName, callback, mPrompt, mExtras);
         }
-    }
+    };
 
     public static class CompleteVoiceRequest extends Request {
         final CharSequence mMessage;
@@ -262,7 +264,7 @@ public class VoiceInteractor {
                 IVoiceInteractorCallback callback) throws RemoteException {
             return interactor.startCompleteVoice(packageName, callback, mMessage, mExtras);
         }
-    }
+    };
 
     public static class AbortVoiceRequest extends Request {
         final CharSequence mMessage;
@@ -295,7 +297,7 @@ public class VoiceInteractor {
                 IVoiceInteractorCallback callback) throws RemoteException {
             return interactor.startAbortVoice(packageName, callback, mMessage, mExtras);
         }
-    }
+    };
 
     public static class CommandRequest extends Request {
         final String mCommand;
@@ -331,7 +333,7 @@ public class VoiceInteractor {
                 IVoiceInteractorCallback callback) throws RemoteException {
             return interactor.startCommand(packageName, callback, mCommand, mArgs);
         }
-   }
+   };
 
     VoiceInteractor(IVoiceInteractor interactor, Context context, Activity activity,
             Looper looper) {
@@ -341,7 +343,7 @@ public class VoiceInteractor {
         mHandlerCaller = new HandlerCaller(context, looper, mHandlerCallerCallback, true);
     }
 
-    Request pullRequest(IVoiceInteractorRequest request, boolean complete) {
+    Request pullRequest(IVoiceInteractorRequest request, Boolean complete) {
         synchronized (mActiveRequests) {
             Request req = mActiveRequests.get(request.asBinder());
             if (req != null && complete) {
@@ -394,7 +396,7 @@ public class VoiceInteractor {
         mActivity = null;
     }
 
-    public boolean submitRequest(Request request) {
+    public Boolean submitRequest(Request request) {
         try {
             IVoiceInteractorRequest ireq = request.submit(mInteractor,
                     mContext.getOpPackageName(), mCallback);
@@ -419,13 +421,42 @@ public class VoiceInteractor {
      *
      * @param commands
      */
-    public boolean[] supportsCommands(String[] commands) {
+    public Boolean[] supportsCommands(String[] commands) {
         try {
-            boolean[] res = mInteractor.supportsCommands(mContext.getOpPackageName(), commands);
+            Boolean[] res = mInteractor.supportsCommands(mContext.getOpPackageName(), commands);
             if (DEBUG) Log.d(TAG, "supportsCommands: cmds=" + commands + " res=" + res);
             return res;
         } catch (RemoteException e) {
             throw new RuntimeException("Voice interactor has died", e);
         }
     }
-}
+
+private:
+    static const String TAG = "VoiceInteractor";
+    static const Boolean DEBUG = true;
+
+    AutoPtr<IVoiceInteractor> mInteractor;
+
+    AutoPtr<IContext> mContext;
+    AutoPtr<IActivity> mActivity;
+
+    AutoPtr<IHandlerCaller> mHandlerCaller;
+    AutoPtr<IHandlerCallerCallback> mHandlerCallerCallback;
+
+    AutoPtr<IIVoiceInteractorCallback> mCallback;
+
+    HashMap<AutoPtr<IBinder>, AutoPtr<Request> > mActiveRequests;
+
+    static final int MSG_CONFIRMATION_RESULT = 1;
+    static final int MSG_COMPLETE_VOICE_RESULT = 2;
+    static final int MSG_ABORT_VOICE_RESULT = 3;
+    static final int MSG_COMMAND_RESULT = 4;
+    static final int MSG_CANCEL_RESULT = 5;
+};
+
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__ELASTOS_DROID_APP_VOICE_INTERACTOR_H__
+

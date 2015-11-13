@@ -1,15 +1,16 @@
 
 
-package android.app;
+#ifndef __ELASTOS_DROID_APP_CRESOURCEMANAGER_H__
+#define __ELASTOS_DROID_APP_CRESOURCEMANAGER_H__
 
-import static android.app.ActivityThread.DEBUG_CONFIGURATION;
+#include "_Elastos_Droid_App_CFragmentHelper.h"
 
-using Elastos::Droid::content.pm.ActivityInfo;
-using Elastos::Droid::content.res.AssetManager;
-using Elastos::Droid::content.res.CompatibilityInfo;
-using Elastos::Droid::content.res.Configuration;
-using Elastos::Droid::content.res.Resources;
-using Elastos::Droid::content.res.ResourcesKey;
+using Elastos::Droid::Content::pm.ActivityInfo;
+using Elastos::Droid::Content::res.AssetManager;
+using Elastos::Droid::Content::res.CompatibilityInfo;
+using Elastos::Droid::Content::res.Configuration;
+using Elastos::Droid::Content::res.Resources;
+using Elastos::Droid::Content::res.ResourcesKey;
 using Elastos::Droid::hardware.display.DisplayManagerGlobal;
 using Elastos::Droid::os.IBinder;
 using Elastos::Droid::util.ArrayMap;
@@ -21,8 +22,16 @@ using Elastos::Droid::view.DisplayAdjustments;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
+
+namespace Elastos {
+namespace Droid {
+namespace App {
+
 /** @hide */
-public class ResourcesManager {
+CarClass(CResourcesManager)
+    , public Object
+    , public IResourcesManager
+{
     static final String TAG = "ResourcesManager";
     static final boolean DEBUG_CACHE = false;
     static final boolean DEBUG_STATS = true;
@@ -48,19 +57,29 @@ public class ResourcesManager {
         }
     }
 
-    public Configuration getConfiguration() {
+    public CARAPI GetConfiguration(
+        /* [out] */ IConfiguration** config)
+    {
         return mResConfiguration;
     }
 
-    public void flushDisplayMetricsLocked() {
+    public CARAPI FlushDisplayMetricsLocked()
+    {
         mDefaultDisplayMetrics.clear();
     }
 
-    public DisplayMetrics getDisplayMetricsLocked(int displayId) {
+    public CARAPI GetDisplayMetricsLocked(
+        /* [in] */ Int32 displayId,
+        /* [out] */ IDisplayMetrics** displayMetrics)
+    {
         return getDisplayMetricsLocked(displayId, DisplayAdjustments.DEFAULT_DISPLAY_ADJUSTMENTS);
     }
 
-    public DisplayMetrics getDisplayMetricsLocked(int displayId, DisplayAdjustments daj) {
+    public CARAPI GetDisplayMetricsLocked(
+        /* [in] */ Int32 displayId,
+        /* [in] */ IDisplayAdjustments* daj,
+        /* [out] */ IDisplayMetrics** displayMetrics)
+    {
         boolean isDefaultDisplay = (displayId == Display.DEFAULT_DISPLAY);
         DisplayMetrics dm = isDefaultDisplay ? mDefaultDisplayMetrics.get(daj) : null;
         if (dm != null) {
@@ -96,7 +115,8 @@ public class ResourcesManager {
     }
 
     final void applyNonDefaultDisplayMetricsToConfigurationLocked(
-            DisplayMetrics dm, Configuration config) {
+            DisplayMetrics dm, Configuration config)
+    {
         config.touchscreen = Configuration.TOUCHSCREEN_NOTOUCH;
         config.densityDpi = dm.densityDpi;
         config.screenWidthDp = (int)(dm.widthPixels / dm.density);
@@ -117,8 +137,11 @@ public class ResourcesManager {
         config.compatSmallestScreenWidthDp = config.smallestScreenWidthDp;
     }
 
-    public boolean applyCompatConfiguration(int displayDensity,
-            Configuration compatConfiguration) {
+    public CARAPI ApplyCompatConfiguration(
+        /* [in] */ Int32 displayDensity,
+        /* [in] */ IConfiguration* compatConfiguration,
+        /* [out] */ Boolean* result)
+    {
         if (mResCompatibilityInfo != null && !mResCompatibilityInfo.supportsScreen()) {
             mResCompatibilityInfo.applyToConfiguration(displayDensity, compatConfiguration);
             return true;
@@ -135,9 +158,17 @@ public class ResourcesManager {
      * @param compatInfo the compability info. Must not be null.
      * @param token the application token for determining stack bounds.
      */
-    public Resources getTopLevelResources(String resDir, String[] splitResDirs,
-            String[] overlayDirs, String[] libDirs, int displayId,
-            Configuration overrideConfiguration, CompatibilityInfo compatInfo, IBinder token) {
+    public CARAPI GetTopLevelResources(
+        /* [in] */ String resDir,
+        /* [in] */ ArrayOf<String>* splitResDirs,
+        /* [in] */ ArrayOf<String>* overlayDirs,
+        /* [in] */ ArrayOf<String>* libDirs,
+        /* [in] */ Int32 displayId,
+        /* [in] */ IConfiguration* overrideConfiguration,
+        /* [in] */ ICompatibilityInfo* compatInfo,
+        /* [in] */ IBinder* token,
+        /* [out] */ IResources** res);
+    {
         final float scale = compatInfo.applicationScale;
         ResourcesKey key = new ResourcesKey(resDir, displayId, overrideConfiguration, scale, token);
         Resources r;
@@ -235,8 +266,11 @@ public class ResourcesManager {
         }
     }
 
-    public final boolean applyConfigurationToResourcesLocked(Configuration config,
-            CompatibilityInfo compat) {
+    public CARAPI ApplyConfigurationToResourcesLocked(
+        /* [in] */ IConfiguration* config,
+        /* [in] */ ICompatibilityInfo* compat,
+        /* [out] */ Boolean* result)
+    {
         if (mResConfiguration == null) {
             mResConfiguration = new Configuration();
         }
@@ -306,4 +340,10 @@ public class ResourcesManager {
         return changes != 0;
     }
 
-}
+};
+
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__ELASTOS_DROID_APP_CRESOURCEMANAGER_H__

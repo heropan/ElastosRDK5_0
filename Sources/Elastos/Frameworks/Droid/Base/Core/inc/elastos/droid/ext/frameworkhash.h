@@ -17,6 +17,7 @@ DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Accounts::IAccount)
 //
 // App
 //
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::App::IActivity)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::App::IAppOpsManagerOnOpChangedListener)
 
 //

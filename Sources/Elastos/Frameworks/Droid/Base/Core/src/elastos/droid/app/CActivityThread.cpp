@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/CActivityThread.h"
-#include "elastos/droid/app/LoadedPkg.h"
+// #include "elastos/droid/app/CApplicationThread.h"
 //#include "elastos/droid/app/CContextImpl.h"
 #include "elastos/droid/app/CInstrumentation.h"
 #include "elastos/droid/app/CActivityManager.h"
@@ -23,13 +23,13 @@
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/AsyncTask.h"
 #include "elastos/droid/os/CSystemProperties.h"
-#include "elastos/droid/view/ViewRootImpl.h"
-#include "elastos/droid/view/CCompatibilityInfoHolder.h"
-#include "elastos/droid/view/CWindowManagerGlobal.h"
-#include "elastos/droid/utility/CParcelableObjectContainer.h"
+// #include "elastos/droid/view/ViewRootImpl.h"
+// #include "elastos/droid/view/CWindowManagerGlobal.h"
+// #include "elastos/droid/utility/CParcelableObjectContainer.h"
 #include "elastos/droid/database/sqlite/CSQLiteDatabaseHelper.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
@@ -46,12 +46,11 @@ using Elastos::Droid::App::LoadedPkg;
 using Elastos::Droid::App::CContextImpl;
 using Elastos::Droid::App::CContentProviderHolder;
 using Elastos::Droid::App::QueuedWork;
-using Elastos::Droid::View::ViewRootImpl;
+// using Elastos::Droid::View::ViewRootImpl;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IWindowManager;
-using Elastos::Droid::View::CCompatibilityInfoHolder;
-using Elastos::Droid::View::CWindowManagerGlobal;
+// using Elastos::Droid::View::CWindowManagerGlobal;
 using Elastos::Droid::View::IWindowManagerGlobal;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::CBitmap;
@@ -76,6 +75,8 @@ using Elastos::Droid::Content::IPendingResult;
 using Elastos::Droid::Hardware::Display::DisplayManagerGlobal;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabaseHelper;
 using Elastos::Droid::Database::Sqlite::CSQLiteDatabaseHelper;
+using Elastos::Droid::Os::EIID_IHandler;
+using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::UserHandle;
@@ -83,7 +84,7 @@ using Elastos::Droid::Os::AsyncTask;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
-using Elastos::Droid::Utility::CParcelableObjectContainer;
+using Elastos::Droid::Os::CBundle;
 
 using Elastos::Core::ISystem;
 using Elastos::Core::IClassLoader;
@@ -92,6 +93,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::Thread;
 using Elastos::IO::CFile;
 using Elastos::IO::IFile;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::Logging::Slogger;
@@ -242,33 +244,42 @@ CActivityThread::ProviderKey::ProviderKey(
     , mUserId(userId)
 {}
 
-Boolean CActivityThread::ProviderKey::Equals(
-    /* [in] */ const ProviderKey* o) const
+ECode CActivityThread::ProviderKey::Equals(
+    /* [in] */ IInterface* o,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
     if (o == NULL) {
-        return FALSE;
+        return NOERROR;
     }
 
-    if (o == this) {
-        return TRUE;
+    if (TO_IINTERFACE(this) == IInterface::Probe(o)) {
+        *result = TRUE;
+        return NOERROR;
     }
 
-    if (o->mUserId == mUserId && o->mAuthority == mAuthority) {
-        return TRUE;
+    ProviderKey* other = (ProviderKey*)IObject::Probe(o);
+    if (other->mUserId == mUserId && other->mAuthority == mAuthority) {
+        *result = TRUE;
+        return NOERROR;
     }
 
-    return FALSE;
+    return NOERROR;
 }
 
-Int32 CActivityThread::ProviderKey::GetHashCode() const
+ECode CActivityThread::ProviderKey::GetHashCode(
+    /* [out] */ Int32* hash)
 {
-    return (!mAuthority.IsNull() ? mAuthority.GetHashCode() : 0) ^ mUserId;
+    VALIDATE_NOT_NULL(hash)
+    *hash = (!mAuthority.IsNull() ? mAuthority.GetHashCode() : 0) ^ mUserId;
+    return NOERROR;
 }
 
 //==============================================================================
 // CActivityThread::Idler
 //==============================================================================
-CAR_INTERFACE_IMPL(CActivityThread::Idler, IIdleHandler);
+CAR_INTERFACE_IMPL(CActivityThread::Idler, Object, IIdleHandler);
 
 CActivityThread::Idler::Idler(
     /* [in] */ CActivityThread* owner)
@@ -406,7 +417,6 @@ CActivityThread::ProviderClientRecord::ProviderClientRecord(
 //==============================================================================
 // CActivityThread::ReceiverData
 //==============================================================================
-CAR_INTERFACE_IMPL(CActivityThread::ReceiverData, IPendingResult)
 
 CActivityThread::ReceiverData::ReceiverData(
     /* [in] */ IIntent* intent,
@@ -546,13 +556,13 @@ ECode CActivityThread::CreateBackupAgentData::ToString(
 //==============================================================================
 
 void CActivityThread::Profiler::SetProfiler(
-    /* [in] */ CProfilerInfo* profilerInfo)
+    /* [in] */ IProfilerInfo* profilerInfo)
 {
     AutoPtr<IParcelFileDescriptor> fd = profilerInfo->mProfileFd;
     if (mProfiling) {
         if (fd != NULL) {
 //            try {
-                fd->Close();
+                ICloseable::Probe(fd)->Close();
 //            } catch (IOException e) {
 //                // Ignore
 //           }
@@ -562,7 +572,7 @@ void CActivityThread::Profiler::SetProfiler(
 
     if (mProfileFd != NULL) {
 //        try {
-            mProfileFd->Close();
+            ICloseable::Probe(mProfileFd)->Close();
 //        } catch (IOException e) {
 //            // Ignore
 //        }
@@ -640,7 +650,7 @@ ECode CActivityThread::StopInfo::Run()
 //==============================================================================
 // CActivityThread::ConfigurationChangedCallbacks
 //==============================================================================
-CAR_INTERFACE_IMPL_2(CActivityThread::ConfigurationChangedCallbacks, IComponentCallbacks, IComponentCallbacks2)
+CAR_INTERFACE_IMPL_2(CActivityThread::ConfigurationChangedCallbacks, Object, IComponentCallbacks, IComponentCallbacks2)
 
 CActivityThread::ConfigurationChangedCallbacks::ConfigurationChangedCallbacks(
     /* [in] */ IWeakReference* activityThread)
@@ -749,9 +759,9 @@ const Int32 CActivityThread::H::ENTER_ANIMATION_COMPLETE        = 149;
 
 CActivityThread::H::H(
     /* [in] */ CActivityThread* host)
-    : HandlerBase(FALSE)
-    , mHost(host)
+    : mHost(host)
 {
+    Handler::constructor(FALSE);
 }
 
 String CActivityThread::H::CodeToString(
@@ -816,6 +826,7 @@ String CActivityThread::H::CodeToString(
 
 void CActivityThread::H::MaybeSnapshot()
 {
+    assert(0 && "TODO");
     // if (mHost->mBoundApplication != NULL && SamplingProfilerIntegration.isEnabled()) {
     //     // convert the *private* ActivityThread.PackageInfo to *public* known
     //     // android.content.pm.PackageInfo
@@ -1194,8 +1205,9 @@ CActivityThread::CActivityThread()
     , mSomeActivitiesChanged(FALSE)
     , mGcIdlerScheduled(FALSE)
 {
-    ASSERT_SUCCEEDED(CApplicationThread::New((IApplicationThread**)&mAppThread));
-    ((CApplicationThread*)mAppThread.Get())->mAThread = this;
+    assert(0 && "TODO");
+    // ASSERT_SUCCEEDED(CApplicationThread::New((IApplicationThread**)&mAppThread));
+    // ((CApplicationThread*)mAppThread.Get())->mAThread = this;
     mLooper = Looper::GetMyLooper();
 
     mH = new H(this);
@@ -1608,7 +1620,7 @@ ECode CActivityThread::GetSystemContext(
 {
     VALIDATE_NOT_NULL(ctx);
 
-    synchronized (this) {
+    synchronized(this) {
         if (mSystemContext == NULL) {
             mSystemContext = ContextImpl::CreateSystemContext(this);
         }
@@ -1625,7 +1637,7 @@ ECode CActivityThread::InstallSystemApplicationInfo(
 {
     Slogger::D(TAG, " > TODO: CActivityThread::InstallSystemApplicationInfo");
 
-    synchronized (this)
+    synchronized(this)
     {
         getSystemContext().installSystemApplicationInfo(info, classLoader);
 
@@ -1985,7 +1997,7 @@ ECode CActivityThread::StartActivityNow(
     r->mToken = token;
     r->mIdent = 0;
     r->mIntent = intent;
-    r->mState = (CBundle*)state;
+    r->mState = state;
     r->mParent = parent;
     r->mEmbeddedID = id;
     r->mActivityInfo = (CActivityInfo*)activityInfo;
@@ -2040,11 +2052,12 @@ ECode CActivityThread::SendActivityResult(
         Slogger::V(TAG, "sendActivityResult: id=%s req=%d res=%d data=%p",
                 id.string(), requestCode, resultCode, data);
     }
-    AutoPtr<IObjectContainer> list;
-    CParcelableObjectContainer::New((IObjectContainer**)&list);
+    AutoPtr<IArrayList> list;
+    CArrayList::New((IArrayList**)&list);
+
     AutoPtr<CResultInfo> info;
     CResultInfo::NewByFriend(id, requestCode, resultCode, data, (CResultInfo**)&info);
-    list->Add((IParcelable*)(CResultInfo*)info);
+    list->Add(IInterface::Probe(list));
     return mAppThread->ScheduleSendResult(token, list);
 }
 
@@ -2452,7 +2465,7 @@ ECode CActivityThread::HandleLaunchActivity(
     if (a != NULL) {
         r->mCreatedConfig = NULL;
         CConfiguration::New(mConfiguration, (IConfiguration**)&r->mCreatedConfig);
-        AutoPtr<CBundle> oldState = r->mState;
+        AutoPtr<IBundle> oldState = r->mState;
         if (localLOGV) {
             Slogger::V(TAG, "Handling resume of activity.");
         }
@@ -3369,7 +3382,7 @@ void CActivityThread::CleanUpPendingRemoveWindows(
             AutoPtr<IComponentName> cn;
             r->mActivity->GetComponentName((IComponentName**)&cn);
             cn->ToShortString(&activityName);
-            CWindowManagerGlobal::GetInstance()->CloseAll(wtoken, activityName, String("Activity"));
+            // CWindowManagerGlobal::GetInstance()->CloseAll(wtoken, activityName, String("Activity"));
         }
     }
     r->mPendingRemoveWindow = NULL;
@@ -4028,8 +4041,9 @@ ECode CActivityThread::HandleUpdatePackageCompatibilityInfo(
         pkg->SetCompatibilityInfo(data->mInfo);
     }
     HandleConfigurationChanged(mConfiguration, data->mInfo);
-    AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
-    wmg->ReportNewConfiguration(mConfiguration);
+    assert(0 && "TODO");
+    // AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
+    // wmg->ReportNewConfiguration(mConfiguration);
     return NOERROR;
 }
 
@@ -4306,8 +4320,9 @@ ECode CActivityThread::HandleDestroyActivity(
             }
 
             if (wtoken != NULL && r->mPendingRemoveWindow == NULL) {
-                AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
-                wmg->CloseAll(wtoken, activityName, String("Activity"));
+                assert(0 && "TODO");
+                // AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
+                // wmg->CloseAll(wtoken, activityName, String("Activity"));
             }
             r->mActivity->SetDecorView(NULL);
         }
@@ -4319,8 +4334,9 @@ ECode CActivityThread::HandleDestroyActivity(
             // by the app will leak.  Well we try to warning them a lot
             // about leaking windows, because that is a bug, so if they are
             // using this recreate facility then they get to live with leaks.
-            AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
-            wmg->CloseAll(token, activityName, String("Activity"));
+            assert(0 && "TODO");
+            // AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
+            // wmg->CloseAll(token, activityName, String("Activity"));
         }
 
         // Mocked out contexts won't be participating in the normal
@@ -4536,7 +4552,7 @@ ECode CActivityThread::HandleRelaunchActivity(
     activity->mChangingConfigurations = TRUE;
 
     // Need to ensure state is saved.
-    AutoPtr<CBundle> savedState;
+    AutoPtr<IBundle> savedState;
     if (!r->mPaused) {
         PerformPauseActivity(r->mToken, FALSE, r->IsPreHoneycomb(), (IBundle**)&savedState);
     }
@@ -4578,8 +4594,8 @@ ECode CActivityThread::HandleRelaunchActivity(
 ECode CActivityThread::CallCallActivityOnSaveInstanceState(
     /* [in] */ ActivityClientRecord* token)
 {
-    CBundle* st;
-    CBundle::NewByFriend((CBundle**)&st);
+    AutoPtr<IBundle> st;
+    CBundle::New((CBundle**)&st);
     st->SetAllowFds(FALSE);
     r->mState = st;
 
@@ -4862,7 +4878,7 @@ ECode CActivityThread::HandleProfilerControl(
 //                     + " -- can the process access this path?");
 //         } finally {
 //             try {
-        profilerInfo->mProfileFd->Close();
+        ICloseable::Probe(profilerInfo->mProfileFd)->Close();
 //             } catch (IOException e) {
 //                 Slog.w(TAG, "Failure closing profile fd", e);
 //             }
@@ -4890,7 +4906,7 @@ ECode CActivityThread::HandleDumpHeap(
 //                     + " -- can the process access this path?");
 //         } finally {
 //             try {
-        dhd->mFd->Close();
+        ICloseable::Probe(dhd->mFd)->Close();
 //             } catch (IOException e) {
 //                 Slog.w(TAG, "Failure closing profile fd", e);
 //             }
@@ -5398,17 +5414,20 @@ ECode CActivityThread::FinishInstrumentation(
 
 ECode CActivityThread::InstallContentProviders(
     /* [in] */ IContext* context,
-    /* [in] */ IObjectContainer* providers)
+    /* [in] */ IList* providers)
 {
-    AutoPtr<IObjectContainer> results;
-    CParcelableObjectContainer::New((IObjectContainer**)&results);
+    AutoPtr<IArrayList> results;
+    CArrayList::New((IArrayList**)&results);
+
+    AutoPtr<IIterator> it;
+    providers->GetIterator((IIterator**)&it);
 
     Boolean hasNext = FALSE;
-    AutoPtr<IObjectEnumerator> enumerator;
-    providers->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    while(enumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IProviderInfo> cpi;
-        enumerator->Current((IInterface**)&cpi);
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        IProviderInfo* cpi = IProviderInfo::Probe(obj);
+
         if (DEBUG_PROVIDER) {
             StringBuilder buf(128);
             buf.AppendCStr("Pub ");
@@ -5888,7 +5907,7 @@ ECode CActivityThread::HandleUnstableProviderDiedLocked(
 ECode CActivityThread::AppNotRespondingViaProvider(
         /* [in] */ IBinder* provider)
 {
-    synchronized (mProviderMap) {
+    synchronized(mProviderMap) {
         ProviderRefCount prc = mProviderRefCountMap.get(provider);
         if (prc != null) {
             try {
@@ -6227,7 +6246,8 @@ ECode CActivityThread::Attach(
     AutoPtr<IWeakReference> wr;
     GetWeakReference((IWeakReference**)&wr);
     AutoPtr<IComponentCallbacks2> callbacks = new ConfigurationChangedCallbacks(wr);
-    ViewRootImpl::AddConfigCallback(callbacks);
+    assert(0 && "TODO");
+    // ViewRootImpl::AddConfigCallback(callbacks);
     return NOERROR;
 }
 
@@ -6249,16 +6269,10 @@ AutoPtr<IActivityThread> CActivityThread::GetSystemMain()
 }
 
 ECode CActivityThread::InstallSystemProviders(
-    /* [in] */ ArrayOf<IProviderInfo*>* providers)
+    /* [in] */ IList* providers)
 {
     if (providers != NULL) {
-        AutoPtr<IObjectContainer> proContainer;
-        CParcelableObjectContainer::New((IObjectContainer**)&proContainer);
-        Int32 length = providers->GetLength();
-        for (Int32 i = 0; i< length; ++i) {
-            proContainer->Add((*providers)[i]);
-        }
-        InstallContentProviders(mInitialApplication, proContainer);
+        InstallContentProviders(mInitialApplication, providers);
     }
     return NOERROR;
 }

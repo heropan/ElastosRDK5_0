@@ -68,19 +68,19 @@ public:
         /* [out] */ IPackageInfo** info);
 
     /**
-     * Like {@link #getPackageSizeInfo(String, int, IPackageStatsObserver)}, but
+     * Like {@link #getPackageSizeInfo(String, int, IIPackageStatsObserver)}, but
      * returns the size for the calling user.
      *
      * @hide
      */
     CARAPI GetPackageSizeInfo(
         /* [in] */ const String& packageName,
-        /* [in] */ IPackageStatsObserver* observer);
+        /* [in] */ IIPackageStatsObserver* observer);
 
     virtual CARAPI GetPackageSizeInfo(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 userHandle,
-        /* [in] */ IPackageStatsObserver* observer) = 0;
+        /* [in] */ IIPackageStatsObserver* observer) = 0;
 
     /**
      * Same as {@link #addPreferredActivity(IntentFilter, int,

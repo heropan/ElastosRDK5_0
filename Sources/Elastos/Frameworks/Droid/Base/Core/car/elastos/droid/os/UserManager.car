@@ -567,6 +567,21 @@ module
             [out] IList** users);
 
         /**
+         * Returns list of the profiles of userHandle including
+         * userHandle itself.
+         * Note that this returns both enabled and not enabled profiles. See
+         * {@link #getUserProfiles()} if you need only the enabled ones.
+         *
+         * Requires {@link android.Manifest.permission#MANAGE_USERS} permission.
+         * @param userHandle profiles of this user will be returned.
+         * @return the list of profiles.
+         * @hide
+         */
+        GetProfiles(
+            [in] Int32 userHandle,
+            [out] IList** users);
+
+        /**
          * Returns a list of UserHandles for profiles associated with the user that the calling process
          * is running on, including the user itself.
          *

@@ -5,23 +5,16 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::View::IView;
+using Elastos::Utility::IList;
+using Elastos::Utility::IMap;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
-
-// using Elastos::Droid::content.Context;
-// using Elastos::Droid::content.res.Resources;
-// using Elastos::Droid::graphics.Bitmap;
-// using Elastos::Droid::graphics.Canvas;
-// using Elastos::Droid::graphics.Matrix;
-// using Elastos::Droid::graphics.RectF;
-// using Elastos::Droid::graphics.drawable.BitmapDrawable;
-// using Elastos::Droid::os.Parcelable;
-// using Elastos::Droid::transition.TransitionUtils;
-// using Elastos::Droid::view.View;
-
-// import java.util.List;
-// import java.util.Map;
 
 /**
  * Listener provided in
@@ -39,7 +32,7 @@ class SharedElementCallback
 public:
     CAR_INTERFACE_DECL()
 
-    SharedElementCallback()
+    SharedElementCallback();
 
     virtual ~SharedElementCallback();
 
@@ -60,9 +53,7 @@ public:
     CARAPI OnSharedElementStart(
         /* [in] */ IList* sharedElementNames, //List<String>
         /* [in] */ IList* sharedElements, //List<View>
-        /* [in] */ IList* sharedElementSnapshots) //List<View>
-    {
-    }
+        /* [in] */ IList* sharedElementSnapshots); //List<View>
 
     /**
      * Called after the end state is set for the shared element, but before the end state
@@ -89,9 +80,7 @@ public:
     CARAPI OnSharedElementEnd(
         /* [in] */ IList* sharedElementNames, //List<String>
         /* [in] */ IList* sharedElements, //List<View>
-        /* [in] */ IList* sharedElementSnapshots) //List<View>
-    {
-    }
+        /* [in] */ IList* sharedElementSnapshots); //List<View>
 
     /**
      * Called after {@link #onMapSharedElements(java.util.List, java.util.Map)} when
@@ -116,9 +105,8 @@ public:
      *                               automatically.
      */
     CARAPI OnRejectSharedElements(
-        /* [in] */ IList* rejectedSharedElements) // List<View>
-    {
-    }
+        /* [in] */ IList* rejectedSharedElements); // List<View>
+
 
     /**
      * Lets the SharedElementCallback adjust the mapping of shared element names to
@@ -131,10 +119,7 @@ public:
      */
     CARAPI OnMapSharedElements(
         /* [in] */ IList* names, //List<String>
-        /* [in] */ IMap* sharedElements) //Map<String, View>
-    {
-        return NOERROR;
-    }
+        /* [in] */ IMap* sharedElements); //Map<String, View>
 
     /**
      * Creates a snapshot of a shared element to be used by the remote Activity and reconstituted
@@ -159,15 +144,7 @@ public:
         /* [in] */ IView* sharedElement,
         /* [in] */ IMatrix* viewToGlobalMatrix,
         /* [in] */ IRectF* screenBounds,
-        /* [out] */ IParcelable** parcleable)
-    {
-        if (mTempMatrix == null) {
-            mTempMatrix = new Matrix(viewToGlobalMatrix);
-        } else {
-            mTempMatrix.set(viewToGlobalMatrix);
-        }
-        return TransitionUtils.createViewBitmap(sharedElement, mTempMatrix, screenBounds);
-    }
+        /* [out] */ IParcelable** parcleable);
 
     /**
      * Reconstitutes a snapshot View from a Parcelable returned in
@@ -189,17 +166,7 @@ public:
     CARAPI OnCreateSnapshotView(
         /* [in] */ IContext* context,
         /* [in] */ IParcelable* snapshot,
-        /* [out] */ IView** view)
-    {
-        View view = null;
-        if (snapshot instanceof Bitmap) {
-            Bitmap bitmap = (Bitmap) snapshot;
-            view = new View(context);
-            Resources resources = context.getResources();
-            view.setBackground(new BitmapDrawable(resources, bitmap));
-        }
-        return view;
-    }
+        /* [out] */ IView** view);
 
 private:
     AutoPtr<IMatrix> mTempMatrix;

@@ -27,6 +27,9 @@ public:
     static CARAPI CheckNotNull(
         /* [in] */ IInterface* reference);
 
+    static CARAPI CheckNotNull(
+        /* [in] */ const String& reference);
+
     /**
      * Ensures that an object reference passed as a parameter to the calling
      * method is not NULL.

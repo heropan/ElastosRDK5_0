@@ -1,70 +1,92 @@
-package android.app;
 
-using Elastos::Droid::os.Parcel;
-using Elastos::Droid::os.Parcelable;
-using Elastos::Droid::os.ParcelFileDescriptor;
+#ifndef __ELASTOS_DROID_APP_CPROFILERINFO_H__
+#define __ELASTOS_DROID_APP_CPROFILERINFO_H__
+
+#include "_Elastos_Droid_App_CProfilerInfo.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Os::IParcelFileDescriptor;
+
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 /**
  * System private API for passing profiler settings.
  *
  * {@hide}
  */
-public class ProfilerInfo implements Parcelable {
+CarClass(CProfilerInfo)
+    , public Object
+    , public IProfilerInfo
+    , public IParcelable
+{
+public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CProfilerInfo();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& filename,
+        /* [in] */ IParcelFileDescriptor* fd,
+        /* [in] */ Int32 interval,
+        /* [in] */ Boolean autoStop);
+
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* out);
+
+    CARAPI ReadFromParcle(
+        /* [in] */ IParcel* in);
 
     /* Name of profile output file. */
-    public final String profileFile;
+    CARAPI GetProfileFile(
+        /* [out] */ String* str);
+
+    CARAPI SetProfileFile(
+        /* [in] */ const String& str);
 
     /* File descriptor for profile output file, can be null. */
-    public ParcelFileDescriptor profileFd;
+    CARAPI GetProfileFd(
+        /* [out] */ IParcelFileDescriptor** fd);
+
+    CARAPI SetProfiledFd(
+        /* [in] */ IParcelFileDescriptor* fd);
 
     /* Indicates sample profiling when nonzero, interval in microseconds. */
-    public final int samplingInterval;
+    CARAPI GetSamplingInterval(
+        /* [out] */ Int32* result);
+
+    CARAPI SetSamplingInterval(
+        /* [in] */ Int32 result);
 
     /* Automatically stop the profiler when the app goes idle. */
-    public final boolean autoStopProfiler;
+    CARAPI IsAutoStopProfiler(
+        /* [out] */ Boolean* result);
 
-    public ProfilerInfo(String filename, ParcelFileDescriptor fd, int interval, boolean autoStop) {
-        profileFile = filename;
-        profileFd = fd;
-        samplingInterval = interval;
-        autoStopProfiler = autoStop;
-    }
+    CARAPI SetAutoStopProfiler(
+        /* [in] */ Boolean result);
 
-    public int describeContents() {
-        if (profileFd != null) {
-            return profileFd.describeContents();
-        } else {
-            return 0;
-        }
-    }
+public:
+    /* Name of profile output file. */
+    String mProfileFile;
 
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeString(profileFile);
-        if (profileFd != null) {
-            out.writeInt(1);
-            profileFd.writeToParcel(out, flags);
-        } else {
-            out.writeInt(0);
-        }
-        out.writeInt(samplingInterval);
-        out.writeInt(autoStopProfiler ? 1 : 0);
-    }
+    /* File descriptor for profile output file, can be null. */
+    AutoPtr<IParcelFileDescriptor> mProfileFd;
 
-    public static final Parcelable.Creator<ProfilerInfo> CREATOR =
-            new Parcelable.Creator<ProfilerInfo>() {
-        public ProfilerInfo createFromParcel(Parcel in) {
-            return new ProfilerInfo(in);
-        }
+    /* Indicates sample profiling when nonzero, interval in microseconds. */
+    Int32 mSamplingInterval;
 
-        public ProfilerInfo[] newArray(int size) {
-            return new ProfilerInfo[size];
-        }
-    };
+    /* Automatically stop the profiler when the app goes idle. */
+    Boolean mAutoStopProfiler;
 
-    private ProfilerInfo(Parcel in) {
-        profileFile = in.readString();
-        profileFd = in.readInt() != 0 ? ParcelFileDescriptor.CREATOR.createFromParcel(in) : null;
-        samplingInterval = in.readInt();
-        autoStopProfiler = in.readInt() != 0;
-    }
-}
+};
+
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__ELASTOS_DROID_APP_CPROFILERINFO_H__

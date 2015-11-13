@@ -323,7 +323,7 @@ ECode ActivityView::ActivityContainerWrapper::InjectEvent(
 
 ECode ActivityView::ActivityContainerWrapper::ReleaseResources()
 {
-    synchronized (mGuard) {
+    synchronized(mGuard) {
         if (mOpened) {
             if (ActivityView::DEBUG)
                 Logger::V("ActivityView", "ActivityContainerWrapper: release called");

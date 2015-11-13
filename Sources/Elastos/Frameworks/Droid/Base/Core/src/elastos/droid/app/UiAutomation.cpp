@@ -42,7 +42,7 @@ ECode UiAutomation::constructor(
 
 ECode UiAutomation::Connect()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfConnectedLocked();
         if (mIsConnecting) {
             return;
@@ -57,7 +57,7 @@ ECode UiAutomation::Connect()
         throw new RuntimeException("Error while connecting UiAutomation", re);
     }
 
-    synchronized (mLock) {
+    synchronized(mLock) {
         final Int64 startTimeMillis = SystemClock.uptimeMillis();
         try {
             while (true) {
@@ -83,7 +83,7 @@ ECode UiAutomation::Connect()
 
 ECode UiAutomation::Disconnect()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mIsConnecting) {
             throw new IllegalStateException(
                     "Cannot call disconnect() while connecting!");
@@ -102,7 +102,7 @@ ECode UiAutomation::Disconnect()
 ECode UiAutomation::GetConnectionId(
     /* [out] */ Int32* id)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
         return mConnectionId;
     }
@@ -111,7 +111,7 @@ ECode UiAutomation::GetConnectionId(
 ECode UiAutomation::SetOnAccessibilityEventListener(
     /* [in] */ IOnAccessibilityEventListener* listener)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         mOnAccessibilityEventListener = listener;
     }
 }
@@ -121,7 +121,7 @@ ECode UiAutomation::PerformGlobalAction(
     /* [out] */ Boolean* action)
 {
     final IAccessibilityServiceConnection connection;
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
         connection = AccessibilityInteractionClient.getInstance()
                 .getConnection(mConnectionId);
@@ -149,7 +149,7 @@ ECode UiAutomation::GetServiceInfo(
     /* [out] */ IAccessibilityServiceInfo** info)
 {
     final IAccessibilityServiceConnection connection;
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
         connection = AccessibilityInteractionClient.getInstance()
                 .getConnection(mConnectionId);
@@ -169,7 +169,7 @@ ECode UiAutomation::SetServiceInfo(
     /* [in] */ IAccessibilityServiceInfo* info)
 {
     final IAccessibilityServiceConnection connection;
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
         AccessibilityInteractionClient.getInstance().clearCache();
         connection = AccessibilityInteractionClient.getInstance()
@@ -189,7 +189,7 @@ ECode UiAutomation::GetWindows(
     /* [out] */ IList** windows) //List<AccessibilityWindowInfo>
 {
     final Int32 connectionId;
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
         connectionId = mConnectionId;
     }
@@ -202,7 +202,7 @@ ECode UiAutomation::GetRootInActiveWindow(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     final Int32 connectionId;
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
         connectionId = mConnectionId;
     }
@@ -216,7 +216,7 @@ ECode UiAutomation::InjectInputEvent(
     /* [in] */ Boolean sync,
     /* [out] */ Boolean* result)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
     }
     try {
@@ -235,7 +235,7 @@ ECode UiAutomation::SetRotation(
     /* [in] */ Int32 rotation,
     /* [out] */ Boolean* result)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
     }
     switch (rotation) {
@@ -266,7 +266,7 @@ ECode UiAutomation::ExecuteAndWaitForEvent(
     /* [out] */ IAccessibilityEvent** event)
 {
     // Acquire the lock and prepare for receiving events.
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
         mEventQueue.clear();
         // Prepare to wait for an event.
@@ -283,7 +283,7 @@ ECode UiAutomation::ExecuteAndWaitForEvent(
     command.run();
 
     // Acquire the lock and wait for the event.
-    synchronized (mLock) {
+    synchronized(mLock) {
         try {
             // Wait for the event.
             final Int64 startTimeMillis = SystemClock.uptimeMillis();
@@ -325,7 +325,7 @@ ECode UiAutomation::WaitForIdle(
     /* [in] */ Int64 idleTimeoutMillis,
     /* [in] */ Int64 globalTimeoutMillis)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
 
         final Int64 startTimeMillis = SystemClock.uptimeMillis();
@@ -362,7 +362,7 @@ ECode UiAutomation::WaitForIdle(
 ECode UiAutomation::TakeScreenshot(
     /* [out] */ IBitmap** bmp)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
     }
     Display display = DisplayManagerGlobal.getInstance()
@@ -437,7 +437,7 @@ ECode UiAutomation::TakeScreenshot(
 ECode UiAutomation::SetRunAsMonkey(
     /* [in] */ Boolean enable)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
     }
     try {
@@ -451,7 +451,7 @@ ECode UiAutomation::ClearWindowContentFrameStats(
     /* [in] */ Int32 windowId,
     /* [out] */ Boolean* result)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
     }
     try {
@@ -470,7 +470,7 @@ ECode UiAutomation::GetWindowContentFrameStats(
     /* [in] */ Int32 windowId,
     /* [out] */ IWindowContentFrameStats** stats)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
     }
     try {
@@ -487,7 +487,7 @@ ECode UiAutomation::GetWindowContentFrameStats(
 
 ECode UiAutomation::ClearWindowAnimationFrameStats()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
     }
     try {
@@ -504,7 +504,7 @@ ECode UiAutomation::ClearWindowAnimationFrameStats()
 ECode UiAutomation::GetWindowAnimationFrameStats(
     /* [out] */ IWindowAnimationFrameStats** stats)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
     }
     try {
@@ -523,7 +523,7 @@ ECode UiAutomation::ExecuteShellCommand(
     /* [in] */ const String& command,
     /* [out] */ IParcelFileDescriptor** pfd)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         throwIfNotConnectedLocked();
     }
 

@@ -2,39 +2,45 @@
 #include "elastos/droid/app/ApplicationPackageManager.h"
 // #include "elastos/droid/app/CContextImpl.h"
 #include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/CUserManager.h"
 #include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/content/pm/PackageItemInfo.h"
 #include "elastos/droid/content/pm/CPackageInstaller.h"
 #include "elastos/droid/content/pm/CVerificationParams.h"
-#include "elastos/droid/grapchis/CBitmap.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CCanvas.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
-// #include "elastos/droid/utility/CParcelableObjectContainer.h"
-#include "elastos/droid/utility/Preconditions.h"
+#include "elastos/droid/internal/utility/Preconditions.h"
 #include "elastos/droid/internal/utility/UserIcons.h"
+#include "elastos/droid/R.h"
+#include "elastos/core/CoreUtils.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
-#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::CUserHandle;
+using Elastos::Droid::Os::CUserManager;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::Pm::ECLSID_CApplicationInfo;
 using Elastos::Droid::Content::Pm::ECLSID_CPackageInfo;
 using Elastos::Droid::Content::Pm::EIID_IPackageManager;
 using Elastos::Droid::Content::Pm::IParceledListSlice;
 using Elastos::Droid::Content::Pm::CVerificationParams;
 using Elastos::Droid::Content::Pm::CPackageInstaller;
+using Elastos::Droid::Content::Pm::IIPackageInstaller;
 using Elastos::Droid::Content::Pm::PackageItemInfo;
-using Elastos::Droid::Content::Res::IResourcesHelper;
-using Elastos::Droid::Content::Res::CResourcesHelper;
-using Elastos::Droid::Content::CIntent;
-// using Elastos::Droid::Utility::CParcelableObjectContainer;
-using Elastos::Droid::Utility::Preconditions;
+using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Internal::Utility::Preconditions;
 using Elastos::Droid::Internal::Utility::UserIcons;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::CCanvas;
@@ -42,6 +48,7 @@ using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
 using Elastos::Droid::Graphics::Drawable::CBitmapDrawable;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableConstantState;
 
+using Elastos::Core::CoreUtils;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;
@@ -56,23 +63,23 @@ const String ApplicationPackageManager::TAG("ApplicationPackageManager");
 const Boolean ApplicationPackageManager::DEBUG = FALSE;
 const Boolean ApplicationPackageManager::DEBUG_ICONS = FALSE;
 
-Mutex ApplicationPackageManager::sSync;
+Object ApplicationPackageManager::sSync;
 HashMap<AutoPtr<ApplicationPackageManager::ResourceName>, AutoPtr<IWeakReference> > ApplicationPackageManager::sIconCache;
 HashMap<AutoPtr<ApplicationPackageManager::ResourceName>, AutoPtr<IWeakReference> > ApplicationPackageManager::sStringCache;
 
 ApplicationPackageManager::ApplicationPackageManager(
     /* [in] */ IContextImpl* context,
     /* [in] */ IIPackageManager* pm)
-    : mContext(context)
+    : mContext(IContext::Probe(context))
     , mPM(pm)
     , mCachedSafeMode(-1)
 {}
 
 AutoPtr<IUserManager> ApplicationPackageManager::GetUserManager()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mUserManager == NULL) {
-            mUserManager = UserManager.get(mContext);
+            mUserManager = CUserManager::Get(mContext);
         }
     }
     return mUserManager;
@@ -144,7 +151,7 @@ ECode ApplicationPackageManager::GetLaunchIntentForPackage(
 
     // Otherwise, try to find a main launcher activity.
     Int32 size;
-    if (ris == NULL ||(ris->GetObjectCount(&size), size <= 0)) {
+    if (ris == NULL ||(ris->GetSize(&size), size <= 0)) {
         // reuse the intent instance
         intentToResolve->RemoveCategory(IIntent::CATEGORY_INFO);
         intentToResolve->AddCategory(IIntent::CATEGORY_LAUNCHER);
@@ -152,23 +159,22 @@ ECode ApplicationPackageManager::GetLaunchIntentForPackage(
         ris = NULL;
         QueryIntentActivities(intentToResolve, 0, (IList**)&ris);
     }
-    if (ris == NULL ||(ris->GetObjectCount(&size), size <= 0)) {
+    if (ris == NULL ||(ris->GetSize(&size), size <= 0)) {
         *intent = NULL;
         return NOERROR;
     }
     AutoPtr<IIntent> newIntent;
     CIntent::New(intentToResolve, (IIntent**)&newIntent);
     newIntent->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
-    AutoPtr<IObjectEnumerator> enumerator;
-    ris->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    Boolean hasNext;
-    AutoPtr<IResolveInfo> resInfo;
-    if (enumerator->MoveNext(&hasNext), hasNext) enumerator->Current((IInterface**)&resInfo);
+
+    AutoPtr<IInterface> obj;
+    ris->Get(0, (IInterface**)&obj);
+    AutoPtr<IResolveInfo> resInfo = IResolveInfo::Probe(obj);
     AutoPtr<IActivityInfo> aInfo;
     resInfo->GetActivityInfo((IActivityInfo**)&aInfo);
     String pkgName, name;
-    aInfo->GetPackageName(&pkgName);
-    aInfo->GetName(&name);
+    IPackageItemInfo::Probe(aInfo)->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(aInfo)->GetName(&name);
     newIntent->SetClassName(pkgName, name);
     *intent = newIntent;
     REFCOUNT_ADD(*intent);
@@ -177,25 +183,41 @@ ECode ApplicationPackageManager::GetLaunchIntentForPackage(
 
 ECode ApplicationPackageManager::GetLeanbackLaunchIntentForPackage(
     /* [in] */ const String& packageName,
-    /* [out] */ IIntent** intent);
+    /* [out] */ IIntent** intent)
 {
     VALIDATE_NOT_NULL(intent)
     *intent = NULL;
 
     // Try to find a main leanback_launcher activity.
-    Intent intentToResolve = new Intent(Intent.ACTION_MAIN);
-    intentToResolve.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
+    AutoPtr<IIntent> intentToResolve;
+    CIntent::New(IIntent::ACTION_MAIN, (IIntent**)&intentToResolve);
+    intentToResolve->AddCategory(IIntent::CATEGORY_LEANBACK_LAUNCHER);
     intentToResolve->SetPackage(packageName);
-    List<ResolveInfo> ris = queryIntentActivities(intentToResolve, 0);
 
-    if (ris == NULL || ris.size() <= 0) {
-        return NULL;
+    AutoPtr<IList> ris;
+    QueryIntentActivities(intentToResolve, 0, (IList**)&ris);
+
+    Int32 size;
+    if (ris == NULL ||(ris->GetSize(&size), size <= 0)) {
+        *intent = NULL;
+        return NOERROR;
     }
-    Intent intent = new Intent(intentToResolve);
-    intent->SetFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    intent->SetClassName(ris.get(0).activityInfo.packageName,
-            ris.get(0).activityInfo.name);
-    return intent;
+
+    AutoPtr<IInterface> obj;
+    ris->Get(0, (IInterface**)&obj);
+    AutoPtr<IResolveInfo> resInfo = IResolveInfo::Probe(obj);
+    AutoPtr<IActivityInfo> aInfo;
+    resInfo->GetActivityInfo((IActivityInfo**)&aInfo);
+    String pkgName, name;
+    IPackageItemInfo::Probe(aInfo)->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(aInfo)->GetName(&name);
+
+    AutoPtr<IIntent> newIntent;
+    CIntent::New(intentToResolve, (IIntent**)&newIntent);
+    newIntent->SetClassName(pkgName, name);
+    *intent = newIntent;
+    REFCOUNT_ADD(*intent);
+    return NOERROR;
 }
 
 ECode ApplicationPackageManager::GetPackageGids(
@@ -250,17 +272,21 @@ ECode ApplicationPackageManager::GetPackageUid(
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* uid)
 {
-    try {
-        int uid = mPM->getPackageUid(packageName, userHandle);
-        if (uid >= 0) {
-            return uid;
-        }
-    } catch (RemoteException e) {
-        throw new RuntimeException("Package manager has died", e);
+    VALIDATE_NOT_NULL(uid)
+    *uid = -1;
+    // try {
+    Int32 id;
+    ECode ec = mPM->GetPackageUid(packageName, userHandle, &id);
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        return E_RUNTIME_EXCEPTION;
     }
 
-    throw new NameNotFoundException(packageName);
-    return NOERROR;
+    if (id >= 0) {
+        *uid = id;
+        return NOERROR;
+    }
+
+    return E_NAME_NOT_FOUND_EXCEPTION;
 }
 
 ECode ApplicationPackageManager::QueryPermissionsByGroup(
@@ -356,18 +382,21 @@ void ApplicationPackageManager::MaybeAdjustApplicationInfo(
     // If we're dealing with a multi-arch application that has both
     // 32 and 64 bit shared libraries, we might need to choose the secondary
     // depending on what the current runtime's instruction set is.
-    if (info.primaryCpuAbi != NULL && info.secondaryCpuAbi != NULL) {
-        final String runtimeIsa = VMRuntime.getRuntime().vmInstructionSet();
-        final String secondaryIsa = VMRuntime.getInstructionSet(info.secondaryCpuAbi);
+    String pca, sca;
+    info->GetPrimaryCpuAbi(&pca);
+    info->GetSecondaryCpuAbi(&sca);
+    if (!pca.IsNull() && !sca.IsNull()) {
+        assert(0 && "TODO");
+        // String runtimeIsa = VMRuntime.getRuntime().vmInstructionSet();
+        // String secondaryIsa = VMRuntime.getInstructionSet(info.secondaryCpuAbi);
 
-        // If the runtimeIsa is the same as the primary isa, then we do nothing.
-        // Everything will be set up correctly because info.nativeLibraryDir will
-        // correspond to the right ISA.
-        if (runtimeIsa.equals(secondaryIsa)) {
-            info.nativeLibraryDir = info.secondaryNativeLibraryDir;
-        }
+        // // If the runtimeIsa is the same as the primary isa, then we do nothing.
+        // // Everything will be set up correctly because info.nativeLibraryDir will
+        // // correspond to the right ISA.
+        // if (runtimeIsa.Equals(secondaryIsa)) {
+        //     info->SetNativeLibraryDir(info.secondaryNativeLibraryDir);
+        // }
     }
-    return NOERROR;
 }
 
 ECode ApplicationPackageManager::GetActivityInfo(
@@ -658,16 +687,19 @@ ECode ApplicationPackageManager::GetInstalledPackages(
     /* [out] */ IList** infos)
 {
     VALIDATE_NOT_NULL(infos);
-//     try {
-    try {
-        ParceledListSlice<PackageInfo> slice = mPM->getInstalledPackages(flags, userId);
-        return slice.getList();
-    } catch (RemoteException e) {
-        throw new RuntimeException("Package manager has died", e);
+    *infos = NULL;
+
+    Int32 id;
+    mContext->GetUserId(&id);
+    AutoPtr<IParceledListSlice> slice;
+    ECode ec = mPM->GetInstalledPackages(
+        flags, userId, (IParceledListSlice**)&slice);
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        Logger::E(TAG, "Package manager has died");
+        return E_RUNTIME_EXCEPTION;
     }
-//     } catch (RemoteException e) {
-//         throw new RuntimeException("Package manager has died", e);
-//     }
+
+    return slice->GetList(infos);
 }
 
 ECode ApplicationPackageManager::GetPackagesHoldingPermissions(
@@ -676,13 +708,14 @@ ECode ApplicationPackageManager::GetPackagesHoldingPermissions(
     /* [out] */ IList** apps)
 {
     VALIDATE_NOT_NULL(apps);
-    *result = NULL;
+    *apps = NULL;
 
-    Int32 id;
-    mContext->GetUserId(&id);
+    Int32 userId;
+    mContext->GetUserId(&userId);
     AutoPtr<IParceledListSlice> slice;
-    ECode ec = mPM->GetPackagesHoldingPermissions(permissions, flags, userId, (IParceledListSlice)&slice);
-    if (ec == E_REMOTE_EXCEPTION) {
+    ECode ec = mPM->GetPackagesHoldingPermissions(
+        permissions, flags, userId, (IParceledListSlice**)&slice);
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E(TAG, "Package manager has died");
         return E_RUNTIME_EXCEPTION;
     }
@@ -701,8 +734,9 @@ ECode ApplicationPackageManager::GetInstalledApplications(
     mContext->GetUserId(&userId);
 
     AutoPtr<IParceledListSlice> slice;
-    ECode ec = mPM->GetInstalledApplications(flags, userId, (IParceledListSlice**)&slice);
-    if (ec == E_REMOTE_EXCEPTION) {
+    ECode ec = mPM->GetInstalledApplications(
+        flags, userId, (IParceledListSlice**)&slice);
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E(TAG, "Package manager has died");
         return E_RUNTIME_EXCEPTION;
     }
@@ -915,20 +949,22 @@ ECode ApplicationPackageManager::QueryIntentContentProvidersAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userId,
-    /* [out] */ IList** resolveInfos); //List<ResolveInfo>
+    /* [out] */ IList** resolveInfos) //List<ResolveInfo>
 {
-    try {
-        return mPM->queryIntentContentProviders(intent,
-                intent.resolveTypeIfNeeded(mContext.getContentResolver()), flags, userId);
-    } catch (RemoteException e) {
-        throw new RuntimeException("Package manager has died", e);
-    }
+    VALIDATE_NOT_NULL(resolveInfos)
+    *resolveInfos = NULL;
+    AutoPtr<IContentResolver> cResolver;
+    FAIL_RETURN(mContext->GetContentResolver((IContentResolver**)&cResolver));
+    String type;
+    FAIL_RETURN(intent->ResolveTypeIfNeeded(cResolver, &type));
+    return mPM->QueryIntentContentProviders(
+        intent, type, flags, userId, resolveInfos);
 }
 
 ECode ApplicationPackageManager::QueryIntentContentProviders(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 flags,
-    /* [out] */ IList** resolveInfos); //List<ResolveInfo>
+    /* [out] */ IList** resolveInfos) //List<ResolveInfo>
 {
     Int32 id;
     mContext->GetUserId(&id);
@@ -1045,7 +1081,7 @@ ECode ApplicationPackageManager::GetActivityIcon(
     VALIDATE_NOT_NULL(icon);
     AutoPtr<IActivityInfo> aInfo;
     GetActivityInfo(activityName, sDefaultFlags, (IActivityInfo**)&aInfo);
-    FAIL_RETURN(aInfo->LoadIcon(this, icon));
+    FAIL_RETURN(IPackageItemInfo::Probe(aInfo)->LoadIcon(this, icon));
     return NOERROR;
 }
 
@@ -1066,7 +1102,7 @@ ECode ApplicationPackageManager::GetActivityIcon(
     if (info != NULL) {
         AutoPtr<IActivityInfo> aInfo;
         info->GetActivityInfo((IActivityInfo**)&aInfo);
-        return aInfo->LoadIcon(this, icon);
+        return IPackageItemInfo::Probe(aInfo)->LoadIcon(this, icon);
     }
 
 //     throw new NameNotFoundException(intent.toUri(0));
@@ -1077,10 +1113,7 @@ ECode ApplicationPackageManager::GetDefaultActivityIcon(
     /* [out] */ IDrawable** icon)
 {
     VALIDATE_NOT_NULL(icon);
-    AutoPtr<IResourcesHelper> resHelper;
-    CResourcesHelper::AcquireSingleton((IResourcesHelper**)&resHelper);
-    AutoPtr<IResources> resources;
-    resHelper->GetSystem((IResources**)&resources);
+    AutoPtr<IResources> resources = CResources::GetSystem();
     FAIL_RETURN(resources->GetDrawable(
            R::drawable::sym_def_app_icon, icon));
     return NOERROR;
@@ -1091,7 +1124,7 @@ ECode ApplicationPackageManager::GetApplicationIcon(
     /* [out] */ IDrawable** icon)
 {
     VALIDATE_NOT_NULL(icon);
-    return info->LoadIcon(this, icon);
+    return IPackageItemInfo::Probe(info)->LoadIcon(this, icon);
 }
 
 ECode ApplicationPackageManager::GetApplicationIcon(
@@ -1101,29 +1134,38 @@ ECode ApplicationPackageManager::GetApplicationIcon(
     VALIDATE_NOT_NULL(icon);
     AutoPtr<IApplicationInfo> appInfo;
     GetApplicationInfo(packageName, sDefaultFlags, (IApplicationInfo**)&appInfo);
-    GetApplicationIcon(appInfo, icon);
-    return NOERROR;
+    return GetApplicationIcon(appInfo, icon);
 }
 
 ECode ApplicationPackageManager::GetActivityBanner(
     /* [in] */ IComponentName* activityName,
     /* [out] */ IDrawable** icon)
 {
-    return GetActivityInfo(activityName, sDefaultFlags).loadBanner(this);
+    VALIDATE_NOT_NULL(icon);
+    AutoPtr<IActivityInfo> info;
+    GetActivityInfo(activityName, sDefaultFlags, (IActivityInfo**)&info);
+    return  IPackageItemInfo::Probe(info)->LoadBanner(this, icon);
 }
 
 ECode ApplicationPackageManager::GetActivityBanner(
     /* [in] */ IIntent* intent,
     /* [out] */ IDrawable** icon)
 {
-    if (intent.getComponent() != NULL) {
-        return GetActivityBanner(intent.getComponent());
+    VALIDATE_NOT_NULL(icon)
+    *icon = NULL;
+
+    AutoPtr<IComponentName>  cn;
+    intent->GetComponent((IComponentName**)&cn);
+    if (cn != NULL) {
+        return GetActivityBanner(cn, icon);
     }
 
-    ResolveInfo info = resolveActivity(
-            intent, PackageManager.MATCH_DEFAULT_ONLY);
+    AutoPtr<IResolveInfo> info;
+    ResolveActivity(intent, IPackageManager::MATCH_DEFAULT_ONLY, (IResolveInfo**)&info);
     if (info != NULL) {
-        return info.activityInfo.loadBanner(this);
+        AutoPtr<IActivityInfo> ai;
+        info->GetActivityInfo((IActivityInfo**)&ai);
+        return  IPackageItemInfo::Probe(info)->LoadBanner(this, icon);
     }
 
     // throw new NameNotFoundException(intent.toUri(0));
@@ -1134,7 +1176,7 @@ ECode ApplicationPackageManager::GetApplicationBanner(
     /* [in] */ IApplicationInfo* info,
     /* [out] */ IDrawable** icon)
 {
-    return info->LoadBanner(this, icon);
+    return IPackageItemInfo::Probe(info)->LoadBanner(this, icon);
 }
 
 ECode ApplicationPackageManager::GetApplicationBanner(
@@ -1153,7 +1195,7 @@ ECode ApplicationPackageManager::GetActivityLogo(
     VALIDATE_NOT_NULL(logo);
     AutoPtr<IActivityInfo> aInfo;
     GetActivityInfo(activityName, sDefaultFlags, (IActivityInfo**)&aInfo);
-    return aInfo->LoadLogo(this, logo);
+    return IPackageItemInfo::Probe(aInfo)->LoadLogo(this, logo);
 }
 
 ECode ApplicationPackageManager::GetActivityLogo(
@@ -1172,7 +1214,7 @@ ECode ApplicationPackageManager::GetActivityLogo(
     if (info != NULL) {
         AutoPtr<IActivityInfo> aInfo;
         info->GetActivityInfo((IActivityInfo**)&aInfo);
-        return aInfo->LoadLogo(this, logo);
+        return IPackageItemInfo::Probe(aInfo)->LoadLogo(this, logo);
     }
 
 //     throw new NameNotFoundException(intent.toUri(0));
@@ -1185,7 +1227,7 @@ ECode ApplicationPackageManager::GetApplicationLogo(
 {
     VALIDATE_NOT_NULL(logo);
 
-    return info->LoadLogo(this, logo);
+    return IPackageItemInfo::Probe(info)->LoadLogo(this, logo);
 }
 
 ECode ApplicationPackageManager::GetApplicationLogo(
@@ -1208,7 +1250,7 @@ ECode ApplicationPackageManager::GetResourcesForActivity(
      AutoPtr<IActivityInfo> aInfo;
      GetActivityInfo(activityName, sDefaultFlags, (IActivityInfo**)&aInfo);
      AutoPtr<IApplicationInfo> info;
-     aInfo->GetApplicationInfo((IApplicationInfo**)&info);
+     IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&info);
      return GetResourcesForApplication(info, res);
 }
 
@@ -1217,12 +1259,22 @@ ECode ApplicationPackageManager::GetUserBadgedIcon(
     /* [in] */ IUserHandle* user,
     /* [out] */ IDrawable** drawable)
 {
-    Int32 badgeResId = getBadgeResIdForUser(user.getIdentifier());
+    VALIDATE_NOT_NULL(drawable)
+    *drawable = NULL;
+    Int32 userId;
+    user->GetIdentifier(&userId);
+    Int32 badgeResId = GetBadgeResIdForUser(userId);
     if (badgeResId == 0) {
-        return icon;
+        *drawable = icon;
+        REFCOUNT_ADD(*drawable)
+        return NOERROR;
     }
-    Drawable badgeIcon = getDrawable("system", badgeResId, NULL);
-    return getBadgedDrawable(icon, badgeIcon, NULL, true);
+    AutoPtr<IDrawable> badgeIcon;
+    GetDrawable(String("system"), badgeResId, NULL, (IDrawable**)&badgeIcon);
+    AutoPtr<IDrawable> tmp = GetBadgedDrawable(icon, badgeIcon, NULL, TRUE);
+    *drawable = tmp;
+    REFCOUNT_ADD(*drawable)
+    return NOERROR;
 }
 
 ECode ApplicationPackageManager::GetUserBadgedDrawableForDensity(
@@ -1230,29 +1282,52 @@ ECode ApplicationPackageManager::GetUserBadgedDrawableForDensity(
     /* [in] */ IUserHandle* user,
     /* [in] */ IRect* badgeLocation,
     /* [in] */ Int32 badgeDensity,
-    /* [out] */ IDrawable** drawable)
+    /* [out] */ IDrawable** result)
 {
-    Drawable badgeDrawable = getUserBadgeForDensity(user, badgeDensity);
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    AutoPtr<IDrawable> badgeDrawable;
+    GetUserBadgeForDensity(user, badgeDensity, (IDrawable**)&badgeDrawable);
     if (badgeDrawable == NULL) {
-        return drawable;
+        *result = drawable;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
     }
-    return getBadgedDrawable(drawable, badgeDrawable, badgeLocation, true);
+
+    AutoPtr<IDrawable> tmp = GetBadgedDrawable(drawable, badgeDrawable, badgeLocation, TRUE);
+    *result = tmp;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode ApplicationPackageManager::GetUserBadgeForDensity(
     /* [in] */ IUserHandle* user,
     /* [in] */ Int32 density,
-    /* [out] */ IDrawable** drawable)
+    /* [out] */ IDrawable** result)
 {
-    UserInfo userInfo = getUserIfProfile(user.getIdentifier());
-    if (userInfo != NULL && userInfo.isManagedProfile()) {
-        if (density <= 0) {
-            density = mContext.getResources().getDisplayMetrics().densityDpi;
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    Int32 id;
+    user->GetIdentifier(&id);
+    AutoPtr<IUserInfo> userInfo = GetUserIfProfile(id);
+    Boolean bval;
+    if (userInfo != NULL && (userInfo->IsManagedProfile(&bval), bval)) {
+        Int32 d = density;
+        if (d <= 0) {
+            AutoPtr<IResources> resources;
+            mContext->GetResources((IResources**)&resources);
+            AutoPtr<IDisplayMetrics> dm;
+            resources->GetDisplayMetrics((IDisplayMetrics**)&dm);
+            dm->GetDensityDpi(&d);
         }
-        return Resources.getSystem().getDrawableForDensity(
-                com.android.internal.R->Drawable.ic_corp_badge, density);
+
+        AutoPtr<IResources> systemRes = CResources::GetSystem();
+        return systemRes->GetDrawableForDensity(
+                R::drawable::ic_corp_badge, d, result);
     }
-    return NULL;
+    return NOERROR;
 }
 
 ECode ApplicationPackageManager::GetUserBadgedLabel(
@@ -1260,12 +1335,29 @@ ECode ApplicationPackageManager::GetUserBadgedLabel(
     /* [in] */ IUserHandle* user,
     /* [out] */ ICharSequence** csq)
 {
-    UserInfo userInfo = getUserIfProfile(user.getIdentifier());
-    if (userInfo != NULL && userInfo.isManagedProfile()) {
-        return Resources.getSystem().getString(
-                com.android.internal.R.string.managed_profile_label_badge, label);
+    VALIDATE_NOT_NULL(csq)
+    *csq = NULL;
+
+    Int32 id;
+    user->GetIdentifier(&id);
+    AutoPtr<IUserInfo> userInfo = GetUserIfProfile(id);
+    Boolean bval;
+    if (userInfo != NULL && (userInfo->IsManagedProfile(&bval), bval)) {
+        AutoPtr<IResources> systemRes = CResources::GetSystem();
+        AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
+        args->Set(0, label);
+        String str;
+        systemRes->GetString(
+                R::string::managed_profile_label_badge, args, &str);
+        AutoPtr<ICharSequence> tmp = CoreUtils::Convert(str);
+        *csq = tmp;
+        REFCOUNT_ADD(*csq);
+        return NOERROR;
     }
-    return label;
+
+    *csq = label;
+    REFCOUNT_ADD(*csq)
+    return NOERROR;
 }
 
 ECode ApplicationPackageManager::GetResourcesForApplication(
@@ -1276,39 +1368,43 @@ ECode ApplicationPackageManager::GetResourcesForApplication(
     *res = NULL;
 
     String pkgName;
-    app->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(app)->GetPackageName(&pkgName);
     if (pkgName.Equals("system")) {
         AutoPtr<IContextImpl> sysContent;
-        mContext->mMainThread->GetSystemContext((IContextImpl**)&sysContent);
-        return sysContent->GetResources(res);
+        assert(0 && "TODO");
+        // CContextImpl* ci = (CContextImpl*)IContextImpl::Probe(mContext);
+        // ci->mMainThread->GetSystemContext((IContextImpl**)&sysContent);
+        return IContext::Probe(sysContent)->GetResources(res);
     }
 
-    final Boolean sameUid = (app.uid == Process.myUid());
-    Resources r = mContext.mMainThread.getTopLevelResources(
-            sameUid ? app.sourceDir : app.publicSourceDir,
-            sameUid ? app.splitSourceDirs : app.splitPublicSourceDirs,
-            app.resourceDirs, app.sharedLibraryFiles, Display.DEFAULT_DISPLAY,
-            NULL, mContext.mPackageInfo);
+    Int32 appUid;
+    app->GetUid(&appUid);
+    Boolean sameUid = (appUid == Process::MyUid());
 
-    // String resDir;
-    // Int32 appUid;
-    // app->GetUid(&appUid);
-    // if (appUid == Process::MyUid()) {
-    //     app->GetSourceDir(&resDir);
-    // }
-    // else {
-    //     app->GetPublicSourceDir(&resDir);
-    // }
-    // AutoPtr<IResources> r;
-    // mContext->mMainThread->GetTopLevelResources(
-    //     resDir, IDisplay::DEFAULT_DISPLAY, NULL, mContext->mPackageInfo, (IResources**)&r);
-    // if (r != NULL) {
-    //     *res = r;
-    //     REFCOUNT_ADD(*res);
-    //     return NOERROR;
-    // }
+    String sourceDir, publicSourceDir;
+    AutoPtr< ArrayOf<String> > splitSourceDirs, splitPublicSourceDirs, resourceDirs, sharedLibraryFiles;
+    app->GetSourceDir(&sourceDir);
+    app->GetPublicSourceDir(&publicSourceDir);
+    app->GetSplitSourceDirs((ArrayOf<String>**)&splitSourceDirs);
+    app->GetSplitPublicSourceDirs((ArrayOf<String>**)&splitPublicSourceDirs);
+    app->GetResourceDirs((ArrayOf<String>**)&resourceDirs);
+    app->GetSharedLibraryFiles((ArrayOf<String>**)&sharedLibraryFiles);
 
-    Slogger::E("ApplicationPackageManager", "Unable to open [%s]",  resDir.string());
+    AutoPtr<IResources> r;
+    assert(0 && "TODO");
+    // CContextImpl* ci = (CContextImpl*)IContextImpl::Probe(mContext);
+    // ci->mMainThread->GetTopLevelResources(
+    //         sameUid ? sourceDir : publicSourceDir,
+    //         sameUid ? splitSourceDirs : splitPublicSourceDirs,
+    //         resourceDirs, sharedLibraryFiles, IDisplay::DEFAULT_DISPLAY,
+    //         NULL, ci->mPackageInfo, (IResources**)&r);
+    if (r != NULL) {
+        *res = r;
+        REFCOUNT_ADD(*res)
+        return NOERROR;
+    }
+
+    Slogger::E("ApplicationPackageManager", "Unable to open [%s]",  publicSourceDir.string());
     return E_NAME_NOT_FOUND_EXCEPTION;
 }
 
@@ -1337,8 +1433,10 @@ ECode ApplicationPackageManager::GetResourcesForApplicationAsUser(
 
     if (appPackageName.Equals("system")) {
         AutoPtr<IContextImpl> ctx;
-        mContext->mMainThread->GetSystemContext((IContextImpl**)&ctx);
-        return ctx->GetResources(res);
+        assert(0 && "TODO");
+        // CContextImpl* ci = (CContextImpl*)IContextImpl::Probe(mContext);
+        // ci->mMainThread->GetSystemContext((IContextImpl**)&ctx);
+        return IContext::Probe(ctx)->GetResources(res);
     }
 
     // try {
@@ -1399,7 +1497,10 @@ AutoPtr<IDrawable> ApplicationPackageManager::GetCachedIcon(
 
         if (state != NULL) {
             if (DEBUG_ICONS) {
-                Logger::V(TAG, "Get cached drawable state for %s : %p", name->ToString().string(), state.Get());
+                String info;
+                name->ToString(&info);
+                Logger::V(TAG, "Get cached drawable state for %s : %s",
+                    info.string(), Object::ToString(state).string());
             }
             // Note: It's okay here to not use the newDrawable(Resources) variant
             //       of the API. The ConstantState comes from a drawable that was
@@ -1432,7 +1533,12 @@ void ApplicationPackageManager::PutCachedIcon(
         AutoPtr<IWeakReference> wr;
         source->GetWeakReference((IWeakReference**)&wr);
         sIconCache[name] = wr;
-        if (DEBUG_ICONS) Logger::V(TAG, "Added cached drawable state for %s : %p", name->ToString().string(), dr);
+        if (DEBUG_ICONS) {
+            String info;
+            name->ToString(&info);
+            Logger::V(TAG, "Added cached drawable state for %s : %s",
+                info.string(), Object::ToString(state).string());
+        }
     }
 }
 
@@ -1458,7 +1564,11 @@ void ApplicationPackageManager::HandlePackageBroadcast(
                     for (it = sIconCache.Begin(); it != sIconCache.End();) {
                         AutoPtr<ResourceName> nm = it->mFirst;
                         if (nm->mPackageName.Equals(ssp)) {
-                            if (DEBUG_ICONS) Logger::V(TAG, "Removing cached drawable for %s", nm->ToString().string());
+                            if (DEBUG_ICONS) {
+                                String info;
+                                nm->ToString(&info);
+                                Logger::V(TAG, "Removing cached drawable for %s", info.string());
+                            }
                             sIconCache.Erase(it++);
                             needCleanup = true;
                         }
@@ -1473,7 +1583,11 @@ void ApplicationPackageManager::HandlePackageBroadcast(
                     for (it = sStringCache.Begin(); it != sStringCache.End();) {
                         AutoPtr<ResourceName> nm = it->mFirst;
                         if (nm->mPackageName.Equals(ssp)) {
-                            if (DEBUG_ICONS) Logger::V(TAG, "Removing cached string for %s", nm->ToString().string());
+                            if (DEBUG_ICONS) {
+                                String info;
+                                nm->ToString(&info);
+                                Logger::V(TAG, "Removing cached string for %s", info.string());
+                            }
                             sStringCache.Erase(it++);
                             needCleanup = true;
                         }
@@ -1510,8 +1624,10 @@ AutoPtr<ICharSequence> ApplicationPackageManager::GetCachedString(
             if (DEBUG_ICONS) {
                 String str;
                 cs->ToString(&str);
+                String info;
+                name->ToString(&info);
                 Logger::V(TAG, "Get cached string for %s : %s wr:%p",
-                    name->ToString().string(), str.string(), wr.Get());
+                    info.string(), str.string(), wr.Get());
             }
 
             return cs;
@@ -1539,8 +1655,10 @@ void ApplicationPackageManager::PutCachedString(
         if (DEBUG_ICONS) {
             String str;
             cs->ToString(&str);
+            String info;
+            name->ToString(&info);
             Logger::V(TAG, "Added cached string for %s : %s wr:%p",
-                name->ToString().string(), str.string(), wr.Get());
+                info.string(), str.string(), wr.Get());
         }
     }
 }
@@ -1565,7 +1683,7 @@ ECode ApplicationPackageManager::GetText(
     ECode ec;
     if (appInfo == NULL) {
         ec = GetApplicationInfo(packageName, sDefaultFlags, (IApplicationInfo**)&appInfo);
-        if (ec = (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             return NOERROR;
         }
     }
@@ -1583,8 +1701,9 @@ ERROR:
         case E_NAME_NOT_FOUND_EXCEPTION:
         {
             String pkgName;
-            Slogger::W(String("PackageManager"), "Failure retrieving resources for %s"
-                  , (appInfo->GetPackageName(&pkgName), pkgName).string());
+            IPackageItemInfo::Probe(appInfo)->GetPackageName(&pkgName);
+            Slogger::W("PackageManager", "Failure retrieving resources for %s",
+                pkgName.string());
             ec = NOERROR;
             break;
         }
@@ -1592,8 +1711,8 @@ ERROR:
         {
            // If an exception was thrown, fall through to return
            // default icon.
-            Slogger::W(String("PackageManager"), "Failure retrieving text 0x%08x  in package %s"
-                , resid, packageName.string());
+            Slogger::W("PackageManager", "Failure retrieving text 0x%08x  in package %s",
+                resid, packageName.string());
             ec = NOERROR;
             break;
         }
@@ -1643,45 +1762,58 @@ ECode ApplicationPackageManager::GetApplicationLabel(
     /* [out] */ ICharSequence** label)
 {
     assert(info != NULL);
-    return info->LoadLabel((IPackageManager*)this->Probe(EIID_IPackageManager), label);
+    return IPackageItemInfo::Probe(info)->LoadLabel((IPackageManager*)this, label);
 }
 
 ECode ApplicationPackageManager::InstallPackage(
     /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
+    /* [in] */ IIPackageInstallObserver* observer,
     /* [in] */ Int32 flags,
     /* [in] */ const String& installerPackageName)
 {
     AutoPtr<IVerificationParams> verificationParams;
-    CVerificationParams::New(NULL, NULL, NULL, IVerificationParams::NO_UID, NULL,
+    CVerificationParams::New(NULL, NULL,
+        NULL, IVerificationParams::NO_UID, NULL,
         (IVerificationParams**)&verificationParams);
 
-    return InstallCommon(packageURI, new LegacyPackageInstallObserver(observer), flags,
+    AutoPtr<IPackageInstallObserver> lpio = new LegacyPackageInstallObserver(observer);
+    return InstallCommon(packageURI, lpio, flags,
             installerPackageName, verificationParams, NULL);
-
-    // try {
-    // return mPM->InstallPackage(packageURI, observer, flags, installerPackageName);
-    // } catch (RemoteException e) {
-    //     // Should never happen!
-    // }
 }
 
 ECode ApplicationPackageManager::InstallPackageWithVerification(
     /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
+    /* [in] */ IIPackageInstallObserver* observer,
     /* [in] */ Int32 flags,
     /* [in] */ const String& installerPackageName,
     /* [in] */ IUri* verificationURI,
     /* [in] */ IManifestDigest* manifestDigest,
     /* [in] */ IContainerEncryptionParams* encryptionParams)
 {
-    final VerificationParams verificationParams = new VerificationParams(verificationURI, NULL,
-            NULL, VerificationParams.NO_UID, manifestDigest);
-    InstallCommon(packageURI, new LegacyPackageInstallObserver(observer), flags,
+    AutoPtr<IVerificationParams> verificationParams;
+    CVerificationParams::New(verificationURI, NULL,
+        NULL, IVerificationParams::NO_UID, manifestDigest,
+        (IVerificationParams**)&verificationParams);
+
+    AutoPtr<IPackageInstallObserver> lpio = new LegacyPackageInstallObserver(observer);
+    return InstallCommon(packageURI, lpio, flags,
             installerPackageName, verificationParams, encryptionParams);
 }
 
 ECode ApplicationPackageManager::InstallPackageWithVerificationAndEncryption(
+    /* [in] */ IUri* packageURI,
+    /* [in] */ IIPackageInstallObserver* observer,
+    /* [in] */ Int32 flags,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ IVerificationParams* verificationParams,
+    /* [in] */ IContainerEncryptionParams* encryptionParams)
+{
+    AutoPtr<IPackageInstallObserver> lpio = new LegacyPackageInstallObserver(observer);
+    return InstallCommon(packageURI, lpio, flags,
+            installerPackageName, verificationParams, encryptionParams);
+}
+
+ECode ApplicationPackageManager::InstallCommon(
     /* [in] */ IUri* packageURI,
     /* [in] */ IPackageInstallObserver* observer,
     /* [in] */ Int32 flags,
@@ -1689,69 +1821,32 @@ ECode ApplicationPackageManager::InstallPackageWithVerificationAndEncryption(
     /* [in] */ IVerificationParams* verificationParams,
     /* [in] */ IContainerEncryptionParams* encryptionParams)
 {
-    return InstallCommon(packageURI, new LegacyPackageInstallObserver(observer), flags,
-            installerPackageName, verificationParams, encryptionParams);
-}
-
-//====================
-
-
-ECode ApplicationPackageManager::InstallPackage(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
-    /* [in] */ Int32 flags,
-    /* [in] */ const String& installerPackageName)
-{
-    AutoPtr<IVerificationParams> verificationParams;
-    CVerificationParams::New(NULL, NULL, NULL, IVerificationParams::NO_UID, NULL,
-        (IVerificationParams**)&verificationParams);
-    return InstallCommon(packageURI, observer, flags, installerPackageName, verificationParams, NULL);
-}
-
-ECode ApplicationPackageManager::InstallPackageWithVerification(Uri packageURI,
-        PackageInstallObserver observer, int flags, String installerPackageName,
-        Uri verificationURI, ManifestDigest manifestDigest,
-        ContainerEncryptionParams encryptionParams) {
-    final VerificationParams verificationParams = new VerificationParams(verificationURI, NULL,
-            NULL, VerificationParams.NO_UID, manifestDigest);
-    InstallCommon(packageURI, observer, flags, installerPackageName, verificationParams,
-            encryptionParams);
-}
-
-ECode ApplicationPackageManager::InstallPackageWithVerificationAndEncryption(Uri packageURI,
-        PackageInstallObserver observer, int flags, String installerPackageName,
-        VerificationParams verificationParams, ContainerEncryptionParams encryptionParams) {
-    InstallCommon(packageURI, observer, flags, installerPackageName, verificationParams,
-            encryptionParams);
-}
-
-private void InstallCommon(Uri packageURI,
-        PackageInstallObserver observer, int flags, String installerPackageName,
-        VerificationParams verificationParams, ContainerEncryptionParams encryptionParams) {
-    if (!"file".equals(packageURI.getScheme())) {
-        throw new UnsupportedOperationException("Only file:// URIs are supported");
+    String scheme;
+    packageURI->GetScheme(&scheme);
+    if (!scheme.Equals("file")) {
+        Logger::E(TAG, "Only file:// URIs are supported");
+        return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     if (encryptionParams != NULL) {
-        throw new UnsupportedOperationException("ContainerEncryptionParams not supported");
+        Logger::E(TAG, "ContainerEncryptionParams not supported");
+        return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
 
-    final String originPath = packageURI.getPath();
-    try {
-        mPM->InstallPackage(originPath, observer.getBinder(), flags, installerPackageName,
-                verificationParams, NULL);
-    } catch (RemoteException ignored) {
-    }
+    String originPath;
+    packageURI->GetPath(&originPath);
+    AutoPtr<IIPackageInstallObserver2> binder;
+    observer->GetBinder((IIPackageInstallObserver2**)&binder);
+    return mPM->InstallPackage(originPath, binder, flags, installerPackageName,
+            verificationParams, String(NULL));
 }
 
-
-//==============
 
 ECode ApplicationPackageManager::InstallExistingPackage(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    ECode ec = mPM->InstallExistingPackageAsUser(packageName, UserHandle::MyUserId(), result);
+    ECode ec = mPM->InstallExistingPackageAsUser(packageName, UserHandle::GetMyUserId(), result);
     if (FAILED(ec)) {
         *result = 0;
         Slogger::W("PackageManager", "Package %s doesn't exist", packageName.string());
@@ -1789,7 +1884,7 @@ ECode ApplicationPackageManager::SetInstallerPackageName(
 
 ECode ApplicationPackageManager::MovePackage(
     /* [in] */ const String& packageName,
-    /* [in] */ IPackageMoveObserver* observer,
+    /* [in] */ IIPackageMoveObserver* observer,
     /* [in] */ Int32 flags)
 {
     return mPM->MovePackage(packageName, observer, flags);
@@ -1805,15 +1900,15 @@ ECode ApplicationPackageManager::GetInstallerPackageName(
 
 ECode ApplicationPackageManager::DeletePackage(
     /* [in] */ const String& packageName,
-    /* [in] */ IPackageDeleteObserver* observer,
+    /* [in] */ IIPackageDeleteObserver* observer,
     /* [in] */ Int32 flags)
 {
-    return mPM->DeletePackage(packageName, observer, UserHandle::MyUserId(), flags);
+    return mPM->DeletePackageAsUser(packageName, observer, UserHandle::GetMyUserId(), flags);
 }
 
 ECode ApplicationPackageManager::ClearApplicationUserData(
     /* [in] */ const String& packageName,
-    /* [in] */ IPackageDataObserver* observer)
+    /* [in] */ IIPackageDataObserver* observer)
 {
     Int32 uid = 0;
     mContext->GetUserId(&uid);
@@ -1822,14 +1917,14 @@ ECode ApplicationPackageManager::ClearApplicationUserData(
 
 ECode ApplicationPackageManager::DeleteApplicationCacheFiles(
     /* [in] */ const String& packageName,
-    /* [in] */ IPackageDataObserver* observer)
+    /* [in] */ IIPackageDataObserver* observer)
 {
     return mPM->DeleteApplicationCacheFiles(packageName, observer);
 }
 
 ECode ApplicationPackageManager::FreeStorageAndNotify(
     /* [in] */ Int64 freeStorageSize,
-    /* [in] */ IPackageDataObserver* observer)
+    /* [in] */ IIPackageDataObserver* observer)
 {
     return mPM->FreeStorageAndNotify(freeStorageSize, observer);
 }
@@ -1844,7 +1939,7 @@ ECode ApplicationPackageManager::FreeStorage(
 ECode ApplicationPackageManager::GetPackageSizeInfo(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 userHandle,
-    /* [in] */ IPackageStatsObserver* observer)
+    /* [in] */ IIPackageStatsObserver* observer)
 {
     return mPM->GetPackageSizeInfo(packageName, userHandle, observer);
 }
@@ -1902,7 +1997,7 @@ ECode ApplicationPackageManager::ReplacePreferredActivity(
     /* [in] */ ArrayOf<IComponentName*>* set,
     /* [in] */ IComponentName* activity)
 {
-    return mPM->ReplacePreferredActivity(filter, match, set, activity, UserHandle::MyUserId());
+    return mPM->ReplacePreferredActivity(filter, match, set, activity, UserHandle::GetMyUserId());
 }
 
 ECode ApplicationPackageManager::ReplacePreferredActivityAsUser(
@@ -1984,8 +2079,10 @@ ECode ApplicationPackageManager::SetApplicationEnabledSetting(
 {
     Int32 uid = 0;
     mContext->GetUserId(&uid);
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
     return mPM->SetApplicationEnabledSetting(
-        packageName, newState, flags, uid, mContext.getOpPackageName());
+        packageName, newState, flags, uid, pkgName);
 }
 
 ECode ApplicationPackageManager::GetApplicationEnabledSetting(
@@ -2015,7 +2112,7 @@ ECode ApplicationPackageManager::SetApplicationHiddenSettingAsUser(
     Int32 userId;
     user->GetIdentifier(&userId);
 
-    return mPM->setApplicationHiddenSettingAsUser(packageName, hidden,
+    return mPM->SetApplicationHiddenSettingAsUser(packageName, hidden,
         userId, result);
 }
 
@@ -2103,7 +2200,7 @@ ECode ApplicationPackageManager::GetPackageInstaller(
     VALIDATE_NOT_NULL(installer)
     *installer = NULL;
 
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mInstaller == NULL) {
             // try {
             AutoPtr<IIPackageInstaller> pi;
@@ -2257,11 +2354,13 @@ AutoPtr<IDrawable> ApplicationPackageManager::GetBadgedDrawable(
             // throw new IllegalArgumentException("Badge location " + badgeLocation
             //         + " not in badged drawable bounds "
             //         + new Rect(0, 0, badgedWidth, badgedHeight));
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            // return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            return NULL;
         }
         badgeDrawable->SetBounds(0, 0, w, h);
 
-        canvas->Save();
+        Int32 ival;
+        canvas->Save(&ival);
         canvas->Translate(l, t);
         badgeDrawable->Draw(canvas);
         canvas->Restore();
@@ -2286,7 +2385,7 @@ AutoPtr<IDrawable> ApplicationPackageManager::GetBadgedDrawable(
             mergedDrawable->SetTargetDensity(density);
         }
 
-        return mergedDrawable;
+        return IDrawable::Probe(mergedDrawable);
     }
 
     return drawable;
@@ -2296,9 +2395,10 @@ Int32 ApplicationPackageManager::GetBadgeResIdForUser(
     /* [in] */ Int32 userHandle)
 {
     // Return the framework-provided badge.
-    UserInfo userInfo = getUserIfProfile(userHandle);
-    if (userInfo != NULL && userInfo.isManagedProfile()) {
-        return com.android.internal.R->Drawable.ic_corp_icon_badge;
+    AutoPtr<IUserInfo> userInfo = GetUserIfProfile(userHandle);
+    Boolean bval;
+    if (userInfo != NULL && (userInfo->IsManagedProfile(&bval), bval)) {
+        return R::drawable::ic_corp_icon_badge;
     }
     return 0;
 }
@@ -2307,11 +2407,11 @@ AutoPtr<IUserInfo> ApplicationPackageManager::GetUserIfProfile(
     /* [in] */ Int32 userHandle)
 {
     AutoPtr<IList> userProfiles;
-    GetUserManager()->GetProfiles(UserHandle::MyUserId(), (IList**)&userProfiles);
+    GetUserManager()->GetProfiles(UserHandle::GetMyUserId(), (IList**)&userProfiles);
     AutoPtr<IIterator> it;
     userProfiles->GetIterator((IIterator**)&it);
     Boolean hasNext;
-    while ((it->HasNext(&hasNext), &hasNext) {
+    while (it->HasNext(&hasNext), &hasNext) {
         AutoPtr<IInterface> obj;
         it->GetNext((IInterface**)&obj);
         IUserInfo* user = IUserInfo::Probe(obj);
@@ -2340,7 +2440,7 @@ ApplicationPackageManager::ResourceName::ResourceName(
     /* [in] */ Int32 iconId)
 {
     String pkgName;
-    aInfo->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(aInfo)->GetPackageName(&pkgName);
     ResourceName(pkgName, iconId);
 }
 
@@ -2351,7 +2451,7 @@ ApplicationPackageManager::ResourceName::ResourceName(
     AutoPtr<IApplicationInfo> appInfo;
     cInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
     String pkgName;
-    appInfo->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(appInfo)->GetPackageName(&pkgName);
     ResourceName(pkgName, iconId);
 }
 
@@ -2362,9 +2462,9 @@ ApplicationPackageManager::ResourceName::ResourceName(
     AutoPtr<IActivityInfo> acInfo;
     rInfo->GetActivityInfo((IActivityInfo**)&acInfo);
     AutoPtr<IApplicationInfo> appInfo;
-    acInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    IComponentInfo::Probe(acInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     String pkgName;
-    appInfo->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(appInfo)->GetPackageName(&pkgName);
     ResourceName(pkgName, iconId);
 }
 
