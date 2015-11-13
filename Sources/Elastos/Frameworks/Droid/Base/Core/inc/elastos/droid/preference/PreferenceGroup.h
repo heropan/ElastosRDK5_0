@@ -17,21 +17,6 @@ class PreferenceGroup
 public:
     PreferenceGroup();
 
-    PreferenceGroup(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
-
-    PreferenceGroup(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr);
-
-    PreferenceGroup(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
     virtual ~PreferenceGroup() {}
 
     CAR_INTERFACE_DECL()
@@ -70,7 +55,7 @@ public:
         /* [in] */ Boolean disableDependents);
 
 protected:
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,

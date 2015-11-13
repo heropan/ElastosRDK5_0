@@ -41,6 +41,7 @@ module
     interface Elastos.Droid.Widget.IBaseAdapter;
     interface Elastos.Droid.Preference.IPreferenceOnPreferenceChangeInternalListener;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.View.IAbsSavedState;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.View.IViewParent;
@@ -61,7 +62,7 @@ module
                 [in] Int32 defStyleAttr);
 
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -84,7 +85,7 @@ module
                 [in] IParcelable* superState);
 
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -96,7 +97,7 @@ module
 
             interface ITwoStatePreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -107,7 +108,7 @@ module
                 [in] Int32 defStyleAttr);
 
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -133,13 +134,13 @@ module
 
             interface IDialogPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
         class CEditTextPreference {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -173,13 +174,13 @@ module
 
             interface IEditTextPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
         class CListPreference {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -213,13 +214,13 @@ module
 
             interface IListPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
         class CMultiCheckPreference {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -253,13 +254,13 @@ module
 
             interface IMultiCheckPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
         class CMultiSelectListPreference {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -293,13 +294,13 @@ module
 
             interface IMultiSelectListPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
         class CSeekBarDialogPreference {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -331,7 +332,7 @@ module
 
         class CSeekBarVolumizer {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] Int32 streamType,
                 [in] IUri* defaultUri,
                 [in] ISeekBarVolumizerCallback* cb);
@@ -343,7 +344,7 @@ module
 
         class CSwitchPreference {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -368,7 +369,7 @@ module
 
         class CVolumePreference {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -403,14 +404,14 @@ module
 
             interface IVolumePreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
         [local]
         class CPreferenceInflater {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IPreferenceManager* pm);
 
             constructor(
@@ -424,7 +425,7 @@ module
 
         class CPreferenceCategory {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -476,7 +477,7 @@ module
 
         class CRingtonePreference {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -501,7 +502,7 @@ module
 
         class CPreferenceFrameLayout {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -550,13 +551,13 @@ module
 
             interface IPreferenceScreenSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
         class CSeekBarPreference {
             constructor(
-                [in] IContext* context,
+                [in] IContext* ctx,
                 [in] IAttributeSet* attrs,
                 [in] Int32 defStyleAttr,
                 [in] Int32 defStyleRes);
@@ -587,7 +588,7 @@ module
 
             interface ISeekBarPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 

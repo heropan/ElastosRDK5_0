@@ -33,45 +33,15 @@ DialogPreference::DialogPreference()
     , mWhichButtonClicked(0)
 {}
 
-DialogPreference::DialogPreference(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-    : mDialogLayoutResId(0)
-    , mWhichButtonClicked(0)
-{
-    Init(context, attrs, defStyleAttr, defStyleRes);
-}
-
-DialogPreference::DialogPreference(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : mDialogLayoutResId(0)
-    , mWhichButtonClicked(0)
-{
-    Init(context, attrs, defStyle);
-}
-
-DialogPreference::DialogPreference(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : mDialogLayoutResId(0)
-    , mWhichButtonClicked(0)
-{
-    Init(context, attrs);
-}
-
 CAR_INTERFACE_IMPL_4(DialogPreference, Preference, IDialogPreference, IDialogInterfaceOnClickListener, IDialogInterfaceOnDismissListener, IPreferenceManagerOnActivityDestroyListener)
 
-void DialogPreference::Init(
+ECode DialogPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(const_cast<Int32 *>(R::styleable::DialogPreference),
             ARRAY_SIZE(R::styleable::DialogPreference));
@@ -98,21 +68,22 @@ void DialogPreference::Init(
     CString::New(tmpString, (ICharSequence**)&mNegativeButtonText);
     a->GetResourceId(R::styleable::DialogPreference_dialogLayout, mDialogLayoutResId, &mDialogLayoutResId);
     a->Recycle();
+    return NOERROR;
 }
 
-void DialogPreference::Init(
+ECode DialogPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    return Init(context, attrs, defStyleAttr, 0);
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
-void DialogPreference::Init(
+ECode DialogPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return Init(context, attrs, R::attr::dialogPreferenceStyle);
+    return constructor(context, attrs, R::attr::dialogPreferenceStyle);
 }
 
 ECode DialogPreference::SetDialogTitle(

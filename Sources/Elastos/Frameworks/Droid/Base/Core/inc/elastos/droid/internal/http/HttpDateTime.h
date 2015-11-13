@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_HTTPDATETIME_H__
-#define __ELASTOS_DROID_NET_INTERNAL_HTTP_HTTPDATETIME_H__
+#ifndef __ELASTOS_DROID_INTERNAL_HTTP_HTTPDATETIME_H__
+#define __ELASTOS_DROID_INTERNAL_HTTP_HTTPDATETIME_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
@@ -112,4 +112,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_HTTPDATETIME_H__
+#endif // __ELASTOS_DROID_INTERNAL_HTTP_HTTPDATETIME_H__

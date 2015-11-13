@@ -342,7 +342,7 @@ ECode ListPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ListPreference),

@@ -28,8 +28,7 @@ ECode PreferenceScreen::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    PreferenceGroup::Init(context, attrs, R::attr::preferenceScreenStyle, 0);
-    return NOERROR;
+    return PreferenceGroup::constructor(context, attrs, R::attr::preferenceScreenStyle, 0);
 }
 
 ECode PreferenceScreen::GetRootAdapter(

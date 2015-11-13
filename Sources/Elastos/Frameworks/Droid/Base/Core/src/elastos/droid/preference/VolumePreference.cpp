@@ -26,7 +26,15 @@ ECode VolumePreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN (SeekBarDialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
+    mStreamType = 0;
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::VolumePreference),
+            ARRAY_SIZE(R::styleable::VolumePreference));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+    a->GetInt32(R::styleable::VolumePreference_streamType, 0, &mStreamType);
+    a->Recycle();
     return NOERROR;
 }
 
@@ -46,23 +54,6 @@ ECode VolumePreference::constructor(
 }
 
 CAR_INTERFACE_IMPL_4(VolumePreference, SeekBarDialogPreference,IVolumePreference, IPreferenceManagerOnActivityStopListener,IViewOnKeyListener,ISeekBarVolumizerCallback);
-
-void VolumePreference::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    SeekBarDialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes);
-    mStreamType = 0;
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::VolumePreference),
-            ARRAY_SIZE(R::styleable::VolumePreference));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
-    a->GetInt32(R::styleable::VolumePreference_streamType, 0, &mStreamType);
-    a->Recycle();
-}
 
 ECode VolumePreference::SetStreamType(
     /* [in] */ Int32 streamType)

@@ -30,7 +30,7 @@ const AutoPtr<IUserHandle> UserHandle::CURRENT = InitUserHandle(IUserHandle::USE
 const AutoPtr<IUserHandle> UserHandle::CURRENT_OR_SELF = InitUserHandle(IUserHandle::USER_CURRENT_OR_SELF);
 const AutoPtr<IUserHandle> UserHandle::OWNER = InitUserHandle(IUserHandle::USER_OWNER);
 
-CAR_INTERFACE_IMPL(UserHandle, Object, IUserHandle)
+CAR_INTERFACE_IMPL_2(UserHandle, Object, IUserHandle, IParcelable)
 
 UserHandle::UserHandle()
     : mHandle(0)

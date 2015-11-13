@@ -18,15 +18,6 @@ public:
 
     PreferenceInflater(){}
 
-    PreferenceInflater(
-        /* [in] */ IContext* context,
-        /* [in] */ IPreferenceManager* preferenceManager);
-
-    PreferenceInflater(
-        /* [in] */ IGenericInflater* original,
-        /* [in] */ IPreferenceManager* preferenceManager,
-        /* [in] */ IContext* newContext);
-
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IPreferenceManager* preferenceManager);

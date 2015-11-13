@@ -43,13 +43,6 @@ class Preference
     , public IPreference
     , public IComparable
 {
-protected:
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle,
-        /* [in] */ Int32 defStyleRes);
-
 public:
     Preference();
 

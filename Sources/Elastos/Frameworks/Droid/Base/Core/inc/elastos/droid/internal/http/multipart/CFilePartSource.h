@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPARTSOURCE_H__
-#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPARTSOURCE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_HTTP_MULTIPART_CFILEPARTSOURCE_H__
+#define __ELASTOS_DROID_INTERNAL_HTTP_MULTIPART_CFILEPARTSOURCE_H__
 
 #include "_Elastos_Droid_Internal_Http_Multipart_CFilePartSource.h"
 #include "elastos/droid/internal/http/multipart/FilePartSource.h"
@@ -24,4 +24,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPARTSOURCE_H__
+#endif // __ELASTOS_DROID_INTERNAL_HTTP_MULTIPART_CFILEPARTSOURCE_H__

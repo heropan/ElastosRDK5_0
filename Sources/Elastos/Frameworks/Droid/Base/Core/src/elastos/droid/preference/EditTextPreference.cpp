@@ -22,7 +22,7 @@ ECode EditTextPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes))
 
     // CEditText::New(context, attrs, (IEditText**)&mEditText);
 

@@ -78,29 +78,25 @@ CAR_INTERFACE_IMPL(PreferenceFrameLayout, Object, IPreferenceFrameLayout)
 // IKEYEVENTCALLBACK_METHODS_IMPL(PreferenceFrameLayout, FrameLayout)
 // IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(PreferenceFrameLayout, FrameLayout)
 
+PreferenceFrameLayout::PreferenceFrameLayout()
+    : mBorderTop(0)
+    , mBorderBottom(0)
+    , mBorderLeft(0)
+    , mBorderRight(0)
+    , mPaddingApplied(FALSE)
+{}
+
 ECode PreferenceFrameLayout::constructor(
     /* [in] */ IContext* context)
 {
-    mBorderTop = 0;
-    mBorderBottom = 0;
-    mBorderLeft = 0;
-    mBorderRight = 0;
-    mPaddingApplied = FALSE;
-    Init(context, NULL, R::attr::preferenceFrameLayoutStyle, 0);
-    return NOERROR;
+    return constructor(context, NULL, R::attr::preferenceFrameLayoutStyle, 0);
 }
 
 ECode PreferenceFrameLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    mBorderTop = 0;
-    mBorderBottom = 0;
-    mBorderLeft = 0;
-    mBorderRight = 0;
-    mPaddingApplied = FALSE;
-    Init(context, attrs, R::attr::preferenceFrameLayoutStyle, 0);
-    return NOERROR;
+    return constructor(context, attrs, R::attr::preferenceFrameLayoutStyle, 0);
 }
 
 ECode PreferenceFrameLayout::constructor(
@@ -108,13 +104,7 @@ ECode PreferenceFrameLayout::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    mBorderTop = 0;
-    mBorderBottom = 0;
-    mBorderLeft = 0;
-    mBorderRight = 0;
-    mPaddingApplied = FALSE;
-    Init(context, attrs, defStyleAttr, 0);
-    return NOERROR;
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
 ECode PreferenceFrameLayout::constructor(
@@ -123,22 +113,7 @@ ECode PreferenceFrameLayout::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    mBorderTop = 0;
-    mBorderBottom = 0;
-    mBorderLeft = 0;
-    mBorderRight = 0;
-    mPaddingApplied = FALSE;
-    Init(context, attrs, defStyleAttr, defStyleRes);
-    return NOERROR;
-}
-
-void PreferenceFrameLayout::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    // FrameLayout::Init(context, attrs, defStyleAttr, defStyleRes);
+    // FAIL_RETURN(FrameLayout::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
@@ -172,6 +147,7 @@ void PreferenceFrameLayout::Init(
             defaultRightPadding, &mBorderRight);
 
     a->Recycle();
+    return NOERROR;
 }
 
 ECode PreferenceFrameLayout::GenerateLayoutParams(

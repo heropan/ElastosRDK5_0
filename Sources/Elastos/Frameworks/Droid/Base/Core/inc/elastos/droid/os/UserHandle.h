@@ -17,6 +17,7 @@ namespace Os {
 class UserHandle
     : public Object
     , public IUserHandle
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()

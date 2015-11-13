@@ -70,12 +70,7 @@ public:
     };
 
 public:
-    PreferenceFrameLayout()
-        : mBorderTop(0)
-        , mBorderBottom(0)
-        , mBorderLeft(0)
-        , mBorderRight(0)
-        , mPaddingApplied(FALSE){}
+    PreferenceFrameLayout();
 
     CARAPI constructor(
         /* [in] */ IContext* context);
@@ -110,13 +105,6 @@ public:
 
     CARAPI AddView(
         /* [in] */ IView* child);
-
-private:
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
 
 private:
     static const Int32 DEFAULT_BORDER_TOP = 0;

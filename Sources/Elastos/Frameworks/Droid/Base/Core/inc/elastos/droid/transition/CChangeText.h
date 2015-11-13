@@ -182,8 +182,7 @@ public:
     CChangeText();
 
     CARAPI SetChangeBehavior(
-        /* [in] */ Int32 changeBehavior,
-        /* [out] */ IChangeText** result);
+        /* [in] */ Int32 changeBehavior);
 
     CARAPI GetTransitionProperties(
         /* [out] */ ArrayOf<String>** result);

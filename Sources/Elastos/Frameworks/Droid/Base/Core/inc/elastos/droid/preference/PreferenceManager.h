@@ -27,13 +27,6 @@ class PreferenceManager
 public:
     PreferenceManager();
 
-    PreferenceManager(
-        /* [in] */ IActivity* activity,
-        /* [in] */ Int32 firstRequestCode);
-
-    PreferenceManager(
-        /* [in] */ IContext* context);
-
     CAR_INTERFACE_DECL()
 
     CARAPI constructor(

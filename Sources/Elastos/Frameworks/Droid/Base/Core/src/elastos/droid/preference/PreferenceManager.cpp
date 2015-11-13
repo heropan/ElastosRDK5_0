@@ -1,7 +1,8 @@
 
 #include "elastos/droid/preference/PreferenceManager.h"
+#include "elastos/droid/preference/CPreferenceManager.h"
 // #include "elastos/droid/preference/CPreferenceScreen.h"
-#include "elastos/droid/preference/PreferenceInflater.h"
+#include "elastos/droid/preference/CPreferenceInflater.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/core/StringBuilder.h>
@@ -31,22 +32,6 @@ PreferenceManager::PreferenceManager()
     , mNoCommit(FALSE)
     , mSharedPreferencesMode(0)
 {}
-
-PreferenceManager::PreferenceManager(
-    /* [in] */ IActivity* activity,
-    /* [in] */ Int32 firstRequestCode)
-{
-    mActivity = activity;
-    mNextRequestCode = firstRequestCode;
-
-    Init(IContext::Probe(activity));
-}
-
-PreferenceManager::PreferenceManager(
-    /* [in] */ IContext* context)
-{
-    Init(context);
-}
 
 CAR_INTERFACE_IMPL(PreferenceManager, Object, IPreferenceManager)
 
@@ -191,7 +176,8 @@ ECode PreferenceManager::InflateFromResource(
     // Block commits
     SetNoCommit(TRUE);
 
-    AutoPtr<PreferenceInflater> inflater = new PreferenceInflater(context, THIS_PROBE(IPreferenceManager));
+    AutoPtr<CPreferenceInflater> inflater;
+    CPreferenceInflater::NewByFriend(context, this, (CPreferenceInflater**)&inflater);
     AutoPtr<IInterface> pfObj;
     inflater->Inflate(resId, IPreference::Probe(rootPreferences), TRUE, (IInterface**)&pfObj);
     AutoPtr<IPreference> pf = IPreference::Probe(pfObj);
@@ -353,7 +339,8 @@ void PreferenceManager::SetDefaultValues(
 
     Boolean value;
     if (readAgain || (defaultValueSp->GetBoolean(KEY_HAS_SET_DEFAULT_VALUES, FALSE, &value), !value)) {
-        AutoPtr<PreferenceManager> pm = new PreferenceManager(context);
+        AutoPtr<IPreferenceManager> pm;
+        CPreferenceManager::New(context, (IPreferenceManager**)&pm);
         pm->SetSharedPreferencesName(sharedPreferencesName);
         pm->SetSharedPreferencesMode(sharedPreferencesMode);
         AutoPtr<IPreferenceScreen> screen;

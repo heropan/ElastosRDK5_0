@@ -25,22 +25,22 @@ public:
 
     virtual ~TwoStatePreference() {}
 
-    TwoStatePreference(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes);
 
-    TwoStatePreference(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr);
 
-    TwoStatePreference(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    TwoStatePreference(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     virtual CARAPI OnClick();

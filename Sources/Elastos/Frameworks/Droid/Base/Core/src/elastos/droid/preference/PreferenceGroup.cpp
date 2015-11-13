@@ -27,45 +27,13 @@ PreferenceGroup::PreferenceGroup()
     , mAttachedToActivity(FALSE)
 {}
 
-PreferenceGroup::PreferenceGroup(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-    : mOrderingAsAdded(TRUE)
-    , mCurrentPreferenceOrder(0)
-    , mAttachedToActivity(FALSE)
-{
-    Init(context, attrs, defStyleAttr, defStyleRes);
-}
-
-PreferenceGroup::PreferenceGroup(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-    : mOrderingAsAdded(TRUE)
-    , mCurrentPreferenceOrder(0)
-    , mAttachedToActivity(FALSE)
-{
-    Init(context, attrs, defStyleAttr, 0);
-}
-
-PreferenceGroup::PreferenceGroup(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : mOrderingAsAdded(TRUE)
-    , mCurrentPreferenceOrder(0)
-    , mAttachedToActivity(FALSE)
-{
-     Init(context, attrs, 0, 0);
-}
-void PreferenceGroup::Init(
+ECode PreferenceGroup::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceGroup),
             ARRAY_SIZE(R::styleable::PreferenceGroup));
@@ -74,6 +42,8 @@ void PreferenceGroup::Init(
     a->GetBoolean(R::styleable::PreferenceGroup_orderingFromXml,
             mOrderingAsAdded, &mOrderingAsAdded);
     a->Recycle();
+
+    return NOERROR;
 }
 
 ECode PreferenceGroup::SetOrderingAsAdded(

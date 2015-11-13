@@ -46,12 +46,6 @@ module
 
         Dump(
             [in] IPrintWriter* pw);
-
-        GetSlots(
-            [out,callee] ArrayOf<String>* slots);
-
-        GetIcons(
-            [out,callee] ArrayOf<IStatusBarIcon*>* icons);
     }
 
     } // namespace StatusBar

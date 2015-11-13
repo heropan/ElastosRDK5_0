@@ -24,7 +24,7 @@ ECode CheckBoxPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    TwoStatePreference::Init(context, attrs, defStyleAttr, 0);
+    FAIL_RETURN(TwoStatePreference::constructor(context, attrs, defStyleAttr, 0));
 
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::CheckBoxPreference),

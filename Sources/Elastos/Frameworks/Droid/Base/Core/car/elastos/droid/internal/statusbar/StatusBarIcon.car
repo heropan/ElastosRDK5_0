@@ -55,6 +55,9 @@ module
 
         SetContentDescription(
             [in] ICharSequence* seq);
+
+        Clone(
+            [out] IStatusBarIcon** object);
     }
 
     } // namespace StatusBar

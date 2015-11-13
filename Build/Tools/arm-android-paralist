@@ -176,6 +176,9 @@
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/inputmethod
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/net
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/os
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/preference
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/statusbar
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/transition
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/utility
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/display

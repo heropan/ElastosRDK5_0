@@ -24,11 +24,37 @@ namespace Preference {
 
 CAR_INTERFACE_IMPL_2(Preference, Object, IPreference, IComparable)
 
-void Preference::Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes)
+Preference::Preference()
+    : mId(0)
+    , mOrder(IPreference::DEFAULT_ORDER)
+    , mTitleRes(0)
+    , mIconResId(0)
+    , mEnabled(TRUE)
+    , mSelectable(TRUE)
+    , mRequiresKey(FALSE)
+    , mPersistent(TRUE)
+    , mDependencyMet(TRUE)
+    , mParentDependencyMet(TRUE)
+    , mShouldDisableView(TRUE)
+    , mLayoutResId(R::layout::preference)
+    , mWidgetLayoutResId(0)
+    , mCanRecycleLayout(TRUE)
+    , mBaseMethodCalled(FALSE)
+{}
+
+Preference::~Preference()
+{
+    if (mDependents != NULL) {
+        mDependents->Clear();
+        mDependents = NULL;
+    }
+}
+
+ECode Preference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     mContext = context;
 
@@ -115,41 +141,6 @@ void Preference::Init(
 //        mCanRecycleLayout = false;
 //    }
 #endif
-}
-
-Preference::Preference()
-    : mId(0)
-    , mOrder(IPreference::DEFAULT_ORDER)
-    , mTitleRes(0)
-    , mIconResId(0)
-    , mEnabled(TRUE)
-    , mSelectable(TRUE)
-    , mRequiresKey(FALSE)
-    , mPersistent(TRUE)
-    , mDependencyMet(TRUE)
-    , mParentDependencyMet(TRUE)
-    , mShouldDisableView(TRUE)
-    , mLayoutResId(R::layout::preference)
-    , mWidgetLayoutResId(0)
-    , mCanRecycleLayout(TRUE)
-    , mBaseMethodCalled(FALSE)
-{}
-
-Preference::~Preference()
-{
-    if (mDependents != NULL) {
-        mDependents->Clear();
-        mDependents = NULL;
-    }
-}
-
-ECode Preference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    Init(context, attrs, defStyleAttr, defStyleRes);
     return NOERROR;
 }
 
@@ -158,23 +149,20 @@ ECode Preference::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    Init(context, attrs, defStyleAttr, 0);
-    return NOERROR;
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
 ECode Preference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    Init(context, attrs, Elastos::Droid::R::attr::preferenceStyle, 0);
-    return NOERROR;
+    return constructor(context, attrs, Elastos::Droid::R::attr::preferenceStyle, 0);
 }
 
 ECode Preference::constructor(
     /* [in] */ IContext* context)
 {
-    Init(context, NULL, Elastos::Droid::R::attr::preferenceStyle, 0);
-    return NOERROR;
+    return constructor(context, NULL, Elastos::Droid::R::attr::preferenceStyle, 0);
 }
 
 ECode Preference::OnGetDefaultValue(

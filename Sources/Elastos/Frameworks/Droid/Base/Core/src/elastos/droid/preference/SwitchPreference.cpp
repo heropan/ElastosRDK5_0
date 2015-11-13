@@ -59,7 +59,7 @@ ECode SwitchPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    TwoStatePreference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(TwoStatePreference::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::SwitchPreference),

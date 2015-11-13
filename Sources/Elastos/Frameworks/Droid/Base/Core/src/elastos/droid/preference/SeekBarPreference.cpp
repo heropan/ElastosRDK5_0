@@ -28,44 +28,10 @@ ECode SeekBarPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    Init(context, attrs, defStyleAttr, defStyleRes);
-    return NOERROR;
-}
-
-ECode SeekBarPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-{
-    Init(context, attrs, defStyleAttr, 0);
-    return NOERROR;
-}
-
-ECode SeekBarPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    // Init(context, attrs, R::attr::seekBarPreferenceStyle, 0);
-    return NOERROR;
-}
-
-ECode SeekBarPreference::constructor(
-    /* [in] */ IContext* context)
-{
-    // Init(context, NULL, R::attr::seekBarPreferenceStyle, 0);
-    return NOERROR;
-}
-
-void SeekBarPreference::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
     mProgress = 0;
     mMax = 0;
     mTrackingTouch = FALSE;
-    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ProgressBar),
@@ -87,6 +53,28 @@ void SeekBarPreference::Init(
     //         R::layout::preference_widget_seekbar, &layoutResId);
     // a->Recycle();
     // SetLayoutResource(layoutResId);
+    return NOERROR;
+}
+
+ECode SeekBarPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode SeekBarPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::seekBarPreferenceStyle, 0);
+}
+
+ECode SeekBarPreference::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL, R::attr::seekBarPreferenceStyle, 0);
 }
 
 ECode SeekBarPreference::OnBindView(

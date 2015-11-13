@@ -4,4 +4,7 @@ DIRS += http
 DIRS += inputmethod
 DIRS += net
 DIRS += os
+DIRS += preference
+DIRS += statusbar
+DIRS += transition
 DIRS += utility

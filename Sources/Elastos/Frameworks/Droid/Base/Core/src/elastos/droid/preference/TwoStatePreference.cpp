@@ -28,46 +28,34 @@ TwoStatePreference::TwoStatePreference()
     , mDisableDependentsState(FALSE)
 {}
 
-TwoStatePreference::TwoStatePreference(
+ECode TwoStatePreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
-    : mChecked(FALSE)
-    , mCheckedSet(FALSE)
-    , mDisableDependentsState(FALSE)
 {
-    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+    return Preference::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
-TwoStatePreference::TwoStatePreference(
+ECode TwoStatePreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
-    : mChecked(FALSE)
-    , mCheckedSet(FALSE)
-    , mDisableDependentsState(FALSE)
 {
-    Preference::Init(context, attrs, defStyleAttr, 0);
+    return Preference::constructor(context, attrs, defStyleAttr, 0);
 }
 
-TwoStatePreference::TwoStatePreference(
+ECode TwoStatePreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : mChecked(FALSE)
-    , mCheckedSet(FALSE)
-    , mDisableDependentsState(FALSE)
 {
-    Preference::Init(context, attrs, 0, 0);
+    return Preference::constructor(context, attrs, 0, 0);
 }
 
-TwoStatePreference::TwoStatePreference(
+ECode TwoStatePreference::constructor(
     /* [in] */ IContext* context)
-    : mChecked(FALSE)
-    , mCheckedSet(FALSE)
-    , mDisableDependentsState(FALSE)
 {
-    Preference::Init(context, NULL, 0, 0);
+    return Preference::constructor(context, NULL, 0, 0);
 }
 
 ECode TwoStatePreference::OnClick()

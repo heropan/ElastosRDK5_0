@@ -71,8 +71,7 @@ module
          * @return this textChange object.
          */
         SetChangeBehavior(
-            [in] Int32 changeBehavior,
-            [out] IChangeText** result);
+            [in] Int32 changeBehavior);
 
         /**
          * Returns the type of changing animation that will be run.

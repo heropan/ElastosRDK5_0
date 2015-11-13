@@ -37,21 +37,6 @@ class DialogPreference
 public:
     DialogPreference();
 
-    DialogPreference(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
-
-    DialogPreference(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr);
-
-    DialogPreference(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
     virtual ~DialogPreference() {}
 
     CAR_INTERFACE_DECL()
@@ -221,18 +206,18 @@ public:
     virtual CARAPI OnActivityDestroy();
 
 protected:
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes);
 
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr);
 
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 

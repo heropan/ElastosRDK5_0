@@ -243,7 +243,7 @@ ECode RingtonePreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr<ArrayOf<Int32> > arrayAttrs = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::RingtonePreference),

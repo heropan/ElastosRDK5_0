@@ -45,15 +45,11 @@ CChangeText::CChangeText()
 }
 
 ECode CChangeText::SetChangeBehavior(
-    /* [in] */ Int32 changeBehavior,
-    /* [out] */ IChangeText** result)
+    /* [in] */ Int32 changeBehavior)
 {
-    VALIDATE_NOT_NULL(result)
     if (changeBehavior >= CHANGE_BEHAVIOR_KEEP && changeBehavior <= CHANGE_BEHAVIOR_OUT_IN) {
         mChangeBehavior = changeBehavior;
     }
-    *result = IChangeText::Probe(this);
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

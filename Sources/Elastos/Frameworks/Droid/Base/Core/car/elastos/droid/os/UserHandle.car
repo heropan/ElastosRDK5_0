@@ -4,7 +4,10 @@ module
     namespace Droid {
     namespace Os {
 
-    [local, parcelable]
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IUserHandle {
         /**
          * @hide Range of uids allocated for a user.

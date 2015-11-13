@@ -1,5 +1,6 @@
 
 #include "elastos/droid/preference/PreferenceInflater.h"
+#include "elastos/droid/preference/CPreferenceInflater.h"
 #include "elastos/droid/content/Intent.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/utility/logging/Slogger.h>
@@ -19,32 +20,6 @@ const String PreferenceInflater::INTENT_TAG_NAME("intent");
 const String PreferenceInflater::EXTRA_TAG_NAME("extra");
 
 CAR_INTERFACE_IMPL(PreferenceInflater, GenericInflater, IPreferenceInflater)
-
-PreferenceInflater::PreferenceInflater(
-    /* [in] */ IContext* context,
-    /* [in] */ IPreferenceManager* preferenceManager)
-{
-    mContext = context;
-    SetFactorySet(FALSE);
-    AutoPtr<ArrayOf<IInterface*> > ca = ArrayOf<IInterface*>::Alloc(2);
-    SetConstructorArgs(ca);
-    Init(preferenceManager);
-}
-
-PreferenceInflater::PreferenceInflater(
-    /* [in] */ IGenericInflater* original,
-    /* [in] */ IPreferenceManager* preferenceManager,
-    /* [in] */ IContext* newContext)
-{
-    mContext = newContext;
-    SetFactorySet(FALSE);
-    AutoPtr<ArrayOf<IInterface*> > ca = ArrayOf<IInterface*>::Alloc(2);
-    SetConstructorArgs(ca);
-    AutoPtr<IGenericInflaterFactory> factory;
-    original->GetFactory((IGenericInflaterFactory**)&factory);
-    original->SetFactory(factory);
-    Init(preferenceManager);
-}
 
 ECode PreferenceInflater::constructor(
     /* [in] */ IContext* context,
@@ -78,11 +53,7 @@ ECode PreferenceInflater::CloneInContext(
     /* [in] */ IContext* newContext,
     /* [out] */ IGenericInflater** ret)
 {
-    VALIDATE_NOT_NULL(ret)
-    PreferenceInflater* pi = new PreferenceInflater(IGenericInflater::Probe(this), mPreferenceManager, newContext);
-    *ret = IGenericInflater::Probe(pi);
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return CPreferenceInflater::New(this, mPreferenceManager, newContext, ret);
 }
 
 void PreferenceInflater::Init(

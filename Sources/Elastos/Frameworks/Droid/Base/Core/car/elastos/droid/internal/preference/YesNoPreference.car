@@ -35,6 +35,16 @@ module
             [out] Boolean* value);
     }
 
+    /**
+     * @Involve
+     * interface IDialogPreferenceSavedState
+     * interface IPreferenceBaseSavedState
+     * interface IAbsSavedState
+     * interface IParcelable
+     */
+    interface IYesNoPreferenceSavedState {
+    }
+
     }//namespace Preference
     }//namespace Internal
     }//namespace Droid

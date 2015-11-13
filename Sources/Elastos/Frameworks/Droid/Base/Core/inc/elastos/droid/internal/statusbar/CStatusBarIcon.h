@@ -1,23 +1,27 @@
-#ifndef __ELASTOS_DROID_STATUSBAR_CSTATUSBARICON_H__
-#define __ELASTOS_DROID_STATUSBAR_CSTATUSBARICON_H__
+#ifndef __ELASTOS_DINTERNAL_ROID_STATUSBAR_CSTATUSBARICON_H__
+#define __ELASTOS_DINTERNAL_ROID_STATUSBAR_CSTATUSBARICON_H__
 
-#include "_Elastos_Droid_StatusBar_CStatusBarIcon.h"
-#include "elastos/droid/ext/frameworkdef.h"
-#include <elastos/core/StringBuilder.h>
-
-using Elastos::Core::ICharSequence;
-using Elastos::Core::StringBuilder;
+#include "_Elastos_Droid_Internal_StatusBar_CStatusBarIcon.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IUserHandle;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
+namespace Internal {
 namespace StatusBar {
 
 CarClass(CStatusBarIcon)
+    , public Object
+    , public IStatusBarIcon
 {
 public:
     CStatusBarIcon();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
@@ -31,6 +35,9 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* result);
+
+    CARAPI Clone(
+        /* [out] */ IStatusBarIcon** object);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* in);
@@ -112,9 +119,10 @@ public:
 */
 };
 
-}//namespace StatusBar
-}//namespace Droid
-}//namespace Elastos
+} //namespace StatusBar
+} //namespace Internal
+} //namespace Droid
+} //namespace Elastos
 
 
-#endif //__ELASTOS_DROID_STATUSBAR_CSTATUSBARICON_H__
+#endif //__ELASTOS_DROID_INTERNAL_STATUSBAR_CSTATUSBARICON_H__

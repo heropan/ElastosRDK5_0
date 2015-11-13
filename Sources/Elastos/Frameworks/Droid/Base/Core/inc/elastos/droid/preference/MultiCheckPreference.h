@@ -262,12 +262,6 @@ protected:
         /* [in] */ IParcelable* state);
 
 private:
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
-
     CARAPI_(void) SetEntryValuesCS(
         /* [in] */ ArrayOf<ICharSequence*>* values);
 

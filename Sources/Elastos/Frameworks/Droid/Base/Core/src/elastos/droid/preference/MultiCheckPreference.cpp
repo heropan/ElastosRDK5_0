@@ -49,42 +49,7 @@ ECode MultiCheckPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    Init(context, attrs, defStyleAttr, defStyleRes);
-    return NOERROR;
-}
-
-ECode MultiCheckPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-{
-     Init(context, attrs, defStyleAttr, 0);
-    return NOERROR;
-}
-
-ECode MultiCheckPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    DialogPreference::constructor(context, attrs);
-    Init(context, attrs, R::attr::dialogPreferenceStyle, 0);
-    return NOERROR;
-}
-
-ECode MultiCheckPreference::constructor(
-    /* [in] */ IContext* context)
-{
-    Init(context, NULL, R::attr::dialogPreferenceStyle, 0);
-    return NOERROR;
-}
-
-void MultiCheckPreference::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    DialogPreference(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ListPreference),
             ARRAY_SIZE(R::styleable::ListPreference));
@@ -110,6 +75,28 @@ void MultiCheckPreference::Init(
     context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     a->GetString(R::styleable::Preference_summary, &mSummary);
     a->Recycle();
+    return NOERROR;
+}
+
+ECode MultiCheckPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode MultiCheckPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::dialogPreferenceStyle, 0);
+}
+
+ECode MultiCheckPreference::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL, R::attr::dialogPreferenceStyle, 0);
 }
 
 CAR_INTERFACE_IMPL(MultiCheckPreference, DialogPreference, IMultiCheckPreference)
