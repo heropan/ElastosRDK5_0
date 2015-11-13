@@ -8,3 +8,4 @@ DIRS += preference
 DIRS += statusbar
 DIRS += transition
 DIRS += utility
+DIRS += view

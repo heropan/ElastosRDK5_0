@@ -1,5 +1,6 @@
 
-#include "NativeInterpolatorFactoryHelper.h"
+#include "elastos/droid/internal/view/animation/NativeInterpolatorFactoryHelper.h"
+#include <hwui/Interpolator.h>
 
 namespace Elastos {
 namespace Droid {
