@@ -723,6 +723,20 @@ ECode Surface::WriteToParcel(
     return NOERROR;
 }
 
+ANativeWindow* Surface::GetSurface()
+{
+    sp<android::Surface> surface;
+    {
+        AutoLock lock(this);
+        if (mNativeObject != 0)
+            surface = reinterpret_cast<android::Surface*>(mNativeObject);
+    }
+    if (surface != NULL) {
+        surface->incStrong(&sRefBaseOwner);
+    }
+    return surface.get();
+}
+
 } // namespace View
 } // namespace Droid
 } // namespace Elastos
