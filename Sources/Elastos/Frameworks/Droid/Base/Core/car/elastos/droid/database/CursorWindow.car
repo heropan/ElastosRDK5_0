@@ -435,9 +435,6 @@ module
             [in] Int32 col,
             [out] Boolean* succeeded);
 
-        DescribeContents(
-            [out] Int32* result);
-
         ToString(
             [out] String* str);
     }

@@ -22,9 +22,6 @@ module
         ToString(
             [out] String* res);
 
-        DescribeContents(
-            [out] Int32* res);
-
         GetSignalStrength(
             [out] Int32* val);
 

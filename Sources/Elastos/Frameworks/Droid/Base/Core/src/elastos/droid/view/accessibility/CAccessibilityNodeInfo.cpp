@@ -1241,14 +1241,6 @@ ECode CAccessibilityNodeInfo::SetConnectionId(
     return NOERROR;
 }
 
-ECode CAccessibilityNodeInfo::DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents);
-    *contents = 0;
-    return NOERROR;
-}
-
 ECode CAccessibilityNodeInfo::GetSourceNodeId(
     /* [out] */ Int64* id)
 {

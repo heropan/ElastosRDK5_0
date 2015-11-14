@@ -187,15 +187,6 @@ ECode CCellIdentityGsm::ToString(
     return NOERROR;
 }
 
-ECode CCellIdentityGsm::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 } // namespace Telephony
 } // namespace Droid
 } // namespace Elastos
-

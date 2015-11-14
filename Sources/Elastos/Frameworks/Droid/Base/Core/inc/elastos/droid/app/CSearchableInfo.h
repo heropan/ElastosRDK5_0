@@ -356,9 +356,6 @@ public:
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* contents);
-
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 

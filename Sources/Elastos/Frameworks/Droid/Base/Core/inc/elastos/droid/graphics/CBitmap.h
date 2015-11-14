@@ -9,15 +9,6 @@ using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::IO::IBuffer;
 using Elastos::IO::IOutputStream;
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-    extern void Elastos_Bitmap_InitCallback(Int32 cb);
-#ifdef __cplusplus
-}
-#endif
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {

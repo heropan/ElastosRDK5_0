@@ -119,14 +119,6 @@ ECode CStatusBarNotification::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CStatusBarNotification::DescribeContents(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = 0;
-    return NOERROR;
-}
-
 ECode CStatusBarNotification::IsOngoing(
     /* [out] */ Boolean* result)
 {

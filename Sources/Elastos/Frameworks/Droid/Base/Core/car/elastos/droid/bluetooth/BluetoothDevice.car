@@ -456,9 +456,6 @@ module
             GetAddress(
                 [out] String* address);
 
-            DescribeContents(
-                [out] Int32* value);
-
             /**
              * Get the friendly Bluetooth name of the remote device.
              *

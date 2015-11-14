@@ -60,8 +60,7 @@ ECode CSurfaceTexture::constructor(
 {
     mCreatorLooper = Looper::GetMyLooper();
     AutoPtr<IWeakReference> wr;
-    IWeakReferenceSource* wrs = THIS_PROBE(IWeakReferenceSource);
-    wrs->GetWeakReference((IWeakReference**)&wr);
+    GetWeakReference((IWeakReference**)&wr);
     return NativeInit(FALSE, texName, singleBufferMode, wr);
 }
 
@@ -70,8 +69,7 @@ ECode CSurfaceTexture::constructor(
 {
     mCreatorLooper = Looper::GetMyLooper();
     AutoPtr<IWeakReference> wr;
-    IWeakReferenceSource* wrs = THIS_PROBE(IWeakReferenceSource);
-    wrs->GetWeakReference((IWeakReference**)&wr);
+    GetWeakReference((IWeakReference**)&wr);
     return NativeInit(TRUE, 0, singleBufferMode, wr);
 }
 

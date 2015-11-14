@@ -157,14 +157,6 @@ ECode CNeighboringCellInfo::ToString(
     return NOERROR;
 }
 
-ECode CNeighboringCellInfo::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CNeighboringCellInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

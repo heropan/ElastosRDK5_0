@@ -2,7 +2,7 @@
 #include "elastos/droid/graphics/drawable/BitmapDrawable.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
 #include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/BitmapFactory.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CBitmapShader.h"
 #include "elastos/droid/graphics/Insets.h"
@@ -783,10 +783,8 @@ ECode BitmapDrawable::UpdateStateFromTypedArray(
     Int32 srcResId = 0;
     a->GetResourceId(R::styleable::BitmapDrawable_src, 0, &srcResId);
     if (srcResId != 0) {
-        AutoPtr<IBitmapFactory> bmFactory;
-        CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
         AutoPtr<IBitmap> bitmap;
-        bmFactory->DecodeResource(r, srcResId, (IBitmap**)&bitmap);
+        BitmapFactory::DecodeResource(r, srcResId, (IBitmap**)&bitmap);
         if (bitmap == NULL) {
             // throw new XmlPullParserException(a.getPositionDescription() +
             //         ": <bitmap> requires a valid src attribute");
@@ -1011,10 +1009,8 @@ ECode BitmapDrawable::constructor(
 ECode BitmapDrawable::constructor(
     /* [in] */ const String& filepath)
 {
-    AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
+    FAIL_RETURN(BitmapFactory::DecodeFile(filepath, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
     constructor(state, NULL, NULL);
@@ -1028,10 +1024,8 @@ ECode BitmapDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ const String& filepath)
 {
-    AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
+    FAIL_RETURN(BitmapFactory::DecodeFile(filepath, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
     constructor(state, NULL, NULL);
@@ -1045,10 +1039,8 @@ ECode BitmapDrawable::constructor(
 ECode BitmapDrawable::constructor(
     /* [in] */ IInputStream* is)
 {
-    AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
+    FAIL_RETURN(BitmapFactory::DecodeStream(is, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
     constructor(state, NULL, NULL);
@@ -1062,10 +1054,8 @@ ECode BitmapDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ IInputStream* is)
 {
-    AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
-    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
+    FAIL_RETURN(BitmapFactory::DecodeStream(is, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
     constructor((IDrawableConstantState*)state->Probe(EIID_IDrawableConstantState), NULL, NULL);

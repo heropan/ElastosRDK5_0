@@ -72,6 +72,7 @@ ECode CSweepGradient::Copy(
             CSweepGradient::New(mCx, mCy, mColor0, mColor1, (IShader**)&copy);
             break;
         default:
+            *shader = NULL;
             // throw new IllegalArgumentException("SweepGradient should be created with either " +
             //         "colors and positions or start color and end color");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;

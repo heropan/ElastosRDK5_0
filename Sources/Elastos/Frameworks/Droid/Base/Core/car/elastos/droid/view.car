@@ -83,6 +83,7 @@ module
     merge("view/WindowInsets.car");
     merge("view/WindowManager.car");
     merge("view/WindowManagerGlobal.car");
+    merge("view/WindowManagerInternal.car");
     merge("view/WindowManagerPolicy.car");
     merge("view/GraphicBuffer.car");
 
@@ -974,6 +975,27 @@ module
             interface IParcelable;
         }
 
+        class CWindowId {
+            constructor();
+
+            constructor(
+                [in] IIWindowId* target);
+
+            constructor(
+                [in] IBinder* obj);
+
+            interface IWindowId;
+            interface IParcelable;
+        }
+
+        class CWindowIdFocusObserver {
+            constructor(
+                [in] IWindowIdFocusObserver* observer);
+
+            interface IIWindowFocusObserver;
+            interface IBinder;
+        }
+
     //     singleton class CWindowManagerGlobal {
     //         interface IWindowManagerGlobal;
     //     }
@@ -1099,17 +1121,38 @@ module
     //     interface IWindowManagerPolicyThread;
     // }
 
-    // class CWindowInfo {
+    class CWindowInfo {
+        constructor();
 
-    //     constructor();
+        interface IWindowInfo;
+        interface IParcelable;
+    }
 
-    //     interface IWindowInfo;
-    //     interface IParcelable;
-    // }
+    class CWindowInsets {
+        constructor(
+            [in] IRect* systemWindowInsets,
+            [in] IRect* windowDecorInsets,
+            [in] IRect* stableInsets,
+            [in] Boolean isRound);
 
-    // singleton class CWindowInfoHelper {
-    //     interface IWindowInfoHelper;
-    // }
+        /**
+         * Construct a new WindowInsets, copying all values from a source WindowInsets.
+         *
+         * @param src Source to copy insets from
+         */
+        constructor(
+            [in] IWindowInsets* src);
+
+        /** @hide */
+        constructor(
+            [in] IRect* systemWindowInsets);
+
+        interface IWindowInsets;
+    }
+
+    singleton class CWindowInfoHelper {
+        interface IWindowInfoHelper;
+    }
 
     } // namespace View
     } // namepsace Droid

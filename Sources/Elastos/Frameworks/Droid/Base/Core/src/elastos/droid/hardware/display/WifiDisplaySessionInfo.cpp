@@ -118,15 +118,6 @@ ECode WifiDisplaySessionInfo::WriteToParcel(
     return NOERROR;
 }
 
-ECode WifiDisplaySessionInfo::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-
-    *result = 0;
-    return NOERROR;
-}
-
 ECode WifiDisplaySessionInfo::ToString(
     /* [out] */ String* result)
 {

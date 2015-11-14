@@ -16,9 +16,6 @@ module {
         CompareTo(
             [in] IGroupMetadata* another,
             [out] Int32* pos);
-
-        DescribeContents(
-            [out] Int32* contents);
     }
 
     interface IGroupMetadataHelper {

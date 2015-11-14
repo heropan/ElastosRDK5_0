@@ -38,10 +38,6 @@ public:
         /* [in] */ ArrayOf<Byte>* data);
 
     //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
-    //@Override
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 

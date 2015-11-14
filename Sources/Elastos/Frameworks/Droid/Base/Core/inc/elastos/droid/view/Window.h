@@ -20,8 +20,6 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-extern "C" const InterfaceID EIID_Window;
-
 class Window
     : public Object
     , public IWindow

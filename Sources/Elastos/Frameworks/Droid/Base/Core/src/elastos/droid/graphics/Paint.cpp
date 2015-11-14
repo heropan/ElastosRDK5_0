@@ -218,7 +218,6 @@ void Paint::SetClassVariablesFrom(
     mMaskFilter = paint->mMaskFilter;
     mPathEffect = paint->mPathEffect;
     mRasterizer = paint->mRasterizer;
-    mShader = paint->mShader;
 
     if (paint->mShader != NULL) {
         ((Shader*)paint->mShader.Get())->Copy((IShader**)&mShader);

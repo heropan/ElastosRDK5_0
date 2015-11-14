@@ -68,14 +68,6 @@ ECode CStatusBarIconList::WriteToParcel(
     return NOERROR;
 }
 
-ECode CStatusBarIconList::DescribeContents(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = 0;
-    return NOERROR;
-}
-
 /**
  * Parcelable.Creator that instantiates StatusBarIconList objects
  */

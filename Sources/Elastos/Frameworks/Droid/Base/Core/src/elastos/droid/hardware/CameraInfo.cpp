@@ -12,15 +12,6 @@ CameraInfo::CameraInfo()
     info = new HardwareCamera::CameraInfo();
 }
 
-ECode CameraInfo::DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents);
-
-    *contents = 0;
-    return NOERROR;
-}
-
 ECode CameraInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {

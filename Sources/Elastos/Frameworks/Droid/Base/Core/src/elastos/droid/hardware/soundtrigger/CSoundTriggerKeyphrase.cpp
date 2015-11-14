@@ -45,15 +45,6 @@ ECode CSoundTriggerKeyphrase::constructor(
     return NOERROR;
 }
 
-ECode CSoundTriggerKeyphrase::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CSoundTriggerKeyphrase::FromParcel(
     /* [in] */ IParcel* source,
     /* [out] */ ISoundTriggerKeyphrase** result)

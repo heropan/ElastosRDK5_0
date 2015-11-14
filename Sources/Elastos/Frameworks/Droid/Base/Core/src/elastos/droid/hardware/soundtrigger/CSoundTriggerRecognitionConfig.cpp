@@ -42,15 +42,6 @@ ECode CSoundTriggerRecognitionConfig::constructor(
     return NOERROR;
 }
 
-ECode CSoundTriggerRecognitionConfig::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CSoundTriggerRecognitionConfig::FromParcel(
     /* [in] */ IParcel* source,
     /* [out] */ ISoundTriggerRecognitionConfig** result)

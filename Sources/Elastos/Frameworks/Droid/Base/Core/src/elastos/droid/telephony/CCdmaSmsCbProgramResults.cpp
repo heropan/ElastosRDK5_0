@@ -103,15 +103,6 @@ ECode CCdmaSmsCbProgramResults::ToString(
     return NOERROR;
 }
 
-ECode CCdmaSmsCbProgramResults::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 } // namespace Telephony
 } // namespace Droid
 } // namespace Elastos
-

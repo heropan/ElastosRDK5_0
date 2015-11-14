@@ -128,9 +128,6 @@ public:
         /* [in] */ IUsbAccessory* accessory,
         /* [out] */ Boolean* result);
 
-    CARAPI DescribeContents (
-        /* [out] */ Int32* contents);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 

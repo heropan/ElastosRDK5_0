@@ -265,14 +265,6 @@ ECode CCellSignalStrengthLte::ToString(
     return NOERROR;
 }
 
-ECode CCellSignalStrengthLte::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CCellSignalStrengthLte::GetSignalStrength(
     /* [out] */ Int32* signalStrength)
 {

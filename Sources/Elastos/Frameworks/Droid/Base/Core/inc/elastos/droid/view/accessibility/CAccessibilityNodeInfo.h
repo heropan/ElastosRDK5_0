@@ -1459,12 +1459,6 @@ public:
         /* [in] */ Int32 connectionId);
 
     /**
-     * {@inheritDoc}
-     */
-    CARAPI DescribeContents(
-        /* [out] */ Int32* contents);
-
-    /**
      * Gets the id of the source node.
      *
      * @return The id.

@@ -94,9 +94,6 @@ public:
     CARAPI ToString(
         /* [out] */ String * pStr);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32 * pContents);
-
     CARAPI WriteToParcel(
         /* [in] */ IParcel * pParcel);
 

@@ -20,7 +20,7 @@ public:
 
     CAR_SINGLETON_DECL();
 
-    CARAPI MayUseInputMethodHelper(
+    CARAPI MayUseInputMethod(
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* mayUse);
 };

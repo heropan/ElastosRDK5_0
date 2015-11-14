@@ -160,15 +160,6 @@ ECode UsbInterface::ToString(
     return NOERROR;
 }
 
-ECode UsbInterface::DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents);
-
-    *contents = 0;
-    return NOERROR;
-}
-
 ECode UsbInterface::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

@@ -13,7 +13,7 @@
 #include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CCanvas.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CBitmap.h"
 
 using Elastos::Utility::IMap;
 using Elastos::Utility::Logging::Logger;
@@ -27,8 +27,7 @@ using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::Graphics::IBitmapFactory;
-using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::CBitmap;
 //TODO: Need CKeyEvent
 // using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::Utility::CArrayMap;
@@ -646,10 +645,8 @@ AutoPtr<IBitmap> CMediaSessionLegacyHelper::ScaleBitmapIfTooBig(
             if (newConfig == NULL) {
                 newConfig = Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
             }
-            AutoPtr<IBitmapFactory> bitmapFactory;
-            CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
             AutoPtr<IBitmap> outBitmap;
-            bitmapFactory->CreateBitmap(newWidth, newHeight, newConfig, (IBitmap**)&outBitmap);
+            CBitmap::CreateBitmap(newWidth, newHeight, newConfig, (IBitmap**)&outBitmap);
             AutoPtr<ICanvas> canvas;
             CCanvas::New(outBitmap, (ICanvas**)&canvas);
             AutoPtr<IPaint> paint;

@@ -7,7 +7,8 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-class InputStreamAdaptor : public SkStream {
+class InputStreamAdaptor : public SkStream
+{
 public:
     InputStreamAdaptor(
         /* [in] */ IInputStream* js,
@@ -36,10 +37,10 @@ public:
                  */
                 size_t amountSkipped = 0;
                 do {
-                    size_t amount = this->doSkip(size - amountSkipped);
+                    size_t amount = doSkip(size - amountSkipped);
                     if (0 == amount) {
                         char tmp;
-                        amount = this->doRead(&tmp, 1);
+                        amount = doRead(&tmp, 1);
                         if (0 == amount) {
                             // if read returned 0, we're at EOF
                             mIsAtEnd = true;
@@ -51,7 +52,7 @@ public:
                 return amountSkipped;
             }
         }
-        return this->doRead(buffer, size);
+        return doRead(buffer, size);
     }
 
     virtual bool isAtEnd() const

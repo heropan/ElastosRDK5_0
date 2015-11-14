@@ -15,7 +15,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-class Handler
+class ECO_PUBLIC Handler
     : public Object
     , public IHandler
 {

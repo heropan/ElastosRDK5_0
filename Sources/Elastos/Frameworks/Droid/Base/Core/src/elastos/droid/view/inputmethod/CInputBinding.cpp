@@ -115,15 +115,6 @@ ECode CInputBinding::WriteToParcel(
     return NOERROR;
 }
 
-ECode CInputBinding::DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents);
-
-    *contents = 0;
-    return NOERROR;
-}
-
 ECode CInputBinding::ToString(
     /* [out] */ String* str)
 {

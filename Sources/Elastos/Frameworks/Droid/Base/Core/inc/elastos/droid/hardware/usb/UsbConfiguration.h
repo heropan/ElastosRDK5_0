@@ -125,9 +125,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI DescribeContents (
-        /* [out] */ Int32* contents);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 

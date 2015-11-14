@@ -26,10 +26,6 @@ public:
     ~CameraInfo();
 
     //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* contents);
-
-    //@Override
     CARAPI WriteToParcel(
     /* [in] */ IParcel* dest);
 

@@ -38,6 +38,7 @@ ECode CWindowContentFrameStats::GetFramePostedTimeNano(
 {
     VALIDATE_NOT_NULL(value);
     if (mFramesPostedTimeNano == NULL) {
+        *value = 0;
         // throw new IndexOutOfBoundsException();
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -51,18 +52,11 @@ ECode CWindowContentFrameStats::GetFrameReadyTimeNano(
 {
     VALIDATE_NOT_NULL(value);
     if (mFramesReadyTimeNano == NULL) {
+        *value = 0;
         // throw new IndexOutOfBoundsException();
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     *value = (*mFramesReadyTimeNano)[index];
-    return NOERROR;
-}
-
-ECode CWindowContentFrameStats::DescribeContents(
-    /* [out] */ Int32* count)
-{
-    VALIDATE_NOT_NULL(count);
-    *count = 0;
     return NOERROR;
 }
 

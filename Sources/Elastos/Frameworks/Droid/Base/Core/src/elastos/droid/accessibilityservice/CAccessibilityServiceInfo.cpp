@@ -405,14 +405,6 @@ ECode CAccessibilityServiceInfo::LoadDescription(
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CAccessibilityServiceInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {

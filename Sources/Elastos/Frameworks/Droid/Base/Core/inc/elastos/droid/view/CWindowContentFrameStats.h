@@ -98,10 +98,6 @@ public:
         /* [out] */ Int64* value);
 
     // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* count);
-
-    // @Override
     CARAPI WriteToParcel(
         /* [in] */ IParcel* parcel);
 

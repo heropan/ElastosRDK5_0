@@ -103,12 +103,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
-
 protected:
-
     CARAPI CopyFrom(
         /* [in] */ ICellSignalStrengthCdma* css);
 

@@ -265,9 +265,6 @@ public:
      */
     CARAPI ResetDriftUncertaintyInNsPerSec();
 
-    // CARAPI DescribeContents(
-    //     /* [out] */ Int32* result);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 

@@ -32,10 +32,6 @@ public:
         /* [in] */ ArrayOf<ISoundTriggerConfidenceLevel*>* confidenceLevels);
 
     //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
-    //@Override
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 

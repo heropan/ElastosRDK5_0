@@ -137,15 +137,6 @@ ECode UsbConfiguration::ToString(
     return buf.ToString(str);
 }
 
-ECode UsbConfiguration::DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents);
-    *contents = 0;
-
-    return NOERROR;
-}
-
 ECode UsbConfiguration::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

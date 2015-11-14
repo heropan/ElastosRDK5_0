@@ -217,14 +217,6 @@ ECode CSyncResult::MadeSomeProgress(
     return NOERROR;
 }
 
-ECode CSyncResult::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = 0;
-    return NOERROR;
-}
-
 ECode CSyncResult::Clear()
 {
     if (mSyncAlreadyInProgress) {

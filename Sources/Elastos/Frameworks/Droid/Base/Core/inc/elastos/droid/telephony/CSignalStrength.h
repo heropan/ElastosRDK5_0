@@ -82,9 +82,6 @@ public:
         /* [in] */ Int32 lteCqi,
         /* [in] */ Boolean gsm);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
     CARAPI ValidateInput();
 
     CARAPI SetGsm(

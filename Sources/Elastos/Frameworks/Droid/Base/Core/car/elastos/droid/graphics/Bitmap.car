@@ -222,49 +222,6 @@ module
             [out] IBitmap** bitmap);
 
         /**
-         * Returns a mutable bitmap with the specified width and height.  Its
-         * initial density is as per {@link #getDensity}.
-         *
-         * @param width    The width of the bitmap
-         * @param height   The height of the bitmap
-         * @param config   The bitmap config to create.
-         * @param hasAlpha If the bitmap is ARGB_8888 this flag can be used to mark the
-         *                 bitmap as opaque. Doing so will clear the bitmap in black
-         *                 instead of transparent.
-         *
-         * @throws IllegalArgumentException if the width or height are <= 0
-         */
-        CreateBitmap(
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] BitmapConfig config,
-            [in] Boolean hasAlpha,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns a mutable bitmap with the specified width and height.  Its
-         * initial density is determined from the given {@link DisplayMetrics}.
-         *
-         * @param display  Display metrics for the display this bitmap will be
-         *                 drawn on.
-         * @param width    The width of the bitmap
-         * @param height   The height of the bitmap
-         * @param config   The bitmap config to create.
-         * @param hasAlpha If the bitmap is ARGB_8888 this flag can be used to mark the
-         *                 bitmap as opaque. Doing so will clear the bitmap in black
-         *                 instead of transparent.
-         *
-         * @throws IllegalArgumentException if the width or height are <= 0
-         */
-        CreateBitmap(
-            [in] IDisplayMetrics* display,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] BitmapConfig config,
-            [in] Boolean hasAlpha,
-            [out] IBitmap** bitmap);
-
-        /**
          * Returns a immutable bitmap with the specified width and height, with each
          * pixel value set to the corresponding value in the colors array.  Its
          * initial density is as per {@link #getDensity}.

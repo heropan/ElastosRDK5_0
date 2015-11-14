@@ -39,15 +39,6 @@ ECode CSoundTriggerSoundModelEvent::constructor(
     return NOERROR;
 }
 
-ECode CSoundTriggerSoundModelEvent::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CSoundTriggerSoundModelEvent::FromParcel(
     /* [in] */ IParcel* source,
     /* [out] */ ISoundTriggerSoundModelEvent** result)

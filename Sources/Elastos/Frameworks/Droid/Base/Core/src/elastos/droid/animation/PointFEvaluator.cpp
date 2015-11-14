@@ -42,7 +42,7 @@ ECode PointFEvaluator::Evaluate(
         return NOERROR;
     }
 
-    return CPointF::New(x, y, (IPointF**)&pf);
+    return CPointF::New(x, y, (IPointF**)pf);
 }
 
 }   //namespace Animation

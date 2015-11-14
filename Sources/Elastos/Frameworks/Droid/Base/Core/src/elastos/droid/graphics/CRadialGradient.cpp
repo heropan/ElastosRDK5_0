@@ -117,6 +117,7 @@ ECode CRadialGradient::Copy(
             CRadialGradient::New(mX, mY, mRadius, mCenterColor, mEdgeColor, mTileMode, (IShader**)&copy);
             break;
         default:
+            *shader = NULL;
             // throw new IllegalArgumentException("RadialGradient should be created with either " +
             //         "colors and positions or center color and edge color");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;

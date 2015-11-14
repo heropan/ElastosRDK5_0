@@ -39,10 +39,6 @@ public:
         /* [in] */ ArrayOf<Int32>* users);
 
     //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
-    //@Override
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 

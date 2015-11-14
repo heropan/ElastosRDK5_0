@@ -945,6 +945,7 @@ void HtmlToSpannedConverter::EndFont(
                 Int32 c = Color::GetHtmlColor(f->mColor);
                 if (c != -1) {
                     AutoPtr<IForegroundColorSpan> foregroundColorSpan;
+                    assert(0 && "TODO");
                     // CForegroundColorSpan::New(c | 0xFF000000, (IForegroundColorSpan**)&foregroundColorSpan);
                     spannable->SetSpan(foregroundColorSpan, where, len, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
                 }

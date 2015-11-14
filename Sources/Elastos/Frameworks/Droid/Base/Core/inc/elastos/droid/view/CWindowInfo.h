@@ -1,19 +1,29 @@
+
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWINFO_H__
 #define __ELASTOS_DROID_VIEW_CWINDOWINFO_H__
 
 #include "_Elastos_Droid_View_CWindowInfo.h"
-#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/utility/Pools.h"
 
 using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Utility::Pools;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CWindowInfo)
+    , public Object
+    , public IWindowInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CWindowInfo();
 
     CARAPI constructor();
@@ -36,84 +46,69 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI GetDisplayId(
-        /* [out] */ Int32* id);
-
-    CARAPI GetType(
-        /* [out] */ Int32* type);
-
-    CARAPI GetFrame(
-        /* [out] */ IRect** frame);
-
-    CARAPI GetTouchableRegion(
-        /* [out] */ IRect** region);
-
-    CARAPI GetToken(
-        /* [out] */ IInterface** token);
-
-    CARAPI GetCompatibilityScale(
-        /* [out] */ Float* compatibilityScale);
-
-    CARAPI GetVisible(
-        /* [out] */ Boolean* visible);
-
-    CARAPI GetLayer(
-        /* [out] */ Int32* layer);
-
-    CARAPI SetToken(
-        /* [in] */ IInterface* token);
-
-    CARAPI SetFrame(
-        /* [in] */ IRect* frame);
-
     CARAPI SetType(
         /* [in] */ Int32 type);
-
-    CARAPI SetDisplayId(
-        /* [in] */ Int32 displayId);
-
-    CARAPI SetCompatibilityScale(
-        /* [in] */ Float compatibilityScale);
-
-    CARAPI SetVisible(
-        /* [in] */ Boolean visible);
 
     CARAPI SetLayer(
         /* [in] */ Int32 layer);
 
-    CARAPI SetTouchableRegion(
-        /* [in] */ IRect* touchableRegion);
+    CARAPI SetToken(
+        /* [in] */ IBinder* token);
+
+    CARAPI SetParentToken(
+        /* [in] */ IBinder* token);
+
+    CARAPI SetFocused(
+        /* [in] */ Boolean focused);
+
+    CARAPI SetBoundsInScreen(
+        /* [in] */ IRect* rect);
+
+    CARAPI SetChildTokens(
+        /* [in] */ IList* tokens);
+
+    CARAPI GetType(
+        /* [out] */ Int32* type);
+
+    CARAPI GetLayer(
+        /* [out] */ Int32* layer);
+
+    CARAPI GetToken(
+        /* [out] */ IBinder** token);
+
+    CARAPI GetParentToken(
+        /* [out] */ IBinder** token);
+
+    CARAPI GetFocused(
+        /* [out] */ Boolean* focused);
+
+    CARAPI GetBoundsInScreen(
+        /* [out] */ IRect** rect);
+
+    CARAPI GetChildTokens(
+        /* [out] */ IList** tokens);
 
 private:
-    CARAPI Clear();
+    CARAPI_(void) Clear();
 
+    CARAPI InitFromParcel(
+        /* [in] */ IParcel* parcel);
+
+private:
     static const Int32 MAX_POOL_SIZE;
-    static Int32 UNDEFINED;
-    static Object sPoolLock;
-    static AutoPtr<IWindowInfo> sPool;
-    static Int32 sPoolSize;
-
-    AutoPtr<IWindowInfo> mNext;
-    Boolean mInPool;
-
-    AutoPtr<IInterface> mToken;
-
-    AutoPtr<IRect> mFrame;
-
-    AutoPtr<IRect> mTouchableRegion;
+    static AutoPtr<Pools::SynchronizedPool<IWindowInfo> > sPool;
 
     Int32 mType;
-
-    Float mCompatibilityScale;
-
-    Boolean mVisible;
-
-    Int32 mDisplayId;
-
     Int32 mLayer;
+    AutoPtr<IBinder> mToken;
+    AutoPtr<IBinder> mParentToken;
+    Boolean mFocused;
+    AutoPtr<IRect> mBoundsInScreen;
+    AutoPtr<IList> mChildTokens;
 };
 
 }// namespace View
 }// namespace Droid
 }// namespace Elastos
-#endif
+
+#endif // __ELASTOS_DROID_VIEW_CWINDOWINFO_H__

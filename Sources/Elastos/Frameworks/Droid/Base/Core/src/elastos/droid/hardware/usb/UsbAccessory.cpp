@@ -262,15 +262,6 @@ ECode UsbAccessory::CompareTo(
     return NOERROR;
 }
 
-ECode UsbAccessory::DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents);
-    *contents = 0;
-
-    return NOERROR;
-}
-
 ECode UsbAccessory::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

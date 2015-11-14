@@ -6,7 +6,7 @@
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CNinePatch.h"
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/BitmapFactory.h"
 #include "elastos/droid/graphics/NinePatch.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/content/res/CTypedArray.h"
@@ -670,9 +670,7 @@ ECode NinePatchDrawable::UpdateStateFromTypedArray(
         AutoPtr<IInputStream> is;
         r->OpenRawResource(srcResId, value, (IInputStream**)&is);
 
-        AutoPtr<IBitmapFactory> bf;
-        CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bf);
-        bf->DecodeResourceStream(r, value, is, padding, options, (IBitmap**)&bitmap);
+        BitmapFactory::DecodeResourceStream(r, value, is, padding, options, (IBitmap**)&bitmap);
 
         is->Close();
         // } catch (IOException e) {

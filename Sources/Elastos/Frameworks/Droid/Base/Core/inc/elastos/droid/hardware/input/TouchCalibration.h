@@ -58,10 +58,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* contents);
-
     CARAPI GetAffineTransform(
         /* [out, callee] */ ArrayOf<Float>** transform);
 

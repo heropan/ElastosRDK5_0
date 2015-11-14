@@ -21,10 +21,6 @@ public:
 
     CBulkCursorDescriptor();
 
-    //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* contents);
-
     CARAPI WriteToParcel(
         /* [in] */ IParcel* writeout);
 

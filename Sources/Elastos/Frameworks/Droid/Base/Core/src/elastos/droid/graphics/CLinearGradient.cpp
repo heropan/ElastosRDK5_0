@@ -171,6 +171,7 @@ ECode CLinearGradient::Copy(
             CLinearGradient::New(mX0, mY0, mX1, mY1, mColor0, mColor1, mTileMode, (IShader**)&copy);
             break;
         default:
+            *shader = NULL;
             // throw new IllegalArgumentException("LinearGradient should be created with either " +
             //         "colors and positions or start color and end color");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;

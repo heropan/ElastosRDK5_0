@@ -23,7 +23,7 @@
 #include "elastos/droid/graphics/CCamera.h"
 #include "elastos/droid/graphics/CLinearGradient.h"
 #include "elastos/droid/graphics/CPorterDuffXfermode.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/drawable/CColorDrawable.h"
 #include "elastos/droid/graphics/CInterpolator.h"
@@ -72,8 +72,7 @@ using Elastos::Droid::Graphics::CPoint;
 using Elastos::Droid::Graphics::CRegion;
 using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::IPixelFormat;
-using Elastos::Droid::Graphics::IBitmapFactory;
-using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::IPathMeasure;
 using Elastos::Droid::Graphics::CPathMeasure;
 using Elastos::Droid::Graphics::IPorterDuffXfermode;
@@ -12024,13 +12023,11 @@ ECode View::BuildDrawingCache(
                 bitmap->Recycle();
             }
 
-            AutoPtr<IBitmapFactory> factory;
-            CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
             bitmap = NULL;
 
             AutoPtr<IDisplayMetrics> displayMetrics;
             mResources->GetDisplayMetrics((IDisplayMetrics**)&displayMetrics);
-            ECode ec = factory->CreateBitmap(displayMetrics, width, height, quality, (IBitmap**)&bitmap);
+            ECode ec = CBitmap::CreateBitmap(displayMetrics, width, height, quality, (IBitmap**)&bitmap);
             if (FAILED(ec)) {
                 if (ec == (ECode)E_OUT_OF_MEMORY_ERROR) {
                     // If there is not enough memory to create the bitmap cache, just
@@ -12166,12 +12163,9 @@ ECode View::CreateSnapshot(
     height = (Int32) ((height * scale) + 0.5f);
 
     AutoPtr<IBitmap> bitmap;
-    AutoPtr<IBitmapFactory> factory;
-    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
-
     AutoPtr<IDisplayMetrics> displayMetrics;
     mResources->GetDisplayMetrics((IDisplayMetrics**)&displayMetrics);
-    factory->CreateBitmap(displayMetrics, width > 0 ? width : 1, height > 0 ? height : 1, quality, (IBitmap**)&bitmap);
+    CBitmap::CreateBitmap(displayMetrics, width > 0 ? width : 1, height > 0 ? height : 1, quality, (IBitmap**)&bitmap);
     if (bitmap == NULL) {
         //throw new OutOfMemoryError();
         return E_OUT_OF_MEMORY_ERROR;

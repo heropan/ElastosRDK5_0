@@ -24,7 +24,7 @@ class Shader
 public:
     CAR_INTERFACE_DECL();
 
-    ~Shader();
+    virtual ~Shader();
 
     /**
      * Return true if the shader has a non-identity local matrix.

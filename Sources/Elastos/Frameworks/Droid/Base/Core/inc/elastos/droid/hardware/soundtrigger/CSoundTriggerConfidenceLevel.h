@@ -30,10 +30,6 @@ public:
         /* [in] */ Int32 confidenceLevel);
 
     //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
-    //@Override
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 

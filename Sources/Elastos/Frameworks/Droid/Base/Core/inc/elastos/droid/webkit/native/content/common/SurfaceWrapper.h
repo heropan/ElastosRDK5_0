@@ -28,10 +28,6 @@ public:
     AutoPtr<ISurface> GetSurface();
 
     //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* content);
-
-    //@Override
     // TODO
     // CARAPI WriteToParcel(
     //     /* [in] */ IParcel* out,

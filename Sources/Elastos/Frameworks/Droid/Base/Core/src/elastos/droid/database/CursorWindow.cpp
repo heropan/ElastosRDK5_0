@@ -1004,14 +1004,6 @@ ECode CursorWindow::NewFromParcel(
     return NOERROR;
 }
 
-ECode CursorWindow::DescribeContents(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value)
-    *value = 0;
-    return NOERROR;
-}
-
 ECode CursorWindow::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

@@ -3664,7 +3664,7 @@ ECode CInputMethodManagerService::WindowGainedFocus(
                     AutoPtr<IWindowManagerLayoutParamsHelper> wmHelper;
                     CWindowManagerLayoutParamsHelper::AcquireSingleton((IWindowManagerLayoutParamsHelper**)&wmHelper);
                     Boolean mayUse = FALSE;
-                    wmHelper->MayUseInputMethodHelper(windowFlags, &mayUse);
+                    wmHelper->MayUseInputMethod(windowFlags, &mayUse);
                     if (mayUse) {
                         // There is no focus view, and this window will
                         // be behind any soft input window, so hide the

@@ -244,14 +244,6 @@ ECode CDropBoxManagerEntry::GetInputStream(
     }
 }
 
-ECode CDropBoxManagerEntry::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = mFileDescriptor != NULL ? 0x0001/*Parcelable.CONTENTS_FILE_DESCRIPTOR*/ : 0;
-    return NOERROR;
-}
-
 ECode CDropBoxManagerEntry::ReadFromParcel(
     /* [in] */ IParcel *source)
 {

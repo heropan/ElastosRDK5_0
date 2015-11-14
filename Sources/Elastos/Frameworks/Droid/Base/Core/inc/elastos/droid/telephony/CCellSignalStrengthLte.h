@@ -73,9 +73,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
     CARAPI GetSignalStrength(
         /* [out] */ Int32* signalStrength);
 

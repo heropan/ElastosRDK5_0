@@ -67,15 +67,6 @@ ECode CSentenceSuggestionsInfo::WriteToParcel(
     return NOERROR;
 }
 
-//@Override
-ECode CSentenceSuggestionsInfo::DescribeContents(
-    /* [out] */ Int32* content)
-{
-    VALIDATE_NOT_NULL(content);
-    *content = 0;
-    return NOERROR;
-}
-
 /**
  * @return the count of {@link SuggestionsInfo}s this instance holds.
  */

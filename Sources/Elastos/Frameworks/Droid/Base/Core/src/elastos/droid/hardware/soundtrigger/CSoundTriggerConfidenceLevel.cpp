@@ -34,15 +34,6 @@ ECode CSoundTriggerConfidenceLevel::constructor(
     return NOERROR;
 }
 
-ECode CSoundTriggerConfidenceLevel::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CSoundTriggerConfidenceLevel::FromParcel(
     /* [in] */ IParcel* source,
     /* [out] */ ISoundTriggerConfidenceLevel** result)

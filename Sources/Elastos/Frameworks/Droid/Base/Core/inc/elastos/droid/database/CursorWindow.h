@@ -516,9 +516,6 @@ public:
         /* [in] */ IParcel* p,
         /* [out] */ ICursorWindow** cw);
 
-    virtual CARAPI DescribeContents(
-        /* [out] */ Int32* value);
-
     virtual CARAPI  ReadFromParcel(
         /* [in] */ IParcel* source);
 

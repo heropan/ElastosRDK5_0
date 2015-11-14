@@ -191,14 +191,6 @@ ECode CCellSignalStrengthGsm::ToString(
     return NOERROR;
 }
 
-ECode CCellSignalStrengthGsm::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CCellSignalStrengthGsm::GetSignalStrength(
     /* [out] */ Int32* signalStrength)
 {

@@ -445,14 +445,6 @@ ECode CSearchableInfo::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CSearchableInfo::DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents);
-    *contents = 0;
-    return NOERROR;
-}
-
 ECode CSearchableInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {

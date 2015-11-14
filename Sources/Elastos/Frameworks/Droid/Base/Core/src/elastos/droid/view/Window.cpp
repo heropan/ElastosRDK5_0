@@ -9,22 +9,20 @@
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::App::IService;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Os::SystemProperties;
-using Elastos::Droid::App::IActivity;
-using Elastos::Droid::App::IService;
 using Elastos::Droid::R;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CString;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-extern "C" const InterfaceID EIID_Window =
-        {0xdddddddd,0xdddd,0xdddd,{0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd}};
 const String Window::PROPERTY_HARDWARE_UI("persist.sys.ui.hw");
 const Int32 Window::DEFAULT_FEATURES = (1 << IWindow::FEATURE_OPTIONS_PANEL) | (1 << IWindow::FEATURE_CONTEXT_MENU);
 

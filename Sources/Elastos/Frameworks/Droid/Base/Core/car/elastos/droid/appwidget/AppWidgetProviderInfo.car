@@ -112,9 +112,6 @@ module
         GetProfile(
             [out] IUserHandle** result);
 
-        DescribeContents(
-            [out] Int32* result);
-
         ToString(
             [out] String* result);
 

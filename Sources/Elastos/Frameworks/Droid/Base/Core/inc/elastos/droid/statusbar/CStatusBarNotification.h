@@ -53,8 +53,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* out);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* value);
 /*
     public static final Parcelable.Creator<StatusBarNotification> CREATOR
             = new Parcelable.Creator<StatusBarNotification>()

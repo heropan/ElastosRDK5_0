@@ -2,7 +2,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/graphics/CRect.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/BitmapFactory.h"
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
 #include "elastos/droid/graphics/CPorterDuffColorFilter.h"
 #include "elastos/droid/graphics/Insets.h"
@@ -719,9 +719,7 @@ ECode Drawable::CreateFromResourceStream(
     }
 
     AutoPtr<IBitmap> bm;
-    AutoPtr<IBitmapFactory> factory;
-    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
-    FAIL_RETURN(factory->DecodeResourceStream(
+    FAIL_RETURN(BitmapFactory::DecodeResourceStream(
             res, value, is, pad, opts, (IBitmap**)&bm));
     if (bm != NULL) {
         AutoPtr< ArrayOf<Byte> > np;
@@ -892,10 +890,8 @@ ECode Drawable::CreateFromPath(
 
     // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, pathName);
     // try {
-    AutoPtr<IBitmapFactory> factory;
-    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
     AutoPtr<IBitmap> bm;
-    FAIL_RETURN(factory->DecodeFile(pathName, (IBitmap**)&bm));
+    FAIL_RETURN(BitmapFactory::DecodeFile(pathName, (IBitmap**)&bm));
     if (bm != NULL) {
         return DrawableFromBitmap(NULL, bm, NULL, NULL, NULL, pathName, drawable);
     }

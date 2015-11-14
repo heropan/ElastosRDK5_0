@@ -44,9 +44,6 @@ module
             [in] Int32 lteCqi,
             [in] Boolean gsm);
 
-        DescribeContents(
-            [out] Int32* val);
-
         ValidateInput();
 
         SetGsm(

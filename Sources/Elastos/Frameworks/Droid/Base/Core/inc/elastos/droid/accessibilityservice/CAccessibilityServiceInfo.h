@@ -181,12 +181,6 @@ public:
         /* [in] */ IPackageManager* packageManager,
         /* [out] */ String* str);
 
-    /**
-     * {@inheritDoc}
-     */
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 

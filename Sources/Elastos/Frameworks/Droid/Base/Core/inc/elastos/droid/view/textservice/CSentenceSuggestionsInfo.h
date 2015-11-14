@@ -40,10 +40,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* content);
-
     /**
      * @return the count of {@link SuggestionsInfo}s this instance holds.
      */

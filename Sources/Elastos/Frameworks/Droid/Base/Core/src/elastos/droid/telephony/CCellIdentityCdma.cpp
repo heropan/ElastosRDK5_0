@@ -189,16 +189,6 @@ ECode CCellIdentityCdma::ToString(
     return NOERROR;
 }
 
-ECode CCellIdentityCdma::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    //originall not emplemented in android
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 } // namespace Telephony
 } // namespace Droid
 } // namespace Elastos
-

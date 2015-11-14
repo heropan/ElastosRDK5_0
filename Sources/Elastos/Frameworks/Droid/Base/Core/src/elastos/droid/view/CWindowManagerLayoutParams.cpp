@@ -261,7 +261,7 @@ ECode CWindowManagerLayoutParams::CopyFrom(
     }
 
     Boolean equals = FALSE;
-    if (!(mSurfaceInsets->Equals(src->mSurfaceInsets, &equals), equals)) {
+    if (mSurfaceInsets->Equals(src->mSurfaceInsets, &equals), !equals) {
         mSurfaceInsets->Set(src->mSurfaceInsets);
         *changes |= SURFACE_INSETS_CHANGED;
     }
@@ -859,19 +859,25 @@ ECode CWindowManagerLayoutParams::ToString(
     sb->Append(",");
     sb->Append(mY);
     sb->Append(")(");
-    if (mWidth == MATCH_PARENT)
+    if (mWidth == MATCH_PARENT) {
         sb->Append("fill");
-    else if (mWidth == WRAP_CONTENT)
+    }
+    else if (mWidth == WRAP_CONTENT) {
         sb->Append("wrap");
-    else
+    }
+    else {
         sb->Append(mWidth);
+    }
     sb->Append("x");
-    if (mHeight == MATCH_PARENT)
+    if (mHeight == MATCH_PARENT) {
         sb->Append("fill");
-    else if (mHeight == WRAP_CONTENT)
+    }
+    else if (mHeight == WRAP_CONTENT) {
         sb->Append("wrap");
-    else
+    }
+    else {
         sb->Append(mHeight);
+    }
     sb->Append(")");
     if (mHorizontalMargin != 0) {
         sb->Append(" hm=");

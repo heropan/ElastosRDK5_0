@@ -261,15 +261,3 @@ ECode CSpellCheckerInfo::GetSubtypeAt(
     REFCOUNT_ADD(*subtype);
     return NOERROR;
 }
-
-/**
- * Used to make this class parcelable.
- */
-//@Override
-ECode CSpellCheckerInfo::DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents);
-    *contents = 0;
-    return NOERROR;
-}

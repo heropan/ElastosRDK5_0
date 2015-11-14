@@ -22,7 +22,6 @@ module
      */
     [local, deprecated]
     interface IWindowInfo {
-
         SetType(
             [in] Int32 type);
 

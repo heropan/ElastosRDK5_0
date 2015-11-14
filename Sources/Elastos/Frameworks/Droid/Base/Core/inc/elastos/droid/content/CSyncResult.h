@@ -160,9 +160,6 @@ public:
     CARAPI MadeSomeProgress(
         /* [out] */ Boolean* result);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     /**
      * Clears the SyncResult to a clean state. Throws an {@link UnsupportedOperationException}
      * if this is called when {@link #syncAlreadyInProgress} is set.

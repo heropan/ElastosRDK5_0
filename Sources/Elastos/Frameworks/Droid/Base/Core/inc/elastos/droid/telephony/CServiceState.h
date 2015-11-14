@@ -38,9 +38,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
     CARAPI GetState(
         /* [out] */ Int32* state);
 

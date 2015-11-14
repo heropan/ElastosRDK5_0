@@ -106,9 +106,6 @@ module
 
         ToString(
             [out] String* str);
-
-        DescribeContents(
-            [out] Int32* contents);
     }
 
     } // namespace Usb

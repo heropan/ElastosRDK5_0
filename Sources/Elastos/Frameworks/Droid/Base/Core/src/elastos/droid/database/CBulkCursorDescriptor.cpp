@@ -15,14 +15,6 @@ CBulkCursorDescriptor::CBulkCursorDescriptor()
     , mCount(0)
 {}
 
-ECode CBulkCursorDescriptor::DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents)
-    *contents = 0;
-    return NOERROR;
-}
-
 ECode CBulkCursorDescriptor::WriteToParcel(
     /* [in] */ IParcel* writeout)
 {

@@ -169,15 +169,6 @@ ECode WifiDisplayStatus::WriteToParcel(
     return IParcelable::Probe(mSessionInfo)->WriteToParcel(dest);
 }
 
-ECode WifiDisplayStatus::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-
-    *result = 0;
-    return NOERROR;
-}
-
 ECode WifiDisplayStatus::ToString(
     /* [out] */ String* info)
 {

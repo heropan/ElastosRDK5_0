@@ -198,14 +198,6 @@ ECode CSignalStrength::Initialize(
     return NOERROR;
 }
 
-ECode CSignalStrength::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CSignalStrength::ValidateInput()
 {
     if (DBG) Slogger::I(LOG_TAG, "Signal before validate=+ this");

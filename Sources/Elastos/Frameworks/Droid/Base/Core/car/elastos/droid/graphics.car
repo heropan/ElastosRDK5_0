@@ -156,6 +156,10 @@ module
         interface IParcelable;
     }
 
+    singleton class CBitmapHelper {
+        interface IBitmapHelper;
+    }
+
     class CBitmapFactoryOptions {
         interface IBitmapFactoryOptions;
     }
@@ -504,6 +508,10 @@ module
             [in] IMatrix* src);
 
         interface IMatrix;
+    }
+
+    class CShader {
+        interface IShader;
     }
 
     singleton class CMovieHelper {

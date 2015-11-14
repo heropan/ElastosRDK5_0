@@ -24,9 +24,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* s);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* value);
-
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 

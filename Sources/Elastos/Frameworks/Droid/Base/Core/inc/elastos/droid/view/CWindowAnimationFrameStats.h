@@ -51,10 +51,6 @@ public:
         /* [in] */ ArrayOf<Int64>* framesPresentedTimeNano);
 
     // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* count);
-
-    // @Override
     CARAPI WriteToParcel(
         /* [in] */ IParcel* parcel);
 

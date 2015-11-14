@@ -1180,7 +1180,7 @@ module
     }
 
     interface IWindowManagerLayoutParamsHelper {
-        MayUseInputMethodHelper(
+        MayUseInputMethod(
             [in] Int32 flags,
             [out] Boolean* mayUse);
     }

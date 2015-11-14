@@ -42,9 +42,6 @@ public:
     CARAPI GetProductId(
         /* [out] */ Int32* id);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* contents);
-
     //@Override
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);

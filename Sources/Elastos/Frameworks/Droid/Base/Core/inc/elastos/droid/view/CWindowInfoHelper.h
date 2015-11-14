@@ -2,14 +2,23 @@
 #define __ELASTOS_DROID_VIEW_CWINDOWINFOHELPER_H__
 
 #include "_Elastos_Droid_View_CWindowInfoHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CWindowInfoHelper)
+    , public Singleton
+    , public IWindowInfoHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
     CARAPI Obtain(
         /* [out] */ IWindowInfo** info);
 
@@ -22,4 +31,5 @@ public:
 }// namespace View
 }// namespace Droid
 }// namespace Elastos
-#endif
+
+#endif // __ELASTOS_DROID_VIEW_CWINDOWINFOHELPER_H__

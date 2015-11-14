@@ -60,10 +60,6 @@ module
 
         ToString(
             [out] String* str);
-
-        DescribeContents(
-            [out] Int32* val);
-
     }
 
     } // namespace Telephony

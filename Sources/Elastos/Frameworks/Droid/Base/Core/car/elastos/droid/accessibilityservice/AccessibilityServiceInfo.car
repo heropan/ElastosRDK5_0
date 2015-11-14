@@ -394,12 +394,6 @@ module
             [out] String* description);
 
         /**
-         * {@inheritDoc}
-         */
-        DescribeContents(
-            [out] Int32* result);
-
-        /**
          * @hide
          * @return The list of {@link CapabilityInfo} objects.
          */

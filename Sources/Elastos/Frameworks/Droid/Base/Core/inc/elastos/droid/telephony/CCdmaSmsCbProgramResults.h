@@ -45,9 +45,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
 private:
 
     /** Service category to modify. */

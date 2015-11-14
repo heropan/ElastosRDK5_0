@@ -39,9 +39,6 @@ module
         const Int32 REGISTRATION_STATE_UNKNOWN = 4;
         const Int32 REGISTRATION_STATE_ROAMING = 5;
 
-        DescribeContents(
-            [out] Int32* val);
-
         GetState(
             [out] Int32* state);
 

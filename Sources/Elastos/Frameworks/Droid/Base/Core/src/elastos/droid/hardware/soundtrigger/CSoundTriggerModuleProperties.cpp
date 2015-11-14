@@ -75,15 +75,6 @@ ECode CSoundTriggerModuleProperties::constructor(
     return NOERROR;
 }
 
-ECode CSoundTriggerModuleProperties::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CSoundTriggerModuleProperties::FromParcel(
     /* [in] */ IParcel* source,
     /* [out] */ ISoundTriggerModuleProperties** result)

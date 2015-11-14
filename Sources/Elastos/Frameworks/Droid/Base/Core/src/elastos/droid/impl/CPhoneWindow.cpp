@@ -1918,9 +1918,7 @@ ECode CPhoneWindow::constructor(
 PInterface CPhoneWindow::Probe(
     /* [in] */ REIID riid)
 {
-    if (riid == EIID_Window) {
-        return reinterpret_cast<PInterface>((Window*)this);
-    } else if(riid == EIID_CPhoneWindow) {
+    if(riid == EIID_CPhoneWindow) {
         return reinterpret_cast<PInterface>(this);
     }
     return _CPhoneWindow::Probe(riid);

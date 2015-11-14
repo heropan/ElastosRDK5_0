@@ -140,14 +140,6 @@ ECode CStatusBarIcon::WriteToParcel(
     return NOERROR;
 }
 
-ECode CStatusBarIcon::DescribeContents(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = 0;
-    return NOERROR;
-}
-
 ECode CStatusBarIcon::GetVisible(
     /* [out] */ Boolean* visible)
 {

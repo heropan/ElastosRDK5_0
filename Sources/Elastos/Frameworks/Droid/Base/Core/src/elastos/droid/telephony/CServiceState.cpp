@@ -68,14 +68,6 @@ ECode CServiceState::WriteToParcel(
     return NOERROR;
 }
 
-ECode CServiceState::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CServiceState::GetState(
     /* [out] */ Int32* state)
 {

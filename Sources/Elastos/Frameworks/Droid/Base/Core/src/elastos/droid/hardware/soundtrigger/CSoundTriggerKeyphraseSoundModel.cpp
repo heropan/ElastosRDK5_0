@@ -40,15 +40,6 @@ ECode CSoundTriggerKeyphraseSoundModel::constructor(
     return NOERROR;
 }
 
-ECode CSoundTriggerKeyphraseSoundModel::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CSoundTriggerKeyphraseSoundModel::FromParcel(
     /* [in] */ IParcel* source,
     /* [out] */ ISoundTriggerKeyphraseSoundModel** result)

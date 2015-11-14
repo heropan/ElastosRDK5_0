@@ -28,9 +28,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* out);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* value);
-
     CARAPI DefineSlots(
         /* [in] */ const ArrayOf<String>& slots);
 

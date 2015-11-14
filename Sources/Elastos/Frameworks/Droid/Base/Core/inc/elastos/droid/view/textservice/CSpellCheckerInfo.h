@@ -113,13 +113,6 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ ISpellCheckerSubtype** subtype);
 
-    /**
-     * Used to make this class parcelable.
-     */
-    //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* contents);
-
 private:
     static const CString TAG;// = SpellCheckerInfo.class.getSimpleName();
     AutoPtr<IResolveInfo> mService;

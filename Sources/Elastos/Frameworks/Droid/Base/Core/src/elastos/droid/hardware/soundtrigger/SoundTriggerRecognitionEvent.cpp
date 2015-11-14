@@ -62,15 +62,6 @@ ECode SoundTriggerRecognitionEvent::constructor(
     return NOERROR;
 }
 
-ECode SoundTriggerRecognitionEvent::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode SoundTriggerRecognitionEvent::FromParcel(
     /* [in] */ IParcel* source,
     /* [out] */ ISoundTriggerRecognitionEvent** result)

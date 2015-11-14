@@ -28,14 +28,6 @@ void CWindowAnimationFrameStats::Init(
     mFramesPresentedTimeNano = framesPresentedTimeNano;
 }
 
-ECode CWindowAnimationFrameStats::DescribeContents(
-    /* [out] */ Int32* count)
-{
-    VALIDATE_NOT_NULL(count);
-    *count = 0;
-    return NOERROR;
-}
-
 ECode CWindowAnimationFrameStats::WriteToParcel(
     /* [in] */ IParcel* parcel)
 {

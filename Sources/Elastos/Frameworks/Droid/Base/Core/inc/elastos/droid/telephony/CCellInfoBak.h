@@ -52,9 +52,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* res);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* res);
-
     CARAPI constructor();
 
     CARAPI constructor(

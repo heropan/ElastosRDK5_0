@@ -1,5 +1,6 @@
 
 #include "elastos/droid/graphics/Shader.h"
+#include "elastos/droid/graphics/CShader.h"
 #include "elastos/droid/graphics/CMatrix.h"
 #include <skia/core/SkShader.h>
 
@@ -52,7 +53,8 @@ ECode Shader::Copy(
     /* [out] */ IShader** shader)
 {
     VALIDATE_NOT_NULL(shader);
-    AutoPtr<IShader> copy = new Shader();
+    AutoPtr<IShader> copy;
+    CShader::New((IShader**)&copy);
     CopyLocalMatrix(copy);
     *shader = copy;
     REFCOUNT_ADD(*shader);
@@ -63,7 +65,8 @@ void Shader::CopyLocalMatrix(
     /* [in] */ IShader* dest)
 {
     if (mLocalMatrix != NULL) {
-        AutoPtr<IMatrix> lm = new Matrix();
+        AutoPtr<IMatrix> lm;
+        CMatrix::New((IMatrix**)&lm);
         Boolean has = FALSE;
         GetLocalMatrix(lm, &has);
         dest->SetLocalMatrix(lm);

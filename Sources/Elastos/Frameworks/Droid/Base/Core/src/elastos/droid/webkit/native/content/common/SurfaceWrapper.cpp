@@ -31,15 +31,6 @@ AutoPtr<ISurface> SurfaceWrapper::GetSurface()
     return mSurface;
 }
 
-//@Override
-ECode SurfaceWrapper::DescribeContents(
-    /* [out] */ Int32* content)
-{
-    VALIDATE_NOT_NULL(content);
-    *content = 0;
-    return NOERROR;
-}
-
 // TODO
 // //@Override
 // ECode SurfaceWrapper::WriteToParcel(

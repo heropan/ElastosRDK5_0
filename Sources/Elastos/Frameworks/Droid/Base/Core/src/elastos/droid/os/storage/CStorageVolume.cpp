@@ -304,14 +304,6 @@ ECode CStorageVolume::ToString(
     return NOERROR;
 }
 
-ECode CStorageVolume::DescribeContents(
-    /* [out] */ Int32 * pContents)
-{
-    VALIDATE_NOT_NULL(pContents);
-    *pContents = 0;
-    return NOERROR;
-}
-
 ECode CStorageVolume::WriteToParcel(
     /* [in] */ IParcel * pParcel)
 {

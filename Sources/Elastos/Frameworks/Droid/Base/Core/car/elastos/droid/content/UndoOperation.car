@@ -34,9 +34,6 @@ module
         Undo();
 
         Redo();
-
-        DescribeContents(
-            [out] Int32* res);
     }
 
     } // namespace Content

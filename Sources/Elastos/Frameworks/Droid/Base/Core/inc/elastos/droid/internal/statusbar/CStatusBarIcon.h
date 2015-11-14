@@ -45,9 +45,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* out);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* value);
-
     CARAPI GetVisible(
         /* [out] */ Boolean* visible);
 

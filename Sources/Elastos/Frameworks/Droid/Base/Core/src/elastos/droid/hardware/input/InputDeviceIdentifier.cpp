@@ -57,15 +57,6 @@ ECode InputDeviceIdentifier::GetProductId(
     return NOERROR;
 }
 
-CARAPI DescribeContents(
-    /* [out] */ Int32* contents)
-{
-    VALIDATE_NOT_NULL(contents);
-
-    *contents = 0;
-    return NOERROR;
-}
-
 ECode InputDeviceIdentifier::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

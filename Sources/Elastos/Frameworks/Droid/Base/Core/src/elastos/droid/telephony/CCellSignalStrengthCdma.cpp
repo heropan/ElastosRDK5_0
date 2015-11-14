@@ -388,14 +388,6 @@ ECode CCellSignalStrengthCdma::ToString(
     return NOERROR;
 }
 
-ECode CCellSignalStrengthCdma::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = 0;
-    return NOERROR;
-}
-
 ECode CCellSignalStrengthCdma::Log(
     /* [in] */ const String& s)
 {
@@ -417,4 +409,3 @@ ECode CCellSignalStrengthCdma::CopyFrom(
 }
 }
 }
-
