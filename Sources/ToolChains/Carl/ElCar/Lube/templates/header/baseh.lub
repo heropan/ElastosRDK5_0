@@ -4,13 +4,7 @@ $;;=========================================================================
 $
 $INPUT module
 $OUTPUT "_${name}.h"
-$
-$WITH all interfaces DO
-${InterfaceNamespaceBegin(interface)}$^
-interface ${name};
-${InterfaceNamespaceEnd(interface)}$^
-$END DO
-$
+
 EXTERN_C ELAPI _Impl_AcquireCallbackHandler(PInterface pServerObj, _ELASTOS REIID iid, PInterface *ppHandler);
 
 $WITH all interfaces DO

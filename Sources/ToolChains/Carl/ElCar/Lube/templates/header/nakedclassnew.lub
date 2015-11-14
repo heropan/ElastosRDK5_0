@@ -1,0 +1,75 @@
+$ INPUT class
+$ IF type is not "aspect"
+$   IF attrib is not "hasctor" OR attrib is "hasdefaultctor"
+$   WITH all interfaces DO
+$       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter"
+
+$           IF class.attrib is "singleton"
+    static _ELASTOS ECode AcquireSingleton(
+$           ELSE
+    static _ELASTOS ECode New(
+$           END IF ;; is singleton
+        /* [out] */ ${namespace}${name}** ${name})
+    {
+        return _CObject_CreateInstance(ECLSID_${class.name}, RGM_SAME_DOMAIN, ${namespace}EIID_${name}, (PInterface*)${name});
+    }
+$
+$       END IF ;; attrib is not clsobj and is not callback and ...
+$   END DO ;; all interfaces
+$   END IF ;; not hasctor OR hasdefaultctor
+$
+$   IF attrib is "hasctor"
+$   WITH all interfaces DO
+$       IF attrib is "clsobj"
+$           WITH all methods DO
+$               IF attrib is not "defaultctor"
+$                   WITH all interfaces DO
+$                       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter"
+
+$                           IF class.attrib is "singleton"
+    static _ELASTOS ECode AcquireSingleton(
+$                           ELSE
+    static _ELASTOS ECode New(
+$                           END IF ;; is singleton
+$                           WITH all parameters DO
+$                               IF parameter is not last
+        /* [${attrib}] */ ${ParamNamespaceType(type)} ${name},
+$                               ELSE
+        /* [out] */ ${interface.namespace}${interface.name}** __${interface.name})
+$                               END IF ;; parameter is not last
+$                           END DO ;; all parameters
+    {
+        IInterface* __pNewObj;
+
+        _ELASTOS ECode ec = $^
+$                           IF class.attrib is "singleton"
+_AcquireSingleton($^
+$                           ELSE
+_New($^
+$                           END IF ;; is singleton
+$                           WITH all parameters DO
+$                               IF parameter is not last
+${name}, $^
+$                               ELSE
+&__pNewObj);
+$                               END IF ;; parameter is not last
+$                           END DO ;; all parameters
+        if (FAILED(ec)) return ec;
+
+        *__${name} = ${namespace}${name}::Probe(__pNewObj);
+        if (*__${name}) (*__${name})->AddRef();
+        else ec = E_NO_INTERFACE;
+        __pNewObj->Release();
+
+        return ec;
+    }
+
+$                       END IF ;; attrib is not clsobj and is not callback and ...
+$                   END DO ;; all interfaces
+$               END IF ;; is not defaultctor
+$           END DO ;; all methods
+$       END IF ;; is clsobj
+$   END DO ;; all interfaces
+$   END IF ;; attrib is hasctor
+$
+$ END IF ;; is not aspect

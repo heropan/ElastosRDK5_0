@@ -38,11 +38,11 @@ class _${name}
 {
 public:
 $
-$ TEMPLATE "basenew.lub"
+$ TEMPLATE "nakedbasenew.lub"
 $
 $
 $IF type is not "generic" and attrib is not "private"
-$TEMPLATE "classnew.lub"
+$TEMPLATE "nakedclassnew.lub"
 $END IF
 $
 $IF attrib is not "hasctor"
