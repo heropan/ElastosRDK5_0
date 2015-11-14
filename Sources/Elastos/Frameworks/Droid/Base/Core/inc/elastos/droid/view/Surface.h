@@ -15,6 +15,7 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Core::ICloseGuard;
 
+struct ANativeWindow;
 namespace Elastos {
 namespace Droid {
 namespace View {
@@ -167,6 +168,8 @@ public:
      */
     CARAPI_(String) RotationToString(
         /* [in] */ Int32 rotation);
+
+    CARAPI_(ANativeWindow*) GetSurface();
 
 private:
     CARAPI NativeCreateFromSurfaceTexture(
