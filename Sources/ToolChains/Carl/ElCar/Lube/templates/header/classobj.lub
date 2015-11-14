@@ -15,6 +15,10 @@ ${ClassNamespaceBegin(class)}$^
 class ${name}
 {
 public:
+$IF attrib is "naked"
+$ TEMPLATE "nakedbasenew.lub"
+$ TEMPLATE "nakedclassnew.lub"
+$ELSE
 $ TEMPLATE "basenew.lub"
 $ TEMPLATE "classnew.lub"
 $ IF attrib is "hascallback"
@@ -27,6 +31,7 @@ $       TEMPLATE "supercallback.lub"
 $     END IF
 $   END DO ;; super
 $ END DO ;; supers
+$END IF
 };
 ${ClassNamespaceEnd(class)}$^
 $   END IF ;; is not sink and is not private and is not clsobj and is not "generic"

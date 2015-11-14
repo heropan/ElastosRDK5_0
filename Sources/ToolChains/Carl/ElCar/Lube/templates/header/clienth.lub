@@ -17,17 +17,7 @@ $
 $END DO
 #endif // !_NO_INCLIST
 $
-$   WITH all classes DO
-${ClassNamespaceBegin(class)}$^
-EXTERN const _ELASTOS ClassID ECLSID_${name};
-${ClassNamespaceEnd(class)}$^
-$   END DO
 
-$   WITH all interfaces DO
-${InterfaceNamespaceBegin(interface)}$^
-EXTERN const _ELASTOS InterfaceID EIID_${name};
-${InterfaceNamespaceEnd(interface)}$^
-$   END DO
 $
 $TEMPLATE "decltype.lub"
 $

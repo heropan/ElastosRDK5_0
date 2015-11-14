@@ -5,11 +5,8 @@ $
 $INPUT module
 $
 
-$WITH all interfaces DO
-${InterfaceNamespaceBegin(interface)}$^
-interface ${name};
-${InterfaceNamespaceEnd(interface)}$^
-$END DO ;;
+${GenerateModuleDeclaration(module)}
+
 $WITH all consts DO
 
 #ifndef ${name}

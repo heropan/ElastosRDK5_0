@@ -54,8 +54,10 @@ lube.lbo :  $(MAKEDIR)/background/backcpp.lub       \
             $(MAKEDIR)/header/trigger.lub           \
             $(MAKEDIR)/header/classobj.lub          \
             $(MAKEDIR)/header/basenew.lub           \
+            $(MAKEDIR)/header/nakedbasenew.lub      \
             $(MAKEDIR)/header/supernew.lub          \
             $(MAKEDIR)/header/classnew.lub          \
+            $(MAKEDIR)/header/nakedclassnew.lub     \
             $(MAKEDIR)/header/supercallback.lub     \
             $(MAKEDIR)/header/clientcallback.lub    \
             $(MAKEDIR)/header/cstyleh.lub           \

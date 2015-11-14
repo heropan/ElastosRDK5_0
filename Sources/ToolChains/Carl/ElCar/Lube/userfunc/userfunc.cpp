@@ -84,6 +84,7 @@ DECL_USERFUNC(InterfaceNamespaceBegin);
 DECL_USERFUNC(InterfaceNamespaceEnd);
 DECL_USERFUNC(EnumNamespaceBegin);
 DECL_USERFUNC(EnumNamespaceEnd);
+DECL_USERFUNC(GenerateModuleDeclaration);
 
 
 const UserFuncEntry g_userFuncs[] = {
@@ -191,6 +192,8 @@ const UserFuncEntry g_userFuncs[] = {
             "Generate the namespace beginning of the enum"),
     USERFUNC_(EnumNamespaceEnd, ARGTYPE_(Object_Enum, Member_None), \
             "Generate the namespace end of the enum"),
+    USERFUNC_(GenerateModuleDeclaration, ARGTYPE_(Object_Module, Member_None), \
+            "Generate the declaration of the module"),
 };
 const int c_cUserFuncs = sizeof(g_userFuncs) / sizeof(UserFuncEntry);
 
@@ -2108,6 +2111,277 @@ IMPL_USERFUNC(EnumNamespaceEnd)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         }
         free(pszNamespace);
     }
+
+    return LUBE_OK;
+}
+
+class ModuleDeclaration
+{
+private:
+    class NamespaceUnit
+    {
+    private:
+        class DeclarationUnit
+        {
+        public:
+            DeclarationUnit()
+                : mType(TYPE_NONE)
+                , mInterface(NULL)
+                , mNext(NULL)
+            {}
+
+            ~DeclarationUnit()
+            {
+                mInterface = NULL;
+                mClass = NULL;
+                mNext = NULL;
+            }
+
+            void Print(PLUBECTX context)
+            {
+                switch (mType) {
+                    case TYPE_INTERFACE:
+                    context->PutString("interface ");
+                    context->PutString(mInterface->mName);
+                    context->PutString(";\n");
+                    context->PutString("EXTERN const _ELASTOS InterfaceID EIID_");
+                    context->PutString(mInterface->mName);
+                    context->PutString(";\n");
+                    break;
+
+                    case TYPE_CLASS:
+                    context->PutString("EXTERN const _ELASTOS ClassID ECLSID_");
+                    context->PutString(mClass->mName);
+                    context->PutString(";\n");
+                    break;
+
+                    default:
+                    break;
+                }
+            }
+
+        public:
+            int mType;
+            InterfaceDirEntry* mInterface;
+            ClassDirEntry* mClass;
+            DeclarationUnit* mNext;
+        };
+
+    public:
+        NamespaceUnit()
+            : mNameSpace(NULL)
+            , mNext(NULL)
+            , mDeclaration(NULL)
+            , mLastDecl(NULL)
+            , mDeclCount(0)
+        {}
+
+        ~NamespaceUnit()
+        {
+            mNameSpace = NULL;
+            mNext = NULL;
+            mLastDecl = NULL;
+
+            if (mDeclaration == NULL) return;
+            DeclarationUnit* declaration = mDeclaration;
+            while (declaration != NULL) {
+                DeclarationUnit* next = declaration->mNext;
+                delete declaration;
+                declaration = next;
+            }
+
+        }
+
+        void AddInterfaceDeclaration(InterfaceDirEntry* itfDir)
+        {
+            DeclarationUnit* unit = new DeclarationUnit();
+            unit->mType = TYPE_INTERFACE;
+            unit->mInterface = itfDir;
+            mDeclCount++;
+
+            if (mDeclaration == NULL) {
+                mDeclaration = unit;
+                mLastDecl = mDeclaration;
+                return;
+            }
+
+            mLastDecl->mNext = unit;
+            mLastDecl = unit;
+        }
+
+        void AddClassDeclaration(ClassDirEntry* clsDir)
+        {
+            DeclarationUnit* unit = new DeclarationUnit();
+            unit->mType = TYPE_CLASS;
+            unit->mClass = clsDir;
+            mDeclCount++;
+
+            if (mDeclaration == NULL) {
+                mDeclaration = unit;
+                mLastDecl = mDeclaration;
+                return;
+            }
+
+            mLastDecl->mNext = unit;
+            mLastDecl = unit;
+        }
+
+        void Print(PLUBECTX context)
+        {
+            PrintHead(context);
+
+            DeclarationUnit* unit = mDeclaration;
+            while (unit != NULL) {
+                unit->Print(context);
+                unit = unit->mNext;
+            }
+
+            PrintEnd(context);
+            context->PutString("\n");
+        }
+
+    private:
+        void PrintHead(PLUBECTX context)
+        {
+            if (mNameSpace[0] == '\0') return;
+
+            char *nameSpace = (char*)malloc(strlen(mNameSpace) + 1);
+            strcpy(nameSpace, mNameSpace);
+            char *begin = nameSpace;
+            while (begin != NULL) {
+                char *dot = strchr(begin, '.');
+                if (dot != NULL) *dot = '\0';
+                context->PutString("namespace ");
+                context->PutString(begin);
+                context->PutString(" {\n");
+                if (dot != NULL) begin = dot + 1;
+                else begin = NULL;
+            }
+            free(nameSpace);
+        }
+
+        void PrintEnd(PLUBECTX context)
+        {
+            if (mNameSpace[0] == '\0') return;
+
+            char *nameSpace = (char*)malloc(strlen(mNameSpace) + 1);
+            strcpy(nameSpace, mNameSpace);
+            char *begin = nameSpace;
+            while (begin != NULL) {
+                char *dot = strchr(begin, '.');
+                if (dot != NULL) *dot = '\0';
+                context->PutString("}\n");
+                if (dot != NULL) begin = dot + 1;
+                else begin = NULL;
+            }
+            free(nameSpace);
+        }
+
+    public:
+        char* mNameSpace;
+        NamespaceUnit* mNext;
+        DeclarationUnit* mDeclaration;
+        DeclarationUnit* mLastDecl;
+        int mDeclCount;
+    };
+
+public:
+    ModuleDeclaration(PLUBECTX ctx)
+        : mContext(ctx)
+        , mHead(NULL)
+    {}
+
+    ~ModuleDeclaration()
+    {
+        if (mHead == NULL) return;
+
+        NamespaceUnit* current = mHead;
+        while (current != NULL) {
+            NamespaceUnit* next = current->mNext;
+            delete current;
+            current = next;
+        }
+    }
+
+    void AddInterfaceDeclaration(InterfaceDirEntry* itfDir)
+    {
+        NamespaceUnit* unit = FindUnit(itfDir->mNameSpace);
+        unit->AddInterfaceDeclaration(itfDir);
+    }
+
+    void AddClassDeclaration(ClassDirEntry* clsDir)
+    {
+        NamespaceUnit* unit = FindUnit(clsDir->mNameSpace);
+        unit->AddClassDeclaration(clsDir);
+    }
+
+    void Print()
+    {
+        NamespaceUnit* unit = mHead;
+        while (unit != NULL) {
+            unit->Print(mContext);
+            unit = unit->mNext;
+        }
+    }
+
+private:
+    NamespaceUnit* FindUnit(char* nameSpace)
+    {
+        if (nameSpace == NULL) nameSpace = "";
+        if (mHead == NULL) {
+            mHead = new NamespaceUnit();
+            mHead->mNameSpace = nameSpace;
+            return mHead;
+        }
+        else {
+            NamespaceUnit* prev = mHead;
+            while (prev != NULL) {
+                if (!strcmp(prev->mNameSpace, nameSpace)) return prev;
+                if (prev->mNext != NULL) prev = prev->mNext;
+                else break;
+            }
+            prev->mNext = new NamespaceUnit();
+            prev = prev->mNext;
+            prev->mNameSpace = nameSpace;
+            return prev;
+        }
+    }
+
+public:
+    static const int TYPE_NONE = 0;
+    static const int TYPE_INTERFACE = 1;
+    static const int TYPE_CLASS = 2;
+
+private:
+    PLUBECTX mContext;
+    NamespaceUnit* mHead;
+};
+
+
+IMPL_USERFUNC(GenerateModuleDeclaration)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
+{
+    assert(NULL != pCtx->m_pModule && pvArg == pCtx->m_pModule);
+    CLSModule* module = pCtx->m_pModule;
+
+    ModuleDeclaration* moduleDecl = new ModuleDeclaration(pCtx);
+
+    //collection interfaces
+    for (int i = 0; i < module->mDefinedInterfaceCount; i++) {
+        InterfaceDirEntry* itfDir = module->mInterfaceDirs[module->mDefinedInterfaceIndexes[i]];
+        moduleDecl->AddInterfaceDeclaration(itfDir);
+    }
+
+    //collection classes
+    for (int i = 0; i < module->mClassCount; i++) {
+        if (!(module->mClassDirs[i]->mDesc->mAttribs & ClassAttrib_t_external) &&
+            (module->mClassDirs[i]->mNameSpace == NULL ||
+            strcmp("systypes", module->mClassDirs[i]->mNameSpace))) {
+            ClassDirEntry* clsDir = module->mClassDirs[i];
+            moduleDecl->AddClassDeclaration(clsDir);
+        }
+    }
+
+    moduleDecl->Print();
 
     return LUBE_OK;
 }
