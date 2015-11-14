@@ -54,8 +54,8 @@ const Int32 SlidingTab::Slider::STATE_NORMAL;
 const Int32 SlidingTab::Slider::STATE_PRESSED;
 const Int32 SlidingTab::Slider::STATE_ACTIVE;
 
-CAR_INTERFACE_IMPL(SlidingTab::AnimationDoneListener, IAnimationListener)
-CAR_INTERFACE_IMPL(SlidingTab::StartAnimationListener, IAnimationListener)
+CAR_INTERFACE_IMPL(SlidingTab::AnimationDoneListener, IAnimationAnimationListener)
+CAR_INTERFACE_IMPL(SlidingTab::StartAnimationListener, IAnimationAnimationListener)
 
 SlidingTab::AnimationDoneListener::AnimationDoneListener(
     /* [in] */ SlidingTab* host) : mHost(host)

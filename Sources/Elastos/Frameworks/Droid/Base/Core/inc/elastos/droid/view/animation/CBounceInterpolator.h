@@ -3,9 +3,12 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CBOUNCEINTERPOLATOR_H__
 
 #include "_Elastos_Droid_View_Animation_CBounceInterpolator.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Internal::View::Animation::INativeInterpolatorFactory;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -13,7 +16,7 @@ namespace View {
 namespace Animation {
 
 CarClass(CBounceInterpolator)
-    : public Object
+    , public Object
     , public IBounceInterpolator
     , public INativeInterpolatorFactory
     , public IInterpolator
@@ -23,6 +26,10 @@ public:
     CAR_INTERFACE_DECL();
 
     CAR_OBJECT_DECL();
+
+    CBounceInterpolator();
+
+    ~CBounceInterpolator();
 
     CARAPI constructor();
 
@@ -38,7 +45,6 @@ public:
     // @Override
     CARAPI CreateNativeInterpolator(
         /* [out] */ Int64* interpolator);
-
 private:
 };
 

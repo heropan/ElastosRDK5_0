@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CCLIPRECTANIMATION_H__
 
 #include "_Elastos_Droid_View_Animation_CClipRectAnimation.h"
+#include "elastos/droid/view/animation/Animation.h"
+
+using Elastos::Droid::Graphics::IRect;
 
 namespace Elastos {
 namespace Droid {
@@ -20,8 +23,6 @@ CarClass(CClipRectAnimation)
     , public Animation
 {
 public:
-    CAR_INTERFACE_DECL();
-
     CAR_OBJECT_DECL();
 
     CClipRectAnimation();

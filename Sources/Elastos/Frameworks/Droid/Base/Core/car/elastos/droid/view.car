@@ -136,6 +136,7 @@ module
     merge("view/animation/ScaleAnimation.car");
     merge("view/animation/Transformation.car");
     merge("view/animation/TranslateAnimation.car");
+    merge("internal/view/animation/NativeInterpolatorFactory.car");
 
     merge("view/inputmethod/BaseInputConnection.car");
     merge("view/inputmethod/CompletionInfo.car");
@@ -161,12 +162,18 @@ module
     merge("view/textservice/TextServicesManager.car");
 
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Core.ICloneable;
     using interface Elastos.Utility.IMap;
 
+    interface Elastos.Droid.Animation.ITimeInterpolator;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
+    interface Elastos.Droid.Content.Res.IResources;
+    interface Elastos.Droid.Content.Res.IResourcesTheme;
+    interface Elastos.Droid.Graphics.IPath;
     // interface Elastos.Droid.Graphics.ISurfaceTexture;
     // interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.Internal.View.Animation.INativeInterpolatorFactory;
     // interface Elastos.Droid.Internal.View.IInputBindResult;
     // interface Elastos.Droid.Internal.View.IIInputMethodManager;
     // interface Elastos.Droid.Internal.View.IInputContext;
@@ -1104,378 +1111,395 @@ module
     //     interface IWindowInfoHelper;
     // }
 
-    // namespace Animation {
-
-    // [local]
-    // class CLinearInterpolator {
-    //     constructor();
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface ILinearInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    //     interface INativeInterpolatorFactory;
-    // }
-
-    // [local]
-    // class CAccelerateDecelerateInterpolator {
-    //     constructor();
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface IAccelerateDecelerateInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    //     interface INativeInterpolatorFactory;
-    // }
-
-    // [local]
-    // class CAnticipateInterpolator {
-    //     constructor();
-
-    //     constructor(
-    //         [in] Float tension);
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] ITheme* theme,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface IAnticipateInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    //     interface INativeInterpolatorFactory;
-    // }
-
-    // [local]
-    // class CAnticipateOvershootInterpolator {
-    //     constructor();
-
-    //     constructor(
-    //         [in] Float tension);
-
-    //     constructor(
-    //         [in] Float tension,
-    //         [in] Float extraTension);
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] ITheme* theme,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface IAnticipateOvershootInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    //     interface INativeInterpolatorFactory;
-    // }
-
-    // [local]
-    // class CBounceInterpolator {
-    //     constructor();
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface IBounceInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    //     interface INativeInterpolatorFactory;
-    // }
-
-    // [local]
-    // class CCycleInterpolator {
-    //     constructor(
-    //         [in] Float cycles);
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] ITheme* theme,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface ICycleInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    //     interface INativeInterpolatorFactory;
-    // }
-
-    // [local]
-    // class CDecelerateInterpolator {
-    //     constructor();
-
-    //     constructor(
-    //         [in] Float factor);
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] ITheme* theme,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface IDecelerateInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    //     interface INativeInterpolatorFactory;
-    // }
-
-    // [local]
-    // class CAccelerateInterpolator {
-    //     constructor();
-
-    //     constructor(
-    //         [in] Float factor);
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] ITheme* theme,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface IAccelerateInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    //     interface INativeInterpolatorFactory;
-    // }
-
-    // [local]
-    // class COvershootInterpolator {
-    //     constructor();
-
-    //     constructor(
-    //         [in] Float tension);
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] ITheme* theme,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface IOvershootInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    //     interface INativeInterpolatorFactory;
-    // }
-
-    // [local]
-    // class CPathInterpolator {
-    //     constructor(
-    //         [in] IPath path);
-
-    //     constructor(
-    //         [in] Float controlX,
-    //         [in] Float controlY);
-
-    //     constructor(
-    //         [in] Float controlX1,
-    //         [in] Float controlY1,
-    //         [in] Float controlX2,
-    //         [in] Float controlY2);
-
-    //     constructor(
-    //         [in] IContext* context,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] IResources* res,
-    //         [in] ITheme* theme,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface IPathInterpolator;
-    //     interface IInterpolator;
-    //     interface ITimeInterpolator;
-    // }
-
-    // [local]
-    // class CRotateAnimation {
-    //      constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //      constructor(
-    //         [in] Float fromDegrees,
-    //         [in] Float toDegrees);
-
-    //      constructor(
-    //         [in] Float fromDegrees,
-    //         [in] Float toDegrees,
-    //         [in] Float pivotX,
-    //         [in] Float pivotY);
-
-    //      constructor(
-    //         [in] Float fromDegrees,
-    //         [in] Float toDegrees,
-    //         [in] Int32 pivotXType,
-    //         [in] Float pivotXValue,
-    //         [in] Int32 pivotYType,
-    //         [in] Float pivotYValue);
-
-    //      interface IRotateAnimation;
-    //      interface IAnimation;
-    //      interface ICloseable;
-    // }
-
-    // [local]
-    // class CTranslateAnimation {
-    //      constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //      constructor(
-    //          [in] Float fromXDelta,
-    //          [in] Float toXDelta,
-    //          [in] Float fromYDelta,
-    //          [in] Float toYDelta);
-
-    //      constructor(
-    //          [in] Float fromXType,
-    //          [in] Float fromXValue,
-    //          [in] Float toXType,
-    //          [in] Float toXValue,
-    //          [in] Float fromYType,
-    //          [in] Float fromYValue,
-    //          [in] Float toYType,
-    //          [in] Float toYValue);
-
-    //      interface ITranslateAnimation;
-    //      interface IAnimation;
-    //      interface ICloseable;
-    // }
-
-    // [local]
-    // class CAlphaAnimation {
-    //      constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //      constructor(
-    //         [in] Float fromAlpha,
-    //         [in] Float toAlpha);
-
-
-    //      interface IAlphaAnimation;
-    //      interface IAnimation;
-    //      interface ICloseable;
-    // }
-
-    // [local]
-    // class CLayoutAnimationController {
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] IAnimation* animation);
-
-    //     constructor(
-    //         [in] IAnimation* animation,
-    //         [in] Float delay);
-
-    //     interface ILayoutAnimationController;
-    // }
-
-    // [local]
-    // class CGridLayoutAnimationController {
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] IAnimation* animation);
-
-    //     constructor(
-    //         [in] IAnimation* animation,
-    //         [in] Float columnDelay,
-    //         [in] Float rowDelay);
-
-    //     interface IGridLayoutAnimationController;
-    //     interface ILayoutAnimationController;
-    // }
-
-    // [local]
-    // class CScaleAnimation {
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     constructor(
-    //         [in] Float fromX,
-    //         [in] Float toX,
-    //         [in] Float fromY,
-    //         [in] Float toY);
-
-    //     constructor(
-    //         [in] Float fromX,
-    //         [in] Float toX,
-    //         [in] Float fromY,
-    //         [in] Float toY,
-    //         [in] Float pivotX,
-    //         [in] Float pivotY);
-
-    //     constructor(
-    //         [in] Float fromX,
-    //         [in] Float toX,
-    //         [in] Float fromY,
-    //         [in] Float toY,
-    //         [in] Float pivotXType,
-    //         [in] Float pivotXValue,
-    //         [in] Float pivotYType,
-    //         [in] Float pivotYValue);
-
-    //      interface IScaleAnimation;
-    //      interface IAnimation;
-    //      interface ICloseable;
-    // }
-
-    // [local]
-    // class CAnimationSet {
-    //     constructor(
-    //         [in] Boolean shareInterpolator);
-
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
-
-    //     interface IAnimationSet;
-    // }
-
-    // class CTransformation {
-    //     constructor();
-
-    //     interface ITransformation;
-    // }
-
-    // singleton class CAnimationUtils {
-    //     interface IAnimationUtils;
-    // }
-
-    // }// namespace Animation
-
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Animation {
+
+    [local]
+    class CLinearInterpolator {
+        constructor();
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface ILinearInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+        interface INativeInterpolatorFactory;
+    }
+
+    [local]
+    class CAccelerateDecelerateInterpolator {
+        constructor();
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface IAccelerateDecelerateInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+        interface INativeInterpolatorFactory;
+    }
+
+    [local]
+    class CAnticipateInterpolator {
+        constructor();
+
+        constructor(
+            [in] Float tension);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IResources* res,
+            [in] IResourcesTheme* theme,
+            [in] IAttributeSet* attrs);
+
+        interface IAnticipateInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+        interface INativeInterpolatorFactory;
+    }
+
+    [local]
+    class CAnticipateOvershootInterpolator {
+        constructor();
+
+        constructor(
+            [in] Float tension);
+
+        constructor(
+            [in] Float tension,
+            [in] Float extraTension);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IResources* res,
+            [in] IResourcesTheme* theme,
+            [in] IAttributeSet* attrs);
+
+        interface IAnticipateOvershootInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+        interface INativeInterpolatorFactory;
+    }
+
+    [local]
+    class CBounceInterpolator {
+        constructor();
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface IBounceInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+        interface INativeInterpolatorFactory;
+    }
+
+    [local]
+    class CCycleInterpolator {
+        constructor(
+            [in] Float cycles);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IResources* res,
+            [in] IResourcesTheme* theme,
+            [in] IAttributeSet* attrs);
+
+        interface ICycleInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+        interface INativeInterpolatorFactory;
+    }
+
+    [local]
+    class CDecelerateInterpolator {
+        constructor();
+
+        constructor(
+            [in] Float factor);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IResources* res,
+            [in] IResourcesTheme* theme,
+            [in] IAttributeSet* attrs);
+
+        interface IDecelerateInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+        interface INativeInterpolatorFactory;
+    }
+
+    [local]
+    class CAccelerateInterpolator {
+        constructor();
+
+        constructor(
+            [in] Float factor);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IResources* res,
+            [in] IResourcesTheme* theme,
+            [in] IAttributeSet* attrs);
+
+        interface IAccelerateInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+        interface INativeInterpolatorFactory;
+    }
+
+    [local]
+    class COvershootInterpolator {
+        constructor();
+
+        constructor(
+            [in] Float tension);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IResources* res,
+            [in] IResourcesTheme* theme,
+            [in] IAttributeSet* attrs);
+
+        interface IOvershootInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+        interface INativeInterpolatorFactory;
+    }
+
+    [local]
+    class CPathInterpolator {
+        constructor(
+            [in] IPath* path);
+
+        constructor(
+            [in] Float controlX,
+            [in] Float controlY);
+
+        constructor(
+            [in] Float controlX1,
+            [in] Float controlY1,
+            [in] Float controlX2,
+            [in] Float controlY2);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IResources* res,
+            [in] IResourcesTheme* theme,
+            [in] IAttributeSet* attrs);
+
+        interface IPathInterpolator;
+        interface IInterpolator;
+        interface ITimeInterpolator;
+    }
+
+    [local]
+    class CRotateAnimation {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] Float fromDegrees,
+            [in] Float toDegrees);
+
+        constructor(
+            [in] Float fromDegrees,
+            [in] Float toDegrees,
+            [in] Float pivotX,
+            [in] Float pivotY);
+
+        constructor(
+            [in] Float fromDegrees,
+            [in] Float toDegrees,
+            [in] Int32 pivotXType,
+            [in] Float pivotXValue,
+            [in] Int32 pivotYType,
+            [in] Float pivotYValue);
+
+        interface IRotateAnimation;
+        interface IAnimation;
+        interface ICloneable;
+    }
+
+    [local]
+    class CTranslateAnimation {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] Float fromXDelta,
+            [in] Float toXDelta,
+            [in] Float fromYDelta,
+            [in] Float toYDelta);
+
+        constructor(
+            [in] Float fromXType,
+            [in] Float fromXValue,
+            [in] Float toXType,
+            [in] Float toXValue,
+            [in] Float fromYType,
+            [in] Float fromYValue,
+            [in] Float toYType,
+            [in] Float toYValue);
+
+        interface ITranslateAnimation;
+        interface IAnimation;
+        interface ICloneable;
+    }
+
+    [local]
+    class CAlphaAnimation {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] Float fromAlpha,
+            [in] Float toAlpha);
+
+        interface IAlphaAnimation;
+        interface IAnimation;
+        interface ICloneable;
+    }
+
+    [local]
+    class CClipRectAnimation {
+        constructor(
+            [in] IRect* fromClip,
+            [in] IRect* toClip);
+
+        interface IAnimation;
+        interface ICloneable;
+    }
+
+    [local]
+    class CLayoutAnimationController {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IAnimation* animation);
+
+        constructor(
+            [in] IAnimation* animation,
+            [in] Float delay);
+
+        interface ILayoutAnimationController;
+    }
+
+    [local]
+    class CGridLayoutAnimationController {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IAnimation* animation);
+
+        constructor(
+            [in] IAnimation* animation,
+            [in] Float columnDelay,
+            [in] Float rowDelay);
+
+        interface IGridLayoutAnimationController;
+        interface ILayoutAnimationController;
+    }
+
+    [local]
+    class CScaleAnimation {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] Float fromX,
+            [in] Float toX,
+            [in] Float fromY,
+            [in] Float toY);
+
+        constructor(
+            [in] Float fromX,
+            [in] Float toX,
+            [in] Float fromY,
+            [in] Float toY,
+            [in] Float pivotX,
+            [in] Float pivotY);
+
+        constructor(
+            [in] Float fromX,
+            [in] Float toX,
+            [in] Float fromY,
+            [in] Float toY,
+            [in] Float pivotXType,
+            [in] Float pivotXValue,
+            [in] Float pivotYType,
+            [in] Float pivotYValue);
+
+        interface IScaleAnimation;
+        interface IAnimation;
+        interface ICloneable;
+    }
+
+    [local]
+    class CAnimationSet {
+        constructor(
+            [in] Boolean shareInterpolator);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface IAnimationSet;
+        interface IAnimation;
+        interface ICloneable;
+    }
+
+    class CTransformation {
+        constructor();
+
+        interface ITransformation;
+    }
+
+    singleton class CAnimationUtils {
+        interface IAnimationUtils;
+    }
+
+    } // namespace Animation
     } // namespace View
     } // namepsace Droid
     } // namespace Elastos

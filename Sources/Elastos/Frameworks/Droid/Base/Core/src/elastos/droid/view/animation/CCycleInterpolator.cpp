@@ -1,7 +1,15 @@
 
 #include "elastos/droid/view/animation/CCycleInterpolator.h"
+#include "elastos/droid/internal/view/animation/NativeInterpolatorFactoryHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
+
+using Elastos::Droid::Animation::EIID_ITimeInterpolator;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Internal::View::Animation::EIID_INativeInterpolatorFactory;
+using Elastos::Droid::Internal::View::Animation::NativeInterpolatorFactoryHelper;
+using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
@@ -9,13 +17,20 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CCycleInterpolator);
-CAR_INTERFACE_IMPL_4(CCycleInterpolator, Object, ICycleInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
+
+CAR_INTERFACE_IMPL_4(CCycleInterpolator, Object, ICycleInterpolator, INativeInterpolatorFactory, IInterpolator, ITimeInterpolator);
+
+CCycleInterpolator::CCycleInterpolator()
+    : mCycles(0.0f)
+{}
+
+CCycleInterpolator::~CCycleInterpolator()
+{}
 
 ECode CCycleInterpolator::constructor(
     /* [in] */ Float cycles)
 {
     mCycles = cycles;
-
     return NOERROR;
 }
 
@@ -40,9 +55,10 @@ ECode CCycleInterpolator::constructor(
             ARRAY_SIZE(R::styleable::CycleInterpolator));
     AutoPtr<ITypedArray> a;
     if (theme != NULL) {
-        theme->btainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
-    } else {
-        resources->btainAttributes(attrs, attrIds, (ITypedArray**)&a);
+        theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    }
+    else {
+        res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a);
     }
 
     a->GetFloat(R::styleable::CycleInterpolator_cycles, 1.0f, &mCycles);
@@ -55,7 +71,7 @@ ECode CCycleInterpolator::GetInterpolation(
     /* [out] */ Float* output)
 {
     VALIDATE_NOT_NULL(output);
-    *output = (Float)(Elastos::Core::Math::Sin(2 * mCycles * Elastos::Core::Math::DOUBLE_PI * input));
+    *output = (Float)(Elastos::Core::Math::Sin(2 * mCycles * Elastos::Core::Math::PI * input));
 
     return NOERROR;
 }

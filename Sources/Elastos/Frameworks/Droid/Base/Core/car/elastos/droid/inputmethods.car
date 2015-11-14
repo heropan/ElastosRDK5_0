@@ -82,7 +82,7 @@ module
     //         interface IKeyEventCallback;
     //         interface IAccessibilityEventSource;
     //         interface IViewOnTouchListener;
-    //         interface IAnimationListener;
+    //         interface IAnimationAnimationListener;
     //         interface IArrowUpdater;
     //     }
 

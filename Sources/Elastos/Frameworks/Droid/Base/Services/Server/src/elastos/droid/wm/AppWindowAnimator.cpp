@@ -589,7 +589,7 @@ ECode AppWindowAnimator::DummyAnimation::WillChangeBounds(
 }
 
 ECode AppWindowAnimator::DummyAnimation::SetAnimationListener(
-    /* [in] */ IAnimationListener* listener)
+    /* [in] */ IAnimationAnimationListener* listener)
 {
     return Animation::SetAnimationListener(listener);
 }

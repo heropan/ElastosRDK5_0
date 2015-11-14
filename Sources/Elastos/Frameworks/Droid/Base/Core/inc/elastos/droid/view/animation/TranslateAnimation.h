@@ -4,10 +4,10 @@
 
 #include "elastos/droid/view/animation/Animation.h"
 
-using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::ITypedValue;
 
 namespace Elastos {
@@ -22,17 +22,19 @@ class TranslateAnimation
 public:
     CAR_INTERFACE_DECL();
 
-    TranslateAnimation(
+    TranslateAnimation();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    TranslateAnimation(
+    CARAPI constructor(
         /* [in] */ Float fromXDelta,
         /* [in] */ Float toXDelta,
         /* [in] */ Float fromYDelta,
         /* [in] */ Float toYDelta);
 
-    TranslateAnimation(
+    CARAPI constructor(
         /* [in] */ Float fromXType,
         /* [in] */ Float fromXValue,
         /* [in] */ Float toXType,
@@ -49,38 +51,11 @@ public:
         /* [in] */ Int32 parentWidth,
         /* [in] */ Int32 parentHeight);
 
-    virtual CARAPI Clone(
-        /* [out] */ IInterface** object);
-
 protected:
-    TranslateAnimation();
-
     //@Override
     CARAPI_(void) ApplyTransformation(
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ Float fromXDelta,
-        /* [in] */ Float toXDelta,
-        /* [in] */ Float fromYDelta,
-        /* [in] */ Float toYDelta);
-
-    CARAPI constructor(
-        /* [in] */ Float fromXType,
-        /* [in] */ Float fromXValue,
-        /* [in] */ Float toXType,
-        /* [in] */ Float toXValue,
-        /* [in] */ Float fromYType,
-        /* [in] */ Float fromYValue,
-        /* [in] */ Float toYType,
-        /* [in] */ Float toYValue);
-
-    virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
 
 private:
     Int32 mFromXType;

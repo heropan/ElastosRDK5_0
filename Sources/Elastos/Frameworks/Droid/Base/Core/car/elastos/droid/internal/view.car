@@ -2,7 +2,7 @@
 module
 {
     merge("view/animation/FallbackLUTInterpolator.car");
-    merge("view/animation/NativeInterpolatorFactory.car");
+    // merge("view/animation/NativeInterpolatorFactory.car");
     merge("view/animation/NativeInterpolatorFactoryHelper.car");
     merge("view/menu/ActionMenu.car");
     merge("view/menu/ActionMenuItem.car");

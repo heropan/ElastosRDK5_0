@@ -1,5 +1,9 @@
 
 #include "elastos/droid/view/animation/CRotateAnimation.h"
+#include "elastos/droid/R.h"
+
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
@@ -18,133 +22,6 @@ RotateAnimation::RotateAnimation()
     , mPivotX(0.f)
     , mPivotY(0.f)
 {}
-
-RotateAnimation::RotateAnimation(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : mFromDegrees(0.f)
-    , mToDegrees(0.f)
-    , mPivotXType(IAnimation::ABSOLUTE)
-    , mPivotYType(IAnimation::ABSOLUTE)
-    , mPivotXValue(0.0f)
-    , mPivotYValue(0.0f)
-    , mPivotX(0.f)
-    , mPivotY(0.f)
-{
-    constructor(context, attrs);
-}
-
-RotateAnimation::RotateAnimation(
-    /* [in] */ Float fromDegrees,
-    /* [in] */ Float toDegrees)
-    : mFromDegrees(fromDegrees)
-    , mToDegrees(toDegrees)
-    , mPivotXType(IAnimation::ABSOLUTE)
-    , mPivotYType(IAnimation::ABSOLUTE)
-    , mPivotXValue(0.0f)
-    , mPivotYValue(0.0f)
-    , mPivotX(0.f)
-    , mPivotY(0.f)
-{}
-
-RotateAnimation::RotateAnimation(
-    /* [in] */ Float fromDegrees,
-    /* [in] */ Float toDegrees,
-    /* [in] */ Float pivotX,
-    /* [in] */ Float pivotY)
-    : mFromDegrees(fromDegrees)
-    , mToDegrees(toDegrees)
-    , mPivotXType(IAnimation::ABSOLUTE)
-    , mPivotYType(IAnimation::ABSOLUTE)
-    , mPivotXValue(pivotX)
-    , mPivotYValue(pivotY)
-    , mPivotX(0.f)
-    , mPivotY(0.f)
-{
-    InitializePivotPoint();
-}
-
-RotateAnimation::RotateAnimation(
-    /* [in] */ Float fromDegrees,
-    /* [in] */ Float toDegrees,
-    /* [in] */ Int32 pivotXType,
-    /* [in] */ Float pivotXValue,
-    /* [in] */ Int32 pivotYType,
-    /* [in] */ Float pivotYValue)
-    : mFromDegrees(fromDegrees)
-    , mToDegrees(toDegrees)
-    , mPivotXType(pivotXType)
-    , mPivotYType(pivotYType)
-    , mPivotXValue(pivotXValue)
-    , mPivotYValue(pivotYValue)
-    , mPivotX(0.f)
-    , mPivotY(0.f)
-{
-    InitializePivotPoint();
-}
-
-AutoPtr<IAnimation> RotateAnimation::GetCloneInstance()
-{
-    AutoPtr<IRotateAnimation> result;
-    ASSERT_SUCCEEDED(CRotateAnimation::New(0.f, 0.f, (IRotateAnimation**)&result));
-    return result.Get();
-}
-
-ECode RotateAnimation::Clone(
-    /* [out] */ IInterface** object)
-{
-    VALIDATE_NOT_NULL(object);
-    *object = NULL;
-    AutoPtr<IAnimation> result;
-    Animation::Clone((IInterface**)&result);
-    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_IRotateAnimation)) {
-        return NOERROR;
-    }
-
-    Animation* temp = (Animation*)result->Probe(EIID_Animation);
-    RotateAnimation* animation = (RotateAnimation*)temp;
-    animation->mFromDegrees = mFromDegrees;
-    animation->mToDegrees = mToDegrees;
-    animation->mPivotXType = mPivotXType;
-    animation->mPivotYType = mPivotYType;
-    animation->mPivotXValue = mPivotXValue;
-    animation->mPivotYValue = mPivotYValue;
-    animation->mPivotX = mPivotX;
-    animation->mPivotY = mPivotY;
-    *object = result;
-    REFCOUNT_ADD(*object);
-    return NOERROR;
-}
-
-void RotateAnimation::ApplyTransformation(
-    /* [in] */ Float interpolatedTime,
-    /* [in] */ ITransformation* t)
-{
-    Float degrees = mFromDegrees + ((mToDegrees - mFromDegrees) * interpolatedTime);
-    Float scale = GetScaleFactor();
-
-    AutoPtr<IMatrix> matrix;
-    t->GetMatrix((IMatrix**)&matrix);
-    if (mPivotX == 0.0f && mPivotY == 0.0f) {
-        matrix->SetRotate(degrees);
-    }
-    else {
-        matrix->SetRotate(degrees, mPivotX * scale, mPivotY * scale);
-    }
-}
-
-ECode RotateAnimation::Initialize(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height,
-    /* [in] */ Int32 parentWidth,
-    /* [in] */ Int32 parentHeight)
-{
-    Animation::Initialize(width, height, parentWidth, parentHeight);
-    mPivotX = ResolveSize(mPivotXType, mPivotXValue, width, parentWidth);
-    mPivotY = ResolveSize(mPivotYType, mPivotYValue, height, parentHeight);
-
-    return NOERROR;
-}
 
 ECode RotateAnimation::constructor(
     /* [in] */ IContext* context,
@@ -225,6 +102,36 @@ ECode RotateAnimation::constructor(
     mPivotXType = pivotXType;
     mPivotYValue = pivotYValue;
     mPivotYType = pivotYType;
+
+    return NOERROR;
+}
+
+void RotateAnimation::ApplyTransformation(
+    /* [in] */ Float interpolatedTime,
+    /* [in] */ ITransformation* t)
+{
+    Float degrees = mFromDegrees + ((mToDegrees - mFromDegrees) * interpolatedTime);
+    Float scale = GetScaleFactor();
+
+    AutoPtr<IMatrix> matrix;
+    t->GetMatrix((IMatrix**)&matrix);
+    if (mPivotX == 0.0f && mPivotY == 0.0f) {
+        matrix->SetRotate(degrees);
+    }
+    else {
+        matrix->SetRotate(degrees, mPivotX * scale, mPivotY * scale);
+    }
+}
+
+ECode RotateAnimation::Initialize(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 parentWidth,
+    /* [in] */ Int32 parentHeight)
+{
+    Animation::Initialize(width, height, parentWidth, parentHeight);
+    mPivotX = ResolveSize(mPivotXType, mPivotXValue, width, parentWidth);
+    mPivotY = ResolveSize(mPivotYType, mPivotYValue, height, parentHeight);
 
     return NOERROR;
 }

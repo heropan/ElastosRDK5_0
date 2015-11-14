@@ -3,11 +3,12 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CLINEARINTERPOLATOR_H__
 
 #include "_Elastos_Droid_View_Animation_CLinearInterpolator.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Internal::View::Animation::INativeInterpolatorFactory;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +26,10 @@ public:
     CAR_INTERFACE_DECL();
 
     CAR_OBJECT_DECL();
+
+    CLinearInterpolator();
+
+    ~CLinearInterpolator();
 
     CARAPI constructor();
 

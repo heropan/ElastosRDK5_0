@@ -4,28 +4,29 @@
 #include "elastos/droid/view/animation/CAnimationUtils.h"
 #include "elastos/droid/view/animation/CTransformation.h"
 #include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
-#include "elastos/droid/utility/CTypedValueHelper.h"
 #include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/os/CSystemProperties.h"
+#include "elastos/droid/utility/CTypedValueHelper.h"
 #endif
-#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::CRectF;
-using Elastos::Droid::Utility::ITypedValueHelper;
-using Elastos::Droid::Utility::CTypedValueHelper;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::R;
+using Elastos::Droid::Utility::ITypedValueHelper;
+using Elastos::Droid::Utility::CTypedValueHelper;
+using Elastos::Core::EIID_ICloneable;
+using Elastos::Core::Math;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Animation {
-
-extern "C" const InterfaceID EIID_Animation =
-    {0x483e7556, 0x8aff, 0x4b89, {0x8e, 0xf8, 0x3a, 0x57, 0x39, 0x6f, 0x59, 0xe6}};
 
 static Boolean InitUSECLOSEGUARD()
 {
@@ -35,27 +36,58 @@ static Boolean InitUSECLOSEGUARD()
     sysProp->GetBoolean(String("ro.monkey"), FALSE, &value);
     return value;
 }
-Boolean Animation::USE_CLOSEGUARD = InitUSECLOSEGUARD();
-const Int32 Animation::SetListenerHandlerRunable::ONSTART_TYPE;
-const Int32 Animation::SetListenerHandlerRunable::ONREPEAT_TYPE;
-const Int32 Animation::SetListenerHandlerRunable::ONEND_TYPE;
 
+Boolean Animation::USE_CLOSEGUARD = InitUSECLOSEGUARD();
+const Int32 Animation::SetListenerHandlerRunable::ONSTART_TYPE = 0;
+const Int32 Animation::SetListenerHandlerRunable::ONREPEAT_TYPE = 1;
+const Int32 Animation::SetListenerHandlerRunable::ONEND_TYPE = 2;
+
+/* Animation::SetListenerHandlerRunable */
+Animation::SetListenerHandlerRunable::SetListenerHandlerRunable(
+    /* [in] */ Animation* host,
+    /* [in] */ Int32 type)
+    : mHost(host)
+    , mType(type)
+{}
+
+Animation::SetListenerHandlerRunable::~SetListenerHandlerRunable()
+{}
+
+ECode Animation::SetListenerHandlerRunable::Run()
+{
+    if(mHost->mListener)
+    {
+        switch(mType) {
+            case ONSTART_TYPE:
+                mHost->mListener->OnAnimationStart((IAnimation*)mHost->Probe(EIID_IAnimation));
+                break;
+            case ONREPEAT_TYPE:
+                mHost->mListener->OnAnimationRepeat((IAnimation*)mHost->Probe(EIID_IAnimation));
+                break;
+            case ONEND_TYPE:
+                mHost->mListener->OnAnimationEnd((IAnimation*)mHost->Probe(EIID_IAnimation));
+                break;
+            default:
+                break;
+        }
+    }
+    return NOERROR;
+}
+
+/* Animation::Description */
 Animation::Description::Description()
     : mType(0)
     , mValue(0.f)
 {}
-/**
- * Size descriptions can appear inthree forms:
- * <ol>
- * <li>An absolute size. This is represented by a number.</li>
- * <li>A size relative to the size of the object being animated. This
- * is represented by a number followed by "%".</li> *
- * <li>A size relative to the size of the parent of object being
- * animated. This is represented by a number followed by "%p".</li>
- * </ol>
- * @param value The typed value to parse
- * @return The parsed version of the description
- */
+
+Animation::Description::~Description()
+{}
+
+ECode Animation::Description::constructor()
+{
+    return NOERROR;
+}
+
 AutoPtr<Animation::Description> Animation::Description::ParseValue(
     /* [in] */ ITypedValue* value)
 {
@@ -71,8 +103,8 @@ AutoPtr<Animation::Description> Animation::Description::ParseValue(
             Int32 data;
             value->GetData(&data);
             d->mType = ((data & ITypedValue::COMPLEX_UNIT_MASK)
-                == ITypedValue::COMPLEX_UNIT_FRACTION_PARENT) ?
-                IAnimation::RELATIVE_TO_PARENT : IAnimation::RELATIVE_TO_SELF;
+                    == ITypedValue::COMPLEX_UNIT_FRACTION_PARENT) ?
+                    IAnimation::RELATIVE_TO_PARENT : IAnimation::RELATIVE_TO_SELF;
             AutoPtr<ITypedValueHelper> helper;
             CTypedValueHelper::AcquireSingleton((ITypedValueHelper**)&helper);
             helper->ComplexToFloat(data, &d->mValue);
@@ -84,7 +116,7 @@ AutoPtr<Animation::Description> Animation::Description::ParseValue(
             return d;
         }
         else if (type >= ITypedValue::TYPE_FIRST_INT &&
-            type <= ITypedValue::TYPE_LAST_INT) {
+                type <= ITypedValue::TYPE_LAST_INT) {
             d->mType = IAnimation::ABSOLUTE;
             Int32 data;
             value->GetData(&data);
@@ -99,78 +131,9 @@ AutoPtr<Animation::Description> Animation::Description::ParseValue(
     return d;
 }
 
-Animation::SetListenerHandlerRunable::SetListenerHandlerRunable(
-        /* [in] */ Animation* host,
-        /* [in] */ Int32 type) : mHost(host), mType(type)
-{}
-
-ECode Animation::SetListenerHandlerRunable::Run()
-{
-    if(mHost->mListener)
-    {
-        switch(mType)
-        {
-        case ONSTART_TYPE:
-            mHost->mListener->OnAnimationStart((IAnimation*)mHost->Probe(EIID_IAnimation));
-            break;
-        case ONREPEAT_TYPE:
-            mHost->mListener->OnAnimationRepeat((IAnimation*)mHost->Probe(EIID_IAnimation));
-            break;
-        case ONEND_TYPE:
-            mHost->mListener->OnAnimationEnd((IAnimation*)mHost->Probe(EIID_IAnimation));
-            break;
-        default:
-            break;
-        }
-    }
-    return NOERROR;
-}
-
-UInt32 Animation::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Animation::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface Animation::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IAnimation) {
-        return (IAnimation*)this;
-    }
-    else if (riid == EIID_ICloneable) {
-        return (ICloneable*)this;
-    }
-    else if (riid == EIID_Animation) {
-        return reinterpret_cast<PInterface>((Animation*)this);
-    }
-
-    return Object::Probe(riid);
-}
-
-ECode Animation::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == (IInterface*)(IAnimation*)this) {
-        *pIID = EIID_IAnimation;
-    }
-    if (pObject == (IInterface*)(ICloneable*)this) {
-        *pIID = EIID_ICloneable;
-    }
-
-    return Object::GetInterfaceID(pObject, pIID);
-}
-
+/* Animation */
 CAR_INTERFACE_IMPL_2(Animation, Object, IAnimation, ICloneable);
+
 Animation::Animation()
     : mEnded(FALSE)
     , mStarted(FALSE)
@@ -196,95 +159,84 @@ Animation::Animation()
     ASSERT_SUCCEEDED(CRectF::New((IRectF**)&mRegion));
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTransformation));
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mPreviousTransformation));
-    Init();
 }
 
-/**
- * Creates a new animation whose parameters come from the specified context and
- * attributes Set.
- *
- * @param context the application environment
- * @param attrs the Set of attributes holding the animation parameters
- */
-Animation::Animation(
+Animation::~Animation()
+{}
+
+ECode Animation::constructor()
+{
+    EnsureInterpolator();
+    return NOERROR;
+}
+
+ECode Animation::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : mEnded(FALSE)
-    , mStarted(FALSE)
-    , mCycleFlip(FALSE)
-    , mInitialized(FALSE)
-    , mFillBefore(TRUE)
-    , mFillAfter(FALSE)
-    , mFillEnabled(FALSE)
-    , mStartTime(-1)
-    , mRepeatCount(0)
-    , mRepeated(0)
-    , mRepeatMode(IAnimation::RESTART)
-    , mZAdjustment(0)
-    , mBackgroundColor(0)
-    , mScaleFactor(1.f)
-    , mDetachWallpaper(FALSE)
-    , mMore(TRUE)
-    , mOneMoreTime(TRUE)
 {
-    ASSERT_SUCCEEDED(CRectF::New((IRectF**)&mPreviousRegion));
-    ASSERT_SUCCEEDED(CRectF::New((IRectF**)&mRegion));
-    ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTransformation));
-    ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mPreviousTransformation));
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::Animation),
+            ARRAY_SIZE(R::styleable::Animation));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
-    Init(context, attrs);
+    Int32 data;
+    a->GetInt32(R::styleable::Animation_duration, 0, &data);
+    SetDuration((Int64)data);
+    a->GetInt32(R::styleable::Animation_startOffset, 0, &data);
+    SetStartOffset((Int64)data);
+
+    Boolean flag;
+    a->GetBoolean(R::styleable::Animation_fillEnabled, mFillEnabled, &flag);
+    SetFillEnabled(flag);
+    a->GetBoolean(R::styleable::Animation_fillBefore, mFillBefore, &flag);
+    SetFillBefore(flag);
+    a->GetBoolean(R::styleable::Animation_fillAfter, mFillAfter, &flag);
+    SetFillAfter(flag);
+
+    a->GetInt32(R::styleable::Animation_repeatCount, mRepeatCount, &data);
+    SetRepeatCount(data);
+    a->GetInt32(R::styleable::Animation_repeatMode, IAnimation::RESTART, &data);
+    SetRepeatMode(data);
+    a->GetInt32(R::styleable::Animation_zAdjustment, IAnimation::ZORDER_NORMAL, &data);
+    SetZAdjustment(data);
+
+    a->GetInt32(R::styleable::Animation_background, 0, &data);
+    SetBackgroundColor(data);
+
+    a->GetBoolean(R::styleable::Animation_detachWallpaper, FALSE, &flag);
+    SetDetachWallpaper(flag);
+
+    Int32 resID;
+    a->GetResourceId(R::styleable::Animation_interpolator, 0, &resID);
+
+    a->Recycle();
+
+    if (resID > 0) {
+        SetInterpolator(context, resID);
+    }
+
+    EnsureInterpolator();
+    return NOERROR;
 }
 
 ECode Animation::Clone(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
-    AutoPtr<IAnimation> result = GetCloneInstance();
-    if(result == NULL) {
-        *object = result;
-        REFCOUNT_ADD(*object);
-        return NOERROR;
-    }
 
-    Animation* animation = (Animation*)result->Probe(EIID_Animation);
-    animation->mEnded = mEnded;
-    animation->mStarted = mStarted;
-    animation->mCycleFlip = mCycleFlip;
-    animation->mInitialized = mInitialized;
-    animation->mFillBefore = mFillBefore;
-    animation->mFillAfter = mFillAfter;
-    animation->mFillEnabled = mFillEnabled;
-    animation->mStartTime = mStartTime;
-    animation->mStartOffset = mStartOffset;
-    animation->mDuration = mDuration;
-    animation->mRepeatCount = mRepeatCount;
-    animation->mRepeated = mRepeated;
-    animation->mRepeatMode = mRepeatMode;
-    animation->mZAdjustment = mZAdjustment;
-    animation->mBackgroundColor = mBackgroundColor;
-    animation->mScaleFactor = mScaleFactor;
-    animation->mDetachWallpaper = mDetachWallpaper;
-    animation->mMore = mMore;
-    animation->mOneMoreTime = mOneMoreTime;
-    animation->mInterpolator = mInterpolator;
-    animation->mListener = mListener;
-    animation->mListenerHandler = mListenerHandler;
-    animation->mOnStart = mOnStart;
-    animation->mOnRepeat = mOnRepeat;
-    animation->mOnEnd = mOnEnd;
+    Animation* animation = (Animation*)IAnimation::Probe(*object);
 
-    //Reference object has Init in Constructor
-    //So just need to value ordinary object
-    *object = result;
+    CRectF::New((IRectF**)&animation->mPreviousRegion);
+    CRectF::New((IRectF**)&animation->mRegion);
+    CTransformation::New((ITransformation**)&animation->mTransformation);
+    CTransformation::New((ITransformation**)&animation->mPreviousTransformation);
+
+    *object = (IAnimation*)animation;
     REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
-/**
- * Reset the initialization state of this animation.
- *
- * @see #initialize(Int32, Int32, Int32, Int32)
- */
 ECode Animation::Reset()
 {
     mPreviousRegion->SetEmpty();
@@ -299,17 +251,6 @@ ECode Animation::Reset()
     return NOERROR;
 }
 
-/**
- * Cancel the animation. Cancelling an animation invokes the animation
- * listener, if Set, to notify the end of the animation.
- *
- * If you cancel an animation manually, you must call {@link #reset()}
- * before starting the animation again.
- *
- * @see #reset()
- * @see #start()
- * @see #startNow()
- */
 ECode Animation::Cancel()
 {
     if (mStarted && !mEnded) {
@@ -326,9 +267,6 @@ ECode Animation::Cancel()
     return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode Animation::Detach()
 {
     if (mStarted && !mEnded) {
@@ -343,12 +281,6 @@ ECode Animation::Detach()
     return NOERROR;
 }
 
-/**
- * Whether or not the animation has been initialized.
- *
- * @return Has this animation been initialized.
- * @see #initialize(Int32, Int32, Int32, Int32)
- */
 ECode Animation::IsInitialized(
     /* [out] */ Boolean* init)
 {
@@ -357,21 +289,6 @@ ECode Animation::IsInitialized(
     return NOERROR;
 }
 
-/**
- * Initialize this animation with the dimensions of the object being
- * animated as well as the objects parents. (This is to support animation
- * sizes being specified relative to these dimensions.)
- *
- * <p>Objects that interpret Animations should call this method when
- * the sizes of the object being animated and its parent are known, and
- * before calling {@link #getTransformation}.
- *
- *
- * @param width Width of the object being animated
- * @param height Height of the object being animated
- * @param parentWidth Width of the animated object's parent
- * @param parentHeight Height of the animated object's parent
- */
 ECode Animation::Initialize(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
@@ -397,14 +314,6 @@ ECode Animation::SetListenerHandler(
     return NOERROR;
 }
 
-/**
- * Sets the acceleration curve for this animation. The interpolator is loaded as
- * a resource from the specified context.
- *
- * @param context The application environment
- * @param resID The resource identifier of the interpolator to load
- * @attr ref android.R.styleable#IAnimation::interpolator
- */
 ECode Animation::SetInterpolator(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resID)
@@ -416,13 +325,6 @@ ECode Animation::SetInterpolator(
     return SetInterpolator(interpolator);
 }
 
-/**
- * Sets the acceleration curve for this animation. Defaults to a linear
- * interpolation.
- *
- * @param i The interpolator which defines the acceleration curve
- * @attr ref android.R.styleable#IAnimation::interpolator
- */
 ECode Animation::SetInterpolator(
     /* [in] */ IInterpolator* i)
 {
@@ -430,15 +332,6 @@ ECode Animation::SetInterpolator(
     return NOERROR;
 }
 
-/**
- * When this animation should start relative to the start time. This is most
- * useful when composing complex animations using an {@link AnimationSet }
- * where some of the animations components start at different times.
- *
- * @param startOffset When this Animation should start, in milliseconds from
- *                    the start time of the root AnimationSet.
- * @attr ref android.R.styleable#IAnimation::startOffset
- */
 ECode Animation::SetStartOffset(
     /* [in] */ Int64 startOffset)
 {
@@ -447,20 +340,11 @@ ECode Animation::SetStartOffset(
     return NOERROR;
 }
 
-/**
- * How Int64 this animation should last. The duration cannot be negative.
- *
- * @param durationMillis Duration in milliseconds
- *
- * @throws java.lang.IllegalArgumentException if the duration is < 0
- *
- * @attr ref android.R.styleable#IAnimation::duration
- */
 ECode Animation::SetDuration(
     /* [in] */ Int64 durationMillis)
 {
     if (durationMillis < 0) {
-        Logger::E(String("Animation"), String("Animation duration cannot be negative"));
+        Logger::E("Animation", "Animation duration cannot be negative");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mDuration = durationMillis;
@@ -468,15 +352,6 @@ ECode Animation::SetDuration(
     return NOERROR;
 }
 
-/**
- * Ensure that the duration that this animation will run is not longer
- * than <var>durationMillis</var>.  In addition to adjusting the duration
- * itself, this ensures that the repeat count also will not make it run
- * longer than the given time.
- *
- * @param durationMillis The maximum duration the animation is allowed
- * to run.
- */
 ECode Animation::RestrictDuration(
     /* [in] */ Int64 durationMillis)
 {
@@ -515,11 +390,6 @@ ECode Animation::RestrictDuration(
     return NOERROR;
 }
 
-/**
- * How much to scale the duration by.
- *
- * @param scale The amount to scale the duration.
- */
 ECode Animation::ScaleCurrentDuration(
     /* [in] */ Float scale)
 {
@@ -529,16 +399,6 @@ ECode Animation::ScaleCurrentDuration(
     return NOERROR;
 }
 
-/**
- * When this animation should start. When the start time is Set to
- * {@link #START_ON_FIRST_FRAME}, the animation will start the first time
- * {@link #getTransformation(Int64, Transformation)} is invoked. The time passed
- * to this method should be obtained by calling
- * {@link AnimationUtils#currentAnimationTimeMillis()} instead of
- * {@link System#currentTimeMillis()}.
- *
- * @param startTimeMillis the start time in milliseconds
- */
 ECode Animation::SetStartTime(
     /* [in] */ Int64 startTimeMillis)
 {
@@ -551,19 +411,11 @@ ECode Animation::SetStartTime(
     return NOERROR;
 }
 
-/**
- * Convenience method to start the animation the first time
- * {@link #getTransformation(Int64, Transformation)} is invoked.
- */
 ECode Animation::Start()
 {
     return SetStartTime(-1);
 }
 
-/**
- * Convenience method to start the animation at the current time in
- * milliseconds.
- */
 ECode Animation::StartNow()
 {
     AutoPtr<IAnimationUtils> au;
@@ -573,14 +425,6 @@ ECode Animation::StartNow()
     return SetStartTime(time);
 }
 
-/**
- * Defines what this animation should do when it reaches the end. This
- * Setting is applied only when the repeat count is either greater than
- * 0 or {@link #INFINITE}. Defaults to {@link #IAnimation::RESTART}.
- *
- * @param repeatMode {@link #IAnimation::RESTART} or {@link #REVERSE}
- * @attr ref android.R.styleable#IAnimation::repeatMode
- */
 ECode Animation::SetRepeatMode(
     /* [in] */ Int32 repeatMode)
 {
@@ -588,15 +432,6 @@ ECode Animation::SetRepeatMode(
     return NOERROR;
 }
 
-/**
- * Sets how many times the animation should be repeated. If the repeat
- * count is 0, the animation is never repeated. If the repeat count is
- * greater than 0 or {@link #INFINITE}, the repeat mode will be taken
- * into account. The repeat count is 0 by default.
- *
- * @param repeatCount the number of times the animation should be repeated
- * @attr ref android.R.styleable#IAnimation::repeatCount
- */
 ECode Animation::SetRepeatCount(
     /* [in] */ Int32 repeatCount)
 {
@@ -608,12 +443,6 @@ ECode Animation::SetRepeatCount(
     return NOERROR;
 }
 
-/**
- * If fillEnabled is true, this animation will apply the value of fillBefore.
- *
- * @return true if the animation will take fillBefore into account
- * @attr ref android.R.styleable#IAnimation::fillEnabled
- */
 ECode Animation::IsFillEnabled(
     /* [out] */ Boolean* enabled)
 {
@@ -622,17 +451,6 @@ ECode Animation::IsFillEnabled(
     return NOERROR;
 }
 
-/**
- * If fillEnabled is true, the animation will apply the value of fillBefore.
- * Otherwise, fillBefore is ignored and the animation
- * transformation is always applied until the animation ends.
- *
- * @param fillEnabled true if the animation should take the value of fillBefore into account
- * @attr ref android.R.styleable#IAnimation::fillEnabled
- *
- * @see #setFillBefore(boolean)
- * @see #setFillAfter(boolean)
- */
 ECode Animation::SetFillEnabled(
     /* [in] */ Boolean fillEnabled)
 {
@@ -640,20 +458,6 @@ ECode Animation::SetFillEnabled(
     return NOERROR;
 }
 
-/**
- * If fillBefore is true, this animation will apply its transformation
- * before the start time of the animation. Defaults to true if
- * {@link #setFillEnabled(boolean)} is not set to true.
- * Note that this applies when using an {@link
- * android.view.animation.AnimationSet AnimationSet} to chain
- * animations. The transformation is not applied before the AnimationSet
- * itself starts.
- *
- * @param fillBefore true if the animation should apply its transformation before it starts
- * @attr ref android.R.styleable#IAnimation::fillBefore
- *
- * @see #setFillEnabled(boolean)
- */
 ECode Animation::SetFillBefore(
     /* [in] */ Boolean fillBefore)
 {
@@ -661,18 +465,6 @@ ECode Animation::SetFillBefore(
     return NOERROR;
 }
 
-/**
- * If fillAfter is true, the transformation that this animation performed
- * will persist when it is finished. Defaults to false if not set.
- * Note that this applies to individual animations and when using an {@link
- * android.view.animation.AnimationSet AnimationSet} to chain
- * animations.
- *
- * @param fillAfter true if the animation should apply its transformation after it ends
- * @attr ref android.R.styleable#IAnimation::fillAfter
- *
- * @see #setFillEnabled(boolean)
- */
 ECode Animation::SetFillAfter(
     /* [in] */ Boolean fillAfter)
 {
@@ -680,13 +472,6 @@ ECode Animation::SetFillAfter(
     return NOERROR;
 }
 
-/**
- * Set the Z ordering mode to use while running the animation.
- *
- * @param zAdjustment The desired mode, one of {@link #ZORDER_NORMAL},
- * {@link #ZORDER_TOP}, or {@link #ZORDER_BOTTOM}.
- * @attr ref android.R.styleable#IAnimation::zAdjustment
- */
 ECode Animation::SetZAdjustment(
     /* [in] */ Int32 zAdjustment)
 {
@@ -709,15 +494,6 @@ ECode Animation::GetBackgroundColor(
     return NOERROR;
 }
 
-/**
- * If detachWallpaper is TRUE, and this is a window animation of a window
- * that has a wallpaper background, then the window will be detached from
- * the wallpaper while it runs.  That is, the animation will only be applied
- * to the window, and the wallpaper behind it will remain static.
- *
- * @param detachWallpaper TRUE if the wallpaper should be detached from the animation
- * @attr ref android.R.styleable#IAnimation::detachWallpaper
- */
 ECode Animation::SetDetachWallpaper(
     /* [in] */ Boolean detachWallpaper)
 {
@@ -725,12 +501,6 @@ ECode Animation::SetDetachWallpaper(
     return NOERROR;
 }
 
-/**
- * Gets the acceleration curve type for this animation.
- *
- * @return the {@link Interpolator} associated to this animation
- * @attr ref android.R.styleable#IAnimation::interpolator
- */
 ECode Animation::GetInterpolator(
     /* [out] */ IInterpolator** interpolator)
 {
@@ -740,13 +510,6 @@ ECode Animation::GetInterpolator(
     return NOERROR;
 }
 
-/**
- * When this animation should start. If the animation has not startet yet,
- * this method might return {@link #START_ON_FIRST_FRAME}.
- *
- * @return the time in milliseconds when the animation should start or
- *         {@link #START_ON_FIRST_FRAME}
- */
 ECode Animation::GetStartTime(
     /* [out] */ Int64* time)
 {
@@ -755,12 +518,6 @@ ECode Animation::GetStartTime(
     return NOERROR;
 }
 
-/**
- * How Int64 this animation should last
- *
- * @return the duration in milliseconds of the animation
- * @attr ref android.R.styleable#IAnimation::duration
- */
 ECode Animation::GetDuration(
     /* [out] */ Int64* duration)
 {
@@ -769,12 +526,6 @@ ECode Animation::GetDuration(
     return NOERROR;
 }
 
-/**
- * When this animation should start, relative to StartTime
- *
- * @return the start offset in milliseconds
- * @attr ref android.R.styleable#IAnimation::startOffset
- */
 ECode Animation::GetStartOffset(
     /* [out] */ Int64* startOffset)
 {
@@ -783,12 +534,6 @@ ECode Animation::GetStartOffset(
     return NOERROR;
 }
 
-/**
- * Defines what this animation should do when it reaches the end.
- *
- * @return either one of {@link #REVERSE} or {@link #IAnimation::RESTART}
- * @attr ref android.R.styleable#IAnimation::repeatMode
- */
 ECode Animation::GetRepeatMode(
     /* [out] */ Int32* mode)
 {
@@ -797,13 +542,6 @@ ECode Animation::GetRepeatMode(
     return NOERROR;
 }
 
-/**
- * Defines how many times the animation should repeat. The default value
- * is 0.
- *
- * @return the number of times the animation should repeat, or {@link #INFINITE}
- * @attr ref android.R.styleable#IAnimation::repeatCount
- */
 ECode Animation::GetRepeatCount(
     /* [out] */ Int32* count)
 {
@@ -812,15 +550,6 @@ ECode Animation::GetRepeatCount(
     return NOERROR;
 }
 
-/**
- * If fillBefore is true, this animation will apply its transformation
- * before the start time of the animation. If fillBefore is false and
- * {@link #isFillEnabled() fillEnabled} is true, the transformation will not be applied until
- * the start time of the animation.
- *
- * @return true if the animation applies its transformation before it starts
- * @attr ref android.R.styleable#IAnimation::fillBefore
- */
 ECode Animation::GetFillBefore(
     /* [out] */ Boolean* result)
 {
@@ -829,13 +558,6 @@ ECode Animation::GetFillBefore(
     return NOERROR;
 }
 
-/**
- * If fillAfter is TRUE, this animation will apply its transformation
- * after the end time of the animation.
- *
- * @return TRUE if the animation applies its transformation after it ends
- * @attr ref android.R.styleable#IAnimation::fillAfter
- */
 ECode Animation::GetFillAfter(
     /* [out] */ Boolean* result)
 {
@@ -844,14 +566,6 @@ ECode Animation::GetFillAfter(
     return NOERROR;
 }
 
-/**
- * Returns the Z ordering mode to use while running the animation as
- * previously Set by {@link #setZAdjustment}.
- *
- * @return Returns one of {@link #ZORDER_NORMAL},
- * {@link #ZORDER_TOP}, or {@link #ZORDER_BOTTOM}.
- * @attr ref android.R.styleable#IAnimation::zAdjustment
- */
 ECode Animation::GetZAdjustment(
     /* [out] */ Int32* zAdjustment)
 {
@@ -860,10 +574,6 @@ ECode Animation::GetZAdjustment(
     return NOERROR;
 }
 
-/**
- * Return value of {@link #setDetachWallpaper(Boolean)}.
- * @attr ref android.R.styleable#IAnimation::detachWallpaper
- */
 ECode Animation::GetDetachWallpaper(
     /* [out] */ Boolean* result)
 {
@@ -872,13 +582,6 @@ ECode Animation::GetDetachWallpaper(
     return NOERROR;
 }
 
-/**
- * <p>Indicates whether or not this animation will affect the transformation
- * matrix. For instance, a fade animation will not affect the matrix whereas
- * a scale animation will.</p>
- *
- * @return TRUE if this animation will change the transformation matrix
- */
 ECode Animation::WillChangeTransformationMatrix(
     /* [out] */ Boolean* result)
 {
@@ -888,13 +591,6 @@ ECode Animation::WillChangeTransformationMatrix(
     return NOERROR;
 }
 
-/**
- * <p>Indicates whether or not this animation will affect the bounds of the
- * animated view. For instance, a fade animation will not affect the bounds
- * whereas a 200% scale animation will.</p>
- *
- * @return TRUE if this animation will change the view's bounds
- */
 ECode Animation::WillChangeBounds(
     /* [out] */ Boolean* result)
 {
@@ -904,57 +600,30 @@ ECode Animation::WillChangeBounds(
     return NOERROR;
 }
 
-/**
- * <p>Binds an animation listener to this animation. The animation listener
- * is notified of animation events such as the end of the animation or the
- * repetition of the animation.</p>
- *
- * @param listener the animation listener to be notified
- */
 ECode Animation::SetAnimationListener(
-    /* [in] */ IAnimationListener* listener)
+    /* [in] */ IAnimationAnimationListener* listener)
 {
     mListener = listener;
-
     return NOERROR;
 }
 
-/**
- * Gurantees that this animation has an interpolator. Will use
- * a AccelerateDecelerateInterpolator is nothing else was specified.
- */
 void Animation::EnsureInterpolator()
 {
     if (mInterpolator == NULL) {
-        CAccelerateDecelerateInterpolator::New(
-            (IAccelerateDecelerateInterpolator**)&mInterpolator);
+        CAccelerateDecelerateInterpolator::New((IAccelerateDecelerateInterpolator**)&mInterpolator);
     }
 }
 
-/**
- * Compute a hint at how Int64 the entire animation may last, in milliseconds.
- * Animations can be written to cause themselves to run for a different
- * duration than what is computed here, but generally this should be
- * accurate.
- */
 ECode Animation::ComputeDurationHint(
     /* [out] */ Int64* hint)
 {
     VALIDATE_NOT_NULL(hint);
-    *hint = (GetStartOffset() + GetDuration()) * (GetRepeatCount() + 1);
+    Int64 d1, d2;
+    Int32 d3;
+    *hint = ((GetStartOffset(&d1), d1) + (GetDuration(&d2), d2)) * ((GetRepeatCount(&d3), d3) + 1);
     return NOERROR;
 }
 
-/**
- * Gets the transformation to apply at a specified point in time. Implementations of this
- * method should always replace the specified Transformation or document they are doing
- * otherwise.
- *
- * @param currentTime Where we are in the animation. This is wall clock time.
- * @param outTransformation A tranformation object that is provided by the
- *        caller and will be filled in by the animation.
- * @return True if the animation is still running
- */
 ECode Animation::GetTransformation(
     /* [in] */ Int64 currentTime,
     /* [in] */ ITransformation* outTransformation,
@@ -965,7 +634,8 @@ ECode Animation::GetTransformation(
         mStartTime = currentTime;
     }
 
-    Int64 startOffset = GetStartOffset();
+    Int64 startOffset;
+    GetStartOffset(&startOffset);
     Int64 duration = mDuration;
     Float normalizedTime;
     if (duration != 0) {
@@ -1007,7 +677,7 @@ ECode Animation::GetTransformation(
         }
 
         Float interpolatedTime;
-        mInterpolator->GetInterpolation(normalizedTime, &interpolatedTime);
+        ITimeInterpolator::Probe(mInterpolator)->GetInterpolation(normalizedTime, &interpolatedTime);
         ApplyTransformation(interpolatedTime, outTransformation);
     }
 
@@ -1044,7 +714,7 @@ ECode Animation::GetTransformation(
     return NOERROR;
 }
 
-Boolean Animation::GetTransformation(
+ECode Animation::GetTransformation(
     /* [in] */ Int64 currentTime,
     /* [in, out] */ ITransformation* outTransformation,
     /* [in] */ Float scale,
@@ -1055,11 +725,6 @@ Boolean Animation::GetTransformation(
     return GetTransformation(currentTime, outTransformation, result);
 }
 
-/**
- * <p>Indicates whether this animation has started or not.</p>
- *
- * @return TRUE if the animation has started, FALSE otherwise
- */
 ECode Animation::HasStarted(
     /* [out] */ Boolean* has)
 {
@@ -1068,11 +733,6 @@ ECode Animation::HasStarted(
     return NOERROR;
 }
 
-/**
- * <p>Indicates whether this animation has ended or not.</p>
- *
- * @return TRUE if the animation has ended, FALSE otherwise
- */
 ECode Animation::HasEnded(
     /* [out] */ Boolean* has)
 {
@@ -1089,34 +749,12 @@ ECode Animation::HasAlpha(
     return NOERROR;
 }
 
-/**
- * Helper for getTransformation. Subclasses should implement this to apply
- * their transforms given an interpolation value.  Implementations of this
- * method should always replace the specified Transformation or document
- * they are doing otherwise.
- *
- * @param interpolatedTime The value of the normalized time (0.0 to 1.0)
- *        after it has been run through the interpolation function.
- * @param t The Transofrmation object to fill in with the current
- *        transforms.
- */
 void Animation::ApplyTransformation(
     /* [in] */ Float interpolatedTime,
     /* [in] */ ITransformation* t)
 {
 }
 
-/**
- * Convert the information in the description of a size to an actual
- * dimension
- *
- * @param type One of Animation.ABSOLUTE, Animation.RELATIVE_TO_SELF, or
- *             Animation.RELATIVE_TO_PARENT.
- * @param value The dimension associated with the type parameter
- * @param size The size of the object being animated
- * @param parentSize The size of the parent of the object being animated
- * @return The dimension to use for the animation
- */
 Float Animation::ResolveSize(
     /* [in] */ Int32 type,
     /* [in] */ Float value,
@@ -1135,16 +773,6 @@ Float Animation::ResolveSize(
     }
 }
 
-/**
- * @param left
- * @param top
- * @param right
- * @param bottom
- * @param invalidate
- * @param transformation
- *
- * @hide
- */
 ECode Animation::GetInvalidateRegion(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
@@ -1177,14 +805,6 @@ ECode Animation::GetInvalidateRegion(
     return NOERROR;
 }
 
-/**
- * @param left
- * @param top
- * @param right
- * @param bottom
- *
- * @hide
- */
 ECode Animation::InitializeInvalidateRegion(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
@@ -1196,66 +816,9 @@ ECode Animation::InitializeInvalidateRegion(
     mPreviousRegion->Inset(-1.0f, -1.0f);
     if (mFillBefore) {
         Float time;
-        mInterpolator->GetInterpolation(0.0f, &time);
+        ITimeInterpolator::Probe(mInterpolator)->GetInterpolation(0.0f, &time);
         ApplyTransformation(time, mPreviousTransformation);
     }
-    return NOERROR;
-}
-
-ECode Animation::constructor()
-{
-    EnsureInterpolator();
-    return NOERROR;
-}
-
-ECode Animation::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::Animation),
-            ARRAY_SIZE(R::styleable::Animation));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds,
-        (ITypedArray**)&a);
-
-    Int32 data;
-    a->GetInt32(R::styleable::Animation_duration, 0, &data);
-    SetDuration((Int64)data);
-    a->GetInt32(R::styleable::Animation_startOffset, 0, &data);
-    SetStartOffset((Int64)data);
-
-    Boolean flag;
-    a->GetBoolean(R::styleable::Animation_fillEnabled, mFillEnabled, &flag);
-    SetFillEnabled(flag);
-    a->GetBoolean(R::styleable::Animation_fillBefore, mFillBefore, &flag);
-    SetFillBefore(flag);
-    a->GetBoolean(R::styleable::Animation_fillAfter, mFillAfter, &flag);
-    SetFillAfter(flag);
-
-    a->GetInt32(R::styleable::Animation_repeatCount, mRepeatCount, &data);
-    SetRepeatCount(data);
-    a->GetInt32(R::styleable::Animation_repeatMode, IAnimation::RESTART, &data);
-    SetRepeatMode(data);
-    a->GetInt32(R::styleable::Animation_zAdjustment, IAnimation::ZORDER_NORMAL, &data);
-    SetZAdjustment(data);
-
-    a->GetInt32(R::styleable::Animation_background, 0, &data);
-    SetBackgroundColor(data);
-
-    a->GetBoolean(R::styleable::Animation_detachWallpaper, FALSE, &flag);
-    SetDetachWallpaper(flag);
-
-    Int32 resID;
-    a->GetResourceId(R::styleable::Animation_interpolator, 0, &resID);
-
-    a->Recycle();
-
-    if (resID > 0) {
-        SetInterpolator(context, resID);
-    }
-
-    EnsureInterpolator();
     return NOERROR;
 }
 

@@ -2,13 +2,15 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEINTERPOLATOR_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEINTERPOLATOR_H__
 
-#include "_Elastos_Droid_View_Animation_Elastos_Droid_View_CAnticipateInterpolator.h"
-#include "elastos/droid/R.h"
+#include "_Elastos_Droid_View_Animation_CAnticipateInterpolator.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::R;
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Internal::View::Animation::INativeInterpolatorFactory;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -16,13 +18,21 @@ namespace View {
 namespace Animation {
 
 CarClass(CAnticipateInterpolator)
-    : public Object
+    , public Object
     , public IAnticipateInterpolator
     , public INativeInterpolatorFactory
     , public IInterpolator
     , public ITimeInterpolator
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
+    CAnticipateInterpolator();
+
+    ~CAnticipateInterpolator();
+
     CARAPI constructor();
 
     CARAPI constructor(

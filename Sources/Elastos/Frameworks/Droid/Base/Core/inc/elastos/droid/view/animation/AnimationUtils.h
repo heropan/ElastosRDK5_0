@@ -6,15 +6,16 @@
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/utility/Xml.h"
 
-using Org::Xmlpull::V1::IXmlPullParser;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::View::Animation::IAnimationSet;
 using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IXmlResourceParser;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Utility::IArrayList;
+using Org::Xmlpull::V1::IXmlPullParser;
 
 namespace Elastos {
 namespace Droid {
@@ -26,8 +27,6 @@ namespace Animation {
  *
  */
 class AnimationUtils
-    // : public Object
-    // , public IAnimationUtils
 {
 public:
     /**
@@ -124,9 +123,11 @@ public:
         /* [in] */ IResources* res,
         /* [in] */ IResourcesTheme* theme,
         /* [in] */ Int32 id,
-        /* [out] */ IInterpolator** interpolator) /*throws NotFoundException */;
+        /* [out] */ IInterpolator** interpolator); /*throws NotFoundException */
 
 private:
+    AnimationUtils();
+
     static CARAPI CreateAnimationFromXml(
         /* [in] */ IContext* c,
         /* [in] */ IXmlPullParser* parser,
@@ -160,8 +161,8 @@ private:
     /**
      * These flags are used when parsing AnimatorSet objects
      */
-    static const Int32 TOGETHER = 0;
-    static const Int32 SEQUENTIALLY = 1;
+    static const Int32 TOGETHER;
+    static const Int32 SEQUENTIALLY;
 };
 
 }   //namespace Animation

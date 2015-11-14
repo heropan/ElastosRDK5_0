@@ -10,7 +10,7 @@
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::ITransformation;
-using Elastos::Droid::View::Animation::IAnimationListener;
+using Elastos::Droid::View::Animation::IAnimationAnimationListener;
 using Elastos::Droid::View::Animation::IInterpolator;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Content::IContext;
@@ -158,7 +158,7 @@ public:
             /* [out] */ Boolean* result);
 
         CARAPI SetAnimationListener(
-            /* [in] */ IAnimationListener* listener);
+            /* [in] */ IAnimationAnimationListener* listener);
 
         CARAPI ComputeDurationHint(
             /* [out] */ Int64* hint);

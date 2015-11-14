@@ -14,18 +14,7 @@ CarClass(CAnimationSet)
     , public AnimationSet
 {
 public:
-    CAR_INTERFACE_DECL();
-
     CAR_OBJECT_DECL();
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ Boolean shareInterpolator);
-
-private:
 };
 
 }// namespace Animation

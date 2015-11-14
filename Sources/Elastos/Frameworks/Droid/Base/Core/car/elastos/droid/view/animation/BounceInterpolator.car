@@ -13,8 +13,8 @@ module
      */
     /**
      * @Involve
-     * interface ITimeInterpolator
      * interface IInterpolator
+     * interface ITimeInterpolator
      * interface INativeInterpolatorFactory
      */
     interface IBounceInterpolator {

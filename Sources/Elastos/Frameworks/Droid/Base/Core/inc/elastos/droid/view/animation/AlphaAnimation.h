@@ -16,11 +16,13 @@ class AlphaAnimation
 public:
     CAR_INTERFACE_DECL();
 
-    AlphaAnimation(
+    AlphaAnimation();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    AlphaAnimation(
+    CARAPI constructor(
         /* [in] */ Float fromAlpha,
         /* [in] */ Float toAlpha);
 
@@ -33,25 +35,10 @@ public:
     CARAPI HasAlpha(
         /* [out] */ Boolean* has);
 
-    virtual CARAPI Clone(
-        /* [out] */ IInterface** object);
-
 protected:
-    AlphaAnimation();
-
     CARAPI_(void) ApplyTransformation(
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ Float fromAlpha,
-        /* [in] */ Float toAlpha);
-
-    virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
 
 private:
     Float mFromAlpha;

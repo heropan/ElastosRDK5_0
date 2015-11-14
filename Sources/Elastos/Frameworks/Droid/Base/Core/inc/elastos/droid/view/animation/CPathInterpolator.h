@@ -3,6 +3,15 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CPATHINTERPOLATOR_H__
 
 #include "_Elastos_Droid_View_Animation_CPathInterpolator.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Animation::ITimeInterpolator;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Graphics::IPath;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -35,6 +44,10 @@ public:
     CAR_INTERFACE_DECL();
 
     CAR_OBJECT_DECL();
+
+    CPathInterpolator();
+
+    ~CPathInterpolator();
 
     /**
      * Create an interpolator for an arbitrary <code>Path</code>. The <code>Path</code>
@@ -117,9 +130,9 @@ private:
     // This governs how accurate the approximation of the Path is.
     static const Float PRECISION;
 
-    AutoPtr<ArrayOf<Float> > mX; // x coordinates in the line
+    AutoPtr< ArrayOf<Float> > mX; // x coordinates in the line
 
-    AutoPtr<ArrayOf<Float> > mY; // y coordinates in the line
+    AutoPtr< ArrayOf<Float> > mY; // y coordinates in the line
 };
 
 }   //namespace Animation

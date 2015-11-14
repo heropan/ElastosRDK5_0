@@ -27,6 +27,10 @@ public:
 
         AnimationParameters();
 
+        ~AnimationParameters();
+
+        CARAPI constructor();
+
         CARAPI GetCount(
             /* [out] */ Int32* count);
 
@@ -56,74 +60,71 @@ public:
 public:
     CAR_INTERFACE_DECL();
 
-    LayoutAnimationController(
+    LayoutAnimationController();
+
+    ~LayoutAnimationController();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    LayoutAnimationController(
-        /* [in] */ IAnimation* animation,
-        /* [in] */ Float delay = 0.5f);
-
-    virtual CARAPI GetOrder(
-        /* [out] */ Int32* order);
-
-    virtual CARAPI SetOrder(
-        /* [in] */ Int32 order);
-
-    virtual CARAPI SetAnimation(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 resourceID);
-
-    virtual CARAPI SetAnimation(
+    CARAPI constructor(
         /* [in] */ IAnimation* animation);
 
-    virtual CARAPI GetAnimation(
-        /* [out] */ IAnimation** animation);
+    CARAPI constructor(
+        /* [in] */ IAnimation* animation,
+        /* [in] */ Float delay);
 
-    virtual CARAPI SetInterpolator(
+    CARAPI GetOrder(
+        /* [out] */ Int32* order);
+
+    CARAPI SetOrder(
+        /* [in] */ Int32 order);
+
+    CARAPI SetAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 
-    virtual CARAPI SetInterpolator(
+    CARAPI SetAnimation(
+        /* [in] */ IAnimation* animation);
+
+    CARAPI GetAnimation(
+        /* [out] */ IAnimation** animation);
+
+    CARAPI SetInterpolator(
+        /* [in] */ IContext* context,
+        /* [in] */ Int32 resourceID);
+
+    CARAPI SetInterpolator(
         /* [in] */ IInterpolator* interpolator);
 
-    virtual CARAPI GetInterpolator(
+    CARAPI GetInterpolator(
         /* [out] */ IInterpolator** interpolator);
 
-    virtual CARAPI GetDelay(
+    CARAPI GetDelay(
         /* [out] */ Float* delay);
 
-    virtual CARAPI SetDelay(
+    CARAPI SetDelay(
         /* [in] */ Float delay);
 
-    virtual CARAPI WillOverlap(
+    CARAPI WillOverlap(
         /* [out] */ Boolean* willOverlap);
 
-    virtual CARAPI Start();
+    CARAPI Start();
 
     CARAPI GetAnimationForView(
         /* [in] */ IView* view,
         /* [out] */ IAnimation** animation);
 
-    virtual CARAPI IsDone(
+    CARAPI IsDone(
         /* [out] */ Boolean* done);
 
 protected:
-    LayoutAnimationController();
-
-    virtual CARAPI_(Int64) GetDelayForView(
+    CARAPI_(Int64) GetDelayForView(
         /* [in] */ IView* view);
 
-    virtual CARAPI_(Int32) GetTransformedIndex(
+    CARAPI_(Int32) GetTransformedIndex(
         /* [in] */ AnimationParameters* params);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ IAnimation* animation,
-        /* [in] */ Float delay = 0.5f);
 
     CARAPI_(Float) GetRandomFloat();
 protected:
@@ -137,7 +138,7 @@ protected:
      * The randomizer used when the order is set to random. Subclasses should
      * use this object to avoid creating their own.
      */
-//    Random mRandomizer;
+    // AutoPtr<IRandom> mRandomizer;
 
     /**
      * The interpolator used to interpolate the delays.

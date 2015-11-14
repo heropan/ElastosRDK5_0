@@ -380,7 +380,7 @@ private:
 
     class TickingDoneListener
         : public ElRefBase
-        , public IAnimationListener
+        , public IAnimationAnimationListener
     {
     public:
         TickingDoneListener(
@@ -710,7 +710,7 @@ private:
 
     AutoPtr<IAnimation> LoadAnim(
         /* [in] */ Int32 id,
-        /* [in] */ IAnimationListener* listener);
+        /* [in] */ IAnimationAnimationListener* listener);
 
     CARAPI_(void) AddStatusBarWindow();
 
@@ -846,7 +846,7 @@ protected:
     AutoPtr<IAnimator> mSettingsButtonAnim;
     AutoPtr<IAnimator> mClearButtonAnim;
 
-    AutoPtr<IAnimationListener> mTickingDoneListener;
+    AutoPtr<IAnimationAnimationListener> mTickingDoneListener;
 
     AutoPtr<IRunnable> mStartTracing;
     AutoPtr<IRunnable> mStopTracing;

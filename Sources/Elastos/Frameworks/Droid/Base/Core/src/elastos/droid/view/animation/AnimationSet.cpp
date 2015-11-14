@@ -1,110 +1,138 @@
 
 #include "elastos/droid/view/animation/CAnimationSet.h"
 #include "elastos/droid/view/animation/CTransformation.h"
-#include <elastos/core/Math.h>
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
 
-using Elastos::Droid::Os::Build;
-using namespace Elastos::Core;
-
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::R;
+using Elastos::Droid::Os::Build;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Animation {
 
-const Int32 AnimationSet::PROPERTY_FILL_AFTER_MASK;
-const Int32 AnimationSet::PROPERTY_FILL_BEFORE_MASK;
-const Int32 AnimationSet::PROPERTY_REPEAT_MODE_MASK;
-const Int32 AnimationSet::PROPERTY_START_OFFSET_MASK;
-const Int32 AnimationSet::PROPERTY_SHARE_INTERPOLATOR_MASK;
-const Int32 AnimationSet::PROPERTY_DURATION_MASK;
-const Int32 AnimationSet::PROPERTY_MORPH_MATRIX_MASK;
-const Int32 AnimationSet::PROPERTY_CHANGE_BOUNDS_MASK;
+const Int32 AnimationSet::PROPERTY_FILL_AFTER_MASK = 0x1;
+const Int32 AnimationSet::PROPERTY_FILL_BEFORE_MASK = 0x2;
+const Int32 AnimationSet::PROPERTY_REPEAT_MODE_MASK = 0x4;
+const Int32 AnimationSet::PROPERTY_START_OFFSET_MASK = 0x8;
+const Int32 AnimationSet::PROPERTY_SHARE_INTERPOLATOR_MASK = 0x10;
+const Int32 AnimationSet::PROPERTY_DURATION_MASK = 0x20;
+const Int32 AnimationSet::PROPERTY_MORPH_MATRIX_MASK = 0x40;
+const Int32 AnimationSet::PROPERTY_CHANGE_BOUNDS_MASK = 0x80;
 
 CAR_INTERFACE_IMPL(AnimationSet, Animation, IAnimationSet);
 AnimationSet::AnimationSet()
     : mFlags(0)
-    , mLastEnd(0)
-    , mStoredOffsets(NULL)
     , mDirty(FALSE)
     , mHasAlpha(FALSE)
+    , mLastEnd(0)
 {
+    CArrayList::New((IArrayList**)&mAnimations);
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTempTransformation));
+    mStoredOffsets = NULL;
 }
 
-/**
- * Constructor used when an AnimationSet is loaded from a resource.
- *
- * @param context Application context to use
- * @param attrs Attribute set from which to read values
- */
-AnimationSet::AnimationSet(
+AnimationSet::~AnimationSet()
+{}
+
+ECode AnimationSet::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : mFlags(0)
-    , mLastEnd(0)
-    , mStoredOffsets(NULL)
-    , mDirty(FALSE)
-    , mHasAlpha(FALSE)
 {
-    ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTempTransformation));
-    constructor(context, attrs);
-}
+    FAIL_RETURN(Animation::constructor(context, attrs));
 
-/**
- * Constructor to use when building an AnimationSet from code
- *
- * @param shareInterpolator Pass TRUE if all of the animations in this set
- *        should use the interpolator assocciated with this AnimationSet.
- *        Pass FALSE if each animation should use its own interpolator.
- */
-AnimationSet::AnimationSet(
-    /* [in] */ Boolean shareInterpolator)
-    : mFlags(0)
-    , mLastEnd(0)
-    , mStoredOffsets(NULL)
-    , mDirty(FALSE)
-    , mHasAlpha(FALSE)
-{
-    ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTempTransformation));
-    constructor(shareInterpolator);
-}
+    // member variables may be changed in Animation::constructor, initialize them here
+    mFlags = 0;
+    mDirty = FALSE;
+    mHasAlpha = FALSE;
+    mLastEnd = 0;
+    mStoredOffsets = NULL;
 
-AutoPtr<IAnimation> AnimationSet::GetCloneInstance()
-{
-    AutoPtr<IAnimationSet> result;
-    ASSERT_SUCCEEDED(CAnimationSet::New(FALSE, (IAnimationSet**)&result));
-    return result.Get();
-}
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::AnimationSet), ARRAY_SIZE(R::styleable::AnimationSet));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
-//@Override
-AutoPtr<IAnimation> AnimationSet::Clone()
-{
-    AutoPtr<IAnimation> result = Animation::Clone();
-    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_IAnimationSet))
-    {
-        return NULL;
+    Boolean share;
+    a->GetBoolean(R::styleable::AnimationSet_shareInterpolator, TRUE, &share);
+
+    SetFlag(PROPERTY_SHARE_INTERPOLATOR_MASK, share);
+    Init();
+
+    Int32 targetSdkVersion;
+    AutoPtr<IApplicationInfo> application;
+    context->GetApplicationInfo((IApplicationInfo**)&application);
+    application->GetTargetSdkVersion(&targetSdkVersion);
+    if(targetSdkVersion >= Build::VERSION_CODES::ICE_CREAM_SANDWICH) {
+        Boolean has;
+        if(a->HasValue(R::styleable::AnimationSet_duration, &has), has)
+        {
+            mFlags |= PROPERTY_DURATION_MASK;
+        }
+        if(a->HasValue(R::styleable::AnimationSet_fillBefore, &has), has)
+        {
+            mFlags |= PROPERTY_FILL_BEFORE_MASK;
+        }
+        if(a->HasValue(R::styleable::AnimationSet_fillAfter, &has), has)
+        {
+            mFlags |= PROPERTY_FILL_AFTER_MASK;
+        }
+        if(a->HasValue(R::styleable::AnimationSet_repeatMode, &has), has)
+        {
+            mFlags |= PROPERTY_REPEAT_MODE_MASK;
+        }
+        if(a->HasValue(R::styleable::AnimationSet_startOffset, &has), has)
+        {
+            mFlags |= PROPERTY_START_OFFSET_MASK;
+        }
     }
-    Animation* temp = (Animation*)result->Probe(EIID_Animation);
-    AnimationSet* animation = (AnimationSet*)temp;
-    animation->mFlags = mFlags;
-    animation->mDirty = mDirty;
-    animation->mHasAlpha = mHasAlpha;
-    animation->mLastEnd = mLastEnd;
-    animation->mStoredOffsets = mStoredOffsets != NULL ? mStoredOffsets->Clone() : NULL;
-    //Reference object has Init in Constructor
-    //So just need to value ordinary object
-    Int32 count = mAnimations.GetSize();
+    a->Recycle();
+
+    return NOERROR;
+}
+
+ECode AnimationSet::constructor(
+    /* [in] */ Boolean shareInterpolator)
+{
+    SetFlag(PROPERTY_SHARE_INTERPOLATOR_MASK, shareInterpolator);
+    Init();
+
+    return NOERROR;
+}
+
+ECode AnimationSet::Clone(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IInterface> obj;
+    Animation::Clone((IInterface**)&obj);
+    AutoPtr<IAnimationSet> result = IAnimationSet::Probe(obj);
+
+    AnimationSet* animation = (AnimationSet*)result.Get();
+    CTransformation::New((ITransformation**)&animation->mTempTransformation);
+    CArrayList::New((IArrayList**)&animation->mAnimations);
+
+    Int32 count;
+    mAnimations->GetSize(&count);
+    AutoPtr<IArrayList> animations = mAnimations;
 
     for (Int32 i = 0; i < count; i++) {
-        Animation* iAnimation = (Animation*)(mAnimations[i]->Probe(EIID_Animation));
-        AutoPtr<IAnimation> temp = iAnimation->Clone();
-        animation->mAnimations.PushBack(temp);
+        obj = NULL;
+        animations->Get(i, (IInterface**)&obj);
+        AutoPtr<IInterface> objectClone;
+        ICloneable::Probe(obj)->Clone((IInterface**)&objectClone);
+        animation->mAnimations->Add(objectClone);
     }
 
-    return result;
+    *object = (IAnimation*)animation;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
 }
 
 void AnimationSet::SetFlag(
@@ -119,12 +147,11 @@ void AnimationSet::SetFlag(
     }
 }
 
-void AnimationSet::InitInternal()
+void AnimationSet::Init()
 {
     mStartTime = 0;
 }
 
-//@Override
 ECode AnimationSet::SetFillAfter(
     /* [in] */ Boolean fillAfter)
 {
@@ -132,7 +159,6 @@ ECode AnimationSet::SetFillAfter(
     return Animation::SetFillAfter(fillAfter);
 }
 
-//@Override
 ECode AnimationSet::SetFillBefore(
     /* [in] */ Boolean fillBefore)
 {
@@ -140,7 +166,6 @@ ECode AnimationSet::SetFillBefore(
     return Animation::SetFillBefore(fillBefore);
 }
 
-//@Override
 ECode AnimationSet::SetRepeatMode(
     /* [in] */ Int32 repeatMode)
 {
@@ -148,7 +173,6 @@ ECode AnimationSet::SetRepeatMode(
     return Animation::SetRepeatMode(repeatMode);
 }
 
-//@Override
 ECode AnimationSet::SetStartOffset(
     /* [in] */ Int64 startOffset)
 {
@@ -156,32 +180,32 @@ ECode AnimationSet::SetStartOffset(
     return Animation::SetStartOffset(startOffset);
 }
 
-Boolean AnimationSet::HasAlpha()
+ECode AnimationSet::HasAlpha(
+    /* [out] */ Boolean* has)
 {
+    VALIDATE_NOT_NULL(has);
+
     if (mDirty) {
         mDirty = mHasAlpha = FALSE;
 
-        List<AutoPtr<IAnimation> >::Iterator iter = mAnimations.Begin();
-        for (; iter != mAnimations.End(); ++iter) {
-            Boolean has = FALSE;
-            (*iter)->HasAlpha(&has);
-            if (has) {
+        Int32 count;
+        mAnimations->GetSize(&count);
+        AutoPtr<IArrayList> animations = mAnimations;
+
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> obj;
+            animations->Get(i, (IInterface**)&obj);
+            Boolean res;
+            if (IAnimation::Probe(obj)->HasAlpha(&res), res) {
                 mHasAlpha = TRUE;
                 break;
             }
         }
     }
-
-    return mHasAlpha;
+    *has = mHasAlpha;
+    return NOERROR;
 }
 
-/**
- * <p>Sets the duration of every child animation.</p>
- *
- * @param durationMillis the duration of the animation, in milliseconds, for
- *        every child in this set
- */
-//@Override
 ECode AnimationSet::SetDuration(
     /* [in] */ Int64 durationMillis)
 {
@@ -192,16 +216,10 @@ ECode AnimationSet::SetDuration(
     return NOERROR;
 }
 
-/**
- * Add a child animation to this animation set.
- * The transforms of the child animations are applied in the order
- * that they were added
- * @param a Animation to add.
- */
 ECode AnimationSet::AddAnimation(
     /* [in] */ IAnimation* a)
 {
-    mAnimations.PushBack(a);
+    mAnimations->Add(a);
 
     Boolean noMatrix = (mFlags & PROPERTY_MORPH_MATRIX_MASK) == 0;
     Boolean willChange;
@@ -223,7 +241,8 @@ ECode AnimationSet::AddAnimation(
         Int64 startOffset, duration;
         a->GetStartOffset(&startOffset);
         a->GetDuration(&duration);
-        if (mAnimations.GetSize() == 1) {
+        Int32 size;
+        if ((mAnimations->GetSize(&size), size) == 1) {
             mDuration = startOffset + duration;
             mLastEnd = mStartOffset + mDuration;
         }
@@ -234,67 +253,78 @@ ECode AnimationSet::AddAnimation(
     }
 
     mDirty = TRUE;
-
     return NOERROR;
 }
 
-/**
- * Sets the start time of this animation and all child animations
- *
- * @see android.view.animation.Animation#setStartTime(Int64)
- */
-//@Override
+
 ECode AnimationSet::SetStartTime(
     /* [in] */ Int64 startTimeMillis)
 {
     Animation::SetStartTime(startTimeMillis);
 
-    List<AutoPtr<IAnimation> >::Iterator iter = mAnimations.Begin();
-    for (; iter != mAnimations.End(); ++iter) {
-        (*iter)->SetStartTime(startTimeMillis);
+    Int32 count;
+    mAnimations->GetSize(&count);
+    AutoPtr<IArrayList> animations = mAnimations;
+
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        animations->Get(i, (IInterface**)&obj);
+        AutoPtr<IAnimation> a = IAnimation::Probe(obj);
+        a->SetStartTime(startTimeMillis);
     }
 
     return NOERROR;
 }
 
-//@Override
-Int64 AnimationSet::GetStartTime()
+ECode AnimationSet::GetStartTime(
+    /* [out] */ Int64* time)
 {
+    VALIDATE_NOT_NULL(time);
     Int64 startTime = Elastos::Core::Math::INT64_MAX_VALUE;
 
-    List<AutoPtr<IAnimation> >::Iterator iter = mAnimations.Begin();
-    for (; iter != mAnimations.End(); ++iter) {
+    Int32 count;
+    mAnimations->GetSize(&count);
+    AutoPtr<IArrayList> animations = mAnimations;
+
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        animations->Get(i, (IInterface**)&obj);
+        AutoPtr<IAnimation> a = IAnimation::Probe(obj);
         Int64 temp;
-        (*iter)->GetStartTime(&temp);
+        a->GetStartTime(&temp);
         startTime = Elastos::Core::Math::Min(startTime, temp);
     }
 
-    return startTime;
+    *time = startTime;
+    return NOERROR;
 }
 
-//@Override
 ECode AnimationSet::RestrictDuration(
     /* [in] */ Int64 durationMillis)
 {
     Animation::RestrictDuration(durationMillis);
 
-    List<AutoPtr<IAnimation> >::Iterator iter = mAnimations.Begin();
-    for (; iter != mAnimations.End(); ++iter) {
-        (*iter)->RestrictDuration(durationMillis);
+    AutoPtr<IArrayList> animations = mAnimations;
+    Int32 count;
+    animations->GetSize(&count);
+
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        animations->Get(i, (IInterface**)&obj);
+        IAnimation::Probe(obj)->RestrictDuration(durationMillis);
     }
 
     return NOERROR;
 }
 
-/**
- * The duration of an AnimationSet is defined to be the
- * duration of the longest child animation.
- *
- * @see android.view.animation.Animation#getDuration()
- */
-//@Override
-Int64 AnimationSet::GetDuration()
+ECode AnimationSet::GetDuration(
+    /* [out] */ Int64* _duration)
 {
+    VALIDATE_NOT_NULL(_duration);
+
+    AutoPtr<IArrayList> animations = mAnimations;
+    Int32 count;
+    animations->GetSize(&count);
     Int64 duration = 0;
 
     Boolean durationSet = (mFlags & PROPERTY_DURATION_MASK) == PROPERTY_DURATION_MASK;
@@ -302,40 +332,43 @@ Int64 AnimationSet::GetDuration()
         duration = mDuration;
     }
     else {
-        List<AutoPtr<IAnimation> >::Iterator iter = mAnimations.Begin();
-        for (; iter != mAnimations.End(); ++iter) {
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> obj;
+            animations->Get(i, (IInterface**)&obj);
             Int64 temp;
-            (*iter)->GetDuration(&temp);
+            IAnimation::Probe(obj)->GetDuration(&temp);
             duration = Elastos::Core::Math::Max(duration, temp);
         }
     }
 
-    return duration;
+    *_duration = duration;
+    return NOERROR;
 }
 
-/**
- * The duration hint of an animation set is the maximum of the duration
- * hints of all of its component animations.
- *
- * @see android.view.animation.Animation#computeDurationHint
- */
-Int64 AnimationSet::ComputeDurationHint()
+ECode AnimationSet::ComputeDurationHint(
+    /* [out] */ Int64* hint)
 {
+    VALIDATE_NOT_NULL(hint);
+
     Int64 duration = 0;
-    List<AutoPtr<IAnimation> >::ReverseIterator iter = mAnimations.RBegin();
-    for (; iter != mAnimations.REnd(); ++iter) {
+    Int32 count;
+    mAnimations->GetSize(&count);
+    AutoPtr<IArrayList> animations = mAnimations;
+
+    for (Int32 i = count -1; i >= 0; --i) {
+        AutoPtr<IInterface> obj;
+        animations->Get(i, (IInterface**)&obj);
         Int64 d;
-        (*iter)->ComputeDurationHint(&d);
+        IAnimation::Probe(obj)->ComputeDurationHint(&d);
         if (d > duration) {
             duration = d;
         }
     }
-    return duration;
+
+    *hint = duration;
+    return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode AnimationSet::InitializeInvalidateRegion(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
@@ -347,19 +380,30 @@ ECode AnimationSet::InitializeInvalidateRegion(
     region->Inset(-1.0f, -1.0f);
 
     if (mFillBefore) {
-        List<AutoPtr<IAnimation> >::ReverseIterator iter = mAnimations.RBegin();
-        for (; iter != mAnimations.REnd(); ++iter) {
-            Animation* a = (Animation*)(*iter)->Probe(EIID_Animation);
+        Int32 count;
+        mAnimations->GetSize(&count);
+        AutoPtr<IArrayList> animations = mAnimations;
+        AutoPtr<ITransformation> temp = mTempTransformation;
 
-            if (!a->IsFillEnabled() || a->GetFillBefore() || a->GetStartOffset() == 0) {
-                mTempTransformation->Clear();
-                AutoPtr<IInterpolator> interpolator = a->mInterpolator;
+        AutoPtr<ITransformation> previousTransformation = mPreviousTransformation;
+
+        for (Int32 i = count -1; i >= 0; --i) {
+            AutoPtr<IInterface> obj;
+            animations->Get(i, (IInterface**)&obj);
+            AutoPtr<IAnimation> a = IAnimation::Probe(obj);
+            Boolean res, res1;
+            Int64 startOffset;
+            if ((a->IsFillEnabled(&res), !res) || (a->GetFillBefore(&res1), res1)
+                    || (a->GetStartOffset(&startOffset), startOffset) == 0) {
+                temp->Clear();
+                AutoPtr<Animation> animation = (Animation*)a.Get();
+                AutoPtr<IInterpolator> interpolator = animation->mInterpolator;
                 Float interpolation = 0.0f;
                 if (interpolator != NULL) {
-                    interpolator->GetInterpolation(0.0f, &interpolation);
+                    ITimeInterpolator::Probe(interpolator)->GetInterpolation(0.0f, &interpolation);
                 }
-                a->ApplyTransformation(interpolation, mTempTransformation);
-                mPreviousTransformation->Compose(mTempTransformation);
+                animation->ApplyTransformation(interpolation, temp);
+                previousTransformation->Compose(temp);
             }
         }
     }
@@ -367,71 +411,71 @@ ECode AnimationSet::InitializeInvalidateRegion(
     return NOERROR;
 }
 
-/**
- * The transformation of an animation set is the concatenation of all of its
- * component animations.
- *
- * @see android.view.animation.Animation#getTransformation
- */
-//@Override
-Boolean AnimationSet::GetTransformation(
+ECode AnimationSet::GetTransformation(
     /* [in] */ Int64 currentTime,
-    /* [in] */ ITransformation* t)
+    /* [in] */ ITransformation* t,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+
+    Int32 count;
+    mAnimations->GetSize(&count);
+    AutoPtr<IArrayList> animations = mAnimations;
+    AutoPtr<ITransformation> temp = mTempTransformation;
+
     Boolean more = FALSE;
     Boolean started = FALSE;
     Boolean ended = TRUE;
 
     t->Clear();
 
-    List<AutoPtr<IAnimation> >::ReverseIterator iter = mAnimations.RBegin();
-    for (; iter != mAnimations.REnd(); ++iter) {
-        Animation* a = reinterpret_cast<Animation*>((*iter)->Probe(EIID_Animation));
+    for (Int32 i = count -1; i >= 0; --i) {
+        AutoPtr<IInterface> obj;
+        animations->Get(i, (IInterface**)&obj);
+        AutoPtr<IAnimation> a = IAnimation::Probe(obj);
+        temp->Clear();
+        Boolean res;
+        more = (a->GetTransformation(currentTime, mTempTransformation, GetScaleFactor(), &res), res) || more;
+        t->Compose(temp);
 
-        mTempTransformation->Clear();
-        more = a->GetTransformation(currentTime, mTempTransformation, GetScaleFactor()) || more;
-        t->Compose(mTempTransformation);
-
-        started = started || a->HasStarted();
-        ended = a->HasEnded() && ended;
+        started = started || (a->HasStarted(&res), res);
+        ended = (a->HasEnded(&res), res) && ended;
     }
 
     if (started && !mStarted) {
         if (mListener != NULL) {
-            mListener->OnAnimationStart((IAnimation*)this->Probe(EIID_IAnimation));
+            mListener->OnAnimationStart(THIS_PROBE(IAnimation));
         }
         mStarted = TRUE;
     }
 
     if (ended != mEnded) {
         if (mListener != NULL) {
-            mListener->OnAnimationEnd((IAnimation*)this->Probe(EIID_IAnimation));
+            mListener->OnAnimationEnd(THIS_PROBE(IAnimation));
         }
         mEnded = ended;
     }
 
-    return more;
+    *result = more;
+    return NOERROR;
 }
 
-/**
- * @see android.view.animation.Animation#scaleCurrentDuration(Float)
- */
-//@Override
 ECode AnimationSet::ScaleCurrentDuration(
-    /* [in] */  Float scale)
+    /* [in] */ Float scale)
 {
-    List<AutoPtr<IAnimation> >::Iterator iter = mAnimations.Begin();
-    for (; iter != mAnimations.End(); ++iter) {
-        (*iter)->ScaleCurrentDuration(scale);
+    AutoPtr<IArrayList> animations = mAnimations;
+    Int32 count;
+    animations->GetSize(&count);
+
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        animations->Get(i, (IInterface**)&obj);
+        IAnimation::Probe(obj)->ScaleCurrentDuration(scale);
     }
 
     return NOERROR;
 }
 
-/**
- * @see android.view.animation.Animation#initialize(Int32, Int32, Int32, Int32)
- */
-//@Override
 ECode AnimationSet::Initialize(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
@@ -453,165 +497,109 @@ ECode AnimationSet::Initialize(
         EnsureInterpolator();
     }
 
+    AutoPtr<IArrayList> children = mAnimations;
+    Int32 count;
+    children->GetSize(&count);
+
+    Int64 duration = mDuration;
+    Boolean fillAfter = mFillAfter;
+    Boolean fillBefore = mFillBefore;
+    Int32 repeatMode = mRepeatMode;
+    AutoPtr<IInterpolator> interpolator = mInterpolator;
+    Int64 startOffset = mStartOffset;
+
+    AutoPtr< ArrayOf<Int64> > storedOffsets = mStoredOffsets;
+
     if (startOffsetSet) {
-        Int32 count = mAnimations.GetSize();
-        if (mStoredOffsets == NULL || mStoredOffsets->GetLength() != count) {
-            mStoredOffsets = ArrayOf<Int64>::Alloc(count);
+        Int32 count;
+        mAnimations->GetSize(&count);
+        if (storedOffsets == NULL || storedOffsets->GetLength() != count) {
+            storedOffsets = mStoredOffsets = ArrayOf<Int64>::Alloc(count);
         }
     }
-    else if (mStoredOffsets != NULL) {
-        mStoredOffsets = NULL;
+    else if (storedOffsets != NULL) {
+        storedOffsets = mStoredOffsets = NULL;
     }
 
-    List<AutoPtr<IAnimation> >::Iterator iter = mAnimations.Begin();
-    for (Int32 i = 0; iter != mAnimations.End(); ++iter, ++i) {
+    for (int i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        children->Get(i, (IInterface**)&obj);
+        AutoPtr<IAnimation> a = IAnimation::Probe(obj);
         if (durationSet) {
-            (*iter)->SetDuration(mDuration);
+            a->SetDuration(duration);
         }
         if (fillAfterSet) {
-            (*iter)->SetFillAfter(mFillAfter);
+            a->SetFillAfter(fillAfter);
         }
         if (fillBeforeSet) {
-            (*iter)->SetFillBefore(mFillBefore);
+            a->SetFillBefore(fillBefore);
         }
         if (repeatModeSet) {
-            (*iter)->SetRepeatMode(mRepeatMode);
+            a->SetRepeatMode(repeatMode);
         }
         if (shareInterpolator) {
-            (*iter)->SetInterpolator(mInterpolator);
+            a->SetInterpolator(interpolator);
         }
         if (startOffsetSet) {
             Int64 offset;
-            (*iter)->GetStartOffset(&offset);
-            (*iter)->SetStartOffset(offset + mStartOffset);
-            (*mStoredOffsets)[i] = offset;
+            a->GetStartOffset(&offset);
+            a->SetStartOffset(offset + startOffset);
+            (*storedOffsets)[i] = offset;
         }
-        (*iter)->Initialize(width, height, parentWidth, parentHeight);
+        a->Initialize(width, height, parentWidth, parentHeight);
     }
 
     return NOERROR;
 }
 
-//@Override
 ECode AnimationSet::Reset()
 {
     Animation::Reset();
     return RestoreChildrenStartOffset();
 }
 
-/**
- * @hide
- */
 ECode AnimationSet::RestoreChildrenStartOffset()
 {
-    if (mStoredOffsets == NULL) {
+    AutoPtr< ArrayOf<Int64> > offsets = mStoredOffsets;
+    if (offsets == NULL) {
         return NOERROR;
     }
 
-    List<AutoPtr<IAnimation> >::Iterator iter = mAnimations.Begin();
-    for (Int32 i = 0; iter != mAnimations.End(); ++iter, ++i) {
-        (*iter)->SetStartOffset((*mStoredOffsets)[i]);
+    AutoPtr<IArrayList> children = mAnimations;
+    Int32 count;
+    children->GetSize(&count);
+
+    for (int i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        children->Get(i, (IInterface**)&obj);
+        IAnimation::Probe(obj)->SetStartOffset((*offsets)[i]);
     }
 
     return NOERROR;
 }
 
-/**
- * @return All the child animations in this AnimationSet. Note that
- * this may include other AnimationSets, which are not expanded.
- */
 ECode AnimationSet::GetAnimations(
-    /* [out] */ IObjectContainer** animations)
+    /* [out] */ IList** animations)
 {
     VALIDATE_NOT_NULL(animations);
-
-    CObjectContainer::New(animations);
-    List<AutoPtr<IAnimation> >::Iterator iter = mAnimations.Begin();
-    for (; iter != mAnimations.End(); ++iter) {
-        (*animations)->Add((*iter).Get());;
-    }
-
+    *animations = IList::Probe(mAnimations);
+    REFCOUNT_ADD(*animations);
     return NOERROR;
 }
 
-//@Override
-Boolean AnimationSet::WillChangeTransformationMatrix()
+ECode AnimationSet::WillChangeTransformationMatrix(
+    /* [out] */ Boolean* result)
 {
-    return (mFlags & PROPERTY_MORPH_MATRIX_MASK) == PROPERTY_MORPH_MATRIX_MASK;
-}
-
-//@Override
-Boolean AnimationSet::WillChangeBounds()
-{
-    return (mFlags & PROPERTY_CHANGE_BOUNDS_MASK) == PROPERTY_CHANGE_BOUNDS_MASK;
-}
-
-ECode AnimationSet::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    FAIL_RETURN(Animation::constructor(context, attrs));
-
-    // member variables may be changed in Animation::constructor, initialize them here
-    //
-    mFlags = 0;
-    mLastEnd = 0;
-    mStoredOffsets = NULL;
-    mDirty = FALSE;
-    mHasAlpha = FALSE;
-
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::AnimationSet),
-            ARRAY_SIZE(R::styleable::AnimationSet));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(
-        attrs, attrIds, (ITypedArray**)&a);
-
-    Boolean share;
-    a->GetBoolean(R::styleable::AnimationSet_shareInterpolator, TRUE, &share);
-
-    SetFlag(PROPERTY_SHARE_INTERPOLATOR_MASK, share);
-    InitInternal();
-
-    Int32 targetSdkVersion;
-    AutoPtr<IApplicationInfo> application;
-    context->GetApplicationInfo((IApplicationInfo**)&application);
-    application->GetTargetSdkVersion(&targetSdkVersion);
-    if(targetSdkVersion >= Build::VERSION_CODES::ICE_CREAM_SANDWICH)
-    {
-        Boolean has;
-        if((a->HasValue(R::styleable::AnimationSet_duration, &has), has))
-        {
-            mFlags |= PROPERTY_DURATION_MASK;
-        }
-        if((a->HasValue(R::styleable::AnimationSet_fillBefore, &has), has))
-        {
-            mFlags |= PROPERTY_FILL_BEFORE_MASK;
-        }
-        if((a->HasValue(R::styleable::AnimationSet_fillAfter, &has), has))
-        {
-            mFlags |= PROPERTY_FILL_AFTER_MASK;
-        }
-        if((a->HasValue(R::styleable::AnimationSet_repeatMode, &has), has))
-        {
-            mFlags |= PROPERTY_REPEAT_MODE_MASK;
-        }
-        if((a->HasValue(R::styleable::AnimationSet_startOffset, &has), has))
-        {
-            mFlags |= PROPERTY_START_OFFSET_MASK;
-        }
-    }
-    a->Recycle();
-
+    VALIDATE_NOT_NULL(result);
+    *result = (mFlags & PROPERTY_MORPH_MATRIX_MASK) == PROPERTY_MORPH_MATRIX_MASK;
     return NOERROR;
 }
 
-ECode AnimationSet::constructor(
-    /* [in] */ Boolean shareInterpolator)
+ECode AnimationSet::WillChangeBounds(
+    /* [out] */ Boolean* result)
 {
-    SetFlag(PROPERTY_SHARE_INTERPOLATOR_MASK, shareInterpolator);
-    InitInternal();
-
+    VALIDATE_NOT_NULL(result);
+    *result = (mFlags & PROPERTY_CHANGE_BOUNDS_MASK) == PROPERTY_CHANGE_BOUNDS_MASK;
     return NOERROR;
 }
 

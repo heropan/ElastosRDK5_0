@@ -1,16 +1,31 @@
 
 #include "elastos/droid/view/animation/CTransformation.h"
+#include "elastos/droid/graphics/CRect.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_OBJECT_IMPL(CTransformation);
+
+CAR_INTERFACE_IMPL(CTransformation, Object, ITransformation);
+
 CTransformation::CTransformation()
-    : mHasClipRect(FALSE)
+    : mAlpha(0.0f)
+    , mTransformationType(0)
+    , mHasClipRect(FALSE)
 {
     CRect::New((IRect**)&mClipRect);
 }
+
+CTransformation::~CTransformation()
+{}
 
 ECode CTransformation::constructor()
 {
@@ -38,7 +53,6 @@ ECode CTransformation::GetTransformationType(
 {
     VALIDATE_NOT_NULL(type)
     *type = mTransformationType;
-
     return NOERROR;
 }
 
@@ -46,7 +60,6 @@ ECode CTransformation::SetTransformationType(
     /* [in] */ Int32 transformationType)
 {
     mTransformationType = transformationType;
-
     return NOERROR;
 }
 
@@ -61,7 +74,8 @@ ECode CTransformation::Set(
         AutoPtr<IRect> cr;
         t->GetClipRect((IRect**)&cr);
         SetClipRect(cr);
-    } else {
+    }
+    else {
         mHasClipRect = FALSE;
         mClipRect->SetEmpty();
     }
@@ -116,8 +130,6 @@ ECode CTransformation::GetMatrix(
     VALIDATE_NOT_NULL(matrix)
     *matrix = mMatrix;
     REFCOUNT_ADD(*matrix);
-
-
     return NOERROR;
 }
 
@@ -169,7 +181,47 @@ ECode CTransformation::GetAlpha(
 {
     VALIDATE_NOT_NULL(alpha);
     *alpha = mAlpha;
+    return NOERROR;
+}
 
+ECode CTransformation::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    AutoPtr<StringBuilder> sb = new StringBuilder(64);
+    sb->Append("Transformation");
+    ToShortString((IStringBuilder*)sb);
+    return sb->ToString(str);
+}
+
+ECode CTransformation::ToShortString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    AutoPtr<StringBuilder> sb = new StringBuilder(64);
+    ToShortString((IStringBuilder*)sb);
+    return sb->ToString(str);
+}
+
+ECode CTransformation::ToShortString(
+    /* [in] */ IStringBuilder* sb)
+{
+    sb->Append(String("{alpha="));
+    sb->Append(mAlpha);
+    sb->Append(String(" matrix="));
+    mMatrix->ToShortString(sb);
+    sb->AppendChar('}');
+    return NOERROR;
+}
+
+ECode CTransformation::PrintShortString(
+    /* [in] */ IPrintWriter* pw)
+{
+    pw->Print(String("{alpha="));
+    pw->Print(mAlpha);
+    pw->Print(String(" matrix="));
+    mMatrix->PrintShortString(pw);
+    pw->PrintChar('}');
     return NOERROR;
 }
 

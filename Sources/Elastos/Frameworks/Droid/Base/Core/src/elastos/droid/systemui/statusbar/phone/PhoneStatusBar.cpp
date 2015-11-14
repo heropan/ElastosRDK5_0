@@ -2441,7 +2441,7 @@ ECode PhoneStatusBar::Tick(
 
 AutoPtr<IAnimation> LoadAnim(
     /* [in] */ Int32 id,
-    /* [in] */ IAnimationListener* listener)
+    /* [in] */ IAnimationAnimationListener* listener)
 {
     Animation anim = AnimationUtils.loadAnimation(mContext, id);
     if (listener != NULL) {

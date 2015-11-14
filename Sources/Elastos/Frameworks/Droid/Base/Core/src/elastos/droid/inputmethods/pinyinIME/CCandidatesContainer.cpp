@@ -378,7 +378,7 @@ ECode CCandidatesContainer::LoadAnimation(
         }
     }
 
-    mInAnimInUse->SetAnimationListener(THIS_PROBE(IAnimationListener));
+    mInAnimInUse->SetAnimationListener(THIS_PROBE(IAnimationAnimationListener));
 
     mFlipper->SetInAnimation(mInAnimInUse);
     mFlipper->SetOutAnimation(mOutAnimInUse);

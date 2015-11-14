@@ -11,14 +11,15 @@
 #include "elastos/droid/view/animation/COvershootInterpolator.h"
 #include "elastos/droid/view/animation/CAnimationSet.h"
 #include "elastos/droid/view/animation/CAlphaAnimation.h"
+#include "elastos/droid/view/animation/CPathInterpolator.h"
 #include "elastos/droid/view/animation/CRotateAnimation.h"
 #include "elastos/droid/view/animation/CScaleAnimation.h"
 #include "elastos/droid/view/animation/CTranslateAnimation.h"
 #include "elastos/droid/view/animation/CLayoutAnimationController.h"
 #include "elastos/droid/view/animation/CGridLayoutAnimationController.h"
 #include "elastos/droid/os/SystemClock.h"
-#include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/R.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::R;
 using Elastos::Utility::Logging::Logger;
@@ -27,6 +28,12 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Animation {
+
+const Int32 AnimationUtils::TOGETHER = 0;
+const Int32 AnimationUtils::SEQUENTIALLY = 1;
+
+AnimationUtils::AnimationUtils()
+{}
 
 ECode AnimationUtils::CurrentAnimationTimeMillis(
     /* [out] */ Int64* time)
@@ -48,7 +55,7 @@ ECode AnimationUtils::LoadAnimation(
     FAIL_RETURN(context->GetResources((IResources**)&res));
     AutoPtr<IXmlResourceParser> parser;
     FAIL_RETURN(res->GetAnimation(id, (IXmlResourceParser**)&parser));
-    ECode ec = CreateAnimationFromXml(context, parser, animation);
+    ECode ec = CreateAnimationFromXml(context, IXmlPullParser::Probe(parser), animation);
 
     if (parser != NULL) {
         parser->Close();
@@ -62,8 +69,9 @@ ECode AnimationUtils::CreateAnimationFromXml(
     /* [in] */ IXmlPullParser* parser,
     /* [out] */ IAnimation** animation)
 {
+    VALIDATE_NOT_NULL(animation);
     return CreateAnimationFromXml(
-        c, parser, NULL, Xml::AsAttributeSet(parser), animation);
+            c, parser, NULL, Xml::AsAttributeSet(parser), animation);
 }
 
 ECode AnimationUtils::CreateAnimationFromXml(
@@ -84,8 +92,9 @@ ECode AnimationUtils::CreateAnimationFromXml(
     AutoPtr<IAnimation> anim;
 
     while (((parser->Next(&type), type) != IXmlPullParser::END_TAG
-        || (parser->GetDepth(&curDepth), curDepth) > depth)
-        && type != IXmlPullParser::END_DOCUMENT) {
+            || (parser->GetDepth(&curDepth), curDepth) > depth)
+            && type != IXmlPullParser::END_DOCUMENT) {
+
         if (type != IXmlPullParser::START_TAG) {
             continue;
         }
@@ -97,7 +106,7 @@ ECode AnimationUtils::CreateAnimationFromXml(
             FAIL_RETURN(CAnimationSet::New(c, attrs, (IAnimationSet**)&anim));
             AutoPtr<IAnimation> temp;
             FAIL_RETURN(CreateAnimationFromXml(
-                c, parser, IAnimationSet::Probe(anim), attrs, (IAnimation**)&temp));
+                    c, parser, IAnimationSet::Probe(anim), attrs, (IAnimation**)&temp));
         }
         else if (name.Equals("alpha")) {
             FAIL_RETURN(CAlphaAnimation::New(c, attrs, (IAlphaAnimation**)&anim));
@@ -137,7 +146,7 @@ ECode AnimationUtils::LoadLayoutAnimation(
     FAIL_RETURN(context->GetResources((IResources**)&res));
     AutoPtr<IXmlResourceParser> parser;
     FAIL_RETURN(res->GetAnimation(id, (IXmlResourceParser**)&parser));
-    ECode ec = CreateLayoutAnimationFromXml(context, parser, controller);
+    ECode ec = CreateLayoutAnimationFromXml(context, IXmlPullParser::Probe(parser), controller);
 
     if (parser != NULL) {
         parser->Close();
@@ -151,8 +160,9 @@ ECode AnimationUtils::CreateLayoutAnimationFromXml(
     /* [in] */ IXmlPullParser* parser,
     /* [out] */ ILayoutAnimationController** controller)
 {
+    VALIDATE_NOT_NULL(controller);
     return CreateLayoutAnimationFromXml(
-        c, parser, Xml::AsAttributeSet(parser), controller);
+            c, parser, Xml::AsAttributeSet(parser), controller);
 }
 
 ECode AnimationUtils::CreateLayoutAnimationFromXml(
@@ -172,9 +182,9 @@ ECode AnimationUtils::CreateLayoutAnimationFromXml(
     AutoPtr<ILayoutAnimationController> temp;
 
     while (((parser->Next(&type), type) != IXmlPullParser::END_TAG
-        || (parser->GetDepth(&curDepth), curDepth) > depth)
-        && type != IXmlPullParser::END_DOCUMENT)
-    {
+            || (parser->GetDepth(&curDepth), curDepth) > depth)
+            && type != IXmlPullParser::END_DOCUMENT) {
+
         if (type != IXmlPullParser::START_TAG) {
             continue;
         }
@@ -209,20 +219,18 @@ ECode AnimationUtils::MakeInAnimation(
     *animation = NULL;
 
     if (fromLeft) {
-        FAIL_RETURN(AnimationUtils::LoadAnimation(
-            context, R::anim::slide_in_left,
-            animation));
+        FAIL_RETURN(AnimationUtils::LoadAnimation(context, R::anim::slide_in_left, animation));
     }
     else {
-        FAIL_RETURN(AnimationUtils::LoadAnimation(
-            context, R::anim::slide_in_right,
-            animation));
+        FAIL_RETURN(AnimationUtils::LoadAnimation(context, R::anim::slide_in_right, animation));
     }
 
     AutoPtr<IInterpolator> interpolator;
     FAIL_RETURN(CDecelerateInterpolator::New((IDecelerateInterpolator**)&interpolator));
     (*animation)->SetInterpolator(interpolator);
-    (*animation)->SetStartTime(CurrentAnimationTimeMillis());
+    Int64 time;
+    CurrentAnimationTimeMillis(&time);
+    (*animation)->SetStartTime(time);
 
     return NOERROR;
 }
@@ -236,20 +244,18 @@ ECode AnimationUtils::MakeOutAnimation(
     *animation = NULL;
 
     if (toRight) {
-        FAIL_RETURN(AnimationUtils::LoadAnimation(
-            context, R::anim::slide_out_right,
-            animation));
+        FAIL_RETURN(AnimationUtils::LoadAnimation(context, R::anim::slide_out_right, animation));
     }
     else {
-        FAIL_RETURN(AnimationUtils::LoadAnimation(
-            context, R::anim::slide_out_left,
-            animation));
+        FAIL_RETURN(AnimationUtils::LoadAnimation(context, R::anim::slide_out_left, animation));
     }
 
     AutoPtr<IInterpolator> interpolator;
     FAIL_RETURN(CAccelerateInterpolator::New((IAccelerateInterpolator**)&interpolator));
     (*animation)->SetInterpolator(interpolator);
-    (*animation)->SetStartTime(CurrentAnimationTimeMillis());
+    Int64 time;
+    CurrentAnimationTimeMillis(&time);
+    (*animation)->SetStartTime(time);
 
     return NOERROR;
 }
@@ -261,14 +267,14 @@ ECode AnimationUtils::MakeInChildBottomAnimation(
     VALIDATE_NOT_NULL(animation);
     *animation = NULL;
 
-    FAIL_RETURN(AnimationUtils::LoadAnimation(
-        context, R::anim::slide_in_left,
-        animation));
+    FAIL_RETURN(AnimationUtils::LoadAnimation(context, R::anim::slide_in_left, animation));
 
     AutoPtr<IInterpolator> interpolator;
     FAIL_RETURN(CAccelerateInterpolator::New((IAccelerateInterpolator**)&interpolator));
     (*animation)->SetInterpolator(interpolator);
-    (*animation)->SetStartTime(CurrentAnimationTimeMillis());
+    Int64 time;
+    CurrentAnimationTimeMillis(&time);
+    (*animation)->SetStartTime(time);
 
     return NOERROR;
 }
@@ -287,7 +293,7 @@ ECode AnimationUtils::LoadInterpolator(
     FAIL_RETURN(res->GetAnimation(id, (IXmlResourceParser**)&parser));
     AutoPtr<IResourcesTheme> theme;
     context->GetTheme((IResourcesTheme**)&theme);
-    ECode ec = CreateInterpolatorFromXml(res, theme, parser, interpolator);
+    ECode ec = CreateInterpolatorFromXml(res, theme, IXmlPullParser::Probe(parser), interpolator);
 
     if (parser != NULL) {
         parser->Close();
@@ -308,7 +314,7 @@ ECode AnimationUtils::LoadInterpolator(
     AutoPtr<IXmlResourceParser> parser;
     // try {
     FAIL_RETURN(res->GetAnimation(id, (IXmlResourceParser**)&parser));
-    ECode ec = CreateInterpolatorFromXml(res, theme, parser, interpolator);
+    ECode ec = CreateInterpolatorFromXml(res, theme, IXmlPullParser::Probe(parser), interpolator);
     // } catch (XmlPullParserException ex) {
     //     NotFoundException rnf = new NotFoundException("Can't load animation resource ID #0x" +
     //             Integer.toHexString(id));
@@ -344,8 +350,9 @@ ECode AnimationUtils::CreateInterpolatorFromXml(
     AutoPtr<IAttributeSet> attrs;
 
     while (((parser->Next(&type), type) != IXmlPullParser::END_TAG
-        || (parser->GetDepth(&curDepth), curDepth) > depth)
-        && type != IXmlPullParser::END_DOCUMENT) {
+            || (parser->GetDepth(&curDepth), curDepth) > depth)
+            && type != IXmlPullParser::END_DOCUMENT) {
+
         if (type != IXmlPullParser::START_TAG) {
             continue;
         }

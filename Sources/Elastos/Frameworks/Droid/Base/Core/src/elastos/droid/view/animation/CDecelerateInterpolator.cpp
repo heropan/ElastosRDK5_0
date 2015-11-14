@@ -1,21 +1,34 @@
 
 #include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/internal/view/animation/NativeInterpolatorFactoryHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
+
+using Elastos::Droid::Animation::EIID_ITimeInterpolator;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Internal::View::Animation::EIID_INativeInterpolatorFactory;
+using Elastos::Droid::Internal::View::Animation::NativeInterpolatorFactoryHelper;
+using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Animation {
 
-
 CAR_OBJECT_IMPL(CDecelerateInterpolator);
-CAR_INTERFACE_IMPL_4(CDecelerateInterpolator, Object, IDecelerateInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
+
+CAR_INTERFACE_IMPL_4(CDecelerateInterpolator, Object, IDecelerateInterpolator, INativeInterpolatorFactory, IInterpolator, ITimeInterpolator);
+
+CDecelerateInterpolator::CDecelerateInterpolator()
+    : mFactor(1.0f)
+{}
+
+CDecelerateInterpolator::~CDecelerateInterpolator()
+{}
 
 ECode CDecelerateInterpolator::constructor()
 {
-    mFactor = 1.0f;
-
     return NOERROR;
 }
 
@@ -23,7 +36,6 @@ ECode CDecelerateInterpolator::constructor(
     /* [in] */ Float factor)
 {
     mFactor = factor;
-
     return NOERROR;
 }
 
@@ -47,13 +59,12 @@ ECode CDecelerateInterpolator::constructor(
             const_cast<Int32 *>(R::styleable::DecelerateInterpolator),
             ARRAY_SIZE(R::styleable::DecelerateInterpolator));
     AutoPtr<ITypedArray> a;
-    if (theme != null) {
-        theme->btainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
-    } else {
-        res->btainAttributes(attrs, attrIds, (ITypedArray**)&a);
+    if (theme != NULL) {
+        theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     }
-
-    mFactor = a.getFloat(R.styleable.DecelerateInterpolator_factor, 1.0f);
+    else {
+        res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a);
+    }
 
     a->GetFloat(R::styleable::DecelerateInterpolator_factor, 1.0f, &mFactor);
 

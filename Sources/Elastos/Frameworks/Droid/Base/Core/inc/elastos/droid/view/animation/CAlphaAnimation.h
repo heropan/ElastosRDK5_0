@@ -14,19 +14,7 @@ CarClass(CAlphaAnimation)
     , public AlphaAnimation
 {
 public:
-    CAR_INTERFACE_DECL();
-
     CAR_OBJECT_DECL();
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ Float fromAlpha,
-        /* [in] */ Float toAlpha);
-
-private:
 };
 
 }// namespace Animation

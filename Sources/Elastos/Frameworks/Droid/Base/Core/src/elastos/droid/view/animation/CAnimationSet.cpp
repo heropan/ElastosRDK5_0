@@ -8,19 +8,6 @@ namespace Animation {
 
 CAR_OBJECT_IMPL(CAnimationSet);
 
-ECode CAnimationSet::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return AnimationSet::constructor(context, attrs);
-}
-
-ECode CAnimationSet::constructor(
-    /* [in] */ Boolean shareInterpolator)
-{
-    return AnimationSet::constructor(shareInterpolator);
-}
-
 }// namespace Animation
 }// namespace View
 }// namespace Droid

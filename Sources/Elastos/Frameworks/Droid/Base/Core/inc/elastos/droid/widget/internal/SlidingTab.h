@@ -11,7 +11,7 @@ using Elastos::Droid::R;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::Animation::IAnimation;
-using Elastos::Droid::View::Animation::IAnimationListener;
+using Elastos::Droid::View::Animation::IAnimationAnimationListener;
 using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::Content::IContext;
@@ -167,7 +167,7 @@ private:
 
     class AnimationDoneListener
             : public ElRefBase
-            , public IAnimationListener
+            , public IAnimationAnimationListener
     {
     public:
         CAR_INTERFACE_DECL()
@@ -190,7 +190,7 @@ private:
 
     class StartAnimationListener
             : public ElRefBase
-            , public IAnimationListener
+            , public IAnimationAnimationListener
     {
     public:
         CAR_INTERFACE_DECL()

@@ -157,5 +157,5 @@ SOURCES += CSurfaceViewWindow.cpp
 
 LIBRARIES += inputmethod/inputmethod.lib
 LIBRARIES += accessibility/accessibility.lib
-// LIBRARIES += animation/animation.lib
+LIBRARIES += animation/animation.lib
 // LIBRARIES += menu/menu.lib

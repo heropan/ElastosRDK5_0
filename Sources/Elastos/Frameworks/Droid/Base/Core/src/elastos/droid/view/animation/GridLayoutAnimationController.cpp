@@ -2,13 +2,17 @@
 #include "elastos/droid/view/animation/GridLayoutAnimationController.h"
 #include "elastos/droid/view/animation/Animation.h"
 #include "elastos/droid/view/animation/CLinearInterpolator.h"
-#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/R.h"
+
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Animation {
 
+/* GridLayoutAnimationController::GridLayoutAnimationParameters */
 CAR_INTERFACE_IMPL(GridLayoutAnimationController::GridLayoutAnimationParameters, LayoutAnimationController::AnimationParameters, IGridLayoutAnimationParameters);
 
 GridLayoutAnimationController::GridLayoutAnimationParameters::GridLayoutAnimationParameters()
@@ -17,6 +21,14 @@ GridLayoutAnimationController::GridLayoutAnimationParameters::GridLayoutAnimatio
     , mColumnsCount(0)
     , mRowsCount(0)
 {}
+
+GridLayoutAnimationController::GridLayoutAnimationParameters::~GridLayoutAnimationParameters()
+{}
+
+ECode GridLayoutAnimationController::GridLayoutAnimationParameters::constructor()
+{
+    return NOERROR;
+}
 
 ECode GridLayoutAnimationController::GridLayoutAnimationParameters::GetColumn(
     /* [out] */ Int32* column)
@@ -78,24 +90,72 @@ ECode GridLayoutAnimationController::GridLayoutAnimationParameters::SetRowsCount
     return NOERROR;
 }
 
+/* GridLayoutAnimationController */
 CAR_INTERFACE_IMPL(GridLayoutAnimationController, LayoutAnimationController, IGridLayoutAnimationController);
+
 GridLayoutAnimationController::GridLayoutAnimationController()
+    : mColumnDelay(0.0f)
+    , mRowDelay(0.0f)
+    , mDirection(0)
+    , mDirectionPriority(0)
 {}
 
+GridLayoutAnimationController::~GridLayoutAnimationController()
+{}
 
-GridLayoutAnimationController::GridLayoutAnimationController(
+ECode GridLayoutAnimationController::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    constructor(context, attrs);
+    LayoutAnimationController::constructor(context, attrs);
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::GridLayoutAnimation),
+            ARRAY_SIZE(R::styleable::GridLayoutAnimation));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+
+    AutoPtr<ITypedValue> value;
+    a->PeekValue(R::styleable::GridLayoutAnimation_columnDelay, (ITypedValue**)&value);
+
+    AutoPtr<Animation::Description> d = Animation::Description::ParseValue(value);
+    mColumnDelay = d->mValue;
+
+    value = NULL;
+    a->PeekValue(R::styleable::GridLayoutAnimation_rowDelay, (ITypedValue**)&value);
+
+    d = Animation::Description::ParseValue(value);
+    mRowDelay = d->mValue;
+
+    //noinspection PointlessBitwiseExpression
+    a->GetInt32(R::styleable::GridLayoutAnimation_direction,
+            IGridLayoutAnimationController::DIRECTION_LEFT_TO_RIGHT |
+            IGridLayoutAnimationController::DIRECTION_TOP_TO_BOTTOM, &mDirection);
+
+    a->GetInt32(R::styleable::GridLayoutAnimation_directionPriority,
+            IGridLayoutAnimationController::PRIORITY_NONE, &mDirection);
+
+    a->Recycle();
+
+    return NOERROR;
 }
 
-GridLayoutAnimationController::GridLayoutAnimationController(
+ECode GridLayoutAnimationController::constructor(
+    /* [in] */ IAnimation* animation)
+{
+    return constructor(animation, 0.5f, 0.5f);
+}
+
+ECode GridLayoutAnimationController::constructor(
     /* [in] */ IAnimation* animation,
     /* [in] */ Float columnDelay,
     /* [in] */ Float rowDelay)
 {
-    constructor(animation, columnDelay, rowDelay);
+    LayoutAnimationController::constructor(animation);
+    mColumnDelay = columnDelay;
+    mRowDelay = rowDelay;
+
+    return NOERROR;
 }
 
 ECode GridLayoutAnimationController::GetColumnDelay(
@@ -110,7 +170,6 @@ ECode GridLayoutAnimationController::SetColumnDelay(
     /* [in] */ Float columnDelay)
 {
     mColumnDelay = columnDelay;
-
     return NOERROR;
 }
 
@@ -215,7 +274,7 @@ Int64 GridLayoutAnimationController::GetDelayForView(
     }
 
     Float normalizedDelay = viewDelay / totalDelay;
-    mInterpolator->GetInterpolation(normalizedDelay, &normalizedDelay);
+    ITimeInterpolator::Probe(mInterpolator)->GetInterpolation(normalizedDelay, &normalizedDelay);
 
     return (Int64)(normalizedDelay * totalDelay);
 }
@@ -223,8 +282,10 @@ Int64 GridLayoutAnimationController::GetDelayForView(
 Int32 GridLayoutAnimationController::GetTransformedColumnIndex(
     /* [in] */ GridLayoutAnimationParameters* params)
 {
-    Int32 index;
-    switch (GetOrder()) {
+    Int32 order;
+    GetOrder(&order);
+    Int32 index;;
+    switch (order) {
         case ILayoutAnimationController::ORDER_REVERSE:
             index = params->mColumnsCount - 1 - params->mColumn;
             break;
@@ -249,8 +310,10 @@ Int32 GridLayoutAnimationController::GetTransformedColumnIndex(
 Int32 GridLayoutAnimationController::GetTransformedRowIndex(
     /* [in] */ GridLayoutAnimationParameters* params)
 {
+    Int32 order;
+    GetOrder(&order);
     Int32 index;
-    switch (GetOrder()) {
+    switch(order) {
         case ILayoutAnimationController::ORDER_REVERSE:
             index = params->mRowsCount - 1 - params->mRow;
             break;
@@ -269,56 +332,6 @@ Int32 GridLayoutAnimationController::GetTransformedRowIndex(
     }
 
     return index;
-}
-
-ECode GridLayoutAnimationController::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    LayoutAnimationController::constructor(context, attrs);
-
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::GridLayoutAnimation),
-            ARRAY_SIZE(R::styleable::GridLayoutAnimation));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
-
-    AutoPtr<ITypedValue> value;
-    a->PeekValue(R::styleable::GridLayoutAnimation_columnDelay, (ITypedValue**)&value);
-
-    AutoPtr<Animation::Description> d = Animation::Description::ParseValue(value);
-    mColumnDelay = d->mValue;
-
-    value = NULL;
-    a->PeekValue(R::styleable::GridLayoutAnimation_rowDelay, (ITypedValue**)&value);
-
-    d = Animation::Description::ParseValue(value);
-    mRowDelay = d->mValue;
-
-    //noinspection PointlessBitwiseExpression
-    a->GetInt32(R::styleable::GridLayoutAnimation_direction,
-        IGridLayoutAnimationController::DIRECTION_LEFT_TO_RIGHT |
-        IGridLayoutAnimationController::DIRECTION_TOP_TO_BOTTOM,
-        &mDirection);
-
-    a->GetInt32(R::styleable::GridLayoutAnimation_directionPriority,
-        IGridLayoutAnimationController::PRIORITY_NONE, &mDirection);
-
-    a->Recycle();
-
-    return NOERROR;
-}
-
-ECode GridLayoutAnimationController::constructor(
-    /* [in] */ IAnimation* animation,
-    /* [in] */ Float columnDelay,
-    /* [in] */ Float rowDelay)
-{
-    LayoutAnimationController::constructor(animation);
-    mColumnDelay = columnDelay;
-    mRowDelay = rowDelay;
-
-    return NOERROR;
 }
 
 }   //namespace Animation

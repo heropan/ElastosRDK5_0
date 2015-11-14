@@ -15,8 +15,8 @@ module
      */
     /**
      * @Involve
-     * interface Elastos.IO.ICloseable
      * interface IAnimation
+     * interface Elastos.Core.ICloneable
      */
     interface IRotateAnimation {
     }

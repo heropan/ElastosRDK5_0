@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_SCALEANIMATION_H__
 
 #include "elastos/droid/view/animation/Animation.h"
+#include "elastos/droid/view/animation/CScaleAnimation.h"
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Utility::IDisplayMetrics;
@@ -19,48 +20,7 @@ class ScaleAnimation
 public:
     CAR_INTERFACE_DECL();
 
-    ScaleAnimation(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    ScaleAnimation(
-        /* [in] */ Float fromX,
-        /* [in] */ Float toX,
-        /* [in] */ Float fromY,
-        /* [in] */ Float toY);
-
-    ScaleAnimation(
-        /* [in] */ Float fromX,
-        /* [in] */ Float toX,
-        /* [in] */ Float fromY,
-        /* [in] */ Float toY,
-        /* [in] */ Float pivotX,
-        /* [in] */ Float pivotY);
-
-    ScaleAnimation(
-        /* [in] */ Float fromX,
-        /* [in] */ Float toX,
-        /* [in] */ Float fromY,
-        /* [in] */ Float toY,
-        /* [in] */ Float pivotXType,
-        /* [in] */ Float pivotXValue,
-        /* [in] */ Float pivotYType,
-        /* [in] */ Float pivotYValue);
-
-    //@Override
-    CARAPI Initialize(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Int32 parentWidth,
-        /* [in] */ Int32 parentHeight);
-
-protected:
     ScaleAnimation();
-
-    //@Override
-    CARAPI_(void) ApplyTransformation(
-        /* [in] */ Float interpolatedTime,
-        /* [in] */ ITransformation* t);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -97,10 +57,18 @@ protected:
         /* [in] */ Int32 size,
         /* [in] */ Int32 psize);
 
-    virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
+    //@Override
+    CARAPI Initialize(
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 parentWidth,
+        /* [in] */ Int32 parentHeight);
 
-    virtual CARAPI Clone(
-        /* [out] */ IInterface** object);
+protected:
+    //@Override
+    CARAPI_(void) ApplyTransformation(
+        /* [in] */ Float interpolatedTime,
+        /* [in] */ ITransformation* t);
 
 private:
     /**

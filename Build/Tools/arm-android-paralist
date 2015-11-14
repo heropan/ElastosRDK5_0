@@ -191,7 +191,7 @@
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/inputmethod
  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/accessibility
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/animation
+ Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/animation
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/menu
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/impl

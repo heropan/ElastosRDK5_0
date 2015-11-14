@@ -1,7 +1,15 @@
 
 #include "elastos/droid/view/animation/CAccelerateInterpolator.h"
+#include "elastos/droid/internal/view/animation/NativeInterpolatorFactoryHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
+
+using Elastos::Droid::Animation::EIID_ITimeInterpolator;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Internal::View::Animation::EIID_INativeInterpolatorFactory;
+using Elastos::Droid::Internal::View::Animation::NativeInterpolatorFactoryHelper;
+using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
@@ -9,7 +17,16 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CAccelerateInterpolator);
-CAR_INTERFACE_IMPL_4(CAccelerateInterpolator, Object, IAccelerateInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
+
+CAR_INTERFACE_IMPL_4(CAccelerateInterpolator, Object, IAccelerateInterpolator, INativeInterpolatorFactory, IInterpolator, ITimeInterpolator);
+
+CAccelerateInterpolator::CAccelerateInterpolator()
+    : mFactor(0.0f)
+    , mDoubleFactor(0ll)
+{}
+
+CAccelerateInterpolator::~CAccelerateInterpolator()
+{}
 
 ECode CAccelerateInterpolator::constructor()
 {
@@ -45,13 +62,14 @@ ECode CAccelerateInterpolator::constructor(
     /* [in] */ IAttributeSet* attrs)
 {
     AutoPtr<ITypedArray> a;
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+    AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AccelerateInterpolator),
             ARRAY_SIZE(R::styleable::AccelerateInterpolator));
 
     if (theme != NULL) {
         theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
-    } else {
+    }
+    else {
         res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a);
     }
 
@@ -71,7 +89,7 @@ ECode CAccelerateInterpolator::GetInterpolation(
         *output = input * input;
     }
     else {
-        *output =  (Float)Elastos::Core::Math::Pow(input, mDoubleFactor);
+        *output = (Float)Elastos::Core::Math::Pow(input, mDoubleFactor);
     }
 
     return NOERROR;

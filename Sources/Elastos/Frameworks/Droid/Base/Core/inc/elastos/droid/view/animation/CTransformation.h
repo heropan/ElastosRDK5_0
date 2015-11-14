@@ -7,7 +7,9 @@
 #include "elastos/droid/graphics/CMatrix.h"
 
 using Elastos::Droid::Graphics::IMatrix;
-using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Core::IStringBuilder;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
@@ -15,9 +17,17 @@ namespace View {
 namespace Animation {
 
 CarClass(CTransformation)
+    , public Object
+    , public ITransformation
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CTransformation();
+
+    ~CTransformation();
 
     CARAPI constructor();
 
@@ -78,15 +88,37 @@ public:
     CARAPI GetAlpha(
         /* [out] */ Float* pAlpha);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
+    /**
+     * Return a string representation of the transformation in a compact form.
+     */
+    CARAPI ToShortString(
+        /* [out] */ String* str);
+
+    /**
+     * @hide
+     */
+    CARAPI ToShortString(
+        /* [in] */ IStringBuilder* sb);
+
+    /**
+     * Print short string, to optimize dumping.
+     * @hide
+     */
+    CARAPI PrintShortString(
+        /* [in] */ IPrintWriter* pw);
+
 protected:
     AutoPtr<IMatrix> mMatrix;
     Float mAlpha;
     Int32 mTransformationType;
 
+private:
     Boolean mHasClipRect;
     AutoPtr<IRect> mClipRect;
 };
-
 
 }// namespace Animation
 }// namespace View

@@ -16,21 +16,23 @@ class RotateAnimation
 public:
     CAR_INTERFACE_DECL();
 
-    RotateAnimation(
+    RotateAnimation();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    RotateAnimation(
+    CARAPI constructor(
         /* [in] */ Float fromDegrees,
         /* [in] */ Float toDegrees);
 
-    RotateAnimation(
+    CARAPI constructor(
         /* [in] */ Float fromDegrees,
         /* [in] */ Float toDegrees,
         /* [in] */ Float pivotX,
         /* [in] */ Float pivotY);
 
-    RotateAnimation(
+    CARAPI constructor(
         /* [in] */ Float fromDegrees,
         /* [in] */ Float toDegrees,
         /* [in] */ Int32 pivotXType,
@@ -45,40 +47,11 @@ public:
         /* [in] */ Int32 parentWidth,
         /* [in] */ Int32 parentHeight);
 
-    virtual CARAPI Clone(
-        /* [out] */ IInterface** object);
-
 protected:
-    RotateAnimation();
-
     //@Override
     CARAPI_(void) ApplyTransformation(
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ Float fromDegrees,
-        /* [in] */ Float toDegrees);
-
-    CARAPI constructor(
-        /* [in] */ Float fromDegrees,
-        /* [in] */ Float toDegrees,
-        /* [in] */ Float pivotX,
-        /* [in] */ Float pivotY);
-
-    CARAPI constructor(
-        /* [in] */ Float fromDegrees,
-        /* [in] */ Float toDegrees,
-        /* [in] */ Int32 pivotXType,
-        /* [in] */ Float pivotXValue,
-        /* [in] */ Int32 pivotYType,
-        /* [in] */ Float pivotYValue);
-
-    virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
 
 private:
     /**

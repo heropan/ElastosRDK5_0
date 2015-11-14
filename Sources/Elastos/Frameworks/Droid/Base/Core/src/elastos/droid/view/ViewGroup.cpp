@@ -6286,7 +6286,7 @@ ECode ViewGroup::DispatchApplyWindowInsets(
 }
 
 ECode ViewGroup::GetLayoutAnimationListener(
-    /* [out] */ IAnimationListener** res)
+    /* [out] */ IAnimationAnimationListener** res)
 {
     VALIDATE_NOT_NULL(res)
     *res = mAnimationListener;
@@ -6424,7 +6424,7 @@ ECode ViewGroup::ChildDrawableStateChanged(
 }
 
 ECode ViewGroup::SetLayoutAnimationListener(
-    /* [in] */ IAnimationListener* animationListener)
+    /* [in] */ IAnimationAnimationListener* animationListener)
 {
     mAnimationListener = animationListener;
     return NOERROR;

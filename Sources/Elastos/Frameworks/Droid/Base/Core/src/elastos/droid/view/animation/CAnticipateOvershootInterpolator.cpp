@@ -1,6 +1,11 @@
 
 #include "elastos/droid/view/animation/CAnticipateOvershootInterpolator.h"
+#include "elastos/droid/internal/view/animation/NativeInterpolatorFactoryHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
+
+using Elastos::Droid::Animation::EIID_ITimeInterpolator;
+using Elastos::Droid::Internal::View::Animation::EIID_INativeInterpolatorFactory;
+using Elastos::Droid::Internal::View::Animation::NativeInterpolatorFactoryHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -8,12 +13,19 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CAnticipateOvershootInterpolator);
-CAR_INTERFACE_IMPL_4(CAnticipateOvershootInterpolator, Object, IAnticipateOvershootInterpolator,INativeInterpolatorFactory,IInterpolator,ITimeInterpolator);
+
+CAR_INTERFACE_IMPL_4(CAnticipateOvershootInterpolator, Object, IAnticipateOvershootInterpolator, INativeInterpolatorFactory, IInterpolator, ITimeInterpolator);
+
+CAnticipateOvershootInterpolator::CAnticipateOvershootInterpolator()
+    : mTension(0.0f)
+{}
+
+CAnticipateOvershootInterpolator::~CAnticipateOvershootInterpolator()
+{}
 
 ECode CAnticipateOvershootInterpolator::constructor()
 {
     mTension = 2.0f * 1.5f;
-
     return NOERROR;
 }
 
@@ -21,7 +33,6 @@ ECode CAnticipateOvershootInterpolator::constructor(
     /* [in] */ Float tension)
 {
     mTension = tension * 1.5f;
-
     return NOERROR;
 }
 
@@ -30,7 +41,6 @@ ECode CAnticipateOvershootInterpolator::constructor(
     /* [in] */ Float extraTension)
 {
     mTension = tension * extraTension;
-
     return NOERROR;
 }
 

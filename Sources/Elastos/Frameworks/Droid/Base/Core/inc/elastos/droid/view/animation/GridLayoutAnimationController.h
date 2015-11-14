@@ -21,13 +21,17 @@ public:
      * animation.
      */
     class GridLayoutAnimationParameters
-            : public LayoutAnimationController::AnimationParameters
-            , public IGridLayoutAnimationParameters
+        : public LayoutAnimationController::AnimationParameters
+        , public IGridLayoutAnimationParameters
     {
     public:
         CAR_INTERFACE_DECL();
 
         GridLayoutAnimationParameters();
+
+        ~GridLayoutAnimationParameters();
+
+        CARAPI constructor();
 
         CARAPI GetColumn(
             /* [out] */ Int32* column);
@@ -79,6 +83,10 @@ public:
 public:
     CAR_INTERFACE_DECL();
 
+    GridLayoutAnimationController();
+
+    ~GridLayoutAnimationController();
+
     /**
      * Creates a new grid layout animation controller from external resources.
      *
@@ -87,9 +95,18 @@ public:
      * @param attrs the attributes of the XML tag that is inflating the
      *        layout animation controller
      */
-    GridLayoutAnimationController(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
+
+    /**
+     * Creates a new layout animation controller with a delay of 50%
+     * for both rows and columns and the specified animation.
+     *
+     * @param animation the animation to use on each child of the view group
+     */
+    CARAPI constructor(
+        /* [in] */ IAnimation* animation);
 
     /**
      * Creates a new layout animation controller with the specified delays
@@ -99,10 +116,10 @@ public:
      * @param columnDelay the delay by which each column animation must be offset
      * @param rowDelay the delay by which each row animation must be offset
      */
-    GridLayoutAnimationController(
+    CARAPI constructor(
         /* [in] */ IAnimation* animation,
-        /* [in] */ Float columnDelay = 0.5f,
-        /* [in] */ Float rowDelay = 0.5f);
+        /* [in] */ Float columnDelay,
+        /* [in] */ Float rowDelay);
 
     /**
      * Returns the delay by which the children's animation are offset from one
@@ -115,7 +132,7 @@ public:
      * @see #getRowDelay()
      * @see #setRowDelay(Float)
      */
-    virtual CARAPI GetColumnDelay(
+    CARAPI GetColumnDelay(
         /* [out] */ Float* columnDelay);
 
     /**
@@ -128,7 +145,7 @@ public:
      * @see #getRowDelay()
      * @see #setRowDelay(Float)
      */
-    virtual CARAPI SetColumnDelay(
+    CARAPI SetColumnDelay(
         /* [in] */ Float columnDelay);
 
     /**
@@ -142,7 +159,7 @@ public:
      * @see #getColumnDelay()
      * @see #setColumnDelay(Float)
      */
-    virtual CARAPI GetRowDelay(
+    CARAPI GetRowDelay(
         /* [out] */ Float* rowDelay);
 
     /**
@@ -155,7 +172,7 @@ public:
      * @see #getColumnDelay()
      * @see #setColumnDelay(Float)
      */
-    virtual CARAPI SetRowDelay(
+    CARAPI SetRowDelay(
         /* [in] */ Float rowDelay);
 
     /**
@@ -173,7 +190,7 @@ public:
      * @see #IGridLayoutAnimationController::DIRECTION_HORIZONTAL_MASK
      * @see #DIRECTION_VERTICAL_MASK
      */
-    virtual CARAPI GetDirection(
+    CARAPI GetDirection(
         /* [out] */ Int32* direction);
 
     /**
@@ -191,7 +208,7 @@ public:
      * @see #IGridLayoutAnimationController::DIRECTION_HORIZONTAL_MASK
      * @see #DIRECTION_VERTICAL_MASK
      */
-    virtual CARAPI SetDirection(
+    CARAPI SetDirection(
         /* [in] */ Int32 direction);
 
     /**
@@ -206,7 +223,7 @@ public:
      * @see #IGridLayoutAnimationController::PRIORITY_NONE
      * @see #IGridLayoutAnimationController::PRIORITY_ROW
      */
-    virtual CARAPI GetDirectionPriority(
+    CARAPI GetDirectionPriority(
         /* [out] */ Int32* directionPriority);
 
     /**
@@ -221,34 +238,23 @@ public:
      * @see #IGridLayoutAnimationController::PRIORITY_NONE
      * @see #IGridLayoutAnimationController::PRIORITY_ROW
      */
-    virtual CARAPI SetDirectionPriority(
+    CARAPI SetDirectionPriority(
         /* [in] */ Int32 directionPriority);
 
     /**
      * {@inheritDoc}
      */
     //@Override
-    virtual CARAPI WillOverlap(
+    CARAPI WillOverlap(
         /* [out] */ Boolean* willOverlap);
 
 protected:
-    GridLayoutAnimationController();
-
     /**
      * {@inheritDoc}
      */
     //@Override
     CARAPI_(Int64) GetDelayForView(
         /* [in] */ IView* view);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ IAnimation* animation,
-        /* [in] */ Float columnDelay = 0.5f,
-        /* [in] */ Float rowDelay = 0.5f);
 
 private:
     CARAPI_(Int32) GetTransformedColumnIndex(

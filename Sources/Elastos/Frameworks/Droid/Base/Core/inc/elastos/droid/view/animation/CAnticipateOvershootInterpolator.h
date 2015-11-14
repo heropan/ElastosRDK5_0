@@ -4,11 +4,16 @@
 
 #include "_Elastos_Droid_View_Animation_CAnticipateOvershootInterpolator.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::R;
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Internal::View::Animation::INativeInterpolatorFactory;
+using Elastos::Droid::R;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +21,7 @@ namespace View {
 namespace Animation {
 
 CarClass(CAnticipateOvershootInterpolator)
-    : public Object
+    , public Object
     , public IAnticipateOvershootInterpolator
     , public INativeInterpolatorFactory
     , public IInterpolator
@@ -26,6 +31,10 @@ public:
     CAR_INTERFACE_DECL();
 
     CAR_OBJECT_DECL();
+
+    CAnticipateOvershootInterpolator();
+
+    ~CAnticipateOvershootInterpolator();
 
     CARAPI constructor();
 

@@ -236,11 +236,11 @@ ECode CAccessibilityManager::SendAccessibilityEvent(
         Logger::E(localLOG_TAG, "Error during sending %p 0x%08x", event, ec);
     }
     else {
-        Binder::RestoreCallingIdentity(identityToken);
         if (DEBUG) {
             Logger::I(localLOG_TAG, " %p sent", event);
         }
     }
+    Binder::RestoreCallingIdentity(identityToken);
 
     if (doRecycle) {
         IAccessibilityRecord::Probe(event)->Recycle();

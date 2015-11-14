@@ -5,10 +5,10 @@
 #include "_Elastos_Droid_View_Animation_CAccelerateDecelerateInterpolator.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Internal::View::Animation::INativeInterpolatorFactory;
-using Elastos::Droid::Animation::ITimeInterpolator;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -26,6 +26,10 @@ public:
     CAR_INTERFACE_DECL();
 
     CAR_OBJECT_DECL();
+
+    CAccelerateDecelerateInterpolator();
+
+    ~CAccelerateDecelerateInterpolator();
 
     CARAPI constructor();
 

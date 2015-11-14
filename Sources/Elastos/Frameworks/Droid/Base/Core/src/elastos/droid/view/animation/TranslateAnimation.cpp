@@ -1,5 +1,9 @@
 
 #include "elastos/droid/view/animation/CTranslateAnimation.h"
+#include "elastos/droid/R.h"
+
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
@@ -17,105 +21,6 @@ TranslateAnimation::TranslateAnimation()
     , mFromYValue(0.0f)
     , mToYValue(0.0f)
 {}
-
-TranslateAnimation::TranslateAnimation(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    constructor(context, attrs);
-}
-
-TranslateAnimation::TranslateAnimation(
-    /* [in] */ Float fromXDelta,
-    /* [in] */ Float toXDelta,
-    /* [in] */ Float fromYDelta,
-    /* [in] */ Float toYDelta)
-{
-    constructor(fromXDelta, toXDelta, fromYDelta, toYDelta);
-}
-
-TranslateAnimation::TranslateAnimation(
-    /* [in] */ Float fromXType,
-    /* [in] */ Float fromXValue,
-    /* [in] */ Float toXType,
-    /* [in] */ Float toXValue,
-    /* [in] */ Float fromYType,
-    /* [in] */ Float fromYValue,
-    /* [in] */ Float toYType,
-    /* [in] */ Float toYValue)
-{
-    constructor(fromXType, fromXValue, toXType, toXValue,
-        fromYType, fromYValue, toYType, toYValue);
-}
-
-AutoPtr<IAnimation> TranslateAnimation::GetCloneInstance()
-{
-    AutoPtr<ITranslateAnimation> result;
-    ASSERT_SUCCEEDED(CTranslateAnimation::New(0.f, 0.f, 0.f, 0.f, (ITranslateAnimation**)&result));
-    return result.Get();
-}
-
-ECode TranslateAnimation::Clone(
-    /* [out] */ IInterface** object)
-{
-    VALIDATE_NOT_NULL(object);
-    *object = NULL;
-    AutoPtr<IAnimation> result;
-    Animation::Clone((IInterface**)&result);
-    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_ITranslateAnimation)) {
-        return NOERROR;
-    }
-
-    Animation* temp = (Animation*)result->Probe(EIID_Animation);
-    TranslateAnimation* animation = (TranslateAnimation*)temp;
-    animation->mFromXType = mFromXType;
-    animation->mToXType = mToXType;
-    animation->mFromYType = mFromYType;
-    animation->mFromXValue = mFromXValue;
-    animation->mToXValue = mToXValue;
-    animation->mFromYValue = mFromYValue;
-    animation->mToYValue = mToYValue;
-    animation->mFromXDelta = mFromXDelta;
-    animation->mToXDelta = mToXDelta;
-    animation->mFromYDelta = mFromYDelta;
-    animation->mToYDelta = mToYDelta;
-    *object = result;
-    REFCOUNT_ADD(*object);
-    return NOERROR;
-}
-
-void TranslateAnimation::ApplyTransformation(
-    /* [in] */ Float interpolatedTime,
-    /* [in] */ ITransformation* t)
-{
-    Float dx = mFromXDelta;
-    Float dy = mFromYDelta;
-    if (mFromXDelta != mToXDelta) {
-        dx = mFromXDelta + ((mToXDelta - mFromXDelta) * interpolatedTime);
-    }
-    if (mFromYDelta != mToYDelta) {
-        dy = mFromYDelta + ((mToYDelta - mFromYDelta) * interpolatedTime);
-    }
-
-    AutoPtr<IMatrix> matrix;
-    t->GetMatrix((IMatrix**)&matrix);
-    matrix->SetTranslate(dx, dy);
-}
-
-ECode TranslateAnimation::Initialize(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height,
-    /* [in] */ Int32 parentWidth,
-    /* [in] */ Int32 parentHeight)
-{
-    Animation::Initialize(width, height, parentWidth, parentHeight);
-    mFromXDelta = ResolveSize(mFromXType, mFromXValue, width, parentWidth);
-    mToXDelta = ResolveSize(mToXType, mToXValue, width, parentWidth);
-    mFromYDelta = ResolveSize(mFromYType, mFromYValue, height, parentHeight);
-    mToYDelta = ResolveSize(mToYType, mToYValue, height, parentHeight);
-
-    return NOERROR;
-}
 
 ECode TranslateAnimation::constructor(
     /* [in] */ IContext* context,
@@ -196,6 +101,39 @@ ECode TranslateAnimation::constructor(
     mToXType = toXType;
     mFromYType = fromYType;
     mToYType = toYType;
+
+    return NOERROR;
+}
+
+void TranslateAnimation::ApplyTransformation(
+    /* [in] */ Float interpolatedTime,
+    /* [in] */ ITransformation* t)
+{
+    Float dx = mFromXDelta;
+    Float dy = mFromYDelta;
+    if (mFromXDelta != mToXDelta) {
+        dx = mFromXDelta + ((mToXDelta - mFromXDelta) * interpolatedTime);
+    }
+    if (mFromYDelta != mToYDelta) {
+        dy = mFromYDelta + ((mToYDelta - mFromYDelta) * interpolatedTime);
+    }
+
+    AutoPtr<IMatrix> matrix;
+    t->GetMatrix((IMatrix**)&matrix);
+    matrix->SetTranslate(dx, dy);
+}
+
+ECode TranslateAnimation::Initialize(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 parentWidth,
+    /* [in] */ Int32 parentHeight)
+{
+    Animation::Initialize(width, height, parentWidth, parentHeight);
+    mFromXDelta = ResolveSize(mFromXType, mFromXValue, width, parentWidth);
+    mToXDelta = ResolveSize(mToXType, mToXValue, width, parentWidth);
+    mFromYDelta = ResolveSize(mFromYType, mFromYValue, height, parentHeight);
+    mToYDelta = ResolveSize(mToYType, mToYValue, height, parentHeight);
 
     return NOERROR;
 }

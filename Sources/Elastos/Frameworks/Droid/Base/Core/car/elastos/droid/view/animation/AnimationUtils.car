@@ -118,7 +118,6 @@ module
             [in] IResourcesTheme* theme,
             [in] Int32 id,
             [out] IInterpolator** interpolator);
-
     }
 
     }   //namespace Animation

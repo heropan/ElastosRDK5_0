@@ -1,5 +1,8 @@
 
-#include "CClipRectAnimation.h"
+#include "elastos/droid/view/animation/CClipRectAnimation.h"
+#include "elastos/droid/graphics/CRect.h"
+
+using Elastos::Droid::Graphics::CRect;
 
 namespace Elastos {
 namespace Droid {
@@ -7,6 +10,7 @@ namespace View {
 namespace Animation {
 
 CAR_OBJECT_IMPL(CClipRectAnimation);
+
 CClipRectAnimation::CClipRectAnimation()
 {
     CRect::New((IRect**)&mFromRect);

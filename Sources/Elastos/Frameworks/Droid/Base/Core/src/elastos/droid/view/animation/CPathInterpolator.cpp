@@ -1,15 +1,33 @@
 
-#include "CPathInterpolator.h"
+#include "elastos/droid/view/animation/CPathInterpolator.h"
+#include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/utility/PathParser.h"
+#include "elastos/droid/R.h"
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Droid::Animation::EIID_ITimeInterpolator;
+using Elastos::Droid::Graphics::CPath;
+using Elastos::Droid::R;
+using Elastos::Droid::Utility::PathParser;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Animation {
 
-CAR_OBJECT_IMPL(CPathInterpolator);
-CAR_INTERFACE_IMPL_3(CPathInterpolator, Object, IPathInterpolator,IInterpolator,ITimeInterpolator);
-
 const Float CPathInterpolator::PRECISION = 0.002f;
+
+CAR_OBJECT_IMPL(CPathInterpolator);
+
+CAR_INTERFACE_IMPL_3(CPathInterpolator, Object, IPathInterpolator, IInterpolator, ITimeInterpolator);
+
+CPathInterpolator::CPathInterpolator()
+{}
+
+CPathInterpolator::~CPathInterpolator()
+{}
+
 ECode CPathInterpolator::constructor(
     /* [in] */ IPath* path)
 {
@@ -55,7 +73,8 @@ ECode CPathInterpolator::constructor(
 
     if (theme != NULL) {
         theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
-    } else {
+    }
+    else {
         res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a);
     }
     FAIL_RETURN(ParseInterpolatorFromTypeArray(a));
@@ -76,21 +95,26 @@ ECode CPathInterpolator::ParseInterpolatorFromTypeArray(
         if (path == NULL) {
             // throw new InflateException("The path is null, which is created"
             //         + " from " + pathData);
+            Slogger::E("CPathInterpolator", "The path is null, which is created from %s", pathData.string());
             return E_INFLATE_EXCEPTION;
         }
 
         FAIL_RETURN(InitPath(path));
-    } else {
-        if (!(a->HasValue(R::styleable::PathInterpolator_controlX1, &has), has)) {
+    }
+    else {
+        if (a->HasValue(R::styleable::PathInterpolator_controlX1, &has), !has) {
             // throw new InflateException("pathInterpolator requires the controlX1 attribute");
-            return E_INFLATE_EXCEPTION;
-        } else if (!a.hasValue(R.styleable.PathInterpolator_controlY1)) {
-            // throw new InflateException("pathInterpolator requires the controlY1 attribute");
+            Slogger::E("CPathInterpolator", "pathInterpolator requires the controlX1 attribute");
             return E_INFLATE_EXCEPTION;
         }
-        Float x1 = 0f;
+        else if (a->HasValue(R::styleable::PathInterpolator_controlY1, &has), !has) {
+            // throw new InflateException("pathInterpolator requires the controlY1 attribute");
+            Slogger::E("CPathInterpolator", "pathInterpolator requires the controlY1 attribute");
+            return E_INFLATE_EXCEPTION;
+        }
+        Float x1;
         a->GetFloat(R::styleable::PathInterpolator_controlX1, 0, &x1);
-        Float y1 = 0f;
+        Float y1;
         a->GetFloat(R::styleable::PathInterpolator_controlY1, 0, &y1);
 
         Boolean hasX2 = FALSE;
@@ -101,20 +125,21 @@ ECode CPathInterpolator::ParseInterpolatorFromTypeArray(
         if (hasX2 != hasY2) {
             // throw new InflateException(
             //         "pathInterpolator requires both controlX2 and controlY2 for cubic Beziers.");
+            Slogger::E("CPathInterpolator", "pathInterpolator requires both controlX2 and controlY2 for cubic Beziers.");
             return E_INFLATE_EXCEPTION;
         }
 
         if (!hasX2) {
             FAIL_RETURN(InitQuad(x1, y1));
-        } else {
-            Float x2 = 0f;
+        }
+        else {
+            Float x2;
             a->GetFloat(R::styleable::PathInterpolator_controlX2, 0, &x2);
-            Float y2 = 0f;
+            Float y2;
             a->GetFloat(R::styleable::PathInterpolator_controlY2, 0, &y2);
             FAIL_RETURN(InitCubic(x1, y1, x2, y2));
         }
     }
-
     return NOERROR;
 }
 
@@ -125,7 +150,7 @@ ECode CPathInterpolator::InitQuad(
     AutoPtr<IPath> path;
     CPath::New((IPath**)&path);
     path->MoveTo(0, 0);
-    path->QuadTo(controlX, controlY, 1f, 1f);
+    path->QuadTo(controlX, controlY, 1, 1);
     return InitPath(path);
 }
 
@@ -138,14 +163,14 @@ ECode CPathInterpolator::InitCubic(
     AutoPtr<IPath> path;
     CPath::New((IPath**)&path);
     path->MoveTo(0, 0);
-    path->CubicTo(x1, y1, x2, y2, 1f, 1f);
+    path->CubicTo(x1, y1, x2, y2, 1, 1);
     return InitPath(path);
 }
 
 ECode CPathInterpolator::InitPath(
     /* [in] */ IPath* path)
 {
-    AutoPtr<ArrayOf<Float> > pointComponents;
+    AutoPtr< ArrayOf<Float> > pointComponents;
     path->Approximate(PRECISION, (ArrayOf<Float>**)&pointComponents);
 
     Int32 numPoints = pointComponents->GetLength() / 3;
@@ -153,6 +178,7 @@ ECode CPathInterpolator::InitPath(
             || (*pointComponents)[pointComponents->GetLength() - 2] != 1
             || (*pointComponents)[pointComponents->GetLength() - 1] != 1) {
         // throw new IllegalArgumentException("The Path must start at (0,0) and end at (1,1)");
+        Slogger::E("CPathInterpolator", "The Path must start at (0,0) and end at (1,1)");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -168,10 +194,12 @@ ECode CPathInterpolator::InitPath(
         if (fraction == prevFraction && x != prevX) {
             // throw new IllegalArgumentException(
             //         "The Path cannot have discontinuity in the X axis.");
+            Slogger::E("CPathInterpolator", "The Path cannot have discontinuity in the X axis.");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         if (x < prevX) {
             // throw new IllegalArgumentException("The Path cannot loop back on itself.");
+            Slogger::E("CPathInterpolator", "The Path cannot loop back on itself.");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         (*mX)[i] = x;
@@ -188,22 +216,24 @@ ECode CPathInterpolator::GetInterpolation(
     /* [out] */ Float* interpolation)
 {
     VALIDATE_NOT_NULL(interpolation);
-    *interpolation = 0f;
+    *interpolation = 0;
     if (t <= 0) {
         return NOERROR;
-    } else if (t >= 1) {
+    }
+    else if (t >= 1) {
         *interpolation = 1;
         return NOERROR;
     }
     // Do a binary search for the correct x to interpolate between.
     Int32 startIndex = 0;
-    Int32 endIndex = mX.length - 1;
+    Int32 endIndex = mX->GetLength() - 1;
 
     while (endIndex - startIndex > 1) {
         Int32 midIndex = (startIndex + endIndex) / 2;
-        if (t < mX[midIndex]) {
+        if (t < (*mX)[midIndex]) {
             endIndex = midIndex;
-        } else {
+        }
+        else {
             startIndex = midIndex;
         }
     }

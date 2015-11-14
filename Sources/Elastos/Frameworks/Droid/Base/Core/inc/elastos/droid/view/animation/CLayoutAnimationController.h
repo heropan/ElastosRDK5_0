@@ -10,25 +10,11 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-CarClass(CLayoutAnimationController), public LayoutAnimationController
+CarClass(CLayoutAnimationController)
+    , public LayoutAnimationController
 {
 public:
-    CAR_INTERFACE_DECL();
-
     CAR_OBJECT_DECL();
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ IAnimation* animation);
-
-    CARAPI constructor(
-        /* [in] */ IAnimation* animation,
-        /* [in] */ Float delay);
-
-private:
 };
 
 }   //namespace Animation

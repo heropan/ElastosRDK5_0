@@ -1,6 +1,9 @@
 
 module
 {
+    using interface Elastos.Core.IStringBuilder;
+    using interface Elastos.IO.IPrintWriter;
+
     interface Elastos.Droid.Graphics.IMatrix;
     interface Elastos.Droid.Graphics.IRect;
 
@@ -138,6 +141,19 @@ module
          */
         ToShortString(
             [out] String* result);
+
+        /**
+         * @hide
+         */
+        ToShortString(
+            [in] IStringBuilder* sb);
+
+        /**
+         * Print short string, to optimize dumping.
+         * @hide
+         */
+        PrintShortString(
+            [in] IPrintWriter* pw);
     }
 
     }   //namespace Animation

@@ -8,7 +8,7 @@ using Elastos::Core::IComparable;
 using Elastos::Droid::Graphics::IPointF;
 using Elastos::Droid::Animation::ITransitionListener;
 using Elastos::Droid::Animation::ILayoutTransition;
-using Elastos::Droid::View::Animation::IAnimationListener;
+using Elastos::Droid::View::Animation::IAnimationAnimationListener;
 using Elastos::Droid::View::Animation::ILayoutAnimationController;
 
 namespace Elastos {
@@ -823,7 +823,7 @@ public:
      * @return an {@link android.view.animation.Animation.AnimationListener}
      */
     virtual CARAPI GetLayoutAnimationListener(
-        /* [out] */ IAnimationListener** res);
+        /* [out] */ IAnimationAnimationListener** res);
 
     /**
      * Sets whether this ViewGroup's drawable states also include
@@ -861,7 +861,7 @@ public:
      * @param animationListener the layout animation listener
      */
     virtual CARAPI SetLayoutAnimationListener(
-        /* [in] */ IAnimationListener* animationListener);
+        /* [in] */ IAnimationAnimationListener* animationListener);
 
     virtual CARAPI SetMotionEventSplittingEnabled(
         /* [in] */ Boolean split);
@@ -2110,7 +2110,7 @@ private:
 
     // Layout animation
     AutoPtr<ILayoutAnimationController> mLayoutAnimationController;
-    AutoPtr<IAnimationListener> mAnimationListener;
+    AutoPtr<IAnimationAnimationListener> mAnimationListener;
 
     // First touch target in the linked list of touch targets.
     AutoPtr<TouchTarget> mFirstTouchTarget;

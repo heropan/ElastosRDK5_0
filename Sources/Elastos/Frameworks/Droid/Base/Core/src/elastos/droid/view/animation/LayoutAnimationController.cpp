@@ -4,24 +4,38 @@
 #include "elastos/droid/view/animation/Animation.h"
 #include "elastos/droid/view/animation/CLinearInterpolator.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <stdlib.h>
 
-using namespace Elastos::Core;
+using Elastos::Droid::R;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Animation {
 
+/* LayoutAnimationController::AnimationParameters */
 CAR_INTERFACE_IMPL(LayoutAnimationController::AnimationParameters, Object, IAnimationParameters);
+
 LayoutAnimationController::AnimationParameters::AnimationParameters()
-        : mCount(0), mIndex(0)
+    : mCount(0)
+    , mIndex(0)
 {}
+
+LayoutAnimationController::AnimationParameters::~AnimationParameters()
+{}
+
+ECode LayoutAnimationController::AnimationParameters::constructor()
+{
+    return NOERROR;
+}
 
 ECode LayoutAnimationController::AnimationParameters::GetCount(
     /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count);
     *count = mCount;
     return NOERROR;
 }
@@ -36,6 +50,7 @@ ECode LayoutAnimationController::AnimationParameters::SetCount(
 ECode LayoutAnimationController::AnimationParameters::GetIndex(
     /* [out] */ Int32* index)
 {
+    VALIDATE_NOT_NULL(index);
     *index = mIndex;
     return NOERROR;
 }
@@ -47,26 +62,66 @@ ECode LayoutAnimationController::AnimationParameters::SetIndex(
     return NOERROR;
 }
 
+/* LayoutAnimationController */
 CAR_INTERFACE_IMPL(LayoutAnimationController, Object, ILayoutAnimationController);
+
 LayoutAnimationController::LayoutAnimationController()
     : mDelay(0.f)
-    , mOrder(0.f)
-    , mDuration(0L)
-    , mMaxDelay(0L)
+    , mOrder(0)
+    , mDuration(0ll)
+    , mMaxDelay(0ll)
 {}
 
-LayoutAnimationController::LayoutAnimationController(
+LayoutAnimationController::~LayoutAnimationController()
+{}
+
+ECode LayoutAnimationController::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    constructor(context, attrs);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32*>(R::styleable::LayoutAnimation),
+            ARRAY_SIZE(R::styleable::LayoutAnimation));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+
+    AutoPtr<ITypedValue> value;
+    a->PeekValue(R::styleable::LayoutAnimation_delay, (ITypedValue**)&value);
+
+    AutoPtr<Animation::Description> d = Animation::Description::ParseValue(value);
+    mDelay = d->mValue;
+
+    a->GetInt32(R::styleable::LayoutAnimation_animationOrder,
+            ILayoutAnimationController::ORDER_NORMAL, &mOrder);
+
+    Int32 resource;
+    a->GetResourceId(R::styleable::LayoutAnimation_animation, 0, &resource);
+    if (resource > 0) {
+        SetAnimation(context, resource);
+    }
+
+    a->GetResourceId(R::styleable::LayoutAnimation_interpolator, 0, &resource);
+    if (resource > 0) {
+        SetInterpolator(context, resource);
+    }
+
+    a->Recycle();
+
+    return NOERROR;
 }
 
-LayoutAnimationController::LayoutAnimationController(
+ECode LayoutAnimationController::constructor(
+    /* [in] */ IAnimation* animation)
+{
+    return constructor(animation, 0.5f);
+}
+
+ECode LayoutAnimationController::constructor(
     /* [in] */ IAnimation* animation,
     /* [in] */ Float delay)
 {
-    constructor(animation, delay);
+    mDelay = delay;
+    return SetAnimation(animation);
 }
 
 ECode LayoutAnimationController::GetOrder(
@@ -99,7 +154,6 @@ ECode LayoutAnimationController::SetAnimation(
 {
     mAnimation = animation;
     mAnimation->SetFillBefore(TRUE);
-
     return NOERROR;
 }
 
@@ -180,8 +234,13 @@ ECode LayoutAnimationController::GetAnimationForView(
     Int64 delay = GetDelayForView(view) + startOffset;
     mMaxDelay = Elastos::Core::Math::Max(mMaxDelay, delay);
 
-    mAnimation->Clone((IInterface**)animation);
-    animation->SetStartOffset(delay);
+    AutoPtr<IInterface> obj;
+    ICloneable::Probe(mAnimation)->Clone((IInterface**)&obj);
+    AutoPtr<IAnimation> anim = IAnimation::Probe(obj);
+    anim->SetStartOffset(delay);
+    *animation = anim;
+    REFCOUNT_ADD(*animation);
+
     return NOERROR;
 }
 
@@ -191,8 +250,9 @@ ECode LayoutAnimationController::IsDone(
     VALIDATE_NOT_NULL(done);
     Int64 startTime;
     mAnimation->GetStartTime(&startTime);
-    *done AnimationUtils::CurrentAnimationTimeMillis() >
-        startTime + mMaxDelay + mDuration;
+    Int64 time;
+    *done = (AnimationUtils::CurrentAnimationTimeMillis(&time), time) >
+            startTime + mMaxDelay + mDuration;
     return NOERROR;
 }
 
@@ -220,7 +280,7 @@ Int64 LayoutAnimationController::GetDelayForView(
     }
 
     Float normalizedDelay = viewDelay / totalDelay;
-    mInterpolator->GetInterpolation(normalizedDelay, &normalizedDelay);
+    ITimeInterpolator::Probe(mInterpolator)->GetInterpolation(normalizedDelay, &normalizedDelay);
 
     return (Int64)(normalizedDelay * totalDelay);
 }
@@ -242,7 +302,9 @@ Float LayoutAnimationController::GetRandomFloat()
 Int32 LayoutAnimationController::GetTransformedIndex(
     /* [in] */ AnimationParameters* params)
 {
-    switch (GetOrder()) {
+    Int32 order;
+    GetOrder(&order);
+    switch(order) {
         case ILayoutAnimationController::ORDER_REVERSE:
             return params->mCount - 1 - params->mIndex;
         case ILayoutAnimationController::ORDER_RANDOM:
@@ -251,51 +313,6 @@ Int32 LayoutAnimationController::GetTransformedIndex(
         default:
             return params->mIndex;
     }
-}
-
-ECode LayoutAnimationController::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32*>(R::styleable::LayoutAnimation),
-            ARRAY_SIZE(R::styleable::LayoutAnimation));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
-
-    AutoPtr<ITypedValue> value;
-    a->PeekValue(R::styleable::LayoutAnimation_delay, (ITypedValue**)&value);
-
-    AutoPtr<Animation::Description> d = Animation::Description::ParseValue(value);
-    mDelay = d->mValue;
-
-    a->GetInt32(R::styleable::LayoutAnimation_animationOrder,
-        ILayoutAnimationController::ORDER_NORMAL, &mOrder);
-
-    Int32 resource;
-    a->GetResourceId(R::styleable::LayoutAnimation_animation, 0, &resource);
-    if (resource > 0) {
-        SetAnimation(context, resource);
-    }
-
-    a->GetResourceId(R::styleable::LayoutAnimation_interpolator, 0, &resource);
-    if (resource > 0) {
-        SetInterpolator(context, resource);
-    }
-
-    a->Recycle();
-
-    return NOERROR;
-}
-
-ECode LayoutAnimationController::constructor(
-    /* [in] */ IAnimation* animation,
-    /* [in] */ Float delay)
-{
-    mDelay = delay;
-    SetAnimation(animation);
-
-    return NOERROR;
 }
 
 }   //namespace Animation
