@@ -1035,6 +1035,12 @@ module
          */
         const Int32 CONTEXT_RESTRICTED = 0x00000004;
 
+        /**
+         * @hide Used to indicate we should tell the activity manager about the process
+         * loading this code.
+         */
+        const Int32 CONTEXT_REGISTER_PACKAGE = 0x40000000;
+
         /** Return an AssetManager instance for your application's package. */
         GetAssets(
             [out] IAssetManager** assetManager);

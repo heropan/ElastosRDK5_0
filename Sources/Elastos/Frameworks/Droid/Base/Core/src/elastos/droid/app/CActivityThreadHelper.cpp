@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CActivityThreadHelper, Object, IActivityThreadHelper)
+
+CAR_SINGLETON_IMPL(CActivityThreadHelper)
+
 ECode CActivityThreadHelper::GetCurrentActivityThread(
     /* [out] */ IActivityThread** thread)
 {
@@ -21,34 +25,25 @@ ECode CActivityThreadHelper::GetCurrentPackageName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
-    *name = NULL;
+    *name = CActivityThread::GetCurrentPackageName();
+    return NOERROR;
+}
 
-    AutoPtr<IActivityThread> at = CActivityThread::GetCurrentActivityThread();
-    if (at != NULL) {
-        CActivityThread* am = (CActivityThread*)at.Get();
-        if (am->mBoundApplication = NULL) {
-            *name = am->mBoundApplication->mProcessName;
-        }
-    }
-
+ECode CActivityThreadHelper::GetCurrentProcessName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+    *name = CActivityThread::GetCurrentProcessName();
     return NOERROR;
 }
 
 ECode CActivityThreadHelper::GetCurrentApplication(
     /* [out] */ IApplication** app)
 {
-    VALIDATE_NOT_NULL(app);
-    *app = NULL;
-
-    AutoPtr<IActivityThread> at = CActivityThread::GetCurrentActivityThread();
-    if (at != NULL) {
-        CActivityThread* am = (CActivityThread*)at.Get();
-        if (am->mInitialApplication = NULL) {
-            *app = am->mInitialApplication;
-            REFCOUNT_ADD(*app);
-        }
-    }
-
+    VALIDATE_NOT_NULL(app)
+    AutoPtr<IApplication> tmp = CActivityThread::GetCurrentApplication();
+    *app = tmp;
+    REFCOUNT_ADD(*app)
     return NOERROR;
 }
 
@@ -62,18 +57,10 @@ ECode CActivityThreadHelper::GetPackageManager(
     return NOERROR;
 }
 
-/**
- * Return the Intent that's currently being handled by a
- * BroadcastReceiver on this thread, or null if none.
- * @hide
- */
 ECode CActivityThreadHelper::GetIntentBeingBroadcast(
     /* [out] */ IIntent** intent)
 {
-    AutoPtr<IIntent> curIntent = (IIntent*)pthread_getspecific(CActivityThread::sCurrentBroadcastIntentKey);
-    *intent = curIntent;
-    REFCOUNT_ADD(*intent);
-    return NOERROR;
+    return CActivityThread::GetIntentBeingBroadcast(intent);
 }
 
 ECode CActivityThreadHelper::GetSystemMain(

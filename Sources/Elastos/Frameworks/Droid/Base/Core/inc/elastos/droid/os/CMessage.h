@@ -238,7 +238,7 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI UpdateCheckRecycle(
+    static CARAPI UpdateCheckRecycle(
         /* [in] */ Int32 targetSdkVersion);
 
     CARAPI RecycleUnchecked();

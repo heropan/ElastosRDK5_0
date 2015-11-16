@@ -547,7 +547,6 @@ ECode LoadedPkg::constructor(
     /* [in] */ IActivityThread* activityThread,
     /* [in] */ IApplicationInfo* inAInfo,
     /* [in] */ ICompatibilityInfo* compatInfo,
-    /* [in] */ IActivityThread* mainThread,
     /* [in] */ IClassLoader* baseLoader,
     /* [in] */ Boolean securityViolation,
     /* [in] */ Boolean includeCode,

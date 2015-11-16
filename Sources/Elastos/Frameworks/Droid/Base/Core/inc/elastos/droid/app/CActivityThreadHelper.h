@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYTHREADHELPER_H__
 
 #include "_Elastos_Droid_App_CActivityThreadHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IIPackageManager;
@@ -12,12 +13,21 @@ namespace Droid {
 namespace App {
 
 CarClass(CActivityThreadHelper)
+    , public Singleton
+    , public IActivityThreadHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetCurrentActivityThread(
         /* [out] */ IActivityThread** thread);
 
     CARAPI GetCurrentPackageName(
+        /* [out] */ String* name);
+
+    CARAPI GetCurrentProcessName(
         /* [out] */ String* name);
 
     CARAPI GetCurrentApplication(

@@ -65,7 +65,7 @@ ELASTOS_LIBS += webkit/webkit.lib
 // ELASTOS_LIBS += telephony/telephony.lib
 
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
-LIBRARIES += $(XDK_USER_LIB)/DroidRuntime.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/DroidRuntime.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco

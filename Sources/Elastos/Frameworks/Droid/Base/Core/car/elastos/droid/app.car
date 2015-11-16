@@ -159,9 +159,11 @@ module
     interface Elastos.Droid.View.IOnWindowDismissedCallback;
     interface Elastos.Droid.Content.IComponentCallbacks;
     interface Elastos.Droid.Content.IComponentCallbacks2;
+    interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceClient;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Utility.IArrayMap;
     interface Elastos.Droid.Internal.App.IIAppOpsCallback;
+    interface Elastos.Droid.Internal.Os.IHandlerCallerCallback;
 
 //     using interface Elastos.Core.ICharSequence;
 //     interface Elastos.Droid.Os.ILooper;
@@ -613,6 +615,15 @@ module
         interface IIUiAutomationConnection;
         interface IBinder;
     }
+
+    //class CAccessibilityServiceClientImpl {
+    //    constructor(
+    //        [in] ILooper* looper);
+
+    //    interface IIAccessibilityServiceClient;
+    //    interface IBinder;
+    //    interface IHandlerCallerCallback;
+    //}
 
     class CPendingIntent {
         constructor();

@@ -2,37 +2,85 @@
 #define __ELASTOS_DROID_ACCESSIBILITYSERVICE_ACCESSIBILITYSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-// #include "elastos/droid/app/Service.h"
-#include <elastos/core/Object.h>
+#include "elastos/droid/app/Service.h"
 
-// using Elastos::Droid::App::Service;
-using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IContextWrapper;
-using Elastos::Droid::Content::EIID_IContextWrapper;
-using Elastos::Droid::Content::IComponentCallbacks;
-using Elastos::Droid::Content::EIID_IComponentCallbacks;
-using Elastos::Droid::Content::IComponentCallbacks2;
-using Elastos::Droid::Content::EIID_IComponentCallbacks2;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::Internal::Os::IHandlerCaller;
+using Elastos::Droid::Internal::Os::IHandlerCallerCallback;
 using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace AccessibilityService {
 
-class AccessibilityService
-    // TODO,  public Elastos::Droid::App::Service replace Object
-    // , public Elastos.Droid.App.IService
+class IAccessibilityServiceClientWrapper
     : public Object
+    , public IIAccessibilityServiceClient
+    , public IHandlerCallerCallback
+    , public IBinder
+{
+public:
+    CAR_INTERFACE_DECL()
+
+    IAccessibilityServiceClientWrapper();
+
+    virtual ~IAccessibilityServiceClientWrapper();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ ILooper* looper,
+        /* [in] */ IAccessibilityServiceCallbacks* callback);
+
+    CARAPI SetConnection(
+        /* [in] */ IIAccessibilityServiceConnection* connection,
+        /* [in] */ Int32 connectionId);
+
+    CARAPI OnInterrupt();
+
+    CARAPI OnAccessibilityEvent(
+        /* [in] */ IAccessibilityEvent* event);
+
+    CARAPI OnGesture(
+        /* [in] */ Int32 gestureId);
+
+    CARAPI ClearAccessibilityCache();
+
+    CARAPI OnKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [in] */ Int32 sequence);
+
+    CARAPI ExecuteMessage(
+        /* [in] */ IMessage* message);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
+
+public:
+    static const Int32 DO_SET_SET_CONNECTION;
+    static const Int32 DO_ON_INTERRUPT;
+    static const Int32 DO_ON_ACCESSIBILITY_EVENT;
+    static const Int32 DO_ON_GESTURE;
+    static const Int32 DO_CLEAR_ACCESSIBILITY_CACHE;
+    static const Int32 DO_ON_KEY_EVENT;
+
+    Int32 mConnectionId;
+    AutoPtr<IHandlerCaller> mCaller;
+    AutoPtr<IAccessibilityServiceCallbacks> mCallback;
+};
+
+class AccessibilityService
+    : public Elastos::Droid::App::Service
     , public IAccessibilityService
-    , public IContextWrapper
-    , public IContext
-    , public IComponentCallbacks2
-    , public IComponentCallbacks
 {
 public:
     class MyAccessibilityServiceCallbacks
@@ -69,6 +117,10 @@ public:
 
 public:
     CAR_INTERFACE_DECL()
+
+    AccessibilityService();
+
+    virtual ~AccessibilityService();
 
     /**
      * Callback for {@link android.view.accessibility.AccessibilityEvent}s.

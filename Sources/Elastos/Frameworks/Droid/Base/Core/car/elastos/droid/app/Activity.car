@@ -3470,6 +3470,37 @@ module
         OnVisibleBehindCanceled();
 
         /**
+         * Translucent activities may call this to determine if there is an activity below them that
+         * is currently set to be visible in the background.
+         *
+         * @return true if an activity below is set to visible according to the most recent call to
+         * {@link #requestVisibleBehind(boolean)}, false otherwise.
+         *
+         * @see #requestVisibleBehind(boolean)
+         * @see #onVisibleBehindCanceled()
+         * @see #onBackgroundVisibleBehindChanged(boolean)
+         * @hide
+         */
+        IsBackgroundVisibleBehind(
+            [out] Boolean* result);
+
+        /**
+         * The topmost foreground activity will receive this call when the background visibility state
+         * of the activity below it changes.
+         *
+         * This call may be a consequence of {@link #requestVisibleBehind(boolean)} or might be
+         * due to a background activity finishing itself.
+         *
+         * @param visible true if a background activity is visible, false otherwise.
+         *
+         * @see #requestVisibleBehind(boolean)
+         * @see #onVisibleBehindCanceled()
+         * @hide
+         */
+        OnBackgroundVisibleBehindChanged(
+            [in] Boolean visible);
+
+        /**
          * Activities cannot draw during the period that their windows are animating in. In order
          * to know when it is safe to begin drawing they can override this method which will be
          * called when the entering animation has completed.

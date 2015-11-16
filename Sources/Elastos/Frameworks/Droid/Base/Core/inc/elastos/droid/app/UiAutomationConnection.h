@@ -79,6 +79,9 @@ public:
 
     CARAPI Shutdown();
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 private:
     CARAPI RegisterUiTestAutomationServiceLocked(
         /* [in] */ IIAccessibilityServiceClient* client);

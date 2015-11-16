@@ -6,6 +6,7 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IPersistableBundle;
     interface Elastos.Droid.Os.IStrictModeViolationInfo;
     interface Elastos.Droid.Os.IDebugMemoryInfo;
     interface Elastos.Droid.Content.IIntentSender;
@@ -247,7 +248,7 @@ module
         ActivityStopped(
             [in] IBinder* token,
             [in] IBundle* state,
-            [in] IBitmap* thumbnail,
+            [in] IPersistableBundle* thumbnail,
             [in] ICharSequence* description);
 
         ActivitySlept(

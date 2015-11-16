@@ -540,13 +540,13 @@ ECode CApplicationThread::DispatchPackageBroadcast(
     /* [in] */ Int32 cmd,
     /* [in] */ ArrayOf<String>* packages)
 {
-    AutoPtr<IObjectContainer> container;
+    AutoPtr<IArrayList> container;
+
     if (packages != NULL) {
-        CObjectContainer::New((IObjectContainer**)&container);
+        CArrayList::New((IArrayList**)&container);
         for (Int32 i = 0; i < packages->GetLength(); ++i) {
-            AutoPtr<ICharSequence> seq;
-            CString::New((*packages)[i], (ICharSequence**)&seq);
-            container->Add(seq);
+            AutoPtr<ICharSequence> seq = CoreUtils::Convert((*packages)[i]);
+            container->Add(seq.Get());
         }
     }
 
@@ -812,8 +812,11 @@ ECode CApplicationThread::ScheduleOnNewActivityOptions(
     /* [in] */ IBinder* token,
     /* [in] */ IActivityOptions* options)
 {
-    return mAThread->SendMessage(CActivityThread::H::ON_NEW_ACTIVITY_OPTIONS,
-            new Pair<IBinder, ActivityOptions>(token, options));
+    AutoPtr<IPairHelper> helper;
+    CPairHelper::AcquireSingleton((IPairHelper**)&helper);
+    AutoPtr<IPair> pair;
+    helper->Create(token, options, (IPair**)&pair);
+    return mAThread->SendMessage(CActivityThread::H::ON_NEW_ACTIVITY_OPTIONS, pair);
 }
 
 ECode CApplicationThread::SetProcessState(

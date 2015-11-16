@@ -3,12 +3,13 @@
 #define __ELASTOS_DROID_APP_UIAUTOMATION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/accessibilityservice/AccessibilityService.h"
 #include <elastos/core/Object.h>
 
 // package android.app;
 
-// using Elastos::Droid::Accessibilityservice::AccessibilityService.Callbacks;
-// using Elastos::Droid::Accessibilityservice::AccessibilityService.IAccessibilityServiceClientWrapper;
+using Elastos::Droid::Accessibilityservice::IAccessibilityServiceClientWrapper;
+using Elastos::Droid::Accessibilityservice::IAccessibilityServiceCallbacks;
 // using Elastos::Droid::Accessibilityservice::AccessibilityServiceInfo;
 // using Elastos::Droid::Accessibilityservice::IIAccessibilityServiceClient;
 // using Elastos::Droid::Accessibilityservice::IIAccessibilityServiceConnection;
@@ -20,17 +21,16 @@
 // using Elastos::Droid::Os::IParcelFileDescriptor;
 // using Elastos::Droid::Os::IRemoteException;
 // using Elastos::Droid::Os::ISystemClock;
-// using Elastos::Droid::View::IDisplay;
 // using Elastos::Droid::View::IInputEvent;
-// using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IKeyEvent;
 // using Elastos::Droid::View::ISurface;
 // using Elastos::Droid::View::IWindowAnimationFrameStats;
 // using Elastos::Droid::View::IWindowContentFrameStats;
-// using Elastos::Droid::View::Accessibility.AccessibilityEvent;
-// using Elastos::Droid::View::Accessibility.AccessibilityInteractionClient;
-// using Elastos::Droid::View::Accessibility.AccessibilityNodeInfo;
-// using Elastos::Droid::View::Accessibility.AccessibilityWindowInfo;
-// using Elastos::Droid::View::Accessibility.IAccessibilityInteractionConnection;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
+// using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+// using Elastos::Droid::View::Accessibility::IAccessibilityWindowInfo;
+// using Elastos::Droid::View::Accessibility::IIAccessibilityInteractionConnection;
 // import libcore.io.IoUtils;
 
 // import java.io.IOException;
@@ -71,58 +71,52 @@ class UiAutomation
     , public IUiAutomation
 {
 private:
+    class InnerAccessibilityServiceCallbacks
+        : public Object
+        , public IAccessibilityServiceCallbacks
+    {
+    public:
+        CAR_INTERFACE_DECL()
 
-    class IAccessibilityServiceClientImpl extends IAccessibilityServiceClientWrapper {
+        InnerAccessibilityServiceCallbacks(
+            /* [in] */ UiAutomation* host);
 
-        public IAccessibilityServiceClientImpl(Looper looper) {
-            super(null, looper, new Callbacks() {
-                @Override
-                public void onSetConnectionId(Int32 connectionId) {
-                    synchronized (mLock) {
-                        mConnectionId = connectionId;
-                        mLock.notifyAll();
-                    }
-                }
+        // @Override
+        CARAPI OnSetConnectionId(
+            /* [in] */ Int32 connectionId);
 
-                @Override
-                public void onServiceConnected() {
-                    /* do nothing */
-                }
+        // @Override
+        CARAPI OnServiceConnected();
 
-                @Override
-                public void onInterrupt() {
-                    /* do nothing */
-                }
+        // @Override
+        CARAPI OnInterrupt();
 
-                @Override
-                public Boolean onGesture(Int32 gestureId) {
-                    /* do nothing */
-                    return false;
-                }
+        // @Override
+        CARAPI OnGesture(
+            /* [in] */ Int32 gestureId,
+            /* [out] */ Boolean* result);
 
-                @Override
-                public void onAccessibilityEvent(AccessibilityEvent event) {
-                    synchronized (mLock) {
-                        mLastEventTimeMillis = event.getEventTime();
-                        if (mWaitingForEventDelivery) {
-                            mEventQueue.add(AccessibilityEvent.obtain(event));
-                        }
-                        mLock.notifyAll();
-                    }
-                    // Calling out only without a lock held.
-                    final OnAccessibilityEventListener listener = mOnAccessibilityEventListener;
-                    if (listener != null) {
-                        listener.onAccessibilityEvent(AccessibilityEvent.obtain(event));
-                    }
-                }
+        // @Override
+        CARAPI OnAccessibilityEvent(
+            /* [in] */ IAccessibilityEvent* event);
 
-                @Override
-                public Boolean onKeyEvent(KeyEvent event) {
-                    return false;
-                }
-            });
-        }
-    }
+        // @Override
+        CARAPI OnKeyEvent(
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean* result);
+
+    private:
+        UiAutomation* host;
+    };
+
+    class IAccessibilityServiceClientImpl
+        : public IAccessibilityServiceClientWrapper
+    {
+    public:
+        CARAPI constructor(
+            /* [in] */ ILooper* looper,
+            /* [in] */ IUiAutomation* host);
+    };
 
 
 public:
@@ -478,19 +472,13 @@ private:
 
     Boolean IsConnectedLocked();
 
-    // private void throwIfConnectedLocked() {
-    //     if (mConnectionId != CONNECTION_ID_UNDEFINED) {
-    //         throw new IllegalStateException("UiAutomation not connected!");
-    //     }
-    // }
+    CARAPI ThrowIfConnectedLocked();
 
-    // private void throwIfNotConnectedLocked() {
-    //     if (!isConnectedLocked()) {
-    //         throw new IllegalStateException("UiAutomation not connected!");
-    //     }
-    // }
+    CARAPI ThrowIfNotConnectedLocked();
 
 private:
+    friend class InnerAccessibilityServiceCallbacks;
+
     static const String LOG_TAG;// = UiAutomation.class.getSimpleName();
 
     static const Boolean DEBUG;// = FALSE;

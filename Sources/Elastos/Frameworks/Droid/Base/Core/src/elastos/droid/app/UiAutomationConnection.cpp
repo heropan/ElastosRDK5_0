@@ -463,6 +463,12 @@ ECode UiAutomationConnection::ThrowIfCalledByNotTrustedUidLocked()
     return NOERROR;
 }
 
+ECode UiAutomationConnection::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
+}
+
 } // namespace App
 } // namespace Droid
 } // namespace Elastos

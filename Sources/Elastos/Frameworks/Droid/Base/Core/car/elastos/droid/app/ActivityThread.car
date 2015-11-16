@@ -140,7 +140,7 @@ module
 
         PerformNewIntents(
             [in] IBinder* token,
-            [in] ArrayOf<IIntent*>* intents);
+            [in] IList* intents);
 
         HandleRequestAssistContextExtras(
             [in] IRequestAssistContextExtras* cmd);
@@ -175,8 +175,8 @@ module
 
         RequestRelaunchActivity(
             [in] IBinder* token,
-            [in] ArrayOf<IResultInfo*>* pendingResults,
-            [in] ArrayOf<IIntent*>* pendingNewIntents,
+            [in] IList* pendingResults,
+            [in] IList* pendingNewIntents,
             [in] Int32 configChanges,
             [in] Boolean notResumed,
             [in] IConfiguration* config,

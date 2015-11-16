@@ -62,36 +62,41 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-// class ResourcesKey : public ElRefBase
-// {
-// public:
-//     friend class CActivityThread;
+class ProviderKey
+    : public Object
+{
+public:
+    ProviderKey(
+        /* [in] */ const String& authority,
+        /* [in] */ Int32 userId);
 
-//     ResourcesKey(
-//         /* [in] */ const String& resDir,
-//         /* [in] */ Int32 displayId,
-//         /* [in] */ IConfiguration* overrideConfiguration,
-//         /* [in] */ Float scale);
+    CARAPI ToString(
+        /* [out] */ String* description)
+    {
+        VALIDATE_NOT_NULL(description)
+        *description = String("CActivityThread::ProviderKey");
+        return NOERROR;
+    }
 
-//     virtual ~ResourcesKey();
+    //@Override
+    CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* result);
 
-//     CARAPI_(Int32) GetHashCode() const;
+    // @Override
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
 
-//     CARAPI_(Boolean) Equals(
-//         /* [in] */ const ResourcesKey* peer) const;
-
-// private:
-//     String mResDir;
-//     Int32 mDisplayId;
-//     AutoPtr<IConfiguration> mOverrideConfiguration;
-//     Float mScale;
-//     Int32 mHash;
-// };
+public:
+    String mAuthority;
+    Int32 mUserId;
+};
 
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
 
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::App::ProviderKey)
 
 namespace Elastos {
 namespace Droid {
@@ -107,6 +112,8 @@ namespace App {
  * {@hide}
  */
 CarClass(CActivityThread)
+    , public Object
+    , public IActivityThread
 {
 public:
     class H
@@ -181,8 +188,11 @@ public:
 
     class ActivityClientRecord
         : public Object
+        , public IActivityClientRecord
     {
     public:
+        CAR_INTERFACE_DECL();
+
         ActivityClientRecord();
 
         virtual ~ActivityClientRecord();
@@ -191,21 +201,22 @@ public:
 
         CARAPI_(Boolean) IsPersistable();
 
+        CARAPI IsPreHoneycomb(
+            /* [out] */ Boolean* result);
+
+        CARAPI IsPersistable(
+            /* [out] */ Boolean* result);
+
         CARAPI ToString(
-            /* [out] */ String* description)
-        {
-            VALIDATE_NOT_NULL(description)
-            *description = String("CActivityThread::ActivityClientRecord");
-            return NOERROR;
-        }
+            /* [out] */ String* description);
 
     public:
         AutoPtr<IBinder> mToken;
         Int32 mIdent;
         AutoPtr<IIntent> mIntent;
-        AutoPtr<IIVoiceInteractor> voiceInteractor;
+        AutoPtr<IIVoiceInteractor> mVoiceInteractor;
         AutoPtr<IBundle> mState;
-        AutoPtr<IPersistableBundle> persistentState;
+        AutoPtr<IPersistableBundle> mPersistentState;
         AutoPtr<IActivity> mActivity;
         AutoPtr<IWindow> mWindow;
         AutoPtr<IActivity> mParent;
@@ -222,7 +233,7 @@ public:
 
         AutoPtr<IActivityInfo> mActivityInfo;
         AutoPtr<ICompatibilityInfo> mCompatInfo;
-        // AutoPtr<LoadedPkg> mPackageInfo;
+        AutoPtr<ILoadedPkg> mPackageInfo;
 
         AutoPtr<IList> mPendingResults;
         AutoPtr<IList> mPendingIntents; //List<IIntent>
@@ -276,7 +287,7 @@ public:
             return NOERROR;
         }
     public:
-        List< AutoPtr<IIntent> > mIntents;
+        AutoPtr<IList> mIntents;
         AutoPtr<IBinder> mToken;
     };
 
@@ -514,7 +525,7 @@ public:
             return NOERROR;
         }
     public:
-        // AutoPtr<LoadedPkg> mInfo;
+        AutoPtr<ILoadedPkg> mInfo;
         String mProcessName;
         AutoPtr<IApplicationInfo> mAppInfo;
         AutoPtr<IList> mProviders;
@@ -539,8 +550,7 @@ public:
     {
     public:
         Profiler()
-            : mProfileFile("")
-            , mProfileFd(NULL)
+            : mSamplingInterval(0)
             , mAutoStopProfiler(FALSE)
             , mProfiling(FALSE)
             , mHandlingProfiling(FALSE)
@@ -564,6 +574,7 @@ public:
     public:
         String mProfileFile;
         AutoPtr<IParcelFileDescriptor> mProfileFd;
+        Int32 mSamplingInterval;
         Boolean mAutoStopProfiler;
         Boolean mProfiling;
         Boolean mHandlingProfiling;
@@ -596,7 +607,7 @@ public:
 
     public:
         AutoPtr<IBinder> mToken;
-        List< AutoPtr<IResultInfo> > mResults;
+        AutoPtr<IList> mResults;
     };
 
     class ContextCleanupInfo
@@ -650,8 +661,11 @@ public:
 
     class RequestAssistContextExtras
         : public Object
+        , public IRequestAssistContextExtras
     {
     public:
+        CAR_INTERFACE_DECL()
+
         RequestAssistContextExtras()
             : mRequestType(0)
         {}
@@ -700,35 +714,6 @@ public:
     };
 
 private:
-    class ProviderKey
-        : public Object
-    {
-    public:
-        ProviderKey(
-            /* [in] */ const String& authority,
-            /* [in] */ Int32 userId);
-
-        CARAPI ToString(
-            /* [out] */ String* description)
-        {
-            VALIDATE_NOT_NULL(description)
-            *description = String("CActivityThread::ProviderKey");
-            return NOERROR;
-        }
-
-        //@Override
-        CARAPI Equals(
-            /* [in] */ IInterface* o,
-            /* [out] */ Boolean* result);
-
-        // @Override
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hash) const;
-
-    public:
-        String mAuthority;
-        Int32 mUserId;
-    };
 
     class Idler
         : public Object
@@ -806,6 +791,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CActivityThread();
 
     virtual ~CActivityThread();
@@ -821,6 +810,14 @@ public:
     static CARAPI_(AutoPtr<IApplication>) GetCurrentApplication();
 
     static CARAPI_(AutoPtr<IIPackageManager>) GetPackageManager();
+
+    /**
+     * Return the Intent that's currently being handled by a
+     * BroadcastReceiver on this thread, or null if none.
+     * @hide
+     */
+    static CARAPI GetIntentBeingBroadcast(
+        /* [out] */ IIntent** intent);
 
     CARAPI_(AutoPtr<IConfiguration>) ApplyConfigCompatMainThread(
         /* [in] */ Int32 displayDensity,
@@ -845,29 +842,34 @@ public:
 
     CARAPI_(AutoPtr<IHandler>) GetHandler();
 
-    CARAPI_(AutoPtr<LoadedPkg>) GetPackageInfo(
-        /* [in] */ const String& packageName,
-        /* [in] */ ICompatibilityInfo* compatInfo,
-        /* [in] */ Int32 flags);
-
-    CARAPI_(AutoPtr<LoadedPkg>) GetPackageInfo(
+    ECode GetPackageInfo(
         /* [in] */ const String& packageName,
         /* [in] */ ICompatibilityInfo* compatInfo,
         /* [in] */ Int32 flags,
-        /* [in] */ Int32 userId);
+        /* [out] */ ILoadedPkg** loadedPkg);
 
-    CARAPI_(AutoPtr<LoadedPkg>) GetPackageInfo(
+    ECode GetPackageInfo(
+        /* [in] */ const String& packageName,
+        /* [in] */ ICompatibilityInfo* compatInfo,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 userId,
+        /* [out] */ ILoadedPkg** loadedPkg);
+
+    ECode GetPackageInfo(
         /* [in] */ IApplicationInfo* ai,
         /* [in] */ ICompatibilityInfo* compatInfo,
-        /* [in] */ Int32 flags);
+        /* [in] */ Int32 flags,
+        /* [out] */ ILoadedPkg** loadedPkg);
 
-    CARAPI_(AutoPtr<LoadedPkg>) GetPackageInfoNoCheck(
+    ECode GetPackageInfoNoCheck(
         /* [in] */ IApplicationInfo* ai,
-        /* [in] */ ICompatibilityInfo* compatInfo);
+        /* [in] */ ICompatibilityInfo* compatInfo,
+        /* [out] */ ILoadedPkg** loadedPkg);
 
-    CARAPI_(AutoPtr<LoadedPkg>) PeekPackageInfo(
+    ECode PeekPackageInfo(
         /* [in] */ const String& packageName,
-        /* [in] */ Boolean includeCode);
+        /* [in] */ Boolean includeCode,
+        /* [out] */ ILoadedPkg** loadedPkg);
 
     CARAPI GetApplicationThread(
         /* [out] */ IApplicationThread** thread);
@@ -894,7 +896,8 @@ public:
         /* [out] */ IContextImpl** ctx);
 
     CARAPI InstallSystemApplicationInfo(
-        /* [in] */ IApplicationInfo* info);
+        /* [in] */ IApplicationInfo* info,
+        /* [in] */ IClassLoader* cl);
 
     CARAPI EnsureJitEnabled();
 
@@ -959,11 +962,12 @@ public:
 
     CARAPI PerformNewIntents(
         /* [in] */ IBinder* token,
-        /* [in] */ ArrayOf<IIntent*>* intents);
+        /* [in] */ IList* intents);
 
-    CARAPI_(AutoPtr<ActivityClientRecord>) PerformResumeActivity(
+    CARAPI PerformResumeActivity(
         /* [in] */ IBinder* token,
-        /* [in] */ Boolean clearHide);
+        /* [in] */ Boolean clearHide,
+        /* [out] */ IActivityClientRecord** record);
 
     static CARAPI_(void) CleanUpPendingRemoveWindows(
         /* [in] */ ActivityClientRecord* r);
@@ -993,17 +997,18 @@ public:
         /* [in] */ IBinder* token,
         /* [in] */ Boolean saveState);
 
-    CARAPI_(void) PerformRestartActivity(
+    CARAPI PerformRestartActivity(
         /* [in] */ IBinder* token);
 
-    CARAPI_(AutoPtr<ActivityClientRecord>) PerformDestroyActivity(
+    CARAPI PerformDestroyActivity(
         /* [in] */ IBinder* token,
-        /* [in] */ Boolean finishing);
+        /* [in] */ Boolean finishing,
+        /* [out] */ IActivityClientRecord** record);
 
     CARAPI RequestRelaunchActivity(
         /* [in] */ IBinder* token,
-        /* [in] */ ArrayOf<IResultInfo*>* pendingResults,
-        /* [in] */ ArrayOf<IIntent*>* pendingNewIntents,
+        /* [in] */ IList* pendingResults,
+        /* [in] */ IList* pendingNewIntents,
         /* [in] */ Int32 configChanges,
         /* [in] */ Boolean notResumed,
         /* [in] */ IConfiguration* config,
@@ -1093,13 +1098,14 @@ public:
 
 private:
 
-    CARAPI_(AutoPtr<LoadedPkg>) GetPackageInfo(
+    CARAPI GetPackageInfo(
         /* [in] */ IApplicationInfo* aInfo,
         /* [in] */ ICompatibilityInfo* compatInfo,
         /* [in] */ IClassLoader* baseLoader,
         /* [in] */ Boolean securityViolation,
         /* [in] */ Boolean includeCode,
-        /* [in] */ Boolean registerPackage);
+        /* [in] */ Boolean registerPackage,
+        /* [out] */ ILoadedPkg** pkg);
 
     CARAPI SendMessage(
         /* [in] */ Int32 what,
@@ -1136,15 +1142,15 @@ private:
         /* [in] */ ActivityClientRecord* r,
         /* [in] */ IIntent* customIntent);
 
-    CARAPI_(void) DeliverNewIntents(
+    CARAPI DeliverNewIntents(
         /* [in] */ ActivityClientRecord* r,
-        /* [in] */ List< AutoPtr<IIntent> >* intents);
+        /* [in] */ IList* intents);
 
     CARAPI HandleNewIntent(
         /* [in] */ NewIntentData* data);
 
     CARAPI HandleRequestAssistContextExtras(
-        /* [in] */ RequestAssistContextExtras* cmd);
+        /* [in] */ IRequestAssistContextExtras* cmd);
 
     CARAPI HandleTranslucentConversionComplete(
         /* [in] */ IBinder* token,
@@ -1253,16 +1259,17 @@ private:
 
     CARAPI DeliverResults(
         /* [in] */ ActivityClientRecord* r,
-        /* [in] */ List< AutoPtr<IResultInfo> >* results);
+        /* [in] */ IList* results);
 
     CARAPI HandleSendResult(
         /* [in] */ ResultData* res);
 
-    CARAPI_(AutoPtr<ActivityClientRecord>) PerformDestroyActivity(
+    CARAPI PerformDestroyActivity(
         /* [in] */ IBinder* token,
         /* [in] */ Boolean finishing,
         /* [in] */ Int32 configChanges,
-        /* [in] */ Boolean getNonConfigInstance);
+        /* [in] */ Boolean getNonConfigInstance,
+        /* [out] */ IActivityClientRecord** record);
 
     static CARAPI_(String) SafeToComponentShortString(
         /* [in] */ IIntent* intent);
@@ -1328,33 +1335,12 @@ private:
 
     static CARAPI_(void) InitTLS();
 
-    static void PrintRow(
-        /* [in] */ IPrintWriter* pw,
-        /* [in] */ const char* format,
-        /* [in] */ ...);
+    // static void PrintRow(
+    //     /* [in] */ IPrintWriter* pw,
+    //     /* [in] */ const char* format,
+    //     /* [in] */ ...);
 
 public:
-    struct HashPK
-    {
-        size_t operator()(const ProviderKey* s) const
-        {
-            Int32 hash;
-            s->GetHashCode(&hash);
-            return (size_t)hash;
-        }
-    };
-
-    struct PKEq
-    {
-        Boolean operator()(const ProviderKey* x,
-                           const ProviderKey* y) const
-        {
-            Boolean equals;
-            IInterface* o = y->Probe(EIID_IInterface);
-            x->Equals(o, &equals);
-            return equals;
-        }
-    };
 
     /** @hide */
     static const String TAG;
@@ -1395,7 +1381,7 @@ public:
     AutoPtr<IInstrumentation> mInstrumentation;
     String mInstrumentationPackageName;
     String mInstrumentationAppDir;
-    AutoPtr<ArrayOf<String> > mInstrumentationAppSplitDirs;
+    AutoPtr<ArrayOf<String> > mInstrumentationSplitAppDirs;
     String mInstrumentationLibDir;
     String mInstrumentedAppDir;
     AutoPtr<ArrayOf<String> > mInstrumentedSplitAppDirs;
@@ -1426,7 +1412,7 @@ public:
     AutoPtr<IResourcesManager> mResourcesManager;
 
     // The lock of mProviderMap protects the following variables.
-    HashMap< AutoPtr<ProviderKey>, AutoPtr<ProviderClientRecord>, HashPK, PKEq > mProviderMap;
+    HashMap< AutoPtr<ProviderKey>, AutoPtr<ProviderClientRecord> > mProviderMap;
     HashMap< AutoPtr<IBinder>, AutoPtr<ProviderRefCount> > mProviderRefCountMap;
     HashMap<AutoPtr<IBinder>, AutoPtr<ProviderClientRecord> > mLocalProviders;
     HashMap<AutoPtr<IComponentName>, AutoPtr<ProviderClientRecord> > mLocalProvidersByName;
@@ -1484,6 +1470,9 @@ private:
     Object mOnPauseListenersLock;
     Object mProviderMapLock;
     Object mPackagesLock;
+
+    static pthread_key_t sKey;
+    static Boolean sHaveKey;
 };
 
 } // namespace App

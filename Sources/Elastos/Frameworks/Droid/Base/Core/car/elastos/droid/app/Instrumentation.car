@@ -681,6 +681,18 @@ module
             [in] IActivity* activity,
             [in] IBundle* icicle);
 
+        /**
+         * Perform calling of an activity's {@link Activity#onCreate}
+         * method.  The default implementation simply calls through to that method.
+         *  @param activity The activity being created.
+         * @param icicle The previously frozen state (or null) to pass through to
+         * @param persistentState The previously persisted state (or null)
+         */
+        CallActivityOnCreate(
+            [in] IActivity* activity,
+            [in] IBundle* icicle,
+            [in] IPersistableBundle* persistentState);
+
         CallActivityOnDestroy(
             [in] IActivity* activity);
 
@@ -705,7 +717,8 @@ module
          */
         CallActivityOnRestoreInstanceState(
             [in] IActivity* activity,
-            [in] IPersistableBundle* savedInstanceState);
+            [in] IBundle* savedInstanceState,
+            [in] IPersistableBundle* persistentState);
 
         /**
          * Perform calling of an activity's {@link Activity#onPostCreate} method.
@@ -729,6 +742,7 @@ module
          */
         CallActivityOnPostCreate(
             [in] IActivity* activity,
+            [in] IBundle* icicle,
             [in] IPersistableBundle* persistentState);
 
         /**
@@ -798,6 +812,7 @@ module
          */
         CallActivityOnSaveInstanceState(
             [in] IActivity* activity,
+            [in] IBundle* outState,
             [in] IPersistableBundle* outPersistentState);
 
         /**

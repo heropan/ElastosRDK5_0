@@ -1,9 +1,128 @@
 
 #include "elastos/droid/app/UiAutomation.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
+#include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
+
+// using Elastos::Droid::Accessibilityservice::AccessibilityServiceInfo;
+// using Elastos::Droid::Accessibilityservice::IIAccessibilityServiceClient;
+// using Elastos::Droid::Accessibilityservice::IIAccessibilityServiceConnection;
+
+// using Elastos::Droid::Os::ILooper;
+// using Elastos::Droid::Os::IParcelFileDescriptor;
+// using Elastos::Droid::Os::IRemoteException;
+// using Elastos::Droid::Os::ISystemClock;
+// using Elastos::Droid::View::IInputEvent;
+// using Elastos::Droid::View::ISurface;
+// using Elastos::Droid::View::IWindowAnimationFrameStats;
+// using Elastos::Droid::View::IWindowContentFrameStats;
+// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
+// using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+// using Elastos::Droid::View::Accessibility::IAccessibilityWindowInfo;
+// using Elastos::Droid::View::Accessibility::IIAccessibilityInteractionConnection;
+// import libcore.io.IoUtils;
+
+
+using Elastos::Droid::Hardware::Display::DisplayManagerGlobal;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPoint;
+using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
+using Elastos::Droid::View::IDisplay;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
+
+//==================================================================
+// UiAutomation::InnerAccessibilityServiceCallbacks
+//==================================================================
+
+CAR_INTERFACE_IMPL(UiAutomation::InnerAccessibilityServiceCallbacks, Object, IAccessibilityServiceCallbacks)
+
+ECode UiAutomation::InnerAccessibilityServiceCallbacks::InnerAccessibilityServiceCallbacks(
+    /* [in] */ UiAutomation* host)
+    : mHost(host)
+{}
+
+ECode UiAutomation::InnerAccessibilityServiceCallbacks::OnSetConnectionId(
+    /* [in] */ Int32 connectionId)
+{
+    synchronized (mHost->mLock) {
+        mHost->mConnectionId = connectionId;
+        mHost->mLock.NotifyAll();
+    }
+}
+
+// @Override
+ECode UiAutomation::InnerAccessibilityServiceCallbacks::OnServiceConnected()
+{
+    /* do nothing */
+    return NOERROR;
+}
+
+// @Override
+ECode UiAutomation::InnerAccessibilityServiceCallbacks::OnInterrupt()
+{
+    /* do nothing */
+    return NOERROR;
+}
+
+// @Override
+ECode UiAutomation::InnerAccessibilityServiceCallbacks::OnGesture(
+    /* [in] */ Int32 gestureId,
+    /* [out] */ Boolean* result)
+{
+    /* do nothing */
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
+}
+
+// @Override
+ECode UiAutomation::InnerAccessibilityServiceCallbacks::OnAccessibilityEvent(
+    /* [in] */ IAccessibilityEvent* event)
+{
+    synchronized (mHost->mLock) {
+        event->GetEventTime(&mHost->mLastEventTimeMillis);
+        if (mHost->mWaitingForEventDelivery) {
+            AutoPtr<IAccessibilityEvent> ae;
+            CAccessibilityEvent::Obtain(event, (IAccessibilityEvent**)&ae);
+            mHost->mEventQueue->Add(TO_IINTERFACE(ae));
+        }
+        mLock.NotifyAll();
+    }
+    // Calling out only without a lock held.
+    AutoPtr<IOnAccessibilityEventListener> listener = mOnAccessibilityEventListener;
+    if (listener != NULL) {
+        AutoPtr<IAccessibilityEvent> ae;
+        CAccessibilityEvent::Obtain(event, (IAccessibilityEvent**)&ae);
+        listener->OnAccessibilityEvent(ae);
+    }
+    return NOERROR;
+}
+
+// @Override
+ECode UiAutomation::InnerAccessibilityServiceCallbacks::OnKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
+}
+
+//==================================================================
+// UiAutomation::IAccessibilityServiceClientImpl
+//==================================================================
+
+ECode UiAutomation::IAccessibilityServiceClientImpl::constructor(
+    /* [in] */ ILooper* looper,
+    /* [in] */ IUiAutomation* host)
+{
+    UiAutomation* ua = (UiAutomation*)host;
+    AutoPtr<IAccessibilityServiceCallbacks> cbs = new InnerAccessibilityServiceCallbacks(ua);
+    return IAccessibilityServiceClientWrapper::constructor(NULL, looper, cbs);
+}
 
 //==================================================================
 // UiAutomation
@@ -30,14 +149,16 @@ ECode UiAutomation::constructor(
     /* [in] */ ILooper* looper,
     /* [in] */ IIUiAutomationConnection* connection);
 {
-    if (looper == null) {
-        throw new IllegalArgumentException("Looper cannot be null!");
+    if (looper == NULL) {
+        Logger::E(TAG, "IllegalArgumentException: Looper cannot be NULL!");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (connection == null) {
-        throw new IllegalArgumentException("Connection cannot be null!");
+    if (connection == NULL) {
+        Logger::E(TAG, "IllegalArgumentException: Connection cannot be NULL!");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mUiAutomationConnection = connection;
-    mClient = new IAccessibilityServiceClientImpl(looper);
+    CAccessibilityServiceClientImpl::New(looper, this, (IIAccessibilityServiceClient**)&mClient);
 }
 
 ECode UiAutomation::Connect()
@@ -45,67 +166,74 @@ ECode UiAutomation::Connect()
     synchronized(mLock) {
         throwIfConnectedLocked();
         if (mIsConnecting) {
-            return;
+            return NOERROR;
         }
-        mIsConnecting = true;
+        mIsConnecting = TRUE;
     }
 
-    try {
-        // Calling out without a lock held.
-        mUiAutomationConnection.connect(mClient);
-    } catch (RemoteException re) {
-        throw new RuntimeException("Error while connecting UiAutomation", re);
+    // try {
+    // Calling out without a lock held.
+    ECode ec = mUiAutomationConnection->Connect(mClient);
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        Logger::E(TAG, "Error while connecting UiAutomation");
+        return E_RUNTIME_EXCEPTION:
     }
 
     synchronized(mLock) {
-        final Int64 startTimeMillis = SystemClock.uptimeMillis();
-        try {
-            while (true) {
-                if (isConnectedLocked()) {
+        Int64 startTimeMillis = SystemClock::GetUptimeMillis();
+        // try {
+            while (TRUE) {
+                if (IsConnectedLocked()) {
                     break;
                 }
-                final Int64 elapsedTimeMillis = SystemClock.uptimeMillis() - startTimeMillis;
-                final Int64 remainingTimeMillis = CONNECT_TIMEOUT_MILLIS - elapsedTimeMillis;
+                Int64 elapsedTimeMillis = SystemClock::GetUptimeMillis() - startTimeMillis;
+                Int64 remainingTimeMillis = CONNECT_TIMEOUT_MILLIS - elapsedTimeMillis;
                 if (remainingTimeMillis <= 0) {
-                    throw new RuntimeException("Error while connecting UiAutomation");
+                    Logger::E(TAG, "Error while connecting UiAutomation");
+                    return E_RUNTIME_EXCEPTION:
                 }
-                try {
-                    mLock.wait(remainingTimeMillis);
-                } catch (InterruptedException ie) {
-                    /* ignore */
-                }
+                // try {
+                    mLock.Wait(remainingTimeMillis);
+                // } catch (InterruptedException ie) {
+                //     /* ignore */
+                // }
             }
-        } finally {
-            mIsConnecting = false;
-        }
+        // } finally {
+            mIsConnecting = FALSE;
+        // }
     }
+    return NOERROR;
 }
 
 ECode UiAutomation::Disconnect()
 {
     synchronized(mLock) {
         if (mIsConnecting) {
-            throw new IllegalStateException(
-                    "Cannot call disconnect() while connecting!");
+            Logger::E(TAG, "Cannot call disconnect() while connecting!");
+            return E_ILLEGAL_STATE_EXCEPTION:
         }
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
         mConnectionId = CONNECTION_ID_UNDEFINED;
     }
-    try {
+    // try {
         // Calling out without a lock held.
-        mUiAutomationConnection.disconnect();
-    } catch (RemoteException re) {
-        throw new RuntimeException("Error while disconnecting UiAutomation", re);
+        ECode ec = mUiAutomationConnection->Disconnect();
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        Logger::E(TAG, "Error while disconnecting UiAutomation");
+        return E_RUNTIME_EXCEPTION:
     }
+    return ec;
 }
 
 ECode UiAutomation::GetConnectionId(
     /* [out] */ Int32* id)
 {
+    VALIDATE_NOT_NULL(id)
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
-        return mConnectionId;
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
+        *id = mConnectionId;
     }
+    return NOERROR;
 }
 
 ECode UiAutomation::SetOnAccessibilityEventListener(
@@ -114,101 +242,119 @@ ECode UiAutomation::SetOnAccessibilityEventListener(
     synchronized(mLock) {
         mOnAccessibilityEventListener = listener;
     }
+    return NOERROR;
 }
 
 ECode UiAutomation::PerformGlobalAction(
     /* [in] */ Int32 action,
     /* [out] */ Boolean* action)
 {
-    final IAccessibilityServiceConnection connection;
+    VALIDATE_NOT_NULL(action)
+    *action = FALSE;
+
+    AutoPtr<IIAccessibilityServiceConnection> connection;
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
-        connection = AccessibilityInteractionClient.getInstance()
-                .getConnection(mConnectionId);
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
+        CAccessibilityInteractionClient::GetInstance()->GetConnection(mConnectionId,
+            (IIAccessibilityServiceConnection**)&connection);
     }
     // Calling out without a lock held.
-    if (connection != null) {
-        try {
-            return connection.performGlobalAction(action);
-        } catch (RemoteException re) {
-            Log.w(LOG_TAG, "Error while calling performGlobalAction", re);
-        }
+    if (connection != NULL) {
+        // try {
+            return connection->PerformGlobalAction(action, action);
+        // } catch (RemoteException re) {
+        //     Log.w(LOG_TAG, "Error while calling performGlobalAction", re);
+        // }
     }
-    return false;
+    return NOERROR;
 }
 
 ECode UiAutomation::FindFocus(
     /* [in] */ Int32 focus,
     /* [out] */ IAccessibilityNodeInfo** info)
 {
-    return AccessibilityInteractionClient.getInstance().findFocus(mConnectionId,
-            AccessibilityNodeInfo.ANY_WINDOW_ID, AccessibilityNodeInfo.ROOT_NODE_ID, focus);
+    VALIDATE_NOT_NULL(info)
+    return CAccessibilityInteractionClient::GetInstance()->FindFocus(
+        mConnectionId,
+        IAccessibilityNodeInfo::ANY_WINDOW_ID, IAccessibilityNodeInfo::ROOT_NODE_ID,
+        focus, info);
 }
 
 ECode UiAutomation::GetServiceInfo(
     /* [out] */ IAccessibilityServiceInfo** info)
 {
-    final IAccessibilityServiceConnection connection;
+    VALIDATE_NOT_NULL(info)
+    *info = NULL;
+
+    AutoPtr<IIAccessibilityServiceConnection> connection;
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
-        connection = AccessibilityInteractionClient.getInstance()
-                .getConnection(mConnectionId);
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
+        CAccessibilityInteractionClient::GetInstance()->GetConnection(mConnectionId,
+            (IIAccessibilityServiceConnection**)&connection);
     }
     // Calling out without a lock held.
-    if (connection != null) {
-        try {
-            return connection.getServiceInfo();
-        } catch (RemoteException re) {
-            Log.w(LOG_TAG, "Error while getting AccessibilityServiceInfo", re);
-        }
+    if (connection != NULL) {
+        // try {
+        return connection->GetServiceInfo(info);
+        // } catch (RemoteException re) {
+        //     Log.w(LOG_TAG, "Error while getting AccessibilityServiceInfo", re);
+        // }
     }
-    return null;
+    return NOERROR;
 }
 
 ECode UiAutomation::SetServiceInfo(
     /* [in] */ IAccessibilityServiceInfo* info)
 {
-    final IAccessibilityServiceConnection connection;
+    VALIDATE_NOT_NULL(info)
+    *info = NULL;
+
+    AutoPtr<IIAccessibilityServiceConnection> connection;
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
-        AccessibilityInteractionClient.getInstance().clearCache();
-        connection = AccessibilityInteractionClient.getInstance()
-                .getConnection(mConnectionId);
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
+        CAccessibilityInteractionClient::GetInstance()->ClearCache();
+        CAccessibilityInteractionClient::GetInstance()->GetConnection(mConnectionId,
+            (IIAccessibilityServiceConnection**)&connection);
     }
     // Calling out without a lock held.
-    if (connection != null) {
-        try {
-            connection.setServiceInfo(info);
-        } catch (RemoteException re) {
-            Log.w(LOG_TAG, "Error while setting AccessibilityServiceInfo", re);
-        }
+    if (connection != NULL) {
+        // try {
+            connection->SetServiceInfo(info);
+        // } catch (RemoteException re) {
+        //     Log.w(LOG_TAG, "Error while setting AccessibilityServiceInfo", re);
+        // }
     }
+    return NOERROR;
 }
 
 ECode UiAutomation::GetWindows(
     /* [out] */ IList** windows) //List<AccessibilityWindowInfo>
 {
-    final Int32 connectionId;
+    VALIDATE_NOT_NULL(windows)
+    *windows = NULL;
+
+    Int32 connectionId;
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
         connectionId = mConnectionId;
     }
     // Calling out without a lock held.
-    return AccessibilityInteractionClient.getInstance()
-            .getWindows(connectionId);
+    return CAccessibilityInteractionClient::GetInstance()->GetWindows(connectionId, windows);
 }
 
 ECode UiAutomation::GetRootInActiveWindow(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
-    final Int32 connectionId;
+    VALIDATE_NOT_NULL(info)
+    *info = NULL;
+
+    Int32 connectionId;
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
         connectionId = mConnectionId;
     }
     // Calling out without a lock held.
-    return AccessibilityInteractionClient.getInstance()
-            .getRootInActiveWindow(connectionId);
+    return CAccessibilityInteractionClient::GetInstance()->GetRootInActiveWindow(connectionId, info);
 }
 
 ECode UiAutomation::InjectInputEvent(
@@ -216,61 +362,72 @@ ECode UiAutomation::InjectInputEvent(
     /* [in] */ Boolean sync,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    result = FALSE;
+
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
     }
-    try {
+    // try {
         if (DEBUG) {
-            Log.i(LOG_TAG, "Injecting: " + event + " sync: " + sync);
+            Logger::I(LOG_TAG, "Injecting: %s sync: %d", Object::ToString(event).string(), sync);
         }
         // Calling out without a lock held.
-        return mUiAutomationConnection.injectInputEvent(event, sync);
-    } catch (RemoteException re) {
-        Log.e(LOG_TAG, "Error while injecting input event!", re);
-    }
-    return false;
+        return mUiAutomationConnection->injectInputEvent(event, sync);
+    // } catch (RemoteException re) {
+    //     Log.e(LOG_TAG, "Error while injecting input event!", re);
+    // }
 }
 
 ECode UiAutomation::SetRotation(
     /* [in] */ Int32 rotation,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
     }
     switch (rotation) {
-        case ROTATION_FREEZE_0:
-        case ROTATION_FREEZE_90:
-        case ROTATION_FREEZE_180:
-        case ROTATION_FREEZE_270:
-        case ROTATION_UNFREEZE:
-        case ROTATION_FREEZE_CURRENT: {
-            try {
+        case IUiAutomation::ROTATION_FREEZE_0:
+        case IUiAutomation::ROTATION_FREEZE_90:
+        case IUiAutomation::ROTATION_FREEZE_180:
+        case IUiAutomation::ROTATION_FREEZE_270:
+        case IUiAutomation::ROTATION_UNFREEZE:
+        case IUiAutomation::ROTATION_FREEZE_CURRENT: {
+            // try {
                 // Calling out without a lock held.
-                mUiAutomationConnection.setRotation(rotation);
-                return true;
-            } catch (RemoteException re) {
-                Log.e(LOG_TAG, "Error while setting rotation!", re);
-            }
-        } return false;
+                mUiAutomationConnection->SetRotation(rotation, result);
+                *result = TRUE;
+            // } catch (RemoteException re) {
+            //     Log.e(LOG_TAG, "Error while setting rotation!", re);
+            // }
+            return NOERROR;
+        }
         default: {
-            throw new IllegalArgumentException("Invalid rotation.");
+            Logger::E(TAG, "IllegalArgumentException: Invalid rotation.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
     }
+    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 ECode UiAutomation::ExecuteAndWaitForEvent(
     /* [in] */ IRunnable* command,
     /* [in] */ IAccessibilityEventFilter* filter,
     /* [in] */ Int64 timeoutMillis,
-    /* [out] */ IAccessibilityEvent** event)
+    /* [out] */ IAccessibilityEvent** result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     // Acquire the lock and prepare for receiving events.
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
-        mEventQueue.clear();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
+        mEventQueue->Clear();
         // Prepare to wait for an event.
-        mWaitingForEventDelivery = true;
+        mWaitingForEventDelivery = TRUE;
     }
 
     // Note: We have to release the lock since calling out with this lock held
@@ -278,47 +435,55 @@ ECode UiAutomation::ExecuteAndWaitForEvent(
     // so starting to collect events before running the action is just fine.
 
     // We will ignore events from previous interactions.
-    final Int64 executionStartTimeMillis = SystemClock.uptimeMillis();
+    Int64 executionStartTimeMillis = SystemClock::GetUptimeMillis();
     // Execute the command *without* the lock being held.
     command.run();
 
     // Acquire the lock and wait for the event.
     synchronized(mLock) {
-        try {
+        // try {
             // Wait for the event.
-            final Int64 startTimeMillis = SystemClock.uptimeMillis();
-            while (true) {
+            Int64 startTimeMillis = SystemClock::GetUptimeMillis();
+            Int64 eventTime;
+            Boolean empty, accept;
+            while (TRUE) {
                 // Drain the event queue
-                while (!mEventQueue.isEmpty()) {
-                    AccessibilityEvent event = mEventQueue.remove(0);
+                while (mEventQueue->IsEmpty(&empty), !empty) {
+                    AutoPtr<IInterface> obj;
+                    mEventQueue->Remove(0, (IInterface**)&obj);
+                    IAccessibilityEvent* event = IAccessibilityEvent::Probe(obj;
                     // Ignore events from previous interactions.
-                    if (event.getEventTime() < executionStartTimeMillis) {
+                    event->GetEventTime(&eventTime)
+                    if (eventTime < executionStartTimeMillis) {
                         continue;
                     }
-                    if (filter.accept(event)) {
-                        return event;
+                    if (filter->Accept(event, &accept), accept) {
+                        *result = event;
+                        REFCOUNT_ADD(*result)
+                        return NOERROR;
                     }
-                    event.recycle();
+                    event->Recycle();
                 }
                 // Check if timed out and if not wait.
-                final Int64 elapsedTimeMillis = SystemClock.uptimeMillis() - startTimeMillis;
-                final Int64 remainingTimeMillis = timeoutMillis - elapsedTimeMillis;
+                Int64 elapsedTimeMillis = SystemClock::GetUptimeMillis() - startTimeMillis;
+                Int64 remainingTimeMillis = timeoutMillis - elapsedTimeMillis;
                 if (remainingTimeMillis <= 0) {
-                    throw new TimeoutException("Expected event not received within: "
-                            + timeoutMillis + " ms.");
+                    Logger::E(TAG, "Expected event not received within: %lld ms.", timeoutMillis);
+                    return E_TIMEOUT_EXCEPTION;
                 }
-                try {
-                    mLock.wait(remainingTimeMillis);
-                } catch (InterruptedException ie) {
-                    /* ignore */
-                }
+                // try {
+                    mLock.Wait(remainingTimeMillis);
+                // } catch (InterruptedException ie) {
+                //     /* ignore */
+                // }
             }
-        } finally {
-            mWaitingForEventDelivery = false;
-            mEventQueue.clear();
-            mLock.notifyAll();
-        }
+        // } finally {
+            mWaitingForEventDelivery = FALSE;
+            mEventQueue->Clear();
+            mLock.NotifyAll();
+        // }
     }
+    return NOERROR;
 }
 
 ECode UiAutomation::WaitForIdle(
@@ -326,95 +491,98 @@ ECode UiAutomation::WaitForIdle(
     /* [in] */ Int64 globalTimeoutMillis)
 {
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
 
-        final Int64 startTimeMillis = SystemClock.uptimeMillis();
+        Int64 startTimeMillis = SystemClock::GetUptimeMillis();
         if (mLastEventTimeMillis <= 0) {
             mLastEventTimeMillis = startTimeMillis;
         }
 
-        while (true) {
-            final Int64 currentTimeMillis = SystemClock.uptimeMillis();
+        while (TRUE) {
+            Int64 currentTimeMillis = SystemClock::GetUptimeMillis();
             // Did we get idle state within the global timeout?
-            final Int64 elapsedGlobalTimeMillis = currentTimeMillis - startTimeMillis;
-            final Int64 remainingGlobalTimeMillis =
+            Int64 elapsedGlobalTimeMillis = currentTimeMillis - startTimeMillis;
+            Int64 remainingGlobalTimeMillis =
                     globalTimeoutMillis - elapsedGlobalTimeMillis;
             if (remainingGlobalTimeMillis <= 0) {
-                throw new TimeoutException("No idle state with idle timeout: "
-                        + idleTimeoutMillis + " within global timeout: "
-                        + globalTimeoutMillis);
+                Logger::E(TAG, "No idle state with idle timeout: %lld within global timeout: %lld",
+                    idleTimeoutMillis, globalTimeoutMillis);
+                    return E_TIMEOUT_EXCEPTION;
             }
             // Did we get an idle state within the idle timeout?
-            final Int64 elapsedIdleTimeMillis = currentTimeMillis - mLastEventTimeMillis;
-            final Int64 remainingIdleTimeMillis = idleTimeoutMillis - elapsedIdleTimeMillis;
+            Int64 elapsedIdleTimeMillis = currentTimeMillis - mLastEventTimeMillis;
+            Int64 remainingIdleTimeMillis = idleTimeoutMillis - elapsedIdleTimeMillis;
             if (remainingIdleTimeMillis <= 0) {
-                return;
+                return NOERROR;
             }
-            try {
-                 mLock.wait(remainingIdleTimeMillis);
-            } catch (InterruptedException ie) {
-                 /* ignore */
-            }
+            // try {
+                 mLock.Wait(remainingIdleTimeMillis);
+            // } catch (InterruptedException ie) {
+            //      /* ignore */
+            // }
         }
     }
+    return NOERROR;
 }
 
 ECode UiAutomation::TakeScreenshot(
     /* [out] */ IBitmap** bmp)
 {
+    VALIDATE_NOT_NULL(bmp)
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
     }
-    Display display = DisplayManagerGlobal.getInstance()
-            .getRealDisplay(Display.DEFAULT_DISPLAY);
+    AutoPtr<IDisplay> display;
+    DisplayManagerGlobal::GetInstance()->GetRealDisplay(IDisplay::DEFAULT_DISPLAY, (IDisplay**)&display);
     Point displaySize = new Point();
     display.getRealSize(displaySize);
-    final Int32 displayWidth = displaySize.x;
-    final Int32 displayHeight = displaySize.y;
+    Int32 displayWidth = displaySize.x;
+    Int32 displayHeight = displaySize.y;
 
-    final float screenshotWidth;
-    final float screenshotHeight;
+    float screenshotWidth;
+    float screenshotHeight;
 
-    final Int32 rotation = display.getRotation();
+    Int32 rotation = display.getRotation();
     switch (rotation) {
-        case ROTATION_FREEZE_0: {
+        case IUiAutomation::ROTATION_FREEZE_0: {
             screenshotWidth = displayWidth;
             screenshotHeight = displayHeight;
         } break;
-        case ROTATION_FREEZE_90: {
+        case IUiAutomation::ROTATION_FREEZE_90: {
             screenshotWidth = displayHeight;
             screenshotHeight = displayWidth;
         } break;
-        case ROTATION_FREEZE_180: {
+        case IUiAutomation::ROTATION_FREEZE_180: {
             screenshotWidth = displayWidth;
             screenshotHeight = displayHeight;
         } break;
-        case ROTATION_FREEZE_270: {
+        case IUiAutomation::ROTATION_FREEZE_270: {
             screenshotWidth = displayHeight;
             screenshotHeight = displayWidth;
         } break;
         default: {
-            throw new IllegalArgumentException("Invalid rotation: "
+            Logger::E(TAG, "IllegalArgumentException: Invalid rotation: "
                     + rotation);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
     }
 
     // Take the screenshot
-    Bitmap screenShot = null;
+    Bitmap screenShot = NULL;
     try {
         // Calling out without a lock held.
-        screenShot = mUiAutomationConnection.takeScreenshot((Int32) screenshotWidth,
+        screenShot = mUiAutomationConnection->takeScreenshot((Int32) screenshotWidth,
                 (Int32) screenshotHeight);
-        if (screenShot == null) {
-            return null;
+        if (screenShot == NULL) {
+            return NULL;
         }
     } catch (RemoteException re) {
         Log.e(LOG_TAG, "Error while taking screnshot!", re);
-        return null;
+        return NULL;
     }
 
     // Rotate the screenshot to the current orientation
-    if (rotation != ROTATION_FREEZE_0) {
+    if (rotation != IUiAutomation::ROTATION_FREEZE_0) {
         Bitmap unrotatedScreenShot = Bitmap.createBitmap(displayWidth, displayHeight,
                 Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(unrotatedScreenShot);
@@ -422,14 +590,14 @@ ECode UiAutomation::TakeScreenshot(
                 unrotatedScreenShot.getHeight() / 2);
         canvas.rotate(getDegreesForRotation(rotation));
         canvas.translate(- screenshotWidth / 2, - screenshotHeight / 2);
-        canvas.drawBitmap(screenShot, 0, 0, null);
-        canvas.setBitmap(null);
+        canvas.drawBitmap(screenShot, 0, 0, NULL);
+        canvas.setBitmap(NULL);
         screenShot.recycle();
         screenShot = unrotatedScreenShot;
     }
 
     // Optimization
-    screenShot.setHasAlpha(false);
+    screenShot.setHasAlpha(FALSE);
 
     return screenShot;
 }
@@ -438,7 +606,7 @@ ECode UiAutomation::SetRunAsMonkey(
     /* [in] */ Boolean enable)
 {
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
     }
     try {
         ActivityManagerNative.getDefault().setUserIsMonkey(enable);
@@ -452,18 +620,18 @@ ECode UiAutomation::ClearWindowContentFrameStats(
     /* [out] */ Boolean* result)
 {
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
     }
     try {
         if (DEBUG) {
             Log.i(LOG_TAG, "Clearing content frame stats for window: " + windowId);
         }
         // Calling out without a lock held.
-        return mUiAutomationConnection.clearWindowContentFrameStats(windowId);
+        return mUiAutomationConnection->clearWindowContentFrameStats(windowId);
     } catch (RemoteException re) {
         Log.e(LOG_TAG, "Error clearing window content frame stats!", re);
     }
-    return false;
+    return FALSE;
 }
 
 ECode UiAutomation::GetWindowContentFrameStats(
@@ -471,31 +639,31 @@ ECode UiAutomation::GetWindowContentFrameStats(
     /* [out] */ IWindowContentFrameStats** stats)
 {
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
     }
     try {
         if (DEBUG) {
             Log.i(LOG_TAG, "Getting content frame stats for window: " + windowId);
         }
         // Calling out without a lock held.
-        return mUiAutomationConnection.getWindowContentFrameStats(windowId);
+        return mUiAutomationConnection->getWindowContentFrameStats(windowId);
     } catch (RemoteException re) {
         Log.e(LOG_TAG, "Error getting window content frame stats!", re);
     }
-    return null;
+    return NULL;
 }
 
 ECode UiAutomation::ClearWindowAnimationFrameStats()
 {
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
     }
     try {
         if (DEBUG) {
             Log.i(LOG_TAG, "Clearing window animation frame stats");
         }
         // Calling out without a lock held.
-        mUiAutomationConnection.clearWindowAnimationFrameStats();
+        mUiAutomationConnection->clearWindowAnimationFrameStats();
     } catch (RemoteException re) {
         Log.e(LOG_TAG, "Error clearing window animation frame stats!", re);
     }
@@ -505,18 +673,18 @@ ECode UiAutomation::GetWindowAnimationFrameStats(
     /* [out] */ IWindowAnimationFrameStats** stats)
 {
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
     }
     try {
         if (DEBUG) {
             Log.i(LOG_TAG, "Getting window animation frame stats");
         }
         // Calling out without a lock held.
-        return mUiAutomationConnection.getWindowAnimationFrameStats();
+        return mUiAutomationConnection->getWindowAnimationFrameStats();
     } catch (RemoteException re) {
         Log.e(LOG_TAG, "Error getting window animation frame stats!", re);
     }
-    return null;
+    return NULL;
 }
 
 ECode UiAutomation::ExecuteShellCommand(
@@ -524,11 +692,11 @@ ECode UiAutomation::ExecuteShellCommand(
     /* [out] */ IParcelFileDescriptor** pfd)
 {
     synchronized(mLock) {
-        throwIfNotConnectedLocked();
+        FAIL_RETURN(ThrowIfNotConnectedLocked())
     }
 
-    ParcelFileDescriptor source = null;
-    ParcelFileDescriptor sink = null;
+    ParcelFileDescriptor source = NULL;
+    ParcelFileDescriptor sink = NULL;
 
     try {
         ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
@@ -536,7 +704,7 @@ ECode UiAutomation::ExecuteShellCommand(
         sink = pipe[1];
 
         // Calling out without a lock held.
-        mUiAutomationConnection.executeShellCommand(command, sink);
+        mUiAutomationConnection->executeShellCommand(command, sink);
     } catch (IOException ioe) {
         Log.e(LOG_TAG, "Error executing shell command!", ioe);
     } catch (RemoteException re) {
@@ -569,6 +737,20 @@ Float UiAutomation::GetDegreesForRotation(
 Boolean UiAutomation::IsConnectedLocked()
 {
     return mConnectionId != IUiAutomation::CONNECTION_ID_UNDEFINED;
+}
+
+CARAPI ThrowIfConnectedLocked()
+{
+    if (mConnectionId != CONNECTION_ID_UNDEFINED) {
+        throw new IllegalStateException("UiAutomation not connected!");
+    }
+}
+
+CARAPI ThrowIfNotConnectedLocked()
+{
+    if (!IsConnectedLocked()) {
+        throw new IllegalStateException("UiAutomation not connected!");
+    }
 }
 
 } // namespace App

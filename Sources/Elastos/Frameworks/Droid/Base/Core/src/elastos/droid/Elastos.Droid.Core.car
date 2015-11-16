@@ -7,6 +7,7 @@ module
     merge("../../../car/elastos/droid/fake_interfaces.car");
     merge("../../../car/elastos/droid/utility.car");
     merge("../../../car/elastos/droid/internal/utility.car");
+    merge("../../../car/elastos/droid/internal/os.car");
     merge("../../../car/elastos/droid/os.car");
     merge("../../../car/elastos/droid/animation.car");
     merge("../../../car/elastos/droid/database.car");
@@ -40,7 +41,6 @@ module
     merge("../../../car/elastos/droid/internal/inputmethod.car");
     merge("../../../car/elastos/droid/internal/logging.car");
     merge("../../../car/elastos/droid/internal/net.car");
-    merge("../../../car/elastos/droid/internal/os.car");
     merge("../../../car/elastos/droid/internal/policy.car");
     merge("../../../car/elastos/droid/internal/preference.car");
     merge("../../../car/elastos/droid/internal/statusbar.car");

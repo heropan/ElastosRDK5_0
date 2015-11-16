@@ -227,7 +227,6 @@ public:
         /* [in] */ IActivityThread* activityThread,
         /* [in] */ IApplicationInfo* aInfo,
         /* [in] */ ICompatibilityInfo* compatInfo,
-        /* [in] */ IActivityThread* mainActivityThread,
         /* [in] */ IClassLoader* baseLoader,
         /* [in] */ Boolean securityViolation,
         /* [in] */ Boolean includeCode,

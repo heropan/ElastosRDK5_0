@@ -46,7 +46,7 @@ ECode CProfilerInfo::WriteToParcel(
     return NOERROR;
 }
 
-ECode CProfilerInfo::ReadFromParcle(
+ECode CProfilerInfo::ReadFromParcel(
     /* [in] */ IParcel* in)
 {
     in->ReadString(&mProfileFile);

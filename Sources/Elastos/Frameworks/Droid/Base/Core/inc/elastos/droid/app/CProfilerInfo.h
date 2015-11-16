@@ -39,7 +39,7 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* out);
 
-    CARAPI ReadFromParcle(
+    CARAPI ReadFromParcel(
         /* [in] */ IParcel* in);
 
     /* Name of profile output file. */
