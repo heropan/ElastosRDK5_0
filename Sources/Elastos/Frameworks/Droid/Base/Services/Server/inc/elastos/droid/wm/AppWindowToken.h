@@ -44,7 +44,7 @@ public:
 
     // All of the windows and child windows that are included in this
     // application token.  Note this list is NOT sorted!
-    List< AutoPtr<WindowState> > mAllAppWindows;
+    WindowList mAllAppWindows;
     AutoPtr<AppWindowAnimator> mAppAnimator;
 
     AutoPtr<WindowAnimator> mAnimator;

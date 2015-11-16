@@ -414,7 +414,7 @@ public:
     CARAPI_(void) GetTouchableRegion(
         /* [in] */ IRegion* outRegion);
 
-    CARAPI_(List<AutoPtr<WindowState> >&) GetWindowList();
+    CARAPI_(AutoPtr<WindowList>) GetWindowList();
 
     // void dump(PrintWriter pw, String prefix, boolean dumpAll);
 
@@ -458,7 +458,7 @@ public:
     AutoPtr<IWindowManagerLayoutParams> mAttrs;
     AutoPtr<DeathRecipient> mDeathRecipient;
     AutoPtr<WindowState> mAttachedWindow;
-    List<AutoPtr<WindowState> > mChildWindows;
+    WindowList mChildWindows;
     Int32 mBaseLayer;
     Int32 mSubLayer;
     Boolean mLayoutAttached;
@@ -645,6 +645,8 @@ public:
 
     // UserId and appId of the owner. Don't display windows of non-current user.
     Int32 mOwnerUid;
+
+    typedef List<AutoPtr<WindowState> > WindowList;
 
 private:
     /** When true this window can be displayed on screens owther than mOwnerUid's */

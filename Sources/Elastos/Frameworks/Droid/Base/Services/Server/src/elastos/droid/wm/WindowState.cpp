@@ -1197,7 +1197,7 @@ void WindowState::GetTouchableRegion(
     }
 }
 
-List<AutoPtr<WindowState> >& WindowState::GetWindowList()
+AutoPtr< List<AutoPtr<WindowState> > > WindowState::GetWindowList()
 {
     return mDisplayContent->GetWindowList();
 }

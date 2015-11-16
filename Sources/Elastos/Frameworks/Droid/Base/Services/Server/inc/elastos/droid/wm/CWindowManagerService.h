@@ -7,6 +7,8 @@
 #include "input/CInputManagerService.h"
 #include "display/CDisplayManagerService.h"
 #include "power/CPowerManagerService.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/InputEventReceiver.h"
 #include "wm/WindowState.h"
 #include "wm/AppWindowToken.h"
@@ -20,20 +22,27 @@
 #include "wm/WindowStateAnimator.h"
 #include "wm/DimAnimator.h"
 #include "wm/DisplayContent.h"
+#include "wm/DisplaySettings.h"
+#include "wm/CircularDisplayMask.h"
+#include "wm/EmulatorDisplayOverlay.h"
+#include "wm/FocusedStackFrame.h"
+#include "wm/AppTransition.h"
+#include "wm/AccessibilityController.h"
 #include "AttributeCache.h"
 #include "wm/MagnificationSpec.h"
 #include "wm/WindowBinder.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::Pair;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
 using Elastos::Net::ISocket;
+using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Hardware::Display::IDisplayManagerInternal;
+using Elastos::Droid::Hardware::Display::IDisplayManager;
 using Elastos::Droid::View::IWindowSession;
 using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::View::IIWindow;
@@ -52,6 +61,7 @@ using Elastos::Droid::View::IInputEventReceiverFactory;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::IDisplayInfo;
 using Elastos::Droid::View::IApplicationToken;
+using Elastos::Droid::View::IWindowContentFrameStats;
 using Elastos::Droid::View::Animation::IInterpolator;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::Content::IContext;
@@ -63,7 +73,8 @@ using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IRemoteCallback;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Hardware::Display::IDisplayManager;
+using Elastos::Droid::Os::IPowerManagerInternal;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IPoint;
@@ -74,7 +85,9 @@ using Elastos::Droid::Internal::View::IInputContext;
 using Elastos::Droid::Server::Display::CDisplayManagerService;
 using Elastos::Droid::Server::Input::CInputManagerService;
 using Elastos::Droid::Server::Power::CPowerManagerService;
-
+using Elastos::Droid::SystemUI::StatusBar::Policy::IAccessibilityController;
+using Elastos::Droid::Utility::IArraySet;
+using Elastos::Droid::Utility::ISparseArray;
 
 namespace Elastos {
 namespace Droid {
@@ -91,6 +104,22 @@ class InputMonitor;
 CarClass(CWindowManagerService)
 {
 public:
+    class RotationWatcher : public Object
+    {
+    public:
+        RotationWatcher(
+            /* [in] */ IRotationWatcher* w,
+            /* [in] */ IProxyDeathRecipient* d)
+            : mWatcher(w)
+            , mDeathRecipient(d)
+        {}
+
+    public:
+        AutoPtr<IRotationWatcher> mWatcher;
+        AutoPtr<IProxyDeathRecipient> mDeathRecipient;
+
+    };
+
     /** Pulled out of performLayoutAndPlaceSurfacesLockedInner in order to refactor into multiple
      * methods. */
     class LayoutFields : public ElRefBase
@@ -104,64 +133,34 @@ public:
         static const Int32 SET_FORCE_HIDING_CHANGED;
         static const Int32 SET_ORIENTATION_CHANGE_COMPLETE;
         static const Int32 SET_TURN_ON_SCREEN;
+        static const Int32 SET_WALLPAPER_ACTION_PENDING;
 
         Boolean mWallpaperForceHidingChanged;
         Boolean mWallpaperMayChange;
         Boolean mOrientationChangeComplete;
-        Int32 mAdjResult;
+        AutoPtr<IObject> mLastWindowFreezeSource;
+        Boolean mWallpaperActionPending;
+
+        // Set to true when the display contains content to show the user.
+        // When false, the display manager may choose to mirror or blank the display.
+        Boolean mDisplayHasContent;
+
+        // Only set while traversing the default display based on its content.
+        // Affects the behavior of mirroring on secondary displays.
+        Boolean mObscureApplicationContentOnSecondaryDisplays;
+
+        Float mPreferredRefreshRate;
 
     private:
-        static const Int32 DISPLAY_CONTENT_UNKNOWN;
-        static const Int32 DISPLAY_CONTENT_MIRROR;
-        static const Int32 DISPLAY_CONTENT_UNIQUE;
-
         AutoPtr<IWindowSession> mHoldScreen;
         Boolean mObscured;
-        Boolean mDimming;
         Boolean mSyswin;
         Float mScreenBrightness;
         Float mButtonBrightness;
         Int64 mUserActivityTimeout;
         Boolean mUpdateRotation;
-        Int32 mDisplayHasContent;
 
         friend class CWindowManagerService;
-    };
-
-    class AppWindowAnimParams : public ElRefBase
-    {
-    public:
-        AppWindowAnimParams(
-            /* [in] */ AppWindowAnimator* appAnimator);
-
-        ~AppWindowAnimParams();
-
-    public:
-        AutoPtr<AppWindowAnimator> mAppAnimator;
-        List< AutoPtr<WindowStateAnimator> > mWinAnimators;
-    };
-
-    class LayoutToAnimatorParams : public ElRefBase
-    {
-    public:
-        LayoutToAnimatorParams();
-
-        ~LayoutToAnimatorParams();
-
-    public:
-        static const Int64 WALLPAPER_TOKENS_CHANGED;
-
-    public:
-        Boolean mParamsModified;
-        Int64 mChanges;
-        Boolean mAnimationScheduled;
-        HashMap<Int32, AutoPtr<List< AutoPtr<WindowStateAnimator> > > > mWinAnimatorLists;
-        AutoPtr<WindowState> mWallpaperTarget;
-        AutoPtr<WindowState> mLowerWallpaperTarget;
-        AutoPtr<WindowState> mUpperWallpaperTarget;
-        HashMap<Int32, AutoPtr<DimAnimator::Parameters> > mDimParams;
-        List< AutoPtr<WindowToken> > mWallpaperTokens;
-        List< AutoPtr<AppWindowAnimParams> > mAppWindowAnimParams;
     };
 
     class DragInputEventReceiver
@@ -190,26 +189,8 @@ public:
     interface IOnHardKeyboardStatusChangeListener : public IInterface
     {
         virtual CARAPI_(void) OnHardKeyboardStatusChange(
-            /* [in] */ Boolean available,
-            /* [in] */ Boolean enabled) = 0;
+            /* [in] */ Boolean available) = 0;
     };
-
-    // class AllWindowsIterator : public ElRefBase
-    // {
-    // public:
-    //     AllWindowsIterator();
-
-    //     AllWindowsIterator(
-    //         /* [in] */ Boolean reverse);
-
-    // private:
-    //     AutoPtr<DisplayContent> mDisplayContent;
-    //     AutoPtr<DisplayContentsIterator> mDisplayContentsIterator;
-    //     List< AutoPtr<WindowState> > mWindowList;
-    //     List< AutoPtr<WindowState> >::Iterator mWindowListIt;
-    //     List< AutoPtr<WindowState> >::ReverseIterator mWindowListRIt;
-    //     Boolean mReverse;
-    // };
 
     class LocalBroadcastReceiver
         : public BroadcastReceiver
@@ -262,7 +243,8 @@ public:
     {
     public:
         H(
-            /* [in] */ CWindowManagerService * host) : mHost(host)
+            /* [in] */ CWindowManagerService * host)
+            : mHost(host)
         {}
 
         ECode HandleMessage(
@@ -291,87 +273,105 @@ public:
         static const Int32 REPORT_HARD_KEYBOARD_STATUS_CHANGE; // = 22;
         static const Int32 BOOT_TIMEOUT; // = 23;
         static const Int32 WAITING_FOR_DRAWN_TIMEOUT; // = 24;
-        static const Int32 UPDATE_ANIM_PARAMETERS; // = 25;
-        static const Int32 SHOW_STRICT_MODE_VIOLATION; // = 26;
-        static const Int32 DO_ANIMATION_CALLBACK; // = 27;
-        static const Int32 NOTIFY_ROTATION_CHANGED; // = 28;
-        static const Int32 NOTIFY_WINDOW_TRANSITION; // = 29;
-        static const Int32 NOTIFY_RECTANGLE_ON_SCREEN_REQUESTED; // = 30;
-        static const Int32 NOTIFY_WINDOW_LAYERS_CHANGED; // = 31;
+        static const Int32 SHOW_STRICT_MODE_VIOLATION; // = 25;
+        static const Int32 DO_ANIMATION_CALLBACK; // = 26;
 
-        static const Int32 DO_DISPLAY_ADDED; // = 32;
-        static const Int32 DO_DISPLAY_REMOVED; // = 33;
-        static const Int32 DO_DISPLAY_CHANGED; // = 34;
+        static const Int32 DO_DISPLAY_ADDED; // = 27;
+        static const Int32 DO_DISPLAY_REMOVED; // = 28;
+        static const Int32 DO_DISPLAY_CHANGED; // = 29;
 
-        static const Int32 CLIENT_FREEZE_TIMEOUT; // = 35;
+        static const Int32 CLIENT_FREEZE_TIMEOUT; // = 30;
+        static const Int32 TAP_OUTSIDE_STACK; // = 31;
+        static const Int32 NOTIFY_ACTIVITY_DRAWN; // = 32;
 
-        static const Int32 ANIMATOR_WHAT_OFFSET; // = 100000;
-        static const Int32 SET_TRANSPARENT_REGION; // = ANIMATOR_WHAT_OFFSET + 1;
-        static const Int32 CLEAR_PENDING_ACTIONS; // = ANIMATOR_WHAT_OFFSET + 2
+        static const Int32 ALL_WINDOWS_DRAWN; // = 33;
+
+        static const Int32 NEW_ANIMATOR_SCALE; // = 34;
+
+        static const Int32 SHOW_CIRCULAR_DISPLAY_MASK; // = 35;
+        static const Int32 SHOW_EMULATOR_DISPLAY_OVERLAY; // = 36;
+
+        static const Int32 CHECK_IF_BOOT_ANIMATION_FINISHED; // = 37;
 
     private:
         CWindowManagerService * mHost;
     };
 
 private:
-    class WindowManagerServiceCreator
-        : public ElRefBase
-        , public IRunnable
+    class SettingsObserver : public ContentObserver
+    {
+    public:
+        SettingsObserver(
+            /* [in] */ CWindowManagerService* host);
+
+        CARAPI OnChange(
+            /* [in] */ Boolean selfChange);
+
+    private:
+        CWindowManagerService* mHost;
+    };
+
+    class WindowManagerServiceCreator : public Runnable
     {
     public:
         WindowManagerServiceCreator(
             /* [in] */ IContext* context,
-            /* [in] */ CPowerManagerService* pm,
-            /* [in] */ CDisplayManagerService* dm,
             /* [in] */ CInputManagerService* im,
-            /* [in] */ IHandler* uiHandler,
             /* [in] */ Boolean haveInputMethods,
             /* [in] */ Boolean showBootMsgs,
             /* [in] */ Boolean onlyCore);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [in] */ InterfaceID* pIID);
 
         CARAPI Run();
 
     public:
         AutoPtr<IContext> mContext;
-        AutoPtr<CPowerManagerService> mPm;
-        AutoPtr<CDisplayManagerService> mDm;
         AutoPtr<CInputManagerService> mIm;
-        AutoPtr<IHandler> mUiHandler;
         Boolean mHaveInputMethods;
         Boolean mShowBootMsgs;
         Boolean mOnlyCore;
         CWindowManagerService* mInstance;
     };
 
-    class PolicyInitializer
-        : public ElRefBase
-        , public IRunnable
+    class MyLowPowerModeListener
+        : public Object
+        , public ILowPowerModeListener
+    {
+    public:
+        MyLowPowerModeListener(
+            /* [in] */ CWindowManagerService* host);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnLowPowerModeChanged(
+            /* [in] */ Boolean enabled);
+
+    private:
+        CWindowManagerService* mHost;
+    };
+
+    class MyAppOpsManagerOnOpChangedListener
+        : public Object
+        , public IAppOpsManagerOnOpChangedListener
+    {
+    public:
+        MyAppOpsManagerOnOpChangedListener(
+            /* [in] */ CWindowManagerService* host);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnOpChanged(
+            /* [in] */ Int32 op,
+            /* [in] */ const String& packageName);
+
+    private:
+        CWindowManagerService* mHost;
+    };
+
+    class PolicyInitializer : public Runnable
     {
     public:
         PolicyInitializer(
             /* [in] */ CWindowManagerService* wmService);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [in] */ InterfaceID* pIID);
 
         CARAPI Run();
 
@@ -410,28 +410,60 @@ private:
             /* [out] */ Float* output);
     };
 
+    class LocalService : public WindowManagerInternal
+    {
+    public:
+        LocalService(
+            /* [in] */ CWindowManagerService* host);
+
+        CARAPI RequestTraversalFromDisplayManager();
+
+        CARAPI SetMagnificationSpec(
+            /* [in] */ IMagnificationSpec* spec);
+
+        CARAPI GetCompatibleMagnificationSpecForWindow(
+            /* [in] */ IBinder* windowToken,
+            /* [out] */ IMagnificationSpec** spec);
+
+        CARAPI SetMagnificationCallbacks(
+            /* [in] */ IMagnificationCallbacks* callbacks);
+
+        CARAPI SetWindowsForAccessibilityCallback(
+            /* [in] */ IWindowsForAccessibilityCallback* callback);
+
+        CARAPI SetInputFilter(
+            /* [in] */ IIInputFilter* filter);
+
+        CARAPI GetFocusedWindowToken(
+            /* [out] */ IBinder** binder);
+
+        CARAPI IsKeyguardLocked(
+            /* [out] */ Boolean* isLocked);
+
+        CARAPI ShowGlobalActions();
+
+        CARAPI GetWindowFrame(
+            /* [in] */ IBinder* token,
+            /* [in] */ IRect* outBounds);
+
+        CARAPI WaitForAllWindowsDrawn(
+            /* [in] */ IRunnable* callback,
+            /* [in] */ Int64 timeout);
+    };
+
 public:
     CWindowManagerService();
 
-    ~CWindowManagerService();
-
     static AutoPtr<CWindowManagerService> Main(
         /* [in] */ IContext* context,
-        /* [in] */ CPowerManagerService* pm,
-        /* [in] */ CDisplayManagerService* dm,
         /* [in] */ CInputManagerService* im,
-        /* [in] */ IHandler* uiHandler,
-        /* [in] */ IHandler* wmHandler,
         /* [in] */ Boolean haveInputMethods,
         /* [in] */ Boolean showBootMsgs,
         /* [in] */ Boolean onlyCore);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ Handle32 pm,
-        /* [in] */ Handle32 displayManager,
         /* [in] */ Handle32 inputManager,
-        /* [in] */ IHandler* uiHandler,
         /* [in] */ Boolean haveInputMethods,
         /* [in] */ Boolean showBootMsgs,
         /* [in] */ Boolean onlyCore);
@@ -444,7 +476,7 @@ public:
      * @param displayContent The display we are interested in.
      * @return List of windows from token that are on displayContent.
      */
-    CARAPI_(AutoPtr< List<AutoPtr<WindowState> > >) GetTokenWindowsOnDisplay(
+    CARAPI_(AutoPtr<WindowList>) GetTokenWindowsOnDisplay(
         /* [in] */ WindowToken* token,
         /* [in] */ DisplayContent* displayContent);
 
@@ -475,8 +507,6 @@ public:
 
     CARAPI_(Boolean) MoveInputMethodWindowsIfNeededLocked(
         /* [in] */ Boolean needAssignLayers);
-
-    CARAPI_(void) AdjustInputMethodDialogsLocked();
 
     CARAPI_(Boolean) IsWallpaperVisible(
         /* [in] */ WindowState* wallpaperTarget);
@@ -522,6 +552,20 @@ public:
         /* [out] */ IRect** outContentInsets,
         /* [out] */ IInputChannel** outInputChannel);
 
+    /**
+     * Returns whether screen capture is disabled for all windows of a specific user.
+     */
+    CARAPI_(Boolean) IsScreenCaptureDisabledLocked(
+        /* [in] */ Int32 userId);
+
+    /**
+     * Set mScreenCaptureDisabled for specific user
+     */
+    // @Override
+    CARAPI_(void) SetScreenCaptureDisabled(
+        /* [in] */ Int32 userId,
+        /* [in] */ Boolean disabled);
+
     CARAPI_(void) RemoveWindow(
         /* [in] */ CSession* session,
         /* [in] */ IIWindow* client);
@@ -530,17 +574,18 @@ public:
         /* [in] */ CSession* session,
         /* [in] */ WindowState* win);
 
+    CARAPI_(void) RemoveWindowInnerLocked(
+        /* [in] */ CSession* session,
+        /* [in] */ WindowState* win);
+
+    CARAPI_(void) UpdateAppOpsState();
+
     // static CARAPI_(void) LogSurface(
     //     /* [in] */ WindowState* w,
     //     /* [in] */ const String& msg,
     //     /* [in] */ RuntimeException where);
 
-    // static CARAPI_(void) logSurface(WindowState w, String msg, RuntimeException where);
-
-    // TODO(cmautner): Move to WindowStateAnimator.
-    CARAPI_(void) SetTransparentRegionHint(
-        /* [in] */ WindowStateAnimator* winAnimator,
-        /* [in] */ IRegion* region);
+    // static void logSurface(SurfaceControl s, String title, String msg, RuntimeException where);
 
     CARAPI_(void) SetTransparentRegionWindow(
         /* [in] */ CSession* session,
@@ -571,6 +616,11 @@ public:
         /* [in] */ IBinder* window,
         /* [in] */ IBundle* result);
 
+    CARAPI_(void) SetWindowWallpaperDisplayOffsetLocked(
+        /* [in] */ WindowState* window,
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
+
     CARAPI_(AutoPtr<IBundle>) SendWindowWallpaperCommandLocked(
         /* [in] */ WindowState* window,
         /* [in] */ const String& action,
@@ -592,8 +642,10 @@ public:
 
     CARAPI_(void) OnRectangleOnScreenRequested(
         /* [in] */ IBinder* token,
-        /* [in] */ IRect* rectangle,
-        /* [in] */ Boolean immediate);
+        /* [in] */ IRect* rectangle);
+
+    CARAPI_(AutoPtr<IIWindowId>) GetWindowId(
+        /* [in] */ IBinder* token);
 
     CARAPI_(Int32) RelayoutWindow(
         /* [in] */ CSession* session,
@@ -607,12 +659,15 @@ public:
         /* [in] */ IRect* inFrame,
         /* [in] */ IRect* inContentInsets,
         /* [in] */ IRect* inVisibleInsets,
+        /* [in] */ IRect* inStableInsets,
         /* [in] */ IConfiguration* inConfig,
         /* [in] */ ISurface* inSurface,
         /* [out] */ IRect** outFrame,
+        /* [out] */ IRect** outOverscanInsets,
         /* [out] */ IRect** outContentInsets,
         /* [out] */ IRect** outVisibleInsets,
-        /* [out] */ IConfiguration** outConfig,
+        /* [out] */ IRect** outStableInsets,
+        /* [out] */ IConfiguration* outConfig,
         /* [out] */ ISurface** outSurface);
 
     CARAPI_(void) PerformDeferredDestroyWindow(
@@ -627,35 +682,12 @@ public:
         /* [in] */ CSession* session,
         /* [in] */ IIWindow* client);
 
-    /**
-     * Gets the compatibility scale of e window given its token.
-     */
-    CARAPI GetWindowCompatibilityScale(
-        /* [in] */ IBinder* windowToken,
-        /* [out] */ Float* scale);
-
-    CARAPI GetWindowInfo(
-        /* [in] */ IBinder* token,
-        /* [out] */ IWindowInfo** info);
-
-    CARAPI GetVisibleWindowsForDisplay(
-        /* [in] */ Int32 displayId,
-        /* [out] */ IObjectContainer** outInfos);
-
-    /**
-     * Sets the scale and offset for implementing accessibility magnification.
-     */
-    CARAPI MagnifyDisplay(
-        /* [in] */ Int32 dipslayId,
-        /* [in] */ Float scale,
-        /* [in] */ Float offsetX,
-        /* [in] */ Float offsetY);
-
-    CARAPI_(AutoPtr<MagnificationSpec>) GetDisplayMagnificationSpecLocked(
-        /* [in] */ Int32 displayId);
-
     CARAPI_(void) ValidateAppTokens(
-        /* [in] */ List< AutoPtr<IBinder> >& tokens);
+        /* [in] */ Int32 stackId,
+        /* [in] */ List< AutoPtr<TaskGroup> >& tasks);
+
+    CARAPI_(void) ValidateStackOrder(
+        /* [in] */ ArrayOf<IInteger32*>* remoteStackIds);
 
     CARAPI_(Boolean) CheckCallingPermission(
         /* [in] */ const String& permission,
@@ -675,12 +707,16 @@ public:
 
     CARAPI AddAppToken(
         /* [in] */ Int32 addPos,
-        /* [in] */ Int32 userId,
         /* [in] */ IApplicationToken* token,
-        /* [in] */ Int32 groupId,
+        /* [in] */ Int32 taskId,
+        /* [in] */ Int32 stackId,
         /* [in] */ Int32 requestedOrientation,
         /* [in] */ Boolean fullscreen,
-        /* [in] */ Boolean showWhenLocked);
+        /* [in] */ Boolean showWhenLocked,
+        /* [in] */ Int32 userId,
+        /* [in] */ Int32 configChanges,
+        /* [in] */ Boolean voiceInteraction,
+        /* [in] */ Boolean launchTaskBehind);
 
     CARAPI SetAppGroupId(
         /* [in] */ IBinder* token,
@@ -715,8 +751,6 @@ public:
     CARAPI_(Boolean) UpdateOrientationFromAppTokensLocked(
         /* [in] */ Boolean inTransaction);
 
-    CARAPI_(Int32) ComputeForcedAppOrientationLocked();
-
     CARAPI SetNewConfiguration(
         /* [in] */ IConfiguration* config);
 
@@ -727,6 +761,11 @@ public:
     CARAPI GetAppOrientation(
         /* [in] */ IApplicationToken* token,
         /* [out] */ Int32* orientation);
+
+    /** Call while in a Surface transaction. */
+    CARAPI_(void) SetFocusedStackLayer();
+
+    CARAPI_(void) SetFocusedStackFrame();
 
     CARAPI SetFocusedApp(
         /* [in] */ IBinder* token,
@@ -758,6 +797,15 @@ public:
         /* [in] */ IRemoteCallback* startedCallback,
         /* [in] */ Boolean scaleUp);
 
+    CARAPI OverridePendingAppTransitionAspectScaledThumb(
+        /* [in] */ IBitmap* srcThumb,
+        /* [in] */ Int32 startX,
+        /* [in] */ Int32 startY,
+        /* [in] */ Int32 targetWidth,
+        /* [in] */ Int32 targetHeight,
+        /* [in] */ IRemoteCallback* startedCallback,
+        /* [in] */ Boolean scaleUp);
+
     CARAPI ExecuteAppTransition();
 
     CARAPI SetAppStartingWindow(
@@ -768,12 +816,28 @@ public:
         /* [in] */ ICharSequence* nonLocalizedLabel,
         /* [in] */ Int32 labelRes,
         /* [in] */ Int32 icon,
+        /* [in] */ Int32 logo,
         /* [in] */ Int32 windowFlags,
         /* [in] */ IBinder* transferFrom,
-        /* [in] */ Boolean createIfNeeded);
+        /* [in] */ Boolean createIfNeeded,);
+
+    CARAPI_(void) RemoveAppStartingWindow(
+        /* [in] */ IBinder* token);
 
     CARAPI SetAppWillBeHidden(
         /* [in] */ IBinder* token);
+
+    CARAPI_(void) SetAppFullscreen(
+        /* [in] */ IBinder* token,
+        /* [in] */ Boolean toOpaque);
+
+    CARAPI_(void) SetWindowOpaque(
+        /* [in] */ IBinder* token,
+        /* [in] */ Boolean isOpaque);
+
+    CARAPI_(void) SetWindowOpaqueLocked(
+        /* [in] */ IBinder* token,
+        /* [in] */ Boolean isOpaque);
 
     CARAPI_(Boolean) SetTokenVisibilityLocked(
         /* [in] */ AppWindowToken* wtoken,
@@ -787,13 +851,9 @@ public:
         /* [in] */ Boolean visible);
 
     CARAPI_(void) UnsetAppFreezingScreenLocked(
-    /* [in] */ AppWindowToken* wtoken,
-    /* [in] */ Boolean unfreezeSurfaceNow,
-    /* [in] */ Boolean force);
-
-    CARAPI_(void) StartAppFreezingScreenLocked(
         /* [in] */ AppWindowToken* wtoken,
-        /* [in] */ Int32 configChanges);
+        /* [in] */ Boolean unfreezeSurfaceNow,
+        /* [in] */ Boolean force);
 
     CARAPI StartAppFreezingScreen(
         /* [in] */ IBinder* token,
@@ -803,24 +863,68 @@ public:
         /* [in] */ IBinder* token,
         /* [in] */ Boolean force);
 
+    CARAPI_(void) RemoveAppFromTaskLocked(
+        /* [in] */ AppWindowToken* wtoken);
+
     CARAPI RemoveAppToken(
         /* [in] */ IBinder* token);
 
-    CARAPI_(void) DumpAppTokensLocked();
+    CARAPI_(void) ScheduleRemoveStartingWindowLocked(
+        /* [in] */ AppWindowToken* wtoken);
 
-    CARAPI_(void) DumpAnimatingAppTokensLocked();
+    CARAPI_(void) DumpAppTokensLocked();
 
     CARAPI_(void) DumpWindowsLocked();
 
-    CARAPI MoveAppToken(
-        /* [in] */ Int32 index,
-        /* [in] */ IBinder* token);
+    CARAPI_(void) TmpRemoveTaskWindowsLocked(
+        /* [in] */ Task* task);
 
-    CARAPI MoveAppTokensToTop(
-        /* [in] */ IObjectContainer* tokens);
+    CARAPI_(void) MoveStackWindowsLocked(
+        /* [in] */ DisplayContent* displayContent);
 
-    CARAPI MoveAppTokensToBottom(
-        /* [in] */ IObjectContainer* tokens);
+    CARAPI_(void) MoveTaskToTop(
+        /* [in] */ Int32 taskId);
+
+    CARAPI_(void) MoveTaskToBottom(
+        /* [in] */ Int32 taskId);
+
+    /**
+     * Create a new TaskStack and place it on a DisplayContent.
+     * @param stackId The unique identifier of the new stack.
+     * @param displayId The unique identifier of the DisplayContent.
+     */
+    CARAPI_(void) AttachStack(
+        /* [in] */ Int32 stackId,
+        /* [in] */ Int32 displayId);
+
+    CARAPI_(void) DetachStackLocked(
+        /* [in] */ DisplayContent* displayContent,
+        /* [in] */ TaskStack* stack);
+
+    CARAPI_(void) DetachStack(
+        /* [in] */ Int32 stackId);
+
+    CARAPI_(void) RemoveStack(
+        /* [in] */ Int32 stackId);
+
+    CARAPI_(void) RemoveTaskLocked(
+        /* [in] */ Task* task);
+
+    CARAPI_(void) RemoveTask(
+        /* [in] */ Int32 taskId);
+
+    CARAPI_(void) AddTask(
+        /* [in] */ Int32 taskId,
+        /* [in] */ Int32 stackId,
+        /* [in] */ Boolean toTop);
+
+    CARAPI ResizeStack(
+        /* [in] */ Int32 stackId,
+        /* [in] */ IRect* bounds);
+
+    CARAPI_(void) GetStackBounds(
+        /* [in] */ Int32 stackId,
+        /* [in] */ IRect* bounds);
 
     CARAPI StartFreezingScreen(
         /* [in] */ Int32 exitAnim,
@@ -853,6 +957,16 @@ public:
 
     CARAPI DismissKeyguard();
 
+    CARAPI KeyguardGoingAway(
+        /* [in] */ Boolean disableWindowAnimations,
+        /* [in] */ Boolean keyguardGoingToNotificationShade);
+
+    CARAPI_(void) KeyguardWaitingForActivityDrawn();
+
+    CARAPI_(void) NotifyActivityDrawnForKeyguard();
+
+    CARAPI_(void) ShowGlobalActions();
+
     CARAPI CloseSystemDialogs(
         /* [in] */ const String& reason);
 
@@ -866,6 +980,10 @@ public:
     CARAPI SetAnimationScales(
         /* [in] */ ArrayOf<Float>* scales);
 
+    CARAPI_(Float) GetWindowAnimationScaleLocked();
+
+    CARAPI_(Float) GetTransitionAnimationScaleLocked();
+
     // These can only be called with the SET_ANIMATON_SCALE permission.
     CARAPI GetAnimationScale(
         /* [in] */ Int32 which,
@@ -874,6 +992,18 @@ public:
     CARAPI GetAnimationScales(
         /* [out, callee] */ ArrayOf<Float>** scales);
 
+    CARAPI GetCurrentAnimatorScale(
+        /* [out] */ Float* scale);
+
+    CARAPI_(void) DispatchNewAnimatorScaleLocked(
+        /* [in] */ ISession* session);
+
+    CARAPI RegisterPointerEventListener(
+        /* [in] */ IPointerEventListener* listener);
+
+    CARAPI UnregisterPointerEventListener(
+        /* [in] */ IPointerEventListener* listener);
+
     /**
      * Returns a code that describes the current state of the lid switch.
      */
@@ -881,13 +1011,9 @@ public:
     CARAPI GetLidState(
         /* [out] */ Int32* lidState);
 
-    /**
-     * Creates an input channel that will receive all input from the input dispatcher.
-     */
     // Called by window manager policy.  Not exposed externally.
-    CARAPI MonitorInput(
-        /* [in] */ const String& name,
-        /* [out] */ IInputChannel** inputChannel);
+    CARAPI GetCameraLensCoverState(
+        /* [out] */ Int32* state);
 
     /**
      * Switch the keyboard layout for the given device.
@@ -905,13 +1031,20 @@ public:
     CARAPI RebootSafeMode(
         /* [in] */ Boolean confirm);
 
-    CARAPI SetInputFilter(
-        /* [in] */ IIInputFilter* filter);
+    CARAPI_(void) SetCurrentProfileIds(
+        /* [in] */ ArrayOf<Int32>* currentProfileIds);
 
     CARAPI_(void) SetCurrentUser(
-        /* [in] */ Int32 newUserId);
+        /* [in] */ Int32 newUserId,
+        /* [in] */ ArrayOf<Int32>* currentProfileIds);
+
+    /* Called by WindowState */
+    CARAPI_(Boolean) IsCurrentProfileLocked(
+        /* [in] */ Int32 userId);
 
     CARAPI_(void) EnableScreenAfterBoot();
+
+    CARAPI EnableScreenIfNeeded();
 
     CARAPI_(void) EnableScreenIfNeededLocked();
 
@@ -927,6 +1060,19 @@ public:
 
     CARAPI SetInTouchMode(
         /* [in] */ Boolean mode);
+
+    CARAPI_(void) ShowCircularDisplayMaskIfNeeded();
+
+    CARAPI_(void) ShowEmulatorDisplayOverlayIfNeeded();
+
+    CARAPI_(void) ShowCircularMask();
+
+    CARAPI_(void) ShowEmulatorDisplayOverlay();
+
+    CARAPI_(void) HandleTapOutsideStack(
+        /* [in] */ DisplayContent* dc,
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
 
     // For StrictMode flashing a red border on violations from the UI
     // thread.  The uid/pid is implicit from the Binder call, and the Window
@@ -953,6 +1099,8 @@ public:
      * @param displayId the Display to take a screenshot of.
      * @param width the width of the target bitmap
      * @param height the height of the target bitmap
+     * @param force565 if true the returned bitmap will be RGB_565, otherwise it
+     *                 will be the same config as the surface
      */
     // @Override
     CARAPI ScreenshotApplications(
@@ -960,6 +1108,7 @@ public:
         /* [in] */ Int32 displayId,
         /* [in] */ Int32 maxWidth,
         /* [in] */ Int32 maxHeight,
+        /* [in] */ Boolean force565,
         /* [out] */ IBitmap** bitmap);
 
     /**
@@ -994,7 +1143,8 @@ public:
      * This can be used to prevent rotation changes from occurring while the user is
      * performing certain operations, such as drag and drop.
      *
-     * This call nests and must be matched by an equal number of calls to {@link #resumeRotation}.
+     * This call nests and must be matched by an equal number of calls to
+     * {@link #resumeRotationLocked}.
      */
     CARAPI_(void) PauseRotationLocked();
 
@@ -1024,6 +1174,9 @@ public:
     CARAPI GetRotation(
         /* [out] */ Int32* rotation);
 
+    CARAPI IsRotationFrozen(
+        /* [out] */ Boolean* result);
+
     /**
      * Watch the rotation of the screen.  Returns the current rotation,
      * calls back when it changes.
@@ -1031,6 +1184,13 @@ public:
     CARAPI WatchRotation(
         /* [in] */ IRotationWatcher* watcher,
         /* [out] */ Int32* rotation);
+
+    /**
+     * Remove a rotation watcher set using watchRotation.
+     * @hide
+     */
+    CARAPI RemoveRotationWatcher(
+        /* [in] */ IRotationWatcher* watcher);
 
     /**
      * Apps that use the compact menu panel (as controlled by the panelMenuIsCompact
@@ -1127,24 +1287,6 @@ public:
         /* [in] */ const String& command,
         /* [in] */ const String& parameters);
 
-    /**
-     * Adds a listener for display content changes.
-     */
-    CARAPI AddDisplayContentChangeListener(
-        /* [in] */ Int32 displayId,
-        /* [in] */ IDisplayContentChangeListener* listener);
-
-    /**
-     * Removes a listener for display content changes.
-     */
-    CARAPI RemoveDisplayContentChangeListener(
-        /* [in] */ Int32 displayId,
-        /* [in] */ IDisplayContentChangeListener* listener);
-
-    CARAPI_(void) ScheduleNotifyWindowTranstionIfNeededLocked(
-        /* [in] */ WindowState* window,
-        /* [in] */ Int32 transition);
-
     CARAPI_(void) AddWindowChangeListener(
         /* [in] */ IWindowChangeListener* listener);
 
@@ -1166,10 +1308,7 @@ public:
 
     CARAPI_(Boolean) IsHardKeyboardAvailable();
 
-    CARAPI_(Boolean) IsHardKeyboardEnabled();
-
-    CARAPI_(void) SetHardKeyboardEnabled(
-        /* [in] */ Boolean enabled);
+    CARAPI_(void) UpdateShowImeWithHardKeyboard();
 
     CARAPI_(void) SetOnHardKeyboardStatusChangeListener(
         /* [in] */ IOnHardKeyboardStatusChangeListener* listener);
@@ -1193,9 +1332,6 @@ public:
     CARAPI SetEventDispatching(
         /* [in] */ Boolean enabled);
 
-    CARAPI GetFocusedWindowToken(
-        /* [out] */ IBinder** token);
-
     CARAPI_(Boolean) DetectSafeMode();
 
     CARAPI_(void) DisplayReady();
@@ -1203,6 +1339,7 @@ public:
     CARAPI SystemReady();
 
     CARAPI OpenSession(
+        /* [in] */ IIWindowSessionCallback* callback,
         /* [in] */ IInputMethodClient* client,
         /* [in] */ IInputContext* inputContext,
         /* [out] */ IWindowSession** session);
@@ -1211,9 +1348,13 @@ public:
         /* [in] */ IInputMethodClient* client,
         /* [out] */ Boolean* result);
 
-    CARAPI_(void) GetInitialDisplaySize(
+    CARAPI GetInitialDisplaySize(
         /* [in] */ Int32 displayId,
-        /* [in] */ IPoint** size);
+        /* [in] */ IPoint* size);
+
+    CARAPI GetBaseDisplaySize(
+        /* [in] */ Int32 displayId,
+        /* [in] */ IPoint* size);
 
     CARAPI SetForcedDisplaySize(
         /* [in] */ Int32 displayId,
@@ -1223,16 +1364,27 @@ public:
     CARAPI ClearForcedDisplaySize(
         /* [in] */ Int32 displayId);
 
+    CARAPI SetOverscan(
+        /* [in] */ Int32 displayId,
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
+
+    CARAPI GetInitialDisplayDensity(
+        /* [in] */ Int32 displayId,
+        /* [out] */ Int32* result);
+
+    CARAPI GetBaseDisplayDensity(
+        /* [in] */ Int32 displayId,
+        /* [out] */ Int32* result);
+
     CARAPI SetForcedDisplayDensity(
         /* [in] */ Int32 displayId,
         /* [in] */ Int32 density);
 
     CARAPI ClearForcedDisplayDensity(
         /* [in] */ Int32 displayId);
-
-    // Is the device configured to have a full system bar for larger screens?
-    CARAPI HasSystemNavBar(
-        /* [out] */ Boolean* result);
 
     CARAPI WindowForClientLocked(
         /* [in] */ CSession* session,
@@ -1261,11 +1413,6 @@ public:
 
     CARAPI_(void) CheckDrawnWindowsLocked();
 
-    CARAPI WaitForWindowDrawn(
-        /* [in] */ IBinder* token,
-        /* [in] */ IRemoteCallback* callback,
-        /* [out] */ Boolean* result);
-
     CARAPI_(void) SetHoldScreenLocked(
         /* [in] */ CSession* newHoldScreen);
 
@@ -1276,22 +1423,13 @@ public:
     /** Note that Locked in this case is on mLayoutToAnim */
     CARAPI_(void) ScheduleAnimationLocked();
 
-    CARAPI_(void) UpdateLayoutToAnimationLocked();
+    CARAPI_(Boolean) CopyAnimToLayoutParamsLocked();
 
-    CARAPI_(void) UpdateLayoutToAnimWallpaperTokens();
-
-    CARAPI_(void) SetAnimDimParams(
-        /* [in] */ Int32 displayId,
-        /* [in] */ DimAnimator::Parameters* params);
-
-    CARAPI_(void) StartDimmingLocked(
-        /* [in] */ WindowStateAnimator* winAnimator,
-        /* [in] */ Float target,
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    CARAPI_(void) StopDimmingLocked(
-        /* [in] */ Int32 displayId);
+    /** If a window that has an animation specifying a colored background and the current wallpaper
+     * is visible, then the color goes *below* the wallpaper so we don't cause the wallpaper to
+     * suddenly disappear. */
+    CARAPI_(Int32) AdjustAnimationBackground(
+        /* [in] */ WindowStateAnimator* winAnimator);
 
     CARAPI_(Boolean) ReclaimSomeSurfaceMemoryLocked(
         /* [in] */ WindowStateAnimator* winAnimator,
@@ -1332,6 +1470,7 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Int32 windowType,
         /* [in] */ Int32 layoutParamsFlags,
+        /* [in] */ Int32 layoutParamsPrivateFlags,
         /* [in] */ Boolean canReceiveKeys,
         /* [in] */ Boolean hasFocus,
         /* [in] */ Boolean touchFullscreen,
@@ -1342,6 +1481,8 @@ public:
 
     // It is assumed that this method is called only by InputMethodManagerService.
     CARAPI_(void) SaveLastInputMethodWindowForTransition();
+
+    CARAPI_(Int32) GetInputMethodWindowVisibleHeight();
 
     /**
      * Device has a software navigation bar (separate from the status bar).
@@ -1355,29 +1496,21 @@ public:
     CARAPI LockNow(
         /* [in] */ IBundle* options);
 
+    CARAPI_(void) ShowRecentApps();
+
     /**
      * Device is in safe mode.
      */
     CARAPI IsSafeModeEnabled(
         /* [out] */ Boolean* isSafe);
 
-    /**
-     * Tell keyguard to show the assistant (Intent.ACTION_ASSIST) after asking for the user's
-     * credentials.
-     */
-    CARAPI ShowAssistant();
+    CARAPI ClearWindowContentFrameStats(
+        /* [in] */ IBinder* token,
+        /* [out] */ Boolean* result);
 
-    CARAPI KeyEnterMouseMode();
-
-    CARAPI KeyExitMouseMode();
-
-    CARAPI KeySetMouseMoveCode(int left,int right,int top,int bottom);
-
-    CARAPI KeySetMouseBtnCode(int leftbtn,int midbtn,int rightbtn);
-
-    CARAPI KeySetMouseDistance(int distance);
-
-    CARAPI ResetInputCalibration();
+    CARAPI GetWindowContentFrameStats(
+        /* [in] */ IBinder* token,
+        /* [out] */ IWindowContentFrameStats** stats);
 
     // CARAPI_(void) DumpPolicyLocked(PrintWriter pw, String[] args, boolean dumpAll);
 
@@ -1405,15 +1538,17 @@ public:
      *
      * @param appWindowToken The application that ANR'd, may be null.
      * @param windowState The window that ANR'd, may be null.
+     * @param reason The reason for the ANR, may be null.
      */
     CARAPI_(void) SaveANRStateLocked(
         /* [in] */ AppWindowToken* appWindowToken,
-        /* [in] */ WindowState* windowState);
+        /* [in] */ WindowState* windowState,
+        /* [in] */ const String& reason);
 
     // CARAPI_(void) Dump(FileDescriptor fd, PrintWriter pw, String[] args);
 
     // Called by the heartbeat to ensure locks are not held indefnitely (for deadlock detection).
-    CARAPI_(void) Monitor();
+    CARAPI Monitor();
 
     CARAPI_(void) DebugLayoutRepeats(
         /* [in] */ const String& msg,
@@ -1434,11 +1569,25 @@ public:
     // There is an inherent assumption that this will never return null.
     CARAPI_(AutoPtr<DisplayContent>) GetDefaultDisplayContentLocked();
 
-    CARAPI_(List< AutoPtr<WindowState> >&) GetDefaultWindowListLocked();
+    CARAPI_(AutoPtr<WindowList>) GetDefaultWindowListLocked();
 
     CARAPI_(AutoPtr<IDisplayInfo>) GetDefaultDisplayInfoLocked();
 
+    /**
+     * Return the list of WindowStates associated on the passed display.
+     * @param display The screen to return windows from.
+     * @return The list of WindowStates on the screen, or null if the there is no screen.
+     */
+    CARAPI_(AutoPtr<WindowList>) GetWindowListLocked(
+        /* [in] */ IDisplay* display);
+
+    CARAPI_(AutoPtr<WindowList>) GetWindowListLocked(
+        /* [in] */ Int32 displayId);
+
     CARAPI OnDisplayAdded(
+        /* [in] */ Int32 displayId);
+
+    CARAPI_(void) HandleDisplayAdded(
         /* [in] */ Int32 displayId);
 
     CARAPI OnDisplayRemoved(
@@ -1448,8 +1597,7 @@ public:
         /* [in] */ Int32 displayId);
 
 private:
-    CARAPI_(void) InitPolicy(
-        /* [in] */ IHandler* uiHandler);
+    CARAPI_(void) InitPolicy();
 
     CARAPI_(void) PlaceWindowAfter(
         /* [in] */ WindowState* pos,
@@ -1474,8 +1622,18 @@ private:
         /* [in] */ WindowState* win,
         /* [in] */ List<AutoPtr<WindowState> >& windows);
 
+    CARAPI_(List<AutoPtr<WindowState> >::Iterator) AddAppWindowToListLocked(
+        /* [in] */ WindowState* targetWin);
+
+    CARAPI_(void) AddFreeWindowToListLocked(
+        /* [in] */ WindowState* win);
+
+    CARAPI_(void) AddAttachedWindowToListLocked(
+        /* [in] */ WindowState* win,
+        /* [in] */ Boolean addToToken);
+
     CARAPI_(void) AddWindowToListInOrderLocked(
-        /* [in] */ WindowState* targetWin,
+        /* [in] */ WindowState* win,
         /* [in] */ Boolean addToToken);
 
     CARAPI_(List< AutoPtr<WindowState> >::Iterator) TmpRemoveWindowLocked(
@@ -1485,148 +1643,60 @@ private:
     CARAPI_(void) ReAddWindowToListInOrderLocked(
         /* [in] */ WindowState* win);
 
-    CARAPI_(void) RemoveWindowInnerLocked(
-        /* [in] */ CSession* session,
-        /* [in] */ WindowState* win);
-
-    CARAPI_(void) ScheduleNotifyRectangleOnScreenRequestedIfNeededLocked(
-        /* [in] */ WindowState* window,
-        /* [in] */ IRect* rectangle,
-        /* [in] */ Boolean immediate);
-
-    CARAPI_(void) HandleNotifyRectangleOnScreenRequested(
-        /* [in] */ Int32 displayId,
-        /* [in] */ IRect* rectangle,
-        /* [in] */ Boolean immediate);
-
-    CARAPI_(AutoPtr<IWindowInfo>) GetWindowInfoForWindowStateLocked(
-        /* [in] */ WindowState* window);
-
-    CARAPI_(AutoPtr<AttributeCache::Entry>) GetCachedAnimations(
-        /* [in] */ Int32 userId,
-        /* [in] */ IWindowManagerLayoutParams* lp);
-
-    CARAPI_(AutoPtr<AttributeCache::Entry>) GetCachedAnimations(
-        /* [in] */ Int32 userId,
-        /* [in] */ const String& packageName,
-        /* [in] */ Int32 resId);
-
-    CARAPI_(AutoPtr<IAnimation>) LoadAnimation(
-        /* [in] */ Int32 userId,
-        /* [in] */ const String& packageName,
-        /* [in] */ Int32 resId);
-
-    CARAPI_(AutoPtr<IAnimation>) LoadAnimation(
-        /* [in] */ Int32 userId,
+    CARAPI_(Boolean) ApplyAnimationLocked(
+        /* [in] */ AppWindowToken* atoken,
         /* [in] */ IWindowManagerLayoutParams* lp,
-        /* [in] */ Int32 animAttr);
-
-    CARAPI_(AutoPtr<IAnimation>) CreateExitAnimationLocked(
-        /* [in] */ Int32 transit,
-        /* [in] */ Int32 duration);
-
-    /**
-     * Compute the pivot point for an animation that is scaling from a small
-     * rect on screen to a larger rect.  The pivot point varies depending on
-     * the distance between the inner and outer edges on both sides.  This
-     * function computes the pivot point for one dimension.
-     * @param startPos  Offset from left/top edge of outer rectangle to
-     * left/top edge of inner rectangle.
-     * @param finalScale The scaling factor between the size of the outer
-     * and inner rectangles.
-     */
-    static CARAPI_(Float) ComputePivot(
-        /* [in] */ Int32 startPos,
-        /* [in] */ Float finalScale);
-
-    CARAPI_(AutoPtr<IAnimation>) CreateScaleUpAnimationLocked(
-        /* [in] */ Int32 transit,
-        /* [in] */ Boolean enter);
-
-    CARAPI_(AutoPtr<IAnimation>) CreateThumbnailAnimationLocked(
         /* [in] */ Int32 transit,
         /* [in] */ Boolean enter,
-        /* [in] */ Boolean thumb,
-        /* [in] */ Boolean scaleUp);
+        /* [in] */ Boolean isVoiceInteraction);
 
-    CARAPI_(Boolean) ApplyAnimationLocked(
-        /* [in] */ AppWindowToken* win,
-        /* [in] */ IWindowManagerLayoutParams* lp,
-        /* [in] */ Int32 transit,
-        /* [in] */ Boolean isEntrance);
-
-    /**
-     *  Find the location to insert a new AppWindowToken into the window-ordered app token list.
-     *  Note that mAppTokens.size() == mAnimatingAppTokens.size() + 1.
-     * @param addPos The location the token was inserted into in mAppTokens.
-     * @param atoken The token to insert.
-     */
-    CARAPI_(void) AddAppTokenToAnimating(
-        /* [in] */ Int32 addPos,
+    CARAPI CreateTask(
+        /* [in] */ Int32 taskId,
+        /* [in] */ Int32 stackId,
         /* [in] */ Int32 userId,
-        /* [in] */ AppWindowToken* atoken);
+        /* [in] */ AppWindowToken* atoken,
+        /* [out] */ Task** task);
 
     CARAPI_(AutoPtr<IConfiguration>) UpdateOrientationFromAppTokensLocked(
         /* [in] */ IConfiguration* currentConfig,
         /* [in] */ IBinder* freezeThisOneIfNeeded);
 
-    CARAPI_(void) ScheduleAnimationCallback(
-        /* [in] */ IRemoteCallback* cb);
+    CARAPI_(void) StartAppFreezingScreenLocked(
+        /* [in] */ AppWindowToken* wtoken);
 
     CARAPI_(Boolean) TmpRemoveAppWindowsLocked(
         /* [in] */ WindowToken* token);
 
-    CARAPI_(List< AutoPtr<WindowState> >::Iterator) FindWindowOffsetLocked(
-        /* [in] */ List< AutoPtr<WindowState> >& windows,
-        /* [in] */ List< AutoPtr<AppWindowToken> >::Iterator tokenPosIt);
+    CARAPI_(WindowList::Iterator) FindAppWindowInsertionPointLocked(
+        /* [in] */ AppWindowToken* target);
 
-    CARAPI_(List< AutoPtr<WindowState> >::Iterator) ReAddWindowLocked(
+    CARAPI_(WindowList::Iterator) ReAddWindowLocked(
         /* [in] */ List< AutoPtr<WindowState> >::Iterator it,
         /* [in] */ WindowState* win);
 
-    CARAPI_(List< AutoPtr<WindowState> >::Iterator) ReAddAppWindowsLocked(
+    CARAPI_(WindowList:Iterator) ReAddAppWindowsLocked(
         /* [in] */ DisplayContent* displayContent,
         /* [in] */ List< AutoPtr<WindowState> >::Iterator it,
         /* [in] */ WindowToken* token);
 
-    CARAPI_(void) RemoveAppTokensLocked(
-        /* [in] */ IObjectContainer* tokens);
-
-    CARAPI_(void) MoveAppWindowsLocked(
-        /* [in] */ AppWindowToken* wtoken,
-        /* [in] */ List< AutoPtr<AppWindowToken> >::Iterator tokenPosIt,
-        /* [in] */ Boolean updateFocusAndLayout);
-
-    CARAPI_(void) MoveAppWindowsLocked(
-        /* [in] */ IObjectContainer* tokens,
-        /* [in] */ List< AutoPtr<AppWindowToken> >::Iterator tokenPosIt);
-
     CARAPI_(void) SetAnimatorDurationScale(
         /* [in] */ Float scale);
+
+    CARAPI_(Boolean) CheckWaitingForWindowsLocked();
+
+    CARAPI_(Boolean) CheckBootAnimationCompleteLocked();
 
     CARAPI_(void) ShowStrictModeViolation(
         /* [in] */ Int32 arg,
         /* [in] */ Int32 pid);
 
+    static CARAPI_(void) ConvertCropForSurfaceFlinger(
+        /* [in] */ IRect* crop,
+        /* [in] */ Int32 rot,
+        /* [in] */ Int32 dw,
+        /* [in] */ Int32 dh);
+
     CARAPI_(Boolean) IsSystemSecure();
-
-    CARAPI_(void) HandleNotifyWindowTransition(
-        /* [in] */ Int32 transition,
-        /* [in] */ IWindowInfo* info);
-
-    CARAPI_(void) ScheduleNotifyRotationChangedIfNeededLocked(
-        /* [in] */ DisplayContent* displayContent,
-        /* [in] */ Int32 rotation);
-
-    CARAPI_(void) HandleNotifyRotationChanged(
-        /* [in] */ Int32 displayId,
-        /* [in] */ Int32 rotation);
-
-    CARAPI_(void) ScheduleNotifyWindowLayersChangedIfNeededLocked(
-        /* [in] */ DisplayContent* displayContent);
-
-    CARAPI_(void) HandleNotifyWindowLayersChanged(
-        /* [in] */ DisplayContent* displayContent);
 
     CARAPI_(void) NotifyWindowsChanged();
 
@@ -1676,9 +1746,6 @@ private:
     CARAPI_(void) DisplayReady(
         /* [in] */ Int32 displayId);
 
-    // TODO(multidisplay): Call isScreenOn for each display.
-    CARAPI_(void) SendScreenStatusToClientsLocked();
-
     // -------------------------------------------------------------
     // Async Handler
     // -------------------------------------------------------------
@@ -1724,20 +1791,7 @@ private:
     CARAPI HandleDragEndTimeout(
         /* [in] */ IBinder* winBinder);
 
-    CARAPI HandleWaitingForDrawnTimeout(
-        /* [in] */ WindowState* windowState,
-        /* [in] */ IRemoteCallback* remoteCallback);
-
-    CARAPI HandleUpdateAnimParameters();
-
-    CARAPI HandleDoDisplayAdded(
-        /* [in] */ Int32 displayId);
-
-    CARAPI HandleDoDisplayRemoved(
-        /* [in] */ Int32 displayId);
-
-    CARAPI HandleDoDisplayChanged(
-        /* [in] */ Int32 displayId);
+    CARAPI HandleWaitingForDrawnTimeout();
 
     CARAPI_(void) ReadForcedDisplaySizeAndDensityLocked(
         /* [in] */ DisplayContent* displayContent);
@@ -1757,11 +1811,21 @@ private:
     CARAPI_(void) ReconfigureDisplayLocked(
         /* [in] */ DisplayContent* displayContent);
 
+    CARAPI_(void) ConfigureDisplayPolicyLocked(
+        /* [in] */ DisplayContent* displayContent);
+
+    CARAPI_(void) SetOverscanLocked(
+        /* [in] */ DisplayContent* displayContent,
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
+
     CARAPI_(void) RebuildAppWindowListLocked(
         /* [in] */ DisplayContent* displayContent);
 
     CARAPI_(void) AssignLayersLocked(
-        /* [in] */ List< AutoPtr<WindowState> >& windows);
+        /* [in] */ WindowList* windows);
 
     CARAPI_(void) PerformLayoutAndPlaceSurfacesLocked();
 
@@ -1777,13 +1841,6 @@ private:
      * @return bitmap indicating if another pass through layout must be made.
      */
     CARAPI_(Int32) HandleAnimatingStoppedAndTransitionLocked();
-
-    /**
-     * Extracted from {@link #performLayoutAndPlaceSurfacesLockedInner} to reduce size of method.
-     *
-     * @return bitmap indicating if another pass through layout must be made.
-     */
-    CARAPI_(Int32) AnimateAwayWallpaperLocked();
 
     CARAPI_(void) UpdateResizingWindows(
         /* [in] */ WindowState* w);
@@ -1802,7 +1859,11 @@ private:
         /* [in] */ Int32 innerDw,
         /* [in] */ Int32 innerDh);
 
-    CARAPI_(void) UpdateAllDrawnLocked();
+    CARAPI_(void) HandleFlagDimBehind(
+        /* [in] */ WindowState* w);
+
+    CARAPI_(void) UpdateAllDrawnLocked(
+        /* [in] */ DisplayContent* displayContent);
 
     // "Something has changed!  Let's make it correct now."
     CARAPI_(void) PerformLayoutAndPlaceSurfacesLockedInner(
@@ -1813,13 +1874,8 @@ private:
 
     CARAPI_(Boolean) NeedsLayout();
 
-    CARAPI_(Boolean) CopyAnimToLayoutParamsLocked();
-
     CARAPI_(Boolean) UpdateFocusedWindowLocked(
         /* [in] */ Int32 mode,
-        /* [in] */ Boolean updateInputWindows);
-
-    CARAPI_(void) FinishUpdateFocusedWindowAfterAssignLayersLocked(
         /* [in] */ Boolean updateInputWindows);
 
     CARAPI_(AutoPtr<WindowState>) ComputeFocusedWindowLocked();
@@ -1834,8 +1890,8 @@ private:
 
     CARAPI_(void) StopFreezingDisplayLocked();
 
-    CARAPI_(void) HandleDisplayAddedLocked(
-        /* [in] */ Int32 displayId);
+    CARAPI_(AutoPtr<DisplayContent>) NewDisplayContentLocked(
+        /* [in] */ IDisplay* display);
 
     CARAPI_(void) HandleDisplayRemovedLocked(
         /* [in] */ Int32 displayId);
@@ -1848,6 +1904,7 @@ public:
     static const Boolean DEBUG;
     static const Boolean DEBUG_ADD_REMOVE;
     static const Boolean DEBUG_FOCUS;
+    static const Boolean DEBUG_FOCUS_LIGHT
     static const Boolean DEBUG_ANIM;
     static const Boolean DEBUG_LAYOUT;
     static const Boolean DEBUG_RESIZE;
@@ -1872,6 +1929,9 @@ public:
     static const Boolean DEBUG_LAYOUT_REPEATS;
     static const Boolean DEBUG_SURFACE_TRACE;
     static const Boolean DEBUG_WINDOW_TRACE;
+    static const Boolean DEBUG_TASK_MOVEMENT;
+    static const Boolean DEBUG_STACK;
+    static const Boolean DEBUG_DISPLAY;
     static const Boolean SHOW_SURFACE_ALLOC;
     static const Boolean SHOW_TRANSACTIONS;
     static const Boolean SHOW_LIGHT_TRANSACTIONS;
@@ -1906,6 +1966,11 @@ public:
     static const Int32 LAYER_OFFSET_BLUR;
 
     /**
+     * FocusedStackFrame layer is immediately above focused window.
+     */
+    static const Int32 LAYER_OFFSET_FOCUSED_STACK;
+
+    /**
      * Animation thumbnail is as far as possible below the window above
      * the thumbnail (or in other words as far as possible above the window
      * below it).
@@ -1927,11 +1992,6 @@ public:
      */
     static const Int32 MAX_ANIMATION_DURATION;
 
-    /** Amount of time (in milliseconds) to animate the dim surface from one
-     * value to another, when no window animation is driving it.
-     */
-    static const Int32 DEFAULT_DIM_DURATION;
-
     /** Amount of time (in milliseconds) to animate the fade-in-out transition for
      * compatible windows.
      */
@@ -1939,9 +1999,6 @@ public:
 
     /** Amount of time (in milliseconds) to delay before declaring a window freeze timeout. */
     static const Int32 WINDOW_FREEZE_TIMEOUT_DURATION;
-
-    /** Fraction of animation at which the recents thumbnail becomes completely transparent */
-    static const Float RECENTS_THUMBNAIL_FADEOUT_FRACTION;
 
     /**
      * If true, the window manager will do its own custom freezing and general
@@ -1951,6 +2008,18 @@ public:
 
     // Default input dispatching timeout in nanoseconds.
     static const Int64 DEFAULT_INPUT_DISPATCHING_TIMEOUT_NANOS;
+
+    // Poll interval in milliseconds for watching boot animation finished.
+    static const Int32 BOOT_ANIMATION_POLL_INTERVAL;
+
+    // The name of the boot animation service in init.rc.
+    static const String BOOT_ANIMATION_SERVICE;
+
+    /** Minimum value for attachStack and resizeStack weight value */
+    static const Float STACK_WEIGHT_MIN;
+
+    /** Maximum value for attachStack and resizeStack weight value */
+    static const Float STACK_WEIGHT_MAX;
 
     static const Int32 UPDATE_FOCUS_NORMAL;
     static const Int32 UPDATE_FOCUS_WILL_ASSIGN_LAYERS;
@@ -1967,12 +2036,22 @@ public:
 
     AutoPtr<IBroadcastReceiver> mBroadcastReceiver;
 
-    // Current user when multi-user is enabled. Don't show windows of non-current user.
+    /**
+     * Current user when multi-user is enabled. Don't show windows of
+     * non-current user. Also see mCurrentProfileIds.
+     */
     Int32 mCurrentUserId;
+    /**
+     * Users that are profiles of the current user. These are also allowed to show windows
+     * on the current user.
+     */
+    AutoPtr< ArrayOf<Int32> > mCurrentProfileIds;
 
     AutoPtr<IContext> mContext;
 
     Boolean mHaveInputMethods;
+
+    Boolean mHasPermanentDpad;
 
     Boolean mAllowBootMessages;
 
@@ -1984,14 +2063,19 @@ public:
 
     AutoPtr<IIBatteryStats> mBatteryStats;
 
+    AutoPtr<IAppOpsManager> mAppOps;
+
+    AutoPtr<DisplaySettings> mDisplaySettings;
+
     /**
      * All currently active sessions with clients.
      */
-    HashSet<AutoPtr<IWindowSession> > mSessions;
+    AutoPtr<IArraySet> mSessions;//new ArraySet<CSession>();
 
     /**
      * Mapping from an IIWindow IBinder to the server's Window object.
      * This is also used as the lock for all of our state.
+     * NOTE: Never call into methods that lock ActivityManagerService while holding this object.
      */
     HashMap<AutoPtr<IBinder>, AutoPtr<WindowState> > mWindowMap;
     Object mWindowMapLock;
@@ -2000,32 +2084,6 @@ public:
      * Mapping from a token IBinder to a WindowToken object.
      */
     HashMap<AutoPtr<IBinder>, AutoPtr<WindowToken> > mTokenMap;
-
-    /**
-     * Window tokens that are in the process of exiting, but still
-     * on screen for animations.
-     */
-    List< AutoPtr<WindowToken> > mExitingTokens;
-
-    /**
-     * List controlling the ordering of windows in different applications which must
-     * be kept in sync with ActivityManager.
-     */
-    List< AutoPtr<AppWindowToken> > mAppTokens;
-
-    /**
-     * AppWindowTokens in the Z order they were in at the start of an animation. Between
-     * animations this list is maintained in the exact order of mAppTokens. If tokens
-     * are added to mAppTokens during an animation an attempt is made to insert them at the same
-     * logical location in this list. Note that this list is always in sync with mWindows.
-     */
-    List< AutoPtr<AppWindowToken> > mAnimatingAppTokens;
-
-    /**
-     * Application tokens that are in the process of exiting, but still
-     * on screen for animations.
-     */
-    List< AutoPtr<AppWindowToken> > mExitingAppTokens;
 
     /**
      * List of window tokens that have finished starting their application,
@@ -2052,6 +2110,11 @@ public:
     List< AutoPtr<WindowState> > mPendingRemove;
 
     /**
+     * Stacks whose animations have ended and whose tasks, apps, selves may now be removed.
+     */
+    AutoPtr<IArraySet> mPendingStacksRemove;// = new ArraySet<TaskStack>();
+
+    /**
      * Used when processing mPendingRemove to avoid working on the original array.
      */
     AutoPtr< ArrayOf<WindowState*> > mPendingRemoveTmp;
@@ -2076,7 +2139,11 @@ public:
     /**
      * Windows that clients are waiting to have drawn.
      */
-    List< Pair<AutoPtr<WindowState>, AutoPtr<IRemoteCallback> > > mWaitingForDrawn;
+    List< AutoPtr<WindowState> > mWaitingForDrawn;
+    /**
+     * And the callback to make when they've all been drawn.
+     */
+    AutoPtr<IRunnable> mWaitingForDrawnCallback;
 
     /**
      * Windows that have called relayout() while we were running animations,
@@ -2090,11 +2157,25 @@ public:
      */
     AutoPtr< ArrayOf<WindowState*> > mRebuildTmp;
 
+    /**
+     * Stores for each user whether screencapture is disabled
+     * This array is essentially a cache for all userId for
+     * {@link android.app.admin.DevicePolicyManager#getScreenCaptureDisabled}
+     */
+    AutoPtr<ISparseArray> mScreenCaptureDisabled; // = new SparseArray<Boolean>();
+
     AutoPtr<IIInputMethodManager> mInputMethodManager;
+
+    AutoPtr<AccessibilityController> mAccessibilityController;
 
     AutoPtr<ISurfaceSession> mFxSession;
     AutoPtr<Watermark> mWatermark;
     AutoPtr<StrictModeFlash> mStrictModeFlash;
+    AutoPtr<CircularDisplayMask> mCircularDisplayMask;
+    AutoPtr<EmulatorDisplayOverlay> mEmulatorDisplayOverlay;
+    AutoPtr<FocusedStackFrame> mFocusedStackFrame;
+
+    Int32 mFocusedStackLayer;
 
     AutoPtr< ArrayOf<Float> > mTmpFloats;
 
@@ -2104,21 +2185,27 @@ public:
     Boolean mSystemBooted;
     Boolean mForceDisplayEnabled;
     Boolean mShowingBootMessages;
+    Boolean mBootAnimationStopped;
 
     String mLastANRState;
+
+    /** All DisplayContents in the world, kept here */
+    AutoPtr<ISparseArray> mDisplayContents; // =  new SparseArray<DisplayContent>(2);
 
     Int32 mRotation;
     Int32 mForcedAppOrientation;
     Boolean mAltOrientation;
-    List< AutoPtr<IRotationWatcher> > mRotationWatchers;
+    List< AutoPtr<RotationWatcher> > mRotationWatchers;
     Int32 mDeferredRotationPauseCount;
 
-    AutoPtr<IRect> mSystemDecorRect;
     Int32 mSystemDecorLayer;
     AutoPtr<IRect> mScreenRect;
 
     Boolean mTraversalScheduled;
     Boolean mDisplayFrozen;
+    Int64 mDisplayFreezeTime;
+    Int32 mLastDisplayFreezeDuration;
+    AutoPtr<IObject> mLastFinishedFreezeSource;
     Boolean mWaitingForConfig;
     Boolean mWindowsFreezingScreen;
     Boolean mClientFreezingScreen;
@@ -2134,32 +2221,7 @@ public:
 
     AutoPtr<IConfiguration> mCurConfiguration;
 
-    // This is held as long as we have the screen frozen, to give us time to
-    // perform a rotation animation when turning off shows the lock screen which
-    // changes the orientation.
-    AutoPtr<IPowerManagerWakeLock> mScreenFrozenLock;
-
-    // State management of app transitions.  When we are preparing for a
-    // transition, mNextAppTransition will be the kind of transition to
-    // perform or TRANSIT_NONE if we are not waiting.  If we are waiting,
-    // mOpeningApps and mClosingApps are the lists of tokens that will be
-    // made visible or hidden at the next transition.
-    Int32 mNextAppTransition;
-    Int32 mNextAppTransitionType;
-    String mNextAppTransitionPackage;
-    AutoPtr<IBitmap> mNextAppTransitionThumbnail;
-    // Used for thumbnail transitions. True if we're scaling up, false if scaling down
-    Boolean mNextAppTransitionScaleUp;
-    AutoPtr<IRemoteCallback> mNextAppTransitionCallback;
-    Int32 mNextAppTransitionEnter;
-    Int32 mNextAppTransitionExit;
-    Int32 mNextAppTransitionStartX;
-    Int32 mNextAppTransitionStartY;
-    Int32 mNextAppTransitionStartWidth;
-    Int32 mNextAppTransitionStartHeight;
-    Boolean mAppTransitionReady;
-    Boolean mAppTransitionRunning;
-    Boolean mAppTransitionTimeout;
+    AutoPtr<AppTransition> mAppTransition;
     Boolean mStartingIconInTransition;
     Boolean mSkipAppTransitionAnimation;
     List< AutoPtr<AppWindowToken> > mOpeningApps;
@@ -2191,8 +2253,9 @@ public:
     List< AutoPtr<WindowState> > mInputMethodDialogs;
 
     Boolean mHardKeyboardAvailable;
-    Boolean mHardKeyboardEnabled;
+    Boolean mShowImeWithHardKeyboard;
     AutoPtr<IOnHardKeyboardStatusChangeListener> mHardKeyboardStatusChangeListener;
+    AutoPtr<SettingsObserver> mSettingsObserver;
 
     List< AutoPtr<WindowToken> > mWallpaperTokens;
 
@@ -2202,28 +2265,36 @@ public:
     // If non-null, we are in the middle of animating from one wallpaper target
     // to another, and this is the lower one in Z-order.
     AutoPtr<WindowState> mLowerWallpaperTarget;
+    // If non-null, we are in the middle of animating from one wallpaper target
+    // to another, and this is the higher one in Z-order.
+    AutoPtr<WindowState> mUpperWallpaperTarget;
 
     Int32 mWallpaperAnimLayerAdjustment;
     Float mLastWallpaperX;
     Float mLastWallpaperY;
     Float mLastWallpaperXStep;
     Float mLastWallpaperYStep;
+    Int32 mLastWallpaperDisplayOffsetX;
+    Int32 mLastWallpaperDisplayOffsetY;
     // This is set when we are waiting for a wallpaper to tell us it is done
     // changing its scroll position.
     AutoPtr<WindowState> mWaitingOnWallpaper;
     // The last time we had a timeout when waiting for a wallpaper.
     Int64 mLastWallpaperTimeoutTime;
+    Boolean mAnimateWallpaperWithTarget;
 
     AutoPtr<AppWindowToken> mFocusedApp;
 
-    AutoPtr<CPowerManagerService> mPowerManager;
+    AutoPtr<IPowerManager> mPowerManager;
+    AutoPtr<IPowerManagerInternal> mPowerManagerInternal;
 
-    Float mWindowAnimationScale;
-    Float mTransitionAnimationScale;
-    Float mAnimatorDurationScale;
+    Float mWindowAnimationScaleSetting;
+    Float mTransitionAnimationScaleSetting;
+    Float mAnimatorDurationScaleSetting;
+    Boolean mAnimationsDisabled;
 
     AutoPtr<CInputManagerService> mInputManager;
-    AutoPtr<CDisplayManagerService> mDisplayManagerService;
+    AutoPtr<IDisplayManagerInternal> mDisplayManagerInternal;
     AutoPtr<IDisplayManager> mDisplayManager;
 
     // Who is holding the screen on.
@@ -2234,18 +2305,22 @@ public:
 
     AutoPtr<DragState> mDragState;
 
+    // For frozen screen animations.
+    Int32 mExitAnimId;
+    Int32 mEnterAnimId;
+
     AutoPtr<LayoutFields> mInnerFields;
 
-    /** Params from WindowManagerService to WindowAnimator. Do not modify or read without first
-     * locking on either mWindowMap or mAnimator and then on mLayoutToAnim */
-    AutoPtr<LayoutToAnimatorParams> mLayoutToAnim;
-    Object mLayoutToAnimLock;
-
-    /** The lowest wallpaper target with a detached wallpaper animation on it. */
-    AutoPtr<WindowState> mWindowDetachedWallpaper;
+    Boolean mAnimationScheduled;
 
     AutoPtr<WindowAnimator> mAnimator;
     Object mAnimatorLock;
+
+    AutoPtr<ISparseArray> mTaskIdToTask;// = new SparseArray<Task>();
+
+    /** All of the TaskStacks in the window manager, unordered. For an ordered list call
+     * DisplayContent.getStacks(). */
+    AutoPtr<ISparseArray> mStackIdToStack;// = new SparseArray<TaskStack>();
 
     /**
      * Whether the UI is currently running in touch mode (not showing
@@ -2271,18 +2346,25 @@ private:
     static const Int32 INPUT_DEVICES_READY_FOR_SAFE_MODE_DETECTION_TIMEOUT_MILLIS;
     static const String SYSTEM_SECURE;
     static const String SYSTEM_DEBUGGABLE;
-    static const Float THUMBNAIL_ANIMATION_DECELERATE_FACTOR;
+    static const String DENSITY_OVERRIDE;
+    static const String SIZE_OVERRIDE;
+    static const String SYSTEM_DEFAULT_ROTATION;
+    static const Int32 MAX_SCREENSHOT_RETRIES;
+
+    // The flag describing a full screen app window (where the app takes care of drawing under the
+    // SystemUI bars)
+    static const Int32 SYSTEM_UI_FLAGS_LAYOUT_STABLE_FULLSCREEN;
+
+    static const String PROPERTY_EMULATOR_CIRCULAR;
 
     AutoPtr<KeyguardDisableHandler> mKeyguardDisableHandler;
 
-    Boolean mHeadless;
+    Boolean mKeyguardWaitingForActivityDrawn;
 
-    /** All DisplayContents in the world, kept here */
-    HashMap<Int32, AutoPtr<DisplayContent> > mDisplayContents;
-
-    // If non-null, we are in the middle of animating from one wallpaper target
-    // to another, and this is the higher one in Z-order.
-    AutoPtr<WindowState> mUpperWallpaperTarget;
+    // This is held as long as we have the screen frozen, to give us time to
+    // perform a rotation animation when turning off shows the lock screen which
+    // changes the orientation.
+    AutoPtr<IPowerManagerWakeLock> mScreenFrozenLock;
 
     /** Skip repeated AppWindowTokens initialization. Note that AppWindowsToken's version of this
      * is a long initialized to Long.MIN_VALUE so that it doesn't match this value on startup. */
@@ -2291,8 +2373,9 @@ private:
     /** Only do a maximum of 6 repeated layouts. After that quit */
     Int32 mLayoutRepeatCount;
 
-    // Temp regions for intermediary calculations.
-    AutoPtr<IRegion> mTempRegion;
+    AutoPtr<PointerEventDispatcher> mPointerEventDispatcher;
+
+    AutoPtr<IWindowContentFrameStats> mTempWindowRenderStats;
 
     AutoPtr<ViewServer> mViewServer;
     List< AutoPtr<IWindowChangeListener> > mWindowChangeListeners;
@@ -2303,6 +2386,7 @@ private:
 
     AutoPtr<WindowBinder> mWindowBinder;
 
+    friend class H;
     friend class CSession;
     friend class WindowAnimator;
     friend class WindowStateAnimator;

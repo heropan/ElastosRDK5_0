@@ -737,18 +737,13 @@ module
 //     class CWindowManagerService {
 //         constructor(
 //             [in] IContext* ctx,
-//             [in] Handle32 pm,
-//             [in] Handle32 displayManager,
 //             [in] Handle32 inputManager,
-//             [in] IHandler* uiHandler,
 //             [in] Boolean haveInputMethods,
 //             [in] Boolean showBootMsgs,
 //             [in] Boolean onlyCore);
 
 //         interface IIWindowManager;
 //         interface IWindowManagerPolicyWindowManagerFuncs;
-//         interface IDisplayManagerServiceWindowManagerFuncs;
-//         interface IDisplayListener;
 //     }
 
 //     class CSession {

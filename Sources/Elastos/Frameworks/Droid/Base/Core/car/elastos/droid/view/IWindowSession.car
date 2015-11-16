@@ -296,7 +296,7 @@ module
      *
      * {@hide}
      */
-    interface IWindowSessionCallback {
+    interface IIWindowSessionCallback {
         OnAnimatorScaleChanged(
             [in] Float scale);
     }

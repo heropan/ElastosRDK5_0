@@ -40,7 +40,7 @@ public:
 
     CARAPI_(Int32) GetDisplayId();
 
-    CARAPI_(List< AutoPtr<WindowState> >&) GetWindowList();
+    CARAPI_(AutoPtr<WindowList>) GetWindowList();
 
     CARAPI_(AutoPtr<IDisplay>) GetDisplay();
 
@@ -86,7 +86,7 @@ private:
 
     /** Z-ordered (bottom-most first) list of all Window objects. Assigned to an element
      * from mDisplayWindows; */
-    List< AutoPtr<WindowState> > mWindows;
+    WindowList mWindows;
 
     AutoPtr<IDisplayInfo> mDisplayInfo;
     AutoPtr<IDisplay> mDisplay;
