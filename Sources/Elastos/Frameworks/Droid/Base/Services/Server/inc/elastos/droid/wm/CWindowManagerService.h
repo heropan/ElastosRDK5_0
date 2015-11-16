@@ -1350,11 +1350,13 @@ public:
 
     CARAPI GetInitialDisplaySize(
         /* [in] */ Int32 displayId,
-        /* [in] */ IPoint* size);
+        /* [in] */ IPoint* inSize,
+        /* [out] */ IPoint** outSize);
 
     CARAPI GetBaseDisplaySize(
         /* [in] */ Int32 displayId,
-        /* [in] */ IPoint* size);
+        /* [in] */ IPoint* inSize,
+        /* [out] */ IPoint** outSize);
 
     CARAPI SetForcedDisplaySize(
         /* [in] */ Int32 displayId,
