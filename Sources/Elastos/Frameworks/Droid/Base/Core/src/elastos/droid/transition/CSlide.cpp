@@ -174,10 +174,7 @@ void CSlide::CaptureValues(
     AutoPtr<CTransitionValues> ctv = (CTransitionValues*)transitionValues;
     AutoPtr<IView> view = ctv->mView;
     AutoPtr<ArrayOf<Int32> > position = ArrayOf<Int32>::Alloc(2);
-    Int32 pos1 = 0, pos2 = 0;
-    view->GetLocationOnScreen(&pos1, &pos2);
-    (*position)[0] = pos1;
-    (*position)[1] = pos2;
+    view->GetLocationOnScreen((ArrayOf<Int32>*)position);
     AutoPtr<ICharSequence> pro_pos;
     CString::New(PROPNAME_SCREEN_POSITION, (ICharSequence**)&pro_pos);
     assert(0 && "TODO");

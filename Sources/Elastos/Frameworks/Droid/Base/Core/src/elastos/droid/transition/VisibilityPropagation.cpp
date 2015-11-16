@@ -48,18 +48,17 @@ ECode VisibilityPropagation::CaptureValues(
     }
     cv->mValues->Put(pro_vis, visibility);
     AutoPtr<ArrayOf<Int32> > loc = ArrayOf<Int32>::Alloc(2);
-    Int32 loc1 = 0, loc2 = 0;
-    view->GetLocationOnScreen(&loc1, &loc2);
+    view->GetLocationOnScreen((ArrayOf<Int32>*)loc);
     Float x, y;
     Int32 w = 0, h = 0;
     view->GetTranslationX(&x);
-    loc1 += Elastos::Core::Math::Round(x);
+    (*loc)[0] += Elastos::Core::Math::Round(x);
     view->GetWidth(&w);
-    loc1 += w / 2;
+    (*loc)[0] += w / 2;
     view->GetTranslationY(&y);
-    loc2 += Elastos::Core::Math::Round(y);
+    (*loc)[1] += Elastos::Core::Math::Round(y);
     view->GetHeight(&h);
-    loc2 += h / 2;
+    (*loc)[1] += h / 2;
     assert(0 && "TODO");
 //    cv->mValues->Put(PROPNAME_VIEW_CENTER, loc);
     return NOERROR;

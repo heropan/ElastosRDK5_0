@@ -69,13 +69,13 @@ ECode CSidePropagation::GetStartDelay(
     Int32 viewCenterY = 0;
     GetViewY(positionValues, &viewCenterY);
 
-    Int32 loc1 = 0, loc2 = 0;
-    IView::Probe(sceneRoot)->GetLocationOnScreen(&loc1, &loc2);
+    AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
+    IView::Probe(sceneRoot)->GetLocationOnScreen((ArrayOf<Int32>*)temp);
     Float x, y;
     IView::Probe(sceneRoot)->GetTranslationX(&x);
     IView::Probe(sceneRoot)->GetTranslationY(&y);
-    Int32 left = loc1 + Elastos::Core::Math::Round(x);
-    Int32 top = loc2 + Elastos::Core::Math::Round(y);
+    Int32 left = (*temp)[0] + Elastos::Core::Math::Round(x);
+    Int32 top = (*temp)[1] + Elastos::Core::Math::Round(y);
     Int32 w=0, h=0;
     IView::Probe(sceneRoot)->GetWidth(&w);
     IView::Probe(sceneRoot)->GetHeight(&h);

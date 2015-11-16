@@ -1,5 +1,5 @@
 
-#include "elastos/droid/view/CMenuInflater.h"
+#include "elastos/droid/view/MenuInflater.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
@@ -7,10 +7,12 @@
 using Elastos::Core::IClassLoader;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::R;
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::Content::IContextWrapper;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::View::Menu::IMenuItemImpl;
+using Elastos::Droid::Internal::View::Menu::IMenuItemImpl;
 using Elastos::Droid::Utility::Xml;
 
 namespace Elastos {
@@ -18,13 +20,14 @@ namespace Droid {
 namespace View {
 
 //=============================================================================
-// CMenuInflater::InflatedOnMenuItemClickListener
+// MenuInflater::InflatedOnMenuItemClickListener
 //=============================================================================
-CMenuInflater::InflatedOnMenuItemClickListener::InflatedOnMenuItemClickListener(
+MenuInflater::InflatedOnMenuItemClickListener::InflatedOnMenuItemClickListener(
     /* [in] */ IObject* realOwner,
     /* [in] */ const String& methodName)
 {
-    mRealOwner = realOwner;
+    assert(0);
+    /*mRealOwner = realOwner;
     ClassID clsid;
     realOwner->GetClassID(&clsid);
     AutoPtr<IModuleInfo> module;
@@ -44,12 +47,12 @@ CMenuInflater::InflatedOnMenuItemClickListener::InflatedOnMenuItemClickListener(
     for (Int32 i = 0; i < classes->GetUsed(); ++i) {
         (*classes)[i]->Release();
     }
-    BufferOf<IClassInfo*>::Free(classes);
+    BufferOf<IClassInfo*>::Free(classes);*/
 }
 
-CAR_INTERFACE_IMPL_LIGHT(CMenuInflater::InflatedOnMenuItemClickListener, IOnMenuItemClickListener)
+CAR_INTERFACE_IMPL(MenuInflater::InflatedOnMenuItemClickListener, Object, IOnMenuItemClickListener)
 
-ECode CMenuInflater::InflatedOnMenuItemClickListener::OnMenuItemClick(
+ECode MenuInflater::InflatedOnMenuItemClickListener::OnMenuItemClick(
     /* [in] */ IMenuItem* item,
     /* [out] */ Boolean* result)
 {
@@ -63,20 +66,20 @@ ECode CMenuInflater::InflatedOnMenuItemClickListener::OnMenuItemClick(
 
 
 //=============================================================================
-// CMenuInflater::MenuState
+// MenuInflater::MenuState
 //=============================================================================
-const Int32 CMenuInflater::MenuState::sDefaultGroupId = CMenuInflater::NO_ID;
-const Int32 CMenuInflater::MenuState::sDefaultItemId = CMenuInflater::NO_ID;
-const Int32 CMenuInflater::MenuState::sDefaultItemCategory = 0;
-const Int32 CMenuInflater::MenuState::sDefaultItemOrder = 0;
-const Int32 CMenuInflater::MenuState::sDefaultItemCheckable = 0;
-const Boolean CMenuInflater::MenuState::sDefaultItemChecked = FALSE;
-const Boolean CMenuInflater::MenuState::sDefaultItemVisible = TRUE;
-const Boolean CMenuInflater::MenuState::sDefaultItemEnabled = TRUE;
+const Int32 MenuInflater::MenuState::sDefaultGroupId = MenuInflater::NO_ID;
+const Int32 MenuInflater::MenuState::sDefaultItemId = MenuInflater::NO_ID;
+const Int32 MenuInflater::MenuState::sDefaultItemCategory = 0;
+const Int32 MenuInflater::MenuState::sDefaultItemOrder = 0;
+const Int32 MenuInflater::MenuState::sDefaultItemCheckable = 0;
+const Boolean MenuInflater::MenuState::sDefaultItemChecked = FALSE;
+const Boolean MenuInflater::MenuState::sDefaultItemVisible = TRUE;
+const Boolean MenuInflater::MenuState::sDefaultItemEnabled = TRUE;
 
-CMenuInflater::MenuState::MenuState(
+MenuInflater::MenuState::MenuState(
     /* [in] */ IMenu* menu,
-    /* [in] */ CMenuInflater* owner)
+    /* [in] */ MenuInflater* owner)
     : mMenu(menu)
     , mGroupId(0)
     , mGroupCategory(0)
@@ -101,7 +104,7 @@ CMenuInflater::MenuState::MenuState(
     ResetGroup();
 }
 
-void CMenuInflater::MenuState::ResetGroup()
+void MenuInflater::MenuState::ResetGroup()
 {
     mGroupId = sDefaultGroupId;
     mGroupCategory = sDefaultItemCategory;
@@ -111,7 +114,7 @@ void CMenuInflater::MenuState::ResetGroup()
     mGroupEnabled = sDefaultItemEnabled;
 }
 
-void CMenuInflater::MenuState::ReadGroup(
+void MenuInflater::MenuState::ReadGroup(
     /* [in] */ IAttributeSet* attrs)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
@@ -130,7 +133,7 @@ void CMenuInflater::MenuState::ReadGroup(
     a->Recycle();
 }
 
-void CMenuInflater::MenuState::ReadItem(
+void MenuInflater::MenuState::ReadItem(
     /* [in] */ IAttributeSet* attrs)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
@@ -183,7 +186,7 @@ void CMenuInflater::MenuState::ReadItem(
     if (hasActionProvider && mItemActionViewLayout == 0 && mItemActionViewClassName.IsNull()) {
         AutoPtr<IInterface> obj;
         NewInstance(mItemActionProviderClassName,
-                CMenuInflater::ACTION_PROVIDER_CONSTRUCTOR_SIGNATURE,
+                MenuInflater::ACTION_PROVIDER_CONSTRUCTOR_SIGNATURE,
                 mOwner->mActionProviderConstructorArguments,
                 (IInterface**)&obj);
         mItemActionProvider = IActionProvider::Probe(obj);
@@ -200,7 +203,7 @@ void CMenuInflater::MenuState::ReadItem(
     mItemAdded = FALSE;
 }
 
-Char32 CMenuInflater::MenuState::GetShortcut(
+Char32 MenuInflater::MenuState::GetShortcut(
     /* [in] */ const String& shortcutString)
 {
     if (shortcutString.IsNull()) {
@@ -211,7 +214,7 @@ Char32 CMenuInflater::MenuState::GetShortcut(
     }
 }
 
-ECode CMenuInflater::MenuState::SetItem(
+ECode MenuInflater::MenuState::SetItem(
     /* [in] */ IMenuItem* item)
 {
     item->SetChecked(mItemChecked);
@@ -235,7 +238,7 @@ ECode CMenuInflater::MenuState::SetItem(
             return E_ILLEGAL_STATE_EXCEPTION;
         }
         AutoPtr<IOnMenuItemClickListener> l = new InflatedOnMenuItemClickListener(
-                IObject::Probe(mOwner->mRealOwner), mItemListenerMethodName);
+                IObject::Probe(mOwner->GetRealOwner()), mItemListenerMethodName);
         item->SetOnMenuItemClickListener(l);
     }
 
@@ -269,15 +272,20 @@ ECode CMenuInflater::MenuState::SetItem(
     return NOERROR;
 }
 
-ECode CMenuInflater::MenuState::AddItem()
+ECode MenuInflater::MenuState::AddItem(
+    /* [out] */ IMenuItem** item)
 {
+    VALIDATE_NOT_NULL(item)
     mItemAdded = TRUE;
-    AutoPtr<IMenuItem> item;
+    AutoPtr<IMenuItem> _item;
     mMenu->Add(mGroupId, mItemId, mItemCategoryOrder, mItemTitle, (IMenuItem**)&item);
-    return SetItem(item);
+    SetItem(_item);
+    *item = _item;
+    REFCOUNT_ADD(*item)
+    return NOERROR;
 }
 
-ECode CMenuInflater::MenuState::AddSubMenuItem(
+ECode MenuInflater::MenuState::AddSubMenuItem(
     /* [out] */ ISubMenu** subMenu)
 {
     mItemAdded = TRUE;
@@ -287,12 +295,12 @@ ECode CMenuInflater::MenuState::AddSubMenuItem(
     return SetItem(item);
 }
 
-Boolean CMenuInflater::MenuState::HasAddedItem()
+Boolean MenuInflater::MenuState::HasAddedItem()
 {
     return mItemAdded;
 }
 
-ECode CMenuInflater::MenuState::NewInstance(
+ECode MenuInflater::MenuState::NewInstance(
     /* [in] */ const String& className,
     /* [in] */ const String& constructorSignature,
     /* [in] */ ArrayOf<IInterface*>* arguments,
@@ -300,7 +308,8 @@ ECode CMenuInflater::MenuState::NewInstance(
 {
     *object = NULL;
     AutoPtr<IClassLoader> cl;
-    FAIL_RETURN(mOwner->mContext->GetClassLoader((IClassLoader**)&cl));
+    assert(0);
+    //FAIL_RETURN(mOwner->mContext->GetClassLoader((IClassLoader**)&cl));
     AutoPtr<IClassInfo> clazz;
     FAIL_RETURN(cl->LoadClass(className, (IClassInfo**)&clazz));
     AutoPtr<IConstructorInfo> constructor;
@@ -318,28 +327,33 @@ ECode CMenuInflater::MenuState::NewInstance(
 
 
 //=============================================================================
-// CMenuInflater
+// MenuInflater
 //=============================================================================
-const String CMenuInflater::TAG("CMenuInflater");
-const String CMenuInflater::XML_MENU("menu");
-const String CMenuInflater::XML_GROUP("group");
-const String CMenuInflater::XML_ITEM("item");
-const Int32 CMenuInflater::NO_ID = 0;
-const String CMenuInflater::ACTION_VIEW_CONSTRUCTOR_SIGNATURE("ctx");
-const String CMenuInflater::ACTION_PROVIDER_CONSTRUCTOR_SIGNATURE("ctx");
+CAR_INTERFACE_IMPL(MenuInflater, Object, IMenuInflater)
 
-ECode CMenuInflater::constructor(
+const String MenuInflater::TAG("MenuInflater");
+const String MenuInflater::XML_MENU("menu");
+const String MenuInflater::XML_GROUP("group");
+const String MenuInflater::XML_ITEM("item");
+const Int32 MenuInflater::NO_ID = 0;
+const String MenuInflater::ACTION_VIEW_CONSTRUCTOR_SIGNATURE("ctx");
+const String MenuInflater::ACTION_PROVIDER_CONSTRUCTOR_SIGNATURE("ctx");
+
+MenuInflater::MenuInflater()
+{
+}
+
+ECode MenuInflater::constructor(
     /* [in] */ IContext* context)
 {
     mContext = context;
-    mRealOwner = context;
     mActionViewConstructorArguments = ArrayOf<IInterface*>::Alloc(1);
     mActionViewConstructorArguments->Set(0, context);
     mActionProviderConstructorArguments = mActionViewConstructorArguments;
     return NOERROR;
 }
 
-ECode CMenuInflater::constructor(
+ECode MenuInflater::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IInterface* realOwner)
 {
@@ -351,7 +365,7 @@ ECode CMenuInflater::constructor(
     return NOERROR;
 }
 
-ECode CMenuInflater::Inflate(
+ECode MenuInflater::Inflate(
     /* [in] */ Int32 menuRes,
     /* [in] */ IMenu* menu)
 {
@@ -360,10 +374,11 @@ ECode CMenuInflater::Inflate(
     AutoPtr<IResources> resources;
     mContext->GetResources((IResources**)&resources);
     resources->GetLayout(menuRes, (IXmlResourceParser**)&parser);
-    AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(parser);
+    assert(0);
+    /*AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(parser);
 
     ECode ec = ParseMenu(parser, attrs, menu);
-    if (FAILED(ec)) ec = E_INFLATE_EXCEPTION;
+    if (FAILED(ec)) ec = E_INFLATE_EXCEPTION;*/
     //}
     // catch (XmlPullParserException e) {
     //     throw new InflateException("Error inflating menu XML", e);
@@ -372,10 +387,11 @@ ECode CMenuInflater::Inflate(
     // } finally {
     if (parser != NULL) parser->Close();
     // }
-    return ec;
+    assert(0);
+    return NOERROR;//ec;
 }
 
-ECode CMenuInflater::ParseMenu(
+ECode MenuInflater::ParseMenu(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ IMenu* menu)
@@ -423,9 +439,9 @@ ECode CMenuInflater::ParseMenu(
                     // A menu start tag denotes a submenu for an item
                     AutoPtr<ISubMenu> subMenu;
                     FAIL_RETURN(menuState->AddSubMenuItem((ISubMenu**)&subMenu));
-
+                    RegisterMenu(subMenu, attrs);
                     // Parse the submenu into returned SubMenu
-                    ParseMenu(parser, attrs, subMenu);
+                    ParseMenu(parser, attrs, IMenu::Probe(subMenu));
                 }
                 else {
                     lookingForEndOfUnknownTag = TRUE;
@@ -451,9 +467,12 @@ ECode CMenuInflater::ParseMenu(
                                 (menuState->mItemActionProvider->HasSubMenu(&result), result)) {
                             AutoPtr<ISubMenu> subMenu;
                             FAIL_RETURN(menuState->AddSubMenuItem((ISubMenu**)&subMenu));
+                            RegisterMenu(subMenu, attrs);
                         }
                         else {
-                            FAIL_RETURN(menuState->AddItem());
+                            AutoPtr<IMenuItem> item;
+                            FAIL_RETURN(menuState->AddItem((IMenuItem**)&item));
+                            RegisterMenu(item, attrs);
                         }
                     }
                 }
@@ -470,6 +489,65 @@ ECode CMenuInflater::ParseMenu(
         parser->Next(&eventType);
     }
     return NOERROR;
+}
+
+/**
+ * The method is a hook for layoutlib to do its magic.
+ * Nothing is needed outside of LayoutLib. However, it should not be deleted because it
+ * appears to do nothing.
+ * @SuppressWarnings("unused")
+ */
+void MenuInflater::RegisterMenu(
+    /* [in] */ IMenuItem* item,
+    /* [in] */ IAttributeSet* set)
+{
+}
+
+/**
+ * The method is a hook for layoutlib to do its magic.
+ * Nothing is needed outside of LayoutLib. However, it should not be deleted because it
+ * appears to do nothing.
+ * @SuppressWarnings("unused")
+ */
+void MenuInflater::RegisterMenu(
+    /* [in] */ ISubMenu* subMenu,
+    /* [in] */ IAttributeSet* set)
+{
+}
+
+// Needed by layoutlib.
+ECode MenuInflater::GetContext(
+    /* [out] */ IContext** ctx)
+{
+    VALIDATE_NOT_NULL(ctx)
+    *ctx = mContext;
+    REFCOUNT_ADD(*ctx)
+    return NOERROR;
+}
+
+AutoPtr<IInterface> MenuInflater::GetRealOwner()
+{
+    if (mRealOwner == NULL) {
+        mRealOwner = FindRealOwner(mContext);
+    }
+    return mRealOwner;
+}
+
+AutoPtr<IInterface> MenuInflater::FindRealOwner(
+    /* [in] */ IInterface* owner)
+{
+    if (IActivity::Probe(owner)) {
+        return owner;
+    }
+
+    if (IContextWrapper::Probe(owner)) {
+        AutoPtr<IContextWrapper> wrapper = IContextWrapper::Probe(owner);
+        AutoPtr<IContext> ctx;
+        wrapper->GetBaseContext((IContext**)&ctx);
+        return FindRealOwner((IInterface*)ctx->Probe(EIID_IInterface));
+    }
+
+    return owner;
 }
 
 } // namespace View

@@ -1040,7 +1040,7 @@ ECode InputMethodService::OnComputeInsets(
 {
     Int32 vis = 0;
     if (IView::Probe(mInputFrame)->GetVisibility(&vis), vis == IView::VISIBLE) {
-        IView::Probe(mInputFrame)->GetLocationInWindow(&mTmpLocation[0], &mTmpLocation[1]);
+        IView::Probe(mInputFrame)->GetLocationInWindow((ArrayOf<Int32>*)mTmpLocation);
     }
     else {
         AutoPtr<IDialog> dlg;
@@ -1072,7 +1072,7 @@ ECode InputMethodService::OnComputeInsets(
         outInsets->mContentTopInsets = mTmpLocation[1];
     }
     if (IView::Probe(mCandidatesFrame)->GetVisibility(&vis), vis == IView::VISIBLE) {
-        IView::Probe(mCandidatesFrame)->GetLocationInWindow(&mTmpLocation[0], &mTmpLocation[1]);
+        IView::Probe(mCandidatesFrame)->GetLocationInWindow((ArrayOf<Int32>*)mTmpLocation);
     }
     outInsets->mVisibleTopInsets = mTmpLocation[1];
     outInsets->mTouchableInsets = Insets::TOUCHABLE_INSETS_VISIBLE;

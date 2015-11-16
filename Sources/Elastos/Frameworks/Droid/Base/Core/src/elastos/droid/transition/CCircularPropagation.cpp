@@ -70,16 +70,16 @@ ECode CCircularPropagation::GetStartDelay(
         epicenter->GetCenterY(&epicenterY);
     }
     else {
-        Int32 locX, locY;
-        IView::Probe(sceneRoot)->GetLocationOnScreen(&locX, &locY);
+        AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
+        IView::Probe(sceneRoot)->GetLocationOnScreen((ArrayOf<Int32>*)temp);
         Int32 w = 0, h = 0;
         Float x = 0, y = 0;
         IView::Probe(sceneRoot)->GetWidth(&w);
         IView::Probe(sceneRoot)->GetTranslationX(&x);
         IView::Probe(sceneRoot)->GetHeight(&h);
         IView::Probe(sceneRoot)->GetTranslationY(&y);
-        epicenterX = Elastos::Core::Math::Round(locX + (w / 2) + x);
-        epicenterY = Elastos::Core::Math::Round(locY + (h / 2) + y);
+        epicenterX = Elastos::Core::Math::Round((*temp)[0] + (w / 2) + x);
+        epicenterY = Elastos::Core::Math::Round((*temp)[1] + (h / 2) + y);
     }
     Float distance = Distance(viewCenterX, viewCenterY, epicenterX, epicenterY);
     Int32 w = 0, h = 0;

@@ -111,14 +111,14 @@ void Visibility::CaptureValues(
     AutoPtr<IViewParent> vp;
     ctv->mView->GetParent((IViewParent**)&vp);
     ctv->mValues->Put(pro_par, vp);
-    Int32 loc1 = 0, loc2 = 0;
-    ctv->mView->GetLocationOnScreen(&loc1, &loc2);
+    AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
+    ctv->mView->GetLocationOnScreen((ArrayOf<Int32>*)temp);
     AutoPtr<ICharSequence> pro_loc;
     CString::New(PROPNAME_SCREEN_LOCATION, (ICharSequence**)&pro_loc);
     AutoPtr<IInteger32> pLoc1;
-    CInteger32::New(loc1, (IInteger32**)&pLoc1);
+    CInteger32::New((*temp)[0], (IInteger32**)&pLoc1);
     AutoPtr<IInteger32> pLoc2;
-    CInteger32::New(loc2, (IInteger32**)&pLoc2);
+    CInteger32::New((*temp)[1], (IInteger32**)&pLoc2);
     assert(0 && "TODO");
 //    ctv->mValues->Put(pro_loc, pLoc1, pLoc2);
 }
@@ -421,13 +421,13 @@ ECode Visibility::OnDisappear(
         AutoPtr<ArrayOf<Int32> > screenLoc;// = (Int32[]) locs;
         Int32 screenX = (*screenLoc)[0];
         Int32 screenY = (*screenLoc)[1];
-        Int32 loc1 = 0, loc2 = 0;
-        IView::Probe(sceneRoot)->GetLocationOnScreen(&loc1, &loc2);
+        AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
+        IView::Probe(sceneRoot)->GetLocationOnScreen((ArrayOf<Int32>*)temp);
         Int32 l = 0, t = 0;
         overlayView->GetLeft(&l);
         overlayView->GetTop(&t);
-        overlayView->OffsetLeftAndRight((screenX - loc1) - l);
-        overlayView->OffsetTopAndBottom((screenY - loc2) - t);
+        overlayView->OffsetLeftAndRight((screenX - (*temp)[0]) - l);
+        overlayView->OffsetTopAndBottom((screenY - (*temp)[1]) - t);
         AutoPtr<IViewOverlay> ol;
         IView::Probe(sceneRoot)->GetOverlay((IViewOverlay**)&ol);
         ol->Add(IDrawable::Probe(overlayView));

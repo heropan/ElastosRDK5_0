@@ -63,10 +63,10 @@ module
     merge("view/TextureView.car");
     merge("view/TouchDelegate.car");
     merge("view/VelocityTracker.car");
+    merge("view/ViewRootImpl.car");
     merge("view/View.car");
     merge("view/ViewConfiguration.car");
     merge("view/ViewGroup.car");
-    merge("view/ViewRootImpl.car");
     merge("view/ViewGroupOverlay.car");
     merge("view/ViewManager.car");
     merge("view/ViewOutlineProvider.car");
@@ -173,8 +173,8 @@ module
     interface Elastos.Droid.Content.Res.IResourcesTheme;
     interface Elastos.Droid.Graphics.IPath;
     // interface Elastos.Droid.Graphics.ISurfaceTexture;
-    // interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Internal.View.Animation.INativeInterpolatorFactory;
+    interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     // interface Elastos.Droid.Internal.View.IInputBindResult;
     // interface Elastos.Droid.Internal.View.IIInputMethodManager;
     // interface Elastos.Droid.Internal.View.IInputContext;
@@ -185,6 +185,7 @@ module
     // interface Elastos.Droid.Os.ILooper;
      interface Elastos.Droid.Os.IHandler;
     // interface Elastos.Droid.View.IKeyEventCallback;
+    interface Elastos.Droid.View.IKeyEventCallback;
     // interface Elastos.Droid.View.IInputMethodCallback;
     // interface Elastos.Droid.View.IWindowManagerPolicyThread;
     // interface Elastos.Droid.View.IAccessibilityInteractionController;
@@ -236,6 +237,38 @@ module
     namespace Elastos {
     namespace Droid {
     namespace View {
+
+    class CView {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    class CWindowManagerGlobalSessionCallback {
+        constructor();
+
+        interface IWindowSessionCallback;
+        interface IBinder;
+    }
 
     singleton class CChoreographerHelper {
         interface IChoreographerHelper;
@@ -395,6 +428,7 @@ module
          interface IParcelable;
      }
 
+    [local]
     class CTouchDelegate {
         constructor();
 
@@ -996,9 +1030,16 @@ module
             interface IBinder;
         }
 
-    //     singleton class CWindowManagerGlobal {
-    //         interface IWindowManagerGlobal;
-    //     }
+        singleton class CWindowManagerGlobalHelper {
+            interface IWindowManagerGlobalHelper;
+        }
+
+        class CWindowManagerGlobal {
+            /**@hide*/
+            constructor();
+
+            interface IWindowManagerGlobal;
+        }
 
     //     //Menu
     //     [local]

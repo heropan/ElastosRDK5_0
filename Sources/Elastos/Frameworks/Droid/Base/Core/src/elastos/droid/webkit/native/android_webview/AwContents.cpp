@@ -2952,12 +2952,9 @@ void AwContents::InvalidateOnFunctorDestroy()
 //@CalledByNative
 AutoPtr<ArrayOf<Int32> > AwContents::GetLocationOnScreen()
 {
-    AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(2);
+    AutoPtr< ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(2);
     AutoPtr<IView> view = IView::Probe(mContainerView);
-    Int32 x,y;
-    view->GetLocationOnScreen(&x, &y);
-    (*result)[0] = x;
-    (*result)[1] = y;
+    view->GetLocationOnScreen((ArrayOf<Int32>*)result);
     return result;
 }
 

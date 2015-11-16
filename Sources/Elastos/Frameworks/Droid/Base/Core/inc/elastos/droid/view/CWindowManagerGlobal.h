@@ -5,12 +5,13 @@
 #include "_Elastos_Droid_View_CWindowManagerGlobal.h"
 #include "elastos/droid/os/Runnable.h"
 
-using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IBinder;
+using Elastos::IO::IFileDescriptor;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -19,9 +20,13 @@ namespace View {
 class ViewRootImpl;
 
 CarClass(CWindowManagerGlobal)
+    , public Object
+    , public IWindowManagerGlobal
 {
 private:
-    class SystemPropertyUpdaterRunnable : public Runnable
+
+    class SystemPropertyUpdaterRunnable
+        : public Runnable
     {
     public:
         SystemPropertyUpdaterRunnable(
@@ -34,7 +39,13 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWindowManagerGlobal();
+
+    CARAPI constructor();
 
     static AutoPtr<IWindowManagerGlobal> GetInstance();
 
@@ -54,6 +65,13 @@ public:
 
     CARAPI PeekWindowSession(
         /* [out] */ IWindowSession** windowSession);
+
+    CARAPI GetViewRootNames(
+        /* [out, callee] */ ArrayOf<String>** names);
+
+    CARAPI GetRootView(
+        /* [in] */ const String& name,
+        /* [out] */ IView** view);
 
     CARAPI AddView(
         /* [in] */ IView* view,
@@ -81,8 +99,20 @@ public:
     CARAPI ReportNewConfiguration(
         /* [in] */ IConfiguration* config);
 
+    CARAPI DoRemoveView(
+        /* [in] */ IViewRootImpl* root);
+
+    CARAPI ChangeCanvasOpacity(
+        /* [in] */ IBinder* token,
+        /* [in] */ Boolean opaque);
+
+    static CARAPI_(void) TrimForeground();
+
+    static CARAPI_(Boolean) ShouldDestroyEglContext(
+        /* [in] */ Int32 trimLevel);
+
 private:
-    AutoPtr<IView> RemoveViewLocked(
+    CARAPI_(void) RemoveViewLocked(
         /* [in] */ Int32 index,
         /* [in] */ Boolean immediate);
 
@@ -91,18 +121,16 @@ private:
         /* [in] */ Boolean required,
         /* [out] */ Int32* result);
 
-    CARAPI StartTrimMemory(
+    CARAPI TrimMemory(
         /* [in] */ Int32 level);
 
-    CARAPI EndTrimMemory();
-
-    CARAPI TrimLocalMemory();
+    CARAPI_(void) DoTrimForeground();
 
     CARAPI DumpGfxInfo(
         /* [in] */ IFileDescriptor* fd);
 
     static String GetWindowName(
-        /* [in] */ ViewRootImpl* root);
+        /* [in] */ IViewRootImpl* root);
 
 private:
     static const char* TAG;
@@ -114,9 +142,10 @@ private:
 
     Object mLock;
 
-    AutoPtr<ArrayOf<IView*> > mViews;
-    AutoPtr<ArrayOf<ViewRootImpl*> > mRoots;
-    AutoPtr<ArrayOf<IWindowManagerLayoutParams*> > mParams;
+    AutoPtr<IArrayList> mViews;
+    AutoPtr<IArrayList> mRoots;
+    AutoPtr<IArrayList> mParams;
+    AutoPtr<IArrayList> mDyingViews;
     Boolean mNeedsEglTerminate;
 
     AutoPtr<IRunnable> mSystemPropertyUpdater;

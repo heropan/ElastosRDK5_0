@@ -14,7 +14,7 @@ module
      *
      * @hide
      */
-    [oneway]
+    [local, oneway]
     interface IIAccessibilityServiceClient {
         SetConnection(
             [in] IIAccessibilityServiceConnection* connection,

@@ -27,6 +27,7 @@ module
      * as many rows as the first level children.
      * </p>
      */
+    [local]
     interface IAccessibilityNodeInfoCollectionInfo {
         /** Selection mode where items are not selectable. */
         const Int32 SELECTION_MODE_NONE = 0;
@@ -80,6 +81,7 @@ module
         Recycle();
     }
 
+    [local]
     interface IAccessibilityNodeInfoCollectionInfoHelper {
         /**
          * Obtains a pooled instance that is a clone of another one.
@@ -407,6 +409,7 @@ module
      * @Involve
      * interface IParcelable
      */
+    [local]
     interface IAccessibilityNodeInfo {
 
         /** @hide */
@@ -2189,6 +2192,7 @@ module
         Recycle();
     }
 
+    [local]
     interface IAccessibilityNodeInfoHelper {
         /**
          * Gets the accessibility view id which identifies a View in the view three.

@@ -27,6 +27,7 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Utility.ISparseArray;
     interface Elastos.Droid.View.IWindowInsets;
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.ITouchDelegate;
@@ -617,7 +618,7 @@ module
                 [out] IAccessibilityNodeInfo** res);
         }
 
-        [deprecated]
+        [local, deprecated]
         interface IView {
             /**
              * When set to true, apps will draw debugging information about their layouts.
@@ -2391,7 +2392,8 @@ module
              * @return The supplied insets with any applied insets consumed
              */
             OnApplyWindowInsets(
-                [in] IWindowInsets* insets);
+                [in] IWindowInsets* insets,
+                [out] IWindowInsets** result);
 
             /**
              * Set an {@link OnApplyWindowInsetsListener} to take over the policy for applying
@@ -2444,7 +2446,8 @@ module
              */
             ComputeSystemWindowInsets(
                 [in] IWindowInsets* insets,
-                [in] IRect* outLocalInsets);
+                [in] IRect* outLocalInsets,
+                [out] IWindowInsets** result);
 
             /**
              * Sets whether or not this view should account for system screen decorations
@@ -5025,6 +5028,9 @@ module
             GetHandler(
                 [out] IHandler** apartment);
 
+            GetViewRootImpl(
+                [out] IViewRootImpl** impl);
+
             /**
              * <p>Causes the Runnable to be added to the message queue.
              * The runnable will be run on the user interface thread.</p>
@@ -5649,7 +5655,7 @@ module
              * @see #onSaveInstanceState()
              */
             SaveHierarchyState(
-                [in/*, out*/] IMap* container);
+                [in/*, out*/] ISparseArray* container);
 
             /**
              * Restore this view hierarchy's frozen state from the given container.
@@ -5661,7 +5667,7 @@ module
              * @see #onRestoreInstanceState(android.os.Parcelable)
              */
             RestoreHierarchyState(
-                [in] IMap* container);
+                [in] ISparseArray* container);
 
             /**
              * <p>Return the time at which the drawing of the view hierarchy started.</p>
@@ -6426,12 +6432,6 @@ module
                 [out] IInsets** sets);
 
             /**
-             * @hide
-             */
-            SetLayoutInsets(
-                [in] IInsets* layoutInsets);
-
-            /**
              * Changes the selection state of this view. A view can be selected or not.
              * Note that selection is not the same as focus. Views are typically
              * selected in the context of an AdapterView like ListView or GridView;
@@ -6550,8 +6550,7 @@ module
              * @param location an array of two integers in which to hold the coordinates
              */
             GetLocationOnScreen(
-                [out] Int32* x,
-                [out] Int32* y);
+                [in] ArrayOf<Int32> * res);
 
             /**
              * <p>Computes the coordinates of this view in its window. The argument
@@ -6561,8 +6560,7 @@ module
              * @param location an array of two integers in which to hold the coordinates
              */
             GetLocationInWindow(
-                [out] Int32* x,
-                [out] Int32* y);
+                [in] ArrayOf<Int32> * res);
 
             /**
              * Look for a child view with the given id.  If this view has the given
@@ -7314,7 +7312,7 @@ module
              * @return true if the parent consumed some or all of the scroll delta
              * @see #dispatchNestedScroll(int, int, int, int, int[])
              */
-            DispatchNestedScroll(
+            DispatchNestedPreScroll(
                 [in] Int32 dx,
                 [in] Int32 dy,
                 [in] ArrayOf<Int32>* consumed,
@@ -7645,18 +7643,6 @@ module
              */
             GetTransitionName(
                 [out] String* transitionName);
-
-            GetInflaterContext(
-                [out] IContext** context);
-
-            SetInflaterContext(
-                [in] IContext* ctx);
-
-            GetXmlPath(
-                [out] String* path);
-
-            SetXmlPath(
-                [in] String path);
 
             DamageInParent();
         }

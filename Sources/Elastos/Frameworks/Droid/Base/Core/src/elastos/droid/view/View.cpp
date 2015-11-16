@@ -812,7 +812,7 @@ View::AttachInfo::AttachInfo(
     /* [in] */ IWindowSession* session,
     /* [in] */ IIWindow* window,
     /* [in] */ IDisplay* display,
-    /* [in] */ ViewRootImpl* viewRootImpl,
+    /* [in] */ IViewRootImpl* viewRootImpl,
     /* [in] */ IHandler* handler,
     /* [in] */ Callbacks* effectPlayer)
     : mSession(session)
@@ -1388,8 +1388,10 @@ ECode View::GetVerticalScrollbarWidth(
  * @return The height in pixels of the horizontal scrollbar or 0 if
  *         there is no horizontal scrollbar.
  */
-Int32 View::GetHorizontalScrollbarHeight()
+ECode View::GetHorizontalScrollbarHeight(
+    /* [out] */ Int32* height)
 {
+    VALIDATE_NOT_NULL(height)
     AutoPtr<ScrollabilityCache> cache = mScrollCache;
     if (cache != NULL) {
         AutoPtr<IScrollBarDrawable> scrollBar = cache->mScrollBar;
@@ -1399,11 +1401,14 @@ Int32 View::GetHorizontalScrollbarHeight()
             if (size <= 0) {
                 size = cache->mScrollBarSize;
             }
-            return size;
+            *height = size;
+            return NOERROR;
         }
-        return 0;
+        *height = 0;
+        return NOERROR;
     }
-    return 0;
+    *height = 0;
+    return NOERROR;
 }
 
 /**
@@ -3075,17 +3080,23 @@ ECode View::GetAccessibilityNodeProvider(
     }
 }
 
-Int32 View::GetAccessibilityViewId()
+ECode View::GetAccessibilityViewId(
+    /* [out] */ Int32* id)
 {
+    VALIDATE_NOT_NULL(id)
     if (mAccessibilityViewId == IView::NO_ID) {
         mAccessibilityViewId = sNextAccessibilityViewId++;
     }
-    return mAccessibilityViewId;
+    *id = mAccessibilityViewId;
+    return NOERROR;
 }
 
-Int32 View::GetAccessibilityWindowId()
+ECode View::GetAccessibilityWindowId(
+    /* [out] */ Int32* id)
 {
-    return mAttachInfo != NULL ? mAttachInfo->mAccessibilityWindowId : IAccessibilityNodeInfo::UNDEFINED_ITEM_ID;;
+    VALIDATE_NOT_NULL(id)
+    *id = mAttachInfo != NULL ? mAttachInfo->mAccessibilityWindowId : IAccessibilityNodeInfo::UNDEFINED_ITEM_ID;
+    return NOERROR;
 }
 
 ECode View::GetContentDescription(
@@ -4798,8 +4809,8 @@ ECode View::RequestAccessibilityFocus(
     }
     if ((mPrivateFlags2 & PFLAG2_ACCESSIBILITY_FOCUSED) == 0) {
         mPrivateFlags2 |= PFLAG2_ACCESSIBILITY_FOCUSED;
-        ViewRootImpl* viewRootImpl;
-        GetViewRootImpl((ViewRootImpl**)&viewRootImpl);
+        AutoPtr<IViewRootImpl> viewRootImpl;
+        GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
         if (viewRootImpl != NULL) {
             //viewRootImpl->SetAccessibilityFocus(IVIEW_PROBE(this), NULL);
         }
@@ -4817,8 +4828,8 @@ ECode View::ClearAccessibilityFocus()
     ClearAccessibilityFocusNoCallbacks();
     // Clear the global reference of accessibility focus if this
     // view or any of its descendants had accessibility focus.
-    ViewRootImpl* viewRootImpl;
-    GetViewRootImpl((ViewRootImpl**)&viewRootImpl);
+    AutoPtr<IViewRootImpl> viewRootImpl;
+    GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
     /*if (viewRootImpl != NULL) {
         AutoPtr<IView> focusHost = viewRootImpl->GetAccessibilityFocusedHost();
         if (focusHost != NULL && ViewRootImpl::IsViewDescendantOf(focusHost, IVIEW_PROBE(this))) {
@@ -5005,8 +5016,8 @@ ECode View::RequestFocusFromTouch(
     // Leave touch mode if we need to
     Boolean isInTouchMode;
     if (IsInTouchMode(&isInTouchMode), isInTouchMode) {
-        ViewRootImpl* viewRoot;
-        GetViewRootImpl((ViewRootImpl**)&viewRoot);
+        AutoPtr<IViewRootImpl> viewRoot;
+        GetViewRootImpl((IViewRootImpl**)&viewRoot);
         if (viewRoot != NULL) {
             //viewRoot->EnsureTouchMode(FALSE);
         }
@@ -5206,7 +5217,7 @@ ECode View::GetParentForAccessibility(
 }
 
 ECode View::AddChildrenForAccessibility(
-    /* [in] */ IList* children) {
+    /* [in] */ IArrayList* children) {
 
     return NOERROR;
 }
@@ -5357,8 +5368,8 @@ Boolean View::PerformAccessibilityActionInternal(
                 // Get out of touch mode since accessibility
                 // wants to move focus around.
                 assert(0);
-                /*AutoPtr<ViewRootImpl> impl;
-                GetViewRootImpl((ViewRootImpl**)&impl);
+                /*AutoPtr<IViewRootImpl> impl;
+                GetViewRootImpl((IViewRootImpl**)&impl);
                 impl->EnsureTouchMode(FALSE);*/
                 return RequestFocus(&result);
             }
@@ -7593,8 +7604,10 @@ void View::EnsureTransformationInfo()
     }
 }
 
-AutoPtr<IMatrix> View::GetInverseMatrix()
+ECode View::GetInverseMatrix(
+    /* [out] */ IMatrix** res)
 {
+    VALIDATE_NOT_NULL(res)
     EnsureTransformationInfo();
     if (mTransformationInfo->mInverseMatrix == NULL) {
 
@@ -7602,7 +7615,9 @@ AutoPtr<IMatrix> View::GetInverseMatrix()
     }
     AutoPtr<IMatrix> matrix = mTransformationInfo->mInverseMatrix;
     mRenderNode->GetInverseMatrix((IMatrix**)&matrix);
-    return matrix;
+    *res = matrix;
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
 ECode View::GetCameraDistance(
@@ -9468,7 +9483,7 @@ ECode View::GetHandler(
  * @hide
  */
 ECode View::GetViewRootImpl(
-    /* [out] */ ViewRootImpl** impl)
+    /* [out] */ IViewRootImpl** impl)
 {
     VALIDATE_NOT_NULL(impl)
     if (mAttachInfo != NULL) {
@@ -10588,7 +10603,9 @@ ECode View::ResolveRtlPropertiesIfNeeded(
     if (!IsDrawablesResolved()) {
         ResolveDrawables();
     }
-    if (!IsPaddingResolved()) {
+    Boolean isPaddingResolved;
+    IsPaddingResolved(&isPaddingResolved);
+    if (!isPaddingResolved) {
         ResolvePadding();
     }
     Int32 layoutDirection;
@@ -10768,9 +10785,12 @@ ECode View::IsLayoutDirectionResolved(
     return NOERROR;
 }
 
-Boolean View::IsPaddingResolved()
+ECode View::IsPaddingResolved(
+    /* [out] */ Boolean* res)
 {
-    return (mPrivateFlags2 & PFLAG2_PADDING_RESOLVED) == PFLAG2_PADDING_RESOLVED;
+    VALIDATE_NOT_NULL(res)
+    *res = (mPrivateFlags2 & PFLAG2_PADDING_RESOLVED) == PFLAG2_PADDING_RESOLVED;
+    return NOERROR;
 }
 
 ECode View::ResolvePadding()
@@ -13201,8 +13221,8 @@ void View::DrawAccessibilityFocus(
 
     AutoPtr<CRect> bounds = mAttachInfo->mTmpInvalRect;
     assert(0);
-    /*AutoPtr<ViewRootImpl> viewRoot;
-    GetViewRootImpl((ViewRootImpl**)&viewRoot);
+    /*AutoPtr<IViewRootImpl> viewRoot;
+    GetViewRootImpl((IViewRootImpl**)&viewRoot);
 
     if (viewRoot == NULL || viewRoot->GetAccessibilityFocusedHost() != THIS_PROBE(IView)) {
         return;
@@ -14567,8 +14587,13 @@ void View::InternalSetPadding(
             }
         }
         if ((viewFlags & SCROLLBARS_HORIZONTAL) != 0) {
-            bottom += (viewFlags & SCROLLBARS_INSET_MASK) == 0
-                    ? 0 : GetHorizontalScrollbarHeight();
+            if (viewFlags & SCROLLBARS_INSET_MASK) {
+                bottom += 0;
+            } else {
+                Int32 height;
+                GetHorizontalScrollbarHeight(&height);
+                bottom += height;
+            }
         }
     }
 
@@ -14663,7 +14688,9 @@ ECode View::GetPaddingBottom(
 ECode View::GetPaddingLeft(
     /* [out] */ Int32* res)
 {
-    if (!IsPaddingResolved()) {
+    Boolean isPaddingResolved;
+    IsPaddingResolved(&isPaddingResolved);
+    if (!isPaddingResolved) {
         ResolvePadding();
     }
 
@@ -14674,7 +14701,9 @@ ECode View::GetPaddingLeft(
 
 ECode View::GetPaddingStart(
     /* [out] */ Int32* res) {
-    if (!IsPaddingResolved()) {
+    Boolean isPaddingResolved;
+    IsPaddingResolved(&isPaddingResolved);
+    if (!isPaddingResolved) {
         ResolvePadding();
     }
     VALIDATE_NOT_NULL(res)
@@ -14695,7 +14724,9 @@ ECode View::GetPaddingStart(
 ECode View::GetPaddingRight(
     /* [out] */ Int32* res)
 {
-    if (!IsPaddingResolved()) {
+    Boolean isPaddingResolved;
+    IsPaddingResolved(&isPaddingResolved);
+    if (!isPaddingResolved) {
         ResolvePadding();
     }
 
@@ -14707,7 +14738,9 @@ ECode View::GetPaddingRight(
 ECode View::GetPaddingEnd(
     /* [out] */ Int32* res)
 {
-    if (!IsPaddingResolved()) {
+    Boolean isPaddingResolved;
+    IsPaddingResolved(&isPaddingResolved);
+    if (!isPaddingResolved) {
         ResolvePadding();
     }
 
@@ -15046,7 +15079,8 @@ ECode View::TransformMatrixToLocal(
     m->PostTranslate(-mLeft, -mTop, &res);
 
     if (!HasIdentityMatrix()) {
-        AutoPtr<IMatrix> other = GetInverseMatrix();
+        AutoPtr<IMatrix> other;
+        GetInverseMatrix((IMatrix**)&other);
         m->PostConcat(other, &res);
     }
 }
@@ -15235,7 +15269,8 @@ ECode View::FindViewByAccessibilityIdTraversal(
     /* [out] */ IView** res)
 {
     VALIDATE_NOT_NULL(res)
-    Int32 id = GetAccessibilityViewId();
+    Int32 id = 0;
+    GetAccessibilityViewId(&id);
     if (id == accessibilityId) {
         *res = IVIEW_PROBE(this);
         REFCOUNT_ADD(*res)
@@ -15685,8 +15720,8 @@ ECode View::IsInLayout(
 {
     VALIDATE_NOT_NULL(res)
     assert(0);
-    /*AutoPtr<ViewRootImpl> viewRoot;
-    GetViewRootImpl((ViewRootImpl**)&viewRoot);
+    /*AutoPtr<IViewRootImpl> viewRoot;
+    GetViewRootImpl((IViewRootImpl**)&viewRoot);
     *res = (viewRoot != NULL && viewRoot->IsInLayout());*/
     return NOERROR;
 }
@@ -15710,8 +15745,8 @@ ECode View::RequestLayout()
         // Only trigger request-during-layout logic if this is the view requesting it,
         // not the views in its parent hierarchy
         assert(0);
-        /*AutoPtr<ViewRootImpl> viewRoot;
-        GetViewRootImpl((ViewRootImpl**)&viewRoot);
+        /*AutoPtr<IViewRootImpl> viewRoot;
+        GetViewRootImpl((IViewRootImpl**)&viewRoot);
         if (viewRoot != NULL && viewRoot->IsInLayout()) {
             if (!viewRoot->RequestLayoutDuringLayout(THIS_PROBE(IView))) {
                 return NOERROR;
@@ -16501,8 +16536,8 @@ ECode View::StartDrag(
             surface->UnlockCanvasAndPost(canvas);
 
             assert(0);
-            /*AutoPtr<ViewRootImpl> root;
-            GetViewRootImpl((ViewRootImpl**)&root);
+            /*AutoPtr<IViewRootImpl> root;
+            GetViewRootImpl((IViewRootImpl**)&root);
 
             // Cache the local state object for delivery with DragEvents
             root->SetLocalDragState(myLocalState);

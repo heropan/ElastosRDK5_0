@@ -1,18 +1,18 @@
 
 module
 {
+    interface Elastos.Droid.Animation.ILayoutTransition;
     interface Elastos.Droid.Content.IComponentCallbacks;
     interface Elastos.Droid.Content.Res.IConfiguration;
-    interface Elastos.Droid.Animation.ILayoutTransition;
     interface Elastos.Droid.Graphics.IMatrix;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.IPoint;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
+    interface Elastos.Droid.View.InputMethod.IInputConnection;
+    interface Elastos.Core.IRunnable;
     interface Elastos.IO.IFileDescriptor;
     interface Elastos.IO.IPrintWriter;
-    interface Elastos.Core.IRunnable;
-    interface Elastos.Droid.View.InputMethod.IInputConnection;
 
     namespace Elastos {
     namespace Droid {

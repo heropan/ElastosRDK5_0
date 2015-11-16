@@ -2563,7 +2563,8 @@ static void DoDrawBitmap(
         }
         filteredPaint.setFilterBitmap(true);
         canvas->drawBitmapRect(*bitmap, srcPtr, dst, &filteredPaint);
-    } else {
+    }
+    else {
         canvas->drawBitmapRect(*bitmap, srcPtr, dst, paint);
     }
 }

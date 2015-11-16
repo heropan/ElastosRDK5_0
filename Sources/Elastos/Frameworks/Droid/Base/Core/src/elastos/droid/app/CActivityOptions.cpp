@@ -124,15 +124,14 @@ ECode CActivityOptions::MakeScaleUpAnimation(
     source->GetContext((IContext**)&context);
     String pkgName;
     context->GetPackageName(&pkgName);
-    Int32 x, y;
-    source->GetLocationOnScreen(&x, &y);
-
+    AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
+    source->GetLocationOnScreen((ArrayOf<Int32>*)temp);
     AutoPtr<IActivityOptions> opts;
     CActivityOptions::New((IActivityOptions**)&opts);
     opts->SetPackageName(pkgName);
     opts->SetAnimationType(IActivityOptions::ANIM_SCALE_UP);
-    opts->SetStartX(x + startX);
-    opts->SetStartY(y + startY);
+    opts->SetStartX((*temp)[0] + startX);
+    opts->SetStartY((*temp)[1] + startY);
     opts->SetWidth(width);
     opts->SetHeight(height);
     *options = opts;
@@ -188,8 +187,8 @@ ECode CActivityOptions::MakeThumbnailAnimation(
     source->GetContext((IContext**)&context);
     String pkgName;
     context->GetPackageName(&pkgName);
-    Int32 x, y;
-    source->GetLocationOnScreen(&x, &y);
+    AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
+    source->GetLocationOnScreen((ArrayOf<Int32>*)temp);
     AutoPtr<IHandler> handler;
     source->GetHandler((IHandler**)&handler);
     AutoPtr<IActivityOptions> opts;
@@ -197,8 +196,8 @@ ECode CActivityOptions::MakeThumbnailAnimation(
     opts->SetPackageName(pkgName);
     opts->SetAnimationType(scaleUp ? IActivityOptions::ANIM_SCALE_UP :IActivityOptions::ANIM_THUMBNAIL_SCALE_DOWN);
     opts->SetThumbnail(thumbnail);
-    opts->SetStartX(x + startX);
-    opts->SetStartY(y + startY);
+    opts->SetStartX((*temp)[0] + startX);
+    opts->SetStartY((*temp)[1] + startY);
     ((CActivityOptions*)opts.Get())->SetOnAnimationStartedListener(handler, listener);
     *options = opts;
     REFCOUNT_ADD(*options);
@@ -257,10 +256,10 @@ ECode CActivityOptions::MakeAspectScaledThumbnailAnimation(
             IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_UP :
             IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_DOWN;
     opts->mThumbnail = thumbnail;
-    Int32 x, y;
-    source->GetLocationOnScreen(&x, &y);
-    opts->mStartX = x + startX;
-    opts->mStartY = y + startY;
+    AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
+    source->GetLocationOnScreen((ArrayOf<Int32>*)temp);
+    opts->mStartX = (*temp)[0] + startX;
+    opts->mStartY = (*temp)[1] + startY;
     opts->mWidth = targetWidth;
     opts->mHeight = targetHeight;
     AutoPtr<IHandler> h;

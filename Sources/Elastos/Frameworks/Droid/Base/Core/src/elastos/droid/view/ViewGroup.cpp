@@ -1,14 +1,14 @@
 
-#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/CPointF.h"
+#include "elastos/droid/graphics/Color.h"
+#include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/view/ViewGroup.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
-#include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/graphics/Insets.h"
-#include "elastos/droid/graphics/CColor.h"
-#include "elastos/droid/graphics/CPaint.h"
 /*#include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/view/CMotionEvent.h"
 #include "elastos/droid/view/ViewRootImpl.h"
@@ -51,7 +51,7 @@ using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Graphics::CPointF;
 using Elastos::Droid::Graphics::Insets;
 using Elastos::Droid::Graphics::IColor;
-using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemClock;
@@ -487,7 +487,10 @@ Int32 ViewGroup::ViewLocationHolder::CompareTo(
 
     // Just break the tie somehow. The accessibility ids are unique
     // and stable, hence this is deterministic tie breaking.
-    return mView->GetAccessibilityViewId() - another->mView->GetAccessibilityViewId();
+    Int32 id, anotherId;
+    mView->GetAccessibilityViewId(&id);
+    another->mView->GetAccessibilityViewId(&anotherId);
+    return id - anotherId;
 }
 
 void ViewGroup::ViewLocationHolder::Init(
@@ -1551,8 +1554,7 @@ ECode ViewGroup::BringChildToFront(
     if (index >= 0) {
         RemoveFromArray(index);
         AddInArray(child, mChildrenCount);
-        VIEW_PROBE(child)->mParent =
-            THIS_PROBE(IViewParent);
+        VIEW_PROBE(child)->mParent = THIS_PROBE(IViewParent);
         RequestLayout();
         Invalidate();
     }
@@ -1578,8 +1580,8 @@ ECode ViewGroup::DispatchDragEvent(
     Float ty = 0.0f;
     event->GetY(&ty);
 
-    ViewRootImpl* root;
-    GetViewRootImpl(&root);
+    AutoPtr<IViewRootImpl> root;
+    GetViewRootImpl((IViewRootImpl**)&root);
 
     // Dispatch down the view hierarchy
     AutoPtr<IPointF> localPoint = GetLocalPoint();
@@ -2216,7 +2218,7 @@ ECode ViewGroup::AddChildrenForAccessibility(
                 childrenForAccessibility->Add(IView::Probe(child));
             }
             else {
-                child->AddChildrenForAccessibility(IList::Probe(childrenForAccessibility));
+                child->AddChildrenForAccessibility(childrenForAccessibility);
             }
         }
     }
@@ -2693,8 +2695,7 @@ Boolean ViewGroup::CanViewReceivePointerEvents(
     assert(_child != NULL);
     AutoPtr<IAnimation> animation;
     _child->GetAnimation((IAnimation**)&animation);
-    return (_child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE
-            || animation != NULL;
+    return (_child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE || animation != NULL;
 }
 
 Boolean ViewGroup::IsTransformedTouchPointInView(
@@ -2710,7 +2711,9 @@ Boolean ViewGroup::IsTransformedTouchPointInView(
         AutoPtr<ArrayOf<Float> > locations = ArrayOf<Float>::Alloc(2);
         (*locations)[0] = localX;
         (*locations)[1] = localY;
-        _child->GetInverseMatrix()->MapPoints(locations);
+        AutoPtr<IMatrix> temp;
+        _child->GetInverseMatrix((IMatrix**)&temp);
+        temp->MapPoints(locations);
         localX = (*locations)[0];
         localY = (*locations)[1];
         (*mAttachInfo->mTmpTransformLocation)[0] = localX;
@@ -2802,7 +2805,9 @@ Boolean ViewGroup::DispatchTransformedTouchEvent(
         Float offsetY = mScrollY - _child->mTop;
         transformedEvent->OffsetLocation(offsetX, offsetY);
         if (!_child->HasIdentityMatrix()) {
-            transformedEvent->Transform(_child->GetInverseMatrix());
+            AutoPtr<IMatrix> temp;
+            _child->GetInverseMatrix((IMatrix**)&temp);
+            transformedEvent->Transform(temp);
         }
 
         handled = _child->DispatchTouchEvent(transformedEvent, &dispatchTouchEvent);
@@ -3178,7 +3183,7 @@ void ViewGroup::OnInitializeAccessibilityEventInternal(
     View::OnInitializeAccessibilityEventInternal(event);
     AutoPtr<ICharSequence> seq;
     CString::New(String("ViewGroup"), (ICharSequence**)&seq);
-    (IAccessibilityRecord::Probe(event))->SetClassName(seq);
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
 }
 
 //@Override
@@ -3211,7 +3216,7 @@ ECode ViewGroup::ResetSubtreeAccessibilityStateChanged()
     View::ResetSubtreeAccessibilityStateChanged();
     for (Int32 i = 0; i < mChildrenCount; i++) {
         AutoPtr<IView> child = (*mChildren)[i];
-        (VIEW_PROBE(child))->ResetSubtreeAccessibilityStateChanged();
+        VIEW_PROBE(child)->ResetSubtreeAccessibilityStateChanged();
     }
 
     return NOERROR;
@@ -3607,12 +3612,9 @@ void ViewGroup::OnDebugDraw(
             DrawRect(canvas, paint, tl + l, tt + t, tr - r - 1, tb - b - 1);
         }
     }
-    AutoPtr<IColor> color;
-    CColor::AcquireSingleton((IColor**)&color);
     // Draw margins
     {
-        Int32 marginsColor;
-        color->Argb(63, 255, 0, 255, &marginsColor);
+        Int32 marginsColor = Color::Argb(63, 255, 0, 255);
         paint->SetColor(marginsColor);
         paint->SetStyle(Elastos::Droid::Graphics::PaintStyle_FILL);
 
@@ -3621,8 +3623,7 @@ void ViewGroup::OnDebugDraw(
 
     // Draw clip bounds
     {
-        Int32 clipColor;
-        color->Rgb(63, 127, 255, &clipColor);
+        Int32 clipColor = Color::Rgb(63, 127, 255);
         paint->SetColor(clipColor);
         paint->SetStyle(Elastos::Droid::Graphics::PaintStyle_FILL);
 
@@ -3733,8 +3734,8 @@ void ViewGroup::DispatchDraw(
             child = IView::Probe(temp);
         }
         AutoPtr<IAnimation> animation;
-        child->GetAnimation((IAnimation**)&animation);
-        if ((VIEW_PROBE(child)->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE || animation != NULL) {
+        if ((VIEW_PROBE(child)->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE
+            || (child->GetAnimation((IAnimation**)&animation), animation) != NULL) {
             more |= DrawChild(canvas, child, drawingTime);
         }
     }
@@ -3746,7 +3747,7 @@ void ViewGroup::DispatchDraw(
         mDisappearingChildren->GetSize(&disappearingCount);
         disappearingCount -= 1;
         // Go backwards -- we may delete as animations finish
-        for (Int32 i = disappearingCount; i >= 0; i--) {
+        for (Int32 i = disappearingCount - 1; i >= 0; i--) {
             AutoPtr<IInterface> temp;
             mDisappearingChildren->Get(i, (IInterface**)&temp);
             AutoPtr<IView> child = IView::Probe(temp);
@@ -3864,7 +3865,7 @@ AutoPtr<IList> ViewGroup::BuildOrderedChildList()
     if (mPreSortedChildren == NULL) {
         CArrayList::New(count, (IArrayList**)&mPreSortedChildren);
     } else {
-        (IArrayList::Probe(mPreSortedChildren))->EnsureCapacity(count);
+        IArrayList::Probe(mPreSortedChildren)->EnsureCapacity(count);
     }
 
     Boolean useCustomOrder = IsChildrenDrawingOrderEnabled();
@@ -3880,11 +3881,11 @@ AutoPtr<IList> ViewGroup::BuildOrderedChildList()
         Float z;
         AutoPtr<IInterface> temp;
         mPreSortedChildren->Get(insertIndex - 1, (IInterface**)&temp);
-        (VIEW_PROBE(temp))->GetZ(&z);
+        VIEW_PROBE(temp)->GetZ(&z);
         while (insertIndex > 0 && z > currentZ) {
             insertIndex--;
             mPreSortedChildren->Get(insertIndex - 1, (IInterface**)&temp);
-            (VIEW_PROBE(temp))->GetZ(&z);
+            VIEW_PROBE(temp)->GetZ(&z);
         }
         mPreSortedChildren->Add(insertIndex, (IInterface*)nextChild->Probe(EIID_IInterface));
     }
@@ -3917,8 +3918,9 @@ void ViewGroup::DispatchGetDisplayList()
     for (Int32 i = 0; i < mChildrenCount; i++) {
         View* child = VIEW_PROBE((*mChildren)[i]);
         AutoPtr<IAnimation> animation;
-        child->GetAnimation((IAnimation**)&animation);
-        if (((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE || animation != NULL) &&
+
+        if (((child->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE
+            || (child->GetAnimation((IAnimation**)&animation), animation) != NULL) &&
                 child->HasStaticLayer()) {
             RecreateChildDisplayList(child);
         }
@@ -3969,7 +3971,7 @@ Boolean ViewGroup::DrawChild(
     /* [in] */ IView* child,
     /* [in] */ Int64 drawingTime)
 {
-    return (VIEW_PROBE(child))->Draw(canvas, THIS_PROBE(IViewGroup), drawingTime);
+    return VIEW_PROBE(child)->Draw(canvas, THIS_PROBE(IViewGroup), drawingTime);
 }
 
 /**
@@ -4054,7 +4056,7 @@ ECode ViewGroup::GetClipToPadding(
   * {@inheritDoc}
   */
 //@Override
-CARAPI ViewGroup::DispatchSetSelected(
+ECode ViewGroup::DispatchSetSelected(
     /* [in] */ Boolean selected)
 {
     for (Int32 i = 0; i < mChildrenCount; i++) {
@@ -4063,7 +4065,7 @@ CARAPI ViewGroup::DispatchSetSelected(
     return NOERROR;
 }
 
-CARAPI ViewGroup::DispatchSetActivated(
+ECode ViewGroup::DispatchSetActivated(
     /* [in] */ Boolean activated)
 {
     for (Int32 i = 0; i < mChildrenCount; i++) {
@@ -4082,9 +4084,8 @@ void ViewGroup::DispatchSetPressed(
         // show a pressed state when their parent view does.
         // Clearing a pressed state always propagates.
         Boolean isClickable, isLongClickable;
-        child->IsClickable(&isClickable);
-        child->IsLongClickable(&isLongClickable);
-        if (!pressed || (!isClickable && !isLongClickable)) {
+        if (!pressed || ((child->IsClickable(&isClickable), !isClickable)
+            && (child->IsLongClickable(&isLongClickable), !isLongClickable))) {
             child->SetPressed(pressed);
         }
     }
@@ -4748,8 +4749,7 @@ void ViewGroup::RemoveViewInternal(
         }
     }
     AutoPtr<IAnimation> animation;
-    v->GetAnimation((IAnimation**)&animation);
-    if (animation != NULL || contains) {
+    if ((v->GetAnimation((IAnimation**)&animation), animation) != NULL || contains) {
         AddDisappearingView(view);
     }
     else if (v->mAttachInfo != NULL) {
@@ -4849,8 +4849,7 @@ void ViewGroup::RemoveViewsInternal(
             }
         }
         AutoPtr<IAnimation> animation;
-        view->GetAnimation((IAnimation**)&animation);
-        if (animation != NULL || contains) {
+        if ((view->GetAnimation((IAnimation**)&animation), animation) != NULL || contains) {
             AddDisappearingView(_view);
         }
         else if (detach) {
@@ -4935,8 +4934,7 @@ ECode ViewGroup::RemoveAllViewsInLayout()
 
         View* v = VIEW_PROBE(view);
         AutoPtr<IAnimation> animation;
-        v->GetAnimation((IAnimation**)&animation);
-        if (animation != NULL || contains) {
+        if ((v->GetAnimation((IAnimation**)&animation), animation) != NULL || contains) {
             AddDisappearingView(view);
         }
         else if (detach) {
@@ -4994,8 +4992,7 @@ void ViewGroup::RemoveDetachedView(
         }
     }
     AutoPtr<IAnimation> animation;
-    _child->GetAnimation((IAnimation**)&animation);
-    if ((animate && animation != NULL) || contains) {
+    if ((animate && (_child->GetAnimation((IAnimation**)&animation) ,animation) != NULL) || contains) {
         AddDisappearingView(child);
     }
     else if (_child->mAttachInfo != NULL) {
@@ -5965,11 +5962,11 @@ void ViewGroup::MeasureChildWithMargins(
     AutoPtr<IViewGroupLayoutParams> lv;
     child->GetLayoutParams((IViewGroupLayoutParams**)&lv);
 
-    IViewGroupMarginLayoutParams* lp = (IViewGroupMarginLayoutParams*)lv.Get();
+    IViewGroupMarginLayoutParams* lp = IViewGroupMarginLayoutParams::Probe(lv);
 
     Int32 width, height, left, top, right, bottom;
-    (IViewGroupLayoutParams::Probe(lp))->GetWidth(&width);
-    (IViewGroupLayoutParams::Probe(lp))->GetHeight(&height);
+    IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
+    IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
     lp->GetMargins(&left, &top, &right, &bottom);
 
     Int32 childWidthMeasureSpec = GetChildMeasureSpec(parentWidthMeasureSpec,
@@ -6103,7 +6100,7 @@ void ViewGroup::AddDisappearingView(
     if (mDisappearingChildren == NULL) {
         CArrayList::New((IArrayList**)&mDisappearingChildren);
     }
-    mDisappearingChildren->Add((IInterface*)v->Probe(EIID_IInterface));
+    mDisappearingChildren->Add(v);
 
 }
 
@@ -6116,9 +6113,9 @@ void ViewGroup::FinishAnimatingView(
 
     if (mDisappearingChildren != NULL) {
         Boolean hasElement;
-        mDisappearingChildren->Contains((IInterface*)view->Probe(EIID_IInterface), &hasElement);
+        mDisappearingChildren->Contains(view, &hasElement);
         if (hasElement) {
-            mDisappearingChildren->Remove((IInterface*)view->Probe(EIID_IInterface));
+            mDisappearingChildren->Remove(view);
 
             if (v->mAttachInfo != NULL) {
                 v->DispatchDetachedFromWindow();
@@ -6234,8 +6231,8 @@ ECode ViewGroup::GatherTransparentRegion(
     for (Int32 i = 0; i < mChildrenCount; i++) {
         View* v = VIEW_PROBE((*mChildren)[i]);
         AutoPtr<IAnimation> animation;
-        v->GetAnimation((IAnimation**)&animation);
-        if ((v->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE || animation != NULL) {
+        if ((v->mViewFlags & VISIBILITY_MASK) == IView::VISIBLE
+            || (v->GetAnimation((IAnimation**)&animation), animation) != NULL) {
             Boolean transparentRegion;
             v->GatherTransparentRegion(region, &transparentRegion);
             if (!transparentRegion) {
@@ -6267,7 +6264,7 @@ ECode ViewGroup::DispatchApplyWindowInsets(
     VALIDATE_NOT_NULL(res)
     View::DispatchApplyWindowInsets(insets, (IWindowInsets**)&insets);
     Boolean isConsumed;
-    if (!(insets->IsConsumed(&isConsumed), isConsumed)) {
+    if ((insets->IsConsumed(&isConsumed), !isConsumed)) {
         Int32 count = 0;
         GetChildCount(&count);
         for (Int32 i = 0; i < count; i++) {
@@ -6434,8 +6431,8 @@ ECode ViewGroup::RequestTransitionStart(
     /* [in] */ ILayoutTransition* transition)
 {
     assert(0 && "TODO");
-    /*ViewRootImpl* viewAncestor;
-    GetViewRootImpl(&viewAncestor);
+    /*AutoPtr<IViewRootImpl> viewAncestor;
+    GetViewRootImpl((IViewRootImpl**)&viewAncestor);
     if (viewAncestor != NULL) {
         viewAncestor->RequestTransitionStart(transition);
     }*/

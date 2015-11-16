@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_IINPUTCONNECTIONWRQPPER_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "elastos/droid/os/HandlerBase.h"
+//#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::HandlerBase;

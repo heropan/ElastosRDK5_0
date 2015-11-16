@@ -89,6 +89,10 @@ class CAccessibilityInteractionController;
 #define VIEWGROUP_PROBE(host) ((ViewGroup*)IViewGroup::Probe(host))
 #endif
 
+#ifndef VIEWIMPL_PROB
+#define VIEWIMPL_PROBE(host) ((ViewRootImpl*)IViewRootImpl::Probe(host))
+#endif
+
 class View
     : public Object
     , public IView
@@ -1682,7 +1686,7 @@ public:
             /* [in] */ IWindowSession* session,
             /* [in] */ IIWindow* window,
             /* [in] */ IDisplay* display,
-            /* [in] */ ViewRootImpl* viewRootImpl,
+            /* [in] */ IViewRootImpl* viewRootImpl,
             /* [in] */ IHandler* handler,
             /* [in] */ Callbacks* effectPlayer);
 
@@ -1935,7 +1939,7 @@ public:
         /**
          * The view root impl.
          */
-        ViewRootImpl* mViewRootImpl;
+        IViewRootImpl* mViewRootImpl;
 
         /**
          * A Handler supplied by a view's {@link android.view.ViewRootImpl}. This
@@ -2978,7 +2982,8 @@ public:
      *
      * @hide
      */
-    virtual Int32 GetAccessibilityViewId();
+    virtual CARAPI GetAccessibilityViewId(
+        /* [out] */ Int32* id);
 
     /**
      * Gets the unique identifier of the window in which this View reseides.
@@ -2987,7 +2992,8 @@ public:
      *
      * @hide
      */
-    virtual Int32 GetAccessibilityWindowId();
+    virtual CARAPI GetAccessibilityWindowId(
+        /* [out] */ Int32* id);
 
     /**
      * Gets the id of a view for which this view serves as a label for
@@ -3328,7 +3334,7 @@ public:
         /* [out] */ IViewParent** res);
 
     virtual CARAPI AddChildrenForAccessibility(
-        /* [in] */ IList* children);
+        /* [in] */ IArrayList* children);
 
     virtual CARAPI IncludeForAccessibility(
         /* [out] */ Boolean* res);
@@ -4476,7 +4482,7 @@ public:
         /* [out] */ Boolean* res);
 
     virtual CARAPI GetViewRootImpl(
-        /* [out] */ ViewRootImpl** impl);
+        /* [out] */ IViewRootImpl** impl);
 
     /**
      * Merge two states as returned by {@link #getMeasuredState()}.
@@ -4794,7 +4800,8 @@ protected:
     virtual CARAPI_(void) InitializeFadingEdgeInternal(
         /* [in] */ ITypedArray* a);
 
-    virtual CARAPI_(Int32) GetHorizontalScrollbarHeight();
+    virtual CARAPI GetHorizontalScrollbarHeight(
+        /* [out] */ Int32* height);
 
     virtual CARAPI_(void) InitializeScrollbars(
         /* [in] */ ITypedArray* a);
@@ -5251,7 +5258,8 @@ protected:
      *
      * @return The inverse of the current matrix of this view.
      */
-    virtual CARAPI_(AutoPtr<IMatrix>) GetInverseMatrix();
+    virtual CARAPI GetInverseMatrix(
+        /* [out] */ IMatrix** res);
 
     /**
      * Faster version of setAlpha() which performs the same steps except there are
@@ -5351,7 +5359,8 @@ protected:
      *
      * @hide
      */
-    virtual CARAPI_(Boolean) IsPaddingResolved();
+    virtual CARAPI IsPaddingResolved(
+        /* [out] */ Boolean* res);
 
     /**
      * Indicates whether this view has a static layer. A view with layer type
@@ -6044,7 +6053,7 @@ protected:
      * This field should be made private, so it is hidden from the SDK.
      * {@hide}
      */
-    IContext* mContext;
+    AutoPtr<IContext> mContext;
 
     AutoPtr<ScrollabilityCache> mScrollCache;
 

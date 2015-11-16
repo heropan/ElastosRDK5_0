@@ -52,10 +52,7 @@ void CExplode::CaptureValues(
 {
     AutoPtr<CTransitionValues> ctv = (CTransitionValues*)transitionValues;
     AutoPtr<IView> view = ctv->mView;
-    Int32 s1 = 0, s2 = 0;
-    view->GetLocationOnScreen(&s1, &s2);
-    (*mTempLoc)[0] = s1;
-    (*mTempLoc)[1] = s2;
+    view->GetLocationOnScreen((ArrayOf<Int32> *)mTempLoc);
     Int32 left = (*mTempLoc)[0];
     Int32 top = (*mTempLoc)[1];
     Int32 w = 0, h = 0;
@@ -174,10 +171,7 @@ void CExplode::CalculateOut(
     /* [in] */ IRect* bounds,
     /* [in] */ ArrayOf<Int32>* outVector)
 {
-    Int32 s1 = 0, s2 = 0;
-    sceneRoot->GetLocationOnScreen(&s1, &s2);
-    (*mTempLoc)[0] = s1;
-    (*mTempLoc)[1] = s2;
+    sceneRoot->GetLocationOnScreen((ArrayOf<Int32>*)mTempLoc);
     Int32 sceneRootX = (*mTempLoc)[0];
     Int32 sceneRootY = (*mTempLoc)[1];
     Int32 focalX;

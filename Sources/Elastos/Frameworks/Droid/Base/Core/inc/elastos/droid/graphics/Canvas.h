@@ -39,62 +39,62 @@ public:
     virtual ~Canvas();
 
 public:
-    virtual CARAPI IsRecordingFor(
+    CARAPI IsRecordingFor(
         /* [in] */ IInterface* it,
         /* [out] */ Boolean* res);
 
-    virtual CARAPI IsHardwareAccelerated(
+    CARAPI IsHardwareAccelerated(
         /* [out] */ Boolean* isAccelerated);
 
-    virtual CARAPI SetBitmap(
+    CARAPI SetBitmap(
         /* [in] */ IBitmap* bitmap);
 
-    virtual CARAPI SetViewport(
+    CARAPI SetViewport(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
     /** @hide */
-    virtual CARAPI SetHighContrastText(
+    CARAPI SetHighContrastText(
         /* [in] */ Boolean highContrastText);
 
     /** @hide */
-    virtual CARAPI InsertReorderBarrier();
+    CARAPI InsertReorderBarrier();
 
     /** @hide */
-    virtual CARAPI InsertInorderBarrier();
+    CARAPI InsertInorderBarrier();
 
-    virtual CARAPI IsOpaque(
+    CARAPI IsOpaque(
         /* [out] */ Boolean* isOpaque);
 
-    virtual CARAPI GetWidth(
+    CARAPI GetWidth(
         /* [out] */ Int32* width);
 
-    virtual CARAPI GetHeight(
+    CARAPI GetHeight(
         /* [out] */ Int32* height);
 
-    virtual CARAPI GetDensity(
+    CARAPI GetDensity(
         /* [out] */ Int32* density);
 
-    virtual CARAPI SetDensity(
+    CARAPI SetDensity(
         /* [in] */ Int32 density);
 
-    virtual CARAPI SetScreenDensity(
+    CARAPI SetScreenDensity(
         /* [in] */ Int32 density);
 
-    virtual CARAPI GetMaximumBitmapWidth(
+    CARAPI GetMaximumBitmapWidth(
         /* [out] */ Int32* width);
 
-    virtual CARAPI GetMaximumBitmapHeight(
+    CARAPI GetMaximumBitmapHeight(
         /* [out] */ Int32* height);
 
-    virtual CARAPI Save(
+    CARAPI Save(
         /* [out] */ Int32* count);
 
-    virtual CARAPI Save(
+    CARAPI Save(
         /* [in] */ Int32 saveFlags,
         /* [out] */ Int32* count);
 
-    virtual CARAPI SaveLayer(
+    CARAPI SaveLayer(
         /* [in] */ IRectF* bounds,
         /* [in] */ IPaint* paint,
         /* [in] */ Int32 saveFlags,
@@ -103,12 +103,12 @@ public:
     /**
      * Convenience for saveLayer(bounds, paint, {@link #ALL_SAVE_FLAG})
      */
-    virtual CARAPI SaveLayer(
+    CARAPI SaveLayer(
         /* [in] */ /*@Nullable*/ IRectF* bounds,
         /* [in] */ /*@Nullable*/ IPaint* paint,
         /* [out] */ Int32* count);
 
-    virtual CARAPI SaveLayer(
+    CARAPI SaveLayer(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -120,7 +120,7 @@ public:
     /**
      * Convenience for saveLayer(left, top, right, bottom, paint, {@link #ALL_SAVE_FLAG})
      */
-    virtual CARAPI SaveLayer(
+    CARAPI SaveLayer(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -128,7 +128,7 @@ public:
         /* [in] */ /*@Nullable*/ IPaint* paint,
         /* [out] */ Int32* count);
 
-    virtual CARAPI SaveLayerAlpha(
+    CARAPI SaveLayerAlpha(
         /* [in] */ IRectF* bounds,
         /* [in] */ Int32 alpha,
         /* [in] */ Int32 saveFlags,
@@ -137,12 +137,12 @@ public:
     /**
      * Convenience for saveLayerAlpha(bounds, alpha, {@link #ALL_SAVE_FLAG})
      */
-    virtual CARAPI SaveLayerAlpha(
+    CARAPI SaveLayerAlpha(
         /* [in] */ /*@Nullable*/ IRectF* bounds,
         /* [in] */ Int32 alpha,
         /* [out] */ Int32* count);
 
-    virtual CARAPI SaveLayerAlpha(
+    CARAPI SaveLayerAlpha(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -154,7 +154,7 @@ public:
     /**
      * Helper for saveLayerAlpha(left, top, right, bottom, alpha, {@link #ALL_SAVE_FLAG})
      */
-    virtual CARAPI SaveLayerAlpha(
+    CARAPI SaveLayerAlpha(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -162,19 +162,19 @@ public:
         /* [in] */ Int32 alpha,
         /* [out] */ Int32* count);
 
-    virtual CARAPI Restore();
+    CARAPI Restore();
 
-    virtual CARAPI GetSaveCount(
+    CARAPI GetSaveCount(
         /* [out] */ Int32* count);
 
-    virtual CARAPI RestoreToCount(
+    CARAPI RestoreToCount(
         /* [in] */ Int32 saveCount);
 
-    virtual CARAPI Translate(
+    CARAPI Translate(
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
-    virtual CARAPI Scale(
+    CARAPI Scale(
         /* [in] */ Float sx,
         /* [in] */ Float sy);
 
@@ -184,7 +184,7 @@ public:
         /* [in] */ Float px,
         /* [in] */ Float py);
 
-    virtual CARAPI Rotate(
+    CARAPI Rotate(
         /* [in] */ Float degrees);
 
     CARAPI Rotate(
@@ -192,41 +192,41 @@ public:
         /* [in] */ Float px,
         /* [in] */ Float py);
 
-    virtual CARAPI Skew(
+    CARAPI Skew(
         /* [in] */ Float sx,
         /* [in] */ Float sy);
 
-    virtual CARAPI Concat(
+    CARAPI Concat(
         /* [in] */ IMatrix* matrix);
 
-    virtual CARAPI SetMatrix(
+    CARAPI SetMatrix(
         /* [in] */ IMatrix* matrix);
 
-    virtual CARAPI GetMatrix(
+    CARAPI GetMatrix(
         /* [in] */ IMatrix* ctm);
 
-    virtual CARAPI GetMatrix(
+    CARAPI GetMatrix(
         /* [out] */ IMatrix** metrix);
 
-    virtual CARAPI ClipRect(
+    CARAPI ClipRect(
         /* [in] */ IRectF* rect,
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRect(
+    CARAPI ClipRect(
         /* [in] */ IRect* rect,
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRect(
+    CARAPI ClipRect(
         /* [in] */ IRectF* rect,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRect(
+    CARAPI ClipRect(
         /* [in] */ IRect* rect,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRect(
+    CARAPI ClipRect(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -234,55 +234,55 @@ public:
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRect(
+    CARAPI ClipRect(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
         /* [in] */ Float bottom,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRect(
+    CARAPI ClipRect(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipPath(
+    CARAPI ClipPath(
         /* [in] */ IPath* path,
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipPath(
+    CARAPI ClipPath(
         /* [in] */ IPath* path,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRegion(
+    CARAPI ClipRegion(
         /* [in] */ IRegion* region,
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRegion(
+    CARAPI ClipRegion(
         /* [in] */ IRegion* region,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI GetDrawFilter(
+    CARAPI GetDrawFilter(
         /* [out] */ IDrawFilter** filter);
 
-    virtual CARAPI SetDrawFilter(
+    CARAPI SetDrawFilter(
         /* [in] */ IDrawFilter* filter);
 
-    virtual CARAPI QuickReject(
+    CARAPI QuickReject(
         /* [in] */ IRectF* rect,
         /* [in] */ CanvasEdgeType type,
         /* [out] */ Boolean* isNotIntersect);
 
-    virtual CARAPI QuickReject(
+    CARAPI QuickReject(
         /* [in] */ IPath* path,
         /* [in] */ CanvasEdgeType type,
         /* [out] */ Boolean* isNotIntersect);
 
-    virtual CARAPI QuickReject(
+    CARAPI QuickReject(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -290,82 +290,82 @@ public:
         /* [in] */ CanvasEdgeType type,
         /* [out] */ Boolean* isNotIntersect);
 
-    virtual CARAPI GetClipBounds(
+    CARAPI GetClipBounds(
         /* [in] */ IRect* bounds,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI GetClipBounds(
+    CARAPI GetClipBounds(
         /* [out] */ IRect** bounds);
 
-    virtual CARAPI DrawRGB(
+    CARAPI DrawRGB(
         /* [in] */ Int32 r,
         /* [in] */ Int32 g,
         /* [in] */ Int32 b);
 
-    virtual CARAPI DrawARGB(
+    CARAPI DrawARGB(
         /* [in] */ Int32 a,
         /* [in] */ Int32 r,
         /* [in] */ Int32 g,
         /* [in] */ Int32 b);
 
-    virtual CARAPI DrawColor(
+    CARAPI DrawColor(
         /* [in] */ Int32 color);
 
-    virtual CARAPI DrawColor(
+    CARAPI DrawColor(
         /* [in] */ Int32 color,
         /* [in] */ PorterDuffMode mode);
 
-    virtual CARAPI DrawPaint(
+    CARAPI DrawPaint(
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawPoints(
+    CARAPI DrawPoints(
         /* [in] */ ArrayOf<Float>* pts,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawPoints(
+    CARAPI DrawPoints(
         /* [in] */ ArrayOf<Float>* pts,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawPoint(
+    CARAPI DrawPoint(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawLine(
+    CARAPI DrawLine(
         /* [in] */ Float startX,
         /* [in] */ Float startY,
         /* [in] */ Float stopX,
         /* [in] */ Float stopY,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawLines(
+    CARAPI DrawLines(
         /* [in] */ ArrayOf<Float>* pts,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawLines(
+    CARAPI DrawLines(
         /* [in] */ ArrayOf<Float>* pts,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawRect(
+    CARAPI DrawRect(
         /* [in] */ IRectF* rect,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawRect(
+    CARAPI DrawRect(
         /* [in] */ IRect* r,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawRect(
+    CARAPI DrawRect(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
         /* [in] */ Float bottom,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawOval(
+    CARAPI DrawOval(
         /* [in] */ IRectF* oval,
         /* [in] */ IPaint* paint);
 
@@ -373,20 +373,20 @@ public:
      * Draw the specified oval using the specified paint. The oval will be
      * filled or framed based on the Style in the paint.
      */
-    virtual CARAPI DrawOval(
+    CARAPI DrawOval(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
         /* [in] */ Float bottom,
         /* [in] */ /*@NonNull*/ IPaint* paint);
 
-    virtual CARAPI DrawCircle(
+    CARAPI DrawCircle(
         /* [in] */ Float cx,
         /* [in] */ Float cy,
         /* [in] */ Float radius,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawArc(
+    CARAPI DrawArc(
         /* [in] */ IRectF* oval,
         /* [in] */ Float startAngle,
         /* [in] */ Float sweepAngle,
@@ -414,7 +414,7 @@ public:
                         close it if it is being stroked. This will draw a wedge
      * @param paint      The paint used to draw the arc
      */
-    virtual CARAPI DrawArc(
+    CARAPI DrawArc(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -424,7 +424,7 @@ public:
         /* [in] */ Boolean useCenter,
         /* [in] */ /*@NonNull*/ IPaint* paint);
 
-    virtual CARAPI DrawRoundRect(
+    CARAPI DrawRoundRect(
         /* [in] */ IRectF* rect,
         /* [in] */ Float rx,
         /* [in] */ Float ry,
@@ -438,7 +438,7 @@ public:
      * @param ry    The y-radius of the oval used to round the corners
      * @param paint The paint used to draw the roundRect
      */
-    virtual CARAPI DrawRoundRect(
+    CARAPI DrawRoundRect(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -447,7 +447,7 @@ public:
         /* [in] */ Float ry,
         /* [in] */ /*@NonNull*/ IPaint* paint);
 
-    virtual CARAPI DrawPath(
+    CARAPI DrawPath(
         /* [in] */ IPath* path,
         /* [in] */ IPaint* paint);
 
@@ -460,35 +460,35 @@ public:
      *
      * @hide
      */
-    virtual CARAPI DrawPatch(
+    CARAPI DrawPatch(
         /* [in] */ /*@NonNull*/ INinePatch* patch,
         /* [in] */ /*@NonNull*/ IRect* dst,
         /* [in] */ /*@Nullable*/ IPaint* paint);
 
-    virtual CARAPI DrawPatch(
+    CARAPI DrawPatch(
         /* [in] */ /*@NonNull*/ INinePatch* patch,
         /* [in] */ IRectF* dst,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmap(
+    CARAPI DrawBitmap(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmap(
+    CARAPI DrawBitmap(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ IRect* src,
         /* [in] */ IRectF* dst,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmap(
+    CARAPI DrawBitmap(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ IRect* src,
         /* [in] */ IRect* dst,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmap(
+    CARAPI DrawBitmap(
         /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
@@ -499,7 +499,7 @@ public:
         /* [in] */ Boolean hasAlpha,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmap(
+    CARAPI DrawBitmap(
         /* [in] */ ArrayOf<Int32>* colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
@@ -510,12 +510,12 @@ public:
         /* [in] */ Boolean hasAlpha,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmap(
+    CARAPI DrawBitmap(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ IMatrix* matrix,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmapMesh(
+    CARAPI DrawBitmapMesh(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ Int32 meshWidth,
         /* [in] */ Int32 meshHeight,
@@ -525,7 +525,7 @@ public:
         /* [in] */ Int32 colorOffset,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawVertices(
+    CARAPI DrawVertices(
         /* [in] */ CanvasVertexMode mode,
         /* [in] */ Int32 vertexCount,
         /* [in] */ ArrayOf<Float>* verts,
@@ -539,7 +539,7 @@ public:
         /* [in] */ Int32 indexCount,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawText(
+    CARAPI DrawText(
         /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
@@ -547,13 +547,13 @@ public:
         /* [in] */ Float y,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawText(
+    CARAPI DrawText(
         /* [in] */ const String& text,
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawText(
+    CARAPI DrawText(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -561,7 +561,7 @@ public:
         /* [in] */ Float y,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawText(
+    CARAPI DrawText(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -569,7 +569,7 @@ public:
         /* [in] */ Float y,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawTextRun(
+    CARAPI DrawTextRun(
         /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
@@ -580,7 +580,7 @@ public:
         /* [in] */ Boolean isRtl,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawTextRun(
+    CARAPI DrawTextRun(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -591,19 +591,19 @@ public:
         /* [in] */ Boolean isRtl,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawPosText(
+    CARAPI DrawPosText(
         /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Float>* pos,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawPosText(
+    CARAPI DrawPosText(
         /* [in] */ const String& text,
         /* [in] */ ArrayOf<Float>* pos,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawTextOnPath(
+    CARAPI DrawTextOnPath(
         /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
@@ -612,21 +612,21 @@ public:
         /* [in] */ Float vOffset,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawTextOnPath(
+    CARAPI DrawTextOnPath(
         /* [in] */ const String& text,
         /* [in] */ IPath* path,
         /* [in] */ Float hOffset,
         /* [in] */ Float vOffset,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawPicture(
+    CARAPI DrawPicture(
         /* [in] */ IPicture* picture);
 
-    virtual CARAPI DrawPicture(
+    CARAPI DrawPicture(
         /* [in] */ IPicture* picture,
         /* [in] */ IRectF* dst);
 
-    virtual CARAPI DrawPicture(
+    CARAPI DrawPicture(
         /* [in] */ IPicture* picture,
         /* [in] */ IRect* dst);
 
@@ -641,7 +641,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI ReleaseResources();
+    CARAPI ReleaseResources();
 
     static CARAPI_(void) FreeCaches();
 
@@ -663,7 +663,7 @@ protected:
     CARAPI constructor(
         /* [in] */ Int64 nativeCanvas);
 
-    virtual CARAPI_(AutoPtr<IGL>) GetGL();
+    CARAPI_(AutoPtr<IGL>) GetGL();
 
     static CARAPI CheckRange(
         /* [in] */ Int32 length,

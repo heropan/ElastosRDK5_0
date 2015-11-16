@@ -130,11 +130,11 @@ void CChangeBounds::CaptureValues(
         CString::New(PROPNAME_PARENT, (ICharSequence**)&pro_parent);
         cVals->mValues->Put(pro_parent, p);
         if (mReparent) {
-            Int32 x = 0, y = 0;
-            cVals->mView->GetLocationInWindow(&x, &y);
+            AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
+            cVals->mView->GetLocationInWindow((ArrayOf<Int32>*)temp);
             AutoPtr<IInteger32> pX, pY;
-            CInteger32::New(x, (IInteger32**)&pX);
-            CInteger32::New(y, (IInteger32**)&pY);
+            CInteger32::New((*temp)[0], (IInteger32**)&pX);
+            CInteger32::New((*temp)[1], (IInteger32**)&pY);
             AutoPtr<ICharSequence> pro_x;
             CString::New(PROPNAME_WINDOW_X, (ICharSequence**)&pro_x);
             AutoPtr<ICharSequence> pro_y;
@@ -364,10 +364,7 @@ ECode CChangeBounds::CreateAnimator(
         IInteger32::Probe(eY)->GetValue(&endY);
         // TODO: also handle size changes: check bounds and animate size changes
         if (startX != endX || startY != endY) {
-            Int32 n0 = 0, n1 = 0;
-            IView::Probe(sceneRoot)->GetLocationInWindow(&n0, &n1);
-            (*mTempLocation)[0] = n0;
-            (*mTempLocation)[1] = n1;
+            IView::Probe(sceneRoot)->GetLocationInWindow((ArrayOf<Int32>*)mTempLocation);
             Int32 w = 0, h = 0;
             view->GetWidth(&w);
             view->GetHeight(&h);

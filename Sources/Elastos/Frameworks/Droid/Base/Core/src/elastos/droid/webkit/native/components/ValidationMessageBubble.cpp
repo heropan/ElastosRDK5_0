@@ -186,16 +186,14 @@ Float ValidationMessageBubble::GetWebViewOffsetYPixInScreen(
     // int[] location = new int[2];
     // contentViewCore.getContainerView().getLocationOnScreen(location);
     // return location[1] + contentViewCore.getRenderCoordinates().getContentOffsetYPix();
-
-    Int32 screenX = 0;
-    Int32 screenY = 0;
     AutoPtr<IViewGroup> viewGroup = contentViewCore->GetContainerView();
     AutoPtr<IView> view = IView::Probe(viewGroup);
-    view->GetLocationOnScreen(&screenX, &screenY);
+    AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
+    view->GetLocationOnScreen((ArrayOf<Int32>*)temp);
 
     AutoPtr<RenderCoordinates> coordinates = contentViewCore->GetRenderCoordinates();
     Float offsetYPix = coordinates->GetContentOffsetYPix();
-    Float result = screenY + offsetYPix;
+    Float result = (*temp)[1] + offsetYPix;
     return result;
 }
 

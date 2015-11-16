@@ -10,43 +10,14 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class ViewGroupMarginLayoutParams : public ViewGroupLayoutParams
+class ViewGroupMarginLayoutParams
+    : public ViewGroupLayoutParams
+    , public IViewGroupMarginLayoutParams
 {
 public:
     ViewGroupMarginLayoutParams();
 
-    /**
-     * Creates a new set of layout parameters. The values are extracted from
-     * the supplied attributes set and context.
-     *
-     * @param c the application environment
-     * @param attrs the set of attributes from which to extract the layout
-     *              parameters' values
-     */
-    ViewGroupMarginLayoutParams(
-        /* [in] */ IContext* c,
-        /* [in] */ IAttributeSet* attrs);
-
-    /**
-     * {@inheritDoc}
-     */
-    ViewGroupMarginLayoutParams(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    /**
-     * Copy constructor. Clones the width, height and margin values of the source.
-     *
-     * @param source The layout params to copy from.
-     */
-    ViewGroupMarginLayoutParams(
-        /* [in] */ ViewGroupMarginLayoutParams* source);
-
-    /**
-     * {@inheritDoc}
-     */
-    ViewGroupMarginLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* source);
+    CAR_INTERFACE_DECL()
 
     virtual CARAPI GetLeftMargin(
         /* [out] */ Int32* leftMargin);
@@ -121,19 +92,23 @@ public:
     virtual CARAPI SetMarginStart(
         /* [in] */ Int32 start);
 
-    virtual CARAPI_(Int32) GetMarginStart();
+    virtual CARAPI GetMarginStart(
+        /* [out] */ Int32* start);
 
     virtual CARAPI SetMarginEnd(
         /* [in] */ Int32 end);
 
-    virtual CARAPI_(Int32) GetMarginEnd();
+    virtual CARAPI GetMarginEnd(
+        /* [out] */ Int32* end);
 
-    virtual CARAPI_(Boolean) IsMarginRelative();
+    virtual CARAPI IsMarginRelative(
+        /* [out] */ Boolean* set);
 
     virtual CARAPI SetLayoutDirection(
         /* [in] */ Int32 layoutDirection);
 
-    virtual CARAPI_(Int32) GetLayoutDirection();
+    virtual CARAPI GetLayoutDirection(
+        /* [out] */ Int32* layoutDirection);
 
     /**
      * This will be called by {@link android.view.View#requestLayout()}. Left and Right margins
@@ -147,7 +122,8 @@ public:
         /* [in] */ IView* view,
         /* [in] */ ICanvas* canvas);
 
-    virtual CARAPI_(Boolean) IsLayoutRtl();
+    virtual CARAPI IsLayoutRtl(
+        /* [out] */ Boolean* rtl);
 
     CARAPI constructor(
         /* [in] */ IContext* c,
@@ -164,7 +140,7 @@ public:
         /* [in] */ IViewGroupLayoutParams* source);
 
     virtual CARAPI CopyMarginsFrom(
-        /* [in] */ IViewGroupMarginLayoutParams source);
+        /* [in] */ IViewGroupMarginLayoutParams* source);
 
     private:
         CARAPI_(void) DoResolveMargins();
@@ -217,6 +193,7 @@ private:
 
     Byte mMarginFlags;
 
+    static const Int32 DEFAULT_MARGIN_RELATIVE;
     static const Int32 LAYOUT_DIRECTION_MASK;
     static const Int32 LEFT_MARGIN_UNDEFINED_MASK;// = 0x00000004;
     static const Int32 RIGHT_MARGIN_UNDEFINED_MASK;// = 0x00000008;

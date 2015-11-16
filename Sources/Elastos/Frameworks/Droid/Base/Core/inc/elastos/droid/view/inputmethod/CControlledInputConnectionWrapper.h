@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CCONTROLLEDINPUTCONNECTIONWRAPPER_H__
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CCONTROLLEDINPUTCONNECTIONWRAPPER_H__
 
-#include "_Elastos_Droid_View_InputMethod_CControlledInputConnectionWrapper.h"
+//#include "_Elastos_Droid_View_InputMethod_CControlledInputConnectionWrapper.h"
 #include "elastos/droid/view/IInputConnectionWrapper.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 

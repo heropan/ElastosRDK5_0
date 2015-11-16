@@ -39,6 +39,8 @@ using Elastos::Droid::Text::Method::IWordIterator;
 using Elastos::Droid::Text::Method::IKeyListener;
 using Elastos::Droid::Text::Method::IMovementMethod;
 using Elastos::Droid::Text::Method::ITransformationMethod;
+using Elastos::Droid::View::View;
+using Elastos::Droid::View::IOnPreDrawListener;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
 using Elastos::Droid::View::InputMethod::IExtractedTextRequest;
 using Elastos::Droid::View::InputMethod::IExtractedText;
@@ -48,8 +50,6 @@ using Elastos::Droid::View::InputMethod::ICorrectionInfo;
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-
-extern "C" const InterfaceID EIID_TextView;
 
 class TextView;
 
@@ -88,7 +88,8 @@ protected:
 //==============================================================================
 //          Drawables
 //==============================================================================
-class Drawables : public Object
+class Drawables
+    : public Object
 {
 public:
     Drawables();
@@ -157,10 +158,8 @@ public:
 //==============================================================================
 //          CharWrapper
 //==============================================================================
-extern const InterfaceID EIID_CharWrapper;
-
 class CharWrapper
-    : public ElRefBase
+    : public Object
     , public IGetChars
     , public IGraphicsOperations
 {
@@ -262,7 +261,7 @@ private:
 //          Marquee
 //==============================================================================
 class Marquee
-    : public HandlerBase
+    : public Handler
 {
 private:
     class TickCallback
@@ -371,7 +370,7 @@ private:
 //          ChangeWatcher
 //==============================================================================
 class ChangeWatcher
-    : public ElRefBase
+    : public Object
     , public ITextWatcher
     , public ISpanWatcher
 {
@@ -429,7 +428,10 @@ private:
 
 class UserDictionaryListener;
 
-class TextView : public Elastos::Droid::View::View
+class TextView
+    : public View
+    , public ITextView
+    , public IOnPreDrawListener;
 {
 public:
     TextView();

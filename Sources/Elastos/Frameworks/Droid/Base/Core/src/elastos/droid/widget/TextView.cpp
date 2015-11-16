@@ -339,7 +339,7 @@ Drawables::Drawables()
     CRect::NewByFriend((CRect**)&mCompoundRect);
 }
 
-Drawables::Drawables(
+ECode Drawables::Drawables(
     /* [in] */ IContext* context)
     : mIsRtlCompatibilityMode(FALSE)
     , mOverride(FALSE)

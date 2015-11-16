@@ -10,7 +10,6 @@
 #include "elastos/droid/view/CAccessibilityInteractionConnection.h"
 #include "elastos/droid/view/CAccessibilityInteractionController.h"
 #include "elastos/droid/view/ViewTreeObserver.h"
-#include "elastos/droid/view/Choreographer.h"
 #include "elastos/droid/view/CKeyCharacterMap.h"
 #include "elastos/droid/view/SurfaceView.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
@@ -40,6 +39,7 @@
 
 #include "elastos/droid/view/ViewRootImpl.h"
 #include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/Choreographer.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/Build.h"
@@ -51,27 +51,33 @@
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/content/res/CCompatibilityInfo.h"
 #include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Thread.h>
-#include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
 using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Content::Res::CCompatibilityInfo;
 using Elastos::Droid::Content::Res::CConfiguration;
-using Elastos::Droid::Hardware::Display::EIID_IDisplayListener;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::CPoint;
 using Elastos::Droid::Graphics::CPointF;
+using Elastos::Droid::Hardware::Display::EIID_IDisplayListener;
+using Elastos::Droid::Internal::View::IRootViewSurfaceTaker;
+using Elastos::Droid::Internal::View::EIID_IRootViewSurfaceTaker;
+using Elastos::Droid::Internal::Os::ISomeArgs;
+using Elastos::Droid::Internal::Os::SomeArgs;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::Process;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
@@ -81,15 +87,9 @@ using Elastos::Droid::View::Animation::IAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerAccessibilityStateChangeListener;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerHighTextContrastChangeListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
-using Elastos::Droid::Internal::View::IRootViewSurfaceTaker;
-using Elastos::Droid::Internal::View::EIID_IRootViewSurfaceTaker;
-using Elastos::Droid::Internal::Os::ISomeArgs;
-using Elastos::Droid::Internal::Os::SomeArgs;
-using Elastos::Droid::Utility::IDisplayMetrics;
-using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::CArrayList;
 using Elastos::Core::CString;
 using Elastos::Core::Thread;
 using Elastos::Core::ISystem;
@@ -644,9 +644,9 @@ void ViewRootImpl::InvalidateOnAnimationRunnable::RemoveView(
     AutoPtr<IInterface> obj;
     mHost->Resolve(EIID_IInterface, (IInterface**)&obj);
     if (mPosted && mViews.IsEmpty() && mViewRects.IsEmpty() && obj != NULL) {
-        //AutoPtr<ViewRootImpl> viewRoot = ViewRootImpl::Probe(obj);
-        /*viewRoot->mChoreographer->RemoveCallbacks(
-            IChoreographer::CALLBACK_ANIMATION, this, NULL);*/
+        AutoPtr<IViewRootImpl> viewRoot = IViewRootImpl::Probe(obj);
+        VIEWIMPL_PROBE(viewRoot)->mChoreographer->RemoveCallbacks(
+            IChoreographer::CALLBACK_ANIMATION, IRunnable::Probe(this), NULL);
         mPosted = FALSE;
     }
 }
@@ -1106,7 +1106,7 @@ ECode ViewRootImpl::SendWindowContentChangedAccessibilityEvent::Run()
     // The accessibility may be turned off while we were waiting so check again.
     AutoPtr<IAccessibilityManager> amg;
     assert(0 && "TODO");
-    //CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&amg);
+    //CAccessibilityManager::GetInstance(sContext, (IAccessibilityManager**)&amg);
     Boolean isEnabled;
     amg->IsEnabled(&isEnabled);
     if (isEnabled) {
@@ -1224,9 +1224,9 @@ const Boolean ViewRootImpl::DEBUG_IMF = FALSE || LOCAL_LOGV;
 const Boolean ViewRootImpl::DEBUG_CONFIGURATION = FALSE || LOCAL_LOGV;
 const Boolean ViewRootImpl::DEBUG_FPS = FALSE;
 const Boolean ViewRootImpl::DEBUG_INPUT_STAGES = FALSE;
-const String ViewRootImpl::PROPERTY_EMULATOR_CIRCULAR = String("ro.emulator.circular");
-const String ViewRootImpl::PROPERTY_MEDIA_DISABLED = String("config.disable_media");
-const String ViewRootImpl::PROPERTY_PROFILE_RENDERING = String("viewroot.profile_rendering");
+const String ViewRootImpl::PROPERTY_EMULATOR_CIRCULAR("ro.emulator.circular");
+const String ViewRootImpl::PROPERTY_MEDIA_DISABLED("config.disable_media");
+const String ViewRootImpl::PROPERTY_PROFILE_RENDERING("viewroot.profile_rendering");
 const Int32 ViewRootImpl::MAX_TRACKBALL_DELAY = 250;
 const Int32 ViewRootImpl::MAX_QUEUED_INPUT_EVENT_POOL_SIZE = 10;
 
@@ -1241,7 +1241,7 @@ Boolean ViewRootImpl::sFirstDrawComplete = FALSE;
 List<AutoPtr<IComponentCallbacks> > ViewRootImpl::sConfigCallbacks;
 Object ViewRootImpl::sConfigCallbacksLock;
 
-AutoPtr<IContext> ViewRootImpl::mContext;
+AutoPtr<IContext> ViewRootImpl::sContext;
 
 static AutoPtr<IAccelerateDecelerateInterpolator> CreateInterpolator()
 {
@@ -1288,7 +1288,7 @@ ViewRootImpl::ViewRootImpl() :
     mPendingInputEventCount(0),
     mProcessInputEventsScheduled(FALSE),
     mUnbufferedInputDispatch(FALSE),
-    mPendingInputEventQueueLengthCounterName(String("pq")),
+    mPendingInputEventQueueLengthCounterName("pq"),
     mWindowAttributesChanged(FALSE),
     mWindowAttributesChangesFlag(0),
     mAdded(FALSE),
@@ -1327,7 +1327,7 @@ ECode ViewRootImpl::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IDisplay* display)
 {
-    mContext = context;
+    sContext = context;
     assert(0 && "TODO");
     //CWindowManagerGlobal::GetWindowSession((IWindowSession**)&mWindowSession);
     mDisplay = display;
@@ -1788,7 +1788,7 @@ ECode ViewRootImpl::RegisterAnimatingRenderNode(
         if (mAttachInfo->mPendingAnimatingRenderNodes == NULL) {
             CArrayList::New((IArrayList**)&mAttachInfo->mPendingAnimatingRenderNodes);
         }
-        mAttachInfo->mPendingAnimatingRenderNodes->Add(animator->Probe(EIID_IInterface));
+        mAttachInfo->mPendingAnimatingRenderNodes->Add(animator);
     }
 }
 
@@ -1841,7 +1841,7 @@ void ViewRootImpl::EnableHardwareAcceleration(
     //         }
 
     //         Boolean translucent = ((CWindowManagerLayoutParams*)attrs)->mFormat != IPixelFormat::OPAQUE;
-    //         mAttachInfo->mHardwareRenderer = HardwareRenderer::Create(mContext, translucent);
+    //         mAttachInfo->mHardwareRenderer = HardwareRenderer::Create(sContext, translucent);
     //         if (mAttachInfo->mHardwareRenderer != NULL) {
     //             AutoPtr<ICharSequence> temp;
     //             attrs->GetTitle((ICharSequence**)&temp);
@@ -1860,6 +1860,7 @@ ViewRootImpl::GetView(
 {
     VALIDATE_NOT_NULL(res)
     *res = mView;
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -2136,9 +2137,7 @@ ECode ViewRootImpl::GetHostVisibility(
     if (mAppVisible) {
         mView->GetVisibility(&visibility);
     }
-
     *res = visibility;
-
     return NOERROR;
 }
 
@@ -2337,8 +2336,8 @@ Boolean ViewRootImpl::MeasureHierarchy(
             if (DEBUG_DIALOG)
                 Logger::V(TAG, "Window 0x%08x : measured (%d, %d)",
                     mView.Get(), tempWidth, tempHeight);
-            host->GetMeasuredWidthAndState(&tempState);
-            if ((tempState & IView::MEASURED_STATE_TOO_SMALL) == 0) {
+            if (((host->GetMeasuredWidthAndState(&tempState),tempState)
+                & IView::MEASURED_STATE_TOO_SMALL) == 0) {
                 goodMeasure = TRUE;
             }
             else {
@@ -2354,8 +2353,8 @@ Boolean ViewRootImpl::MeasureHierarchy(
                 if (DEBUG_DIALOG)
                     Logger::V(TAG, "Window 0x%08x : measured (%d, %d)",
                         mView.Get(), tempWidth, tempHeight);
-                host->GetMeasuredWidthAndState(&tempState);
-                if ((tempState & IView::MEASURED_STATE_TOO_SMALL) == 0) {
+                if (((host->GetMeasuredWidthAndState(&tempState), tempState)
+                    & IView::MEASURED_STATE_TOO_SMALL) == 0) {
                     if (DEBUG_DIALOG)
                         Logger::V(TAG, "Good!");
                     goodMeasure = TRUE;
@@ -2370,9 +2369,8 @@ Boolean ViewRootImpl::MeasureHierarchy(
         childHeightMeasureSpec = GetRootMeasureSpec(desiredWindowHeight, lp->mHeight);*/
         PerformMeasure(childWidthMeasureSpec, childHeightMeasureSpec);
         Int32 tempWidth, tempHeight;
-        host->GetMeasuredWidth(&tempWidth);
-        host->GetMeasuredHeight(&tempHeight);
-        if (mWidth != tempWidth || mHeight != tempHeight) {
+        if (mWidth != (host->GetMeasuredWidth(&tempWidth), tempWidth)
+            || mHeight != (host->GetMeasuredHeight(&tempHeight), tempHeight)) {
             windowSizeMayChange = TRUE;
         }
     }
@@ -3444,16 +3442,17 @@ ECode ViewRootImpl::RequestLayoutDuringLayout(
         return NOERROR;
     }
     Boolean contains;
-    mLayoutRequesters->Contains((IInterface*)view->Probe(EIID_IInterface), &contains);
+    mLayoutRequesters->Contains(view, &contains);
     if (!contains) {
-        mLayoutRequesters->Add((IInterface*)view->Probe(EIID_IInterface));
+        mLayoutRequesters->Add(view);
     }
     if (!mHandlingLayoutInLayoutRequest) {
         // Let the request proceed normally; it will be processed in a second layout pass
         // if necessary
         *res = TRUE;
         return NOERROR;
-    } else {
+    }
+    else {
         // Don't let the request proceed during the second layout pass.
         // It will post to the next frame instead.
         *res = FALSE;
@@ -3575,7 +3574,8 @@ AutoPtr<IArrayList> ViewRootImpl::GetValidLayoutRequesters(
                 }
                 if (IView::Probe(VIEW_PROBE(parent)->mParent)) {
                     parent = IView::Probe(VIEW_PROBE(parent)->mParent);
-                } else {
+                }
+                else {
                     parent = NULL;
                 }
             }
@@ -3583,7 +3583,7 @@ AutoPtr<IArrayList> ViewRootImpl::GetValidLayoutRequesters(
                 if (validLayoutRequesters == NULL) {
                     CArrayList::New((IArrayList**)&validLayoutRequesters);
                 }
-                validLayoutRequesters->Add((IInterface*)view->Probe(EIID_IInterface));
+                validLayoutRequesters->Add(view);
             }
         }
     }
@@ -3598,7 +3598,8 @@ AutoPtr<IArrayList> ViewRootImpl::GetValidLayoutRequesters(
                 VIEW_PROBE(view)->mPrivateFlags &= ~View::PFLAG_FORCE_LAYOUT;
                 if (IView::Probe(VIEW_PROBE(view)->mParent)) {
                     view = IView::Probe(VIEW_PROBE(view)->mParent);
-                } else {
+                }
+                else {
                     view = NULL;
                 }
             }
@@ -3708,7 +3709,8 @@ void ViewRootImpl::ProfileRendering(
                 mRenderProfiler = new ProfileFrameCallback(this);
             }
             mChoreographer->PostFrameCallback(mRenderProfiler);
-        } else {
+        }
+        else {
             mRenderProfiler = NULL;
         }
     }
@@ -3846,8 +3848,8 @@ void ViewRootImpl::Draw(
     }
 
     Boolean tempAnimating;
-    mScroller->ComputeScrollOffset(&tempAnimating);
-    Boolean animating = mScroller != NULL && tempAnimating;
+    Boolean animating = mScroller != NULL
+        && (mScroller->ComputeScrollOffset(&tempAnimating), tempAnimating);
     Int32 curScrollY;
     if (animating) {
         mScroller->GetCurrY(&curScrollY);
@@ -5585,10 +5587,9 @@ ECode ViewRootImpl::DispatchResized(
     args->mArg5 = argoverscanInsets;
     args->mArg6 = argstableInsets;
 
-
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(reportDraw ? MSG_RESIZED_REPORT : MSG_RESIZED,
-        (IInterface*)args->Probe(EIID_IInterface), (IMessage**)&msg);
+        (IInterface*)(IObject*)args, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
 
@@ -5844,7 +5845,7 @@ void ViewRootImpl::DispatchInvalidateRectDelayed(
     /* [in] */ Int64 delayMilliseconds)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessage(MSG_INVALIDATE_RECT, (IInterface*)info->Probe(EIID_IInterface), (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_INVALIDATE_RECT, (IInterface*)(IObject*)info, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessageDelayed(msg, delayMilliseconds, &result);
 }
@@ -5888,7 +5889,7 @@ ECode ViewRootImpl::DispatchInputEvent(
     args->mArg1 = event;
     args->mArg2 = receiver;
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessage(MSG_DISPATCH_INPUT_EVENT, (IInterface*)args->Probe(EIID_IInterface), (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_DISPATCH_INPUT_EVENT, (IInterface*)(IObject*)args, (IMessage**)&msg);
     msg->SetAsynchronous(TRUE);
     Boolean temp;
     mHandler->SendMessage(msg, &temp);
@@ -6013,7 +6014,7 @@ ECode ViewRootImpl::DispatchSystemUiVisibilityChanged(
     args->mLocalChanges = localChanges;
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessage(MSG_DISPATCH_SYSTEM_UI_VISIBILITY, (IInterface*)args->Probe(EIID_IInterface), (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_DISPATCH_SYSTEM_UI_VISIBILITY, (IInterface*)(IObject*)args, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
 
@@ -6430,7 +6431,7 @@ ECode ViewRootImpl::OnNestedFling(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    result = FALSE;
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -6442,7 +6443,7 @@ ECode ViewRootImpl::OnNestedPreFling(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    result = FALSE;
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -6721,7 +6722,7 @@ Int32 ViewRootImpl::RootDisplayListener::ToViewScreenState(
     /* [in] */ Int32 displayState)
 {
      return displayState == IDisplay::STATE_OFF ?
-                    IView::SCREEN_STATE_OFF : IView::SCREEN_STATE_ON;
+        IView::SCREEN_STATE_OFF : IView::SCREEN_STATE_ON;
 }
 
 ////////////////////////////////////////////////////////////
@@ -6784,9 +6785,11 @@ ECode ViewRootImpl::InputStage::Deliver(
 {
     if ((q->mFlags & QueuedInputEvent::FLAG_FINISHED) != 0) {
         Forward(q);
-    } else if (ShouldDropInputEvent(q)) {
+    }
+    else if (ShouldDropInputEvent(q)) {
         Finish(q, FALSE);
-    } else {
+    }
+    else {
         Apply(q, OnProcess(q));
     }
     return NOERROR;
@@ -6817,11 +6820,14 @@ ECode ViewRootImpl::InputStage::Apply(
 {
     if (result == FORWARD) {
         Forward(q);
-    } else if (result == FINISH_HANDLED) {
+    }
+    else if (result == FINISH_HANDLED) {
         Finish(q, TRUE);
-    } else if (result == FINISH_NOT_HANDLED) {
+    }
+    else if (result == FINISH_NOT_HANDLED) {
         Finish(q, FALSE);
-    } else {
+    }
+    else {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
@@ -7424,8 +7430,7 @@ Int32 ViewRootImpl::ViewPostImeInputStage::ProcessKeyEvent(
                 // find the best view to give focus to in this non-touch-mode with no-focus
                 AutoPtr<IView> v;
                 mHost->FocusSearch(NULL, direction, (IView**)&v);
-                v->RequestFocus(direction, &temp);
-                if (v != NULL && temp) {
+                if (v != NULL && (v->RequestFocus(direction, &temp), temp)) {
                     return FINISH_HANDLED;
                 }
             }
@@ -7736,7 +7741,7 @@ CARAPI ViewRootImpl::SyntheticJoystickHandler::HandleMessage(
             if (mHost->mAttachInfo->mHasWindowFocus) {
                 mHost->EnqueueInputEvent(IInputEvent::Probe(e));
                 AutoPtr<IMessage> m;
-                ObtainMessage(what, e->Probe(EIID_IInterface), (IMessage**)&m);
+                ObtainMessage(what, e, (IMessage**)&m);
                 m->SetAsynchronous(TRUE);
                 assert(0);
                 //SendMessageDelayed(m, ViewConfiguration::GetKeyRepeatDelay());
@@ -7824,7 +7829,7 @@ void ViewRootImpl::SyntheticJoystickHandler::Update(
                     deviceId, 0, IKeyEvent::FLAG_FALLBACK, source, (IKeyEvent**)&temp);*/
             mHost->EnqueueInputEvent(IInputEvent::Probe(e));
             AutoPtr<IMessage> m;
-            ObtainMessage(MSG_ENQUEUE_X_AXIS_KEY_REPEAT, e->Probe(EIID_IInterface), (IMessage**)&m);
+            ObtainMessage(MSG_ENQUEUE_X_AXIS_KEY_REPEAT, e, (IMessage**)&m);
             m->SetAsynchronous(TRUE);
             assert(0);
             //SendMessageDelayed(m, ViewConfiguration::GetKeyRepeatTimeout());
@@ -7855,7 +7860,7 @@ void ViewRootImpl::SyntheticJoystickHandler::Update(
                     deviceId, 0, IKeyEvent::FLAG_FALLBACK, source, (IKeyEvent**)&e);*/
             mHost->EnqueueInputEvent(IInputEvent::Probe(e));
             AutoPtr<IMessage> m;
-            ObtainMessage(MSG_ENQUEUE_Y_AXIS_KEY_REPEAT, e->Probe(EIID_IInterface), (IMessage**)&m);
+            ObtainMessage(MSG_ENQUEUE_Y_AXIS_KEY_REPEAT, e, (IMessage**)&m);
             m->SetAsynchronous(TRUE);
             assert(0);
             //SendMessageDelayed(m, ViewConfiguration::GetKeyRepeatTimeout());
@@ -7878,7 +7883,7 @@ Int32 ViewRootImpl::SyntheticJoystickHandler::JoystickAxisValueToDirection(
 ////////////////////////////////////////////////////////////
 //      ViewRootImpl::SyntheticTouchNavigationHandler
 ////////////////////////////////////////////////////////////
-const String ViewRootImpl::SyntheticTouchNavigationHandler::LOCAL_TAG = String("SyntheticTouchNavigationHandler");
+const String ViewRootImpl::SyntheticTouchNavigationHandler::LOCAL_TAG("SyntheticTouchNavigationHandler");
 const Boolean ViewRootImpl::SyntheticTouchNavigationHandler::LOCAL_DEBUG = FALSE;
 const Float ViewRootImpl::SyntheticTouchNavigationHandler::DEFAULT_WIDTH_MILLIMETERS = 48;
 const Float ViewRootImpl::SyntheticTouchNavigationHandler::DEFAULT_HEIGHT_MILLIMETERS = 48;
@@ -7922,9 +7927,8 @@ ECode ViewRootImpl::SyntheticTouchNavigationHandler::Process(
     Int64 time = 0;
     IInputEvent::Probe(event)->GetEventTime(&time);
     Int32 deviceId, source;
-    IInputEvent::Probe(event)->GetDeviceId(&deviceId);
-    IInputEvent::Probe(event)->GetSource(&source);
-    if (mCurrentDeviceId != deviceId || mCurrentSource != source) {
+    if (mCurrentDeviceId != (IInputEvent::Probe(event)->GetDeviceId(&deviceId), deviceId)
+        || mCurrentSource != (IInputEvent::Probe(event)->GetSource(&source), source)) {
         FinishKeys(time);
         FinishTracking(time);
         mCurrentDeviceId = deviceId;

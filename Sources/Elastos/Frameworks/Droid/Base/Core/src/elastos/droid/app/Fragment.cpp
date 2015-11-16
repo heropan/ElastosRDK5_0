@@ -19,6 +19,7 @@ using Elastos::Droid::Transition::TransitionInflater;
 using Elastos::Droid::Transition::ITransitionInflater;
 using Elastos::Droid::Transition::CTransitionSet;
 using Elastos::Droid::Transition::ITransitionSet;
+using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
 using Elastos::Droid::R;
 using Elastos::Core::StringBuilder;
@@ -867,7 +868,7 @@ ECode Fragment::RestoreViewState(
     /* [in] */ IBundle* savedInstanceState)
 {
     if (mSavedViewState != NULL) {
-        mView->RestoreHierarchyState(IMap::Probe(mSavedViewState));
+        mView->RestoreHierarchyState(ISparseArray::Probe(mSavedViewState));
         mSavedViewState = NULL;
     }
     mCalled = FALSE;

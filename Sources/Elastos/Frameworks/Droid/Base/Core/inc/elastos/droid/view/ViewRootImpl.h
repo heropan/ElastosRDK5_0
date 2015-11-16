@@ -72,8 +72,8 @@ class CAccessibilityInteractionController;
 
 class ViewRootImpl
     : public Object
-    , public IViewRootImpl
     , public View::AttachInfo::Callbacks
+    , public IViewRootImpl
     , public IViewParent
     , public IHardwareDrawCallbacks
 {
@@ -150,7 +150,7 @@ private:
     static List<AutoPtr<IComponentCallbacks> > sConfigCallbacks;
     static Object sConfigCallbacksLock;
 
-    static AutoPtr<IContext> mContext;
+    static AutoPtr<IContext> sContext;
 
     static AutoPtr<Elastos::Droid::View::Animation::IInterpolator> mResizeInterpolator;
 
@@ -530,7 +530,7 @@ private:
         ViewRootImpl* mHost;
 
     private:
-        InputStage* mNext;
+        AutoPtr<InputStage> mNext;
     };
 
     class AsyncInputStage
@@ -1007,7 +1007,6 @@ public:
 
     class HighContrastTextManager
         : public Object
-
         , public IAccessibilityManagerHighTextContrastChangeListener
     {
     public:
@@ -1177,16 +1176,15 @@ private:
         /* [in] */ ArrayOf<Int32>* info);
 
 public:
-
     ViewRootImpl();
+
+    virtual ~ViewRootImpl();
 
     CAR_INTERFACE_DECL()
 
     CARAPI constructor(
         /* [in] */ IContext* ctx,
         /* [in] */ IDisplay* display);
-
-    virtual ~ViewRootImpl();
 
     /**
     * Call this to profile the next traversal call.

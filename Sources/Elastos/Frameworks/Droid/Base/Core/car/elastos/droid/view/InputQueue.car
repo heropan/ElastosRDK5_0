@@ -14,8 +14,7 @@ module
         Dispose();
     }
 
-    interface IInputQueueFinishedInputEventCallback
-    {
+    interface IInputQueueFinishedInputEventCallback {
         OnFinishedInputEvent(
             [in] IInterface* token,
             [in] Boolean handled);

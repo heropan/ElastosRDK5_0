@@ -1,9 +1,8 @@
 
-#ifndef __ELASTOS_DROID_VIEW_CMENUINFLATER_H__
-#define __ELASTOS_DROID_VIEW_CMENUINFLATER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENUINFLATER_H__
+#define __ELASTOS_DROID_VIEW_MENUINFLATER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "_Elastos_Droid_View_CMenuInflater.h"
 
 using Elastos::Core::ICharSequence;
 using Org::Xmlpull::V1::IXmlPullParser;
@@ -23,11 +22,13 @@ namespace View {
  * it only works with an XmlPullParser returned from a compiled resource (R.
  * <em>something</em> file.)
  */
-CarClass(CMenuInflater)
+class MenuInflater
+    : public Object
+    , public IMenuInflater
 {
 private:
     class InflatedOnMenuItemClickListener
-        : public ElLightRefBase
+        : public Object
         , public IOnMenuItemClickListener
     {
     public:
@@ -52,12 +53,13 @@ private:
      * Groups can not be nested unless there is another menu (which will have
      * its state class).
      */
-    class MenuState : public ElLightRefBase
+    class MenuState
+        : public Object
     {
     public:
         MenuState(
             /* [in] */ IMenu* menu,
-            /* [in] */ CMenuInflater* owner);
+            /* [in] */ MenuInflater* owner);
 
         CARAPI_(void) ResetGroup();
 
@@ -73,7 +75,8 @@ private:
         CARAPI_(void) ReadItem(
             /* [in] */ IAttributeSet* attrs);
 
-        CARAPI AddItem();
+        CARAPI AddItem(
+            /* [out] */ IMenuItem** item);
 
         CARAPI AddSubMenuItem(
             /* [out] */ ISubMenu** subMenu);
@@ -94,7 +97,7 @@ private:
             /* [out] */ IInterface** object);
 
     private:
-        friend class CMenuInflater;
+        friend class MenuInflater;
 
         AutoPtr<IMenu> mMenu;
 
@@ -154,10 +157,14 @@ private:
         static const Boolean sDefaultItemVisible;
         static const Boolean sDefaultItemEnabled;
 
-        CMenuInflater* mOwner;
+        MenuInflater* mOwner;
     };
 
 public:
+    MenuInflater();
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructs a menu inflater.
      *
@@ -199,6 +206,22 @@ private:
         /* [in] */ IAttributeSet* attrs,
         /* [in, out] */ IMenu* menu);
 
+    CARAPI_(void) RegisterMenu(
+        /* [in] */ IMenuItem* item,
+        /* [in] */ IAttributeSet* set);
+
+    CARAPI_(void) RegisterMenu(
+        /* [in] */ ISubMenu* subMenu,
+        /* [in] */ IAttributeSet* set);
+
+    CARAPI GetContext(
+        /* [out] */ IContext** ctx);
+
+    CARAPI_(AutoPtr<IInterface>) GetRealOwner();
+
+    CARAPI_(AutoPtr<IInterface>) FindRealOwner(
+        /* [in] */ IInterface* owner);
+
 private:
     static const String TAG;
 
@@ -229,4 +252,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ELASTOS_DROID_VIEW_CMENUINFLATER_H__
+#endif  //__ELASTOS_DROID_VIEW_MENUINFLATER_H__
