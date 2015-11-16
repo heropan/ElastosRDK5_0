@@ -9632,32 +9632,42 @@ ECode CWindowManagerService::InputMethodClientHasFocus(
 
 ECode CWindowManagerService::GetInitialDisplaySize(
     /* [in] */ Int32 displayId,
-    /* [in] */ IPoint* size)
+    /* [in] */ IPoint* inSize,
+    /* [out] */ IPoint** outSize)
 {
+    VALIDATE_NOT_NULL(outSize)
     synchronized (mWindowMapLock) {
         AutoPtr<DisplayContent> displayContent = GetDisplayContentLocked(displayId);
         if (displayContent != NULL && displayContent->HasAccess(Binder::GetCallingUid())) {
             synchronized(displayContent->mDisplaySizeLock) {
-                size->SetX(displayContent->mInitialDisplayWidth);
-                size->SetY(displayContent->mInitialDisplayHeight);
+                inSize->SetX(displayContent->mInitialDisplayWidth);
+                inSize->SetY(displayContent->mInitialDisplayHeight);
             }
         }
     }
+    *outSize = inSize;
+    REFCOUNT_ADD(*outSize)
+    return NOERROR;
 }
 
 ECode CWindowManagerService::GetBaseDisplaySize(
     /* [in] */ Int32 displayId,
-    /* [in] */ IPoint* size)
+    /* [in] */ IPoint* inSize,
+    /* [out] */ IPoint** outSize)
 {
+    VALIDATE_NOT_NULL(outSize)
     synchronized (mWindowMapLock) {
         AutoPtr<DisplayContent> displayContent = GetDisplayContentLocked(displayId);
         if (displayContent != NULL && displayContent->HasAccess(Binder::GetCallingUid())) {
             synchronized(displayContent->mDisplaySizeLock) {
-                size->SetX(displayContent->mBaseDisplayWidth);
-                size->SetY(displayContent->mBaseDisplayHeight);
+                inSize->SetX(displayContent->mBaseDisplayWidth);
+                inSize->SetY(displayContent->mBaseDisplayHeight);
             }
         }
     }
+    *outSize = inSize;
+    REFCOUNT_ADD(*outSize)
+    return NOERROR;
 }
 
 ECode CWindowManagerService::SetForcedDisplaySize(

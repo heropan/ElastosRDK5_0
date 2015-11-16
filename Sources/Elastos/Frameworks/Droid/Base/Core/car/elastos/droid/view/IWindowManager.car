@@ -50,10 +50,12 @@ module
 
         GetInitialDisplaySize(
             [in] Int32 displayId,
-            [in] IPoint* size);
+            [in] IPoint* inSize,
+            [out] IPoint** outSize);
         GetBaseDisplaySize(
             [in] Int32 displayId,
-            [in] IPoint* size);
+            [in] IPoint* inSize,
+            [out] IPoint** outSize);
         SetForcedDisplaySize(
             [in] Int32 displayId,
             [in] Int32 width,
