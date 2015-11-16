@@ -9,7 +9,7 @@ module
     interface Elastos.Droid.View.IApplicationToken;
     interface Elastos.Droid.View.IOnKeyguardExitResult;
     interface Elastos.Droid.View.IRotationWatcher;
-    interface Elastos.Droid.View.IWindowSessionCallback;
+    interface Elastos.Droid.View.IIWindowSessionCallback;
     interface Elastos.Droid.View.IWindowContentFrameStats;
     interface Elastos.Droid.Graphics.IPoint;
     interface Elastos.Droid.Content.Res.IConfiguration;
@@ -40,7 +40,7 @@ module
             [out] Boolean* result);       // Transaction #3
 
         OpenSession(
-            [in] IWindowSessionCallback* cb,
+            [in] IIWindowSessionCallback* cb,
             [in] IInputMethodClient* client,
             [in] IInputContext* inputContext,
             [out] IWindowSession** session);
@@ -50,10 +50,10 @@ module
 
         GetInitialDisplaySize(
             [in] Int32 displayId,
-            [out] IPoint** size);
+            [in] IPoint* size);
         GetBaseDisplaySize(
             [in] Int32 displayId,
-            [out] IPoint** size);
+            [in] IPoint* size);
         SetForcedDisplaySize(
             [in] Int32 displayId,
             [in] Int32 width,
