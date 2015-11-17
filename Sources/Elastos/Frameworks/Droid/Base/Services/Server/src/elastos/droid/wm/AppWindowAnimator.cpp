@@ -1,38 +1,60 @@
 
 #include "wm/AppWindowAnimator.h"
+#include <elastos/utility/logging/Slogger.h>
 
- using Elastos::Droid::View::Animation::CTransformation;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::View::Animation::CTransformation;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm {
 
+//==============================================================================
+//                  AppWindowAnimator::DummyAnimation
+//==============================================================================
+
+ECode AppWindowAnimator::DummyAnimation::GetTransformation(
+    /* [in] */ Int64 currentTime,
+    /* [in, out] */ ITransformation* outTransformation,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
+}
+
+
+//==============================================================================
+//                  AppWindowAnimator
+//==============================================================================
+
 const String AppWindowAnimator::TAG("AppWindowAnimator");
-const AutoPtr<IAnimation> AppWindowAnimator::sDummyAnimation
-        = (IAnimation*)new DummyAnimation();
+const AutoPtr<IAnimation> AppWindowAnimator::sDummyAnimation = (IAnimation*)new DummyAnimation();
 
 AppWindowAnimator::AppWindowAnimator(
     /* [in] */ AppWindowToken* atoken)
     : mService(atoken->mService)
     , mAnimator(atoken->mAnimator)
     , mAnimating(FALSE)
-    , mAnimInitialized(FALSE)
     , mHasTransformation(FALSE)
     , mFreezingScreen(FALSE)
+    , mLastFreezeDuration(0)
     , mAnimLayerAdjustment(0)
     , mAllDrawn(FALSE)
     , mThumbnailTransactionSeq(0)
     , mThumbnailX(0)
     , mThumbnailY(0)
     , mThumbnailLayer(0)
+    , mThumbnailForceAboveLayer(0)
+    , mDeferThumbnailDestruction(FALSE)
 {
     AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)atoken->Probe(EIID_IWeakReferenceSource);
     assert(wrs != NULL);
     wrs->GetWeakReference((IWeakReference**)&mWeakAppToken);
 
-    ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTransformation));
-    ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mThumbnailTransformation));
+    CTransformation::New((ITransformation**)&mTransformation);
+    CTransformation::New((ITransformation**)&mThumbnailTransformation);
 }
 
 AutoPtr<AppWindowToken> AppWindowAnimator::GetAppToken()
@@ -48,18 +70,25 @@ AutoPtr<AppWindowToken> AppWindowAnimator::GetAppToken()
 
 void AppWindowAnimator::SetAnimation(
     /* [in] */ IAnimation* anim,
-    /* [in] */ Boolean initialized)
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
 {
-    // if (WindowManagerService.localLOGV) Slog.v(
-    //     TAG, "Setting animation in " + mAppToken + ": " + anim);
     AutoPtr<AppWindowToken> appToken = GetAppToken();
     if (appToken == NULL) return;
 
+    if (CWindowManagerService::localLOGV) {
+        Slogger::V(TAG, "Setting animation in %p: %p wxh=%dx%d isVisible=%d", appToken.Get()
+                , anim, width, height, appToken->IsVisible());
+    }
+
     mAnimation = anim;
     mAnimating = FALSE;
-    mAnimInitialized = initialized;
+    Boolean isInitialized;
+    if (anim->IsInitialized(&isInitialized), !isInitialized) {
+        anim->Initialize(width, height, width, height);
+    }
     anim->RestrictDuration(CWindowManagerService::MAX_ANIMATION_DURATION);
-    anim->ScaleCurrentDuration(mService->mTransitionAnimationScale);
+    anim->ScaleCurrentDuration(mService->GetTransitionAnimationScaleLocked());
     Int32 zorder;
     anim->GetZAdjustment(&zorder);
     Int32 adj = 0;
@@ -76,8 +105,12 @@ void AppWindowAnimator::SetAnimation(
     }
     // Start out animation gone if window is gone, or visible if window is visible.
     mTransformation->Clear();
-    mTransformation->SetAlpha(appToken->mReportedVisible ? 1 : 0);
+    mTransformation->SetAlpha(appToken->IsVisible() ? 1 : 0);
     mHasTransformation = TRUE;
+
+    if (!appToken->mAppFullscreen) {
+        anim->SetBackgroundColor(0);
+    }
 }
 
 void AppWindowAnimator::SetDummyAnimation()
@@ -85,12 +118,15 @@ void AppWindowAnimator::SetDummyAnimation()
     AutoPtr<AppWindowToken> appToken = GetAppToken();
     if (appToken == NULL) return;
 
-    // if (WindowManagerService.localLOGV) Slog.v(TAG, "Setting dummy animation in " + mAppToken);
+    if (CWindowManagerService::localLOGV) {
+        Slogger::V(TAG, "Setting dummy animation in %p isVisible=%d", appToken.Get(), appToken->IsVisible());
+    }
+
     mAnimation = sDummyAnimation;
     mAnimInitialized = FALSE;
     mHasTransformation = TRUE;
     mTransformation->Clear();
-    mTransformation->SetAlpha(appToken->mReportedVisible ? 1 : 0);
+    mTransformation->SetAlpha(appToken->IsVisible() ? 1 : 0);
 }
 
 void AppWindowAnimator::ClearAnimation()
@@ -98,9 +134,16 @@ void AppWindowAnimator::ClearAnimation()
     if (mAnimation != NULL) {
         mAnimation = NULL;
         mAnimating = TRUE;
-        mAnimInitialized = FALSE;
     }
-    ClearThumbnail();
+    if (!mDeferThumbnailDestruction) {
+        ClearThumbnail();
+    }
+    AutoPtr<AppWindowToken> appToken = GetAppToken();
+    if (appToken == NULL) return;
+    if (appToken->mDeferClearAllDrawn) {
+        appToken->mAllDrawn = FALSE;
+        appToken->mDeferClearAllDrawn = FALSE;
+    }
 }
 
 void AppWindowAnimator::ClearThumbnail()
@@ -108,6 +151,14 @@ void AppWindowAnimator::ClearThumbnail()
     if (mThumbnail != NULL) {
         mThumbnail->Destroy();
         mThumbnail = NULL;
+    }
+}
+
+void AppWindowAnimator::ClearDeferredThumbnail()
+{
+    if (mDeferredThumbnail != NULL) {
+        mDeferredThumbnail->Destroy();
+        mDeferredThumbnail = NULL;
     }
 }
 
@@ -131,7 +182,7 @@ void AppWindowAnimator::UpdateLayers()
         if (w == mService->mInputMethodTarget && !mService->mInputMethodTargetWaitingAnim) {
             mService->SetInputMethodAnimLayerAdjustment(adj);
         }
-        if (w == mAnimator->mWallpaperTarget && mAnimator->mLowerWallpaperTarget == NULL) {
+        if (w == mService->mWallpaperTarget && mService->mLowerWallpaperTarget == NULL) {
             mService->SetWallpaperAnimLayerAdjustmentLocked(adj);
         }
     }
@@ -173,10 +224,15 @@ void AppWindowAnimator::StepThumbnailAnimation(
     Float alpha;
     mThumbnailTransformation->GetAlpha(&alpha);
     mThumbnail->SetAlpha(alpha);
-    // The thumbnail is layered below the window immediately above this
-    // token's anim layer.
-    mThumbnail->SetLayer(mThumbnailLayer + CWindowManagerService::WINDOW_LAYER_MULTIPLIER
-            - CWindowManagerService::LAYER_OFFSET_THUMBNAIL);
+    if (mThumbnailForceAboveLayer > 0) {
+        mThumbnail->SetLayer(mThumbnailForceAboveLayer + 1);
+    }
+    else {
+        // The thumbnail is layered below the window immediately above this
+        // token's anim layer.
+        mThumbnail->SetLayer(thumbnailLayer + CWindowManagerService::WINDOW_LAYER_MULTIPLIER
+                - CWindowManagerService::LAYER_OFFSET_THUMBNAIL);
+    }
     mThumbnail->SetMatrix((*tmpFloats)[IMatrix::MSCALE_X], (*tmpFloats)[IMatrix::MSKEW_Y],
             (*tmpFloats)[IMatrix::MSKEW_X], (*tmpFloats)[IMatrix::MSCALE_Y]);
 }
@@ -194,7 +250,9 @@ Boolean AppWindowAnimator::StepAnimation(
     //     TAG, "Stepped animation in " + mAppToken + ": more=" + more + ", xform=" + transformation);
     if (!more) {
         mAnimation = NULL;
-        ClearThumbnail();
+        if (!mDeferThumbnailDestruction) {
+            ClearThumbnail();
+        }
         // if (WindowManagerService.DEBUG_ANIM) Slog.v(
         //     TAG, "Finished animation in " + mAppToken + " @ " + currentTime);
     }
@@ -203,9 +261,7 @@ Boolean AppWindowAnimator::StepAnimation(
 }
 
 Boolean AppWindowAnimator::StepAnimationLocked(
-    /* [in] */ Int64 currentTime,
-    /* [in] */ Int32 dw,
-    /* [in] */ Int32 dh)
+    /* [in] */ Int64 currentTime)
 {
     AutoPtr<AppWindowToken> appToken = GetAppToken();
     if (appToken == NULL) return FALSE;
@@ -225,13 +281,10 @@ Boolean AppWindowAnimator::StepAnimationLocked(
                 && mAnimation != NULL) {
             if (!mAnimating) {
                 // if (WindowManagerService.DEBUG_ANIM) Slog.v(
-                //     TAG, "Starting animation in " + mAppToken +
-                //     " @ " + currentTime + ": dw=" + dw + " dh=" + dh
-                //     + " scale=" + mService.mTransitionAnimationScale
-                //     + " allDrawn=" + mAppToken.allDrawn + " animating=" + animating);
-                if (!mAnimInitialized) {
-                    mAnimation->Initialize(dw, dh, dw, dh);
-                }
+                //         TAG, "Starting animation in " + mAppToken +
+                //         " @ " + currentTime + " scale="
+                //         + mService.getTransitionAnimationScaleLocked()
+                //         + " allDrawn=" + mAppToken.allDrawn + " animating=" + animating);
                 mAnimation->SetStartTime(currentTime);
                 mAnimating = TRUE;
                 if (mThumbnail != NULL) {
@@ -284,9 +337,29 @@ Boolean AppWindowAnimator::StepAnimationLocked(
 
     List<AutoPtr<WindowStateAnimator> >::Iterator it = mAllAppWinAnimators.Begin();
     for (; it != mAllAppWinAnimators.End(); ++it) {
-        (*it)->FinishExit();
+        AutoPtr<WindowStateAnimator> winAnim = *it;
+        if (appToken->mLaunchTaskBehind) {
+            winAnim->mWin->mExiting = TRUE;
+        }
+        winAnim->FinishExit();
     }
-    appToken->UpdateReportedVisibilityLocked();
+    if (appToken->mLaunchTaskBehind) {
+        // try {
+        mService->mActivityManager->NotifyLaunchTaskBehindComplete(appToken->mToken);
+        // } catch (RemoteException e) {
+        // }
+        mAppToken->mLaunchTaskBehind = FALSE;
+    }
+    else {
+        mAppToken->UpdateReportedVisibilityLocked();
+        if (mAppToken->mEnteringAnimation) {
+            mAppToken->mEnteringAnimation = FALSE;
+            // try {
+            mService->mActivityManager->NotifyEnterAnimationComplete(appToken->mToken);
+            // } catch (RemoteException e) {
+            // }
+        }
+    }
 
     return FALSE;
 }
@@ -303,384 +376,6 @@ Boolean AppWindowAnimator::ShowAllWindowsLocked()
         isAnimating |= winAnimator->IsAnimating();
     }
     return isAnimating;
-}
-
-PInterface AppWindowAnimator::DummyAnimation::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IAnimation*)this;
-    }
-    else if (riid == Elastos::Droid::View::Animation::EIID_IAnimation) {
-        return (IAnimation*)this;
-    }
-    else if (riid == Elastos::Droid::View::Animation::EIID_Animation) {
-        return reinterpret_cast<PInterface>((Animation*)this);
-    }
-    return NULL;
-}
-
-UInt32 AppWindowAnimator::DummyAnimation::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 AppWindowAnimator::DummyAnimation::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode AppWindowAnimator::DummyAnimation::Reset()
-{
-    return Animation::Reset();
-}
-
-ECode AppWindowAnimator::DummyAnimation::Cancel()
-{
-    return Animation::Cancel();
-}
-
-ECode AppWindowAnimator::DummyAnimation::Detach()
-{
-    return Animation::Detach();
-}
-
-ECode AppWindowAnimator::DummyAnimation::IsInitialized(
-    /* [out] */ Boolean* isInitialized)
-{
-     *isInitialized = Animation::IsInitialized();
-     return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::Initialize(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height,
-    /* [in] */ Int32 parentWidth,
-    /* [in] */ Int32 parentHeight)
-{
-    return Animation::Initialize(width, height, parentWidth, parentHeight);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetListenerHandler(
-    /* [in] */ IHandler* handler)
-{
-    return Animation::SetListenerHandler(handler);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetInterpolator(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 resID)
-{
-    return Animation::SetInterpolator(context, resID);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetInterpolator(
-    /* [in] */ IInterpolator* i)
-{
-    return Animation::SetInterpolator(i);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetStartOffset(
-    /* [in] */ Int64 startOffset)
-{
-    return Animation::SetStartOffset(startOffset);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetDuration(
-    /* [in] */ Int64 durationMillis)
-{
-    return Animation::SetDuration(durationMillis);
-}
-
-ECode AppWindowAnimator::DummyAnimation::RestrictDuration(
-    /* [in] */ Int64 durationMillis)
-{
-    return Animation::RestrictDuration(durationMillis);
-}
-
-ECode AppWindowAnimator::DummyAnimation::ScaleCurrentDuration(
-    /* [in] */ Float scale)
-{
-    return Animation::ScaleCurrentDuration(scale);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetStartTime(
-    /* [in] */ Int64 startTimeMillis)
-{
-    return Animation::SetStartTime(startTimeMillis);
-}
-
-ECode AppWindowAnimator::DummyAnimation::Start()
-{
-    return Animation::Start();
-}
-
-ECode AppWindowAnimator::DummyAnimation::StartNow()
-{
-    return Animation::StartNow();
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetRepeatMode(
-    /* [in] */ Int32 repeatMode)
-{
-    return Animation::SetRepeatMode(repeatMode);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetRepeatCount(
-    /* [in] */ Int32 repeatCount)
-{
-    return Animation::SetRepeatCount(repeatCount);
-}
-
-ECode AppWindowAnimator::DummyAnimation::IsFillEnabled(
-    /* [out] */ Boolean* isFillEnabled)
-{
-    VALIDATE_NOT_NULL(isFillEnabled);
-    *isFillEnabled = Animation::IsFillEnabled();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetFillEnabled(
-    /* [in] */ Boolean fillEnabled)
-{
-    return Animation::SetFillEnabled(fillEnabled);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetFillBefore(
-    /* [in] */ Boolean fillBefore)
-{
-    return Animation::SetFillBefore(fillBefore);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetFillAfter(
-    /* [in] */ Boolean fillAfter)
-{
-    return Animation::SetFillAfter(fillAfter);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetZAdjustment(
-    /* [in] */ Int32 zAdjustment)
-{
-    return Animation::SetZAdjustment(zAdjustment);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetBackgroundColor(
-    /* [in] */ Int32 bg)
-{
-    return Animation::SetBackgroundColor(bg);
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetBackgroundColor(
-    /* [out] */ Int32* bg)
-{
-    VALIDATE_NOT_NULL(bg);
-    return Animation::GetBackgroundColor(bg);
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetDetachWallpaper(
-    /* [in] */ Boolean detachWallpaper)
-{
-    return Animation::SetDetachWallpaper(detachWallpaper);
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetInterpolator(
-    /* [out] */ IInterpolator** interpolator)
-{
-    VALIDATE_NOT_NULL(interpolator);
-    AutoPtr<IInterpolator> temp = Animation::GetInterpolator();
-    *interpolator = temp;
-    REFCOUNT_ADD(*interpolator);
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetStartTime(
-    /* [out] */ Int64* time)
-{
-    VALIDATE_NOT_NULL(time);
-    *time = Animation::GetStartTime();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetDuration(
-    /* [out] */ Int64* time)
-{
-    VALIDATE_NOT_NULL(time);
-    *time = Animation::GetDuration();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetStartOffset(
-    /* [out] */ Int64* startOffset)
-{
-    VALIDATE_NOT_NULL(startOffset);
-    *startOffset = Animation::GetStartOffset();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetRepeatMode(
-    /* [out] */ Int32* mode)
-{
-    VALIDATE_NOT_NULL(mode);
-    *mode = Animation::GetRepeatMode();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetRepeatCount(
-    /* [out] */ Int32* count)
-{
-    VALIDATE_NOT_NULL(count);
-    *count = Animation::GetRepeatCount();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetFillBefore(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = Animation::GetFillBefore();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetFillAfter(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = Animation::GetFillAfter();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetZAdjustment(
-    /* [out] */ Int32* zAdjustment)
-{
-    VALIDATE_NOT_NULL(zAdjustment);
-    *zAdjustment = Animation::GetZAdjustment();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetDetachWallpaper(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = Animation::GetDetachWallpaper();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::WillChangeTransformationMatrix(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = Animation::WillChangeTransformationMatrix();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::WillChangeBounds(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = Animation::WillChangeBounds();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::SetAnimationListener(
-    /* [in] */ IAnimationAnimationListener* listener)
-{
-    return Animation::SetAnimationListener(listener);
-}
-
-ECode AppWindowAnimator::DummyAnimation::ComputeDurationHint(
-    /* [out] */ Int64* hint)
-{
-    VALIDATE_NOT_NULL(hint);
-    *hint = Animation::ComputeDurationHint();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetTransformation(
-    /* [in] */ Int64 currentTime,
-    /* [in, out] */ ITransformation* outTransformation,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetTransformation(
-    /* [in] */ Int64 currentTime,
-    /* [in, out] */ ITransformation* outTransformation,
-    /* [in] */ Float scale,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = Animation::GetTransformation(currentTime, outTransformation, scale);
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::HasStarted(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = Animation::HasStarted();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::HasEnded(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = Animation::HasEnded();
-    return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::HasAlpha(
-    /* [out] */ Boolean* has)
-{
-     VALIDATE_NOT_NULL(has);
-     *has = Animation::HasAlpha();
-     return NOERROR;
-}
-
-ECode AppWindowAnimator::DummyAnimation::Clone(
-    /* [out] */ IAnimation** animation)
-{
-    VALIDATE_NOT_NULL(animation);
-    AutoPtr<IAnimation> temp = Animation::Clone();
-    *animation = temp;
-    REFCOUNT_ADD(*animation);
-    return NOERROR;
-}
-
-AutoPtr<IAnimation> AppWindowAnimator::DummyAnimation::GetCloneInstance()
-{
-    AutoPtr<IAnimation> temp = new AppWindowAnimator::DummyAnimation();
-    return temp;
-}
-
-ECode AppWindowAnimator::DummyAnimation::GetInvalidateRegion(
-    /* [in] */ Int32 left,
-    /* [in] */ Int32 top,
-    /* [in] */ Int32 right,
-    /* [in] */ Int32 bottom,
-    /* [in] */ IRectF* invalidate,
-    /* [in] */ ITransformation* transformation)
-{
-    return Animation::GetInvalidateRegion(left, top, right, bottom, invalidate, transformation);
-}
-
-ECode AppWindowAnimator::DummyAnimation::InitializeInvalidateRegion(
-    /* [in] */ Int32 left,
-    /* [in] */ Int32 top,
-    /* [in] */ Int32 right,
-    /* [in] */ Int32 bottom)
-{
-    return Animation::InitializeInvalidateRegion(left, top, right, bottom);
 }
 
 } // Wm

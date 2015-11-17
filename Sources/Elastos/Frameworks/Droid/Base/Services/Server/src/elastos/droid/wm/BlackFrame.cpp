@@ -14,6 +14,10 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
+//==============================================================================
+//                  BlackFrame::BlackSurface
+//==============================================================================
+
 BlackFrame::BlackSurface::BlackSurface(
     /* [in] */ ISurfaceSession* session,
     /* [in] */ Int32 layer,
@@ -31,13 +35,13 @@ BlackFrame::BlackSurface::BlackSurface(
     Int32 w = r - l;
     Int32 h = b - t;
     // if (WindowManagerService.DEBUG_SURFACE_TRACE) {
-    //     surface = new WindowStateAnimator.SurfaceTrace(session, "BlackSurface("
-    //             + l + ", " + t + ")",
-    //             w, h, PixelFormat.OPAQUE, mSurface->FX_SURFACE_DIM | mSurface->HIDDEN);
+            // surface = new WindowStateAnimator.SurfaceTrace(session, "BlackSurface("
+            //         + l + ", " + t + ")",
+            //         w, h, PixelFormat.OPAQUE, SurfaceControl.FX_SURFACE_DIM | SurfaceControl.HIDDEN);
     // } else {
-    ASSERT_SUCCEEDED(CSurface::New(session, String("BlackSurface"),
+    ASSERT_SUCCEEDED(CSurfaceControl::New(session, String("BlackSurface"),
             w, h, IPixelFormat::OPAQUE,
-            ISurface::FX_SURFACE_DIM | ISurface::HIDDEN, (ISurface**)&mSurface));
+            ISurfaceControl::FX_SURFACE_DIM | ISurfaceControl::HIDDEN, (ISurfaceControl**)&mSurface));
     // }
     mSurface->SetAlpha(1);
     mSurface->SetLayerStack(layerStack);
@@ -49,6 +53,12 @@ BlackFrame::BlackSurface::BlackSurface(
     }
 }
 
+void BlackFrame::BlackSurface::SetAlpha(
+    /* [in] */ Float alpha)
+{
+    mSurface->SetAlpha(alpha);
+}
+
 void BlackFrame::BlackSurface::SetMatrix(
     /* [in] */ IMatrix* matrix)
 {
@@ -56,8 +66,7 @@ void BlackFrame::BlackSurface::SetMatrix(
     Boolean result;
     mHost->mTmpMatrix->PostConcat(matrix, &result);
     mHost->mTmpMatrix->GetValues(mHost->mTmpFloats);
-    mSurface->SetPosition((*mHost->mTmpFloats)[IMatrix::MTRANS_X],
-            (*mHost->mTmpFloats)[IMatrix::MTRANS_Y]);
+    mSurface->SetPosition((*mHost->mTmpFloats)[IMatrix::MTRANS_X], (*mHost->mTmpFloats)[IMatrix::MTRANS_Y]);
     mSurface->SetMatrix(
             (*mHost->mTmpFloats)[IMatrix::MSCALE_X], (*mHost->mTmpFloats)[IMatrix::MSKEW_Y],
             (*mHost->mTmpFloats)[IMatrix::MSKEW_X], (*mHost->mTmpFloats)[IMatrix::MSCALE_Y]);
@@ -77,12 +86,19 @@ void BlackFrame::BlackSurface::ClearMatrix()
     mSurface->SetMatrix(1, 0, 0, 1);
 }
 
+
+//==============================================================================
+//                  BlackFrame
+//==============================================================================
+
 BlackFrame::BlackFrame(
     /* [in] */ ISurfaceSession* session,
     /* [in] */ IRect* outer,
     /* [in] */ IRect* inner,
     /* [in] */ Int32 layer,
-    /* [in] */ Int32 layerStack)
+    /* [in] */ Int32 layerStack,
+    /* [in] */ Boolean forceDefaultOrientation)
+    : mForceDefaultOrientation(forceDefaultOrientation)
 {
     CMatrix::New((IMatrix**)&mTmpMatrix);
     mTmpFloats = ArrayOf<Float>::Alloc(9);
@@ -150,6 +166,16 @@ void BlackFrame::Hide()
             if ((*mBlackSurfaces)[i] != NULL) {
                 (*mBlackSurfaces)[i]->mSurface->Hide();
             }
+        }
+    }
+}
+
+void BlackFrame::SetAlpha(
+    /* [in] */ Float alpha)
+{
+    for (Int32 i = 0; i < mBlackSurfaces->GetLength(); i++) {
+        if ((*mBlackSurfaces)[i] != NULL) {
+            (*mBlackSurfaces)[i].setAlpha(alpha);
         }
     }
 }

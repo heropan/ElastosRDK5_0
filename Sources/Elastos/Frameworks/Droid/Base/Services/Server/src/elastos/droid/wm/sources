@@ -34,3 +34,6 @@ SOURCES += KeyguardDisableHandler.cpp
 SOURCES += CWindowManagerService.cpp
 SOURCES += InputMonitor.cpp
 SOURCES += WindowBinder.cpp
+SROUCES += AccessibilityController.cpp
+SOURCES += AppTransition.cpp
+SOURCES += CircularDisplayMask.cpp

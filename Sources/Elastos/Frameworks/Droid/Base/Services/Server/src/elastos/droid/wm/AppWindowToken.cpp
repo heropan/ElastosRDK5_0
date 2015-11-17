@@ -15,14 +15,15 @@ namespace Wm {
 
 AppWindowToken::AppWindowToken(
     /* [in] */ CWindowManagerService* service,
-    /* [in] */ Int32 userId,
-    /* [in] */ IApplicationToken* token)
+    /* [in] */ IApplicationToken* token,
+    /* [in] */ Boolean voiceInteraction)
     : WindowToken(service, IBinder::Probe(token), IWindowManagerLayoutParams::TYPE_APPLICATION, TRUE)
-    , mUserId(userId)
     , mAppToken(token)
+    , mVoiceInteraction(voiceInteraction)
     , mGroupId(-1)
     , mAppFullscreen(FALSE)
     , mRequestedOrientation(IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED)
+    , mLayoutConfigChanges(FALSE)
     , mShowWhenLocked(FALSE)
     , mInputDispatchingTimeoutNanos(0)
     , mLastTransactionSequence(0)
@@ -30,6 +31,7 @@ AppWindowToken::AppWindowToken(
     , mNumDrawnWindows(0)
     , mInPendingTransaction(FALSE)
     , mAllDrawn(FALSE)
+    , mDeferClearAllDrawn(FALSE)
     , mWillBeHidden(FALSE)
     , mHiddenRequested(FALSE)
     , mClientHidden(FALSE)
@@ -39,6 +41,9 @@ AppWindowToken::AppWindowToken(
     , mStartingDisplayed(FALSE)
     , mStartingMoved(FALSE)
     , mFirstWindowDrawn(FALSE)
+    , mDeferRemoval(FALSE)
+    , mLaunchTaskBehind(FALSE)
+    , mEnteringAnimation(FALSE)
 {
     mAppWindowToken = this;
     mInputApplicationHandle = new InputApplicationHandle(this);
@@ -101,7 +106,7 @@ void AppWindowToken::UpdateReportedVisibilityLocked()
         //             + win.isDrawnLw()
         //             + ", isAnimating=" + win.mWinAnimator.isAnimating());
         //     if (!win.isDrawnLw()) {
-        //         Slog.v(WindowManagerService.TAG, "Not displayed: s=" + win.mWinAnimator.mSurface
+        //         Slog.v(WindowManagerService.TAG, "Not displayed: s=" + win.mWinAnimator.mSurfaceControl
         //                 + " pv=" + win.mPolicyVisibility
         //                 + " mDrawState=" + win.mWinAnimator.mDrawState
         //                 + " ah=" + win.mAttachedHidden
@@ -176,8 +181,37 @@ AutoPtr<WindowState> AppWindowToken::FindMainWindow()
     return NULL;
 }
 
-String AppWindowToken::ToString()
+Boolean AppWindowToken::IsVisible()
 {
+    WindowList::Iterator it = mAllAppWindows.Begin();
+    for (; it != mAllAppWindows.End(); ++it) {
+        AutoPtr<WindowState> win = *it;
+        if (!win->mAppFreezing
+                && (win->mViewVisibility == IView::VISIBLE ||
+                    (win->mWinAnimator->IsAnimating() &&
+                            !service->mAppTransition->IsTransitionSet()))
+                && !win->mDestroying && win->IsDrawnLw()) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+void AppWindowToken::RemoveAllWindows()
+{
+    WindowList::ReverseIterator rit = mAllAppWindows.RBegin();
+    for (; rit != mAllAppWindows.REnd(); ++rit) {
+        AutoPtr<WindowState> win = *rit;
+        if (CWindowManagerService::DEBUG_WINDOW_MOVEMENT)
+            Slogger::W(CWindowManagerService::TAG, "removeAllWindows: removing win=%p", win.Get());
+        win->mService>RemoveWindowLocked(win->mSession, win);
+    }
+}
+
+ECode AppWindowToken::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
     if (mStringName.IsNull()) {
         StringBuilder sb;
         sb.Append("AppWindowToken{");
@@ -193,7 +227,8 @@ String AppWindowToken::ToString()
         sb.AppendChar('}');
         sb.ToString(&mStringName);
     }
-    return mStringName;
+    *str = mStringName;
+    return NOERROR;
 }
 
 } // Wm

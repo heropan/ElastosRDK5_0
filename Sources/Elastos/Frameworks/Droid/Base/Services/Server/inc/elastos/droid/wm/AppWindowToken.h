@@ -17,14 +17,13 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
-class AppWindowToken
-    : public WindowToken
+class AppWindowToken : public WindowToken
 {
 public:
     AppWindowToken(
         /* [in] */ CWindowManagerService* service,
-        /* [in] */ Int32 userId,
-        /* [in] */ IApplicationToken* token);
+        /* [in] */ IApplicationToken* token,
+        /* [in] */ Boolean voiceInteraction);
 
     CARAPI Init();
 
@@ -34,12 +33,14 @@ public:
 
     CARAPI_(AutoPtr<WindowState>) FindMainWindow();
 
-    CARAPI_(String) ToString();
+    CARAPI_(Boolean) IsVisible();
+
+    CARAPI_(void) RemoveAllWindows();
+
+    CARAPI ToString(
+        /* [out] */ String* str;);
 
 public:
-    // The user who owns this app window token.
-    Int32 mUserId;
-
     AutoPtr<IApplicationToken> mAppToken;
 
     // All of the windows and child windows that are included in this
@@ -49,9 +50,12 @@ public:
 
     AutoPtr<WindowAnimator> mAnimator;
 
+    Boolean mVoiceInteraction;
+
     Int32 mGroupId;
     Boolean mAppFullscreen;
     Int32 mRequestedOrientation;
+    Boolean mLayoutConfigChanges;
     Boolean mShowWhenLocked;
 
     // The input dispatching timeout for this application token in nanoseconds.
@@ -65,6 +69,9 @@ public:
     Int32 mNumDrawnWindows;
     Boolean mInPendingTransaction;
     Boolean mAllDrawn;
+    // Set to true when this app creates a surface while in the middle of an animation. In that
+    // case do not clear allDrawn until the animation completes.
+    Boolean mDeferClearAllDrawn;
 
     // Is this token going to be hidden in a little while?  If so, it
     // won't be taken into account for setting the screen orientation.
@@ -98,6 +105,13 @@ public:
 
     // Input application handle used by the input dispatcher.
     AutoPtr<InputApplicationHandle> mInputApplicationHandle;
+
+    Boolean mDeferRemoval;
+
+    Boolean mLaunchTaskBehind;
+    Boolean mEnteringAnimation;
+
+    typedef List<AutoPtr<AppWindowToken> > AppTokenList;
 };
 
 } // Wm

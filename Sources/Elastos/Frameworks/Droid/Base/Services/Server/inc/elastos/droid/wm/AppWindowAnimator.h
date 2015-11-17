@@ -5,9 +5,11 @@
 #include "wm/WindowStateAnimator.h"
 #include "wm/WindowAnimator.h"
 #include "elastos/droid/view/animation/Animation.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
+using Elastos::Droid::View::Animation::Animation;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Animation::IAnimationAnimationListener;
@@ -24,7 +26,7 @@ class AppWindowToken;
 class WindowAnimator;
 class WindowStateAnimator;
 
-class AppWindowAnimator : public ElRefBase
+class AppWindowAnimator : public Object
 {
 public:
     // This is an animation that does nothing: it just immediately finishes
@@ -32,176 +34,13 @@ public:
     // where we want to synchronize multiple things that may be animating.
     class DummyAnimation
         : public ElRefBase
-        , public IAnimation
-        , public Elastos::Droid::View::Animation::Animation
+        , public Animation
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-
-        CARAPI Reset();
-
-        CARAPI Cancel();
-
-        CARAPI Detach();
-
-        CARAPI IsInitialized(
-            /* [out] */ Boolean* isInitialized);
-
-        CARAPI Initialize(
-            /* [in] */ Int32 width,
-            /* [in] */ Int32 height,
-            /* [in] */ Int32 parentWidth,
-            /* [in] */ Int32 parentHeight);
-
-        CARAPI SetListenerHandler(
-            /* [in] */ IHandler* handler);
-
-        CARAPI SetInterpolator(
-            /* [in] */ IContext* context,
-            /* [in] */ Int32 resID);
-
-        CARAPI SetInterpolator(
-            /* [in] */ IInterpolator* i);
-
-        CARAPI SetStartOffset(
-            /* [in] */ Int64 startOffset);
-
-        CARAPI SetDuration(
-            /* [in] */ Int64 durationMillis);
-
-        CARAPI RestrictDuration(
-            /* [in] */ Int64 durationMillis);
-
-        CARAPI ScaleCurrentDuration(
-            /* [in] */ Float scale);
-
-        CARAPI SetStartTime(
-            /* [in] */ Int64 startTimeMillis);
-
-        CARAPI Start();
-
-        CARAPI StartNow();
-
-        CARAPI SetRepeatMode(
-            /* [in] */ Int32 repeatMode);
-
-        CARAPI SetRepeatCount(
-            /* [in] */ Int32 repeatCount);
-
-        CARAPI IsFillEnabled(
-            /* [out] */ Boolean* isFillEnabled);
-
-        CARAPI SetFillEnabled(
-            /* [in] */ Boolean fillEnabled);
-
-        CARAPI SetFillBefore(
-            /* [in] */ Boolean fillBefore);
-
-        CARAPI SetFillAfter(
-            /* [in] */ Boolean fillAfter);
-
-        CARAPI SetZAdjustment(
-            /* [in] */ Int32 zAdjustment);
-
-        CARAPI SetBackgroundColor(
-            /* [in] */ Int32 bg);
-
-        CARAPI GetBackgroundColor(
-            /* [out] */ Int32* bg);
-
-        CARAPI SetDetachWallpaper(
-            /* [in] */ Boolean detachWallpaper);
-
-        CARAPI GetInterpolator(
-            /* [out] */ IInterpolator** interpolator);
-
-        CARAPI GetStartTime(
-            /* [out] */ Int64* time);
-
-        CARAPI GetDuration(
-            /* [out] */ Int64* time);
-
-        CARAPI GetStartOffset(
-            /* [out] */ Int64* startOffset);
-
-        CARAPI GetRepeatMode(
-            /* [out] */ Int32* mode);
-
-        CARAPI GetRepeatCount(
-            /* [out] */ Int32* count);
-
-        CARAPI GetFillBefore(
-            /* [out] */ Boolean* result);
-
-        CARAPI GetFillAfter(
-            /* [out] */ Boolean* result);
-
-        CARAPI GetZAdjustment(
-            /* [out] */ Int32* zAdjustment);
-
-        CARAPI GetDetachWallpaper(
-            /* [out] */ Boolean* result);
-
-        CARAPI WillChangeTransformationMatrix(
-            /* [out] */ Boolean* result);
-
-        CARAPI WillChangeBounds(
-            /* [out] */ Boolean* result);
-
-        CARAPI SetAnimationListener(
-            /* [in] */ IAnimationAnimationListener* listener);
-
-        CARAPI ComputeDurationHint(
-            /* [out] */ Int64* hint);
-
         CARAPI GetTransformation(
             /* [in] */ Int64 currentTime,
             /* [in, out] */ ITransformation* outTransformation,
             /* [out] */ Boolean* result);
-
-        CARAPI GetTransformation(
-            /* [in] */ Int64 currentTime,
-            /* [in, out] */ ITransformation* outTransformation,
-            /* [in] */ Float scale,
-            /* [out] */ Boolean* result);
-
-        CARAPI HasStarted(
-            /* [out] */ Boolean* result);
-
-        CARAPI HasEnded(
-            /* [out] */ Boolean* result);
-
-        CARAPI HasAlpha(
-            /* [out] */ Boolean* has);
-
-        CARAPI  Clone(
-            /* [out] */ IAnimation** animation);
-
-        CARAPI GetInvalidateRegion(
-            /* [in] */ Int32 left,
-            /* [in] */ Int32 top,
-            /* [in] */ Int32 right,
-            /* [in] */ Int32 bottom,
-            /* [in] */ IRectF* invalidate,
-            /* [in] */ ITransformation* transformation);
-
-        CARAPI InitializeInvalidateRegion(
-            /* [in] */ Int32 left,
-            /* [in] */ Int32 top,
-            /* [in] */ Int32 right,
-            /* [in] */ Int32 bottom);
-
-    protected:
-        CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
     };
 
 public:
@@ -212,7 +51,8 @@ public:
 
     CARAPI_(void) SetAnimation(
         /* [in] */ IAnimation* anim,
-        /* [in] */ Boolean initialized);
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height);
 
     CARAPI_(void) SetDummyAnimation();
 
@@ -220,13 +60,13 @@ public:
 
     CARAPI_(void) ClearThumbnail();
 
+    CARAPI_(void) ClearDeferredThumbnail();
+
     CARAPI_(void) UpdateLayers();
 
     // This must be called while inside a transaction.
     CARAPI_(Boolean) StepAnimationLocked(
-        /* [in] */ Int64 currentTime,
-        /* [in] */ Int32 dw,
-        /* [in] */ Int32 dh);
+        /* [in] */ Int64 currentTime);
 
     CARAPI_(Boolean) ShowAllWindowsLocked();
 
@@ -248,13 +88,17 @@ public:
 
     Boolean mAnimating;
     AutoPtr<IAnimation> mAnimation;
-    Boolean mAnimInitialized;
     Boolean mHasTransformation;
     AutoPtr<ITransformation> mTransformation;
 
     // Have we been asked to have this token keep the screen frozen?
     // Protect with mAnimator.
     Boolean mFreezingScreen;
+
+    /**
+     * How long we last kept the screen frozen.
+     */
+    Int32 mLastFreezeDuration;
 
     // Offset to the window of all layers in the token, for use by
     // AppWindowToken animations.
@@ -265,13 +109,22 @@ public:
     Boolean mAllDrawn;
 
     // Special surface for thumbnail animation.
-    AutoPtr<ISurface> mThumbnail;
+    AutoPtr<ISurfaceControl> mThumbnail;
     Int32 mThumbnailTransactionSeq;
     Int32 mThumbnailX;
     Int32 mThumbnailY;
     Int32 mThumbnailLayer;
+    Int32 mThumbnailForceAboveLayer;
     AutoPtr<IAnimation> mThumbnailAnimation;
     AutoPtr<ITransformation> mThumbnailTransformation;
+    // This flag indicates that the destruction of the thumbnail surface is synchronized with
+    // another animation, so do not pre-emptively destroy the thumbnail surface when the animation
+    // completes
+    Boolean mDeferThumbnailDestruction;
+    // This is the thumbnail surface that has been bestowed upon this animator, and when the
+    // surface for this animator's animation is complete, we will destroy the thumbnail surface
+    // as well.  Do not animate or do anything with this surface.
+    AutoPtr<ISurfaceControl> mDeferredThumbnail;
 
     /** WindowStateAnimator from mAppAnimator.allAppWindows as of last performLayout */
     List< AutoPtr<WindowStateAnimator> > mAllAppWinAnimators;
