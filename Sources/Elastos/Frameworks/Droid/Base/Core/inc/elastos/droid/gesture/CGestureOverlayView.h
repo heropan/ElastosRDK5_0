@@ -3,6 +3,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/gesture/GestureOverlayView.h"
+#include "_Elastos_Droid_Gesture_CGestureOverlayView.h"
 
 namespace Elastos {
 namespace Droid {

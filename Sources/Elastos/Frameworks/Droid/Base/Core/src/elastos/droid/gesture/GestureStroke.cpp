@@ -1,5 +1,6 @@
 
 #include "elastos/droid/gesture/GestureStroke.h"
+#include "elastos/droid/gesture/CGestureStroke.h"
 #include "elastos/droid/gesture/GestureUtils.h"
 #include "elastos/droid/gesture/CGesturePoint.h"
 #include "elastos/droid/graphics/CRectF.h"
@@ -42,14 +43,10 @@ ECode GestureStroke::constructor(
     Float len = 0;
     Int32 index = 0;
 
-    AutoPtr<IListIterator> pointsIt;
-    points->GetListIterator((IListIterator**)&pointsIt);
-    Boolean hasNext;
-    Int32 i = 0;
-    while (pointsIt->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> item;
-        pointsIt->Current((IInterface**)&item);
-        AutoPtr<IGesturePoint> p = IGesturePoint::Probe(item);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IGesturePoint> p;
+        points->Get(i, (IInterface **)&p);
+
         p->GetX(&(*tmpPoints)[i * 2]);
         p->GetY(&(*tmpPoints)[i * 2 + 1]);
         p->GetTimestamp(&(*times)[index]);
@@ -235,13 +232,13 @@ ECode GestureStroke::Deserialize(
     Int32 count = 0;
     IDataInput::Probe(in)->ReadInt32(&count);
 
-    AutoPtr<IObjectContainer> points;
+    AutoPtr<IList> points;
     for (Int32 i = 0; i < count; i++) {
         AutoPtr<IGesturePoint> point;
-        CGesturePoint::Deserialize(in, (IGesturePoint**)&point);
+        point = CGesturePoint::Deserialize(in);
         points->Add((IGesturePoint *)point);
     }
-    GestureStroke::New(points, stroke);
+    CGestureStroke::New(points, stroke);
     return NOERROR;
 }
 

@@ -52,6 +52,12 @@ GestureLibraries::FileGestureLibrary::FileGestureLibrary(
     : mPath(path)
 {}
 
+GestureLibraries::FileGestureLibrary::FileGestureLibrary()
+{}
+
+GestureLibraries::FileGestureLibrary::~FileGestureLibrary()
+{}
+
 ECode GestureLibraries::FileGestureLibrary::IsReadOnly(
     /* [out] */ Boolean *isReadOnly)
 {

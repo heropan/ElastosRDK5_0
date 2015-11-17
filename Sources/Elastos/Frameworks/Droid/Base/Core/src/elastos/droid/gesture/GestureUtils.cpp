@@ -439,19 +439,19 @@ Float GestureUtils::MinimumCosineDistance(
 }
 
 AutoPtr<IOrientedBoundingBox> GestureUtils::ComputeOrientedBoundingBox(
-    /* [in] */ List<IGesturePoint *> *originalPoints)
+    /* [in] */ IArrayList *originalPoints)
 {
-    const Int32 count = originalPoints->GetSize();
+    Int32 count;
+    originalPoints->GetSize(&count);
     AutoPtr<ArrayOf<Float> > points = ArrayOf<Float>::Alloc(count * 2);
-    List<IGesturePoint *>::Iterator it = originalPoints->Begin();
+
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IGesturePoint> point = *it;
+        AutoPtr<IGesturePoint> point;
+
+        originalPoints->Get(i, (IInterface**)&point);
         Int32 index = i * 2;
         point->GetX(&(*points)[index]);
         point->GetY(&(*points)[index + 1]);
-        if (it != originalPoints->End()) {
-            ++it;
-        }
     }
     AutoPtr<ArrayOf<Float> > meanVector = ComputeCentroid(points);
     return ComputeOrientedBoundingBox(points, meanVector);
@@ -586,6 +586,12 @@ AutoPtr<ArrayOf<Float> > GestureUtils::Scale(
     AutoPtr<ArrayOf<Float> > result = points;
     return result;
 }
+
+GestureUtils::GestureUtils()
+{}
+
+GestureUtils::GestureUtils(const GestureUtils&)
+{}
 
 } // namespace Gesture
 } // namespace Droid

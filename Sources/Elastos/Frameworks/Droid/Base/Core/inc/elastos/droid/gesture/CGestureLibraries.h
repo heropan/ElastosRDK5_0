@@ -18,9 +18,9 @@ CarClass(CGestureLibraries)
     , public IGestureLibraries
 {
 public:
-    CAR_SINGLETON_DECL()
+    CAR_SINGLETON_DECL();
 
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     CARAPI FromFile(
         /* [in] */  const String& path,
@@ -32,7 +32,7 @@ public:
 
     CARAPI FromPrivateFile(
         /* [in] */ IContext* ctx,
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [out] */ IGestureLibrary** gestureLib);
 
     CARAPI FromRawResource(

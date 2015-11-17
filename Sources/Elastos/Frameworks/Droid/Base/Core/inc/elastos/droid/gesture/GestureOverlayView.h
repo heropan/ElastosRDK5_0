@@ -3,10 +3,10 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Gesture::IGestureOverlayView;
+using Elastos::Droid::Gesture::IFadeOutRunnable;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Utility::IList;
@@ -43,6 +43,8 @@ public:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
+
         FadeOutRunnable();
 
         virtual ~FadeOutRunnable();
@@ -94,7 +96,7 @@ public:
         /* [in] */ Int32 defStyleRes);
 
     CARAPI GetCurrentStroke(
-        /* [out] */ IList **stroke);
+        /* [out] */ IArrayList **stroke);
 
     CARAPI GetOrientation(
         /* [out] */ Int32 *orientation);

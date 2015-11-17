@@ -3,9 +3,8 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
-#include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Core::Object;
+using Elastos::Droid::Gesture::IPrediction;
 
 namespace Elastos {
 namespace Droid {

@@ -27,6 +27,8 @@ using Elastos::IO::CDataInputStream;
 using Elastos::IO::CDataOutputStream;
 using Elastos::IO::IDataOutputStream;
 using Elastos::IO::IFlushable;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IInputStream;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -111,8 +113,9 @@ ECode GestureStore::Recognize(
 
     AutoPtr<Instance> instance = Instance::CreateInstance(mSequenceType, mOrientationStyle,
         gesture, String(NULL));
-    AutoPtr<IArrayList> tmplist = mClassifier->Classify(mSequenceType, mOrientationStyle,
-        instance->mVector);
+
+    AutoPtr<IArrayList> tmpList;
+    mClassifier->Classify(mSequenceType, mOrientationStyle, instance->mVector, (IArrayList**)&tmpList);
     *list = tmpList;
     REFCOUNT_ADD(*list);
     return NOERROR;
@@ -187,18 +190,18 @@ ECode GestureStore::RemoveEntry(
 
 ECode GestureStore::GetGestures(
     /* [in] */ const String& entryName,
-    /* [out] */ IObjectContainer** value)
+    /* [out] */ IArrayList** value)
 {
     VALIDATE_NOT_NULL(value);
     *value = NULL;
 
     AutoPtr<GestureList> gestures;
     HashMap<String, AutoPtr<GestureList> >::Iterator iter = mNamedGestures.Find(entryName);
-    if (iter != mNamedGestures.End()) gestures = iter->mSecond;
+    if (iter != mNamedGestures.End())
+        gestures = iter->mSecond;
 
     GestureList::Iterator it;
     if (gestures != NULL) {
-        CObjectContainer::New(value);
         for (it = gestures->Begin(); it != gestures->End(); ++it) {
             (*value)->Add(*it);
         }
@@ -241,7 +244,10 @@ ECode GestureStore::Save(
         AutoPtr<IBufferedOutputStream> bos;
         CBufferedOutputStream::New(stream,
             GestureConstants::IO_BUFFER_SIZE, (IBufferedOutputStream**)&bos);
-        CDataOutputStream::New(bos, (IDataOutputStream**)&out);
+
+        AutoPtr<IOutputStream> os;
+        os = IOutputStream::Probe(bos);
+        CDataOutputStream::New(os, (IDataOutputStream**)&out);
     }
     // Write version number
     IDataOutput::Probe(out)->WriteInt16(FILE_FORMAT_VERSION);
@@ -276,9 +282,8 @@ ECode GestureStore::Save(
     }
 
     mChanged = FALSE;
-    //} finally {
-    if (closeStream) GestureUtils::CloseStream(ICloseable::Probe(out));
-    //}
+    if (closeStream)
+        GestureUtils::CloseStream(ICloseable::Probe(out));
 
     return NOERROR;
 }
@@ -298,11 +303,15 @@ ECode GestureStore::Load(
 
     if (stream->Probe(EIID_IBufferedInputStream) != NULL) {
         CDataInputStream::New(stream, (IDataInputStream**)&in);
-    } else {
+    }
+    else {
         AutoPtr<IBufferedInputStream> bis;
         CBufferedInputStream::New(stream,
             GestureConstants::IO_BUFFER_SIZE, (IBufferedInputStream**)&bis);
-        CDataInputStream::New(bis, (IDataInputStream**)&in);
+
+        AutoPtr<IInputStream> is;
+        is = IInputStream::Probe(bis);
+        CDataInputStream::New(is, (IDataInputStream**)&in);
     }
 
     Int64 start;
@@ -326,9 +335,9 @@ ECode GestureStore::Load(
         String log = String("Loading gestures library = ") + tmp + String(" ms");
         Logger::D(GestureConstants::myLOG_TAG, log.string());
     }
-    //} finally {
-    if (closeStream) GestureUtils::CloseStream((ICloseable *)in);
-    //}
+
+    if (closeStream)
+        GestureUtils::CloseStream(ICloseable::Probe(in));
 
     return NOERROR;
 }

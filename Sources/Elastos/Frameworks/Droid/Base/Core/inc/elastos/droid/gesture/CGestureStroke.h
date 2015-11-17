@@ -19,6 +19,10 @@ CarClass(CGestureStroke)
 {
 public:
     CAR_OBJECT_DECL();
+
+    CGestureStroke();
+
+    virtual ~CGestureStroke();
 };
 
 } // namespace Gesture

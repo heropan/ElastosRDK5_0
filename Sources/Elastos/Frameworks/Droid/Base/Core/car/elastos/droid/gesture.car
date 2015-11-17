@@ -1,5 +1,3 @@
-
-
 module
 {
     merge("gesture/Prediction.car");
@@ -12,6 +10,7 @@ module
     merge("gesture/Instance.car");
     merge("gesture/Learner.car");
     merge("gesture/InstanceLearner.car");
+    merge("gesture/InstanceHelper.car");
     merge("gesture/GestureLibrary.car");
     merge("gesture/GestureStore.car");
     merge("gesture/GestureLibraries.car");
@@ -79,6 +78,12 @@ module
         interface IParcelable;
     }
 
+    class CInstance {
+        constructor();
+
+        interface IInstance;
+    }
+
     class CInstanceLearner {
         constructor();
 
@@ -87,6 +92,14 @@ module
 
     singleton class CGestureLibraries {
         interface IGestureLibraries;
+    }
+
+    singleton class CInstanceHelper {
+        interface IInstanceHelper;
+    }
+
+    singleton class CGestureUtils {
+        interface IGestureUtils;
     }
 
     class CGestureOverlayView {

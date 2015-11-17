@@ -27,7 +27,7 @@ ECode CGestureLibraries::FromFile(
     return NOERROR;
 }
 
-CARAPI FromFile(
+CARAPI CGestureLibraries::FromFile(
     /* [in] */ IFile* path,
     /* [out] */ IGestureLibrary** gestureLib)
 {
@@ -38,9 +38,9 @@ CARAPI FromFile(
     return NOERROR;
 }
 
-CARAPI FromPrivateFile(
+CARAPI CGestureLibraries::FromPrivateFile(
     /* [in] */ IContext* ctx,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [out] */ IGestureLibrary** gestureLib)
 {
     VALIDATE_NOT_NULL(gestureLib);
@@ -50,7 +50,7 @@ CARAPI FromPrivateFile(
     return NOERROR;
 }
 
-CARAPI FromRawResource(
+CARAPI CGestureLibraries::FromRawResource(
     /* [in] */ IContext* ctx,
     /* [in] */ Int32 resourceId,
     /* [out] */ IGestureLibrary** gestureLib)

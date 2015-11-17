@@ -100,7 +100,7 @@ private:
     /**
      * A faster constructor specially for cloning a stroke.
      */
-    CGestureStroke(
+    GestureStroke(
         /* [in] */ IRectF *bbx,
         /* [in] */ Float len,
         /* [in] */ ArrayOf<Float> *pts,

@@ -3,10 +3,10 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
-#include "elastos/core/Object.h"
 
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -29,7 +29,7 @@ public:
      *
      * @param stream The stream to close.
      */
-    static CARAPI CloseStreamStatic(
+    static CARAPI CloseStream(
         /* [in] */ ICloseable* stream);
 
     /**
@@ -84,7 +84,7 @@ public:
      * @return an oriented bounding box
      */
     static CARAPI_(AutoPtr<IOrientedBoundingBox>) ComputeOrientedBoundingBox(
-        /* [in] */ List<IGesturePoint *> * originalPoints);
+        /* [in] */ IArrayList *originalPoints);
 
     /**
      * Computes an oriented, minimum bounding box of a set of points.
@@ -93,7 +93,7 @@ public:
      * @return an oriented bounding box
      */
     static CARAPI_(AutoPtr<IOrientedBoundingBox>) ComputeOrientedBoundingBox(
-        /* [in] */ ArrayOf<Float>* originalPoints);
+        /* [in] */ ArrayOf<Float> *originalPoints);
 
     static CARAPI_(AutoPtr<IOrientedBoundingBox>) ComputeOrientedBoundingBox(
             /* [in] */ ArrayOf<Float> *points,

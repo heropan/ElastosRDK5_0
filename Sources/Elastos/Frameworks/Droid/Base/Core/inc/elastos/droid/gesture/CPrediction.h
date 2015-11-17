@@ -17,6 +17,7 @@ public:
     CAR_OBJECT_DECL();
 
     CPrediction();
+
     virtual ~CPrediction();
 
 };
