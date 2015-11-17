@@ -123,9 +123,9 @@ AutoPtr<IWindowSession> CWindowManagerGlobal::GetWindowSession(
         imm->GetClient((IInputMethodClient**)&client);
         AutoPtr<IInputContext> ctx;
         imm->GetInputContext((IInputContext**)&ctx);
-        AutoPtr<IWindowSessionCallback> cb;
+        AutoPtr<IIWindowSessionCallback> cb;
         assert(0);
-        //CWindowManagerGlobalSessionCallback::New((IWindowSessionCallback**)&cb);
+        //CWindowManagerGlobalSessionCallback::New((IIWindowSessionCallback**)&cb);
         wm->OpenSession(cb, client, ctx, (IWindowSession**)&sWindowSession);
         Float animatorScale;
         wm->GetCurrentAnimatorScale(&animatorScale);
