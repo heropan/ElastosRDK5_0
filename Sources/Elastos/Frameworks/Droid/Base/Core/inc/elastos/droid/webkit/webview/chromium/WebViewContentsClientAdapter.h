@@ -19,20 +19,16 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/webkit/HttpAuthHandler.h"
+#include "elastos/droid/webkit/JsPromptResult.h"
 #include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
-#include "elastos/droid/webkit/native/android_webview/JsPromptResultReceiver.h"
-#include "elastos/droid/webkit/native/android_webview/JsResultReceiver.h"
 #include "elastos/droid/webkit/native/android_webview/AwContentsClientBridge.h"
 #include "elastos/droid/webkit/native/android_webview/AwHttpAuthHandler.h"
 #include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
+#include "elastos/droid/webkit/native/android_webview/JsPromptResultReceiver.h"
+#include "elastos/droid/webkit/native/android_webview/JsResultReceiver.h"
 #include "elastos/droid/webkit/native/android_webview/permission/AwPermissionRequest.h"
-//#include "elastos/droid/webkit/WebViewClient.h"
-//#include "elastos/droid/webkit/WebResourceRequest.h"
-//#include "elastos/droid/webkit/JsResult.h"
-//#include "elastos/droid/webkit/JsPromptResult.h"
-//#include "elastos/droid/webkit/ClientCertRequest.h"
-//#include "elastos/droid/webkit/SslErrorHandler.h"
-//#include "elastos/droid/webkit/PermissionRequest.h"
+#include "elastos/droid/webkit/WebViewClient.h"
 
 // package com.android.webview.chromium;
 // import android.content.ActivityNotFoundException;
@@ -91,41 +87,45 @@
 // import java.util.Map;
 // import java.util.WeakHashMap;
 
-using Elastos::Core::IRunnable;
-using Elastos::Utility::IMap;
-using Elastos::Utility::IWeakHashMap;
-using Elastos::Security::IPrincipal;
-using Elastos::Security::IPrivateKey;
-using Elastos::Security::Cert::IX509Certificate;
-using Elastos::Droid::View::IKeyEvent;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Net::Http::ISslError;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Graphics::IPicture;
-using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::IPicture;
+using Elastos::Droid::Net::Http::ISslError;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IView;
-//using Elastos::Droid::Webkit::WebViewClient;
-//using Elastos::Droid::Webkit::WebResourceRequest;
-//using Elastos::Droid::Webkit::PermissionRequest;
-//using Elastos::Droid::Webkit::JsResult;
-//using Elastos::Droid::Webkit::JsPromptResult;
-//using Elastos::Droid::Webkit::ClientCertRequest;
-//using Elastos::Droid::Webkit::IHttpAuthHandler;
-//using Elastos::Droid::Webkit::IDownloadListener;
-//using Elastos::Droid::Webkit::IConsoleMessage;
-//using Elastos::Droid::Webkit::SslErrorHandler;
-//using Elastos::Droid::Webkit::IWebViewPictureListener;
-//using Elastos::Droid::Webkit::IWebViewFindListener;
 using Elastos::Droid::Webkit::AndroidWebview::AwContentsClient;
-using Elastos::Droid::Webkit::AndroidWebview::JsPromptResultReceiver;
-using Elastos::Droid::Webkit::AndroidWebview::JsResultReceiver;
 using Elastos::Droid::Webkit::AndroidWebview::AwContentsClientBridge;
 using Elastos::Droid::Webkit::AndroidWebview::AwHttpAuthHandler;
 using Elastos::Droid::Webkit::AndroidWebview::AwWebResourceResponse;
+using Elastos::Droid::Webkit::AndroidWebview::JsPromptResultReceiver;
+using Elastos::Droid::Webkit::AndroidWebview::JsResultReceiver;
 using Elastos::Droid::Webkit::AndroidWebview::Permission::AwPermissionRequest;
+using Elastos::Droid::Webkit::HttpAuthHandler;
+using Elastos::Droid::Webkit::IConsoleMessage;
+using Elastos::Droid::Webkit::IDownloadListener;
+using Elastos::Droid::Webkit::IGeolocationPermissionsCallback;
+using Elastos::Droid::Webkit::IPermissionRequest;
+using Elastos::Droid::Webkit::ISslErrorHandler;
+using Elastos::Droid::Webkit::IValueCallback;
+using Elastos::Droid::Webkit::IWebChromeClient;
+using Elastos::Droid::Webkit::IWebChromeClientCustomViewCallback;
+using Elastos::Droid::Webkit::IWebResourceRequest;
+using Elastos::Droid::Webkit::IWebView;
+using Elastos::Droid::Webkit::IWebViewClient;
+using Elastos::Droid::Webkit::IWebViewFindListener;
+using Elastos::Droid::Webkit::IWebViewPictureListener;
+using Elastos::Droid::Webkit::JsPromptResult;
+using Elastos::Droid::Webkit::WebViewClient;
+using Elastos::Core::IRunnable;
+using Elastos::Security::Cert::IX509Certificate;
+using Elastos::Security::IPrincipal;
+using Elastos::Security::IPrivateKey;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IWeakHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -160,25 +160,32 @@ public:
     // as the Null Object pattern) rather than duplicating the WebViewClassic approach in
     // ContentView.
     class NullWebViewClient
-        : public Object// WebViewClient
+        : public WebViewClient
     {
     public:
-        // @Override
-        CARAPI_(Boolean) ShouldOverrideKeyEvent(
-            /* [in] */ IInterface/*WebView*/* view,
-            /* [in] */ IKeyEvent* event);
+        CAR_INTERFACE_DECL()
 
         // @Override
-        CARAPI_(Boolean) ShouldOverrideUrlLoading(
-            /* [in] */ IInterface/*WebView*/* view,
-            /* [in] */ const String& url);
+        CARAPI ShouldOverrideKeyEvent(
+            /* [in] */ IWebView* view,
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI ShouldOverrideUrlLoading(
+            /* [in] */ IWebView* view,
+            /* [in] */ const String& url,
+            /* [out] */ Boolean* result);
     };
 
     // TODO: Move to the upstream once the PermissionRequest is part of SDK.
     class PermissionRequestAdapter
-        : public Object// PermissionRequest
+        : public Object
+        , public IPermissionRequest
     {
     public:
+        CAR_INTERFACE_DECL()
+
         PermissionRequestAdapter(
             /* [in] */ AwPermissionRequest* awPermissionRequest);
 
@@ -186,10 +193,12 @@ public:
             /* [in] */ ArrayOf<String>* resources);
 
         // @Override
-        CARAPI_(AutoPtr<IUri>) GetOrigin();
+        CARAPI GetOrigin(
+            /* [out] */ IUri** result);
 
         // @Override
-        CARAPI_(AutoPtr< ArrayOf<String> >) GetResources();
+        CARAPI GetResources(
+            /* [out] */ ArrayOf<String>** result);
 
         // @Override
         CARAPI Grant(
@@ -229,26 +238,33 @@ private:
 
     class WebResourceRequestImpl
         : public Object
-        //, public WebResourceRequest
+        , public IWebResourceRequest
     {
     public:
+        CAR_INTERFACE_DECL()
+
         WebResourceRequestImpl(
             /* [in] */ ShouldInterceptRequestParams* params);
 
         // @Override
-        CARAPI_(AutoPtr<IUri>) GetUrl();
+        CARAPI GetUrl(
+            /* [out] */ IUri** result);
 
         // @Override
-        CARAPI_(Boolean) IsForMainFrame();
+        CARAPI IsForMainFrame(
+            /* [out] */ Boolean* result);
 
         // @Override
-        CARAPI_(Boolean) HasGesture();
+        CARAPI HasGesture(
+            /* [out] */ Boolean* result);
 
         // @Override
-        CARAPI_(String) GetMethod();
+        CARAPI GetMethod(
+            /* [out] */ String* result);
 
         // @Override
-        CARAPI_(AutoPtr<IMap>) GetRequestHeaders();
+        CARAPI GetRequestHeaders(
+            /* [out] */ IMap** result);
 
     private:
         /*const*/ AutoPtr<ShouldInterceptRequestParams> mParams;
@@ -272,35 +288,41 @@ private:
     };
 
     class JsPromptResultReceiverAdapter
-        : public Object // JsResult::ResultReceiver
+        : public Object
+        , public IJsResultReceiver
     {
     public:
+        CAR_INTERFACE_DECL()
+
         JsPromptResultReceiverAdapter(
             /* [in] */ JsPromptResultReceiver* receiver);
 
         JsPromptResultReceiverAdapter(
             /* [in] */ JsResultReceiver* receiver);
 
-        virtual CARAPI_(AutoPtr<IInterface/*JsPromptResult*/>) GetPromptResult();
+        virtual CARAPI_(AutoPtr<JsPromptResult>) GetPromptResult();
 
         // @Override
         CARAPI OnJsResultComplete(
-            /* [in] */ IInterface/*JsResult*/* result);
+            /* [in] */ IJsResult* result);
 
     private:
         AutoPtr<JsPromptResultReceiver> mChromePromptResultReceiver;
         AutoPtr<JsResultReceiver> mChromeResultReceiver;
         // We hold onto the JsPromptResult here, just to avoid the need to downcast
         // in onJsResultComplete.
-        /*const*/ AutoPtr<IInterface/*JsPromptResult*/> mPromptResult;
+        /*const*/ AutoPtr<JsPromptResult> mPromptResult;
     };
 
     class InnerSslErrorHandler
-        : public Object// SslErrorHandler
+        : public Object
+        , public ISslErrorHandler
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSslErrorHandler(
-            /* [in] */ IInterface/*IValueCallback*/* callback);
+            /* [in] */ IValueCallback* callback);
 
         // @Override
         CARAPI Proceed();
@@ -309,14 +331,16 @@ private:
         CARAPI Cancel();
 
     private:
-        IInterface/*IValueCallback*/* mCallback;
+        IValueCallback* mCallback;
     };
 
     class ClientCertRequestImpl
         : public Object
-        //, public ClientCertRequest
+        , public IClientCertRequest
     {
     public:
+        CAR_INTERFACE_DECL()
+
         ClientCertRequestImpl(
             /* [in] */ AwContentsClientBridge::ClientCertificateRequestCallback* callback,
             /* [in] */ ArrayOf<String>* keyTypes,
@@ -325,16 +349,20 @@ private:
             /* [in] */ Int32 port);
 
         // @Override
-        CARAPI_(AutoPtr< ArrayOf<String> >) GetKeyTypes();
+        CARAPI GetKeyTypes(
+            /* [out] */ ArrayOf<String>** result);
 
         // @Override
-        CARAPI_(AutoPtr< ArrayOf<IPrincipal*> >) GetPrincipals();
+        CARAPI GetPrincipals(
+            /* [out] */ ArrayOf<IPrincipal*>** result);
 
         // @Override
-        CARAPI_(String) GetHost();
+        CARAPI GetHost(
+            /* [out] */ String* result);
 
         // @Override
-        CARAPI_(Int32) GetPort();
+        CARAPI GetPort(
+            /* [out] */ Int32* result);
 
         // @Override
         CARAPI Proceed(
@@ -357,42 +385,45 @@ private:
 
     class InnerValueCallback1
         : public Object
-        //, public IValueCallback
+        , public IValueCallback
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerValueCallback1(
-            /* [in] */ IInterface/*IValueCallback*/* uploadFileCallback);
+            /* [in] */ IValueCallback* uploadFileCallback);
 
         // @Override
         CARAPI OnReceiveValue(
-            /* [in] */ ArrayOf<IUri*>* uriList);
+            /* [in] */ IInterface* uriList);
 
     private:
         Boolean mCompleted;
-        IInterface/*IValueCallback*/* mUploadFileCallback;
+        IValueCallback* mUploadFileCallback;
     };
 
     class InnerValueCallback2
         : public Object
-        //, public IValueCallback
+        , public IValueCallback
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerValueCallback2(
-            /* [in] */ IInterface/*IValueCallback*/* uploadFileCallback);
+            /* [in] */ IValueCallback* uploadFileCallback);
 
         // @Override
         CARAPI OnReceiveValue(
-            /* [in] */ IUri* uri);
+            /* [in] */ IInterface* uri);
 
     private:
         Boolean mCompleted;
-        IInterface/*IValueCallback*/* mUploadFileCallback;
+        IValueCallback* mUploadFileCallback;
     };
 
     // TODO: Move to upstream.
     class AwHttpAuthHandlerAdapter
-        : public Object
-        //, public IHttpAuthHandler
+        : public HttpAuthHandler
     {
     public:
         AwHttpAuthHandlerAdapter(
@@ -407,7 +438,8 @@ private:
         CARAPI Cancel();
 
         // @Override
-        CARAPI_(Boolean) UseHttpAuthUsernamePassword();
+        CARAPI UseHttpAuthUsernamePassword(
+            /* [out] */ Boolean* result);
 
     private:
         AutoPtr<AwHttpAuthHandler> mAwHandler;
@@ -420,22 +452,22 @@ public:
       * @param webView the {@link WebView} instance that this adapter is serving.
       */
     WebViewContentsClientAdapter(
-        /* [in] */ IInterface/*WebView*/* webView);
+        /* [in] */ IWebView* webView);
 
     virtual CARAPI SetWebViewClient(
-        /* [in] */ IInterface/*WebViewClient*/* client);
+        /* [in] */ IWebViewClient* client);
 
     virtual CARAPI SetWebChromeClient(
-        /* [in] */ IInterface/*WebChromeClient*/* client);
+        /* [in] */ IWebChromeClient* client);
 
     virtual CARAPI SetDownloadListener(
-        /* [in] */ IInterface/*IDownloadListener*/* listener);
+        /* [in] */ IDownloadListener* listener);
 
     virtual CARAPI SetFindListener(
-        /* [in] */ IInterface/*IWebViewFindListener*/* listener);
+        /* [in] */ IWebViewFindListener* listener);
 
     virtual CARAPI SetPictureListener(
-        /* [in] */ IInterface/*IWebViewPictureListener*/* listener);
+        /* [in] */ IWebViewPictureListener* listener);
 
     //--------------------------------------------------------------------------------------------
     //                        Adapter for all the methods.
@@ -445,7 +477,7 @@ public:
       */
     // @Override
     CARAPI GetVisitedHistory(
-        /* [in] */ IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
     /**
       * @see AwContentsClient#doUpdateVisiteHistory(const String&, boolean)
@@ -488,7 +520,7 @@ public:
       */
     // @Override
     CARAPI_(Boolean) OnConsoleMessage(
-        /* [in] */ IInterface/*IConsoleMessage*/* consoleMessage);
+        /* [in] */ IConsoleMessage* consoleMessage);
 
     /**
       * @see AwContentsClient#onFindResultReceived(int,int,boolean)
@@ -591,7 +623,7 @@ public:
     // @Override
     CARAPI OnGeolocationPermissionsShowPrompt(
         /* [in] */ const String& origin,
-        /* [in] */ IInterface/*GeolocationPermissions::Callback*/* callback);
+        /* [in] */ IGeolocationPermissionsCallback* callback);
 
     // @Override
     CARAPI OnGeolocationPermissionsHidePrompt();
@@ -637,7 +669,7 @@ public:
 
     // @Override
     CARAPI OnReceivedSslError(
-        /* [in] */ IInterface/*IValueCallback*/* callback,
+        /* [in] */ IValueCallback* callback,
         /* [in] */ ISslError* error);
 
     // @Override
@@ -669,7 +701,7 @@ public:
 
     // @Override
     CARAPI ShowFileChooser(
-        /* [in] */ IInterface/*IValueCallback*/* uploadFileCallback,
+        /* [in] */ IValueCallback* uploadFileCallback,
         /* [in] */ AwContentsClient::FileChooserParams* fileChooserParams);
 
     // @Override
@@ -680,7 +712,7 @@ public:
     // @Override
     CARAPI OnShowCustomView(
         /* [in] */ IView* view,
-        /* [in] */ IInterface/*WebChromeClient::CustomViewCallback*/* cb);
+        /* [in] */ IWebChromeClientCustomViewCallback* cb);
 
     // @Override
     CARAPI OnHideCustomView();
@@ -698,16 +730,16 @@ private:
     // Enables API callback tracing
     static const Boolean TRACE;
     // The WebView instance that this adapter is serving.
-    /*const*/ AutoPtr<IInterface/*WebView*/> mWebView;
+    /*const*/ AutoPtr<IWebView> mWebView;
     // The WebViewClient instance that was passed to WebView.setWebViewClient().
-    AutoPtr<IInterface/*WebViewClient*/> mWebViewClient;
+    AutoPtr<IWebViewClient> mWebViewClient;
     // The WebChromeClient instance that was passed to WebView.setContentViewClient().
-    AutoPtr<IInterface/*WebChromeClient*/> mWebChromeClient;
+    AutoPtr<IWebChromeClient> mWebChromeClient;
     // The listener receiving find-in-page API results.
-    AutoPtr<IInterface/*IWebViewFindListener*/> mFindListener;
+    AutoPtr<IWebViewFindListener> mFindListener;
     // The listener receiving notifications of screen updates.
-    AutoPtr<IInterface/*IWebViewPictureListener*/> mPictureListener;
-    AutoPtr<IInterface/*IDownloadListener*/> mDownloadListener;
+    AutoPtr<IWebViewPictureListener> mPictureListener;
+    AutoPtr<IDownloadListener> mDownloadListener;
     AutoPtr<IHandler> mUiThreadHandler;
     static const Int32 NEW_WEBVIEW_CREATED = 100;
     AutoPtr<IWeakHashMap> mOngoingPermissionRequests;

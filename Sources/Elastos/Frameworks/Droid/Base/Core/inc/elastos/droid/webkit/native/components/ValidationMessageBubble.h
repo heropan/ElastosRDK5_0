@@ -25,12 +25,12 @@
 // import org.chromium.content.browser.ContentViewCore;
 // import org.chromium.content.browser.RenderCoordinates;
 
-using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::IPoint;
+using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::Widget::IPopupWindow;
 using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
 using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
+using Elastos::Droid::Widget::IPopupWindow;
 
 namespace Elastos {
 namespace Droid {

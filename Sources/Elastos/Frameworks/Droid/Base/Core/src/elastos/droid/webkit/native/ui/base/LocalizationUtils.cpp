@@ -1,15 +1,15 @@
 
+#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+#include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include "elastos/droid/webkit/native/ui/base/LocalizationUtils.h"
 #include "elastos/droid/webkit/native/ui/api/LocalizationUtils_dec.h"
-#include "elastos/droid/webkit/native/base/ApplicationStatus.h"
-#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 
-using Elastos::Utility::CLocale;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Webkit::Base::ApplicationStatus;
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Droid::Webkit::Base::ApplicationStatus;
+using Elastos::Utility::CLocale;
 
 namespace Elastos {
 namespace Droid {
@@ -162,8 +162,8 @@ String LocalizationUtils::GetDisplayNameForLocale(
     /* [in] */ IInterface* locale,
     /* [in] */ IInterface* displayLocale)
 {
-    AutoPtr<ILocale> l = ILocale::Probe(locale);
-    AutoPtr<ILocale> dl = ILocale::Probe(displayLocale);
+    ILocale* l = ILocale::Probe(locale);
+    ILocale* dl = ILocale::Probe(displayLocale);
     return GetDisplayNameForLocale(l, dl);
 }
 

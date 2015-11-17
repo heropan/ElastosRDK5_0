@@ -1,28 +1,30 @@
 
+#include "elastos/droid/content/pm/CSignature.h"
 #include "elastos/droid/webkit/native/net/DefaultElastosKeyStore.h"
 #include "elastos/droid/webkit/native/net/PrivateKeyType.h"
-#include "elastos/droid/content/pm/CSignature.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Security::IPrivateKey;
-using Elastos::Security::ISignature;
-using Elastos::Security::Interfaces::IRSAKey;
-using Elastos::Security::Interfaces::EIID_IRSAKey;
-using Elastos::Security::Interfaces::IDSAKey;
-using Elastos::Security::Interfaces::EIID_IDSAKey;
-using Elastos::Security::Interfaces::IDSAParams;
-using Elastos::Security::Interfaces::IECKey;
-using Elastos::Security::Interfaces::EIID_IECKey;
-using Elastos::Security::Interfaces::IRSAPrivateKey;
-using Elastos::Security::Interfaces::IDSAPrivateKey;
-using Elastos::Security::Interfaces::IECPrivateKey;
-using Elastos::Security::Interfaces::EIID_IRSAPrivateKey;
-using Elastos::Security::Interfaces::EIID_IDSAPrivateKey;
-using Elastos::Security::Interfaces::EIID_IECPrivateKey;
-using Elastos::Security::Spec::IECParameterSpec;
-using Elastos::Math::IBigInteger;
-using Elastos::Math::CBigInteger;
 using Elastos::Droid::Content::Pm::CSignature;
 using Elastos::Droid::Webkit::Net::PrivateKeyType;
+using Elastos::Math::CBigInteger;
+using Elastos::Math::IBigInteger;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Security::Interfaces::EIID_IDSAKey;
+using Elastos::Security::Interfaces::EIID_IDSAPrivateKey;
+using Elastos::Security::Interfaces::EIID_IECKey;
+using Elastos::Security::Interfaces::EIID_IECPrivateKey;
+using Elastos::Security::Interfaces::EIID_IRSAKey;
+using Elastos::Security::Interfaces::EIID_IRSAPrivateKey;
+using Elastos::Security::Interfaces::IDSAKey;
+using Elastos::Security::Interfaces::IDSAParams;
+using Elastos::Security::Interfaces::IDSAPrivateKey;
+using Elastos::Security::Interfaces::IECKey;
+using Elastos::Security::Interfaces::IECPrivateKey;
+using Elastos::Security::Interfaces::IRSAKey;
+using Elastos::Security::Interfaces::IRSAPrivateKey;
+using Elastos::Security::IPrivateKey;
+using Elastos::Security::ISignature;
+using Elastos::Security::Spec::IECParameterSpec;
 
 namespace Elastos {
 namespace Droid {
@@ -88,7 +90,7 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetRSAKeyModulus(
     // return null;
 
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
-    AutoPtr<IRSAKey> rsakey = IRSAKey::Probe(javaKey);
+    IRSAKey* rsakey = IRSAKey::Probe(javaKey);
     if (rsakey != NULL) {
         AutoPtr<IBigInteger> bigInteger;
         CBigInteger::New((IBigInteger**)&bigInteger);
@@ -98,7 +100,8 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetRSAKeyModulus(
         bigInteger->ToByteArray((ArrayOf<Byte>**)&result);
         return result;
     }
-    //Log.w(TAG, "Not a RSAKey instance!");
+
+    Logger::W(TAG, "Not a RSAKey instance!");
     return NULL;
 }
 
@@ -116,7 +119,7 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetDSAKeyParamQ(
 
     assert(0);
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
-    AutoPtr<IDSAKey> dsaKey = IDSAKey::Probe(javaKey);
+    IDSAKey* dsaKey = IDSAKey::Probe(javaKey);
     if (dsaKey != NULL) {
         AutoPtr<IDSAParams> params;
         dsaKey->GetParams((IDSAParams**)&params);
@@ -129,7 +132,8 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetDSAKeyParamQ(
         bigInteger->ToByteArray((ArrayOf<Byte>**)&result);
         return result;
     }
-    //Log.w(TAG, "Not a DSAKey instance!");
+
+    Logger::W(TAG, "Not a DSAKey instance!");
     return NULL;
 }
 
@@ -147,7 +151,7 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetECKeyOrder(
 
     assert(0);
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
-    AutoPtr<IECKey> eckkey = IECKey::Probe(javaKey);
+    IECKey* eckkey = IECKey::Probe(javaKey);
     if (eckkey != NULL) {
         AutoPtr<IECParameterSpec> params;
         eckkey->GetParams((IECParameterSpec**)&params);
@@ -160,7 +164,8 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetECKeyOrder(
         bigInteger->ToByteArray((ArrayOf<Byte>**)&result);
         return result;
     }
-    //Log.w(TAG, "Not an ECKey instance!");
+
+    Logger::W(TAG, "Not an ECKey instance!");
     return NULL;
 }
 
@@ -226,9 +231,9 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::RawSignDigestWithPrivateKey(
     // Hint: Algorithm names come from:
     // http://docs.oracle.com/javase/6/docs/technotes/guides/security/StandardNames.html
     //try {
-        AutoPtr<IRSAPrivateKey> rsakey = IRSAPrivateKey::Probe(javaKey);
-        AutoPtr<IDSAPrivateKey> dsakey = IDSAPrivateKey::Probe(javaKey);
-        AutoPtr<IECPrivateKey> eckey = IECPrivateKey::Probe(javaKey);
+        IRSAPrivateKey* rsakey = IRSAPrivateKey::Probe(javaKey);
+        IDSAPrivateKey* dsakey = IDSAPrivateKey::Probe(javaKey);
+        IECPrivateKey* eckey = IECPrivateKey::Probe(javaKey);
         if (rsakey != NULL) {
             // IMPORTANT: Due to a platform bug, this will throw NoSuchAlgorithmException
             // on Android 4.0.x and 4.1.x. Fixed in 4.2 and higher.
@@ -246,7 +251,7 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::RawSignDigestWithPrivateKey(
     //}
 
     if (signature == NULL) {
-        //Log.e(TAG, "Unsupported private key algorithm: " + javaKey.getAlgorithm());
+        //Logger::E(TAG, String("Unsupported private key algorithm: ") + javaKey.getAlgorithm());
         return NULL;
     }
 
@@ -280,9 +285,9 @@ Int32 DefaultElastosKeyStore::GetPrivateKeyType(
 
     assert(0);
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
-    AutoPtr<IRSAPrivateKey> rsakey = IRSAPrivateKey::Probe(javaKey);
-    AutoPtr<IDSAPrivateKey> dsakey = IDSAPrivateKey::Probe(javaKey);
-    AutoPtr<IECPrivateKey> eckey = IECPrivateKey::Probe(javaKey);
+    IRSAPrivateKey* rsakey = IRSAPrivateKey::Probe(javaKey);
+    IDSAPrivateKey* dsakey = IDSAPrivateKey::Probe(javaKey);
+    IECPrivateKey* eckey = IECPrivateKey::Probe(javaKey);
 
     if (rsakey != NULL)
         return PrivateKeyType::RSA;
@@ -386,13 +391,13 @@ Int64 DefaultElastosKeyStore::GetOpenSSLHandleForPrivateKey(
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
     // Sanity checks
     if (NULL == javaKey) {
-        //Log.e(TAG, "key == null");
+        Logger::E(TAG, "key == null");
         return 0;
     }
 
-    AutoPtr<IRSAPrivateKey> rsaKey = IRSAPrivateKey::Probe(javaKey);
+    IRSAPrivateKey* rsaKey = IRSAPrivateKey::Probe(javaKey);
     if (NULL == rsaKey) {
-        //Log.e(TAG, "does not implement RSAPrivateKey");
+        Logger::E(TAG, "does not implement RSAPrivateKey");
         return 0;
     }
     // First, check that this is a proper instance of OpenSSLRSAPrivateKey
@@ -417,7 +422,9 @@ Int64 DefaultElastosKeyStore::GetOpenSSLHandleForPrivateKey(
         // This may happen if the PrivateKey was not created by the "AndroidOpenSSL"
         // provider, which should be the default. That could happen if an OEM decided
         // to implement a different default provider. Also highly unlikely.
-        //Log.e(TAG, "Private key is not an OpenSSLRSAPrivateKey instance, its class name is:" + javaKey.getClass().getCanonicalName());
+
+        String canonicalName;// = javaKey.getClass().getCanonicalName();
+        Logger::E(TAG, String("Private key is not an OpenSSLRSAPrivateKey instance, its class name is:") + canonicalName);
         return 0;
     //--}
 
@@ -437,7 +444,8 @@ Int64 DefaultElastosKeyStore::GetOpenSSLHandleForPrivateKey(
         //}
         //--if (opensslKey == NULL) {
             // Bail when detecting OEM "enhancement".
-            //Log.e(TAG, "getOpenSSLKey() returned null");
+
+            Logger::E(TAG, "getOpenSSLKey() returned null");
             return 0;
         //--}
 
@@ -467,7 +475,7 @@ Int64 DefaultElastosKeyStore::GetOpenSSLHandleForPrivateKey(
         //}
         //--if (evp_pkey == 0) {
             // The PrivateKey is probably rotten for some reason.
-            //Log.e(TAG, "getPkeyContext() returned null");
+            Logger::E(TAG, "getPkeyContext() returned null");
         //--}
         //--return evp_pkey;
 

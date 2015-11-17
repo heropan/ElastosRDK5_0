@@ -16,11 +16,11 @@
 // import android.view.WindowManager;
 // import org.chromium.base.TraceEvent;
 
-using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::View::IChoreographer;
 using Elastos::Droid::View::IFrameCallback;
-using Elastos::Droid::Os::IHandler;
+using Elastos::Core::IRunnable;
 
 namespace Elastos {
 namespace Droid {

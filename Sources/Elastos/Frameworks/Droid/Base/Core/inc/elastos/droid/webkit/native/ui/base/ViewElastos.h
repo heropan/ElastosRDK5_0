@@ -6,16 +6,16 @@
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROID_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
 #include "elastos/droid/webkit/native/ui/base/ViewElastosDelegate.h"
+#include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
 
 // package org.chromium.ui.base;
 // import android.view.View;
 // import org.chromium.base.JNINamespace;
 
 using Elastos::Droid::View::IView;
-using Elastos::Droid::Webkit::Ui::Base::WindowElastos;
 using Elastos::Droid::Webkit::Ui::Base::ViewElastosDelegate;
+using Elastos::Droid::Webkit::Ui::Base::WindowElastos;
 
 namespace Elastos {
 namespace Droid {

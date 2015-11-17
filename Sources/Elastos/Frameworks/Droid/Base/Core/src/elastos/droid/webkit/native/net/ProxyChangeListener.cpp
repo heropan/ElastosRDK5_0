@@ -1,21 +1,21 @@
 
+#include "elastos/droid/content/CIntentFilter.h"
+//#include "elastos/droid/net/CProxyProperties.h"
+#include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/native/net/ProxyChangeListener.h"
 #include "elastos/droid/webkit/native/net/api/ProxyChangeListener_dec.h"
-#include "elastos/droid/os/Build.h"
-//#include "elastos/droid/net/CProxyProperties.h"
-#include "elastos/droid/content/CIntentFilter.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Net::IProxyProperties;
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::IIntentFilter;
+//using Elastos::Droid::Net::CProxyProperties;
 using Elastos::Droid::Net::IProxyInfo;
 using Elastos::Droid::Net::IProxyInfoHelper;
-//using Elastos::Droid::Net::CProxyProperties;
-using Elastos::Droid::Content::IIntentFilter;
-using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Net::IProxyProperties;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -371,7 +371,7 @@ ECode ProxyChangeListener::NativeProxySettingsChanged(
 AutoPtr<IInterface> ProxyChangeListener::Create(
     /* [in] */ IInterface* context)
 {
-    AutoPtr<IContext> c = IContext::Probe(context);
+    IContext* c = IContext::Probe(context);
     return TO_IINTERFACE(Create(c));
 }
 
@@ -379,9 +379,8 @@ void ProxyChangeListener::Start(
     /* [in] */ IInterface* obj,
     /* [in] */ Int64 nativePtr)
 {
-    AutoPtr<ProxyChangeListener> mObj = (ProxyChangeListener*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    ProxyChangeListener* mObj = (ProxyChangeListener*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("ProxyChangeListener", "ProxyChangeListener::Start, mObj is NULL");
         return;
     }
@@ -391,9 +390,8 @@ void ProxyChangeListener::Start(
 void ProxyChangeListener::Stop(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ProxyChangeListener> mObj = (ProxyChangeListener*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    ProxyChangeListener* mObj = (ProxyChangeListener*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("ProxyChangeListener", "ProxyChangeListener::Stop, mObj is NULL");
         return;
     }

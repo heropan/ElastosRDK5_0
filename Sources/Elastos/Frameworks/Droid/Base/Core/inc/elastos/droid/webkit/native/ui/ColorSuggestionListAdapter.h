@@ -21,11 +21,11 @@
 // import android.widget.LinearLayout;
 // import org.chromium.base.ApiCompatibilityUtils;
 
-using Elastos::Droid::Widget::BaseAdapter;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::Widget::BaseAdapter;
 
 namespace Elastos {
 namespace Droid {

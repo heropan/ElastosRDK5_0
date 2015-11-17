@@ -10,6 +10,8 @@ namespace Chromium {
 //=====================================================================
 //                        WebViewDatabaseAdapter
 //=====================================================================
+CAR_INTERFACE_IMPL(WebViewDatabaseAdapter, Object, IWebViewDatabase)
+
 WebViewDatabaseAdapter::WebViewDatabaseAdapter(
     /* [in] */ AwFormDatabase* formDatabase,
     /* [in] */ HttpAuthDatabase* httpAuthDatabase)
@@ -21,13 +23,16 @@ WebViewDatabaseAdapter::WebViewDatabaseAdapter(
     // mHttpAuthDatabase = httpAuthDatabase;
 }
 
-Boolean WebViewDatabaseAdapter::HasUsernamePassword()
+ECode WebViewDatabaseAdapter::HasUsernamePassword(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // This is a deprecated API: intentional no-op.
     // return false;
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode WebViewDatabaseAdapter::ClearUsernamePassword()
@@ -38,12 +43,15 @@ ECode WebViewDatabaseAdapter::ClearUsernamePassword()
     return NOERROR;
 }
 
-Boolean WebViewDatabaseAdapter::HasHttpAuthUsernamePassword()
+ECode WebViewDatabaseAdapter::HasHttpAuthUsernamePassword(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mHttpAuthDatabase.hasHttpAuthUsernamePassword();
 
-    return mHttpAuthDatabase->HasHttpAuthUsernamePassword();
+    *result = mHttpAuthDatabase->HasHttpAuthUsernamePassword();
+    return NOERROR;
 }
 
 ECode WebViewDatabaseAdapter::ClearHttpAuthUsernamePassword()
@@ -55,12 +63,15 @@ ECode WebViewDatabaseAdapter::ClearHttpAuthUsernamePassword()
     return NOERROR;
 }
 
-Boolean WebViewDatabaseAdapter::HasFormData()
+ECode WebViewDatabaseAdapter::HasFormData(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mFormDatabase.hasFormData();
 
-    return mFormDatabase->HasFormData();
+    *result = mFormDatabase->HasFormData();
+    return NOERROR;
 }
 
 ECode WebViewDatabaseAdapter::ClearFormData()

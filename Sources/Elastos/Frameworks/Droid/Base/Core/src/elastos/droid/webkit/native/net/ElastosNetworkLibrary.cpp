@@ -1,29 +1,31 @@
 
-#include "elastos/droid/webkit/native/net/ElastosNetworkLibrary.h"
-#include "elastos/droid/webkit/native/net/api/ElastosNetworkLibrary_dec.h"
-#include "elastos/core/IntegralToString.h"
 #include "elastos/droid/content/CIntent.h"
 //#include "elastos/droid/telephony/CTelephonyManager.h"
+#include "elastos/droid/webkit/native/net/ElastosNetworkLibrary.h"
 #include "elastos/droid/webkit/native/net/CertificateMimeType.h"
+#include "elastos/droid/webkit/native/net/api/ElastosNetworkLibrary_dec.h"
 #include "elastos/droid/webkit/native/net/X509Util.h"
+#include "elastos/core/IntegralToString.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::IEnumeration;
-using Elastos::Core::IntegralToString;
-using Elastos::Net::INetworkInterfaceHelper;
-using Elastos::Net::CNetworkInterfaceHelper;
-using Elastos::Net::INetworkInterface;
-using Elastos::Net::IInetAddress;
-using Elastos::Net::IInet6Address;
-using Elastos::Net::EIID_IInet6Address;
-using Elastos::Net::IInterfaceAddress;
-//using Elastos::Net::URLConnection;
-using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Keystore::Security::IKeyChain;
-using Elastos::Droid::Telephony::ITelephonyManager;
 //using Elastos::Droid::Telephony::CTelephonyManager;
+using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Webkit::Net::CertificateMimeType;
 using Elastos::Droid::Webkit::Net::X509Util;
+using Elastos::Core::IntegralToString;
+using Elastos::Net::CNetworkInterfaceHelper;
+using Elastos::Net::EIID_IInet6Address;
+using Elastos::Net::IInet6Address;
+using Elastos::Net::IInetAddress;
+using Elastos::Net::IInterfaceAddress;
+using Elastos::Net::INetworkInterface;
+using Elastos::Net::INetworkInterfaceHelper;
+//using Elastos::Net::URLConnection;
+using Elastos::Utility::IEnumeration;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -125,7 +127,7 @@ Boolean ElastosNetworkLibrary::StoreCertificate(
                 break;
             default:
                 {
-                    //Log.w(TAG, "invalid certificate type: " + certType);
+                    Logger::W(TAG, "invalid certificate type: %d", certType);
                     return FALSE;
                 }
         }
@@ -187,7 +189,7 @@ Boolean ElastosNetworkLibrary::HaveOnlyLoopbackAddresses()
     while (hasMoreElements) {
         AutoPtr<IInterface> tmp;
         list->GetNextElement((IInterface**)&tmp);
-        AutoPtr<INetworkInterface> netIf = INetworkInterface::Probe(tmp);
+        INetworkInterface* netIf = INetworkInterface::Probe(tmp);
         //try {
             Boolean isUp = FALSE;
             Boolean isLoopback = FALSE;
@@ -272,7 +274,7 @@ String ElastosNetworkLibrary::GetNetworkList()
     while (hasMoreElements) {
         AutoPtr<IInterface> tmp;
         lists->GetNextElement((IInterface**)&tmp);
-        AutoPtr<INetworkInterface> netIf = INetworkInterface::Probe(tmp);
+        INetworkInterface* netIf = INetworkInterface::Probe(tmp);
         //try {
             // Skip loopback interfaces, and ones which are down.
             Boolean isUp = FALSE;
@@ -291,7 +293,7 @@ String ElastosNetworkLibrary::GetNetworkList()
                 AutoPtr<IInterface> interfaceTmp;
                 interfaceAddressTmp->Get(i, (IInterface**)&interfaceTmp);
 
-                AutoPtr<IInterfaceAddress> interfaceAddress = IInterfaceAddress::Probe(interfaceTmp);
+                IInterfaceAddress* interfaceAddress = IInterfaceAddress::Probe(interfaceTmp);
                 AutoPtr<IInetAddress> address;
                 interfaceAddress->GetAddress((IInetAddress**)&address);
 
@@ -309,7 +311,7 @@ String ElastosNetworkLibrary::GetNetworkList()
 
                 String ipAddress;
                 address->GetHostAddress(&ipAddress);
-                AutoPtr<IInet6Address> inet6Addr = IInet6Address::Probe(address);
+                IInet6Address* inet6Addr = IInet6Address::Probe(address);
                 if (inet6Addr != NULL && ipAddress.Contains(String("%"))) {
                     ipAddress = ipAddress.Substring(0, ipAddress.LastIndexOf(String("%")));
                 }
@@ -399,7 +401,7 @@ String ElastosNetworkLibrary::GetNetworkCountryIso(
     assert(0);
     AutoPtr<IInterface> telephonyManagerTmp;
     context->GetSystemService(IContext::TELEPHONY_SERVICE, (IInterface**)&telephonyManagerTmp);
-    AutoPtr<ITelephonyManager> telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
+    ITelephonyManager* telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
     String result("");
     if (telephonyManager != NULL) {
         // telephonyManager->GetNetworkCountryIso(&result);
@@ -422,7 +424,7 @@ String ElastosNetworkLibrary::GetNetworkOperator(
     assert(0);
     AutoPtr<IInterface> telephonyManagerTmp;
     context->GetSystemService(IContext::TELEPHONY_SERVICE, (IInterface**)&telephonyManagerTmp);
-    AutoPtr<ITelephonyManager> telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
+    ITelephonyManager* telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
     String result("");
     if (telephonyManager != NULL) {
         // telephonyManager->GetNetworkOperator(&result);
@@ -436,7 +438,7 @@ Boolean ElastosNetworkLibrary::StoreKeyPair(
     /* [in] */ ArrayOf<Byte>* publicKey,
     /* [in] */ ArrayOf<Byte>* privateKey)
 {
-    AutoPtr<IContext> c = IContext::Probe(context);
+    IContext* c = IContext::Probe(context);
     return StoreKeyPair(c, publicKey, privateKey);
 }
 
@@ -445,21 +447,21 @@ Boolean ElastosNetworkLibrary::StoreCertificate(
     /* [in] */ Int32 certType,
     /* [in] */ ArrayOf<Byte>* data)
 {
-    AutoPtr<IContext> c = IContext::Probe(context);
+    IContext* c = IContext::Probe(context);
     return StoreCertificate(c, certType, data);
 }
 
 String ElastosNetworkLibrary::GetNetworkCountryIso(
     /* [in] */ IInterface* context)
 {
-    AutoPtr<IContext> c = IContext::Probe(context);
+    IContext* c = IContext::Probe(context);
     return GetNetworkCountryIso(c);
 }
 
 String ElastosNetworkLibrary::GetNetworkOperator(
     /* [in] */ IInterface* context)
 {
-    AutoPtr<IContext> c = IContext::Probe(context);
+    IContext* c = IContext::Probe(context);
     return GetNetworkOperator(c);
 }
 

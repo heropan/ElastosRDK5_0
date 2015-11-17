@@ -2,18 +2,18 @@
 #include "elastos/droid/webkit/native/net/NetStringUtil.h"
 //#include "elastos/io/charset/CCodingErrorAction.h"
 
-using Elastos::IO::ICharBuffer;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::IO::Charset::CCharsetHelper;
+using Elastos::IO::Charset::CCodingErrorAction;
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsetDecoder;
 using Elastos::IO::Charset::ICharsetHelper;
-using Elastos::IO::Charset::CCharsetHelper;
 using Elastos::IO::Charset::ICodingErrorAction;
-using Elastos::IO::Charset::CCodingErrorAction;
-using Elastos::Text::INormalizer;
+using Elastos::IO::ICharBuffer;
 using Elastos::Text::CNormalizerHelper;
+using Elastos::Text::INormalizer;
 using Elastos::Text::NormalizerForm_NFC;
-using Elastos::Core::CString;
-using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {

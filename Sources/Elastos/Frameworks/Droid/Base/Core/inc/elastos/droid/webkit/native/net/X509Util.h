@@ -5,8 +5,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_X509UTIL_H_
 #define _ELASTOS_DROID_WEBKIT_NET_X509UTIL_H_
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/net/ElastosCertVerifyResult.h"
 #include "elastos/utility/etl/List.h"
 #include "elastos/utility/etl/Pair.h"
@@ -47,21 +47,21 @@
 // import javax.net.ssl.X509TrustManager;
 // import javax.security.auth.x500.X500Principal;
 
-using Elastos::IO::IFile;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::ISet;
-using Elastos::Security::Cert::IX509Certificate;
-using Elastos::Security::Cert::ICertificateFactory;
-using Elastos::Security::IKeyStore;
-using Elastos::Security::IPublicKey;
-using Elastosx::Security::Auth::X500::IX500Principal;
-using Elastosx::Net::Ssl::IX509TrustManager;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Net::Http::IX509TrustManagerExtensions;
 using Elastos::Droid::Webkit::Net::ElastosCertVerifyResult;
+using Elastos::IO::IFile;
+using Elastos::Security::Cert::ICertificateFactory;
+using Elastos::Security::Cert::IX509Certificate;
+using Elastos::Security::IKeyStore;
+using Elastos::Security::IPublicKey;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::ISet;
+using Elastosx::Net::Ssl::IX509TrustManager;
+using Elastosx::Security::Auth::X500::IX500Principal;
 
 namespace Elastos {
 namespace Droid {

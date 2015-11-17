@@ -1,10 +1,10 @@
 
 #include "elastos/droid/webkit/webview/chromium/ResourceRewriter.h"
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IAssetManager;
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -53,7 +53,7 @@ ECode ResourceRewriter::RewriteRValues(
     res->GetAssets((IAssetManager**)&assetManager);
 
     AutoPtr<ISparseArray> packageIdentifiers;
-    //assetManager->GetAssignedPackageIdentifiers((ISparseArray**)&packageIdentifiers);
+    // car has no this func: assetManager->GetAssignedPackageIdentifiers((ISparseArray**)&packageIdentifiers);
 
     Int32 N = 0;
     packageIdentifiers->GetSize(&N);
@@ -62,7 +62,7 @@ ECode ResourceRewriter::RewriteRValues(
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IInterface> itemTmp;
         packageIdentifiers->Get(i, (IInterface**)&itemTmp);
-        AutoPtr<ICharSequence> charSequenceTmp = ICharSequence::Probe(itemTmp);
+        ICharSequence* charSequenceTmp = ICharSequence::Probe(itemTmp);
         charSequenceTmp->ToString(&name);
 
         // The resources are always called com.android.webview even if the manifest has had the

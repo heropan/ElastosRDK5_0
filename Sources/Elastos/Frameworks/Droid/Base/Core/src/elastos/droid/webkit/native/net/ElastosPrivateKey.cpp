@@ -11,9 +11,8 @@ namespace Net {
 AutoPtr<IInterface> ElastosPrivateKey::GetKeyStore(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ElastosPrivateKey> mObj = (ElastosPrivateKey*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    ElastosPrivateKey* mObj = (ElastosPrivateKey*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("ElastosPrivateKey", "ElastosPrivateKey::GetKeyStore, mObj is NULL");
         return NULL;
     }

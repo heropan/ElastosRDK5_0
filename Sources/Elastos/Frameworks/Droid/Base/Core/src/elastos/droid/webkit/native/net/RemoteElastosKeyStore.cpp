@@ -1,5 +1,8 @@
 
 #include "elastos/droid/webkit/native/net/RemoteElastosKeyStore.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -64,7 +67,7 @@ AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetRSAKeyModulus(
 
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
-        //Log.d(TAG, "getRSAKeyModulus");
+        Logger::D(TAG, "getRSAKeyModulus");
         AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetRSAKeyModulus((ElastosPrivateKey*)remoteKey->GetHandle());
         return ret;
     //} catch (RemoteException e) {
@@ -88,7 +91,7 @@ AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetDSAKeyParamQ(
 
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
-        //Log.d(TAG, "getDSAKeyParamQ");
+        Logger::D(TAG, "getDSAKeyParamQ");
         AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetDSAKeyParamQ((ElastosPrivateKey*)remoteKey->GetHandle());
         return ret;
     //} catch (RemoteException e) {
@@ -112,7 +115,7 @@ AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetECKeyOrder(
 
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
-        //Log.d(TAG, "getECKeyOrder");
+        Logger::D(TAG, "getECKeyOrder");
         AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetECKeyOrder((ElastosPrivateKey*)remoteKey->GetHandle());
         return ret;
     //} catch (RemoteException e) {
@@ -137,7 +140,7 @@ AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::RawSignDigestWithPrivateKey(
 
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
-        //Log.d(TAG, "rawSignDigestWithPrivateKey");
+        Logger::D(TAG, "rawSignDigestWithPrivateKey");
         AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->RawSignDigestWithPrivateKey((ElastosPrivateKey*)remoteKey->GetHandle(), message);
         return ret;
     //} catch (RemoteException e) {
@@ -161,7 +164,7 @@ Int32 RemoteElastosKeyStore::GetPrivateKeyType(
 
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
-        //Log.d(TAG, "getPrivateKeyType");
+        Logger::D(TAG, "getPrivateKeyType");
         return mRemoteManager->GetPrivateKeyType((ElastosPrivateKey*)remoteKey->GetHandle());
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -234,7 +237,7 @@ ECode RemoteElastosKeyStore::ReleaseKey(
 
     RemotePrivateKey* remoteKey = (RemotePrivateKey*) key;
     //try {
-        //Log.d(TAG, "releaseKey");
+        Logger::D(TAG, "releaseKey");
         mRemoteManager->ReleaseKey((ElastosPrivateKey*)remoteKey->GetHandle());
     //} catch (RemoteException e) {
     //    e.printStackTrace();

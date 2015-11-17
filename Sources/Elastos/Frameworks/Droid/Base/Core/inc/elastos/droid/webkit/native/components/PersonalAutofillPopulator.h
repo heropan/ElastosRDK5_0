@@ -18,10 +18,10 @@
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {

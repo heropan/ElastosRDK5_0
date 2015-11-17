@@ -6,10 +6,10 @@
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERSIMPLE_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-//#include "elastos/droid/widget/ListView.h"
-#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestionListAdapter.h"
 #include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
+#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
+//#include "elastos/droid/widget/ListView.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -18,11 +18,11 @@
 // import android.widget.ListView;
 // import org.chromium.ui.ColorSuggestionListAdapter.OnColorSuggestionClickListener;
 
-//using Elastos::Droid::Widget::ListView;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Webkit::Ui::ColorSuggestionListAdapter;
 using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
+//using Elastos::Droid::Widget::ListView;
 
 namespace Elastos {
 namespace Droid {

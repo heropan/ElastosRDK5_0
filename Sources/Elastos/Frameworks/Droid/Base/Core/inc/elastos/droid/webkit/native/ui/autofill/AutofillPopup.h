@@ -6,10 +6,10 @@
 #define _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLPOPUP_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/utility/etl/List.h"
-#include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
-#include "elastos/droid/webkit/native/ui/base/ViewElastosDelegate.h"
 #include "elastos/droid/webkit/native/ui/autofill/AutofillSuggestion.h"
+#include "elastos/droid/webkit/native/ui/base/ViewElastosDelegate.h"
+#include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
+#include "elastos/utility/etl/List.h"
 
 // package org.chromium.ui.autofill;
 // import android.content.Context;
@@ -24,14 +24,14 @@
 // import java.util.HashSet;
 // import java.util.List;
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
-using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
-using Elastos::Droid::Widget::IAdapterView;
-using Elastos::Droid::Webkit::Ui::DropdownPopupWindow;
-using Elastos::Droid::Webkit::Ui::Base::ViewElastosDelegate;
 using Elastos::Droid::Webkit::Ui::Autofill::AutofillSuggestion;
+using Elastos::Droid::Webkit::Ui::Base::ViewElastosDelegate;
+using Elastos::Droid::Webkit::Ui::DropdownPopupWindow;
+using Elastos::Droid::Widget::IAdapterView;
+using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

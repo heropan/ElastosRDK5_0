@@ -1,19 +1,19 @@
 
-#include "elastos/droid/webkit/native/ui/ColorPickerAdvancedComponent.h"
 #include "elastos/droid/graphics/drawable/CGradientDrawable.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerAdvancedComponent.h"
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::Drawable::CGradientDrawable;
 using Elastos::Droid::Graphics::Drawable::GradientDrawableOrientation;
 using Elastos::Droid::Graphics::Drawable::GradientDrawableOrientation_LEFT_RIGHT;
-using Elastos::Droid::Graphics::Drawable::CGradientDrawable;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Widget::IProgressBar;
-using Elastos::Droid::Widget::IAbsSeekBar;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Droid::Widget::IAbsSeekBar;
+using Elastos::Droid::Widget::IProgressBar;
 
 namespace Elastos {
 namespace Droid {
@@ -47,16 +47,16 @@ ColorPickerAdvancedComponent::ColorPickerAdvancedComponent(
 
     assert(0);
     rootView->FindViewById(-1/*R::id::gradient*/, (IView**)&mGradientView);
-    AutoPtr<IView> viewTmp = IView::Probe(mText);
+    IView* viewTmp = IView::Probe(mText);
     rootView->FindViewById(-1/*R::id::text*/, (IView**)&viewTmp);
     mText->SetText(textResourceId);
     CGradientDrawable::New(GradientDrawableOrientation_LEFT_RIGHT, NULL, (IGradientDrawable**)&mGradientDrawable);
 
-    AutoPtr<IView> viewTmp1 = IView::Probe(mSeekBar);
+    IView* viewTmp1 = IView::Probe(mSeekBar);
     rootView->FindViewById(-1/*R::id::seek_bar*/, (IView**)&viewTmp1);
     mSeekBar->SetOnSeekBarChangeListener(seekBarListener);
 
-    AutoPtr<IProgressBar> progressBar = IProgressBar::Probe(mSeekBar);
+    IProgressBar* progressBar = IProgressBar::Probe(mSeekBar);
     progressBar->SetMax(seekBarMax);
     // Setting the thumb offset means the seek bar thumb can move all the way to each end
     // of the gradient view.
@@ -71,7 +71,7 @@ ColorPickerAdvancedComponent::ColorPickerAdvancedComponent(
     Int32 offset = 0;
     drawable->GetIntrinsicWidth(&offset);
 
-    AutoPtr<IAbsSeekBar> absSeekBar = IAbsSeekBar::Probe(mSeekBar);
+    IAbsSeekBar* absSeekBar = IAbsSeekBar::Probe(mSeekBar);
     absSeekBar->SetThumbOffset(offset / 2);
 }
 
@@ -80,7 +80,7 @@ Float ColorPickerAdvancedComponent::GetValue()
     // ==================before translated======================
     // return mSeekBar.getProgress();
 
-    AutoPtr<IProgressBar> progressBar = IProgressBar::Probe(mSeekBar);
+    IProgressBar* progressBar = IProgressBar::Probe(mSeekBar);
     Int32 result = 0;
     progressBar->GetProgress(&result);
     return (Float)result;
@@ -92,7 +92,7 @@ ECode ColorPickerAdvancedComponent::SetValue(
     // ==================before translated======================
     // mSeekBar.setProgress((int) newValue);
 
-    AutoPtr<IProgressBar> progressBar = IProgressBar::Probe(mSeekBar);
+    IProgressBar* progressBar = IProgressBar::Probe(mSeekBar);
     progressBar->SetProgress((Int32)newValue);
     return NOERROR;
 }
@@ -120,7 +120,7 @@ ECode ColorPickerAdvancedComponent::SetGradientColors(
         mGradientDrawable->SetColors(mGradientColors);
     }
 
-    AutoPtr<IDrawable> drawable = IDrawable::Probe(mGradientDrawable);
+    IDrawable* drawable = IDrawable::Probe(mGradientDrawable);
     ApiCompatibilityUtils::SetBackgroundForView(mGradientView, drawable);
     return NOERROR;
 }

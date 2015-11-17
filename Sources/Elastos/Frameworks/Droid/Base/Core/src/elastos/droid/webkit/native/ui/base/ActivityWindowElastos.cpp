@@ -1,13 +1,13 @@
 
-#include "elastos/droid/webkit/native/ui/base/ActivityWindowElastos.h"
 #include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/webkit/native/ui/base/ActivityWindowElastos.h"
 
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-using Elastos::Core::CString;
-using Elastos::Droid::Content::IIntentSender;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IIntentSender;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
+using Elastos::Core::IInteger32;
 
 namespace Elastos {
 namespace Droid {
@@ -30,11 +30,11 @@ ActivityWindowElastos::ActivityWindowElastos(
     // super(activity.getApplicationContext());
     // mActivityRef = new WeakReference<Activity>(activity);
 
-    AutoPtr<IContext> tmp = IContext::Probe(activity);
+    IContext* tmp = IContext::Probe(activity);
     AutoPtr<IContext> context;
     tmp->GetApplicationContext((IContext**)&context);
 
-    AutoPtr<IWeakReferenceSource> source = IWeakReferenceSource::Probe(activity);
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe(activity);
     source->GetWeakReference((IWeakReference**)&mActivityRef);
 }
 
@@ -62,7 +62,7 @@ Int32 ActivityWindowElastos::ShowCancelableIntent(
     assert(0);
     AutoPtr<IInterface> activityTmp;
     mActivityRef->Resolve(EIID_IInterface, (IInterface**)&activityTmp);
-    AutoPtr<IActivity> activity = IActivity::Probe(activityTmp);
+    IActivity* activity = IActivity::Probe(activityTmp);
     if (NULL == activity)
         return START_INTENT_FAILURE;
 
@@ -105,7 +105,7 @@ Int32 ActivityWindowElastos::ShowCancelableIntent(
     assert(0);
     AutoPtr<IInterface> activityTmp;
     mActivityRef->Resolve(EIID_IInterface, (IInterface**)&activityTmp);
-    AutoPtr<IActivity> activity = IActivity::Probe(activityTmp);
+    IActivity* activity = IActivity::Probe(activityTmp);
     if (NULL == activity)
         return START_INTENT_FAILURE;
 
@@ -134,7 +134,7 @@ ECode ActivityWindowElastos::CancelIntent(
 
     AutoPtr<IInterface> activityTmp;
     mActivityRef->Resolve(EIID_IInterface, (IInterface**)&activityTmp);
-    AutoPtr<IActivity> activity = IActivity::Probe(activityTmp);
+    IActivity* activity = IActivity::Probe(activityTmp);
     if (NULL == activity)
         return NOERROR;
     activity->FinishActivity(requestCode);
@@ -205,7 +205,7 @@ AutoPtr<IWeakReference> ActivityWindowElastos::GetActivity()
     if (NULL == activity)
         return NULL;
 
-    AutoPtr<IWeakReferenceSource> source = IWeakReferenceSource::Probe(activity);
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe(activity);
     AutoPtr<IWeakReference> result;
     source->GetWeakReference((IWeakReference**)&result);
     return result;

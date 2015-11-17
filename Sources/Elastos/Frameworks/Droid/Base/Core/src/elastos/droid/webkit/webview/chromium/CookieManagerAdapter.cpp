@@ -1,8 +1,8 @@
 
+#include "elastos/droid/net/CWebAddress.h"
 #include "elastos/droid/webkit/webview/chromium/CookieManagerAdapter.h"
-//#include "elastos/droid/webkit/WebView.h"
 
-//using Elastos::Droid::Webkit::WebView;
+using Elastos::Droid::Net::CWebAddress;
 
 namespace Elastos {
 namespace Droid {
@@ -35,17 +35,20 @@ ECode CookieManagerAdapter::SetAcceptCookie(
 }
 
 // synchronized
-Boolean CookieManagerAdapter::AcceptCookie()
+ECode CookieManagerAdapter::AcceptCookie(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mChromeCookieManager.acceptCookie();
 
-    return mChromeCookieManager->AcceptCookie();
+    *result = mChromeCookieManager->AcceptCookie();
+    return NOERROR;
 }
 
 // synchronized
 ECode CookieManagerAdapter::SetAcceptThirdPartyCookies(
-    /* [in] */ WebView* webView,
+    /* [in] */ IWebView* webView,
     /* [in] */ Boolean accept)
 {
     VALIDATE_NOT_NULL(webView);
@@ -53,20 +56,25 @@ ECode CookieManagerAdapter::SetAcceptThirdPartyCookies(
     // webView.getSettings().setAcceptThirdPartyCookies(accept);
 
     assert(0);
-    //webView->GetSettings()->SetAcceptThirdPartyCookies(accept);
-    return NOERROR;
+    AutoPtr<IWebSettings> webSettings;
+    webView->GetSettings((IWebSettings**)&webSettings);
+    return webSettings->SetAcceptThirdPartyCookies(accept);
 }
 
 // synchronized
-Boolean CookieManagerAdapter::AcceptThirdPartyCookies(
-    /* [in] */ WebView* webView)
+ECode CookieManagerAdapter::AcceptThirdPartyCookies(
+    /* [in] */ IWebView* webView,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(webView);
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return webView.getSettings().getAcceptThirdPartyCookies();
 
     assert(0);
-    //return webView->GetSettings()->GetAcceptThirdPartyCookies();
-    return FALSE;
+    AutoPtr<IWebSettings> webSettings;
+    webView->GetSettings((IWebSettings**)&webSettings);
+    return webSettings->GetAcceptThirdPartyCookies(result);
 }
 
 ECode CookieManagerAdapter::SetCookie(
@@ -91,7 +99,7 @@ ECode CookieManagerAdapter::SetCookie(
 ECode CookieManagerAdapter::SetCookie(
     /* [in] */ const String& url,
     /* [in] */ const String& value,
-    /* [in] */ IInterface/*IValueCallback*/* callback)
+    /* [in] */ IValueCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
     // ==================before translated======================
@@ -109,9 +117,11 @@ ECode CookieManagerAdapter::SetCookie(
     return NOERROR;
 }
 
-String CookieManagerAdapter::GetCookie(
-    /* [in] */ const String& url)
+ECode CookieManagerAdapter::GetCookie(
+    /* [in] */ const String& url,
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // try {
     //     return mChromeCookieManager.getCookie(fixupUrl(url));
@@ -121,33 +131,43 @@ String CookieManagerAdapter::GetCookie(
     // }
 
     // try {
-        return mChromeCookieManager->GetCookie(FixupUrl(url));
+        *result = mChromeCookieManager->GetCookie(FixupUrl(url));
+        return NOERROR;
     // } catch (ParseException e) {
     //     Log.e(LOGTAG, "Unable to get cookies due to error parsing URL: " + url, e);
     //     return null;
     // }
-    return String("");
+    *result = String("");
+    return NOERROR;
 }
 
-String CookieManagerAdapter::GetCookie(
+ECode CookieManagerAdapter::GetCookie(
     /* [in] */ const String& url,
-    /* [in] */ Boolean privateBrowsing)
+    /* [in] */ Boolean privateBrowsing,
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return getCookie(url);
 
-    return GetCookie(url);
+    return GetCookie(url, result);
 }
 
 // synchronized
-String CookieManagerAdapter::GetCookie(
-    /* [in] */ WebAddress* uri)
+ECode CookieManagerAdapter::GetCookie(
+    /* [in] */ IWebAddress* uri,
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mChromeCookieManager.getCookie(uri.toString());
 
     assert(0);
-    return mChromeCookieManager->GetCookie(String("")/*uri->ToString()*/);
+    String address;
+    IObject* objTmp = IObject::Probe(uri);
+    objTmp->ToString(&address);
+    *result = mChromeCookieManager->GetCookie(address);
+    return NOERROR;
 }
 
 ECode CookieManagerAdapter::RemoveSessionCookie()
@@ -160,7 +180,7 @@ ECode CookieManagerAdapter::RemoveSessionCookie()
 }
 
 ECode CookieManagerAdapter::RemoveSessionCookies(
-    /* [in] */ IInterface/*IValueCallback*/* callback)
+    /* [in] */ IValueCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
     // ==================before translated======================
@@ -180,7 +200,7 @@ ECode CookieManagerAdapter::RemoveAllCookie()
 }
 
 ECode CookieManagerAdapter::RemoveAllCookies(
-    /* [in] */ IInterface/*IValueCallback*/* callback)
+    /* [in] */ IValueCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
     // ==================before translated======================
@@ -191,22 +211,28 @@ ECode CookieManagerAdapter::RemoveAllCookies(
 }
 
 // synchronized
-Boolean CookieManagerAdapter::HasCookies()
+ECode CookieManagerAdapter::HasCookies(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mChromeCookieManager.hasCookies();
 
-    return mChromeCookieManager->HasCookies();
+    *result = mChromeCookieManager->HasCookies();
+    return NOERROR;
 }
 
 // synchronized
-Boolean CookieManagerAdapter::HasCookies(
-    /* [in] */ Boolean privateBrowsing)
+ECode CookieManagerAdapter::HasCookies(
+    /* [in] */ Boolean privateBrowsing,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mChromeCookieManager.hasCookies();
 
-    return mChromeCookieManager->HasCookies();
+    *result = mChromeCookieManager->HasCookies();
+    return NOERROR;
 }
 
 ECode CookieManagerAdapter::RemoveExpiredCookie()
@@ -218,13 +244,12 @@ ECode CookieManagerAdapter::RemoveExpiredCookie()
     return NOERROR;
 }
 
-ECode CookieManagerAdapter::FlushCookieStore()
+void CookieManagerAdapter::FlushCookieStore()
 {
     // ==================before translated======================
     // mChromeCookieManager.flushCookieStore();
 
     mChromeCookieManager->FlushCookieStore();
-    return NOERROR;
 }
 
 Boolean CookieManagerAdapter::AllowFileSchemeCookiesImpl()
@@ -235,14 +260,13 @@ Boolean CookieManagerAdapter::AllowFileSchemeCookiesImpl()
     return mChromeCookieManager->AllowFileSchemeCookies();
 }
 
-ECode CookieManagerAdapter::SetAcceptFileSchemeCookiesImpl(
+void CookieManagerAdapter::SetAcceptFileSchemeCookiesImpl(
     /* [in] */ Boolean accept)
 {
     // ==================before translated======================
     // mChromeCookieManager.setAcceptFileSchemeCookies(accept);
 
     mChromeCookieManager->SetAcceptFileSchemeCookies(accept);
-    return NOERROR;
 }
 
 String CookieManagerAdapter::FixupUrl(
@@ -256,9 +280,11 @@ String CookieManagerAdapter::FixupUrl(
     // return new WebAddress(url).toString();
 
     assert(0);
-    //WebAddress webAddress(url);
+    AutoPtr<IWebAddress> webAddress;
+    CWebAddress::New(url, (IWebAddress**)&webAddress);
+    IObject* objTmp = IObject::Probe(webAddress);
     String result;
-    // webAddress.ToString(&result);
+    objTmp->ToString(&result);
     return result;
 }
 

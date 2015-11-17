@@ -24,9 +24,9 @@
 // import java.security.interfaces.RSAPrivateKey;
 // import java.security.spec.ECParameterSpec;
 
-using Elastos::Security::IPrivateKey;
 using Elastos::Droid::Webkit::Net::ElastosKeyStore;
 using Elastos::Droid::Webkit::Net::ElastosPrivateKey;
+using Elastos::Security::IPrivateKey;
 
 namespace Elastos {
 namespace Droid {

@@ -17,10 +17,10 @@
 // import android.widget.Button;
 
 using Elastos::Droid::Content::IContext;
-//using Elastos::Droid::Widget::Button;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Utility::IAttributeSet;
+//using Elastos::Droid::Widget::Button;
 
 namespace Elastos {
 namespace Droid {

@@ -6,10 +6,10 @@
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_COLORCHOOSERANDROID_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerDialog.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
-#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
 
 // package org.chromium.components.web_contents_delegate_android;
 // import android.content.Context;
@@ -21,10 +21,10 @@
 // import org.chromium.ui.OnColorChangedListener;
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
 using Elastos::Droid::Webkit::Ui::ColorPickerDialog;
 using Elastos::Droid::Webkit::Ui::ColorSuggestion;
-using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
 
 namespace Elastos {
 namespace Droid {

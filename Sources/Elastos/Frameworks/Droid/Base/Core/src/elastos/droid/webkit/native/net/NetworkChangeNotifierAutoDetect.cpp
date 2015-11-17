@@ -1,17 +1,19 @@
 
-#include "elastos/droid/webkit/native/net/NetworkChangeNotifierAutoDetect.h"
-#include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include "elastos/droid/webkit/native/base/ApplicationState.h"
+#include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifier.h"
+#include "elastos/droid/webkit/native/net/NetworkChangeNotifierAutoDetect.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Wifi::IWifiInfo;
-using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Webkit::Base::ApplicationStatus;
+using Elastos::Droid::Net::INetworkInfo;
+using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Webkit::Base::ApplicationState;
+using Elastos::Droid::Webkit::Base::ApplicationStatus;
 using Elastos::Droid::Webkit::Net::NetworkChangeNotifier;
+using Elastos::Droid::Wifi::IWifiInfo;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -438,7 +440,8 @@ ECode NetworkChangeNotifierAutoDetect::ConnectionTypeChanged()
 
     mConnectionType = newConnectionType;
     mWifiSSID = newWifiSSID;
-    //Log.d(TAG, "Network connectivity changed, type is: " + mConnectionType);
+
+    Logger::D(TAG, "Network connectivity changed, type is: %d", mConnectionType);
     mObserver->OnConnectionTypeChanged(newConnectionType);
     return NOERROR;
 }

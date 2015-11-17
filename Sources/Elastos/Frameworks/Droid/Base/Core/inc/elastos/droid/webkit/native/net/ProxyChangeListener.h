@@ -5,8 +5,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_PROXYCHANGELISTENER_H_
 #define _ELASTOS_DROID_WEBKIT_NET_PROXYCHANGELISTENER_H_
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 // package org.chromium.net;
 // import android.content.BroadcastReceiver;
@@ -22,9 +22,9 @@
 // import java.lang.reflect.InvocationTargetException;
 // import java.lang.reflect.Method;
 
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::BroadcastReceiver;
 
 namespace Elastos {
 namespace Droid {

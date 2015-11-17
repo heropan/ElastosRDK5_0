@@ -92,7 +92,7 @@ public:
      * @param cleanupTask the task to run once obj loses reachability.
      */
     CleanupReference(
-        /* [in] */ Object& obj,
+        /* [in] */ Object* obj,
         /* [in] */ IRunnable* cleanupTask);
 
     /**

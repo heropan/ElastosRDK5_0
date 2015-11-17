@@ -20,10 +20,10 @@
 // import org.chromium.base.JNINamespace;
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::View::IDisplay;
-using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::IWindowManager;
 
 namespace Elastos {
 namespace Droid {

@@ -25,9 +25,9 @@
 // import android.webkit.WebIconDatabase.IconListener;
 // import org.chromium.android_webview.AwContents;
 
-using Elastos::Droid::Webkit::IWebIconDatabase;
-//using Elastos::Droid::Webkit::IIconListener;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Webkit::IWebIconDatabase;
+using Elastos::Droid::Webkit::IWebIconDatabaseIconListener;
 
 namespace Elastos {
 namespace Droid {
@@ -58,13 +58,13 @@ public:
     // @Override
     CARAPI RequestIconForPageUrl(
         /* [in] */ const String& url,
-        /* [in] */ IInterface/*IIconListener*/* listener);
+        /* [in] */ IWebIconDatabaseIconListener* listener);
 
     // @Override
     CARAPI BulkRequestIconForPageUrl(
-        /* [in] */ IInterface/*IContentResolver*/* cr,
+        /* [in] */ IContentResolver* cr,
         /* [in] */ const String& where,
-        /* [in] */ IInterface/*IIconListener*/* listener);
+        /* [in] */ IWebIconDatabaseIconListener* listener);
 
     // @Override
     CARAPI RetainIconForPageUrl(

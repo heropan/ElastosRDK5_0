@@ -1,10 +1,12 @@
 
 #include "elastos/droid/webkit/webview/chromium/ContentSettingsAdapter.h"
+#include "elastos/droid/webkit/webview/chromium/DebugFlags.h"
 #include "elastos/core/AutoLock.h"
-#include "elastos/droid/webkit/DebugFlags.h"
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Webkit::Webview::Chromium::DebugFlags;
 using Elastos::Core::AutoLock;
-using Elastos::Droid::Webkit::DebugFlags;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +17,12 @@ namespace Chromium {
 //=====================================================================
 //                        ContentSettingsAdapter
 //=====================================================================
-const String ContentSettingsAdapter::LOGTAG;// = ContentSettingsAdapter.class.getSimpleName();
+const String ContentSettingsAdapter::LOGTAG("ContentSettingsAdapter");// = ContentSettingsAdapter.class.getSimpleName();
+
+ContentSettingsAdapter::ContentSettingsAdapter()
+    //: mAwSettings(NULL)
+{
+}
 
 ContentSettingsAdapter::ContentSettingsAdapter(
     /* [in] */ AwSettings* awSettings)
@@ -25,12 +32,16 @@ ContentSettingsAdapter::ContentSettingsAdapter(
     // mAwSettings = awSettings;
 }
 
-AutoPtr<AwSettings> ContentSettingsAdapter::GetAwSettings()
+ECode ContentSettingsAdapter::GetAwSettings(
+    /* [out] */ AwSettings** awSettings)
 {
+    VALIDATE_NOT_NULL(awSettings);
     // ==================before translated======================
     // return mAwSettings;
 
-    return mAwSettings;
+    *awSettings = mAwSettings;
+    REFCOUNT_ADD(*awSettings);
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetNavDump(
@@ -42,13 +53,16 @@ ECode ContentSettingsAdapter::SetNavDump(
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetNavDump()
+ECode ContentSettingsAdapter::GetNavDump(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // Intentional no-op.
     // return false;
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetSupportZoom(
@@ -60,20 +74,23 @@ ECode ContentSettingsAdapter::SetSupportZoom(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setSupportZoom=" + support);
+        String suppportStr = (TRUE == support) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setSupportZoom=") + suppportStr);
     }
-    //mAwSettings->SetSupportZoom(support);
+    mAwSettings->SetSupportZoom(support);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::SupportZoom()
+ECode ContentSettingsAdapter::SupportZoom(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.supportZoom();
 
     assert(0);
-    //return mAwSettings->SupportZoom();
-    return FALSE;
+    *result = mAwSettings->SupportZoom();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetBuiltInZoomControls(
@@ -85,20 +102,23 @@ ECode ContentSettingsAdapter::SetBuiltInZoomControls(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setBuiltInZoomControls=" + enabled);
+        String enabledStr = (TRUE == enabled) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setBuiltInZoomControls=") + enabledStr);
     }
-    //mAwSettings->SetBuiltInZoomControls(enabled);
+    mAwSettings->SetBuiltInZoomControls(enabled);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetBuiltInZoomControls()
+ECode ContentSettingsAdapter::GetBuiltInZoomControls(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getBuiltInZoomControls();
 
     assert(0);
-    //return mAwSettings->GetBuiltInZoomControls();
-    return FALSE;
+    *result = mAwSettings->GetBuiltInZoomControls();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetDisplayZoomControls(
@@ -110,20 +130,23 @@ ECode ContentSettingsAdapter::SetDisplayZoomControls(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setDisplayZoomControls=" + enabled);
+        String enabledStr = (TRUE == enabled) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setDisplayZoomControls=") + enabledStr);
     }
-    //mAwSettings->SetDisplayZoomControls(enabled);
+    mAwSettings->SetDisplayZoomControls(enabled);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetDisplayZoomControls()
+ECode ContentSettingsAdapter::GetDisplayZoomControls(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getDisplayZoomControls();
 
     assert(0);
-    //return mAwSettings->GetDisplayZoomControls();
-    return FALSE;
+    *result = mAwSettings->GetDisplayZoomControls();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetAllowFileAccess(
@@ -135,20 +158,23 @@ ECode ContentSettingsAdapter::SetAllowFileAccess(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setAllowFileAccess=" + allow);
+        String allowStr = (TRUE == allow) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setAllowFileAccess=") + allowStr);
     }
-    //mAwSettings->SetAllowFileAccess(allow);
+    mAwSettings->SetAllowFileAccess(allow);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetAllowFileAccess()
+ECode ContentSettingsAdapter::GetAllowFileAccess(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getAllowFileAccess();
 
     assert(0);
-    //return mAwSettings->GetAllowFileAccess();
-    return FALSE;
+    *result = mAwSettings->GetAllowFileAccess();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetAllowContentAccess(
@@ -160,20 +186,23 @@ ECode ContentSettingsAdapter::SetAllowContentAccess(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setAllowContentAccess=" + allow);
+        String allowStr = (TRUE == allow) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setAllowContentAccess=") + allowStr);
     }
-    //mAwSettings->SetAllowContentAccess(allow);
+    mAwSettings->SetAllowContentAccess(allow);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetAllowContentAccess()
+ECode ContentSettingsAdapter::GetAllowContentAccess(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getAllowContentAccess();
 
     assert(0);
-    //return mAwSettings->GetAllowContentAccess();
-    return FALSE;
+    *result = mAwSettings->GetAllowContentAccess();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetLoadWithOverviewMode(
@@ -185,20 +214,23 @@ ECode ContentSettingsAdapter::SetLoadWithOverviewMode(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setLoadWithOverviewMode=" + overview);
+        String overviewStr = (TRUE == overview) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setLoadWithOverviewMode=") + overviewStr);
     }
-    //mAwSettings->SetLoadWithOverviewMode(overview);
+    mAwSettings->SetLoadWithOverviewMode(overview);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetLoadWithOverviewMode()
+ECode ContentSettingsAdapter::GetLoadWithOverviewMode(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getLoadWithOverviewMode();
 
     assert(0);
-    //return mAwSettings->GetLoadWithOverviewMode();
-    return FALSE;
+    *result = mAwSettings->GetLoadWithOverviewMode();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetAcceptThirdPartyCookies(
@@ -210,20 +242,23 @@ ECode ContentSettingsAdapter::SetAcceptThirdPartyCookies(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setAcceptThirdPartyCookies=" + accept);
+        String acceptStr = (TRUE == accept) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setAcceptThirdPartyCookies=") + acceptStr);
     }
-    //mAwSettings->SetAcceptThirdPartyCookies(accept);
+    mAwSettings->SetAcceptThirdPartyCookies(accept);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetAcceptThirdPartyCookies()
+ECode ContentSettingsAdapter::GetAcceptThirdPartyCookies(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getAcceptThirdPartyCookies();
 
     assert(0);
-    //return mAwSettings->GetAcceptThirdPartyCookies();
-    return FALSE;
+    *result = mAwSettings->GetAcceptThirdPartyCookies();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetEnableSmoothTransition(
@@ -235,13 +270,16 @@ ECode ContentSettingsAdapter::SetEnableSmoothTransition(
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::EnableSmoothTransition()
+ECode ContentSettingsAdapter::EnableSmoothTransition(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // Intentional no-op.
     // return false;
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetUseWebViewBackgroundForOverscrollBackground(
@@ -253,13 +291,16 @@ ECode ContentSettingsAdapter::SetUseWebViewBackgroundForOverscrollBackground(
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetUseWebViewBackgroundForOverscrollBackground()
+ECode ContentSettingsAdapter::GetUseWebViewBackgroundForOverscrollBackground(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // Intentional no-op.
     // return false;
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetSaveFormData(
@@ -271,20 +312,23 @@ ECode ContentSettingsAdapter::SetSaveFormData(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setSaveFormData=" + save);
+        String saveStr = (TRUE == save) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setSaveFormData=") + saveStr);
     }
-    //mAwSettings->SetSaveFormData(save);
+    mAwSettings->SetSaveFormData(save);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetSaveFormData()
+ECode ContentSettingsAdapter::GetSaveFormData(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getSaveFormData();
 
     assert(0);
-    //return mAwSettings->GetSaveFormData();
-    return FALSE;
+    *result = mAwSettings->GetSaveFormData();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetSavePassword(
@@ -296,13 +340,16 @@ ECode ContentSettingsAdapter::SetSavePassword(
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetSavePassword()
+ECode ContentSettingsAdapter::GetSavePassword(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // Intentional no-op.
     // return false;
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 // synchronized
@@ -316,26 +363,28 @@ ECode ContentSettingsAdapter::SetTextZoom(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setTextZoom=" + textZoom);
+        Logger::D(LOGTAG, "setTextZoom=%d", textZoom);
     }
-    //mAwSettings->SetTextZoom(textZoom);
+    mAwSettings->SetTextZoom(textZoom);
     return NOERROR;
 }
 
 // synchronized
-Int32 ContentSettingsAdapter::GetTextZoom()
+ECode ContentSettingsAdapter::GetTextZoom(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getTextZoom();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetTextZoom();
-    return 0;
+    *result = mAwSettings->GetTextZoom();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetDefaultZoom(
-    /* [in] */ Int32/*WebSettings::ZoomDensity*/ zoom)
+    /* [in] */ ZoomDensity zoom)
 {
     // ==================before translated======================
     // if (zoom != ZoomDensity.MEDIUM) {
@@ -343,21 +392,23 @@ ECode ContentSettingsAdapter::SetDefaultZoom(
     // }
 
     assert(0);
-    if (zoom != -1/*ZoomDensity.MEDIUM*/) {
-        //Log.w(LOGTAG, "setDefaultZoom not supported, zoom=" + zoom);
+    if (zoom != ZoomDensity_MEDIUM) {
+        Logger::W(LOGTAG, "setDefaultZoom not supported, zoom=%d", zoom);
     }
     return NOERROR;
 }
 
-Int32/*WebSettings::ZoomDensity*/ ContentSettingsAdapter::GetDefaultZoom()
+ECode ContentSettingsAdapter::GetDefaultZoom(
+    /* [out] */ ZoomDensity* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // Intentional no-op.
     // return ZoomDensity.MEDIUM;
 
     assert(0);
-    //return WebSettings::ZoomDensity::MEDIUM;
-    return -1;
+    *result = ZoomDensity_MEDIUM;
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetLightTouchEnabled(
@@ -369,13 +420,16 @@ ECode ContentSettingsAdapter::SetLightTouchEnabled(
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetLightTouchEnabled()
+ECode ContentSettingsAdapter::GetLightTouchEnabled(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // Intentional no-op.
     // return false;
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 // synchronized
@@ -397,14 +451,16 @@ ECode ContentSettingsAdapter::SetUserAgent(
         SetUserAgentString(String(""));
     }
     else {
-        //Log.w(LOGTAG, "setUserAgent not supported, ua=" + ua);
+        Logger::W(LOGTAG, "setUserAgent not supported, ua=%d", ua);
     }
     return NOERROR;
 }
 
 // synchronized
-Int32 ContentSettingsAdapter::GetUserAgent()
+ECode ContentSettingsAdapter::GetUserAgent(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // Minimal implementation for backwards compatibility: just identifies default vs custom.
     // return AwSettings.getDefaultUserAgent().equals(getUserAgentString()) ? 0 : -1;
@@ -412,7 +468,10 @@ Int32 ContentSettingsAdapter::GetUserAgent()
     assert(0);
     AutoLock lock(this);
     // Minimal implementation for backwards compatibility: just identifies default vs custom.
-    //return AwSettings::GetDefaultUserAgent()->Equals(GetUserAgentString()) ? 0 : -1;
+
+    String userAgent;
+    GetUserAgentString(&userAgent);
+    *result = AwSettings::GetDefaultUserAgent().Equals(userAgent) ? 0 : -1;
     return 0;
 }
 
@@ -427,22 +486,25 @@ ECode ContentSettingsAdapter::SetUseWideViewPort(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setUseWideViewPort=" + use);
+        String useStr = (TRUE == use) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setUseWideViewPort=") + useStr);
     }
-    //mAwSettings->SetUseWideViewPort(use);
+    mAwSettings->SetUseWideViewPort(use);
     return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::GetUseWideViewPort()
+ECode ContentSettingsAdapter::GetUseWideViewPort(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getUseWideViewPort();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetUseWideViewPort();
-    return FALSE;
+    *result = mAwSettings->GetUseWideViewPort();
+    return NOERROR;
 }
 
 // synchronized
@@ -456,27 +518,30 @@ ECode ContentSettingsAdapter::SetSupportMultipleWindows(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setSupportMultipleWindows=" + support);
+        String supportStr = (TRUE == support) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setSupportMultipleWindows=") + supportStr);
     }
-    //mAwSettings->SetSupportMultipleWindows(support);
+    mAwSettings->SetSupportMultipleWindows(support);
     return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::SupportMultipleWindows()
+ECode ContentSettingsAdapter::SupportMultipleWindows(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.supportMultipleWindows();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->SupportMultipleWindows();
-    return FALSE;
+    *result = mAwSettings->SupportMultipleWindows();
+    return NOERROR;
 }
 
 // synchronized
 ECode ContentSettingsAdapter::SetLayoutAlgorithm(
-    /* [in] */ Int32/*AwSettings::LayoutAlgorithm*/ la)
+    /* [in] */ LayoutAlgorithm la)
 {
     // ==================before translated======================
     // // TODO: Remove the upstream enum and mapping once the new value is in the public API.
@@ -490,21 +555,16 @@ ECode ContentSettingsAdapter::SetLayoutAlgorithm(
 
     assert(0);
     AutoLock lock(this);
-    /*const AwSettings::LayoutAlgorithm chromiumValues[] = {
-        AwSettings::LayoutAlgorithm::NORMAL,
-        AwSettings::LayoutAlgorithm::SINGLE_COLUMN,
-        AwSettings::LayoutAlgorithm::NARROW_COLUMNS,
-        AwSettings::LayoutAlgorithm::TEXT_AUTOSIZING
-    };
-
-    Int32 index = la - -1;//AwSettings::LayoutAlgorithm::NORMAL;
-    mAwSettings->SetLayoutAlgorithm(index]);*/
+    AwSettings::LayoutAlgorithm index = (AwSettings::LayoutAlgorithm)(la - LayoutAlgorithm_NORMAL);
+    mAwSettings->SetLayoutAlgorithm(index);
     return NOERROR;
 }
 
 // synchronized
-Int32/*AwSettings::LayoutAlgorithm*/ ContentSettingsAdapter::GetLayoutAlgorithm()
+ECode ContentSettingsAdapter::GetLayoutAlgorithm(
+    /* [out] */ LayoutAlgorithm* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // TODO: Remove the upstream enum and mapping once the new value is in the public API.
     // final LayoutAlgorithm[] webViewValues = {
@@ -517,16 +577,16 @@ Int32/*AwSettings::LayoutAlgorithm*/ ContentSettingsAdapter::GetLayoutAlgorithm(
 
     assert(0);
     AutoLock lock(this);
-    /*const AwSettings::LayoutAlgorithm webViewValues[] = {
-        AwSettings::LayoutAlgorithm::NORMAL,
-        AwSettings::LayoutAlgorithm::SINGLE_COLUMN,
-        AwSettings::LayoutAlgorithm::NARROW_COLUMNS,
-        AwSettings::LayoutAlgorithm::TEXT_AUTOSIZING
+    const LayoutAlgorithm webViewValues[] = {
+        LayoutAlgorithm_NORMAL,
+        LayoutAlgorithm_SINGLE_COLUMN,
+        LayoutAlgorithm_NARROW_COLUMNS,
+        LayoutAlgorithm_TEXT_AUTOSIZING
     };
 
-    Int32 index = mAwSettings->GetLayoutAlgorithm() - -1;//AwSettings::LayoutAlgorithm::NORMAL;
-    return webViewValues[index];*/
-    return -1;
+    Int32 index = mAwSettings->GetLayoutAlgorithm() - AwSettings::NORMAL;
+    *result = webViewValues[index];
+    return NOERROR;
 }
 
 // synchronized
@@ -540,22 +600,24 @@ ECode ContentSettingsAdapter::SetStandardFontFamily(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setStandardFontFamily=" + font);
+        Logger::D(LOGTAG, String("setStandardFontFamily=") + font);
     }
-    //mAwSettings->SetStandardFontFamily(font);
+    mAwSettings->SetStandardFontFamily(font);
     return NOERROR;
 }
 
 // synchronized
-String ContentSettingsAdapter::GetStandardFontFamily()
+ECode ContentSettingsAdapter::GetStandardFontFamily(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getStandardFontFamily();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetStandardFontFamily();
-    return String("");
+    *result = mAwSettings->GetStandardFontFamily();
+    return NOERROR;
 }
 
 // synchronized
@@ -569,22 +631,24 @@ ECode ContentSettingsAdapter::SetFixedFontFamily(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setFixedFontFamily=" + font);
+        Logger::D(LOGTAG, String("setFixedFontFamily=") + font);
     }
-    //mAwSettings->SetFixedFontFamily(font);
+    mAwSettings->SetFixedFontFamily(font);
     return NOERROR;
 }
 
 // synchronized
-String ContentSettingsAdapter::GetFixedFontFamily()
+ECode ContentSettingsAdapter::GetFixedFontFamily(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getFixedFontFamily();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetFixedFontFamily();
-    return String("");
+    *result = mAwSettings->GetFixedFontFamily();
+    return NOERROR;
 }
 
 // synchronized
@@ -598,22 +662,24 @@ ECode ContentSettingsAdapter::SetSansSerifFontFamily(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setSansSerifFontFamily=" + font);
+        Logger::D(LOGTAG, String("setSansSerifFontFamily=") + font);
     }
-    //mAwSettings->SetSansSerifFontFamily(font);
+    mAwSettings->SetSansSerifFontFamily(font);
     return NOERROR;
 }
 
 // synchronized
-String ContentSettingsAdapter::GetSansSerifFontFamily()
+ECode ContentSettingsAdapter::GetSansSerifFontFamily(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getSansSerifFontFamily();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetSansSerifFontFamily();
-    return String("");
+    *result = mAwSettings->GetSansSerifFontFamily();
+    return NOERROR;
 }
 
 // synchronized
@@ -627,22 +693,24 @@ ECode ContentSettingsAdapter::SetSerifFontFamily(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setSerifFontFamily=" + font);
+        Logger::D(LOGTAG, String("setSerifFontFamily=") + font);
     }
-    //mAwSettings->SetSerifFontFamily(font);
+    mAwSettings->SetSerifFontFamily(font);
     return NOERROR;
 }
 
 // synchronized
-String ContentSettingsAdapter::GetSerifFontFamily()
+ECode ContentSettingsAdapter::GetSerifFontFamily(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getSerifFontFamily();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetSerifFontFamily();
-    return String("");
+    *result = mAwSettings->GetSerifFontFamily();
+    return NOERROR;
 }
 
 // synchronized
@@ -656,22 +724,24 @@ ECode ContentSettingsAdapter::SetCursiveFontFamily(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setCursiveFontFamily=" + font);
+        Logger::D(LOGTAG, String("setCursiveFontFamily=") + font);
     }
-    //mAwSettings->SetCursiveFontFamily(font);
+    mAwSettings->SetCursiveFontFamily(font);
     return NOERROR;
 }
 
 // synchronized
-String ContentSettingsAdapter::GetCursiveFontFamily()
+ECode ContentSettingsAdapter::GetCursiveFontFamily(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getCursiveFontFamily();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetCursiveFontFamily();
-    return String("");
+    *result = mAwSettings->GetCursiveFontFamily();
+    return NOERROR;
 }
 
 // synchronized
@@ -685,22 +755,24 @@ ECode ContentSettingsAdapter::SetFantasyFontFamily(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setFantasyFontFamily=" + font);
+        Logger::D(LOGTAG, String("setFantasyFontFamily=") + font);
     }
-    //mAwSettings->SetFantasyFontFamily(font);
+    mAwSettings->SetFantasyFontFamily(font);
     return NOERROR;
 }
 
 // synchronized
-String ContentSettingsAdapter::GetFantasyFontFamily()
+ECode ContentSettingsAdapter::GetFantasyFontFamily(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getFantasyFontFamily();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetFantasyFontFamily();
-    return String("");
+    *result = mAwSettings->GetFantasyFontFamily();
+    return NOERROR;
 }
 
 // synchronized
@@ -714,22 +786,24 @@ ECode ContentSettingsAdapter::SetMinimumFontSize(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setMinimumFontSize=" + size);
+        Logger::D(LOGTAG, "setMinimumFontSize=%d", size);
     }
-    //mAwSettings->SetMinimumFontSize(size);
+    mAwSettings->SetMinimumFontSize(size);
     return NOERROR;
 }
 
 // synchronized
-Int32 ContentSettingsAdapter::GetMinimumFontSize()
+ECode ContentSettingsAdapter::GetMinimumFontSize(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getMinimumFontSize();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetMinimumFontSize();
-    return 0;
+    *result = mAwSettings->GetMinimumFontSize();
+    return NOERROR;
 }
 
 // synchronized
@@ -743,22 +817,24 @@ ECode ContentSettingsAdapter::SetMinimumLogicalFontSize(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setMinimumLogicalFontSize=" + size);
+        Logger::D(LOGTAG, "setMinimumLogicalFontSize=%d", size);
     }
-    //mAwSettings->SetMinimumLogicalFontSize(size);
+    mAwSettings->SetMinimumLogicalFontSize(size);
     return NOERROR;
 }
 
 // synchronized
-Int32 ContentSettingsAdapter::GetMinimumLogicalFontSize()
+ECode ContentSettingsAdapter::GetMinimumLogicalFontSize(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getMinimumLogicalFontSize();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetMinimumLogicalFontSize();
-    return 0;
+    *result = mAwSettings->GetMinimumLogicalFontSize();
+    return NOERROR;
 }
 
 // synchronized
@@ -772,22 +848,24 @@ ECode ContentSettingsAdapter::SetDefaultFontSize(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setDefaultFontSize=" + size);
+        Logger::D(LOGTAG, "setDefaultFontSize=%d", size);
     }
-    //mAwSettings->SetDefaultFontSize(size);
+    mAwSettings->SetDefaultFontSize(size);
     return NOERROR;
 }
 
 // synchronized
-Int32 ContentSettingsAdapter::GetDefaultFontSize()
+ECode ContentSettingsAdapter::GetDefaultFontSize(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getDefaultFontSize();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetDefaultFontSize();
-    return 0;
+    *result = mAwSettings->GetDefaultFontSize();
+    return NOERROR;
 }
 
 // synchronized
@@ -801,22 +879,24 @@ ECode ContentSettingsAdapter::SetDefaultFixedFontSize(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setDefaultFixedFontSize=" + size);
+        Logger::D(LOGTAG, "setDefaultFixedFontSize=%d", size);
     }
-    //mAwSettings->SetDefaultFixedFontSize(size);
+    mAwSettings->SetDefaultFixedFontSize(size);
     return NOERROR;
 }
 
 // synchronized
-Int32 ContentSettingsAdapter::GetDefaultFixedFontSize()
+ECode ContentSettingsAdapter::GetDefaultFixedFontSize(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getDefaultFixedFontSize();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetDefaultFixedFontSize();
-    return 0;
+    *result = mAwSettings->GetDefaultFixedFontSize();
+    return NOERROR;
 }
 
 // synchronized
@@ -830,22 +910,25 @@ ECode ContentSettingsAdapter::SetLoadsImagesAutomatically(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setLoadsImagesAutomatically=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setLoadsImagesAutomatically=") + flagStr);
     }
-    //mAwSettings->SetLoadsImagesAutomatically(flag);
+    mAwSettings->SetLoadsImagesAutomatically(flag);
     return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::GetLoadsImagesAutomatically()
+ECode ContentSettingsAdapter::GetLoadsImagesAutomatically(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getLoadsImagesAutomatically();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetLoadsImagesAutomatically();
-    return FALSE;
+    *result = mAwSettings->GetLoadsImagesAutomatically();
+    return NOERROR;
 }
 
 // synchronized
@@ -859,22 +942,25 @@ ECode ContentSettingsAdapter::SetBlockNetworkImage(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setBlockNetworkImage=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setBlockNetworkImage=") + flagStr);
     }
-    //mAwSettings->SetImagesEnabled(!flag);
+    mAwSettings->SetImagesEnabled(!flag);
     return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::GetBlockNetworkImage()
+ECode ContentSettingsAdapter::GetBlockNetworkImage(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return !mAwSettings.getImagesEnabled();
 
     assert(0);
     AutoLock lock(this);
-    //return !mAwSettings->GetImagesEnabled();
-    return FALSE;
+    *result = !mAwSettings->GetImagesEnabled();
+    return NOERROR;
 }
 
 // synchronized
@@ -888,22 +974,25 @@ ECode ContentSettingsAdapter::SetBlockNetworkLoads(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setBlockNetworkLoads=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setBlockNetworkLoads=") + flagStr);
     }
-    //mAwSettings->SetBlockNetworkLoads(flag);
+    mAwSettings->SetBlockNetworkLoads(flag);
     return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::GetBlockNetworkLoads()
+ECode ContentSettingsAdapter::GetBlockNetworkLoads(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getBlockNetworkLoads();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetBlockNetworkLoads();
-    return FALSE;
+    *result = mAwSettings->GetBlockNetworkLoads();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetJavaScriptEnabled(
@@ -916,9 +1005,10 @@ ECode ContentSettingsAdapter::SetJavaScriptEnabled(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setJavaScriptEnabled=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setJavaScriptEnabled=") + flagStr);
     }
-    //mAwSettings->SetJavaScriptEnabled(flag);
+    mAwSettings->SetJavaScriptEnabled(flag);
     return NOERROR;
 }
 
@@ -931,9 +1021,10 @@ ECode ContentSettingsAdapter::SetAllowUniversalAccessFromFileURLs(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setAllowUniversalAccessFromFileURLs=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setAllowUniversalAccessFromFileURLs=") + flagStr);
     }
-    //mAwSettings->SetAllowUniversalAccessFromFileURLs(flag);
+    mAwSettings->SetAllowUniversalAccessFromFileURLs(flag);
     return NOERROR;
 }
 
@@ -946,9 +1037,10 @@ ECode ContentSettingsAdapter::SetAllowFileAccessFromFileURLs(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setAllowFileAccessFromFileURLs=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setAllowFileAccessFromFileURLs=") + flagStr);
     }
-    //mAwSettings->SetAllowFileAccessFromFileURLs(flag);
+    mAwSettings->SetAllowFileAccessFromFileURLs(flag);
     return NOERROR;
 }
 
@@ -963,15 +1055,16 @@ ECode ContentSettingsAdapter::SetPluginsEnabled(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setPluginsEnabled=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setPluginsEnabled=") + flagStr);
     }
-    //mAwSettings->SetPluginsEnabled(flag);
+    mAwSettings->SetPluginsEnabled(flag);
     return NOERROR;
 }
 
 // synchronized
 ECode ContentSettingsAdapter::SetPluginState(
-    /* [in] */ Int32/*WebSettings::PluginState*/ state)
+    /* [in] */ PluginState state)
 {
     // ==================before translated======================
     // if (DebugFlags.TRACE_API) Log.d(LOGTAG, "setPluginState=" + state);
@@ -980,9 +1073,9 @@ ECode ContentSettingsAdapter::SetPluginState(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setPluginState=" + state);
+        Logger::D(LOGTAG, "setPluginState=%d", (Int32)state);
     }
-    //mAwSettings->SetPluginState(state);
+    mAwSettings->SetPluginState(state);
     return NOERROR;
 }
 
@@ -1019,9 +1112,10 @@ ECode ContentSettingsAdapter::SetAppCacheEnabled(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setAppCacheEnabled=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setAppCacheEnabled=") + flagStr);
     }
-    //mAwSettings->SetAppCacheEnabled(flag);
+    mAwSettings->SetAppCacheEnabled(flag);
     return NOERROR;
 }
 
@@ -1036,9 +1130,9 @@ ECode ContentSettingsAdapter::SetAppCachePath(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setAppCachePath=" + appCachePath);
+        Logger::D(LOGTAG, String("setAppCachePath=") + appCachePath);
     }
-    //mAwSettings->SetAppCachePath(appCachePath);
+    mAwSettings->SetAppCachePath(appCachePath);
     return NOERROR;
 }
 
@@ -1064,9 +1158,10 @@ ECode ContentSettingsAdapter::SetDatabaseEnabled(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setDatabaseEnabled=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setDatabaseEnabled=") + flagStr);
     }
-    //mAwSettings->SetDatabaseEnabled(flag);
+    mAwSettings->SetDatabaseEnabled(flag);
     return NOERROR;
 }
 
@@ -1081,45 +1176,53 @@ ECode ContentSettingsAdapter::SetDomStorageEnabled(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setDomStorageEnabled=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setDomStorageEnabled=") + flagStr);
     }
-    //mAwSettings.setDomStorageEnabled(flag);
+    mAwSettings->SetDomStorageEnabled(flag);
     return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::GetDomStorageEnabled()
+ECode ContentSettingsAdapter::GetDomStorageEnabled(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getDomStorageEnabled();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetDomStorageEnabled();
-    return FALSE;
+    *result = mAwSettings->GetDomStorageEnabled();
+    return NOERROR;
 }
 
 // synchronized
-String ContentSettingsAdapter::GetDatabasePath()
+ECode ContentSettingsAdapter::GetDatabasePath(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // // Intentional no-op.
     // return "";
 
     AutoLock lock(this);
-    return String("");
+    *result = String("");
+    return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::GetDatabaseEnabled()
+ECode ContentSettingsAdapter::GetDatabaseEnabled(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getDatabaseEnabled();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetDatabaseEnabled();
-    return FALSE;
+    *result = mAwSettings->GetDatabaseEnabled();
+    return NOERROR;
 }
 
 // synchronized
@@ -1133,66 +1236,77 @@ ECode ContentSettingsAdapter::SetGeolocationEnabled(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setGeolocationEnabled=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setGeolocationEnabled=") + flagStr);
     }
-    //mAwSettings->SetGeolocationEnabled(flag);
+    mAwSettings->SetGeolocationEnabled(flag);
     return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::GetJavaScriptEnabled()
+ECode ContentSettingsAdapter::GetJavaScriptEnabled(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getJavaScriptEnabled();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetJavaScriptEnabled();
-    return FALSE;
+    *result = mAwSettings->GetJavaScriptEnabled();
+    return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetAllowUniversalAccessFromFileURLs()
+ECode ContentSettingsAdapter::GetAllowUniversalAccessFromFileURLs(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getAllowUniversalAccessFromFileURLs();
 
     assert(0);
-    //return mAwSettings->GetAllowUniversalAccessFromFileURLs();
-    return FALSE;
+    *result = mAwSettings->GetAllowUniversalAccessFromFileURLs();
+    return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetAllowFileAccessFromFileURLs()
+ECode ContentSettingsAdapter::GetAllowFileAccessFromFileURLs(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getAllowFileAccessFromFileURLs();
 
     assert(0);
-    //return mAwSettings->GetAllowFileAccessFromFileURLs();
-    return FALSE;
+    *result = mAwSettings->GetAllowFileAccessFromFileURLs();
+    return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::GetPluginsEnabled()
+ECode ContentSettingsAdapter::GetPluginsEnabled(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getPluginsEnabled();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetPluginsEnabled();
-    return FALSE;
+    *result = mAwSettings->GetPluginsEnabled();
+    return NOERROR;
 }
 
 // synchronized
-Int32/*WebSettings::PluginState*/ ContentSettingsAdapter::GetPluginState()
+ECode ContentSettingsAdapter::GetPluginState(
+    /* [out] */ PluginState* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getPluginState();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetPluginState();
-    return -1;
+    *result = mAwSettings->GetPluginState();
+    return NOERROR;
 }
 
 // synchronized
@@ -1206,22 +1320,25 @@ ECode ContentSettingsAdapter::SetJavaScriptCanOpenWindowsAutomatically(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setJavaScriptCanOpenWindowsAutomatically=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setJavaScriptCanOpenWindowsAutomatically=") + flagStr);
     }
-    //mAwSettings->SetJavaScriptCanOpenWindowsAutomatically(flag);
+    mAwSettings->SetJavaScriptCanOpenWindowsAutomatically(flag);
     return NOERROR;
 }
 
 // synchronized
-Boolean ContentSettingsAdapter::GetJavaScriptCanOpenWindowsAutomatically()
+ECode ContentSettingsAdapter::GetJavaScriptCanOpenWindowsAutomatically(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getJavaScriptCanOpenWindowsAutomatically();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetJavaScriptCanOpenWindowsAutomatically();
-    return FALSE;
+    *result = mAwSettings->GetJavaScriptCanOpenWindowsAutomatically();
+    return NOERROR;
 }
 
 // synchronized
@@ -1235,22 +1352,24 @@ ECode ContentSettingsAdapter::SetDefaultTextEncodingName(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setDefaultTextEncodingName=" + encoding);
+        Logger::D(LOGTAG, String("setDefaultTextEncodingName=") + encoding);
     }
-    //mAwSettings->SetDefaultTextEncodingName(encoding);
+    mAwSettings->SetDefaultTextEncodingName(encoding);
     return NOERROR;
 }
 
 // synchronized
-String ContentSettingsAdapter::GetDefaultTextEncodingName()
+ECode ContentSettingsAdapter::GetDefaultTextEncodingName(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getDefaultTextEncodingName();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetDefaultTextEncodingName();
-    return String("");
+    *result = mAwSettings->GetDefaultTextEncodingName();
+    return NOERROR;
 }
 
 // synchronized
@@ -1264,22 +1383,24 @@ ECode ContentSettingsAdapter::SetUserAgentString(
     assert(0);
     AutoLock lock(this);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setUserAgentString=" + ua);
+        Logger::D(LOGTAG, String("setUserAgentString=") + ua);
     }
-    //mAwSettings->SetUserAgentString(ua);
+    mAwSettings->SetUserAgentString(ua);
     return NOERROR;
 }
 
 // synchronized
-String ContentSettingsAdapter::GetUserAgentString()
+ECode ContentSettingsAdapter::GetUserAgentString(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getUserAgentString();
 
     assert(0);
     AutoLock lock(this);
-    //return mAwSettings->GetUserAgentString();
-    return String("");
+    *result = mAwSettings->GetUserAgentString();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetNeedInitialFocus(
@@ -1291,15 +1412,16 @@ ECode ContentSettingsAdapter::SetNeedInitialFocus(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setNeedInitialFocus=" + flag);
+        String flagStr = (TRUE == flag) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setNeedInitialFocus=") + flagStr);
     }
-    //mAwSettings->SetShouldFocusFirstNode(flag);
+    mAwSettings->SetShouldFocusFirstNode(flag);
     return NOERROR;
 }
 
 // synchronized
 ECode ContentSettingsAdapter::SetRenderPriority(
-    /* [in] */ Int32/*RenderPriority*/ priority)
+    /* [in] */ RenderPriority priority)
 {
     // ==================before translated======================
     // // Intentional no-op.
@@ -1318,20 +1440,22 @@ ECode ContentSettingsAdapter::SetCacheMode(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setCacheMode=" + mode);
+        Logger::D(LOGTAG, "setCacheMode=%d", mode);
     }
-    //mAwSettings->SetCacheMode(mode);
+    mAwSettings->SetCacheMode(mode);
     return NOERROR;
 }
 
-Int32 ContentSettingsAdapter::GetCacheMode()
+ECode ContentSettingsAdapter::GetCacheMode(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getCacheMode();
 
     assert(0);
-    //return mAwSettings->GetCacheMode();
-    return 0;
+    *result = mAwSettings->GetCacheMode();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetMediaPlaybackRequiresUserGesture(
@@ -1343,20 +1467,23 @@ ECode ContentSettingsAdapter::SetMediaPlaybackRequiresUserGesture(
 
     assert(0);
     if (DebugFlags::TRACE_API) {
-        //Log.d(LOGTAG, "setMediaPlaybackRequiresUserGesture=" + require);
+        String requireStr = (TRUE == require) ? String("TRUE") : String("FALSE");
+        Logger::D(LOGTAG, String("setMediaPlaybackRequiresUserGesture=") + requireStr);
     }
-    //mAwSettings->SetMediaPlaybackRequiresUserGesture(require);
+    mAwSettings->SetMediaPlaybackRequiresUserGesture(require);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetMediaPlaybackRequiresUserGesture()
+ECode ContentSettingsAdapter::GetMediaPlaybackRequiresUserGesture(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getMediaPlaybackRequiresUserGesture();
 
     assert(0);
-    //return mAwSettings->GetMediaPlaybackRequiresUserGesture();
-    return FALSE;
+    *result = mAwSettings->GetMediaPlaybackRequiresUserGesture();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetMixedContentMode(
@@ -1366,18 +1493,20 @@ ECode ContentSettingsAdapter::SetMixedContentMode(
     // mAwSettings.setMixedContentMode(mode);
 
     assert(0);
-    //mAwSettings->SetMixedContentMode(mode);
+    mAwSettings->SetMixedContentMode(mode);
     return NOERROR;
 }
 
-Int32 ContentSettingsAdapter::GetMixedContentMode()
+ECode ContentSettingsAdapter::GetMixedContentMode(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getMixedContentMode();
 
     assert(0);
-    //return mAwSettings->GetMixedContentMode();
-    return 0;
+    *result = mAwSettings->GetMixedContentMode();
+    return NOERROR;
 }
 
 ECode ContentSettingsAdapter::SetVideoOverlayForEmbeddedEncryptedVideoEnabled(
@@ -1387,18 +1516,20 @@ ECode ContentSettingsAdapter::SetVideoOverlayForEmbeddedEncryptedVideoEnabled(
     // mAwSettings.setVideoOverlayForEmbeddedVideoEnabled(flag);
 
     assert(0);
-    //mAwSettings->SetVideoOverlayForEmbeddedVideoEnabled(flag);
+    mAwSettings->SetVideoOverlayForEmbeddedVideoEnabled(flag);
     return NOERROR;
 }
 
-Boolean ContentSettingsAdapter::GetVideoOverlayForEmbeddedEncryptedVideoEnabled()
+ECode ContentSettingsAdapter::GetVideoOverlayForEmbeddedEncryptedVideoEnabled(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAwSettings.getVideoOverlayForEmbeddedVideoEnabled();
 
     assert(0);
-    //return mAwSettings->GetVideoOverlayForEmbeddedVideoEnabled();
-    return FALSE;
+    *result = mAwSettings->GetVideoOverlayForEmbeddedVideoEnabled();
+    return NOERROR;
 }
 
 } // namespace Chromium

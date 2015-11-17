@@ -27,10 +27,10 @@
 // import java.util.ArrayList;
 // import java.util.List;
 
-using Elastos::Utility::IList;
-//using Elastos::Droid::Webkit::IWebHistoryItem;
-//using Elastos::Droid::Webkit::IWebBackForwardList;
 using Elastos::Droid::Webkit::Content::Browser::NavigationHistory;
+using Elastos::Droid::Webkit::IWebBackForwardList;
+using Elastos::Droid::Webkit::IWebHistoryItem;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -44,9 +44,11 @@ namespace Chromium {
   */
 class WebBackForwardListChromium
     : public Object
-    //, public IWebBackForwardList
+    , public IWebBackForwardList
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /* package */
     WebBackForwardListChromium(
         /* [in] */ NavigationHistory* nav_history);
@@ -57,7 +59,7 @@ public:
     // @Override
     // synchronized
     CARAPI GetCurrentItem(
-        /* [out] */ IInterface/*IWebHistoryItem*/** item);
+        /* [out] */ IWebHistoryItem** item);
 
     /**
       * See {@link android.webkit.WebBackForwardList#getCurrentIndex}.
@@ -74,7 +76,7 @@ public:
     // synchronized
     CARAPI GetItemAtIndex(
         /* [in] */ Int32 index,
-        /* [out] */ IInterface/*IWebHistoryItem*/** item);
+        /* [out] */ IWebHistoryItem** item);
 
     /**
       * See {@link android.webkit.WebBackForwardList#getSize}.

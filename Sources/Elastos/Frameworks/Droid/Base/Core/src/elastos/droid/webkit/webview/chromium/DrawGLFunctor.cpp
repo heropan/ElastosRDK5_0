@@ -45,7 +45,7 @@ ECode DrawGLFunctor::DestroyRunnable::DetachNativeFunctor()
 
     assert(0);
     if (mNativeDrawGLFunctor != 0 && mViewRootImpl != NULL) {
-        //mViewRootImpl->DetachFunctor(mNativeDrawGLFunctor);
+        mViewRootImpl->DetachFunctor(mNativeDrawGLFunctor);
     }
     mViewRootImpl = NULL;
     return NOERROR;
@@ -65,7 +65,7 @@ DrawGLFunctor::DrawGLFunctor(
 
     assert(0);
     mDestroyRunnable = new DestroyRunnable(NativeCreateGLFunctor(viewContext));
-    //mCleanupReference = new CleanupReference(this, mDestroyRunnable);
+    mCleanupReference = new CleanupReference(this, mDestroyRunnable);
 }
 
 ECode DrawGLFunctor::Destroy()
@@ -80,9 +80,9 @@ ECode DrawGLFunctor::Destroy()
 
     assert(0);
     Detach();
-    if (/*mCleanupReference != */NULL) {
-        //mCleanupReference->CleanupNow();
-        //mCleanupReference = NULL;
+    if (mCleanupReference != NULL) {
+        mCleanupReference->CleanupNow();
+        mCleanupReference = NULL;
         mDestroyRunnable = NULL;
     }
     return NOERROR;
@@ -99,7 +99,7 @@ ECode DrawGLFunctor::Detach()
 
 Boolean DrawGLFunctor::RequestDrawGL(
     /* [in] */ IHardwareCanvas* canvas,
-    /* [in] */ IInterface/*ViewRootImpl*/* viewRootImpl,
+    /* [in] */ IViewRootImpl* viewRootImpl,
     /* [in] */ Boolean waitForCompletion)
 {
     // ==================before translated======================
@@ -137,14 +137,14 @@ Boolean DrawGLFunctor::RequestDrawGL(
 
     mDestroyRunnable->mViewRootImpl = viewRootImpl;
     if (canvas == NULL) {
-        //viewRootImpl->InvokeFunctor(mDestroyRunnable->mNativeDrawGLFunctor, waitForCompletion);
+        viewRootImpl->InvokeFunctor(mDestroyRunnable->mNativeDrawGLFunctor, waitForCompletion);
         return TRUE;
     }
 
     Int32 result = 0;
     canvas->CallDrawGLFunction(mDestroyRunnable->mNativeDrawGLFunctor, &result);
     if (waitForCompletion) {
-        //viewRootImpl->InvokeFunctor(mDestroyRunnable->mNativeDrawGLFunctor, waitForCompletion);
+        viewRootImpl->InvokeFunctor(mDestroyRunnable->mNativeDrawGLFunctor, waitForCompletion);
     }
 
     return TRUE;

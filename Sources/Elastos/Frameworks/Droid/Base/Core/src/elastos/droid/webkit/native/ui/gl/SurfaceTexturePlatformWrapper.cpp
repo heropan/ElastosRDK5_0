@@ -1,12 +1,12 @@
 
-#include "elastos/droid/webkit/native/ui/gl/SurfaceTexturePlatformWrapper.h"
-#include "elastos/droid/webkit/native/ui/api/SurfaceTexturePlatformWrapper_dec.h"
 #include "elastos/droid/graphics/CSurfaceTexture.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/webkit/native/ui/gl/SurfaceTexturePlatformWrapper.h"
 #include "elastos/droid/webkit/native/ui/gl/SurfaceTextureListener.h"
+#include "elastos/droid/webkit/native/ui/api/SurfaceTexturePlatformWrapper_dec.h"
 
-using Elastos::Droid::Graphics::ISurfaceTexture;
 using Elastos::Droid::Graphics::CSurfaceTexture;
+using Elastos::Droid::Graphics::ISurfaceTexture;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::ISurfaceTextureListener;
 using Elastos::Droid::Webkit::Ui::Gl::SurfaceTextureListener;
@@ -55,7 +55,7 @@ ECode SurfaceTexturePlatformWrapper::Destroy(
     // surfaceTexture.release();
 
     surfaceTexture->SetOnFrameAvailableListener(NULL);
-    surfaceTexture->Release();
+    surfaceTexture->ReleaseTexImage();
     return NOERROR;
 }
 
@@ -162,7 +162,7 @@ ECode SurfaceTexturePlatformWrapper::DetachFromGLContext(
 void SurfaceTexturePlatformWrapper::Destroy(
     /* [in] */ IInterface* surfaceTexture)
 {
-    AutoPtr<ISurfaceTexture> st = ISurfaceTexture::Probe(surfaceTexture);
+    ISurfaceTexture* st = ISurfaceTexture::Probe(surfaceTexture);
     Destroy(st);
 }
 
@@ -170,21 +170,21 @@ void SurfaceTexturePlatformWrapper::SetFrameAvailableCallback(
     /* [in] */ IInterface* surfaceTexture,
     /* [in] */ Int64 nativeSurfaceTextureListener)
 {
-    AutoPtr<ISurfaceTexture> st = ISurfaceTexture::Probe(surfaceTexture);
+    ISurfaceTexture* st = ISurfaceTexture::Probe(surfaceTexture);
     SetFrameAvailableCallback(st, nativeSurfaceTextureListener);
 }
 
 void SurfaceTexturePlatformWrapper::UpdateTexImage(
     /* [in] */ IInterface* surfaceTexture)
 {
-    AutoPtr<ISurfaceTexture> st = ISurfaceTexture::Probe(surfaceTexture);
+    ISurfaceTexture* st = ISurfaceTexture::Probe(surfaceTexture);
     UpdateTexImage(st);
 }
 
 void SurfaceTexturePlatformWrapper::ReleaseTexImage(
     /* [in] */ IInterface* surfaceTexture)
 {
-    AutoPtr<ISurfaceTexture> st = ISurfaceTexture::Probe(surfaceTexture);
+    ISurfaceTexture* st = ISurfaceTexture::Probe(surfaceTexture);
     ReleaseTexImage(st);
 }
 
@@ -193,7 +193,7 @@ void SurfaceTexturePlatformWrapper::SetDefaultBufferSize(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    AutoPtr<ISurfaceTexture> st = ISurfaceTexture::Probe(surfaceTexture);
+    ISurfaceTexture* st = ISurfaceTexture::Probe(surfaceTexture);
     SetDefaultBufferSize(st, width, height);
 }
 
@@ -201,7 +201,7 @@ void SurfaceTexturePlatformWrapper::GetTransformMatrix(
     /* [in] */ IInterface* surfaceTexture,
     /* [in] */ ArrayOf<Float>* matrix)
 {
-    AutoPtr<ISurfaceTexture> st = ISurfaceTexture::Probe(surfaceTexture);
+    ISurfaceTexture* st = ISurfaceTexture::Probe(surfaceTexture);
     GetTransformMatrix(st, matrix);
 }
 
@@ -209,14 +209,14 @@ void SurfaceTexturePlatformWrapper::AttachToGLContext(
     /* [in] */ IInterface* surfaceTexture,
     /* [in] */ Int32 texName)
 {
-    AutoPtr<ISurfaceTexture> st = ISurfaceTexture::Probe(surfaceTexture);
+    ISurfaceTexture* st = ISurfaceTexture::Probe(surfaceTexture);
     AttachToGLContext(st, texName);
 }
 
 void SurfaceTexturePlatformWrapper::DetachFromGLContext(
     /* [in] */ IInterface* surfaceTexture)
 {
-    AutoPtr<ISurfaceTexture> st = ISurfaceTexture::Probe(surfaceTexture);
+    ISurfaceTexture* st = ISurfaceTexture::Probe(surfaceTexture);
     DetachFromGLContext(st);
 }
 

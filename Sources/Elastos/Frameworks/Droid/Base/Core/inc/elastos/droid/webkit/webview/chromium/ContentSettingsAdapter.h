@@ -19,7 +19,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/android_webview/AwSettings.h"
-//#include "elastos/droid/webkit/WebSettings.h"
+#include "elastos/droid/webkit/WebSettings.h"
 
 // package com.android.webview.chromium;
 // import android.util.Log;
@@ -31,9 +31,11 @@
 // import android.webkit.WebSettings.ZoomDensity;
 // import org.chromium.android_webview.AwSettings;
 
-//using Elastos::Droid::Webkit::WebSettings;
-//using Elastos::Droid::Webkit::RenderPriority;
 using Elastos::Droid::Webkit::AndroidWebview::AwSettings;
+using Elastos::Droid::Webkit::LayoutAlgorithm;
+using Elastos::Droid::Webkit::PluginState;
+using Elastos::Droid::Webkit::RenderPriority;
+using Elastos::Droid::Webkit::WebSettings;
 
 namespace Elastos {
 namespace Droid {
@@ -42,14 +44,16 @@ namespace Webview {
 namespace Chromium {
 
 class ContentSettingsAdapter
-    : public Object
-    //, public WebSettings
+    : public WebSettings
 {
 public:
+    ContentSettingsAdapter();
+
     ContentSettingsAdapter(
         /* [in] */ AwSettings* awSettings);
 
-    virtual CARAPI_(AutoPtr<AwSettings>) GetAwSettings();
+    virtual CARAPI GetAwSettings(
+        /* [out] */ AwSettings** awSettings);
 
     // @Override
     // @Deprecated
@@ -58,84 +62,96 @@ public:
 
     // @Override
     // @Deprecated
-    CARAPI_(Boolean) GetNavDump();
+    CARAPI GetNavDump(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetSupportZoom(
         /* [in] */ Boolean support);
 
     // @Override
-    CARAPI_(Boolean) SupportZoom();
+    CARAPI SupportZoom(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetBuiltInZoomControls(
         /* [in] */ Boolean enabled);
 
     // @Override
-    CARAPI_(Boolean) GetBuiltInZoomControls();
+    CARAPI GetBuiltInZoomControls(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetDisplayZoomControls(
         /* [in] */ Boolean enabled);
 
     // @Override
-    CARAPI_(Boolean) GetDisplayZoomControls();
+    CARAPI GetDisplayZoomControls(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetAllowFileAccess(
         /* [in] */ Boolean allow);
 
     // @Override
-    CARAPI_(Boolean) GetAllowFileAccess();
+    CARAPI GetAllowFileAccess(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetAllowContentAccess(
         /* [in] */ Boolean allow);
 
     // @Override
-    CARAPI_(Boolean) GetAllowContentAccess();
+    CARAPI GetAllowContentAccess(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetLoadWithOverviewMode(
         /* [in] */ Boolean overview);
 
     // @Override
-    CARAPI_(Boolean) GetLoadWithOverviewMode();
+    CARAPI GetLoadWithOverviewMode(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetAcceptThirdPartyCookies(
         /* [in] */ Boolean accept);
 
     // @Override
-    CARAPI_(Boolean) GetAcceptThirdPartyCookies();
+    CARAPI GetAcceptThirdPartyCookies(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetEnableSmoothTransition(
         /* [in] */ Boolean enable);
 
     // @Override
-    CARAPI_(Boolean) EnableSmoothTransition();
+    CARAPI EnableSmoothTransition(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetUseWebViewBackgroundForOverscrollBackground(
         /* [in] */ Boolean view);
 
     // @Override
-    CARAPI_(Boolean) GetUseWebViewBackgroundForOverscrollBackground();
+    CARAPI GetUseWebViewBackgroundForOverscrollBackground(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetSaveFormData(
         /* [in] */ Boolean save);
 
     // @Override
-    CARAPI_(Boolean) GetSaveFormData();
+    CARAPI GetSaveFormData(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetSavePassword(
         /* [in] */ Boolean save);
 
     // @Override
-    CARAPI_(Boolean) GetSavePassword();
+    CARAPI GetSavePassword(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
@@ -144,21 +160,24 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Int32) GetTextZoom();
+    CARAPI GetTextZoom(
+        /* [out] */ Int32* result);
 
     // @Override
     CARAPI SetDefaultZoom(
-         /* [in] */ Int32/*WebSettings::ZoomDensity*/ zoom);
+         /* [in] */ ZoomDensity zoom);
 
     // @Override
-    CARAPI_(Int32/*WebSettings::ZoomDensity*/) GetDefaultZoom();
+    CARAPI GetDefaultZoom(
+        /* [out] */ ZoomDensity* result);
 
     // @Override
     CARAPI SetLightTouchEnabled(
         /* [in] */ Boolean enabled);
 
     // @Override
-    CARAPI_(Boolean) GetLightTouchEnabled();
+    CARAPI GetLightTouchEnabled(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
@@ -167,7 +186,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Int32) GetUserAgent();
+    CARAPI GetUserAgent(
+        /* [out] */ Int32* result);
 
     // @Override
     // synchronized
@@ -176,7 +196,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) GetUseWideViewPort();
+    CARAPI GetUseWideViewPort(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
@@ -185,15 +206,17 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) SupportMultipleWindows();
+    CARAPI SupportMultipleWindows(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
     CARAPI SetLayoutAlgorithm(
-        /* [in] */ Int32/*AwSettings::LayoutAlgorithm*/ la);
+        /* [in] */ LayoutAlgorithm la);
 
     // @Override
-    CARAPI_(Int32/*AwSettings::LayoutAlgorithm*/) GetLayoutAlgorithm();
+    CARAPI GetLayoutAlgorithm(
+        /* [out] */ LayoutAlgorithm* result);
 
     // @Override
     // synchronized
@@ -202,7 +225,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(String) GetStandardFontFamily();
+    CARAPI GetStandardFontFamily(
+        /* [out] */ String* result);
 
     // @Override
     // synchronized
@@ -211,7 +235,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(String) GetFixedFontFamily();
+    CARAPI GetFixedFontFamily(
+        /* [out] */ String* result);
 
     // @Override
     // synchronized
@@ -220,7 +245,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(String) GetSansSerifFontFamily();
+    CARAPI GetSansSerifFontFamily(
+        /* [out] */ String* result);
 
     // @Override
     // synchronized
@@ -229,7 +255,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(String) GetSerifFontFamily();
+    CARAPI GetSerifFontFamily(
+        /* [out] */ String* result);
 
     // @Override
     // synchronized
@@ -238,7 +265,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(String) GetCursiveFontFamily();
+    CARAPI GetCursiveFontFamily(
+        /* [out] */ String* result);
 
     // @Override
     // synchronized
@@ -247,7 +275,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(String) GetFantasyFontFamily();
+    CARAPI GetFantasyFontFamily(
+        /* [out] */ String* result);
 
     // @Override
     // synchronized
@@ -256,7 +285,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Int32) GetMinimumFontSize();
+    CARAPI GetMinimumFontSize(
+        /* [out] */ Int32* result);
 
     // @Override
     // synchronized
@@ -265,7 +295,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Int32) GetMinimumLogicalFontSize();
+    CARAPI GetMinimumLogicalFontSize(
+        /* [out] */ Int32* result);
 
     // @Override
     // synchronized
@@ -274,7 +305,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Int32) GetDefaultFontSize();
+    CARAPI GetDefaultFontSize(
+        /* [out] */ Int32* result);
 
     // @Override
     // synchronized
@@ -283,7 +315,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Int32) GetDefaultFixedFontSize();
+    CARAPI GetDefaultFixedFontSize(
+        /* [out] */ Int32* result);
 
     // @Override
     // synchronized
@@ -292,7 +325,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) GetLoadsImagesAutomatically();
+    CARAPI GetLoadsImagesAutomatically(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
@@ -301,7 +335,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) GetBlockNetworkImage();
+    CARAPI GetBlockNetworkImage(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
@@ -310,7 +345,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) GetBlockNetworkLoads();
+    CARAPI GetBlockNetworkLoads(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
@@ -333,7 +369,7 @@ public:
     // @Override
     // synchronized
     CARAPI SetPluginState(
-        /* [in] */ Int32/*WebSettings::PluginState*/ state);
+        /* [in] */ PluginState state);
 
     // @Override
     // synchronized
@@ -372,15 +408,18 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) GetDomStorageEnabled();
+    CARAPI GetDomStorageEnabled(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
-    CARAPI_(String) GetDatabasePath();
+    CARAPI GetDatabasePath(
+        /* [out] */ String* result);
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) GetDatabaseEnabled();
+    CARAPI GetDatabaseEnabled(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
@@ -389,21 +428,26 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) GetJavaScriptEnabled();
+    CARAPI GetJavaScriptEnabled(
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) GetAllowUniversalAccessFromFileURLs();
+    CARAPI GetAllowUniversalAccessFromFileURLs(
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) GetAllowFileAccessFromFileURLs();
+    CARAPI GetAllowFileAccessFromFileURLs(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) GetPluginsEnabled();
+    CARAPI GetPluginsEnabled(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
-    CARAPI_(Int32/*WebSettings::PluginState*/) GetPluginState();
+    CARAPI GetPluginState(
+        /* [out] */ PluginState* result);
 
     // @Override
     // synchronized
@@ -412,7 +456,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) GetJavaScriptCanOpenWindowsAutomatically();
+    CARAPI GetJavaScriptCanOpenWindowsAutomatically(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
@@ -421,7 +466,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(String) GetDefaultTextEncodingName();
+    CARAPI GetDefaultTextEncodingName(
+        /* [out] */ String* result);
 
     // @Override
     // synchronized
@@ -430,7 +476,8 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(String) GetUserAgentString();
+    CARAPI GetUserAgentString(
+        /* [out] */ String* result);
 
     // @Override
     CARAPI SetNeedInitialFocus(
@@ -439,35 +486,39 @@ public:
     // @Override
     // synchronized
     CARAPI SetRenderPriority(
-        /* [in] */ Int32/*RenderPriority*/ priority);
+        /* [in] */ RenderPriority priority);
 
     // @Override
     CARAPI SetCacheMode(
         /* [in] */ Int32 mode);
 
     // @Override
-    CARAPI_(Int32) GetCacheMode();
+    CARAPI GetCacheMode(
+        /* [out] */ Int32* result);
 
     // @Override
     CARAPI SetMediaPlaybackRequiresUserGesture(
         /* [in] */ Boolean require);
 
     // @Override
-    CARAPI_(Boolean) GetMediaPlaybackRequiresUserGesture();
+    CARAPI GetMediaPlaybackRequiresUserGesture(
+        /* [out] */ Boolean* result);
 
-    //    @Override
-    virtual CARAPI SetMixedContentMode(
+    // @Override
+    CARAPI SetMixedContentMode(
         /* [in] */ Int32 mode);
 
-    //    @Override
-    virtual CARAPI_(Int32) GetMixedContentMode();
+    // @Override
+    CARAPI GetMixedContentMode(
+        /* [out] */ Int32* result);
 
-    //    @Override
-    virtual CARAPI SetVideoOverlayForEmbeddedEncryptedVideoEnabled(
+    // @Override
+    CARAPI SetVideoOverlayForEmbeddedEncryptedVideoEnabled(
         /* [in] */ Boolean flag);
 
-    //    @Override
-    virtual CARAPI_(Boolean) GetVideoOverlayForEmbeddedEncryptedVideoEnabled();
+    // @Override
+    CARAPI GetVideoOverlayForEmbeddedEncryptedVideoEnabled(
+        /* [out] */ Boolean* result);
 
 private:
     static const String LOGTAG;

@@ -13,6 +13,8 @@ namespace Chromium {
 //=====================================================================
 //                        WebHistoryItemChromium
 //=====================================================================
+CAR_INTERFACE_IMPL(WebHistoryItemChromium, Object, IWebHistoryItem)
+
 WebHistoryItemChromium::WebHistoryItemChromium(
     /* [in] */ NavigationEntry* entry)
     : mUrl(entry->GetUrl())
@@ -88,11 +90,11 @@ ECode WebHistoryItemChromium::GetFavicon(
 ECode WebHistoryItemChromium::Clone(
     /* [out] */ WebHistoryItemChromium** chromium)
 {
-    AutoLock lock(this);
     VALIDATE_NOT_NULL(chromium);
     // ==================before translated======================
     // return new WebHistoryItemChromium(mUrl, mOriginalUrl, mTitle, mFavicon);
 
+    AutoLock lock(this);
     *chromium = new WebHistoryItemChromium(mUrl, mOriginalUrl, mTitle, mFavicon);
     REFCOUNT_ADD(*chromium);
     return NOERROR;

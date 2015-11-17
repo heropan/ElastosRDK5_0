@@ -27,14 +27,14 @@
 // import java.util.Arrays;
 // import java.util.List;
 
-using Elastos::IO::IFile;
-using Elastos::Utility::IList;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::AsyncTask;
 using Elastos::Droid::Webkit::Ui::Base::WindowElastos;
+using Elastos::IO::IFile;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {

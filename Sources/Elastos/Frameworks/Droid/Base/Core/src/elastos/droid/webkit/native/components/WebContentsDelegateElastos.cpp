@@ -169,9 +169,8 @@ void WebContentsDelegateElastos::OpenNewTab(
     /* [in] */ Int32 disposition,
     /* [in] */ Boolean isRendererInitiated)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::OpenNewTab, mObj is NULL");
         return;
     }
@@ -181,9 +180,8 @@ void WebContentsDelegateElastos::OpenNewTab(
 void WebContentsDelegateElastos::ActivateContents(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::ActivateContents, mObj is NULL");
         return;
     }
@@ -193,9 +191,8 @@ void WebContentsDelegateElastos::ActivateContents(
 void WebContentsDelegateElastos::CloseContents(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::CloseContents, mObj is NULL");
         return;
     }
@@ -205,9 +202,8 @@ void WebContentsDelegateElastos::CloseContents(
 void WebContentsDelegateElastos::OnLoadStarted(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::OnLoadStarted, mObj is NULL");
         return;
     }
@@ -217,9 +213,8 @@ void WebContentsDelegateElastos::OnLoadStarted(
 void WebContentsDelegateElastos::OnLoadStopped(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::OnLoadStopped, mObj is NULL");
         return;
     }
@@ -230,9 +225,8 @@ void WebContentsDelegateElastos::NavigationStateChanged(
     /* [in] */ IInterface* obj,
     /* [in] */ Int32 flags)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::NavigationStateChanged, mObj is NULL");
         return;
     }
@@ -242,9 +236,8 @@ void WebContentsDelegateElastos::NavigationStateChanged(
 void WebContentsDelegateElastos::VisibleSSLStateChanged(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::VisibleSSLStateChanged, mObj is NULL");
         return;
     }
@@ -255,9 +248,8 @@ void WebContentsDelegateElastos::NotifyLoadProgressChanged(
     /* [in] */ IInterface* obj,
     /* [in] */ Double progress)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::NotifyLoadProgressChanged, mObj is NULL");
         return;
     }
@@ -267,9 +259,8 @@ void WebContentsDelegateElastos::NotifyLoadProgressChanged(
 void WebContentsDelegateElastos::RendererUnresponsive(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::RendererUnresponsive, mObj is NULL");
         return;
     }
@@ -279,9 +270,8 @@ void WebContentsDelegateElastos::RendererUnresponsive(
 void WebContentsDelegateElastos::RendererResponsive(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::RendererResponsive, mObj is NULL");
         return;
     }
@@ -292,9 +282,8 @@ void WebContentsDelegateElastos::OnUpdateUrl(
     /* [in] */ IInterface* obj,
     /* [in] */ const String& url)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::OnUpdateUrl, mObj is NULL");
         return;
     }
@@ -305,9 +294,8 @@ Boolean WebContentsDelegateElastos::TakeFocus(
     /* [in] */ IInterface* obj,
     /* [in] */ Boolean reverse)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::TakeFocus, mObj is NULL");
         return FALSE;
     }
@@ -318,13 +306,12 @@ void WebContentsDelegateElastos::HandleKeyboardEvent(
     /* [in] */ IInterface* obj,
     /* [in] */ IInterface* event)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::HandleKeyboardEvent, mObj is NULL");
         return;
     }
-    AutoPtr<IKeyEvent> ke = IKeyEvent::Probe(event);
+    IKeyEvent* ke = IKeyEvent::Probe(event);
     mObj->HandleKeyboardEvent(ke);
 }
 
@@ -335,9 +322,8 @@ Boolean WebContentsDelegateElastos::AddMessageToConsole(
     /* [in] */ Int32 lineNumber,
     /* [in] */ const String& sourceId)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::AddMessageToConsole, mObj is NULL");
         return FALSE;
     }
@@ -348,13 +334,12 @@ void WebContentsDelegateElastos::ShowRepostFormWarningDialog(
     /* [in] */ IInterface* obj,
     /* [in] */ IInterface* contentViewCore)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::ShowRepostFormWarningDialog, mObj is NULL");
         return;
     }
-    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    ContentViewCore* cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
     mObj->ShowRepostFormWarningDialog(cvc);
 }
 
@@ -362,9 +347,8 @@ void WebContentsDelegateElastos::ToggleFullscreenModeForTab(
     /* [in] */ IInterface* obj,
     /* [in] */ Boolean enterFullscreen)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::ToggleFullscreenModeForTab, mObj is NULL");
         return;
     }
@@ -374,9 +358,8 @@ void WebContentsDelegateElastos::ToggleFullscreenModeForTab(
 Boolean WebContentsDelegateElastos::IsFullscreenForTabOrPending(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<WebContentsDelegateElastos> mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WebContentsDelegateElastos* mObj = (WebContentsDelegateElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("WebContentsDelegateElastos", "WebContentsDelegateElastos::IsFullscreenForTabOrPending, mObj is NULL");
         return FALSE;
     }

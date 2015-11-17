@@ -5,11 +5,11 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_COLORPICKERDIALOG_H_
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERDIALOG_H_
 
-#include "elastos/droid/ext/frameworkext.h"
 //#include "elastos/droid/app/AlertDialog.h"
-#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvanced.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerSimple.h"
+#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
 
 // package org.chromium.ui;
 // import android.app.AlertDialog;
@@ -22,16 +22,16 @@
 // import android.widget.TextView;
 
 //using Elastos::Droid::App::AlertDialog;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
+using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewOnClickListener;
-using Elastos::Droid::Widget::IButton;
-using Elastos::Droid::Content::IDialogInterface;
-using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
-using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
 using Elastos::Droid::Webkit::Ui::ColorPickerAdvanced;
 using Elastos::Droid::Webkit::Ui::ColorPickerSimple;
+using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
+using Elastos::Droid::Widget::IButton;
 
 namespace Elastos {
 namespace Droid {

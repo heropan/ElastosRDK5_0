@@ -1,50 +1,52 @@
 
-#include "elastos/droid/webkit/native/net/X509Util.h"
-#include "elastos/droid/webkit/native/net/api/X509Util_dec.h"
-#include "elastos/core/IntegralToString.h"
-#include "elastos/core/AutoLock.h"
-//#include "elastos/security/cert/CCertificateFactoryHelper.h"
-//#include "elastos/security/CKeyStoreHelper.h"
-//#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
 #include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
+//#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/utility/CPairHelper.h"
-#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/webkit/native/net/X509Util.h"
 #include "elastos/droid/webkit/native/net/CertVerifyStatusElastos.h"
+#include "elastos/droid/webkit/native/net/api/X509Util_dec.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/core/IntegralToString.h"
+#include <elastos/utility/logging/Logger.h>
+//#include "elastos/security/cert/CCertificateFactoryHelper.h"
+//#include "elastos/security/CKeyStoreHelper.h"
 
-using Elastos::Core::IntegralToString;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Keystore::Security::IKeyChain;
+//using Elastos::Droid::Net::Http::CX509TrustManagerExtensions;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Utility::CPairHelper;
+using Elastos::Droid::Utility::IPair;
+using Elastos::Droid::Utility::IPairHelper;
+using Elastos::Droid::Webkit::Net::CertVerifyStatusElastos;
 using Elastos::Core::AutoLock;
-using Elastos::IO::IInputStream;
+using Elastos::Core::CSystem;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IntegralToString;
+using Elastos::Core::ISystem;
 using Elastos::IO::CFile;
-using Elastosx::Net::Ssl::ITrustManager;
-using Elastosx::Net::Ssl::ITrustManagerFactory;
-using Elastosx::Net::Ssl::ITrustManagerFactoryHelper;
-using Elastosx::Net::Ssl::CTrustManagerFactoryHelper;
+using Elastos::IO::IInputStream;
+using Elastos::Utility::Logging::Logger;
+//using Elastos::Security::Cert::CCertificateFactoryHelper;
 using Elastos::Security::Cert::ICertificate;
 using Elastos::Security::Cert::ICertificateFactory;
 using Elastos::Security::Cert::ICertificateFactoryHelper;
+//using Elastos::Security::CKeyStoreHelper;
+using Elastos::Security::CMessageDigestHelper;
 using Elastos::Security::IKeyStoreHelper;
 using Elastos::Security::IMessageDigest;
 using Elastos::Security::IMessageDigestHelper;
-using Elastos::Security::CMessageDigestHelper;
 using Elastos::Security::IPrincipal;
-//using Elastos::Security::CKeyStoreHelper;
-//using Elastos::Security::Cert::CCertificateFactoryHelper;
 using Elastos::Utility::CHashSet;
-using Elastos::Droid::Utility::IPair;
-using Elastos::Droid::Utility::IPairHelper;
-using Elastos::Droid::Utility::CPairHelper;
-using Elastos::Droid::Keystore::Security::IKeyChain;
-using Elastos::Droid::Content::IIntentFilter;
-using Elastos::Droid::Content::CIntentFilter;
-using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::IBroadcastReceiver;
-using Elastos::Droid::Os::Build;
-//using Elastos::Droid::Net::Http::CX509TrustManagerExtensions;
-using Elastos::Droid::Webkit::Net::CertVerifyStatusElastos;
+using Elastosx::Net::Ssl::CTrustManagerFactoryHelper;
+using Elastosx::Net::Ssl::ITrustManager;
+using Elastosx::Net::Ssl::ITrustManagerFactory;
+using Elastosx::Net::Ssl::ITrustManagerFactoryHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -209,7 +211,7 @@ ECode X509Util::AddTestRootCertificate(
         sTestKeyStore->GetSize(&size);
         String sSize = IntegralToString::ToString(size);
 
-        AutoPtr<ICertificate> certificate;//-- = ICertificate::Probe(&rootCert);
+        ICertificate* certificate = ICertificate::Probe(rootCert);
         sTestKeyStore->SetCertificateEntry(String("root_cert_") + sSize, (ICertificate*)&certificate);
         ReloadTestTrustManager();
     }
@@ -290,7 +292,7 @@ Boolean X509Util::VerifyKeyUsage(
 
         // need say IX509Certificate's func GetExtendedKeyUsage how to set data to interface
         // think setting ICharSequence as String temp
-        AutoPtr<ICharSequence> charSequence = ICharSequence::Probe(item);
+        ICharSequence* charSequence = ICharSequence::Probe(item);
         charSequence->ToString(&ekuOid);
         if (ekuOid.Equals(OID_TLS_SERVER_AUTH) ||
             ekuOid.Equals(OID_ANY_EKU) ||
@@ -631,7 +633,7 @@ AutoPtr<X509Util::X509TrustManagerImplementation> X509Util::CreateTrustManager(
     tmf->GetTrustManagers((ArrayOf<ITrustManager*>**)&managers);
     for (Int32 i=0; i<managers->GetLength(); ++i) {
         AutoPtr<ITrustManager> tm = (*managers)[i];
-        AutoPtr<IX509TrustManager> x509tm = IX509TrustManager::Probe(tm);
+        IX509TrustManager* x509tm = IX509TrustManager::Probe(tm);
         if (NULL != x509tm) {
             //try {
                 if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1) {
@@ -649,7 +651,7 @@ AutoPtr<X509Util::X509TrustManagerImplementation> X509Util::CreateTrustManager(
         }
     }
 
-    //Log.e(TAG, "Could not find suitable trust manager");
+    Logger::E(TAG, "Could not find suitable trust manager");
     return NULL;
 }
 
@@ -801,7 +803,7 @@ Boolean X509Util::IsKnownRoot(
     AutoPtr<IX500Principal> principal;
     root->GetSubjectX500Principal((IX500Principal**)&principal);
 
-    AutoPtr<ICertificate> certificate = ICertificate::Probe(root);
+    ICertificate* certificate = ICertificate::Probe(root);
     AutoPtr<IPublicKey> publicKey;
     certificate->GetPublicKey((IPublicKey**)&publicKey);
 
@@ -851,7 +853,7 @@ Boolean X509Util::IsKnownRoot(
             // This should never happen.
             //String className = anchor.getClass().getName();
             String className("X509Certificate");
-            //Log.e(TAG, "Anchor " + alias + " not an X509Certificate: " + className);
+            Logger::E(TAG, String("Anchor ") + alias + String(" not an X509Certificate: ") + className);
             continue;
         }
 
@@ -862,7 +864,7 @@ Boolean X509Util::IsKnownRoot(
         AutoPtr<IPublicKey> anchorx509PublicKey;
         anchor->GetPublicKey((IPublicKey**)&anchorx509PublicKey);
 
-        AutoPtr<IPrincipal> principalTmp = IPrincipal::Probe(principal);
+        IPrincipal* principalTmp = IPrincipal::Probe(principal);
         Boolean equalPrincipal = FALSE;
         principalTmp->Equals(anchorx509Principal, &equalPrincipal);
 
@@ -891,7 +893,7 @@ ECode X509Util::NativeRecordCertVerifyCapabilitiesHistogram(
 AutoPtr<IContext> X509Util::NativeGetApplicationContext()
 {
     AutoPtr<IInterface> c = Elastos_X509Util_nativeGetApplicationContext();
-    AutoPtr<IContext> context = IContext::Probe(c);
+    IContext* context = IContext::Probe(c);
     return context;
 }
 
