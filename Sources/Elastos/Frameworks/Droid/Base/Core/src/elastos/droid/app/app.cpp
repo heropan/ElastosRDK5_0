@@ -6,6 +6,7 @@
 #include "elastos/droid/app/CActivityViewActivityContainerCallback.h"
 #include "elastos/droid/app/CApplication.h"
 #include "elastos/droid/app/CFragmentState.h"
+// #include "elastos/droid/app/CUiAutomation.h"
 #include "elastos/droid/app/CUiAutomationConnection.h"
 
 namespace Elastos {
@@ -19,6 +20,7 @@ CAR_OBJECT_IMPL(CActivityGroup)
 CAR_OBJECT_IMPL(CActivityViewActivityContainerCallback)
 CAR_OBJECT_IMPL(CApplication)
 CAR_OBJECT_IMPL(CFragmentState)
+// CAR_OBJECT_IMPL(CUiAutomation)
 CAR_OBJECT_IMPL(CUiAutomationConnection)
 
 } // namespace App

@@ -9,7 +9,6 @@ INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
 
 SOURCES += app.cpp
-SOURCES += CActivityThread.cpp
 
 SOURCES += Activity.cpp
 SOURCES += ActivityGroup.cpp
@@ -33,7 +32,7 @@ SOURCES += CActivityOptions.cpp
 SOURCES += CActivityOptionsHelper.cpp
 SOURCES += CActivityOptionsAnimationStartedListener.cpp
 
-#SOURCES += CActivityThread.cpp
+SOURCES += CActivityThread.cpp
 SOURCES += CActivityThreadHelper.cpp
 
 SOURCES += ActivityTransitionCoordinator.cpp

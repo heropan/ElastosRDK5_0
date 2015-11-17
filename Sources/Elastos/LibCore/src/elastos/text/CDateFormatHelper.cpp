@@ -59,6 +59,12 @@ ECode CDateFormatHelper::GetDateTimeInstance(
     return DateFormat::GetDateTimeInstance(dateStyle,timeStyle,locale,instance);
 }
 
+ECode CDateFormatHelper::Set24HourTimePref(
+    /* [in] */ Boolean bval)
+{
+    return DateFormat::Set24HourTimePref(bval);
+}
+
 ECode CDateFormatHelper::GetInstance(
     /* [out] */ IDateFormat** instance)
 {

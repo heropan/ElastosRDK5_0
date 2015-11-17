@@ -899,6 +899,9 @@ public:
         /* [in] */ IApplicationInfo* info,
         /* [in] */ IClassLoader* cl);
 
+    CARAPI InstallSystemApplicationInfo(
+        /* [in] */ IApplicationInfo* info) { return NOERROR;}
+
     CARAPI EnsureJitEnabled();
 
     CARAPI ScheduleGcIdler();

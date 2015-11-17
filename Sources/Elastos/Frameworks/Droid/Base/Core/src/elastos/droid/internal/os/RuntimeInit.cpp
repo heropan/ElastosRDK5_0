@@ -13,7 +13,7 @@ using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 
-AutoPtr<Elastos::Droid::DroidRuntime> sCurRuntime;
+ECO_PUBLIC AutoPtr<Elastos::Droid::DroidRuntime> sCurRuntime;
 
 namespace Elastos {
 namespace Droid {

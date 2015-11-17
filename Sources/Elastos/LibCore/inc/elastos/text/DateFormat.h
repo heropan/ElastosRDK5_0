@@ -202,7 +202,7 @@ public:
     /**
      * @hide for internal use only.
      */
-    CARAPI Set24HourTimePref(
+    static CARAPI Set24HourTimePref(
         /* [in] */ Boolean is24Hour);
 
 private:

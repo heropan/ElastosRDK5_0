@@ -32,7 +32,7 @@ using Elastos::Utility::Logging::Logger;
     } while(0);
 #endif
 
-extern AutoPtr<Elastos::Droid::DroidRuntime> sCurRuntime;
+AutoPtr<Elastos::Droid::DroidRuntime> ECO_PUBLIC sCurRuntime;
 
 namespace Elastos {
 namespace Droid {

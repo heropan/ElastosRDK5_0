@@ -17,6 +17,11 @@ CProfilerInfo::CProfilerInfo()
     , mAutoStopProfiler(FALSE)
 {}
 
+ECode CProfilerInfo::constructor()
+{
+    return NOERROR;
+}
+
 ECode CProfilerInfo::constructor(
     /* [in] */ const String& filename,
     /* [in] */ IParcelFileDescriptor* fd,

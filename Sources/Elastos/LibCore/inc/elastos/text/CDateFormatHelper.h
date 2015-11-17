@@ -49,6 +49,9 @@ public:
         /* [in] */ ILocale* locale,
         /* [out] */ IDateFormat** instance);
 
+    CARAPI Set24HourTimePref(
+        /* [in] */ Boolean bval);
+
     CARAPI GetInstance(
         /* [out] */ IDateFormat** instance);
 

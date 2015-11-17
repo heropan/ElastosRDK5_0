@@ -136,6 +136,7 @@ module
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IRemoteCallback;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Content.IIntent;
@@ -166,7 +167,6 @@ module
     interface Elastos.Droid.Internal.Os.IHandlerCallerCallback;
 
 //     using interface Elastos.Core.ICharSequence;
-//     interface Elastos.Droid.Os.ILooper;
 //     interface Elastos.Droid.Content.Pm.IResolveInfo;
 //     interface Elastos.Droid.Content.IContentResolver;
 //     interface Elastos.Droid.Content.IDialogInterface;
@@ -609,6 +609,12 @@ module
 //         interface IUiModeManager;
 //     }
 
+    //class CUiAutomation {
+    //    constructor(
+    //        [in] ILooper* looper,
+    //        [in] IIUiAutomationConnection* connection);
+    //}
+
     class CUiAutomationConnection {
         constructor();
 
@@ -618,7 +624,8 @@ module
 
     //class CAccessibilityServiceClientImpl {
     //    constructor(
-    //        [in] ILooper* looper);
+    //        [in] ILooper* looper,
+    //        [in] IUiAutomation* host);
 
     //    interface IIAccessibilityServiceClient;
     //    interface IBinder;

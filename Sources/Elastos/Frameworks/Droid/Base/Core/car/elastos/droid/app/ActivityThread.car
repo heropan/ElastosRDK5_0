@@ -1,6 +1,7 @@
 module
 {
     using interface Elastos.Utility.IList;
+    using interface Elastos.Core.IClassLoader;
 
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
@@ -103,7 +104,8 @@ module
             [out] IContextImpl** context);
 
         InstallSystemApplicationInfo(
-            [in] IApplicationInfo* info);
+            [in] IApplicationInfo* info,
+            [in] IClassLoader* cl);
 
         RegisterOnActivityPausedListener(
             [in] IActivity* activity,
