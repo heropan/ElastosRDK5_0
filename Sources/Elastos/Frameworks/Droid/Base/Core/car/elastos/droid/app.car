@@ -87,17 +87,6 @@ module
     merge("app/WallpaperInfo.car");
     merge("app/WallpaperManager.car");
 
-    // merge("app/IBatteryStats.car");
-    // merge("app/IUsageStats.car");
-    // merge("app/PermissionController.car");
-    // merge("app/ActionBarImpl.car");
-    // merge("app/AlertController.car");
-    // merge("app/MediaRouteChooserDialogFragment.car");
-    // merge("app/HeavyWeightSwitcherActivity.car");
-    // merge("app/LocalePicker.car");
-    // merge("app/ReceiverRestrictedContext.car");
-    // merge("app/IMediaContainerService.car");
-
     merge("app/admin/DeviceAdminInfo.car");
     merge("app/admin/DeviceAdminReceiver.car");
     merge("app/admin/DevicePolicyManager.car");
@@ -127,6 +116,12 @@ module
     merge("app/backup/RestoreSet.car");
     merge("app/backup/SharedPreferencesBackupHelper.car");
     merge("app/backup/WallpaperBackupHelper.car");
+
+    //merge("app/job/JobInfo.car");
+    //merge("app/job/JobParameters.car");
+    //merge("app/job/JobScheduler.car");
+    //merge("app/job/JobService.car");
+
 
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IClassLoader;
@@ -189,6 +184,29 @@ module
 //     interface Elastos.Droid.App.IActivity;
 //     interface Elastos.Droid.App.IDialog;
 //     interface Elastos.Droid.Net.IUri;
+
+
+    // namespace Elastos {
+    // namespace Droid {
+    // namespace App {
+    // namespace Job {
+
+    //     class CJobInfo {
+    //         constructor();
+
+    //         constructor(
+    //             [in] IJobInfoBuilder* builder);
+
+    //         interface IJobInfo;
+    //         interface IParcelable;
+    //     }
+
+
+    // } // namespace Job
+    // } // namespace App
+    // } // namespace Droid
+    // } // namespace Elastos
+
 
     namespace Elastos {
     namespace Droid {
