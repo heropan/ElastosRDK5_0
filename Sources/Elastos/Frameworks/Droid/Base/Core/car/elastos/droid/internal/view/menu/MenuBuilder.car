@@ -32,8 +32,7 @@ module
     [local]
     interface IMenuBuilder {
         SetDefaultShowAsAction(
-            [in] Int32 defaultShowAsAction,
-            [out] IMenuBuilder** builder);
+            [in] Int32 defaultShowAsAction);
 
         /**
          * Add a presenter to this menu. This will only hold a WeakReference;
@@ -163,12 +162,6 @@ module
 
         StartDispatchingItemsChanged();
 
-        OnItemVisibleChanged(
-            [in] IMenuItemImpl* item);
-
-        OnItemActionRequestChanged(
-            [in] IMenuItemImpl* item);
-
         GetVisibleItems(
             [out] IArrayList** items);
 
@@ -242,33 +235,6 @@ module
 
         GetExpandedItem(
             [out] IMenuItemImpl** itemImpl);
-
-        /*********** following method is not public *********/
-
-        SetExclusiveItemChecked(
-            [in] IMenuItem* item);
-
-        IsQwertyMode(
-            [out] Boolean* isQwerty);
-
-        GetResources(
-            [out] IResources** res);
-
-        DispatchMenuItemSelected(
-            [in] IMenuBuilder* menu,
-            [in] IMenuItem* item,
-            [out] Boolean* res);
-
-        FindItemWithShortcutForKey(
-            [in] Int32 keyCode,
-            [in] IKeyEvent* event,
-            [out] IMenuItemImpl** impl);
-
-        SetOptionalIconsVisible(
-            [in] Boolean visible);
-
-        GetOptionalIconsVisible(
-            [out] Boolean* res);
     }
 
     /**

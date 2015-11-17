@@ -10,4 +10,5 @@ C_DEFINES += -DDROID_CORE
 
 VPATH += $(MAKEDIR)/animation
 
+SOURCES += BaseIWindow.cpp
 SOURCES += NativeInterpolatorFactoryHelper.cpp

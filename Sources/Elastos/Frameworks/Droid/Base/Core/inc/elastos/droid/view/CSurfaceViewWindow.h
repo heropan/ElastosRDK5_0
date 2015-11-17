@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_View_CSurfaceViewWindow.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/view/BaseIWindow.h"
+#include "elastos/droid/internal/view/BaseIWindow.h"
 
 using Elastos::Droid::Internal::View::BaseIWindow;
 using Elastos::Droid::Os::IParcelFileDescriptor;
