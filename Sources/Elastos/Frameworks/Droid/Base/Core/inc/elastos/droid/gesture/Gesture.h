@@ -166,6 +166,10 @@ public:
         }
     };*/
 
+    CARAPI DescribeContents(
+        /* [out] */ Int32 *result);
+
+
     CARAPI Serialize(
         /* [in] */ IDataOutputStream *out);
 

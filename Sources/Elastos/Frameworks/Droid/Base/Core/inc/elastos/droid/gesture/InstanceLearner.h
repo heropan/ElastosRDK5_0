@@ -35,6 +35,8 @@ public:
 
     virtual ~InstanceLearner();
 
+    CARAPI constructor();
+
     CARAPI GetInstances(
         /* [in] */ IArrayList** instances);
 

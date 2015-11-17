@@ -66,7 +66,7 @@ public:
     CARAPI_(AutoPtr<IArrayList>) Classify(
         /* [in] */ Int32 sequenceType,
         /* [in] */ Int32 orientationType,
-        /* [in] */ ArrayOf<Float> vec);
+        /* [in] */ ArrayOf<Float> *vec);
 
     CARAPI Classify(
         /* [in] */ Int32 sequenceType,

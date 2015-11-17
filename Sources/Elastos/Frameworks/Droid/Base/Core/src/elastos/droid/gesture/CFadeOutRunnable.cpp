@@ -5,7 +5,6 @@ namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-
 CAR_OBJECT_IMPL(CFadeOutRunnable);
 
 CFadeOutRunnable::CFadeOutRunnable()

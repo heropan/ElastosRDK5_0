@@ -4,7 +4,7 @@
 #include "elastos/droid/gesture/GestureUtils.h"
 #include "elastos/droid/gesture/CGestureStroke.h"
 #include "elastos/droid/gesture/GestureConstants.h"
-#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/graphics/CCanvas.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CPath.h"
@@ -31,7 +31,8 @@ using Elastos::Droid::Graphics::CPath;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::CRectF;
-using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Graphics::CBitmapFactory;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Utility::Logging::Logger;
@@ -240,8 +241,10 @@ ECode Gesture::ToBitmap(
 {
     VALIDATE_NOT_NULL(bm);
 
+    AutoPtr<IBitmapFactory> bitmapFactory;
+    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> bitmap;
-    CBitmap::CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+    bitmapFactory->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
 
     AutoPtr<ICanvas> canvas;
     CCanvas::New(bitmap, (ICanvas**)&canvas);
@@ -283,8 +286,10 @@ ECode Gesture::ToBitmap(
 {
     VALIDATE_NOT_NULL(bm);
 
+    AutoPtr<IBitmapFactory> bitmapFactory;
+    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> bitmap;
-    CBitmap::CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+    bitmapFactory->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
 
     AutoPtr<ICanvas> canvas;
     CCanvas::New(bitmap, (ICanvas**)&canvas);
@@ -375,8 +380,8 @@ ECode Gesture::WriteToParcel(
     ic = ICloseable::Probe(outStream);
     ic2 = ICloseable::Probe(byteStream);
 
-    GestureUtils::CloseStreamStatic(ic);
-    GestureUtils::CloseStreamStatic(ic2);
+    GestureUtils::CloseStream(ic);
+    GestureUtils::CloseStream(ic2);
 
     if (result) {
         AutoPtr<ArrayOf<Byte> > streamBytes;
@@ -445,6 +450,14 @@ ECode Gesture::Deserialize(
         (*gesture)->AddStroke(stroke);
     }
 
+    return NOERROR;
+}
+
+ECode Gesture::DescribeContents(
+    /* [out] */ Int32 *result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = 0;
     return NOERROR;
 }
 

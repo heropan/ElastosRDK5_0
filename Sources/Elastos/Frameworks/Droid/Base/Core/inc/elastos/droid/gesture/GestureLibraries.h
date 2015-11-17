@@ -30,6 +30,8 @@ public:
         FileGestureLibrary(
             /* [in] */ IFile *path);
 
+        FileGestureLibrary();
+
         virtual ~FileGestureLibrary();
 
         CARAPI IsReadOnly(

@@ -19,6 +19,11 @@ namespace Gesture {
 CAR_INTERFACE_IMPL(InstanceLearner, Object, IComparator);
 CAR_INTERFACE_IMPL(InstanceLearner::PredictionComparator, Object, IComparator);
 
+ECode InstanceLearner::constructor()
+{
+    return NOERROR;
+}
+
 ECode InstanceLearner::PredictionComparator::Compare(
     /* [in] */ IInterface* object1,
     /* [in] */ IInterface* object2,
@@ -42,6 +47,9 @@ InstanceLearner::InstanceLearner()
 {
     mComparator = new PredictionComparator();
 }
+
+InstanceLearner::~InstanceLearner()
+{}
 
 AutoPtr<IArrayList> InstanceLearner::Classify(
     /* [in] */ Int32 sequenceType,
@@ -131,6 +139,16 @@ ECode InstanceLearner::Classify(
 
     list = Classify(sequenceType, orientationType, vec);
     *predictions = list;
+    return NOERROR;
+}
+
+ECode InstanceLearner::GetInstances(
+    /* [in] */ IArrayList** instances)
+{
+/*
+    AutoPtr<IArrayList> ret = Learner::GetInstances();
+    *instances = ret;
+*/
     return NOERROR;
 }
 

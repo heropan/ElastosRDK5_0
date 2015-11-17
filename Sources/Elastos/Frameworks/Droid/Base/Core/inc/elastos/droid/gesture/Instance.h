@@ -25,6 +25,8 @@ public:
 
     virtual ~Instance();
 
+    CARAPI constructor();
+
     /**
      * create a learning instance for a single stroke gesture
      *
@@ -38,13 +40,12 @@ public:
         /* [in] */ IGesture *gesture,
         /* [in] */ const String& label);
 
-private:
-    Instance(
-        /* [in] */ Int64 id,
-        /* [in] */ ArrayOf<Float> *sample,
-        /* [in] */ const String& sampleName);
-
-    CARAPI Normalize();
+    CARAPI CreateInstance(
+        /* [in] */ Int32 sequenceType,
+        /* [in] */ Int32 orientationType,
+        /* [in] */ IGesture *gesture,
+        /* [in] */ const String& label,
+        /* [out] */ IInstance** obj);
 
     static CARAPI SpatialSampler(
         /* [in] */ IGesture *gesture,
@@ -54,15 +55,21 @@ private:
         /* [in] */ Int32 orientationType,
         /* [in] */ IGesture *gesture);
 
+    CARAPI Normalize();
+private:
+    Instance(
+        /* [in] */ Int64 id,
+        /* [in] */ ArrayOf<Float> *sample,
+        /* [in] */ const String& sampleName);
 public:
     // the feature vector
-    const AutoPtr<ArrayOf<Float> > mVector;
+    AutoPtr<ArrayOf<Float> > mVector;
 
     // the label can be null
-    const String mLabel;
+    String mLabel;
 
     // the id of the instance
-    const Int64 mId;
+    Int64 mId;
 
 private:
     const static Int32 SEQUENCE_SAMPLE_SIZE = 16;

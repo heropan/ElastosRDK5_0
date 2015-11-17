@@ -3,6 +3,8 @@
 #include "elastos/droid/gesture/GestureUtils.h"
 #include <elastos/core/Math.h>
 
+using Elastos::Utility::IArrayList;
+
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
@@ -11,15 +13,15 @@ static AutoPtr<ArrayOf<Float> > InitORIENTATIONS()
 {
     AutoPtr<ArrayOf<Float> > orientations = ArrayOf<Float>::Alloc(10);
     (*orientations)[0] = 0.0;
-    (*orientations)[1] = (Float)(Elastos::Core::Math::DOUBLE_PI / 4.0);
-    (*orientations)[2] = (Float)(Elastos::Core::Math::DOUBLE_PI / 2.0);
-    (*orientations)[3] = (Float)(Elastos::Core::Math::DOUBLE_PI * 3.0 / 4.0);
-    (*orientations)[4] = (Float)(Elastos::Core::Math::DOUBLE_PI);
+    (*orientations)[1] = (Float)(Elastos::Core::Math::PI / 4.0);
+    (*orientations)[2] = (Float)(Elastos::Core::Math::PI / 2.0);
+    (*orientations)[3] = (Float)(Elastos::Core::Math::PI * 3.0 / 4.0);
+    (*orientations)[4] = (Float)(Elastos::Core::Math::PI);
     (*orientations)[5] = -0.0;
-    (*orientations)[6] = (Float)(-Elastos::Core::Math::DOUBLE_PI / 4.0);
-    (*orientations)[7] = (Float)(-Elastos::Core::Math::DOUBLE_PI / 2.0);
-    (*orientations)[8] = (Float)(-Elastos::Core::Math::DOUBLE_PI * 3.0 / 4.0);
-    (*orientations)[9] = (Float)(-Elastos::Core::Math::DOUBLE_PI);
+    (*orientations)[6] = (Float)(-Elastos::Core::Math::PI / 4.0);
+    (*orientations)[7] = (Float)(-Elastos::Core::Math::PI / 2.0);
+    (*orientations)[8] = (Float)(-Elastos::Core::Math::PI * 3.0 / 4.0);
+    (*orientations)[9] = (Float)(-Elastos::Core::Math::PI);
     return orientations;
 }
 
@@ -36,8 +38,16 @@ Instance::Instance(
     , mId(id)
 {}
 
+Instance::Instance()
+{}
+
 Instance::~Instance()
 {}
+
+ECode Instance::constructor()
+{
+    return NOERROR;
+}
 
 ECode Instance::Normalize()
 {
@@ -57,12 +67,11 @@ ECode Instance::Normalize()
     return NOERROR;
 }
 
-ECode Instance::CreateInstance(
+AutoPtr<Instance> Instance::CreateInstance(
     /* [in] */ Int32 sequenceType,
     /* [in] */ Int32 orientationType,
     /* [in] */ IGesture *gesture,
-    /* [in] */ const String& label,
-    /* [out] */ IInstance** obj)
+    /* [in] */ const String& label)
 {
     AutoPtr<ArrayOf<Float> > pts;
     AutoPtr<Instance> instance;
@@ -73,14 +82,26 @@ ECode Instance::CreateInstance(
         gesture->GetID(&id);
         instance = new Instance(id, pts, label);
         instance->Normalize();
-    } else {
+    }
+    else {
         SpatialSampler(gesture, (ArrayOf<Float> **)&pts);
         gesture->GetID(&id);
         instance = new Instance(id, pts, label);
     }
 
-    obj = IInstance::Probe(instance);
     REFCOUNT_ADD(instance);
+
+    return instance;
+}
+
+ECode Instance::CreateInstance(
+    /* [in] */ Int32 sequenceType,
+    /* [in] */ Int32 orientationType,
+    /* [in] */ IGesture *gesture,
+    /* [in] */ const String& label,
+    /* [out] */ IInstance** obj)
+{
+    *obj = CreateInstance(sequenceType, orientationType, gesture, label);
 
     return NOERROR;
 }
@@ -100,20 +121,11 @@ AutoPtr<ArrayOf<Float> > Instance::TemporalSampler(
     /* [in] */ Int32 orientationType,
     /* [in] */ IGesture *gesture)
 {
-    AutoPtr<IObjectContainer> strokes;
-    AutoPtr<IObjectEnumerator> enumerator;
+    AutoPtr<IArrayList> strokes;
     AutoPtr<IGestureStroke> stroke;
 
-    gesture->GetStrokes((IObjectContainer**)&strokes);
-    strokes->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-
-    Boolean hasNext = FALSE;
-    enumerator->MoveNext(&hasNext);
-    if (hasNext) {
-        AutoPtr<IInterface> item;
-        enumerator->Current((IInterface**)&item);
-        stroke = IGestureStroke::Probe(item);
-    }
+    gesture->GetStrokes((IArrayList**)&strokes);
+    strokes->Get(0, (IInterface**)&stroke);
 
     AutoPtr<ArrayOf<Float> > pts = GestureUtils::TemporalSampling((IGestureStroke *)stroke,
             SEQUENCE_SAMPLE_SIZE);

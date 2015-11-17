@@ -1,8 +1,13 @@
-#include "CInstanceHelper.h"
+#include "elastos/droid/gesture/CInstanceHelper.h"
+#include "elastos/droid/gesture/Instance.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
+
+CAR_SINGLETON_IMPL(CInstanceHelper)
+
+CAR_INTERFACE_IMPL(CInstanceHelper, Singleton, IInstanceHelper)
 
 ECode CInstanceHelper::CreateInstance(
     /* [in] */ Int32 sequenceType,
@@ -11,7 +16,12 @@ ECode CInstanceHelper::CreateInstance(
     /* [in] */ const String& label,
     /* [out] */ IInstance **instance)
 {
-    return Instance::CreateInstance(sequenceType, orientationType, gesture, label, instance);
+    AutoPtr<IInstance> ret;
+
+    ret = Instance::CreateInstance(sequenceType, orientationType, gesture, label);
+    *instance = ret;
+
+    return NOERROR;
 }
 
 ECode CInstanceHelper::SpatialSampler(
@@ -26,7 +36,12 @@ ECode CInstanceHelper::TemporalSampler(
     /* [in] */ IGesture *gesture,
     /* [out, callee] */ ArrayOf<Float> **sampler)
 {
-    return Instance::TemporalSampler(orientationType, gesture, sampler);
+    AutoPtr<ArrayOf<Float> > ret;
+
+    ret = Instance::TemporalSampler(orientationType, gesture);
+    *sampler = ret;
+
+    return NOERROR;
 }
 
 } // namespace Gesture

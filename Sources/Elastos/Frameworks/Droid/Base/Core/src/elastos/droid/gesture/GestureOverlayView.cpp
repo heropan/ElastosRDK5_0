@@ -1,5 +1,6 @@
-#include "elastos/droid/Widget/FrameLayout.h"
-#include "elastos/droid/View/Animation/AnimationUtils.h"
+//WAITING
+//#include "elastos/droid/Widget/FrameLayout.h"
+//#include "elastos/droid/View/Animation/AnimationUtils.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/gesture/GestureOverlayView.h"
 #include "elastos/droid/gesture/GestureStroke.h"
@@ -1064,7 +1065,11 @@ GestureOverlayView::FadeOutRunnable::FadeOutRunnable()
 {
 }
 
-GestureOverlayView::FadeOutRunnable::~CFadeOutRunnable()
+GestureOverlayView::FadeOutRunnable::FadeOutRunnable()
+{
+}
+
+GestureOverlayView::FadeOutRunnable::~FadeOutRunnable()
 {
 }
 
