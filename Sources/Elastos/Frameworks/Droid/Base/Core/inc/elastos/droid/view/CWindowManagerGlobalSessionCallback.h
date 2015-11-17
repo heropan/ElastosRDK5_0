@@ -12,7 +12,7 @@ namespace View {
 
 CarClass(CWindowManagerGlobalSessionCallback)
     , public Object
-    , public IWindowSessionCallback
+    , public IIWindowSessionCallback
     , public IBinder
 {
 public:
