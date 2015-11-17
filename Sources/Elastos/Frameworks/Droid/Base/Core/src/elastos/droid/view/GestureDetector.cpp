@@ -1,9 +1,9 @@
 
-#include <elastos/core/Math.h>
 #include "elastos/droid/view/GestureDetector.h"
+#include "elastos/droid/view/ViewConfiguration.h"
+#include <elastos/core/Math.h>
 // zhangjingcheng, wait...
 // #include "elastos/droid/view/VelocityTracker.h"
-// #include "elastos/droid/view/CViewConfigurationHelper.h"
 // #include "elastos/droid/view/CMotionEvent.h"
 
 using Elastos::Droid::Os::ILooper;
@@ -12,50 +12,112 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-static Int32 InitLONGPRESS_TIMEOUT()
-{
-    AutoPtr<IViewConfigurationHelper> helper;
-    // CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
-    Int32 result = 0;
-    helper->GetLongPressTimeout(&result);
-    return result;
-}
-static Int32 InitTAP_TIMEOUT()
-{
-    AutoPtr<IViewConfigurationHelper> helper;
-    // CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
-    Int32 result = 0;
-    helper->GetTapTimeout(&result);
-    return result;
-}
-static Int32 InitDOUBLE_TAP_MIN_TIME()
-{
-    AutoPtr<IViewConfigurationHelper> helper;
-    // CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
-    Int32 result = 0;
-    // helper->GetDoubleTapMinTime(&result);
-    return result;
-}
+Int32 GestureDetector::LONGPRESS_TIMEOUT =  ViewConfiguration::GetLongPressTimeout();
+Int32 GestureDetector::TAP_TIMEOUT = ViewConfiguration::GetTapTimeout();
+Int32 GestureDetector::DOUBLE_TAP_TIMEOUT = ViewConfiguration::GetDoubleTapTimeout();
+Int32 GestureDetector::DOUBLE_TAP_MIN_TIME = ViewConfiguration::GetDoubleTapMinTime();
 
-static Int32 InitDOUBLE_TAP_TIMEOUT()
+const Int32 GestureDetector::SHOW_PRESS = 1;
+const Int32 GestureDetector::LONG_PRESS = 2;
+const Int32 GestureDetector::TAP = 3;
+
+/*GestureDetector::SimpleOnGestureListener*/
+CAR_INTERFACE_IMPL_2(GestureDetector::SimpleOnGestureListener, Object,
+        IGestureDetectorOnGestureListener, IGestureDetectorOnDoubleTapListener);
+
+GestureDetector::SimpleOnGestureListener::SimpleOnGestureListener()
+{}
+
+GestureDetector::SimpleOnGestureListener::~SimpleOnGestureListener()
+{}
+
+ECode GestureDetector::SimpleOnGestureListener::constructor()
 {
-    AutoPtr<IViewConfigurationHelper> helper;
-    // CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
-    Int32 result = 0;
-    helper->GetDoubleTapTimeout(&result);
-    return result;
+    return NOERROR;
 }
 
-Int32 GestureDetector::LONGPRESS_TIMEOUT = InitLONGPRESS_TIMEOUT();
-Int32 GestureDetector::TAP_TIMEOUT = InitTAP_TIMEOUT();
-Int32 GestureDetector::DOUBLE_TAP_TIMEOUT = InitDOUBLE_TAP_TIMEOUT();
-Int32 GestureDetector::DOUBLE_TAP_MIN_TIME = InitDOUBLE_TAP_MIN_TIME();
+ECode GestureDetector::SimpleOnGestureListener::OnSingleTapUp(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
 
-const Int32 GestureDetector::SHOW_PRESS;
-const Int32 GestureDetector::LONG_PRESS;
-const Int32 GestureDetector::TAP;
+ECode GestureDetector::SimpleOnGestureListener::OnLongPress(
+    /* [in] */ IMotionEvent* e)
+{
+    return NOERROR;
+}
 
+ECode GestureDetector::SimpleOnGestureListener::OnScroll(
+    /* [in] */ IMotionEvent* e1,
+    /* [in] */ IMotionEvent* e2,
+    /* [in] */ Float distanceX,
+    /* [in] */ Float distanceY,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
 
+ECode GestureDetector::SimpleOnGestureListener::OnFling(
+    /* [in] */ IMotionEvent* e1,
+    /* [in] */ IMotionEvent* e2,
+    /* [in] */ Float velocityX,
+    /* [in] */ Float velocityY,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
+
+ECode GestureDetector::SimpleOnGestureListener::OnShowPress(
+    /* [in] */ IMotionEvent* e)
+{
+    return NOERROR;
+}
+
+ECode GestureDetector::SimpleOnGestureListener::OnDown(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
+
+ECode GestureDetector::SimpleOnGestureListener::OnDoubleTap(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
+
+ECode GestureDetector::SimpleOnGestureListener::OnDoubleTapEvent(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
+
+ECode GestureDetector::SimpleOnGestureListener::OnSingleTapConfirmed(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
+
+/* GestureDetector::GestureHandler */
 ECode GestureDetector::GestureHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
@@ -79,7 +141,8 @@ ECode GestureDetector::GestureHandler::HandleMessage(
                     Boolean tmp = FALSE;
                     mHost->mDoubleTapListener->OnSingleTapConfirmed(
                         mHost->mCurrentDownEvent, &tmp);
-                }else {
+                }
+                else {
                     mHost->mDeferConfirmSingleTap = TRUE;
                 }
             }
@@ -93,7 +156,7 @@ ECode GestureDetector::GestureHandler::HandleMessage(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(GestureDetector, Object, IGestureDetector)
+CAR_INTERFACE_IMPL(GestureDetector, Object, IGestureDetector);
 
 GestureDetector::GestureDetector()
     : mTouchSlopSquare(0)
@@ -115,29 +178,32 @@ GestureDetector::GestureDetector()
 {
 }
 
+GestureDetector::~GestureDetector()
+{}
+
 ECode GestureDetector::constructor(
-    /* [in] */ IOnGestureListener* listener,
+    /* [in] */ IGestureDetectorOnGestureListener* listener,
     /* [in] */ IHandler* handler)
 {
     return constructor(NULL, listener, handler);
 }
 
 ECode GestureDetector::constructor(
-    /* [in] */ IOnGestureListener* listener)
+    /* [in] */ IGestureDetectorOnGestureListener* listener)
 {
     return constructor(NULL, listener, NULL);
 }
 
 ECode GestureDetector::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IOnGestureListener* listener)
+    /* [in] */ IGestureDetectorOnGestureListener* listener)
 {
     return constructor(context, listener, NULL);
 }
 
 ECode GestureDetector::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IOnGestureListener* listener,
+    /* [in] */ IGestureDetectorOnGestureListener* listener,
     /* [in] */ IHandler* handler,
     /* [in] */ Boolean unused)
 {
@@ -146,12 +212,13 @@ ECode GestureDetector::constructor(
 
 ECode GestureDetector::constructor(
    /* [in] */ IContext* context,
-   /* [in] */ IOnGestureListener* listener,
+   /* [in] */ IGestureDetectorOnGestureListener* listener,
    /* [in] */ IHandler* handler)
 {
-    // if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
-        // mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IGestureDetector*)this, 0);
-    // }  zhangjingcheng
+    assert (0 && "TODO");
+    // mInputEventConsistencyVerifier =
+    //         InputEventConsistencyVerifier::IsInstrumentationEnabled() ?
+    //                 new InputEventConsistencyVerifier(THIS_PROBE(IInterface), 0) : NULL;
 
     if (handler != NULL) {
         AutoPtr<ILooper> looper;
@@ -162,8 +229,8 @@ ECode GestureDetector::constructor(
         mHandler = new GestureHandler(this);
     }
     mListener = listener;
-    if (IOnDoubleTapListener::Probe(listener)) {
-        SetOnDoubleTapListener(IOnDoubleTapListener::Probe(listener));
+    if (IGestureDetectorOnDoubleTapListener::Probe(listener)) {
+        SetOnDoubleTapListener(IGestureDetectorOnDoubleTapListener::Probe(listener));
     }
 
     if (mListener == NULL) {
@@ -184,7 +251,8 @@ ECode GestureDetector::constructor(
         //noinspection deprecation
         helper->GetMinimumFlingVelocity(&mMinimumFlingVelocity);
         helper->GetMaximumFlingVelocity(&mMaximumFlingVelocity);
-    } else {
+    }
+    else {
         AutoPtr<IViewConfiguration> configuration;
         helper->Get(context, (IViewConfiguration**)&configuration);
         configuration->GetScaledTouchSlop(&touchSlop);
@@ -200,7 +268,7 @@ ECode GestureDetector::constructor(
 }
 
 ECode GestureDetector::SetOnDoubleTapListener(
-    /* [in] */ IOnDoubleTapListener* onDoubleTapListener)
+    /* [in] */ IGestureDetectorOnDoubleTapListener* onDoubleTapListener)
 {
     mDoubleTapListener = onDoubleTapListener;
     return NOERROR;
@@ -329,7 +397,8 @@ ECode GestureDetector::OnTouchEvent(
                     // Give a callback with down event of the double-tap
                     mDoubleTapListener->OnDoubleTapEvent(ev, &dtap);
                     handled |= dtap;
-                } else {
+                }
+                else {
                     // This is a first tap
                     AutoPtr<IParcel> params;
                     CCallbackParcel::New((IParcel**)&params);
@@ -397,7 +466,8 @@ ECode GestureDetector::OnTouchEvent(
                 if (distance > mDoubleTapTouchSlopSquare) {
                     mAlwaysInBiggerTapRegion = FALSE;
                 }
-            } else if ((Elastos::Core::Math::Abs(scrollX) >= 1) || (Elastos::Core::Math::Abs(scrollY) >= 1)) {
+            }
+            else if ((Elastos::Core::Math::Abs(scrollX) >= 1) || (Elastos::Core::Math::Abs(scrollY) >= 1)) {
                 mListener->OnScroll(mCurrentDownEvent, ev, scrollX, scrollY, &handled);
                 mLastFocusX = focusX;
                 mLastFocusY = focusY;
@@ -413,16 +483,19 @@ ECode GestureDetector::OnTouchEvent(
                 // Finally, give the up event of the double-tap
                 Boolean dtap = FALSE;
                 handled |= (mDoubleTapListener->OnDoubleTapEvent(ev, &dtap), dtap);
-            } else if (mInLongPress) {
+            }
+            else if (mInLongPress) {
                 mHandler->RemoveMessages(TAP);
                 mInLongPress = FALSE;
-            } else if (mAlwaysInTapRegion) {
+            }
+            else if (mAlwaysInTapRegion) {
                 mListener->OnSingleTapUp(ev, &handled);
                 if (mDeferConfirmSingleTap && mDoubleTapListener != NULL) {
                     Boolean tmp = FALSE;
                     mDoubleTapListener->OnSingleTapConfirmed(ev, &tmp);
                 }
-            } else {
+            }
+            else {
                 // A fling must travel the minimum tap distance
                 AutoPtr<IVelocityTracker> velocityTracker = mVelocityTracker;
                 Int32 pointerId = 0;

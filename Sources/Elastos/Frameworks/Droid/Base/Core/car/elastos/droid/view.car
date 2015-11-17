@@ -173,6 +173,7 @@ module
     interface Elastos.Droid.Content.Res.IResourcesTheme;
     interface Elastos.Droid.Graphics.IPath;
     // interface Elastos.Droid.Graphics.ISurfaceTexture;
+    interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Internal.View.Animation.INativeInterpolatorFactory;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     // interface Elastos.Droid.Internal.View.IInputBindResult;
@@ -210,6 +211,11 @@ module
     interface Elastos.Droid.View.Accessibility.ICaptioningManagerCaptionStyle;
     interface Elastos.Droid.View.Accessibility.ICaptioningManagerCaptionStyleHelper;
     interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnectionCallback;
+    interface Elastos.Droid.View.IGestureDetector;
+    interface Elastos.Droid.View.IGestureDetectorOnGestureListener;
+    interface Elastos.Droid.View.IGestureDetectorOnDoubleTapListener;
+    interface Elastos.Droid.View.IScaleGestureDetector;
+    interface Elastos.Droid.View.IScaleGestureDetectorOnScaleGestureListener;
     interface Elastos.Droid.Hardware.Display.IDisplayManagerGlobal;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.ISurfaceTexture;
@@ -288,15 +294,15 @@ module
         interface IDisplay;
     }
 
-     class CDisplayInfo {
-         constructor();
+    class CDisplayInfo {
+        constructor();
 
-         constructor(
-             [in] IDisplayInfo* other);
+        constructor(
+            [in] IDisplayInfo* other);
 
-         interface IDisplayInfo;
-         interface IParcelable;
-     }
+        interface IDisplayInfo;
+        interface IParcelable;
+    }
 
     //     class CDisplayManagerAw {
     //         constructor();
@@ -369,16 +375,16 @@ module
       * from an InputChannel at a time.
       * @hide
       */
-     class CInputChannel {
-         constructor();
+    class CInputChannel {
+        constructor();
 
-         interface IInputChannel;
-         interface IParcelable;
+        interface IInputChannel;
+        interface IParcelable;
      }
 
-     singleton class CInputChannelHelper {
-         interface IInputChannelHelper;
-     }
+    singleton class CInputChannelHelper {
+        interface IInputChannelHelper;
+    }
 
     //     /**
     //      * An input queue provides a mechanism for an application to receive incoming
@@ -406,10 +412,10 @@ module
     //      * the appropriate interpretation.
     //      * </p>
     //      */
-     class CInputDevice {
-         constructor();
+    class CInputDevice {
+        constructor();
 
-         constructor(
+        constructor(
             [in] Int32 id,
             [in] Int32 generation,
             [in] Int32 controllerNumber,
@@ -424,8 +430,8 @@ module
             [in] Boolean hasVibrator,
             [in] Boolean hasButtonUnderPad);
 
-         interface IInputDevice;
-         interface IParcelable;
+        interface IInputDevice;
+        interface IParcelable;
      }
 
     [local]
@@ -706,50 +712,50 @@ module
     //         interface IPointerIconHelper;
     //     }
 
-     class CDragEvent {
-         constructor();
+    class CDragEvent {
+        constructor();
 
-         interface IDragEvent;
-         interface IParcelable;
-     }
+        interface IDragEvent;
+        interface IParcelable;
+    }
 
-     singleton class CFocusFinderHelper {
-         constructor();
+    singleton class CFocusFinderHelper {
+        constructor();
 
-         interface IFocusFinderHelper;
-     }
+        interface IFocusFinderHelper;
+    }
 
     //     singleton class CDragEventHelper {
     //         interface IDragEventHelper;
     //     }
 
-    //     [local]
-    //     class CViewConfiguration {
-    //         /**
-    //          * @deprecated Use {@link android.view.ViewConfiguration#get(android.content.Context)} instead.
-    //          */
-    //         constructor();
+    [local]
+    class CViewConfiguration {
+        /**
+         * @deprecated Use {@link android.view.ViewConfiguration#get(android.content.Context)} instead.
+         */
+        constructor();
 
-    //         /**
-    //          * Creates a new configuration for the specified context. The configuration depends on
-    //          * various parameters of the context, like the dimension of the display or the density
-    //          * of the display.
-    //          *
-    //          * @param context The application context used to initialize this view configuration.
-    //          *
-    //          * @see #get(android.content.Context)
-    //          * @see android.util.DisplayMetrics
-    //          */
-    //         constructor(
-    //             [in] IContext* ctx);
+        /**
+         * Creates a new configuration for the specified context. The configuration depends on
+         * various parameters of the context, like the dimension of the display or the density
+         * of the display.
+         *
+         * @param context The application context used to initialize this view configuration.
+         *
+         * @see #get(android.content.Context)
+         * @see android.util.DisplayMetrics
+         */
+        constructor(
+            [in] IContext* ctx);
 
-    //         interface IViewConfiguration;
-    //     }
+        interface IViewConfiguration;
+    }
 
-    //     [local]
-    //     singleton class CViewConfigurationHelper {
-    //         interface IViewConfigurationHelper;
-    //     }
+    [local]
+    singleton class CViewConfigurationHelper {
+        interface IViewConfigurationHelper;
+    }
 
         [local]
         class CViewGroupLayoutParams {
@@ -809,58 +815,58 @@ module
     //         interface IAccessibilityInteractionController;
     //     }
 
-     class CSurface {
-         /**
-          * Create an empty surface, which will later be filled in by readFromParcel().
-          * @hide
-          */
-         constructor();
+    class CSurface {
+        /**
+         * Create an empty surface, which will later be filled in by readFromParcel().
+         * @hide
+         */
+        constructor();
 
-         /**
-          * Create a surface with a name.
-          *
-          * The surface creation flags specify what kind of surface to create and
-          * certain options such as whether the surface can be assumed to be opaque
-          * and whether it should be initially hidden.  Surfaces should always be
-          * created with the {@link #HIDDEN} flag set to ensure that they are not
-          * made visible prematurely before all of the surface's properties have been
-          * configured.
-          *
-          * Good practice is to first create the surface with the {@link #HIDDEN} flag
-          * specified, open a transaction, set the surface layer, layer stack, alpha,
-          * and position, call {@link #show} if appropriate, and close the transaction.
-          *
-          * @param session The surface session, must not be null.
-          * @param name The surface name, must not be null.
-          * @param w The surface initial width.
-          * @param h The surface initial height.
-          * @param flags The surface creation flags.  Should always include {@link #HIDDEN}
-          * in the creation flags.
-          * @hide
-          */
-         constructor(
-             [in] Int64 nativeObject);
+        /**
+         * Create a surface with a name.
+         *
+         * The surface creation flags specify what kind of surface to create and
+         * certain options such as whether the surface can be assumed to be opaque
+         * and whether it should be initially hidden.  Surfaces should always be
+         * created with the {@link #HIDDEN} flag set to ensure that they are not
+         * made visible prematurely before all of the surface's properties have been
+         * configured.
+         *
+         * Good practice is to first create the surface with the {@link #HIDDEN} flag
+         * specified, open a transaction, set the surface layer, layer stack, alpha,
+         * and position, call {@link #show} if appropriate, and close the transaction.
+         *
+         * @param session The surface session, must not be null.
+         * @param name The surface name, must not be null.
+         * @param w The surface initial width.
+         * @param h The surface initial height.
+         * @param flags The surface creation flags.  Should always include {@link #HIDDEN}
+         * in the creation flags.
+         * @hide
+         */
+        constructor(
+            [in] Int64 nativeObject);
 
-         /**
-          * Create Surface from a {@link SurfaceTexture}.
-          *
-          * Images drawn to the Surface will be made available to the {@link
-          * SurfaceTexture}, which can attach them to an OpenGL ES texture via {@link
-          * SurfaceTexture#updateTexImage}.
-          *
-          * @param surfaceTexture The {@link SurfaceTexture} that is updated by this
-          * Surface.
-          */
-         constructor(
-             [in] ISurfaceTexture* surfaceTexture);
+        /**
+         * Create Surface from a {@link SurfaceTexture}.
+         *
+         * Images drawn to the Surface will be made available to the {@link
+         * SurfaceTexture}, which can attach them to an OpenGL ES texture via {@link
+         * SurfaceTexture#updateTexImage}.
+         *
+         * @param surfaceTexture The {@link SurfaceTexture} that is updated by this
+         * Surface.
+         */
+        constructor(
+            [in] ISurfaceTexture* surfaceTexture);
 
-         interface ISurface;
-         interface IParcelable;
+        interface ISurface;
+        interface IParcelable;
      }
 
-     singleton class CSurfaceControlHelper {
-         interface ISurfaceControlHelper;
-     }
+    singleton class CSurfaceControlHelper {
+        interface ISurfaceControlHelper;
+    }
 
     class CSurfaceSession {
         constructor();
@@ -911,13 +917,13 @@ module
     //         interface ISurfaceViewHelper;
     //     }
 
-     class CSurfaceViewWindow {
-         constructor(
-             [in] ISurfaceView* surfaceView);
+    class CSurfaceViewWindow {
+        constructor(
+            [in] ISurfaceView* surfaceView);
 
-         interface IIWindow;
-         interface IBinder;
-     }
+        interface IIWindow;
+        interface IBinder;
+    }
 
     //     [local]
     //     class CViewRootImplW {
@@ -1077,30 +1083,36 @@ module
     //     interface IParcelable;
     // }
 
-    // // ViewStub
-    // [local]
-    // class CViewStub {
-    //     constructor(
-    //         [in] IContext* ctx);
+    [local]
+    class CViewStub {
+        constructor(
+            [in] IContext* ctx);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] Int32 layoutResource);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 layoutResource);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs,
-    //         [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-    //     interface IViewStub;
-    //     interface IDrawableCallback;
-    //     interface IKeyEventCallback;
-    //     interface IAccessibilityEventSource;
-    // }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IViewStub;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
     // [local]
     // class CContextThemeWrapper {
@@ -1116,43 +1128,56 @@ module
     [local]
     class CGestureDetector {
         constructor(
-            [in] IOnGestureListener* listener,
+            [in] IGestureDetectorOnGestureListener* listener,
             [in] IHandler* handler);
 
         constructor(
-            [in] IOnGestureListener* listener);
+            [in] IGestureDetectorOnGestureListener* listener);
 
         constructor(
             [in] IContext* ctx,
-            [in] IOnGestureListener* listener);
+            [in] IGestureDetectorOnGestureListener* listener);
 
         constructor(
             [in] IContext* ctx,
-            [in] IOnGestureListener* listener,
+            [in] IGestureDetectorOnGestureListener* listener,
             [in] IHandler* handler);
 
         constructor(
             [in] IContext* ctx,
-            [in] IOnGestureListener* listener,
+            [in] IGestureDetectorOnGestureListener* listener,
             [in] IHandler* handler,
             [in] Boolean unused);
 
         interface IGestureDetector;
     }
 
+    class CGestureDetectorSimpleOnGestureListener {
+        constructor();
 
-    // [local]
-    // class CScaleGestureDetector {
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IOnScaleGestureListener* listener);
+        interface IGestureDetectorOnGestureListener;
+        interface IGestureDetectorOnDoubleTapListener;
+    }
 
-    //     interface IScaleGestureDetector;
-    // }
+    [local]
+    class CScaleGestureDetector {
+        constructor(
+            [in] IContext* ctx,
+            [in] IScaleGestureDetectorOnScaleGestureListener* listener);
 
-    // class CSimpleOnScaleGestureListener {
-    //     interface IOnScaleGestureListener;
-    // }
+        constructor(
+            [in] IContext* ctx,
+            [in] IScaleGestureDetectorOnScaleGestureListener* listener,
+            [in] IHandler* handler);
+
+        interface IScaleGestureDetector;
+    }
+
+    class CScaleGestureDetectorSimpleOnScaleGestureListener {
+        constructor();
+
+        interface IScaleGestureDetectorOnScaleGestureListener;
+    }
 
     // singleton class CVelocityTrackerHelper {
     //     interface IVelocityTrackerHelper;

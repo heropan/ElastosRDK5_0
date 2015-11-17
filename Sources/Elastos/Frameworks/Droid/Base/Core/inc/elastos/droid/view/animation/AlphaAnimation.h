@@ -40,6 +40,13 @@ protected:
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
 
+    // @Override
+    CARAPI Clone(
+        /* [out] */ IInterface** object);
+
+    CARAPI CloneImpl(
+        /* [in] */ IAlphaAnimation* object);
+
 private:
     Float mFromAlpha;
     Float mToAlpha;

@@ -1,11 +1,11 @@
+#include "elastos/droid/view/CScaleGestureDetectorSimpleOnScaleGestureListener.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/view/CScaleGestureDetector.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CAR_OBJECT_IMPL(CScaleGestureDetector);
+CAR_OBJECT_IMPL(CScaleGestureDetectorSimpleOnScaleGestureListener);
 
 } // namespace View
 } // namespace Droid

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CVIEWCONFIGURATIONHELPER_H__
 
 #include "_Elastos_Droid_View_CViewConfigurationHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -11,8 +12,14 @@ namespace Droid {
 namespace View {
 
 CarClass(CViewConfigurationHelper)
+    , public Singleton
+    , public IViewConfigurationHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns a configuration for the specified context. The configuration depends on
      * various parameters of the context, like the dimension of the display or the
@@ -102,6 +109,16 @@ public:
      */
     CARAPI GetDoubleTapTimeout(
         /* [out] */ Int32* doubleTapTimeout);
+
+    /**
+     * @return the minimum duration in milliseconds between the first tap's
+     * up event and the second tap's down event for an interaction to be considered a
+     * double-tap.
+     *
+     * @hide
+     */
+    CARAPI GetDoubleTapMinTime(
+        /* [out] */ Int32* doubleTapMinTime);
 
     /**
      * @return the maximum duration in milliseconds between a touch pad
@@ -212,7 +229,9 @@ public:
      *
      * @return how Int64 a user needs to press the relevant key to bring up
      *   the global actions dialog.
+     * @deprecated This timeout should not be used by applications
      */
+    //@Deprecated
     CARAPI GetGlobalActionKeyTimeout(
         /* [out] */ Int64* globalActionKeyTimeout);
 

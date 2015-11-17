@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_VIEW_GESTUREDETECTOR_H__
 #define __ELASTOS_DROID_VIEW_GESTUREDETECTOR_H__
 
-#include <elastos/core/Object.h>
 #include "elastos/droid/os/Handler.h"
 // #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/view/InputEventConsistencyVerifier.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Handler;
@@ -18,6 +18,62 @@ class GestureDetector
     : public Object
     , public IGestureDetector
 {
+public:
+    class SimpleOnGestureListener
+        : public Object
+        , public IGestureDetectorOnGestureListener
+        , public IGestureDetectorOnDoubleTapListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        SimpleOnGestureListener();
+
+        ~SimpleOnGestureListener();
+
+        CARAPI constructor();
+
+        CARAPI OnSingleTapUp(
+            /* [in] */ IMotionEvent* e,
+            /* [out] */ Boolean* res);
+
+        CARAPI OnLongPress(
+            /* [in] */ IMotionEvent* e);
+
+        CARAPI OnScroll(
+            /* [in] */ IMotionEvent* e1,
+            /* [in] */ IMotionEvent* e2,
+            /* [in] */ Float distanceX,
+            /* [in] */ Float distanceY,
+            /* [out] */ Boolean* res);
+
+        CARAPI OnFling(
+            /* [in] */ IMotionEvent* e1,
+            /* [in] */ IMotionEvent* e2,
+            /* [in] */ Float velocityX,
+            /* [in] */ Float velocityY,
+            /* [out] */ Boolean* res);
+
+        CARAPI OnShowPress(
+            /* [in] */ IMotionEvent* e);
+
+        CARAPI OnDown(
+            /* [in] */ IMotionEvent* e,
+            /* [out] */ Boolean* res);
+
+        CARAPI OnDoubleTap(
+            /* [in] */ IMotionEvent* e,
+            /* [out] */ Boolean* res);
+
+        CARAPI OnDoubleTapEvent(
+            /* [in] */ IMotionEvent* e,
+            /* [out] */ Boolean* res);
+
+        CARAPI OnSingleTapConfirmed(
+            /* [in] */ IMotionEvent* e,
+            /* [out] */ Boolean* res);
+    };
+
 private:
     class GestureHandler : public Handler
     {
@@ -45,6 +101,8 @@ public:
 
     GestureDetector();
 
+    ~GestureDetector();
+
     /**
      * Creates a GestureDetector with the supplied listener.
      * This variant of the constructor should be used from a non-UI thread
@@ -62,7 +120,7 @@ public:
      */
     //@Deprecated
     CARAPI constructor(
-        /* [in] */ IOnGestureListener* listener,
+        /* [in] */ IGestureDetectorOnGestureListener* listener,
         /* [in] */ IHandler* handler);
 
     /**
@@ -80,11 +138,11 @@ public:
      */
     //@Deprecated
     CARAPI constructor(
-        /* [in] */ IOnGestureListener* listener);
+        /* [in] */ IGestureDetectorOnGestureListener* listener);
 
     /**
      * Creates a GestureDetector with the supplied listener.
-     * You may only use this constructor from a UI thread (this is the usual situation).
+     * You may only use this constructor from a {@link android.os.Looper} thread.
      * @see android.os.Handler#Handler()
      *
      * @param context the application's context
@@ -95,40 +153,41 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IOnGestureListener* listener);
+        /* [in] */ IGestureDetectorOnGestureListener* listener);
 
     /**
-     * Creates a GestureDetector with the supplied listener.
-     * You may only use this constructor from a UI thread (this is the usual situation).
+     * Creates a GestureDetector with the supplied listener that runs deferred events on the
+     * thread associated with the supplied {@link android.os.Handler}.
      * @see android.os.Handler#Handler()
      *
      * @param context the application's context
      * @param listener the listener invoked for all the callbacks, this must
      * not be null.
-     * @param handler the handler to use
+     * @param handler the handler to use for running deferred listener events.
      *
      * @throws NullPointerException if {@code listener} is null.
      */
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IOnGestureListener* listener,
+        /* [in] */ IGestureDetectorOnGestureListener* listener,
         /* [in] */ IHandler* handler);
 
     /**
-     * Creates a GestureDetector with the supplied listener.
-     * You may only use this constructor from a UI thread (this is the usual situation).
+     * Creates a GestureDetector with the supplied listener that runs deferred events on the
+     * thread associated with the supplied {@link android.os.Handler}.
      * @see android.os.Handler#Handler()
      *
      * @param context the application's context
      * @param listener the listener invoked for all the callbacks, this must
      * not be null.
-     * @param handler the handler to use
+     * @param handler the handler to use for running deferred listener events.
+     * @param unused currently not used.
      *
      * @throws NullPointerException if {@code listener} is null.
      */
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IOnGestureListener* listener,
+        /* [in] */ IGestureDetectorOnGestureListener* listener,
         /* [in] */ IHandler* handler,
         /* [in] */ Boolean unused);
 
@@ -140,7 +199,7 @@ public:
      *        null to stop listening for double-tap gestures.
      */
     CARAPI SetOnDoubleTapListener(
-        /* [in] */ IOnDoubleTapListener* onDoubleTapListener);
+        /* [in] */ IGestureDetectorOnDoubleTapListener* onDoubleTapListener);
 
     /**
      * Set whether longpress is enabled, if this is enabled when a user
@@ -191,19 +250,19 @@ private:
     Int32 mMinimumFlingVelocity;
     Int32 mMaximumFlingVelocity;
 
-    static Int32 LONGPRESS_TIMEOUT;// = ViewConfiguration.getLongPressTimeout();
-    static Int32 TAP_TIMEOUT;// = ViewConfiguration.getTapTimeout();
-    static Int32 DOUBLE_TAP_TIMEOUT;// = ViewConfiguration.getDoubleTapTimeout();
-    static Int32 DOUBLE_TAP_MIN_TIME;// = ViewConfiguration.getDoubleTapMinTime();
+    static Int32 LONGPRESS_TIMEOUT;
+    static Int32 TAP_TIMEOUT;
+    static Int32 DOUBLE_TAP_TIMEOUT;
+    static Int32 DOUBLE_TAP_MIN_TIME;
 
     // constants for Message.what used by GestureHandler below
-    static const Int32 SHOW_PRESS = 1;
-    static const Int32 LONG_PRESS = 2;
-    static const Int32 TAP = 3;
+    static const Int32 SHOW_PRESS;
+    static const Int32 LONG_PRESS;
+    static const Int32 TAP;
 
     AutoPtr<IHandler> mHandler;
-    IOnGestureListener* mListener;
-    AutoPtr<IOnDoubleTapListener> mDoubleTapListener;
+    IGestureDetectorOnGestureListener* mListener;
+    AutoPtr<IGestureDetectorOnDoubleTapListener> mDoubleTapListener;
 
     Boolean mStillDown;
     Boolean mDeferConfirmSingleTap;

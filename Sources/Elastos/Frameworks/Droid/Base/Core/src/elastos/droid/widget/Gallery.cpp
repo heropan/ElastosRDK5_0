@@ -19,7 +19,7 @@ using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::View::CViewConfiguration;
 using Elastos::Droid::View::CGestureDetector;
-using Elastos::Droid::View::IOnGestureListener;
+using Elastos::Droid::View::IGestureDetectorOnGestureListener;
 using Elastos::Droid::View::EIID_IOnGestureListener;
 using Elastos::Droid::Widget::CGalleryLayoutParams;
 using Elastos::Droid::Widget::CScroller;
@@ -203,7 +203,7 @@ ECode Gallery::Init(
 {
     ASSERT_SUCCEEDED(AbsSpinner::Init(context, attrs, defStyle));
 
-    FAIL_RETURN(CGestureDetector::New(context, (IOnGestureListener*)this->Probe(EIID_IOnGestureListener),
+    FAIL_RETURN(CGestureDetector::New(context, (IGestureDetectorOnGestureListener*)this->Probe(EIID_IOnGestureListener),
         (IGestureDetector**)&mGestureDetector));
     mGestureDetector->SetIsLongpressEnabled(TRUE);
 

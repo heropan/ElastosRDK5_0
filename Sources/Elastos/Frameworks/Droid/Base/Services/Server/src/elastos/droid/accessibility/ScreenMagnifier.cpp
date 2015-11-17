@@ -106,9 +106,9 @@ ScreenMagnifier::MagnifiedContentInteractonStateHandler::MagnifiedContentInterac
     , mScaling(FALSE)
     , mHost(host)
 {
-    ASSERT_SUCCEEDED(CScaleGestureDetector::New(context, (IOnScaleGestureListener*)this,
+    ASSERT_SUCCEEDED(CScaleGestureDetector::New(context, (IScaleGestureDetectorOnScaleGestureListener*)this,
         (IScaleGestureDetector**)&mScaleGestureDetector));
-    ASSERT_SUCCEEDED(CGestureDetector::New(context, (IOnGestureListener*)this,
+    ASSERT_SUCCEEDED(CGestureDetector::New(context, (IGestureDetectorOnGestureListener*)this,
         (IGestureDetector**)&mGestureDetector));
 }
 
@@ -116,16 +116,16 @@ PInterface ScreenMagnifier::MagnifiedContentInteractonStateHandler::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)(IOnGestureListener*)this;
+        return (PInterface)(IGestureDetectorOnGestureListener*)this;
     }
     else if (riid == Elastos::Droid::View::EIID_IOnGestureListener) {
-        return (IOnGestureListener*)this;
+        return (IGestureDetectorOnGestureListener*)this;
     }
     else if (riid == Elastos::Droid::View::EIID_IOnDoubleTapListener) {
-        return (IOnDoubleTapListener*)this;
+        return (IGestureDetectorOnDoubleTapListener*)this;
     }
     else if (riid == Elastos::Droid::View::EIID_IOnScaleGestureListener) {
-        return (IOnScaleGestureListener*)this;
+        return (IScaleGestureDetectorOnScaleGestureListener*)this;
     }
 
     return NULL;

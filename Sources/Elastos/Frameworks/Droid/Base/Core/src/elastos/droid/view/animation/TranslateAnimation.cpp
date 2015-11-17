@@ -1,4 +1,5 @@
 
+#include "elastos/droid/view/animation/TranslateAnimation.h"
 #include "elastos/droid/view/animation/CTranslateAnimation.h"
 #include "elastos/droid/R.h"
 
@@ -134,6 +135,41 @@ ECode TranslateAnimation::Initialize(
     mToXDelta = ResolveSize(mToXType, mToXValue, width, parentWidth);
     mFromYDelta = ResolveSize(mFromYType, mFromYValue, height, parentHeight);
     mToYDelta = ResolveSize(mToYType, mToYValue, height, parentHeight);
+
+    return NOERROR;
+}
+
+ECode TranslateAnimation::Clone(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<ITranslateAnimation> obj;
+    CTranslateAnimation::New(0.0f, 0.0f, 0.0f, 0.0f, (ITranslateAnimation**)&obj);
+    TranslateAnimation::CloneImpl(obj);
+    *object = obj;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode TranslateAnimation::CloneImpl(
+    /* [in] */ ITranslateAnimation* object)
+{
+    Animation::CloneImpl(IAnimation::Probe(object));
+    TranslateAnimation* obj = (TranslateAnimation*)object;
+
+    obj->mFromXType = mFromXType;
+    obj->mToXType = mToXType;
+    obj->mFromYType = mFromYType;
+    obj->mToYType = mToYType;
+    obj->mFromXValue = mFromXValue;
+    obj->mToXValue = mToXValue;
+    obj->mFromYValue = mFromYValue;
+    obj->mToYValue = mToYValue;
+    obj->mFromXDelta = mFromXDelta;
+    obj->mToXDelta = mToXDelta;
+    obj->mFromYDelta = mFromYDelta;
+    obj->mToYDelta = mToYDelta;
 
     return NOERROR;
 }

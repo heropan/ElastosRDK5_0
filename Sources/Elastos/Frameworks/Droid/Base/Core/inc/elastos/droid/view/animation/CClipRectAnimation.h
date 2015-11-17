@@ -38,13 +38,21 @@ public:
         /* [in] */ IRect* toClip);
 
     // @Override
+    CARAPI WillChangeTransformationMatrix(
+        /* [out] */ Boolean* result);
+
+protected:
+    // @Override
     CARAPI_(void) ApplyTransformation(
         /* [in] */ Float it,
         /* [in] */ ITransformation* tr);
 
     // @Override
-    CARAPI WillChangeTransformationMatrix(
-        /* [out] */ Boolean* result);
+    CARAPI Clone(
+        /* [out] */ IInterface** object);
+
+    CARAPI CloneImpl(
+        /* [in] */ CClipRectAnimation* object);
 
 private:
     AutoPtr<IRect> mFromRect;

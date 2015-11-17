@@ -7,8 +7,8 @@
 
 using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::R;
 using Elastos::Droid::Os::Build;
+using Elastos::Droid::R;
 using Elastos::Utility::CArrayList;
 
 namespace Elastos {
@@ -34,7 +34,6 @@ AnimationSet::AnimationSet()
 {
     CArrayList::New((IArrayList**)&mAnimations);
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTempTransformation));
-    mStoredOffsets = NULL;
 }
 
 AnimationSet::~AnimationSet()
@@ -68,26 +67,21 @@ ECode AnimationSet::constructor(
     AutoPtr<IApplicationInfo> application;
     context->GetApplicationInfo((IApplicationInfo**)&application);
     application->GetTargetSdkVersion(&targetSdkVersion);
-    if(targetSdkVersion >= Build::VERSION_CODES::ICE_CREAM_SANDWICH) {
+    if (targetSdkVersion >= Build::VERSION_CODES::ICE_CREAM_SANDWICH) {
         Boolean has;
-        if(a->HasValue(R::styleable::AnimationSet_duration, &has), has)
-        {
+        if (a->HasValue(R::styleable::AnimationSet_duration, &has), has) {
             mFlags |= PROPERTY_DURATION_MASK;
         }
-        if(a->HasValue(R::styleable::AnimationSet_fillBefore, &has), has)
-        {
+        if (a->HasValue(R::styleable::AnimationSet_fillBefore, &has), has) {
             mFlags |= PROPERTY_FILL_BEFORE_MASK;
         }
-        if(a->HasValue(R::styleable::AnimationSet_fillAfter, &has), has)
-        {
+        if (a->HasValue(R::styleable::AnimationSet_fillAfter, &has), has) {
             mFlags |= PROPERTY_FILL_AFTER_MASK;
         }
-        if(a->HasValue(R::styleable::AnimationSet_repeatMode, &has), has)
-        {
+        if (a->HasValue(R::styleable::AnimationSet_repeatMode, &has), has) {
             mFlags |= PROPERTY_REPEAT_MODE_MASK;
         }
-        if(a->HasValue(R::styleable::AnimationSet_startOffset, &has), has)
-        {
+        if (a->HasValue(R::styleable::AnimationSet_startOffset, &has), has) {
             mFlags |= PROPERTY_START_OFFSET_MASK;
         }
     }
@@ -110,13 +104,27 @@ ECode AnimationSet::Clone(
 {
     VALIDATE_NOT_NULL(object);
 
-    AutoPtr<IInterface> obj;
-    Animation::Clone((IInterface**)&obj);
-    AutoPtr<IAnimationSet> result = IAnimationSet::Probe(obj);
+    AutoPtr<IAnimationSet> obj;
+    CAnimationSet::New(TRUE, (IAnimationSet**)&obj);
+    AnimationSet::CloneImpl(obj);
+    *object = obj;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
 
-    AnimationSet* animation = (AnimationSet*)result.Get();
-    CTransformation::New((ITransformation**)&animation->mTempTransformation);
-    CArrayList::New((IArrayList**)&animation->mAnimations);
+ECode AnimationSet::CloneImpl(
+    /* [in] */ IAnimationSet* object)
+{
+    Animation::CloneImpl(IAnimation::Probe(object));
+
+    AnimationSet* obj = (AnimationSet*)object;
+    obj->mFlags = mFlags;
+    obj->mDirty = mDirty;
+    obj->mHasAlpha = mHasAlpha;
+    obj->mLastEnd = mLastEnd;
+    obj->mStoredOffsets = mStoredOffsets;
+    CTransformation::New((ITransformation**)&obj->mTempTransformation);
+    CArrayList::New((IArrayList**)&obj->mAnimations);
 
     Int32 count;
     mAnimations->GetSize(&count);
@@ -127,11 +135,9 @@ ECode AnimationSet::Clone(
         animations->Get(i, (IInterface**)&obj);
         AutoPtr<IInterface> objectClone;
         ICloneable::Probe(obj)->Clone((IInterface**)&objectClone);
-        animation->mAnimations->Add(objectClone);
+        obj->mAnimations->Add(objectClone);
     }
 
-    *object = (IAnimation*)animation;
-    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -394,7 +400,7 @@ ECode AnimationSet::InitializeInvalidateRegion(
             Boolean res, res1;
             Int64 startOffset;
             if ((a->IsFillEnabled(&res), !res) || (a->GetFillBefore(&res1), res1)
-                    || (a->GetStartOffset(&startOffset), startOffset) == 0) {
+                    || (a->GetStartOffset(&startOffset), startOffset == 0)) {
                 temp->Clear();
                 AutoPtr<Animation> animation = (Animation*)a.Get();
                 AutoPtr<IInterpolator> interpolator = animation->mInterpolator;
@@ -444,14 +450,14 @@ ECode AnimationSet::GetTransformation(
 
     if (started && !mStarted) {
         if (mListener != NULL) {
-            mListener->OnAnimationStart(THIS_PROBE(IAnimation));
+            mListener->OnAnimationStart((IAnimation*)this);
         }
         mStarted = TRUE;
     }
 
     if (ended != mEnded) {
         if (mListener != NULL) {
-            mListener->OnAnimationEnd(THIS_PROBE(IAnimation));
+            mListener->OnAnimationEnd((IAnimation*)this);
         }
         mEnded = ended;
     }

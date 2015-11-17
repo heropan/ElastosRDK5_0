@@ -1,11 +1,12 @@
 
+#include "elastos/droid/view/animation/ScaleAnimation.h"
 #include "elastos/droid/view/animation/CScaleAnimation.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::R;
 using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
@@ -273,6 +274,48 @@ void ScaleAnimation::InitializePivotPoint()
     if (mPivotYType == IAnimation::ABSOLUTE) {
         mPivotY = mPivotYValue;
     }
+}
+
+ECode ScaleAnimation::Clone(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IScaleAnimation> obj;
+    CScaleAnimation::New(0.0f, 0.0f, 0.0f, 0.0f, (IScaleAnimation**)&obj);
+    ScaleAnimation::CloneImpl(obj);
+    *object = obj;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode ScaleAnimation::CloneImpl(
+    /* [in] */ IScaleAnimation* object)
+{
+    Animation::CloneImpl(IAnimation::Probe(object));
+    ScaleAnimation* obj = (ScaleAnimation*)object;
+
+    obj->mResources = mResources;
+    obj->mFromX = mFromX;
+    obj->mToX = mToX;
+    obj->mFromY = mFromY;
+    obj->mToY = mToY;
+    obj->mFromXType = mFromXType;
+    obj->mToXType = mToXType;
+    obj->mFromYType = mFromYType;
+    obj->mToYType = mToYType;
+    obj->mFromXData = mFromXData;
+    obj->mToXData = mToXData;
+    obj->mFromYData = mFromYData;
+    obj->mToYData = mToYData;
+    obj->mPivotXType = mPivotXType;
+    obj->mPivotYType = mPivotYType;
+    obj->mPivotXValue = mPivotXValue;
+    obj->mPivotYValue = mPivotYValue;
+    obj->mPivotX = mPivotX;
+    obj->mPivotY = mPivotY;
+
+    return NOERROR;
 }
 
 }   //namespace Animation

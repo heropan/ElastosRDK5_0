@@ -7,6 +7,7 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Utility::IRandom;
 
 namespace Elastos {
 namespace Droid {
@@ -120,13 +121,12 @@ public:
         /* [out] */ Boolean* done);
 
 protected:
-    CARAPI_(Int64) GetDelayForView(
+    virtual CARAPI_(Int64) GetDelayForView(
         /* [in] */ IView* view);
 
-    CARAPI_(Int32) GetTransformedIndex(
+    virtual CARAPI_(Int32) GetTransformedIndex(
         /* [in] */ AnimationParameters* params);
 
-    CARAPI_(Float) GetRandomFloat();
 protected:
     /**
      * The animation applied on each child of the view group on which this
@@ -138,7 +138,7 @@ protected:
      * The randomizer used when the order is set to random. Subclasses should
      * use this object to avoid creating their own.
      */
-    // AutoPtr<IRandom> mRandomizer;
+    AutoPtr<IRandom> mRandomizer;
 
     /**
      * The interpolator used to interpolate the delays.

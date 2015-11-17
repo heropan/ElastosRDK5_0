@@ -10,6 +10,7 @@
 
 using Elastos::Droid::R;
 using Elastos::Core::ICloneable;
+using Elastos::Utility::CRandom;
 
 namespace Elastos {
 namespace Droid {
@@ -285,20 +286,6 @@ Int64 LayoutAnimationController::GetDelayForView(
     return (Int64)(normalizedDelay * totalDelay);
 }
 
-Float LayoutAnimationController::GetRandomFloat()
-{
-    srand((Int32)time(0));
-    Int32 a = rand();
-    srand((Int32)time(0)/Elastos::Core::Math::Abs(a));
-    Int32 b = rand();
-    Float result = Elastos::Core::Math::Abs(a) / Elastos::Core::Math::Abs(b);
-    if(result > 1)
-        result = (Float)(1/result);
-    if(result != result)
-        return GetRandomFloat();
-    return result;
-}
-
 Int32 LayoutAnimationController::GetTransformedIndex(
     /* [in] */ AnimationParameters* params)
 {
@@ -307,8 +294,14 @@ Int32 LayoutAnimationController::GetTransformedIndex(
     switch(order) {
         case ILayoutAnimationController::ORDER_REVERSE:
             return params->mCount - 1 - params->mIndex;
-        case ILayoutAnimationController::ORDER_RANDOM:
-            return (Int32) (params->mCount * GetRandomFloat());
+        case ILayoutAnimationController::ORDER_RANDOM: {
+            if (mRandomizer == NULL) {
+                CRandom::New((IRandom**)&mRandomizer);
+            }
+            Float value;
+            mRandomizer->NextFloat(&value);
+            return (Int32) (params->mCount * value);
+        }
         case ILayoutAnimationController::ORDER_NORMAL:
         default:
             return params->mIndex;

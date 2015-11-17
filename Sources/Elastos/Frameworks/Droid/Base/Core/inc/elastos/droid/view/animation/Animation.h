@@ -588,7 +588,7 @@ protected:
      * Gurantees that this animation has an interpolator. Will use
      * a AccelerateDecelerateInterpolator is nothing else was specified.
      */
-    CARAPI_(void) EnsureInterpolator();
+    virtual CARAPI_(void) EnsureInterpolator();
 
     /**
      * Helper for getTransformation. Subclasses should implement this to apply
@@ -601,7 +601,7 @@ protected:
      * @param t The Transofrmation object to fill in with the current
      *        transforms.
      */
-    CARAPI_(void) ApplyTransformation(
+    virtual CARAPI_(void) ApplyTransformation(
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
 
@@ -616,7 +616,7 @@ protected:
      * @param parentSize The size of the parent of the object being animated
      * @return The dimension to use for the animation
      */
-    CARAPI_(Float) ResolveSize(
+    virtual CARAPI_(Float) ResolveSize(
         /* [in] */ Int32 type,
         /* [in] */ Float value,
         /* [in] */ Int32 size,
@@ -631,13 +631,12 @@ protected:
      * @return float The scale factor that should be applied to pre-scaled values in
      * an Animation such as the pivot points in {@link ScaleAnimation} and {@link RotateAnimation}.
      */
-    CARAPI_(Float) GetScaleFactor();
+    virtual CARAPI_(Float) GetScaleFactor();
 
-    CARAPI_(void) Finalize();
+    virtual CARAPI_(void) Finalize();
 
-    // @Override
-    CARAPI Clone(
-        /* [out] */ IInterface** object);
+    CARAPI CloneImpl(
+        /* [in] */ IAnimation* object);
 
 private:
     CARAPI_(void) FireAnimationStart();

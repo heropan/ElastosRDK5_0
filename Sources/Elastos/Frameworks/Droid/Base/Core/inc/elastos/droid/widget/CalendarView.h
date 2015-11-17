@@ -4,7 +4,7 @@
 #include "FrameLayout.h"
 #include "BaseAdapter.h"
 
-#include "elastos/droid/view/SimpleOnGestureListener.h"
+#include "elastos/droid/view/GestureDetector.h"
 #include "elastos/droid/os/Runnable.h"
 
 using Elastos::Utility::ILocale;
@@ -551,7 +551,7 @@ private:
     };
 
     class CalendarGestureListener
-        : public Elastos::Droid::View::SimpleOnGestureListener
+        : public Elastos::Droid::View::GestureDetector::SimpleOnGestureListener
     {
     public:
         CalendarGestureListener();

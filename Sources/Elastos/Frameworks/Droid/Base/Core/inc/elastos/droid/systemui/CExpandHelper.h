@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_SystemUI_CExpandHelper.h"
 #include "elastos/droid/systemui/CViewScaller.h"
-#include "elastos/droid/view/SimpleOnScaleGestureListener.h"
+#include "elastos/droid/view/ScaleGestureDetector.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
 
 using Elastos::Droid::Os::IVibrator;
@@ -16,9 +16,9 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::IScaleGestureDetector;
-using Elastos::Droid::View::IOnScaleGestureListener;
+using Elastos::Droid::View::IScaleGestureDetectorOnScaleGestureListener;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::View::SimpleOnScaleGestureListener;
+using Elastos::Droid::View::ScaleGestureDetector;
 using Elastos::Droid::SystemUI::IExpandHelperCallback;
 
 namespace Elastos {
@@ -39,7 +39,7 @@ private:
     };
 
     class ExpandScaleGestureListener
-        : public SimpleOnScaleGestureListener
+        : public ScaleGestureDetector::SimpleOnScaleGestureListener
     {
     public:
         ExpandScaleGestureListener(

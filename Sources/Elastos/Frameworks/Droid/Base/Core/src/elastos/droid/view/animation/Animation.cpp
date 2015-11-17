@@ -1,12 +1,12 @@
 
 #include "elastos/droid/view/animation/Animation.h"
 #ifdef DROID_CORE
-#include "elastos/droid/view/animation/CAnimationUtils.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
 #include "elastos/droid/view/animation/CTransformation.h"
 #include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
 #include "elastos/droid/graphics/CRectF.h"
-#include "elastos/droid/os/CSystemProperties.h"
-#include "elastos/droid/utility/CTypedValueHelper.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/utility/CTypedValue.h"
 #endif
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
@@ -14,11 +14,9 @@
 
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::CRectF;
-using Elastos::Droid::Os::ISystemProperties;
-using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::Os::SystemProperties;
+using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::R;
-using Elastos::Droid::Utility::ITypedValueHelper;
-using Elastos::Droid::Utility::CTypedValueHelper;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::Math;
 using Elastos::Utility::Logging::Logger;
@@ -30,10 +28,8 @@ namespace Animation {
 
 static Boolean InitUSECLOSEGUARD()
 {
-    AutoPtr<ISystemProperties> sysProp;
-    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     Boolean value;
-    sysProp->GetBoolean(String("ro.monkey"), FALSE, &value);
+    SystemProperties::GetBoolean(String("ro.monkey"), FALSE, &value);
     return value;
 }
 
@@ -55,17 +51,16 @@ Animation::SetListenerHandlerRunable::~SetListenerHandlerRunable()
 
 ECode Animation::SetListenerHandlerRunable::Run()
 {
-    if(mHost->mListener)
-    {
+    if (mHost->mListener) {
         switch(mType) {
             case ONSTART_TYPE:
-                mHost->mListener->OnAnimationStart((IAnimation*)mHost->Probe(EIID_IAnimation));
+                mHost->mListener->OnAnimationStart((IAnimation*)mHost);
                 break;
             case ONREPEAT_TYPE:
-                mHost->mListener->OnAnimationRepeat((IAnimation*)mHost->Probe(EIID_IAnimation));
+                mHost->mListener->OnAnimationRepeat((IAnimation*)mHost);
                 break;
             case ONEND_TYPE:
-                mHost->mListener->OnAnimationEnd((IAnimation*)mHost->Probe(EIID_IAnimation));
+                mHost->mListener->OnAnimationEnd((IAnimation*)mHost);
                 break;
             default:
                 break;
@@ -105,9 +100,7 @@ AutoPtr<Animation::Description> Animation::Description::ParseValue(
             d->mType = ((data & ITypedValue::COMPLEX_UNIT_MASK)
                     == ITypedValue::COMPLEX_UNIT_FRACTION_PARENT) ?
                     IAnimation::RELATIVE_TO_PARENT : IAnimation::RELATIVE_TO_SELF;
-            AutoPtr<ITypedValueHelper> helper;
-            CTypedValueHelper::AcquireSingleton((ITypedValueHelper**)&helper);
-            helper->ComplexToFloat(data, &d->mValue);
+            d->mValue = CTypedValue::ComplexToFloat(data);
             return d;
         }
         else if (type ==ITypedValue::TYPE_FLOAT) {
@@ -220,20 +213,15 @@ ECode Animation::constructor(
     return NOERROR;
 }
 
-ECode Animation::Clone(
-    /* [out] */ IInterface** object)
+ECode Animation::CloneImpl(
+    /* [in] */ IAnimation* object)
 {
-    VALIDATE_NOT_NULL(object);
-
-    Animation* animation = (Animation*)IAnimation::Probe(*object);
+    Animation* animation = (Animation*)object;
 
     CRectF::New((IRectF**)&animation->mPreviousRegion);
     CRectF::New((IRectF**)&animation->mRegion);
     CTransformation::New((ITransformation**)&animation->mTransformation);
     CTransformation::New((ITransformation**)&animation->mPreviousTransformation);
-
-    *object = (IAnimation*)animation;
-    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -319,9 +307,7 @@ ECode Animation::SetInterpolator(
     /* [in] */ Int32 resID)
 {
     AutoPtr<IInterpolator> interpolator;
-    AutoPtr<IAnimationUtils> au;
-    CAnimationUtils::AcquireSingleton((IAnimationUtils**)&au);
-    au->LoadInterpolator(context, resID, (IInterpolator**)&interpolator);
+    AnimationUtils::LoadInterpolator(context, resID, (IInterpolator**)&interpolator);
     return SetInterpolator(interpolator);
 }
 
@@ -418,10 +404,8 @@ ECode Animation::Start()
 
 ECode Animation::StartNow()
 {
-    AutoPtr<IAnimationUtils> au;
-    CAnimationUtils::AcquireSingleton((IAnimationUtils**)&au);
     Int64 time;
-    au->CurrentAnimationTimeMillis(&time);
+    AnimationUtils::CurrentAnimationTimeMillis(&time);
     return SetStartTime(time);
 }
 
@@ -618,9 +602,13 @@ ECode Animation::ComputeDurationHint(
     /* [out] */ Int64* hint)
 {
     VALIDATE_NOT_NULL(hint);
-    Int64 d1, d2;
+    Int64 d1;
+    GetStartOffset(&d1);
+    Int64 d2;
+    GetDuration(&d2);
     Int32 d3;
-    *hint = ((GetStartOffset(&d1), d1) + (GetDuration(&d2), d2)) * ((GetRepeatCount(&d3), d3) + 1);
+    GetRepeatCount(&d3);
+    *hint = (d1 + d2) * (d3 + 1);
     return NOERROR;
 }
 

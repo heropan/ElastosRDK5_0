@@ -53,6 +53,13 @@ protected:
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
 
+    // @Override
+    CARAPI Clone(
+        /* [out] */ IInterface** object);
+
+    CARAPI CloneImpl(
+        /* [in] */ IRotateAnimation* object);
+
 private:
     /**
      * Called at the end of constructor methods to initialize, if possible, values for

@@ -18,7 +18,7 @@ using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::CTypedValueHelper;
 using Elastos::Droid::Utility::ITypedValueHelper;
 using Elastos::Droid::View::ILayoutInflater;
-using Elastos::Droid::View::IOnGestureListener;
+using Elastos::Droid::View::IGestureDetectorOnGestureListener;
 using Elastos::Droid::View::CGestureDetector;
 using Elastos::Droid::Text::Format::DateUtils;
 using Elastos::Droid::Text::Format::IDateUtils;
@@ -127,7 +127,7 @@ CalendarView::_WeeksAdapter::_WeeksAdapter(
     helper->GetInstance((ICalendar**)&mSelectedDate);
 
     mHost->mContext = context;
-    AutoPtr<IOnGestureListener> listener = new CalendarGestureListener();
+    AutoPtr<IGestureDetectorOnGestureListener> listener = new CalendarGestureListener();
     CGestureDetector::New(mHost->mContext, listener, (IGestureDetector**)&mGestureDetector);
     Init();
 }

@@ -172,6 +172,9 @@ protected:
     CARAPI Clone(
         /* [out] */ IInterface** object);
 
+    CARAPI CloneImpl(
+        /* [in] */ IAnimationSet* object);
+
 private:
     CARAPI_(void) SetFlag(
         /* [in] */ Int32 mask,

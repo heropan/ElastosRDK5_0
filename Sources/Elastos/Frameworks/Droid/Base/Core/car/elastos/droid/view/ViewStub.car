@@ -15,7 +15,7 @@ module
      * @see android.view.ViewStub#setOnInflateListener(android.view.ViewStub.OnInflateListener)
      */
     [local]
-    interface IOnInflateListener {
+    interface IViewStubOnInflateListener {
         /**
          * Invoked after a ViewStub successfully inflated its layout resource.
          * This method is invoked after the inflated view was added to the
@@ -74,6 +74,9 @@ module
     /**
      * @Involve
      * interface IView
+     * interface IDrawableCallback
+     * interface IKeyEventCallback
+     * interface IAccessibilityEventSource
      */
     [local]
     interface IViewStub {
@@ -167,7 +170,7 @@ module
          * @see android.view.ViewStub.OnInflateListener
          */
         SetOnInflateListener(
-            [in] IOnInflateListener* inflateListener);
+            [in] IViewStubOnInflateListener* inflateListener);
     }
 
     } // namespace View

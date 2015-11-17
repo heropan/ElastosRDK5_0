@@ -1,6 +1,6 @@
 
 #ifndef __ELASTOS_DROID_VIEW_VIEWSTUB_H__
-#define  __ELASTOS_DROID_VIEW_VIEWSTUB_H__
+#define __ELASTOS_DROID_VIEW_VIEWSTUB_H__
 
 #include "elastos/droid/view/View.h"
 
@@ -8,12 +8,18 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class ViewStub: public View
+class ViewStub
+    : public View
+    , public IViewStub
 {
 public:
+    CAR_INTERFACE_DECL();
+
     ViewStub();
 
-    CARAPI InitViewStub(
+    ~ViewStub();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -22,15 +28,25 @@ public:
      * @param context The application's environment.
      * @param layoutResource The reference to a layout resource that will be inflated.
      */
-    CARAPI InitViewStub(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 layoutResource);
 
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
     // /@SuppressWarnings({"UnusedDeclaration"})
-    CARAPI InitViewStub(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = 0);
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     /**
      * Returns the id taken by the inflated view. If the inflated id is
@@ -110,7 +126,8 @@ public:
     /**
      * When visibility is set to {@link #VISIBLE} or {@link #INVISIBLE},
      * {@link #inflate()} is invoked and this StubbedView is replaced in its parent
-     * by the inflated layout resource.
+     * by the inflated layout resource. After that calls to this function are passed
+     * through to the inflated view.
      *
      * @param visibility One of {@link #VISIBLE}, {@link #INVISIBLE}, or {@link #GONE}.
      *
@@ -140,7 +157,7 @@ public:
      * @see android.view.ViewStub.OnInflateListener
      */
     CARAPI SetOnInflateListener(
-        /* [in] */ IOnInflateListener* inflateListener);
+        /* [in] */ IViewStubOnInflateListener* inflateListener);
 
 protected:
     //@Override
@@ -164,11 +181,11 @@ private:
     AutoPtr<IWeakReference> mInflatedViewRef;
 
     AutoPtr<ILayoutInflater> mInflater;
-    AutoPtr<IOnInflateListener> mInflateListener;
+    AutoPtr<IViewStubOnInflateListener> mInflateListener;
 };
 
 } // namespace View
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ELASTOS_DROID_VIEW_VIEWSTUB_H__
+#endif //__ELASTOS_DROID_VIEW_VIEWSTUB_H__

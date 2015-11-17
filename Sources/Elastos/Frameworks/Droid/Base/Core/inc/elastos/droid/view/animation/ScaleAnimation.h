@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_SCALEANIMATION_H__
 
 #include "elastos/droid/view/animation/Animation.h"
-#include "elastos/droid/view/animation/CScaleAnimation.h"
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Utility::IDisplayMetrics;
@@ -69,6 +68,13 @@ protected:
     CARAPI_(void) ApplyTransformation(
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
+
+    // @Override
+    CARAPI Clone(
+        /* [out] */ IInterface** object);
+
+    CARAPI CloneImpl(
+        /* [in] */ IScaleAnimation* object);
 
 private:
     /**

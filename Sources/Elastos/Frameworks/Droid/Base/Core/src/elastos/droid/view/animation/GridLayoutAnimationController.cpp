@@ -6,6 +6,7 @@
 
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::R;
+using Elastos::Utility::CRandom;
 
 namespace Elastos {
 namespace Droid {
@@ -107,7 +108,7 @@ ECode GridLayoutAnimationController::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    LayoutAnimationController::constructor(context, attrs);
+    FAIL_RETURN(LayoutAnimationController::constructor(context, attrs));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::GridLayoutAnimation),
@@ -290,7 +291,12 @@ Int32 GridLayoutAnimationController::GetTransformedColumnIndex(
             index = params->mColumnsCount - 1 - params->mColumn;
             break;
         case ILayoutAnimationController::ORDER_RANDOM:
-            index = (Int32) (params->mColumnsCount * GetRandomFloat());
+            if (mRandomizer == NULL) {
+                CRandom::New((IRandom**)&mRandomizer);
+            }
+            Float value;
+            mRandomizer->NextFloat(&value);
+            index = (Int32) (params->mColumnsCount * value);
             break;
         case ILayoutAnimationController::ORDER_NORMAL:
         default:
@@ -318,7 +324,12 @@ Int32 GridLayoutAnimationController::GetTransformedRowIndex(
             index = params->mRowsCount - 1 - params->mRow;
             break;
         case ILayoutAnimationController::ORDER_RANDOM:
-            index = (Int32) (params->mRowsCount * GetRandomFloat());
+            if (mRandomizer == NULL) {
+                CRandom::New((IRandom**)&mRandomizer);
+            }
+            Float value;
+            mRandomizer->NextFloat(&value);
+            index = (Int32) (params->mRowsCount * value);
             break;
         case ILayoutAnimationController::ORDER_NORMAL:
         default:

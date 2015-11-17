@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINGESTURELISTENER_H__
 
 #include "_Elastos_Droid_Inputmethods_PinyinIME_CPinyinGestureListener.h"
-#include "elastos/droid/view/SimpleOnGestureListener.h"
+#include "elastos/droid/view/GestureDetector.h"
 
 using Elastos::Droid::Inputmethods::PinyinIME::IPinyinIME;
 using Elastos::Droid::View::IMotionEvent;
@@ -13,7 +13,7 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-CarClass(CPinyinGestureListener), public Elastos::Droid::View::SimpleOnGestureListener
+CarClass(CPinyinGestureListener), public Elastos::Droid::View::GestureDetector::SimpleOnGestureListener
 {
 public:
     CAR_OBJECT_DECL();

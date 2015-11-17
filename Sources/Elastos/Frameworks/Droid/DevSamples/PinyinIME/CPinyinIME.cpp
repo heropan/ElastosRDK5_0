@@ -304,8 +304,8 @@ ECode CPinyinIME::OnCreate()
     CInputModeSwitcher::New(THIS_PROBE(IPinyinIME), (IInputModeSwitcher**)&mInputModeSwitcher);
     mChoiceNotifier = new ChoiceNotifier(this);
 
-    CPinyinGestureListener::New(FALSE, THIS_PROBE(IPinyinIME), (IOnGestureListener**)&mGestureListenerSkb);
-    CPinyinGestureListener::New(TRUE, THIS_PROBE(IPinyinIME), (IOnGestureListener**)&mGestureListenerCandidates);
+    CPinyinGestureListener::New(FALSE, THIS_PROBE(IPinyinIME), (IGestureDetectorOnGestureListener**)&mGestureListenerSkb);
+    CPinyinGestureListener::New(TRUE, THIS_PROBE(IPinyinIME), (IGestureDetectorOnGestureListener**)&mGestureListenerCandidates);
     CGestureDetector::New(THIS_PROBE(IContext), mGestureListenerSkb, (IGestureDetector**)&mGestureDetectorSkb);
     CGestureDetector::New(THIS_PROBE(IContext), mGestureListenerCandidates, (IGestureDetector**)&mGestureDetectorCandidates);
 

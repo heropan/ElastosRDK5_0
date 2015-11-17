@@ -35,7 +35,7 @@ using Elastos::Droid::InputMethodService::IAbstractInputMethodSessionImpl;
 using Elastos::Droid::Os::HandlerRunnable;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::View::IGestureDetector;
-using Elastos::Droid::View::IOnGestureListener;
+using Elastos::Droid::View::IGestureDetectorOnGestureListener;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::Widget::IPopupWindow;
 using Elastos::Droid::Widget::ILinearLayout;
@@ -1120,12 +1120,12 @@ private:
     /**
      * Used to notify gestures from soft keyboard.
      */
-    AutoPtr<IOnGestureListener> mGestureListenerSkb;
+    AutoPtr<IGestureDetectorOnGestureListener> mGestureListenerSkb;
 
     /**
      * Used to notify gestures from candidates view.
      */
-    AutoPtr<IOnGestureListener> mGestureListenerCandidates;
+    AutoPtr<IGestureDetectorOnGestureListener> mGestureListenerCandidates;
 
     /**
      * The on-screen movement gesture detector for soft keyboard.

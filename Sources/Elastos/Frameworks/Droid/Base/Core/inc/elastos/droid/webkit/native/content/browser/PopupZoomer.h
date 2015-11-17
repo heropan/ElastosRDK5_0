@@ -8,7 +8,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/view/SimpleOnGestureListener.h"
+#include "elastos/droid/view/GestureDetector.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
@@ -26,7 +26,7 @@ using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::View::IGestureDetector;
 using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::View::SimpleOnGestureListener;
+using Elastos::Droid::View::GestureDetector;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::Animation::IInterpolator;
 using Elastos::Droid::View::Animation::IOvershootInterpolator;
@@ -76,7 +76,7 @@ public:
     };
 
     class InnerGestureDetectorSimpleOnGestureListener
-        : public SimpleOnGestureListener
+        : public GestureDetector::SimpleOnGestureListener
     {
     public:
         InnerGestureDetectorSimpleOnGestureListener(

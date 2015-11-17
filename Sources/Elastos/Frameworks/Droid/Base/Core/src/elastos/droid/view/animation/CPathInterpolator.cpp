@@ -7,8 +7,8 @@
 
 using Elastos::Droid::Animation::EIID_ITimeInterpolator;
 using Elastos::Droid::Graphics::CPath;
-using Elastos::Droid::R;
 using Elastos::Droid::Utility::PathParser;
+using Elastos::Droid::R;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {

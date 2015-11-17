@@ -17,9 +17,9 @@ using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::View::IPointerProperties;
 using Elastos::Droid::View::IPointerCoords;
-using Elastos::Droid::View::IOnGestureListener;
-using Elastos::Droid::View::IOnDoubleTapListener;
-using Elastos::Droid::View::IOnScaleGestureListener;
+using Elastos::Droid::View::IGestureDetectorOnGestureListener;
+using Elastos::Droid::View::IGestureDetectorOnDoubleTapListener;
+using Elastos::Droid::View::IScaleGestureDetectorOnScaleGestureListener;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IScaleGestureDetector;
 using Elastos::Droid::View::IGestureDetector;
@@ -215,9 +215,9 @@ private:
 
     class MagnifiedContentInteractonStateHandler
         : public ElRefBase
-        , public IOnGestureListener
-        , public IOnDoubleTapListener
-        , public IOnScaleGestureListener
+        , public IGestureDetectorOnGestureListener
+        , public IGestureDetectorOnDoubleTapListener
+        , public IScaleGestureDetectorOnScaleGestureListener
     {
     public:
         CAR_INTERFACE_DECL()

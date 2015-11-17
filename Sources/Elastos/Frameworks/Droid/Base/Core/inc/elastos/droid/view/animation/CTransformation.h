@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CTRANSFORMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CTRANSFORMATION_H__
 
-#include "_Elastos_Droid_View_Animation_CTransformation.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "_Elastos_Droid_View_Animation_CTransformation.h"
 #include "elastos/droid/graphics/CMatrix.h"
 
 using Elastos::Droid::Graphics::IMatrix;

@@ -4,8 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
-#include "elastos/droid/view/SimpleOnGestureListener.h"
-#include "elastos/droid/view/SimpleOnScaleGestureListener.h"
+#include "elastos/droid/view/GestureDetector.h"
+#include "elastos/droid/view/ScaleGestureDetector.h"
 
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Content::IContext;
@@ -13,8 +13,8 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IViewOnTouchListener;
 using Elastos::Droid::View::ISurfaceTextureListener;
-using Elastos::Droid::View::SimpleOnGestureListener;
-using Elastos::Droid::View::SimpleOnScaleGestureListener;
+using Elastos::Droid::View::GestureDetector;
+using Elastos::Droid::View::ScaleGestureDetector;
 using Elastos::Droid::View::IScaleGestureDetector;
 using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::View::IDisplay;
@@ -22,8 +22,8 @@ using Elastos::Droid::View::IDisplayInfo;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::ITextureView;
 using Elastos::Droid::View::IGestureDetector;
-using Elastos::Droid::View::IOnGestureListener;
-using Elastos::Droid::View::IOnScaleGestureListener;
+using Elastos::Droid::View::IGestureDetectorOnGestureListener;
+using Elastos::Droid::View::IScaleGestureDetectorOnScaleGestureListener;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Hardware::Display::IDisplayListener;
 using Elastos::Droid::Hardware::Display::IDisplayManager;
@@ -126,7 +126,7 @@ private:
     };
 
 
-    class MyOnGestureListener : public SimpleOnGestureListener
+    class MyOnGestureListener : public GestureDetector::SimpleOnGestureListener
     {
     public:
         MyOnGestureListener(
@@ -143,7 +143,7 @@ private:
         OverlayDisplayWindow* mHost;
     };
 
-    class MyOnScaleGestureListener : public SimpleOnScaleGestureListener
+    class MyOnScaleGestureListener : public ScaleGestureDetector::SimpleOnScaleGestureListener
     {
     public:
         MyOnScaleGestureListener(
@@ -239,8 +239,8 @@ private:
     AutoPtr<IDisplayListener> mDisplayListener;
     AutoPtr<ISurfaceTextureListener> mSurfaceTextureListener;
     AutoPtr<IViewOnTouchListener> mOnTouchListener;
-    AutoPtr<IOnGestureListener> mOnGestureListener;
-    AutoPtr<IOnScaleGestureListener> mOnScaleGestureListener;
+    AutoPtr<IGestureDetectorOnGestureListener> mOnGestureListener;
+    AutoPtr<IScaleGestureDetectorOnScaleGestureListener> mOnScaleGestureListener;
 };
 
 } // namespace Display

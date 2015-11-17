@@ -60,6 +60,30 @@ ECode CClipRectAnimation::WillChangeTransformationMatrix(
     return NOERROR;
 }
 
+ECode CClipRectAnimation::Clone(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<CClipRectAnimation> obj;
+    CClipRectAnimation::NewByFriend(NULL, NULL, (CClipRectAnimation**)&obj);
+    CClipRectAnimation::CloneImpl(obj);
+    *object = (IInterface*)IAnimation::Probe(obj);
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CClipRectAnimation::CloneImpl(
+    /* [in] */ CClipRectAnimation* object)
+{
+    Animation::CloneImpl(IAnimation::Probe(object));
+
+    object->mFromRect = mFromRect;
+    object->mToRect = mToRect;
+
+    return NOERROR;
+}
+
 }   //namespace Animation
 }   //namespace View
 }   //namespace Droid

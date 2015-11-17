@@ -1,4 +1,5 @@
 
+#include "elastos/droid/view/animation/AlphaAnimation.h"
 #include "elastos/droid/view/animation/CAlphaAnimation.h"
 #include "elastos/droid/R.h"
 
@@ -75,6 +76,30 @@ ECode AlphaAnimation::HasAlpha(
 {
     VALIDATE_NOT_NULL(has);
     *has = TRUE;
+    return NOERROR;
+}
+
+ECode AlphaAnimation::Clone(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IAlphaAnimation> obj;
+    CAlphaAnimation::New(0.0f, 0.0f, (IAlphaAnimation**)&obj);
+    AlphaAnimation::CloneImpl(obj);
+    *object = obj;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode AlphaAnimation::CloneImpl(
+    /* [in] */ IAlphaAnimation* object)
+{
+    Animation::CloneImpl(IAnimation::Probe(object));
+    AlphaAnimation* obj = (AlphaAnimation*)object;
+    obj->mFromAlpha = mFromAlpha;
+    obj->mToAlpha = mToAlpha;
+
     return NOERROR;
 }
 

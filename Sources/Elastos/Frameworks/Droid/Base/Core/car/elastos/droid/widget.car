@@ -151,7 +151,7 @@ module
    //  interface Elastos.Droid.View.IKeyEventCallback;
    //  interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
    //  interface Elastos.Droid.View.IOnPreDrawListener;
-   //  interface Elastos.Droid.View.IOnGestureListener;
+   //  interface Elastos.Droid.View.IGestureDetectorOnGestureListener;
    //  interface Elastos.Droid.View.IOnTouchModeChangeListener;
    //  interface Elastos.Droid.View.IViewOnFocusChangeListener;
    //  interface Elastos.Droid.View.IViewOnClickListener;
@@ -1618,7 +1618,7 @@ module
    //      interface IDrawableCallback;
    //      interface IKeyEventCallback;
    //      interface IAccessibilityEventSource;
-   //      interface IOnGestureListener;
+   //      interface IGestureDetectorOnGestureListener;
    //  }
 
    //  [local]

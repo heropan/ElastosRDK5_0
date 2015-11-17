@@ -1,4 +1,5 @@
 
+#include "elastos/droid/view/animation/RotateAnimation.h"
 #include "elastos/droid/view/animation/CRotateAnimation.h"
 #include "elastos/droid/R.h"
 
@@ -144,6 +145,35 @@ void RotateAnimation::InitializePivotPoint()
     if (mPivotYType == IAnimation::ABSOLUTE) {
         mPivotY = mPivotYValue;
     }
+}
+
+ECode RotateAnimation::Clone(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IRotateAnimation> obj;
+    CRotateAnimation::New(0.0f, 0.0f, (IRotateAnimation**)&obj);
+    RotateAnimation::CloneImpl(obj);
+    *object = obj;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode RotateAnimation::CloneImpl(
+    /* [in] */ IRotateAnimation* object)
+{
+    Animation::CloneImpl(IAnimation::Probe(object));
+    RotateAnimation* obj = (RotateAnimation*)object;
+    obj->mFromDegrees = mFromDegrees;
+    obj->mToDegrees = mToDegrees;
+    obj->mPivotXType = mPivotXType;
+    obj->mPivotYType = mPivotYType;
+    obj->mPivotXValue = mPivotXValue;
+    obj->mPivotYValue = mPivotYValue;
+    obj->mPivotX = mPivotX;
+    obj->mPivotY = mPivotY;
+    return NOERROR;
 }
 
 }   //namespace Animation

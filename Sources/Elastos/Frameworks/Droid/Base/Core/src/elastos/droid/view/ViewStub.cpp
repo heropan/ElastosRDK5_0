@@ -10,20 +10,24 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+CAR_INTERFACE_IMPL(ViewStub, View, IViewStub);
+
 ViewStub::ViewStub()
     : mLayoutResource(0)
     , mInflatedId(0)
-{
-}
+{}
 
-ECode ViewStub::InitViewStub(
+ViewStub::~ViewStub()
+{}
+
+ECode ViewStub::constructor(
     /* [in] */ IContext* context)
 {
     Initialize(context);
     return NOERROR;
 }
 
-ECode ViewStub::InitViewStub(
+ECode ViewStub::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 layoutResource)
 {
@@ -32,16 +36,33 @@ ECode ViewStub::InitViewStub(
     return NOERROR;
 }
 
-ECode ViewStub::InitViewStub(
+ECode ViewStub::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    constructor(context, attrs, 0);
+    return NOERROR;
+}
+
+ECode ViewStub::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-        const_cast<Int32 *>(R::styleable::ViewStub),
-        ARRAY_SIZE(R::styleable::ViewStub));
+    constructor(context, attrs, defStyleAttr, 0);
+    return NOERROR;
+}
+
+ECode ViewStub::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::ViewStub), ARRAY_SIZE(R::styleable::ViewStub));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     a->GetResourceId(R::styleable::ViewStub_inflatedId, IView::NO_ID, &mInflatedId);
     a->GetResourceId(R::styleable::ViewStub_layout, 0, &mLayoutResource);
@@ -50,9 +71,8 @@ ECode ViewStub::InitViewStub(
 
     a = NULL;
     attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::View),
-            ARRAY_SIZE(R::styleable::View));
-    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+            const_cast<Int32 *>(R::styleable::View), ARRAY_SIZE(R::styleable::View));
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     a->GetResourceId(R::styleable::View_id, IView::NO_ID, &mID);
     a->Recycle();
@@ -72,7 +92,7 @@ void ViewStub::Initialize(
 ECode ViewStub::GetInflatedId(
     /* [out] */ Int32* id)
 {
-    assert(id != NULL);
+    VALIDATE_NOT_NULL(id);
     *id = mInflatedId;
     return NOERROR;
 }
@@ -87,7 +107,7 @@ ECode ViewStub::SetInflatedId(
 ECode ViewStub::GetLayoutResource(
     /* [out] */ Int32* resource)
 {
-    assert(resource != NULL);
+    VALIDATE_NOT_NULL(resource);
     *resource = mLayoutResource;
     return NOERROR;
 }
@@ -109,7 +129,7 @@ ECode ViewStub::SetLayoutInflater(
 ECode ViewStub::GetLayoutInflater(
     /* [out] */ ILayoutInflater** inflater)
 {
-    assert(inflater != NULL);
+    VALIDATE_NOT_NULL(inflater);
     *inflater = mInflater;
     REFCOUNT_ADD(*inflater);
     return NOERROR;
@@ -146,7 +166,8 @@ ECode ViewStub::SetVisibility(
             Slogger::E("ViewStub", "setVisibility called on un-referenced view");
             return E_ILLEGAL_STATE_EXCEPTION;
         }
-    } else {
+    }
+    else {
         View::SetVisibility(visibility);
         if (visibility == IView::VISIBLE || visibility == IView::INVISIBLE) {
             AutoPtr<IView> tmp;
@@ -160,8 +181,9 @@ ECode ViewStub::SetVisibility(
 ECode ViewStub::Inflate(
     /* [out] */ IView** retView)
 {
-    assert(retView != NULL);
-    AutoPtr<IViewParent> viewParent = GetParent();
+    VALIDATE_NOT_NULL(retView);
+    AutoPtr<IViewParent> viewParent;
+    GetParent((IViewParent**)&viewParent);
 
     if (viewParent != NULL && IViewGroup::Probe(viewParent) != NULL) {
         if (mLayoutResource != 0) {
@@ -169,13 +191,13 @@ ECode ViewStub::Inflate(
             AutoPtr<ILayoutInflater> factory;
             if (mInflater != NULL) {
                 factory = mInflater;
-            } else {
+            }
+            else {
                 LayoutInflater::From(mContext, (ILayoutInflater**)&factory);
             }
 
             AutoPtr<IView> view;
-            factory->Inflate(mLayoutResource, parent,
-                    FALSE, (IView**)&view);
+            factory->Inflate(mLayoutResource, parent, FALSE, (IView**)&view);
 
             if (mInflatedId != IView::NO_ID) {
                 view->SetId(mInflatedId);
@@ -185,10 +207,12 @@ ECode ViewStub::Inflate(
             parent->IndexOfChild((IView*)this->Probe(EIID_IView), &index);
             parent->RemoveViewInLayout((IView*)this->Probe(EIID_IView));
 
-            AutoPtr<IViewGroupLayoutParams> layoutParams = GetLayoutParams();
+            AutoPtr<IViewGroupLayoutParams> layoutParams;
+            GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
             if (layoutParams != NULL) {
                 parent->AddView(view, index, layoutParams);
-            } else {
+            }
+            else {
                 parent->AddView(view, index);
             }
 
@@ -219,7 +243,7 @@ ECode ViewStub::Inflate(
 }
 
 ECode ViewStub::SetOnInflateListener(
-    /* [in] */ IOnInflateListener* inflateListener)
+    /* [in] */ IViewStubOnInflateListener* inflateListener)
 {
     mInflateListener = inflateListener;
     return NOERROR;

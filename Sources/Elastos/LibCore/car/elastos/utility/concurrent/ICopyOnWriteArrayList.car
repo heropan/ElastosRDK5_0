@@ -32,11 +32,14 @@ module
 
     /**
      * @Involve
-     * interface IIterable;
+     * interface IList;
      * interface ICollection;
+     * interface IIterable;
+     * interface IRandomAccess;
+     * interface ICloneable;
+     * interface ISerializable;
      */
     interface ICopyOnWriteArrayList {
-
         /**
          * Searches this list for {@code object} and returns the index of the first
          * occurrence that is at or after {@code from}.
@@ -87,7 +90,6 @@ module
     }
 
     interface ICopyOnWriteArrayListHelper {
-
         ContainsAll(
             [in] ICollection* collection,
             [in] ArrayOf<IInterface*> snapshot,

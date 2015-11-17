@@ -170,7 +170,7 @@ PopupZoomer::PopupZoomer(
     // SetFocusable(TRUE);
     // SetFocusableInTouchMode(TRUE);
 
-    AutoPtr<SimpleOnGestureListener> listener = new InnerGestureDetectorSimpleOnGestureListener(this);
+    AutoPtr<GestureDetector::SimpleOnGestureListener> listener = new InnerGestureDetectorSimpleOnGestureListener(this);
 
     // TODO
     // CGestureDetector::New(context, listener, (IGestureDetector**)&mGestureDetector);

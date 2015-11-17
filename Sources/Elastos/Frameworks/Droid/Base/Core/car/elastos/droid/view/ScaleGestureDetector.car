@@ -157,7 +157,7 @@ module
          * @return Time difference since the last scaling event in milliseconds.
          */
         GetTimeDelta(
-            [in] Int64 delta);
+            [out] Int64* delta);
 
         /**
          * Return the event time of the current event being processed.
@@ -165,7 +165,7 @@ module
          * @return Current event time in milliseconds.
          */
         GetEventTime(
-            [in] Int64 delta);
+            [out] Int64* delta);
     }
 
     /**
@@ -181,7 +181,7 @@ module
      *  <li>One {@link OnScaleGestureListener#onScaleEnd(ScaleGestureDetector)}
      * </ul>
      */
-    interface IOnScaleGestureListener {
+    interface IScaleGestureDetectorOnScaleGestureListener {
         /**
          * Responds to scaling events for a gesture in progress.
          * Reported by pointer motion.
@@ -229,25 +229,6 @@ module
         OnScaleEnd(
             [in] IScaleGestureDetector* detector);
     }
-
-
-    /**
-     * A convenience class to extend when you only want to listen for a subset
-     * of scaling-related events. This implements all methods in
-     * {@link OnScaleGestureListener} but does nothing.
-     * {@link OnScaleGestureListener#onScale(ScaleGestureDetector)} returns
-     * {@code false} so that a subclass can retrieve the accumulated scale
-     * factor in an overridden onScaleEnd.
-     * {@link OnScaleGestureListener#onScaleBegin(ScaleGestureDetector)} returns
-     * {@code true}.
-     */
-    /**
-     * @Involve
-     * interface IOnScaleGestureListener
-     */
-    interface ISimpleOnScaleGestureListener {
-    }
-
 
     } // namespace View
     } // namepsace Droid
