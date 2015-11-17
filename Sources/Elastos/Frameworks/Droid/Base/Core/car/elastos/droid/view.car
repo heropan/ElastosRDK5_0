@@ -266,7 +266,7 @@ module
     class CWindowManagerGlobalSessionCallback {
         constructor();
 
-        interface IWindowSessionCallback;
+        interface IIWindowSessionCallback;
         interface IBinder;
     }
 
