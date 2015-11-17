@@ -221,7 +221,7 @@ $(EXPORT_HEADERS) : $(patsubst %,$(MAKEDIR)/%,$(EXPORT_HEADERS))
 # Final targets
 #
 ifneq "$(TARGET_TYPE)" ""
-$(TARGET_NAME).ecx: $(OBJECTS) $(filter-out -l%,$(LIBRARIES)) $(MAKEDIR)/sources
+$(TARGET_NAME).ecx: $(OBJECTS) $(filter-out -l%,$(LIBRARIES)) $(ELASTOS_LIBS) $(MAKEDIR)/sources
 	@echo Linking $(TARGET_NAME) ...
 # if ELF(for linux)
 ifneq "$(USE_STDLIB)" ""
@@ -261,7 +261,7 @@ endif
 # endif (ELF PE)
 	touch $@
 
-$(TARGET_NAME).exe: $(OBJECTS) $(filter-out -l%,$(LIBRARIES)) $(MAKEDIR)/sources
+$(TARGET_NAME).exe: $(OBJECTS) $(filter-out -l%,$(LIBRARIES)) $(ELASTOS_LIBS) $(MAKEDIR)/sources
 	@echo Linking $(TARGET_NAME)...
 # if ELF(for linux)
 ifneq "$(USE_STDLIB)" ""
@@ -315,7 +315,7 @@ ifneq "$(EXPORT_LIBRARY)" ""
 endif
 endif
 
-$(TARGET_NAME).eco: $(RESOURCES_OBJECTS) $(OBJECTS) $(filter-out -l%,$(LIBRARIES)) $(MAKEDIR)/sources
+$(TARGET_NAME).eco: $(RESOURCES_OBJECTS) $(OBJECTS) $(filter-out -l%,$(LIBRARIES)) $(ELASTOS_LIBS) $(MAKEDIR)/sources
 	@echo Linking $@ ...
 # else PE(for win32 .zener. linux)
 ifneq "$(filter %.car,$(SOURCES))" ""
