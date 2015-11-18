@@ -10,13 +10,6 @@ ReceiverRestrictedContext::ReceiverRestrictedContext(
     : ContextWrapper(base)
 {}
 
-PInterface ReceiverRestrictedContext::Probe(
-    /* [in]  */ REIID riid)
-{
-    assert(0);
-    return NULL;
-}
-
 ECode ReceiverRestrictedContext::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,

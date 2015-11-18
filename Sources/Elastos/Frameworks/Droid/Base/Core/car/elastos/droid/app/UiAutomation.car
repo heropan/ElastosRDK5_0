@@ -82,7 +82,6 @@ module
      * interacting with another application whose behavior depends on that setting.
      * </p>
      */
-    [local]
     interface IUiAutomation {
 
         /** Rotation constant: Unfreeze rotation (rotating the device changes its rotation state). */

@@ -27,7 +27,6 @@ module
      * as many rows as the first level children.
      * </p>
      */
-    [local]
     interface IAccessibilityNodeInfoCollectionInfo {
         /** Selection mode where items are not selectable. */
         const Int32 SELECTION_MODE_NONE = 0;
@@ -409,7 +408,7 @@ module
      * @Involve
      * interface IParcelable
      */
-    [local]
+    [local, parcelable]
     interface IAccessibilityNodeInfo {
 
         /** @hide */

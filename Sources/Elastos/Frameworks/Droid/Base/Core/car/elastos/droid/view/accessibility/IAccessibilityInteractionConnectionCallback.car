@@ -16,7 +16,7 @@ module
      *
      * @hide
      */
-    [local, oneway]
+    [oneway]
     interface IIAccessibilityInteractionConnectionCallback {
         /**
          * Sets the result of an async request that returns an {@link AccessibilityNodeInfo}.

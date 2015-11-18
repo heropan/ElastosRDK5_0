@@ -21,6 +21,7 @@ module
     namespace Droid {
     namespace App {
 
+    [local]
     interface IIUiAutomationConnection {
         Connect(
             [in] IIAccessibilityServiceClient* client);

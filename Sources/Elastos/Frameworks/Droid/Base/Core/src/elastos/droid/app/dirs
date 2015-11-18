@@ -1,3 +1,5 @@
 
 #DIRS += admin
 #DIRS += backup
+DIRS += job
+DIRS += trust

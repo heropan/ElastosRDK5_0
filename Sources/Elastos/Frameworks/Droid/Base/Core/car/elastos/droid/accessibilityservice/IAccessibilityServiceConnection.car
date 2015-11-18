@@ -17,7 +17,7 @@ module
      *
      * @hide
      */
-    [local]
+
     interface IIAccessibilityServiceConnection {
         SetServiceInfo(
             [in] IAccessibilityServiceInfo* info);

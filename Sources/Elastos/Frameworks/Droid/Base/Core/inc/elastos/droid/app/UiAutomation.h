@@ -6,37 +6,21 @@
 #include "elastos/droid/accessibilityservice/AccessibilityService.h"
 #include <elastos/core/Object.h>
 
-// package android.app;
-
-using Elastos::Droid::Accessibilityservice::IAccessibilityServiceClientWrapper;
-using Elastos::Droid::Accessibilityservice::IAccessibilityServiceCallbacks;
-// using Elastos::Droid::Accessibilityservice::AccessibilityServiceInfo;
-// using Elastos::Droid::Accessibilityservice::IIAccessibilityServiceClient;
-// using Elastos::Droid::Accessibilityservice::IIAccessibilityServiceConnection;
-// using Elastos::Droid::Graphics::IBitmap;
-// using Elastos::Droid::Graphics::ICanvas;
-// using Elastos::Droid::Graphics::IPoint;
-// using Elastos::Droid::Hardware::Display::IDisplayManagerGlobal;
-// using Elastos::Droid::Os::ILooper;
-// using Elastos::Droid::Os::IParcelFileDescriptor;
-// using Elastos::Droid::Os::IRemoteException;
-// using Elastos::Droid::Os::ISystemClock;
-// using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::AccessibilityService::IAccessibilityServiceClientWrapper;
+using Elastos::Droid::AccessibilityService::IAccessibilityServiceCallbacks;
+using Elastos::Droid::AccessibilityService::IAccessibilityServiceInfo;
+using Elastos::Droid::AccessibilityService::IIAccessibilityServiceClient;
+using Elastos::Droid::AccessibilityService::IIAccessibilityServiceConnection;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IKeyEvent;
-// using Elastos::Droid::View::ISurface;
-// using Elastos::Droid::View::IWindowAnimationFrameStats;
-// using Elastos::Droid::View::IWindowContentFrameStats;
+using Elastos::Droid::View::IWindowAnimationFrameStats;
+using Elastos::Droid::View::IWindowContentFrameStats;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
-// using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
-// using Elastos::Droid::View::Accessibility::IAccessibilityWindowInfo;
-// using Elastos::Droid::View::Accessibility::IIAccessibilityInteractionConnection;
-// import libcore.io.IoUtils;
 
-// import java.io.IOException;
-// import java.util.ArrayList;
-// import java.util.List;
-// import java.util.concurrent.TimeoutException;
+using Elastos::Core::IRunnable;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -106,9 +90,10 @@ private:
             /* [out] */ Boolean* result);
 
     private:
-        UiAutomation* host;
+        UiAutomation* mHost;
     };
 
+public:
     class IAccessibilityServiceClientImpl
         : public IAccessibilityServiceClientWrapper
     {
@@ -117,7 +102,6 @@ private:
             /* [in] */ ILooper* looper,
             /* [in] */ IUiAutomation* host);
     };
-
 
 public:
     CAR_INTERFACE_DECL()
@@ -162,13 +146,7 @@ public:
      * @hide
      */
     CARAPI GetConnectionId(
-        /* [out] */ Int32* id)
-    {
-        synchronized (mLock) {
-            throwIfNotConnectedLocked();
-            return mConnectionId;
-        }
-    }
+        /* [out] */ Int32* id);
 
     /**
      * Sets a callback for observing the stream of {@link AccessibilityEvent}s.
@@ -193,7 +171,7 @@ public:
      */
     CARAPI PerformGlobalAction(
         /* [in] */ Int32 action,
-        /* [out] */ Boolean* action);
+        /* [out] */ Boolean* result);
 
     /**
      * Find the view that has the specified focus type. The search is performed
@@ -479,12 +457,10 @@ private:
 private:
     friend class InnerAccessibilityServiceCallbacks;
 
-    static const String LOG_TAG;// = UiAutomation.class.getSimpleName();
-
+    static const String TAG;// = UiAutomation.class.getSimpleName();
     static const Boolean DEBUG;// = FALSE;
 
     static const Int32 CONNECTION_ID_UNDEFINED;// = -1;
-
     static const Int64 CONNECT_TIMEOUT_MILLIS;// = 5000;
 
     Object mLock;

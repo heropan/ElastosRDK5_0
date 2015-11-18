@@ -117,11 +117,17 @@ module
     merge("app/backup/SharedPreferencesBackupHelper.car");
     merge("app/backup/WallpaperBackupHelper.car");
 
-    //merge("app/job/JobInfo.car");
-    //merge("app/job/JobParameters.car");
-    //merge("app/job/JobScheduler.car");
-    //merge("app/job/JobService.car");
+    merge("app/job/IJobCallback.car");
+    merge("app/job/IJobScheduler.car");
+    merge("app/job/IJobService.car");
+    merge("app/job/JobInfo.car");
+    merge("app/job/JobParameters.car");
+    merge("app/job/JobScheduler.car");
+    merge("app/job/JobService.car");
 
+    merge("app/trust/ITrustListener.car");
+    merge("app/trust/ITrustManager.car");
+    merge("app/trust/TrustManager.car");
 
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IClassLoader;
@@ -133,6 +139,7 @@ module
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IRemoteCallback;
+    interface Elastos.Droid.Os.IPersistableBundle;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IIIntentSender;
@@ -140,6 +147,7 @@ module
     interface Elastos.Droid.Content.IIntentFilter;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntentReceiver;
+    interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.View.IViewGroup;
@@ -167,7 +175,6 @@ module
 //     interface Elastos.Droid.Content.IDialogInterface;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
-//     interface Elastos.Droid.Content.IComponentName;
 //     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
 //     interface Elastos.Droid.View.IView;
 //     interface Elastos.Droid.View.IDisplay;
@@ -186,27 +193,73 @@ module
 //     interface Elastos.Droid.Net.IUri;
 
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace App {
-    // namespace Job {
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+    namespace Job {
 
-    //     class CJobInfo {
-    //         constructor();
+        class CJobInfo {
+            constructor();
 
-    //         constructor(
-    //             [in] IJobInfoBuilder* builder);
+            constructor(
+                [in] IJobInfoBuilder* builder);
 
-    //         interface IJobInfo;
-    //         interface IParcelable;
-    //     }
+            interface IJobInfo;
+            interface IParcelable;
+        }
+
+        class CJobInfoBuilder {
+            constructor(
+                [in] Int32 jobId,
+                [in] IComponentName* jobService);
+
+            interface IJobInfoBuilder;
+        }
+
+        class  CJobParameters {
+            constructor();
+
+            constructor(
+                [in] IBinder* cb,
+                [in] Int32 jobId,
+                [in] IPersistableBundle* extras,
+                [in] Boolean overrideDeadlineExpired);
+
+            interface IJobParameters;
+            interface IParcelable;
+        }
+
+    } // namespace Job
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
 
 
-    // } // namespace Job
-    // } // namespace App
-    // } // namespace Droid
-    // } // namespace Elastos
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+    namespace Trust {
 
+        class CTrustManager {
+            constructor(
+                [in] IBinder* b);
+
+            interface ITrustManager;
+        }
+
+        class CTrustManagerTrustListener {
+            constructor(
+                [in] ITrustListener* trustListener,
+                [in] IHandler* handler);
+
+            interface IITrustListener;
+            interface IBinder;
+        }
+
+    } // namespace Trust
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {
@@ -627,11 +680,14 @@ module
 //         interface IUiModeManager;
 //     }
 
-    //class CUiAutomation {
-    //    constructor(
-    //        [in] ILooper* looper,
-    //        [in] IIUiAutomationConnection* connection);
-    //}
+    [local]
+    class CUiAutomation {
+        constructor(
+            [in] ILooper* looper,
+            [in] IIUiAutomationConnection* connection);
+
+        interface IUiAutomation;
+    }
 
     class CUiAutomationConnection {
         constructor();
@@ -640,15 +696,15 @@ module
         interface IBinder;
     }
 
-    //class CAccessibilityServiceClientImpl {
-    //    constructor(
-    //        [in] ILooper* looper,
-    //        [in] IUiAutomation* host);
+    class CAccessibilityServiceClientImpl {
+        constructor(
+            [in] ILooper* looper,
+            [in] IUiAutomation* host);
 
-    //    interface IIAccessibilityServiceClient;
-    //    interface IBinder;
-    //    interface IHandlerCallerCallback;
-    //}
+        interface IIAccessibilityServiceClient;
+        interface IBinder;
+        interface IHandlerCallerCallback;
+    }
 
     class CPendingIntent {
         constructor();
@@ -741,6 +797,14 @@ module
         interface IBinder;
     }
 
+    class CAppImportanceMonitorProcessObserver {
+        constructor(
+            [in] IAppImportanceMonitor* monitor);
+
+        interface IIProcessObserver;
+        interface IBinder;
+    }
+
 //     [local]
 //     class CProgressDialog {
 //         constructor(
@@ -779,12 +843,12 @@ module
         interface IActivityThreadHelper;
     }
 
-//     class CApplicationThread {
-//         constructor();
+    class CApplicationThread {
+        constructor();
 
-//         interface IApplicationThread;
-//         interface IBinder;
-//     }
+        interface IApplicationThread;
+        interface IBinder;
+    }
 
     class CApplication {
         constructor();

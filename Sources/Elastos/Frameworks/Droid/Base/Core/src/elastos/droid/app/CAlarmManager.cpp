@@ -10,6 +10,10 @@ namespace App {
 
 const String CAlarmManager::TAG("CAlarmManager");
 
+CAR_INTERFACE_IMPL(CAlarmManager, Object, IAlarmManager)
+
+CAR_OBJECT_IMPL(CAlarmManager)
+
 CAlarmManager::CAlarmManager()
     : mAlwaysExact(FALSE)
 {

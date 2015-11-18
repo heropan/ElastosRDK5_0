@@ -1,10 +1,12 @@
 
 #include "elastos/droid/app/job/CJobInfo.h"
 #include "elastos/droid/os/CPersistableBundle.h"
+#include "elastos/droid/content/CComponentName.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::CPersistableBundle;
+using Elastos::Droid::Content::CComponentName;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
 
@@ -16,7 +18,7 @@ namespace Job {
 //========================================================================
 // CJobInfo
 //========================================================================
-CAR_INTERFACE_IMPL(CJobInfo, Object, IJobInfo, IParcelable)
+CAR_INTERFACE_IMPL_2(CJobInfo, Object, IJobInfo, IParcelable)
 
 CAR_OBJECT_IMPL(CJobInfo)
 
@@ -38,16 +40,18 @@ CJobInfo::CJobInfo()
 }
 
 ECode CJobInfo::constructor()
-{}
+{
+    return NOERROR;
+}
 
 ECode CJobInfo::constructor(
-    /* [in] */ IJobInfoBuilder* b)
+    /* [in] */ IJobInfoBuilder* jib)
 {
-    VALIDATE_NOT_NULL(b)
-    JobInfoBuilder* jib = (JobInfoBuilder*)b;
+    VALIDATE_NOT_NULL(jib)
+    JobInfoBuilder* b = (JobInfoBuilder*)jib;
     mJobId = b->mJobId;
-    extras = b->mExtras;
-    service = b->mJobService;
+    mExtras = b->mExtras;
+    mService = b->mJobService;
     mRequireCharging = b->mRequiresCharging;
     mRequireDeviceIdle = b->mRequiresDeviceIdle;
     mNetworkType = b->mNetworkType;
@@ -137,7 +141,7 @@ ECode CJobInfo::IsPeriodic(
     return NOERROR;
 }
 
-ECode CJobInfo::IsPersisted((
+ECode CJobInfo::IsPersisted(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -185,7 +189,7 @@ ECode CJobInfo::HasLateConstraint(
     return NOERROR;
 }
 
-ECode CJobInfo::ReadFromParcelable(
+ECode CJobInfo::ReadFromParcel(
     /* [in] */ IParcel* in)
 {
     in->ReadInt32(&mJobId);
@@ -244,9 +248,9 @@ ECode CJobInfo::ToString(
     StringBuilder sb("(job:");
     sb += mJobId;
     sb += "/";
-    String str;
-    mService->FlattenToShortString(&str);
-    sb += str;
+    String info;
+    mService->FlattenToShortString(&info);
+    sb += info;
     sb += ")";
     *str = sb.ToString();
     return NOERROR;
@@ -281,11 +285,11 @@ JobInfoBuilder::~JobInfoBuilder()
 {}
 
 ECode JobInfoBuilder::constructor(
-    /* [in] */ Int32 mJobId,
+    /* [in] */ Int32 jobId,
     /* [in] */ IComponentName* jobService)
 {
     mJobService = jobService;
-    mJobId = mJobId;
+    mJobId = jobId;
     return NOERROR;
 }
 
@@ -379,11 +383,11 @@ ECode JobInfoBuilder::Build(
     CPersistableBundle::New(tmp, (IPersistableBundle**)&mExtras);  // Make our own copy.
     // Check that a deadline was not set on a periodic job.
     if (mIsPeriodic && (mMaxExecutionDelayMillis != 0)) {
-        Logger::E("JobInfoBuilder", "Can't call setOverrideDeadline() on a periodic job.")
+        Logger::E("JobInfoBuilder", "Can't call setOverrideDeadline() on a periodic job.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (mIsPeriodic && (mMinLatencyMillis != 0)) {
-        Logger::E("JobInfoBuilder", "Can't call setMinimumLatency() on a periodic job.")
+        Logger::E("JobInfoBuilder", "Can't call setMinimumLatency() on a periodic job.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (mBackoffPolicySet && mRequiresDeviceIdle) {

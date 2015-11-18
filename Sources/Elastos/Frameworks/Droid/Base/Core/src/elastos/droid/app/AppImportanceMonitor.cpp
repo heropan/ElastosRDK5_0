@@ -1,16 +1,21 @@
 
 #include "elastos/droid/app/AppImportanceMonitor.h"
 #include "elastos/droid/app/CActivityManagerRunningAppProcessInfo.h"
+#include "elastos/droid/app/CAppImportanceMonitorProcessObserver.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::EIID_IBinder;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
+
+const Int32 AppImportanceMonitor::MSG_UPDATE = 1;
 
 //=================================================================================
 // AppImportanceMonitor::AppEntry
@@ -19,19 +24,24 @@ namespace App {
 AppImportanceMonitor::AppEntry::AppEntry(
     /* [in] */ Int32 uid)
     : mUid(uid)
-    , mImportance(IActivityManagerRunningAppProcessInfo.IMPORTANCE_GONE)
+    , mImportance(IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE)
 {
 }
 
 //=================================================================================
 // AppImportanceMonitor::ProcessObserver
 //=================================================================================
-CAR_INTERFACE_IMPL_2(AppImportanceMonitor::ProcessObserver, Object, IProcessObserver, IBinder)
+CAR_INTERFACE_IMPL_2(AppImportanceMonitor::ProcessObserver, Object, IIProcessObserver, IBinder)
 
-AppImportanceMonitor::ProcessObserver::ProcessObserver(
-    /* [in] */ AppImportanceMonitor* host)
-    : mHost(host)
+AppImportanceMonitor::ProcessObserver::ProcessObserver()
 {}
+
+ECode AppImportanceMonitor::ProcessObserver::constructor(
+    /* [in] */ IAppImportanceMonitor* host)
+{
+    mHost = (AppImportanceMonitor*)host;
+    return NOERROR;
+}
 
 AppImportanceMonitor::ProcessObserver::~ProcessObserver()
 {}
@@ -52,8 +62,7 @@ ECode AppImportanceMonitor::ProcessObserver::OnProcessStateChanged(
     Object& lock = mHost->mAppsLock;
     synchronized(lock) {
         mHost->UpdateImportanceLocked(pid, uid,
-            CActivityManagerRunningAppProcessInfo::procStateToImportance(procState),
-            TRUE);
+            CActivityManagerRunningAppProcessInfo::ProcStateToImportance(procState), TRUE);
     }
     return NOERROR;
 }
@@ -62,10 +71,19 @@ ECode AppImportanceMonitor::ProcessObserver::OnProcessDied(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 uid)
 {
-    synchronized(mApps) {
+    Object& lock = mHost->mAppsLock;
+    synchronized(lock) {
         mHost->UpdateImportanceLocked(pid, uid,
             IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE, TRUE);
     }
+    return NOERROR;
+}
+
+ECode AppImportanceMonitor::ProcessObserver::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = "AppImportanceMonitor::ProcessObserver";
     return NOERROR;
 }
 
@@ -75,8 +93,8 @@ ECode AppImportanceMonitor::ProcessObserver::OnProcessDied(
 AppImportanceMonitor::MyHandler::MyHandler(
     /* [in] */ AppImportanceMonitor* host,
     /* [in] */ ILooper* looper)
-    : mHost(host)
-    , Handler(looper)
+    : Handler(looper)
+    , mHost(host)
 {}
 
 ECode AppImportanceMonitor::MyHandler::HandleMessage(
@@ -100,7 +118,6 @@ ECode AppImportanceMonitor::MyHandler::HandleMessage(
 //=================================================================================
 // AppImportanceMonitor
 //=================================================================================
-static const Int32 AppImportanceMonitor::MSG_UPDATE = 1;
 
 CAR_INTERFACE_IMPL(AppImportanceMonitor, Object, IAppImportanceMonitor)
 
@@ -115,16 +132,16 @@ ECode AppImportanceMonitor::constructor(
     /* [in] */ ILooper* looper)
 {
     mContext = context;
-    mHandler = new MyHandler(looper);
+    mHandler = new MyHandler(this, looper);
 
-    mProcessObserver = new ProcessObserver(this);
+    CAppImportanceMonitorProcessObserver::New(this, (IIProcessObserver**)&mProcessObserver);
 
     AutoPtr<IInterface> obj;
     context->GetSystemService(IContext::ACTIVITY_SERVICE, (IInterface**)&obj);
     AutoPtr<IActivityManager> am = IActivityManager::Probe(obj);
 
     // try {
-    ActivityManagerNative::GetDefault()::RegisterProcessObserver(mProcessObserver);
+    ActivityManagerNative::GetDefault()->RegisterProcessObserver(mProcessObserver);
     // } catch (RemoteException e) {
     // }
     AutoPtr<IList> apps;
@@ -183,9 +200,13 @@ void AppImportanceMonitor::UpdateImportanceLocked(
         mApps[uid] = ent;
     }
     if (importance >= IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE) {
-        ent->mProcs.Remove(pid);
-    } else {
-        ent->procs[pid] = importance;
+        HashMap<Int32, Int32>::Iterator it = ent->mProcs.Find(pid);
+        if (it != ent->mProcs.End()) {
+            ent->mProcs.Erase(it);
+        }
+    }
+    else {
+        ent->mProcs[pid] = importance;
     }
     UpdateImportanceLocked(ent, repChange);
 }
@@ -207,14 +228,16 @@ void AppImportanceMonitor::UpdateImportanceLocked(
         Int32 impCode = appImp | (ent->mImportance << 16);
         ent->mImportance = appImp;
         if (appImp >= IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE) {
-            mApps->Remove(ent->mUid);
+            HashMap<Int32, AutoPtr<AppEntry> >::Iterator it = mApps.Find(ent->mUid);
+            if (it != mApps.End()) {
+                mApps.Erase(it);
+            }
         }
 
         if (repChange) {
             AutoPtr<IMessage> msg;
             mHandler->ObtainMessage(MSG_UPDATE, ent->mUid, impCode, (IMessage**)&msg);
-            Boolean result;
-            msg->SendToTarget(&result);
+            msg->SendToTarget();
         }
     }
 }
