@@ -1,11 +1,14 @@
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/CMotionEventHelper.h"
-#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/MotionEvent.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
+
+CAR_INTERFACE_IMPL(CMotionEventHelper, Singleton, IMotionEventHelper);
+
+CAR_SINGLETON_IMPL(CMotionEventHelper);
 
 ECode CMotionEventHelper::Obtain(
     /* [in] */ Int64 downTime,
@@ -25,18 +28,12 @@ ECode CMotionEventHelper::Obtain(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(CMotionEvent::Obtain(
-        downTime, eventTime, action, pointerCount,
-        pointerProperties, pointerCoords,
-        metaState, buttonState, xPrecision, yPrecision,
-        deviceId, edgeFlags, source, flags, (CMotionEvent**)&ev));
-
-    *event = ev;
-    REFCOUNT_ADD(*event);
-    return NOERROR;
+    return MotionEvent::Obtain(
+            downTime, eventTime, action, pointerCount,
+            pointerProperties, pointerCoords,
+            metaState, buttonState, xPrecision, yPrecision,
+            deviceId, edgeFlags, source, flags, event);
 }
 
 ECode CMotionEventHelper::Obtain(
@@ -56,17 +53,11 @@ ECode CMotionEventHelper::Obtain(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(CMotionEvent::Obtain(
-        downTime, eventTime, action, pointerCount, pointerIds,
-        pointerCoords, metaState, xPrecision, yPrecision,
-        deviceId, edgeFlags, source, flags, (CMotionEvent**)&ev));
-
-    *event = ev;
-    REFCOUNT_ADD(*event);
-    return NOERROR;
+    return MotionEvent::Obtain(
+            downTime, eventTime, action, pointerCount, pointerIds,
+            pointerCoords, metaState, xPrecision, yPrecision,
+            deviceId, edgeFlags, source, flags, event);
 }
 
 ECode CMotionEventHelper::Obtain(
@@ -85,16 +76,10 @@ ECode CMotionEventHelper::Obtain(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(CMotionEvent::Obtain(
-        downTime, eventTime, action, x, y, pressure, size, metaState,
-        xPrecision, yPrecision, deviceId, edgeFlags, (CMotionEvent**)&ev));
-
-    *event = ev;
-    REFCOUNT_ADD(*event);
-    return NOERROR;
+    return MotionEvent::Obtain(
+            downTime, eventTime, action, x, y, pressure, size, metaState,
+            xPrecision, yPrecision, deviceId, edgeFlags, event);
 }
 
 ECode CMotionEventHelper::Obtain(
@@ -114,16 +99,10 @@ ECode CMotionEventHelper::Obtain(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(CMotionEvent::Obtain(
-        downTime, eventTime, action, pointerCount, x, y, pressure, size,
-        metaState, xPrecision, yPrecision, deviceId, edgeFlags, (CMotionEvent**)&ev));
-
-    *event = ev;
-    REFCOUNT_ADD(*event);
-    return NOERROR;
+    return MotionEvent::Obtain(
+            downTime, eventTime, action, pointerCount, x, y, pressure, size,
+            metaState, xPrecision, yPrecision, deviceId, edgeFlags, event);
 }
 
 ECode CMotionEventHelper::Obtain(
@@ -136,15 +115,9 @@ ECode CMotionEventHelper::Obtain(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(CMotionEvent::Obtain(
-        downTime, eventTime, action, x, y, metaState, (CMotionEvent**)&ev));
-
-    *event = ev;
-    REFCOUNT_ADD(*event);
-    return NOERROR;
+    return MotionEvent::Obtain(
+            downTime, eventTime, action, x, y, metaState, event);
 }
 
 ECode CMotionEventHelper::Obtain(
@@ -152,14 +125,8 @@ ECode CMotionEventHelper::Obtain(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(CMotionEvent::Obtain((CMotionEvent*)o, (CMotionEvent**)&ev));
-
-    *event = ev;
-    REFCOUNT_ADD(*event);
-    return NOERROR;
+    return MotionEvent::Obtain(o, event);
 }
 
 ECode CMotionEventHelper::ObtainNoHistory(
@@ -167,14 +134,8 @@ ECode CMotionEventHelper::ObtainNoHistory(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(CMotionEvent::ObtainNoHistory((CMotionEvent*)o, (CMotionEvent**)&ev));
-
-    *event = ev;
-    REFCOUNT_ADD(*event);
-    return NOERROR;
+    return MotionEvent::ObtainNoHistory(o, event);
 }
 
 ECode CMotionEventHelper::ActionToString(
@@ -182,8 +143,8 @@ ECode CMotionEventHelper::ActionToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = CMotionEvent::ActionToString(action);
 
+    *str = MotionEvent::ActionToString(action);
     return NOERROR;
 }
 
@@ -192,8 +153,8 @@ ECode CMotionEventHelper::AxisToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = CMotionEvent::AxisToString(axis);
 
+    *str = MotionEvent::AxisToString(axis);
     return NOERROR;
 }
 
@@ -202,7 +163,8 @@ ECode CMotionEventHelper::AxisFromString(
     /* [out] */ Int32* axis)
 {
     VALIDATE_NOT_NULL(axis);
-    return CMotionEvent::AxisFromString(symbolicName, axis);
+
+    return MotionEvent::AxisFromString(symbolicName, axis);
 }
 
 ECode CMotionEventHelper::ButtonStateToString(
@@ -210,8 +172,8 @@ ECode CMotionEventHelper::ButtonStateToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = CMotionEvent::ButtonStateToString(buttonState);
 
+    *str = MotionEvent::ButtonStateToString(buttonState);
     return NOERROR;
 }
 
@@ -220,8 +182,8 @@ ECode CMotionEventHelper::ToolTypeToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = CMotionEvent::ToolTypeToString(toolType);
 
+    *str = MotionEvent::ToolTypeToString(toolType);
     return NOERROR;
 }
 
@@ -230,14 +192,8 @@ ECode CMotionEventHelper::CreateFromParcelBody(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(CMotionEvent::CreateFromParcelBody(in, (CMotionEvent**)&ev));
-
-    *event = ev;
-    REFCOUNT_ADD(*event);
-    return NOERROR;
+    return MotionEvent::CreateFromParcelBody(in, event);
 }
 
 }   //namespace View

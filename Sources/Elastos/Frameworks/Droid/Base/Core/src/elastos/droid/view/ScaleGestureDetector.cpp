@@ -125,8 +125,7 @@ ECode ScaleGestureDetector::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IScaleGestureDetectorOnScaleGestureListener* listener)
 {
-    constructor(context, listener, NULL);
-    return NOERROR;
+    return constructor(context, listener, NULL);
 }
 
 ECode ScaleGestureDetector::constructor(
@@ -235,9 +234,11 @@ void ScaleGestureDetector::AddTouchHistory(
 
 void ScaleGestureDetector::ClearTouchHistory()
 {
-    mTouchUpper = Elastos::Core::Math::FLOAT_NAN;
-    mTouchLower = Elastos::Core::Math::FLOAT_NAN;
-    mTouchHistoryLastAccepted = Elastos::Core::Math::FLOAT_NAN;
+    using Elastos::Core::Math;
+
+    mTouchUpper = Math::FLOAT_NAN;
+    mTouchLower = Math::FLOAT_NAN;
+    mTouchHistoryLastAccepted = Math::FLOAT_NAN;
     mTouchHistoryDirection = 0;
     mTouchHistoryLastAcceptedTime = 0;
 }
@@ -293,8 +294,9 @@ ECode ScaleGestureDetector::OnTouchEvent(
             action == IMotionEvent::ACTION_POINTER_DOWN;
     Boolean pointerUp = action == IMotionEvent::ACTION_POINTER_UP;
     Int32 skipIndex = -1;
-    if (pointerUp)
+    if (pointerUp) {
         event->GetActionIndex(&skipIndex);
+    }
 
     // Determine focal point
     Float sumX = 0, sumY = 0;

@@ -38,9 +38,9 @@ public:
      * {@link InputDevice#SOURCE_CLASS_POINTER}.
      * @return Whether the event is from the given source.
      */
-        IsFromSource(
-            /* [in] */ Int32 source,
-            /* [out] */ Boolean* result);
+    CARAPI IsFromSource(
+        /* [in] */ Int32 source,
+        /* [out] */ Boolean* result);
 
     /**
      * Recycles the event.

@@ -77,6 +77,25 @@ ECode InputEvent::GetSequenceNumber(
     return NOERROR;
 }
 
+ECode InputEvent::IsFromSource(
+    /* [in] */ Int32 source,
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
+}
+
+ECode InputEvent::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    return NOERROR;
+}
+
+ECode InputEvent::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    return NOERROR;
+}
+
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos

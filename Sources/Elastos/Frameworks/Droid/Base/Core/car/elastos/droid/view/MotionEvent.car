@@ -180,6 +180,13 @@ module
             [in] Float value);
     }
 
+    interface IPointerCoordsHelper {
+        /** @hide */
+        CreateArray(
+            [in] Int32 size,
+            [out, callee] ArrayOf<IPointerCoords*>* array);
+    }
+
     /**
      * Transfer object for pointer properties.
      *
@@ -234,6 +241,13 @@ module
 
         GetHashCode(
             [out] Int32* hash);
+    }
+
+    interface IPointerPropertiesHelper {
+        /** @hide */
+        CreateArray(
+            [in] Int32 size,
+            [out, callee] ArrayOf<IPointerProperties*>* array);
     }
 
     /**
@@ -1442,8 +1456,6 @@ module
          * @see #TOOL_TYPE_FINGER
          * @see #TOOL_TYPE_STYLUS
          * @see #TOOL_TYPE_MOUSE
-         * @see #TOOL_TYPE_INDIRECT_FINGER
-         * @see #TOOL_TYPE_INDIRECT_STYLUS
          */
         GetToolType(
             [in] Int32 pointerIndex,
@@ -1663,6 +1675,9 @@ module
          * events on the screen, this is the original location of the event
          * on the screen, before it had been adjusted for the containing window
          * and views.
+         *
+         * @see #getX(int)
+         * @see #AXIS_X
          */
         GetRawX(
             [out] Float* rawX);
@@ -1672,6 +1687,9 @@ module
          * events on the screen, this is the original location of the event
          * on the screen, before it had been adjusted for the containing window
          * and views.
+         *
+         * @see #getY(int)
+         * @see #AXIS_Y
          */
         GetRawY(
             [out] Float* rawY);
@@ -2436,13 +2454,13 @@ module
             [out] IMotionEvent** event);
 
         /**
-         * Returns a string that represents the symbolic name of the specified action
+         * Returns a string that represents the symbolic name of the specified unmasked action
          * such as "ACTION_DOWN", "ACTION_POINTER_DOWN(3)" or an equivalent numeric constant
          * such as "35" if unknown.
          *
-         * @param action The action.
+         * @param action The unmasked action.
          * @return The symbolic name of the specified action.
-         * @hide
+         * @see #getAction()
          */
         ActionToString(
             [in] Int32 action,
@@ -2465,7 +2483,7 @@ module
          *
          * @param symbolicName The symbolic name of the axis.
          * @return The axis or -1 if not found.
-         * @see #keycodeToString
+         * @see KeyEvent#keyCodeToString(int)
          */
         AxisFromString(
             [in] String symbolicName,

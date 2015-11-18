@@ -40,8 +40,7 @@ ECode ViewStub::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    constructor(context, attrs, 0);
-    return NOERROR;
+    return constructor(context, attrs, 0);
 }
 
 ECode ViewStub::constructor(
@@ -49,8 +48,7 @@ ECode ViewStub::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    constructor(context, attrs, defStyleAttr, 0);
-    return NOERROR;
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
 ECode ViewStub::constructor(
