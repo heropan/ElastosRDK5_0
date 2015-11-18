@@ -6,6 +6,7 @@
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/List.h>
+#include "elastos/droid/view/CSurfaceViewWindow.h"
 
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IParcelFileDescriptor;
@@ -101,7 +102,7 @@ private:
     };
 
     class MyOnPreDrawListener
-        : public ElRefBase
+        : public Object
         , public IOnPreDrawListener
     {
     public:
@@ -120,7 +121,7 @@ private:
     };
 
     class MyOnScrollChangedListener
-        : public ElRefBase
+        : public Object
         , public IOnScrollChangedListener
     {
     public:
@@ -138,6 +139,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     SurfaceView();
 
     virtual ~SurfaceView();
@@ -149,6 +152,9 @@ public:
      * @return SurfaceHolder The holder of the surface.
      */
     virtual CARAPI_(AutoPtr<ISurfaceHolder>) GetHolder();
+
+    virtual CARAPI GetHolder(
+        /* [out] */ ISurfaceHolder** holder);
 
     virtual CARAPI SetVisibility(
         /* [in] */ Int32 visibility);
@@ -221,6 +227,9 @@ public:
      */
     virtual CARAPI_(Boolean) IsFixedSize();
 
+    virtual CARAPI IsFixedSize(
+        /* [out] */ Boolean* isFixedSize);
+
     virtual CARAPI HandleGetNewSurface();
 
     //todo: for gecko using input method
@@ -256,10 +265,6 @@ public:
     CARAPI SetKeyEventCallbackDelegate(
         /* [in] */IKeyEventCallback* cb);
 
-    static CARAPI AdjustSurfaceViewMotion(
-        /* [in] */ IMotionEvent* evt);
-
-protected:
     CARAPI constructor(
         /* [in] */ IContext* context);
 
@@ -272,6 +277,7 @@ protected:
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
 
+protected:
     virtual CARAPI OnAttachedToWindow();
 
     virtual CARAPI_(void) OnWindowVisibilityChanged(
@@ -296,27 +302,12 @@ protected:
 protected:
     CARAPI_(void) Init();
 
-private:
     CARAPI UpdateWindow(
         /* [in] */ Boolean force,
         /* [in] */ Boolean redrawNeeded);
 
+private:
     CARAPI_(AutoPtr<ArrayOf<ISurfaceHolderCallback*> >) GetSurfaceCallbacks();
-
-    CARAPI_(void) InitMem();
-
-
-    CARAPI_(void) TestGameloftNeedAdjust();
-
-    CARAPI_(void) AdjustWindowLayout();
-
-protected:
-    static Int32 mScreenWidth;
-    static Int32 mScreenHeight;
-    static Int32 mGameSurfaceWidth;
-    static Int32 mGameSurfaceHeight;
-    static Int32 mScreenOrientation;
-    static Boolean mAdapterMode;
 
 public:
     static const Int32 KEEP_SCREEN_ON_MSG;
@@ -342,10 +333,10 @@ private:
 
     AutoPtr<IWindowManagerLayoutParams> mLayout; //= new WindowManager.LayoutParams();
     AutoPtr<IWindowSession> mSession;
-    AutoPtr<IIWindow> mWindow;
+    AutoPtr<IBaseIWindow> mWindow;
     AutoPtr<IRect> mVisibleInsets;// = new Rect();
     AutoPtr<IRect> mWinFrame;// = new Rect();
-    AutoPtr<IRect> mOverscanInsets
+    AutoPtr<IRect> mOverscanInsets;
     AutoPtr<IRect> mContentInsets;// = new Rect();
     AutoPtr<IRect> mStableInsets;
     AutoPtr<IConfiguration> mConfiguration;// = new Configuration();
@@ -380,7 +371,6 @@ private:
     Int32 mFormat;// = -1;
     Int32 mType;// = -1;
     AutoPtr<IRect> mSurfaceFrame;// = new Rect();
-    AutoPtr<IRect> mTmpDirty;
     Int32 mLastSurfaceWidth;// = -1;
     Int32 mLastSurfaceHeight;// = -1;
     Boolean mUpdateWindowNeeded;
@@ -397,9 +387,6 @@ private:
     //todo: for gecko using input method;
     AutoPtr<IView> mDelegate;
     AutoPtr<IKeyEventCallback> mKeyEventCallbackDelegate;
-public:
-    static Boolean mGameloftNeedCompat;
-    static Boolean mMotionEventMayNeedAdjust;
 };
 
 } // namespace View

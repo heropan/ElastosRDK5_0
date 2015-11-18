@@ -4017,7 +4017,8 @@ ECode ViewGroup::SetClipChildren(
             GetChildAt(i, (IView**)&temp);
             View* child = VIEW_PROBE(temp);
             if (child->mRenderNode != NULL) {
-                child->mRenderNode->SetClipToBounds(clipChildren);
+                Boolean r;
+                child->mRenderNode->SetClipToBounds(clipChildren, &r);
             }
         }
         Invalidate(TRUE);

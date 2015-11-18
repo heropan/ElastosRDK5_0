@@ -83,7 +83,8 @@ ECode ThreadedRenderer::constructor(
     AutoPtr<IRenderNodeHelper> hlp;
     // CRenderNodeHelper::AcquireSingleton((IRenderNodeHelper**)&hlp);
     hlp->Adopt(rootNodePtr, (IRenderNode**)&mRootNode);
-    mRootNode->SetClipToBounds(FALSE);
+    Boolean r;
+    mRootNode->SetClipToBounds(FALSE, &r);
     mNativeProxy = NativeCreateProxy(translucent, rootNodePtr);
 
 //    AtlasInitializer::sInstance->Init(context, mNativeProxy);

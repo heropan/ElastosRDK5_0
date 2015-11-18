@@ -466,7 +466,7 @@ Boolean GraphicBuffer::nUnlockCanvasAndPost(
     return FALSE;
 }
 
-CARAPI GraphicBuffer::constructor(
+ECode GraphicBuffer::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 format,

@@ -2,8 +2,8 @@
 #include "elastos/droid/internal/view/BaseIWindow.h"
 
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::View::IIWindow;
 using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::View::IIWindow;
 using Elastos::Droid::View::EIID_IIWindow;
 
 namespace Elastos {
@@ -16,6 +16,20 @@ ECode BaseIWindow::SetSession(
     /* [in] */ IWindowSession* session)
 {
     mSession = session;
+    return NOERROR;
+}
+
+ECode BaseIWindow::SetSeq(
+    /* [in] */ Int32 seq)
+{
+    mSeq = seq;
+    return NOERROR;
+}
+
+ECode BaseIWindow::GetSeq(
+    /* [out] */ Int32* seq)
+{
+    *seq = mSeq;
     return NOERROR;
 }
 

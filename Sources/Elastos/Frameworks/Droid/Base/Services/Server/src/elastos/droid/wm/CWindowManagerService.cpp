@@ -3341,6 +3341,7 @@ Int32 CWindowManagerService::RelayoutWindow(
     /* [in] */ Int32 viewVisibility,
     /* [in] */ Int32 flags,
     /* [in] */ IRect* inFrame,
+    /* [in] */ IRect* inOverscanInsets,
     /* [in] */ IRect* inContentInsets,
     /* [in] */ IRect* inVisibleInsets,
     /* [in] */ IRect* inStableInsets,
@@ -3351,7 +3352,7 @@ Int32 CWindowManagerService::RelayoutWindow(
     /* [out] */ IRect** outContentInsets,
     /* [out] */ IRect** outVisibleInsets,
     /* [out] */ IRect** outStableInsets,
-    /* [out] */ IConfiguration* outConfig,
+    /* [out] */ IConfiguration** outConfig,
     /* [out] */ ISurface** outSurface)
 {
     Boolean toBeDisplayed = FALSE;

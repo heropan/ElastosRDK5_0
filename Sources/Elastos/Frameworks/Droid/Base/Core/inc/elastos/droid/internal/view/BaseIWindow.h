@@ -13,6 +13,7 @@ using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::View::IWindowSession;
 using Elastos::Droid::View::IDragEvent;
 using Elastos::Droid::View::IIWindow;
+using Elastos::Droid::Internal::View::IBaseIWindow;
 
 namespace Elastos {
 namespace Droid {
@@ -30,6 +31,12 @@ public:
 
     CARAPI SetSession(
         /* [in] */ IWindowSession* session);
+
+    CARAPI SetSeq(
+        /* [in] */ Int32 seq);
+
+    CARAPI GetSeq(
+        /* [out] */ Int32* seq);
 
     CARAPI Resized(
         /* [in] */ IRect* frame,
@@ -49,6 +56,12 @@ public:
 
     CARAPI DispatchGetNewSurface();
 
+<<<<<<< HEAD
+=======
+    CARAPI DispatchScreenState(
+        /* [in] */ Boolean on);
+
+>>>>>>> update view
     CARAPI WindowFocusChanged(
         /* [in] */ Boolean hasFocus,
         /* [in] */ Boolean touchEnabled);
@@ -86,12 +99,15 @@ public:
         /* [in] */ Boolean sync);
 
     CARAPI DoneAnimating();
+<<<<<<< HEAD
 
     CARAPI SetSeq(
         /* [in] */ Int32 seq);
 
     CARAPI GetSeq(
         /* [out] */ Int32* seq);
+=======
+>>>>>>> update view
 
 public:
     Int32 mSeq;

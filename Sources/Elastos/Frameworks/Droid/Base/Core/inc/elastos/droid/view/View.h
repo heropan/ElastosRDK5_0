@@ -102,6 +102,7 @@ class View
     , public IAccessibilityEventSource
 
 {
+    friend class RenderNode;
     friend class ViewRootImpl;
     friend class LayoutInflater;
     friend class ViewGroup;

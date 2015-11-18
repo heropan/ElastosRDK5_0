@@ -161,6 +161,7 @@ module
     merge("view/textservice/SuggestionsInfo.car");
     merge("view/textservice/TextInfo.car");
     merge("view/textservice/TextServicesManager.car");
+    merge("internal/view/BaseIWindow.car");
 
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.ICloneable;
@@ -182,9 +183,10 @@ module
     // interface Elastos.Droid.Internal.View.IInputContextCallback;
     // interface Elastos.Droid.Internal.View.IInputMethodClient;
     // interface Elastos.Droid.Internal.View.IIInputMethodSession;
+    interface Elastos.Droid.Internal.View.IBaseIWindow;
     interface Elastos.Droid.Os.IBinder;
     // interface Elastos.Droid.Os.ILooper;
-     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.IHandler;
     // interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IKeyEventCallback;
     // interface Elastos.Droid.View.IInputMethodCallback;
@@ -828,54 +830,60 @@ module
     //         interface IAccessibilityInteractionController;
     //     }
 
+    singleton class CRenderNodeHelper {
+        constructor();
+
+        interface IRenderNodeHelper;
+    }
+
     class CSurface {
         /**
-         * Create an empty surface, which will later be filled in by readFromParcel().
-         * @hide
-         */
+        * Create an empty surface, which will later be filled in by readFromParcel().
+        * @hide
+        */
         constructor();
 
         /**
-         * Create a surface with a name.
-         *
-         * The surface creation flags specify what kind of surface to create and
-         * certain options such as whether the surface can be assumed to be opaque
-         * and whether it should be initially hidden.  Surfaces should always be
-         * created with the {@link #HIDDEN} flag set to ensure that they are not
-         * made visible prematurely before all of the surface's properties have been
-         * configured.
-         *
-         * Good practice is to first create the surface with the {@link #HIDDEN} flag
-         * specified, open a transaction, set the surface layer, layer stack, alpha,
-         * and position, call {@link #show} if appropriate, and close the transaction.
-         *
-         * @param session The surface session, must not be null.
-         * @param name The surface name, must not be null.
-         * @param w The surface initial width.
-         * @param h The surface initial height.
-         * @param flags The surface creation flags.  Should always include {@link #HIDDEN}
-         * in the creation flags.
-         * @hide
-         */
+        * Create a surface with a name.
+        *
+        * The surface creation flags specify what kind of surface to create and
+        * certain options such as whether the surface can be assumed to be opaque
+        * and whether it should be initially hidden.  Surfaces should always be
+        * created with the {@link #HIDDEN} flag set to ensure that they are not
+        * made visible prematurely before all of the surface's properties have been
+        * configured.
+        *
+        * Good practice is to first create the surface with the {@link #HIDDEN} flag
+        * specified, open a transaction, set the surface layer, layer stack, alpha,
+        * and position, call {@link #show} if appropriate, and close the transaction.
+        *
+        * @param session The surface session, must not be null.
+        * @param name The surface name, must not be null.
+        * @param w The surface initial width.
+        * @param h The surface initial height.
+        * @param flags The surface creation flags.  Should always include {@link #HIDDEN}
+        * in the creation flags.
+        * @hide
+        */
         constructor(
-            [in] Int64 nativeObject);
+         [in] Int64 nativeObject);
 
         /**
-         * Create Surface from a {@link SurfaceTexture}.
-         *
-         * Images drawn to the Surface will be made available to the {@link
-         * SurfaceTexture}, which can attach them to an OpenGL ES texture via {@link
-         * SurfaceTexture#updateTexImage}.
-         *
-         * @param surfaceTexture The {@link SurfaceTexture} that is updated by this
-         * Surface.
-         */
+        * Create Surface from a {@link SurfaceTexture}.
+        *
+        * Images drawn to the Surface will be made available to the {@link
+        * SurfaceTexture}, which can attach them to an OpenGL ES texture via {@link
+        * SurfaceTexture#updateTexImage}.
+        *
+        * @param surfaceTexture The {@link SurfaceTexture} that is updated by this
+        * Surface.
+        */
         constructor(
-            [in] ISurfaceTexture* surfaceTexture);
+         [in] ISurfaceTexture* surfaceTexture);
 
         interface ISurface;
         interface IParcelable;
-     }
+    }
 
     singleton class CSurfaceControlHelper {
         interface ISurfaceControlHelper;
@@ -908,32 +916,32 @@ module
         interface IPhysicalDisplayInfo;
     }
 
-    //     [local]
-    //     class CSurfaceView {
-    //         constructor(
-    //                 [in] IContext* ctx);
+    [local]
+    class CSurfaceView {
+        constructor(
+             [in] IContext* ctx);
 
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] IAttributeSet* attrs);
+        constructor(
+             [in] IContext* ctx,
+             [in] IAttributeSet* attrs);
 
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] IAttributeSet* attrs,
-    //             [in] Int32 defStyle);
+        constructor(
+             [in] IContext* ctx,
+             [in] IAttributeSet* attrs,
+             [in] Int32 defStyle);
 
-    //         interface ISurfaceView;
-    //         interface IKeyEventCallback;
-    //     }
-
-    //     singleton class CSurfaceViewHelper {
-    //         interface ISurfaceViewHelper;
-    //     }
+        interface IView;
+        interface ISurfaceView;
+        interface IKeyEventCallback;
+        interface IDrawableCallback;
+        interface IAccessibilityEventSource;
+    }
 
     class CSurfaceViewWindow {
         constructor(
             [in] ISurfaceView* surfaceView);
 
+        interface IBaseIWindow;
         interface IIWindow;
         interface IBinder;
     }

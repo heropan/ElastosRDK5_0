@@ -17,9 +17,7 @@ ECode CInputChannelHelper::OpenInputChannelPair(
 {
     VALIDATE_NOT_NULL(icp);
 
-    FAIL_RETURN(CInputChannel::OpenInputChannelPair(name, icp))
-
-    return NOERROR;
+    return CInputChannel::OpenInputChannelPair(name, icp);
 }
 
 } // namespace View

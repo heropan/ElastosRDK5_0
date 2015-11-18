@@ -12,6 +12,8 @@ INCLUDES += $(PREBUILD_INC)/input
 INCLUDES += $(PREBUILD_INC)/utils
 INCLUDES += $(PREBUILD_INC)/bionic
 INCLUDES += $(PREBUILD_INC)/stlport
+INCLUDES += $(PREBUILD_INC)/libcxx
+INCLUDES += $(PREBUILD_INC)/hwui
 
 C_DEFINES += -DDROID_CORE
 
@@ -65,10 +67,12 @@ SOURCES += CSurfaceControl.cpp
 #SOURCES += CViewBaseSavedState.cpp
 #SOURCES += CChoreographerHelper.cpp
 #SOURCES += CCompatibilityInfoHolder.cpp
-SOURCES += CDispatcherState.cpp
 
-#SOURCES += NativeDisplayEventReceiver.cpp
-#SOURCES += DisplayEventReceiver.cpp
+#SOURCES += CDispatcherState.cpp
+SOURCES += RenderNode.cpp
+SOURCES += CRenderNodeHelper.cpp
+SOURCES += NativeDisplayEventReceiver.cpp
+SOURCES += DisplayEventReceiver.cpp
 
 #SOURCES += CDragShadowBuilder.cpp
 #SOURCES += NativeInputChannel.cpp
@@ -103,8 +107,8 @@ SOURCES += CPointerPropertiesHelper.cpp
 #SOURCES += CSurfaceHelper.cpp
 #SOURCES += CSurfaceSession.cpp
 #SOURCES += CSurfaceViewWindow.cpp
-#SOURCES += SurfaceView.cpp
-#SOURCES += CSurfaceView.cpp
+SOURCES += SurfaceView.cpp
+SOURCES += CSurfaceView.cpp
 #SOURCES += CSurfaceViewHelper.cpp
 SOURCES += ViewConfiguration.cpp
 SOURCES += CViewConfiguration.cpp
@@ -127,6 +131,7 @@ SOURCES += CWindowManagerGlobal.cpp
 SOURCES += CWindowManagerGlobalHelper.cpp
 SOURCES += CWindowManagerGlobalSessionCallback.cpp
 #SOURCES += LayoutInflater.cpp
+
 #SOURCES += ViewTreeObserver.cpp
 SOURCES += View.cpp
 SOURCES += CView.cpp

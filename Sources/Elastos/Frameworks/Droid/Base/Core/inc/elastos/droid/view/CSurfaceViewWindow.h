@@ -6,11 +6,12 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/internal/view/BaseIWindow.h"
 
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Internal::View::IBaseIWindow;
 using Elastos::Droid::Internal::View::BaseIWindow;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Content::Res::IConfiguration;
 
 namespace Elastos {
 namespace Droid {
@@ -31,8 +32,10 @@ public:
 
     CARAPI Resized(
         /* [in] */ IRect* frame,
+        /* [in] */ IRect* overscanInsets,
         /* [in] */ IRect* coveredInsets,
         /* [in] */ IRect* visibleInsets,
+        /* [in] */ IRect* stableInsets,
         /* [in] */ Boolean reportDraw,
         /* [in] */ IConfiguration* newConfig);
 

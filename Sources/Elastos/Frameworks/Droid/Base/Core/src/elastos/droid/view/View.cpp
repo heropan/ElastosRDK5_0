@@ -7584,7 +7584,7 @@ ECode View::GetMatrix(
     VALIDATE_NOT_NULL(res)
     EnsureTransformationInfo();
     AutoPtr<IMatrix> matrix = mTransformationInfo->mMatrix;
-    mRenderNode->GetMatrix((IMatrix**)&matrix);
+    mRenderNode->GetMatrix(matrix);
     *res = matrix;
     REFCOUNT_ADD(*res)
     return NOERROR;
@@ -7614,7 +7614,7 @@ ECode View::GetInverseMatrix(
         CMatrix::New((IMatrix**)&(mTransformationInfo->mInverseMatrix));
     }
     AutoPtr<IMatrix> matrix = mTransformationInfo->mInverseMatrix;
-    mRenderNode->GetInverseMatrix((IMatrix**)&matrix);
+    mRenderNode->GetInverseMatrix(matrix);
     *res = matrix;
     REFCOUNT_ADD(*res)
     return NOERROR;
@@ -13356,7 +13356,7 @@ AutoPtr<IRenderNode> View::GetDrawableRenderNode(
     drawable->IsProjected(&isProjected);
     renderNode->SetProjectBackwards(isProjected, &res);
     renderNode->SetProjectionReceiver(TRUE, &res);
-    renderNode->SetClipToBounds(FALSE);
+    renderNode->SetClipToBounds(FALSE, &res);
     return renderNode;
 }
 

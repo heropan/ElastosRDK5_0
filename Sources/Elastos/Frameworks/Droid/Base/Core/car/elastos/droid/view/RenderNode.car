@@ -214,10 +214,10 @@ module
             [out] Boolean* result);
 
         GetMatrix(
-            [out] IMatrix** outMatrix);
+            [in] IMatrix* outMatrix);
 
         GetInverseMatrix(
-            [out] IMatrix** outMatrix);
+            [in] IMatrix* outMatrix);
 
         ///////////////////////////////////////////////////////////////////////////
         // RenderProperty Setters
@@ -241,7 +241,8 @@ module
          * @param clipToBounds true if the display list should clip to its bounds
          */
         SetClipToBounds(
-            [in] Boolean clipToBounds);
+            [in] Boolean clipToBounds,
+            [out] Boolean* result);
 
         /**
          * Sets whether the display list should be drawn immediately after the
@@ -339,7 +340,7 @@ module
          *
          * @see #setAlpha(float)
          */
-        GtAlpha(
+        GetAlpha(
             [out] Float* result);
 
         /**

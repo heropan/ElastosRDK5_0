@@ -7,6 +7,7 @@
 
 using Elastos::Droid::Os::IMessageQueue;
 using Elastos::Droid::Os::ILooper;
+using Elastos::Core::ICloseGuard;
 
 namespace Elastos {
 namespace Droid {
@@ -104,7 +105,7 @@ private:
 private:
     static const char* TAG;
 
-    //final CloseGuard mCloseGuard = CloseGuard.get();
+    AutoPtr<ICloseGuard> mCloseGuard;// = CloseGuard.get();
 
     android::sp<NativeDisplayEventReceiver> mNativeReceiver;
 
