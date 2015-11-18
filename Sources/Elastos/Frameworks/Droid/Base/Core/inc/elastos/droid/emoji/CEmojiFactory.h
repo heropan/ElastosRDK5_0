@@ -15,6 +15,7 @@ public:
     CAR_OBJECT_DECL();
 
     CEmojiFactory();
+
     virtual ~CEmojiFactory();
 };
 
