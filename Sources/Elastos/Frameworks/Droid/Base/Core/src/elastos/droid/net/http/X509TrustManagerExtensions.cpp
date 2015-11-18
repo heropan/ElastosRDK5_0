@@ -22,9 +22,9 @@ ECode X509TrustManagerExtensions::constructor(
     impl = (ITrustManagerImpl*)tm->Probe(Org::Apache::Harmony::Xnet::Provider::Jsse::EIID_ITrustManagerImpl);
 
     if (impl == NULL) {
-            throw new IllegalArgumentException("tm is an instance of " + tm.getClass().getName() +
-                    " which is not a supported type of X509TrustManager");
-        Logger::E();
+            // throw new IllegalArgumentException("tm is an instance of " + tm.getClass().getName() +
+            //         " which is not a supported type of X509TrustManager");
+        Logger::E("X509TrustManagerExtensions", "tm is not an instance of X509TrustManager");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -41,8 +41,9 @@ ECode X509TrustManagerExtensions::CheckServerTrusted(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    // return mDelegate->CheckServerTrusted(chain, authType, host, certificates);
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(result)
+
+    return mDelegate->CheckServerTrusted(chain, authType, host, result);
 #endif
 }
 
@@ -52,11 +53,11 @@ ECode X509TrustManagerExtensions::IsUserAddedCertificate(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return mDelegate.isUserAddedCertificate(cert);
+    VALIDATE_NOT_NULL(result)
 
+    return mDelegate->IsUserAddedCertificate(cert, result);
 #endif
 }
-
 
 } // namespace Http
 } // namespace Net

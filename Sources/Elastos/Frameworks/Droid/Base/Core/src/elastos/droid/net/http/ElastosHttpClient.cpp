@@ -559,10 +559,8 @@ ECode CElastosHttpClient::HttpRequestInterceptor::Process(
     /* [in] */ IHttpContext* context)
 {
     // Prevent the HttpRequest from being sent on the main thread
-    AutoPtr<ILooperHelper> helper;
-    CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
     AutoPtr<ILooper> l;
-    helper->MyLooper((ILooper**)&l);
+    CLooperHelper::MyLooper((ILooper**)&l);
     AutoPtr<ILooper> ml;
     helper->GetMainLooper((ILooper**)&ml);
     if (l != NULL && l == ml ) {

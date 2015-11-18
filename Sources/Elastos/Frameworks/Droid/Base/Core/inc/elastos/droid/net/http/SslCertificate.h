@@ -156,13 +156,6 @@ private:
         /* [in] */ Elastos::Utility::IDate* validNotAfter,
         /* [in] */ IX509Certificate* x509Certificate);
 
-    CARAPI Init(
-        /* [in] */ const String& issuedTo,
-        /* [in] */ const String& issuedBy,
-        /* [in] */ IDate* validNotBefore,
-        /* [in] */ IDate* validNotAfter,
-        /* [in] */ IX509Certificate* x509Certificate);
-
     /**
      * Convenience for UI presentation, not intended as public API.
      */

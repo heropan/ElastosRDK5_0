@@ -30,9 +30,9 @@ const AutoPtr<IHostnameVerifier> CertificateChainValidator::NoPreloadHolder::sVe
 
 AutoPtr<ICertificateChainValidator> CertificateChainValidator::NoPreloadHolder::InitInstance()
 {
-    AutoPtr<ICertificateChainValidator> ret;
-    CCertificateChainValidator::New((ICertificateChainValidator**)&ret);
-    return ret;
+    AutoPtr<CCertificateChainValidator> ret;
+    CCertificateChainValidator::NewByFriend((CCertificateChainValidator**)&ret);
+    return (ICertificateChainValidator*) ret;
 }
 
 AutoPtr<IHostnameVerifier> CertificateChainValidator::NoPreloadHolder::InitVerifier()

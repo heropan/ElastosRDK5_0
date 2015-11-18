@@ -8,6 +8,7 @@ include $(MAKEDIR)/../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../inc;
 INCLUDES += $(MAKEDIR)/../../../../inc/libcore;
 INCLUDES += $(MAKEDIR)/../../../../inc/libcore/io;
 INCLUDES += $(MAKEDIR)/../../../../inc/libcore/net;
@@ -21,4 +22,5 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/zip;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/jar;
 
 SOURCES = NetworkEventDispatcher.cpp
+SOURCES += CNetworkEventDispatcherHelper.cpp
 SOURCES += NetworkEventListener.cpp

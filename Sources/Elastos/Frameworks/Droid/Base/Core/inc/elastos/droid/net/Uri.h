@@ -623,7 +623,7 @@ public:
             /* [out] */ IUri** result);
 
 private:
-    static AutoPtr<IUri> CreateEmpty();
+    static CARAPI_(AutoPtr<IUri>) CreateEmpty();
 
     /**
      * Prevents external subclassing.
@@ -972,13 +972,6 @@ class HierarchicalUri
 {
 public:
     HierarchicalUri();
-
-    HierarchicalUri(
-        /* [in] */ const String& scheme,
-        /* [in] */ Uri::Part* authority,
-        /* [in] */ Uri::PathPart* path,
-        /* [in] */ Uri::Part* query,
-        /* [in] */ Uri::Part* fragment);
 
     CARAPI constructor(
         /* [in] */ const String& scheme,

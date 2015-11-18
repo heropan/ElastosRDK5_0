@@ -109,6 +109,7 @@ module
     interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContextWrapper;
+    interface Elastos.Droid.Internal.Utility.IStateMachine;
     interface Elastos.Droid.Net.IWebAddress;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.ILooper;
@@ -189,6 +190,11 @@ module
         interface IDhcpResults;
         interface IStaticIpConfiguration;
         interface IParcelable;
+    }
+
+    class CDhcpStateMachine {
+        interface IStateMachine;
+        interface IDhcpStateMachine;
     }
 
     singleton class CDhcpStateMachineHelper {

@@ -80,8 +80,7 @@ ECode NetworkPolicyManager::GetUidPolicy(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-    ECode ec;
-    ec = mService->GetUidPolicy(uid, result);
+    ECode ec = mService->GetUidPolicy(uid, result);
     if(FAILED(ec)) *result = POLICY_NONE;
     return NOERROR;
 #endif
@@ -95,8 +94,7 @@ ECode NetworkPolicyManager::GetUidsWithPolicy(
 #if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     AutoPtr< ArrayOf<Int32> > outputarray;
-    ECode ec;
-    ec = mService->GetUidsWithPolicy(policy, (ArrayOf<Int32>**)&outputarray);
+    ECode ec = mService->GetUidsWithPolicy(policy, (ArrayOf<Int32>**)&outputarray);
     if(FAILED(ec)) outputarray = ArrayOf<Int32>::Alloc(0);
     *result = outputarray;
     REFCOUNT_ADD(*result);
@@ -152,8 +150,7 @@ ECode NetworkPolicyManager::GetNetworkPolicies(
 #if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     AutoPtr< ArrayOf<INetworkPolicy*> > outputarray;
-    ECode ec;
-    ec = mService->GetNetworkPolicies((ArrayOf<INetworkPolicy*>**)&outputarray);
+    ECode ec = mService->GetNetworkPolicies((ArrayOf<INetworkPolicy*>**)&outputarray);
     if(FAILED(ec)) outputarray = NULL;
     *result = outputarray;
     REFCOUNT_ADD(*result);
@@ -176,8 +173,7 @@ ECode NetworkPolicyManager::GetRestrictBackground(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-    ECode ec;
-    ec = mService->GetRestrictBackground(result);
+    ECode ec = mService->GetRestrictBackground(result);
     if(FAILED(ec)) *result = FALSE;
     return NOERROR;
 #endif

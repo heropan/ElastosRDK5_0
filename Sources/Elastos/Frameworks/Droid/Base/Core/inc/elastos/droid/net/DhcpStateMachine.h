@@ -45,9 +45,7 @@ class DhcpStateMachine
 {
 public:
     class DefaultState
-#if 0 // TODO: Waiting for State
         : public State
-#endif
     {
     public:
         DefaultState(
@@ -63,14 +61,14 @@ public:
             /* [in] */ IMessage* msg,
             /* [out] */ Boolean* result);
 
+        CARAPI_(String) GetName();
+
     private:
         DhcpStateMachine* mOwner;
     };
 
     class StoppedState
-#if 0 // TODO: Waiting for State
         : public State
-#endif
     {
     public:
         StoppedState(
@@ -86,14 +84,14 @@ public:
             /* [in] */ IMessage* msg,
             /* [out] */ Boolean* result);
 
+        CARAPI_(String) GetName();
+
     private:
         DhcpStateMachine* mOwner;
     };
 
     class WaitBeforeStartState
-#if 0 // TODO: Waiting for State
         : public State
-#endif
     {
     public:
         WaitBeforeStartState(
@@ -109,14 +107,14 @@ public:
             /* [in] */ IMessage* msg,
             /* [out] */ Boolean* result);
 
+        CARAPI_(String) GetName();
+
     private:
         DhcpStateMachine* mOwner;
     };
 
     class RunningState
-#if 0 // TODO: Waiting for State
         : public State
-#endif
     {
     public:
         RunningState(
@@ -132,14 +130,14 @@ public:
             /* [in] */ IMessage* msg,
             /* [out] */ Boolean* result);
 
+        CARAPI_(String) GetName();
+
     private:
         DhcpStateMachine* mOwner;
     };
 
     class WaitBeforeRenewalState
-#if 0 // TODO: Waiting for State
         : public State
-#endif
     {
     public:
         WaitBeforeRenewalState(
@@ -157,6 +155,8 @@ public:
 
         // @Override
         CARAPI Exit();
+
+        CARAPI_(String) GetName();
 
     private:
         DhcpStateMachine* mOwner;
@@ -182,6 +182,7 @@ private:
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         DhcpStateMachine* mOwner;
     };
@@ -194,6 +195,8 @@ private:
 
 public:
     CAR_INTERFACE_DECL()
+
+    DhcpStateMachine();
 
     static CARAPI_(AutoPtr<IDhcpStateMachine>) MakeDhcpStateMachine(
         /* [in] */ IContext* context,
@@ -208,7 +211,7 @@ protected:
     CARAPI_(void) OnQuitting();
 
 private:
-    DhcpStateMachine(
+    constructor(
         /* [in] */ IContext* context,
         /* [in] */ IStateMachine* controller,
         /* [in] */ const String& intf);
@@ -263,7 +266,7 @@ private:
     //Used for sanity check on setting up renewal
     static const Int32 MIN_RENEWAL_TIME_SECS;  // 5 minutes
 
-    String mInterfaceName;
+    /* const */ String mInterfaceName;
     Boolean mRegisteredForPreDhcpNotification;
 
     AutoPtr<IState> mDefaultState;
@@ -278,4 +281,3 @@ private:
 } // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_DHCPSTATEMACHINE_H__
-

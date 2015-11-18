@@ -14,6 +14,7 @@ using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::SystemClock;
 
+using Elastos::Core::IInteger32;
 using Elastos::Net::IDatagramSocket;
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
@@ -47,7 +48,7 @@ private:
         Int32 mInternalId;
         Int16 mPacketId;
         Int32 mTimeout;
-        Int32 mResult;
+        AutoPtr<IInteger32> mResult;
         Int64 mStart;
     };
 
@@ -128,10 +129,10 @@ private:
         /* [out] */ IInetAddress** result);
 
     CARAPI Log(
-        /* [in] */ const String& s);
+        /* [in] */ const char* fmt, ...);
 
     CARAPI Loge(
-        /* [in] */ const String& s);
+        /* [in] */ const char* fmt, ...);
 
     static CARAPI_(AutoPtr<ArrayOf<Byte> >) InitDnsQuery();
 
@@ -170,7 +171,7 @@ private:
     AutoPtr<IList> mActivePings;
     Int32 mEventCounter;
 
-    static const AutoPtr<ArrayOf<Byte> > DNS_QUERY;
+    static /* const */ AutoPtr<ArrayOf<Byte> > mDnsQuery;
 };
 
 } // namespace Net

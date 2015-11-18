@@ -71,10 +71,8 @@ ECode NetworkIdentity::ToString(
         builder += String("COMBINED");
     }
     else if (bol) {
-        AutoPtr<ITelephonyManagerHelper> helper;
-        CTelephonyManagerHelper::AcquireSingleton((ITelephonyManagerHelper**)&helper);
         String name;
-        helper->GetNetworkTypeName(mSubType, &name);
+        CTelephonyManager::GetNetworkTypeName(mSubType, &name);
         builder.AppendString(name);
     }
     else {

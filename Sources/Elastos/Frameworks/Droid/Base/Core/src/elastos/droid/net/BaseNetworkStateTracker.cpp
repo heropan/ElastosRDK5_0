@@ -1,7 +1,7 @@
 
 #include "elastos/droid/net/BaseNetworkStateTracker.h"
 #include "elastos/droid/net/CNetwork.h"
-#include "elastos/droid/net/CConnectivityManagerHelper.h"
+#include "elastos/droid/net/CConnectivityManager.h"
 #include "elastos/droid/net/CNetworkInfo.h"
 #include "elastos/droid/net/CLinkProperties.h"
 #include "elastos/droid/net/CNetworkInfo.h"
@@ -40,10 +40,8 @@ ECode BaseNetworkStateTracker::constructor(
     /* [in] */ Int32 networkType)
 {
 
-    AutoPtr<IConnectivityManagerHelper> CMHelper;
-    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&CMHelper);
     String typeName;
-    CMHelper->GetNetworkTypeName(networkType, &typeName);
+    CConnectivityManager::GetNetworkTypeName(networkType, &typeName);
     CNetworkInfo::New(networkType, -1, typeName, String(NULL), (INetworkInfo**)&mNetworkInfo);
     CLinkProperties::New((ILinkProperties**)&mLinkProperties);
     CNetworkCapabilities::New((INetworkCapabilities**)&mNetworkCapabilities);
@@ -102,27 +100,22 @@ ECode BaseNetworkStateTracker::GetNetworkInfo(
     /* [out] */ INetworkInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    *info = NULL;
-    CNetworkInfo::New(mNetworkInfo, info);
-    REFCOUNT_ADD(*info)
-    return NOERROR;
+
+    return CNetworkInfo::New(mNetworkInfo, info);
 }
 
 ECode BaseNetworkStateTracker::GetLinkProperties(
     /* [out] */ ILinkProperties** result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = NULL;
 
-    CLinkProperties::New(mLinkProperties, result);
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return CLinkProperties::New(mLinkProperties, result);
 }
 
 ECode BaseNetworkStateTracker::GetLinkQualityInfo(
-        /* [out] */ ILinkQualityInfo** result)
+    /* [out] */ ILinkQualityInfo** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
 
     return NOERROR;
@@ -221,7 +214,7 @@ ECode BaseNetworkStateTracker::SetDependencyMet(
 }
 
 ECode BaseNetworkStateTracker::AddStackedLink(
-        /* [in] */ ILinkProperties* link)
+    /* [in] */ ILinkProperties* link)
 {
     VALIDATE_NOT_NULL(link)
 
@@ -285,9 +278,8 @@ ECode BaseNetworkStateTracker::StopSampling(
 ECode BaseNetworkStateTracker::SetNetId(
     /* [in] */ Int32 netId)
 {
-    CNetwork::New(netId, (INetwork**)&mNetwork);
-    REFCOUNT_ADD(mNetwork);
-    return NOERROR;
+    mNetwork = NULL;
+    return CNetwork::New(netId, (INetwork**)&mNetwork);
 }
 
 ECode BaseNetworkStateTracker::GetNetwork(
@@ -304,11 +296,8 @@ ECode BaseNetworkStateTracker::GetNetworkCapabilities(
     /* [out] */ INetworkCapabilities** result)
 {
     VALIDATE_NOT_NULL(*result)
-    *result = NULL;
 
-    CNetworkCapabilities::New(mNetworkCapabilities, result);
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return CNetworkCapabilities::New(mNetworkCapabilities, result);
 }
 
 } // namespace Net

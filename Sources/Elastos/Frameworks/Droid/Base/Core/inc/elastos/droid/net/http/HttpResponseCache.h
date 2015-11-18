@@ -237,6 +237,7 @@ private:
     CARAPI constructor(
         /* [in] */ Com::Squareup::Okhttp::IHttpResponseCache* delegate);
 
+private:
     /* const */ AutoPtr<Com::Squareup::Okhttp::IHttpResponseCache> mDelegate;
 };
 

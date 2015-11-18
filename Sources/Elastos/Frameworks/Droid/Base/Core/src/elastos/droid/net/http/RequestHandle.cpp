@@ -201,11 +201,9 @@ ECode RequestHandle::SetupRedirect(
 
     // update the "Cookie" header based on the redirected url
     mHeaders.Erase(String("Cookie"));
-    AutoPtr<ICookieManagerHelper> helper;
     // TODO:
-    // CCookieManagerHelper::AcquireSingleton((ICookieManagerHelper**)&helper);
     AutoPtr<ICookieManager> cookieManager;
-    helper->GetInstance((ICookieManager**)&cookieManager);
+    CCookieManagerHelper::GetInstance((ICookieManager**)&cookieManager);
     String cookie;
     // TODO:
     // cookieManager->GetCookie(mUri, &cookie);
@@ -270,10 +268,8 @@ ECode RequestHandle::SetupBasicAuthResponse(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoPtr<IRequestHandleHelper> helper;
-    // CRequestHandleHelper::AcquireSingleton((IRequestHandleHelper**)&helper);
     String response;
-    helper->ComputeBasicAuthResponse(username, password, &response);
+    CRequestHandleHelper::ComputeBasicAuthResponse(username, password, &response);
     if (HttpLog::LOGV) {
         HttpLog::V(String("setupBasicAuthResponse(): response: ") + response);
     }

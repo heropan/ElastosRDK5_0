@@ -16,9 +16,12 @@ CAR_INTERFACE_IMPL(NetworkEventDispatcher, Object, INetworkEventDispatcher);
 
 AutoPtr<INetworkEventDispatcher> NetworkEventDispatcher::sInstance = new NetworkEventDispatcher();
 
-AutoPtr<INetworkEventDispatcher> NetworkEventDispatcher::GetInstance()
+ECode NetworkEventDispatcher::GetInstance(
+    /* [out] */ INetworkEventDispatcher** result)
 {
-    return sInstance;
+    VALIDATE_NOT_NULL(result)
+    *result = sInstance;
+    return NOERROR;
 }
 
 NetworkEventDispatcher::NetworkEventDispatcher()

@@ -29,8 +29,7 @@ ECode SslError::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     AutoPtr<ISslCertificate> cert;
-    // TODO:
-    // cert = (ISslCertificate*)certificate->Probe(EIID_ISslCertificate);
+    cert = ISslCertificate::Probe(certificate);
     return constructor(error, cert, String(""));
 #endif
 }
@@ -42,7 +41,6 @@ ECode SslError::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(certificate);
     if (url.IsNullOrEmpty()) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -63,8 +61,7 @@ ECode SslError::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     AutoPtr<ISslCertificate> cert;
-    // TODO:
-    // CSslCertificate::New(certificate, (ISslCertificate**)&cert);
+    CSslCertificate::New(certificate, (ISslCertificate**)&cert);
     return constructor(error, cert, url);
 #endif
 }
@@ -77,20 +74,20 @@ ECode SslError::SslErrorFromChromiumErrorCode(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(sslError);
+    VALIDATE_NOT_NULL(result)
 
     // The chromium error codes are in:
     // external/chromium/net/base/net_error_list.h
     assert (error >= -299 && error <= -200);
 
     if (error == -200)
-        return CSslError::New(CSslError::SSL_IDMISMATCH, cert, url, sslError);
+        return CSslError::New(CSslError::SSL_IDMISMATCH, cert, url, result);
     if (error == -201)
-        return CSslError::New(CSslError::SSL_DATE_INVALID, cert, url, sslError);
+        return CSslError::New(CSslError::SSL_DATE_INVALID, cert, url, result);
     if (error == -202)
-        return CSslError::New(CSslError::SSL_UNTRUSTED, cert, url, sslError);
+        return CSslError::New(CSslError::SSL_UNTRUSTED, cert, url, result);
     // Map all other codes to SSL_INVALID.
-    return CSslError::New(CSslError::SSL_INVALID, cert, url, sslError);
+    return CSslError::New(CSslError::SSL_INVALID, cert, url, result);
 #endif
 }
 
@@ -99,15 +96,16 @@ ECode SslError::GetCertificate(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(certificate);
-    *certificate = mCertificate;
-    REFCOUNT_ADD(*certificate);
+    VALIDATE_NOT_NULL(result);
+
+    *result = mCertificate;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 #endif
 }
 
 ECode SslError::GetUrl(
-    /* [out] */ String* result)
+    /* [out] */ String* url)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
@@ -123,6 +121,8 @@ ECode SslError::AddError(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     Boolean rval = (0 <= error && error < SSL_MAX_ERROR);
     if (rval) {
         mErrors |= (0x1 << error);
@@ -139,6 +139,8 @@ ECode SslError::HasError(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     Boolean rval = (0 <= error && error < SSL_MAX_ERROR);
     if (rval) {
         rval = ((mErrors & (0x1 << error)) != 0);
@@ -150,10 +152,12 @@ ECode SslError::HasError(
 }
 
 ECode SslError::GetPrimaryError(
-    /* [out] */ Int32* result)
+    /* [out] */ Int32* error)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(error)
+
     if (mErrors != 0) {
         // go from the most to the least severe errors
         for (Int32 iError = SSL_MAX_ERROR - 1; iError >= 0; --iError) {
@@ -172,10 +176,12 @@ ECode SslError::GetPrimaryError(
 }
 
 ECode SslError::ToString(
-    /* [out] */ String* result)
+    /* [out] */ String* str)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(str)
+
     Int32 err;
     GetPrimaryError(&err);
     String sCert;
@@ -188,7 +194,6 @@ ECode SslError::ToString(
     return NOERROR;
 #endif
 }
-
 
 } // namespace Http
 } // namespace Net

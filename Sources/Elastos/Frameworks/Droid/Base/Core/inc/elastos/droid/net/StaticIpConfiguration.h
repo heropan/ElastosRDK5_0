@@ -109,7 +109,7 @@ public:
     CARAPI SetDomains(
         /* [in] */ const String& domains);
 
-private:
+protected:
     AutoPtr<ILinkAddress> mIpAddress;
 
     AutoPtr<IInetAddress> mGateway;

@@ -43,7 +43,8 @@ public:
         CAR_INTERFACE_DECL()
 
         ActivePool(
-            /* [in] */ Int32 connectionCount);
+            /* [in] */ Int32 connectionCount,
+            /* [in] */ RequestQueue* host);
 
         CARAPI Startup();
 
@@ -93,6 +94,8 @@ public:
         Int32 mTotalConnection;
 
         Int32 mConnectionCount;
+
+        const RequestQueue* mHost;
     };
 
 private:

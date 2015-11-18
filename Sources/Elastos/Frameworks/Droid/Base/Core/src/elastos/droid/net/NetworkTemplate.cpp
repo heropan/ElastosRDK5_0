@@ -321,10 +321,8 @@ ECode NetworkTemplate::MatchesMobile3gLower(
     } else if (MatchesMobile(ident)) {
         Int32 subtype;
         ident->GetSubType(&subtype);
-        AutoPtr<ITelephonyManagerHelper> helper;
-        CTelephonyManagerHelper::AcquireSingleton((ITelephonyManagerHelper**)&helper);
         Int32 type;
-        helper->GetNetworkClass(subtype, &type);
+        CTelephonyManager::GetNetworkClass(subtype, &type);
         switch (type) {
             case ITelephonyManager::NETWORK_CLASS_UNKNOWN:
             case ITelephonyManager::NETWORK_CLASS_2_G:
@@ -351,10 +349,8 @@ ECode NetworkTemplate::MatchesMobile4g(
     } else if (MatchesMobile(ident)) {
         Int32 subtype;
         ident->GetSubType(&subtype);
-        AutoPtr<ITelephonyManagerHelper> helper;
-        CTelephonyManagerHelper::AcquireSingleton((ITelephonyManagerHelper**)&helper);
         Int32 type;
-        helper->GetNetworkClass(subtype, &type);
+        CTelephonyManager::GetNetworkClass(subtype, &type);
         switch (type) {
             case ITelephonyManager::NETWORK_CLASS_4_G:
             return TRUE;
