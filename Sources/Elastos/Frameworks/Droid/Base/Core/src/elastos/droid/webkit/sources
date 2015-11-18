@@ -41,7 +41,6 @@ SOURCES += CWebViewHelper.cpp
 SOURCES += CWebViewHitTestResult.cpp
 SOURCES += CWebViewTransport.cpp
 SOURCES += CWebChromeClientFileChooserParamsHelper.cpp
-#
 SOURCES += ConsoleMessage.cpp
 SOURCES += CookieManager.cpp
 SOURCES += CookieSyncManager.cpp
@@ -69,6 +68,6 @@ SOURCES += WebSettings.cpp
 SOURCES += WebStorage.cpp
 SOURCES += WebViewDatabase.cpp
 
-LIBRARIES = native/native.lib
-#LIBRARIES += webview/webview.lib
-LIBRARIES += webview/chromium/chromium.lib
+ELASTOS_LIBS = native/native.lib
+#ELASTOS_LIBS += webview/webview.lib
+ELASTOS_LIBS += webview/chromium/chromium.lib

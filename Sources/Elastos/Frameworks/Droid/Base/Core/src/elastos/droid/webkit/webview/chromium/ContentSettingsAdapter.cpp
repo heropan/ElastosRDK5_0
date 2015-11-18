@@ -1,10 +1,10 @@
 
+#include "elastos/droid/webkit/DebugFlags.h"
 #include "elastos/droid/webkit/webview/chromium/ContentSettingsAdapter.h"
-#include "elastos/droid/webkit/webview/chromium/DebugFlags.h"
 #include "elastos/core/AutoLock.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::Webkit::Webview::Chromium::DebugFlags;
+using Elastos::Droid::Webkit::DebugFlags;
 using Elastos::Core::AutoLock;
 using Elastos::Utility::Logging::Logger;
 
