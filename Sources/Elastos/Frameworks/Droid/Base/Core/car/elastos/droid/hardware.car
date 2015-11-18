@@ -31,6 +31,26 @@ module
     merge("hardware/display/WifiDisplaySessionInfo.car");
     merge("hardware/display/WifiDisplayStatus.car");
 
+    merge("hardware/hdmi/HdmiClient.car");
+    merge("hardware/hdmi/HdmiControlManager.car");
+    merge("hardware/hdmi/HdmiDeviceInfo.car");
+    merge("hardware/hdmi/HdmiHotplugEvent.car");
+    merge("hardware/hdmi/HdmiPlaybackClient.car");
+    merge("hardware/hdmi/HdmiPortInfo.car");
+    merge("hardware/hdmi/HdmiRecordListener.car");
+    merge("hardware/hdmi/HdmiRecordSources.car");
+    merge("hardware/hdmi/HdmiTimerRecordSources.car");
+    merge("hardware/hdmi/HdmiTvClient.car");
+    merge("hardware/hdmi/IHdmiControlCallback.car");
+    merge("hardware/hdmi/IHdmiControlService.car");
+    merge("hardware/hdmi/IHdmiDeviceEventListener.car");
+    merge("hardware/hdmi/IHdmiHotplugEventListener.car");
+    merge("hardware/hdmi/IHdmiInputChangeListener.car");
+    merge("hardware/hdmi/IHdmiMhlVendorCommandListener.car");
+    merge("hardware/hdmi/IHdmiRecordListener.car");
+    merge("hardware/hdmi/IHdmiSystemAudioModeChangeListener.car");
+    merge("hardware/hdmi/IHdmiVendorCommandListener.car");
+
     merge("hardware/input/IInputManager.car");
     merge("hardware/input/IInputDevicesChangedListener.car");
     merge("hardware/input/InputDeviceIdentifier.car");
