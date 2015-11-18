@@ -1,7 +1,6 @@
 
 #include "elastos/droid/hardware/camera2/params/CRggbChannelVector.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -96,6 +95,7 @@ ECode CRggbChannelVector::GetComponent(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
 
     if (colorChannel < 0 || colorChannel >= COUNT) {
         //throw new IllegalArgumentException("Color channel out of range");

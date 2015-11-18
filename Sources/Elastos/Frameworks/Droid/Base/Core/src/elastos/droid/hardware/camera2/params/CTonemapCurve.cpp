@@ -2,7 +2,6 @@
 #include "elastos/droid/hardware/camera2/params/CTonemapCurve.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
 #include "elastos/droid/graphics/CPointF.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -106,6 +105,7 @@ ECode CTonemapCurve::CheckArgumentColorChannel(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = 0;
 
     switch (colorChannel) {
         case ITonemapCurve::CHANNEL_RED:
@@ -141,6 +141,7 @@ ECode CTonemapCurve::GetPointCount(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
 
     Int32 channle;
     FAIL_RETURN(CheckArgumentColorChannel(colorChannel, &channle))
@@ -156,6 +157,7 @@ ECode CTonemapCurve::GetPoint(
     /* [out] */ IPointF** outpf)
 {
     VALIDATE_NOT_NULL(outpf)
+    *outpf = NULL;
 
     Int32 channle;
     FAIL_RETURN(CheckArgumentColorChannel(colorChannel, &channle))
@@ -239,7 +241,8 @@ ECode CTonemapCurve::GetHashCode(
 
     if (mHashCalculated) {
         // Avoid re-calculating hash. Data is immutable so this is both legal and faster.
-        return mHashCode;
+        *hashCode = mHashCode;
+        return NOERROR;
     }
 
     assert(0 && "TODO: weit Hardware/Camera2/Utils/HashCodeHelpers");
@@ -259,15 +262,15 @@ ECode CTonemapCurve::ToString(
     sb += "TonemapCurve{";
     sb += "R:";
     String strRed;
-    FAIL_RETURN(CurveToString(CHANNEL_RED, &strRed))
+    CurveToString(CHANNEL_RED, &strRed);
     sb += strRed;
     sb += ", G:";
     String strGreen;
-    FAIL_RETURN(CurveToString(CHANNEL_GREEN, &strGreen))
+    CurveToString(CHANNEL_GREEN, &strGreen);
     sb += strGreen;
     sb += ", B:";
     String strBlue;
-    FAIL_RETURN(CurveToString(CHANNEL_BLUE, &strBlue))
+    CurveToString(CHANNEL_BLUE, &strBlue);
     sb += strBlue;
     sb += "}";
     return sb.ToString(str);
@@ -278,6 +281,7 @@ ECode CTonemapCurve::CurveToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
+    *str = NULL;
 
     Int32 channle;
     FAIL_RETURN(CheckArgumentColorChannel(colorChannel, &channle))
@@ -304,17 +308,21 @@ ECode CTonemapCurve::GetCurve(
     /* [out, callee] */ ArrayOf<Float>** curve)
 {
     VALIDATE_NOT_NULL(curve)
+    *curve = NULL;
 
     switch (colorChannel) {
         case ITonemapCurve::CHANNEL_RED:
             *curve = mRed;
             REFCOUNT_ADD(*curve);
+            break;
         case ITonemapCurve::CHANNEL_GREEN:
             *curve = mGreen;
             REFCOUNT_ADD(*curve);
+            break;
         case ITonemapCurve::CHANNEL_BLUE:
             *curve = mBlue;
             REFCOUNT_ADD(*curve);
+            break;
         default:
             // throw new AssertionError("colorChannel out of range");
             Slogger::E("CTonemapCurve", "colorChannel out of range");

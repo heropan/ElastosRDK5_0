@@ -49,6 +49,10 @@ public:
         /* [in] */ IInterface* reference,
         /* [in] */ IObject* errorMessage);
 
+    CARAPI CheckNotNull(
+        /* [in] */ IInterface* reference,
+        /* [in] */ const String& errorMessage);
+
     /**
      * Ensures the truth of an expression involving the state of the calling
      * instance, but not involving any parameters to the calling method.

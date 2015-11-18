@@ -1,7 +1,6 @@
 
 #include "elastos/droid/hardware/camera2/params/CBlackLevelPattern.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
 

@@ -136,13 +136,6 @@ module
          */
         GetMouthPosition(
             [out] IPoint** outpoint);
-
-        /**
-         * Represent the Face as a string for debugging purposes.
-         */
-        // @Override
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Params

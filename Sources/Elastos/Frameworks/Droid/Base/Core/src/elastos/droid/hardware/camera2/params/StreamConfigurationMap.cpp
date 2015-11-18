@@ -3,7 +3,6 @@
 #include "elastos/droid/internal/utility/Preconditions.h"
 #include "elastos/droid/graphics/PixelFormat.h"
 //#include "elastos/droid/graphics/CImageFormat.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/Objects.h>
@@ -84,13 +83,13 @@ ECode StreamConfigurationMap::constructor(
 
         Boolean result;
         config->IsOutput(&result);
-        HashMap<Int32, Int32>* map = result ? &mOutputFormats : &mInputFormats;
+        HashMap<Int32, Int32>& map = result ? mOutputFormats : mInputFormats;
 
         Int32 format;
         config->GetFormat(&format);
-        Int32 count;
-        HashMap<Int32, Int32>::Iterator it = map->Find(format);
-        if (it != map->End()) {
+        Int32 count = 0;
+        HashMap<Int32, Int32>::Iterator it = map.Find(format);
+        if (it != map.End()) {
             count = it->mSecond;
         }
         else {
@@ -98,7 +97,7 @@ ECode StreamConfigurationMap::constructor(
         }
 
         count = count + 1;
-        (*map)[format] = count;
+        map[format] = count;
     }
 
     Boolean hasKey;
@@ -124,7 +123,7 @@ ECode StreamConfigurationMap::constructor(
         AutoPtr<ISize> size;
         config->GetSize((ISize**)&size);
         AutoPtr<Range<IInteger32> > fpsRange;
-        config->GetFpsRange((Handle32*)&fpsRange);
+        config->GetFpsRange((IInterface**)&fpsRange);
         Int32 fpsRangeCount;
         HashMap<AutoPtr<ISize>, Int32>::Iterator it = mHighSpeedVideoSizeMap.Find(size);
         if (it != mHighSpeedVideoSizeMap.End()) {
@@ -178,15 +177,16 @@ ECode StreamConfigurationMap::IsOutputSupportedFor(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = FALSE;
 
     Int32 _format;
     FAIL_RETURN(CheckArgumentFormat(format, &_format))
     Int32 tmp;
     FAIL_RETURN(ImageFormatToInternal(_format, &tmp))
     _format = tmp;
-    AutoPtr<HashMap<Int32, Int32> > formatsMap = GetFormatsMap(/*output*/TRUE);
-    HashMap<Int32, Int32>::Iterator it = formatsMap->Find(_format);
-    if (it != formatsMap->End()) {
+    HashMap<Int32, Int32> formatsMap = GetFormatsMap(/*output*/TRUE);
+    HashMap<Int32, Int32>::Iterator it = formatsMap.Find(_format);
+    if (it != formatsMap.End()) {
         *value = TRUE;
     }
     else {
@@ -200,12 +200,9 @@ ECode StreamConfigurationMap::IsOutputSupportedFor(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = FALSE;
 
-    //FAIL_RETURN(Preconditions::CheckNotNull(klass, String("klass must not be null")))
-    if (klass == NULL) {
-        Slogger::E(TAG, "klass must not be null");
-        return E_NULL_POINTER_EXCEPTION;
-    }
+    FAIL_RETURN(Preconditions::CheckNotNull(klass, String("klass must not be null")))
 
     assert(0 && "TODO: need ECLSID_C*");
     ClassID cls;
@@ -239,13 +236,9 @@ ECode StreamConfigurationMap::IsOutputSupportedFor(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = FALSE;
 
-    //FAIL_RETURN(Preconditions::CheckNotNull(surface, String("surface must not be null")))
-    if (surface == NULL) {
-        Slogger::E(TAG, "surface must not be null");
-        return E_NULL_POINTER_EXCEPTION;
-    }
-
+    FAIL_RETURN(Preconditions::CheckNotNull(surface, String("surface must not be null")))
     //throw new UnsupportedOperationException("Not implemented yet");
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 
@@ -257,6 +250,7 @@ ECode StreamConfigurationMap::GetOutputSizes(
     /* [out, callee] */ ArrayOf<ISize*>** outarr)
 {
     VALIDATE_NOT_NULL(outarr);
+    *outarr = NULL;
 
     // Image reader is "supported", but never for implementation-defined formats; return empty
     assert(0 && "TODO: need isAssignableFrom");
@@ -278,6 +272,7 @@ ECode StreamConfigurationMap::GetOutputSizes(
     /* [out, callee] */ ArrayOf<ISize*>** outarr)
 {
     VALIDATE_NOT_NULL(outarr);
+    *outarr = NULL;
 
     return GetPublicFormatSizes(format, /*output*/TRUE, outarr);
 }
@@ -286,6 +281,7 @@ ECode StreamConfigurationMap::GetHighSpeedVideoSizes(
     /* [out, callee] */ ArrayOf<ISize*>** outarr)
 {
     VALIDATE_NOT_NULL(outarr);
+    *outarr = NULL;
 
     AutoPtr<ArrayOf<ISize*> > _outarr = ArrayOf<ISize*>::Alloc(mHighSpeedVideoSizeMap.GetSize());
     HashMap<AutoPtr<ISize>, Int32>::Iterator it;
@@ -301,9 +297,10 @@ ECode StreamConfigurationMap::GetHighSpeedVideoSizes(
 
 ECode StreamConfigurationMap::GetHighSpeedVideoFpsRangesFor(
     /* [in] */ ISize* size,
-    /* [out, callee] */ ArrayOf<Handle32>** outarr)
+    /* [out, callee] */ ArrayOf<IInterface*>** outarr)
 {
     VALIDATE_NOT_NULL(outarr);
+    *outarr = NULL;
 
     Int32 fpsRangeCount;
     HashMap<AutoPtr<ISize>, Int32>::Iterator it = mHighSpeedVideoSizeMap.Find(size);
@@ -341,9 +338,10 @@ ECode StreamConfigurationMap::GetHighSpeedVideoFpsRangesFor(
 }
 
 ECode StreamConfigurationMap::GetHighSpeedVideoFpsRanges(
-    /* [out, callee] */ ArrayOf<Handle32>** outarr)
+    /* [out, callee] */ ArrayOf<IInterface*>** outarr)
 {
     VALIDATE_NOT_NULL(outarr);
+    *outarr = NULL;
 
     assert(0 && "TODO");
     // AutoPtr<ArrayOf<Range<IInteger32>* > > _outarr = ArrayOf<Range<IInteger32>* >::Alloc(mHighSpeedVideoFpsRangeMap.GetSize());
@@ -359,13 +357,14 @@ ECode StreamConfigurationMap::GetHighSpeedVideoFpsRanges(
 }
 
 ECode StreamConfigurationMap::GetHighSpeedVideoSizesFor(
-    /* [in] */ Handle32 fpsRange,
+    /* [in] */ IInterface* fpsRange,
     /* [out, callee] */ ArrayOf<ISize*>** outarr)
 {
     VALIDATE_NOT_NULL(outarr);
+    *outarr = NULL;
 
     Int32 sizeCount;
-    AutoPtr<Range<IInteger32> > range = (Range<IInteger32>*)fpsRange;
+    AutoPtr<Range<IInteger32> > range = (Range<IInteger32>*)IObject::Probe(fpsRange);
     HashMap<AutoPtr<Range<IInteger32> >, Int32>::Iterator it = mHighSpeedVideoFpsRangeMap.Find(range);
     if (it == mHighSpeedVideoFpsRangeMap.End() || it->mSecond == 0) {
         // throw new IllegalArgumentException(String.format(
@@ -381,7 +380,7 @@ ECode StreamConfigurationMap::GetHighSpeedVideoSizesFor(
     for (Int32 i = 0; i < mHighSpeedVideoConfigurations->GetLength(); i++) {
         AutoPtr<IHighSpeedVideoConfiguration> config = (*mHighSpeedVideoConfigurations)[i];
         AutoPtr<Range<IInteger32> > _range;
-        config->GetFpsRange((Handle32*)&_range);
+        config->GetFpsRange((IInterface**)&_range);
         Boolean result;
         range->Equals(TO_IINTERFACE(_range), &result);
         if (result) {
@@ -401,12 +400,9 @@ ECode StreamConfigurationMap::GetOutputMinFrameDuration(
     /* [out] */Int64* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
 
-    //FAIL_RETURN(Preconditions::CheckNotNull(size, String("size must not be null")))
-    if (size == NULL) {
-        Slogger::E(TAG, "size must not be null");
-        return E_NULL_POINTER_EXCEPTION;
-    }
+    FAIL_RETURN(Preconditions::CheckNotNull(size, String("size must not be null")))
 
     Int32 result;
     FAIL_RETURN(CheckArgumentFormatSupported(format, /*output*/TRUE, &result))
@@ -422,6 +418,7 @@ ECode StreamConfigurationMap::GetOutputMinFrameDuration(
     /* [out] */Int64* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
 
     Boolean result;
     FAIL_RETURN(IsOutputSupportedFor(klass, &result))
@@ -441,6 +438,7 @@ ECode StreamConfigurationMap::GetOutputStallDuration(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
 
     Int32 result;
     FAIL_RETURN(CheckArgumentFormatSupported(format, /*output*/TRUE, &result))
@@ -457,6 +455,7 @@ ECode StreamConfigurationMap::GetOutputStallDuration(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
 
     Boolean result;
     FAIL_RETURN(IsOutputSupportedFor(klass, &result))
@@ -516,6 +515,7 @@ ECode StreamConfigurationMap::CheckArgumentFormatSupported(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = 0;
 
     Int32 _format;
     FAIL_RETURN(CheckArgumentFormat(format, &_format))
@@ -546,6 +546,7 @@ ECode StreamConfigurationMap::CheckArgumentFormatInternal(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = 0;
 
     switch (format) {
         case HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED:
@@ -559,8 +560,7 @@ ECode StreamConfigurationMap::CheckArgumentFormatInternal(
             Slogger::E(TAG, "ImageFormat.JPEG is an unknown internal format");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
         default:
-            FAIL_RETURN(CheckArgumentFormat(format, result))
-            return NOERROR;
+            return CheckArgumentFormat(format, result);
     }
     return NOERROR;
 }
@@ -570,6 +570,7 @@ ECode StreamConfigurationMap::CheckArgumentFormat(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = 0;
 
     Boolean res1;
     assert(0);
@@ -592,6 +593,7 @@ ECode StreamConfigurationMap::ImageFormatToPublic(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = 0;
 
     switch (format) {
         case HAL_PIXEL_FORMAT_BLOB:
@@ -632,6 +634,7 @@ ECode StreamConfigurationMap::ImageFormatToInternal(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = 0;
 
     switch (format) {
         case IImageFormat::JPEG:
@@ -667,6 +670,9 @@ ECode StreamConfigurationMap::GetPublicFormatSizes(
     /* [in] */ Boolean output,
     /* [out, callee] */ ArrayOf<ISize*>** sizes)
 {
+    VALIDATE_NOT_NULL(sizes);
+    *sizes = NULL;
+
     //try {
     Int32 result;
     ECode ec = CheckArgumentFormatSupported(format, output, &result);
@@ -690,11 +696,12 @@ ECode StreamConfigurationMap::GetInternalFormatSizes(
     /* [out, callee] */ ArrayOf<ISize*>** _sizes)
 {
     VALIDATE_NOT_NULL(_sizes);
+    *_sizes = NULL;
 
-    AutoPtr<HashMap<Int32, Int32> > formatsMap = GetFormatsMap(output);
+    HashMap<Int32, Int32> formatsMap = GetFormatsMap(output);
     Int32 sizesCount;
-    HashMap<Int32, Int32>::Iterator it = formatsMap->Find(format);
-    if (it == formatsMap->End()) {
+    HashMap<Int32, Int32>::Iterator it = formatsMap.Find(format);
+    if (it == formatsMap.End()) {
         //throw new IllegalArgumentException("format not available");
         Slogger::E(TAG, "format not available");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -713,7 +720,9 @@ ECode StreamConfigurationMap::GetInternalFormatSizes(
         config->GetFormat(&_format);
         config->IsOutput(&_output);
         if (_format == format && _output == output) {
-            config->GetSize((ISize**)&(sizes[sizeIndex++]));
+            AutoPtr<ISize> size;
+            config->GetSize((ISize**)&size);
+            sizes->Set(sizeIndex++, size);
         }
     }
 
@@ -734,6 +743,7 @@ ECode StreamConfigurationMap::GetPublicFormats(
     /* [out, callee] */ ArrayOf<Int32>** _formats)
 {
     VALIDATE_NOT_NULL(_formats);
+    *_formats = NULL;
 
     Int32 count;
     GetPublicFormatCount(output, &count);
@@ -742,9 +752,9 @@ ECode StreamConfigurationMap::GetPublicFormats(
     Int32 i = 0;
 
     AutoPtr<ISet> lkeyset;
-    AutoPtr<HashMap<Int32, Int32> > map = GetFormatsMap(output);
+    HashMap<Int32, Int32> map = GetFormatsMap(output);
     HashMap<Int32, Int32>::Iterator it;
-    for (it = map->Begin(); it != map->End(); ++it) {
+    for (it = map.Begin(); it != map.End(); ++it) {
         Int32 format = it->mFirst;
         if (format != HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED) {
             (*formats)[i++] = format;
@@ -763,10 +773,10 @@ ECode StreamConfigurationMap::GetPublicFormats(
     return NOERROR;
 }
 
-AutoPtr<HashMap<Int32, Int32> > StreamConfigurationMap::GetFormatsMap(
+HashMap<Int32, Int32>& StreamConfigurationMap::GetFormatsMap(
     /* [in] */ Boolean output)
 {
-    return output ? &mOutputFormats : &mInputFormats;
+    return output ? mOutputFormats : mInputFormats;
 }
 
 ECode StreamConfigurationMap::GetInternalFormatDuration(
@@ -776,6 +786,7 @@ ECode StreamConfigurationMap::GetInternalFormatDuration(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = 0;
 
     // assume format is already checked, since its internal
     AutoPtr<ArrayOf<ISize*> > sizes;
@@ -816,6 +827,7 @@ ECode StreamConfigurationMap::GetDurations(
     /* [out, callee] */ ArrayOf<IStreamConfigurationDuration*>** durations)
 {
     VALIDATE_NOT_NULL(durations);
+    *durations = NULL;
 
     switch (duration) {
         case DURATION_MIN_FRAME:
@@ -840,10 +852,10 @@ ECode StreamConfigurationMap::GetPublicFormatCount(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr<HashMap<Int32, Int32> > formatsMap = GetFormatsMap(output);
+    HashMap<Int32, Int32> formatsMap = GetFormatsMap(output);
 
-    Int32 size = formatsMap->GetSize();
-    HashMap<Int32, Int32>::Iterator it = formatsMap->Find(HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED);
+    Int32 size = formatsMap.GetSize();
+    HashMap<Int32, Int32>::Iterator it = formatsMap.Find(HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED);
     if (it != mOutputFormats.End()) {
         size -= 1;
     }

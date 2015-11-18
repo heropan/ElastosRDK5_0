@@ -44,6 +44,17 @@ ECode Preconditions::CheckNotNull(
     return NOERROR;
 }
 
+ECode Preconditions::CheckNotNull(
+    /* [in] */ IInterface* reference,
+    /* [in] */ const String& errorMessage)
+{
+    if (reference == NULL) {
+        Logger::E(TAG, errorMessage);
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    return NOERROR;
+}
+
 ECode Preconditions::CheckState(
     /* [in] */ Boolean expression)
 {

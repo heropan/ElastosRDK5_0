@@ -24,6 +24,13 @@ ECode CPreconditions::CheckNotNull(
     return Preconditions::CheckNotNull(reference, errorMessage);
 }
 
+ECode CPreconditions::CheckNotNull(
+    /* [in] */ IInterface* reference,
+    /* [in] */ const String& errorMessage)
+{
+    return Preconditions::CheckNotNull(reference, errorMessage);
+}
+
 ECode CPreconditions::CheckState(
     /* [in] */ Boolean expression)
 {

@@ -316,7 +316,7 @@ public:
      */
     CARAPI GetHighSpeedVideoFpsRangesFor(
         /* [in] */ ISize* size,
-        /* [out, callee] */ ArrayOf<Handle32>** outarr);
+        /* [out, callee] */ ArrayOf<IInterface*>** outarr);
 
     /**
      * Get a list of supported high speed video recording FPS ranges.
@@ -351,7 +351,7 @@ public:
      */
     // @SuppressWarnings("unchecked")
     CARAPI GetHighSpeedVideoFpsRanges(
-        /* [out, callee] */ ArrayOf<Handle32>** outarr);
+        /* [out, callee] */ ArrayOf<IInterface*>** outarr);
 
     /**
      * Get the supported video sizes for input FPS range.
@@ -375,7 +375,7 @@ public:
      * @see #getHighSpeedVideoFpsRanges()
      */
     CARAPI GetHighSpeedVideoSizesFor(
-        /* [in] */ Handle32 fpsRange,
+        /* [in] */ IInterface* fpsRange,
         /* [out, callee] */ ArrayOf<ISize*>** outarr);
 
     /**
@@ -766,7 +766,7 @@ private:
         /* [out, callee] */ ArrayOf<Int32>** formats);
 
     /** Get the format -> size count map for either output or input formats */
-    AutoPtr<HashMap<Int32, Int32> > GetFormatsMap(
+    HashMap<Int32, Int32>& GetFormatsMap(
         /* [in] */ Boolean output);
 
     CARAPI GetInternalFormatDuration(

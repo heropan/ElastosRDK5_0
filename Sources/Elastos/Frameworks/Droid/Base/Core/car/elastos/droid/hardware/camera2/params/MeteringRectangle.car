@@ -2,6 +2,8 @@
 module
 {
     interface Elastos.Droid.Graphics.IPoint;
+    interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.Utility.ISize;
 
     namespace Elastos {
     namespace Droid {
@@ -100,8 +102,8 @@ module
          *
          * @return a new {@code (x,y)} {@link Point} with both x,y >= 0
          */
-//        GetUpperLeftPoint(
-//            [out] IPoint** outpoint);
+        GetUpperLeftPoint(
+            [out] IPoint** outpoint);
 
         /**
          * Convenience method to create the size from this metering rectangle.
@@ -110,8 +112,8 @@ module
          *
          * @return a new {@link Size} with non-negative width and height
          */
-//        GetSize(
-//            [out] ISize** outsize);
+        GetSize(
+            [out] ISize** outsize);
 
         /**
          * Convenience method to create a {@link Rect} from this metering rectangle.
@@ -120,48 +122,8 @@ module
          *
          * @return a new {@link Rect} with non-negative x1, y1, x2, y2
          */
-//        GetRect(
-//            [out] IRect** outrect);
-
-        /**
-         * {@inheritDoc}
-         */
-        // @Override
-        Equals(
-            [in] IInterface* other,
-            [out] Boolean* value);
-
-        /**
-         * Compare two metering rectangles to see if they are equal.
-         *
-         * Two weighted rectangles are only considered equal if each of their components
-         * (x, y, width, height, weight) is respectively equal.
-         *
-         * @param other Another MeteringRectangle
-         *
-         * @return {@code true} if the metering rectangles are equal, {@code false} otherwise
-         */
-        Equals(
-            [in] IMeteringRectangle* other,
-            [out] Boolean* value);
-
-        /**
-         * {@inheritDoc}
-         */
-        // @Override
-        GetHashCode(
-            [out] Int32* value);
-
-        /**
-         * Return the metering rectangle as a string representation
-         * {@code "(x:%d, y:%d, w:%d, h:%d, wt:%d)"} where each {@code %d} respectively represents
-         * the x, y, width, height, and weight points.
-         *
-         * @return string representation of the metering rectangle
-         */
-        // @Override
-        ToString(
-            [out] String* str);
+        GetRect(
+            [out] IRect** outrect);
     }
 
     } // namespace Params

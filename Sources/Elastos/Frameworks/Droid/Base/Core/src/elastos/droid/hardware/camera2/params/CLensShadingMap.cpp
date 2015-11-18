@@ -2,7 +2,6 @@
 #include "elastos/droid/hardware/camera2/params/CLensShadingMap.h"
 #include "elastos/droid/hardware/camera2/params/CRggbChannelVector.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -108,11 +107,13 @@ ECode CLensShadingMap::GetGainFactor(
         //throw new IllegalArgumentException("colorChannel out of range");
         Slogger::E("CLensShadingMap", "colorChannel out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    } else if (column < 0 || column >= mColumns) {
+    }
+    else if (column < 0 || column >= mColumns) {
         //throw new IllegalArgumentException("column out of range");
         Slogger::E("CLensShadingMap", "column out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    } else if (row < 0 || row >= mRows) {
+    }
+    else if (row < 0 || row >= mRows) {
         //throw new IllegalArgumentException("row out of range");
         Slogger::E("CLensShadingMap", "row out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -133,7 +134,8 @@ ECode CLensShadingMap::GetGainFactorVector(
         //throw new IllegalArgumentException("column out of range");
         Slogger::E("CLensShadingMap", "column out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    } else if (row < 0 || row >= mRows) {
+    }
+    else if (row < 0 || row >= mRows) {
         //throw new IllegalArgumentException("row out of range");
         Slogger::E("CLensShadingMap", "row out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

@@ -2,7 +2,6 @@
 #include "elastos/droid/hardware/camera2/params/CHighSpeedVideoConfiguration.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
 #include "elastos/droid/utility/CSize.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -114,12 +113,12 @@ ECode CHighSpeedVideoConfiguration::GetSize(
 }
 
 ECode CHighSpeedVideoConfiguration::GetFpsRange(
-    /* [out] */ Handle32* range)
+    /* [out] */ IInterface** range)
 {
     VALIDATE_NOT_NULL(range);
 
-    *range = (Handle32)mFpsRange.Get();
-    REFCOUNT_ADD(mFpsRange);
+    *range = TO_IINTERFACE(mFpsRange);
+    REFCOUNT_ADD(*range);
     return NOERROR;
 }
 

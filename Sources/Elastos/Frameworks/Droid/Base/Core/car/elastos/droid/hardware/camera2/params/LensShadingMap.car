@@ -118,26 +118,6 @@ module
         CopyGainFactors(
             [in] ArrayOf<Float>* destination,
             [in] Int32 offset);
-
-        /**
-         * Check if this LensShadingMap is equal to another LensShadingMap.
-         *
-         * <p>Two lens shading maps are equal if and only if they have the same rows/columns,
-         * and all of their elements are {@link Object#equals equal}.</p>
-         *
-         * @return {@code true} if the objects were equal, {@code false} otherwise
-         */
-        // @Override
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* value);
-
-        /**
-         * {@inheritDoc}
-         */
-        // @Override
-        GetHashCode(
-            [out] Int32* value);
     }
 
     } // namespace Params

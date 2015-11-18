@@ -4,7 +4,6 @@
 #include "elastos/droid/graphics/CPoint.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/utility/CSize.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -69,16 +68,8 @@ ECode CMeteringRectangle::constructor(
     /* [in] */ ISize* dimensions,
     /* [in] */ Int32 meteringWeight)
 {
-    //FAIL_RETURN(Preconditions::CheckNotNull(xy, String("xy must not be null")))
-    if (xy == NULL) {
-        Slogger::E("CMeteringRectangle", "xy must not be null");
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    //FAIL_RETURN(Preconditions::CheckNotNull(dimensions, String("dimensions must not be null")))
-    if (dimensions == NULL) {
-        Slogger::E("CMeteringRectangle", "dimensions must not be null");
-        return E_NULL_POINTER_EXCEPTION;
-    }
+    FAIL_RETURN(Preconditions::CheckNotNull(xy, String("xy must not be null")))
+    FAIL_RETURN(Preconditions::CheckNotNull(dimensions, String("dimensions must not be null")))
 
     Int32 x;
     xy->GetX(&x);
@@ -111,11 +102,7 @@ ECode CMeteringRectangle::constructor(
     /* [in] */ IRect* rect,
     /* [in] */ Int32 meteringWeight)
 {
-    //FAIL_RETURN(Preconditions::CheckNotNull(rect, String("rect must not be null")))
-    if (rect == NULL) {
-        Slogger::E("CMeteringRectangle", "rect must not be null");
-        return E_NULL_POINTER_EXCEPTION;
-    }
+    FAIL_RETURN(Preconditions::CheckNotNull(rect, String("rect must not be null")))
 
     Int32 left;
     rect->GetLeft(&left);
@@ -218,35 +205,23 @@ ECode CMeteringRectangle::Equals(
 {
     VALIDATE_NOT_NULL(value);
 
-    if (IMeteringRectangle::Probe(obj) != NULL) {
-        Boolean ret;
-        Equals(IMeteringRectangle::Probe(obj), &ret);
-        if (ret) {
-            *value = TRUE;
-        }
-    }
-    else {
-        *value = FALSE;
-    }
-    return NOERROR;
-}
-
-ECode CMeteringRectangle::Equals(
-    /* [in] */ IMeteringRectangle* other,
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value);
-
-    if (other == NULL) {
+    if (obj == NULL) {
         *value = FALSE;
         return NOERROR;
     }
 
-    *value = (mX == ((CMeteringRectangle*)other)->mX
-            && mY == ((CMeteringRectangle*)other)->mY
-            && mWidth == ((CMeteringRectangle*)other)->mWidth
-            && mHeight == ((CMeteringRectangle*)other)->mHeight
-            && mWeight == ((CMeteringRectangle*)other)->mWeight);
+    if (IMeteringRectangle::Probe(obj) != NULL) {
+        Boolean ret;
+        CMeteringRectangle* cOther = (CMeteringRectangle*)IMeteringRectangle::Probe(obj);
+        *value = (mX == cOther->mX
+            && mY == cOther->mY
+            && mWidth == cOther->mWidth
+            && mHeight == cOther->mHeight
+            && mWeight == cOther->mWeight);
+    }
+    else {
+        *value = FALSE;
+    }
     return NOERROR;
 }
 

@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_CHIGHSPEEDVIDEOCONFIGURATION_H__
 
 #include "_Elastos_Droid_Hardware_Camera2_Params_CHighSpeedVideoConfiguration.h"
-#include "elastos/droid/utility/Range.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/utility/Range.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::ISize;
@@ -98,7 +98,7 @@ public:
      * @return a Range with high bound >= 60
      */
     CARAPI GetFpsRange(
-        /* [out] */ Handle32* range);
+        /* [out] */ IInterface** range);
 
     /**
      * Check if this {@link HighSpeedVideoConfiguration} is equal to another

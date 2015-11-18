@@ -2,7 +2,6 @@
 #include "elastos/droid/hardware/camera2/params/CReprocessFormatsMap.h"
 #include "elastos/droid/hardware/camera2/params/StreamConfigurationMap.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -94,6 +93,7 @@ ECode CReprocessFormatsMap::GetInputs(
     /* [out, callee] */ ArrayOf<Int32>** inputs)
 {
     VALIDATE_NOT_NULL(inputs);
+    *inputs = NULL;
 
     AutoPtr<ArrayOf<Int32> > _inputs = ArrayOf<Int32>::Alloc(mInputCount);
 
@@ -143,6 +143,7 @@ ECode CReprocessFormatsMap::GetOutputs(
     /* [out, callee] */ ArrayOf<Int32>** outputs)
 {
     VALIDATE_NOT_NULL(outputs);
+    *outputs = NULL;
 
     Int32 left = mEntry->GetLength();
     for (Int32 i = 0; i < left; ) {

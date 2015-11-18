@@ -66,27 +66,7 @@ module
          * @return a Range with high bound >= 60
          */
         GetFpsRange(
-            [out] Handle32* range);
-
-        /**
-         * Check if this {@link HighSpeedVideoConfiguration} is equal to another
-         * {@link HighSpeedVideoConfiguration}.
-         *
-         * <p>Two configurations are equal if and only if each of the respective elements is equal.</p>
-         *
-         * @return {@code true} if the objects were equal, {@code false} otherwise
-         */
-        //@Override
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* equal);
-
-        /**
-         * {@inheritDoc}
-         */
-        //@Override
-        GetHashCode(
-            [out] Int32* code);
+            [out] IInterface** range);
     }
 
     } // namespace Params

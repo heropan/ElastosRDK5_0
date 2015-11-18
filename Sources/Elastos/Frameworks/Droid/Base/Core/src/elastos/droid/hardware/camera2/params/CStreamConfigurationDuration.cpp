@@ -3,7 +3,6 @@
 // #include "elastos/droid/hardware/camera2/params/StreamConfigurationMap.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
 #include "elastos/droid/utility/CSize.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>

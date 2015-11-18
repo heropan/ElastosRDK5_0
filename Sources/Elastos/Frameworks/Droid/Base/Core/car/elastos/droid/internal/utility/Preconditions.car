@@ -38,6 +38,10 @@ module
             [in] IInterface* reference,
             [in] IObject* errorMessage);
 
+        CheckNotNull(
+            [in] IInterface* reference,
+            [in] String errorMessage);
+
         /**
          * Ensures the truth of an expression involving the state of the calling
          * instance, but not involving any parameters to the calling method.

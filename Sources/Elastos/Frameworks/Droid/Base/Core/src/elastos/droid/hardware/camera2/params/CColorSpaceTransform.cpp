@@ -2,7 +2,6 @@
 #include "elastos/droid/hardware/camera2/params/CColorSpaceTransform.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
 #include "elastos/droid/utility/CRational.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -56,16 +55,21 @@ ECode CColorSpaceTransform::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    ArrayOf<Int32>::Alloc(COUNT_INT);
+    mElements = ArrayOf<Int32>::Alloc(COUNT_INT);
 
     for (Int32 i = 0; i < elements->GetLength(); ++i) {
-        //FAIL_RETURN(Preconditions::CheckNotNull((*elements)[i], String("element ") + i + String(" must not be null")))
-        if ((*elements)[i] == NULL) {
-            Slogger::E("CColorSpaceTransform", "element %d must not be null", i);
-            return E_NULL_POINTER_EXCEPTION;
-        }
-        (*elements)[i]->GetNumerator(&((*mElements)[i * RATIONAL_SIZE + OFFSET_NUMERATOR]));
-        (*elements)[i]->GetDenominator(&((*mElements)[i * RATIONAL_SIZE + OFFSET_DENOMINATOR]));
+        StringBuilder sb;
+        sb += "element ";
+        sb += i;
+        sb += " must not be null";
+        FAIL_RETURN(Preconditions::CheckNotNull(TO_IINTERFACE((*elements)[i]), sb.ToString()))
+
+        Int32 numerator;
+        (*elements)[i]->GetNumerator(&numerator);
+        Int32 denominator;
+        (*elements)[i]->GetDenominator(&denominator);
+        (*mElements)[i * RATIONAL_SIZE + OFFSET_NUMERATOR] = numerator;
+        (*mElements)[i * RATIONAL_SIZE + OFFSET_DENOMINATOR] = denominator;
     }
     return NOERROR;
 }
@@ -84,14 +88,6 @@ ECode CColorSpaceTransform::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    for (Int32 i = 0; i < elements->GetLength(); ++i) {
-        //FAIL_RETURN(Preconditions::CheckNotNull((*elements)[i], String("element ") + i + String(" must not be null")))
-        //Slogger::E("CColorSpaceTransform", "element i  must not be null", i);
-        // if ((*elements)[i] == NULL) {
-        //     return E_NULL_POINTER_EXCEPTION;
-        // }
-    }
-
     return Arrays::CopyOf(elements, elements->GetLength(), (ArrayOf<Int32>**)&mElements);
 }
 
@@ -106,7 +102,8 @@ ECode CColorSpaceTransform::GetElement(
         //throw new IllegalArgumentException("column out of range");
         Slogger::E("CColorSpaceTransform", "column out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    } else if (row < 0 || row >= ROWS) {
+    }
+    else if (row < 0 || row >= ROWS) {
         //throw new IllegalArgumentException("row out of range");
         Slogger::E("CColorSpaceTransform", "row out of range");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -122,11 +119,7 @@ ECode CColorSpaceTransform::CopyElements(
     /* [in] */ ArrayOf<IRational*>* destination,
     /* [in] */ Int32 offset)
 {
-    //FAIL_RETURN(Preconditions::CheckArgumentNonnegative(offset, String("offset must not be negative")))
-    if (offset < 0) {
-        Slogger::E("CColorSpaceTransform", "offset must not be negative");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
+    FAIL_RETURN(Preconditions::CheckArgumentNonnegative(offset, String("offset must not be negative")))
     //FAIL_RETURN(Preconditions::CheckNotNull(destination, Strinfg("destination must not be null")))
     if (destination == NULL) {
         Slogger::E("CColorSpaceTransform", "destination must not be null");
@@ -143,7 +136,9 @@ ECode CColorSpaceTransform::CopyElements(
         Int32 numerator = (*mElements)[j + OFFSET_NUMERATOR];
         Int32 denominator = (*mElements)[j + OFFSET_DENOMINATOR];
 
-        CRational::New(numerator, denominator, (IRational**)&((*destination)[i + offset]));
+        AutoPtr<IRational> rational;
+        CRational::New(numerator, denominator, (IRational**)&rational);
+        destination->Set(i + offset, rational);
     }
     return NOERROR;
 }
@@ -152,11 +147,7 @@ ECode CColorSpaceTransform::CopyElements(
     /* [in] */ ArrayOf<Int32>* destination,
     /* [in] */ Int32 offset)
 {
-    //FAIL_RETURN(Preconditions::CheckArgumentNonnegative(offset, String("offset must not be negative")))
-    if (offset < 0) {
-        Slogger::E("CColorSpaceTransform", "offset must not be negative");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
+    FAIL_RETURN(Preconditions::CheckArgumentNonnegative(offset, String("offset must not be negative")))
     //FAIL_RETURN(Preconditions::CheckNotNull(destination, Strinfg("destination must not be null")))
     if (destination == NULL) {
         Slogger::E("CColorSpaceTransform", "destination must not be null");

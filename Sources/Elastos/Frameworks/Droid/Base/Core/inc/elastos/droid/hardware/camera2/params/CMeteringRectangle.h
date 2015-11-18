@@ -159,20 +159,6 @@ public:
         /* [out] */ Boolean* value);
 
     /**
-     * Compare two metering rectangles to see if they are equal.
-     *
-     * Two weighted rectangles are only considered equal if each of their components
-     * (x, y, width, height, weight) is respectively equal.
-     *
-     * @param other Another MeteringRectangle
-     *
-     * @return {@code true} if the metering rectangles are equal, {@code false} otherwise
-     */
-    CARAPI Equals(
-        /* [in] */ IMeteringRectangle* other,
-        /* [out] */ Boolean* value);
-
-    /**
      * {@inheritDoc}
      */
     // @Override
