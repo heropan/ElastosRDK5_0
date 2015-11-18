@@ -84,7 +84,6 @@ module
     /**
      * This class is used to specify meta information of a TV input.
      */
-    [parcelable]
     interface ITvInputInfo {
         // Should be in sync with frameworks/base/core/res/res/values/attrs.xml
         /**
@@ -265,8 +264,6 @@ module
         LoadIcon(
             [in] IContext * context,
             [out] IDrawable ** result);
-
-
     }
 
     [local]
@@ -329,9 +326,7 @@ module
             [in] String label,
             [in] IUri * iconUri,
             [out] ITvInputInfo ** result);
-
     }
-
 
     } // namespace Tv
     } // namespace media

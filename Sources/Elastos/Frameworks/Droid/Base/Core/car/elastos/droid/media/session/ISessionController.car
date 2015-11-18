@@ -16,7 +16,6 @@ module
     namespace Media {
     namespace Session {
 
-    [deprecated]
     interface IISessionController {
         SendCommand(
             [in] String command,

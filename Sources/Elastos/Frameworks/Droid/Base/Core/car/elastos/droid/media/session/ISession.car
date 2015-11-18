@@ -14,7 +14,6 @@ module
     namespace Media {
     namespace Session {
 
-    [deprecated]
     interface IISession {
         SendEvent(
             [in] String event,

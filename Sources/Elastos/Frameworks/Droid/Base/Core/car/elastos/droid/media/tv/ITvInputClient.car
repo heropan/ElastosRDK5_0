@@ -17,7 +17,6 @@ module
      * about changes to the state of each TV input service.
      * @hide
      */
-    [deprecated]
     interface IITvInputClient {
         OnSessionCreated(
             [in] String inputId,
@@ -66,7 +65,6 @@ module
             [in] Int32 right,
             [in] Int32 bottom,
             [in] Int32 seq);
-
     }
 
     } // namespace Tv

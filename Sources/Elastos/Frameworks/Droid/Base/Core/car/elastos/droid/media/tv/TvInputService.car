@@ -20,7 +20,7 @@ module
      * @Involve
      * interface Elastos.Droid.View.IKeyEventCallback
      */
-    [local, deprecated]
+    [local]
     interface ITvInputServiceSession {
         /**
          * Enables or disables the overlay view. By default, the overlay view is disabled. Must be
@@ -359,7 +359,8 @@ module
          * @see View#onTouchEvent
          */
         OnTouchEvent(
-            [in] IMotionEvent * event);
+            [in] IMotionEvent * event,
+            [out] Boolean * result);
 
         /**
          * Implement this method to handle trackball events on the current input session.
@@ -370,7 +371,8 @@ module
          * @see View#onTrackballEvent
          */
         OnTrackballEvent(
-            [in] IMotionEvent * event);
+            [in] IMotionEvent * event,
+            [out] Boolean * result);
 
         /**
          * Implement this method to handle generic motion events on the current input session.
@@ -381,8 +383,8 @@ module
          * @see View#onGenericMotionEvent
          */
         OnGenericMotionEvent(
-            [in] IMotionEvent * event);
-
+            [in] IMotionEvent * event,
+            [out] Boolean * result);
     }
 
     /**
@@ -429,7 +431,6 @@ module
          */
         OnHardwareVideoUnavailable(
             [in] Int32 reason);
-
     }
 
     /**
@@ -539,7 +540,6 @@ module
         OnHdmiDeviceRemoved(
             [in] IHdmiDeviceInfo * deviceInfo,
             [out] String * result);
-
     }
 
     interface ITvInputServiceHelper {
@@ -547,7 +547,6 @@ module
         IsNavigationKey(
             [in] Int32 keyCode,
             [out] Boolean * result);
-
     }
 
     } // namespace Tv

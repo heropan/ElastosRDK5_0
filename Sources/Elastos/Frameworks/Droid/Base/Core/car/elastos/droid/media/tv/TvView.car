@@ -14,7 +14,6 @@ module
     /**
      * Callback used to receive various status updates on the {@link TvView}.
      */
-    [deprecated]
     interface ITvViewTvInputCallback {
         /**
          * This is invoked when an error occurred while establishing a connection to the underlying

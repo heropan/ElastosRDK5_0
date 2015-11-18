@@ -23,7 +23,6 @@ module
      * owner to allow them to create a {@link MediaController} to communicate with
      * the session.
      */
-    [parcelable]
     interface IMediaSessionToken {
     }
 
@@ -166,7 +165,6 @@ module
      * A single item that is part of the play queue. It contains a description
      * of the item and its id in the queue.
      */
-    [parcelable]
     interface IMediaSessionQueueItem {
         /**
          * This id is reserved. No items can be explicitly asigned this id.
@@ -208,7 +206,6 @@ module
      * <p>
      * MediaSession objects are thread safe.
      */
-    [deprecated]
     interface IMediaSession {
         /**
          * Set this flag on the session to indicate that it can handle media button

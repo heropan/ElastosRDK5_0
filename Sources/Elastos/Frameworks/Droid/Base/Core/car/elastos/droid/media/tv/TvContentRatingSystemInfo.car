@@ -15,7 +15,6 @@ module
      * @hide
      */
     // @SystemApi
-    [parcelable]
     interface ITvContentRatingSystemInfo {
         /**
          * Returns {@code true} if the TV content rating system is defined by a system app,
@@ -32,9 +31,7 @@ module
          */
         GetXmlUri(
             [out] IUri ** result);
-
     }
-
 
     interface ITvContentRatingSystemInfoHelper {
         /**
@@ -49,7 +46,6 @@ module
             [in] Int32 xmlResourceId,
             [in] IApplicationInfo * applicationInfo,
             [out] ITvContentRatingSystemInfo ** result);
-
     }
 
     } // namespace Tv

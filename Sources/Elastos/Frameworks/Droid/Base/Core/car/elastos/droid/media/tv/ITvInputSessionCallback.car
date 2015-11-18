@@ -17,7 +17,6 @@ module
      * new session has been created.
      * @hide
      */
-    [deprecated]
     interface IITvInputSessionCallback {
         OnSessionCreated(
             [in] IITvInputSession * session,

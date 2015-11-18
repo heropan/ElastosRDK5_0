@@ -27,7 +27,6 @@ module
 
     }
 
-
     /**
      * A sub-directory of a single TV channel that represents its primary logo.
      * <p>
@@ -68,6 +67,7 @@ module
     /**
       * @Involve
       * interface ITvContractBaseTvColumns;
+      * interface IBaseColumns;
       */
     interface ITvContractChannels {
         /** The content:// style URI for this table. */
@@ -456,7 +456,7 @@ module
 
     }
 
-
+    [deprecated]
     interface ITvContractProgramsGenres {
         /** The genre for Family/Kids. */
         const String FAMILY_KIDS = "FAMILY_KIDS";
@@ -499,7 +499,7 @@ module
          *         {@link #COLUMN_CANONICAL_GENRE} column.
          */
         Encode(
-            [in] String genres,
+            [in] ArrayOf<String> * genres,
             [out] String * result);
 
         /**
@@ -529,6 +529,7 @@ module
     /**
       * @Involve
       * interface ITvContractBaseTvColumns;
+      * interface IBaseColumns;
       */
     interface ITvContractPrograms {
         /** The content:// style URI for this table. */
@@ -761,6 +762,7 @@ module
     /**
       * @Involve
       * interface ITvContractBaseTvColumns;
+      * interface IBaseColumns;
       */
     interface ITvContractWatchedPrograms {
         /** The content:// style URI for this table. */

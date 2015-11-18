@@ -20,7 +20,6 @@ module
      * Interface to the TV input manager service.
      * @hide
      */
-    [deprecated]
     interface IITvInputManager {
         GetTvInputList(
             [in] Int32 userId,
@@ -33,7 +32,7 @@ module
 
         GetTvContentRatingSystemList(
             [in] Int32 userId,
-            [out] ITvContentRatingSystemInfo ** result);
+            [out] IList ** result);
 
         RegisterCallback(
             [in] IITvInputManagerCallback * cb,
@@ -175,7 +174,6 @@ module
         IsSingleSessionActive(
             [in] Int32 userId,
             [out] Boolean * result);
-
     }
 
     } // namespace Tv

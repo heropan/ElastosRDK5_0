@@ -1,8 +1,8 @@
 module
 {
-    interface Elastos.Utility.IList;
-    interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Utility.IList;
 
     namespace Elastos {
     namespace Droid {
@@ -14,7 +14,6 @@ module
      * the standard transport controls by exposing app specific actions to
      * {@link MediaController MediaControllers}.
      */
-    [parcelable]
     interface IPlaybackStateCustomAction {
         /**
          * Returns the action of the {@link CustomAction}.
