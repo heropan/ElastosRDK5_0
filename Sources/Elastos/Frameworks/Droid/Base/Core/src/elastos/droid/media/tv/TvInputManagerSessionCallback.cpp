@@ -15,8 +15,7 @@ TvInputManagerSessionCallback::~TvInputManagerSessionCallback()
 {
 }
 
-ECode TvInputManagerSessionCallback::constructor(
-    /* [in] */ IContext* context)
+ECode TvInputManagerSessionCallback::constructor()
 {
     return NOERROR;
 }

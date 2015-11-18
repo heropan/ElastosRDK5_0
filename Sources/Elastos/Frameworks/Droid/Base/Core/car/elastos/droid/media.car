@@ -1359,6 +1359,10 @@ module
         interface IParcelable;
     }
 
+    singleton class CTvInputInfoHelper {
+        interface ITvInputInfoHelper;
+    }
+
     class CTvInputManagerSession {
         constructor(
             [in] IBinder* token,

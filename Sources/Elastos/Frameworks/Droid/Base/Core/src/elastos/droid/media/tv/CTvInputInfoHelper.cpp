@@ -6,7 +6,7 @@ namespace Droid {
 namespace Media {
 namespace Tv {
 
-CAR_INTERFACE_IMPL(CTvInputInfoHelper, Object, ITvInputInfoHelper)
+CAR_INTERFACE_IMPL(CTvInputInfoHelper, Singleton, ITvInputInfoHelper)
 
 CAR_SINGLETON_IMPL(CTvInputInfoHelper)
 

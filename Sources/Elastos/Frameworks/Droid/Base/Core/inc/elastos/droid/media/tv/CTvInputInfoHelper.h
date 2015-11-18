@@ -7,6 +7,7 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Hardware::Hdmi::IHdmiDeviceInfo;
 using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
@@ -15,7 +16,7 @@ namespace Media {
 namespace Tv {
 
 CarClass(CTvInputInfoHelper)
-    , public Object
+    , public Singleton
     , public ITvInputInfoHelper
 {
 public:

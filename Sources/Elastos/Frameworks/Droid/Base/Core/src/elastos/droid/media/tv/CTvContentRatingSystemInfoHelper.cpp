@@ -6,7 +6,7 @@ namespace Droid {
 namespace Media {
 namespace Tv {
 
-CAR_INTERFACE_IMPL(CTvContentRatingSystemInfoHelper, Object, ITvContentRatingSystemInfoHelper)
+CAR_INTERFACE_IMPL(CTvContentRatingSystemInfoHelper, Singleton, ITvContentRatingSystemInfoHelper)
 
 CAR_SINGLETON_IMPL(CTvContentRatingSystemInfoHelper)
 
