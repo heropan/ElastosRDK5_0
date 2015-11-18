@@ -6,14 +6,12 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Os::IParcelable;
 using Elastos::Droid::Os::IPersistableBundle;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 namespace Job {
-
 
 /**
  * Container of data passed to the {@link android.app.job.JobScheduler} fully encapsulating the
@@ -101,7 +99,7 @@ public:
     /**
      * @return Whether or not this job should be persisted across device reboots.
      */
-    CARAPI IsPersisted((
+    CARAPI IsPersisted(
         /* [out] */ Boolean* result);
 
     /**
@@ -140,10 +138,10 @@ public:
      * function was called at all.
      * @hide
      */
-    CARAPI HasLateConstraInt32(
+    CARAPI HasLateConstraint(
         /* [out] */ Boolean* result);
 
-    CARAPI ReadFromParcelable(
+    CARAPI ReadFromParcel(
         /* [in] */ IParcel* in);
 
     //@Override
@@ -160,8 +158,8 @@ private:
     AutoPtr<IComponentName> mService;
     Boolean mRequireCharging;
     Boolean mRequireDeviceIdle;
-    Boolean mHasEarlyConstraInt32;
-    Boolean mHasLateConstraInt32;
+    Boolean mHasEarlyConstraint;
+    Boolean mHasLateConstraint;
     Int32 mNetworkType;
     Int64 mMinLatencyMillis;
     Int64 mMaxExecutionDelayMillis;
@@ -303,6 +301,8 @@ public:
         /* [out] */ IJobInfo** info);
 
 private:
+    friend class CJobInfo;
+
     Int32 mJobId;
     AutoPtr<IPersistableBundle> mExtras;// = IPersistableBundle*.EMPTY;
     AutoPtr<IComponentName> mJobService;
@@ -316,8 +316,8 @@ private:
     Int64 mMaxExecutionDelayMillis;
     // Periodic parameters.
     Boolean mIsPeriodic;
-    Boolean mHasEarlyConstraInt32;
-    Boolean mHasLateConstraInt32;
+    Boolean mHasEarlyConstraint;
+    Boolean mHasLateConstraint;
     Int64 mIntervalMillis;
     // Back-off parameters.
     Int64 mInitialBackoffMillis;// = DEFAULT_INITIAL_BACKOFF_MILLIS;

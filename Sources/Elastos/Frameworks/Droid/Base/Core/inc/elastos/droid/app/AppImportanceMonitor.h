@@ -8,8 +8,9 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Content::IContext;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -49,30 +50,34 @@ private:
         Int32 mImportance;
 
         AppEntry(
-            /* [in] */ Int32 uid)
-            : mUid(uid)
-            , mImportance(IActivityManagerRunningAppProcessInfo.IMPORTANCE_GONE)
-        {
-        }
+            /* [in] */ Int32 uid);
     };
 
+public:
     class ProcessObserver
         : public Object
-        , public IProcessObserver
+        , public IIProcessObserver
         , public IBinder
     {
     public:
         CAR_INTERFACE_DECL()
 
-        ProcessObserver(
-            /* [in] */ AppImportanceMonitor* host);
+        ProcessObserver();
 
         virtual ~ProcessObserver();
+
+        CARAPI constructor(
+            /* [in] */ IAppImportanceMonitor* host);
 
         CARAPI OnForegroundActivitiesChanged(
             /* [in] */ Int32 pid,
             /* [in] */ Int32 uid,
             /* [in] */ Boolean foregroundActivities);
+
+        CARAPI OnImportanceChanged(
+            /* [in] */ Int32 pid,
+            /* [in] */ Int32 uid,
+            /* [in] */ Int32 procState) { return NOERROR; }
 
         CARAPI OnProcessStateChanged(
             /* [in] */ Int32 pid,
@@ -82,6 +87,9 @@ private:
         CARAPI OnProcessDied(
             /* [in] */ Int32 pid,
             /* [in] */ Int32 uid);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     private:
         AppImportanceMonitor* mHost;
@@ -123,14 +131,14 @@ private:
 
 private:
     friend class MyHandler;
-    friend class AppImportanceMonitor;
+    friend class ProcessObserver;
 
     AutoPtr<IContext> mContext;
 
     HashMap<Int32, AutoPtr<AppEntry> > mApps;
     Object mAppsLock;
 
-    AutoPtr<IProcessObserver> mProcessObserver;
+    AutoPtr<IIProcessObserver> mProcessObserver;
 
     static const Int32 MSG_UPDATE;
 

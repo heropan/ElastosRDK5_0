@@ -6,13 +6,13 @@ module
 
     /** {@hide} */
     [oneway]
-    interface IProcessObserver {
+    interface IIProcessObserver {
         OnForegroundActivitiesChanged(
             [in] Int32 pid,
             [in] Int32 uid,
             [in] Boolean foregroundActivities);
 
-        OnImportanceChanged(
+        OnProcessStateChanged(
             [in] Int32 pid,
             [in] Int32 uid,
             [in] Int32 importance);

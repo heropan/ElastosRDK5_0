@@ -5,21 +5,27 @@
 #include "_Elastos_Droid_App_CApplicationThread.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IDebugMemoryInfo;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::Os::IPersistableBundle;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentReceiver;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Content::Pm::IProviderInfo;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IDebugMemoryInfo;
-using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Internal::App::IIVoiceInteractor;
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
+using Elastos::Utility::IList;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -40,6 +46,8 @@ public:
     CAR_OBJECT_DECL()
 
     CApplicationThread();
+
+    CARAPI constructor();
 
     CARAPI SchedulePauseActivity(
         /* [in] */ IBinder* token,
@@ -63,11 +71,13 @@ public:
 
     CARAPI ScheduleResumeActivity(
         /* [in] */ IBinder* token,
-        /* [in] */ Boolean isForward);
+        /* [in] */ Int32 processState,
+        /* [in] */ Boolean isForward,
+        /* [in] */ IBundle* resumeArgs);
 
     CARAPI ScheduleSendResult(
         /* [in] */ IBinder* token,
-        /* [in] */ IObjectContainer* results);
+        /* [in] */ IList* results);
 
     // we use token to identify this activity without having to send the
     // activity itself back to the activity manager. (matters more with ipc)
@@ -90,14 +100,14 @@ public:
 
     CARAPI ScheduleRelaunchActivity(
         /* [in] */ IBinder* token,
-        /* [in] */ ArrayOf<IResultInfo*>* pendingResults,
-        /* [in] */ ArrayOf<IIntent*>* pendingNewIntents,
+        /* [in] */ IList* pendingResults,
+        /* [in] */ IList* pendingNewIntents,
         /* [in] */ Int32 configChanges,
         /* [in] */ Boolean notResumed,
         /* [in] */ IConfiguration* config);
 
     CARAPI ScheduleNewIntent(
-        /* [in] */ IObjectContainer* intents,
+        /* [in] */ IList* intents,
         /* [in] */ IBinder* token);
 
     CARAPI ScheduleDestroyActivity(
@@ -128,12 +138,14 @@ public:
     CARAPI ScheduleCreateService(
         /* [in] */ IBinder* token,
         /* [in] */ IServiceInfo* info,
-        /* [in] */ ICompatibilityInfo* compatInfo);
+        /* [in] */ ICompatibilityInfo* compatInfo,
+        /* [in] */ Int32 processState);
 
     CARAPI ScheduleBindService(
         /* [in] */ IBinder* token,
         /* [in] */ IIntent* intent,
-        /* [in] */ Boolean rebind);
+        /* [in] */ Boolean rebind,
+        /* [in] */ Int32 processState);
 
     CARAPI ScheduleUnbindService(
         /* [in] */ IBinder* token,
@@ -170,9 +182,6 @@ public:
     CARAPI ScheduleExit();
 
     CARAPI ScheduleSuicide();
-
-    CARAPI RequestThumbnail(
-        /* [in] */ IBinder* token);
 
     CARAPI ScheduleConfigurationChanged(
         /* [in] */ IConfiguration* config);

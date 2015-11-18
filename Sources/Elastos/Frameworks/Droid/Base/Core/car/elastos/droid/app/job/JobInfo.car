@@ -28,7 +28,7 @@ module
         /**
          * Amount of backoff a job has initially by default, in milliseconds.
          */
-        const Int64 DEFAULT_INITIAL_BACKOFF_MILLIS = 30000L;  // 30 seconds.
+        const Int64 DEFAULT_INITIAL_BACKOFF_MILLIS = 30000;  // 30 seconds.
 
         /**
          * Maximum backoff we allow for a job, in milliseconds.
@@ -119,7 +119,7 @@ module
         /**
          * @return Whether or not this job should be persisted across device reboots.
          */
-        IsPersisted((
+        IsPersisted(
            [out] Boolean* result);
 
         /**
@@ -158,7 +158,7 @@ module
          * function was called at all.
          * @hide
          */
-        HasLateConstraInt32(
+        HasLateConstraint(
            [out] Boolean* result);
     }
 
@@ -269,7 +269,7 @@ module
          * @return The job object to hand to the JobScheduler. This object is immutable.
          */
         Build(
-            /* [out] */ IJobInfo** info);
+            [out] IJobInfo** info);
     }
 
 

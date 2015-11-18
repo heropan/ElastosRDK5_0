@@ -13,7 +13,6 @@ SOURCES += app.cpp
 SOURCES += Activity.cpp
 SOURCES += ActivityGroup.cpp
 SOURCES += ActivityManagerNative.cpp
-
 SOURCES += CActivityManager.cpp
 SOURCES += CActivityManagerHelper.cpp
 SOURCES += CActivityManagerMemoryInfo.cpp
@@ -26,29 +25,24 @@ SOURCES += CActivityManagerTaskDescription.cpp
 SOURCES += CActivityManagerTaskThumbnail.cpp
 SOURCES += CActivityManagerWaitResult.cpp
 SOURCES += CActivityManagerStackInfo.cpp
-
 SOURCES += CActivityNonConfigurationInstances.cpp
 SOURCES += CActivityOptions.cpp
 SOURCES += CActivityOptionsHelper.cpp
 SOURCES += CActivityOptionsAnimationStartedListener.cpp
-
 SOURCES += CActivityThread.cpp
 SOURCES += CActivityThreadHelper.cpp
-
 SOURCES += ActivityTransitionCoordinator.cpp
 SOURCES += ActivityTransitionState.cpp
-
 SOURCES += ActivityView.cpp
+#SOURCES += CAlarmManager.cpp
 
 SOURCES += ActionBar.cpp
 SOURCES += CActionKeyInfo.cpp
-
 SOURCES += AppGlobals.cpp
-
-#SOURCES += AppImportanceMonitor.cpp
+SOURCES += AppImportanceMonitor.cpp
 
 SOURCES += Application.cpp
-#SOURCES += CApplicationThread.cpp
+SOURCES += CApplicationThread.cpp
 SOURCES += ApplicationPackageManager.cpp
 SOURCES += CApplicationErrorReport.cpp
 SOURCES += CApplicationErrorReportHelper.cpp
@@ -56,18 +50,14 @@ SOURCES += CApplicationErrorReportAnrInfo.cpp
 SOURCES += CApplicationErrorReportBatteryInfo.cpp
 SOURCES += CApplicationErrorReportCrashInfo.cpp
 SOURCES += CApplicationErrorReportRunningServiceInfo.cpp
-
 SOURCES += AppOpsManager.cpp
 SOURCES += CAppOpsManagerAppOpsCallback.cpp
 
 SOURCES += CBackStackState.cpp
 SOURCES += CBackStackRecordTransitionState.cpp
-
 SOURCES += CContentProviderHolder.cpp
-
 SOURCES += EnterTransitionCoordinator.cpp
 SOURCES += ExitTransitionCoordinator.cpp
-
 SOURCES += Fragment.cpp
 SOURCES += CFragmentHelper.cpp
 SOURCES += FragmentManager.cpp
@@ -83,30 +73,24 @@ SOURCES += CInstrumentation.cpp
 SOURCES += CInstrumentationHelper.cpp
 SOURCES += CInstrumentationActivityMonitor.cpp
 SOURCES += CInstrumentationActivityResult.cpp
-
 SOURCES += LoadedPkg.cpp
 SOURCES += CInnerReceiver.cpp
 SOURCES += CInnerConnection.cpp
 
 SOURCES += PackageDeleteObserver.cpp
 SOURCES += PackageInstallObserver.cpp
-
 SOURCES += CPendingIntent.cpp
 SOURCES += CPendingIntentFinishedDispatcher.cpp
 SOURCES += CPendingIntentHelper.cpp
-
 SOURCES += CProfilerInfo.cpp
 
 SOURCES += QueuedWork.cpp
-
 SOURCES += CResultInfo.cpp
 SOURCES += Service.cpp
 SOURCES += SharedElementCallback.cpp
-
 SOURCES += CTaskStackBuilder.cpp
 SOURCES += CTaskStackBuilderHelper.cpp
-
-#SOURCES += UiAutomation.cpp
+SOURCES += UiAutomation.cpp
 SOURCES += UiAutomationConnection.cpp
 
 #============================================
@@ -119,7 +103,6 @@ SOURCES += UiAutomationConnection.cpp
 #SOURCES += AlertDialog.cpp
 #SOURCES += CActionBarLayoutParams.cpp
 
-#SOURCES += CAlarmManager.cpp
 #SOURCES += CAlertDialog.cpp
 #SOURCES += CAlertDialogBuilder.cpp
 
@@ -187,3 +170,5 @@ SOURCES += UiAutomationConnection.cpp
 
 #ELASTOS_LIBS += admin/admin.lib
 #ELASTOS_LIBS += backup/backup.lib
+ELASTOS_LIBS += job/job.lib
+ELASTOS_LIBS += trust/trust.lib

@@ -28,7 +28,7 @@ module
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Net.IUri;
-    interface Elastos.Droid.App.IProcessObserver;
+    interface Elastos.Droid.App.IIProcessObserver;
     interface Elastos.Droid.App.IApplicationThread;
     interface Elastos.Droid.App.INotification;
     interface Elastos.Droid.App.IInstrumentationWatcher;
@@ -872,10 +872,10 @@ module
             [out] Boolean* removed);
 
         RegisterProcessObserver(
-            [in] IProcessObserver* observer);
+            [in] IIProcessObserver* observer);
 
         UnregisterProcessObserver(
-            [in] IProcessObserver* observer);
+            [in] IIProcessObserver* observer);
 
         IsIntentSenderTargetedToPackage(
             [in] IIIntentSender* sender,

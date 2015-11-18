@@ -4,20 +4,41 @@
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/CServiceManager.h"
-#include "elastos/droid/os/CDebug.h"
+#include "elastos/droid/net/Proxy.h"
+#include "elastos/droid/utility/CPairHelper.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/CoreUtils.h>
+
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::CServiceManager;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Content::IIntentReceiver;
+using Elastos::Droid::Content::Pm::IPackageInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Net::Proxy;
+using Elastos::Droid::Utility::IPair;
+using Elastos::Droid::Utility::IPairHelper;
+using Elastos::Droid::Utility::CPairHelper;
 
 using Elastos::Core::CString;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Text::IDateFormatHelper;
+using Elastos::Text::CDateFormatHelper;
 using Elastos::Net::IInetAddressHelper;
 using Elastos::Net::CInetAddressHelper;
-using Elastos::Droid::Content::IIntentReceiver;
-using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::IDebug;
-using Elastos::Droid::Os::CDebug;
+// using Libcore::Net::Event::INetworkEventDispatcher
+// using Libcore::Net::Event::INetworkEventDispatcherHelper;
+// using Libcore::Net::Event::CNetworkEventDispatcherHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -34,6 +55,11 @@ CAR_OBJECT_IMPL(CApplicationThread)
 CApplicationThread::CApplicationThread()
     : mLastProcessState(-1)
 {
+}
+
+ECode CApplicationThread::constructor()
+{
+    return NOERROR;
 }
 
 void CApplicationThread::UpdatePendingConfiguration(
@@ -57,7 +83,7 @@ ECode CApplicationThread::SchedulePauseActivity(
 {
     return mAThread->SendMessage(
         finished ? CActivityThread::H::PAUSE_ACTIVITY_FINISHING : CActivityThread::H::PAUSE_ACTIVITY,
-        token, (userLeaving ? 1 : 0) | (dontReport ? 2 : 0),, configChanges);
+        token, (userLeaving ? 1 : 0) | (dontReport ? 2 : 0), configChanges);
 }
 
 ECode CApplicationThread::ScheduleStopActivity(
@@ -99,20 +125,12 @@ ECode CApplicationThread::ScheduleResumeActivity(
 
 ECode CApplicationThread::ScheduleSendResult(
     /* [in] */ IBinder* token,
-    /* [in] */ IObjectContainer* results)
+    /* [in] */ IList* results)
 {
     AutoPtr<CActivityThread::ResultData> res = new CActivityThread::ResultData();
     res->mToken = token;
-    AutoPtr<IObjectEnumerator> enumerator;
-    results->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    Boolean hasNext;
-    while(enumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> obj;
-        enumerator->Current((IInterface**)&obj);
-        res->mResults.PushBack(IResultInfo::Probe(obj));
-    }
-
-    return mAThread->SendMessage(CActivityThread::H::SEND_RESULT, res);
+    res->mResults = results;
+    return mAThread->SendMessage(CActivityThread::H::SEND_RESULT, TO_IINTERFACE(res));
 }
 
 ECode CApplicationThread::ScheduleLaunchActivity(
@@ -130,7 +148,7 @@ ECode CApplicationThread::ScheduleLaunchActivity(
     /* [in] */ IList* pendingNewIntents, //List<Intent>
     /* [in] */ Boolean notResumed,
     /* [in] */ Boolean isForward,
-    /* [in] */ IProfilerInfo* pi)
+    /* [in] */ IProfilerInfo* profilerInfo)
 {
     UpdateProcessState(procState, FALSE);
 
@@ -144,8 +162,8 @@ ECode CApplicationThread::ScheduleLaunchActivity(
     r->mState = (CBundle*)state;
     r->mPersistentState = persistentState;
 
-    r->PendingResults = pendingResults;
-    r->PendingIntents = pendingNewIntents;
+    r->mPendingResults = pendingResults;
+    r->mPendingIntents = pendingNewIntents;
 
     r->mStartsNotResumed = notResumed;
     r->mIsForward = isForward;
@@ -154,13 +172,13 @@ ECode CApplicationThread::ScheduleLaunchActivity(
 
     UpdatePendingConfiguration(curConfig);
 
-    return mAThread->SendMessage(CActivityThread::H::LAUNCH_ACTIVITY, r);
+    return mAThread->SendMessage(CActivityThread::H::LAUNCH_ACTIVITY, TO_IINTERFACE(r));
 }
 
 ECode CApplicationThread::ScheduleRelaunchActivity(
     /* [in] */ IBinder* token,
-    /* [in] */ ArrayOf<IResultInfo*>* pendingResults,
-    /* [in] */ ArrayOf<IIntent*>* pendingNewIntents,
+    /* [in] */ IList* pendingResults,
+    /* [in] */ IList* pendingNewIntents,
     /* [in] */ Int32 configChanges,
     /* [in] */ Boolean notResumed,
     /* [in] */ IConfiguration* config)
@@ -174,18 +192,10 @@ ECode CApplicationThread::ScheduleNewIntent(
     /* [in] */ IBinder *token)
 {
     AutoPtr<CActivityThread::NewIntentData> data = new CActivityThread::NewIntentData();
-    AutoPtr<IObjectEnumerator> enumerator;
-    intents->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    Boolean hasNext;
-    while(enumerator->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> obj;
-        enumerator->Current((IInterface**)&obj);
-        AutoPtr<IIntent> intent = IIntent::Probe(obj);
-        data->mIntents.PushBack(intent);
-    }
+    data->mIntents = intents;
     data->mToken = token;
 
-    return mAThread->SendMessage(CActivityThread::H::NEW_INTENT, data);
+    return mAThread->SendMessage(CActivityThread::H::NEW_INTENT, TO_IINTERFACE(data));
 }
 
 ECode CApplicationThread::ScheduleDestroyActivity(
@@ -214,7 +224,7 @@ ECode CApplicationThread::ScheduleReceiver(
     r->mInfo = info;
     r->mCompatInfo = (CCompatibilityInfo*)compatInfo;
 
-    return mAThread->SendMessage(CActivityThread::H::RECEIVER, r);
+    return mAThread->SendMessage(CActivityThread::H::RECEIVER, TO_IINTERFACE(r));
 }
 
 ECode CApplicationThread::ScheduleCreateBackupAgent(
@@ -227,7 +237,7 @@ ECode CApplicationThread::ScheduleCreateBackupAgent(
     d->mCompatInfo = (CCompatibilityInfo*)compatInfo;
     d->mBackupMode = backupMode;
 
-    return mAThread->SendMessage(CActivityThread::H::CREATE_BACKUP_AGENT, d);
+    return mAThread->SendMessage(CActivityThread::H::CREATE_BACKUP_AGENT, TO_IINTERFACE(d));
 }
 
 ECode CApplicationThread::ScheduleDestroyBackupAgent(
@@ -238,7 +248,7 @@ ECode CApplicationThread::ScheduleDestroyBackupAgent(
     d->mAppInfo = app;
     d->mCompatInfo = (CCompatibilityInfo*)compatInfo;
 
-    return mAThread->SendMessage(CActivityThread::H::DESTROY_BACKUP_AGENT, d);
+    return mAThread->SendMessage(CActivityThread::H::DESTROY_BACKUP_AGENT, TO_IINTERFACE(d));
 }
 
 ECode CApplicationThread::ScheduleCreateService(
@@ -253,7 +263,7 @@ ECode CApplicationThread::ScheduleCreateService(
     s->mInfo = info;
     s->mCompatInfo = compatInfo;
 
-    return mAThread->SendMessage(CActivityThread::H::CREATE_SERVICE, s);
+    return mAThread->SendMessage(CActivityThread::H::CREATE_SERVICE, TO_IINTERFACE(s));
 }
 
 ECode CApplicationThread::ScheduleBindService(
@@ -273,7 +283,7 @@ ECode CApplicationThread::ScheduleBindService(
             , token, intent, Binder::GetCallingUid(), Binder::GetCallingPid());
     }
 
-    return mAThread->SendMessage(CActivityThread::H::BIND_SERVICE, s);
+    return mAThread->SendMessage(CActivityThread::H::BIND_SERVICE, TO_IINTERFACE(s));
 }
 
 ECode CApplicationThread::ScheduleUnbindService(
@@ -284,7 +294,7 @@ ECode CApplicationThread::ScheduleUnbindService(
     s->mToken = token;
     s->mIntent = intent;
 
-    return mAThread->SendMessage(CActivityThread::H::UNBIND_SERVICE, s);
+    return mAThread->SendMessage(CActivityThread::H::UNBIND_SERVICE, TO_IINTERFACE(s));
 }
 
 ECode CApplicationThread::ScheduleServiceArgs(
@@ -301,7 +311,7 @@ ECode CApplicationThread::ScheduleServiceArgs(
     s->mFlags = flags;
     s->mArgs = args;
 
-    return mAThread->SendMessage(CActivityThread::H::SERVICE_ARGS, s);
+    return mAThread->SendMessage(CActivityThread::H::SERVICE_ARGS, TO_IINTERFACE(s));
 }
 
 ECode CApplicationThread::ScheduleStopService(
@@ -315,7 +325,7 @@ ECode CApplicationThread::BindApplication(
     /* [in] */ IApplicationInfo* appInfo,
     /* [in] */ IList* providers,
     /* [in] */ IComponentName* instrumentationName,
-    /* [in] */ IProfilerInfo* pi,
+    /* [in] */ IProfilerInfo* profilerInfo,
     /* [in] */ IBundle* instrumentationArgs,
     /* [in] */ IInstrumentationWatcher* instrumentationWatcher,
     /* [in] */ IIUiAutomationConnection* instrumentationUiConnection,
@@ -352,24 +362,31 @@ ECode CApplicationThread::BindApplication(
      * in a process and therefore cannot rely on the package
      * name inside the runtime.
      */
-    IPackageManager pm = getPackageManager();
-    android.content.pm.PackageInfo pi = null;
-    try {
-        pi = pm.getPackageInfo(appInfo.packageName, 0, UserHandle.myUserId());
-    } catch (RemoteException e) {
-    }
-    if (pi != null) {
-        boolean sharedUserIdSet = (pi.sharedUserId != null);
-        boolean processNameNotDefault =
-        (pi.applicationInfo != null &&
-         !appInfo.packageName.equals(pi.applicationInfo.processName));
-        boolean sharable = (sharedUserIdSet || processNameNotDefault);
+    String packageName;
+    IPackageItemInfo::Probe(appInfo)->GetPackageName(&packageName);
+    AutoPtr<IIPackageManager> pm = CActivityThread::GetPackageManager();
+    AutoPtr<IPackageInfo> pi;
+    pm->GetPackageInfo(packageName, 0, UserHandle::GetMyUserId(), (IPackageInfo**)&pi);
+
+    if (pi != NULL) {
+        String uid;
+        pi->GetSharedUserId(&uid);
+        AutoPtr<IApplicationInfo> ai;
+        pi->GetApplicationInfo((IApplicationInfo**)&ai);
+        Boolean sharedUserIdSet = !uid.IsNull();
+        Boolean processNameNotDefault = FALSE;
+        if (ai != NULL) {
+            String processName;
+            ai->GetProcessName(&processName);
+            processNameNotDefault = !packageName.Equals(processName);
+        }
+        Boolean sharable = (sharedUserIdSet || processNameNotDefault);
 
         // Tell the VMRuntime about the application, unless it is shared
         // inside a process.
         if (!sharable) {
-            VMRuntime.registerAppInfo(appInfo.packageName, appInfo.dataDir,
-                                    appInfo.processName);
+            // VMRuntime.registerAppInfo(packageName, appInfo.dataDir,
+            //                         appInfo.processName);
         }
     }
 
@@ -388,25 +405,17 @@ ECode CApplicationThread::BindApplication(
     data->mConfig = config;
     data->mCompatInfo = compatInfo;
     data->mInitProfilerInfo = profilerInfo;
-    return mAThread->SendMessage(CActivityThread::H::BIND_APPLICATION, data);
+    return mAThread->SendMessage(CActivityThread::H::BIND_APPLICATION, TO_IINTERFACE(data));
 }
 
 ECode CApplicationThread::ScheduleExit()
 {
-    return mAThread->SendMessage(CActivityThread::H::EXIT_APPLICATION,
-        NULL);
+    return mAThread->SendMessage(CActivityThread::H::EXIT_APPLICATION, NULL);
 }
 
 ECode CApplicationThread::ScheduleSuicide()
 {
-    return mAThread->SendMessage(CActivityThread::H::SUICIDE,
-        NULL);
-}
-
-ECode CApplicationThread::RequestThumbnail(
-    /* [in] */ IBinder* token)
-{
-    return mAThread->SendMessage(CActivityThread::H::REQUEST_THUMBNAIL, token);
+    return mAThread->SendMessage(CActivityThread::H::SUICIDE, NULL);
 }
 
 ECode CApplicationThread::ScheduleConfigurationChanged(
@@ -433,7 +442,11 @@ ECode CApplicationThread::ClearDnsCache()
 
     // Allow libcore to perform the necessary actions as it sees fit upon a network
     // configuration change.
-    return NetworkEventDispatcher::GetInstance()->OnNetworkConfigurationChanged();
+    assert(0 && "TODO");
+    // AutoPtr<INetworkEventDispatcherHelper> helper;
+    // CNetworkEventDispatcherHelper::AcquireSingleton((INetworkEventDispatcherHelper**)&helper);
+    // return helper->OnNetworkConfigurationChanged();
+    return NOERROR;
 }
 
 ECode CApplicationThread::SetHttpProxy(
@@ -442,9 +455,7 @@ ECode CApplicationThread::SetHttpProxy(
     /* [in] */ const String& exclList,
     /* [in] */ IUri* pacFileUrl)
 {
-    assert(0 && "TODO");
-//     Proxy.setHttpProxySystemProperty(host, port, exclList, pacFileUrl);
-    return E_NOT_IMPLEMENTED;
+    return Proxy::SetHttpProxySystemProperty(host, port, exclList, pacFileUrl);
 }
 
 ECode CApplicationThread::ProcessInBackground()
@@ -467,7 +478,8 @@ ECode CApplicationThread::DumpService(
     data->mToken = servicetoken;
     data->mArgs->Copy(args);
 
-    return mAThread->SendMessage(CActivityThread::H::DUMP_SERVICE, data, 0, 0, TRUE /*async*/);
+    return mAThread->SendMessage(CActivityThread::H::DUMP_SERVICE, TO_IINTERFACE(data),
+        0, 0, TRUE /*async*/);
 //     } catch (IOException e) {
 //         Slog.w(TAG, "dumpService failed", e);
 //     }
@@ -518,7 +530,8 @@ ECode CApplicationThread::DumpHeap(
     dhd->mPath = path;
     dhd->mFd = fd;
 
-    return mAThread->SendMessage(CActivityThread::H::DUMP_HEAP, dhd, managed ? 1 : 0, 0, true /*async*/);
+    return mAThread->SendMessage(CActivityThread::H::DUMP_HEAP, TO_IINTERFACE(dhd),
+        managed ? 1 : 0, 0, true /*async*/);
 }
 
 ECode CApplicationThread::SetSchedulingGroup(
@@ -576,7 +589,8 @@ ECode CApplicationThread::DumpActivity(
     data->mPrefix = prefix;
     data->mArgs->Copy(args);
 
-    return mAThread->SendMessage(CActivityThread::H::DUMP_ACTIVITY, data, 0, 0, TRUE /*async*/);
+    return mAThread->SendMessage(CActivityThread::H::DUMP_ACTIVITY, TO_IINTERFACE(data),
+        0, 0, TRUE /*async*/);
 //     } catch (IOException e) {
 //         Slog.w(TAG, "dumpActivity failed", e);
 //     }
@@ -593,13 +607,13 @@ ECode CApplicationThread::DumpProvider(
     data->mToken = providertoken;
     data->mArgs->Copy(args);
 
-    return mAThread->SendMessage(CActivityThread::H::DUMP_PROVIDER, data, 0, 0, TRUE /*async*/);
+    return mAThread->SendMessage(CActivityThread::H::DUMP_PROVIDER, TO_IINTERFACE(data),
+        0, 0, TRUE /*async*/);
 //     } catch (IOException e) {
 //         Slog.w(TAG, "dumpProvider failed", e);
 //     }
 }
 
-// @Override
 ECode CApplicationThread::DumpMemInfo(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IDebugMemoryInfo* mem,
@@ -647,7 +661,7 @@ ECode CApplicationThread::DumpMemInfo(
 //     SQLiteDebug.PagerStats stats = SQLiteDebug.getDatabaseInfo();
 
         // dumpMemInfoTable(pw, memInfo, checkin, dumpFullInfo, dumpDalvik, Process.myPid(),
-        //         (mBoundApplication != null) ? mBoundApplication.processName : "unknown",
+        //         (mBoundApplication != NULL) ? mBoundApplication.processName : "unknown",
         //         nativeMax, nativeAllocated, nativeFree,
         //         dalvikMax, dalvikAllocated, dalvikFree);
 
@@ -729,14 +743,14 @@ ECode CApplicationThread::DumpMemInfo(
 
 //     // Asset details.
 //     String assetAlloc = AssetManager.getAssetAllocations();
-//     if (assetAlloc != null) {
+//     if (assetAlloc != NULL) {
 //         pw.println(" ");
 //         pw.println(" Asset Allocations");
 //         pw.print(assetAlloc);
 //     }
+    return NOERROR;
 }
 
-// @Override
 ECode CApplicationThread::DumpGfxInfo(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<String>* args)
@@ -746,7 +760,6 @@ ECode CApplicationThread::DumpGfxInfo(
     return E_NOT_IMPLEMENTED;
 }
 
-// @Override
 ECode CApplicationThread::DumpDbInfo(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<String>* args)
@@ -758,7 +771,6 @@ ECode CApplicationThread::DumpDbInfo(
     return E_NOT_IMPLEMENTED;
 }
 
-// @Override
 ECode CApplicationThread::UnstableProviderDied(
     /* [in] */ IBinder* provider)
 {
@@ -770,11 +782,11 @@ ECode CApplicationThread::RequestAssistContextExtras(
     /* [in] */ IBinder* requestToken,
     /* [in] */ Int32 requestType)
 {
-    RequestAssistContextExtras cmd = new RequestAssistContextExtras();
-    cmd.activityToken = activityToken;
-    cmd.requestToken = requestToken;
-    cmd.requestType = requestType;
-    return mAThread->SendMessage(CActivityThread::H::REQUEST_ASSIST_CONTEXT_EXTRAS, cmd);
+    AutoPtr<CActivityThread::RequestAssistContextExtras> cmd = new CActivityThread::RequestAssistContextExtras();
+    cmd->mActivityToken = activityToken;
+    cmd->mRequestToken = requestToken;
+    cmd->mRequestType = requestType;
+    return mAThread->SendMessage(CActivityThread::H::REQUEST_ASSIST_CONTEXT_EXTRAS, TO_IINTERFACE(cmd));
 }
 
 ECode CApplicationThread::SetCoreSettings(
@@ -791,14 +803,13 @@ ECode CApplicationThread::UpdatePackageCompatibilityInfo(
     ucd->mPkg = pkg;
     ucd->mInfo = info;
 
-    return mAThread->SendMessage(CActivityThread::H::UPDATE_PACKAGE_COMPATIBILITY_INFO, ucd);
+    return mAThread->SendMessage(CActivityThread::H::UPDATE_PACKAGE_COMPATIBILITY_INFO, TO_IINTERFACE(ucd));
 }
 
 ECode CApplicationThread::ScheduleTrimMemory(
     /* [in] */ Int32 level)
 {
-    return mAThread->SendMessage(CActivityThread::H::TRIM_MEMORY,
-        NULL, level);
+    return mAThread->SendMessage(CActivityThread::H::TRIM_MEMORY, NULL, level);
 }
 
 ECode CApplicationThread::ScheduleTranslucentConversionComplete(
@@ -822,7 +833,7 @@ ECode CApplicationThread::ScheduleOnNewActivityOptions(
 ECode CApplicationThread::SetProcessState(
     /* [in] */ Int32 state)
 {
-    updateProcessState(state, true);
+    return UpdateProcessState(state, TRUE);
 }
 
 ECode CApplicationThread::UpdateProcessState(
@@ -833,20 +844,21 @@ ECode CApplicationThread::UpdateProcessState(
         if (mLastProcessState != processState) {
             mLastProcessState = processState;
             // Update Dalvik state based on ActivityManager.PROCESS_STATE_* constants.
-            final int DALVIK_PROCESS_STATE_JANK_PERCEPTIBLE = 0;
-            final int DALVIK_PROCESS_STATE_JANK_IMPERCEPTIBLE = 1;
-            int dalvikProcessState = DALVIK_PROCESS_STATE_JANK_IMPERCEPTIBLE;
+            Int32 DALVIK_PROCESS_STATE_JANK_PERCEPTIBLE = 0;
+            Int32 DALVIK_PROCESS_STATE_JANK_IMPERCEPTIBLE = 1;
+            Int32 dalvikProcessState = DALVIK_PROCESS_STATE_JANK_IMPERCEPTIBLE;
             // TODO: Tune this since things like gmail sync are important background but not jank perceptible.
-            if (processState <= ActivityManager.PROCESS_STATE_IMPORTANT_FOREGROUND) {
+            if (processState <= IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND) {
                 dalvikProcessState = DALVIK_PROCESS_STATE_JANK_PERCEPTIBLE;
             }
-            VMRuntime.getRuntime().updateProcessState(dalvikProcessState);
-            if (false) {
-                Slog.i(TAG, "******************* PROCESS STATE CHANGED TO: " + processState
-                        + (fromIpc ? " (from ipc": ""));
+            // VMRuntime.getRuntime().UpdateProcessState(dalvikProcessState);
+            if (FALSE) {
+                Slogger::I("CApplicationThread", "******************* PROCESS STATE CHANGED TO: %d %s",
+                    processState ,(fromIpc ? " (from ipc": ""));
             }
         }
     }
+    return NOERROR;
 }
 
 ECode CApplicationThread::ScheduleInstallProvider(
@@ -858,7 +870,9 @@ ECode CApplicationThread::ScheduleInstallProvider(
 ECode CApplicationThread::UpdateTimePrefs(
     /* [in] */ Boolean is24Hour)
 {
-    DateFormat::Set24HourTimePref(is24Hour);
+    AutoPtr<IDateFormatHelper> helper;
+    CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
+    return helper->Set24HourTimePref(is24Hour);
 }
 
 ECode CApplicationThread::ScheduleCancelVisibleBehind(

@@ -17,6 +17,7 @@ module
     merge("../../../car/elastos/droid/location.car");
     merge("../../../car/elastos/droid/view.car");
     merge("../../../car/elastos/droid/hardware.car");
+    merge("../../../car/elastos/droid/accessibilityservice.car");
     merge("../../../car/elastos/droid/internal/app.car");
     merge("../../../car/elastos/droid/app.car");
     merge("../../../car/elastos/droid/net.car");
@@ -26,7 +27,6 @@ module
     // merge("../../../car/elastos/droid/gesture.car");
     merge("../../../car/elastos/droid/preference.car");
     merge("../../../car/elastos/droid/accounts.car");
-    merge("../../../car/elastos/droid/accessibilityservice.car");
     merge("../../../car/elastos/droid/provider.car");
     merge("../../../car/elastos/droid/inputmethods.car");
     merge("../../../car/elastos/droid/transition.car");

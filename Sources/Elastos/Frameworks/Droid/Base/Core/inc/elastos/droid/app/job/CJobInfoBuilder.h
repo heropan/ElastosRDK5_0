@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_JOB_CJOBINFO_BUILDER_H__
 
 #include "_Elastos_Droid_App_Job_CJobInfoBuilder.h"
-#include "elastos/droid/app/CJobInfo.h"
+#include "elastos/droid/app/job/CJobInfo.h"
 
 namespace Elastos {
 namespace Droid {

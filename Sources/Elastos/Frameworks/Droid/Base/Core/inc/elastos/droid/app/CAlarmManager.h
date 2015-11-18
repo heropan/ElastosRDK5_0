@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CALARMMANAGER_H__
 
 #include "_Elastos_Droid_App_CAlarmManager.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IIAlarmManager;
 using Elastos::Droid::App::IPendingIntent;
@@ -52,8 +53,15 @@ namespace App {
  * Context.getSystemService(Context.ALARM_SERVICE)}.
  */
 CarClass(CAlarmManager)
+    , public Object
+    , public IAlarmManager
 {
 public:
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CAlarmManager();
 
     /**
