@@ -2,11 +2,17 @@
 #ifndef __ELASTOS_DROID_EMOJI_EMOJIFACTORY_H__
 #define __ELASTOS_DROID_EMOJI_EMOJIFACTORY_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Map.h>
+#include <elastos/utility/etl/Map.h>
+#include "_Elastos_Droid_Emoji_CEmojiFactory.h"
 
+using Elastos::Droid::Emoji::IEmojiFactory;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::CHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -26,7 +32,12 @@ public:
     CAR_INTERFACE_DECL();
 
     EmojiFactory();
+
     virtual ~EmojiFactory();
+
+    constructor(
+        /* [in] */ Int64 nativeEmojiFactory,
+        /* [in] */ const String& name);
 
     /**
      * Returns Bitmap object corresponding to the AndroidPua.
@@ -43,26 +54,80 @@ public:
         /* [in] */ Int32 pua,
         /* [out] */ IBitmap** RetBitmap);
 
-    /**
-     * Constructs an instance of EmojiFactory corresponding to the name.
-     *
-     * @param class_name Name of the factory. This must include complete package name.
-     * @return A concrete EmojiFactory instance corresponding to factory_name.
-     * If factory_name is invalid, null is returned.
-     */
-    static CARAPI NewInstance(
-        /* [in] */ const String& class_name
-        /* [out] */ IEmojiFactory** EmojiFactory);
+   /**
+    * Returns Bitmap object corresponding to the vendor specified sjis.
+    *
+    * See comments in getBitmapFromAndroidPua().
+    *
+    * @param sjis sjis code specific to each career(vendor)
+    * @return Bitmap object when this factory knows the Bitmap relevant to the code. Otherwise
+    * null is returned.
+    */
+    CARAPI GetBitmapFromVendorSpecificSjis(
+        /* [in] */ Char32 sjis,
+        /* [out] */ IBitmap** RetBitmap);
+
+   /**
+    * Returns Bitmap object corresponding to the vendor specific Unicode.
+    *
+    * See comments in getBitmapFromAndroidPua().
+    *
+    * @param vsp vendor specific PUA.
+    * @return Bitmap object when this factory knows the Bitmap relevant to the code. Otherwise
+    * null is returned.
+    */
+    CARAPI GetBitmapFromVendorSpecificPua(
+        /* [in] */ Int32 vsp,
+        /* [out] */ IBitmap** RetBitmap);
+
+   /**
+    * Returns Unicode PUA for Android corresponding to the vendor specific sjis.
+    *
+    * @param sjis vendor specific sjis
+    * @return Unicode PUA for Android, or -1 if there's no map for the sjis.
+    */
+    CARAPI GetAndroidPuaFromVendorSpecificSjis(
+        /* [in] */ Char32 sjis,
+        /* [out] */ Int32* RetValue);
+
+   /**
+    * Returns vendor specific sjis corresponding to the Unicode AndroidPua.
+    *
+    * @param pua Unicode PUA for Android,
+    * @return vendor specific sjis, or -1 if there's no map for the AndroidPua.
+    */
+    CARAPI GetVendorSpecificSjisFromAndroidPua(
+        /* [in] */ Int32 pua,
+        /* [out] */ Int32* RetValue);
+
+   /**
+    * Returns Unicode PUA for Android corresponding to the vendor specific Unicode.
+    *
+    * @param vsp vendor specific PUA.
+    * @return Unicode PUA for Android, or -1 if there's no map for the
+    * Unicode.
+    */
+    CARAPI GetAndroidPuaFromVendorSpecificPua(
+        /* [in] */ Int32 vsp,
+        /* [out] */ Int32* RetValue);
+
+    CARAPI GetAndroidPuaFromVendorSpecificPua(
+        /* [in] */ const String& vspString,
+        /* [out] */ String* RetValue);
 
     /**
-     * Constructs an instance of available EmojiFactory.
+     * Returns vendor specific Unicode corresponding to the Unicode AndroidPua.
      *
-     * @return A concrete EmojiFactory instance. If there are several available
-     * EmojiFactory class, preferred one is chosen by the system. If there isn't, null
-     * is returned.
+     * @param pua Unicode PUA for Android,
+     * @return vendor specific sjis, or -1 if there's no map for the AndroidPua.
      */
-    static CARAPI NewAvailableInstance(
-        /* [out] */ IEmojiFactory** EmojiFactory);
+    CARAPI GetVendorSpecificPuaFromAndroidPua(
+        /* [in] */ Int32 pua,
+        /* [out] */ Int32* RetValue);
+
+    CARAPI GetVendorSpecificPuaFromAndroidPua(
+        /* [in] */ const String& puaString,
+        /* [out] */ String* RetValue);
 
     /**
      * Returns the lowest code point corresponding to an Android
@@ -81,126 +146,112 @@ public:
     CARAPI GetName(
         /* [out] */ String* RetValue);
 
-   /**
-    * Returns Bitmap object corresponding to the vendor specified sjis.
-    *
-    * See comments in getBitmapFromAndroidPua().
-    *
-    * @param sjis sjis code specific to each career(vendor)
-    * @return Bitmap object when this factory knows the Bitmap relevant to the code. Otherwise
-    * null is returned.
-    */
-    static CARAPI GetBitmapFromVendorSpecificSjis(
-        /* [in] */char sjis,
-        /* [out] */ IBitmap** RetBitmap);
-
-   /**
-    * Returns Bitmap object corresponding to the vendor specific Unicode.
-    *
-    * See comments in getBitmapFromAndroidPua().
-    *
-    * @param vsp vendor specific PUA.
-    * @return Bitmap object when this factory knows the Bitmap relevant to the code. Otherwise
-    * null is returned.
-    */
-    static CARAPI GetBitmapFromVendorSpecificPua(
-        /* [in] */ Int32 vsp,
-        /* [out] */ IBitmap** RetBitmap);
-
-   /**
-    * Returns Unicode PUA for Android corresponding to the vendor specific sjis.
-    *
-    * @param sjis vendor specific sjis
-    * @return Unicode PUA for Android, or -1 if there's no map for the sjis.
-    */
-    static CARAPI GetAndroidPuaFromVendorSpecificSjis(
-        /* [in] */ char sjis,
-        /* [out] */ Int32* RetValue);
-
-   /**
-    * Returns vendor specific sjis corresponding to the Unicode AndroidPua.
-    *
-    * @param pua Unicode PUA for Android,
-    * @return vendor specific sjis, or -1 if there's no map for the AndroidPua.
-    */
-    static CARAPI GetVendorSpecificSjisFromAndroidPua(
-        /* [in] */ Int32 pua,
-        /* [out] */ Int32* RetValue);
-
-   /**
-    * Returns Unicode PUA for Android corresponding to the vendor specific Unicode.
-    *
-    * @param vsp vendor specific PUA.
-    * @return Unicode PUA for Android, or -1 if there's no map for the
-    * Unicode.
-    */
-    static CARAPI GetAndroidPuaFromVendorSpecificPua(
-        /* [in] */ Int32 vsp,
-        /* [out] */ Int32* RetValue);
-
-    static CARAPI GetAndroidPuaFromVendorSpecificPua(
-        /* [in] */ const String& vspString,
-        /* [out] */ String* RetValue);
+    //the following 2 functions doesn't defined in car file
 
     /**
-     * Returns vendor specific Unicode corresponding to the Unicode AndroidPua.
-     *
-     * @param pua Unicode PUA for Android,
-     * @return vendor specific sjis, or -1 if there's no map for the AndroidPua.
+     * Returns maximum Vendor-Specific PUA. This is the last valid value.
      */
-    static CARAPI GetVendorSpecificPuaFromAndroidPua(
-        /* [in] */ Int32 pua
+    CARAPI GetMaximumVendorSpecificPua(
         /* [out] */ Int32* RetValue);
 
-    static CARAPI GetVendorSpecificPuaFromAndroidPua(
-        /* [in] */ const String& puaString,
-        /* [out] */ String* RetValue);
+    /**
+     * Returns minimum Vendor-Specific PUA.
+     */
+    CARAPI GetMinimumVendorSpecificPua(
+        /* [out] */ Int32* RetValue);
 
+    /**
+     * Constructs an instance of EmojiFactory corresponding to the name.
+     *
+     * @param class_name Name of the factory. This must include complete package name.
+     * @return A concrete EmojiFactory instance corresponding to factory_name.
+     * If factory_name is invalid, null is returned.
+     */
+    static CARAPI NewInstance(
+        /* [in] */ const String& class_name,
+        /* [out] */ IEmojiFactory** EmojiFactory);
+
+    /**
+     * Constructs an instance of available EmojiFactory.
+     *
+     * @return A concrete EmojiFactory instance. If there are several available
+     * EmojiFactory class, preferred one is chosen by the system. If there isn't, null
+     * is returned.
+     */
+    static CARAPI NewAvailableInstance(
+        /* [out] */ IEmojiFactory** EmojiFactory);
 
 private:
-    Int32 sCacheSize = 100;
+
+    Int32 sCacheSize;
     Int64 mNativeEmojiFactory;
+    static Boolean lib_emoji_factory_is_ready;
     String mName;
 
-    IMap<Integer, Bitmap> mCache;
+    AutoPtr<IHashMap> mCache;
 
-    constructor(
-        /* [in] */ Int32 nativeEmojiFactory,
-        /* [in] */ const String& name);
+    CARAPI_(void) NativeDestructor(
+        /* [in] */ Int64 nativeEmojiFactory);
 
-    void NativeDestructor(
+    static void InitializeCaller();
+
+    static Int32 NativeGetMinimumAndroidPua(
         /* [in] */ Int64 nativeEmojiFactory);
-    Int32 NativeGetMinimumAndroidPua(
-        /* [in] */ Int64 nativeEmojiFactory);
-    Int32 NativeGetMaximumAndroidPua(
+
+    static Int32 NativeGetMaximumAndroidPua(
        /* [in] */ Int64 nativeEmojiFactory);
-    Bitmap NativeGetBitmapFromAndroidPua(
+
+    static AutoPtr<IBitmap> NativeGetBitmapFromAndroidPua(
        /* [in] */ Int64 nativeEmojiFactory,
        /* [in] */ Int32 AndroidPua);
-    Int32 NativeGetAndroidPuaFromVendorSpecificSjis(
+
+    static Int32 NativeGetAndroidPuaFromVendorSpecificSjis(
        /* [in] */ Int64 nativeEmojiFactory,
        /* [in] */ char sjis);
-    Int32 NativeGetVendorSpecificSjisFromAndroidPua(
+
+    static  Int32 NativeGetVendorSpecificSjisFromAndroidPua(
        /* [in] */ Int64 nativeEmojiFactory,
        /* [in] */ Int32 pua);
-    Int32 NativeGetAndroidPuaFromVendorSpecificPua(
+
+    static Int32 NativeGetAndroidPuaFromVendorSpecificPua(
        /* [in] */ Int64 nativeEmojiFactory,
        /* [in] */ Int32 vsp);
-    Int32 NativeGetVendorSpecificPuaFromAndroidPua(
+
+    static Int32 NativeGetVendorSpecificPuaFromAndroidPua(
        /* [in] */ Int64 nativeEmojiFactory,
        /* [in] */ Int32 pua);
-    Int32 NativeGetMaximumVendorSpecificPua(
-       /* [in] */ Int64 nativeEmojiFactory);
-    Int32 NativeGetMinimumVendorSpecificPua(
+
+    static Int32 NativeGetMaximumVendorSpecificPua(
        /* [in] */ Int64 nativeEmojiFactory);
 
-    class CustomLinkedHashMap<K, V> : HashMap<K, V>
+    static Int32 NativeGetMinimumVendorSpecificPua(
+       /* [in] */ Int64 nativeEmojiFactory);
+
+
+     /*
+      // Returns binary image data corresponding to "pua". The size of binary is
+      // stored to "size". Returns NULL if there's no mapping from the "pua" to a
+      // specific image. Currently, image format is all (animated) gif.
+      //
+      // TODO(dmiyakawa): there should be a way to tell users the format of the
+      // binary.
+      virtual const char *GetImageBinaryFromAndroidPua(int pua, int *size) = 0;
+    */
+    static char *GetImageBinaryFromAndroidPua(Int32 pua, Int32 *size);
+
+#if 0
+    class CustomLinkedHashMap
     {
         public:
             CustomLinkedHashMap();
+
+            virtual ~CustomLinkedHashMap();
         protected:
-            Boolean removeEldestEntry(Map.Entry<K, V> eldest);
+            Boolean removeEldestEntry(IMap *eldest);
+        private:
+            AutoPtr<HashMap<Int32, AutoPtr<IBitmap> > > mHashMap;
     };
+#endif
 };
 
 } // namespace Emoji
