@@ -3,3 +3,4 @@ DIRS += audiopolicy
 DIRS += browse
 DIRS += projection
 DIRS += session
+DIRS += tv

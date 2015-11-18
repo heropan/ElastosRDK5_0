@@ -8,7 +8,6 @@ module
     /**
      * @hide
      */
-    [parcelable]
     interface ITvStreamConfig {
         const Int32 STREAM_TYPE_INDEPENDENT_VIDEO_SOURCE = 1;
         const Int32 STREAM_TYPE_BUFFER_PRODUCER = 2;
@@ -35,24 +34,19 @@ module
      */
     interface ITvStreamConfigBuilder {
         StreamId(
-            [in] Int32 streamId,
-            [out] ITvStreamConfigBuilder ** result);
+            [in] Int32 streamId);
 
         Type(
-            [in] Int32 type,
-            [out] ITvStreamConfigBuilder ** result);
+            [in] Int32 type);
 
         MaxWidth(
-            [in] Int32 maxWidth,
-            [out] ITvStreamConfigBuilder ** result);
+            [in] Int32 maxWidth);
 
         MaxHeight(
-            [in] Int32 maxHeight,
-            [out] ITvStreamConfigBuilder ** result);
+            [in] Int32 maxHeight);
 
         Generation(
-            [in] Int32 generation,
-            [out] ITvStreamConfigBuilder ** result);
+            [in] Int32 generation);
 
         Build(
             [out] ITvStreamConfig ** result);

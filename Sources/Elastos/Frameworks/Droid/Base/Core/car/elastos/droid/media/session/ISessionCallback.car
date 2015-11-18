@@ -10,7 +10,6 @@ module
     namespace Media {
     namespace Session {
 
-    [deprecated]
     interface IISessionCallback {
         OnCommand(
             [in] String command,

@@ -8,10 +8,9 @@ module
     namespace Media {
     namespace Session {
 
-    [deprecated]
     interface IIActiveSessionsListener {
         OnActiveSessionsChanged(
-            [in] IList * sessions);
+            [in] IList* sessions);
     }
 
     } // namespace Session

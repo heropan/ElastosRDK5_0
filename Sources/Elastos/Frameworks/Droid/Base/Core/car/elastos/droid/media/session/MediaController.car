@@ -93,7 +93,6 @@ module
      * Callback for receiving updates on from the session. A Callback can be
      * registered using {@link #registerCallback}
      */
-    [deprecated]
     interface IMediaControllerCallback {
         /**
          * Override to handle the session being destroyed. The session is no

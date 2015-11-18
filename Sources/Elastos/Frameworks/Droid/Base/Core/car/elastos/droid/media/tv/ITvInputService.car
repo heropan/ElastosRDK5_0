@@ -15,7 +15,6 @@ module
      * Top-level interface to a TV input component (implemented in a Service).
      * @hide
      */
-    // [deprecated]
     interface IITvInputService {
         RegisterCallback(
             [in] IITvInputServiceCallback * cb);
@@ -40,8 +39,6 @@ module
 
         NotifyHdmiDeviceRemoved(
             [in] IHdmiDeviceInfo * deviceInfo);
-
-
     }
 
     } // namespace Tv

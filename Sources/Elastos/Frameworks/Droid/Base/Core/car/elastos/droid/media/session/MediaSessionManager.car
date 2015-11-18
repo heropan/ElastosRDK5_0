@@ -16,7 +16,6 @@ module
      * Listens for changes to the list of active sessions. This can be added
      * using {@link #addOnActiveSessionsChangedListener}.
      */
-    [deprecated]
     interface IMediaSessionManagerOnActiveSessionsChangedListener {
         OnActiveSessionsChanged(
             [in] IList * controllers);
@@ -33,7 +32,6 @@ module
      * @see MediaSession
      * @see MediaController
      */
-    [deprecated]
     interface IMediaSessionManager {
         /**
          * Create a new session in the system and get the binder for it.
@@ -208,9 +206,6 @@ module
          */
         IsGlobalPriorityActive(
             [out] Boolean * result);
-
-
-
     }
 
     } // namespace Session

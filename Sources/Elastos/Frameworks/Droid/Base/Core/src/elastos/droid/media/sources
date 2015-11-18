@@ -109,4 +109,4 @@ ELASTOS_LIBS += audiopolicy/audiopolicy.lib
 ELASTOS_LIBS += browse/browse.lib
 ELASTOS_LIBS += projection/projection.lib
 ELASTOS_LIBS += session/session.lib
-#ELASTOS_LIBS += tv/tv.lib
+ELASTOS_LIBS += tv/tv.lib

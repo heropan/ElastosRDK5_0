@@ -12,7 +12,6 @@ module
      * @hide
      */
     // @SystemApi
-    [parcelable]
     interface ITvInputHardwareInfo {
         // Match hardware/libhardware/include/hardware/tv_input.h
         const Int32 TV_INPUT_TYPE_OTHER_HARDWARE = 1;
@@ -44,24 +43,19 @@ module
 
     interface ITvInputHardwareInfoBuilder {
         DeviceId(
-            [in] Int32 deviceId,
-            [out] ITvInputHardwareInfoBuilder ** result);
+            [in] Int32 deviceId);
 
         Type(
-            [in] Int32 type,
-            [out] ITvInputHardwareInfoBuilder ** result);
+            [in] Int32 type);
 
         AudioType(
-            [in] Int32 audioType,
-            [out] ITvInputHardwareInfoBuilder ** result);
+            [in] Int32 audioType);
 
         AudioAddress(
-            [in] String audioAddress,
-            [out] ITvInputHardwareInfoBuilder ** result);
+            [in] String audioAddress);
 
         HdmiPortId(
-            [in] Int32 hdmiPortId,
-            [out] ITvInputHardwareInfoBuilder ** result);
+            [in] Int32 hdmiPortId);
 
         Build(
             [out] ITvInputHardwareInfo ** result);

@@ -12,7 +12,6 @@ module
      * @hide
      */
     interface IITvInputSessionWrapper {
-
     }
 
     } // namespace Tv
