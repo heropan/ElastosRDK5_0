@@ -400,9 +400,7 @@ ECode Connection::HttpFailure(
         ret = FALSE;
         String error;
         if (errorId < 0) {
-            AutoPtr<IErrorStrings> errorStrs;
-            CErrorStrings::AcquireSingleton((IErrorStrings**)&errorStrs);
-            errorStrs->GetString(errorId, mContext, &error);
+            ErrorStrings::GetString(errorId, mContext, &error);
         } else {
             // Throwable cause = e.getCause();
             // error = cause != null ? cause.toString() : e.getMessage();

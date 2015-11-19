@@ -56,8 +56,8 @@ ECode StringUri::ReadFrom(
     String str;
     parcel->ReadString(&str);
 
-    AutoPtr<StringUri> curi = new StringUri;
-
+    AutoPtr<StringUri> curi = new StringUri();
+    curi->constructor(str);
     *uri = IUri::Probe(curi);
     REFCOUNT_ADD(*uri);
     return NOERROR;
@@ -495,13 +495,8 @@ ECode StringUri::BuildUpon(
     String str;
     GetScheme(&str);
 
-#ifdef DROID_CORE
-    AutoPtr<CUriBuilder> builder;
-    FAIL_RETURN(CUriBuilder::NewByFriend((CUriBuilder**)&builder));
-#else
-    AutoPtr<IUriBuilder> builder;
-    FAIL_RETURN(CUriBuilder::New((IUriBuilder**)&builder));
-#endif
+    AutoPtr<UriBuilder> builder = new UriBuilder();
+    builder->constructor();
     builder->Scheme(str);
 
     Boolean isHierarchical;
@@ -524,7 +519,7 @@ ECode StringUri::BuildUpon(
         builder->Fragment(p.Get());
     }
 
-    *result = (IUriBuilder*)builder.Get();
+    *result = IUriBuilder::Probe(builder);
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
@@ -563,7 +558,7 @@ ECode OpaqueUri::ReadFrom(
     Uri::Part::ReadFrom(parcel, (Uri::Part**)&p1);
     Uri::Part::ReadFrom(parcel, (Uri::Part**)&p2);
 
-    AutoPtr<OpaqueUri> curi = new OpaqueUri;
+    AutoPtr<OpaqueUri> curi = new OpaqueUri();
     curi->constructor(str, p1, p2);
     *result = IUri::Probe(curi);
     REFCOUNT_ADD(*result);
@@ -764,7 +759,7 @@ ECode OpaqueUri::ToString(
         sb += (":");
 
         String str;
-        FAIL_RETURN(GetEncodedSchemeSpecificPart(&str));
+        GetEncodedSchemeSpecificPart(&str);
         sb += str;
 
         Boolean isEmpty = mFragment->IsEmpty();
@@ -1045,20 +1040,6 @@ HierarchicalUri::HierarchicalUri()
     mUriString = Uri::NOT_CACHED;
 }
 
-HierarchicalUri::HierarchicalUri(
-    /* [in] */ const String& scheme,
-    /* [in] */ Uri::Part* authority,
-    /* [in] */ Uri::PathPart* path,
-    /* [in] */ Uri::Part* query,
-    /* [in] */ Uri::Part* fragment)
-    : mScheme(scheme)
-    , mAuthority(authority)
-    , mPath(path)
-    , mQuery(query)
-    , mFragment(fragment)
-{
-}
-
 ECode HierarchicalUri::constructor(
     /* [in] */ const String& scheme,
     /* [in] */ Uri::Part* authority,
@@ -1067,10 +1048,10 @@ ECode HierarchicalUri::constructor(
     /* [in] */ Uri::Part* fragment)
 {
     mScheme = scheme;
-    mAuthority = (Uri::Part*)authority;
-    mPath = (Uri::PathPart*)path;
-    mQuery = (Uri::Part*)query;
-    mFragment = (Uri::Part*)fragment;
+    mAuthority = authority;
+    mPath = path;
+    mQuery = query;
+    mFragment = fragment;
     return NOERROR;
 }
 
@@ -1092,7 +1073,7 @@ ECode HierarchicalUri::ReadFrom(
     Uri::Part::ReadFrom(parcel, (Uri::Part**)&p3);
     Uri::Part::ReadFrom(parcel, (Uri::Part**)&p4);
 
-    AutoPtr<HierarchicalUri> curi = new HierarchicalUri;
+    AutoPtr<HierarchicalUri> curi = new HierarchicalUri();
     curi->constructor(str, p1, p2, p3, p4);
 
     *result = IUri::Probe(curi);
@@ -1139,14 +1120,16 @@ ECode HierarchicalUri::IsHierarchical(
     /* [out] */ Boolean* isHierarchical)
 {
     VALIDATE_NOT_NULL(isHierarchical);
-    return TRUE;
+    *isHierarchical = TRUE;
+    return NOERROR;
 }
 
 ECode HierarchicalUri::IsRelative(
     /* [out] */ Boolean* isRelative)
 {
     VALIDATE_NOT_NULL(isRelative);
-    return !mScheme.IsNull();
+    *isRelative = !mScheme.IsNull();
+    return NOERROR;
 }
 
 ECode HierarchicalUri::GetScheme(
@@ -1327,19 +1310,14 @@ ECode HierarchicalUri::BuildUpon(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-#ifdef DROID_CORE
-    AutoPtr<CUriBuilder> builder;
-    FAIL_RETURN(CUriBuilder::NewByFriend((CUriBuilder**)&builder));
-#else
-    AutoPtr<IUriBuilder> builder;
-    FAIL_RETURN(CUriBuilder::New((IUriBuilder**)&builder));
-#endif
+    AutoPtr<UriBuilder> builder = new UriBuilder();
+    builder->constructor();
 
-    FAIL_RETURN(builder->Scheme(mScheme));
-    FAIL_RETURN(builder->Authority(mAuthority));
-    FAIL_RETURN(builder->Path(mPath));
-    FAIL_RETURN(builder->Query(mQuery));
-    FAIL_RETURN(builder->Fragment(mFragment));
+    builder->Scheme(mScheme);
+    builder->Authority(mAuthority);
+    builder->Path(mPath);
+    builder->Query(mQuery);
+    builder->Fragment(mFragment);
     *result = IUriBuilder::Probe(builder);
     REFCOUNT_ADD(*result);
     return NOERROR;

@@ -477,11 +477,8 @@ ECode CVpnService::Protect(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr<IParcelFileDescriptorHelper> helper;
-    CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
-
     AutoPtr<IParcelFileDescriptor> dup;
-    ECode ec = helper->FromFd(socket, (IParcelFileDescriptor**)&dup);
+    ECode ec = CParcelFileDescriptor::FromFd(socket, (IParcelFileDescriptor**)&dup);
     if (FAILED(ec)) {
         *result = FALSE;
         return NOERROR;
@@ -569,11 +566,8 @@ AutoPtr<IIntent> CVpnService::PrepareImpl(
         return NULL;
     }
 
-    AutoPtr<IVpnConfigHelper> helper;
-    CVpnConfigHelper::AcquireSingleton((IVpnConfigHelper**)&helper);
-
     AutoPtr<IIntent> intent;
-    helper->GetIntentForConfirmation((IIntent**)&intent);
+    CVpnConfigHelper::GetIntentForConfirmation((IIntent**)&intent);
     return intent;
 }
 

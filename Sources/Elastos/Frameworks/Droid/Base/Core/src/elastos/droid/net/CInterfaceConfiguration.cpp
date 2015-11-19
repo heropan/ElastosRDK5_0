@@ -1,8 +1,13 @@
 
 #include "elastos/droid/net/CInterfaceConfiguration.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -18,12 +23,10 @@ const String CInterfaceConfiguration::FLAG_DOWN("down");
 CInterfaceConfiguration::CInterfaceConfiguration()
 {
     AutoPtr<ISets> tmp;
-#if 0 // TODO: Wait for CSets, ISets
-    CSets::AcquireSingleton((ISets**)&tmp);
-    tmp->NewHashSet((IHashSet**)&mFlags);
-#else
+    // TODO: Waiting for Sets
     assert(0);
-#endif
+    // CSets::AcquireSingleton((ISets**)&tmp);
+    // tmp->NewHashSet((IHashSet**)&mFlags);
 }
 
 ECode CInterfaceConfiguration::constructor()
@@ -34,152 +37,122 @@ ECode CInterfaceConfiguration::constructor()
 ECode CInterfaceConfiguration::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
 
     StringBuilder builder;
-    builder.AppendCStr("mHwAddr=");
-    builder.AppendString(mHwAddr);
-    builder.AppendCStr(" mAddr=");
+    builder.Append("mHwAddr=");
+    builder.Append(mHwAddr);
+    builder.Append(" mAddr=");
     String mAddrS;
-    mAddr->ToString(&mAddrS);
-    builder.AppendString(mAddrS);
-    builder.AppendCStr(" mFlags=");
-    AutoPtr< ArrayOf<String> > flags;
-    GetFlags((ArrayOf<String>**)&flags);
-    for(Int32 i = 0; i < flags->GetLength() ; i++) {
-        builder.AppendString((*flags)[i]);
-        builder.AppendCStr(", ");
-    }
+    IObject::Probe(mAddr)->ToString(&mAddrS);
+    builder.Append(mAddrS);
+    builder.Append(" mFlags=");
+    AutoPtr<IIterable> flags;
+    GetFlags((IIterable**)&flags);
+    builder.Append(IInterface::Probe(flags));
     *result = builder.ToString();
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::GetFlags(
     /* [out] */ IIterable** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr< ArrayOf<String> > resArray = ArrayOf<String>::Alloc(mFlags.GetSize());
-    HashSet<String>::Iterator iter = mFlags.Begin();
-    for (Int32 i = 0; iter != mFlags.End(); ++iter) {
-        (*resArray)[i++] = *iter;
-    }
-    *result = resArray;
+    *result = IIterable::Probe(mFlags);
     REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::HasFlag(
     /* [in] */ const String& flag,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
 
     FAIL_RETURN(ValidateFlag(flag));
-    HashSet<String>::Iterator iter = mFlags.Find(flag);
-    *result = iter != mFlags.End();
-    return NOERROR;
-#endif
+    AutoPtr<ICharSequence> csq;
+    CString::New(flag, (ICharSequence**)&csq);
+    return mFlags->Contains(csq, result);
 }
 
 ECode CInterfaceConfiguration::ClearFlag(
     /* [in] */ const String& flag)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     FAIL_RETURN(ValidateFlag(flag));
-    mFlags.Erase(flag);
+    AutoPtr<ICharSequence> csq;
+    CString::New(flag, (ICharSequence**)&csq);
+    mFlags->Remove(csq);
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::SetFlag(
     /* [in] */ const String& flag)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     FAIL_RETURN(ValidateFlag(flag));
-    mFlags.Insert(flag);
+    AutoPtr<ICharSequence> csq;
+    CString::New(flag, (ICharSequence**)&csq);
+    mFlags->Add(csq);
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::SetInterfaceUp()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
-    mFlags.Erase(FLAG_DOWN);
-    mFlags.Insert(FLAG_UP);
+    AutoPtr<ICharSequence> csq;
+    CString::New(FLAG_DOWN, (ICharSequence**)&csq);
+    mFlags->Remove(csq);
+    csq = NULL;
+    CString::New(FLAG_UP, (ICharSequence**)&csq);
+    mFlags->Add(csq);
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::SetInterfaceDown()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
-    mFlags.Erase(FLAG_UP);
-    mFlags.Insert(FLAG_DOWN);
+    AutoPtr<ICharSequence> csq;
+    CString::New(FLAG_UP, (ICharSequence**)&csq);
+    mFlags->Remove(csq);
+    csq = NULL;
+    CString::New(FLAG_DOWN, (ICharSequence**)&csq);
+    mFlags->Add(csq);
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::GetLinkAddress(
     /* [out] */ ILinkAddress** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
     *result = mAddr;
     REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::SetLinkAddress(
     /* [in] */ ILinkAddress* addr)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     mAddr = addr;
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::GetHardwareAddress(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
+
     *result = mHwAddr;
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::SetHardwareAddress(
     /* [in] */ const String& hwAddr)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     mHwAddr = hwAddr;
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::IsActive(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     VALIDATE_NOT_NULL(result);
     // try {
     Boolean hasFlag;
@@ -196,19 +169,16 @@ ECode CInterfaceConfiguration::IsActive(
             }
         }
     }
-    // } catch (NullPointerException e) {
-        // *result = FALSE;
-    // }
     *result = FALSE;
     return NOERROR;
-#endif
+    // } catch (NullPointerException e) {
+    //     return false;
+    // }
 }
 
 ECode CInterfaceConfiguration::ReadFromParcel(
     /* [in] */ IParcel* src)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     src->ReadString(&mHwAddr);
     Byte bv;
     src->ReadByte(&bv);
@@ -222,17 +192,16 @@ ECode CInterfaceConfiguration::ReadFromParcel(
     for (Int32 i = 0; i < size; i++) {
         String flag;
         src->ReadString(&flag);
-        mFlags.Insert(flag);
+        AutoPtr<ICharSequence> csq;
+        CString::New(flag, (ICharSequence**)&csq);
+        mFlags->Add(csq);
     }
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     dest->WriteString(mHwAddr);
     if (mAddr != NULL) {
         dest->WriteByte(1);
@@ -241,26 +210,30 @@ ECode CInterfaceConfiguration::WriteToParcel(
     else {
         dest->WriteByte(0);
     }
-    dest->WriteInt32(mFlags.GetSize());
-    HashSet<String>::Iterator iter;
-    for (iter = mFlags.Begin(); iter != mFlags.End(); ++iter) {
-        dest->WriteString(*iter);
+    Int32 size;
+    mFlags->GetSize(&size);
+    dest->WriteInt32(size);
+    AutoPtr<IIterator> iter;
+    mFlags->GetIterator((IIterator**)&iter);
+    Boolean hasNext;
+    while (iter->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> iCur;
+        iter->GetNext((IInterface**)&iCur);
+        String s;
+        ICharSequence::Probe(iCur)->ToString(&s);
+        dest->WriteString(s);
     }
     return NOERROR;
-#endif
 }
 
 ECode CInterfaceConfiguration::ValidateFlag(
         /* [in] */ const String& flag)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Previous translated. Need check.
     if (flag.IndexOf(' ') >= 0) {
-        // throw new IllegalArgumentException("flag contains space: " + flag);
+        Logger::E("InterfaceConfiguration", "flag contains space: %s", flag.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
-#endif
 }
 
 } // namespace Net

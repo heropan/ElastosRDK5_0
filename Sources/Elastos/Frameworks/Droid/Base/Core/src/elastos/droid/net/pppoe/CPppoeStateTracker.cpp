@@ -148,8 +148,7 @@ ECode CPppoeStateTracker::Reconnect(
     Slogger::I(TAG, ">>>reconnect");
     //try
     Int32 state;
-    ECode ec;
-    ec = mEM->GetPppoeState(&state);
+    ECode ec = mEM->GetPppoeState(&state);
     if (SUCCEEDED(ec)) {
         if (state != IPppoeManager::PPPOE_STATE_DISABLED ) {
             // maybe this is the first time we run, so set it to enabled

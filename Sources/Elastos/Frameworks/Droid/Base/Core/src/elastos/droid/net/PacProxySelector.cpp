@@ -7,9 +7,9 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(PacProxySelector, ProxySelector, IPacProxySelector)
 
-const String PacProxySelector::TAG = String("PacProxySelector");
-const String PacProxySelector::SOCKS = String("SOCKS ");
-const String PacProxySelector::PROXY = String("PROXY ");
+const String PacProxySelector::TAG("PacProxySelector");
+const String PacProxySelector::SOCKS("SOCKS ");
+const String PacProxySelector::PROXY("PROXY ");
 
 ECode PacProxySelector::constructor()
 {

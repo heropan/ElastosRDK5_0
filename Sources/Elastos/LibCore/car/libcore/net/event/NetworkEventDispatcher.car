@@ -25,6 +25,14 @@ module
         OnNetworkConfigurationChanged();
     }
 
+    interface INetworkEventDispatcherHelper {
+        /**
+           * Returns the shared {@link NetworkEventDispatcher} instance.
+           */
+        GetInstance(
+            [out] INetworkEventDispatcher** result);
+    }
+
     } // namespace Event
     } // namespace Net
     } // namespace Libcore

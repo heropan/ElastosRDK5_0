@@ -1,5 +1,12 @@
 
 #include "elastos/droid/net/IpConfiguration.h"
+#include "elastos/droid/net/CStaticIpConfiguration.h"
+#include "elastos/droid/net/CProxyInfo.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/Objects.h>
+
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Objects;
 
 namespace Elastos {
 namespace Droid {
@@ -7,7 +14,7 @@ namespace Net {
 
 CAR_INTERFACE_IMPL_2(IpConfiguration, Object, IIpConfiguration, IParcelable)
 
-const String IpConfiguration::sTAG = String("IpConfiguration");
+const String IpConfiguration::TAG("IpConfiguration");
 
 ECode IpConfiguration::Init(
     /* [in] */ IpConfigurationIpAssignment ipAssignment,
@@ -15,25 +22,24 @@ ECode IpConfiguration::Init(
     /* [in] */ IStaticIpConfiguration* staticIpConfiguration,
     /* [in] */ IProxyInfo* httpProxy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.ipAssignment = ipAssignment;
-        this.proxySettings = proxySettings;
-        this.staticIpConfiguration = (staticIpConfiguration == null) ?
-                null : new StaticIpConfiguration(staticIpConfiguration);
-        this.httpProxy = (httpProxy == null) ?
-                null : new ProxyInfo(httpProxy);
-
-#endif
+    mIpAssignment = ipAssignment;
+    mProxySettings = proxySettings;
+    if (staticIpConfiguration == NULL) {
+        mStaticIpConfiguration = NULL;
+    } else {
+        CStaticIpConfiguration::New(staticIpConfiguration, (IStaticIpConfiguration**)&mStaticIpConfiguration);
+    }
+    if (httpProxy == NULL) {
+        mHttpProxy = NULL;
+    } else {
+        CProxyInfo::New(httpProxy, (IProxyInfo**)&mHttpProxy);
+    }
+    return NOERROR;
 }
 
 ECode IpConfiguration::constructor()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        init(IpAssignment.UNASSIGNED, ProxySettings.UNASSIGNED, null, null);
-
-#endif
+    return Init(UNASSIGNED_IpAssignment, UNASSIGNED_ProxySettings, NULL, NULL);
 }
 
 ECode IpConfiguration::constructor(
@@ -42,33 +48,33 @@ ECode IpConfiguration::constructor(
     /* [in] */ IStaticIpConfiguration* staticIpConfiguration,
     /* [in] */ IProxyInfo* httpProxy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        init(ipAssignment, proxySettings, staticIpConfiguration, httpProxy);
-
-#endif
+    return Init(ipAssignment, proxySettings, staticIpConfiguration, httpProxy);
 }
 
 ECode IpConfiguration::constructor(
     /* [in] */ IIpConfiguration* source)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this();
-        if (source != null) {
-            init(source.ipAssignment, source.proxySettings,
-                 source.staticIpConfiguration, source.httpProxy);
-        }
-
-#endif
+    constructor();
+    if (source != NULL) {
+        IpConfigurationIpAssignment ipAssignment;
+        source->GetIpAssignment(&ipAssignment);
+        AutoPtr<IStaticIpConfiguration> staticIpConfiguration;
+        source->GetStaticIpConfiguration((IStaticIpConfiguration**)&staticIpConfiguration);
+        IpConfigurationProxySettings proxySettings;
+        source->GetProxySettings(&proxySettings);
+        AutoPtr<IProxyInfo> httpProxy;
+        source->GetHttpProxy((IProxyInfo**)&httpProxy);
+        return Init(ipAssignment, proxySettings, staticIpConfiguration, httpProxy);
+    }
+    return NOERROR;
 }
 
 ECode IpConfiguration::GetIpAssignment(
     /* [out] */ IpConfigurationIpAssignment* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = mIpAssignment;
 
+    *result = mIpAssignment;
     return NOERROR;
 }
 
@@ -83,8 +89,8 @@ ECode IpConfiguration::GetStaticIpConfiguration(
     /* [out] */ IStaticIpConfiguration** result)
 {
     VALIDATE_NOT_NULL(*result)
-    *result = mStaticIpConfiguration;
 
+    *result = mStaticIpConfiguration;
     return NOERROR;
 }
 
@@ -101,8 +107,8 @@ ECode IpConfiguration::GetProxySettings(
     /* [out] */ IpConfigurationProxySettings* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = mProxySettings;
 
+    *result = mProxySettings;
     return NOERROR;
 }
 
@@ -134,102 +140,96 @@ ECode IpConfiguration::SetHttpProxy(
 ECode IpConfiguration::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        StringBuilder sbuf = new StringBuilder();
-        sbuf.append("IP assignment: " + ipAssignment.toString());
-        sbuf.append("\n");
-        if (staticIpConfiguration != null) {
-            sbuf.append("Static configuration: " + staticIpConfiguration.toString());
-            sbuf.append("\n");
-        }
-        sbuf.append("Proxy settings: " + proxySettings.toString());
-        sbuf.append("\n");
-        if (httpProxy != null) {
-            sbuf.append("HTTP proxy: " + httpProxy.toString());
-            sbuf.append("\n");
-        }
-        return sbuf.toString();
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    StringBuilder sbuf;
+    String s;
+    sbuf.Append("IP assignment: ");
+    sbuf.Append(mIpAssignment);
+    sbuf.Append("\n");
+    if (mStaticIpConfiguration != NULL) {
+        IObject::Probe(mStaticIpConfiguration)->ToString(&s);
+        sbuf.Append(String("Static configuration: ") + s);
+        sbuf.Append("\n");
+    }
+    sbuf.Append("Proxy settings: ");
+    sbuf.Append(mProxySettings);
+    sbuf.Append("\n");
+    if (mHttpProxy != NULL) {
+        IObject::Probe(mHttpProxy)->ToString(&s);
+        sbuf.Append(String("HTTP proxy: ") + s);
+        sbuf.Append("\n");
+    }
+    sbuf.ToString(result);
+    return NOERROR;
 }
 
 ECode IpConfiguration::Equals(
-    /* [in] */ IObject* o,
+    /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof IpConfiguration)) {
-            return false;
-        }
-        IpConfiguration other = (IpConfiguration) o;
-        return this.ipAssignment == other.ipAssignment &&
-                this.proxySettings == other.proxySettings &&
-                Objects.equals(this.staticIpConfiguration, other.staticIpConfiguration) &&
-                Objects.equals(this.httpProxy, other.httpProxy);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (TO_IINTERFACE(this) == IInterface::Probe(o)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    if (IIpConfiguration::Probe(o) == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    AutoPtr<IIpConfiguration> iother = IIpConfiguration::Probe(o);
+    AutoPtr<IpConfiguration> other = (IpConfiguration*) iother.Get();
+    *result = mIpAssignment == other->mIpAssignment &&
+            mProxySettings == other->mProxySettings &&
+            Objects::Equals(mStaticIpConfiguration, other->mStaticIpConfiguration) &&
+            Objects::Equals(mHttpProxy, other->mHttpProxy);
+    return NOERROR;
 }
 
-ECode IpConfiguration::HashCode(
+ECode IpConfiguration::GetHashCode(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 13 + (staticIpConfiguration != null ? staticIpConfiguration.hashCode() : 0) +
-               17 * ipAssignment.ordinal() +
-               47 * proxySettings.ordinal() +
-               83 * httpProxy.hashCode();
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = 13;
+    Int32 hashCode;
+    if (mStaticIpConfiguration != NULL) {
+        IObject::Probe(mStaticIpConfiguration)->GetHashCode(&hashCode);
+    } else {
+        hashCode = 0;
+    }
+    *result += hashCode;
+    *result += 17 * mIpAssignment;
+    *result += 47 * mProxySettings;
+    IObject::Probe(mHttpProxy)->GetHashCode(&hashCode);
+    *result += 83 * hashCode;
+    return NOERROR;
 }
 
 ECode IpConfiguration::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public IpConfiguration createFromParcel(Parcel in) {
-                IpConfiguration config = new IpConfiguration();
-                config.ipAssignment = IpAssignment.valueOf(in.readString());
-                config.proxySettings = ProxySettings.valueOf(in.readString());
-                config.staticIpConfiguration = in.readParcelable(null);
-                config.httpProxy = in.readParcelable(null);
-                return config;
-            }
-            public IpConfiguration[] newArray(int size) {
-                return new IpConfiguration[size];
-            }
-
-#endif
-
+    AutoPtr<IInterface> obj;
+    parcel->ReadInt32(&mIpAssignment);
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mStaticIpConfiguration = IStaticIpConfiguration::Probe(obj);
+    parcel->ReadInt32(&mProxySettings);
+    obj = NULL;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mHttpProxy = IProxyInfo::Probe(obj);
+    return NOERROR;
 }
 
 ECode IpConfiguration::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public IpConfiguration createFromParcel(Parcel in) {
-                IpConfiguration config = new IpConfiguration();
-                config.ipAssignment = IpAssignment.valueOf(in.readString());
-                config.proxySettings = ProxySettings.valueOf(in.readString());
-                config.staticIpConfiguration = in.readParcelable(null);
-                config.httpProxy = in.readParcelable(null);
-                return config;
-            }
-            public IpConfiguration[] newArray(int size) {
-                return new IpConfiguration[size];
-            }
-
-#endif
+    dest->WriteInt32(mIpAssignment);
+    dest->WriteInterfacePtr(mStaticIpConfiguration);
+    dest->WriteInt32(mProxySettings);
+    dest->WriteInterfacePtr(mHttpProxy);
+    return NOERROR;
 }
-
-
 
 } // namespace Net
 } // namespace Droid

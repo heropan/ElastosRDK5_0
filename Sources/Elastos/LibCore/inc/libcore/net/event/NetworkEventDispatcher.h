@@ -23,7 +23,8 @@ public:
     /**
     * Returns the shared {@link NetworkEventDispatcher} instance.
     */
-    static AutoPtr<INetworkEventDispatcher> GetInstance();
+    static CARAPI GetInstance(
+        /* [out] */ INetworkEventDispatcher** result);
 
     /**
     * Registers a listener to be notified when network events occur.

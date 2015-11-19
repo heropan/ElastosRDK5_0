@@ -30,11 +30,12 @@ NsdManager::NsdManager()
     : mListenerKey(1)
 {
 #if 0 // TODO: Translate codes below
-    private final SparseArray mListenerMap = new SparseArray();
-    private final SparseArray<NsdServiceInfo> mServiceMap = new SparseArray<NsdServiceInfo>();
-    private final Object mMapLock = new Object();
-    private final AsyncChannel mAsyncChannel = new AsyncChannel();
-    private final CountDownLatch mConnected = new CountDownLatch(1);
+
+    CSparseArray::New((ISparseArray**)&mListenerMap);
+    CSparseArray::New((ISparseArray**)&mServiceMap);
+    CObject::New((IObject**)&mMapLock);
+    CAsyncChannel::New((IAsyncChannel**)&mAsyncChannel;
+    CCountDownLatch::New(1, (ICountDownLatch**)&mConnected);
 #endif
 }
 
@@ -60,7 +61,7 @@ ECode NsdManager::PutListener(
     }
 
     Int32 key;
-    AutoLock lock(mMapLock);
+    sychronized(mMapLock) {
     Int32 valueIndex;
     mListenerMap->IndexOfValue(listener, &valueIndex);
     if (valueIndex != -1) {
@@ -68,15 +69,14 @@ ECode NsdManager::PutListener(
     }
     do {
         key = mListenerKey++;
+    } while (key == INVALID_LISTENER_KEY);
+
+    mListenerMap->Put(key, IInterface::Probe(listener));
+
+    mServiceMap->Put(key, IInterface::Probe(s));
     }
-    while (key == INVALID_LISTENER_KEY);
-
-    typedef typename HashMap<Int32, AutoPtr<IInterface> >::ValueType PairValueType1;
-    mListenerMap.Insert(PairValueType1(key, listener));
-
-    typedef typename HashMap<Int32, AutoPtr<INsdServiceInfo> >::ValueType PairValueType2;
-    mListenerMap.Insert(PairValueType2(key, s));
-    return key;
+    *result = key;
+    return NOERROR;
 #endif
 }
 
@@ -93,11 +93,8 @@ ECode NsdManager::GetListener(
         return NOERROR;
     }
 
-    AutoLock lock(mMapLock);
-    HashMap<Int32, AutoPtr<IInterface> >::Iterator it = mListenerMap.Find(key);
-    if(it != mListenerMap.End()) {
-        *listener = it->mSecond;
-        REFCOUNT_ADD(*listener);
+    sychronized(mMapLock) {
+        mListenerMap->Get(key, result);
     }
 
     return NOERROR;
@@ -110,12 +107,11 @@ ECode NsdManager::GetNsdService(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mMapLock);
-    HashMap<Int32, AutoPtr<INsdServiceInfo> >::Iterator it = mServiceMap.Find(key);
-    if(it != mServiceMap.End())
-        return it->mSecond;
+    VALIDATE_NOT_NULL(result)
 
-    return NULL;
+    sychronized(mMapLock) {
+        mServiceMap->Get(key, result);
+    }
 #endif
 }
 
@@ -126,15 +122,11 @@ ECode NsdManager::RemoveListener(
 #if 0 // TODO: Translate codes below
     if (key == INVALID_LISTENER_KEY) return;
 
-    AutoLock lock(mMapLock);
-
-    HashMap<Int32, AutoPtr<IInterface> >::Iterator it = mListenerMap.Find(key);
-    if(it != mListenerMap.End())
-        mListenerMap.Erase(it);
-
-    HashMap<Int32, AutoPtr<INsdServiceInfo> >::Iterator ite = mServiceMap.Find(key);
-    if(ite != mServiceMap.End())
-        mServiceMap.Erase(ite);
+    sychronized(mMapLock) {
+        mListenerMap->Remove(key);
+        mServiceMap->Remove(key);
+    }
+    return NOERROR;
 #endif
 }
 
@@ -144,15 +136,19 @@ ECode NsdManager::GetListenerKey(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mMapLock);
-    HashMap<Int32, AutoPtr<IInterface> >::Iterator it;
-    for (it = mListenerMap.Begin(); it != mListenerMap.End(); ++it) {
-        if (it->mSecond.Get() == listener) {
-            return it->mFirst;
+    VALIDATE_NOT_NULL(result)
+
+    sychronized(mMapLock) {
+        Int32 valueIndex;
+        mListenerMap->IndexOfValue(listener, &valueIndex);
+        if (valueIndex != -1) {
+            mListenerMap->KeyAt(valueIndex, result);
+            return NOERROR;
         }
     }
 
-    return INVALID_LISTENER_KEY;
+    *result = INVALID_LISTENER_KEY;
+    return NOERROR;
 #endif
 }
 
@@ -162,8 +158,13 @@ ECode NsdManager::GetNsdServiceInfoType(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (s == null) return "?";
-        return s.getServiceType();
+    VALIDATE_NOT_NULL(reslut)
+
+    if (s == NULL) {
+        *result = "?";
+        return NOERROR;
+    }
+    return s->GetServiceType(result);
 #endif
 }
 
@@ -363,6 +364,8 @@ ECode NsdManager::GetMessenger(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     // try {
     AutoPtr<IMessenger> messenger;
     mService->GetMessenger((IMessenger**)&messenger);

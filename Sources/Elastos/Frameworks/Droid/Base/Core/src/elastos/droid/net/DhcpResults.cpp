@@ -1,5 +1,19 @@
 
 #include "elastos/droid/net/DhcpResults.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/net/CLinkAddress.h"
+#include "elastos/droid/text/TextUtils.h"
+#include <elastos/core/StringBuffer.h>
+#include <elastos/utility/Objects.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Text::TextUtils;
+
+using Elastos::Core::StringBuffer;
+using Elastos::Net::IInet4Address;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Objects;
 
 namespace Elastos {
 namespace Droid {
@@ -44,139 +58,138 @@ ECode DhcpResults::GetLeaseDuration(
 
 ECode DhcpResults::constructor()
 {
-#if 0 // // TODO: Waiting for StaticIpConfiguration.h
-    StaticIpConfiguration::constructor();
-#else
-    assert(0);
-#endif
-    return NOERROR;
+    return StaticIpConfiguration::constructor();
 }
 
 ECode DhcpResults::constructor(
     /* [in] */ IStaticIpConfiguration* source)
 {
-#if 0 // // TODO: Waiting for StaticIpConfiguration.h
-    StaticIpConfiguration::constructor(source);
-#else
-    assert(0);
-#endif
-    return NOERROR;
+    return StaticIpConfiguration::constructor(source);
 }
 
 ECode DhcpResults::constructor(
     /* [in] */ IDhcpResults* source)
 {
-#if 0 // // TODO: Waiting for StaticIpConfiguration.h
-    StaticIpConfiguration::constructor(source);
-#else
-    assert(0);
-#endif
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (source != null) {
-            // All these are immutable, so no need to make copies.
-            serverAddress = source.serverAddress;
-            vendorInfo = source.vendorInfo;
-            leaseDuration = source.leaseDuration;
-        }
-#endif
+    StaticIpConfiguration::constructor(IStaticIpConfiguration::Probe(source));
+    if (source != NULL) {
+        // All these are immutable, so no need to make copies.
+        AutoPtr<DhcpResults> dr = (DhcpResults*)source;
+        mServerAddress = dr->mServerAddress;
+        mVendorInfo = dr->mVendorInfo;
+        mLeaseDuration = dr->mLeaseDuration;
+    }
     return NOERROR;
 }
 
 ECode DhcpResults::UpdateFromDhcpRequest(
     /* [in] */ IDhcpResults* orig)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (orig == null) return;
-        if (gateway == null) gateway = orig.gateway;
-        if (dnsServers.size() == 0) {
-            dnsServers.addAll(orig.dnsServers);
-        }
-#endif
+    if (orig == NULL) return NOERROR;
+    AutoPtr<DhcpResults> dr = (DhcpResults*) orig;
+    if (mGateway == NULL) mGateway = dr->mGateway;
+    Int32 size;
+    mDnsServers->GetSize(&size);
+    if (size == 0) {
+        Boolean b;
+        mDnsServers->AddAll(ICollection::Probe(dr->mDnsServers), &b);
+    }
+    return NOERROR;
 }
 
 ECode DhcpResults::HasMeteredHint(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (vendorInfo != null) {
-            return vendorInfo.contains("ANDROID_METERED");
-        } else {
-            return false;
-        }
-#endif
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (!mVendorInfo.IsNull()) {
+        *result = mVendorInfo.Contains("ANDROID_METERED");
+        return NOERROR;
+    }
+    return NOERROR;
 }
 
 ECode DhcpResults::Clear()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        super.clear();
-        vendorInfo = null;
-        leaseDuration = 0;
-#endif
+    StaticIpConfiguration::Clear();
+    mVendorInfo = NULL;
+    mLeaseDuration = 0;
+    return NOERROR;
 }
 
 ECode DhcpResults::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        StringBuffer str = new StringBuffer(super.toString());
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
-        str.append(" DHCP server ").append(serverAddress);
-        str.append(" Vendor info ").append(vendorInfo);
-        str.append(" lease ").append(leaseDuration).append(" seconds");
+    String s;
+    StaticIpConfiguration::ToString(&s);
+    StringBuffer str(s);
 
-        return str.toString();
-#endif
+    str.Append(" DHCP server ");
+    IObject::Probe(mServerAddress)->ToString(&s);
+    str.Append(s);
+    str.Append(" Vendor info ");
+    str.Append(mVendorInfo);
+    str.Append(s);
+    str.Append(" lease ");
+    str.Append(mLeaseDuration);
+    str.Append(s);
+    str.Append(" seconds");
+
+    str.ToString(result);
+    return NOERROR;
 }
 
 ECode DhcpResults::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (this == obj) return true;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
 
-        if (!(obj instanceof DhcpResults)) return false;
+    if (this->Probe(EIID_IInterface) == IInterface::Probe(obj)) {
+        *result = TRUE;
+        return NOERROR;
+    }
 
-        DhcpResults target = (DhcpResults)obj;
+    AutoPtr<IDhcpResults> dr = IDhcpResults::Probe(obj);
 
-        return super.equals((StaticIpConfiguration) obj) &&
-                Objects.equals(serverAddress, target.serverAddress) &&
-                Objects.equals(vendorInfo, target.vendorInfo) &&
-                leaseDuration == target.leaseDuration;
-#endif
+    if (dr == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<DhcpResults> target = (DhcpResults*) dr.Get();
+    Boolean b;
+    StaticIpConfiguration::Equals(IInterface::Probe(dr), &b);
+    *result =  b &&
+            Objects::Equals(this->mServerAddress, target->mServerAddress) &&
+            this->mVendorInfo.Equals(target->mVendorInfo) &&
+            this->mLeaseDuration == target->mLeaseDuration;
+    return NOERROR;
 }
 
 ECode DhcpResults::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
+    /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        super.writeToParcel(dest, flags);
-        dest.writeInt(leaseDuration);
-        NetworkUtils.parcelInetAddress(dest, serverAddress, flags);
-        dest.writeString(vendorInfo);
-#endif
+    StaticIpConfiguration::WriteToParcel(dest);
+    dest->WriteInt32(mLeaseDuration);
+    dest->WriteInterfacePtr(mServerAddress.Get());
+    dest->WriteString(mVendorInfo);
+    return NOERROR;
 }
 
 ECode DhcpResults::ReadFromParcel(
-    /* [in] */ IDhcpResults* dhcpResults,
     /* [in] */ IParcel* in)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        StaticIpConfiguration.readFromParcel(dhcpResults, in);
-        dhcpResults.leaseDuration = in.readInt();
-        dhcpResults.serverAddress = NetworkUtils.unparcelInetAddress(in);
-        dhcpResults.vendorInfo = in.readString();
-#endif
+    StaticIpConfiguration::ReadFromParcel(in);
+    in->ReadInt32(&mLeaseDuration);
+    AutoPtr<IInterface> obj;
+    in->ReadInterfacePtr((Handle32*)&obj);
+    mServerAddress = IInetAddress::Probe(obj);
+    in->ReadString(&mVendorInfo);
+    return NOERROR;
 }
 
 ECode DhcpResults::SetIpAddress(
@@ -184,67 +197,80 @@ ECode DhcpResults::SetIpAddress(
     /* [in] */ Int32 prefixLength,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            Inet4Address addr = (Inet4Address) NetworkUtils.numericToInetAddress(addrString);
-            ipAddress = new LinkAddress(addr, prefixLength);
-        } catch (IllegalArgumentException|ClassCastException e) {
-            Log.e(TAG, "setIpAddress failed with addrString " + addrString + "/" + prefixLength);
-            return true;
-        }
-        return false;
-#endif
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    AutoPtr<IInetAddress> addr;
+    AutoPtr<ILinkAddress> ipAddress;
+    ECode ec;
+    FAIL_GOTO((ec = NetworkUtils::NumericToInetAddress(addrString, (IInetAddress**)&addr)), CATCH);
+    FAIL_GOTO((ec = CLinkAddress::New(addr, prefixLength, (ILinkAddress**)&ipAddress)), CATCH);
+    return NOERROR;
+CATCH:
+    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION || ec == E_CLASS_CAST_EXCEPTION) {
+        Logger::E(TAG, "setIpAddress failed with addrString %s/%d", addrString.string(), prefixLength);
+        *result = TRUE;
+        return NOERROR;
+    }
+    return ec;
 }
 
 ECode DhcpResults::SetGateway(
     /* [in] */ const String& addrString,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            gateway = NetworkUtils.numericToInetAddress(addrString);
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG, "setGateway failed with addrString " + addrString);
-            return true;
-        }
-        return false;
-#endif
+    VALIDATE_NOT_NULL(*result)
+    *result = FALSE;
+
+    ECode ec = NetworkUtils::NumericToInetAddress(addrString, (IInetAddress**)&mGateway);
+    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+        Logger::E(TAG, "setGateway failed with addrString %s", addrString.string());
+        *result = TRUE;
+        return NOERROR;
+    }
+    return NOERROR;
 }
 
 ECode DhcpResults::AddDns(
     /* [in] */ const String& addrString,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (TextUtils.isEmpty(addrString) == false) {
-            try {
-                dnsServers.add(NetworkUtils.numericToInetAddress(addrString));
-            } catch (IllegalArgumentException e) {
-                Log.e(TAG, "addDns failed with addrString " + addrString);
-                return true;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (TextUtils::IsEmpty(addrString) == FALSE) {
+        AutoPtr<IInetAddress> inetAddress;
+        ECode ec = NetworkUtils::NumericToInetAddress(addrString, (IInetAddress**)&inetAddress);
+        if (FAILED(ec)) {
+            if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+                Logger::E(TAG, "addDns failed with addrString %s", addrString.string());
+                *result = TRUE;
+                return NOERROR;
             }
+            return ec;
         }
-        return false;
-#endif
+        mDnsServers->Add(inetAddress);
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode DhcpResults::SetServerAddress(
     /* [in] */ const String& addrString,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            serverAddress = NetworkUtils.numericToInetAddress(addrString);
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG, "setServerAddress failed with addrString " + addrString);
-            return true;
-        }
-        return false;
-#endif
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    mServerAddress = NULL;
+    ECode ec = NetworkUtils::NumericToInetAddress(addrString, (IInetAddress**)&mServerAddress);
+    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+        Logger::E(TAG, "setServerAddress failed with addrString %s", addrString.string());
+        *result = TRUE;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode DhcpResults::SetLeaseDuration(
@@ -264,11 +290,7 @@ ECode DhcpResults::SetVendorInfo(
 ECode DhcpResults::SetDomains(
     /* [in] */ const String& domains)
 {
-#if 0 // TODO: Waiting for c++ class StaticIpConfiguration
     this->mDomains = domains;
-#else
-    assert(0);
-#endif
     return NOERROR;
 }
 

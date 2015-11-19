@@ -14,7 +14,7 @@ const Boolean HttpLog::DEBUG = false;
 const Boolean HttpLog::LOGV = false;
 
 ECode HttpLog::V(
-    /* [in] */ const String& logMe)
+    /* [in] */ const char* fmt, ...)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
@@ -26,7 +26,7 @@ ECode HttpLog::V(
 }
 
 ECode HttpLog::E(
-    /* [in] */ const String& logMe)
+    /* [in] */ const char* fmt, ...)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below

@@ -1,5 +1,8 @@
 
 #include "elastos/droid/net/CDhcpInfo.h"
+#include "elastos/droid/net/NetworkUtils.h"
+
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {
@@ -19,10 +22,7 @@ ECode CDhcpInfo::constructor()
 ECode CDhcpInfo::constructor(
     /* [in] */ IDhcpInfo* source)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: change translated codes below
-    if (source != NULL)
-    {
+    if (source != NULL) {
        source->GetIpAddress(&mIpAddress);
        source->GetGateway(&mGateway);
        source->GetNetmask(&mNetmask);
@@ -32,43 +32,42 @@ ECode CDhcpInfo::constructor(
        source->GetLeaseDuration(&mLeaseDuration);
     }
     return NOERROR;
-#endif
 }
 
 ECode CDhcpInfo::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: change translated codes below
     VALIDATE_NOT_NULL(result);
 
-    StringBuffer str("ipaddr"); PutAddress(&str, mIpAddress);
-    str += String(" gateway "); PutAddress(&str, mGateway);
-    str += String(" netmask "); PutAddress(&str, mNetmask);
-    str += String(" dns1 "); PutAddress(&str, mDns1);
-    str += String(" dns2 "); PutAddress(&str, mDns2);
-    str += String(" DHCP server "); PutAddress(&str, mServerAddress);
+    StringBuffer str("ipaddr");
+    PutAddress(&str, mIpAddress);
+    str += String(" gateway ");
+    PutAddress(&str, mGateway);
+    str += String(" netmask ");
+    PutAddress(&str, mNetmask);
+    str += String(" dns1 ");
+    PutAddress(&str, mDns1);
+    str += String(" dns2 ");
+    PutAddress(&str, mDns2);
+    str += String(" DHCP server ");
+    PutAddress(&str, mServerAddress);
     str += String(" lease ");
     str += mLeaseDuration;
     str += String(" seconds");
 
     *result = str.ToString();
     return NOERROR;
-#endif
 }
 
 void CDhcpInfo::PutAddress(
     /* [in] */ StringBuffer* buff,
     /* [in] */ Int32 addr)
 {
-#if 0 // TODO: change translated codes below
-    buff = new StringBuffer();
     AutoPtr<IInetAddress> inetAddr;
-    NetworkUtils::Int32ToInetAddress(addr,(IInetAddress**)&inetAddr);
+    NetworkUtils::IntToInetAddress(addr,(IInetAddress**)&inetAddr);
     String address;
     inetAddr->GetHostAddress(&address);
-    buff->AppendString(address);
-#endif
+    buff->Append(address);
 }
 
 /** Implement the Parcelable interface {@hide} */

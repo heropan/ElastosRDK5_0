@@ -1,6 +1,7 @@
 
 #include "elastos/droid/net/CConnectivityManagerNetworkCallback.h"
 #include "elastos/droid/net/CDhcpResults.h"
+#include "elastos/droid/net/CDhcpStateMachine.h"
 #include "elastos/droid/net/CEthernetManager.h"
 #include "elastos/droid/net/CIpConfiguration.h"
 #include "elastos/droid/net/CIpPrefix.h"
@@ -85,6 +86,8 @@ namespace Net {
 CAR_OBJECT_IMPL(CConnectivityManagerNetworkCallback)
 
 CAR_OBJECT_IMPL(CDhcpResults)
+
+CAR_OBJECT_IMPL(CDhcpStateMachine)
 
 CAR_OBJECT_IMPL(CEthernetManager)
 

@@ -85,7 +85,7 @@ private:
         /* [in] */ StringBuffer* buff,
         /* [in] */ Int32 addr);
 
-public:
+private:
     Int32 mIpAddress;
     Int32 mGateway;
     Int32 mNetmask;

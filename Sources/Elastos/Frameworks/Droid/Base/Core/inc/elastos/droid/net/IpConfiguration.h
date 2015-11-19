@@ -62,11 +62,11 @@ public:
 
     // @Override
     CARAPI Equals(
-        /* [in] */ IObject* o,
+        /* [in] */ IInterface* o,
         /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     /** Implement the Parcelable interface */
@@ -83,10 +83,15 @@ private:
         /* [in] */ IStaticIpConfiguration* staticIpConfiguration,
         /* [in] */ IProxyInfo* httpProxy);
 
-    static const String sTAG;
+private:
+    static const String TAG;
+
     IpConfigurationIpAssignment mIpAssignment;
+
     AutoPtr<IStaticIpConfiguration> mStaticIpConfiguration;
+
     IpConfigurationProxySettings mProxySettings;
+
     AutoPtr<IProxyInfo> mHttpProxy;
 };
 

@@ -8,6 +8,7 @@ using Elastos::Net::IInetAddress;
 using Elastos::Net::ISocket;
 using Elastos::Security::IPrivateKey;
 using Elastosx::Net::ISocketFactory;
+using Elastosx::Net::Ssl::EIID_ITrustManager;
 using Elastosx::Net::Ssl::IHostnameVerifier;
 using Elastosx::Net::Ssl::IHttpsURLConnection;
 using Elastosx::Net::Ssl::IKeyManager;
@@ -28,6 +29,8 @@ namespace Net {
 //==========================================================
 // SSLCertificateSocketFactory::InnerSub_TrustManager
 //==========================================================
+CAR_INTERFACE_IMPL(SSLCertificateSocketFactory::InnerSub_TrustManager, Object, ITrustManager)
+
 ECode SSLCertificateSocketFactory::InnerSub_TrustManager::GetAcceptedIssuers(
     /* [out, callee] */ ArrayOf<IX509Certificate*>** result)
 {
@@ -930,12 +933,7 @@ ECode CSSLCertificateSocketFactory::CreateSocket(
     ((IOpenSSLSocketImpl*)*socket)->SetNpnProtocols(mNpnProtocols);
     ((IOpenSSLSocketImpl*)*socket)->SetHandshakeTimeout(mHandshakeTimeoutMillis);
     if (mSecure) {
-        AutoPtr<ISSLCertificateSocketFactoryHelper> helper;
-        CSSLCertificateSocketFactoryHelper::AcquireSingleton((ISSLCertificateSocketFactoryHelper**)&helper);
-        if(helper == NULL) {
-            return E_FAIL;
-        }
-        return helper->VerifyHostname(*socket, host);
+        return CSSLCertificateSocketFactoryHelper::VerifyHostname(*socket, host);
     }
     return NOERROR;
 }
@@ -1024,12 +1022,10 @@ ECode CSSLCertificateSocketFactory::CreateSocket(
     ((IOpenSSLSocketImpl*)*socket)->SetNpnProtocols(mNpnProtocols);
     ((IOpenSSLSocketImpl*)*socket)->SetHandshakeTimeout(mHandshakeTimeoutMillis);
     if (mSecure) {
-        AutoPtr<ISSLCertificateSocketFactoryHelper> helper;
-        CSSLCertificateSocketFactoryHelper::AcquireSingleton((ISSLCertificateSocketFactoryHelper**)&helper);
         if(helper == NULL) {
             return E_FAIL;
         }
-        return helper->VerifyHostname(*socket, host);
+        return CSSLCertificateSocketFactoryHelper::VerifyHostname(*socket, host);
     }
     return NOERROR;
 }
@@ -1052,12 +1048,10 @@ ECode CSSLCertificateSocketFactory::CreateSocket(
     ((IOpenSSLSocketImpl*)*socket)->SetNpnProtocols(mNpnProtocols);
     ((IOpenSSLSocketImpl*)*socket)->SetHandshakeTimeout(mHandshakeTimeoutMillis);
     if (mSecure) {
-        AutoPtr<ISSLCertificateSocketFactoryHelper> helper;
-        CSSLCertificateSocketFactoryHelper::AcquireSingleton((ISSLCertificateSocketFactoryHelper**)&helper);
         if(helper == NULL) {
             return E_FAIL;
         }
-        return helper->VerifyHostname(*socket, host);
+        return CSSLCertificateSocketFactoryHelper::VerifyHostname(*socket, host);
     }
     return NOERROR;
 }

@@ -1,5 +1,7 @@
 
 #include "elastos/droid/net/http/RequestQueue.h"
+// #include "elastos/droid/net/GetValue.h"
+#include "elastos/droid/net/http/HttpLog.h"
 
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Net::IConnectivityManager;
@@ -23,10 +25,12 @@ namespace Http {
 CAR_INTERFACE_IMPL(RequestQueue::ActivePool, Object, IRequestQueueConnectionManager)
 
 RequestQueue::ActivePool::ActivePool(
-    /* [in] */ Int32 connectionCount)
+    /* [in] */ Int32 connectionCount,
+    /* [in] */ RequestQueue* host)
     : mTotalRequest(0)
     , mTotalConnection(0)
     , mConnectionCount(connectionCount)
+    , mHost(host)
 {
 #if 0 // TODO: Translate codes below
     mIdleCache = new IdleCache();
@@ -66,10 +70,9 @@ ECode RequestQueue::ActivePool::StartConnectionThread()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                synchronized (RequestQueue.this) {
-                    RequestQueue.this.notify();
-                }
-
+    synchronized(mHost) {
+        mHost->Notify();
+    }
 #endif
 }
 
@@ -155,23 +158,22 @@ ECode RequestQueue::ActivePool::DisablePersistence()
 
 ECode RequestQueue::ActivePool::GetThread(
     /* [in] */ IHttpHost* host,
-    /* [out] */ ConnectionThread** result)
+    /* [out] */ ConnectionThread** thread)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(thread);
 
-    AutoLock lock(mLock);
-
-    for (Int32 i = 0; i < mThreads->GetLength(); i++) {
-        ConnectionThread* ct = (*mThreads)[i];
-        Connection* connection = ct->mConnection;
-        // TODO:
-        // if (connection != NULL && connection->mHost->Equals(host)) {
-        //     *thread = ct;
-        //     REFCOUNT_ADD(*thread);
-        //     return NOERROR;
-        // }
+    synchronized(mHost) {
+        for (Int32 i = 0; i < mThreads->GetLength(); i++) {
+            ConnectionThread* ct = (*mThreads)[i];
+            Connection* connection = ct->mConnection;
+            if (connection != NULL && connection->mHost->Equals(host)) {
+                *thread = ct;
+                REFCOUNT_ADD(*thread);
+                return NOERROR;
+            }
+        }
     }
 
     *thread = NULL;
@@ -188,12 +190,12 @@ ECode RequestQueue::ActivePool::GetConnection(
 #if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(conn);
 
-    // host = mParent->DetermineHost(host);
+    host = mParent->DetermineHost(host);
     Connection* con;
-    // con = mIdleCache->GetConnection(host);
+    con = mIdleCache->GetConnection(host);
     if (con == NULL) {
         mTotalConnection++;
-        // con = Connection::GetConnection(mParent->mContext, host, mParent->mProxyHost, mParent);
+        con = Connection::GetConnection(mParent->mContext, host, mParent->mProxyHost, mParent);
     }
     *conn = con;
     REFCOUNT_ADD(*conn);
@@ -207,8 +209,9 @@ ECode RequestQueue::ActivePool::RecycleConnection(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                return mIdleCache.cacheConnection(connection.getHost(), connection);
+    VALIDATE_NOT_NULL(result)
 
+    return mIdleCache->CacheConnection(connection.getHost(), connection, result);
 #endif
 }
 
@@ -232,7 +235,6 @@ ECode RequestQueue::SyncFeeder::GetRequest(
     /* [out] */ IRequest** req)
 {
     VALIDATE_NOT_NULL(req)
-    *req = NULL;
 
     return GetRequest(req);
 }
@@ -283,7 +285,7 @@ ECode RequestQueue::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this(context, CONNECTION_COUNT);
+    return constructor(context, CONNECTION_COUNT);
 #endif
 }
 
@@ -317,14 +319,14 @@ ECode RequestQueue::EnablePlatformNotifications()
     }
 
     if (mProxyChangeReceiver == NULL) {
-        // mProxyChangeReceiver = new LocalBroadcastReceiver(this);
+        mProxyChangeReceiver = new LocalBroadcastReceiver(this);
         AutoPtr<IIntentFilter> filter;
-        // CIntentFilter::New(IProxy::PROXY_CHANGE_ACTION, (IIntentFilter**)&filter);
+        CIntentFilter::New(IProxy::PROXY_CHANGE_ACTION, (IIntentFilter**)&filter);
         AutoPtr<IIntent> intent;
         mContext->RegisterReceiver(mProxyChangeReceiver, filter, (IIntent**)&intent);
     }
     // we need to resample the current proxy setup
-    // SetProxyConfig();
+    SetProxyConfig();
     return NOERROR;
 #endif
 }
@@ -352,13 +354,13 @@ ECode RequestQueue::SetProxyConfig()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     AutoPtr<INetworkInfo> info;
-    // mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
+    mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     Int32 type;
     if (info != NULL /*&& (info.getType(&type), type) == IConnectivityManager::TYPE_WIFI*/) {
         mProxyHost = NULL;
     } else {
         String host;
-        // Proxy::GetHost(mContext, &host);
+        Proxy::GetHost(mContext, &host);
         if (HttpLog::LOGV) {
             HttpLog::V(String("RequestQueue.setProxyConfig ") + host);
         }
@@ -367,8 +369,8 @@ ECode RequestQueue::SetProxyConfig()
         } else {
             mActivePool->DisablePersistence();
             Int32 port;
-            // Proxy::GetPort(mContext, &port);
-            // CHttpHost::New(host, port, String("http"), &mProxyHost);
+            Proxy::GetPort(mContext, &port);
+            CHttpHost::New(host, port, String("http"), &mProxyHost);
         }
     }
     return NOERROR;
@@ -399,8 +401,7 @@ ECode RequestQueue::QueueRequest(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     AutoPtr<IWebAddress> uri;
-    // TODO:
-    // CWebAddress::New(url, (IWebAddress**)&uri);
+    CWebAddress::New(url, (IWebAddress**)&uri);
     return QueueRequest(reqQueue, url, uri, method, headers, eventHandler,
         bodyProvider, bodyLength, handle);
 #endif
@@ -432,18 +433,17 @@ ECode RequestQueue::QueueRequest(
     /* Create and queue request */
     Request* req;
     String host;
-    // TODO:
-    // uri->GetHost(&host);
+    uri->GetHost(&host);
     Int32 port;
-    // uri->GetPort(&port);
+    uri->GetPort(&port);
     String scheme;
-    // uri->GetScheme(&scheme);
+    uri->GetScheme(&scheme);
     AutoPtr<IHttpHost> httpHost;
     // CHttpHost::New(host, port, scheme, (IHttpHost**)&httpHost);
 
     // set up request
     String uriPath;
-    // uri->GetPath(&uriPath);
+    uri->GetPath(&uriPath);
     req/* = new Request(method, httpHost, mProxyHost, uriPath, bodyProvider,
         bodyLength, eventHandler, headers)*/;
 
@@ -485,23 +485,21 @@ ECode RequestQueue::QueueSynchronousRequest(
 #if 0 // TODO: Translate codes below
     if (HttpLog::LOGV) {
         String suri;
-        // uri->ToString(&suri);
+        uri->ToString(&suri);
         HttpLog::V(String("RequestQueue.dispatchSynchronousRequest ") + suri);
     }
 
     AutoPtr<IHttpHost> host;
     String shost;
-    // TODO:
-    // uri->GetHost(&shost);
+    uri->GetHost(&shost);
     Int32 port;
-    // uri->GetPort(&port);
+    uri->GetPort(&port);
     String scheme;
-    // uri->GetScheme(&scheme);
-    // CHttpHost::New(shost, port, scheme, (IHttpHost**)&host);
+    uri->GetScheme(&scheme);
+    CHttpHost::New(shost, port, scheme, (IHttpHost**)&host);
 
     String uriPath;
-    // uri->GetPath(&uriPath);
-    // TODO:
+    uri->GetPath(&uriPath);
     Request* req/* = new Request(method, host, mProxyHost, uriPath,
         bodyProvider, bodyLength, eventHandler, headers)*/;
 
@@ -544,8 +542,7 @@ ECode RequestQueue::DetermineHost(
     // HttpsConnection rather than HttpConnection if the proxy address is
     // not secure.
     String schemeName;
-    // TODO:
-    // host->GetSchemeName(&schemeName);
+    host->GetSchemeName(&schemeName);
     if (mProxyHost == NULL || schemeName.Equals("https")) {
         return host;
     }
@@ -558,9 +555,10 @@ ECode RequestQueue::RequestsPending(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mLock);
-
-    return !mPending.IsEmpty();
+    synchronized(this) {
+        *result = !mPending.IsEmpty();
+    }
+    return NOERROR;
 #endif
 }
 
@@ -568,89 +566,116 @@ ECode RequestQueue::Dump()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    HttpLog::V(String("dump()"));
-    StringBuilder dump;
-    Int32 count = 0;
-    // Iterator<Map.Entry<HttpHost, LinkedList<Request>>> iter;
+    synchronized(this) {
+        HttpLog::V(String("dump()"));
+        StringBuilder dump;
+        Int32 count = 0;
+        AutoPtr<IIterator> iter;
 
-    // // mActivePool.log(dump);
-
-    // if (!mPending.isEmpty()) {
-    //     iter = mPending.entrySet().iterator();
-    //     while (iter.hasNext()) {
-    //         Map.Entry<HttpHost, LinkedList<Request>> entry = iter.next();
-    //         String hostName = entry.getKey().getHostName();
-    //         StringBuilder line = new StringBuilder("p" + count++ + " " + hostName + " ");
-
-    //         LinkedList<Request> reqList = entry.getValue();
-    //         ListIterator reqIter = reqList.listIterator(0);
-    //         while (iter.hasNext()) {
-    //             Request request = (Request)iter.next();
-    //             line.append(request + " ");
-    //         }
-    //         dump.append(line);
-    //         dump.append("\n");
-    //     }
-    // }
-    HttpLog::V(dump->ToString());
+        // mActivePool.log(dump);
+        Boolean isEmpty;
+        if (IMap::Probe(mPending)->IsEmpty(&isEmpty), !isEmpty) {
+            AutoPtr<ISet> entrySet;
+            mPending->GetEntrySet((ISet**)&entrySet);
+            entrySet->GetIterator((IIterator**)&iter);
+            Boolean hasNext;
+            while (iter->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> obj;
+                iter->GetNext((IInterface**)&obj);
+                AutoPtr<IMapEntry> entry = IMapEntry::Probe(obj);
+                obj = NULL;
+                entry->GetKey((IInterface**)&obj);
+                String hostName;
+                IHttpHost::Probe(obj)->GetHostName(&hostName);
+                StringBuilder line("p");
+                line.Append(count++);
+                line.Append(" ");
+                line.Append(hostName);
+                line.Append(" ");
+                AutoPtr<ILinkedList> reqList;
+                obj = NULL;
+                entry->GetValue((IInterface**)&obj);
+                AutoPtr<IListIterator> reqIter;
+                ILinkedList::Probe(obj)->GetListIterator(0, (IListIterator**)&regIter);
+                    // while (iter.hasNext()) {
+                while (regIter->HasNext(&hasNext), hasNext) {
+                        // Request request = (Request)iter.next();
+                    obj = NULL;
+                    regIter->GetNext((IInterface**)&obj);
+                    String s;
+                    IObject::Probe(obj)->ToString(&s);
+                    line.Append(s + " ");
+                }
+                dump += line;
+                dump.Append("\n");
+            }
+        }
+        String s;
+        dump->ToString(&s);
+        HttpLog::V(s);
+    }
 
     return NOERROR;
 #endif
 }
 
 ECode RequestQueue::GetRequest(
-    /* [out] */ IRequest** result)
+    /* [out] */ IRequest** req)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(req);
 
-    AutoLock lock(mLock);
+    synchronized(this) {
 
-    Request* ret = NULL;
+        AutoPtr<IRequest> ret;
 
-    if (!mPending.IsEmpty()) {
-        ret = RemoveFirst(mPending);
+        if (!GetValue(mPending, ILinkedHashMap::IsEmpty)) {
+            RemoveFirst(mPending, (IRequest**)&ret);
+        }
+        if (HttpLog::LOGV) {
+            HttpLog::V("RequestQueue.getRequest() => %s", GetValue(IObject::Probe(ret), IObject::ToString).string());
+        }
+        *req = ret;
     }
-    if (HttpLog::LOGV) {
-        String sret;
-        ret->ToString(&sret);
-        HttpLog::V(String("RequestQueue.getRequest() => ") + sret);
-    }
-    *req = ret;
     return NOERROR;
 #endif
 }
 
 ECode RequestQueue::GetRequest(
     /* [in] */ IHttpHost* host,
-    /* [out] */ IRequest** result)
+    /* [out] */ IRequest** req)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(req);
 
-    AutoLock lock(mLock);
+    synchronized(this) {
+        AutoPtr<IRequest> ret;
 
-    Request* ret = NULL;
-
-    HashMap<AutoPtr<IHttpHost>, AutoPtr<RequestList> >::Iterator it = mPending.Find(host);
-    if (it != mPending.End()) {
-        AutoPtr<RequestList> reqList = &(it->mSecond);
-        // TODO:
-        // ret = reqList->RemoveFirst();
-        if (reqList->IsEmpty()) {
-            // mPending.Erase(it);
+        if (GetValue(mPending, ILinkedHashMap::ContainsKey, IInterface::Probe(host))) {
+            AutoPtr<IInterface> obj;
+            mPending->Get(IInterface::Probe(host), (IInterface**)&obj);
+            AutoPtr<ILinkedList> reqList = ILinkedList::Probe(obj);
+            obj = NULL;
+            reqList->RemoveFirst((IInterface**)&obj);
+            ret = IRequest::Probe(obj);
+            if (GetValue(reqList, ILinkedList::IsEmpty) {
+                mPending->Remove(IInterface::Probe(host));
+            }
         }
+        if (HttpLog::LOGV) {
+            String shost;
+            // host->ToString(&shost);
+            String sret;
+            // ret->ToString(&sret);
+            HttpLog::V("RequestQueue.getRequest(%s) => %s",
+                    GetValue(IObject::Probe(host), IObject::ToString).string(),
+                    GetValue(IObject::Probe(ret), IObject::ToString).string());
+        }
+        *req = ret;
+        REFCOUNT_ADD(*req)
     }
-    if (HttpLog::LOGV) {
-        String shost;
-        // host->ToString(&shost);
-        String sret;
-        // ret->ToString(&sret);
-        HttpLog::V(String("RequestQueue.getRequest(") + shost + String(") => ") + sret);
-    }
-    *req = ret;
     return NOERROR;
 #endif
 }

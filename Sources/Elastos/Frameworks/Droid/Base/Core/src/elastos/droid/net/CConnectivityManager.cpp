@@ -1,11 +1,16 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CConnectivityManager.h"
-#include "elastos/droid/net/CNetworkUtils.h"
+#include "elastos/droid/net/CNetwork.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/net/CNetworkCapabilities.h"
 #include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/CMessenger.h"
+#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/Manifest.h"
 #include "elastos/droid/R.h"
-#include "elastos/droid/Manifest.h" // can't move upper
 
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/AutoLock.h>
@@ -13,22 +18,33 @@
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Internal::Telephony::IITelephony;
 using Elastos::Droid::Internal::Telephony::IPhoneConstants;
-using Elastos::Droid::Net::CNetworkUtils;
+using Elastos::Droid::Net::ECLSID_CLinkProperties;
+using Elastos::Droid::Net::ECLSID_CNetwork;
+using Elastos::Droid::Net::ECLSID_CNetworkCapabilities;
+using Elastos::Droid::Net::ECLSID_CNetworkRequest;
 using Elastos::Droid::Os::CBinder;
+using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::CMessenger;
+using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::EIID_INetworkActivityListener;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::INetworkActivityListener;
 using Elastos::Droid::Os::IServiceManager;
+using Elastos::Droid::Utility::CArrayMap;
 
 using Elastos::Core::IThread;
 using Elastos::Core::StringUtils;
 using Elastos::Net::CInetAddressHelper;
 using Elastos::Net::IInetAddressHelper;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IMap;
 using Elastos::Utility::ISet;
+using Libcore::Net::Event::CNetworkEventDispatcherHelper;
+using Libcore::Net::Event::INetworkEventDispatcher;
+using Libcore::Net::Event::INetworkEventDispatcherHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -41,22 +57,14 @@ CAR_INTERFACE_IMPL(CConnectivityManager, Object, IConnectivityManager)
 AutoPtr<IHashMap> CreateHashMap()
 {
     AutoPtr<IHashMap> rev;
-#if 0 // TODO: Waiting for CHashMap
     CHashMap::New((IHashMap**)&rev);
-#else
-    assert(0);
-#endif
     return rev;
 }
 
 AutoPtr<IAtomicInteger32> CreateAtomicInterger32()
 {
     AutoPtr<IAtomicInteger32> rev;
-#if 0 // TODO: Waiting for CAtomicInteger32
-    CAtomicInterger32::New(0, (IAtomicInteger32**)&rev);
-#else
-    assert(0);
-#endif
+    CAtomicInteger32::New(0, (IAtomicInteger32**)&rev);
     return rev;
 }
 
@@ -74,11 +82,7 @@ const Int32 CConnectivityManager::REQUEST = 2;
 
 CConnectivityManager::CConnectivityManager()
 {
-#if 0 // TODO: Waiting for CArrayMap
     CArrayMap::New((IArrayMap**)&mNetworkActivityListeners);
-#else
-    assert(0);
-#endif
 }
 
 ECode CConnectivityManager::IsNetworkTypeValid(
@@ -218,14 +222,12 @@ ECode CConnectivityManager::GetNetworkPreference(
 ECode CConnectivityManager::GetActiveNetworkInfo(
     /* [out] */ INetworkInfo** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     AutoPtr<INetworkInfo> networkInfo;
     ECode ec = mService->GetActiveNetworkInfo((INetworkInfo**)&networkInfo);
-    if (E_REMOTE_EXCEPTION == ec) {
-        networkInfo = NULL;
-    }
+    if (FAILED(ec)) return NOERROR;
     *result = networkInfo;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -235,14 +237,12 @@ ECode CConnectivityManager::GetActiveNetworkInfoForUid(
     /* [in] */ Int32 uid,
     /* [out] */ INetworkInfo** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     AutoPtr<INetworkInfo> networkInfo;
     ECode ec = mService->GetActiveNetworkInfoForUid(uid, (INetworkInfo**)&networkInfo);
-    if (E_REMOTE_EXCEPTION == ec) {
-        networkInfo = NULL;
-    }
+    if (FAILED(ec)) return NOERROR;
     *result = networkInfo;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -252,14 +252,12 @@ ECode CConnectivityManager::GetNetworkInfo(
     /* [in] */ Int32 networkType,
     /* [out] */ INetworkInfo** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     AutoPtr<INetworkInfo> networkInfo;
     ECode ec = mService->GetNetworkInfo(networkType, (INetworkInfo**)&networkInfo);
-    if (E_REMOTE_EXCEPTION == ec) {
-        networkInfo = NULL;
-    }
+    if (FAILED(ec)) return NOERROR;
     *result = networkInfo;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -269,15 +267,13 @@ ECode CConnectivityManager::GetNetworkInfo(
     /* [in] */ INetwork* network,
     /* [out] */ INetworkInfo** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
     VALIDATE_NOT_NULL(network)
 
     AutoPtr<INetworkInfo> networkInfo;
     ECode ec = mService->GetNetworkInfoForNetwork(network, (INetworkInfo**)&networkInfo);
-    if (E_REMOTE_EXCEPTION == ec) {
-        networkInfo = NULL;
-    }
+    if (FAILED(ec)) return NOERROR;
     *result = networkInfo;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -286,12 +282,12 @@ ECode CConnectivityManager::GetNetworkInfo(
 ECode CConnectivityManager::GetAllNetworkInfo(
     /* [out, callee] */ ArrayOf<INetworkInfo*>** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     AutoPtr<ArrayOf<INetworkInfo*> > outputarray;
     ECode ec = mService->GetAllNetworkInfo((ArrayOf<INetworkInfo*>**)&outputarray);
-    if (E_REMOTE_EXCEPTION == ec) outputarray = NULL;
+    if (FAILED(ec)) return NOERROR;
     *result = outputarray;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -301,12 +297,12 @@ ECode CConnectivityManager::GetNetworkForType(
     /* [in] */ Int32 networkType,
     /* [out] */ INetwork** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     AutoPtr<INetwork> network;
     ECode ec = mService->GetNetworkForType(networkType, (INetwork**)&network);
-    if (E_REMOTE_EXCEPTION == ec) network = NULL;
+    if (FAILED(ec)) return NOERROR;
     *result = network;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -315,12 +311,12 @@ ECode CConnectivityManager::GetNetworkForType(
 ECode CConnectivityManager::GetAllNetworks(
     /* [out] */ ArrayOf<INetwork*>** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
 
     AutoPtr<ArrayOf<INetwork*> > outputarray;
     ECode ec = mService->GetAllNetworks((ArrayOf<INetwork*>**)&outputarray);
-    if (E_REMOTE_EXCEPTION == ec) outputarray = NULL;
+    if (FAILED(ec)) return NOERROR;
     *result = outputarray;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -329,14 +325,12 @@ ECode CConnectivityManager::GetAllNetworks(
 ECode CConnectivityManager::GetProvisioningOrActiveNetworkInfo(
     /* [out] */ INetworkInfo** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
 
     AutoPtr<INetworkInfo> networkInfo;
     ECode ec = mService->GetProvisioningOrActiveNetworkInfo((INetworkInfo**)&networkInfo);
-    if (E_REMOTE_EXCEPTION == ec) {
-        networkInfo = NULL;
-    }
+    if (FAILED(ec)) return NOERROR;
     *result = networkInfo;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -345,12 +339,12 @@ ECode CConnectivityManager::GetProvisioningOrActiveNetworkInfo(
 ECode CConnectivityManager::GetActiveLinkProperties(
     /* [out] */ ILinkProperties** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     AutoPtr<ILinkProperties> linkp;
     ECode ec = mService->GetActiveLinkProperties((ILinkProperties**)&linkp);
-    if (E_REMOTE_EXCEPTION == ec) linkp = NULL;
+    if (FAILED(ec)) return NOERROR;
     *result = linkp;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -360,12 +354,12 @@ ECode CConnectivityManager::GetLinkProperties(
     /* [in] */ Int32 networkType,
     /* [out] */ ILinkProperties** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     AutoPtr<ILinkProperties> linkp;
     ECode ec = mService->GetLinkPropertiesForType(networkType, (ILinkProperties**)&linkp);
-    if (E_REMOTE_EXCEPTION == ec) linkp = NULL;
+    if (FAILED(ec)) return NOERROR;
     *result = linkp;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -375,18 +369,12 @@ ECode CConnectivityManager::GetLinkProperties(
     /* [in] */ INetwork* network,
     /* [out] */ ILinkProperties** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
-    VALIDATE_NOT_NULL(network)
 
     AutoPtr<ILinkProperties> linkp;
-#if 0 // TODO: Waiting for IIConnectivityManager
     ECode ec = mService->GetLinkProperties(network, (ILinkProperties**)&linkp);
-#else
-    ECode ec;
-    assert(0);
-#endif
-    if (E_REMOTE_EXCEPTION == ec) linkp = NULL;
+    if (FAILED(ec)) return NOERROR;
     *result = linkp;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -396,18 +384,13 @@ ECode CConnectivityManager::GetNetworkCapabilities(
     /* [in] */ INetwork* network,
     /* [out] */ INetworkCapabilities** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
     VALIDATE_NOT_NULL(network)
 
     AutoPtr<INetworkCapabilities> networkCapabilities;
-#if 0 // TODO: Waiting for IIConnectivityManager
-    ECode ec = mService->GetLinkProperties(network, (INetworkCapabilities**)&networkCapabilities);
-#else
-    ECode ec;
-    assert(0);
-#endif
-    if (E_REMOTE_EXCEPTION == ec) networkCapabilities = NULL;
+    ECode ec = mService->GetNetworkCapabilities(network, (INetworkCapabilities**)&networkCapabilities);
+    if (FAILED(ec)) return NOERROR;
     *result = networkCapabilities;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -419,11 +402,7 @@ ECode CConnectivityManager::StartUsingNetworkFeature(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-#if 0 // TODO: Waiting for IPhoneConstants
     *result = IPhoneConstants::APN_REQUEST_FAILED;
-#else
-    assert(0);
-#endif
 
     AutoPtr<INetworkCapabilities> netCap;
     FAIL_RETURN(NetworkCapabilitiesForFeature(networkType, feature, (INetworkCapabilities**)&netCap))
@@ -431,11 +410,7 @@ ECode CConnectivityManager::StartUsingNetworkFeature(
         // Log.d(TAG, "Can't satisfy startUsingNetworkFeature for " + networkType + ", " +
                 // feature);
         Logger::D(TAG, (String("Can't satisfy startUsingNetworkFeature for ") + StringUtils::ToString(networkType) + ", " + feature).string());
-#if 0 // TODO: Waiting for IPhoneConstants
         *result = IPhoneConstants::APN_REQUEST_FAILED;
-#else
-        assert(0);
-#endif
         return NOERROR;
     }
 
@@ -480,18 +455,10 @@ ECode CConnectivityManager::StartUsingNetworkFeature(
             Logger::D(TAG, (String("renewing startUsingNetworkFeature request ") + s).string());
             FAIL_RETURN(RenewRequestLocked((LegacyRequest*)IObject::Probe(l.Get())))
             if (lr->mCurrentNetwork != NULL) {
-#if 0 // TODO: Waiting for IPhoneConstants
                 *result = IPhoneConstants::APN_ALREADY_ACTIVE;
-#else
-                assert(0);
-#endif
                 return NOERROR;
             } else {
-#if 0 // TODO: Waiting for IPhoneConstants
-                *result = IPhoneConstants::APN_REQUEST_STARTED;
-#else
-                assert(0);
-#endif
+               *result = IPhoneConstants::APN_REQUEST_STARTED;
                 return NOERROR;
             }
 
@@ -504,20 +471,12 @@ ECode CConnectivityManager::StartUsingNetworkFeature(
         IObject::Probe(request)->ToString(&s);
         // Log.d(TAG, "starting startUsingNetworkFeature for request " + request);
         Logger::D(TAG, (String("starting startUsingNetworkFeature for request ") + s).string());
-#if 0 // TODO: Waiting for IPhoneConstants
         *result = IPhoneConstants::APN_REQUEST_STARTED;
-#else
-        assert(0);
-#endif
         return NOERROR;
     } else {
         // Log.d(TAG, " request Failed");
         Logger::D(TAG, " request Failed");
-#if 0 // TODO: Waiting for IPhoneConstants
         *result = IPhoneConstants::APN_REQUEST_FAILED;
-#else
-        assert(0);
-#endif
         return NOERROR;
     }
 }
@@ -587,7 +546,7 @@ ECode CConnectivityManager::NetworkCapabilitiesForFeature(
     /* [in] */ const String& feature,
     /* [out] */ INetworkCapabilities** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
 
     if (TYPE_MOBILE == networkType) {
@@ -610,11 +569,7 @@ ECode CConnectivityManager::NetworkCapabilitiesForFeature(
             *result = NULL;
         }
         AutoPtr<INetworkCapabilities> netCap;
-#if 0 // TODO: Waiting for CNetworkCapabilities
         CNetworkCapabilities::New((INetworkCapabilities**)&netCap);
-#else
-        assert(0);
-#endif
         AutoPtr<INetworkCapabilities> tmp;
         FAIL_RETURN(netCap->AddTransportType(INetworkCapabilities::TRANSPORT_CELLULAR, (INetworkCapabilities**)&tmp))
         FAIL_RETURN(tmp->AddCapability(cap, (INetworkCapabilities**)&netCap))
@@ -625,11 +580,7 @@ ECode CConnectivityManager::NetworkCapabilitiesForFeature(
     } else if (TYPE_WIFI == networkType) {
         if (feature.Equals("p2p")) {
             AutoPtr<INetworkCapabilities> netCap;
-#if 0 // TODO: Waiting for CNetworkCapabilities
             CNetworkCapabilities::New((INetworkCapabilities**)&netCap);
-#else
-            assert(0);
-#endif
             AutoPtr<INetworkCapabilities> tmp;
             FAIL_RETURN(netCap->AddTransportType(INetworkCapabilities::TRANSPORT_WIFI, (INetworkCapabilities**)&tmp))
             FAIL_RETURN(netCap->AddCapability(INetworkCapabilities::NET_CAPABILITY_WIFI_P2P, (INetworkCapabilities**)&tmp))
@@ -786,7 +737,7 @@ ECode CConnectivityManager::FindRequestForFeature(
     /* [in] */ INetworkCapabilities* netCap,
     /* [out] */ INetworkRequest** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
     VALIDATE_NOT_NULL(netCap)
 
@@ -836,7 +787,7 @@ ECode CConnectivityManager::ExpireRequest(
         }
     }
     // Log.d(TAG, "expireRequest with " + ourSeqNum + ", " + sequenceNum);
-    Logger::D(TAG, (String("expireRequest with ") + StringUtils::ToString(ourSeqNum) + ", " + StringUtils::ToString(sequenceNum)).string());
+    Logger::D(TAG, "expireRequest with %s, %s", StringUtils::ToString(ourSeqNum).string(), StringUtils::ToString(sequenceNum).string());
     return NOERROR;
 }
 
@@ -844,7 +795,7 @@ ECode CConnectivityManager::RequestNetworkForFeatureLocked(
     /* [in] */ INetworkCapabilities* netCap,
     /* [out] */ INetworkRequest** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
     VALIDATE_NOT_NULL(netCap)
 
@@ -899,7 +850,7 @@ ECode CConnectivityManager::RemoveRequestForFeature(
     /* [in] */ INetworkCapabilities* netCap,
     /* [out] */ IConnectivityManagerNetworkCallback** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
     VALIDATE_NOT_NULL(netCap)
 
@@ -926,9 +877,7 @@ ECode CConnectivityManager::RequestRouteToHost(
     *result = FALSE;
 
     AutoPtr<IInetAddress> inetAddress;
-    AutoPtr<INetworkUtils> networkUtilsHelper;
-    CNetworkUtils::AcquireSingleton((INetworkUtils**)&networkUtilsHelper);
-    FAIL_RETURN(networkUtilsHelper->IntToInetAddress(hostAddress, (IInetAddress**)&inetAddress))
+    FAIL_RETURN(NetworkUtils::IntToInetAddress(hostAddress, (IInetAddress**)&inetAddress))
     return RequestRouteToHostAddress(networkType, inetAddress, result);
 }
 
@@ -973,12 +922,12 @@ ECode CConnectivityManager::SetBackgroundDataSetting(
 ECode CConnectivityManager::GetActiveNetworkQuotaInfo(
     /* [out] */ INetworkQuotaInfo** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     AutoPtr<INetworkQuotaInfo> quotaInfo;
     ECode ec = mService->GetActiveNetworkQuotaInfo((INetworkQuotaInfo**)&quotaInfo);
-    if (E_REMOTE_EXCEPTION == ec) quotaInfo = NULL;
+    if (FAILED(ec)) return NOERROR;
     *result = quotaInfo;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -990,31 +939,19 @@ ECode CConnectivityManager::GetMobileDataEnabled(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    AutoPtr<IServiceManager> serviceManager;
-#if 0 // TODO: Waiting for CServiceManager, IServiceManager
-    CServiceManager::AcquireSingleton((IServiceManager**)&serviceManager);
-#else
-    assert(0);
-#endif
-    AutoPtr<IBinder> b;
-    AutoPtr<IInterface> itmp;
-    FAIL_RETURN(serviceManager->GetService(IContext::TELEPHONY_SERVICE, (IInterface**)&itmp))
-    b = IBinder::Probe(itmp);
+    AutoPtr<IInterface> obj = ServiceManager::GetService(IContext::TELEPHONY_SERVICE);
+    AutoPtr<IBinder> b = IBinder::Probe(obj);
     if (b != NULL) {
         // try {
         //     ITelephony it = ITelephony.Stub.asInterface(b);
         //     return it.getDataEnabled();
         // } catch (RemoteException e) { }
         AutoPtr<IITelephony> it = IITelephony::Probe(b);
-#if 0 // TODO: Waiting for IITelephony
         ECode ec = it->GetDataEnabled(result);
         if (E_REMOTE_EXCEPTION == ec) {
             return NOERROR;
         }
         return ec;
-#else
-        assert(0);
-#endif
     }
     *result = FALSE;
     return NOERROR;
@@ -1031,16 +968,8 @@ ECode CConnectivityManager::GetNetworkManagementService(
             *result = mNMService;
             return NOERROR;
         }
-        AutoPtr<IBinder> b;
-        AutoPtr<IServiceManager> sm;
-#if 0 // TODO: Waiting for CServiceManager
-        CServiceManager::AcquireSingleton((IServiceManager**)&sm);
-#else
-        assert(0);
-#endif
-        AutoPtr<IInterface> itmp;
-        FAIL_RETURN(sm->GetService(IContext::NETWORKMANAGEMENT_SERVICE, (IInterface**)&itmp))
-        b = IBinder::Probe(itmp);
+        AutoPtr<IInterface> obj = ServiceManager::GetService(IContext::TELEPHONY_SERVICE);
+        AutoPtr<IBinder> b = IBinder::Probe(obj);
         mNMService = INetworkManagementService::Probe(b);
         *result = mNMService;
     }
@@ -1163,11 +1092,13 @@ ECode CConnectivityManager::From(
     /* [in] */ IContext* ctx,
     /* [out] */ IConnectivityManager** result)
 {
-    VALIDATE_NOT_NULL(*result);
-    *result = NULL;
+    VALIDATE_NOT_NULL(result);
 
-   ASSERT_SUCCEEDED(ctx->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&result));
-   return NOERROR;
+    AutoPtr<IInterface> obj;
+    ctx->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&obj);
+    *result = IConnectivityManager::Probe(obj);
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode CConnectivityManager::EnforceTetherChangePermission(
@@ -1182,19 +1113,11 @@ ECode CConnectivityManager::EnforceTetherChangePermission(
     if(stringArray->GetLength() == 2) {
         // Have a provisioning app - must only let system apps (which check this app)
         // turn on tethering
-#if 0 // TODO: Waiting for Manifest.cpp add to sources
         FAIL_RETURN(context->EnforceCallingOrSelfPermission(
                 Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, String("ConnectivityService")))
-#else
-        assert(0);
-#endif
     } else {
-#if 0 // TODO: Waiting for Manifest.cpp add to sources
         FAIL_RETURN(context->EnforceCallingOrSelfPermission(
                 Elastos::Droid::Manifest::permission::CHANGE_NETWORK_STATE, String("ConnectivityService")))
-#else
-        assert(0);
-#endif
     }
     return NOERROR;
 }
@@ -1202,62 +1125,57 @@ ECode CConnectivityManager::EnforceTetherChangePermission(
 ECode CConnectivityManager::GetTetherableIfaces(
     /* [out, callee] */ ArrayOf<String>** result)
 {
-    VALIDATE_NOT_NULL(*result);
-    *result = NULL;
+    VALIDATE_NOT_NULL(result);
 
     ECode ec = mService->GetTetherableIfaces(result);
-    if (E_REMOTE_EXCEPTION == ec) {
+    if (FAILED(ec)) {
         *result = ArrayOf<String>::Alloc(0);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
-    return ec;
+    return NOERROR;
 }
 
 ECode CConnectivityManager::GetTetheredIfaces(
     /* [out, callee] */ ArrayOf<String>** result)
 {
-    VALIDATE_NOT_NULL(*result);
-    *result = NULL;
+    VALIDATE_NOT_NULL(result);
 
-    AutoPtr <ArrayOf<String> > outputArray;
     ECode ec = mService->GetTetheredIfaces(result);
-    if (E_REMOTE_EXCEPTION == ec) {
+    if (FAILED(ec)) {
         *result = ArrayOf<String>::Alloc(0);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
-    return ec;
+    return NOERROR;
 }
 
 ECode CConnectivityManager::GetTetheringErroredIfaces(
     /* [out, callee] */ ArrayOf<String>** result)
 {
-    VALIDATE_NOT_NULL(*result);
-    *result = NULL;
+    VALIDATE_NOT_NULL(result);
 
     ECode ec = mService->GetTetheringErroredIfaces(result);
-    if (E_REMOTE_EXCEPTION == ec) {
+    if (FAILED(ec)) {
         *result = ArrayOf<String>::Alloc(0);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
-    return ec;
+    return NOERROR;
 }
 
 ECode CConnectivityManager::GetTetheredDhcpRanges(
-    /* [out] */ ArrayOf<String>** result)
+    /* [out, callee] */ ArrayOf<String>** result)
 {
-    VALIDATE_NOT_NULL(*result)
-    *result = NULL;
+    VALIDATE_NOT_NULL(result)
 
-    ECode ec = mService->GetTetheredDhcpRanges((ArrayOf<String>**)&result);
-    if (E_REMOTE_EXCEPTION == ec) {
+    ECode ec = mService->GetTetheredDhcpRanges(result);
+    if (FAILED(ec)) {
         *result = ArrayOf<String>::Alloc(0);
         REFCOUNT_ADD(*result)
         return NOERROR;
     }
-    return ec;
+    return NOERROR;
 }
 
 ECode  CConnectivityManager::Tether(
@@ -1307,46 +1225,43 @@ ECode CConnectivityManager::IsTetheringSupported(
 ECode CConnectivityManager::GetTetherableUsbRegexs(
     /* [out, callee] */ ArrayOf<String>** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    ECode ec = mService->GetTetherableUsbRegexs(result);
-    if (E_REMOTE_EXCEPTION == ec) {
-        *result = ArrayOf<String>::Alloc(0);
-        REFCOUNT_ADD(*result);
-        return NOERROR;
-    }
-    return ec;
+    AutoPtr <ArrayOf<String> > outputArray;
+    ECode ec = mService->GetTetherableUsbRegexs((ArrayOf<String>**)&outputArray);
+    if (E_REMOTE_EXCEPTION == ec) outputArray = ArrayOf<String>::Alloc(0);
+    *result = outputArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 ECode CConnectivityManager::GetTetherableWifiRegexs(
     /* [out, callee] */ ArrayOf<String>** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    ECode ec = mService->GetTetherableWifiRegexs(result);
-    if (E_REMOTE_EXCEPTION == ec) {
-        *result = ArrayOf<String>::Alloc(0);
-        REFCOUNT_ADD(*result);
-        return NOERROR;
-    }
-    return ec;
+    AutoPtr<ArrayOf<String> > outputArray;
+    ECode ec = mService->GetTetherableWifiRegexs((ArrayOf<String>**)&outputArray);
+    if (E_REMOTE_EXCEPTION == ec) outputArray = ArrayOf<String>::Alloc(0);
+    *result = outputArray;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 ECode CConnectivityManager::GetTetherableBluetoothRegexs(
     /* [out, callee] */ ArrayOf<String>** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    ECode ec = mService->GetTetherableBluetoothRegexs(result);
-    if (E_REMOTE_EXCEPTION == ec) {
-        *result = ArrayOf<String>::Alloc(0);
-        REFCOUNT_ADD(*result);
-        return NOERROR;
-    }
-    return ec;
+    AutoPtr<ArrayOf<String> > outputArray;
+    ECode ec = mService->GetTetherableBluetoothRegexs((ArrayOf<String>**)&outputArray);
+    if (E_REMOTE_EXCEPTION == ec) outputArray = ArrayOf<String>::Alloc(0);
+    *result = outputArray.Get();
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 ECode CConnectivityManager::SetUsbTethering(
@@ -1417,7 +1332,7 @@ ECode CConnectivityManager::SetGlobalProxy(
 ECode CConnectivityManager::GetGlobalProxy(
     /* [out] */ IProxyInfo** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     ECode ec = mService->GetGlobalProxy(result);
@@ -1431,7 +1346,7 @@ ECode CConnectivityManager::GetGlobalProxy(
 ECode CConnectivityManager::GetProxy(
     /* [out] */ IProxyInfo** result)
 {
-    VALIDATE_NOT_NULL(*result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     ECode ec = mService->GetProxy(result);
@@ -1588,7 +1503,7 @@ ECode CConnectivityManager::GetLinkQualityInfo(
     /* [in] */ Int32 networkType,
     /* [out] */ ILinkQualityInfo** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
 
     // try {
@@ -1792,11 +1707,7 @@ ECode CConnectivityManager::IncCallbackHandlerRefCount()
         if (1 == num) {
             // TODO - switch this over to a ManagerThread or expire it when done
             AutoPtr<IHandlerThread> callbackThread;
-#if 0 // TODO: Waiting for CHandlerThread
-            CHandlerThread::New("ConnectivityManager", (IHandlerThread**)&callbackThread);
-#else
-            assert(0);
-#endif
+            CHandlerThread::New(String("ConnectivityManager"), (IHandlerThread**)&callbackThread);
             FAIL_RETURN(IThread::Probe(callbackThread)->Start())
             AutoPtr<ILooper> looper;
             FAIL_RETURN(callbackThread->GetLooper((ILooper**)&looper))
@@ -1829,7 +1740,7 @@ ECode CConnectivityManager::SendRequestForNetwork(
         /* [in] */ Int32 legacyType,
         /* [out] */ INetworkRequest** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
 
     if (NULL == networkCallback) {
@@ -1985,33 +1896,25 @@ ECode CConnectivityManager::SetProcessDefaultNetwork(
         network->GetNetId(&netId);
     }
     Int32 netBound;
-    AutoPtr<INetworkUtils> networkUtilsHelper;
-    CNetworkUtils::AcquireSingleton((INetworkUtils**)&networkUtilsHelper);
-    FAIL_RETURN(networkUtilsHelper->GetNetworkBoundToProcess(&netBound))
+    FAIL_RETURN(NetworkUtils::GetNetworkBoundToProcess(&netBound))
     if (netBound == netId) {
         *result = TRUE;
         return NOERROR;
     }
     Boolean b;
-    FAIL_RETURN(networkUtilsHelper->BindProcessToNetwork(netId, &b))
+    FAIL_RETURN(NetworkUtils::BindProcessToNetwork(netId, &b))
     if (b) {
         // Must flush DNS cache as new network may have different DNS resolutions.
         AutoPtr<IInetAddressHelper> inetAddressHelper;
-#if 0 // TODO: Waiting for CInetAddressHelper
         CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetAddressHelper);
-#else
-        assert(0);
-#endif
         FAIL_RETURN(inetAddressHelper->ClearDnsCache())
-#if 0 // TODO: Waiting for NetworkEventDispatcher
-        AutoPtr<INetworkEventDispatcherHelper>  networkEventDispatcherHelper;
+        // Must flush socket pool as idle sockets will be bound to previous network and may
+        // cause subsequent fetches to be performed on old network.
+        AutoPtr<INetworkEventDispatcherHelper> networkEventDispatcherHelper;
         CNetworkEventDispatcherHelper::AcquireSingleton((INetworkEventDispatcherHelper**)&networkEventDispatcherHelper);
         AutoPtr<INetworkEventDispatcher> networkEventDispatcher;
         FAIL_RETURN(networkEventDispatcherHelper->GetInstance((INetworkEventDispatcher**)&networkEventDispatcher))
         FAIL_RETURN(networkEventDispatcher->OnNetworkConfigurationChanged())
-#else
-        assert(0);
-#endif
         *result = TRUE;
         return NOERROR;
     }
@@ -2022,22 +1925,16 @@ ECode CConnectivityManager::SetProcessDefaultNetwork(
 ECode CConnectivityManager::GetProcessDefaultNetwork(
     /* [out] */ INetwork** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
 
-    AutoPtr<INetworkUtils> networkUtilsHelper;
-    CNetworkUtils::AcquireSingleton((INetworkUtils**)&networkUtilsHelper);
     Int32 netId;
-    networkUtilsHelper->GetNetworkBoundToProcess(&netId);
+    NetworkUtils::GetNetworkBoundToProcess(&netId);
     if (NETID_UNSET == netId) {
         *result = NULL;
         return NOERROR;
     }
-#if 0 // TODO: Waiting for CNetwork
     CNetwork::New(netId, result);
-#else
-    assert(0);
-#endif
     return NOERROR;
 }
 
@@ -2052,9 +1949,7 @@ ECode CConnectivityManager::SetProcessDefaultNetworkForHostResolution(
     if (NULL == network) {
         network->GetNetId(&netId);
     }
-    AutoPtr<INetworkUtils> networkUtilsHelper;
-    CNetworkUtils::AcquireSingleton((INetworkUtils**)&networkUtilsHelper);
-    networkUtilsHelper->BindProcessToNetworkForHostResolution(netId, result);
+    NetworkUtils::BindProcessToNetworkForHostResolution(netId, result);
     return NOERROR;
 }
 
@@ -2086,20 +1981,12 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
     switch (what) {
         case CALLBACK_PRECHECK: {
             AutoPtr<IInterface> request;
-#if 0 // TODO: Waiting for NetworkRequest
-            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
-#else
-            assert(0);
-#endif
+            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-#if 0 // TODO: Waiting for class Network
-                GetObject(message, ECLSID_Network, (IInterface**)&network);
-#else
-                assert(0);
-#endif
+                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 callbacks->OnPreCheck(INetwork::Probe(network));
             } else {
                 // Log.e(TAG, "callback not found for PRECHECK message");
@@ -2109,20 +1996,12 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_AVAILABLE: {
             AutoPtr<IInterface> request;
-#if 0 // TODO: Waiting for NetworkRequest
-            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
-#else
-            assert(0);
-#endif
+            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-#if 0 // TODO: Waiting for class Network
-                GetObject(message, ECLSID_Network, (IInterface**)&network);
-#else
-                assert(0);
-#endif
+                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 callbacks->OnAvailable(INetwork::Probe(network));
             } else {
                 // Log.e(TAG, "callback not found for AVAILABLE message");
@@ -2132,21 +2011,13 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_LOSING: {
             AutoPtr<IInterface> request;
-#if 0 // TODO: Waiting for NetworkRequest
-            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
-#else
-            assert(0);
-#endif
+            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
 
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-#if 0 // TODO: Waiting for class Network
-                GetObject(message, ECLSID_Network, (IInterface**)&network);
-#else
-                assert(0);
-#endif
+                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 Int32 arg1;
                 message->GetArg1(&arg1);
                 callbacks->OnLosing(INetwork::Probe(network), arg1);
@@ -2158,20 +2029,12 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_LOST: {
             AutoPtr<IInterface> request;
-#if 0 // TODO: Waiting for NetworkRequest
-            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
-#else
-            assert(0);
-#endif
+            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-#if 0 // TODO: Waiting for class Network
-                GetObject(message, ECLSID_Network, (IInterface**)&network);
-#else
-                assert(0);
-#endif
+                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 callbacks->OnLost(INetwork::Probe(network));
             } else {
                 // Log.e(TAG, "callback not found for LOST message");
@@ -2181,22 +2044,14 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_UNAVAIL: {
             AutoPtr<IInterface> request;
-#if 0 // TODO: Waiting for NetworkRequest
-            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
-#else
-            assert(0);
-#endif
+            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
             AutoPtr<IInterface> callbacks = NULL;
             synchronized(mCallbackMap) {
                 mCallbackMap->Get(request, (IInterface**)&callbacks);
             }
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-#if 0 // TODO: Waiting for class Network
-                GetObject(message, ECLSID_Network, (IInterface**)&network);
-#else
-                assert(0);
-#endif
+                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 IConnectivityManagerNetworkCallback::Probe(callbacks)->OnUnavailable();
             } else {
                 // Log.e(TAG, "callback not found for UNAVAIL message");
@@ -2206,26 +2061,14 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_CAP_CHANGED: {
             AutoPtr<IInterface> request;
-#if 0 // TODO: Waiting for NetworkRequest
-            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
-#else
-            assert(0);
-#endif
+            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-#if 0 // TODO: Waiting for Network
-                GetObject(message, ECLSID_Network, (IInterface**)&network);
-#else
-                assert(0);
-#endif
+                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 AutoPtr<IInterface> cap;
-#if 0 // TODO: Waiting for NetworkCapabilities
-                GetObject(message, ECLSID_NetworkCapabilities, (IInterface**)&cap);
-#else
-            assert(0);
-#endif
+                GetObject(message, ECLSID_CNetworkCapabilities, (IInterface**)&cap);
                 callbacks->OnCapabilitiesChanged(INetwork::Probe(network), INetworkCapabilities::Probe(cap));
             } else {
                 // Log.e(TAG, "callback not found for CAP_CHANGED message");
@@ -2235,26 +2078,14 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_IP_CHANGED: {
             AutoPtr<IInterface> request;
-#if 0 // TODO: Waiting for NetworkRequest
-            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
-#else
-            assert(0);
-#endif
+            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-#if 0 // TODO: Waiting for class Network
-                GetObject(message, ECLSID_Network, (IInterface**)&network);
-#else
-                assert(0);
-#endif
+                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 AutoPtr<IInterface> lp;
-#if 0 // TODO: Waiting for LinkProperties
-                GetObject(message, ECLSID_LinkProperties, (IInterface**)&lp);
-#else
-                assert(0);
-#endif
+                GetObject(message, ECLSID_CLinkProperties, (IInterface**)&lp);
 
                 callbacks->OnLinkPropertiesChanged(INetwork::Probe(network), ILinkProperties::Probe(lp));
             } else {
@@ -2265,11 +2096,7 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_RELEASED: {
             AutoPtr<IInterface> req;
-#if 0 // TODO: Waiting for NetworkRequest
-            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&req)
-#else
-            assert(0);
-#endif
+            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&req);
             AutoPtr<IInterface> callbacks = NULL;
             synchronized(mCallbackMap) {
                 mCallbackMap->Remove(req, (IInterface**)&callbacks);
@@ -2348,21 +2175,21 @@ ECode CConnectivityManager::CallbackHandler::GetObject(
     /* [in] */ ClassID c,
     /* [out] */ IInterface** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
     VALIDATE_NOT_NULL(msg)
 
+    // TODO: Waiting for the method to get name from classid
+    assert(0);
     return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Waiting for the method to get name from classid
-    return msg.getData().getParcelable(c.getSimpleName());
-#endif
+    // return msg.getData().getParcelable(c.getSimpleName());
 }
 
 ECode CConnectivityManager::CallbackHandler::GetCallbacks(
     /* [in] */ INetworkRequest* req,
    /* [out] */ IConnectivityManagerNetworkCallback** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
     VALIDATE_NOT_NULL(req)
 

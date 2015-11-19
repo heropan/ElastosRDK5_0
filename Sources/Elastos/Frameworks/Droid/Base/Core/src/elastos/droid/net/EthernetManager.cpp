@@ -1,5 +1,6 @@
 
 #include "elastos/droid/net/EthernetManager.h"
+#include "elastos/droid/net/CIpConfiguration.h"
 
 namespace Elastos {
 namespace Droid {
@@ -7,50 +8,47 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(EthernetManager, Object, IEthernetManager)
 
-const String EthernetManager::TAG = String("EthernetManager");
+const String EthernetManager::TAG("EthernetManager");
 
 ECode EthernetManager::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IIEthernetManager* service)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mContext = context;
-        mService = service;
-#endif
+    mContext = context;
+    mService = service;
+    return NOERROR;
 }
 
 ECode EthernetManager::GetConfiguration(
     /* [out] */ IIpConfiguration** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (mService == null) {
-            return new IpConfiguration();
-        }
-        try {
-            return mService.getConfiguration();
-        } catch (RemoteException e) {
-            return new IpConfiguration();
-        }
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (mService == NULL) {
+        return CIpConfiguration::New(result);
+    }
+        // try {
+    ECode ec = mService->GetConfiguration(result);
+        // } catch (RemoteException e) {
+    if (ec == E_REMOTE_EXCEPTION) {
+        return CIpConfiguration::New(result);
+    }
+        // }
+    return ec;
 }
 
 ECode EthernetManager::SetConfiguration(
     /* [in] */ IIpConfiguration* config)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (mService == null) {
-            return;
-        }
-        try {
-            mService.setConfiguration(config);
-        } catch (RemoteException e) {
-        }
-
-#endif
+    if (mService == NULL) {
+        return NOERROR;
+    }
+        // try {
+    ECode ec = mService->SetConfiguration(config);
+        // } catch (RemoteException e) {
+    if (ec == E_REMOTE_EXCEPTION) return NOERROR;
+        // }
+    return ec;
 }
 
 } // namespace Net

@@ -74,11 +74,9 @@ public:
 
     /** Implement the Parcelable interface */
     CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
+        /* [in] */ IParcel* dest);
 
     CARAPI ReadFromParcel(
-        /* [in] */ IDhcpResults* dhcpResults,
         /* [in] */ IParcel* in);
 
     // Utils for jni population - false on success

@@ -6,6 +6,7 @@ using Elastos::Droid::Utility::ILog;
 using Elastos::Droid::Utility::CArrayMap;
 
 using Elastos::IO::Charset::IStandardCharsets;
+using Elastos::Net::EIID_IInetAddress;
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::IMap;
@@ -23,7 +24,6 @@ NsdServiceInfo::NsdServiceInfo()
     : mPort(0)
 {
     CArrayMap::New((IArrayMap**)&mTxtRecord);
-    REFCOUNT_ADD(mTxtRecord)
 }
 
 ECode NsdServiceInfo::constructor()
@@ -235,27 +235,42 @@ ECode NsdServiceInfo::GetTxtRecord(
     }
     AutoPtr<ArrayOf<Byte> > txtRecord = ArrayOf<Byte>::Alloc(txtRecordSize);
     Int32 ptr = 0;
-        for (Map.Entry<String, byte[]> entry : mTxtRecord.entrySet()) {
-            String key = entry.getKey();
-            byte[] value = entry.getValue();
-            // One byte to record the length of this key/value pair.
-            txtRecord[ptr++] = (byte) (key.length() + (value == null ? 0 : value.length) + 1);
-            // The key, in US-ASCII.
-            // Note: use the StandardCharsets const here because it doesn't raise exceptions and we
-            // already know the key is ASCII at this point.
-            System.arraycopy(key.getBytes(StandardCharsets.US_ASCII), 0, txtRecord, ptr,
-                    key.length());
-            ptr += key.length();
-            // US-ASCII '=' character.
-            txtRecord[ptr++] = (byte)'=';
-            // The value, as any raw bytes.
-            if (value != null) {
-                System.arraycopy(value, 0, txtRecord, ptr, value.length);
-                ptr += value.length;
-            }
+    AutoPtr<ISet> entrySet;
+    mTxtRecord->GetEntrySet((ISet**)&entrySet);
+    AutoPtr<ArrayOf<IInterface*> > array;
+    entrySet->ToArray((ArrayOf<IInterface*>**)&array);
+    for (Int32 i = 0; i < array->GetLength(); ++i) {
+        AutoPtr<IMapEntry> entry;
+        entry = IMapEntry::Probe((*array)[i]);
+        AutoPtr<IInterface> iKey;
+        entry->GetKey((IInterface**)&iKey);
+        String key;
+        ICharSequence::Probe(iKey)->ToString(&key);
+        AutoPtr<IInterface> iValue;
+        entry->GetValue((IInterface**)&iValue);
+        AutoPtr<IArrayOf> value = IArrayOf::Probe(iValue);
+        // One byte to record the length of this key/value pair.
+        txtRecord[ptr++] = (Byte) (key.GetLength + (value == NULL ? 0 : value->GetLength()) + 1);
+        // The key, in US-ASCII.
+        // Note: use the StandardCharsets const here because it doesn't raise exceptions and we
+        // already know the key is ASCII at this point.
+            // System.arraycopy(key.getBytes(StandardCharsets.US_ASCII), 0, txtRecord, ptr, key.length());
+        txtRecord->Copy(ptr, key.GetBytes(IStandardCharsets::US_ASCII), 0, key.GetLength());
+        ptr += key.GetLength();
+        // US-ASCII '=' character.
+        txtRecord[ptr++] = (Byte)'=';
+        // The value, as any raw bytes.
+        if (value != NULL) {
+                // System.arraycopy(value, 0, txtRecord, ptr, value.length);
+            Int32 length;
+            value->GetLength(&length);
+            txtRecord->Copy(ptr, (ArrayOf<Byte>*)value, 0, length);
+            ptr += length;
         }
-        return txtRecord;
-
+    }
+    *result = txtRecord;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 #endif
 }
 

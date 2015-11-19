@@ -7,7 +7,6 @@
 using Elastos::Droid::Utility::IArrayMap;
 
 using Elastos::Net::IInetAddress;
-using Elastos::Net::EIID_IInetAddress;
 using Elastos::Utility::IMap;
 
 namespace Elastos {

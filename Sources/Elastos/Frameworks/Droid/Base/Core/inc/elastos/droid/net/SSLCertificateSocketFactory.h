@@ -54,8 +54,13 @@ class SSLCertificateSocketFactory
     , public ISSLCertificateSocketFactory
 {
 private:
-    class InnerSub_TrustManager {
+    class InnerSub_TrustManager
+        : public Object
+        , public ITrustManager
+    {
     public:
+        CAR_INTERFACE_DECL()
+
         CARAPI GetAcceptedIssuers(
             /* [out, callee] */ ArrayOf<IX509Certificate*>** result);
 
