@@ -127,4 +127,5 @@ module
     //==========================================================================
     // Elastos Droid hardware exception codes (Family: 0x6E - EF)
     const E_INVALID_PARAMETER_EXCEPTION                 =  0xEF010000;
+    const E_CAMERA_RUNTIME_EXCEPTION                    =  0xEF020000;
 }

@@ -157,14 +157,19 @@ module
     merge("hardware/camera2/params/StreamConfigurationDuration.car");
 
     merge("hardware/camera2/utils/ArrayUtils.car");
+    merge("hardware/camera2/utils/BinderHolder.car");
     merge("hardware/camera2/utils/CloseableLock.car");
     merge("hardware/camera2/utils/HashCodeHelpers.car");
     merge("hardware/camera2/utils/ListUtils.car");
+    merge("hardware/camera2/utils/LongParcelable.car");
     merge("hardware/camera2/utils/ParamsUtils.car");
     merge("hardware/camera2/utils/SizeAreaComparator.car");
     merge("hardware/camera2/utils/TaskDrainer.car");
     merge("hardware/camera2/utils/TaskSingleDrainer.car");
     merge("hardware/camera2/utils/TypeReference.car");
+    merge("hardware/camera2/utils/CameraBinderDecorator.car");
+    merge("hardware/camera2/utils/CameraServiceBinderDecorator.car");
+    merge("hardware/camera2/utils/Decorator.car");
 
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.IPoint;
@@ -174,9 +179,12 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Media.IAudioFormat;
     interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Utility.IRational;
     interface Elastos.Droid.Utility.ISize;
 
+    using interface Elastos.Core.IComparator;
+    using interface Elastos.IO.ICloseable;
     using interface Elastos.Utility.IUUID;
 
     namespace Elastos {
@@ -424,6 +432,74 @@ module
         }
 
     } // namespace Params
+
+    namespace Utils {
+        singleton class CArrayUtils {
+            interface IArrayUtils;
+        }
+
+        class CCloseableLock {
+            constructor();
+
+            constructor(
+                [in] String name);
+
+            interface ICloseableLock;
+            interface ICloseable;
+        }
+
+        singleton class CHashCodeHelpers {
+            interface IHashCodeHelpers;
+        }
+
+        singleton class CListUtils {
+            interface IListUtils;
+        }
+
+        singleton class CParamsUtils {
+            interface IParamsUtils;
+        }
+
+        class CSizeAreaComparator {
+            interface ISizeAreaComparator;
+            interface IComparator;
+        }
+
+        singleton class CSizeAreaComparatorHelper {
+            interface ISizeAreaComparatorHelper;
+        }
+
+        class CTaskDrainer {
+            constructor();
+
+            constructor(
+                [in] IHandler* handler,
+                [in] ITaskDrainerDrainListener* listener);
+
+            constructor(
+                [in] IHandler* handler,
+                [in] ITaskDrainerDrainListener* listener,
+                [in] String name);
+
+            interface ITaskDrainer;
+        }
+
+        class CTaskSingleDrainer {
+            constructor();
+
+            constructor(
+                [in] IHandler* handler,
+                [in] ITaskDrainerDrainListener* listener);
+
+            constructor(
+                [in] IHandler* handler,
+                [in] ITaskDrainerDrainListener* listener,
+                [in] String name);
+
+            interface ITaskSingleDrainer;
+        }
+    } //namespace Utils
+
     } // namespace Camera2
 
     namespace Location {

@@ -8,11 +8,11 @@ module
     namespace Utils {
     /**
      * Helper class to release a lock at the end of a try-with-resources statement.
+     *
+     * @invoke
+     * IInterface AutoCloseable
      */
-    /*
-    * invoke AutoCloseable
-    */
-    interface IScopedLock {
+    interface ICloseableLockScopedLock {
     }
 
     /**
@@ -29,10 +29,10 @@ module
      *
      * <p>If the lock is closed, all future and current acquires will immediately return {@code null}.
      * </p>
+     *
+     * @invoke
+     * IInterface AutoCloseable
      */
-    /*
-    * invoke AutoCloseable
-    */
     interface ICloseableLock {
         /**
          * Try to acquire the lock non-exclusively, blocking until the operation completes.
@@ -53,7 +53,7 @@ module
          * @throws IllegalStateException if this thread is already holding an exclusive lock
          */
         AcquireLock(
-            [out] IScopedLock** outsl);
+            [out] ICloseableLockScopedLock** outsl);
 
         /**
          * Try to acquire the lock exclusively, blocking until all other threads release their locks.
@@ -74,7 +74,7 @@ module
          *          if an attempt is made to acquire an exclusive lock while already holding a lock
          */
         AcquireExclusiveLock(
-            [out] IScopedLock** outsl);
+            [out] ICloseableLockScopedLock** outsl);
 
         /**
          * Release a single lock that was acquired.

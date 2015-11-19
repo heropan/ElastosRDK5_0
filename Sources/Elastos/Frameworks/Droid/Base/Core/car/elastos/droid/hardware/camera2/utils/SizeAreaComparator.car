@@ -15,10 +15,13 @@ module
      * Comparator for {@link Size} objects by the area.
      *
      * <p>This comparator totally orders by rectangle area. Tie-breaks on width.</p>
+     *
+     * @invoke
+     * interface IComparator
      */
-    /*
-    * invoke IComparator
-    */
+    interface ISizeAreaComparator {
+    }
+
     interface ISizeAreaComparatorHelper {
         /**
          * Get the largest {@code Size} from the list by comparing each size's area

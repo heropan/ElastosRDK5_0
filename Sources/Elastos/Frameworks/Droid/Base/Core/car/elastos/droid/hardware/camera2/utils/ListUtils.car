@@ -16,7 +16,7 @@ module
      * (e.g. {@code false}, or {@code null}).</p>
      */
     [deprecated]
-    interface IListUtilsHelper {
+    interface IListUtils {
 
         /** Return {@code} true if the {@code list} contains the {@code needle}. */
         ListContains(

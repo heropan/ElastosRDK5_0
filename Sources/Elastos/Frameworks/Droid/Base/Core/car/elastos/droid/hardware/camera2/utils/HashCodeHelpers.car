@@ -6,6 +6,7 @@ module
     namespace Hardware {
     namespace Camera2 {
     namespace Utils {
+
     /**
      * Provide hashing functions using the Modified Bernstein hash
      */

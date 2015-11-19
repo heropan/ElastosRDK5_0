@@ -8,11 +8,12 @@ module
     namespace Hardware {
     namespace Camera2 {
     namespace Utils {
+
     /**
      * Various assortment of array utilities.
      */
     [deprecated]
-    interface IArrayUtilsHelper {
+    interface IArrayUtils {
 
         /** Return the index of {@code needle} in the {@code array}, or else {@code -1} */
         GetArrayIndex(

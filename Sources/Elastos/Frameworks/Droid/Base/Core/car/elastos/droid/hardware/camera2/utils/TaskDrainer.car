@@ -7,6 +7,33 @@ module
     namespace Camera2 {
     namespace Utils {
 
+    /**
+     * Fired asynchronously after draining has begun with {@link TaskDrainer#beginDrain}
+     * <em>and</em> all tasks that were started have finished.
+     */
+    interface ITaskDrainerDrainListener {
+        /** All tasks have fully finished draining; there will be no more pending tasks. */
+        OnDrained();
+    }
+
+    /**
+     * Keep track of multiple concurrent tasks starting and finishing by their key;
+     * allow draining existing tasks and figuring out when all tasks have finished
+     * (and new ones won't begin).
+     *
+     * <p>The initial state is to allow all tasks to be started and finished. A task may only be started
+     * once, after which it must be finished before starting again. Likewise, finishing a task
+     * that hasn't been started is also not allowed.</p>
+     *
+     * <p>When draining begins, no more new tasks can be started. This guarantees that at some
+     * point when all the tasks are finished there will be no more collective new tasks,
+     * at which point the {@link DrainListener#onDrained} callback will be invoked.</p>
+     *
+     *
+     * @param <T>
+     *          a type for the key that will represent tracked tasks;
+     *          must implement {@code Object#equals}
+     */
     interface ITaskDrainer {
         /**
          * Mark an asynchronous task as having started.
