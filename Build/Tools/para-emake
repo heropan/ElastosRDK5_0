@@ -306,7 +306,7 @@ para_emake_check_existence() {
 
 build_emake() {
     cd "$src_path"
-    emake $opt_make_opts
+    local CLOSE_EMAKE_TIMES=1;emake $opt_make_opts
 }
 
 build_eco() {
@@ -540,6 +540,7 @@ para_emake_build() {
 }
 
 para_emake_process_targets() {
+    local START_TIME=`date +%s`
     is_disabled check_point || check_point_init
 
     trap on_user_interrupt INT
@@ -558,6 +559,11 @@ para_emake_process_targets() {
         LD_LIBRARY_PATH="$build_tools_path:$LD_LIBRARY_PATH" \
         para_emake_$target
     done
+    local ELAPSED_TIME=$(( `date +%s`-$START_TIME ))
+    local HOURS=`echo $ELAPSED_TIME/3600 | bc`
+    local MINUTES=`echo $ELAPSED_TIME/60%60 | bc`
+    local SECONDS=`echo $ELAPSED_TIME%60 | bc`
+    echo "Para-emake Build finished, elapsed time: $HOURS Hours, $MINUTES Minutes, $SECONDS Seconds."
 }
 
 parse_args "$@"
