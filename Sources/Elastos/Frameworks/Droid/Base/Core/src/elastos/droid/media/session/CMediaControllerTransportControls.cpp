@@ -23,14 +23,14 @@ CMediaControllerTransportControls::~CMediaControllerTransportControls()
 ECode CMediaControllerTransportControls::constructor(
     /* [in] */ IMediaController * host)
 {
-    mHost = host;
+    mHost = (CMediaController*)host;
     return NOERROR;
 }
 
 ECode CMediaControllerTransportControls::Play()
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->Play();
+    return mHost->mSessionBinder->Play();
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling play.", e);
     // }
@@ -46,24 +46,24 @@ ECode CMediaControllerTransportControls::PlayFromMediaId(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->PlayFromMediaId(mediaId, extras);
+    return mHost->mSessionBinder->PlayFromMediaId(mediaId, extras);
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling play(" + mediaId + ").", e);
     // }
 }
 
 ECode CMediaControllerTransportControls::PlayFromSearch(
-    /* [in] */ const String& query,
+    /* [in] */ const String& _query,
     /* [in] */ IBundle * extras)
 {
-    String str = query;
-    if (str == NULL) {
+    String query = _query;
+    if (query.IsNull()) {
         // This is to remain compatible with
         // INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH
-        str = "";
+        query = "";
     }
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->PlayFromSearch(str, extras);
+    return mHost->mSessionBinder->PlayFromSearch(query, extras);
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling play(" + query + ").", e);
     // }
@@ -73,7 +73,7 @@ ECode CMediaControllerTransportControls::SkipToQueueItem(
     /* [in] */ Int64 id)
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->SkipToQueueItem(id);
+    return mHost->mSessionBinder->SkipToQueueItem(id);
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling skipToItem(" + id + ").", e);
     // }
@@ -82,7 +82,7 @@ ECode CMediaControllerTransportControls::SkipToQueueItem(
 ECode CMediaControllerTransportControls::Pause()
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->Pause();
+    return mHost->mSessionBinder->Pause();
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling pause.", e);
     // }
@@ -91,7 +91,7 @@ ECode CMediaControllerTransportControls::Pause()
 ECode CMediaControllerTransportControls::Stop()
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->Stop();
+    return mHost->mSessionBinder->Stop();
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling stop.", e);
     // }
@@ -101,7 +101,7 @@ ECode CMediaControllerTransportControls::SeekTo(
     /* [in] */ Int64 pos)
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->SeekTo(pos);
+    return mHost->mSessionBinder->SeekTo(pos);
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling seekTo.", e);
     // }
@@ -110,7 +110,7 @@ ECode CMediaControllerTransportControls::SeekTo(
 ECode CMediaControllerTransportControls::FastForward()
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->FastForward();
+    return mHost->mSessionBinder->FastForward();
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling fastForward.", e);
     // }
@@ -119,7 +119,7 @@ ECode CMediaControllerTransportControls::FastForward()
 ECode CMediaControllerTransportControls::SkipToNext()
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->Next();
+    return mHost->mSessionBinder->Next();
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling next.", e);
     // }
@@ -128,7 +128,7 @@ ECode CMediaControllerTransportControls::SkipToNext()
 ECode CMediaControllerTransportControls::Rewind()
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->Rewind();
+    return mHost->mSessionBinder->Rewind();
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling rewind.", e);
     // }
@@ -137,7 +137,7 @@ ECode CMediaControllerTransportControls::Rewind()
 ECode CMediaControllerTransportControls::SkipToPrevious()
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->Previous();
+    return mHost->mSessionBinder->Previous();
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling previous.", e);
     // }
@@ -147,7 +147,7 @@ ECode CMediaControllerTransportControls::SetRating(
     /* [in] */ IRating * rating)
 {
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->Rate(rating);
+    return mHost->mSessionBinder->Rate(rating);
     // } catch (RemoteException e) {
     //     Log.wtf(TAG, "Error calling rate.", e);
     // }
@@ -175,12 +175,11 @@ ECode CMediaControllerTransportControls::SendCustomAction(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // try {
-    return ((CMediaController*)mHost.Get())->mSessionBinder->SendCustomAction(action, args);
+    return mHost->mSessionBinder->SendCustomAction(action, args);
     // } catch (RemoteException e) {
     //     Log.d(TAG, "Dead object in sendCustomAction.", e);
     // }
 }
-
 
 } // namespace Session
 } // namespace Media

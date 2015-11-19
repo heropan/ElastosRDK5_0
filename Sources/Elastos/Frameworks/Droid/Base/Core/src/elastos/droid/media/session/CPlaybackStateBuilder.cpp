@@ -3,11 +3,11 @@
 #include "elastos/droid/media/session/CPlaybackState.h"
 #include "elastos/droid/os/SystemClock.h"
 
+using Elastos::Droid::Os::SystemClock;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
-using Elastos::Droid::Os::SystemClock;
 
 namespace Elastos {
 namespace Droid {
@@ -64,100 +64,73 @@ ECode CPlaybackStateBuilder::SetState(
     /* [in] */ Int32 state,
     /* [in] */ Int64 position,
     /* [in] */ Float playbackSpeed,
-    /* [in] */ Int64 updateTime,
-    /* [out] */ IPlaybackStateBuilder ** result)
+    /* [in] */ Int64 updateTime)
 {
-    VALIDATE_NOT_NULL(result)
     mState = state;
     mPosition = position;
     mUpdateTime = updateTime;
     mSpeed = playbackSpeed;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode CPlaybackStateBuilder::SetState(
     /* [in] */ Int32 state,
     /* [in] */ Int64 position,
-    /* [in] */ Float playbackSpeed,
-    /* [out] */ IPlaybackStateBuilder ** result)
+    /* [in] */ Float playbackSpeed)
 {
-    return SetState(state, position, playbackSpeed, SystemClock::GetElapsedRealtime(), result);
+    return SetState(state, position, playbackSpeed, SystemClock::GetElapsedRealtime());
 }
 
 ECode CPlaybackStateBuilder::SetActions(
-    /* [in] */ Int64 actions,
-    /* [out] */ IPlaybackStateBuilder ** result)
+    /* [in] */ Int64 actions)
 {
-    VALIDATE_NOT_NULL(result)
     mActions = actions;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode CPlaybackStateBuilder::AddCustomAction(
     /* [in] */ const String& action,
     /* [in] */ const String& name,
-    /* [in] */ Int32 icon,
-    /* [out] */ IPlaybackStateBuilder ** result)
+    /* [in] */ Int32 icon)
 {
     AutoPtr<ICharSequence> csq;
     CString::New(name, (ICharSequence**)&csq);
     AutoPtr<IPlaybackStateCustomAction> customAction;
     CPlaybackStateCustomAction::New(action, csq, icon, NULL
         , (IPlaybackStateCustomAction**)&customAction);
-    return AddCustomAction(customAction, result);
+    return AddCustomAction(customAction);
 }
 
 ECode CPlaybackStateBuilder::AddCustomAction(
-    /* [in] */ IPlaybackStateCustomAction * customAction,
-    /* [out] */ IPlaybackStateBuilder ** result)
+    /* [in] */ IPlaybackStateCustomAction * customAction)
 {
-    VALIDATE_NOT_NULL(result)
-    *result = NULL;
     if (customAction == NULL) {
         // throw new IllegalArgumentException(
         //         "You may not add a null CustomAction to PlaybackState.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mCustomActions->Add(customAction);
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode CPlaybackStateBuilder::SetBufferedPosition(
-    /* [in] */ Int64 bufferedPosition,
-    /* [out] */ IPlaybackStateBuilder ** result)
+    /* [in] */ Int64 bufferedPosition)
 {
-    VALIDATE_NOT_NULL(result)
     mBufferedPosition = bufferedPosition;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode CPlaybackStateBuilder::SetActiveQueueItemId(
-    /* [in] */ Int64 id,
-    /* [out] */ IPlaybackStateBuilder ** result)
+    /* [in] */ Int64 id)
 {
-    VALIDATE_NOT_NULL(result)
     mActiveItemId = id;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode CPlaybackStateBuilder::SetErrorMessage(
-    /* [in] */ ICharSequence * error,
-    /* [out] */ IPlaybackStateBuilder ** result)
+    /* [in] */ ICharSequence * error)
 {
-    VALIDATE_NOT_NULL(result)
     mErrorMessage = error;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

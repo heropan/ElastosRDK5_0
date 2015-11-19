@@ -5,9 +5,10 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IResultReceiver;
-using Elastos::Droid::Content::IIntent;
 
 namespace Elastos {
 namespace Droid {
@@ -20,6 +21,7 @@ namespace Session {
 CarClass(CMediaSessionCallbackStub)
     , public Object
     , public IISessionCallback
+    , public IBinder
 {
 public:
     CMediaSessionCallbackStub();
@@ -86,9 +88,11 @@ public:
     CARAPI OnSetVolumeTo(
         /* [in] */ Int32 value);
 
-private:
-    AutoPtr<IMediaSession> mMediaSession;
+    CARAPI ToString(
+        /* [out] */ String* str);
 
+private:
+    AutoPtr<IWeakReference> mMediaSession;
 };
 
 } // namespace Session

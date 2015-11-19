@@ -63,7 +63,6 @@ public:
 private:
     AutoPtr<IMediaDescription> mDescription;
     Int64 mId;
-
 };
 
 } // namespace Session

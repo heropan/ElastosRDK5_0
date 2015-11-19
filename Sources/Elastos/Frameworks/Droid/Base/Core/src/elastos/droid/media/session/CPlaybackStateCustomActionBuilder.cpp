@@ -49,13 +49,10 @@ ECode CPlaybackStateCustomActionBuilder::constructor(
 }
 
 ECode CPlaybackStateCustomActionBuilder::SetExtras(
-    /* [in] */ IBundle * extras,
-    /* [out] */ IPlaybackStateCustomActionBuilder ** result)
+    /* [in] */ IBundle * extras)
 {
-    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(extras)
     mExtras = extras;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -65,9 +62,6 @@ ECode CPlaybackStateCustomActionBuilder::Build(
     VALIDATE_NOT_NULL(result)
     return CPlaybackStateCustomAction::New(mAction, mName, mIcon, mExtras, result);
 }
-
-
-
 
 } // namespace Session
 } // namespace Media

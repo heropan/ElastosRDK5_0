@@ -38,9 +38,9 @@ ECode CMediaSessionQueueItem::constructor(
 ECode CMediaSessionQueueItem::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    AutoPtr<IInterface> obj;
     source->ReadInt64(&mId);
-    source->ReadInterfacePtr((Handle32*)(IInterface**)&obj);
+    AutoPtr<IInterface> obj;
+    source->ReadInterfacePtr((Handle32*)&obj);
     mDescription = IMediaDescription::Probe(obj);
     return NOERROR;
 }
@@ -85,10 +85,6 @@ ECode CMediaSessionQueueItem::ToString(
     //         ", Id=" + mId + " }";
     return NOERROR;
 }
-
-
-
-
 
 } // namespace Session
 } // namespace Media

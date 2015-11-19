@@ -1142,11 +1142,13 @@ module
         constructor(
             [in] IMediaSession* session);
 
-        interface IMediaSessionCallbackStub;
         interface IISessionCallback;
+        interface IBinder;
     }
 
     class CMediaSessionCallback {
+        constructor();
+
         interface IMediaSessionCallback;
     }
 

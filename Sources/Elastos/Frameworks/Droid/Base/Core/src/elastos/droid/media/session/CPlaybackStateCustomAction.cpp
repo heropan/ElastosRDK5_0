@@ -1,6 +1,8 @@
 #include "elastos/droid/media/session/CPlaybackStateCustomAction.h"
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/Objects.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Utility::Objects;
 
 namespace Elastos {
@@ -13,8 +15,7 @@ CAR_INTERFACE_IMPL_2(CPlaybackStateCustomAction, Object, IPlaybackStateCustomAct
 CAR_OBJECT_IMPL(CPlaybackStateCustomAction)
 
 CPlaybackStateCustomAction::CPlaybackStateCustomAction()
-    : mAction(String(NULL))
-    , mIcon(0)
+    : mIcon(0)
 {
 }
 
@@ -38,12 +39,13 @@ ECode CPlaybackStateCustomAction::constructor(
 ECode CPlaybackStateCustomAction::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    AutoPtr<IInterface> obj;
     source->ReadString(&mAction);
-    source->ReadInterfacePtr((Handle32*)(IInterface**)&obj);
+    AutoPtr<IInterface> obj;
+    source->ReadInterfacePtr((Handle32*)&obj);
     mName = ICharSequence::Probe(obj);
     source->ReadInt32(&mIcon);
-    source->ReadInterfacePtr((Handle32*)(IInterface**)&obj);
+    obj = NULL;
+    source->ReadInterfacePtr((Handle32*)&obj);
     mExtras = IBundle::Probe(obj);
     return NOERROR;
 }
@@ -96,13 +98,18 @@ ECode CPlaybackStateCustomAction::ToString(
     /* [out] */ String * result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = String("Action:") + mAction;
+    StringBuilder sb("Action:");
+    sb.Append(mAction);
     String str;
     mName->ToString(&str);
-    *result = *result + "mName='" + str + ", mIcon=" + mIcon;
+    sb.Append(" mName=");
+    sb.Append(str);
+    sb.Append(", mIcon=");
+    sb.Append(mIcon);
     // mExtras->ToString(&str);
-    // *result = *result + ", mExtras=" + str;
-    return NOERROR;
+    // sb.Append(", mExtras=");
+    // sb.Append(str);
+    return sb.ToString(result);
 }
 
 } // namespace Session

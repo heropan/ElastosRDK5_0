@@ -41,7 +41,7 @@ module
          * @hide
          */
         CreateSession(
-            [in] IMediaSessionCallbackStub * cbStub,
+            [in] IISessionCallback * cbStub,
             [in] String tag,
             [in] Int32 userId,
             [out] IISession ** result);

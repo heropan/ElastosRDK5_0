@@ -21,7 +21,8 @@ CMediaSessionCallbackStub::~CMediaSessionCallbackStub()
 ECode CMediaSessionCallbackStub::constructor(
     /* [in] */ IMediaSession * session)
 {
-    mMediaSession = session;
+    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(session);
+    wrs->GetWeakReference((IWeakReference**)&mMediaSession);
     return NOERROR;
 }
 
@@ -30,8 +31,10 @@ ECode CMediaSessionCallbackStub::OnCommand(
     /* [in] */ IBundle * args,
     /* [in] */ IResultReceiver * cb)
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->PostCommand(command, args, cb);
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->PostCommand(command, args, cb);
     }
     return NOERROR;
 }
@@ -42,21 +45,25 @@ ECode CMediaSessionCallbackStub::OnMediaButton(
     /* [in] */ IResultReceiver * cb)
 {
     // try {
-        if (mMediaSession != NULL) {
-            ((CMediaSession*)mMediaSession.Get())->DispatchMediaButton(mediaButtonIntent);
-        }
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchMediaButton(mediaButtonIntent);
+    }
     // } finally {
-        if (cb != NULL) {
-            cb->Send(sequenceNumber, NULL);
-        }
+    if (cb != NULL) {
+        cb->Send(sequenceNumber, NULL);
+    }
     // }
     return NOERROR;
 }
 
 ECode CMediaSessionCallbackStub::OnPlay()
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchPlay();
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchPlay();
     }
     return NOERROR;
 }
@@ -65,8 +72,10 @@ ECode CMediaSessionCallbackStub::OnPlayFromMediaId(
     /* [in] */ const String& mediaId,
     /* [in] */ IBundle * extras)
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchPlayFromMediaId(mediaId, extras);
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchPlayFromMediaId(mediaId, extras);
     }
     return NOERROR;
 }
@@ -75,8 +84,10 @@ ECode CMediaSessionCallbackStub::OnPlayFromSearch(
     /* [in] */ const String& query,
     /* [in] */ IBundle * extras)
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchPlayFromSearch(query, extras);
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchPlayFromSearch(query, extras);
     }
     return NOERROR;
 }
@@ -84,56 +95,70 @@ ECode CMediaSessionCallbackStub::OnPlayFromSearch(
 ECode CMediaSessionCallbackStub::OnSkipToTrack(
     /* [in] */ Int64 id)
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchSkipToItem(id);
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchSkipToItem(id);
     }
     return NOERROR;
 }
 
 ECode CMediaSessionCallbackStub::OnPause()
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchPause();
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchPause();
     }
     return NOERROR;
 }
 
 ECode CMediaSessionCallbackStub::OnStop()
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchStop();
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchStop();
     }
     return NOERROR;
 }
 
 ECode CMediaSessionCallbackStub::OnNext()
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchNext();
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchNext();
     }
     return NOERROR;
 }
 
 ECode CMediaSessionCallbackStub::OnPrevious()
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchPrevious();
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchPrevious();
     }
     return NOERROR;
 }
 
 ECode CMediaSessionCallbackStub::OnFastForward()
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchFastForward();
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchFastForward();
     }
     return NOERROR;
 }
 
 ECode CMediaSessionCallbackStub::OnRewind()
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchRewind();
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchRewind();
     }
     return NOERROR;
 }
@@ -141,8 +166,10 @@ ECode CMediaSessionCallbackStub::OnRewind()
 ECode CMediaSessionCallbackStub::OnSeekTo(
     /* [in] */ Int64 pos)
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchSeekTo(pos);
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchSeekTo(pos);
     }
     return NOERROR;
 }
@@ -150,8 +177,10 @@ ECode CMediaSessionCallbackStub::OnSeekTo(
 ECode CMediaSessionCallbackStub::OnRate(
     /* [in] */ IRating * rating)
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchRate(rating);
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchRate(rating);
     }
     return NOERROR;
 }
@@ -160,8 +189,10 @@ ECode CMediaSessionCallbackStub::OnCustomAction(
     /* [in] */ const String& action,
     /* [in] */ IBundle * args)
 {
-    if (mMediaSession != NULL) {
-        ((CMediaSession*)mMediaSession.Get())->DispatchCustomAction(action, args);
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        ((CMediaSession*)ms.Get())->DispatchCustomAction(action, args);
     }
     return NOERROR;
 }
@@ -169,9 +200,11 @@ ECode CMediaSessionCallbackStub::OnCustomAction(
 ECode CMediaSessionCallbackStub::OnAdjustVolume(
     /* [in] */ Int32 direction)
 {
-    if (mMediaSession != NULL) {
-        if (((CMediaSession*)mMediaSession.Get())->mVolumeProvider != NULL) {
-            ((CMediaSession*)mMediaSession.Get())->mVolumeProvider->OnAdjustVolume(direction);
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        if (((CMediaSession*)ms.Get())->mVolumeProvider != NULL) {
+            ((CMediaSession*)ms.Get())->mVolumeProvider->OnAdjustVolume(direction);
         }
     }
     return NOERROR;
@@ -180,14 +213,23 @@ ECode CMediaSessionCallbackStub::OnAdjustVolume(
 ECode CMediaSessionCallbackStub::OnSetVolumeTo(
     /* [in] */ Int32 value)
 {
-    if (mMediaSession != NULL) {
-        if (((CMediaSession*)mMediaSession.Get())->mVolumeProvider != NULL) {
-            ((CMediaSession*)mMediaSession.Get())->mVolumeProvider->OnSetVolumeTo(value);
+    if (mMediaSession.Get() != NULL) {
+        AutoPtr<IMediaSession> ms;
+        mMediaSession->Resolve(EIID_IMediaSession, (IInterface**)&ms);
+        if (((CMediaSession*)ms.Get())->mVolumeProvider != NULL) {
+            ((CMediaSession*)ms.Get())->mVolumeProvider->OnSetVolumeTo(value);
         }
     }
     return NOERROR;
 }
 
+ECode CMediaSessionCallbackStub::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = "CMediaSessionCallbackStub";
+    return NOERROR;
+}
 
 } // namespace Session
 } // namespace Media

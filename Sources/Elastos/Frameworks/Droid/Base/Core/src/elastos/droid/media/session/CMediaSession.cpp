@@ -1,24 +1,24 @@
+#include "elastos/droid/content/pm/CParceledListSlice.h"
+#include "elastos/droid/media/session/CMediaController.h"
 #include "elastos/droid/media/session/CMediaSession.h"
-#include "elastos/droid/media/session/CMediaSessionToken.h"
 #include "elastos/droid/media/session/CMediaSessionCallback.h"
 #include "elastos/droid/media/session/CMediaSessionCallbackStub.h"
-#include "elastos/droid/media/session/CMediaController.h"
+#include "elastos/droid/media/session/CMediaSessionToken.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CUserHandleHelper.h"
-#include "elastos/droid/content/pm/CParceledListSlice.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CString;
-using Elastos::Core::IInteger64;
-using Elastos::Core::CInteger64;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Os::CHandler;
-using Elastos::Droid::Os::IUserHandleHelper;
-using Elastos::Droid::Os::CUserHandleHelper;
-using Elastos::Droid::Content::Pm::IParceledListSlice;
 using Elastos::Droid::Content::Pm::CParceledListSlice;
+using Elastos::Droid::Content::Pm::IParceledListSlice;
 using Elastos::Droid::Media::IRating;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::CUserHandleHelper;
+using Elastos::Droid::Os::IUserHandleHelper;
+using Elastos::Core::CString;
+using Elastos::Core::CInteger64;
+using Elastos::Core::IInteger64;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -51,20 +51,20 @@ CMediaSession::Command::Command(
     /* [in] */ const String& command,
     /* [in] */ IBundle * extras,
     /* [in] */ IResultReceiver * stub)
+    : mCommand(command)
+    , mExtras(extras)
+    , mStub(stub)
 {
-    this->command = command;
-    this->extras = extras;
-    this->stub = stub;
 }
 
 CMediaSession::CallbackMessageHandler::CallbackMessageHandler(
     /* [in] */ CMediaSession* host,
     /* [in] */ ILooper* looper,
     /* [in] */ IMediaSessionCallback * callback)
+    : Handler(looper, NULL, TRUE)
+    , mCallback(callback)
+    , mHost(host)
 {
-    Handler(looper, NULL, TRUE);
-    mCallback = callback;
-    mHost = host;
 }
 
 ECode CMediaSession::CallbackMessageHandler::HandleMessage(
@@ -76,65 +76,80 @@ ECode CMediaSession::CallbackMessageHandler::HandleMessage(
     msg->GetObj((IInterface**)&obj);
     AutoPtr<IBundle> data;
     msg->GetData((IBundle**)&data);
-    AutoPtr<Command> cmd;
-    String str;
-    AutoPtr<ICharSequence> cs;
-    AutoPtr<IInteger64> n;
-    Int64 i;
-    Boolean b;
 
     switch (what) {
-        case MSG_PLAY:
+        case MSG_PLAY: {
             mCallback->OnPlay();
             break;
-        case MSG_PLAY_MEDIA_ID:
+        }
+        case MSG_PLAY_MEDIA_ID: {
+            String str;
             ICharSequence::Probe(obj)->ToString(&str);
             mCallback->OnPlayFromMediaId(str, data);
             break;
-        case MSG_PLAY_SEARCH:
+        }
+        case MSG_PLAY_SEARCH: {
+            String str;
             ICharSequence::Probe(obj)->ToString(&str);
             mCallback->OnPlayFromSearch(str, data);
             break;
-        case MSG_SKIP_TO_ITEM:
+        }
+        case MSG_SKIP_TO_ITEM: {
+            Int64 i;
             IInteger64::Probe(obj)->GetValue(&i);
             mCallback->OnSkipToQueueItem(i);
             break;
-        case MSG_PAUSE:
+        }
+        case MSG_PAUSE: {
             mCallback->OnPause();
             break;
-        case MSG_STOP:
+        }
+        case MSG_STOP: {
             mCallback->OnStop();
             break;
-        case MSG_NEXT:
+        }
+        case MSG_NEXT: {
             mCallback->OnSkipToNext();
             break;
-        case MSG_PREVIOUS:
+        }
+        case MSG_PREVIOUS: {
             mCallback->OnSkipToPrevious();
             break;
-        case MSG_FAST_FORWARD:
+        }
+        case MSG_FAST_FORWARD: {
             mCallback->OnFastForward();
             break;
-        case MSG_REWIND:
+        }
+        case MSG_REWIND: {
             mCallback->OnRewind();
             break;
-        case MSG_SEEK_TO:
+        }
+        case MSG_SEEK_TO: {
+            Int64 i;
             IInteger64::Probe(obj)->GetValue(&i);
             mCallback->OnSeekTo(i);
             break;
-        case MSG_RATE:
+        }
+        case MSG_RATE: {
             mCallback->OnSetRating(IRating::Probe(obj));
             break;
-        case MSG_CUSTOM_ACTION:
+        }
+        case MSG_CUSTOM_ACTION: {
+            String str;
             ICharSequence::Probe(obj)->ToString(&str);
             mCallback->OnCustomAction(str, data);
             break;
-        case MSG_MEDIA_BUTTON:
+        }
+        case MSG_MEDIA_BUTTON: {
+            Boolean b;
             mCallback->OnMediaButtonEvent(IIntent::Probe(obj), &b);
             break;
-        case MSG_COMMAND:
-            cmd = (Command*)(IObject*)obj.Get();
-            mCallback->OnCommand(cmd->command, cmd->extras, cmd->stub);
+        }
+        case MSG_COMMAND: {
+            AutoPtr<Command> cmd = (Command*)(IObject*)obj.Get();
+            mCallback->OnCommand(cmd->mCommand, cmd->mExtras, cmd->mStub);
             break;
+        }
     }
     return NOERROR;
 }
@@ -189,9 +204,9 @@ ECode CMediaSession::constructor(
     /* [in] */ IContext * context,
     /* [in] */ const String& tag)
 {
-    Int32 myUserId;
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+    Int32 myUserId;
     helper->GetMyUserId(&myUserId);
     return constructor(context, tag, myUserId);
 }
@@ -210,7 +225,7 @@ ECode CMediaSession::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    CMediaSessionCallbackStub::New(this, (IMediaSessionCallbackStub**)&mCbStub);
+    CMediaSessionCallbackStub::New(this, (IISessionCallback**)&mCbStub);
     AutoPtr<IMediaSessionManager> manager;
     context->GetSystemService(IContext::MEDIA_SESSION_SERVICE, (IInterface**)&manager);
     // try {
@@ -233,7 +248,7 @@ ECode CMediaSession::SetCallback(
 
 ECode CMediaSession::SetCallback(
     /* [in] */ IMediaSessionCallback * callback,
-    /* [in] */ IHandler * handler)
+    /* [in] */ IHandler * _handler)
 {
     synchronized(mLock) {
         if (callback == NULL) {
@@ -248,6 +263,7 @@ ECode CMediaSession::SetCallback(
             // one.
             ((CMediaSessionCallback*)(mCallback->mCallback.Get()))->mSession = NULL;
         }
+        AutoPtr<IHandler> handler = _handler;
         if (handler == NULL) {
             CHandler::New((IHandler**)&handler);
         }
@@ -431,7 +447,7 @@ ECode CMediaSession::SetQueue(
     if(queue != NULL) {
         CParceledListSlice::New(queue, (IParceledListSlice**)&list);
     }
-    return mBinder->SetQueue(queue == NULL ? NULL : list);
+    return mBinder->SetQueue(list);
     // } catch (RemoteException e) {
     //     Log.wtf("Dead object in setQueue.", e);
     // }
@@ -461,7 +477,7 @@ ECode CMediaSession::NotifyRemoteVolumeChanged(
     /* [in] */ IVolumeProvider * provider)
 {
     if (provider == NULL || provider != mVolumeProvider) {
-        Logger::W(TAG, String("Received update from stale volume provider"));
+        Logger::W(TAG, "Received update from stale volume provider");
         return NOERROR;
     }
     // try {

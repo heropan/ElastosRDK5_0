@@ -5,9 +5,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Media::IMediaMetadata;
+using Elastos::Droid::Os::IBundle;
 
 namespace Elastos {
 namespace Droid {

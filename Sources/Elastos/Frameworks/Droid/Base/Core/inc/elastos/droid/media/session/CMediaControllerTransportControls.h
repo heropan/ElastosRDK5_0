@@ -3,6 +3,7 @@
 
 #include "_Elastos_Droid_Media_Session_CMediaControllerTransportControls.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/session/CMediaController.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBundle;
@@ -146,9 +147,8 @@ public:
         /* [in] */ IBundle * args);
 
 private:
-    static String TAG; // = "MediaControllerTransportController";
-    AutoPtr<IMediaController> mHost;
-
+    static String TAG;
+    AutoPtr<CMediaController> mHost;
 };
 
 } // namespace Session

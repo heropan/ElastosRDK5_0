@@ -3,24 +3,24 @@
 
 #include "_Elastos_Droid_Media_Session_CMediaSession.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/Object.h>
 #include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::IList;
-using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::IResultReceiver;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Media::IRating;
 using Elastos::Droid::Media::IAudioAttributes;
-using Elastos::Droid::Media::IVolumeProvider;
 using Elastos::Droid::Media::IMediaMetadata;
+using Elastos::Droid::Media::IRating;
+using Elastos::Droid::Media::IVolumeProvider;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::IResultReceiver;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -64,9 +64,9 @@ private:
             /* [in] */ IResultReceiver * stub);
 
     public:
-        String command;
-        AutoPtr<IBundle> extras;
-        AutoPtr<IResultReceiver> stub;
+        String mCommand;
+        AutoPtr<IBundle> mExtras;
+        AutoPtr<IResultReceiver> mStub;
     };
 
     class CallbackMessageHandler
@@ -99,28 +99,26 @@ private:
             /* [in] */ Int32 arg1);
 
     public:
-        const static Int32 MSG_PLAY; // = 1;
-        const static Int32 MSG_PLAY_MEDIA_ID; // = 2;
-        const static Int32 MSG_PLAY_SEARCH; // = 3;
-        const static Int32 MSG_SKIP_TO_ITEM; // = 4;
-        const static Int32 MSG_PAUSE; // = 5;
-        const static Int32 MSG_STOP; // = 6;
-        const static Int32 MSG_NEXT; // = 7;
-        const static Int32 MSG_PREVIOUS; // = 8;
-        const static Int32 MSG_FAST_FORWARD; // = 9;
-        const static Int32 MSG_REWIND; // = 10;
-        const static Int32 MSG_SEEK_TO; // = 11;
-        const static Int32 MSG_RATE; // = 12;
-        const static Int32 MSG_CUSTOM_ACTION; // = 13;
-        const static Int32 MSG_MEDIA_BUTTON; // = 14;
-        const static Int32 MSG_COMMAND; // = 15;
+        const static Int32 MSG_PLAY;
+        const static Int32 MSG_PLAY_MEDIA_ID;
+        const static Int32 MSG_PLAY_SEARCH;
+        const static Int32 MSG_SKIP_TO_ITEM;
+        const static Int32 MSG_PAUSE;
+        const static Int32 MSG_STOP;
+        const static Int32 MSG_NEXT;
+        const static Int32 MSG_PREVIOUS;
+        const static Int32 MSG_FAST_FORWARD;
+        const static Int32 MSG_REWIND;
+        const static Int32 MSG_SEEK_TO;
+        const static Int32 MSG_RATE;
+        const static Int32 MSG_CUSTOM_ACTION;
+        const static Int32 MSG_MEDIA_BUTTON;
+        const static Int32 MSG_COMMAND;
 
         AutoPtr<IMediaSessionCallback> mCallback;
 
     private:
         CMediaSession* mHost;
-
-
     };
 
 public:
@@ -430,19 +428,14 @@ public:
     AutoPtr<IPlaybackState> mPlaybackState;
 
 private:
-    const static String TAG; // = "MediaSession";
-
-    Object mLock; // = new Object();
-
+    const static String TAG;
+    Object mLock;
     AutoPtr<IMediaSessionToken> mSessionToken;
     AutoPtr<IMediaController> mController;
     AutoPtr<IISession> mBinder;
-    AutoPtr<IMediaSessionCallbackStub> mCbStub;
-
+    AutoPtr<IISessionCallback> mCbStub;
     AutoPtr<CallbackMessageHandler> mCallback;
-
-    Boolean mActive; // = false;
-
+    Boolean mActive;
 };
 
 } // namespace Session

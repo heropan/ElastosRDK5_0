@@ -28,6 +28,8 @@ public:
 
     virtual ~MediaSessionCallback();
 
+    CARAPI constructor();
+
     /**
      * Called when a controller has sent a command to this session.
      * The owner of the session may handle custom commands but is not

@@ -52,7 +52,6 @@ public:
     Int32 mMaxVolume;
     Int32 mCurrentVolume;
     AutoPtr<IAudioAttributes> mAudioAttrs;
-
 };
 
 } // namespace Session

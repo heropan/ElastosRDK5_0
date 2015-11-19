@@ -14,28 +14,28 @@ ECode CPlaybackStateHelper::GetStateFromRccState(
     /* [in] */ Int32 rccState,
     /* [out] */ Int32 * result)
 {
-	return CPlaybackState::GetStateFromRccState(rccState, result);
+    return CPlaybackState::GetStateFromRccState(rccState, result);
 }
 
 ECode CPlaybackStateHelper::GetRccStateFromState(
     /* [in] */ Int32 state,
     /* [out] */ Int32 * result)
 {
-	return CPlaybackState::GetRccStateFromState(state, result);
+    return CPlaybackState::GetRccStateFromState(state, result);
 }
 
 ECode CPlaybackStateHelper::GetActionsFromRccControlFlags(
     /* [in] */ Int32 rccFlags,
     /* [out] */ Int64 * result)
 {
-	return CPlaybackState::GetActionsFromRccControlFlags(rccFlags, result);
+    return CPlaybackState::GetActionsFromRccControlFlags(rccFlags, result);
 }
 
 ECode CPlaybackStateHelper::GetRccControlFlagsFromActions(
     /* [in] */ Int64 actions,
     /* [out] */ Int32 * result)
 {
-	return CPlaybackState::GetRccControlFlagsFromActions(actions, result);
+    return CPlaybackState::GetRccControlFlagsFromActions(actions, result);
 }
 
 } // namespace Session

@@ -1,37 +1,39 @@
 #include "elastos/droid/media/session/CMediaSessionLegacyHelper.h"
 #include "elastos/droid/media/session/CMediaSession.h"
-#include <elastos/utility/logging/Logger.h>
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/utility/CArrayMap.h"
+//TODO: Need CKeyEvent
+// #include "elastos/droid/view/CKeyEvent.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
-#include "elastos/droid/os/CHandler.h"
-#include "elastos/droid/os/Looper.h"
-//TODO: Need CKeyEvent
-// #include "elastos/droid/view/CKeyEvent.h"
-#include "elastos/droid/utility/CArrayMap.h"
-#include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/graphics/CRectF.h"
-#include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CCanvas.h"
-#include "elastos/droid/graphics/CBitmap.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::IMap;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Core::StringUtils;
-using Elastos::Droid::Os::Looper;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::CHandler;
-using Elastos::Droid::Graphics::IRectF;
-using Elastos::Droid::Graphics::CRectF;
-using Elastos::Droid::Graphics::IPaint;
-using Elastos::Droid::Graphics::CPaint;
-using Elastos::Droid::Graphics::CCanvas;
-using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::CCanvas;
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::CRectF;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Utility::CArrayMap;
 //TODO: Need CKeyEvent
 // using Elastos::Droid::View::CKeyEvent;
-using Elastos::Droid::Utility::CArrayMap;
-using Elastos::Droid::Content::CIntent;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::IMap;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -41,9 +43,9 @@ namespace Session {
 CMediaSessionLegacyHelper::MediaButtonListener::MediaButtonListener(
     /* [in] */ IPendingIntent * pi,
     /* [in] */ IContext * context)
+    : mPendingIntent(pi)
+    , mContext(context)
 {
-    mPendingIntent = pi;
-    mContext = context;
 }
 
 ECode CMediaSessionLegacyHelper::MediaButtonListener::OnMediaButtonEvent(
@@ -224,10 +226,11 @@ ECode CMediaSessionLegacyHelper::SessionHolder::Update()
 {
     if (mMediaButtonListener == NULL && mRccListener == NULL) {
         mSession->SetCallback(NULL);
-        mSession->Release();
+        mSession->ReleaseResources();
         mCb = NULL;
         IMap::Probe(mHost->mSessions)->Remove(mPi);
-    } else if (mCb == NULL) {
+    }
+    else if (mCb == NULL) {
         mCb = new SessionCallback(this);
         AutoPtr<IHandler> handler;
         AutoPtr<ILooper> looper = Looper::GetMainLooper();
@@ -273,11 +276,7 @@ ECode CMediaSessionLegacyHelper::GetSession(
 
     AutoPtr<SessionHolder> holder;
     IMap::Probe(mSessions)->Get(pi, (IInterface**)&result);
-    if(holder == NULL) {
-        *result = NULL;
-    } else {
-        *result = holder->mSession;
-    }
+    *result = (holder == NULL) ? NULL : holder->mSession;
     return NOERROR;
 }
 
@@ -334,11 +333,13 @@ ECode CMediaSessionLegacyHelper::SendVolumeKeyEvent(
             // This flag is used when the screen is off to only affect
             // active media
             flags = IAudioManager::FLAG_ACTIVE_MEDIA_ONLY;
-        } else {
+        }
+        else {
             // These flags are consistent with the home screen
             if (up) {
                 flags = IAudioManager::FLAG_PLAY_SOUND | IAudioManager::FLAG_VIBRATE;
-            } else {
+            }
+            else {
                 flags = IAudioManager::FLAG_SHOW_UI | IAudioManager::FLAG_VIBRATE;
             }
         }
@@ -504,10 +505,12 @@ ECode CMediaSessionLegacyHelper::GetOldMetadata(
     Int64 val;
     AutoPtr<IRating> rating;
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_ALBUM, &b);
+    AutoPtr<IBundle> oldMetadata;
+    CBundle::New((IBundle**)&oldMetadata);
 
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_ALBUM, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_ALBUM), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_ALBUM), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_ART, &b);
@@ -515,114 +518,116 @@ ECode CMediaSessionLegacyHelper::GetOldMetadata(
     if (includeArtwork && b) {
         AutoPtr<IBitmap> art;
         metadata->GetBitmap(IMediaMetadata::METADATA_KEY_ART, (IBitmap**)&art);
-        (*result)->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::BITMAP_KEY_ARTWORK),
+        oldMetadata->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::BITMAP_KEY_ARTWORK),
                 IParcelable::Probe(ScaleBitmapIfTooBig(art, artworkWidth, artworkHeight)));
     } else if (includeArtwork && b2) {
         // Fall back to album art if the track art wasn't available
         AutoPtr<IBitmap> art;
         metadata->GetBitmap(IMediaMetadata::METADATA_KEY_ALBUM_ART, (IBitmap**)&art);
-        (*result)->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::BITMAP_KEY_ARTWORK),
+        oldMetadata->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::BITMAP_KEY_ARTWORK),
                 IParcelable::Probe(ScaleBitmapIfTooBig(art, artworkWidth, artworkHeight)));
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_ALBUM_ARTIST, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_ALBUM_ARTIST, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_ALBUMARTIST), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_ALBUMARTIST), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_ARTIST, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_ARTIST, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_ARTIST), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_ARTIST), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_AUTHOR, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_AUTHOR, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_AUTHOR), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_AUTHOR), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_COMPILATION, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_COMPILATION, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_COMPILATION), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_COMPILATION), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_COMPOSER, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_COMPOSER, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_COMPOSER), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_COMPOSER), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_DATE, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_DATE, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_DATE), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_DATE), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_DISC_NUMBER, &b);
     if (b) {
         metadata->GetInt64(IMediaMetadata::METADATA_KEY_DISC_NUMBER, &val);
-        (*result)->PutInt64(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_DISC_NUMBER), val);
+        oldMetadata->PutInt64(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_DISC_NUMBER), val);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_DURATION, &b);
     if (b) {
         metadata->GetInt64(IMediaMetadata::METADATA_KEY_DURATION, &val);
-        (*result)->PutInt64(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_DURATION), val);
+        oldMetadata->PutInt64(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_DURATION), val);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_GENRE, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_GENRE, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_GENRE), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_GENRE), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_NUM_TRACKS, &b);
     if (b) {
         metadata->GetInt64(IMediaMetadata::METADATA_KEY_NUM_TRACKS, &val);
-        (*result)->PutInt64(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_NUM_TRACKS), val);
+        oldMetadata->PutInt64(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_NUM_TRACKS), val);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_RATING, &b);
     if (b) {
         metadata->GetRating(IMediaMetadata::METADATA_KEY_RATING, (IRating**)&rating);
-        (*result)->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::RATING_KEY_BY_OTHERS)
+        oldMetadata->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::RATING_KEY_BY_OTHERS)
             , IParcelable::Probe(rating));
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_USER_RATING, &b);
     if (b) {
         metadata->GetRating(IMediaMetadata::METADATA_KEY_USER_RATING, (IRating**)&rating);
-        (*result)->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::RATING_KEY_BY_USER)
+        oldMetadata->PutParcelable(StringUtils::ToString(IMediaMetadataEditor::RATING_KEY_BY_USER)
             , IParcelable::Probe(rating));
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_TITLE, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_TITLE, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_TITLE), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_TITLE), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_TRACK_NUMBER, &b);
     if (b) {
         metadata->GetInt64(IMediaMetadata::METADATA_KEY_TRACK_NUMBER, &val);
-        (*result)->PutInt64(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_CD_TRACK_NUMBER), val);
+        oldMetadata->PutInt64(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_CD_TRACK_NUMBER), val);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_WRITER, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_WRITER, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_WRITER), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_WRITER), str);
     }
 
     metadata->ContainsKey(IMediaMetadata::METADATA_KEY_YEAR, &b);
     if (b) {
         metadata->GetString(IMediaMetadata::METADATA_KEY_YEAR, &str);
-        (*result)->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_YEAR), str);
+        oldMetadata->PutString(StringUtils::ToString(IMediaMetadataRetriever::METADATA_KEY_YEAR), str);
     }
 
+    *result = oldMetadata;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -642,7 +647,7 @@ AutoPtr<IBitmap> CMediaSessionLegacyHelper::ScaleBitmapIfTooBig(
             Int32 newHeight = Elastos::Core::Math::Round(scale * height);
             Elastos::Droid::Graphics::BitmapConfig newConfig;
             bitmap->GetConfig(&newConfig);
-            if (newConfig == NULL) {
+            if (newConfig == Elastos::Droid::Graphics::BitmapConfig_NONE) {
                 newConfig = Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
             }
             AutoPtr<IBitmap> outBitmap;

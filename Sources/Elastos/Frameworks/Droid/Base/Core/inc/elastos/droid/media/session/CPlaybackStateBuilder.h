@@ -80,8 +80,7 @@ public:
         /* [in] */ Int32 state,
         /* [in] */ Int64 position,
         /* [in] */ Float playbackSpeed,
-        /* [in] */ Int64 updateTime,
-        /* [out] */ IPlaybackStateBuilder ** result);
+        /* [in] */ Int64 updateTime);
 
     /**
      * Set the current state of playback.
@@ -115,8 +114,7 @@ public:
     CARAPI SetState(
         /* [in] */ Int32 state,
         /* [in] */ Int64 position,
-        /* [in] */ Float playbackSpeed,
-        /* [out] */ IPlaybackStateBuilder ** result);
+        /* [in] */ Float playbackSpeed);
 
     /**
      * Set the current actions available on this session. This should use a
@@ -137,8 +135,7 @@ public:
      * @return this
      */
     CARAPI SetActions(
-        /* [in] */ Int64 actions,
-        /* [out] */ IPlaybackStateBuilder ** result);
+        /* [in] */ Int64 actions);
 
     /**
      * Add a custom action to the playback state. Actions can be used to
@@ -163,8 +160,7 @@ public:
     CARAPI AddCustomAction(
         /* [in] */ const String& action,
         /* [in] */ const String& name,
-        /* [in] */ Int32 icon,
-        /* [out] */ IPlaybackStateBuilder ** result);
+        /* [in] */ Int32 icon);
 
     /**
      * Add a custom action to the playback state. Actions can be used to expose additional
@@ -178,8 +174,7 @@ public:
      * @return this
      */
     CARAPI AddCustomAction(
-        /* [in] */ IPlaybackStateCustomAction * customAction,
-        /* [out] */ IPlaybackStateBuilder ** result);
+        /* [in] */ IPlaybackStateCustomAction * customAction);
 
     /**
      * Set the current buffered position in ms. This is the farthest
@@ -191,8 +186,7 @@ public:
      * @return this
      */
     CARAPI SetBufferedPosition(
-        /* [in] */ Int64 bufferedPosition,
-        /* [out] */ IPlaybackStateBuilder ** result);
+        /* [in] */ Int64 bufferedPosition);
 
     /**
      * Set the active item in the play queue by specifying its id. The
@@ -202,8 +196,7 @@ public:
      * @return this
      */
     CARAPI SetActiveQueueItemId(
-        /* [in] */ Int64 id,
-        /* [out] */ IPlaybackStateBuilder ** result);
+        /* [in] */ Int64 id);
 
     /**
      * Set a user readable error message. This should be set when the state
@@ -213,8 +206,7 @@ public:
      * @return this
      */
     CARAPI SetErrorMessage(
-        /* [in] */ ICharSequence * error,
-        /* [out] */ IPlaybackStateBuilder ** result);
+        /* [in] */ ICharSequence * error);
 
     /**
      * Build and return the {@link PlaybackState} instance with these values.
@@ -225,7 +217,7 @@ public:
         /* [out] */ IPlaybackState ** result);
 
 private:
-    AutoPtr<IArrayList> mCustomActions; // = new ArrayList<>();
+    AutoPtr<IArrayList> mCustomActions;
 
     Int32 mState;
     Int64 mPosition;
@@ -234,8 +226,7 @@ private:
     Int64 mActions;
     AutoPtr<ICharSequence> mErrorMessage;
     Int64 mUpdateTime;
-    Int64 mActiveItemId; // = MediaSession.QueueItem.UNKNOWN_ID;
-
+    Int64 mActiveItemId;
 };
 
 } // namespace Session

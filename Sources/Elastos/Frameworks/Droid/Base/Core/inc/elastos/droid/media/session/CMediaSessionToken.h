@@ -53,7 +53,6 @@ public:
 
 public:
     AutoPtr<IISessionController> mBinder;
-
 };
 
 } // namespace Session

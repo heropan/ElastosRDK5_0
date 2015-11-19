@@ -3,24 +3,24 @@
 #include "elastos/droid/media/session/CMediaControllerTransportControls.h"
 #include "elastos/droid/media/session/CMediaSessionToken.h"
 #include "elastos/droid/media/session/CParcelableVolumeInfo.h"
-#include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/utility/CArrayMap.h"
 // TODO: Need CKeyEventHelper
 // #include "elastos/droid/view/CKeyEventHelper.h"
-#include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CString;
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::IMap;
-using Elastos::Utility::CArrayList;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::View::IKeyEventHelper;
 // TODO: Need CKeyEventHelper
 // using Elastos::Droid::View::CKeyEventHelper;
+using Elastos::Droid::View::IKeyEventHelper;
 using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IMap;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -82,9 +82,7 @@ ECode CMediaController::CallbackStub::OnQueueChanged(
     /* [in] */ IParceledListSlice * parceledQueue)
 {
     AutoPtr<IList> queue;
-    if(parceledQueue == NULL) {
-        queue = NULL;
-    } else {
+    if(parceledQueue != NULL) {
         parceledQueue->GetList((IList**)&queue);
     }
     if (mHost != NULL) {
@@ -128,10 +126,10 @@ CMediaController::MessageHandler::MessageHandler(
     /* [in] */ ILooper * looper,
     /* [in] */ IMediaControllerCallback * cb,
     /* [in] */ CMediaController * host)
+    : Handler(looper, NULL, TRUE)
+    , mCallback(cb)
+    , mHost(host)
 {
-    Handler(looper, NULL, true);
-    mCallback = cb;
-    mHost = host;
 }
 
 ECode CMediaController::MessageHandler::HandleMessage(
@@ -191,8 +189,6 @@ CAR_OBJECT_IMPL(CMediaController)
 
 CMediaController::CMediaController()
     : mCbRegistered(FALSE)
-    , mPackageName(String(NULL))
-    , mTag(String(NULL))
 {
     mCbStub = new CallbackStub(this);
     CArrayList::New((IArrayList**)&mCallbacks);
@@ -415,12 +411,13 @@ ECode CMediaController::RegisterCallback(
 
 ECode CMediaController::RegisterCallback(
     /* [in] */ IMediaControllerCallback * callback,
-    /* [in] */ IHandler * handler)
+    /* [in] */ IHandler * _handler)
 {
     if (callback == NULL) {
         // throw new IllegalArgumentException("callback must not be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    AutoPtr<IHandler> handler = _handler;
     if (handler == NULL) {
         CHandler::New((IHandler**)&handler);
     }
@@ -463,7 +460,7 @@ ECode CMediaController::GetPackageName(
     /* [out] */ String * result)
 {
     VALIDATE_NOT_NULL(result)
-    if (mPackageName == NULL) {
+    if (mPackageName.IsNull()) {
         // try {
         mSessionBinder->GetPackageName(&mPackageName);
         // } catch (RemoteException e) {
@@ -478,7 +475,7 @@ ECode CMediaController::GetTag(
     /* [out] */ String * result)
 {
     VALIDATE_NOT_NULL(result)
-    if (mTag == NULL) {
+    if (mTag.IsNull()) {
         // try {
         mSessionBinder->GetTag(&mTag);
         // } catch (RemoteException e) {
@@ -498,10 +495,10 @@ ECode CMediaController::ControlsSameSession(
         *result = FALSE;
         return NOERROR;
     }
-    // return mSessionBinder.asBinder() == other.getSessionBinder().asBinder();
     AutoPtr<IISessionController> binder;
     ((CMediaController*)other)->GetSessionBinder((IISessionController**)&binder);
-    return (IObject::Probe(mSessionBinder))->Equals(binder, result);
+    *result = (mSessionBinder == binder);
+    return NOERROR;
 }
 
 ECode CMediaController::GetSessionBinder(
@@ -517,7 +514,9 @@ void CMediaController::AddCallbackLocked(
     /* [in] */ IMediaControllerCallback * cb,
     /* [in] */ IHandler * handler)
 {
-    if (GetHandlerForCallbackLocked(cb) != NULL) {
+    AutoPtr<MessageHandler> mh;
+    GetHandlerForCallbackLocked(cb, (MessageHandler**)&mh);
+    if (mh != NULL) {
         Logger::W(TAG, String("Callback is already added, ignoring"));
         return;
     }
@@ -562,12 +561,15 @@ Boolean CMediaController::RemoveCallbackLocked(
     return success;
 }
 
-AutoPtr<CMediaController::MessageHandler> CMediaController::GetHandlerForCallbackLocked(
-    /* [in] */ IMediaControllerCallback * cb)
+ECode CMediaController::GetHandlerForCallbackLocked(
+    /* [in] */ IMediaControllerCallback * cb,
+    /* [out] */ MessageHandler ** result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
     if (cb == NULL) {
         // throw new IllegalArgumentException("Callback cannot be null");
-        return NULL;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Int32 size;
     mCallbacks->GetSize(&size);
@@ -575,10 +577,11 @@ AutoPtr<CMediaController::MessageHandler> CMediaController::GetHandlerForCallbac
         AutoPtr<MessageHandler> handler;
         mCallbacks->Get(i, (IInterface**)&handler);
         if (cb == handler->mCallback) {
-            return handler;
+            *result = handler;
+            return NOERROR;
         }
     }
-    return NULL;
+    return NOERROR;
 }
 
 void CMediaController::PostMessage(

@@ -3,18 +3,18 @@
 
 #include "_Elastos_Droid_Media_Session_CMediaSessionLegacyHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/Object.h>
 #include "elastos/droid/media/session/MediaSessionCallback.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Utility::IArrayMap;
-using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::View::IKeyEvent;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Graphics::IBitmap;
 
 namespace Elastos {
 namespace Droid {
@@ -37,7 +37,6 @@ private:
         : public MediaSessionCallback
     {
     public:
-
         MediaButtonListener(
             /* [in] */ IPendingIntent * pi,
             /* [in] */ IContext * context);
@@ -77,13 +76,12 @@ private:
             : public MediaSessionCallback
         {
         public:
-
             SessionCallback(
                 /* [in] */ SessionHolder * host)
                 : mHost(host)
             {}
 
-            OnMediaButtonEvent(
+            CARAPI OnMediaButtonEvent(
                 /* [in] */ IIntent * mediaButtonIntent,
                 /* [out] */ Boolean * result);
 
@@ -214,15 +212,14 @@ private:
         /* [in] */ IIntent * intent);
 
 private:
-    static String TAG; // = "MediaSessionHelper";
-    static Boolean DEBUG; // = Log.isLoggable(TAG, Log.DEBUG);
-
-    static Object sLock; // = new Object();
+    static String TAG;
+    static Boolean DEBUG;
+    static Object sLock;
     static AutoPtr<IMediaSessionLegacyHelper> sInstance;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IMediaSessionManager> mSessionManager;
-    AutoPtr<IHandler> mHandler; // = new Handler(Looper.getMainLooper());
+    AutoPtr<IHandler> mHandler;
     // The legacy APIs use PendingIntents to register/unregister media button
     // receivers and these are associated with RCC.
     AutoPtr<IArrayMap> mSessions;

@@ -39,11 +39,11 @@ ECode CParcelableVolumeInfo::constructor(
 ECode CParcelableVolumeInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    AutoPtr<IInterface> obj;
     source->ReadInt32(&mVolumeType);
     source->ReadInt32(&mControlType);
     source->ReadInt32(&mMaxVolume);
     source->ReadInt32(&mCurrentVolume);
+    AutoPtr<IInterface> obj;
     source->ReadInterfacePtr((Handle32*)(IInterface**)&obj);
     mAudioAttrs = IAudioAttributes::Probe(obj);
     return NOERROR;

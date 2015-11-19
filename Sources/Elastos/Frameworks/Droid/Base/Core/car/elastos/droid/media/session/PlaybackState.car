@@ -64,8 +64,7 @@ module
          * @return this.
          */
         SetExtras(
-            [in] IBundle * extras,
-            [out] IPlaybackStateCustomActionBuilder ** result);
+            [in] IBundle * extras);
 
         /**
          * Build and return the {@link CustomAction} instance with the specified values.
@@ -446,8 +445,7 @@ module
             [in] Int32 state,
             [in] Int64 position,
             [in] Float playbackSpeed,
-            [in] Int64 updateTime,
-            [out] IPlaybackStateBuilder ** result);
+            [in] Int64 updateTime);
 
         /**
          * Set the current state of playback.
@@ -481,8 +479,7 @@ module
         SetState(
             [in] Int32 state,
             [in] Int64 position,
-            [in] Float playbackSpeed,
-            [out] IPlaybackStateBuilder ** result);
+            [in] Float playbackSpeed);
 
         /**
          * Set the current actions available on this session. This should use a
@@ -503,8 +500,7 @@ module
          * @return this
          */
         SetActions(
-            [in] Int64 actions,
-            [out] IPlaybackStateBuilder ** result);
+            [in] Int64 actions);
 
         /**
          * Add a custom action to the playback state. Actions can be used to
@@ -529,8 +525,7 @@ module
         AddCustomAction(
             [in] String action,
             [in] String name,
-            [in] Int32 icon,
-            [out] IPlaybackStateBuilder ** result);
+            [in] Int32 icon);
 
         /**
          * Add a custom action to the playback state. Actions can be used to expose additional
@@ -544,8 +539,7 @@ module
          * @return this
          */
         AddCustomAction(
-            [in] IPlaybackStateCustomAction * customAction,
-            [out] IPlaybackStateBuilder ** result);
+            [in] IPlaybackStateCustomAction * customAction);
 
         /**
          * Set the current buffered position in ms. This is the farthest
@@ -557,8 +551,7 @@ module
          * @return this
          */
         SetBufferedPosition(
-            [in] Int64 bufferedPosition,
-            [out] IPlaybackStateBuilder ** result);
+            [in] Int64 bufferedPosition);
 
         /**
          * Set the active item in the play queue by specifying its id. The
@@ -568,8 +561,7 @@ module
          * @return this
          */
         SetActiveQueueItemId(
-            [in] Int64 id,
-            [out] IPlaybackStateBuilder ** result);
+            [in] Int64 id);
 
         /**
          * Set a user readable error message. This should be set when the state
@@ -579,8 +571,7 @@ module
          * @return this
          */
         SetErrorMessage(
-            [in] ICharSequence * error,
-            [out] IPlaybackStateBuilder ** result);
+            [in] ICharSequence * error);
 
         /**
          * Build and return the {@link PlaybackState} instance with these values.

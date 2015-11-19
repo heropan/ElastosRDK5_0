@@ -53,8 +53,7 @@ public:
      * @return this.
      */
     CARAPI SetExtras(
-        /* [in] */ IBundle * extras,
-        /* [out] */ IPlaybackStateCustomActionBuilder ** result);
+        /* [in] */ IBundle * extras);
 
     /**
      * Build and return the {@link CustomAction} instance with the specified values.
@@ -69,7 +68,6 @@ private:
     AutoPtr<ICharSequence> mName;
     Int32 mIcon;
     AutoPtr<IBundle> mExtras;
-
 };
 
 } // namespace Session

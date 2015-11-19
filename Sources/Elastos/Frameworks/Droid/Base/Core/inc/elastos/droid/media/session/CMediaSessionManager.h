@@ -3,17 +3,17 @@
 
 #include "_Elastos_Droid_Media_Session_CMediaSessionManager.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/Object.h>
 #include "elastos/droid/os/Runnable.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::IList;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Media::IIRemoteVolumeController;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Utility::IArrayMap;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Media::IIRemoteVolumeController;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -99,7 +99,7 @@ private:
             , mTokens(list)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         ActiveSessionsListener * mHost;
@@ -129,7 +129,7 @@ public:
      * @hide
      */
     CARAPI CreateSession(
-        /* [in] */ IMediaSessionCallbackStub * cbStub,
+        /* [in] */ IISessionCallback * cbStub,
         /* [in] */ const String& tag,
         /* [in] */ Int32 userId,
         /* [out] */ IISession ** result);
@@ -299,13 +299,11 @@ public:
     AutoPtr<IContext> mContext;
 
 private:
-    const static String TAG; // = "SessionManager";
+    const static String TAG;
 
     AutoPtr<IArrayMap> mListeners;
-    Object mLock; // = new Object();
+    Object mLock;
     AutoPtr<IISessionManager> mService;
-
-
 };
 
 } // namespace Session

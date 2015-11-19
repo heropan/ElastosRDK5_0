@@ -152,16 +152,6 @@ module
     }
 
     /**
-     * @hide
-     */
-    /**
-     * @Involve
-     * interface Elastos.Droid.Media.Session.IISessionCallback
-     */
-    interface IMediaSessionCallbackStub {
-    }
-
-    /**
      * A single item that is part of the play queue. It contains a description
      * of the item and its id in the queue.
      */

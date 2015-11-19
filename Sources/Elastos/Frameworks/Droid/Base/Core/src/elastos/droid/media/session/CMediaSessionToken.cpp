@@ -50,7 +50,7 @@ ECode CMediaSessionToken::Equals(
     VALIDATE_NOT_NULL(result)
 
     AutoPtr<IMediaSessionToken> other = IMediaSessionToken::Probe(obj);
-    if (THIS_PROBE(IMediaSessionToken) == other) {
+    if (THIS_PROBE(IMediaSessionToken) == IInterface::Probe(other)) {
         *result = TRUE;
         return NOERROR;
     }
@@ -69,7 +69,8 @@ ECode CMediaSessionToken::Equals(
             return NOERROR;
         }
     // } else if (!mBinder.asBinder().equals(other.mBinder.asBinder())) {
-    } else if (Objects::Equals(mBinder, o->mBinder)) {
+    }
+    else if (Objects::Equals(mBinder, o->mBinder)) {
         *result = FALSE;
         return NOERROR;
     }
@@ -85,9 +86,10 @@ ECode CMediaSessionToken::GetHashCode(
     Int32 prime = 31;
     Int32 result = 1;
     Int32 val;
-    if(mBinder == NULL){
+    if (mBinder == NULL){
         val = 0;
-    } else {
+    }
+    else {
         IObject::Probe(mBinder)->GetHashCode(&val);
     }
     result = prime * result + val;
@@ -103,7 +105,6 @@ ECode CMediaSessionToken::GetBinder(
     REFCOUNT_ADD(*result)
     return NOERROR;
 }
-
 
 } // namespace Session
 } // namespace Media

@@ -1,13 +1,13 @@
 #include "elastos/droid/media/session/CPlaybackState.h"
-#include <elastos/utility/Objects.h>
-#include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/Objects.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::Objects;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::ICollection;
+using Elastos::Utility::Objects;
 
 namespace Elastos {
 namespace Droid {
@@ -59,7 +59,6 @@ ECode CPlaybackState::constructor(
 ECode CPlaybackState::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    AutoPtr<IInterface> obj;
     source->ReadInt32(&mState);
     source->ReadInt64(&mPosition);
     source->ReadInt64(&mBufferedPosition);
@@ -68,8 +67,10 @@ ECode CPlaybackState::ReadFromParcel(
     source->ReadInt64(&mUpdateTime);
     source->ReadInt64(&mActiveItemId);
 
+    AutoPtr<IInterface> obj;
     source->ReadInterfacePtr((Handle32*)(IInterface**)&obj);
     mCustomActions = IList::Probe(obj);
+    obj = NULL;
     source->ReadInterfacePtr((Handle32*)(IInterface**)&obj);
     mErrorMessage = ICharSequence::Probe(obj);
     return NOERROR;
@@ -346,26 +347,36 @@ Int32 CPlaybackState::GetRccFlagForAction(
     // flags.
     Int32 testAction = action < Elastos::Core::Math::INT32_MAX_VALUE ? (Int32) action : 0;
 
-    if(testAction == IPlaybackState::ACTION_SKIP_TO_PREVIOUS)
+    if (testAction == IPlaybackState::ACTION_SKIP_TO_PREVIOUS) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_PREVIOUS;
-    if(testAction == IPlaybackState::ACTION_REWIND)
+    }
+    if (testAction == IPlaybackState::ACTION_REWIND) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_REWIND;
-    if(testAction == IPlaybackState::ACTION_PLAY)
+    }
+    if (testAction == IPlaybackState::ACTION_PLAY) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_PLAY;
-    if(testAction == IPlaybackState::ACTION_PLAY_PAUSE)
+    }
+    if (testAction == IPlaybackState::ACTION_PLAY_PAUSE) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_PLAY_PAUSE;
-    if(testAction == IPlaybackState::ACTION_PAUSE)
+    }
+    if (testAction == IPlaybackState::ACTION_PAUSE) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_PAUSE;
-    if(testAction == IPlaybackState::ACTION_STOP)
+    }
+    if (testAction == IPlaybackState::ACTION_STOP) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_STOP;
-    if(testAction == IPlaybackState::ACTION_FAST_FORWARD)
+    }
+    if (testAction == IPlaybackState::ACTION_FAST_FORWARD) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_FAST_FORWARD;
-    if(testAction == IPlaybackState::ACTION_SKIP_TO_NEXT)
+    }
+    if (testAction == IPlaybackState::ACTION_SKIP_TO_NEXT) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_NEXT;
-    if(testAction == IPlaybackState::ACTION_SEEK_TO)
+    }
+    if (testAction == IPlaybackState::ACTION_SEEK_TO) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_POSITION_UPDATE;
-    if(testAction == IPlaybackState::ACTION_SET_RATING)
+    }
+    if (testAction == IPlaybackState::ACTION_SET_RATING) {
         return IRemoteControlClient::FLAG_KEY_MEDIA_RATING;
+    }
 
     return 0;
 }

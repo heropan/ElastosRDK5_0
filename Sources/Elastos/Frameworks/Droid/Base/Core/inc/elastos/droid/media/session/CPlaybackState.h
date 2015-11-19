@@ -181,12 +181,14 @@ public:
         /* [out] */ Int32 * result);
 
 private:
-    static CARAPI_(Int64) GetActionForRccFlag(Int32 flag);
+    static CARAPI_(Int64) GetActionForRccFlag(
+        /* [in] */ Int32 flag);
 
-    static CARAPI_(Int32) GetRccFlagForAction(Int64 action);
+    static CARAPI_(Int32) GetRccFlagForAction(
+        /* [in] */ Int64 action);
 
 private:
-    static String TAG; // = "PlaybackState";
+    static String TAG;
 
     Int32 mState;
     Int64 mPosition;
@@ -197,7 +199,6 @@ private:
     AutoPtr<ICharSequence> mErrorMessage;
     Int64 mUpdateTime;
     Int64 mActiveItemId;
-
 };
 
 } // namespace Session

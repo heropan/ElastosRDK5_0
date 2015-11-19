@@ -5,8 +5,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -89,7 +89,6 @@ public:
     AutoPtr<ICharSequence> mName;
     Int32 mIcon;
     AutoPtr<IBundle> mExtras;
-
 };
 
 } // namespace Session

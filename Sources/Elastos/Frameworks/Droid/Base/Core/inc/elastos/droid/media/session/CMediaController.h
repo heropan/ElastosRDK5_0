@@ -3,19 +3,19 @@
 
 #include "_Elastos_Droid_Media_Session_CMediaController.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/Object.h>
 #include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::IList;
-using Elastos::Utility::IArrayList;
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IParceledListSlice;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IResultReceiver;
-using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::View::IKeyEvent;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Pm::IParceledListSlice;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -359,8 +359,9 @@ private:
     CARAPI_(Boolean) RemoveCallbackLocked(
         /* [in] */ IMediaControllerCallback * cb);
 
-    CARAPI_(AutoPtr<MessageHandler>) GetHandlerForCallbackLocked(
-        /* [in] */ IMediaControllerCallback * cb);
+    CARAPI GetHandlerForCallbackLocked(
+        /* [in] */ IMediaControllerCallback * cb,
+        /* [out] */ MessageHandler ** result);
 
     CARAPI_(void) PostMessage(
         /* [in] */ Int32 what,
@@ -368,27 +369,26 @@ private:
         /* [in] */ IBundle * data);
 
 public:
-    const static Int32 MSG_EVENT; // = 1;
-    const static Int32 MSG_UPDATE_PLAYBACK_STATE; // = 2;
-    const static Int32 MSG_UPDATE_METADATA; // = 3;
-    const static Int32 MSG_UPDATE_VOLUME; // = 4;
-    const static Int32 MSG_UPDATE_QUEUE; // = 5;
-    const static Int32 MSG_UPDATE_QUEUE_TITLE; // = 6;
-    const static Int32 MSG_UPDATE_EXTRAS; // = 7;
-    const static Int32 MSG_DESTROYED; // = 8;
+    const static Int32 MSG_EVENT;
+    const static Int32 MSG_UPDATE_PLAYBACK_STATE;
+    const static Int32 MSG_UPDATE_METADATA;
+    const static Int32 MSG_UPDATE_VOLUME;
+    const static Int32 MSG_UPDATE_QUEUE;
+    const static Int32 MSG_UPDATE_QUEUE_TITLE;
+    const static Int32 MSG_UPDATE_EXTRAS;
+    const static Int32 MSG_DESTROYED;
 
     AutoPtr<IISessionController> mSessionBinder;
 
 private:
-    const static String TAG; // = "MediaController";
+    const static String TAG;
 
     AutoPtr<IMediaSessionToken> mToken;
     AutoPtr<IContext> mContext;
-    AutoPtr<CallbackStub> mCbStub; // = new CallbackStub(this);
-    AutoPtr<IArrayList> mCallbacks; // = new ArrayList<MessageHandler>();
-    Object mLock; // = new Object();
-
-    Boolean mCbRegistered; // = false;
+    AutoPtr<CallbackStub> mCbStub;
+    AutoPtr<IArrayList> mCallbacks;
+    Object mLock;
+    Boolean mCbRegistered;
     String mPackageName;
     String mTag;
 
