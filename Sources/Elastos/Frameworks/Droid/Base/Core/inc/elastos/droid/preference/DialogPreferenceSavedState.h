@@ -15,14 +15,14 @@ namespace Preference {
     , public IDialogPreferenceSavedState
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DialogPreferenceSavedState();
 
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IParcelable* superState);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI GetIsDialogShowing(
         /* [out] */ Boolean* isShow);

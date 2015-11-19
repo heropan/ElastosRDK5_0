@@ -29,6 +29,10 @@ class EditTextPreference
     , public IEditTextPreference
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    EditTextPreference();
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
@@ -46,8 +50,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ IContext* context);
-
-    CAR_INTERFACE_DECL()
 
     /**
      * Saves the text to the {@link SharedPreferences}.
@@ -75,69 +77,6 @@ public:
 
     CARAPI ShouldDisableDependents(
         /* [out] */ Boolean* shouldDisableDependents);
-
-    CARAPI SetDialogTitle(
-        /* [in] */ ICharSequence* dialogTitle);
-
-    CARAPI SetDialogTitle(
-        /* [in] */ Int32 dialogTitleResId);
-
-    CARAPI GetDialogTitle(
-        /* [out] */ ICharSequence** title);
-
-    CARAPI SetDialogMessage(
-        /* [in] */ ICharSequence* dialogMessage);
-
-    CARAPI SetDialogMessage(
-        /* [in] */ Int32 dialogMessageResId);
-
-    CARAPI GetDialogMessage(
-        /* [out] */ ICharSequence** message);
-
-    CARAPI SetDialogIcon(
-        /* [in] */ IDrawable* dialogIcon);
-
-    CARAPI SetDialogIcon(
-        /* [in] */ Int32 dialogIconRes);
-
-    CARAPI GetDialogIcon(
-        /* [out] */ IDrawable** icon);
-
-    CARAPI SetPositiveButtonText(
-        /* [in] */ ICharSequence* positiveButtonText);
-
-    CARAPI SetPositiveButtonText(
-        /* [in] */ Int32 positiveButtonTextResId);
-
-    CARAPI GetPositiveButtonText(
-        /* [out] */ ICharSequence** text);
-
-    CARAPI SetNegativeButtonText(
-        /* [in] */ ICharSequence* negativeButtonText);
-
-    CARAPI SetNegativeButtonText(
-        /* [in] */ Int32 negativeButtonTextResId);
-
-    CARAPI GetNegativeButtonText(
-        /* [out] */ ICharSequence** text);
-
-    CARAPI SetDialogLayoutResource(
-        /* [in] */ Int32 dialogLayoutResId);
-
-    CARAPI GetDialogLayoutResource(
-        /* [out] */ Int32* layoutResId);
-
-    CARAPI OnPrepareDialogBuilder(
-        /* [in] */ IAlertDialogBuilder* builder);
-
-    CARAPI ShowDialog(
-        /* [in] */ IBundle* state);
-
-    CARAPI OnCreateDialogView(
-        /* [out] */ IView** view);
-
-    CARAPI GetDialog(
-        /* [out] */ IDialog** dialog);
 
 protected:
     CARAPI OnBindDialogView(

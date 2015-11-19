@@ -16,6 +16,7 @@ using Elastos::Utility::CArrayList;
 using Elastos::Core::EIID_IComparable;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Widget::IAdapter;
 using Elastos::Droid::Widget::IListView;
 using Elastos::Droid::Widget::EIID_IBaseAdapter;
 using Elastos::Droid::Widget::EIID_IListAdapter;
@@ -30,37 +31,45 @@ namespace Preference {
 // PreferenceGroupAdapter::PreferenceLayout
 //====================================================
 
-CAR_INTERFACE_IMPL_2(PreferenceGroupAdapter::PreferenceLayout, Object,IPreferenceLayout, IComparable)
+CAR_INTERFACE_IMPL_2(PreferenceGroupAdapter::PreferenceLayout, Object, IPreferenceLayout, IComparable)
+
+PreferenceGroupAdapter::PreferenceLayout::PreferenceLayout()
+    : mResId(0)
+    , mWidgetResId(0)
+{
+}
 
 ECode PreferenceGroupAdapter::PreferenceLayout::CompareTo(
-    /* [in] */ IPreferenceLayout* otherObj,
+    /* [in] */ IInterface* otherObj,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    String name;
-    otherObj->GetName(&name);
-    Int32 resId, widgetResId;
-    otherObj->GetResId(&resId);
-    otherObj->GetWidgetResId(&widgetResId);
-    Int32 compareNames = mName.Compare(name);
-    if (compareNames == 0) {
-        if (mResId == resId) {
-            if (mWidgetResId == widgetResId) {
-                *result = 0;
-                return NOERROR;
+    AutoPtr<IPreferenceLayout> _otherObj = IPreferenceLayout::Probe(otherObj);
+    if (_otherObj != NULL) {
+        String name;
+        _otherObj->GetName(&name);
+        Int32 resId, widgetResId;
+        _otherObj->GetResId(&resId);
+        _otherObj->GetWidgetResId(&widgetResId);
+        Int32 compareNames = mName.Compare(name);
+        if (compareNames == 0) {
+            if (mResId == resId) {
+                if (mWidgetResId == widgetResId) {
+                    *result = 0;
+                    return NOERROR;
+                }
+                else {
+                    *result = mWidgetResId - widgetResId;
+                    return NOERROR;
+                }
             }
             else {
-                *result = mWidgetResId - widgetResId;
+                *result = mResId - resId;
                 return NOERROR;
             }
         }
-        else {
-            *result = mResId - resId;
-            return NOERROR;
-        }
+        *result = compareNames;
     }
-
-    *result = compareNames;
     return NOERROR;
 }
 
@@ -128,6 +137,7 @@ ECode PreferenceGroupAdapter::SyncRunnable::Run()
 //====================================================
 // PreferenceGroupAdapter
 //====================================================
+
 static AutoPtr<IViewGroupLayoutParams> init()
 {
     // AutoPtr<IViewGroupLayoutParams> vglp;
@@ -143,57 +153,35 @@ AutoPtr<IViewGroupLayoutParams> PreferenceGroupAdapter::sWrapperLayoutParams = i
 const String PreferenceGroupAdapter::TAG("PreferenceGroupAdapter");
 
 // CAR_INTERFACE_IMPL(PreferenceGroupAdapter, BaseAdapter, IPreferenceOnPreferenceChangeInternalListener)
-CAR_INTERFACE_IMPL_2(PreferenceGroupAdapter, Object, IBaseAdapter, IPreferenceGroupAdapter)
+CAR_INTERFACE_IMPL_2(PreferenceGroupAdapter, Object, IPreferenceOnPreferenceChangeInternalListener, /*IBaseAdapter,*/ IPreferenceGroupAdapter)
 
-PreferenceGroupAdapter::PreferenceGroupAdapter(
-    /* [in] */ IPreferenceGroup* preferenceGroup)
+PreferenceGroupAdapter::PreferenceGroupAdapter()
     : mHasReturnedViewTypeCount(FALSE)
     , mIsSyncing(FALSE)
     , mHighlightedPosition(-1)
 {
-    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(preferenceGroup);
-    assert(wrs != NULL && "Error: Invalid PreferenceGroup interface, IWeakReferenceSource not implemented!");
-    wrs->GetWeakReference((IWeakReference**)&mWeakPreferenceGroup);
-    mPreferenceList = new List<AutoPtr<IPreference> >();
-    mPreferenceLayouts = new List<AutoPtr<PreferenceLayout> >();
     mTempPreferenceLayout = new PreferenceLayout();
     CHandler::New((IHandler**)&mHandler);
     mSyncRunnable = new SyncRunnable(this);
-
-    // If this group gets or loses any children, let us know
-    // reinterpret_cast<Preference*>(preferenceGroup->Probe(EIID_Preference))->SetOnPreferenceChangeInternalListener(
-    //         (IPreferenceOnPreferenceChangeInternalListener*)this);
-
-    SyncMyPreferences();
 }
 
 ECode PreferenceGroupAdapter::constructor(
     /* [in] */ IPreferenceGroup* preferenceGroup)
 {
-    mHasReturnedViewTypeCount = FALSE;
-    mIsSyncing = FALSE;
-    mHighlightedPosition = -1;
     AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(preferenceGroup);
     assert(wrs != NULL && "Error: Invalid PreferenceGroup interface, IWeakReferenceSource not implemented!");
     wrs->GetWeakReference((IWeakReference**)&mWeakPreferenceGroup);
-    mPreferenceList = new List<AutoPtr<IPreference> >();
-    mPreferenceLayouts = new List<AutoPtr<PreferenceLayout> >();
-    mTempPreferenceLayout = new PreferenceLayout();
-    CHandler::New((IHandler**)&mHandler);
-    mSyncRunnable = new SyncRunnable(this);
-
+    assert(0);
     // If this group gets or loses any children, let us know
     // reinterpret_cast<Preference*>(preferenceGroup->Probe(EIID_Preference))->SetOnPreferenceChangeInternalListener(
     //         (IPreferenceOnPreferenceChangeInternalListener*)this);
-
     SyncMyPreferences();
     return NOERROR;
 }
 
 void PreferenceGroupAdapter::SyncMyPreferences()
 {
-    {
-        AutoLock lock(mLock);
+    synchronized(this) {
         if (mIsSyncing) {
             return;
         }
@@ -201,22 +189,26 @@ void PreferenceGroupAdapter::SyncMyPreferences()
         mIsSyncing = TRUE;
     }
 
-    AutoPtr< List<AutoPtr<IPreference> > > newPreferenceList = new List<AutoPtr<IPreference> >(mPreferenceList->GetSize());
+    Int32 size;
+    mPreferenceList->GetSize(&size);
+    AutoPtr<IList>  newPreferenceList;
+    CArrayList::New(size, (IList**)&newPreferenceList);
     AutoPtr<IPreferenceGroup> group;
     mWeakPreferenceGroup->Resolve(EIID_IPreferenceGroup, (IInterface**)&group);
     FlattenPreferenceGroup(newPreferenceList, group);
-
     mPreferenceList = newPreferenceList;
 
+    assert(0);
     // BaseAdapter::NotifyDataSetChanged();
 
-    AutoLock lock(mLock);
-    mIsSyncing = FALSE;
-    mLock.NotifyAll();
+    synchronized(this) {
+        mIsSyncing = FALSE;
+        mLock.NotifyAll();
+    }
 }
 
 void PreferenceGroupAdapter::FlattenPreferenceGroup(
-    /* [in] */ List<AutoPtr<IPreference> >* preferences,
+    /* [in] */ IList* preferences,
     /* [in] */ IPreferenceGroup* group)
 {
     // TODO: shouldn't always?
@@ -228,7 +220,7 @@ void PreferenceGroupAdapter::FlattenPreferenceGroup(
         AutoPtr<IPreference> preference;
         group->GetPreference(i, (IPreference**)&preference);
 
-        preferences->PushBack(preference);
+        preferences->Add(preference);
 
         Boolean canRecycleLayout;
         if (!mHasReturnedViewTypeCount && (preference->CanRecycleLayout(&canRecycleLayout), canRecycleLayout)) {
@@ -243,44 +235,39 @@ void PreferenceGroupAdapter::FlattenPreferenceGroup(
             }
         }
 
-        // reinterpret_cast<Preference*>(preference->Probe(EIID_Preference))->SetOnPreferenceChangeInternalListener(this);
+        preference->SetOnPreferenceChangeInternalListener((IPreferenceOnPreferenceChangeInternalListener*)this);
     }
 }
 
 AutoPtr<IPreferenceLayout> PreferenceGroupAdapter::CreatePreferenceLayout(
     /* [in] */ IPreference* preference,
-    /* [in] */ PreferenceLayout* in)
+    /* [in] */ IPreferenceLayout* in)
 {
     AutoPtr<IPreferenceLayout> pl = in != NULL ? in : new PreferenceLayout();
-    // EGuid clsId;
-    // IObject::Probe(preference)->GetClassID(&clsId);
-    // pl->mName = clsId.pUunm;
-    preference->GetLayoutResource(&pl->mResId);
-    preference->GetWidgetLayoutResource(&pl->mWidgetResId);
+    assert(0);
+    // pl.name = preference.getClass().getName();
+    Int32 resId, widgetResId;
+    preference->GetLayoutResource(&resId);
+    pl->SetResId(resId);
+    preference->GetWidgetLayoutResource(&widgetResId);
+    pl->SetWidgetResId(widgetResId);
     return pl;
 }
 
 void PreferenceGroupAdapter::AddPreferenceClassName(
     /* [in] */ IPreference* preference)
 {
-    AutoPtr<PreferenceLayout> pl = CreatePreferenceLayout(preference, NULL);
+    AutoPtr<IPreferenceLayout> pl = CreatePreferenceLayout(preference, NULL);
     AutoPtr<ICollections> collections;
     CCollections::AcquireSingleton((ICollections**)&collections);
-    AutoPtr<IArrayList> arrayList;
-    CArrayList::New((IArrayList**)&arrayList);
-    List<AutoPtr<PreferenceLayout> >::Iterator it = mPreferenceLayouts->Begin();
-    for (; it != mPreferenceLayouts->End(); ++it) {
-        Boolean isSuccess;
-        arrayList->Add(*it, &isSuccess);
-    }
     Int32 insertPos;
-    collections->BinarySearch(arrayList, pl, &insertPos);
+    collections->BinarySearch(mPreferenceLayouts, pl, &insertPos);
 
     // Only insert if it doesn't exist (when it is negative).
     if (insertPos < 0) {
         // Convert to insert index
         insertPos = insertPos * -1 - 1;
-        mPreferenceLayouts->Insert(insertPos, pl);
+        mPreferenceLayouts->Add(insertPos, pl);
     }
 }
 
@@ -288,13 +275,13 @@ ECode PreferenceGroupAdapter::GetCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count)
-    *count = mPreferenceList->GetSize();
+    mPreferenceList->GetSize(count);
     return NOERROR;
 }
 
 ECode PreferenceGroupAdapter::GetItem(
     /* [in] */ Int32 position,
-    /* [out] */ IInterface** item)
+    /* [out] */ IPreference** item)
 {
     VALIDATE_NOT_NULL(item)
     Int32 count;
@@ -302,9 +289,7 @@ ECode PreferenceGroupAdapter::GetItem(
         *item = NULL;
         return NOERROR;
     }
-    *item = (IInterface*)(*mPreferenceList)[position];
-    REFCOUNT_ADD(*item)
-    return NOERROR;
+    return mPreferenceList->Get(position, (IInterface**)item);
 }
 
 ECode PreferenceGroupAdapter::GetItemId(
@@ -318,8 +303,21 @@ ECode PreferenceGroupAdapter::GetItemId(
         return NOERROR;
     }
     AutoPtr<IPreference> p;
-    GetItem(position, (IInterface**)&p);
-    // *id = reinterpret_cast<Preference*>(p->Probe(EIID_Preference))->GetId();
+    GetItem(position, (IPreference**)&p);
+    return p->GetId(id);
+}
+
+ECode PreferenceGroupAdapter::SetHighlighted(
+    /* [in] */ Int32 position)
+{
+    mHighlightedPosition = position;
+    return NOERROR;
+}
+
+ECode PreferenceGroupAdapter::SetHighlightedDrawable(
+    /* [in] */ IDrawable* drawable)
+{
+    mHighlightedDrawable = drawable;
     return NOERROR;
 }
 
@@ -332,7 +330,7 @@ ECode PreferenceGroupAdapter::GetView(
     VALIDATE_NOT_NULL(view)
 
     AutoPtr<IPreference> preference;
-    GetItem(position, (IInterface**)&preference);
+    GetItem(position, (IPreference**)&preference);
     // Build a PreferenceLayout to compare with known ones that are cacheable.
     mTempPreferenceLayout = CreatePreferenceLayout(preference, mTempPreferenceLayout);
 
@@ -340,20 +338,28 @@ ECode PreferenceGroupAdapter::GetView(
     // the layout gets re-created by the Preference.
     AutoPtr<ICollections> collections;
     CCollections::AcquireSingleton((ICollections**)&collections);
-    AutoPtr<IArrayList> arrayList;
-    CArrayList::New((IArrayList**)&arrayList);
-    List<AutoPtr<PreferenceLayout> >::Iterator it = mPreferenceLayouts->Begin();
-    for (; it != mPreferenceLayouts->End(); ++it) {
-        Boolean isSuccess;
-        arrayList->Add(*it, &isSuccess);
-    }
-    Int32 insertPos;
-    collections->BinarySearch(arrayList, mTempPreferenceLayout, &insertPos);
-    if (insertPos < 0) {
+    Int32 index, type, viewType;
+    if ((collections->BinarySearch(mPreferenceLayouts, mTempPreferenceLayout, &index), index < 0) ||
+        (GetItemViewType(position, &type),  GetHighlightItemViewType(&viewType), type == viewType)) {
         convertView = NULL;
     }
-
-    return preference->GetView(convertView, parent, view);
+    assert(0);
+    // AutoPtr<IView> result;
+    // preference->GetView(convertView, parent, (IView**)&result);
+    // if (position == mHighlightedPosition && mHighlightedDrawable != NULL) {
+    //     AutoPtr<IContext> ctx;
+    //     IView::Probe(parent)->GetContext((IContext**)&ctx);
+    //     AutoPtr<IViewGroup> wrapper;
+    //     CFrameLayout::New(ctx, (IViewGroup**)&wrapper);
+    //     AutoPtr<IView> vwrapper = IView::Probe(wrapper);
+    //     vwrapper->SetLayoutParams(sWrapperLayoutParams);
+    //     vwrapper->SetBackgroundDrawable(mHighlightedDrawable);
+    //     wrapper->AddView(result);
+    //     result = wrapper;
+    // }
+    // *view = result;
+    // REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
 ECode PreferenceGroupAdapter::IsEnabled(
@@ -367,7 +373,7 @@ ECode PreferenceGroupAdapter::IsEnabled(
         return NOERROR;
     }
     AutoPtr<IPreference> p;
-    GetItem(position, (IInterface**)&p);
+    GetItem(position, (IPreference**)&p);
     return p->IsSelectable(enabled);
 }
 
@@ -383,7 +389,9 @@ ECode PreferenceGroupAdapter::AreAllItemsEnabled(
 ECode PreferenceGroupAdapter::OnPreferenceChange(
     /* [in] */ IPreference* preference)
 {
-    return NotifyDataSetChanged();
+    assert(0);
+    // return BaseAdapter::NotifyDataSetChanged();
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode PreferenceGroupAdapter::OnPreferenceHierarchyChange(
@@ -425,10 +433,10 @@ ECode PreferenceGroupAdapter::GetItemViewType(
     }
 
     AutoPtr<IPreference> preference;
-    GetItem(position, (IInterface**)&preference);
+    GetItem(position, (IPreference**)&preference);
     Boolean canRecycleLayout;
     if (preference->CanRecycleLayout(&canRecycleLayout), !canRecycleLayout) {
-        *type = IGNORE_ITEM_VIEW_TYPE;
+        *type = IAdapter::IGNORE_ITEM_VIEW_TYPE;
         return NOERROR;
     }
 
@@ -436,24 +444,16 @@ ECode PreferenceGroupAdapter::GetItemViewType(
 
     AutoPtr<ICollections> collections;
     CCollections::AcquireSingleton((ICollections**)&collections);
-    AutoPtr<IArrayList> arrayList;
-    CArrayList::New((IArrayList**)&arrayList);
-    List<AutoPtr<PreferenceLayout> >::Iterator it = mPreferenceLayouts->Begin();
-    for (; it != mPreferenceLayouts->End(); ++it) {
-        Boolean isSuccess;
-        arrayList->Add(*it, &isSuccess);
-    }
     Int32 viewType;
-    collections->BinarySearch(arrayList, mTempPreferenceLayout, &viewType);
+    collections->BinarySearch(mPreferenceLayouts, mTempPreferenceLayout, &viewType);
     if (viewType < 0) {
         // This is a class that was seen after we returned the count, so
         // don't recycle it.
-        *type = IGNORE_ITEM_VIEW_TYPE;
-    }
-    else {
+        return IAdapter::IGNORE_ITEM_VIEW_TYPE;
+    } else {
         *type = viewType;
+        return NOERROR;
     }
-    return NOERROR;
 }
 
 ECode PreferenceGroupAdapter::GetViewTypeCount(
@@ -464,111 +464,10 @@ ECode PreferenceGroupAdapter::GetViewTypeCount(
         mHasReturnedViewTypeCount = TRUE;
     }
 
-    *count = Elastos::Core::Math::Max(1, mPreferenceLayouts->GetSize()) + 1;
+    Int32 size;
+    mPreferenceLayouts->GetSize(&size);
+    *count = Elastos::Core::Math::Max(1, size) + 1;
     return NOERROR;
-}
-
-ECode PreferenceGroupAdapter::NotifyDataSetChanged()
-{
-    return BaseAdapter::NotifyDataSetChanged();
-}
-
-ECode PreferenceGroupAdapter::NotifyDataSetInvalidated()
-{
-    return BaseAdapter::NotifyDataSetInvalidated();
-}
-
-ECode PreferenceGroupAdapter::RegisterDataSetObserver(
-    /* [in] */ IDataSetObserver* observer)
-{
-    return BaseAdapter::RegisterDataSetObserver(observer);
-}
-
-ECode PreferenceGroupAdapter::UnregisterDataSetObserver(
-    /* [in] */ IDataSetObserver* observer)
-{
-    return BaseAdapter::UnregisterDataSetObserver(observer);
-}
-
-ECode PreferenceGroupAdapter::IsEmpty(
-    /* [out] */ Boolean* isEmpty)
-{
-    VALIDATE_NOT_NULL(isEmpty)
-    *isEmpty = BaseAdapter::IsEmpty();
-    return NOERROR;
-}
-
-Int32 PreferenceGroupAdapter::GetCount()
-{
-    Int32 count;
-    GetCount(&count);
-    return count;
-}
-
-AutoPtr<IInterface> PreferenceGroupAdapter::GetItem(
-    /* [in] */ Int32 position)
-{
-    AutoPtr<IInterface> item;
-    GetItem(position, (IInterface**)&item);
-    return item;
-}
-
-Int64 PreferenceGroupAdapter::GetItemId(
-    /* [in] */ Int32 position)
-{
-    Int64 id;
-    GetItemId(position, &id);
-    return id;
-}
-
-ECode PreferenceGroupAdapter::SetHighlighted(
-    /* [in] */ Int32 position)
-{
-    mHighlightedPosition = position;
-    return NOERROR;
-}
-
-ECode PreferenceGroupAdapter::SetHighlightedDrawable(
-    /* [in] */ IDrawable* drawable)
-{
-    mHighlightedDrawable = drawable;
-    return NOERROR;
-}
-
-AutoPtr<IView> PreferenceGroupAdapter::GetView(
-    /* [in] */ Int32 position,
-    /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
-{
-    AutoPtr<IInterface> i = this->GetItem(position);
-    AutoPtr<IPreference> preference = IPreference::Probe(i);
-    // Build a PreferenceLayout to compare with known ones that are cacheable.
-    mTempPreferenceLayout = CreatePreferenceLayout(preference, mTempPreferenceLayout);
-
-    // If it's not one of the cached ones, set the convertView to null so that
-    // the layout gets re-created by the Preference.
-    Int32 index;
-    Collections::BinarySearch(mPreferenceLayouts, mTempPreferenceLayout, &index);
-    Int32 t1,t2;
-    GetItemViewType(position, &t1);
-    GetHighlightItemViewType(&t2);
-    if (index < 0 || (t1 == t2)) {
-        convertView = NULL;
-    }
-    AutoPtr<IView> result;
-    preference->GetView(convertView, parent, (IView**)&result);
-    if (position == mHighlightedPosition && mHighlightedDrawable != NULL) {
-        AutoPtr<IContext> context;
-        parent->GetContext((IContext**)&context);
-        AutoPtr<IFrameLayout> layout;
-        CFrameLayout::New(context, (IFrameLayout**)&layout);
-        AutoPtr<IViewGroup> wrapper = IViewGroup::Probe(layout);
-        wrapper->SetLayoutParams(sWrapperLayoutParams);
-        wrapper->SetBackgroundDrawable(mHighlightedDrawable);
-        wrapper->AddView(result);
-        result = IView::Probe(wrapper);
-    }
-    return result;
 }
 
 }

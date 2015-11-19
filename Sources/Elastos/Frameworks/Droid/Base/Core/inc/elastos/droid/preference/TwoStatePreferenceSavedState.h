@@ -14,14 +14,14 @@ class TwoStatePreferenceSavedState
     , public ITwoStatePreferenceSavedState
 {
 public:
+    CAR_INTERFACE_DECL()
+
     TwoStatePreferenceSavedState();
 
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IParcelable* superState);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI IsChecked(
         /* [out] */ Boolean* isChecked);

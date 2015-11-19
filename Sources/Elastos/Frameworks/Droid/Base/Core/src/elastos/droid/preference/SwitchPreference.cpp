@@ -2,13 +2,13 @@
 #include "elastos/droid/preference/SwitchPreference.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::IBoolean;
-using Elastos::Core::CBoolean;
-using Elastos::Core::CString;
+using Elastos::Droid::R;
 using Elastos::Droid::Widget::EIID_ICompoundButtonOnCheckedChangeListener;
 using Elastos::Droid::Widget::ICheckable;
 using Elastos::Droid::Widget::ISwitch;
-using Elastos::Droid::R;
+using Elastos::Core::IBoolean;
+using Elastos::Core::CBoolean;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -43,10 +43,11 @@ ECode SwitchPreference::Listener::OnCheckedChanged(
     return NOERROR;
 }
 
-
 /////////////////////////////////////////////////////
 // SwitchPreference
 /////////////////////////////////////////////////////
+
+CAR_INTERFACE_IMPL(SwitchPreference, TwoStatePreference, ISwitchPreference)
 
 SwitchPreference::SwitchPreference()
 {
@@ -94,7 +95,6 @@ ECode SwitchPreference::constructor(
     a->GetBoolean(R::styleable::SwitchPreference_disableDependentsState, FALSE, &disable);
     SetDisableDependentsState(disable);
     a->Recycle();
-
     return NOERROR;
 }
 
@@ -118,8 +118,6 @@ ECode SwitchPreference::constructor(
 {
     return constructor(context, NULL);
 }
-
-CAR_INTERFACE_IMPL(SwitchPreference, TwoStatePreference, ISwitchPreference)
 
 ECode SwitchPreference::OnBindView(
     /* [in] */ IView* view)

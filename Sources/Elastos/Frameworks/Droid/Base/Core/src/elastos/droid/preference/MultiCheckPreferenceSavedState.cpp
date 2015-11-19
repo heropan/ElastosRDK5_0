@@ -5,11 +5,15 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+CAR_INTERFACE_IMPL(MultiCheckPreferenceSavedState, PreferenceBaseSavedState, IMultiCheckPreferenceSavedState)
+
+MultiCheckPreferenceSavedState::MultiCheckPreferenceSavedState()
+{
+}
+
 ECode MultiCheckPreferenceSavedState::constructor()
 {
-    PreferenceBaseSavedState::constructor();
-    // source->CreateBooleanArray((ArrayOf<Boolean>**)&mValues);
-    return NOERROR;
+    return PreferenceBaseSavedState::constructor();
 }
 
 ECode MultiCheckPreferenceSavedState::constructor(
@@ -17,8 +21,6 @@ ECode MultiCheckPreferenceSavedState::constructor(
 {
     return PreferenceBaseSavedState::constructor(superState);
 }
-
-CAR_INTERFACE_IMPL(MultiCheckPreferenceSavedState, PreferenceBaseSavedState, IMultiCheckPreferenceSavedState)
 
 ECode MultiCheckPreferenceSavedState::ReadFromParcel(
     /* [in] */ IParcel* source)

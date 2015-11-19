@@ -14,12 +14,14 @@ class ListPreferenceSavedState
     , public IListPreferenceSavedState
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    ListPreferenceSavedState();
+
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IParcelable* superState);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI GetValue(
         /* [out] */ String* text);

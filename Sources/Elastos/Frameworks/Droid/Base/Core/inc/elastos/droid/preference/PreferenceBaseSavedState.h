@@ -25,7 +25,7 @@ class PreferenceBaseSavedState
 public:
     CAR_INTERFACE_DECL()
 
-    virtual ~PreferenceBaseSavedState();
+    PreferenceBaseSavedState();
 
     CARAPI constructor();
 

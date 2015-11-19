@@ -6,18 +6,29 @@
 #include "elastos/droid/preference/TwoStatePreference.h"
 
 using Elastos::Droid::Preference::IPreference;
-using Elastos::Droid::Widget::ICheckable;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+/**
+ * A {@link Preference} that provides checkbox widget
+ * functionality.
+ * <p>
+ * This preference will store a boolean into the SharedPreferences.
+ *
+ * @attr ref android.R.styleable#CheckBoxPreference_summaryOff
+ * @attr ref android.R.styleable#CheckBoxPreference_summaryOn
+ * @attr ref android.R.styleable#CheckBoxPreference_disableDependentsState
+ */
 class CheckBoxPreference
     : public TwoStatePreference
     , public ICheckBoxPreference
 {
 public:
     CAR_INTERFACE_DECL()
+
+    CheckBoxPreference();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -37,8 +48,16 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context);
 
+    //@Override
     CARAPI OnBindView(
         /* [in]  */ IView* view);
+
+private:
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 };
 
 }

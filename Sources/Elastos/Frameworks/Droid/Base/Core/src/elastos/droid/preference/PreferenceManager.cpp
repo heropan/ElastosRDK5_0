@@ -1,13 +1,13 @@
 
 #include "elastos/droid/preference/PreferenceManager.h"
-#include "elastos/droid/preference/CPreferenceManager.h"
-// #include "elastos/droid/preference/CPreferenceScreen.h"
 #include "elastos/droid/preference/CPreferenceInflater.h"
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/utility/etl/HashSet.h>
+#include "elastos/droid/preference/CPreferenceManager.h"
+#include "elastos/droid/preference/CPreferenceScreen.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/Algorithm.h>
-#include <elastos/core/AutoLock.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
@@ -15,8 +15,12 @@ using Elastos::Core::AutoLock;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Preference::CPreferenceInflater;
+using Elastos::Droid::Preference::CPreferenceManager;
+using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Utility::IList;
 using Elastos::Droid::Os::IBundle;
 
@@ -26,14 +30,14 @@ namespace Preference {
 
 const String PreferenceManager::TAG("PreferenceManager");
 
+CAR_INTERFACE_IMPL(PreferenceManager, Object, IPreferenceManager)
+
 PreferenceManager::PreferenceManager()
     : mNextId(0)
     , mNextRequestCode(0)
     , mNoCommit(FALSE)
     , mSharedPreferencesMode(0)
 {}
-
-CAR_INTERFACE_IMPL(PreferenceManager, Object, IPreferenceManager)
 
 ECode PreferenceManager::constructor(
     /* [in] */ IActivity* activity,
@@ -42,22 +46,20 @@ ECode PreferenceManager::constructor(
     mActivity = activity;
     mNextRequestCode = firstRequestCode;
 
-    Init(IContext::Probe(activity));
-    return NOERROR;
+    return Init(IContext::Probe(activity));
 }
 
 ECode PreferenceManager::constructor(
     /* [in] */ IContext* context)
 {
-    Init(context);
-    return NOERROR;
+    return Init(context);
 }
 
-void PreferenceManager::Init(
+ECode PreferenceManager::Init(
     /* [in] */ IContext* context)
 {
     mContext = context;
-    SetSharedPreferencesName(GetDefaultSharedPreferencesName(context));
+    return SetSharedPreferencesName(GetDefaultSharedPreferencesName(context));
 }
 
 ECode PreferenceManager::SetFragment(
@@ -101,68 +103,62 @@ ECode PreferenceManager::InflateFromIntent(
     /* [in] */ IPreferenceScreen* _rootPreferences,
     /* [out] */ IPreferenceScreen** screen)
 {
-    // VALIDATE_NOT_NULL(screen)
+    VALIDATE_NOT_NULL(screen)
 
-    // AutoPtr<IPreference> rootPreferences = IPreference::Probe(_rootPreferences);
+    AutoPtr<IPreference> rootPreferences = IPreference::Probe(_rootPreferences);
 
-    // AutoPtr<List<AutoPtr<IResolveInfo> > > activities = QueryIntentActivities(queryIntent);
-    // HashSet<String> inflatedRes;
+    AutoPtr<List<AutoPtr<IResolveInfo> > > activities = QueryIntentActivities(queryIntent);
+    HashSet<String> inflatedRes;
 
-    // List<AutoPtr<IResolveInfo> >::ReverseIterator rit = activities->RBegin();
-    // for (; rit != activities->REnd(); ++rit) {
-    //     AutoPtr<IActivityInfo> activityInfo;
-    //     (*rit)->GetActivityInfo((IActivityInfo**)&activityInfo);
-        // AutoPtr<IBundle> metaData;
-        // activityInfo->GetMetaData((IBundle**)&metaData);
+    List<AutoPtr<IResolveInfo> >::ReverseIterator rit = activities->RBegin();
+    for (; rit != activities->REnd(); ++rit) {
+        AutoPtr<IActivityInfo> activityInfo;
+        (*rit)->GetActivityInfo((IActivityInfo**)&activityInfo);
+        AutoPtr<IBundle> metaData;
+        IPackageItemInfo::Probe(activityInfo)->GetMetaData((IBundle**)&metaData);
 
-        // Boolean contains;
-        // if ((metaData == NULL) || (metaData->ContainsKey(METADATA_KEY_PREFERENCES, &contains), !contains)) {
-        //     continue;
-        // }
+        Boolean contains;
+        if ((metaData == NULL) || (metaData->ContainsKey(METADATA_KEY_PREFERENCES, &contains), !contains)) {
+            continue;
+        }
 
-        // Need to concat the package with res ID since the same res ID
-        // can be re-used across contexts
-        // String packageName;
-        // activityInfo->GetPackageName(&packageName);
-        // Int32 keyPreferences;
-        // metaData->GetInt32(METADATA_KEY_PREFERENCES, &keyPreferences);
-        // StringBuilder sb(packageName);
-        // sb += ":";
-        // sb += keyPreferences;
-        // String uniqueResId = sb.ToString();
+        //Need to concat the package with res ID since the same res ID
+        //can be re-used across contexts
+        String packageName;
+        IPackageItemInfo::Probe(activityInfo)->GetPackageName(&packageName);
+        Int32 keyPreferences;
+        metaData->GetInt32(METADATA_KEY_PREFERENCES, &keyPreferences);
+        StringBuilder sb(packageName);
+        sb += ":";
+        sb += keyPreferences;
+        String uniqueResId = sb.ToString();
 
-        // if (inflatedRes.Find(uniqueResId) == inflatedRes.End()) {
-        //     inflatedRes.Insert(uniqueResId);
+        if (inflatedRes.Find(uniqueResId) == inflatedRes.End()) {
+            inflatedRes.Insert(uniqueResId);
 
-        //     AutoPtr<IContext> context;
-        //     // try {
-        //     ECode ec = mContext->CreatePackageContext(packageName, 0, (IContext**)&context);
-        //     if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
-        //         Slogger::W(TAG, "Could not create context for %s: 0x%08x", packageName.string(), ec);
-        //         continue;
-        //     }
-            // } catch (NameNotFoundException e) {
-            //     Log.w(TAG, "Could not create context for " + activityInfo.packageName + ": "
-            //         + Log.getStackTraceString(e));
-            //     continue;
-            // }
+            AutoPtr<IContext> context;
+            ECode ec = mContext->CreatePackageContext(packageName, 0, (IContext**)&context);
+            if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
+                Slogger::W(TAG, "Could not create context for %s: 0x%08x", packageName.string(), ec);
+                continue;
+            }
+            AutoPtr<IGenericInflater> inflater;
+            CPreferenceInflater::New(context, (IPreferenceManager*)this, (IGenericInflater**)&inflater);
+            AutoPtr<IPackageManager> pm;
+            context->GetPackageManager((IPackageManager**)&pm);
+            AutoPtr<IXmlResourceParser> parser;
+            IPackageItemInfo::Probe(activityInfo)->LoadXmlMetaData(pm, METADATA_KEY_PREFERENCES, (IXmlResourceParser**)&parser);
+            AutoPtr<IInterface> temp;
+            inflater->Inflate(IXmlPullParser::Probe(parser), rootPreferences, TRUE, (IInterface**)&temp);
+            rootPreferences = IPreference::Probe(temp);
+            parser->Close();
+        }
+    }
 
-            // AutoPtr<PreferenceInflater> inflater = new PreferenceInflater(context, THIS_PROBE(IPreferenceManager));
-            // AutoPtr<IPackageManager> pm;
-            // context->GetPackageManager((IPackageManager**)&pm);
-            // AutoPtr<IXmlResourceParser> parser;
-            // activityInfo->LoadXmlMetaData(pm, METADATA_KEY_PREFERENCES, (IXmlResourceParser**)&parser);
-            // AutoPtr<IInterface> temp;
-            // inflater->Inflate(parser, rootPreferences, TRUE, (IInterface**)&temp);
-            // rootPreferences = IPreference::Probe(temp);
-            // parser->Close();
-    //     }
-    // }
+    rootPreferences->OnAttachedToHierarchy(this);
 
-    // rootPreferences->OnAttachedToHierarchy(this);
-
-    // *screen = IPreferenceScreen::Probe(rootPreferences);
-    // REFCOUNT_ADD(*screen)
+    *screen = IPreferenceScreen::Probe(rootPreferences);
+    REFCOUNT_ADD(*screen)
     return NOERROR;
 }
 
@@ -176,12 +172,12 @@ ECode PreferenceManager::InflateFromResource(
     // Block commits
     SetNoCommit(TRUE);
 
-    AutoPtr<CPreferenceInflater> inflater;
-    CPreferenceInflater::NewByFriend(context, this, (CPreferenceInflater**)&inflater);
+    AutoPtr<IGenericInflater> inflater;
+    CPreferenceInflater::New(context, (IPreferenceManager*)this, (IGenericInflater**)&inflater);
     AutoPtr<IInterface> pfObj;
-    inflater->Inflate(resId, IPreference::Probe(rootPreferences), TRUE, (IInterface**)&pfObj);
+    inflater->Inflate(resId, rootPreferences, TRUE, (IInterface**)&pfObj);
     AutoPtr<IPreference> pf = IPreference::Probe(pfObj);
-    pf->OnAttachedToHierarchy(THIS_PROBE(IPreferenceManager));
+    if (pf != NULL) pf->OnAttachedToHierarchy((IPreferenceManager*)this);
 
     // Unblock commits
     SetNoCommit(FALSE);
@@ -195,11 +191,12 @@ ECode PreferenceManager::CreatePreferenceScreen(
     /* [out] */ IPreferenceScreen** screen)
 {
     VALIDATE_NOT_NULL(screen)
-    // AutoPtr<IPreferenceScreen> preferenceScreen;
-    // CPreferenceScreen::New(context, NULL, (IPreferenceScreen**)&preferenceScreen);
-    // IPreference::Probe(preferenceScreen)->OnAttachedToHierarchy(this);
-    // *screen = preferenceScreen;
-    // REFCOUNT_ADD(*screen)
+    AutoPtr<IPreferenceScreen> preferenceScreen;
+    CPreferenceScreen::New(context, NULL, (IPreferenceScreen**)&preferenceScreen);
+    AutoPtr<IPreference> preference = IPreference::Probe(preferenceScreen);
+    preference->OnAttachedToHierarchy((IPreferenceManager*)this);
+    *screen = preferenceScreen.Get();
+    REFCOUNT_ADD(*screen)
     return NOERROR;
 }
 
@@ -207,8 +204,9 @@ ECode PreferenceManager::GetNextId(
     /* [out] */ Int64* id)
 {
     VALIDATE_NOT_NULL(id)
-    AutoLock lock(mLock);
-    *id = mNextId++;
+    synchronized (this){
+        *id = mNextId++;
+    }
     return NOERROR;
 }
 
@@ -259,13 +257,13 @@ ECode PreferenceManager::GetSharedPreferences(
     return NOERROR;
 }
 
-AutoPtr<ISharedPreferences> PreferenceManager::GetDefaultSharedPreferences(
-    /* [in] */ IContext* context)
+ECode PreferenceManager::GetDefaultSharedPreferences(
+    /* [in] */ IContext* context,
+    /* [out] */ ISharedPreferences** sp)
 {
-    AutoPtr<ISharedPreferences> preferences;
-    context->GetSharedPreferences(GetDefaultSharedPreferencesName(context),
-            GetDefaultSharedPreferencesMode(), (ISharedPreferences**)&preferences);
-    return preferences;
+    VALIDATE_NOT_NULL(sp)
+    return context->GetSharedPreferences(GetDefaultSharedPreferencesName(context),
+            GetDefaultSharedPreferencesMode(), sp);
 }
 
 String PreferenceManager::GetDefaultSharedPreferencesName(
@@ -317,17 +315,17 @@ ECode PreferenceManager::FindPreference(
     return NOERROR;
 }
 
-void PreferenceManager::SetDefaultValues(
+ECode PreferenceManager::SetDefaultValues(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resId,
     /* [in] */ Boolean readAgain)
 {
     // Use the default shared preferences name and mode
-    SetDefaultValues(context, GetDefaultSharedPreferencesName(context),
+    return SetDefaultValues(context, GetDefaultSharedPreferencesName(context),
             GetDefaultSharedPreferencesMode(), resId, readAgain);
 }
 
-void PreferenceManager::SetDefaultValues(
+ECode PreferenceManager::SetDefaultValues(
     /* [in] */ IContext* context,
     /* [in] */ const String& sharedPreferencesName,
     /* [in] */ Int32 sharedPreferencesMode,
@@ -349,15 +347,19 @@ void PreferenceManager::SetDefaultValues(
         AutoPtr<ISharedPreferencesEditor> editor;
         defaultValueSp->Edit((ISharedPreferencesEditor**)&editor);
         editor->PutBoolean(KEY_HAS_SET_DEFAULT_VALUES, TRUE);
-        // try {
-        editor->Apply();
-        // } catch (AbstractMethodError unused) {
-        //     // The app injected its own pre-Gingerbread
-        //     // SharedPreferences.Editor implementation without
-        //     // an apply method.
-        //     editor.commit();
-        // }
+        ECode ec = editor->Apply();
+        if (FAILED(ec)) {
+            // The app injected its own pre-Gingerbread
+            // SharedPreferences.Editor implementation without
+            // an apply method.
+            Boolean result = FALSE;
+            editor->Commit(&result);
+            assert(0);
+            // return E_ABSTRACT_METHOD_ERROR;
+            return NOERROR;
+        }
     }
+    return NOERROR;
 }
 
 ECode PreferenceManager::GetEditor(
@@ -397,14 +399,16 @@ void PreferenceManager::SetNoCommit(
     /* [in] */ Boolean noCommit)
 {
     if (!noCommit && mEditor != NULL) {
-        // try {
-        mEditor->Apply();
-        // } catch (AbstractMethodError unused) {
-        //     // The app injected its own pre-Gingerbread
-        //     // SharedPreferences.Editor implementation without
-        //     // an apply method.
-        //     mEditor.commit();
-        // }
+        ECode ec = mEditor->Apply();
+        if (FAILED(ec)) {
+            // The app injected its own pre-Gingerbread
+            // SharedPreferences.Editor implementation without
+            // an apply method.
+            Boolean result = FALSE;
+            mEditor->Commit(&result);
+            assert(0);
+            // return E_ABSTRACT_METHOD_ERROR;
+        }
     }
     mNoCommit = noCommit;
 }
@@ -430,28 +434,28 @@ ECode PreferenceManager::GetContext(
 ECode PreferenceManager::RegisterOnActivityResultListener(
     /* [in] */ IPreferenceManagerOnActivityResultListener* listener)
 {
-    AutoLock lock(mLock);
+    synchronized (this) {
+        if (mActivityResultListeners == NULL) {
+            mActivityResultListeners = new List<AutoPtr<IPreferenceManagerOnActivityResultListener> >();
+        }
 
-    if (mActivityResultListeners == NULL) {
-        mActivityResultListeners = new List<AutoPtr<IPreferenceManagerOnActivityResultListener> >();
+        AutoPtr<IPreferenceManagerOnActivityResultListener> temp = listener;
+        List<AutoPtr<IPreferenceManagerOnActivityResultListener> >::Iterator it
+                = Find(mActivityResultListeners->Begin(), mActivityResultListeners->End(), temp);
+        if (it == mActivityResultListeners->End()) {
+            mActivityResultListeners->PushBack(listener);
+        }
     }
-
-    AutoPtr<IPreferenceManagerOnActivityResultListener> temp = listener;
-    List<AutoPtr<IPreferenceManagerOnActivityResultListener> >::Iterator it
-            = Find(mActivityResultListeners->Begin(), mActivityResultListeners->End(), temp);
-    if (it == mActivityResultListeners->End()) {
-        mActivityResultListeners->PushBack(listener);
-    }
-
     return NOERROR;
 }
 
 ECode PreferenceManager::UnregisterOnActivityResultListener(
     /* [in] */ IPreferenceManagerOnActivityResultListener* listener)
 {
-    AutoLock lock(mLock);
-    if (mActivityResultListeners != NULL) {
-        mActivityResultListeners->Remove(listener);
+    synchronized (this) {
+        if (mActivityResultListeners != NULL) {
+            mActivityResultListeners->Remove(listener);
+        }
     }
     return NOERROR;
 }
@@ -463,8 +467,7 @@ ECode PreferenceManager::DispatchActivityResult(
 {
     AutoPtr<List< AutoPtr<IPreferenceManagerOnActivityResultListener> > > list;
 
-    {
-        AutoLock lock(mLock);
+    synchronized(this) {
         if (mActivityResultListeners == NULL) {
             return NOERROR;
         }
@@ -479,34 +482,34 @@ ECode PreferenceManager::DispatchActivityResult(
             break;
         }
     }
-
     return NOERROR;
 }
 
 ECode PreferenceManager::RegisterOnActivityStopListener(
     /* [in] */ IPreferenceManagerOnActivityStopListener* listener)
 {
-    AutoLock lock(mLock);
-    if (mActivityStopListeners == NULL) {
-        mActivityStopListeners = new List<AutoPtr<IPreferenceManagerOnActivityStopListener> >();
-    }
+    synchronized(this) {
+        if (mActivityStopListeners == NULL) {
+            mActivityStopListeners = new List<AutoPtr<IPreferenceManagerOnActivityStopListener> >();
+        }
 
-    AutoPtr<IPreferenceManagerOnActivityStopListener> temp = listener;
-    List<AutoPtr<IPreferenceManagerOnActivityStopListener> >::Iterator it
-            = Find(mActivityStopListeners->Begin(), mActivityStopListeners->End(), temp);
-    if (it == mActivityStopListeners->End()) {
-        mActivityStopListeners->PushBack(listener);
+        AutoPtr<IPreferenceManagerOnActivityStopListener> temp = listener;
+        List<AutoPtr<IPreferenceManagerOnActivityStopListener> >::Iterator it
+                = Find(mActivityStopListeners->Begin(), mActivityStopListeners->End(), temp);
+        if (it == mActivityStopListeners->End()) {
+            mActivityStopListeners->PushBack(listener);
+        }
     }
-
     return NOERROR;
 }
 
 ECode PreferenceManager::UnregisterOnActivityStopListener(
     /* [in] */ IPreferenceManagerOnActivityStopListener* listener)
 {
-    AutoLock lock(mLock);
-    if (mActivityStopListeners != NULL) {
-        mActivityStopListeners->Remove(listener);
+    synchronized(this) {
+        if (mActivityStopListeners != NULL) {
+            mActivityStopListeners->Remove(listener);
+        }
     }
     return NOERROR;
 }
@@ -515,8 +518,7 @@ ECode PreferenceManager::DispatchActivityStop()
 {
     AutoPtr<List<AutoPtr<IPreferenceManagerOnActivityStopListener> > > list;
 
-    {
-        AutoLock lock(mLock);
+    synchronized(this) {
         if (mActivityStopListeners == NULL) return NOERROR;
         list = new List<AutoPtr<IPreferenceManagerOnActivityStopListener> >(*mActivityStopListeners);
     }
@@ -531,16 +533,17 @@ ECode PreferenceManager::DispatchActivityStop()
 ECode PreferenceManager::RegisterOnActivityDestroyListener(
     /* [in] */ IPreferenceManagerOnActivityDestroyListener* listener)
 {
-    AutoLock lock(mLock);
-    if (mActivityDestroyListeners == NULL) {
-        mActivityDestroyListeners = new List<AutoPtr<IPreferenceManagerOnActivityDestroyListener> >();
-    }
+    synchronized(this) {
+        if (mActivityDestroyListeners == NULL) {
+            mActivityDestroyListeners = new List<AutoPtr<IPreferenceManagerOnActivityDestroyListener> >();
+        }
 
-    AutoPtr<IPreferenceManagerOnActivityDestroyListener> temp = listener;
-    List<AutoPtr<IPreferenceManagerOnActivityDestroyListener> >::Iterator it
-            = Find(mActivityDestroyListeners->Begin(), mActivityDestroyListeners->End(), temp);
-    if (it == mActivityDestroyListeners->End()) {
-        mActivityDestroyListeners->PushBack(listener);
+        AutoPtr<IPreferenceManagerOnActivityDestroyListener> temp = listener;
+        List<AutoPtr<IPreferenceManagerOnActivityDestroyListener> >::Iterator it
+                = Find(mActivityDestroyListeners->Begin(), mActivityDestroyListeners->End(), temp);
+        if (it == mActivityDestroyListeners->End()) {
+            mActivityDestroyListeners->PushBack(listener);
+        }
     }
     return NOERROR;
 }
@@ -548,9 +551,10 @@ ECode PreferenceManager::RegisterOnActivityDestroyListener(
 ECode PreferenceManager::UnregisterOnActivityDestroyListener(
     /* [in] */ IPreferenceManagerOnActivityDestroyListener* listener)
 {
-    AutoLock lock(mLock);
-    if (mActivityDestroyListeners != NULL) {
-        mActivityDestroyListeners->Remove(listener);
+    synchronized(this) {
+        if (mActivityDestroyListeners != NULL) {
+            mActivityDestroyListeners->Remove(listener);
+        }
     }
     return NOERROR;
 }
@@ -559,8 +563,7 @@ ECode PreferenceManager::DispatchActivityDestroy()
 {
     AutoPtr<List<AutoPtr<IPreferenceManagerOnActivityDestroyListener> > > list;
 
-    {
-        AutoLock lock(mLock);
+    synchronized(this) {
         if (mActivityDestroyListeners != NULL) {
             list = new List<AutoPtr<IPreferenceManagerOnActivityDestroyListener> >(*mActivityDestroyListeners);
         }
@@ -575,7 +578,6 @@ ECode PreferenceManager::DispatchActivityDestroy()
 
     // Dismiss any PreferenceScreens still showing
     DismissAllScreens();
-
     return NOERROR;
 }
 
@@ -583,33 +585,35 @@ ECode PreferenceManager::GetNextRequestCode(
     /* [out] */ Int32* code)
 {
     VALIDATE_NOT_NULL(code)
-    AutoLock lock(mLock);
-    *code = mNextRequestCode++;
+    synchronized(this) {
+        *code = mNextRequestCode++;
+    }
     return NOERROR;
 }
 
 ECode PreferenceManager::AddPreferencesScreen(
     /* [in] */ IDialogInterface* screen)
 {
-    AutoLock lock(mLock);
-    if (mPreferencesScreens == NULL) {
-        mPreferencesScreens = new List<AutoPtr<IDialogInterface> >();
-    }
+    synchronized(this) {
+        if (mPreferencesScreens == NULL) {
+            mPreferencesScreens = new List<AutoPtr<IDialogInterface> >();
+        }
 
-    mPreferencesScreens->PushBack(screen);
+        mPreferencesScreens->PushBack(screen);
+    }
     return NOERROR;
 }
 
 ECode PreferenceManager::RemovePreferencesScreen(
     /* [in] */ IDialogInterface* screen)
 {
-    AutoLock lock(mLock);
+    synchronized(this) {
+        if (mPreferencesScreens == NULL) {
+            return NOERROR;
+        }
 
-    if (mPreferencesScreens == NULL) {
-        return NOERROR;
+        mPreferencesScreens->Remove(screen);
     }
-
-    mPreferencesScreens->Remove(screen);
     return NOERROR;
 }
 
@@ -625,8 +629,7 @@ void PreferenceManager::DismissAllScreens()
      // Remove any of the previously shown preferences screens
     AutoPtr<List<AutoPtr<IDialogInterface> > > screensToDismiss;
 
-    {
-        AutoLock lock(mLock);
+    synchronized (this) {
         if (mPreferencesScreens == NULL) {
             return;
         }

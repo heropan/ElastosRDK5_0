@@ -6,10 +6,9 @@
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CString;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IFragment;
+using Elastos::Droid::App::EIID_IFragment;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::EIID_IHandler;
@@ -17,6 +16,8 @@ using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::EIID_IViewOnKeyListener;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::Widget::IAdapterView;
+using Elastos::Core::CString;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -25,7 +26,6 @@ namespace Preference {
 const String PreferenceFragment::PREFERENCES_TAG("android:preferences");
 const Int32 PreferenceFragment::FIRST_REQUEST_CODE;
 const Int32 PreferenceFragment::MSG_BIND_PREFERENCES;
-
 
 /////////////////////////////////////////////////////
 // PreferenceFragment::PreferenceFragmentHandler
@@ -49,7 +49,6 @@ ECode PreferenceFragment::PreferenceFragmentHandler::HandleMessage(
     return NOERROR;
 }
 
-
 /////////////////////////////////////////////////////
 // PreferenceFragment::RequestFocus
 /////////////////////////////////////////////////////
@@ -64,17 +63,16 @@ ECode PreferenceFragment::RequestFocus::Run()
     return IViewParent::Probe(mHost->mList)->FocusableViewAvailable(IView::Probe(mHost->mList));
 }
 
-
 /////////////////////////////////////////////////////
 // PreferenceFragment::PreferenceFragmentOnKeyListener
 /////////////////////////////////////////////////////
+
+CAR_INTERFACE_IMPL(PreferenceFragment::PreferenceFragmentOnKeyListener, Object, IViewOnKeyListener)
 
 PreferenceFragment::PreferenceFragmentOnKeyListener::PreferenceFragmentOnKeyListener(
     /* [in] */ PreferenceFragment* host)
     : mHost(host)
 {}
-
-CAR_INTERFACE_IMPL(PreferenceFragment::PreferenceFragmentOnKeyListener, Object, IViewOnKeyListener)
 
 ECode PreferenceFragment::PreferenceFragmentOnKeyListener::OnKey(
     /* [in] */ IView* v,
@@ -100,6 +98,8 @@ ECode PreferenceFragment::PreferenceFragmentOnKeyListener::OnKey(
 // PreferenceFragment
 /////////////////////////////////////////////////////
 
+CAR_INTERFACE_IMPL_2(PreferenceFragment, Fragment, IPreferenceFragment,IPreferenceManagerOnPreferenceTreeClickListener)
+
 PreferenceFragment::PreferenceFragment()
     : mHavePrefs(FALSE)
     , mInitDone(FALSE)
@@ -110,17 +110,14 @@ PreferenceFragment::PreferenceFragment()
     mListOnKeyListener = new PreferenceFragmentOnKeyListener(this);
 }
 
-// CAR_INTERFACE_IMPL_2(PreferenceFragment, Fragment, IPreferenceFragment,IPreferenceManagerOnPreferenceTreeClickListener)
-CAR_INTERFACE_IMPL_2(PreferenceFragment, Object, IPreferenceFragment,IPreferenceManagerOnPreferenceTreeClickListener)
-
 ECode PreferenceFragment::OnCreate(
     /*[in]*/ IBundle* savedInstanceState)
 {
-    // Fragment::OnCreate(savedInstanceState);
-    // AutoPtr<IActivity> activity;
-    // GetActivity((IActivity**)&activity);
-    // CPreferenceManager::New(activity, FIRST_REQUEST_CODE, (IPreferenceManager**)&mPreferenceManager);
-    // mPreferenceManager->SetFragment((IPreferenceFragment*)this->Probe(EIID_IPreferenceFragment));
+    Fragment::OnCreate(savedInstanceState);
+    AutoPtr<IActivity> activity;
+    GetActivity((IActivity**)&activity);
+    CPreferenceManager::New(activity, FIRST_REQUEST_CODE, (IPreferenceManager**)&mPreferenceManager);
+    mPreferenceManager->SetFragment((IPreferenceFragment*)this->Probe(EIID_IPreferenceFragment));
     return NOERROR;
 }
 
@@ -132,23 +129,26 @@ ECode PreferenceFragment::OnCreateView(
 {
     VALIDATE_NOT_NULL(view)
 
-    // AutoPtr<IActivity> activity;
-    // Fragment::GetActivity((IActivity**)&activity);
-    // AutoPtr<ITypedArray> a;
-    // activity->ObtainStyledAttributes(NULL, R::styleable::PreferenceFragment,
-    //      R::attr::preferenceFragmentStyle, 0, (ITypedArray**)&a);
+    AutoPtr<IActivity> activity;
+    Fragment::GetActivity((IActivity**)&activity);
 
-    // a->GetResourceId(R::styleable::PreferenceFragment_layout, mLayoutResId, &mLayoutResId);
-    // a->Recycle();
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::PreferenceFragment),
+            ARRAY_SIZE(R::styleable::PreferenceFragment));
+    AutoPtr<ITypedArray> a;
+    IContext::Probe(activity)->ObtainStyledAttributes(NULL, attrIds,
+         R::attr::preferenceFragmentStyle, 0, (ITypedArray**)&a);
 
-    // return inflater->Inflate(mLayoutResId, container, FALSE, view);
-    return NOERROR;
+    a->GetResourceId(R::styleable::PreferenceFragment_layout, mLayoutResId, &mLayoutResId);
+    a->Recycle();
+
+    return inflater->Inflate(mLayoutResId, container, FALSE, view);
 }
 
 ECode PreferenceFragment::OnActivityCreated(
     /*[in]*/ IBundle* savedInstanceState)
 {
-    // Fragment::OnActivityCreated(savedInstanceState);
+    Fragment::OnActivityCreated(savedInstanceState);
 
     if (mHavePrefs) {
         BindPreferences();
@@ -172,7 +172,7 @@ ECode PreferenceFragment::OnActivityCreated(
 
 ECode PreferenceFragment::OnStart()
 {
-    // Fragment::OnStart();
+    Fragment::OnStart();
     mPreferenceManager->SetOnPreferenceTreeClickListener(
             (IPreferenceManagerOnPreferenceTreeClickListener*)this->Probe(EIID_IPreferenceManagerOnPreferenceTreeClickListener));
     return NOERROR;
@@ -180,7 +180,7 @@ ECode PreferenceFragment::OnStart()
 
 ECode PreferenceFragment::OnStop()
 {
-    // Fragment::OnStop();
+    Fragment::OnStop();
     mPreferenceManager->DispatchActivityStop();
     mPreferenceManager->SetOnPreferenceTreeClickListener(NULL);
     return NOERROR;
@@ -191,13 +191,12 @@ ECode PreferenceFragment::OnDestroyView()
     mList = NULL;
     mHandler->RemoveCallbacks(mRequestFocus);
     mHandler->RemoveMessages(MSG_BIND_PREFERENCES);
-    // return Fragment::OnDestroyView();
-    return NOERROR;
+    return Fragment::OnDestroyView();
 }
 
 ECode PreferenceFragment::OnDestroy()
 {
-    // Fragment::OnDestroy();
+    Fragment::OnDestroy();
     mPreferenceManager->DispatchActivityDestroy();
     return NOERROR;
 }
@@ -205,7 +204,7 @@ ECode PreferenceFragment::OnDestroy()
 ECode PreferenceFragment::OnSaveInstanceState(
       /*[in]*/ IBundle* outState)
 {
-    // Fragment::OnSaveInstanceState(outState);
+    Fragment::OnSaveInstanceState(outState);
 
     AutoPtr<IPreferenceScreen> preferenceScreen;
     GetPreferenceScreen((IPreferenceScreen**)&preferenceScreen);
@@ -223,7 +222,7 @@ ECode PreferenceFragment::OnActivityResult(
      /*[in]*/ Int32 resultCode,
      /*[in]*/ IIntent* data)
 {
-    // Fragment::OnActivityResult(requestCode, resultCode, data);
+    Fragment::OnActivityResult(requestCode, resultCode, data);
     mPreferenceManager->DispatchActivityResult(requestCode, resultCode, data);
     return NOERROR;
 }
@@ -279,13 +278,13 @@ ECode PreferenceFragment::AddPreferencesFromResource(
 {
     RequirePreferenceManager();
 
-    // AutoPtr<IActivity> activity;
-    // GetActivity((IActivity**)&activity);
-    // AutoPtr<IPreferenceScreen> rootscreen;
-    // GetPreferenceScreen((IPreferenceScreen**)&rootscreen);
-    // AutoPtr<IPreferenceScreen> screen;
-    // mPreferenceManager->InflateFromResource(activity, preferencesResId, rootscreen, (IPreferenceScreen**)&screen);
-    // SetPreferenceScreen(screen);
+    AutoPtr<IActivity> activity;
+    GetActivity((IActivity**)&activity);
+    AutoPtr<IPreferenceScreen> rootscreen;
+    GetPreferenceScreen((IPreferenceScreen**)&rootscreen);
+    AutoPtr<IPreferenceScreen> screen;
+    mPreferenceManager->InflateFromResource(IContext::Probe(activity), preferencesResId, rootscreen, (IPreferenceScreen**)&screen);
+    SetPreferenceScreen(screen);
     return NOERROR;
 }
 
@@ -295,13 +294,13 @@ ECode PreferenceFragment::OnPreferenceTreeClick(
     /*[out]*/ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    // String fragment;
-    // AutoPtr<IActivity> activity;
-    // if ((preference->GetFragment(&fragment), !fragment.IsNull()) &&
-    //         (GetActivity((IActivity**)&activity),  IPreferenceFragmentOnPreferenceStartFragmentCallback::Probe(activity) != NULL)) {
-    //     AutoPtr<IPreferenceFragmentOnPreferenceStartFragmentCallback> cb = IPreferenceFragmentOnPreferenceStartFragmentCallback::Probe(activity);
-    //     return cb->OnPreferenceStartFragment((IPreferenceFragment*)this->Probe(EIID_IPreferenceFragment), preference, result);
-    // }
+    String fragment;
+    AutoPtr<IActivity> activity;
+    if ((preference->GetFragment(&fragment), !fragment.IsNull()) &&
+            (GetActivity((IActivity**)&activity),  IPreferenceFragmentOnPreferenceStartFragmentCallback::Probe(activity) != NULL)) {
+        AutoPtr<IPreferenceFragmentOnPreferenceStartFragmentCallback> cb = IPreferenceFragmentOnPreferenceStartFragmentCallback::Probe(activity);
+        return cb->OnPreferenceStartFragment((IPreferenceFragment*)this->Probe(EIID_IPreferenceFragment), preference, result);
+    }
     *result = FALSE;
     return NOERROR;
 }
@@ -378,22 +377,19 @@ ECode PreferenceFragment::HasListView(
         *result = TRUE;
         return NOERROR;
     }
-    // AutoPtr<IView> root;
-    // Fragment::GetView((IView**)&root);
-    // if (root == NULL) {
-    //     *result = FALSE;
-    //     return NOERROR;
-    // }
-    // AutoPtr<IView> rawListView = root->FindViewById(R::id::list);//android.R.id.list
-    // if (rawListView->Probe(EIID_IListView) == NULL) {
-    //     *result = FALSE;
-    //     return NOERROR;
-    // }
-    // mList = rawListView->Probe(EIID_IListView);
-    // if (mList == NULL) {
-    //     *result = FALSE;
-    //     return NOERROR;
-    // }
+    AutoPtr<IView> root;
+    Fragment::GetView((IView**)&root);
+    if (root == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    AutoPtr<IView> rawListView;
+    root->FindViewById(R::id::list, (IView**)&rawListView);
+    mList = IListView::Probe(rawListView);
+    if (mList == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
     *result = TRUE;
     return NOERROR;
 }
@@ -404,7 +400,8 @@ ECode PreferenceFragment::EnsureList()
         return NOERROR;
     }
     AutoPtr<IView> root;
-    IFragment::Probe(this)->GetView((IView**)&root);
+    AutoPtr<IFragment> fragment = THIS_PROBE(IFragment);
+    fragment->GetView((IView**)&root);
 
     if (root == NULL) {
         Slogger::E(PREFERENCES_TAG, "Content view not yet created");
@@ -422,7 +419,9 @@ ECode PreferenceFragment::EnsureList()
         Slogger::E(PREFERENCES_TAG, "Your content must have a ListView whose id attribute is 'android.R.id.list'");
         return E_RUNTIME_EXCEPTION;
     }
-    IView::Probe(mList)->SetOnKeyListener(mListOnKeyListener);
+    rawListView = NULL;
+    rawListView = (IView*)(mList.Get());
+    rawListView->SetOnKeyListener(mListOnKeyListener);
     Boolean result;
     mHandler->Post(mRequestFocus, &result);
     return NOERROR;

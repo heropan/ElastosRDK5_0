@@ -2,38 +2,66 @@
 #include "elastos/droid/preference/PreferenceGroup.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/R.h"
-#include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
 
-using Elastos::Utility::ICollections;
-using Elastos::Utility::CCollections;
-using Elastos::Utility::IArrayList;
-using Elastos::Utility::CArrayList;
-using Elastos::Utility::IList;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::R;
 using Elastos::Core::AutoLock;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
+
 CAR_INTERFACE_IMPL_2(PreferenceGroup, Preference, IGenericInflaterParent, IPreferenceGroup)
 
 PreferenceGroup::PreferenceGroup()
+{
+}
+
+PreferenceGroup::PreferenceGroup(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
     : mOrderingAsAdded(TRUE)
     , mCurrentPreferenceOrder(0)
     , mAttachedToActivity(FALSE)
-{}
+{
+    Init(context, attrs, defStyleAttr, defStyleRes);
+}
 
-ECode PreferenceGroup::constructor(
+PreferenceGroup::PreferenceGroup(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+    : mOrderingAsAdded(TRUE)
+    , mCurrentPreferenceOrder(0)
+    , mAttachedToActivity(FALSE)
+{
+    Init(context, attrs, defStyleAttr, 0);
+}
+
+PreferenceGroup::PreferenceGroup(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+    : mOrderingAsAdded(TRUE)
+    , mCurrentPreferenceOrder(0)
+    , mAttachedToActivity(FALSE)
+{
+    Init(context, attrs, 0, 0);
+}
+
+void PreferenceGroup::Init(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
+    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceGroup),
             ARRAY_SIZE(R::styleable::PreferenceGroup));
@@ -42,8 +70,6 @@ ECode PreferenceGroup::constructor(
     a->GetBoolean(R::styleable::PreferenceGroup_orderingFromXml,
             mOrderingAsAdded, &mOrderingAsAdded);
     a->Recycle();
-
-    return NOERROR;
 }
 
 ECode PreferenceGroup::SetOrderingAsAdded(
@@ -72,7 +98,7 @@ ECode PreferenceGroup::GetPreferenceCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count)
-    *count = mPreferenceList.GetSize();
+    mPreferenceList->GetSize(count);
     return NOERROR;
 }
 
@@ -81,8 +107,7 @@ ECode PreferenceGroup::GetPreference(
     /* [out] */ IPreference** preference)
 {
     VALIDATE_NOT_NULL(preference)
-    *preference = mPreferenceList[index];
-    REFCOUNT_ADD(*preference)
+    mPreferenceList->Get(index, (IInterface**)preference);
     return NOERROR;
 }
 
@@ -92,10 +117,8 @@ ECode PreferenceGroup::AddPreference(
 {
     VALIDATE_NOT_NULL(result)
 
-    AutoPtr<IPreference> p;
-    List<AutoPtr<IPreference> >::Iterator it = Find(mPreferenceList.Begin(), mPreferenceList.End(), p);
-    if (it != mPreferenceList.End()) {
-        *result = TRUE;
+    if (mPreferenceList->Contains(preference, result), *result) {
+        // Exists
         return NOERROR;
     }
 
@@ -115,17 +138,10 @@ ECode PreferenceGroup::AddPreference(
 
     }
 
-    AutoPtr<IArrayList> arrayList;
-    CArrayList::New((IArrayList**)&arrayList);
-    it = mPreferenceList.Begin();
-    for (; it != mPreferenceList.End(); ++it) {
-        Boolean isSuccess;
-        arrayList->Add(*it, &isSuccess);
-    }
-    AutoPtr<ICollections> collections;
-    CCollections::AcquireSingleton((ICollections**)&collections);
+    AutoPtr<ICollections> coll;
+    CCollections::AcquireSingleton((ICollections**)&coll);
     Int32 insertionIndex;
-    collections->BinarySearch(IList::Probe(arrayList), preference, &insertionIndex);
+    coll->BinarySearch(mPreferenceList, preference, &insertionIndex);
     if (insertionIndex < 0) {
         insertionIndex = insertionIndex * -1 - 1;
     }
@@ -136,9 +152,8 @@ ECode PreferenceGroup::AddPreference(
         return NOERROR;
     }
 
-    {
-        AutoLock lock(mLock);
-        mPreferenceList.Insert(insertionIndex, preference);
+    synchronized(this) {
+        mPreferenceList->Add(insertionIndex, preference);
     }
 
     AutoPtr<IPreferenceManager> preferencemanager;
@@ -168,22 +183,26 @@ ECode PreferenceGroup::RemovePreference(
 Boolean PreferenceGroup::RemovePreferenceInt(
     /* [in] */ IPreference* preference)
 {
-    AutoLock lock(mLock);
-    preference->OnPrepareForRemoval();
-    mPreferenceList.Remove(preference);
-    return TRUE;
+    Boolean modified;
+    synchronized(this) {
+        preference->OnPrepareForRemoval();
+        mPreferenceList->Remove(preference, &modified);
+    }
+    return modified;
 }
 
 ECode PreferenceGroup::RemoveAll()
 {
-    {
-        AutoLock lock(mLock);
-        List<AutoPtr<IPreference> > preferenceList(mPreferenceList);
-        for (Int32 i = preferenceList.GetSize() - 1; i >= 0; i--) {
-            RemovePreferenceInt(*(preferenceList.Begin()));
+    synchronized(this) {
+        AutoPtr<IList> preferenceList = mPreferenceList;
+        Int32 i;
+        preferenceList->GetSize(&i);
+        for (i = i - 1; i >= 0; i--) {
+            AutoPtr<IPreference> preference;
+            preferenceList->Get(0, (IInterface**)&preference);
+            RemovePreferenceInt(preference);
         }
     }
-
     NotifyHierarchyChanged();
     return NOERROR;
 }
@@ -209,6 +228,7 @@ ECode PreferenceGroup::FindPreference(
     String keyStr1, keyStr2;
     GetKey(&keyStr1);
     key->ToString(&keyStr2);
+    assert(0);
     // if (TextUtils::Equals(keyStr1, keyStr2)) {
     //     *preferencevalue = THIS_PROBE(IPreference);
     //     REFCOUNT_ADD(*preferencevalue)
@@ -268,7 +288,6 @@ ECode PreferenceGroup::OnAttachedToActivity()
         GetPreference(i, (IPreference**)&p);
         p->OnAttachedToActivity();
     }
-
     return NOERROR;
 }
 
@@ -300,17 +319,12 @@ ECode PreferenceGroup::NotifyDependencyChange(
 
 ECode PreferenceGroup::SortPreferences()
 {
-    AutoLock lock(mLock);
-    AutoPtr<IArrayList> arrayList;
-    CArrayList::New((IArrayList**)&arrayList);
-    List<AutoPtr<IPreference> >::Iterator it = mPreferenceList.Begin();
-    for (; it != mPreferenceList.End(); ++it) {
-        Boolean isSuccess;
-        arrayList->Add(*it, &isSuccess);
+    synchronized(this) {
+        AutoPtr<ICollections> coll;
+        CCollections::AcquireSingleton((ICollections**)&coll);
+        coll->Sort(mPreferenceList);
     }
-    AutoPtr<ICollections> collections;
-    CCollections::AcquireSingleton((ICollections**)&collections);
-    return collections->Sort(IList::Probe(arrayList));
+    return NOERROR;
 }
 
 ECode PreferenceGroup::DispatchSaveInstanceState(
@@ -326,7 +340,6 @@ ECode PreferenceGroup::DispatchSaveInstanceState(
         GetPreference(i, (IPreference**)&p);
         p->DispatchSaveInstanceState(container);
     }
-
     return NOERROR;
 }
 
@@ -343,7 +356,6 @@ ECode PreferenceGroup::DispatchRestoreInstanceState(
         GetPreference(i, (IPreference**)&p);
         p->DispatchRestoreInstanceState(container);
     }
-
     return NOERROR;
 }
 

@@ -14,14 +14,14 @@ class VolumePreferenceSavedState
     , public IVolumePreferenceSavedState
 {
 public:
+    CAR_INTERFACE_DECL()
+
     VolumePreferenceSavedState();
 
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IParcelable* superState);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);

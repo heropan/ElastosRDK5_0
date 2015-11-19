@@ -1,30 +1,26 @@
 
-#include "elastos/droid/preference/PreferenceActivity.h"
-#include "elastos/droid/utility/Xml.h"
-#include "elastos/droid/utility/XmlUtils.h"
 #include "elastos/droid/app/Fragment.h"
-#include "elastos/droid/text/TextUtils.h"
-#ifdef DROID_CORE
-#include "elastos/droid/preference/CPreferenceManager.h"
-#include "elastos/droid/preference/CPreferenceActivityHeader.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CIntentHelper.h"
 #include "elastos/droid/os/CBundle.h"
-// #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
-#endif
+#include "elastos/droid/preference/CPreferenceActivityHeader.h"
+#include "elastos/droid/preference/CPreferenceManager.h"
+#include "elastos/droid/preference/PreferenceActivity.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
+// #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Logger;
-using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
+using Elastos::Droid::App::EIID_IActivity;
 using Elastos::Droid::App::Fragment;
 using Elastos::Droid::App::IFragmentManager;
 using Elastos::Droid::App::IFragmentTransaction;
-using Elastos::Droid::App::EIID_IActivity;
-using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::CIntentHelper;
+using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Content::IIntentHelper;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ITypedArray;
@@ -34,20 +30,31 @@ using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::Xml;
-using Elastos::Droid::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 // using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
-using Elastos::Droid::Widget::IArrayAdapter;
-using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
 using Elastos::Droid::Widget::IAbsListView;
+using Elastos::Droid::Widget::IAdapter;
+using Elastos::Droid::Widget::IArrayAdapter;
 using Elastos::Droid::Widget::IBaseAdapter;
+using Elastos::Droid::Widget::EIID_IArrayAdapter;
 using Elastos::Droid::Widget::EIID_IBaseAdapter;
+using Elastos::Droid::Widget::EIID_IListAdapter;
+using Elastos::Droid::Widget::EIID_ISpinnerAdapter;
+using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
 using Org::Xmlpull::V1::IXmlPullParser;
+using Elastos::Core::CString;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
+
 const String PreferenceActivity::TAG("PreferenceActivity");
 const String PreferenceActivity::HEADERS_TAG(":android:headers");
 const String PreferenceActivity::CUR_HEADER_TAG(":android:cur_header");
@@ -62,10 +69,15 @@ const Int32 PreferenceActivity::MSG_BIND_PREFERENCES;
 const Int32 PreferenceActivity::MSG_BUILD_HEADERS;
 
 //====================================================
-// PreferenceActivity::MyHandler
+// PreferenceActivity::MHandler
 //====================================================
-onBuildHeaders(List<Header> target)
-ECode PreferenceActivity::MyHandler::HandleMessage(
+
+PreferenceActivity::MHandler::MHandler(
+    /* [in] */ PreferenceActivity* host)
+    : mHost(host)
+{}
+
+ECode PreferenceActivity::MHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     Int32 what;
@@ -76,10 +88,12 @@ ECode PreferenceActivity::MyHandler::HandleMessage(
             mHost->BindPreferences();
             break;
         case MSG_BUILD_HEADERS:
-            List<AutoPtr<IPreferenceActivityHeader> > oldHeaders(mHost->mHeaders);
-            mHost->mHeaders.Clear();
-            mHost->OnBuildHeaders(mHeaders);
-            AutoPtr<IBaseAdapter> baseAdapter = IBaseAdapter::Probe(mAdapter);
+            AutoPtr<IArrayList> oldHeaders;
+            AutoPtr<ICollection> coll = ICollection::Probe(mHost->mHeaders);
+            CArrayList::New((ICollection*)coll, (IArrayList**)&oldHeaders);
+            mHost->mHeaders->Clear();
+            mHost->OnBuildHeaders(mHost->mHeaders);
+            AutoPtr<IBaseAdapter> baseAdapter = IBaseAdapter::Probe(mHost->mAdapter);
             if (baseAdapter != NULL) {
                 baseAdapter->NotifyDataSetChanged();
             }
@@ -87,34 +101,38 @@ ECode PreferenceActivity::MyHandler::HandleMessage(
             mHost->OnGetNewHeader((IPreferenceActivityHeader**)&header);
             String fragment;
             if (header != NULL && (header->GetFragment(&fragment), !fragment.IsNull())) {
-                AutoPtr<IPreferenceActivityHeader> mappedHeader = mHost->FindBestMatchingHeader(header, oldHeaders);
+                AutoPtr<IPreferenceActivityHeader> mappedHeader;
+                mHost->FindBestMatchingHeader((IPreferenceActivityHeader*)header, IList::Probe(oldHeaders), (IPreferenceActivityHeader**)&mappedHeader);
                 if (mappedHeader == NULL || mHost->mCurHeader != mappedHeader) {
                     mHost->SwitchToHeader(header);
                 }
             }
             else if (mHost->mCurHeader != NULL) {
-                AutoPtr<IPreferenceActivityHeader> mappedHeader = mHost->FindBestMatchingHeader(mHost->mCurHeader, mHost->mHeaders);
+                AutoPtr<IPreferenceActivityHeader> mappedHeader;
+                mHost->FindBestMatchingHeader((IPreferenceActivityHeader*)(mHost->mCurHeader), (IList*)(mHost->mHeaders), (IPreferenceActivityHeader**)&mappedHeader);
                 if (mappedHeader != NULL) {
                     mHost->SetSelectedHeader(mappedHeader);
                 }
             }
             break;
     }
-
     return NOERROR;
 }
 
 //====================================================
 // PreferenceActivity::HeaderAdapter
 //====================================================
+// CAR_INTERFACE_IMPL_5(PreferenceActivity::HeaderAdapter, Object, IPreferenceActivityHeaderAdapter, IArrayAdapter, IListAdapter, ISpinnerAdapter, IBaseAdapter)
+CAR_INTERFACE_IMPL(PreferenceActivity::HeaderAdapter, Object, IPreferenceActivityHeaderAdapter)
+
 PreferenceActivity::HeaderAdapter::HeaderAdapter(
     /* [in] */ IContext* context,
-    /* [in] */ List<AutoPtr<IPreferenceActivityHeader> > * objects,
+    /* [in] */ IList* objects,
     /* [in] */ Int32 layoutResId,
     /* [in] */ Boolean removeIconBehavior)
-        : ArrayAdapter(context, 0, objects)
-        , mLayoutResId(layoutResId)
-        , mRemoveIconIfEmpty(removeIconBehavior)
+    // : ArrayAdapter(context, 0, objects)
+    : mLayoutResId(layoutResId)
+    , mRemoveIconIfEmpty(removeIconBehavior)
 {
     AutoPtr<IInterface> object;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&object);
@@ -129,33 +147,33 @@ PreferenceActivity::HeaderAdapter::GetView(
 {
     VALIDATE_NOT_NULL(view)
     AutoPtr<HeaderViewHolder> holder;
-    AutoPtr<IView> lView;
+    AutoPtr<IView> v;
 
     if (convertView == NULL) {
-        mInflater->Inflate(mLayoutResId, FALSE, (IView**)&lView);
+        mInflater->Inflate(mLayoutResId, FALSE, (IView**)&v);
         holder = new HeaderViewHolder();
         AutoPtr<IView> tempView;
-        lView->FindViewById(R::id::icon, (IView**)&tempView);
-        holder->mIcon = IImageView::Probe(tempView);
+        v->FindViewById(R::id::icon, (IView**)&tempView);
+        holder->icon = IImageView::Probe(tempView);
         tempView = NULL;
-        lView->FindViewById(R::id::title, (IView**)&tempView);
-        holder->mTitle = ITextView::Probe(tempView);
+        v->FindViewById(R::id::title, (IView**)&tempView);
+        holder->title = ITextView::Probe(tempView);
         tempView = NULL;
-        lView->FindViewById(R::id::summary, (IView**)&tempView);
-        holder->mSummary = ITextView::Probe(tempView);
+        v->FindViewById(R::id::summary, (IView**)&tempView);
+        holder->summary = ITextView::Probe(tempView);
         tempView = NULL;
-        lView->SetTag(holder);
+        v->SetTag(holder->Probe(EIID_IInterface));
     }
     else {
-        lView = convertView;
+        v = convertView;
         AutoPtr<IInterface> inface;
-        lView->GetTag((IInterface**)&inface);
-        holder = (HeaderViewHolder*)inface.Get();
+        v->GetTag((IInterface**)&inface);
+        holder = (HeaderViewHolder*)(IObject*)(inface.Get());
     }
 
     // All view fields must be updated every time, because the view may be recycled
     AutoPtr<IInterface> obj;
-    GetItem(position, (IInterface**)&obj);
+    ((IAdapter*)this)->GetItem(position, (IInterface**)&obj);
     AutoPtr<IPreferenceActivityHeader> header = IPreferenceActivityHeader::Probe(obj);
     Int32 iconRes;
     header->GetIconRes(&iconRes);
@@ -163,38 +181,397 @@ PreferenceActivity::HeaderAdapter::GetView(
         Int32 iconRes = 0;
         header->GetIconRes(&iconRes);
         if (iconRes == 0) {
-            holder->icon->SetVisibility(IView::GONE);
+            IView::Probe(holder->icon)->SetVisibility(IView::GONE);
         } else {
-            holder->icon->SetVisibility(IView::VISIBLE);
-            holder->icon->SetImageResource(iconRes);
+             IView::Probe(holder->icon)->SetVisibility(IView::VISIBLE);
+             assert(0);//cannot find this function in car files
+            // holder->icon->SetImageResource(iconRes);
         }
     } else {
-        holder->icon->SetImageResource(iconRes);
+        assert(0);//cannot find this function in car files
+        // holder->icon->SetImageResource(iconRes);
     }
 
+    assert(0);
+#if 0 // GetContext from ?
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
     AutoPtr<IResources> resource;
     context->GetResources((IResources**)&resource);
     AutoPtr<ICharSequence> title;
     header->GetTitle(resource, (ICharSequence**)&title);
-    holder->mTitle->SetText(title);
+    holder->title->SetText(title);
     AutoPtr<ICharSequence> summary;
-    header->GetSummary(resource, (ICharSequence**)&summary);\
+    header->GetSummary(resource, (ICharSequence**)&summary);
     if (!TextUtils::IsEmpty(summary)) {
-        holder->mSummary->SetVisibility(IView::VISIBLE);
-        holder->mSummary->SetText(summary);
+        IView::Probe(holder->summary)->SetVisibility(IView::VISIBLE);
+        holder->summary->SetText(summary);
     }
     else {
-        holder->mSummary->SetVisibility(IView::GONE);
+        IView::Probe(holder->summary)->SetVisibility(IView::GONE);
     }
 
-    *view = lView;
+    *view = v;
     REFCOUNT_ADD(*view)
+#endif
+    return NOERROR;
+}
+
+//====================================================
+// PreferenceActivity::Header
+//====================================================
+
+CAR_INTERFACE_IMPL_2(PreferenceActivity::Header, Object, IPreferenceActivityHeader, IParcelable)
+
+PreferenceActivity::Header::Header()
+    : mId(IPreferenceActivity::HEADER_ID_UNDEFINED)
+    , mTitleRes(0)
+    , mSummaryRes(0)
+    , mBreadCrumbTitleRes(0)
+    , mBreadCrumbShortTitleRes(0)
+    , mIconRes(0)
+{
+    // Empty
+}
+
+ECode PreferenceActivity::Header::constructor()
+{
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::constructor(
+    /* [in] */ IParcelable* source)
+{
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetTitle(
+    /* [in] */ IResources* res,
+    /* [out] */ ICharSequence** title)
+{
+    VALIDATE_NOT_NULL(title)
+    if (mTitleRes != 0) {
+        return res->GetText(mTitleRes, title);
+    }
+    *title = mTitle;
+    REFCOUNT_ADD(*title)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetSummary(
+    /* [in] */ IResources* res,
+    /* [out] */ ICharSequence** summary)
+{
+    VALIDATE_NOT_NULL(summary)
+    if (mSummaryRes != 0) {
+        return res->GetText(mSummaryRes, summary);
+    }
+    *summary = mSummary;
+    REFCOUNT_ADD(*summary)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetBreadCrumbTitle(
+    /* [in] */ IResources* res,
+    /* [out] */ ICharSequence** title)
+{
+    VALIDATE_NOT_NULL(title)
+    if (mBreadCrumbTitleRes != 0) {
+        return res->GetText(mBreadCrumbTitleRes, title);
+    }
+    *title = mBreadCrumbTitle;
+    REFCOUNT_ADD(*title)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetBreadCrumbShortTitle(
+    /* [in] */ IResources* res,
+    /* [out] */ ICharSequence** title)
+{
+    VALIDATE_NOT_NULL(title)
+    if (mBreadCrumbShortTitleRes != 0) {
+        return res->GetText(mBreadCrumbShortTitleRes, title);
+    }
+    *title = mBreadCrumbShortTitle;
+    REFCOUNT_ADD(*title);
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    VALIDATE_NOT_NULL(dest)
+
+    dest->WriteInt64(mId);
+    dest->WriteInt32(mTitleRes);
+    dest->WriteInterfacePtr(mTitle);
+    dest->WriteInt32(mSummaryRes);
+    dest->WriteInterfacePtr(mSummary);
+    dest->WriteInt32(mBreadCrumbTitleRes);
+    dest->WriteInterfacePtr(mBreadCrumbTitle);
+    dest->WriteInt32(mBreadCrumbShortTitleRes);
+    dest->WriteInterfacePtr(mBreadCrumbShortTitle);
+    dest->WriteInt32(mIconRes);
+    dest->WriteString(mFragment);
+    dest->WriteInterfacePtr(mFragmentArguments);
+    if (mIntent != NULL) {
+        dest->WriteInt32(1);
+        AutoPtr<IParcelable> parcelable = IParcelable::Probe(mIntent);
+        parcelable->WriteToParcel(dest);
+    }
+    else {
+        dest->WriteInt32(0);
+    }
+    dest->WriteInterfacePtr(mExtras);
 
     return NOERROR;
 }
 
+ECode PreferenceActivity::Header::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    source->ReadInt64(&mId);
+    source->ReadInt32(&mTitleRes);
+    source->ReadInterfacePtr((Handle32*)(ICharSequence**)&mTitle);
+    source->ReadInt32(&mSummaryRes);
+    source->ReadInterfacePtr((Handle32*)(ICharSequence**)&mSummary);
+    source->ReadInt32(&mBreadCrumbTitleRes);
+    source->ReadInterfacePtr((Handle32*)(ICharSequence**)&mBreadCrumbTitle);
+    source->ReadInt32(&mBreadCrumbShortTitleRes);
+    source->ReadInterfacePtr((Handle32*)(ICharSequence**)&mBreadCrumbShortTitle);
+    source->ReadInt32(&mIconRes);
+    source->ReadString(&mFragment);
+    source->ReadInterfacePtr((Handle32*)(IBundle**)&mFragmentArguments);
+
+    Int32 value;
+    source->ReadInt32(&value);
+    if (value != 0) {
+        CIntent::New((IIntent**)&mIntent);
+        AutoPtr<IParcelable> p = IParcelable::Probe(mIntent);
+        p->ReadFromParcel(source);
+    }
+
+    source->ReadInterfacePtr((Handle32*)(IBundle**)&mExtras);
+
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetId(
+    /* [out] */ Int64* id)
+{
+    VALIDATE_NOT_NULL(id)
+    *id = mId;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetId(
+    /* [in] */ Int64 id)
+{
+    mId = id;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetTitleRes(
+    /* [out] */ Int32* titleRes)
+{
+    VALIDATE_NOT_NULL(titleRes)
+    *titleRes = mTitleRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetTitleRes(
+    /* [in] */ Int32 titleRes)
+{
+    mTitleRes = titleRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetTitle(
+    /* [out] */ ICharSequence** title)
+{
+    VALIDATE_NOT_NULL(title)
+    *title = mTitle;
+    REFCOUNT_ADD(*title)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetTitle(
+    /* [in] */ ICharSequence* title)
+{
+    mTitle = title;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetSummaryRes(
+    /* [out] */ Int32* summaryRes)
+{
+    VALIDATE_NOT_NULL(summaryRes)
+    *summaryRes = mSummaryRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetSummaryRes(
+    /* [in] */ Int32 summaryRes)
+{
+    mSummaryRes = summaryRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetSummary(
+    /* [out] */ ICharSequence** summary)
+{
+    VALIDATE_NOT_NULL(summary)
+    *summary = mSummary;
+    REFCOUNT_ADD(*summary)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetSummary(
+    /* [in] */ ICharSequence* summary)
+{
+    mSummary = summary;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetBreadCrumbTitleRes(
+    /* [out] */ Int32* breadCrumbTitleRes)
+{
+    VALIDATE_NOT_NULL(breadCrumbTitleRes)
+    *breadCrumbTitleRes = mBreadCrumbTitleRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetBreadCrumbTitleRes(
+    /* [in] */ Int32 breadCrumbTitleRes)
+{
+    mBreadCrumbTitleRes = breadCrumbTitleRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetBreadCrumbTitle(
+    /* [out] */ ICharSequence** breadCrumbTitle)
+{
+    VALIDATE_NOT_NULL(breadCrumbTitle)
+    *breadCrumbTitle = mBreadCrumbTitle;
+    REFCOUNT_ADD(*breadCrumbTitle)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetBreadCrumbTitle(
+    /* [in] */ ICharSequence* breadCrumbTitle)
+{
+    mBreadCrumbTitle = breadCrumbTitle;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetBreadCrumbShortTitleRes(
+    /* [out] */ Int32* breadCrumbShortTitleRes)
+{
+    VALIDATE_NOT_NULL(breadCrumbShortTitleRes);
+    *breadCrumbShortTitleRes = mBreadCrumbShortTitleRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetBreadCrumbShortTitleRes(
+    /* [in] */ Int32 breadCrumbShortTitleRes)
+{
+    mBreadCrumbShortTitleRes = breadCrumbShortTitleRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetBreadCrumbShortTitle(
+    /* [out] */ ICharSequence** breadCrumbShortTitle)
+{
+    VALIDATE_NOT_NULL(breadCrumbShortTitle)
+    *breadCrumbShortTitle = mBreadCrumbShortTitle;
+    REFCOUNT_ADD(*breadCrumbShortTitle)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetBreadCrumbShortTitle(
+    /* [in] */ ICharSequence* breadCrumbShortTitle)
+{
+    mBreadCrumbShortTitle = breadCrumbShortTitle;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetIconRes(
+    /* [out] */ Int32* iconRes)
+{
+    VALIDATE_NOT_NULL(iconRes)
+    *iconRes = mIconRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetIconRes(
+    /* [in] */ Int32 iconRes)
+{
+    mIconRes = iconRes;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetFragment(
+    /* [out] */ String* fragment)
+{
+    VALIDATE_NOT_NULL(fragment)
+    *fragment = mFragment;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetFragment(
+    /* [in] */ const String& fragment)
+{
+    mFragment = fragment;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetFragmentArguments(
+    /* [out] */ IBundle** fragmentArguments)
+{
+    VALIDATE_NOT_NULL(fragmentArguments)
+    *fragmentArguments = mFragmentArguments;
+    REFCOUNT_ADD(*fragmentArguments)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetFragmentArguments(
+    /* [in] */ IBundle* fragmentArguments)
+{
+    mFragmentArguments = fragmentArguments;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetIntent(
+    /* [out] */ IIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    *intent = mIntent;
+    REFCOUNT_ADD(*intent)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetIntent(
+    /* [in] */ IIntent* intent)
+{
+    mIntent = intent;
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::GetExtras(
+    /* [out] */ IBundle** extras)
+{
+    VALIDATE_NOT_NULL(extras)
+    *extras = mExtras;
+    REFCOUNT_ADD(*extras)
+    return NOERROR;
+}
+
+ECode PreferenceActivity::Header::SetExtras(
+    /* [in] */ IBundle* extras)
+{
+    mExtras = extras;
+    return NOERROR;
+}
 
 //====================================================
 // PreferenceActivity::BackButtonListener
@@ -256,6 +633,7 @@ ECode PreferenceActivity::NextButtonListener::OnClick(
 //====================================================
 // PreferenceActivity
 //====================================================
+
 CAR_INTERFACE_IMPL_3(PreferenceActivity, ListActivity, IPreferenceActivity, IPreferenceManagerOnPreferenceTreeClickListener, IPreferenceFragmentOnPreferenceStartFragmentCallback)
 
 PreferenceActivity::PreferenceActivity()
@@ -263,11 +641,8 @@ PreferenceActivity::PreferenceActivity()
     , mPreferenceHeaderItemResId(0)
     , mPreferenceHeaderRemoveEmptyIcon(FALSE)
 {
-    mHandler = new MyHandler(this);
+    mHandler = new MHandler(this);
 }
-
-PreferenceActivity::~PreferenceActivity()
-{}
 
 ECode PreferenceActivity::OnCreate(
     /* [in] */ IBundle* savedInstanceState)
@@ -320,22 +695,22 @@ ECode PreferenceActivity::OnCreate(
     if (savedInstanceState != NULL) {
         // We are restarting from a previous saved state; used that to
         // initialize, instead of starting fresh.
-        AutoPtr<IObjectContainer> container;
-        savedInstanceState->GetParcelableArrayList(HEADERS_TAG, (IObjectContainer**)&container);
-        if (container != NULL) {
-            AutoPtr<IObjectEnumerator> objEnumerator;
-            container->GetObjectEnumerator((IObjectEnumerator**)&objEnumerator);
-            Boolean hasNext;
-            while (objEnumerator->MoveNext(&hasNext), hasNext) {
-                AutoPtr<IPreferenceActivityHeader> header;
-                objEnumerator->Current((IInterface**)&header);
-                mHeaders.PushBack(header);
-            }
+        AutoPtr<IArrayList> headers;
+        savedInstanceState->GetParcelableArrayList(HEADERS_TAG, (IArrayList**)&headers);
+        if (headers != NULL) {
+            // We are restarting from a previous saved state; used that to
+            // initialize, instead of starting fresh.
+            AutoPtr<ICollection> collection = ICollection::Probe(headers);
+            mHeaders->AddAll(collection.Get());
             Int32 curHeader;
-            savedInstanceState->GetInt32(CUR_HEADER_TAG, (Int32) HEADER_ID_UNDEFINED, &curHeader);
-            if (curHeader >= 0 && curHeader < (Int32)mHeaders.GetSize()) {
-                SetSelectedHeader(mHeaders[curHeader]);
+            Int32 size;
+            if ((savedInstanceState->GetInt32(CUR_HEADER_TAG, (Int32) HEADER_ID_UNDEFINED, &curHeader), curHeader >= 0)
+                && (mHeaders->GetSize(&size), curHeader < size)) {
+                AutoPtr<IPreferenceActivityHeader> element;
+                mHeaders->Get(curHeader, (IInterface**)&element);
+                SetSelectedHeader(element.Get());
             }
+
         }
     }
     else {
@@ -357,27 +732,20 @@ ECode PreferenceActivity::OnCreate(
         }
         else {
             // We need to try to build the headers.
-            AutoPtr<IObjectContainer> container;
-            CObjectContainer::New((IObjectContainer**)&container);
-            List<AutoPtr<IPreferenceActivityHeader> >::Iterator it = mHeaders.Begin();
-            for (; it != mHeaders.End(); ++it) {
-                container->Add(*it);
-            }
-            OnBuildHeaders(container);
+            OnBuildHeaders(mHeaders.Get());
 
             // If there are headers, then at this point we need to show
             // them and, depending on the screen, we may also show in-line
             // the currently selected preference fragment.
-            if (mHeaders.Begin() != mHeaders.End()) {
-                if (!mSinglePane) {
-                    if (initialFragment.IsNull()) {
-                        AutoPtr<IPreferenceActivityHeader> h;
-                        OnGetInitialHeader((IPreferenceActivityHeader**)&h);
-                        SwitchToHeader(h);
-                    }
-                    else {
-                        SwitchToHeader(initialFragment, initialArguments);
-                    }
+            Int32 size;
+            if ((mHeaders->GetSize(&size), size > 0) && !mSinglePane) {
+                 if (initialFragment.IsNull()) {
+                    AutoPtr<IPreferenceActivityHeader> h;
+                    OnGetInitialHeader((IPreferenceActivityHeader**)&h);
+                    SwitchToHeader(h);
+                }
+                else {
+                    SwitchToHeader(initialFragment, initialArguments);
                 }
             }
         }
@@ -385,10 +753,11 @@ ECode PreferenceActivity::OnCreate(
 
     // The default configuration is to only show the list view.  Adjust
     // visibility for other configurations.
+    Int32 size;
     if (!initialFragment.IsNull() && mSinglePane) {
         // Single pane, showing just a prefs fragment.
         Activity::FindViewById(R::id::headers)->SetVisibility(IView::GONE);
-        mPrefsContainer->SetVisibility(IView::VISIBLE);
+        IView::Probe(mPrefsContainer)->SetVisibility(IView::VISIBLE);
         if (initialTitle != 0) {
             AutoPtr<ICharSequence> initialTitleStr;
             GetText(initialTitle, (ICharSequence**)&initialTitleStr);
@@ -399,21 +768,18 @@ ECode PreferenceActivity::OnCreate(
             ShowBreadCrumbs(initialTitleStr, initialShortTitleStr);
         }
     }
-    else if (mHeaders.GetSize() > 0) {
-        setListAdapter(new HeaderAdapter(this, mHeaders, mPreferenceHeaderItemResId,
-                mPreferenceHeaderRemoveEmptyIcon));
-        AutoPtr<HeaderAdapter> ha = new HeaderAdapter(IContext::Probe(this), mHeaders,
-             mPreferenceHeaderItemResId,mPreferenceHeaderRemoveEmptyIcon);
+    else if (mHeaders->GetSize(&size), size > 0) {
+        AutoPtr<HeaderAdapter> ha = new HeaderAdapter((IContext*)this, mHeaders, mPreferenceHeaderItemResId, mPreferenceHeaderRemoveEmptyIcon);
         ListActivity::SetListAdapter(IListAdapter::Probe(ha));
         if (!mSinglePane) {
             // Multi-pane.
             AutoPtr<IListView> listView;
             GetListView((IListView**)&listView);
-            listView->SetChoiceMode(IAbsListView::CHOICE_MODE_SINGLE);
+            IAbsListView::Probe(listView)->SetChoiceMode(IAbsListView::CHOICE_MODE_SINGLE);
             if (mCurHeader != NULL) {
                 SetSelectedHeader(mCurHeader);
             }
-            mPrefsContainer->SetVisibility(IView::VISIBLE);
+            IView::Probe(mPrefsContainer)->SetVisibility(IView::VISIBLE);
         }
     }
     else {
@@ -424,7 +790,7 @@ ECode PreferenceActivity::OnCreate(
         mListFooter = IFrameLayout::Probe(view);
         view = Activity::FindViewById(R::id::prefs);
         mPrefsContainer = IViewGroup::Probe(view);
-        CPreferenceManager::New(THIS_PROBE(IActivity), FIRST_REQUEST_CODE, (IPreferenceManager**)&mPreferenceManager);
+        CPreferenceManager::New((IActivity*)this, FIRST_REQUEST_CODE, (IPreferenceManager**)&mPreferenceManager);
         AutoPtr<IPreferenceManagerOnPreferenceTreeClickListener> listener;
         listener = (IPreferenceManagerOnPreferenceTreeClickListener*)this->Probe(EIID_IPreferenceManagerOnPreferenceTreeClickListener);
         mPreferenceManager->SetOnPreferenceTreeClickListener(listener);
@@ -439,17 +805,17 @@ ECode PreferenceActivity::OnCreate(
         view = Activity::FindViewById(R::id::back_button);
         AutoPtr<IButton> backButton = IButton::Probe(view);
         AutoPtr<IViewOnClickListener> backButtonListener = new BackButtonListener(this);
-        backButton->SetOnClickListener(backButtonListener);
+        IView::Probe(backButton)->SetOnClickListener(backButtonListener);
 
         view = Activity::FindViewById(R::id::skip_button);
         AutoPtr<IButton> skipButton = IButton::Probe(view);
         AutoPtr<IViewOnClickListener> skipButtonListener = new SkipButtonListener(this);
-        skipButton->SetOnClickListener(skipButtonListener);
+        IView::Probe(skipButton)->SetOnClickListener(skipButtonListener);
 
         view = Activity::FindViewById(R::id::next_button);
         mNextButton = IButton::Probe(view);
         AutoPtr<IViewOnClickListener> nextButtonListener = new NextButtonListener(this);
-        mNextButton->SetOnClickListener(nextButtonListener);
+        IView::Probe(mNextButton)->SetOnClickListener(nextButtonListener);
 
         // set our various button parameters
         Boolean setNextText;
@@ -457,12 +823,12 @@ ECode PreferenceActivity::OnCreate(
             String buttonText;
             intent->GetStringExtra(EXTRA_PREFS_SET_NEXT_TEXT, &buttonText);
             if (TextUtils::IsEmpty(buttonText)) {
-                mNextButton->SetVisibility(IView::GONE);
+                IView::Probe(mNextButton)->SetVisibility(IView::GONE);
             }
             else {
                 AutoPtr<ICharSequence> cButtonText;
                 CString::New(buttonText, (ICharSequence**)&cButtonText);
-                mNextButton->SetText(cButtonText);
+                ITextView::Probe(mNextButton)->SetText(cButtonText);
             }
         }
         Boolean setBackText;
@@ -470,20 +836,19 @@ ECode PreferenceActivity::OnCreate(
             String buttonText;
             intent->GetStringExtra(EXTRA_PREFS_SET_BACK_TEXT, &buttonText);
             if (TextUtils::IsEmpty(buttonText)) {
-                backButton->SetVisibility(IView::GONE);
+                IView::Probe(backButton)->SetVisibility(IView::GONE);
             }
             else {
                 AutoPtr<ICharSequence> cButtonText;
                 CString::New(buttonText, (ICharSequence**)&cButtonText);
-                backButton->SetText(cButtonText);
+                ITextView::Probe(backButton)->SetText(cButtonText);
             }
         }
         Boolean showSkip;
         if (intent->GetBooleanExtra(EXTRA_PREFS_SHOW_SKIP, FALSE, &showSkip), showSkip) {
-            skipButton->SetVisibility(IView::VISIBLE);
+            IView::Probe(skipButton)->SetVisibility(IView::VISIBLE);
         }
     }
-
     return NOERROR;
 }
 
@@ -494,14 +859,18 @@ ECode PreferenceActivity::HasHeaders(
     AutoPtr<IListView> lw;
     GetListView((IListView**)&lw);
     Int32 visibility;
-    lw->GetVisibility(&visibility);
+    IView::Probe(lw)->GetVisibility(&visibility);
     *hasHeaders = visibility == IView::VISIBLE && mPreferenceManager == NULL;
     return NOERROR;
 }
 
-List<AutoPtr<IPreferenceActivityHeader> >& PreferenceActivity::GetHeaders()
+ECode PreferenceActivity::GetHeaders(
+    /* [out] */ IList** headers)
 {
-    return mHeaders;
+    VALIDATE_NOT_NULL(headers)
+    *headers = mHeaders.Get();
+    REFCOUNT_ADD(*headers);
+    return NOERROR;
 }
 
 ECode PreferenceActivity::IsMultiPane(
@@ -515,7 +884,7 @@ ECode PreferenceActivity::IsMultiPane(
     }
     else {
         Int32 visiblity;
-        mPrefsContainer->GetVisibility(&visiblity);
+        IView::Probe(mPrefsContainer)->GetVisibility(&visiblity);
         *isMultiPane = visiblity == IView::VISIBLE;
     }
     return NOERROR;
@@ -543,17 +912,20 @@ ECode PreferenceActivity::OnIsHidingHeaders(
 ECode PreferenceActivity::OnGetInitialHeader(
     /* [out] */ IPreferenceActivityHeader** header)
 {
-    List<AutoPtr<IPreferenceActivityHeader>::Iterator it;
-    for(it = mHeaders.Begin(); it != mHeaders.End(); ++it) {
-        AutoPtr<IPreferenceActivityHeader> h = *it;
+    VALIDATE_NOT_NULL(header)
+    Int32 size;
+    mHeaders->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IPreferenceActivityHeader> h;
+        mHeaders->Get(i, (IInterface**)&h);
         String fragment;
-        h->GetFragment(&fragment);
-        if (!fragment.IsNull()) {
-            *header = h;
+        if (h->GetFragment(&fragment), !fragment.IsNull()) {
+            *header = h.Get();
             REFCOUNT_ADD(*header)
             return NOERROR;
         }
     }
+    Slogger::E(TAG, "Must have at least one header with a fragment");
     return E_ILLEGAL_STATE_EXCEPTION;
 }
 
@@ -566,7 +938,7 @@ ECode PreferenceActivity::OnGetNewHeader(
 }
 
 ECode PreferenceActivity::OnBuildHeaders(
-    /* [in] */ IObjectContainer* target)
+    /* [in] */ IList* target)
 {
     // Should be overloaded by subclasses
     return NOERROR;
@@ -583,26 +955,26 @@ ECode PreferenceActivity::InvalidateHeaders()
 
 ECode PreferenceActivity::LoadHeadersFromResource(
     /* [in] */ Int32 resid,
-    /* [in] */ IObjectContainer* target)
+    /* [in] */ IList* target)
 {
     AutoPtr<IXmlResourceParser> parser;
-    // try {
     AutoPtr<IResources> resource;
-    GetResources((IResources**)&resource);
+    ((IContext*)this)->GetResources((IResources**)&resource);
     resource->GetXml(resid, (IXmlResourceParser**)&parser);
-    AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(parser);
+    AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(IXmlPullParser::Probe(parser));
 
     Int32 type;
-    while (parser->Next(&type),
+    AutoPtr<IXmlPullParser> xp = IXmlPullParser::Probe(parser);
+    while (xp->Next(&type),
             (type != IXmlPullParser::END_DOCUMENT && type != IXmlPullParser::START_TAG)) {
         // Parse next until start tag is found
     }
 
     String nodeName;
-    parser->GetName(&nodeName);
+    xp->GetName(&nodeName);
     if (!nodeName.Equals("preference-headers")) {
         String description;
-        parser->GetPositionDescription(&description);
+        xp->GetPositionDescription(&description);
         Logger::E("PreferenceActivity", "XML document must start with <preference-headers> tag; found %s at %s"
                 , nodeName.string(), description.string());
         if (parser != NULL) parser->Close();
@@ -612,15 +984,15 @@ ECode PreferenceActivity::LoadHeadersFromResource(
     AutoPtr<IBundle> curBundle;
 
     Int32 outerDepth;
-    parser->GetDepth(&outerDepth);
+    xp->GetDepth(&outerDepth);
     Int32 depth;
-    while ((parser->Next(&type), (type != IXmlPullParser::END_DOCUMENT
-           && type != IXmlPullParser::END_TAG)) || (parser->GetDepth(&depth), depth > outerDepth)) {
+    while ((xp->Next(&type), (type != IXmlPullParser::END_DOCUMENT
+           && type != IXmlPullParser::END_TAG)) || (xp->GetDepth(&depth), depth > outerDepth)) {
         if (type == IXmlPullParser::END_TAG || type == IXmlPullParser::TEXT) {
             continue;
         }
 
-        parser->GetName(&nodeName);
+        xp->GetName(&nodeName);
         if (nodeName.Equals("header")) {
             AutoPtr<IPreferenceActivityHeader> header;
             CPreferenceActivityHeader::New((IPreferenceActivityHeader**)&header);
@@ -708,29 +1080,29 @@ ECode PreferenceActivity::LoadHeadersFromResource(
             }
 
             Int32 innerDepth;
-            parser->GetDepth(&innerDepth);
-            while ((parser->Next(&type), type != IXmlPullParser::END_DOCUMENT
-                   && type != IXmlPullParser::END_TAG) || (parser->GetDepth(&depth), depth > innerDepth)) {
+            xp->GetDepth(&innerDepth);
+            while ((xp->Next(&type), type != IXmlPullParser::END_DOCUMENT
+                   && type != IXmlPullParser::END_TAG) || (xp->GetDepth(&depth), depth > innerDepth)) {
                 if (type == IXmlPullParser::END_TAG || type == IXmlPullParser::TEXT) {
                     continue;
                 }
 
                 String innerNodeName;
-                parser->GetName(&innerNodeName);
+                xp->GetName(&innerNodeName);
                 if (innerNodeName.Equals("extra")) {
                     resource->ParseBundleExtra(String("extra"), attrs, curBundle);
-                    XmlUtils::SkipCurrentTag(parser);
+                    XmlUtils::SkipCurrentTag(IXmlPullParser::Probe(parser));
 
                 }
                 else if (innerNodeName.Equals("intent")) {
                     AutoPtr<IIntentHelper> helper;
                     CIntentHelper::AcquireSingleton((IIntentHelper**)&helper);
                     AutoPtr<IIntent> intent;
-                    helper->ParseIntent(resource, parser, attrs, (IIntent**)&intent);
+                    helper->ParseIntent(IResources::Probe(resource), IXmlPullParser::Probe(parser), IAttributeSet::Probe(attrs), (IIntent**)&intent);
                     header->SetIntent(intent);
                 }
                 else {
-                    XmlUtils::SkipCurrentTag(parser);
+                    XmlUtils::SkipCurrentTag(IXmlPullParser::Probe(parser));
                 }
             }
 
@@ -742,18 +1114,10 @@ ECode PreferenceActivity::LoadHeadersFromResource(
             target->Add(header);
         }
         else {
-            XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(IXmlPullParser::Probe(parser));
         }
     }
-
     return NOERROR;
-    // } catch (XmlPullParserException e) {
-    //     throw new RuntimeException("Error parsing headers", e);
-    // } catch (IOException e) {
-    //     throw new RuntimeException("Error parsing headers", e);
-    // } finally {
-    //     if (parser != null) parser.close();
-    // }
 }
 
 ECode PreferenceActivity::IsValidFragment(
@@ -765,7 +1129,9 @@ ECode PreferenceActivity::IsValidFragment(
     Activity::GetApplicationInfo((IApplicationInfo**)&info);
     Int32 targetSdkVersion;
     info->GetTargetSdkVersion(&targetSdkVersion);
+#if 0 // cannot find android.os.Build.VERSION_CODES.KITKAT
     if (targetSdkVersion  >= android.os.Build.VERSION_CODES.KITKAT) {
+        assert(0);
         // throw new RuntimeException(
         //         "Subclasses of PreferenceActivity must override isValidFragment(String)"
         //         + " to verify that the Fragment class is valid! " + this.getClass().getName()
@@ -775,12 +1141,15 @@ ECode PreferenceActivity::IsValidFragment(
         *result= TRUE;
         return NOERROR;
     }
+#endif
+    return NOERROR;
 }
 
 ECode PreferenceActivity::SetListFooter(
     /* [in] */ IView* view)
 {
-    mListFooter->RemoveAllViews();
+    IViewGroup::Probe(mListFooter)->RemoveAllViews();
+    assert(0);
     // AutoPtr<IViewGroupLayoutParams> layoutParams;
     // CFrameLayoutLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
     //         IViewGroupLayoutParams::WRAP_CONTENT, (IFrameLayoutLayoutParams**)&layoutParams);
@@ -813,22 +1182,13 @@ ECode PreferenceActivity::OnSaveInstanceState(
 {
     ListActivity::OnSaveInstanceState(outState);
 
-    if (mHeaders.Begin() != mHeaders.End()) {
-        AutoPtr<IObjectContainer> container;
-        CObjectContainer::New((IObjectContainer**)&container);
-        List<AutoPtr<IPreferenceActivityHeader> >::Iterator iter = mHeaders.Begin();
-        for (; iter != mHeaders.End(); ++iter) {
-            container->Add(*iter);
-        }
-        outState->PutParcelableArrayList(HEADERS_TAG, container);
-        if (mCurHeader != NULL) {
-            Int32 index = 0;
-            for (iter = mHeaders.Begin(); iter != mHeaders.End(); ++index, ++iter) {
-                if (mCurHeader == *iter) break;
-            }
-            if (iter != mHeaders.End()) {
-                outState->PutInt32(CUR_HEADER_TAG, index);
-            }
+    Int32 size;
+    if (mHeaders->GetSize(&size), size > 0) {
+        AutoPtr<IArrayList> al = IArrayList::Probe(mHeaders);
+        outState->PutParcelableArrayList(HEADERS_TAG, al);
+        Int32 index;
+        if (mCurHeader != NULL && (mHeaders->IndexOf(mCurHeader.Get(), &index), index >= 0)) {
+            outState->PutInt32(CUR_HEADER_TAG, index);
         }
     }
 
@@ -842,7 +1202,6 @@ ECode PreferenceActivity::OnSaveInstanceState(
             outState->PutBundle(PREFERENCES_TAG, container);
         }
     }
-
     return NOERROR;
 }
 
@@ -898,12 +1257,12 @@ ECode PreferenceActivity::OnListItemClick(
     Boolean isResumed = FALSE;
     Activity::IsResumed(&isResumed);
     if (!isResumed) {
-        return E_NULL_POINTER;
+        return E_NULL_POINTER_EXCEPTION;
     }
     ListActivity::OnListItemClick(l, v, position, id);
     if (mAdapter != NULL) {
         AutoPtr<IInterface> item;
-        mAdapter->GetItem(position, (IInterface**)&item);
+        IAdapter::Probe(mAdapter)->GetItem(position, (IInterface**)&item);
         AutoPtr<IPreferenceActivityHeader> header = IPreferenceActivityHeader::Probe(item);
         if (header) {
             OnHeaderClick(header, position);
@@ -940,7 +1299,6 @@ ECode PreferenceActivity::OnHeaderClick(
     else if (header->GetIntent((IIntent**)&intent), intent != NULL) {
         StartActivity(intent);
     }
-
     return NOERROR;
 }
 
@@ -958,11 +1316,11 @@ ECode PreferenceActivity::OnBuildStartFragmentIntent(
 
     ClassID id;
     GetClassID(&id);
-    intent->SetClass(THIS_PROBE(IContext), id);
-    intent->PutStringExtra(EXTRA_SHOW_FRAGMENT, fragmentName);
-    intent->PutBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
-    intent->PutInt32Extra(EXTRA_SHOW_FRAGMENT_TITLE, titleRes);
-    intent->PutInt32Extra(EXTRA_SHOW_FRAGMENT_SHORT_TITLE, shortTitleRes);
+    intent->SetClass((IContext*)this, id);
+    intent->PutExtra(EXTRA_SHOW_FRAGMENT, fragmentName);
+    intent->PutExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+    intent->PutExtra(EXTRA_SHOW_FRAGMENT_TITLE, titleRes);
+    intent->PutExtra(EXTRA_SHOW_FRAGMENT_SHORT_TITLE, shortTitleRes);
     intent->PutBooleanExtra(EXTRA_NO_HEADERS, TRUE);
 
     *_intent = intent;
@@ -1001,6 +1359,7 @@ ECode PreferenceActivity::ShowBreadCrumbs(
     /* [in] */ ICharSequence* title,
     /* [in] */ ICharSequence* shortTitle)
 {
+#if 0 // Elastos::Droid::App::IFragmentBreadCrumbs' has not been declared
     if (mFragmentBreadCrumbs == NULL) {
         AutoPtr<IView> crumbs = Activity::FindViewById(R::id::title);
         // For screens with a different kind of title, don't create breadcrumbs.
@@ -1025,7 +1384,7 @@ ECode PreferenceActivity::ShowBreadCrumbs(
             SetTitle(title);
         }
         mFragmentBreadCrumbs->SetMaxVisible(2);
-        mFragmentBreadCrumbs->SetActivity(THIS_PROBE(IActivity));
+        mFragmentBreadCrumbs->SetActivity((IActivity*)this);
     }
     Boolean res = FALSE;
     mFragmentBreadCrumbs->GetVisibility(&res);
@@ -1035,6 +1394,7 @@ ECode PreferenceActivity::ShowBreadCrumbs(
         mFragmentBreadCrumbs->SetTitle(title, shortTitle);
         mFragmentBreadCrumbs->SetParentTitle(NULL, NULL, NULL);
     }
+#endif
     return NOERROR;
 }
 
@@ -1043,34 +1403,32 @@ ECode PreferenceActivity::SetParentTitle(
     /* [in] */ ICharSequence* shortTitle,
     /* [in] */ IViewOnClickListener* listener)
 {
+#if 0 //Elastos::Droid::App::IFragmentBreadCrumbs' has not been declared
     if (mFragmentBreadCrumbs != NULL) {
         return mFragmentBreadCrumbs->SetParentTitle(title, shortTitle, listener);
     }
+#endif
     return NOERROR;
 }
 
-void PreferenceActivity::SetSelectedHeader(
+ECode PreferenceActivity::SetSelectedHeader(
     /* [in] */ IPreferenceActivityHeader* header)
 {
     mCurHeader = header;
-    AutoPtr<IPreferenceActivityHeader> temp(header);
-    Int32 index = 0;
-    List<AutoPtr<IPreferenceActivityHeader> >::Iterator itr = mHeaders.Begin();
-    for (; itr != mHeaders.End(); ++index, ++itr) {
-        if (header == *itr) break;
-    }
     AutoPtr<IListView> listView;
     GetListView((IListView**)&listView);
-    if (itr != mHeaders.End()) {
-        listView->SetItemChecked(index, TRUE);
+    Int32 index;
+    if (mHeaders->IndexOf(header, &index), index >= 0) {
+        IAbsListView::Probe(listView)->SetItemChecked(index, TRUE);
     }
     else {
-        listView->ClearChoices();
+        IAbsListView::Probe(listView)->ClearChoices();
     }
     ShowBreadCrumbs(header);
+    return NOERROR;
 }
 
-void PreferenceActivity::ShowBreadCrumbs(
+ECode PreferenceActivity::ShowBreadCrumbs(
     /* [in] */ IPreferenceActivityHeader* header)
 {
     if (header != NULL) {
@@ -1093,9 +1451,10 @@ void PreferenceActivity::ShowBreadCrumbs(
         GetTitle((ICharSequence**)&title);
         ShowBreadCrumbs(title, NULL);
     }
+    return NOERROR;
 }
 
-void PreferenceActivity::SwitchToHeaderInner(
+ECode PreferenceActivity::SwitchToHeaderInner(
     /* [in] */ const String& fragmentName,
     /* [in] */ IBundle* args)
 {
@@ -1110,13 +1469,14 @@ void PreferenceActivity::SwitchToHeaderInner(
     }
 
     AutoPtr<IFragment> f;
-    Fragment::Instantiate(THIS_PROBE(IActivity), fragmentName, args, (IFragment**)&f);
+    Fragment::Instantiate((IContext*)this, fragmentName, args, (IFragment**)&f);
     AutoPtr<IFragmentTransaction> transaction;
     manager->BeginTransaction((IFragmentTransaction**)&transaction);
     transaction->SetTransition(IFragmentTransaction::TRANSIT_FRAGMENT_FADE);
     transaction->Replace(R::id::prefs, f);
     Int32 res;
     transaction->CommitAllowingStateLoss(&res);
+    return NOERROR;
 }
 
 ECode PreferenceActivity::SwitchToHeader(
@@ -1124,12 +1484,15 @@ ECode PreferenceActivity::SwitchToHeader(
     /* [in] */ IBundle* args)
 {
     AutoPtr<IPreferenceActivityHeader> selectedHeader = NULL;
-    List<AutoPtr<IPreferenceActivityHeader> >::Iterator it;
-    for (it = mHeaders.Begin(); it != mHeaders.End(); ++it) {
+    Int32 size;
+    mHeaders->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IPreferenceActivityHeader> pah;
+        mHeaders->Get(i, (IInterface**)&pah);
         String fragment;
-        it->GetFragment(&fragment);
+        pah->GetFragment(&fragment);
         if (fragmentName.Equals(fragment)) {
-            selectedHeader = *it;
+            selectedHeader = pah;
             break;
         }
     }
@@ -1163,100 +1526,81 @@ ECode PreferenceActivity::SwitchToHeader(
     return NOERROR;
 }
 
-AutoPtr<IPreferenceActivityHeader> PreferenceActivity::FindBestMatchingHeader(
+ECode PreferenceActivity::FindBestMatchingHeader(
     /* [in] */ IPreferenceActivityHeader* cur,
-    /* [in] */ List<AutoPtr<IPreferenceActivityHeader> >& from)
+    /* [in] */ IList* form,
+    /* [out] */ IPreferenceActivityHeader** h)
 {
-    List<AutoPtr<IPreferenceActivityHeader> > matches;
-    List<AutoPtr<IPreferenceActivityHeader> >::Iterator it = from.Begin();
-    for (; it != from.End(); ++it) {
-        AutoPtr<IPreferenceActivityHeader> lOh = *it;
+    VALIDATE_NOT_NULL(h)
+    AutoPtr<IArrayList> matches;
+    Int32 size;
+    form->GetSize(&size);
+    for (Int32 j = 0; j < size; j++) {
+        AutoPtr<IInterface> obj;
+        form->Get(j, (IInterface**)&obj);
+        AutoPtr<IPreferenceActivityHeader> oh = IPreferenceActivityHeader::Probe(obj.Get());
         Int64 curId;
         cur->GetId(&curId);
         Int64 ohId;
-        lOh->GetId(&ohId);
-        if (cur == lOh || (curId != HEADER_ID_UNDEFINED && curId == ohId)) {
+        oh->GetId(&ohId);
+        if (cur == oh || (curId != HEADER_ID_UNDEFINED && curId == ohId)) {
             // Must be this one.
-            matches.Clear();
-            matches.PushBack(lOh);
+            IList::Probe(matches)->Clear();
+            IList::Probe(matches)->Add(oh);
             break;
         }
-        String curFragment;
-        AutoPtr<IIntent> curIntent;
-        AutoPtr<ICharSequence> curTitle;
-        if (cur->GetFragment(&curFragment), !curFragment.IsNull()) {
-            String ohFragment;
-            lOh->GetFragment(&ohFragment);
-            if (curFragment.Equals(ohFragment)) {
-                matches.PushBack(lOh);
-            }
+        String curFragment, ohFragment;
+        AutoPtr<IIntent> curIntent, ohIntent;
+        AutoPtr<ICharSequence> curTitle, ohTitle;
+        Boolean isEquals = FALSE;
+        if ((cur->GetFragment(&curFragment), !curFragment.IsNull()) &&
+            (oh->GetFragment(&ohFragment), curFragment.Equals(ohFragment))) {
+            IList::Probe(matches)->Add(oh);
         }
-        else if (cur->GetIntent((IIntent**)&curIntent), curIntent != NULL) {
-            AutoPtr<IIntent> ohIntent;
-            lOh->GetIntent((IIntent**)&ohIntent);
-            AutoPtr<IObject> obj = IObject::Probe(curIntent);
-            Boolean result;
-            if (obj->Equals(ohIntent, &result), result) {
-                matches.PushBack(lOh);
-            }
+        else if ((cur->GetIntent((IIntent**)&curIntent), curIntent != NULL) &&
+            (oh->GetIntent((IIntent**)&ohIntent), IObject::Probe(curIntent)->Equals(ohIntent, &isEquals), isEquals)) {
+            IList::Probe(matches)->Add(oh);
         }
-        else if (cur->GetTitle((ICharSequence**)&curTitle), curTitle != NULL) {
-            AutoPtr<ICharSequence> ohTitle;
-            lOh->GetTitle((ICharSequence**)&ohTitle);
-            AutoPtr<IObject> obj = IObject::Probe(curTitle);
-            Boolean result;
-            if (obj->Equals(ohTitle, &result), result) {
-                matches.PushBack(lOh);
+        else if ((cur->GetTitle((ICharSequence**)&curTitle), curTitle != NULL) &&
+            (oh->GetTitle((ICharSequence**)&ohTitle), IObject::Probe(curTitle)->Equals(ohTitle, &isEquals), isEquals)) {
+            IList::Probe(matches)->Add(oh);
+        }
+    }
+    Int32 NM;
+    matches->GetSize(&NM);
+    if (NM == 1) {
+        return matches->Get(0, (IInterface**)h);
+    }
+    else if (NM > 1) {
+        for (Int32 j=0; j < NM; j++) {
+            AutoPtr<IPreferenceActivityHeader> oh;
+            matches->Get(j, (IInterface**)&oh);
+            AutoPtr<IBundle> curFragmentArguments, ohFragmentArguments;
+            AutoPtr<IBundle> curExtras, ohExtras;
+            AutoPtr<ICharSequence> curTitle, ohTitle;
+            Boolean isEquals = FALSE;
+            if ((cur->GetFragmentArguments((IBundle**)&curFragmentArguments), curFragmentArguments != NULL) &&
+                (oh->GetFragmentArguments((IBundle**)&ohFragmentArguments), IObject::Probe(curFragmentArguments)->Equals(ohFragmentArguments, &isEquals), isEquals)) {
+                *h = oh.Get();
+                REFCOUNT_ADD(*h)
+                return NOERROR;
+            }
+            if ((cur->GetExtras((IBundle**)&curExtras), curExtras != NULL) &&
+                (oh->GetExtras((IBundle**)&ohExtras), IObject::Probe(curExtras)->Equals(ohExtras, &isEquals), isEquals)) {
+                *h = oh.Get();
+                REFCOUNT_ADD(*h)
+                return NOERROR;
+            }
+            if ((cur->GetTitle((ICharSequence**)&curTitle), curTitle != NULL) &&
+                (oh->GetTitle((ICharSequence**)&ohTitle), IObject::Probe(curTitle)->Equals(ohTitle, &isEquals), isEquals)) {
+                *h = oh.Get();
+                REFCOUNT_ADD(*h)
+                return NOERROR;
             }
         }
     }
-    it = matches.Begin();
-    if (it != matches.End()) {
-        ++it;
-        if (it == matches.End()) {
-            return *(matches.Begin());
-        }
-        else {
-            for (it = matches.Begin(); it != matches.End(); ++it) {
-                AutoPtr<IPreferenceActivityHeader> oh = *it;
-                AutoPtr<IBundle> curFragmentArguments;
-                cur->GetFragmentArguments((IBundle**)&curFragmentArguments);
-                if (curFragmentArguments != NULL) {
-                    AutoPtr<IBundle> ohFragmentArguments;
-                    oh->GetFragmentArguments((IBundle**)&ohFragmentArguments);
-                    AutoPtr<IObject> obj = IObject::Probe(curFragmentArguments);
-                    Boolean result;
-                    if (obj->Equals(ohFragmentArguments, &result), result) {
-                        return oh;
-                    }
-                }
-                AutoPtr<IBundle> curExtras;
-                cur->GetExtras((IBundle**)&curExtras);
-                if (curExtras != NULL) {
-                    AutoPtr<IBundle> ohExtras;
-                    oh->GetExtras((IBundle**)&ohExtras);
-                    AutoPtr<IObject> obj = IObject::Probe(curExtras);
-                    Boolean result;
-                    if (obj->Equals(ohExtras, &result), result) {
-                        return oh;
-                    }
-                }
-                AutoPtr<ICharSequence> curTitle;
-                cur->GetTitle((ICharSequence**)&curTitle);
-                if (curTitle != NULL) {
-                    AutoPtr<ICharSequence> ohTitle;
-                    oh->GetTitle((ICharSequence**)&ohTitle);
-                    AutoPtr<IObject> obj = IObject::Probe(curTitle);
-                    Boolean result;
-                    if (obj->Equals(ohTitle, &result), result) {
-                        return oh;
-                    }
-                }
-            }
-        }
-    }
-
-    return NULL;
+    *h = NULL;
+    return NOERROR;
 }
 
 ECode PreferenceActivity::StartPreferenceFragment(
@@ -1277,7 +1621,6 @@ ECode PreferenceActivity::StartPreferenceFragment(
     }
     Int32 res;
     transaction->CommitAllowingStateLoss(&res);
-
     return NOERROR;
 }
 
@@ -1294,7 +1637,7 @@ ECode PreferenceActivity::StartPreferencePanel(
     }
     else {
         AutoPtr<IFragment> f;
-        Fragment::Instantiate(THIS_PROBE(IActivity), fragmentClass, args, (IFragment**)&f);
+        Fragment::Instantiate((IContext*)this, fragmentClass, args, (IFragment**)&f);
         if (resultTo != NULL) {
             f->SetTargetFragment(resultTo, resultRequestCode);
         }
@@ -1314,7 +1657,6 @@ ECode PreferenceActivity::StartPreferencePanel(
         Int32 res;
         transaction->CommitAllowingStateLoss(&res);
     }
-
     return NOERROR;
 }
 
@@ -1340,7 +1682,6 @@ ECode PreferenceActivity::FinishPreferencePanel(
             }
         }
     }
-
     return NOERROR;
 }
 
@@ -1456,7 +1797,6 @@ ECode PreferenceActivity::AddPreferencesFromIntent(
     AutoPtr<IPreferenceScreen> preScreen;
     mPreferenceManager->InflateFromIntent(intent, preferenceScreen, (IPreferenceScreen**)&preScreen);
     SetPreferenceScreen(preScreen);
-
     return NOERROR;
 }
 
@@ -1468,7 +1808,7 @@ ECode PreferenceActivity::AddPreferencesFromResource(
     AutoPtr<IPreferenceScreen> preferenceScreen;
     GetPreferenceScreen((IPreferenceScreen**)&preferenceScreen);
     AutoPtr<IPreferenceScreen> preScreen;
-    mPreferenceManager->InflateFromResource(THIS_PROBE(IContext), preferencesResId, preferenceScreen, (IPreferenceScreen**)&preScreen);
+    mPreferenceManager->InflateFromResource((IContext*)this, preferencesResId, preferenceScreen, (IPreferenceScreen**)&preScreen);
     SetPreferenceScreen(preScreen);
     return NOERROR;
 }

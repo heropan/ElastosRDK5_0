@@ -5,9 +5,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/preference/Preference.h"
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::Res::ITypedArray;
 
@@ -21,6 +21,8 @@ class RingtonePreference
     , public IPreferenceManagerOnActivityResultListener
 {
 public:
+    CAR_INTERFACE_DECL()
+
     RingtonePreference();
 
     CARAPI constructor(
@@ -40,8 +42,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ IContext* context);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI GetRingtoneType(
         /* [out] */ Int32* type);
@@ -68,6 +68,7 @@ public:
         /* [out] */ Boolean* result);
 
 protected:
+    //@Override
     CARAPI OnClick();
 
     CARAPI OnPrepareRingtonePickerIntent(

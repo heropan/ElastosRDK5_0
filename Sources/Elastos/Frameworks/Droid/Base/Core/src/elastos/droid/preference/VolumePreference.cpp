@@ -18,7 +18,62 @@ using Elastos::Droid::Preference::CSeekBarVolumizer;
 namespace Elastos {
 namespace Droid {
 namespace Preference {
-const String VolumePreference::TAG = String("VolumePreference");
+
+/////////////////////////VolumePreference::VolumeStore//////////////////////////////////////
+
+CAR_INTERFACE_IMPL(VolumePreference::VolumeStore, Object, IVolumePreferenceVolumeStore)
+
+VolumePreference::VolumeStore::VolumeStore()
+    : volume(-1)
+    , originalVolume(-1)
+{
+}
+
+ECode VolumePreference::VolumeStore::constructor()
+{
+    return NOERROR;
+}
+
+ECode VolumePreference::VolumeStore::GetVolume(
+    /* [out] */ Int32* volume)
+{
+    VALIDATE_NOT_NULL(volume)
+    *volume = this->volume;
+    return NOERROR;
+}
+
+ECode VolumePreference::VolumeStore::GetOriginalVolume(
+    /* [out] */ Int32* volume)
+{
+    VALIDATE_NOT_NULL(volume)
+    *volume = this->originalVolume;
+    return NOERROR;
+}
+
+ECode VolumePreference::VolumeStore::SetVolume(
+    /* [in] */ Int32 volume)
+{
+    this->volume = volume;
+    return NOERROR;
+}
+
+ECode VolumePreference::VolumeStore::SetOriginalVolume(
+    /* [in] */ Int32 volume)
+{
+    this->originalVolume = volume;
+    return NOERROR;
+}
+
+/////////////////////////VolumePreference//////////////////////////////////////////////////////////
+
+const String VolumePreference::TAG("VolumePreference");
+
+CAR_INTERFACE_IMPL_4(VolumePreference, SeekBarDialogPreference,IVolumePreference, IPreferenceManagerOnActivityStopListener,IViewOnKeyListener,ISeekBarVolumizerCallback);
+
+VolumePreference::VolumePreference()
+    : mStreamType(0)
+{
+}
 
 ECode VolumePreference::constructor(
     /* [in] */ IContext* context,
@@ -26,16 +81,7 @@ ECode VolumePreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    FAIL_RETURN (SeekBarDialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
-    mStreamType = 0;
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::VolumePreference),
-            ARRAY_SIZE(R::styleable::VolumePreference));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
-    a->GetInt32(R::styleable::VolumePreference_streamType, 0, &mStreamType);
-    a->Recycle();
-    return NOERROR;
+    return Init(context, attrs, defStyleAttr, defStyleRes);
 }
 
 ECode VolumePreference::constructor(
@@ -53,7 +99,22 @@ ECode VolumePreference::constructor(
     return constructor(context, attrs, R::attr::dialogPreferenceStyle);
 }
 
-CAR_INTERFACE_IMPL_4(VolumePreference, SeekBarDialogPreference,IVolumePreference, IPreferenceManagerOnActivityStopListener,IViewOnKeyListener,ISeekBarVolumizerCallback);
+ECode VolumePreference::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    SeekBarDialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::VolumePreference),
+            ARRAY_SIZE(R::styleable::VolumePreference));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+    a->GetInt32(R::styleable::VolumePreference_streamType, 0, &mStreamType);
+    a->Recycle();
+    return NOERROR;
+}
 
 ECode VolumePreference::SetStreamType(
     /* [in] */ Int32 streamType)
@@ -235,8 +296,6 @@ ECode VolumePreference::OnRestoreInstanceState(
 
     return NOERROR;
 }
-
-CAR_INTERFACE_IMPL(VolumePreference::VolumeStore, Object, IVolumePreferenceVolumeStore)
 
 }
 }

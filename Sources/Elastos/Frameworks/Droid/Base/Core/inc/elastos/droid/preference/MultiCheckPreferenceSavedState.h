@@ -14,12 +14,14 @@ class MultiCheckPreferenceSavedState
     , public IMultiCheckPreferenceSavedState
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    MultiCheckPreferenceSavedState();
+
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IParcelable* superState);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);

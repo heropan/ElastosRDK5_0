@@ -19,9 +19,9 @@ class SeekBarDialogPreference
     , public ISeekBarDialogPreference
 {
 public:
-    SeekBarDialogPreference(){}
+    CAR_INTERFACE_DECL()
 
-    virtual ~SeekBarDialogPreference(){}
+    SeekBarDialogPreference();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -41,14 +41,15 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context);
 
-    CAR_INTERFACE_DECL()
-
     // Allow subclasses to override the action buttons
     virtual CARAPI CreateActionButtons();
 
-protected:
-    virtual CARAPI OnBindDialogView(
+    CARAPI OnBindDialogView(
         /* [in] */ IView* view);
+
+    static CARAPI GetSeekBar(
+        /* [in] */ IView* dialogView,
+        /* [out] */ ISeekBar** bar);
 
 private:
     static const String TAG;

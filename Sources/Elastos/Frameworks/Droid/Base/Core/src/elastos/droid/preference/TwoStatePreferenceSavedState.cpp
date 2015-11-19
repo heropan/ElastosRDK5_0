@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+CAR_INTERFACE_IMPL(TwoStatePreferenceSavedState, PreferenceBaseSavedState, ITwoStatePreferenceSavedState)
+
 TwoStatePreferenceSavedState::TwoStatePreferenceSavedState()
     : mChecked(FALSE)
 {}
@@ -12,9 +14,6 @@ TwoStatePreferenceSavedState::TwoStatePreferenceSavedState()
 ECode TwoStatePreferenceSavedState::constructor()
 {
     PreferenceBaseSavedState::constructor();
-    // Int32 i;
-    // source->ReadInt32(&i);
-    // mChecked =  i == 1;
     return NOERROR;
 }
 
@@ -23,8 +22,6 @@ ECode TwoStatePreferenceSavedState::constructor(
 {
     return PreferenceBaseSavedState::constructor(superState);
 }
-
-CAR_INTERFACE_IMPL(TwoStatePreferenceSavedState, PreferenceBaseSavedState, ITwoStatePreferenceSavedState)
 
 ECode TwoStatePreferenceSavedState::IsChecked(
     /* [out] */ Boolean* isChecked)

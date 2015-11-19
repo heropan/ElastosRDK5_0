@@ -16,18 +16,20 @@
 #include "elastos/droid/preference/CSeekBarVolumizer.h"
 #include "elastos/droid/preference/CSwitchPreference.h"
 #include "elastos/droid/preference/CVolumePreference.h"
+#include "elastos/droid/preference/CVolumePreferenceVolumnStore.h"
 #include "elastos/droid/preference/CVolumePreferenceSavedState.h"
 #include "elastos/droid/preference/CPreferenceInflater.h"
 #include "elastos/droid/preference/CPreferenceCategory.h"
 #include "elastos/droid/preference/CPreferenceManager.h"
 #include "elastos/droid/preference/CRingtonePreference.h"
 #include "elastos/droid/preference/CPreferenceFrameLayout.h"
+#include "elastos/droid/preference/CPreferenceFrameLayoutLayoutParams.h"
 #include "elastos/droid/preference/CPreferenceScreen.h"
 #include "elastos/droid/preference/CPreferenceScreenSavedState.h"
 #include "elastos/droid/preference/CSeekBarPreference.h"
 #include "elastos/droid/preference/CSeekBarPreferenceSavedState.h"
-// #include "elastos/droid/preference/CPreferenceActivityHeader.h"
-//#include "elastos/droid/preference/CPreferenceGroupAdapter.h"
+#include "elastos/droid/preference/CPreferenceActivityHeader.h"
+#include "elastos/droid/preference/CPreferenceGroupAdapter.h"
 
 namespace Elastos {
 namespace Droid {
@@ -67,6 +69,8 @@ CAR_OBJECT_IMPL(CSwitchPreference)
 
 CAR_OBJECT_IMPL(CVolumePreference)
 
+CAR_OBJECT_IMPL(CVolumePreferenceVolumnStore)
+
 CAR_OBJECT_IMPL(CVolumePreferenceSavedState)
 
 CAR_OBJECT_IMPL(CPreferenceInflater)
@@ -79,6 +83,8 @@ CAR_OBJECT_IMPL(CRingtonePreference)
 
 CAR_OBJECT_IMPL(CPreferenceFrameLayout)
 
+CAR_OBJECT_IMPL(CPreferenceFrameLayoutLayoutParams)
+
 CAR_OBJECT_IMPL(CPreferenceScreen)
 
 CAR_OBJECT_IMPL(CPreferenceScreenSavedState)
@@ -87,9 +93,9 @@ CAR_OBJECT_IMPL(CSeekBarPreference)
 
 CAR_OBJECT_IMPL(CSeekBarPreferenceSavedState)
 
-// CAR_OBJECT_IMPL(CPreferenceActivityHeader)
+CAR_OBJECT_IMPL(CPreferenceActivityHeader)
 
-//CAR_OBJECT_IMPL(CPreferenceGroupAdapter)
+CAR_OBJECT_IMPL(CPreferenceGroupAdapter)
 
 } // namespace Preference
 } // namespace Droid

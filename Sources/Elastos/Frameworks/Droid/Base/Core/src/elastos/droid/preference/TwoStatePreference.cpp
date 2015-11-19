@@ -1,25 +1,22 @@
 
 #include "elastos/droid/preference/TwoStatePreference.h"
 #include "elastos/droid/preference/CTwoStatePreferenceSavedState.h"
-// #include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
-// #include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::CString;
-using Elastos::Core::IBoolean;
-using Elastos::Core::CBoolean;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
-// using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityManagerHelper;
-// using Elastos::Droid::View::Accessibility::CAccessibilityManagerHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::R;
+using Elastos::Core::IBoolean;
+using Elastos::Core::CBoolean;
+using Elastos::Core::CString;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
+
 CAR_INTERFACE_IMPL(TwoStatePreference, Preference, ITwoStatePreference)
 
 TwoStatePreference::TwoStatePreference()
@@ -34,7 +31,7 @@ ECode TwoStatePreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    return Preference::constructor(context, attrs, defStyleAttr, defStyleRes);
+    return Preference::Init(context, attrs, defStyleAttr, defStyleRes);
 }
 
 ECode TwoStatePreference::constructor(
@@ -42,20 +39,20 @@ ECode TwoStatePreference::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    return Preference::constructor(context, attrs, defStyleAttr, 0);
+    return Preference::Init(context, attrs, defStyleAttr, 0);
 }
 
 ECode TwoStatePreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return Preference::constructor(context, attrs, 0, 0);
+    return Preference::Init(context, attrs, 0, 0);
 }
 
 ECode TwoStatePreference::constructor(
     /* [in] */ IContext* context)
 {
-    return Preference::constructor(context, NULL, 0, 0);
+    return Preference::Init(context, NULL, 0, 0);
 }
 
 ECode TwoStatePreference::OnClick()
@@ -296,7 +293,6 @@ ECode TwoStatePreference::OnSaveInstanceState(
     return NOERROR;
 }
 
-
 ECode TwoStatePreference::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
@@ -305,13 +301,13 @@ ECode TwoStatePreference::OnRestoreInstanceState(
         Preference::OnRestoreInstanceState(state);
         return NOERROR;
     }
-    // AutoPtr<ITwoStatePreferenceSavedState> myState = ITwoStatePreferenceSavedState::Probe(state);
-    // AutoPtr<IParcelable> superState;
-    // myState->GetSuperState((IParcelable**)&superState);
-    // Preference::OnRestoreInstanceState(superState);
-    // Boolean isChecked;
-    // myState->IsChecked(&isChecked);
-    // SetChecked(isChecked);
+    AutoPtr<ITwoStatePreferenceSavedState> myState = ITwoStatePreferenceSavedState::Probe(state);
+    AutoPtr<IParcelable> superState;
+    IPreferenceBaseSavedState::Probe(myState)->GetSuperState((IParcelable**)&superState);
+    Preference::OnRestoreInstanceState(superState);
+    Boolean isChecked;
+    myState->IsChecked(&isChecked);
+    SetChecked(isChecked);
     return NOERROR;
 }
 

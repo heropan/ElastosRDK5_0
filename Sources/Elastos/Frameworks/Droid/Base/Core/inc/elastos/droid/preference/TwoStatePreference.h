@@ -5,10 +5,10 @@
 #include "elastos/droid/preference/Preference.h"
 #include "elastos/droid/text/TextUtils.h"
 
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -22,8 +22,6 @@ public:
     CAR_INTERFACE_DECL()
 
     TwoStatePreference();
-
-    virtual ~TwoStatePreference() {}
 
     CARAPI constructor(
         /* [in] */ IContext* context,

@@ -19,9 +19,7 @@ ECode CPreferenceManagerHelper::GetDefaultSharedPreferences(
     /* [out] */ ISharedPreferences** result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = PreferenceManager::GetDefaultSharedPreferences(context);
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return PreferenceManager::GetDefaultSharedPreferences(context, result);
 }
 
 ECode CPreferenceManagerHelper::SetDefaultValues(
@@ -29,8 +27,7 @@ ECode CPreferenceManagerHelper::SetDefaultValues(
     /* [in] */ Int32 resId,
     /* [in] */ Boolean readAgain)
 {
-    PreferenceManager::SetDefaultValues(context, resId, readAgain);
-    return NOERROR;
+    return PreferenceManager::SetDefaultValues(context, resId, readAgain);
 }
 
 ECode CPreferenceManagerHelper::SetDefaultValues(
@@ -40,8 +37,7 @@ ECode CPreferenceManagerHelper::SetDefaultValues(
     /* [in] */ Int32 resId,
     /* [in] */ Boolean readAgain)
 {
-    PreferenceManager::SetDefaultValues(context, sharedPreferencesName, sharedPreferencesMode, resId, readAgain);
-    return NOERROR;
+    return PreferenceManager::SetDefaultValues(context, sharedPreferencesName, sharedPreferencesMode, resId, readAgain);
 }
 
 } // namespace Preference

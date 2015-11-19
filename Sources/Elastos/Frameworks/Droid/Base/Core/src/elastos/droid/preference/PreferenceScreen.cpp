@@ -1,7 +1,7 @@
 
 #include "elastos/droid/preference/PreferenceScreen.h"
 #include "elastos/droid/R.h"
-#include "elastos/droid/preference/PreferenceGroupAdapter.h"
+#include "elastos/droid/preference/CPreferenceGroupAdapter.h"
 #include "elastos/droid/preference/CPreferenceManager.h"
 //#include "elastos/droid/app/CDialog.h"
 #include "elastos/droid/text/TextUtils.h"
@@ -11,6 +11,7 @@
 using Elastos::Core::CString;
 //using Elastos::Droid::App::CDialog;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnDismissListener;
+using Elastos::Droid::Preference::CPreferenceGroupAdapter;
 using Elastos::Droid::Text::TextUtils;
 //using Elastos::Droid::Widget::CListView;
 using Elastos::Droid::Widget::IAdapter;
@@ -22,7 +23,12 @@ using Elastos::Droid::View::IWindow;
 namespace Elastos {
 namespace Droid {
 namespace Preference {
-CAR_INTERFACE_IMPL(PreferenceScreen, PreferenceGroup, IAdapterViewOnItemClickListener)
+
+CAR_INTERFACE_IMPL_2(PreferenceScreen, PreferenceGroup, IPreferenceScreen, IAdapterViewOnItemClickListener)
+
+PreferenceScreen::PreferenceScreen()
+{
+}
 
 ECode PreferenceScreen::constructor(
     /* [in] */ IContext* context,
@@ -48,19 +54,22 @@ ECode PreferenceScreen::OnCreateRootAdapter(
     /* [out] */ IListAdapter** adapter)
 {
     VALIDATE_NOT_NULL(adapter)
-    // AutoPtr<PreferenceGroupAdapter> preferenceAdapter = new PreferenceGroupAdapter(THIS_PROBE(IPreferenceGroup));
-    // *adapter = (IListAdapter*)preferenceAdapter;
-    // REFCOUNT_ADD(*adapter)
+    AutoPtr<IPreferenceGroupAdapter> a;
+    CPreferenceGroupAdapter::New((IPreferenceGroup*)this, (IPreferenceGroupAdapter**)&a);
+    *adapter = IListAdapter::Probe(a);
+    REFCOUNT_ADD(*adapter)
     return NOERROR;
 }
 
 ECode PreferenceScreen::Bind(
     /* [in] */ IListView* listView)
 {
-    IAdapterView::Probe(listView)->SetOnItemClickListener(THIS_PROBE(IAdapterViewOnItemClickListener));
+    AutoPtr<IAdapterView> av = IAdapterView::Probe(listView);
+    av->SetOnItemClickListener((IAdapterViewOnItemClickListener*)this);
     AutoPtr<IListAdapter> adapter;
     GetRootAdapter((IListAdapter**)&adapter);
-    IAdapterView::Probe(listView)->SetAdapter(IAdapter::Probe(adapter));
+    AutoPtr<IAdapter> a = IAdapter::Probe(adapter);
+    av->SetAdapter(a);
 
     OnAttachedToActivity();
     return NOERROR;
@@ -85,7 +94,8 @@ ECode PreferenceScreen::ShowDialog(
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
     if (mListView != NULL) {
-        IAdapterView::Probe(mListView)->SetAdapter(NULL);
+        AutoPtr<IAdapterView> av = IAdapterView::Probe(mListView);
+        av->SetAdapter(NULL);
     }
 
     AutoPtr<ILayoutInflater> inflater;
@@ -224,69 +234,6 @@ ECode PreferenceScreen::OnRestoreInstanceState(
         ShowDialog(b);
     }
     return NOERROR;
-}
-
-ECode PreferenceScreen::SetOrderingAsAdded(
-    /* [in] */ Boolean orderingAsAdded)
-{
-    return PreferenceGroup::SetOrderingAsAdded(orderingAsAdded);
-}
-
-ECode PreferenceScreen::IsOrderingAsAdded(
-    /* [out] */ Boolean* added)
-{
-    return PreferenceGroup::IsOrderingAsAdded(added);
-}
-
-ECode PreferenceScreen::GetPreferenceCount(
-    /* [out] */ Int32* count)
-{
-    return PreferenceGroup::GetPreferenceCount(count);
-}
-
-ECode PreferenceScreen::GetPreference(
-    /* [in] */ Int32 index,
-    /* [out] */ IPreference** preference)
-{
-    return PreferenceGroup::GetPreference(index, preference);
-}
-
-ECode PreferenceScreen::AddPreference(
-    /* [in] */ IPreference* preference,
-    /* [out] */ Boolean* result)
-{
-    return PreferenceGroup::AddPreference(preference, result);
-}
-
-ECode PreferenceScreen::RemovePreference(
-    /* [in] */ IPreference* preference,
-    /* [out] */ Boolean* result)
-{
-    return PreferenceGroup::RemovePreference(preference, result);
-}
-
-ECode PreferenceScreen::RemoveAll()
-{
-    return PreferenceGroup::RemoveAll();
-}
-
-ECode PreferenceScreen::FindPreference(
-    /* [in] */ ICharSequence* key,
-    /* [out] */ IPreference** preference)
-{
-    return PreferenceGroup::FindPreference(key, preference);
-}
-
-ECode PreferenceScreen::SortPreferences()
-{
-    return PreferenceGroup::SortPreferences();
-}
-
-ECode PreferenceScreen::OnPrepareAddPreference(
-    /* [in] */ IPreference* preference,
-    /* [out] */ Boolean* result)
-{
-    return PreferenceGroup::OnPrepareAddPreference(preference, result);
 }
 
 }  // Preference

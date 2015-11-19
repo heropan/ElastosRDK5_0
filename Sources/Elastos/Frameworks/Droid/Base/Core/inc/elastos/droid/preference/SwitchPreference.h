@@ -23,10 +23,10 @@ public:
         , public ICompoundButtonOnCheckedChangeListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         Listener(
             /* [in] */ SwitchPreference* host);
-
-        CAR_INTERFACE_DECL()
 
         ECode OnCheckedChanged(
             /* [in] */ ICompoundButton* buttonView,
@@ -37,6 +37,8 @@ public:
      };
 
 public:
+    CAR_INTERFACE_DECL()
+
     SwitchPreference();
 
     CARAPI constructor(
@@ -57,8 +59,6 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context);
 
-    CAR_INTERFACE_DECL()
-
     CARAPI SetSwitchTextOn(
         /* [in] */ ICharSequence* onText);
 
@@ -78,6 +78,7 @@ public:
         /* [out] */ ICharSequence** textOff);
 
 protected:
+    //@Override
     CARAPI OnBindView(
         /* [in] */ IView* view);
 
@@ -86,7 +87,6 @@ private:
     AutoPtr<ICharSequence> mSwitchOn;
     AutoPtr<ICharSequence> mSwitchOff;
     AutoPtr<ICompoundButtonOnCheckedChangeListener> mListener;
-
 };
 
 }

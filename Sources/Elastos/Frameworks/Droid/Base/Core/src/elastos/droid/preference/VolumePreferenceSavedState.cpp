@@ -1,38 +1,38 @@
 
 #include "elastos/droid/preference/VolumePreferenceSavedState.h"
-#include "elastos/droid/preference/VolumePreference.h"
+#include "elastos/droid/preference/CVolumePreferenceVolumnStore.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+CAR_INTERFACE_IMPL(VolumePreferenceSavedState, PreferenceBaseSavedState, IVolumePreferenceSavedState)
+
 VolumePreferenceSavedState::VolumePreferenceSavedState()
 {
-    // VolumePreference::VolumeStore* vs = new VolumePreference::VolumeStore();
-    // mVolumeStore = vs;
+    CVolumePreferenceVolumnStore::New((IVolumePreferenceVolumeStore**)&mVolumeStore);
 }
 
 ECode VolumePreferenceSavedState::constructor()
 {
-    PreferenceBaseSavedState::constructor();
-    // mVolumeStore.volume = source.readInt();
-    // mVolumeStore.originalVolume = source.readInt();
-    return NOERROR;
+    return PreferenceBaseSavedState::constructor();
 }
 
 ECode VolumePreferenceSavedState::constructor(
-    /* [in] */ IParcelable* superState)
+    /* [in] */ IParcelable* source)
 {
-    return PreferenceBaseSavedState::constructor(superState);
+    return PreferenceBaseSavedState::constructor(source);
 }
-
-CAR_INTERFACE_IMPL(VolumePreferenceSavedState, PreferenceBaseSavedState, IVolumePreferenceSavedState)
 
 ECode VolumePreferenceSavedState::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     PreferenceBaseSavedState::ReadFromParcel(source);
-    // source->ReadInt32(&mVolumeStore->mVolume);
-    // source->ReadInt32(&mVolumeStore->mOriginalVolume);
+    Int32 volumn, originalVolume;
+    source->ReadInt32(&volumn);
+    source->ReadInt32(&originalVolume);
+    mVolumeStore->SetVolume(volumn);
+    mVolumeStore->SetOriginalVolume(originalVolume);
     return NOERROR;
 }
 
@@ -40,8 +40,11 @@ ECode VolumePreferenceSavedState::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     PreferenceBaseSavedState::WriteToParcel(dest);
-    // dest->WriteInt32(mVolumeStore->mVolume);
-    // dest->WriteInt32(mVolumeStore->mOriginalVolume);
+    Int32 volumn, originalVolume;
+    mVolumeStore->GetVolume(&volumn);
+    mVolumeStore->GetOriginalVolume(&originalVolume);
+    dest->WriteInt32(volumn);
+    dest->WriteInt32(originalVolume);
     return NOERROR;
 }
 

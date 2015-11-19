@@ -15,9 +15,9 @@ class SeekBarPreferenceSavedState
     , public ISeekBarPreferenceSavedState
 {
 public:
-    SeekBarPreferenceSavedState();
-
     CAR_INTERFACE_DECL()
+
+    SeekBarPreferenceSavedState();
 
     CARAPI constructor();
 
@@ -44,6 +44,7 @@ public:
 
     CARAPI GetSuperState(
         /* [out] */ IParcelable** superState);
+
 private:
     Int32 mProgress;
     Int32 mMax;

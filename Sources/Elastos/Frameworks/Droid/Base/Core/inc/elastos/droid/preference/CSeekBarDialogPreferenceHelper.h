@@ -6,8 +6,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::ISeekBar;
+using Elastos::Droid::View::IView;
 
 namespace Elastos {
 namespace Droid {
@@ -25,11 +25,9 @@ public:
     CARAPI GetSeekBar(
         /* [in] */ IView* dialogView,
         /* [out] */ ISeekBar** bar);
-
 };
 
 }
 }
 }
-
 #endif // __ELASTOS_DROID_PREFERENCE_CSEEKBARPREFERENCEHELPER_H__

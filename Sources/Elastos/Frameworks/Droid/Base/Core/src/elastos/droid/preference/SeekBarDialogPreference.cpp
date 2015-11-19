@@ -13,6 +13,10 @@ const String SeekBarDialogPreference::TAG("SeekBarDialogPreference");
 
 CAR_INTERFACE_IMPL(SeekBarDialogPreference, DialogPreference, ISeekBarDialogPreference)
 
+SeekBarDialogPreference::SeekBarDialogPreference()
+{
+}
+
 ECode SeekBarDialogPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
@@ -25,7 +29,7 @@ ECode SeekBarDialogPreference::constructor(
 
     // Steal the XML dialogIcon attribute's value
     GetDialogIcon((IDrawable**)&mMyIcon);
-    SetDialogIcon(NULL);
+    SetDialogIcon((IDrawable*)NULL);
     return NOERROR;
 }
 
@@ -71,6 +75,19 @@ ECode SeekBarDialogPreference::OnBindDialogView(
         AutoPtr<IView> v = IView::Probe(iconView);
         v->SetVisibility(IView::GONE);
     }
+    return NOERROR;
+}
+
+ECode SeekBarDialogPreference::GetSeekBar(
+        /* [in] */ IView* dialogView,
+        /* [out] */ ISeekBar** bar)
+{
+    VALIDATE_NOT_NULL(bar)
+    AutoPtr<IView> v;
+    dialogView->FindViewById(R::id::seekbar, (IView**)&v);
+    AutoPtr<ISeekBar> seekBar = ISeekBar::Probe(v);
+    *bar = seekBar;
+    REFCOUNT_ADD(*bar)
     return NOERROR;
 }
 

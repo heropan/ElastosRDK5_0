@@ -5,6 +5,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/preference/Preference.h"
 
+using Elastos::Utility::IList;
+
 namespace Elastos {
 namespace Droid {
 namespace Preference {
@@ -15,11 +17,24 @@ class PreferenceGroup
     , public IPreferenceGroup
 {
 public:
+    CAR_INTERFACE_DECL()
+
     PreferenceGroup();
 
-    virtual ~PreferenceGroup() {}
+    PreferenceGroup(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
-    CAR_INTERFACE_DECL()
+    PreferenceGroup(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    PreferenceGroup(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
 
     virtual CARAPI SetOrderingAsAdded(
         /* [in] */  Boolean orderingAsAdded);
@@ -55,7 +70,7 @@ public:
         /* [in] */ Boolean disableDependents);
 
 protected:
-    CARAPI constructor(
+    CARAPI_(void) Init(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
@@ -85,15 +100,13 @@ private:
         /* [in] */  IPreference* preference);
 
 private:
-    List<AutoPtr<IPreference> > mPreferenceList;
+    AutoPtr<IList> mPreferenceList;
 
     Boolean mOrderingAsAdded;
 
     Int32 mCurrentPreferenceOrder;
 
     Boolean mAttachedToActivity;
-
-    Object mLock;
 };
 
 } // Preference
