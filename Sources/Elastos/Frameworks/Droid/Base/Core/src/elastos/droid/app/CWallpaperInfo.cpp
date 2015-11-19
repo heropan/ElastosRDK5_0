@@ -20,11 +20,15 @@ using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Service::Wallpaper::WallpaperService;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 const String CWallpaperInfo::TAG("WallpaperInfo");
+
+CAR_INTERFACE_IMPL_2(CWallpaperInfo, Object, IWallpaperInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CWallpaperInfo)
 
 CWallpaperInfo::CWallpaperInfo()
     : mThumbnailResource(0)

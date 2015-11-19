@@ -8,7 +8,7 @@
 using Elastos::Droid::App::Job::IIJobCallback;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IPersistableBundle;
-
+using Elastos::Droid::Content::Res::IConfiguration;
 
 namespace Elastos {
 namespace Droid {

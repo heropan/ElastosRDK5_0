@@ -2,17 +2,26 @@
 #define __ELASTOS_DROID_APP_CSEARCHMANAGER_H__
 
 #include "_Elastos_Droid_App_CSearchManager.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 CarClass(CSearchManager)
+    , public Object
+    , public ISearchManager
+    , public IDialogInterfaceOnDismissListener
+    , public IDialogInterfaceOnCancelListener
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSearchManager();
 
-    ~CSearchManager();
+    virtual ~CSearchManager();
 
     CARAPI constructor(
         /* [in] */ IContext * context,

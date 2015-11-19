@@ -2,9 +2,9 @@
 #include "elastos/droid/app/Instrumentation.h"
 #include "elastos/droid/app/Activity.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
-// #include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/app/Fragment.h"
-//#include "elastos/droid/app/UiAutomation.h"
+#include "elastos/droid/app/CUiAutomation.h"
 #include "elastos/droid/app/CInstrumentationActivityMonitor.h"
 #include "elastos/droid/app/CInstrumentationActivityResult.h"
 #include "elastos/droid/content/CComponentName.h"
@@ -209,7 +209,6 @@ void Instrumentation::Idler::WaitForIdle()
     }
 }
 
-
 //====================================================
 // Instrumentation::MenuRunnable
 //====================================================
@@ -232,7 +231,6 @@ ECode Instrumentation::MenuRunnable::Run()
     return win->PerformPanelIdentifierAction(IWindow::FEATURE_OPTIONS_PANEL, mIdentifier, mFlags, &mReturnValue);
 }
 
-
 //====================================================
 // Instrumentation::ContextMenuRunnable
 //====================================================
@@ -254,7 +252,6 @@ ECode Instrumentation::ContextMenuRunnable::Run()
 
     return win->PerformPanelIdentifierAction(IWindow::FEATURE_OPTIONS_PANEL, mIdentifier, mFlags, &mReturnValue);
 }
-
 
 //====================================================
 // Instrumentation::BlockPhoneCallRunnable
@@ -287,6 +284,8 @@ Instrumentation::BlockPhoneCallRunnable::Run()
 //====================================================
 
 const String Instrumentation::TAG("Instrumentation");
+
+CAR_INTERFACE_IMPL(Instrumentation, Object, IInstrumentation)
 
 Instrumentation::Instrumentation()
     : mAutomaticPerformanceSnapshots(FALSE)
@@ -377,10 +376,9 @@ ECode Instrumentation::Finish(
         mUiAutomation->Disconnect();
         mUiAutomation = NULL;
     }
-    assert(0 && "TODO");
-    // CActivityThread* at = (CActivityThread*)mThread.Get();
-    // return at->FinishInstrumentation(resultCode, results);
-    return NOERROR;
+
+    CActivityThread* at = (CActivityThread*)mThread;
+    return at->FinishInstrumentation(resultCode, results);
 }
 
 ECode Instrumentation::SetAutomaticPerformanceSnapshots()
@@ -1049,6 +1047,17 @@ ECode Instrumentation::CallActivityOnCreate(
 {
     PrePerformCreate(activity);
     activity->PerformCreate(icicle);
+    PostPerformCreate(activity);
+    return NOERROR;
+}
+
+ECode Instrumentation::CallActivityOnCreate(
+    /* [in] */ IActivity* activity,
+    /* [in] */ IBundle* icicle,
+    /* [in] */ IPersistableBundle* persistentState)
+{
+    PrePerformCreate(activity);
+    activity->PerformCreate(icicle, persistentState);
     PostPerformCreate(activity);
     return NOERROR;
 }
@@ -1739,8 +1748,7 @@ ECode Instrumentation::GetUiAutomation(
             GetTargetContext((IContext**)&ctx);
             AutoPtr<ILooper> looper;
             ctx->GetMainLooper((ILooper**)&looper);
-            assert(0 && "TODO");
-            // mUiAutomation = new UiAutomation(looper, mUiAutomationConnection);
+            CUiAutomation::New(looper, mUiAutomationConnection, (IUiAutomation**)&mUiAutomation);
             mUiAutomation->Connect();
         }
         *ua = mUiAutomation;

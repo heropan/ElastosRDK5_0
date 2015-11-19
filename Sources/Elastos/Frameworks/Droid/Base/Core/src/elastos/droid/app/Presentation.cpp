@@ -22,8 +22,10 @@ namespace App {
 
 const String Presentation::TAG("Presentation");
 
-CAR_INTERFACE_IMPL(Presentation::PresentationDisplayListener, IDisplayListener);
-CAR_INTERFACE_IMPL(Presentation::PresentationContextThemeWrapper, IContextThemeWrapper);
+//======================================================================================
+// Presentation::PresentationDisplayListener
+//======================================================================================
+CAR_INTERFACE_IMPL(Presentation::PresentationDisplayListener, Object, IDisplayListener);
 
 ECode Presentation::PresentationDisplayListener::OnDisplayAdded(
     /* [in] */ Int32 displayId)
@@ -53,6 +55,9 @@ ECode Presentation::PresentationDisplayListener::OnDisplayChanged(
     return NOERROR;
 }
 
+//======================================================================================
+// Presentation::PresentationHandler
+//======================================================================================
 ECode Presentation::PresentationHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
@@ -65,6 +70,12 @@ ECode Presentation::PresentationHandler::HandleMessage(
     }
     return NOERROR;
 }
+
+//======================================================================================
+// Presentation::PresentationContextThemeWrapper
+//======================================================================================
+
+CAR_INTERFACE_IMPL(Presentation::PresentationContextThemeWrapper, Object,IContextThemeWrapper);
 
 ECode Presentation::PresentationContextThemeWrapper::GetSystemService(
     /* [in] */ const String& name,
@@ -889,6 +900,9 @@ ECode Presentation::PresentationContextThemeWrapper::IsRestricted(
     return ContextThemeWrapper::IsRestricted(isRestricted);
 }
 
+//======================================================================================
+// Presentation
+//======================================================================================
 Presentation::Presentation()
 {
     mDisplayListener = new PresentationDisplayListener(this);

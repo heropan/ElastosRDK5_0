@@ -7,8 +7,11 @@
 #include "elastos/droid/app/CApplication.h"
 #include "elastos/droid/app/CAppImportanceMonitorProcessObserver.h"
 #include "elastos/droid/app/CFragmentState.h"
+#include "elastos/droid/app/CInstrumentation.h"
 #include "elastos/droid/app/CUiAutomation.h"
 #include "elastos/droid/app/CUiAutomationConnection.h"
+//#include "elastos/droid/app/CVoiceInteractorCallback.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -22,8 +25,10 @@ CAR_OBJECT_IMPL(CActivityViewActivityContainerCallback)
 CAR_OBJECT_IMPL(CApplication)
 CAR_OBJECT_IMPL(CAppImportanceMonitorProcessObserver)
 CAR_OBJECT_IMPL(CFragmentState)
+CAR_OBJECT_IMPL(CInstrumentation)
 CAR_OBJECT_IMPL(CUiAutomation)
 CAR_OBJECT_IMPL(CUiAutomationConnection)
+//CAR_OBJECT_IMPL(CVoiceInteractorCallback)
 
 } // namespace App
 } // namespace Droid

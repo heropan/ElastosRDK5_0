@@ -1049,18 +1049,17 @@ module
         ExecStartActivityFromAppTask(
             [in] IContext* who,
             [in] IBinder* contextThread,
-            [in] IBinder* token,
             [in] IIAppTask* appTask,
             [in] IIntent* intent,
-            [in] IBundle* options,
-            [out] IInstrumentationActivityResult** activityResult);
+            [in] IBundle* options);
 
         Init(
             [in] IActivityThread* thread,
             [in] IContext* instrContext,
             [in] IContext* appContext,
             [in] IComponentName* component,
-            [in] IInstrumentationWatcher* watcher);
+            [in] IInstrumentationWatcher* watcher,
+            [in] IIUiAutomationConnection* connection);
 
         /**
          * Gets the {@link UiAutomation} instance.

@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_CWALLPAPERMANAGERHELPER_H__
 
 #include "_Elastos_Droid_App_CWallpaperManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -10,8 +11,14 @@ namespace Droid {
 namespace App {
 
 CarClass(CWallpaperManagerHelper)
+    , public Singleton
+    , public IWallpaperManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Retrieve a WallpaperManager associated with the given Context.
      */

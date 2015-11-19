@@ -1,12 +1,12 @@
 
 module
 {
-    using Elastos.Droid.Content.IConfiguration;
+    interface Elastos.Droid.Content.Res.IConfiguration;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
-    namespace Trust {
+    namespace Usage {
 
     /**
      * An event representing a state change for a component.
@@ -89,14 +89,14 @@ module
             [out] Int32* result);
 
         SetConfiguration(
-            [in] 　IConfiguration* value);
+            [in] IConfiguration* value);
 
         /**
          * Returns a {@link Configuration} for this event if the event is of type
          * {@link #CONFIGURATION_CHANGE}, otherwise it returns null.
          */
         GetConfiguration(
-            [out]　IConfiguration** config);
+            [out] IConfiguration** config);
     }
 
     /**
@@ -139,7 +139,7 @@ module
         ResetToStart();
     }
 
-    } // namespace Trust
+    } // namespace Usage
     } // namespace App
     } // namespace Droid
     } // namespace Elastos

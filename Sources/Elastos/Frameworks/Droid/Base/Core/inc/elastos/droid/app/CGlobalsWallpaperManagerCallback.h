@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_CGLOBALSWALLPAPERMANAGERCALLBACK_H__
 
 #include "_Elastos_Droid_App_CGlobalsWallpaperManagerCallback.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::ILooper;
@@ -16,9 +16,13 @@ namespace App{
 class CWallpaperManager;
 
 CarClass(CGlobalsWallpaperManagerCallback)
+    , public Object
+    , public IIWallpaperManagerCallback
+    , public IBinder
 {
 private:
-    class MyHandler : public HandlerBase
+    class MyHandler
+        : public Handler
     {
     public:
         MyHandler(
@@ -33,6 +37,13 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor(
+        /* [in] */ ILooper* looper);
+
     CARAPI OnWallpaperChanged();
 
     CARAPI_(AutoPtr<IBitmap>) PeekWallpaperBitmap(
@@ -40,9 +51,6 @@ public:
         /* [in] */ Boolean returnDefault);
 
     CARAPI_(void) ForgetLoadedWallpaper();
-
-    CARAPI constructor(
-        /* [in] */ ILooper* looper);
 
 private:
     CARAPI_(AutoPtr<IBitmap>) GetCurrentWallpaperLocked(

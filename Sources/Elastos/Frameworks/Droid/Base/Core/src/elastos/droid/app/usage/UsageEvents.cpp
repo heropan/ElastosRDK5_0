@@ -1,5 +1,14 @@
 #include "elastos/droid/app/usage/UsageEvents.h"
+#include "elastos/droid/os/CParcel.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/utility/Arrays.h"
+#include <elastos/utility/logging/Logger.h>
+#include <binder/Parcel.h>
 
+using Elastos::Droid::Os::CParcel;
+using Elastos::Droid::Content::Res::CConfiguration;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -86,14 +95,14 @@ ECode UsageEvent::GetEventType(
 }
 
 ECode UsageEvent::SetConfiguration(
-    /* [in] */ 　IConfiguration* value)
+    /* [in] */ IConfiguration* value)
 {
     mConfiguration = value;
     return NOERROR;
 }
 
 ECode UsageEvent::GetConfiguration(
-    /* [out] */　IConfiguration** config)
+    /* [out] */ IConfiguration** result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mConfiguration;
@@ -105,7 +114,7 @@ ECode UsageEvent::GetConfiguration(
 // UsageEvents
 //==================================================================
 
-CAR_INTERFACE_IMPL_2(UsageEvents, IUsageEvents, IParcelable)
+CAR_INTERFACE_IMPL_2(UsageEvents, Object, IUsageEvents, IParcelable)
 
 UsageEvents::UsageEvents()
     : mEventCount(0)
@@ -127,7 +136,7 @@ ECode UsageEvents::constructor(
     /* [in] */ ArrayOf<String>* stringPool)
 {
     mStringPool = stringPool;
-    mEventCount = events.size();
+    events->GetSize(&mEventCount);
     mEventsToWrite = events;
     return NOERROR;
 }
@@ -135,7 +144,8 @@ ECode UsageEvents::constructor(
 ECode UsageEvents::HasNextEvent(
     /* [out] */ Boolean* result)
 {
-    return mIndex < mEventCount;
+    VALIDATE_NOT_NULL(result)
+    *result = mIndex < mEventCount;
     return NOERROR;
 }
 
@@ -143,27 +153,28 @@ ECode UsageEvents::GetNextEvent(
     /* [in] */ IUsageEvent* eventOut,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     if (mIndex >= mEventCount) {
-        return FALSE;
+        return NOERROR;
     }
 
-    readEventFromParcel(mParcel, eventOut);
+    ReadEventFromParcel(mParcel, eventOut);
 
     mIndex++;
     if (mIndex >= mEventCount) {
-        mParcel.recycle();
-        mParcel = null;
+        mParcel = NULL;
     }
-    return true;
+    *result = TRUE;
     return NOERROR;
 }
-
 
 ECode UsageEvents::ResetToStart()
 {
     mIndex = 0;
-    if (mParcel != null) {
-        mParcel.setDataPosition(0);
+    if (mParcel != NULL) {
+        mParcel->SetDataPosition(0);
     }
 
     return NOERROR;
@@ -172,80 +183,102 @@ ECode UsageEvents::ResetToStart()
 ECode UsageEvents::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    dest.writeInt(mEventCount);
-    dest.writeInt(mIndex);
+    dest->WriteInt32(mEventCount);
+    dest->WriteInt32(mIndex);
     if (mEventCount > 0) {
-        dest.writeStringArray(mStringPool);
+        dest->WriteArrayOfString(mStringPool);
 
-        if (mEventsToWrite != null) {
+        if (mEventsToWrite != NULL) {
             // Write out the events
-            Parcel p = Parcel.obtain();
-            try {
-                p.setDataPosition(0);
+            // Parcel p = Parcel.obtain();
+            AutoPtr<IParcel> p;
+            CParcel::New((IParcel**)&p);
+            // try {
+                p->SetDataPosition(0);
                 for (Int32 i = 0; i < mEventCount; i++) {
-                    final Event event = mEventsToWrite.get(i);
-                    writeEventToParcel(event, p, flags);
+                    AutoPtr<IInterface> obj;
+                    mEventsToWrite->Get(i, (IInterface**)&obj);
+                    IUsageEvent* event = IUsageEvent::Probe(obj);
+                    WriteEventToParcel(event, p);
                 }
 
-                final Int32 listByteLength = p.dataPosition();
+                Int32 listByteLength;
+                p->GetDataPosition(&listByteLength);
 
                 // Write the total length of the data.
-                dest.writeInt(listByteLength);
+                dest->WriteInt32(listByteLength);
 
                 // Write our current position into the data.
-                dest.writeInt(0);
+                dest->WriteInt32(0);
 
                 // Write the data.
-                dest.appendFrom(p, 0, listByteLength);
-            } finally {
-                p.recycle();
-            }
-
-        } else if (mParcel != null) {
+                dest->AppendFrom(p, 0, listByteLength);
+            // } finally {
+            //     p->Recycle();
+            // }
+        }
+        else if (mParcel != NULL) {
             // Write the total length of the data.
-            dest.writeInt(mParcel.dataSize());
+            Int32 size, position;
+            mParcel->GetElementSize(&size);
+            mParcel->GetDataPosition(&position);
+            dest->WriteInt32(size);
 
             // Write out current position into the data.
-            dest.writeInt(mParcel.dataPosition());
+            dest->WriteInt32(position);
 
             // Write the data.
-            dest.appendFrom(mParcel, 0, mParcel.dataSize());
-        } else {
-            throw new IllegalStateException(
-                    "Either mParcel or mEventsToWrite must not be null");
+            dest->AppendFrom(mParcel, 0, size);
+        }
+        else {
+            Logger::E("UsageEvents", "Either mParcel or mEventsToWrite must not be NULL");
+            return E_ILLEGAL_STATE_EXCEPTION;
         }
     }
     return NOERROR;
 }
 
 ECode UsageEvents::ReadFromParcel(
-    /* [in] */ IParcel in)
+    /* [in] */ IParcel*in)
 {
-    mEventCount = in->ReadInt();
-    mIndex = in->ReadInt();
+    in->ReadInt32(&mEventCount);
+    in->ReadInt32(&mIndex);
     if (mEventCount > 0) {
-        mStringPool = in.createStringArray();
+        in->ReadArrayOfString((ArrayOf<String>**)&mStringPool);
 
-        final Int32 listByteLength = in->ReadInt();
-        final Int32 positionInParcel = in->ReadInt();
-        mParcel = Parcel.obtain();
-        mParcel.setDataPosition(0);
-        mParcel.appendFrom(in, in.dataPosition(), listByteLength);
-        mParcel.setDataSize(mParcel.dataPosition());
-        mParcel.setDataPosition(positionInParcel);
+        Int32 listByteLength, positionInParcel;
+        in->ReadInt32(&listByteLength);
+        in->ReadInt32(&positionInParcel);
+
+        CParcel::New((IParcel**)&mParcel);
+        mParcel->SetDataPosition(0);
+        Int32 position;
+        in->GetDataPosition(&position);
+        mParcel->AppendFrom(in, position, listByteLength);
+        mParcel->GetDataPosition(&position);
+
+        android::Parcel* parcelObj;
+        mParcel->GetElementPayload((Handle32*)&parcelObj);
+        parcelObj->setDataSize(position);
+        parcelObj->setDataPosition(positionInParcel);
     }
     return NOERROR;
 }
 
 ECode UsageEvents::FindStringIndex(
     /* [in] */ const String& str,
-    /* [out] */ Int32* index)
+    /* [out] */ Int32* result)
 {
-    final Int32 index = Arrays.binarySearch(mStringPool, str);
+    VALIDATE_NOT_NULL(result)
+    *result = -1;
+
+    Int32 index;
+    Arrays::BinarySearch(mStringPool, str, &index);
     if (index < 0) {
-        throw new IllegalStateException("String '" + str + "' is not in the string pool");
+        Logger::E("UsageEvents", "String '%s' is not in the string pool", str.string());
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
-    return index;
+    *result = index;
     return NOERROR;
 }
 
@@ -253,63 +286,65 @@ void UsageEvents::WriteEventToParcel(
     /* [in] */ IUsageEvent* event,
     /* [in] */ IParcel* p)
 {
-    final Int32 packageIndex;
-    if (event.mPackage != null) {
-        packageIndex = findStringIndex(event.mPackage);
-    } else {
-        packageIndex = -1;
+    Int32 packageIndex = -1;
+    String package;
+    event->GetPackageName(&package);
+    if (!package.IsNull()) {
+        FindStringIndex(package, &packageIndex);
     }
 
-    final Int32 classIndex;
-    if (event.mClass != null) {
-        classIndex = findStringIndex(event.mClass);
-    } else {
-        classIndex = -1;
+    Int32 classIndex = -1;
+    String className;
+    event->GetClassName(&className);
+    if (!className.IsNull()) {
+        FindStringIndex(className, &classIndex);
     }
-    p.writeInt(packageIndex);
-    p.writeInt(classIndex);
-    p.writeInt(event.mEventType);
-    p.writeLong(event.mTimeStamp);
 
-    if (event.mEventType == Event.CONFIGURATION_CHANGE) {
-        event.mConfiguration.writeToParcel(p, flags);
+    p->WriteInt32(packageIndex);
+    p->WriteInt32(classIndex);
+    Int32 eventType;
+    event->GetEventType(&eventType);
+    p->WriteInt32(eventType);
+    Int64 stamp;
+    event->GetTimeStamp(&stamp);
+    p->WriteInt64(stamp);
+
+    if (eventType == IUsageEvent::CONFIGURATION_CHANGE) {
+        AutoPtr<IConfiguration> config;
+        event->GetConfiguration((IConfiguration**)&config);
+        IParcelable::Probe(config)->WriteToParcel(p);
     }
 }
 
 void UsageEvents::ReadEventFromParcel(
     /* [in] */ IParcel* p,
-    /* [in] */ IUsageEvent* eventOut)
+    /* [in] */ IUsageEvent* eo)
 {
-    final Int32 packageIndex = p.readInt();
+    UsageEvent* eventOut = (UsageEvent*)eo;
+    Int32 packageIndex;
+    p->ReadInt32(&packageIndex);
     if (packageIndex >= 0) {
-        eventOut.mPackage = mStringPool[packageIndex];
-    } else {
-        eventOut.mPackage = null;
+        eventOut->mPackage = (*mStringPool)[packageIndex];
     }
 
-    final Int32 classIndex = p.readInt();
+    Int32 classIndex;
+    p->ReadInt32(&classIndex);
     if (classIndex >= 0) {
-        eventOut.mClass = mStringPool[classIndex];
-    } else {
-        eventOut.mClass = null;
+        eventOut->mClass = (*mStringPool)[classIndex];
     }
-    eventOut.mEventType = p.readInt();
-    eventOut.mTimeStamp = p.readLong();
+    p->ReadInt32(&eventOut->mEventType);
+    p->ReadInt64(&eventOut->mTimeStamp);
 
     // Extract the configuration for configuration change events.
-    if (eventOut.mEventType == Event.CONFIGURATION_CHANGE) {
-        eventOut.mConfiguration = Configuration.CREATOR.createFromParcel(p);
-    } else {
-        eventOut.mConfiguration = null;
+    if (eventOut->mEventType == IUsageEvent::CONFIGURATION_CHANGE) {
+        CConfiguration::New((IConfiguration**)&eventOut->mConfiguration);
+        IParcelable::Probe(eventOut->mConfiguration)->ReadFromParcel(p);
     }
 }
 
 void UsageEvents::Finalize()
 {
-    if (mParcel != NULL) {
-        mParcel->Recycle();
-        mParcel = NULL;
-    }
+    mParcel = NULL;
 }
 
 

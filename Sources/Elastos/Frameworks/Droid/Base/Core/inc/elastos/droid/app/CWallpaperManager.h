@@ -32,9 +32,19 @@ namespace Droid{
 namespace App{
 
 CarClass(CWallpaperManager)
+    , public Object
+    , public IWallpaperManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWallpaperManager();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IHandler* handler);
 
     static CARAPI_(void) InitGlobals(
         /* [in] */ ILooper* looper);
@@ -412,10 +422,6 @@ public:
      */
     static AutoPtr<IComponentName> GetDefaultWallpaperComponent(
         /* [in] */ IContext* context);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IHandler* handler);
 
 private:
     CARAPI_(void) SetWallpaper(

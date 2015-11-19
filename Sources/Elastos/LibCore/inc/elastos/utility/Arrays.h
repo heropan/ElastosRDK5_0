@@ -133,6 +133,56 @@ public:
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
+    static CARAPI BinarySearch(
+        /* [in] */ ArrayOf<String>* array,
+        /* [in] */ Int32 startIndex,
+        /* [in] */ Int32 endIndex,
+        /* [in] */ const String& value,
+        /* [out] */ Int32* index);
+
+    static CARAPI BinarySearch(
+        /* [in] */ const AutoPtr<ArrayOf<String> > & array,
+        /* [in] */ Int32 startIndex,
+        /* [in] */ Int32 endIndex,
+        /* [in] */ const String& value,
+        /* [out] */ Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array}.
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     */
+    static CARAPI BinarySearch(
+        /* [in] */ ArrayOf<String>* array,
+        /* [in] */ const String& value,
+        /* [out] */ Int32* index);
+
+    static CARAPI BinarySearch(
+        /* [in] */ const AutoPtr<ArrayOf<String> > & array,
+        /* [in] */ const String& value,
+        /* [out] */ Int32* index);
+
+    /**
+     * Performs a binary search for {@code value} in the ascending sorted array {@code array},
+     * in the range specified by fromIndex (inclusive) and toIndex (exclusive).
+     * Searching in an unsorted array has an undefined result. It's also undefined which element
+     * is found if there are multiple occurrences of the same element.
+     *
+     * @param array the sorted array to search.
+     * @param startIndex the inclusive start index.
+     * @param endIndex the exclusive start index.
+     * @param value the element to find.
+     * @return the non-negative index of the element, or a negative index which
+     *         is {@code -index - 1} where the element would be inserted.
+     * @throws IllegalArgumentException if {@code startIndex > endIndex}
+     * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
+     * @since 1.6
+     */
     template<typename T>
     static CARAPI BinarySearch(
         /* [in] */ ArrayOf<T>* array,

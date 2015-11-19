@@ -11,9 +11,9 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Utility::IArrayMap;
-using Elastos::Droid::Internal::App::IVoiceInteractor;
-using Elastos::Droid::Internal::App::IVoiceInteractorCallback;
-using Elastos::Droid::Internal::App::IVoiceInteractorRequest;
+using Elastos::Droid::Internal::App::IIVoiceInteractor;
+using Elastos::Droid::Internal::App::IIVoiceInteractorCallback;
+using Elastos::Droid::Internal::App::IIVoiceInteractorRequest;
 using Elastos::Droid::Internal::Os::HandlerCaller;
 using Elastos::Droid::Internal::Os::SomeArgs;
 
@@ -57,6 +57,8 @@ private:
         , public IHandlerCallerCallback
     {
     public:
+        CAR_INTERFACE_DECL()
+
         CARAPI ExecuteMessage(
             /* [in] */ IMessage* msg)
         {
@@ -64,32 +66,32 @@ private:
             Request request;
             switch (msg.what) {
                 case MSG_CONFIRMATION_RESULT:
-                    request = pullRequest((IVoiceInteractorRequest)args.arg1, true);
+                    request = pullRequest((IVoiceInteractorRequest)args.arg1, TRUE);
                     if (DEBUG) Log.d(TAG, "onConfirmResult: req="
                             + ((IVoiceInteractorRequest)args.arg1).asBinder() + "/" + request
                             + " confirmed=" + msg.arg1 + " result=" + args.arg2);
-                    if (request != null) {
+                    if (request != NULL) {
                         ((ConfirmationRequest)request).onConfirmationResult(msg.arg1 != 0,
                                 (Bundle) args.arg2);
                         request.clear();
                     }
                     break;
                 case MSG_COMPLETE_VOICE_RESULT:
-                    request = pullRequest((IVoiceInteractorRequest)args.arg1, true);
+                    request = pullRequest((IVoiceInteractorRequest)args.arg1, TRUE);
                     if (DEBUG) Log.d(TAG, "onCompleteVoice: req="
                             + ((IVoiceInteractorRequest)args.arg1).asBinder() + "/" + request
                             + " result=" + args.arg1);
-                    if (request != null) {
+                    if (request != NULL) {
                         ((CompleteVoiceRequest)request).onCompleteResult((Bundle) args.arg2);
                         request.clear();
                     }
                     break;
                 case MSG_ABORT_VOICE_RESULT:
-                    request = pullRequest((IVoiceInteractorRequest)args.arg1, true);
+                    request = pullRequest((IVoiceInteractorRequest)args.arg1, TRUE);
                     if (DEBUG) Log.d(TAG, "onAbortVoice: req="
                             + ((IVoiceInteractorRequest)args.arg1).asBinder() + "/" + request
                             + " result=" + args.arg1);
-                    if (request != null) {
+                    if (request != NULL) {
                         ((AbortVoiceRequest)request).onAbortResult((Bundle) args.arg2);
                         request.clear();
                     }
@@ -99,7 +101,7 @@ private:
                     if (DEBUG) Log.d(TAG, "onCommandResult: req="
                             + ((IVoiceInteractorRequest)args.arg1).asBinder() + "/" + request
                             + " result=" + args.arg2);
-                    if (request != null) {
+                    if (request != NULL) {
                         ((CommandRequest)request).onCommandResult((Bundle) args.arg2);
                         if (msg.arg1 != 0) {
                             request.clear();
@@ -107,10 +109,10 @@ private:
                     }
                     break;
                 case MSG_CANCEL_RESULT:
-                    request = pullRequest((IVoiceInteractorRequest)args.arg1, true);
+                    request = pullRequest((IVoiceInteractorRequest)args.arg1, TRUE);
                     if (DEBUG) Log.d(TAG, "onCancelResult: req="
                             + ((IVoiceInteractorRequest)args.arg1).asBinder() + "/" + request);
-                    if (request != null) {
+                    if (request != NULL) {
                         request.onCancel();
                         request.clear();
                     }
@@ -120,54 +122,75 @@ private:
     };
 
     class VoiceInteractorCallback
-        : Object
+        : public Object
         , public IIVoiceInteractorCallback
         , public IBinder
     {
-        @Override
-        public void deliverConfirmationResult(IVoiceInteractorRequest request, Boolean confirmed,
-                Bundle result) {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor();
+
+        //@Override
+        CARAPI DeliverConfirmationResult(
+            /* [in] */ IIVoiceInteractorRequest* request,
+            /* [in] */ Boolean confirmed,
+            /* [in] */ IBundle* result)
+        {
             mHandlerCaller.sendMessage(mHandlerCaller.obtainMessageIOO(
                     MSG_CONFIRMATION_RESULT, confirmed ? 1 : 0, request, result));
         }
 
-        @Override
-        public void deliverCompleteVoiceResult(IVoiceInteractorRequest request, Bundle result) {
+        //@Override
+        CARAPI DeliverCompleteVoiceResult(
+            /* [in] */ IIVoiceInteractorRequest* request,
+            /* [in] */ IBundle* result)
+        {
             mHandlerCaller.sendMessage(mHandlerCaller.obtainMessageOO(
                     MSG_COMPLETE_VOICE_RESULT, request, result));
         }
 
-        @Override
-        public void deliverAbortVoiceResult(IVoiceInteractorRequest request, Bundle result) {
+        //@Override
+        CARAPI DeliverAbortVoiceResult(
+            /* [in] */ IIVoiceInteractorRequest* request,
+            /* [in] */ IBundle* result)
+        {
             mHandlerCaller.sendMessage(mHandlerCaller.obtainMessageOO(
                     MSG_ABORT_VOICE_RESULT, request, result));
         }
 
-        @Override
-        public void deliverCommandResult(IVoiceInteractorRequest request, Boolean complete,
-                Bundle result) {
+        //@Override
+        CARAPI DeliverCommandResult(
+            /* [in] */ IIVoiceInteractorRequest* request,
+            /* [in] */ Boolean complete,
+            /* [in] */ IBundle* result)
+        {
             mHandlerCaller.sendMessage(mHandlerCaller.obtainMessageIOO(
                     MSG_COMMAND_RESULT, complete ? 1 : 0, request, result));
         }
 
-        @Override
-        public void deliverCancel(IVoiceInteractorRequest request) throws RemoteException {
+        //@Override
+        CARAPI DeliverCancel(
+            /* [in] */ IIVoiceInteractorRequest* request)
+        {
             mHandlerCaller.sendMessage(mHandlerCaller.obtainMessageO(
                     MSG_CANCEL_RESULT, request));
         }
     };
 
+    class Request
+        : public Object
+        , public IIVoiceInteractorRequest
+    {
+    public:
+        CAR_INTERFACE_DECL()
 
+        Request();
 
-    public static abstract class Request {
-        IVoiceInteractorRequest mRequestInterface;
-        Context mContext;
-        Activity mActivity;
+        CARAPI constructor();
 
-        public Request() {
-        }
-
-        public void cancel() {
+        CARAPI Cancel()
+        {
             try {
                 mRequestInterface.cancel();
             } catch (RemoteException e) {
@@ -175,36 +198,58 @@ private:
             }
         }
 
-        public Context getContext() {
+        CARAPI GetContext(
+            /* [out] */ IContext** ctx)
+        {
             return mContext;
         }
 
-        public Activity getActivity() {
+        CARAPI GetActivity(
+            /* [out] */ IActivity** activity)
+        {
             return mActivity;
         }
 
-        public void onCancel() {
+        CARAPI OnCancel()
+        {
         }
 
-        public void onAttached(Activity activity) {
+        CARAPI OnAttached(
+            /* [in] */ IActivity* activity)
+        {
         }
 
-        public void onDetached() {
+        CARAPI OnDetached()
+        {
         }
 
-        void clear() {
-            mRequestInterface = null;
-            mContext = null;
-            mActivity = null;
+    protected:
+        CARAPI Clear()
+        {
+            mRequestInterface = NULL;
+            mContext = NULL;
+            mActivity = NULL;
+            return NOERROR;
         }
 
-        abstract IVoiceInteractorRequest submit(IVoiceInteractor interactor,
-                String packageName, IVoiceInteractorCallback callback) throws RemoteException;
+        virtual CARAPI Submit(
+            /* [in] */ IIVoiceInteractor* interactor,
+            /* [in] */ const String& packageName,
+            /* [in] */ IIVoiceInteractorCallback* callback,
+            /* [out] */ IIVoiceInteractorRequest** request) = 0;
+
+    private:
+        AutoPtr<IIVoiceInteractorRequest> mRequestInterface;
+        AutoPtr<IContext> mContext;
+        AutoPtr<IActivity> mActivity;
     };
 
-    public static class ConfirmationRequest extends Request {
-        final CharSequence mPrompt;
-        final Bundle mExtras;
+    class ConfirmationRequest
+        : public Request
+        , public IConfirmationRequest
+    {
+    public:
+        CAR_INTERFACE_DECL();
 
         /**
          * Confirms an operation with the user via the trusted system
@@ -222,23 +267,39 @@ private:
          * confirmed.
          * @param extras Additional optional information.
          */
-        public ConfirmationRequest(CharSequence prompt, Bundle extras) {
+        CARAPI constructor(
+            /* [in] */ ICharSequence* prompt,
+            /* [in] */ IBundle* extras)
+        {
             mPrompt = prompt;
             mExtras = extras;
         }
 
-        public void onConfirmationResult(Boolean confirmed, Bundle result) {
+        CARAPI OnConfirmationResult(
+            /* [in] */ Boolean confirmed,
+            /* [in] */ IBundle* result)
+        {
         }
 
-        IVoiceInteractorRequest submit(IVoiceInteractor interactor, String packageName,
-                IVoiceInteractorCallback callback) throws RemoteException {
+        CARAPI Submit(
+            /* [in] */ IIVoiceInteractor* interactor,
+            /* [in] */ const String& packageName,
+            /* [in] */ IIVoiceInteractorCallback* callback,
+            /* [out] */ IIVoiceInteractorRequest** request)
+        {
             return interactor.startConfirmation(packageName, callback, mPrompt, mExtras);
         }
+    private:
+        AutoPtr<ICharSequence> mPrompt;
+        AutoPtr<IBundle> mExtras;
     };
 
-    public static class CompleteVoiceRequest extends Request {
-        final CharSequence mMessage;
-        final Bundle mExtras;
+    class CompleteVoiceRequest
+        : public Request
+        , public ICompleteVoiceRequest
+    {
+    public:
+        CAR_INTERFACE_DECL();
 
         /**
          * Reports that the current interaction was successfully completed with voice, so the
@@ -252,23 +313,38 @@ private:
          * @param message Optional message to tell user about the completion status of the task.
          * @param extras Additional optional information.
          */
-        public CompleteVoiceRequest(CharSequence message, Bundle extras) {
+        CARAPI constructor(
+            /* [in] */ ICharSequence* message,
+            /* [in] */ IBundle extras) {
             mMessage = message;
             mExtras = extras;
         }
 
-        public void onCompleteResult(Bundle result) {
+        CARAPI OnCompleteResult(
+            /* [in] */ IBundle* result)
+        {
         }
 
-        IVoiceInteractorRequest submit(IVoiceInteractor interactor, String packageName,
-                IVoiceInteractorCallback callback) throws RemoteException {
+        CARAPI Submit(
+            /* [in] */ IIVoiceInteractor* interactor,
+            /* [in] */ const String& packageName,
+            /* [in] */ IIVoiceInteractorCallback* callback,
+            /* [out] */ IIVoiceInteractorRequest** request)
+        {
             return interactor.startCompleteVoice(packageName, callback, mMessage, mExtras);
         }
+
+    private:
+        AutoPtr<ICharSequence> mMessage;
+        AutoPtr<IBundle> mExtras;
     };
 
-    public static class AbortVoiceRequest extends Request {
-        final CharSequence mMessage;
-        final Bundle mExtras;
+    class CompleteVoiceRequest
+        : public Request
+        , public IAbortVoiceRequest
+    {
+    public:
+        CAR_INTERFACE_DECL();
 
         /**
          * Reports that the current interaction can not be complete with voice, so the
@@ -285,23 +361,37 @@ private:
          * the interaction with voice.
          * @param extras Additional optional information.
          */
-        public AbortVoiceRequest(CharSequence message, Bundle extras) {
+        CARAPI constructor(
+            /* [in] */ ICharSequence* message,
+            /* [in] */ IBundle* extras)
+        {
             mMessage = message;
             mExtras = extras;
         }
 
-        public void onAbortResult(Bundle result) {
+        CARAPI OnAbortResult(Bundle result) {
         }
 
-        IVoiceInteractorRequest submit(IVoiceInteractor interactor, String packageName,
-                IVoiceInteractorCallback callback) throws RemoteException {
+        CARAPI Submit(
+            /* [in] */ IIVoiceInteractor* interactor,
+            /* [in] */ const String& packageName,
+            /* [in] */ IIVoiceInteractorCallback* callback,
+            /* [out] */ IIVoiceInteractorRequest** request)
+        {
             return interactor.startAbortVoice(packageName, callback, mMessage, mExtras);
         }
+
+    private:
+        AutoPtr<ICharSequence> mMessage;
+        AutoPtr<IBundle> mExtras;
     };
 
-    public static class CommandRequest extends Request {
-        final String mCommand;
-        final Bundle mArgs;
+    class CommandRequest
+        : public Request
+        , public ICommandRequest
+    {
+    public:
+        CAR_INTERFACE_DECL();
 
         /**
          * Execute a command using the trusted system VoiceInteractionService.
@@ -321,59 +411,88 @@ private:
          * @param command The desired command to perform.
          * @param args Additional arguments to control execution of the command.
          */
-        public CommandRequest(String command, Bundle args) {
+        CARAPI constructor(
+            /* [in] */ const String& command,
+            /* [in] */ IBundle* args)
+        {
             mCommand = command;
             mArgs = args;
         }
 
-        public void onCommandResult(Bundle result) {
+        CARAPI OnCommandResult(
+            /* [in] */ IBundle* result)
+        {
         }
 
-        IVoiceInteractorRequest submit(IVoiceInteractor interactor, String packageName,
-                IVoiceInteractorCallback callback) throws RemoteException {
+        CARAPI Submit(
+            /* [in] */ IIVoiceInteractor* interactor,
+            /* [in] */ const String& packageName,
+            /* [in] */ IIVoiceInteractorCallback* callback,
+            /* [out] */ IIVoiceInteractorRequest** request)
+        {
             return interactor.startCommand(packageName, callback, mCommand, mArgs);
         }
+
+    private:
+        String mCommand;
+        AutoPtr<IBundle> mArgs;
    };
 
-    VoiceInteractor(IVoiceInteractor interactor, Context context, Activity activity,
-            Looper looper) {
+public:
+    CAR_INTERFACE_DECL()
+
+    VoiceInteractor();
+
+    virtual ~VoiceInteractor();
+
+    CARAPI constructor(
+        /* [in] */ IIVoiceInteractor* interactor,
+        /* [in] */ IContext* context,
+        /* [in] */ IActivity* activity,
+        /* [in] */ ILooper* looper)
+    {
         mInteractor = interactor;
         mContext = context;
         mActivity = activity;
-        mHandlerCaller = new HandlerCaller(context, looper, mHandlerCallerCallback, true);
+        mHandlerCaller = new HandlerCaller(context, looper, mHandlerCallerCallback, TRUE);
     }
 
-    Request pullRequest(IVoiceInteractorRequest request, Boolean complete) {
+    AutoPtr<IVoiceInteractorRequest> PullRequest(
+        /* [in] */ IIVoiceInteractorRequest* request,
+        /* [in] */ Boolean complete)
+    {
         synchronized (mActiveRequests) {
             Request req = mActiveRequests.get(request.asBinder());
-            if (req != null && complete) {
+            if (req != NULL && complete) {
                 mActiveRequests.remove(request.asBinder());
             }
             return req;
         }
     }
 
-    private ArrayList<Request> makeRequestList() {
-        final int N = mActiveRequests.size();
+    AutoPtr<IArrayList> MakeRequestList()
+    {
+        final Int32 N = mActiveRequests.size();
         if (N < 1) {
-            return null;
+            return NULL;
         }
         ArrayList<Request> list = new ArrayList<Request>(N);
-        for (int i=0; i<N; i++) {
+        for (Int32 i=0; i<N; i++) {
             list.add(mActiveRequests.valueAt(i));
         }
         return list;
     }
 
-    void attachActivity(Activity activity) {
+    CARAPI AttachActivity(Activity activity)
+    {
         if (mActivity == activity) {
             return;
         }
         mContext = activity;
         mActivity = activity;
         ArrayList<Request> reqs = makeRequestList();
-        if (reqs != null) {
-            for (int i=0; i<reqs.size(); i++) {
+        if (reqs != NULL) {
+            for (Int32 i=0; i<reqs.size(); i++) {
                 Request req = reqs.get(i);
                 req.mContext = activity;
                 req.mActivity = activity;
@@ -382,23 +501,27 @@ private:
         }
     }
 
-    void detachActivity() {
+    CARAPI DetachActivity()
+    {
         ArrayList<Request> reqs = makeRequestList();
-        if (reqs != null) {
-            for (int i=0; i<reqs.size(); i++) {
+        if (reqs != NULL) {
+            for (Int32 i=0; i<reqs.size(); i++) {
                 Request req = reqs.get(i);
                 req.onDetached();
-                req.mActivity = null;
-                req.mContext = null;
+                req.mActivity = NULL;
+                req.mContext = NULL;
             }
         }
-        mContext = null;
-        mActivity = null;
+        mContext = NULL;
+        mActivity = NULL;
     }
 
-    public Boolean submitRequest(Request request) {
+    public CARAPI SubmitRequest(
+        /* [in] */ IVoiceInteractorRequest* request,
+        /* [out] */ Boolean* result)
+    {
         try {
-            IVoiceInteractorRequest ireq = request.submit(mInteractor,
+            AutoPtr<IIVoiceInteractorRequest> ireq = request.submit(mInteractor,
                     mContext.getOpPackageName(), mCallback);
             request.mRequestInterface = ireq;
             request.mContext = mContext;
@@ -406,7 +529,7 @@ private:
             synchronized (mActiveRequests) {
                 mActiveRequests.put(ireq.asBinder(), request);
             }
-            return true;
+            return TRUE;
         } catch (RemoteException e) {
             Log.w(TAG, "Remove voice interactor service died", e);
             return false;
@@ -421,7 +544,10 @@ private:
      *
      * @param commands
      */
-    public Boolean[] supportsCommands(String[] commands) {
+    public CARAPI SupportsCommands(
+        /* [in] */ ArrayOf<String>* commands,
+        /* [out, callee] */ ArrayOf<String>** results)
+    {
         try {
             Boolean[] res = mInteractor.supportsCommands(mContext.getOpPackageName(), commands);
             if (DEBUG) Log.d(TAG, "supportsCommands: cmds=" + commands + " res=" + res);
@@ -433,9 +559,9 @@ private:
 
 private:
     static const String TAG = "VoiceInteractor";
-    static const Boolean DEBUG = true;
+    static const Boolean DEBUG = TRUE;
 
-    AutoPtr<IVoiceInteractor> mInteractor;
+    AutoPtr<IIVoiceInteractor> mInteractor;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IActivity> mActivity;
@@ -447,11 +573,11 @@ private:
 
     HashMap<AutoPtr<IBinder>, AutoPtr<Request> > mActiveRequests;
 
-    static final int MSG_CONFIRMATION_RESULT = 1;
-    static final int MSG_COMPLETE_VOICE_RESULT = 2;
-    static final int MSG_ABORT_VOICE_RESULT = 3;
-    static final int MSG_COMMAND_RESULT = 4;
-    static final int MSG_CANCEL_RESULT = 5;
+    static const Int32 MSG_CONFIRMATION_RESULT = 1;
+    static const Int32 MSG_COMPLETE_VOICE_RESULT = 2;
+    static const Int32 MSG_ABORT_VOICE_RESULT = 3;
+    static const Int32 MSG_COMMAND_RESULT = 4;
+    static const Int32 MSG_CANCEL_RESULT = 5;
 };
 
 } // namespace App

@@ -1,17 +1,19 @@
 
 module
 {
+    interface Elastos.Droid.Content.Res.IConfiguration;
+
     namespace Elastos {
     namespace Droid {
     namespace App {
-    namespace Trust {
+    namespace Usage {
 
     /**
      * Private API to be notified about trust changes.
      *
      * {@hide}
      */
-    interface IITrustListener {
+    interface IConfigurationStats {
 
         GetConfiguration(
             [out] IConfiguration** config);
@@ -55,7 +57,7 @@ module
             [out] Int32* result);
     }
 
-    } // namespace Trust
+    } // namespace Usage
     } // namespace App
     } // namespace Droid
     } // namespace Elastos

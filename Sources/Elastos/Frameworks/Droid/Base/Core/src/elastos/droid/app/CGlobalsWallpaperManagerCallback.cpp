@@ -42,6 +42,10 @@ ECode CGlobalsWallpaperManagerCallback::MyHandler::HandleMessage(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(CGlobalsWallpaperManagerCallback, Object, IIWallpaperManagerCallback, IBinder)
+
+CAR_OBJECT_IMPL(CGlobalsWallpaperManagerCallback)
+
 ECode CGlobalsWallpaperManagerCallback::OnWallpaperChanged()
 {
     /* The wallpaper has changed but we shouldn't eagerly load the

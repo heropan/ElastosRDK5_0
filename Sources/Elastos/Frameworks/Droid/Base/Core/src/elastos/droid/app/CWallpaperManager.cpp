@@ -49,6 +49,10 @@ const String CWallpaperManager::PROP_WALLPAPER("ro.config.wallpaper");
 /** {@hide} */
 const String CWallpaperManager::PROP_WALLPAPER_COMPONENT("ro.config.wallpaper_component");
 
+CAR_INTERFACE_IMPL(CWallpaperManager, Object, IWallpaperManager)
+
+CAR_OBJECT_IMPL(CWallpaperManager)
+
 CWallpaperManager::CWallpaperManager()
     : mWallpaperXStep(-1)
     , mWallpaperYStep(-1)

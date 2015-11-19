@@ -430,6 +430,75 @@ ECode Arrays::AsList(
     return NOERROR;
 }
 
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<String>* array,
+    /* [in] */ const String& value,
+    /* [out] */ Int32* index)
+{
+    return BinarySearch(array, 0, array->GetLength(), value, index);
+}
+
+ECode Arrays::BinarySearch(
+    /* [in] */ const AutoPtr<ArrayOf<String> > & array,
+    /* [in] */ const String& value,
+    /* [out] */ Int32* index)
+{
+    return BinarySearch(array.Get(), value, index);
+}
+
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<String>* array,
+    /* [in] */ Int32 startIndex,
+    /* [in] */ Int32 endIndex,
+    /* [in] */ const String& value,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
+
+    ECode ec = CheckBinarySearchBounds(startIndex, endIndex, array->GetLength());
+    if (FAILED(ec)) {
+        ALOGE("Arrays::BinarySearch: error %08x, startIndex: %d, endIndex: %d, array length: %d",
+            ec, startIndex, endIndex, array->GetLength());
+        return ec;
+    }
+
+    Int32 lo = startIndex;
+    Int32 hi = endIndex - 1;
+    Int32 mid;
+
+    String midVal;
+    while (lo <= hi) {
+        mid = (UInt32(lo + hi)) >> 1;
+        midVal = (*array)[mid];
+
+        if (midVal.Compare(value) < 0) {
+            lo = mid + 1;
+        }
+        else if (midVal.Compare(value) > 0) {
+            hi = mid - 1;
+        }
+        else {
+            *index = mid;  // value found
+            return NOERROR;
+        }
+    }
+    *index = ~lo;  // value not present
+    return NOERROR;
+}
+
+ECode Arrays::BinarySearch(
+    /* [in] */ const AutoPtr<ArrayOf<String> > & array,
+    /* [in] */ Int32 startIndex,
+    /* [in] */ Int32 endIndex,
+    /* [in] */ const String& value,
+    /* [out] */ Int32* index)
+{
+    return BinarySearch(array.Get(), startIndex, endIndex, value, index);
+}
+
 Int32 Arrays::GetHashCode(
     /* [in] */ ArrayOf<Boolean>* array)
 {

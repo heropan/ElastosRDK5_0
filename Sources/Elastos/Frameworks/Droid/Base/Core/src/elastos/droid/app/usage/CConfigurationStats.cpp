@@ -1,5 +1,8 @@
 
-#include "elastos/droid/app/job/CConfigurationStats.h"
+#include "elastos/droid/app/usage/CConfigurationStats.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+
+using Elastos::Droid::Content::Res::CConfiguration;
 
 namespace Elastos {
 namespace Droid {
@@ -24,9 +27,9 @@ ECode CConfigurationStats::constructor()
 }
 
 ECode CConfigurationStats::constructor(
-    /* [in] */ IConfigurationStats* stats)
+    /* [in] */ IConfigurationStats* cs)
 {
-    CConfigurationStats* cs = (CConfigurationStats*)stats;
+    CConfigurationStats* stats = (CConfigurationStats*)cs;
     mConfiguration = stats->mConfiguration;
     mBeginTimeStamp = stats->mBeginTimeStamp;
     mEndTimeStamp = stats->mEndTimeStamp;
@@ -113,11 +116,11 @@ ECode CConfigurationStats::ReadFromParcel(
         CConfiguration::New((IConfiguration**)&mConfiguration);
         IParcelable::Probe(mConfiguration)->ReadFromParcel(source);
     }
-    source->ReadInt64(mBeginTimeStamp);
-    source->ReadInt64(mEndTimeStamp);
-    source->ReadInt64(mLastTimeActive);
-    source->ReadInt64(mTotalTimeActive);
-    source->ReadInt32(mActivationCount);
+    source->ReadInt64(&mBeginTimeStamp);
+    source->ReadInt64(&mEndTimeStamp);
+    source->ReadInt64(&mLastTimeActive);
+    source->ReadInt64(&mTotalTimeActive);
+    source->ReadInt32(&mActivationCount);
     return NOERROR;
 }
 

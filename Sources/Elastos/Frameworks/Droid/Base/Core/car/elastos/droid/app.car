@@ -129,8 +129,16 @@ module
     merge("app/trust/ITrustManager.car");
     merge("app/trust/TrustManager.car");
 
+    merge("app/usage/ConfigurationStats.car");
+    merge("app/usage/IUsageStatsManager.car");
+    merge("app/usage/UsageEvents.car");
+    merge("app/usage/UsageStats.car");
+    merge("app/usage/UsageStatsManager.car");
+    merge("app/usage/UsageStatsManagerInternal.car");
+
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IClassLoader;
+    using interface Elastos.Utility.IList;
     using interface Elastos.Utility.IHashMap;
     using interface Elastos.Utility.IArrayList;
 
@@ -260,6 +268,63 @@ module
     } // namespace App
     } // namespace Droid
     } // namespace Elastos
+
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+    namespace Usage {
+
+        class CConfigurationStats {
+            constructor();
+
+            constructor(
+                [in] IConfigurationStats* stats);
+
+            interface IConfigurationStats;
+            interface IParcelable;
+        }
+
+        class CUsageStats {
+            constructor();
+
+            constructor(
+                [in] IUsageStats* stats);
+
+            interface IUsageStats;
+            interface IParcelable;
+        }
+
+        class CUsageStatsManager {
+            constructor(
+                [in] IContext* ctx,
+                [in] IIUsageStatsManager* service);
+
+            interface IUsageStatsManager;
+        }
+
+        class CUsageEvent {
+            constructor();
+
+            interface IUsageEvent;
+        }
+
+        [deprecated]
+        class CUsageEvents {
+            constructor();
+
+            constructor(
+                [in] IList* events,
+                [in] ArrayOf<String>* stringPool);
+
+            interface IUsageEvents;
+        }
+
+    } // namespace Usage
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+
 
     namespace Elastos {
     namespace Droid {
@@ -1130,12 +1195,12 @@ module
 //         interface IParcelable;
 //     }
 
-//     [local]
 //     class CGlobalsWallpaperManagerCallback {
 //         constructor(
 //             [in] ILooper* looper);
 
 //         interface IWallpaperManagerCallback;
+//         interface IBinder;
 //     }
 
 //     [local]
@@ -1191,19 +1256,6 @@ module
         interface IRemoteCallback;
         interface IBinder;
     }
-
-// //    class CPendingIntent {
-// //        constructor();
-// //
-// //        constructor(
-// //            [in] IIIntentSender* target);
-// //
-// //        constructor(
-// //            [in] IBinder* t);
-// //
-// //        interface IPendingIntent;
-// //        interface IParcelable;
-// //    }
 
 //     [local]
 //     class CStatusBarManager {
@@ -1329,6 +1381,13 @@ module
 //     class CDownloadManagerQuery {
 //         interface IDownloadManagerQuery;
 //     }
+
+        //class CVoiceInteractorCallback {
+        //    constructor();
+
+        //    interface IIVoiceInteractorCallback;
+        //    interface IBinder;
+        //}
 
     } // namespace App
     } // namespace Droid

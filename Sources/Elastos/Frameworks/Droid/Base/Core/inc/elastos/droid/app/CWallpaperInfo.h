@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_CWALLPAPERINFO_H__
 
 #include "_Elastos_Droid_App_CWallpaperInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IComponentName;
@@ -17,9 +18,22 @@ namespace Droid{
 namespace App{
 
 CarClass(CWallpaperInfo)
+    , public Object
+    , public IWallpaperInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWallpaperInfo();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IResolveInfo* service);
+
+    CARAPI constructor();
 
     /**
      * Return the .apk package that implements this wallpaper.
@@ -143,12 +157,6 @@ public:
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IResolveInfo* service);
-
-    CARAPI constructor();
 
 public:
     static const String TAG;

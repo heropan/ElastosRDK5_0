@@ -4,7 +4,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/accessibilityservice/AccessibilityService.h"
-#include <elastos/core/Object.h>
 
 using Elastos::Droid::AccessibilityService::IAccessibilityServiceClientWrapper;
 using Elastos::Droid::AccessibilityService::IAccessibilityServiceCallbacks;

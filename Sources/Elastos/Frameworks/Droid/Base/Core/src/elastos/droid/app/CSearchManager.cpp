@@ -1,11 +1,14 @@
-#include "CSearchManager.h"
+#include "elastos/droid/app/CSearchManager.h"
 
 namespace Elastos{
 namespace Droid{
 namespace App{
 
+CAR_INTERFACE_IMPL_3(CSearchManager, Object, ISearchManager, IDialogInterfaceOnDismissListener, IDialogInterfaceOnCancelListener)
+
+CAR_OBJECT_IMPL()
+
 CSearchManager::CSearchManager()
-    : mAssociatedPackage(NULL)
 {
 }
 
@@ -23,47 +26,6 @@ ECode CSearchManager::constructor(
     (serviceManager->GetService(IContext::SEARCH_SERVICE, (IInterface**)&mService));
     return NOERROR;
 }
-
-/**
- * Launch search UI.
- *
- * <p>The search manager will open a search widget in an overlapping
- * window, and the underlying activity may be obscured.  The search
- * entry state will remain in effect until one of the following events:
- * <ul>
- * <li>The user completes the search.  In most cases this will launch
- * a search intent.</li>
- * <li>The user uses the back, home, or other keys to exit the search.</li>
- * <li>The application calls the {@link #stopSearch}
- * method, which will hide the search window and return focus to the
- * activity from which it was launched.</li>
- *
- * <p>Most applications will <i>not</i> use this interface to invoke search.
- * The primary method for invoking search is to call
- * {@link android.app.Activity#onSearchRequested Activity.onSearchRequested()} or
- * {@link android.app.Activity#startSearch Activity.startSearch()}.
- *
- * @param initialQuery A search string can be pre-entered here, but this
- * is typically null or empty.
- * @param selectInitialQuery If true, the intial query will be preselected, which means that
- * any further typing will replace it.  This is useful for cases where an entire pre-formed
- * query is being inserted.  If false, the selection point will be placed at the end of the
- * inserted query.  This is useful when the inserted query is text that the user entered,
- * and the user would expect to be able to keep typing.  <i>This parameter is only meaningful
- * if initialQuery is a non-empty string.</i>
- * @param launchActivity The ComponentName of the activity that has launched this search.
- * @param appSearchData An application can insert application-specific
- * context here, in order to improve quality or specificity of its own
- * searches.  This data will be returned with SEARCH intent(s).  Null if
- * no extra data is required.
- * @param globalSearch If false, this will only launch the search that has been specifically
- * defined by the application (which is usually defined as a local search).  If no default
- * search is defined in the current application or activity, global search will be launched.
- * If true, this will always launch a platform-global (e.g. web-based) search instead.
- *
- * @see android.app.Activity#onSearchRequested
- * @see #stopSearch
- */
 ECode CSearchManager::StartSearch(
     /* [in] */ const String &initialQuery,
     /* [in] */ Boolean selectInitialQuery,
@@ -75,12 +37,6 @@ ECode CSearchManager::StartSearch(
             appSearchData, globalSearch, NULL);
 }
 
-/**
- * As {@link #startSearch(String, boolean, ComponentName, Bundle, boolean)} but including
- * source bounds for the global search intent.
- *
- * @hide
- */
 ECode CSearchManager::StartSearch(
     /* [in] */ const String &initialQuery,
     /* [in] */ Boolean selectInitialQuery,
@@ -103,12 +59,6 @@ ECode CSearchManager::StartSearch(
     return NOERROR;
 }
 
-/**
- * Returns a list of installed apps that handle the global search
- * intent.
- *
- * @hide
- */
 ECode CSearchManager::GetGlobalSearchActivities(
     /* [out] */ IObjectContainer **apps)
 {
@@ -120,9 +70,6 @@ ECode CSearchManager::GetGlobalSearchActivities(
     //}
 }
 
-/**
- * Gets the name of the global search activity.
- */
 ECode CSearchManager::GetGlobalSearchActivity(
     /* [out] */ IComponentName **name)
 {
@@ -134,15 +81,6 @@ ECode CSearchManager::GetGlobalSearchActivity(
     //}
 }
 
-/**
- * Gets the name of the web search activity.
- *
- * @return The name of the default activity for web searches. This activity
- *         can be used to get web search suggestions. Returns {@code null} if
- *         there is no default web search activity.
- *
- * @hide
- */
 ECode CSearchManager::GetWebSearchActivity(
     /* [out] */ IComponentName **name)
 {
@@ -154,19 +92,6 @@ ECode CSearchManager::GetWebSearchActivity(
     //}
 }
 
-/**
- * Similar to {@link #startSearch} but actually fires off the search query after invoking
- * the search dialog.  Made available for testing purposes.
- *
- * @param query The query to trigger.  If empty, request will be ignored.
- * @param launchActivity The ComponentName of the activity that has launched this search.
- * @param appSearchData An application can insert application-specific
- * context here, in order to improve quality or specificity of its own
- * searches.  This data will be returned with SEARCH intent(s).  Null if
- * no extra data is required.
- *
- * @see #startSearch
- */
 ECode CSearchManager::TriggerSearch(
     /* [in] */ const String &query,
     /* [in] */ IComponentName *launchActivity,
@@ -188,17 +113,6 @@ ECode CSearchManager::TriggerSearch(
     return NOERROR;
 }
 
-/**
- * Terminate search UI.
- *
- * <p>Typically the user will terminate the search UI by launching a
- * search or by canceling.  This function allows the underlying application
- * or activity to cancel the search prematurely (for any reason).
- *
- * <p>This function can be safely called at any time (even if no search is active.)
- *
- * @see #startSearch
- */
 ECode CSearchManager::StopSearch()
 {
     if (mSearchDialog != NULL) {
@@ -207,15 +121,6 @@ ECode CSearchManager::StopSearch()
     return NOERROR;
 }
 
-/**
- * Determine if the Search UI is currently displayed.
- *
- * This is provided primarily for application test purposes.
- *
- * @return Returns true if the search UI is currently displayed.
- *
- * @hide
- */
 ECode CSearchManager::IsVisible(
     /* [out] */ Boolean *visible)
 {
@@ -230,11 +135,6 @@ ECode CSearchManager::IsVisible(
     return NOERROR;
 }
 
-/**
- * Set or clear the callback that will be invoked whenever the search UI is dismissed.
- *
- * @param listener The {@link OnDismissListener} to use, or null.
- */
 ECode CSearchManager::SetOnDismissListener(
     /* [in] */ ISearchManagerOnDismissListener *listener)
 {
@@ -242,11 +142,6 @@ ECode CSearchManager::SetOnDismissListener(
     return NOERROR;
 }
 
-/**
- * Set or clear the callback that will be invoked whenever the search UI is canceled.
- *
- * @param listener The {@link OnCancelListener} to use, or null.
- */
 ECode CSearchManager::SetOnCancelListener(
     /* [in] */ ISearchManagerOnCancelListener *listener)
 {
@@ -254,13 +149,6 @@ ECode CSearchManager::SetOnCancelListener(
     return NOERROR;
 }
 
-/**
- * Gets information about a searchable activity.
- *
- * @param componentName The activity to get searchable information for.
- * @return Searchable information, or <code>null</code> if the activity does not
- *         exist, or is not searchable.
- */
 ECode CSearchManager::GetSearchableInfo(
     /* [in] */ IComponentName *componentName,
     /* [out] */ ISearchableInfo **info)
@@ -273,15 +161,6 @@ ECode CSearchManager::GetSearchableInfo(
     //}
 }
 
-/**
- * Gets a cursor with search suggestions.
- *
- * @param searchable Information about how to get the suggestions.
- * @param query The search text entered (so far).
- * @return a cursor with suggestions, or <code>null</null> the suggestion query failed.
- *
- * @hide because SearchableInfo is not part of the API.
- */
 ECode CSearchManager::GetSuggestions(
     /* [in] */ ISearchableInfo *searchable,
     /* [in] */ const String &query,
@@ -291,17 +170,6 @@ ECode CSearchManager::GetSuggestions(
     return GetSuggestions(searchable, query, -1, cursor);
 }
 
-/**
- * Gets a cursor with search suggestions.
- *
- * @param searchable Information about how to get the suggestions.
- * @param query The search text entered (so far).
- * @param limit The query limit to pass to the suggestion provider. This is advisory,
- *        the returned cursor may contain more rows. Pass {@code -1} for no limit.
- * @return a cursor with suggestions, or <code>null</null> the suggestion query failed.
- *
- * @hide because SearchableInfo is not part of the API.
- */
 ECode CSearchManager::GetSuggestions(
     /* [in] */ ISearchableInfo *searchable,
     /* [in] */ const String &query,
@@ -322,7 +190,7 @@ ECode CSearchManager::GetSuggestions(
 
     AutoPtr<IUriBuilder> uriBuilder;
     CUriBuilder::New(&uriBuilder);
-
+    assert(0 && "TODO");
     // Uri.Builder uriBuilder = new Uri.Builder()
     //         .scheme(ContentResolver.SCHEME_CONTENT)
     //         .authority(authority)
@@ -359,13 +227,6 @@ ECode CSearchManager::GetSuggestions(
     return E_NOT_IMPLEMENTED;
 }
 
-/**
- * Returns a list of the searchable activities that can be included in global search.
- *
- * @return a list containing searchable information for all searchable activities
- *         that have the <code>android:includeInGlobalSearch</code> attribute set
- *         in their searchable meta-data.
- */
 ECode CSearchManager::GetSearchablesInGlobalSearch(
     /* [out] */ IObjectContainer **info)
 {
@@ -377,12 +238,6 @@ ECode CSearchManager::GetSearchablesInGlobalSearch(
         // }
 }
 
-/**
- * Gets an intent for launching installed assistant activity, or null if not available.
- * @return The assist intent.
- *
- * @hide
- */
 ECode CSearchManager::GetAssistIntent(
     /* [in] */ IContext *context,
     /* [in] */ Boolean inclContext,
@@ -391,12 +246,6 @@ ECode CSearchManager::GetAssistIntent(
     return GetAssistIntent(context, inclContext, UserHandle::MyUserId(), intent);
 }
 
-/**
- * Gets an intent for launching installed assistant activity, or null if not available.
- * @return The assist intent.
- *
- * @hide
- */
 ECode CSearchManager::GetAssistIntent(
     /* [in] */ IContext *context,
     /* [in] */ Boolean inclContext,
@@ -438,11 +287,7 @@ ECode CSearchManager::GetAssistIntent(
     return NOERROR;
 }
 
-/**
- * Launch an assist action for the current top activity.
- * @hide
- */
-CARAPI CSearchManager::LaunchAssistAction(
+ECode CSearchManager::LaunchAssistAction(
     /* [in] */ Int32 requestType,
     /* [in] */ const String& hint,
     /* [in] */ Int32 userHandle,

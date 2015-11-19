@@ -1,4 +1,4 @@
-ssourcTARGET_NAME= usage
+TARGET_NAME= usage
 TARGET_TYPE= lib
 
 C_DEFINES += -DDROID_CORE
@@ -9,3 +9,6 @@ INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 SOURCES += CConfigurationStats.cpp
+SOURCES += CUsageStats.cpp
+SOURCES += CConfigurationStats.cpp
+SOURCES += UsageEvents.cpp

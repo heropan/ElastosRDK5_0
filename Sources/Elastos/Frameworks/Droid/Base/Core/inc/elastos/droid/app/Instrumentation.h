@@ -41,6 +41,7 @@ namespace App {
 
 class Instrumentation
     : public Object
+    , public IInstrumentation
 {
 private:
     class ActivityWaiter
@@ -189,6 +190,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     Instrumentation();
 
     virtual ~Instrumentation();
@@ -707,6 +710,18 @@ public:
     CARAPI CallActivityOnCreate(
         /* [in] */ IActivity* activity,
         /* [in] */ IBundle* icicle);
+
+    /**
+     * Perform calling of an activity's {@link Activity#onCreate}
+     * method.  The default implementation simply calls through to that method.
+     *  @param activity The activity being created.
+     * @param icicle The previously frozen state (or null) to pass through to
+     * @param persistentState The previously persisted state (or null)
+     */
+    CARAPI CallActivityOnCreate(
+        /* [in] */ IActivity* activity,
+        /* [in] */ IBundle* icicle,
+        /* [in] */ IPersistableBundle* persistentState);
 
     virtual CARAPI CallActivityOnDestroy(
         /* [in] */ IActivity* activity);

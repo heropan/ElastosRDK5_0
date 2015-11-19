@@ -2,12 +2,12 @@
 module
 {
     interface Elastos.Droid.Content.Pm.IParceledListSlice;
-    interface Elastos.Droid.App.Trust.IUsageEvents;
+    interface Elastos.Droid.App.Usage.IUsageEvents;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
-    namespace Trust {
+    namespace Usage {
 
     /**
      * System private API for talking with the UsageStatsManagerService.
@@ -36,7 +36,7 @@ module
             [out] IUsageEvents** events);
     }
 
-    } // namespace Trust
+    } // namespace Usage
     } // namespace App
     } // namespace Droid
     } // namespace Elastos

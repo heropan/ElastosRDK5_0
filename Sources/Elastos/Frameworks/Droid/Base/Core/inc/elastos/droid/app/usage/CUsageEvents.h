@@ -12,7 +12,6 @@ namespace Usage {
 
 CarClass(CUsageEvents)
     , public UsageEvents
-
 {
 public:
     CAR_OBJECT_DECL()

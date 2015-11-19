@@ -2,9 +2,11 @@
 #ifndef __ELASTOS_DROID_APP_USAGE_USAGE_EVENTS_H__
 #define __ELASTOS_DROID_APP_USAGE_USAGE_EVENTS_H__
 
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Droid::Content::IConfiguration;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -15,8 +17,8 @@ namespace Usage {
  * An event representing a state change for a component.
  */
 class UsageEvent
-    : Object
-    , IUsageEvent
+    : public Object
+    , public IUsageEvent
 {
 public:
     CAR_INTERFACE_DECL()
@@ -70,14 +72,14 @@ public:
         /* [out] */ Int32* result);
 
     CARAPI SetConfiguration(
-        /* [in] */ 　IConfiguration* value);
+        /* [in] */ IConfiguration* value);
 
     /**
      * Returns a {@link Configuration} for this event if the event is of type
      * {@link #CONFIGURATION_CHANGE}, otherwise it returns null.
      */
     CARAPI GetConfiguration(
-        /* [out] */　IConfiguration** config);
+        /* [out] */IConfiguration** config);
 
 public:
     /**
@@ -113,9 +115,9 @@ public:
  * from which to read {@link android.app.usage.UsageEvents.Event} objects.
  */
 class UsageEvents
-    : Object
-    , IUsageEvents
-    , IParcelable
+    : public Object
+    , public IUsageEvents
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -168,7 +170,7 @@ public:
         /* [in] */ IParcel* dest);
 
     CARAPI ReadFromParcel(
-        /* [in] */ IParcel in);
+        /* [in] */ IParcel* in);
 
 private:
     CARAPI FindStringIndex(
