@@ -854,7 +854,7 @@ ECode CConnectivityManager::RemoveRequestForFeature(
     *result = NULL;
     VALIDATE_NOT_NULL(netCap)
 
-    synchronized (sLegacyRequests) {
+    synchronized(sLegacyRequests) {
         AutoPtr<IInterface> pl;
         FAIL_RETURN(sLegacyRequests->Remove(netCap, (IInterface**)&pl))
         LegacyRequest* l = (LegacyRequest*) IObject::Probe(pl);

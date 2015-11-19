@@ -286,7 +286,7 @@ ECode Connection::ClearPipe(
     Boolean empty = TRUE;
     // if (HttpLog.LOGV) HttpLog.v(
     //         "Connection.clearPipe(): clearing pipe " + pipe.size());
-    // synchronized (mRequestFeeder) {
+    // synchronized(mRequestFeeder) {
         Request* tReq;
 
         List<Request*>::Iterator itor;

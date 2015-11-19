@@ -89,7 +89,7 @@ LocationFudger::LocationFudger(
     cr->RegisterContentObserver(uri, FALSE, mSettingsObserver);
 
     Float accuracy = LoadCoarseAccuracy();
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         SetAccuracyInMetersLocked(accuracy);
@@ -105,7 +105,7 @@ LocationFudger::LocationFudger(
 AutoPtr<ILocation> LocationFudger::GetOrCreate(
     /* [in] */ ILocation* location)
 {
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
 

@@ -255,7 +255,7 @@ AutoPtr<ITransition> TransitionInflater::CreateTransitionFromXml(
 //     }
 
 //     try {
-//         synchronized (sConstructors) {
+//         synchronized(sConstructors) {
 //             Constructor constructor = sConstructors.get(className);
 //             if (constructor == null) {
 //                 Class c = mContext.getClassLoader().loadClass(className)

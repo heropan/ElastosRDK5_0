@@ -2391,7 +2391,7 @@ void CLocationManagerService::HandleLocationChanged(
 
 void CLocationManagerService::IncrementPendingBroadcasts()
 {
-    // synchronized (mWakeLock) {
+    // synchronized(mWakeLock) {
     AutoLock lock(mLockForWakeLock);
     if (mPendingBroadcasts++ == 0) {
         // try {
@@ -2409,7 +2409,7 @@ void CLocationManagerService::IncrementPendingBroadcasts()
 void CLocationManagerService::DecrementPendingBroadcasts()
 {
     AutoLock lock(mLockForWakeLock);
-    // synchronized (mWakeLock) {
+    // synchronized(mWakeLock) {
     if (--mPendingBroadcasts == 0) {
         // try {
         // Release wake lock

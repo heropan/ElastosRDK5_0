@@ -552,7 +552,7 @@ ECode SQLiteDatabase::Open()
 
 ECode SQLiteDatabase::OpenInner()
 {
-    synchronized (mLock){
+    synchronized(mLock){
         assert(mConnectionPoolLocked == NULL);
         FAIL_RETURN(SQLiteConnectionPool::Open(mConfigurationLocked, (SQLiteConnectionPool**)&mConnectionPoolLocked));
         // mCloseGuardLocked.Open("close");

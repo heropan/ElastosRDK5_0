@@ -746,7 +746,7 @@ ECode LocalSocketImpl::Close()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (LocalSocketImpl.this) {
+        synchronized(LocalSocketImpl.this) {
             if ((fd == null) || (mFdCreatedInternally == false)) {
                 fd = null;
                 return;

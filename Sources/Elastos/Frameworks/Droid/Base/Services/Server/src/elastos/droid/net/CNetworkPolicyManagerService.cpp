@@ -2249,7 +2249,7 @@ void CNetworkPolicyManagerService::Dump(
     //     argSet->Insert(arg);
     // }
 
-    // //synchronized (mRulesLock) {
+    // //synchronized(mRulesLock) {
     // {
     //     AutoLock lock(mRulesLock);
     //     AutoPtr<HashSet<String> >::Iterator iter1 = argSet->Find(String("--unsnooze"));

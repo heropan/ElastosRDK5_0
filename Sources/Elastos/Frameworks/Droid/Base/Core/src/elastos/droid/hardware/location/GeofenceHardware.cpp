@@ -333,7 +333,7 @@ ECode GeofenceHardware::UnregisterForMonitorStateChangeCallback(
 void GeofenceHardware::RemoveCallback(
     /* [in] */ IGeofenceHardwareCallback* _callback)
 {
-    synchronized (mCallbacksLock) {
+    synchronized(mCallbacksLock) {
         mCallbacks.Erase(_callback);
     }
 }
@@ -344,7 +344,7 @@ ECode GeofenceHardware::GetCallbackWrapper(
 {
     VALIDATE_NOT_NULL(wrapper);
 
-    synchronized (mCallbacksLock) {
+    synchronized(mCallbacksLock) {
         AutoPtr<GeofenceHardwareCallbackWrapper> _wrapper = mCallbacks[_callback];
         if (_wrapper == NULL) {
             _wrapper = new GeofenceHardwareCallbackWrapper(_callback, this);
@@ -360,7 +360,7 @@ ECode GeofenceHardware::GetCallbackWrapper(
 void GeofenceHardware::RemoveMonitorCallback(
     /* [in] */ IGeofenceHardwareMonitorCallback* _callback)
 {
-    synchronized (mMonitorCallbacksLock) {
+    synchronized(mMonitorCallbacksLock) {
         mMonitorCallbacks.Erase(_callback);
     }
 }
@@ -371,7 +371,7 @@ ECode GeofenceHardware::GetMonitorCallbackWrapper(
 {
     VALIDATE_NOT_NULL(wrapper);
 
-    synchronized (mMonitorCallbacksLock) {
+    synchronized(mMonitorCallbacksLock) {
         AutoPtr<GeofenceHardwareMonitorCallbackWrapper> _wrapper = mMonitorCallbacks[_callback];
         if (_wrapper == NULL) {
             _wrapper = new GeofenceHardwareMonitorCallbackWrapper(_callback);

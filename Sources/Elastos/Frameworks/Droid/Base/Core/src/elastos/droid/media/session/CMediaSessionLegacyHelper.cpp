@@ -478,7 +478,7 @@ ECode CMediaSessionLegacyHelper::GetHelper(
     if (DEBUG) {
         // Logger::D(TAG, "Attempting to get helper with context " + context);
     }
-    synchronized (sLock) {
+    synchronized(sLock) {
         if (sInstance == NULL) {
             CMediaSessionLegacyHelper::New(context, (IMediaSessionLegacyHelper**)&sInstance);
         }

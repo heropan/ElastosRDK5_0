@@ -42,7 +42,7 @@ ECode ChildProcessService::InnerRunnable::Run()
         // Boolean useLinker = Linker.isUsed();
 
         // if (useLinker) {
-        //     synchronized (mMainThread) {
+        //     synchronized(mMainThread) {
         //         while (!mIsBound) {
         //             mMainThread.wait();
         //         }
@@ -62,13 +62,13 @@ ECode ChildProcessService::InnerRunnable::Run()
         //     Log.e(TAG, "Failed to load native library, exiting child process", e);
         //     System.exit(-1);
         // }
-        // synchronized (mMainThread) {
+        // synchronized(mMainThread) {
         //     while (mCommandLineParams == null) {
         //         mMainThread.wait();
         //     }
         // }
         // LibraryLoader.initialize(mCommandLineParams);
-        // synchronized (mMainThread) {
+        // synchronized(mMainThread) {
         //     mLibraryInitialized = true;
         //     mMainThread.notifyAll();
         //     while (mFileIds == null) {
@@ -119,7 +119,7 @@ ChildProcessService::ChildProcessService()
     //     @Override
     //     public int setupConnection(Bundle args, IChildProcessCallback callback) {
     //         mCallback = callback;
-    //         synchronized (mMainThread) {
+    //         synchronized(mMainThread) {
     //             // Allow the command line to be set via bind() intent or setupConnection, but
     //             // the FD can only be transferred here.
     //             if (mCommandLineParams == null) {
@@ -209,7 +209,7 @@ ECode ChildProcessService::OnDestroy()
         return NOERROR;
     }
 
-    //synchronized (mMainThread)
+    //synchronized(mMainThread)
     {
         AutoLock lock(mMainThreadLock);
         // try {
@@ -246,7 +246,7 @@ ECode ChildProcessService::OnBind(
     // TODO
     // StopSelf();
 
-    //synchronized (mMainThread)
+    //synchronized(mMainThread)
     {
         AutoLock lock(mMainThreadLock);
         intent->GetStringArrayExtra(

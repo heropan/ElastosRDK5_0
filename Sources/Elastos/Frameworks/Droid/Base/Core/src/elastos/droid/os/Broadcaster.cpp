@@ -135,7 +135,7 @@ Void Broadcaster::CancelRequest(
 
 Void Broadcaster::DumpRegistrations()
 {
-    // synchronized (this) {
+    // synchronized(this) {
     //     Registration start = mReg;
     //     System.out.println("Broadcaster " + this + " {");
     //     if (start != NULL) {

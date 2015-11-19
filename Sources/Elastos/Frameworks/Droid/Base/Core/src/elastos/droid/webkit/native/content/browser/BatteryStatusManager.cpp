@@ -61,7 +61,7 @@ Boolean BatteryStatusManager::Start(
   /* [in] */ Int64 nativePtr)
 {
   assert(0);
-    // synchronized (mNativePtrLock) {
+    // synchronized(mNativePtrLock) {
     //     if (!mEnabled && mAppContext.registerReceiver(mReceiver, mFilter) != null) {
     //         // success
     //         mNativePtr = nativePtr;
@@ -79,7 +79,7 @@ Boolean BatteryStatusManager::Start(
 void BatteryStatusManager::Stop()
 {
   assert(0);
-    // synchronized (mNativePtrLock) {
+    // synchronized(mNativePtrLock) {
     //     if (mEnabled) {
     //         mAppContext.unregisterReceiver(mReceiver);
     //         mNativePtr = 0;
@@ -147,7 +147,7 @@ void BatteryStatusManager::GotBatteryStatus(
   /* [in] */ Double level)
 {
   assert(0);
-    // synchronized (mNativePtrLock) {
+    // synchronized(mNativePtrLock) {
     //     if (mNativePtr != 0) {
     //         nativeGotBatteryStatus(mNativePtr, charging, chargingTime, dischargingTime, level);
     //     }

@@ -188,7 +188,7 @@ ECode DisplayManagerGlobal::GetDisplayInfo(
     VALIDATE_NOT_NULL(displayInfo);
 
     //try {
-    synchronized (mLock) {
+    synchronized(mLock) {
         AutoPtr<IDisplayInfo> info;
         if (USE_CACHE) {
             HashMap<Int32, AutoPtr<IDisplayInfo> >::Iterator find
@@ -404,7 +404,7 @@ void DisplayManagerGlobal::HandleDisplayEvent(
 
 ECode DisplayManagerGlobal::StartWifiDisplayScan()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mWifiDisplayScanNestCount++ == 0) {
             RegisterCallbackIfNeededLocked();
             if (FAILED(mDm->StartWifiDisplayScan())) {
@@ -418,7 +418,7 @@ ECode DisplayManagerGlobal::StartWifiDisplayScan()
 
 ECode DisplayManagerGlobal::StopWifiDisplayScan()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (--mWifiDisplayScanNestCount == 0) {
             if (FAILED(mDm->StopWifiDisplayScan())) {
                 Logger::E(TAG, "Failed to scan for Wifi displays.");

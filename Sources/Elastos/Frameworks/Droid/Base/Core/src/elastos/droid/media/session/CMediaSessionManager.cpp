@@ -176,7 +176,7 @@ ECode CMediaSessionManager::AddOnActiveSessionsChangedListener(
     if (handler == NULL) {
         CHandler::New((IHandler**)&handler);
     }
-    synchronized (mLock) {
+    synchronized(mLock) {
         AutoPtr<SessionsChangedWrapper> wrapper;
         IMap::Probe(mListeners)->Get(sessionListener, (IInterface**)&wrapper);
         if (wrapper != NULL) {
@@ -201,7 +201,7 @@ ECode CMediaSessionManager::RemoveOnActiveSessionsChangedListener(
         // throw new IllegalArgumentException("listener may not be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    synchronized (mLock) {
+    synchronized(mLock) {
         AutoPtr<SessionsChangedWrapper> wrapper;
         IMap::Probe(mListeners)->Remove(listener, (IInterface**)&wrapper);
         if (wrapper != NULL) {

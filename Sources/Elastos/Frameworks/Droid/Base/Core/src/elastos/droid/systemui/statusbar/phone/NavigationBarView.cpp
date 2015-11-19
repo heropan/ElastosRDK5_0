@@ -317,7 +317,7 @@ void NavigationBarView::TakeScreenshot()
 //     ServiceConnection conn = new ServiceConnection() {
 //         @Override
 //         public void onServiceConnected(ComponentName name, IBinder service) {
-//             synchronized (mScreenshotLock) {
+//             synchronized(mScreenshotLock) {
 //                 if (mScreenshotConnection != this) {
 //                     return;
 //                 }
@@ -327,7 +327,7 @@ void NavigationBarView::TakeScreenshot()
 //                 Handler h = new Handler(mHandler.getLooper()) {
 //                     @Override
 //                     public void handleMessage(Message msg) {
-//                         synchronized (mScreenshotLock) {
+//                         synchronized(mScreenshotLock) {
 //                             if (mScreenshotConnection == myConn) {
 //                                 mContext.unbindService(mScreenshotConnection);
 //                                 mScreenshotConnection = NULL;

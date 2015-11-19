@@ -128,7 +128,7 @@ AutoPtr<ITimeZone> TimeUtils::GetTimeZone(
 AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
     /* [in] */ const String& country)
 {
-    synchronized (sLastUniqueLockObj) {
+    synchronized(sLastUniqueLockObj) {
         if ((!country.IsNull()) && country.Equals(sLastUniqueCountry)) {
             if (DBG) {
                 Logger::D(TAG, "getTimeZonesWithUniqueOffsets(%s): return cached version", country.string());
@@ -190,7 +190,7 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
 AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
     /* [in] */ const String& country)
 {
-    synchronized (sLastLockObj) {
+    synchronized(sLastLockObj) {
         if (!country.IsNull() && country.Equals(sLastCountry)) {
             if (DBG) Logger::D(TAG, "getTimeZones(): return cached version", country.string());
             return sLastZones;

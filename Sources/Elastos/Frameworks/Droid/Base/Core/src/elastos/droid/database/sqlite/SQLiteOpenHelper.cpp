@@ -67,7 +67,7 @@ ECode SQLiteOpenHelper::GetDatabaseName(
 ECode SQLiteOpenHelper::SetWriteAheadLoggingEnabled(
     /* [in] */ Boolean enabled)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mEnableWriteAheadLogging != enabled) {
             Boolean isOpen, isReadOnly;
             if (mDatabase != NULL && (mDatabase->IsOpen(&isOpen), isOpen)
@@ -91,7 +91,7 @@ ECode SQLiteOpenHelper::GetWritableDatabase(
     /* [out] */ ISQLiteDatabase** database)
 {
     ECode ec = NOERROR;
-    synchronized (mLock) {
+    synchronized(mLock) {
         ec = GetDatabaseLocked(TRUE, database);
     }
     return ec;
@@ -101,7 +101,7 @@ ECode SQLiteOpenHelper::GetReadableDatabase(
         /* [out] */ ISQLiteDatabase** database)
 {
     ECode ec = NOERROR;
-    synchronized (mLock) {
+    synchronized(mLock) {
         ec =  GetDatabaseLocked(FALSE, database);
     }
     return ec;
@@ -240,7 +240,7 @@ ECode SQLiteOpenHelper::GetDatabaseLocked(
 
 ECode SQLiteOpenHelper::Close()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mIsInitializing) {
             //throw new IllegalStateException("Closed during initialization");
             Slogger::E(TAG, "Closed during initialization");

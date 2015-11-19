@@ -520,7 +520,7 @@ ECode CContentService::NotifyChange(
         //     Log.v(TAG, "Notified " + oc.mObserver + " of " + "update at " + uri);
         // }
         // } catch (RemoteException ex) {
-        //     synchronized (mRootNode) {
+        //     synchronized(mRootNode) {
         //         Log.w(TAG, "Found dead observer, removing");
         //         IBinder binder = oc.mObserver.asBinder();
         //         final ArrayList<ObserverNode.ObserverEntry> list

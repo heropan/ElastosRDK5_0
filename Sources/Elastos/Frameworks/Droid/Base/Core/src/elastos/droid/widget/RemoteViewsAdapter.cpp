@@ -1038,7 +1038,7 @@ AutoPtr<IView> RemoteViewsAdapter::GetView(
 
         //     RemoteViewsFrameLayout loadingView = null;
         //     final RemoteViewsMetaData metaData = mCache.getMetaData();
-        //     synchronized (metaData) {
+        //     synchronized(metaData) {
         //         loadingView = metaData.createLoadingView(position, convertView, parent,
         //                 mCache, mLayoutInflater, mRemoteViewsOnClickHandler);
         //     }

@@ -10,7 +10,12 @@
 #include "elastos/droid/app/CInstrumentation.h"
 #include "elastos/droid/app/CUiAutomation.h"
 #include "elastos/droid/app/CUiAutomationConnection.h"
-//#include "elastos/droid/app/CVoiceInteractorCallback.h"
+#include "elastos/droid/app/CVoiceInteractor.h"
+#include "elastos/droid/app/CVoiceInteractorCallback.h"
+#include "elastos/droid/app/CVoiceInteractorConfirmationRequest.h"
+#include "elastos/droid/app/CVoiceInteractorCompleteVoiceRequest.h"
+#include "elastos/droid/app/CVoiceInteractorAbortVoiceRequest.h"
+#include "elastos/droid/app/CVoiceInteractorCommandRequest.h"
 
 
 namespace Elastos {
@@ -28,7 +33,13 @@ CAR_OBJECT_IMPL(CFragmentState)
 CAR_OBJECT_IMPL(CInstrumentation)
 CAR_OBJECT_IMPL(CUiAutomation)
 CAR_OBJECT_IMPL(CUiAutomationConnection)
-//CAR_OBJECT_IMPL(CVoiceInteractorCallback)
+CAR_OBJECT_IMPL(CVoiceInteractor)
+CAR_OBJECT_IMPL(CVoiceInteractorCallback)
+CAR_OBJECT_IMPL(CVoiceInteractorConfirmationRequest)
+CAR_OBJECT_IMPL(CVoiceInteractorCompleteVoiceRequest)
+CAR_OBJECT_IMPL(CVoiceInteractorAbortVoiceRequest)
+CAR_OBJECT_IMPL(CVoiceInteractorCommandRequest)
+
 
 } // namespace App
 } // namespace Droid

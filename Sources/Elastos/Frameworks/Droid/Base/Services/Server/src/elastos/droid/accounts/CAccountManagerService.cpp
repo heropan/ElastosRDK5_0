@@ -2367,7 +2367,7 @@ Boolean CAccountManagerService::ScanArgs(
 
 // private void dumpUser(UserAccounts userAccounts, FileDescriptor fd, PrintWriter fout,
 //         String[] args, boolean isCheckinRequest) {
-//     synchronized (userAccounts.cacheLock) {
+//     synchronized(userAccounts.cacheLock) {
 //         final SQLiteDatabase db = userAccounts.openHelper.getReadableDatabase();
 
 //         if (isCheckinRequest) {
@@ -2392,7 +2392,7 @@ Boolean CAccountManagerService::ScanArgs(
 //             }
 
 //             fout.println();
-//             synchronized (mSessions) {
+//             synchronized(mSessions) {
 //                 final long now = SystemClock.elapsedRealtime();
 //                 fout.println("Active Sessions: " + mSessions.size());
 //                 for (Session session : mSessions.values()) {

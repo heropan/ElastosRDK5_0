@@ -67,7 +67,7 @@ ECode NetworkInfo::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (source != null) {
-            synchronized (source) {
+            synchronized(source) {
                 mNetworkType = source.mNetworkType;
                 mSubtype = source.mSubtype;
                 mTypeName = source.mTypeName;
@@ -91,7 +91,7 @@ ECode NetworkInfo::GetType(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mNetworkType;
         }
 
@@ -103,7 +103,7 @@ ECode NetworkInfo::SetType(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             mNetworkType = type;
         }
 
@@ -115,7 +115,7 @@ ECode NetworkInfo::GetSubtype(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mSubtype;
         }
 
@@ -128,7 +128,7 @@ ECode NetworkInfo::SetSubtype(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             mSubtype = subtype;
             mSubtypeName = subtypeName;
         }
@@ -141,7 +141,7 @@ ECode NetworkInfo::GetTypeName(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mTypeName;
         }
 
@@ -153,7 +153,7 @@ ECode NetworkInfo::GetSubtypeName(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mSubtypeName;
         }
 
@@ -165,7 +165,7 @@ ECode NetworkInfo::IsConnectedOrConnecting(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mState == State.CONNECTED || mState == State.CONNECTING;
         }
 
@@ -177,7 +177,7 @@ ECode NetworkInfo::IsConnected(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mState == State.CONNECTED;
         }
 
@@ -189,7 +189,7 @@ ECode NetworkInfo::IsAvailable(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mIsAvailable;
         }
 
@@ -201,7 +201,7 @@ ECode NetworkInfo::SetIsAvailable(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             mIsAvailable = isAvailable;
         }
 
@@ -213,7 +213,7 @@ ECode NetworkInfo::IsFailover(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mIsFailover;
         }
 
@@ -225,7 +225,7 @@ ECode NetworkInfo::SetFailover(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             mIsFailover = isFailover;
         }
 
@@ -237,7 +237,7 @@ ECode NetworkInfo::IsRoaming(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mIsRoaming;
         }
 
@@ -249,7 +249,7 @@ ECode NetworkInfo::SetRoaming(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             mIsRoaming = isRoaming;
         }
 
@@ -261,7 +261,7 @@ ECode NetworkInfo::IsConnectedToProvisioningNetwork(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mIsConnectedToProvisioningNetwork;
         }
 
@@ -273,7 +273,7 @@ ECode NetworkInfo::SetIsConnectedToProvisioningNetwork(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             mIsConnectedToProvisioningNetwork = val;
         }
 
@@ -285,7 +285,7 @@ ECode NetworkInfo::GetState(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mState;
         }
 
@@ -297,7 +297,7 @@ ECode NetworkInfo::GetDetailedState(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mDetailedState;
         }
 
@@ -311,7 +311,7 @@ ECode NetworkInfo::SetDetailedState(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             this.mDetailedState = detailedState;
             this.mState = stateMap.get(detailedState);
             this.mReason = reason;
@@ -326,7 +326,7 @@ ECode NetworkInfo::SetExtraInfo(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             this.mExtraInfo = extraInfo;
         }
 
@@ -338,7 +338,7 @@ ECode NetworkInfo::GetReason(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mReason;
         }
 
@@ -350,7 +350,7 @@ ECode NetworkInfo::GetExtraInfo(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             return mExtraInfo;
         }
 
@@ -362,7 +362,7 @@ ECode NetworkInfo::ToString(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (this) {
+        synchronized(this) {
             StringBuilder builder = new StringBuilder("[");
             builder.append("type: ").append(getTypeName()).append("[").append(getSubtypeName()).
             append("], state: ").append(mState).append("/").append(mDetailedState).

@@ -3913,7 +3913,7 @@ Boolean Editor::IsPositionVisible(
     /* [in] */ Int32 positionX,
     /* [in] */ Int32 positionY)
 {
-//    synchronized (TEMP_POSITION)
+//    synchronized(TEMP_POSITION)
     {
         AutoLock lock(mTempPositionLock);
         AutoPtr<ArrayOf<Float> > position = TEMP_POSITION;

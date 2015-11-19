@@ -150,7 +150,7 @@ ECode CTvView::MySessionCallback::OnSessionCreated(
     mHost->mSession = session;
     if (session != NULL) {
         Object& lock = mHost->sMainTvViewLock;
-        synchronized (lock) {
+        synchronized(lock) {
             Boolean b;
             mHost->HasWindowFocus(&b);
 
@@ -432,7 +432,7 @@ ECode CTvView::SetCallback(
 
 ECode CTvView::SetMain()
 {
-    synchronized (sMainTvViewLock) {
+    synchronized(sMainTvViewLock) {
         IWeakReferenceSource* wrs = THIS_PROBE(IWeakReferenceSource);
         wrs->GetWeakReference((IWeakReference**)&sMainTvView);
         Boolean b;
@@ -513,7 +513,7 @@ ECode CTvView::Tune(
         // throw new IllegalArgumentException("inputId cannot be NULL or an empty string");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    synchronized (sMainTvViewLock) {
+    synchronized(sMainTvViewLock) {
         if (sMainTvView.Get() == NULL) {
             IWeakReferenceSource* wrs = THIS_PROBE(IWeakReferenceSource);
             wrs->GetWeakReference((IWeakReference**)&sMainTvView);
@@ -546,7 +546,7 @@ ECode CTvView::Tune(
 ECode CTvView::Reset()
 {
     if (DEBUG) Logger::D(TAG, "reset()");
-    synchronized (sMainTvViewLock) {
+    synchronized(sMainTvViewLock) {
         if (sMainTvView.Get() != NULL) {
             AutoPtr<ITvView> cs;
             sMainTvView->Resolve(EIID_ITvView, (IInterface**)&cs);
@@ -767,7 +767,7 @@ ECode CTvView::DispatchWindowFocusChanged(
     ViewGroup::DispatchWindowFocusChanged(hasFocus);
     // Other app may have shown its own main TvView.
     // Set main again to regain main session.
-    synchronized (sMainTvViewLock) {
+    synchronized(sMainTvViewLock) {
         if (sMainTvView.Get() != NULL) {
             AutoPtr<ITvView> cs;
             sMainTvView->Resolve(EIID_ITvView, (IInterface**)&cs);

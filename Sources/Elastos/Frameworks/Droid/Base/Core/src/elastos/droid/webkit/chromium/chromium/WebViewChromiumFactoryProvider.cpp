@@ -243,7 +243,7 @@ void WebViewChromiumFactoryProvider::EnsureChromiumStartedLocked(
     ThreadUtils.postOnUiThread(new Runnable() {
         @Override
         public void run() {
-            synchronized (mLock) {
+            synchronized(mLock) {
                 startChromiumLocked();
             }
         }

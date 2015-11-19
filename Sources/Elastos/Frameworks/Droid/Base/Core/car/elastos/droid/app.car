@@ -29,6 +29,7 @@ module
     merge("app/Fragment.car");
     merge("app/FragmentManager.car");
     merge("app/FragmentTransaction.car");
+    //merge("app/FragmentBreadCrumbs.car");
     merge("app/IActivityContainer.car");
     merge("app/IActivityContainerCallback.car");
     merge("app/IActivityController.car");
@@ -136,6 +137,7 @@ module
     merge("app/usage/UsageStatsManager.car");
     merge("app/usage/UsageStatsManagerInternal.car");
 
+    using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IClassLoader;
     using interface Elastos.Utility.IList;
@@ -175,9 +177,12 @@ module
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Utility.IArrayMap;
     interface Elastos.Droid.Internal.App.IIAppOpsCallback;
+    interface Elastos.Droid.Internal.App.IIVoiceInteractor;
+    interface Elastos.Droid.Internal.App.IIVoiceInteractorCallback;
     interface Elastos.Droid.Internal.Os.IHandlerCallerCallback;
+    interface Elastos.Droid.Internal.Os.IHandlerCaller;
 
-//     using interface Elastos.Core.ICharSequence;
+//
 //     interface Elastos.Droid.Content.Pm.IResolveInfo;
 //     interface Elastos.Droid.Content.IContentResolver;
 //     interface Elastos.Droid.Content.IDialogInterface;
@@ -1382,13 +1387,62 @@ module
 //         interface IDownloadManagerQuery;
 //     }
 
-        //class CVoiceInteractorCallback {
-        //    constructor();
+    [local]
+    class CVoiceInteractor {
+        constructor(
+            [in] IIVoiceInteractor* interactor,
+            [in] IContext* context,
+            [in] IActivity* activity,
+            [in] ILooper* looper);
 
-        //    interface IIVoiceInteractorCallback;
-        //    interface IBinder;
-        //}
+        interface IVoiceInteractor;
+    }
 
+    class CVoiceInteractorCallback {
+        constructor(
+            [in] IObject* handlerCaller);
+
+        interface IIVoiceInteractorCallback;
+        interface IBinder;
+    }
+
+    class CVoiceInteractorConfirmationRequest {
+        constructor(
+            [in] ICharSequence* prompt,
+            [in] IBundle* extras);
+
+        interface IVoiceInteractorConfirmationRequest;
+        interface IVoiceInteractorRequest;
+    }
+
+    class CVoiceInteractorCompleteVoiceRequest {
+        constructor(
+            [in] ICharSequence* message,
+            [in] IBundle* extras);
+
+        interface IVoiceInteractorCompleteVoiceRequest;
+        interface IVoiceInteractorRequest;
+    }
+
+    class CVoiceInteractorAbortVoiceRequest {
+        constructor(
+            [in] ICharSequence* message,
+            [in] IBundle* extras);
+
+        interface IVoiceInteractorAbortVoiceRequest;
+        interface IVoiceInteractorRequest;
+    }
+
+    class CVoiceInteractorCommandRequest {
+        constructor(
+            [in] String message,
+            [in] IBundle* extras);
+
+        interface IVoiceInteractorCommandRequest;
+        interface IVoiceInteractorRequest;
+    }
+
+    }
     } // namespace App
     } // namespace Droid
     } // namespace Elastos

@@ -55,7 +55,7 @@ CTimeFormatter::~CTimeFormatter()
 
 ECode CTimeFormatter::constructor()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
 
         AutoPtr<ILocaleHelper> localeHelper;
         CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);

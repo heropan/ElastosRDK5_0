@@ -3238,7 +3238,7 @@ void CDevicePolicyManagerService::Dump(
 
 //     final Printer p = new PrintWriterPrinter(pw);
 
-//     synchronized (this) {
+//     synchronized(this) {
 //         p.println("Current Device Policy Manager state:");
 
 //         int userCount = mUserData.size();

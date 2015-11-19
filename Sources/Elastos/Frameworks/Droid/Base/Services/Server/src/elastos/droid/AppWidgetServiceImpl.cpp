@@ -484,7 +484,7 @@ void AppWidgetServiceImpl::Dump(
     //     return;
     // }
 
-    // //synchronized (mAppWidgetIds)
+    // //synchronized(mAppWidgetIds)
     // {
     //     AutoLock lock(mAppWidgetIdsLock);
     //     //int N = mInstalledProviders.size();

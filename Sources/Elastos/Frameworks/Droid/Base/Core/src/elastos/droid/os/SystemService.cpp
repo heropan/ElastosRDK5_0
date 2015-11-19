@@ -87,7 +87,7 @@ ECode SystemService::WaitForState(
 {
     Int64 endMillis = SystemClock::GetElapsedRealtime() + timeoutMillis;
     while (TRUE) {
-        synchronized (sPropertyLock) {
+        synchronized(sPropertyLock) {
             SystemServiceState currentState = GetState(service);
             if (state == currentState) {
                 return NOERROR;
@@ -112,7 +112,7 @@ ECode SystemService::WaitForAnyStopped(
     /* [in] */ ArrayOf<String>* services)
 {
     while (TRUE) {
-        synchronized (sPropertyLock) {
+        synchronized(sPropertyLock) {
             for (Int32 i = 0; i < services->GetLength(); ++i) {
                 if (SystemServiceState_STOPPED == GetState((*services)[i])) {
                     return NOERROR;

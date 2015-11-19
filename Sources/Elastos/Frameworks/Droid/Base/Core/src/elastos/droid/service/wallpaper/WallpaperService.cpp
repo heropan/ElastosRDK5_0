@@ -367,7 +367,7 @@ void WallpaperService::Engine::Dump(
     // out->Print(" mContentInsets="); out->Println(mContentInsets->ToShortString());
     // out->Print(prefix); out->Print("mConfiguration="); out->Println(mConfiguration);
     // out->Print(prefix); out->Print("mLayout="); out->Println(mLayout);
-    // //synchronized (mLock)
+    // //synchronized(mLock)
     // {
     //     AutoLock lock(mLock);
     //     out->Print(prefix); out->Print("mPendingXOffset="); out->Print(mPendingXOffset);
@@ -391,7 +391,7 @@ void WallpaperService::Engine::DispatchPointer(
     Boolean isTouchEvent;
     event->IsTouchEvent(&isTouchEvent);
     if (isTouchEvent) {
-        //synchronized (mLock)
+        //synchronized(mLock)
         {
             AutoLock lock(mLock);
             Int32 action;
@@ -761,7 +761,7 @@ void WallpaperService::Engine::DoOffsetsChanged(
     Float xOffsetStep;
     Float yOffsetStep;
     Boolean sync;
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         xOffset = mPendingXOffset;

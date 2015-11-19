@@ -111,7 +111,7 @@ ECode TrafficStats::StartDataProfiling(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (sProfilingLock) {
+        synchronized(sProfilingLock) {
             if (sActiveProfilingStart != null) {
                 throw new IllegalStateException("already profiling data");
             }
@@ -128,7 +128,7 @@ ECode TrafficStats::StopDataProfiling(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (sProfilingLock) {
+        synchronized(sProfilingLock) {
             if (sActiveProfilingStart == null) {
                 throw new IllegalStateException("not profiling data");
             }

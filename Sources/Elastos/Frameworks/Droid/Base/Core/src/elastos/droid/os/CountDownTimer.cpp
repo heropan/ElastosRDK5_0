@@ -77,7 +77,7 @@ ECode CountDownTimer::MyHandler::HandleMessage(
     ISynchronize* sync = ISynchronize::Probe(obj);
     CountDownTimer* ctd = (CountDownTimer*)sync;
 
-    synchronized (obj) {
+    synchronized(obj) {
         if (ctd->mCancelled) {
             return NOERROR;
         }

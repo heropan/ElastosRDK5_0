@@ -240,7 +240,7 @@ ECode SQLiteCursor::Requery(
         return NOERROR;
     }
 
-    synchronized (mLock){
+    synchronized(mLock){
         AutoPtr<ISQLiteDatabase> database = ((CSQLiteQuery*)mQuery.Get())->GetDatabase();
         Boolean isOpened;
         if (database->IsOpen(&isOpened), !isOpened) {

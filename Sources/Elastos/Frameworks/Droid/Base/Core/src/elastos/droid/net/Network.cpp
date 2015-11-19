@@ -95,7 +95,7 @@ ECode Network::GetSocketFactory(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (mNetworkBoundSocketFactory == null) {
-            synchronized (mLock) {
+            synchronized(mLock) {
                 if (mNetworkBoundSocketFactory == null) {
                     mNetworkBoundSocketFactory = new NetworkBoundSocketFactory(netId);
                 }
@@ -110,7 +110,7 @@ ECode Network::MaybeInitHttpClient()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (mLock) {
+        synchronized(mLock) {
             if (mHostResolver == null) {
                 mHostResolver = new HostResolver() {
                     @Override

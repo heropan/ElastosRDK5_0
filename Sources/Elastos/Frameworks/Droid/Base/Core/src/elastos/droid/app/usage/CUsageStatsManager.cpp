@@ -1,7 +1,14 @@
 
 #include "elastos/droid/app/usage/CUsageStatsManager.h"
 #include "elastos/droid/app/usage/CUsageEvents.h"
+#include "elastos/droid/utility/CArrayMap.h"
+#include <elastos/core/CoreUtils.h>
 
+using Elastos::Droid::Content::Pm::IParceledListSlice;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
 
@@ -135,14 +142,14 @@ ECode CUsageStatsManager::QueryAndAggregateUsageStats(
         aggregatedStats->Get(key.Get(), (IInterface**)&valueObj);
         IUsageStats* existingStat = IUsageStats::Probe(valueObj);
         if (existingStat == NULL) {
-            aggregatedStats->Put(keyObj.Get(), newStat);
+            aggregatedStats->Put(key.Get(), newStat);
         }
         else {
             existingStat->Add(newStat);
         }
     }
 
-    *result = aggregatedStats;
+    *result = IMap::Probe(aggregatedStats);
     REFCOUNT_ADD(*result)
     return NOERROR;
 }

@@ -49,7 +49,7 @@ CarClass(CResourcesManager)
     final Configuration mTmpConfig = new Configuration();
 
     public static ResourcesManager getInstance() {
-        synchronized (ResourcesManager.class) {
+        synchronized(ResourcesManager.class) {
             if (sResourcesManager == null) {
                 sResourcesManager = new ResourcesManager();
             }
@@ -172,7 +172,7 @@ CarClass(CResourcesManager)
         final float scale = compatInfo.applicationScale;
         ResourcesKey key = new ResourcesKey(resDir, displayId, overrideConfiguration, scale, token);
         Resources r;
-        synchronized (this) {
+        synchronized(this) {
             // Resources is app scale dependent.
             if (false) {
                 Slog.w(TAG, "getTopLevelResources: " + resDir + " / " + scale);
@@ -250,7 +250,7 @@ CarClass(CResourcesManager)
                     + r.getCompatibilityInfo().applicationScale);
         }
 
-        synchronized (this) {
+        synchronized(this) {
             WeakReference<Resources> wr = mActiveResources.get(key);
             Resources existing = wr != null ? wr.get() : null;
             if (existing != null && existing.getAssets().isUpToDate()) {

@@ -36,7 +36,7 @@ ECode CWindowId::RegisterFocusObserver(
 {
     WindowIdFocusObserver* observer = (WindowIdFocusObserver*)_observer;
     AutoPtr<IHashMap> map = observer->mRegistrations;
-    synchronized (map) {
+    synchronized(map) {
         Boolean contains = FALSE;
         if (map->ContainsKey(IBinder::Probe(mToken), &contains), contains) {
             // throw new IllegalStateException(
@@ -57,7 +57,7 @@ ECode CWindowId::UnregisterFocusObserver(
 {
     WindowIdFocusObserver* observer = (WindowIdFocusObserver*)_observer;
     AutoPtr<IHashMap> map = observer->mRegistrations;
-    synchronized (map) {
+    synchronized(map) {
         AutoPtr<IInterface> obj;
         map->Remove(IBinder::Probe(mToken), (IInterface**)&obj);
         if (obj.Get() == NULL) {

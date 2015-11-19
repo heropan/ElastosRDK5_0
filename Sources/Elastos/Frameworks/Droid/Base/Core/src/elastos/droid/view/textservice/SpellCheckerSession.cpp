@@ -220,7 +220,7 @@ Boolean SpellCheckerSession::SpellCheckerSessionListenerImpl::IsDisconnected()
 void SpellCheckerSession::SpellCheckerSessionListenerImpl::OnGetSuggestions(
     /* [in] */ ArrayOf<ISuggestionsInfo*>* results)
 {
-    //synchronized (this)
+    //synchronized(this)
     {
         Object::AutoLock lock(mLock);
 //        if (mHandler != null) {
@@ -298,7 +298,7 @@ void SpellCheckerSession::SpellCheckerSessionListenerImpl::ProcessTask(
     if (scp.mWhat == TASK_CLOSE) {
         // If we are closing, we want to clean up our state now even
         // if it is pending as an async operation.
-        synchronized (this) {
+        synchronized(this) {
             mISpellCheckerSession = null;
             mHandler = null;
             if (mThread != null) {
@@ -318,7 +318,7 @@ void SpellCheckerSession::SpellCheckerSessionListenerImpl::ProcessOrEnqueueTask(
 //    }
 /*
     AutoPtr<ISpellCheckerSession> session;
-    //synchronized (this)
+    //synchronized(this)
     {
         Object::AutoLock lock(mLock);
         session = mISpellCheckerSession;

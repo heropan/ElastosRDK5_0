@@ -5,12 +5,12 @@
 namespace Elastos {
 namespace Droid {
 namespace App {
-namespace Trust {
+namespace Usage {
 
 CAR_OBJECT_IMPL(CUsageEvent)
 CAR_OBJECT_IMPL(CUsageEvents)
 
-} // namespace Trust
+} // namespace Usage
 } // namespace App
 } // namespace Droid
 } // namespace Elastos

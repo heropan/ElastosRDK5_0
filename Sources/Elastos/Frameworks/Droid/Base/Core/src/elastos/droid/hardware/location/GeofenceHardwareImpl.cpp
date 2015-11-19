@@ -170,7 +170,7 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
     switch (what) {
         case GeofenceHardwareImpl::ADD_GEOFENCE_CALLBACK:
             msg->GetArg1(&geofenceId);
-            synchronized (lockObj) {
+            synchronized(lockObj) {
                 _callback = (mHost->mGeofences)[geofenceId];
             }
 
@@ -189,7 +189,7 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
             break;
         case GeofenceHardwareImpl::REMOVE_GEOFENCE_CALLBACK:
             msg->GetArg1(&geofenceId);
-            synchronized (lockObj) {
+            synchronized(lockObj) {
                 _callback = (mHost->mGeofences)[geofenceId];
             }
 
@@ -200,7 +200,7 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
                 ECode ec = _callback->OnGeofenceRemove(geofenceId, arg2);
                 //} catch (RemoteException e) {}
                 if (FAILED(ec)) {
-                    synchronized (lockObj) {
+                    synchronized(lockObj) {
                         (mHost->mGeofences).Erase(geofenceId);
                     }
                 }
@@ -210,7 +210,7 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
 
         case GeofenceHardwareImpl::PAUSE_GEOFENCE_CALLBACK:
             msg->GetArg1(&geofenceId);
-            synchronized (lockObj) {
+            synchronized(lockObj) {
                 _callback = (mHost->mGeofences)[geofenceId];
             }
 
@@ -226,7 +226,7 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
 
         case GeofenceHardwareImpl::RESUME_GEOFENCE_CALLBACK:
             msg->GetArg1(&geofenceId);
-            synchronized (lockObj) {
+            synchronized(lockObj) {
                 _callback = (mHost->mGeofences)[geofenceId];
             }
 
@@ -246,7 +246,7 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
             msg->GetObj((IInterface**)&obj);
             AutoPtr<GeofenceTransition> geofenceTransition;
             geofenceTransition = (GeofenceTransition*)IObject::Probe(obj);
-            synchronized (lockObj) {
+            synchronized(lockObj) {
                 _callback = (mHost->mGeofences)[geofenceTransition->mGeofenceId];
 
                 // need to keep access to mGeofences synchronized at all times
@@ -290,7 +290,7 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
             }
             Int32 monitoringType;
             msg->GetArg1(&monitoringType);
-            synchronized (lockObj) {
+            synchronized(lockObj) {
                 for (UInt32 i = 0; i < (mHost->mGeofences).GetSize(); i++) {
                     Boolean result;
                     IObject::Probe(mHost->mGeofences[i])->Equals(_callback, &result);
@@ -652,7 +652,7 @@ ECode GeofenceHardwareImpl::GetMonitoringTypes(
 
     Boolean gpsSupported;
     Boolean fusedSupported;
-    synchronized (mSupportedMonitorTypesLock) {
+    synchronized(mSupportedMonitorTypesLock) {
         gpsSupported = (*mSupportedMonitorTypes)[IGeofenceHardware::MONITORING_TYPE_GPS_HARDWARE]
                 != IGeofenceHardware::MONITOR_UNSUPPORTED;
         fusedSupported = (*mSupportedMonitorTypes)[IGeofenceHardware::MONITORING_TYPE_FUSED_HARDWARE]
@@ -698,7 +698,7 @@ ECode GeofenceHardwareImpl::GetStatusOfMonitoringType(
 {
     VALIDATE_NOT_NULL(type);
 
-    synchronized (mSupportedMonitorTypesLock) {
+    synchronized(mSupportedMonitorTypesLock) {
         if (monitoringType >= mSupportedMonitorTypes->GetLength() || monitoringType < 0) {
             //throw new IllegalArgumentException("Unknown monitoring type");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -737,7 +737,7 @@ ECode GeofenceHardwareImpl::AddCircularFence(
     // callback might not be called after the geofence is added in the geofence hardware.
     // This also means that the callback must be removed if the addCircularHardwareGeofence
     // operations is not called or fails.
-    synchronized (mGeofencesLock) {
+    synchronized(mGeofencesLock) {
         mGeofences[geofenceId] = _callback;
     }
 
@@ -807,7 +807,7 @@ ECode GeofenceHardwareImpl::AddCircularFence(
         mReaperHandler->SendMessage(m, &success);
     }
     else {
-        synchronized (mGeofencesLock) {
+        synchronized(mGeofencesLock) {
             mGeofences.Erase(geofenceId);
         }
     }
@@ -840,7 +840,7 @@ ECode GeofenceHardwareImpl::RemoveGeofence(
 
     Boolean _result = FALSE;
 
-    synchronized (mGeofencesLock) {
+    synchronized(mGeofencesLock) {
         if (mGeofences[geofenceId] == NULL) {
             //throw new IllegalArgumentException("Geofence " + geofenceId + " not registered.");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -912,7 +912,7 @@ ECode GeofenceHardwareImpl::PauseGeofence(
         Slogger::D(TAG, sb.ToString());
     }
     Boolean _result;
-    synchronized (mGeofencesLock) {
+    synchronized(mGeofencesLock) {
         if (mGeofences[geofenceId] == NULL) {
             //throw new IllegalArgumentException("Geofence " + geofenceId + " not registered.");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -983,7 +983,7 @@ ECode GeofenceHardwareImpl::ResumeGeofence(
         Slogger::D(TAG, sb.ToString());
     }
     Boolean _result;
-    synchronized (mGeofencesLock) {
+    synchronized(mGeofencesLock) {
         if (mGeofences[geofenceId] == NULL) {
             // /throw new IllegalArgumentException("Geofence " + geofenceId + " not registered.");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -1216,7 +1216,7 @@ void GeofenceHardwareImpl::SetMonitorAvailability(
     /* [in] */ Int32 monitor,
     /* [in] */ Int32 val)
 {
-    synchronized (mSupportedMonitorTypesLock) {
+    synchronized(mSupportedMonitorTypesLock) {
         (*mSupportedMonitorTypes)[monitor] = val;
     }
     return;

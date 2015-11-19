@@ -118,7 +118,7 @@ ECode ResultReceiver::ReadFromParcel(
 ECode ResultReceiver::WriteToParcel(
     /* [in] */ IParcel* out)
 {
-    synchronized (this) {
+    synchronized(this) {
         if (mReceiver == NULL) {
             AutoPtr<IWeakReference> wr;
             GetWeakReference((IWeakReference**)&wr);

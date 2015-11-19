@@ -144,7 +144,7 @@ ECode CIInputMethodWrapper::ExecuteMessage(
             // } catch (RuntimeException e) {
             //     ((PrintWriter)args->mArg2).println("Exception: " + e);
             // }
-            // synchronized (args->mArg4) {
+            // synchronized(args->mArg4) {
             //     ((CountDownLatch)args->mArg4).countDown();
             // }
             args->Recycle();

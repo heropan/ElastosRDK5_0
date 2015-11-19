@@ -15,7 +15,7 @@ void ThreadUtils::SetWillOverrideUiThread()
 {
     assert(0);
 #if 0
-    synchronized (sLock) {
+    synchronized(sLock) {
         sWillOverride = true;
     }
 #endif
@@ -26,7 +26,7 @@ void ThreadUtils::SetUiThread(
 {
     assert(0);
 #if 0
-    synchronized (sLock) {
+    synchronized(sLock) {
         if (sUiThreadHandler != null && sUiThreadHandler.getLooper() != looper) {
             throw new RuntimeException("UI thread looper is already set to " +
                     sUiThreadHandler.getLooper() + " (Main thread looper is " +
@@ -42,7 +42,7 @@ AutoPtr<IHandler> ThreadUtils::GetUiThreadHandler()
 {
     assert(0);
 #if 0
-    synchronized (sLock) {
+    synchronized(sLock) {
         if (sUiThreadHandler == null) {
             if (sWillOverride) {
                 throw new RuntimeException("Did not yet override the UI thread");

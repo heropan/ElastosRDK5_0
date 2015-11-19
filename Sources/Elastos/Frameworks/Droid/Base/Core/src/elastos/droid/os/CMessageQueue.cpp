@@ -443,7 +443,7 @@ ECode CMessageQueue::IsIdling(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    synchronized (this) {
+    synchronized(this) {
         *result = IsIdlingLocked();
     }
     return NOERROR;

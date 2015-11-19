@@ -49,7 +49,7 @@ AutoPtr<IWebViewFactoryProvider> WebViewFactory::GetProvider()
 {
     assert(0);
     // TODO
-    // synchronized (sProviderLock) {
+    // synchronized(sProviderLock) {
     //     // For now the main purpose of this function (and the factory abstraction) is to keep
     //     // us honest and minimize usage of WebView internals when binding the proxy.
     //     if (sProviderInstance != null) return sProviderInstance;

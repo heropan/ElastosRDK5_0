@@ -65,7 +65,7 @@ ECode ActivityRecognitionHardware::GetInstance(
 {
     VALIDATE_NOT_NULL(instance);
 
-    synchronized (sSingletonInstanceLock) {
+    synchronized(sSingletonInstanceLock) {
         if (sSingletonInstance == NULL) {
             sSingletonInstance = new ActivityRecognitionHardware(context);
         }

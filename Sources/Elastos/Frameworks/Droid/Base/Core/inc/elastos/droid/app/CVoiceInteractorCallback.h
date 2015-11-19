@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CVOICE_INTERACTOR_CALLBACK_H__
 
 #include "_Elastos_Droid_App_CVoiceInteractorCallback.h"
-#include "elastos/droid/app/VoiceInteractorCallback.h"
+#include "elastos/droid/app/VoiceInteractor.h"
 
 namespace Elastos {
 namespace Droid {

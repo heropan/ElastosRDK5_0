@@ -299,7 +299,7 @@ ECode CCursorLoader::LoadInBackground(
     mCancellationSignal = NULL;
     return NOERROR;
     // } finally {
-    //     synchronized (this) {
+    //     synchronized(this) {
     //         mCancellationSignal = null;
     //     }
     // }

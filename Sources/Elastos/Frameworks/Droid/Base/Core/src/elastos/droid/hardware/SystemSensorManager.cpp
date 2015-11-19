@@ -404,7 +404,7 @@ void SystemSensorManager::SensorEventQueue::AddSensorEvent(
     AutoPtr<ISensorEvent> t;
     CSensorEvent::New(CSensor::GetMaxLengthValuesArray(sensor,
             ((SystemSensorManager*)mManager.Get())->mTargetSdkLevel), (ISensorEvent**)&t);
-    synchronized (mSensorsEventsLock) {
+    synchronized(mSensorsEventsLock) {
         Int32 handle;
         sensor->GetHandle(&handle);
         mSensorsEvents[handle] = t;
@@ -414,7 +414,7 @@ void SystemSensorManager::SensorEventQueue::AddSensorEvent(
 void SystemSensorManager::SensorEventQueue::RemoveSensorEvent(
     /* [in] */ ISensor* sensor)
 {
-    synchronized (mSensorsEventsLock) {
+    synchronized(mSensorsEventsLock) {
         Int32 handle;
         sensor->GetHandle(&handle);
         mSensorsEvents.Erase(handle);
@@ -429,7 +429,7 @@ void SystemSensorManager::SensorEventQueue::DispatchSensorEvent(
 {
     AutoPtr<ISensor> sensor = sHandleToSensor[handle];
     AutoPtr<ISensorEvent> t = NULL;
-    synchronized (mSensorsEventsLock) {
+    synchronized(mSensorsEventsLock) {
         t = mSensorsEvents[handle];
     }
 
@@ -483,7 +483,7 @@ void SystemSensorManager::TriggerEventQueue::AddSensorEvent(
     AutoPtr<ITriggerEvent> t;
     CTriggerEvent::New(CSensor::GetMaxLengthValuesArray(sensor,
             ((SystemSensorManager*)mManager.Get())->mTargetSdkLevel), (ITriggerEvent**)&t);
-    synchronized (mTriggerEventsLock) {
+    synchronized(mTriggerEventsLock) {
         Int32 handle;
         sensor->GetHandle(&handle);
         mTriggerEvents[handle] = t;
@@ -493,7 +493,7 @@ void SystemSensorManager::TriggerEventQueue::AddSensorEvent(
 void SystemSensorManager::TriggerEventQueue::RemoveSensorEvent(
     /* [in] */ ISensor* sensor)
 {
-    synchronized (mTriggerEventsLock) {
+    synchronized(mTriggerEventsLock) {
         Int32 handle;
         sensor->GetHandle(&handle);
         mTriggerEvents.Erase(handle);
@@ -508,7 +508,7 @@ void SystemSensorManager::TriggerEventQueue::DispatchSensorEvent(
 {
     const AutoPtr<ISensor> sensor = sHandleToSensor[handle];
     AutoPtr<ITriggerEvent> t = NULL;
-    synchronized (mTriggerEventsLock) {
+    synchronized(mTriggerEventsLock) {
         t = mTriggerEvents[handle];
     }
     if (t == NULL) {
@@ -629,7 +629,7 @@ ECode SystemSensorManager::RegisterListenerImpl(
     // - one Looper per SensorEventListener
     // - one Looper per SensorEventQueue
     // We map SensorEventListener to a SensorEventQueue, which holds the looper
-    synchronized (mSensorListenersLock) {
+    synchronized(mSensorListenersLock) {
         AutoPtr<SensorEventQueue> queue = mSensorListeners[listener];
         if (queue == NULL) {
             AutoPtr<ILooper> looper;
@@ -667,7 +667,7 @@ ECode SystemSensorManager::UnregisterListenerImpl(
         return NOERROR;
     }
 
-    synchronized (mSensorListenersLock) {
+    synchronized(mSensorListenersLock) {
         AutoPtr<SensorEventQueue> queue = mSensorListeners[listener];
         if (queue != NULL) {
             Boolean result1, result2;
@@ -706,7 +706,7 @@ ECode SystemSensorManager::RequestTriggerSensorImpl(
         return NOERROR;
     }
 
-    synchronized (mTriggerListenersLock) {
+    synchronized(mTriggerListenersLock) {
         AutoPtr<TriggerEventQueue> queue = mTriggerListeners[listener];
         if (queue == NULL) {
             queue = new TriggerEventQueue(listener, mMainLooper, this);
@@ -743,7 +743,7 @@ ECode SystemSensorManager::CancelTriggerSensorImpl(
         *result = FALSE;
         return NOERROR;
     }
-    synchronized (mTriggerListenersLock) {
+    synchronized(mTriggerListenersLock) {
         AutoPtr<TriggerEventQueue> queue = mTriggerListeners[listener];
         if (queue != NULL) {
             Boolean result1;

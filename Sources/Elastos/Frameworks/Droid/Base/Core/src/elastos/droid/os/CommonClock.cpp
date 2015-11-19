@@ -104,7 +104,7 @@ ECode CommonClock::GetMasterAddr(
 ECode CommonClock::SetTimelineChangedListener(
     /* [in] */ ICommonClockOnTimelineChangedListener* listener)
 {
-    synchronized (mListenerLock) {
+    synchronized(mListenerLock) {
         mTimelineChangedListener = listener;
     }
     return NOERROR;
@@ -113,7 +113,7 @@ ECode CommonClock::SetTimelineChangedListener(
 ECode CommonClock::SetServerDiedListener(
     /* [in] */ ICommonClockOnServerDiedListener* listener)
 {
-    synchronized (mListenerLock) {
+    synchronized(mListenerLock) {
         mServerDiedListener = listener;
     }
     return NOERROR;

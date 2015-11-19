@@ -225,7 +225,7 @@ ECode WebViewContentsClientAdapter::PermissionRequestAdapter::GetResources(
 {
     VALIDATE_NOT_NULL(result);
     // ==================before translated======================
-    // synchronized (this) {
+    // synchronized(this) {
     //     if (mResources == null) {
     //         mResources = toPermissionResources(mAwPermissionRequest.getResources());
     //     }

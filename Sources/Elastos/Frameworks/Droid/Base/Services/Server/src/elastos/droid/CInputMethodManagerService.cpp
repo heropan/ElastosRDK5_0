@@ -4403,7 +4403,7 @@ void CInputMethodManagerService::ShowInputMethodMenuInternal(
     // int lastInputMethodSubtypeId = getSelectedInputMethodSubtypeId(lastInputMethodId);
     // if (DEBUG) Slog.v(TAG, "Current IME: " + lastInputMethodId);
 
-    // synchronized (mMethodMap) {
+    // synchronized(mMethodMap) {
     //     final HashMap<InputMethodInfo, List<InputMethodSubtype>> immis =
     //             getExplicitlyOrImplicitlyEnabledInputMethodsAndSubtypeListLocked();
     //     if (immis == NULL || immis.size() == 0) {
@@ -4487,7 +4487,7 @@ void CInputMethodManagerService::ShowInputMethodMenuInternal(
     //             new AlertDialog.OnClickListener() {
     //                 @Override
     //                 public void onClick(DialogInterface dialog, int which) {
-    //                     synchronized (mMethodMap) {
+    //                     synchronized(mMethodMap) {
     //                         if (mIms == NULL || mIms.length <= which
     //                                 || mSubtypeIds == NULL || mSubtypeIds.length <= which) {
     //                             return;
@@ -5165,7 +5165,7 @@ ECode CInputMethodManagerService::SetCurrentInputMethodSubtype(
 
 //     final Printer p = new PrintWriterPrinter(pw);
 
-//     synchronized (mMethodMap) {
+//     synchronized(mMethodMap) {
 //         p.println("Current Input Method Manager state:");
 //         int N = mMethodList->size();
 //         p.println("  Input Methods:");

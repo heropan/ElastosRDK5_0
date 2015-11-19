@@ -499,7 +499,7 @@ ECode TabletStatusBar::TakeScreenshotServiceConnection::OnServiceConnected(
     // Handler h = new Handler(mHandler->GetLooper()) {
     //     @Override
     //     public void handleMessage(Message msg) {
-    //         synchronized (mScreenshotLock) {
+    //         synchronized(mScreenshotLock) {
     //             if (mScreenshotConnection == myConn) {
     //                 mContext.unbindService(mScreenshotConnection);
     //                 mScreenshotConnection = NULL;

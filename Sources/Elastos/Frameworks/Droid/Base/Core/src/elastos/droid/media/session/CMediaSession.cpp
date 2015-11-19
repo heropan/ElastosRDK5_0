@@ -235,7 +235,7 @@ ECode CMediaSession::SetCallback(
     /* [in] */ IMediaSessionCallback * callback,
     /* [in] */ IHandler * handler)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (callback == NULL) {
             if (mCallback != NULL) {
                 ((CMediaSessionCallback*)(mCallback->mCallback.Get()))->mSession = NULL;
@@ -610,7 +610,7 @@ ECode CMediaSession::PostToCallback(
     /* [in] */ IInterface * obj,
     /* [in] */ IBundle * extras)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mCallback != NULL) {
             mCallback->Post(what, obj, extras);
         }

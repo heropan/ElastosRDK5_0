@@ -645,7 +645,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
 {
     VALIDATE_NOT_NULL(result)
 
-    /*synchronized (lock) */
+    /*synchronized(lock) */
     { // custom listener should only return a value after this method has returned
         AutoLock lock(mLock);
 

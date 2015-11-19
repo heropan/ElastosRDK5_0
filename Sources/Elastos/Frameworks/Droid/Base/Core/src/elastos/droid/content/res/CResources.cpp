@@ -917,7 +917,7 @@ ECode CResources::GetDrawable(
     *drawable = NULL;
 
     AutoPtr<ITypedValue> value;
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         value = (ITypedValue*)mTmpValue.Get();
         if (value == NULL) {
             CTypedValue::New((ITypedValue**)&value);
@@ -929,7 +929,7 @@ ECode CResources::GetDrawable(
     }
     AutoPtr<IDrawable> res;
     LoadDrawable(value, id, theme, (IDrawable**)&res);
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         if (mTmpValue == NULL) {
             mTmpValue = (CTypedValue*)value.Get();
         }
@@ -987,7 +987,7 @@ ECode CResources::GetDrawableForDensity(
     AutoPtr<IDrawable> res;
     LoadDrawable(value, id, theme, (IDrawable**)&res);
 
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         if (mTmpValue == NULL) {
             mTmpValue = (CTypedValue*)value.Get();
         }
@@ -1022,7 +1022,7 @@ ECode CResources::GetColor(
 
     AutoPtr<ITypedValue> value;
 
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         value = (ITypedValue*)mTmpValue.Get();
         if (value == NULL) {
             CTypedValue::New((ITypedValue**)&value);
@@ -1046,7 +1046,7 @@ ECode CResources::GetColor(
 
     AutoPtr<IColorStateList> csl;
     ASSERT_SUCCEEDED(LoadColorStateList(value, id, (IColorStateList**)&csl));
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         if (mTmpValue == NULL) {
             mTmpValue = (CTypedValue*)value.Get();
         }
@@ -1062,7 +1062,7 @@ ECode CResources::GetColorStateList(
 
     AutoPtr<ITypedValue> value;
 
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         value = (ITypedValue*)mTmpValue.Get();
         if (value == NULL) {
             CTypedValue::New((ITypedValue**)&value);
@@ -1076,7 +1076,7 @@ ECode CResources::GetColorStateList(
 
     AutoPtr<IColorStateList> csl;
     ASSERT_SUCCEEDED(LoadColorStateList(value, id, (IColorStateList**)&csl));
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         if (mTmpValue == NULL) {
             mTmpValue = (CTypedValue*)value.Get();
         }
@@ -1194,7 +1194,7 @@ ECode CResources::OpenRawResource(
     VALIDATE_NOT_NULL(res);
 
     AutoPtr<ITypedValue> value;
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         value = (ITypedValue*)mTmpValue.Get();
         if (value == NULL) {
             CTypedValue::New((ITypedValue**)&value);
@@ -1206,7 +1206,7 @@ ECode CResources::OpenRawResource(
 
     AutoPtr<IInputStream> is;
     OpenRawResource(id, value, (IInputStream**)&is);
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         if (mTmpValue == NULL) {
             mTmpValue = (CTypedValue*)value.Get();
         }
@@ -1246,7 +1246,7 @@ ECode CResources::OpenRawResourceFd(
     VALIDATE_NOT_NULL(des);
 
     AutoPtr<ITypedValue> value;
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         value = mTmpValue;
         if (value == NULL) {
             CTypedValue::New((ITypedValue**)&value);
@@ -1271,7 +1271,7 @@ ECode CResources::OpenRawResourceFd(
 //        rnf.initCause(e);
 //        throw rnf;
 //    }
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         if (mTmpValue == NULL) {
             mTmpValue = (CTypedValue*)value.Get();
         }
@@ -2063,7 +2063,7 @@ ECode CResources::CacheDrawable(
         }
     }
     else {
-        synchronized (mAccessLock) {
+        synchronized(mAccessLock) {
             String themeKey("");
             if (theme != NULL) {
                 themeKey = ((CResources::Theme*)theme)->mKey;
@@ -2156,7 +2156,7 @@ AutoPtr<IDrawable> CResources::GetCachedDrawable(
     /* [in] */ Int64 key,
     /* [in] */ IResourcesTheme* theme)
 {
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         String themeKey("");
         if (theme != NULL) {
             themeKey = ((CResources::Theme*)theme)->mKey;
@@ -2496,7 +2496,7 @@ ECode CResources::LoadXmlResourceParser(
 ECode CResources::RecycleCachedStyledAttributes(
     /* [in] */ CTypedArray* attrs)
 {
-    synchronized (mAccessLock) {
+    synchronized(mAccessLock) {
         AutoPtr<CTypedArray> cached = mCachedStyledAttributes;
         if (cached == NULL || cached->mData->GetLength() < attrs->mData->GetLength()) {
             mCachedStyledAttributes = attrs;

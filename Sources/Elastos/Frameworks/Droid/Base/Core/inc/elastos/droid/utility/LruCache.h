@@ -43,7 +43,7 @@ namespace Utility {
  *
  * <p>This class is thread-safe. Perform multiple cache operations atomically by
  * synchronizing on the cache: <pre>   {@code
- *   synchronized (cache) {
+ *   synchronized(cache) {
  *     if (cache.get(key) == null) {
  *         cache.put(key, value);
  *     }

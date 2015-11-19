@@ -52,7 +52,7 @@ void LocationBlacklist::Init()
 Boolean LocationBlacklist::IsBlacklisted(
     /* [in] */ const String& packageName)
 {
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         Int32 length = mBlacklist->GetLength();

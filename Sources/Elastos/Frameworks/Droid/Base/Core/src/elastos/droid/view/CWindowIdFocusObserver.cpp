@@ -22,7 +22,7 @@ ECode CWindowIdFocusObserver::FocusGained(
     WindowIdFocusObserver* observer = (WindowIdFocusObserver*)mObserver.Get();
     AutoPtr<IWindowId> token;
     AutoPtr<IHashMap> map = observer->mRegistrations;
-    synchronized (map) {
+    synchronized(map) {
         map->Get(inputToken, (IInterface**)&token);
     }
     if (observer->mHandler != NULL) {
@@ -42,7 +42,7 @@ ECode CWindowIdFocusObserver::FocusLost(
     WindowIdFocusObserver* observer = (WindowIdFocusObserver*)mObserver.Get();
     AutoPtr<IWindowId> token;
     AutoPtr<IHashMap> map = observer->mRegistrations;
-    synchronized (map) {
+    synchronized(map) {
         map->Get(inputToken, (IInterface**)&token);
     }
     if (observer->mHandler != NULL) {

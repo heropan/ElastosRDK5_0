@@ -876,7 +876,7 @@ void GpsLocationProvider::HandleEnable()
 {
 //    if (DEBUG) Log.d(TAG, "handleEnable");
 
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         if (mEnabled) return;
@@ -894,7 +894,7 @@ void GpsLocationProvider::HandleEnable()
             Native_set_agps_server(AGPS_TYPE_C2K, mC2KServerHost, mC2KServerPort);
         }
     } else {
-        //synchronized (mLock)
+        //synchronized(mLock)
         {
             AutoLock lock(mLock);
             mEnabled = FALSE;
@@ -907,7 +907,7 @@ void GpsLocationProvider::HandleDisable()
 {
 //    if (DEBUG) Log.d(TAG, "handleDisable");
 
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         if (!mEnabled) return;
@@ -1195,7 +1195,7 @@ void GpsLocationProvider::ReportLocation(
 //    if (VERBOSE) Log.v(TAG, "reportLocation lat: " + latitude + " long: " + longitude +
 //                " timestamp: " + timestamp);
 
-    //synchronized (mLocation)
+    //synchronized(mLocation)
     {
         AutoLock lock(mLocationMutex);
         mLocationFlags = flags;
@@ -1245,7 +1245,7 @@ void GpsLocationProvider::ReportLocation(
 //        if (DEBUG) Log.d(TAG, "TTFF: " + mTimeToFirstFix);
 
         // notify status listeners
-        //synchronized (mListeners)
+        //synchronized(mListeners)
         {
             AutoLock lock(mListenersMutex);
             Int32 size = mListeners.GetSize();
@@ -1299,7 +1299,7 @@ void GpsLocationProvider::ReportStatus(
 {
 //    if (DEBUG) Log.v(TAG, "reportStatus status: " + status);
 
-    //synchronized (mListeners)
+    //synchronized(mListeners)
     {
         AutoLock lock(mListenersMutex);
 
@@ -1362,7 +1362,7 @@ void GpsLocationProvider::ReportSvStatus()
 {
     Int32 svCount = Native_read_sv_status(mSvs, mSnrs, mSvElevations, mSvAzimuths, mSvMasks);
 
-    //synchronized (mListeners)
+    //synchronized(mListeners)
     {
         AutoLock lock(mListenersMutex);
 
@@ -1494,7 +1494,7 @@ void GpsLocationProvider::ReportAGpsStatus(
 void GpsLocationProvider::ReportNmea(
     /* [in] */ Int64 timestamp)
 {
-    //synchronized (mListeners)
+    //synchronized(mListeners)
     {
         AutoLock lock(mListenersMutex);
         Int32 size = mListeners.GetSize();

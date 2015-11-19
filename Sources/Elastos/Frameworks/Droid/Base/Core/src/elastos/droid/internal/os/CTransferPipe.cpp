@@ -291,7 +291,7 @@ ECode CTransferPipe::Run()
             if (DEBUG) Slogger::I(TAG, "Interrupted!");
         }
     // } catch (IOException e) {
-    //     synchronized (this) {
+    //     synchronized(this) {
     //         mFailure = e.toString();
     //         notifyAll();
     //         return;

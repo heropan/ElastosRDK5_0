@@ -45,7 +45,7 @@ ECode CAudioMixingRuleBuilder::AddRule(
         // throw new IllegalArgumentException("Illegal rule value " + rule);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    synchronized (mCriteria) {
+    synchronized(mCriteria) {
         AutoPtr<IIterator> crIterator;
         mCriteria->GetIterator((IIterator**)&crIterator);
         Boolean b;

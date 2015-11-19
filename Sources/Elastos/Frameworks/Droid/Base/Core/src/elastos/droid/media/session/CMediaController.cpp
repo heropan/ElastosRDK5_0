@@ -424,7 +424,7 @@ ECode CMediaController::RegisterCallback(
     if (handler == NULL) {
         CHandler::New((IHandler**)&handler);
     }
-    synchronized (mLock) {
+    synchronized(mLock) {
         AddCallbackLocked(callback, handler);
     }
     return NOERROR;
@@ -437,7 +437,7 @@ ECode CMediaController::UnregisterCallback(
         // throw new IllegalArgumentException("callback must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    synchronized (mLock) {
+    synchronized(mLock) {
         RemoveCallbackLocked(callback);
     }
     return NOERROR;

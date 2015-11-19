@@ -116,7 +116,7 @@ void GeofenceManager::AddFence(
     request->GetExpireAt(&expireAt);
     AutoPtr<GeofenceState> state = new GeofenceState(geofence,
             expireAt, packageName, intent);
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         // first make sure it doesn't already exist
@@ -147,7 +147,7 @@ void GeofenceManager::RemoveFence(
         Slog.d(TAG, "removeFence: fence=" + fence + ", intent=" + intent);
     }
 */
-    //synchronized (mLock)
+    //synchronized(mLock)
     PFL_EX("DEBUG")
     {
         AutoLock lock(mLock);
@@ -185,7 +185,7 @@ void GeofenceManager::RemoveFence(
         Slog.d(TAG, "removeFence: packageName=" + packageName);
     }
 */
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
 
@@ -209,7 +209,7 @@ void GeofenceManager::RemoveFence(
 ECode GeofenceManager::OnLocationChanged(
     /* [in] */ ILocation* location)
 {
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         if (mReceivingLocationUpdates) {

@@ -108,7 +108,7 @@ ECode CTvInputManagerSession::PendingEvent::Run()
 {
     mCallback->OnFinishedInputEvent(mEventToken, mHandled);
 
-    synchronized (mEventHandler) {
+    synchronized(mEventHandler) {
         mHost->RecyclePendingEventLocked(this);
     }
     return NOERROR;
@@ -391,7 +391,7 @@ ECode CTvInputManagerSession::DispatchInputEvent(
         // throw new IllegalArgumentException("handler cannot be NULL");
         return NOERROR;
     }
-    synchronized (mHandler) {
+    synchronized(mHandler) {
         if (mChannel == NULL) {
             *result = ITvInputManagerSession::DISPATCH_NOT_HANDLED;
             return NOERROR;
@@ -521,7 +521,7 @@ ECode CTvInputManagerSession::FinishedInputEvent(
     /* [in] */ Boolean timeout)
 {
     AutoPtr<PendingEvent> p;
-    synchronized (mHandler) {
+    synchronized(mHandler) {
         Int32 index;
         mPendingEvents->IndexOfKey(seq, &index);
         if (index < 0) {
@@ -574,7 +574,7 @@ Boolean CTvInputManagerSession::ContainsTrack(
 void CTvInputManagerSession::SendInputEventAndReportResultOnMainLooper(
     /* [in] */ PendingEvent* p)
 {
-    synchronized (mHandler) {
+    synchronized(mHandler) {
         Int32 result = SendInputEventOnMainLooperLocked(p);
         if (result == ITvInputManagerSession::DISPATCH_IN_PROGRESS) {
             return;
@@ -684,7 +684,7 @@ void CTvInputManagerSession::RecyclePendingEventLocked(
 ECode CTvInputManagerSession::ReleaseInternal()
 {
     mToken = NULL;
-    synchronized (mHandler) {
+    synchronized(mHandler) {
         if (mChannel != NULL) {
             if (mSender != NULL) {
                 FlushPendingEventsLocked();
@@ -696,7 +696,7 @@ ECode CTvInputManagerSession::ReleaseInternal()
             mChannel = NULL;
         }
     }
-    synchronized (mSessionCallbackRecordMap) {
+    synchronized(mSessionCallbackRecordMap) {
         mSessionCallbackRecordMap->Remove(mSeq);
     }
     return NOERROR;

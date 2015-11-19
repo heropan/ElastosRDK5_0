@@ -64,7 +64,7 @@ ECode CInputMethodManager::MyHandler::HandleMessage(
             // } catch (RuntimeException e) {
             //     ((PrintWriter)args.arg2).println("Exception: " + e);
             // }
-            // synchronized (args.arg4) {
+            // synchronized(args.arg4) {
             //     ((CountDownLatch)args.arg4).countDown();
             // }
             // args.recycle();

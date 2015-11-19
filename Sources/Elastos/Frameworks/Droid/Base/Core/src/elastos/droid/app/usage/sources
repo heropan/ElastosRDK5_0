@@ -8,7 +8,8 @@ include $(MAKEDIR)/../../../../../../../sources.inc
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/
 
+SOURCES += usage.cpp
 SOURCES += CConfigurationStats.cpp
 SOURCES += CUsageStats.cpp
-SOURCES += CConfigurationStats.cpp
+SOURCES += CUsageStatsManager.cpp
 SOURCES += UsageEvents.cpp

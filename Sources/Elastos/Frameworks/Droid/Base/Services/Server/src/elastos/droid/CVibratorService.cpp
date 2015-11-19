@@ -657,7 +657,7 @@ Boolean CVibratorService::DoVibratorExists() {
     // information to decide whether to enable certain features so they expect the
     // result of hasVibrator() to be constant.  For now, just report whether
     // the device has a built-in vibrator.
-    //synchronized (mInputDeviceVibrators) {
+    //synchronized(mInputDeviceVibrators) {
     //    return !mInputDeviceVibrators.isEmpty() || vibratorExists();
     //}
     return VibratorExists();

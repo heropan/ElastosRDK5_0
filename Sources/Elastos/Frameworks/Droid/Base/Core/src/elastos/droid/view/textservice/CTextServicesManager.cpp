@@ -18,7 +18,7 @@ Mutex CTextServicesManager::sLock;
  */
 AutoPtr<ITextServicesManager> CTextServicesManager::GetInstance()
 {
-    //synchronized (TextServicesManager.class)
+    //synchronized(TextServicesManager.class)
     {
         Object::AutoLock lock(sLock);
         if (sInstance != NULL) {

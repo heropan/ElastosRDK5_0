@@ -90,7 +90,7 @@ ECode NetworkAgent::HandleMessage(
                     ac.connected(null, this, msg.replyTo);
                     ac.replyToMessage(msg, AsyncChannel.CMD_CHANNEL_FULLY_CONNECTED,
                             AsyncChannel.STATUS_SUCCESSFUL);
-                    synchronized (mPreConnectedQueue) {
+                    synchronized(mPreConnectedQueue) {
                         mAsyncChannel = ac;
                         for (Message m : mPreConnectedQueue) {
                             ac.sendMessage(m);
@@ -109,7 +109,7 @@ ECode NetworkAgent::HandleMessage(
                 if (DBG) log("NetworkAgent channel lost");
                 // let the client know CS is done with us.
                 unwanted();
-                synchronized (mPreConnectedQueue) {
+                synchronized(mPreConnectedQueue) {
                     mAsyncChannel = null;
                 }
                 break;
@@ -137,7 +137,7 @@ ECode NetworkAgent::QueueOrSendMessage(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        synchronized (mPreConnectedQueue) {
+        synchronized(mPreConnectedQueue) {
             if (mAsyncChannel != null) {
                 mAsyncChannel.sendMessage(what, obj);
             } else {

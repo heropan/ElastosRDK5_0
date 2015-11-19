@@ -485,7 +485,7 @@ ECode TextKeyListener::GetPrefs(
     /* [in] */ IContext* context,
     /* [out] */ Int32* ret)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (!mPrefsInited || mResolver == NULL) {
             InitPrefs(context);
         }

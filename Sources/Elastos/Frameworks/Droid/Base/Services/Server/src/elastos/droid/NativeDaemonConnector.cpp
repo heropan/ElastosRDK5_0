@@ -465,7 +465,7 @@ _EXIT_:
 //        loge("Communications error: " + ex);
 //        throw ex;
 //    } finally {
-//        synchronized (mDaemonLock) {
+//        synchronized(mDaemonLock) {
 //            if (mOutputStream != NULL) {
 //                try {
 //                    loge("closing stream for " + mSocket);

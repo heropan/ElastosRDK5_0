@@ -606,7 +606,7 @@ ECode CAppWidgetService::Dump(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG));
 
     // Dump the state of all the app widget providers
-    //synchronized (mAppWidgetServices)
+    //synchronized(mAppWidgetServices)
     {
         AutoLock lock(mAppWidgetServicesLock);
         //IndentingPrintWriter ipw = new IndentingPrintWriter(pw, "  ");

@@ -159,7 +159,7 @@ ECode LocationProviderProxy::GetProperties(
 //@Override
 ECode LocationProviderProxy::Enable()
 {
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         mEnabled = TRUE;
@@ -182,7 +182,7 @@ ECode LocationProviderProxy::Enable()
 //@Override
 ECode LocationProviderProxy::Disable()
 {
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         mEnabled = FALSE;
@@ -217,7 +217,7 @@ ECode LocationProviderProxy::SetRequest(
     /* [in] */ IProviderRequest* request,
     /* [in] */ IWorkSource* source)
 {
-    //synchronized (mLock)
+    //synchronized(mLock)
     {
         AutoLock lock(mLock);
         mRequest = request;

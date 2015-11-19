@@ -1305,7 +1305,7 @@ void CNetworkStatsService::Dump(
     //     // IIdentingPrintWriter is not implemented yet...so...
     // AutoPtr<IPrintWriter> pw = writer;
 
-    // //synchronized (_m_syncLock) {
+    // //synchronized(_m_syncLock) {
     // {
     //     AutoLock lock(this);
     //     if (poll) {

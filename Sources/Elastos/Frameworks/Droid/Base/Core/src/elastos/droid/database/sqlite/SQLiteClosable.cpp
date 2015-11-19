@@ -23,7 +23,7 @@ void SQLiteClosable::OnAllReferencesReleasedFromContainer()
 
 ECode SQLiteClosable::AcquireReference()
 {
-    synchronized (this) {
+    synchronized(this) {
         if (mReferenceCount <= 0) {
             // throw new IllegalStateException(
             //                 "attempt to re-open an already-closed object: " + this);
@@ -39,7 +39,7 @@ ECode SQLiteClosable::ReleaseReference()
 {
     Boolean refCountIsZero = FALSE;
 
-    synchronized (this) {
+    synchronized(this) {
         refCountIsZero = --mReferenceCount == 0;
     }
 
@@ -54,7 +54,7 @@ ECode SQLiteClosable::ReleaseReferenceFromContainer()
 {
     Boolean refCountIsZero = FALSE;
 
-    synchronized (this) {
+    synchronized(this) {
         refCountIsZero = --mReferenceCount == 0;
     }
 

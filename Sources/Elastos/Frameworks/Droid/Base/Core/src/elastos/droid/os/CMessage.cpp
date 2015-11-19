@@ -238,7 +238,7 @@ ECode CMessage::RecycleUnchecked()
     mCallback = NULL;
     mData = NULL;
 
-    synchronized (sPoolSync) {
+    synchronized(sPoolSync) {
         if (sPoolSize < MAX_POOL_SIZE) {
             mNext = sPool;
             sPool = this;

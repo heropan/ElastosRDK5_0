@@ -204,7 +204,7 @@ ECode CTvInputManager::TvInputClient::OnSessionCreated(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -225,7 +225,7 @@ ECode CTvInputManager::TvInputClient::OnSessionReleased(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         mHost->mSessionCallbackRecordMap->Delete(seq);
@@ -245,7 +245,7 @@ ECode CTvInputManager::TvInputClient::OnSessionEvent(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -262,7 +262,7 @@ ECode CTvInputManager::TvInputClient::OnChannelRetuned(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -279,7 +279,7 @@ ECode CTvInputManager::TvInputClient::OnTracksChanged(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -297,7 +297,7 @@ ECode CTvInputManager::TvInputClient::OnTrackSelected(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -313,7 +313,7 @@ ECode CTvInputManager::TvInputClient::OnVideoAvailable(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -330,7 +330,7 @@ ECode CTvInputManager::TvInputClient::OnVideoUnavailable(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -346,7 +346,7 @@ ECode CTvInputManager::TvInputClient::OnContentAllowed(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -363,7 +363,7 @@ ECode CTvInputManager::TvInputClient::OnContentBlocked(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -385,7 +385,7 @@ ECode CTvInputManager::TvInputClient::OnLayoutSurface(
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
@@ -416,7 +416,7 @@ ECode CTvInputManager::TvInputManagerCallback::OnInputStateChanged(
     /* [in] */ Int32 state)
 {
     Object& lock = mHost->mLock;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<ICharSequence> csq;
         CString::New(inputId, (ICharSequence**)&csq);
         AutoPtr<IInteger32> i;
@@ -437,7 +437,7 @@ ECode CTvInputManager::TvInputManagerCallback::OnInputAdded(
     /* [in] */ const String& inputId)
 {
     Object& lock = mHost->mLock;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<ICharSequence> csq;
         CString::New(inputId, (ICharSequence**)&csq);
         AutoPtr<IInteger32> i;
@@ -458,7 +458,7 @@ ECode CTvInputManager::TvInputManagerCallback::OnInputRemoved(
     /* [in] */ const String& inputId)
 {
     Object& lock = mHost->mLock;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<ICharSequence> csq;
         CString::New(inputId, (ICharSequence**)&csq);
         mHost->mStateMap->Remove(csq);
@@ -477,7 +477,7 @@ ECode CTvInputManager::TvInputManagerCallback::OnInputUpdated(
     /* [in] */ const String& inputId)
 {
     Object& lock = mHost->mLock;
-    synchronized (lock) {
+    synchronized(lock) {
         AutoPtr<ArrayOf<IInterface *> > array;
         mHost->mCallbackRecords->ToArray((ArrayOf<IInterface *>**)&array);
         for (Int32 i = 0; i < array->GetLength(); i++) {
@@ -758,7 +758,7 @@ ECode CTvInputManager::GetInputState(
         // throw new IllegalArgumentException("inputId cannot be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    synchronized (mLock) {
+    synchronized(mLock) {
         AutoPtr<ICharSequence> csq;
         CString::New(inputId, (ICharSequence**)&csq);
         AutoPtr<IInteger32> state;
@@ -784,7 +784,7 @@ ECode CTvInputManager::RegisterCallback(
         // throw new IllegalArgumentException("handler cannot be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    synchronized (mLock) {
+    synchronized(mLock) {
         AutoPtr<TvInputCallbackRecord> r = new TvInputCallbackRecord(callback, handler, this);
         mCallbackRecords->Add((IInterface*)(IObject*)r);
     }
@@ -798,7 +798,7 @@ ECode CTvInputManager::UnregisterCallback(
         // throw new IllegalArgumentException("callback cannot be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    synchronized (mLock) {
+    synchronized(mLock) {
         AutoPtr<ArrayOf<IInterface *> > array;
         mCallbackRecords->ToArray((ArrayOf<IInterface *>**)&array);
         for (Int32 i = 0 ; i < array->GetLength(); i++) {
@@ -941,7 +941,7 @@ ECode CTvInputManager::CreateSession(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<SessionCallbackRecord> record = new SessionCallbackRecord(callback, handler, this);
-    synchronized (mSessionCallbackRecordMap) {
+    synchronized(mSessionCallbackRecordMap) {
         Int32 seq = mNextSeq++;
         mSessionCallbackRecordMap->Put(seq, (IInterface*)(IObject*)record);
         // try {

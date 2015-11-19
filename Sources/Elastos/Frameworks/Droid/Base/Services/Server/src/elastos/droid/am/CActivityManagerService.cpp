@@ -3907,7 +3907,7 @@ void CActivityManagerService::DumpStackTraces(
         processStats->Init();
         processStats->Update();
         // try {
-        //     synchronized (processStats) {
+        //     synchronized(processStats) {
         //         processStats.wait(500); // measure over 1/2 second.
         Thread::Sleep(500);
         //     }
@@ -13376,7 +13376,7 @@ Boolean CActivityManagerService::RemoveDyingProviderLocked(
 
     if (!inLaunching || always) {
         {
-            //    synchronized (cpr) {
+            //    synchronized(cpr) {
             AutoPtr<IThread> thread;
             Thread::Attach((IThread**)&thread);
             cpr->Lock();
@@ -13537,7 +13537,7 @@ ECode CActivityManagerService::CleanUpApplicationRecordLocked(
         for (; it != mLaunchingProviders.End(); ++it) {
             AutoPtr<ContentProviderRecord> cpr = *it;
             if (cpr->mConnections.IsEmpty() && !cpr->HasExternalProcessHandles()) {
-                //synchronized (cpr)
+                //synchronized(cpr)
                 {
                     cpr->Lock();
                     cpr->mLaunchingApp = NULL;

@@ -196,7 +196,7 @@ AutoPtr<CipherFactory::CipherData> CipherFactory::GetCipherData(
         // }
 
         // Only the first thread is allowed to save the data.
-        //synchronized (mDataLock)
+        //synchronized(mDataLock)
         {
             AutoLock lock(mDataLock);
             if (mData == NULL) {
@@ -228,7 +228,7 @@ void CipherFactory::TriggerKeyGeneration()
 {
     if (mData != NULL) return;
 
-    //synchronized (mDataLock)
+    //synchronized(mDataLock)
     {
         AutoLock lock(mDataLock);
         if (mDataGenerator == NULL) {

@@ -122,7 +122,7 @@ ECode CLoudnessEnhancer::GetTargetGain(
 ECode CLoudnessEnhancer::SetParameterListener(
     /* [in] */ ILoudnessEnhancerOnParameterChangeListener * listener)
 {
-    synchronized (mParamListenerLock) {
+    synchronized(mParamListenerLock) {
         if (mParamListener == NULL) {
             mBaseParamListener = new BaseParameterListener(this);
             AudioEffect::SetParameterListener(mBaseParamListener);

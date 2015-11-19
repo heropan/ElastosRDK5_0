@@ -1,6 +1,7 @@
 
 module
 {
+    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.App.IActivity;
 
@@ -24,6 +25,45 @@ module
             [in] IActivity* activity);
 
         OnDetached();
+
+        Clear();
+    }
+
+    /**
+     * @Involve
+     * interface IVoiceInteractorRequest
+     */
+    interface IVoiceInteractorConfirmationRequest {
+        OnConfirmationResult(
+            [in] Boolean confirmed,
+            [in] IBundle* result);
+    }
+
+    /**
+     * @Involve
+     * interface IVoiceInteractorRequest
+     */
+    interface IVoiceInteractorCompleteVoiceRequest {
+        OnCompleteResult(
+            [in] IBundle* result);
+    }
+
+    /**
+     * @Involve
+     * interface IVoiceInteractorRequest
+     */
+    interface IVoiceInteractorAbortVoiceRequest {
+        OnAbortResult(
+            [in] IBundle* result);
+    }
+
+    /**
+     * @Involve
+     * interface IVoiceInteractorRequest
+     */
+    interface IVoiceInteractorCommandRequest {
+        OnCommandResult(
+            [in] IBundle* result);
     }
 
     /**
@@ -49,10 +89,11 @@ module
      * request, rather than holding on to the activity instance yourself, either explicitly
      * or implicitly through a non-static inner class.
      */
-     [local]
+     [deprecated, local]
     interface IVoiceInteractor {
         SubmitRequest(
-            [in] IVoiceInteractorRequest* request);
+            [in] IVoiceInteractorRequest* request,
+            [out] Boolean* result);
 
         /**
          * Queries the supported commands available from the VoiceinteractionService.
@@ -63,7 +104,8 @@ module
          * @param commands
          */
         SupportsCommands(
-            [out, callee] ArrayOf<String>* commands);
+            [in] ArrayOf<String>* commands,
+            [out, callee] ArrayOf<Boolean>* result);
     }
 
     } // namespace App

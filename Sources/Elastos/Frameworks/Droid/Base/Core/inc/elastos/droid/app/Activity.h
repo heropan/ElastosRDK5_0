@@ -3739,7 +3739,7 @@ public:
     AutoPtr<IArrayMap> mAllLoaderManagers;
     AutoPtr<ILoaderManagerImpl> mLoaderManager;
 
-    // protected by synchronized (this)
+    // protected by synchronized(this)
     Int32 mResultCode;
     AutoPtr<IIntent> mResultData;
     AutoPtr<IHandler> mHandler;

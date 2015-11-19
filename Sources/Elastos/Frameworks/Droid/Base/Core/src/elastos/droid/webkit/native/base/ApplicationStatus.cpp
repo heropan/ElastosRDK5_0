@@ -242,7 +242,7 @@ void ApplicationStatus::OnStateChange(
     }
 
     // Invalidate the cached application state.
-    synchronized (sCachedApplicationStateLock) {
+    synchronized(sCachedApplicationStateLock) {
         sCachedApplicationState = NULL;
     }
 

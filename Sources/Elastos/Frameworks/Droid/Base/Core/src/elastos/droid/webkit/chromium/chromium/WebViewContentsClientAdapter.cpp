@@ -363,7 +363,7 @@ ECode WebViewContentsClientAdapter::PermissionRequestAdapter::GetResources(
     /* [out] */ ArrayOf<String>** res)
 {
 #if 0
-    synchronized (this) {
+    synchronized(this) {
         if (mResources == null) {
             mResources = toPermissionResources(mAwPermissionRequest.getResources());
         }

@@ -5916,7 +5916,7 @@ void CAudioService::FilterVoiceInputKeyEvent(
                 }
             }
         }
-    }//synchronized (mVoiceEventLock)
+    }//synchronized(mVoiceEventLock)
 
     // take action after media button event filtering for voice-based interactions
     switch (voiceButtonAction) {

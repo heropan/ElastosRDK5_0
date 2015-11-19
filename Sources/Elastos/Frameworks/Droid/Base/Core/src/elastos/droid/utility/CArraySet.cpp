@@ -225,7 +225,7 @@ ECode CArraySet::AllocArrays(
     /* [in] */ Int32 size)
 {
     if (size == (BASE_SIZE * 2)) {
-        synchronized (sLock) {
+        synchronized(sLock) {
             if (mTwiceBaseCache != NULL) {
                 AutoPtr<ArrayOf<IInterface*> > array = mTwiceBaseCache;
                 mArray = array;
@@ -243,7 +243,7 @@ ECode CArraySet::AllocArrays(
         }
     }
     else if (size == BASE_SIZE) {
-        synchronized (sLock) {
+        synchronized(sLock) {
             if (mBaseCache != NULL) {
                 AutoPtr<ArrayOf<IInterface*> > array = mBaseCache;
                 mArray = array;
@@ -272,7 +272,7 @@ ECode CArraySet::FreeArrays(
     /* [in] */ Int32 size)
 {
     if (hashes->GetLength() == (BASE_SIZE * 2)) {
-        synchronized (sLock) {
+        synchronized(sLock) {
             if (mTwiceBaseCacheSize < CACHE_SIZE) {
                 AutoPtr<IInterface> oe = (IObject*)new ObjectsEntry(mTwiceBaseCache.Get());
                 AutoPtr<IInterface> he = (IObject*)new HashesEntry(hashes);
@@ -289,7 +289,7 @@ ECode CArraySet::FreeArrays(
         }
     }
     else if (hashes->GetLength() == BASE_SIZE) {
-        synchronized (sLock) {
+        synchronized(sLock) {
             if (mBaseCacheSize < CACHE_SIZE) {
                 AutoPtr<IInterface> oe = (IObject*)new ObjectsEntry(mBaseCache.Get());
                 AutoPtr<IInterface> he = (IObject*)new HashesEntry(hashes);

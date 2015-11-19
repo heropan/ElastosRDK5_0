@@ -77,7 +77,7 @@ ECode CDozeLog::TraceDozing(
 {
     if (!ENABLED) return NOERROR;
     sPulsing = FALSE;
-    synchronized (DozeLog.class) {
+    synchronized(DozeLog.class) {
         if (dozing && sMessages == NULL) {
             sTimes = ArrayOf<Int64>::Alloc(SIZE);
             sMessages = ArrayOf<String>::Alloc(SIZE);
@@ -167,7 +167,7 @@ ECode CDozeLog::TraceProximityResult(
 ECode CDozeLog::Dump(
     /* [in] */ IPrintWriter* pw)
 {
-    synchronized (DozeLog.class) {
+    synchronized(DozeLog.class) {
         if (sMessages == NULL) return NOERROR;
         pw->Println("  Doze log:");
         Int32 start = (sPosition - sCount + SIZE) % SIZE;
@@ -200,7 +200,7 @@ ECode CDozeLog::Dump(
 ECode CDozeLog::Log(
     /* [in] */ const String& msg)
 {
-//    synchronized (DozeLog.class) {
+//    synchronized(DozeLog.class) {
         if (sMessages == NULL) return NOERROR;
         AutoPtr<ISystem> system;
         Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);

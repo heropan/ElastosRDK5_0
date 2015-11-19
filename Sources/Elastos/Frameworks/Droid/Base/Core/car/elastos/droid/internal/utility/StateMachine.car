@@ -347,7 +347,7 @@ module
         &#64;Override
         void onHalting() {
             log("halting");
-            synchronized (this) {
+            synchronized(this) {
                 this.notifyAll();
             }
         }

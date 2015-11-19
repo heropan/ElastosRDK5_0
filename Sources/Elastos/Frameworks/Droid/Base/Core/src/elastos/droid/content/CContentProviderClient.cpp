@@ -99,7 +99,7 @@ ECode CContentProviderClient::constructor(
 ECode CContentProviderClient::SetDetectNotResponding(
     /* [in] */ Int64 timeoutMillis)
 {
-    synchronized (mContentProviderClientLock) {
+    synchronized(mContentProviderClientLock) {
         mAnrTimeout = timeoutMillis;
 
         if (timeoutMillis > 0) {
