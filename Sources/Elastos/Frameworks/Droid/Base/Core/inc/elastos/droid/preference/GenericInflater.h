@@ -26,11 +26,11 @@ private:
         , public IGenericInflaterFactory
     {
     public:
+        CAR_INTERFACE_DECL()
+
         FactoryMerger(
             /* [in] */ IGenericInflaterFactory* f1,
             /* [in] */ IGenericInflaterFactory* f2);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI OnCreateItem(
             /* [in] */ const String& name,
@@ -44,9 +44,9 @@ private:
     };
 
 public:
-    GenericInflater(){}
-
     CAR_INTERFACE_DECL()
+
+    GenericInflater(){}
 
     /**
      * Create a copy of the existing inflater object, with the copy
@@ -236,6 +236,7 @@ public:
 
    CARAPI SetConstructorArgs(
         /* [in] */ ArrayOf<IInterface*>* ca);
+
 protected:
     /**
      * Create a new inflater instance associated with a
@@ -260,8 +261,6 @@ protected:
     GenericInflater(
         /* [in] */ IGenericInflater* original,
         /* [in] */ IContext* newContext);
-
-    virtual ~GenericInflater() {}
 
     /**
      * This routine is responsible for creating the correct subclass of item

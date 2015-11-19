@@ -5,11 +5,11 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/widget/BaseAdapter.h"
-#include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IComparable;
-using Elastos::Utility::Etl::List;
+using Elastos::Utility::IList;
+using Elastos::Droid::Preference::IPreferenceOnPreferenceChangeListener;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Widget::BaseAdapter;
@@ -22,9 +22,10 @@ namespace Droid {
 namespace Preference {
 
 class PreferenceGroupAdapter
+    // : BaseAdapter
     : public Object
-    , public IBaseAdapter
-    //, public IPreferenceOnPreferenceChangeInternalListener
+    // , public IBaseAdapter
+    , public IPreferenceOnPreferenceChangeInternalListener
     , public IPreferenceGroupAdapter
 {
 private:
@@ -33,16 +34,15 @@ private:
         , public IComparable
         , public IPreferenceLayout
     {
+        friend class PreferenceGroupAdapter;
     public:
-        PreferenceLayout()
-            : mResId(0)
-            , mWidgetResId(0)
-        {}
-
         CAR_INTERFACE_DECL()
 
+        PreferenceLayout();
+
+        //@Override
         CARAPI CompareTo(
-            /* [in]  */ IPreferenceLayout* other,
+            /* [in]  */ IInterface* other,
             /* [out]  */ Int32* result);
 
         CARAPI GetResId(
@@ -62,11 +62,6 @@ private:
 
         CARAPI SetName(
             /* [in]  */ const String & name);
-
-        CARAPI CompareTo(
-        /* [in]  */ IInterface* other,
-        /* [out]  */ Int32* result)
-            {return NOERROR;}
 
     public:
         Int32 mResId;
@@ -88,10 +83,9 @@ private:
     };
 
 public:
-    PreferenceGroupAdapter(
-        /* [in] */ IPreferenceGroup* preferenceGroup);
-
     CAR_INTERFACE_DECL()
+
+    PreferenceGroupAdapter();
 
     CARAPI constructor(
         /* [in] */ IPreferenceGroup* preferenceGroup);
@@ -101,11 +95,23 @@ public:
 
     CARAPI GetItem(
         /* [in] */ Int32 position,
-        /* [out] */ IInterface** item);
+        /* [out] */ IPreference** item);
 
     CARAPI GetItemId(
         /* [in] */ Int32 position,
         /* [out] */ Int64* id);
+
+    /**
+     * @hide
+     */
+    CARAPI SetHighlighted(
+        /* [in] */ Int32 position);
+
+    /**
+     * @hide
+     */
+    CARAPI SetHighlightedDrawable(
+        /* [in] */ IDrawable* drawable);
 
     CARAPI GetView(
         /* [in] */ Int32 position,
@@ -136,38 +142,6 @@ public:
     CARAPI GetViewTypeCount(
         /* [out] */ Int32* count);
 
-    CARAPI NotifyDataSetChanged();
-
-    CARAPI NotifyDataSetInvalidated();
-
-    CARAPI RegisterDataSetObserver(
-        /* [in] */ IDataSetObserver* observer);
-
-    CARAPI UnregisterDataSetObserver(
-        /* [in] */ IDataSetObserver* observer);
-
-    CARAPI IsEmpty(
-        /* [out] */ Boolean* isEmpty);
-
-    CARAPI_(Int32) GetCount();
-
-    CARAPI_(AutoPtr<IInterface>) GetItem(
-        /* [in] */ Int32 position);
-
-    CARAPI_(Int64) GetItemId(
-        /* [in] */ Int32 position);
-
-    CARAPI SetHighlighted(
-        /* [in] */ Int32 position);
-
-    CARAPI SetHighlightedDrawable(
-        /* [in] */ IDrawable* drawable);
-
-    CARAPI_(AutoPtr<IView>) GetView(
-        /* [in] */ Int32 position,
-        /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
-
 private:
     CARAPI GetHighlightItemViewType(
         /* [out] */ Int32* type);
@@ -175,7 +149,7 @@ private:
     CARAPI_(void) SyncMyPreferences();
 
     CARAPI_(void) FlattenPreferenceGroup(
-        /* [in] */ List<AutoPtr<IPreference> >* preferences,
+        /* [in] */ IList* preferences,
         /* [in] */ IPreferenceGroup* group);
     /**
      * Creates a string that includes the preference name, layout id and widget layout id.
@@ -204,7 +178,7 @@ private:
      * {@link Preference}s don't have to be direct children of this
      * {@link PreferenceGroup}, they can be grand children or younger)
      */
-    AutoPtr< List<AutoPtr<IPreference> > > mPreferenceList;
+    AutoPtr<IList> mPreferenceList;
 
     /**
      * List of unique Preference and its subclasses' names. This is used to find
@@ -213,7 +187,7 @@ private:
      * count once--when the adapter is being set). We will not recycle views for
      * Preference subclasses seen after the count has been returned.
      */
-    AutoPtr< List<AutoPtr<IPreferenceLayout> > > mPreferenceLayouts;
+    AutoPtr<IList> mPreferenceLayouts;
 
     AutoPtr<IPreferenceLayout> mTempPreferenceLayout;
 

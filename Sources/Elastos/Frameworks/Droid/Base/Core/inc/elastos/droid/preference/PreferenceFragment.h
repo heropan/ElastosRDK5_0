@@ -2,11 +2,11 @@
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCEFRAGMENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-//#include "elastos/droid/app/Fragment.h"
+#include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
 
-//using Elastos::Droid::App::Fragment;
+using Elastos::Droid::App::Fragment;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewOnKeyListener;
@@ -15,8 +15,8 @@ using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Widget::IListView;
 using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Preference::IPreferenceManagerOnPreferenceTreeClickListener;
 
 namespace Elastos {
@@ -24,13 +24,13 @@ namespace Droid {
 namespace Preference {
 
 class PreferenceFragment
-    //: public Fragment
-    : public Object
+    : public Fragment
     , public IPreferenceFragment
     , public IPreferenceManagerOnPreferenceTreeClickListener
 {
 private:
-    class PreferenceFragmentHandler : public Handler
+    class PreferenceFragmentHandler
+        : public Handler
     {
     public:
         PreferenceFragmentHandler(
@@ -43,7 +43,8 @@ private:
         PreferenceFragment* mHost;
     };
 
-    class RequestFocus : public Runnable
+    class RequestFocus
+        : public Runnable
     {
     public:
         RequestFocus(
@@ -60,10 +61,10 @@ private:
         , public IViewOnKeyListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         PreferenceFragmentOnKeyListener(
             /* [in] */ PreferenceFragment* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI OnKey(
             /* [in] */ IView* v,
@@ -76,33 +77,41 @@ private:
     };
 
 public:
-    PreferenceFragment();
-
     CAR_INTERFACE_DECL()
 
+    PreferenceFragment();
+
+    //@Override
     CARAPI OnCreate(
         /*[in]*/ IBundle* savedInstanceState);
 
+    //@Override
     CARAPI OnCreateView(
         /*[in]*/ ILayoutInflater* inflater,
         /*[in]*/ IViewGroup* container,
         /*[in]*/ IBundle* savedInstanceState,
         /*[out]*/ IView** view);
 
+    //@Override
     CARAPI OnActivityCreated(
         /*[in]*/ IBundle* savedInstanceState);
 
+    //@Override
     CARAPI OnStart();
 
+    //@Override
     CARAPI OnStop();
 
+    //@Override
     CARAPI OnDestroyView();
 
+    //@Override
     CARAPI OnDestroy();
 
     CARAPI OnSaveInstanceState(
         /*[in]*/ IBundle* outState);
 
+    //@Override
     CARAPI OnActivityResult(
         /* [in] */ Int32 requestCode,
         /* [in] */ Int32 resultCode,

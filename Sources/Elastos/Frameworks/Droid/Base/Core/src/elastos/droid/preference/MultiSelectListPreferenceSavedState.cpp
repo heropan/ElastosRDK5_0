@@ -7,17 +7,15 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+CAR_INTERFACE_IMPL(MultiSelectListPreferenceSavedState, PreferenceBaseSavedState, IMultiSelectListPreferenceSavedState)
+
+MultiSelectListPreferenceSavedState::MultiSelectListPreferenceSavedState()
+{
+}
+
 ECode MultiSelectListPreferenceSavedState::constructor()
 {
-    PreferenceBaseSavedState::constructor();
-    // values = new HashSet<String>();
-    // String[] strings = source.readStringArray();
-
-    // final int stringCount = strings.length;
-    // for (int i = 0; i < stringCount; i++) {
-    //     values.add(strings[i]);
-    // }
-    return NOERROR;
+    return PreferenceBaseSavedState::constructor();
 }
 
 ECode MultiSelectListPreferenceSavedState::constructor(
@@ -25,8 +23,6 @@ ECode MultiSelectListPreferenceSavedState::constructor(
 {
     return PreferenceBaseSavedState::constructor(superState);
 }
-
-CAR_INTERFACE_IMPL(MultiSelectListPreferenceSavedState, PreferenceBaseSavedState, IMultiSelectListPreferenceSavedState)
 
 ECode MultiSelectListPreferenceSavedState::ReadFromParcel(
     /* [in] */ IParcel* source)

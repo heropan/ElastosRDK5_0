@@ -3,18 +3,13 @@
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/coredef.h>
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/List.h>
-#include "elastos/droid/R.h"
-#include "elastos/droid/text/TextUtils.h"
 
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::ISet;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IComparable;
-using Elastos::Core::StringBuilder;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::ISharedPreferences;
@@ -24,6 +19,7 @@ using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Preference::IPreference;
+using Elastos::Droid::R;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IView;
@@ -31,8 +27,12 @@ using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::R;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IComparable;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::ISet;
 
 namespace Elastos {
 namespace Droid {
@@ -43,12 +43,17 @@ class Preference
     , public IPreference
     , public IComparable
 {
+protected:
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle,
+        /* [in] */ Int32 defStyleRes);
+
 public:
-    Preference();
-
-    virtual ~Preference();
-
     CAR_INTERFACE_DECL()
+
+    Preference();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -218,7 +223,7 @@ public:
     virtual CARAPI GetOnPreferenceClickListener(
         /* [out] */ IPreferenceOnPreferenceClickListener** listener);
 
-    CARAPI PerformClick(
+    virtual CARAPI PerformClick(
         /* [in] */ IPreferenceScreen* preferenceScreen);
 
     /**
@@ -356,10 +361,11 @@ public:
     virtual CARAPI CanRecycleLayout(
         /* [out] */ Boolean* result);
 
-    virtual CARAPI ToString(
+    // @Override
+    CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI GetFilterableString(
+    virtual CARAPI GetFilterableString(
         /* [out] */ String* fsb);
 
     virtual CARAPI SaveHierarchyState(

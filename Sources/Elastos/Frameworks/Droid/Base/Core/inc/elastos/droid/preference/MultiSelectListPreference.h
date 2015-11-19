@@ -35,10 +35,10 @@ private:
         , public IDialogInterfaceOnMultiChoiceClickListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         MultiChoiceClickListener(
             /* [in] */ MultiSelectListPreference* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI OnClick(
             /* [in] */ IDialogInterface* dialog,
@@ -50,6 +50,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     MultiSelectListPreference();
 
     CARAPI constructor(
@@ -69,8 +71,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ IContext* context);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI SetEntries(
         /* [in] */ ArrayOf<ICharSequence*>* entries);
@@ -99,72 +99,6 @@ public:
     CARAPI FindIndexOfValue(
         /* [in] */ const String& value,
         /* [out] */ Int32* index);
-
-    CARAPI SetDialogTitle(
-        /* [in] */ ICharSequence* dialogTitle);
-
-    CARAPI SetDialogTitle(
-        /* [in] */ Int32 dialogTitleResId);
-
-    CARAPI GetDialogTitle(
-        /* [out] */ ICharSequence** title);
-
-    CARAPI SetDialogMessage(
-        /* [in] */ ICharSequence* dialogMessage);
-
-    CARAPI SetDialogMessage(
-        /* [in] */ Int32 dialogMessageResId);
-
-    CARAPI GetDialogMessage(
-        /* [out] */ ICharSequence** message);
-
-    CARAPI SetDialogIcon(
-        /* [in] */ IDrawable* dialogIcon);
-
-    CARAPI SetDialogIcon(
-        /* [in] */ Int32 dialogIconRes);
-
-    CARAPI GetDialogIcon(
-        /* [out] */ IDrawable** icon);
-
-    CARAPI SetPositiveButtonText(
-        /* [in] */ ICharSequence* positiveButtonText);
-
-    CARAPI SetPositiveButtonText(
-        /* [in] */ Int32 positiveButtonTextResId);
-
-    CARAPI GetPositiveButtonText(
-        /* [out] */ ICharSequence** text);
-
-    CARAPI SetNegativeButtonText(
-        /* [in] */ ICharSequence* negativeButtonText);
-
-    CARAPI SetNegativeButtonText(
-        /* [in] */ Int32 negativeButtonTextResId);
-
-    CARAPI GetNegativeButtonText(
-        /* [out] */ ICharSequence** text);
-
-    CARAPI SetDialogLayoutResource(
-        /* [in] */ Int32 dialogLayoutResId);
-
-    CARAPI GetDialogLayoutResource(
-        /* [out] */ Int32* layoutResId);
-
-    CARAPI ShowDialog(
-        /* [in] */ IBundle* state);
-
-    CARAPI NeedInputMethod(
-        /* [out] */ Boolean* isNeed);
-
-    CARAPI OnCreateDialogView(
-        /* [out] */ IView** view);
-
-    CARAPI OnBindDialogView(
-        /* [in] */ IView* view);
-
-    CARAPI GetDialog(
-        /* [out] */ IDialog** dialog);
 
 protected:
     CARAPI OnPrepareDialogBuilder(

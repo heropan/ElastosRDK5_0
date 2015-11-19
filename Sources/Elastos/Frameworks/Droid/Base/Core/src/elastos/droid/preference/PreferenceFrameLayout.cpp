@@ -14,13 +14,20 @@ namespace Preference {
 // PreferenceFrameLayout::LayoutParams
 //====================================================
 
-PreferenceFrameLayout::LayoutParams::LayoutParams(
-    /* [in] */ IContext* c,
-    /* [in] */ IAttributeSet* attrs)
-    //: FrameLayoutLayoutParams(c, attrs)
-    //, mRemoveBorders(FALSE)
+//CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, FrameLayoutLayoutParams, IFrameLayoutLayoutParams)
+CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, Object, IFrameLayoutLayoutParams)
+
+PreferenceFrameLayout::LayoutParams::LayoutParams()
     : mRemoveBorders(FALSE)
 {
+}
+
+ECode PreferenceFrameLayout::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    assert(0);
+    // FrameLayoutLayoutParams::constructor(c, attrs);
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceFrameLayout_Layout),
@@ -29,24 +36,23 @@ PreferenceFrameLayout::LayoutParams::LayoutParams(
     a->GetBoolean(R::styleable::PreferenceFrameLayout_Layout_layout_removeBorders,
             FALSE, &mRemoveBorders);
     a->Recycle();
+    return NOERROR;
 }
 
-PreferenceFrameLayout::LayoutParams::LayoutParams(
+ECode PreferenceFrameLayout::LayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
-    //: FrameLayoutLayoutParams(width, height)
-{}
-
-//CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, FrameLayoutLayoutParams, IFrameLayoutLayoutParams)
-CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, Object, IFrameLayoutLayoutParams)
-
-// IVIEWGROUPLP_METHODS_IMPL(PreferenceFrameLayout::LayoutParams, FrameLayoutLayoutParams)
-// IVIEWGROUPMARGINLP_METHODS_IMPL(PreferenceFrameLayout::LayoutParams, FrameLayoutLayoutParams)
+{
+    assert(0);
+    // FrameLayoutLayoutParams::constructor(width, height);
+    return NOERROR;
+}
 
 ECode PreferenceFrameLayout::LayoutParams::GetGravity(
     /* [out] */ Int32* gravity)
 {
     VALIDATE_NOT_NULL(gravity)
+    assert(0);
     // *gravity = FrameLayoutLayoutParams::GetGravity();
     return NOERROR;
 }
@@ -54,6 +60,7 @@ ECode PreferenceFrameLayout::LayoutParams::GetGravity(
 ECode PreferenceFrameLayout::LayoutParams::SetGravity(
     /* [in] */ Int32 gravity)
 {
+    assert(0);
     // return FrameLayoutLayoutParams::SetGravity(gravity);
     return NOERROR;
 }
@@ -71,12 +78,6 @@ const Int32 PreferenceFrameLayout::DEFAULT_BORDER_RIGHT;
 // CAR_INTERFACE_IMPL_7(PreferenceFrameLayout,FrameLayout,IView,IViewGroup,IViewParent,IViewManager,IDrawableCallback,IKeyEventCallback,IAccessibilityEventSource)
 // CAR_INTERFACE_IMPL_8(PreferenceFrameLayout,Object,IFrameLayout,IView,IViewGroup,IViewParent,IViewManager,IDrawableCallback,IKeyEventCallback,IAccessibilityEventSource)
 CAR_INTERFACE_IMPL(PreferenceFrameLayout, Object, IPreferenceFrameLayout)
-// IVIEW_METHODS_IMPL(PreferenceFrameLayout, FrameLayout)
-// IVIEWPARENT_METHODS_IMPL(PreferenceFrameLayout, FrameLayout)
-// IVIEWMANAGER_METHODS_IMPL(PreferenceFrameLayout, FrameLayout)
-// IDRAWABLECALLBACK_METHODS_IMPL(PreferenceFrameLayout, FrameLayout)
-// IKEYEVENTCALLBACK_METHODS_IMPL(PreferenceFrameLayout, FrameLayout)
-// IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(PreferenceFrameLayout, FrameLayout)
 
 PreferenceFrameLayout::PreferenceFrameLayout()
     : mBorderTop(0)
@@ -84,19 +85,20 @@ PreferenceFrameLayout::PreferenceFrameLayout()
     , mBorderLeft(0)
     , mBorderRight(0)
     , mPaddingApplied(FALSE)
-{}
+{
+}
 
 ECode PreferenceFrameLayout::constructor(
     /* [in] */ IContext* context)
 {
-    return constructor(context, NULL, R::attr::preferenceFrameLayoutStyle, 0);
+    return constructor(context, NULL);
 }
 
 ECode PreferenceFrameLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return constructor(context, attrs, R::attr::preferenceFrameLayoutStyle, 0);
+    return constructor(context, attrs, R::attr::preferenceFrameLayoutStyle);
 }
 
 ECode PreferenceFrameLayout::constructor(
@@ -113,7 +115,16 @@ ECode PreferenceFrameLayout::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    // FAIL_RETURN(FrameLayout::constructor(context, attrs, defStyleAttr, defStyleRes));
+    return Init(context, attrs, defStyleAttr, defStyleRes);
+}
+
+ECode PreferenceFrameLayout::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    // FrameLayout::Init(context, attrs, defStyleAttr, defStyleRes);
 
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
@@ -145,7 +156,6 @@ ECode PreferenceFrameLayout::constructor(
     a->GetDimensionPixelSize(
             R::styleable::PreferenceFrameLayout_borderRight,
             defaultRightPadding, &mBorderRight);
-
     a->Recycle();
     return NOERROR;
 }
@@ -155,6 +165,7 @@ ECode PreferenceFrameLayout::GenerateLayoutParams(
     /* [out] */ IViewGroupLayoutParams** params)
 {
     VALIDATE_NOT_NULL(params)
+    assert(0);
     // AutoPtr<IContext> ctx;
     // GetContext((IContext**)&ctx);
     // AutoPtr<IViewGroupLayoutParams> lp = new LayoutParams(ctx, attrs);
@@ -166,6 +177,7 @@ ECode PreferenceFrameLayout::GenerateLayoutParams(
 ECode PreferenceFrameLayout::AddView(
     /* [in] */ IView* child)
 {
+    assert(0);
     // Int32 borderTop, borderBottom, borderLeft, borderRight;
     // GetPaddingTop(&borderTop);
     // GetPaddingBottom(&borderBottom);

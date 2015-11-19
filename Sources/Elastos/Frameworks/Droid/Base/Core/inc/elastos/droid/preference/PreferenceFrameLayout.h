@@ -47,17 +47,17 @@ public:
         , public IFrameLayoutLayoutParams
     {
     public:
-        LayoutParams(
+        LayoutParams();
+
+        CARAPI constructor(
             /* [in] */ IContext* c,
             /* [in] */ IAttributeSet* attrs);
 
-        LayoutParams(
+        CARAPI constructor(
             /* [in] */ Int32 width,
             /* [in] */ Int32 height);
 
         CAR_INTERFACE_DECL()
-        // IVIEWGROUPLP_METHODS_DECL();
-        // IVIEWGROUPMARGINLP_METHODS_DECL();
 
         CARAPI GetGravity(
             /* [out] */ Int32* gravity);
@@ -91,13 +91,6 @@ public:
         /* [in] */ Int32 defStyleRes);
 
     CAR_INTERFACE_DECL()
-    // IVIEW_METHODS_DECL();
-    // IVIEWGROUP_METHODS_DECL();
-    // IVIEWPARENT_METHODS_DECL();
-    // IVIEWMANAGER_METHODS_DECL();
-    // IDRAWABLECALLBACK_METHODS_DECL();
-    // IKEYEVENTCALLBACK_METHODS_DECL();
-    // IACCESSIBILITYEVENTSOURCE_METHODS_DECL();
 
     CARAPI GenerateLayoutParams(
         /* [in] */ IAttributeSet* attrs,
@@ -105,6 +98,13 @@ public:
 
     CARAPI AddView(
         /* [in] */ IView* child);
+
+private:
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
 private:
     static const Int32 DEFAULT_BORDER_TOP = 0;

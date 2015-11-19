@@ -108,6 +108,7 @@ module
             [in] String value,
             [out] Int32* result);
     }
+
     /**
      * @Involve
      * interface IPreferenceBaseSavedState
@@ -122,6 +123,7 @@ module
         GetValues(
             [out] ISet** values);
     }
+
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

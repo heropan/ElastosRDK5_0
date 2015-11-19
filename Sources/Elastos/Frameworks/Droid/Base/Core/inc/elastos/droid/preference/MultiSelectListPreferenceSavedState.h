@@ -16,12 +16,14 @@ class MultiSelectListPreferenceSavedState
     , public IMultiSelectListPreferenceSavedState
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    MultiSelectListPreferenceSavedState();
+
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IParcelable* superState);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);

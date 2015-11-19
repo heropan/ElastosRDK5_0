@@ -1,5 +1,4 @@
 
-
 #ifndef __ELASTOS_DROID_PREFERENCE_CSEEKBARVOLUMIZER_H__
 #define  __ELASTOS_DROID_PREFERENCE_CSEEKBARVOLUMIZER_H__
 
@@ -20,5 +19,4 @@ public:
 } // Preference
 } // Droid
 } // Elastos
-
 #endif  // __ELASTOS_DROID_PREFERENCE_CSEEKBARVOLUMIZER_H__

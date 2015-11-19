@@ -16,14 +16,20 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+CAR_INTERFACE_IMPL(EditTextPreference, DialogPreference, IEditTextPreference)
+
+EditTextPreference::EditTextPreference()
+{
+}
+
 ECode EditTextPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes))
-
+    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
+    assert(0);
     // CEditText::New(context, attrs, (IEditText**)&mEditText);
 
     // Give it an ID so it can be saved/restored
@@ -60,8 +66,6 @@ ECode EditTextPreference::constructor(
     return constructor(context, NULL);
 }
 
-CAR_INTERFACE_IMPL(EditTextPreference, DialogPreference, IEditTextPreference)
-
 ECode EditTextPreference::SetText(
     /* [in] */ const String& text)
 {
@@ -97,13 +101,16 @@ ECode EditTextPreference::OnBindDialogView(
     AutoPtr<IEditText> editText = mEditText;
     AutoPtr<ICharSequence> cs;
     CString::New(mText, (ICharSequence**)&cs);
+    assert(0);
     // editText->SetText(cs);
 
     AutoPtr<IViewParent> oldParent;
+    assert(0);
     // editText->GetParent((IViewParent**)&oldParent);
     if ((IView*)oldParent.Get() != view) {
         if (oldParent != NULL) {
             AutoPtr<IViewGroup> vGroup = IViewGroup::Probe(oldParent);
+            assert(0);
             // vGroup->RemoveViewInLayout(editText);
         }
         OnAddEditTextToDialogView(view, editText);
@@ -120,6 +127,7 @@ ECode EditTextPreference::OnAddEditTextToDialogView(
     dialogView->FindViewById(R::id::edittext_container, (IView**)&temp);
     AutoPtr<IViewGroup> container = IViewGroup::Probe(temp);
     if (container != NULL) {
+        assert(0);
         // container->AddView(editText, IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT);
     }
 
@@ -132,6 +140,7 @@ ECode EditTextPreference::OnDialogClosed(
     FAIL_RETURN(DialogPreference::OnDialogClosed(positiveResult))
 
     if (positiveResult) {
+        assert(0);
         // AutoPtr<ICharSequence> cs;
         // mEditText->GetText((ICharSequence**)&cs);
         // Boolean isSuccess;
@@ -182,6 +191,7 @@ ECode EditTextPreference::ShouldDisableDependents(
 
     Boolean superShould;
     DialogPreference::ShouldDisableDependents(&superShould);
+    assert(0);
     // *shouldDisableDependents = TextUtils::IsEmpty(mText) || superShould;
     return NOERROR;
 }
@@ -238,6 +248,7 @@ ECode EditTextPreference::OnRestoreInstanceState(
     }
 
     AutoPtr<IEditTextPreferenceSavedState> myState = IEditTextPreferenceSavedState::Probe(state);
+    assert(0);
     // AutoPtr<IParcelable> superParcel;
     // myState->GetSuperState((IParcelable**)&superParcel);
     // DialogPreference::OnRestoreInstanceState(superParcel);
@@ -246,132 +257,6 @@ ECode EditTextPreference::OnRestoreInstanceState(
     SetText(str);
 
     return NOERROR;
-}
-
-ECode EditTextPreference::SetDialogTitle(
-    /* [in] */ ICharSequence* dialogTitle)
-{
-    return DialogPreference::SetDialogTitle(dialogTitle);
-}
-
-ECode EditTextPreference::SetDialogTitle(
-    /* [in] */ Int32 dialogTitleResId)
-{
-    return DialogPreference::SetDialogTitle(dialogTitleResId);
-}
-
-ECode EditTextPreference::GetDialogTitle(
-    /* [out] */ ICharSequence** title)
-{
-    return DialogPreference::GetDialogTitle(title);
-}
-
-ECode EditTextPreference::SetDialogMessage(
-    /* [in] */ ICharSequence* dialogMessage)
-{
-    return DialogPreference::SetDialogMessage(dialogMessage);
-}
-
-ECode EditTextPreference::SetDialogMessage(
-    /* [in] */ Int32 dialogMessageResId)
-{
-    return DialogPreference::SetDialogMessage(dialogMessageResId);
-}
-
-ECode EditTextPreference::GetDialogMessage(
-    /* [out] */ ICharSequence** message)
-{
-    return DialogPreference::GetDialogMessage(message);
-}
-
-ECode EditTextPreference::SetDialogIcon(
-    /* [in] */ IDrawable* dialogIcon)
-{
-    return DialogPreference::SetDialogIcon(dialogIcon);
-}
-
-ECode EditTextPreference::SetDialogIcon(
-    /* [in] */ Int32 dialogIconRes)
-{
-    return DialogPreference::SetDialogIcon(dialogIconRes);
-}
-
-ECode EditTextPreference::GetDialogIcon(
-    /* [out] */ IDrawable** icon)
-{
-    return DialogPreference::GetDialogIcon(icon);
-}
-
-ECode EditTextPreference::SetPositiveButtonText(
-    /* [in] */ ICharSequence* positiveButtonText)
-{
-    return DialogPreference::SetPositiveButtonText(positiveButtonText);
-}
-
-ECode EditTextPreference::SetPositiveButtonText(
-    /* [in] */ Int32 positiveButtonTextResId)
-{
-    return DialogPreference::SetPositiveButtonText(positiveButtonTextResId);
-}
-
-ECode EditTextPreference::GetPositiveButtonText(
-    /* [out] */ ICharSequence** text)
-{
-    return DialogPreference::GetPositiveButtonText(text);
-}
-
-ECode EditTextPreference::SetNegativeButtonText(
-    /* [in] */ ICharSequence* negativeButtonText)
-{
-    return DialogPreference::SetNegativeButtonText(negativeButtonText);
-}
-
-ECode EditTextPreference::SetNegativeButtonText(
-    /* [in] */ Int32 negativeButtonTextResId)
-{
-    return DialogPreference::SetNegativeButtonText(negativeButtonTextResId);
-}
-
-ECode EditTextPreference::GetNegativeButtonText(
-    /* [out] */ ICharSequence** text)
-{
-    return DialogPreference::GetNegativeButtonText(text);
-}
-
-ECode EditTextPreference::SetDialogLayoutResource(
-    /* [in] */ Int32 dialogLayoutResId)
-{
-    return DialogPreference::SetDialogLayoutResource(dialogLayoutResId);
-}
-
-ECode EditTextPreference::GetDialogLayoutResource(
-    /* [out] */ Int32* layoutResId)
-{
-    return DialogPreference::GetDialogLayoutResource(layoutResId);
-}
-
-ECode EditTextPreference::OnPrepareDialogBuilder(
-    /* [in] */ IAlertDialogBuilder* builder)
-{
-    return DialogPreference::OnPrepareDialogBuilder(builder);
-}
-
-ECode EditTextPreference::ShowDialog(
-    /* [in] */ IBundle* state)
-{
-    return DialogPreference::ShowDialog(state);
-}
-
-ECode EditTextPreference::OnCreateDialogView(
-    /* [out] */ IView** view)
-{
-    return DialogPreference::OnCreateDialogView(view);
-}
-
-ECode EditTextPreference::GetDialog(
-    /* [out] */ IDialog** dialog)
-{
-    return DialogPreference::GetDialog(dialog);
 }
 
 }

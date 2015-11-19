@@ -1,31 +1,141 @@
+
 #include "elastos/droid/preference/SeekBarVolumizer.h"
-#include "elastos/droid/R.h"
+// #include "elastos/droid/media/RingtoneManager.h"
+#include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/CHandler.h"
+// #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/R.h"
 #include "elastos/core/StringBuilder.h"
 #include "elastos/utility/logging/Logger.h"
-#include "elastos/droid/content/CIntentFilter.h"
 
-using Elastos::Droid::R;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::CIntentFilter;
+// using Elastos::Droid::Media::RingtoneManager;
+using Elastos::Droid::Os::EIID_IHandlerCallback;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::R;
+using Elastos::Droid::Widget::EIID_ISeekBarOnSeekBarChangeListener;
+using Elastos::Droid::Widget::IProgressBar;
 using Elastos::Core::IThread;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Content::IIntentFilter;
-using Elastos::Droid::Content::CIntentFilter;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
+
+//**************SeekBarVolumizer::SeekBarVolumizerH***************//
+
+const Int32 SeekBarVolumizer::SeekBarVolumizerH::UPDATE_SLIDER;
+
+SeekBarVolumizer::SeekBarVolumizerH::SeekBarVolumizerH(
+    /* [in] */ SeekBarVolumizer* owner)
+    : mOwner(owner)
+{
+}
+ECode SeekBarVolumizer::SeekBarVolumizerH::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    Int32 what;
+    msg->GetWhat(&what);
+    if (what == UPDATE_SLIDER) {
+        if (mOwner->mSeekBar != NULL) {
+            Int32 arg1;
+            msg->GetArg1(&arg1);
+            IProgressBar::Probe(mOwner->mSeekBar)->SetProgress(arg1);
+            IProgressBar::Probe(mOwner->mSeekBar)->GetProgress(&(mOwner->mLastProgress));
+        }
+    }
+    return NOERROR;
+}
+
+ECode SeekBarVolumizer::SeekBarVolumizerH::PostUpdateSlider(
+    /* [in] */ Int32 volume)
+{
+    AutoPtr<IMessage> msg;
+    FAIL_RETURN(ObtainMessage(UPDATE_SLIDER, volume, 0, (IMessage**)&msg))
+    FAIL_RETURN(msg->SendToTarget())
+    return NOERROR;
+}
+
+//**************SeekBarVolumizer::SeekBarVolumizerObserver***************//
+
+SeekBarVolumizer::SeekBarVolumizerObserver::SeekBarVolumizerObserver(
+    /* [in] */ IHandler* handler,
+    /* [in] */ SeekBarVolumizer* owner)
+    : mOwner(owner)
+{
+    ContentObserver::constructor(handler);
+}
+
+ECode SeekBarVolumizer::SeekBarVolumizerObserver::OnChange(
+    /* [in] */ Boolean selfChange)
+{
+    ContentObserver::OnChange(selfChange);
+    if (mOwner->mSeekBar != NULL && mOwner->mAudioManager != NULL) {
+        Int32 volume;
+        mOwner->mAudioManager->GetStreamVolume(mOwner->mStreamType, &volume);
+        mOwner->mUiHandler->PostUpdateSlider(volume);
+    }
+    return NOERROR;
+}
+//**************SeekBarVolumizer::SeekBarVolumizerReceiver***************//
+
+SeekBarVolumizer::SeekBarVolumizerReceiver::SeekBarVolumizerReceiver(
+    /* [in] */ SeekBarVolumizer* owner)
+    : mListening(FALSE)
+    , mOwner(owner)
+{}
+
+void SeekBarVolumizer::SeekBarVolumizerReceiver::SetListening(
+    /* [in] */ Boolean listening)
+{
+    if (mListening == listening) return;
+    mListening = listening;
+    if (listening) {
+        AutoPtr<IIntentFilter> filter;
+        CIntentFilter::New(IAudioManager::VOLUME_CHANGED_ACTION, (IIntentFilter**)&filter);
+        AutoPtr<IIntent> intent;
+        mOwner->mContext->RegisterReceiver(IBroadcastReceiver::Probe(this), filter, (IIntent**)&intent);
+    } else {
+        mOwner->mContext->UnregisterReceiver(IBroadcastReceiver::Probe(this));
+    }
+}
+
+ECode SeekBarVolumizer::SeekBarVolumizerReceiver::OnReceive(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    String action;
+    intent->GetAction(&action);
+
+    if (!IAudioManager::VOLUME_CHANGED_ACTION.Equals(action)) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    Int32 streamType;
+    intent->GetInt32Extra(IAudioManager::EXTRA_VOLUME_STREAM_TYPE, -1, &streamType);
+    Int32 streamValue;
+    intent->GetInt32Extra(IAudioManager::EXTRA_VOLUME_STREAM_VALUE, -1, &streamValue);
+
+    if (mOwner->mSeekBar != NULL && streamType == mOwner->mStreamType && streamValue != -1) {
+        mOwner->mUiHandler->PostUpdateSlider(streamValue);
+    }
+    return NOERROR;
+}
+
 //**************SeekBarVolumizer**************************************//
+
 const String SeekBarVolumizer::TAG = String("SeekBarVolumizer");
 const Int32 SeekBarVolumizer::MSG_SET_STREAM_VOLUME;
 const Int32 SeekBarVolumizer::MSG_START_SAMPLE;
 const Int32 SeekBarVolumizer::MSG_STOP_SAMPLE;
 const Int32 SeekBarVolumizer::MSG_INIT_SAMPLE;
 const Int32 SeekBarVolumizer::CHECK_RINGTONE_PLAYBACK_DELAY_MS;
+
+CAR_INTERFACE_IMPL_3(SeekBarVolumizer, Object, ISeekBarVolumizer, ISeekBarOnSeekBarChangeListener, IHandlerCallback)
 
 SeekBarVolumizer::SeekBarVolumizer()
     : mStreamType(0)
@@ -38,16 +148,12 @@ SeekBarVolumizer::SeekBarVolumizer()
     mReceiver = new SeekBarVolumizerReceiver(this);
 }
 
-//CAR_INTERFACE_IMPL_3(SeekBarVolumizer, Object, ISeekBarVolumizer, ISeekBarOnSeekBarChangeListener, IHandlerCallback)
-CAR_INTERFACE_IMPL(SeekBarVolumizer, Object, ISeekBarVolumizer)
-
 ECode SeekBarVolumizer::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 streamType,
     /* [in] */ IUri* defaultUri,
     /* [in] */ ISeekBarVolumizerCallback* callback)
 {
-    SeekBarVolumizer();
     mContext = context;
     AutoPtr<IInterface> object;
     context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&object);
@@ -61,31 +167,39 @@ ECode SeekBarVolumizer::constructor(
     AutoPtr<IThread> t = IThread::Probe(thread);
     t->Start();
 
-    // AutoPtr<ILooper> looper;
-    // thread->GetLooper((ILooper**)&looper);
-    // CHandler::New(looper, IHandlerCallback::Probe(this), (IHandler**)&mHandler);
+    AutoPtr<ILooper> looper;
+    thread->GetLooper((ILooper**)&looper);
+    assert(0);
+    //CHandler lack of one   constructor as below:
+    // constructor(
+    //     [in] ILooper* looper,
+    //     [in] IHandlerCallback* cb);
+    // CHandler::New(looper, (IHandlerCallback*)this, (IHandler**)&mHandler);
+    CHandler::New(looper, (IHandlerCallback*)this, TRUE, (IHandler**)&mHandler);
     mCallback = callback;
     mAudioManager->GetStreamVolume(mStreamType, &mOriginalStreamVolume);
-    // mVolumeObserver = new SeekBarVolumizerObserver(mHandler, this);
+    mVolumeObserver = new SeekBarVolumizerObserver(mHandler, this);
 
+#if 0 // Elastos::Droid::Provider::Settings needed to update for below code
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    // AutoPtr<IUri> uri;
-    // Settings::System::GetUriFor((*VOLUME_SETTINGS)[mStreamType], (IUri**)&uri);
-    // resolver->RegisterContentObserver(uri, FALSE, mVolumeObserver);
+    AutoPtr<IUri> uri;
+    Settings::System::GetUriFor((*VOLUME_SETTINGS)[mStreamType], (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, mVolumeObserver);
     mReceiver->SetListening(TRUE);
-    // if (defaultUri == NULL) {
-    //     if (mStreamType == IAudioManager::STREAM_RING) {
-    //         defaultUri = Settings::System::DEFAULT_RINGTONE_URI;
-    //     } else if (mStreamType == IAudioManager::STREAM_NOTIFICATION) {
-    //         defaultUri = Settings::System::DEFAULT_NOTIFICATION_URI;
-    //     } else {
-    //         defaultUri = Settings::System::DEFAULT_ALARM_ALERT_URI;
-    //     }
-    // }
+    if (defaultUri == NULL) {
+        if (mStreamType == IAudioManager::STREAM_RING) {
+            defaultUri = Settings::System::DEFAULT_RINGTONE_URI;
+        } else if (mStreamType == IAudioManager::STREAM_NOTIFICATION) {
+            defaultUri = Settings::System::DEFAULT_NOTIFICATION_URI;
+        } else {
+            defaultUri = Settings::System::DEFAULT_ALARM_ALERT_URI;
+        }
+    }
     mDefaultUri = defaultUri;
-    // Boolean result = FALSE;
-    // mHandler->SendEmptyMessage(MSG_INIT_SAMPLE, &result);
+    Boolean result = FALSE;
+    mHandler->SendEmptyMessage(MSG_INIT_SAMPLE, &result);
+#endif
     return NOERROR;
 }
 
@@ -97,8 +211,8 @@ ECode SeekBarVolumizer::SetSeekBar(
     }
     mSeekBar = seekBar;
     mSeekBar->SetOnSeekBarChangeListener(NULL);
-    // mSeekBar->SetMax(mMaxStreamVolume);
-    // mSeekBar->SetProgress(mLastProgress > -1 ? mLastProgress : mOriginalStreamVolume);
+    IProgressBar::Probe(mSeekBar)->SetMax(mMaxStreamVolume);
+    IProgressBar::Probe(mSeekBar)->SetProgress(mLastProgress > -1 ? mLastProgress : mOriginalStreamVolume);
      mSeekBar->SetOnSeekBarChangeListener(ISeekBarOnSeekBarChangeListener::Probe(this));
     return NOERROR;
 }
@@ -135,10 +249,12 @@ ECode SeekBarVolumizer::HandleMessage(
 
 void SeekBarVolumizer::OnInitSample()
 {
-    // RingtoneManager::GetRingtone(mContext, mDefaultUri, (IRingtone**)&mRingtone);
-    // if (mRingtone != NULL) {
-    //     mRingtone->SetStreamType(mStreamType);
-    // }
+    #if 0 // RingtoneManager needed
+    RingtoneManager::GetRingtone(mContext, mDefaultUri, (IRingtone**)&mRingtone);
+    if (mRingtone != NULL) {
+        mRingtone->SetStreamType(mStreamType);
+    }
+    #endif
 }
 void SeekBarVolumizer::PostStartSample()
 {
@@ -193,7 +309,7 @@ ECode SeekBarVolumizer::Stop()
     mContext->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<IContentObserver> observer;
     resolver->UnregisterContentObserver(observer);
-    // mVolumeObserver = (SeekBarVolumizerObserver*)observer;
+    mVolumeObserver = (SeekBarVolumizerObserver*)(observer.Get());
     mSeekBar->SetOnSeekBarChangeListener(NULL);
     mReceiver->SetListening(FALSE);
     AutoPtr<ILooper> looper;
@@ -210,7 +326,8 @@ ECode SeekBarVolumizer::RevertVolume()
 ECode SeekBarVolumizer::OnProgressChanged(
     /* [in] */ ISeekBar* seekBar,
     /* [in] */ Int32 progress,
-    /* [in] */ Boolean fromTouch) {
+    /* [in] */ Boolean fromTouch)
+{
     if (!fromTouch) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -278,10 +395,10 @@ ECode SeekBarVolumizer::GetSeekBar(
 ECode SeekBarVolumizer::ChangeVolumeBy(
     /* [in] */ Int32 amount)
 {
-    // mSeekBar->IncrementProgressBy(amount);
-    // Int32 progress;
-    // mSeekBar->GetProgress(&progress);
-    // PostSetVolume(progress);
+    IProgressBar::Probe(mSeekBar)->IncrementProgressBy(amount);
+    Int32 progress;
+    IProgressBar::Probe(mSeekBar)->GetProgress(&progress);
+    PostSetVolume(progress);
     PostStartSample();
     mVolumeBeforeMute = -1;
     return NOERROR;
@@ -290,13 +407,13 @@ ECode SeekBarVolumizer::ChangeVolumeBy(
 ECode SeekBarVolumizer::MuteVolume()
 {
     if (mVolumeBeforeMute != -1) {
-        // mSeekBar->SetProgress(mVolumeBeforeMute);
+        IProgressBar::Probe(mSeekBar)->SetProgress(mVolumeBeforeMute);
         PostSetVolume(mVolumeBeforeMute);
         PostStartSample();
         mVolumeBeforeMute = -1;
     } else {
-        // mSeekBar->GetProgress(&mVolumeBeforeMute);
-        // mSeekBar->SetProgress(0);
+        IProgressBar::Probe(mSeekBar)->GetProgress(&mVolumeBeforeMute);
+        IProgressBar::Probe(mSeekBar)->SetProgress(0);
         PostStopSample();
         PostSetVolume(0);
     }
@@ -322,101 +439,6 @@ ECode SeekBarVolumizer::OnRestoreInstanceState(
         volumeStore->GetOriginalVolume(&mOriginalStreamVolume);
         volumeStore->GetVolume(&mLastProgress);
         PostSetVolume(mLastProgress);
-    }
-    return NOERROR;
-}
-
-//**************SeekBarVolumizer::SeekBarVolumizerH***************//
-const Int32 SeekBarVolumizer::SeekBarVolumizerH::UPDATE_SLIDER;
-SeekBarVolumizer::SeekBarVolumizerH::SeekBarVolumizerH(
-    /* [in] */ SeekBarVolumizer* owner)
-    : mOwner(owner)
-{
-}
-ECode SeekBarVolumizer::SeekBarVolumizerH::HandleMessage(
-    /* [in] */ IMessage* msg)
-{
-    Int32 what;
-    msg->GetWhat(&what);
-    if (what == UPDATE_SLIDER) {
-        if (mOwner->mSeekBar != NULL) {
-            Int32 arg1;
-            msg->GetArg1(&arg1);
-            // mOwner->mSeekBar->SetProgress(arg1);
-            // mOwner->mSeekBar->GetProgress(&mLastProgress);
-        }
-    }
-    return NOERROR;
-}
-
-ECode SeekBarVolumizer::SeekBarVolumizerH::PostUpdateSlider(
-    /* [in] */ Int32 volume)
-{
-    AutoPtr<IMessage> msg;
-    FAIL_RETURN(ObtainMessage(UPDATE_SLIDER, volume, 0, (IMessage**)&msg))
-    FAIL_RETURN(msg->SendToTarget())
-    return NOERROR;
-}
-
-//**************SeekBarVolumizer::SeekBarVolumizerObserver***************//
-SeekBarVolumizer::SeekBarVolumizerObserver::SeekBarVolumizerObserver(
-    /* [in] */ IHandler* handler,
-    /* [in] */ SeekBarVolumizer* owner)
-    : mOwner(owner)
-{
-    ContentObserver::constructor(handler);
-}
-
-ECode SeekBarVolumizer::SeekBarVolumizerObserver::OnChange(
-    /* [in] */ Boolean selfChange)
-{
-    ContentObserver::OnChange(selfChange);
-    if (mOwner->mSeekBar != NULL && mOwner->mAudioManager != NULL) {
-        Int32 volume;
-        mOwner->mAudioManager->GetStreamVolume(mOwner->mStreamType, &volume);
-        mOwner->mUiHandler->PostUpdateSlider(volume);
-    }
-    return NOERROR;
-}
-//**************SeekBarVolumizer::SeekBarVolumizerReceiver***************//
-SeekBarVolumizer::SeekBarVolumizerReceiver::SeekBarVolumizerReceiver(
-    /* [in] */ SeekBarVolumizer* owner)
-    : mOwner(owner)
-    , mListening(FALSE)
-{}
-
-void SeekBarVolumizer::SeekBarVolumizerReceiver::SetListening(
-    /* [in] */ Boolean listening)
-{
-    if (mListening == listening) return;
-    mListening = listening;
-    if (listening) {
-        AutoPtr<IIntentFilter> filter;
-        CIntentFilter::New(IAudioManager::VOLUME_CHANGED_ACTION, (IIntentFilter**)&filter);
-        AutoPtr<IIntent> intent;
-        mOwner->mContext->RegisterReceiver(IBroadcastReceiver::Probe(this), filter, (IIntent**)&intent);
-    } else {
-        mOwner->mContext->UnregisterReceiver(IBroadcastReceiver::Probe(this));
-    }
-}
-
-ECode SeekBarVolumizer::SeekBarVolumizerReceiver::OnReceive(
-    /* [in] */ IContext* context,
-    /* [in] */ IIntent* intent)
-{
-    String action;
-    intent->GetAction(&action);
-
-    if (!IAudioManager::VOLUME_CHANGED_ACTION.Equals(action)) {
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    Int32 streamType;
-    intent->GetInt32Extra(IAudioManager::EXTRA_VOLUME_STREAM_TYPE, -1, &streamType);
-    Int32 streamValue;
-    intent->GetInt32Extra(IAudioManager::EXTRA_VOLUME_STREAM_VALUE, -1, &streamValue);
-
-    if (mOwner->mSeekBar != NULL && streamType == mOwner->mStreamType && streamValue != -1) {
-        mOwner->mUiHandler->PostUpdateSlider(streamValue);
     }
     return NOERROR;
 }

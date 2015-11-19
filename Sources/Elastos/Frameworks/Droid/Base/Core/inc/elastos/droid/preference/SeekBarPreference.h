@@ -18,6 +18,8 @@ class SeekBarPreference
     , public ISeekBarOnSeekBarChangeListener
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SeekBarPreference();
 
     CARAPI constructor(
@@ -38,8 +40,6 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context);
 
-    CAR_INTERFACE_DECL()
-
     CARAPI GetSummary(
         /* [out] */ ICharSequence** summary);
 
@@ -49,13 +49,14 @@ public:
         /* [in] */ IKeyEvent* event,
         /* [out] */ Boolean* result);
 
-    CARAPI_(void) SetMax(
+    CARAPI SetMax(
         /* [in] */ Int32 max);
 
-    CARAPI_(void) SetProgress(
+    CARAPI SetProgress(
         /* [in] */ Int32 progress);
 
-    CARAPI_(Int32) GetProgress();
+    CARAPI GetProgress(
+        /* [out] */ Int32* result);
 
 protected:
     CARAPI OnBindView(
@@ -74,7 +75,7 @@ protected:
      * Persist the seekBar's progress value if callChangeListener
      * returns true, otherwise set the seekBar's progress to the stored value
      */
-    CARAPI_(void) SyncProgress(
+    CARAPI SyncProgress(
         /* [in] */ ISeekBar* seekBar);
 
     CARAPI OnProgressChanged(
@@ -94,8 +95,15 @@ protected:
     CARAPI OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
 
+protected:
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
 private:
-    CARAPI_(void) SetProgress(
+    CARAPI SetProgress(
         /* [in] */ Int32 progress,
         /* [in] */ Boolean notifyChanged);
 
@@ -108,5 +116,4 @@ private:
 }
 }
 }
-
 #endif // __SeekBarPreference_H__

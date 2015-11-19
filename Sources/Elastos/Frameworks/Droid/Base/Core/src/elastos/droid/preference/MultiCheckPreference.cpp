@@ -23,12 +23,13 @@ namespace Preference {
 // MultiCheckPreference::MultiChoiceClickListener
 /////////////////////////////////////////////////////
 
+CAR_INTERFACE_IMPL(MultiCheckPreference::MultiChoiceClickListener, Object, IDialogInterfaceOnMultiChoiceClickListener)
+
 MultiCheckPreference::MultiChoiceClickListener::MultiChoiceClickListener(
     /* [in] */ MultiCheckPreference* host)
     : mHost(host)
-{}
-
-CAR_INTERFACE_IMPL(MultiCheckPreference::MultiChoiceClickListener, Object, IDialogInterfaceOnMultiChoiceClickListener)
+{
+}
 
 ECode MultiCheckPreference::MultiChoiceClickListener::OnClick(
     /* [in] */ IDialogInterface* dialog,
@@ -39,17 +40,54 @@ ECode MultiCheckPreference::MultiChoiceClickListener::OnClick(
     return NOERROR;
 }
 
-
 /////////////////////////////////////////////////////
 // MultiCheckPreference
 /////////////////////////////////////////////////////
+
+CAR_INTERFACE_IMPL(MultiCheckPreference, DialogPreference, IMultiCheckPreference)
+
+MultiCheckPreference::MultiCheckPreference()
+{
+}
+
 ECode MultiCheckPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
+    return Init(context, attrs, defStyleAttr, defStyleRes);
+}
+
+ECode MultiCheckPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+     return Init(context, attrs, defStyleAttr, 0);
+}
+
+ECode MultiCheckPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return Init(context, attrs, R::attr::dialogPreferenceStyle, 0);
+}
+
+ECode MultiCheckPreference::constructor(
+    /* [in] */ IContext* context)
+{
+    return Init(context, NULL, R::attr::dialogPreferenceStyle, 0);
+}
+
+ECode MultiCheckPreference::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
+
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ListPreference),
             ARRAY_SIZE(R::styleable::ListPreference));
@@ -77,29 +115,6 @@ ECode MultiCheckPreference::constructor(
     a->Recycle();
     return NOERROR;
 }
-
-ECode MultiCheckPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-{
-    return constructor(context, attrs, defStyleAttr, 0);
-}
-
-ECode MultiCheckPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return constructor(context, attrs, R::attr::dialogPreferenceStyle, 0);
-}
-
-ECode MultiCheckPreference::constructor(
-    /* [in] */ IContext* context)
-{
-    return constructor(context, NULL, R::attr::dialogPreferenceStyle, 0);
-}
-
-CAR_INTERFACE_IMPL(MultiCheckPreference, DialogPreference, IMultiCheckPreference)
 
 ECode MultiCheckPreference::SetEntries(
     /* [in] */ ArrayOf<ICharSequence*>* entries)
@@ -361,6 +376,7 @@ ECode MultiCheckPreference::OnRestoreInstanceState(
     }
 
     AutoPtr<IMultiCheckPreferenceSavedState> myState = IMultiCheckPreferenceSavedState::Probe(state);
+    assert(0);
     // AutoPtr<IParcelable> superParcel;
     // myState->GetSuperState((IParcelable**)&superParcel);
     // DialogPreference::OnRestoreInstanceState(superParcel);
@@ -371,133 +387,6 @@ ECode MultiCheckPreference::OnRestoreInstanceState(
     return NOERROR;
 }
 
-ECode MultiCheckPreference::SetDialogTitle(
-    /* [in] */ ICharSequence* dialogTitle)
-{
-    return DialogPreference::SetDialogTitle(dialogTitle);
-}
-
-ECode MultiCheckPreference::SetDialogTitle(
-    /* [in] */ Int32 dialogTitleResId)
-{
-    return DialogPreference::SetDialogTitle(dialogTitleResId);
-}
-
-ECode MultiCheckPreference::GetDialogTitle(
-    /* [out] */ ICharSequence** title)
-{
-    return DialogPreference::GetDialogTitle(title);
-}
-
-ECode MultiCheckPreference::SetDialogMessage(
-    /* [in] */ ICharSequence* dialogMessage)
-{
-    return DialogPreference::SetDialogMessage(dialogMessage);
-}
-
-ECode MultiCheckPreference::SetDialogMessage(
-    /* [in] */ Int32 dialogMessageResId)
-{
-    return DialogPreference::SetDialogMessage(dialogMessageResId);
-}
-
-ECode MultiCheckPreference::GetDialogMessage(
-    /* [out] */ ICharSequence** message)
-{
-    return DialogPreference::GetDialogMessage(message);
-}
-
-ECode MultiCheckPreference::SetDialogIcon(
-    /* [in] */ IDrawable* dialogIcon)
-{
-    return DialogPreference::SetDialogIcon(dialogIcon);
-}
-
-ECode MultiCheckPreference::SetDialogIcon(
-    /* [in] */ Int32 dialogIconRes)
-{
-    return DialogPreference::SetDialogIcon(dialogIconRes);
-}
-
-ECode MultiCheckPreference::GetDialogIcon(
-    /* [out] */ IDrawable** icon)
-{
-    return DialogPreference::GetDialogIcon(icon);
-}
-
-ECode MultiCheckPreference::SetPositiveButtonText(
-    /* [in] */ ICharSequence* positiveButtonText)
-{
-    return DialogPreference::SetPositiveButtonText(positiveButtonText);
-}
-
-ECode MultiCheckPreference::SetPositiveButtonText(
-    /* [in] */ Int32 positiveButtonTextResId)
-{
-    return DialogPreference::SetPositiveButtonText(positiveButtonTextResId);
-}
-
-ECode MultiCheckPreference::GetPositiveButtonText(
-    /* [out] */ ICharSequence** text)
-{
-    return DialogPreference::GetPositiveButtonText(text);
-}
-
-ECode MultiCheckPreference::SetNegativeButtonText(
-    /* [in] */ ICharSequence* negativeButtonText)
-{
-    return DialogPreference::SetNegativeButtonText(negativeButtonText);
-}
-
-ECode MultiCheckPreference::SetNegativeButtonText(
-    /* [in] */ Int32 negativeButtonTextResId)
-{
-    return DialogPreference::SetNegativeButtonText(negativeButtonTextResId);
-}
-
-ECode MultiCheckPreference::GetNegativeButtonText(
-    /* [out] */ ICharSequence** text)
-{
-    return DialogPreference::GetNegativeButtonText(text);
-}
-
-ECode MultiCheckPreference::SetDialogLayoutResource(
-    /* [in] */ Int32 dialogLayoutResId)
-{
-    return DialogPreference::SetDialogLayoutResource(dialogLayoutResId);
-}
-
-ECode MultiCheckPreference::GetDialogLayoutResource(
-    /* [out] */ Int32* layoutResId)
-{
-    return DialogPreference::GetDialogLayoutResource(layoutResId);
-}
-
-ECode MultiCheckPreference::ShowDialog(
-    /* [in] */ IBundle* state)
-{
-    return DialogPreference::ShowDialog(state);
-}
-
-ECode MultiCheckPreference::NeedInputMethod(
-    /* [out] */ Boolean* isNeed)
-{
-    return DialogPreference::NeedInputMethod(isNeed);
-}
-
-ECode MultiCheckPreference::OnCreateDialogView(
-    /* [out] */ IView** view)
-{
-    return DialogPreference::OnCreateDialogView(view);
-}
-
-ECode MultiCheckPreference::GetDialog(
-    /* [out] */ IDialog** dialog)
-{
-    return DialogPreference::GetDialog(dialog);
-}
-
 }
 }
 }
-

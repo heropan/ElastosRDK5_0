@@ -14,12 +14,14 @@ class EditTextPreferenceSavedState
     , public IEditTextPreferenceSavedState
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    EditTextPreferenceSavedState();
+
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IParcelable* superState);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI GetText(
         /* [out] */ String* text);
@@ -35,6 +37,7 @@ public:
 
     CARAPI GetSuperState(
         /* [out] */ IParcelable** superState);
+
 private:
     String mText;
 };

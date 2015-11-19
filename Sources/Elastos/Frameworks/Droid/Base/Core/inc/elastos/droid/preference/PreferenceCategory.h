@@ -9,12 +9,25 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+/**
+ * Used to group {@link Preference} objects
+ * and provide a disabled title above the group.
+ *
+ * <div class="special reference">
+ * <h3>Developer Guides</h3>
+ * <p>For information about building a settings UI with Preferences,
+ * read the <a href="{@docRoot}guide/topics/ui/settings.html">Settings</a>
+ * guide.</p>
+ * </div>
+ */
 class PreferenceCategory
     : public PreferenceGroup
     , public IPreferenceCategory
 {
 public:
     CAR_INTERFACE_DECL()
+
+    PreferenceCategory();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -34,43 +47,13 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context);
 
+    //@Override
     CARAPI IsEnabled(
         /* [out] */ Boolean* isEnabled);
 
+    //@Override
     CARAPI ShouldDisableDependents(
         /* [out] */ Boolean* should);
-
-    CARAPI SetOrderingAsAdded(
-        /* [in] */ Boolean orderingAsAdded);
-
-    CARAPI IsOrderingAsAdded(
-        /* [out] */ Boolean* added);
-
-    CARAPI GetPreferenceCount(
-        /* [out] */ Int32* count);
-
-    CARAPI GetPreference(
-        /* [in] */ Int32 index,
-        /* [out] */ IPreference** preference);
-
-    CARAPI AddPreference(
-        /* [in] */ IPreference* preference,
-        /* [out] */ Boolean* result);
-
-    CARAPI RemovePreference(
-        /* [in] */ IPreference* preference,
-        /* [out] */ Boolean* result);
-
-    CARAPI RemoveAll();
-
-    CARAPI FindPreference(
-        /* [in] */ ICharSequence* key,
-        /* [out] */ IPreference** preference);
-
-    CARAPI IsOnSameScreenAsChildren(
-        /* [out] */ Boolean* isOnSameScreenAsChildren);
-
-    CARAPI SortPreferences();
 
 protected:
     CARAPI OnPrepareAddPreference(

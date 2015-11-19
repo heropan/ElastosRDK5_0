@@ -5,10 +5,15 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+CAR_INTERFACE_IMPL(ListPreferenceSavedState, PreferenceBaseSavedState, IListPreferenceSavedState)
+
+ListPreferenceSavedState::ListPreferenceSavedState()
+{
+}
+
 ECode ListPreferenceSavedState::constructor()
 {
     PreferenceBaseSavedState::constructor();
-    // source->ReadString(&mValue);
     return NOERROR;
 }
 
@@ -17,8 +22,6 @@ ECode ListPreferenceSavedState::constructor(
 {
     return PreferenceBaseSavedState::constructor(superState);
 }
-
-CAR_INTERFACE_IMPL(ListPreferenceSavedState, PreferenceBaseSavedState, IListPreferenceSavedState)
 
 ECode ListPreferenceSavedState::GetValue(
     /* [out] */ String* value)
@@ -56,7 +59,6 @@ ECode ListPreferenceSavedState::GetSuperState(
 {
     return PreferenceBaseSavedState::GetSuperState(superState);
 }
-
 
 } // Preference
 } // Droid

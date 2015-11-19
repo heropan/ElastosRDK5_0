@@ -5,11 +5,15 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+CAR_INTERFACE_IMPL(EditTextPreferenceSavedState, PreferenceBaseSavedState, IEditTextPreferenceSavedState)
+
+EditTextPreferenceSavedState::EditTextPreferenceSavedState()
+{
+}
+
 ECode EditTextPreferenceSavedState::constructor()
 {
-    PreferenceBaseSavedState::constructor();
-    // source->ReadString(&mText);
-    return NOERROR;
+    return PreferenceBaseSavedState::constructor();
 }
 
 ECode EditTextPreferenceSavedState::constructor(
@@ -17,8 +21,6 @@ ECode EditTextPreferenceSavedState::constructor(
 {
     return PreferenceBaseSavedState::constructor(superState);
 }
-
-CAR_INTERFACE_IMPL(EditTextPreferenceSavedState, PreferenceBaseSavedState, IEditTextPreferenceSavedState)
 
 ECode EditTextPreferenceSavedState::GetText(
     /* [out] */ String* text)

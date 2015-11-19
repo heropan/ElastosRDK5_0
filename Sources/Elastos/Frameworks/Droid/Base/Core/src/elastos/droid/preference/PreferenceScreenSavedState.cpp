@@ -4,6 +4,7 @@
 namespace Elastos {
 namespace Droid {
 namespace Preference {
+
 CAR_INTERFACE_IMPL(PreferenceScreenSavedState, PreferenceBaseSavedState, IPreferenceBaseSavedState)
 
 PreferenceScreenSavedState::PreferenceScreenSavedState()

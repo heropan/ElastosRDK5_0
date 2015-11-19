@@ -6,8 +6,6 @@
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;
@@ -15,6 +13,8 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::ISharedPreferences;
 using Elastos::Droid::Content::ISharedPreferencesEditor;
 using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -25,9 +25,9 @@ class PreferenceManager
     , public IPreferenceManager
 {
 public:
-    PreferenceManager();
-
     CAR_INTERFACE_DECL()
+
+    PreferenceManager();
 
     CARAPI constructor(
         /* [in] */ IActivity* activity,
@@ -83,8 +83,9 @@ public:
      * @return A SharedPreferences instance that can be used to retrieve and
      *         listen to values of the preferences.
      */
-    static CARAPI_(AutoPtr<ISharedPreferences>) GetDefaultSharedPreferences(
-        /* [in] */ IContext* context);
+    static CARAPI GetDefaultSharedPreferences(
+        /* [in] */ IContext* context,
+        /* [out] */ ISharedPreferences** sp);
 
     CARAPI GetPreferenceScreen(
         /* [out] */ IPreferenceScreen** screen);
@@ -118,7 +119,7 @@ public:
      *            and clear it followed by a call to this method with this
      *            parameter set to true.
      */
-    static CARAPI_(void) SetDefaultValues(
+    static CARAPI SetDefaultValues(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resId,
         /* [in] */ Boolean readAgain);
@@ -151,7 +152,7 @@ public:
      * @see #setSharedPreferencesName(String)
      * @see #setSharedPreferencesMode(int)
      */
-    static CARAPI_(void) SetDefaultValues(
+    static CARAPI SetDefaultValues(
         /* [in] */ IContext* context,
         /* [in] */ const String& sharedPreferencesName,
         /* [in] */ Int32 sharedPreferencesMode,
@@ -216,7 +217,7 @@ public:
         /* [out] */ IPreferenceManagerOnPreferenceTreeClickListener** listener);
 
 private:
-    CARAPI_(void) Init(
+    CARAPI Init(
         /* [in] */ IContext* context);
 
     CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntentActivities(
@@ -319,8 +320,6 @@ private:
     AutoPtr<List<AutoPtr<IDialogInterface> > > mPreferencesScreens;
 
     AutoPtr<IPreferenceManagerOnPreferenceTreeClickListener> mOnPreferenceTreeClickListener;
-
-    Object mLock;
 };
 
 }

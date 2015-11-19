@@ -22,6 +22,8 @@ namespace Preference {
 
 const String RingtonePreference::TAG("RingtonePreference");
 
+CAR_INTERFACE_IMPL_2(RingtonePreference, Preference, IRingtonePreference, IPreferenceManagerOnActivityResultListener)
+
 RingtonePreference::RingtonePreference()
     : mRingtoneType(0)
     , mShowDefault(FALSE)
@@ -29,7 +31,46 @@ RingtonePreference::RingtonePreference()
     , mRequestCode(0)
 {}
 
-CAR_INTERFACE_IMPL_2(RingtonePreference, Preference, IRingtonePreference, IPreferenceManagerOnActivityResultListener)
+ECode RingtonePreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+
+    AutoPtr<ArrayOf<Int32> > arrayAttrs = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::RingtonePreference),
+            ARRAY_SIZE(R::styleable::RingtonePreference));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, arrayAttrs, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+    a->GetInt32(R::styleable::RingtonePreference_ringtoneType, IRingtoneManager::TYPE_RINGTONE, &mRingtoneType);
+    a->GetBoolean(R::styleable::RingtonePreference_showDefault, TRUE, &mShowDefault);
+    a->GetBoolean(R::styleable::RingtonePreference_showSilent, TRUE, &mShowSilent);
+    a->Recycle();
+    return NOERROR;
+}
+
+ECode RingtonePreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode RingtonePreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::ringtonePreferenceStyle);
+}
+
+ECode RingtonePreference::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
 
 ECode RingtonePreference::GetRingtoneType(
     /* [out] */ Int32* type)
@@ -101,27 +142,30 @@ ECode RingtonePreference::OnClick()
 ECode RingtonePreference::OnPrepareRingtonePickerIntent(
     /* [in] */ IIntent* ringtonePickerIntent)
 {
+    assert(0);
+#if 0 //struct IParcelable' has no member named 'PutParcelableExtra
     AutoPtr<IUri> uri;
     OnRestoreRingtone((IUri**)&uri);
-    // ringtonePickerIntent->PutParcelableExtra(IRingtoneManager::EXTRA_RINGTONE_EXISTING_URI,
-    //         IParcelable::Probe(uri));
+    IParcelable::Probe(ringtonePickerIntent)->PutParcelableExtra(IRingtoneManager::EXTRA_RINGTONE_EXISTING_URI,
+            IParcelable::Probe(uri));
     ringtonePickerIntent->PutBooleanExtra(IRingtoneManager::EXTRA_RINGTONE_SHOW_DEFAULT, mShowDefault);
     if (mShowDefault) {
         Int32 type;
         GetRingtoneType(&type);
         AutoPtr<IUri> defaultUri;
-        // AutoPtr<IRingtoneManagerHelper> helper;
-        // CRingtoneManagerHelper::AcquireSingleton((IRingtoneManagerHelper**)&helper);
-        // helper->GetDefaultUri(type, (IUri**)&defaultUri);
-        // ringtonePickerIntent->PutParcelableExtra(IRingtoneManager::EXTRA_RINGTONE_DEFAULT_URI,
-        //         IParcelable::Probe(defaultUri));
+        AutoPtr<IRingtoneManagerHelper> helper;
+        CRingtoneManagerHelper::AcquireSingleton((IRingtoneManagerHelper**)&helper);
+        helper->GetDefaultUri(type, (IUri**)&defaultUri);
+        ringtonePickerIntent->PutParcelableExtra(IRingtoneManager::EXTRA_RINGTONE_DEFAULT_URI,
+                IParcelable::Probe(defaultUri));
     }
 
     ringtonePickerIntent->PutBooleanExtra(IRingtoneManager::EXTRA_RINGTONE_SHOW_SILENT, mShowSilent);
-    // ringtonePickerIntent->PutInt32Extra(IRingtoneManager::EXTRA_RINGTONE_TYPE, mRingtoneType);
+    ringtonePickerIntent->PutInt32Extra(IRingtoneManager::EXTRA_RINGTONE_TYPE, mRingtoneType);
     AutoPtr<ICharSequence> cs;
     GetTitle((ICharSequence**)&cs);
-    // ringtonePickerIntent->PutCharSequenceExtra(IRingtoneManager::EXTRA_RINGTONE_TITLE, cs);
+    ringtonePickerIntent->PutCharSequenceExtra(IRingtoneManager::EXTRA_RINGTONE_TITLE, cs);
+#endif
     return NOERROR;
 }
 
@@ -130,7 +174,8 @@ ECode RingtonePreference::OnSaveRingtone(
 {
     String uri("");
     if (ringtoneUri != NULL) {
-        // ringtoneUri->ToString((String*)&uri);
+        AutoPtr<IObject> o = IObject::Probe(ringtoneUri);
+        o->ToString((String*)&uri);
     }
     Boolean result;
     return PersistString(uri, &result);
@@ -221,7 +266,8 @@ ECode RingtonePreference::OnActivityResult(
             AutoPtr<IUri> uri = IUri::Probe(p);
             String str("");
             if (uri != NULL) {
-                // uri->ToString(&str);
+                AutoPtr<IObject> o = IObject::Probe(uri);
+                o->ToString((String*)&str);
             }
             AutoPtr<ICharSequence> cs;
             CString::New(str, (ICharSequence**)&cs);
@@ -235,47 +281,6 @@ ECode RingtonePreference::OnActivityResult(
     }
     *result = FALSE;
     return NOERROR;
-}
-
-ECode RingtonePreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
-
-    AutoPtr<ArrayOf<Int32> > arrayAttrs = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::RingtonePreference),
-            ARRAY_SIZE(R::styleable::RingtonePreference));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, arrayAttrs, defStyleAttr, defStyleRes, (ITypedArray**)&a);
-    a->GetInt32(R::styleable::RingtonePreference_ringtoneType, IRingtoneManager::TYPE_RINGTONE, &mRingtoneType);
-    a->GetBoolean(R::styleable::RingtonePreference_showDefault, TRUE, &mShowDefault);
-    a->GetBoolean(R::styleable::RingtonePreference_showSilent, TRUE, &mShowSilent);
-    a->Recycle();
-    return NOERROR;
-}
-
-ECode RingtonePreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-{
-    return constructor(context, attrs, defStyleAttr, 0);
-}
-
-ECode RingtonePreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return constructor(context, attrs, R::attr::ringtonePreferenceStyle);
-}
-
-ECode RingtonePreference::constructor(
-    /* [in] */ IContext* context)
-{
-    return constructor(context, NULL);
 }
 
 }

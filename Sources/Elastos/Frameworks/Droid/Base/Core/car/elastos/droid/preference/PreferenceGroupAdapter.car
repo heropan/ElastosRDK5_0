@@ -72,15 +72,12 @@ module
             [in] IPreference* preference);
 
     }
+
     /**
      * @Involve
      * interface IComparable
      */
     interface IPreferenceLayout {
-        CompareTo(
-            [in] IPreferenceLayout* other,
-            [out] Int32* result);
-
         GetResId(
             [out] Int32* resId);
 

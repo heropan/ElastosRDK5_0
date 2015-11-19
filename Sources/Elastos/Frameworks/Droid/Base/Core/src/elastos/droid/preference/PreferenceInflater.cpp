@@ -3,6 +3,7 @@
 #include "elastos/droid/preference/CPreferenceInflater.h"
 #include "elastos/droid/content/Intent.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/preference/CPreferenceInflater.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -20,6 +21,10 @@ const String PreferenceInflater::INTENT_TAG_NAME("intent");
 const String PreferenceInflater::EXTRA_TAG_NAME("extra");
 
 CAR_INTERFACE_IMPL(PreferenceInflater, GenericInflater, IPreferenceInflater)
+
+PreferenceInflater::PreferenceInflater()
+{
+}
 
 ECode PreferenceInflater::constructor(
     /* [in] */ IContext* context,
@@ -53,7 +58,11 @@ ECode PreferenceInflater::CloneInContext(
     /* [in] */ IContext* newContext,
     /* [out] */ IGenericInflater** ret)
 {
-    return CPreferenceInflater::New(this, mPreferenceManager, newContext, ret);
+    VALIDATE_NOT_NULL(ret)
+    AutoPtr<IGenericInflater> gf = (IGenericInflater*)this;
+    CPreferenceInflater::New(gf, mPreferenceManager, newContext, ret);
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
 void PreferenceInflater::Init(
@@ -124,14 +133,13 @@ ECode PreferenceInflater::OnMergeRoots(
     // If we were given a Preferences, use it as the root (ignoring the root
     // Preferences from the XML file).
     if (givenRoot == NULL) {
-        assert(IPreferenceGroup::Probe(xmlRoot) != NULL);
-        IPreference::Probe(xmlRoot)->OnAttachedToHierarchy(mPreferenceManager);
+        AutoPtr<IPreference> pg = IPreference::Probe(xmlRoot);
+        if (pg != NULL) pg->OnAttachedToHierarchy(mPreferenceManager);
         *p = xmlRoot;
     }
     else {
         *p = givenRoot;
     }
-
     REFCOUNT_ADD(*p)
     return NOERROR;
 }

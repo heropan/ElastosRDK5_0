@@ -8,8 +8,9 @@ namespace Preference {
 //CAR_INTERFACE_IMPL(PreferenceBaseSavedState, AbsSavedState, IPreferenceBaseSavedState)
 CAR_INTERFACE_IMPL_2(PreferenceBaseSavedState, Object, IPreferenceBaseSavedState, IParcelable)
 
-PreferenceBaseSavedState::~PreferenceBaseSavedState()
-{}
+PreferenceBaseSavedState::PreferenceBaseSavedState()
+{
+}
 
 ECode PreferenceBaseSavedState::constructor()
 {

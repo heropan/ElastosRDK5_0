@@ -33,9 +33,39 @@ class VolumePreference
     , public IVolumePreference
 {
 public:
-    VolumePreference(){}
+    class VolumeStore
+        : public Object
+        , public IVolumePreferenceVolumeStore
+    {
+        friend class VolumePreference;
+    public:
+        CAR_INTERFACE_DECL()
 
-    virtual ~VolumePreference(){}
+        VolumeStore();
+
+        CARAPI constructor();
+
+        CARAPI GetVolume(
+            /* [out] */ Int32* volume);
+
+        CARAPI GetOriginalVolume(
+            /* [out] */ Int32* volume);
+
+        CARAPI SetVolume(
+            /* [in] */ Int32 volume);
+
+        CARAPI SetOriginalVolume(
+            /* [in] */ Int32 volume);
+
+    public:
+        Int32 volume;
+        Int32 originalVolume;
+    };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    VolumePreference();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -51,8 +81,6 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI SetStreamType(
         /* [in] */ Int32 streamType);
@@ -81,38 +109,21 @@ protected:
     CARAPI OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
 
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
 private:
     CARAPI_(void) Cleanup();
+
 public:
     const static String TAG;
+
 private:
     Int32 mStreamType;
     AutoPtr<ISeekBarVolumizer> mSeekBarVolumizer;
-
-public:
-    class VolumeStore
-        : public Object
-        , public IVolumePreferenceVolumeStore
-    {
-        friend class VolumePreference;
-    public:
-        VolumeStore()
-            : volume(-1)
-            , originalVolume(-1)
-        {}
-        VolumeStore(
-            /* [in] */ VolumePreference* owner)
-            : volume(-1)
-            , originalVolume(-1)
-            , mOwner(owner)
-        {}
-        CAR_INTERFACE_DECL()
-    public:
-        Int32 volume;
-        Int32 originalVolume;
-        VolumePreference* mOwner;
-    };
-
 };
 
 }

@@ -10,14 +10,15 @@ using Elastos::Droid::Os::IBundle;
 namespace Elastos {
 namespace Droid {
 namespace Preference {
+
 class PreferenceScreenSavedState
     : public PreferenceBaseSavedState
     , public IPreferenceScreenSavedState
 {
 public:
-    PreferenceScreenSavedState();
-
     CAR_INTERFACE_DECL()
+
+    PreferenceScreenSavedState();
 
     CARAPI constructor();
 

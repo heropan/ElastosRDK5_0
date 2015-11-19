@@ -19,12 +19,12 @@ namespace Preference {
 // MultiSelectListPreference::MultiChoiceClickListener
 /////////////////////////////////////////////////////
 
+CAR_INTERFACE_IMPL(MultiSelectListPreference::MultiChoiceClickListener, Object, IDialogInterfaceOnMultiChoiceClickListener)
+
 MultiSelectListPreference::MultiChoiceClickListener::MultiChoiceClickListener(
     /* [in] */ MultiSelectListPreference* host)
     : mHost(host)
 {}
-
-CAR_INTERFACE_IMPL(MultiSelectListPreference::MultiChoiceClickListener, Object, IDialogInterfaceOnMultiChoiceClickListener)
 
 ECode MultiSelectListPreference::MultiChoiceClickListener::OnClick(
     /* [in] */ IDialogInterface* dialog,
@@ -50,10 +50,11 @@ ECode MultiSelectListPreference::MultiChoiceClickListener::OnClick(
     }
 }
 
-
 /////////////////////////////////////////////////////
 // MultiSelectListPreference
 /////////////////////////////////////////////////////
+
+CAR_INTERFACE_IMPL(MultiSelectListPreference, DialogPreference, IMultiSelectListPreference)
 
 MultiSelectListPreference::MultiSelectListPreference()
     : mPreferenceChanged(FALSE)
@@ -65,7 +66,7 @@ ECode MultiSelectListPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
+    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::MultiSelectListPreference),
@@ -75,7 +76,6 @@ ECode MultiSelectListPreference::constructor(
     a->GetTextArray(R::styleable::MultiSelectListPreference_entries, (ArrayOf<ICharSequence*>**)&mEntries);
     a->GetTextArray(R::styleable::MultiSelectListPreference_entryValues, (ArrayOf<ICharSequence*>**)&mEntryValues);
     a->Recycle();
-
     return NOERROR;
 }
 
@@ -99,8 +99,6 @@ ECode MultiSelectListPreference::constructor(
 {
     return constructor(context, NULL);
 }
-
-CAR_INTERFACE_IMPL(MultiSelectListPreference, DialogPreference, IMultiSelectListPreference)
 
 ECode MultiSelectListPreference::SetEntries(
     /* [in] */ ArrayOf<ICharSequence*>* entries)
@@ -247,7 +245,6 @@ AutoPtr< ArrayOf<Boolean> > MultiSelectListPreference::GetSelectedItems()
         Set<String>::Iterator itr = values.Find(entryValue);
         (*result)[i] = itr != values.End() ? TRUE : FALSE;
     }
-
     return result;
 }
 
@@ -344,139 +341,6 @@ ECode MultiSelectListPreference::OnSaveInstanceState(
     return NOERROR;
 }
 
-ECode MultiSelectListPreference::SetDialogTitle(
-    /* [in] */ ICharSequence* dialogTitle)
-{
-    return DialogPreference::SetDialogTitle(dialogTitle);
-}
-
-ECode MultiSelectListPreference::SetDialogTitle(
-    /* [in] */ Int32 dialogTitleResId)
-{
-    return DialogPreference::SetDialogTitle(dialogTitleResId);
-}
-
-ECode MultiSelectListPreference::GetDialogTitle(
-    /* [out] */ ICharSequence** title)
-{
-    return DialogPreference::GetDialogTitle(title);
-}
-
-ECode MultiSelectListPreference::SetDialogMessage(
-    /* [in] */ ICharSequence* dialogMessage)
-{
-    return DialogPreference::SetDialogMessage(dialogMessage);
-}
-
-ECode MultiSelectListPreference::SetDialogMessage(
-    /* [in] */ Int32 dialogMessageResId)
-{
-    return DialogPreference::SetDialogMessage(dialogMessageResId);
-}
-
-ECode MultiSelectListPreference::GetDialogMessage(
-    /* [out] */ ICharSequence** message)
-{
-    return DialogPreference::GetDialogMessage(message);
-}
-
-ECode MultiSelectListPreference::SetDialogIcon(
-    /* [in] */ IDrawable* dialogIcon)
-{
-    return DialogPreference::SetDialogIcon(dialogIcon);
-}
-
-ECode MultiSelectListPreference::SetDialogIcon(
-    /* [in] */ Int32 dialogIconRes)
-{
-    return DialogPreference::SetDialogIcon(dialogIconRes);
-}
-
-ECode MultiSelectListPreference::GetDialogIcon(
-    /* [out] */ IDrawable** icon)
-{
-    return DialogPreference::GetDialogIcon(icon);
-}
-
-ECode MultiSelectListPreference::SetPositiveButtonText(
-    /* [in] */ ICharSequence* positiveButtonText)
-{
-    return DialogPreference::SetPositiveButtonText(positiveButtonText);
-}
-
-ECode MultiSelectListPreference::SetPositiveButtonText(
-    /* [in] */ Int32 positiveButtonTextResId)
-{
-    return DialogPreference::SetPositiveButtonText(positiveButtonTextResId);
-}
-
-ECode MultiSelectListPreference::GetPositiveButtonText(
-    /* [out] */ ICharSequence** text)
-{
-    return DialogPreference::GetPositiveButtonText(text);
-}
-
-ECode MultiSelectListPreference::SetNegativeButtonText(
-    /* [in] */ ICharSequence* negativeButtonText)
-{
-    return DialogPreference::SetNegativeButtonText(negativeButtonText);
-}
-
-ECode MultiSelectListPreference::SetNegativeButtonText(
-    /* [in] */ Int32 negativeButtonTextResId)
-{
-    return DialogPreference::SetNegativeButtonText(negativeButtonTextResId);
-}
-
-ECode MultiSelectListPreference::GetNegativeButtonText(
-    /* [out] */ ICharSequence** text)
-{
-    return DialogPreference::GetNegativeButtonText(text);
-}
-
-ECode MultiSelectListPreference::SetDialogLayoutResource(
-    /* [in] */ Int32 dialogLayoutResId)
-{
-    return DialogPreference::SetDialogLayoutResource(dialogLayoutResId);
-}
-
-ECode MultiSelectListPreference::GetDialogLayoutResource(
-    /* [out] */ Int32* layoutResId)
-{
-    return DialogPreference::GetDialogLayoutResource(layoutResId);
-}
-
-ECode MultiSelectListPreference::ShowDialog(
-    /* [in] */ IBundle* state)
-{
-    return DialogPreference::ShowDialog(state);
-}
-
-ECode MultiSelectListPreference::NeedInputMethod(
-    /* [out] */ Boolean* isNeed)
-{
-    return DialogPreference::NeedInputMethod(isNeed);
-}
-
-ECode MultiSelectListPreference::OnCreateDialogView(
-    /* [out] */ IView** view)
-{
-    return DialogPreference::OnCreateDialogView(view);
-}
-
-ECode MultiSelectListPreference::OnBindDialogView(
-    /* [in] */ IView* view)
-{
-    return DialogPreference::OnBindDialogView(view);
-}
-
-ECode MultiSelectListPreference::GetDialog(
-    /* [out] */ IDialog** dialog)
-{
-    return DialogPreference::GetDialog(dialog);
-}
-
 }
 }
 }
-

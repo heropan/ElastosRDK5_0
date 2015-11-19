@@ -73,14 +73,14 @@ HashMap<String, AutoPtr<IConstructorInfo> > GenericInflater::sConstructorMap;
 // GenericInflater::FactoryMerger
 //====================================================
 
+CAR_INTERFACE_IMPL(GenericInflater::FactoryMerger, Object, IGenericInflaterFactory);
+
 GenericInflater::FactoryMerger::FactoryMerger(
     /* [in] */ IGenericInflaterFactory* f1,
     /* [in] */ IGenericInflaterFactory* f2)
     : mF1(f1)
     , mF2(f2)
 {}
-
-CAR_INTERFACE_IMPL(GenericInflater::FactoryMerger, Object, IGenericInflaterFactory);
 
 ECode GenericInflater::FactoryMerger::OnCreateItem(
     /* [in] */ const String& name,

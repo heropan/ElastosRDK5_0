@@ -28,10 +28,37 @@ ECode SeekBarPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    mProgress = 0;
-    mMax = 0;
-    mTrackingTouch = FALSE;
-    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
+    return Init(context, attrs, defStyleAttr, defStyleRes);
+}
+
+ECode SeekBarPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return Init(context, attrs, defStyleAttr, 0);
+}
+
+ECode SeekBarPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return Init(context, attrs, R::attr::seekBarPreferenceStyle, 0);
+}
+
+ECode SeekBarPreference::constructor(
+    /* [in] */ IContext* context)
+{
+    return Init(context, NULL, R::attr::seekBarPreferenceStyle, 0);
+}
+
+ECode SeekBarPreference::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ProgressBar),
@@ -43,38 +70,18 @@ ECode SeekBarPreference::constructor(
     SetMax(max);
     a->Recycle();
 
-    // attrIds = ArrayOf<Int32>::Alloc(
-    //         const_cast<Int32 *>(R::styleable::SeekBarPreference),
-    //         ARRAY_SIZE(R::styleable::SeekBarPreference));
-    // a = context.obtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes);
-    // Int32 layoutResId;
-    // a->GetResourceId(
-    //         R::styleable::SeekBarPreference_layout,
-    //         R::layout::preference_widget_seekbar, &layoutResId);
-    // a->Recycle();
-    // SetLayoutResource(layoutResId);
+    a = NULL;
+    attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::SeekBarPreference),
+            ARRAY_SIZE(R::styleable::SeekBarPreference));
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+    Int32 layoutResId;
+    a->GetResourceId(
+            R::styleable::SeekBarPreference_layout,
+            R::layout::preference_widget_seekbar, &layoutResId);
+    a->Recycle();
+    SetLayoutResource(layoutResId);
     return NOERROR;
-}
-
-ECode SeekBarPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-{
-    return constructor(context, attrs, defStyleAttr, 0);
-}
-
-ECode SeekBarPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return constructor(context, attrs, R::attr::seekBarPreferenceStyle, 0);
-}
-
-ECode SeekBarPreference::constructor(
-    /* [in] */ IContext* context)
-{
-    return constructor(context, NULL, R::attr::seekBarPreferenceStyle, 0);
 }
 
 ECode SeekBarPreference::OnBindView(
@@ -84,12 +91,11 @@ ECode SeekBarPreference::OnBindView(
     AutoPtr<ISeekBar> seekBar;
     view->FindViewById(R::id::seekbar, (IView**)&seekBar);
     seekBar->SetOnSeekBarChangeListener(this);
-    // IAbsSeekBar::Probe(seekBar)->SetMax(mMax);
+    IProgressBar::Probe(seekBar)->SetMax(mMax);
     IProgressBar::Probe(seekBar)->SetProgress(mProgress);
     Boolean isEnabled;
     IsEnabled(&isEnabled);
     IView::Probe(seekBar)->SetEnabled(isEnabled);
-
     return NOERROR;
 }
 
@@ -139,15 +145,16 @@ ECode SeekBarPreference::OnKey(
 {
     VALIDATE_NOT_NULL(result)
 
-    Int32 action;
+    Int32 action, progress;
+    GetProgress(&progress);
     if (event->GetAction(&action), action != IKeyEvent::ACTION_UP) {
         if (keyCode == IKeyEvent::KEYCODE_PLUS || keyCode == IKeyEvent::KEYCODE_EQUALS) {
-            SetProgress(GetProgress() + 1);
+            SetProgress(progress + 1);
             *result = TRUE;
             return NOERROR;
         }
         if (keyCode == IKeyEvent::KEYCODE_MINUS) {
-            SetProgress(GetProgress() - 1);
+            SetProgress(progress - 1);
             *result = TRUE;
             return NOERROR;
         }
@@ -156,22 +163,23 @@ ECode SeekBarPreference::OnKey(
     return NOERROR;
 }
 
-void SeekBarPreference::SetMax(
+ECode SeekBarPreference::SetMax(
     /* [in] */ Int32 max)
 {
     if (max != mMax) {
         mMax = max;
         NotifyChanged();
     }
+    return NOERROR;
 }
 
-void SeekBarPreference::SetProgress(
+ECode SeekBarPreference::SetProgress(
     /* [in] */ Int32 progress)
 {
-    SetProgress(progress, TRUE);
+    return SetProgress(progress, TRUE);
 }
 
-void SeekBarPreference::SetProgress(
+ECode SeekBarPreference::SetProgress(
     /* [in] */ Int32 progress,
     /* [in] */ Boolean notifyChanged)
 {
@@ -189,14 +197,18 @@ void SeekBarPreference::SetProgress(
             NotifyChanged();
         }
     }
+    return NOERROR;
 }
 
-Int32 SeekBarPreference::GetProgress()
+ECode SeekBarPreference::GetProgress(
+    /* [out] */ Int32* result)
 {
-    return mProgress;
+    VALIDATE_NOT_NULL(result)
+    *result = mProgress;
+    return NOERROR;
 }
 
-void SeekBarPreference::SyncProgress(
+ECode SeekBarPreference::SyncProgress(
     /* [in] */ ISeekBar* seekBar)
 {
     Int32 progress;
@@ -212,6 +224,7 @@ void SeekBarPreference::SyncProgress(
             IProgressBar::Probe(seekBar)->SetProgress(mProgress);
         }
     }
+    return NOERROR;
 }
 
 ECode SeekBarPreference::OnProgressChanged(

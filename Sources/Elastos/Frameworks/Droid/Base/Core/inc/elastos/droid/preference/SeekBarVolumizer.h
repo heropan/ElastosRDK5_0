@@ -4,26 +4,26 @@
 #define  __ELASTOS_DROID_PREFERENCE_SEEKBARVOLUMIZER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/Object.h>
-#include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::Widget::ISeekBarOnSeekBarChangeListener;
-using Elastos::Droid::Widget::ISeekBar;
-using Elastos::Droid::Os::IHandlerCallback;
-using Elastos::Droid::Media::IRingtone;
-using Elastos::Droid::Media::IAudioManager;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Database::ContentObserver;
-using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Database::IContentObserver;
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Media::IRingtone;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Widget::ISeekBarOnSeekBarChangeListener;
+using Elastos::Droid::Widget::ISeekBar;
 
 namespace Elastos {
 namespace Droid {
@@ -32,74 +32,9 @@ namespace Preference {
 class SeekBarVolumizer
     : public Object
     , public ISeekBarVolumizer
-    //, public ISeekBarOnSeekBarChangeListener
-    //, public IHandlerCallback
+    , public ISeekBarOnSeekBarChangeListener
+    , public IHandlerCallback
 {
-public:
-    SeekBarVolumizer();
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 streamType,
-        /* [in] */ IUri* defaultUri,
-        /* [in] */ ISeekBarVolumizerCallback* callback);
-
-    CAR_INTERFACE_DECL()
-
-    virtual CARAPI SetSeekBar(
-        /* [in] */ ISeekBar* seekBar);
-
-    CARAPI HandleMessage(
-        /* [in] */ IMessage* msg,
-        /* [out] */ Boolean* result);
-
-    virtual CARAPI PostStopSample();
-
-    virtual CARAPI Stop();
-
-    virtual CARAPI RevertVolume();
-
-    virtual CARAPI OnProgressChanged(
-        /* [in] */ ISeekBar* seekBar,
-        /* [in] */ Int32 progress,
-        /* [in] */ Boolean fromTouch);
-
-    virtual CARAPI PostSetVolume(
-        /* [in] */ Int32 progress);
-
-    virtual CARAPI OnStartTrackingTouch(
-        /* [in] */ ISeekBar* seekBar);
-
-    virtual CARAPI OnStopTrackingTouch(
-        /* [in] */ ISeekBar* seekBar);
-
-    virtual CARAPI IsSamplePlaying(
-        /* [out] */ Boolean* result);
-
-    virtual CARAPI StartSample();
-
-    virtual CARAPI StopSample();
-
-    virtual CARAPI GetSeekBar(
-        /* [out] */ ISeekBar** seekBar);
-
-    virtual CARAPI ChangeVolumeBy(
-        /* [in] */ Int32 amount);
-
-    virtual CARAPI MuteVolume();
-
-    virtual CARAPI OnSaveInstanceState(
-        /* [in] */ IVolumePreferenceVolumeStore* volumeStore);
-
-    virtual CARAPI OnRestoreInstanceState(
-        /* [in] */ IVolumePreferenceVolumeStore* volumeStore);
-
-private:
-    CARAPI_(void) OnInitSample();
-    CARAPI_(void) PostStartSample();
-    CARAPI_(void) OnStartSample();
-    CARAPI_(void) OnStopSample();
-
 private:
     class SeekBarVolumizerH
         : public Handler
@@ -136,7 +71,8 @@ private:
         SeekBarVolumizer* mOwner;
     };
 
-    class SeekBarVolumizerReceiver : public BroadcastReceiver
+    class SeekBarVolumizerReceiver
+        : public BroadcastReceiver
     {
         friend class SeekBarVolumizer;
     public:
@@ -154,6 +90,71 @@ private:
         Boolean mListening;
         SeekBarVolumizer* mOwner;
     };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    SeekBarVolumizer();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ Int32 streamType,
+        /* [in] */ IUri* defaultUri,
+        /* [in] */ ISeekBarVolumizerCallback* callback);
+
+    CARAPI SetSeekBar(
+        /* [in] */ ISeekBar* seekBar);
+
+    CARAPI HandleMessage(
+        /* [in] */ IMessage* msg,
+        /* [out] */ Boolean* result);
+
+    CARAPI PostStopSample();
+
+    CARAPI Stop();
+
+    CARAPI RevertVolume();
+
+    CARAPI OnProgressChanged(
+        /* [in] */ ISeekBar* seekBar,
+        /* [in] */ Int32 progress,
+        /* [in] */ Boolean fromTouch);
+
+    CARAPI PostSetVolume(
+        /* [in] */ Int32 progress);
+
+    CARAPI OnStartTrackingTouch(
+        /* [in] */ ISeekBar* seekBar);
+
+    CARAPI OnStopTrackingTouch(
+        /* [in] */ ISeekBar* seekBar);
+
+    CARAPI IsSamplePlaying(
+        /* [out] */ Boolean* result);
+
+    CARAPI StartSample();
+
+    CARAPI StopSample();
+
+    CARAPI GetSeekBar(
+        /* [out] */ ISeekBar** seekBar);
+
+    CARAPI ChangeVolumeBy(
+        /* [in] */ Int32 amount);
+
+    CARAPI MuteVolume();
+
+    CARAPI OnSaveInstanceState(
+        /* [in] */ IVolumePreferenceVolumeStore* volumeStore);
+
+    CARAPI OnRestoreInstanceState(
+        /* [in] */ IVolumePreferenceVolumeStore* volumeStore);
+
+private:
+    CARAPI_(void) OnInitSample();
+    CARAPI_(void) PostStartSample();
+    CARAPI_(void) OnStartSample();
+    CARAPI_(void) OnStopSample();
 
 private:
     const static String TAG;
@@ -179,7 +180,6 @@ private:
     const static Int32 MSG_STOP_SAMPLE = 2;
     const static Int32 MSG_INIT_SAMPLE = 3;
     const static Int32 CHECK_RINGTONE_PLAYBACK_DELAY_MS = 1000;
-
 };
 
 } // Preference

@@ -2,23 +2,21 @@
 #include "elastos/droid/preference/CheckBoxPreference.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CString;
 using Elastos::Droid::R;
+using Elastos::Droid::Widget::ICheckable;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
+
 CAR_INTERFACE_IMPL(CheckBoxPreference, TwoStatePreference, ICheckBoxPreference)
 
-ECode CheckBoxPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
+CheckBoxPreference::CheckBoxPreference()
 {
-    return constructor(context, attrs, defStyleAttr, 0);
 }
 
-ECode CheckBoxPreference::constructor(
+ECode CheckBoxPreference::Init(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -55,15 +53,32 @@ ECode CheckBoxPreference::constructor(
 
 ECode CheckBoxPreference::constructor(
     /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return Init(context, attrs, defStyleAttr, 0);
+}
+
+ECode CheckBoxPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    return Init(context, attrs, defStyleAttr, defStyleRes);
+}
+
+ECode CheckBoxPreference::constructor(
+    /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return constructor(context, attrs, R::attr::checkBoxPreferenceStyle);
+    return Init(context, attrs, R::attr::checkBoxPreferenceStyle, 0);
 }
 
 ECode CheckBoxPreference::constructor(
     /* [in] */ IContext* context)
 {
-    return constructor(context, NULL);
+    return Init(context, NULL, R::attr::checkBoxPreferenceStyle, 0);
 }
 
 ECode CheckBoxPreference::OnBindView(

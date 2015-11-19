@@ -16,12 +16,12 @@ namespace Preference {
 // ListPreference::DialogInterfaceOnClickListener
 /////////////////////////////////////////////////////
 
+CAR_INTERFACE_IMPL(ListPreference::DialogInterfaceOnClickListener, Object,IDialogInterfaceOnClickListener)
+
 ListPreference::DialogInterfaceOnClickListener::DialogInterfaceOnClickListener(
     /* [in] */ ListPreference* host)
     : mHost(host)
 {}
-
-CAR_INTERFACE_IMPL(ListPreference::DialogInterfaceOnClickListener, Object,IDialogInterfaceOnClickListener)
 
 ECode ListPreference::DialogInterfaceOnClickListener::OnClick(
     /* [in] */ IDialogInterface* dialog,
@@ -35,20 +35,70 @@ ECode ListPreference::DialogInterfaceOnClickListener::OnClick(
      */
     mHost->OnClick(dialog, IDialogInterface::BUTTON_POSITIVE);
     dialog->Dismiss();
-
     return NOERROR;
 }
-
 
 /////////////////////////////////////////////////////
 // ListPreference
 /////////////////////////////////////////////////////
 
+CAR_INTERFACE_IMPL(ListPreference, DialogPreference, IListPreference)
+
 ListPreference::ListPreference()
     : mClickedDialogEntryIndex(0)
+    , mValueSet(FALSE)
 {}
 
-CAR_INTERFACE_IMPL(ListPreference, DialogPreference, IListPreference)
+ECode ListPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
+
+    AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::ListPreference),
+            ARRAY_SIZE(R::styleable::ListPreference));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+    a->GetTextArray(R::styleable::ListPreference_entries, (ArrayOf<ICharSequence*>**)&mEntries);
+    a->GetTextArray(R::styleable::ListPreference_entryValues, (ArrayOf<ICharSequence*>**)&mEntryValues);
+    a->Recycle();
+
+    /* Retrieve the Preference summary attribute since it's private
+     * in the Preference class.
+     */
+    a = NULL;
+    attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::Preference),
+            ARRAY_SIZE(R::styleable::Preference));
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+    a->GetString(R::styleable::Preference_summary, &mSummary);
+    a->Recycle();
+    return NOERROR;
+}
+
+ECode ListPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode ListPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::dialogPreferenceStyle);
+}
+
+ECode ListPreference::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
 
 ECode ListPreference::SetEntries(
     /* [in] */ ArrayOf<ICharSequence*>* entries)
@@ -109,6 +159,7 @@ ECode ListPreference::GetEntryValues(
 ECode ListPreference::SetValue(
     /* [in] */ const String& value)
 {
+    assert(0);
     // Always persist/notify the first time.
     // Boolean changed = !TextUtils::Equals(mValue, value);
     // if (changed || !mValueSet) {
@@ -166,7 +217,6 @@ ECode ListPreference::SetValueIndex(
         cstr->ToString(&str);
         SetValue(str);
     }
-
     return NOERROR;
 }
 
@@ -189,7 +239,6 @@ ECode ListPreference::GetEntry(
     else {
         *entry = NULL;
     }
-
     return NOERROR;
 }
 
@@ -240,8 +289,8 @@ ECode ListPreference::OnPrepareDialogBuilder(
      * click-on-an-item dismiss the dialog instead of the user having to
      * press 'Ok'.
      */
+    assert(0);
     // builder->SetPositiveButton(NULL, NULL);
-
     return NOERROR;
 }
 
@@ -267,6 +316,7 @@ ECode ListPreference::OnGetDefaultValue(
     /* [in] */ Int32 index,
     /* [out] */ IInterface** value)
 {
+    VALIDATE_NOT_NULL(value)
     String str;
     a->GetString(index, &str);
     AutoPtr<ICharSequence> cs;
@@ -280,6 +330,7 @@ ECode ListPreference::OnSetInitialValue(
     /* [in] */ Boolean restoreValue,
     /* [in] */ IInterface* defaultValue)
 {
+    VALIDATE_NOT_NULL(defaultValue)
     String value;
     if (restoreValue) {
         GetPersistedString(mValue, &value);
@@ -287,7 +338,6 @@ ECode ListPreference::OnSetInitialValue(
     else {
         ICharSequence::Probe(defaultValue)->ToString(&value);
     }
-
     return SetValue(value);
 }
 
@@ -314,7 +364,6 @@ ECode ListPreference::OnSaveInstanceState(
     myState->SetValue(&value);
     *parcel = IParcelable::Probe(myState);
     REFCOUNT_ADD(*parcel)
-
     return NOERROR;
 }
 
@@ -327,6 +376,7 @@ ECode ListPreference::OnRestoreInstanceState(
     }
 
     AutoPtr<IListPreferenceSavedState> myState = IListPreferenceSavedState::Probe(state);
+    assert(0);
     // AutoPtr<IParcelable> superState;
     // myState->GetSuperState((IParcelable**)&superState);
     // DialogPreference::OnRestoreInstanceState(superState);
@@ -334,190 +384,6 @@ ECode ListPreference::OnRestoreInstanceState(
     // myState->GetValue(&value);
     // SetValue(&value);
     return NOERROR;
-}
-
-ECode ListPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
-
-    AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::ListPreference),
-            ARRAY_SIZE(R::styleable::ListPreference));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
-    a->GetTextArray(R::styleable::ListPreference_entries, (ArrayOf<ICharSequence*>**)&mEntries);
-    a->GetTextArray(R::styleable::ListPreference_entryValues, (ArrayOf<ICharSequence*>**)&mEntryValues);
-    a->Recycle();
-
-    /* Retrieve the Preference summary attribute since it's private
-     * in the Preference class.
-     */
-    a = NULL;
-    attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::Preference),
-            ARRAY_SIZE(R::styleable::Preference));
-    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
-    a->GetString(R::styleable::Preference_summary, &mSummary);
-    a->Recycle();
-
-    return NOERROR;
-}
-
-ECode ListPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-{
-    return constructor(context, attrs, defStyleAttr, 0);
-}
-
-ECode ListPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return constructor(context, attrs, R::attr::dialogPreferenceStyle);
-}
-
-ECode ListPreference::constructor(
-    /* [in] */ IContext* context)
-{
-    return constructor(context, NULL);
-}
-
-ECode ListPreference::SetDialogTitle(
-    /* [in] */ ICharSequence* dialogTitle)
-{
-    return DialogPreference::SetDialogTitle(dialogTitle);
-}
-
-ECode ListPreference::SetDialogTitle(
-    /* [in] */ Int32 dialogTitleResId)
-{
-    return DialogPreference::SetDialogTitle(dialogTitleResId);
-}
-
-ECode ListPreference::GetDialogTitle(
-    /* [out] */ ICharSequence** title)
-{
-    return DialogPreference::GetDialogTitle(title);
-}
-
-ECode ListPreference::SetDialogMessage(
-    /* [in] */ ICharSequence* dialogMessage)
-{
-    return DialogPreference::SetDialogMessage(dialogMessage);
-}
-
-ECode ListPreference::SetDialogMessage(
-    /* [in] */ Int32 dialogMessageResId)
-{
-    return DialogPreference::SetDialogMessage(dialogMessageResId);
-}
-
-ECode ListPreference::GetDialogMessage(
-    /* [out] */ ICharSequence** message)
-{
-    return DialogPreference::GetDialogMessage(message);
-}
-
-ECode ListPreference::SetDialogIcon(
-    /* [in] */ IDrawable* dialogIcon)
-{
-    return DialogPreference::SetDialogIcon(dialogIcon);
-}
-
-ECode ListPreference::SetDialogIcon(
-    /* [in] */ Int32 dialogIconRes)
-{
-    return DialogPreference::SetDialogIcon(dialogIconRes);
-}
-
-ECode ListPreference::GetDialogIcon(
-    /* [out] */ IDrawable** icon)
-{
-    return DialogPreference::GetDialogIcon(icon);
-}
-
-ECode ListPreference::SetPositiveButtonText(
-    /* [in] */ ICharSequence* positiveButtonText)
-{
-    return DialogPreference::SetPositiveButtonText(positiveButtonText);
-}
-
-ECode ListPreference::SetPositiveButtonText(
-    /* [in] */ Int32 positiveButtonTextResId)
-{
-    return DialogPreference::SetPositiveButtonText(positiveButtonTextResId);
-}
-
-ECode ListPreference::GetPositiveButtonText(
-    /* [out] */ ICharSequence** text)
-{
-    return DialogPreference::GetPositiveButtonText(text);
-}
-
-ECode ListPreference::SetNegativeButtonText(
-    /* [in] */ ICharSequence* negativeButtonText)
-{
-    return DialogPreference::SetNegativeButtonText(negativeButtonText);
-}
-
-ECode ListPreference::SetNegativeButtonText(
-    /* [in] */ Int32 negativeButtonTextResId)
-{
-    return DialogPreference::SetNegativeButtonText(negativeButtonTextResId);
-}
-
-ECode ListPreference::GetNegativeButtonText(
-    /* [out] */ ICharSequence** text)
-{
-    return DialogPreference::GetNegativeButtonText(text);
-}
-
-ECode ListPreference::SetDialogLayoutResource(
-    /* [in] */ Int32 dialogLayoutResId)
-{
-    return DialogPreference::SetDialogLayoutResource(dialogLayoutResId);
-}
-
-ECode ListPreference::GetDialogLayoutResource(
-    /* [out] */ Int32* layoutResId)
-{
-    return DialogPreference::GetDialogLayoutResource(layoutResId);
-}
-
-ECode ListPreference::ShowDialog(
-    /* [in] */ IBundle* state)
-{
-    return DialogPreference::ShowDialog(state);
-}
-
-ECode ListPreference::NeedInputMethod(
-    /* [out] */ Boolean* isNeed)
-{
-    return DialogPreference::NeedInputMethod(isNeed);
-}
-
-ECode ListPreference::OnCreateDialogView(
-    /* [out] */ IView** view)
-{
-    return DialogPreference::OnCreateDialogView(view);
-}
-
-ECode ListPreference::OnBindDialogView(
-    /* [in] */ IView* view)
-{
-    return DialogPreference::OnBindDialogView(view);
-}
-
-ECode ListPreference::GetDialog(
-    /* [out] */ IDialog** dialog)
-{
-    return DialogPreference::GetDialog(dialog);
 }
 
 }

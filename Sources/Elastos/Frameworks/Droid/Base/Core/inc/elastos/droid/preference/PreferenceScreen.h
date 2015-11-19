@@ -8,10 +8,10 @@
 using Elastos::Droid::App::IDialog;
 using Elastos::Droid::Content::IDialogInterfaceOnDismissListener;
 using Elastos::Droid::Content::IDialogInterface;
-using Elastos::Droid::Widget::IListAdapter;
-using Elastos::Droid::Widget::IListView;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
+using Elastos::Droid::Widget::IListAdapter;
+using Elastos::Droid::Widget::IListView;
 
 namespace Elastos {
 namespace Droid {
@@ -19,10 +19,13 @@ namespace Preference {
 
 class PreferenceScreen
     : public PreferenceGroup
+    , public IPreferenceScreen
     , public IAdapterViewOnItemClickListener
 {
 public:
     CAR_INTERFACE_DECL()
+
+    PreferenceScreen();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -37,6 +40,7 @@ public:
     CARAPI Bind(
         /* [in] */ IListView* listView);
 
+    //@Override
     CARAPI OnClick();
 
     CARAPI OnDismiss(
@@ -51,46 +55,16 @@ public:
         /* [in] */ Int32 position,
         /* [in] */ Int64 id);
 
-    CARAPI SetOrderingAsAdded(
-        /* [in] */ Boolean orderingAsAdded);
-
-    CARAPI IsOrderingAsAdded(
-        /* [out] */ Boolean* added);
-
-    CARAPI GetPreferenceCount(
-        /* [out] */ Int32* count);
-
-    CARAPI GetPreference(
-        /* [in] */ Int32 index,
-        /* [out] */ IPreference** preference);
-
-    CARAPI AddPreference(
-        /* [in] */ IPreference* preference,
-        /* [out] */ Boolean* result);
-
-    CARAPI RemovePreference(
-        /* [in] */ IPreference* preference,
-        /* [out] */ Boolean* result);
-
-    CARAPI RemoveAll();
-
-    CARAPI FindPreference(
-        /* [in] */ ICharSequence* key,
-        /* [out] */ IPreference** preference);
-
-    CARAPI SortPreferences();
-
-    CARAPI OnPrepareAddPreference(
-        /* [in] */ IPreference* preference,
-        /* [out] */ Boolean* result);
-
 protected:
+    //@Override
     CARAPI IsOnSameScreenAsChildren(
         /* [out] */ Boolean* isOnSameScreenAsChildren);
 
+    //@Override
     CARAPI OnSaveInstanceState(
         /* [out] */ IParcelable** state);
 
+    //@Override
     CARAPI OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
 
@@ -100,8 +74,8 @@ private:
 
 private:
     AutoPtr<IListAdapter> mRootAdapter;
-    AutoPtr<IDialog>      mDialog;
-    AutoPtr<IListView>    mListView;
+    AutoPtr<IDialog> mDialog;
+    AutoPtr<IListView> mListView;
 };
 
 }

@@ -16,7 +16,7 @@ class PreferenceInflater
 public:
     CAR_INTERFACE_DECL()
 
-    PreferenceInflater(){}
+    PreferenceInflater();
 
     CARAPI constructor(
         /* [in] */ IContext* context,

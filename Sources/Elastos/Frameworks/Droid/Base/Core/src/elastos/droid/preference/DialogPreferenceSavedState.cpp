@@ -5,18 +5,15 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
+CAR_INTERFACE_IMPL(DialogPreferenceSavedState, PreferenceBaseSavedState, IDialogPreferenceSavedState)
+
 DialogPreferenceSavedState::DialogPreferenceSavedState()
     : mIsDialogShowing(FALSE)
 {}
 
 ECode DialogPreferenceSavedState::constructor()
 {
-    PreferenceBaseSavedState::constructor();
-    // Int32 i;
-    // source->ReadInt32(&i);
-    // mIsDialogShowing = i == 1;
-    // source->ReadBundle((IBundle**)&mDialogBundle);
-    return NOERROR;
+    return PreferenceBaseSavedState::constructor();
 }
 
 ECode DialogPreferenceSavedState::constructor(
@@ -24,8 +21,6 @@ ECode DialogPreferenceSavedState::constructor(
 {
     return PreferenceBaseSavedState::constructor(source);
 }
-
-CAR_INTERFACE_IMPL(DialogPreferenceSavedState, PreferenceBaseSavedState, IDialogPreferenceSavedState)
 
 ECode DialogPreferenceSavedState::GetIsDialogShowing(
     /* [out] */ Boolean* isShow)

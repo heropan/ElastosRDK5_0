@@ -4,8 +4,8 @@
 // #include "elastos/droid/app/CAlertDialogBuilder.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/view/LayoutInflater.h"
 
 using Elastos::Core::CString;
 //using Elastos::Droid::App::CAlertDialogBuilder;
@@ -15,6 +15,7 @@ using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnDismissListener;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::R;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::ILayoutInflater;
@@ -22,20 +23,19 @@ using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
+
+CAR_INTERFACE_IMPL_4(DialogPreference, Preference, IDialogPreference, IDialogInterfaceOnClickListener, IDialogInterfaceOnDismissListener, IPreferenceManagerOnActivityDestroyListener)
 
 DialogPreference::DialogPreference()
     : mDialogLayoutResId(0)
     , mWhichButtonClicked(0)
 {}
 
-CAR_INTERFACE_IMPL_4(DialogPreference, Preference, IDialogPreference, IDialogInterfaceOnClickListener, IDialogInterfaceOnDismissListener, IPreferenceManagerOnActivityDestroyListener)
-
-ECode DialogPreference::constructor(
+ECode DialogPreference::Init(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -74,16 +74,25 @@ ECode DialogPreference::constructor(
 ECode DialogPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
-    return constructor(context, attrs, defStyleAttr, 0);
+    return Init(context, attrs, defStyleAttr, defStyleRes);
+}
+
+ECode DialogPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyle)
+{
+    return Init(context, attrs, defStyle, 0);
 }
 
 ECode DialogPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return constructor(context, attrs, R::attr::dialogPreferenceStyle);
+    return Init(context, attrs, R::attr::dialogPreferenceStyle, 0);
 }
 
 ECode DialogPreference::SetDialogTitle(
@@ -251,7 +260,6 @@ ECode DialogPreference::OnClick()
     if (mDialog != NULL && (mDialog->IsShowing(&isShowing), isShowing)) {
         return NOERROR;
     }
-
     return ShowDialog(NULL);
 }
 
@@ -263,6 +271,7 @@ ECode DialogPreference::ShowDialog(
 
     mWhichButtonClicked = IDialogInterface::BUTTON_NEGATIVE;
 
+    assert(0);
     // mBuilder = NULL;
     // CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&mBuilder);
     // mBuilder->SetTitle(mDialogTitle);
@@ -331,6 +340,7 @@ ECode DialogPreference::OnCreateDialogView(
 
     AutoPtr<IContext> context;
     mBuilder->GetContext((IContext**)&context);
+    assert(0);
     // AutoPtr<ILayoutInflater> inflater;
     // LayoutInflater::From(context, (ILayoutInflater**)&inflater);
     // return inflater->Inflate(mDialogLayoutResId, NULL, view);
@@ -347,7 +357,7 @@ ECode DialogPreference::OnBindDialogView(
         AutoPtr<ICharSequence> message;
         GetDialogMessage((ICharSequence**)&message);
         Int32 newVisibility = IView::GONE;
-
+        assert(0);
         // if (!TextUtils::IsEmpty(message)) {
         //     AutoPtr<ITextView> textView = ITextView::Probe(dialogMessageView);
         //     if (textView != NULL) {
@@ -443,7 +453,7 @@ ECode DialogPreference::OnRestoreInstanceState(
         Preference::OnRestoreInstanceState(state);
         return NOERROR;
     }
-
+    assert(0);
     // AutoPtr<IDialogPreferenceSavedState> myState = IDialogPreferenceSavedState::Probe(state);
     // AutoPtr<IParcelable> superState;
     // myState->GetSuperState((IParcelable**)&superState);
@@ -454,7 +464,6 @@ ECode DialogPreference::OnRestoreInstanceState(
     //     myState->GetDialogBundle((IBundle**)&bundle);
     //     ShowDialog(bundle);
     // }
-
     return NOERROR;
 }
 

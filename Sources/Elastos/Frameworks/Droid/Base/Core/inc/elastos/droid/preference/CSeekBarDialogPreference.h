@@ -16,7 +16,6 @@ CarClass(CSeekBarDialogPreference)
 {
 public:
     CAR_OBJECT_DECL()
-
 };
 
 }
