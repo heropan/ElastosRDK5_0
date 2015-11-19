@@ -1,9 +1,10 @@
 
-#ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_SUBMENUBUILDERBASE_H__
-#define __ELASTOS_DROID_INTERNAL_VIEW_MENU_SUBMENUBUILDERBASE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_SUBMENUBUILDER_H__
+#define __ELASTOS_DROID_INTERNAL_VIEW_MENU_SUBMENUBUILDER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/internal/view/menu/MenuBuilder.h"
+
+using Elastos::Droid::View::ISubMenu;
 
 namespace Elastos {
 namespace Droid {
@@ -15,13 +16,17 @@ namespace Menu {
  * The model for a sub menu, which is an extension of the menu.  Most methods are proxied to
  * the parent menu.
  */
-class SubMenuBuilderBase
+class SubMenuBuilder
     : public MenuBuilder
+    , public ISubMenuBuilder
+    , public ISubMenu
 {
 public:
     using MenuBuilder::GetItem;
 
-    SubMenuBuilderBase(
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IMenuBuilder* parentMenu,
         /* [in] */ IMenuItemImpl* item);
@@ -31,25 +36,30 @@ public:
         /* [in] */ Boolean isQwerty);
 
     //@override
-    CARAPI_(Boolean) IsQwertyMode();
+    CARAPI IsQwertyMode(
+        /* [out] */ Boolean* result);
 
     //@override
     CARAPI SetShortcutsVisible(
         /* [in] */ Boolean shortcutsVisible);
 
     //@override
-    CARAPI_(Boolean) IsShortcutsVisible();
+    CARAPI IsShortcutsVisible(
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(AutoPtr<IMenu>) GetParentMenu();
+    CARAPI GetParentMenu(
+        /* [out] */ IMenu** menu);
 
-    virtual CARAPI_(AutoPtr<IMenuItem>) GetItem();
+    CARAPI GetItem(
+        /* [out] */ IMenuItem** item);
 
     //@override
     CARAPI SetCallback(
         /* [in] */ IMenuBuilderCallback* callback);
 
     //@override
-    CARAPI_(AutoPtr<IMenuBuilder>) GetRootMenu();
+    CARAPI GetRootMenu(
+        /* [out] */ IMenuBuilder** rootMenu);
 
     CARAPI_(Boolean) DispatchMenuItemSelected(
         /* [in] */ IMenuBuilder* menu,
@@ -76,26 +86,20 @@ public:
     CARAPI SetHeaderView(
         /* [in] */ IView* view);
 
-    CARAPI_(Boolean) ExpandItemActionView(
-        /* [in] */ IMenuItemImpl* item);
+    CARAPI ExpandItemActionView(
+        /* [in] */ IMenuItemImpl* item,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) CollapseItemActionView(
-        /* [in] */ IMenuItemImpl* item);
+    CARAPI CollapseItemActionView(
+        /* [in] */ IMenuItemImpl* item,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(void) GetActionViewStatesKey(
+    CARAPI GetActionViewStatesKey(
         /* [out] */ String* key);
 
-protected:
-    SubMenuBuilderBase();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IMenuBuilder* parentMenu,
-        /* [in] */ IMenuItemImpl* item);
-
 private:
-    AutoPtr<IMenuBuilder> mParentMenu;
-    AutoPtr<IMenuItem> mItem;
+    AutoPtr<MenuBuilder> mParentMenu;
+    AutoPtr<IMenuItemImpl> mItem;
 };
 
 } // namespace Menu
@@ -104,4 +108,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ELASTOS_DROID_INTERNAL_VIEW_MENU_SUBMENUBUILDERBASE_H__
+#endif  //__ELASTOS_DROID_INTERNAL_VIEW_MENU_SUBMENUBUILDER_H__

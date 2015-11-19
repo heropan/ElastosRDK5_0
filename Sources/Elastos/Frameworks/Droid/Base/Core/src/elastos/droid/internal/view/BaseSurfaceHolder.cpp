@@ -1,7 +1,7 @@
 
 #include "elastos/droid/internal/view/BaseSurfaceHolder.h"
 #ifdef DROID_CORE
-#include "elastos/droid/internal/view/CSurface.h"
+#include "elastos/droid/view/CSurface.h"
 #include "elastos/droid/graphics/CRect.h"
 #endif
 #include "elastos/droid/os/SystemClock.h"
@@ -12,7 +12,8 @@
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::SystemClock;
-using Elastos::Utility::Etl::Vector;
+using Elastos::Droid::View::CSurface;
+using Elastos::Utility::Concurrent::Locks::CReentrantLock;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -21,7 +22,7 @@ namespace Internal {
 namespace View {
 
 const Boolean BaseSurfaceHolder::DEBUG = FALSE;
-const char* BaseSurfaceHolder::TAG = "BaseSurfaceHolder";
+const String BaseSurfaceHolder::TAG("BaseSurfaceHolder");
 
 CAR_INTERFACE_IMPL(BaseSurfaceHolder, ISurfaceHolder);
 
@@ -34,6 +35,7 @@ BaseSurfaceHolder::BaseSurfaceHolder() :
     mLastLockTime(0),
     mType(-1)
 {
+    ASSERT_SUCCEEDED(CReentrantLock::New((IReentrantLock**)&mSurfaceLock));
     ASSERT_SUCCEEDED(CSurface::New((ISurface**)&mSurface));
     ASSERT_SUCCEEDED(CRect::New((IRect**)&mSurfaceFrame));
 }

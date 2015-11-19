@@ -1,7 +1,8 @@
-#ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_CACTIONBARPOLICY_H__
-#define __ELASTOS_DROID_INTERNAL_VIEW_MENU_CACTIONBARPOLICY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_ACTIONBARPOLICY_H__
+#define __ELASTOS_DROID_INTERNAL_VIEW_MENU_ACTIONBARPOLICY_H__
 
-#include "_Elastos_Droid_Internal_View_Menu_CActionBarPolicy.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -9,15 +10,16 @@ namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace View {
-namespace Menu {
 
-CarClass(CActionBarPolicy)
+class ActionBarPolicy
+    : public Object
+    , public IActionBarPolicy
 {
 public:
-    CActionBarPolicy();
+    static CARAPI_(AutoPtr<IActionBarPolicy>) Get(
+        /* [in] */ IContext* context);
 
-    CARAPI constructor(
-        /* [in] */ IContext* ctx);
+    CAR_INTERFACE_DECL()
 
     CARAPI GetMaxActionButtons(
         /* [out] */ Int32* rst);
@@ -39,14 +41,18 @@ public:
 
     CARAPI GetStackedTabMaxWidth(
         /* [out] */ Int32* rst);
+
+private:
+    ActionBarPolicy(
+        /* [in] */ IContext* ctx);
+
 private:
     AutoPtr<IContext> mContext;
-
 };
 
-} // namespace Menu
 } // namespace View
+} // namespace Internal
 } // namepsace Droid
 } // namespace Elastos
 
-#endif
+#endif //__ELASTOS_DROID_INTERNAL_VIEW_MENU_ACTIONBARPOLICY_H__

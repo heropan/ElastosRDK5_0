@@ -21,16 +21,17 @@ namespace View {
 
 class BaseIWindow
     : public Object
+    , public IBaseIWindow
     , public IIWindow
     , public IBinder
 {
 public:
     CAR_INTERFACE_DECL()
 
-    virtual CARAPI SetSession(
+    CARAPI SetSession(
         /* [in] */ IWindowSession* session);
 
-    virtual CARAPI Resized(
+    CARAPI Resized(
         /* [in] */ IRect* frame,
         /* [in] */ IRect* overscanInsets,
         /* [in] */ IRect* contentInsets,
@@ -39,47 +40,44 @@ public:
         /* [in] */ Boolean reportDraw,
         /* [in] */ IConfiguration* newConfig);
 
-    virtual CARAPI Moved(
+    CARAPI Moved(
         /* [in] */ Int32 newX,
         /* [in] */ Int32 newY);
 
-    virtual CARAPI DispatchAppVisibility(
+    CARAPI DispatchAppVisibility(
         /* [in] */ Boolean visible);
 
-    virtual CARAPI DispatchGetNewSurface();
+    CARAPI DispatchGetNewSurface();
 
-    virtual CARAPI DispatchScreenState(
-        /* [in] */ Boolean on);
-
-    virtual CARAPI WindowFocusChanged(
+    CARAPI WindowFocusChanged(
         /* [in] */ Boolean hasFocus,
         /* [in] */ Boolean touchEnabled);
 
-    virtual CARAPI ExecuteCommand(
+    CARAPI ExecuteCommand(
         /* [in] */ const String& command,
         /* [in] */ const String& parameters,
         /* [in] */ IParcelFileDescriptor* out);
 
-    virtual CARAPI CloseSystemDialogs(
+    CARAPI CloseSystemDialogs(
         /* [in] */ const String& reason);
 
-    virtual CARAPI DispatchWallpaperOffsets(
+    CARAPI DispatchWallpaperOffsets(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Float xStep,
         /* [in] */ Float yStep,
         /* [in] */ Boolean sync);
 
-    virtual CARAPI DispatchDragEvent(
+    CARAPI DispatchDragEvent(
         /* [in] */ IDragEvent* event);
 
-    virtual CARAPI DispatchSystemUiVisibilityChanged(
+    CARAPI DispatchSystemUiVisibilityChanged(
         /* [in] */ Int32 seq,
         /* [in] */ Int32 globalUi,
         /* [in] */ Int32 localValue,
         /* [in] */ Int32 localChanges);
 
-    virtual CARAPI DispatchWallpaperCommand(
+    CARAPI DispatchWallpaperCommand(
         /* [in] */ const String& action,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
@@ -87,7 +85,13 @@ public:
         /* [in] */ IBundle* extras,
         /* [in] */ Boolean sync);
 
-    virtual CARAPI DoneAnimating();
+    CARAPI DoneAnimating();
+
+    CARAPI SetSeq(
+        /* [in] */ Int32 seq);
+
+    CARAPI GetSeq(
+        /* [out] */ Int32* seq);
 
 public:
     Int32 mSeq;

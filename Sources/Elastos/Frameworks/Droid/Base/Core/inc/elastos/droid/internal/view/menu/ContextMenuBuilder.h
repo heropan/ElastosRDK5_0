@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_CONTEXTMENUBUILDERBASE_H__
-#define __ELASTOS_DROID_INTERNAL_VIEW_MENU_CONTEXTMENUBUILDERBASE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_CONTEXTMENUBUILDER_H__
+#define __ELASTOS_DROID_INTERNAL_VIEW_MENU_CONTEXTMENUBUILDER_H__
 
 #include "elastos/droid/internal/view/menu/MenuBuilder.h"
 
@@ -103,6 +103,8 @@ public:
         /* [in] */ IView* originalView,
         /* [in] */ IBinder* token,
         /* [out] */ IMenuDialogHelper** helper);
+
+    CARAPI ClearHeader();
 };
 
 } // namespace Menu
@@ -111,4 +113,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ELASTOS_DROID_INTERNAL_VIEW_MENU_CONTEXTMENUBUILDERBASE_H__
+#endif  //__ELASTOS_DROID_INTERNAL_VIEW_MENU_CONTEXTMENUBUILDER_H__

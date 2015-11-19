@@ -12,3 +12,5 @@ VPATH += $(MAKEDIR)/animation
 
 SOURCES += BaseIWindow.cpp
 SOURCES += NativeInterpolatorFactoryHelper.cpp
+
+ELASTOS_LIBS += menu/menu.lib

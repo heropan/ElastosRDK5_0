@@ -2,9 +2,16 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_EXPANDEDMENUVIEW_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_EXPANDEDMENUVIEW_H__
 
+#if 0
 #include "elastos/droid/widget/ListView.h"
+#else
+#include "elastos/droid/view/ViewGroup.h"
 
-using Elastos::Droid::Widget::ListView;
+using Elastos::Droid::View::ViewGroup;
+
+#endif
+
+// using Elastos::Droid::Widget::ListView;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
 
@@ -19,7 +26,11 @@ namespace Menu {
  * by the user clicking no the 'More' button on the icon menu view.
  */
 class ExpandedMenuView
+#if 0
     : public ListView
+#else
+    : public ViewGroup
+#endif
     , public IExpandedMenuView
     , public IMenuBuilderItemInvoker
     , public IMenuView
@@ -49,6 +60,8 @@ private:
     };
 
 public:
+    ExpandedMenuView();
+
     CAR_INTERFACE_DECL();
 
     /**
@@ -76,7 +89,16 @@ public:
         /* [out] */ Int32* animations);
 
 protected:
-    ExpandedMenuView();
+    CARAPI OnLayout(
+        /* [in] */ Boolean changed,
+        /* [in] */ Int32 l,
+        /* [in] */ Int32 t,
+        /* [in] */ Int32 r,
+        /* [in] */ Int32 b)
+    {
+        assert(0 && "TODO:delete");
+        return NOERROR;
+    }
 
     //@override
     CARAPI OnDetachedFromWindow();

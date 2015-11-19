@@ -2,10 +2,18 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_ListMenuItemView_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_ListMenuItemView_H__
 
-#include "elastos/droid/internal/view/menu/MenuItemImpl.h"
+#if 0
 #include "elastos/droid/widget/LinearLayout.h"
+#else
+#include "elastos/droid/view/ViewGroup.h"
 
-using Elastos::Droid::Widget::LinearLayout;
+using Elastos::Droid::View::ViewGroup;
+
+#endif
+
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+// using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Widget::IRadioButton;
 using Elastos::Droid::Widget::ITextView;
@@ -17,50 +25,85 @@ namespace Internal {
 namespace View {
 namespace Menu {
 
-class ListMenuItemView : public LinearLayout
+class ListMenuItemView
+#if 0
+    : public LinearLayout
+#else
+    : public ViewGroup
+#endif
+    , public IListMenuItemView
+    , public IMenuItemView
 {
 public:
-    ListMenuItemView(
+    ListMenuItemView();
+
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = 0);
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
-    virtual CARAPI Initialize(
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI Initialize(
         /* [in] */ IMenuItemImpl* itemData,
         /* [in] */ Int32 menuType);
 
-    virtual CARAPI SetForceShowIcon(
+    CARAPI SetForceShowIcon(
         /* [in] */ Boolean forceShow);
 
-    virtual CARAPI SetTitle(
+    CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    virtual CARAPI_(AutoPtr<IMenuItemImpl>) GetItemData();
+    CARAPI GetItemData(
+        /* [out] */ IMenuItemImpl** itemData);
 
-    virtual CARAPI SetCheckable(
+    CARAPI SetCheckable(
         /* [in] */ Boolean checkable);
 
-    virtual CARAPI SetChecked(
+    CARAPI SetChecked(
         /* [in] */ Boolean checked);
 
-    virtual CARAPI SetShortcut(
+    CARAPI SetShortcut(
         /* [in] */ Boolean showShortcut,
         /* [in] */ Char32 shortcutKey);
 
-    virtual CARAPI SetIcon(
+    CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
-    virtual CARAPI_(Boolean) PrefersCondensedTitle();
+    CARAPI PrefersCondensedTitle(
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) ShowsIcon();
+    CARAPI ShowsIcon(
+        /* [out] */ Boolean* result);
+
+    CARAPI OnInitializeAccessibilityNodeInfo(
+        /* [in] */ IAccessibilityNodeInfo* info);
+
+    //@Override
+    CARAPI SetEnabled(
+        /* [in] */ Boolean enabled);
 
 protected:
-    ListMenuItemView();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = 0);
+    CARAPI OnLayout(
+        /* [in] */ Boolean changed,
+        /* [in] */ Int32 l,
+        /* [in] */ Int32 t,
+        /* [in] */ Int32 r,
+        /* [in] */ Int32 b)
+    {
+        assert(0 && "TODO:delete");
+        return NOERROR;
+    }
 
     //Override
     CARAPI OnFinishInflate();
@@ -75,11 +118,6 @@ private:
     CARAPI_(void) InsertRadioButton();
 
     CARAPI_(void) InsertCheckBox();
-
-    CARAPI InitFromAttributes(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
 
     CARAPI_(AutoPtr<ILayoutInflater>) GetInflater();
 

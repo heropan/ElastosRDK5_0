@@ -1,22 +1,20 @@
 
 #include "elastos/droid/internal/view/menu/ListMenuPresenter.h"
-#include "elastos/droid/internal/view/menu/MenuBuilder.h"
 #include "elastos/droid/internal/view/menu/CMenuDialogHelper.h"
-#include <elastos/utility/etl/List.h>
-#include "elastos/droid/internal/view/LayoutInflater.h"
+// #include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/internal/view/CContextThemeWrapper.h"
+#include "elastos/droid/utility/CSparseArray.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Utility::Etl::List;
-using Elastos::Droid::R;
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Widget::EIID_IBaseAdapter;
-using Elastos::Droid::Widget::IAdapter;
-using Elastos::Droid::Widget::EIID_IAdapter;
+using Elastos::Droid::Utility::CSparseArray;
+// using Elastos::Droid::View::CContextThemeWrapper;
+using Elastos::Droid::View::IMenu;
+using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::View::LayoutInflater;
+using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
-using Elastos::Droid::Widget::EIID_IListAdapter;
-using Elastos::Droid::Widget::EIID_ISpinnerAdapter;
 
 namespace Elastos {
 namespace Droid {
@@ -24,79 +22,92 @@ namespace Internal {
 namespace View {
 namespace Menu {
 
-String ListMenuPresenter::TAG("ListMenuPresenter");
-String ListMenuPresenter::VIEWS_TAG = String("android:menu:list");
+const String ListMenuPresenter::TAG("ListMenuPresenter");
 
-ListMenuPresenter::_MenuAdapter::_MenuAdapter(
+ListMenuPresenter::MenuAdapter::MenuAdapter(
     /* [in] */ ListMenuPresenter* host)
     : mExpandedIndex(-1)
     , mHost(host)
 {
-
+    FindExpandedIndex();
 }
 
-AutoPtr<IInterface> ListMenuPresenter::_MenuAdapter::GetItem(
-    /* [in] */ Int32 position)
+ECode ListMenuPresenter::MenuAdapter::GetCount(
+    /* [out] */ Int32* count)
 {
-    MenuBuilder* base = (MenuBuilder*)mHost->mMenu->Probe(EIID_MenuBuilderBase);
-    assert(base != NULL);
-    AutoPtr< List<AutoPtr<IMenuItemImpl> > > items = base->GetNonActionItems();
+    VALIDATE_NOT_NULL(count)
+    AutoPtr<IArrayList> items;
+    mHost->mMenu->GetNonActionItems((IArrayList**)&items);
+    Int32 size;
+    items->GetSize(&size);
+    *count = size - mHost->mItemIndexOffset;
+    if (mExpandedIndex < 0) {
+        return NOERROR;
+    }
+
+    *count -= 1;
+    return NOERROR;
+}
+
+ECode ListMenuPresenter::MenuAdapter::GetItem(
+    /* [in] */ Int32 position,
+    /* [out] */ IInterface** item)
+{
+    VALIDATE_NOT_NULL(item)
+    AutoPtr<IArrayList> items;
+    mHost->mMenu->GetNonActionItems((IArrayList**)&items);
     position += mHost->mItemIndexOffset;
     if (mExpandedIndex >= 0 && position >= mExpandedIndex) {
         position++;
     }
-
-    AutoPtr<IInterface> item = (*items)[position];
-    return item;
+    return items->Get(position, item);
 }
 
-Int32 ListMenuPresenter::_MenuAdapter::GetCount()
+ECode ListMenuPresenter::MenuAdapter::GetItemId(
+    /* [in] */ Int32 position,
+    /* [out] */ Int64* id)
 {
-    MenuBuilder* base = (MenuBuilder*)mHost->mMenu->Probe(EIID_MenuBuilderBase);
-    assert(base != NULL);
-    AutoPtr< List<AutoPtr<IMenuItemImpl> > > items = base->GetNonActionItems();
-    Int32 count = items->GetSize() - mHost->mItemIndexOffset;
-    if (mExpandedIndex < 0) {
-        return count;
-    }
-
-    return count - 1;
-}
-
-Int64 ListMenuPresenter::_MenuAdapter::GetItemId(
-    /* [in] */ Int32 position)
-{
+    VALIDATE_NOT_NULL(id)
     // Since a menu item's ID is optional, we'll use the position as an
     // ID for the item in the AdapterView
-    return position;
+    *id = position;
+    return NOERROR;
 }
 
-AutoPtr<IView> ListMenuPresenter::_MenuAdapter::GetView(
+ECode ListMenuPresenter::MenuAdapter::GetView(
     /* [in] */ Int32 position,
-    /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IView* _convertView,
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
+    VALIDATE_NOT_NULL(view)
+    AutoPtr<IView> convertView = _convertView;
     if (convertView == NULL) {
         mHost->mInflater->Inflate(mHost->mItemLayoutRes, parent, FALSE, (IView**)&convertView);
     }
 
     AutoPtr<IMenuItemView> itemView = IMenuItemView::Probe(convertView);
-    AutoPtr<IMenuItemImpl> item = IMenuItemImpl::Probe(GetItem(position));
-    itemView->Initialize(item, 0);
-    return convertView;
+    AutoPtr<IInterface> item;
+    GetItem(position, (IInterface**)&item);
+    itemView->Initialize(IMenuItemImpl::Probe(item), 0);
+    *view = convertView;
+    REFCOUNT_ADD(*view)
+    return NOERROR;
 }
 
-void ListMenuPresenter::_MenuAdapter::FindExpandedIndex()
+void ListMenuPresenter::MenuAdapter::FindExpandedIndex()
 {
-    MenuBuilder* base = (MenuBuilder*)mHost->mMenu->Probe(EIID_MenuBuilderBase);
-    assert(base != NULL);
-    AutoPtr<IMenuItemImpl> expandedItem = base->GetExpandedItem();
+    AutoPtr<IMenuItemImpl> expandedItem;
+    mHost->mMenu->GetExpandedItem((IMenuItemImpl**)&expandedItem);
     if (expandedItem != NULL) {
-        AutoPtr< List<AutoPtr<IMenuItemImpl> > > items = base->GetNonActionItems();
-        const Int32 count = items->GetSize();
+        AutoPtr<IArrayList> items;
+        mHost->mMenu->GetNonActionItems((IArrayList**)&items);
+        Int32 count;
+        items->GetSize(&count);
         for (Int32 i = 0; i < count; i++) {
-            AutoPtr<IMenuItemImpl> item = (*items)[i];
-            if (item == expandedItem) {
+            AutoPtr<IInterface> item;
+            items->Get(i, (IInterface**)&item);
+            if (IMenuItemImpl::Probe(item) == expandedItem) {
                 mExpandedIndex = i;
                 return;
             }
@@ -106,77 +117,15 @@ void ListMenuPresenter::_MenuAdapter::FindExpandedIndex()
     mExpandedIndex = -1;
 }
 
-ECode ListMenuPresenter::_MenuAdapter::NotifyDataSetChanged()
+ECode ListMenuPresenter::MenuAdapter::NotifyDataSetChanged()
 {
     FindExpandedIndex();
-    return BaseAdapter::NotifyDataSetChanged();
-}
-
-ECode ListMenuPresenter::_MenuAdapter::NotifyDataSetInvalidated()
-{
-    return BaseAdapter::NotifyDataSetInvalidated();
-}
-
-IADAPTER_METHODS_IMPL(ListMenuPresenter::MenuAdapter, ListMenuPresenter::_MenuAdapter)
-IBASEADAPTER_METHODS_IMPL(ListMenuPresenter::MenuAdapter, ListMenuPresenter::_MenuAdapter)
-ILISTADAPTER_METHODS_IMPL(ListMenuPresenter::MenuAdapter, ListMenuPresenter::_MenuAdapter)
-ISPINNERADAPTER_METHODS_IMPL(ListMenuPresenter::MenuAdapter, ListMenuPresenter::_MenuAdapter)
-
-ListMenuPresenter::MenuAdapter::MenuAdapter(
-    /* [in] */ ListMenuPresenter* host)
-    : _MenuAdapter(host)
-{
-    FindExpandedIndex();
-}
-
-PInterface ListMenuPresenter::MenuAdapter::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInterface == riid) {
-        return (IBaseAdapter *)this;
-    }
-    else if (EIID_IBaseAdapter == riid) {
-        return (IBaseAdapter *)this;
-    }
-    else if (EIID_ISpinnerAdapter == riid) {
-        return (ISpinnerAdapter *)this;
-    }
-    else if (EIID_IListAdapter == riid) {
-        return (IListAdapter*)(IBaseAdapter *)this;
-    }
-    else if (EIID_IAdapter == riid) {
-        return (IAdapter*)(IBaseAdapter *)this;
-    }
-    return NULL;
-}
-
-UInt32 ListMenuPresenter::MenuAdapter::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ListMenuPresenter::MenuAdapter::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ListMenuPresenter::MenuAdapter::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IBaseAdapter*)this) {
-        *pIID = EIID_IBaseAdapter;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
+    assert(0);
     return NOERROR;
+    // return BaseAdapter::NotifyDataSetChanged();
 }
 
-CAR_INTERFACE_IMPL(ListMenuPresenter::OnItemClickListener, IAdapterViewOnItemClickListener)
+CAR_INTERFACE_IMPL(ListMenuPresenter::OnItemClickListener, Object, IAdapterViewOnItemClickListener)
 
 ECode ListMenuPresenter::OnItemClickListener::OnItemClick(
     /* [in] */ IAdapterView* parent,
@@ -187,34 +136,34 @@ ECode ListMenuPresenter::OnItemClickListener::OnItemClick(
     return mOwner->OnItemClick(parent, v, position, id);
 }
 
-ListMenuPresenter::ListMenuPresenter(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 itemLayoutRes)
-    : mItemIndexOffset(0)
-    , mThemeRes(0)
-    , mItemLayoutRes(0)
-    , mId(0)
-{
-    Init(itemLayoutRes, 0);
-    mContext = context;
-    LayoutInflater::From(mContext, (ILayoutInflater**)&mInflater);
-}
+CAR_INTERFACE_IMPL_3(ListMenuPresenter, Object, IListMenuPresenter,
+    IMenuPresenter, IAdapterViewOnItemClickListener)
 
 ListMenuPresenter::ListMenuPresenter()
-    : mItemIndexOffset(0)
-    , mThemeRes(0)
+    : mThemeRes(0)
     , mItemLayoutRes(0)
+    , mItemIndexOffset(0)
     , mId(0)
 {}
 
-ListMenuPresenter::ListMenuPresenter(
+ECode ListMenuPresenter::constructor(
+    /* [in] */ IContext* ctx,
+    /* [in] */ Int32 itemLayoutRes)
+{
+    constructor(itemLayoutRes, 0);
+    mContext = ctx;
+    LayoutInflater::From(mContext, (ILayoutInflater**)&mInflater);
+    return NOERROR;
+}
+
+ECode ListMenuPresenter::constructor(
     /* [in] */ Int32 itemLayoutRes,
     /* [in] */ Int32 themeRes)
-    : mItemIndexOffset(0)
-    , mThemeRes(themeRes)
-    , mItemLayoutRes(itemLayoutRes)
-    , mId(0)
-{}
+{
+    mItemLayoutRes = itemLayoutRes;
+    mThemeRes = themeRes;
+    return NOERROR;
+}
 
 ECode ListMenuPresenter::InitForMenu(
     /* [in] */ IContext* context,
@@ -223,9 +172,11 @@ ECode ListMenuPresenter::InitForMenu(
     if (mThemeRes != 0) {
         mContext = NULL;
         mInflater = NULL;
-        CContextThemeWrapper::New(context, mThemeRes, (IContextThemeWrapper**)&mContext);
+        assert(0);
+        // CContextThemeWrapper::New(context, mThemeRes, (IContextThemeWrapper**)&mContext);
         LayoutInflater::From(mContext, (ILayoutInflater**)&mInflater);
-    } else if (mContext != NULL) {
+    }
+    else if (mContext != NULL) {
         mContext = context;
         if (mInflater == NULL) {
             LayoutInflater::From(mContext, (ILayoutInflater**)&mInflater);
@@ -244,7 +195,7 @@ ECode ListMenuPresenter::GetMenuView(
     /* [in] */ IViewGroup* root,
     /* [out] */ IMenuView** view)
 {
-    assert(view != NULL);
+    VALIDATE_NOT_NULL(view)
     if (mMenuView == NULL) {
         AutoPtr<IView> tmpView;
         mInflater->Inflate(R::layout::expanded_menu_layout, root, FALSE, (IView**)&tmpView);
@@ -253,8 +204,10 @@ ECode ListMenuPresenter::GetMenuView(
             mAdapter = new MenuAdapter(this);
         }
 
-        mMenuView->SetAdapter((IAdapter*)mAdapter->Probe(EIID_IAdapter));
-        mMenuView->SetOnItemClickListener(new OnItemClickListener(this));
+        assert(0);
+        // mMenuView->SetAdapter(mAdapter);
+        AutoPtr<OnItemClickListener> listener = new OnItemClickListener(this);
+        IAdapterView::Probe(mMenuView)->SetOnItemClickListener(listener);
     }
 
     *view = IMenuView::Probe(mMenuView);
@@ -263,13 +216,18 @@ ECode ListMenuPresenter::GetMenuView(
     return NOERROR;
 }
 
-AutoPtr<IListAdapter> ListMenuPresenter::GetAdapter()
+ECode ListMenuPresenter::GetAdapter(
+    /* [out] */ IListAdapter** adapter)
 {
+    VALIDATE_NOT_NULL(adapter)
     if (mAdapter == NULL) {
         mAdapter = new MenuAdapter(this);
     }
 
-    return (IListAdapter*)mAdapter->Probe(EIID_IListAdapter);
+    assert(0);
+    // *adapter = mAdapter;
+    REFCOUNT_ADD(*adapter)
+    return NOERROR;
 }
 
 ECode ListMenuPresenter::UpdateMenuView(
@@ -290,20 +248,20 @@ ECode ListMenuPresenter::OnSubMenuSelected(
     /* [in] */ ISubMenuBuilder* subMenu,
     /* [out] */ Boolean* selected)
 {
-    assert(selected != NULL);
-    *selected = FALSE;
+    VALIDATE_NOT_NULL(selected)
     Boolean has = FALSE;
-    if (!(subMenu->HasVisibleItems(&has), has)) {
+    if (!(IMenu::Probe(subMenu)->HasVisibleItems(&has), has)) {
+        *selected = FALSE;
         return NOERROR;
     }
 
     // The window manager will give us a token.
     AutoPtr<IMenuDialogHelper> helper;
-    CMenuDialogHelper::New(subMenu, (IMenuDialogHelper**)&helper);
+    CMenuDialogHelper::New(IMenuBuilder::Probe(subMenu), (IMenuDialogHelper**)&helper);
     helper->Show(NULL);
     if (mCallback != NULL) {
         Boolean tmp = FALSE;
-        mCallback->OnOpenSubMenu(subMenu, &tmp);
+        mCallback->OnOpenSubMenu(IMenuBuilder::Probe(subMenu), &tmp);
     }
 
     *selected = TRUE;
@@ -343,19 +301,17 @@ ECode ListMenuPresenter::OnItemClick(
     /* [in] */ Int32 position,
     /* [in] */ Int64 id)
 {
-    MenuBuilder* base = (MenuBuilder*)mMenu->Probe(EIID_MenuBuilderBase);
-    assert(base != NULL);
-
-    AutoPtr<IMenuItem> item;
+    AutoPtr<IInterface> item;
     mAdapter->GetItem(position, (IInterface**)&item);
-    base->PerformItemAction(item, 0);
-    return NOERROR;
+    AutoPtr<IMenuItem> menuItem = IMenuItem::Probe(item);
+    Boolean res;
+    return mMenu->PerformItemAction(menuItem, this, 0, &res);
 }
 
 ECode ListMenuPresenter::FlagActionItems(
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     *result = FALSE;
     return NOERROR;
 }
@@ -365,7 +321,7 @@ ECode ListMenuPresenter::ExpandItemActionView(
     /* [in] */ IMenuItemImpl* item,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     *result = FALSE;
     return NOERROR;
 }
@@ -375,7 +331,7 @@ ECode ListMenuPresenter::CollapseItemActionView(
     /* [in] */ IMenuItemImpl* item,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     *result = FALSE;
     return NOERROR;
 }
@@ -383,25 +339,22 @@ ECode ListMenuPresenter::CollapseItemActionView(
 ECode ListMenuPresenter::SaveHierarchyState(
     /* [in] */ IBundle* outState)
 {
-    assert(0);
-    //TODO
-    // SparseArray<Parcelable> viewStates = new SparseArray<Parcelable>();
-    // if (mMenuView != null) {
-    //     ((View) mMenuView).saveHierarchyState(viewStates);
-    // }
-    // outState.putSparseParcelableArray(VIEWS_TAG, viewStates);
-    return NOERROR;
+    AutoPtr<ISparseArray> viewStates;
+    CSparseArray::New((ISparseArray**)&viewStates);
+    if (mMenuView != NULL) {
+        IView::Probe(mMenuView)->SaveHierarchyState(viewStates);
+    }
+    return outState->PutSparseParcelableArray(VIEWS_TAG, viewStates);
 }
 
 ECode ListMenuPresenter::RestoreHierarchyState(
     /* [in] */ IBundle* inState)
 {
-    assert(0);
-    //TODO
-    // SparseArray<Parcelable> viewStates = inState.getSparseParcelableArray(VIEWS_TAG);
-    // if (viewStates != null) {
-    //     ((View) mMenuView).restoreHierarchyState(viewStates);
-    // }
+    AutoPtr<ISparseArray> viewStates;
+    inState->GetSparseParcelableArray(VIEWS_TAG, (ISparseArray**)&viewStates);
+    if (viewStates != NULL) {
+        IView::Probe(mMenuView)->RestoreHierarchyState(viewStates);
+    }
     return NOERROR;
 }
 
@@ -415,7 +368,7 @@ ECode ListMenuPresenter::SetId(
 ECode ListMenuPresenter::GetId(
     /* [out] */ Int32* id)
 {
-    assert(id != NULL);
+    VALIDATE_NOT_NULL(id)
     *id = mId;
     return NOERROR;
 }
@@ -423,41 +376,20 @@ ECode ListMenuPresenter::GetId(
 ECode ListMenuPresenter::OnSaveInstanceState(
     /* [out] */ IParcelable** parcel)
 {
-    assert(parcel != NULL);
-    *parcel = NULL;
+    VALIDATE_NOT_NULL(parcel)
     if (mMenuView == NULL) {
+        *parcel = NULL;
         return NOERROR;
     }
 
-    CBundle::New((IBundle**)&parcel);
-    SaveHierarchyState(IBundle::Probe(*parcel));
-    return NOERROR;
+    CBundle::New(parcel);
+    return SaveHierarchyState(IBundle::Probe(*parcel));
 }
 
 ECode ListMenuPresenter::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
-    RestoreHierarchyState(IBundle::Probe(state));
-    return NOERROR;
-}
-
-ECode ListMenuPresenter::Init(
-    /* [in] */ IContext* ctx,
-    /* [in] */ Int32 itemLayoutRes)
-{
-    Init(itemLayoutRes, 0);
-    mContext = ctx;
-    LayoutInflater::From(mContext, (ILayoutInflater**)&mInflater);
-    return NOERROR;
-}
-
-ECode ListMenuPresenter::Init(
-    /* [in] */ Int32 itemLayoutRes,
-    /* [in] */ Int32 themeRes)
-{
-    mItemLayoutRes = itemLayoutRes;
-    mThemeRes = themeRes;
-    return NOERROR;
+    return RestoreHierarchyState(IBundle::Probe(state));
 }
 
 } // namespace Menu

@@ -1,12 +1,14 @@
 
 #include "elastos/droid/internal/view/menu/ListMenuItemView.h"
-#include "elastos/droid/internal/view/LayoutInflater.h"
+#include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CStringWrapper;
-using Elastos::Droid::R;
+using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::Widget::ICompoundButton;
 using Elastos::Droid::Widget::ICheckable;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +18,12 @@ namespace Menu {
 
 const String ListMenuItemView::TAG("ListMenuItemView");
 
+#if 0
+CAR_INTERFACE_IMPL_2(ListMenuItemView, LinearLayout, IListMenuItemView, IMenuItemView)
+#else
+CAR_INTERFACE_IMPL_2(ListMenuItemView, ViewGroup, IListMenuItemView, IMenuItemView)
+#endif
+
 ListMenuItemView::ListMenuItemView()
     : mTextAppearance(0)
     , mPreserveIconSpacing(FALSE)
@@ -23,52 +31,82 @@ ListMenuItemView::ListMenuItemView()
     , mForceShowIcon(FALSE)
 {}
 
-ListMenuItemView::ListMenuItemView(
+ECode ListMenuItemView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : LinearLayout(context, attrs)
-    , mTextAppearance(0)
-    , mPreserveIconSpacing(FALSE)
-    , mMenuType(0)
-    , mForceShowIcon(FALSE)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+    assert(0);
+    // FAIL_RETURN(LinearLayout::constructor(context, attrs, defStyleAttr, defStyleRes));
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32 *>(R::styleable::MenuView),
+        ARRAY_SIZE(R::styleable::MenuView));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+
+    a->GetDrawable(R::styleable::MenuView_itemBackground, (IDrawable**)&mBackground);
+    a->GetResourceId(R::styleable::MenuView_itemTextAppearance, -1, &mTextAppearance);
+    a->GetBoolean(R::styleable::MenuView_preserveIconSpacing, FALSE, &mPreserveIconSpacing);
+    mTextAppearanceContext = context;
+
+    a->Recycle();
+    return NOERROR;
+}
+
+ECode ListMenuItemView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode ListMenuItemView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, 0);
 }
 
 ECode ListMenuItemView::OnFinishInflate()
 {
-    LinearLayout::OnFinishInflate();
+    assert(0);
+    // FAIL_RETURN(LinearLayout::OnFinishInflate())
 
     SetBackgroundDrawable(mBackground);
 
-    AutoPtr<IView> view = FindViewById(R::id::title);
+    AutoPtr<IView> view;
+    FindViewById(R::id::title, (IView**)&view);
     mTitleView = ITextView::Probe(view);
     if (mTextAppearance != -1) {
         mTitleView->SetTextAppearance(mTextAppearanceContext, mTextAppearance);
     }
 
-    view = FindViewById(R::id::shortcut);
+    view = NULL;
+    FindViewById(R::id::shortcut, (IView**)&view);
     mShortcutView = ITextView::Probe(view);
     return NOERROR;
 }
 
 ECode ListMenuItemView::Initialize(
-    /* [in] */ IMenuItemImpl* itemData,
+    /* [in] */ IMenuItemImpl* _itemData,
     /* [in] */ Int32 menuType)
 {
-    mItemData = itemData;
+    mItemData = _itemData;
+    IMenuItem* itemData = IMenuItem::Probe(_itemData);
     mMenuType = menuType;
 
     Boolean visible = FALSE;
-    mItemData->IsVisible(&visible);
+    itemData->IsVisible(&visible);
     SetVisibility(visible ? IView::VISIBLE : IView::GONE);
 
     AutoPtr<ICharSequence> title;
-    mItemData->GetTitleForItemView((IMenuItemView*)this->Probe(EIID_IMenuItemView), (ICharSequence**)&title);
+    mItemData->GetTitleForItemView(this, (ICharSequence**)&title);
     SetTitle(title);
     Boolean isCheckable = FALSE;
-    mItemData->IsCheckable(&isCheckable);
+    itemData->IsCheckable(&isCheckable);
     SetCheckable(isCheckable);
     Boolean mssc = FALSE;
     mItemData->ShouldShowShortcut(&mssc);
@@ -76,10 +114,10 @@ ECode ListMenuItemView::Initialize(
     mItemData->GetShortcut(&mgsc);
     SetShortcut(mssc, mgsc);
     AutoPtr<IDrawable> icon;
-    mItemData->GetIcon((IDrawable**)&icon);
+    itemData->GetIcon((IDrawable**)&icon);
     SetIcon(icon);
     Boolean isEnabled = FALSE;
-    mItemData->IsEnabled(&isEnabled);
+    itemData->IsEnabled(&isEnabled);
     SetEnabled(isEnabled);
 
     return NOERROR;
@@ -95,29 +133,31 @@ ECode ListMenuItemView::SetForceShowIcon(
 ECode ListMenuItemView::SetTitle(
     /* [in] */ ICharSequence* title)
 {
+    Int32 visibility;
+    IView::Probe(mTitleView)->GetVisibility(&visibility);
     if (title != NULL) {
         mTitleView->SetText(title);
 
-        Int32 visibility;
-        mTitleView->GetVisibility(&visibility);
         if (visibility != IView::VISIBLE) {
-            mTitleView->SetVisibility(IView::VISIBLE);
+            IView::Probe(mTitleView)->SetVisibility(IView::VISIBLE);
         }
     }
     else {
-        Int32 visibility;
-        mTitleView->GetVisibility(&visibility);
         if (visibility != IView::GONE) {
-            mTitleView->SetVisibility(IView::GONE);
+            IView::Probe(mTitleView)->SetVisibility(IView::GONE);
         }
     }
 
     return NOERROR;
 }
 
-AutoPtr<IMenuItemImpl> ListMenuItemView::GetItemData()
+ECode ListMenuItemView::GetItemData(
+    /* [out] */ IMenuItemImpl** itemData)
 {
-    return mItemData;
+    VALIDATE_NOT_NULL(itemData)
+    *itemData = mItemData;
+    REFCOUNT_ADD(*itemData)
+    return NOERROR;
 }
 
 ECode ListMenuItemView::SetCheckable(
@@ -138,44 +178,44 @@ ECode ListMenuItemView::SetCheckable(
         if (mRadioButton == NULL) {
             InsertRadioButton();
         }
-        compoundButton = mRadioButton;
-        otherCompoundButton = mCheckBox;
+        compoundButton = ICompoundButton::Probe(mRadioButton);
+        otherCompoundButton = ICompoundButton::Probe(mCheckBox);
     }
     else {
         if (mCheckBox == NULL) {
             InsertCheckBox();
         }
-        compoundButton = mCheckBox;
-        otherCompoundButton = mRadioButton;
+        compoundButton = ICompoundButton::Probe(mCheckBox);
+        otherCompoundButton = ICompoundButton::Probe(mRadioButton);
     }
 
     if (checkable) {
-        mItemData->IsChecked(&check);
+        IMenuItem::Probe(mItemData)->IsChecked(&check);
         ICheckable::Probe(compoundButton)->SetChecked(check);
 
         Int32 newVisibility = checkable ? IView::VISIBLE : IView::GONE;
 
         Int32 tmpVisibility;
-        compoundButton->GetVisibility(&tmpVisibility);
+        IView::Probe(compoundButton)->GetVisibility(&tmpVisibility);
         if (tmpVisibility != newVisibility) {
-            compoundButton->SetVisibility(newVisibility);
+            IView::Probe(compoundButton)->SetVisibility(newVisibility);
         }
 
         // Make sure the other compound button isn't visible
         if (otherCompoundButton != NULL) {
-            otherCompoundButton->GetVisibility(&tmpVisibility);
+            IView::Probe(otherCompoundButton)->GetVisibility(&tmpVisibility);
             if (tmpVisibility != IView::GONE) {
-                otherCompoundButton->SetVisibility(IView::GONE);
+                IView::Probe(otherCompoundButton)->SetVisibility(IView::GONE);
             }
         }
     }
     else {
         if (mCheckBox != NULL) {
-            mCheckBox->SetVisibility(IView::GONE);
+            IView::Probe(mCheckBox)->SetVisibility(IView::GONE);
         }
 
         if (mRadioButton != NULL) {
-            mRadioButton->SetVisibility(IView::GONE);
+            IView::Probe(mRadioButton)->SetVisibility(IView::GONE);
         }
     }
 
@@ -193,13 +233,13 @@ ECode ListMenuItemView::SetChecked(
         if (mRadioButton == NULL) {
             InsertRadioButton();
         }
-        compoundButton = mRadioButton;
+        compoundButton = ICompoundButton::Probe(mRadioButton);
     }
     else {
         if (mCheckBox == NULL) {
             InsertCheckBox();
         }
-        compoundButton = mCheckBox;
+        compoundButton = ICompoundButton::Probe(mCheckBox);
     }
 
     ICheckable::Probe(compoundButton)->SetChecked(checked);
@@ -219,14 +259,14 @@ ECode ListMenuItemView::SetShortcut(
         String label;
         mItemData->GetShortcutLabel(&label);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(label, (ICharSequence**)&cs);
+        CString::New(label, (ICharSequence**)&cs);
         mShortcutView->SetText(cs);
     }
 
     Int32 visibility;
-    mShortcutView->GetVisibility(&visibility);
+    IView::Probe(mShortcutView)->GetVisibility(&visibility);
     if (visibility != newVisibility) {
-        mShortcutView->SetVisibility(newVisibility);
+        IView::Probe(mShortcutView)->SetVisibility(newVisibility);
     }
 
     return NOERROR;
@@ -254,13 +294,13 @@ ECode ListMenuItemView::SetIcon(
         mIconView->SetImageDrawable(showIcon ? icon : NULL);
 
         Int32 visibility;
-        mIconView->GetVisibility(&visibility);
+        IView::Probe(mIconView)->GetVisibility(&visibility);
         if (visibility != IView::VISIBLE) {
-            mIconView->SetVisibility(IView::VISIBLE);
+            IView::Probe(mIconView)->SetVisibility(IView::VISIBLE);
         }
     }
     else {
-        mIconView->SetVisibility(IView::GONE);
+        IView::Probe(mIconView)->SetVisibility(IView::GONE);
     }
 
     return NOERROR;
@@ -272,9 +312,10 @@ void ListMenuItemView::OnMeasure(
 {
     if (mIconView != NULL && mPreserveIconSpacing) {
         // Enforce minimum icon spacing
-        AutoPtr<IViewGroupLayoutParams> lp = GetLayoutParams();
+        AutoPtr<IViewGroupLayoutParams> lp;
+        GetLayoutParams((IViewGroupLayoutParams**)&lp);
         AutoPtr<IViewGroupLayoutParams> iconLp;
-        mIconView->GetLayoutParams((IViewGroupLayoutParams**)&iconLp);
+        IView::Probe(mIconView)->GetLayoutParams((IViewGroupLayoutParams**)&iconLp);
 
         Int32 height = 0, width = 0;
         lp->GetHeight(&height);
@@ -284,44 +325,54 @@ void ListMenuItemView::OnMeasure(
         }
     }
 
-    LinearLayout::OnMeasure(widthMeasureSpec, heightMeasureSpec);
+    assert(0);
+    // LinearLayout::OnMeasure(widthMeasureSpec, heightMeasureSpec);
 }
 
 void ListMenuItemView::InsertIconView()
 {
     AutoPtr<ILayoutInflater> inflater = GetInflater();
-    mIconView = NULL;
+    AutoPtr<IView> view;
     inflater->Inflate(R::layout::list_menu_item_icon,
-            (IViewGroup*)this->Probe(EIID_IViewGroup), FALSE, (IView**)&mIconView);
-    AddView(mIconView, 0);
+            this, FALSE, (IView**)&view);
+    mIconView = IImageView::Probe(view);
+    AddView(view, 0);
 }
 
 void ListMenuItemView::InsertRadioButton()
 {
     AutoPtr<ILayoutInflater> inflater = GetInflater();
-    mRadioButton = NULL;
+    AutoPtr<IView> view;
     inflater->Inflate(R::layout::list_menu_item_radio,
-            (IViewGroup*)this->Probe(EIID_IViewGroup), FALSE, (IView**)&mRadioButton);
-    AddView(mRadioButton);
+            this, FALSE, (IView**)&view);
+    mRadioButton = IRadioButton::Probe(view);
+    AddView(view);
 }
 
 void ListMenuItemView::InsertCheckBox()
 {
     AutoPtr<ILayoutInflater> inflater = GetInflater();
-    mCheckBox = NULL;
+    AutoPtr<IView> view;
     inflater->Inflate(R::layout::list_menu_item_checkbox,
-            (IViewGroup*)this->Probe(EIID_IViewGroup), FALSE, (IView**)&mCheckBox);
-    AddView(mCheckBox);
+            this, FALSE, (IView**)&view);
+    mCheckBox = ICheckBox::Probe(view);
+    AddView(view);
 }
 
-Boolean ListMenuItemView::PrefersCondensedTitle()
+ECode ListMenuItemView::PrefersCondensedTitle(
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
-Boolean ListMenuItemView::ShowsIcon()
+ECode ListMenuItemView::ShowsIcon(
+    /* [out] */ Boolean* result)
 {
-    return mForceShowIcon;
+    VALIDATE_NOT_NULL(result)
+    *result = mForceShowIcon;
+    return NOERROR;
 }
 
 AutoPtr<ILayoutInflater> ListMenuItemView::GetInflater()
@@ -333,33 +384,24 @@ AutoPtr<ILayoutInflater> ListMenuItemView::GetInflater()
     return mInflater;
 }
 
-ECode ListMenuItemView::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+ECode ListMenuItemView::OnInitializeAccessibilityNodeInfo(
+    /* [in] */ IAccessibilityNodeInfo* info)
 {
-    FAIL_RETURN(LinearLayout::Init(context, attrs));
+    assert(0);
+    // FAIL_RETURN(LinearLayout::OnInitializeAccessibilityNodeInfo(info))
 
-    return InitFromAttributes(context, attrs, defStyle);
+    Boolean hasSubMenu;
+    if (mItemData != NULL && (IMenuItem::Probe(mItemData)->HasSubMenu(&hasSubMenu), hasSubMenu)) {
+        info->SetCanOpenPopup(TRUE);
+    }
+    return NOERROR;
 }
 
-ECode ListMenuItemView::InitFromAttributes(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+ECode ListMenuItemView::SetEnabled(
+    /* [in] */ Boolean enabled)
 {
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-        const_cast<Int32 *>(R::styleable::MenuView),
-        ARRAY_SIZE(R::styleable::MenuView));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
-
-    a->GetDrawable(R::styleable::MenuView_itemBackground, (IDrawable**)&mBackground);
-    a->GetResourceId(R::styleable::MenuView_itemTextAppearance, -1, &mTextAppearance);
-    a->GetBoolean(R::styleable::MenuView_preserveIconSpacing, FALSE, &mPreserveIconSpacing);
-    mTextAppearanceContext = context;
-
-    a->Recycle();
+    assert(0);
+    // return LayoutInflater::SetEnabled(enabled);
     return NOERROR;
 }
 

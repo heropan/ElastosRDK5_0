@@ -1,6 +1,6 @@
 
 #include "elastos/droid/internal/view/menu/ActionMenu.h"
-//#include "elastos/droid/internal/view/menu/CActionMenuItem.h"
+#include "elastos/droid/internal/view/menu/CActionMenuItem.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CComponentName.h"
 #include <elastos/core/CoreUtils.h>
@@ -84,7 +84,7 @@ ECode ActionMenu::Add(
     /* [out] */ IMenuItem** item)
 {
     VALIDATE_NOT_NULL(item)
-    // CActionMenuItem::New(GetContext(), groupId, itemId, 0, order, title, item);
+    CActionMenuItem::New(GetContext(), groupId, itemId, 0, order, title, item);
     mItems.Insert(order, IActionMenuItem::Probe(*item));
     return NOERROR;
 }

@@ -1,32 +1,33 @@
 
 #include "elastos/droid/internal/view/menu/MenuPopupHelper.h"
-#include "elastos/droid/internal/view/menu/MenuBuilder.h"
 #include "elastos/droid/internal/view/menu/CListMenuItemView.h"
 #include "elastos/droid/internal/view/menu/CMenuPopupHelper.h"
-#include "elastos/droid/internal/view/LayoutInflater.h"
-#include "elastos/droid/widget/CFrameLayout.h"
-#include "elastos/droid/widget/CListPopupWindow.h"
-#include <elastos/core/Math.h>
-#include <elastos/utility/etl/List.h>
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/view/View.h"
+// #include "elastos/droid/widget/CFrameLayout.h"
+// #include "elastos/droid/widget/CListPopupWindow.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Droid::R;
-using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::View::IMenu;
+using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::View::LayoutInflater;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::EIID_IViewOnKeyListener;
+using Elastos::Droid::View::EIID_IOnGlobalLayoutListener;
+using Elastos::Droid::View::EIID_IViewOnAttachStateChangeListener;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
 using Elastos::Droid::Widget::EIID_IPopupWindowOnDismissListener;
-using Elastos::Droid::Widget::EIID_IBaseAdapter;
-using Elastos::Droid::Widget::EIID_IListAdapter;
-using Elastos::Droid::Widget::EIID_IAdapter;
-using Elastos::Droid::Widget::IAdapter;
 using Elastos::Droid::Widget::IListView;
 using Elastos::Droid::Widget::IPopupWindow;
-using Elastos::Droid::Widget::CFrameLayout;
+// using Elastos::Droid::Widget::CFrameLayout;
 using Elastos::Droid::Widget::IFrameLayout;
-using Elastos::Droid::Widget::CListPopupWindow;
-using Elastos::Droid::Widget::EIID_ISpinnerAdapter;
+// using Elastos::Droid::Widget::CListPopupWindow;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -34,70 +35,83 @@ namespace Internal {
 namespace View {
 namespace Menu {
 
-String MenuPopupHelper::TAG("MenuPopupHelper");
+const String MenuPopupHelper::TAG("MenuPopupHelper");
 const Int32 MenuPopupHelper::ITEM_LAYOUT = R::layout::popup_menu_item_layout;
 
-MenuPopupHelper::_MenuAdapter::_MenuAdapter(
+MenuPopupHelper::MenuAdapter::MenuAdapter(
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ MenuPopupHelper* host)
     : mExpandedIndex(-1)
     , mHost(host)
 {
-    assert(menu);
     AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(menu);
     assert(wrs != NULL && "Error: Invalid MenuBuilder, IWeakReferenceSource not implemented!");
     wrs->GetWeakReference((IWeakReference**)&mWeakAdapterMenu);
+    FindExpandedIndex();
 }
 
-Int32 MenuPopupHelper::_MenuAdapter::GetCount()
+ECode MenuPopupHelper::MenuAdapter::GetCount(
+    /* [out] */ Int32* count)
 {
-    AutoPtr<IWeakReferenceSource> wrs;
-    mWeakAdapterMenu->Resolve(EIID_IWeakReferenceSource, (IInterface**)&wrs);
-    if (wrs == NULL) {
-        return 0;
+    VALIDATE_NOT_NULL(count)
+    AutoPtr<IMenuBuilder> menu;
+    mWeakAdapterMenu->Resolve(EIID_IMenuBuilder, (IInterface**)&menu);
+    if (menu == NULL) {
+        *count = 0;
+        return NOERROR;
     }
 
-    MenuBuilder* base = reinterpret_cast<MenuBuilder*>(wrs->Probe(EIID_MenuBuilderBase));
-    assert(base != NULL);
-    AutoPtr< List<AutoPtr<IMenuItemImpl> > > items = mHost->mOverflowOnly ?
-            base->GetNonActionItems() : base->GetVisibleItems();
+    AutoPtr<IArrayList> items;
+    mHost->mOverflowOnly ? menu->GetNonActionItems((IArrayList**)&items)
+        : menu->GetVisibleItems((IArrayList**)&items);
+    Int32 size;
+    items->GetSize(&size);
     if (mExpandedIndex < 0) {
-        return items->GetSize();
+        *count = size;
+        return NOERROR;
     }
-    return items->GetSize() - 1;
+    *count = size - 1;
+    return NOERROR;
 }
 
-AutoPtr<IInterface> MenuPopupHelper::_MenuAdapter::GetItem(
-    /* [in] */ Int32 position)
+ECode MenuPopupHelper::MenuAdapter::GetItem(
+    /* [in] */ Int32 position,
+    /* [out] */ IInterface** item)
 {
-    AutoPtr<IWeakReferenceSource> wrs;
-    mWeakAdapterMenu->Resolve(EIID_IWeakReferenceSource, (IInterface**)&wrs);
-    if (wrs == NULL) {
-        return NULL;
+    VALIDATE_NOT_NULL(item)
+    AutoPtr<IMenuBuilder> menu;
+    mWeakAdapterMenu->Resolve(EIID_IMenuBuilder, (IInterface**)&menu);
+    if (menu == NULL) {
+        *item = NULL;
+        return NOERROR;
     }
 
-    MenuBuilder* base = reinterpret_cast<MenuBuilder*>(wrs->Probe(EIID_MenuBuilderBase));
-    assert(base != NULL);
-    AutoPtr< List<AutoPtr<IMenuItemImpl> > > items = mHost->mOverflowOnly ?
-            base->GetNonActionItems() : base->GetVisibleItems();
+    AutoPtr<IArrayList> items;
+    mHost->mOverflowOnly ? menu->GetNonActionItems((IArrayList**)&items)
+        : menu->GetVisibleItems((IArrayList**)&items);
     if (mExpandedIndex >= 0 && position >= mExpandedIndex) {
         position++;
     }
-    return (*items)[position];
+
+    return items->Get(position, item);
 }
 
-Int64 MenuPopupHelper::_MenuAdapter::GetItemId(
-    /* [in] */ Int32 position)
+ECode MenuPopupHelper::MenuAdapter::GetItemId(
+    /* [in] */ Int32 position,
+    /* [out] */ Int64* id)
 {
+    VALIDATE_NOT_NULL(id)
     // Since a menu item's ID is optional, we'll use the position as an
     // ID for the item in the AdapterView
-    return position;
+    *id = position;
+    return NOERROR;
 }
 
-AutoPtr<IView> MenuPopupHelper::_MenuAdapter::GetView(
+ECode MenuPopupHelper::MenuAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in, out?] */ IView* _convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
     AutoPtr<IView> convertView = _convertView;
     if (convertView == NULL) {
@@ -106,37 +120,30 @@ AutoPtr<IView> MenuPopupHelper::_MenuAdapter::GetView(
 
     AutoPtr<IMenuItemView> itemView = IMenuItemView::Probe(convertView);
     if (mHost->mForceShowIcon) {
-        ((CListMenuItemView*)convertView.Get())->SetForceShowIcon(TRUE);
+        IListMenuItemView::Probe(convertView)->SetForceShowIcon(TRUE);
     }
 
-    itemView->Initialize(IMenuItemImpl::Probe(GetItem(position)), 0);
-    return convertView;
+    AutoPtr<IInterface> item;
+    GetItem(position, (IInterface**)&item);
+    itemView->Initialize(IMenuItemImpl::Probe(item), 0);
+    *view = convertView;
+    REFCOUNT_ADD(*view)
+    return NOERROR;
 }
 
-ECode MenuPopupHelper::_MenuAdapter::NotifyDataSetChanged()
-{
-    FindExpandedIndex();
-    return BaseAdapter::NotifyDataSetChanged();
-}
-
-ECode MenuPopupHelper::_MenuAdapter::NotifyDataSetInvalidated()
-{
-    return BaseAdapter::NotifyDataSetInvalidated();
-}
-
-void MenuPopupHelper::_MenuAdapter::FindExpandedIndex()
+void MenuPopupHelper::MenuAdapter::FindExpandedIndex()
 {
     AutoPtr<IMenuItemImpl> expandedItem;
     mHost->mMenu->GetExpandedItem((IMenuItemImpl**)&expandedItem);
     if (expandedItem != NULL) {
-        MenuBuilder* base = reinterpret_cast<MenuBuilder*>(mHost->mMenu->Probe(EIID_MenuBuilderBase));
-        assert(base != NULL);
-
-        AutoPtr< List<AutoPtr<IMenuItemImpl> > > items = base->GetNonActionItems();
-        const Int32 count = items->GetSize();
+        AutoPtr<IArrayList> items;
+        mHost->mMenu->GetNonActionItems((IArrayList**)&items);
+        Int32 count;
+        items->GetSize(&count);
         for (Int32 i = 0; i < count; i++) {
-            AutoPtr<IMenuItemImpl> item = (*items)[i];
-            if (item == expandedItem) {
+            AutoPtr<IInterface> item;
+            items->Get(i, (IInterface**)&item);
+            if (IMenuItemImpl::Probe(item) == expandedItem) {
                 mExpandedIndex = i;
                 return;
             }
@@ -146,74 +153,16 @@ void MenuPopupHelper::_MenuAdapter::FindExpandedIndex()
     mExpandedIndex = -1;
 }
 
-IADAPTER_METHODS_IMPL(MenuPopupHelper::MenuAdapter, _MenuAdapter)
-IBASEADAPTER_METHODS_IMPL(MenuPopupHelper::MenuAdapter, _MenuAdapter)
-ILISTADAPTER_METHODS_IMPL(MenuPopupHelper::MenuAdapter, _MenuAdapter)
-ISPINNERADAPTER_METHODS_IMPL(MenuPopupHelper::MenuAdapter, _MenuAdapter)
-
-MenuPopupHelper::MenuAdapter::MenuAdapter(
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ MenuPopupHelper* host)
-    : _MenuAdapter(menu, host)
+ECode MenuPopupHelper::MenuAdapter::NotifyDataSetChanged()
 {
     FindExpandedIndex();
-}
-
-PInterface MenuPopupHelper::MenuAdapter::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IMenuAdapter == riid) {
-        return (IMenuAdapter *)this;
-    }
-    else if (EIID_IBaseAdapter == riid) {
-        return (IBaseAdapter *)this;
-    }
-    else if (EIID_IListAdapter == riid) {
-        return (IListAdapter *)this;
-    }
-    else if (EIID_ISpinnerAdapter == riid) {
-        return (ISpinnerAdapter *)this;
-    }
-    else if (EIID_IAdapter == riid) {
-        return (IAdapter *)(IBaseAdapter*)this;
-    }
-    else if (EIID_IInterface == riid) {
-        return (IInterface*)(IBaseAdapter*)this;
-    }
-    return NULL;
-}
-
-UInt32 MenuPopupHelper::MenuAdapter::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 MenuPopupHelper::MenuAdapter::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode MenuPopupHelper::MenuAdapter::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IMenuAdapter*)this) {
-        *pIID = EIID_IBaseAdapter;
-    }
-    else if (pObject == (IInterface*)(ISpinnerAdapter*)this) {
-        *pIID = EIID_IListAdapter;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
+    assert(0);
     return NOERROR;
+    // return BaseAdapter::NotifyDataSetChanged();
 }
 
-CAR_INTERFACE_IMPL_2(MenuPopupHelper::MyListener, IAdapterViewOnItemClickListener,
-    IPopupWindowOnDismissListener)
+CAR_INTERFACE_IMPL_3(MenuPopupHelper::MyListener, Object, IAdapterViewOnItemClickListener,
+    IViewOnKeyListener, IPopupWindowOnDismissListener)
 
 ECode MenuPopupHelper::MyListener::OnItemClick(
     /* [in] */ IAdapterView* parent,
@@ -224,48 +173,81 @@ ECode MenuPopupHelper::MyListener::OnItemClick(
     return mOwner->OnItemClick(parent, v, position, id);
 }
 
+ECode MenuPopupHelper::MyListener::OnKey(
+    /* [in] */ IView* v,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    return mOwner->OnKey(v, keyCode, event, result);
+}
+
 ECode MenuPopupHelper::MyListener::OnDismiss()
 {
     return mOwner->OnDismiss();
 }
 
+CAR_INTERFACE_IMPL_7(MenuPopupHelper, Object, IMenuPopupHelper, IAdapterViewOnItemClickListener, IOnGlobalLayoutListener,
+    IViewOnKeyListener, IPopupWindowOnDismissListener, IViewOnAttachStateChangeListener, IMenuPresenter)
+
 MenuPopupHelper::MenuPopupHelper()
-    : mPopupMaxWidth(0)
-    , mOverflowOnly(FALSE)
+    : mOverflowOnly(FALSE)
+    , mPopupMaxWidth(0)
+    , mPopupStyleAttr(0)
     , mForceShowIcon(FALSE)
+    , mHasContentWidth(FALSE)
+    , mContentWidth(0)
+    , mDropDownGravity(IGravity::NO_GRAVITY)
 {}
 
-MenuPopupHelper::MenuPopupHelper(
+ECode MenuPopupHelper::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IMenuBuilder* menu)
-    : mPopupMaxWidth(0)
-    , mOverflowOnly(FALSE)
-    , mForceShowIcon(FALSE)
 {
-    Init(context, menu, NULL, FALSE);
+    return constructor(context, menu, NULL, FALSE, R::attr::popupMenuStyle);
 }
 
-MenuPopupHelper::MenuPopupHelper(
+ECode MenuPopupHelper::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ IView* anchorView)
-    : mPopupMaxWidth(0)
-    , mOverflowOnly(FALSE)
-    , mForceShowIcon(FALSE)
 {
-    Init(context, menu, anchorView, FALSE);
+    return constructor(context, menu, anchorView, FALSE, R::attr::popupMenuStyle);
 }
 
-MenuPopupHelper::MenuPopupHelper(
+ECode MenuPopupHelper::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ IView* anchorView,
-    /* [in] */ Boolean overflowOnly)
-    : mPopupMaxWidth(0)
-    , mOverflowOnly(FALSE)
-    , mForceShowIcon(FALSE)
+    /* [in] */ Boolean overflowOnly,
+    /* [in] */ Int32 popupStyleAttr)
 {
-    Init(context, menu, anchorView, overflowOnly);
+    mContext = context;
+    LayoutInflater::From(context, (ILayoutInflater**)&mInflater);
+    mMenu = menu;
+    assert(0);
+    // mAdapter = new MenuAdapter(mMenu, this);
+    mOverflowOnly = overflowOnly;
+    mPopupStyleAttr = popupStyleAttr;
+
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    assert(res != NULL);
+
+    AutoPtr<IDisplayMetrics> display;
+    res->GetDisplayMetrics((IDisplayMetrics**)&display);
+    assert(display != NULL);
+
+    Int32 widthPixels = 0, pixelSize = 0;
+    display->GetWidthPixels(&widthPixels);
+    res->GetDimensionPixelSize(R::dimen::config_prefDialogWidth, &pixelSize);
+    mPopupMaxWidth = Elastos::Core::Math::Max(widthPixels / 2, pixelSize);
+
+    mAnchorView = anchorView;
+
+    // Present the menu using our context, not the menu builder's context.
+    menu->AddMenuPresenter(this, context);
+    return NOERROR;
 }
 
 ECode MenuPopupHelper::SetAnchorView(
@@ -282,27 +264,46 @@ ECode MenuPopupHelper::SetForceShowIcon(
     return NOERROR;
 }
 
+ECode MenuPopupHelper::SetGravity(
+    /* [in] */ Int32 gravity)
+{
+    mDropDownGravity = gravity;
+    return NOERROR;
+}
+
 ECode MenuPopupHelper::Show()
 {
-    if (!TryShow())
-    {
+    Boolean res;
+    TryShow(&res);
+    if (!res) {
+        Logger::E(TAG, "MenuPopupHelper cannot be used without an anchor");
         return E_ILLEGAL_STATE_EXCEPTION;
-        //throw new IllegalStateException("MenuPopupHelper cannot be used without an anchor");
     }
 
     return NOERROR;
 }
 
-Boolean MenuPopupHelper::TryShow()
+ECode MenuPopupHelper::GetPopup(
+    /* [out] */ IListPopupWindow** popup)
 {
+    VALIDATE_NOT_NULL(popup)
+    *popup = mPopup;
+    REFCOUNT_ADD(*popup)
+    return NOERROR;
+}
+
+ECode MenuPopupHelper::TryShow(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
     mPopup = NULL;
-    CListPopupWindow::New(mContext, NULL, R::attr::popupMenuStyle, (IListPopupWindow**)&mPopup);
+    assert(0);
+    // CListPopupWindow::New(mContext, NULL, mPopupStyleAttr, (IListPopupWindow**)&mPopup);
     AutoPtr<MyListener> listener = new MyListener(this);
     mPopup->SetOnDismissListener(listener);
     mPopup->SetOnItemClickListener(listener);
-
-    mAdapter = new MenuAdapter(mMenu, this);
-    mPopup->SetAdapter((IListAdapter*)mAdapter->Probe(EIID_IListAdapter));
+    assert(0);
+    // mPopup->SetAdapter(mAdapter);
     mPopup->SetModal(TRUE);
 
     AutoPtr<IView> anchor = mAnchorView;
@@ -310,27 +311,36 @@ Boolean MenuPopupHelper::TryShow()
         Boolean addGlobalListener = mTreeObserver == NULL;
         mTreeObserver = NULL;
         anchor->GetViewTreeObserver((IViewTreeObserver**)&mTreeObserver); // Refresh to latest
-        if (addGlobalListener) mTreeObserver->AddOnGlobalLayoutListener((IOnGlobalLayoutListener*)(this->Probe(EIID_IOnGlobalLayoutListener)));
-        anchor->AddOnAttachStateChangeListener((IViewOnAttachStateChangeListener*)(this->Probe(EIID_IViewOnAttachStateChangeListener)));
+        if (addGlobalListener) mTreeObserver->AddOnGlobalLayoutListener(this);
+        anchor->AddOnAttachStateChangeListener(this);
         mPopup->SetAnchorView(anchor);
+        mPopup->SetDropDownGravity(mDropDownGravity);
     }
     else {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
-    mPopup->SetContentWidth(Elastos::Core::Math::Min(MeasureContentWidth((IListAdapter*)mAdapter->Probe(EIID_IListAdapter)), mPopupMaxWidth));
+    if (!mHasContentWidth) {
+        mContentWidth = MeasureContentWidth();
+        mHasContentWidth = TRUE;
+    }
+
+    mPopup->SetContentWidth(mContentWidth);
     mPopup->SetInputMethodMode(IPopupWindow::INPUT_METHOD_NOT_NEEDED);
     mPopup->Show();
 
     AutoPtr<IListView> listView;
     mPopup->GetListView((IListView**)&listView);
-    listView->SetOnKeyListener((IViewOnKeyListener*)(this->Probe(EIID_IViewOnKeyListener)));
-    return TRUE;
+    IView::Probe(listView)->SetOnKeyListener(listener);
+    *result = TRUE;
+    return NOERROR;
 }
 
 ECode MenuPopupHelper::Dismiss()
 {
-    if (IsShowing()) {
+    Boolean res;
+    if (IsShowing(&res), res) {
         // hold the last reference of mPopup until Dismiss() finished
         AutoPtr<IListPopupWindow> popup = mPopup;
         mPopup->Dismiss();
@@ -342,7 +352,7 @@ ECode MenuPopupHelper::Dismiss()
 ECode MenuPopupHelper::OnDismiss()
 {
     mPopup = NULL;
-    mMenu->Close();
+    IMenu::Probe(mMenu)->Close();
     if (mTreeObserver != NULL) {
         Boolean tmp = FALSE;
         if (!(mTreeObserver->IsAlive(&tmp), tmp)) {
@@ -350,17 +360,20 @@ ECode MenuPopupHelper::OnDismiss()
             mAnchorView->GetViewTreeObserver((IViewTreeObserver**)&mTreeObserver);
         }
 
-        mTreeObserver->RemoveGlobalOnLayoutListener((IOnGlobalLayoutListener*)(this->Probe(EIID_IOnGlobalLayoutListener)));
+        mTreeObserver->RemoveGlobalOnLayoutListener(this);
         mTreeObserver = NULL;
     }
 
-    return mAnchorView->RemoveOnAttachStateChangeListener((IViewOnAttachStateChangeListener*)(this->Probe(EIID_IViewOnAttachStateChangeListener)));
+    return mAnchorView->RemoveOnAttachStateChangeListener(this);
 }
 
-Boolean MenuPopupHelper::IsShowing()
+ECode MenuPopupHelper::IsShowing(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     Boolean tmp = FALSE;
-    return mPopup != NULL && (mPopup->IsShowing(&tmp), tmp);
+    *result = mPopup != NULL && (mPopup->IsShowing(&tmp), tmp);
+    return NOERROR;
 }
 
 ECode MenuPopupHelper::OnItemClick(
@@ -399,48 +412,62 @@ ECode MenuPopupHelper::OnKey(
     return NOERROR;
 }
 
-Int32 MenuPopupHelper::MeasureContentWidth(
-    /* [in] */ IListAdapter* adapter)
+Int32 MenuPopupHelper::MeasureContentWidth()
 {
     // Menus don't tend to be long, so this is more sane than it looks.
-    Int32 width = 0;
+    Int32 maxWidth = 0;
     AutoPtr<IView> itemView;
     Int32 itemType = 0;
-    const Int32 widthMeasureSpec =
-        View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
-    const Int32 heightMeasureSpec =
-        View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
+
+    AutoPtr<MenuAdapter> adapter = mAdapter;
+    const Int32 widthMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(
+        0, Elastos::Droid::View::View::MeasureSpec::UNSPECIFIED);
+    const Int32 heightMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(
+        0, Elastos::Droid::View::View::MeasureSpec::UNSPECIFIED);
     Int32 count = 0;
     adapter->GetCount(&count);
     for (Int32 i = 0; i < count; i++) {
         Int32 positionType = 0;
-        adapter->GetItemViewType(i, &positionType);
+        assert(0);
+        // adapter->GetItemViewType(i, &positionType);
         if (positionType != itemType) {
             itemType = positionType;
             itemView = NULL;
         }
 
         if (mMeasureParent == NULL) {
-            CFrameLayout::New(mContext, (IFrameLayout**)&mMeasureParent);
+            assert(0);
+            // CFrameLayout::New(mContext, (IFrameLayout**)&mMeasureParent);
         }
         AutoPtr<IView> temp;
         adapter->GetView(i, itemView, mMeasureParent, (IView**)&temp);
         itemView = temp;
-        VIEW_PROBE(itemView)->Measure(widthMeasureSpec, heightMeasureSpec);
-        width = Elastos::Core::Math::Max(width, ((View*)itemView->Probe(EIID_View))->GetMeasuredWidth());
+        itemView->Measure(widthMeasureSpec, heightMeasureSpec);
+
+        Int32 itemWidth;
+        itemView->GetMeasuredWidth(&itemWidth);
+        if (itemWidth >= mPopupMaxWidth) {
+            return mPopupMaxWidth;
+        }
+        else if (itemWidth > maxWidth) {
+            maxWidth = itemWidth;
+        }
     }
 
-    return width;
+    return maxWidth;
 }
 
 ECode MenuPopupHelper::OnGlobalLayout()
 {
-    if (IsShowing()) {
+    Boolean isShowing;
+    IsShowing(&isShowing);
+    if (isShowing) {
         AutoPtr<IView> anchor = mAnchorView;
         Boolean tmp = FALSE;
         if (anchor == NULL || !(anchor->IsShown(&tmp), tmp)) {
             Dismiss();
-        } else if (IsShowing()) {
+        }
+        else if (isShowing) {
             // Recompute window size and position
             return mPopup->Show();
         }
@@ -465,10 +492,10 @@ ECode MenuPopupHelper::OnViewDetachedFromWindow(
             v->GetViewTreeObserver((IViewTreeObserver**)&mTreeObserver);
         }
 
-        mTreeObserver->RemoveGlobalOnLayoutListener((IOnGlobalLayoutListener*)(this->Probe(EIID_IOnGlobalLayoutListener)));
+        mTreeObserver->RemoveGlobalOnLayoutListener(this);
     }
 
-    return v->RemoveOnAttachStateChangeListener((IViewOnAttachStateChangeListener*)(this->Probe(EIID_IViewOnAttachStateChangeListener)));
+    return v->RemoveOnAttachStateChangeListener(this);
 }
 
 ECode MenuPopupHelper::InitForMenu(
@@ -483,13 +510,15 @@ ECode MenuPopupHelper::GetMenuView(
     /* [in] */ IViewGroup* root,
     /* [out] */ IMenuView** view)
 {
-    //throw new UnsupportedOperationException("MenuPopupHelpers manage their own views");
+    Logger::E(TAG, "MenuPopupHelpers manage their own views");
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode MenuPopupHelper::UpdateMenuView(
     /* [in] */ Boolean cleared)
 {
+    mHasContentWidth = FALSE;
+
     if (mAdapter != NULL) {
         mAdapter->NotifyDataSetChanged();
     }
@@ -510,17 +539,18 @@ ECode MenuPopupHelper::OnSubMenuSelected(
 {
     assert(selected != NULL && subMenu != NULL);
     Boolean tmp = FALSE;
-    if (subMenu->HasVisibleItems(&tmp), tmp) {
+    if (IMenu::Probe(subMenu)->HasVisibleItems(&tmp), tmp) {
         AutoPtr<IMenuPopupHelper> subPopup;
-        CMenuPopupHelper::New(mContext, subMenu, mAnchorView, FALSE, (IMenuPopupHelper**)&subPopup);
-        (IMenuPresenter::Probe(subPopup))->SetCallback(mPresenterCallback);
+        CMenuPopupHelper::New(mContext, IMenuBuilder::Probe(subMenu),
+            mAnchorView, (IMenuPopupHelper**)&subPopup);
+        IMenuPresenter::Probe(subPopup)->SetCallback(mPresenterCallback);
 
         Boolean preserveIconSpacing = FALSE;
         Int32 count = 0;
-        subMenu->GetSize(&count);
+        IMenu::Probe(subMenu)->GetSize(&count);
         for (Int32 i = 0; i < count; i++) {
             AutoPtr<IMenuItem> childItem;
-            subMenu->GetItem(i, (IMenuItem**)&childItem);
+            IMenu::Probe(subMenu)->GetItem(i, (IMenuItem**)&childItem);
             assert(childItem != NULL);
 
             AutoPtr<IDrawable> icon;
@@ -537,7 +567,7 @@ ECode MenuPopupHelper::OnSubMenuSelected(
         Boolean tryShow = FALSE;
         if (subPopup->TryShow(&tryShow), tryShow) {
             if (mPresenterCallback != NULL) {
-                mPresenterCallback->OnOpenSubMenu(subMenu, &tmp);
+                mPresenterCallback->OnOpenSubMenu(IMenuBuilder::Probe(subMenu), &tmp);
             }
             *selected = TRUE;
             return NOERROR;
@@ -566,7 +596,7 @@ ECode MenuPopupHelper::OnCloseMenu(
 ECode MenuPopupHelper::FlagActionItems(
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     *result = FALSE;
     return NOERROR;
 }
@@ -576,7 +606,7 @@ ECode MenuPopupHelper::ExpandItemActionView(
     /* [in] */ IMenuItemImpl* item,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     *result = FALSE;
     return NOERROR;
 }
@@ -586,7 +616,7 @@ ECode MenuPopupHelper::CollapseItemActionView(
     /* [in] */ IMenuItemImpl* item,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     *result = FALSE;
     return NOERROR;
 }
@@ -594,7 +624,7 @@ ECode MenuPopupHelper::CollapseItemActionView(
 ECode MenuPopupHelper::GetId(
     /* [out] */ Int32* id)
 {
-    assert(id != NULL);
+    VALIDATE_NOT_NULL(id)
     *id = 0;
     return NOERROR;
 }
@@ -602,7 +632,7 @@ ECode MenuPopupHelper::GetId(
 ECode MenuPopupHelper::OnSaveInstanceState(
     /* [out] */ IParcelable** parcel)
 {
-    assert(parcel != NULL);
+    VALIDATE_NOT_NULL(parcel)
     *parcel = NULL;
     return NOERROR;
 }
@@ -610,36 +640,6 @@ ECode MenuPopupHelper::OnSaveInstanceState(
 ECode MenuPopupHelper::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
-    return NOERROR;
-}
-
-ECode MenuPopupHelper::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ IView* anchorView,
-    /* [in] */ Boolean overflowOnly)
-{
-    mContext = context;
-    LayoutInflater::From(context, (ILayoutInflater**)&mInflater);
-    mMenu = menu;
-    mOverflowOnly = overflowOnly;
-
-    AutoPtr<IResources> res;
-    context->GetResources((IResources**)&res);
-    assert(res != NULL);
-
-    AutoPtr<IDisplayMetrics> display;
-    res->GetDisplayMetrics((IDisplayMetrics**)&display);
-    assert(display != NULL);
-
-    Int32 widthPixels = 0, pixelSize = 0;
-    display->GetWidthPixels(&widthPixels);
-    res->GetDimensionPixelSize(R::dimen::config_prefDialogWidth, &pixelSize);
-    mPopupMaxWidth = Elastos::Core::Math::Max(widthPixels / 2, pixelSize);
-
-    mAnchorView = anchorView;
-
-    menu->AddMenuPresenter((IMenuPresenter*)(this->Probe(EIID_IMenuPresenter)));
     return NOERROR;
 }
 

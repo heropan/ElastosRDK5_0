@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Droid.View.IMenu;
+    interface Elastos.Droid.View.IMenuItem;
 
     namespace Elastos {
     namespace Droid {
@@ -19,8 +20,14 @@ module
      */
     [local]
     interface ISubMenuBuilder {
+        IsQwertyMode(
+            [out] Boolean* result);
+
         GetParentMenu(
             [out] IMenu** menu);
+
+        GetItem(
+            [out] IMenuItem** item);
     }
 
     } // namespace Menu

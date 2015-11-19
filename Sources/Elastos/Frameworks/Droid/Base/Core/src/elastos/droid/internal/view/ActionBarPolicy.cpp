@@ -1,34 +1,34 @@
-#include "elastos/droid/internal/view/menu/CActionBarPolicy.h"
-#include "elastos/droid/internal/view/CViewConfigurationHelper.h"
+
+#include "elastos/droid/internal/view/menu/ActionBarPolicy.h"
+#include "elastos/droid/os/Build.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Droid::R;
-using Elastos::Droid::View::IViewConfiguration;
-using Elastos::Droid::View::IViewConfigurationHelper;
-using Elastos::Droid::View::CViewConfigurationHelper;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::Utility::IDisplayMetrics;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace View {
-namespace Menu {
 
-CActionBarPolicy::CActionBarPolicy()
-{}
+CAR_INTERFACE_IMPL(ActionBarPolicy, Object, IActionBarPolicy)
 
-ECode CActionBarPolicy::constructor(
-        /* [in] */ IContext* ctx)
+ActionBarPolicy::ActionBarPolicy(
+    /* [in] */ IContext* ctx)
+    : mContext(ctx)
 {
-    mContext = ctx;
-    return NOERROR;
 }
 
-ECode CActionBarPolicy::GetMaxActionButtons(
+AutoPtr<IActionBarPolicy> ActionBarPolicy::Get(
+    /* [in] */ IContext* context)
+{
+    return new ActionBarPolicy(context);
+}
+
+ECode ActionBarPolicy::GetMaxActionButtons(
         /* [out] */ Int32* rst)
 {
     AutoPtr<IResources> rs;
@@ -36,22 +36,18 @@ ECode CActionBarPolicy::GetMaxActionButtons(
     return rs->GetInteger(R::integer::max_action_buttons, rst);
 }
 
-ECode CActionBarPolicy::ShowsOverflowMenuButton(
+ECode ActionBarPolicy::ShowsOverflowMenuButton(
         /* [out] */ Boolean* rst)
 {
-    AutoPtr<IViewConfigurationHelper> helper;
-    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
-    AutoPtr<IViewConfiguration> vcf;
-    helper->Get(mContext, (IViewConfiguration**)&vcf);
-    Boolean isHas;
-    vcf->HasPermanentMenuKey(&isHas);
-    *rst = !isHas;
+    VALIDATE_NOT_NULL(rst)
+    *rst = TRUE;
     return NOERROR;
 }
 
-ECode CActionBarPolicy::GetEmbeddedMenuWidthLimit(
+ECode ActionBarPolicy::GetEmbeddedMenuWidthLimit(
         /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
     AutoPtr<IResources> rs;
     mContext->GetResources((IResources**)&rs);
     AutoPtr<IDisplayMetrics> dm;
@@ -62,26 +58,29 @@ ECode CActionBarPolicy::GetEmbeddedMenuWidthLimit(
     return NOERROR;
 }
 
-ECode CActionBarPolicy::HasEmbeddedTabs(
+ECode ActionBarPolicy::HasEmbeddedTabs(
         /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
     AutoPtr<IApplicationInfo> appInfo;
     mContext->GetApplicationInfo((IApplicationInfo**)&appInfo);
     Int32 targetSdk;
     appInfo->GetTargetSdkVersion(&targetSdk);
     AutoPtr<IResources> rs;
     mContext->GetResources((IResources**)&rs);
-    if(targetSdk >= 16)
-    {
+    if(targetSdk >= Build::VERSION_CODES::JELLY_BEAN) {
         return rs->GetBoolean(R::bool_::action_bar_embed_tabs, rst);
-    } else {
-        return rs->GetBoolean(R::bool_::action_bar_embed_tabs_pre_jb, rst);
     }
+
+    // The embedded tabs policy changed in Jellybean; give older apps the old policy
+    // so they get what they expect.
+    return rs->GetBoolean(R::bool_::action_bar_embed_tabs_pre_jb, rst);
 }
 
-ECode CActionBarPolicy::GetTabContainerHeight(
+ECode ActionBarPolicy::GetTabContainerHeight(
         /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ActionBar),
             ARRAY_SIZE(R::styleable::ActionBar));
@@ -91,8 +90,7 @@ ECode CActionBarPolicy::GetTabContainerHeight(
     Int32 height;
     a->GetLayoutDimension(R::styleable::ActionBar_height, 0, &height);
     Boolean isHas;
-    if(HasEmbeddedTabs(&isHas), !isHas)
-    {
+    if(HasEmbeddedTabs(&isHas), !isHas) {
         AutoPtr<IResources> r;
         mContext->GetResources((IResources**)&r);
         Int32 pixelSize;
@@ -104,18 +102,18 @@ ECode CActionBarPolicy::GetTabContainerHeight(
     return NOERROR;
 }
 
-ECode CActionBarPolicy::EnableHomeButtonByDefault(
+ECode ActionBarPolicy::EnableHomeButtonByDefault(
         /* [out] */ Boolean* rst)
 {
     AutoPtr<IApplicationInfo> appInfo;
     mContext->GetApplicationInfo((IApplicationInfo**)&appInfo);
     Int32 targetSdk;
     appInfo->GetTargetSdkVersion(&targetSdk);
-    *rst = (targetSdk < 14);
+    *rst = (targetSdk < Build::VERSION_CODES::ICE_CREAM_SANDWICH);
     return NOERROR;
 }
 
-ECode CActionBarPolicy::GetStackedTabMaxWidth(
+ECode ActionBarPolicy::GetStackedTabMaxWidth(
         /* [out] */ Int32* rst)
 {
     AutoPtr<IResources> r;
@@ -124,7 +122,7 @@ ECode CActionBarPolicy::GetStackedTabMaxWidth(
     return NOERROR;
 }
 
-} // namespace Menu
 } // namespace View
+} // namespace Internal
 } // namepsace Droid
 } // namespace Elastos

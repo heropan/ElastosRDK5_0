@@ -1,6 +1,6 @@
 
 #include "elastos/droid/internal/view/menu/ContextMenuBuilder.h"
-// #include "elastos/droid/internal/view/menu/CMenuDialogHelper.h"
+#include "elastos/droid/internal/view/menu/CMenuDialogHelper.h"
 
 using Elastos::Droid::View::EIID_IContextMenu;
 
@@ -71,8 +71,7 @@ ECode ContextMenuBuilder::Show(
     items->IsEmpty(&isEmpty);
     if (isEmpty == FALSE) {
         //EventLog.writeEvent(50001. 1);
-        assert(0);
-        // CMenuDialogHelper::New(this, helper);
+        CMenuDialogHelper::New(this, helper);
         (*helper)->Show(token);
 
         return NOERROR;
@@ -80,6 +79,11 @@ ECode ContextMenuBuilder::Show(
 
     *helper = NULL;
     return NOERROR;
+}
+
+ECode ContextMenuBuilder::ClearHeader()
+{
+    return MenuBuilder::ClearHeader();
 }
 
 } // namespace Menu

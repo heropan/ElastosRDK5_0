@@ -20,6 +20,8 @@ class COverlayViewGroup;
 class ViewGroup
     : public View
     , public IViewGroup
+    , public IViewParent
+    , public IViewManager
 {
     friend class View;
     friend class COverlayViewGroup;
@@ -1026,6 +1028,50 @@ public:
 
     virtual CARAPI ShouldBlockFocusForTouchscreen(
         /* [out] */ Boolean* should);
+
+    // method of IViewParent
+    CARAPI RequestLayout();
+
+    CARAPI GetParent(
+        /* [out] */ IViewParent** res);
+
+    CARAPI IsLayoutRequested(
+        /* [out] */ Boolean* result);
+
+    CARAPI CreateContextMenu(
+        /* [in] */ IContextMenu* menu);
+
+    CARAPI RequestFitSystemWindows();
+
+    CARAPI GetParentForAccessibility(
+        /* [out] */ IViewParent** parent);
+
+    CARAPI CanResolveLayoutDirection(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsLayoutDirectionResolved(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetLayoutDirection(
+        /* [out] */ Int32* direction);
+
+    CARAPI CanResolveTextDirection(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsTextDirectionResolved(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetTextDirection(
+        /* [out] */ Int32* direction);
+
+    CARAPI CanResolveTextAlignment(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsTextAlignmentResolved(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetTextAlignment(
+        /* [out] */ Int32* result);
 
 protected:
     CARAPI_(Boolean) OnRequestFocusInDescendants(

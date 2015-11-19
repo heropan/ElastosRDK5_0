@@ -510,7 +510,8 @@ void ViewGroup::ViewLocationHolder::Clear()
     mLocation->Set(0, 0, 0, 0);
 }
 
-CAR_INTERFACE_IMPL(ViewGroup, View, IViewGroup);
+CAR_INTERFACE_IMPL_3(ViewGroup, View, IViewGroup, IViewParent, IViewManager)
+
 ViewGroup::ViewGroup()
     : mGroupFlags(0)
     , mPersistentDrawingCache(0)
@@ -6921,6 +6922,94 @@ AutoPtr<ArrayOf<Float> > ViewGroup::GetDebugLines(
     (*sDebugLines)[15] = y1;
 
     return sDebugLines;
+}
+
+ECode ViewGroup::RequestLayout()
+{
+    return View::RequestLayout();
+}
+
+ECode ViewGroup::GetParent(
+    /* [out] */ IViewParent** res)
+{
+    return View::GetParent(res);
+}
+
+ECode ViewGroup::IsLayoutRequested(
+    /* [out] */ Boolean* result)
+{
+    return View::IsLayoutRequested(result);
+}
+
+ECode ViewGroup::CreateContextMenu(
+    /* [in] */ IContextMenu* menu)
+{
+    return View::CreateContextMenu(menu);
+}
+
+ECode ViewGroup::RequestFitSystemWindows()
+{
+    return View::RequestFitSystemWindows();
+}
+
+ECode ViewGroup::GetParentForAccessibility(
+    /* [out] */ IViewParent** parent)
+{
+    return View::GetParentForAccessibility(parent);
+}
+
+ECode ViewGroup::CanResolveLayoutDirection(
+    /* [out] */ Boolean* result)
+{
+    return View::CanResolveLayoutDirection(result);
+}
+
+ECode ViewGroup::IsLayoutDirectionResolved(
+    /* [out] */ Boolean* result)
+{
+    return View::IsLayoutDirectionResolved(result);
+}
+
+ECode ViewGroup::GetLayoutDirection(
+    /* [out] */ Int32* direction)
+{
+    return View::GetLayoutDirection(direction);
+}
+
+ECode ViewGroup::CanResolveTextDirection(
+    /* [out] */ Boolean* result)
+{
+    return View::CanResolveTextDirection(result);
+}
+
+ECode ViewGroup::IsTextDirectionResolved(
+    /* [out] */ Boolean* result)
+{
+    return View::IsTextDirectionResolved(result);
+}
+
+ECode ViewGroup::GetTextDirection(
+    /* [out] */ Int32* direction)
+{
+    return View::GetTextDirection(direction);
+}
+
+ECode ViewGroup::CanResolveTextAlignment(
+    /* [out] */ Boolean* result)
+{
+    return View::CanResolveTextAlignment(result);
+}
+
+ECode ViewGroup::IsTextAlignmentResolved(
+    /* [out] */ Boolean* result)
+{
+    return View::IsTextAlignmentResolved(result);
+}
+
+ECode ViewGroup::GetTextAlignment(
+    /* [out] */ Int32* result)
+{
+    return View::GetTextAlignment(result);
 }
 
 }   //namespace View

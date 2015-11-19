@@ -2,18 +2,18 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_LISTMENUPRESENTER_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_LISTMENUPRESENTER_H__
 
-#include "elastos/droid/widget/BaseAdapter.h"
+#include "elastos/droid/ext/frameworkext.h"
+// #include "elastos/droid/widget/BaseAdapter.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::View::Menu::IMenuPresenter;
-using Elastos::Droid::View::Menu::IExpandedMenuView;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
-using Elastos::Droid::Widget::IBaseAdapter;
-using Elastos::Droid::Widget::BaseAdapter;
+// using Elastos::Droid::Widget::BaseAdapter;
 using Elastos::Droid::Widget::IListAdapter;
 using Elastos::Droid::Widget::IAdapterView;
-using Elastos::Droid::Widget::ISpinnerAdapter;
 
 namespace Elastos {
 namespace Droid {
@@ -22,78 +22,61 @@ namespace View {
 namespace Menu {
 
 class ListMenuPresenter
+    : public Object
+    , public IListMenuPresenter
+    , public IMenuPresenter
+    , public IAdapterViewOnItemClickListener
 {
 private:
-    class _MenuAdapter
-        : public ElRefBase
-        , public BaseAdapter
+    class MenuAdapter
+    #if 0
+        : public BaseAdapter
+    #else
+        : public Object
+    #endif
     {
     public:
-        _MenuAdapter(
+        MenuAdapter(
             /* [in] */ ListMenuPresenter* host);
 
-        virtual CARAPI_(AutoPtr<IInterface>) GetItem(
-            /* [in] */ Int32 position);
+        CARAPI GetCount(
+            /* [out] */ Int32* count);
 
-        CARAPI_(Int32) GetCount();
+        CARAPI GetItem(
+            /* [in] */ Int32 position,
+            /* [out] */ IInterface** item);
 
-        CARAPI_(Int64) GetItemId(
-            /* [in] */ Int32 position);
+        CARAPI GetItemId(
+            /* [in] */ Int32 position,
+            /* [out] */ Int64* id);
 
-        CARAPI_(AutoPtr<IView>) GetView(
+        CARAPI GetView(
             /* [in] */ Int32 position,
             /* [in] */ IView* convertView,
-            /* [in] */ IViewGroup* parent);
+            /* [in] */ IViewGroup* parent,
+            /* [out] */ IView** view);
 
         CARAPI_(void) FindExpandedIndex();
 
         //@Override
         CARAPI NotifyDataSetChanged();
 
-        CARAPI NotifyDataSetInvalidated();
-
     protected:
         Int32 mExpandedIndex;
         ListMenuPresenter*  mHost;
     };
 
-    class MenuAdapter
-        : public _MenuAdapter
-        , public IBaseAdapter
-        , public ISpinnerAdapter
-    {
-    public:
-        IADAPTER_METHODS_DECL()
-        IBASEADAPTER_METHODS_DECL()
-        ILISTADAPTER_METHODS_DECL()
-        ISPINNERADAPTER_METHODS_DECL()
-
-        MenuAdapter(
-            /* [in] */ ListMenuPresenter* host);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-    };
-
     class OnItemClickListener
-        : public IAdapterViewOnItemClickListener
-        , public ElRefBase
+        : public Object
+        , public IAdapterViewOnItemClickListener
     {
     public:
-        CAR_INTERFACE_DECL()
-
         OnItemClickListener(
             /* [in] */ ListMenuPresenter* owner)
             : mOwner(owner)
         {}
+
+        CAR_INTERFACE_DECL()
 
         CARAPI OnItemClick(
             /* [in] */ IAdapterView* parent,
@@ -106,16 +89,17 @@ private:
     };
 
 public:
+    ListMenuPresenter();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
+
     /**
      * Construct a new ListMenuPresenter.
      * @param context Context to use for theming. This will supersede the context provided
      *                to initForMenu when this presenter is added.
      * @param itemLayoutRes Layout resource for individual item views.
      */
-    ListMenuPresenter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 itemLayoutRes);
 
@@ -124,7 +108,7 @@ public:
      * @param itemLayoutRes Layout resource for individual item views.
      * @param themeRes Resource ID of a theme to use for views.
      */
-    ListMenuPresenter(
+    CARAPI constructor(
         /* [in] */ Int32 itemLayoutRes,
         /* [in] */ Int32 themeRes);
 
@@ -145,7 +129,8 @@ public:
      *
      * @return A ListAdapter containing the items in the menu.
      */
-    CARAPI_(AutoPtr<IListAdapter>) GetAdapter();
+    CARAPI GetAdapter(
+        /* [out] */ IListAdapter** adapter);
 
     //@Override
     CARAPI UpdateMenuView(
@@ -213,36 +198,21 @@ public:
 protected:
     CARAPI_(Int32) GetItemIndexOffset();
 
-    ListMenuPresenter();
-
-    CARAPI Init(
-        /* [in] */ Int32 itemLayoutRes,
-        /* [in] */ Int32 themeRes);
-
-    CARAPI Init(
-        /* [in] */ IContext* ctx,
-        /* [in] */ Int32 itemLayoutRes);
-
-private:
-    static String TAG;
-
+public:
     AutoPtr<IContext> mContext;
     AutoPtr<ILayoutInflater> mInflater;
     AutoPtr<IMenuBuilder> mMenu;
-
     AutoPtr<IExpandedMenuView> mMenuView;
-
-    Int32 mItemIndexOffset;
     Int32 mThemeRes;
     Int32 mItemLayoutRes;
-
-    AutoPtr<IMenuPresenterCallback> mCallback;
     AutoPtr<MenuAdapter> mAdapter;
 
+private:
+    static const String TAG;
+
+    Int32 mItemIndexOffset;
+    AutoPtr<IMenuPresenterCallback> mCallback;
     Int32 mId;
-
-    static String VIEWS_TAG;
-
 };
 
 } // namespace Menu

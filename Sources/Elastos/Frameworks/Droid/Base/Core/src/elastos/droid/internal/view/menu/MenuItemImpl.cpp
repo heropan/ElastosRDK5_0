@@ -1,18 +1,26 @@
 
 #include "elastos/droid/internal/view/menu/MenuItemImpl.h"
 #include "elastos/droid/internal/view/menu/MenuBuilder.h"
-#include "elastos/droid/internal/view/menu/CIconMenuItemView.h"
-#include "elastos/droid/internal/view/ActionProvider.h"
-#include "elastos/droid/internal/view/LayoutInflater.h"
-#include <elastos/core/Character.h>
-#include "elastos/droid/widget/CLinearLayout.h"
+#include "elastos/droid/view/LayoutInflater.h"
+// #include "elastos/droid/widget/CLinearLayout.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/Character.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
-using namespace Elastos::Core;
-using Elastos::Droid::R;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::View::IMenu;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::LayoutInflater;
+using Elastos::Droid::View::EIID_IMenuItem;
 using Elastos::Droid::View::EIID_IVisibilityListener;
-using Elastos::Droid::Widget::CLinearLayout;
+using Elastos::Droid::View::IViewGroup;
+// using Elastos::Droid::Widget::CLinearLayout;
 using Elastos::Droid::Widget::ILinearLayout;
+using Elastos::Core::Character;
+using Elastos::Core::CString;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -20,7 +28,21 @@ namespace Internal {
 namespace View {
 namespace Menu {
 
-String MenuItemImpl::TAG("MenuItemImpl");
+CAR_INTERFACE_IMPL(MenuItemImpl::VisibilityListener, Object, IVisibilityListener)
+
+MenuItemImpl::VisibilityListener::VisibilityListener(
+    /* [in] */ MenuItemImpl* host)
+    : mHost(host)
+{}
+
+ECode MenuItemImpl::VisibilityListener::OnActionProviderVisibilityChanged(
+    /* [in] */ Boolean isVisible)
+{
+    mHost->mMenu->OnItemVisibleChanged(mHost);
+    return NOERROR;
+}
+
+const String MenuItemImpl::TAG("MenuItemImpl");
 const Int32 MenuItemImpl::SHOW_AS_ACTION_MASK = IMenuItem::SHOW_AS_ACTION_NEVER |
             IMenuItem::SHOW_AS_ACTION_IF_ROOM | IMenuItem::SHOW_AS_ACTION_ALWAYS;
 
@@ -34,29 +56,16 @@ const Int32 MenuItemImpl::IS_ACTION = 0x00000020;
 /** Used for the icon resource ID if this item does not have an icon */
 const Int32 MenuItemImpl::NO_ICON = 0;
 
+String MenuItemImpl::sLanguage;
 String MenuItemImpl::sPrependShortcutLabel;
 String MenuItemImpl::sEnterShortcutLabel;
 String MenuItemImpl::sDeleteShortcutLabel;
 String MenuItemImpl::sSpaceShortcutLabel;
 
-CAR_INTERFACE_IMPL(MenuItemImpl::VisibilityListener, IVisibilityListener)
-
-MenuItemImpl::VisibilityListener::VisibilityListener(
-    /* [in] */ MenuItemImpl* host)
-    : mHost(host)
-{}
-
-ECode MenuItemImpl::VisibilityListener::OnActionProviderVisibilityChanged(
-    /* [in] */ Boolean isVisible)
-{
-    mHost->mMenu->OnItemVisibleChanged((IMenuItemImpl*)(mHost->Probe(EIID_IMenuItemImpl)));
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(MenuItemImpl, Object, IMenuItemImpl, IMenuItem)
 
 MenuItemImpl::MenuItemImpl()
-    : mShowAsAction(0)
-    , mIsActionViewExpanded(FALSE)
-    , mId(0)
+    : mId(0)
     , mGroup(0)
     , mCategoryOrder(0)
     , mOrdering(0)
@@ -64,43 +73,11 @@ MenuItemImpl::MenuItemImpl()
     , mShortcutAlphabeticChar(0)
     , mIconResId(NO_ICON)
     , mFlags(ENABLED)
+    , mShowAsAction(0)
+    , mIsActionViewExpanded(FALSE)
 {}
 
-MenuItemImpl::MenuItemImpl (
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ Int32 group,
-    /* [in] */ Int32 id,
-    /* [in] */ Int32 categoryOrder,
-    /* [in] */ Int32 ordering,
-    /* [in] */ ICharSequence* title,
-    /* [in] */ Int32 showAsAction)
-    : mShowAsAction(showAsAction)
-    , mIsActionViewExpanded(FALSE)
-    , mId(id)
-    , mGroup(group)
-    , mCategoryOrder(categoryOrder)
-    , mOrdering(ordering)
-    , mTitle(title)
-    , mShortcutNumericChar(0)
-    , mShortcutAlphabeticChar(0)
-    , mIconResId(NO_ICON)
-    , mMenu(menu)
-    , mFlags(ENABLED)
-{
-    if (sPrependShortcutLabel.IsNull()) {
-        // This is instantiated from the UI thread, so no chance of sync issues
-        AutoPtr<IContext> context;
-        mMenu->GetContext((IContext**)&context);
-        AutoPtr<IResources> res;
-        context->GetResources((IResources**)&res);
-        res->GetString(R::string::prepend_shortcut_label, &sPrependShortcutLabel);
-        res->GetString(R::string::menu_enter_shortcut_label, &sEnterShortcutLabel);
-        res->GetString(R::string::menu_delete_shortcut_label, &sDeleteShortcutLabel);
-        res->GetString(R::string::menu_space_shortcut_label, &sSpaceShortcutLabel);
-    }
-}
-
-ECode MenuItemImpl::Init(
+ECode MenuItemImpl::constructor(
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ Int32 group,
     /* [in] */ Int32 id,
@@ -109,18 +86,25 @@ ECode MenuItemImpl::Init(
     /* [in] */ ICharSequence* title,
     /* [in] */ Int32 showAsAction)
 {
-    if (sPrependShortcutLabel.IsNull()) {
+    AutoPtr<IContext> context;
+    menu->GetContext((IContext**)&context);
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<IConfiguration> c;
+    res->GetConfiguration((IConfiguration**)&c);
+    AutoPtr<ILocale> locale;
+    c->GetLocale((ILocale**)&locale);
+    String lang;
+    locale->ToString(&lang);
+    if (sPrependShortcutLabel == NULL || !lang.Equals(sLanguage)) {
+        sLanguage = lang;
         // This is instantiated from the UI thread, so no chance of sync issues
-        AutoPtr<IContext> context;
-        menu->GetContext((IContext**)&context);
-        AutoPtr<IResources> res;
-        context->GetResources((IResources**)&res);
         res->GetString(R::string::prepend_shortcut_label, &sPrependShortcutLabel);
         res->GetString(R::string::menu_enter_shortcut_label, &sEnterShortcutLabel);
         res->GetString(R::string::menu_delete_shortcut_label, &sDeleteShortcutLabel);
         res->GetString(R::string::menu_space_shortcut_label, &sSpaceShortcutLabel);
     }
-    mMenu = menu;
+    mMenu = (MenuBuilder*)menu;
     mId = id;
     mGroup = group;
     mCategoryOrder = categoryOrder;
@@ -137,7 +121,7 @@ ECode MenuItemImpl::Invoke(
 
     Boolean isConsumed;
     if (mClickListener != NULL &&
-        (mClickListener->OnMenuItemClick((IMenuItem*)this->Probe(EIID_IMenuItem), &isConsumed), isConsumed)) {
+        (mClickListener->OnMenuItemClick(this, &isConsumed), isConsumed)) {
         *state = TRUE;
         return NOERROR;
     }
@@ -145,7 +129,7 @@ ECode MenuItemImpl::Invoke(
     AutoPtr<IMenuBuilder> menu;
     mMenu->GetRootMenu((IMenuBuilder**)&menu);
 
-    if (mMenu->DispatchMenuItemSelected(menu, (IMenuItem*)this->Probe(EIID_IMenuItem), &isConsumed), isConsumed) {
+    if (mMenu->DispatchMenuItemSelected(menu, this)) {
         *state = TRUE;
         return NOERROR;
     }
@@ -157,16 +141,13 @@ ECode MenuItemImpl::Invoke(
     }
 
     if (mIntent != NULL) {
-//        try {
-            AutoPtr<IContext> context;
-            mMenu->GetContext((IContext**)&context);
-            FAIL_RETURN(context->StartActivity(mIntent));
+        AutoPtr<IContext> context;
+        mMenu->GetContext((IContext**)&context);
+        if (SUCCEEDED(context->StartActivity(mIntent))) {
             *state = TRUE;
             return NOERROR;
-//        } catch (ActivityNotFoundException e) {
-//            Log.e(TAG, "Can't find activity to handle intent; ignoring", e);
-//        }
-
+        }
+        Logger::E(TAG, "Can't find activity to handle intent; ignoring");
     }
 
     Boolean pDefault;
@@ -193,7 +174,8 @@ ECode MenuItemImpl::SetEnabled(
 {
     if (enabled) {
         mFlags |= ENABLED;
-    } else {
+    }
+    else {
         mFlags &= ~ENABLED;
     }
 
@@ -325,8 +307,7 @@ ECode MenuItemImpl::GetShortcut(
     /* [out] */ Char32* c)
 {
     VALIDATE_NOT_NULL(c);
-    Boolean isQwertyMode;
-    mMenu->IsQwertyMode(&isQwertyMode);
+    Boolean isQwertyMode = mMenu->IsQwertyMode();
     *c = isQwertyMode ? mShortcutAlphabeticChar : mShortcutNumericChar;
 
     return NOERROR;
@@ -343,7 +324,7 @@ ECode MenuItemImpl::GetShortcutLabel(
         return NOERROR;
     }
 
-    StringBuffer sb(sPrependShortcutLabel);
+    StringBuilder sb(sPrependShortcutLabel);
     switch (shortcut) {
         case '\n':
             sb += sEnterShortcutLabel;
@@ -426,13 +407,6 @@ ECode MenuItemImpl::GetTitle(
     return NOERROR;
 }
 
-/**
- * Gets the title for a particular {@link ItemView}
- *
- * @param itemView The ItemView that is receiving the title
- * @return Either the title or condensed title based on what the ItemView
- *         prefers
- */
 ECode MenuItemImpl::GetTitleForItemView(
     /* [in] */ IMenuItemView* itemView,
     /* [out] */ ICharSequence** title)
@@ -471,7 +445,7 @@ ECode MenuItemImpl::SetTitle(
     mMenu->GetContext((IContext**)&context);
     context->GetString(title, &str);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(str, (ICharSequence**)&csq);
+    CString::New(str, (ICharSequence**)&csq);
     return SetTitle(csq);
 }
 
@@ -513,10 +487,10 @@ ECode MenuItemImpl::GetIcon(
     }
 
     if (mIconResId != NO_ICON) {
-        AutoPtr<IResources> res;
-        mMenu->GetResources((IResources**)&res);
+        AutoPtr<IContext> context;
+        mMenu->GetContext((IContext**)&context);
         AutoPtr<IDrawable> icon;
-        res->GetDrawable(mIconResId, (IDrawable**)&icon);
+        context->GetDrawable(mIconResId, (IDrawable**)&icon);
 
         mIconResId = NO_ICON;
         mIconDrawable = icon;
@@ -606,7 +580,7 @@ ECode MenuItemImpl::SetChecked(
     if ((mFlags & EXCLUSIVE) != 0) {
         // Call the method on the Menu since it knows about the others in this
         // exclusive checkable group
-        mMenu->SetExclusiveItemChecked((IMenuItem*)this->Probe(EIID_IMenuItem));
+        mMenu->SetExclusiveItemChecked(this);
     }
     else {
         SetCheckedInt(checked);
@@ -657,14 +631,13 @@ ECode MenuItemImpl::SetVisibleInt(
 ECode MenuItemImpl::SetVisible(
     /* [in] */ Boolean shown)
 {
-
     // Try to set the shown state to the given state. If the shown state was changed
     // (i.e. the previous state isn't the same as given state), notify the parent menu that
     // the shown state has changed for this item
     Boolean res = FALSE;
     SetVisibleInt(shown, &res);
     if (res) {
-        mMenu->OnItemVisibleChanged((IMenuItemImpl*)this->Probe(EIID_IMenuItemImpl));
+        mMenu->OnItemVisibleChanged(this);
     }
 
     return NOERROR;
@@ -681,8 +654,8 @@ ECode MenuItemImpl::ToString(
     /* [out] */ String* string)
 {
     VALIDATE_NOT_NULL(string);
-
-    return mTitle->ToString(string);
+    *string = NULL;
+    return mTitle != NULL ? mTitle->ToString(string) : NOERROR;
 }
 
 ECode MenuItemImpl::SetMenuInfo(
@@ -705,7 +678,7 @@ ECode MenuItemImpl::GetMenuInfo(
 
 ECode MenuItemImpl::ActionFormatChanged()
 {
-    mMenu->OnItemActionRequestChanged((IMenuItemImpl*)this->Probe(EIID_IMenuItemImpl));
+    mMenu->OnItemActionRequestChanged(this);
     return NOERROR;
 }
 
@@ -713,14 +686,14 @@ ECode MenuItemImpl::ShouldShowIcon(
     /* [out] */ Boolean* show)
 {
     VALIDATE_NOT_NULL(show);
-    mMenu->GetOptionalIconsVisible(show);
+    *show = mMenu->GetOptionalIconsVisible();
     return NOERROR;
 }
 
 ECode MenuItemImpl::IsActionButton(
     /* [out] */ Boolean* action)
 {
-    assert(action != NULL);
+    VALIDATE_NOT_NULL(action);
     *action = (mFlags & IS_ACTION) == IS_ACTION;
     return NOERROR;
 }
@@ -728,7 +701,7 @@ ECode MenuItemImpl::IsActionButton(
 ECode MenuItemImpl::RequestsActionButton(
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result);
     *result = (mShowAsAction & IMenuItem::SHOW_AS_ACTION_IF_ROOM) == IMenuItem::SHOW_AS_ACTION_IF_ROOM;
     return NOERROR;
 }
@@ -736,7 +709,7 @@ ECode MenuItemImpl::RequestsActionButton(
 ECode MenuItemImpl::RequiresActionButton(
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result);
     *result = (mShowAsAction & IMenuItem::SHOW_AS_ACTION_ALWAYS) == IMenuItem::SHOW_AS_ACTION_ALWAYS;
     return NOERROR;
 }
@@ -746,7 +719,8 @@ ECode MenuItemImpl::SetIsActionButton(
 {
     if (isActionButton) {
         mFlags |= IS_ACTION;
-    } else {
+    }
+    else {
         mFlags &= ~IS_ACTION;
     }
 
@@ -756,7 +730,7 @@ ECode MenuItemImpl::SetIsActionButton(
 ECode MenuItemImpl::ShowsTextAsAction(
     /* [out] */ Boolean* shows)
 {
-    assert(shows != NULL);
+    VALIDATE_NOT_NULL(shows);
     *shows = (mShowAsAction & IMenuItem::SHOW_AS_ACTION_WITH_TEXT) == IMenuItem::SHOW_AS_ACTION_WITH_TEXT;
     return NOERROR;
 }
@@ -773,13 +747,13 @@ ECode MenuItemImpl::SetShowAsAction(
 
         default:
             // Mutually exclusive options selected!
-            // throw new IllegalArgumentException("SHOW_AS_ACTION_ALWAYS, SHOW_AS_ACTION_IF_ROOM,"
-            //         + " and SHOW_AS_ACTION_NEVER are mutually exclusive.");
-            assert(0);
+            Logger::E(TAG, "SHOW_AS_ACTION_ALWAYS, SHOW_AS_ACTION_IF_ROOM,"
+                " and SHOW_AS_ACTION_NEVER are mutually exclusive.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     mShowAsAction = actionEnum;
-    mMenu->OnItemActionRequestChanged((IMenuItemImpl*)this->Probe(EIID_IMenuItemImpl));
+    mMenu->OnItemActionRequestChanged(this);
     return NOERROR;
 }
 
@@ -793,7 +767,7 @@ ECode MenuItemImpl::SetActionView(
         view->SetId(mId);
     }
 
-    mMenu->OnItemActionRequestChanged((IMenuItemImpl*)this->Probe(EIID_IMenuItemImpl));
+    mMenu->OnItemActionRequestChanged(this);
 
     return NOERROR;
 }
@@ -806,8 +780,9 @@ ECode MenuItemImpl::SetActionView(
     AutoPtr<ILayoutInflater> inflater;
     LayoutInflater::From(context, (ILayoutInflater**)&inflater);
 
-    AutoPtr<ILinearLayout> linearLayout;
-    CLinearLayout::New(context, (ILinearLayout**)&linearLayout);
+    AutoPtr<IViewGroup> linearLayout;
+    assert(0);
+    // CLinearLayout::New(context, (IViewGroup**)&linearLayout);
     AutoPtr<IView> view;
     inflater->Inflate(resId, linearLayout, FALSE, (IView**)&view);
 
@@ -819,7 +794,7 @@ ECode MenuItemImpl::SetActionView(
 ECode MenuItemImpl::GetActionView(
     /* [out] */ IView** view)
 {
-    assert(view != NULL);
+    VALIDATE_NOT_NULL(view);
 
     *view = NULL;
     if (mActionView != NULL) {
@@ -828,7 +803,7 @@ ECode MenuItemImpl::GetActionView(
         return NOERROR;
     }
     else if (mActionProvider != NULL) {
-        mActionProvider->OnCreateActionView((IMenuItem*)this->Probe(EIID_IMenuItem), (IView**)&mActionView);
+        mActionProvider->OnCreateActionView(this, (IView**)&mActionView);
         *view = mActionView;
         REFCOUNT_ADD(*view);
         return NOERROR;
@@ -842,7 +817,7 @@ ECode MenuItemImpl::GetActionView(
 ECode MenuItemImpl::GetActionProvider(
     /* [out] */ IActionProvider** provider)
 {
-    assert(provider != NULL);
+    VALIDATE_NOT_NULL(provider);
     *provider = mActionProvider;
     REFCOUNT_ADD(*provider);
 
@@ -859,8 +834,10 @@ ECode MenuItemImpl::SetActionProvider(
     mActionView = NULL;
     mActionProvider = actionProvider;
     mMenu->OnItemsChanged(TRUE); // Measurement can be changed
-    AutoPtr<VisibilityListener> listener = new VisibilityListener(this);
-    mActionProvider->SetVisibilityListener(listener);
+    if (mActionProvider != NULL) {
+        AutoPtr<VisibilityListener> listener = new VisibilityListener(this);
+        mActionProvider->SetVisibilityListener(listener);
+    }
 
     return NOERROR;
 }
@@ -876,16 +853,18 @@ ECode MenuItemImpl::SetShowAsActionFlags(
 ECode MenuItemImpl::ExpandActionView(
     /* [out] */ Boolean* expand)
 {
-    assert(expand != NULL);
-    if ((mShowAsAction & IMenuItem::SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW) == 0 || mActionView == NULL) {
+    VALIDATE_NOT_NULL(expand);
+    Boolean hasCollapsibleActionView;
+    HasCollapsibleActionView(&hasCollapsibleActionView);
+    if (!hasCollapsibleActionView) {
         *expand = FALSE;
         return NOERROR;
     }
 
     Boolean tmp = FALSE;
     if (mOnActionExpandListener == NULL ||
-            (mOnActionExpandListener->OnMenuItemActionExpand((IMenuItem*)this->Probe(EIID_IMenuItem), &tmp), tmp)) {
-        return mMenu->ExpandItemActionView((IMenuItemImpl*)this->Probe(EIID_IMenuItemImpl), expand);
+        (mOnActionExpandListener->OnMenuItemActionExpand(this, &tmp), tmp)) {
+        return mMenu->ExpandItemActionView(this, expand);
     }
 
     *expand = FALSE;
@@ -895,7 +874,7 @@ ECode MenuItemImpl::ExpandActionView(
 ECode MenuItemImpl::CollapseActionView(
     /* [out] */ Boolean* collapse)
 {
-    assert(collapse != NULL);
+    VALIDATE_NOT_NULL(collapse);
     if ((mShowAsAction & IMenuItem::SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW) == 0) {
         *collapse = FALSE;
         return NOERROR;
@@ -909,8 +888,8 @@ ECode MenuItemImpl::CollapseActionView(
 
     Boolean tmp = FALSE;
     if (mOnActionExpandListener == NULL ||
-            (mOnActionExpandListener->OnMenuItemActionCollapse((IMenuItem*)this->Probe(EIID_IMenuItem), &tmp), tmp)) {
-        return mMenu->CollapseItemActionView((IMenuItemImpl*)this->Probe(EIID_IMenuItemImpl), collapse);
+        (mOnActionExpandListener->OnMenuItemActionCollapse(this, &tmp), tmp)) {
+        return mMenu->CollapseItemActionView(this, collapse);
     }
 
     *collapse = FALSE;
@@ -928,8 +907,15 @@ ECode MenuItemImpl::SetOnActionExpandListener(
 ECode MenuItemImpl::HasCollapsibleActionView(
     /* [out] */ Boolean* has)
 {
-    assert(has != NULL);
-    *has = (mShowAsAction & IMenuItem::SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW) != 0 && mActionView != NULL;
+    VALIDATE_NOT_NULL(has);
+    if ((mShowAsAction & IMenuItem::SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW) != 0) {
+        if (mActionView == NULL && mActionProvider != NULL) {
+            mActionProvider->OnCreateActionView(this, (IView**)&mActionView);
+        }
+        *has = mActionView != NULL;
+        return NOERROR;
+    }
+    *has = FALSE;
     return NOERROR;
 }
 
@@ -944,7 +930,7 @@ ECode MenuItemImpl::SetActionViewExpanded(
 ECode MenuItemImpl::IsActionViewExpanded(
     /* [out] */ Boolean* expanded)
 {
-    assert(expanded != NULL);
+    VALIDATE_NOT_NULL(expanded);
     *expanded = mIsActionViewExpanded;
     return NOERROR;
 }

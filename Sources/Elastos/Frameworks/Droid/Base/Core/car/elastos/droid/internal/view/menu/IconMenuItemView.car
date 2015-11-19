@@ -31,9 +31,6 @@ module
 
         SetItemInvoker(
             [in] IMenuBuilderItemInvoker* itemInvoker);
-
-        GetIcon(
-            [out] IDrawable** icon);
     }
 
     } // namespace Menu

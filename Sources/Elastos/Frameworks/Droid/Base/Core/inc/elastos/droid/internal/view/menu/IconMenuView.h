@@ -2,9 +2,15 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_ICONMENUVIEW_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_ICONMENUVIEW_H__
 
-#include "elastos/droid/internal/view/ViewGroup.h"
-#include "elastos/droid/internal/view/ViewGroupMarginLayoutParams.h"
+#include "elastos/droid/view/ViewBaseSavedState.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
 
+using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::ViewBaseSavedState;
 using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::ViewGroupMarginLayoutParams;
 
@@ -22,6 +28,108 @@ class IconMenuView
     , public IRunnable
 {
     friend class IconMenuPresenter;
+public:
+    class SavedState
+    #if 0
+        : public ViewBaseSavedState
+    #else
+        : public Object
+    #endif
+        , public IIconMenuViewSavedState
+    {
+    public:
+        SavedState();
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ IParcelable* superState,
+            /* [in] */ Int32 focusedPosition);
+
+        CARAPI SetFocusedPosition(
+            /* [in] */ Int32 focusedPosition);
+
+        CARAPI GetFocusedPosition(
+            /* [out] */ Int32* focusedPosition);
+
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel *source);
+
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel *dest);
+
+    private:
+        Int32 mFocusedPosition;
+    };
+
+    /**
+     * Layout parameters specific to IconMenuView (stores the left, top, right, bottom from the
+     * measure pass).
+     */
+    class LayoutParams
+        : public ViewGroupMarginLayoutParams
+        , public IIconMenuViewLayoutParams
+    {
+    public:
+        LayoutParams();
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
+            /* [in] */ IContext* c,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height);
+
+        CARAPI SetLeft(
+            /* [in] */ Int32 left);
+
+        CARAPI GetLeft(
+            /* [out] */ Int32* left);
+
+        CARAPI SetTop(
+            /* [in] */ Int32 top);
+
+        CARAPI GetTop(
+            /* [out] */ Int32* top);
+
+        CARAPI SetRight(
+            /* [in] */ Int32 right);
+
+        CARAPI GetRight(
+            /* [out] */ Int32* right);
+
+        CARAPI SetBottom(
+            /* [in] */ Int32 bottom);
+
+        CARAPI GetBottom(
+            /* [out] */ Int32* bottom);
+
+        CARAPI SetDesiredWidth(
+            /* [in] */ Int32 desiredWidth);
+
+        CARAPI GetDesiredWidth(
+            /* [out] */ Int32* desiredWidth);
+
+        CARAPI SetMaxNumItemsOnRow(
+            /* [in] */ Int32 maxNumItemsOnRow);
+
+        CARAPI GetMaxNumItemsOnRow(
+            /* [out] */ Int32* maxNumItemsOnRow);
+
+    public:
+        Int32 mLeft;
+        Int32 mTop;
+        Int32 mRight;
+        Int32 mBottom;
+        Int32 mDesiredWidth;
+        Int32 mMaxNumItemsOnRow;
+    };
+
 private:
     class OnClickListener
         : public Object
@@ -58,7 +166,7 @@ public:
         /* [in] */ IMenuBuilder* menu);
 
     CARAPI InvokeItem(
-        /* [in] */ IMenuItem* item,
+        /* [in] */ IMenuItemImpl* item,
         /* [out] */ Boolean* state);
 
     //@override

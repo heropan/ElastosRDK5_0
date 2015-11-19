@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace View {
-CAR_INTERFACE_IMPL_2(BaseIWindow, Object, IIWindow, IBinder)
+CAR_INTERFACE_IMPL_3(BaseIWindow, Object, IBaseIWindow, IIWindow, IBinder)
 
 ECode BaseIWindow::SetSession(
     /* [in] */ IWindowSession* session)
@@ -49,12 +49,6 @@ ECode BaseIWindow::DispatchAppVisibility(
 }
 
 ECode BaseIWindow::DispatchGetNewSurface()
-{
-    return NOERROR;
-}
-
-ECode BaseIWindow::DispatchScreenState(
-    /* [in] */ Boolean on)
 {
     return NOERROR;
 }
@@ -125,6 +119,21 @@ ECode BaseIWindow::DispatchWallpaperCommand(
 
 ECode BaseIWindow::DoneAnimating()
 {
+    return NOERROR;
+}
+
+ECode BaseIWindow::SetSeq(
+    /* [in] */ Int32 seq)
+{
+    mSeq = seq;
+    return NOERROR;
+}
+
+ECode BaseIWindow::GetSeq(
+    /* [out] */ Int32* seq)
+{
+    VALIDATE_NOT_NULL(seq)
+    *seq = mSeq;
     return NOERROR;
 }
 

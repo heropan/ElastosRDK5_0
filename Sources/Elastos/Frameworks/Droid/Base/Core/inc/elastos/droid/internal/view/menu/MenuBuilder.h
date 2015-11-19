@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUBUILDERBASE_H__
-#define __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUBUILDERBASE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUBUILDER_H__
+#define __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUBUILDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 // #include "elastos/droid/widget/BaseAdapter.h"
@@ -882,4 +882,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif    //__ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUBUILDERBASE_H__
+#endif    //__ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUBUILDER_H__

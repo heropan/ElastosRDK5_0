@@ -3,14 +3,20 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUITEMIMPL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
-#include <elastos/core/StringBuffer.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Core::IRunnable;
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::IActionProvider;
+using Elastos::Droid::View::IContextMenuInfo;
+using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::View::IOnActionExpandListener;
+using Elastos::Droid::View::IOnMenuItemClickListener;
+using Elastos::Droid::View::ISubMenu;
+using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IVisibilityListener;
+using Elastos::Core::IRunnable;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -18,18 +24,22 @@ namespace Internal {
 namespace View {
 namespace Menu {
 
+class MenuBuilder;
+
 /**
  * @hide
  */
 class MenuItemImpl
+    : public Object
+    , public IMenuItemImpl
+    , public IMenuItem
 {
 private:
     class VisibilityListener
-        : public ElRefBase
+        : public Object
         , public IVisibilityListener
     {
     public:
-
         CAR_INTERFACE_DECL()
 
         VisibilityListener(
@@ -39,10 +49,14 @@ private:
             /* [in] */ Boolean isVisible);
 
     private:
-        MenuItemImpl*  mHost;
+        MenuItemImpl* mHost;
     };
 
 public:
+    MenuItemImpl();
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Instantiates this menu item.
      *
@@ -55,8 +69,7 @@ public:
      * @param categoryOrder The ordering for this item.
      * @param title The text to display for the item.
      */
-
-    MenuItemImpl(
+    CARAPI constructor(
         /* [in] */ IMenuBuilder* menu,
         /* [in] */ Int32 group,
         /* [in] */ Int32 id,
@@ -64,9 +77,6 @@ public:
         /* [in] */ Int32 ordering,
         /* [in] */ ICharSequence* title,
         /* [in] */ Int32 showAsAction);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     /**
      * Invokes the item by calling various listeners or callbacks.
@@ -301,20 +311,9 @@ public:
 
     CARAPI IsActionViewExpanded(
         /* [out] */ Boolean* expanded);
-protected:
 
-    MenuItemImpl();
-
-    CARAPI Init(
-        /* [in] */ IMenuBuilder* menu,
-        /* [in] */ Int32 group,
-        /* [in] */ Int32 id,
-        /* [in] */ Int32 categoryOrder,
-        /* [in] */ Int32 ordering,
-        /* [in] */ ICharSequence* title,
-        /* [in] */ Int32 showAsAction);
 private:
-    static String TAG;
+    static const String TAG;
     static const Int32 SHOW_AS_ACTION_MASK;
 
     static const Int32 CHECKABLE;
@@ -323,16 +322,10 @@ private:
     static const Int32 HIDDEN;
     static const Int32 ENABLED;
     static const Int32 IS_ACTION;
-    Int32 mShowAsAction/* = SHOW_AS_ACTION_NEVER*/;
-
-    AutoPtr<IView> mActionView;
-    AutoPtr<IActionProvider> mActionProvider;
-    AutoPtr<IOnActionExpandListener> mOnActionExpandListener;
-    Boolean mIsActionViewExpanded;
-
     /** Used for the icon resource ID if this item does not have an icon */
     static const Int32 NO_ICON;
 
+    static String sLanguage;
     static String sPrependShortcutLabel;
     static String sEnterShortcutLabel;
     static String sDeleteShortcutLabel;
@@ -358,7 +351,7 @@ private:
     Int32 mIconResId;
 
     /** The menu to which this item belongs */
-    IMenuBuilder* mMenu;    // mMenu has this's reference
+    MenuBuilder* mMenu;    // mMenu has this's reference
     /** If this item should launch a sub menu, this is the sub menu to launch */
     AutoPtr<ISubMenuBuilder> mSubMenu;
 
@@ -366,6 +359,13 @@ private:
     AutoPtr<IOnMenuItemClickListener> mClickListener;
 
     Int32 mFlags;
+
+    Int32 mShowAsAction/* = SHOW_AS_ACTION_NEVER*/;
+
+    AutoPtr<IView> mActionView;
+    AutoPtr<IActionProvider> mActionProvider;
+    AutoPtr<IOnActionExpandListener> mOnActionExpandListener;
+    Boolean mIsActionViewExpanded;
 
     /**
      * Current use case is for context menu: Extra information linked to the

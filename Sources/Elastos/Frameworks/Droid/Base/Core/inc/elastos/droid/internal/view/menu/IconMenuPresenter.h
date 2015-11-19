@@ -75,7 +75,8 @@ public:
     CARAPI UpdateMenuView(
         /* [in] */ Boolean cleared);
 
-    CARAPI_(Int32) GetNumActualItemsShown();
+    CARAPI GetNumActualItemsShown(
+        /* [out] */ Int32* num);
 
     CARAPI SaveHierarchyState(
         /* [in] */ IBundle* outState);

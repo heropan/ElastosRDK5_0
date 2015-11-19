@@ -520,7 +520,8 @@ void ActionMenuItemView::OnMeasure(
     /* [in] */ Int32 heightMeasureSpec)
 {
     assert(0);
-    Boolean textVisible = HasText();
+    Boolean textVisible;
+    HasText(&textVisible);
     if (textVisible && mSavedPaddingLeft >= 0) {
         // TextView::SetPadding(mSavedPaddingLeft, GetPaddingTop(),
         //         GetPaddingRight(), GetPaddingBottom());
@@ -530,7 +531,8 @@ void ActionMenuItemView::OnMeasure(
 
     const Int32 widthMode = MeasureSpec::GetMode(widthMeasureSpec);
     const Int32 widthSize = MeasureSpec::GetSize(widthMeasureSpec);
-    const Int32 oldMeasuredWidth = GetMeasuredWidth();
+    Int32 oldMeasuredWidth;
+    GetMeasuredWidth(&oldMeasuredWidth);
     const Int32 targetWidth = widthMode == MeasureSpec::AT_MOST ? Elastos::Core::Math::Min(widthSize, mMinWidth)
             : mMinWidth;
 
@@ -543,7 +545,8 @@ void ActionMenuItemView::OnMeasure(
     if (!textVisible && mIcon != NULL) {
         // TextView won't center compound drawables in both dimensions without
         // a little coercion. Pad in to center the icon after we've measured.
-        const Int32 w = GetMeasuredWidth();
+        Int32 w;
+        GetMeasuredWidth(&w);
 
         AutoPtr<IRect> bounds;
         mIcon->GetBounds((IRect**)&bounds);

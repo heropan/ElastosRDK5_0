@@ -4,12 +4,13 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/utility/etl/Vector.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::Vector;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::ISurfaceHolder;
+using Elastos::Utility::Concurrent::Locks::IReentrantLock;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -88,13 +89,12 @@ private:
 
 public:
     List<AutoPtr<ISurfaceHolderCallback> > mCallbacks;
-    //public final ReentrantLock mSurfaceLock = new ReentrantLock();
-    Object mSurfaceLock;
+    AutoPtr<IReentrantLock> mSurfaceLock;
     AutoPtr<ISurface> mSurface;
 
 protected:
     static const Boolean DEBUG;
-    Vector<AutoPtr<ISurfaceHolderCallback> > mGottenCallbacks;
+    AutoPtr<ArrayOf<ISurfaceHolderCallback*> > mGottenCallbacks;
     Boolean mHaveGottenCallbacks;
     Int32 mRequestedWidth;
     Int32 mRequestedHeight;
@@ -107,7 +107,7 @@ protected:
     AutoPtr<IRect> mTmpDirty;
 
 private:
-    static const char* TAG;
+    static const String TAG;
     Object mCallbackLock;
 };
 

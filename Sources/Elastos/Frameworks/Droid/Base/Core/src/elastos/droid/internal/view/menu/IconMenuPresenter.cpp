@@ -4,12 +4,13 @@
 #include "elastos/droid/internal/view/menu/IconMenuView.h"
 #include "elastos/droid/internal/view/menu/CMenuDialogHelper.h"
 #include "elastos/droid/internal/view/menu/IconMenuItemView.h"
-#include "elastos/droid/view/CContextThemeWrapper.h"
+// #include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/utility/CSparseArray.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::View::CContextThemeWrapper;
+// using Elastos::Droid::View::CContextThemeWrapper;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IViewParent;
@@ -52,7 +53,7 @@ ECode IconMenuPresenter::SubMenuPresenterCallback::OnOpenSubMenu(
     /* [in] */ IMenuBuilder* subMenu,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     if (subMenu != NULL) {
         AutoPtr<IMenuItem> item;
         ISubMenu::Probe(subMenu)->GetItem((IMenuItem**)&item);
@@ -65,6 +66,8 @@ ECode IconMenuPresenter::SubMenuPresenterCallback::OnOpenSubMenu(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(IconMenuPresenter, BaseMenuPresenter, IIconMenuPresenter)
+
 IconMenuPresenter::IconMenuPresenter()
     : mOpenSubMenuId(0)
     , mMaxItems(-1)
@@ -76,7 +79,8 @@ ECode IconMenuPresenter::constructor(
     /* [in] */ IContext* context)
 {
     AutoPtr<IContext> themeContext;
-    CContextThemeWrapper::New(context, R::style::Theme_IconMenu, (IContextThemeWrapper**)&themeContext);
+    assert(0);
+    // CContextThemeWrapper::New(context, R::style::Theme_IconMenu, (IContextThemeWrapper**)&themeContext);
     return BaseMenuPresenter::constructor(themeContext, R::layout::icon_menu_layout,
             R::layout::icon_menu_item_layout);
 }
@@ -98,21 +102,22 @@ ECode IconMenuPresenter::BindItemView(
     view->SetItemData(item);
 
     AutoPtr<IDrawable> drawable;
-    item->GetIcon((IDrawable**)&drawable);
+    IMenuItem::Probe(item)->GetIcon((IDrawable**)&drawable);
     AutoPtr<ICharSequence> csq;
     item->GetTitleForItemView(IMenuItemView::Probe(itemView), (ICharSequence**)&csq);
-    IconMenuItemView* vTemp = (IconMenuItemView*)view;
+    IconMenuItemView* vTemp = (IconMenuItemView*)view.Get();
     vTemp->Initialize(csq, drawable);
     Boolean visiable = FALSE;
-    item->IsVisible(&visiable);
-    view->SetVisibility(visiable ? IView::VISIBLE : IView::GONE);
+    IMenuItem::Probe(item)->IsVisible(&visiable);
+    vTemp->SetVisibility(visiable ? IView::VISIBLE : IView::GONE);
 
     Boolean enabled = FALSE;
-    view->IsEnabled(&enabled);
-    view->SetEnabled(enabled);
+    vTemp->IsEnabled(&enabled);
+    vTemp->SetEnabled(enabled);
 
-    AutoPtr<IViewGroupLayoutParams> params = vTemp->GetTextAppropriateLayoutParams();
-    view->SetLayoutParams(params);
+    AutoPtr<IViewGroupLayoutParams> params =
+        IViewGroupLayoutParams::Probe(vTemp->GetTextAppropriateLayoutParams());
+    vTemp->SetLayoutParams(params);
     return NOERROR;
 }
 
@@ -142,11 +147,10 @@ void IconMenuPresenter::AddItemView(
     AutoPtr<IIconMenuItemView> v = IIconMenuItemView::Probe(itemView);
     AutoPtr<IIconMenuView> parent = IIconMenuView::Probe(mMenuView);
 
-    IconMenuItemView* vTemp = (IconMenuItemView*)v;
+    IconMenuItemView* vTemp = (IconMenuItemView*)v.Get();
     vTemp->SetIconMenuView(parent);
-    v->SetItemInvoker(IMenuBuilderItemInvoker::Probe(parent));
-    assert(0);
-    // v->SetBackgroundDrawable(((IconMenuView*)parent.Get())->GetItemBackgroundDrawable());
+    vTemp->SetItemInvoker(IMenuBuilderItemInvoker::Probe(parent));
+    vTemp->SetBackgroundDrawable(((IconMenuView*)parent.Get())->GetItemBackgroundDrawable());
     BaseMenuPresenter::AddItemView(itemView, childIndex);
 }
 
@@ -157,15 +161,14 @@ ECode IconMenuPresenter::OnSubMenuSelected(
     VALIDATE_NOT_NULL(result)
 
     Boolean tmp = FALSE;
-    if (!(subMenu->HasVisibleItems(&tmp), tmp)) {
+    if (!(IMenu::Probe(subMenu)->HasVisibleItems(&tmp), tmp)) {
         *result = FALSE;
         return NOERROR;
     }
 
     // The window manager will give us a token.
     AutoPtr<IMenuDialogHelper> helper;
-    assert(0);
-    // CMenuDialogHelper::New(subMenu, (IMenuDialogHelper**)&helper);
+    CMenuDialogHelper::New(IMenuBuilder::Probe(subMenu), (IMenuDialogHelper**)&helper);
     helper->SetPresenterCallback(mSubMenuPresenterCallback);
     helper->Show(NULL);
     mOpenSubMenu = helper;
@@ -188,26 +191,26 @@ ECode IconMenuPresenter::UpdateMenuView(
     }
 
     AutoPtr<IArrayList> itemsToShow;
-    base->GetNonActionItems((IArrayList**)&itemsToShow);
+    mMenu->GetNonActionItems((IArrayList**)&itemsToShow);
     Int32 size;
     itemsToShow->GetSize(&size);
     Boolean needsMore = size > mMaxItems;
     BaseMenuPresenter::UpdateMenuView(cleared);
 
     AutoPtr<IViewParent> parent;
-    if (needsMore && (mMoreView == NULL || (mMoreView->GetParent((IViewParent**)&parent),
+    if (needsMore && (mMoreView == NULL || (IView::Probe(mMoreView)->GetParent((IViewParent**)&parent),
         parent.Get()) != IViewParent::Probe(menuView))) {
         if (mMoreView == NULL) {
             mMoreView = menuView->CreateMoreItemView();
 
             AutoPtr<IDrawable> drawable = menuView->GetItemBackgroundDrawable();
-            mMoreView->SetBackgroundDrawable(drawable);
+            IView::Probe(mMoreView)->SetBackgroundDrawable(drawable);
         }
 
-        menuView->AddView(mMoreView);
+        menuView->AddView(IView::Probe(mMoreView));
     }
     else if (!needsMore && mMoreView != NULL) {
-        IViewManager::Probe(menuView)->RemoveView(mMoreView);
+        IViewManager::Probe(menuView)->RemoveView(IView::Probe(mMoreView));
     }
 
     menuView->SetNumActualItemsShown(needsMore ? mMaxItems - 1 : size);
@@ -220,16 +223,19 @@ Boolean IconMenuPresenter::FilterLeftoverView(
 {
     AutoPtr<IView> view;
     parent->GetChildAt(childIndex, (IView**)&view);
-    if (view != mMoreView) {
+    if (view.Get() != IView::Probe(mMoreView)) {
         return BaseMenuPresenter::FilterLeftoverView(parent, childIndex);
     }
 
     return FALSE;
 }
 
-Int32 IconMenuPresenter::GetNumActualItemsShown()
+ECode IconMenuPresenter::GetNumActualItemsShown(
+    /* [out] */ Int32* num)
 {
-    return ((IconMenuView*)IIconMenuView::Probe(mMenuView))->GetNumActualItemsShown();
+    VALIDATE_NOT_NULL(num)
+    *num = ((IconMenuView*)IIconMenuView::Probe(mMenuView))->GetNumActualItemsShown();
+    return NOERROR;
 }
 
 ECode IconMenuPresenter::SaveHierarchyState(
@@ -259,7 +265,7 @@ ECode IconMenuPresenter::RestoreHierarchyState(
     inState->GetInt32(OPEN_SUBMENU_KEY, 0, &subMenuId);
     if (subMenuId > 0 && mMenu != NULL) {
         AutoPtr<IMenuItem> item;
-        mMenu->FindItem(subMenuId, (IMenuItem**)&item);
+        IMenu::Probe(mMenu)->FindItem(subMenuId, (IMenuItem**)&item);
         if (item != NULL) {
             AutoPtr<ISubMenu> sm;
             item->GetSubMenu((ISubMenu**)&sm);

@@ -5,14 +5,18 @@
 #include "elastos/droid/internal/view/menu/CIconMenuViewLayoutParams.h"
 #include "elastos/droid/internal/view/menu/CIconMenuViewSavedState.h"
 #include "elastos/droid/internal/view/menu/MenuItemImpl.h"
-#include "elastos/droid/internal/view/LayoutInflater.h"
-#include "elastos/droid/internal/view/CViewConfiguration.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/view/CViewConfiguration.h"
 #include <elastos/core/Math.h>
 #include "elastos/droid/R.h"
 
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Droid::R;
+using Elastos::Droid::View::CViewConfiguration;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::IAbsSavedState;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::Graphics::Drawable::IDrawableConstantState;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -20,7 +24,7 @@ namespace Internal {
 namespace View {
 namespace Menu {
 
-CAR_INTERFACE_IMPL(IconMenuView::OnClickListener, IViewOnClickListener)
+CAR_INTERFACE_IMPL(IconMenuView::OnClickListener, Object, IViewOnClickListener)
 
 IconMenuView::OnClickListener::OnClickListener(
     /* [in] */ IconMenuView* host)
@@ -33,6 +37,172 @@ ECode IconMenuView::OnClickListener::OnClick(
     // Switches the menu to expanded mode. Requires support from
     // the menu's active callback.
     mHost->mMenu->ChangeMenuMode();
+    return NOERROR;
+}
+
+#if 0
+CAR_INTERFACE_IMPL(IconMenuView::SavedState, ViewBaseSavedState, IIconMenuViewSavedState)
+#else
+CAR_INTERFACE_IMPL(IconMenuView::SavedState, Object, IIconMenuViewSavedState)
+#endif
+
+IconMenuView::SavedState::SavedState()
+    : mFocusedPosition(0)
+{}
+
+ECode IconMenuView::SavedState::constructor()
+{
+    return NOERROR;
+}
+
+ECode IconMenuView::SavedState::constructor(
+    /* [in] */ IParcelable* superState,
+    /* [in] */ Int32 focusedPosition)
+{
+    assert(0);
+    // ViewBaseSavedState::constructor(superState);
+    mFocusedPosition = focusedPosition;
+    return NOERROR;
+}
+
+ECode IconMenuView::SavedState::SetFocusedPosition(
+    /* [in] */ Int32 focusedPosition)
+{
+    mFocusedPosition = focusedPosition;
+    return NOERROR;
+}
+
+ECode IconMenuView::SavedState::GetFocusedPosition(
+    /* [out] */ Int32* focusedPosition)
+{
+    *focusedPosition = mFocusedPosition;
+    return NOERROR;
+}
+
+ECode IconMenuView::SavedState::ReadFromParcel(
+    /* [in] */ IParcel *source)
+{
+    assert(0);
+    // ViewBaseSavedState::ReadFromParcel(source);
+    source->ReadInt32(&mFocusedPosition);
+    return NOERROR;
+}
+
+ECode IconMenuView::SavedState::WriteToParcel(
+    /* [in] */ IParcel *dest)
+{
+    assert(0);
+    // ViewBaseSavedState::WriteToParcel(dest);
+    dest->WriteInt32(mFocusedPosition);
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(IconMenuView::LayoutParams, ViewGroupMarginLayoutParams, IIconMenuViewLayoutParams)
+
+IconMenuView::LayoutParams::LayoutParams()
+    : mLeft(0)
+    , mTop(0)
+    , mRight(0)
+    , mBottom(0)
+    , mDesiredWidth(0)
+    , mMaxNumItemsOnRow(0)
+{}
+
+ECode IconMenuView::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return ViewGroupMarginLayoutParams::constructor(c, attrs);
+}
+
+ECode IconMenuView::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    return ViewGroupMarginLayoutParams::constructor(width, height);
+}
+
+ECode IconMenuView::LayoutParams::SetLeft(
+    /* [in] */ Int32 left)
+{
+    mLeft = left;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::GetLeft(
+    /* [out] */ Int32* left)
+{
+    *left = mLeft;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::SetTop(
+    /* [in] */ Int32 top)
+{
+    mTop = top;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::GetTop(
+    /* [out] */ Int32* top)
+{
+    *top = mTop;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::SetRight(
+    /* [in] */ Int32 right)
+{
+    mRight = right;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::GetRight(
+    /* [out] */ Int32* right)
+{
+    *right = mRight;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::SetBottom(
+    /* [in] */ Int32 bottom)
+{
+    mBottom = bottom;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::GetBottom(
+    /* [out] */ Int32* bottom)
+{
+    *bottom = mBottom;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::SetDesiredWidth(
+    /* [in] */ Int32 desiredWidth)
+{
+    mDesiredWidth = desiredWidth;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::GetDesiredWidth(
+    /* [out] */ Int32* desiredWidth)
+{
+    *desiredWidth = mDesiredWidth;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::SetMaxNumItemsOnRow(
+    /* [in] */ Int32 maxNumItemsOnRow)
+{
+    mMaxNumItemsOnRow = maxNumItemsOnRow;
+    return NOERROR;
+}
+
+ECode IconMenuView::LayoutParams::GetMaxNumItemsOnRow(
+    /* [out] */ Int32* maxNumItemsOnRow)
+{
+    *maxNumItemsOnRow = mMaxNumItemsOnRow;
     return NOERROR;
 }
 
@@ -242,12 +412,12 @@ AutoPtr<IIconMenuItemView> IconMenuView::CreateMoreItemView()
     context->GetResources((IResources**)&r);
     AutoPtr<ICharSequence> text;
     r->GetText(R::string::more_item_label, (ICharSequence**)&text);
-    ((IconMenuItemView*)itemView)->Initialize(text, mMoreIcon);
+    ((IconMenuItemView*)itemView.Get())->Initialize(text, mMoreIcon);
 
     // Set up a click listener on the view since there will be no invocation sequence
     // due to the lack of a MenuItemData this view
     AutoPtr<IViewOnClickListener> onClick = new OnClickListener(this);
-    itemView->SetOnClickListener(onClick);
+    IView::Probe(itemView)->SetOnClickListener(onClick);
 
     return itemView;
 }
@@ -296,13 +466,13 @@ void IconMenuView::PositionChildren(
 
         for (Int32 itemPosOnRow = 0; itemPosOnRow < (*numItemsForRow)[row]; itemPosOnRow++) {
             // Tell the child to be exactly this size
-            child = NULL
+            child = NULL;
             GetChildAt(itemPos, (IView**)&child);
             child->Measure(MeasureSpec::MakeMeasureSpec((Int32)itemWidth, MeasureSpec::EXACTLY),
                     MeasureSpec::MakeMeasureSpec((Int32)itemHeight, MeasureSpec::EXACTLY));
 
             // Remember the child's position for layout
-            AutoPtr<IViewGroupLayoutParams> _lp
+            AutoPtr<IViewGroupLayoutParams> _lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&_lp);
             lp = IIconMenuViewLayoutParams::Probe(_lp);
 
@@ -369,7 +539,10 @@ void IconMenuView::OnMeasure(
 
     // Position the children
     if (layoutNumRows > 0) {
-        PositionChildren(GetMeasuredWidth(), GetMeasuredHeight());
+        Int32 w, h;
+        GetMeasuredWidth(&w);
+        GetMeasuredHeight(&h);
+        PositionChildren(w, h);
     }
 }
 
@@ -429,10 +602,10 @@ void IconMenuView::OnDraw(
 }
 
 ECode IconMenuView::InvokeItem(
-    /* [in] */ IMenuItem* item,
+    /* [in] */ IMenuItemImpl* item,
     /* [out] */ Boolean* state)
 {
-    return mMenu->PerformItemAction(item, 0, state);
+    return mMenu->PerformItemAction(IMenuItem::Probe(item), 0, state);
 }
 
 ECode IconMenuView::GenerateLayoutParams(
@@ -512,8 +685,9 @@ ECode IconMenuView::DispatchKeyEvent(
         event->GetAction(&action);
         event->GetRepeatCount(&repeatCount);
         if (action == IKeyEvent::ACTION_DOWN && repeatCount == 0) {
-            RemoveCallbacks(this);
-            PostDelayed(this, CViewConfiguration::GetLongPressTimeout());
+            Boolean res;
+            RemoveCallbacks(this, &res);
+            PostDelayed(this, CViewConfiguration::GetLongPressTimeout(), &res);
         }
         else if (action == IKeyEvent::ACTION_UP) {
             if (mMenuBeingLongpressed) {
@@ -525,7 +699,8 @@ ECode IconMenuView::DispatchKeyEvent(
             }
             else {
                 // Just remove us from being called back
-                RemoveCallbacks(this);
+                Boolean res;
+                RemoveCallbacks(this, &res);
                 // Fall through to normal processing too
             }
         }
@@ -538,7 +713,8 @@ ECode IconMenuView::OnAttachedToWindow()
 {
     ViewGroup::OnAttachedToWindow();
 
-    RequestFocus();
+    Boolean res;
+    RequestFocus(&res);
     return NOERROR;
 }
 
@@ -566,7 +742,8 @@ void IconMenuView::SetCycleShortcutCaptionMode(
          * We're setting back to title, so remove any callbacks for setting
          * to shortcut
          */
-        RemoveCallbacks(this);
+        Boolean res;
+        RemoveCallbacks(this, &res);
         SetChildrenCaptionMode(FALSE);
         mMenuBeingLongpressed = FALSE;
 
@@ -590,7 +767,8 @@ ECode IconMenuView::Run()
     }
 
     // We should run again soon to cycle to the other caption mode
-    PostDelayed(this, ITEM_CAPTION_CYCLE_DELAY);
+    Boolean res;
+    PostDelayed(this, ITEM_CAPTION_CYCLE_DELAY, &res);
 
     return NOERROR;
 }
@@ -618,7 +796,7 @@ void IconMenuView::CalculateItemFittingMetadata(
     ViewGroup::GetChildCount(&numItems);
     for (Int32 i = 0; i < numItems; i++) {
         AutoPtr<IView> child;
-        GetChildAt((IView**)&child);
+        GetChildAt(i, (IView**)&child);
         AutoPtr<IViewGroupLayoutParams> _lp;
         child->GetLayoutParams((IViewGroupLayoutParams**)&_lp);
         AutoPtr<IIconMenuViewLayoutParams> lp = IIconMenuViewLayoutParams::Probe(_lp);
@@ -643,21 +821,21 @@ AutoPtr<IParcelable> IconMenuView::OnSaveInstanceState()
 {
     AutoPtr<IParcelable> superState = ViewGroup::OnSaveInstanceState();
 
-    AutoPtr<IView> focusedView = GetFocusedChild();
+    AutoPtr<IView> focusedView;
+    GetFocusedChild((IView**)&focusedView);
     AutoPtr<IParcelable> rst;
-    AutoPtr<IIconMenuViewSavedState> ss;
-    for (Int32 i = GetChildCount() - 1; i >= 0; i--) {
+    Int32 childCount;
+    GetChildCount(&childCount);
+    for (Int32 i = childCount - 1; i >= 0; i--) {
         AutoPtr<IView> view;
         GetChildAt(i, (IView**)&view);
         if (view == focusedView) {
-            CIconMenuViewSavedState::New(superState, i, (IIconMenuViewSavedState**)&ss);
-            rst = IParcelable::Probe(ss);
+            CIconMenuViewSavedState::New(superState, i, (IParcelable**)&rst);
             return rst;
         }
     }
 
-    CIconMenuViewSavedState::New(superState, -1, (IIconMenuViewSavedState**)&ss);
-    rst = IParcelable::Probe(ss);
+    CIconMenuViewSavedState::New(superState, -1, (IParcelable**)&rst);
     return rst;
 
 }
@@ -667,11 +845,13 @@ void IconMenuView::OnRestoreInstanceState(
 {
     AutoPtr<IIconMenuViewSavedState> ss = IIconMenuViewSavedState::Probe(state);
     AutoPtr<IParcelable> superState;
-    ss->GetSuperState((IParcelable**)&superState);
+    IAbsSavedState::Probe(ss)->GetSuperState((IParcelable**)&superState);
 
     Int32 focusedPosition;
     ss->GetFocusedPosition(&focusedPosition);
-    if (focusedPosition >= GetChildCount()) {
+    Int32 childCount;
+    GetChildCount(&childCount);
+    if (focusedPosition >= childCount) {
         return;
     }
 

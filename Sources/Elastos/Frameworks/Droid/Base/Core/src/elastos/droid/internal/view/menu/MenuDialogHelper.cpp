@@ -1,17 +1,24 @@
 
 #include "elastos/droid/internal/view/menu/MenuDialogHelper.h"
-#include "elastos/droid/internal/view/menu/MenuBuilder.h"
 #include "elastos/droid/internal/view/menu/CListMenuPresenter.h"
-#include "elastos/droid/app/CAlertDialogBuilder.h"
-#include "elastos/droid/internal/view/CWindowManagerLayoutParams.h"
+// #include "elastos/droid/app/CAlertDialogBuilder.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Droid::R;
 using Elastos::Droid::App::IAlertDialogBuilder;
-using Elastos::Droid::App::CAlertDialogBuilder;
+// using Elastos::Droid::App::CAlertDialogBuilder;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnKeyListener;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnDismissListener;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::IDispatcherState;
+using Elastos::Droid::View::IMenu;
+using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IWindow;
+using Elastos::Droid::View::IWindowManagerLayoutParams;
+using Elastos::Droid::Widget::IAdapter;
+using Elastos::Droid::Widget::IListAdapter;
 
 namespace Elastos {
 namespace Droid {
@@ -19,15 +26,54 @@ namespace Internal {
 namespace View {
 namespace Menu {
 
-MenuDialogHelper::MenuDialogHelper()
+CAR_INTERFACE_IMPL_4(MenuDialogHelper::Listener, Object, IDialogInterfaceOnKeyListener,
+    IDialogInterfaceOnClickListener, IDialogInterfaceOnDismissListener, IMenuPresenterCallback)
+
+MenuDialogHelper::Listener::Listener(
+    /* [in] */ MenuDialogHelper* owner)
+    : mOwner(owner)
 {}
 
-MenuDialogHelper::MenuDialogHelper(
-    /* [in] */ IMenuBuilder* menu)
-    : mMenu(menu)
-{}
+ECode MenuDialogHelper::Listener::OnKey(
+    /* [in] */ IDialogInterface* dialog,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* flag)
+{
+    return mOwner->OnKey(dialog, keyCode, event, flag);
+}
 
-ECode MenuDialogHelper::Init(
+ECode MenuDialogHelper::Listener::OnDismiss(
+    /* [in] */ IDialogInterface* dialog)
+{
+    return mOwner->OnDismiss(dialog);
+}
+
+ECode MenuDialogHelper::Listener::OnClick(
+    /* [in] */ IDialogInterface* dialog,
+    /* [in] */ Int32 which)
+{
+    return mOwner->OnClick(dialog, which);
+}
+
+ECode MenuDialogHelper::Listener::OnCloseMenu(
+    /* [in] */ IMenuBuilder* menu,
+    /* [in] */ Boolean allMenusAreClosing)
+{
+    return mOwner->OnCloseMenu(menu, allMenusAreClosing);
+}
+
+ECode MenuDialogHelper::Listener::OnOpenSubMenu(
+    /* [in] */ IMenuBuilder* subMenu,
+    /* [out] */ Boolean* result)
+{
+    return mOwner->OnOpenSubMenu(subMenu, result);
+}
+
+CAR_INTERFACE_IMPL_4(MenuDialogHelper, Object, IDialogInterfaceOnKeyListener,
+    IDialogInterfaceOnClickListener, IDialogInterfaceOnDismissListener, IMenuPresenterCallback)
+
+ECode MenuDialogHelper::constructor(
     /* [in] */ IMenuBuilder* menu)
 {
     mMenu = menu;
@@ -44,8 +90,8 @@ ECode MenuDialogHelper::Show(
     AutoPtr<IContext> context;
     menu->GetContext((IContext**)&context);
     AutoPtr<IAlertDialogBuilder> builder;
-
-    CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&builder);
+    assert(0);
+    // CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&builder);
 
     AutoPtr<IContext> alctx;
     builder->GetContext((IContext**)&alctx);
@@ -53,12 +99,13 @@ ECode MenuDialogHelper::Show(
     mPresenter = NULL;
     CListMenuPresenter::New(alctx, R::layout::list_menu_item_layout, (IListMenuPresenter**)&mPresenter);
 
-    mPresenter->SetCallback((IMenuPresenterCallback*)(this->Probe(EIID_IMenuPresenterCallback)));
-    mMenu->AddMenuPresenter(mPresenter);
+    AutoPtr<Listener> listener = new Listener(this);
+    IMenuPresenter::Probe(mPresenter)->SetCallback(listener);
+    mMenu->AddMenuPresenter(IMenuPresenter::Probe(mPresenter));
 
     AutoPtr<IListAdapter> adapter;
     mPresenter->GetAdapter((IListAdapter**)&adapter);
-    builder->SetAdapter(adapter, ((IDialogInterfaceOnClickListener*)(this->Probe(EIID_IDialogInterfaceOnClickListener))));
+    builder->SetAdapter(adapter, listener);
 
     // Set the title
     AutoPtr<IView> headerView;
@@ -79,12 +126,13 @@ ECode MenuDialogHelper::Show(
     }
 
     // Set the key listener
-    builder->SetOnKeyListener((IDialogInterfaceOnKeyListener*)(this->Probe(EIID_IDialogInterfaceOnKeyListener)));
+    builder->SetOnKeyListener(listener);
 
     // Show the menu
-    mDialog = NULL;
-    builder->Create((IAlertDialog**)&mDialog);
-    mDialog->SetOnDismissListener((IDialogInterfaceOnDismissListener*)(this->Probe(EIID_IDialogInterfaceOnDismissListener)));
+    AutoPtr<IAlertDialog> dialog;
+    builder->Create((IAlertDialog**)&dialog);
+    mDialog = IDialog::Probe(dialog);
+    mDialog->SetOnDismissListener(listener);
 
     AutoPtr<IWindow> window;
     mDialog->GetWindow((IWindow**)&window);
@@ -115,8 +163,7 @@ ECode MenuDialogHelper::OnKey(
         event->GetAction(&action);
         event->GetRepeatCount(&repeatCount);
         Boolean isCanceled;
-        if (action == IKeyEvent::ACTION_DOWN
-                && repeatCount == 0) {
+        if (action == IKeyEvent::ACTION_DOWN && repeatCount == 0) {
             AutoPtr<IWindow> win;
             mDialog->GetWindow((IWindow**)&win);
             if (win != NULL) {
@@ -155,7 +202,7 @@ ECode MenuDialogHelper::OnKey(
     }
 
     // Menu shortcut matching
-    return mMenu->PerformShortcut(keyCode, event, 0, flag);
+    return IMenu::Probe(mMenu)->PerformShortcut(keyCode, event, 0, flag);
 }
 
 ECode MenuDialogHelper::SetPresenterCallback(
@@ -168,7 +215,7 @@ ECode MenuDialogHelper::SetPresenterCallback(
 ECode MenuDialogHelper::Dismiss()
 {
     if (mDialog != NULL) {
-        mDialog->Dismiss();
+        IDialogInterface::Probe(mDialog)->Dismiss();
     }
     return NOERROR;
 }
@@ -176,7 +223,7 @@ ECode MenuDialogHelper::Dismiss()
 ECode MenuDialogHelper::OnDismiss(
     /* [in] */ IDialogInterface* dialog)
 {
-    return mPresenter->OnCloseMenu(mMenu, TRUE);
+    return IMenuPresenter::Probe(mPresenter)->OnCloseMenu(mMenu, TRUE);
 }
 
 ECode MenuDialogHelper::OnCloseMenu(
@@ -187,7 +234,7 @@ ECode MenuDialogHelper::OnCloseMenu(
         Dismiss();
     }
     if (mPresenterCallback != NULL) {
-        return mPresenterCallback->OnCloseMenu(menu, allMenusAreClosing);
+        return IMenuPresenter::Probe(mPresenterCallback)->OnCloseMenu(menu, allMenusAreClosing);
     }
 
     return NOERROR;
@@ -197,7 +244,7 @@ ECode MenuDialogHelper::OnOpenSubMenu(
     /* [in] */ IMenuBuilder* subMenu,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
     *result = FALSE;
     if (mPresenterCallback != NULL) {
         return mPresenterCallback->OnOpenSubMenu(subMenu, result);
@@ -210,14 +257,13 @@ ECode MenuDialogHelper::OnClick(
     /* [in] */ IDialogInterface* dialog,
     /* [in] */ Int32 which)
 {
-    AutoPtr<IMenuItem> item;
     AutoPtr<IListAdapter> adapter;
     mPresenter->GetAdapter((IListAdapter**)&adapter);
-    assert(adapter != NULL);
-    adapter->GetItem(which, (IInterface**)&item);
+    AutoPtr<IInterface> item;
+    IAdapter::Probe(adapter)->GetItem(which, (IInterface**)&item);
 
     Boolean state;
-    return mMenu->PerformItemAction(item , 0, &state);
+    return mMenu->PerformItemAction(IMenuItem::Probe(item) , 0, &state);
 }
 
 } // namespace Menu

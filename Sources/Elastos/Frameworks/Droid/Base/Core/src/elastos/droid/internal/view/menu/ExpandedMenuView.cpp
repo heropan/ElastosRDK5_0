@@ -1,7 +1,9 @@
 
 #include "elastos/droid/internal/view/menu/ExpandedMenuView.h"
 #include "elastos/droid/internal/view/menu/MenuBuilder.h"
+#include "elastos/droid/R.h"
 
+using Elastos::Droid::Widget::IAdapter;
 using Elastos::Droid::Widget::IListAdapter;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
 
@@ -22,8 +24,13 @@ ECode ExpandedMenuView::OnItemClickListener::OnItemClick(
     return mOwner->OnItemClick(parent, v, position, id);
 }
 
+#if 0
 CAR_INTERFACE_IMPL_4(ExpandedMenuView, ListView, IExpandedMenuView, IMenuBuilderItemInvoker,
     IMenuView, IAdapterViewOnItemClickListener)
+#else
+CAR_INTERFACE_IMPL_4(ExpandedMenuView, ViewGroup, IExpandedMenuView, IMenuBuilderItemInvoker,
+    IMenuView, IAdapterViewOnItemClickListener)
+#endif
 
 ExpandedMenuView::ExpandedMenuView()
     : mAnimations(0)
@@ -33,7 +40,8 @@ ECode ExpandedMenuView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(ListView::constructor(context, attrs))
+    assert(0);
+    // FAIL_RETURN(ListView::constructor(context, attrs))
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::MenuView),
@@ -45,7 +53,9 @@ ECode ExpandedMenuView::constructor(
     a->Recycle();
 
     AutoPtr<OnItemClickListener> listener = new OnItemClickListener(this);
-    return SetOnItemClickListener(listener);
+    assert(0);
+    // return SetOnItemClickListener(listener);
+    return NOERROR;
 }
 
 ECode ExpandedMenuView::Initialize(
@@ -57,7 +67,8 @@ ECode ExpandedMenuView::Initialize(
 
 ECode ExpandedMenuView::OnDetachedFromWindow()
 {
-    FAIL_RETURN(ListView::OnDetachedFromWindow())
+    assert(0);
+    // FAIL_RETURN(ListView::OnDetachedFromWindow())
 
     // Clear the cached bitmaps of children
     SetChildrenDrawingCacheEnabled(FALSE);
@@ -69,7 +80,7 @@ ECode ExpandedMenuView::InvokeItem(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return mMenu->PerformItemAction(item, 0, result);
+    return mMenu->PerformItemAction(IMenuItem::Probe(item), 0, result);
 }
 
 ECode ExpandedMenuView::OnItemClick(
@@ -79,9 +90,10 @@ ECode ExpandedMenuView::OnItemClick(
     /* [in] */ Int64 id)
 {
     AutoPtr<IListAdapter> adapter;
-    GetAdapter((IListAdapter**)&adapter);
+    assert(0);
+    // GetAdapter((IListAdapter**)&adapter);
     AutoPtr<IInterface> item;
-    adapter->GetItem(position, (IInterface**)&item);
+    IAdapter::Probe(adapter)->GetItem(position, (IInterface**)&item);
     Boolean res;
     return InvokeItem(IMenuItemImpl::Probe(item), &res);
 }

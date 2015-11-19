@@ -3,8 +3,8 @@
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/res/CConfiguration.h"
-// #include "elastos/droid/internal/view/menu/CSubMenuBuilder.h"
-// #include "elastos/droid/internal/view/menu/CMenuItemImpl.h"
+#include "elastos/droid/internal/view/menu/CSubMenuBuilder.h"
+#include "elastos/droid/internal/view/menu/CMenuItemImpl.h"
 #include "elastos/droid/utility/CSparseArray.h"
 // #include "elastos/droid/view/CKeyCharacterMap.h"
 #include "elastos/droid/R.h"
@@ -435,9 +435,8 @@ AutoPtr<IMenuItemImpl> MenuBuilder::CreateNewMenuItem(
     /* [in] */ Int32 defaultShowAsAction)
 {
     AutoPtr<IMenuItemImpl> item;
-    assert(0);
-    // CMenuItemImpl::New(this, group, id, categoryOrder, ordering, title,
-    //     defaultShowAsAction, (IMenuItemImpl**)&item);
+    CMenuItemImpl::New(this, group, id, categoryOrder, ordering, title,
+        defaultShowAsAction, (IMenuItemImpl**)&item);
     return item;
 }
 
@@ -523,8 +522,7 @@ ECode MenuBuilder::AddSubMenu(
 {
     VALIDATE_NOT_NULL(subMenu)
     AutoPtr<IMenuItemImpl> item = IMenuItemImpl::Probe(AddInternal(groupId, itemId, order, title));
-    assert(0);
-    // CSubMenuBuilder::New(mContext, this, item, subMenu);
+    CSubMenuBuilder::New(mContext, this, item, subMenu);
     item->SetSubMenu(ISubMenuBuilder::Probe(*subMenu));
     return NOERROR;
 }
@@ -1207,8 +1205,7 @@ ECode MenuBuilder::PerformItemAction(
             AutoPtr<IContext> context;
             GetContext((IContext**)&context);
             AutoPtr<ISubMenuBuilder> smb;
-            assert(0);
-            // CSubMenuBuilder::New(context, this, itemImpl, (ISubMenuBuilder**)&smb);
+            CSubMenuBuilder::New(context, this, itemImpl, (ISubMenuBuilder**)&smb);
             itemImpl->SetSubMenu(smb);
         }
 

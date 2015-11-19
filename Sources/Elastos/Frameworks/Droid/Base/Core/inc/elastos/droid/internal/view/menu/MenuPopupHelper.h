@@ -2,25 +2,22 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUPOPUPHELPER_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUPOPUPHELPER_H__
 
-#include "elastos/droid/widget/BaseAdapter.h"
+#include "elastos/droid/ext/frameworkext.h"
+// #include "elastos/droid/widget/BaseAdapter.h"
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::View::IViewOnKeyListener;
-using Elastos::Droid::View::EIID_IViewOnKeyListener;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IOnGlobalLayoutListener;
-using Elastos::Droid::View::EIID_IOnGlobalLayoutListener;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IViewOnAttachStateChangeListener;
-using Elastos::Droid::View::EIID_IViewOnAttachStateChangeListener;
-using Elastos::Droid::View::Menu::IMenuPresenter;
-using Elastos::Droid::View::Menu::EIID_IMenuPresenter;
+using Elastos::Droid::View::IViewOnKeyListener;
+using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::Widget::IPopupWindowOnDismissListener;
-using Elastos::Droid::Widget::EIID_IPopupWindowOnDismissListener;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
-using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
-using Elastos::Droid::Widget::BaseAdapter;
-using Elastos::Droid::Widget::IBaseAdapter;
+// using Elastos::Droid::Widget::BaseAdapter;
 using Elastos::Droid::Widget::IAdapterView;
-using Elastos::Droid::Widget::IListAdapter;
 using Elastos::Droid::Widget::IListPopupWindow;
 using Elastos::Droid::Widget::ISpinnerAdapter;
 
@@ -35,37 +32,51 @@ namespace Menu {
  * @hide
  */
 class MenuPopupHelper
+    : public Object
+    , public IMenuPopupHelper
+    , public IAdapterViewOnItemClickListener
+    , public IViewOnKeyListener
+    , public IOnGlobalLayoutListener
+    , public IPopupWindowOnDismissListener
+    , public IViewOnAttachStateChangeListener
+    , public IMenuPresenter
 {
 private:
-    class _MenuAdapter : public BaseAdapter
+    class MenuAdapter
+    #if 0
+        : public BaseAdapter
+    #else
+        : public Object
+    #endif
     {
     public:
-        _MenuAdapter(
+        MenuAdapter(
             /* [in] */ IMenuBuilder* menu,
             /* [in] */ MenuPopupHelper* host);
 
-        CARAPI_(Int32) GetCount();
+        CARAPI GetCount(
+            /* [out] */ Int32* count);
 
-        CARAPI_(AutoPtr<IInterface>) GetItem(
-            /* [in] */ Int32 position);
+        CARAPI GetItem(
+            /* [in] */ Int32 position,
+            /* [out] */ IInterface** item);
 
-        CARAPI_(Int64) GetItemId(
-            /* [in] */ Int32 position);
+        CARAPI GetItemId(
+            /* [in] */ Int32 position,
+            /* [out] */ Int64* id);
 
-        CARAPI_(AutoPtr<IView>) GetView(
+        CARAPI GetView(
             /* [in] */ Int32 position,
             /* [in] */ IView* convertView,
-            /* [in] */ IViewGroup* parent);
+            /* [in] */ IViewGroup* parent,
+            /* [out] */ IView** view);
+
+        CARAPI_(void) FindExpandedIndex();
 
         // /@Override
         CARAPI NotifyDataSetChanged();
 
-        CARAPI NotifyDataSetInvalidated();
-
-    protected:
-        CARAPI_(void) FindExpandedIndex();
-
-    protected:
+    private:
         // AdapterMenu usually holds adapter, we use weak-reference here.
         AutoPtr<IWeakReference> mWeakAdapterMenu;
         // AutoPtr<IMenuBuilder> mAdapterMenu;
@@ -75,32 +86,11 @@ private:
         friend class MenuPopupHelper;
     };
 
-    class MenuAdapter
-        : public ElRefBase
-        , public _MenuAdapter
-        , public IMenuAdapter
-        , public ISpinnerAdapter
-    {
-    public:
-        IADAPTER_METHODS_DECL()
-
-        IBASEADAPTER_METHODS_DECL()
-
-        ILISTADAPTER_METHODS_DECL()
-
-        ISPINNERADAPTER_METHODS_DECL()
-
-        MenuAdapter(
-            /* [in] */ IMenuBuilder* menu,
-            /* [in] */ MenuPopupHelper* host);
-
-        CAR_INTERFACE_DECL()
-    };
-
     class MyListener
-        : public IAdapterViewOnItemClickListener
+        : public Object
+        , public IAdapterViewOnItemClickListener
+        , public IViewOnKeyListener
         , public IPopupWindowOnDismissListener
-        , public ElRefBase
     {
     public:
         CAR_INTERFACE_DECL()
@@ -116,6 +106,12 @@ private:
             /* [in] */ Int32 position,
             /* [in] */ Int64 id);
 
+        CARAPI OnKey(
+            /* [in] */ IView* v,
+            /* [in] */ Int32 keyCode,
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean* result);
+
         CARAPI OnDismiss();
 
     private:
@@ -123,23 +119,25 @@ private:
     };
 
 public:
-    MenuPopupHelper(
+    MenuPopupHelper();
+
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IMenuBuilder* menu);
 
-    MenuPopupHelper(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IMenuBuilder* menu,
         /* [in] */ IView* anchorView);
 
-    MenuPopupHelper(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IMenuBuilder* menu,
         /* [in] */ IView* anchorView,
-        /* [in] */ Boolean overflowOnly);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+        /* [in] */ Boolean overflowOnly,
+        /* [in] */ Int32 popupStyleAttr);
 
     CARAPI SetAnchorView(
         /* [in] */ IView* anchor);
@@ -147,15 +145,23 @@ public:
     CARAPI SetForceShowIcon(
         /* [in] */ Boolean forceShow);
 
+    CARAPI SetGravity(
+        /* [in] */ Int32 gravity);
+
     CARAPI Show();
 
-    CARAPI_(Boolean) TryShow();
+    CARAPI GetPopup(
+        /* [out] */ IListPopupWindow** popup);
+
+    CARAPI TryShow(
+        /* [out] */ Boolean* result);
 
     CARAPI Dismiss();
 
     CARAPI OnDismiss();
 
-    CARAPI_(Boolean) IsShowing();
+    CARAPI IsShowing(
+        /* [out] */ Boolean* result);
 
     CARAPI OnItemClick(
         /* [in] */ IAdapterView* parent,
@@ -234,37 +240,36 @@ public:
     CARAPI OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
 
-protected:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IMenuBuilder* menu,
-        /* [in] */ IView* anchorView = NULL,
-        /* [in] */ Boolean overflowOnly = FALSE);
-
-    MenuPopupHelper();
 private:
-
-    CARAPI_(Int32) MeasureContentWidth(
-        /* [in] */ IListAdapter* adapter);
+    CARAPI_(Int32) MeasureContentWidth();
 
 private:
-    static String TAG;
-
+    static const String TAG;
     static const Int32 ITEM_LAYOUT;
 
     AutoPtr<IContext> mContext;
     AutoPtr<ILayoutInflater> mInflater;
-    AutoPtr<IListPopupWindow> mPopup;
     AutoPtr<IMenuBuilder> mMenu;
-    Int32 mPopupMaxWidth;
-    AutoPtr<IView> mAnchorView;
-    Boolean mOverflowOnly;
-    AutoPtr<IViewTreeObserver> mTreeObserver;
-
     AutoPtr<MenuAdapter> mAdapter;
+    Boolean mOverflowOnly;
+    Int32 mPopupMaxWidth;
+    Int32 mPopupStyleAttr;
+
+    AutoPtr<IView> mAnchorView;
+    AutoPtr<IListPopupWindow> mPopup;
+    AutoPtr<IViewTreeObserver> mTreeObserver;
     AutoPtr<IMenuPresenterCallback> mPresenterCallback;
+
     Boolean mForceShowIcon;
     AutoPtr<IViewGroup> mMeasureParent;
+
+    /** Whether the cached content width value is valid. */
+    Boolean mHasContentWidth;
+
+    /** Cached content width from {@link #measureContentWidth}. */
+    Int32 mContentWidth;
+
+    Int32 mDropDownGravity;
 };
 
 } // namespace Menu
