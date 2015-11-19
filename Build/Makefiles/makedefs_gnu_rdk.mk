@@ -373,8 +373,8 @@ LUBE= lube
 
 AR_FLAGS = rcs
 
-CP = cp -f
-CPDIR = cp -rf
+CP = cp -f -u
+CPDIR = cp -rf -u
 MV = mv
 MKDIR = mkdir -p
 RM = rm -f
