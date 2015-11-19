@@ -750,6 +750,7 @@ module
 //         constructor(
 //             [in] Handle32 service,
 //             [in] IInputMethodClient* client,
+//             [in] IIWindowSessionCallback* callback,
 //             [in] IInputContext* inputContext);
 
 //         interface IWindowSession;

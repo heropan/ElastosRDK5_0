@@ -1,29 +1,30 @@
-#ifndef __ELASTOS_DROID_SERVER_WM_CIRCULARDISPLAYMASK_H__
-#define __ELASTOS_DROID_SERVER_WM_CIRCULARDISPLAYMASK_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_EMULATORDISPLAYOVERLAY_H__
+#define __ELASTOS_DROID_SERVER_WM_EMULATORDISPLAYOVERLAY_H__
 
 #include "Elastos.Droid.Server_server.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IPoint;
-using Elastos::Droid::Graphics::IPaint;
-using Elastos::Droid::View::ISurfaceSession;
-using Elastos::Droid::View::ISurface;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::View::ISurfaceControl;
+using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::ISurfaceSession;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm {
 
-class CircularDisplayMask : public Object
+class EmulatorDisplayOverlay : public Object
 {
 public:
-    CircularDisplayMask(
+    EmulatorDisplayOverlay(
+        /* [in] */ IContext* context,
         /* [in] */ IDisplay* display,
         /* [in] */ ISurfaceSession* session,
-        /* [in] */ Int32 zOrder,
-        /* [in] */ Int32 screenOffset);
+        /* [in] */ Int32 zOrder);
 
     // Note: caller responsible for being inside
     // Surface.openTransaction() / closeTransaction()
@@ -41,9 +42,6 @@ private:
 private:
     static const String TAG;
 
-    static cosnt Int32 STROKE_WIDTH = 2;
-    // size of the chin
-    Int32 mScreenOffset;
     // Display dimensions
     AutoPtr<IPoint> mScreenSize;
 
@@ -52,10 +50,9 @@ private:
     Int32 mLastDW;
     Int32 mLastDH;
     Boolean mDrawNeeded;
-    AutoPtr<IPaint> mPaint;
+    AutoPtr<IDrawable> mOverlay;
     Int32 mRotation;
     Boolean mVisible;
-    Boolean mDimensionsUnequal;
 };
 
 } // Wm
@@ -63,4 +60,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ELASTOS_DROID_SERVER_WM_CIRCULARDISPLAYMASK_H__
+#endif //__ELASTOS_DROID_SERVER_WM_EMULATORDISPLAYOVERLAY_H__

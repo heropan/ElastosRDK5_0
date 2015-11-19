@@ -19,7 +19,7 @@ namespace Server {
 namespace Wm {
 
 class FakeWindowImpl
-    : public ElRefBase
+    : public Object
     , public IFakeWindow
 {
 public:
@@ -30,6 +30,7 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Int32 windowType,
         /* [in] */ Int32 layoutParamsFlags,
+        /* [in] */ Int32 layoutParamsPrivateFlags,
         /* [in] */ Boolean canReceiveKeys,
         /* [in] */ Boolean hasFocus,
         /* [in] */ Boolean touchFullscreen);

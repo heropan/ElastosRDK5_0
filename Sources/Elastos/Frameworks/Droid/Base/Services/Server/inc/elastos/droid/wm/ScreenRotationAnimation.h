@@ -1,12 +1,14 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_SCREENROTATIONANIMATION_H__
 #define __ELASTOS_DROID_SERVER_WM_SCREENROTATIONANIMATION_H__
 
-#include "wm/CWindowManagerService.h"
 #include "wm/BlackFrame.h"
+#include "wm/DisplayContent.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::ISurfaceControl;
 using Elastos::Droid::View::ISurfaceSession;
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Animation::IAnimation;
@@ -16,19 +18,16 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
-class ScreenRotationAnimation : public ElRefBase
+class ScreenRotationAnimation : public Object
 {
 public:
     ScreenRotationAnimation(
         /* [in] */ IContext* context,
-        /* [in] */ IDisplay* display,
+        /* [in] */ DisplayContent* displayContent,
         /* [in] */ ISurfaceSession* session,
         /* [in] */ Boolean inTransaction,
-        /* [in] */ Int32 originalWidth,
-        /* [in] */ Int32 originalHeight,
-        /* [in] */ Int32 originalRotation,
-        /* [in] */ Int32 exitAnim,
-        /* [in] */ Int32 enterAnim);
+        /* [in] */ Boolean forceDefaultOrientation,
+        /* [in] */ Boolean isSecure);
 
     CARAPI_(Boolean) HasScreenshot();
 
@@ -59,7 +58,9 @@ public:
         /* [in] */ Int64 maxAnimationDuration,
         /* [in] */ Float animationScale,
         /* [in] */ Int32 finalWidth,
-        /* [in] */ Int32 finalHeight);
+        /* [in] */ Int32 finalHeight,
+        /* [in] */ Int32 exitAnim,
+        /* [in] */ Int32 enterAnim);
 
     CARAPI_(void) Kill();
 
@@ -92,7 +93,9 @@ private:
         /* [in] */ Float animationScale,
         /* [in] */ Int32 finalWidth,
         /* [in] */ Int32 finalHeight,
-        /* [in] */ Boolean dismissing);
+        /* [in] */ Boolean dismissing,
+        /* [in] */ Int32 exitAnim,
+        /* [in] */ Int32 enterAnim);
 
     CARAPI_(Boolean) HasAnimations();
 
@@ -110,20 +113,20 @@ public:
 
 public:
     AutoPtr<IContext> mContext;
-    AutoPtr<IDisplay> mDisplay;
-    AutoPtr<ISurface> mSurface;
+    AutoPtr<DisplayContent> mDisplayContent;
+    AutoPtr<ISurfaceControl> mSurfaceControl;
     AutoPtr<BlackFrame> mCustomBlackFrame;
     AutoPtr<BlackFrame> mExitingBlackFrame;
     AutoPtr<BlackFrame> mEnteringBlackFrame;
     Int32 mWidth;
     Int32 mHeight;
-    Int32 mExitAnimId;
-    Int32 mEnterAnimId;
 
     Int32 mOriginalRotation;
     Int32 mOriginalWidth;
     Int32 mOriginalHeight;
     Int32 mCurRotation;
+    AutoPtr<IRect> mOriginalDisplayRect;
+    AutoPtr<IRect> mCurrentDisplayRect;
 
     // For all animations, "exit" is for the UI elements that are going
     // away (that is the snapshot of the old screen), and "enter" is for
@@ -179,6 +182,7 @@ public:
     Boolean mAnimRunning;
     Boolean mFinishAnimReady;
     Int64 mFinishAnimStartTime;
+    Boolean mForceDefaultOrientation;
 
     AutoPtr<IMatrix> mFrameInitialMatrix;
     AutoPtr<IMatrix> mSnapshotInitialMatrix;

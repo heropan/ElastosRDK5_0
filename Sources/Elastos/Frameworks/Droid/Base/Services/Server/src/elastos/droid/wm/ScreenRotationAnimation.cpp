@@ -1,14 +1,13 @@
 
 #include "wm/ScreenRotationAnimation.h"
-#include "R.h"
-#include <elastos/utility/logging/Slogger.h>
+#include "wm/CWindowManagerService.h"
 #include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Os::ISystemProperties;
-using Elastos::Droid::Os::CSystemProperties;
-using Elastos::Droid::View::ISurfaceHelper;
-using Elastos::Droid::View::CSurfaceHelper;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::View::ISurfaceControlHelper;
+using Elastos::Droid::View::CSurfaceControlHelper;
 using Elastos::Droid::View::CSurface;
 using Elastos::Droid::View::Animation::CTransformation;
 using Elastos::Droid::View::Animation::CAnimationUtils;
@@ -33,18 +32,13 @@ Int32 ScreenRotationAnimation::mHwrotation = 0;
 
 ScreenRotationAnimation::ScreenRotationAnimation(
     /* [in] */ IContext* context,
-    /* [in] */ IDisplay* display,
+    /* [in] */ DisplayContent* displayContent,
     /* [in] */ ISurfaceSession* session,
     /* [in] */ Boolean inTransaction,
-    /* [in] */ Int32 originalWidth,
-    /* [in] */ Int32 originalHeight,
-    /* [in] */ Int32 originalRotation,
-    /* [in] */ Int32 exitAnim,
-    /* [in] */ Int32 enterAnim)
+    /* [in] */ Boolean forceDefaultOrientation,
+    /* [in] */ Boolean isSecure)
     : mContext(context)
-    , mDisplay(display)
-    , mExitAnimId(exitAnim)
-    , mEnterAnimId(enterAnim)
+    , mDisplayContent(mDisplayContent)
     , mOriginalRotation(originalRotation)
     , mOriginalWidth(originalWidth)
     , mOriginalHeight(originalHeight)
@@ -53,6 +47,7 @@ ScreenRotationAnimation::ScreenRotationAnimation(
     , mAnimRunning(FALSE)
     , mFinishAnimReady(FALSE)
     , mFinishAnimStartTime(0)
+    , mForceDefaultOrientation(FALSE)
     , mHalfwayPoint(0)
     , mMoreRotateEnter(FALSE)
     , mMoreRotateExit(FALSE)
@@ -64,6 +59,9 @@ ScreenRotationAnimation::ScreenRotationAnimation(
     , mMoreStartExit(FALSE)
     , mMoreStartFrame(FALSE)
 {
+    CRect::New((IRect**)&mOriginalDisplayRect);
+    CRect::New((IRect**)&mCurrentDisplayRect);
+
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mStartExitTransformation));
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mStartEnterTransformation));
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mStartFrameTransformation));
@@ -92,7 +90,25 @@ ScreenRotationAnimation::ScreenRotationAnimation(
 
     mTmpFloats = ArrayOf<Float>::Alloc(9);
 
+    displayContent->GetLogicalDisplayRect(mOriginalDisplayRect);
+
     // Screenshot does NOT include rotation!
+    AutoPtr<IDisplay> display = displayContent->GetDisplay();
+    Int32 originalRotation = display->GetRotation();
+    Int32 originalWidth;
+    Int32 originalHeight;
+    AutoPtr<IDisplayInfo> displayInfo = displayContent->GetDisplayInfo();
+    if (forceDefaultOrientation) {
+        // Emulated orientation.
+        mForceDefaultOrientation = TRUE;
+        originalWidth = displayContent->mBaseDisplayWidth;
+        originalHeight = displayContent->mBaseDisplayHeight;
+    }
+    else {
+        // Normal situation
+        displayInfo->GetLogicalWidth(&originalWidth);
+        displayInfo->GetLOgicalHeight(&originalHeight);
+    }
     if (originalRotation == ISurface::ROTATION_90
             || originalRotation == ISurface::ROTATION_270) {
         mWidth = originalHeight;
@@ -103,79 +119,68 @@ ScreenRotationAnimation::ScreenRotationAnimation(
         mHeight = originalHeight;
     }
 
-    AutoPtr<ISurfaceHelper> surfaceHelper;
-    CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
+    AutoPtr<ISurfaceControlHelper> helper;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&helper);
     if (!inTransaction) {
         // if (WindowManagerService.SHOW_LIGHT_TRANSACTIONS) Slog.i(WindowManagerService.TAG,
         //         ">>> OPEN TRANSACTION ScreenRotationAnimation");
-        surfaceHelper->OpenTransaction();
+        helper->OpenTransaction();
     }
 
     // try {
-    //     try {
+    // try {
+    Int32 flags = ISurfaceControl::HIDDEN;
+    if (isSecure) {
+        flags |= ISurfaceControl::SECURE;
+    }
+
     // if (WindowManagerService.DEBUG_SURFACE_TRACE) {
-    //     mSurface = new SurfaceTrace(session, "FreezeSurface",
+    //     mSurfaceControl = new SurfaceTrace(session, "ScreenshotSurface",
     //             mWidth, mHeight,
-    //             PixelFormat.OPAQUE, ISurface::FX_SURFACE_SCREENSHOT | ISurface::HIDDEN);
+    //             PixelFormat.OPAQUE, flags);
+    //     Slog.w(TAG, "ScreenRotationAnimation ctor: displayOffset="
+    //             + mOriginalDisplayRect.toShortString());
+    // } else {
+    CSurfaceControl::New(session, String("ScreenshotSurface"),
+            mWidth, mHeight, IPixelFormat::OPAQUE, flags, (ISurfaceControl**)&mSurfaceControl);
     // }
-    // else {
-    if (FAILED(CSurface::New(session, String("FreezeSurface"),
-            mWidth, mHeight,
-            IPixelFormat::OPAQUE, ISurface::FX_SURFACE_SCREENSHOT | ISurface::HIDDEN,
-            (ISurface**)&mSurface))) {
-        goto failed;
-    }
-    // }
-    Boolean isValid;
-    mSurface->IsValid(&isValid);
-    if (!isValid) {
-        // Screenshot failed, punt.
-        mSurface = NULL;
-        if (!inTransaction) {
-            surfaceHelper->CloseTransaction();
-            // if (WindowManagerService.SHOW_LIGHT_TRANSACTIONS) Slog.i(WindowManagerService.TAG,
-            //         "<<< CLOSE TRANSACTION ScreenRotationAnimation");
-        }
-        return;
-    }
+    // capture a screenshot into the surface we just created
+    AutoPtr<ISurface> sur;
+    CSurface::New((ISurface**)&sur);
+    sur->CopyFrom(mSurfaceControl);
+    // FIXME: we should use the proper display
+    AutoPtr<IBinder> binder;
+    helper->GetBuiltInDisplay(ISurfaceControl::BUILT_IN_DISPLAY_ID_MAIN, (IBinder**)&binder);
+    helper->Screenshot(binder, sur);
     Int32 stack;
-    mDisplay->GetLayerStack(&stack);
-    mSurface->SetLayerStack(stack);
-    mSurface->SetLayer(FREEZE_LAYER + 1);
-    mSurface->SetAlpha(0);
-    mSurface->Show();
-        // } catch (ISurface::OutOfResourcesException e) {
-        //     Slog.w(TAG, "Unable to allocate freeze surface", e);
-        // }
-failed:
-    // if (WindowManagerService.SHOW_TRANSACTIONS ||
-    //         WindowManagerService.SHOW_SURFACE_ALLOC) Slog.i(WindowManagerService.TAG,
-    //                 "  FREEZE " + mSurface + ": CREATE");
+    display->GetLayerStack(&stack);
+    mSurfaceControl->SetLayerStack(stack);
+    mSurfaceControl->SetLayer(FREEZE_LAYER + 1);
+    mSurfaceControl->SetAlpha(0);
+    mSurfaceControl->Show();
+    sur->Destroy();
+    // } catch (OutOfResourcesException e) {
+    //     Slog.w(TAG, "Unable to allocate freeze surface", e);
+    // }
+
+    if (CWindowManagerService::SHOW_TRANSACTIONS ||
+            CWindowManagerService::SHOW_SURFACE_ALLOC) {
+        Slogger::I(CWindowManagerService::TAG, "  FREEZE %p: CREATE", mSurfaceControl.Get());
+    }
 
     SetRotationInTransaction(originalRotation);
     // } finally {
     if (!inTransaction) {
-        surfaceHelper->CloseTransaction();
-        // if (WindowManagerService.SHOW_LIGHT_TRANSACTIONS) Slog.i(WindowManagerService.TAG,
-        //         "<<< CLOSE TRANSACTION ScreenRotationAnimation");
+        helper->CloseTransaction();
+        if (CWindowManagerService::SHOW_LIGHT_TRANSACTIONS) Slogger::I(CWindowManagerService::TAG,
+                "<<< CLOSE TRANSACTION ScreenRotationAnimation");
     }
-    // }
-
-    // AutoPtr<ISystemProperties> sysProp;
-    // CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-    // String hwrotation;
-    // sysProp->Get(String("ro.sf.hwrotation"), String("0"), &hwrotation);
-    // if(String("180").Equals(hwrotation)){
-    //     mHwrotation = ISurface::ROTATION_180;
-    // }
-    // else{
-    //     mHwrotation = ISurface::ROTATION_0;
     // }
 }
 
 Boolean ScreenRotationAnimation::HasScreenshot()
 {
-    return mSurface != NULL;
+    return mSurfaceControl != NULL;
 }
 
 Int32 ScreenRotationAnimation::DeltaRotation(
@@ -191,14 +196,23 @@ void ScreenRotationAnimation::SetSnapshotTransformInTransaction(
     /* [in] */ IMatrix* matrix,
     /* [in] */ Float alpha)
 {
-    if (mSurface != NULL) {
-        matrix->GetValues(mTmpFloats.Get());
-        mSurface->SetPosition((*mTmpFloats)[IMatrix::MTRANS_X],
-                (*mTmpFloats)[IMatrix::MTRANS_Y]);
-        mSurface->SetMatrix(
+    if (mSurfaceControl != NULL) {
+        matrix->GetValues(mTmpFloats);
+        Float x = (*mTmpFloats([IMatrix::MTRANS_X];
+        Float y = (*mTmpFloats)[IMatrix::MTRANS_Y];
+        if (mForceDefaultOrientation) {
+            mDisplayContent->GetLogicalDisplayRect(mCurrentDisplayRect);
+            Int32 left, top;
+            mCurrentDisplayRect->GetLeft(&left);
+            mCurrentDisplayRect->GetTop(&top);
+            x -= left;
+            y -= top;
+        }
+        mSurfaceControl->SetPosition(x, y);
+        mSurfaceControl->SetMatrix(
                 (*mTmpFloats)[IMatrix::MSCALE_X], (*mTmpFloats)[IMatrix::MSKEW_Y],
                 (*mTmpFloats)[IMatrix::MSKEW_X], (*mTmpFloats)[IMatrix::MSCALE_Y]);
-        mSurface->SetAlpha(alpha);
+        mSurfaceControl->SetAlpha(alpha);
         // if (DEBUG_TRANSFORMS) {
         //     float[] srcPnts = new float[] { 0, 0, mWidth, mHeight };
         //     float[] dstPnts = new float[4];
@@ -264,7 +278,7 @@ Boolean ScreenRotationAnimation::SetRotationInTransaction(
     SetRotationInTransaction(rotation);
     if (TWO_PHASE_ANIMATION) {
         return StartAnimation(session, maxAnimationDuration, animationScale,
-                finalWidth, finalHeight, FALSE);
+                finalWidth, finalHeight, FALSE, 0, 0);
     }
 
     // Don't start animation yet.
@@ -277,9 +291,11 @@ Boolean ScreenRotationAnimation::StartAnimation(
     /* [in] */ Float animationScale,
     /* [in] */ Int32 finalWidth,
     /* [in] */ Int32 finalHeight,
-    /* [in] */ Boolean dismissing)
+    /* [in] */ Boolean dismissing,
+    /* [in] */ Int32 exitAnim,
+    /* [in] */ Int32 enterAnim)
 {
-    if (mSurface == NULL) {
+    if (mSurfaceControl == NULL) {
         // Can't do animation.
         return FALSE;
     }
@@ -296,7 +312,7 @@ Boolean ScreenRotationAnimation::StartAnimation(
 
     if (TWO_PHASE_ANIMATION && mFinishExitAnimation == NULL
             && (!dismissing || delta != ISurface::ROTATION_0)) {
-        // if (DEBUG_STATE) Slogger::V(TAG, "Creating start and finish animations");
+        if (DEBUG_STATE) Slogger::V(TAG, "Creating start and finish animations");
         firstStart = TRUE;
         AutoPtr<IAnimationUtils> animationUtils;
         CAnimationUtils::AcquireSingleton((IAnimationUtils**)&animationUtils);
@@ -318,22 +334,19 @@ Boolean ScreenRotationAnimation::StartAnimation(
         }
     }
 
-    // if (DEBUG_STATE) Slogger::V(TAG, "Rotation delta: " + delta + " finalWidth="
-    //         + finalWidth + " finalHeight=" + finalHeight
-    //         + " origWidth=" + mOriginalWidth + " origHeight=" + mOriginalHeight);
+    if (DEBUG_STATE) Slogger::V(TAG, "Rotation delta: %d finalWidth=%d finalHeight=%d origWidth=%d origHeight=%d",
+            delta, finalWidth, finalHeight, mOriginalWidth, mOriginalHeight);
 
     mRotateExitAnimation = NULL;
     mRotateEnterAnimation = NULL;
 
     Boolean customAnim;
-    if (mExitAnimId != 0 && mEnterAnimId != 0) {
+    if (exitAnim != 0 && enterAnim != 0) {
         customAnim = TRUE;
         AutoPtr<IAnimationUtils> animationUtils;
         CAnimationUtils::AcquireSingleton((IAnimationUtils**)&animationUtils);
-        animationUtils->LoadAnimation(mContext, mExitAnimId,
-                (IAnimation**)&mRotateExitAnimation);
-        animationUtils->LoadAnimation(mContext, mEnterAnimId,
-                (IAnimation**)&mRotateEnterAnimation);
+        animationUtils->LoadAnimation(mContext, exitAnim, (IAnimation**)&mRotateExitAnimation);
+        animationUtils->LoadAnimation(mContext, exitAnim, (IAnimation**)&mRotateEnterAnimation);
     }
     else {
         customAnim = FALSE;
@@ -451,9 +464,9 @@ Boolean ScreenRotationAnimation::StartAnimation(
     }
 
     Int32 layerStack;
-    mDisplay->GetLayerStack(&layerStack);
-    AutoPtr<ISurfaceHelper> surfaceHelper;
-    CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
+    mDisplayContent->GetDisplay()->GetLayerStack(&layerStack);
+    AutoPtr<ISurfaceControlHelper> surfaceHelper;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceHelper);
     if (USE_CUSTOM_BLACK_FRAME && mCustomBlackFrame == NULL) {
         // if (WindowManagerService.SHOW_LIGHT_TRANSACTIONS || DEBUG_STATE) Slog.i(
         //         WindowManagerService.TAG,
@@ -475,7 +488,7 @@ Boolean ScreenRotationAnimation::StartAnimation(
         AutoPtr<IRect> inner;
         CRect::New(0, 0, mOriginalWidth, mOriginalHeight, (IRect**)&inner);
         mCustomBlackFrame = new BlackFrame(session, outer, inner, FREEZE_LAYER + 3,
-                layerStack);
+                layerStack, FALSE);
         mCustomBlackFrame->SetMatrix(mFrameInitialMatrix);
         // } catch (Surface.OutOfResourcesException e) {
         //     Slog.w(TAG, "Unable to allocate black surface", e);
@@ -503,30 +516,41 @@ Boolean ScreenRotationAnimation::StartAnimation(
         CreateRotationMatrix(delta, mOriginalWidth, mOriginalHeight, mFrameInitialMatrix);
 
         AutoPtr<IRect> outer;
-        CRect::New(-mOriginalWidth * 1, -mOriginalHeight * 1,
-                mOriginalWidth * 2, mOriginalHeight * 2, (IRect**)&outer);
         AutoPtr<IRect> inner;
-        CRect::New(0, 0, mOriginalWidth, mOriginalHeight, (IRect**)&inner);
+        if (mForceDefaultOrientation) {
+            // Going from a smaller Display to a larger Display, add curtains to sides
+            // or top and bottom. Going from a larger to smaller display will result in
+            // no BlackSurfaces being constructed.
+            outer = mCurrentDisplayRect;
+            inner = mOriginalDisplayRect;
+        }
+        else {
+            CRect::New(-mOriginalWidth*1, -mOriginalHeight*1,
+                    mOriginalWidth*2, mOriginalHeight*2, (IRect**)&outer);
+            CRect::New(0, 0, mOriginalWidth, mOriginalHeight, (IRect**)&inner);
+        }
         mExitingBlackFrame = new BlackFrame(session, outer, inner, FREEZE_LAYER + 2,
-                layerStack);
+                layerStack, mForceDefaultOrientation);
         mExitingBlackFrame->SetMatrix(mFrameInitialMatrix);
-        // } catch (ISurface::OutOfResourcesException e) {
+        // } catch (OutOfResourcesException e) {
         //     Slog.w(TAG, "Unable to allocate black surface", e);
         // } finally {
-        //     ISurface::closeTransaction();
+        //     SurfaceControl.closeTransaction();
         //     if (WindowManagerService.SHOW_LIGHT_TRANSACTIONS || DEBUG_STATE) Slog.i(
         //             WindowManagerService.TAG,
         //             "<<< CLOSE TRANSACTION ScreenRotationAnimation.startAnimation");
         // }
         surfaceHelper->CloseTransaction();
+        if (CWindowManagerService::SHOW_LIGHT_TRANSACTIONS || DEBUG_STATE) Slogger::I(
+                CWindowManagerService::TAG,
+                "<<< CLOSE TRANSACTION ScreenRotationAnimation.startAnimation");
     }
 
     if (customAnim && mEnteringBlackFrame == NULL) {
-        // if (WindowManagerService.SHOW_LIGHT_TRANSACTIONS || DEBUG_STATE) Slog.i(
-        //         WindowManagerService.TAG,
-        //         ">>> OPEN TRANSACTION ScreenRotationAnimation.startAnimation");
+        if (CWindowManagerService::SHOW_LIGHT_TRANSACTIONS || DEBUG_STATE) Slogger::I(
+                CWindowManagerService::TAG,
+                ">>> OPEN TRANSACTION ScreenRotationAnimation.startAnimation");
         surfaceHelper->OpenTransaction();
-
         // try {
         AutoPtr<IRect> outer;
         CRect::New(-finalWidth * 1, -finalHeight * 1,
@@ -534,7 +558,7 @@ Boolean ScreenRotationAnimation::StartAnimation(
         AutoPtr<IRect> inner;
         CRect::New(0, 0, finalWidth, finalHeight, (IRect**)&inner);
         mEnteringBlackFrame = new BlackFrame(session, outer, inner, FREEZE_LAYER,
-                layerStack);
+                layerStack, FALSE);
         // } catch (ISurface::OutOfResourcesException e) {
         //     Slog.w(TAG, "Unable to allocate black surface", e);
         // } finally {
@@ -554,43 +578,37 @@ Boolean ScreenRotationAnimation::Dismiss(
     /* [in] */ Int64 maxAnimationDuration,
     /* [in] */ Float animationScale,
     /* [in] */ Int32 finalWidth,
-    /* [in] */ Int32 finalHeight)
+    /* [in] */ Int32 finalHeight,
+    /* [in] */ Int32 exitAnim,
+    /* [in] */ Int32 enterAnim)
 {
-    // if (DEBUG_STATE) Slogger::V(TAG, "Dismiss!");
-    if (mSurface == NULL) {
+    if (DEBUG_STATE) Slogger::V(TAG, "Dismiss!");
+    if (mSurfaceControl == NULL) {
         // Can't do animation.
         return FALSE;
     }
     if (!mStarted) {
-        // if (DynamicPowerPolicyChangeThread.mGlobleLauncherRotateState) {
-        //     DynamicPowerPolicyChangeThread.mGlobleLauncherRotateState = FALSE;
-        // }
-        // else
-        {
-            StartAnimation(session, maxAnimationDuration, animationScale,
-                finalWidth, finalHeight, TRUE);
-        }
-        //startAnimation(session, maxAnimationDuration, animationScale, finalWidth, finalHeight,
-          //      true);
+        StartAnimation(session, maxAnimationDuration, animationScale,
+                finalWidth, finalHeight, TRUE, exitAnim, enterAnim);
     }
     if (!mStarted) {
         return FALSE;
     }
-    // if (DEBUG_STATE) Slogger::V(TAG, "Setting mFinishAnimReady = true");
+    if (DEBUG_STATE) Slogger::V(TAG, "Setting mFinishAnimReady = true");
     mFinishAnimReady = TRUE;
     return TRUE;
 }
 
 void ScreenRotationAnimation::Kill()
 {
-    // if (DEBUG_STATE) Slogger::V(TAG, "Kill!");
+    if (DEBUG_STATE) Slogger::V(TAG, "Kill!");
     if (mSurface != NULL) {
         if (CWindowManagerService::SHOW_TRANSACTIONS ||
                 CWindowManagerService::SHOW_SURFACE_ALLOC) {
-            Slogger::I(CWindowManagerService::TAG, "  FREEZE %p: DESTROY", mSurface.Get());
+            Slogger::I(CWindowManagerService::TAG, "  FREEZE %p: DESTROY", mSurfaceControl.Get());
         }
-        mSurface->Destroy();
-        mSurface = NULL;
+        mSurfaceControl->Destroy();
+        mSurfaceControl = NULL;
     }
     if (mCustomBlackFrame != NULL) {
         mCustomBlackFrame->Kill();
@@ -874,10 +892,10 @@ void ScreenRotationAnimation::UpdateSurfacesInTransaction()
         return;
     }
 
-    if (mSurface != NULL) {
+    if (mSurfaceControl != NULL) {
         if (!mMoreStartExit && !mMoreFinishExit && !mMoreRotateExit) {
             // if (DEBUG_STATE) Slogger::V(TAG, "Exit animations done, hiding screenshot surface");
-            mSurface->Hide();
+            mSurfaceControl->Hide();
         }
     }
 
@@ -904,6 +922,11 @@ void ScreenRotationAnimation::UpdateSurfacesInTransaction()
             Boolean result;
             mExitFrameFinalMatrix->SetConcat(m, mFrameInitialMatrix, &result);
             mExitingBlackFrame->SetMatrix(mExitFrameFinalMatrix);
+            if (mForceDefaultOrientation) {
+                Float alpha;
+                mExitTransformation->GetAlpha(&alpha);
+                mExitingBlackFrame->SetAlpha(alpha);
+            }
         }
     }
 

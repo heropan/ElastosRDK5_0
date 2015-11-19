@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_AppTransition_H__
 #define __ELASTOS_DROID_SERVER_WM_AppTransition_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "AttributeCache.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>

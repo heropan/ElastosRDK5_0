@@ -25,14 +25,20 @@ namespace Server {
 namespace Wm {
 
 CarClass(CSession)
+    , public Object
+    , public IWindowSession
+    , public IProxyDeathRecipient
 {
 public:
     CSession();
 
-    ~CSession();
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Handle32 wmService,
+        /* [in] */ IIWindowSessionCallback* callback,
         /* [in] */ IInputMethodClient* client,
         /* [in] */ IInputContext* inputContext);
 
@@ -125,19 +131,23 @@ public:
         /* [in] */ IWindowManagerLayoutParams* attrs,
         /* [in] */ Int32 requestedWidth,
         /* [in] */ Int32 requestedHeight,
-        /* [in] */ Int32 viewVisibility,
+        /* [in] */ Int32 viewFlags,
         /* [in] */ Int32 flags,
         /* [in] */ IRect* inFrame,
+        /* [in] */ IRect* inOverscanInsets,
         /* [in] */ IRect* inContentInsets,
         /* [in] */ IRect* inVisibleInsets,
+        /* [in] */ IRect* inStableInsets,
         /* [in] */ IConfiguration* inConfig,
         /* [in] */ ISurface* inSurface,
         /* [out] */ IRect** outFrame,
+        /* [out] */ IRect** outOverscanInsets,
         /* [out] */ IRect** outContentInsets,
         /* [out] */ IRect** outVisibleInsets,
+        /* [out] */ IRect** outStableInsets,
         /* [out] */ IConfiguration** outConfig,
-        /* [out] */ Int32* result,
-        /* [out] */ ISurface** outSurface);
+        /* [out] */ ISurface** outSurface,
+        /* [out] */ Int32* result);
 
     /**
      * If a call to relayout() asked to have the surface destroy deferred,
@@ -265,6 +275,11 @@ public:
     CARAPI WallpaperOffsetsComplete(
         /* [in] */ IBinder* window);
 
+    CARAPI SetWallpaperDisplayOffset(
+        /* [in] */ IBinder* windowToken,
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
+
     CARAPI SendWallpaperCommand(
         /* [in] */ IBinder* window,
         /* [in] */ const String& action,
@@ -294,8 +309,10 @@ public:
      */
     CARAPI OnRectangleOnScreenRequested(
         /* [in] */ IBinder* token,
-        /* [in] */ IRect* rectangle,
-        /* [in] */ Boolean immediate);
+        /* [in] */ IRect* rectangle);
+
+    CARAPI_(AutoPtr<IIWindowId>) GetWindowId(
+        /* [in] */ IBinder* window);
 
     CARAPI ProxyDied();
 
@@ -307,6 +324,7 @@ public:
 
 public:
     AutoPtr<CWindowManagerService> mService;
+    AutoPtr<IIWindowSessionCallback> mCallback;
     AutoPtr<IInputMethodClient> mClient;
     AutoPtr<IInputContext> mInputContext;
     Int32 mUid;
@@ -315,6 +333,7 @@ public:
     AutoPtr<ISurfaceSession> mSurfaceSession;
     Int32 mNumWindow;
     Boolean mClientDead;
+    Float mLastReportedAnimatorScale;
 };
 
 } // Wm

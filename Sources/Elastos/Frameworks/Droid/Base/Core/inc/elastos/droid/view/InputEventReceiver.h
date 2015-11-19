@@ -73,6 +73,10 @@ public:
         /* [in] */ IInputChannel* inputChannel,
         /* [in] */ ILooper* looper);
 
+    CARAPI_(void) Init(
+        /* [in] */ IInputChannel* inputChannel,
+        /* [in] */ ILooper* looper);
+
     virtual ~InputEventReceiver();
 
     virtual CARAPI Dispose();

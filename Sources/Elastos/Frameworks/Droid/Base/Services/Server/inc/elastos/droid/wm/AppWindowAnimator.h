@@ -33,8 +33,7 @@ public:
     // itself every time it is called.  It is used as a stub animation in cases
     // where we want to synchronize multiple things that may be animating.
     class DummyAnimation
-        : public ElRefBase
-        , public Animation
+        : public Animation
     {
     public:
         CARAPI GetTransformation(

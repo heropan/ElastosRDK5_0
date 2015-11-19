@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_ACCESSIBILITYCONTROLLER_H__
 #define __ELASTOS_DROID_SERVER_WM_ACCESSIBILITYCONTROLLER_H__
 
+#include "Elastos.Droid.Server_server.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>

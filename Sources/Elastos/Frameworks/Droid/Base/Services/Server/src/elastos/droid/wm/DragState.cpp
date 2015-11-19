@@ -12,10 +12,10 @@ using Elastos::Droid::Graphics::CPoint;
 using Elastos::Droid::View::IInputChannelHelper;
 using Elastos::Droid::View::CInputChannelHelper;
 using Elastos::Droid::View::IInputChannel;
-using Elastos::Droid::View::ISurfaceHelper;
+using Elastos::Droid::View::ISurfaceControlHelper;
 using Elastos::Droid::View::IDragEventHelper;
 using Elastos::Droid::View::CDragEventHelper;
-using Elastos::Droid::View::CSurfaceHelper;
+using Elastos::Droid::View::CSurfaceControlHelper;
 using Elastos::Droid::Os::Process;
 
 namespace Elastos {
@@ -26,12 +26,12 @@ namespace Wm {
 DragState::DragState(
     /* [in] */ CWindowManagerService* service,
     /* [in] */ IBinder* token,
-    /* [in] */ ISurface* surface,
+    /* [in] */ ISurfaceControl* surfaceControl,
     /* [in] */ Int32 flags,
     /* [in] */ IBinder* localWin)
     : mService(service)
     , mToken(token)
-    , mSurface(surface)
+    , mSurfaceControl(surfaceControl)
     , mFlags(flags)
     , mLocalWin(localWin)
 {
@@ -40,10 +40,10 @@ DragState::DragState(
 
 void DragState::Reset()
 {
-    if (mSurface != NULL) {
-        mSurface->Destroy();
+    if (mSurfaceControl != NULL) {
+        mSurfaceControl->Destroy();
     }
-    mSurface = NULL;
+    mSurfaceControl = NULL;
     mFlags = 0;
     mLocalWin = NULL;
     mToken = NULL;
@@ -86,6 +86,7 @@ void DragState::Register(
         mDragWindowHandle->mInputChannel = mServerChannel;
         mDragWindowHandle->mLayer = GetDragLayerLw();
         mDragWindowHandle->mLayoutParamsFlags = 0;
+        mDragWindowHandle->mLayoutParamsPrivateFlags = 0;
         mDragWindowHandle->mLayoutParamsType = IWindowManagerLayoutParams::TYPE_DRAG;
         mDragWindowHandle->mDispatchingTimeoutNanos =
                 CWindowManagerService::DEFAULT_INPUT_DISPATCHING_TIMEOUT_NANOS;
@@ -290,13 +291,13 @@ void DragState::NotifyMoveLw(
     // Move the surface to the given touch
     if (CWindowManagerService::SHOW_LIGHT_TRANSACTIONS) Slogger::I(
             CWindowManagerService::TAG, ">>> OPEN TRANSACTION notifyMoveLw");
-    AutoPtr<ISurfaceHelper> surfaceHelper;
-    CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
+    AutoPtr<ISurfaceControlHelper> surfaceHelper;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
     surfaceHelper->OpenTransaction();
     // try {
-    mSurface->SetPosition(x - mThumbOffsetX, y - mThumbOffsetY);
+    mSurfaceControl->SetPosition(x - mThumbOffsetX, y - mThumbOffsetY);
     // if (WindowManagerService.SHOW_TRANSACTIONS) Slog.i(WindowManagerService.TAG, "  DRAG "
-    //         + mSurface + ": pos=(" +
+    //         + mSurfaceControl + ": pos=(" +
     //         (int)(x - mThumbOffsetX) + "," + (int)(y - mThumbOffsetY) + ")");
     // } finally {
     surfaceHelper->CloseTransaction();

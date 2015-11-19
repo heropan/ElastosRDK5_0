@@ -18,6 +18,7 @@ FakeWindowImpl::FakeWindowImpl(
     /* [in] */ const String& name,
     /* [in] */ Int32 windowType,
     /* [in] */ Int32 layoutParamsFlags,
+    /* [in] */ Int32 layoutParamsPrivateFlags,
     /* [in] */ Boolean canReceiveKeys,
     /* [in] */ Boolean hasFocus,
     /* [in] */ Boolean touchFullscreen)
@@ -45,6 +46,7 @@ FakeWindowImpl::FakeWindowImpl(
     mWindowLayer = GetLayerLw(windowType);
     mWindowHandle->mLayer = mWindowLayer;
     mWindowHandle->mLayoutParamsFlags = layoutParamsFlags;
+    mWindowHandle->mLayoutParamsPrivateFlags = layoutParamsPrivateFlags;
     mWindowHandle->mLayoutParamsType = windowType;
     mWindowHandle->mDispatchingTimeoutNanos =
             CWindowManagerService::DEFAULT_INPUT_DISPATCHING_TIMEOUT_NANOS;

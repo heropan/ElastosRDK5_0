@@ -1,9 +1,6 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_KEYGURADDISABLEHANDLER_H__
 #define __ELASTOS_DROID_SERVER_WM_KEYGURADDISABLEHANDLER_H__
 
-#include "wm/CWindowManagerService.h"
-// #include "input/InputApplicationHandle.h"
-// #include "input/InputWindowHandle.h"
 #include "elastos/droid/os/HandlerBase.h"
 #include "elastos/droid/os/TokenWatcher.h"
 
@@ -16,13 +13,10 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
-class KeyguardDisableHandler
-    : public HandlerBase
+class KeyguardDisableHandler : public HandlerBase
 {
 public:
-    class KeyguardTokenWatcher
-        : public ElRefBase
-        , public TokenWatcher
+    class KeyguardTokenWatcher : public TokenWatcher
     {
     public:
         KeyguardTokenWatcher(

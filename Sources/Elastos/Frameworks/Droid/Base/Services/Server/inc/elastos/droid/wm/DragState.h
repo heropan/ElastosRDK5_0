@@ -5,11 +5,9 @@
 #include "wm/WindowState.h"
 #include "input/InputApplicationHandle.h"
 #include "input/InputWindowHandle.h"
-#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::ISurfacecontrol;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IDragEvent;
 using Elastos::Droid::View::IInputChannel;
@@ -19,7 +17,6 @@ using Elastos::Droid::Graphics::IRegion;
 using Elastos::Droid::Server::Input::InputApplicationHandle;
 using Elastos::Droid::Server::Input::InputWindowHandle;
 
-
 namespace Elastos{
 namespace Droid{
 namespace Server{
@@ -27,13 +24,13 @@ namespace Wm{
 
 class WindowState;
 
-class DragState : public ElRefBase
+class DragState : public Object
 {
 public:
     DragState(
         /* [in] */ CWindowManagerService* service,
         /* [in] */ IBinder* token,
-        /* [in] */ ISurface* surface,
+        /* [in] */ ISurfaceControl* surfaceControl,
         /* [in] */ Int32 flags,
         /* [in] */ IBinder* localWin);
 
@@ -110,7 +107,7 @@ private:
 public:
     CWindowManagerService* mService;
     AutoPtr<IBinder> mToken;
-    AutoPtr<ISurface> mSurface;
+    AutoPtr<ISurfaceControl> mSurfaceControl;
     Int32 mFlags;
     AutoPtr<IBinder> mLocalWin;
     AutoPtr<IClipData> mData;

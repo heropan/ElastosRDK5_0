@@ -70,10 +70,9 @@ using Elastos::Droid::View::CInputChannelHelper;
 using Elastos::Droid::View::IWindowManagerGlobal;
 using Elastos::Droid::View::IInternalInsetsInfo;
 using Elastos::Droid::View::CInputChannel;
-using Elastos::Droid::View::ISurfaceControlHelper;
 using Elastos::Droid::View::IWindowInfoHelper;
 using Elastos::Droid::View::IInputDevice;
-// using Elastos::Droid::View::CWindowInfoHelper;
+using Elastos::Droid::View::ISurfaceControlHelper;
 using Elastos::Droid::View::CSurfaceControlHelper;
 using Elastos::Droid::View::CSurfaceSession;
 using Elastos::Droid::View::IGravity;
@@ -2329,12 +2328,12 @@ Boolean CWindowManagerService::UpdateWallpaperOffsetLocked(
 void CWindowManagerService::WallpaperOffsetsComplete(
     /* [in] */ IBinder* window)
 {
-    AutoLock lock(mWindowMapLock);
-
-    if (mWaitingOnWallpaper != NULL &&
-            IBinder::Probe(mWaitingOnWallpaper->mClient.Get()) == window) {
-        mWaitingOnWallpaper = NULL;
-        mWindowMapLock.NotifyAll();
+    synchronized (mWindowMapLock) {
+        if (mWaitingOnWallpaper != NULL &&
+                IBinder::Probe(mWaitingOnWallpaper->mClient.Get()) == window) {
+            mWaitingOnWallpaper = NULL;
+            mWindowMapLock.NotifyAll();
+        }
     }
 }
 

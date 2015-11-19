@@ -21,7 +21,7 @@ namespace Wm {
 class CWindowManagerService;
 
 class InputMonitor
-    : public ElRefBase
+    : public Object
     , public CInputManagerService::WindowManagerCallbacks
 {
 public:
@@ -42,7 +42,8 @@ public:
      */
     CARAPI_(Int64) NotifyANR(
         /* [in] */ InputApplicationHandle* inputApplicationHandle,
-        /* [in] */ InputWindowHandle* inputWindowHandle);
+        /* [in] */ InputWindowHandle* inputWindowHandle,
+        /* [in] */ const String& reason);
 
     CARAPI_(void) SetUpdateInputWindowsNeededLw();
 
@@ -62,12 +63,18 @@ public:
         /* [in] */ Int64 whenNanos,
         /* [in] */ Boolean lidOpen);
 
-    /* Provides an opportunity for the window manager policy to intercept early key
-     * processing as soon as the key has been read from the device. */
+    /* Notifies that the camera lens cover state has changed. */
+    // @Override
+    CARAPI_(void) NotifyCameraLensCoverSwitchChanged(
+        /* [in] */ Int64 whenNanos,
+        /* [in] */ Boolean lensCovered);
+
+    /* Provides an opportunity for the window manager policy to intercept early motion event
+     * processing when the device is in a non-interactive state since these events are normally
+     * dropped. */
     CARAPI_(Int32) InterceptKeyBeforeQueueing(
         /* [in] */ IKeyEvent* event,
-        /* [in] */ Int32 policyFlags,
-        /* [in] */ Boolean isScreenOn);
+        /* [in] */ Int32 policyFlags);
 
     /* Provides an opportunity for the window manager policy to intercept early
      * motion event processing when the screen is off since these events are normally
@@ -120,6 +127,7 @@ private:
         /* [in] */ InputWindowHandle* inputWindowHandle,
         /* [in] */ WindowState* child,
         /* [in] */ Int32 flags,
+        /* [in] */ Int32 privateFlags,
         /* [in] */ Int32 type,
         /* [in] */ Boolean isVisible,
         /* [in] */ Boolean hasFocus,
@@ -128,6 +136,9 @@ private:
     CARAPI_(void) ClearInputWindowHandlesLw();
 
     CARAPI_(void) UpdateInputDispatchModeLw();
+
+public:
+    AutoPtr<IRect> mTmpRect;
 
 private:
     AutoPtr<CWindowManagerService> mService;

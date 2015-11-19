@@ -352,6 +352,18 @@ InputEventReceiver::InputEventReceiver(
     /* [in] */ IInputChannel* inputChannel,
     /* [in] */ ILooper* looper)
 {
+    Init(inputChannel, looper);
+}
+
+InputEventReceiver::~InputEventReceiver()
+{
+    Dispose();
+}
+
+void InputEventReceiver::Init(
+    /* [in] */ IInputChannel* inputChannel,
+    /* [in] */ ILooper* looper)
+{
     if (inputChannel == NULL) {
         //throw new IllegalArgumentException("inputChannel must not be NULL");
         assert(0);
@@ -371,11 +383,6 @@ InputEventReceiver::InputEventReceiver(
     ASSERT_SUCCEEDED(NativeInit())
 
     //mCloseGuard.open("dispose");
-}
-
-InputEventReceiver::~InputEventReceiver()
-{
-    Dispose();
 }
 
 /**
