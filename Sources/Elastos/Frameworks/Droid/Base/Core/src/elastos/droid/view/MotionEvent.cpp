@@ -2502,6 +2502,11 @@ ECode MotionEvent::SetNative(
     return NOERROR;
 }
 
+Int64 MotionEvent::GetNativePtr()
+{
+    return mNativePtr;
+}
+
 Int64 MotionEvent::NativeInitialize(
     /* [in] */ Int64 nativePtr,
     /* [in] */ Int32 deviceId,

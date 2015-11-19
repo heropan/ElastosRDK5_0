@@ -39,8 +39,7 @@ class ColorSuggestion;
   */
 class ColorSuggestionListAdapter
     // BaseAdapter parent hasno Object
-    : public Object
-    , public BaseAdapter
+    : public BaseAdapter
     , public IViewOnClickListener
 {
 public:
@@ -78,22 +77,26 @@ public:
         /* [in] */ IView* v);
 
     // @Override
-    CARAPI_(AutoPtr<IView>) GetView(
+    CARAPI GetView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
     // @Override
-    CARAPI_(Int64) GetItemId(
-        /* [in] */ Int32 position);
+    CARAPI GetItemId(
+        /* [in] */ Int32 position,
+        /* [out] */ Int64* id);
 
     // @Override
     // consistent with the parent class
-    CARAPI_(AutoPtr<IInterface>) GetItem(
-        /* [in] */ Int32 position);
+    CARAPI GetItem(
+        /* [in] */ Int32 position,
+        /* [out] */ IInterface** item);
 
     // @Override
-    CARAPI_(Int32) GetCount();
+    CARAPI GetCount(
+      /* [out] */ Int32* count);
 
 private:
     /**

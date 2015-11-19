@@ -386,16 +386,9 @@ module
         interface IInputChannelHelper;
     }
 
-    //     /**
-    //      * An input queue provides a mechanism for an application to receive incoming
-    //      * input events.  Currently only usable from native code.
-    //      */
-    //     class CInputQueue {
-    //         constructor(
-    //             [in] IInputChannel* channel);
-
-    //         interface IInputQueue;
-    //     }
+    class CInputQueue {
+        interface IInputQueue;
+    }
 
     //     /**
     //      * Describes the capabilities of a particular input device.
@@ -784,23 +777,25 @@ module
         interface IViewGroupLayoutParams;
     }
 
-    //     [local]
-    //     class CViewGroupMarginLayoutParams {
-    //         constructor();
+        [local]
+        class CViewGroupMarginLayoutParams {
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] IAttributeSet* attrs);
+            constructor(
+                [in] Int32 width,
+                [in] Int32 height);
 
-    //         constructor(
-    //             [in] Int32 width,
-    //             [in] Int32 height);
+            constructor(
+                [in] IViewGroupMarginLayoutParams* source);
 
-    //         constructor(
-    //             [in] IViewGroupMarginLayoutParams* source);
+            constructor(
+                [in] IViewGroupLayoutParams* vglp);
 
-    //         interface IViewGroupMarginLayoutParams;
-    //     }
+            interface IViewGroupMarginLayoutParams;
+            interface IViewGroupLayoutParams;
+        }
 
     //     [local]
     //     class CViewPropertyAnimator {
@@ -1227,6 +1222,42 @@ module
 
     singleton class CWindowInfoHelper {
         interface IWindowInfoHelper;
+    }
+
+    [local]
+    class CViewOverlay {
+        constructor(
+            [in] IContext* ctx,
+            [in] IView* hostView);
+
+        interface IViewOverlay;
+    }
+
+    [local]
+    class COverlayViewGroup {
+        constructor(
+            [in] IContext* ctx,
+            [in] IView* hostView);
+
+        interface IOverlayViewGroup;
+        interface IViewGroup;
+        interface IViewParent;
+        interface IViewManager;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    singleton class CViewOutlineProviderHelper {
+        interface IViewOutlineProviderHelper;
+    }
+
+    class CMagnificationSpec {
+        constructor();
+
+        interface IMagnificationSpec;
+        interface IParcelable;
     }
 
     } // namespace View

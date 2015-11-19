@@ -1,31 +1,42 @@
+
 #ifndef __ELASTOS_DROID_WIDGET_LINEARLAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_LINEARLAYOUT_H__
 
 #include "elastos/droid/view/ViewGroup.h"
-#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 
 using Elastos::Droid::View::ViewGroup;
+using Elastos::Droid::View::IViewGroupLayoutParams;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class LinearLayout : public ViewGroup
+class LinearLayout
+    : public ViewGroup
+    , public ILinearLayout
 {
 public:
+    CAR_INTERFACE_DECL();
+
     LinearLayout();
 
-    LinearLayout(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    LinearLayout(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    LinearLayout(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     /**
      * Set how dividers should be shown between items in this layout
@@ -38,13 +49,15 @@ public:
         /* [in] */ Int32 showDividers);
 
     //@Override
-    virtual CARAPI_(Boolean) ShouldDelayChildPressedState();
+    virtual CARAPI ShouldDelayChildPressedState(
+        /* [out] */ Boolean* result);
 
     /**
      * @return A flag set indicating how dividers should be shown around items.
      * @see #setShowDividers(int)
      */
-    virtual CARAPI_(Int32) GetShowDividers();
+    virtual CARAPI GetShowDividers(
+        /* [out] */ Int32* showDividers);
 
     /**
      * @return the divider Drawable that will divide each item.
@@ -53,7 +66,8 @@ public:
      *
      * @attr ref android.R.styleable#LinearLayout_divider
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetDividerDrawable();
+    virtual CARAPI GetDividerDrawable(
+        /* [out] */ IDrawable** drawable);
 
     /**
      * Set a drawable to be used as a divider between items.
@@ -86,14 +100,16 @@ public:
      * @see #setDividerDrawable(Drawable)
      * @see #setDividerPadding(int)
      */
-    virtual CARAPI_(Int32) GetDividerPadding();
+    virtual CARAPI GetDividerPadding(
+        /* [out] */ Int32* result);
 
     /**
      * Get the width of the current divider drawable.
      *
      * @hide Used internally by framework.
      */
-    virtual CARAPI_(Int32) GetDividerWidth();
+    virtual CARAPI GetDividerWidth(
+        /* [out] */ Int32* result);
 
     /**
      * <p>Indicates whether widgets contained within this layout are aligned
@@ -101,7 +117,8 @@ public:
      *
      * @return true when widgets are baseline-aligned, false otherwise
      */
-    virtual CARAPI_(Boolean) IsBaselineAligned();
+    virtual CARAPI IsBaselineAligned(
+        /* [out] */ Boolean* result);
 
     /**
      * <p>Defines whether widgets contained in this layout are
@@ -125,7 +142,8 @@ public:
      *
      * @attr ref android.R.styleable#LinearLayout_measureWithLargestChild
      */
-    virtual CARAPI_(Boolean) IsMeasureWithLargestChildEnabled();
+    virtual CARAPI IsMeasureWithLargestChildEnabled(
+        /* [out] */ Boolean* enabled);
 
     /**
      * When set to true, all children with a weight will be considered having
@@ -150,7 +168,8 @@ public:
      *   part of a larger layout that is baseline aligned, or -1 if none has
      *   been set.
      */
-    virtual CARAPI_(Int32) GetBaselineAlignedChildIndex();
+    virtual CARAPI GetBaselineAlignedChildIndex(
+        /* [out] */ Int32* index);
 
     /**
      * @param i The index of the child that will be used if this layout is
@@ -168,7 +187,8 @@ public:
      *         a number lower than or equals to 0.0f if not weight sum is
      *         to be used.
      */
-    virtual CARAPI_(Float) GetWeightSum();
+    virtual CARAPI GetWeightSum(
+        /* [out] */ Float* weightSum);
 
     /**
      * Defines the desired weights sum. If unspecified the weights sum is computed
@@ -200,7 +220,8 @@ public:
      *
      * @return either {@link #HORIZONTAL} or {@link #VERTICAL}
      */
-    virtual CARAPI GetOrientation();
+    virtual CARAPI GetOrientation(
+        /* [out] */ Int32* orientation);
 
     /**
      * Describes how the child views are positioned. Defaults to GRAVITY_TOP. If
@@ -240,8 +261,9 @@ public:
      * @param index the child's index
      * @return the child at the specified index
      */
-    virtual CARAPI_(AutoPtr<IView>) GetVirtualChildAt(
-        /* [in] */ Int32 index);
+    virtual CARAPI GetVirtualChildAt(
+        /* [in] */ Int32 index,
+        /* [out] */ IView** view);
 
     /**
      * <p>Returns the virtual number of children. This number might be different
@@ -252,7 +274,8 @@ public:
      *
      * @return the virtual number of children
      */
-    virtual CARAPI_(Int32) GetVirtualChildCount();
+    virtual CARAPI GetVirtualChildCount(
+        /* [out] */ Int32* count);
 
     /**
      * <p>Returns the number of children to skip after measuring/laying out
@@ -334,7 +357,11 @@ public:
      * @see #setOrientation(int)
      * @see #onLayout(boolean, int, int, int, int)
      */
-    CARAPI_(void) LayoutVertical();
+    CARAPI_(void) LayoutVertical(
+        /* [in] */ Int32 l,
+        /* [in] */ Int32 t,
+        /* [in] */ Int32 r,
+        /* [in] */ Int32 b);
 
     /**
      * Position the children during a layout pass if the orientation of this
@@ -344,7 +371,11 @@ public:
      * @see #setOrientation(int)
      * @see #onLayout(boolean, int, int, int, int)
      */
-    CARAPI_(void) LayoutHorizontal();
+    CARAPI_(void) LayoutHorizontal(
+        /* [in] */ Int32 l,
+        /* [in] */ Int32 t,
+        /* [in] */ Int32 r,
+        /* [in] */ Int32 b);
 
 protected:
     virtual CARAPI_(void) OnMeasure(
@@ -354,7 +385,7 @@ protected:
     CARAPI_(Boolean) HasDividerBeforeChildAt(
         /* [in] */ Int32 childIndex);
 
-    virtual CARAPI_(void) OnLayout(
+    virtual CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,
@@ -378,23 +409,10 @@ protected:
     virtual CARAPI_(Boolean) CheckLayoutParams(
         /* [in] */ IViewGroupLayoutParams* p);
 
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
     CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
 private:
-
     CARAPI_(void) DrawDividersVertical(
         /* [in] */ ICanvas* canvas);
 
@@ -426,8 +444,14 @@ private:
 
     CARAPI InitFromAttributes(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ IAttributeSet* attrs = NULL,
+        /* [in] */ Int32 defStyleAttr = 0,
+        /* [in] */ Int32 defStyleRes = 0);
+
+    CARAPI_(AutoPtr<IView>) GetVirtualChildAt(
+        /* [in] */ Int32 index);
+
+    CARAPI_(Int32) GetChildCount();
 
 private:
     /**

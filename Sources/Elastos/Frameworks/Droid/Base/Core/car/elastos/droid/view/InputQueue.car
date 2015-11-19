@@ -6,18 +6,30 @@ module
     namespace Droid {
     namespace View {
 
+    interface IInputQueueFinishedInputEventCallback {
+        OnFinishedInputEvent(
+            [in] IInterface* token,
+            [in] Boolean handled);
+    }
+
     /**
      * An input queue provides a mechanism for an application to receive incoming
      * input events.  Currently only usable from native code.
      */
     interface IInputQueue {
         Dispose();
-    }
 
-    interface IInputQueueFinishedInputEventCallback {
-        OnFinishedInputEvent(
+        Dispose(
+            [in] Boolean finalized);
+
+        GetNativePtr(
+            [out] Int64* native);
+
+        SendInputEvent(
+            [in] IInputEvent* e,
             [in] IInterface* token,
-            [in] Boolean handled);
+            [in] Boolean predispatch,
+            [in] IInputQueueFinishedInputEventCallback* cb);
     }
 
     interface IInputQueueCallback {

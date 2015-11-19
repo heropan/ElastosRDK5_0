@@ -1,3 +1,4 @@
+
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/LinearLayoutLayoutParams.h"
 #include "elastos/droid/R.h"
@@ -6,78 +7,17 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
+CAR_INTERFACE_IMPL(LinearLayoutLayoutParams, ViewGroupMarginLayoutParams, ILinearLayoutLayoutParams);
 LinearLayoutLayoutParams::LinearLayoutLayoutParams()
-    : mGravity(-1)
-{}
-
-/**
- * {@inheritDoc}
- */
-LinearLayoutLayoutParams::LinearLayoutLayoutParams(
-    /* [in] */ IContext* c,
-    /* [in] */ IAttributeSet* attrs)
     : mWeight(0)
     , mGravity(-1)
-{
-    ASSERT_SUCCEEDED(Init(c, attrs));
-}
-
-/**
- * {@inheritDoc}
- */
-LinearLayoutLayoutParams::LinearLayoutLayoutParams(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height)
-    : ViewGroupMarginLayoutParams(width, height)
-    , mWeight(0)
-    , mGravity(-1)
 {}
 
-/**
- * Creates a new set of layout parameters with the specified width, height
- * and weight.
- *
- * @param width the width, either {@link #MATCH_PARENT},
- *        {@link #WRAP_CONTENT} or a fixed size in pixels
- * @param height the height, either {@link #MATCH_PARENT},
- *        {@link #WRAP_CONTENT} or a fixed size in pixels
- * @param weight the weight
- */
-LinearLayoutLayoutParams::LinearLayoutLayoutParams(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height,
-    /* [in] */ Float weight)
-    : ViewGroupMarginLayoutParams(width, height)
-    , mWeight(weight)
-    , mGravity(-1)
-{}
-
-/**
- * {@inheritDoc}
- */
-LinearLayoutLayoutParams::LinearLayoutLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* p)
-    : ViewGroupMarginLayoutParams(p)
-    , mWeight(0)
-    , mGravity(-1)
-{}
-
-/**
- * {@inheritDoc}
- */
-LinearLayoutLayoutParams::LinearLayoutLayoutParams(
-    /* [in] */ ViewGroupMarginLayoutParams* source)
-    : ViewGroupMarginLayoutParams(source)
-    , mWeight(0)
-    , mGravity(-1)
-{}
-
-ECode LinearLayoutLayoutParams::Init(
+ECode LinearLayoutLayoutParams::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(ViewGroupMarginLayoutParams::Init(context, attrs));
+    FAIL_RETURN(ViewGroupMarginLayoutParams::constructor(context, attrs));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::LinearLayout_Layout),
@@ -95,36 +35,45 @@ ECode LinearLayoutLayoutParams::Init(
     return NOERROR;
 }
 
-ECode LinearLayoutLayoutParams::Init(
+ECode LinearLayoutLayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    ViewGroupMarginLayoutParams::Init(width, height);
+    ViewGroupMarginLayoutParams::constructor(width, height);
     mWeight = 0;
     return NOERROR;
 }
 
-ECode LinearLayoutLayoutParams::Init(
+ECode LinearLayoutLayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Float weight)
 {
-    ViewGroupMarginLayoutParams::Init(width, height);
+    ViewGroupMarginLayoutParams::constructor(width, height);
     mWeight = weight;
     return NOERROR;
 }
 
-ECode LinearLayoutLayoutParams::Init(
+ECode LinearLayoutLayoutParams::constructor(
     /* [in] */ IViewGroupLayoutParams* source)
 {
-    ViewGroupMarginLayoutParams::Init(source);
+    ViewGroupMarginLayoutParams::constructor(source);
     return NOERROR;
 }
 
-ECode LinearLayoutLayoutParams::Init(
+ECode LinearLayoutLayoutParams::constructor(
     /* [in] */ IViewGroupMarginLayoutParams* source)
 {
-    ViewGroupMarginLayoutParams::Init(source);
+    ViewGroupMarginLayoutParams::constructor(source);
+    return NOERROR;
+}
+
+ECode LinearLayoutLayoutParams::constructor(
+    /* [in] */ ILinearLayoutLayoutParams* source)
+{
+    ViewGroupMarginLayoutParams::constructor(IViewGroupMarginLayoutParams::Probe(source));
+    mWeight = ((LinearLayoutLayoutParams*)source)->mWeight;
+    mGravity = ((LinearLayoutLayoutParams*)source)->mGravity;
     return NOERROR;
 }
 
@@ -135,9 +84,12 @@ ECode LinearLayoutLayoutParams::SetWeight(
     return NOERROR;
 }
 
-Float LinearLayoutLayoutParams::GetWeight()
+ECode LinearLayoutLayoutParams::GetWeight(
+    /* [out] */ Float* weight)
 {
-    return mWeight;
+    VALIDATE_NOT_NULL(weight);
+    *weight = mWeight;
+    return NOERROR;
 }
 
 ECode LinearLayoutLayoutParams::SetGravity(
@@ -147,9 +99,12 @@ ECode LinearLayoutLayoutParams::SetGravity(
     return NOERROR;
 }
 
-Int32 LinearLayoutLayoutParams::GetGravity()
+ECode LinearLayoutLayoutParams::GetGravity(
+    /* [out] */ Int32* gravity)
 {
-    return mGravity;
+    VALIDATE_NOT_NULL(gravity);
+    *gravity = mGravity;
+    return NOERROR;
 }
 
 } // namespace Widget

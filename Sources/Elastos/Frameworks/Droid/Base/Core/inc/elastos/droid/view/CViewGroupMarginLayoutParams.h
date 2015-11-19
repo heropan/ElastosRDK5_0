@@ -5,35 +5,18 @@
 #include "_Elastos_Droid_View_CViewGroupMarginLayoutParams.h"
 #include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CarClass(CViewGroupMarginLayoutParams), public ViewGroupMarginLayoutParams
+CarClass(CViewGroupMarginLayoutParams)
+    , public ViewGroupMarginLayoutParams
 {
 public:
-    IVIEWGROUPLP_METHODS_DECL();
-
-    IVIEWGROUPMARGINLP_METHODS_DECL();
+    CAR_OBJECT_DECL();
 
     CARAPI ToString(
         /* [out] */ String* description);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IContext* c,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    CARAPI constructor(
-        /* [in] */ IViewGroupMarginLayoutParams* source);
-
-private:
 };
 
 } // namespace View

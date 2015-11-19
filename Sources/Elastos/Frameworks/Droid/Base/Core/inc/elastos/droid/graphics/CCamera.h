@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Graphics_CCamera.h"
 #include <elastos/core/Object.h>
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {

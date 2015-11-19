@@ -23,7 +23,6 @@ module
      */
     [local]
     interface IViewOverlay {
-
         /**
          * Adds a Drawable to the overlay. The bounds of the drawable should be relative to
          * the host view. Any drawable added to the overlay should be removed when it is no longer
@@ -55,6 +54,33 @@ module
 
         GetOverlayView(
             [out] IViewGroup** res);
+    }
+
+    /**
+     * @Involve
+     * interface IViewGroup;
+     * interface IView;
+     * interface IViewParent;
+     * interface IViewManager;
+     */
+    [local]
+    interface IOverlayViewGroup {
+        Add(
+            [in] IDrawable* drawable);
+
+        Remove(
+            [in] IDrawable* drawable);
+
+        Add(
+            [in] IView* child);
+
+        Remove(
+            [in] IView* view);
+
+        Clear();
+
+        IsEmpty(
+            [out] Boolean* empty);
     }
 
     } // namespace View

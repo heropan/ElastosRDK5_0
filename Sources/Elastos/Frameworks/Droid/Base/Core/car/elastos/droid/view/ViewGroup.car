@@ -165,7 +165,7 @@ module
                 [out] Byte* leftMargin);
 
             SetMarginFlags(
-                [in] Int32 leftMargin);
+                [in] Byte leftMargin);
 
             /**
              * The top margin in pixels of the child.
@@ -827,19 +827,6 @@ module
             InvalidateChild(
                 [in] IView* child,
                 [in] IRect* dirty);
-
-            /**
-             * Don't call or override this method. It is used for the implementation of
-             * the view hierarchy.
-             *
-             * This implementation returns null if this ViewGroup does not have a parent,
-             * if this ViewGroup is already fully invalidated or if the dirty rectangle
-             * does not intersect with this ViewGroup's bounds.
-             */
-            InvalidateChildInParent(
-                [in] ArrayOf<Int32>* location,
-                [in] ArrayOf<IRect*>* dirty,
-                [out] IViewParent** parent);
 
             /**
              * Native-calculated damage path

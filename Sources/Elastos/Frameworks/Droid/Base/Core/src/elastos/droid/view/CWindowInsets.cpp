@@ -10,8 +10,8 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-AutoPtr<IWindowInsets> CWindowInsets::CONSUMED = InitStatic();
-AutoPtr<IRect> CWindowInsets::EMPTY_RECT;
+AutoPtr<IWindowInsets> CWindowInsets::CONSUMED = InitStatic1();
+AutoPtr<IRect> CWindowInsets::EMPTY_RECT = InitStatic2();
 
 CAR_OBJECT_IMPL(CWindowInsets);
 CAR_INTERFACE_IMPL(CWindowInsets, Object, IWindowInsets);
@@ -162,7 +162,7 @@ ECode CWindowInsets::HasInsets(
 {
     VALIDATE_NOT_NULL(has);
     Boolean value = FALSE;
-    *has = (HasSystemWindowInsets(has), *has) || (HasWindowDecorInsets(&value), value);
+    *has = (HasSystemWindowInsets(&value), value) || (HasWindowDecorInsets(&value), value);
     return NOERROR;
 }
 
@@ -186,10 +186,10 @@ ECode CWindowInsets::ConsumeSystemWindowInsets(
     /* [out] */ IWindowInsets** insets)
 {
     VALIDATE_NOT_NULL(insets);
-    AutoPtr<IWindowInsets> result;
-    CWindowInsets::New(this, (IWindowInsets**)&result);
-    ((CWindowInsets*)result.Get())->mSystemWindowInsets = EMPTY_RECT;
-    ((CWindowInsets*)result.Get())->mSystemWindowInsetsConsumed = TRUE;
+    AutoPtr<CWindowInsets> result;
+    CWindowInsets::NewByFriend(this, (CWindowInsets**)&result);
+    result->mSystemWindowInsets = EMPTY_RECT;
+    result->mSystemWindowInsetsConsumed = TRUE;
     *insets = result;
     REFCOUNT_ADD(*insets);
     return NOERROR;
@@ -204,15 +204,15 @@ ECode CWindowInsets::ConsumeSystemWindowInsets(
 {
     VALIDATE_NOT_NULL(insets);
     if (left || top || right || bottom) {
-        AutoPtr<IWindowInsets> result;
-        CWindowInsets::New(this, (IWindowInsets**)&result);
+        AutoPtr<CWindowInsets> result;
+        CWindowInsets::NewByFriend(this, (CWindowInsets**)&result);
         Int32 l = 0, t = 0, r = 0, b = 0;
         mSystemWindowInsets->Get(&l, &t, &r, &b);
         CRect::New(
             left ? 0 : l,
             top ? 0 : t,
             right ? 0 : r,
-            bottom ? 0 : b, (IRect**)&((CWindowInsets*)result.Get())->mSystemWindowInsets);
+            bottom ? 0 : b, (IRect**)&result->mSystemWindowInsets);
         *insets = result;
         REFCOUNT_ADD(*insets);
         return NOERROR;
@@ -231,9 +231,9 @@ ECode CWindowInsets::ReplaceSystemWindowInsets(
     /* [out] */ IWindowInsets** insets)
 {
     VALIDATE_NOT_NULL(insets);
-    AutoPtr<IWindowInsets> result;
-    CWindowInsets::New(this, (IWindowInsets**)&result);
-    CRect::New(left, top, right, bottom, (IRect**)&((CWindowInsets*)result.Get())->mSystemWindowInsets);
+    AutoPtr<CWindowInsets> result;
+    CWindowInsets::NewByFriend(this, (CWindowInsets**)&result);
+    CRect::New(left, top, right, bottom, (IRect**)&result->mSystemWindowInsets);
     *insets = result;
     REFCOUNT_ADD(*insets);
     return NOERROR;
@@ -243,9 +243,9 @@ ECode CWindowInsets::ReplaceSystemWindowInsets(
     /* [in] */ IRect* systemWindowInsets,
     /* [out] */ IWindowInsets** insets)
 {
-    AutoPtr<IWindowInsets> result;
-    CWindowInsets::New(this, (IWindowInsets**)&result);
-    CRect::New(systemWindowInsets, (IRect**)&((CWindowInsets*)result.Get())->mSystemWindowInsets);
+    AutoPtr<CWindowInsets> result;
+    CWindowInsets::NewByFriend(this, (CWindowInsets**)&result);
+    CRect::New(systemWindowInsets, (IRect**)&result->mSystemWindowInsets);
     *insets = result;
     REFCOUNT_ADD(*insets);
     return NOERROR;
@@ -255,10 +255,10 @@ ECode CWindowInsets::ConsumeWindowDecorInsets(
     /* [out] */ IWindowInsets** insets)
 {
     VALIDATE_NOT_NULL(insets);
-    AutoPtr<IWindowInsets> result;
-    CWindowInsets::New(this, (IWindowInsets**)&insets);
-    ((CWindowInsets*)result.Get())->mWindowDecorInsets->Set(0, 0, 0, 0);
-    ((CWindowInsets*)result.Get())->mWindowDecorInsetsConsumed = TRUE;
+    AutoPtr<CWindowInsets> result;
+    CWindowInsets::NewByFriend(this, (CWindowInsets**)&insets);
+    result->mWindowDecorInsets->Set(0, 0, 0, 0);
+    result->mWindowDecorInsetsConsumed = TRUE;
     *insets = result;
     REFCOUNT_ADD(*insets);
     return NOERROR;
@@ -273,14 +273,14 @@ ECode CWindowInsets::ConsumeWindowDecorInsets(
 {
     VALIDATE_NOT_NULL(insets);
     if (left || top || right || bottom) {
-        AutoPtr<IWindowInsets> result;
-        CWindowInsets::New(this, (IWindowInsets**)&result);
+        AutoPtr<CWindowInsets> result;
+        CWindowInsets::NewByFriend(this, (CWindowInsets**)&result);
         Int32 l = 0, t = 0, r = 0, b = 0;
         mWindowDecorInsets->Get(&l, &t, &r, &b);
         CRect::New(left ? 0 : l,
             top ? 0 : t,
             right ? 0 : r,
-            bottom ? 0 : b, (IRect**)&((CWindowInsets*)result.Get())->mWindowDecorInsets);
+            bottom ? 0 : b, (IRect**)&result->mWindowDecorInsets);
         *insets = result;
         REFCOUNT_ADD(*insets);
         return NOERROR;
@@ -298,9 +298,9 @@ ECode CWindowInsets::ReplaceWindowDecorInsets(
     /* [out] */ IWindowInsets** insets)
 {
     VALIDATE_NOT_NULL(insets);
-    AutoPtr<IWindowInsets> result;
-    CWindowInsets::New(this, (IWindowInsets**)&result);
-    CRect::New(left, top, right, bottom, (IRect**)&((CWindowInsets*)result.Get())->mWindowDecorInsets);
+    AutoPtr<CWindowInsets> result;
+    CWindowInsets::NewByFriend(this, (CWindowInsets**)&result);
+    CRect::New(left, top, right, bottom, (IRect**)&result->mWindowDecorInsets);
     *insets = result;
     REFCOUNT_ADD(*insets);
     return NOERROR;
@@ -348,10 +348,10 @@ ECode CWindowInsets::ConsumeStableInsets(
     /* [out] */ IWindowInsets** insets)
 {
     VALIDATE_NOT_NULL(insets);
-    AutoPtr<IWindowInsets> result;
-    CWindowInsets::New(this, (IWindowInsets**)&result);
-    ((CWindowInsets*)result.Get())->mStableInsets = EMPTY_RECT;
-    ((CWindowInsets*)result.Get())->mStableInsetsConsumed = TRUE;
+    AutoPtr<CWindowInsets> result;
+    CWindowInsets::NewByFriend(this, (CWindowInsets**)&result);
+    result->mStableInsets = EMPTY_RECT;
+    result->mStableInsetsConsumed = TRUE;
     *insets = result;
     REFCOUNT_ADD(*insets);
     return NOERROR;
@@ -405,12 +405,18 @@ ECode CWindowInsets::ToString(
     return sb.ToString(str);
 }
 
-AutoPtr<IWindowInsets> CWindowInsets::InitStatic()
+AutoPtr<IWindowInsets> CWindowInsets::InitStatic1()
 {
     AutoPtr<CWindowInsets> wi;
     CWindowInsets::NewByFriend(NULL, NULL, NULL, FALSE, (CWindowInsets**)&wi);
     CRect::New(0, 0, 0, 0, (IRect**)&EMPTY_RECT);
     return wi;
+}
+
+AutoPtr<IRect> CWindowInsets::InitStatic2()
+{
+    CRect::New(0, 0, 0, 0, (IRect**)&EMPTY_RECT);
+    return EMPTY_RECT;
 }
 
 }// namespace View

@@ -36,9 +36,7 @@ namespace Ui {
 //=====================================================================
 const Int32 ColorSuggestionListAdapter::COLORS_PER_ROW;
 
-CAR_INTERFACE_IMPL(ColorSuggestionListAdapter, Object, IViewOnClickListener)
-//CAR_INTERFACE_IMPL(ColorSuggestionListAdapter, BaseAdapter, IViewOnClickListener)
-
+CAR_INTERFACE_IMPL(ColorSuggestionListAdapter, BaseAdapter, IViewOnClickListener)
 ColorSuggestionListAdapter::ColorSuggestionListAdapter(
     /* [in] */ IContext* context,
     /* [in] */ ArrayOf<IInterface*>* suggestions)
@@ -91,11 +89,13 @@ ECode ColorSuggestionListAdapter::OnClick(
     return NOERROR;
 }
 
-AutoPtr<IView> ColorSuggestionListAdapter::GetView(
+ECode ColorSuggestionListAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
+    VALIDATE_NOT_NULL(view);
     // ==================before translated======================
     // LinearLayout layout;
     // if (convertView != null && convertView instanceof LinearLayout) {
@@ -175,34 +175,44 @@ AutoPtr<IView> ColorSuggestionListAdapter::GetView(
         SetUpColorButton(child, position * COLORS_PER_ROW + i);
     }
 
-    IView* result = IView::Probe(layout);
-    return result;
+    *view = IView::Probe(layout);
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
-Int64 ColorSuggestionListAdapter::GetItemId(
-    /* [in] */ Int32 position)
+ECode ColorSuggestionListAdapter::GetItemId(
+    /* [in] */ Int32 position,
+    /* [out] */ Int64* id)
 {
+    VALIDATE_NOT_NULL(id);
     // ==================before translated======================
     // return position;
 
-    return position;
+    *id = position;
+    return NOERROR;
 }
 
-AutoPtr<IInterface> ColorSuggestionListAdapter::GetItem(
-    /* [in] */ Int32 position)
+ECode ColorSuggestionListAdapter::GetItem(
+    /* [in] */ Int32 position,
+    /* [out] */ IInterface** item)
 {
+    VALIDATE_NOT_NULL(item);
     // ==================before translated======================
     // return null;
 
-    return NULL;
+    *item = NULL;
+    return NOERROR;
 }
 
-Int32 ColorSuggestionListAdapter::GetCount()
+ECode ColorSuggestionListAdapter::GetCount(
+    /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count);
     // ==================before translated======================
     // return (mSuggestions.length + COLORS_PER_ROW - 1) / COLORS_PER_ROW;
 
-    return (mSuggestions->GetLength() + COLORS_PER_ROW - 1) / COLORS_PER_ROW;
+    *count = (mSuggestions->GetLength() + COLORS_PER_ROW - 1) / COLORS_PER_ROW;
+    return NOERROR;
 }
 
 ECode ColorSuggestionListAdapter::SetUpColorButton(
@@ -269,5 +279,3 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

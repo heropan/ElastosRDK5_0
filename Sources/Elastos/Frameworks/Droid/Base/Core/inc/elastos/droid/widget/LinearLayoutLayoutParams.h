@@ -12,81 +12,48 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
-class LinearLayoutLayoutParams : public ViewGroupMarginLayoutParams
+class LinearLayoutLayoutParams
+    : public ViewGroupMarginLayoutParams
+    , public ILinearLayoutLayoutParams
 {
 public:
+    CAR_INTERFACE_DECL();
+
     LinearLayoutLayoutParams();
 
-    /**
-     * {@inheritDoc}
-     */
-    LinearLayoutLayoutParams(
+    CARAPI constructor(
         /* [in] */ IContext* c,
         /* [in] */ IAttributeSet* attrs);
 
-    /**
-     * {@inheritDoc}
-     */
-    LinearLayoutLayoutParams(
+    CARAPI constructor(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    /**
-     * Creates a new set of layout parameters with the specified width, height
-     * and weight.
-     *
-     * @param width the width, either {@link #MATCH_PARENT},
-     *        {@link #WRAP_CONTENT} or a fixed size in pixels
-     * @param height the height, either {@link #MATCH_PARENT},
-     *        {@link #WRAP_CONTENT} or a fixed size in pixels
-     * @param weight the weight
-     */
-    LinearLayoutLayoutParams(
+    CARAPI constructor(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Float weight);
 
-    /**
-     * {@inheritDoc}
-     */
-    LinearLayoutLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* p);
-
-    /**
-     * {@inheritDoc}
-     */
-    LinearLayoutLayoutParams(
-        /* [in] */ ViewGroupMarginLayoutParams* source);
-
-    CARAPI Init(
-        /* [in] */ IContext* c,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    CARAPI Init(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Float weight);
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IViewGroupLayoutParams* source);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IViewGroupMarginLayoutParams* source);
+
+    CARAPI constructor(
+        /* [in] */ ILinearLayoutLayoutParams* source);
 
     CARAPI SetWeight(
         /* [in] */ Float weight);
 
-    CARAPI_(Float) GetWeight();
+    CARAPI GetWeight(
+        /* [out] */ Float* weight);
 
     CARAPI SetGravity(
         /* [in] */ Int32 gravity);
 
-    CARAPI_(Int32) GetGravity();
+    CARAPI GetGravity(
+        /* [out] */ Int32* gravity);
 
 public:
     /**
@@ -109,6 +76,5 @@ public:
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-
 
 #endif // __ELASTOS_DROID_WIDGET_LINEARLAYOUTLAYOUTPARAMS_H__

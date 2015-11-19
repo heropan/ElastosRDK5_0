@@ -3,9 +3,13 @@
 #define __ELASTOS_DROID_WIDGET_BASEADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/widget/Adapter.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Database::IDataSetObservable;
+using Elastos::Droid::Database::IDataSetObserver;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Core::Object;
 
 namespace Elastos{
 namespace Droid{
@@ -17,13 +21,18 @@ namespace Widget{
  * {@link ListAdapter} interface} and {@link Spinner} (by implementing the
  * specialized {@link SpinnerAdapter} interface.
  */
-class BaseAdapter : public ListAdapter
+class BaseAdapter
+    : public Object
+    , public IBaseAdapter
+    , public IListAdapter
+    , public ISpinnerAdapter
+    , public IAdapter
 {
-protected:
-    BaseAdapter();
-
 public:
-    virtual CARAPI_(Boolean) HasStableIds();
+    CAR_INTERFACE_DECL();
+
+    virtual CARAPI HasStableIds(
+        /* [out] */ Boolean* has);
 
     virtual CARAPI RegisterDataSetObserver(
         /* [in] */ IDataSetObserver* observer);
@@ -35,22 +44,31 @@ public:
 
     virtual CARAPI NotifyDataSetInvalidated();
 
-    virtual CARAPI_(Boolean) AreAllItemsEnabled();
+    virtual CARAPI AreAllItemsEnabled(
+        /* [out] */ Boolean* enabled);
 
-    virtual CARAPI_(Boolean) IsEnabled(
-        /* [in] */ Int32 position);
+    virtual CARAPI IsEnabled(
+        /* [in] */ Int32 position,
+        /* [out] */ Boolean* enabled);
 
-    virtual CARAPI_(AutoPtr<IView>) GetDropDownView(
+    virtual CARAPI GetDropDownView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    virtual CARAPI_(Int32) GetItemViewType(
-        /* [in] */ Int32 position);
+    virtual CARAPI GetItemViewType(
+        /* [in] */ Int32 position,
+        /* [out] */ Int32* type);
 
-    virtual CARAPI_(Int32) GetViewTypeCount();
+    virtual CARAPI GetViewTypeCount(
+        /* [out] */ Int32* count);
 
-    virtual CARAPI_(Boolean) IsEmpty();
+    virtual CARAPI IsEmpty(
+        /* [out] */ Boolean* empty);
+
+protected:
+    BaseAdapter();
 
 private:
     AutoPtr<IDataSetObservable> mDataSetObservable;

@@ -242,6 +242,21 @@ ECode ViewGroupMarginLayoutParams::GetLayoutDirection(
     return NOERROR;
 }
 
+ECode ViewGroupMarginLayoutParams::GetMarginFlags(
+    /* [out] */ Byte* leftMargin)
+{
+    VALIDATE_NOT_NULL(leftMargin);
+    *leftMargin = mLeftMargin;
+    return NOERROR;
+}
+
+ECode ViewGroupMarginLayoutParams::SetMarginFlags(
+    /* [in] */ Byte leftMargin)
+{
+    mLeftMargin = leftMargin;
+    return NOERROR;
+}
+
 ECode ViewGroupMarginLayoutParams::ResolveLayoutDirection(
     /* [in] */ Int32 layoutDirection)
 {

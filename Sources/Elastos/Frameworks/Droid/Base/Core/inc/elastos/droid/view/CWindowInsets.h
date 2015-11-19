@@ -384,7 +384,9 @@ public:
         /* [out] */ String* str);
 
 private:
-    static CARAPI_(AutoPtr<IWindowInsets>) InitStatic();
+    static CARAPI_(AutoPtr<IWindowInsets>) InitStatic1();
+
+    static CARAPI_(AutoPtr<IRect>) InitStatic2();
 
 public:
     /**

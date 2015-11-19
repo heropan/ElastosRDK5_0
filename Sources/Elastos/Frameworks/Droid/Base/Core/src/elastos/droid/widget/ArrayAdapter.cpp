@@ -1,4 +1,4 @@
-#include "elastos/droid/ext/frameworkext.h"
+
 #include "elastos/droid/widget/ArrayAdapter.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
@@ -17,76 +17,6 @@ ArrayAdapter::ArrayFilter::ArrayFilter(
     : mHost(host)
 {}
 
-CAR_INTERFACE_IMPL(ArrayAdapter::ArrayFilter, IFilter);
-
-/**
- * Provide an interface that decides how Int64 to delay the message for a given query.  Useful
- * for heuristics such as posting a delay for the delete key to avoid doing any work while the
- * user holds down the delete key.
- *
- * @param delayer The delayer.
- * @hide
- */
-ECode ArrayAdapter::ArrayFilter::SetDelayer(
-    /* [in] */ IFilterDelayer* delayer)
-{
-    return Filter::SetDelayer(delayer);
-}
-
-/**
- * <p>Starts an asynchronous filtering operation. Calling this method
- * cancels all previous non-executed filtering requests and posts a new
- * filtering request that will be executed later.</p>
- *
- * @param constraint the constraint used to filter the data
- *
- * @see #filter(CharSequence, android.widget.Filter.FilterListener)
- */
-ECode ArrayAdapter::ArrayFilter::DoFilter(
-    /* [in] */ ICharSequence* constraint)
-{
-    return Filter::DoFilter(constraint);
-}
-
-/**
- * <p>Starts an asynchronous filtering operation. Calling this method
- * cancels all previous non-executed filtering requests and posts a new
- * filtering request that will be executed later.</p>
- *
- * <p>Upon completion, the listener is notified.</p>
- *
- * @param constraint the constraint used to filter the data
- * @param listener a listener notified upon completion of the operation
- *
- * @see #filter(CharSequence)
- * @see #performFiltering(CharSequence)
- * @see #publishResults(CharSequence, android.widget.Filter.FilterResults)
- */
-ECode ArrayAdapter::ArrayFilter::DoFilter(
-    /* [in] */ ICharSequence* constraint,
-    /* [in] */ IFilterListener* listener)
-{
-    return Filter::DoFilter(constraint, listener);
-}
-
-/**
- * <p>Converts a value from the filtered set into a CharSequence. Subclasses
- * should override this method to convert their results. The default
- * implementation returns an empty String for NULL values or the default
- * String representation of the value.</p>
- *
- * @param resultValue the value to convert to a CharSequence
- * @return a CharSequence representing the value
- */
-ECode ArrayAdapter::ArrayFilter::ConvertResultToString(
-    /* [in] */ IInterface* resultValue,
-    /* [out] */ ICharSequence** cs)
-{
-    VALIDATE_NOT_NULL(cs);
-    return Filter::ConvertResultToString(resultValue, cs);
-}
-
-//@Override
 ECode ArrayAdapter::ArrayFilter::PerformFiltering(
     /* [in] */ ICharSequence* prefix,
     /* [out] */ IFilterResults** filterResults)
@@ -172,7 +102,6 @@ ECode ArrayAdapter::ArrayFilter::PerformFiltering(
     return NOERROR;
 }
 
-//@Override
 ECode ArrayAdapter::ArrayFilter::PublishResults(
     /* [in] */ ICharSequence* constraint,
     /* [in] */ IFilterResults* results)
@@ -210,6 +139,7 @@ ECode ArrayAdapter::ArrayFilter::PublishResults(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL_2(ArrayAdapter, BaseAdapter, IArrayAdapter, IFilterable);
 ArrayAdapter::ArrayAdapter()
     : mResource(0)
     , mDropDownResource(0)
@@ -218,88 +148,53 @@ ArrayAdapter::ArrayAdapter()
     , mOriginalValues(NULL)
 {}
 
-/**
- * Constructor
- *
- * @param context The current context.
- * @param textViewResourceId The resource ID for a layout file containing a TextView to use when
- *                 instantiating views.
- */
-ArrayAdapter::ArrayAdapter(
+ECode ArrayAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 textViewResourceId)
-    : mResource(0)
-    , mDropDownResource(0)
-    , mFieldId(0)
-    , mNotifyOnChange(TRUE)
-    , mOriginalValues(NULL)
 {
-    Init(context, textViewResourceId, 0);
+    init(context, resource, 0, new ArrayList<T>());
 }
 
-/**
- * Constructor
- *
- * @param context The current context.
- * @param resource The resource ID for a layout file containing a layout to use when
- *                 instantiating views.
- * @param textViewResourceId The id of the TextView within the layout resource to be populated
- */
-ArrayAdapter::ArrayAdapter(
+ECode ArrayAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resource,
     /* [in] */ Int32 textViewResourceId)
-    : mResource(0)
-    , mDropDownResource(0)
-    , mFieldId(0)
-    , mNotifyOnChange(TRUE)
-    , mOriginalValues(NULL)
 {
-    Init(context, resource, textViewResourceId);
+    init(context, resource, textViewResourceId, new ArrayList<T>());
 }
 
-/**
- * Constructor
- *
- * @param context The current context.
- * @param textViewResourceId The resource ID for a layout file containing a TextView to use when
- *                 instantiating views.
- * @param objects The objects to represent in the ListView.
- */
-ArrayAdapter::ArrayAdapter(
+ECode ArrayAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 textViewResourceId,
-    /* [in] */ IObjectContainer* objects)
-    : mResource(0)
-    , mDropDownResource(0)
-    , mFieldId(0)
-    , mNotifyOnChange(TRUE)
-    , mOriginalValues(NULL)
+    /* [in] */ ArrayOf<IInterface*>* objects)
 {
-    Init(context, textViewResourceId, 0, objects);
+    init(context, resource, 0, Arrays.asList(objects));
 }
 
-/**
- * Constructor
- *
- * @param context The current context.
- * @param resource The resource ID for a layout file containing a layout to use when
- *                 instantiating views.
- * @param textViewResourceId The id of the TextView within the layout resource to be populated
- * @param objects The objects to represent in the ListView.
- */
-ArrayAdapter::ArrayAdapter(
+ECode ArrayAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resource,
     /* [in] */ Int32 textViewResourceId,
-    /* [in] */ IObjectContainer* objects)
-    : mResource(0)
-    , mDropDownResource(0)
-    , mFieldId(0)
-    , mNotifyOnChange(TRUE)
-    , mOriginalValues(NULL)
+    /* [in] */ ArrayOf<IInterface*>* objects)
 {
-    Init(context, resource, textViewResourceId, objects);
+    init(context, resource, textViewResourceId, Arrays.asList(objects));
+}
+
+ECode ArrayAdapter::constructor(
+    /* [in] */ IContext* ctx,
+    /* [in] */ Int32 resource,
+    /* [in] */ IList* objects)
+{
+    init(context, resource, 0, objects);
+}
+
+ECode ArrayAdapter::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 resource,
+    /* [in] */ Int32 textViewResourceId,
+    /* [in] */ IList* objects)
+{
+    init(context, resource, textViewResourceId, objects);
 }
 
 ArrayAdapter::~ArrayAdapter()
@@ -307,11 +202,6 @@ ArrayAdapter::~ArrayAdapter()
     mOriginalValues = NULL;
 }
 
-/**
- * Adds the specified object at the end of the array.
- *
- * @param object The object to add at the end of the array.
- */
 ECode ArrayAdapter::Add(
     /* [in] */ IInterface* object)
 {
@@ -330,7 +220,7 @@ ECode ArrayAdapter::Add(
 }
 
 ECode ArrayAdapter::AddAll(
-    /* [in] */ IObjectContainer* collection)
+    /* [in] */ ICollection* collection)
 {
     assert(collection != NULL);
     {
@@ -390,13 +280,6 @@ ECode ArrayAdapter::AddAll(
     return NOERROR;
 }
 
-
-/**
- * Inserts the specified object at the specified index in the array.
- *
- * @param object The object to insert into the array.
- * @param index The index at which the object must be inserted.
- */
 ECode ArrayAdapter::Insert(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 index)
@@ -414,11 +297,6 @@ ECode ArrayAdapter::Insert(
     return NOERROR;
 }
 
-/**
- * Removes the specified object from the array.
- *
- * @param object The object to remove.
- */
 ECode ArrayAdapter::Remove(
     /* [in] */ IInterface* object)
 {
@@ -435,9 +313,6 @@ ECode ArrayAdapter::Remove(
     return NOERROR;
 }
 
-/**
- * Remove all elements from the list.
- */
 ECode ArrayAdapter::Clear()
 {
     {
@@ -453,12 +328,6 @@ ECode ArrayAdapter::Clear()
     return NOERROR;
 }
 
-/**
- * Sorts the content of this adapter using the specified comparator.
- *
- * @param comparator The comparator used to sort the objects contained
- *        in this adapter.
- */
 ECode ArrayAdapter::Sort(
     /* [in] */ IComparator* comparator)
 {
@@ -498,10 +367,7 @@ ECode ArrayAdapter::Sort(
     }
     return NOERROR;
 }
-/**
- * {@inheritDoc}
- */
-//@Override
+
 ECode ArrayAdapter::NotifyDataSetChanged()
 {
     BaseAdapter::NotifyDataSetChanged();
@@ -510,20 +376,6 @@ ECode ArrayAdapter::NotifyDataSetChanged()
     return NOERROR;
 }
 
-/**
- * Control whether methods that change the list ({@link #add},
- * {@link #insert}, {@link #remove}, {@link #clear}) automatically call
- * {@link #notifyDataSetChanged}.  If set to false, caller must
- * manually call notifyDataSetChanged() to have the changes
- * reflected in the attached view.
- *
- * The default is TRUE, and calling notifyDataSetChanged()
- * resets the flag to TRUE.
- *
- * @param notifyOnChange if TRUE, modifications to the list will
- *                       automatically call {@link
- *                       #notifyDataSetChanged}
- */
 ECode ArrayAdapter::SetNotifyOnChange(
     /* [in] */ Boolean notifyOnChange)
 {
@@ -536,12 +388,13 @@ ECode ArrayAdapter::Init(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resource,
     /* [in] */ Int32 textViewResourceId,
-    /* [in] */ IObjectContainer* objects/* = NULL*/)
+    /* [in] */ IList* objects/* = NULL*/)
 {
     assert(context);
-    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(context);
-    assert(wrs != NULL && "Error: Invalid context, IWeakReferenceSource not implemented!");
-    wrs->GetWeakReference((IWeakReference**)&mWeakContext);
+    // AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(context);
+    // assert(wrs != NULL && "Error: Invalid context, IWeakReferenceSource not implemented!");
+    // wrs->GetWeakReference((IWeakReference**)&mWeakContext);
+    mContext = context;
 
     context->GetSystemService(
         IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
@@ -565,74 +418,71 @@ ECode ArrayAdapter::Init(
     return NOERROR;
 }
 
-/**
- * Returns the context associated with this array adapter. The context is used
- * to create views from the resource passed to the constructor.
- *
- * @return The Context associated with this adapter.
- */
-AutoPtr<IContext> ArrayAdapter::GetContext()
+ECode ArrayAdapter::GetContext(
+    /* [out] */ IContext** context)
 {
-    AutoPtr<IContext> context;
-    mWeakContext->Resolve(EIID_IContext, (IInterface**)&context);
-    return context;
+    VALIDATE_NOT_NULL(context);
+    // return mWeakContext->Resolve(EIID_IContext, (IInterface**)&context);
+    *context = mContext;
+    REFCOUNT_ADD(*context);
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-Int32 ArrayAdapter::GetCount()
+ECode ArrayAdapter::GetCount(
+    /* [out] */ Int32* count)
 {
-    return mObjects.GetSize();
+    VALIDATE_NOT_NULL(count);
+    *count = mObjects.GetSize();
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-AutoPtr<IInterface> ArrayAdapter::GetItem(
-    /* [in] */ Int32 position)
+ECode ArrayAdapter::GetItem(
+    /* [in] */ Int32 position,
+    /* [out] */ IInterface** item)
 {
-    return mObjects[position];
+    VALIDATE_NOT_NULL(item);
+    *item = mObjects[position];
+    REFCOUNT_ADD(*item);
+    return NOERROR;
 }
 
-/**
- * Returns the position of the specified item in the array.
- *
- * @param item The item to retrieve the position of.
- *
- * @return The position of the specified item.
- */
-Int32 ArrayAdapter::GetPosition(
-    /* [in] */ IInterface* item)
+ECode ArrayAdapter::GetPosition(
+    /* [in] */ IInterface* item,
+    /* [out] */ Int32* position)
 {
+    VALIDATE_NOT_NULL(position);
     List<AutoPtr<IInterface> >::Iterator iter = mObjects.Begin();
     for (Int32 i = 0; iter != mObjects.End(); ++iter, ++i) {
         if ((*iter).Get() == item) {
-            return i;
+            *position = i;
+            return NOERROR;
         }
     }
 
-    return -1;
+    *position = -1;
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-Int64 ArrayAdapter::GetItemId(
-    /* [in] */ Int32 position)
+ECode ArrayAdapter::GetItemId(
+    /* [in] */ Int32 position,
+    /* [out] */ Int64* itemId)
 {
-    return position;
+    VALIDATE_NOT_NULL(itemId);
+    *itemId = position;
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-AutoPtr<IView> ArrayAdapter::GetView(
+ECode ArrayAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    return CreateViewFromResource(position, convertView, parent, mResource);
+    VALIDATE_NOT_NULL(view);
+    AutoPtr<IView> v = CreateViewFromResource(position, convertView, parent, mResource);
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
 AutoPtr<IView> ArrayAdapter::CreateViewFromResource(
@@ -708,12 +558,6 @@ AutoPtr<IView> ArrayAdapter::CreateViewFromResource(
     return view;
 }
 
-/**
- * <p>Sets the layout resource to create the drop down views.</p>
- *
- * @param resource the layout resource defining the drop down views
- * @see #getDropDownView(Int32, android.view.View, android.view.ViewGroup)
- */
 ECode ArrayAdapter::SetDropDownViewResource(
     /* [in] */ Int32 resource)
 {
@@ -722,33 +566,32 @@ ECode ArrayAdapter::SetDropDownViewResource(
     return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-//@Override
-AutoPtr<IView> ArrayAdapter::GetDropDownView(
+ECode ArrayAdapter::GetDropDownView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    return CreateViewFromResource(
-        position, convertView, parent, mDropDownResource);
+    VALIDATE_NOT_NULL(view);
+    AutoPtr<IView> v = CreateViewFromResource(position, convertView, parent, mDropDownResource);
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-AutoPtr<IFilter> ArrayAdapter::GetFilter()
+ECode ArrayAdapter::GetFilter(
+    /* [out] */ IFilter** filter)
 {
+    VALIDATE_NOT_NULL(filter);
     if (mFilter == NULL) {
         mFilter = new ArrayFilter(this);
     }
 
-    return mFilter;
+    *filter = mFilter;
+    REFCOUNT_ADD(*filter);
+    return NOERROR;
 }
-
 
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
-

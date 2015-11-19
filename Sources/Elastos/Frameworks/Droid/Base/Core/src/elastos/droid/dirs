@@ -25,11 +25,11 @@ DIRS += systemui
 DIRS += text
 DIRS += transition
 DIRS += utility
+DIRS += widget
 
 #DIRS += impl
 #DIRS += bluetooth
 #DIRS += speech
-#DIRS += widget
 #DIRS += gesture
 #DIRS += opengl
 DIRS += webkit

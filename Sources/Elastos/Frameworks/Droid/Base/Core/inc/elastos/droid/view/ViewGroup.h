@@ -15,9 +15,14 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class ViewGroup : public View
+class COverlayViewGroup;
+
+class ViewGroup
+    : public View
+    , public IViewGroup
 {
     friend class View;
+    friend class COverlayViewGroup;
 private:
     class NotifyAnimationListenerRunnable
         : public Runnable
@@ -236,6 +241,8 @@ private:
 
 
 public:
+    CAR_INTERFACE_DECL();
+
     ViewGroup();
 
     CARAPI constructor(
@@ -588,9 +595,10 @@ public:
      * if this ViewGroup is already fully invalidated or if the dirty rectangle
      * does not intersect with this ViewGroup's bounds.
      */
-    virtual CARAPI_(AutoPtr<IViewParent>) InvalidateChildInParent(
+    virtual CARAPI InvalidateChildInParent(
         /* [in] */ ArrayOf<Int32>* location,
-        /* [in] */ IRect* dirty);
+        /* [in] */ IRect* dirty,
+        /* [out] */ IViewParent** parent);
 
     /**
      * Quick invalidation method called by View.invalidateViewProperty. This doesn't set the
@@ -1015,6 +1023,9 @@ public:
 
     virtual CARAPI FindNamedViews(
         /* [in] */ IMap* namedElements);
+
+    virtual CARAPI ShouldBlockFocusForTouchscreen(
+        /* [out] */ Boolean* should);
 
 protected:
     CARAPI_(Boolean) OnRequestFocusInDescendants(
@@ -1565,6 +1576,15 @@ protected:
 
     virtual CARAPI OnDetachedFromWindow();
 
+    /**
+     * Quick invalidation method that simply transforms the dirty rect into the parent's
+     * coordinate system, pruning the invalidation if the parent has already been invalidated.
+     */
+    CARAPI_(AutoPtr<IViewParent>) DamageChildInParent(
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ IRect* dirty);
+
 private:
     CARAPI_(Boolean) DebugDraw();
 
@@ -1714,15 +1734,6 @@ private:
         /* [in] */ Int32 x2,
         /* [in] */ Int32 y2);
 
-    /**
-     * Quick invalidation method that simply transforms the dirty rect into the parent's
-     * coordinate system, pruning the invalidation if the parent has already been invalidated.
-     */
-    CARAPI_(AutoPtr<IViewParent>) DamageChildInParent(
-        /* [in] */ Int32 left,
-        /* [in] */ Int32 top,
-        /* [in] */ IRect* dirty);
-
     CARAPI TranslateBoundsAndIntersectionsInWindowCoordinates(
         /* [in] */ IView* child,
         /* [in] */ IRectF* bounds,
@@ -1736,8 +1747,6 @@ private:
             /* [in] */ Int32 y1,
             /* [in] */ Int32 x2,
             /* [in] */ Int32 y2);
-
-    CARAPI_(Boolean) ShouldBlockFocusForTouchscreen();
 
     CARAPI_(AutoPtr<IPointF>) GetLocalPoint();
 

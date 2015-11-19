@@ -25,8 +25,10 @@ ECode CWindowId::IsFocused(
     /* [out] */ Boolean* focused)
 {
     VALIDATE_NOT_NULL(focused);
-    if (mToken->IsFocused(focused) == E_REMOTE_EXCEPTION) {
+    ECode ec = mToken->IsFocused(focused);
+    if (FAILED(ec)) {
         *focused = FALSE;
+        return ec;
     }
     return NOERROR;
 }
@@ -78,7 +80,8 @@ ECode CWindowId::Equals(
 {
     VALIDATE_NOT_NULL(e);
     if (IWindowId::Probe(otherObj)) {
-        return IObject::Probe(mToken)->Equals(IBinder::Probe(((CWindowId*)(IWindowId*)otherObj)->mToken), e);
+        AutoPtr<IBinder> binder = IBinder::Probe(((CWindowId*)(IWindowId*)otherObj)->mToken);
+        return IObject::Probe(mToken)->Equals(binder, e);
     }
     *e = FALSE;
     return NOERROR;
@@ -115,8 +118,7 @@ ECode CWindowId::ToString(
 ECode CWindowId::WriteToParcel(
     /* [in] */ IParcel* out)
 {
-    IBinder* binder = IBinder::Probe(mToken);
-    return out->WriteInterfacePtr((IInterface*)binder);
+    return out->WriteInterfacePtr(mToken);
 }
 
 ECode CWindowId::ReadFromParcel(

@@ -25,7 +25,6 @@ public:
     CARAPI Obtain(
         /* [in] */ IWindowInfo *other,
         /* [out] */ IWindowInfo** info);
-
 };
 
 }// namespace View

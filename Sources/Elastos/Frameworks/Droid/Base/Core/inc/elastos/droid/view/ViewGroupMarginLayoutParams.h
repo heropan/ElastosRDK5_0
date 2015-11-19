@@ -110,6 +110,12 @@ public:
     virtual CARAPI GetLayoutDirection(
         /* [out] */ Int32* layoutDirection);
 
+    virtual CARAPI GetMarginFlags(
+        /* [out] */ Byte* leftMargin);
+
+    virtual CARAPI SetMarginFlags(
+        /* [in] */ Byte leftMargin);
+
     /**
      * This will be called by {@link android.view.View#requestLayout()}. Left and Right margins
      * may be overridden depending on layout direction.
@@ -142,8 +148,8 @@ public:
     virtual CARAPI CopyMarginsFrom(
         /* [in] */ IViewGroupMarginLayoutParams* source);
 
-    private:
-        CARAPI_(void) DoResolveMargins();
+private:
+    CARAPI_(void) DoResolveMargins();
 
 public:
     /**

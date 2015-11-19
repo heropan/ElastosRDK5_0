@@ -510,6 +510,7 @@ void ViewGroup::ViewLocationHolder::Clear()
     mLocation->Set(0, 0, 0, 0);
 }
 
+CAR_INTERFACE_IMPL(ViewGroup, View, IViewGroup);
 ViewGroup::ViewGroup()
     : mGroupFlags(0)
     , mPersistentDrawingCache(0)
@@ -801,11 +802,12 @@ ECode ViewGroup::FocusableViewAvailable(
     IsFocused(&isFocused);
     IsFocusableInTouchMode(&isFocusableInTouchMode);
 
+    Boolean should = FALSE;
     if (mParent != NULL
         // shortcut: don't report a new focusable view if we block our descendants from
         // getting focus
         && (descendantFocusability != FOCUS_BLOCK_DESCENDANTS)
-        && (isFocusableInTouchMode || !ShouldBlockFocusForTouchscreen())
+        && (isFocusableInTouchMode || (ShouldBlockFocusForTouchscreen(&should), !should))
         // shortcut: don't report a new focusable view if we already are focused
         // (and we don't prefer our descendants)
         //
@@ -1274,7 +1276,8 @@ ECode ViewGroup::AddFocusables(
     Int32 descendantFocusability = 0;
     GetDescendantFocusability(&descendantFocusability);
     if (descendantFocusability != FOCUS_BLOCK_DESCENDANTS) {
-        if (ShouldBlockFocusForTouchscreen()) {
+        Boolean should = FALSE;
+        if (ShouldBlockFocusForTouchscreen(&should), should) {
             focusableMode |= FOCUSABLES_TOUCH_MODE;
         }
         for (Int32 i = 0; i < mChildrenCount; i++) {
@@ -1292,12 +1295,12 @@ ECode ViewGroup::AddFocusables(
     //
     Int32 size;
     views->GetSize(&size);
-    Boolean isFocusableInTouchMode;
+    Boolean isFocusableInTouchMode = FALSE, should = FALSE;
     IsFocusableInTouchMode(&isFocusableInTouchMode);
     if ((descendantFocusability != FOCUS_AFTER_DESCENDANTS
             // No focusable descendants
             || (focusableCount == size)) &&
-            (isFocusableInTouchMode || !ShouldBlockFocusForTouchscreen())) {
+            (isFocusableInTouchMode || (ShouldBlockFocusForTouchscreen(&should), !should))) {
             View::AddFocusables(IArrayList::Probe(views), direction, focusableMode);
     }
 
@@ -1347,14 +1350,17 @@ ECode ViewGroup::GetTouchscreenBlocksFocus(
     return NOERROR;
 }
 
-Boolean ViewGroup::ShouldBlockFocusForTouchscreen()
+ECode ViewGroup::ShouldBlockFocusForTouchscreen(
+    /* [out] */ Boolean* should)
 {
+    VALIDATE_NOT_NULL(should);
     Boolean touchscreenBlocksFocus, hasSystemFeature;
     GetTouchscreenBlocksFocus(&touchscreenBlocksFocus);
     AutoPtr<IPackageManager> pmg;
     mContext->GetPackageManager((IPackageManager**)&pmg);
     pmg->HasSystemFeature(IPackageManager::FEATURE_TOUCHSCREEN, &hasSystemFeature);
-    return touchscreenBlocksFocus && hasSystemFeature;
+    *should = touchscreenBlocksFocus && hasSystemFeature;
+    return NOERROR;
 }
 
 ECode ViewGroup::FindViewsWithText(
@@ -5219,10 +5225,12 @@ ECode ViewGroup::InvalidateChild(
     return NOERROR;
 }
 
-AutoPtr<IViewParent> ViewGroup::InvalidateChildInParent(
-        /* [in] */ ArrayOf<Int32>* location,
-        /* [in] */ IRect* dirty)
+ECode ViewGroup::InvalidateChildInParent(
+    /* [in] */ ArrayOf<Int32>* location,
+    /* [in] */ IRect* dirty,
+    /* [out] */ IViewParent** parent)
 {
+    VALIDATE_NOT_NULL(parent);
     if ((mPrivateFlags & PFLAG_DRAWN) == PFLAG_DRAWN ||
             (mPrivateFlags & PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID) {
         if ((mGroupFlags & (FLAG_OPTIMIZE_INVALIDATE | FLAG_ANIMATION_DONE)) !=
@@ -5253,8 +5261,9 @@ AutoPtr<IViewParent> ViewGroup::InvalidateChildInParent(
                 mPrivateFlags |= PFLAG_INVALIDATED;
             }
 
-            return mParent;
-
+            *parent = mParent;
+            REFCOUNT_ADD(*parent);
+            return NOERROR;
         }
         else {
             mPrivateFlags &= ~PFLAG_DRAWN & ~PFLAG_DRAWING_CACHE_VALID;
@@ -5273,11 +5282,14 @@ AutoPtr<IViewParent> ViewGroup::InvalidateChildInParent(
                 mPrivateFlags |= PFLAG_INVALIDATED;
             }
 
-            return mParent;
+            *parent = mParent;
+            REFCOUNT_ADD(*parent);
+            return NOERROR;
         }
     }
 
-    return NULL;
+    *parent = NULL;
+    return NOERROR;
 }
 
 /**

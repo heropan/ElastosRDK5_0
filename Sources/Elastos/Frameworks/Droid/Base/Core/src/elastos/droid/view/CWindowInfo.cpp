@@ -87,7 +87,7 @@ ECode CWindowInfo::WriteToParcel(
     parcel->WriteInterfacePtr(mToken);
     parcel->WriteInterfacePtr(mParentToken);
     parcel->WriteInt32(mFocused ? 1 : 0);
-    IParcelable::Probe(mBoundsInScreen)->WriteToParcel(parcel);
+    parcel->WriteInterfacePtr(mBoundsInScreen);
 
     Boolean isEmpty = FALSE;
     if (mChildTokens != NULL && (mChildTokens->IsEmpty(&isEmpty), !isEmpty)) {
@@ -144,7 +144,7 @@ ECode CWindowInfo::InitFromParcel(
     parcel->ReadInterfacePtr((Handle32*)&mParentToken);
     Int32 value = 0;
     mFocused = ((parcel->ReadInt32(&value), value) == 1);
-    IParcelable::Probe(mBoundsInScreen)->ReadFromParcel(parcel);
+    parcel->ReadInterfacePtr((Handle32*)&mBoundsInScreen);
 
     Boolean hasChildren = ((parcel->ReadInt32(&value), value) == 1);
     if (hasChildren) {

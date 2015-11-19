@@ -10,7 +10,6 @@
 #include <utils/Looper.h>
 #include <elastos/core/Object.h>
 
-
 namespace Elastos {
 namespace Droid {
 namespace Os {
@@ -43,6 +42,10 @@ public:
 
     CARAPI_(void) Wake();
 };
+
+/* Gets the native object associated with a MessageQueue. */
+extern AutoPtr<NativeMessageQueue> Elastos_Os_MessageQueue_GetMessageQueue(
+    /* [in] */ IMessageQueue* messageQueueObj);
 
 } // namespace Os
 } // namespace Droid

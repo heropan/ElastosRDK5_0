@@ -1,91 +1,107 @@
 
 #include "elastos/droid/widget/BaseAdapter.h"
 #ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/database/CDataSetObservable.h"
 #else
 #include "Elastos.Droid.Core.h"
 #endif
 
 using Elastos::Droid::Database::CDataSetObservable;
+using Elastos::Droid::Database::IObservable;
 
 namespace Elastos{
 namespace Droid{
 namespace Widget{
 
+CAR_INTERFACE_IMPL_4(BaseAdapter, Object, IBaseAdapter, IListAdapter, ISpinnerAdapter, IAdapter);
 BaseAdapter::BaseAdapter()
 {
     CDataSetObservable::New((IDataSetObservable**)&mDataSetObservable);
 }
 
-Boolean BaseAdapter::HasStableIds()
+ECode BaseAdapter::HasStableIds(
+    /* [out] */ Boolean* has)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(has);
+    *has = FALSE;
+    return NOERROR;
 }
 
 ECode BaseAdapter::RegisterDataSetObserver(
     /* [in] */ IDataSetObserver* observer)
 {
-    return mDataSetObservable->RegisterObserver(observer);
+    return IObservable::Probe(mDataSetObservable)->RegisterObserver(observer);
 }
 
 ECode BaseAdapter::UnregisterDataSetObserver(
     /* [in] */ IDataSetObserver* observer)
 {
-    return mDataSetObservable->UnregisterObserver(observer);
+    return IObservable::Probe(mDataSetObservable)->UnregisterObserver(observer);
 }
 
-/**
- * Notifies the attached View that the underlying data has been changed
- * and it should refresh itself.
- */
 ECode BaseAdapter::NotifyDataSetChanged()
 {
     mDataSetObservable->NotifyChanged();
-
     return NOERROR;
 }
 
 ECode BaseAdapter::NotifyDataSetInvalidated()
 {
     mDataSetObservable->NotifyInvalidated();
-
     return NOERROR;
 }
 
-Boolean BaseAdapter::AreAllItemsEnabled()
+ECode BaseAdapter::AreAllItemsEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = TRUE;
+    return NOERROR;
 }
 
-Boolean BaseAdapter::IsEnabled(
-    /* [in] */ Int32 position)
+ECode BaseAdapter::IsEnabled(
+    /* [in] */ Int32 position,
+    /* [out] */ Boolean* enabled)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = TRUE;
+    return NOERROR;
 }
 
-AutoPtr<IView> BaseAdapter::GetDropDownView(
+ECode BaseAdapter::GetDropDownView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    return GetView(position, convertView, parent);
+    VALIDATE_NOT_NULL(view);
+    return GetView(position, convertView, parent, view);
 }
 
-Int32 BaseAdapter::GetItemViewType(
-    /* [in] */ Int32 position)
+ECode BaseAdapter::GetItemViewType(
+    /* [in] */ Int32 position,
+    /* [out] */ Int32* type)
 {
-    return 0;
+    VALIDATE_NOT_NULL(type);
+    *type = 0;
+    return NOERROR;
 }
 
-Int32 BaseAdapter::GetViewTypeCount()
+ECode BaseAdapter::GetViewTypeCount(
+    /* [out] */ Int32* count)
 {
-    return 1;
+    VALIDATE_NOT_NULL(count);
+    *count = 1;
+    return NOERROR;
 }
 
-Boolean BaseAdapter::IsEmpty()
+ECode BaseAdapter::IsEmpty(
+    /* [out] */ Boolean* empty)
 {
-    return GetCount() == 0;
+    VALIDATE_NOT_NULL(empty);
+    Int32 count = 0;
+    *empty = (GetCount(&count), count) == 0;
+    return NOERROR;
 }
 
 }// namespace Widget

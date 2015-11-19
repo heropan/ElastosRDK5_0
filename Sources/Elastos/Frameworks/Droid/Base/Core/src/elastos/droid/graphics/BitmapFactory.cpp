@@ -93,6 +93,7 @@ ECode BitmapFactory::DecodeResourceStream(
     /* [out] */ IBitmap** bitmap)
 {
     VALIDATE_NOT_NULL(bitmap);
+    *bitmap = NULL;
 
     AutoPtr<IBitmapFactoryOptions> opts = _opts;
     if (opts == NULL) {
@@ -127,17 +128,16 @@ ECode BitmapFactory::DecodeResource(
     /* [in] */ IBitmapFactoryOptions* opts,
     /* [out] */ IBitmap** bitmap)
 {
+    VALIDATE_NOT_NULL(bitmap);
+    *bitmap = NULL;
+
     AutoPtr<IInputStream> is;
-
     AutoPtr<ITypedValue> value;
-    FAIL_RETURN(CTypedValue::New((ITypedValue**)&value));
-    FAIL_RETURN(res->OpenRawResource(id, value.Get(), (IInputStream**)&is));
+    CTypedValue::New((ITypedValue**)&value);
+    if (res->OpenRawResource(id, value.Get(), (IInputStream**)&is) == NOERROR) {
+        DecodeResourceStream(res, value, is, NULL, opts, bitmap);
+    }
 
-    /*  do nothing.
-        If the exception happened on open, bm will be NULL.
-        If it happened on close, bm is still valid.
-    */
-    DecodeResourceStream(res, value, is, NULL, opts, bitmap);
     if (is != NULL) ICloseable::Probe(is)->Close();
 
     AutoPtr<IBitmap> bm;
@@ -163,6 +163,8 @@ ECode BitmapFactory::DecodeByteArray(
     /* [in] */ IBitmapFactoryOptions* _opts,
     /* [out] */ IBitmap** bitmap)
 {
+    VALIDATE_NOT_NULL(bitmap);
+    *bitmap = NULL;
     if ((offset | length) < 0 || data->GetLength() < offset + length) {
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -255,7 +257,7 @@ ECode BitmapFactory::DecodeStream(
     is->IsMarkSupported(&supported);
     if (!supported) {
         is = NULL;
-        FAIL_RETURN(CBufferedInputStream::New(_is, DECODE_BUFFER_SIZE, (IBufferedInputStream**)&is));
+        CBufferedInputStream::New(_is, DECODE_BUFFER_SIZE, (IBufferedInputStream**)&is);
     }
 
     is->Mark(DECODE_BUFFER_SIZE);
@@ -326,6 +328,7 @@ ECode BitmapFactory::DecodeFileDescriptor(
     /* [out] */ IBitmap** bitmap)
 {
     VALIDATE_NOT_NULL(bitmap);
+    *bitmap = NULL;
 
     AutoPtr<IBitmap> bm;
     //ACTIONS_CODE_START
@@ -370,10 +373,16 @@ ECode BitmapFactory::DecodeFileDescriptor(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ IBitmap** bitmap)
 {
+    VALIDATE_NOT_NULL(bitmap);
     return DecodeFileDescriptor(fd, NULL, NULL, bitmap);
 }
 
-static void ScaleDivRange(int32_t* divs, int count, float scale, int maxValue) {
+static void ScaleDivRange(
+    /* [in] */ int32_t* divs,
+    /* [in] */ int count,
+    /* [in] */ float scale,
+    /* [in] */ int maxValue)
+{
     for (int i = 0; i < count; i++) {
         divs[i] = int32_t(divs[i] * scale + 0.5f);
         if (i > 0 && divs[i] == divs[i - 1]) {
@@ -397,7 +406,8 @@ static void ScaleDivRange(int32_t* divs, int count, float scale, int maxValue) {
     }
 }
 
-static Boolean OptionsJustBounds(IBitmapFactoryOptions* options)
+static Boolean OptionsJustBounds(
+    /* [in] */ IBitmapFactoryOptions* options)
 {
     if (options == NULL) return FALSE;
 
@@ -406,8 +416,12 @@ static Boolean OptionsJustBounds(IBitmapFactoryOptions* options)
     return value;
 }
 
-static void ScaleNinePatchChunk(android::Res_png_9patch* chunk, float scale,
-        int scaledWidth, int scaledHeight) {
+static void ScaleNinePatchChunk(
+    /* [in] */ android::Res_png_9patch* chunk,
+    /* [in] */ float scale,
+    /* [in] */ int scaledWidth,
+    /* [in] */ int scaledHeight)
+{
     chunk->paddingLeft = int(chunk->paddingLeft * scale + 0.5f);
     chunk->paddingTop = int(chunk->paddingTop * scale + 0.5f);
     chunk->paddingRight = int(chunk->paddingRight * scale + 0.5f);
@@ -417,7 +431,9 @@ static void ScaleNinePatchChunk(android::Res_png_9patch* chunk, float scale,
     ScaleDivRange(chunk->getYDivs(), chunk->numYDivs, scale, scaledHeight);
 }
 
-static SkColorType ColorTypeForScaledOutput(SkColorType colorType) {
+static SkColorType ColorTypeForScaledOutput(
+    /* [in] */ SkColorType colorType)
+{
     switch (colorType) {
         case kUnknown_SkColorType:
         case kIndex_8_SkColorType:
@@ -428,13 +444,21 @@ static SkColorType ColorTypeForScaledOutput(SkColorType colorType) {
     return colorType;
 }
 
-class ScaleCheckingAllocator : public SkBitmap::HeapAllocator {
+class ScaleCheckingAllocator : public SkBitmap::HeapAllocator
+{
 public:
-    ScaleCheckingAllocator(float scale, int size)
-            : mScale(scale), mSize(size) {
+    ScaleCheckingAllocator(
+        /* [in] */ float scale,
+        /* [in] */ int size)
+        : mScale(scale)
+        , mSize(size)
+    {
     }
 
-    virtual bool allocPixelRef(SkBitmap* bitmap, SkColorTable* ctable) {
+    virtual bool allocPixelRef(
+        /* [in] */ SkBitmap* bitmap,
+        /* [in] */ SkColorTable* ctable)
+    {
         // accounts for scale in final allocation, using eventual size and config
         const int bytesPerPixel = SkColorTypeBytesPerPixel(
                 ColorTypeForScaledOutput(bitmap->colorType()));
@@ -453,10 +477,15 @@ private:
     const int mSize;
 };
 
-class RecyclingPixelAllocator : public SkBitmap::Allocator {
+class RecyclingPixelAllocator : public SkBitmap::Allocator
+{
 public:
-    RecyclingPixelAllocator(SkPixelRef* pixelRef, unsigned int size)
-            : mPixelRef(pixelRef), mSize(size) {
+    RecyclingPixelAllocator(
+        /* [in] */ SkPixelRef* pixelRef,
+        /* [in] */ unsigned int size)
+        : mPixelRef(pixelRef)
+        , mSize(size)
+    {
         SkSafeRef(mPixelRef);
     }
 
@@ -464,7 +493,10 @@ public:
         SkSafeUnref(mPixelRef);
     }
 
-    virtual bool allocPixelRef(SkBitmap* bitmap, SkColorTable* ctable) {
+    virtual bool allocPixelRef(
+        /* [in] */ SkBitmap* bitmap,
+        /* [in] */ SkColorTable* ctable)
+    {
         const SkImageInfo& info = bitmap->info();
         if (info.fColorType == kUnknown_SkColorType) {
             ALOGW("unable to reuse a bitmap as the target has an unknown bitmap configuration");
@@ -620,8 +652,7 @@ static AutoPtr<IBitmap> DoDecode(
     // happens earlier than AutoDecoderCancel object is added
     // to the gAutoDecoderCancelMutex linked list.
     Boolean cancel = FALSE;
-    options->GetCancel(&cancel);
-    if (options != NULL && cancel) {
+    if (options != NULL && (options->GetCancel(&cancel), cancel)) {
         // return nullObjectReturn("gOptions_mCancelID");
         Logger::W("BitmapFactory", String("gOptions_mCancelID"));
         return NULL;

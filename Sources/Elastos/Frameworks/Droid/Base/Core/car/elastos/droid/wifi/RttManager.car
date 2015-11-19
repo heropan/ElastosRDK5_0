@@ -276,11 +276,6 @@ module
 
         SetResults(
             [in] ArrayOf<IRttManagerRttResult*>* mResults);
-
-        /** Implement the Parcelable interface {@hide} */
-        WriteToParcel(
-            [in] IParcel* dest,
-            [in] Int32 flags);
     }
 
     /**

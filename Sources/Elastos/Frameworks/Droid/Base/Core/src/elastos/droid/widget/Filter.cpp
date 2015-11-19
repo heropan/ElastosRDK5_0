@@ -4,25 +4,30 @@
 #ifdef DROID_CORE
 #include "elastos/droid/os/CHandlerThread.h"
 #endif
-using Elastos::Core::CStringWrapper;
+#include <elastos/core/AutoLock.h>
+
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::IProcess;
+using Elastos::Core::CString;
+using Elastos::Core::IThread;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
 const String Filter::TAG("Filter");
 const String Filter::THREAD_NAME = String("Filter");
-const Int32 Filter::FILTER_TOKEN;
-const Int32 Filter::FINISH_TOKEN;
+const Int32 Filter::FILTER_TOKEN = 0xD0D0F00D;
+const Int32 Filter::FINISH_TOKEN = 0xDEADBEEF;
 
 //==============================================================================
 //              Filter::FilterResults
 //==============================================================================
-CAR_INTERFACE_IMPL(Filter::FilterResults, IFilterResults);
+CAR_INTERFACE_IMPL(Filter::FilterResults, Object, IFilterResults);
+Filter::FilterResults::FilterResults()
+    : mCount(0)
+{}
 
 ECode Filter::FilterResults::SetCount(
     /* [in] */ Int32 count)
@@ -56,32 +61,16 @@ ECode Filter::FilterResults::GetValues(
 }
 
 //==============================================================================
-//              Filter::RequestArguments
-//==============================================================================
-CAR_INTERFACE_IMPL(Filter::RequestArguments, IInterface)
-
-//==============================================================================
 //              Filter::RequestHandler
 //==============================================================================
-
 Filter::RequestHandler::RequestHandler(
     /* [in] */ ILooper* looper,
     /* [in] */ Filter* host)
-    : HandlerBase(looper)
+    : Handler(looper)
     , mHost(host)
 {
 }
 
-/**
- * <p>Messages received from the request handler are processed in the
- * UI thread. The processing involves calling
- * {@link Filter#publishResults(CharSequence,
- * android.widget.Filter.FilterResults)}
- * to post the results back in the UI and then notifying the listener,
- * if any.</p>
- *
- * @param msg the filtering results
- */
 ECode Filter::RequestHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
@@ -92,7 +81,7 @@ ECode Filter::RequestHandler::HandleMessage(
 
     switch (what) {
         case Filter::FILTER_TOKEN: {
-            RequestArguments* args = (RequestArguments*)obj.Get();
+            RequestArguments* args = (RequestArguments*)(IObject*)obj.Get();
             mHost->HandleFilterMessage(args);
             break;
         }
@@ -118,7 +107,7 @@ ECode Filter::ResultsHandler::HandleMessage(
 {
     AutoPtr<IInterface> obj;
     msg->GetObj((IInterface**)&obj);
-    RequestArguments* args = (RequestArguments*)obj.Get();
+    RequestArguments* args = (RequestArguments*)(IObject*)obj.Get();
     mHost->HandleResultsMessage(args);
     return NOERROR;
 }
@@ -126,7 +115,7 @@ ECode Filter::ResultsHandler::HandleMessage(
 //==============================================================================
 //              Filter
 //==============================================================================
-
+CAR_INTERFACE_IMPL(Filter, Object, IFilter);
 Filter::Filter()
 {
     mResultHandler = new ResultsHandler(this);
@@ -135,8 +124,9 @@ Filter::Filter()
 ECode Filter::SetDelayer(
     /* [in] */ IFilterDelayer* delayer)
 {
-    AutoLock lock(mLock);
-    mDelayer = delayer;
+    synchronized(mLock) {
+        mDelayer = delayer;
+    }
     return NOERROR;
 }
 
@@ -150,42 +140,42 @@ ECode Filter::DoFilter(
     /* [in] */ ICharSequence* constraint,
     /* [in] */ IFilterListener* listener)
 {
-    AutoLock lock(mLock);
+    synchronized(mLock) {
+        if (mThreadHandler == NULL) {
+            AutoPtr<IHandlerThread> thread;
+            CHandlerThread::New(THREAD_NAME, IProcess::THREAD_PRIORITY_BACKGROUND,
+                    (IHandlerThread**)&thread);
+            IThread::Probe(thread)->Start();
 
-    if (mThreadHandler == NULL) {
-        AutoPtr<IHandlerThread> thread;
-        CHandlerThread::New(THREAD_NAME, IProcess::THREAD_PRIORITY_BACKGROUND,
-                (IHandlerThread**)&thread);
-        thread->Start();
+            AutoPtr<ILooper> looper;
+            thread->GetLooper((ILooper**)&looper);
+            mThreadHandler = new RequestHandler(looper, this);
+        }
 
-        AutoPtr<ILooper> looper;
-        thread->GetLooper((ILooper**)&looper);
-        mThreadHandler = new RequestHandler(looper, this);
+        Int64 delay = 0;
+        if (mDelayer != NULL) {
+            mDelayer->GetPostingDelay(constraint, &delay);
+        }
+
+        AutoPtr<RequestArguments> args = new RequestArguments();
+        // make sure we use an immutable copy of the constraint, so that
+        // it doesn't change while the filter operation is in progress
+        //
+        String str("");
+        if (constraint) {
+            constraint->ToString(&str);
+        }
+        CString::New(str, (ICharSequence**)&args->mConstraint);
+        args->mListener = listener;
+
+        AutoPtr<IMessage> message;
+        mThreadHandler->ObtainMessage(FILTER_TOKEN, args->Probe(EIID_IInterface), (IMessage**)&message);
+
+        Boolean result;
+        mThreadHandler->RemoveMessages(FILTER_TOKEN);
+        mThreadHandler->RemoveMessages(FINISH_TOKEN);
+        mThreadHandler->SendMessageDelayed(message, delay, &result);
     }
-
-    Int64 delay = 0;
-    if (mDelayer != NULL) {
-        mDelayer->GetPostingDelay(constraint, &delay);
-    }
-
-    AutoPtr<RequestArguments> args = new RequestArguments();
-    // make sure we use an immutable copy of the constraint, so that
-    // it doesn't change while the filter operation is in progress
-    //
-    String str("");
-    if (constraint) {
-        constraint->ToString(&str);
-    }
-    CStringWrapper::New(str, (ICharSequence**)&args->mConstraint);
-    args->mListener = listener;
-
-    AutoPtr<IMessage> message;
-    mThreadHandler->ObtainMessage(FILTER_TOKEN, args, (IMessage**)&message);
-
-    Boolean result;
-    mThreadHandler->RemoveMessages(FILTER_TOKEN);
-    mThreadHandler->RemoveMessages(FINISH_TOKEN);
-    mThreadHandler->SendMessageDelayed(message, delay, &result);
     return NOERROR;
 }
 
@@ -199,7 +189,7 @@ ECode Filter::ConvertResultToString(
         ICharSequence::Probe(resultValue)->ToString(&str);
     }
 
-    return CStringWrapper::New(str, cs);
+    return CString::New(str, cs);
 }
 
 ECode Filter::HandleFilterMessage(
@@ -216,15 +206,16 @@ ECode Filter::HandleFilterMessage(
     }
 
     AutoPtr<IMessage> message;
-    mResultHandler->ObtainMessage(FILTER_TOKEN, args, (IMessage**)&message);
+    mResultHandler->ObtainMessage(FILTER_TOKEN, args->Probe(EIID_IInterface), (IMessage**)&message);
     message->SendToTarget();
 
-    AutoLock lock(mLock);
-    if (mThreadHandler != NULL) {
-        AutoPtr<IMessage> finishMessage;
-        mThreadHandler->ObtainMessage(FINISH_TOKEN, (IMessage**)&finishMessage);
-        Boolean result;
-        mThreadHandler->SendMessageDelayed(finishMessage, 3000, &result);
+    synchronized(mLock) {
+        if (mThreadHandler != NULL) {
+            AutoPtr<IMessage> finishMessage;
+            mThreadHandler->ObtainMessage(FINISH_TOKEN, (IMessage**)&finishMessage);
+            Boolean result;
+            mThreadHandler->SendMessageDelayed(finishMessage, 3000, &result);
+        }
     }
 
     return NOERROR;
@@ -232,13 +223,13 @@ ECode Filter::HandleFilterMessage(
 
 ECode Filter::HandleFinishMessage()
 {
-    AutoLock lock(mLock);
-
-    if (mThreadHandler != NULL) {
-        AutoPtr<ILooper> looper;
-        mThreadHandler->GetLooper((ILooper**)&looper);
-        looper->Quit();
-        mThreadHandler = NULL;
+    synchronized(mLock) {
+        if (mThreadHandler != NULL) {
+            AutoPtr<ILooper> looper;
+            mThreadHandler->GetLooper((ILooper**)&looper);
+            looper->Quit();
+            mThreadHandler = NULL;
+        }
     }
     return NOERROR;
 }

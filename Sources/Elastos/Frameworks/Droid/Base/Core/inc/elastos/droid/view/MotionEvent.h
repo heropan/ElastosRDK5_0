@@ -1698,6 +1698,8 @@ public:
     CARAPI SetNative(
         /* [in] */ Handle32 native);
 
+    CARAPI_(Int64) GetNativePtr();
+
 private:
     static CARAPI_(Int64) NativeInitialize(
         /* [in] */ Int64 nativePtr,

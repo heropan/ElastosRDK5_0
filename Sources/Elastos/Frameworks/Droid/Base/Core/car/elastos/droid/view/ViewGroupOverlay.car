@@ -23,7 +23,6 @@ module
      */
     [local]
     interface IViewGroupOverlay {
-
         /**
          * Adds a View to the overlay. The bounds of the added view should be
          * relative to the host view. Any view added to the overlay should be
@@ -60,7 +59,6 @@ module
         Remove(
             [in] IView* view);
     }
-
 
     } // namespace View
     } // namepsace Droid

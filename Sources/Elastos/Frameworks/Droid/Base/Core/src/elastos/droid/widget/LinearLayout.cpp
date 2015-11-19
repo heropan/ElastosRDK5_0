@@ -1,11 +1,14 @@
-#include "elastos/droid/ext/frameworkext.h"
+
 #include "elastos/droid/widget/LinearLayout.h"
-#include <elastos/core/Math.h>
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/Gravity.h"
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::View::Gravity;
 using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IViewGroupMarginLayoutParams;
+using Elastos::Droid::View::IView;
 using Elastos::Droid::View::View;
 
 namespace Elastos {
@@ -18,6 +21,7 @@ const Int32 LinearLayout::INDEX_TOP;
 const Int32 LinearLayout::INDEX_BOTTOM;
 const Int32 LinearLayout::INDEX_FILL;
 
+CAR_INTERFACE_IMPL(LinearLayout, ViewGroup, ILinearLayout);
 LinearLayout::LinearLayout()
     : mBaselineAligned(TRUE)
     , mBaselineAlignedChildIndex(-1)
@@ -33,92 +37,43 @@ LinearLayout::LinearLayout()
 {
 }
 
-LinearLayout::LinearLayout(
-    /* [in] */ IContext* context)
-    : ViewGroup(context)
-    , mBaselineAligned(TRUE)
-    , mBaselineAlignedChildIndex(-1)
-    , mBaselineChildTop(0)
-    , mOrientation(0)
-    , mGravity(IGravity::START | IGravity::TOP)
-    , mTotalLength(0)
-    , mWeightSum(0.0)
-    , mUseLargestChild(FALSE)
-    , mDividerWidth(0)
-    , mDividerHeight(0)
-    , mDividerPadding(0)
-{
-}
-
-LinearLayout::LinearLayout(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : ViewGroup(context, attrs)
-    , mBaselineAligned(TRUE)
-    , mBaselineAlignedChildIndex(-1)
-    , mBaselineChildTop(0)
-    , mOrientation(0)
-    , mGravity(IGravity::START | IGravity::TOP)
-    , mTotalLength(0)
-    , mWeightSum(0.0)
-    , mUseLargestChild(FALSE)
-    , mDividerWidth(0)
-    , mDividerHeight(0)
-    , mDividerPadding(0)
-{
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, 0));
-}
-
-LinearLayout::LinearLayout(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : ViewGroup(context, attrs, defStyle)
-    , mBaselineAligned(TRUE)
-    , mBaselineAlignedChildIndex(-1)
-    , mBaselineChildTop(0)
-    , mOrientation(0)
-    , mGravity(IGravity::START | IGravity::TOP)
-    , mTotalLength(0)
-    , mWeightSum(0.0)
-    , mUseLargestChild(FALSE)
-    , mDividerWidth(0)
-    , mDividerHeight(0)
-    , mDividerPadding(0)
-{
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
-}
-
-ECode LinearLayout::Init(
+ECode LinearLayout::constructor(
     /* [in] */ IContext* context)
 {
-    ASSERT_SUCCEEDED(ViewGroup::Init(context));
-    return NOERROR;
+    return constructor(context, NULL);
 }
 
-ECode LinearLayout::Init(
+ECode LinearLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    ASSERT_SUCCEEDED(ViewGroup::Init(context, attrs));
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, 0));
-    return NOERROR;
+    return constructor(context, attrs, 0);
 }
 
-ECode LinearLayout::Init(
+ECode LinearLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    ASSERT_SUCCEEDED(ViewGroup::Init(context, attrs));
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode LinearLayout::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    ASSERT_SUCCEEDED(ViewGroup::constructor(context, attrs, defStyleAttr, defStyleRes));
+    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyleAttr, defStyleRes));
     return NOERROR;
 }
 
 ECode LinearLayout::InitFromAttributes(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     VALIDATE_NOT_NULL(context);
 
@@ -127,7 +82,7 @@ ECode LinearLayout::InitFromAttributes(
             ARRAY_SIZE(R::styleable::LinearLayout));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
     Int32 index;
     a->GetInt32(R::styleable::LinearLayout_orientation, -1, &index);
@@ -174,19 +129,29 @@ ECode LinearLayout::SetShowDividers(
     return NOERROR;
 }
 
-Boolean LinearLayout::ShouldDelayChildPressedState()
+ECode LinearLayout::ShouldDelayChildPressedState(
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
 }
 
-Int32 LinearLayout::GetShowDividers()
+ECode LinearLayout::GetShowDividers(
+    /* [out] */ Int32* showDividers)
 {
-    return mShowDividers;
+    VALIDATE_NOT_NULL(showDividers);
+    *showDividers = mShowDividers;
+    return NOERROR;
 }
 
-AutoPtr<IDrawable> LinearLayout::GetDividerDrawable()
+ECode LinearLayout::GetDividerDrawable(
+    /* [out] */ IDrawable** drawable)
 {
-    return mDivider;
+    VALIDATE_NOT_NULL(drawable)
+    *drawable = mDivider;
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
 ECode LinearLayout::SetDividerDrawable(
@@ -215,14 +180,20 @@ ECode LinearLayout::SetDividerPadding(
     return NOERROR;
 }
 
-Int32 LinearLayout::GetDividerPadding()
+ECode LinearLayout::GetDividerPadding(
+    /* [out] */ Int32* result)
 {
-    return mDividerPadding;
+    VALIDATE_NOT_NULL(result);
+    *result = mDividerPadding;
+    return NOERROR;
 }
 
-Int32 LinearLayout::GetDividerWidth()
+ECode LinearLayout::GetDividerWidth(
+    /* [out] */ Int32* result)
 {
-    return mDividerWidth;
+    VALIDATE_NOT_NULL(result);
+    *result = mDividerWidth;
+    return NOERROR;
 }
 
 void LinearLayout::OnDraw(
@@ -243,7 +214,8 @@ void LinearLayout::DrawDividersVertical(
     /* [in] */ ICanvas* canvas)
 {
     Int32 visibility;
-    Int32 count = GetVirtualChildCount();
+    Int32 count = 0;
+    GetVirtualChildCount(&count);
     for (Int32 i = 0; i < count; i++) {
         AutoPtr<IView> child = GetVirtualChildAt(i);
 
@@ -254,7 +226,7 @@ void LinearLayout::DrawDividersVertical(
                     AutoPtr<ILinearLayoutLayoutParams> lp;
                     child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
                     Int32 ml, mt, mr, mb;
-                    lp->GetMargins(&ml, &mt, &mr, &mb);
+                    IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&ml, &mt, &mr, &mb);
                     Int32 top;
                     child->GetTop(&top);
                     top = top - mt - mDividerHeight;
@@ -268,12 +240,13 @@ void LinearLayout::DrawDividersVertical(
         AutoPtr<IView> child = GetVirtualChildAt(count - 1);
         Int32 bottom = 0;
         if (child == NULL) {
-            bottom = GetHeight() - GetPaddingBottom() - mDividerHeight;
+            Int32 h = 0, b = 0;
+            bottom = (GetHeight(&h), h) - (GetPaddingBottom(&b), b) - mDividerHeight;
         } else {
             AutoPtr<ILinearLayoutLayoutParams> lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
             Int32 ml, mt, mr, mb;
-            lp->GetMargins(&ml, &mt, &mr, &mb);
+            IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&ml, &mt, &mr, &mb);
 
             child->GetBottom(&bottom);
             bottom = bottom + mb;
@@ -286,8 +259,10 @@ void LinearLayout::DrawDividersHorizontal(
     /* [in] */ ICanvas* canvas)
 {
     Int32 visibility;
-    Int32 count = GetVirtualChildCount();
-    Boolean isLayoutRtl = IsLayoutRtl();
+    Int32 count = 0;
+    GetVirtualChildCount(&count);
+    Boolean isLayoutRtl = FALSE;
+    IsLayoutRtl(&isLayoutRtl);
     for (Int32 i = 0; i < count; i++) {
         AutoPtr<IView> child = GetVirtualChildAt(i);
 
@@ -298,7 +273,7 @@ void LinearLayout::DrawDividersHorizontal(
                     AutoPtr<ILinearLayoutLayoutParams> lp;
                     child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
                     Int32 ml, mt, mr, mb;
-                    lp->GetMargins(&ml, &mt, &mr, &mb);
+                    IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&ml, &mt, &mr, &mb);
 
                     Int32 position;
                     if (isLayoutRtl) {
@@ -318,18 +293,19 @@ void LinearLayout::DrawDividersHorizontal(
 
     if (HasDividerBeforeChildAt(count)) {
         AutoPtr<IView> child = GetVirtualChildAt(count - 1);
-        Int32 position;
+        Int32 position = 0;
         if (child == NULL) {
             if (isLayoutRtl) {
-                position = GetPaddingLeft();
+                GetPaddingLeft(&position);
             } else {
-                position = GetWidth() - GetPaddingRight() - mDividerWidth;
+                Int32 w = 0, r = 0;
+                position = (GetWidth(&w), w) - (GetPaddingRight(&r), r) - mDividerWidth;
             }
         } else {
             AutoPtr<ILinearLayoutLayoutParams> lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
             Int32 ml, mt, mr, mb;
-            lp->GetMargins(&ml, &mt, &mr, &mb);
+            IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&ml, &mt, &mr, &mb);
 
             if (isLayoutRtl) {
                 Int32 left;
@@ -350,8 +326,9 @@ void LinearLayout::DrawHorizontalDivider(
     /* [in] */ Int32 top)
 {
     if (mDivider != NULL) {
-        mDivider->SetBounds(GetPaddingLeft() + mDividerPadding, top,
-                GetWidth() - GetPaddingRight() - mDividerPadding, top + mDividerHeight);
+        Int32 w = 0, r = 0, l = 0;
+        mDivider->SetBounds((GetPaddingLeft(&l), l) + mDividerPadding, top,
+                (GetWidth(&w), w) - (GetPaddingRight(&r), r) - mDividerPadding, top + mDividerHeight);
         mDivider->Draw(canvas);
     }
 }
@@ -361,15 +338,19 @@ void LinearLayout::DrawVerticalDivider(
     /* [in] */ Int32 left)
 {
     if (mDivider != NULL) {
-        mDivider->SetBounds(left, GetPaddingTop() + mDividerPadding,
-                left + mDividerWidth, GetHeight() - GetPaddingBottom() - mDividerPadding);
+        Int32 top = 0, h = 0, bottom = 0;
+        mDivider->SetBounds(left, (GetPaddingTop(&top), top) + mDividerPadding,
+                left + mDividerWidth, (GetHeight(&h), h) - (GetPaddingBottom(&bottom), bottom) - mDividerPadding);
         mDivider->Draw(canvas);
     }
 }
 
-Boolean LinearLayout::IsBaselineAligned()
+ECode LinearLayout::IsBaselineAligned(
+    /* [out] */ Boolean* aligned)
 {
-    return mBaselineAligned;
+    VALIDATE_NOT_NULL(aligned);
+    *aligned = mBaselineAligned;
+    return NOERROR;
 }
 
 ECode LinearLayout::SetBaselineAligned(
@@ -379,9 +360,12 @@ ECode LinearLayout::SetBaselineAligned(
     return NOERROR;
 }
 
-Boolean LinearLayout::IsMeasureWithLargestChildEnabled()
+ECode LinearLayout::IsMeasureWithLargestChildEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return mUseLargestChild;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = mUseLargestChild;
+    return NOERROR;
 }
 
 ECode LinearLayout::SetMeasureWithLargestChildEnabled(
@@ -407,7 +391,8 @@ ECode LinearLayout::GetBaseline(
         return E_RUNTIME_EXCEPTION;
     }
 
-    AutoPtr<IView> child = GetChildAt(mBaselineAlignedChildIndex);
+    AutoPtr<IView> child;
+    GetChildAt(mBaselineAlignedChildIndex, (IView**)&child);
     Int32 childBaseline;
     child->GetBaseline(&childBaseline);
 
@@ -451,14 +436,17 @@ ECode LinearLayout::GetBaseline(
     AutoPtr<IViewGroupMarginLayoutParams> lp;
     child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
     Int32 ml, mt, mr,mb;
-    lp->GetMargins(&ml, &mt, &mr, &mb);
+    IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&ml, &mt, &mr, &mb);
     *baseline = childTop + mt + childBaseline;
     return NOERROR;
 }
 
-Int32 LinearLayout::GetBaselineAlignedChildIndex()
+ECode LinearLayout::GetBaselineAlignedChildIndex(
+    /* [out] */ Int32* index)
 {
-    return mBaselineAlignedChildIndex;
+    VALIDATE_NOT_NULL(index);
+    *index = mBaselineAlignedChildIndex;
+    return NOERROR;
 }
 
 ECode LinearLayout::SetBaselineAlignedChildIndex(
@@ -473,20 +461,35 @@ ECode LinearLayout::SetBaselineAlignedChildIndex(
     return NOERROR;
 }
 
+ECode LinearLayout::GetVirtualChildAt(
+    /* [in] */ Int32 index,
+    /* [out] */ IView** view)
+{
+    VALIDATE_NOT_NULL(view);
+    return GetChildAt(index, view);
+}
+
 AutoPtr<IView> LinearLayout::GetVirtualChildAt(
     /* [in] */ Int32 index)
 {
-    return GetChildAt(index);
+    AutoPtr<IView> view;
+    GetVirtualChildAt(index, (IView**)&view);
+    return view;
 }
 
-Int32 LinearLayout::GetVirtualChildCount()
+ECode LinearLayout::GetVirtualChildCount(
+    /* [out] */ Int32* count)
 {
-    return GetChildCount();
+    VALIDATE_NOT_NULL(count);
+    return ViewGroup::GetChildCount(count);
 }
 
-Float LinearLayout::GetWeightSum()
+ECode LinearLayout::GetWeightSum(
+    /* [out] */ Float* weightSum)
 {
-    return mWeightSum;
+    VALIDATE_NOT_NULL(weightSum);
+    *weightSum = mWeightSum;
+    return NOERROR;
 }
 
 ECode LinearLayout::SetWeightSum(
@@ -519,7 +522,8 @@ Boolean LinearLayout::HasDividerBeforeChildAt(
         Boolean hasVisibleViewBefore = FALSE;
         Int32 visibility;
         for (int i = childIndex - 1; i >= 0; i--) {
-            AutoPtr<IView> child = GetChildAt(i);
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
             if (child != NULL) {
                 child->GetVisibility(&visibility);
                 if (visibility != IView::GONE) {
@@ -545,12 +549,14 @@ ECode LinearLayout::MeasureVertical(
     Boolean allFillParent = TRUE;
     Float totalWeight = 0;
 
-    Int32 count = GetVirtualChildCount();
+    Int32 count = 0;
+    GetVirtualChildCount(&count);
 
     Int32 widthMode = MeasureSpec::GetMode(widthMeasureSpec);
     Int32 heightMode = MeasureSpec::GetMode(heightMeasureSpec);
 
     Boolean matchWidth = FALSE;
+    Boolean skippedMeasure = FALSE;
 
     Int32 baselineChildIndex = mBaselineAlignedChildIndex;
     Boolean useLargestChild = mUseLargestChild;
@@ -587,11 +593,11 @@ ECode LinearLayout::MeasureVertical(
         lp->GetWeight(&weight);
 
         Int32 width, height;
-        lp->GetWidth(&width);
-        lp->GetHeight(&height);
+        IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
+        IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
 
         Int32 top, left, right, bottom;
-        lp->GetMargins(&left, &top, &right, &bottom);
+        IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&left, &top, &right, &bottom);
 
         totalWeight += weight;
 
@@ -601,6 +607,7 @@ ECode LinearLayout::MeasureVertical(
             // there is any leftover space.
             Int32 totalLength = mTotalLength;
             mTotalLength = Elastos::Core::Math::Max(totalLength, totalLength + top + bottom);
+            skippedMeasure = TRUE;
         }
         else {
             Int32 oldHeight = Elastos::Core::Math::INT32_MIN_VALUE;
@@ -611,7 +618,7 @@ ECode LinearLayout::MeasureVertical(
                 // Translate that to WRAP_CONTENT so that it does not end up
                 // with a height of 0
                 oldHeight = 0;
-                lp->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
+                IViewGroupLayoutParams::Probe(lp)->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
             }
 
             // Determine how big this child would like to be. If this or
@@ -623,7 +630,7 @@ ECode LinearLayout::MeasureVertical(
                     totalWeight == 0 ? mTotalLength : 0);
 
             if (oldHeight != Elastos::Core::Math::INT32_MIN_VALUE) {
-                lp->SetHeight(oldHeight);
+                IViewGroupLayoutParams::Probe(lp)->SetHeight(oldHeight);
             }
 
             Int32 childHeight;
@@ -721,7 +728,7 @@ ECode LinearLayout::MeasureVertical(
             child->GetLayoutParams((IViewGroupLayoutParams**)&lv);
             ILinearLayoutLayoutParams* lp = (ILinearLayoutLayoutParams*)lv.Get();
             Int32 top, left, right, bottom;
-            lp->GetMargins(&left, &top, &right, &bottom);
+            IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&left, &top, &right, &bottom);
 
             // Account for negative margins
             Int32 totalLength = mTotalLength;
@@ -743,9 +750,10 @@ ECode LinearLayout::MeasureVertical(
     heightSize = heightSizeAndState & IView::MEASURED_SIZE_MASK;
 
     // Either expand children with weight to take up available space or
-    // shrink them if they extend beyond our current bounds
+    // shrink them if they extend beyond our current bounds. If we skipped
+    // measurement on any children, we need to measure them now.
     Int32 delta = heightSize - mTotalLength;
-    if (delta != 0 && totalWeight > 0.0f) {
+    if (skippedMeasure || (delta != 0 && totalWeight > 0.0f)) {
         Float weightSum = mWeightSum > 0.0f ? mWeightSum : totalWeight;
 
         mTotalLength = 0;
@@ -766,10 +774,10 @@ ECode LinearLayout::MeasureVertical(
             Float weight;
             lp->GetWeight(&weight);
             Int32 width, height;
-            lp->GetWidth(&width);
-            lp->GetHeight(&height);
+            IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
+            IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
             Int32 left, top, right, bottom;
-            lp->GetMargins(&left, &top, &right, &bottom);
+            IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&left, &top, &right, &bottom);
 
             Float childExtra = weight;
             if (childExtra > 0) {
@@ -898,7 +906,8 @@ void LinearLayout::ForceUniformWidth(
     /* [in] */ Int32 heightMeasureSpec)
 {
     // Pretend that the linear layout has an exact size.
-    Int32 uniformMeasureSpec = MeasureSpec::MakeMeasureSpec(GetMeasuredWidth(),
+    Int32 mw = 0;
+    Int32 uniformMeasureSpec = MeasureSpec::MakeMeasureSpec((GetMeasuredWidth(&mw), mw),
             MeasureSpec::EXACTLY);
     for (Int32 i = 0; i< count; ++i) {
         AutoPtr<IView> child = GetVirtualChildAt(i);
@@ -910,20 +919,20 @@ void LinearLayout::ForceUniformWidth(
             ILinearLayoutLayoutParams* lp = (ILinearLayoutLayoutParams*)lv.Get();
 
             Int32 width;
-            lp->GetWidth(&width);
+            IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
 
             if (width == IViewGroupLayoutParams::MATCH_PARENT) {
                 // Temporarily force children to reuse their old measured height
                 // FIXME: this may not be right for something like wrapping text?
                 Int32 oldHeight;
-                lp->GetHeight(&oldHeight);
+                IViewGroupLayoutParams::Probe(lp)->GetHeight(&oldHeight);
                 Int32 height;
                 child->GetMeasuredHeight(&height);
-                lp->SetHeight(height);
+                IViewGroupLayoutParams::Probe(lp)->SetHeight(height);
 
                 // Remeasue with new dimensions
                 MeasureChildWithMargins(child, uniformMeasureSpec, 0, heightMeasureSpec, 0);
-                lp->SetHeight(oldHeight);
+                IViewGroupLayoutParams::Probe(lp)->SetHeight(oldHeight);
             }
         }
     }
@@ -941,12 +950,14 @@ ECode LinearLayout::MeasureHorizontal(
     Boolean allFillParent = TRUE;
     Float totalWeight = 0;
 
-    Int32 count = GetVirtualChildCount();
+    Int32 count = 0;
+    GetVirtualChildCount(&count);
 
     Int32 widthMode = MeasureSpec::GetMode(widthMeasureSpec);
     Int32 heightMode = MeasureSpec::GetMode(heightMeasureSpec);
 
     Boolean matchHeight = FALSE;
+    Boolean skippedMeasure = FALSE;
 
     if (mMaxAscent == NULL || mMaxDescent == NULL) {
         mMaxAscent = ArrayOf<Int32>::Alloc(VERTICAL_GRAVITY_COUNT);
@@ -991,15 +1002,15 @@ ECode LinearLayout::MeasureHorizontal(
         ILinearLayoutLayoutParams* lp = (ILinearLayoutLayoutParams*)lv.Get();
 
         Int32 width, height;
-        lp->GetWidth(&width);
-        lp->GetHeight(&height);
+        IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
+        IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
 
         Float weight;
         lp->GetWeight(&weight);
         totalWeight += weight;
 
         Int32 left, top, right, bottom;
-        lp->GetMargins(&left, &top, &right, &bottom);
+        IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&left, &top, &right, &bottom);
 
         Int32 gravity;
         lp->GetGravity(&gravity);
@@ -1025,6 +1036,9 @@ ECode LinearLayout::MeasureHorizontal(
                 Int32 freeSpec = MeasureSpec::MakeMeasureSpec(0, MeasureSpec::UNSPECIFIED);
                 child->Measure(freeSpec, freeSpec);
             }
+            else {
+                skippedMeasure = TRUE;
+            }
         }
         else {
             Int32 oldWidth = Elastos::Core::Math::INT32_MIN_VALUE;
@@ -1035,7 +1049,7 @@ ECode LinearLayout::MeasureHorizontal(
                 // wanted to stretch to fill available space. Translate that to
                 // WRAP_CONTENT so that it does not end up with a width of 0
                 oldWidth = 0;
-                lp->SetWidth(IViewGroupLayoutParams::WRAP_CONTENT);
+                IViewGroupLayoutParams::Probe(lp)->SetWidth(IViewGroupLayoutParams::WRAP_CONTENT);
             }
 
             // Determine how big this child would like to be. If this or
@@ -1047,7 +1061,7 @@ ECode LinearLayout::MeasureHorizontal(
                     heightMeasureSpec, 0);
 
             if (oldWidth != Elastos::Core::Math::INT32_MIN_VALUE) {
-                lp->SetWidth(oldWidth);
+                IViewGroupLayoutParams::Probe(lp)->SetWidth(oldWidth);
             }
 
             Int32 childWidth;
@@ -1158,7 +1172,7 @@ ECode LinearLayout::MeasureHorizontal(
             ILinearLayoutLayoutParams* lp = (ILinearLayoutLayoutParams*)lv.Get();
 
             Int32 left, top, right, bottom;
-            lp->GetMargins(&left, &top, &right, &bottom);
+            IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&left, &top, &right, &bottom);
 
             if (isExactly) {
                 mTotalLength += largestChildWidth + left + right +
@@ -1184,9 +1198,10 @@ ECode LinearLayout::MeasureHorizontal(
     widthSize = widthSizeAndState & IView::MEASURED_SIZE_MASK;
 
     // Either expand children with weight to take up available space or
-    // shrink them if they extend beyond our current bounds
+    // shrink them if they extend beyond our current bounds. If we skipped
+    // measurement on any children, we need to measure them now.
     Int32 delta = widthSize - mTotalLength;
-    if (delta != 0 && totalWeight > 0.0f) {
+    if (skippedMeasure || (delta != 0 && totalWeight > 0.0f)) {
         Float weightSum = mWeightSum > 0.0f ? mWeightSum : totalWeight;
 
         (*maxAscent)[0] = (*maxAscent)[1] = (*maxAscent)[2] = (*maxAscent)[3] = -1;
@@ -1216,12 +1231,12 @@ ECode LinearLayout::MeasureHorizontal(
             totalWeight += weight;
 
             Int32 width, height, lpGravity;
-            lp->GetWidth(&width);
-            lp->GetHeight(&height);
+            IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
+            IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
             lp->GetGravity(&lpGravity);
 
             Int32 left, top, right, bottom;
-            lp->GetMargins(&left, &top, &right, &bottom);
+            IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&left, &top, &right, &bottom);
 
             Float childExtra = weight;
             if (childExtra > 0) {
@@ -1384,7 +1399,8 @@ void LinearLayout::ForceUniformHeight(
     // Pretend that the linear layout has an exact size. This is the measured height of
     // ourselves. The measured height should be the max height of the children, changed
     // to accomodate the heightMesureSpec from the parent
-    Int32 uniformMeasureSpec = MeasureSpec::MakeMeasureSpec(GetMeasuredHeight(),
+    Int32 mh = 0;
+    Int32 uniformMeasureSpec = MeasureSpec::MakeMeasureSpec((GetMeasuredHeight(&mh), mh),
             MeasureSpec::EXACTLY);
     for (Int32 i = 0; i < count; ++i) {
         AutoPtr<IView> child = GetVirtualChildAt(i);
@@ -1400,20 +1416,20 @@ void LinearLayout::ForceUniformHeight(
             ILinearLayoutLayoutParams* lp = (ILinearLayoutLayoutParams*)lv.Get();
 
             Int32 height;
-            lp->GetHeight(&height);
+            IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
 
             if (height == IViewGroupLayoutParams::MATCH_PARENT) {
                 // Temporarily force children to reuse their old measured width
                 // FIXME: this may not be right for something like wrapping text?
                 Int32 oldWidth;
-                lp->GetWidth(&oldWidth);
+                IViewGroupLayoutParams::Probe(lp)->GetWidth(&oldWidth);
                 Int32 width;
                 child->GetMeasuredWidth(&width);
-                lp->SetWidth(width);
+                IViewGroupLayoutParams::Probe(lp)->SetWidth(width);
 
                 // Remeasure with new dimensions
                 MeasureChildWithMargins(child, widthMeasureSpec, 0, uniformMeasureSpec, 0);
-                lp->SetWidth(oldWidth);
+                IViewGroupLayoutParams::Probe(lp)->SetWidth(oldWidth);
             }
         }
     }
@@ -1456,7 +1472,7 @@ Int32 LinearLayout::GetNextLocationOffset(
     return 0;
 }
 
-void LinearLayout::OnLayout(
+ECode LinearLayout::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
@@ -1464,13 +1480,18 @@ void LinearLayout::OnLayout(
     /* [in] */ Int32 b)
 {
     if (mOrientation == ILinearLayout::VERTICAL) {
-        LayoutVertical();
+        LayoutVertical(l, t, r, b);
     } else {
-        LayoutHorizontal();
+        LayoutHorizontal(l, t, r, b);
     }
+    return NOERROR;
 }
 
-void LinearLayout::LayoutVertical()
+void LinearLayout::LayoutVertical(
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom)
 {
     Int32 paddingLeft = mPaddingLeft;
 
@@ -1478,13 +1499,13 @@ void LinearLayout::LayoutVertical()
     Int32 childLeft;
 
     // Where right end of child should go
-    Int32 width = mRight - mLeft;
+    Int32 width = right - left;
     Int32 childRight = width - mPaddingRight;
 
     // Space available for child
     Int32 childSpace = width - paddingLeft - mPaddingRight;
 
-    Int32 count = GetVirtualChildCount();
+    Int32 count = 0;GetVirtualChildCount(&count);
 
     Int32 majorGravity = mGravity & IGravity::VERTICAL_GRAVITY_MASK;
     Int32 minorGravity = mGravity & IGravity::RELATIVE_HORIZONTAL_GRAVITY_MASK;
@@ -1492,12 +1513,12 @@ void LinearLayout::LayoutVertical()
     switch (majorGravity) {
         case IGravity::BOTTOM:
             // mTotalLength contains the padding already
-            childTop = mPaddingTop + mBottom - mTop - mTotalLength;
+            childTop = mPaddingTop + bottom - top - mTotalLength;
             break;
 
             // mTotalLength contains the padding already
         case IGravity::CENTER_VERTICAL:
-            childTop = mPaddingTop + (mBottom - mTop - mTotalLength) / 2;
+            childTop = mPaddingTop + (bottom - top - mTotalLength) / 2;
             break;
 
         case IGravity::TOP:
@@ -1525,18 +1546,19 @@ void LinearLayout::LayoutVertical()
                 ILinearLayoutLayoutParams* lp = (ILinearLayoutLayoutParams*)lv.Get();
 
                 Int32 width, height, gravity;
-                lp->GetWidth(&width);
-                lp->GetHeight(&height);
+                IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
+                IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
                 lp->GetGravity(&gravity);
 
                 Int32 left, top, right, bottom;
-                lp->GetMargins(&left, &top, &right, &bottom);
+                IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&left, &top, &right, &bottom);
 
                 if (gravity < 0) {
                     gravity = minorGravity;
                 }
 
-                Int32 layoutDirection = GetLayoutDirection();
+                Int32 layoutDirection = 0;
+                GetLayoutDirection(&layoutDirection);
                 Int32 absoluteGravity = Gravity::GetAbsoluteGravity(gravity, layoutDirection);
                 switch (absoluteGravity & IGravity::HORIZONTAL_GRAVITY_MASK) {
                     case IGravity::CENTER_HORIZONTAL:
@@ -1569,23 +1591,28 @@ void LinearLayout::LayoutVertical()
     }
 }
 
-
-void LinearLayout::LayoutHorizontal()
+void LinearLayout::LayoutHorizontal(
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom)
 {
-    Boolean isLayoutRtl = IsLayoutRtl();
+    Boolean isLayoutRtl = FALSE;
+    IsLayoutRtl(&isLayoutRtl);
     Int32 paddingTop = mPaddingTop;
 
     Int32 childTop;
     Int32 childLeft;
 
     // Where bottom of child should go
-    Int32 height = mBottom - mTop;
+    Int32 height = bottom - top;
     Int32 childBottom = height - mPaddingBottom;
 
     // Space available for child
     Int32 childSpace = height - paddingTop - mPaddingBottom;
 
-    Int32 count = GetVirtualChildCount();
+    Int32 count = 0;
+    GetVirtualChildCount(&count);
 
     Int32 majorGravity = mGravity & IGravity::RELATIVE_HORIZONTAL_GRAVITY_MASK;
     Int32 minorGravity = mGravity & IGravity::VERTICAL_GRAVITY_MASK;
@@ -1595,16 +1622,17 @@ void LinearLayout::LayoutHorizontal()
     AutoPtr<ArrayOf<Int32> > maxAscent = mMaxAscent;
     AutoPtr<ArrayOf<Int32> > maxDescent = mMaxDescent;
 
-    Int32 layoutDirection = GetLayoutDirection();
+    Int32 layoutDirection = 0;
+    GetLayoutDirection(&layoutDirection);
     switch (Gravity::GetAbsoluteGravity(majorGravity, layoutDirection)) {
         case IGravity::RIGHT:
             // mTotalLength contains the padding already
-            childLeft = mPaddingLeft + mRight - mLeft - mTotalLength;
+            childLeft = mPaddingLeft + right - left - mTotalLength;
             break;
 
         case IGravity::CENTER_HORIZONTAL:
             // mTotalLength contains the padding already
-            childLeft = mPaddingLeft + (mRight - mLeft - mTotalLength) / 2;
+            childLeft = mPaddingLeft + (right - left - mTotalLength) / 2;
             break;
 
         case IGravity::LEFT:
@@ -1641,12 +1669,12 @@ void LinearLayout::LayoutHorizontal()
                 ILinearLayoutLayoutParams* lp = (ILinearLayoutLayoutParams*)lv.Get();
 
                 Int32 width, height,  gravity;
-                lp->GetWidth(&width);
-                lp->GetHeight(&height);
+                IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
+                IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
                 lp->GetGravity(&gravity);
 
                 Int32 left, top, right, bottom;
-                lp->GetMargins(&left, &top, &right, &bottom);
+                IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&left, &top, &right, &bottom);
 
                 if (baselineAligned && height != IViewGroupLayoutParams::MATCH_PARENT) {
                     child->GetBaseline(&childBaseline);
@@ -1731,9 +1759,12 @@ ECode LinearLayout::SetOrientation(
     return NOERROR;
 }
 
-Int32 LinearLayout::GetOrientation()
+ECode LinearLayout::GetOrientation(
+    /* [out] */ Int32* orientation)
 {
-    return mOrientation;
+    VALIDATE_NOT_NULL(orientation);
+    *orientation = mOrientation;
+    return NOERROR;
 }
 
 ECode LinearLayout::SetGravity(
@@ -1785,7 +1816,9 @@ ECode LinearLayout::GenerateLayoutParams(
 {
     VALIDATE_NOT_NULL(params);
     AutoPtr<ILinearLayoutLayoutParams> lp;
-    FAIL_RETURN(CLinearLayoutLayoutParams::New(GetContext(), attrs, (ILinearLayoutLayoutParams**)&lp));
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
+    FAIL_RETURN(CLinearLayoutLayoutParams::New(ctx, attrs, (ILinearLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
     REFCOUNT_ADD(*params);
     return NOERROR;
@@ -1849,6 +1882,12 @@ ECode LinearLayout::OnInitializeAccessibilityNodeInfo(
     return NOERROR;
 }
 
+Int32 LinearLayout::GetChildCount()
+{
+    Int32 count = 0;
+    ViewGroup::GetChildCount(&count);
+    return count;
+}
 
 } // namespace Widget
 } // namespace Droid

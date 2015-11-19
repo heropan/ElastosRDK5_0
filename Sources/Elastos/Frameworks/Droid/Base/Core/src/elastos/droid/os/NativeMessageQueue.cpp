@@ -28,6 +28,14 @@ void NativeMessageQueue::Wake()
     mLooper->wake();
 }
 
+AutoPtr<NativeMessageQueue> Elastos_Os_MessageQueue_GetMessageQueue(
+    /* [in] */ IMessageQueue* messageQueueObj)
+{
+    Int64 ptr = 0;
+    messageQueueObj->GetMPtr(&ptr);
+    return reinterpret_cast<NativeMessageQueue*>(ptr);
+}
+
 } // namespace Os
 } // namespace Droid
 } // namespace Elastos

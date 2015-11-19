@@ -44,9 +44,9 @@ ELASTOS_LIBS += text/text.lib
 ELASTOS_LIBS += transition/transition.lib
 ELASTOS_LIBS += utility/utility.lib
 ELASTOS_LIBS += view/view.lib
+ELASTOS_LIBS += widget/widget.lib
 
 // ELASTOS_LIBS += wifi/wifi.lib
-// ELASTOS_LIBS += widget/widget.lib
 // ELASTOS_LIBS += appwidget/appwidget.lib
 // ELASTOS_LIBS += wifidisplay/wifidisplay.lib
 // ELASTOS_LIBS += statusbar/statusbar.lib

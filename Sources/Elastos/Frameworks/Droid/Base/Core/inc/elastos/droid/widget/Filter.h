@@ -3,17 +3,18 @@
 #define __ELASTOS_DROID_WIDGET_FILTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
 class Filter
+    : public Object
+    , public IFilter
 {
 protected:
     /**
@@ -21,13 +22,13 @@ protected:
      * computed by the filtering operation and the number of these values.</p>
      */
     class FilterResults
-        : public ElRefBase
+        : public Object
         , public IFilterResults
     {
     public:
         CAR_INTERFACE_DECL();
 
-        FilterResults() {}
+        FilterResults();
 
         CARAPI SetCount(
             /* [in] */ Int32 count);
@@ -60,8 +61,7 @@ private:
      * of the request.</p>
      */
     class RequestArguments
-        : public ElRefBase
-        , public IInterface
+        : public Object
     {
     public:
         CAR_INTERFACE_DECL()
@@ -87,7 +87,7 @@ private:
      * handled in the UI thread.</p>
      */
     class RequestHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         RequestHandler(
@@ -106,12 +106,13 @@ private:
          */
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         Filter* mHost;
     };
 
     class ResultsHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         ResultsHandler(
@@ -119,10 +120,14 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         Filter* mHost;
     };
+
 public:
+    CAR_INTERFACE_DECL();
+
     Filter();
 
     virtual CARAPI SetDelayer(
@@ -191,12 +196,11 @@ private:
 private:
     static const String TAG;
     static const String THREAD_NAME;
-    static const Int32 FILTER_TOKEN = 0xD0D0F00D;
-    static const Int32 FINISH_TOKEN = 0xDEADBEEF;
+    static const Int32 FILTER_TOKEN;
+    static const Int32 FINISH_TOKEN;
 
     AutoPtr<IHandler> mThreadHandler;
     AutoPtr<IHandler> mResultHandler;
-
     AutoPtr<IFilterDelayer> mDelayer;
 
     Object mLock;
@@ -205,6 +209,5 @@ private:
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-
 
 #endif //__ELASTOS_DROID_WIDGET_FILTER_H__

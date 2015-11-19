@@ -7,21 +7,25 @@
 #include "elastos/droid/widget/Filter.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::CObjectContainer;
-using Elastos::Utility::Etl::List;
-using Elastos::Core::IComparator;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::Widget::BaseAdapter;
 using Elastos::Droid::Widget::Filter;
 using Elastos::Droid::Widget::IFilterResults;
 using Elastos::Droid::Widget::IFilter;
+using Elastos::Core::IComparator;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IList;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos{
 namespace Droid{
 namespace Widget{
 
-class ArrayAdapter : public BaseAdapter
+class ArrayAdapter
+    : public BaseAdapter
+    , public IArrayAdapter
+    , public IFilterable
 {
 private:
     /**
@@ -30,69 +34,11 @@ private:
      * is removed from the list.</p>
      */
     class ArrayFilter
-        : public ElRefBase
-        , public IFilter
-        , public Filter
+        : public Filter
     {
     public:
         ArrayFilter(
             /* [in] */ ArrayAdapter* host);
-
-        CAR_INTERFACE_DECL();
-
-        /**
-         * Provide an interface that decides how Int64 to delay the message for a given query.  Useful
-         * for heuristics such as posting a delay for the delete key to avoid doing any work while the
-         * user holds down the delete key.
-         *
-         * @param delayer The delayer.
-         * @hide
-         */
-        CARAPI SetDelayer(
-            /* [in] */ IFilterDelayer* delayer);
-
-        /**
-         * <p>Starts an asynchronous filtering operation. Calling this method
-         * cancels all previous non-executed filtering requests and posts a new
-         * filtering request that will be executed later.</p>
-         *
-         * @param constraint the constraint used to filter the data
-         *
-         * @see #filter(CharSequence, android.widget.Filter.FilterListener)
-         */
-        CARAPI DoFilter(
-            /* [in] */ ICharSequence* constraint);
-
-        /**
-         * <p>Starts an asynchronous filtering operation. Calling this method
-         * cancels all previous non-executed filtering requests and posts a new
-         * filtering request that will be executed later.</p>
-         *
-         * <p>Upon completion, the listener is notified.</p>
-         *
-         * @param constraint the constraint used to filter the data
-         * @param listener a listener notified upon completion of the operation
-         *
-         * @see #filter(CharSequence)
-         * @see #performFiltering(CharSequence)
-         * @see #publishResults(CharSequence, android.widget.Filter.FilterResults)
-         */
-        CARAPI DoFilter(
-            /* [in] */ ICharSequence* constraint,
-            /* [in] */ IFilterListener* listener);
-
-        /**
-         * <p>Converts a value from the filtered set into a CharSequence. Subclasses
-         * should override this method to convert their results. The default
-         * implementation returns an empty String for NULL values or the default
-         * String representation of the value.</p>
-         *
-         * @param resultValue the value to convert to a CharSequence
-         * @return a CharSequence representing the value
-         */
-        CARAPI ConvertResultToString(
-            /* [in] */ IInterface* resultValue,
-            /* [out] */ ICharSequence** cs);
 
     protected:
         //@Override
@@ -110,27 +56,57 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     ArrayAdapter();
 
-    ArrayAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 textViewResourceId);
 
-    ArrayAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resource,
         /* [in] */ Int32 textViewResourceId);
 
-    ArrayAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 textViewResourceId,
-        /* [in] */ IObjectContainer* objects);
+        /* [in] */ ArrayOf<IInterface*>* objects);
 
-    ArrayAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resource,
         /* [in] */ Int32 textViewResourceId,
-        /* [in] */ IObjectContainer* objects);
+        /* [in] */ ArrayOf<IInterface*>* objects);
+
+    /**
+     * Constructor
+     *
+     * @param context The current context.
+     * @param resource The resource ID for a layout file containing a TextView to use when
+     *                 instantiating views.
+     * @param objects The objects to represent in the ListView.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ Int32 resource,
+        /* [in] */ IList* objects);
+
+    /**
+     * Constructor
+     *
+     * @param context The current context.
+     * @param resource The resource ID for a layout file containing a layout to use when
+     *                 instantiating views.
+     * @param textViewResourceId The id of the TextView within the layout resource to be populated
+     * @param objects The objects to represent in the ListView.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ Int32 resource,
+        /* [in] */ Int32 textViewResourceId,
+        /* [in] */ IList* objects);
 
     virtual ~ArrayAdapter();
 
@@ -138,7 +114,7 @@ public:
         /* [in] */ IInterface* object);
 
     virtual CARAPI AddAll(
-        /* [in] */ IObjectContainer* collection);
+        /* [in] */ ICollection* collection);
 
     virtual CARAPI AddAll(
         /* [in] */ ArrayOf<IInterface* >* items) ;
@@ -155,47 +131,54 @@ public:
     virtual CARAPI Sort(
         /* [in] */ IComparator* comparator);
 
-    CARAPI NotifyDataSetChanged();
-
+    virtual CARAPI NotifyDataSetChanged();
 
     virtual CARAPI SetNotifyOnChange(
         /* [in] */ Boolean notifyOnChange);
 
-    virtual CARAPI_(AutoPtr<IContext>) GetContext();
+    virtual CARAPI GetContext(
+        /* [out] */ IContext** context);
 
-    CARAPI_(Int32) GetCount();
+    virtual CARAPI GetCount(
+        /* [out] */ Int32* count);
 
-    CARAPI_(AutoPtr<IInterface>) GetItem(
-        /* [in] */ Int32 position);
+    virtual CARAPI GetItem(
+        /* [in] */ Int32 position,
+        /* [out] */ IInterface** item);
 
-    virtual CARAPI_(Int32) GetPosition(
-        /* [in] */ IInterface* item);
+    virtual CARAPI GetPosition(
+        /* [in] */ IInterface* item,
+        /* [out] */ Int32* position);
 
-    CARAPI_(Int64) GetItemId(
-        /* [in] */ Int32 position);
+    virtual CARAPI GetItemId(
+        /* [in] */ Int32 position,
+        /* [out] */ Int64* itemId);
 
-    virtual CARAPI_(AutoPtr<IView>) GetView(
+    virtual CARAPI GetView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
     virtual CARAPI SetDropDownViewResource(
         /* [in] */ Int32 resource);
 
     //@Override
-    CARAPI_(AutoPtr<IView>) GetDropDownView(
+    virtual CARAPI GetDropDownView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    virtual CARAPI_(AutoPtr<IFilter>) GetFilter();
+    virtual CARAPI GetFilter(
+        /* [out] */ IFilter** filter);
 
 protected:
     CARAPI Init(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resource,
         /* [in] */ Int32 textViewResourceId,
-        /* [in] */ IObjectContainer* objects = NULL);
+        /* [in] */ IList* objects = NULL);
 
 private:
     CARAPI_(AutoPtr<IView>) CreateViewFromResource(
@@ -249,8 +232,8 @@ private:
     Boolean mNotifyOnChange;
 
     // context usually holds adapter, we use weak-reference here.
-    AutoPtr<IWeakReference> mWeakContext;
-    // AutoPtr<IContext> mContext;
+    // AutoPtr<IWeakReference> mWeakContext;
+    AutoPtr<IContext> mContext;
 
     // A copy of the original mObjects array, initialized from and then used instead as soon as
     // the mFilter ArrayFilter is used. mObjects will then only contain the filtered values.

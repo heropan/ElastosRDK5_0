@@ -44,6 +44,7 @@ ECode CBitmapFactory::DecodeResource(
     /* [in] */ IBitmapFactoryOptions* opts,
     /* [out] */ IBitmap** bitmap)
 {
+    VALIDATE_NOT_NULL(bitmap);
     return BitmapFactory::DecodeResource(res, id, opts, bitmap);
 }
 
@@ -52,6 +53,7 @@ ECode CBitmapFactory::DecodeResource(
     /* [in] */ Int32 id,
     /* [out] */ IBitmap** bitmap)
 {
+    VALIDATE_NOT_NULL(bitmap);
     return BitmapFactory::DecodeResource(res, id, bitmap);
 }
 
@@ -62,6 +64,7 @@ ECode CBitmapFactory::DecodeByteArray(
     /* [in] */ IBitmapFactoryOptions* _opts,
     /* [out] */ IBitmap** bitmap)
 {
+    VALIDATE_NOT_NULL(bitmap);
     return BitmapFactory::DecodeByteArray(data, offset, length, _opts, bitmap);
 }
 
@@ -71,6 +74,7 @@ ECode CBitmapFactory::DecodeByteArray(
     /* [in] */ Int32 length,
     /* [out] */ IBitmap** bitmap)
 {
+    VALIDATE_NOT_NULL(bitmap);
     return BitmapFactory::DecodeByteArray(data, offset, length, bitmap);
 }
 
@@ -88,6 +92,7 @@ ECode CBitmapFactory::DecodeStream(
     /* [in] */ IInputStream* is,
     /* [out] */ IBitmap** bitmap)
 {
+    VALIDATE_NOT_NULL(bitmap);
     return BitmapFactory::DecodeStream(is, bitmap);
 }
 
@@ -105,10 +110,10 @@ ECode CBitmapFactory::DecodeFileDescriptor(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ IBitmap** bitmap)
 {
+    VALIDATE_NOT_NULL(bitmap);
     return BitmapFactory::DecodeFileDescriptor(fd, bitmap);
 }
 
 } // namespace Graphics
 } // namepsace Droid
 } // namespace Elastos
-
