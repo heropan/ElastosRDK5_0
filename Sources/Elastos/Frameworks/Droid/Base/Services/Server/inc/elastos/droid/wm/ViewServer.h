@@ -19,13 +19,11 @@ namespace Wm {
  * {@hide}
  */
 class ViewServer
-    : public ElRefBase
-    , public IRunnable
+    : public Runnable
 {
 public:
     class ViewServerWorker
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
         , public CWindowManagerService::IWindowChangeListener
     {
     public:
@@ -33,16 +31,7 @@ public:
             /* [in] */ ISocket* client,
             /* [in] */ ViewServer* host);
 
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [in] */ InterfaceID* pIID);
+        CAR_INTERFACE_DECL()
 
         CARAPI Run();
 
@@ -73,17 +62,6 @@ public:
     ViewServer(
         /* [in] */ CWindowManagerService* service,
         /* [in] */ Int32 port);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* pObject,
-        /* [in] */ InterfaceID* pIID);
 
     /**
      * Starts the server.

@@ -13,6 +13,7 @@ StartingData::StartingData(
     /* [in] */ ICharSequence* nonLocalizedLabel,
     /* [in] */ Int32 labelRes,
     /* [in] */ Int32 icon,
+    /* [in] */ Int32 logo,
     /* [in] */ Int32 windowFlags)
     : mPkg(pkg)
     , mTheme(theme)
@@ -20,6 +21,7 @@ StartingData::StartingData(
     , mNonLocalizedLabel(nonLocalizedLabel)
     , mLabelRes(labelRes)
     , mIcon(icon)
+    , mLogo(logo)
     , mWindowFlags(windowFlags)
 {}
 

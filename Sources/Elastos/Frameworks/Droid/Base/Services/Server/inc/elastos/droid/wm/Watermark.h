@@ -2,10 +2,11 @@
 #define __ELASTOS_DROID_SERVER_WM_WATERMARK_H__
 
 #include "Elastos.Droid.Server_server.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::ISurfaceSession;
-using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::ISurfaceControl;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Utility::IDisplayMetrics;
 
@@ -17,7 +18,7 @@ namespace Wm {
 /**
  * Displays a watermark on top of the window manager's windows.
  */
-class Watermark : public ElRefBase
+class Watermark : public Object
 {
 public:
     Watermark(
@@ -32,19 +33,17 @@ public:
 
     CARAPI_(void) DrawIfNeeded();
 
-public:
+private:
     AutoPtr<IDisplay> mDisplay;
     AutoPtr< ArrayOf<String> > mTokens;
     String mText;
     AutoPtr<IPaint> mTextPaint;
     Int32 mTextWidth;
     Int32 mTextHeight;
-    Int32 mTextAscent;
-    Int32 mTextDescent;
     Int32 mDeltaX;
     Int32 mDeltaY;
 
-    AutoPtr<ISurface> mSurface;
+    AutoPtr<ISurfaceControl> mSurfaceControl;
     Int32 mLastDW;
     Int32 mLastDH;
     Boolean mDrawNeeded;

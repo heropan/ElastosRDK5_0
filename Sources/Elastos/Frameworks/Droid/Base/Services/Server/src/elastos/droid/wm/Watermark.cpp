@@ -13,7 +13,7 @@ using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::View::CSurface;
+using Elastos::Droid::View::CSurfaceControl;
 
 namespace Elastos {
 namespace Droid {
@@ -82,8 +82,6 @@ Watermark::Watermark(
     AutoPtr<IPaintFontMetricsInt> fm;
     mTextPaint->GetFontMetricsInt((IPaintFontMetricsInt**)&fm);
     mTextPaint->MeasureText(mText, (Float*)&mTextWidth);
-    fm->GetAscent(&mTextAscent);
-    fm->GetDescent(&mTextDescent);
     mTextHeight = mTextDescent - mTextAscent;
 
     mDeltaX = CWindowManagerService::GetPropertyInt(tokens, 2,
@@ -104,18 +102,20 @@ Watermark::Watermark(
     mTextPaint->SetColor(color);
     mTextPaint->SetShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor);
 
+    AutoPtr<ISurfaceControl> ctrl;
     // try {
-    ASSERT_SUCCEEDED(CSurface::New(session, String("WatermarkSurface"),
-            1, 1, IPixelFormat::TRANSLUCENT,
-            ISurface::HIDDEN, (ISurface**)&mSurface));
+    CSurfaceControl::New(session, String("WatermarkSurface"),
+            1, 1, IPixelFormat::TRANSLUCENT, ISurfaceControl::HIDDEN, (ISurfaceControl**)&ctrl);
     Int32 stack;
     mDisplay->GetLayerStack(&stack);
-    mSurface->SetLayerStack(stack);
-    mSurface->SetLayer(CWindowManagerService::TYPE_LAYER_MULTIPLIER * 100);
-    mSurface->SetPosition(0, 0);
-    mSurface->Show();
+    ctrl->SetLayerStack(stack);
+    ctrl->SetLayer(CWindowManagerService::TYPE_LAYER_MULTIPLIER * 100);
+    ctrl->SetPosition(0, 0);
+    ctrl->Show();
+    mSurface->CopyFrom(ctrl);
     // } catch (OutOfResourcesException e) {
     // }
+    mSurfaceControl = ctrl;
 }
 
 void Watermark::PositionSurface(
@@ -125,7 +125,7 @@ void Watermark::PositionSurface(
     if (mLastDW != dw || mLastDH != dh) {
         mLastDW = dw;
         mLastDH = dh;
-        mSurface->SetSize(dw, dh);
+        mSurfaceControl->SetSize(dw, dh);
         mDrawNeeded = TRUE;
     }
 }

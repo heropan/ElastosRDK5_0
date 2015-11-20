@@ -26,6 +26,10 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
+//==============================================================================
+//                  ViewServer::ViewServerWorker
+//==============================================================================
+
 ViewServer::ViewServerWorker::ViewServerWorker(
     /* [in] */ ISocket* client,
     /* [in] */ ViewServer* host)
@@ -35,34 +39,7 @@ ViewServer::ViewServerWorker::ViewServerWorker(
     , mHost(host)
 { }
 
-PInterface ViewServer::ViewServerWorker::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IRunnable*)this;
-    }
-    else if (riid == Elastos::Core::EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-    return NULL;
-}
-
-UInt32 ViewServer::ViewServerWorker::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ViewServer::ViewServerWorker::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ViewServer::ViewServerWorker::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
+CAR_INTERFACE_IMPL(ViewServer::ViewServerWorker, Runnable, CWindowManagerService::IWindowChangeListener)
 
 ECode ViewServer::ViewServerWorker::Run()
 {
@@ -152,16 +129,18 @@ ECode ViewServer::ViewServerWorker::Run()
 
 void ViewServer::ViewServerWorker::WindowsChanged()
 {
-    AutoLock lock(mLock);
-    mNeedWindowListUpdate = TRUE;
-    mLock.NotifyAll();
+    synchronized (mLock) {
+        mNeedWindowListUpdate = TRUE;
+        mLock.NotifyAll();
+    }
 }
 
 void ViewServer::ViewServerWorker::FocusChanged()
 {
-    AutoLock lock(mLock);
-    mNeedFocusedWindowUpdate = TRUE;
-    mLock.NotifyAll();
+    synchronized (mLock) {
+        mNeedFocusedWindowUpdate = TRUE;
+        mLock.NotifyAll();
+    }
 }
 
 Boolean ViewServer::ViewServerWorker::WindowManagerAutolistLoop()
@@ -191,8 +170,7 @@ Boolean ViewServer::ViewServerWorker::WindowManagerAutolistLoop()
         Boolean needWindowListUpdate = FALSE;
         Boolean needFocusedWindowUpdate = FALSE;
 
-        {
-            AutoLock lock(mLock);
+        synchronized (mLock) {
             while (!mNeedWindowListUpdate && !mNeedFocusedWindowUpdate) {
                 mLock.Wait();
             }
@@ -211,7 +189,7 @@ Boolean ViewServer::ViewServerWorker::WindowManagerAutolistLoop()
             IFlushable::Probe(out)->Flush();
         }
         if (needFocusedWindowUpdate) {
-            out->WriteString(String("FOCUS UPDATE\n"));
+            out->WriteString(String("ACTION_FOCUS UPDATE\n"));
             IFlushable::Probe(out)->Flush();
         }
     }
@@ -231,6 +209,11 @@ Boolean ViewServer::ViewServerWorker::WindowManagerAutolistLoop()
     return TRUE;
 }
 
+
+//==============================================================================
+//                  ViewServer
+//==============================================================================
+
 const Int32 ViewServer::VIEW_SERVER_DEFAULT_PORT = 4939;
 const Int32 ViewServer::VIEW_SERVER_MAX_CONNECTIONS = 10;
 const String ViewServer::LocalLOG_TAG("ViewServer");
@@ -247,36 +230,7 @@ ViewServer::ViewServer(
     /* [in] */ Int32 port)
     : mWindowManager(windowManager)
     , mPort(port)
-{ }
-
-PInterface ViewServer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IRunnable*)this;
-    }
-    else if (riid == Elastos::Core::EIID_IRunnable) {
-        return (IAnimation*)this;
-    }
-    return NULL;
-}
-
-UInt32 ViewServer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ViewServer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ViewServer::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
+{}
 
 ECode ViewServer::Start(
     /* [out] */ Boolean* result)

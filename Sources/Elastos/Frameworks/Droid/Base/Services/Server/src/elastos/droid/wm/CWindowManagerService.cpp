@@ -190,7 +190,7 @@ CAR_INTERFACE_IMPL(CWindowManagerService::MyLowPowerModeListener, Object, ILowPo
 ECode CWindowManagerService::MyLowPowerModeListener::OnLowPowerModeChanged(
     /* [in] */ Boolean enabled)
 {
-    synchronized(mHost->mWindowMapLock) {
+    synchronized (mHost->mWindowMapLock) {
         if (mHost->mAnimationsDisabled != enabled) {
             mHost->mAnimationsDisabled = enabled;
             mHost->DispatchNewAnimatorScaleLocked(NULL);
@@ -262,7 +262,7 @@ CWindowManagerService::DragInputEventReceiver::DragInputEventReceiver(
 ECode CWindowManagerService::DragInputEventReceiver::OnInputEvent(
     /* [in] */ IInputEvent* event)
 {
-    VALIDATE_NOT_NULL(event);
+    VALIDATE_NOT_NULL(event)
 
     Boolean handled = FALSE;
     // try {

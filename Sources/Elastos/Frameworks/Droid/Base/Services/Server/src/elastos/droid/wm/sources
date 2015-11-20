@@ -43,3 +43,5 @@ SOURCES += EmulatorDisplayOverlay.cpp
 SOURCES += FocusedStackFrame.cpp
 SOURCES += PointerEventDispatcher.cpp
 SOURCES += StackTapPointerEventListener.cpp
+SOURCES += Task.cpp
+SOURCES += TaskGroup.cpp

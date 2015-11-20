@@ -21,6 +21,7 @@ public:
         /* [in] */ ICharSequence* nonLocalizedLabel,
         /* [in] */ Int32 labelRes,
         /* [in] */ Int32 icon,
+        /* [in] */ Int32 logo,
         /* [in] */ Int32 windowFlags);
 
 public:
@@ -30,6 +31,7 @@ public:
     AutoPtr<ICharSequence> mNonLocalizedLabel;
     Int32 mLabelRes;
     Int32 mIcon;
+    Int32 mLogo;
     Int32 mWindowFlags;
 };
 

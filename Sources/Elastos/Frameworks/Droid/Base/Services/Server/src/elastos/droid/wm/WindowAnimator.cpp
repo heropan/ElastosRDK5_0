@@ -1,5 +1,7 @@
 
 #include "wm/WindowAnimator.h"
+#include "wm/AppWindowAnimator.h"
+#include "wm/ScreenRotationAnimation.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/core/StringBuilder.h>
@@ -10,45 +12,31 @@ using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::View::ISurfaceHelper;
 using Elastos::Droid::View::CSurfaceHelper;
+using Elastos::Droid::View::Animation::IAlphaAnimation;
+using Elastos::Droid::View::Animation::CAlphaAnimation;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm {
 
-const Int32 WindowAnimator::WALLPAPER_ACTION_PENDING = 1;
-const String WindowAnimator::TAG("WindowAnimator");
-const Int32 WindowAnimator::KEYGUARD_NOT_SHOWN     = 0;
-const Int32 WindowAnimator::KEYGUARD_ANIMATING_IN  = 1;
-const Int32 WindowAnimator::KEYGUARD_SHOWN         = 2;
-const Int32 WindowAnimator::KEYGUARD_ANIMATING_OUT = 3;
-
-
-WindowAnimator::AnimatorToLayoutParams::AnimatorToLayoutParams()
-    : mUpdateQueued(FALSE)
-    , mBulkUpdateParams(0)
-{
-}
-
-WindowAnimator::AnimationRunnable::AnimationRunnable(
-    /* [in] */ WindowAnimator* host)
-    : mHost(host)
-{
-}
+//==============================================================================
+//                  WindowAnimator::AnimationRunnable
+//==============================================================================
 
 ECode WindowAnimator::AnimationRunnable::Run()
 {
-    // TODO(cmautner): When full isolation is achieved for animation, the first lock
-    // goes away and only the WindowAnimator.this remains.
-    AutoLock lock(mHost->mService->mWindowMapLock);
-    {
-        AutoLock lock(mHost->mSelfLock);
-        mHost->CopyLayoutToAnimParamsLocked();
+    synchronized (mHost->mWindowMapLock) {
+        mHost->mService->mAnimationScheduled = FALSE;
         mHost->AnimateLocked();
     }
-
     return NOERROR;
 }
+
+
+//==============================================================================
+//                  WindowAnimator::DisplayContentsAnimator
+//==============================================================================
 
 WindowAnimator::DisplayContentsAnimator::DisplayContentsAnimator(
     /* [in] */ WindowAnimator* host,
@@ -60,28 +48,34 @@ WindowAnimator::DisplayContentsAnimator::DisplayContentsAnimator(
             new DimSurface(mHost->mService->mFxSession, displayId);
 }
 
+
+//==============================================================================
+//                  WindowAnimator
+//==============================================================================
+
+const String WindowAnimator::TAG("WindowAnimator");
+const Int64 KEYGUARD_ANIM_TIMEOUT_MS;
+const Int32 WindowAnimator::KEYGUARD_NOT_SHOWN;
+const Int32 WindowAnimator::KEYGUARD_ANIMATING_IN;
+const Int32 WindowAnimator::KEYGUARD_SHOWN;
+const Int32 WindowAnimator::KEYGUARD_ANIMATING_OUT;
+
 WindowAnimator::WindowAnimator(
     /* [in] */ CWindowManagerService* service)
     : mService(service)
     , mAnimating(FALSE)
-    , mAdjResult(0)
-    , mDw(0)
-    , mDh(0)
-    , mInnerDw(0)
-    , mInnerDh(0)
     , mCurrentTime(0)
     , mAboveUniverseLayer(0)
     , mBulkUpdateParams(0)
-    , mPendingActions(0)
     , mInitialized(FALSE)
+    , mKeyguardGoingAway(FALSE)
+    , mKeyguardGoingAwayToNotificationShade(FALSE)
+    , mKeyguardGoingAwayDisableWindowAnimations(FALSE)
     , mForceHiding(KEYGUARD_NOT_SHOWN)
 {
     mContext = service->mContext;
     mPolicy = service->mPolicy;
-
     mAnimationRunnable = new AnimationRunnable(this);
-
-    mAnimToLayout = new AnimatorToLayoutParams();
 }
 
 WindowAnimator::~WindowAnimator()
@@ -118,19 +112,10 @@ void WindowAnimator::RemoveDisplayLocked(
             =  mDisplayContentsAnimators.Find(displayId);
     if (it != mDisplayContentsAnimators.End()) {
         displayAnimator = it->mSecond;
-
         if (displayAnimator != NULL) {
-            if (displayAnimator->mWindowAnimationBackgroundSurface != NULL) {
-                displayAnimator->mWindowAnimationBackgroundSurface->Kill();
-                displayAnimator->mWindowAnimationBackgroundSurface = NULL;
-            }
             if (displayAnimator->mScreenRotationAnimation != NULL) {
                 displayAnimator->mScreenRotationAnimation->Kill();
                 displayAnimator->mScreenRotationAnimation = NULL;
-            }
-            if (displayAnimator->mDimAnimator != NULL) {
-                displayAnimator->mDimAnimator->Kill();
-                displayAnimator->mDimAnimator = NULL;
             }
         }
 
@@ -138,144 +123,12 @@ void WindowAnimator::RemoveDisplayLocked(
     }
 }
 
-void WindowAnimator::UpdateAnimToLayoutLocked()
-{
-    AutoLock lock(mAnimToLayoutLock);
-    mAnimToLayout->mBulkUpdateParams = mBulkUpdateParams;
-    mAnimToLayout->mPendingLayoutChanges
-            = new HashMap<Int32, Int32>(
-                    mPendingLayoutChanges.Begin(), mPendingLayoutChanges.End());
-    mAnimToLayout->mWindowDetachedWallpaper = mWindowDetachedWallpaper;
-
-    if (!mAnimToLayout->mUpdateQueued) {
-        mAnimToLayout->mUpdateQueued = TRUE;
-        Boolean result;
-        mService->mH->SendEmptyMessage(CWindowManagerService::H::UPDATE_ANIM_PARAMETERS, &result);
-    }
-}
-
-void WindowAnimator::CopyLayoutToAnimParamsLocked()
-{
-    AutoPtr<CWindowManagerService::LayoutToAnimatorParams> layoutToAnim
-            = mService->mLayoutToAnim;
-
-    AutoLock lock(mService->mLayoutToAnimLock);
-
-    layoutToAnim->mAnimationScheduled = FALSE;
-
-    if (!layoutToAnim->mParamsModified) {
-        return;
-    }
-    layoutToAnim->mParamsModified = FALSE;
-
-    if ((layoutToAnim->mChanges & CWindowManagerService::LayoutToAnimatorParams::WALLPAPER_TOKENS_CHANGED) != 0) {
-        layoutToAnim->mChanges &= ~CWindowManagerService::LayoutToAnimatorParams::WALLPAPER_TOKENS_CHANGED;
-        mWallpaperTokens.Assign(layoutToAnim->mWallpaperTokens.Begin(),
-                layoutToAnim->mWallpaperTokens.End());
-    }
-
-    // if (WindowManagerService.DEBUG_WALLPAPER_LIGHT) {
-    //     if (mWallpaperTarget != layoutToAnim.mWallpaperTarget
-    //             || mLowerWallpaperTarget != layoutToAnim.mLowerWallpaperTarget
-    //             || mUpperWallpaperTarget != layoutToAnim.mUpperWallpaperTarget) {
-    //         Slog.d(TAG, "Pulling anim wallpaper: target=" + layoutToAnim.mWallpaperTarget
-    //                 + " lower=" + layoutToAnim.mLowerWallpaperTarget + " upper="
-    //                 + layoutToAnim.mUpperWallpaperTarget);
-    //     }
-    // }
-    mWallpaperTarget = layoutToAnim->mWallpaperTarget;
-    mWpAppAnimator = mWallpaperTarget == NULL
-            ? NULL : mWallpaperTarget->mAppToken == NULL
-                    ? NULL : mWallpaperTarget->mAppToken->mAppAnimator;
-    mLowerWallpaperTarget = layoutToAnim->mLowerWallpaperTarget;
-    mUpperWallpaperTarget = layoutToAnim->mUpperWallpaperTarget;
-
-    // Set the new DimAnimator params.
-    HashMap<Int32, AutoPtr<DisplayContentsAnimator> >::Iterator it =
-            mDisplayContentsAnimators.Begin();
-    for (; it != mDisplayContentsAnimators.End(); ++it) {
-        Int32 displayId = it->mFirst;
-        AutoPtr<DisplayContentsAnimator> displayAnimator = it->mSecond;
-
-        displayAnimator->mWinAnimators.Clear();
-        AutoPtr<List< AutoPtr<WindowStateAnimator> > > winAnimators;
-        HashMap<Int32, AutoPtr<List<AutoPtr<WindowStateAnimator> > > >::Iterator listsIt
-                = layoutToAnim->mWinAnimatorLists.Find(displayId);
-        if (listsIt != layoutToAnim->mWinAnimatorLists.End()) {
-            winAnimators = listsIt->mSecond;
-        }
-        if (winAnimators != NULL) {
-            displayAnimator->mWinAnimators.Assign(winAnimators->Begin(),
-                    winAnimators->End());
-        }
-
-        AutoPtr<DimAnimator::Parameters> dimParams;
-        HashMap<Int32, AutoPtr<DimAnimator::Parameters> >::Iterator paramsIt
-                = layoutToAnim->mDimParams.Find(displayId);
-        if (paramsIt != layoutToAnim->mDimParams.End()) {
-            dimParams = paramsIt->mSecond;
-        }
-        if (dimParams == NULL) {
-            displayAnimator->mDimParams = NULL;
-        }
-        else {
-            AutoPtr<WindowStateAnimator> newWinAnimator = dimParams->mDimWinAnimator;
-
-            // Only set dim params on the highest dimmed layer.
-            AutoPtr<WindowStateAnimator> existingDimWinAnimator =
-                    displayAnimator->mDimParams == NULL ?
-                            NULL : displayAnimator->mDimParams->mDimWinAnimator;
-            // Don't turn on for an unshown surface, or for any layer but the highest
-            // dimmed layer.
-            if (newWinAnimator->mSurfaceShown && (existingDimWinAnimator == NULL
-                    || !existingDimWinAnimator->mSurfaceShown
-                    || existingDimWinAnimator->mAnimLayer < newWinAnimator->mAnimLayer)) {
-                displayAnimator->mDimParams = new DimAnimator::Parameters(dimParams);
-            }
-        }
-    }
-
-    mAppAnimators.Clear();
-    List< AutoPtr<CWindowManagerService::AppWindowAnimParams> >::Iterator paramsIt
-            = layoutToAnim->mAppWindowAnimParams.Begin();
-    for (; paramsIt != layoutToAnim->mAppWindowAnimParams.End(); ++paramsIt) {
-        AutoPtr<CWindowManagerService::AppWindowAnimParams> params = *paramsIt;
-        AutoPtr<AppWindowAnimator> appAnimator = params->mAppAnimator;
-        appAnimator->mAllAppWinAnimators.Clear();
-        appAnimator->mAllAppWinAnimators.Assign(params->mWinAnimators.Begin(),
-                params->mWinAnimators.End());
-        mAppAnimators.PushBack(appAnimator);
-    }
-}
-
 void WindowAnimator::HideWallpapersLocked(
-    /* [in] */ WindowState* w,
-    /* [in] */ Boolean fromAnimator)
+    /* [in] */ WindowState* w)
 {
-    // There is an issue where this function can be called either from
-    // the animation or the layout side of the window manager.  The problem
-    // is that if it is called from the layout side, we may not yet have
-    // propagated the current layout wallpaper state over into the animation
-    // state.  If that is the case, we can do bad things like hide the
-    // wallpaper when we had just made it shown because the animation side
-    // doesn't yet see that there is now a wallpaper target.  As a temporary
-    // work-around, we tell the function here which side of the window manager
-    // is calling so it can use the right state.
-    if (fromAnimator) {
-        HideWallpapersLocked(w, mWallpaperTarget, mLowerWallpaperTarget, mWallpaperTokens);
-    }
-    else {
-        HideWallpapersLocked(w, mService->mWallpaperTarget,
-                mService->mLowerWallpaperTarget, mService->mWallpaperTokens);
-    }
-}
-
-void WindowAnimator::HideWallpapersLocked(
-    /* [in] */ WindowState* w,
-    /* [in] */ WindowState* wallpaperTarget,
-    /* [in] */ WindowState* lowerWallpaperTarget,
-    /* [in] */ List<AutoPtr<WindowToken> >& wallpaperTokens)
-{
+    AutoPtr<WindowState> wallpaperTarget = mService->mWallpaperTarget;
+    AutoPtr<WindowState> lowerWallpaperTarget = mService->mLowerWallpaperTarget;
+    List< AutoPtr<WindowToken> > wallpaperTokens = mService.mWallpaperTokens;
     if ((wallpaperTarget == w && lowerWallpaperTarget == NULL) || wallpaperTarget == NULL) {
         List<AutoPtr<WindowToken> >::ReverseIterator rit = wallpaperTokens.RBegin();
         for (; rit != wallpaperTokens.REnd(); ++rit) {
@@ -300,57 +153,52 @@ void WindowAnimator::HideWallpapersLocked(
     }
 }
 
-void WindowAnimator::UpdateAppWindowsLocked()
+void WindowAnimator::UpdateAppWindowsLocked(
+    /* [in] */ Int32 displayId)
 {
-    List<AutoPtr<AppWindowAnimator> >::Iterator it = mAppAnimators.Begin();
-    for (; it != mAppAnimators.End(); ++it) {
-        AutoPtr<AppWindowAnimator> appAnimator = *it;
-        Boolean wasAnimating = appAnimator->mAnimation != NULL
-                && appAnimator->mAnimation != AppWindowAnimator::sDummyAnimation;
-        if (appAnimator->StepAnimationLocked(mCurrentTime, mInnerDw, mInnerDh)) {
-            mAnimating = TRUE;
+    AutoPtr< List<AutoPtr<TaskStack> > > stacks = mService->GetDisplayContentLocked(displayId)->GetStacks();
+    List<AutoPtr<TaskStack> >::ReverseIterator stackRit = stacks->RBegin();
+    for (; stackRit != stacks->REnd(); ++stackRit) {
+        AutoPtr<TaskStack> stack = *stackRit;
+        AutoPtr< List<AutoPtr<Task> > > tasks = stack->GetTasks();
+        List<AutoPtr<Task> >::ReverseIterator taskRit = tasks->RBegin();
+        for (; taskRit != tasks->REnd(); ++taskRit) {
+            AppTokenList tokens = (*taskRit)->mAppTokens;
+            AppTokenList::ReverseIterator tokenRit = tokens->RBegin();
+            for (; tokenRit != tokens->REnd(); ++tokenRit) {
+                AutoPtr<AppWindowAnimator> appAnimator = (*tokenRit)->mAppAnimator;
+                Boolean wasAnimating = appAnimator->mAnimation != NULL
+                        && appAnimator->mAnimation != AppWindowAnimator::sDummyAnimation;
+                if (appAnimator->StepAnimationLocked(mCurrentTime)) {
+                    mAnimating = TRUE;
+                }
+                else if (wasAnimating) {
+                    // stopped animating, do one more pass through the layout
+                    SetAppLayoutChanges(appAnimator,
+                            IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER,
+                            String("appToken ") + appAnimator->mAppToken + String(" done"));
+                    if (CWindowManagerService::DEBUG_ANIM) Slogger::V(TAG,
+                            "updateWindowsApps...: done animating %p", appAnimator->mAppToken.Get());
+                }
+            }
         }
-        else if (wasAnimating) {
-            String info("appToken ");
-            AutoPtr<AppWindowToken> token = appAnimator->GetAppToken();
-            if (token) {
-                info += token->ToString();
-            }
-            else {
-                info += "dead AppWindowToken";
-            }
-            info += " done";
 
-            // stopped animating, do one more pass through the layout
-            SetAppLayoutChanges(appAnimator, IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER, info);
-            // if (WindowManagerService.DEBUG_ANIM) Slog.v(TAG,
-            //         "updateWindowsApps...: done animating " + appAnimator.mAppToken);
-        }
-    }
-
-    List<AutoPtr<AppWindowToken> >::Iterator appWinIt = mService->mExitingAppTokens.Begin();
-    for (; appWinIt != mService->mExitingAppTokens.End(); ++appWinIt) {
-        AutoPtr<AppWindowAnimator> appAnimator = (*appWinIt)->mAppAnimator;
-        Boolean wasAnimating = appAnimator->mAnimation != NULL
-                && appAnimator->mAnimation != AppWindowAnimator::sDummyAnimation;
-        if (appAnimator->StepAnimationLocked(mCurrentTime, mInnerDw, mInnerDh)) {
-            mAnimating = TRUE;
-        }
-        else if (wasAnimating) {
-            String info("exiting appToken ");
-            AutoPtr<AppWindowToken> token = appAnimator->GetAppToken();
-            if (token) {
-                info += token->ToString();
+        AppTokenList exitingAppTokens = stack->mExitingAppTokens;
+        AppTokenList::Iterator tokenIt = exitingAppTokens.Begin();
+        for (; tokenIt != exitingAppTokens.End(); ++tokenIt) {
+            AutoPtr<AppWindowAnimator> appAnimator = (*tokenIt)->mAppAnimator;
+            Boolean wasAnimating = appAnimator->mAnimation != NULL
+                    && appAnimator->mAnimation != AppWindowAnimator::sDummyAnimation;
+            if (appAnimator->StepAnimationLocked(mCurrentTime)) {
+                mAnimating = TRUE;
             }
-            else {
-                info += "dead AppWindowToken";
+            else if (wasAnimating) {
+                // stopped animating, do one more pass through the layout
+                SetAppLayoutChanges(appAnimator, IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER,
+                        String("exiting appToken ") + appAnimator->mAppToken + String(" done"));
+                if (CWindowManagerService::DEBUG_ANIM) Slogger::V(TAG,
+                        "updateWindowsApps...: done animating exiting %p", appAnimator->mAppToken.Get());
             }
-            info += " done";
-
-            // stopped animating, do one more pass through the layout
-            SetAppLayoutChanges(appAnimator, IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER, info);
-            // if (WindowManagerService.DEBUG_ANIM) Slog.v(TAG,
-            //         "updateWindowsApps...: done animating exiting " + appAnimator.mAppToken);
         }
     }
 }
@@ -359,61 +207,94 @@ void WindowAnimator::UpdateWindowsLocked(
     /* [in] */ Int32 displayId)
 {
     ++mAnimTransactionSequence;
-
-    List<AutoPtr<WindowStateAnimator> >& winAnimatorList =
-            GetDisplayContentsAnimatorLocked(displayId)->mWinAnimators;
+    AutoPtr<WindowList> windows = mService->GetWindowListLocked(displayId);
     List<AutoPtr<WindowStateAnimator> > unForceHiding;
     Boolean wallpaperInUnForceHiding = FALSE;
+    AutoPtr<WindowState> wallpaper;
+
+    if (mKeyguardGoingAway) {
+        WindowList::ReverseIterator winRit = windows->RBegin();
+        for (; winRit != windows->REnd(); ++winRit) {
+            AutoPtr<WindowState> win = *winRit;
+            Boolean isKeyguardHostWindow;
+            if (mPolicy->IsKeyguardHostWindow(win->mAttrs, &isKeyguardHostWindow), !isKeyguardHostWindow) {
+                continue;
+            }
+            AutoPtr<WindowStateAnimator> winAnimator = win->mWinAnimator;
+            Int32 privateFlags;
+            if (win->mAttrs->GetPrivateFlags(&privateFlags), (privateFlags & PRIVATE_FLAG_KEYGUARD) != 0) {
+                if (!winAnimator->mAnimating) {
+                    // Create a new animation to delay until keyguard is gone on its own.
+                    winAnimator->mAnimation = NULL;
+                    CAlphaAnimation::New(1.0f, 1.0f, (IAlphaAnimation**)&(winAnimator->mAnimation));
+                    winAnimator->mAnimation->SetDuration(KEYGUARD_ANIM_TIMEOUT_MS);
+                    winAnimator->mAnimationIsEntrance = FALSE;
+                }
+            }
+            else {
+                mKeyguardGoingAway = FALSE;
+                winAnimator->ClearAnimation();
+            }
+            break;
+        }
+    }
+
     mForceHiding = KEYGUARD_NOT_SHOWN;
 
-    List<AutoPtr<WindowStateAnimator> >::ReverseIterator rit = winAnimatorList.RBegin();
-    for (; rit != winAnimatorList.REnd(); ++rit) {
-        AutoPtr<WindowStateAnimator> winAnimator = *rit;
-        AutoPtr<WindowState> win = winAnimator->mWin;
-        Int32 flags = winAnimator->mAttrFlags;
+    AutoPtr<WindowState> imeTarget = mService->mInputMethodTarget;
+    AutoPtr<IWindowManagerLayoutParams> lp;
+    imeTarget->GetAttrs((IWindowManagerLayoutParams**)&lp);
+    Int32 flags;
+    Boolean showImeOverKeyguard = imeTarget != NULL && imeTarget->IsVisibleNow() &&
+            (lp->GetFlags(&flags), (flags & FLAG_SHOW_WHEN_LOCKED) != 0);
+    AutoPtr<IWindowState> ws;
+    mPolicy->GetWinShowWhenLockedLw((IWindowState**)&ws);
+    AutoPtr<WindowState> winShowWhenLocked = (WindowState*)ws.Get();
+    AutoPtr<AppWindowToken> appShowWhenLocked = winShowWhenLocked == NULL ? NULL : winShowWhenLocked.mAppToken;
 
-        if (winAnimator->mSurface != NULL) {
+    WindowList::ReverseIterator winRit = windows->RBegin();
+    for (; winRit != windows->REnd(); ++winRit) {
+        AutoPtr<WindowState> win = *winRit;
+        AutoPtr<WindowStateAnimator> winAnimator = win->mWinAnimator;
+        Int32 flags;
+        win->mAttrs->GetFlags(&flags);
+
+        if (winAnimator->mSurfaceControl != NULL) {
             Boolean wasAnimating = winAnimator->mWasAnimating;
             Boolean nowAnimating = winAnimator->StepAnimationLocked(mCurrentTime);
 
-            // if (WindowManagerService.DEBUG_WALLPAPER) {
-            //     Slog.v(TAG, win + ": wasAnimating=" + wasAnimating +
-            //             ", nowAnimating=" + nowAnimating);
-            // }
+            if (CWindowManagerService::DEBUG_WALLPAPER) {
+                Slogger::V(TAG, "%p: wasAnimating=%d, nowAnimating=%d", win.Get(), wasAnimating, nowAnimating);
+            }
 
-            if (wasAnimating && !winAnimator->mAnimating && mWallpaperTarget == win) {
+            if (wasAnimating && !winAnimator->mAnimating && mService->mWallpaperTarget == win) {
                 mBulkUpdateParams |= CWindowManagerService::LayoutFields::SET_WALLPAPER_MAY_CHANGE;
                 SetPendingLayoutChanges(IDisplay::DEFAULT_DISPLAY,
                         IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER);
                 if (CWindowManagerService::DEBUG_LAYOUT_REPEATS) {
-                    Int32 value = 0;
-                    IntIterator it = mPendingLayoutChanges.Find(IDisplay::DEFAULT_DISPLAY);
-                    if (it != mPendingLayoutChanges.End()) {
-                        value = it->mSecond;
-                    }
-                    mService->DebugLayoutRepeats(String("updateWindowsAndWallpaperLocked 2"), value);
+                    mService->DebugLayoutRepeats(String("updateWindowsAndWallpaperLocked 2"),
+                            GetPendingLayoutChanges(IDisplay::DEFAULT_DISPLAY));
                 }
             }
 
-            Boolean result;
-            mPolicy->DoesForceHide(win, win->mAttrs, &result);
-            if (result) {
+            if (mPolicy->IsForceHiding(win->mAttrs, &isForceHiding), isForceHiding) {
                 if (!wasAnimating && nowAnimating) {
                     // if (WindowManagerService.DEBUG_ANIM ||
                     //         WindowManagerService.DEBUG_VISIBILITY) Slog.v(TAG,
                     //         "Animation started that could impact force hide: " + win);
                     mBulkUpdateParams |= CWindowManagerService::LayoutFields::SET_FORCE_HIDING_CHANGED;
-                    SetPendingLayoutChanges(displayId,
-                            IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER);
+                    SetPendingLayoutChanges(displayId, IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER);
                     if (CWindowManagerService::DEBUG_LAYOUT_REPEATS) {
-                        Int32 value = 0;
-                        IntIterator it = mPendingLayoutChanges.Find(displayId);
-                        if (it != mPendingLayoutChanges.End()) {
-                            value = it->mSecond;
-                        }
-                        mService->DebugLayoutRepeats(String("updateWindowsAndWallpaperLocked 3"), value);
+                        mService->DebugLayoutRepeats(String("updateWindowsAndWallpaperLocked 3"),
+                                GetPendingLayoutChanges(displayId));
                     }
                     mService->mFocusMayChange = TRUE;
+                }
+                else if (mKeyguardGoingAway && !nowAnimating) {
+                    // Timeout!!
+                    Slogger::E(TAG, "Timeout waiting for animation to startup");
+                    mPolicy->StartKeyguardExitAnimation(0, 0);
+                    mKeyguardGoingAway = FALSE;
                 }
                 if (win->IsReadyForDisplay()) {
                     if (nowAnimating) {
@@ -425,7 +306,7 @@ void WindowAnimator::UpdateWindowsLocked(
                         }
                     }
                     else {
-                        mForceHiding = KEYGUARD_SHOWN;
+                        mForceHiding = win->IsDrawnLw() ? KEYGUARD_SHOWN : KEYGUARD_NOT_SHOWN;
                     }
                 }
                 // if (WindowManagerService.DEBUG_VISIBILITY) Slog.v(TAG,
@@ -441,8 +322,8 @@ void WindowAnimator::UpdateWindowsLocked(
             else {
                 mPolicy->CanBeForceHidden(win, win->mAttrs, &result);
                 if (result) {
-                    Boolean hideWhenLocked =
-                            (winAnimator->mAttrFlags & IWindowManagerLayoutParams::FLAG_SHOW_WHEN_LOCKED) == 0;
+                    Boolean hideWhenLocked = !((win->mIsImWindow && showImeOverKeyguard) ||
+                            (appShowWhenLocked != NULL && appShowWhenLocked == win->mAppToken.Get()));
                     Boolean changed;
                     if (((mForceHiding == KEYGUARD_ANIMATING_IN)
                                 && (!winAnimator->IsAnimating() || hideWhenLocked))
@@ -463,10 +344,13 @@ void WindowAnimator::UpdateWindowsLocked(
                                     wallpaperInUnForceHiding = TRUE;
                                 }
                             }
-                            if (mCurrentFocus == NULL || mCurrentFocus->mLayer < win->mLayer) {
+                            AutoPtr<WindowState> currentFocus = mService->mCurrentFocus;
+                            if (currentFocus == NULL || currentFocus->mLayer < win->mLayer) {
                                 // We are showing on to of the current
                                 // focus, so re-evaluate focus to make
                                 // sure it is correct.
+                                if (CWindowManagerService::DEBUG_FOCUS_LIGHT) Slogger::V(TAG,
+                                        "updateWindowsLocked: setting mFocusMayChange true");
                                 mService->mFocusMayChange = TRUE;
                             }
                         }
@@ -476,12 +360,8 @@ void WindowAnimator::UpdateWindowsLocked(
                         SetPendingLayoutChanges(IDisplay::DEFAULT_DISPLAY,
                                 IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER);
                         if (CWindowManagerService::DEBUG_LAYOUT_REPEATS) {
-                            Int32 value = 0;
-                            IntIterator it = mPendingLayoutChanges.Find(IDisplay::DEFAULT_DISPLAY);
-                            if (it != mPendingLayoutChanges.End()) {
-                                value = it->mSecond;
-                            }
-                            mService->DebugLayoutRepeats(String("updateWindowsAndWallpaperLocked 4"), value);
+                            mService->DebugLayoutRepeats(String("updateWindowsAndWallpaperLocked 4"),
+                                    GetPendingLayoutChanges(IDisplay::DEFAULT_DISPLAY));
                         }
                     }
                 }
@@ -492,14 +372,10 @@ void WindowAnimator::UpdateWindowsLocked(
         if (winAnimator->mDrawState == WindowStateAnimator::READY_TO_SHOW) {
             if (atoken == NULL || atoken->mAllDrawn) {
                 if (winAnimator->PerformShowLocked()) {
-                    mPendingLayoutChanges[displayId]= IWindowManagerPolicy::FINISH_LAYOUT_REDO_ANIM;
+                    SetPendingLayoutChanges(displayId, IWindowManagerPolicy::FINISH_LAYOUT_REDO_ANIM);
                     if (CWindowManagerService::DEBUG_LAYOUT_REPEATS) {
-                        Int32 value = 0;
-                        IntIterator it = mPendingLayoutChanges.Find(displayId);
-                        if (it != mPendingLayoutChanges.End()) {
-                            value = it->mSecond;
-                        }
-                        mService->DebugLayoutRepeats(String("updateWindowsAndWallpaperLocked 5"), value);
+                        mService->DebugLayoutRepeats(String("updateWindowsAndWallpaperLocked 5"),
+                                GetPendingLayoutChanges(displayId));
                     }
                 }
             }
@@ -514,19 +390,46 @@ void WindowAnimator::UpdateWindowsLocked(
                 appAnimator->mThumbnailLayer = winAnimator->mAnimLayer;
             }
         }
+        if (win->mIsWallpaper) {
+            wallpaper = win;
+        }
     } // end forall windows
 
     // If we have windows that are being show due to them no longer
     // being force-hidden, apply the appropriate animation to them.
-    if (unForceHiding.IsEmpty() == FALSE) {
+    if (unForceHiding.Begin() != unForceHiding.End()) {
+        Boolean startKeyguardExit = TRUE;
         List<AutoPtr<WindowStateAnimator> >::ReverseIterator animRIt = unForceHiding.RBegin();
         for (; animRIt != unForceHiding.REnd(); ++animRIt) {
             AutoPtr<IAnimation> a;
-            mPolicy->CreateForceHideEnterAnimation(wallpaperInUnForceHiding, (IAnimation**)&a);
+            if (!mKeyguardGoingAwayDisableWindowAnimations) {
+                mPolicy->CreateForceHideEnterAnimation(wallpaperInUnForceHiding,
+                        mKeyguardGoingAwayToNotificationShade, (IAnimation**)&a);
+            }
             if (a != NULL) {
                 AutoPtr<WindowStateAnimator> winAnimator = *animRIt;
                 winAnimator->SetAnimation(a);
-                winAnimator->mAnimationIsEntrance = TRUE;
+                winAnimator->mKeyguardGoingAwayAnimation = TRUE;
+                if (startKeyguardExit && mKeyguardGoingAway) {
+                    // Do one time only.
+                    Int64 offset, duration;
+                    a->GetStartOffset(&offset);
+                    a->GetDuration(&duration);
+                    mPolicy->StartKeyguardExitAnimation(mCurrentTime + offset, duration);
+                    mKeyguardGoingAway = FALSE;
+                    startKeyguardExit = FALSE;
+                }
+            }
+        }
+
+        // Wallpaper is going away in un-force-hide motion, animate it as well.
+        if (!wallpaperInUnForceHiding && wallpaper != NULL
+                && !mKeyguardGoingAwayDisableWindowAnimations) {
+            AutoPtr<IAnimation> a;
+            mPolicy->CreateForceHideWallpaperExitAnimation(mKeyguardGoingAwayToNotificationShade, (IAnimation**)&a);
+            if (a != NULL) {
+                AutoPtr<WindowStateAnimator> animator = wallpaper->mWinAnimator;
+                animator->SetAnimation(a);
             }
         }
     }
@@ -535,24 +438,21 @@ void WindowAnimator::UpdateWindowsLocked(
 void WindowAnimator::UpdateWallpaperLocked(
     /* [in] */ Int32 displayId)
 {
-    AutoPtr<DisplayContentsAnimator> displayAnimator =
-            GetDisplayContentsAnimatorLocked(displayId);
-    List<AutoPtr<WindowStateAnimator> >& winAnimatorList = displayAnimator->mWinAnimators;
-    AutoPtr<WindowStateAnimator> windowAnimationBackground;
-    Int32 windowAnimationBackgroundColor = 0;
-    AutoPtr<WindowState> detachedWallpaper;
-    AutoPtr<DimSurface> windowAnimationBackgroundSurface =
-            displayAnimator->mWindowAnimationBackgroundSurface;
+    mService->GetDisplayContentLocked(displayId)->ResetAnimationBackgroundAnimator();
 
-    List<AutoPtr<WindowStateAnimator> >::ReverseIterator rit = winAnimatorList.RBegin();
-    for (; rit != winAnimatorList.REnd(); ++rit) {
-        AutoPtr<WindowStateAnimator> winAnimator = *rit;
-        if (winAnimator->mSurface == NULL) {
+    AutoPtr<WindowList> windows = mService->GetWindowListLocked(displayId);
+    AutoPtr<WindowState> detachedWallpaper;
+
+    WindowList::ReverseIterator rit = windows->RBegin();
+    for (; rit != windows->REnd(); ++rit) {
+        AutoPtr<WindowState> win = *rit;
+        AutoPtr<WindowStateAnimator> winAnimator = win->mWinAnimator;
+        if (winAnimator->mSurfaceControl == NULL) {
             continue;
         }
 
-        Int32 flags = winAnimator->mAttrFlags;
-        AutoPtr<WindowState> win = winAnimator->mWin;
+        Int32 flags;
+        win->mAttrs->GetFlags(&flags);
 
         // If this window is animating, make a note that we have
         // an animating window and take care of a request to run
@@ -564,13 +464,12 @@ void WindowAnimator::UpdateWallpaperLocked(
                         && (winAnimator->mAnimation->GetDetachWallpaper(&value), value)) {
                     detachedWallpaper = win;
                 }
-                Int32 backgroundColor;
-                winAnimator->mAnimation->GetBackgroundColor(&backgroundColor);
-                if (backgroundColor != 0) {
-                    if (windowAnimationBackground == NULL || (winAnimator->mAnimLayer <
-                            windowAnimationBackground->mAnimLayer)) {
-                        windowAnimationBackground = winAnimator;
-                        windowAnimationBackgroundColor = backgroundColor;
+                Int32 color;
+                winAnimator->mAnimation->GetBackgroundColor(&color);
+                if (color != 0) {
+                    AutoPtr<TaskStack> stack = win->GetStack();
+                    if (stack != NULL) {
+                        stack->SetAnimationBackground(winAnimator, color);
                     }
                 }
             }
@@ -589,13 +488,12 @@ void WindowAnimator::UpdateWallpaperLocked(
                 detachedWallpaper = win;
             }
 
-            Int32 backgroundColor;
-            appAnimator->mAnimation->GetBackgroundColor(&backgroundColor);
-            if (backgroundColor != 0) {
-                if (windowAnimationBackground == NULL || (winAnimator->mAnimLayer <
-                        windowAnimationBackground->mAnimLayer)) {
-                    windowAnimationBackground = winAnimator;
-                    windowAnimationBackgroundColor = backgroundColor;
+            Int32 color;
+            appAnimator->mAnimation->GetBackgroundColor(&color);
+            if (color != 0) {
+                AutoPtr<TaskStack> stack = win->GetStack();
+                if (stack != NULL) {
+                    stack->SetAnimationBackground(winAnimator, color);
                 }
             }
         }
@@ -608,38 +506,8 @@ void WindowAnimator::UpdateWallpaperLocked(
         mWindowDetachedWallpaper = detachedWallpaper;
         mBulkUpdateParams |= CWindowManagerService::LayoutFields::SET_WALLPAPER_MAY_CHANGE;
     }
-
-    if (windowAnimationBackgroundColor != 0) {
-        // If the window that wants black is the current wallpaper
-        // target, then the black goes *below* the wallpaper so we
-        // don't cause the wallpaper to suddenly disappear.
-        Int32 animLayer = windowAnimationBackground->mAnimLayer;
-        AutoPtr<WindowState> win = windowAnimationBackground->mWin;
-        if (mWallpaperTarget == win
-                || mLowerWallpaperTarget == win || mUpperWallpaperTarget == win) {
-            List<AutoPtr<WindowStateAnimator> >::Iterator it = winAnimatorList.Begin();
-            for (; it != winAnimatorList.End(); ++it) {
-                AutoPtr<WindowStateAnimator> winAnimator = *it;
-                if (winAnimator->mIsWallpaper) {
-                    animLayer = winAnimator->mAnimLayer;
-                    break;
-                }
-            }
-        }
-
-        if (windowAnimationBackgroundSurface != NULL) {
-            windowAnimationBackgroundSurface->Show(
-                mDw, mDh, animLayer - CWindowManagerService::LAYER_OFFSET_DIM,
-                windowAnimationBackgroundColor);
-        }
-    }
-    else {
-        if (windowAnimationBackgroundSurface != NULL) {
-            windowAnimationBackgroundSurface->Hide();
-        }
-    }
 }
-
+// begin from this
 void WindowAnimator::TestTokenMayBeDrawnLocked()
 {
     // See if any windows have been drawn, so they (and others

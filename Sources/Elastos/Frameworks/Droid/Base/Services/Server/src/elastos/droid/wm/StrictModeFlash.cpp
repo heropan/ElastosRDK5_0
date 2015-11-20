@@ -3,6 +3,7 @@
 #include "wm/CWindowManagerService.h"
 
 using Elastos::Droid::View::CSurface;
+using Elastos::Droid::View::CSurfaceControl;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::IRect;
@@ -24,20 +25,21 @@ StrictModeFlash::StrictModeFlash(
     , mLastDH(0)
     , mThickness(20)
 {
+    AutoPtr<ISurfaceControl> ctrl;
     // try {
-    ASSERT_SUCCEEDED(CSurface::New(session, String("StrictModeFlash"),
-            1, 1, IPixelFormat::TRANSLUCENT, ISurface::HIDDEN,
-            (ISurface**)&mSurface));
-    // } catch (Surface.OutOfResourcesException e) {
-    //     return;
-    // }
-
+    CSurfaceControl::New(session, String("StrictModeFlash"),
+            1, 1, IPixelFormat::TRANSLUCENT, ISurfaceControl::HIDDEN, (ISurfaceControl**)&ctrl);
+    ctrl = new SurfaceControl();
     Int32 stack;
     display->GetLayerStack(&stack);
-    mSurface->SetLayerStack(stack);
-    mSurface->SetLayer(CWindowManagerService::TYPE_LAYER_MULTIPLIER * 101);  // one more than Watermark? arbitrary.
-    mSurface->SetPosition(0, 0);
-    mSurface->Show();
+    ctrl->SetLayerStack(stack);
+    ctrl->SetLayer(CWindowManagerService::TYPE_LAYER_MULTIPLIER * 101);  // one more than Watermark? arbitrary.
+    ctrl->SetPosition(0, 0);
+    ctrl->Show();
+    mSurface->CopyFrom(ctrl);
+    // } catch (OutOfResourcesException e) {
+    // }
+    mSurfaceControl = ctrl;
     mDrawNeeded = TRUE;
 }
 
@@ -90,15 +92,15 @@ void StrictModeFlash::DrawIfNeeded()
 void StrictModeFlash::SetVisibility(
     /* [in] */ Boolean on)
 {
-    if (mSurface == NULL) {
+    if (mSurfaceControl == NULL) {
         return;
     }
     DrawIfNeeded();
     if (on) {
-        mSurface->Show();
+        mSurfaceControl->Show();
     }
     else {
-        mSurface->Hide();
+        mSurfaceControl->Hide();
     }
 }
 
@@ -111,7 +113,7 @@ void StrictModeFlash::PositionSurface(
     }
     mLastDW = dw;
     mLastDH = dh;
-    mSurface->SetSize(dw, dh);
+    mSurfaceControl->SetSize(dw, dh);
     mDrawNeeded = TRUE;
 }
 

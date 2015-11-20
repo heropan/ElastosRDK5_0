@@ -6,6 +6,7 @@
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::ISurfaceSession;
 using Elastos::Droid::View::ISurface;
+using Elastos::Droid::View::ISurfaceControl;
 
 namespace Elastos {
 namespace Droid {
@@ -31,15 +32,15 @@ public:
 private:
     CARAPI_(void) DrawIfNeeded();
 
-public:
+private:
+    static const String TAG;
+
+    AutoPtr<ISurfaceControl> mSurfaceControl;
     AutoPtr<ISurface> mSurface;
     Int32 mLastDW;
     Int32 mLastDH;
     Boolean mDrawNeeded;
     Int32 mThickness;
-
-private:
-    static const String TAG;
 };
 
 } // Wm

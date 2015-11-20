@@ -3,9 +3,7 @@
 
 #include "wm/CWindowManagerService.h"
 #include "wm/WindowState.h"
-#include "wm/AppWindowAnimator.h"
 #include "wm/WindowStateAnimator.h"
-#include "wm/ScreenRotationAnimation.h"
 #include "wm/DimAnimator.h"
 #include "wm/DimSurface.h"
 #include <elastos/utility/etl/List.h>
@@ -31,29 +29,17 @@ class ScreenRotationAnimation;
  * Singleton class that carries out the animations and Surface operations in a separate task
  * on behalf of WindowManagerService.
  */
-class WindowAnimator : public ElRefBase
+class WindowAnimator : public Object
 {
-public:
-    /** Parameters being passed from this into mService. */
-    class AnimatorToLayoutParams : public ElRefBase
-    {
-    public:
-        AnimatorToLayoutParams();
-
-    public:
-        Boolean mUpdateQueued;
-        Int32 mBulkUpdateParams;
-        AutoPtr<HashMap<Int32, Int32> > mPendingLayoutChanges;
-        AutoPtr<WindowState> mWindowDetachedWallpaper;
-    };
-
 private:
-    class AnimationRunnable
-        : public Runnable
+    class AnimationRunnable : public Runnable
     {
     public:
         AnimationRunnable(
-            /* [in] */ WindowAnimator* host);
+            /* [in] */ WindowAnimator* host)
+            : mHost(host)
+
+        {}
 
         CARAPI Run();
 
@@ -61,7 +47,7 @@ private:
         WindowAnimator* mHost;
     };
 
-    class DisplayContentsAnimator : public ElRefBase
+    class DisplayContentsAnimator : public Object
     {
     public:
         DisplayContentsAnimator(
@@ -90,13 +76,6 @@ public:
 
     CARAPI_(void) RemoveDisplayLocked(
         /* [in] */ Int32 displayId);
-
-    /** Locked on mAnimToLayout */
-    CARAPI_(void) UpdateAnimToLayoutLocked();
-
-    CARAPI_(void) HideWallpapersLocked(
-        /* [in] */ WindowState* w,
-        /* [in] */ Boolean fromAnimator);
 
     CARAPI_(void) HideWallpapersLocked(
         /* [in] */ WindowState* w,
@@ -145,10 +124,8 @@ public:
 private:
     CARAPI_(String) ForceHidingToString();
 
-    /** Copy all WindowManagerService params into local params here. Locked on 'this'. */
-    CARAPI_(void) CopyLayoutToAnimParamsLocked();
-
-    CARAPI_(void) UpdateAppWindowsLocked();
+    CARAPI_(void) UpdateAppWindowsLocked(
+        /* [in] */ Int32 displayId);
 
     CARAPI_(void) UpdateWindowsLocked(
         /* [in] */ Int32 displayId);
@@ -169,13 +146,11 @@ private:
         /* [in] */ Int32 displayId);
 
 public:
-    static const Int32 WALLPAPER_ACTION_PENDING;
-
     // forceHiding states.
-    static const Int32 KEYGUARD_NOT_SHOWN;
-    static const Int32 KEYGUARD_ANIMATING_IN;
-    static const Int32 KEYGUARD_SHOWN;
-    static const Int32 KEYGUARD_ANIMATING_OUT;
+    static const Int32 KEYGUARD_NOT_SHOWN = 0;
+    static const Int32 KEYGUARD_ANIMATING_IN = 1;
+    static const Int32 KEYGUARD_SHOWN = 2;
+    static const Int32 KEYGUARD_ANIMATING_OUT = 3;
 
     Object mSelfLock;
 
@@ -187,67 +162,44 @@ public:
 
     AutoPtr<AnimationRunnable> mAnimationRunnable;
 
-    Int32 mAdjResult;
-
-    // Layout changes for individual Displays. Indexed by displayId.
-    HashMap<Int32, Int32> mPendingLayoutChanges;
-
-    // TODO: Assign these from each iteration through DisplayContent. Only valid between loops.
-    /** Overall window dimensions */
-    Int32 mDw;
-    Int32 mDh;
-
-    /** Interior window dimensions */
-    Int32 mInnerDw;
-    Int32 mInnerDh;
-
     /** Time of current animation step. Reset on each iteration */
     Int64 mCurrentTime;
 
-    // Window currently running an animation that has requested it be detached
-    // from the wallpaper.  This means we need to ensure the wallpaper is
-    // visible behind it in case it animates in a way that would allow it to be
-    // seen. If multiple windows satisfy this, use the lowest window.
+    /** Window currently running an animation that has requested it be detached
+     * from the wallpaper.  This means we need to ensure the wallpaper is
+     * visible behind it in case it animates in a way that would allow it to be
+     * seen. If multiple windows satisfy this, use the lowest window. */
     AutoPtr<WindowState> mWindowDetachedWallpaper;
 
     AutoPtr<WindowStateAnimator> mUniverseBackground;
     Int32 mAboveUniverseLayer;
 
     Int32 mBulkUpdateParams;
+    AutoPtr<IObject> mLastWindowFreezeSource;
 
     HashMap<Int32, AutoPtr<DisplayContentsAnimator> > mDisplayContentsAnimators;
 
-    Int32 mPendingActions;
-
-    AutoPtr<WindowState> mWallpaperTarget;
-    AutoPtr<AppWindowAnimator> mWpAppAnimator;
-    AutoPtr<WindowState> mLowerWallpaperTarget;
-    AutoPtr<WindowState> mUpperWallpaperTarget;
-
-    List< AutoPtr<AppWindowAnimator> > mAppAnimators;
-
-    List< AutoPtr<WindowToken> > mWallpaperTokens;
-
-    /** Do not modify unless holding mService.mWindowMap or this and mAnimToLayout in that order */
-    AutoPtr<AnimatorToLayoutParams> mAnimToLayout;
-    Object mAnimToLayoutLock;
-
     Boolean mInitialized;
+
+    Boolean mKeyguardGoingAway;
+    Boolean mKeyguardGoingAwayToNotificationShade;
+    Boolean mKeyguardGoingAwayDisableWindowAnimations;
 
     Int32 mForceHiding;
 
     AutoPtr<WindowState> mCurrentFocus;
 
 private:
-    friend class AnimationRunnable;
-
     static const String TAG;
+
+    /** How long to give statusbar to clear the private keyguard flag when animating out */
+    static const Int64 KEYGUARD_ANIM_TIMEOUT_MS = 1000;
 
     /** Skip repeated AppWindowTokens initialization. Note that AppWindowsToken's version of this
      * is a long initialized to Long.MIN_VALUE so that it doesn't match this value on startup. */
     Int32 mAnimTransactionSequence;
 
-    typedef HashMap<Int32, Int32>::Iterator IntIterator;
+    friend class AnimationRunnable;
 };
 
 } // Wm
