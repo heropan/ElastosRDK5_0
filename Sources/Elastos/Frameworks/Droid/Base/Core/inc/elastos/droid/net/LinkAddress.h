@@ -129,7 +129,7 @@ public:
      * Returns a hashcode for this address.
      */
     // @Override
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     /**

@@ -26,12 +26,14 @@ ECode IpConfiguration::Init(
     mProxySettings = proxySettings;
     if (staticIpConfiguration == NULL) {
         mStaticIpConfiguration = NULL;
-    } else {
+    }
+    else {
         CStaticIpConfiguration::New(staticIpConfiguration, (IStaticIpConfiguration**)&mStaticIpConfiguration);
     }
     if (httpProxy == NULL) {
         mHttpProxy = NULL;
-    } else {
+    }
+    else {
         CProxyInfo::New(httpProxy, (IProxyInfo**)&mHttpProxy);
     }
     return NOERROR;
@@ -91,6 +93,7 @@ ECode IpConfiguration::GetStaticIpConfiguration(
     VALIDATE_NOT_NULL(*result)
 
     *result = mStaticIpConfiguration;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -125,6 +128,7 @@ ECode IpConfiguration::GetHttpProxy(
     VALIDATE_NOT_NULL(*result)
 
     *result = mHttpProxy;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -196,7 +200,8 @@ ECode IpConfiguration::GetHashCode(
     Int32 hashCode;
     if (mStaticIpConfiguration != NULL) {
         IObject::Probe(mStaticIpConfiguration)->GetHashCode(&hashCode);
-    } else {
+    }
+    else {
         hashCode = 0;
     }
     *result += hashCode;

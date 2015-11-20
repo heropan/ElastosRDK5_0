@@ -71,9 +71,9 @@ ECode NsdManager::PutListener(
         key = mListenerKey++;
     } while (key == INVALID_LISTENER_KEY);
 
-    mListenerMap->Put(key, IInterface::Probe(listener));
+    mListenerMap->Put(key, listener);
 
-    mServiceMap->Put(key, IInterface::Probe(s));
+    mServiceMap->Put(key, s);
     }
     *result = key;
     return NOERROR;

@@ -211,7 +211,7 @@ protected:
     CARAPI_(void) OnQuitting();
 
 private:
-    constructor(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IStateMachine* controller,
         /* [in] */ const String& intf);

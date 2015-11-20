@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CETHERNETMANAGER_H__
 
 #include "_Elastos_Droid_Net_CEthernetManager.h"
-#include "EthernetManager.h"
+#include "elastos/droid/net/EthernetManager.h"
 
 namespace Elastos {
 namespace Droid {

@@ -457,7 +457,8 @@ ECode CConnectivityManager::StartUsingNetworkFeature(
             if (lr->mCurrentNetwork != NULL) {
                 *result = IPhoneConstants::APN_ALREADY_ACTIVE;
                 return NOERROR;
-            } else {
+            }
+            else {
                *result = IPhoneConstants::APN_REQUEST_STARTED;
                 return NOERROR;
             }
@@ -473,7 +474,8 @@ ECode CConnectivityManager::StartUsingNetworkFeature(
         Logger::D(TAG, (String("starting startUsingNetworkFeature for request ") + s).string());
         *result = IPhoneConstants::APN_REQUEST_STARTED;
         return NOERROR;
-    } else {
+    }
+    else {
         // Log.d(TAG, " request Failed");
         Logger::D(TAG, " request Failed");
         *result = IPhoneConstants::APN_REQUEST_FAILED;
@@ -553,19 +555,26 @@ ECode CConnectivityManager::NetworkCapabilitiesForFeature(
         Int32 cap = -1;
         if (feature.Equals("enableMMS")) {
             cap = INetworkCapabilities::NET_CAPABILITY_MMS;
-        } else if (feature.Equals("enableSUPL")) {
+        }
+        else if (feature.Equals("enableSUPL")) {
             cap = INetworkCapabilities::NET_CAPABILITY_SUPL;
-        } else if (feature.Equals("enableDUN") || feature.Equals("enableDUNAlways")) {
+        }
+        else if (feature.Equals("enableDUN") || feature.Equals("enableDUNAlways")) {
             cap = INetworkCapabilities::NET_CAPABILITY_DUN;
-        } else if (feature.Equals("enableHIPRI")) {
+        }
+        else if (feature.Equals("enableHIPRI")) {
             cap = INetworkCapabilities::NET_CAPABILITY_INTERNET;
-        } else if (feature.Equals("enableFOTA")) {
+        }
+        else if (feature.Equals("enableFOTA")) {
             cap = INetworkCapabilities::NET_CAPABILITY_FOTA;
-        } else if (feature.Equals("enableIMS")) {
+        }
+        else if (feature.Equals("enableIMS")) {
             cap = INetworkCapabilities::NET_CAPABILITY_IMS;
-        } else if (feature.Equals("enableCBS")) {
+        }
+        else if (feature.Equals("enableCBS")) {
             cap = INetworkCapabilities::NET_CAPABILITY_CBS;
-        } else {
+        }
+        else {
             *result = NULL;
         }
         AutoPtr<INetworkCapabilities> netCap;
@@ -577,7 +586,8 @@ ECode CConnectivityManager::NetworkCapabilitiesForFeature(
         *result = netCap;
         REFCOUNT_ADD(*result)
         return NOERROR;
-    } else if (TYPE_WIFI == networkType) {
+    }
+    else if (TYPE_WIFI == networkType) {
         if (feature.Equals("p2p")) {
             AutoPtr<INetworkCapabilities> netCap;
             CNetworkCapabilities::New((INetworkCapabilities**)&netCap);
@@ -616,7 +626,8 @@ ECode CConnectivityManager::InferLegacyTypeForNetworkCapabilities(
         if (IObject::Probe(netCap)->Equals(networkCapabilities, &b), b) {
             *result = TYPE_MOBILE_CBS;
             return NOERROR;
-        } else {
+        }
+        else {
             *result = TYPE_NONE;
             return NOERROR;
         }
@@ -626,7 +637,8 @@ ECode CConnectivityManager::InferLegacyTypeForNetworkCapabilities(
         if (IObject::Probe(netCap)->Equals(networkCapabilities, &b), b) {
             *result = TYPE_MOBILE_IMS;
             return NOERROR;
-        } else {
+        }
+        else {
             *result = TYPE_NONE;
             return NOERROR;
         }
@@ -636,7 +648,8 @@ ECode CConnectivityManager::InferLegacyTypeForNetworkCapabilities(
         if (IObject::Probe(netCap)->Equals(networkCapabilities, &b), b) {
             *result = TYPE_MOBILE_FOTA;
             return NOERROR;
-        } else {
+        }
+        else {
             *result = TYPE_NONE;
             return NOERROR;
         }
@@ -646,7 +659,8 @@ ECode CConnectivityManager::InferLegacyTypeForNetworkCapabilities(
         if (IObject::Probe(netCap)->Equals(networkCapabilities, &b), b) {
             *result = TYPE_MOBILE_DUN;
             return NOERROR;
-        } else {
+        }
+        else {
             *result = TYPE_NONE;
             return NOERROR;
         }
@@ -656,7 +670,8 @@ ECode CConnectivityManager::InferLegacyTypeForNetworkCapabilities(
         if (IObject::Probe(netCap)->Equals(networkCapabilities, &b), b) {
             *result = TYPE_MOBILE_SUPL;
             return NOERROR;
-        } else {
+        }
+        else {
             *result = TYPE_NONE;
             return NOERROR;
         }
@@ -666,7 +681,8 @@ ECode CConnectivityManager::InferLegacyTypeForNetworkCapabilities(
         if (IObject::Probe(netCap)->Equals(networkCapabilities, &b), b) {
             *result = TYPE_MOBILE_MMS;
             return NOERROR;
-        } else {
+        }
+        else {
             *result = TYPE_NONE;
             return NOERROR;
         }
@@ -676,7 +692,8 @@ ECode CConnectivityManager::InferLegacyTypeForNetworkCapabilities(
         if (IObject::Probe(netCap)->Equals(networkCapabilities, &b), b) {
             *result = TYPE_MOBILE_HIPRI;
             return NOERROR;
-        } else {
+        }
+        else {
             *result = TYPE_NONE;
             return NOERROR;
         }
@@ -1115,7 +1132,8 @@ ECode CConnectivityManager::EnforceTetherChangePermission(
         // turn on tethering
         FAIL_RETURN(context->EnforceCallingOrSelfPermission(
                 Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, String("ConnectivityService")))
-    } else {
+    }
+    else {
         FAIL_RETURN(context->EnforceCallingOrSelfPermission(
                 Elastos::Droid::Manifest::permission::CHANGE_NETWORK_STATE, String("ConnectivityService")))
     }
@@ -1766,7 +1784,8 @@ ECode CConnectivityManager::SendRequestForNetwork(
             if (FAILED(ec) && ec != E_REMOTE_EXCEPTION) {
                 return ec;
             }
-        } else {
+        }
+        else {
             ec = mService->RequestNetwork(need, msg, timeoutSec, binder, legacyType, (INetworkRequest**)&(((ConnectivityManagerNetworkCallback*)networkCallback)->mNetworkRequest));
             if (FAILED(ec) && ec != E_REMOTE_EXCEPTION) {
                 return ec;
@@ -1859,11 +1878,13 @@ ECode CConnectivityManager::UnregisterNetworkCallback(
     if (NULL == networkCallback) {
         // throw new IllegalArgumentException("Invalid NetworkCallback");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    } else {
+    }
+    else {
         if (NULL == ((ConnectivityManagerNetworkCallback*)networkCallback)->mNetworkRequest) {
             // throw new IllegalArgumentException("Invalid NetworkCallback");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        } else {
+        }
+        else {
             Int32 requestId;
             ((ConnectivityManagerNetworkCallback*)networkCallback)->mNetworkRequest->GetRequestId(&requestId);
             if (REQUEST_ID_UNSET == requestId) {
@@ -1892,7 +1913,8 @@ ECode CConnectivityManager::SetProcessDefaultNetwork(
     Int32 netId;
     if (NULL == network) {
         netId = NETID_UNSET;
-    } else {
+    }
+    else {
         network->GetNetId(&netId);
     }
     Int32 netBound;
@@ -1988,7 +2010,8 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
                 AutoPtr<IInterface> network;
                 GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 callbacks->OnPreCheck(INetwork::Probe(network));
-            } else {
+            }
+            else {
                 // Log.e(TAG, "callback not found for PRECHECK message");
                 Logger::E(TAG, String("callback not found for PRECHECK message").string());
             }
@@ -2003,7 +2026,8 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
                 AutoPtr<IInterface> network;
                 GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 callbacks->OnAvailable(INetwork::Probe(network));
-            } else {
+            }
+            else {
                 // Log.e(TAG, "callback not found for AVAILABLE message");
                 Logger::E(TAG, String("callback not found for AVAILABLE message").string());
             }
@@ -2021,7 +2045,8 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
                 Int32 arg1;
                 message->GetArg1(&arg1);
                 callbacks->OnLosing(INetwork::Probe(network), arg1);
-            } else {
+            }
+            else {
                 // Log.e(TAG, "callback not found for LOSING message");
                 Logger::E(TAG, String("callback not found for LOSING message").string());
             }
@@ -2036,7 +2061,8 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
                 AutoPtr<IInterface> network;
                 GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 callbacks->OnLost(INetwork::Probe(network));
-            } else {
+            }
+            else {
                 // Log.e(TAG, "callback not found for LOST message");
                 Logger::E(TAG, String("callback not found for LOST message").string());
             }
@@ -2053,7 +2079,8 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
                 AutoPtr<IInterface> network;
                 GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
                 IConnectivityManagerNetworkCallback::Probe(callbacks)->OnUnavailable();
-            } else {
+            }
+            else {
                 // Log.e(TAG, "callback not found for UNAVAIL message");
                 Logger::E(TAG, String("callback not found for UNAVAIL message").string());
             }
@@ -2070,7 +2097,8 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
                 AutoPtr<IInterface> cap;
                 GetObject(message, ECLSID_CNetworkCapabilities, (IInterface**)&cap);
                 callbacks->OnCapabilitiesChanged(INetwork::Probe(network), INetworkCapabilities::Probe(cap));
-            } else {
+            }
+            else {
                 // Log.e(TAG, "callback not found for CAP_CHANGED message");
                 Logger::E(TAG, String("callback not found for CAP_CHANGED message").string());
             }
@@ -2088,7 +2116,8 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
                 GetObject(message, ECLSID_CLinkProperties, (IInterface**)&lp);
 
                 callbacks->OnLinkPropertiesChanged(INetwork::Probe(network), ILinkProperties::Probe(lp));
-            } else {
+            }
+            else {
                 // Log.e(TAG, "callback not found for IP_CHANGED message");
                 Logger::E(TAG, String("callback not found for IP_CHANGED message").string());
             }
@@ -2111,7 +2140,8 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
                         looper->Quit();
                     }
                 }
-            } else {
+            }
+            else {
                 // Log.e(TAG, "callback not found for CANCELED message");
                 Logger::E(TAG, String("callback not found for CANCELED message").string());
             }

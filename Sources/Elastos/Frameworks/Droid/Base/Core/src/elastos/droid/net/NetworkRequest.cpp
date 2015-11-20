@@ -120,6 +120,7 @@ ECode NetworkRequest::GetNetworkCapabilities(
     VALIDATE_NOT_NULL(*result)
 
     *result = mNetworkCapabilities;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
