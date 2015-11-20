@@ -23,6 +23,7 @@ using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::View::EIID_IMenu;
 using Elastos::Droid::View::IActionProvider;
 using Elastos::Core::CoreUtils;
+using Elastos::Utility::IHashMap;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::Concurrent::CCopyOnWriteArrayList;
@@ -343,8 +344,8 @@ ECode MenuBuilder::RestoreActionViewStates(
 
     String key;
     GetActionViewStatesKey(&key);
-    AutoPtr<ISparseArray> viewStates;
-    states->GetSparseParcelableArray(key, (ISparseArray**)&viewStates);
+    AutoPtr<IHashMap> viewStates;
+    states->GetParcelableHashMap(key, (IHashMap**)&viewStates);
 
     Int32 itemCount;
     GetSize(&itemCount);
@@ -356,7 +357,8 @@ ECode MenuBuilder::RestoreActionViewStates(
 
         Int32 id = 0;
         if (v != NULL && (v->GetId(&id), id) != IView::NO_ID) {
-            v->RestoreHierarchyState(viewStates);
+            assert(0 && "TODO");
+            // v->RestoreHierarchyState(viewStates);
         }
 
         Boolean has = FALSE;

@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/app/Service.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::Handler;

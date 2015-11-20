@@ -3,25 +3,23 @@
 #ifndef __ELASTOS_DROID_APP_CRESOURCEMANAGER_H__
 #define __ELASTOS_DROID_APP_CRESOURCEMANAGER_H__
 
-#include "_Elastos_Droid_App_CFragmentHelper.h"
+#include "_Elastos_Droid_App_CResourcesManager.h"
 
-using Elastos::Droid::Content::pm.ActivityInfo;
-using Elastos::Droid::Content::res.AssetManager;
-using Elastos::Droid::Content::res.CompatibilityInfo;
-using Elastos::Droid::Content::res.Configuration;
-using Elastos::Droid::Content::res.Resources;
-using Elastos::Droid::Content::res.ResourcesKey;
-using Elastos::Droid::hardware.display.DisplayManagerGlobal;
-using Elastos::Droid::os.IBinder;
-using Elastos::Droid::util.ArrayMap;
-using Elastos::Droid::util.DisplayMetrics;
-using Elastos::Droid::util.Slog;
-using Elastos::Droid::view.Display;
-using Elastos::Droid::view.DisplayAdjustments;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Res::IAssetManager;
+using Elastos::Droid::Content::Res::ICompatibilityInfo;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesKey;
+using Elastos::Droid::Hardware::Display::IDisplayManagerGlobal;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Utility::ISlog;
+using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::IDisplayAdjustments;
 
-import java.lang.ref.WeakReference;
-import java.util.Locale;
-
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
@@ -32,23 +30,10 @@ CarClass(CResourcesManager)
     , public Object
     , public IResourcesManager
 {
-    static final String TAG = "ResourcesManager";
-    static final boolean DEBUG_CACHE = false;
-    static final boolean DEBUG_STATS = true;
+public:
 
-    private static ResourcesManager sResourcesManager;
-    final ArrayMap<ResourcesKey, WeakReference<Resources> > mActiveResources
-            = new ArrayMap<ResourcesKey, WeakReference<Resources> >();
-
-    final ArrayMap<DisplayAdjustments, DisplayMetrics> mDefaultDisplayMetrics
-            = new ArrayMap<DisplayAdjustments, DisplayMetrics>();
-
-    CompatibilityInfo mResCompatibilityInfo;
-
-    Configuration mResConfiguration;
-    final Configuration mTmpConfig = new Configuration();
-
-    public static ResourcesManager getInstance() {
+    public static AutoPtr<IResourcesManager> GetInstance()
+    {
         synchronized(ResourcesManager.class) {
             if (sResourcesManager == null) {
                 sResourcesManager = new ResourcesManager();
@@ -114,8 +99,9 @@ CarClass(CResourcesManager)
         return dm;
     }
 
-    final void applyNonDefaultDisplayMetricsToConfigurationLocked(
-            DisplayMetrics dm, Configuration config)
+    void ApplyNonDefaultDisplayMetricsToConfigurationLocked(
+        /* [in] */ IDisplayMetrics* dm,
+        /* [in] */ IConfiguration* config)
     {
         config.touchscreen = Configuration.TOUCHSCREEN_NOTOUCH;
         config.densityDpi = dm.densityDpi;
@@ -144,9 +130,9 @@ CarClass(CResourcesManager)
     {
         if (mResCompatibilityInfo != null && !mResCompatibilityInfo.supportsScreen()) {
             mResCompatibilityInfo.applyToConfiguration(displayDensity, compatConfiguration);
-            return true;
+            return TRUE;
         }
-        return false;
+        return FALSE;
     }
 
     /**
@@ -174,14 +160,14 @@ CarClass(CResourcesManager)
         Resources r;
         synchronized(this) {
             // Resources is app scale dependent.
-            if (false) {
+            if (FALSE) {
                 Slog.w(TAG, "getTopLevelResources: " + resDir + " / " + scale);
             }
             WeakReference<Resources> wr = mActiveResources.get(key);
             r = wr != null ? wr.get() : null;
             //if (r != null) Slog.i(TAG, "isUpToDate " + resDir + ": " + r.getAssets().isUpToDate());
             if (r != null && r.getAssets().isUpToDate()) {
-                if (false) {
+                if (FALSE) {
                     Slog.w(TAG, "Returning cached resources " + r + " " + resDir
                             + ": appScale=" + r.getCompatibilityInfo().applicationScale);
                 }
@@ -244,7 +230,7 @@ CarClass(CResourcesManager)
             config = getConfiguration();
         }
         r = new Resources(assets, dm, config, compatInfo, token);
-        if (false) {
+        if (FALSE) {
             Slog.i(TAG, "Created app resources " + resDir + " " + r + ": "
                     + r.getConfiguration() + " appScale="
                     + r.getCompatibilityInfo().applicationScale);
@@ -277,7 +263,7 @@ CarClass(CResourcesManager)
         if (!mResConfiguration.isOtherSeqNewer(config) && compat == null) {
             if (DEBUG_CONFIGURATION) Slog.v(TAG, "Skipping new config: curSeq="
                     + mResConfiguration.seq + ", newSeq=" + config.seq);
-            return false;
+            return FALSE;
         }
         int changes = mResConfiguration.updateFrom(config);
         flushDisplayMetricsLocked();
@@ -340,6 +326,22 @@ CarClass(CResourcesManager)
         return changes != 0;
     }
 
+private:
+    static final String TAG = "ResourcesManager";
+    static final boolean DEBUG_CACHE = FALSE;
+    static final boolean DEBUG_STATS = TRUE;
+
+    private static ResourcesManager sResourcesManager;
+    final ArrayMap<ResourcesKey, WeakReference<Resources> > mActiveResources
+            = new ArrayMap<ResourcesKey, WeakReference<Resources> >();
+
+    final ArrayMap<DisplayAdjustments, DisplayMetrics> mDefaultDisplayMetrics
+            = new ArrayMap<DisplayAdjustments, DisplayMetrics>();
+
+    CompatibilityInfo mResCompatibilityInfo;
+
+    Configuration mResConfiguration;
+    final Configuration mTmpConfig = new Configuration();
 };
 
 } // namespace App

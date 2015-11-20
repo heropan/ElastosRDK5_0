@@ -18,6 +18,7 @@ using Elastos::Droid::View::IViewOnCreateContextMenuListener;
 using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::Transition::ITransition;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentCallbacks;
@@ -153,10 +154,10 @@ public:
         /* [in] */ IBundle* fState);
 
     CARAPI GetSavedViewState(
-        /* [out] */ IHashMap** viewState);
+        /* [out] */ ISparseArray** viewState);
 
     CARAPI SetSavedViewState(
-        /* [in] */ IHashMap* viewState);
+        /* [in] */ ISparseArray* viewState);
 
     CARAPI GetIndex(
         /* [out] */ Int32* index);
@@ -912,7 +913,7 @@ public:
 
     // When instantiated from saved state, this is the saved state.
     AutoPtr<IBundle> mSavedFragmentState;
-    AutoPtr<IHashMap> mSavedViewState;
+    AutoPtr<ISparseArray> mSavedViewState;
 
     // Index into active fragment array.
     Int32 mIndex;

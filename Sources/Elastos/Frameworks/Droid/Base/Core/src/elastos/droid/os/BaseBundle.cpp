@@ -158,7 +158,7 @@ String BaseBundle::GetPairValue()
 {
     Unparcel();
     Int32 size;
-    IMap::Probe(mMap)->GetSize(&size);
+    mMap->GetSize(&size);
     if (size > 1) {
         Logger::W(TAG, "getPairValue() used on Bundle with multiple pairs.");
     }
@@ -246,7 +246,7 @@ ECode BaseBundle::GetSize(
 {
     VALIDATE_NOT_NULL(size)
     Unparcel();
-    return IMap::Probe(mMap)->GetSize(size);
+    return mMap->GetSize(size);
 }
 
 ECode BaseBundle::IsEmpty(
@@ -254,13 +254,13 @@ ECode BaseBundle::IsEmpty(
 {
     VALIDATE_NOT_NULL(empty)
     Unparcel();
-    return IMap::Probe(mMap)->IsEmpty(empty);
+    return mMap->IsEmpty(empty);
 }
 
 ECode BaseBundle::Clear()
 {
     Unparcel();
-    return IMap::Probe(mMap)->Clear();
+    return mMap->Clear();
 }
 
 ECode BaseBundle::ContainsKey(
@@ -270,7 +270,7 @@ ECode BaseBundle::ContainsKey(
     VALIDATE_NOT_NULL(result)
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    return IMap::Probe(mMap)->ContainsKey(keyObj, result);
+    return mMap->ContainsKey(keyObj, result);
 }
 
 ECode BaseBundle::Get(
@@ -280,7 +280,7 @@ ECode BaseBundle::Get(
     VALIDATE_NOT_NULL(obj)
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    return IMap::Probe(mMap)->Get(keyObj, obj);
+    return mMap->Get(keyObj, obj);
 }
 
 ECode BaseBundle::Remove(
@@ -288,7 +288,7 @@ ECode BaseBundle::Remove(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    return IMap::Probe(mMap)->Remove(keyObj);
+    return mMap->Remove(keyObj);
 }
 
 ECode BaseBundle::PutAll(
@@ -297,14 +297,14 @@ ECode BaseBundle::PutAll(
     Unparcel();
     BaseBundle* bb = (BaseBundle*)bundle;
     bb->Unparcel();
-    return IMap::Probe(mMap)->PutAll(IMap::Probe(bb->mMap));
+    return mMap->PutAll(IMap::Probe(bb->mMap));
 }
 
 ECode BaseBundle::PutAll(
     /* [in] */ IMap* map)
 {
     Unparcel();
-    return IMap::Probe(mMap)->PutAll(map);
+    return mMap->PutAll(map);
 }
 
 ECode BaseBundle::GetKeySet(
@@ -312,7 +312,7 @@ ECode BaseBundle::GetKeySet(
 {
     VALIDATE_NOT_NULL(set)
     Unparcel();
-    return IMap::Probe(mMap)->GetKeySet(set);
+    return mMap->GetKeySet(set);
 }
 
 ECode BaseBundle::PutBoolean(
@@ -322,7 +322,7 @@ ECode BaseBundle::PutBoolean(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IBoolean> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutByte(
@@ -332,7 +332,7 @@ ECode BaseBundle::PutByte(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IByte> valueObj = CoreUtils::ConvertByte(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutChar(
@@ -342,7 +342,7 @@ ECode BaseBundle::PutChar(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IChar32> valueObj = CoreUtils::ConvertChar32(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutInt16(
@@ -352,7 +352,7 @@ ECode BaseBundle::PutInt16(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IInteger16> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutInt32(
@@ -362,7 +362,7 @@ ECode BaseBundle::PutInt32(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IInteger32> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutInt64(
@@ -372,7 +372,7 @@ ECode BaseBundle::PutInt64(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IInteger64> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutFloat(
@@ -382,7 +382,7 @@ ECode BaseBundle::PutFloat(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IFloat> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutDouble(
@@ -392,7 +392,7 @@ ECode BaseBundle::PutDouble(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IDouble> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());}
+    return mMap->Put(keyObj.Get(), valueObj.Get());}
 
 ECode BaseBundle::PutString(
     /* [in] */ const String& key,
@@ -401,7 +401,7 @@ ECode BaseBundle::PutString(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<ICharSequence> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutCharSequence(
@@ -410,7 +410,7 @@ ECode BaseBundle::PutCharSequence(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    return mMap->Put(keyObj.Get(), value);
 }
 
 ECode BaseBundle::PutIntegerArrayList(
@@ -419,7 +419,7 @@ ECode BaseBundle::PutIntegerArrayList(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    return mMap->Put(keyObj.Get(), value);
 }
 
 ECode BaseBundle::PutStringArrayList(
@@ -428,7 +428,7 @@ ECode BaseBundle::PutStringArrayList(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    return mMap->Put(keyObj.Get(), value);
 }
 
 ECode BaseBundle::PutCharSequenceArrayList(
@@ -437,7 +437,7 @@ ECode BaseBundle::PutCharSequenceArrayList(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    return mMap->Put(keyObj.Get(), value);
 }
 
 ECode BaseBundle::PutSerializable(
@@ -446,7 +446,7 @@ ECode BaseBundle::PutSerializable(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    return mMap->Put(keyObj.Get(), value);
 }
 
 ECode BaseBundle::PutBooleanArray(
@@ -456,7 +456,7 @@ ECode BaseBundle::PutBooleanArray(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutByteArray(
@@ -466,7 +466,7 @@ ECode BaseBundle::PutByteArray(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::ConvertByteArray(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutCharArray(
@@ -476,7 +476,7 @@ ECode BaseBundle::PutCharArray(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::ConvertChar32Array(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutInt16Array(
@@ -486,7 +486,7 @@ ECode BaseBundle::PutInt16Array(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutInt32Array(
@@ -496,7 +496,7 @@ ECode BaseBundle::PutInt32Array(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutInt64Array(
@@ -506,7 +506,7 @@ ECode BaseBundle::PutInt64Array(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutFloatArray(
@@ -516,7 +516,7 @@ ECode BaseBundle::PutFloatArray(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutDoubleArray(
@@ -526,7 +526,7 @@ ECode BaseBundle::PutDoubleArray(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutStringArray(
@@ -536,7 +536,7 @@ ECode BaseBundle::PutStringArray(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::Convert(value);
-    return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    return mMap->Put(keyObj.Get(), valueObj.Get());
 }
 
 ECode BaseBundle::PutCharSequenceArray(
@@ -547,7 +547,7 @@ ECode BaseBundle::PutCharSequenceArray(
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> arrObj = CoreUtils::Convert(value);
 
-    return IMap::Probe(mMap)->Put(keyObj.Get(), arrObj.Get());
+    return mMap->Put(keyObj.Get(), arrObj.Get());
 }
 
 void BaseBundle::TypeWarning(
@@ -566,7 +566,7 @@ AutoPtr<IInterface> BaseBundle::GetValue(
 {
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
-    IMap::Probe(mMap)->Get(keyObj.Get(), (IInterface**)&obj);
+    mMap->Get(keyObj.Get(), (IInterface**)&obj);
     return obj;
 }
 
@@ -1670,7 +1670,7 @@ ECode BaseBundle::WriteToParcelInner(
         // Special case for empty bundles.
         Int32 size = 0;
         if (mMap) {
-            IMap::Probe(mMap)->GetSize(&size);
+            mMap->GetSize(&size);
         }
         if (size == 0) {
             dest->WriteInt32(0);

@@ -149,7 +149,7 @@ module
             [in] Int32 outHeight,
             [in] Boolean scaleToFit,
             [in] Float horizontalAlignment,
-            [in] Float verticalAlignment
+            [in] Float verticalAlignment,
             [out] IDrawable** drawable);
 
         /**

@@ -1,58 +1,56 @@
 
+#ifndef __ELASTOS_DROID_APP_JOB_SCHEDULERIMPL_H__
+#define __ELASTOS_DROID_APP_JOB_SCHEDULERIMPL_H__
 
-// in android.app so ContextImpl has package access
-package android.app;
+#include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::app.job.JobInfo;
-using Elastos::Droid::app.job.JobScheduler;
-using Elastos::Droid::app.job.IJobScheduler;
-using Elastos::Droid::os.RemoteException;
+using Elastos::Droid::App::Job::IJobInfo;
+using Elastos::Droid::App::Job::IJobScheduler;
+using Elastos::Droid::App::Job::IIJobScheduler;
 
-import java.util.List;
+using Elastos::Utility::IList;
 
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 /**
- * Concrete implementation of the JobScheduler interface
+ * Concrete implementation of the JobScheduler Int32erface
  * @hide
  */
-public class JobSchedulerImpl extends JobScheduler {
-    IJobScheduler mBinder;
+class JobSchedulerImpl
+    : public Object
+    , public IJobScheduler
+{
+public:
+    CAR_INTERFACE_DECL()
 
-    /* package */ JobSchedulerImpl(IJobScheduler binder) {
-        mBinder = binder;
-    }
+    JobSchedulerImpl();
 
-    @Override
-    public int schedule(JobInfo job) {
-        try {
-            return mBinder.schedule(job);
-        } catch (RemoteException e) {
-            return JobScheduler.RESULT_FAILURE;
-        }
-    }
+    virtual ~JobSchedulerImpl();
 
-    @Override
-    public void cancel(int jobId) {
-        try {
-            mBinder.cancel(jobId);
-        } catch (RemoteException e) {}
+    CARAPI constructor(
+        /* [in] */ IIJobScheduler* binder);
 
-    }
+    CARAPI Schedule(
+        /* [in] */ IJobInfo* job,
+        /* [out] */ Int32* result);
 
-    @Override
-    public void cancelAll() {
-        try {
-            mBinder.cancelAll();
-        } catch (RemoteException e) {}
+    CARAPI Cancel(
+        /* [in] */ Int32 jobId);
 
-    }
+    CARAPI CancelAll();
 
-    @Override
-    public List<JobInfo> getAllPendingJobs() {
-        try {
-            return mBinder.getAllPendingJobs();
-        } catch (RemoteException e) {
-            return null;
-        }
-    }
-}
+    CARAPI GetAllPendingJobs(
+        /* [out] */ IList** result);
+
+private:
+    AutoPtr<IIJobScheduler> mBinder;
+};
+
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__ELASTOS_DROID_APP_JOB_SCHEDULERIMPL_H__
+
