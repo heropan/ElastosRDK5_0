@@ -1,8 +1,11 @@
 
 #include "elastos/droid/app/CAlarmManager.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/UserHandle.h"
 
 using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
 
 namespace Elastos {
 namespace Droid {
@@ -25,7 +28,10 @@ ECode CAlarmManager::constructor(
 {
     mService = service;
 
-    Int32 sdkVersion = ctx->GetApplicationInfo().targetSdkVersion;
+    AutoPtr<IApplicationInfo> ai;
+    ctx->GetApplicationInfo((IApplicationInfo**)&ai);
+    Int32 sdkVersion;
+    ai->GetTargetSdkVersion(&sdkVersion);
     mAlwaysExact = (sdkVersion < Build::VERSION_CODES::KITKAT);
     return NOERROR;
 }
@@ -56,86 +62,28 @@ ECode CAlarmManager::SetWindow(
     /* [in] */ Int32 type,
     /* [in] */ Int64 windowStartMillis,
     /* [in] */ Int64 windowLengthMillis,
-    /* [in] */ IPendingIntent* operation);
+    /* [in] */ IPendingIntent* operation)
 {
     return SetImpl(type, windowStartMillis, windowLengthMillis, 0, operation, NULL, NULL);
 }
 
+ECode CAlarmManager::SetExact(
+    /* [in] */ Int32 type,
+    /* [in] */ Int64 triggerAtMillis,
+    /* [in] */ IPendingIntent* operation)
+{
+    return SetImpl(type, triggerAtMillis, WINDOW_EXACT, 0, operation, NULL, NULL);
+}
 
-    /**
-     * Schedule an alarm to be delivered precisely at the stated time.
-     *
-     * <p>
-     * This method is like {@link #set(int, long, PendingIntent)}, but does not permit
-     * the OS to adjust the delivery time.  The alarm will be delivered as nearly as
-     * possible to the requested trigger time.
-     *
-     * <p>
-     * <b>Note:</b> only alarms for which there is a strong demand for exact-time
-     * delivery (such as an alarm clock ringing at the requested time) should be
-     * scheduled as exact.  Applications are strongly discouraged from using exact
-     * alarms unnecessarily as they reduce the OS's ability to minimize battery use.
-     *
-     * @param type One of {@link #ELAPSED_REALTIME}, {@link #ELAPSED_REALTIME_WAKEUP},
-     *        {@link #RTC}, or {@link #RTC_WAKEUP}.
-     * @param triggerAtMillis time in milliseconds that the alarm should go
-     *        off, using the appropriate clock (depending on the alarm type).
-     * @param operation Action to perform when the alarm goes off;
-     *        typically comes from {@link PendingIntent#getBroadcast
-     *        IntentSender.getBroadcast()}.
-     *
-     * @see #set
-     * @see #setRepeating
-     * @see #setWindow
-     * @see #cancel
-     * @see android.content.Context#sendBroadcast
-     * @see android.content.Context#registerReceiver
-     * @see android.content.Intent#filterEquals
-     * @see #ELAPSED_REALTIME
-     * @see #ELAPSED_REALTIME_WAKEUP
-     * @see #RTC
-     * @see #RTC_WAKEUP
-     */
-    ECode CAlarmManager::SetExact(
-        /* [in] */ Int32 type,
-        /* [in] */ Int64 triggerAtMillis,
-        /* [in] */ IPendingIntent* operation)
-    {
-        setImpl(type, triggerAtMillis, WINDOW_EXACT, 0, operation, null, null);
-    }
+ECode CAlarmManager::SetAlarmClock(
+    /* [in] */ IAlarmClockInfo* info,
+    /* [in] */ IPendingIntent* operation)
+{
+    Int64 time;
+    info->GetTriggerTime(&time);
+    return SetImpl(RTC_WAKEUP, time, WINDOW_EXACT, 0, operation, NULL, info);
+}
 
-    /**
-     * Schedule an alarm that represents an alarm clock.
-     *
-     * The system may choose to display information about this alarm to the user.
-     *
-     * <p>
-     * This method is like {@link #setExact(int, long, PendingIntent)}, but implies
-     * {@link #RTC_WAKEUP}.
-     *
-     * @param info
-     * @param operation Action to perform when the alarm goes off;
-     *        typically comes from {@link PendingIntent#getBroadcast
-     *        IntentSender.getBroadcast()}.
-     *
-     * @see #set
-     * @see #setRepeating
-     * @see #setWindow
-     * @see #setExact
-     * @see #cancel
-     * @see #getNextAlarmClock()
-     * @see android.content.Context#sendBroadcast
-     * @see android.content.Context#registerReceiver
-     * @see android.content.Intent#filterEquals
-     */
-    ECode CAlarmManager::SetAlarmClock(
-        /* [in] */ IAlarmClockInfo* info,
-        /* [in] */ IPendingIntent* operation)
-    {
-        return SetImpl(RTC_WAKEUP, info.getTriggerTime(), WINDOW_EXACT, 0, operation, null, info);
-    }
-
-/** @hide */
 ECode CAlarmManager::Set(
     /* [in] */ Int32 type,
     /* [in] */ Int64 triggerAtMillis,
@@ -154,7 +102,7 @@ ECode CAlarmManager::SetImpl(
     /* [in] */ Int64 intervalMillis,
     /* [in] */ IPendingIntent* operation,
     /* [in] */ IWorkSource* workSource,
-    /* [in] */ IAlarmClockInfo* alarmClock);
+    /* [in] */ IAlarmClockInfo* alarmClock)
 {
     if (triggerAtMillis < 0) {
         /* NOTYET
@@ -167,11 +115,11 @@ ECode CAlarmManager::SetImpl(
         triggerAtMillis = 0;
     }
 
-    try {
-        mService.set(type, triggerAtMillis, windowMillis, intervalMillis, operation,
-                workSource, alarmClock);
-    } catch (RemoteException ex) {
-    }
+    // try {
+    return mService->Set(type, triggerAtMillis, windowMillis, intervalMillis,
+        operation, workSource, alarmClock);
+    // } catch (RemoteException ex) {
+    // }
 }
 
 ECode CAlarmManager::SetInexactRepeating(
@@ -180,7 +128,7 @@ ECode CAlarmManager::SetInexactRepeating(
     /* [in] */ Int64 intervalMillis,
     /* [in] */ IPendingIntent* operation)
 {
-    return SetImpl(type, triggerAtMillis, WINDOW_HEURISTIC, intervalMillis, operation, null, null);
+    return SetImpl(type, triggerAtMillis, WINDOW_HEURISTIC, intervalMillis, operation, NULL, NULL);
 }
 
 ECode CAlarmManager::Cancel(
@@ -196,17 +144,12 @@ ECode CAlarmManager::SetTime(
     /* [in] */ Int64 millis)
 {
     //try {
-    return mService->SetTime(millis);
+    Boolean bval;
+    return mService->SetTime(millis, &bval);
     //} catch (RemoteException ex) {
     //}
 }
 
-/**
- * Set the system default time zone.
- * Requires the permission android.permission.SET_TIME_ZONE.
- *
- * @param timeZone in the format understood by {@link java.util.TimeZone}
- */
 ECode CAlarmManager::SetTimeZone(
     /* [in] */ const String& timeZone)
 {
@@ -219,18 +162,20 @@ ECode CAlarmManager::SetTimeZone(
 ECode CAlarmManager::GetNextAlarmClock(
     /* [out] */ IAlarmClockInfo** info)
 {
-    return GetNextAlarmClock(UserHandle.myUserId());
+    return GetNextAlarmClock(UserHandle::GetMyUserId(), info);
 }
 
 ECode CAlarmManager::GetNextAlarmClock(
-    /* [in] */ Int32 userId
+    /* [in] */ Int32 userId,
     /* [out] */ IAlarmClockInfo** info)
 {
-    try {
-        return mService.getNextAlarmClock(userId);
-    } catch (RemoteException ex) {
-        return null;
-    }
+    VALIDATE_NOT_NULL(info)
+
+    // try {
+    return mService->GetNextAlarmClock(userId, info);
+    // } catch (RemoteException ex) {
+    //     return NULL;
+    // }
 }
 
 

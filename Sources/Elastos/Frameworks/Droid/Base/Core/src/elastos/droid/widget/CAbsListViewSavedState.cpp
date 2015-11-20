@@ -1,8 +1,8 @@
 #include "CAbsListViewSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ECode CAbsListViewSavedState::ReadFromParcel(
         /* [in] */  IParcel* source)

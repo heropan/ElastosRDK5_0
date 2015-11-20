@@ -1,9 +1,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/CShareActionProvider.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 PInterface CShareActionProvider::Probe(
     /* [in] */ REIID riid)

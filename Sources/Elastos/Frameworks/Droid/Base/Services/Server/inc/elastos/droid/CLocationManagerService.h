@@ -35,10 +35,10 @@ using Elastos::Droid::Location::IILocationListener;
 using Elastos::Droid::Location::IIGpsStatusListener;
 
 
-namespace Elastos{
-namespace Droid{
-namespace Server{
-namespace Location{
+namespace Elastos {
+namespace Droid {
+namespace Server {
+namespace Location {
 
 CarClass(CLocationManagerService)
 {

@@ -24,9 +24,9 @@ using Elastos::Droid::View::EIID_IOnGestureListener;
 using Elastos::Droid::Widget::CGalleryLayoutParams;
 using Elastos::Droid::Widget::CScroller;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 //==============================================================================

@@ -1,9 +1,9 @@
 #include "elastos/droid/app/backup/CRestoreSet.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 CRestoreSet::CRestoreSet()
     : mName(NULL)

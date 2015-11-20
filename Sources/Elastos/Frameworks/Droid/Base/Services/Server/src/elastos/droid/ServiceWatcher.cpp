@@ -5,10 +5,10 @@
 using Elastos::Droid::Content::EIID_IServiceConnection;
 using Elastos::Utility::Logging::Slogger;
 
-namespace Elastos{
-namespace Droid{
-namespace Server{
-namespace Location{
+namespace Elastos {
+namespace Droid {
+namespace Server {
+namespace Location {
 
 const String ServiceWatcher::EXTRA_SERVICE_VERSION("serviceVersion");
 

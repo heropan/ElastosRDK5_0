@@ -4,9 +4,9 @@ module
     interface Elastos.Droid.Text.ITextWatcher;
     using interface Elastos.Core.ICharSequence;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * @Involve

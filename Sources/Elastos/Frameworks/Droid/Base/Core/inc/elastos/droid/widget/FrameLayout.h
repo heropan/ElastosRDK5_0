@@ -8,9 +8,9 @@
 
 using Elastos::Droid::View::ViewGroup;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class FrameLayout
     : public ViewGroup

@@ -5,9 +5,9 @@ module
     interface Elastos.Droid.Content.Res.IColorStateList;
     enum Elastos.Droid.Graphics.PorterDuffMode;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * @Involve

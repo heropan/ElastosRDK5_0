@@ -1,8 +1,8 @@
 #include "elastos/droid/app/CSearchManager.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CAR_INTERFACE_IMPL_3(CSearchManager, Object, ISearchManager, IDialogInterfaceOnDismissListener, IDialogInterfaceOnCancelListener)
 

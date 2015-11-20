@@ -3,9 +3,9 @@
 
 #include "_Elastos_Droid_App_COnActivityPausedListener.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CarClass(COnActivityPausedListener)
 {

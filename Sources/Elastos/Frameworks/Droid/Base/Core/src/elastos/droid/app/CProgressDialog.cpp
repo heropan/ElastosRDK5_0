@@ -1,9 +1,9 @@
 
 #include "elastos/droid/app/CProgressDialog.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 IPROGRESSDIALOG_METHODS_IMPL(CProgressDialog, ProgressDialog);
 IALERTDIALOG_METHODS_IMPL(CProgressDialog, ProgressDialog);

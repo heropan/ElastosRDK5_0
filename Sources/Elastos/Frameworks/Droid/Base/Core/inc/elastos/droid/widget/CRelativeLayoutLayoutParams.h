@@ -4,9 +4,16 @@
 #include "_Elastos_Droid_Widget_CRelativeLayoutLayoutParams.h"
 #include "elastos/droid/widget/RelativeLayoutLayoutParams.h"
 
+<<<<<<< HEAD
 namespace Elastos{
 namespace Droid{
 namespace Widget{
+=======
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+>>>>>>> compile app.
 
 CarClass(CRelativeLayoutLayoutParams), public RelativeLayoutLayoutParams
 {

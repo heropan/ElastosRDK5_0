@@ -7,7 +7,7 @@ using Elastos::Droid::Animation::IValueAnimator;
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-namespace Internal{
+namespace Internal {
 
 CarClass(CWaveView) , public WaveView
 {

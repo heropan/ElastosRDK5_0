@@ -5,9 +5,9 @@
 #include "elastos/droid/widget/AbsoluteLayoutLayoutParams.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CAbsoluteLayoutLayoutParams), public AbsoluteLayoutLayoutParams
 {

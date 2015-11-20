@@ -4,10 +4,10 @@
 
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 CarClass(CActionBarViewHomeView) , public ActionBarViewHomeView
 {

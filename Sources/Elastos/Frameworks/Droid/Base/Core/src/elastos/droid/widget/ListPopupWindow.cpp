@@ -15,9 +15,9 @@ using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::CDisplayMetrics;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 const Int32 ListPopupWindow::EXPAND_LIST_TIMEOUT;
 

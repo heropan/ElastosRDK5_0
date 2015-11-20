@@ -225,7 +225,11 @@ public:
 public:
     CAR_INTERFACE_DECL()
 
-    BackStackRecord(
+    BackStackRecord();
+
+    virtual ~BackStackRecord();
+
+    CARAPI constructor(
         /* [in] */ IFragmentManagerImpl* manager);
 
     CARAPI ToString(

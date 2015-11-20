@@ -13,10 +13,10 @@ using Elastos::Droid::App::Backup::IBackupDataInput;
 using Elastos::Droid::App::Backup::IBackupHelper;
 using Elastos::Droid::App::Backup::IBackupDataOutput;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 /** @hide */
 CarClass(CBackupHelperDispatcher)

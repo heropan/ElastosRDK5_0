@@ -12,9 +12,9 @@ using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CToastTransientNotification)
 {

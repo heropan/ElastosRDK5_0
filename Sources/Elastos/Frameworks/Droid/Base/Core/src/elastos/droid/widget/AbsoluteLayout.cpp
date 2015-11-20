@@ -3,9 +3,9 @@
 #include <elastos/core/Math.h>
 #include "elastos/droid/widget/CAbsoluteLayoutLayoutParams.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 AbsoluteLayout::AbsoluteLayout()

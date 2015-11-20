@@ -3,10 +3,10 @@
 #include "elastos/droid/app/backup/CRestoreObserverWrapper.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 RestoreSession::RestoreSession(
     /* [in] */ IContext* context,

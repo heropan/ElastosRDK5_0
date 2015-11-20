@@ -17,9 +17,9 @@ using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;
 using Elastos::Utility::Etl::List;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class ArrayAdapter
     : public BaseAdapter

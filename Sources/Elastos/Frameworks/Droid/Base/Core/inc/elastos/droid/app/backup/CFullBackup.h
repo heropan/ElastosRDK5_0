@@ -7,9 +7,9 @@
 using Elastos::IO::IFile;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 namespace Backup {
 
 CarClass(CFullBackup)

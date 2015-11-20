@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_App_Backup_CRestoreSet.h"
 #include "elastos/droid/ext/frameworkext.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 namespace Backup {
 
 CarClass(CRestoreSet)

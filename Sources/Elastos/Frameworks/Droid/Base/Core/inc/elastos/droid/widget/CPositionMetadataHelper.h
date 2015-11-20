@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_Widget_CPositionMetadataHelper.h"
 #include "elastos/droid/widget/PositionMetadata.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CPositionMetadataHelper)
 {

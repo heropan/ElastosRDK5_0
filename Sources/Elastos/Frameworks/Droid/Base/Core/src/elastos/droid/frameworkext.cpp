@@ -29,7 +29,7 @@ extern "C" const ClassID ECLSID_CDummyObject =
 
 
 #ifdef DROID_CORE
-pthread_key_t sLooperKey;
-Boolean sLooperKeyInited = FALSE;
+ECO_PUBLIC pthread_key_t sLooperKey;
+ECO_PUBLIC Boolean sLooperKeyInited = FALSE;
 #endif
 

@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CAbsSpinnerSavedState.h"
 #include "AbsSpinnerSavedState.h"
 
-namespace Elastos{
+namespace Elastos {
 namespace Droid {
 namespace Widget {
 

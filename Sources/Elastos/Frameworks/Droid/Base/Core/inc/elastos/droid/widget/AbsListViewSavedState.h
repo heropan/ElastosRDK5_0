@@ -9,9 +9,9 @@
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::View::ViewBaseSavedState;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class AbsListViewSavedState : public ViewBaseSavedState
 {

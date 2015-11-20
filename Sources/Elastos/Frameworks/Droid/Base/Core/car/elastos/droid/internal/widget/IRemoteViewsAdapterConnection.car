@@ -3,10 +3,10 @@ module
 {
     interface Elastos.Droid.Os.IBinder;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     interface IRemoteViewsAdapterConnection {
         OnServiceConnected(

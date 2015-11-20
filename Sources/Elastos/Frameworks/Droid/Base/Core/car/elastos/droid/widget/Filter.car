@@ -3,9 +3,9 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * <p>Listener used to receive a notification upon completion of a filtering

@@ -4,9 +4,9 @@ module
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Widget.Internal.IIRemoteViewsFactory;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * @Involve

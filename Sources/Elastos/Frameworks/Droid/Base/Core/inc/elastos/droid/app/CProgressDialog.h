@@ -6,9 +6,9 @@
 
 
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CarClass(CProgressDialog), public ProgressDialog
 {

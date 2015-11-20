@@ -34,9 +34,9 @@ using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class Spinner;
 

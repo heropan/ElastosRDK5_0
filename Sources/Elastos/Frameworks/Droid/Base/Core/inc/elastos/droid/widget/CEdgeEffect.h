@@ -9,9 +9,9 @@ using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IRect;
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 CarClass(CEdgeEffect), public EdgeEffect

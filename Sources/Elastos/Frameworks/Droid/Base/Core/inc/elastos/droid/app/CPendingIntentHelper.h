@@ -5,10 +5,10 @@
 #include "_Elastos_Droid_App_CPendingIntentHelper.h"
 #include <elastos/core/Singleton.h>
 
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IUserHandle;
 
 namespace Elastos {
 namespace Droid {

@@ -256,6 +256,14 @@ module
         WallpaperOffsetsComplete(
             [in] IBinder* window);
 
+        /**
+         * Apply a raw offset to the wallpaper service when shown behind this window.
+         */
+        SetWallpaperDisplayOffset(
+            [in] IBinder* windowToken,
+            [in] Int32 x,
+            [in] Int32 y);
+
         SendWallpaperCommand(
             [in] IBinder* window,
             [in] String action,

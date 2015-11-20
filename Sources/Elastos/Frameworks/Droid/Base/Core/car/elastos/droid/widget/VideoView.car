@@ -10,9 +10,9 @@ module
     interface Elastos.Droid.Media.IMediaFormat;
     interface Elastos.Droid.Widget.IMediaController;
     interface Elastos.Droid.Net.IUri;
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * @Involve

@@ -9,8 +9,8 @@ module
     interface Elastos.Droid.App.IActivity;
     interface Elastos.Droid.Os.IUserHandle;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace Keystore{
     namespace Security{
 

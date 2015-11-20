@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CProgressBarSavedState.h"
 #include "ProgressBarSavedState.h"
 
-namespace Elastos{
+namespace Elastos {
 namespace Droid {
 namespace Widget {
 

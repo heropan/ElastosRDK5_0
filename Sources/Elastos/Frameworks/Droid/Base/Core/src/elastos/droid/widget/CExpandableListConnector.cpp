@@ -1,9 +1,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/CExpandableListConnector.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 PInterface CExpandableListConnector::Probe(
     /* [in] */ REIID riid)

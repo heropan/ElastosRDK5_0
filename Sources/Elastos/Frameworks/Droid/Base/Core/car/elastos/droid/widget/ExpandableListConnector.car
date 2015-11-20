@@ -3,9 +3,9 @@ module {
 
     interface Elastos.Droid.Widget.IExpandableListPosition;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * Metadata about an expanded group to help convert from a flat list

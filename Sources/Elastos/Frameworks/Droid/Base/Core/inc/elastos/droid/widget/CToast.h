@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_Widget_CToast.h"
 #include "elastos/droid/widget/Toast.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CToast), public Toast
 {

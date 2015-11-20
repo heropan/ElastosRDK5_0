@@ -46,10 +46,10 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Utility::CParcelableObjectContainer;
 using Elastos::Utility::Logging::Slogger;
 
-namespace Elastos{
-namespace Droid{
-namespace Server{
-namespace Location{
+namespace Elastos {
+namespace Droid {
+namespace Server {
+namespace Location {
 
 const Boolean CLocationManagerService::D = FALSE;
 const String CLocationManagerService::TAG("LocationManagerService");

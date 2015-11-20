@@ -7,11 +7,10 @@
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/R.h"
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IInputStream;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::IParcelFileDescriptor;
@@ -20,10 +19,14 @@ using Elastos::Droid::Graphics::IBitmapFactoryOptions;
 using Elastos::Droid::Graphics::CBitmapFactoryOptions;
 using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Utility::Logging::Logger;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IInputStream;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 const Int32 CGlobalsWallpaperManagerCallback::MSG_CLEAR_WALLPAPER = 1;
 
@@ -42,7 +45,7 @@ ECode CGlobalsWallpaperManagerCallback::MyHandler::HandleMessage(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(CGlobalsWallpaperManagerCallback, Object, IIWallpaperManagerCallback, IBinder)
+CAR_INTERFACE_IMPL_2(CGlobalsWallpaperManagerCallback, Object, IIWallpaperManagerCallback, IBinder)
 
 CAR_OBJECT_IMPL(CGlobalsWallpaperManagerCallback)
 
@@ -98,7 +101,7 @@ void CGlobalsWallpaperManagerCallback::ForgetLoadedWallpaper()
 AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetCurrentWallpaperLocked(
     /* [in] */ IContext* context)
 {
-    if (mService == null) {
+    if (mService == NULL) {
         Logger::W("GlobalsWallpaperManagerCallback", "WallpaperService not running");
         return NULL;
     }
@@ -106,7 +109,7 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetCurrentWallpaperLocked(
     // try {
     AutoPtr<IBundle> params;
     AutoPtr<IParcelFileDescriptor> fd;
-    ASSERT_SUCCEEDED(mService->GetWallpaper((IWallpaperManagerCallback*)this,
+    ASSERT_SUCCEEDED(mService->GetWallpaper((IIWallpaperManagerCallback*)this,
         (IBundle**)&params, (IParcelFileDescriptor**)&fd));
     if (fd != NULL) {
 
@@ -140,7 +143,7 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetCurrentWallpaperLocked(
 AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetDefaultWallpaperLocked(
     /* [in] */ IContext* context)
 {
-    InputStream is = OpenDefaultWallpaper(context);
+    AutoPtr<IInputStream> is = CWallpaperManager::OpenDefaultWallpaper(context);
     if (is != NULL) {
         // try {
         AutoPtr<IBitmapFactoryOptions> options;
@@ -150,10 +153,10 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetDefaultWallpaperLocked(
         AutoPtr<IBitmap> bm;
         ECode ec = factory->DecodeStream(is, NULL, options, (IBitmap**)&bm);
         if (ec == (ECode)E_OUT_OF_MEMORY_ERROR) {
-            Slogger::W("GlobalsWallpaperManagerCallback", "Can't decode stream");
+            Logger::W("GlobalsWallpaperManagerCallback", "Can't decode stream");
         }
 
-        is->Close();
+        ICloseable::Probe(is)->Close();
         return bm;
         // } catch (OutOfMemoryError e) {
         //     Log.w(TAG, "Can't decode stream", e);
@@ -180,6 +183,12 @@ ECode CGlobalsWallpaperManagerCallback::constructor(
 {
     mService = (IIWallpaperManager*)ServiceManager::GetService(IContext::WALLPAPER_SERVICE).Get();
     return NOERROR;
+}
+
+ECode CGlobalsWallpaperManagerCallback::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
 }
 
 } // namespace App

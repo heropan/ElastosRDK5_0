@@ -8,9 +8,9 @@ module
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * A callback interface for updating input validity when the date picker

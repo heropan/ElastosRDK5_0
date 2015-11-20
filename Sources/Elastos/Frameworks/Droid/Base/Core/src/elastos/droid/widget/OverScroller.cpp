@@ -14,9 +14,9 @@ using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::IViewConfigurationHelper;
 using Elastos::Droid::View::CViewConfigurationHelper;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 const Int32 OverScroller::DEFAULT_DURATION;
 const Int32 OverScroller::SCROLL_MODE;

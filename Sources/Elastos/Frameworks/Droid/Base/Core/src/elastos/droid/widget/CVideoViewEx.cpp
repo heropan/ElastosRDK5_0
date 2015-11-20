@@ -3,9 +3,9 @@
 
 using Elastos::Droid::View::EIID_View;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 IVIEW_METHODS_IMPL(CVideoViewEx, VideoView)
 IDRAWABLECALLBACK_METHODS_IMPL(CVideoViewEx, VideoView)

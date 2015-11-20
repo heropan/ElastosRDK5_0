@@ -2,9 +2,9 @@
 #include "elastos/droid/widget/FrameLayoutLayoutParams.h"
 #include "elastos/droid/R.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CAR_INTERFACE_IMPL(FrameLayoutLayoutParams, ViewGroupMarginLayoutParams, IFrameLayoutLayoutParams);
 FrameLayoutLayoutParams::FrameLayoutLayoutParams()

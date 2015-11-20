@@ -2,9 +2,9 @@
 #include "elastos/droid/view/CViewBaseSavedState.h"
 #include "elastos/droid/ext/frameworkdef.h"
 
-namespace Elastos{
-namespace Droid{
-namespace View{
+namespace Elastos {
+namespace Droid {
+namespace View {
 
 ECode CViewBaseSavedState::ReadFromParcel(
     /* [in] */ IParcel* source)

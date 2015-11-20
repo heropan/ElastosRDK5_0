@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_Widget_CExpandableListViewHelper.h"
 #include "elastos/droid/widget/ExpandableListView.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CExpandableListViewHelper)
 {

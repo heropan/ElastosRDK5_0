@@ -4,9 +4,9 @@
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 static AutoPtr<ICharSequence> InitDEFAULT_FORMAT_12_HOUR()
 {

@@ -7,9 +7,9 @@
 using Elastos::Droid::View::ISubUiVisibilityListener;
 using Elastos::Droid::View::IVisibilityListener;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CShareActionProvider), public ShareActionProvider
 {

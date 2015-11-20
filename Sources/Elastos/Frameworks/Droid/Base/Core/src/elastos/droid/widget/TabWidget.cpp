@@ -12,9 +12,9 @@ using Elastos::Droid::View::EIID_IViewOnFocusChangeListener;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::EIID_IView;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 // {ca8d2eff-aa0f-43c3-881c-108012f2d868}
 const InterfaceID EIID_TabWidget =

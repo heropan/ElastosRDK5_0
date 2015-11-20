@@ -26,10 +26,10 @@ using Elastos::Droid::Widget::IAdapterViewOnItemSelectedListener;
 using Elastos::Droid::App::IActionBar;
 using Elastos::Droid::App::IActionBarOnNavigationListener;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 class ActionBarView : public AbsActionBarView
 {

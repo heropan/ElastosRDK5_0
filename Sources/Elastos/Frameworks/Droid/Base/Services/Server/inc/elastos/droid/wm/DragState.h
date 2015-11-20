@@ -17,9 +17,9 @@ using Elastos::Droid::Graphics::IRegion;
 using Elastos::Droid::Server::Input::InputApplicationHandle;
 using Elastos::Droid::Server::Input::InputWindowHandle;
 
-namespace Elastos{
-namespace Droid{
-namespace Server{
+namespace Elastos {
+namespace Droid {
+namespace Server {
 namespace Wm{
 
 class WindowState;

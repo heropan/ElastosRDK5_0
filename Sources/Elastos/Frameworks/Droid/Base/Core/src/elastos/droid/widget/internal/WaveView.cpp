@@ -26,7 +26,7 @@ using Elastos::Droid::View::Accessibility::CAccessibilityManager;
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-namespace Internal{
+namespace Internal {
 
 const String WaveView::TAG("WaveView");
 const Boolean WaveView::DBG;

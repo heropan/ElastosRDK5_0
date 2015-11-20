@@ -5,8 +5,8 @@ module
     interface Elastos.Utility.IList;
     interface Org.Xmlpull.V1.IXmlSerializer;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace NFC{
     namespace Cardemulation{
 

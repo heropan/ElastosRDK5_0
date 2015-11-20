@@ -1,8 +1,8 @@
 #include "elastos/droid/widget/CScroller.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ECode CScroller::constructor(
     /* [in] */ IContext* context)

@@ -8,9 +8,9 @@ using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::EIID_IContext;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ArrayAdapter::ArrayFilter::ArrayFilter(
     /* [in] */ ArrayAdapter* host)

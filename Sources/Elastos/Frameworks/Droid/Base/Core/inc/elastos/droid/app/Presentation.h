@@ -23,9 +23,9 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Hardware::Display::IDisplayListener;
 using Elastos::Droid::Hardware::Display::IDisplayManager;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 class Presentation
     : public Dialog

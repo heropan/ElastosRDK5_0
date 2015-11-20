@@ -5,9 +5,9 @@
 #include "_Elastos_Droid_View_CViewBaseSavedState.h"
 #include "elastos/droid/view/ViewBaseSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace View{
+namespace Elastos {
+namespace Droid {
+namespace View {
 
 CarClass(CViewBaseSavedState), public ViewBaseSavedState
 {

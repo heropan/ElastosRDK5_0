@@ -676,12 +676,10 @@ void WallpaperService::Engine::Attach(
     mSurfaceHolder->SetSizeFromLayout();
     mInitializing = TRUE;
 
-    AutoPtr<ILooper> looper;
-    mOwner->GetMainLooper((ILooper**)&looper);
     AutoPtr<IWindowManagerGlobal> wg;
     CWindowManagerGlobal::AcquireSingleton((IWindowManagerGlobal**)&wg);
     mSession = NULL;
-    wg->GetWindowSession(looper, (IWindowSession**)&mSession);
+    wg->GetWindowSession((IWindowSession**)&mSession);
 
     mWindow->SetSession(mSession);
 

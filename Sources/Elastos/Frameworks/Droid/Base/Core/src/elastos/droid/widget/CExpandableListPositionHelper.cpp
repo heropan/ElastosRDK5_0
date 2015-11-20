@@ -3,9 +3,9 @@
 
 using Elastos::Droid::Widget::IExpandableListPosition;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ECode CExpandableListPositionHelper::ObtainGroupPosition(
     /* [in] */ Int32 groupPosition,

@@ -1,9 +1,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/CExpandableListPosition.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 PInterface CExpandableListPosition::Probe(
     /* [in] */ REIID riid)

@@ -3,10 +3,10 @@ module
 {
     interface Elastos.Droid.View.IMotionEvent;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * ExploreByTouchHelper is a utility class for implementing accessibility

@@ -18,9 +18,9 @@
 #include <Elastos.CoreLibrary.h>
 #include "elastos/droid/R.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class CAbsListViewSavedState;
 

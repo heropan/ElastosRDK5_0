@@ -6,9 +6,9 @@ module
     interface Elastos.Droid.Content.IContext;
     using interface Elastos.Core.ICharSequence;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
 
     /**

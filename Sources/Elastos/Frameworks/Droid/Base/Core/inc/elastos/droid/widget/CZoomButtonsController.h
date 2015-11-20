@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_Widget_CZoomButtonsController.h"
 #include "elastos/droid/widget/ZoomButtonsController.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CZoomButtonsController) , public ZoomButtonsController
 {

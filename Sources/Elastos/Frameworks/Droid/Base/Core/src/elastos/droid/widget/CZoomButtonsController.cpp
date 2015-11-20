@@ -1,8 +1,8 @@
 #include "elastos/droid/widget/CZoomButtonsController.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 PInterface CZoomButtonsController::Probe(
     /* [in] */ REIID riid)

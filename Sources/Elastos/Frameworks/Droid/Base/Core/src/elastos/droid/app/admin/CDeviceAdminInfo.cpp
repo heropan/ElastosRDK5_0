@@ -28,7 +28,7 @@ namespace Droid {
 namespace App {
 namespace Admin {
 
-const String TAG = String("CDeviceAdminInfo");
+const String TAG("CDeviceAdminInfo");
 
 AutoPtr<IDeviceAdminInfoPolicyInfo> CreatePolicyInfo(
     /* [in] */ Int32 identIn,

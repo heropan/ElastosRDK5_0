@@ -6,9 +6,9 @@
 
 using Elastos::Droid::Content::IContext;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CarClass(CTaskStackBuilderHelper)
     , public Singleton

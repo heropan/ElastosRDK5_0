@@ -5,9 +5,9 @@ using Elastos::Utility::Concurrent::CConcurrentLinkedQueue;
 using Elastos::Utility::Concurrent::IExecutors;
 using Elastos::Utility::Concurrent::CExecutors;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 static AutoPtr<IQueue> InitPendingWorkFinishers()
 {

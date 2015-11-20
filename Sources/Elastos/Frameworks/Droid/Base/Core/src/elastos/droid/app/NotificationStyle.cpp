@@ -5,9 +5,9 @@
 using Elastos::Droid::View::IView;
 using Elastos::Droid::R;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 NotificationStyle::NotificationStyle()
     : mSummaryTextSet(FALSE)

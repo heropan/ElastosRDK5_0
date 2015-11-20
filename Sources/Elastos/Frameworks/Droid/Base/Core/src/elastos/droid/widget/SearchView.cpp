@@ -44,9 +44,9 @@ using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::App::CPendingIntentHelper;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 // {50c74954-5585-4c65-826c-665878e53611}
 extern "C" const InterfaceID EIID_SearchView =

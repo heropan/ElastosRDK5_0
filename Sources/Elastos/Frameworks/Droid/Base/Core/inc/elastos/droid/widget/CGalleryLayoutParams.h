@@ -8,9 +8,9 @@
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Graphics::ICanvas;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CGalleryLayoutParams), public GalleryLayoutParams
 {

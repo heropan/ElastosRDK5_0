@@ -4,10 +4,10 @@
 #include "_Elastos_Droid_Widget_Internal_CLockPatternViewSavedState.h"
 #include "elastos/droid/widget/internal/LockPatternViewSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 CarClass(CLockPatternViewSavedState), public LockPatternViewSavedState
 {

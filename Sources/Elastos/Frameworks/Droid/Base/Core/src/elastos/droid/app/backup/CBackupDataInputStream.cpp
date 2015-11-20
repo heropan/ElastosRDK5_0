@@ -3,10 +3,10 @@
 #include <elastos/coredef.h>
 #include <elastos/core/Math.h>
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 ECode CBackupDataInputStream::constructor(
     /* [in] */ IBackupDataInput* data)

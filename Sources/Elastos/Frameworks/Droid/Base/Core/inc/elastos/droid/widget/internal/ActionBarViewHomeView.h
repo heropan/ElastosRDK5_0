@@ -5,10 +5,10 @@
 
 using Elastos::Droid::View::IMotionEvent;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 extern "C" const InterfaceID EIID_ActionBarViewHomeView;
 

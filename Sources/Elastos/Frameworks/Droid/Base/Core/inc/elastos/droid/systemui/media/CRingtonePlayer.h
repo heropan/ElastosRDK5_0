@@ -15,8 +15,8 @@ using Elastos::Droid::Media::IIAudioService;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 
-namespace Elastos{
-namespace Droid{
+namespace Elastos {
+namespace Droid {
 namespace SystemUI{
 namespace Media{
 

@@ -5,9 +5,9 @@
 #include "elastos/droid/widget/GridLayoutLayoutParams.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CGridLayoutLayoutParams), public GridLayoutLayoutParams
 {

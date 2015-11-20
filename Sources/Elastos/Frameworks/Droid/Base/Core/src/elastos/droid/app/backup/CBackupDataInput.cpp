@@ -4,10 +4,10 @@
 
 using Elastos::Utility::Logging::Logger;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 CBackupDataInput::EntityHeader::EntityHeader()
     : mDataSize(0)

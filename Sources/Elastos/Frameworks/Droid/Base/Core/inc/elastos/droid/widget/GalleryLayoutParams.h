@@ -6,9 +6,9 @@
 
 using Elastos::Droid::View::IViewGroupLayoutParams;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 /**
  * Gallery extends LayoutParams to provide a place to hold current

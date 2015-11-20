@@ -10,9 +10,9 @@ using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::View::IViewOnTouchListener;
 using Elastos::Droid::View::IView;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CPopupWindow), public PopupWindow
 {

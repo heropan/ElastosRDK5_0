@@ -4,10 +4,10 @@ module
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Animation.IAnimator;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * Per-child layout information associated with ViewSizeAdaptiveLayout.

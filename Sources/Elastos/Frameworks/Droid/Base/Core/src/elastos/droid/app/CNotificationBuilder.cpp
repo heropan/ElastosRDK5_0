@@ -15,9 +15,9 @@ using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Widget::CRemoteViews;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 const Int32 CNotificationBuilder::MAX_ACTION_BUTTONS = 3;
 const Float CNotificationBuilder::LARGE_TEXT_SCALE = 1.3f;

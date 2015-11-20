@@ -4,10 +4,10 @@
 
 using Elastos::Utility::Logging::Logger;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 const String CBackupDataOutput::TAG("CBackupDataOutput");
 const Boolean CBackupDataOutput::DEBUG = FALSE;

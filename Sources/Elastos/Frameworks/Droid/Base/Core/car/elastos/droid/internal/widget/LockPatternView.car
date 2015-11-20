@@ -6,10 +6,10 @@ module
 
     interface Elastos.Droid.Animation.IValueAnimator;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     enum DisplayMode {
 

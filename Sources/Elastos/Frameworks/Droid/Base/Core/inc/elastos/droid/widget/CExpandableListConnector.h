@@ -5,9 +5,9 @@
 #include "_Elastos_Droid_Widget_CExpandableListConnector.h"
 #include "elastos/droid/widget/ExpandableListConnector.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CExpandableListConnector), public ExpandableListConnector
 {

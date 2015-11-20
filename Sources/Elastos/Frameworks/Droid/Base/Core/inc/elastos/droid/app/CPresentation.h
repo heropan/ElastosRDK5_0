@@ -11,9 +11,9 @@ using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::Content::IContext;
 
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CarClass(CPresentation), public Presentation
 {

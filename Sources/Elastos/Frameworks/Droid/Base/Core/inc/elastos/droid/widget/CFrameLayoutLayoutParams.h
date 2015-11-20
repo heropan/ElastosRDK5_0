@@ -5,9 +5,16 @@
 #include "_Elastos_Droid_Widget_CFrameLayoutLayoutParams.h"
 #include "elastos/droid/widget/FrameLayoutLayoutParams.h"
 
+<<<<<<< HEAD
 namespace Elastos{
 namespace Droid{
 namespace Widget{
+=======
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+>>>>>>> compile app.
 
 CarClass(CFrameLayoutLayoutParams), public FrameLayoutLayoutParams
 {

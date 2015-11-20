@@ -3,8 +3,8 @@ module
 {
     interface Elastos.Core.IArrayOf;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace NFC{
 
     /**

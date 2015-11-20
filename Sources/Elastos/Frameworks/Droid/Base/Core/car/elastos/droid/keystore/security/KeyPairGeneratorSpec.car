@@ -9,8 +9,8 @@ module
     interface Elastos.Droid.Keystore.Security.IKeyPairGeneratorSpec;
     interface Elastos.Droid.Content.IContext;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace Keystore{
     namespace Security{
 

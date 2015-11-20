@@ -36,7 +36,8 @@ SOURCES += CActivityThreadHelper.cpp
 SOURCES += ActivityTransitionCoordinator.cpp
 SOURCES += ActivityTransitionState.cpp
 SOURCES += ActivityView.cpp
-#SOURCES += CAlarmManager.cpp
+SOURCES += CAlarmManager.cpp
+SOURCES += CAlarmClockInfo.cpp
 #SOURCES += AlertDialog.cpp
 #SOURCES += CAlertDialog.cpp
 #SOURCES += CAlertDialogBuilder.cpp
@@ -75,6 +76,7 @@ SOURCES += EnterTransitionCoordinator.cpp
 SOURCES += ExitTransitionCoordinator.cpp
 #SOURCES += ExpandableListActivity.cpp
 
+SOURCES += FastBitmapDrawable.cpp
 SOURCES += Fragment.cpp
 SOURCES += CFragmentHelper.cpp
 #SOURCES += FragmentBreadCrumbs.cpp
@@ -148,12 +150,12 @@ SOURCES += CTaskStackBuilderHelper.cpp
 
 SOURCES += UiAutomation.cpp
 SOURCES += UiAutomationConnection.cpp
-#SOURCES += CUiModeManager.cpp
+SOURCES += CUiModeManager.cpp
 SOURCES += VoiceInteractor.cpp
-#SOURCES += CWallpaperInfo.cpp
-#SOURCES += CWallpaperManager.cpp
-#SOURCES += CWallpaperManagerHelper.cpp
-#SOURCES += CGlobalsWallpaperManagerCallback.cpp
+SOURCES += CWallpaperInfo.cpp
+SOURCES += CWallpaperManager.cpp
+SOURCES += CWallpaperManagerHelper.cpp
+SOURCES += CGlobalsWallpaperManagerCallback.cpp
 
 #============================================
 
@@ -176,8 +178,6 @@ SOURCES += VoiceInteractor.cpp
 #SOURCES += CExternalMediaFormatActivity.cpp
 #SOURCES += ChooserActivity.cpp
 #SOURCES += CDisableCarModeActivity.cpp
-#SOURCES += FastBitmapDrawable.cpp
-#SOURCES += CFastBitmapDrawable.cpp
 #SOURCES += CBackupAgentBackupServiceBinder.cpp
 
 #ELASTOS_LIBS += admin/admin.lib

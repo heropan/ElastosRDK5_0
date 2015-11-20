@@ -28,11 +28,10 @@ ECode CWindowManagerGlobalHelper::GetWindowManagerService(
 }
 
 ECode CWindowManagerGlobalHelper::GetWindowSession(
-    /* [in] */ ILooper* mainLooper,
     /* [out] */ IWindowSession** windowSession)
 {
     VALIDATE_NOT_NULL(windowSession);
-    *windowSession = CWindowManagerGlobal::GetWindowSession(mainLooper);
+    *windowSession = CWindowManagerGlobal::GetWindowSession();
     REFCOUNT_ADD(*windowSession)
     return NOERROR;
 }

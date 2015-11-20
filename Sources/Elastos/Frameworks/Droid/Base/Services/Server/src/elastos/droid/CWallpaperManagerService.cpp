@@ -694,7 +694,7 @@ ECode CWallpaperManagerService::GetHeightHint(
 }
 
 ECode CWallpaperManagerService::GetWallpaper(
-    /* [in] */ IWallpaperManagerCallback* cb,
+    /* [in] */ IIWallpaperManagerCallback* cb,
     /* [out] */ IBundle** outParams,
     /* [out] */ IParcelFileDescriptor** result)
 {
@@ -1149,7 +1149,7 @@ void CWallpaperManagerService::NotifyCallbacksLocked(
     wallpaper->mCallbacks->BeginBroadcast(&n);
     for (Int32 i = 0; i < n; i++) {
         // try {
-        AutoPtr<IWallpaperManagerCallback> item;
+        AutoPtr<IIWallpaperManagerCallback> item;
             wallpaper->mCallbacks->GetBroadcastItem(i, (IInterface**)&item);
             item->OnWallpaperChanged();
         // } catch (RemoteException e) {

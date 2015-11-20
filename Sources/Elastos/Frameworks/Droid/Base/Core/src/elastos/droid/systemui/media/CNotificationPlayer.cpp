@@ -10,8 +10,8 @@ using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Media::CMediaPlayer;
 
-namespace Elastos{
-namespace Droid{
+namespace Elastos {
+namespace Droid {
 namespace SystemUI{
 namespace Media{
 

@@ -26,9 +26,9 @@ using Elastos::Droid::View::IDisplayAdjustments;
 using Elastos::IO::IFile;
 using Elastos::Utility::Etl::HashMap;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 class LoadedPkg
     : public Object

@@ -10,9 +10,9 @@ using Elastos::Droid::View::ViewGroupMarginLayoutParams;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class FrameLayoutLayoutParams
     : public ViewGroupMarginLayoutParams

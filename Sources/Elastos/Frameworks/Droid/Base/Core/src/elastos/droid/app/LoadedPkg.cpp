@@ -35,9 +35,9 @@ using Elastos::IO::CFile;
 using Elastos::Utility::Etl::Pair;
 using Elastos::Utility::Logging::Slogger;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 const String LoadedPkg::TAG("LoadedPkg");
 

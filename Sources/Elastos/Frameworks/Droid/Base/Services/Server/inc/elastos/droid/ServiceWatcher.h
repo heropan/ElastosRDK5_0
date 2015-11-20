@@ -25,10 +25,10 @@ using Elastos::Droid::Content::Pm::IServiceInfo;
 using Elastos::Droid::Content::Pm::IPackageInfo;
 
 
-namespace Elastos{
-namespace Droid{
-namespace Server{
-namespace Location{
+namespace Elastos {
+namespace Droid {
+namespace Server {
+namespace Location {
 
 using Elastos::Core::Math;
 

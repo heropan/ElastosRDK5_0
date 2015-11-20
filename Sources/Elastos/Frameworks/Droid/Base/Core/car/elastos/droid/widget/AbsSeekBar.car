@@ -3,9 +3,9 @@ module {
 
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
 
     /**

@@ -33,9 +33,9 @@ using Elastos::Droid::Widget::IAutoCompleteTextView;
 using Elastos::Droid::Widget::ISearchView;
 using Elastos::Droid::App::IActionKeyInfo;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 extern "C" const InterfaceID EIID_SearchView;
 extern "C" const InterfaceID EIID_SearchAutoComplete;

@@ -29,7 +29,6 @@ public:
         /* [out] */ IIWindowManager** windowManager);
 
     CARAPI GetWindowSession(
-        /* [in] */ ILooper* mainLooper,
         /* [out] */ IWindowSession** windowSession);
 
     CARAPI PeekWindowSession(

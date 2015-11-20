@@ -24,9 +24,9 @@ using Elastos::Droid::View::EIID_IContextMenuInfo;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 class AdapterView : public ViewGroup

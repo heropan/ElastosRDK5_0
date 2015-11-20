@@ -3,9 +3,9 @@
 
 using Elastos::Droid::View::EIID_View;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 IVIEW_METHODS_IMPL(CNumberPickerCustomEditText, NumberPickerCustomEditText)
 ITEXTVIEW_METHODS_IMPL(CNumberPickerCustomEditText, NumberPickerCustomEditText);
@@ -65,6 +65,6 @@ ECode CNumberPickerCustomEditText::OnPreDraw(
     return NOERROR;
 }
 
-}// namespace Widget{
+}// namespace Widget {
 }// namespace Droid
 }// namespace Elastos

@@ -7,9 +7,9 @@ using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::View::IViewOnLongClickListener;
 using Elastos::Droid::View::EIID_IViewOnLongClickListener;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ZoomButton::ZoomButton(
     /* [in] */ IContext* context,

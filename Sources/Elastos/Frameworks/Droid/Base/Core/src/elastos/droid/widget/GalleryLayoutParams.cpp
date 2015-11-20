@@ -1,9 +1,9 @@
 
 #include "elastos/droid/widget/GalleryLayoutParams.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 GalleryLayoutParams::GalleryLayoutParams()
 {}

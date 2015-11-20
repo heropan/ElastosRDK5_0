@@ -21,9 +21,9 @@ using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
 using Elastos::Droid::View::IOnPreDrawListener;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 class PopupWindow

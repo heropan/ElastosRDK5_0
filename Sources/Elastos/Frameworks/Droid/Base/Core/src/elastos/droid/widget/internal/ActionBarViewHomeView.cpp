@@ -8,10 +8,10 @@ using Elastos::Core::Math;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 //fe4e85ad-2d3a-4404-ad58-039cdcf0943c
 extern "C" const InterfaceID EIID_ActionBarViewHomeView =

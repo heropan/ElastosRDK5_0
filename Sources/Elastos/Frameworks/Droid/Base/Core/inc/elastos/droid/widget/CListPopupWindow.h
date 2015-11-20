@@ -10,9 +10,9 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Utility::IAttributeSet;*/
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CListPopupWindow), public ListPopupWindow
 {

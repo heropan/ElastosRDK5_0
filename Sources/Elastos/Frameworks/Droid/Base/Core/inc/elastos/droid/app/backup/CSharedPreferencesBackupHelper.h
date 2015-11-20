@@ -7,10 +7,10 @@
 
 using Elastos::Droid::Content::IContext;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 CarClass(CSharedPreferencesBackupHelper), public FileBackupHelperBase
 {

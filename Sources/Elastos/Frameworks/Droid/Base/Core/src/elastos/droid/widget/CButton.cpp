@@ -2,9 +2,9 @@
 #include "elastos/droid/widget/CButton.h"
 
 using Elastos::Droid::View::EIID_View;
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 IVIEW_METHODS_IMPL(CButton, Button)
 IDRAWABLECALLBACK_METHODS_IMPL(CButton, Button)

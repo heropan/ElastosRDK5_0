@@ -6,9 +6,9 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Widget::IRemoteViews;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 /**
  * An object that can apply a rich notification style to a {@link Notification.Builder}

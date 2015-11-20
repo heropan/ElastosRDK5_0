@@ -109,15 +109,14 @@ AutoPtr<IIWindowManager> CWindowManagerGlobal::GetWindowManagerService()
     return sWindowManagerService;
 }
 
-AutoPtr<IWindowSession> CWindowManagerGlobal::GetWindowSession(
-    /* [in] */ ILooper* mainLooper)
+AutoPtr<IWindowSession> CWindowManagerGlobal::GetWindowSession()
 {
     AutoLock lock(sDefaultWindowManagerLock);
 
     if (sWindowSession == NULL) {
         //try {
         assert(0);
-        AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::GetInstance(mainLooper);
+        AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::GetInstance();
         AutoPtr<IIWindowManager> wm = GetWindowManagerService();
         AutoPtr<IInputMethodClient> client;
         imm->GetClient((IInputMethodClient**)&client);
@@ -205,11 +204,10 @@ ECode CWindowManagerGlobal::GetWindowManagerService(
 }
 
 ECode CWindowManagerGlobal::GetWindowSession(
-    /* [in] */ ILooper* mainLooper,
     /* [out] */ IWindowSession** windowSession)
 {
     VALIDATE_NOT_NULL(windowSession);
-    AutoPtr<IWindowSession> temp = GetWindowSession(mainLooper);
+    AutoPtr<IWindowSession> temp = GetWindowSession();
     *windowSession = temp;
     REFCOUNT_ADD(*windowSession)
 

@@ -2,23 +2,23 @@
 #ifndef __ELASTOS_DROID_WIDGET_TEXTCLOCK_H__
 #define __ELASTOS_DROID_WIDGET_TEXTCLOCK_H__
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 /**
  * <p><code>TextClock</code> can display the current date and/or time as
  * a formatted string.</p>
- * 
+ *
  * <p>This view honors the 24-hour format system setting. As such, it is
  * possible and recommended to provide two different formatting patterns:
  * one to display the date/time in 24-hour mode and one to display the
  * date/time in 12-hour mode.</p>
- * 
+ *
  * <p>It is possible to determine whether the system is currently in
  * 24-hour mode by calling {@link #is24HourModeEnabled()}.</p>
- * 
+ *
  * <p>The rules used by this widget to decide how to format the date and
  * time are the following:</p>
  * <ul>
@@ -37,11 +37,11 @@ namespace Widget{
  *         </ul>
  *     </li>
  * </ul>
- * 
+ *
  * <p>The {@link CharSequence} instances used as formatting patterns when calling either
  * {@link #setFormat24Hour(CharSequence)} or {@link #setFormat12Hour(CharSequence)} can
  * contain styling information. To do so, use a {@link android.text.Spanned} object.</p>
- * 
+ *
  * @attr ref android.R.styleable#TextClock_format12Hour
  * @attr ref android.R.styleable#TextClock_format24Hour
  * @attr ref android.R.styleable#TextClock_timeZone

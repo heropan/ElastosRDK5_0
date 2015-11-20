@@ -5,7 +5,7 @@ using Elastos::Droid::View::EIID_View;
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-namespace Internal{
+namespace Internal {
 
 IVIEW_METHODS_IMPL(CWaveView, WaveView)
 

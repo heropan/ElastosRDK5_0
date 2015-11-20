@@ -8,10 +8,10 @@ using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 class FileBackupHelperBase
 {

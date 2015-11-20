@@ -2,8 +2,8 @@
 
 using Elastos::Droid::View::EIID_View;
 
-namespace Elastos{
-namespace Droid{
+namespace Elastos {
+namespace Droid {
 namespace Opengl{
 
 IVIEW_METHODS_IMPL(CGLSurfaceView, GLSurfaceView)

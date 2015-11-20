@@ -24,9 +24,9 @@ using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Widget::CRemoteViews;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 const String CNotification::TAG("Notification");
 

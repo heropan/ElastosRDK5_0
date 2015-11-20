@@ -1,10 +1,10 @@
 
 #include "elastos/droid/internal/LockPatternViewSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 LockPatternViewSavedState::LockPatternViewSavedState()
     : mSerializedPattern(NULL)

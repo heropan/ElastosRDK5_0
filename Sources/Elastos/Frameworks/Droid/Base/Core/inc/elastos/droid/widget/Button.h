@@ -7,9 +7,9 @@
 
 using Elastos::Droid::R;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class Button : public TextView
 {

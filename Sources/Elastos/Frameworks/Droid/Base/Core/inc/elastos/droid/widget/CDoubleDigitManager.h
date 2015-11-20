@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_Widget_CDoubleDigitManager.h"
 #include "elastos/droid/widget/DoubleDigitManager.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CDoubleDigitManager), public DoubleDigitManager
 {

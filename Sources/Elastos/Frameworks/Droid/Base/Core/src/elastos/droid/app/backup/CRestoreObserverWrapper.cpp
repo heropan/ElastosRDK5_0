@@ -6,10 +6,10 @@ using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IMessage;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 const Int32 CRestoreObserverWrapper::MSG_RESTORE_STARTING = 1;
 const Int32 CRestoreObserverWrapper::MSG_UPDATE = 2;

@@ -16,9 +16,9 @@
 #include "elastos/droid/widget/FastScroller.h"
 #include "elastos/droid/widget/CPopupWindow.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::IBoolean;

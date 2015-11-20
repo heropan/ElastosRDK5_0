@@ -8,9 +8,9 @@
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Graphics::IBitmap;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class MemoryUsageCounter;
 

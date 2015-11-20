@@ -4,7 +4,7 @@
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/pm/CResolveInfo.h"
 #include "elastos/droid/utility/Xml.h"
-#include "elastos/droid/service/wallpaper/WallpaperService.h"
+// #include "elastos/droid/service/wallpaper/WallpaperService.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
@@ -12,13 +12,15 @@ using Elastos::Utility::Logging::Slogger;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
 using Elastos::Droid::Content::Pm::CResolveInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Service::Wallpaper::WallpaperService;
+// using Elastos::Droid::Service::Wallpaper::WallpaperService;
 
 namespace Elastos {
 namespace Droid {
@@ -42,7 +44,7 @@ ECode CWallpaperInfo::GetPackageName(
     VALIDATE_NOT_NULL(pkgName);
     AutoPtr<IServiceInfo> serviceInfo;
     FAIL_RETURN(mService->GetServiceInfo((IServiceInfo**)&serviceInfo));
-    return serviceInfo->GetPackageName(pkgName);
+    return IPackageItemInfo::Probe(serviceInfo)->GetPackageName(pkgName);
 }
 
 ECode CWallpaperInfo::GetServiceName(
@@ -51,7 +53,7 @@ ECode CWallpaperInfo::GetServiceName(
     VALIDATE_NOT_NULL(sName);
     AutoPtr<IServiceInfo> serviceInfo;
     FAIL_RETURN(mService->GetServiceInfo((IServiceInfo**)&serviceInfo));
-    return serviceInfo->GetName(sName);
+    return IPackageItemInfo::Probe(serviceInfo)->GetName(sName);
 }
 
 ECode CWallpaperInfo::GetServiceInfo(
@@ -67,8 +69,8 @@ ECode CWallpaperInfo::GetComponent(
     AutoPtr<IServiceInfo> serviceInfo;
     FAIL_RETURN(mService->GetServiceInfo((IServiceInfo**)&serviceInfo));
     String packageName, name;
-    serviceInfo->GetPackageName(&packageName);
-    serviceInfo->GetName(&name);
+    IPackageItemInfo::Probe(serviceInfo)->GetPackageName(&packageName);
+    IPackageItemInfo::Probe(serviceInfo)->GetName(&name);
     return CComponentName::New(packageName, name, component);
 }
 
@@ -102,9 +104,9 @@ ECode CWallpaperInfo::LoadThumbnail(
     AutoPtr<IServiceInfo> serviceInfo;
     FAIL_RETURN(mService->GetServiceInfo((IServiceInfo**)&serviceInfo));
     String packageName;
-    serviceInfo->GetPackageName(&packageName);
+    IPackageItemInfo::Probe(serviceInfo)->GetPackageName(&packageName);
     AutoPtr<IApplicationInfo> appInfo;
-    serviceInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    IComponentInfo::Probe(serviceInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     return pm->GetDrawable(packageName, mThumbnailResource, appInfo, drawable);
 }
 
@@ -123,8 +125,8 @@ ECode CWallpaperInfo::LoadAuthor(
     if (packageName.IsNull()) {
         AutoPtr<IServiceInfo> serviceInfo;
         FAIL_RETURN(mService->GetServiceInfo((IServiceInfo**)&serviceInfo));
-        serviceInfo->GetPackageName(&packageName);
-        serviceInfo->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
+        IPackageItemInfo::Probe(serviceInfo)->GetPackageName(&packageName);
+        IComponentInfo::Probe(serviceInfo)->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
     }
     return pm->GetText(packageName, mAuthorResource, applicationInfo, author);
 }
@@ -140,13 +142,13 @@ ECode CWallpaperInfo::LoadDescription(
     if (packageName.IsNull()) {
         AutoPtr<IServiceInfo> serviceInfo;
         FAIL_RETURN(mService->GetServiceInfo((IServiceInfo**)&serviceInfo));
-        serviceInfo->GetPackageName(&packageName);
-        serviceInfo->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
+        IPackageItemInfo::Probe(serviceInfo)->GetPackageName(&packageName);
+        IComponentInfo::Probe(serviceInfo)->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
     }
     AutoPtr<IServiceInfo> serviceInfo;
     FAIL_RETURN(mService->GetServiceInfo((IServiceInfo**)&serviceInfo));
     Int32 desc;
-    serviceInfo->GetDescriptionRes(&desc);
+    IComponentInfo::Probe(serviceInfo)->GetDescriptionRes(&desc);
     if (desc != 0) {
         return pm->GetText(packageName, desc, applicationInfo, summary);
 
@@ -155,7 +157,9 @@ ECode CWallpaperInfo::LoadDescription(
         *summary = NULL;
         return E_NOT_FOUND_EXCEPTION;
     }
-    serviceInfo->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
+
+    applicationInfo = NULL;
+    IComponentInfo::Probe(serviceInfo)->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
     return pm->GetText(packageName, mDescriptionResource, applicationInfo, summary);
 }
 
@@ -279,6 +283,11 @@ ECode CWallpaperInfo::ReadFromParcel(
     return NOERROR;
 }
 
+ECode CWallpaperInfo::constructor()
+{
+    return NOERROR;
+}
+
 ECode CWallpaperInfo::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IResolveInfo* service)
@@ -296,29 +305,31 @@ ECode CWallpaperInfo::constructor(
 
     AutoPtr<IXmlResourceParser> parser;
     // try {
-    ECode ec = si->LoadXmlMetaData(pm, WallpaperService::SERVICE_META_DATA,
-            (IXmlResourceParser**)&parser);
-    if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION || parser == NULL) {
-        String packageName;
-        si->GetPackageName(&packageName);
-        Slogger::E(TAG, "Unable to create context for: %s", (const char*)packageName);
-        return E_XML_PULL_PARSER_EXCEPTION;
-    }
+    assert(0 && "TODO");
+    // ECode ec = si->LoadXmlMetaData(pm, WallpaperService::SERVICE_META_DATA,
+    //         (IXmlResourceParser**)&parser);
+    // if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION || parser == NULL) {
+    //     String packageName;
+    //     si->GetPackageName(&packageName);
+    //     Slogger::E(TAG, "Unable to create context for: %s", (const char*)packageName);
+    //     return E_XML_PULL_PARSER_EXCEPTION;
+    // }
 
     AutoPtr<IApplicationInfo> appInfo;
-    si->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    IComponentInfo::Probe(si)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     AutoPtr<IResources> res;
     ASSERT_SUCCEEDED(pm->GetResourcesForApplication(appInfo, (IResources**)&res));
 
-    AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(parser);
+    IXmlPullParser* p = IXmlPullParser::Probe(parser);
+    AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(p);
 
     Int32 type;
-    while (parser->Next(&type), type != IXmlPullParser::END_DOCUMENT
+    while (p->Next(&type), type != IXmlPullParser::END_DOCUMENT
             && type != IXmlPullParser::START_TAG) {
     }
 
     String nodeName;
-    parser->GetName(&nodeName);
+    p->GetName(&nodeName);
     if (!String("wallpaper").Equals(nodeName)) {
         Slogger::E(TAG, "Meta-data does not start with wallpaper tag");
         parser->Close();
@@ -353,11 +364,6 @@ ECode CWallpaperInfo::constructor(
     mThumbnailResource = thumbnailRes;
     mAuthorResource = authorRes;
     mDescriptionResource = descriptionRes;
-    return NOERROR;
-}
-
-ECode CWallpaperInfo::constructor()
-{
     return NOERROR;
 }
 

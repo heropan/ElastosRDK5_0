@@ -6,9 +6,9 @@
 #include "elastos/droid/widget/RadioGroupLayoutParams.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CRadioGroupLayoutParams), public RadioGroupLayoutParams
 {

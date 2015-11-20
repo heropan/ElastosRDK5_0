@@ -2,19 +2,16 @@
 #define __ELASTOS_DROID_APP_CWALLPAPERMANAGER_H__
 
 #include "_Elastos_Droid_App_CWallpaperManager.h"
-#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/app/CGlobalsWallpaperManagerCallback.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
 
-
-using Elastos::IO::IInputStream;
-using Elastos::IO::IFileOutputStream;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IColorFilter;
 using Elastos::Droid::Graphics::PorterDuffMode;
+using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::IRegion;
 using Elastos::Droid::Graphics::IInsets;
 using Elastos::Droid::Graphics::Drawable::IDrawableConstantState;
@@ -22,14 +19,20 @@ using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+using Elastos::IO::IInputStream;
+using Elastos::IO::IFileOutputStream;
+
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CarClass(CWallpaperManager)
     , public Object
@@ -97,7 +100,7 @@ public:
         /* [in] */ Int32 outHeight,
         /* [in] */ Boolean scaleToFit,
         /* [in] */ Float horizontalAlignment,
-        /* [in] */ Float verticalAlignment
+        /* [in] */ Float verticalAlignment,
         /* [out] */ IDrawable** drawable);
 
     static AutoPtr<IRectF> GetMaxCropRect(
@@ -170,7 +173,7 @@ public:
     CARAPI GetWallpaperInfo(
         /* [out] */ IWallpaperInfo** info);
 
-  /**
+   /**
      * Gets an Intent that will launch an activity that crops the given
      * image and sets the device's wallpaper. If there is a default HOME activity
      * that supports cropping wallpapers, it will be preferred as the default.
@@ -178,10 +181,10 @@ public:
      * intent.
      *
      * @param imageUri The image URI that will be set in the intent. The must be a content
-     *                 URI and its provider must resolve its type to "image/*"
+     *                 URI and its provider must resolve its type to "image/"
      *
      * @throws IllegalArgumentException if the URI is not a content URI or its MIME type is
-     *         not "image/*"
+     *         not "image/"
      */
     CARAPI GetCropAndSetWallpaperIntent(
         /* [in] */ IUri* imageUri,

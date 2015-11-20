@@ -41,10 +41,10 @@ using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::View::ICollapsibleActionView;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 ActionBarView::ActionBarView()
 {}

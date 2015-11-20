@@ -6,9 +6,9 @@
 #include "elastos/droid/widget/ImageView.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CImageView), public ImageView
 {

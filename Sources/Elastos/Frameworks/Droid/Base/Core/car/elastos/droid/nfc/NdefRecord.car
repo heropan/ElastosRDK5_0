@@ -5,8 +5,8 @@ module
     interface Elastos.Droid.Net.IUri;
     interface Elastos.IO.IByteBuffer;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace NFC{
 
     /**

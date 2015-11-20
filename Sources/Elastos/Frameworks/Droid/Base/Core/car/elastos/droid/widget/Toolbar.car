@@ -12,9 +12,9 @@ module
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Content.IContext;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * Interface responsible for receiving menu item click events if the items themselves

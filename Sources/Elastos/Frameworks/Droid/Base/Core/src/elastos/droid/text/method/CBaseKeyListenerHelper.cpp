@@ -1,8 +1,8 @@
 #include "elastos/droid/text/method/CBaseKeyListenerHelper.h"
 #include "elastos/droid/text/method/BaseKeyListener.h"
 
-namespace Elastos{
-namespace Droid{
+namespace Elastos {
+namespace Droid {
 namespace Text{
 namespace Method{
 

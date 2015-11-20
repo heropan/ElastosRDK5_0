@@ -36,9 +36,9 @@ using Elastos::Droid::Widget::CAbsListViewLayoutParams;
 using Elastos::Droid::Widget::CHeaderViewListAdapter;
 using Elastos::Droid::View::EIID_IViewGroupLayoutParams;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 const String ListView::LISTVIEW_NAME = String("ListView");
 

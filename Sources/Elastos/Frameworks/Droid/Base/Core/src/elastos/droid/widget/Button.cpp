@@ -5,9 +5,9 @@ using Elastos::Core::CStringWrapper;
 using Elastos::Core::CPathClassLoader;
 using Elastos::Core::IClassLoader;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 Button::Button()

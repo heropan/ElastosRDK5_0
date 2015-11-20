@@ -12,8 +12,8 @@ module
     interface Elastos.Droid.NFC.INfcAdapterCreateNdefMessageCallback;
     interface Elastos.Droid.NFC.INfcAdapterOnNdefPushCompleteCallback;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace NFC{
 
     interface INfcApplicationState {

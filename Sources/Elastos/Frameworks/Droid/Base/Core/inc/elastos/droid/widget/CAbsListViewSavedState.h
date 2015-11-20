@@ -14,9 +14,9 @@
 using Elastos::Droid::Widget::AbsListViewSavedState;
 using Elastos::Droid::Widget::AbsListView;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CAbsListViewSavedState) , public AbsListViewSavedState
 {

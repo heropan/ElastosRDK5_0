@@ -4,8 +4,8 @@ module
 
     interface Elastos.Droid.NFC.ITag;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace NFC{
 
     /*

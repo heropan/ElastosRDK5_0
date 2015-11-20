@@ -2,9 +2,9 @@ module
 {
     interface Elastos.Droid.Content.Res.IConfiguration;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
     /**
      * @Involve
      * extends Elastos.Droid.View.Menu.IBaseMenuPresenter;

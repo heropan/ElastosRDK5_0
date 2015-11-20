@@ -316,7 +316,6 @@ module
      * the identifier as returned by {@link #getId} is the only thing that
      * will be persisted across activity instances.
      */
-    [local]
     interface IFragmentManagerBackStackEntry {
         /**
          * Return the unique identifier for the entry.  This is the only

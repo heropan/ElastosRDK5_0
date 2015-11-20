@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_Widget_CExpandableListPosition.h"
 #include "elastos/droid/widget/ExpandableListPosition.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CExpandableListPosition), public ExpandableListPosition
 {

@@ -4,14 +4,15 @@
 #include "_Elastos_Droid_App_CGlobalsWallpaperManagerCallback.h"
 #include "elastos/droid/os/Handler.h"
 
-using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IBitmap;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 class CWallpaperManager;
 
@@ -52,6 +53,8 @@ public:
 
     CARAPI_(void) ForgetLoadedWallpaper();
 
+    CARAPI ToString(
+        /* [out] */ String* str);
 private:
     CARAPI_(AutoPtr<IBitmap>) GetCurrentWallpaperLocked(
         /* [in] */ IContext* context);

@@ -6,8 +6,8 @@
 
 
 namespace Elastos {
-namespace Droid{
-namespace Widget{
+namespace Droid {
+namespace Widget {
 
 CarClass(CEditText) , public EditText
 {

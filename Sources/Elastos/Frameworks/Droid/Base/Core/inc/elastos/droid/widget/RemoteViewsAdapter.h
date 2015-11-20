@@ -30,9 +30,9 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilterComparison;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 extern "C" const InterfaceID EIID_RemoteViewsFrameLayout;
 extern "C" const InterfaceID EIID_RemoteViewsAdapter;
@@ -114,9 +114,9 @@ _ETL_NAMESPACE_END
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Widget::RemoteViewsFrameLayout)
 #endif
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 class CRemoteViewsAdapterServiceConnection;

@@ -16,9 +16,9 @@ using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 
 using Elastos::Core::CString;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 static Int32 InitDefaultChildGravity()
 {

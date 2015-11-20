@@ -13,6 +13,7 @@ module
     merge("app/ActivityTransitionState.car");
     merge("app/ActivityView.car");
     merge("app/AlarmManager.car");
+    merge("app/AlarmClockInfo.car");
     merge("app/AlertDialog.car");
     merge("app/AliasActivity.car");
     merge("app/AppOpsManager.car");
@@ -29,7 +30,7 @@ module
     merge("app/Fragment.car");
     merge("app/FragmentManager.car");
     merge("app/FragmentTransaction.car");
-    //merge("app/FragmentBreadCrumbs.car");
+    merge("app/FragmentBreadCrumbs.car");
     merge("app/IActivityContainer.car");
     merge("app/IActivityContainerCallback.car");
     merge("app/IActivityController.car");
@@ -159,7 +160,9 @@ module
     interface Elastos.Droid.Content.IIntentReceiver;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
+    interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.View.IViewManager;
     interface Elastos.Droid.View.IViewParent;
@@ -182,8 +185,6 @@ module
     interface Elastos.Droid.Internal.Os.IHandlerCallerCallback;
     interface Elastos.Droid.Internal.Os.IHandlerCaller;
 
-//
-//     interface Elastos.Droid.Content.Pm.IResolveInfo;
 //     interface Elastos.Droid.Content.IContentResolver;
 //     interface Elastos.Droid.Content.IDialogInterface;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
@@ -345,12 +346,24 @@ module
 //         interface IContextImpl;
 //     }
 
-//     class CAlarmManager {
-//         constructor(
-//             [in] IIAlarmManager* service);
+        class CAlarmManager {
+            constructor(
+                [in] IIAlarmManager* service,
+                [in] IContext* ctx);
 
-//         interface IAlarmManager;
-//     }
+            interface IAlarmManager;
+        }
+
+        class CAlarmClockInfo {
+            constructor();
+
+            constructor(
+                [in] Int64 triggerTime,
+                [in] IPendingIntent* showIntent);
+
+            interface IAlarmClockInfo;
+            interface IParcelable;
+        }
 
 //     namespace Admin {
 
@@ -568,25 +581,25 @@ module
         interface IOnWindowDismissedCallback;
     }
 
-    // class CActivityView {
-    //     constructor(
-    //         [in] IContext* ctx);
+    class CActivityView {
+        constructor(
+            [in] IContext* ctx);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IAttributeSet* attrs,
-    //         [in] Int32 style);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 style);
 
-    //     interface IActivityView;
-    //     interface IViewGroup;
-    //     interface IViewManager;
-    //     interface IViewParent;
-    //     interface IView;
-    // }
+        interface IActivityView;
+        interface IViewGroup;
+        interface IViewManager;
+        interface IViewParent;
+        interface IView;
+    }
 
     class CActivityViewActivityContainerCallback {
         constructor(
@@ -744,11 +757,11 @@ module
         interface IParcelable;
     }
 
-//     class CUiModeManager {
-//         constructor();
+    class CUiModeManager {
+        constructor();
 
-//         interface IUiModeManager;
-//     }
+        interface IUiModeManager;
+    }
 
     [local]
     class CUiAutomation {
@@ -1188,45 +1201,46 @@ module
 //         interface IAlertDialogBuilder;
 //     }
 
-//     [local, parcelable]
-//     class CWallpaperInfo {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IResolveInfo* service);
+    [local, parcelable]
+    class CWallpaperInfo {
+        constructor(
+            [in] IContext* ctx,
+            [in] IResolveInfo* service);
 
-//         constructor();
+        constructor();
 
-//         interface IWallpaperInfo;
-//         interface IParcelable;
-//     }
+        interface IWallpaperInfo;
+        interface IParcelable;
+    }
 
-//     class CGlobalsWallpaperManagerCallback {
-//         constructor(
-//             [in] ILooper* looper);
+    class CGlobalsWallpaperManagerCallback {
+        constructor(
+            [in] ILooper* looper);
 
-//         interface IWallpaperManagerCallback;
-//         interface IBinder;
-//     }
+        interface IIWallpaperManagerCallback;
+        interface IBinder;
+    }
 
-//     [local]
-//     class CWallpaperManager {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IHandler* handler);
+    [local]
+    class CWallpaperManager {
+        constructor(
+            [in] IContext* ctx,
+            [in] IHandler* handler);
 
-//         interface IWallpaperManager;
-//     }
+        interface IWallpaperManager;
+    }
 
-//     class CFastBitmapDrawable {
-//         constructor(
-//             [in] IBitmap* bitmap);
+    class CFastBitmapDrawable {
+        constructor(
+            [in] IBitmap* bitmap);
 
-//         interface IFastBitmapDrawable;
-//     }
+        interface IFastBitmapDrawable;
+        interface IDrawable;
+    }
 
-//     singleton class CWallpaperManagerHelper {
-//         interface IWallpaperManagerHelper;
-//     }
+    singleton class CWallpaperManagerHelper {
+        interface IWallpaperManagerHelper;
+    }
 
     singleton class CFragmentManagerHelper {
         interface IFragmentManagerHelper;
@@ -1348,6 +1362,17 @@ module
 
         interface IBackStackState;
         interface IParcelable;
+    }
+
+    [local]
+    class CBackStackRecord {
+        constructor(
+            [in] IFragmentManagerImpl* fm);
+
+        interface IBackStackRecord;
+        interface IFragmentTransaction;
+        interface IRunnable;
+        interface IFragmentManagerBackStackEntry;
     }
 
     class CBackStackRecordTransitionState {

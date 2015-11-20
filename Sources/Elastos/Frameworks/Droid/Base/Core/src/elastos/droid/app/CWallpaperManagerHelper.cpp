@@ -2,9 +2,9 @@
 #include "elastos/droid/app/CWallpaperManagerHelper.h"
 #include "elastos/droid/app/CWallpaperManager.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CAR_INTERFACE_IMPL(CWallpaperManagerHelper, Object, IWallpaperManagerHelper)
 

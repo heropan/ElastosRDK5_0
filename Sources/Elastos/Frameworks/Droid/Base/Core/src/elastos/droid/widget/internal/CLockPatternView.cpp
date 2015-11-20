@@ -2,10 +2,10 @@
 
 using Elastos::Droid::View::EIID_View;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 IVIEW_METHODS_IMPL(CLockPatternView, LockPatternView)
 IDRAWABLECALLBACK_METHODS_IMPL(CLockPatternView, LockPatternView)

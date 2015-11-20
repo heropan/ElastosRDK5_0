@@ -4,9 +4,9 @@
 
 #include "elastos/droid/view/AbsSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace View{
+namespace Elastos {
+namespace Droid {
+namespace View {
 
 class ViewBaseSavedState : public AbsSavedState
 {

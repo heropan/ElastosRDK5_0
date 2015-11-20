@@ -4,10 +4,10 @@ module
     interface Elastos.Droid.Internal.Widget.IOnDismissedListener;
     interface Elastos.Droid.Internal.Widget.IOnSwipeProgressChangedListener;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * @Involve

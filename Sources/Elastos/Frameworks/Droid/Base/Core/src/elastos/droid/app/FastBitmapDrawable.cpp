@@ -3,13 +3,16 @@
 #include "elastos/droid/graphics/CPorterDuffXfermode.h"
 
 using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::IXfermode;
 using Elastos::Droid::Graphics::IPorterDuffXfermode;
 using Elastos::Droid::Graphics::CPorterDuffXfermode;
 using Elastos::Droid::Graphics::IPixelFormat;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
+
+CAR_INTERFACE_IMPL(FastBitmapDrawable, Elastos::Droid::Graphics::Drawable::Drawable, IFastBitmapDrawable)
 
 FastBitmapDrawable::FastBitmapDrawable()
     : mWidth(0)
@@ -19,7 +22,7 @@ FastBitmapDrawable::FastBitmapDrawable()
 {
 }
 
-ECode FastBitmapDrawable::Init(
+ECode FastBitmapDrawable::constructor(
     /* [in] */ IBitmap* bitmap)
 {
     mBitmap = bitmap;
@@ -32,7 +35,7 @@ ECode FastBitmapDrawable::Init(
     AutoPtr<IPorterDuffXfermode> mode;
     ASSERT_SUCCEEDED(CPorterDuffXfermode::New(Elastos::Droid::Graphics::PorterDuffMode_SRC,
             (IPorterDuffXfermode**)&mode));
-    mPaint->SetXfermode(mode);
+    mPaint->SetXfermode(IXfermode::Probe(mode));
     return NOERROR;
 }
 
@@ -42,9 +45,12 @@ ECode FastBitmapDrawable::Draw(
     return canvas->DrawBitmap(mBitmap, (Float)mDrawLeft, (Float)mDrawTop, mPaint);
 }
 
-Int32 FastBitmapDrawable::GetOpacity()
+ECode FastBitmapDrawable::GetOpacity(
+    /* [out] */ Int32* result)
 {
-    return IPixelFormat::OPAQUE;
+    VALIDATE_NOT_NULL(result)
+    *result = IPixelFormat::OPAQUE;
+    return NOERROR;
 }
 
 ECode FastBitmapDrawable::SetBounds(
@@ -55,6 +61,38 @@ ECode FastBitmapDrawable::SetBounds(
 {
     mDrawLeft = left + (right-left - mWidth) / 2;
     mDrawTop = top + (bottom-top - mHeight) / 2;
+    return NOERROR;
+}
+
+ECode FastBitmapDrawable::GetIntrinsicWidth(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mWidth;
+    return NOERROR;
+}
+
+ECode FastBitmapDrawable::GetIntrinsicHeight(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mHeight;
+    return NOERROR;
+}
+
+ECode FastBitmapDrawable::GetMinimumWidth(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mWidth;
+    return NOERROR;
+}
+
+ECode FastBitmapDrawable::GetMinimumHeight(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mHeight;
     return NOERROR;
 }
 

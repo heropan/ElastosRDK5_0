@@ -1,8 +1,8 @@
 #include "elastos/droid/widget/CommaTokenizer.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CommaTokenizer::CommaTokenizer()
 {

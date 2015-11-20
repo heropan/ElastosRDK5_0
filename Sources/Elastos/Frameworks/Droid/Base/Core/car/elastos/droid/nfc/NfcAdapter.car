@@ -11,8 +11,8 @@ module
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.NFC.INfcEvent;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace NFC{
 
 

@@ -4,10 +4,10 @@
 
 #include "_Elastos_Droid_App_Backup_CBackupDataInputStream.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 /**
  * Provides an {@link java.io.InputStream}-like interface for accessing an

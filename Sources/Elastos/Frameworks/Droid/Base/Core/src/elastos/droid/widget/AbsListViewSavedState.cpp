@@ -1,9 +1,9 @@
 
 #include "elastos/droid/widget/AbsListViewSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 AbsListViewSavedState::AbsListViewSavedState()
     : mSelectedId(-1)

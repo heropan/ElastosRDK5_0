@@ -2,10 +2,12 @@
 #include "elastos/droid/app/CAccessibilityServiceClientImpl.h"
 #include "elastos/droid/app/CActivity.h"
 #include "elastos/droid/app/CActivityGroup.h"
-//#include "elastos/droid/app/CActivityView.h"
+#include "elastos/droid/app/CActivityView.h"
 #include "elastos/droid/app/CActivityViewActivityContainerCallback.h"
 #include "elastos/droid/app/CApplication.h"
 #include "elastos/droid/app/CAppImportanceMonitorProcessObserver.h"
+#include "elastos/droid/app/CBackStackRecord.h"
+#include "elastos/droid/app/CFastBitmapDrawable.h"
 #include "elastos/droid/app/CFragmentState.h"
 #include "elastos/droid/app/CInstrumentation.h"
 #include "elastos/droid/app/CUiAutomation.h"
@@ -25,10 +27,12 @@ namespace App {
 CAR_OBJECT_IMPL(CAccessibilityServiceClientImpl)
 CAR_OBJECT_IMPL(CActivity)
 CAR_OBJECT_IMPL(CActivityGroup)
-//CAR_OBJECT_IMPL(CActivityView)
+CAR_OBJECT_IMPL(CActivityView)
 CAR_OBJECT_IMPL(CActivityViewActivityContainerCallback)
 CAR_OBJECT_IMPL(CApplication)
 CAR_OBJECT_IMPL(CAppImportanceMonitorProcessObserver)
+CAR_OBJECT_IMPL(CBackStackRecord)
+CAR_OBJECT_IMPL(CFastBitmapDrawable)
 CAR_OBJECT_IMPL(CFragmentState)
 CAR_OBJECT_IMPL(CInstrumentation)
 CAR_OBJECT_IMPL(CUiAutomation)

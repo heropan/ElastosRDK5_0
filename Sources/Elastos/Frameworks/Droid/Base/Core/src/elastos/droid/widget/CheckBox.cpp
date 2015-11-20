@@ -3,9 +3,9 @@
 
 using Elastos::Core::CStringWrapper;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CheckBox::CheckBox()
 {}

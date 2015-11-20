@@ -1,6 +1,6 @@
 #include "CProgressBarSavedState.h"
 
-namespace Elastos{
+namespace Elastos {
 namespace Droid {
 namespace Widget {
 

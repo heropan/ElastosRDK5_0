@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_Widget_CTextViewSavedState.h"
 #include "elastos/droid/widget/TextViewSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CTextViewSavedState), public TextViewSavedState
 {

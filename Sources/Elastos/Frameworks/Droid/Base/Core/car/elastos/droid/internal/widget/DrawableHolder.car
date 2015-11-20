@@ -6,10 +6,10 @@ module
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.Drawable.IBitmapDrawable;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * This class is a container for a Drawable with multiple animated properties.

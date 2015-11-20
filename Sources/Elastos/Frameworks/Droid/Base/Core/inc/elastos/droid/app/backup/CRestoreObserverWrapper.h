@@ -12,10 +12,10 @@ using Elastos::Droid::App::Backup::IRestoreSet;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::HandlerBase;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 /*
  * We wrap incoming binder calls with a private class implementation that
  * redirects them into main-thread actions.  This serializes the restore

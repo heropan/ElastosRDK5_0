@@ -1,8 +1,8 @@
 #include "elastos/droid/widget/CStackViewLayoutParams.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 IVIEWGROUPLP_METHODS_IMPL(CStackViewLayoutParams, StackViewLayoutParams)
 

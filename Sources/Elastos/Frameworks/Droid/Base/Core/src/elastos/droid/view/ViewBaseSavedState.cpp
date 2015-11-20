@@ -1,9 +1,9 @@
 
 #include "elastos/droid/view/ViewBaseSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace View{
+namespace Elastos {
+namespace Droid {
+namespace View {
 
 ViewBaseSavedState::ViewBaseSavedState()
 {

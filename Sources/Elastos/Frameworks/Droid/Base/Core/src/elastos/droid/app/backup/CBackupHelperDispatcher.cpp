@@ -11,10 +11,10 @@ using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::App::Backup::IBackupDataInputStream;
 using Elastos::Droid::App::Backup::CBackupDataInputStream;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 #define VERSION_1_HEADER 0x01706c48  // 'Hlp'1 little endian
 

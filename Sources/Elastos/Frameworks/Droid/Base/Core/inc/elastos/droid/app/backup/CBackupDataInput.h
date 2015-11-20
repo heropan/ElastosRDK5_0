@@ -7,10 +7,10 @@
 
 using Elastos::IO::IFileDescriptor;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 CarClass(CBackupDataInput)
 {

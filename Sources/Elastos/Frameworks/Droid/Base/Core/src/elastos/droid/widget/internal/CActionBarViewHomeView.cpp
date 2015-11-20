@@ -5,10 +5,10 @@ using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;
 using Elastos::Droid::Widget::Internal::EIID_ActionBarViewHomeView;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 IVIEW_METHODS_IMPL(CActionBarViewHomeView, ActionBarViewHomeView)
 IVIEWGROUP_METHODS_IMPL(CActionBarViewHomeView, ActionBarViewHomeView)

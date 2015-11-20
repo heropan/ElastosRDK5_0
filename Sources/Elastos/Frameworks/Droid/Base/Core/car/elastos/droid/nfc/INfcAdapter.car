@@ -11,8 +11,8 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace NFC{
 
     /*

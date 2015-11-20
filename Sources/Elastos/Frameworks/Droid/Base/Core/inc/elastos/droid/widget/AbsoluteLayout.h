@@ -7,9 +7,9 @@
 using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 /**

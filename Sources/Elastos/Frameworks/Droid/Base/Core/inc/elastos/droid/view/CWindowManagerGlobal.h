@@ -51,8 +51,7 @@ public:
 
     static AutoPtr<IIWindowManager> GetWindowManagerService();
 
-    static AutoPtr<IWindowSession> GetWindowSession(
-        /* [in] */ ILooper* mainLooper);
+    static AutoPtr<IWindowSession> GetWindowSession();
 
     static AutoPtr<IWindowSession> PeekWindowSession();
 
@@ -60,7 +59,6 @@ public:
         /* [out] */ IIWindowManager** windowManager);
 
     CARAPI GetWindowSession(
-        /* [in] */ ILooper* mainLooper,
         /* [out] */ IWindowSession** windowSession);
 
     CARAPI PeekWindowSession(

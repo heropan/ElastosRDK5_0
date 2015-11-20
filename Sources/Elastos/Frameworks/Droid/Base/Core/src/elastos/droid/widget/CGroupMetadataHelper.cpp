@@ -2,9 +2,9 @@
 #include "elastos/droid/widget/CGroupMetadataHelper.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ECode CGroupMetadataHelper::Obtain(
     /* [in] */ Int32 flPos,

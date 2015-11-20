@@ -408,6 +408,7 @@ ECode SurfaceView::OnAttachedToWindow()
     View::OnAttachedToWindow();
     mParent->RequestTransparentRegion(this);
     GetWindowSession((IWindowSession**)&mSession);
+
     assert(mSession != NULL);
     AutoPtr<IBinder> token;
     GetWindowToken((IBinder**)&token);

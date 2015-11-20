@@ -1,21 +1,43 @@
 
 #include "elastos/droid/app/CWallpaperManager.h"
 #include "elastos/droid/app/CFastBitmapDrawable.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CPorterDuffXfermode.h"
 #include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/BitmapFactory.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
+#include "elastos/droid/graphics/BitmapRegionDecoder.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
 #include "elastos/droid/view/CWindowManagerGlobal.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/R.h"
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/AutoLock.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::IO::IFileOutputStream;
-using Elastos::IO::CFileOutputStream;
+using Elastos::Droid::Os::SystemProperties;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::CRectF;
+using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Graphics::CMatrix;
 using Elastos::Droid::Graphics::IPorterDuffXfermode;
 using Elastos::Droid::Graphics::CPorterDuffXfermode;
 using Elastos::Droid::Graphics::IPixelFormat;
@@ -23,8 +45,16 @@ using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::IXfermode;
+using Elastos::Droid::Graphics::BitmapCompressFormat_PNG;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
+using Elastos::Droid::Graphics::BitmapFactory;
 using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::IBitmapFactoryOptions;
+using Elastos::Droid::Graphics::CBitmapFactoryOptions;
+using Elastos::Droid::Graphics::BitmapRegionDecoder;
+using Elastos::Droid::Graphics::IBitmapRegionDecoder;
+using Elastos::Droid::Graphics::MatrixScaleToFit_FILL;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawable;
 using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
 using Elastos::Droid::Graphics::Drawable::CBitmapDrawable;
@@ -33,15 +63,24 @@ using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Utility::CDisplayMetrics;
-using Elastos::Droid::Os::IParcelFileDescriptor;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+using Elastos::IO::CBufferedInputStream;
+using Elastos::IO::IFileOutputStream;
+using Elastos::IO::CFileOutputStream;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::IFile;
+using Elastos::IO::CFile;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
+
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 const String CWallpaperManager::TAG("WallpaperManager");
 Boolean CWallpaperManager::DEBUG = FALSE;
-Mutex CWallpaperManager::sSync;
+Object CWallpaperManager::sSync;
 AutoPtr<CGlobalsWallpaperManagerCallback> CWallpaperManager::sGlobals;
 
 /** {@hide} */
@@ -92,12 +131,12 @@ ECode CWallpaperManager::GetDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IBitmap> bm = sGlobals->PeekWallpaperBitmap(mContext, TRUE);
     if (bm != NULL) {
-        AutoPtr<IBitmapDrawable> dr;
+        AutoPtr<IDrawable> dr;
         AutoPtr<IResources> res;
         mContext->GetResources((IResources**)&res);
-        CBitmapDrawable::New(res, bm, (IBitmapDrawable**)&dr);
+        CBitmapDrawable::New(res, bm, (IDrawable**)&dr);
         dr->SetDither(FALSE);
-        *drawable = (IDrawable*)dr;
+        *drawable = dr;
         REFCOUNT_ADD(*drawable);
         return NOERROR;
     }
@@ -108,7 +147,7 @@ ECode CWallpaperManager::GetDrawable(
 ECode CWallpaperManager::GetBuiltInDrawable(
     /* [out] */ IDrawable** drawable)
 {
-    return GetBuiltInDrawable(0, 0, false, 0, 0, drawable);
+    return GetBuiltInDrawable(0, 0, FALSE, 0.0, 0.0, drawable);
 }
 
 ECode CWallpaperManager::GetBuiltInDrawable(
@@ -116,136 +155,175 @@ ECode CWallpaperManager::GetBuiltInDrawable(
     /* [in] */ Int32 outHeight,
     /* [in] */ Boolean scaleToFit,
     /* [in] */ Float horizontalAlignment,
-    /* [in] */ Float verticalAlignment
+    /* [in] */ Float verticalAlignment,
     /* [out] */ IDrawable** drawable)
 {
-    if (sGlobals.mService == null) {
-        Log.w(TAG, "WallpaperService not running");
-        return null;
+    VALIDATE_NOT_NULL(drawable)
+    *drawable = NULL;
+
+    if (sGlobals->mService == NULL) {
+        Logger::W(TAG, "WallpaperService not running");
+        return NOERROR;
     }
-    Resources resources = mContext.getResources();
-    horizontalAlignment = Math.max(0, Math.min(1, horizontalAlignment));
-    verticalAlignment = Math.max(0, Math.min(1, verticalAlignment));
 
-    InputStream is = new BufferedInputStream(openDefaultWallpaper(mContext));
+    using Elastos::Core::Math;
 
-    if (is == null) {
-        Log.e(TAG, "default wallpaper input stream is null");
-        return null;
-    } else {
+    AutoPtr<IResources> resources;
+    mContext->GetResources((IResources**)&resources);
+    horizontalAlignment = (Float)Math::Max(0.0, (Double)Math::Min(1.0, (Double)horizontalAlignment));
+    verticalAlignment = (Float)Math::Max(0.0, (Double)Math::Min(1.0, (Double)verticalAlignment));
+
+    AutoPtr<IInputStream> is;
+    CBufferedInputStream::New(OpenDefaultWallpaper(mContext), (IInputStream**)&is);
+
+    if (is == NULL) {
+        Logger::E(TAG, "default wallpaper input stream is NULL");
+        return NOERROR;
+    }
+    else {
         if (outWidth <= 0 || outHeight <= 0) {
-            Bitmap fullSize = BitmapFactory.decodeStream(is, null, null);
-            return new BitmapDrawable(resources, fullSize);
-        } else {
-            int inWidth;
-            int inHeight;
+            AutoPtr<IBitmap> fullSize;
+            BitmapFactory::DecodeStream(is, NULL, NULL, (IBitmap**)&fullSize);
+            return CBitmapDrawable::New(resources, fullSize, (IDrawable**)&drawable);
+        }
+        else {
+            Int32 inWidth;
+            Int32 inHeight;
             {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeStream(is, null, options);
-                if (options.outWidth != 0 && options.outHeight != 0) {
-                    inWidth = options.outWidth;
-                    inHeight = options.outHeight;
+                AutoPtr<IBitmapFactoryOptions> options;
+                CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&options);
+                options->SetInJustDecodeBounds(TRUE);
+                AutoPtr<IBitmap> tmp;
+                BitmapFactory::DecodeStream(is, NULL, options, (IBitmap**)&tmp);
+                Int32 ow, oh;
+                options->GetOutWidth(&ow);
+                options->GetOutHeight(&oh);
+                if (ow != 0 && oh != 0) {
+                    inWidth = ow;
+                    inHeight = oh;
                 } else {
-                    Log.e(TAG, "default wallpaper dimensions are 0");
-                    return null;
+                    Logger::E(TAG, "default wallpaper dimensions are 0");
+                    return NOERROR;
                 }
             }
 
-            is = new BufferedInputStream(openDefaultWallpaper(mContext));
+            CBufferedInputStream::New(OpenDefaultWallpaper(mContext), (IInputStream**)&is);
 
-            RectF cropRectF;
+            AutoPtr<IRectF> cropRectF;
 
-            outWidth = Math.min(inWidth, outWidth);
-            outHeight = Math.min(inHeight, outHeight);
+            outWidth = Math::Min(inWidth, outWidth);
+            outHeight = Math::Min(inHeight, outHeight);
             if (scaleToFit) {
-                cropRectF = getMaxCropRect(inWidth, inHeight, outWidth, outHeight,
+                cropRectF = GetMaxCropRect(inWidth, inHeight, outWidth, outHeight,
                     horizontalAlignment, verticalAlignment);
-            } else {
-                float left = (inWidth - outWidth) * horizontalAlignment;
-                float right = left + outWidth;
-                float top = (inHeight - outHeight) * verticalAlignment;
-                float bottom = top + outHeight;
-                cropRectF = new RectF(left, top, right, bottom);
             }
-            Rect roundedTrueCrop = new Rect();
-            cropRectF.roundOut(roundedTrueCrop);
+            else {
+                Float left = (inWidth - outWidth) * horizontalAlignment;
+                Float right = left + outWidth;
+                Float top = (inHeight - outHeight) * verticalAlignment;
+                Float bottom = top + outHeight;
+                CRectF::New(left, top, right, bottom, (IRectF**)&cropRectF);
+            }
+            AutoPtr<IRect> roundedTrueCrop;
+            CRect::New((IRect**)&roundedTrueCrop);
+            cropRectF->RoundOut(roundedTrueCrop);
 
-            if (roundedTrueCrop.width() <= 0 || roundedTrueCrop.height() <= 0) {
-                Log.w(TAG, "crop has bad values for full size image");
-                return null;
+            Int32 w, h;
+            roundedTrueCrop->GetWidth(&w);
+            roundedTrueCrop->GetHeight(&h);
+            if (w <= 0 || h <= 0) {
+                Logger::W(TAG, "crop has bad values for full size image");
+                return NOERROR;
             }
 
             // See how much we're reducing the size of the image
-            int scaleDownSampleSize = Math.min(roundedTrueCrop.width() / outWidth,
-                    roundedTrueCrop.height() / outHeight);
+            Int32 scaleDownSampleSize = Math::Min(w / outWidth, h / outHeight);
 
             // Attempt to open a region decoder
-            BitmapRegionDecoder decoder = null;
-            try {
-                decoder = BitmapRegionDecoder.newInstance(is, true);
-            } catch (IOException e) {
-                Log.w(TAG, "cannot open region decoder for default wallpaper");
+            AutoPtr<IBitmapRegionDecoder> decoder;
+            // try {
+            ECode ec = BitmapRegionDecoder::NewInstance(is, TRUE, (IBitmapRegionDecoder**)&decoder);
+            // } catch (IOException e) {
+            if (ec == (ECode)E_IO_EXCEPTION) {
+                Logger::W(TAG, "cannot open region decoder for default wallpaper");
             }
+            // }
 
-            Bitmap crop = null;
-            if (decoder != null) {
+            AutoPtr<IBitmap> crop;
+            if (decoder != NULL) {
                 // Do region decoding to get crop bitmap
-                BitmapFactory.Options options = new BitmapFactory.Options();
+                AutoPtr<IBitmapFactoryOptions> options;
+                CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&options);
                 if (scaleDownSampleSize > 1) {
-                    options.inSampleSize = scaleDownSampleSize;
+                    options->SetInSampleSize(scaleDownSampleSize);
                 }
-                crop = decoder.decodeRegion(roundedTrueCrop, options);
-                decoder.recycle();
+                decoder->DecodeRegion(roundedTrueCrop, options, (IBitmap**)&crop);
+                decoder->Recycle();
             }
 
-            if (crop == null) {
+            if (crop == NULL) {
                 // BitmapRegionDecoder has failed, try to crop in-memory
-                is = new BufferedInputStream(openDefaultWallpaper(mContext));
-                Bitmap fullSize = null;
-                if (is != null) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
+                is = NULL;
+                CBufferedInputStream::New(OpenDefaultWallpaper(mContext), (IInputStream**)&is);
+                AutoPtr<IBitmap> fullSize;
+                if (is != NULL) {
+                    AutoPtr<IBitmapFactoryOptions> options;
+                    CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&options);
                     if (scaleDownSampleSize > 1) {
-                        options.inSampleSize = scaleDownSampleSize;
+                        options->SetInSampleSize(scaleDownSampleSize);
                     }
-                    fullSize = BitmapFactory.decodeStream(is, null, options);
+                    BitmapFactory::DecodeStream(is, NULL, options, (IBitmap**)&fullSize);
                 }
-                if (fullSize != null) {
-                    crop = Bitmap.createBitmap(fullSize, roundedTrueCrop.left,
-                            roundedTrueCrop.top, roundedTrueCrop.width(),
-                            roundedTrueCrop.height());
+                if (fullSize != NULL) {
+                    Int32 l, t, w, h;
+                    roundedTrueCrop->GetLeft(&l);
+                    roundedTrueCrop->GetTop(&t);
+                    roundedTrueCrop->GetWidth(&w);
+                    roundedTrueCrop->GetHeight(&h);
+                    CBitmap::CreateBitmap(fullSize, l, t, w, h, (IBitmap**)&crop);
                 }
             }
 
-            if (crop == null) {
-                Log.w(TAG, "cannot decode default wallpaper");
-                return null;
+            if (crop == NULL) {
+                Logger::W(TAG, "cannot decode default wallpaper");
+                return NOERROR;
             }
 
             // Scale down if necessary
-            if (outWidth > 0 && outHeight > 0 &&
-                    (crop.getWidth() != outWidth || crop.getHeight() != outHeight)) {
-                Matrix m = new Matrix();
-                RectF cropRect = new RectF(0, 0, crop.getWidth(), crop.getHeight());
-                RectF returnRect = new RectF(0, 0, outWidth, outHeight);
-                m.setRectToRect(cropRect, returnRect, Matrix.ScaleToFit.FILL);
-                Bitmap tmp = Bitmap.createBitmap((int) returnRect.width(),
-                        (int) returnRect.height(), Bitmap.Config.ARGB_8888);
-                if (tmp != null) {
-                    Canvas c = new Canvas(tmp);
-                    Paint p = new Paint();
-                    p.setFilterBitmap(true);
-                    c.drawBitmap(crop, m, p);
+            crop->GetWidth(&w);
+            crop->GetHeight(&h);
+            if (outWidth > 0 && outHeight > 0 && (w != outWidth || h != outHeight)) {
+                AutoPtr<IMatrix> m;
+                CMatrix::New((IMatrix**)&m);
+                AutoPtr<IRectF> cropRect, returnRect;
+                CRectF::New(0, 0, w, h, (IRectF**)&cropRect);
+                CRectF::New(0, 0, outWidth, outHeight, (IRectF**)&returnRect);
+                Boolean bval;
+                m->SetRectToRect(cropRect, returnRect, MatrixScaleToFit_FILL, &bval);
+                Float fw, fh;
+                returnRect->GetWidth(&fw);
+                returnRect->GetHeight(&fh);
+                AutoPtr<IBitmap> tmp;
+                CBitmap::CreateBitmap((Int32)fw, (Int32)fh, BitmapConfig_ARGB_8888, (IBitmap**)&tmp);
+                if (tmp != NULL) {
+                    AutoPtr<ICanvas> c;
+                    CCanvas::New(tmp, (ICanvas**)&c);
+                    AutoPtr<IPaint> p;
+                    CPaint::New((IPaint**)&p);
+                    p->SetFilterBitmap(true);
+                    c->DrawBitmap(crop, m, p);
                     crop = tmp;
                 }
             }
 
-            return new BitmapDrawable(resources, crop);
+            return CBitmapDrawable::New(resources, crop, drawable);
         }
     }
+
+    return NOERROR;
 }
 
-static AutoPtr<IRectF> GetMaxCropRect(
+AutoPtr<IRectF> CWallpaperManager::GetMaxCropRect(
     /* [in] */ Int32 inWidth,
     /* [in] */ Int32 inHeight,
     /* [in] */ Int32 outWidth,
@@ -253,20 +331,25 @@ static AutoPtr<IRectF> GetMaxCropRect(
     /* [in] */ Float horizontalAlignment,
     /* [in] */ Float verticalAlignment)
 {
-    RectF cropRect = new RectF();
+    AutoPtr<IRectF> cropRect;
+    CRectF::New((IRectF**)&cropRect);
+
     // Get a crop rect that will fit this
-    if (inWidth / (float) inHeight > outWidth / (float) outHeight) {
-         cropRect.top = 0;
-         cropRect.bottom = inHeight;
-         float cropWidth = outWidth * (inHeight / (float) outHeight);
-         cropRect.left = (inWidth - cropWidth) * horizontalAlignment;
-         cropRect.right = cropRect.left + cropWidth;
-    } else {
-        cropRect.left = 0;
-        cropRect.right = inWidth;
-        float cropHeight = outHeight * (inWidth / (float) outWidth);
-        cropRect.top = (inHeight - cropHeight) * verticalAlignment;
-        cropRect.bottom = cropRect.top + cropHeight;
+    if (inWidth / (Float) inHeight > outWidth / (Float) outHeight) {
+         cropRect->SetTop(0);
+         cropRect->SetBottom(inHeight);
+         Float cropWidth = outWidth * (inHeight / (Float) outHeight);
+         Float left = (inWidth - cropWidth) * horizontalAlignment;
+         cropRect->SetLeft(left);
+         cropRect->SetRight(left + cropWidth);
+    }
+    else {
+        cropRect->SetLeft(0);
+        cropRect->SetRight(inWidth);
+        Float cropHeight = outHeight * (inWidth / (Float) outWidth);
+        Float top = (inHeight - cropHeight) * verticalAlignment;
+        cropRect->SetTop(top);
+        cropRect->SetBottom(top + cropHeight);
     }
     return cropRect;
 }
@@ -277,12 +360,12 @@ ECode CWallpaperManager::PeekDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IBitmap> bm = sGlobals->PeekWallpaperBitmap(mContext, FALSE);
     if (bm != NULL) {
-        AutoPtr<IBitmapDrawable> dr;
+        AutoPtr<IDrawable> dr;
         AutoPtr<IResources> res;
         mContext->GetResources((IResources**)&res);
-        CBitmapDrawable::New(res, bm, (IBitmapDrawable**)&dr);
+        CBitmapDrawable::New(res, bm, (IDrawable**)&dr);
         dr->SetDither(FALSE);
-        *drawable = (IDrawable*)dr;
+        *drawable = dr;
         REFCOUNT_ADD(*drawable);
         return NOERROR;
     }
@@ -344,7 +427,7 @@ ECode CWallpaperManager::GetWallpaperInfo(
     VALIDATE_NOT_NULL(info);
     // try {
     if (sGlobals->mService == NULL) {
-        Slogger::W(TAG, "WallpaperService not running");
+        Logger::W(TAG, "WallpaperService not running");
         *info = NULL;
         return NOERROR;
     }
@@ -352,7 +435,7 @@ ECode CWallpaperManager::GetWallpaperInfo(
         return sGlobals->mService->GetWallpaperInfo(info);
     }
     // } catch (RemoteException e) {
-    //     return null;
+    //     return NULL;
     // }
 }
 
@@ -360,45 +443,68 @@ ECode CWallpaperManager::GetCropAndSetWallpaperIntent(
     /* [in] */ IUri* imageUri,
     /* [out] */ IIntent** intent)
 {
+    VALIDATE_NOT_NULL(intent)
+    *intent = NULL;
+
     if (imageUri == NULL) {
-        throw new IllegalArgumentException("Image URI must not be null");
+        Logger::E(TAG, "Image URI must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if (!ContentResolver.SCHEME_CONTENT.equals(imageUri.getScheme())) {
-        throw new IllegalArgumentException("Image URI must be of the "
-                + ContentResolver.SCHEME_CONTENT + " scheme type");
+    String scheme;
+    imageUri->GetScheme(&scheme);
+    if (!IContentResolver::SCHEME_CONTENT.Equals(scheme)) {
+        Logger::E(TAG, "Image URI must be of the %s scheme type",
+            IContentResolver::SCHEME_CONTENT.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    final PackageManager packageManager = mContext.getPackageManager();
-    Intent cropAndSetWallpaperIntent =
-            new Intent(ACTION_CROP_AND_SET_WALLPAPER, imageUri);
-    cropAndSetWallpaperIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    AutoPtr<IPackageManager> packageManager;
+    mContext->GetPackageManager((IPackageManager**)&packageManager);
+    AutoPtr<IIntent> cropAndSetWallpaperIntent;
+    CIntent::New(ACTION_CROP_AND_SET_WALLPAPER, imageUri, (IIntent**)&cropAndSetWallpaperIntent);
+    cropAndSetWallpaperIntent->AddFlags(IIntent::FLAG_GRANT_READ_URI_PERMISSION);
 
     // Find out if the default HOME activity supports CROP_AND_SET_WALLPAPER
-    Intent homeIntent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
-    ResolveInfo resolvedHome = packageManager.resolveActivity(homeIntent,
-            PackageManager.MATCH_DEFAULT_ONLY);
-    if (resolvedHome != null) {
-        cropAndSetWallpaperIntent.setPackage(resolvedHome.activityInfo.packageName);
+    AutoPtr<IIntent> homeIntent;
+    CIntent::New(IIntent::ACTION_MAIN, (IIntent**)&homeIntent);
+    homeIntent->AddCategory(IIntent::CATEGORY_HOME);
+    AutoPtr<IResolveInfo> resolvedHome;
+    packageManager->ResolveActivity(homeIntent,
+        IPackageManager::MATCH_DEFAULT_ONLY, (IResolveInfo**)&resolvedHome);
+    if (resolvedHome != NULL) {
+        AutoPtr<IActivityInfo> ai;
+        resolvedHome->GetActivityInfo((IActivityInfo**)&ai);
+        String packageName;
+        IPackageItemInfo::Probe(ai)->GetPackageName(&packageName);
+        cropAndSetWallpaperIntent->SetPackage(packageName);
 
-        List<ResolveInfo> cropAppList = packageManager.queryIntentActivities(
-                cropAndSetWallpaperIntent, 0);
-        if (cropAppList.size() > 0) {
-            return cropAndSetWallpaperIntent;
+        AutoPtr<IList> cropAppList;
+        packageManager->QueryIntentActivities(cropAndSetWallpaperIntent, 0, (IList**)&cropAppList);
+        Int32 size;
+        cropAppList->GetSize(&size);
+        if (size > 0) {
+            *intent = cropAndSetWallpaperIntent;
+            REFCOUNT_ADD(*intent)
+            return NOERROR;
         }
     }
 
     // fallback crop activity
-    cropAndSetWallpaperIntent.setPackage("com.android.wallpapercropper");
-    List<ResolveInfo> cropAppList = packageManager.queryIntentActivities(
-            cropAndSetWallpaperIntent, 0);
-    if (cropAppList.size() > 0) {
-        return cropAndSetWallpaperIntent;
+    cropAndSetWallpaperIntent->SetPackage(String("com.android.wallpapercropper"));
+    AutoPtr<IList> cropAppList;
+    packageManager->QueryIntentActivities(cropAndSetWallpaperIntent, 0, (IList**)&cropAppList);
+    Int32 size;
+    cropAppList->GetSize(&size);
+    if (size > 0) {
+        *intent = cropAndSetWallpaperIntent;
+        REFCOUNT_ADD(*intent)
+        return NOERROR;
     }
 
     // If the URI is not of the right type, or for some reason the system wallpaper
-    // cropper doesn't exist, return null
-    // throw new IllegalArgumentException("Cannot use passed URI to set wallpaper; " +
+    // cropper doesn't exist, return NULL
+    // Logger::E(TAG, "Cannot use passed URI to set wallpaper; " +
     //     "check that the type returned by ContentProvider matches image/*");
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
@@ -407,7 +513,7 @@ ECode CWallpaperManager::SetResource(
     /* [in] */ Int32 resid)
 {
     if (sGlobals->mService == NULL) {
-        Slogger::W(TAG, "WallpaperService not running");
+        Logger::W(TAG, "WallpaperService not running");
         return NOERROR;
     }
     // try {
@@ -430,11 +536,10 @@ ECode CWallpaperManager::SetResource(
         ASSERT_SUCCEEDED(resources->OpenRawResource(resid, (IInputStream**)&res));
         SetWallpaper(res, fos);
         if (fos != NULL) {
-            fos->Close();
+            ICloseable::Probe(fos)->Close();
         }
-        fd->Close();
         // } finally {
-        //     if (fos != null) {
+        //     if (fos != NULL) {
         //         fos.close();
         //     }
         // }
@@ -449,7 +554,7 @@ ECode CWallpaperManager::SetBitmap(
     /* [in] */ IBitmap* bitmap)
 {
     if (sGlobals->mService == NULL) {
-        Slogger::W(TAG, "WallpaperService not running");
+        Logger::W(TAG, "WallpaperService not running");
         return NOERROR;
     }
     // try {
@@ -465,12 +570,11 @@ ECode CWallpaperManager::SetBitmap(
     ASSERT_SUCCEEDED(CFileOutputStream::New(des, (IFileOutputStream**)&fos));
     // fos = new ParcelFileDescriptor.AutoCloseOutputStream(fd);
     Boolean result;
-    bitmap->Compress(Elastos::Droid::Graphics::BitmapCompressFormat_PNG, 90, fos, &result);
+    bitmap->Compress(BitmapCompressFormat_PNG, 90, IOutputStream::Probe(fos), &result);
     // } finally {
     if (fos != NULL) {
-        fos->Close();
+        ICloseable::Probe(fos)->Close();
     }
-    fd->Close();
     return NOERROR;
     // }
     // } catch (RemoteException e) {
@@ -482,7 +586,7 @@ ECode CWallpaperManager::SetStream(
     /* [in] */ IInputStream* data)
 {
     if (sGlobals->mService == NULL) {
-        Slogger::W(TAG, "WallpaperService not running");
+        Logger::W(TAG, "WallpaperService not running");
         return NOERROR;
     }
     // try {
@@ -500,9 +604,8 @@ ECode CWallpaperManager::SetStream(
     SetWallpaper(data, fos);
     // } finally {
     if (fos != NULL) {
-        fos->Close();
+        ICloseable::Probe(fos)->Close();
     }
-    fd->Close();
     return NOERROR;
     // }
     // } catch (RemoteException e) {
@@ -515,9 +618,10 @@ void CWallpaperManager::SetWallpaper(
     /* [in] */ IFileOutputStream* fos)
 {
     AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(32768);
+    IOutputStream* os = IOutputStream::Probe(fos);
     Int32 amt;
-    while (data->ReadBytes(buffer, &amt), amt > 0) {
-        fos->WriteBytes(*buffer, 0, amt);
+    while (data->Read(buffer, &amt), amt > 0) {
+        os->Write(buffer, 0, amt);
     }
     return;
 }
@@ -528,7 +632,7 @@ ECode CWallpaperManager::HasResourceWallpaper(
 {
     VALIDATE_NOT_NULL(hasResource);
     if (sGlobals->mService == NULL) {
-        Slogger::W(TAG, "WallpaperService not running");
+        Logger::W(TAG, "WallpaperService not running");
         *hasResource = FALSE;
         return NOERROR;
     }
@@ -549,7 +653,7 @@ ECode CWallpaperManager::GetDesiredMinimumWidth(
 {
     VALIDATE_NOT_NULL(width);
     if (sGlobals->mService == NULL) {
-        Slogger::W(TAG, "WallpaperService not running");
+        Logger::W(TAG, "WallpaperService not running");
         *width = 0;
         return NOERROR;
     }
@@ -566,7 +670,7 @@ ECode CWallpaperManager::GetDesiredMinimumHeight(
 {
     VALIDATE_NOT_NULL(height);
     if (sGlobals->mService == NULL) {
-        Slogger::W(TAG, "WallpaperService not running");
+        Logger::W(TAG, "WallpaperService not running");
         *height = 0;
         return NOERROR;
     }
@@ -591,30 +695,26 @@ ECode CWallpaperManager::SuggestDesiredDimensions(
      * Read maximum texture size from system property and scale down
      * minimumWidth and minimumHeight accordingly.
      */
-    int maximumTextureSize;
-    try {
-        maximumTextureSize = SystemProperties.getInt("sys.max_texture_size", 0);
-    } catch (Exception e) {
-        maximumTextureSize = 0;
-    }
+    Int32 maximumTextureSize = 0;
+    SystemProperties::GetInt32(String("sys.max_texture_size"), 0, &maximumTextureSize);
 
     if (maximumTextureSize > 0) {
         if ((minimumWidth > maximumTextureSize) ||
             (minimumHeight > maximumTextureSize)) {
-            float aspect = (float)minimumHeight / (float)minimumWidth;
+            Float aspect = (Float)minimumHeight / (Float)minimumWidth;
             if (minimumWidth > minimumHeight) {
                 minimumWidth = maximumTextureSize;
-                minimumHeight = (int)((minimumWidth * aspect) + 0.5);
+                minimumHeight = (Int32)((minimumWidth * aspect) + 0.5);
             } else {
                 minimumHeight = maximumTextureSize;
-                minimumWidth = (int)((minimumHeight / aspect) + 0.5);
+                minimumWidth = (Int32)((minimumHeight / aspect) + 0.5);
             }
         }
     }
 
 
     if (sGlobals->mService == NULL) {
-        Slogger::W(TAG, "WallpaperService not running");
+        Logger::W(TAG, "WallpaperService not running");
         return NOERROR;
     }
     else {
@@ -628,14 +728,11 @@ ECode CWallpaperManager::SuggestDesiredDimensions(
 ECode CWallpaperManager::SetDisplayPadding(
     /* [in] */ IRect* padding)
 {
-    try {
-        if (sGlobals.mService == null) {
-            Log.w(TAG, "WallpaperService not running");
-        } else {
-            sGlobals.mService.setDisplayPadding(padding);
-        }
-    } catch (RemoteException e) {
-        // Ignore
+    if (sGlobals->mService == NULL) {
+        Logger::W(TAG, "WallpaperService not running");
+    }
+    else {
+        sGlobals->mService->SetDisplayPadding(padding);
     }
     return NOERROR;
 }
@@ -645,14 +742,9 @@ ECode CWallpaperManager::SetDisplayOffset(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    try {
-        //Log.v(TAG, "Sending new wallpaper display offsets from app...");
-        WindowManagerGlobal.getWindowSession().setWallpaperDisplayOffset(
-                windowToken, x, y);
-        //Log.v(TAG, "...app returning after sending display offset!");
-    } catch (RemoteException e) {
-        // Ignore.
-    }
+    //Log.v(TAG, "Sending new wallpaper display offsets from app...");
+    return CWindowManagerGlobal::GetWindowSession()->SetWallpaperDisplayOffset(
+            windowToken, x, y);
 }
 
 ECode CWallpaperManager::SetWallpaperOffsets(
@@ -660,14 +752,9 @@ ECode CWallpaperManager::SetWallpaperOffsets(
     /* [in] */ Float xOffset,
     /* [in] */ Float yOffset)
 {
-    // try {
     //Log.v(TAG, "Sending new wallpaper offsets from app...");
     return CWindowManagerGlobal::GetWindowSession()->SetWallpaperPosition(
             windowToken, xOffset, yOffset, mWallpaperXStep, mWallpaperYStep);
-    //Log.v(TAG, "...app returning after sending offsets!");
-    // } catch (RemoteException e) {
-    //     // Ignore.
-    // }
 }
 
 ECode CWallpaperManager::SetWallpaperOffsetSteps(
@@ -717,7 +804,8 @@ ECode CWallpaperManager::Clear()
 AutoPtr<IInputStream> CWallpaperManager::OpenDefaultWallpaper(
     /* [in] */ IContext* context)
 {
-    String path = SystemProperties::Get(PROP_WALLPAPER);
+    String path;
+    SystemProperties::Get(PROP_WALLPAPER, &path);
     if (!TextUtils::IsEmpty(path)) {
         AutoPtr<IFile> file;
         CFile::New(path, (IFile**)&file);
@@ -742,9 +830,11 @@ AutoPtr<IInputStream> CWallpaperManager::OpenDefaultWallpaper(
 AutoPtr<IComponentName> CWallpaperManager::GetDefaultWallpaperComponent(
     /* [in] */ IContext* context)
 {
-    String flat = SystemProperties::Get(PROP_WALLPAPER_COMPONENT);
+    String flat;
+    SystemProperties::Get(PROP_WALLPAPER_COMPONENT, &flat);
     if (!TextUtils::IsEmpty(flat)) {
-        AutoPtr<IComponentName> cn = ComponentName::UnflattenFromString(flat);
+        AutoPtr<IComponentName> cn;
+        CComponentName::UnflattenFromString(flat, (IComponentName**)&cn);
         if (cn != NULL) {
             return cn;
         }
@@ -752,7 +842,8 @@ AutoPtr<IComponentName> CWallpaperManager::GetDefaultWallpaperComponent(
 
     context->GetString(R::string::default_wallpaper_component, &flat);
     if (!TextUtils::IsEmpty(flat)) {
-        AutoPtr<IComponentName> cn = ComponentName::UnflattenFromString(flat);
+        AutoPtr<IComponentName> cn;
+        CComponentName::UnflattenFromString(flat, (IComponentName**)&cn);
         if (cn != NULL) {
             return cn;
         }

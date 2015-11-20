@@ -13,7 +13,7 @@ using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::App::IWallpaperInfo;
-using Elastos::Droid::App::IWallpaperManagerCallback;
+using Elastos::Droid::App::IIWallpaperManagerCallback;
 using Elastos::Droid::App::IUserSwitchObserver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
@@ -110,7 +110,7 @@ private:
          * List of callbacks registered they should each be notified when the wallpaper is changed.
          */
         AutoPtr<IRemoteCallbackList> mCallbacks;
-                // = new RemoteCallbackList<IWallpaperManagerCallback>();
+                // = new RemoteCallbackList<IIWallpaperManagerCallback>();
         Int32 mWidth;
         Int32 mHeight;
     };
@@ -197,7 +197,7 @@ public:
         /* [out] */ Int32* result);
 
     CARAPI GetWallpaper(
-        /* [in] */ IWallpaperManagerCallback* cb,
+        /* [in] */ IIWallpaperManagerCallback* cb,
         /* [out] */ IBundle** outParams,
         /* [out] */ IParcelFileDescriptor** result);
 

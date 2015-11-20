@@ -3,9 +3,9 @@ module
 {
     interface Elastos.Droid.View.IKeyEvent;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * Layout container for a view hierarchy that can be scrolled by the user,

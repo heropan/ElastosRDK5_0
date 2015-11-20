@@ -4,8 +4,8 @@
 #include "_Elastos_Droid_Text_Method_CBaseKeyListenerHelper.h"
 #include <elastos/core/Singleton.h>
 
-namespace Elastos{
-namespace Droid{
+namespace Elastos {
+namespace Droid {
 namespace Text{
 namespace Method{
 

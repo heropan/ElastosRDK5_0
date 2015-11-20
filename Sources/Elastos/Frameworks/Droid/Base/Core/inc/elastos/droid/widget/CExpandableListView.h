@@ -8,9 +8,9 @@
 
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CExpandableListView), public ExpandableListView
 {

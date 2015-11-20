@@ -4,9 +4,9 @@ module
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Widget.IGridLayoutAlignment;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * Layout information associated with each of the children of a GridLayout.

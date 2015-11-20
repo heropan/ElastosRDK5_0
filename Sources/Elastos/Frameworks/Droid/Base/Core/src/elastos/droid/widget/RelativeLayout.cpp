@@ -26,7 +26,7 @@ namespace Widget {
 extern "C" const InterfaceID EIID_NODE =
     { 0x9cf99c13, 0x56c5, 0x4194, { 0xab, 0x03, 0xa8, 0x62, 0xce, 0xe2, 0xab, 0x06 } };
 
-static String TAG = String("RelativeLayout");
+static String TAG("RelativeLayout");
 
 //==============================================================================
 //  TopToBottomLeftToRightComparator

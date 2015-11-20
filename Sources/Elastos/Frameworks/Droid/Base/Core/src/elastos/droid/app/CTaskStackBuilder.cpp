@@ -18,9 +18,9 @@ using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IPackageItemInfo;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 const String CTaskStackBuilder::TAG("TaskStackBuilder");
 

@@ -4,9 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 namespace Backup {
 /**
  * Callback class for receiving progress reports during a restore operation.  These

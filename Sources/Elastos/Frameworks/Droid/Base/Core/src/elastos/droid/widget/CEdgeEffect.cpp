@@ -2,9 +2,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ECode CEdgeEffect::constructor(
     /* [in] */ IContext* context)

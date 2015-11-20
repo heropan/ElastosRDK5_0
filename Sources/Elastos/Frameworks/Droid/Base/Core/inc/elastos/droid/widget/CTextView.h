@@ -5,9 +5,9 @@
 
 #include "elastos/droid/widget/TextView.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CTextView), public TextView
 {

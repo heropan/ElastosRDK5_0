@@ -1,8 +1,8 @@
 #include "elastos/droid/widget/CPopupMenu.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 PInterface CPopupMenu::Probe(
     /* [in] */ REIID riid)
