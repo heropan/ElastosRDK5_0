@@ -1,19 +1,20 @@
 
 #include "elastos/droid/widget/SimpleAdapter.h"
-#include <Elastos.CoreLibrary.h>
-#include "elastos/droid/os/ElDataInterface.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/os/ElDataInterface.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Os::ElDataInterface;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IInteger32;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
-using Elastos::Droid::Os::ElDataInterface;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Net::Uri;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IMap;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -28,44 +29,15 @@ SimpleAdapter::SimpleFilter::SimpleFilter(
     : mHost(host)
 {}
 
-CAR_INTERFACE_IMPL(SimpleAdapter::SimpleFilter, IFilter);
-
-ECode SimpleAdapter::SimpleFilter::SetDelayer(
-    /* [in] */ IFilterDelayer* delayer)
-{
-    return Filter::SetDelayer(delayer);
-}
-
-ECode SimpleAdapter::SimpleFilter::DoFilter(
-    /* [in] */ ICharSequence* constraint)
-{
-    return Filter::DoFilter(constraint);
-}
-
-ECode SimpleAdapter::SimpleFilter::DoFilter(
-    /* [in] */ ICharSequence* constraint,
-    /* [in] */ IFilterListener* listener)
-{
-    return Filter::DoFilter(constraint, listener);
-}
-
-ECode SimpleAdapter::SimpleFilter::ConvertResultToString(
-    /* [in] */ IInterface* resultValue,
-    /* [out] */ ICharSequence** cs)
-{
-    VALIDATE_NOT_NULL(cs);
-    return Filter::ConvertResultToString(resultValue, cs);
-}
-
-//@Override
 ECode SimpleAdapter::SimpleFilter::PerformFiltering(
     /* [in] */ ICharSequence* prefix,
     /* [out] */ IFilterResults** filterResults)
 {
+    VALIDATE_NOT_NULL(filterResults);
     AutoPtr<FilterResults> results = new FilterResults();
 
     if (mHost->mUnfilteredData == NULL) {
-        mHost->mUnfilteredData = new List<AutoPtr<IObjectStringMap> >(mHost->mData);
+        CArrayList::New(mData, (IArrayList**)&mHost->mUnfilteredData);
     }
 
     Int32 length = 0;
@@ -74,18 +46,18 @@ ECode SimpleAdapter::SimpleFilter::PerformFiltering(
     }
     if (length == 0) {
         results->mValues = (IInterface*)new ElDataInterface<
-            List<AutoPtr<IObjectStringMap> > >(*mHost->mUnfilteredData);
+            List<AutoPtr<IMap> > >(*mHost->mUnfilteredData);
         results->mCount = mHost->mUnfilteredData->GetSize();
     }
     else {
         String prefixString;
         prefix->ToString(&prefixString);
 
-        List<AutoPtr<IObjectStringMap> > newValues;
-        List<AutoPtr<IObjectStringMap> >::Iterator iter =
+        List<AutoPtr<IMap> > newValues;
+        List<AutoPtr<IMap> >::Iterator iter =
                 mHost->mUnfilteredData->Begin();
         for (; iter != mHost->mUnfilteredData->End(); ++iter) {
-            IObjectStringMap* h = (*iter).Get();
+            AutoPtr<IMap> h = (*iter).Get();
             if (h != NULL) {
                 Int32 len = mHost->mTo->GetLength();
                 for (Int32 i = 0; i < len; i++) {
@@ -115,8 +87,7 @@ ECode SimpleAdapter::SimpleFilter::PerformFiltering(
             }
         }
 
-        results->mValues =
-            new ElDataInterface<List<AutoPtr<IObjectStringMap> > >(newValues);
+        results->mValues = new ElDataInterface<List<AutoPtr<IMap> > >(newValues);
         results->mCount = newValues.GetSize();
     }
 
@@ -126,22 +97,15 @@ ECode SimpleAdapter::SimpleFilter::PerformFiltering(
     return NOERROR;
 }
 
-//@Override
 ECode SimpleAdapter::SimpleFilter::PublishResults(
     /* [in] */ ICharSequence* constraint,
     /* [in] */ IFilterResults* results)
 {
-    assert(results);
-    FilterResults* filterResults = (FilterResults*)results;
-    List<AutoPtr<IObjectStringMap> >& values =
-        ((ElDataInterface<List<AutoPtr<IObjectStringMap> > >*)filterResults
-        ->mValues.Get())->mData;
     //noinspection unchecked
-    mHost->mData.Assign(values.Begin(), values.End());
+    mData = IList::Probe(((FilterResults*)results)->mValues);
     if (filterResults->mCount > 0) {
         mHost->NotifyDataSetChanged();
-    }
-    else {
+    } else {
         mHost->NotifyDataSetInvalidated();
     }
 
@@ -151,8 +115,10 @@ ECode SimpleAdapter::SimpleFilter::PublishResults(
 //==============================================================================
 //                      SimpleAdapter::SimpleAdapter
 //==============================================================================
-
+CAR_INTERFACE_IMPL_2(SimpleAdapter, BaseAdapter, ISimpleAdapter, IFilterable);
 SimpleAdapter::SimpleAdapter()
+    : mResource(0)
+    , mDropDownResource(0)
 {}
 
 SimpleAdapter::SimpleAdapter(
@@ -162,75 +128,58 @@ SimpleAdapter::SimpleAdapter(
     /* [in] */ ArrayOf<String>* from,
     /* [in] */ ArrayOf<Int32>* to)
 {
-    Init(context, data, resource, from, to);
+    constructor(context, data, resource, from, to);
 }
 
-ECode SimpleAdapter::Init(
+ECode SimpleAdapter::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IObjectContainer* data,
+    /* [in] */ IList* data,
     /* [in] */ Int32 resource,
     /* [in] */ ArrayOf<String>* from,
     /* [in] */ ArrayOf<Int32>* to)
 {
-    VALIDATE_NOT_NULL(data);
-    VALIDATE_NOT_NULL(from);
-    VALIDATE_NOT_NULL(to);
-
-    AutoPtr<IObjectEnumerator> it;
-    data->GetObjectEnumerator((IObjectEnumerator**)&it);
-    Boolean hasNext;
-    while (it->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> obj;
-        it->Current((IInterface**)&obj);
-        AutoPtr<IObjectStringMap> item = IObjectStringMap::Probe(obj.Get());
-        mData.PushBack(item);
-    }
-
+    mData = data;
     mResource = mDropDownResource = resource;
-    mFrom = from->Clone();
-    mTo = to->Clone();
+    mFrom = from;
+    mTo = to;
+    return context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
+}
 
-    context->GetSystemService(
-        IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
+ECode SimpleAdapter::GetCount(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count);
+    return mData->GetSize(count);
+}
 
+ECode SimpleAdapter::GetItem(
+    /* [in] */ Int32 position,
+    /* [out] */ IInterface** item)
+{
+    VALIDATE_NOT_NULL(item);
+    return mData->Get(position, item);
+}
+
+ECode SimpleAdapter::GetItemId(
+    /* [in] */ Int32 position,
+    /* [out] */ Int64* id)
+{
+    VALIDATE_NOT_NULL(id);
+    *id = position;
     return NOERROR;
 }
 
-/**
- * @see android.widget.Adapter#getCount()
- */
-Int32 SimpleAdapter::GetCount()
-{
-    return mData.GetSize();
-}
-
-/**
- * @see android.widget.Adapter#getItem(Int32)
- */
-AutoPtr<IInterface> SimpleAdapter::GetItem(
-    /* [in] */ Int32 position)
-{
-    return mData[position];
-}
-
-/**
- * @see android.widget.Adapter#getItemId(Int32)
- */
-Int64 SimpleAdapter::GetItemId(
-    /* [in] */ Int32 position)
-{
-    return position;
-}
-
-/**
- * @see android.widget.Adapter#getView(Int32, View, ViewGroup)
- */
 AutoPtr<IView> SimpleAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    return CreateViewFromResource(position, convertView, parent, mResource);
+    VALIDATE_NOT_NULL(view);
+    AutoPtr<IView> v = CreateViewFromResource(position, convertView, parent, mResource);
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
 AutoPtr<IView> SimpleAdapter::CreateViewFromResource(
@@ -242,28 +191,13 @@ AutoPtr<IView> SimpleAdapter::CreateViewFromResource(
     AutoPtr<IView> view;
 
     if (convertView == NULL) {
-        ECode ec = mInflater->Inflate(resource, parent, FALSE, (IView**)&view);
-        if (FAILED(ec) || view == NULL) {
-            Slogger::E("SimpleAdapter", "Error: failed to inflate view with resource id=%08x, position=%d, ec=%08x",
-                resource, position, ec);
-            return NULL;
-        }
+        mInflater->Inflate(resource, parent, FALSE, (IView**)&view);
     }
     else {
         view = convertView;
     }
 
     BindView(position, view);
-
-// #if defined(_DEBUG) || defined(_ELASTOS_DEBUG)
-//     Int32 viewId = 0;
-//     if (view) {
-//         view->GetId(&viewId);
-//     }
-//     Slogger::D("SimpleAdapter", "Created View: %p, id: %08x, resource: %08x, position: %d",
-//         view.Get(), viewId, resource, position);
-// #endif
-    assert(view != NULL);
     return view;
 }
 
@@ -271,30 +205,34 @@ ECode SimpleAdapter::SetDropDownViewResource(
     /* [in] */ Int32 resource)
 {
     mDropDownResource = resource;
-
     return NOERROR;
 }
 
-//@Override
-AutoPtr<IView> SimpleAdapter::GetDropDownView(
+ECode SimpleAdapter::GetDropDownView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    return CreateViewFromResource(
+    VALIDATE_NOT_NULL(view);
+    AutoPtr<IView> v = CreateViewFromResource(
         position, convertView, parent, mDropDownResource);
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
 ECode SimpleAdapter::BindView(
     /* [in] */ Int32 position,
     /* [in] */ IView* view)
 {
-    AutoPtr<IObjectStringMap> dataSet = mData[position];
+    AutoPtr<IMap> dataSet;
+    mData->Get(position, (IInterface**)&dataSet);
     if (dataSet == NULL) {
         return NOERROR;
     }
 
-    ISimpleAdapterViewBinder* binder = mViewBinder;
+    AutoPtr<ISimpleAdapterViewBinder> binder = mViewBinder;
     Int32 count = mTo->GetLength();
 
     for (Int32 i = 0; i < count; i++) {
@@ -374,9 +312,13 @@ ECode SimpleAdapter::BindView(
     return NOERROR;
 }
 
-AutoPtr<ISimpleAdapterViewBinder> SimpleAdapter::GetViewBinder()
+ECode SimpleAdapter::GetViewBinder(
+    /* [out] */ ISimpleAdapterViewBinder** viewBinder)
 {
-    return mViewBinder;
+    VALIDATE_NOT_NULL(viewBinder);
+    *viewBinder = mViewBinder;
+    REFCOUNT_ADD(*viewBinder);
+    return NOERROR;
 }
 
 ECode SimpleAdapter::SetViewBinder(
@@ -416,20 +358,23 @@ ECode SimpleAdapter::SetViewText(
     /* [in] */ const String& text)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(text, (ICharSequence**)&cs);
+    CString::New(text, (ICharSequence**)&cs);
 
     return v->SetText(cs);
 }
 
-AutoPtr<IFilter> SimpleAdapter::GetFilter()
+ECode SimpleAdapter::GetFilter(
+    /* [out] */ IFilter** filter)
 {
+    VALIDATE_NOT_NULL(filter);
     if (mFilter == NULL) {
         mFilter = new SimpleFilter(this);
     }
 
-    return mFilter;
+    *filter = mFilter;
+    REFCOUNT_ADD(*filter);
+    return NOERROR;
 }
-
 
 } // namespace Widget
 } // namespace Droid

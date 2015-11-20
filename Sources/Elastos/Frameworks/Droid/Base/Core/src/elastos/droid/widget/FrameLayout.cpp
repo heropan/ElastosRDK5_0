@@ -1,16 +1,20 @@
+
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/FrameLayout.h"
-#include <elastos/core/Math.h>
+#include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/Gravity.h"
 #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+#include <elastos/core/Math.h>
 
+using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
 using Elastos::Droid::View::Gravity;
 using Elastos::Droid::View::IGravity;
-using Elastos::Droid::View::View;
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+
+using Elastos::Core::CString;
 
 namespace Elastos{
 namespace Droid{
@@ -22,9 +26,13 @@ static Int32 InitDefaultChildGravity()
 }
 Int32 FrameLayout::DEFAULT_CHILD_GRAVITY = InitDefaultChildGravity();
 
+CAR_INTERFACE_IMPL(FrameLayout, ViewGroup, IFrameLayout);
 FrameLayout::FrameLayout()
     : mForegroundInPadding(TRUE)
     , mMeasureAllChildren(FALSE)
+    , mForegroundTintMode(-1)
+    , mHasForegroundTint(FALSE)
+    , mHasForegroundTintMode(FALSE)
     , mForegroundPaddingLeft(0)
     , mForegroundPaddingTop(0)
     , mForegroundPaddingRight(0)
@@ -36,95 +44,41 @@ FrameLayout::FrameLayout()
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mOverlayBounds));
 }
 
-FrameLayout::FrameLayout(
-    /* [in] */ IContext* context)
-    : ViewGroup(context)
-    , mForegroundInPadding(TRUE)
-    , mMeasureAllChildren(FALSE)
-    , mForegroundPaddingLeft(0)
-    , mForegroundPaddingTop(0)
-    , mForegroundPaddingRight(0)
-    , mForegroundPaddingBottom(0)
-    , mForegroundGravity(IGravity::FILL)
-    , mForegroundBoundsChanged(FALSE)
-{
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mSelfBounds));
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mOverlayBounds));
-}
-
-FrameLayout::FrameLayout(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : ViewGroup(context, attrs, 0)
-    , mForegroundInPadding(TRUE)
-    , mMeasureAllChildren(FALSE)
-    , mForegroundPaddingLeft(0)
-    , mForegroundPaddingTop(0)
-    , mForegroundPaddingRight(0)
-    , mForegroundPaddingBottom(0)
-    , mForegroundGravity(IGravity::FILL)
-    , mForegroundBoundsChanged(FALSE)
-{
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mSelfBounds));
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mOverlayBounds));
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, 0));
-}
-
-FrameLayout::FrameLayout(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : ViewGroup(context, attrs, defStyle)
-    , mForegroundInPadding(TRUE)
-    , mMeasureAllChildren(FALSE)
-    , mForegroundPaddingLeft(0)
-    , mForegroundPaddingTop(0)
-    , mForegroundPaddingRight(0)
-    , mForegroundPaddingBottom(0)
-    , mForegroundGravity(IGravity::FILL)
-    , mForegroundBoundsChanged(FALSE)
-{
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mSelfBounds));
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mOverlayBounds));
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
-}
-
-ECode FrameLayout::Init(
+ECode FrameLayout::constructor(
     /* [in] */ IContext* context)
 {
-    ASSERT_SUCCEEDED(ViewGroup::Init(context));
-    return NOERROR;
+    return ViewGroup::constructor(context);
 }
 
-ECode FrameLayout::Init(
+ECode FrameLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    ASSERT_SUCCEEDED(Init(context, attrs, 0));
-    return NOERROR;
+    return constructor(context, attrs, 0);
 }
 
-ECode FrameLayout::Init(
+ECode FrameLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    ASSERT_SUCCEEDED(ViewGroup::Init(context, attrs, defStyle));
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
-    return NOERROR;
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
-ECode FrameLayout::InitFromAttributes(
+ECode FrameLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
+    ASSERT_SUCCEEDED(ViewGroup::constructor(context, attrs, defStyleAttr, defStyleRes));
+
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::FrameLayout),
             ARRAY_SIZE(R::styleable::FrameLayout));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
     a->GetInt32(R::styleable::FrameLayout_foregroundGravity,
             mForegroundGravity, &mForegroundGravity);
@@ -143,16 +97,34 @@ ECode FrameLayout::InitFromAttributes(
         SetMeasureAllChildren(TRUE);
     }
 
+    a->HasValue(R::styleable::FrameLayout_foregroundTintMode, &value);
+    if (value) {
+        Int32 iv = 0;
+        a->GetInt32(R::styleable::FrameLayout_foregroundTintMode, -1, &iv);
+        Drawable::ParseTintMode(iv, mForegroundTintMode, &mForegroundTintMode);
+        mHasForegroundTintMode = TRUE;
+    }
+
+    a->HasValue(R::styleable::FrameLayout_foregroundTint, &value);
+    if (value) {
+        a->GetColorStateList(R::styleable::FrameLayout_foregroundTint, (IColorStateList**)&mForegroundTintList);
+        mHasForegroundTint = TRUE;
+    }
+
     a->GetBoolean(R::styleable::FrameLayout_foregroundInsidePadding,
             TRUE, &mForegroundInPadding);
 
     a->Recycle();
+    ApplyForegroundTint();
     return NOERROR;
 }
 
-Int32 FrameLayout::GetForegroundGravity()
+ECode FrameLayout::GetForegroundGravity(
+    /* [out] */ Int32* foregroundGravity)
 {
-    return mForegroundGravity;
+    VALIDATE_NOT_NULL(foregroundGravity);
+    *foregroundGravity = mForegroundGravity;
+    return NOERROR;
 }
 
 ECode FrameLayout::SetForegroundGravity(
@@ -192,6 +164,17 @@ ECode FrameLayout::SetForegroundGravity(
     return NOERROR;
 }
 
+ECode FrameLayout::SetVisibility(
+    /* [in] */ /*@Visibility*/ Int32 visibility)
+{
+    ViewGroup::SetVisibility(visibility);
+    if (mForeground != NULL) {
+        Boolean isDifferent = FALSE;
+        mForeground->SetVisible(visibility == IView::VISIBLE, FALSE, &isDifferent);
+    }
+    return NOERROR;
+}
+
 Boolean FrameLayout::VerifyDrawable(
     /* [in] */ IDrawable* who)
 {
@@ -213,9 +196,22 @@ ECode FrameLayout::DrawableStateChanged()
         Boolean isStateful;
         mForeground->IsStateful(&isStateful);
         if (isStateful) {
-            AutoPtr<ArrayOf<Int32> > states = GetDrawableState();
+            AutoPtr<ArrayOf<Int32> > states;
+            GetDrawableState((ArrayOf<Int32>**)&states);
             return mForeground->SetState(states, &isStateful);
         }
+    }
+    return NOERROR;
+}
+
+ECode FrameLayout::DrawableHotspotChanged(
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    ViewGroup::DrawableHotspotChanged(x, y);
+
+    if (mForeground != NULL) {
+        mForeground->SetHotspot(x, y);
     }
     return NOERROR;
 }
@@ -253,13 +249,18 @@ ECode FrameLayout::SetForeground(
             SetWillNotDraw(FALSE);
             IDrawableCallback* callback = (IDrawableCallback*)this->Probe(EIID_IDrawableCallback);
             drawable->SetCallback(callback);
+            Int32 ld = 0;
+            GetLayoutDirection(&ld);
+            drawable->SetLayoutDirection(ld);
 
             Boolean isStateful;
             drawable->IsStateful(&isStateful);
             if (isStateful) {
-                AutoPtr<ArrayOf<Int32> > states = GetDrawableState();
+                AutoPtr<ArrayOf<Int32> > states;
+                GetDrawableState((ArrayOf<Int32>**)&states);
                 drawable->SetState(states, &isStateful);
             }
+            ApplyForegroundTint();
             if (mForegroundGravity == IGravity::FILL) {
                 AutoPtr<IRect> padding;
                 CRect::New((IRect**)&padding);
@@ -281,9 +282,64 @@ ECode FrameLayout::SetForeground(
     return NOERROR;
 }
 
-AutoPtr<IDrawable> FrameLayout::GetForeground()
+ECode FrameLayout::GetForeground(
+    /* [out] */ IDrawable** foreground)
 {
-    return mForeground;
+    VALIDATE_NOT_NULL(foreground);
+    *foreground = mForeground;
+    REFCOUNT_ADD(*foreground);
+    return NOERROR;
+}
+
+ECode FrameLayout::SetForegroundTintList(
+    /* [in] */ /*@Nullable*/ IColorStateList* tint)
+{
+    mForegroundTintList = tint;
+    mHasForegroundTint = TRUE;
+
+    return ApplyForegroundTint();
+}
+
+ECode FrameLayout::GetForegroundTintList(
+    /* [out] */ IColorStateList** csl)
+{
+    VALIDATE_NOT_NULL(csl);
+    *csl = mForegroundTintList;
+    REFCOUNT_ADD(*csl);
+    return NOERROR;
+}
+
+ECode FrameLayout::SetForegroundTintMode(
+    /* [in] */ /*@Nullable*/ PorterDuffMode tintMode)
+{
+    mForegroundTintMode = tintMode;
+    mHasForegroundTintMode = TRUE;
+
+    return ApplyForegroundTint();
+}
+
+ECode FrameLayout::GetForegroundTintMode(
+    /* [out] */ PorterDuffMode* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    *mode = mForegroundTintMode;
+    return NOERROR;
+}
+
+ECode FrameLayout::ApplyForegroundTint()
+{
+    if (mForeground != NULL && (mHasForegroundTint || mHasForegroundTintMode)) {
+        mForeground->Mutate((IDrawable**)&mForeground);
+
+        if (mHasForegroundTint) {
+            mForeground->SetTintList(mForegroundTintList);
+        }
+
+        if (mHasForegroundTintMode) {
+            mForeground->SetTintMode(mForegroundTintMode);
+        }
+    }
+    return NOERROR;
 }
 
 Int32 FrameLayout::GetPaddingLeftWithForeground()
@@ -314,7 +370,8 @@ void FrameLayout::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    Int32 count = GetChildCount();
+    Int32 count = 0;
+    GetChildCount(&count);
 
     Boolean measureMatchParentChildren =
         MeasureSpec::GetMode(widthMeasureSpec) != MeasureSpec::EXACTLY ||
@@ -327,7 +384,8 @@ void FrameLayout::OnMeasure(
     Int32 visibility;
 
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView>  child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         if (child == NULL) {
             continue;
         }
@@ -339,7 +397,7 @@ void FrameLayout::OnMeasure(
             AutoPtr<IFrameLayoutLayoutParams> lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
             Int32 ml, mt, mr, mb;
-            lp->GetMargins(&ml, &mt, &mr, &mb);
+            IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&ml, &mt, &mr, &mb);
 
             Int32 childWidth, childHeight, state;
             child->GetMeasuredWidth(&childWidth);
@@ -351,8 +409,8 @@ void FrameLayout::OnMeasure(
             childState = CombineMeasuredStates(childState, state);
             if (measureMatchParentChildren) {
                 Int32 width, height;
-                lp->GetWidth(&width);
-                lp->GetHeight(&height);
+                IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
+                IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
                 if (width == IViewGroupLayoutParams::MATCH_PARENT ||
                         height == IViewGroupLayoutParams::MATCH_PARENT) {
                     mMatchParentChildren.PushBack(child);
@@ -370,7 +428,8 @@ void FrameLayout::OnMeasure(
     maxWidth = Elastos::Core::Math::Max(maxWidth, GetSuggestedMinimumWidth());
 
     // Check against our foreground's minimum height and width
-    AutoPtr<IDrawable> drawable = GetForeground();
+    AutoPtr<IDrawable> drawable;
+    GetForeground((IDrawable**)&drawable);
     if (drawable != NULL) {
         Int32 drawMinHeight, drawMinWidth;
         drawable->GetMinimumHeight(&drawMinHeight);
@@ -392,17 +451,19 @@ void FrameLayout::OnMeasure(
             AutoPtr<IFrameLayoutLayoutParams> lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
             Int32 ml, mt, mr, mb;
-            lp->GetMargins(&ml, &mt, &mr, &mb);
+            IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&ml, &mt, &mr, &mb);
             Int32 width, height;
-            lp->GetWidth(&width);
-            lp->GetHeight(&height);
+            IViewGroupLayoutParams::Probe(lp)->GetWidth(&width);
+            IViewGroupLayoutParams::Probe(lp)->GetHeight(&height);
 
             Int32 childWidthMeasureSpec;
             Int32 childHeightMeasureSpec;
 
             if (width == IViewGroupLayoutParams::MATCH_PARENT) {
+                Int32 w = 0;
+                GetMeasuredWidth(&w);
                 childWidthMeasureSpec = MeasureSpec::MakeMeasureSpec(
-                        GetMeasuredWidth() - GetPaddingLeftWithForeground()
+                        w - GetPaddingLeftWithForeground()
                         - GetPaddingRightWithForeground() - ml - mr, MeasureSpec::EXACTLY);
             } else {
                 childWidthMeasureSpec = GetChildMeasureSpec(widthMeasureSpec,
@@ -411,8 +472,10 @@ void FrameLayout::OnMeasure(
             }
 
             if (height == IViewGroupLayoutParams::MATCH_PARENT) {
+                Int32 h = 0;
+                GetMeasuredHeight(&h);
                 childHeightMeasureSpec = MeasureSpec::MakeMeasureSpec(
-                        GetMeasuredHeight() - GetPaddingTopWithForeground()
+                        h - GetPaddingTopWithForeground()
                         - GetPaddingBottomWithForeground() - mt - mb, MeasureSpec::EXACTLY);
             } else {
                 childHeightMeasureSpec = GetChildMeasureSpec(heightMeasureSpec,
@@ -425,14 +488,26 @@ void FrameLayout::OnMeasure(
     }
 }
 
-void FrameLayout::OnLayout(
+ECode FrameLayout::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    const Int32 count = GetChildCount();
+    LayoutChildren(left, top, right, bottom, FALSE /* no force left gravity */);
+    return NOERROR;
+}
+
+void FrameLayout::LayoutChildren(
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom,
+    /* [in] */ Boolean forceLeftGravity)
+{
+    Int32 count = 0;
+    GetChildCount(&count);
 
     Int32 parentLeft = GetPaddingLeftWithForeground();
     Int32 parentRight = right - left - GetPaddingRightWithForeground();
@@ -444,7 +519,8 @@ void FrameLayout::OnLayout(
     Int32 visibility;
 
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView>  child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         if (child == NULL) {
             continue;
         }
@@ -454,7 +530,7 @@ void FrameLayout::OnLayout(
             AutoPtr<IFrameLayoutLayoutParams> lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
             Int32 ml, mt, mr, mb;
-            lp->GetMargins(&ml, &mt, &mr, &mb);
+            IViewGroupMarginLayoutParams::Probe(lp)->GetMargins(&ml, &mt, &mr, &mb);
 
             Int32 gravity;
             lp->GetGravity(&gravity);
@@ -467,21 +543,22 @@ void FrameLayout::OnLayout(
             child->GetMeasuredHeight(&height);
             Int32 childLeft, childTop;
 
-            Int32 layoutDirection = GetLayoutDirection();
+            Int32 layoutDirection = 0;
+            GetLayoutDirection(&layoutDirection);
             Int32 absoluteGravity = Gravity::GetAbsoluteGravity(gravity, layoutDirection);
             Int32 verticalGravity = gravity & IGravity::VERTICAL_GRAVITY_MASK;
 
             switch (absoluteGravity & IGravity::HORIZONTAL_GRAVITY_MASK) {
-                    case IGravity::LEFT:
-                        childLeft = parentLeft + ml;
-                        break;
                     case IGravity::CENTER_HORIZONTAL:
                         childLeft = parentLeft + (parentRight - parentLeft - width) / 2 +
                             ml - mr;
                         break;
                     case IGravity::RIGHT:
-                        childLeft = parentRight - width - mr;
-                        break;
+                        if (!forceLeftGravity) {
+                            childLeft = parentRight - width - mr;
+                            break;
+                        }
+                    case IGravity::LEFT:
                     default:
                         childLeft = parentLeft + ml;
             }
@@ -539,7 +616,8 @@ ECode FrameLayout::Draw(
                         h - mPaddingBottom);
             }
 
-            Int32 layoutDirection = GetLayoutDirection();
+            Int32 layoutDirection = 0;
+            GetLayoutDirection(&layoutDirection);
 
             Int32 iWidth, iHeight;
             foreground->GetIntrinsicWidth(&iWidth);
@@ -556,14 +634,18 @@ ECode FrameLayout::Draw(
     return NOERROR;
 }
 
-Boolean FrameLayout::GatherTransparentRegion(
-    /* [in] */ IRegion* region)
+ECode FrameLayout::GatherTransparentRegion(
+    /* [in] */ IRegion* region,
+    /* [out] */ Boolean* result)
 {
-    Boolean opaque = ViewGroup::GatherTransparentRegion(region);
+    VALIDATE_NOT_NULL(result);
+    Boolean opaque = FALSE;
+    ViewGroup::GatherTransparentRegion(region, &opaque);
     if (region != NULL && mForeground != NULL) {
         ApplyDrawableToTransparentRegion(mForeground, region);
     }
-    return opaque;
+    *result = opaque;
+    return NOERROR;
 }
 
 ECode FrameLayout::SetMeasureAllChildren(
@@ -573,14 +655,19 @@ ECode FrameLayout::SetMeasureAllChildren(
     return NOERROR;
 }
 
-Boolean FrameLayout::GetConsiderGoneChildrenWhenMeasuring()
+ECode FrameLayout::GetConsiderGoneChildrenWhenMeasuring(
+    /* [out] */ Boolean* consider)
 {
-    return GetMeasureAllChildren();
+    VALIDATE_NOT_NULL(consider);
+    return GetMeasureAllChildren(consider);
 }
 
-Boolean FrameLayout::GetMeasureAllChildren()
+ECode FrameLayout::GetMeasureAllChildren(
+    /* [out] */ Boolean* measureAll)
 {
-    return mMeasureAllChildren;
+    VALIDATE_NOT_NULL(measureAll);
+    *measureAll = mMeasureAllChildren;
+    return NOERROR;
 }
 
 ECode FrameLayout::GenerateLayoutParams(
@@ -589,16 +676,20 @@ ECode FrameLayout::GenerateLayoutParams(
 {
     VALIDATE_NOT_NULL(params);
     AutoPtr<IFrameLayoutLayoutParams> lp;
-    FAIL_RETURN(CFrameLayoutLayoutParams::New(GetContext(), attrs, (IFrameLayoutLayoutParams**)&lp));
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
+    FAIL_RETURN(CFrameLayoutLayoutParams::New(ctx, attrs, (IFrameLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
     REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
-//@Override
-Boolean FrameLayout::ShouldDelayChildPressedState()
+ECode FrameLayout::ShouldDelayChildPressedState(
+    /* [out] */ Boolean* compatibility)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(compatibility);
+    *compatibility = FALSE;
+    return NOERROR;
 }
 
 Boolean FrameLayout::CheckLayoutParams(
@@ -623,8 +714,8 @@ ECode FrameLayout::OnInitializeAccessibilityEvent(
 {
     ViewGroup::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CFrameLayout"), (ICharSequence**)&seq);
-    event->SetClassName(seq);
+    CString::New(String("CFrameLayout"), (ICharSequence**)&seq);
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
@@ -633,7 +724,7 @@ ECode FrameLayout::OnInitializeAccessibilityNodeInfo(
 {
     ViewGroup::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CFrameLayout"), (ICharSequence**)&seq);
+    CString::New(String("CFrameLayout"), (ICharSequence**)&seq);
     info->SetClassName(seq);
     return NOERROR;
 }

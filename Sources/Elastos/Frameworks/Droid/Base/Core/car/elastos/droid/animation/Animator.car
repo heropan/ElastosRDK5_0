@@ -234,8 +234,6 @@ module
          */
         RemoveAllListeners();
 
-        Clone(
-            [out] IAnimator** anim);
         /**
          * This method tells the object to use appropriate information to extract
          * starting values for the animation. For example, a AnimatorSet object will pass

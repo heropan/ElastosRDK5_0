@@ -165,6 +165,7 @@ SOURCES += CWindowInfoHelper.cpp
 SOURCES += ViewOverlay.cpp
 SOURCES += CViewOverlay.cpp
 SOURCES += COverlayViewGroup.cpp
+SOURCES += CViewGroupOverlay.cpp
 SOURCES += ViewOutlineProvider.cpp
 SOURCES += CViewOutlineProviderHelper.cpp
 SOURCES += CMagnificationSpec.cpp

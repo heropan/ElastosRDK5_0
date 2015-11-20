@@ -298,51 +298,64 @@ module
    //      interface IKeyEventCallback;
    //      interface IAccessibilityEventSource;
    //  }
-   //  [local]
-   //  class CFrameLayoutLayoutParams {
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+    [local]
+    class CFrameLayoutLayoutParams {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height);
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height,
-   //          [in] Int32 weight);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 weight);
 
-   //      constructor(
-   //          [in] IViewGroupLayoutParams* source);
+        constructor(
+            [in] IViewGroupLayoutParams* source);
 
-   //      constructor(
-   //          [in] IViewGroupMarginLayoutParams* marginSource);
+        constructor(
+            [in] IViewGroupMarginLayoutParams* marginSource);
 
-   //      interface IFrameLayoutLayoutParams;
-   //  }
+        constructor(
+            [in] IFrameLayoutLayoutParams* flSource);
 
-   //  [local]
-   //  class CFrameLayout {
-   //      constructor(
-   //          [in] IContext* ctx);
+        interface IFrameLayoutLayoutParams;
+        interface IViewGroupMarginLayoutParams;
+        interface IViewGroupLayoutParams;
+    }
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+    [local]
+    class CFrameLayout {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      interface IFrameLayout;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IFrameLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
     [local]
     class CLinearLayoutLayoutParams {
@@ -403,46 +416,59 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  [local]
-   //  class CRelativeLayoutLayoutParams {
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+    [local]
+    class CRelativeLayoutLayoutParams {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height);
 
-   //      constructor(
-   //          [in] IViewGroupLayoutParams* source);
+        constructor(
+            [in] IViewGroupLayoutParams* source);
 
-   //      constructor(
-   //          [in] IViewGroupMarginLayoutParams* marginSource);
+        constructor(
+            [in] IViewGroupMarginLayoutParams* marginSource);
 
-   //      interface IRelativeLayoutLayoutParams;
-   //  }
+        constructor(
+            [in] IRelativeLayoutLayoutParams* rllSource);
 
-   //  [local]
-   //  class CRelativeLayout {
-   //      constructor(
-   //          [in] IContext* ctx);
+        interface IRelativeLayoutLayoutParams;
+        interface IViewGroupMarginLayoutParams;
+        interface IViewGroupLayoutParams;
+    }
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+    [local]
+    class CRelativeLayout {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      interface IRelativeLayout;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IRelativeLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CBlinkLayout {

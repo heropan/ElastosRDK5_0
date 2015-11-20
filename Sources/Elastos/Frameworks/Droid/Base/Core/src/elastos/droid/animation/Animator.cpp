@@ -9,50 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-// {be5c79d5-127b-4b30-87de-a89ca967d239}
-extern "C" const InterfaceID EIID_Animator =
-        { 0xbe5c79d5, 0x127b, 0x4b30, { 0x87, 0xde, 0xa8, 0x9c, 0xa9, 0x67, 0xd2, 0x39 } };
-
-UInt32 Animator::AddRef()
-{
-    return Object::AddRef();
-}
-
-UInt32 Animator::Release()
-{
-    return Object::Release();
-}
-
-ECode Animator::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == reinterpret_cast<PInterface>((Animator *)this)) {
-        *iid = EIID_Animator;
-        return NOERROR;
-    }
-    else if (object == (IInterface*)(ICloneable *)this) {
-        *iid = EIID_ICloneable;
-        return NOERROR;
-    }
-
-    return Object::GetInterfaceID(object, iid);
-}
-
-PInterface Animator::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_Animator) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    else if (riid == EIID_ICloneable) {
-        return (IInterface*)(ICloneable*)this;
-    }
-
-    return Object::Probe(riid);
-}
-
+CAR_INTERFACE_IMPL_2(Animator, Object, ICloneable, IAnimator);
 Animator::Animator()
     : mPaused(FALSE)
 {

@@ -14,8 +14,6 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-extern "C" const InterfaceID EIID_Animator;
-
 class AnimatorSet;
 /**
  * This is the superclass for classes which provide basic support for animations which can be
@@ -24,6 +22,7 @@ class AnimatorSet;
 class Animator
     : public Object
     , public ICloneable
+    , public IAnimator
 {
 public:
     CAR_INTERFACE_DECL();

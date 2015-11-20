@@ -4,25 +4,20 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ViewGroup.h"
-#include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
+#include "elastos/droid/widget/RelativeLayoutLayoutParams.h"
+#include "elastos/droid/utility/Pools.h"
 #include <elastos/utility/etl/Set.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/core/StringBuilder.h>
-#include "elastos/droid/utility/Pools.h"
 
-using Elastos::String;
-using Elastos::Core::IComparator;
-using Elastos::Utility::Set;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Utility::IPool;
-using Elastos::Droid::Utility::IPoolable;
-using Elastos::Droid::Utility::IPoolableManager;
-using Elastos::Droid::Utility::Pools;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Utility::Pools;
 using Elastos::Droid::View::ViewGroup;
+using Elastos::Droid::View::IView;
+using Elastos::Core::IComparator;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::Set;
 
 namespace Elastos {
 namespace Droid {
@@ -30,9 +25,8 @@ namespace Widget {
 class Node;
 }}}
 
-#define HASH_FUNC_FOR_AUTOPTR_USING_ADDR_NODE
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Widget::Node)
-#endif
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Widget::Node);
+DEFINE_CONVERSION_FOR(Elastos::Droid::Widget::Node, IInterface);
 
 namespace Elastos {
 namespace Droid {
@@ -43,7 +37,9 @@ extern "C" const InterfaceID EIID_NODE;
 /**
  * Compares two views in left-to-right and top-to-bottom fashion.
  */
-class TopToBottomLeftToRightComparator : public ElRefBase, public IComparator
+class TopToBottomLeftToRightComparator
+    : public Object
+    , public IComparator
 {
 public:
     CAR_INTERFACE_DECL()
@@ -54,7 +50,8 @@ public:
         /* [out] */ Int32* result);
 };
 
-class DependencyGraph : public ElRefBase
+class DependencyGraph
+    : public Object
 {
 public:
     DependencyGraph();
@@ -86,20 +83,6 @@ public:
         /* [in] */ ArrayOf<IView*>* sorted,
         /* [in] */ ArrayOf<Int32>* rules);
 
-    /**
-     * Prints the dependency graph for the specified rules.
-     *
-     * @param resources The context's resources to print the ids.
-     * @param rules The list of rules to take into account.
-     */
-    CARAPI_(void) Log(
-        /* [in] */ IResources* resources,
-        /* [in] */ ArrayOf<Int32>* rules);
-
-    static CARAPI_(void) PrintViewId(
-        /* [in] */ IResources* resources,
-        /* [in] */ IView* view);
-
 private:
     /**
      * Finds the roots of the graph. A root is a node with no dependency and
@@ -112,20 +95,6 @@ private:
      */
     CARAPI_(List< AutoPtr<Node> > &) FindRoots(
         /* [in] */ ArrayOf<Int32>* rulesFilter);
-
-    static CARAPI_(void) AppendViewId(
-        /* [in] */ IResources* resources,
-        /* [in] */ Node* node,
-        /* [in] */ StringBuilder& buffer);
-
-    static CARAPI_(void) PrintNode(
-        /* [in] */ IResources* resources,
-        /* [in] */ Node* node);
-
-    static CARAPI_(void) Printdependents(
-        /* [in] */ IResources* resources,
-        /* [in] */ Node* node,
-        /* [in] */ StringBuilder& buffer);
 
 private:
     friend class RelativeLayout;
@@ -154,28 +123,10 @@ private:
  *
  * A node with no dependent is considered a root of the graph.
  */
-class Node : public ElRefBase, public IPoolable
+class Node
+    : public Object
 {
 public:
-
-    CAR_INTERFACE_DECL()
-
-    Node();
-
-    virtual CARAPI SetNextPoolable(
-        /* [in] */ IPoolable* element);
-
-    virtual CARAPI GetNextPoolable(
-        /* [out] */ IPoolable** element);
-
-    virtual CARAPI IsPooled(
-        /* [out] */ Boolean* result);
-
-    virtual CARAPI SetPooled(
-        /* [in] */ Boolean isPooled);
-
-    CARAPI_(Boolean) IsPooled();
-
     static CARAPI_(AutoPtr<Node>) Acquire(
         /* [in] */ IView* view);
 
@@ -203,68 +154,45 @@ public:
 
     // The pool is static, so all nodes instances are shared across
     // activities, that's why we give it a rather high limit
-    const static Int32 POOL_LIMIT = 100;
+    const static Int32 POOL_LIMIT;
 
-    static const AutoPtr<IPool> sPool;
-
-    AutoPtr<IPoolable> mNext;
-    Boolean mIsPooled;
-
-/*
- * START POOL IMPLEMENTATION
- */
-public:
-    class NodePoolableManager : public ElRefBase, public IPoolableManager
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        NewInstance(
-            /* [out] */ IPoolable** element);
-
-        CARAPI OnAcquired(
-            /* [in] */ IPoolable* element);
-
-        CARAPI OnReleased(
-            /* [in] */ IPoolable* element);
-    };
+    static AutoPtr<Pools::SynchronizedPool<Node> > sPool;
 };
 
-class RelativeLayout : public ViewGroup
+class RelativeLayout
+    : public ViewGroup
+    , public IRelativeLayout
 {
 public:
+    CAR_INTERFACE_DECL();
+
     RelativeLayout();
-
-    RelativeLayout(
-        /* [in] */ IContext* context);
-
-    RelativeLayout(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    RelativeLayout(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
 
     ~RelativeLayout();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual CARAPI SetIgnoreGravity(
         /* [in] */ Int32 viewId);
 
-    virtual CARAPI_(Int32) GetGravity();
+    virtual CARAPI GetGravity(
+        /* [out] */ Int32* gravity);
 
     virtual CARAPI SetGravity(
         /* [in] */ Int32 gravity);
@@ -306,7 +234,7 @@ protected:
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
-    virtual CARAPI_(void) OnLayout(
+    virtual CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,
@@ -330,7 +258,7 @@ private:
 
     CARAPI_(void) AlignBaseline(
         /* [in] */ IView* child,
-        /* [in] */ CRelativeLayoutLayoutParams* params);
+        /* [in] */ RelativeLayoutLayoutParams* params);
 
     /**
      * Measure a child. The child should have left, top, right and bottom information
@@ -344,13 +272,13 @@ private:
      */
     CARAPI_(void) MeasureChild(
         /* [in] */ IView* child,
-        /* [in] */ CRelativeLayoutLayoutParams* params,
+        /* [in] */ RelativeLayoutLayoutParams* params,
         /* [in] */ Int32 myWidth,
         /* [in] */ Int32 myHeight);
 
     CARAPI_(void) MeasureChildHorizontal(
         /* [in] */ IView* child,
-        /* [in] */ CRelativeLayoutLayoutParams* params,
+        /* [in] */ RelativeLayoutLayoutParams* params,
         /* [in] */ Int32 myWidth,
         /* [in] */ Int32 myHeight);
 
@@ -382,29 +310,30 @@ private:
 
     CARAPI_(Boolean) PositionChildHorizontal(
         /* [in] */ IView* child,
-        /* [in] */ CRelativeLayoutLayoutParams* params,
+        /* [in] */ RelativeLayoutLayoutParams* params,
         /* [in] */ Int32 myWidth,
         /* [in] */ Boolean wrapContent);
 
     CARAPI_(Boolean) PositionChildVertical(
         /* [in] */ IView* child,
-        /* [in] */ CRelativeLayoutLayoutParams* params,
+        /* [in] */ RelativeLayoutLayoutParams* params,
         /* [in] */ Int32 myHeight,
         /* [in] */ Boolean wrapContent);
 
     CARAPI_(void) ApplyHorizontalSizeRules(
-        /* [in] */ CRelativeLayoutLayoutParams* childParams,
-        /* [in] */ Int32 myWidth);
+        /* [in] */ RelativeLayoutLayoutParams* childParams,
+        /* [in] */ Int32 myWidth,
+        /* [in] */ ArrayOf<Int32>* rules);
 
     CARAPI_(void) ApplyVerticalSizeRules(
-        /* [in] */ CRelativeLayoutLayoutParams* childParams,
+        /* [in] */ RelativeLayoutLayoutParams* childParams,
         /* [in] */ Int32 myHeight);
 
     CARAPI_(AutoPtr<IView>) GetRelatedView(
         /* [in] */ ArrayOf<Int32>* rules,
         /* [in] */ Int32 relation);
 
-    CARAPI_(AutoPtr<CRelativeLayoutLayoutParams>) GetRelatedViewParams(
+    CARAPI_(AutoPtr<RelativeLayoutLayoutParams>) GetRelatedViewParams(
         /* [in] */ ArrayOf<Int32>* rules,
         /* [in] */ Int32 relation);
 
@@ -412,28 +341,34 @@ private:
         /* [in] */ ArrayOf<Int32>* rules,
         /* [in] */ Int32 relation);
 
-    CARAPI_(void) CenterHorizontal(
+    static CARAPI_(void) CenterHorizontal(
         /* [in] */ IView* child,
-        /* [in] */ CRelativeLayoutLayoutParams* params,
+        /* [in] */ RelativeLayoutLayoutParams* params,
         /* [in] */ Int32 myWidth);
 
-    CARAPI_(void) CenterVertical(
+    static CARAPI_(void) CenterVertical(
         /* [in] */ IView* child,
-        /* [in] */ CRelativeLayoutLayoutParams* params,
+        /* [in] */ RelativeLayoutLayoutParams* params,
         /* [in] */ Int32 myHeight);
 
     CARAPI InitFromAttributes(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    CARAPI_(void) QueryCompatibilityModes(
+        /* [in] */ IContext* context);
 
 private:
     friend class RelativeLayoutLayoutParams;
 
-    static String LOGTAG;
-    static Boolean DEBUG_GRAPH;
-
     static const AutoPtr<ArrayOf<Int32> > RULES_VERTICAL;
     static const AutoPtr<ArrayOf<Int32> > RULES_HORIZONTAL;
+    /**
+     * Used to indicate left/right/top/bottom should be inferred from constraints
+     */
+    static const Int32 VALUE_NOT_SET;
 
     AutoPtr<IView> mBaselineView;
     Boolean mHasBaselineAlignedChild;
@@ -447,11 +382,26 @@ private:
     AutoPtr<ArrayOf<IView*> > mSortedHorizontalChildren;
     AutoPtr<ArrayOf<IView*> > mSortedVerticalChildren;
     AutoPtr<DependencyGraph> mGraph;
-};
+    // Compatibility hack. Old versions of the platform had problems
+    // with MeasureSpec value overflow and RelativeLayout was one source of them.
+    // Some apps came to rely on them. :(
+    Boolean mAllowBrokenMeasureSpecs;
+    // Compatibility hack. Old versions of the platform would not take
+    // margins and padding into account when generating the height measure spec
+    // for children during the horizontal measure pass.
+    Boolean mMeasureVerticalWithPaddingMargin;
 
+    // A default width used for RTL measure pass
+    /**
+     * Value reduced so as not to interfere with View's measurement spec. flags. See:
+     * {@link View#MEASURED_SIZE_MASK}.
+     * {@link View#MEASURED_STATE_TOO_SMALL}.
+     **/
+    static const Int32 DEFAULT_WIDTH;
+};
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__RelativeLayout_H__
+#endif // __ELASTOS_DROID_WIDGET_RELATIVELAYOUT_H__

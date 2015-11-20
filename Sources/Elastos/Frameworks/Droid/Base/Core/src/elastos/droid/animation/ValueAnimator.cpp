@@ -1006,7 +1006,7 @@ void ValueAnimator::CloneInternal(
          anim->mValuesMap.Clear();
          for (Int32 i = 0; i < numValues; ++i) {
              AutoPtr<IPropertyValuesHolder> newValuesHolder;
-             (*mValues)[i]->Clone((IPropertyValuesHolder**)&newValuesHolder);
+             ICloneable::Probe((*mValues)[i])->Clone((IInterface**)&newValuesHolder);
              anim->mValues->Set(i, newValuesHolder);
              String propertyName;
              newValuesHolder->GetPropertyName(&propertyName);

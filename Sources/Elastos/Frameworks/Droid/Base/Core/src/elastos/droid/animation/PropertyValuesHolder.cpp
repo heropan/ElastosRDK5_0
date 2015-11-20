@@ -1088,11 +1088,11 @@ ECode PropertyValuesHolder::GetAnimatedValue(
 }
 
 ECode PropertyValuesHolder::Clone(
-    /* [out] */ IPropertyValuesHolder** holder)
+    /* [out] */ IInterface** holder)
 {
     AutoPtr<PropertyValuesHolder> v = new PropertyValuesHolder(mPropertyName);
     CloneSuperData(v);
-    *holder = v;
+    *holder = (IPropertyValuesHolder*)v->Probe(EIID_IPropertyValuesHolder);
     REFCOUNT_ADD(*holder)
     return NOERROR;
 }

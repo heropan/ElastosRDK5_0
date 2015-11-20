@@ -82,14 +82,14 @@ ECode FloatPropertyValuesHolder::GetAnimatedValue(
 }
 
 ECode FloatPropertyValuesHolder::Clone(
-    /* [out] */ IPropertyValuesHolder** holder)
+    /* [out] */ IInterface** holder)
 {
     AutoPtr<FloatPropertyValuesHolder> v = new FloatPropertyValuesHolder(mPropertyName, mFloatKeyframes);
     CloneSuperData(v);
     v->mJniSetter = mJniSetter;
     v->mFloatKeyframes = mFloatKeyframes;
     v->mFloatAnimatedValue = mFloatAnimatedValue;
-    *holder = v;
+    *holder = (IFloatPropertyValuesHolder*)v->Probe(EIID_IFloatPropertyValuesHolder);
     REFCOUNT_ADD(*holder);
 
     return NOERROR;

@@ -5,18 +5,19 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/BaseAdapter.h"
 #include "elastos/droid/widget/Filter.h"
-#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
-class SimpleAdapter : public BaseAdapter
+class SimpleAdapter
+    : public BaseAdapter
+    , public ISimpleAdapter
+    , public IFilterable
 {
 private:
     /**
@@ -25,29 +26,11 @@ private:
      * is removed from the list.</p>
      */
     class SimpleFilter
-        : public ElRefBase
-        , public IFilter
-        , public Filter
+        : public Filter
     {
     public:
         SimpleFilter(
             /* [in] */ SimpleAdapter* host);
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI SetDelayer(
-            /* [in] */ IFilterDelayer* delayer);
-
-        CARAPI DoFilter(
-            /* [in] */ ICharSequence* constraint);
-
-        CARAPI DoFilter(
-            /* [in] */ ICharSequence* constraint,
-            /* [in] */ IFilterListener* listener);
-
-        CARAPI ConvertResultToString(
-            /* [in] */ IInterface* resultValue,
-            /* [out] */ ICharSequence** cs);
 
     protected:
         //@Override
@@ -89,28 +72,34 @@ public:
         /* [in] */ ArrayOf<String>* from,
         /* [in] */ ArrayOf<Int32>* to);
 
-    CARAPI_(Int32) GetCount();
+    CARAPI GetCount(
+        /* [out] */ Int32* count);
 
-    CARAPI_(AutoPtr<IInterface>) GetItem(
-        /* [in] */ Int32 position);
+    CARAPI GetItem(
+        /* [in] */ Int32 position,
+        /* [out] */ IInterface** item);
 
-    CARAPI_(Int64) GetItemId(
-        /* [in] */ Int32 position);
+    CARAPI GetItemId(
+        /* [in] */ Int32 position,
+        /* [out] */ Int64* id);
 
-    virtual CARAPI_(AutoPtr<IView>) GetView(
+    virtual CARAPI GetView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
     virtual CARAPI SetDropDownViewResource(
         /* [in] */ Int32 resource);
 
-    CARAPI_(AutoPtr<IView>) GetDropDownView(
+    CARAPI GetDropDownView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    virtual CARAPI_(AutoPtr<ISimpleAdapterViewBinder>) GetViewBinder();
+    virtual CARAPI GetViewBinder(
+        /* [out] */ ISimpleAdapterViewBinder** viewBinder);
 
     virtual CARAPI SetViewBinder(
         /* [in] */ ISimpleAdapterViewBinder* viewBinder);
@@ -127,12 +116,12 @@ public:
         /* [in] */ ITextView* v,
         /* [in] */ const String& text);
 
-    virtual CARAPI_(AutoPtr<IFilter>) GetFilter();
+    virtual CARAPI GetFilter(
+        /* [out] */ IFilter** filter);
 
-protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IObjectContainer* data,
+        /* [in] */ IList* data,
         /* [in] */ Int32 resource,
         /* [in] */ ArrayOf<String>* from,
         /* [in] */ ArrayOf<Int32>* to);
@@ -153,19 +142,18 @@ private:
     AutoPtr<ArrayOf<String> > mFrom;
     AutoPtr<ISimpleAdapterViewBinder> mViewBinder;
 
-    List<AutoPtr<IObjectStringMap> > mData; //List<? extends Map<String, ?>>
+    AutoPtr<IList> mData; //List<? extends Map<String, ?>>
 
     Int32 mResource;
     Int32 mDropDownResource;
     AutoPtr<ILayoutInflater> mInflater;
 
     AutoPtr<SimpleFilter> mFilter;
-    AutoPtr< List< AutoPtr<IObjectStringMap> > > mUnfilteredData;
+    AutoPtr<IArrayList> mUnfilteredData; //ArrayList<Map<String, ?>>
 };
-
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_SIMPLEADAPTER_H__
+#endif // __ELASTOS_DROID_WIDGET_SIMPLEADAPTER_H__

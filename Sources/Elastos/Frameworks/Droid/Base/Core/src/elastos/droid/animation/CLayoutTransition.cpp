@@ -897,7 +897,7 @@ void CLayoutTransition::SetupChangeAnimation(
 
     // Make a copy of the appropriate animation
     AutoPtr<IAnimator> anim;
-    baseAnimator->Clone((IAnimator**)&anim);
+    ICloneable::Probe(baseAnimator)->Clone((IInterface**)&anim);
 
     // Set the target object for the animation
     anim->SetTarget(child);
@@ -1129,7 +1129,7 @@ void CLayoutTransition::RunAppearingTransition(
     }
 
     AutoPtr<IAnimator> anim;
-    mAppearingAnim->Clone((IAnimator**)&anim);
+    ICloneable::Probe(mAppearingAnim)->Clone((IInterface**)&anim);
     anim->SetTarget(child);
     anim->SetStartDelay(mAppearingDelay);
     anim->SetDuration(mAppearingDuration);
@@ -1171,7 +1171,7 @@ void CLayoutTransition::RunDisappearingTransition(
     }
 
     AutoPtr<IAnimator> anim;
-    mDisappearingAnim->Clone((IAnimator**)&anim);
+    ICloneable::Probe(mDisappearingAnim)->Clone((IInterface**)&anim);
     anim->SetStartDelay(mDisappearingDelay);
     anim->SetDuration(mDisappearingDuration);
     if (mDisappearingInterpolator != sDisappearingInterpolator) {

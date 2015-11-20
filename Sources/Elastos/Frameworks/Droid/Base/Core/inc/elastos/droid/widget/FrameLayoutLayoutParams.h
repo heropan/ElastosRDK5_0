@@ -14,23 +14,23 @@ namespace Elastos{
 namespace Droid{
 namespace Widget{
 
-
-class FrameLayoutLayoutParams : public ViewGroupMarginLayoutParams
+class FrameLayoutLayoutParams
+    : public ViewGroupMarginLayoutParams
+    , public IFrameLayoutLayoutParams
 {
 public:
+    CAR_INTERFACE_DECL();
+
     FrameLayoutLayoutParams();
 
-    /**
-     * {@inheritDoc}
-     */
-    FrameLayoutLayoutParams(
+    CARAPI constructor(
         /* [in] */ IContext* c,
         /* [in] */ IAttributeSet* attrs);
 
     /**
      * {@inheritDoc}
      */
-    FrameLayoutLayoutParams(
+    CARAPI constructor(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
@@ -46,7 +46,7 @@ public:
      *
      * @see android.view.Gravity
      */
-    FrameLayoutLayoutParams(
+    CARAPI constructor(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 gravity);
@@ -54,38 +54,29 @@ public:
     /**
      * {@inheritDoc}
      */
-    FrameLayoutLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* source);
-
-    /**
-     * {@inheritDoc}
-     */
-    FrameLayoutLayoutParams(
-        /* [in] */ ViewGroupMarginLayoutParams* source);
-
-    CARAPI Init(
-        /* [in] */ IContext* c,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    CARAPI Init(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Int32 gravity);
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IViewGroupLayoutParams* source);
 
-    CARAPI Init(
+    /**
+     * {@inheritDoc}
+     */
+    CARAPI constructor(
         /* [in] */ IViewGroupMarginLayoutParams* source);
+
+    /**
+     * Copy constructor. Clones the width, height, margin values, and
+     * gravity of the source.
+     *
+     * @param source The layout params to copy from.
+     */
+    CARAPI constructor(
+        /* [in] */ IFrameLayoutLayoutParams* source);
 
     CARAPI SetGravity(
         /* [in] */ Int32 gravity);
 
-    CARAPI_(Int32) GetGravity();
+    CARAPI GetGravity(
+        /* [out] */ Int32* gravity);
 
 public:
     /**

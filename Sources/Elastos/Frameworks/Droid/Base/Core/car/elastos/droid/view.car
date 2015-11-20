@@ -1231,6 +1231,16 @@ module
     }
 
     [local]
+    class CViewGroupOverlay {
+        constructor(
+            [in] IContext* ctx,
+            [in] IView* hostView);
+
+        interface IViewGroupOverlay;
+        interface IViewOverlay;
+    }
+
+    [local]
     class COverlayViewGroup {
         constructor(
             [in] IContext* ctx,

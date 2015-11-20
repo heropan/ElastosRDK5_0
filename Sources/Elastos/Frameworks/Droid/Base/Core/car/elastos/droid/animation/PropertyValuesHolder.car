@@ -130,9 +130,6 @@ module
          */
         GetPropertyName(
             [out] String* name);
-
-        Clone(
-            [out] IPropertyValuesHolder** holder);
     }
 
     /**

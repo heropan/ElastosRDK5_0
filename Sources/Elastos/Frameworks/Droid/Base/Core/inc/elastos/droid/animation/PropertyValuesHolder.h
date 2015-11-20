@@ -632,7 +632,7 @@ public:
         /* [out] */ IInterface** value);
 
     CARAPI Clone(
-        /* [out] */ IPropertyValuesHolder** holder);
+        /* [out] */ IInterface** holder);
 
     CARAPI ToString(
         /* [out] */ String* str);

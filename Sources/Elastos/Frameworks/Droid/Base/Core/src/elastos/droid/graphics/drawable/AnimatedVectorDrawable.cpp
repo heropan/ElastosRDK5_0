@@ -11,8 +11,9 @@
 using Elastos::Droid::R;
 using Elastos::Droid::Animation::AnimatorInflater;
 using Elastos::Droid::Utility::CArrayMap;
-using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::ICloneable;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::IList;
 using Elastos::Utility::CArrayList;
@@ -50,7 +51,7 @@ AnimatedVectorDrawable::AnimatedVectorDrawableState::AnimatedVectorDrawableState
                 AutoPtr<IAnimator> anim;
                 IList::Probe(copy->mAnimators)->Get(i, (IInterface**)&anim);
                 AutoPtr<IAnimator> animClone;
-                anim->Clone((IAnimator**)&animClone);
+                ICloneable::Probe(anim)->Clone((IInterface**)&animClone);
                 String targetName;
                 AutoPtr<ICharSequence> cs;
                 IMap::Probe(copy->mTargetNameMap)->Get(anim, (IInterface**)&cs);

@@ -79,14 +79,14 @@ ECode Int32PropertyValuesHolder::GetAnimatedValue(
 }
 
 ECode Int32PropertyValuesHolder::Clone(
-    /* [out] */ IPropertyValuesHolder** holder)
+    /* [out] */ IInterface** holder)
 {
     AutoPtr<Int32PropertyValuesHolder> v = new Int32PropertyValuesHolder(mPropertyName, mInt32Keyframes);
     CloneSuperData(v);
     v->mJniSetter = mJniSetter;
     v->mInt32Keyframes = mInt32Keyframes;
     v->mInt32AnimatedValue = mInt32AnimatedValue;
-    *holder = v;
+    *holder = (IInt32PropertyValuesHolder*)v->Probe(EIID_IInt32PropertyValuesHolder);
     REFCOUNT_ADD(*holder);
 
     return NOERROR;
