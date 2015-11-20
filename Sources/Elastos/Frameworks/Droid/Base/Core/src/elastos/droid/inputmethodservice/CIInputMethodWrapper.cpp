@@ -1,8 +1,8 @@
 
 #include "elastos/droid/inputmethodservice/CIInputMethodWrapper.h"
 #include "elastos/droid/inputmethodservice/CIInputMethodSessionWrapper.h"
-#include "elastos/droid/view/LocalInputConnectionWrapper.h"
-// #include "elastos/droid/view/inputmethod/CInputBinding.h"
+#include "elastos/droid/internal/view/CInputConnectionWrapper.h"
+#include "elastos/droid/view/inputmethod/CInputBinding.h"
 #include "elastos/droid/internal/os/SomeArgs.h"
 #include "elastos/droid/internal/os/CHandlerCaller.h"
 #include <elastos/utility/logging/Logger.h>
@@ -12,7 +12,7 @@
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::InputMethodService::CIInputMethodSessionWrapper;
-using Elastos::Droid::Internal::View::LocalInputConnectionWrapper;
+using Elastos::Droid::Internal::View::CInputConnectionWrapper;
 using Elastos::Droid::Internal::View::EIID_IIInputMethod;
 using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
 using Elastos::Droid::Internal::Os::CHandlerCaller;
@@ -21,7 +21,7 @@ using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
 using Elastos::Droid::View::InputMethod::IInputMethod;
 using Elastos::Droid::View::InputMethod::IInputConnection;
-// using Elastos::Droid::View::InputMethod::CInputBinding;
+using Elastos::Droid::View::InputMethod::CInputBinding;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethodSessionCallback;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethod;
 
@@ -166,8 +166,8 @@ ECode CIInputMethodWrapper::ExecuteMessage(
             SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             IInputContext* inputContext = IInputContext::Probe(args->mArg1);
             AutoPtr<IInputConnection> ic;
-            assert(0 && "TODO");
-            // ic = inputContext != NULL ? new LocalInputConnectionWrapper(inputContext) : NULL;
+            if (inputContext != NULL)
+                CInputConnectionWrapper::New(inputContext, (IInputConnection**)&ic);
             IEditorInfo* info = IEditorInfo::Probe(args->mArg2);
             info->MakeCompatible(mTargetSdkVersion);
             inputMethod->StartInput(ic, info);
@@ -178,8 +178,8 @@ ECode CIInputMethodWrapper::ExecuteMessage(
             SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             IInputContext* inputContext = IInputContext::Probe(args->mArg1);
             AutoPtr<IInputConnection> ic;
-            assert(0 && "TODO");
-            // ic = inputContext != NULL ? new LocalInputConnectionWrapper(inputContext) : NULL;
+            if (inputContext != NULL)
+                CInputConnectionWrapper::New(inputContext, (IInputConnection**)&ic);
             IEditorInfo* info = IEditorInfo::Probe(args->mArg2);
             info->MakeCompatible(mTargetSdkVersion);
             inputMethod->RestartInput(ic, info);
@@ -229,10 +229,9 @@ ECode CIInputMethodWrapper::BindInput(
     AutoPtr<IBinder> binder;
     FAIL_RETURN(binding->GetConnectionToken((IBinder**)&binder));
     AutoPtr<IInputConnection> ic;
-    assert(0 && "TODO");
-    // ic = new LocalInputConnectionWrapper(IInputContext::Probe(binder));
+    CInputConnectionWrapper::New(IInputContext::Probe(binder), (IInputConnection**)&ic);
     AutoPtr<IInputBinding> nu;
-    // FAIL_RETURN(CInputBinding::New(ic, binding, (IInputBinding**)&nu));
+    FAIL_RETURN(CInputBinding::New(ic, binding, (IInputBinding**)&nu));
 
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessageO(DO_SET_INPUT_CONTEXT, nu, (IMessage**)&msg);

@@ -3,14 +3,14 @@
 #define __ELASTOS_DROID_VIEW_BASESURFACEHOLDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::ISurfaceHolder;
-using Elastos::Utility::Concurrent::Locks::IReentrantLock;
-using Elastos::Utility::Etl::List;
+using Elastos::Droid::View::ISurfaceHolderCallback;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::Concurrent::Locks::ILock;
 
 namespace Elastos {
 namespace Droid {
@@ -28,7 +28,7 @@ public:
 
     virtual CARAPI OnUpdateSurface() = 0;
 
-    virtual CARAPI_(void) OnRelayoutContainer() = 0;
+    virtual CARAPI OnRelayoutContainer() = 0;
 
     virtual CARAPI_(Boolean) OnAllowLockCanvas() = 0;
 
@@ -40,42 +40,42 @@ public:
 
     CARAPI_(Int32) GetRequestedType();
 
-    virtual CARAPI AddCallback(
+    CARAPI AddCallback(
         /* [in] */ ISurfaceHolderCallback* cback);
 
-    virtual CARAPI RemoveCallback(
+    CARAPI RemoveCallback(
         /* [in] */ ISurfaceHolderCallback* cback);
 
-    CARAPI_(Vector<AutoPtr<ISurfaceHolderCallback> >&) GetCallbacks();
+    CARAPI_(AutoPtr<ArrayOf<ISurfaceHolderCallback*> >) GetCallbacks();
 
     CARAPI_(void) UngetCallbacks();
 
-    virtual CARAPI SetFixedSize(
+    CARAPI SetFixedSize(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    virtual CARAPI SetSizeFromLayout();
+    CARAPI SetSizeFromLayout();
 
-    virtual CARAPI SetFormat(
+    CARAPI SetFormat(
         /* [in] */ Int32 format);
 
-    virtual CARAPI SetType(
+    CARAPI SetType(
         /* [in] */ Int32 type);
 
-    virtual CARAPI LockCanvas(
+    CARAPI LockCanvas(
         /* [out] */ ICanvas** canvas);
 
-    virtual CARAPI LockCanvas(
+    CARAPI LockCanvas(
         /* [in] */ IRect* dirty,
         /* [out] */ ICanvas** canvas);
 
-    virtual CARAPI UnlockCanvasAndPost(
+    CARAPI UnlockCanvasAndPost(
         /* [in] */ ICanvas* canvas);
 
-    virtual CARAPI GetSurface(
+    CARAPI GetSurface(
         /* [out] */ ISurface** surface);
 
-    virtual CARAPI GetSurfaceFrame(
+    CARAPI GetSurfaceFrame(
         /* [out] */ IRect** rect);
 
     virtual CARAPI SetSurfaceFrameSize(
@@ -88,8 +88,10 @@ private:
         /* [out] */ ICanvas** canvas);
 
 public:
-    List<AutoPtr<ISurfaceHolderCallback> > mCallbacks;
-    AutoPtr<IReentrantLock> mSurfaceLock;
+    AutoPtr<IArrayList> mCallbacks;
+    // In order to use convenient
+    AutoPtr<ILock> mSurfaceLock;
+    // AutoPtr<IReentrantLock> mSurfaceLock;
     AutoPtr<ISurface> mSurface;
 
 protected:
@@ -108,7 +110,6 @@ protected:
 
 private:
     static const String TAG;
-    Object mCallbackLock;
 };
 
 } // namespace View

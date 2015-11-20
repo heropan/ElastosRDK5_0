@@ -1084,18 +1084,6 @@ module
     //         interface IMenuInflater;
     //      }
 
-    // class CInputBindResult {
-    //     constructor();
-
-    //     constructor(
-    //         [in] IIInputMethodSession* _method,
-    //         [in] String id,
-    //         [in] Int32 sequence);
-
-    //     interface IInputBindResult;
-    //     interface IParcelable;
-    // }
-
     [local]
     class CViewStub {
         constructor(

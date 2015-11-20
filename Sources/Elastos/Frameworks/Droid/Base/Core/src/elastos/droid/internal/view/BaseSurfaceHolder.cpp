@@ -5,14 +5,18 @@
 #include "elastos/droid/graphics/CRect.h"
 #endif
 #include "elastos/droid/os/SystemClock.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Thread.h>
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/logging/Logger.h>
-#include <unistd.h>
 
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::View::CSurface;
+using Elastos::Droid::View::EIID_ISurfaceHolder;
+using Elastos::Core::Thread;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Concurrent::Locks::CReentrantLock;
 using Elastos::Utility::Logging::Logger;
 
@@ -24,7 +28,7 @@ namespace View {
 const Boolean BaseSurfaceHolder::DEBUG = FALSE;
 const String BaseSurfaceHolder::TAG("BaseSurfaceHolder");
 
-CAR_INTERFACE_IMPL(BaseSurfaceHolder, ISurfaceHolder);
+CAR_INTERFACE_IMPL(BaseSurfaceHolder, Object, ISurfaceHolder);
 
 BaseSurfaceHolder::BaseSurfaceHolder() :
     mHaveGottenCallbacks(FALSE),
@@ -35,7 +39,8 @@ BaseSurfaceHolder::BaseSurfaceHolder() :
     mLastLockTime(0),
     mType(-1)
 {
-    ASSERT_SUCCEEDED(CReentrantLock::New((IReentrantLock**)&mSurfaceLock));
+    ASSERT_SUCCEEDED(CArrayList::New((IArrayList**)&mCallbacks));
+    ASSERT_SUCCEEDED(CReentrantLock::New((ILock**)&mSurfaceLock));
     ASSERT_SUCCEEDED(CSurface::New((ISurface**)&mSurface));
     ASSERT_SUCCEEDED(CRect::New((IRect**)&mSurfaceFrame));
 }
@@ -63,16 +68,13 @@ Int32 BaseSurfaceHolder::GetRequestedType()
 ECode BaseSurfaceHolder::AddCallback(
     /* [in] */ ISurfaceHolderCallback* cback)
 {
-    AutoLock lock(mCallbackLock);
+    AutoLock lock(mCallbacks);
 
     // This is a linear search, but in practice we'll
     // have only a couple callbacks, so it doesn't matter.
-    //
-    AutoPtr<ISurfaceHolderCallback> temp = cback;
-    List<AutoPtr<ISurfaceHolderCallback> >::Iterator iter =
-        Find(mCallbacks.Begin(), mCallbacks.End(), temp);
-    if (iter == mCallbacks.End()) {
-        mCallbacks.PushBack(cback);
+    Boolean contains = FALSE;
+    if (mCallbacks->Contains(cback, &contains), contains) {
+        mCallbacks->Add(cback);
     }
 
     return NOERROR;
@@ -81,34 +83,23 @@ ECode BaseSurfaceHolder::AddCallback(
 ECode BaseSurfaceHolder::RemoveCallback(
     /* [in] */ ISurfaceHolderCallback* cback)
 {
-    AutoLock lock(mCallbackLock);
-
-    AutoPtr<ISurfaceHolderCallback> temp = cback;
-    List<AutoPtr<ISurfaceHolderCallback> >::Iterator iter =
-        Find(mCallbacks.Begin(), mCallbacks.End(), temp);
-    if (iter != mCallbacks.End()) {
-        mCallbacks.Erase(iter);
-    }
-
-    return NOERROR;
+    AutoLock lock(mCallbacks);
+    return mCallbacks->Remove(cback);
 }
 
-Vector<AutoPtr<ISurfaceHolderCallback> >& BaseSurfaceHolder::GetCallbacks()
+AutoPtr<ArrayOf<ISurfaceHolderCallback*> > BaseSurfaceHolder::GetCallbacks()
 {
     if (mHaveGottenCallbacks) {
         return mGottenCallbacks;
     }
 
-    AutoLock lock(mCallbackLock);
+    AutoLock lock(mCallbacks);
 
-    mGottenCallbacks.Clear();
-    if (mCallbacks.IsEmpty() == FALSE) {
-        //List<AutoPtr<ISurfaceHolderCallback> >::Iterator iter = mCallbacks.Begin();
-        //for (; iter!=mCallbacks.End(); ++iter) {
-        //    mGottenCallbacks.PushBack(*iter);
-        //}
-        mGottenCallbacks.Assign<List<AutoPtr<ISurfaceHolderCallback> >::Iterator>(
-            mCallbacks.Begin(), mCallbacks.End());
+    Int32 N;
+    mCallbacks->GetSize(&N);
+    mGottenCallbacks = NULL;
+    if (N > 0) {
+        mCallbacks->ToArray((ArrayOf<IInterface*>**)&mGottenCallbacks);
     }
     mHaveGottenCallbacks = TRUE;
 
@@ -185,61 +176,14 @@ ECode BaseSurfaceHolder::SetType(
 ECode BaseSurfaceHolder::LockCanvas(
     /* [out] */ ICanvas** canvas)
 {
-    if (canvas == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    InternalLockCanvas(NULL, canvas);
-
-    return NOERROR;
+    return InternalLockCanvas(NULL, canvas);
 }
 
 ECode BaseSurfaceHolder::LockCanvas(
     /* [in] */ IRect* dirty,
     /* [out] */ ICanvas** canvas)
 {
-    if (canvas == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    InternalLockCanvas(dirty, canvas);
-
-    return NOERROR;
-}
-
-ECode BaseSurfaceHolder::UnlockCanvasAndPost(
-    /* [in] */ ICanvas* canvas)
-{
-    mSurface->UnlockCanvasAndPost(canvas);
-    mSurfaceLock.Unlock();
-
-    return NOERROR;
-}
-
-ECode BaseSurfaceHolder::GetSurface(
-    /* [out] */ ISurface** surface)
-{
-    if (surface == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    *surface = mSurface;
-    REFCOUNT_ADD(*surface);
-
-    return NOERROR;
-}
-
-ECode BaseSurfaceHolder::GetSurfaceFrame(
-    /* [out] */ IRect** rect)
-{
-    if (rect == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    *rect = mSurfaceFrame;
-    REFCOUNT_ADD(*rect);
-
-    return NOERROR;
+    return InternalLockCanvas(dirty, canvas);
 }
 
 ECode BaseSurfaceHolder::InternalLockCanvas(
@@ -255,7 +199,7 @@ ECode BaseSurfaceHolder::InternalLockCanvas(
         return E_BAD_SURFACE_TYPE_EXCEPTION;
     }
 
-    mSurfaceLock.Lock();
+    mSurfaceLock->Lock();
 
     if (DEBUG) {
         Logger::D(TAG, "Locking canvas..,");
@@ -278,7 +222,9 @@ ECode BaseSurfaceHolder::InternalLockCanvas(
     }
 
     if (DEBUG) {
-        Logger::D(TAG, "Returned canvas: 0x%08x", Int32(*canvas));
+        String str;
+        IObject::Probe(*canvas)->ToString(&str);
+        Logger::D(TAG, "Returned canvas: %s", str.string());
     }
 
     if (*canvas != NULL) {
@@ -292,15 +238,41 @@ ECode BaseSurfaceHolder::InternalLockCanvas(
     Int64 now = SystemClock::GetUptimeMillis();
     Int64 nextTime = mLastLockTime + 100;
     if (nextTime > now) {
-        //try {
-        //    Thread.sleep(nextTime-now);
-        //} catch (InterruptedException e) {
-        //}
-        usleep(nextTime - now);
+        Thread::Sleep(nextTime-now);
         now = SystemClock::GetUptimeMillis();
     }
     mLastLockTime = now;
-    mSurfaceLock.Unlock();
+    mSurfaceLock->UnLock();
+
+    *canvas = NULL;
+    return NOERROR;
+}
+
+ECode BaseSurfaceHolder::UnlockCanvasAndPost(
+    /* [in] */ ICanvas* canvas)
+{
+    mSurface->UnlockCanvasAndPost(canvas);
+    mSurfaceLock->UnLock();
+
+    return NOERROR;
+}
+
+ECode BaseSurfaceHolder::GetSurface(
+    /* [out] */ ISurface** surface)
+{
+    VALIDATE_NOT_NULL(surface);
+    *surface = mSurface;
+    REFCOUNT_ADD(*surface);
+
+    return NOERROR;
+}
+
+ECode BaseSurfaceHolder::GetSurfaceFrame(
+    /* [out] */ IRect** rect)
+{
+    VALIDATE_NOT_NULL(rect);
+    *rect = mSurfaceFrame;
+    REFCOUNT_ADD(*rect);
 
     return NOERROR;
 }

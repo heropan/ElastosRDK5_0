@@ -1,7 +1,7 @@
-#ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_CACTIONBARPOLICYHELPER_H__
-#define __ELASTOS_DROID_INTERNAL_VIEW_MENU_CACTIONBARPOLICYHELPER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_VIEW_CACTIONBARPOLICYHELPER_H__
+#define __ELASTOS_DROID_INTERNAL_VIEW_CACTIONBARPOLICYHELPER_H__
 
-#include "_Elastos_Droid_Internal_View_Menu_CActionBarPolicyHelper.h"
+#include "_Elastos_Droid_Internal_View_CActionBarPolicyHelper.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
@@ -30,4 +30,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_INTERNAL_VIEW_MENU_CACTIONBARPOLICYHELPER_H__
+#endif //__ELASTOS_DROID_INTERNAL_VIEW_CACTIONBARPOLICYHELPER_H__

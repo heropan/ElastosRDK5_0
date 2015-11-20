@@ -1,41 +1,74 @@
 
-#include "elastos/droid/internal/view/CMenuInflater.h"
 #include "elastos/droid/internal/view/StandaloneActionMode.h"
 #include "elastos/droid/internal/view/menu/CMenuBuilder.h"
 #include "elastos/droid/internal/view/menu/CMenuPopupHelper.h"
+// #include "elastos/droid/view/CMenuInflater.h"
 
-using Elastos::Core::CString;
+using Elastos::Droid::Internal::View::Menu::EIID_IMenuBuilderCallback;
+using Elastos::Droid::Internal::View::Menu::CMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::CMenuPopupHelper;
+using Elastos::Droid::Internal::View::Menu::IMenuPopupHelper;
+// using Elastos::Droid::View::CMenuInflater;
+using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
-using Elastos::Droid::View::EIID_IActionMode;
-using Elastos::Droid::View::IMenuInflater;
-using Elastos::Droid::View::Menu::CMenuBuilder;
-using Elastos::Droid::View::Menu::CMenuPopupHelper;
-using Elastos::Droid::View::Menu::IMenuPopupHelper;
+using Elastos::Droid::Internal::Widget::IAbsActionBarView;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace View {
 
-StandaloneActionMode::StandaloneActionMode(
+CAR_INTERFACE_IMPL(StandaloneActionMode::MenuBuilderCallback, Object, IMenuBuilderCallback)
+StandaloneActionMode::MenuBuilderCallback::MenuBuilderCallback(
+    /* [in] */ StandaloneActionMode* owner)
+    : mOwner(owner)
+{
+}
+
+ECode StandaloneActionMode::MenuBuilderCallback::OnMenuItemSelected(
+    /* [in] */ IMenuBuilder* menu,
+    /* [in] */ IMenuItem* item,
+    /* [out] */ Boolean* state)
+{
+    return mOwner->OnMenuItemSelected(menu, item, state);
+}
+
+ECode StandaloneActionMode::MenuBuilderCallback::OnMenuModeChange(
+    /* [in] */ IMenuBuilder* menu)
+{
+    return mOwner->OnMenuModeChange(menu);
+}
+
+CAR_INTERFACE_IMPL(StandaloneActionMode, ActionMode, IMenuBuilderCallback);
+
+StandaloneActionMode::StandaloneActionMode()
+    : mFinished(FALSE)
+    , mFocusable(FALSE)
+{
+}
+
+ECode StandaloneActionMode::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IActionBarContextView* view,
     /* [in] */ IActionModeCallback* callback,
     /* [in] */ Boolean isFocusable)
-    : mContext(context)
-    , mContextView(view)
-    , mCallback(callback)
-    , mFocusable(isFocusable)
 {
-    AutoPtr<IMenuBuilder> menuBuilder;
-    CMenuBuilder::New(context, (IMenuBuilder**)&menuBuilder);
-    menuBuilder->SetDefaultShowAsAction(IMenuItem::SHOW_AS_ACTION_IF_ROOM,
-            (IMenuBuilder**)&mMenu);
-    mMenu->SetCallback(this);
-}
+    mContext = context;
+    mContextView = view;
+    mCallback = callback;
 
-CAR_INTERFACE_IMPL(StandaloneActionMode, IActionMode);
+    AutoPtr<IContext> ctx;
+    IView::Probe(view)->GetContext((IContext**)&ctx);
+    CMenuBuilder::New(ctx, (IMenuBuilder**)&mMenu);
+    mMenu->SetDefaultShowAsAction(IMenuItem::SHOW_AS_ACTION_IF_ROOM);
+    AutoPtr<MenuBuilderCallback> clb = new MenuBuilderCallback(this);
+    mMenu->SetCallback(clb);
+    mFocusable = isFocusable;
+
+    return NOERROR;
+}
 
 ECode StandaloneActionMode::SetTitle(
     /* [in] */ ICharSequence* title)
@@ -98,7 +131,7 @@ ECode StandaloneActionMode::SetCustomView(
 ECode StandaloneActionMode::Invalidate()
 {
     Boolean isPrepare = FALSE;
-    return mCallback->OnPrepareActionMode(this, mMenu, &isPrepare);
+    return mCallback->OnPrepareActionMode(this, IMenu::Probe(mMenu), &isPrepare);
 }
 
 ECode StandaloneActionMode::Finish()
@@ -117,7 +150,7 @@ ECode StandaloneActionMode::GetMenu(
     /* [out] */ IMenu** menu)
 {
     VALIDATE_NOT_NULL(menu);
-    *menu = mMenu;
+    *menu = IMenu::Probe(mMenu);
     REFCOUNT_ADD(*menu);
     return NOERROR;
 }
@@ -151,7 +184,11 @@ ECode StandaloneActionMode::GetMenuInflater(
     /* [out] */ IMenuInflater** menuInflater)
 {
     VALIDATE_NOT_NULL(menuInflater);
-    return CMenuInflater::New(mContext, menuInflater);
+    AutoPtr<IContext> context;
+    IView::Probe(mContextView)->GetContext((IContext**)&context);
+    assert(0);
+    return NOERROR;
+    // return CMenuInflater::New(context, menuInflater);
 }
 
 ECode StandaloneActionMode::OnMenuItemSelected(
@@ -163,28 +200,33 @@ ECode StandaloneActionMode::OnMenuItemSelected(
     return mCallback->OnActionItemClicked(this, item, state);
 }
 
-void StandaloneActionMode::OnCloseMenu(
+ECode StandaloneActionMode::OnCloseMenu(
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ Boolean allMenusAreClosing)
 {
+    return NOERROR;
 }
 
 Boolean StandaloneActionMode::OnSubMenuSelected(
     /* [in] */ ISubMenuBuilder* subMenu)
 {
     Boolean isVisible = FALSE;
-    if (!(subMenu->HasVisibleItems(&isVisible), isVisible)) {
+    if (!(IMenu::Probe(subMenu)->HasVisibleItems(&isVisible), isVisible)) {
         return TRUE;
     }
+
+    AutoPtr<IContext> context;
+    IView::Probe(mContextView)->GetContext((IContext**)&context);
     AutoPtr<IMenuPopupHelper> menuPopupHelper;
-    CMenuPopupHelper::New(mContext, subMenu, (IMenuPopupHelper**)&menuPopupHelper);
+    CMenuPopupHelper::New(context, IMenuBuilder::Probe(subMenu), (IMenuPopupHelper**)&menuPopupHelper);
     menuPopupHelper->Show();
     return TRUE;
 }
 
-void StandaloneActionMode::OnCloseSubMenu(
+ECode StandaloneActionMode::OnCloseSubMenu(
     /* [in] */ ISubMenuBuilder* menu)
 {
+    return NOERROR;
 }
 
 ECode StandaloneActionMode::OnMenuModeChange(
@@ -192,7 +234,7 @@ ECode StandaloneActionMode::OnMenuModeChange(
 {
     Invalidate();
     Boolean isShow = FALSE;
-    return mContextView->ShowOverflowMenu(&isShow);
+    return IAbsActionBarView::Probe(mContextView)->ShowOverflowMenu(&isShow);
 }
 
 Boolean StandaloneActionMode::IsUiFocusable()

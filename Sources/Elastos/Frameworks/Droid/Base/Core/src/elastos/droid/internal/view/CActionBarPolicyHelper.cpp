@@ -1,6 +1,6 @@
 
-#include "elastos/droid/internal/view/menu/CActionBarPolicyHelper.h"
-#include "elastos/droid/internal/view/menu/ActionBarPolicy.h"
+#include "elastos/droid/internal/view/CActionBarPolicyHelper.h"
+#include "elastos/droid/internal/view/ActionBarPolicy.h"
 
 namespace Elastos {
 namespace Droid {

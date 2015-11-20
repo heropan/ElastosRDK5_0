@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_ANIMATION_FALLBACKLUTINTERPOLATOR_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Animation::ITimeInterpolator;
 
@@ -24,7 +25,7 @@ class FallbackLUTInterpolator
     : public Object
     , public IFallbackLUTInterpolator
     , public INativeInterpolatorFactory
-    , pubilc ITimeInterpolator
+    , public ITimeInterpolator
 {
 public:
     /**

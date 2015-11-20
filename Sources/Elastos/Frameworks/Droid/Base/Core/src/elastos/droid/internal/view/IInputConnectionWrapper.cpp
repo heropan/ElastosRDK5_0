@@ -5,6 +5,7 @@
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::CString;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::ICorrectionInfo;
@@ -14,10 +15,6 @@ namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace View {
-
-// 78b0cbcd-8dae-4a2f-a7e1-d020e21b08f7
-extern "C" const InterfaceID EIID_IInputConnectionWrapper =
-    { 0x78b0cbcd, 0x8dae, 0x4a2f, { 0xa7, 0xe1, 0xd0, 0x20, 0xe2, 0x1b, 0x08, 0xf7 } };
 
 String IInputConnectionWrapper::TAG("IInputConnectionWrapper");
 
@@ -42,12 +39,11 @@ const Int32 IInputConnectionWrapper::DO_END_BATCH_EDIT = 95;
 const Int32 IInputConnectionWrapper::DO_REPORT_FULLSCREEN_MODE = 100;
 const Int32 IInputConnectionWrapper::DO_PERFORM_PRIVATE_COMMAND = 120;
 const Int32 IInputConnectionWrapper::DO_CLEAR_META_KEY_STATES = 130;
+const Int32 IInputConnectionWrapper::DO_REQUEST_UPDATE_CURSOR_ANCHOR_INFO = 140;
 
 //===================================================================
 // IInputConnectionWrapper::SomeArgs
 //===================================================================
-CAR_INTERFACE_IMPL_LIGHT(IInputConnectionWrapper::SomeArgs, IInterface)
-
 IInputConnectionWrapper::SomeArgs::SomeArgs(
     /* [in] */ IInterface* arg1,
     /* [in] */ IInterface* arg2,
@@ -65,7 +61,7 @@ IInputConnectionWrapper::SomeArgs::SomeArgs(
 IInputConnectionWrapper::MyHandler::MyHandler(
     /* [in] */ ILooper* looper,
     /* [in] */ IInputConnectionWrapper* host)
-    : HandlerBase(looper)
+    : Handler(looper)
 {
     AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)host->Probe(EIID_IWeakReferenceSource);
     if (wrs != NULL) {
@@ -81,19 +77,11 @@ IInputConnectionWrapper::MyHandler::MyHandler(
 ECode IInputConnectionWrapper::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    AutoPtr<IInterface> obj;
-    mWeakHost->Resolve(EIID_IInterface, (IInterface**)&obj);
+    AutoPtr<IInputContext> obj;
+    mWeakHost->Resolve(EIID_IInputContext, (IInterface**)&obj);
     if (obj != NULL) {
-        IInputConnectionWrapper* host =
-            reinterpret_cast<IInputConnectionWrapper*>(obj->Probe(EIID_IInputConnectionWrapper));
-        if (host) {
-            return host->ExecuteMessage(msg);
-        }
-        else {
-            Logger::E(IInputConnectionWrapper::TAG,
-                "IInputConnectionWrapper's subclass can not Probe EIID_IInputConnectionWrapper.");
-            assert(0);
-        }
+        IInputConnectionWrapper* host = (IInputConnectionWrapper*)obj.Get();
+        return host->ExecuteMessage(msg);
     }
     return NOERROR;
 }
@@ -101,11 +89,14 @@ ECode IInputConnectionWrapper::MyHandler::HandleMessage(
 //===================================================================
 // IInputConnectionWrapper
 //===================================================================
+
+CAR_INTERFACE_IMPL_2(IInputConnectionWrapper, Object, IInputContext, IBinder)
+
 IInputConnectionWrapper::IInputConnectionWrapper()
 {
 }
 
-ECode IInputConnectionWrapper::Init(
+ECode IInputConnectionWrapper::constructor(
     /* [in] */ ILooper* mainLooper,
     /* [in] */ IInputConnection* conn)
 {
@@ -264,10 +255,13 @@ ECode IInputConnectionWrapper::PerformPrivateCommand(
     return DispatchMessage(ObtainMessage(DO_PERFORM_PRIVATE_COMMAND, action, data));
 }
 
-ECode IInputConnectionWrapper::GetDescription(
-    /* [out] */ String* str)
+ECode IInputConnectionWrapper::RequestUpdateCursorAnchorInfo(
+    /* [in] */ Int32 cursorUpdateMode,
+    /* [in] */ Int32 seq,
+    /* [in] */ IInputContextCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
+    return DispatchMessage(ObtainMessageSC(DO_REQUEST_UPDATE_CURSOR_ANCHOR_INFO,
+        cursorUpdateMode, seq, callback));
 }
 
 ECode IInputConnectionWrapper::DispatchMessage(
@@ -298,7 +292,7 @@ ECode IInputConnectionWrapper::ExecuteMessage(
 
     switch (what) {
         case DO_GET_TEXT_AFTER_CURSOR: {
-            const SomeArgs* args = (SomeArgs*)obj.Get();
+            const SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             // try {
             AutoPtr<IInterface> base;
             FAIL_RETURN(mInputConnection->Resolve(EIID_IInterface, (IInterface**)&base))
@@ -315,7 +309,7 @@ ECode IInputConnectionWrapper::ExecuteMessage(
             // }
         }
         case DO_GET_TEXT_BEFORE_CURSOR: {
-            const SomeArgs* args = (SomeArgs*)obj.Get();
+            const SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             // try {
             AutoPtr<IInterface> base;
             FAIL_RETURN(mInputConnection->Resolve(EIID_IInterface, (IInterface**)&base))
@@ -332,7 +326,7 @@ ECode IInputConnectionWrapper::ExecuteMessage(
             // }
         }
         case DO_GET_SELECTED_TEXT: {
-            const SomeArgs* args = (SomeArgs*)obj.Get();
+            const SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             // try {
             AutoPtr<IInterface> base;
             FAIL_RETURN(mInputConnection->Resolve(EIID_IInterface, (IInterface**)&base))
@@ -349,7 +343,7 @@ ECode IInputConnectionWrapper::ExecuteMessage(
             // }
         }
         case DO_GET_CURSOR_CAPS_MODE: {
-            const SomeArgs* args = (SomeArgs*)obj.Get();
+            const SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             // try {
             AutoPtr<IInterface> base;
             FAIL_RETURN(mInputConnection->Resolve(EIID_IInterface, (IInterface**)&base))
@@ -366,7 +360,7 @@ ECode IInputConnectionWrapper::ExecuteMessage(
             // }
         }
         case DO_GET_EXTRACTED_TEXT: {
-            const SomeArgs* args = (SomeArgs*)obj.Get();
+            const SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             // try {
             AutoPtr<IInterface> base;
             FAIL_RETURN(mInputConnection->Resolve(EIID_IInterface, (IInterface**)&base))
@@ -562,11 +556,30 @@ ECode IInputConnectionWrapper::ExecuteMessage(
                 Logger::W(TAG, "performPrivateCommand on inactive InputConnection");
                 return NOERROR;
             }
-            const SomeArgs* args = (SomeArgs*)obj.Get();
+            const SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             String text;
             ICharSequence::Probe(args->mArg1)->ToString(&text);
             Boolean ret = FALSE;
             return ic->PerformPrivateCommand(text, IBundle::Probe(args->mArg2), &ret);
+        }
+        case DO_REQUEST_UPDATE_CURSOR_ANCHOR_INFO: {
+            const SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
+            // try {
+                AutoPtr<IInterface> base;
+                FAIL_RETURN(mInputConnection->Resolve(EIID_IInterface, (IInterface**)&base))
+                AutoPtr<IInputConnection> ic = IInputConnection::Probe(base);
+                if (ic == NULL || !IsActive()) {
+                    Logger::W(TAG, "requestCursorAnchorInfo on inactive InputConnection");
+                    args->mCallback->SetRequestUpdateCursorAnchorInfoResult(FALSE, args->mSeq);
+                    return NOERROR;
+                }
+                Boolean result;
+                ic->RequestCursorUpdates(arg1, &result);
+                args->mCallback->SetRequestUpdateCursorAnchorInfoResult(result, args->mSeq);
+            // } catch (RemoteException e) {
+            //     Log.w(TAG, "Got RemoteException calling requestCursorAnchorInfo", e);
+            // }
+            return NOERROR;
         }
     }
 
@@ -610,7 +623,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageSC(
     AutoPtr<SomeArgs> args = new SomeArgs(NULL, NULL, callback, seq);
 
     AutoPtr<IMessage> msg;
-    mH->ObtainMessage(what, arg1, 0, args, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, 0, (IObject*)args, (IMessage**)&msg);
     return msg;
 }
 
@@ -623,7 +636,19 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageSC(
 {
     AutoPtr<SomeArgs> args = new SomeArgs(NULL, NULL, callback, seq);
     AutoPtr<IMessage> msg;
-    mH->ObtainMessage(what, arg1, arg2, args, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, arg2, (IObject*)args, (IMessage**)&msg);
+    return msg;
+}
+
+AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageSC(
+    /* [in] */ Int32 what,
+    /* [in] */ IInterface* arg1,
+    /* [in] */ Int32 seq,
+    /* [in] */ IInputContextCallback* callback)
+{
+    AutoPtr<SomeArgs> args = new SomeArgs(arg1, NULL, callback, seq);
+    AutoPtr<IMessage> msg;
+    mH->ObtainMessage(what, 0, 0, (IObject*)args, (IMessage**)&msg);
     return msg;
 }
 
@@ -636,7 +661,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageSC(
 {
     AutoPtr<SomeArgs> args = new SomeArgs(arg2, NULL, callback, seq);
     AutoPtr<IMessage> msg;
-    mH->ObtainMessage(what, arg1, 0, args, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, 0, (IObject*)args, (IMessage**)&msg);
     return msg;
 }
 
@@ -660,8 +685,14 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessage(
 
     AutoPtr<SomeArgs> args = new SomeArgs(text, arg2);
     AutoPtr<IMessage> msg;
-    mH->ObtainMessage(what, 0, 0, args, (IMessage**)&msg);
+    mH->ObtainMessage(what, 0, 0, (IObject*)args, (IMessage**)&msg);
     return msg;
+}
+
+ECode IInputConnectionWrapper::ToString(
+    /* [out] */ String* info)
+{
+    return Object::ToString(info);
 }
 
 } // namespace View

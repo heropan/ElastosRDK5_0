@@ -2,35 +2,32 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_IINPUTCONNECTIONWRQPPER_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_IINPUTCONNECTIONWRQPPER_H__
 
-#include "Elastos.Droid.Core_server.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::InputMethod::ICompletionInfo;
 using Elastos::Droid::View::InputMethod::ICorrectionInfo;
 using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::View::InputMethod::IExtractedTextRequest;
-using Elastos::Droid::Internal::View::IInputContextCallback;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace View {
 
-extern "C" const InterfaceID EIID_IInputConnectionWrapper;
-
 class IInputConnectionWrapper
+    : public Object
+    , public IInputContext
+    , public IBinder
 {
 private:
-    class SomeArgs
-        : public ElLightRefBase
-        , public IInterface
+    class SomeArgs : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         SomeArgs(
             /* [in] */ IInterface* arg1 = NULL,
             /* [in] */ IInterface* arg2 = NULL,
@@ -44,7 +41,7 @@ private:
         Int32 mSeq;
     };
 
-    class MyHandler : public HandlerBase
+    class MyHandler : public Handler
     {
     public:
         MyHandler(
@@ -53,6 +50,7 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         // IInputConnectionWrapper* mHost;
         AutoPtr<IWeakReference> mWeakHost;
@@ -61,12 +59,9 @@ private:
 public:
     IInputConnectionWrapper();
 
-    virtual ~IInputConnectionWrapper() {}
+    CAR_INTERFACE_DECL()
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ILooper* mainLooper,
         /* [in] */ IInputConnection* conn);
 
@@ -151,8 +146,13 @@ public:
         /* [in] */ const String& action,
         /* [in] */ IBundle* data);
 
-    CARAPI GetDescription(
-        /* [out] */ String* str);
+    CARAPI RequestUpdateCursorAnchorInfo(
+        /* [in] */ Int32 cursorUpdateMode,
+        /* [in] */ Int32 seq,
+        /* [in] */ IInputContextCallback* callback);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI DispatchMessage(
@@ -183,6 +183,12 @@ private:
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
+        /* [in] */ Int32 seq,
+        /* [in] */ IInputContextCallback* callback);
+
+    CARAPI_(AutoPtr<IMessage>) ObtainMessageSC(
+        /* [in] */ Int32 what,
+        /* [in] */ IInterface* arg1,
         /* [in] */ Int32 seq,
         /* [in] */ IInputContextCallback* callback);
 
@@ -227,6 +233,7 @@ private:
     static const Int32 DO_REPORT_FULLSCREEN_MODE;
     static const Int32 DO_PERFORM_PRIVATE_COMMAND;
     static const Int32 DO_CLEAR_META_KEY_STATES;
+    static const Int32 DO_REQUEST_UPDATE_CURSOR_ANCHOR_INFO;
 
     AutoPtr<IWeakReference> mInputConnection;
 

@@ -43,11 +43,13 @@ module
     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
     interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Text.ITextWatcher;
     interface Elastos.Droid.Text.INoCopySpan;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.View.IAbsSavedState;
     interface Elastos.Droid.View.IContextMenu;
+    interface Elastos.Droid.View.IInputChannel;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IMenu;
     interface Elastos.Droid.View.IMenuItem;
@@ -68,6 +70,7 @@ module
     interface Elastos.Droid.View.IViewGroupLayoutParams;
     interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.View.InputMethod.IInputConnection;
     interface Elastos.Droid.Widget.IAbsListView;
     interface Elastos.Droid.Widget.IActionMenuChildView;
     interface Elastos.Droid.Widget.IAdapterView;
@@ -390,11 +393,62 @@ module
     } // namespace Droid
     } // namespace Elastos
 
-    // [local]
-    // class CActionBarPolicy {
-    //     constructor(
-    //         [in] IContext* ctx);
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace View {
 
-    //     interface IActionBarPolicy;
-    // }
+    singleton class CActionBarPolicyHelper {
+        interface IActionBarPolicyHelper;
+    }
+
+    class CIInputConnectionWrapper {
+        constructor(
+            [in] ILooper* mainLooper,
+            [in] IInputConnection* conn);
+
+        interface IInputContext;
+        interface IBinder;
+    }
+
+    class CInputBindResult {
+        constructor();
+
+        constructor(
+            [in] IIInputMethodSession* method,
+            [in] IInputChannel* channel,
+            [in] String id,
+            [in] Int32 sequence,
+            [in] Int32 userActionNotificationSequenceNumber);
+
+        interface IInputBindResult;
+        interface IParcelable;
+    }
+
+    class CInputConnectionWrapper {
+        constructor(
+            [in] IInputContext* inputContext);
+
+        interface IInputConnection;
+    }
+
+    class CInputContextCallback {
+        constructor();
+
+        interface IInputContextCallback;
+        interface IBinder;
+    }
+
+    singleton class CRotationPolicy {
+        interface IRotationPolicy;
+    }
+
+    singleton class CWindowManagerPolicyThread {
+        interface IWindowManagerPolicyThread;
+    }
+
+    } // namespace View
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

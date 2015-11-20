@@ -1,14 +1,19 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_STANDALONEACTIONMODE_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_STANDALONEACTIONMODE_H__
 
-#include "elastos/droid/internal/view/ActionMode.h"
+#include "elastos/droid/view/ActionMode.h"
 
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::View::ActionMode;
+using Elastos::Droid::View::IActionModeCallback;
+using Elastos::Droid::View::IMenu;
+using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::View::IMenuInflater;
+using Elastos::Droid::View::IView;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::View::Menu::IMenuBuilder;
-using Elastos::Droid::View::Menu::IMenuBuilderCallback;
-using Elastos::Droid::View::Menu::ISubMenuBuilder;
-using Elastos::Droid::Widget::Internal::IActionBarContextView;
+using Elastos::Droid::Internal::View::Menu::IMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::IMenuBuilderCallback;
+using Elastos::Droid::Internal::View::Menu::ISubMenuBuilder;
+using Elastos::Droid::Internal::Widget::IActionBarContextView;
 
 namespace Elastos {
 namespace Droid {
@@ -16,18 +21,42 @@ namespace Internal {
 namespace View {
 
 class StandaloneActionMode
-    : public ElRefBase
-    , public ActionMode
+    : public ActionMode
     , public IMenuBuilderCallback
 {
+private:
+    class MenuBuilderCallback
+        : public Object
+        , public IMenuBuilderCallback
+    {
+    public:
+        MenuBuilderCallback(
+            /* [in] */ StandaloneActionMode* owner);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnMenuItemSelected(
+            /* [in] */ IMenuBuilder* menu,
+            /* [in] */ IMenuItem* item,
+            /* [out] */ Boolean* state);
+
+        CARAPI OnMenuModeChange(
+            /* [in] */ IMenuBuilder* menu);
+
+    private:
+        StandaloneActionMode* mOwner;
+    };
+
 public:
-    StandaloneActionMode(
+    StandaloneActionMode();
+
+    CAR_INTERFACE_DECL();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IActionBarContextView* view,
         /* [in] */ IActionModeCallback* callback,
         /* [in] */ Boolean isFocusable);
-
-    CAR_INTERFACE_DECL();
 
     CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
@@ -74,14 +103,14 @@ public:
         /* [in] */ IMenuItem* item,
         /* [out] */ Boolean* state);
 
-    CARAPI_(void) OnCloseMenu(
+    CARAPI OnCloseMenu(
         /* [in] */ IMenuBuilder* menu,
         /* [in] */ Boolean allMenusAreClosing);
 
     CARAPI_(Boolean) OnSubMenuSelected(
         /* [in] */ ISubMenuBuilder* subMenu);
 
-    CARAPI_(void) OnCloseSubMenu(
+    CARAPI OnCloseSubMenu(
         /* [in] */ ISubMenuBuilder* menu);
 
     CARAPI OnMenuModeChange(

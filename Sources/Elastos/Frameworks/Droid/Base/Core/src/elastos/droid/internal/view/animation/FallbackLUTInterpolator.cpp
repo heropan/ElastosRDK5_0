@@ -1,9 +1,11 @@
 
 #include "elastos/droid/internal/view/animation/FallbackLUTInterpolator.h"
 #include "elastos/droid/internal/view/animation/NativeInterpolatorFactoryHelper.h"
+#include "elastos/droid/utility/TimeUtils.h"
 #include "elastos/droid/view/Choreographer.h"
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::Utility::TimeUtils;
 using Elastos::Droid::View::Choreographer;
 
 namespace Elastos {
