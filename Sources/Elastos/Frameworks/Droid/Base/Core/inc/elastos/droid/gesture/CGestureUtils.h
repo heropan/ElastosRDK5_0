@@ -27,81 +27,81 @@ public:
     virtual ~CGestureUtils();
 
     CARAPI CloseStream(
-        /* [in] */ ICloseable * pParam0);
+        /* [in] */ ICloseable* stream);
 
     CARAPI SpatialSampling(
-        /* [in] */ IGesture * pParam0,
-        /* [in] */ Int32 Param1,
-        /* [out, callee] */ ArrayOf<Float> ** ppParam2);
+        /* [in] */ IGesture* gesture,
+        /* [in] */ Int32 bitmapSize,
+        /* [out, callee] */ ArrayOf<Float>** sample);
 
     CARAPI SpatialSampling(
-        /* [in] */ IGesture * pParam0,
-        /* [in] */ Int32 Param1,
-        /* [in] */ Boolean Param2,
-        /* [out, callee] */ ArrayOf<Float> ** ppParam3);
+        /* [in] */ IGesture* gesture,
+        /* [in] */ Int32 bitmapSize,
+        /* [in] */ Boolean keepAspectRatio,
+        /* [out, callee] */ ArrayOf<Float>** sample);
 
     CARAPI TemporalSampling(
-        /* [in] */ IGestureStroke * pParam0,
-        /* [in] */ Int32 Param1,
-        /* [out, callee] */ ArrayOf<Float> ** ppParam2);
+        /* [in] */ IGestureStroke* stroke,
+        /* [in] */ Int32 numPoints,
+        /* [out, callee] */ ArrayOf<Float>** vector);
 
     CARAPI ComputeCentroid(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [out, callee] */ ArrayOf<Float> ** ppParam1);
+        /* [in] */ ArrayOf<Float>* points,
+        /* [out, callee] */ ArrayOf<Float>** center);
 
     CARAPI ComputeTotalLength(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [out] */ Float * pParam1);
+        /* [in] */ ArrayOf<Float>* points,
+        /* [out] */ Float* pLength);
 
     CARAPI ComputeStraightness(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [out] */ Float * pParam1);
+        /* [in] */ ArrayOf<Float>* points,
+        /* [out] */ Float* pStraightness);
 
     CARAPI ComputeStraightness(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [in] */ Float Param1,
-        /* [out] */ Float * pParam2);
+        /* [in] */ ArrayOf<Float>* points,
+        /* [in] */ Float totalLen,
+        /* [out] */ Float* pStraightness);
 
     CARAPI SquaredEuclideanDistance(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [in] */ ArrayOf<Float> * pParam1,
-        /* [out] */ Float * pParam2);
+        /* [in] */ ArrayOf<Float>* vector1,
+        /* [in] */ ArrayOf<Float>* vector2,
+        /* [out] */ Float* pDistance);
 
     CARAPI CosineDistance(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [in] */ ArrayOf<Float> * pParam1,
-        /* [out] */ Float * pParam2);
+        /* [in] */ ArrayOf<Float>* vector1,
+        /* [in] */ ArrayOf<Float>* vector2,
+        /* [out] */ Float* pDistance);
 
     CARAPI MinimumCosineDistance(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [in] */ ArrayOf<Float> * pParam1,
-        /* [in] */ Int32 Param2,
-        /* [out] */ Float * pParam3);
+        /* [in] */ ArrayOf<Float>* vector1,
+        /* [in] */ ArrayOf<Float>* vector2,
+        /* [in] */ Int32 numOrientations,
+        /* [out] */ Float* pDistance);
 
     CARAPI ComputeOrientedBoundingBox(
-        /* [in] */ IArrayList * pParam0,
-        /* [out] */ IOrientedBoundingBox ** ppParam1);
+        /* [in] */ IArrayList* originalPoints,
+        /* [out] */ IOrientedBoundingBox** ppBox);
 
     CARAPI ComputeOrientedBoundingBox(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [out] */ IOrientedBoundingBox ** ppParam1);
+        /* [in] */ ArrayOf<Float>* originalPoints,
+        /* [out] */ IOrientedBoundingBox **ppBox);
 
     CARAPI Rotate(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [in] */ Float Param1,
-        /* [out, callee] */ ArrayOf<Float> ** ppParam2);
+        /* [in] */ ArrayOf<Float>* points,
+        /* [in] */ Float angle,
+        /* [out, callee] */ ArrayOf<Float>** ppPoints);
 
     CARAPI Translate(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [in] */ Float Param1,
-        /* [in] */ Float Param2,
-        /* [out, callee] */ ArrayOf<Float> ** ppParam3);
+        /* [in] */ ArrayOf<Float>* points,
+        /* [in] */ Float dx,
+        /* [in] */ Float dy,
+        /* [out, callee] */ ArrayOf<Float>** ppPoints);
 
     CARAPI Scale(
-        /* [in] */ ArrayOf<Float> * pParam0,
-        /* [in] */ Float Param1,
-        /* [in] */ Float Param2,
-        /* [out, callee] */ ArrayOf<Float> ** ppParam3);
+        /* [in] */ ArrayOf<Float>* points,
+        /* [in] */ Float sx,
+        /* [in] */ Float sy,
+        /* [out, callee] */ ArrayOf<Float>** ppPoints);
 };
 
 } // namespace Gesture

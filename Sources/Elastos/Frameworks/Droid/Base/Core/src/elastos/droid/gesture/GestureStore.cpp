@@ -30,6 +30,7 @@ using Elastos::IO::IFlushable;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -190,7 +191,7 @@ ECode GestureStore::RemoveEntry(
 
 ECode GestureStore::GetGestures(
     /* [in] */ const String& entryName,
-    /* [out] */ IArrayList** value)
+    /* [out] */ IArrayList **value)
 {
     VALIDATE_NOT_NULL(value);
     *value = NULL;
@@ -202,6 +203,11 @@ ECode GestureStore::GetGestures(
 
     GestureList::Iterator it;
     if (gestures != NULL) {
+        ECode ec = CArrayList::New(value);
+        if (FAILED(ec)) {
+            return E_OUT_OF_MEMORY;
+        }
+
         for (it = gestures->Begin(); it != gestures->End(); ++it) {
             (*value)->Add(*it);
         }
@@ -245,9 +251,7 @@ ECode GestureStore::Save(
         CBufferedOutputStream::New(stream,
             GestureConstants::IO_BUFFER_SIZE, (IBufferedOutputStream**)&bos);
 
-        AutoPtr<IOutputStream> os;
-        os = IOutputStream::Probe(bos);
-        CDataOutputStream::New(os, (IDataOutputStream**)&out);
+        CDataOutputStream::New(IOutputStream::Probe(bos), (IDataOutputStream**)&out);
     }
     // Write version number
     IDataOutput::Probe(out)->WriteInt16(FILE_FORMAT_VERSION);
@@ -282,8 +286,9 @@ ECode GestureStore::Save(
     }
 
     mChanged = FALSE;
-    if (closeStream)
+    if (closeStream) {
         GestureUtils::CloseStream(ICloseable::Probe(out));
+    }
 
     return NOERROR;
 }
@@ -309,9 +314,7 @@ ECode GestureStore::Load(
         CBufferedInputStream::New(stream,
             GestureConstants::IO_BUFFER_SIZE, (IBufferedInputStream**)&bis);
 
-        AutoPtr<IInputStream> is;
-        is = IInputStream::Probe(bis);
-        CDataInputStream::New(is, (IDataInputStream**)&in);
+        CDataInputStream::New(IInputStream::Probe(bis), (IDataInputStream**)&in);
     }
 
     Int64 start;
@@ -336,8 +339,9 @@ ECode GestureStore::Load(
         Logger::D(GestureConstants::myLOG_TAG, log.string());
     }
 
-    if (closeStream)
+    if (closeStream) {
         GestureUtils::CloseStream(ICloseable::Probe(in));
+    }
 
     return NOERROR;
 }

@@ -11,6 +11,7 @@ using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Gesture::IGestureStroke;
+using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;
 using Elastos::Core::Object;
 
@@ -38,7 +39,7 @@ public:
      * @param points
      */
     CARAPI constructor(
-        /* [in] */ IList *points);
+        /* [in] */ IArrayList *points);
 
     CARAPI GetPath(
         /* [out] */ IPath **outPath);

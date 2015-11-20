@@ -29,15 +29,6 @@ const AutoPtr<ArrayOf<Float> > Instance::ORIENTATIONS = InitORIENTATIONS();
 
 CAR_INTERFACE_IMPL(Instance, Object, IInstance);
 
-Instance::Instance(
-    /* [in] */ Int64 id,
-    /* [in] */ ArrayOf<Float> *sample,
-    /* [in] */ const String& sampleName)
-    : mVector(sample)
-    , mLabel(sampleName)
-    , mId(id)
-{}
-
 Instance::Instance()
 {}
 
@@ -46,6 +37,18 @@ Instance::~Instance()
 
 ECode Instance::constructor()
 {
+    return NOERROR;
+}
+
+ECode Instance::constructor(
+    /* [in] */ Int64 id,
+    /* [in] */ ArrayOf<Float>* sample,
+    /* [in] */ const String& sampleName)
+{
+    mVector = sample;
+    mLabel = sampleName;
+    mId = id;
+
     return NOERROR;
 }
 
@@ -70,7 +73,7 @@ ECode Instance::Normalize()
 AutoPtr<Instance> Instance::CreateInstance(
     /* [in] */ Int32 sequenceType,
     /* [in] */ Int32 orientationType,
-    /* [in] */ IGesture *gesture,
+    /* [in] */ IGesture* gesture,
     /* [in] */ const String& label)
 {
     AutoPtr<ArrayOf<Float> > pts;
@@ -80,16 +83,16 @@ AutoPtr<Instance> Instance::CreateInstance(
     if (sequenceType == IGestureStore::SEQUENCE_SENSITIVE) {
         pts = TemporalSampler(orientationType, gesture);
         gesture->GetID(&id);
-        instance = new Instance(id, pts, label);
+        instance = new Instance();
+        instance->constructor(id, pts, label);
         instance->Normalize();
     }
     else {
-        SpatialSampler(gesture, (ArrayOf<Float> **)&pts);
+        SpatialSampler(gesture, (ArrayOf<Float>** )&pts);
         gesture->GetID(&id);
-        instance = new Instance(id, pts, label);
+        instance = new Instance();
+        instance->constructor(id, pts, label);
     }
-
-    REFCOUNT_ADD(instance);
 
     return instance;
 }
@@ -97,18 +100,19 @@ AutoPtr<Instance> Instance::CreateInstance(
 ECode Instance::CreateInstance(
     /* [in] */ Int32 sequenceType,
     /* [in] */ Int32 orientationType,
-    /* [in] */ IGesture *gesture,
+    /* [in] */ IGesture* gesture,
     /* [in] */ const String& label,
     /* [out] */ IInstance** obj)
 {
-    *obj = CreateInstance(sequenceType, orientationType, gesture, label);
+    AutoPtr<IInstance> p = CreateInstance(sequenceType, orientationType, gesture, label);
+    *obj = p;
 
     return NOERROR;
 }
 
 ECode Instance::SpatialSampler(
-    /* [in] */ IGesture *gesture,
-    /* [out, callee] */ ArrayOf<Float> **sampler)
+    /* [in] */ IGesture* gesture,
+    /* [out, callee] */ ArrayOf<Float>** sampler)
 {
     VALIDATE_NOT_NULL(sampler);
     AutoPtr<ArrayOf<Float> > temp = GestureUtils::SpatialSampling(gesture, PATCH_SAMPLE_SIZE, FALSE);
@@ -119,7 +123,7 @@ ECode Instance::SpatialSampler(
 
 AutoPtr<ArrayOf<Float> > Instance::TemporalSampler(
     /* [in] */ Int32 orientationType,
-    /* [in] */ IGesture *gesture)
+    /* [in] */ IGesture* gesture)
 {
     AutoPtr<IArrayList> strokes;
     AutoPtr<IGestureStroke> stroke;

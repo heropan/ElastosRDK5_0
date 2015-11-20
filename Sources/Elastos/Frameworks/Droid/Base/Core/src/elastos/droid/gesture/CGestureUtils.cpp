@@ -19,168 +19,168 @@ CGestureUtils::~CGestureUtils()
 {}
 
 ECode CGestureUtils::CloseStream(
-    /* [in] */ ICloseable * pParam0)
+    /* [in] */ ICloseable *stream)
 {
-    return GestureUtils::CloseStream(pParam0);
+    return GestureUtils::CloseStream(stream);
 }
 
 ECode CGestureUtils::SpatialSampling(
-    /* [in] */ IGesture *pParam0,
-    /* [in] */ Int32 Param1,
-    /* [out, callee] */ ArrayOf<Float> **ppParam2)
+    /* [in] */ IGesture *gesture,
+    /* [in] */ Int32 bitmapSize,
+    /* [out, callee] */ ArrayOf<Float> **sample)
 {
     AutoPtr<ArrayOf<Float> > ret;
 
-    ret = GestureUtils::SpatialSampling(pParam0, Param1);
-    *ppParam2 = ret;
+    ret = GestureUtils::SpatialSampling(gesture, bitmapSize);
+    *sample = ret;
 
     return NOERROR;
 }
 
 ECode CGestureUtils::SpatialSampling(
-    /* [in] */ IGesture *pParam0,
-    /* [in] */ Int32 Param1,
-    /* [in] */ Boolean Param2,
-    /* [out, callee] */ ArrayOf<Float> **ppParam3)
+    /* [in] */ IGesture *gesture,
+    /* [in] */ Int32 bitmapSize,
+    /* [in] */ Boolean keepAspectRatio,
+    /* [out, callee] */ ArrayOf<Float> **sample)
 {
     AutoPtr<ArrayOf<Float> > ret;
 
-    ret = GestureUtils::SpatialSampling(pParam0, Param1, Param2);
-    *ppParam3 = ret;
+    ret = GestureUtils::SpatialSampling(gesture, bitmapSize, keepAspectRatio);
+    *sample = ret;
 
     return NOERROR;
 }
 
 ECode CGestureUtils::TemporalSampling(
-    /* [in] */ IGestureStroke *pParam0,
-    /* [in] */ Int32 Param1,
-    /* [out, callee] */ ArrayOf<Float> **ppParam2)
+    /* [in] */ IGestureStroke *stroke,
+    /* [in] */ Int32 numPoints,
+    /* [out, callee] */ ArrayOf<Float> **vector)
 {
     AutoPtr<ArrayOf<Float> > ret;
 
-    ret = GestureUtils::TemporalSampling(pParam0, Param1);
-    *ppParam2 = ret;
+    ret = GestureUtils::TemporalSampling(stroke, numPoints);
+    *vector = ret;
 
     return NOERROR;
 }
 
 ECode CGestureUtils::ComputeCentroid(
-    /* [in] */ ArrayOf<Float> * pParam0,
-    /* [out, callee] */ ArrayOf<Float> ** ppParam1)
+    /* [in] */ ArrayOf<Float> *points,
+    /* [out, callee] */ ArrayOf<Float> **center)
 {
     AutoPtr<ArrayOf<Float> > ret;
 
-    ret = GestureUtils::ComputeCentroid(pParam0);
-    *ppParam1 = ret;
+    ret = GestureUtils::ComputeCentroid(points);
+    *center = ret;
 
     return NOERROR;
 }
 
 ECode CGestureUtils::ComputeTotalLength(
-    /* [in] */ ArrayOf<Float> *pParam0,
-    /* [out] */ Float *pParam1)
+    /* [in] */ ArrayOf<Float> *points,
+    /* [out] */ Float *pLength)
 {
-    *pParam1 = GestureUtils::ComputeTotalLength(pParam0);
+    *pLength = GestureUtils::ComputeTotalLength(points);
     return NOERROR;
 }
 
 ECode CGestureUtils::ComputeStraightness(
-    /* [in] */ ArrayOf<Float> *pParam0,
-    /* [out] */ Float *pParam1)
+    /* [in] */ ArrayOf<Float> *points,
+    /* [out] */ Float *pStraightness)
 {
-    *pParam1 = GestureUtils::ComputeStraightness(pParam0);
+    *pStraightness = GestureUtils::ComputeStraightness(points);
     return NOERROR;
 }
 
 ECode CGestureUtils::ComputeStraightness(
-    /* [in] */ ArrayOf<Float> *pParam0,
-    /* [in] */ Float Param1,
-    /* [out] */ Float *pParam2)
+    /* [in] */ ArrayOf<Float> *points,
+    /* [in] */ Float totalLen,
+    /* [out] */ Float *pStraightness)
 {
-    *pParam2 = GestureUtils::ComputeStraightness(pParam0, Param1);
+    *pStraightness = GestureUtils::ComputeStraightness(points, totalLen);
     return NOERROR;
 }
 
 ECode CGestureUtils::SquaredEuclideanDistance(
-    /* [in] */ ArrayOf<Float> *pParam0,
-    /* [in] */ ArrayOf<Float> *pParam1,
-    /* [out] */ Float *pParam2)
+    /* [in] */ ArrayOf<Float> *vector1,
+    /* [in] */ ArrayOf<Float> *vector2,
+    /* [out] */ Float *pDistance)
 {
-    *pParam2 = GestureUtils::SquaredEuclideanDistance(pParam0, pParam1);
+    *pDistance = GestureUtils::SquaredEuclideanDistance(vector1, vector2);
     return NOERROR;
 }
 
 ECode CGestureUtils::CosineDistance(
-    /* [in] */ ArrayOf<Float> *pParam0,
-    /* [in] */ ArrayOf<Float> *pParam1,
-    /* [out] */ Float *pParam2)
+    /* [in] */ ArrayOf<Float> *vector1,
+    /* [in] */ ArrayOf<Float> *vector2,
+    /* [out] */ Float *pDistance)
 {
-    *pParam2 = GestureUtils::CosineDistance(pParam0, pParam1);
+    *pDistance = GestureUtils::CosineDistance(vector1, vector2);
     return NOERROR;
 }
 
 ECode CGestureUtils::MinimumCosineDistance(
-    /* [in] */ ArrayOf<Float> *pParam0,
-    /* [in] */ ArrayOf<Float> *pParam1,
-    /* [in] */ Int32 Param2,
-    /* [out] */ Float *pParam3)
+    /* [in] */ ArrayOf<Float> *vector1,
+    /* [in] */ ArrayOf<Float> *vector2,
+    /* [in] */ Int32 numOrientations,
+    /* [out] */ Float *pDistance)
 {
-    *pParam3 = GestureUtils::MinimumCosineDistance(pParam0, pParam1, Param2);
+    *pDistance = GestureUtils::MinimumCosineDistance(vector1, vector2, numOrientations);
     return NOERROR;
 }
 
 ECode CGestureUtils::ComputeOrientedBoundingBox(
-    /* [in] */ Elastos::Utility::IArrayList *pParam0,
-    /* [out] */ IOrientedBoundingBox ** ppParam1)
+    /* [in] */ Elastos::Utility::IArrayList *originalPoints,
+    /* [out] */ IOrientedBoundingBox **ppBox)
 {
     AutoPtr<IOrientedBoundingBox> ret;
 
-    ret = GestureUtils::ComputeOrientedBoundingBox(pParam0);
+    ret = GestureUtils::ComputeOrientedBoundingBox(originalPoints);
 
-    *ppParam1 = ret;
+    *ppBox = ret;
     return NOERROR;
 
 }
 
 ECode CGestureUtils::ComputeOrientedBoundingBox(
-    /* [in] */ ArrayOf<Float> * pParam0,
-    /* [out] */ IOrientedBoundingBox **ppParam1)
+    /* [in] */ ArrayOf<Float> *originalPoints,
+    /* [out] */ IOrientedBoundingBox **ppBox)
 {
     AutoPtr<IOrientedBoundingBox> ret;
 
-    ret = GestureUtils::ComputeOrientedBoundingBox(pParam0);
+    ret = GestureUtils::ComputeOrientedBoundingBox(originalPoints);
 
-    *ppParam1 = ret;
+    *ppBox = ret;
     return NOERROR;
 
 }
 
 ECode CGestureUtils::Rotate(
-    /* [in] */ ArrayOf<Float> *pParam0,
-    /* [in] */ Float Param1,
-    /* [out, callee] */ ArrayOf<Float> **ppParam2)
+    /* [in] */ ArrayOf<Float> *points,
+    /* [in] */ Float angle,
+    /* [out, callee] */ ArrayOf<Float> **ppPoints)
 {
-    *ppParam2 = GestureUtils::Rotate(pParam0, Param1);
+    *ppPoints = GestureUtils::Rotate(points, angle);
     return NOERROR;
 }
 
 ECode CGestureUtils::Translate(
-    /* [in] */ ArrayOf<Float> *pParam0,
-    /* [in] */ Float Param1,
-    /* [in] */ Float Param2,
-    /* [out, callee] */ ArrayOf<Float> **ppParam3)
+    /* [in] */ ArrayOf<Float>* points,
+    /* [in] */ Float dx,
+    /* [in] */ Float dy,
+    /* [out, callee] */ ArrayOf<Float>** ppPoints)
 {
-    *ppParam3 = GestureUtils::Translate(pParam0, Param1, Param2);
+    *ppPoints = GestureUtils::Translate(points, dx, dy);
     return NOERROR;
 }
 
 ECode CGestureUtils::Scale(
-    /* [in] */ ArrayOf<Float> *pParam0,
-    /* [in] */ Float Param1,
-    /* [in] */ Float Param2,
-    /* [out, callee] */ ArrayOf<Float> **ppParam3)
+    /* [in] */ ArrayOf<Float>* points,
+    /* [in] */ Float sx,
+    /* [in] */ Float sy,
+    /* [out, callee] */ ArrayOf<Float> **ppPoints)
 {
-    *ppParam3 = GestureUtils::Scale(pParam0, Param1, Param2);
+    *ppPoints = GestureUtils::Scale(points, sx, sy);
     return NOERROR;
 }
 

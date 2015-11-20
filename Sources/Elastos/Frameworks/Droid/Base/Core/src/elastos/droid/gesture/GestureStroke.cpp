@@ -32,7 +32,7 @@ GestureStroke::~GestureStroke()
 
 
 ECode GestureStroke::constructor(
-    /* [in] */ IList *points)
+    /* [in] */ IArrayList *points)
 {
     Int32 count;
     points->GetSize(&count);
@@ -232,11 +232,10 @@ ECode GestureStroke::Deserialize(
     Int32 count = 0;
     IDataInput::Probe(in)->ReadInt32(&count);
 
-    AutoPtr<IList> points;
+    AutoPtr<IArrayList> points;
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IGesturePoint> point;
-        point = CGesturePoint::Deserialize(in);
-        points->Add((IGesturePoint *)point);
+        AutoPtr<IGesturePoint> point = CGesturePoint::Deserialize(in);
+        points->Add((IGesturePoint*)point);
     }
     CGestureStroke::New(points, stroke);
     return NOERROR;

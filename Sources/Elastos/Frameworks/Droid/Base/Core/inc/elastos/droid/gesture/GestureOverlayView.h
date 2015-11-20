@@ -272,10 +272,24 @@ private:
 
 private:
     static const Int32 FADE_ANIMATION_RATE = 16;
-    static const Boolean GESTURE_RENDERING_ANTIALIAS;
-    static const Boolean DITHER_FLAG;
+    static const Boolean GESTURE_RENDERING_ANTIALIAS = TRUE;
+    static const Boolean DITHER_FLAG = TRUE;
+/*
+ * these constants are defined in GestureOverlayView.car
 
-    const AutoPtr<IPaint> mGesturePaint;
+    const Int32 GESTURE_STROKE_TYPE_SINGLE = 0;
+    const Int32 GESTURE_STROKE_TYPE_MULTIPLE = 1;
+
+    const Int32 ORIENTATION_HORIZONTAL = 0;
+    const Int32 ORIENTATION_VERTICAL = 1;
+
+    const Int32 FADE_ANIMATION_RATE = 16;
+    const Int32 GESTURE_RENDERING_ANTIALIAS = 1;
+    const Int32 DITHER_FLAG = 1;
+*/
+
+
+    AutoPtr<IPaint> mGesturePaint;
 
     Int64 mFadeDuration;
     Int64 mFadeOffset;
@@ -296,8 +310,8 @@ private:
 
     Int32 mOrientation;
 
-    const AutoPtr<IRect> mInvalidRect;
-    const AutoPtr<IPath> mPath;
+    AutoPtr<IRect> mInvalidRect;
+    AutoPtr<IPath> mPath;
     Boolean mGestureVisible;
 
     Float mX;
@@ -315,19 +329,19 @@ private:
 
     // current gesture
     AutoPtr<IGesture> mCurrentGesture;
-    IArrayList *mStrokeBuffer;
+    AutoPtr<IArrayList> mStrokeBuffer;
 
-    const AutoPtr< List< AutoPtr<IOnGestureListener> > > mOnGestureListeners;
-    const AutoPtr< List< AutoPtr<IOnGesturePerformedListener> > > mOnGesturePerformedListeners;
-    const AutoPtr< List< AutoPtr<IOnGesturingListener> > > mOnGesturingListeners;
+    AutoPtr<IArrayList> mOnGestureListeners;
+    AutoPtr<IArrayList> mOnGesturePerformedListeners;
+    AutoPtr<IArrayList> mOnGesturingListeners;
 
     Boolean mHandleGestureActions;
 
     // fading out effect
     Boolean mIsFadingOut;
     Float mFadingAlpha;
-    const AutoPtr<IAccelerateDecelerateInterpolator> mInterpolator;
-    const AutoPtr<IFadeOutRunnable> mFadingOut;
+    AutoPtr<IAccelerateDecelerateInterpolator> mInterpolator;
+    AutoPtr<IFadeOutRunnable> mFadingOut;
 };
 
 } // namespace Gesture

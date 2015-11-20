@@ -2,7 +2,7 @@
 module
 {
     importlib("Elastos.CoreLibrary.eco");
-    
+
     merge("../../../car/elastos/droid/Exceptions.car");
     merge("../../../car/elastos/droid/fake_interfaces.car");
     merge("../../../car/elastos/droid/utility.car");
@@ -24,7 +24,7 @@ module
     merge("../../../car/elastos/droid/nfc.car");
     merge("../../../car/elastos/droid/widget.car");
     merge("../../../car/elastos/droid/text2.car");
-    // merge("../../../car/elastos/droid/gesture.car");
+    merge("../../../car/elastos/droid/gesture.car");
     merge("../../../car/elastos/droid/preference.car");
     merge("../../../car/elastos/droid/accounts.car");
     merge("../../../car/elastos/droid/provider.car");

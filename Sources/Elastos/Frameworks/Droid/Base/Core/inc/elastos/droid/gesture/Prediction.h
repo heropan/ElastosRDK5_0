@@ -11,7 +11,7 @@ namespace Droid {
 namespace Gesture {
 
 class Prediction
-	: public Object
+    : public Object
     , public IPrediction
 {
 public:

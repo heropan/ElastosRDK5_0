@@ -60,7 +60,7 @@ module
          * @param points
          */
         constructor(
-            [in] IList* points);
+            [in] IArrayList* points);
 
         interface IGestureStroke;
     }
