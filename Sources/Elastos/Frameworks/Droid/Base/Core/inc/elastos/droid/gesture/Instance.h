@@ -27,6 +27,11 @@ public:
 
     CARAPI constructor();
 
+    CARAPI constructor(
+        /* [in] */ Int64 id,
+        /* [in] */ ArrayOf<Float>* sample,
+        /* [in] */ const String& sampleName);
+
     /**
      * create a learning instance for a single stroke gesture
      *
@@ -37,30 +42,26 @@ public:
     static CARAPI_(AutoPtr<Instance>) CreateInstance(
         /* [in] */ Int32 sequenceType,
         /* [in] */ Int32 orientationType,
-        /* [in] */ IGesture *gesture,
+        /* [in] */ IGesture* gesture,
         /* [in] */ const String& label);
 
     CARAPI CreateInstance(
         /* [in] */ Int32 sequenceType,
         /* [in] */ Int32 orientationType,
-        /* [in] */ IGesture *gesture,
+        /* [in] */ IGesture* gesture,
         /* [in] */ const String& label,
         /* [out] */ IInstance** obj);
 
     static CARAPI SpatialSampler(
-        /* [in] */ IGesture *gesture,
-        /* [out, callee] */ ArrayOf<Float> **sampler);
+        /* [in] */ IGesture* gesture,
+        /* [out, callee] */ ArrayOf<Float>** sampler);
 
     static CARAPI_(AutoPtr<ArrayOf<Float> >) TemporalSampler(
         /* [in] */ Int32 orientationType,
-        /* [in] */ IGesture *gesture);
+        /* [in] */ IGesture* gesture);
 
     CARAPI Normalize();
-private:
-    Instance(
-        /* [in] */ Int64 id,
-        /* [in] */ ArrayOf<Float> *sample,
-        /* [in] */ const String& sampleName);
+
 public:
     // the feature vector
     AutoPtr<ArrayOf<Float> > mVector;

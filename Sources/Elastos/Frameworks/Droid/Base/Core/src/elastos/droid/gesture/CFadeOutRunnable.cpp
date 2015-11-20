@@ -1,4 +1,3 @@
-
 #include "elastos/droid/gesture/CFadeOutRunnable.h"
 
 namespace Elastos {

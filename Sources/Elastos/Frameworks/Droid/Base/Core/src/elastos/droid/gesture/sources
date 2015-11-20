@@ -16,8 +16,8 @@ SOURCES += CGestureLibraries.cpp
 SOURCES += GestureLibraries.cpp
 SOURCES += GestureLibrary.cpp
 
-#SOURCES += CGestureOverlayView.cpp
-#SOURCES += GestureOverlayView.cpp
+SOURCES += CGestureOverlayView.cpp
+SOURCES += GestureOverlayView.cpp
 
 SOURCES += CGesturePoint.cpp
 SOURCES += GesturePoint.cpp

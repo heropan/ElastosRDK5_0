@@ -20,6 +20,7 @@ ECode CInstanceHelper::CreateInstance(
 
     ret = Instance::CreateInstance(sequenceType, orientationType, gesture, label);
     *instance = ret;
+    REFCOUNT_ADD(*instance);
 
     return NOERROR;
 }

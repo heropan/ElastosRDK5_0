@@ -4,7 +4,6 @@ namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-
 CAR_OBJECT_IMPL(CGestureOverlayView);
 
 CGestureOverlayView::CGestureOverlayView()

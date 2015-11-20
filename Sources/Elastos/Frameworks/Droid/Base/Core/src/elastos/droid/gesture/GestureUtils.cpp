@@ -17,6 +17,12 @@ namespace Gesture {
 const Float GestureUtils::SCALING_THRESHOLD = 0.26f;
 const Float GestureUtils::NONUNIFORM_SCALE = (Float)FloatMath::Sqrt(2);
 
+GestureUtils::GestureUtils()
+{}
+
+GestureUtils::GestureUtils(const GestureUtils&)
+{}
+
 ECode GestureUtils::CloseStream(
     /* [in] */ ICloseable *stream)
 {
@@ -450,8 +456,13 @@ AutoPtr<IOrientedBoundingBox> GestureUtils::ComputeOrientedBoundingBox(
 
         originalPoints->Get(i, (IInterface**)&point);
         Int32 index = i * 2;
-        point->GetX(&(*points)[index]);
-        point->GetY(&(*points)[index + 1]);
+
+        Float x, y;
+        point->GetX(&x);
+        point->GetY(&y);
+
+        (*points)[index] = x;
+        (*points)[index + 1] = y;
     }
     AutoPtr<ArrayOf<Float> > meanVector = ComputeCentroid(points);
     return ComputeOrientedBoundingBox(points, meanVector);
@@ -586,12 +597,6 @@ AutoPtr<ArrayOf<Float> > GestureUtils::Scale(
     AutoPtr<ArrayOf<Float> > result = points;
     return result;
 }
-
-GestureUtils::GestureUtils()
-{}
-
-GestureUtils::GestureUtils(const GestureUtils&)
-{}
 
 } // namespace Gesture
 } // namespace Droid

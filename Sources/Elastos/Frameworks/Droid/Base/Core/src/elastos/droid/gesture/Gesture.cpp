@@ -4,6 +4,7 @@
 #include "elastos/droid/gesture/GestureUtils.h"
 #include "elastos/droid/gesture/CGestureStroke.h"
 #include "elastos/droid/gesture/GestureConstants.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/graphics/CCanvas.h"
 #include "elastos/droid/graphics/CPaint.h"
@@ -23,6 +24,7 @@ using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::IDataOutputStream;
+using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Graphics::PaintStyle_STROKE;
 using Elastos::Droid::Graphics::PaintJoin_ROUND;
@@ -241,10 +243,8 @@ ECode Gesture::ToBitmap(
 {
     VALIDATE_NOT_NULL(bm);
 
-    AutoPtr<IBitmapFactory> bitmapFactory;
-    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> bitmap;
-    bitmapFactory->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+    CBitmap::CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
 
     AutoPtr<ICanvas> canvas;
     CCanvas::New(bitmap, (ICanvas**)&canvas);
@@ -286,10 +286,8 @@ ECode Gesture::ToBitmap(
 {
     VALIDATE_NOT_NULL(bm);
 
-    AutoPtr<IBitmapFactory> bitmapFactory;
-    CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> bitmap;
-    bitmapFactory->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+    CBitmap::CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
 
     AutoPtr<ICanvas> canvas;
     CCanvas::New(bitmap, (ICanvas**)&canvas);
@@ -450,14 +448,6 @@ ECode Gesture::Deserialize(
         (*gesture)->AddStroke(stroke);
     }
 
-    return NOERROR;
-}
-
-ECode Gesture::DescribeContents(
-    /* [out] */ Int32 *result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = 0;
     return NOERROR;
 }
 
