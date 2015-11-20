@@ -1,11 +1,11 @@
 
-#include "elastos/droid/view/CDispatcherState.h"
+#include "elastos/droid/view/CKeyData.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CAR_OBJECT_IMPL(CDispatcherState);
+CAR_OBJECT_IMPL(CKeyData);
 
 }   //namespace View
 }   //namespace Droid

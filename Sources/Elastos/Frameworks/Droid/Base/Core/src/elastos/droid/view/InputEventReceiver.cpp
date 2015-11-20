@@ -56,12 +56,12 @@ static AutoPtr<IMotionEvent> CreateMotionEventFromNative(
     //     return NULL;
     // }
     // zhangjingcheng wait
-    Handle32 native;
+    Handle64 native;
     eventObj->GetNative(&native);
     android::MotionEvent* destEvent = (android::MotionEvent*)native;
     if (!destEvent) {
         destEvent = new android::MotionEvent();
-        eventObj->SetNative((Handle32)destEvent);
+        eventObj->SetNative((Handle64)destEvent);
     }
 
     destEvent->copyFrom(event, true);

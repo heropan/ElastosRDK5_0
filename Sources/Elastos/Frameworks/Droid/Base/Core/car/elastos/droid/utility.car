@@ -226,6 +226,16 @@ module
         interface ICloneable;
     }
 
+    class CSparseInt32Array {
+        constructor();
+
+        constructor(
+            [in] Int32 initialCapacity);
+
+        interface ISparseInt32Array;
+        interface ICloneable;
+    }
+
     class CTypedValue {
         interface ITypedValue;
     }

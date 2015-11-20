@@ -7,10 +7,46 @@ module
 
     interface IFallbackAction {
         Recycle();
+
+        SetKeyCode(
+            [in] Int32 keyCode);
+
+        GetKeyCode(
+            [out] Int32* keyCode);
+
+        SetMetaState(
+            [in] Int32 metaState);
+
+        GetMetaState(
+            [out] Int32* metaState);
     }
 
+    interface IFallbackActionHelper {
+        Obtain(
+            [out] IFallbackAction** action);
+    }
+
+    [deprecated]
     interface IKeyData {
         const Int32 META_LENGTH = 4;
+
+        SetDisplayLabel(
+            [in] Char32 displayLabel);
+
+        GetDisplayLabel(
+            [out] Char32* displayLabel);
+
+        SetNumber(
+            [in] Char32 number);
+
+        GetNumber(
+            [out] Char32* number);
+
+        SetMeta(
+            [in] ArrayOf<Char32>* meta);
+
+        GetMeta(
+            [out, callee] ArrayOf<Char32>* meta);
     }
 
     /**
@@ -359,6 +395,13 @@ module
 
         GetMap(
             [out] Int32* map);
+
+        // add for JNI
+        GetNative(
+            [out] Handle64* native);
+
+        SetNative(
+            [in] Handle64 native);
     }
 
     [deprecated]
@@ -388,8 +431,10 @@ module
             [out] Boolean* hasKey);
 
         /**
-         * Get the character that is produced by putting accent on the character c.
+         * Get the character that is produced by combining the dead key producing accent
+         * with the key producing character c.
          * For example, getDeadChar('`', 'e') returns &egrave;.
+         * getDeadChar('^', ' ') returns '^' and getDeadChar('^', '^') returns '^'.
          *
          * @param accent The accent character.  eg. '`'
          * @param c The basic character.

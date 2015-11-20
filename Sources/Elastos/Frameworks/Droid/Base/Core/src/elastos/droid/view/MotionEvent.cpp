@@ -2,7 +2,7 @@
 #include "elastos/droid/view/MotionEvent.h"
 #include "elastos/droid/view/CMotionEvent.h"
 #include "elastos/droid/view/InputDevice.h"
-// #include "elastos/droid/view/KeyEvent.h"
+#include "elastos/droid/view/KeyEvent.h"
 #include "elastos/droid/view/CPointerCoords.h"
 #include "elastos/droid/view/CPointerProperties.h"
 #include "elastos/droid/graphics/CMatrix.h"
@@ -2278,8 +2278,7 @@ ECode MotionEvent::ToString(
     msg.Append(", metaState=");
     Int32 metaState;
     GetMetaState(&metaState);
-    assert(0 && "TODO");
-    // msg.Append(KeyEvent::MetaStateToString(metaState));
+    msg.Append(KeyEvent::MetaStateToString(metaState));
     msg.Append(", flags=0x");
     Int32 flags;
     GetFlags(&flags);
@@ -2367,22 +2366,22 @@ String MotionEvent::AxisToString(
 }
 
 ECode MotionEvent::AxisFromString(
-    /* [in] */ String symbolicName,
+    /* [in] */ const String& symbolicName,
     /* [out] */ Int32* axis)
 {
     VALIDATE_NOT_NULL(axis);
+    String str = symbolicName;
 
     if (symbolicName.StartWith(LABEL_PREFIX)) {
-        String str = symbolicName.Substring(LABEL_PREFIX.GetLength());
-        symbolicName = str;
-        Int32 a = NativeAxisFromString(symbolicName);
+        str = symbolicName.Substring(LABEL_PREFIX.GetLength());
+        Int32 a = NativeAxisFromString(str);
         if (a >= 0) {
             *axis = a;
             return NOERROR;
         }
     }
 
-    *axis = StringUtils::ParseInt32(symbolicName, 10);
+    *axis = StringUtils::ParseInt32(str, 10);
     return NOERROR;
     // try {
     //     return Integer.parseInt(symbolicName, 10);
@@ -2482,16 +2481,16 @@ ECode MotionEvent::ReadFromParcel(
 }
 
 ECode MotionEvent::GetNative(
-    /* [out] */ Handle32* native)
+    /* [out] */ Handle64* native)
 {
     VALIDATE_NOT_NULL(native);
-    *native = (Handle32)mNativePtr;
+    *native = (Handle64)mNativePtr;
 
     return NOERROR;
 }
 
 ECode MotionEvent::SetNative(
-    /* [in] */ Handle32 native)
+    /* [in] */ Handle64 native)
 {
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(mNativePtr);
     if (event) {

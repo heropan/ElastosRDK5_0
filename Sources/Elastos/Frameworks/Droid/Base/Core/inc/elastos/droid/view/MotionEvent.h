@@ -647,7 +647,7 @@ public:
      * @see KeyEvent#keyCodeToString(int)
      */
     static CARAPI AxisFromString(
-        /* [in] */ String symbolicName,
+        /* [in] */ const String& symbolicName,
         /* [out] */ Int32* axis);
 
     /**
@@ -1693,10 +1693,10 @@ public:
         /* [in] */ IParcel *dest);
 
     CARAPI GetNative(
-        /* [out] */ Handle32* native);
+        /* [out] */ Handle64* native);
 
     CARAPI SetNative(
-        /* [in] */ Handle32 native);
+        /* [in] */ Handle64 native);
 
     CARAPI_(Int64) GetNativePtr();
 

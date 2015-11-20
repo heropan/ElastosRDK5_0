@@ -1173,10 +1173,6 @@ module
         IsWakeKey(
             [out] Boolean* wakeKey);
 
-        /** @hide */
-        HasDefaultAction(
-            [out] Boolean* hasDefaultAction);
-
         /**
          * <p>Returns the state of the meta keys.</p>
          *
@@ -1778,18 +1774,29 @@ module
             [in] Int32 keyCode,
             [out] Boolean* result);
 
+        /**
+         * Whether this key is a media key, which can be send to apps that are
+         * interested in media key events.
+         *
+         * @hide
+         */
         IsMediaKey(
             [in] Int32 keyCode,
             [out] Boolean* result);
 
+        /** Is this a system key? System keys can not be used for menu shortcuts.
+         * @hide
+         */
         IsSystemKey(
             [in] Int32 keyCode,
             [out] Boolean* result);
 
+        /** @hide */
         IsWakeKey(
             [in] Int32 keyCode,
             [out] Boolean* result);
 
+        /** @hide */
         IsMetaKey(
             [in] Int32 keyCode,
             [out] Boolean* result);
@@ -1946,7 +1953,7 @@ module
          *
          * @param symbolicName The symbolic name of the keycode.
          * @return The keycode or {@link #KEYCODE_UNKNOWN} if not found.
-         * @see #keycodeToString
+         * @see #keycodeToString(int)
          */
         KeyCodeFromString(
             [in] String symbolicName,

@@ -2218,13 +2218,12 @@ module
             [in] Int32 button,
             [out] Boolean* result);
 
-
         // add for JNI
         GetNative(
-            [out] Handle32* native);
+            [out] Handle64* native);
 
         SetNative(
-            [in] Handle32 native);
+            [in] Handle64 native);
     }
 
     [deprecated]

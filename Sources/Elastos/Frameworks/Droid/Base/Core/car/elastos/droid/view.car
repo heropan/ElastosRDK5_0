@@ -333,13 +333,15 @@ module
     //         interface IDispListDispFormat;
     //     }
 
-    //     /**
-    //      * Use with {@link KeyEvent#dispatch(Callback, DispatcherState, Object)}
-    //      * for more advanced key dispatching, such as long presses.
-    //      */
-    //     class CDispatcherState {
-    //         interface IDispatcherState;
-    //     }
+    /**
+     * Use with {@link KeyEvent#dispatch(Callback, DispatcherState, Object)}
+     * for more advanced key dispatching, such as long presses.
+     */
+    class CDispatcherState {
+        constructor();
+
+        interface IDispatcherState;
+    }
 
     //     [local]
     //     class CDragShadowBuilder {
@@ -442,225 +444,232 @@ module
     //         interface IInputDeviceHelper;
     //     }
 
-    //     /**
-    //      * Describes the keys provided by a keyboard device and their associated labels.
-    //      */
-    //     class CKeyCharacterMap {
-    //         constructor();
+    /**
+     * Describes the keys provided by a keyboard device and their associated labels.
+     */
+    class CKeyCharacterMap {
+        constructor(
+            [in] Int32 ptr);
 
-    //         constructor(
-    //             [in] Int32 deviceId,
-    //             [in] Int32 map);
+        constructor(
+            [in] IParcel* source);
 
-    //         constructor(
-    //             [in] IParcel* source);
+        interface IKeyCharacterMap;
+        interface IParcelable;
+    }
 
-    //         interface IKeyCharacterMap;
-    //         interface IParcelable;
-    //     }
+    singleton class CKeyCharacterMapHelper {
+        interface IKeyCharacterMapHelper;
+    }
 
-    //     singleton class CKeyCharacterMapHelper {
-    //         interface IKeyCharacterMapHelper;
-    //     }
+    class CKeyData {
+        constructor();
 
-    //     class CKeyEvent {
-    //         /**
-    //          * Create a new key event.
-    //          *
-    //          * @param action Action code: either {@link #ACTION_DOWN},
-    //          * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
-    //          * @param code The key code.
-    //          */
-    //         constructor(
-    //             [in] Int32 action,
-    //             [in] Int32 code);
+        interface IKeyData;
+    }
 
-    //         /**
-    //          * Create a new key event.
-    //          *
-    //          * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this key code originally went down.
-    //          * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this event happened.
-    //          * @param action Action code: either {@link #ACTION_DOWN},
-    //          * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
-    //          * @param code The key code.
-    //          * @param repeat A repeat count for down events (> 0 if this is after the
-    //          * initial down) or event count for multiple events.
-    //          */
-    //         constructor(
-    //             [in] Int64 downTime,
-    //             [in] Int64 eventTime,
-    //             [in] Int32 action,
-    //             [in] Int32 code,
-    //             [in] Int32 repeat);
+    singleton class CFallbackActionHelper {
+        interface IFallbackActionHelper;
+    }
 
-    //         /**
-    //          * Create a new key event.
-    //          *
-    //          * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this key code originally went down.
-    //          * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this event happened.
-    //          * @param action Action code: either {@link #ACTION_DOWN},
-    //          * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
-    //          * @param code The key code.
-    //          * @param repeat A repeat count for down events (> 0 if this is after the
-    //          * initial down) or event count for multiple events.
-    //          * @param metaState Flags indicating which meta keys are currently pressed.
-    //          */
-    //         constructor(
-    //             [in] Int64 downTime,
-    //             [in] Int64 eventTime,
-    //             [in] Int32 action,
-    //             [in] Int32 code,
-    //             [in] Int32 repeat,
-    //             [in] Int32 metaState);
+    class CKeyEvent {
+        /**
+         * Create a new key event.
+         *
+         * @param action Action code: either {@link #ACTION_DOWN},
+         * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
+         * @param code The key code.
+         */
+        constructor(
+            [in] Int32 action,
+            [in] Int32 code);
 
-    //         /**
-    //          * Create a new key event.
-    //          *
-    //          * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this key code originally went down.
-    //          * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this event happened.
-    //          * @param action Action code: either {@link #ACTION_DOWN},
-    //          * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
-    //          * @param code The key code.
-    //          * @param repeat A repeat count for down events (> 0 if this is after the
-    //          * initial down) or event count for multiple events.
-    //          * @param metaState Flags indicating which meta keys are currently pressed.
-    //          * @param deviceId The device ID that generated the key event.
-    //          * @param scancode Raw device scan code of the event.
-    //          */
-    //         constructor(
-    //             [in] Int64 downTime,
-    //             [in] Int64 eventTime,
-    //             [in] Int32 action,
-    //             [in] Int32 code,
-    //             [in] Int32 repeat,
-    //             [in] Int32 metaState,
-    //             [in] Int32 deviceId,
-    //             [in] Int32 scancode);
+        /**
+         * Create a new key event.
+         *
+         * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this key code originally went down.
+         * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this event happened.
+         * @param action Action code: either {@link #ACTION_DOWN},
+         * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
+         * @param code The key code.
+         * @param repeat A repeat count for down events (> 0 if this is after the
+         * initial down) or event count for multiple events.
+         */
+        constructor(
+            [in] Int64 downTime,
+            [in] Int64 eventTime,
+            [in] Int32 action,
+            [in] Int32 code,
+            [in] Int32 repeat);
 
-    //         /**
-    //          * Create a new key event.
-    //          *
-    //          * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this key code originally went down.
-    //          * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this event happened.
-    //          * @param action Action code: either {@link #ACTION_DOWN},
-    //          * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
-    //          * @param code The key code.
-    //          * @param repeat A repeat count for down events (> 0 if this is after the
-    //          * initial down) or event count for multiple events.
-    //          * @param metaState Flags indicating which meta keys are currently pressed.
-    //          * @param deviceId The device ID that generated the key event.
-    //          * @param scancode Raw device scan code of the event.
-    //          * @param flags The flags for this key event
-    //          */
-    //         constructor(
-    //             [in] Int64 downTime,
-    //             [in] Int64 eventTime,
-    //             [in] Int32 action,
-    //             [in] Int32 code,
-    //             [in] Int32 repeat,
-    //             [in] Int32 metaState,
-    //             [in] Int32 deviceId,
-    //             [in] Int32 scancode,
-    //             [in] Int32 flags);
+        /**
+         * Create a new key event.
+         *
+         * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this key code originally went down.
+         * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this event happened.
+         * @param action Action code: either {@link #ACTION_DOWN},
+         * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
+         * @param code The key code.
+         * @param repeat A repeat count for down events (> 0 if this is after the
+         * initial down) or event count for multiple events.
+         * @param metaState Flags indicating which meta keys are currently pressed.
+         */
+        constructor(
+            [in] Int64 downTime,
+            [in] Int64 eventTime,
+            [in] Int32 action,
+            [in] Int32 code,
+            [in] Int32 repeat,
+            [in] Int32 metaState);
 
-    //         /**
-    //          * Create a new key event.
-    //          *
-    //          * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this key code originally went down.
-    //          * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this event happened.
-    //          * @param action Action code: either {@link #ACTION_DOWN},
-    //          * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
-    //          * @param code The key code.
-    //          * @param repeat A repeat count for down events (> 0 if this is after the
-    //          * initial down) or event count for multiple events.
-    //          * @param metaState Flags indicating which meta keys are currently pressed.
-    //          * @param deviceId The device ID that generated the key event.
-    //          * @param scancode Raw device scan code of the event.
-    //          * @param flags The flags for this key event
-    //          * @param source The input source such as {@link InputDevice#SOURCE_KEYBOARD}.
-    //          */
+        /**
+         * Create a new key event.
+         *
+         * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this key code originally went down.
+         * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this event happened.
+         * @param action Action code: either {@link #ACTION_DOWN},
+         * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
+         * @param code The key code.
+         * @param repeat A repeat count for down events (> 0 if this is after the
+         * initial down) or event count for multiple events.
+         * @param metaState Flags indicating which meta keys are currently pressed.
+         * @param deviceId The device ID that generated the key event.
+         * @param scancode Raw device scan code of the event.
+         */
+        constructor(
+            [in] Int64 downTime,
+            [in] Int64 eventTime,
+            [in] Int32 action,
+            [in] Int32 code,
+            [in] Int32 repeat,
+            [in] Int32 metaState,
+            [in] Int32 deviceId,
+            [in] Int32 scancode);
 
-    //         constructor(
-    //             [in] Int64 downTime,
-    //             [in] Int64 eventTime,
-    //             [in] Int32 action,
-    //             [in] Int32 code,
-    //             [in] Int32 repeat,
-    //             [in] Int32 metaState,
-    //             [in] Int32 deviceId,
-    //             [in] Int32 scancode,
-    //             [in] Int32 flags,
-    //             [in] Int32 source);
+        /**
+         * Create a new key event.
+         *
+         * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this key code originally went down.
+         * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this event happened.
+         * @param action Action code: either {@link #ACTION_DOWN},
+         * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
+         * @param code The key code.
+         * @param repeat A repeat count for down events (> 0 if this is after the
+         * initial down) or event count for multiple events.
+         * @param metaState Flags indicating which meta keys are currently pressed.
+         * @param deviceId The device ID that generated the key event.
+         * @param scancode Raw device scan code of the event.
+         * @param flags The flags for this key event
+         */
+        constructor(
+            [in] Int64 downTime,
+            [in] Int64 eventTime,
+            [in] Int32 action,
+            [in] Int32 code,
+            [in] Int32 repeat,
+            [in] Int32 metaState,
+            [in] Int32 deviceId,
+            [in] Int32 scancode,
+            [in] Int32 flags);
 
-    //         /**
-    //          * Create a new key event for a string of characters.  The key code,
-    //          * action, repeat count and source will automatically be set to
-    //          * {@link #KEYCODE_UNKNOWN}, {@link #ACTION_MULTIPLE}, 0, and
-    //          * {@link InputDevice#SOURCE_KEYBOARD} for you.
-    //          *
-    //          * @param time The time (in {@link android.os.SystemClock#uptimeMillis})
-    //          * at which this event occured.
-    //          * @param characters The string of characters.
-    //          * @param deviceId The device ID that generated the key event.
-    //          * @param flags The flags for this key event
-    //          */
-    //         constructor(
-    //             [in] Int64 time,
-    //             [in] String characters,
-    //             [in] Int32 deviceId,
-    //             [in] Int32 flags);
+        /**
+         * Create a new key event.
+         *
+         * @param downTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this key code originally went down.
+         * @param eventTime The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this event happened.
+         * @param action Action code: either {@link #ACTION_DOWN},
+         * {@link #ACTION_UP}, or {@link #ACTION_MULTIPLE}.
+         * @param code The key code.
+         * @param repeat A repeat count for down events (> 0 if this is after the
+         * initial down) or event count for multiple events.
+         * @param metaState Flags indicating which meta keys are currently pressed.
+         * @param deviceId The device ID that generated the key event.
+         * @param scancode Raw device scan code of the event.
+         * @param flags The flags for this key event
+         * @param source The input source such as {@link InputDevice#SOURCE_KEYBOARD}.
+         */
+        constructor(
+            [in] Int64 downTime,
+            [in] Int64 eventTime,
+            [in] Int32 action,
+            [in] Int32 code,
+            [in] Int32 repeat,
+            [in] Int32 metaState,
+            [in] Int32 deviceId,
+            [in] Int32 scancode,
+            [in] Int32 flags,
+            [in] Int32 source);
 
-    //         /**
-    //          * Make an exact copy of an existing key event.
-    //          */
-    //         constructor(
-    //             [in] IKeyEvent* origEvent);
+        /**
+         * Create a new key event for a string of characters.  The key code,
+         * action, repeat count and source will automatically be set to
+         * {@link #KEYCODE_UNKNOWN}, {@link #ACTION_MULTIPLE}, 0, and
+         * {@link InputDevice#SOURCE_KEYBOARD} for you.
+         *
+         * @param time The time (in {@link android.os.SystemClock#uptimeMillis})
+         * at which this event occured.
+         * @param characters The string of characters.
+         * @param deviceId The device ID that generated the key event.
+         * @param flags The flags for this key event
+         */
+        constructor(
+            [in] Int64 time,
+            [in] String characters,
+            [in] Int32 deviceId,
+            [in] Int32 flags);
 
-    //         /**
-    //          * Copy an existing key event, modifying its time and repeat count.
-    //          *
-    //          * @deprecated Use {@link #changeTimeRepeat(KeyEvent, Int64, Int32)}
-    //          * instead.
-    //          *
-    //          * @param origEvent The existing event to be copied.
-    //          * @param eventTime The new event time
-    //          * (in {@link android.os.SystemClock#uptimeMillis}) of the event.
-    //          * @param newRepeat The new repeat count of the event.
-    //          */
-    //         //@Deprecated
-    //         constructor(
-    //             [in] IKeyEvent* origEvent,
-    //             [in] Int64 eventTime,
-    //             [in] Int32 newRepeat);
+        /**
+         * Make an exact copy of an existing key event.
+         */
+        constructor(
+            [in] IKeyEvent* origEvent);
 
-    //         // private
-    //         constructor(
-    //             [in] IKeyEvent* origEvent,
-    //             [in] Int32 action);
+        /**
+         * Copy an existing key event, modifying its time and repeat count.
+         *
+         * @deprecated Use {@link #changeTimeRepeat(KeyEvent, Int64, Int32)}
+         * instead.
+         *
+         * @param origEvent The existing event to be copied.
+         * @param eventTime The new event time
+         * (in {@link android.os.SystemClock#uptimeMillis}) of the event.
+         * @param newRepeat The new repeat count of the event.
+         */
+        //@Deprecated
+        constructor(
+            [in] IKeyEvent* origEvent,
+            [in] Int64 eventTime,
+            [in] Int32 newRepeat);
 
-    //         // private
-    //         constructor(
-    //             [in] IParcel* parcel);
+        // private
+        constructor(
+            [in] IKeyEvent* origEvent,
+            [in] Int32 action);
 
-    //         constructor();
+        // private
+        constructor(
+            [in] IParcel* parcel);
 
-    //         interface IKeyEvent;
-    //         interface IParcelable;
-    //     }
+        constructor();
 
-    //     singleton class CKeyEventHelper {
-    //         interface IKeyEventHelper;
-    //     }
+        interface IKeyEvent;
+        interface IInputEvent;
+        interface IParcelable;
+    }
+
+    singleton class CKeyEventHelper {
+        interface IKeyEventHelper;
+    }
 
     class CMotionEvent {
         constructor();

@@ -73,7 +73,7 @@ module
          * currently stores.
          */
         GetSize(
-            [out] Int32* value);
+            [out] Int32* size);
 
         /**
          * Given an index in the range <code>0...size()-1</code>, returns
@@ -87,7 +87,7 @@ module
          */
         KeyAt(
             [in] Int32 index,
-            [out] Int32* value);
+            [out] Int32* key);
 
         /**
          * Given an index in the range <code>0...size()-1</code>, returns
@@ -101,13 +101,8 @@ module
          * associated with the largest key.</p>
          */
         ValueAt(
-            [in] Int32* index,
-            [out] Int32* value);
-
-        /** @hide */
-        SetValueAt(
             [in] Int32 index,
-            [in] Int32 value);
+            [out] Int32* value);
 
         /**
          * Returns the index for which {@link #keyAt} would return the
@@ -116,7 +111,7 @@ module
          */
         IndexOfKey(
             [in] Int32 key,
-            [out] Int32* value);
+            [out] Int32* index);
 
         /**
          * Returns an index for which {@link #valueAt} would return the
@@ -128,7 +123,7 @@ module
          */
         IndexOfValue(
             [in] Int32 value,
-            [out] Int32* outval);
+            [out] Int32* index);
 
         /**
          * Removes all key-value mappings from this SparseInt32Array.
@@ -142,15 +137,6 @@ module
         Append(
             [in] Int32 key,
             [in] Int32 value);
-
-        /**
-         * {@inheritDoc}
-         *
-         * <p>This implementation composes a string by iterating over its mappings.
-         */
-        // @Override
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Utility

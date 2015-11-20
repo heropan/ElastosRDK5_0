@@ -1,17 +1,21 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/CKeyEventHelper.h"
-#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/KeyEvent.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
+CAR_INTERFACE_IMPL(CKeyEventHelper, Singleton, IKeyEventHelper);
+
+CAR_SINGLETON_IMPL(CKeyEventHelper);
+
 ECode CKeyEventHelper::GetMaxKeyCode(
     /* [out] */ Int32* keyCode)
 {
     VALIDATE_NOT_NULL(keyCode);
-    *keyCode = CKeyEvent::GetMaxKeyCode();
+    *keyCode = KeyEvent::GetMaxKeyCode();
 
     return NOERROR;
 }
@@ -22,7 +26,7 @@ ECode CKeyEventHelper::GetDeadChar(
     /* [out] */ Int32* deadChar)
 {
     VALIDATE_NOT_NULL(deadChar);
-    *deadChar = CKeyEvent::GetDeadChar(accent, c);
+    *deadChar = KeyEvent::GetDeadChar(accent, c);
 
     return NOERROR;
 }
@@ -42,11 +46,11 @@ ECode CKeyEventHelper::Obtain(
     /* [out] */ IKeyEvent** keyEvent)
 {
     VALIDATE_NOT_NULL(keyEvent);
-    AutoPtr<CKeyEvent> temp = CKeyEvent::Obtain(
-        downTime, eventTime, action, code, repeat, metaState,
-        deviceId, scancode, flags, source, characters);
-    *keyEvent = temp.Get();
-    REFCOUNT_ADD(*keyEvent)
+    AutoPtr<IKeyEvent> temp = KeyEvent::Obtain(
+            downTime, eventTime, action, code, repeat, metaState,
+            deviceId, scancode, flags, source, characters);
+    *keyEvent = temp;
+    REFCOUNT_ADD(*keyEvent);
 
     return NOERROR;
 }
@@ -56,9 +60,9 @@ ECode CKeyEventHelper::Obtain(
     /* [out] */ IKeyEvent** keyEvent)
 {
     VALIDATE_NOT_NULL(keyEvent);
-    AutoPtr<CKeyEvent> temp = CKeyEvent::Obtain(otherEvent);
-    *keyEvent = temp.Get();
-    REFCOUNT_ADD(*keyEvent)
+    AutoPtr<IKeyEvent> temp = KeyEvent::Obtain(otherEvent);
+    *keyEvent = temp;
+    REFCOUNT_ADD(*keyEvent);
 
     return NOERROR;
 }
@@ -70,7 +74,7 @@ ECode CKeyEventHelper::ChangeTimeRepeat(
     /* [out] */ IKeyEvent** newEvent)
 {
     VALIDATE_NOT_NULL(newEvent);
-    return CKeyEvent::ChangeTimeRepeat(event, eventTime, newRepeat, newEvent);
+    return KeyEvent::ChangeTimeRepeat(event, eventTime, newRepeat, newEvent);
 }
 
 ECode CKeyEventHelper::ChangeTimeRepeat(
@@ -81,7 +85,7 @@ ECode CKeyEventHelper::ChangeTimeRepeat(
     /* [out] */ IKeyEvent** newEvent)
 {
     VALIDATE_NOT_NULL(newEvent);
-    return CKeyEvent::ChangeTimeRepeat(event, eventTime, newRepeat, newFlags, newEvent);
+    return KeyEvent::ChangeTimeRepeat(event, eventTime, newRepeat, newFlags, newEvent);
 }
 
 ECode CKeyEventHelper::ChangeAction(
@@ -90,7 +94,7 @@ ECode CKeyEventHelper::ChangeAction(
     /* [out] */ IKeyEvent** newEvent)
 {
     VALIDATE_NOT_NULL(newEvent);
-    return CKeyEvent::ChangeAction(event, action, newEvent);
+    return KeyEvent::ChangeAction(event, action, newEvent);
 }
 
 ECode CKeyEventHelper::ChangeFlags(
@@ -99,7 +103,7 @@ ECode CKeyEventHelper::ChangeFlags(
     /* [out] */ IKeyEvent** newEvent)
 {
     VALIDATE_NOT_NULL(event);
-    return CKeyEvent::ChangeFlags(event, flags, newEvent);
+    return KeyEvent::ChangeFlags(event, flags, newEvent);
 }
 
 ECode CKeyEventHelper::IsGamepadButton(
@@ -107,7 +111,57 @@ ECode CKeyEventHelper::IsGamepadButton(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
-    *res = CKeyEvent::IsGamepadButton(keyCode);
+    *res = KeyEvent::IsGamepadButton(keyCode);
+
+    return NOERROR;
+}
+
+ECode CKeyEventHelper::IsConfirmKey(
+    /* [in] */ Int32 keyCode,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = KeyEvent::IsConfirmKey(keyCode);
+
+    return NOERROR;
+}
+
+ECode CKeyEventHelper::IsMediaKey(
+    /* [in] */ Int32 keyCode,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = KeyEvent::IsMediaKey(keyCode);
+
+    return NOERROR;
+}
+
+ECode CKeyEventHelper::IsSystemKey(
+    /* [in] */ Int32 keyCode,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = KeyEvent::IsSystemKey(keyCode);
+
+    return NOERROR;
+}
+
+ECode CKeyEventHelper::IsWakeKey(
+    /* [in] */ Int32 keyCode,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = KeyEvent::IsWakeKey(keyCode);
+
+    return NOERROR;
+}
+
+ECode CKeyEventHelper::IsMetaKey(
+    /* [in] */ Int32 keyCode,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = KeyEvent::IsMetaKey(keyCode);
 
     return NOERROR;
 }
@@ -116,7 +170,7 @@ ECode CKeyEventHelper::GetModifierMetaStateMask(
     /* [out] */ Int32* mask)
 {
     VALIDATE_NOT_NULL(mask);
-    *mask = CKeyEvent::GetModifierMetaStateMask();
+    *mask = KeyEvent::GetModifierMetaStateMask();
 
     return NOERROR;
 }
@@ -126,7 +180,7 @@ ECode CKeyEventHelper::IsModifierKey(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
-    *res = CKeyEvent::IsModifierKey(keyCode);
+    *res = KeyEvent::IsModifierKey(keyCode);
 
     return NOERROR;
 }
@@ -136,7 +190,7 @@ ECode CKeyEventHelper::NormalizeMetaState(
     /* [out] */ Int32* normalizeMetaState)
 {
     VALIDATE_NOT_NULL(normalizeMetaState);
-    *normalizeMetaState = CKeyEvent::NormalizeMetaState(metaState);
+    *normalizeMetaState = KeyEvent::NormalizeMetaState(metaState);
 
     return NOERROR;
 }
@@ -146,11 +200,10 @@ ECode CKeyEventHelper::MetaStateHasNoModifiers(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
-    *res = CKeyEvent::MetaStateHasNoModifiers(metaState);
+    *res = KeyEvent::MetaStateHasNoModifiers(metaState);
 
     return NOERROR;
 }
-
 
 ECode CKeyEventHelper::MetaStateHasModifiers(
     /* [in] */ Int32 metaState,
@@ -158,7 +211,7 @@ ECode CKeyEventHelper::MetaStateHasModifiers(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
-    return CKeyEvent::MetaStateHasModifiers(metaState, modifiers, res);
+    return KeyEvent::MetaStateHasModifiers(metaState, modifiers, res);
 }
 
 ECode CKeyEventHelper::ActionToString(
@@ -166,7 +219,7 @@ ECode CKeyEventHelper::ActionToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = CKeyEvent::ActionToString(action);
+    *str = KeyEvent::ActionToString(action);
 
     return NOERROR;
 }
@@ -176,7 +229,7 @@ ECode CKeyEventHelper::KeyCodeToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = CKeyEvent::KeyCodeToString(keyCode);
+    *str = KeyEvent::KeyCodeToString(keyCode);
 
     return NOERROR;
 }
@@ -186,7 +239,7 @@ ECode CKeyEventHelper::KeyCodeFromString(
     /* [out] */ Int32* keyCode)
 {
     VALIDATE_NOT_NULL(keyCode);
-    return CKeyEvent::KeyCodeFromString(symbolicName, keyCode);
+    return KeyEvent::KeyCodeFromString(symbolicName, keyCode);
 }
 
 ECode CKeyEventHelper::MetaStateToString(
@@ -194,7 +247,7 @@ ECode CKeyEventHelper::MetaStateToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = CKeyEvent::MetaStateToString(metaState);
+    *str = KeyEvent::MetaStateToString(metaState);
 
     return NOERROR;
 }
@@ -204,7 +257,7 @@ ECode CKeyEventHelper::CreateFromParcelBody(
     /* [out] */ IKeyEvent** newEvent)
 {
     VALIDATE_NOT_NULL(newEvent);
-    return CKeyEvent::CreateFromParcelBody(in, newEvent);
+    return KeyEvent::CreateFromParcelBody(in, newEvent);
 }
 
 }   //namespace View

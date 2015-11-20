@@ -1,21 +1,27 @@
 
 #include "elastos/droid/view/CKeyCharacterMapHelper.h"
-#include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/KeyCharacterMap.h"
 
-using namespace Elastos::Droid::View;
+namespace Elastos {
+namespace Droid {
+namespace View {
+
+CAR_INTERFACE_IMPL(CKeyCharacterMapHelper, Singleton, IKeyCharacterMapHelper);
+
+CAR_SINGLETON_IMPL(CKeyCharacterMapHelper);
 
 ECode CKeyCharacterMapHelper::Load(
     /* [in] */ Int32 deviceId,
     /* [out] */ IKeyCharacterMap** kcm)
 {
-    return CKeyCharacterMap::Load(deviceId, kcm);
+    return KeyCharacterMap::Load(deviceId, kcm);
 }
 
 ECode CKeyCharacterMapHelper::DeviceHasKey(
     /* [in] */ Int32 keyCode,
     /* [out] */ Boolean* hasKey)
 {
-    return CKeyCharacterMap::DeviceHasKey(keyCode, hasKey);
+    return KeyCharacterMap::DeviceHasKey(keyCode, hasKey);
 }
 
 ECode CKeyCharacterMapHelper::GetDeadChar(
@@ -24,14 +30,18 @@ ECode CKeyCharacterMapHelper::GetDeadChar(
     /* [out] */ Int32* deadChar)
 {
     VALIDATE_NOT_NULL(deadChar);
-    *deadChar = CKeyCharacterMap::GetDeadChar(accent, c);
+    *deadChar = KeyCharacterMap::GetDeadChar(accent, c);
 
     return NOERROR;
 }
 
 ECode CKeyCharacterMapHelper::DeviceHasKeys(
-    /* [in] */ const ArrayOf<Int32>& keyCodes,
+    /* [in] */ ArrayOf<Int32>* keyCodes,
     /* [in] */ ArrayOf<Boolean>** hasKeys)
 {
-    return CKeyCharacterMap::DeviceHasKeys(keyCodes, hasKeys);
+    return KeyCharacterMap::DeviceHasKeys(keyCodes, hasKeys);
 }
+
+}   //namespace View
+}   //namespace Droid
+}   //namespace Elastos
