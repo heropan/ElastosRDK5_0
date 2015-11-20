@@ -26,7 +26,7 @@ ECode NetworkChangeNotifier::InnerNetworkChangeNotifierAutoDetectObserver::OnCon
     // ==================before translated======================
     // updateCurrentConnectionType(newConnectionType);
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     mOwner->UpdateCurrentConnectionType(newConnectionType);
     return NOERROR;
 }

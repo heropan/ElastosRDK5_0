@@ -4,8 +4,11 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+CAR_OBJECT_IMPL(CViewPropertyAnimator)
+
 CViewPropertyAnimator::CViewPropertyAnimator()
-{}
+{
+}
 
 ECode CViewPropertyAnimator::constructor(
     /* [in] */ IView* v)
@@ -22,8 +25,7 @@ ECode CViewPropertyAnimator::SetDuration(
 ECode CViewPropertyAnimator::GetDuration(
     /* [out] */ Int64* duration)
 {
-    *duration = ViewPropertyAnimator::GetDuration();
-    return NOERROR;
+    return ViewPropertyAnimator::GetDuration(duration);
 }
 
 ECode CViewPropertyAnimator::SetStartDelay(
@@ -35,8 +37,7 @@ ECode CViewPropertyAnimator::SetStartDelay(
 ECode CViewPropertyAnimator::GetStartDelay(
     /* [out] */ Int64* delay)
 {
-    *delay = ViewPropertyAnimator::GetStartDelay();
-    return NOERROR;
+    return ViewPropertyAnimator::GetStartDelay(delay);
 }
 
 ECode CViewPropertyAnimator::SetInterpolator(

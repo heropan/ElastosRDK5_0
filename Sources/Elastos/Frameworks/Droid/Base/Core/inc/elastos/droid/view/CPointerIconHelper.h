@@ -3,16 +3,18 @@
 #define __ELASTOS_DROID_VIEW_CPOINTERICONHELPER_H__
 
 #include "_Elastos_Droid_View_CPointerIconHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::IBitmap;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CPointerIconHelper)
+    , public Object
 {
 public:
     /**
@@ -103,3 +105,4 @@ public:
 } // namespace Elastos
 
 #endif //__ELASTOS_DROID_VIEW_CPOINTERICONHELPER_H__
+

@@ -1,12 +1,17 @@
-#include "elastos/droid/view/ViewPropertyAnimator.h"
 #include "elastos/droid/animation/CValueAnimator.h"
 #include "elastos/droid/view/View.h"
+#include "elastos/droid/view/ViewPropertyAnimator.h"
 
-using Elastos::Droid::Animation::ValueAnimator;
 using Elastos::Droid::Animation::CValueAnimator;
-using Elastos::Droid::Animation::IValueAnimator;
 using Elastos::Droid::Animation::EIID_IAnimatorListener;
 using Elastos::Droid::Animation::EIID_IAnimatorUpdateListener;
+using Elastos::Droid::Animation::IAnimator;
+using Elastos::Droid::Animation::IValueAnimator;
+using Elastos::Droid::Animation::ValueAnimator;
+using Elastos::Droid::View::EIID_IViewPropertyAnimator;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::ISet;
 
 namespace Elastos {
 namespace Droid {
@@ -25,64 +30,54 @@ const Int32 ViewPropertyAnimator::_Y;
 const Int32 ViewPropertyAnimator::ALPHA;
 const Int32 ViewPropertyAnimator::TRANSFORM_MASK;
 
-/*---------------------------------AnimatorEventListener---------------------------------*/
-
-PInterface ViewPropertyAnimator::AnimatorEventListener::Probe(
-    /* [in] */ REIID riid)
+//=====================================================================
+//               ViewPropertyAnimator::NameValuesHolder
+//=====================================================================
+ViewPropertyAnimator::NameValuesHolder::NameValuesHolder(
+    /* [in] */ Int32 nameConstant,
+    /* [in] */ Float fromeValue,
+    /* [in] */ Float deltaValue)
+    : mNameConstant(nameConstant)
+    , mFromValue(fromeValue)
+    , mDeltaValue(deltaValue)
 {
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IAnimatorListener*)this;
-    } else if (riid == EIID_IAnimatorListener) {
-        return (IAnimatorListener*)this;
-    } else if (riid == EIID_IAnimatorUpdateListener) {
-        return (IAnimatorUpdateListener*)this;
-    }
-    return NULL;
 }
 
-UInt32 ViewPropertyAnimator::AnimatorEventListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ViewPropertyAnimator::AnimatorEventListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ViewPropertyAnimator::AnimatorEventListener::GetInterfaceID(
-    /* [in] */ IInterface *object,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (object == (IAnimatorListener*)this) {
-        *pIID = EIID_IAnimatorListener;
-    } else if (object == (IAnimatorUpdateListener*)this) {
-        *pIID = EIID_IAnimatorUpdateListener;
-    } else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
+//=====================================================================
+//         ViewPropertyAnimator::AnimatorEventListener
+//=====================================================================
+CAR_INTERFACE_IMPL_2(ViewPropertyAnimator::AnimatorEventListener, Object, IAnimatorUpdateListener, IAnimatorListener)
 
 ViewPropertyAnimator::AnimatorEventListener::AnimatorEventListener(
-    /* [in] */ ViewPropertyAnimator* host) : mHost(host)
-{}
+    /* [in] */ ViewPropertyAnimator* host)
+    : mHost(host)
+{
+    assert(NULL != mHost);
+}
 
 ECode ViewPropertyAnimator::AnimatorEventListener::OnAnimationStart(
     /* [in] */ IAnimator* animation)
 {
     if (mHost->mAnimatorSetupMap != NULL) {
-        RNIterator it = mHost->mAnimatorSetupMap->Find(animation);
-        if (it != mHost->mAnimatorSetupMap->End()) {
-            it->mSecond->Run();
-            mHost->mAnimatorSetupMap->Erase(animation);
+        Boolean containKey = FALSE;
+        mHost->mAnimatorSetupMap->ContainsKey(TO_IINTERFACE(animation), &containKey);
+        if (containKey) {
+            AutoPtr<IInterface> valueTmp;
+            mHost->mAnimatorSetupMap->Get(TO_IINTERFACE(animation), (IInterface**)&valueTmp);
+            IRunnable* value = IRunnable::Probe(valueTmp);
+            value->Run();
+            mHost->mAnimatorSetupMap->Remove(TO_IINTERFACE(animation));
         }
     }
     if (mHost->mAnimatorOnStartMap != NULL) {
-        RNIterator it = mHost->mAnimatorOnStartMap->Find(animation);
-        if (it != mHost->mAnimatorOnStartMap->End()) {
-            it->mSecond->Run();
-            mHost->mAnimatorOnStartMap->Erase(animation);
+        Boolean containKey = FALSE;
+        mHost->mAnimatorOnStartMap->ContainsKey(TO_IINTERFACE(animation), &containKey);
+        if (containKey) {
+            AutoPtr<IInterface> valueTmp;
+            mHost->mAnimatorOnStartMap->Get(TO_IINTERFACE(animation), (IInterface**)&valueTmp);
+            IRunnable* value = IRunnable::Probe(valueTmp);
+            value->Run();
+            mHost->mAnimatorOnStartMap->Remove(TO_IINTERFACE(animation));
         }
     }
     if (mHost->mListener != NULL) {
@@ -99,20 +94,28 @@ ECode ViewPropertyAnimator::AnimatorEventListener::OnAnimationEnd(
         mHost->mListener->OnAnimationEnd(animation);
     }
     if (mHost->mAnimatorOnEndMap != NULL) {
-        RNIterator it = mHost->mAnimatorOnEndMap->Find(animation);
-        if (it != mHost->mAnimatorOnEndMap->End()) {
-            it->mSecond->Run();
-            mHost->mAnimatorOnEndMap->Erase(animation);
+        Boolean containKey = FALSE;
+        mHost->mAnimatorOnEndMap->ContainsKey(TO_IINTERFACE(animation), &containKey);
+        if (containKey) {
+            AutoPtr<IInterface> valueTmp;
+            mHost->mAnimatorOnEndMap->Get(TO_IINTERFACE(animation), (IInterface**)&valueTmp);
+            IRunnable* value = IRunnable::Probe(valueTmp);
+            value->Run();
+            mHost->mAnimatorOnEndMap->Remove(TO_IINTERFACE(animation));
         }
     }
     if (mHost->mAnimatorCleanupMap != NULL) {
-        RNIterator it = mHost->mAnimatorCleanupMap->Find(animation);
-        if (it != mHost->mAnimatorCleanupMap->End()) {
-            it->mSecond->Run();
-            mHost->mAnimatorCleanupMap->Erase(animation);
+        Boolean containKey = FALSE;
+        mHost->mAnimatorCleanupMap->ContainsKey(TO_IINTERFACE(animation), &containKey);
+        if (containKey) {
+            AutoPtr<IInterface> valueTmp;
+            mHost->mAnimatorCleanupMap->Get(TO_IINTERFACE(animation), (IInterface**)&valueTmp);
+            IRunnable* value = IRunnable::Probe(valueTmp);
+            value->Run();
+            mHost->mAnimatorCleanupMap->Remove(TO_IINTERFACE(animation));
         }
     }
-    mHost->mAnimatorMap->Erase(animation);
+    mHost->mAnimatorMap->Remove(TO_IINTERFACE(animation));
     return NOERROR;
 }
 
@@ -124,11 +127,12 @@ ECode ViewPropertyAnimator::AnimatorEventListener::OnAnimationCancel(
     }
 
     if (mHost->mAnimatorOnEndMap != NULL) {
-        if (mHost->mAnimatorOnEndMap->IsEmpty() == FALSE) {
-            mHost->mAnimatorOnEndMap->Erase(animation);
+        Boolean isEmpty = FALSE;
+        mHost->mAnimatorOnEndMap->IsEmpty(&isEmpty);
+        if (!isEmpty) {
+            mHost->mAnimatorOnEndMap->Remove(TO_IINTERFACE(animation));
         }
     }
-
     return NOERROR;
 }
 
@@ -144,19 +148,22 @@ ECode ViewPropertyAnimator::AnimatorEventListener::OnAnimationRepeat(
 ECode ViewPropertyAnimator::AnimatorEventListener::OnAnimationUpdate(
     /* [in] */ IValueAnimator* animation)
 {
-    AutoPtr<PropertyBundle> propertyBundle;
-    PIterator it = mHost->mAnimatorMap->Find(animation);
-    if(it != mHost->mAnimatorMap->End())
-    {
-        propertyBundle = it->mSecond;
+    AutoPtr<PropertyBundle> propertyBundle = NULL;
+    Boolean containKey = FALSE;
+    mHost->mAnimatorMap->ContainsKey(TO_IINTERFACE(animation), &containKey);
+    if (containKey) {
+        AutoPtr<IInterface> valueTmp;
+        mHost->mAnimatorMap->Get(TO_IINTERFACE(animation), (IInterface**)&valueTmp);
+        IObject* objTmp = IObject::Probe(valueTmp);
+        propertyBundle = (PropertyBundle*)objTmp;
     }
     if (propertyBundle == NULL) {
         // Shouldn't happen, but just to play it safe
         return NOERROR;
     }
-    AutoPtr<IDisplayList> dl;
-    mHost->mView->GetDisplayList((IDisplayList**)&dl);
-    Boolean useDisplayListProperties = dl != NULL;
+
+    Boolean hardwareAccelerated = FALSE;
+    mHost->mView->IsHardwareAccelerated(&hardwareAccelerated);
 
     // alpha requires slightly different treatment than the other (transform) properties.
     // The logic in setAlpha() is not simply setting mAlpha, plus the invalidation
@@ -164,14 +171,14 @@ ECode ViewPropertyAnimator::AnimatorEventListener::OnAnimationUpdate(
     // We track what kinds of properties are set, and how alpha is handled when it is
     // set, and perform the invalidation steps appropriately.
     Boolean alphaHandled = FALSE;
-    if (!useDisplayListProperties) {
+    if (!hardwareAccelerated) {
         VIEW_PROBE(mHost->mView)->InvalidateParentCaches();
     }
     Float fraction;
     animation->GetAnimatedFraction(&fraction);
     Int32 propertyMask = propertyBundle->mPropertyMask;
     if ((propertyMask & TRANSFORM_MASK) != 0) {
-        VIEW_PROBE(mHost->mView)->InvalidateViewProperty(FALSE, FALSE);
+        VIEW_PROBE(mHost->mView)->InvalidateViewProperty(hardwareAccelerated, FALSE);
     }
     AutoPtr< List<AutoPtr<NameValuesHolder> > > valueList = propertyBundle->mNameValuesHolder;
     if (valueList != NULL) {
@@ -187,8 +194,7 @@ ECode ViewPropertyAnimator::AnimatorEventListener::OnAnimationUpdate(
         }
     }
     if ((propertyMask & TRANSFORM_MASK) != 0) {
-        VIEW_PROBE(mHost->mView)->mTransformationInfo->mMatrixDirty = TRUE;
-        if (!useDisplayListProperties) {
+        if (!hardwareAccelerated) {
             VIEW_PROBE(mHost->mView)->mPrivateFlags |= View::PFLAG_DRAWN; // force another invalidation
         }
     }
@@ -196,13 +202,20 @@ ECode ViewPropertyAnimator::AnimatorEventListener::OnAnimationUpdate(
     // via the call to setAlphaNoInvalidation(), above
     if (alphaHandled) {
         VIEW_PROBE(mHost->mView)->Invalidate(TRUE);
-    } else {
+    }
+    else {
         VIEW_PROBE(mHost->mView)->InvalidateViewProperty(FALSE, FALSE);
+    }
+
+    if (mHost->mUpdateListener != NULL) {
+        mHost->mUpdateListener->OnAnimationUpdate(animation);
     }
     return NOERROR;
 }
 
-/*---------------------------------PropertyBundle---------------------------------*/
+//=====================================================================
+//              ViewPropertyAnimator::PropertyBundle
+//=====================================================================
 ViewPropertyAnimator::PropertyBundle::PropertyBundle(
     /* [in] */ Int32 propertyMask,
     /* [in] */ List<AutoPtr<NameValuesHolder> >* nameValuesHolder)
@@ -232,45 +245,69 @@ Boolean ViewPropertyAnimator::PropertyBundle::Cancel(
     return FALSE;
 }
 
-/*---------------------------------NameValuesHolder---------------------------------*/
+//=====================================================================
+//         ViewPropertyAnimator::InnerStartAnimationRunnable
+//=====================================================================
+CAR_INTERFACE_IMPL(ViewPropertyAnimator::InnerStartAnimationRunnable, Object, IRunnable)
 
-ViewPropertyAnimator::NameValuesHolder::NameValuesHolder(
-    /* [in] */ Int32 nameConstant,
-    /* [in] */ Float fromeValue,
-    /* [in] */ Float deltaValue)
-    : mNameConstant(nameConstant)
-    , mFromValue(fromeValue)
-    , mDeltaValue(deltaValue)
-{}
-
-/*---------------------------------InnerRunnable---------------------------------*/
-
-ViewPropertyAnimator::InnerRunnable::InnerRunnable(
-    /* [in] */ ViewPropertyAnimator* host)
-    : mHost(host)
-{}
-
-ECode ViewPropertyAnimator::InnerRunnable::Run()
+ViewPropertyAnimator::InnerStartAnimationRunnable::InnerStartAnimationRunnable(
+    /* [in] */ ViewPropertyAnimator* owner)
+    : mOwner(owner)
 {
-    mHost->StartAnimation();
+}
+
+ECode ViewPropertyAnimator::InnerStartAnimationRunnable::Run()
+{
+    assert(NULL != mOwner);
+    mOwner->StartAnimation();
     return NOERROR;
 }
 
-/*---------------------------------InnerRunnableEx---------------------------------*/
-ViewPropertyAnimator::InnerRunnableEx::InnerRunnable(
-    /* [in] */ ViewPropertyAnimator* host,
+//=====================================================================
+//         ViewPropertyAnimator::InnerBuildLayerRunnable
+//=====================================================================
+CAR_INTERFACE_IMPL(ViewPropertyAnimator::InnerBuildLayerRunnable, Object, IRunnable)
+
+ViewPropertyAnimator::InnerBuildLayerRunnable::InnerBuildLayerRunnable(
+    /* [in] */ ViewPropertyAnimator* owner)
+    : mOwner(owner)
+{
+}
+
+ECode ViewPropertyAnimator::InnerBuildLayerRunnable::Run()
+{
+    assert(NULL != mOwner);
+    //mOwner->mView->SetLayerType(IView::LAYER_TYPE_HARDWARE, NULL);
+    if (-1/*mOwner->mView->IsAttachedToWindow()*/) {
+        //mOwner->mView->BuildLayer();
+    }
+    return NOERROR;
+}
+
+//=====================================================================
+//         ViewPropertyAnimator::InnerSetLayerTypeRunnable
+//=====================================================================
+CAR_INTERFACE_IMPL(ViewPropertyAnimator::InnerSetLayerTypeRunnable, Object, IRunnable)
+
+ViewPropertyAnimator::InnerSetLayerTypeRunnable::InnerSetLayerTypeRunnable(
+    /* [in] */ ViewPropertyAnimator* owner,
     /* [in] */ Int32 type)
-    : mHost(host)
+    : mOwner(owner)
     , mType(type)
-{}
-
-ECode ViewPropertyAnimator::InnerRunnableEx::Run()
 {
-    mHost->mView->SetLayerType(mType, NULL);
+}
+
+ECode ViewPropertyAnimator::InnerSetLayerTypeRunnable::Run()
+{
+    assert(NULL != mOwner);
+    mOwner->mView->SetLayerType(mType, NULL);
     return NOERROR;
 }
 
-/*---------------------------------ViewPropertyAnimator---------------------------------*/
+//=====================================================================
+//                          ViewPropertyAnimator
+//=====================================================================
+CAR_INTERFACE_IMPL(ViewPropertyAnimator, Object, IViewPropertyAnimator)
 
 ViewPropertyAnimator::ViewPropertyAnimator(
     /* [in] */ IView* view)
@@ -282,9 +319,9 @@ ViewPropertyAnimator::ViewPropertyAnimator(
     , mInterpolatorSet(FALSE)
 {
     mPendingAnimations = new List<AutoPtr<NameValuesHolder> >();
-    mAnimatorMap = new HashMap<AutoPtr<IAnimator>, AutoPtr<PropertyBundle> >();
+    CHashMap::New((IHashMap**)&mAnimatorMap);
     mAnimatorEventListener = new AnimatorEventListener(this);
-    mAnimationStarter = new InnerRunnable(this);
+    mAnimationStarter = new InnerStartAnimationRunnable(this);
     VIEW_PROBE(view)->EnsureTransformationInfo();
 }
 
@@ -296,9 +333,9 @@ ViewPropertyAnimator::ViewPropertyAnimator()
     , mInterpolatorSet(FALSE)
 {
     mPendingAnimations = new List<AutoPtr<NameValuesHolder> >();
-    mAnimatorMap = new HashMap<AutoPtr<IAnimator>, AutoPtr<PropertyBundle> >();
+    CHashMap::New((IHashMap**)&mAnimatorMap);
     mAnimatorEventListener = new AnimatorEventListener(this);
-    mAnimationStarter = new InnerRunnable(this);
+    mAnimationStarter = new InnerStartAnimationRunnable(this);
 }
 
 ECode ViewPropertyAnimator::Init(
@@ -332,40 +369,61 @@ ECode ViewPropertyAnimator::SetDuration(
     return NOERROR;
 }
 
-Int64 ViewPropertyAnimator::GetDuration()
+ECode ViewPropertyAnimator::GetDuration(
+    /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result);
+    // ==================before translated======================
+    // if (mDurationSet) {
+    //     return mDuration;
+    // } else {
+    //     // Just return the default from ValueAnimator, since that's what we'd get if
+    //     // the value has not been set otherwise
+    //     if (mTempValueAnimator == null) {
+    //         mTempValueAnimator = new ValueAnimator();
+    //     }
+    //     return mTempValueAnimator.getDuration();
+    // }
+
     if (mDurationSet) {
-        return mDuration;
-    } else {
+        *result = mDuration;
+        return NOERROR;
+    }
+    else {
         // Just return the default from ValueAnimator, since that's what we'd get if
         // the value has not been set otherwise
-        AutoPtr<IValueAnimator> va;
-        CValueAnimator::New((IValueAnimator**)&va);
-        Int64 duration;
-        va->GetDuration(&duration);
-        return duration;
+        if (NULL == mTempValueAnimator) {
+            CValueAnimator::New((IValueAnimator**)&mTempValueAnimator);
+        }
+
+        return NOERROR;//-- aim car wrong: mTempValueAnimator->GetDuration(result);
     }
 }
 
-Int64 ViewPropertyAnimator::GetStartDelay()
+ECode ViewPropertyAnimator::GetStartDelay(
+    /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (mStartDelaySet) {
-        return mStartDelay;
-    } else {
+        *result = mStartDelay;
+    }
+    else {
         // Just return the default from ValueAnimator (0), since that's what we'd get if
         // the value has not been set otherwise
-        return 0;
+        *result = 0;
     }
+    return NOERROR;
 }
 
 ECode ViewPropertyAnimator::SetStartDelay(
     /* [in] */ Int64 startDelay)
 {
     if (startDelay < 0) {
-        // throw new IllegalArgumentException("Animators cannot have negative duration: " +
-        //         startDelay);
+        //throw new IllegalArgumentException("Animators cannot have negative start " +
+        //        "delay: " + startDelay);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     mStartDelaySet = TRUE;
     mStartDelay = startDelay;
     return NOERROR;
@@ -379,6 +437,37 @@ ECode ViewPropertyAnimator::SetInterpolator(
     return NOERROR;
 }
 
+ECode ViewPropertyAnimator::GetInterpolator(
+    /* [out] */ ITimeInterpolator** result)
+{
+    VALIDATE_NOT_NULL(result);
+    // ==================before translated======================
+    // if (mInterpolatorSet) {
+    //     return mInterpolator;
+    // } else {
+    //     // Just return the default from ValueAnimator, since that's what we'd get if
+    //     // the value has not been set otherwise
+    //     if (mTempValueAnimator == null) {
+    //         mTempValueAnimator = new ValueAnimator();
+    //     }
+    //     return mTempValueAnimator.getInterpolator();
+    // }
+
+    if (mInterpolatorSet) {
+        *result = mInterpolator;
+        REFCOUNT_ADD(*result);
+    }
+    else {
+        // Just return the default from ValueAnimator, since that's what we'd get if
+        // the value has not been set otherwise
+        if (NULL == mTempValueAnimator) {
+            CValueAnimator::New((IValueAnimator**)&mTempValueAnimator);
+        }
+        mTempValueAnimator->GetInterpolator((ITimeInterpolator**)result);
+    }
+    return NOERROR;
+}
+
 ECode ViewPropertyAnimator::SetListener(
     /* [in] */ IAnimatorListener* listener)
 {
@@ -386,24 +475,67 @@ ECode ViewPropertyAnimator::SetListener(
     return NOERROR;
 }
 
+ECode ViewPropertyAnimator::GetListener(
+    /* [out] */ IAnimatorListener** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mListener;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode ViewPropertyAnimator::SetUpdateListener(
+    /* [in] */ IAnimatorUpdateListener* listener)
+{
+    VALIDATE_NOT_NULL(listener);
+    mUpdateListener = listener;
+    return NOERROR;
+}
+
+ECode ViewPropertyAnimator::GetUpdateListener(
+    /* [out] */ IAnimatorUpdateListener** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mUpdateListener;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
 ECode ViewPropertyAnimator::Start()
 {
-    VIEW_PROBE(mView)->RemoveCallbacks(mAnimationStarter);
+    Boolean resTmp = FALSE;
+    VIEW_PROBE(mView)->RemoveCallbacks(mAnimationStarter, &resTmp);
     StartAnimation();
     return NOERROR;
 }
 
 ECode ViewPropertyAnimator::Cancel()
 {
-    if (mAnimatorMap->IsEmpty() == FALSE) {
-        HashMap<AutoPtr<IAnimator>, AutoPtr<PropertyBundle> > mAnimatorMapCopy(mAnimatorMap->Begin(), mAnimatorMap->End());
-        PIterator it = mAnimatorMapCopy.Begin();
-        for (; it != mAnimatorMapCopy.End(); it++) {
-            it->mFirst->Cancel();
+    Int32 size = 0;
+    mAnimatorMap->GetSize(&size);
+    if (size > 0) {
+        AutoPtr<ISet> keySet;
+        mAnimatorMap->GetKeySet((ISet**)&keySet);
+        AutoPtr< ArrayOf<IInterface*> > keyArray;
+        keySet->ToArray((ArrayOf<IInterface*>**)&keyArray);
+        Int32 keySize = keyArray->GetLength();
+        for (Int32 idx=0; idx<keySize; ++idx) {
+            IInterface* interfaceTmp = (*keyArray)[idx];
+            IAnimator* animatorTmp = IAnimator::Probe(interfaceTmp);
+            animatorTmp->Cancel();
         }
     }
     mPendingAnimations->Clear();
-    VIEW_PROBE(mView)->RemoveCallbacks(mAnimationStarter);
+    mPendingSetupAction = NULL;
+    mPendingCleanupAction = NULL;
+    mPendingOnStartAction = NULL;
+    mPendingOnEndAction = NULL;
+
+    Boolean resTmp = FALSE;
+    mView->RemoveCallbacks(mAnimationStarter, &resTmp);
+    if (mRTBackend != NULL) {
+        //mRTBackend->CancelAll();
+    }
     return NOERROR;
 }
 
@@ -432,6 +564,20 @@ ECode ViewPropertyAnimator::YBy(
     /* [in] */ Float value)
 {
     AnimatePropertyBy(_Y, value);
+    return NOERROR;
+}
+
+ECode ViewPropertyAnimator::Z(
+    /* [in] */ Float value)
+{
+    AnimateProperty(_Z, value);
+    return NOERROR;
+}
+
+ECode ViewPropertyAnimator::ZBy(
+    /* [in] */ Float value)
+{
+    AnimatePropertyBy(_Z, value);
     return NOERROR;
 }
 
@@ -506,6 +652,20 @@ ECode ViewPropertyAnimator::TranslationYBy(
     return NOERROR;
 }
 
+ECode ViewPropertyAnimator::TranslationZ(
+    /* [in] */ Float value)
+{
+    AnimateProperty(TRANSLATION_Z, value);
+    return NOERROR;
+}
+
+ECode ViewPropertyAnimator::TranslationZBy(
+    /* [in] */ Float value)
+{
+    AnimatePropertyBy(TRANSLATION_Z, value);
+    return NOERROR;
+}
+
 ECode ViewPropertyAnimator::ScaleX(
     /* [in] */ Float value)
 {
@@ -550,15 +710,15 @@ ECode ViewPropertyAnimator::AlphaBy(
 
 ECode ViewPropertyAnimator::WithLayer()
 {
-    mPendingSetupAction = new InnerRunnable(this, IView::LAYER_TYPE_HARDWARE);
+    mPendingSetupAction = new InnerBuildLayerRunnable(this);
     Int32 currentLayerType;
     mView->GetLayerType(&currentLayerType);
-    mPendingCleanupAction = new InnerRunnable(this, currentLayerType);
+    mPendingCleanupAction = new InnerSetLayerTypeRunnable(this, currentLayerType);
     if (mAnimatorSetupMap == NULL) {
-        mAnimatorSetupMap = new HashMap<AutoPtr<IAnimator>, AutoPtr<IRunnable> >();
+        CHashMap::New((IHashMap**)&mAnimatorSetupMap);
     }
     if (mAnimatorCleanupMap == NULL) {
-        mAnimatorCleanupMap = new HashMap<AutoPtr<IAnimator>, AutoPtr<IRunnable> >();
+        CHashMap::New((IHashMap**)&mAnimatorCleanupMap);
     }
     return NOERROR;
 }
@@ -568,7 +728,7 @@ ECode ViewPropertyAnimator::WithStartAction(
 {
     mPendingOnStartAction = runnable;
     if (runnable != NULL && mAnimatorOnStartMap == NULL) {
-        mAnimatorOnStartMap = new HashMap<AutoPtr<IAnimator>, AutoPtr<IRunnable> >();
+        CHashMap::New((IHashMap**)&mAnimatorOnStartMap);
     }
     return NOERROR;
 }
@@ -578,13 +738,28 @@ ECode ViewPropertyAnimator::WithEndAction(
 {
     mPendingOnEndAction = runnable;
     if (runnable != NULL && mAnimatorOnEndMap == NULL) {
-        mAnimatorOnEndMap = new HashMap<AutoPtr<IAnimator>, AutoPtr<IRunnable> >();
+        CHashMap::New((IHashMap**)&mAnimatorOnEndMap);
     }
+    return NOERROR;
+}
+
+ECode ViewPropertyAnimator::HasActions(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mPendingSetupAction != NULL
+        || mPendingCleanupAction != NULL
+        || mPendingOnStartAction != NULL
+        || mPendingOnEndAction != NULL;
     return NOERROR;
 }
 
 ECode ViewPropertyAnimator::StartAnimation()
 {
+    if (mRTBackend != NULL && -1/*mRTBackend->StartAnimation(this)*/) {
+        return NOERROR;
+    }
+
     mView->SetHasTransientState(TRUE);
     AutoPtr<ArrayOf<Float> > array = ArrayOf<Float>::Alloc(1);
     (*array)[0] = 1.0f;
@@ -597,36 +772,40 @@ ECode ViewPropertyAnimator::StartAnimation()
         AutoPtr<NameValuesHolder> nameValuesHolder = *it;
         propertyMask |= nameValuesHolder->mNameConstant;
     }
+
     AutoPtr<PropertyBundle> pb = new PropertyBundle(propertyMask, nameValueList);
-    (*mAnimatorMap)[animator] = pb;
+    IAnimator* animatorTmp = IAnimator::Probe(animator);
+    assert(NULL != animatorTmp);
+    mAnimatorMap->Put(TO_IINTERFACE(animator), TO_IINTERFACE(pb));
     if (mPendingSetupAction != NULL) {
-        (*mAnimatorSetupMap)[animator] = mPendingSetupAction;
+        mAnimatorSetupMap->Put(TO_IINTERFACE(animator), TO_IINTERFACE(mPendingSetupAction));
         mPendingSetupAction = NULL;
     }
     if (mPendingCleanupAction != NULL) {
-        (*mAnimatorCleanupMap)[animator] = mPendingCleanupAction;
+        mAnimatorCleanupMap->Put(TO_IINTERFACE(animator), TO_IINTERFACE(mPendingCleanupAction));
         mPendingCleanupAction = NULL;
     }
     if (mPendingOnStartAction != NULL) {
-        (*mAnimatorOnStartMap)[animator] = mPendingOnStartAction;
+        mAnimatorOnStartMap->Put(TO_IINTERFACE(animator), TO_IINTERFACE(mPendingOnStartAction));
         mPendingOnStartAction = NULL;
     }
     if (mPendingOnEndAction != NULL) {
-        (*mAnimatorOnEndMap)[animator] = mPendingOnEndAction;
+        mAnimatorOnEndMap->Put(TO_IINTERFACE(animator), TO_IINTERFACE(mPendingOnEndAction));
         mPendingOnEndAction = NULL;
     }
+
     animator->AddUpdateListener(mAnimatorEventListener);
-    animator->AddListener(mAnimatorEventListener);
+    animatorTmp->AddListener(mAnimatorEventListener);
     if (mStartDelaySet) {
-        animator->SetStartDelay(mStartDelay);
+        animatorTmp->SetStartDelay(mStartDelay);
     }
     if (mDurationSet) {
-        animator->SetDuration(mDuration);
+        animatorTmp->SetDuration(mDuration);
     }
     if (mInterpolatorSet) {
-        animator->SetInterpolator(mInterpolator);
+        animatorTmp->SetInterpolator(mInterpolator);
     }
-    animator->Start();
+    animatorTmp->Start();
     return NOERROR;
 }
 
@@ -655,11 +834,21 @@ ECode ViewPropertyAnimator::AnimatePropertyBy(
     /* [in] */ Float byValue)
 {
     // First, cancel any existing animations on this property
-    if (mAnimatorMap->IsEmpty() == FALSE) {
+    Int32 size = 0;
+    mAnimatorMap->GetSize(&size);
+    if (size > 0) {
         AutoPtr<IAnimator> animatorToCancel = NULL;
-        PIterator it = mAnimatorMap->Begin();
-        for (; it != mAnimatorMap->End(); it++) {
-            AutoPtr<PropertyBundle> bundle = it->mSecond;
+        AutoPtr<ISet> keySet;
+        mAnimatorMap->GetKeySet((ISet**)&keySet);
+        AutoPtr< ArrayOf<IInterface*> > keyArray;
+        keySet->ToArray((ArrayOf<IInterface*>**)&keyArray);
+        Int32 keySize = keyArray->GetLength();
+        for (Int32 idx=0; idx<keySize; ++idx) {
+            IInterface* interfaceTmp = (*keyArray)[idx];
+            AutoPtr<IInterface> valueTmp;
+            mAnimatorMap->Get(interfaceTmp, (IInterface**)&valueTmp);
+            IObject* objTmp = IObject::Probe(valueTmp);
+            PropertyBundle* bundle = (PropertyBundle*)objTmp;
             if (bundle->Cancel(constantName)) {
                 // property was canceled - cancel the animation if it's now empty
                 // Note that it's safe to break out here because every new animation
@@ -667,7 +856,7 @@ ECode ViewPropertyAnimator::AnimatePropertyBy(
                 // there can only ever be one such animation running.
                 if (bundle->mPropertyMask == NONE) {
                     // the animation is no longer changing anything - cancel it
-                    animatorToCancel = it->mFirst;
+                    animatorToCancel = IAnimator::Probe(interfaceTmp);
                     break;
                 }
             }
@@ -679,8 +868,10 @@ ECode ViewPropertyAnimator::AnimatePropertyBy(
 
     AutoPtr<NameValuesHolder> nameValuePair = new NameValuesHolder(constantName, startValue, byValue);
     mPendingAnimations->PushBack(nameValuePair);
-    VIEW_PROBE(mView)->RemoveCallbacks(mAnimationStarter);
-    VIEW_PROBE(mView)->Post(mAnimationStarter);
+
+    Boolean resTmp = FALSE;
+    mView->RemoveCallbacks(mAnimationStarter, &resTmp);
+    mView->PostOnAnimation(mAnimationStarter);
     return NOERROR;
 }
 
@@ -689,47 +880,82 @@ ECode ViewPropertyAnimator::SetValue(
     /* [in] */ Float value)
 {
     AutoPtr<View::TransformationInfo> info = VIEW_PROBE(mView)->mTransformationInfo;
-    AutoPtr<IDisplayList> displayList = VIEW_PROBE(mView)->mDisplayList;
+    AutoPtr<IRenderNode> renderNode = ((View*)mView.Get())->mRenderNode;
     switch (propertyConstant) {
         case TRANSLATION_X:
-            info->mTranslationX = value;
-            if (displayList != NULL) displayList->SetTranslationX(value);
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetTranslationX(value, &resTmp);
+            }
             break;
         case TRANSLATION_Y:
-            info->mTranslationY = value;
-            if (displayList != NULL) displayList->SetTranslationY(value);
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetTranslationY(value, &resTmp);
+            }
+            break;
+        case TRANSLATION_Z:
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetTranslationZ(value, &resTmp);
+            }
             break;
         case ROTATION:
-            info->mRotation = value;
-            if (displayList != NULL) displayList->SetRotation(value);
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetRotation(value, &resTmp);
+            }
             break;
         case ROTATION_X:
-            info->mRotationX = value;
-            if (displayList != NULL) displayList->SetRotationX(value);
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetRotationX(value, &resTmp);
+            }
             break;
         case ROTATION_Y:
-            info->mRotationY = value;
-            if (displayList != NULL) displayList->SetRotationY(value);
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetRotationY(value, &resTmp);
+            }
             break;
         case SCALE_X:
-            info->mScaleX = value;
-            if (displayList != NULL) displayList->SetScaleX(value);
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetScaleX(value, &resTmp);
+            }
             break;
         case SCALE_Y:
-            info->mScaleY = value;
-            if (displayList != NULL) displayList->SetScaleY(value);
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetScaleY(value, &resTmp);
+            }
             break;
         case _X:
-            info->mTranslationX = value - VIEW_PROBE(mView)->mLeft;
-            if (displayList != NULL) displayList->SetTranslationX(value - VIEW_PROBE(mView)->mLeft);
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetTranslationX(value - 0.0f/*mView.mLeft*/, &resTmp);
+            }
             break;
         case _Y:
-            info->mTranslationY = value - VIEW_PROBE(mView)->mTop;
-            if (displayList != NULL) displayList->SetTranslationY(value - VIEW_PROBE(mView)->mTop);
+            {
+                Boolean resTmp = FALSE;
+                renderNode->SetTranslationY(value - 0.0f/*mView.mTop*/, &resTmp);
+            }
+            break;
+        case _Z:
+            {
+                Boolean resTmp = FALSE;
+                Float elevation = 0.0f;
+                renderNode->GetElevation(&elevation);
+                renderNode->SetTranslationZ(value - elevation, &resTmp);
+            }
             break;
         case ALPHA:
-            info->mAlpha = value;
-            if (displayList != NULL) displayList->SetAlpha(value);
+            {
+                info->mAlpha = value;
+                Boolean resTmp = FALSE;
+                renderNode->SetAlpha(value, &resTmp);
+            }
             break;
     }
     return NOERROR;
@@ -738,30 +964,61 @@ ECode ViewPropertyAnimator::SetValue(
 Float ViewPropertyAnimator::GetValue(
     /* [in] */ Int32 propertyConstant)
 {
-    AutoPtr<View::TransformationInfo> info = VIEW_PROBE(mView)->mTransformationInfo;
+    AutoPtr<IRenderNode> node = ((View*)mView.Get())->mRenderNode;
+    Float result = 0.0f;
     switch (propertyConstant) {
         case TRANSLATION_X:
-            return info->mTranslationX;
+            node->GetTranslationX(&result);
+            break;
         case TRANSLATION_Y:
-            return info->mTranslationY;
+            node->GetTranslationY(&result);
+            break;
+        case TRANSLATION_Z:
+            node->GetTranslationZ(&result);
+            break;
         case ROTATION:
-            return info->mRotation;
+            node->GetRotation(&result);
+            break;
         case ROTATION_X:
-            return info->mRotationX;
+            node->GetRotationX(&result);
+            break;
         case ROTATION_Y:
-            return info->mRotationY;
+            node->GetRotationY(&result);
+            break;
         case SCALE_X:
-            return info->mScaleX;
+            node->GetScaleX(&result);
+            break;
         case SCALE_Y:
-            return info->mScaleY;
+            node->GetScaleY(&result);
+            break;
         case _X:
-            return VIEW_PROBE(mView)->mLeft + info->mTranslationX;
+            {
+                Float tmp = 0.0f;
+                node->GetTranslationX(&tmp);
+                result = 0.0f;//mView->mLeft + tmp;
+            }
+            break;
         case _Y:
-            return VIEW_PROBE(mView)->mTop + info->mTranslationY;
+            {
+                Float tmp = 0.0f;
+                node->GetTranslationY(&tmp);
+                result = 0.0f;//mView->mTop + tmp;
+            }
+            break;
+        case _Z:
+            {
+                Float tmp = 0.0f;
+                node->GetElevation(&tmp);
+                Float tmp1 = 0.0f;
+                node->GetTranslationZ(&tmp1);
+                result = tmp + tmp1;
+            }
+            break;
         case ALPHA:
-            return info->mAlpha;
+            result = 0.0f;//mView->mTransformationInfo->mAlpha;
+            break;
     }
-    return 0;
+    return result;
 }
 
 }// namespace View

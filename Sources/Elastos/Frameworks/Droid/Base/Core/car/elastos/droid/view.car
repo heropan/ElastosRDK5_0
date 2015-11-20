@@ -87,6 +87,8 @@ module
     merge("view/WindowManagerInternal.car");
     merge("view/WindowManagerPolicy.car");
     merge("view/GraphicBuffer.car");
+    merge("view/SoundEffectConstants.car");
+    merge("view/ViewAnimationUtils.car");
 
     // merge("view/CompatibilityInfoHolder.car");
     merge("view/DisplayList.car");
@@ -714,19 +716,20 @@ module
         interface IPointerPropertiesHelper;
     }
 
-    //     class CPointerIcon {
-    //         constructor();
+    class CPointerIcon {
+       constructor();
 
-    //         constructor(
-    //             [in] Int32 style);
+       constructor(
+           [in] Int32 style);
 
-    //         interface IPointerIcon;
-    //         interface IParcelable;
-    //     }
+       interface IPointerIcon;
+       interface IParcelable;
+    }
 
-    //     singleton class CPointerIconHelper {
-    //         interface IPointerIconHelper;
-    //     }
+    singleton class CPointerIconHelper {
+       interface IPointerIconHelper;
+    }
+
 
     class CDragEvent {
         constructor();
@@ -811,13 +814,30 @@ module
             interface IViewGroupLayoutParams;
         }
 
-    //     [local]
-    //     class CViewPropertyAnimator {
-    //         constructor(
-    //             [in] IView* view);
+    //     class CViewGroupMarginLayoutParams {
+    //         constructor();
 
-    //         interface IViewPropertyAnimator;
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         constructor(
+    //             [in] Int32 width,
+    //             [in] Int32 height);
+
+    //         constructor(
+    //             [in] IViewGroupMarginLayoutParams* source);
+
+    //         interface IViewGroupMarginLayoutParams;
     //     }
+
+    [local]
+    class CViewPropertyAnimator {
+        constructor(
+            [in] IView* view);
+
+        interface IViewPropertyAnimator;
+    }
 
     //     class CAccessibilityInteractionConnection {
     //         constructor(
@@ -1310,6 +1330,20 @@ module
 
         interface IMagnificationSpec;
         interface IParcelable;
+    }
+    
+    class CViewTreeObserver {
+        constructor();
+
+        interface IViewTreeObserver;
+    }
+
+    singleton class CSoundEffectConstantsHelper {
+        interface ISoundEffectConstantsHelper;
+    }
+
+    singleton class CViewAnimationUtilsHelper {
+        interface IViewAnimationUtilsHelper;
     }
 
     } // namespace View
@@ -2072,9 +2106,10 @@ module
     //     interface IParcelable;
     // }
 
+
+
     } // InputMethod
     } // namespace View
     } // namepsace Droid
     } // namespace Elastos
-
 }

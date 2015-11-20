@@ -59,7 +59,7 @@ ECode ProxyChangeListener::ProxyReceiver::OnReceive(
     //     proxySettingsChanged(extractNewProxy(intent));
     // }
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     assert(0);
     String action;
     intent->GetAction(&action);
@@ -117,7 +117,7 @@ AutoPtr<ProxyChangeListener::ProxyConfig> ProxyChangeListener::ProxyReceiver::Ex
     //     return null;
     // }
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     assert(0);
     //try {
         const String GET_HOST_NAME("getHost");
@@ -239,7 +239,7 @@ ECode ProxyChangeListener::Start(
     // mNativePtr = nativePtr;
     // registerReceiver();
 
-    assert(0 == mNativePtr);
+    assert(0 != mNativePtr);
     mNativePtr = nativePtr;
     RegisterReceiver();
     return NOERROR;

@@ -3,32 +3,53 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"
-#include <elastos/utility/etl/List.h>
+#include "elastos/droid/view/View.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::IRunnable;
-using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Animation::IAnimator;
-using Elastos::Droid::Animation::IValueAnimator;
 using Elastos::Droid::Animation::IAnimatorListener;
-using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Animation::IAnimatorUpdateListener;
+using Elastos::Droid::Animation::ITimeInterpolator;
+using Elastos::Droid::Animation::IValueAnimator;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::View::IViewPropertyAnimator;
+using Elastos::Droid::View::View;
+using Elastos::Core::IRunnable;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::IHashMap;
+
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 class ViewPropertyAnimator
+    : public Object
+    , public IViewPropertyAnimator
 {
+public:
+    class NameValuesHolder
+        : public Object
+    {
+    public:
+        NameValuesHolder(
+            /* [in] */ Int32 nameConstant,
+            /* [in] */ Float fromeValue,
+            /* [in] */ Float deltaValue);
+
+        Int32 mNameConstant;
+        Float mFromValue;
+        Float mDeltaValue;
+    };
+
 private:
     friend class RenderNodeAnimator;
 private:
     class AnimatorEventListener
-        : public IAnimatorListener
+        : public Object
         , public IAnimatorUpdateListener
-        , public ElRefBase
+        , public IAnimatorListener
     {
     public:
         CAR_INTERFACE_DECL()
@@ -50,11 +71,13 @@ private:
 
         CARAPI OnAnimationUpdate(
             /* [in] */ IValueAnimator* animation);
+
     private:
         ViewPropertyAnimator* mHost;
     };
-    class NameValuesHolder;
-    class PropertyBundle : public ElRefBase
+
+    class PropertyBundle
+        : public Object
     {
     public:
         PropertyBundle(
@@ -70,44 +93,59 @@ private:
         const AutoPtr< List<AutoPtr<NameValuesHolder> > > mNameValuesHolder;
     };
 
-    class NameValuesHolder : public ElRefBase
+    class InnerStartAnimationRunnable
+        : public Object
+        , public IRunnable
     {
     public:
-        NameValuesHolder(
-            /* [in] */ Int32 nameConstant,
-            /* [in] */ Float fromeValue,
-            /* [in] */ Float deltaValue);
+        CAR_INTERFACE_DECL()
 
-        Int32 mNameConstant;
-        Float mFromValue;
-        Float mDeltaValue;
-    };
-
-    class InnerRunnable : public Runnable
-    {
-    public:
-        InnerRunnable(
-            /* [in] */ ViewPropertyAnimator* host);
+        InnerStartAnimationRunnable(
+            /* [in] */ ViewPropertyAnimator* owner);
 
         CARAPI Run();
+
     private:
-        ViewPropertyAnimator* mHost;
+        ViewPropertyAnimator* mOwner;
     };
 
-    class InnerRunnableEx : public Runnable
+    class InnerBuildLayerRunnable
+        : public Object
+        , public IRunnable
     {
     public:
-        InnerRunnable(
-            /* [in] */ ViewPropertyAnimator* host,
+        CAR_INTERFACE_DECL()
+
+        InnerBuildLayerRunnable(
+            /* [in] */ ViewPropertyAnimator* owner);
+
+        CARAPI Run();
+
+    private:
+        ViewPropertyAnimator* mOwner;
+    };
+
+    class InnerSetLayerTypeRunnable
+        : public Object
+        , public IRunnable
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        InnerSetLayerTypeRunnable(
+            /* [in] */ ViewPropertyAnimator* owner,
             /* [in] */ Int32 type);
 
         CARAPI Run();
+
     private:
-        ViewPropertyAnimator* mHost;
+        ViewPropertyAnimator* mOwner;
         Int32 mType;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     ViewPropertyAnimator(
         /* [in] */ IView* view);
 
@@ -116,9 +154,11 @@ public:
     CARAPI SetDuration(
         /* [in] */ Int64 duration);
 
-    CARAPI_(Int64) GetDuration();
+    CARAPI GetDuration(
+        /* [out] */ Int64* result);
 
-    CARAPI_(Int64) GetStartDelay();
+    CARAPI GetStartDelay(
+        /* [out] */ Int64* result);
 
     CARAPI SetStartDelay(
         /* [in] */ Int64 delay);
@@ -126,8 +166,20 @@ public:
     CARAPI SetInterpolator(
         /* [in] */ ITimeInterpolator* interpolator);
 
+    CARAPI GetInterpolator(
+        /* [out] */ ITimeInterpolator** result);
+
     CARAPI SetListener(
         /* [in] */ IAnimatorListener* listener);
+
+    CARAPI GetListener(
+        /* [out] */ IAnimatorListener** result);
+
+    CARAPI SetUpdateListener(
+        /* [in] */ IAnimatorUpdateListener* listener);
+
+    CARAPI GetUpdateListener(
+        /* [out] */ IAnimatorUpdateListener** result);
 
     CARAPI Start();
 
@@ -143,6 +195,12 @@ public:
         /* [in] */ Float value);
 
     CARAPI YBy(
+        /* [in] */ Float value);
+
+    CARAPI Z(
+        /* [in] */ Float value);
+
+    CARAPI ZBy(
         /* [in] */ Float value);
 
     CARAPI Rotation(
@@ -175,6 +233,12 @@ public:
     CARAPI TranslationYBy(
         /* [in] */ Float value);
 
+    CARAPI TranslationZ(
+        /* [in] */ Float value);
+
+    CARAPI TranslationZBy(
+        /* [in] */ Float value);
+
     CARAPI ScaleX(
         /* [in] */ Float value);
 
@@ -200,6 +264,9 @@ public:
 
     CARAPI WithEndAction(
         /* [in] */ IRunnable* runnable);
+
+    CARAPI HasActions(
+        /* [out] */ Boolean* result);
 
 protected:
     ViewPropertyAnimator();
@@ -230,8 +297,23 @@ private:
     CARAPI_(Float) GetValue(
         /* [in] */ Int32 propertyConstant);
 
+public:
+    AutoPtr<IView> mView;
+    const static Int32 NONE           = 0x0000;
+    const static Int32 TRANSLATION_X  = 0x0001;
+    const static Int32 TRANSLATION_Y  = 0x0002;
+    const static Int32 TRANSLATION_Z  = 0x0004;
+    const static Int32 SCALE_X        = 0x0008;
+    const static Int32 SCALE_Y        = 0x0010;
+    const static Int32 ROTATION       = 0x0020;
+    const static Int32 ROTATION_X     = 0x0040;
+    const static Int32 ROTATION_Y     = 0x0080;
+    const static Int32 _X              = 0x0100;
+    const static Int32 _Y              = 0x0200;
+    const static Int32 _Z              = 0x0400;
+    const static Int32 ALPHA          = 0x0800;
+
 private:
-    IView* mView; // View has this's reference
     Int64 mDuration;
     Boolean mDurationSet;
     Int64 mStartDelay;
@@ -239,6 +321,9 @@ private:
     AutoPtr<ITimeInterpolator> mInterpolator;
     Boolean mInterpolatorSet;
     AutoPtr<IAnimatorListener> mListener;
+    AutoPtr<IAnimatorUpdateListener> mUpdateListener;
+    AutoPtr<IValueAnimator> mTempValueAnimator;
+    AutoPtr<IInterface/*IViewPropertyAnimatorRT*/> mRTBackend;
     AutoPtr<AnimatorEventListener> mAnimatorEventListener;
     AutoPtr<List<AutoPtr<NameValuesHolder> > > mPendingAnimations;
     AutoPtr<IRunnable> mPendingSetupAction;
@@ -246,37 +331,19 @@ private:
     AutoPtr<IRunnable> mPendingOnStartAction;
     AutoPtr<IRunnable> mPendingOnEndAction;
 
-    static const Int32 NONE           = 0x0000;
-    static const Int32 TRANSLATION_X  = 0x0001;
-    static const Int32 TRANSLATION_Y  = 0x0002;
-    static const Int32 TRANSLATION_Z  = 0x0004;
-    static const Int32 SCALE_X        = 0x0008;
-    static const Int32 SCALE_Y        = 0x0010;
-    static const Int32 ROTATION       = 0x0020;
-    static const Int32 ROTATION_X     = 0x0040;
-    static const Int32 ROTATION_Y     = 0x0080;
-    static const Int32 _X              = 0x0100;
-    static const Int32 _Y              = 0x0200;
-    static const Int32 _Z              = 0x0400;
-    static const Int32 ALPHA          = 0x0800;
-
-    const static Int32 TRANSFORM_MASK = TRANSLATION_X | TRANSLATION_Y | SCALE_X | SCALE_Y |
-            ROTATION | ROTATION_X | ROTATION_Y | _X | _Y;
+    const static Int32 TRANSFORM_MASK = TRANSLATION_X | TRANSLATION_Y | SCALE_X | SCALE_Y | TRANSLATION_Z |
+            ROTATION | ROTATION_X | ROTATION_Y | _X | _Y | _Z;
     AutoPtr<IRunnable> mAnimationStarter;
-
-    typedef HashMap<AutoPtr<IAnimator>, AutoPtr<PropertyBundle> >::Iterator PIterator;
-    typedef HashMap<AutoPtr<IAnimator>, AutoPtr<IRunnable> > AnimatorRunnableMap;
-    typedef AnimatorRunnableMap::Iterator RNIterator;
-
-    AutoPtr< HashMap<AutoPtr<IAnimator>, AutoPtr<PropertyBundle> > > mAnimatorMap;
-    AutoPtr<AnimatorRunnableMap> mAnimatorSetupMap;
-    AutoPtr<AnimatorRunnableMap> mAnimatorCleanupMap;
-    AutoPtr<AnimatorRunnableMap> mAnimatorOnStartMap;
-    AutoPtr<AnimatorRunnableMap> mAnimatorOnEndMap;
-
+    AutoPtr<IHashMap> mAnimatorMap;
+    AutoPtr<IHashMap> mAnimatorSetupMap;
+    AutoPtr<IHashMap> mAnimatorCleanupMap;
+    AutoPtr<IHashMap> mAnimatorOnStartMap;
+    AutoPtr<IHashMap> mAnimatorOnEndMap;
 };
 
-}// namespace View
-}// namespace Droid
-}// namespace Elastos
-#endif
+} // namespace View
+} // namespace Droid
+} // namespace Elastos
+
+#endif // __ELASTOS_DROID_VIEW_VIEWPROPERTYANIMATOR_H__
+

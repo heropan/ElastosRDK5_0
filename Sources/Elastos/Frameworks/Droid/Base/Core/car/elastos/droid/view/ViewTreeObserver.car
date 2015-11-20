@@ -13,7 +13,7 @@ module
      * Interface definition for a callback to be invoked when the view hierarchy is
      * attached to and detached from its window.
      */
-     interface IOnWindowAttachListener {
+    interface IOnWindowAttachListener {
         /**
          * Callback method to be invoked when the view hierarchy is attached to a window
          */
@@ -218,16 +218,6 @@ module
      */
     [local]
     interface IViewTreeObserver {
-        /**
-         * Merges all the listeners registered on the specified observer with the listeners
-         * registered on this object. After this method is invoked, the specified observer
-         * will return false in {@link #isAlive()} and should not be used anymore.
-         *
-         * @param observer The ViewTreeObserver whose listeners must be added to this observer
-         */
-        Merge(
-            [in] IViewTreeObserver* observer);
-
         /**
          * Register a callback to be invoked when the view hierarchy is attached to a window.
          *
@@ -465,13 +455,6 @@ module
             [out] Boolean* result);
 
         /**
-         * Notifies registered listeners that focus has changed.
-         */
-        DispatchOnGlobalFocusChange(
-            [in] IView* oldFocus,
-            [in] IView* newFocus);
-
-        /**
          * Notifies registered listeners that a global layout happened. This can be called
          * manually if you are forcing a layout on a View or a hierarchy of Views that are
          * not attached to a Window or in the GONE state.
@@ -493,34 +476,6 @@ module
          * Notifies registered listeners that the drawing pass is about to start.
          */
         DispatchOnDraw();
-
-        /**
-         * Notifies registered listeners that the touch mode has changed.
-         *
-         * @param inTouchMode True if the touch mode is now enabled, false otherwise.
-         */
-        DispatchOnTouchModeChanged(
-            [in] Boolean inTouchMode);
-
-        /**
-         * Notifies registered listeners that something has scrolled.
-         */
-        DispatchOnScrollChanged();
-
-        /**
-         * Returns whether there are listeners for computing internal insets.
-         */
-        HasComputeInternalInsetsListeners(
-            [out] Boolean* has);
-
-        /**
-         * Calls all listeners to compute the current insets.
-         */
-        DispatchOnComputeInternalInsets(
-            [in] IInternalInsetsInfo* inoutInfo);
-
-        DispatchOnWindowAttachedChange(
-            [in] Boolean attached);
     }
 
     }   //namespace View

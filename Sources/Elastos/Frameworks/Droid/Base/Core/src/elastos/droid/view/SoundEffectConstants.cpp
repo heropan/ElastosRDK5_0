@@ -1,5 +1,7 @@
 #include "elastos/droid/view/SoundEffectConstants.h"
 
+using Elastos::Droid::View::IView;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
@@ -29,7 +31,6 @@ Int32 SoundEffectConstants::GetContantForFocusDirection(
             return -1;
     }
 }
-
 
 } // namespace View
 } // namespace Droid

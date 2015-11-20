@@ -48,7 +48,7 @@ ECode DropdownPopupWindow::InnerOnLayoutChangeListener::OnLayoutChange(
     // ==================before translated======================
     // if (v == mAnchorView) DropdownPopupWindow.this.show();
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     if (v == mOwner->mAnchorView)
         mOwner->Show();
     return NOERROR;
@@ -77,7 +77,7 @@ ECode DropdownPopupWindow::InnerPopupWindowOnDismissListener::OnDismiss()
     // mAnchorView.setTag(null);
     // mViewAndroidDelegate.releaseAnchorView(mAnchorView);
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     if (NULL != mOwner/*->mWindow->mOnDismissListener*/) {
         //mOwner->mWindow->mOnDismissListener->OnDismiss();
     }
