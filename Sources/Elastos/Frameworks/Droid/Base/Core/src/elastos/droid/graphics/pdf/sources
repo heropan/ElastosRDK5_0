@@ -10,7 +10,8 @@ INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/skia/effects
 INCLUDES += $(PREBUILD_INC)/skia/images
-INCLUDES += $(PREBUILD_INC)/libcxx
+INCLUDES += $(PREBUILD_INC)/bionic
+INCLUDES += $(PREBUILD_INC)/stlport
 INCLUDES += $(PREBUILD_INC)/pdfium/fpdfsdk/include
 INCLUDES += $(PREBUILD_INC)/pdfium/core/include
 

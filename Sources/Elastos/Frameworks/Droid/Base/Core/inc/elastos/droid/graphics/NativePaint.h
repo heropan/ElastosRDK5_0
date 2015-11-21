@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GRAPHICS_NATIVEPAINT_H__
 
 #include <SkPaint.h>
-#include <libcxx/string>
+#include <string>
 #include <minikin/FontFamily.h>
 
 using android::FontVariant;

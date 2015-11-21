@@ -816,9 +816,7 @@ Char32 KeyCharacterMap::NativeGetMatch(
         (*array)[i] = (char16_t)chars[i];
     }
 
-    assert(0);
-    // return map->getMap()->getMatch(keyCode, array->GetPayload(), size_t(numChars), metaState);
-    return 0;
+    return map->getMap()->getMatch(keyCode, array->GetPayload(), size_t(numChars), metaState);
 }
 
 Char32 KeyCharacterMap::NativeGetDisplayLabel(
@@ -849,18 +847,17 @@ AutoPtr<ArrayOf<IKeyEvent*> > KeyCharacterMap::NativeGetEvents(
 
     android::Vector<android::KeyEvent> events;
     AutoPtr<ArrayOf<IKeyEvent*> > result;
-    assert(0);
-    // if (map->getMap()->getEvents(map->getDeviceId(), array->GetPayload(), size_t(numChars), events)) {
-        // result = ArrayOf<IKeyEvent*>::Alloc(events.size());
-        // if (result != NULL) {
-            // for (size_t i = 0; i < events.size(); i++) {
-                // AutoPtr<IKeyEvent> keyEvent = CreateKeyEventFromNative(&events.itemAt(i));
-                // if (keyEvent == NULL)
-                    // break; // threw OOM exception
-                // result->Set(i, keyEvent);
-            // }
-        // }
-    // }
+    if (map->getMap()->getEvents(map->getDeviceId(), array->GetPayload(), size_t(numChars), events)) {
+        result = ArrayOf<IKeyEvent*>::Alloc(events.size());
+        if (result != NULL) {
+            for (size_t i = 0; i < events.size(); i++) {
+                AutoPtr<IKeyEvent> keyEvent = CreateKeyEventFromNative(&events.itemAt(i));
+                if (keyEvent == NULL)
+                    break; // threw OOM exception
+                result->Set(i, keyEvent);
+            }
+        }
+    }
 
     return result;
 }

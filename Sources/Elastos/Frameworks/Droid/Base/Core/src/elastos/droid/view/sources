@@ -10,10 +10,10 @@ INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/androidfw
 INCLUDES += $(PREBUILD_INC)/input
 INCLUDES += $(PREBUILD_INC)/utils
-INCLUDES += $(PREBUILD_INC)/libcxx
+INCLUDES += $(PREBUILD_INC)/bionic
+INCLUDES += $(PREBUILD_INC)/stlport
 
 C_DEFINES += -DDROID_CORE
-CPP_FLAGS += -std=c++0x
 
 SOURCES = AbsSavedState.cpp
 SOURCES += ActionMode.cpp

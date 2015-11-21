@@ -8,7 +8,7 @@
 #include <skia/core/SkPictureRecorder.h>
 #include <skia/core/SkStream.h>
 #include <skia/core/SkRect.h>
-#include <libcxx/vector>
+#include <vector>
 
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;
