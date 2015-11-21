@@ -126,6 +126,10 @@ private:
     CARAPI InitPath(
         /* [in] */ IPath* path);
 
+    // @Override
+    CARAPI HasNativeInterpolator(
+        /* [out] */ Boolean* res);
+
 private:
     // This governs how accurate the approximation of the Path is.
     static const Float PRECISION;

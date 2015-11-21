@@ -712,12 +712,12 @@ ECode KeyCharacterMap::SetNative(
 }
 
 ECode KeyCharacterMap::GetMap(
-    /* [in] */ Int32* map)
+    /* [in] */ Int64* map)
 {
     VALIDATE_NOT_NULL(map);
 
     NativeKeyCharacterMap* nMap = reinterpret_cast<NativeKeyCharacterMap*>(mPtr);
-    *map = reinterpret_cast<Int32>(
+    *map = reinterpret_cast<Int64>(
             new NativeKeyCharacterMap(nMap->getDeviceId(), nMap->getMap()));
     return NOERROR;
 }

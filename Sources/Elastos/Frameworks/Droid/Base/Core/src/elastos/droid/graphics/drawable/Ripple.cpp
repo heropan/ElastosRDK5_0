@@ -38,6 +38,15 @@ ECode Ripple::LogInterpolator::GetInterpolation(
     return NOERROR;
 }
 
+
+ECode Ripple::LogInterpolator::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
+
 Ripple::RippleAnimatorListenerAdapter::RippleAnimatorListenerAdapter(
     /* [in] */ Ripple* host)
     : mHost(host)

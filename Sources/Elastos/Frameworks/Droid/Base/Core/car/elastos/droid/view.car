@@ -826,12 +826,13 @@ module
     //         interface IIAccessibilityInteractionConnection;
     //     }
 
-    //     class CAccessibilityInteractionController {
-    //         constructor(
-    //             [in] Handle32 viewRootImpl);
+    [local]
+    class CAccessibilityInteractionController {
+        constructor(
+            [in] IViewRootImpl* viewRootImpl);
 
-    //         interface IAccessibilityInteractionController;
-    //     }
+        interface IAccessibilityInteractionController;
+    }
 
     singleton class CRenderNodeHelper {
         constructor();

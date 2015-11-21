@@ -84,6 +84,14 @@ ECode CCycleInterpolator::CreateNativeInterpolator(
     return NOERROR;
 }
 
+ECode CCycleInterpolator::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = TRUE;
+    return NOERROR;
+}
+
 }// namespace Animation
 }// namespace View
 }// namespace Droid

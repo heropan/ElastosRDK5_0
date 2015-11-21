@@ -124,6 +124,14 @@ ECode CAnticipateOvershootInterpolator::CreateNativeInterpolator(
     return NOERROR;
 }
 
+ECode CAnticipateOvershootInterpolator::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = TRUE;
+    return NOERROR;
+}
+
 }// namespace Animation
 }// namespace View
 }// namespace Droid

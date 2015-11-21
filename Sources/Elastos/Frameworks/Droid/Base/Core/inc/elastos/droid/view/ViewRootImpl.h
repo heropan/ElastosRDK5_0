@@ -1955,10 +1955,11 @@ public:
     Int32 mResizeAlpha;
     AutoPtr<IPaint> mResizePaint;
 
+    AutoPtr<ViewRootHandler> mHandler;
+
     AutoPtr<TraversalRunnable> mTraversalRunnable;
 
     AutoPtr<WindowInputEventReceiver> mInputEventReceiver;
-
 
     AutoPtr<ConsumeBatchedInputRunnable> mConsumedBatchedInputRunnable;
     Boolean mConsumeBatchedInputScheduled;
@@ -2012,7 +2013,6 @@ private:
     // FIXME for perf testing only
     Boolean mProfile;
 
-    AutoPtr<ViewRootHandler> mHandler;
     Object mSyncLock;
 
     AutoPtr<RootDisplayListener> mDisplayListener;

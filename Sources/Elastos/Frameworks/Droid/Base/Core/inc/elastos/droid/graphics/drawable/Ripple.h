@@ -40,6 +40,10 @@ private:
         CARAPI GetInterpolation(
             /* [in] */ Float input,
             /* [out] */ Float* result);
+
+        // @Override
+        CARAPI HasNativeInterpolator(
+            /* [out] */ Boolean* res);
     };
 
     class RippleAnimatorListenerAdapter

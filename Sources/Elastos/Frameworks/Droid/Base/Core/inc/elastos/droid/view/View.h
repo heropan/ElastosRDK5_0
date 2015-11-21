@@ -2932,6 +2932,11 @@ public:
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
+    CARAPI ComputeClickPointInScreenForAccessibility(
+        /* [in] */ IRegion* interactiveRegion,
+        /* [in] */ IPoint* outPoint,
+        /* [out] */ Boolean* res);
+
     /**
      * Returns the delegate for implementing accessibility support via
      * composition. For more details see {@link AccessibilityDelegate}.
@@ -4254,6 +4259,15 @@ public:
         /* [in] */ Int32 id,
         /* [out] */ IView** res);
 
+    /**
+     * Finds a view by its unuque and stable accessibility id.
+     *
+     * @param accessibilityId The searched accessibility id.
+     * @return The found view.
+     */
+    virtual CARAPI_(AutoPtr<IView>) FindViewByAccessibilityId(
+        /* [in] */ Int32 accessibilityId);
+
     CARAPI FindViewWithTag(
         /* [in] */ IInterface* tag,
         /* [out] */ IView** res);
@@ -4515,11 +4529,6 @@ public:
 
     CARAPI GetHotspotBounds(
         /* [in] */ IRect* outRect);
-
-    CARAPI ComputeClickPointInScreenForAccessibility(
-        /* [in] */ IRegion* interactiveRegion,
-        /* [in] */ IPoint* outPoint,
-        /* [out] */ Boolean* res);
 
     static CARAPI_(void) OffsetRects(
         /* [in] */ IArrayList* rects,
@@ -5484,15 +5493,6 @@ protected:
         /* [in] */ IPredicate* predicate,
         /* [in] */ IView* childToSkip);
 
-    /**
-     * Finds a view by its unuque and stable accessibility id.
-     *
-     * @param accessibilityId The searched accessibility id.
-     * @return The found view.
-     */
-    virtual CARAPI_(AutoPtr<IView>) FindViewByAccessibilityId(
-        /* [in] */ Int32 accessibilityId);
-
     virtual CARAPI_(Boolean) UpdateLocalSystemUiVisibility(
         /* [in] */ Int32 localValue,
         /* [in] */ Int32 localChanges);
@@ -5772,6 +5772,8 @@ public:
 
     static Boolean mDebugViewAttributes;// = false;
 
+    AutoPtr<AttachInfo> mAttachInfo;
+
     AutoPtr< ArrayOf<String> > mAttributes;
 
 protected:
@@ -5848,7 +5850,6 @@ protected:
     // Parent has child's reference
     IViewParent* mParent;
 
-    AutoPtr<AttachInfo> mAttachInfo;
     Int32 mPrivateFlags;
     Int32 mPrivateFlags2;
     Int32 mPrivateFlags3;

@@ -103,6 +103,14 @@ ECode CAccelerateInterpolator::CreateNativeInterpolator(
     return NOERROR;
 }
 
+ECode CAccelerateInterpolator::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = TRUE;
+    return NOERROR;
+}
+
 }// namespace Animation
 }// namespace View
 }// namespace Droid
