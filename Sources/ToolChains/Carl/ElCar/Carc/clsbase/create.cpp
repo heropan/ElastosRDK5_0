@@ -24,6 +24,14 @@ int IsValidCLS(CLSModule *pModule, int nSize, const char *pszName)
     _ReturnError (CLS_NoError);
 }
 
+void DeleteFileDirEntry(FileDirEntry* pFileDir)
+{
+    assert(pFileDir != NULL);
+
+    if (pFileDir->mPath) delete pFileDir->mPath;
+    delete pFileDir;
+}
+
 ClassInterface *NewClassInterface(USHORT index)
 {
     ClassInterface *pClassInterface;
@@ -41,6 +49,25 @@ void DeleteClassInterface(ClassInterface *pClassInterface)
     assert(pClassInterface != NULL);
 
     delete pClassInterface;
+}
+
+FileDirEntry *NewFileDirEntry(const char *pszPath)
+{
+    FileDirEntry *pFile;
+
+    assert(pszPath != NULL);
+
+    pFile = new FileDirEntry;
+    if (!pFile) return NULL;
+
+    pFile->mPath = new char[strlen(pszPath) + 1];
+    if (!pFile->mPath) goto ErrorExit;
+    strcpy(pFile->mPath, pszPath);
+    return pFile;
+
+ErrorExit:
+    delete pFile;
+    return NULL;
 }
 
 ClassDirEntry *NewClassDirEntry(const char *pszName, const char *pszNamespace)
@@ -530,6 +557,7 @@ void DeleteAliasDirEntry(AliasDirEntry *pAlias)
 CLSModule *CreateCLS()
 {
     CLSModule *pModule;
+    FileDirEntry *pFile;
 
     pModule = new CLSModule;
     if (!pModule) return NULL;
@@ -538,6 +566,7 @@ CLSModule *CreateCLS()
     memcpy(pModule->mMagic, MAGIC_STRING, MAGIC_STRING_LENGTH);
     pModule->mCLSModuleVersion = CLSMODULE_VERSION;
 
+    pModule->mFileDirs = new FileDirEntry *[MAX_FILE_NUMBER];
     pModule->mClassDirs = new ClassDirEntry *[MAX_CLASS_NUMBER];
     pModule->mInterfaceDirs = new InterfaceDirEntry *[MAX_INTERFACE_NUMBER];
     pModule->mDefinedInterfaceIndexes = new int[MAX_DEFINED_INTERFACE_NUMBER];
@@ -547,15 +576,20 @@ CLSModule *CreateCLS()
     pModule->mLibraryNames = new char *[MAX_LIBRARY_NUMBER];
     pModule->mArrayDirs = new ArrayDirEntry *[MAX_ARRAY_NUMBER];
     pModule->mConstDirs = new ConstDirEntry *[MAX_CONST_NUMBER];
+    pFile = new FileDirEntry;
 
     if (!pModule->mClassDirs || !pModule->mInterfaceDirs ||
         !pModule->mStructDirs || !pModule->mEnumDirs ||
         !pModule->mAliasDirs || !pModule->mLibraryNames ||
         !pModule->mArrayDirs || !pModule->mConstDirs ||
-        !pModule->mDefinedInterfaceIndexes) {
+        !pModule->mDefinedInterfaceIndexes || !pModule->mFileDirs ||
+        !pFile) {
         DestroyCLS(pModule);
         return NULL;
     }
+
+    pFile->mPath = NULL;
+    pModule->mFileDirs[pModule->mFileCount++] = pFile;
 
     return pModule;
 }
@@ -565,6 +599,13 @@ void DestroyCLS(CLSModule *pModule)
     int n;
 
     assert(pModule != NULL);
+
+    if (pModule->mFileDirs) {
+        for (n = 0; n < pModule->mFileCount; n++) {
+            DeleteFileDirEntry(pModule->mFileDirs[n]);
+        }
+        delete [] pModule->mFileDirs;
+    }
 
     if (pModule->mClassDirs) {
         for (n = 0; n < pModule->mClassCount; n++) {
@@ -630,6 +671,27 @@ void DestroyCLS(CLSModule *pModule)
     if (pModule->mName) delete pModule->mName;
 
     delete pModule;
+}
+
+int CreateFileDirEntry(
+    const char *pszPath, CLSModule *pModule)
+{
+    int n;
+    FileDirEntry *pFile;
+
+    if (!pszPath || pszPath[0] == '\0') return 0;
+
+    n = SelectFileDirEntry(pszPath, pModule);
+    if (n >= 1) {
+        _ReturnOK (n);
+    }
+
+    assert(pModule->mFileCount < MAX_FILE_NUMBER);
+
+    pFile = NewFileDirEntry(pszPath);
+    pModule->mFileDirs[pModule->mFileCount] = pFile;
+
+    _ReturnOK (pModule->mFileCount++);
 }
 
 int CreateClassDirEntry(

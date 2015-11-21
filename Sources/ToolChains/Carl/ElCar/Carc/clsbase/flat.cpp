@@ -27,6 +27,8 @@ private:
     int WriteString(const char *s);
     int WriteData(void *pData, int nSize);
 
+    int WriteFileDirEntry(FileDirEntry *pEntry);
+
     int WriteClassDirEntry(ClassDirEntry *pEntry);
     int WriteClassDescriptor(ClassDescriptor *pDesc);
 
@@ -120,6 +122,19 @@ int CFlatBuffer::WriteClassDescriptor(ClassDescriptor *pDesc)
     }
 
     return WriteData(&d, sizeof(ClassDescriptor));
+}
+
+int CFlatBuffer::WriteFileDirEntry(FileDirEntry *pFileDirEntry)
+{
+    FileDirEntry entry;
+
+    memcpy(&entry, pFileDirEntry, sizeof(FileDirEntry));
+
+    if (entry.mPath) {
+        entry.mPath = (char *)WriteString(entry.mPath);
+    }
+
+    return WriteData(&entry, sizeof(FileDirEntry));
 }
 
 int CFlatBuffer::WriteClassDirEntry(ClassDirEntry *pClassDirEntry)
@@ -387,6 +402,19 @@ int CFlatBuffer::Flat(CLSModule *pModule, void *pvDest)
     pModule = (CLSModule *)pvDest;
     memcpy(pModule, m_pModule, sizeof(CLSModule));
 
+    if (pModule->mFileCount > 0) {
+        p = (int *)_alloca(pModule->mFileCount * sizeof(int));
+
+        for (n = 0; n < pModule->mFileCount; n++)
+            p[n] = WriteFileDirEntry(pModule->mFileDirs[n]);
+
+        pModule->mFileDirs = (FileDirEntry **) \
+            WriteData(p, pModule->mFileCount * sizeof(int));
+    }
+    else {
+        pModule->mFileDirs = NULL;
+    }
+
     if (pModule->mClassCount > 0) {
         p = (int *)_alloca(pModule->mClassCount * sizeof(int));
 
@@ -520,6 +548,15 @@ int CFlatBuffer::Flat(CLSModule *pModule, void *pvDest)
 inline int StringAlignSize(const char *s)
 {
     return RoundUp4(strlen(s) + 1);
+}
+
+int CalcFileSize(FileDirEntry *p)
+{
+    int size = sizeof(FileDirEntry);
+
+    if (p->mPath) size += StringAlignSize(p->mPath);
+
+    return size;
 }
 
 int CalcClassSize(ClassDirEntry *p)
@@ -675,6 +712,11 @@ int CalcConstSize(ConstDirEntry *p)
 int CFlatBuffer::CalcBufferSize(const CLSModule *pModule)
 {
     int n, size = sizeof(CLSModule);
+
+    for (n = 0; n < pModule->mFileCount; n++) {
+        size += CalcFileSize(pModule->mFileDirs[n]);
+    }
+    size += n * sizeof(FileDirEntry *);
 
     for (n = 0; n < pModule->mClassCount; n++) {
         size += CalcClassSize(pModule->mClassDirs[n]);

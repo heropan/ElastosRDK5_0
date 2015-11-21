@@ -1,6 +1,7 @@
 
 module
 {
+    outputfile Elastos.CoreLibrary.Core.h {
     merge("../../car/elastos/core.car");
     merge("../../car/elastos/security.car");
     merge("../../car/elastos/io.car");
@@ -10,17 +11,24 @@ module
     merge("../../car/elastos/utility.car");
     merge("../../car/elastos/sql.car");
     merge("../../car/elastos/system.car");
+    }
 
+    outputfile Elastos.CoreLibrary.Libcore.h {
     merge("../../car/libcore/icu.car");
     merge("../../car/libcore/io.car");
     merge("../../car/libcore/utility.car");
     merge("../../car/libcore/net.car");
+    }
 
+    outputfile Elastos.CoreLibrary.Extension.h {
     merge("../../car/elastosx/elastosx.car");
+    }
 
+    outputfile Elastos.CoreLibrary.External.h {
     merge("../../car/org/apache.car");
     merge("../../car/org/w3c.car");
     merge("../../car/org/xml.car");
     merge("../../car/org/xmlpull.car");
     merge("../../car/org/kxml2.car");
+    }
 }

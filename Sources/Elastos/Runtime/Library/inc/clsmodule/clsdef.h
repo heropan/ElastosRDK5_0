@@ -14,6 +14,7 @@ const unsigned short MAJOR_VERSION = 5;
 const unsigned short MINOR_VERSION = 0;
 const int CLSMODULE_VERSION = 1;
 
+typedef struct FileDirEntry FileDirEntry;
 typedef struct ClassDirEntry ClassDirEntry;
 typedef struct InterfaceDirEntry InterfaceDirEntry;
 typedef struct StructDirEntry StructDirEntry;
@@ -22,6 +23,7 @@ typedef struct AliasDirEntry AliasDirEntry;
 typedef struct ArrayDirEntry ArrayDirEntry;
 typedef struct ConstDirEntry ConstDirEntry;
 
+const int MAX_FILE_NUMBER = 32;
 const int MAX_CLASS_NUMBER = 4096;
 const int MAX_INTERFACE_NUMBER = 8192;
 const int MAX_DEFINED_INTERFACE_NUMBER = 8192;
@@ -50,6 +52,7 @@ typedef struct CLSModule
     char*               mName;
     char*               mServiceName;
 
+    unsigned short      mFileCount;
     unsigned short      mClassCount;
     unsigned short      mInterfaceCount;
     unsigned short      mDefinedInterfaceCount;
@@ -60,6 +63,7 @@ typedef struct CLSModule
     unsigned short      mArrayCount;
     unsigned short      mConstCount;
 
+    FileDirEntry**      mFileDirs;
     ClassDirEntry**     mClassDirs;
     InterfaceDirEntry** mInterfaceDirs;
     int*                mDefinedInterfaceIndexes;
@@ -76,6 +80,11 @@ typedef struct CLSModule
         void*           mBindData;
     } mR;
 } CLSModule;
+
+struct FileDirEntry
+{
+    char*               mPath;
+};
 
 typedef struct TypeDescriptor
 {
@@ -95,6 +104,7 @@ struct ClassDirEntry
 {
     char*               mName;
     char*               mNameSpace;
+    unsigned short      mFileIndex;
     ClassDescriptor*    mDesc;
 };
 
@@ -149,6 +159,7 @@ struct InterfaceDirEntry
 {
     char*                   mName;
     char*                   mNameSpace;
+    unsigned short          mFileIndex;
     InterfaceDescriptor*    mDesc;
 };
 
@@ -211,6 +222,7 @@ struct StructDirEntry
 {
     char*               mName;
     char*               mNameSpace;
+    unsigned short      mFileIndex;
     StructDescriptor*   mDesc;
 };
 
@@ -247,6 +259,7 @@ struct EnumDirEntry
 {
     char*               mName;
     char*               mNameSpace;
+    unsigned short      mFileIndex;
     EnumDescriptor*     mDesc;
 };
 
@@ -398,6 +411,7 @@ extern void DestroyCLS(CLSModule *);
 
 extern int IsValidCLS(CLSModule *, int, const char *);
 
+extern int CreateFileDirEntry(const char *, CLSModule *);
 extern int CreateClassDirEntry(const char *, CLSModule *, unsigned long);
 extern int CreateInterfaceDirEntry(const char *, CLSModule *, unsigned long);
 extern int CreateStructDirEntry(const char *, CLSModule *);
@@ -413,6 +427,7 @@ extern int CreateMethodParam(const char *, MethodDescriptor *);
 extern int CreateStructElement(const char *, StructDescriptor *);
 extern int CreateEnumElement(const char *, CLSModule *, EnumDescriptor *);
 
+extern int SelectFileDirEntry(const char *, const CLSModule *);
 extern int SelectClassDirEntry(const char *, const char *, const CLSModule *);
 extern int SelectInterfaceDirEntry(const char *, const char *, const CLSModule *);
 extern int SelectStructDirEntry(const char *, const CLSModule *);

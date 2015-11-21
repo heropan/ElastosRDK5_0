@@ -8,6 +8,21 @@
 
 #include <clsbase.h>
 
+int SelectFileDirEntry(const char *pszPath, const CLSModule *pModule)
+{
+    int n;
+
+    assert(pszPath != NULL);
+
+    for (n = 1; n < pModule->mFileCount; n++) {
+        if (!strcmp(pszPath, pModule->mFileDirs[n]->mPath)) {
+            _ReturnOK (n);
+        }
+    }
+
+    _ReturnError (CLSError_NotFound);
+}
+
 int SelectClassDirEntry(const char *pszName, const char *pszNamespaces, const CLSModule *pModule)
 {
     int n;

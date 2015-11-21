@@ -3,6 +3,9 @@ $;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
 $;;=========================================================================
 $
 $INPUT module
+
+${GenerateModuleImplementation(module)}
+
 $OUTPUT "_${name}.h"
 
 EXTERN_C ELAPI _Impl_AcquireCallbackHandler(PInterface pServerObj, _ELASTOS REIID iid, PInterface *ppHandler);

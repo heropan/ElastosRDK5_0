@@ -6,6 +6,12 @@
 
 static int sBase;
 
+void MapFileDirEntry(
+    /* [in] */ FileDirEntry* p)
+{
+    if (p->mPath) p->mPath += sBase;
+}
+
 void MapClassDescriptor(
     /* [in] */ ClassDescriptor* p)
 {
@@ -193,6 +199,18 @@ void DoRelocCLS(
     if (p->mServiceName) p->mServiceName += sBase;
     if (p->mDefinedInterfaceCount > 0) {
         p->mDefinedInterfaceIndexes = (int *)((int)(p->mDefinedInterfaceIndexes) + sBase);
+    }
+
+    if (0 != p->mFileCount) {
+        p->mFileDirs = (FileDirEntry **)((int)p->mFileDirs + sBase);
+
+        for (int n = 0; n < p->mFileCount; n++) {
+            p->mFileDirs[n] = (FileDirEntry *)((int)p->mFileDirs[n] + sBase);
+            MapFileDirEntry(p->mFileDirs[n]);
+        }
+    }
+    else {
+        p->mFileDirs = NULL;
     }
 
     if (0 != p->mClassCount) {

@@ -139,6 +139,7 @@ static const KeywordToken s_keywords_n[] = {
 static const KeywordToken s_keywords_o[] = {
     { "oneway", Token_K_oneway },
     { "out", Token_K_out },
+    { "outputfile", Token_K_file },
 };
 
 static const KeywordToken s_keywords_p[] = {

@@ -109,6 +109,8 @@ bool GenCarBarcode(CLSModule *pModule)
 
 extern void InitNamespace();
 extern void UninitNamespace();
+extern void InitOutputFile();
+extern void UninitOutputFile();
 
 CLSModule * CompileCAR(const char *pszName, DWORD attribs)
 {
@@ -162,11 +164,13 @@ CLSModule * CompileCAR(const char *pszName, DWORD attribs)
         s_bInNakedMode = true;
 
     InitNamespace();
+    InitOutputFile();
 
     // compiling
     //
     DoCompiling(pszName, pModule);
 
+    UninitOutputFile();
     UninitNamespace();
 
     if (0 != g_nErrorNumber) {

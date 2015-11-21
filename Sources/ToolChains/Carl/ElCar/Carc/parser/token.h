@@ -61,7 +61,7 @@ typedef enum CARToken {
     Token_K_pertainsto,     Token_K_extends,        Token_K_final,
     Token_K_affiliates,     Token_K_callbacks,      Token_K_delegates,
     Token_K_callbacksink,   Token_K_delegatesink,   Token_K_namespace,
-    Token_K_using,          Token_K_oneway,
+    Token_K_using,          Token_K_oneway,         Token_K_file,
 
     Token_K_true,           Token_K_false,
 

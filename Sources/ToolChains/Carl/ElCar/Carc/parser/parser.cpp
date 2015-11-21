@@ -78,6 +78,7 @@ static char *s_pszUsingNS = NULL;
 static int s_usingCap = 0;
 static int s_usingUsed = 0;
 
+static char *s_pszOutputFile = NULL;
 
 
 typedef struct FrontDeclaration
@@ -160,6 +161,34 @@ void PopNamespace()
         *s_pszNamespace = '\0';
         s_nsUsed = 0;
     }
+}
+
+char* GetOutputFile()
+{
+    return s_pszOutputFile;
+}
+
+void InitOutputFile()
+{
+    s_pszOutputFile = NULL;
+}
+
+void UninitOutputFile()
+{
+    free(s_pszOutputFile);
+}
+
+void ChangeOutputFile(const char *pszPath)
+{
+    if (s_pszOutputFile) {
+        free(s_pszOutputFile);
+    }
+    if (!pszPath) {
+        s_pszOutputFile = NULL;
+        return;
+    }
+    s_pszOutputFile = (char*)malloc(strlen(pszPath) + 1);
+    strcpy(s_pszOutputFile, pszPath);
 }
 
 void AddUsingNS(const char *pszNamespace)
@@ -1035,6 +1064,8 @@ int P_Enum()
             s_pModule->mEnumDirs[r]->mDesc) == Ret_AbortOnError) {
             return Ret_AbortOnError;
         }
+
+        s_pModule->mEnumDirs[r]->mFileIndex = CreateFileDirEntry(GetOutputFile(), s_pModule);
     }
     else if (Token_S_semicolon == token) {
         AddFrontDeclaration(pszFullName, Type_interface);
@@ -1321,6 +1352,8 @@ int P_Struct()
         ErrorReport(CAR_E_ExpectSymbol, "{ or ;");
         return Ret_AbortOnError;
     }
+
+    s_pModule->mStructDirs[r]->mFileIndex = CreateFileDirEntry(GetOutputFile(), s_pModule);
 
     return Ret_Continue;
 }
@@ -4110,6 +4143,7 @@ int P_Interface(CARToken token, DWORD properties)
         CreateError(r, "interface", g_szCurrentToken);
         return Ret_AbortOnError;
     }
+    s_pModule->mInterfaceDirs[r]->mFileIndex = CreateFileDirEntry(GetOutputFile(), s_pModule);
     pDesc = s_pModule->mInterfaceDirs[r]->mDesc;
     pDesc->mAttribs = attribs;
     s_pModule->mDefinedInterfaceIndexes[s_pModule->mDefinedInterfaceCount++] = r;
@@ -4783,6 +4817,7 @@ int GenerateClassObject(ClassDirEntry *pClass)
     pDesc->mCtorIndex = r;
 
     s_pModule->mInterfaceDirs[pDesc->mCtorIndex]->mDesc->mAttribs  = attr;
+    s_pModule->mInterfaceDirs[pDesc->mCtorIndex]->mFileIndex = pClass->mFileIndex;
 
     n = RetrieveInterface("IClassObject", NULL, s_pModule, TRUE);
     if (n < 0) {
@@ -4815,6 +4850,7 @@ int GenerateClassObject(ClassDirEntry *pClass)
     }
     else {
         s_pModule->mClassDirs[r]->mDesc->mAttribs = classAttr;
+        s_pModule->mClassDirs[r]->mFileIndex = pClass->mFileIndex;
     }
     return Ret_Continue;
 }
@@ -5472,6 +5508,7 @@ int P_Class(CARToken token, DWORD properties)
     }
 
     pClass = s_pModule->mClassDirs[r];
+    pClass->mFileIndex = CreateFileDirEntry(GetOutputFile(), s_pModule);
     pDesc = pClass->mDesc;
     pDesc->mAttribs = attribs;
 
@@ -5576,6 +5613,7 @@ int P_UsingNamespace()
 }
 
 int P_DeclNamespace();
+int P_DeclOutputFile();
 
 // CAR_ELEM    -> INTERFACE | CLASS | ENUM | STRUCT | TYPEDEF |
 //                PRAGMA | IMPORT | IMPORTLIB | MERGE
@@ -5630,6 +5668,9 @@ int P_CARElement()
                 return Ret_AbortOnError;
             }
 
+        case Token_K_file:
+            return P_DeclOutputFile();
+
         default:
             return P_InterfaceAndClass(token);
 
@@ -5664,6 +5705,35 @@ int P_DeclNamespace()
 
     GetToken(s_pFile); // skip "}"
     PopNamespace();
+    return Ret_Continue;
+}
+
+// FILE -> k_file string s_lbracket CAR_BODY s-rbracket
+int P_DeclOutputFile()
+{
+    CARToken token;
+
+    if (GetToken(s_pFile) != Token_ident) {
+        ErrorReport(CAR_E_UnexpectSymbol, g_szCurrentToken);
+        return Ret_AbortOnError;
+    }
+
+    ChangeOutputFile(g_szCurrentToken);
+
+    if (GetToken(s_pFile) != Token_S_lbrace) {
+        ErrorReport(CAR_E_UnexpectSymbol, g_szCurrentToken);
+        return Ret_AbortOnError;
+    }
+
+    do {
+        if (P_CARElement() == Ret_AbortOnError) {
+            return Ret_AbortOnError;
+        }
+        token = PeekToken(s_pFile);
+    } while (Token_S_rbrace != token);
+
+    GetToken(s_pFile); // skip "}"
+    ChangeOutputFile(NULL);
     return Ret_Continue;
 }
 
