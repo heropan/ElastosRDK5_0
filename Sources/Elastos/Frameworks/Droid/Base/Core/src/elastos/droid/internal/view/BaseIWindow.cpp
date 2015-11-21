@@ -19,20 +19,6 @@ ECode BaseIWindow::SetSession(
     return NOERROR;
 }
 
-ECode BaseIWindow::SetSeq(
-    /* [in] */ Int32 seq)
-{
-    mSeq = seq;
-    return NOERROR;
-}
-
-ECode BaseIWindow::GetSeq(
-    /* [out] */ Int32* seq)
-{
-    *seq = mSeq;
-    return NOERROR;
-}
-
 ECode BaseIWindow::Resized(
     /* [in] */ IRect* frame,
     /* [in] */ IRect* overscanInsets,

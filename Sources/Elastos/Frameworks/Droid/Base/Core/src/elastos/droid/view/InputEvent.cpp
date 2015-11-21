@@ -40,6 +40,8 @@ ECode InputEvent::IsFromSource(
         /* [in] */ Int32 source,
         /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 rSource;
     GetSource(&rSource);
     *result = (rSource & source) == source;
@@ -84,25 +86,6 @@ ECode InputEvent::GetSequenceNumber(
     VALIDATE_NOT_NULL(seq)
     *seq = mSeq;
 
-    return NOERROR;
-}
-
-ECode InputEvent::IsFromSource(
-    /* [in] */ Int32 source,
-    /* [out] */ Boolean* result)
-{
-    return NOERROR;
-}
-
-ECode InputEvent::ReadFromParcel(
-    /* [in] */ IParcel* source)
-{
-    return NOERROR;
-}
-
-ECode InputEvent::WriteToParcel(
-    /* [in] */ IParcel* dest)
-{
     return NOERROR;
 }
 

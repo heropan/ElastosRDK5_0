@@ -56,12 +56,9 @@ public:
 
     CARAPI DispatchGetNewSurface();
 
-<<<<<<< HEAD
-=======
     CARAPI DispatchScreenState(
         /* [in] */ Boolean on);
 
->>>>>>> update view
     CARAPI WindowFocusChanged(
         /* [in] */ Boolean hasFocus,
         /* [in] */ Boolean touchEnabled);
@@ -99,15 +96,6 @@ public:
         /* [in] */ Boolean sync);
 
     CARAPI DoneAnimating();
-<<<<<<< HEAD
-
-    CARAPI SetSeq(
-        /* [in] */ Int32 seq);
-
-    CARAPI GetSeq(
-        /* [out] */ Int32* seq);
-=======
->>>>>>> update view
 
 public:
     Int32 mSeq;
