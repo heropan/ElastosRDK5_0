@@ -5,6 +5,7 @@
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::CArrayList;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Droid {
@@ -292,7 +293,9 @@ ECode AnimatorSet::Node::Clone(
 {
     VALIDATE_NOT_NULL(obj);
     AutoPtr<Node> newObject = new Node();
-    ICloneable::Probe(mAnimation)->Clone((IInterface**)(&(newObject->mAnimation)));
+    AutoPtr<IInterface> tmp;
+    ICloneable::Probe(mAnimation)->Clone((IInterface**)&tmp);
+    newObject->mAnimation = IAnimator::Probe(tmp);
     newObject->mDependencies.Assign(mDependencies.Begin(), mDependencies.End());
     newObject->mTmpDependencies.Assign(mTmpDependencies.Begin(), mTmpDependencies.End());
     newObject->mNodeDependencies.Assign(mNodeDependencies.Begin(), mNodeDependencies.End());
@@ -914,7 +917,7 @@ ECode AnimatorSet::Clone(
 
         // clear out any listeners that were set up by the AnimatorSet; these will
         // be set up when the clone's nodes are sorted
-        Animator* animator = reinterpret_cast<Animator*>((Animator*)nodeClone->mAnimation.Get());
+        Animator* animator = (Animator*)(nodeClone->mAnimation.Get());
         List<AutoPtr<IAnimatorListener> > cloneListeners(animator->mListeners);
         if (cloneListeners.IsEmpty() == FALSE) {
             List<AutoPtr<IAnimatorListener> > listenersToRemove;

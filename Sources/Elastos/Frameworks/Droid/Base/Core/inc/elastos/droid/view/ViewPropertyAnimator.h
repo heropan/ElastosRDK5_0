@@ -23,6 +23,8 @@ namespace View {
 class ViewPropertyAnimator
 {
 private:
+    friend class RenderNodeAnimator;
+private:
     class AnimatorEventListener
         : public IAnimatorListener
         , public IAnimatorUpdateListener
@@ -244,17 +246,19 @@ private:
     AutoPtr<IRunnable> mPendingOnStartAction;
     AutoPtr<IRunnable> mPendingOnEndAction;
 
-    const static Int32 NONE           = 0x0000;
-    const static Int32 TRANSLATION_X  = 0x0001;
-    const static Int32 TRANSLATION_Y  = 0x0002;
-    const static Int32 SCALE_X        = 0x0004;
-    const static Int32 SCALE_Y        = 0x0008;
-    const static Int32 ROTATION       = 0x0010;
-    const static Int32 ROTATION_X     = 0x0020;
-    const static Int32 ROTATION_Y     = 0x0040;
-    const static Int32 _X              = 0x0080;
-    const static Int32 _Y              = 0x0100;
-    const static Int32 ALPHA          = 0x0200;
+    static const Int32 NONE           = 0x0000;
+    static const Int32 TRANSLATION_X  = 0x0001;
+    static const Int32 TRANSLATION_Y  = 0x0002;
+    static const Int32 TRANSLATION_Z  = 0x0004;
+    static const Int32 SCALE_X        = 0x0008;
+    static const Int32 SCALE_Y        = 0x0010;
+    static const Int32 ROTATION       = 0x0020;
+    static const Int32 ROTATION_X     = 0x0040;
+    static const Int32 ROTATION_Y     = 0x0080;
+    static const Int32 _X              = 0x0100;
+    static const Int32 _Y              = 0x0200;
+    static const Int32 _Z              = 0x0400;
+    static const Int32 ALPHA          = 0x0800;
 
     const static Int32 TRANSFORM_MASK = TRANSLATION_X | TRANSLATION_Y | SCALE_X | SCALE_Y |
             ROTATION | ROTATION_X | ROTATION_Y | _X | _Y;

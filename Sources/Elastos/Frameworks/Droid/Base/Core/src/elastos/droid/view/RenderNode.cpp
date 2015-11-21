@@ -6,6 +6,7 @@
 #include "elastos/droid/graphics/CPath.h"
 #include <elastos/utility/logging/Slogger.h>
 #include "elastos/droid/graphics/NativePaint.h"
+#include "elastos/droid/view/RenderNodeAnimator.h"
 
 #include <hwui/RenderNode.h>
 #include <hwui/Animator.h>

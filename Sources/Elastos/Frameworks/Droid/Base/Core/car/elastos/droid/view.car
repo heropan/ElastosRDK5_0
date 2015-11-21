@@ -50,6 +50,7 @@ module
     merge("view/MenuInflater.car");
     merge("view/MenuItem.car");
     merge("view/MotionEvent.car");
+    merge("view/OrientationListener.car");
     merge("view/OrientationEventListener.car");
     merge("view/PointerIcon.car");
     merge("view/RenderNode.car");
@@ -221,6 +222,8 @@ module
     interface Elastos.Droid.Hardware.Display.IDisplayManagerGlobal;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.ISurfaceTexture;
+    interface Elastos.Droid.Graphics.ICanvasProperty;
+    interface Elastos.Droid.Animation.IAnimator;
 
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
@@ -834,6 +837,39 @@ module
         constructor();
 
         interface IRenderNodeHelper;
+    }
+
+    class CRenderNodeAnimator {
+        constructor(
+            [in] Int32 property,
+            [in] Float finalValue);
+
+        constructor(
+            [in] ICanvasProperty* canvasProperty,
+            [in] Float finalValue);
+
+        /**
+         * Creates a new render node animator for a field on a Paint property.
+         *
+         * @param property The paint property to target
+         * @param paintField Paint field to animate, one of {@link #PAINT_ALPHA} or
+         *            {@link #PAINT_STROKE_WIDTH}
+         * @param finalValue The target value for the property
+         */
+        constructor(
+            [in] ICanvasProperty* property,
+            [in] Int32 paintField,
+            [in] Float finalValue);
+
+        constructor(
+            [in] Int32 x,
+            [in] Int32 y,
+            [in] Float startRadius,
+            [in] Float endRadius);
+
+        interface IAnimator;
+        interface ICloneable;
+        interface IRenderNodeAnimator;
     }
 
     class CSurface {

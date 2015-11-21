@@ -42,6 +42,7 @@ public:
         /* [in] */ Int32 source,
         /* [out] */ Boolean* result);
 
+
     /**
      * Recycles the event.
      * This method should only be used by the system since applications do not
@@ -81,12 +82,6 @@ public:
 
 protected:
     virtual CARAPI_(void) PrepareForReuse();
-
-    virtual CARAPI ReadFromParcel(
-        /* [in] */ IParcel* source);
-
-    virtual CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest);
 
 protected:
     /** @hide */

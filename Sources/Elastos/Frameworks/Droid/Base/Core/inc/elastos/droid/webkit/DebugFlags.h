@@ -21,8 +21,8 @@ namespace Webkit {
 class DebugFlags
 {
 public:
-    static const Boolean COOKIE_SYNC_MANAGER;
-    static const Boolean TRACE_API;
+    static const Boolean COOKIE_SYNC_MANAGER = FALSE;
+    static const Boolean TRACE_API = FALSE;
     static const Boolean TRACE_CALLBACK;
     static const Boolean URL_UTIL;
     static const Boolean WEB_SYNC_MANAGER;

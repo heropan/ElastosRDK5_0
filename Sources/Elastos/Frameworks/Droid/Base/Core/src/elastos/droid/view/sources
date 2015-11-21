@@ -71,6 +71,8 @@ SOURCES += CSurfaceControl.cpp
 #SOURCES += CDispatcherState.cpp
 SOURCES += RenderNode.cpp
 SOURCES += CRenderNodeHelper.cpp
+SOURCES += RenderNodeAnimator.cpp
+SOURCES += CRenderNodeAnimator.cpp
 SOURCES += NativeDisplayEventReceiver.cpp
 SOURCES += DisplayEventReceiver.cpp
 
@@ -175,6 +177,8 @@ SOURCES += ViewOutlineProvider.cpp
 SOURCES += CViewOutlineProviderHelper.cpp
 SOURCES += CMagnificationSpec.cpp
 SOURCES += CInputQueue.cpp
+SOURCES += OrientationEventListener.cpp
+SOURCES += OrientationListener.cpp
 
 ELASTOS_LIBS += inputmethod/inputmethod.lib
 ELASTOS_LIBS += accessibility/accessibility.lib

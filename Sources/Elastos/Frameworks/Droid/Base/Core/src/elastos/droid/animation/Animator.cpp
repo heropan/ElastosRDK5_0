@@ -9,7 +9,8 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL_2(Animator, Object, ICloneable, IAnimator);
+CAR_INTERFACE_IMPL_2(Animator, Object, IAnimator, ICloneable)
+
 Animator::Animator()
     : mPaused(FALSE)
 {

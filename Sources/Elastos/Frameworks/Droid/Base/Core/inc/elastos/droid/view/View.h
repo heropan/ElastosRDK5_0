@@ -77,6 +77,7 @@ class TouchDelegate;
 class ViewPropertyAnimator;
 class CAccessibilityInteractionController;
 class COverlayViewGroup;
+class RenderNodeAnimator;
 
 #ifndef VIEW_PROBE
 #define VIEW_PROBE(host) ((View*)IView::Probe(host))
@@ -103,6 +104,7 @@ class View
 
 {
     friend class RenderNode;
+    friend class RenderNodeAnimator;
     friend class ViewRootImpl;
     friend class LayoutInflater;
     friend class ViewGroup;
@@ -1230,6 +1232,7 @@ protected:
     {
         friend class View;
         friend class ViewPropertyAnimator;
+        friend class RenderNodeAnimator;
     public:
         TransformationInfo();
 

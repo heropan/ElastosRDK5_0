@@ -36,6 +36,16 @@ ECode InputEvent::GetDevice(
     return InputDevice::GetDevice(deviceId, device);
 }
 
+ECode InputEvent::IsFromSource(
+        /* [in] */ Int32 source,
+        /* [out] */ Boolean* result)
+{
+    Int32 rSource;
+    GetSource(&rSource);
+    *result = (rSource & source) == source;
+    return NOERROR;
+}
+
 ECode InputEvent::Recycle()
 {
     // if (TRACK_RECYCLED_LOCATION) {
