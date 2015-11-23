@@ -9,7 +9,8 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-CarClass(CFrameLayout), public FrameLayout
+CarClass(CFrameLayout)
+    , public FrameLayout
 {
 public:
     CAR_OBJECT_DECL();
