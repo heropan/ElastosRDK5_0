@@ -2,9 +2,9 @@
 #include "elastos/droid/view/View.h"
 /*#include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/view/ViewRootImpl.h"
-#include "elastos/droid/view/CDispatcherState.h"
+#include "elastos/droid/view/CDispatcherState.h"*/
 #include "elastos/droid/view/ViewTreeObserver.h"
-#include "elastos/droid/view/CViewConfiguration.h"
+/*#include "elastos/droid/view/CViewConfiguration.h"
 #include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 #include "elastos/droid/view/CChoreographerHelper.h"
@@ -103,6 +103,7 @@ using Elastos::Droid::View::CChoreographerHelper;
 using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfo;
 using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::CAccessibilityManager;*/
+using Elastos::Droid::View::ViewTreeObserver;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::SystemProperties;
@@ -2003,7 +2004,7 @@ ECode View::HandleFocusGainInternal(
         }
 
         if (mAttachInfo) {
-                mAttachInfo->mTreeObserver->DispatchOnGlobalFocusChange(oldFocus, THIS_PROBE(IView));
+            ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnGlobalFocusChange(oldFocus, THIS_PROBE(IView));
         }
 
         OnFocusChanged(TRUE, direction, previouslyFocusedRect);
@@ -2195,8 +2196,8 @@ ECode View::NotifyGlobalFocusCleared(
     /* [in] */ IView* oldFocus)
 {
     if (oldFocus && mAttachInfo) {
-            mAttachInfo->mTreeObserver->DispatchOnGlobalFocusChange(oldFocus, NULL);
-        }
+        ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnGlobalFocusChange(oldFocus, NULL);
+    }
 
     return NOERROR;
 }
@@ -11039,7 +11040,7 @@ ECode View::DispatchAttachedToWindow(
     // We will need to evaluate the drawable state at least once.
     mPrivateFlags |= PFLAG_DRAWABLE_STATE_DIRTY;
     if (mFloatingTreeObserver != NULL) {
-        info->mTreeObserver->Merge(mFloatingTreeObserver);
+        ((ViewTreeObserver*)info->mTreeObserver.Get())->Merge(mFloatingTreeObserver);
         mFloatingTreeObserver = NULL;
     }
     if ((mPrivateFlags & PFLAG_SCROLL_CONTAINER) != 0) {

@@ -1,17 +1,18 @@
 
-#include "elastos/droid/view/CPointerIcon.h"
-#include "elastos/droid/utility/XmlUtils.h"
 #include "elastos/droid/ext/frameworkdef.h"
-#include <elastos/utility/logging/Logger.h>
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/view/CPointerIcon.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::Utility::XmlUtils;
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Utility::Logging::Logger;
+using Org::Xmlpull::V1::IXmlPullParser;
 
 namespace Elastos {
 namespace Droid {
@@ -20,15 +21,11 @@ namespace View {
 const char* CPointerIcon::TAG = "PointerIcon";
 const Int32 CPointerIcon::STYLE_OEM_FIRST;
 const Int32 CPointerIcon::STYLE_DEFAULT;
+AutoPtr<IPointerIcon> CPointerIcon::gNullIcon = CPointerIcon::CreateNullIcon();
 
-static AutoPtr<IPointerIcon> CreateNullIcon()
-{
-    AutoPtr<CPointerIcon> icon;
-    CPointerIcon::NewByFriend(CPointerIcon::STYLE_NULL, (CPointerIcon**)&icon);
-    return icon;
-}
+CAR_INTERFACE_IMPL(CPointerIcon, Object, IPointerIcon)
 
-AutoPtr<IPointerIcon> CPointerIcon::gNullIcon = CreateNullIcon();
+CAR_OBJECT_IMPL(CPointerIcon)
 
 CPointerIcon::CPointerIcon()
     : mStyle(0)
@@ -54,8 +51,7 @@ ECode CPointerIcon::GetNullIcon(
 {
     VALIDATE_NOT_NULL(pointerIcon);
     *pointerIcon = gNullIcon;
-    REFCOUNT_ADD(*pointerIcon)
-
+    REFCOUNT_ADD(*pointerIcon);
     return NOERROR;
 }
 
@@ -63,6 +59,7 @@ ECode CPointerIcon::GetDefaultIcon(
     /* [in] */ IContext* context,
     /* [out] */ IPointerIcon** pointerIcon)
 {
+    VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(pointerIcon);
     return GetSystemIcon(context, STYLE_DEFAULT, pointerIcon);
 }
@@ -72,6 +69,7 @@ ECode CPointerIcon::GetSystemIcon(
     /* [in] */ Int32 style,
     /* [out] */ IPointerIcon** pointerIcon)
 {
+    VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(pointerIcon);
 
     if (context == NULL) {
@@ -120,11 +118,11 @@ ECode CPointerIcon::GetSystemIcon(
     else {
         AutoPtr<IResources> r;
         context->GetResources((IResources**)&r);
-        FAIL_RETURN(icon->LoadResource(r, resourceId));
+        FAIL_RETURN(icon->LoadResource(context, r, resourceId));
     }
-    *pointerIcon = icon.Get();
-    REFCOUNT_ADD(*pointerIcon)
 
+    *pointerIcon = icon.Get();
+    REFCOUNT_ADD(*pointerIcon);
     return NOERROR;
 }
 
@@ -134,7 +132,9 @@ ECode CPointerIcon::CreateCustomIcon(
     /* [in] */ Float hotSpotY,
     /* [out] */ IPointerIcon** pointerIcon)
 {
+    VALIDATE_NOT_NULL(bitmap);
     VALIDATE_NOT_NULL(pointerIcon);
+
     if (bitmap == NULL) {
         Logger::E(TAG, "Bitmap must not be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -147,8 +147,7 @@ ECode CPointerIcon::CreateCustomIcon(
     icon->mHotSpotX = hotSpotX;
     icon->mHotSpotY = hotSpotY;
     *pointerIcon = icon.Get();
-    REFCOUNT_ADD(*pointerIcon)
-
+    REFCOUNT_ADD(*pointerIcon);
     return NOERROR;
 }
 
@@ -157,6 +156,7 @@ ECode CPointerIcon::LoadCustomIcon(
     /* [in] */ Int32 resourceId,
     /* [out] */ IPointerIcon** pointerIcon)
 {
+    VALIDATE_NOT_NULL(resources);
     VALIDATE_NOT_NULL(pointerIcon);
     if (resources == NULL) {
         Logger::E(TAG, "resources must not be NULL");
@@ -165,10 +165,9 @@ ECode CPointerIcon::LoadCustomIcon(
 
     AutoPtr<CPointerIcon> icon;
     CPointerIcon::New(STYLE_CUSTOM, (IPointerIcon**)&icon);
-    FAIL_RETURN(icon->LoadResource(resources, resourceId));
+    FAIL_RETURN(icon->LoadResource(NULL, resources, resourceId));
     *pointerIcon = icon.Get();
-    REFCOUNT_ADD(*pointerIcon)
-
+    REFCOUNT_ADD(*pointerIcon);
     return NOERROR;
 }
 
@@ -176,6 +175,7 @@ ECode CPointerIcon::Load(
     /* [in] */ IContext* context,
     /* [out] */ IPointerIcon** result)
 {
+    VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
@@ -195,10 +195,9 @@ ECode CPointerIcon::Load(
     icon->mSystemIconResourceId = mSystemIconResourceId;
     AutoPtr<IResources> r;
     context->GetResources((IResources**)&r);
-    icon->LoadResource(r, mSystemIconResourceId);
+    icon->LoadResource(context, r, mSystemIconResourceId);
     *result = icon.Get();
     REFCOUNT_ADD(*result);
-
     return NOERROR;
 }
 
@@ -207,7 +206,6 @@ ECode CPointerIcon::IsNullIcon(
 {
     VALIDATE_NOT_NULL(isNullIcon)
     *isNullIcon = mStyle == STYLE_NULL;
-
     return NOERROR;
 }
 
@@ -255,67 +253,37 @@ ECode CPointerIcon::GetHotSpotY(
     return NOERROR;
 }
 
-ECode CPointerIcon::ThrowIfIconIsNotLoaded()
+ECode CPointerIcon::DescribeContents(
+    /* [out] */ Int32* result)
 {
-    Boolean isLoaded;
-    IsLoaded(&isLoaded);
-    if (!isLoaded) {
-        Logger::E(TAG, "The icon is not loaded.");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-    return NOERROR;
+    VALIDATE_NOT_NULL(result);
+    *result = 0;
+    return 0;
 }
 
-// public final Parcelable.Creator<PointerIcon> CREATOR
-//         = new Parcelable.Creator<PointerIcon>() {
-//     public PointerIcon createFromParcel(Parcel in) {
-//         Int32 style = in.readInt();
-//         if (style == STYLE_NULL) {
-//             return getNullIcon();
-//         }
-
-//         Int32 systemIconResourceId = in.readInt();
-//         if (systemIconResourceId != 0) {
-//             PointerIcon icon = new PointerIcon(style);
-//             icon->mSystemIconResourceId = systemIconResourceId;
-//             return icon;
-//         }
-
-//         Bitmap bitmap = Bitmap.CREATOR.createFromParcel(in);
-//         Float hotSpotX = in.readFloat();
-//         Float hotSpotY = in.readFloat();
-//         return PointerIcon.createCustomIcon(bitmap, hotSpotX, hotSpotY);
-//     }
-
-//     public PointerIcon[] newArray(Int32 size) {
-//         return new PointerIcon[size];
-//     }
-// };
-
-// public Int32 describeContents() {
-//     return 0;
-// }
-
 ECode CPointerIcon::WriteToParcel(
-    /* [in] */ IParcel* out)
+    /* [in] */ IParcel* parcel,
+    /* [in] */ Int32 flags)
 {
-    out->WriteInt32(mStyle);
+    VALIDATE_NOT_NULL(parcel);
+    parcel->WriteInt32(mStyle);
 
     if (mStyle != STYLE_NULL) {
-        out->WriteInt32(mSystemIconResourceId);
+        parcel->WriteInt32(mSystemIconResourceId);
         if (mSystemIconResourceId == 0) {
-            IParcelable::Probe(mBitmap)->WriteToParcel(out);
-            out->WriteFloat(mHotSpotX);
-            out->WriteFloat(mHotSpotY);
+            assert(0);
+            //--IParcelable::Probe(mBitmap)->WriteToParcel(parcel, flags);
+            parcel->WriteFloat(mHotSpotX);
+            parcel->WriteFloat(mHotSpotY);
         }
     }
-
     return NOERROR;
 }
 
 ECode CPointerIcon::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
+    VALIDATE_NOT_NULL(source);
     source->ReadInt32(&mStyle);
 
     if (mStyle != STYLE_NULL) {
@@ -326,39 +294,17 @@ ECode CPointerIcon::ReadFromParcel(
             source->ReadFloat(&mHotSpotY);
         }
     }
-
     return NOERROR;
 }
 
-// //@Override
-// public Boolean equals(Object other) {
-//     if (this == other) {
-//         return true;
-//     }
-
-//     if (other == NULL || !(other instanceof PointerIcon)) {
-//         return false;
-//     }
-
-//     PointerIcon otherIcon = (PointerIcon) other;
-//     if (mStyle != otherIcon.mStyle
-//             || mSystemIconResourceId != otherIcon.mSystemIconResourceId) {
-//         return false;
-//     }
-
-//     if (mSystemIconResourceId == 0 && (mBitmap != otherIcon.mBitmap
-//             || mHotSpotX != otherIcon.mHotSpotX
-//             || mHotSpotY != otherIcon.mHotSpotY)) {
-//         return false;
-//     }
-
-//     return true;
-// }
-
 ECode CPointerIcon::LoadResource(
+    /* [in] */ IContext* context,
     /* [in] */ IResources* resources,
     /* [in] */ Int32 resourceId)
 {
+    VALIDATE_NOT_NULL(context);
+    VALIDATE_NOT_NULL(resources);
+
     AutoPtr<IXmlResourceParser> parser;
     resources->GetXml(resourceId, (IXmlResourceParser**)&parser);
     Int32 bitmapRes;
@@ -366,7 +312,8 @@ ECode CPointerIcon::LoadResource(
     Float hotSpotY;
     ECode ec;
     do {
-        ec = XmlUtils::BeginDocument(parser, String("pointer-icon"));
+        IXmlPullParser* pullParser = IXmlPullParser::Probe(parser);
+        ec = XmlUtils::BeginDocument(pullParser, String("pointer-icon"));
         if (FAILED(ec))
             break;
 
@@ -381,10 +328,10 @@ ECode CPointerIcon::LoadResource(
         ec = a->GetResourceId(R::styleable::PointerIcon_bitmap, 0, &bitmapRes);
         if (FAILED(ec))
             break;
-        ec = a->GetFloat(R::styleable::PointerIcon_hotSpotX, 0, &hotSpotX);
+        ec = a->GetDimension(R::styleable::PointerIcon_hotSpotX, 0, &hotSpotX);
         if (FAILED(ec))
             break;
-        ec = a->GetFloat(R::styleable::PointerIcon_hotSpotY, 0, &hotSpotY);
+        ec = a->GetDimension(R::styleable::PointerIcon_hotSpotY, 0, &hotSpotY);
         if (FAILED(ec))
             break;
         ec = a->Recycle();
@@ -398,14 +345,21 @@ ECode CPointerIcon::LoadResource(
     }
 
     if (bitmapRes == 0) {
-         Logger::E(TAG, "<pointer-icon> is missing bitmap attribute.");
+        Logger::E(TAG, "<pointer-icon> is missing bitmap attribute.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     AutoPtr<IDrawable> drawable;
+    if (NULL == context) {
+        resources->GetDrawable(bitmapRes, (IDrawable**)&drawable);
+    }
+    else {
+        context->GetDrawable(bitmapRes, (IDrawable**)&drawable);
+    }
+
     resources->GetDrawable(bitmapRes, (IDrawable**)&drawable);
     if (drawable == NULL || !IBitmapDrawable::Probe(drawable)) {
-     Logger::E(TAG, "<pointer-icon> bitmap attribute must "
+        Logger::E(TAG, "<pointer-icon> bitmap attribute must "
              "refer to a bitmap drawable.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -415,7 +369,6 @@ ECode CPointerIcon::LoadResource(
     IBitmapDrawable::Probe(drawable)->GetBitmap((IBitmap**)&mBitmap);
     mHotSpotX = hotSpotX;
     mHotSpotY = hotSpotY;
-
     return NOERROR;
 }
 
@@ -424,6 +377,7 @@ ECode CPointerIcon::ValidateHotSpot(
     /* [in] */ Float hotSpotX,
     /* [in] */ Float hotSpotY)
 {
+    VALIDATE_NOT_NULL(bitmap);
     Int32 w;
     bitmap->GetWidth(&w);
     if (hotSpotX < 0 || hotSpotX >= w) {
@@ -437,7 +391,6 @@ ECode CPointerIcon::ValidateHotSpot(
         Logger::E(TAG, "y hotspot lies outside of the bitmap area");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-
     return NOERROR;
 }
 
@@ -456,6 +409,26 @@ Int32 CPointerIcon::GetSystemIconStyleIndex(
         default:
             return 0;
     }
+}
+
+AutoPtr<IPointerIcon> CPointerIcon::CreateNullIcon()
+{
+    AutoPtr<CPointerIcon> icon;
+    CPointerIcon::NewByFriend(CPointerIcon::STYLE_NULL, (CPointerIcon**)&icon);
+    return icon;
+}
+
+ECode CPointerIcon::ThrowIfIconIsNotLoaded()
+{
+    assert(0);
+    Boolean isLoaded = FALSE;
+    IsLoaded(&isLoaded);
+    if (!isLoaded) {
+        //throw new IllegalStateException("The icon is not loaded.");
+        Logger::E(TAG, "The icon is not loaded.");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    return NOERROR;
 }
 
 } // namespace View

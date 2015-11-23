@@ -115,7 +115,7 @@ ECode WebViewChromiumFactoryProvider::InnerStartChromiumLockedRunnable::Run()
     //     startChromiumLocked();
     // }
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     AutoLock lock(mOwner->mLock);
     return mOwner->StartChromiumLocked();
 }
@@ -141,7 +141,7 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::FindAd
     // ==================before translated======================
     // return ContentViewStatics.findAddress(addr);
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     *result = ContentViewStatics::FindAddress(addr);
     return NOERROR;
 }
@@ -154,7 +154,7 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::GetDef
     // ==================before translated======================
     // return AwSettings.getDefaultUserAgent();
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     *result = AwSettings::GetDefaultUserAgent();
     return NOERROR;
 }
@@ -169,7 +169,7 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::SetWeb
     //             setWebContentsDebuggingEnabled(enable);
     // }
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     // Web Contents debugging is always enabled on debug builds.
     if (!Build::IS_DEBUGGABLE) {
         mOwner->SetWebContentsDebuggingEnabled(enable);
@@ -184,7 +184,7 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::ClearC
     // ==================before translated======================
     // AwContentsStatics.clearClientCertPreferences(onCleared);
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     AwContentsStatics::ClearClientCertPreferences(onCleared);
     return NOERROR;
 }
@@ -197,7 +197,7 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::FreeMe
     //             ComponentCallbacks2.TRIM_MEMORY_COMPLETE);
     // }
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     AutoPtr<IActivityManagerHelper> helper;
     CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
     Boolean isRunningInTest = FALSE;
@@ -213,7 +213,7 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::Enable
     // ==================before translated======================
     // WebViewChromium.enableSlowWholeDocumentDraw();
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     return WebViewChromium::EnableSlowWholeDocumentDraw();
 }
 
@@ -227,7 +227,7 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::ParseF
     // ==================before translated======================
     // return FileChooserParamsAdapter.parseFileChooserResult(resultCode, intent);
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     *result = FileChooserParamsAdapter::ParseFileChooserResult(resultCode, intent);
     REFCOUNT_ADD(*result);
     return NOERROR;

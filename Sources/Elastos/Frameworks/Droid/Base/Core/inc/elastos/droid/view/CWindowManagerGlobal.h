@@ -3,13 +3,15 @@
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__
 
 #include "_Elastos_Droid_View_CWindowManagerGlobal.h"
-#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::View::IIWindowSessionCallback;
+using Elastos::Droid::View::IWindowManagerGlobal;
+using Elastos::Core::IRunnable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::IArrayList;
 
@@ -24,11 +26,13 @@ CarClass(CWindowManagerGlobal)
     , public IWindowManagerGlobal
 {
 private:
-
     class SystemPropertyUpdaterRunnable
-        : public Runnable
+        : public Object
+        , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         SystemPropertyUpdaterRunnable(
             /* [in] */ CWindowManagerGlobal* owner);
 
@@ -36,6 +40,19 @@ private:
 
     private:
         CWindowManagerGlobal* mOwner;
+    };
+
+    class InnerWindowSessionCallbackStub
+        : public Object
+        , public IIWindowSessionCallback
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        InnerWindowSessionCallbackStub();
+
+        CARAPI OnAnimatorScaleChanged(
+            /* [in] */ Float scale);
     };
 
 public:
@@ -65,7 +82,7 @@ public:
         /* [out] */ IWindowSession** windowSession);
 
     CARAPI GetViewRootNames(
-        /* [out, callee] */ ArrayOf<String>** names);
+        /* [out, callee] */ ArrayOf<String>** resultz);
 
     CARAPI GetRootView(
         /* [in] */ const String& name,
@@ -144,8 +161,6 @@ private:
     AutoPtr<IArrayList> mRoots;
     AutoPtr<IArrayList> mParams;
     AutoPtr<IArrayList> mDyingViews;
-    Boolean mNeedsEglTerminate;
-
     AutoPtr<IRunnable> mSystemPropertyUpdater;
 };
 

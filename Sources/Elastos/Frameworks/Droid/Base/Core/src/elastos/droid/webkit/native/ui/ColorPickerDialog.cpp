@@ -38,7 +38,7 @@ ECode ColorPickerDialog::InnerOnClickListener::OnClick(
     // ==================before translated======================
     // tryNotifyColorSet(mCurrentColor);
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     mOwner->TryNotifyColorSet(mOwner->mCurrentColor);
     return NOERROR;
 }
@@ -64,7 +64,7 @@ ECode ColorPickerDialog::InnerOnClickListener1::OnClick(
     // ==================before translated======================
     // tryNotifyColorSet(mInitialColor);
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     mOwner->TryNotifyColorSet(mOwner->mInitialColor);
     return NOERROR;
 }
@@ -89,7 +89,7 @@ ECode ColorPickerDialog::InnerOnCancelListener::OnCancel(
     // ==================before translated======================
     // tryNotifyColorSet(mInitialColor);
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     mOwner->TryNotifyColorSet(mOwner->mInitialColor);
     return NOERROR;
 }
@@ -114,7 +114,7 @@ ECode ColorPickerDialog::InnerButtonOnClickListener::OnClick(
     // ==================before translated======================
     // showAdvancedView();
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     mOwner->ShowAdvancedView();
     return NOERROR;
 }

@@ -386,10 +386,10 @@ AutoPtr<ElastosCertVerifyResult> X509Util::VerifyServerCertificates(
     assert(0);
 
     // old if expression has throw, use assert instead temporary
-    assert(NULL == certChain);
-    assert(0 == certChain->GetLength());
+    assert(NULL != certChain);
+    assert(0 != certChain->GetLength());
     AutoPtr< ArrayOf<Byte> > firstItem = (*certChain)[0];
-    assert(NULL == firstItem);
+    assert(NULL != firstItem);
 
     //try {
         EnsureInitialized();

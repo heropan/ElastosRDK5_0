@@ -36,7 +36,7 @@ ECode ViewConfigurationHelper::InnerComponentCallbacks::OnConfigurationChanged(
     // ==================before translated======================
     // updateNativeViewConfigurationIfNecessary();
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     mOwner->UpdateNativeViewConfigurationIfNecessary();
     return NOERROR;
 }

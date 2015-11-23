@@ -341,7 +341,7 @@ ECode WebViewContentsClientAdapter::InnerHandler::HandleMessage(
     //         throw new IllegalStateException();
     // }
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     Int32 what = 0;
     msg->GetWhat(&what);
     switch (what) {
@@ -478,7 +478,7 @@ ECode WebViewContentsClientAdapter::InnerRunnable::Run()
     //     mPictureListener.onNewPicture(mWebView, new Picture());
     // }
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     UnimplementedWebViewApi::Invoke();
     if (mOwner->mPictureListener != NULL) {
         if (TRACE) {
@@ -747,7 +747,7 @@ ECode WebViewContentsClientAdapter::InnerValueCallback1::OnReceiveValue(
     }
     mCompleted = TRUE;
     IList* uriListTmp = IList::Probe(uriList);
-    assert(NULL == uriListTmp);
+    assert(NULL != uriListTmp);
 
     AutoPtr<IList> s = NULL;
     if (uriListTmp != NULL) {
@@ -759,7 +759,7 @@ ECode WebViewContentsClientAdapter::InnerValueCallback1::OnReceiveValue(
             AutoPtr<IInterface> valueTmp;
             uriListTmp->Get(i, (IInterface**)&valueTmp);
             IUri* uriTmp = IUri::Probe(valueTmp);
-            assert(NULL == uriTmp);
+            assert(NULL != uriTmp);
             uriTmp->ToSafeString(&tmp);
             AutoPtr<ICharSequence> item;
             CString::New(tmp, (ICharSequence**)&item);

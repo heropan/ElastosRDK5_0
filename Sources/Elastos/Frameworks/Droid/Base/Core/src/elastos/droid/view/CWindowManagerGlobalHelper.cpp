@@ -1,5 +1,5 @@
-#include "elastos/droid/view/CWindowManagerGlobalHelper.h"
 #include "elastos/droid/view/CWindowManagerGlobal.h"
+#include "elastos/droid/view/CWindowManagerGlobalHelper.h"
 
 namespace Elastos {
 namespace Droid {

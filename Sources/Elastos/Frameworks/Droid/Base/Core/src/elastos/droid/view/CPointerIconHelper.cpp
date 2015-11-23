@@ -1,6 +1,6 @@
 
-#include "elastos/droid/view/CPointerIconHelper.h"
 #include "elastos/droid/view/CPointerIcon.h"
+#include "elastos/droid/view/CPointerIconHelper.h"
 
 namespace Elastos {
 namespace Droid {

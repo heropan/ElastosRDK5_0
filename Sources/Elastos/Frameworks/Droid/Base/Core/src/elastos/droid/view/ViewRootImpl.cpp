@@ -8,9 +8,9 @@
 #include "elastos/droid/view/CWindowManagerGlobal.h"
 #include "elastos/droid/view/CCompatibilityInfoHolder.h"
 #include "elastos/droid/view/CAccessibilityInteractionConnection.h"
-#include "elastos/droid/view/CAccessibilityInteractionController.h"
+#include "elastos/droid/view/CAccessibilityInteractionController.h"*/
 #include "elastos/droid/view/ViewTreeObserver.h"
-#include "elastos/droid/view/CKeyCharacterMap.h"
+/*#include "elastos/droid/view/CKeyCharacterMap.h"
 #include "elastos/droid/view/SurfaceView.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
@@ -87,6 +87,7 @@ using Elastos::Droid::View::Animation::IAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerAccessibilityStateChangeListener;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerHighTextContrastChangeListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::ViewTreeObserver;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Logging::Logger;
@@ -2740,7 +2741,7 @@ void ViewRootImpl::PerformTraversals()
         framewHeight < desiredWindowHeight && framewHeight != mHeight));*/
 
     Boolean computesInternalInsetsTemp;
-    mAttachInfo->mTreeObserver->HasComputeInternalInsetsListeners(&computesInternalInsetsTemp);
+    ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->HasComputeInternalInsetsListeners(&computesInternalInsetsTemp);
     Boolean computesInternalInsets = computesInternalInsetsTemp || mAttachInfo->mHasNonEmptyGivenInternalInsets;
 
     Boolean insetsPending = FALSE;
@@ -3844,7 +3845,7 @@ void ViewRootImpl::Draw(
 
     if (mAttachInfo->mViewScrollChanged) {
         mAttachInfo->mViewScrollChanged = FALSE;
-        mAttachInfo->mTreeObserver->DispatchOnScrollChanged();
+        ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnScrollChanged();
     }
 
     Boolean tempAnimating;
@@ -4683,7 +4684,7 @@ Boolean ViewRootImpl::EnsureTouchModeLocally(
     }
 
     mAttachInfo->mInTouchMode = inTouchMode;
-    mAttachInfo->mTreeObserver->DispatchOnTouchModeChanged(inTouchMode);
+    ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnTouchModeChanged(inTouchMode);
 
     return (inTouchMode) ? EnterTouchMode() : LeaveTouchMode();
 }
