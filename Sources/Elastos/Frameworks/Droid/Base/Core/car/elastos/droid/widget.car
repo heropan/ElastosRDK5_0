@@ -127,6 +127,7 @@ module
     merge("widget/ActionMenuPresenter.car");
 
    //  using interface Elastos.Core.ICharSequence;
+   using interface Elastos.Utility.IList;
 
     interface Elastos.Droid.Content.IContext;
    //  interface Elastos.Droid.Content.IIntent;
@@ -1399,47 +1400,63 @@ module
    //      interface ISectionIndexer;
    //  }
 
-   //  [local]
-   //  class CArrayAdapter {
+    [local, deprecated]
+    class CArrayAdapter {
+        constructor(
+           [in] IContext* ctx,
+           [in] Int32 textViewResourceId);
 
-   //      constructor(
-   //         [in] IContext* ctx,
-   //         [in] Int32 textViewResourceId);
+        constructor(
+           [in] IContext* ctx,
+           [in] Int32 resource,
+           [in] Int32 textViewResourceId);
 
-   //      constructor(
-   //         [in] IContext* ctx,
-   //         [in] Int32 resource,
-   //         [in] Int32 textViewResourceId);
+        constructor(
+           [in] IContext* ctx,
+           [in] Int32 textViewResourceId,
+           [in] ArrayOf<IInterface*>* objects);
 
-   //      constructor(
-   //         [in] IContext* ctx,
-   //         [in] Int32 textViewResourceId,
-   //         [in] IObjectContainer* objects);
+        constructor(
+           [in] IContext* ctx,
+           [in] Int32 resource,
+           [in] Int32 textViewResourceId,
+           [in] ArrayOf<IInterface*>* objects);
 
-   //      constructor(
-   //         [in] IContext* ctx,
-   //         [in] Int32 resource,
-   //         [in] Int32 textViewResourceId,
-   //         [in] IObjectContainer* objects);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 resource,
+            [in] IList* objects);
 
-   //      interface IArrayAdapter;
-   //      interface IFilterable;
-   //      interface ISpinnerAdapter;
-   //  }
+        constructor(
+            [in] IContext* context,
+            [in] Int32 resource,
+            [in] Int32 textViewResourceId,
+            [in] IList* objects);
 
-   //  [local, deprecated]
-   //  class CSimpleAdapter {
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IObjectContainer* data,
-   //          [in] Int32 resource,
-   //          [in] ArrayOf<String>* from,
-   //          [in] ArrayOf<Int32>* to);
+        interface IArrayAdapter;
+        interface IBaseAdapter;
+        interface IListAdapter;
+        interface ISpinnerAdapter;
+        interface IAdapter;
+        interface IFilterable;
+    }
 
-   //      interface ISimpleAdapter;
-   //      interface IFilterable;
-   //      interface ISpinnerAdapter;
-   //  }
+    [local, deprecated]
+    class CSimpleAdapter {
+        constructor(
+            [in] IContext* ctx,
+            [in] IList* data,
+            [in] Int32 resource,
+            [in] ArrayOf<String>* from,
+            [in] ArrayOf<Int32>* to);
+
+        interface ISimpleAdapter;
+        interface IBaseAdapter;
+        interface IListAdapter;
+        interface ISpinnerAdapter;
+        interface IAdapter;
+        interface IFilterable;
+    }
 
    //  [local, deprecated]
    //  class CSimpleCursorAdapter {

@@ -64,8 +64,6 @@ private:
         : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         /**
          * <p>The constraint used to filter the data.</p>
          */

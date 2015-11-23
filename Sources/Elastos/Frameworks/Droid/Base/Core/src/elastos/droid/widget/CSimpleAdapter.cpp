@@ -1,7 +1,7 @@
 
 #include "elastos/droid/widget/CSimpleAdapter.h"
 
-namespace Elastos {
+namespace Elastos {x
 namespace Droid {
 namespace Widget {
 
