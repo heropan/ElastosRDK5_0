@@ -32,6 +32,7 @@ module
     merge("../../../car/elastos/droid/transition.car");
     merge("../../../car/elastos/droid/opengl.car");
     merge("../../../car/elastos/droid/wifi.car");
+    merge("../../../car/elastos/droid/emoji.car");
 
     merge("../../../car/elastos/droid/internal/appwidget.car");
     merge("../../../car/elastos/droid/internal/backup.car");

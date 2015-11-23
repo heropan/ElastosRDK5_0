@@ -15,6 +15,9 @@ CEmojiFactoryHelper::CEmojiFactoryHelper()
 CEmojiFactoryHelper::~CEmojiFactoryHelper()
 {}
 
+ECode CEmojiFactoryHelper::constructor()
+{}
+
 ECode CEmojiFactoryHelper::NewInstance(
     /* [in] */ const String& class_name,
     /* [out] */ IEmojiFactory** emojiFactory)

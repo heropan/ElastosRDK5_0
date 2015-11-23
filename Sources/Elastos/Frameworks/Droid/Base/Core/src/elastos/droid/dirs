@@ -27,6 +27,7 @@ DIRS += text
 DIRS += transition
 DIRS += utility
 DIRS += widget
+DIRS += emoji
 
 #DIRS += impl
 #DIRS += bluetooth

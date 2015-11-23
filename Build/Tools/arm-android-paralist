@@ -211,6 +211,7 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/widget/internal
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/widget
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/gesture
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/emoji
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/android_webview/permission
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/android_webview
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/base
