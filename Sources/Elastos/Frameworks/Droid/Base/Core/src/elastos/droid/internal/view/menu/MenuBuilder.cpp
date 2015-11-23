@@ -344,8 +344,8 @@ ECode MenuBuilder::RestoreActionViewStates(
 
     String key;
     GetActionViewStatesKey(&key);
-    AutoPtr<IHashMap> viewStates;
-    states->GetParcelableHashMap(key, (IHashMap**)&viewStates);
+    AutoPtr<ISparseArray> viewStates;
+    states->GetSparseParcelableArray(key, (ISparseArray**)&viewStates);
 
     Int32 itemCount;
     GetSize(&itemCount);
@@ -357,8 +357,7 @@ ECode MenuBuilder::RestoreActionViewStates(
 
         Int32 id = 0;
         if (v != NULL && (v->GetId(&id), id) != IView::NO_ID) {
-            assert(0 && "TODO");
-            // v->RestoreHierarchyState(viewStates);
+            v->RestoreHierarchyState(viewStates);
         }
 
         Boolean has = FALSE;
