@@ -178,6 +178,9 @@ module
    //  interface Elastos.Droid.Media.IAudioService;
    //  interface Elastos.Droid.InputMethodService.IKeyboardView;
    //  interface Elastos.Droid.InputMethodService.IOnKeyboardActionListener;
+   interface Elastos.Droid.Widget.IAdapterView;
+   interface Elastos.Droid.Widget.IAdapterViewAnimator;
+   interface Elastos.Droid.Widget.IAdapterViewFlipper;
 
     namespace Elastos {
     namespace Droid {
@@ -2091,29 +2094,28 @@ module
    //      interface IKeyEventCallback;
    //  }
 
-   //  [local]
-   //  class CAdapterViewAnimator {
-   //      constructor(
-   //          [in] IContext* ctx);
+	[local]
+	class CAdapterViewAnimator {
+	    constructor(
+	        [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+	    constructor(
+	        [in] IContext* ctx,
+	        [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+	    constructor(
+	        [in] IContext* ctx,
+	        [in] IAttributeSet* attrs,
+	        [in] Int32 defStyleAttr);
 
-   //      interface IAdapterViewAnimator;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //      interface IAdvanceable;
-   //      interface IRemoteAdapterConnectionCallback;
-   //  }
+	    constructor(
+	        [in] IContext* ctx,
+	        [in] IAttributeSet* attrs,
+	        [in] Int32 defStyleAttr,
+	        [in] Int32 defStyleRes);
+
+	    interface IAdapterViewAnimator;
+	}
 
    //  [local]
    //  class CStackView {
@@ -2225,6 +2227,52 @@ module
    //      interface IKeyEventCallback;
    //      interface IAccessibilityEventSource;
    //  }
+
+	[local]
+	class CAdapterView {
+		constructor(
+        	[in] IContext* context);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs,
+	        [in] Int32 defStyle);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs,
+	        [in] Int32 defStyle,
+	        [in] Int32 defStyleRes);
+
+		interface IAdapterView;
+	}
+
+	[local]
+	class CAdapterViewFlipper {
+		constructor(
+        	[in] IContext* context);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs,
+	        [in] Int32 defStyleAttr);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs,
+	        [in] Int32 defStyleAttr,
+	        [in] Int32 defStyleRes);
+
+		interface IAdapterViewFlipper;
+	}
 
     } // namespace Widget
     } // namespace Droid
