@@ -2,6 +2,8 @@
 #include "elastos/droid/view/InputFilter.h"
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::View::EIID_IInputFilter;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -18,7 +20,7 @@ const Int32 InputFilter::MSG_INPUT_EVENT = 3;
 InputFilter::H::H(
     /* [in] */ ILooper* loop,
     /* [in] */ InputFilter* host)
-    : HandlerBase(loop)
+    : Handler(loop)
     , mHost(host)
 {
 }
@@ -66,16 +68,15 @@ ECode InputFilter::H::HandleMessage(
 //==========================================================================
 // InputFilter
 //==========================================================================
+CAR_INTERFACE_IMPL_3(InputFilter, Object, IInputFilter, IIInputFilter, IBinder)
+
 InputFilter::InputFilter()
 {}
 
-InputFilter::InputFilter(
-    /* [in] */ ILooper* loop)
-{
-    mH = new H(loop, this);
-}
+InputFilter::~InputFilter()
+{}
 
-ECode InputFilter::Init(
+ECode InputFilter::constructor(
     /* [in] */ ILooper* loop)
 {
     mH = new H(loop, this);

@@ -71,7 +71,7 @@ ECode CCircularPropagation::GetStartDelay(
     }
     else {
         AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
-        IView::Probe(sceneRoot)->GetLocationOnScreen((ArrayOf<Int32>*)temp);
+        IView::Probe(sceneRoot)->GetLocationOnScreen(temp);
         Int32 w = 0, h = 0;
         Float x = 0, y = 0;
         IView::Probe(sceneRoot)->GetWidth(&w);

@@ -111,6 +111,8 @@ class View
     friend class ViewPropertyAnimator;
     friend class CAccessibilityInteractionController;
     friend class COverlayViewGroup;
+    friend class GhostView;
+
 //protected:
 public:
     /**
@@ -6066,7 +6068,7 @@ protected:
      * This field should be made private, so it is hidden from the SDK.
      * {@hide}
      */
-    AutoPtr<IContext> mContext;
+    IContext* mContext;
 
     AutoPtr<ScrollabilityCache> mScrollCache;
 

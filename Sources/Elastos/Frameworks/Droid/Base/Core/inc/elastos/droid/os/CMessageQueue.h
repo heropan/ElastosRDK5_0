@@ -130,6 +130,9 @@ private:
 
     CARAPI_(Boolean) IsIdlingLocked();
 
+public:
+    Int64 mPtr;
+
 private:
     static const String TAG;
     static const Boolean DBG;
@@ -137,7 +140,7 @@ private:
     // True if the message queue can be quit.
     Boolean mQuitAllowed;
 
-    Int64 mPtr; // used by native code
+     // used by native code
 
     AutoPtr<IMessage> mMessages;
     List<AutoPtr<IIdleHandler> > mIdleHandlers;

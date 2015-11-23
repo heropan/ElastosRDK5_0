@@ -20,6 +20,8 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+class FocusFinderWrapper;
+
 /**
  * The algorithm used for finding the next focusable view in a given direction
  * from a view that currently has focus.
@@ -243,6 +245,7 @@ private:
         /* [in] */ IRect* dest,
         /* [in] */ Int32 direction);
 
+    friend FocusFinderWrapper;
 public:
     static pthread_key_t sKeyFocusFinder;
 protected:
@@ -255,6 +258,7 @@ protected:
 private:
     static Boolean sKeyFocusFinderInitialized;
     AutoPtr<IArrayList> mTempList;
+
 };
 
 } // namespace View

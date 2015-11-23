@@ -48,7 +48,7 @@ ECode VisibilityPropagation::CaptureValues(
     }
     cv->mValues->Put(pro_vis, visibility);
     AutoPtr<ArrayOf<Int32> > loc = ArrayOf<Int32>::Alloc(2);
-    view->GetLocationOnScreen((ArrayOf<Int32>*)loc);
+    view->GetLocationOnScreen(loc);
     Float x, y;
     Int32 w = 0, h = 0;
     view->GetTranslationX(&x);

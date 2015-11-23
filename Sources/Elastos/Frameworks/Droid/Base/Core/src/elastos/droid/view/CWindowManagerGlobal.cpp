@@ -328,7 +328,7 @@ ECode CWindowManagerGlobal::AddView(
         FindViewLocked(view, FALSE, &index);
         if (index >= 0) {
             Boolean contains;
-            mDyingViews->Contains((IInterface*)view->Probe(EIID_IInterface), &contains);
+            mDyingViews->Contains(IInterface::Probe(view), &contains);
             if (contains) {
                 // Don't wait for MSG_DIE to make it's way through root's queue.
                 AutoPtr<IInterface> temp;
@@ -356,8 +356,7 @@ ECode CWindowManagerGlobal::AddView(
                 if (IBinder::Probe(VIEWIMPL_PROBE(impl)->mWindow.Get()) == wparams->mToken) {
                     AutoPtr<IInterface> it;
                     mViews->Get(i, (IInterface**)&it);
-                    IView* tempView = IView::Probe(it);
-                    panelParentView = tempView;
+                    panelParentView = IView::Probe(it);;
                 }
             }
         }
@@ -592,8 +591,7 @@ ECode CWindowManagerGlobal::TrimMemory(
                 for (int i = count - 1; i >= 0; --i) {
                     AutoPtr<IInterface> temp;
                     mRoots->Get(i, (IInterface**)&temp);
-                    IViewRootImpl* impl = IViewRootImpl::Probe(temp);
-                    impl->DestroyHardwareResources();
+                    IViewRootImpl::Probe(temp)->DestroyHardwareResources();
                 }
             }
             // Force a full memory flush
@@ -777,8 +775,8 @@ ECode CWindowManagerGlobal::SetStoppedState(
             if (NULL == token || TO_IINTERFACE(token) == TO_IINTERFACE(paramToken)) {
                 temp = NULL;
                 mRoots->Get(i, (IInterface**)&temp);
-                IViewRootImpl* root = IViewRootImpl::Probe(temp);
-                root->SetStopped(stopped);
+                IViewRootImpl::Probe(temp)->SetStopped(stopped);
+
             }
         }
     }
@@ -797,8 +795,7 @@ ECode CWindowManagerGlobal::ReportNewConfiguration(
         for (Int32 i = 0; i < count; i++) {
             AutoPtr<IInterface> temp;
             mRoots->Get(i, (IInterface**)&temp);
-            IViewRootImpl* root = IViewRootImpl::Probe(temp);
-            root->RequestUpdateConfiguration(newConfig);
+            IViewRootImpl::Probe(temp)->RequestUpdateConfiguration(newConfig);
         }
     }
     return NOERROR;

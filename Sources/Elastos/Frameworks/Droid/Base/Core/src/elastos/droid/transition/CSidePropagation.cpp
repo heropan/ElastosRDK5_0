@@ -70,7 +70,7 @@ ECode CSidePropagation::GetStartDelay(
     GetViewY(positionValues, &viewCenterY);
 
     AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
-    IView::Probe(sceneRoot)->GetLocationOnScreen((ArrayOf<Int32>*)temp);
+    IView::Probe(sceneRoot)->GetLocationOnScreen(temp);
     Float x, y;
     IView::Probe(sceneRoot)->GetTranslationX(&x);
     IView::Probe(sceneRoot)->GetTranslationY(&y);

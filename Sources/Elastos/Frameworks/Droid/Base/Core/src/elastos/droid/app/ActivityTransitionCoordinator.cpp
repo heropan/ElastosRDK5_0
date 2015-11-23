@@ -847,7 +847,7 @@ AutoPtr<IArrayList> ActivityTransitionCoordinator::CreateSnapshots( //ArrayList<
     AutoPtr<IViewGroup> decorView;
     GetDecor((IViewGroup**)&decorView);
     if (decorView != NULL) {
-        IView::Probe(decorView)->GetLocationOnScreen((ArrayOf<Int32>*)decorLoc);
+        IView::Probe(decorView)->GetLocationOnScreen(decorLoc);
     }
 
     AutoPtr<IIterator> it;

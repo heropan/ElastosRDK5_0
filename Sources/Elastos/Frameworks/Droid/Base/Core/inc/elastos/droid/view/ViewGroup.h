@@ -31,6 +31,7 @@ class ViewGroup
 {
     friend class View;
     friend class COverlayViewGroup;
+<<<<<<< HEAD
 public:
 
     class LayoutParams
@@ -333,6 +334,9 @@ public:
         static const Int32 UNDEFINED_MARGIN;// = DEFAULT_MARGIN_RELATIVE;
     };
 
+=======
+    friend class GhostView;
+>>>>>>> modify code
 private:
     class NotifyAnimationListenerRunnable
         : public Runnable
@@ -551,9 +555,10 @@ private:
 
 
 public:
-    CAR_INTERFACE_DECL();
 
     ViewGroup();
+
+    CAR_INTERFACE_DECL()
 
     CARAPI constructor(
         /* [in] */ IContext* context);
@@ -1380,7 +1385,6 @@ public:
 
     CARAPI GetTextAlignment(
         /* [out] */ Int32* result);
-
 protected:
     CARAPI_(Boolean) OnRequestFocusInDescendants(
         /* [in] */ Int32 direction,

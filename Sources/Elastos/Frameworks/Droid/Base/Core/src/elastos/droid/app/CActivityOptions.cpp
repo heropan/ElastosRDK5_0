@@ -125,7 +125,7 @@ ECode CActivityOptions::MakeScaleUpAnimation(
     String pkgName;
     context->GetPackageName(&pkgName);
     AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
-    source->GetLocationOnScreen((ArrayOf<Int32>*)temp);
+    source->GetLocationOnScreen(temp);
     AutoPtr<IActivityOptions> opts;
     CActivityOptions::New((IActivityOptions**)&opts);
     opts->SetPackageName(pkgName);

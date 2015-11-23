@@ -663,7 +663,7 @@ protected:
     CARAPI constructor(
         /* [in] */ Int64 nativeCanvas);
 
-    CARAPI_(AutoPtr<IGL>) GetGL();
+    virtual CARAPI_(AutoPtr<IGL>) GetGL();
 
     static CARAPI CheckRange(
         /* [in] */ Int32 length,

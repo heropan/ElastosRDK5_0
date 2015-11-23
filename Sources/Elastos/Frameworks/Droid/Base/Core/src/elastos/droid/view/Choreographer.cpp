@@ -375,9 +375,26 @@ Int64 Choreographer::SubtractFrameDelay(
 }
 
 ECode Choreographer::GetFrameIntervalNanos(
-    /* [out] */ Int64* nanos)
+    /* [out] */ Int64* res)
 {
-    *nanos = mFrameIntervalNanos;
+    VALIDATE_NOT_NULL(res)
+    *res = mFrameIntervalNanos;
+    return NOERROR;
+}
+
+ECode Choreographer::Dump(
+    /* [in] */ const String& prefix,
+    /* [in] */ IPrintWriter* writer)
+{
+    String innerPrefix = prefix + String("  ");
+    writer->Print(prefix);
+    writer->Println(String("Choreographer:"));
+    writer->Print(innerPrefix);
+    writer->Print(String("mFrameScheduled="));
+    writer->Println(mFrameScheduled);
+    writer->Print(innerPrefix);
+    writer->Print(String("mLastFrameTime="));
+    writer->Println(TimeUtils::FormatUptime(mLastFrameTimeNanos / 1000000));
     return NOERROR;
 }
 

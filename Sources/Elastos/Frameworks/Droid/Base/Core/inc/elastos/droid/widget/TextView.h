@@ -2,50 +2,48 @@
 #define __ELASTOS_DROID_WIDGET_TEXTVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/os/HandlerBase.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/View.h"
 
-#include "elastos/droid/widget/Scroller.h"
-#include "elastos/droid/widget/Editor.h"
-
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IRunnable;
-using Elastos::Utility::Concurrent::Locks::IReentrantLock;
-using Elastos::Utility::ILocale;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Content::Res::IColorStateList;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Text::IGetChars;
-using Elastos::Droid::Text::IEditable;
-using Elastos::Droid::Text::ISpannable;
-using Elastos::Droid::Text::ISpanned;
+using Elastos::Droid::Content::IUndoManager;
+using Elastos::Droid::Graphics::ITypeface;
+using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Text::ITextPaint;
+using Elastos::Droid::Text::IEditable;
+using Elastos::Droid::Text::ISpanned;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::IGetChars;
+using Elastos::Droid::Text::ILayout;
+using Elastos::Droid::Text::IBoringLayout;
+using Elastos::Droid::Text::IGraphicsOperations;
 using Elastos::Droid::Text::ITextWatcher;
 using Elastos::Droid::Text::ISpanWatcher;
-using Elastos::Droid::Text::IGraphicsOperations;
-using Elastos::Droid::Text::ILayout;
-using Elastos::Droid::Text::IInputFilter;
 using Elastos::Droid::Text::IEditableFactory;
 using Elastos::Droid::Text::ISpannableFactory;
-using Elastos::Droid::Text::ISpannedString;
-using Elastos::Droid::Text::IBoringLayout;
-using Elastos::Droid::Text::IBoringLayoutMetrics;
-using Elastos::Droid::Text::ITextDirectionHeuristic;
-using Elastos::Droid::Text::TextUtilsTruncateAt;
 using Elastos::Droid::Text::LayoutAlignment;
-using Elastos::Droid::Text::Style::IURLSpan;
-using Elastos::Droid::Text::Method::IWordIterator;
+using Elastos::Droid::Text::TextUtilsTruncateAt;
+using Elastos::Droid::Text::ITextDirectionHeuristic;
+using Elastos::Droid::Text::IBoringLayoutMetrics;
 using Elastos::Droid::Text::Method::IKeyListener;
 using Elastos::Droid::Text::Method::IMovementMethod;
 using Elastos::Droid::Text::Method::ITransformationMethod;
+using Elastos::Droid::Text::Method::IWordIterator;
+using Elastos::Droid::Text::Style::IURLSpan;
 using Elastos::Droid::View::View;
+using Elastos::Droid::View::IDragEvent;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IActionModeCallback;
+using Elastos::Droid::View::IChoreographer;
+using Elastos::Droid::View::IFrameCallback;
 using Elastos::Droid::View::IOnPreDrawListener;
-using Elastos::Droid::View::InputMethod::IInputMethodManager;
+using Elastos::Droid::View::ITextSegmentIterator;
 using Elastos::Droid::View::InputMethod::IExtractedTextRequest;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::ICompletionInfo;
 using Elastos::Droid::View::InputMethod::ICorrectionInfo;
+using Elastos::Droid::View::InputMethod::IInputMethodManager;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -160,6 +158,7 @@ public:
 //==============================================================================
 class CharWrapper
     : public Object
+    , public ICharSequence
     , public IGetChars
     , public IGraphicsOperations
 {
@@ -213,7 +212,7 @@ public:
         /* [in] */ Int32 contextEnd,
         /* [in] */ Float x,
         /* [in] */ Float y,
-        /* [in] */ Int32 flags,
+        /* [in] */ Boolean isRtl,
         /* [in] */ IPaint* p);
 
     CARAPI MeasureText(
@@ -234,7 +233,7 @@ public:
         /* [in] */ Int32 end,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
+        /* [in] */ Boolean isRtl,
         /* [out] */ ArrayOf<Float>* advances,
         /* [in] */ Int32 advancesIndex,
         /* [in] */ IPaint* p,
@@ -261,7 +260,7 @@ private:
 //          Marquee
 //==============================================================================
 class Marquee
-    : public Handler
+    : public Object
 {
 private:
     class TickCallback
@@ -271,6 +270,8 @@ private:
     public:
         TickCallback(
             /* [in] */ Marquee* host);
+
+        CAR_INTERFACE_DECL()
 
         CARAPI DoFrame(
             /* [in] */ Int64 frameTimeNanos);
@@ -286,6 +287,8 @@ private:
         StartCallback(
             /* [in] */ Marquee* host);
 
+        CAR_INTERFACE_DECL()
+
         CARAPI DoFrame(
             /* [in] */ Int64 frameTimeNanos);
     private:
@@ -299,6 +302,8 @@ private:
     public:
         RestartCallback(
             /* [in] */ Marquee* host);
+
+        CAR_INTERFACE_DECL()
 
         CARAPI DoFrame(
             /* [in] */ Int64 frameTimeNanos);
@@ -348,7 +353,7 @@ private:
     static const Byte MARQUEE_RUNNING = 0x2;
 
     AutoPtr<IWeakReference> mView;  //TextView
-    AutoPtr<Choreographer> mChoreographer;
+    AutoPtr<IChoreographer> mChoreographer;
     AutoPtr<IFrameCallback> mTickCallback;
     AutoPtr<IFrameCallback> mStartCallback;
     AutoPtr<IFrameCallback> mRestartCallback;
@@ -429,26 +434,28 @@ private:
 class UserDictionaryListener;
 
 class TextView
-    : public View
+    : public Elastos::Droid::View::View
     , public ITextView
-    , public IOnPreDrawListener;
+    , public IOnPreDrawListener
 {
 public:
     TextView();
 
-    TextView(
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    TextView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    TextView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr);
 
-    TextView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
@@ -911,17 +918,17 @@ public:
      */
     virtual CARAPI_(AutoPtr<ITypeface>) GetTypeface();
 
-    virtual CARAPI_(void) SetElegantTextHeight(
+    virtual CARAPI SetElegantTextHeight(
         /* [in] */ Boolean elegant);
 
     virtual CARAPI_(Float) GetLetterSpacing();
 
-    virtual CARAPI_(void) SetLetterSpacing(
+    virtual CARAPI SetLetterSpacing(
         /* [in] */ Float letterSpacing);
 
     virtual CARAPI_(String) GetFontFeatureSettings();
 
-    virtual CARAPI_(void) SetFontFeatureSettings(
+    virtual CARAPI SetFontFeatureSettings(
         /* [in] */ const String& fontFeatureSettings);
 
     /**
@@ -2321,7 +2328,7 @@ public: /* override */
         /* [in] */ IMotionEvent* event);
 
     virtual CARAPI FindViewsWithText(
-        /* [in, out] */ IObjectContainer* outViews,
+        /* [in, out] */ IArrayList* outViews,
         /* [in] */ ICharSequence* searched,
         /* [in] */ Int32 flags);
 
@@ -2360,7 +2367,7 @@ public: /* override */
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    virtual CARAPI_(void) OnRtlPropertiesChanged(
+    virtual CARAPI OnRtlPropertiesChanged(
         /* [in] */ Int32 layoutDirection);
 
     virtual CARAPI_(Boolean) IsAccessibilitySelectionExtendable();
@@ -2543,7 +2550,7 @@ protected:
 
      virtual CARAPI DrawableStateChanged();
 
-     virtual CARAPI_(void) DrawableHotspotChanged(
+     virtual CARAPI DrawableHotspotChanged(
         /* [in] */ Float x,
         /* [in] */ Float y);
 
@@ -2600,7 +2607,7 @@ protected:
          /* [in] */ Int32 widthMeasureSpec,
          /* [in] */ Int32 heightMeasureSpec);
 
-     CARAPI_(void) OnLayout(
+     CARAPI OnLayout(
          /* [in] */ Boolean changed,
          /* [in] */ Int32 left,
          /* [in] */ Int32 top,
@@ -2647,7 +2654,7 @@ protected:
          /* [in] */ Int32 direction,
          /* [in] */ IRect* previouslyFocusedRect);
 
-     virtual CARAPI_(void) OnVisibilityChanged(
+     virtual CARAPI OnVisibilityChanged(
          /* [in] */ IView* changedView,
          /* [in] */ Int32 visibility);
 
@@ -3155,7 +3162,7 @@ private:
      * EditText specific data, created on demand when one of the Editor fields is used.
      * See {@link #createEditorIfNeeded()}.
      */
-    AutoPtr<Editor> mEditor;
+    AutoPtr<IEditor> mEditor;
 };
 
 } // namespace Widget

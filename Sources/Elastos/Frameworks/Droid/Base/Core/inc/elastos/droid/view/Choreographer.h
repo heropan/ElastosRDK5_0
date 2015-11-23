@@ -7,9 +7,10 @@
 #include "elastos/droid/os/Handler.h"
 #include <pthread.h>
 
-using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IMessage;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
@@ -235,6 +236,17 @@ public:
     CAR_INTERFACE_DECL();
 
     /**
+     * @return The refresh rate as the nanoseconds between frames
+     * @hide
+     */
+    CARAPI GetFrameIntervalNanos(
+        /* [out] */ Int64* res);
+
+    CARAPI Dump(
+        /* [in] */ const String& prefix,
+        /* [in] */ IPrintWriter* writer);
+
+    /**
      * Posts a callback to run on the next frame.
      * <p>
      * The callback runs once then is automatically removed.
@@ -369,13 +381,6 @@ public:
      */
     CARAPI GetFrameTimeNanos(
         /* [out] */ Int64* frameTimeNanos);
-
-    /**
-     * @return The refresh rate as the nanoseconds between frames
-     * @hide
-     */
-    CARAPI GetFrameIntervalNanos(
-        /* [out] */ Int64* nanos);
 
 protected:
     CARAPI_(void) DoFrame(

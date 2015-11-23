@@ -112,7 +112,7 @@ void Visibility::CaptureValues(
     ctv->mView->GetParent((IViewParent**)&vp);
     ctv->mValues->Put(pro_par, vp);
     AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
-    ctv->mView->GetLocationOnScreen((ArrayOf<Int32>*)temp);
+    ctv->mView->GetLocationOnScreen(temp);
     AutoPtr<ICharSequence> pro_loc;
     CString::New(PROPNAME_SCREEN_LOCATION, (ICharSequence**)&pro_loc);
     AutoPtr<IInteger32> pLoc1;
@@ -422,7 +422,7 @@ ECode Visibility::OnDisappear(
         Int32 screenX = (*screenLoc)[0];
         Int32 screenY = (*screenLoc)[1];
         AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
-        IView::Probe(sceneRoot)->GetLocationOnScreen((ArrayOf<Int32>*)temp);
+        IView::Probe(sceneRoot)->GetLocationOnScreen(temp);
         Int32 l = 0, t = 0;
         overlayView->GetLeft(&l);
         overlayView->GetTop(&t);

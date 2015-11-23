@@ -504,7 +504,7 @@ InputMethodService::InputMethodService()
     , mBackDisposition(0)
 {
     mTmpInsets = new InputMethodService::Insets();
-    mTmpLocation = new Int32[2];
+    mTmpLocation = ArrayOf<Int32>::Alloc(2);
     mInsetsComputer = new _OnComputeInternalInsetsListener(this);
     mActionClickListener = new _OnClickListener(this);
 }
@@ -1040,7 +1040,7 @@ ECode InputMethodService::OnComputeInsets(
 {
     Int32 vis = 0;
     if (IView::Probe(mInputFrame)->GetVisibility(&vis), vis == IView::VISIBLE) {
-        IView::Probe(mInputFrame)->GetLocationInWindow((ArrayOf<Int32>*)mTmpLocation);
+        IView::Probe(mInputFrame)->GetLocationInWindow(mTmpLocation);
     }
     else {
         AutoPtr<IDialog> dlg;
@@ -1052,7 +1052,9 @@ ECode InputMethodService::OnComputeInsets(
         AutoPtr<IView> decor;
         win->GetDecorView((IView**)&decor);
         assert(decor != NULL);
-        decor->GetHeight(&mTmpLocation[1]);
+        Int32 height;
+        decor->GetHeight(&height);
+        (*mTmpLocation)[1] = height;
     }
     Boolean ret = FALSE;
     if (IsFullscreenMode(&ret), ret) {
@@ -1069,12 +1071,12 @@ ECode InputMethodService::OnComputeInsets(
         decor->GetHeight(&outInsets->mContentTopInsets);
     }
     else {
-        outInsets->mContentTopInsets = mTmpLocation[1];
+        outInsets->mContentTopInsets = (*mTmpLocation)[1];
     }
     if (IView::Probe(mCandidatesFrame)->GetVisibility(&vis), vis == IView::VISIBLE) {
-        IView::Probe(mCandidatesFrame)->GetLocationInWindow((ArrayOf<Int32>*)mTmpLocation);
+        IView::Probe(mCandidatesFrame)->GetLocationInWindow(mTmpLocation);
     }
-    outInsets->mVisibleTopInsets = mTmpLocation[1];
+    outInsets->mVisibleTopInsets = (*mTmpLocation)[1];
     outInsets->mTouchableInsets = Insets::TOUCHABLE_INSETS_VISIBLE;
     outInsets->mTouchableRegion->SetEmpty();
     return NOERROR;

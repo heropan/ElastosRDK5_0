@@ -88,7 +88,7 @@ private:
     CARAPI NativeGetName(
         /* [out] */ String* name);
 
-private:
+public:
     Handle64 mNative; // used by native code
 };
 

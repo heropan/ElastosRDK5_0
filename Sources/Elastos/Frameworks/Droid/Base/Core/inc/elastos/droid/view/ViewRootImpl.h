@@ -7,39 +7,6 @@
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashSet.h>
-/*#include "elastos/droid/view/CWindowManagerLayoutParams.h"
-
-#include "elastos/droid/view/CSurface.h"
-#include "elastos/droid/view/BaseSurfaceHolder.h"
-#include "elastos/droid/view/CInputQueue.h"
-#include "elastos/droid/view/InputEventReceiver.h"
-#include "elastos/droid/view/HardwareRenderer.h"
-#include "elastos/droid/view/CViewConfiguration.h"
-#include "elastos/droid/graphics/CRect.h"
-#include "elastos/droid/graphics/CRegion.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include "elastos/droid/widget/CScroller.h"
-#include <elastos/utility/etl/List.h>
-*/
-
-/*using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::IThread;
-
-using Elastos::Droid::Content::IClipDescription;
-using Elastos::Droid::Animation::ILayoutTransition;
-using Elastos::Droid::View::InputMethod::IInputMethodManagerFinishedEventCallback;
-<<<<<<< HEAD
-using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::View::Accessibility::IAccessibilityManagerAccessibilityStateChangeListener;
-=======
-using Elastos::Droid::View::Accessibility::IAccessibilityStateChangeListener;
->>>>>>> ViewGroup and ViewRootImpl
-using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnection;
-using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnectionCallback;
-using Elastos::Droid::Utility::ITypedValue;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Widget::CScroller;
-using Elastos::Droid::Media::IAudioManager;*/
 
 using Elastos::Droid::Animation::ILayoutTransition;
 using Elastos::Droid::Content::IComponentCallbacks;

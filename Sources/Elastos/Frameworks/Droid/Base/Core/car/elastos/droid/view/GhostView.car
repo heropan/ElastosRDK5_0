@@ -2,7 +2,7 @@
 module
 {
 
-    interface Elastos.Droid.Opengl.IMatrix;
+    interface Elastos.Droid.Graphics.IMatrix;
 
     namespace Elastos {
     namespace Droid {

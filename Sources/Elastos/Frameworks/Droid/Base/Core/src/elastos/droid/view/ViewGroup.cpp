@@ -10,41 +10,6 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
-/*#include "elastos/droid/view/CViewGroupLayoutParams.h"
-#include "elastos/droid/view/CMotionEvent.h"
-#include "elastos/droid/view/ViewRootImpl.h"
-#include "elastos/droid/view/FocusFinder.h"
-#include "elastos/droid/view/animation/Animation.h"
-#include "elastos/droid/view/animation/AnimationUtils.h"
-#include "elastos/droid/view/animation/CTransformation.h"
-#include "elastos/droid/view/animation/CLayoutAnimationController.h"
-#include "elastos/droid/view/animation/CTransformation.h"
-#include "elastos/droid/view/animation/LayoutAnimationController.h"
-#include "elastos/droid/animation/CLayoutTransition.h"
-#include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CPointF.h"
-#include "elastos/droid/graphics/Color.h"
-#include "elastos/droid/os/Build.h"
-#include "elastos/droid/os/SystemProperties.h"
-#include <elastos/core/Math.h>
-
-<<<<<<< HEAD
-using Elastos::Droid::Animation::CLayoutTransition;
-using Elastos::Droid::Animation::EIID_ITransitionListener;
-using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::Graphics::Color;
-=======
->>>>>>> ViewGroup and ViewRootImpl
-using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
-
-using Elastos::Droid::Os::SystemProperties;
-using Elastos::Droid::View::Animation::CTransformation;
-using Elastos::Droid::View::Animation::LayoutAnimationController;
-using Elastos::Droid::View::Animation::CLayoutAnimationController;
-using Elastos::Droid::View::Animation::Animation;
-using Elastos::Droid::View::Animation::AnimationUtils;
-using Elastos::Droid::View::Animation::CTransformation;
-using Elastos::Utility::ILocale;*/
 
 using Elastos::Droid::Animation::EIID_ITransitionListener;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
@@ -3422,7 +3387,7 @@ Boolean ViewGroup::DispatchTransformedTouchEvent(
     }
 
     // Done.
-    (IInputEvent::Probe(transformedEvent))->Recycle();
+    IInputEvent::Probe(transformedEvent)->Recycle();
     return handled;
 }
 
@@ -4353,7 +4318,6 @@ void ViewGroup::DispatchDraw(
     if (mDisappearingChildren != NULL) {
         Int32 disappearingCount;
         mDisappearingChildren->GetSize(&disappearingCount);
-        disappearingCount -= 1;
         // Go backwards -- we may delete as animations finish
         for (Int32 i = disappearingCount - 1; i >= 0; i--) {
             AutoPtr<IInterface> temp;
