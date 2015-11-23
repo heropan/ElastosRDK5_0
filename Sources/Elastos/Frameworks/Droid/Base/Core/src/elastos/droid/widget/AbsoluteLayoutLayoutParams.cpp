@@ -6,61 +6,37 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(AbsoluteLayoutLayoutParams, ViewGroupLayoutParams, IAbsoluteLayoutLayoutParams)
 
 AbsoluteLayoutLayoutParams::AbsoluteLayoutLayoutParams()
-    : ViewGroupLayoutParams(0, 0)
-    , mX(0)
+    : mX(0)
     , mY(0)
 {}
 
-AbsoluteLayoutLayoutParams::AbsoluteLayoutLayoutParams(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height,
-    /* [in] */ Int32 x,
-    /* [in] */ Int32 y)
-    : ViewGroupLayoutParams(width, height)
-    , mX(x)
-    , mY(y)
-{}
-
-AbsoluteLayoutLayoutParams::AbsoluteLayoutLayoutParams(
-    /* [in] */ IContext* c,
-    /* [in] */ IAttributeSet* attrs)
-    : ViewGroupLayoutParams(c, attrs)
-{
-    InitFromAttributes(c, attrs);
-}
-
-AbsoluteLayoutLayoutParams::AbsoluteLayoutLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* source)
-    : ViewGroupLayoutParams(source)
-{
-}
-
-ECode AbsoluteLayoutLayoutParams::Init(
+ECode AbsoluteLayoutLayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    ViewGroupLayoutParams::Init(width, height);
+    ViewGroupLayoutParams::constructor(width, height);
     mX = x;
     mY = y;
     return NOERROR;
 }
 
-ECode AbsoluteLayoutLayoutParams::Init(
+ECode AbsoluteLayoutLayoutParams::constructor(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
-    ViewGroupLayoutParams::Init(c, attrs);
+    ViewGroupLayoutParams::constructor(c, attrs);
     return InitFromAttributes(c, attrs);
 }
 
-ECode AbsoluteLayoutLayoutParams::Init(
+ECode AbsoluteLayoutLayoutParams::constructor(
     /* [in] */ IViewGroupLayoutParams* source)
 {
-    return ViewGroupLayoutParams::Init(source);
+    return ViewGroupLayoutParams::constructor(source);
 }
 
 ECode AbsoluteLayoutLayoutParams::InitFromAttributes(
@@ -95,14 +71,20 @@ ECode AbsoluteLayoutLayoutParams::SetY(
     return NOERROR;
 }
 
-Int32 AbsoluteLayoutLayoutParams::GetX()
+ECode AbsoluteLayoutLayoutParams::GetX(
+    /* [out] */ Int32* x)
 {
-    return mX;
+    VALIDATE_NOT_NULL(x)
+    *x = mX;
+    return NOERROR;
 }
 
-Int32 AbsoluteLayoutLayoutParams::GetY()
+ECode AbsoluteLayoutLayoutParams::GetY(
+    /* [out] */ Int32* y)
 {
-    return mY;
+    VALIDATE_NOT_NULL(y)
+    *y = mY;
+    return NOERROR;
 }
 
 

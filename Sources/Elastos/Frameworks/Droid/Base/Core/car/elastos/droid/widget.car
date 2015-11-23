@@ -210,46 +210,49 @@ module
    //      interface IDrawableCallback;
    //  }
 
-   //  [local]
-   //  class CAbsoluteLayoutLayoutParams {
+    [local]
+    class CAbsoluteLayoutLayoutParams {
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height,
-   //          [in] Int32 x,
-   //          [in] Int32 y);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 x,
+            [in] Int32 y);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IViewGroupLayoutParams* source);
+        constructor(
+            [in] IViewGroupLayoutParams* source);
 
-   //      interface IAbsoluteLayoutLayoutParams;
-   //  }
+        interface IAbsoluteLayoutLayoutParams;
+        interface IViewGroupLayoutParams;
+    }
 
-   //  [local]
-   //  class CAbsoluteLayout {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CAbsoluteLayout {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-   //      interface IAbsoluteLayout;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface IAbsoluteLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CViewAnimator {

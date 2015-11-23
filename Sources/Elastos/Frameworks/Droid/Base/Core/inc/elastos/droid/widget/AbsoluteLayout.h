@@ -24,37 +24,28 @@ namespace Widget {
  * @deprecated Use {@link android.widget.FrameLayout}, {@link android.widget.RelativeLayout}
  *             or a custom layout instead.
  */
-class AbsoluteLayout : public ViewGroup
+class AbsoluteLayout
+    : public ViewGroup
+    , public IAbsoluteLayout
 {
 public:
-    AbsoluteLayout(
-        /* [in] */ IContext* context);
-
-    AbsoluteLayout(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    AbsoluteLayout(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+    CAR_INTERFACE_DECL()
 
     //@Override
     CARAPI GenerateLayoutParams(
         /* [in] */ IAttributeSet* attrs,
         /* [out] */ IViewGroupLayoutParams** params);
 
-protected:
     AbsoluteLayout();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
@@ -78,7 +69,7 @@ protected:
         /* [out] */ IViewGroupLayoutParams** lp);
 
     //@Override
-    CARAPI_(void) OnLayout(
+    CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,

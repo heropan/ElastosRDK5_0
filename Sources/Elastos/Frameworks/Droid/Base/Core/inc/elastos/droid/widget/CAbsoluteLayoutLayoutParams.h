@@ -12,36 +12,7 @@ namespace Widget {
 CarClass(CAbsoluteLayoutLayoutParams), public AbsoluteLayoutLayoutParams
 {
 public:
-    CAbsoluteLayoutLayoutParams() {}
-
-    ~CAbsoluteLayoutLayoutParams() {}
-
-    CARAPI constructor(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ IViewGroupLayoutParams* source);
-
-    CARAPI SetX(
-        /* [in] */ Int32 x);
-
-    CARAPI SetY(
-        /* [in] */ Int32 y);
-
-    CARAPI GetX(
-        /* [out] */ Int32* x);
-
-    CARAPI GetY(
-        /* [out] */ Int32* y);
-
-    IVIEWGROUPLP_METHODS_DECL();
+    CAR_OBJECT_DECL()
 };
 
 }// namespace Widget

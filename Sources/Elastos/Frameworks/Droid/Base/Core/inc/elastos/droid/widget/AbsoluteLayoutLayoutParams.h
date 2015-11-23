@@ -18,9 +18,13 @@ namespace Widget {
  * {@link android.R.styleable#AbsoluteLayout_Layout Absolute Layout Attributes}
  * for a list of all child view attributes that this class supports.
  */
-class AbsoluteLayoutLayoutParams : public ViewGroupLayoutParams
+class AbsoluteLayoutLayoutParams
+    : public ViewGroupLayoutParams
+    , public IAbsoluteLayoutLayoutParams
 {
 public:
+    CAR_INTERFACE_DECL()
+
     AbsoluteLayoutLayoutParams();
 
     /**
@@ -34,7 +38,7 @@ public:
      * @param x the X location of the child
      * @param y the Y location of the child
      */
-    AbsoluteLayoutLayoutParams(
+    CARAPI constructor(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 x,
@@ -56,17 +60,17 @@ public:
      * @param attrs the set of attributes fom which to extract the layout
      *              parameters values
      */
-    AbsoluteLayoutLayoutParams(
+    CARAPI constructor(
         /* [in] */ IContext* c,
         /* [in] */ IAttributeSet* attrs);
 
     /**
      * {@inheritDoc}
      */
-    AbsoluteLayoutLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* source);
+    CARAPI constructor(
+        /* [in] */ IViewGroupLayoutParams* source);
 
-    ~AbsoluteLayoutLayoutParams() {}
+    virtual ~AbsoluteLayoutLayoutParams() {}
 
     CARAPI SetX(
         /* [in] */ Int32 x);
@@ -74,24 +78,11 @@ public:
     CARAPI SetY(
         /* [in] */ Int32 y);
 
-    CARAPI_(Int32) GetX();
+    CARAPI GetX(
+        /* [out] */ Int32* x);
 
-    CARAPI_(Int32) GetY();
-
-protected:
-
-    CARAPI Init(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
-
-    CARAPI Init(
-        /* [in] */ IContext* c,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ IViewGroupLayoutParams* source);
+    CARAPI GetY(
+        /* [out] */ Int32* y);
 
 private:
     CARAPI InitFromAttributes(
