@@ -3,25 +3,29 @@
 #define __ELASTOS_DROID_WIDGET_ADAPTERVIEWANIMATOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/AdapterView.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include <widget/AdapterView.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::Widget::IAdapterViewAnimator;
+using Elastos::Core::IRunnable;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class AdapterViewAnimator : public AdapterView
+class AdapterViewAnimator
+    : public AdapterView
+    , public IAdapterViewAnimator
 {
-protected:
+public:
     class ViewAndMetaData
-        : public ElRefBase
+        : public Object
     {
     public:
         ViewAndMetaData(
@@ -37,30 +41,68 @@ protected:
         Int64 mItemId;
     };
 
-
-private:
     class CheckForTap
-        : public Runnable
+        : public Object
+        , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         CheckForTap(
             /* [in] */ AdapterViewAnimator* host);
 
         CARAPI Run();
+
     private:
         AdapterViewAnimator* mHost;
     };
 
-    class ActionUpRun
-        : public Runnable
+    class SavedState
+        : public Object//ViewBaseSavedState
     {
     public:
+        SavedState(
+            /* [in] */ IParcelable* superState,
+            /* [in] */ Int32 whichChild);
+
+        // @Override
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* out,
+            /* [in] */ Int32 flags);
+
+        // @Override
+        CARAPI ToString(
+            /* [out] */ String* result);
+
+    private:
+        /**
+         * Constructor called from {@link #CREATOR}
+         */
+        /*SavedState(Parcel in) {
+            super(in);
+            this.whichChild = in.readInt();
+        }*/
+
+    public:
+        //public static final Parcelable.Creator<SavedState> CREATOR;
+        Int32 mWhichChild;
+    };
+
+private:
+    class ActionUpRun
+        : public Object
+        , public IRunnable
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
         ActionUpRun(
             /* [in] */ AdapterViewAnimator* host,
             /* [in] */ ViewAndMetaData* data,
             /* [in] */ IView* v);
 
         CARAPI Run();
+
     private:
         AdapterViewAnimator* mHost;
         AutoPtr<ViewAndMetaData> mData;
@@ -68,15 +110,19 @@ private:
     };
 
     class ActionUpInner
-        : public Runnable
+        : public Object
+        , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         ActionUpInner(
             /* [in] */ AdapterViewAnimator* host,
             /* [in] */ ViewAndMetaData* data,
             /* [in] */ IView* v);
 
         CARAPI Run();
+
     private:
         AdapterViewAnimator* mHost;
         AutoPtr<ViewAndMetaData> mData;
@@ -84,139 +130,171 @@ private:
     };
 
     class CheckDataRun
-        : public Runnable
+        : public Object
+        , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         CheckDataRun(
             /* [in] */ AdapterViewAnimator* host);
 
         CARAPI Run();
+
     private:
         AdapterViewAnimator* mHost;
     };
 
 public:
-    AdapterViewAnimator(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
+    CAR_INTERFACE_DECL()
 
-    CARAPI SetDisplayedChild(
+    AdapterViewAnimator();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    virtual CARAPI SetDisplayedChild(
         /* [in] */ Int32 whichChild);
 
-    CARAPI_(Int32) GetDisplayedChild();
+    virtual CARAPI GetDisplayedChild(
+        /* [out] */ Int32* result);
 
-    CARAPI ShowNext();
+    virtual CARAPI ShowNext();
 
-    CARAPI ShowPrevious();
+    virtual CARAPI ShowPrevious();
 
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    // @Override
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
+    // @Override
+    CARAPI OnSaveInstanceState(
+        /* [out] */ IParcelable** result);
 
+    // @Override
     CARAPI_(void) OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
 
-    CARAPI_(AutoPtr<IView>) GetCurrentView();
+    virtual CARAPI GetCurrentView(
+        /* [out] */ IView** result);
 
-    CARAPI_(AutoPtr<IObjectAnimator>) GetInAnimation();
+    virtual CARAPI GetInAnimation(
+        /* [out] */ IObjectAnimator** result);
 
-    CARAPI SetInAnimation(
+    virtual CARAPI SetInAnimation(
         /* [in] */ IObjectAnimator* inAnimation);
 
-    CARAPI SetInAnimation(
+    virtual CARAPI SetInAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 
-    CARAPI_(AutoPtr<IObjectAnimator>) GetOutAnimation();
+    virtual CARAPI GetOutAnimation(
+        /* [out] */ IObjectAnimator** result);
 
-    CARAPI SetOutAnimation(
+    virtual CARAPI SetOutAnimation(
         /* [in] */ IObjectAnimator* outAnimation);
 
-    CARAPI SetOutAnimation(
+    virtual CARAPI SetOutAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 
-    CARAPI SetAnimateFirstView(
+    virtual CARAPI SetAnimateFirstView(
         /* [in] */ Boolean animate);
 
+    // @Override
     CARAPI GetBaseline(
         /* [out] */ Int32* baseline);
 
-    CARAPI_(AutoPtr<IAdapter>) GetAdapter();
+    // @Override
+    CARAPI GetAdapter(
+        /* [out] */ IAdapter** result);
 
+    // @Override
     CARAPI SetAdapter(
         /* [in] */ IAdapter* adapter);
 
-    CARAPI SetRemoteViewsAdapter(
+    virtual CARAPI SetRemoteViewsAdapter(
         /* [in] */ IIntent* intent);
 
-    CARAPI SetRemoteViewsOnClickHandler(
+    virtual CARAPI SetRemoteViewsOnClickHandler(
         /* [in] */ IRemoteViewsOnClickHandler* handler);
 
+    // @Override
     CARAPI SetSelection(
         /* [in] */ Int32 position);
 
-    CARAPI_(AutoPtr<IView>) GetSelectedView();
+    // @Override
+    CARAPI GetSelectedView(
+        /* [out] */ IView** result);
 
-    CARAPI DeferNotifyDataSetChanged();
+    virtual CARAPI DeferNotifyDataSetChanged();
 
-    CARAPI_(Boolean) OnRemoteAdapterConnected();
+    virtual CARAPI OnRemoteAdapterConnected(
+        /* [out] */ Boolean* result);
 
-    CARAPI OnRemoteAdapterDisconnected();
+    virtual CARAPI OnRemoteAdapterDisconnected();
 
-    CARAPI Advance();
+    virtual CARAPI Advance();
 
-    CARAPI FyiWillBeAdvancedByHostKThx();
+    virtual CARAPI FyiWillBeAdvancedByHostKThx();
 
+    // @Override
     CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
+    // @Override
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-protected:
-    AdapterViewAnimator();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
-
-    CARAPI_(void) ConfigureViewAnimator(
+    virtual CARAPI_(void) ConfigureViewAnimator(
         /* [in] */ Int32 numVisibleViews,
         /* [in] */ Int32 activeOffset);
 
-    CARAPI_(void) TransformViewForTransition(
+    virtual CARAPI_(void) TransformViewForTransition(
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int64 toIndex,
         /* [in] */ IView* v,
         /* [in] */ Boolean animate);
 
-    CARAPI_(AutoPtr<IObjectAnimator>) GetDefaultInAnimation();
+    virtual CARAPI_(AutoPtr<IObjectAnimator>) GetDefaultInAnimation();
 
-    CARAPI_(AutoPtr<IObjectAnimator>) GetDefaultOutAnimation();
+    virtual CARAPI_(AutoPtr<IObjectAnimator>) GetDefaultOutAnimation();
 
     virtual CARAPI_(void) ApplyTransformForChildAtIndex(
         /* [in] */ IView* child,
         /* [in] */ Int32 relativeIndex);
 
-    CARAPI_(Int32) Modulo(
+    virtual CARAPI_(Int32) Modulo(
         /* [in] */ Int32 pos,
         /* [in] */ Int32 size);
 
-    CARAPI_(AutoPtr<IView>) GetViewAtRelativeIndex(
+    virtual CARAPI_(AutoPtr<IView>) GetViewAtRelativeIndex(
         /* [in] */ Int32 relativeIndex);
 
-    CARAPI_(Int32) GetNumActiveViews();
+    virtual CARAPI_(Int32) GetNumActiveViews();
 
-    CARAPI_(Int32) GetWindowSize();
+    virtual CARAPI_(Int32) GetWindowSize();
 
     virtual CARAPI_(AutoPtr<IViewGroupLayoutParams>) CreateOrReuseLayoutParams(
         /* [in] */ IView* v);
 
-    CARAPI_(void) RefreshChildren();
+    virtual CARAPI_(void) RefreshChildren();
 
     virtual CARAPI_(AutoPtr<IFrameLayout>) GetFrameForChild();
 
@@ -230,15 +308,18 @@ protected:
     virtual CARAPI_(void) HideTapFeedback(
         /* [in] */ IView* child);
 
-    CARAPI_(void) CancelHandleClick();
+    virtual CARAPI_(void) CancelHandleClick();
 
+    virtual CARAPI_(void) CheckForAndHandleDataChanged();
+
+protected:
+    // @Override
     CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
-    CARAPI_(void) CheckForAndHandleDataChanged();
-
-    CARAPI_(void) OnLayout(
+    // @Override
+    CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
@@ -260,12 +341,10 @@ private:
 
     CARAPI_(void) MeasureChildren();
 
-
-protected:
+public:
     static const Int32 TOUCH_MODE_NONE = 0;
     static const Int32 TOUCH_MODE_DOWN_IN_CURRENT_VIEW = 1;
     static const Int32 TOUCH_MODE_HANDLED = 2;
-
     Int32 mWhichChild;
     Boolean mAnimateFirstTime;
     Int32 mActiveOffset;
@@ -294,9 +373,7 @@ protected:
 private:
     static const String TAG;
     static const Int32 DEFAULT_ANIMATION_DURATION = 200;
-
     AutoPtr<IRunnable> mPendingCheckForTap;
-
     Int32 mRestoreWhichChild;
     Int32 mTouchMode; //= TOUCH_MODE_NONE;
 };
@@ -306,3 +383,4 @@ private:
 } // namespace Elastos
 
 #endif //__ELASTOS_DROID_WIDGET_ADAPTERVIEWANIMATOR_H__
+
