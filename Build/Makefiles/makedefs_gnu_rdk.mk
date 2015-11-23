@@ -205,7 +205,7 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           GCC_LIB_PATH=$(shell $(CC) -print-file-name=)
 
           EXE_FLAGS := $(EXE_FLAGS) $(32B_FLAG) -Bdynamic -Wl,--no-gc-sections -L$(XDK_TARGETS)
-          ECX_FLAGS := $(ECX_FLAGS) $(32B_FLAG) -Bdynamic -Wl,--gc-sections -L$(XDK_TARGETS) -L$(PREBUILD_LIB)
+          ECX_FLAGS := $(ECX_FLAGS) $(32B_FLAG) -Bdynamic -Wl,--no-gc-sections -L$(XDK_TARGETS) -L$(PREBUILD_LIB)
 
           EXE_CRT_BEGIN=-Wl,-X
           ECX_CRT_BEGIN=-Wl,-X
