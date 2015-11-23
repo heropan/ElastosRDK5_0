@@ -50,19 +50,10 @@ private:
     class DisplayContentsAnimator : public Object
     {
     public:
-        DisplayContentsAnimator(
-            /* [in] */ WindowAnimator* host,
-            /* [in] */ Int32 displayId);
+        DisplayContentsAnimator();
 
     public:
-        List< AutoPtr<WindowStateAnimator> > mWinAnimators;
-        AutoPtr<DimAnimator> mDimAnimator;
-        AutoPtr<DimAnimator::Parameters> mDimParams;
-        AutoPtr<DimSurface> mWindowAnimationBackgroundSurface;
         AutoPtr<ScreenRotationAnimation> mScreenRotationAnimation;
-
-    private:
-        WindowAnimator* mHost;
     };
 
 public:
@@ -83,27 +74,13 @@ public:
         /* [in] */ WindowState* lowerWallpaperTarget,
         /* [in] */ List< AutoPtr<WindowToken> >& wallpaperTokens);
 
-    CARAPI_(void) SetCurrentFocus(
-        /* [in] */ WindowState* currentFocus);
-
-    CARAPI_(void) SetDisplayDimensions(
-        /* [in] */ Int32 curWidth,
-        /* [in] */ Int32 curHeight,
-        /* [in] */ Int32 appWidth,
-        /* [in] */ Int32 appHeight);
-
-    CARAPI_(Boolean) IsDimmingLocked(
-        /* [in] */ Int32 displayId);
-
-    CARAPI_(Boolean) IsDimmingLocked(
-        /* [in] */ WindowStateAnimator* winAnimator);
-
     static CARAPI_(String) BulkUpdateParamsToString(
         /* [in] */ Int32 bulkUpdateParams);
 
     // void dumpLocked(PrintWriter pw, String prefix, boolean dumpAll);
 
-    CARAPI_(void) ClearPendingActions();
+    CARAPI_(Int32) GetPendingLayoutChanges(
+        /* [in] */ Int32 displayId);
 
     CARAPI_(void) SetPendingLayoutChanges(
         /* [in] */ Int32 displayId,
@@ -133,13 +110,15 @@ private:
     CARAPI_(void) UpdateWallpaperLocked(
         /* [in] */ Int32 displayId);
 
-    CARAPI_(void) TestTokenMayBeDrawnLocked();
+    /** See if any windows have been drawn, so they (and others associated with them) can now be
+     *  shown. */
+    CARAPI_(void) TestTokenMayBeDrawnLocked(
+        /* [in] */ Int32 displayId);
 
     CARAPI_(void) PerformAnimationsLocked(
         /* [in] */ Int32 displayId);
 
-    // TODO(cmautner): Change the following comment when no longer locked on mWindowMap */
-    /** Locked on mService.mWindowMap and this. */
+    /** Locked on mService.mWindowMap. */
     CARAPI_(void) AnimateLocked();
 
     CARAPI_(AutoPtr<DisplayContentsAnimator>) GetDisplayContentsAnimatorLocked(
@@ -186,8 +165,6 @@ public:
     Boolean mKeyguardGoingAwayDisableWindowAnimations;
 
     Int32 mForceHiding;
-
-    AutoPtr<WindowState> mCurrentFocus;
 
 private:
     static const String TAG;

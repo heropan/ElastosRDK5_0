@@ -102,6 +102,9 @@ class DragState;
 class InputMonitor;
 
 CarClass(CWindowManagerService)
+    , public Object
+    , public IIWindowManager
+    , public IWindowManagerPolicyWindowManagerFuncs
 {
 public:
     class RotationWatcher : public Object
@@ -122,7 +125,7 @@ public:
 
     /** Pulled out of performLayoutAndPlaceSurfacesLockedInner in order to refactor into multiple
      * methods. */
-    class LayoutFields : public ElRefBase
+    class LayoutFields : public Object
     {
     public:
         LayoutFields();
@@ -163,8 +166,7 @@ public:
         friend class CWindowManagerService;
     };
 
-    class DragInputEventReceiver
-        : public InputEventReceiver
+    class DragInputEventReceiver : public InputEventReceiver
     {
     public:
         DragInputEventReceiver(
@@ -192,8 +194,7 @@ public:
             /* [in] */ Boolean available) = 0;
     };
 
-    class LocalBroadcastReceiver
-        : public BroadcastReceiver
+    class LocalBroadcastReceiver : public BroadcastReceiver
     {
     public:
         LocalBroadcastReceiver(
@@ -218,7 +219,7 @@ public:
     };
 
     class SecurelyOnKeyguardExitResult
-        : public ElRefBase
+        : public Object
         , public IOnKeyguardExitResult
     {
     public:
@@ -380,11 +381,11 @@ private:
     };
 
     class RotationWatcherDeathRecipint
-        : public ElRefBase
+        : public Object
         , public IProxyDeathRecipient
     {
     public:
-        CAR_INTERFACE_DECL();
+        CAR_INTERFACE_DECL()
 
         RotationWatcherDeathRecipint(
             /* [in] */ CWindowManagerService* owner,
@@ -399,7 +400,7 @@ private:
     };
 
     class LocalInterpolator
-        : public ElRefBase
+        : public Object
         , public IInterpolator
     {
     public:
@@ -453,6 +454,10 @@ private:
 
 public:
     CWindowManagerService();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     static AutoPtr<CWindowManagerService> Main(
         /* [in] */ IContext* context,

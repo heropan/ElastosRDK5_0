@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_SERVER_WM_DRAGSTATE_H__
 
 #include "wm/CWindowManagerService.h"
-#include "wm/WindowState.h"
 #include "input/InputApplicationHandle.h"
 #include "input/InputWindowHandle.h"
 
@@ -21,8 +20,6 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Wm{
-
-class WindowState;
 
 class DragState : public Object
 {

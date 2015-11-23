@@ -352,7 +352,7 @@ InputEventReceiver::InputEventReceiver(
     /* [in] */ IInputChannel* inputChannel,
     /* [in] */ ILooper* looper)
 {
-    Init(inputChannel, looper);
+    constructor(inputChannel, looper);
 }
 
 InputEventReceiver::~InputEventReceiver()
@@ -360,18 +360,20 @@ InputEventReceiver::~InputEventReceiver()
     Dispose();
 }
 
-void InputEventReceiver::Init(
+InputEventReceiver::constructor(
     /* [in] */ IInputChannel* inputChannel,
     /* [in] */ ILooper* looper)
 {
     if (inputChannel == NULL) {
         //throw new IllegalArgumentException("inputChannel must not be NULL");
-        assert(0);
+        Slogger::E(TAG, "inputChannel must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if (looper == NULL) {
         //throw new IllegalArgumentException("looper must not be NULL");
-        assert(0);
+        Slogger::E(TAG, "looper must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     mInputChannel = inputChannel;
@@ -380,7 +382,7 @@ void InputEventReceiver::Init(
     Handle32 nativeQueue;
     queue->GetNativeMessageQueue(&nativeQueue);
     mMessageQueue = (NativeMessageQueue*)nativeQueue;
-    ASSERT_SUCCEEDED(NativeInit())
+    return NativeInit();
 
     //mCloseGuard.open("dispose");
 }

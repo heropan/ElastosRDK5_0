@@ -37,8 +37,12 @@ CSession::CSession()
     , mLastReportedAnimatorScale(0)
 {}
 
+CAR_INTERFACE_IMPL_2(CSession, Object, IWindowSession, IProxyDeathRecipient)
+
+CAR_OBJECT_IMPL(CSession)
+
 ECode CSession::constructor(
-    /* [in] */ Handle32 wmService,
+    /* [in] */ Handle64 wmService,
     /* [in] */ IInputMethodClient* client,
     /* [in] */ IIWindowSessionCallback* callback,
     /* [in] */ IInputContext* inputContext)

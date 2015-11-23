@@ -2,14 +2,9 @@
 #define __ELASTOS_DROID_SERVER_WM_WINDOWSTATE_H__
 
 #include "wm/CWindowManagerService.h"
-#include "wm/CSession.h"
-#include "wm/DisplayContent.h"
-#include "wm/MagnificationSpec.h"
-#include "wm/WindowStateAnimator.h"
-#include <elastos/utility/etl/List.h>
+#include "wm/TaskStack.h"
 #include "input/InputWindowHandle.h"
 
-using Elastos::Utility::Etl::List;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IWindowState;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
@@ -31,21 +26,17 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
-class AppWindowToken;
-class WindowToken;
-class WindowStateAnimator;
-
 class WindowState
-    : public ElRefBase
+    : public Object
     , public IWindowState
 {
 private:
     class DeathRecipient
-        : public ElRefBase
+        : public Object
         , public IProxyDeathRecipient
     {
     public:
-        CAR_INTERFACE_DECL();
+        CAR_INTERFACE_DECL()
 
         DeathRecipient(
             /* [in] */ WindowState* owner);
@@ -57,158 +48,120 @@ private:
         AutoPtr<IWeakReference> mWeakOwner;
     };
 
-public:
-    CAR_INTERFACE_DECL();
+    class ResizeRunnable : public Runnable
+    {
+    public:
+        ResizeRunnable(
+            /* [in] */ WindowState* host,
+            /* [in] */ IRect* frame,
+            /* [in] */ IRect* overscanInsets,
+            /* [in] */ IRect* contentInsets,
+            /* [in] */ IRect* visibleInsets,
+            /* [in] */ IRect* stableInsets,
+            /* [in] */ Boolean reportDraw,
+            /* [in] */ IConfiguration* newConfig);
 
+        CARAPI Run();
+
+    private:
+        WindowState* mHost;
+        AutoPtr<IRect> mFrame;
+        AutoPtr<IRect> mOverscanInsets;
+        AutoPtr<IRect> mContentInsets;
+        AutoPtr<IRect> mVisibleInsets;
+        AutoPtr<IRect> mStableInsets;
+        Boolean mReportDraw;
+        AutoPtr<IConfiguration> mNewConfig;
+    };
+
+public:
     WindowState(
         /* [in] */ CWindowManagerService* service,
         /* [in] */ CSession* s,
         /* [in] */ IIWindow* c,
         /* [in] */ WindowToken* token,
         /* [in] */ WindowState* attachedWindow,
+        /* [in] */ Int32 appOp,
         /* [in] */ Int32 seq,
         /* [in] */ IWindowManagerLayoutParams* attrs,
         /* [in] */ Int32 viewVisibility,
         /* [in] */ DisplayContent* displayContent);
 
-    ~WindowState();
+    CAR_INTERFACE_DECL()
 
     CARAPI_(void) Attach();
+
+    CARAPI GetOwningUid(
+        /* [out] */ Int32* id);
+
+    CARAPI GetOwningPackage(
+        /* [out] */ String* package);
 
     CARAPI ComputeFrameLw(
         /* [in] */ IRect* pf,
         /* [in] */ IRect* df,
+        /* [in] */ IRect* of,
         /* [in] */ IRect* cf,
-        /* [in] */ IRect* vf);
+        /* [in] */ IRect* vf,
+        /* [in] */ IRect* dcf,
+        /* [in] */ IRect* sf);
 
-    CARAPI_(AutoPtr<MagnificationSpec>) GetWindowMagnificationSpecLocked();
-
-    /**
-     * Retrieve the current frame of the window that has been assigned by
-     * the window manager.  Must be called with the window manager lock held.
-     *
-     * @return Rect The rectangle holding the window frame.
-     */
     CARAPI GetFrameLw(
         /* [out] */ IRect** frame);
 
-    /**
-     * Retrieve the current frame of the window that is actually shown.
-     * Must be called with the window manager lock held.
-     *
-     * @return Rect The rectangle holding the shown window frame.
-     */
     CARAPI GetShownFrameLw(
         /* [out] */ IRectF** shownFrame);
 
-    /**
-     * Retrieve the frame of the display that this window was last
-     * laid out in.  Must be called with the
-     * window manager lock held.
-     *
-     * @return Rect The rectangle holding the display frame.
-     */
     CARAPI GetDisplayFrameLw(
         /* [out] */ IRect** displayFrame);
 
-    /**
-     * Retrieve the frame of the content area that this window was last
-     * laid out in.  This is the area in which the content of the window
-     * should be placed.  It will be smaller than the display frame to
-     * account for screen decorations such as a status bar or soft
-     * keyboard.  Must be called with the
-     * window manager lock held.
-     *
-     * @return Rect The rectangle holding the content frame.
-     */
+    CARAPI GetOverscanFrameLw(
+        /* [out] */ IRect** displayFrame);
+
     CARAPI GetContentFrameLw(
         /* [out] */ IRect** contentFrame);
 
-    /**
-     * Retrieve the frame of the visible area that this window was last
-     * laid out in.  This is the area of the screen in which the window
-     * will actually be fully visible.  It will be smaller than the
-     * content frame to account for transient UI elements blocking it
-     * such as an input method's candidates UI.  Must be called with the
-     * window manager lock held.
-     *
-     * @return Rect The rectangle holding the visible frame.
-     */
     CARAPI GetVisibleFrameLw(
         /* [out] */ IRect** visibleFrame);
 
-    /**
-     * Returns true if this window is waiting to receive its given
-     * internal insets from the client app, and so should not impact the
-     * layout of other windows.
-     */
     CARAPI GetGivenInsetsPendingLw(
         /* [out] */ Boolean* result);
 
-    /**
-     * Retrieve the insets given by this window's client for the content
-     * area of windows behind it.  Must be called with the
-     * window manager lock held.
-     *
-     * @return Rect The left, top, right, and bottom insets, relative
-     * to the window's frame, of the actual contents.
-     */
     CARAPI GetGivenContentInsetsLw(
         /* [out] */ IRect** insetsRect);
 
-    /**
-     * Retrieve the insets given by this window's client for the visible
-     * area of windows behind it.  Must be called with the
-     * window manager lock held.
-     *
-     * @return Rect The left, top, right, and bottom insets, relative
-     * to the window's frame, of the actual visible area.
-     */
     CARAPI GetGivenVisibleInsetsLw(
         /* [out] */ IRect** visibleArea);
 
-    /**
-     * Retrieve the current LayoutParams of the window.
-     *
-     * @return WindowManager.LayoutParams The window's internal LayoutParams
-     *         instance.
-     */
     CARAPI GetAttrs(
         /* [out] */ IWindowManagerLayoutParams** attrs);
 
-    /**
-     * Return whether this window needs the menu key shown.  Must be called
-     * with window lock held, because it may need to traverse down through
-     * window list to determine the result.
-     * @param bottom The bottom-most window to consider when determining this.
-     */
     CARAPI GetNeedsMenuLw(
         /* [in] */ IWindowState* bottom,
         /* [out] */ Boolean* result);
 
-    /**
-     * Retrieve the current system UI visibility flags associated with
-     * this window.
-     */
     CARAPI GetSystemUiVisibility(
         /* [out] */ Int32* flag);
 
-    /**
-     * Get the layer at which this window's surface will be Z-ordered.
-     */
     CARAPI GetSurfaceLayer(
         /* [out] */ Int32* surfaceLayer);
 
-    /**
-     * Return the token for the application (actually activity) that owns
-     * this window.  May return null for system windows.
-     *
-     * @return An IApplicationToken identifying the owning activity.
-     */
     CARAPI GetAppToken(
         /* [out] */ IApplicationToken** token);
 
+    CARAPI IsVoiceInteraction(
+        /* [out] */ Boolean* result);
+
+    CARAPI_(Boolean) SetInsetsChanged();
+
+    CARAPI_(AutoPtr<DisplayContent>) GetDisplayContent();
+
     CARAPI_(Int32) GetDisplayId();
+
+    CARAPI_(AutoPtr<TaskStack>) GetStack();
+
+    CARAPI_(void) GetStackBounds(
+        /* [in] */ IRect* bounds);
 
     CARAPI_(Int64) GetInputDispatchingTimeoutNanos();
 
@@ -294,10 +247,7 @@ public:
     CARAPI_(Boolean) IsReadyForDisplayIgnoringKeyguard();
 
     /**
-     * Is this window currently visible to the user on-screen?  It is
-     * displayed either if it is visible or it is currently running an
-     * animation before no longer being visible.  Must be called with the
-     * window manager lock held.
+     * Return true if this window or its app token is currently animating.
      */
     CARAPI IsDisplayedLw(
         /* [out] */ Boolean* isDisplayed);
@@ -314,6 +264,12 @@ public:
      */
     CARAPI IsGoneForLayoutLw(
         /* [out] */ Boolean* isGone);
+
+    /**
+     * Returns true if the window has a surface that it has drawn a
+     * complete UI in to.
+     */
+    CARAPI_(Boolean) IsDrawFinishedLw();
 
     /**
      * Returns true if the window has a surface that it has drawn a
@@ -340,9 +296,6 @@ public:
 
     CARAPI_(Boolean) IsConfigChanged();
 
-    CARAPI_(Boolean) IsConfigDiff(
-        /* [in] */ Int32 mask);
-
     CARAPI_(void) RemoveLocked();
 
     CARAPI_(void) SetInputChannel(
@@ -350,8 +303,8 @@ public:
 
     CARAPI_(void) DisposeInputChannel();
 
-    /** Returns true if this window desires key events.
-     * TODO(cmautner): Is this the same as {@link WindowManagerService#canBeImeTarget}
+    /**
+     * @return true if this window desires key events.
      */
     CARAPI_(Boolean) CanReceiveKeys();
 
@@ -391,6 +344,9 @@ public:
         /* [in] */ Boolean doAnimation,
         /* [in] */ Boolean requestAnim);
 
+    CARAPI_(void) SetAppOpVisibilityLw(
+        /* [in] */ Boolean state);
+
     /**
      * Check whether the process hosting this window is currently alive.
      */
@@ -416,6 +372,24 @@ public:
 
     CARAPI_(AutoPtr<WindowList>) GetWindowList();
 
+    /**
+     * Report a focus change.  Must be called with no locks held, and consistently
+     * from the same serialized thread (such as dispatched from a handler).
+     */
+    CARAPI_(void) ReportFocusChangedSerialized(
+        /* [in] */ Boolean focused,
+        /* [in] */ Boolean inTouchMode);
+
+    CARAPI_(void) ReportResized();
+
+    CARAPI_(void) RegisterFocusObserver(
+        /* [in] */ IIWindowFocusObserver* observer);
+
+    CARAPI_(void) UnregisterFocusObserver(
+        /* [in] */ IIWindowFocusObserver* observer);
+
+    CARAPI_(Boolean) IsFocused();
+
     // void dump(PrintWriter pw, String prefix, boolean dumpAll);
 
     CARAPI_(String) MakeInputChannelName();
@@ -423,12 +397,14 @@ public:
     CARAPI SetConfiguration(
         /* [in] */ IConfiguration* config);
 
-    CARAPI_(String) ToString();
-
     CARAPI ToString(
         /* [out]*/ String* str);
 
 private:
+    CARAPI_(void) GetStackBounds(
+        /* [in] */ TaskStack* stack,
+        /* [in] */ IRect* bounds);
+
     static CARAPI_(void) ApplyInsets(
         /* [in] */ IRegion* outRegion,
         /* [in] */ IRect* frame,
@@ -437,17 +413,16 @@ private:
 public:
     static const String TAG;
 
-    static const Boolean DEBUG_VISIBILITY;
-    static const Boolean SHOW_TRANSACTIONS;
-    static const Boolean SHOW_LIGHT_TRANSACTIONS;
-    static const Boolean SHOW_SURFACE_ALLOC;
-
 public:
     AutoPtr<CWindowManagerService> mService;
     AutoPtr<IWindowManagerPolicy> mPolicy;
     AutoPtr<IContext> mContext;
     AutoPtr<CSession> mSession;
     AutoPtr<IIWindow> mClient;
+    Int32 mAppOp;
+    // UserId and appId of the owner. Don't display windows of non-current user.
+    Int32 mOwnerUid;
+    AutoPtr<IIWindowId> mWindowId;
     AutoPtr<WindowToken> mToken;
     AutoPtr<WindowToken> mRootToken;
     AppWindowToken* mAppToken;
@@ -471,9 +446,11 @@ public:
     Int32 mSystemUiVisibility;
     Boolean mPolicyVisibility;
     Boolean mPolicyVisibilityAfterAnim;
+    Boolean mAppOpVisibility;
     Boolean mAppFreezing;
     Boolean mAttachedHidden;    // is our parent window hidden?
     Boolean mWallpaperVisible;  // for wallpaper, what was last vis report?
+    AutoPtr<IRemoteCallbackList> mFocusCallbacks;
 
     /**
      * The window size that was requested by the application.  These are in
@@ -519,6 +496,22 @@ public:
     AutoPtr<IRect> mContentInsets;
     AutoPtr<IRect> mLastContentInsets;
     Boolean mContentInsetsChanged;
+
+    /**
+     * Insets that determine the area covered by the display overscan region.  These are in the
+     * application's coordinate space (without compatibility scale applied).
+     */
+    AutoPtr<IRect> mOverscanInsets;
+    AutoPtr<IRect> mLastOverscanInsets;
+    Boolean mOverscanInsetsChanged;
+
+    /**
+     * Insets that determine the area covered by the stable system windows.  These are in the
+     * application's coordinate space (without compatibility scale applied).
+     */
+    AutoPtr<IRect> mStableInsets;
+    AutoPtr<IRect> mLastStableInsets;
+    Boolean mStableInsetsChanged;
 
     /**
      * Set to true if we are waiting for this window to receive its
@@ -576,9 +569,12 @@ public:
 
     AutoPtr<IRect> mContainingFrame;
     AutoPtr<IRect> mDisplayFrame;
+    AutoPtr<IRect> mOverscanFrame;
     AutoPtr<IRect> mContentFrame;
     AutoPtr<IRect> mParentFrame;
     AutoPtr<IRect> mVisibleFrame;
+    AutoPtr<IRect> mDecorFrame;
+    AutoPtr<IRect> mStableFrame;
 
     Boolean mContentChanged;
 
@@ -592,34 +588,50 @@ public:
     Float mWallpaperXStep;
     Float mWallpaperYStep;
 
+    // If a window showing a wallpaper: a raw pixel offset to forcibly apply
+    // to its window; if a wallpaper window: not used.
+    Int32 mWallpaperDisplayOffsetX;
+    Int32 mWallpaperDisplayOffsetY;
+
     // Wallpaper windows: pixels offset based on above variables.
     Int32 mXOffset;
     Int32 mYOffset;
 
-    // This is set after IWindowSession.relayout() has been called at
-    // least once for the window.  It allows us to detect the situation
-    // where we don't yet have a surface, but should have one soon, so
-    // we can give the window focus before waiting for the relayout.
+    /**
+     * This is set after IWindowSession.relayout() has been called at
+     * least once for the window.  It allows us to detect the situation
+     * where we don't yet have a surface, but should have one soon, so
+     * we can give the window focus before waiting for the relayout.
+     */
     Boolean mRelayoutCalled;
 
-    // If the application has called relayout() with changes that can
-    // impact its window's size, we need to perform a layout pass on it
-    // even if it is not currently visible for layout.  This is set
-    // when in that case until the layout is done.
+    /**
+     * If the application has called relayout() with changes that can
+     * impact its window's size, we need to perform a layout pass on it
+     * even if it is not currently visible for layout.  This is set
+     * when in that case until the layout is done.
+     */
     Boolean mLayoutNeeded;
 
-    // Currently running an exit animation?
+    /** Currently running an exit animation? */
     Boolean mExiting;
 
-    // Currently on the mDestroySurface list?
+    /** Currently on the mDestroySurface list? */
     Boolean mDestroying;
 
-    // Completely remove from window manager after exit animation?
+    /** Completely remove from window manager after exit animation? */
     Boolean mRemoveOnExit;
 
-    // Set when the orientation is changing and this window has not yet
-    // been updated for the new orientation.
+    /**
+     * Set when the orientation is changing and this window has not yet
+     * been updated for the new orientation.
+     */
     Boolean mOrientationChanging;
+
+    /**
+     * How long we last kept the screen frozen.
+     */
+    Int32 mLastFreezeDuration;
 
     // Is this window now (or just being) removed?
     Boolean mRemoved;
@@ -641,10 +653,13 @@ public:
 
     Boolean mHasSurface;
 
+    Boolean mNotOnAppsDisplay;
+
     AutoPtr<DisplayContent>  mDisplayContent;
 
-    // UserId and appId of the owner. Don't display windows of non-current user.
-    Int32 mOwnerUid;
+    /** When true this window is at the top of the screen and should be layed out to extend under
+     * the status bar */
+    Boolean mUnderStatusBar;
 
     typedef List<AutoPtr<WindowState> > WindowList;
 

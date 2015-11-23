@@ -1,12 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__
 #define __ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "wm/CWindowManagerService.h"
-#include "wm/AppWindowAnimator.h"
-#include "wm/CSession.h"
-#include "wm/WindowState.h"
-#include "wm/WindowAnimator.h"
 
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Animation::IAnimation;
@@ -20,42 +15,13 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
-class CWindowManagerService;
-class WindowAnimator;
-class AppWindowAnimator;
-
 /**
  * Singleton class that carries out the animations and AutoPtr<ISurface> operations in a separate task
  * on behalf of WindowManagerService.
  */
-class WindowStateAnimator
-    : public ElRefBase
-    , public IInterface
+class WindowStateAnimator : public Object
 {
-// public:
-    // class SurfaceTrace
-    //     : public ElRefBase
-    //     , public ISurface
-    //     , public Surface
-    // {
-    // public:
-    //     CARAPI_(PInterface) Probe(
-    //         /* [in] */ REIID riid);
-
-    //     CARAPI_(UInt32) AddRef();
-
-    //     CARAPI_(UInt32) Release();
-
-    //     CARAPI GetInterfaceID(
-    //         /* [in] */ IInterface *pObject,
-    //         /* [out] */ InterfaceID *pIID);
-
-    //     //add functions of ISurface
-    // };
-
 public:
-    CAR_INTERFACE_DECL()
-
     WindowStateAnimator(
         /* [in] */ WindowState* win);
 
@@ -93,13 +59,12 @@ public:
     CARAPI_(Boolean) CommitFinishDrawingLocked(
         /* [in] */ Int64 currentTime);
 
-    CARAPI_(AutoPtr<ISurface>) CreateSurfaceLocked();
+    CARAPI_(AutoPtr<ISurfaceControl>) CreateSurfaceLocked();
 
     CARAPI_(void) DestroySurfaceLocked(
         /* [in] */ Boolean fromAnimator);
 
-    CARAPI_(void) DestroyDeferredSurfaceLocked(
-        /* [in] */ Boolean fromAnimator);
+    CARAPI_(void) DestroyDeferredSurfaceLocked();
 
     CARAPI_(void) ComputeShownFrameLocked();
 
@@ -115,12 +80,14 @@ public:
     CARAPI_(void) PrepareSurfaceLocked(
         /* [in] */ Boolean recoveringMemory);
 
-    CARAPI_(void) SetTransparentRegionHint(
+    CARAPI_(void) SetTransparentRegionHintLocked(
         /* [in] */ IRegion* region);
 
     CARAPI_(void) SetWallpaperOffset(
-        /* [in] */ Int32 left,
-        /* [in] */ Int32 top);
+        /* [in] */ IRect* shownFrame);
+
+    CARAPI_(void) SetOpaqueLocked(
+        /* [in] */ Boolean isOpaque);
 
     // This must be called while inside a transaction.
     CARAPI_(Boolean) PerformShowLocked();
@@ -137,10 +104,9 @@ public:
 
     CARAPI_(void) ApplyEnterAnimationLocked();
 
-    // TODO(cmautner): Move back to WindowState?
     /**
      * Choose the correct animation and set it to the passed WindowState.
-     * @param transit If WindowManagerPolicy.TRANSIT_PREVIEW_DONE and the app window has been drawn
+     * @param transit If AppTransition.TRANSIT_PREVIEW_DONE and the app window has been drawn
      *      then the animation will be app_starting_exit. Any other value loads the animation from
      *      the switch statement below.
      * @param isEntrance The animation type the last time this was called. Used to keep from
@@ -158,17 +124,6 @@ private:
         /* [in] */ Int64 currentTime);
 
 public:
-    static const Boolean DEBUG_VISIBILITY;
-    static const Boolean DEBUG_ANIM;
-    static const Boolean DEBUG_LAYERS;
-    static const Boolean DEBUG_STARTING_WINDOW;
-    static const Boolean SHOW_TRANSACTIONS;
-    static const Boolean SHOW_LIGHT_TRANSACTIONS;
-    static const Boolean SHOW_SURFACE_ALLOC;
-    static const Boolean mLocalLOGV;
-    static const Boolean DEBUG_ORIENTATION;
-    static const Boolean DEBUG_SURFACE_TRACE;
-
     static const String TAG;
 
     /** This is set when there is no AutoPtr<ISurface> */
@@ -214,8 +169,8 @@ public:
     Int32 mAnimLayer;
     Int32 mLastLayer;
 
-    AutoPtr<ISurface> mSurface;
-    AutoPtr<ISurface> mPendingDestroySurface;
+    AutoPtr<ISurfaceControl> mSurfaceControl;
+    AutoPtr<ISurfaceControl> mPendingDestroySurface;
 
     /**
      * Set when we have changed the size of the surface, to know that
@@ -232,6 +187,11 @@ public:
     Float mShownAlpha;
     Float mAlpha;
     Float mLastAlpha;
+
+    Boolean mHasClipRect;
+    AutoPtr<IRect> mClipRect;
+    AutoPtr<IRect> mTmpClipRect;
+    AutoPtr<IRect> mLastClipRect;
 
     // Used to save animation distances between the time they are calculated and when they are
     // used.
@@ -261,15 +221,18 @@ public:
     // an enter animation.
     Boolean mEnterAnimationPending;
 
+    Boolean mKeyguardGoingAwayAnimation;
+
     Int32 mDrawState;
 
     /** Was this window last hidden? */
     Boolean mLastHidden;
 
-    Int32 mAttrFlags;
     Int32 mAttrType;
 
-    Int32 mLayerStack;
+private:
+    static const Int32 SYSTEM_UI_FLAGS_LAYOUT_STABLE_FULLSCREEN =
+            IView::SYSTEM_UI_FLAG_LAYOUT_STABLE | IView::SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 };
 
 } // Wm

@@ -124,6 +124,8 @@ using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Droid::Hardware::Display::EIID_IDisplayListener;
 using Elastos::Droid::Utility::CDisplayMetrics;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Os::CBinder;
@@ -383,15 +385,14 @@ ECode CWindowManagerService::PolicyInitializer::Run()
 //                  CWindowManagerService::RotationWatcherDeathRecipint
 //==============================================================================
 
-CAR_INTERFACE_IMPL(CWindowManagerService::RotationWatcherDeathRecipint, IProxyDeathRecipient);
+CAR_INTERFACE_IMPL(CWindowManagerService::RotationWatcherDeathRecipint, Object, IProxyDeathRecipient)
 
 CWindowManagerService::RotationWatcherDeathRecipint::RotationWatcherDeathRecipint(
     /* [in] */ CWindowManagerService* owner,
     /* [in] */ IBinder* watcherBinder)
     : mOwner(owner)
     , mWatcherBinder(watcherBinder)
-{
-}
+{}
 
 ECode CWindowManagerService::RotationWatcherDeathRecipint::ProxyDied()
 {
@@ -439,13 +440,13 @@ ECode CWindowManagerService::LocalBroadcastReceiver::OnReceive(
 //                  CWindowManagerService::LocalInterpolator
 //==============================================================================
 
-CAR_INTERFACE_IMPL(CWindowManagerService::LocalInterpolator, IInterpolator);
+CAR_INTERFACE_IMPL(CWindowManagerService::LocalInterpolator, Object, IInterpolator)
 
 ECode CWindowManagerService::LocalInterpolator::GetInterpolation(
     /* [in] */ Float input,
     /* [out] */ Float* output)
 {
-    VALIDATE_NOT_NULL(output);
+    VALIDATE_NOT_NULL(output)
 
     if (input < RECENTS_THUMBNAIL_FADEOUT_FRACTION) {
         // linear response
@@ -462,7 +463,7 @@ ECode CWindowManagerService::LocalInterpolator::GetInterpolation(
 //                  CWindowManagerService::SecurelyOnKeyguardExitResult
 //==============================================================================
 
-CAR_INTERFACE_IMPL(CWindowManagerService::SecurelyOnKeyguardExitResult, IOnKeyguardExitResult);
+CAR_INTERFACE_IMPL(CWindowManagerService::SecurelyOnKeyguardExitResult, Object, IOnKeyguardExitResult);
 
 ECode CWindowManagerService::SecurelyOnKeyguardExitResult::OnKeyguardExitResult(
     /* [in] */ Boolean success)
@@ -872,6 +873,10 @@ CWindowManagerService::CWindowManagerService()
     ASSERT_SUCCEEDED(CConfiguration::New((IConfiguration**)&mTempConfiguration));
     mInputMonitor = new InputMonitor(this);
 }
+
+CAR_INTERFACE_IMPL_2(CWindowManagerService, Object, IIWindowManager, IWindowManagerPolicyWindowManagerFuncs)
+
+CAR_OBJECT_IMPL(CWindowManagerService)
 
 AutoPtr<CWindowManagerService> CWindowManagerService::Main(
     /* [in] */ IContext* context,

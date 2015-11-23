@@ -45,3 +45,5 @@ SOURCES += PointerEventDispatcher.cpp
 SOURCES += StackTapPointerEventListener.cpp
 SOURCES += Task.cpp
 SOURCES += TaskGroup.cpp
+SOURCES += TaskStack.cpp
+SOURCES += CWindowId.cpp

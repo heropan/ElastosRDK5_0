@@ -37,7 +37,7 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ Handle32 wmService,
+        /* [in] */ Handle64 wmService,
         /* [in] */ IIWindowSessionCallback* callback,
         /* [in] */ IInputMethodClient* client,
         /* [in] */ IInputContext* inputContext);

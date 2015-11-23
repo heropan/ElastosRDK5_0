@@ -10,10 +10,12 @@
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::View::ISurfaceHelper;
-using Elastos::Droid::View::CSurfaceHelper;
+using Elastos::Droid::View::ISurfaceControlHelper;
+using Elastos::Droid::View::CSurfaceControlHelper;
 using Elastos::Droid::View::Animation::IAlphaAnimation;
 using Elastos::Droid::View::Animation::CAlphaAnimation;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Utility::CSparseArray;
 
 namespace Elastos {
 namespace Droid {
@@ -31,21 +33,6 @@ ECode WindowAnimator::AnimationRunnable::Run()
         mHost->AnimateLocked();
     }
     return NOERROR;
-}
-
-
-//==============================================================================
-//                  WindowAnimator::DisplayContentsAnimator
-//==============================================================================
-
-WindowAnimator::DisplayContentsAnimator::DisplayContentsAnimator(
-    /* [in] */ WindowAnimator* host,
-    /* [in] */ Int32 displayId)
-    : mHost(host)
-{
-    mDimAnimator = new DimAnimator(mHost->mService->mFxSession, displayId);
-    mWindowAnimationBackgroundSurface =
-            new DimSurface(mHost->mService->mFxSession, displayId);
 }
 
 
@@ -507,54 +494,53 @@ void WindowAnimator::UpdateWallpaperLocked(
         mBulkUpdateParams |= CWindowManagerService::LayoutFields::SET_WALLPAPER_MAY_CHANGE;
     }
 }
-// begin from this
-void WindowAnimator::TestTokenMayBeDrawnLocked()
+
+void WindowAnimator::TestTokenMayBeDrawnLocked(
+    /* [in] */ Int32 displayId)
 {
     // See if any windows have been drawn, so they (and others
     // associated with them) can now be shown.
-    List<AutoPtr<AppWindowAnimator> >::Iterator it = mAppAnimators.Begin();
-    for (; it != mAppAnimators.End();) {
-        AutoPtr<AppWindowAnimator> appAnimator = *it;
-        AutoPtr<AppWindowToken> wtoken = appAnimator->GetAppToken();
-        if (wtoken == NULL) {
-            it = mAppAnimators.Erase(it);
-            continue;
-        }
+    AutoPtr< List<AutoPtr<TaskStack> > > tasks = mService->GetDisplayContentLocked(displayId)->GetTasks();
+    List<AutoPtr<TaskStack> >::Iterator it = tasks->Begin();
+    for (; it != tasks->End(); ++it) {
+        AppTokenList tokens = (*it)->mAppTokens;
+        AppTokenList::Iterator tokenIt = tokens.Begin();
+        for (; tokenIt != tokens.End(); ++tokenIt) {
+            AutoPtr<AppWindowToken> wtoken = *tokenIt;
+            AutoPtr<AppWindowAnimator> appAnimator = wtoken->mAppAnimator;
+            Boolean allDrawn = wtoken->mAllDrawn;
+            if (allDrawn != appAnimator->mAllDrawn) {
+                appAnimator->mAllDrawn = allDrawn;
+                if (allDrawn) {
+                    // The token has now changed state to having all
+                    // windows shown...  what to do, what to do?
+                    if (appAnimator->mFreezingScreen) {
+                        appAnimator->ShowAllWindowsLocked();
+                        mService->UnsetAppFreezingScreenLocked(wtoken, FALSE, TRUE);
+                        // if (WindowManagerService.DEBUG_ORIENTATION) Slog.i(TAG,
+                        //         "Setting mOrientationChangeComplete=true because wtoken "
+                        //         + wtoken + " numInteresting=" + wtoken.numInterestingWindows
+                        //         + " numDrawn=" + wtoken.numDrawnWindows);
+                        // This will set mOrientationChangeComplete and cause a pass through layout.
+                        SetAppLayoutChanges(appAnimator,
+                            IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER,
+                            String("testTokenMayBeDrawnLocked: freezingScreen"));
+                    }
+                    else {
+                        SetAppLayoutChanges(appAnimator,
+                            IWindowManagerPolicy::FINISH_LAYOUT_REDO_ANIM,
+                            String("testTokenMayBeDrawnLocked"));
 
-        Boolean allDrawn = wtoken->mAllDrawn;
-        if (allDrawn != appAnimator->mAllDrawn) {
-            appAnimator->mAllDrawn = allDrawn;
-            if (allDrawn) {
-                // The token has now changed state to having all
-                // windows shown...  what to do, what to do?
-                if (appAnimator->mFreezingScreen) {
-                    appAnimator->ShowAllWindowsLocked();
-                    mService->UnsetAppFreezingScreenLocked(wtoken, FALSE, TRUE);
-                    // if (WindowManagerService.DEBUG_ORIENTATION) Slog.i(TAG,
-                    //         "Setting mOrientationChangeComplete=true because wtoken "
-                    //         + wtoken + " numInteresting=" + wtoken.numInterestingWindows
-                    //         + " numDrawn=" + wtoken.numDrawnWindows);
-                    // This will set mOrientationChangeComplete and cause a pass through layout.
-                    SetAppLayoutChanges(appAnimator,
-                        IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER,
-                        String("testTokenMayBeDrawnLocked: freezingScreen"));
-                }
-                else {
-                    SetAppLayoutChanges(appAnimator,
-                        IWindowManagerPolicy::FINISH_LAYOUT_REDO_ANIM,
-                        String("testTokenMayBeDrawnLocked"));
-
-                    // We can now show all of the drawn windows!
-                    List<AutoPtr<AppWindowToken> >::Iterator awtIt;
-                    awtIt = Find(mService->mOpeningApps.Begin(), mService->mOpeningApps.End(), wtoken);
-                    if (awtIt == mService->mOpeningApps.End()) {
-                        mAnimating |= appAnimator->ShowAllWindowsLocked();
+                        // We can now show all of the drawn windows!
+                        List<AutoPtr<AppWindowToken> >::Iterator awtIt;
+                        awtIt = Find(mService->mOpeningApps.Begin(), mService->mOpeningApps.End(), wtoken);
+                        if (awtIt == mService->mOpeningApps.End()) {
+                            mAnimating |= appAnimator->ShowAllWindowsLocked();
+                        }
                     }
                 }
             }
         }
-
-        ++it;
     }
 }
 
@@ -582,16 +568,15 @@ void WindowAnimator::AnimateLocked()
 
     // if (WindowManagerService.SHOW_TRANSACTIONS) Slog.i(
     //         TAG, ">>> OPEN TRANSACTION animateLocked");
-    AutoPtr<ISurfaceHelper> helper;
-    CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&helper);
+    AutoPtr<ISurfaceControlHelper> helper;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&helper);
     helper->OpenTransaction();
     helper->SetAnimationTransaction();
     // try {
-    UpdateAppWindowsLocked();
-
     HashMap<Int32, AutoPtr<DisplayContentsAnimator> >::Iterator it;
     for (it = mDisplayContentsAnimators.Begin(); it != mDisplayContentsAnimators.End(); ++it) {
         Int32 displayId = it->mFirst;
+        UpdateAppWindowsLocked(displayId);
         AutoPtr<DisplayContentsAnimator> displayAnimator = it->mSecond;
 
         AutoPtr<ScreenRotationAnimation> screenRotationAnimation =
@@ -604,44 +589,53 @@ void WindowAnimator::AnimateLocked()
                 mBulkUpdateParams |= CWindowManagerService::LayoutFields::SET_UPDATE_ROTATION;
                 screenRotationAnimation->Kill();
                 displayAnimator->mScreenRotationAnimation = NULL;
+
+                //TODO (multidisplay): Accessibility supported only for the default display.
+                if (mService->mAccessibilityController != NULL
+                        && displayId == IDisplay::DEFAULT_DISPLAY) {
+                    // We just finished rotation animation which means we did not
+                    // anounce the rotation and waited for it to end, announce now.
+                    mService->mAccessibilityController->OnRotationChangedLocked(
+                            mService->GetDefaultDisplayContentLocked(), mService->mRotation);
+                }
             }
         }
 
         // Update animations of all applications, including those
         // associated with exiting/removed apps
-        PerformAnimationsLocked(displayId);
+        UpdateWindowsLocked(displayId);
+        UpdateWallpaperLocked(displayId);
 
-        List<AutoPtr<WindowStateAnimator> >& winAnimatorList = displayAnimator->mWinAnimators;
-        List<AutoPtr<WindowStateAnimator> >::Iterator animIt = winAnimatorList.Begin();
-        for (; animIt != winAnimatorList.End(); ++animIt) {
-            (*animIt)->PrepareSurfaceLocked(TRUE);
+        AutoPtr<WindowList> windows = mService->GetWindowListLocked(displayId);
+        WindowList::Iterator winIt = windows->Begin();
+        for (; winIt != windows->End(); ++winIt) {
+            (*winIt)->mWinAnimator->PrepareSurfaceLocked(TRUE);
         }
     }
 
-    TestTokenMayBeDrawnLocked();
-
     for (it = mDisplayContentsAnimators.Begin(); it != mDisplayContentsAnimators.End(); ++it) {
         Int32 displayId = it->mFirst;
-        AutoPtr<DisplayContentsAnimator> displayAnimator = it->mSecond;
+        TestTokenMayBeDrawnLocked(displayId);
 
-        AutoPtr<ScreenRotationAnimation> screenRotationAnimation =
-                displayAnimator->mScreenRotationAnimation;
+        AutoPtr<ScreenRotationAnimation> screenRotationAnimation = (*it)->mScreenRotationAnimation;
         if (screenRotationAnimation != NULL) {
             screenRotationAnimation->UpdateSurfacesInTransaction();
         }
 
-        AutoPtr<DimAnimator::Parameters> dimParams = displayAnimator->mDimParams;
-        AutoPtr<DimAnimator> dimAnimator = displayAnimator->mDimAnimator;
-        if (dimAnimator != NULL && dimParams != NULL) {
-            AutoPtr<IResources> resources;
-            mContext->GetResources((IResources**)&resources);
-            dimAnimator->UpdateParameters(resources, dimParams, mCurrentTime);
-        }
-        if (dimAnimator != NULL && dimAnimator->mDimShown) {
-            mAnimating |= dimAnimator->UpdateSurface(IsDimmingLocked(displayId),
-                    mCurrentTime, !mService->OkToDisplay());
+        mAnimating |= mServic->GetDisplayContentLocked(displayId)->AnimateDimLayers();
+
+        //TODO (multidisplay): Magnification is supported only for the default display.
+        if (mService->mAccessibilityController != NULL
+                && displayId == IDisplay::DEFAULT_DISPLAY) {
+            mService->mAccessibilityController->DrawMagnifiedRegionBorderIfNeededLocked();
         }
     }
+
+    if (mAnimating) {
+        mService->ScheduleAnimationLocked();
+    }
+
+    mService->SetFocusedStackLayer();
 
     if (mService->mWatermark != NULL) {
         mService->mWatermark->DrawIfNeeded();
@@ -655,64 +649,38 @@ void WindowAnimator::AnimateLocked()
     // }
     helper->CloseTransaction();
 
-    HashMap<Int32, Int32>::Iterator changesIt = mPendingLayoutChanges.Begin();
-    for (; changesIt != mPendingLayoutChanges.End(); ++changesIt) {
-        if ((changesIt->mSecond
-                & IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER) != 0) {
-            mPendingActions |= WALLPAPER_ACTION_PENDING;
+    Boolean hasPendingLayoutChanges = FALSE;
+    Int32 numDisplays;
+    mService->mDisplayContents->GetSize(&numDisplays);
+    for (Int32 displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
+        AutoPtr<IInterface> value;
+        mService->mDisplayContents->ValueAt(displayNdx, (IInterface**)&value);
+        AutoPtr<DisplayContent> displayContent = (DisplayContent*)(IObject*)value.Get();
+        Int32 pendingChanges = GetPendingLayoutChanges(displayContent->GetDisplayId());
+        if ((pendingChanges & IWindowManagerPolicy::FINISH_LAYOUT_REDO_WALLPAPER) != 0) {
+            mBulkUpdateParams |= SET_WALLPAPER_ACTION_PENDING;
+        }
+        if (pendingChanges != 0) {
+            hasPendingLayoutChanges = TRUE;
         }
     }
 
-    if (mBulkUpdateParams != 0
-            || mPendingLayoutChanges.Begin() != mPendingLayoutChanges.End()) {
-        UpdateAnimToLayoutLocked();
+    Boolean doRequest = FALSE;
+    if (mBulkUpdateParams != 0) {
+        doRequest = mService->CopyAnimToLayoutParamsLocked();
     }
 
-    if (mAnimating) {
-        AutoLock lock(mService->mLayoutToAnimLock);
-        mService->ScheduleAnimationLocked();
-    }
-    else if (wasAnimating) {
+    if (hasPendingLayoutChanges || doRequest) {
         mService->RequestTraversalLocked();
     }
-    // if (WindowManagerService.DEBUG_WINDOW_TRACE) {
-    //     Slog.i(TAG, "!!! animate: exit mAnimating=" + mAnimating
-    //         + " mBulkUpdateParams=" + Integer.toHexString(mBulkUpdateParams)
-    //         + " mPendingLayoutChanges(DEFAULT_DISPLAY)="
-    //         + Integer.toHexString(mPendingLayoutChanges.get(Display.DEFAULT_DISPLAY)));
-    // }
-}
 
-void WindowAnimator::SetCurrentFocus(
-    /* [in] */ WindowState* currentFocus)
-{
-    mCurrentFocus = currentFocus;
-}
-
-void WindowAnimator::SetDisplayDimensions(
-    /* [in] */ Int32 curWidth,
-    /* [in] */ Int32 curHeight,
-    /* [in] */ Int32 appWidth,
-    /* [in] */ Int32 appHeight)
-{
-    mDw = curWidth;
-    mDh = curHeight;
-    mInnerDw = appWidth;
-    mInnerDh = appHeight;
-}
-
-Boolean WindowAnimator::IsDimmingLocked(
-    /* [in] */ Int32 displayId)
-{
-    return GetDisplayContentsAnimatorLocked(displayId)->mDimParams != NULL;
-}
-
-Boolean WindowAnimator::IsDimmingLocked(
-    /* [in] */ WindowStateAnimator* winAnimator)
-{
-    AutoPtr<DimAnimator::Parameters> dimParams =
-            GetDisplayContentsAnimatorLocked(winAnimator->mWin->GetDisplayId())->mDimParams;
-    return dimParams != NULL && (dimParams->mDimWinAnimator.Get() == winAnimator);
+    if (!mAnimating && wasAnimating) {
+        mService->RequestTraversalLocked();
+    }
+    if (CWindowManagerService::DEBUG_WINDOW_TRACE) {
+        Slogger::I(TAG, "!!! animate: exit mAnimating=%d mBulkUpdateParams=%d mPendingLayoutChanges(DEFAULT_DISPLAY)=%d",
+                mAnimating, mBulkUpdateParams, GetPendingLayoutChanges(IDisplay::DEFAULT_DISPLAY));
+    }
 }
 
 String WindowAnimator::BulkUpdateParamsToString(
@@ -720,42 +688,41 @@ String WindowAnimator::BulkUpdateParamsToString(
 {
     StringBuilder builder(128);
     if ((bulkUpdateParams & CWindowManagerService::LayoutFields::SET_UPDATE_ROTATION) != 0) {
-        builder.AppendCStr(" UPDATE_ROTATION");
+        builder.Append(" UPDATE_ROTATION");
     }
     if ((bulkUpdateParams & CWindowManagerService::LayoutFields::SET_WALLPAPER_MAY_CHANGE) != 0) {
-        builder.AppendCStr(" WALLPAPER_MAY_CHANGE");
+        builder.Append(" WALLPAPER_MAY_CHANGE");
     }
     if ((bulkUpdateParams & CWindowManagerService::LayoutFields::SET_FORCE_HIDING_CHANGED) != 0) {
-        builder.AppendCStr(" FORCE_HIDING_CHANGED");
+        builder.Append(" FORCE_HIDING_CHANGED");
     }
     if ((bulkUpdateParams & CWindowManagerService::LayoutFields::SET_ORIENTATION_CHANGE_COMPLETE) != 0) {
-        builder.AppendCStr(" ORIENTATION_CHANGE_COMPLETE");
+        builder.Append(" ORIENTATION_CHANGE_COMPLETE");
     }
     if ((bulkUpdateParams & CWindowManagerService::LayoutFields::SET_TURN_ON_SCREEN) != 0) {
-        builder.AppendCStr(" TURN_ON_SCREEN");
+        builder.Append(" TURN_ON_SCREEN");
     }
     String result;
     builder.ToString(&result);
     return result;
 }
 
-void WindowAnimator::ClearPendingActions()
+Int32 WindowAnimator::GetPendingLayoutChanges(
+    /* [in] */ Int32 displayId)
 {
-    AutoLock lock(mSelfLock);
-    mPendingActions = 0;
+    if (displayId < 0) {
+        return 0;
+    }
+    return mService->GetDisplayContentLocked(displayId)->mPendingLayoutChanges;
 }
 
 void WindowAnimator::SetPendingLayoutChanges(
     /* [in] */ Int32 displayId,
     /* [in] */ Int32 changes)
 {
-    Int32 value = 0;
-    HashMap<Int32, Int32>::Iterator it = mPendingLayoutChanges.Find(displayId);
-    if (it != mPendingLayoutChanges.End()) {
-        value = it->mSecond;
+    if (displayId >= 0) {
+        mService->GetDisplayContentLocked(displayId)->mPendingLayoutChanges |= changes;
     }
-
-    mPendingLayoutChanges[displayId] = value | changes;
 }
 
 void WindowAnimator::SetAppLayoutChanges(
@@ -763,26 +730,21 @@ void WindowAnimator::SetAppLayoutChanges(
     /* [in] */ Int32 changes,
     /* [in] */ const String& s)
 {
-    //begin from this
     // Used to track which displays layout changes have been done.
-    HashMap<Int32, Int32> displays;
-    List<AutoPtr<WindowStateAnimator> >::ReverseIterator rit
-            = appAnimator->mAllAppWinAnimators.RBegin();
-    for (; rit != appAnimator->mAllAppWinAnimators.REnd(); ++rit) {
-        AutoPtr<WindowStateAnimator> winAnimator = *rit;
-        Int32 displayId = winAnimator->mWin->mDisplayContent->GetDisplayId();
-        if (displays.Find(displayId) == displays.End()) {
+    AutoPtr<ISparseArray> displays;
+    CSparseArray::New(2, (ISparseArray**)&displays);
+    WindowList windows = appAnimator->mAppToken->mAllAppWindows;
+    WindowList::ReverseIterator rit = windows.RBegin();
+    for (; rit != windows.REnd(); ++rit) {
+        Int32 displayId = (*rit)->GetDisplayId();
+        Int32 key;
+        if (displayId >= 0 && (displays->IndexOfKey(displayId, (Int32*)&key), key < 0)) {
             SetPendingLayoutChanges(displayId, changes);
             if (CWindowManagerService::DEBUG_LAYOUT_REPEATS) {
-                Int32 value = 0;
-                HashMap<Int32, Int32>::Iterator it = mPendingLayoutChanges.Find(displayId);
-                if (it != mPendingLayoutChanges.End()) {
-                    value = it->mSecond;
-                }
-                mService->DebugLayoutRepeats(s, value);
+                mService->DebugLayoutRepeats(s, GetPendingLayoutChanges(displayId));
             }
             // Keep from processing this display again.
-            displays[displayId] = changes;
+            displays->Put(displayId, changes);
         }
     }
 }
@@ -797,7 +759,7 @@ AutoPtr<WindowAnimator::DisplayContentsAnimator> WindowAnimator::GetDisplayConte
         displayAnimator = it->mSecond;
     }
     if (displayAnimator == NULL) {
-        displayAnimator = new DisplayContentsAnimator(this, displayId);
+        displayAnimator = new DisplayContentsAnimator();
         mDisplayContentsAnimators[displayId] = displayAnimator;
     }
     return displayAnimator;
@@ -807,12 +769,17 @@ void WindowAnimator::SetScreenRotationAnimationLocked(
     /* [in] */ Int32 displayId,
     /* [in] */ ScreenRotationAnimation* animation)
 {
-    GetDisplayContentsAnimatorLocked(displayId)->mScreenRotationAnimation = animation;
+    if (displayId >= 0) {
+        GetDisplayContentsAnimatorLocked(displayId)->mScreenRotationAnimation = animation;
+    }
 }
 
 AutoPtr<ScreenRotationAnimation> WindowAnimator::GetScreenRotationAnimationLocked(
     /* [in] */ Int32 displayId)
 {
+    if (displayId < 0) {
+        return NULL;
+    }
     return GetDisplayContentsAnimatorLocked(displayId)->mScreenRotationAnimation;
 }
 

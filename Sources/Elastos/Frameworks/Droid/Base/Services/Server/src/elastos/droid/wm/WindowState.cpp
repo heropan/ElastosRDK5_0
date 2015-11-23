@@ -1,6 +1,8 @@
 
 #include "wm/WindowState.h"
+#include "wm/CWindowId.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
@@ -23,13 +25,11 @@ namespace Droid {
 namespace Server {
 namespace Wm {
 
-const String WindowState::TAG("WindowState");
-const Boolean WindowState::DEBUG_VISIBILITY = CWindowManagerService::DEBUG_VISIBILITY;
-const Boolean WindowState::SHOW_TRANSACTIONS = CWindowManagerService::SHOW_TRANSACTIONS;
-const Boolean WindowState::SHOW_LIGHT_TRANSACTIONS = CWindowManagerService::SHOW_LIGHT_TRANSACTIONS;
-const Boolean WindowState::SHOW_SURFACE_ALLOC = CWindowManagerService::SHOW_SURFACE_ALLOC;
+//==============================================================================
+//                  WindowState::DeathRecipient
+//==============================================================================
 
-CAR_INTERFACE_IMPL(WindowState::DeathRecipient, IProxyDeathRecipient);
+CAR_INTERFACE_IMPL(WindowState::DeathRecipient, Object, IProxyDeathRecipient);
 
 WindowState::DeathRecipient::DeathRecipient(
     /* [in] */ WindowState* owner)
@@ -39,33 +39,72 @@ WindowState::DeathRecipient::DeathRecipient(
 
 ECode WindowState::DeathRecipient::ProxyDied()
 {
+    // try {
     AutoPtr<IWindowState> iowner;
     mWeakOwner->Resolve(EIID_IWindowState, (IInterface**)&iowner);
     if (iowner == NULL) {
         return NOERROR;
     }
-
     AutoPtr<WindowState> owner = (WindowState*)iowner.Get();
     Slogger::I(TAG, "WindowState:: %p, DeathRecipient::ProxyDied(): ", owner.Get());
 
-    Autolock lock(&owner->mService->mWindowMapLock);
-
-    AutoPtr<IBinder> binder = IBinder::Probe(owner->mClient);
-    AutoPtr<WindowState> win;
-    owner->mService->WindowForClientLocked(
-        owner->mSession, owner->mClient, FALSE, (WindowState**)&win);
-    Slogger::I(TAG, "WIN DEATH: %p", win.Get());
-    if (win != NULL) {
-        owner->mService->RemoveWindowLocked(owner->mSession, win);
+    synchronized (owner->mService->mService.mWindowMap) {
+        AutoPtr<WindowState> win;
+        owner->mService->WindowForClientLocked(mSession, owner->mClient, FALSE);
+        Slogger::I(TAG, "WIN DEATH: %p", win.Get());
+        if (win != NULL) {
+            owner->mService->RemoveWindowLocked(owner->mSession, win);
+        }
+        else if (owner->mHasSurface) {
+            Slogger::E(TAG, "!!! LEAK !!! Window removed but surface still valid.");
+            owner->mService->RemoveWindowLocked(owner->mSession, owner);
+        }
     }
+    // } catch (IllegalArgumentException ex) {
+    //     // This will happen if the window has already been
+    //     // removed.
+    // }
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(WindowState, IWindowState)
 
-WindowState::~WindowState()
+//==============================================================================
+//                  WindowState::ResizeRunnable
+//==============================================================================
+
+WindowState::ResizeRunnable::ResizeRunnable(
+    /* [in] */ WindowState* host,
+    /* [in] */ IRect* frame,
+    /* [in] */ IRect* overscanInsets,
+    /* [in] */ IRect* contentInsets,
+    /* [in] */ IRect* visibleInsets,
+    /* [in] */ IRect* stableInsets,
+    /* [in] */ Boolean reportDraw,
+    /* [in] */ IConfiguration* newConfig)
+    : mHost(host)
+    , mFrame(frame)
+    , mOverscanInsets(overscanInsets)
+    , mContentInsets(contentInsets)
+    , mVisibleInsets(visibleInsets)
+    , mStableInsets(stableInsets)
+    , mReportDraw(reportDraw)
+    , mNewConfig(newConfig)
+{}
+
+ECode WindowState::ResizeRunnable::Run()
 {
+    return mHost->mClient->Resized(mFrame, mOverscanInsets, mContentInsets,
+            mVisibleInsets, mStableInsets,  mReportDraw, mNewConfig);
 }
+
+
+//==============================================================================
+//                  WindowState
+//==============================================================================
+
+const String WindowState::TAG("WindowState");
+
+CAR_INTERFACE_IMPL(WindowState, Object, IWindowState)
 
 WindowState::WindowState(
     /* [in] */ CWindowManagerService* service,
@@ -73,6 +112,7 @@ WindowState::WindowState(
     /* [in] */ IIWindow* c,
     /* [in] */ WindowToken* token,
     /* [in] */ WindowState* attachedWindow,
+    /* [in] */ Int32 appOp,
     /* [in] */ Int32 seq,
     /* [in] */ IWindowManagerLayoutParams* attrs,
     /* [in] */ Int32 viewVisibility,
@@ -82,6 +122,8 @@ WindowState::WindowState(
     , mContext(service->mContext)
     , mSession(s)
     , mClient(c)
+    , mAppOp(appOp)
+    , mOwnerUid(0)
     , mToken(token)
     , mAppToken(NULL)
     , mSeq(seq)
@@ -89,6 +131,7 @@ WindowState::WindowState(
     , mSystemUiVisibility(0)
     , mPolicyVisibility(TRUE)
     , mPolicyVisibilityAfterAnim(TRUE)
+    , mAppOpVisibility(TRUE)
     , mAppFreezing(FALSE)
     , mAttachedHidden(FALSE)
     , mWallpaperVisible(FALSE)
@@ -104,6 +147,8 @@ WindowState::WindowState(
     , mConfigHasChanged(FALSE)
     , mVisibleInsetsChanged(FALSE)
     , mContentInsetsChanged(FALSE)
+    , mOverscanInsetsChanged(FALSE)
+    , mStableInsetsChanged(FALSE)
     , mGivenInsetsPending(FALSE)
     , mTouchableInsets(IInternalInsetsInfo::TOUCHABLE_INSETS_FRAME)
     , mGlobalScale(1)
@@ -117,6 +162,8 @@ WindowState::WindowState(
     , mWallpaperY(-1)
     , mWallpaperXStep(-1)
     , mWallpaperYStep(-1)
+    , mWallpaperDisplayOffsetX(Elastos::Core::Math::INT32_MIN_VALUE)
+    , mWallpaperDisplayOffsetY(Elastos::Core::Math::INT32_MIN_VALUE)
     , mXOffset(0)
     , mYOffset(0)
     , mRelayoutCalled(FALSE)
@@ -125,12 +172,14 @@ WindowState::WindowState(
     , mDestroying(FALSE)
     , mRemoveOnExit(FALSE)
     , mOrientationChanging(FALSE)
+    , mLastFreezeDuration(0)
     , mRemoved(FALSE)
     , mRebuilding(FALSE)
     , mWasExiting(FALSE)
     , mHasSurface(FALSE)
+    , mNotOnAppsDisplay(FALSE)
     , mDisplayContent(displayContent)
-    , mOwnerUid(s->mUid)
+    , mUnderStatusBar(TRUE)
     , mShowToOwnerOnly(FALSE)
 {
     CWindowManagerLayoutParams::New((IWindowManagerLayoutParams**)&mAttrs);
@@ -142,6 +191,10 @@ WindowState::WindowState(
     CRect::New((IRect**)&mLastVisibleInsets);
     CRect::New((IRect**)&mContentInsets);
     CRect::New((IRect**)&mLastContentInsets);
+    CRect::New((IRect**)&mOverscanInsets);
+    CRect::New((IRect**)&mLastOverscanInsets);
+    CRect::New((IRect**)&mStableInsets);
+    CRect::New((IRect**)&mLastStableInsets);
     CRect::New((IRect**)&mGivenContentInsets);
     CRect::New((IRect**)&mGivenVisibleInsets);
     CRegion::New((IRegion**)&mGivenTouchableRegion);
@@ -155,15 +208,20 @@ WindowState::WindowState(
     CRect::New((IRect**)&mCompatFrame);
     CRect::New((IRect**)&mContainingFrame);
     CRect::New((IRect**)&mDisplayFrame);
+    CRect::New((IRect**)&mOverscanFrame);
     CRect::New((IRect**)&mContentFrame);
     CRect::New((IRect**)&mParentFrame);
     CRect::New((IRect**)&mVisibleFrame);
+    CRect::New((IRect**)&mDecorFrame);
+    CRect::New((IRect**)&mStableFrame);
+
+    CWindowId::New((IWindowState*)this, (IIWindowId**));
 
     AutoPtr<DeathRecipient> deathRecipient = new DeathRecipient(this);
 
     Int32 flags;
-    mAttrs->GetFlags(&flags);
-    mEnforceSizeCompat = (flags & IWindowManagerLayoutParams::FLAG_COMPATIBLE_WINDOW) != 0;
+    mAttrs->GetPrivateFlags(&flags);
+    mEnforceSizeCompat = (flags & IWindowManagerLayoutParams::PRIVATE_FLAG_COMPATIBLE_WINDOW) != 0;
     // if (WindowManagerService.localLOGV) Slog.v(
     //     TAG, "Window " + this + " client=" + c.asBinder()
     //     + " token=" + token + " (" + mAttrs.token + ")" + " params=" + a);
@@ -198,13 +256,40 @@ WindowState::WindowState(
                     CWindowManagerService::TYPE_LAYER_OFFSET;
             mPolicy->SubWindowTypeToLayerLw(type, &mSubLayer);
             mAttachedWindow = attachedWindow;
-            // if (WindowManagerService.DEBUG_ADD_REMOVE)
-            //     Slog.v(TAG, "Adding " + this + " to " + mAttachedWindow);
-            mAttachedWindow->mChildWindows.PushBack(this);
-            mLayoutAttached = type !=
-                IWindowManagerLayoutParams::TYPE_APPLICATION_ATTACHED_DIALOG;
+            if (CWindowManagerServic::DEBUG_ADD_REMOVE) Slogger::V(TAG, "Adding %p to %p", this, mAttachedWindow.Get());
+
+            int children_size = mAttachedWindow.mChildWindows.size();
+            if (mAttachedWindow->mChildWindows.Begin() == mAttachedWindow->mChildWindows.End()) {
+                mAttachedWindow->mChildWindows.PushBack(this);
+            }
+            else {
+                WindowList::Iterator it = mAttachedWindow->mChildWindows.Begin();
+                for (; it != mAttachedWindow->mChildWindows.End(); ++it) {
+                    AutoPtr<WindowState> child = *it;
+                    if (mSubLayer < child->mSubLayer) {
+                        mAttachedWindow->mChildWindows.Insert(it, this);
+                        break;
+                    }
+                    else if (mSubLayer > child->mSubLayer) {
+                        continue;
+                    }
+
+                    if (mBaseLayer <= child->mBaseLayer) {
+                        mAttachedWindow->mChildWindows.Insert(it, this);
+                        break;
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                if (it == mAttachedWindow->mChildWindows.End()) {
+                    mAttachedWindow->mChildWindows.PushBack(this);
+                }
+            }
+
+            mLayoutAttached = type != IWindowManagerLayoutParams::TYPE_APPLICATION_ATTACHED_DIALOG;
             mIsImWindow = attachedWinType == IWindowManagerLayoutParams::TYPE_INPUT_METHOD
-                || attachedWinType == IWindowManagerLayoutParams::TYPE_INPUT_METHOD_DIALOG;
+                    || attachedWinType == IWindowManagerLayoutParams::TYPE_INPUT_METHOD_DIALOG;
             mIsWallpaper = attachedWinType == IWindowManagerLayoutParams::TYPE_WALLPAPER;
             mIsFloatingLayer = mIsImWindow || mIsWallpaper;
         }
@@ -244,6 +329,10 @@ WindowState::WindowState(
         }
         mRootToken = appToken;
         mAppToken = appToken->mAppWindowToken;
+        if (mAppToken != NULL) {
+            AutoPtr<DisplayContent> appDisplay = GetDisplayContent();
+            mNotOnAppsDisplay = displayContent != appDisplay;
+        }
 
         mWinAnimator = new WindowStateAnimator(this);
         attrs->GetAlpha(&mWinAnimator->mAlpha);
@@ -262,32 +351,52 @@ void WindowState::Attach()
     mSession->WindowAddedLocked();
 }
 
+ECode WindowState::GetOwningUid(
+    /* [out] */ Int32* id)
+{
+    VALIDATE_NOT_NULL(id)
+    *id = mOwnerUid;
+    return NOERROR;
+}
+
+ECode WindowState::GetOwningPackage(
+    /* [out] */ String* package)
+{
+    VALIDATE_NOT_NULL(package)
+    return mAttrs->GetPackageName(package);
+}
+
 ECode WindowState::ComputeFrameLw(
     /* [in] */ IRect* pf,
     /* [in] */ IRect* df,
+    /* [in] */ IRect* of,
     /* [in] */ IRect* cf,
-    /* [in] */ IRect* vf)
+    /* [in] */ IRect* vf,
+    /* [in] */ IRect* dcf,
+    /* [in] */ IRect* sf)
 {
     mHaveFrame = TRUE;
+    AutoPtr<TaskStack> stack = mAppToken != NULL ? GetStack() : NULL;
+    if (stack != NULL && !stack->IsFullscreen()) {
+        GetStackBounds(stack, mContainingFrame);
+        if (mUnderStatusBar) {
+            Int32 pfT;
+            pf->GetTop(&pfT);
+            mContainingFrame->SetTop(pfT);
+        }
+    }
+    else {
+        mContainingFrame->Set(pf);
+    }
 
-    AutoPtr<IRect> container = mContainingFrame;
-    container->Set(pf);
+    mDisplayFrame->Set(df);
 
-    AutoPtr<IRect> display = mDisplayFrame;
-    display->Set(df);
+    Int32 pw, ph;
+    mContainingFrame->GetWidth(&pw);
+    mContainingFrame->GetHeight(&ph);
 
-    Int32 right, left, bottom, top;
-    container->GetRight(&right);
-    container->GetLeft(&left);
-    container->GetBottom(&bottom);
-    container->GetTop(&top);
-    Int32 pw = right - left;
-    Int32 ph = bottom - top;
-
-    Int32 w, h;
-    Int32 flags;
-    mAttrs->GetFlags(&flags);
-    if ((flags & IWindowManagerLayoutParams::FLAG_SCALED) != 0) {
+    Int32 w, h, flags;
+    if (mAttrs->GetFlags(&flags), (flags & IWindowManagerLayoutParams::FLAG_SCALED) != 0) {
         Int32 attrsW;
         mAttrs->GetWidth(&attrsW);
         if (attrsW < 0) {
@@ -353,16 +462,15 @@ ECode WindowState::ComputeFrameLw(
         mContentChanged = TRUE;
     }
 
-    AutoPtr<IRect> content = mContentFrame;
-    content->Set(cf);
+    mOverscanFrame->Set(of);
+    mContentFrame->Set(cf);
+    mVisibleFrame->Set(vf);
+    mDecorFrame->Set(dcf);
+    mStableFrame->Set(sf);
 
-    AutoPtr<IRect> visible = mVisibleFrame;
-    visible->Set(vf);
-
-    AutoPtr<IRect> frame = mFrame;
     Int32 fw, fh;
-    frame->GetWidth(&fw);
-    frame->GetHeight(&fh);
+    mFrame->GetWidth(&fw);
+    mFrame->GetHeight(&fh);
 
     // System.out.println("In: w=" + w + " h=" + h + " container=" +
     //                    container + " x=" + mAttrs.x + " y=" + mAttrs.y);
@@ -387,185 +495,165 @@ ECode WindowState::ComputeFrameLw(
     mAttrs->GetVerticalMargin(&attrsVMargin);
     AutoPtr<IGravity> gravity;
     CGravity::AcquireSingleton((IGravity**)&gravity);
-    gravity->Apply(attrsGravity, w, h, container,
-            (Int32)(x + attrsHMargin * pw),
-            (Int32)(y + attrsVMargin * ph), frame);
+    gravity->Apply(attrsGravity, w, h, mContainingFrame,
+            (Int32)(x + attrsHMargin * pw),  (Int32)(y + attrsVMargin * ph), mFrame);
 
     // System.out.println("Out: " + mFrame);
 
     // Now make sure the window fits in the overall display.
-    gravity->ApplyDisplay(attrsGravity, df, frame);
+    gravity->ApplyDisplay(attrsGravity, df, mFrame);
 
     // Make sure the content and visible frames are inside of the
     // final window frame.
-    Int32 contentLeft, contentTop, contentRight, contentBottom;
-    content->GetLeft(&contentLeft);
-    content->GetTop(&contentTop);
-    content->GetRight(&contentRight);
-    content->GetBottom(&contentBottom);
+    Int32 cfL, cfT, cfR, cfB, fL, fT, fR, fB;
+    mContentFrame->GetLeft(&cfL);
+    mContentFrame->GetTop(&cfT);
+    mContentFrame->GetRight(&cfR);
+    mContentFrame->GetBottom(&cfB);
+    mFrame->GetLeft(&fL);
+    mFrame->GetTop(&fT);
+    mFrame->GetRight(&fR);
+    mFrame->GetBottom(&fB);
+    mContentFrame->Set(Elastos::Core::Math::Max(cfL, fL),
+            Elastos::Core::Math::Max(cfT, fT),
+            Elastos::Core::Math::Min(cfR, fR),
+            Elastos::Core::Math::Min(cfB, fB));
 
-    Int32 visibleLeft, visibleTop, visibleRight, visibleBottom;
-    visible->GetLeft(&visibleLeft);
-    visible->GetTop(&visibleTop);
-    visible->GetRight(&visibleRight);
-    visible->GetBottom(&visibleBottom);
+    Int32 vfL, vfT, vfR, vfB;
+    mVisibleFrame->GetLeft(&vfL);
+    mVisibleFrame->GetTop(&vfT);
+    mVisibleFrame->GetRight(&vfR);
+    mVisibleFrame->GetBottom(&vfB);
+    mVisibleFrame->Set(Elastos::Core::Math::Max(mVisibleFrame.left, fL),
+            Elastos::Core::Math::Max(vfT, fT),
+            Elastos::Core::Math::Min(vfR, fR),
+            Elastos::Core::Math::Min(vfB, fB));
 
-    Int32 frameLeft, frameTop, frameRight, frameBottom;
-    frame->GetLeft(&frameLeft);
-    frame->GetTop(&frameTop);
-    frame->GetRight(&frameRight);
-    frame->GetBottom(&frameBottom);
+    Int32 sfL, sfT, sfR, sfB;
+    mStableFrame->GetLeft(&sfL);
+    mStableFrame->GetTop(&sfT);
+    mStableFrame->GetRight(&sfR);
+    mStableFrame->GetBottom(&sfB);
+    mStableFrame->Set(Elastos::Core::Math::Max(sfL, fL),
+            Elastos::Core::Math::Max(sfT, fT),
+            Elastos::Core::Math::Min(sfR, fR),
+            Elastos::Core::Math::Min(sfB, fB));
 
-    if (contentLeft < frameLeft) {
-        contentLeft = frameLeft;
-        content->SetLeft(contentLeft);
-    }
-    if (contentTop < frameTop) {
-        contentTop = frameTop;
-        content->SetTop(contentTop);
-    }
-    if (contentRight > frameRight) {
-        contentRight = frameRight;
-        content->SetRight(contentRight);
-    }
-    if (contentBottom > frameBottom) {
-        contentBottom = frameBottom;
-        content->SetBottom(contentBottom);
-    }
-    if (visibleLeft < frameLeft) {
-        visibleLeft = frameLeft;
-        visible->SetLeft(visibleLeft);
-    }
-    if (visibleTop < frameTop) {
-        visibleTop = frameTop;
-        visible->SetTop(visibleTop);
-    }
-    if (visibleRight > frameRight) {
-        visibleRight = frameRight;
-        visible->SetRight(visibleRight);
-    }
-    if (visibleBottom > frameBottom) {
-        visibleBottom = frameBottom;
-        visible->SetBottom(visibleBottom);
-    }
+    Int32 ofL, ofT, ofR, ofB;
+    mOverscanFrame->GetLeft(&ofL);
+    mOverscanFrame->GetTop(&ofT);
+    mOverscanFrame->GetRight(&ofR);
+    mOverscanFrame->GetBottom(&ofB);
+    mOverscanInsets->Set(Elastos::Core::Math::Max(ofL - fL, 0),
+            Elastos::Core::Math::Max(ofT - fT, 0),
+            Elastos::Core::Math::Max(fR - ofR, 0),
+            Elastos::Core::Math::Max(fB - ofB, 0));
 
-    mContentInsets->SetLeft(contentLeft - frameLeft);
-    mContentInsets->SetTop(contentTop - frameTop);
-    mContentInsets->SetRight(frameRight - contentRight);
-    mContentInsets->SetBottom(frameBottom - contentBottom);
+    mContentInsets->Set(cfL - fL, cfT - fT, fR - cfR, fB - cfB);
 
-    mVisibleInsets->SetLeft(visibleLeft - frameLeft);
-    mVisibleInsets->SetTop(visibleTop - frameTop);
-    mVisibleInsets->SetRight(frameRight - visibleRight);
-    mVisibleInsets->SetBottom(frameBottom - visibleBottom);
+    mVisibleInsets->Set(vfL - fL, vfT - fT, fR - vfR, fB - vfB);
 
-    mCompatFrame->Set(frame);
+    mStableInsets->Set(Elastos::Core::Math::Max(sfL - fL, 0),
+            Elastos::Core::Math::Max(sfT - fT, 0),
+            Elastos::Core::Math::Max(fR - sfR, 0),
+            Elastos::Core::Math::Max(fB - sfB, 0));
+
+    mCompatFrame->Set(mFrame);
     if (mEnforceSizeCompat) {
         // If there is a size compatibility scale being applied to the
         // window, we need to apply this to its insets so that they are
         // reported to the app in its coordinate space.
+        mOverscanInsets->Scale(mInvGlobalScale);
         mContentInsets->Scale(mInvGlobalScale);
         mVisibleInsets->Scale(mInvGlobalScale);
+        mStableInsets->Scale(mInvGlobalScale);
 
         // Also the scaled frame that we report to the app needs to be
         // adjusted to be in its coordinate space.
         mCompatFrame->Scale(mInvGlobalScale);
     }
 
-    Int32 fwTemp, fhTemp;
-    frame->GetWidth(&fwTemp);
-    frame->GetHeight(&fhTemp);
-    if (mIsWallpaper && (fw != fwTemp || fh != fhTemp)) {
-        AutoPtr<IDisplayInfo> displayInfo = mDisplayContent->GetDisplayInfo();
-        Int32 w, h;
-        displayInfo->GetAppWidth(&w);
-        displayInfo->GetAppHeight(&h);
-        mService->UpdateWallpaperOffsetLocked(this, w, h, FALSE);
+    Int32 newFW, newFH;
+    if (mIsWallpaper && ((mFrame->GetWidth(&newFW), fw != newFW) || (mFrame->GetHeight(&newFH), fh != newFH))) {
+        AutoPtr<DisplayContent> displayContent = GetDisplayContent();
+        if (displayContent != NULL) {
+            AutoPtr<IDisplayInfo> displayInfo = displayContent->GetDisplayInfo();
+            Int32 logicalW, logicalH;
+            displayInfo->GetLogicalWeight(&logicalW);
+            displayInfo->GetLogicalHeight(&logicalH);
+            mService->UpdateWallpaperOffsetLocked(this, logicalW, logicalH, FALSE);
+        }
     }
 
-    // if (WindowManagerService.localLOGV) {
-    //     //if ("com.google.android.youtube".equals(mAttrs.packageName)
-    //     //        && mAttrs.type == WindowManager.LayoutParams.TYPE_APPLICATION_PANEL) {
-    //         Slog.v(TAG, "Resolving (mRequestedWidth="
-    //                 + mRequestedWidth + ", mRequestedheight="
-    //                 + mRequestedHeight + ") to" + " (pw=" + pw + ", ph=" + ph
-    //                 + "): frame=" + mFrame.toShortString()
-    //                 + " ci=" + contentInsets.toShortString()
-    //                 + " vi=" + visibleInsets.toShortString());
-    //     //}
-    // }
+    // if (DEBUG_LAYOUT || WindowManagerService.localLOGV) Slog.v(TAG,
+    //         "Resolving (mRequestedWidth="
+    //         + mRequestedWidth + ", mRequestedheight="
+    //         + mRequestedHeight + ") to" + " (pw=" + pw + ", ph=" + ph
+    //         + "): frame=" + mFrame.toShortString()
+    //         + " ci=" + mContentInsets.toShortString()
+    //         + " vi=" + mVisibleInsets.toShortString()
+    //         + " vi=" + mStableInsets.toShortString());
     return NOERROR;
-}
-
-AutoPtr<MagnificationSpec> WindowState::GetWindowMagnificationSpecLocked()
-{
-    AutoPtr<MagnificationSpec> spec = mDisplayContent->mMagnificationSpec;
-    if (spec != NULL && !spec->IsNop()) {
-        if (mAttachedWindow != NULL) {
-            Boolean result;
-            mPolicy->CanMagnifyWindowLw(mAttachedWindow->mAttrs, &result);
-            if (!result) {
-                return NULL;
-            }
-        }
-        Boolean result;
-        mPolicy->CanMagnifyWindowLw(mAttrs, &result);
-        if (!result) {
-            return NULL;
-        }
-    }
-    return spec;
 }
 
 ECode WindowState::GetFrameLw(
     /* [out] */ IRect** frame)
 {
-    VALIDATE_NOT_NULL(frame);
+    VALIDATE_NOT_NULL(frame)
     *frame = mFrame;
-    REFCOUNT_ADD(*frame);
+    REFCOUNT_ADD(*frame)
     return NOERROR;
 }
 
 ECode WindowState::GetShownFrameLw(
     /* [out] */ IRectF** shownFrame)
 {
-    VALIDATE_NOT_NULL(shownFrame);
+    VALIDATE_NOT_NULL(shownFrame)
     *shownFrame = mShownFrame;
-    REFCOUNT_ADD(*shownFrame);
+    REFCOUNT_ADD(*shownFrame)
+    return NOERROR;
+}
+
+ECode WindowState::GetOverscanFrameLw(
+    /* [out] */ IRect** displayFrame)
+{
+    VALIDATE_NOT_NULL(displayFrame)
+    *displayFrame = mOverscanFrame;
+    REFCOUNT_ADD(*displayFrame)
     return NOERROR;
 }
 
 ECode WindowState::GetDisplayFrameLw(
     /* [out] */ IRect** displayFrame)
 {
-    VALIDATE_NOT_NULL(displayFrame);
+    VALIDATE_NOT_NULL(displayFrame)
     *displayFrame = mDisplayFrame;
-    REFCOUNT_ADD(*displayFrame);
+    REFCOUNT_ADD(*displayFrame)
     return NOERROR;
 }
 
 ECode WindowState::GetContentFrameLw(
     /* [out] */ IRect** contentFrame)
 {
-    VALIDATE_NOT_NULL(contentFrame);
+    VALIDATE_NOT_NULL(contentFrame)
     *contentFrame = mContentFrame;
-    REFCOUNT_ADD(*contentFrame);
+    REFCOUNT_ADD(*contentFrame)
     return NOERROR;
 }
 
 ECode WindowState::GetVisibleFrameLw(
     /* [out] */ IRect** visibleFrame)
 {
-    VALIDATE_NOT_NULL(visibleFrame);
+    VALIDATE_NOT_NULL(visibleFrame)
     *visibleFrame = mVisibleFrame;
-    REFCOUNT_ADD(*visibleFrame);
+    REFCOUNT_ADD(*visibleFrame)
     return NOERROR;
 }
 
 ECode WindowState::GetGivenInsetsPendingLw(
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
     *result = mGivenInsetsPending;
     return NOERROR;
 }
@@ -573,27 +661,27 @@ ECode WindowState::GetGivenInsetsPendingLw(
 ECode WindowState::GetGivenContentInsetsLw(
     /* [out] */ IRect** insetsRect)
 {
-    VALIDATE_NOT_NULL(insetsRect);
+    VALIDATE_NOT_NULL(insetsRect)
     *insetsRect = mGivenContentInsets;
-    REFCOUNT_ADD(*insetsRect);
+    REFCOUNT_ADD(*insetsRect)
     return NOERROR;
 }
 
 ECode WindowState::GetGivenVisibleInsetsLw(
     /* [out] */ IRect** visibleArea)
 {
-    VALIDATE_NOT_NULL(visibleArea);
+    VALIDATE_NOT_NULL(visibleArea)
     *visibleArea = mGivenVisibleInsets;
-    REFCOUNT_ADD(*visibleArea);
+    REFCOUNT_ADD(*visibleArea)
     return NOERROR;
 }
 
 ECode WindowState::GetAttrs(
     /* [out] */ IWindowManagerLayoutParams** attrs)
 {
-    VALIDATE_NOT_NULL(attrs);
+    VALIDATE_NOT_NULL(attrs)
     *attrs = mAttrs;
-    REFCOUNT_ADD(*attrs);
+    REFCOUNT_ADD(*attrs)
     return NOERROR;
 }
 
@@ -601,10 +689,10 @@ ECode WindowState::GetNeedsMenuLw(
     /* [in] */ IWindowState* bottom,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
     AutoPtr<WindowState> ws = this;
-    List<AutoPtr<WindowState> >& windows = GetWindowList();
-    List<AutoPtr<WindowState> >::ReverseIterator indexRIt = windows.REnd();
+    AutoPtr<WindowList> windows = GetWindowList();
+    WindowList::ReverseIterator indexRIt = windows->REnd();
     while (TRUE) {
         Int32 flags;
         ws->mAttrs->GetPrivateFlags(&flags);
@@ -622,9 +710,9 @@ ECode WindowState::GetNeedsMenuLw(
         // The current window hasn't specified whether menu key is needed;
         // look behind it.
         // First, we may need to determine the starting position.
-        List<AutoPtr<WindowState> >::ReverseIterator rit;
-        if (indexRIt == windows.REnd()) {
-            for (rit = windows.RBegin(); rit != windows.REnd(); ++rit) {
+        WindowList::ReverseIterator rit;
+        if (indexRIt == windows->REnd()) {
+            for (rit = windows->RBegin(); rit != windows->REnd(); ++rit) {
                 if (*rit == ws) {
                     indexRIt = rit;
                     break;
@@ -632,7 +720,7 @@ ECode WindowState::GetNeedsMenuLw(
             }
         }
         indexRIt++;
-        if (indexRIt == windows.REnd()) {
+        if (indexRIt == windows->REnd()) {
             *result = FALSE;
             return NOERROR;
         }
@@ -643,7 +731,7 @@ ECode WindowState::GetNeedsMenuLw(
 ECode WindowState::GetSystemUiVisibility(
     /* [out] */ Int32* flag)
 {
-    VALIDATE_NOT_NULL(flag);
+    VALIDATE_NOT_NULL(flag)
     *flag = mSystemUiVisibility;
     return NOERROR;
 }
@@ -651,7 +739,7 @@ ECode WindowState::GetSystemUiVisibility(
 ECode WindowState::GetSurfaceLayer(
     /* [out] */ Int32* surfaceLayer)
 {
-    VALIDATE_NOT_NULL(surfaceLayer);
+    VALIDATE_NOT_NULL(surfaceLayer)
     *surfaceLayer = mLayer;
     return NOERROR;
 }
@@ -659,15 +747,88 @@ ECode WindowState::GetSurfaceLayer(
 ECode WindowState::GetAppToken(
     /* [out] */ IApplicationToken** token)
 {
-    VALIDATE_NOT_NULL(token);
+    VALIDATE_NOT_NULL(token)
     *token = mAppToken != NULL ? mAppToken->mAppToken : NULL;
-    REFCOUNT_ADD(*token);
+    REFCOUNT_ADD(*token)
     return NOERROR;
+}
+
+ECode WindowState::IsVoiceInteraction(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mAppToken != NULL ? mAppToken->mVoiceInteraction : FALSE;
+    return NOERROR;
+}
+
+Boolean WindowState::SetInsetsChanged()
+{
+    Boolean equals1, equals2, equals3, equals4;
+    IObject::Probe(mLastOverscanInsets)->Equals((IInterface*)mOverscanInsets.Get(), &equals1);
+    IObject::Probe(mLastContentInsets)->Equals((IInterface*)mLastContentInsets.Get(), &equals2);
+    IObject::Probe(mLastVisibleInsets)->Equals((IInterface*)mLastVisibleInsets.Get(), &equals3);
+    IObject::Probe(mLastStableInsets)->Equals((IInterface*)mLastStableInsets.Get(), &equals4);
+    mOverscanInsetsChanged |= !equals1;
+    mContentInsetsChanged |= !equals2;
+    mVisibleInsetsChanged |= !equals3;
+    mStableInsetsChanged |= !equals4;
+    return mOverscanInsetsChanged || mContentInsetsChanged || mVisibleInsetsChanged;
+}
+
+AutoPtr<DisplayContent> WindowState::GetDisplayContent()
+{
+    if (mAppToken == NULL || mNotOnAppsDisplay) {
+        return mDisplayContent;
+    }
+    AutoPtr<TaskStack> stack = GetStack();
+    return stack == NULL ? mDisplayContent : stack->GetDisplayContent();
 }
 
 Int32 WindowState::GetDisplayId()
 {
-    return mDisplayContent->GetDisplayId();
+    AutoPtr<DisplayContent> displayContent = GetDisplayContent();
+    if (displayContent == NULL) {
+        return -1;
+    }
+    return displayContent->GetDisplayId();
+}
+
+AutoPtr<TaskStack> WindowState::GetStack()
+{
+    AutoPtr<AppWindowToken> wtoken = mAppToken == NULL ? mService->mFocusedApp : mAppToken;
+    if (wtoken != NULL) {
+        AutoPtr<IInterface> value;
+        mService->mTaskIdToTask->Get(wtoken->mGroupId, (IInterface**)&value);
+        AutoPtr<Task> task = (Task*)(IObject*)value.Get();
+        if (task != NULL) {
+            if (task->mStack != NULL) {
+                return task->mStack;
+            }
+            Slogger::E(TAG, "getStack: mStack null for task=%p", task.Get());
+        }
+        else {
+            Slogger::E(TAG, "getStack: %p couldn't find taskId=%d", this, wtoken->mGroupId
+                /*+ " Callers=" + Debug.getCallers(4)*/);
+        }
+    }
+    return mDisplayContent->GetHomeStack();
+}
+
+void WindowState::GetStackBounds(
+    /* [in] */ IRect* bounds)
+{
+    GetStackBounds(GetStack(), bounds);
+}
+
+void WindowState::GetStackBounds(
+    /* [in] */ TaskStack* stack,
+    /* [in] */ IRect* bounds)
+{
+    if (stack != NULL) {
+        stack->GetBounds(bounds);
+        return;
+    }
+    bounds->Set(mFrame);
 }
 
 Int64 WindowState::GetInputDispatchingTimeoutNanos()
@@ -723,10 +884,10 @@ ECode WindowState::IsVisibleLw(
 ECode WindowState::IsVisibleOrBehindKeyguardLw(
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
-    if (mRootToken->mWaitingToShow &&
-            mService->mNextAppTransition != IWindowManagerPolicy::TRANSIT_UNSET) {
-        return FALSE;
+    VALIDATE_NOT_NULL(result)
+    if (mRootToken->mWaitingToShow && mService->mAppTransition->IsTransitionSet()) {
+        *result = FALSE;
+        return NOERROR;
     }
     AutoPtr<AppWindowToken> atoken = mAppToken;
     Boolean animating = atoken != NULL
@@ -783,21 +944,19 @@ Boolean WindowState::IsOnScreen()
 
 Boolean WindowState::IsReadyForDisplay()
 {
-    if (mRootToken->mWaitingToShow &&
-            mService->mNextAppTransition != IWindowManagerPolicy::TRANSIT_UNSET) {
+    if (mRootToken->mWaitingToShow && mService->mAppTransition->IsTransitionSet()) {
         return FALSE;
     }
     return mHasSurface && mPolicyVisibility && !mDestroying
-                && ((!mAttachedHidden && mViewVisibility == IView::VISIBLE
-                                && !mRootToken->mHidden)
-                        || mWinAnimator->mAnimation != NULL
-                        || ((mAppToken != NULL) && (mAppToken->mAppAnimator->mAnimation != NULL)));
+            && ((!mAttachedHidden && mViewVisibility == IView::VISIBLE
+            && !mRootToken->mHidden)
+            || mWinAnimator->mAnimation != NULL
+            || ((mAppToken != NULL) && (mAppToken->mAppAnimator->mAnimation != NULL)));
 }
 
 Boolean WindowState::IsReadyForDisplayIgnoringKeyguard()
 {
-    if (mRootToken->mWaitingToShow &&
-                mService->mNextAppTransition != IWindowManagerPolicy::TRANSIT_UNSET) {
+    if (mRootToken->mWaitingToShow && mService->mAppTransition->IsTransitionSet()) {
         return FALSE;
     }
     AutoPtr<AppWindowToken> atoken = mAppToken;
@@ -817,7 +976,7 @@ Boolean WindowState::IsReadyForDisplayIgnoringKeyguard()
 ECode WindowState::IsDisplayedLw(
     /* [out] */ Boolean* isDisplayed)
 {
-    VALIDATE_NOT_NULL(isDisplayed);
+    VALIDATE_NOT_NULL(isDisplayed)
     AutoPtr<AppWindowToken> atoken = mAppToken;
     *isDisplayed = IsDrawnLw() && mPolicyVisibility
         && ((!mAttachedHidden &&
@@ -830,23 +989,34 @@ ECode WindowState::IsDisplayedLw(
 ECode WindowState::IsAnimatingLw(
     /* [out] */ Boolean* isAnimating)
 {
-    VALIDATE_NOT_NULL(isAnimating);
-    *isAnimating = mWinAnimator->mAnimation != NULL;
+    VALIDATE_NOT_NULL(isAnimating)
+    *isAnimating = mWinAnimator->mAnimation != NULL
+            || (mAppToken != NULL && mAppToken->mAppAnimator->mAnimation != NULL);
     return NOERROR;
 }
 
 ECode WindowState::IsGoneForLayoutLw(
     /* [out] */ Boolean* isGone)
 {
-    VALIDATE_NOT_NULL(isGone);
+    VALIDATE_NOT_NULL(isGone)
     AutoPtr<AppWindowToken> atoken = mAppToken;
+    Booelan isAnimatingLw;
     *isGone = mViewVisibility == IView::GONE
             || !mRelayoutCalled
             || (atoken == NULL && mRootToken->mHidden)
             || (atoken != NULL && (atoken->mHiddenRequested || atoken->mHidden))
             || mAttachedHidden
-            || mExiting || mDestroying;
+            || (mExiting && (IsAnimatingLw(&isAnimatingLw), !isAnimatingLw))
+            || mDestroying;
     return NOERROR;
+}
+
+Boolean WindowState::IsDrawFinishedLw()
+{
+    return mHasSurface && !mDestroying &&
+            (mWinAnimator->mDrawState == WindowStateAnimator::COMMIT_DRAW_PENDING
+            || mWinAnimator->mDrawState == WindowStateAnimator::READY_TO_SHOW
+            || mWinAnimator->mDrawState == WindowStateAnimator::HAS_DRAWN);
 }
 
 Boolean WindowState::IsDrawnLw()
@@ -874,8 +1044,10 @@ Boolean WindowState::ShouldAnimateMove()
     mFrame->GetLeft(&left);
     mLastFrame->GetTop(&lastTop);
     mLastFrame->GetLeft(&lastLeft);
+    Int32 privateFlags;
     return mContentChanged && !mExiting && !mWinAnimator->mLastHidden && mService->OkToDisplay()
             && (top != lastTop || left != lastLeft)
+            && (mAttrs->GetPrivateFlags(&privateFlags), (privateFlags & PRIVATE_FLAG_NO_MOVE_ANIMATION) == 0)
             && (mAttachedWindow == NULL || !mAttachedWindow->ShouldAnimateMove());
 }
 
@@ -897,23 +1069,14 @@ Boolean WindowState::IsConfigChanged()
     Boolean configChanged = mConfiguration != mService->mCurConfiguration
             && (mConfiguration == NULL || (mConfiguration->Diff(mService->mCurConfiguration, &result), result != 0));
 
-    Int32 type;
-    mAttrs->GetType(&type);
-    if (type == IWindowManagerLayoutParams::TYPE_KEYGUARD) {
+    Int32 privateFlags;
+    if (mAttrs->GetPrivateFlags(&privateFlags), (privateFlags & PRIVATE_FLAG_KEYGUARD) != 0) {
         // Retain configuration changed status until resetConfiguration called.
         mConfigHasChanged |= configChanged;
         configChanged = mConfigHasChanged;
     }
 
     return configChanged;
-}
-
-Boolean WindowState::IsConfigDiff(
-    /* [in] */ Int32 mask)
-{
-    Int32 result;
-    return mConfiguration != mService->mCurConfiguration
-            && mConfiguration != NULL && ((mConfiguration->Diff(mService->mCurConfiguration, &result), result) & mask) != 0;
 }
 
 void WindowState::RemoveLocked()
@@ -924,8 +1087,8 @@ void WindowState::RemoveLocked()
         // if (WindowManagerService.DEBUG_ADD_REMOVE) Slog.v(TAG, "Removing " + this + " from " + mAttachedWindow);
         mAttachedWindow->mChildWindows.Remove(this);
     }
-    mWinAnimator->DestroyDeferredSurfaceLocked(FALSE);
-    mWinAnimator->DestroySurfaceLocked(FALSE);
+    mWinAnimator->DestroyDeferredSurfaceLocked();
+    mWinAnimator->DestroySurfaceLocked();
     mSession->WindowRemovedLocked();
     AutoPtr<IProxy> proxy = (IProxy*)mClient->Probe(EIID_IProxy);
     if (proxy != NULL) {
@@ -978,7 +1141,7 @@ Boolean WindowState::CanReceiveKeys()
 ECode WindowState::HasDrawnLw(
     /* [out] */ Boolean* drawn)
 {
-    VALIDATE_NOT_NULL(drawn);
+    VALIDATE_NOT_NULL(drawn)
     *drawn = mWinAnimator->mDrawState == WindowStateAnimator::HAS_DRAWN;
     return NOERROR;
 }
@@ -987,7 +1150,7 @@ ECode WindowState::ShowLw(
     /* [in] */ Boolean doAnimation,
     /* [out] */ Boolean* canShown)
 {
-    VALIDATE_NOT_NULL(canShown);
+    VALIDATE_NOT_NULL(canShown)
     *canShown = ShowLw(doAnimation, TRUE);
     return NOERROR;
 }
@@ -997,10 +1160,10 @@ Boolean WindowState::ShowLw(
     /* [in] */ Boolean requestAnim)
 {
     if (IsHiddenFromUserLocked()) {
-        Int32 type;
-        mAttrs->GetType(&type);
-        Slogger::W(TAG, "current user violation %d trying to display %p, type %d, belonging to %d"
-                , mService->mCurrentUserId, this, type, mOwnerUid);
+        return FALSE;
+    }
+    if (!mAppOpVisibility) {
+        // Being hidden due to app op request.
         return FALSE;
     }
     if (mPolicyVisibility && mPolicyVisibilityAfterAnim) {
@@ -1027,7 +1190,7 @@ Boolean WindowState::ShowLw(
         mWinAnimator->ApplyAnimationLocked(IWindowManagerPolicy::TRANSIT_ENTER, TRUE);
     }
     if (requestAnim) {
-        mService->UpdateLayoutToAnimationLocked();
+        mService->ScheduleAnimationLocked();
     }
     return TRUE;
 }
@@ -1074,21 +1237,47 @@ Boolean WindowState::HideLw(
         // we allow the display to be enabled now.
         mService->EnableScreenIfNeededLocked();
         if (mService->mCurrentFocus.Get() == this) {
+            if (WindowManagerService.DEBUG_FOCUS_LIGHT) Slogger::I(TAG,
+                    "WindowState.hideLw: setting mFocusMayChange true");
             mService->mFocusMayChange = TRUE;
         }
     }
     if (requestAnim) {
-        mService->UpdateLayoutToAnimationLocked();
+        mService->ScheduleAnimationLocked();
     }
     return TRUE;
+}
+
+void WindowState::SetAppOpVisibilityLw(
+    /* [in] */ Boolean state)
+{
+    if (mAppOpVisibility != state) {
+        mAppOpVisibility = state;
+        if (state) {
+            // If the policy visibility had last been to hide, then this
+            // will incorrectly show at this point since we lost that
+            // information.  Not a big deal -- for the windows that have app
+            // ops modifies they should only be hidden by policy due to the
+            // lock screen, and the user won't be changing this if locked.
+            // Plus it will quickly be fixed the next time we do a layout.
+            ShowLw(TRUE, TRUE);
+        }
+        else {
+            HideLw(TRUE, TRUE);
+        }
+    }
 }
 
 ECode WindowState::IsAlive(
     /* [out] */ Boolean* isAlive)
 {
-    // VALIDATE_NOT_NULL(isAlive);
-    // *isAlive = mClient.asBinder().isBinderAlive();
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(isAlive)
+    *isAlive = FALSE;
+    AutoPtr<IProxy> proxy = IProxy::Probe(mClient);
+    if (proxy != NULL) {
+        return proxy->IsStubAlive(isAlive);
+    }
+    return NOERROR;
 }
 
 Boolean WindowState::IsClosing()
@@ -1103,8 +1292,14 @@ Boolean WindowState::IsClosing()
 ECode WindowState::IsDefaultDisplay(
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mDisplayContent->mIsDefaultDisplay;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    AutoPtr<DisplayContent> displayContent = GetDisplayContent();
+    if (displayContent == NULL) {
+        // Only a window that was on a non-default display can be detached from it.
+        return NOERROR;
+    }
+    *result = displayContent->mIsDefaultDisplay;
     return NOERROR;
 }
 
@@ -1127,16 +1322,18 @@ Boolean WindowState::IsHiddenFromUserLocked()
             && win->mAppToken != NULL && win->mAppToken->mShowWhenLocked) {
         // Save some cycles by not calling getDisplayInfo unless it is an application
         // window intended for all users.
-        AutoPtr<IDisplayInfo> displayInfo = win->mDisplayContent->GetDisplayInfo();
+        AutoPtr<DisplayContent> displayContent = win->GetDisplayContent();
+        if (displayContent == NULL) {
+            return TRUE;
+        }
+        AutoPtr<IDisplayInfo> displayInfo = displayContent->GetDisplayInfo();
         Int32 left, top, right, bottom, appWidth, appHeight;
-        win->mFrame->GetLeft(&left);
-        win->mFrame->GetTop(&top);
-        win->mFrame->GetRight(&right);
-        win->mFrame->GetBottom(&bottom);
         displayInfo->GetAppWidth(&appWidth);
         displayInfo->GetAppHeight(&appHeight);
-        if (left <= 0 && top <= 0 && right >= appWidth
-                && bottom >= appHeight) {
+        if ((win->mFrame->GetLeft(&left), left <= 0) &&
+                (win->mFrame->GetTop(&top), top <= 0) &&
+                (win->mFrame->GetRight(&right), right >= appWidth) &&
+                (win->mFrame->GetBottom(&bottom), bottom >= appHeight)) {
             // Is a fullscreen window, like the clock alarm. Show to everyone.
             return FALSE;
         }
@@ -1145,8 +1342,8 @@ Boolean WindowState::IsHiddenFromUserLocked()
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     Int32 id;
-    helper->GetMyUserId(&id);
-    return win->mShowToOwnerOnly && id != mService->mCurrentUserId;
+    helper->GetMyUserId(win->mOwnerUid, &id);
+    return win->mShowToOwnerOnly && !mService->IsCurrentProfileLocked(id);
 }
 
 void WindowState::ApplyInsets(
@@ -1197,9 +1394,122 @@ void WindowState::GetTouchableRegion(
     }
 }
 
-AutoPtr< List<AutoPtr<WindowState> > > WindowState::GetWindowList()
+AutoPtr<WindowList> WindowState::GetWindowList()
 {
-    return mDisplayContent->GetWindowList();
+    AutoPtr<DisplayContent> displayContent = GetDisplayContent();
+    return displayContent == NULL ? NULL : displayContent->GetWindowList();
+}
+
+void WindowState::ReportFocusChangedSerialized(
+    /* [in] */ Boolean focused,
+    /* [in] */ Boolean inTouchMode)
+{
+    // try {
+    mClient->WindowFocusChanged(focused, inTouchMode);
+    // } catch (RemoteException e) {
+    // }
+    if (mFocusCallbacks != NULL) {
+        Int32 N;
+        mFocusCallbacks->BeginBroadcast(&N);
+        for (Int32 i = 0; i < N; i++) {
+            AutoPtr<IInterface> item;
+            mFocusCallbacks->GetBroadcastItem(i, (IInterface**)&item);
+            AutoPtr<IIIWindowFocusObserver> obs = IIIWindowFocusObserver::Probe(value);
+            // try {
+            AutoPtr<IBinder> b = IBinder::Probe(mWindowId);
+            if (focused) {
+                obs->FocusGained(b);
+            } else {
+                obs->FocusLost(b);
+            }
+            // } catch (RemoteException e) {
+            // }
+        }
+        mFocusCallbacks->FinishBroadcast();
+    }
+}
+
+void WindowState::ReportResized()
+{
+    // try {
+    if (CWindowManagerService::DEBUG_RESIZE || CWindowManagerService::DEBUG_ORIENTATION)
+        Slogger::V(TAG, "Reporting new frame to %p: %p", this, mCompatFrame.Get());
+
+    Boolean configChanged = IsConfigChanged();
+    if ((CWindowManagerService::DEBUG_RESIZE || CWindowManagerService::DEBUG_ORIENTATION
+            || CWindowManagerService::DEBUG_CONFIGURATION) && configChanged) {
+        Slogger::I(TAG, "Sending new config to window %p: %dx%d / %p", this,
+                mWinAnimator->mSurfaceW, mWinAnimator->mSurfaceH, mService->mCurConfiguration.Get());
+    }
+    SetConfiguration(mService->mCurConfiguration);
+    if (CWindowManagerService::DEBUG_ORIENTATION && mWinAnimator->mDrawState == WindowStateAnimator::DRAW_PENDING)
+        Slogger::I(TAG, "Resizing %p WITH DRAW PENDING", this);
+
+    AutoPtr<IRect> frame = mFrame;
+    AutoPtr<IRect> overscanInsets = mLastOverscanInsets;
+    AutoPtr<IRect> contentInsets = mLastContentInsets;
+    AutoPtr<IRect> visibleInsets = mLastVisibleInsets;
+    AutoPtr<IRect> stableInsets = mLastStableInsets;
+    Boolean reportDraw = mWinAnimator->mDrawState == WindowStateAnimator::DRAW_PENDING;
+    AutoPtr<IConfiguration> newConfig = configChanged ? mConfiguration : NULL;
+    Int32 type;
+    if (mAttrs->GetType(&type), type != IWindowManagerLayoutParams::TYPE_APPLICATION_STARTING
+            /* && mClient instanceof IWindow.Stub*/) {
+        // To prevent deadlock simulate one-way call if win.mClient is a local object.
+        AutoPtr<IRunnable> runnable = new ResizeRunnable(this, frame, overscanInsets, contentInsets,
+                visibleInsets, stableInsets,  reportDraw, newConfig);
+        mService->mH->Post(runnable);
+    }
+    else {
+        mClient->Resized(frame, overscanInsets, contentInsets, visibleInsets, stableInsets,
+                reportDraw, newConfig);
+    }
+
+    //TODO (multidisplay): Accessibility supported only for the default display.
+    if (mService->mAccessibilityController != NULL
+            && GetDisplayId() == IDisplay::DEFAULT_DISPLAY) {
+        mService->mAccessibilityController->OnSomeWindowResizedOrMovedLocked();
+    }
+
+    mOverscanInsetsChanged = FALSE;
+    mContentInsetsChanged = FALSE;
+    mVisibleInsetsChanged = FALSE;
+    mStableInsetsChanged = FALSE;
+    mWinAnimator.mSurfaceResized = FALSE;
+    // } catch (RemoteException e) {
+    //     mOrientationChanging = false;
+    //     mLastFreezeDuration = (int)(SystemClock.elapsedRealtime()
+    //             - mService.mDisplayFreezeTime);
+    // }
+    return NOERROR;
+}
+
+void WindowState::RegisterFocusObserver(
+    /* [in] */ IIWindowFocusObserver* observer)
+{
+    synchronized (mService->mWindowMapLock) {
+        if (mFocusCallbacks == NULL) {
+            CRemoteCallbackList::New((IRemoteCallbackList**)&mFocusCallbacks);
+        }
+        mFocusCallbacks->Register((IInterface*)observer);
+    }
+}
+
+void WindowState::UnregisterFocusObserver(
+    /* [in] */ IIWindowFocusObserver* observer)
+{
+    synchronized (mService->mWindowMapLock) {
+        if (mFocusCallbacks != NULL) {
+            mFocusCallbacks->Unregister(observer);
+        }
+    }
+}
+
+Boolean WindowState::IsFocused()
+{
+    synchronized (mService->mWindowMapLock) {
+        return mService->mCurrentFocus.Get() == this;
+    }
 }
 
 String WindowState::MakeInputChannelName()
@@ -1218,15 +1528,16 @@ ECode WindowState::ToString(
     /* [out]*/ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    *str = ToString();
-    return NOERROR;
-}
-
-String WindowState::ToString()
-{
     AutoPtr<ICharSequence> title;
     mAttrs->GetTitle((ICharSequence**)&title);
-    if (mStringNameCache.IsNull() || mLastTitle.Get() != title.Get()
+    Int32 len;
+    if (title == NULL || (title->GetLength(&len), len <= 0)) {
+        String pkg;
+        mAttrs->GetPackageName(&pkg);
+        title = NULL;
+        CString::New(pkg, (ICharSequence**)&title);
+    }
+    if (mStringNameCache.IsNull() || (IObject::Probe(mLastTitle)->Equals(title, &equals), !equals)
             || mWasExiting != mExiting) {
         mLastTitle = title;
         mWasExiting = mExiting;
@@ -1243,7 +1554,8 @@ String WindowState::ToString()
         sb += mExiting ? " EXITING}" : "}";
         mStringNameCache = sb.ToString();
     }
-    return mStringNameCache;
+    *str = mStringNameCache;
+    return NOERROR;
 }
 
 } // Wm

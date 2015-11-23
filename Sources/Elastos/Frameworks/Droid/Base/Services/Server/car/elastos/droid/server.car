@@ -737,7 +737,7 @@ module
 //     class CWindowManagerService {
 //         constructor(
 //             [in] IContext* ctx,
-//             [in] Handle32 inputManager,
+//             [in] Handle64 inputManager,
 //             [in] Boolean haveInputMethods,
 //             [in] Boolean showBootMsgs,
 //             [in] Boolean onlyCore);
@@ -753,8 +753,15 @@ module
 //             [in] IIWindowSessionCallback* callback,
 //             [in] IInputContext* inputContext);
 
-//         interface IWindowSession;
+//         interface IIWindowId;
 //         interface IProxyDeathRecipient;
+//     }
+
+//     class CWindowId {
+//         constructor(
+//             [in] IWindowState* host);
+
+//         interface IIWindowId;
 //     }
 
 //     } // Wm
