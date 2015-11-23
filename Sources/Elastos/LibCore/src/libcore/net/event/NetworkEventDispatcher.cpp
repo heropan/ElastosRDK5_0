@@ -21,6 +21,7 @@ ECode NetworkEventDispatcher::GetInstance(
 {
     VALIDATE_NOT_NULL(result)
     *result = sInstance;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

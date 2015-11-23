@@ -291,7 +291,8 @@ void CDnsPinger::HandleActionListenForResponse(
            (*responseBuf)[1] == (Byte) curPing->mPacketId) {
             curPing->mResult = NULL;
             CInteger32::New((Int32) (SystemClock::GetElapsedRealtime() - curPing->mStart), (IInteger32**)&curPing->mResult);
-        } else {
+        }
+        else {
             if (DBG) {
                 Logger::I(TAG, "response ID didn't match, ignoring packet");
             }
@@ -310,7 +311,8 @@ void CDnsPinger::HandleActionListenForResponse(
             SendResponse(curPing->mInternalId, curPing->mPacketId, result);
             curPing->mSocket->Close();
             iter->Remove();
-        } else if (SystemClock::GetElapsedRealtime() > curPing->mStart + curPing->mTimeout) {
+        }
+        else if (SystemClock::GetElapsedRealtime() > curPing->mStart + curPing->mTimeout) {
             SendResponse(curPing->mInternalId, curPing->mPacketId, IDnsPinger::TIMEOUT);
             curPing->mSocket->Close();
             iter->Remove();
@@ -359,7 +361,7 @@ ECode CDnsPinger::GetDnsList(
     curLinkProps->GetDnsServers((IList**)&l);
     AutoPtr<ICollection> dnses = ICollection::Probe(l);
     Int32 num;
-    dnses->GetSize(&num);
+    if (dnses != NULL) dnses->GetSize(&num);
     if (dnses == NULL || num == 0) {
         Loge("getDns::LinkProps has NULL dns - returning default");
         *dnslist = mDefaultDns;

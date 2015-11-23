@@ -178,17 +178,15 @@ private:
     /**
      * @return MD5 hash of concat(secret, ":", data).
      */
-    CARAPI KD(
+    CARAPI_(String) KD(
         /* [in] */ const String& secret,
-        /* [in] */ const String& data,
-        /* [out] */ String* result);
+        /* [in] */ const String& data);
 
     /**
      * @return MD5 hash of param.
      */
-    CARAPI H(
-        /* [in] */ const String& param,
-        /* [out] */ String* result);
+    CARAPI_(String) H(
+        /* [in] */ const String& param);
 
     /**
      * @return HEX buffer representation.

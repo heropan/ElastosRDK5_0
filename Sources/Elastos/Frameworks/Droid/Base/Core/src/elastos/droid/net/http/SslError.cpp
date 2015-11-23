@@ -80,12 +80,15 @@ ECode SslError::SslErrorFromChromiumErrorCode(
     // external/chromium/net/base/net_error_list.h
     assert (error >= -299 && error <= -200);
 
-    if (error == -200)
+    if (error == -200) {
         return CSslError::New(CSslError::SSL_IDMISMATCH, cert, url, result);
-    if (error == -201)
+    }
+    if (error == -201) {
         return CSslError::New(CSslError::SSL_DATE_INVALID, cert, url, result);
-    if (error == -202)
+    }
+    if (error == -202) {
         return CSslError::New(CSslError::SSL_UNTRUSTED, cert, url, result);
+    }
     // Map all other codes to SSL_INVALID.
     return CSslError::New(CSslError::SSL_INVALID, cert, url, result);
 #endif

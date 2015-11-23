@@ -529,11 +529,10 @@ ECode RequestQueue::QueueSynchronousRequest(
 #endif
 }
 
-ECode RequestQueue::DetermineHost(
-    /* [in] */ IHttpHost* host,
-    /* [out] */ IHttpHost** result)
+AutoPtr<IHttpHost> RequestQueue::DetermineHost(
+    /* [in] */ IHttpHost* host)
 {
-    return E_NOT_IMPLEMENTED;
+    return host;
 #if 0 // TODO: Translate codes below
     // There used to be a comment in ConnectionThread about t-mob's proxy
     // being really bad about https. But, HttpsConnection actually looks
@@ -630,8 +629,8 @@ ECode RequestQueue::GetRequest(
 
         AutoPtr<IRequest> ret;
 
-        if (!GetValue(mPending, ILinkedHashMap::IsEmpty)) {
-            RemoveFirst(mPending, (IRequest**)&ret);
+        if (!GetValue(mPending, mPending->IsEmpty)) {
+            ret = RemoveFirst(mPending);
         }
         if (HttpLog::LOGV) {
             HttpLog::V("RequestQueue.getRequest() => %s", GetValue(IObject::Probe(ret), IObject::ToString).string());
@@ -653,14 +652,14 @@ ECode RequestQueue::GetRequest(
     synchronized(this) {
         AutoPtr<IRequest> ret;
 
-        if (GetValue(mPending, ILinkedHashMap::ContainsKey, IInterface::Probe(host))) {
+        if (GetValue(mPending, mPending->ContainsKey, IInterface::Probe(host))) {
             AutoPtr<IInterface> obj;
             mPending->Get(IInterface::Probe(host), (IInterface**)&obj);
             AutoPtr<ILinkedList> reqList = ILinkedList::Probe(obj);
             obj = NULL;
             reqList->RemoveFirst((IInterface**)&obj);
             ret = IRequest::Probe(obj);
-            if (GetValue(reqList, ILinkedList::IsEmpty) {
+            if (GetValue(reqList, reqList->IsEmpty) {
                 mPending->Remove(IInterface::Probe(host));
             }
         }
@@ -688,10 +687,9 @@ ECode RequestQueue::HaveRequest(
 #if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result);
 
-    AutoLock lock(mLock);
-
-    HashMap<AutoPtr<IHttpHost>, AutoPtr<RequestList> >::Iterator it;// = mPending.Find(host);
-    *result = it != mPending.End();
+    synchronized(this) {
+        mPending->ContainsKey(IInterface::Probe(host), result);
+    }
     return NOERROR;
 #endif
 }
@@ -719,25 +717,22 @@ ECode RequestQueue::QueueRequest(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mLock);
-
-    AutoPtr<IHttpHost> host = request->mProxyHost == NULL
-        ? request->mHost : request->mProxyHost;
-    AutoPtr<RequestList> reqList;
-    HashMap<AutoPtr<IHttpHost>, AutoPtr<RequestList> >::Iterator it;// = mPending.Find(host);
-    if (it != mPending.End()) {
-        reqList = &(it->mSecond);
-    } else {
-        reqList = new List<Request*>();
-        // TODO:
-        // mPending.Put(host, reqList);
+    synchronized(this) {
+        AutoPtr<IHttpHost> host = request->mProxyHost == NULL
+            ? request->mHost : request->mProxyHost;
+        AutoPtr<IRequestList> reqList;
+        if (GetValue(mPending, mPending->ContainsKey, IInterface::Probe(host))) {
+            reqList = IRequestList::Probe(GetValue(mPending, mPending->Get, IInterface::Probe(host)));
+        } else {
+            CLinkedList::New((IRequestList**)&reqList);
+            mPending->Put(IInterface::Probe(host), IInterface::Probe(reqList));
+        }
+        if (head) {
+            reqList->AddFirst(IInterface::Probe(request));
+        } else {
+            reqList->Add(IInterface::Probe(request));
+        }
     }
-    if (head) {
-        reqList->Insert(0, request);
-    } else {
-        reqList->PushBack(request);
-    }
-
     return NOERROR;
 #endif
 }
@@ -758,26 +753,24 @@ ECode RequestQueue::StopTiming()
 #endif
 }
 
-ECode RequestQueue::RemoveFirst(
-    /* [in] */ IHashMap* requestQueue,
-    /* [out] */ IRequest** result)
+AutoPtr<IRequest> RequestQueue::RemoveFirst(
+    /* [in] */ IHashMap* requestQueue)
 {
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<IRequest> ret;
 #if 0 // TODO: Translate codes below
-    AutoPtr<Request> ret;
-    HashMap<AutoPtr<IHttpHost>, AutoPtr<RequestList> >::Iterator it;// = requestQueue->Begin();
-
-    // for (; it != requestQueue->End(); ++it) {
-    //     AutoPtr<RequestList> reqList = &(it->mSecond);
-    //     // TODO:
-    //     // ret = reqList->RemoveFirst();
-    //     if (reqList->IsEmpty()) {
-    //         requestQueue->Erase(it);
-    //     }
-    // }
-
-    return ret;
+    AutoPtr<IIterator> iter;
+    GetValue(requestQueue, requestQueue->GetEntrySet)->GetIterator((IIterator**)&iter);
+    if (GetValue(iter, iter->HasNext)) {
+        AutoPtr<IMapEntry> entry;
+        iter->GetNext((IMapEntry**)&entry);
+        AutoPtr<IRequestList> reqList = IRequestList::Probe(GetValue(entry, entry->GetValue));
+        reqList->RemoveFirst((IRequest)&ret);
+        if(GetValue(reqList, reqList->IsEmpty)) {
+            requestQueue->Remove(GetValue(entry, entry->GetKey));
+        }
+    }
 #endif
+    return ret;
 }
 
 } // namespace Http

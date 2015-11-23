@@ -1,5 +1,17 @@
 
 #include "elastos/droid/net/LinkAddress.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/system/OsConstants.h"
+#include <elastos/core/Object.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::System::OsConstants;
+
+using Elastos::Core::IInteger32;
+using Elastos::Net::IInet4Address;
+using Elastos::Net::IInetAddress;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -11,22 +23,26 @@ ECode LinkAddress::ScopeForUnicastAddress(
     /* [in] */ IInetAddress* addr,
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (addr.isAnyLocalAddress()) {
-            return RT_SCOPE_HOST;
-        }
-        if (addr.isLoopbackAddress() || addr.isLinkLocalAddress()) {
-            return RT_SCOPE_LINK;
-        }
-        // isSiteLocalAddress() returns true for private IPv4 addresses, but RFC 6724 section 3.2
-        // says that they are assigned global scope.
-        if (!(addr instanceof Inet4Address) && addr.isSiteLocalAddress()) {
-            return RT_SCOPE_SITE;
-        }
-        return RT_SCOPE_UNIVERSE;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (RETN_OUT_VAL(addr, IsAnyLocalAddress)) {
+        *result = OsConstants::_RT_SCOPE_HOST;
+        return NOERROR;
+    }
+
+    if (RETN_OUT_VAL(addr, IsLoopbackAddress) || RETN_OUT_VAL(addr, IsLinkLocalAddress)) {
+        *result = OsConstants::_RT_SCOPE_LINK;
+        return NOERROR;
+    }
+
+    // isSiteLocalAddress() returns true for private IPv4 addresses, but RFC 6724 section 3.2
+    // says that they are assigned global scope.
+    if ((IInet4Address::Probe(addr) == NULL) && RETN_OUT_VAL(addr, IsSiteLocalAddress)) {
+        *result = OsConstants::_RT_SCOPE_SITE;
+        return NOERROR;
+    }
+    *result = OsConstants::_RT_SCOPE_UNIVERSE;
+    return NOERROR;
 }
 
 ECode LinkAddress::Init(
@@ -35,22 +51,21 @@ ECode LinkAddress::Init(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 scope)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (address == null ||
-                address.isMulticastAddress() ||
-                prefixLength < 0 ||
-                ((address instanceof Inet4Address) && prefixLength > 32) ||
-                (prefixLength > 128)) {
-            throw new IllegalArgumentException("Bad LinkAddress params " + address +
-                    "/" + prefixLength);
-        }
-        this.address = address;
-        this.prefixLength = prefixLength;
-        this.flags = flags;
-        this.scope = scope;
-
-#endif
+    if (address == NULL ||
+            RETN_OUT_VAL(address, IsMulticastAddress) ||
+            prefixLength < 0 ||
+            ((IInet4Address::Probe(address) != NULL ) && prefixLength > 32) ||
+            (prefixLength > 128)) {
+        String s;
+        IObject::Probe(address)->ToString(&s);
+        Logger::E("LinkAddress", "Bad LinkAddress params %s/%d", s.string(), prefixLength);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mAddress = address;
+    mPrefixLength = prefixLength;
+    mFlags = flags;
+    mScope = scope;
+    return NOERROR;
 }
 
 ECode LinkAddress::constructor(
@@ -59,45 +74,29 @@ ECode LinkAddress::constructor(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 scope)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        init(address, prefixLength, flags, scope);
-
-#endif
+    return Init(address, prefixLength, flags, scope);
 }
 
 ECode LinkAddress::constructor(
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 prefixLength)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this(address, prefixLength, 0, 0);
-        this.scope = scopeForUnicastAddress(address);
-
-#endif
+    constructor(address, prefixLength, 0, 0);
+    return ScopeForUnicastAddress(address, &mScope);
 }
 
 ECode LinkAddress::constructor(
     /* [in] */ IInterfaceAddress* interfaceAddress)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this(interfaceAddress.getAddress(),
-             interfaceAddress.getNetworkPrefixLength());
-
-#endif
+    return constructor(RETN_OUT_VAL(interfaceAddress, GetAddress),
+            RETN_OUT_VAL(interfaceAddress, GetNetworkPrefixLength));
 }
 
 ECode LinkAddress::constructor(
     /* [in] */ const String& address)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this(address, 0, 0);
-        this.scope = scopeForUnicastAddress(this.address);
-
-#endif
+    constructor(address, 0, 0);
+    return ScopeForUnicastAddress(mAddress, &mScope);
 }
 
 ECode LinkAddress::constructor(
@@ -105,175 +104,143 @@ ECode LinkAddress::constructor(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 scope)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        // This may throw an IllegalArgumentException; catching it is the caller's responsibility.
-        Pair<InetAddress, Integer> ipAndMask = NetworkUtils.parseIpAndMask(address);
-        init(ipAndMask.first, ipAndMask.second, flags, scope);
-
-#endif
+    // This may throw an IllegalArgumentException; catching it is the caller's responsibility.
+    AutoPtr<IPair> ipAndMask;
+    NetworkUtils::ParseIpAndMask(address, (IPair**)&ipAndMask);
+    Int32 second;
+    IInteger32::Probe(RETN_OUT_VAL(ipAndMask, GetSecond))->GetValue(&second);
+    return Init(IInetAddress::Probe(RETN_OUT_VAL(ipAndMask, GetFirst)),
+            second, flags, scope);
 }
 
 ECode LinkAddress::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return address.getHostAddress() + "/" + prefixLength;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    result->AppendFormat("%s/%d", RETN_OUT_VAL(mAddress, GetHostAddress).string(), mPrefixLength);
+    return NOERROR;
 }
 
 ECode LinkAddress::Equals(
     /* [in] */ IObject* obj,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (!(obj instanceof LinkAddress)) {
-            return false;
-        }
-        LinkAddress linkAddress = (LinkAddress) obj;
-        return this.address.equals(linkAddress.address) &&
-            this.prefixLength == linkAddress.prefixLength &&
-            this.flags == linkAddress.flags &&
-            this.scope == linkAddress.scope;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (TO_IINTERFACE(this) != IInterface::Probe(obj)) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    if (ILinkAddress::Probe(obj) == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    AutoPtr<LinkAddress> linkAddress = (LinkAddress*) ILinkAddress::Probe(obj);
+    Boolean b;
+    IObject::Probe(mAddress)->Equals(linkAddress->mAddress, &b);
+    *result = b && mPrefixLength == linkAddress->mPrefixLength &&
+            mFlags == linkAddress->mFlags &&
+            mScope == linkAddress->mScope;
+    return NOERROR;
 }
 
-ECode LinkAddress::HashCode(
+ECode LinkAddress::GetHashCode(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return address.hashCode() + 11 * prefixLength + 19 * flags + 43 * scope;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    IObject::Probe(mAddress)->GetHashCode(result);
+    *result += 11 * mPrefixLength + 19 * mFlags + 43 * mScope;
+    return NOERROR;
 }
 
 ECode LinkAddress::IsSameAddressAs(
     /* [in] */ ILinkAddress* other,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return address.equals(other.address) && prefixLength == other.prefixLength;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    Boolean b;
+    IObject::Probe(mAddress)->Equals(((LinkAddress*)other)->mAddress, &b);
+    *result = b && mPrefixLength == ((LinkAddress*)other)->mPrefixLength;
+    return NOERROR;
 }
 
 ECode LinkAddress::GetAddress(
     /* [out] */ IInetAddress** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return address;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mAddress;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode LinkAddress::GetPrefixLength(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return prefixLength;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mPrefixLength;
+    return NOERROR;
 }
 
 ECode LinkAddress::GetNetworkPrefixLength(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return getPrefixLength();
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    GetPrefixLength(result);
+    return NOERROR;
 }
 
 ECode LinkAddress::GetFlags(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return flags;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mFlags;
+    return NOERROR;
 }
 
 ECode LinkAddress::GetScope(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return scope;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mScope;
+    return NOERROR;
 }
 
 ECode LinkAddress::IsGlobalPreferred(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (scope == RT_SCOPE_UNIVERSE &&
-                (flags & (IFA_F_DADFAILED | IFA_F_DEPRECATED | IFA_F_TENTATIVE)) == 0L);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = (mScope == OsConstants::_RT_SCOPE_UNIVERSE &&
+            (mFlags & (OsConstants::_IFA_F_DADFAILED | OsConstants::_IFA_F_DEPRECATED | OsConstants::_IFA_F_TENTATIVE)) == 0L);
+    return NOERROR;
 }
 
 ECode LinkAddress::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public LinkAddress createFromParcel(Parcel in) {
-                InetAddress address = null;
-                try {
-                    address = InetAddress.getByAddress(in.createByteArray());
-                } catch (UnknownHostException e) {
-                    // Nothing we can do here. When we call the constructor, we'll throw an
-                    // IllegalArgumentException, because a LinkAddress can't have a null
-                    // InetAddress.
-                }
-                int prefixLength = in.readInt();
-                int flags = in.readInt();
-                int scope = in.readInt();
-                return new LinkAddress(address, prefixLength, flags, scope);
-            }
-            public LinkAddress[] newArray(int size) {
-                return new LinkAddress[size];
-            }
-
-#endif
+    source->ReadInterfacePtr((Handle32*)&mAddress);
+    source->ReadInt32(&mPrefixLength);
+    source->ReadInt32(&mFlags);
+    source->ReadInt32(&mScope);
+    return NOERROR;
 }
 
 ECode LinkAddress::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public LinkAddress createFromParcel(Parcel in) {
-                InetAddress address = null;
-                try {
-                    address = InetAddress.getByAddress(in.createByteArray());
-                } catch (UnknownHostException e) {
-                    // Nothing we can do here. When we call the constructor, we'll throw an
-                    // IllegalArgumentException, because a LinkAddress can't have a null
-                    // InetAddress.
-                }
-                int prefixLength = in.readInt();
-                int flags = in.readInt();
-                int scope = in.readInt();
-                return new LinkAddress(address, prefixLength, flags, scope);
-            }
-            public LinkAddress[] newArray(int size) {
-                return new LinkAddress[size];
-            }
-
-#endif
+    dest->WriteInterfacePtr(mAddress.Get());
+    dest->WriteInt32(mPrefixLength);
+    dest->WriteInt32(mFlags);
+    dest->WriteInt32(mScope);
+    return NOERROR;
 }
 
 } // namespace Net

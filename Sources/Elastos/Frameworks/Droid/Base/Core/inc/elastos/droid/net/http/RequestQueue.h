@@ -293,14 +293,12 @@ private:
     CARAPI SetProxyConfig();
 
     // Chooses between the proxy and the request's host.
-    CARAPI DetermineHost(
-        /* [in] */ IHttpHost* host,
-        /* [out] */ IHttpHost** result);
+    CARAPI_(AutoPtr<IHttpHost>) DetermineHost(
+        /* [in] */ IHttpHost* host);
 
     /* helper */
-    CARAPI RemoveFirst(
-        /* [in] */ IHashMap* requestQueue,
-        /* [out] */ IRequest** result);
+    CARAPI_(AutoPtr<IRequest>) RemoveFirst(
+        /* [in] */ IHashMap* requestQueue);
 
     /**
      * Requests, indexed by HttpHost (scheme, host, port)

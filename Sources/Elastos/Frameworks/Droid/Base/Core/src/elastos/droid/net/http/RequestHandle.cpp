@@ -37,9 +37,9 @@ ECode RequestHandle::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    // if (headers == null) {
-    //     headers = new HashMap<String, String>();
-    // }
+    if (headers == NULL) {
+        CHashMap::New((IMap**)&mHeaders);
+    }
     mBodyProvider = bodyProvider;
     mBodyLength = bodyLength;
     mMethod = method.IsNullOrEmpty() ? String("GET") : method;
@@ -67,9 +67,9 @@ ECode RequestHandle::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    // if (headers == null) {
-    //     headers = new HashMap<String, String>();
-    // }
+    if (headers == NULL) {
+        CHashMap::New((IMap**)&mHeaders);
+    }
     mBodyProvider = bodyProvider;
     mBodyLength = bodyLength;
     mMethod = method.IsNullOrEmpty() ? String("GET") : method;
@@ -201,12 +201,10 @@ ECode RequestHandle::SetupRedirect(
 
     // update the "Cookie" header based on the redirected url
     mHeaders.Erase(String("Cookie"));
-    // TODO:
     AutoPtr<ICookieManager> cookieManager;
     CCookieManagerHelper::GetInstance((ICookieManager**)&cookieManager);
     String cookie;
-    // TODO:
-    // cookieManager->GetCookie(mUri, &cookie);
+    cookieManager->GetCookie(mUri, &cookie);
     if (cookie.IsNullOrEmpty() && cookie.GetLength() > 0) {
         (*mHeaders)[String("Cookie")] = cookie;
     }
@@ -245,8 +243,7 @@ ECode RequestHandle::SetupRedirect(
 
         for (Int32 i = 0; i < size; i++) {
             AutoPtr<ICharSequence> value;
-            // TODO:
-            // cacheHeaders->Get((*keys)[i], (IInterface**)(ICharSequence**)&value);
+            cacheHeaders->Get((*keys)[i], (IInterface**)(ICharSequence**)&value);
             String svalue;
             value->ToString(&svalue);
 
@@ -254,8 +251,7 @@ ECode RequestHandle::SetupRedirect(
         }
     }
 
-    // TODO:
-    // CreateAndQueueNewRequest();
+    CreateAndQueueNewRequest();
     *result = TRUE;
     return NOERROR;
 #endif
@@ -274,10 +270,9 @@ ECode RequestHandle::SetupBasicAuthResponse(
         HttpLog::V(String("setupBasicAuthResponse(): response: ") + response);
     }
     String key;
-    // TODO:
-    // key = AuthorizationHeader(isProxy);
+    key = AuthorizationHeader(isProxy);
     (*mHeaders)[key] = String("Basic ") + response;
-    // SetupAuthResponse();
+    SetupAuthResponse();
     return NOERROR;
 #endif
 }
@@ -301,10 +296,9 @@ ECode RequestHandle::SetupDigestAuthResponse(
         HttpLog::V(String("setupDigestAuthResponse(): response: ") + response);
     }
     String key;
-    // TODO:
-    // key = AuthorizationHeader(isProxy);
+    key = AuthorizationHeader(isProxy);
     (*mHeaders)[key] = String("Digest ") + response;
-    // SetupAuthResponse();
+    SetupAuthResponse();
     return NOERROR;
 #endif
 }
@@ -313,15 +307,14 @@ ECode RequestHandle::SetupAuthResponse()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        try {
-            if (mBodyProvider != null) mBodyProvider.reset();
-        } catch (java.io.IOException ex) {
-            if (HttpLog.LOGV) {
-                HttpLog.v("setupAuthResponse() failed to reset body provider");
+        // try {
+            if (mBodyProvider != NULL) mBodyProvider->Reset();
+        // } catch (java.io.IOException ex) {
+            if (HttpLog::LOGV) {
+                HttpLog::V("setupAuthResponse() failed to reset body provider");
             }
-        }
-        createAndQueueNewRequest();
-
+        // }
+        CreateAndQueueNewRequest();
 #endif
 }
 
@@ -343,11 +336,11 @@ ECode RequestHandle::ComputeBasicAuthResponse(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        Assert.assertNotNull(username);
-        Assert.assertNotNull(password);
-        // encode username:password to base64
-        return new String(Base64.encodeBase64((username + ':' + password).getBytes()));
-
+    assert(username != NULL);
+    assert(password != NULL);
+    // encode username:password to base64
+    *result = String(Base64.encodeBase64((username + ':' + password).getBytes()));
+    return NOERROR;
 #endif
 }
 
@@ -355,8 +348,8 @@ ECode RequestHandle::WaitUntilComplete()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        mRequest.waitUntilComplete();
-
+    mRequest->WaitUntilComplete();
+    return NOERROR;
 #endif
 }
 
@@ -431,12 +424,13 @@ ECode RequestHandle::AuthorizationHeader(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (!isProxy) {
-            return AUTHORIZATION_HEADER;
-        } else {
-            return PROXY_AUTHORIZATION_HEADER;
-        }
-
+    if (!isProxy) {
+        *result = AUTHORIZATION_HEADER;
+        return NOERROR;
+    } else {
+        *result = PROXY_AUTHORIZATION_HEADER;
+    }
+    return NOERROR;
 #endif
 }
 
@@ -476,33 +470,30 @@ ECode RequestHandle::ComputeDigest(
 #endif
 }
 
-ECode RequestHandle::KD(
+String RequestHandle::KD(
     /* [in] */ const String& secret,
-    /* [in] */ const String& data,
-    /* [out] */ String* result)
+    /* [in] */ const String& data)
 {
-    return E_NOT_IMPLEMENTED;
+    return String(NULL);
 #if 0 // TODO: Translate codes below
     return H(secret + String(":") + data, str);
 #endif
 }
 
-ECode RequestHandle::H(
-    /* [in] */ const String& param,
-    /* [out] */ String* result)
+String RequestHandle::H(
+    /* [in] */ const String& param)
 {
-    return E_NOT_IMPLEMENTED;
+    return String(NULL);
 #if 0 // TODO: Translate codes below
     if (param != NULL) {
         AutoPtr<IMessageDigestHelper> helper;
-        // TODO:
-        // CMessageDigest::AcquireSingleton((IMessageDigestHelper**)&helper);
+        CMessageDigest::AcquireSingleton((IMessageDigestHelper**)&helper);
         AutoPtr<IMessageDigest> md5;
         FAIL_RETURN(helper->GetInstance(String("MD5"), (IMessageDigest**)&md5));
 
         AutoPtr<ArrayOf<Byte> > d;
 
-        // FAIL_RETURN(md5->Digest(param.getBytes(), &d));
+        FAIL_RETURN(md5->Digest(param.getBytes(), &d));
         if (d != NULL) {
             return BufferToHex(d, str);
         }

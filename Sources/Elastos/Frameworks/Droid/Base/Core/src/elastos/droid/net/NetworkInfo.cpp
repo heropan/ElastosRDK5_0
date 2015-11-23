@@ -758,6 +758,7 @@ ECode CNetworkInfo::GetState(
     VALIDATE_NOT_NULL(result);
     AutoLock lock(this);
     *result = mState;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -771,6 +772,7 @@ ECode CNetworkInfo::GetDetailedState(
     VALIDATE_NOT_NULL(result);
     AutoLock lock(this);
     *result = mDetailedState;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

@@ -28,6 +28,7 @@ ECode DhcpResults::GetServerAddress(
 {
     VALIDATE_NOT_NULL(*result)
     *result = mServerAddress;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
