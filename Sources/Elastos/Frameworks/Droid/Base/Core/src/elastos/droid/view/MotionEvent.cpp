@@ -28,104 +28,95 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-static Boolean ValidatePointerCount(
+static ECode ValidatePointerCount(
     /* [in] */ Int32 pointerCount)
 {
     if (pointerCount < 1) {
-        assert(0);
         // jniThrowException(env, "java/lang/IllegalArgumentException",
         //         "pointerCount must be at least 1");
-        return FALSE;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return TRUE;
+    return NOERROR;
 }
 
-static Boolean ValidatePointerPropertiesArray(
+static ECode ValidatePointerPropertiesArray(
     /* [in] */ ArrayOf<IPointerProperties*>* pointerPropertiesObjArray,
-    /* [in] */ size_t pointerCount)
+    /* [in] */ Int32 pointerCount)
 {
     if (!pointerPropertiesObjArray) {
-        assert(0);
         // jniThrowException(env, "java/lang/IllegalArgumentException",
         //         "pointerProperties array must not be null");
-        return FALSE;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (size_t(pointerPropertiesObjArray->GetLength()) < pointerCount) {
-        assert(0);
+    if (pointerPropertiesObjArray->GetLength() < pointerCount) {
         // jniThrowException(env, "java/lang/IllegalArgumentException",
         //         "pointerProperties array must be large enough to hold all pointers");
-        return FALSE;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return TRUE;
+    return NOERROR;
 }
 
-static Boolean ValidatePointerCoordsObjArray(
+static ECode ValidatePointerCoordsObjArray(
     /* [in] */ ArrayOf<IPointerCoords*>* pointerCoordsObjArray,
-    /* [in] */ size_t pointerCount)
+    /* [in] */ Int32 pointerCount)
 {
     if (!pointerCoordsObjArray) {
-        assert(0);
         // jniThrowException(env, "java/lang/IllegalArgumentException",
         //         "pointerCoords array must not be null");
-        return FALSE;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (size_t(pointerCoordsObjArray->GetLength()) < pointerCount) {
-        assert(0);
+    if (pointerCoordsObjArray->GetLength() < pointerCount) {
         // jniThrowException(env, "java/lang/IllegalArgumentException",
         //         "pointerCoords array must be large enough to hold all pointers");
-        return FALSE;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return TRUE;
+    return NOERROR;
 }
 
-static Boolean ValidatePointerIndex(
+static ECode ValidatePointerIndex(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ size_t pointerCount)
 {
     if (pointerIndex < 0 || size_t(pointerIndex) >= pointerCount) {
-        assert(0);
         // jniThrowException(env, "java/lang/IllegalArgumentException",
         //         "pointerIndex out of range");
-        return FALSE;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return TRUE;
+    return NOERROR;
 }
 
-static Boolean ValidateHistoryPos(
+static ECode ValidateHistoryPos(
     /* [in] */ Int32 historyPos,
     /* [in] */ size_t historySize)
 {
     if (historyPos < 0 || size_t(historyPos) >= historySize) {
-        assert(0);
         // jniThrowException(env, "java/lang/IllegalArgumentException",
         //         "historyPos out of range");
-        return FALSE;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return TRUE;
+    return NOERROR;
 }
 
-static Boolean ValidatePointerCoords(
+static ECode ValidatePointerCoords(
     /* [in] */ IPointerCoords* pointerCoordsObj)
 {
     if (!pointerCoordsObj) {
-        assert(0);
         // jniThrowException(env, "java/lang/IllegalArgumentException",
         //         "pointerCoords must not be null");
-        return FALSE;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return TRUE;
+    return NOERROR;
 }
 
-static Boolean ValidatePointerProperties(
+static ECode ValidatePointerProperties(
     /* [in] */ IPointerProperties* pointerPropertiesObj)
 {
     if (!pointerPropertiesObj) {
-        assert(0);
         // jniThrowException(env, "java/lang/IllegalArgumentException",
         //         "pointerProperties must not be null");
-        return FALSE;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return TRUE;
+    return NOERROR;
 }
 
 static void PointerCoordsToNative(
@@ -358,14 +349,14 @@ const AutoPtr<ISparseArray> MotionEvent::TOOL_TYPE_SYMBOLIC_NAMES = InitTOOL_TYP
 const Int32 MotionEvent::HISTORY_CURRENT = -0x80000000;
 const Int32 MotionEvent::MAX_RECYCLED = 10;
 
-Object MotionEvent::gRecyclerLock;
-Int32 MotionEvent::gRecyclerUsed = 0;
-AutoPtr<IMotionEvent> MotionEvent::gRecyclerTop;
+Object MotionEvent::sRecyclerLock;
+Int32 MotionEvent::sRecyclerUsed = 0;
+AutoPtr<MotionEvent> MotionEvent::sRecyclerTop;
 
-Object MotionEvent::gSharedTempLock;
-AutoPtr<ArrayOf<IPointerCoords*> > MotionEvent::gSharedTempPointerCoords;
-AutoPtr<ArrayOf<IPointerProperties*> > MotionEvent::gSharedTempPointerProperties;
-AutoPtr<ArrayOf<Int32> > MotionEvent::gSharedTempPointerIndexMap;
+Object MotionEvent::sSharedTempLock;
+AutoPtr<ArrayOf<IPointerCoords*> > MotionEvent::sSharedTempPointerCoords;
+AutoPtr<ArrayOf<IPointerProperties*> > MotionEvent::sSharedTempPointerProperties;
+AutoPtr<ArrayOf<Int32> > MotionEvent::sSharedTempPointerIndexMap;
 const Int32 MotionEvent::PointerCoords::INITIAL_PACKED_AXIS_VALUES = 8;
 
 /*   MotionEvent::PointerCoords   */
@@ -635,12 +626,12 @@ ECode MotionEvent::PointerCoords::GetAxisValue(
             }
 
             const Int64 bits = mPackedAxisBits;
-            const Int64 axisBit = (UInt64)0x8000000000000000L >> (axis & 0x3F);
+            const Int64 axisBit = (UInt64)0x8000000000000000LL >> (axis & 0x3F);
             if ((bits & axisBit) == 0) {
                 *value = 0;
                 break;
             }
-            Int64 data = (UInt64)0xFFFFFFFFFFFFFFFFL >> (axis & 0x3F);
+            Int64 data = (UInt64)0xFFFFFFFFFFFFFFFFLL >> (axis & 0x3F);
             const Int32 index = Elastos::Core::Math::BitCount(bits & ~data);
             *value = (*mPackedAxisValues)[index];
         }
@@ -687,8 +678,8 @@ ECode MotionEvent::PointerCoords::SetAxisValue(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             const Int64 bits = mPackedAxisBits;
-            const Int64 axisBit = (UInt64)0x8000000000000000L >> (axis & 0x3F);
-            Int64 data = (UInt64)0xFFFFFFFFFFFFFFFFL >> (axis & 0x3F);
+            const Int64 axisBit = (UInt64)0x8000000000000000LL >> (axis & 0x3F);
+            Int64 data = (UInt64)0xFFFFFFFFFFFFFFFFLL >> (axis & 0x3F);
             const Int32 index = Elastos::Core::Math::BitCount(bits & ~data);
             AutoPtr<ArrayOf<Float> > values = mPackedAxisValues;
             if ((bits & axisBit) == 0) {
@@ -851,6 +842,7 @@ MotionEvent::MotionEvent()
 MotionEvent::~MotionEvent()
 {
     if (mNativePtr != 0) {
+        NativeDispose(mNativePtr);
         mNativePtr = 0;
     }
 }
@@ -863,45 +855,37 @@ ECode MotionEvent::constructor()
 void MotionEvent::EnsureSharedTempPointerCapacity(
     /* [in] */ Int32 desiredCapacity)
 {
-    if (gSharedTempPointerCoords == NULL
-            || gSharedTempPointerCoords->GetLength() < desiredCapacity) {
-        Int32 capacity = gSharedTempPointerCoords != NULL ? gSharedTempPointerCoords->GetLength() : 8;
+    if (sSharedTempPointerCoords == NULL
+            || sSharedTempPointerCoords->GetLength() < desiredCapacity) {
+        Int32 capacity = sSharedTempPointerCoords != NULL ? sSharedTempPointerCoords->GetLength() : 8;
         while (capacity < desiredCapacity) {
             capacity *= 2;
         }
 
-        gSharedTempPointerCoords = MotionEvent::PointerCoords::CreateArray(capacity);
-        gSharedTempPointerProperties = MotionEvent::PointerProperties::CreateArray(capacity);
-        gSharedTempPointerIndexMap = ArrayOf<Int32>::Alloc(capacity);
+        sSharedTempPointerCoords = MotionEvent::PointerCoords::CreateArray(capacity);
+        sSharedTempPointerProperties = MotionEvent::PointerProperties::CreateArray(capacity);
+        sSharedTempPointerIndexMap = ArrayOf<Int32>::Alloc(capacity);
     }
 }
 
-ECode MotionEvent::Obtain(
-    /* [out] */ IMotionEvent** event)
+AutoPtr<MotionEvent> MotionEvent::Obtain()
 {
-    VALIDATE_NOT_NULL(event);
-    AutoPtr<IMotionEvent> ev;
+    AutoPtr<MotionEvent> ev;
 
-    synchronized(gRecyclerLock) {
-        ev = gRecyclerTop;
+    synchronized(sRecyclerLock) {
+        ev = sRecyclerTop;
         if (ev == NULL) {
-            AutoPtr<IMotionEvent> _event;
-            CMotionEvent::New((IMotionEvent**)&_event);
-            *event = _event;
-            REFCOUNT_ADD(*event);
-            return NOERROR;
+            AutoPtr<IMotionEvent> event;
+            CMotionEvent::New((IMotionEvent**)&event);
+            return (MotionEvent*)event.Get();
         }
-        AutoPtr<MotionEvent> object = (MotionEvent*)ev.Get();
-        gRecyclerTop = object->mNext;
-        gRecyclerUsed -= 1;
+        sRecyclerTop = ev->mNext;
+        sRecyclerUsed -= 1;
     }
 
-    AutoPtr<MotionEvent> object = (MotionEvent*)ev.Get();
-    object->mNext = NULL;
-    object->PrepareForReuse();
-    *event = ev;
-    REFCOUNT_ADD(*event);
-    return NOERROR;
+    ev->mNext = NULL;
+    ev->PrepareForReuse();
+    return ev;
 }
 
 ECode MotionEvent::Obtain(
@@ -922,17 +906,18 @@ ECode MotionEvent::Obtain(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
+    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(Obtain((IMotionEvent**)&ev));
-    AutoPtr<MotionEvent> _event = (MotionEvent*)ev.Get();
+    AutoPtr<MotionEvent> ev = Obtain();
 
-    _event->mNativePtr = NativeInitialize(_event->mNativePtr,
+    Int64 ptr;
+    FAIL_RETURN(NativeInitialize(ev->mNativePtr,
             deviceId, source, action, flags, edgeFlags, metaState, buttonState,
             0, 0, xPrecision, yPrecision,
             downTime * NS_PER_MS, eventTime * NS_PER_MS,
-            pointerCount, pointerProperties, pointerCoords);
-    *event = ev;
+            pointerCount, pointerProperties, pointerCoords, &ptr));
+    ev->mNativePtr = ptr;
+    *event = (IMotionEvent*)ev.Get();
     REFCOUNT_ADD(*event);
     return NOERROR;
 }
@@ -953,15 +938,17 @@ ECode MotionEvent::Obtain(
     /* [in] */ Int32 flags,
     /* [out] */ IMotionEvent** event)
 {
-    synchronized(gSharedTempLock) {
+    VALIDATE_NOT_NULL(event);
+
+    synchronized(sSharedTempLock) {
         EnsureSharedTempPointerCapacity(pointerCount);
-        ArrayOf<IPointerProperties*>* pp = gSharedTempPointerProperties;
+        ArrayOf<IPointerProperties*>* pp = sSharedTempPointerProperties;
         for (Int32 i = 0; i < pointerCount; i++) {
             AutoPtr<IPointerProperties> obj = (*pp)[i];
             obj->Clear();
             obj->SetId((*pointerIds)[i]);
         }
-        Obtain(downTime, eventTime, action, pointerCount, pp,
+        return Obtain(downTime, eventTime, action, pointerCount, pp,
                 pointerCoords, metaState, 0, xPrecision, yPrecision, deviceId,
                 edgeFlags, source, flags, event);
     }
@@ -985,30 +972,31 @@ ECode MotionEvent::Obtain(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
+    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(Obtain((IMotionEvent**)&ev));
+    AutoPtr<MotionEvent> ev = Obtain();
 
-    synchronized(gSharedTempLock) {
+    synchronized(sSharedTempLock) {
         EnsureSharedTempPointerCapacity(1);
 
-        AutoPtr< ArrayOf<IPointerProperties*> > pp = gSharedTempPointerProperties;
+        AutoPtr< ArrayOf<IPointerProperties*> > pp = sSharedTempPointerProperties;
         (*pp)[0]->Clear();
         (*pp)[0]->SetId(0);
 
-        AutoPtr< ArrayOf<IPointerCoords*> > pc = gSharedTempPointerCoords;
+        AutoPtr< ArrayOf<IPointerCoords*> > pc = sSharedTempPointerCoords;
         (*pc)[0]->Clear();
         (*pc)[0]->SetX(x);
         (*pc)[0]->SetY(y);
         (*pc)[0]->SetPressure(pressure);
         (*pc)[0]->SetSize(size);
 
-        AutoPtr<MotionEvent> object = (MotionEvent*)ev.Get();
-        object->mNativePtr = NativeInitialize(object->mNativePtr,
+        Int64 ptr;
+        FAIL_RETURN(NativeInitialize(ev->mNativePtr,
                 deviceId, IInputDevice::SOURCE_UNKNOWN, action, 0, edgeFlags, metaState, 0,
                 0, 0, xPrecision, yPrecision, downTime * NS_PER_MS,
-                eventTime * NS_PER_MS, 1, pp, pc);
-        *event = ev;
+                eventTime * NS_PER_MS, 1, pp, pc, &ptr));
+        ev->mNativePtr = ptr;
+        *event = (IMotionEvent*)ev.Get();
         REFCOUNT_ADD(*event);
     }
 
@@ -1061,13 +1049,11 @@ ECode MotionEvent::Obtain(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(Obtain((IMotionEvent**)&ev));
-    AutoPtr<MotionEvent> object = (MotionEvent*)ev.Get();
+    AutoPtr<MotionEvent> ev = Obtain();
     AutoPtr<MotionEvent> othObject = (MotionEvent*)other;
 
-    object->mNativePtr = NativeCopy(object->mNativePtr, othObject->mNativePtr, TRUE /*keepHistory*/);
-    *event = ev;
+    ev->mNativePtr = NativeCopy(ev->mNativePtr, othObject->mNativePtr, TRUE /*keepHistory*/);
+    *event = (IMotionEvent*)ev.Get();
     REFCOUNT_ADD(*event);
     return NOERROR;
 }
@@ -1083,13 +1069,11 @@ ECode MotionEvent::ObtainNoHistory(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(Obtain((IMotionEvent**)&ev));
-    AutoPtr<MotionEvent> object = (MotionEvent*)ev.Get();
+    AutoPtr<MotionEvent> ev = Obtain();
     AutoPtr<MotionEvent> othObject = (MotionEvent*)other;
 
-    object->mNativePtr = NativeCopy(object->mNativePtr, othObject->mNativePtr, FALSE /*keepHistory*/);
-    *event = ev;
+    ev->mNativePtr = NativeCopy(ev->mNativePtr, othObject->mNativePtr, FALSE /*keepHistory*/);
+    *event = (IMotionEvent*)ev.Get();
     REFCOUNT_ADD(*event);
     return NOERROR;
 }
@@ -1110,11 +1094,11 @@ ECode MotionEvent::Recycle()
 {
     InputEvent::Recycle();
 
-    synchronized(gRecyclerLock) {
-        if (gRecyclerUsed < MAX_RECYCLED) {
-            gRecyclerUsed++;
-            mNext = gRecyclerTop;
-            gRecyclerTop = (IMotionEvent*)this;
+    synchronized(sRecyclerLock) {
+        if (sRecyclerUsed < MAX_RECYCLED) {
+            sRecyclerUsed++;
+            mNext = sRecyclerTop;
+            sRecyclerTop = this;
         }
     }
 
@@ -1245,6 +1229,7 @@ ECode MotionEvent::SetDownTime(
     /* [in] */ Int64 downTime)
 {
     NativeSetDownTimeNanos(mNativePtr, downTime * NS_PER_MS);
+
     return NOERROR;
 }
 
@@ -1252,9 +1237,12 @@ ECode MotionEvent::GetEventTime(
     /* [out] */ Int64* eventTime)
 {
     VALIDATE_NOT_NULL(eventTime);
+    *eventTime = 0;
 
-    *eventTime = NativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT) / NS_PER_MS;
+    Int64 id;
+    FAIL_RETURN(NativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT, &id));
 
+    *eventTime = id / NS_PER_MS;
     return NOERROR;
 }
 
@@ -1263,9 +1251,7 @@ ECode MotionEvent::GetEventTimeNano(
 {
     VALIDATE_NOT_NULL(eventTimeNano);
 
-    *eventTimeNano = NativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT, eventTimeNano);
 }
 
 ECode MotionEvent::GetX(
@@ -1273,9 +1259,7 @@ ECode MotionEvent::GetX(
 {
     VALIDATE_NOT_NULL(x);
 
-    *x = NativeGetAxisValue(mNativePtr, AXIS_X, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_X, 0, HISTORY_CURRENT, x);
 }
 
 ECode MotionEvent::GetY(
@@ -1283,9 +1267,7 @@ ECode MotionEvent::GetY(
 {
     VALIDATE_NOT_NULL(y);
 
-    *y = NativeGetAxisValue(mNativePtr, AXIS_Y, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_Y, 0, HISTORY_CURRENT, y);
 }
 
 ECode MotionEvent::GetPressure(
@@ -1293,9 +1275,7 @@ ECode MotionEvent::GetPressure(
 {
     VALIDATE_NOT_NULL(pressure);
 
-    *pressure = NativeGetAxisValue(mNativePtr, AXIS_PRESSURE, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_PRESSURE, 0, HISTORY_CURRENT, pressure);
 }
 
 ECode MotionEvent::GetSize(
@@ -1303,9 +1283,7 @@ ECode MotionEvent::GetSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    *size = NativeGetAxisValue(mNativePtr, AXIS_SIZE, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_SIZE, 0, HISTORY_CURRENT, size);
 }
 
 ECode MotionEvent::GetTouchMajor(
@@ -1313,9 +1291,7 @@ ECode MotionEvent::GetTouchMajor(
 {
     VALIDATE_NOT_NULL(touchMajor);
 
-    *touchMajor = NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, 0, HISTORY_CURRENT, touchMajor);
 }
 
 ECode MotionEvent::GetTouchMinor(
@@ -1323,9 +1299,7 @@ ECode MotionEvent::GetTouchMinor(
 {
     VALIDATE_NOT_NULL(touchMinor);
 
-    *touchMinor = NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, 0, HISTORY_CURRENT, touchMinor);
 }
 
 ECode MotionEvent::GetToolMajor(
@@ -1333,9 +1307,7 @@ ECode MotionEvent::GetToolMajor(
 {
     VALIDATE_NOT_NULL(toolMajor);
 
-    *toolMajor = NativeGetAxisValue(mNativePtr, AXIS_TOOL_MAJOR, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOOL_MAJOR, 0, HISTORY_CURRENT, toolMajor);
 }
 
 ECode MotionEvent::GetToolMinor(
@@ -1343,9 +1315,7 @@ ECode MotionEvent::GetToolMinor(
 {
     VALIDATE_NOT_NULL(toolMinor);
 
-    *toolMinor = NativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, 0, HISTORY_CURRENT, toolMinor);
 }
 
 ECode MotionEvent::GetOrientation(
@@ -1353,9 +1323,7 @@ ECode MotionEvent::GetOrientation(
 {
     VALIDATE_NOT_NULL(orientation);
 
-    *orientation = NativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, 0, HISTORY_CURRENT, orientation);
 }
 
 ECode MotionEvent::GetAxisValue(
@@ -1364,9 +1332,7 @@ ECode MotionEvent::GetAxisValue(
 {
     VALIDATE_NOT_NULL(value);
 
-    *value = NativeGetAxisValue(mNativePtr, axis, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, axis, 0, HISTORY_CURRENT, value);
 }
 
 ECode MotionEvent::GetPointerCount(
@@ -1385,9 +1351,7 @@ ECode MotionEvent::GetPointerId(
 {
     VALIDATE_NOT_NULL(pointerId);
 
-    *pointerId = NativeGetPointerId(mNativePtr, pointerIndex);
-
-    return NOERROR;
+    return NativeGetPointerId(mNativePtr, pointerIndex, pointerId);
 }
 
 ECode MotionEvent::GetToolType(
@@ -1395,9 +1359,7 @@ ECode MotionEvent::GetToolType(
     /* [out] */ Int32* toolType)
 {
     VALIDATE_NOT_NULL(toolType);
-    *toolType = NativeGetToolType(mNativePtr, pointerIndex);
-
-    return NOERROR;
+    return NativeGetToolType(mNativePtr, pointerIndex, toolType);
 }
 
 ECode MotionEvent::FindPointerIndex(
@@ -1417,9 +1379,7 @@ ECode MotionEvent::GetX(
 {
     VALIDATE_NOT_NULL(x);
 
-    *x = NativeGetAxisValue(mNativePtr, AXIS_X, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_X, pointerIndex, HISTORY_CURRENT, x);
 }
 
 ECode MotionEvent::GetY(
@@ -1428,9 +1388,7 @@ ECode MotionEvent::GetY(
 {
     VALIDATE_NOT_NULL(y);
 
-    *y = NativeGetAxisValue(mNativePtr, AXIS_Y, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_Y, pointerIndex, HISTORY_CURRENT, y);
 }
 
 ECode MotionEvent::GetPressure(
@@ -1439,9 +1397,7 @@ ECode MotionEvent::GetPressure(
 {
     VALIDATE_NOT_NULL(pressure);
 
-    *pressure = NativeGetAxisValue(mNativePtr, AXIS_PRESSURE, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_PRESSURE, pointerIndex, HISTORY_CURRENT, pressure);
 }
 
 ECode MotionEvent::GetSize(
@@ -1450,9 +1406,7 @@ ECode MotionEvent::GetSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    *size = NativeGetAxisValue(mNativePtr, AXIS_SIZE, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_SIZE, pointerIndex, HISTORY_CURRENT, size);
 }
 
 ECode MotionEvent::GetTouchMajor(
@@ -1461,9 +1415,7 @@ ECode MotionEvent::GetTouchMajor(
 {
     VALIDATE_NOT_NULL(touchMajor);
 
-    *touchMajor = NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, pointerIndex, HISTORY_CURRENT, touchMajor);
 }
 
 ECode MotionEvent::GetTouchMinor(
@@ -1472,9 +1424,7 @@ ECode MotionEvent::GetTouchMinor(
 {
     VALIDATE_NOT_NULL(touchMinor);
 
-    *touchMinor = NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, pointerIndex, HISTORY_CURRENT, touchMinor);
 }
 
 ECode MotionEvent::GetToolMajor(
@@ -1483,9 +1433,7 @@ ECode MotionEvent::GetToolMajor(
 {
     VALIDATE_NOT_NULL(toolMajor);
 
-    *toolMajor = NativeGetAxisValue(mNativePtr, AXIS_TOOL_MAJOR, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOOL_MAJOR, pointerIndex, HISTORY_CURRENT, toolMajor);
 }
 
 ECode MotionEvent::GetToolMinor(
@@ -1494,9 +1442,7 @@ ECode MotionEvent::GetToolMinor(
 {
     VALIDATE_NOT_NULL(toolMinor);
 
-    *toolMinor = NativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, pointerIndex, HISTORY_CURRENT, toolMinor);
 }
 
 ECode MotionEvent::GetOrientation(
@@ -1505,9 +1451,7 @@ ECode MotionEvent::GetOrientation(
 {
     VALIDATE_NOT_NULL(orientation);
 
-    *orientation = NativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, pointerIndex, HISTORY_CURRENT, orientation);
 }
 
 ECode MotionEvent::GetAxisValue(
@@ -1516,30 +1460,21 @@ ECode MotionEvent::GetAxisValue(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
-    *value = NativeGetAxisValue(mNativePtr, axis, pointerIndex, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, axis, pointerIndex, HISTORY_CURRENT, value);
 }
 
 ECode MotionEvent::GetPointerCoords(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ IPointerCoords* outPointerCoords)
 {
-    assert(outPointerCoords);
-
-    NativeGetPointerCoords(mNativePtr, pointerIndex, HISTORY_CURRENT, outPointerCoords);
-
-    return NOERROR;
+    return NativeGetPointerCoords(mNativePtr, pointerIndex, HISTORY_CURRENT, outPointerCoords);
 }
 
 ECode MotionEvent::GetPointerProperties(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ IPointerProperties* outPointerProperties)
 {
-    assert(outPointerProperties);
-    NativeGetPointerProperties(mNativePtr, pointerIndex, outPointerProperties);
-
-    return NOERROR;
+    return NativeGetPointerProperties(mNativePtr, pointerIndex, outPointerProperties);
 }
 
 ECode MotionEvent::GetMetaState(
@@ -1567,9 +1502,7 @@ ECode MotionEvent::GetRawX(
 {
     VALIDATE_NOT_NULL(rawX);
 
-    *rawX = NativeGetRawAxisValue(mNativePtr, AXIS_X, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetRawAxisValue(mNativePtr, AXIS_X, 0, HISTORY_CURRENT, rawX);
 }
 
 ECode MotionEvent::GetRawY(
@@ -1577,9 +1510,7 @@ ECode MotionEvent::GetRawY(
 {
     VALIDATE_NOT_NULL(rawY);
 
-    *rawY = NativeGetRawAxisValue(mNativePtr, AXIS_Y, 0, HISTORY_CURRENT);
-
-    return NOERROR;
+    return NativeGetRawAxisValue(mNativePtr, AXIS_Y, 0, HISTORY_CURRENT, rawY);
 }
 
 ECode MotionEvent::GetXPrecision(
@@ -1617,8 +1548,11 @@ ECode MotionEvent::GetHistoricalEventTime(
     /* [out] */ Int64* hEventTime)
 {
     VALIDATE_NOT_NULL(hEventTime);
+    *hEventTime = 0;
 
-    *hEventTime = NativeGetEventTimeNanos(mNativePtr, pos) / NS_PER_MS;
+    Int64 id;
+    FAIL_RETURN(NativeGetEventTimeNanos(mNativePtr, pos, &id));
+    *hEventTime = id / NS_PER_MS;
 
     return NOERROR;
 }
@@ -1629,9 +1563,7 @@ ECode MotionEvent::GetHistoricalEventTimeNano(
 {
     VALIDATE_NOT_NULL(eventTimeNano);
 
-    *eventTimeNano = NativeGetEventTimeNanos(mNativePtr, pos);
-
-    return NOERROR;
+    return NativeGetEventTimeNanos(mNativePtr, pos, eventTimeNano);
 }
 
 ECode MotionEvent::GetHistoricalX(
@@ -1640,9 +1572,7 @@ ECode MotionEvent::GetHistoricalX(
 {
     VALIDATE_NOT_NULL(hX);
 
-    *hX = NativeGetAxisValue(mNativePtr, AXIS_X, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_X, 0, pos, hX);
 }
 
 ECode MotionEvent::GetHistoricalY(
@@ -1651,9 +1581,7 @@ ECode MotionEvent::GetHistoricalY(
 {
     VALIDATE_NOT_NULL(hY);
 
-    *hY = NativeGetAxisValue(mNativePtr, AXIS_Y, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_Y, 0, pos, hY);
 }
 
 ECode MotionEvent::GetHistoricalPressure(
@@ -1662,9 +1590,7 @@ ECode MotionEvent::GetHistoricalPressure(
 {
     VALIDATE_NOT_NULL(hPressure);
 
-    *hPressure = NativeGetAxisValue(mNativePtr, AXIS_PRESSURE, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_PRESSURE, 0, pos, hPressure);
 }
 
 ECode MotionEvent::GetHistoricalSize(
@@ -1673,9 +1599,7 @@ ECode MotionEvent::GetHistoricalSize(
 {
     VALIDATE_NOT_NULL(hSize);
 
-    *hSize = NativeGetAxisValue(mNativePtr, AXIS_SIZE, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_SIZE, 0, pos, hSize);
 }
 
 ECode MotionEvent::GetHistoricalTouchMajor(
@@ -1684,9 +1608,7 @@ ECode MotionEvent::GetHistoricalTouchMajor(
 {
     VALIDATE_NOT_NULL(hTouchMajor);
 
-    *hTouchMajor = NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, 0, pos, hTouchMajor);
 }
 
 ECode MotionEvent::GetHistoricalTouchMinor(
@@ -1695,9 +1617,7 @@ ECode MotionEvent::GetHistoricalTouchMinor(
 {
     VALIDATE_NOT_NULL(hTouchMinor);
 
-    *hTouchMinor = NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, 0, pos, hTouchMinor);
 }
 
 ECode MotionEvent::GetHistoricalToolMajor(
@@ -1706,9 +1626,7 @@ ECode MotionEvent::GetHistoricalToolMajor(
 {
     VALIDATE_NOT_NULL(hToolMajor);
 
-    *hToolMajor = NativeGetAxisValue(mNativePtr, AXIS_TOOL_MAJOR, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOOL_MAJOR, 0, pos, hToolMajor);
 }
 
 ECode MotionEvent::GetHistoricalToolMinor(
@@ -1717,9 +1635,7 @@ ECode MotionEvent::GetHistoricalToolMinor(
 {
     VALIDATE_NOT_NULL(hToolMinor);
 
-    *hToolMinor = NativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, 0, pos, hToolMinor);
 }
 
 ECode MotionEvent::GetHistoricalOrientation(
@@ -1728,9 +1644,7 @@ ECode MotionEvent::GetHistoricalOrientation(
 {
     VALIDATE_NOT_NULL(hOrientation);
 
-    *hOrientation = NativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, 0, pos, hOrientation);
 }
 
 ECode MotionEvent::GetHistoricalAxisValue(
@@ -1740,9 +1654,7 @@ ECode MotionEvent::GetHistoricalAxisValue(
 {
     VALIDATE_NOT_NULL(value);
 
-    *value = NativeGetAxisValue(mNativePtr, axis, 0, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, axis, 0, pos, value);
 }
 
 ECode MotionEvent::GetHistoricalX(
@@ -1752,9 +1664,7 @@ ECode MotionEvent::GetHistoricalX(
 {
     VALIDATE_NOT_NULL(hX);
 
-    *hX = NativeGetAxisValue(mNativePtr, AXIS_X, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_X, pointerIndex, pos, hX);
 }
 
 ECode MotionEvent::GetHistoricalY(
@@ -1764,9 +1674,7 @@ ECode MotionEvent::GetHistoricalY(
 {
     VALIDATE_NOT_NULL(hY);
 
-    *hY = NativeGetAxisValue(mNativePtr, AXIS_Y, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_Y, pointerIndex, pos, hY);
 }
 
 ECode MotionEvent::GetHistoricalPressure(
@@ -1776,9 +1684,7 @@ ECode MotionEvent::GetHistoricalPressure(
 {
     VALIDATE_NOT_NULL(hPressure);
 
-    *hPressure = NativeGetAxisValue(mNativePtr, AXIS_PRESSURE, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_PRESSURE, pointerIndex, pos, hPressure);
 }
 
 ECode MotionEvent::GetHistoricalSize(
@@ -1788,9 +1694,7 @@ ECode MotionEvent::GetHistoricalSize(
 {
     VALIDATE_NOT_NULL(hSize);
 
-    *hSize = NativeGetAxisValue(mNativePtr, AXIS_SIZE, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_SIZE, pointerIndex, pos, hSize);
 }
 
 ECode MotionEvent::GetHistoricalTouchMajor(
@@ -1800,9 +1704,7 @@ ECode MotionEvent::GetHistoricalTouchMajor(
 {
     VALIDATE_NOT_NULL(hTouchMajor);
 
-    *hTouchMajor = NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, pointerIndex, pos, hTouchMajor);
 }
 
 ECode MotionEvent::GetHistoricalTouchMinor(
@@ -1812,9 +1714,7 @@ ECode MotionEvent::GetHistoricalTouchMinor(
 {
     VALIDATE_NOT_NULL(hTouchMinor);
 
-    *hTouchMinor = NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, pointerIndex, pos, hTouchMinor);
 }
 
 ECode MotionEvent::GetHistoricalToolMajor(
@@ -1824,9 +1724,7 @@ ECode MotionEvent::GetHistoricalToolMajor(
 {
     VALIDATE_NOT_NULL(hToolMajor);
 
-    *hToolMajor = NativeGetAxisValue(mNativePtr, AXIS_TOOL_MAJOR, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOOL_MAJOR, pointerIndex, pos, hToolMajor);
 }
 
 ECode MotionEvent::GetHistoricalToolMinor(
@@ -1836,9 +1734,7 @@ ECode MotionEvent::GetHistoricalToolMinor(
 {
     VALIDATE_NOT_NULL(hToolMinor);
 
-    *hToolMinor = NativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, pointerIndex, pos, hToolMinor);
 }
 
 ECode MotionEvent::GetHistoricalOrientation(
@@ -1848,9 +1744,7 @@ ECode MotionEvent::GetHistoricalOrientation(
 {
     VALIDATE_NOT_NULL(hOrientation);
 
-    *hOrientation = NativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, pointerIndex, pos, hOrientation);
 }
 
 ECode MotionEvent::GetHistoricalAxisValue(
@@ -1861,9 +1755,7 @@ ECode MotionEvent::GetHistoricalAxisValue(
 {
     VALIDATE_NOT_NULL(value);
 
-    *value = NativeGetAxisValue(mNativePtr, axis, pointerIndex, pos);
-
-    return NOERROR;
+    return NativeGetAxisValue(mNativePtr, axis, pointerIndex, pos, value);
 }
 
 ECode MotionEvent::GetHistoricalPointerCoords(
@@ -1873,9 +1765,7 @@ ECode MotionEvent::GetHistoricalPointerCoords(
 {
     VALIDATE_NOT_NULL(outPointerCoords);
 
-    NativeGetPointerCoords(mNativePtr, pointerIndex, pos, outPointerCoords);
-
-    return NOERROR;
+    return NativeGetPointerCoords(mNativePtr, pointerIndex, pos, outPointerCoords);
 }
 
 ECode MotionEvent::GetEdgeFlags(
@@ -1946,17 +1836,17 @@ ECode MotionEvent::AddBatch(
     /* [in] */ Float size,
     /* [in] */ Int32 metaState)
 {
-    synchronized(gSharedTempLock) {
+    synchronized(sSharedTempLock) {
         EnsureSharedTempPointerCapacity(1);
 
-        AutoPtr< ArrayOf<IPointerCoords*> > pc = gSharedTempPointerCoords;
+        AutoPtr< ArrayOf<IPointerCoords*> > pc = sSharedTempPointerCoords;
         (*pc)[0]->Clear();
         (*pc)[0]->SetX(x);
         (*pc)[0]->SetY(y);
         (*pc)[0]->SetPressure(pressure);
         (*pc)[0]->SetSize(size);
 
-        NativeAddBatch(mNativePtr, eventTime * NS_PER_MS, pc, metaState);
+        FAIL_RETURN(NativeAddBatch(mNativePtr, eventTime * NS_PER_MS, pc, metaState));
     }
 
     return NOERROR;
@@ -1967,9 +1857,7 @@ ECode MotionEvent::AddBatch(
     /* [in] */ ArrayOf<IPointerCoords*>* pointerCoords,
     /* [in] */ Int32 metaState)
 {
-    NativeAddBatch(mNativePtr, eventTime * NS_PER_MS, pointerCoords, metaState);
-
-    return NOERROR;
+    return NativeAddBatch(mNativePtr, eventTime * NS_PER_MS, pointerCoords, metaState);
 }
 
 ECode MotionEvent::AddBatch(
@@ -1977,38 +1865,35 @@ ECode MotionEvent::AddBatch(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
+    *res = FALSE;
 
     AutoPtr<MotionEvent> eventNative = (MotionEvent*)event;
 
     const Int32 action = NativeGetAction(mNativePtr);
     if (action != ACTION_MOVE && action != ACTION_HOVER_MOVE) {
-        *res = FALSE;
         return NOERROR;
     }
     if (action != NativeGetAction(eventNative->mNativePtr)) {
-        *res = FALSE;
         return NOERROR;
     }
 
     if (NativeGetDeviceId(mNativePtr) != NativeGetDeviceId(eventNative->mNativePtr)
         || NativeGetSource(mNativePtr) != NativeGetSource(eventNative->mNativePtr)
         || NativeGetFlags(mNativePtr) != NativeGetFlags(eventNative->mNativePtr)) {
-        *res = FALSE;
         return NOERROR;
     }
 
     const Int32 pointerCount = NativeGetPointerCount(mNativePtr);
     if (pointerCount != NativeGetPointerCount(eventNative->mNativePtr)) {
-        *res = FALSE;
         return NOERROR;
     }
 
-    synchronized(gSharedTempLock) {
-        AutoLock lock(gSharedTempLock);
+    synchronized(sSharedTempLock) {
+        AutoLock lock(sSharedTempLock);
         EnsureSharedTempPointerCapacity(Elastos::Core::Math::Max(pointerCount, 2));
 
-        ArrayOf<IPointerProperties*>* pp = gSharedTempPointerProperties;
-        ArrayOf<IPointerCoords*>* pc = gSharedTempPointerCoords;
+        ArrayOf<IPointerProperties*>* pp = sSharedTempPointerProperties;
+        ArrayOf<IPointerCoords*>* pc = sSharedTempPointerCoords;
 
         for (Int32 i = 0; i < pointerCount; i++) {
             NativeGetPointerProperties(mNativePtr, i, (*pp)[0]);
@@ -2016,7 +1901,6 @@ ECode MotionEvent::AddBatch(
             Boolean isEquals;
             (*pp)[0]->Equals((*pp)[1], &isEquals);
             if (!isEquals) {
-                *res = FALSE;
                 return NOERROR;
             }
         }
@@ -2030,8 +1914,9 @@ ECode MotionEvent::AddBatch(
                 NativeGetPointerCoords(eventNative->mNativePtr, i, historyPos, (*pc)[i]);
             }
 
-            const Int64 eventTimeNanos = NativeGetEventTimeNanos(eventNative->mNativePtr, historyPos);
-            NativeAddBatch(mNativePtr, eventTimeNanos, pc, metaState);
+            Int64 eventTimeNanos;
+            FAIL_RETURN(NativeGetEventTimeNanos(eventNative->mNativePtr, historyPos, &eventTimeNanos));
+            FAIL_RETURN(NativeAddBatch(mNativePtr, eventTimeNanos, pc, metaState));
         }
     }
     *res = TRUE;
@@ -2048,8 +1933,10 @@ ECode MotionEvent::IsWithinBoundsNoHistory(
     VALIDATE_NOT_NULL(res);
     const Int32 pointerCount = NativeGetPointerCount(mNativePtr);
     for (Int32 i = 0; i < pointerCount; i++) {
-        const Float x = NativeGetAxisValue(mNativePtr, AXIS_X, i, HISTORY_CURRENT);
-        const Float y = NativeGetAxisValue(mNativePtr, AXIS_Y, i, HISTORY_CURRENT);
+        Float x;
+        FAIL_RETURN(NativeGetAxisValue(mNativePtr, AXIS_X, i, HISTORY_CURRENT, &x));
+        Float y;
+        FAIL_RETURN(NativeGetAxisValue(mNativePtr, AXIS_Y, i, HISTORY_CURRENT, &y));
         if (x < left || x > right || y < top || y > bottom) {
             *res = FALSE;
             return NOERROR;
@@ -2082,15 +1969,14 @@ ECode MotionEvent::ClampNoHistory(
 {
     VALIDATE_NOT_NULL(event);
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(Obtain((IMotionEvent**)&ev));
+    AutoPtr<MotionEvent> ev = Obtain();
 
-    synchronized(gSharedTempLock) {
+    synchronized(sSharedTempLock) {
         const Int32 pointerCount = NativeGetPointerCount(mNativePtr);
 
         EnsureSharedTempPointerCapacity(pointerCount);
-        ArrayOf<IPointerProperties*>* pp = gSharedTempPointerProperties;
-        ArrayOf<IPointerCoords*>* pc = gSharedTempPointerCoords;
+        ArrayOf<IPointerProperties*>* pp = sSharedTempPointerProperties;
+        ArrayOf<IPointerCoords*>* pc = sSharedTempPointerCoords;
         Float x, y;
         for (Int32 i = 0; i < pointerCount; i++) {
             NativeGetPointerProperties(mNativePtr, i, (*pp)[i]);
@@ -2103,18 +1989,20 @@ ECode MotionEvent::ClampNoHistory(
             coords->SetY(Clamp(y, top, bottom));
         }
 
-        AutoPtr<MotionEvent> evObj = (MotionEvent*)ev.Get();
-        evObj->mNativePtr = NativeInitialize(evObj->mNativePtr,
-            NativeGetDeviceId(mNativePtr), NativeGetSource(mNativePtr),
-            NativeGetAction(mNativePtr), NativeGetFlags(mNativePtr),
-            NativeGetEdgeFlags(mNativePtr), NativeGetMetaState(mNativePtr),
-            NativeGetButtonState(mNativePtr),
-            NativeGetXOffset(mNativePtr), NativeGetYOffset(mNativePtr),
-            NativeGetXPrecision(mNativePtr), NativeGetYPrecision(mNativePtr),
-            NativeGetDownTimeNanos(mNativePtr),
-            NativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT),
-            pointerCount, pp, pc);
-        *event = ev;
+        Int64 id;
+        FAIL_RETURN(NativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT, &id));
+        Int64 ptr;
+        FAIL_RETURN(NativeInitialize(ev->mNativePtr,
+                NativeGetDeviceId(mNativePtr), NativeGetSource(mNativePtr),
+                NativeGetAction(mNativePtr), NativeGetFlags(mNativePtr),
+                NativeGetEdgeFlags(mNativePtr), NativeGetMetaState(mNativePtr),
+                NativeGetButtonState(mNativePtr),
+                NativeGetXOffset(mNativePtr), NativeGetYOffset(mNativePtr),
+                NativeGetXPrecision(mNativePtr), NativeGetYPrecision(mNativePtr),
+                NativeGetDownTimeNanos(mNativePtr),
+                id, pointerCount, pp, pc, &ptr));
+        ev->mNativePtr = ptr;
+        *event = (IMotionEvent*)ev.Get();
         REFCOUNT_ADD(*event);
     }
 
@@ -2129,7 +2017,9 @@ ECode MotionEvent::GetPointerIdBits(
     *idBits = 0;
     const Int32 pointerCount = NativeGetPointerCount(mNativePtr);
     for (Int32 i = 0; i < pointerCount; i++) {
-        *idBits |= 1 << NativeGetPointerId(mNativePtr, i);
+        Int32 id;
+        FAIL_RETURN(NativeGetPointerId(mNativePtr, i, &id));
+        *idBits |= 1 << id;
     }
     return NOERROR;
 }
@@ -2139,16 +2029,16 @@ ECode MotionEvent::Split(
     /* [out] */ IMotionEvent** event)
 {
     VALIDATE_NOT_NULL(event);
+    *event = NULL;
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(Obtain((IMotionEvent**)&ev));
+    AutoPtr<MotionEvent> ev = Obtain();
 
-    synchronized(gSharedTempLock) {
+    synchronized(sSharedTempLock) {
         const Int32 oldPointerCount = NativeGetPointerCount(mNativePtr);
         EnsureSharedTempPointerCapacity(oldPointerCount);
-        ArrayOf<IPointerProperties*>* pp = gSharedTempPointerProperties;
-        ArrayOf<IPointerCoords*>* pc = gSharedTempPointerCoords;
-        ArrayOf<Int32>* map = gSharedTempPointerIndexMap;
+        ArrayOf<IPointerProperties*>* pp = sSharedTempPointerProperties;
+        ArrayOf<IPointerCoords*>* pc = sSharedTempPointerCoords;
+        ArrayOf<Int32>* map = sSharedTempPointerIndexMap;
 
         const Int32 oldAction = NativeGetAction(mNativePtr);
         const Int32 oldActionMasked = oldAction & ACTION_MASK;
@@ -2208,24 +2098,27 @@ ECode MotionEvent::Split(
                 NativeGetPointerCoords(mNativePtr, (*map)[i], historyPos, (*pc)[i]);
             }
 
-            const Int64 eventTimeNanos = NativeGetEventTimeNanos(mNativePtr, historyPos);
-            AutoPtr<MotionEvent> evObj = (MotionEvent*)ev.Get();
+            Int64 eventTimeNanos;
+            FAIL_RETURN(NativeGetEventTimeNanos(mNativePtr, historyPos, &eventTimeNanos));
+
             if (h == 0) {
-                evObj->mNativePtr = NativeInitialize(evObj->mNativePtr,
-                    NativeGetDeviceId(mNativePtr), NativeGetSource(mNativePtr),
-                    newAction, NativeGetFlags(mNativePtr),
-                    NativeGetEdgeFlags(mNativePtr), NativeGetMetaState(mNativePtr),
-                    NativeGetButtonState(mNativePtr),
-                    NativeGetXOffset(mNativePtr), NativeGetYOffset(mNativePtr),
-                    NativeGetXPrecision(mNativePtr), NativeGetYPrecision(mNativePtr),
-                    NativeGetDownTimeNanos(mNativePtr), eventTimeNanos,
-                    newPointerCount, pp, pc);
+                Int64 ptr;
+                FAIL_RETURN(NativeInitialize(ev->mNativePtr,
+                        NativeGetDeviceId(mNativePtr), NativeGetSource(mNativePtr),
+                        newAction, NativeGetFlags(mNativePtr),
+                        NativeGetEdgeFlags(mNativePtr), NativeGetMetaState(mNativePtr),
+                        NativeGetButtonState(mNativePtr),
+                        NativeGetXOffset(mNativePtr), NativeGetYOffset(mNativePtr),
+                        NativeGetXPrecision(mNativePtr), NativeGetYPrecision(mNativePtr),
+                        NativeGetDownTimeNanos(mNativePtr), eventTimeNanos,
+                        newPointerCount, pp, pc, &ptr));
+                ev->mNativePtr = ptr;
             }
             else {
-                NativeAddBatch(evObj->mNativePtr, eventTimeNanos, pc, 0);
+                FAIL_RETURN(NativeAddBatch(ev->mNativePtr, eventTimeNanos, pc, 0));
             }
         }
-        *event = ev;
+        *event = (IMotionEvent*)ev.Get();
         REFCOUNT_ADD(*event);
     }
 
@@ -2370,8 +2263,9 @@ ECode MotionEvent::AxisFromString(
     /* [out] */ Int32* axis)
 {
     VALIDATE_NOT_NULL(axis);
-    String str = symbolicName;
+    *axis = -1;
 
+    String str = symbolicName;
     if (symbolicName.StartWith(LABEL_PREFIX)) {
         str = symbolicName.Substring(LABEL_PREFIX.GetLength());
         Int32 a = NativeAxisFromString(str);
@@ -2381,13 +2275,11 @@ ECode MotionEvent::AxisFromString(
         }
     }
 
-    *axis = StringUtils::ParseInt32(str, 10);
+    ECode ec = StringUtils::Parse(str, 10, axis);
+    if (FAILED(ec)) {
+        return E_NUMBER_FORMAT_EXCEPTION;
+    }
     return NOERROR;
-    // try {
-    //     return Integer.parseInt(symbolicName, 10);
-    // } catch (NumberFormatException ex) {
-    //     return -1;
-    // }
 }
 
 String MotionEvent::ButtonStateToString(
@@ -2452,11 +2344,11 @@ ECode MotionEvent::CreateFromParcelBody(
 {
     VALIDATE_NOT_NULL(event);
 
-    AutoPtr<IMotionEvent> ev;
-    FAIL_RETURN(Obtain((IMotionEvent**)&ev));
-    AutoPtr<MotionEvent> evObj = (MotionEvent*)ev.Get();
-    evObj->mNativePtr = NativeReadFromParcel(evObj->mNativePtr, in);
-    *event = ev;
+    AutoPtr<MotionEvent> ev = Obtain();
+    Int64 ptr;
+    FAIL_RETURN(NativeReadFromParcel(ev->mNativePtr, in, &ptr));
+    ev->mNativePtr = ptr;
+    *event = (IMotionEvent*)ev.Get();
     REFCOUNT_ADD(*event);
     return NOERROR;
 }
@@ -2475,7 +2367,7 @@ ECode MotionEvent::ReadFromParcel(
 {
     Int32 parcelToken;
     source->ReadInt32(&parcelToken); // skip token, we already know this is a MotionEvent
-    mNativePtr = NativeReadFromParcel(mNativePtr, source);
+    FAIL_RETURN(NativeReadFromParcel(mNativePtr, source, &mNativePtr));
 
     return NOERROR;
 }
@@ -2506,7 +2398,7 @@ Int64 MotionEvent::GetNativePtr()
     return mNativePtr;
 }
 
-Int64 MotionEvent::NativeInitialize(
+ECode MotionEvent::NativeInitialize(
     /* [in] */ Int64 nativePtr,
     /* [in] */ Int32 deviceId,
     /* [in] */ Int32 source,
@@ -2523,13 +2415,15 @@ Int64 MotionEvent::NativeInitialize(
     /* [in] */ Int64 eventTimeNanos,
     /* [in] */ Int32 pointerCount,
     /* [in] */ ArrayOf<IPointerProperties*>* pointerPropertiesObjArray,
-    /* [in] */ ArrayOf<IPointerCoords*>* pointerCoordsObjArray)
+    /* [in] */ ArrayOf<IPointerCoords*>* pointerCoordsObjArray,
+    /* [out] */ Int64* resultPtr)
 {
-    if (!ValidatePointerCount(pointerCount)
-            || !ValidatePointerPropertiesArray(pointerPropertiesObjArray, pointerCount)
-            || !ValidatePointerCoordsObjArray(pointerCoordsObjArray, pointerCount)) {
-        return 0;
-    }
+    VALIDATE_NOT_NULL(resultPtr);
+    *resultPtr = 0;
+
+    FAIL_RETURN(ValidatePointerCount(pointerCount));
+    FAIL_RETURN(ValidatePointerPropertiesArray(pointerPropertiesObjArray, pointerCount));
+    FAIL_RETURN(ValidatePointerCoordsObjArray(pointerCoordsObjArray, pointerCount));
 
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     if (!event) {
@@ -2558,13 +2452,15 @@ Int64 MotionEvent::NativeInitialize(
             xOffset, yOffset, xPrecision, yPrecision,
             downTimeNanos, eventTimeNanos, pointerCount, pointerProperties, rawPointerCoords);
 
-    return reinterpret_cast<Int64>(event);
+    *resultPtr = reinterpret_cast<Int64>(event);
+    return NOERROR;
 
 Error:
     if (!nativePtr) {
         delete event;
     }
-    return 0;
+    *resultPtr = 0;
+    return NOERROR;
 }
 
 Int64 MotionEvent::NativeCopy(
@@ -2581,14 +2477,14 @@ Int64 MotionEvent::NativeCopy(
     return reinterpret_cast<Int64>(destEvent);
 }
 
-void MotionEvent::NativeDisPose(
+void MotionEvent::NativeDispose(
     /* [in] */ Int64 nativePtr)
 {
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     delete event;
 }
 
-void MotionEvent::NativeAddBatch(
+ECode MotionEvent::NativeAddBatch(
     /* [in] */ Int64 nativePtr,
     /* [in] */ Int64 eventTimeNanos,
     /* [in] */ ArrayOf<IPointerCoords*>* pointerCoordsObjArray,
@@ -2596,18 +2492,15 @@ void MotionEvent::NativeAddBatch(
 {
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     size_t pointerCount = event->getPointerCount();
-    if (!ValidatePointerCoordsObjArray(pointerCoordsObjArray, pointerCount)) {
-        return;
-    }
+    FAIL_RETURN(ValidatePointerCoordsObjArray(pointerCoordsObjArray, pointerCount));
 
     android::PointerCoords rawPointerCoords[pointerCount];
 
     for (size_t i = 0; i < pointerCount; i++) {
         AutoPtr<IPointerCoords> pointerCoordsObj = (*pointerCoordsObjArray)[i];
         if (!pointerCoordsObj) {
-            assert(0);
             // jniThrowNullPointerException(env, "pointerCoords");
-            return;
+            return E_NULL_POINTER_EXCEPTION;
         }
         PointerCoordsToNative(pointerCoordsObj,
                 event->getXOffset(), event->getYOffset(), &rawPointerCoords[i]);
@@ -2615,6 +2508,7 @@ void MotionEvent::NativeAddBatch(
 
     event->addSample(eventTimeNanos, rawPointerCoords);
     event->setMetaState(event->getMetaState() | metaState);
+    return NOERROR;
 }
 
 Int32 MotionEvent::NativeGetDeviceId(
@@ -2764,28 +2658,36 @@ Int32 MotionEvent::NativeGetPointerCount(
     return Int32(event->getPointerCount());
 }
 
-Int32 MotionEvent::NativeGetPointerId(
+ECode MotionEvent::NativeGetPointerId(
     /* [in] */ Int64 nativePtr,
-    /* [in] */ Int32 pointerIndex)
+    /* [in] */ Int32 pointerIndex,
+    /* [out] */ Int32* id)
 {
+    VALIDATE_NOT_NULL(id);
+    *id = -1;
+
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     size_t pointerCount = event->getPointerCount();
-    if (!ValidatePointerIndex(pointerIndex, pointerCount)) {
-        return -1;
-    }
-    return event->getPointerId(pointerIndex);
+    FAIL_RETURN(ValidatePointerIndex(pointerIndex, pointerCount));
+
+    *id = event->getPointerId(pointerIndex);
+    return NOERROR;
 }
 
-Int32 MotionEvent::NativeGetToolType(
+ECode MotionEvent::NativeGetToolType(
     /* [in] */ Int64 nativePtr,
-    /* [in] */ Int32 pointerIndex)
+    /* [in] */ Int32 pointerIndex,
+    /* [out] */ Int32* id)
 {
+    VALIDATE_NOT_NULL(id);
+    *id = -1;
+
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     size_t pointerCount = event->getPointerCount();
-    if (!ValidatePointerIndex(pointerIndex, pointerCount)) {
-        return -1;
-    }
-    return event->getToolType(pointerIndex);
+    FAIL_RETURN(ValidatePointerIndex(pointerIndex, pointerCount));
+
+    *id = event->getToolType(pointerIndex);
+    return NOERROR;
 }
 
 Int32 MotionEvent::NativeFindPointerIndex(
@@ -2803,72 +2705,83 @@ Int32 MotionEvent::NativeGetHistorySize(
     return Int32(event->getHistorySize());
 }
 
-Int64 MotionEvent::NativeGetEventTimeNanos(
+ECode MotionEvent::NativeGetEventTimeNanos(
     /* [in] */ Int64 nativePtr,
-    /* [in] */ Int32 historyPos)
+    /* [in] */ Int32 historyPos,
+    /* [out] */ Int64* id)
 {
+    VALIDATE_NOT_NULL(id);
+    *id = 0;
+
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     if (historyPos == HISTORY_CURRENT) {
-        return event->getEventTime();
+        *id = event->getEventTime();
+        return NOERROR;
     }
     else {
         size_t historySize = event->getHistorySize();
-        if (!ValidateHistoryPos(historyPos, historySize)) {
-            return 0;
-        }
-        return event->getHistoricalEventTime(historyPos);
+        FAIL_RETURN(ValidateHistoryPos(historyPos, historySize));
+
+        *id = event->getHistoricalEventTime(historyPos);
+        return NOERROR;
     }
 }
 
-Float MotionEvent::NativeGetRawAxisValue(
-    /* [in] */ Int64 nativePtr,
-    /* [in] */ Int32 axis,
-    /* [in] */ Int32 pointerIndex,
-    /* [in] */ Int32 historyPos)
-{
-    android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
-    size_t pointerCount = event->getPointerCount();
-    if (!ValidatePointerIndex(pointerIndex, pointerCount)) {
-        return 0;
-    }
-
-    if (historyPos == HISTORY_CURRENT) {
-        return event->getRawAxisValue(axis, pointerIndex);
-    }
-    else {
-        size_t historySize = event->getHistorySize();
-        if (!ValidateHistoryPos(historyPos, historySize)) {
-            return 0;
-        }
-        return event->getHistoricalRawAxisValue(axis, pointerIndex, historyPos);
-    }
-}
-
-Float MotionEvent::NativeGetAxisValue(
+ECode MotionEvent::NativeGetRawAxisValue(
     /* [in] */ Int64 nativePtr,
     /* [in] */ Int32 axis,
     /* [in] */ Int32 pointerIndex,
-    /* [in] */ Int32 historyPos)
+    /* [in] */ Int32 historyPos,
+    /* [out] */ Float* id)
 {
+    VALIDATE_NOT_NULL(id);
+    *id = 0;
+
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     size_t pointerCount = event->getPointerCount();
-    if (!ValidatePointerIndex(pointerIndex, pointerCount)) {
-        return 0;
-    }
+    FAIL_RETURN(ValidatePointerIndex(pointerIndex, pointerCount));
 
     if (historyPos == HISTORY_CURRENT) {
-        return event->getAxisValue(axis, pointerIndex);
+        *id = event->getRawAxisValue(axis, pointerIndex);
+        return NOERROR;
     }
     else {
         size_t historySize = event->getHistorySize();
-        if (!ValidateHistoryPos(historyPos, historySize)) {
-            return 0;
-        }
-        return event->getHistoricalAxisValue(axis, pointerIndex, historyPos);
+        FAIL_RETURN(ValidateHistoryPos(historyPos, historySize));
+
+        *id = event->getHistoricalRawAxisValue(axis, pointerIndex, historyPos);
+        return NOERROR;
     }
 }
 
-void MotionEvent::NativeGetPointerCoords(
+ECode MotionEvent::NativeGetAxisValue(
+    /* [in] */ Int64 nativePtr,
+    /* [in] */ Int32 axis,
+    /* [in] */ Int32 pointerIndex,
+    /* [in] */ Int32 historyPos,
+    /* [out] */ Float* id)
+{
+    VALIDATE_NOT_NULL(id);
+    *id = 0;
+
+    android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
+    size_t pointerCount = event->getPointerCount();
+    FAIL_RETURN(ValidatePointerIndex(pointerIndex, pointerCount));
+
+    if (historyPos == HISTORY_CURRENT) {
+        *id = event->getAxisValue(axis, pointerIndex);
+        return NOERROR;
+    }
+    else {
+        size_t historySize = event->getHistorySize();
+        FAIL_RETURN(ValidateHistoryPos(historyPos, historySize));
+
+        *id = event->getHistoricalAxisValue(axis, pointerIndex, historyPos);
+        return NOERROR;
+    }
+}
+
+ECode MotionEvent::NativeGetPointerCoords(
     /* [in] */ Int64 nativePtr,
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 historyPos,
@@ -2876,10 +2789,8 @@ void MotionEvent::NativeGetPointerCoords(
 {
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     size_t pointerCount = event->getPointerCount();
-    if (!ValidatePointerIndex(pointerIndex, pointerCount)
-            || !ValidatePointerCoords(outPointerCoordsObj)) {
-        return;
-    }
+    FAIL_RETURN(ValidatePointerIndex(pointerIndex, pointerCount));
+    FAIL_RETURN(ValidatePointerCoords(outPointerCoordsObj));
 
     const android::PointerCoords* rawPointerCoords;
     if (historyPos == HISTORY_CURRENT) {
@@ -2887,29 +2798,28 @@ void MotionEvent::NativeGetPointerCoords(
     }
     else {
         size_t historySize = event->getHistorySize();
-        if (!ValidateHistoryPos(historyPos, historySize)) {
-            return;
-        }
+        FAIL_RETURN(ValidateHistoryPos(historyPos, historySize));
+
         rawPointerCoords = event->getHistoricalRawPointerCoords(pointerIndex, historyPos);
     }
     PointerCoordsFromNative(rawPointerCoords, event->getXOffset(), event->getYOffset(),
             outPointerCoordsObj);
+    return NOERROR;
 }
 
-void MotionEvent::NativeGetPointerProperties(
+ECode MotionEvent::NativeGetPointerProperties(
     /* [in] */ Int64 nativePtr,
     /* [in] */ Int32 pointerIndex,
     /* [in, out] */ IPointerProperties* outPointerPropertiesObj)
 {
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     size_t pointerCount = event->getPointerCount();
-    if (!ValidatePointerIndex(pointerIndex, pointerCount)
-            || !ValidatePointerProperties(outPointerPropertiesObj)) {
-        return;
-    }
+    FAIL_RETURN(ValidatePointerIndex(pointerIndex, pointerCount));
+    FAIL_RETURN(ValidatePointerProperties(outPointerPropertiesObj));
 
     const android::PointerProperties* pointerProperties = event->getPointerProperties(pointerIndex);
     PointerPropertiesFromNative(pointerProperties, outPointerPropertiesObj);
+    return NOERROR;
 }
 
 void MotionEvent::NativeScale(
@@ -2940,10 +2850,14 @@ void MotionEvent::NativeTransform(
     event->transform(m);
 }
 
-Int64 MotionEvent::NativeReadFromParcel(
+ECode MotionEvent::NativeReadFromParcel(
     /* [in] */ Int64 nativePtr,
-    /* [in] */ IParcel* parcelObj)
+    /* [in] */ IParcel* parcelObj,
+    /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = 0;
+
     android::MotionEvent* event = reinterpret_cast<android::MotionEvent*>(nativePtr);
     if (!event) {
         event = new android::MotionEvent();
@@ -2957,14 +2871,14 @@ Int64 MotionEvent::NativeReadFromParcel(
         if (!nativePtr) {
             delete event;
         }
-        assert(0);
-//        jniThrowRuntimeException(env, "Failed to read MotionEvent parcel.");
-        return 0;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return reinterpret_cast<Int64>(event);
+
+    *result = reinterpret_cast<Int64>(event);
+    return NOERROR;
 }
 
-void MotionEvent::NativeWriteToParcel(
+ECode MotionEvent::NativeWriteToParcel(
     /* [in] */ Int64 nativePtr,
     /* [in] */ IParcel* parcelObj)
 {
@@ -2974,9 +2888,10 @@ void MotionEvent::NativeWriteToParcel(
 
     android::status_t status = event->writeToParcel(parcel);
     if (status) {
-        assert(0);
-//        jniThrowRuntimeException(env, "Failed to write MotionEvent parcel.");
+       // jniThrowRuntimeException(env, "Failed to write MotionEvent parcel.");
+       return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
 String MotionEvent::NativeAxisToString(
