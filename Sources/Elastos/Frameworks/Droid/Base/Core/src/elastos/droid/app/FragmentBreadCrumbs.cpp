@@ -1,23 +1,21 @@
 
 #include "elastos/droid/app/FragmentBreadCrumbs.h"
 #include "elastos/droid/app/CBackStackRecord.h"
+#include "elastos/droid/animation/CLayoutTransition.h"
 #include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/Gravity.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Animation::ILayoutTransition;
-using Elastos::Droid::App::IFragmentManagerBackStackEntry;
-using Elastos::Droid::App::IFragmentManagerOnBackStackChangedListener;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Util::IAttributeSet;
+using Elastos::Droid::Animation::CLayoutTransition;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::IGravity;
-using Elastos::Droid::View::ILayoutInflater;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::View::IViewOnClickListener;
-using Elastos::Droid::Widget::ILinearLayout;
+using Elastos::Droid::View::Gravity;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::R;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -41,7 +39,7 @@ ECode FragmentBreadCrumbs::MyOnClickListener::OnClick(
     v->GetTag((IInterface**)&obj);
     IFragmentManagerBackStackEntry* bse = IFragmentManagerBackStackEntry::Probe(obj);
     if (bse) {
-        if (bse == IFragmentManagerBackStackEntry::Probe(mParentEntry) {
+        if (bse == IFragmentManagerBackStackEntry::Probe(mHost->mParentEntry)) {
             if (mHost->mParentClickListener != NULL) {
                 mHost->mParentClickListener->OnClick(v);
             }
@@ -50,14 +48,14 @@ ECode FragmentBreadCrumbs::MyOnClickListener::OnClick(
             if (mHost->mOnBreadCrumbClickListener != NULL) {
                 Boolean bval;
                 mHost->mOnBreadCrumbClickListener->OnBreadCrumbClick(
-                    bse == mTopEntry ? NULL : bse, 0, &bval)
+                    bse == IFragmentManagerBackStackEntry::Probe(mHost->mTopEntry) ? NULL : bse, 0, &bval);
                 if (bval) {
                     return NOERROR;
                 }
             }
             AutoPtr<IFragmentManager> mgr;
             mHost->mActivity->GetFragmentManager((IFragmentManager**)&mgr);
-            if (bse == mTopEntry) {
+            if (bse == IFragmentManagerBackStackEntry::Probe(mHost->mTopEntry)) {
                 // Pop everything off the back stack.
                 mgr->PopBackStack();
             }
@@ -74,6 +72,7 @@ ECode FragmentBreadCrumbs::MyOnClickListener::OnClick(
 //==============================================================================
 // FragmentBreadCrumbs
 //==============================================================================
+const String FragmentBreadCrumbs::TAG("FragmentBreadCrumbs");
 const Int32 FragmentBreadCrumbs::DEFAULT_GRAVITY = IGravity::START | IGravity::CENTER_VERTICAL;
 
 CAR_INTERFACE_IMPL_2(FragmentBreadCrumbs, ViewGroup, IFragmentBreadCrumbs, IFragmentManagerOnBackStackChangedListener)
@@ -121,7 +120,7 @@ ECode FragmentBreadCrumbs::constructor(
         const_cast<Int32 *>(R::styleable::FragmentBreadCrumbs),
         ARRAY_SIZE(R::styleable::FragmentBreadCrumbs));
     AutoPtr<ITypedArray>  a;
-    context->ObtainStyledAttributes(attr, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     a->GetInt32(R::styleable::FragmentBreadCrumbs_gravity,
         DEFAULT_GRAVITY, &mGravity);
@@ -131,7 +130,8 @@ ECode FragmentBreadCrumbs::constructor(
     a->GetColor(
         R::styleable::FragmentBreadCrumbs_itemColor, 0, &mTextColor);
 
-    a.recycle();
+    a->Recycle();
+    return NOERROR;
 }
 
 ECode FragmentBreadCrumbs::SetActivity(
@@ -139,19 +139,19 @@ ECode FragmentBreadCrumbs::SetActivity(
 {
     mActivity = a;
     AutoPtr<IInterface> obj;
-    a->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
+    IContext::Probe(a)->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
     mInflater = ILayoutInflater::Probe(obj);
     AutoPtr<IView> view;
     mInflater->Inflate(
        R::layout::fragment_bread_crumbs, this, FALSE, (IView**)&view);
     mContainer = ILinearLayout::Probe(view);
-    AddView(mContainer);
+    AddView(view);
     AutoPtr<IFragmentManager> mgr;
     a->GetFragmentManager((IFragmentManager**)&mgr);
     mgr->AddOnBackStackChangedListener(this);
     UpdateCrumbs();
     AutoPtr<ILayoutTransition> layoutTransition;
-    CLayoutTransition::New((ILayoutTransition**)&layoutTransition)
+    CLayoutTransition::New((ILayoutTransition**)&layoutTransition);
     SetLayoutTransition(layoutTransition);
     return NOERROR;
 }
@@ -185,7 +185,7 @@ ECode FragmentBreadCrumbs::SetOnBreadCrumbClickListener(
     return NOERROR;
 }
 
-AutoPtr<IBackStackRecord> CreateBackStackEntry(
+AutoPtr<IBackStackRecord> FragmentBreadCrumbs::CreateBackStackEntry(
     /* [in] */ ICharSequence* title,
     /* [in] */ ICharSequence* shortTitle)
 {
@@ -195,8 +195,8 @@ AutoPtr<IBackStackRecord> CreateBackStackEntry(
     mActivity->GetFragmentManager((IFragmentManager**)&mgr);
     AutoPtr<IBackStackRecord> entry;
     CBackStackRecord::New(IFragmentManagerImpl::Probe(mgr), (IBackStackRecord**)&entry);
-    entry->SetBreadCrumbTitle(title);
-    entry->SetBreadCrumbShortTitle(shortTitle);
+    IFragmentTransaction::Probe(entry)->SetBreadCrumbTitle(title);
+    IFragmentTransaction::Probe(entry)->SetBreadCrumbShortTitle(shortTitle);
     return entry;
 }
 
@@ -274,8 +274,8 @@ void FragmentBreadCrumbs::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    Int32 childCount;
-    GetChildCount(&childCount);
+    Int32 count;
+    GetChildCount(&count);
 
     Int32 maxHeight = 0;
     Int32 maxWidth = 0;
@@ -284,12 +284,13 @@ void FragmentBreadCrumbs::OnMeasure(
 
     using Elastos::Core::Math;
 
-    Int32 mh, mw;
+    Int32 mh, mw, visibility;
     // Find rightmost and bottom-most child
     for (Int32 i = 0; i < count; i++) {
         AutoPtr<IView> child;
         GetChildAt(i, (IView**)&child);
-        if (child->getVisibility() != GONE) {
+        child->GetVisibility(&visibility);
+        if (visibility != GONE) {
             MeasureChild(child, widthMeasureSpec, heightMeasureSpec);
             child->GetMeasuredWidth(&mw);
             child->GetMeasuredHeight(&mh);
@@ -305,11 +306,8 @@ void FragmentBreadCrumbs::OnMeasure(
     maxHeight += mPaddingTop + mPaddingBottom;
 
     // Check against our minimum height and width
-    GetSuggestedMinimumHeight(&mh);
-    GetSuggestedMinimumWidth(&mw);
-
-    maxHeight = Math::Max(maxHeight, mh);
-    maxWidth = Math::Max(maxWidth, mw);
+    maxHeight = Math::Max(maxHeight, GetSuggestedMinimumHeight());
+    maxWidth = Math::Max(maxWidth, GetSuggestedMinimumWidth());
 
     SetMeasuredDimension(
         ResolveSizeAndState(maxWidth, widthMeasureSpec, measuredChildState),
@@ -332,9 +330,12 @@ AutoPtr<IFragmentManagerBackStackEntry> FragmentBreadCrumbs::GetPreEntry(
 {
     // If there's a parent entry, then return that for zero'th item, else top entry.
     if (mParentEntry != NULL) {
-        return index == 0 ? mParentEntry : mTopEntry;
-    } else {
-        return mTopEntry;
+        return index == 0 ?
+            IFragmentManagerBackStackEntry::Probe(mParentEntry)
+            : IFragmentManagerBackStackEntry::Probe(mTopEntry);
+    }
+    else {
+        return IFragmentManagerBackStackEntry::Probe(mTopEntry);
     }
 }
 
@@ -344,25 +345,27 @@ ECode FragmentBreadCrumbs::UpdateCrumbs()
     mActivity->GetFragmentManager((IFragmentManager**)&fm);
     Int32 numEntries, numPreEntries, numViews;
     fm->GetBackStackEntryCount(&numEntries);
-    fm->GetPreEntryCount(&numPreEntries);
-    fm->GetChildCount(&numViews);
+    numPreEntries = GetPreEntryCount();
+    IViewGroup* cvp = IViewGroup::Probe(mContainer);
+    cvp->GetChildCount(&numViews);
+
 
     for (Int32 i = 0; i < numEntries + numPreEntries; i++) {
         AutoPtr<IFragmentManagerBackStackEntry> bse;
         if (i < numPreEntries) {
-            bse = GetPreEntry(i)
+            bse = GetPreEntry(i);
         }
         else {
             fm->GetBackStackEntryAt(i - numPreEntries, (IFragmentManagerBackStackEntry**)&bse);
         }
         if (i < numViews) {
             AutoPtr<IView> v;
-            mContainer->GetChildAt(i, (IView**)&i);
+            cvp->GetChildAt(i, (IView**)&i);
             AutoPtr<IInterface> tag;
             v->GetTag((IInterface**)&tag);
             if (IFragmentManagerBackStackEntry::Probe(tag) != bse) {
                 for (Int32 j = i; j < numViews; j++) {
-                    mContainer->RemoveViewAt(i);
+                    cvp->RemoveViewAt(i);
                 }
                 numViews = i;
             }
@@ -371,33 +374,32 @@ ECode FragmentBreadCrumbs::UpdateCrumbs()
         if (i >= numViews) {
             AutoPtr<IView> item, tv, tmp;
             mInflater->Inflate(mLayoutResId, this, FALSE, (IView**)&item);
-            item.findViewById(R::id::title, (IView**)&tv);
+            item->FindViewById(R::id::title, (IView**)&tv);
             AutoPtr<ITextView> text = ITextView::Probe(tv);
             AutoPtr<ICharSequence> bct;
             bse->GetBreadCrumbTitle((ICharSequence**)&bct);
-            text->SetTextbct);
-            text>SetTag(bse);
-            text>SetTextColor(mTextColor);
+            text->SetText(bct);
+            IView::Probe(text)->SetTag(bse.Get());
+            text->SetTextColor(mTextColor);
             if (i == 0) {
                 item->FindViewById(R::id::left_icon, (IView**)&tmp);
-                v->SetVisibility(IView::GONE);
+                tmp->SetVisibility(IView::GONE);
             }
-            mContainer->AddView(item);
-            text->SetOnClickListener(mOnClickListener);
+            cvp->AddView(item);
+            IView::Probe(text)->SetOnClickListener(mOnClickListener);
         }
     }
 
     Int32 viewI = numEntries + numPreEntries;
-    numViews;
-    mContainer->GetChildCount(&numViews);
+    cvp->GetChildCount(&numViews);
     while (numViews > viewI) {
-        mContainer->RemoveViewAt(numViews - 1);
+        cvp->RemoveViewAt(numViews - 1);
         numViews--;
     }
     // Adjust the visibility and availability of the bread crumbs and divider
     for (Int32 i = 0; i < numViews; i++) {
         AutoPtr<IView> child;
-        mContainer->GetChildAt(i, (IView**)&child);
+        cvp->GetChildAt(i, (IView**)&child);
         // Disable the last one
         AutoPtr<IView> tmp;
         child->FindViewById(R::id::title, (IView**)&tmp);

@@ -1,4 +1,5 @@
 #include "elastos/droid/app/NotificationStyle.h"
+#include "elastos/droid/app/CNotificationBuilder.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/R.h"
 
@@ -8,6 +9,8 @@ using Elastos::Droid::R;
 namespace Elastos {
 namespace Droid {
 namespace App {
+
+CAR_INTERFACE_IMPL(NotificationStyle, Object, INotificationStyle)
 
 NotificationStyle::NotificationStyle()
     : mSummaryTextSet(FALSE)
@@ -24,11 +27,12 @@ ECode NotificationStyle::SetBuilder(
     if (mBuilder.Get() != builder) {
         mBuilder = builder;
         if (mBuilder != NULL) {
-            mBuilder->SetStyle((INotificationStyle*)this->Probe(EIID_INotificationStyle));
+            mBuilder->SetStyle((INotificationStyle*)this);
         }
     }
     return NOERROR;
 }
+
 void NotificationStyle::InternalSetBigContentTitle(
     /* [in] */ ICharSequence *title)
 {
@@ -107,71 +111,93 @@ AutoPtr<IRemoteViews> NotificationStyle::GetStandardView(
 ECode NotificationStyle::ApplyTopPadding(
     /* [in] */ IRemoteViews* contentView)
 {
-    int topPadding = Builder.calculateTopPadding(mBuilder.mContext,
-            mBuilder.mHasThreeLines,
-            mBuilder.mContext.getResources().getConfiguration().fontScale);
-    contentView.setViewPadding(R.id.line1, 0, topPadding, 0, 0);
+    AutoPtr<IResources> res;
+    mBuilder->mContext->GetResources((IResources**)&res);
+    AutoPtr<IConfiguration> cfg;
+    res->GetConfiguration((IConfiguration**)&cfg)
+    Float fontScale;
+    cfg->GetFontScale(&fontScale);
+    Int32 topPadding = CNotificationBuilder::CalculateTopPadding(
+        mBuilder->mContext,
+        mBuilder->mHasThreeLines, fontScale);
+    return contentView->SetViewPadding(R::id::line1, 0, topPadding, 0, 0);
 }
 
 ECode NotificationStyle::AddExtras(
     /* [in] */ IBundle* extras)
 {
     if (mSummaryTextSet) {
-        extras.putCharSequence(EXTRA_SUMMARY_TEXT, mSummaryText);
+        extras->PutCharSequence(EXTRA_SUMMARY_TEXT, mSummaryText);
     }
     if (mBigContentTitle != null) {
-        extras.putCharSequence(EXTRA_TITLE_BIG, mBigContentTitle);
+        extras->PutCharSequence(EXTRA_TITLE_BIG, mBigContentTitle);
     }
-    extras.putString(EXTRA_TEMPLATE, this.getClass().getName());
+    extras->PutString(EXTRA_TEMPLATE, String("CNotificationStyle"));
+    return NOERROR;
 }
 
 ECode NotificationStyle::RestoreFromExtras(
     /* [in] */ IBundle* extras)
 {
-    if (extras.containsKey(EXTRA_SUMMARY_TEXT)) {
-        mSummaryText = extras.getCharSequence(EXTRA_SUMMARY_TEXT);
-        mSummaryTextSet = true;
+    Boolean bval;
+    extras->ContainsKey(EXTRA_SUMMARY_TEXT, &bval);
+    if (bval) {
+        mSummaryText = NULL;
+        extras->GetCharSequence(EXTRA_SUMMARY_TEXT, (ICharSequence**)&mSummaryText);
+        mSummaryTextSet = TRUE;
     }
-    if (extras.containsKey(EXTRA_TITLE_BIG)) {
-        mBigContentTitle = extras.getCharSequence(EXTRA_TITLE_BIG);
+    extras->ContainsKey(EXTRA_TITLE_BIG, &bval)
+    if (bval)) {
+        mBigContentTitle = NULL;
+        extras->GetCharSequence(EXTRA_TITLE_BIG, (ICharSequence**)&mBigContentTitle);
     }
+    return NOERROR;
 }
 
 AutoPtr<INotification> NotificationStyle::BuildStyled(
     /* [in] */ INotification* wip)
 {
-    populateTickerView(wip);
-    populateContentView(wip);
-    populateBigContentView(wip);
-    populateHeadsUpContentView(wip);
+    PopulateTickerView(wip);
+    PopulateContentView(wip);
+    PopulateBigContentView(wip);
+    PopulateHeadsUpContentView(wip);
     return wip;
 }
 
 ECode NotificationStyle::PopulateTickerView(
     /* [in] */ INotification* wip)
-{}
+{
+    return NOERROR;
+}
 
 ECode NotificationStyle::PopulateContentView(
     /* [in] */ INotification* wip)
-{}
+{
+    return NOERROR;
+}
 
 ECode NotificationStyle::PopulateBigContentView(
     /* [in] */ INotification* wip)
-{}
+{
+    return NOERROR;
+}
 
 ECode NotificationStyle::PopulateHeadsUpContentView(
     /* [in] */ INotification* wip)
-{}
+{
+    return NOERROR;
+}
 
 ECode NotificationStyle::Build(
     /* [out] */ INotification** result)
 {
     VALIDATE_NOT_NULL(result)
-    CheckBuilder();
+    *result = NULL;
+    FAIL_RETURN(CheckBuilder())
     return mBuilder->Build();
 }
 
-Boolean HasProgress()
+Boolean NotificationStyle::HasProgress()
 {
     return TRUE;
 }

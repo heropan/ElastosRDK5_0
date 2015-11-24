@@ -14651,6 +14651,28 @@ ECode View::SetPaddingRelative(
     return NOERROR;
 }
 
+ECode View::GetPadding(
+    /* [out] */ Int32* left,
+    /* [out] */ Int32* top,
+    /* [out] */ Int32* right,
+    /* [out] */ Int32* bottom)
+{
+    if (left != NULL) {
+        *left = mPaddingLeft;
+    }
+    if (top != NULL) {
+        *top = mPaddingTop;
+    }
+    if (right != NULL) {
+        *right = mPaddingRight;
+    }
+    if (bottom != NULL) {
+        *bottom = mPaddingBottom;
+    }
+
+    return NOERROR;
+}
+
 /**
  * Returns the top padding of this view.
  *

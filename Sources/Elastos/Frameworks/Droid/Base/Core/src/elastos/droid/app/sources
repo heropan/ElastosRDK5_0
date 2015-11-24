@@ -79,7 +79,7 @@ SOURCES += ExitTransitionCoordinator.cpp
 SOURCES += FastBitmapDrawable.cpp
 SOURCES += Fragment.cpp
 SOURCES += CFragmentHelper.cpp
-##SOURCES += FragmentBreadCrumbs.cpp
+SOURCES += FragmentBreadCrumbs.cpp
 SOURCES += FragmentManager.cpp
 SOURCES += CFragmentManagerHelper.cpp
 SOURCES += FragmentManagerImpl.cpp
@@ -92,10 +92,10 @@ SOURCES += Instrumentation.cpp
 SOURCES += CInstrumentationHelper.cpp
 SOURCES += CInstrumentationActivityMonitor.cpp
 SOURCES += CInstrumentationActivityResult.cpp
-##SOURCES += IntentService.cpp
-##SOURCES += JobSchedulerImpl.cpp
-#SOURCES += CKeyguardManager.cpp
-#SOURCES += CKyeguardManagerKeyguardLock.cpp
+SOURCES += IntentService.cpp
+SOURCES += JobSchedulerImpl.cpp
+SOURCES += CKeyguardManager.cpp
+SOURCES += COnKeyguardExitResult.cpp
 #SOURCES += LauncherActivity.cpp
 #SOURCES += ListActivity.cpp
 #SOURCES += ListFragment.cpp
@@ -105,8 +105,8 @@ SOURCES += CInnerReceiver.cpp
 SOURCES += CInnerConnection.cpp
 #SOURCES += LoaderManager.cpp
 #SOURCES += LocalActivityManager.cpp
-#SOURCES += MediaRouteActionProvider.cpp
-#SOURCES += MediaRouteButton.cpp
+SOURCES += MediaRouteActionProvider.cpp
+SOURCES += MediaRouteButton.cpp
 #SOURCES += NativeActivity.cpp
 
 #SOURCES += CNativeContentView.cpp
@@ -117,6 +117,7 @@ SOURCES += CInnerConnection.cpp
 #SOURCES += CNotificationBigPictureStyle.cpp
 #SOURCES += CNotificationBigTextStyle.cpp
 #SOURCES += CNotificationInboxStyle.cpp
+#SOURCES += CNotificationMediaStyle.cpp
 #SOURCES += NotificationManager.cpp
 
 SOURCES += PackageDeleteObserver.cpp
@@ -157,11 +158,12 @@ SOURCES += CWallpaperManager.cpp
 SOURCES += CWallpaperManagerHelper.cpp
 SOURCES += CGlobalsWallpaperManagerCallback.cpp
 
+#SOURCES += WearableExtender.cpp
+
 #============================================
 
 #SOURCES += CActionBarLayoutParams.cpp
 #SOURCES += ReceiverRestrictedContext.cpp
-#SOURCES += COnKeyguardExitResult.cpp
 #SOURCES += COnActivityPausedListener.cpp
 #SOURCES += CPermissionController.cpp
 #SOURCES += CActionBarImpl.cpp

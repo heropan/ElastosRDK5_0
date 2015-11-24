@@ -6328,6 +6328,12 @@ module
                 [in] Int32 right,
                 [in] Int32 bottom);
 
+            GetPadding(
+                [out] Int32* left,
+                [out] Int32* top,
+                [out] Int32* right,
+                [out] Int32* bottom);
+
             /**
              * Sets the relative padding. The view may add on the space required to display
              * the scrollbars, depending on the style and visibility of the scrollbars.

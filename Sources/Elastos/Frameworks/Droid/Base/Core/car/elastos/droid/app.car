@@ -163,6 +163,7 @@ module
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.View.IViewManager;
     interface Elastos.Droid.View.IViewParent;
@@ -174,6 +175,8 @@ module
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
     interface Elastos.Droid.View.IOnWindowDismissedCallback;
+    interface Elastos.Droid.View.IOnKeyguardExitResult;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     interface Elastos.Droid.Content.IComponentCallbacks;
     interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceClient;
@@ -184,21 +187,20 @@ module
     interface Elastos.Droid.Internal.App.IIVoiceInteractorCallback;
     interface Elastos.Droid.Internal.Os.IHandlerCallerCallback;
     interface Elastos.Droid.Internal.Os.IHandlerCaller;
+    interface Elastos.Droid.App.Job.IJobScheduler;
+    interface Elastos.Droid.App.Job.IIJobScheduler;
 
 //     interface Elastos.Droid.Content.IContentResolver;
 //     interface Elastos.Droid.Content.IDialogInterface;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
-//     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
-//     interface Elastos.Droid.View.IView;
 //     interface Elastos.Droid.View.IDisplay;
 //     interface Elastos.Droid.View.IWindow;
 //     interface Elastos.Droid.View.IKeyEventCallback;
-//     interface Elastos.Droid.View.IOnKeyguardExitResult;
 //     interface Elastos.Droid.View.IWindowCallback;
 //     interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
 //     interface Elastos.Droid.View.IViewGroupLayoutParams;
-//     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+//
 //     interface Elastos.Droid.App.IFragmentManagerHelper;
 //     interface Elastos.Droid.App.IFragmentManagerImplHelper;
 //     interface Elastos.Droid.App.IFragmentManagerImpl;
@@ -341,7 +343,7 @@ module
 //         constructor();
 
 //         constructor(
-//             [in] IContextImpl* context);
+//             [in] IContextImpl* ctx);
 
 //         interface IContextImpl;
 //     }
@@ -463,7 +465,7 @@ module
 //         [local, deprecated]
 //         class CFileBackupHelper {
 //             constructor(
-//                 [in] IContext* context,
+//                 [in] IContext* ctx,
 //                 [in] ArrayOf<String>* files);
 
 //             interface IFileBackupHelper;
@@ -473,7 +475,7 @@ module
 //         [local, deprecated]
 //         class CAbsoluteFileBackupHelper {
 //             constructor(
-//                 [in] IContext* context,
+//                 [in] IContext* ctx,
 //                 [in] ArrayOf<String>* files);
 
 //             interface IAbsoluteFileBackupHelper;
@@ -483,7 +485,7 @@ module
 //         [local, deprecated]
 //         class CSharedPreferencesBackupHelper {
 //             constructor(
-//                 [in] IContext* context,
+//                 [in] IContext* ctx,
 //                 [in] ArrayOf<String>* prefGroups);
 
 //             interface ISharedPreferencesBackupHelper;
@@ -493,7 +495,7 @@ module
 //         [local]
 //         class CRestoreObserverWrapper {
 //             constructor(
-//                 [in] IContext* context,
+//                 [in] IContext* ctx,
 //                 [in] IRestoreObserver* appObserver);
 
 //             interface IIRestoreObserver;
@@ -503,7 +505,7 @@ module
 //         [local, deprecated]
 //         class CWallpaperBackupHelper {
 //             constructor(
-//                 [in] IContext* context,
+//                 [in] IContext* ctx,
 //                 [in] ArrayOf<String>* files,
 //                 [in] ArrayOf<String>* keys);
 
@@ -596,9 +598,12 @@ module
 
         interface IActivityView;
         interface IViewGroup;
-        interface IViewManager;
         interface IViewParent;
+        interface IViewManager;
         interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
     }
 
     class CActivityViewActivityContainerCallback {
@@ -1021,6 +1026,16 @@ module
 //         interface INotificationInboxStyle;
 //     }
 
+//     [local]
+//     class CNotificationMediaStyle {
+//         constructor();
+
+//         constructor(
+//             [in] INotificationBuilder* builder);
+
+//         interface INotificationMediaStyle;
+//     }
+
 //     [local, parcelable]
 //     class CNotification {
 //         constructor();
@@ -1286,7 +1301,7 @@ module
 
     class CTaskStackBuilder {
         constructor(
-            [in] IContext * context);
+            [in] IContext * ctx);
 
         interface ITaskStackBuilder;
     }
@@ -1339,18 +1354,26 @@ module
 //         interface IActionBarLayoutParams;
 //     }
 
-//     class CKeyguardManager {
-//         constructor();
+    class CKeyguardManager {
+       constructor();
 
-//         interface IKeyguardManager;
-//     }
+       interface IKeyguardManager;
+    }
 
-//     class COnKeyguardExitResult {
-//         constructor(
-//             [in] IKeyguardManagerOnKeyguardExitResult* cb);
+    class COnKeyguardExitResult {
+        constructor(
+            [in] IKeyguardManagerOnKeyguardExitResult* cb);
 
-//         interface IOnKeyguardExitResult;
-//     }
+        interface IOnKeyguardExitResult;
+    }
+
+    class CKeyguardManagerKeyguardLock {
+        constructor(
+            [in] String tag,
+            [in] IKeyguardManager* mgr);
+
+        interface IKeyguardManagerKeyguardLock;
+    }
 
     [local, parcelable]
     class CBackStackState {
@@ -1416,7 +1439,7 @@ module
     class CVoiceInteractor {
         constructor(
             [in] IIVoiceInteractor* interactor,
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IActivity* activity,
             [in] ILooper* looper);
 
@@ -1465,6 +1488,73 @@ module
 
         interface IVoiceInteractorCommandRequest;
         interface IVoiceInteractorRequest;
+    }
+
+    class CFragmentBreadCrumbs {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        /**
+         * @hide
+         */
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IFragmentBreadCrumbs;
+        interface IFragmentManagerOnBackStackChangedListener;
+        interface IViewGroup;
+        interface IViewParent;
+        interface IViewManager;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    class CJobSchedulerImpl {
+        constructor(
+            [in] IIJobScheduler* binder);
+
+        interface IJobScheduler;
+    }
+
+    class CMediaRouteButton {
+
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IMediaRouteButton;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
     }
 
     }

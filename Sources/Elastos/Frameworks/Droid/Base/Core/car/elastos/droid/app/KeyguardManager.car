@@ -2,6 +2,8 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
+    interface Elastos.Droid.Content.IIntent;
+
     namespace Elastos {
     namespace Droid {
     namespace App {
@@ -23,6 +25,27 @@ module
     interface IKeyguardManager {
 
         /**
+         * Intent used to prompt user for device credentials.
+         * @hide
+         */
+        const String ACTION_CONFIRM_DEVICE_CREDENTIAL =
+                "android.app.action.CONFIRM_DEVICE_CREDENTIAL";
+
+        /**
+         * A CharSequence dialog title to show to the user when used with a
+         * {@link #ACTION_CONFIRM_DEVICE_CREDENTIAL}.
+         * @hide
+         */
+        const String EXTRA_TITLE = "android.app.extra.TITLE";
+
+        /**
+         * A CharSequence description to show to the user when used with
+         * {@link #ACTION_CONFIRM_DEVICE_CREDENTIAL}.
+         * @hide
+         */
+        const String EXTRA_DESCRIPTION = "android.app.extra.DESCRIPTION";
+
+        /**
          * Get an intent to prompt the user to confirm credentials (pin, pattern or password)
          * for the current user of the device. The caller is expected to launch this activity using
          * {@link android.app.Activity#startActivityForResult(Intent, int)} and check for
@@ -32,7 +55,8 @@ module
          **/
         CreateConfirmDeviceCredentialIntent(
             [in] ICharSequence* title,
-            [in] ICharSequence* description);
+            [in] ICharSequence* description,
+            [out] IIntent** intent);
 
         /**
          * @deprecated Use android.view.WindowManager.LayoutParams#FLAG_DISMISS_KEYGUARD

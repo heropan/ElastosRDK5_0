@@ -30,6 +30,8 @@ public:
 
     virtual ~Service();
 
+    CARAPI constructor();
+
     CARAPI ToString(
         /* [out] */ String* info);
 

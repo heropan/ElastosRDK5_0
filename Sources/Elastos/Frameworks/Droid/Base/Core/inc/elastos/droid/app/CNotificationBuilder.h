@@ -3,6 +3,7 @@
 
 #include "_Elastos_Droid_App_CNotificationBuilder.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
@@ -25,16 +26,21 @@ namespace Droid {
 namespace App {
 
 CarClass(CNotificationBuilder)
+    , public Object
+    , public INotificationBuilder
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CNotificationBuilder();
 
-    ~CNotificationBuilder();
+    virtual ~CNotificationBuilder();
 
     CARAPI constructor(
         /* [in] */ IContext * context);
 
-private:
     /**
      * Creates a Builder for rebuilding the given Notification.
      * <p>
@@ -44,7 +50,6 @@ private:
         /* [in] */ IContext* context,
         /* [in] */ INotification* n);
 
-public:
     /**
      * Add a timestamp pertaining to the notification (usually the time the event occurred).
      * It will be shown in the notification content view by default; use

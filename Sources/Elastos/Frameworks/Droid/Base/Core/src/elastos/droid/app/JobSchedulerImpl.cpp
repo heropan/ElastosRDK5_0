@@ -1,6 +1,8 @@
 
 #include "elastos/droid/app/JobSchedulerImpl.h"
 
+using Elastos::Droid::App::Job::EIID_IJobScheduler;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
@@ -10,7 +12,8 @@ CAR_INTERFACE_IMPL(JobSchedulerImpl, Object, IJobScheduler)
 JobSchedulerImpl::JobSchedulerImpl()
 {}
 
-JobSchedulerImpl::~JobSchedulerImpl();
+JobSchedulerImpl::~JobSchedulerImpl()
+{}
 
 ECode JobSchedulerImpl::constructor(
     /* [in] */ IIJobScheduler* binder)
@@ -30,7 +33,6 @@ ECode JobSchedulerImpl::Schedule(
     if (ec == (ECode)E_REMOTE_EXCEPTION) {
         *result = IJobScheduler::RESULT_FAILURE;
         ec = NOERROR;
-    }
     }
     return ec;
 }

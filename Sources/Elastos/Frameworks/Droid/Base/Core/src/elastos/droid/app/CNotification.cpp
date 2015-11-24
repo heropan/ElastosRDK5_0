@@ -32,6 +32,10 @@ const String CNotification::TAG("Notification");
 
 const Int32 CNotification::MAX_CHARSEQUENCE_LENGTH = 5120;//5 * 1024;
 
+CAR_INTERFACE_IMPL_2(CNotification, Object, INotification, IParcelable)
+
+CAR_OBJECT_IMPL(CNotification)
+
 CNotification::CNotification()
     : mWhen(0)
     , mIcon(0)

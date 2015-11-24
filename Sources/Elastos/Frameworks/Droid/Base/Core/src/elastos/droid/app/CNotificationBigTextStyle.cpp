@@ -12,6 +12,10 @@ const Int32 CNotificationBigTextStyle::MAX_LINES = 13;
 const Int32 CNotificationBigTextStyle::LINES_CONSUMED_BY_ACTIONS = 3;
 const Int32 CNotificationBigTextStyle::LINES_CONSUMED_BY_SUMMARY = 2;
 
+CAR_INTERFACE_DECL(CNotificationBigTextStyle, NotificationStyle, INotificationBigTextStyle)
+
+CAR_OBJECT_IMPL(CNotificationBigTextStyle)
+
 CNotificationBigTextStyle::CNotificationBigTextStyle()
 {
 }
@@ -37,10 +41,6 @@ ECode CNotificationBigTextStyle::SetBuilder(
     return NotificationStyle::SetBuilder(builder);
 }
 
-/**
- * Overrides ContentTitle in the big form of the template.
- * This defaults to the value passed to setContentTitle().
- */
 ECode CNotificationBigTextStyle::SetBigContentTitle(
     /* [in] */ ICharSequence* title)
 {
@@ -48,9 +48,6 @@ ECode CNotificationBigTextStyle::SetBigContentTitle(
     return NOERROR;
 }
 
-/**
- * Set the first line of text after the detail section in the big form of the template.
- */
 ECode CNotificationBigTextStyle::SetSummaryText(
     /* [in] */ ICharSequence* cs)
 {
@@ -58,10 +55,6 @@ ECode CNotificationBigTextStyle::SetSummaryText(
     return NOERROR;
 }
 
-/**
- * Provide the longer text to be displayed in the big form of the
- * template in place of the content text.
- */
 ECode CNotificationBigTextStyle::BigText(
     /* [in] */ ICharSequence* cs)
 {
@@ -69,27 +62,22 @@ ECode CNotificationBigTextStyle::BigText(
     return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode CNotificationBigTextStyle::AddExtras(
     /* [in] */ IBundle* extras)
 {
-    super.addExtras(extras);
+    NotificationStyle::AddExtras(extras);
 
-    extras.putCharSequence(EXTRA_BIG_TEXT, mBigText);
+    extras->PutCharSequence(EXTRA_BIG_TEXT, mBigText);
     return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode CNotificationBigTextStyle::RestoreFromExtras(
     /* [in] */ IBundle* extras)
 {
-    super.restoreFromExtras(extras);
+    NotificationStyle::RestoreFromExtras(extras);
 
-    mBigText = extras.getCharSequence(EXTRA_BIG_TEXT);
+    mBigText = NULL;
+    extras->GetCharSequence(EXTRA_BIG_TEXT, (ICharSequence**)&mBigText);
     return NOERROR;
 }
 
