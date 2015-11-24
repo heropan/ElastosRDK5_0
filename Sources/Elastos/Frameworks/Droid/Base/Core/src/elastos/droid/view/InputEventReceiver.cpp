@@ -366,13 +366,13 @@ InputEventReceiver::constructor(
 {
     if (inputChannel == NULL) {
         //throw new IllegalArgumentException("inputChannel must not be NULL");
-        Slogger::E(TAG, "inputChannel must not be NULL");
+        Logger::E(TAG, "inputChannel must not be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if (looper == NULL) {
         //throw new IllegalArgumentException("looper must not be NULL");
-        Slogger::E(TAG, "looper must not be NULL");
+        Logger::E(TAG, "looper must not be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
