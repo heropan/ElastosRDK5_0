@@ -1,30 +1,29 @@
 
+#include "elastos/droid/widget/AdapterView.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
 #include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
-#include "elastos/droid/widget/AdapterView.h"
-#include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
+#include "elastos/droid/R.h"
 
-using Elastos::Droid::Database::EIID_IDataSetObserver;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
-using Elastos::Droid::View::Accessibility::CAccessibilityManager;
-using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
-using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
-using Elastos::Droid::View::EIID_IContextMenuInfo;
-using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::SoundEffectConstants;
-using Elastos::Droid::Widget::EIID_IAdapterContextMenuInfo;
-using Elastos::Core::CString;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
+
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::CStringWrapper;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
+using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
+using Elastos::Droid::View::Accessibility::CAccessibilityManager;
 
 const Int32 AdapterView::SYNC_SELECTED_POSITION;
 const Int32 AdapterView::SYNC_FIRST_POSITION;
@@ -33,7 +32,7 @@ const Int32 AdapterView::SYNC_MAX_DURATION_MILLIS;
 //==============================================================================
 //              AdapterView::AdapterContextMenuInfo
 //==============================================================================
-CAR_INTERFACE_IMPL_2(AdapterView::AdapterContextMenuInfo, Object, IContextMenuInfo, IAdapterContextMenuInfo)
+CAR_INTERFACE_IMPL(AdapterView::AdapterContextMenuInfo, IContextMenuInfo)
 
 AdapterView::AdapterContextMenuInfo::AdapterContextMenuInfo(
     /* [in] */ IView* targetView,
@@ -94,14 +93,7 @@ ECode AdapterView::AdapterContextMenuInfo::SetId(
 //==============================================================================
 //              AdapterView::AdapterDataSetObserver
 //==============================================================================
-CAR_INTERFACE_IMPL(AdapterView::AdapterDataSetObserver, Object, IDataSetObserver);
-
-AdapterView::AdapterDataSetObserver::AdapterDataSetObserver(
-    /* [in] */ AdapterView* host)
-    : mHost(host)
-{
-    assert(mHost);
-}
+CAR_INTERFACE_IMPL(AdapterView::AdapterDataSetObserver, IDataSetObserver);
 
 ECode AdapterView::AdapterDataSetObserver::OnChanged()
 {
@@ -126,9 +118,9 @@ ECode AdapterView::AdapterDataSetObserver::OnChanged()
     else {
         mHost->RememberSyncState();
     }
-
     mHost->CheckFocus();
     mHost->RequestLayout();
+
     return NOERROR;
 }
 
@@ -136,6 +128,7 @@ ECode AdapterView::AdapterDataSetObserver::OnChanged()
 ECode AdapterView::AdapterDataSetObserver::OnInvalidated()
 {
     mHost->mDataChanged = TRUE;
+
     AutoPtr<IAdapter> adapter;
     ((IAdapterView*)(mHost->Probe(EIID_IAdapterView)))->GetAdapter((IAdapter**)&adapter);
     assert(adapter.Get());
@@ -158,19 +151,20 @@ ECode AdapterView::AdapterDataSetObserver::OnInvalidated()
 
     mHost->CheckFocus();
     mHost->RequestLayout();
+
     return NOERROR;
 }
 
 ECode AdapterView::AdapterDataSetObserver::ClearSavedState()
 {
     mInstanceState = NULL;
+
     return NOERROR;
 }
 
 //==============================================================================
-//                      AdapterView::SelectionNotifier
+//              AdapterView::SelectionNotifier
 //==============================================================================
-CAR_INTERFACE_IMPL(AdapterView::SelectionNotifier, Object, IRunnable)
 
 AdapterView::SelectionNotifier::SelectionNotifier(
     /* [in] */ AdapterView* host)
@@ -189,7 +183,7 @@ ECode AdapterView::SelectionNotifier::Run()
         ((IAdapterView*)(mHost->Probe(EIID_IAdapterView)))->GetAdapter((IAdapter**)&adapter);
         if (adapter != NULL) {
             AutoPtr<IRunnable> r = (IRunnable*)this->Probe(EIID_IRunnable);
-            //mHost->Post(r);
+            mHost->Post(r);
         }
     }
     else {
@@ -200,10 +194,8 @@ ECode AdapterView::SelectionNotifier::Run()
 }
 
 //==============================================================================
-//                              AdapterView
+//              AdapterView
 //==============================================================================
-CAR_INTERFACE_IMPL(AdapterView, ViewGroup, IAdapterView)
-
 AdapterView::AdapterView()
     : mFirstPosition(0)
     , mSpecificTop(0)
@@ -229,39 +221,92 @@ AdapterView::AdapterView()
 {
 }
 
-ECode AdapterView::constructor(
+AdapterView::AdapterView(
     /* [in] */ IContext* context)
+    : ViewGroup(context)
+    , mFirstPosition(0)
+    , mSpecificTop(0)
+    , mSyncPosition(0)
+    , mSyncRowId(IAdapterView::INVALID_ROW_ID)
+    , mSyncHeight(0)
+    , mNeedSync(FALSE)
+    , mSyncMode(0)
+    , mInLayout(FALSE)
+    , mDataChanged(FALSE)
+    , mNextSelectedPosition(IAdapterView::INVALID_POSITION)
+    , mNextSelectedRowId(IAdapterView::INVALID_ROW_ID)
+    , mSelectedPosition(IAdapterView::INVALID_POSITION)
+    , mSelectedRowId(IAdapterView::INVALID_ROW_ID)
+    , mItemCount(0)
+    , mOldItemCount(0)
+    , mOldSelectedPosition(IAdapterView::INVALID_POSITION)
+    , mOldSelectedRowId(IAdapterView::INVALID_ROW_ID)
+    , mBlockLayoutRequests(FALSE)
+    , mLayoutHeight(0)
+    , mDesiredFocusableState(FALSE)
+    , mDesiredFocusableInTouchModeState(FALSE)
 {
-    return constructor(context, NULL);
 }
 
-ECode AdapterView::constructor(
+AdapterView::AdapterView(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
+    : ViewGroup(context, attrs)
+    , mFirstPosition(0)
+    , mSpecificTop(0)
+    , mSyncPosition(0)
+    , mSyncRowId(IAdapterView::INVALID_ROW_ID)
+    , mSyncHeight(0)
+    , mNeedSync(FALSE)
+    , mSyncMode(0)
+    , mInLayout(FALSE)
+    , mDataChanged(FALSE)
+    , mNextSelectedPosition(IAdapterView::INVALID_POSITION)
+    , mNextSelectedRowId(IAdapterView::INVALID_ROW_ID)
+    , mSelectedPosition(IAdapterView::INVALID_POSITION)
+    , mSelectedRowId(IAdapterView::INVALID_ROW_ID)
+    , mItemCount(0)
+    , mOldItemCount(0)
+    , mOldSelectedPosition(IAdapterView::INVALID_POSITION)
+    , mOldSelectedRowId(IAdapterView::INVALID_ROW_ID)
+    , mBlockLayoutRequests(FALSE)
+    , mLayoutHeight(0)
+    , mDesiredFocusableState(FALSE)
+    , mDesiredFocusableInTouchModeState(FALSE)
 {
-    return constructor(context, attrs, 0);
 }
 
-ECode AdapterView::constructor(
+AdapterView::AdapterView(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
+    : ViewGroup(context, attrs, defStyle)
+    , mFirstPosition(0)
+    , mSpecificTop(0)
+    , mSyncPosition(0)
+    , mSyncRowId(IAdapterView::INVALID_ROW_ID)
+    , mSyncHeight(0)
+    , mNeedSync(FALSE)
+    , mSyncMode(0)
+    , mInLayout(FALSE)
+    , mDataChanged(FALSE)
+    , mNextSelectedPosition(IAdapterView::INVALID_POSITION)
+    , mNextSelectedRowId(IAdapterView::INVALID_ROW_ID)
+    , mSelectedPosition(IAdapterView::INVALID_POSITION)
+    , mSelectedRowId(IAdapterView::INVALID_ROW_ID)
+    , mItemCount(0)
+    , mOldItemCount(0)
+    , mOldSelectedPosition(IAdapterView::INVALID_POSITION)
+    , mOldSelectedRowId(IAdapterView::INVALID_ROW_ID)
+    , mBlockLayoutRequests(FALSE)
+    , mLayoutHeight(0)
+    , mDesiredFocusableState(FALSE)
+    , mDesiredFocusableInTouchModeState(FALSE)
 {
-    return constructor(context, attrs, defStyle, 0);
-}
-
-ECode AdapterView::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Int32 defStyleRes)
-{
-    ViewGroup::constructor(context, attrs, defStyle, defStyleRes);
     // If not explicitly specified this view is important for accessibility.
-    if (-1/* func should in View: GetImportantForAccessibility()*/ == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-        //SetImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+    if (GetImportantForAccessibility() == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+        SetImportantForAccessibility(IView::IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
-    return NOERROR;
 }
 
 /**
@@ -281,48 +326,36 @@ ECode AdapterView::SetOnItemClickListener(
  * @return The callback to be invoked with an item in this AdapterView has
  *         been clicked, or NULL id no callback has been set.
  */
-ECode AdapterView::GetOnItemClickListener(
-    /* [out] */ IAdapterViewOnItemClickListener** result)
+AutoPtr<IAdapterViewOnItemClickListener> AdapterView::GetOnItemClickListener()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mOnItemClickListener;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return mOnItemClickListener;
 }
 
 /**
- * Call the OnItemClickListener, if it is defined. Performs all normal
- * actions associated with clicking: reporting accessibility event, playing
- * a sound, etc.
+ * Call the OnItemClickListener, if it is defined.
  *
  * @param view The view within the AdapterView that was clicked.
  * @param position The position of the view in the adapter.
  * @param id The row id of the item that was clicked.
  * @return True if there was an assigned OnItemClickListener that was
- *         called, false otherwise is returned.
+ *         called, FALSE otherwise is returned.
  */
-ECode AdapterView::PerformItemClick(
+Boolean AdapterView::PerformItemClick(
     /* [in] */ IView* view,
     /* [in] */ Int32 position,
-    /* [in] */ Int64 id,
-    /* [out] */ Boolean* result)
+    /* [in] */ Int64 id)
 {
-    VALIDATE_NOT_NULL(view);
-    VALIDATE_NOT_NULL(result);
-
     if (mOnItemClickListener != NULL) {
         PlaySoundEffect(SoundEffectConstants::CLICK);
-        mOnItemClickListener->OnItemClick(this, view, position, id);
         if (view != NULL) {
-           IAccessibilityEventSource* temp = IAccessibilityEventSource::Probe(view);
+           AutoPtr<IAccessibilityEventSource> temp = IAccessibilityEventSource::Probe(view);
            temp->SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_CLICKED);
         }
-        *result = TRUE;
-        return NOERROR;
+        mOnItemClickListener->OnItemClick(THIS_PROBE(IAdapterView), view, position, id);
+        return TRUE;
     }
 
-    *result = FALSE;
-    return NOERROR;
+    return FALSE;
 }
 
 /**
@@ -334,12 +367,11 @@ ECode AdapterView::PerformItemClick(
 ECode AdapterView::SetOnItemLongClickListener(
     /* [in] */ IAdapterViewOnItemLongClickListener* listener)
 {
-    Boolean click = FALSE;
-    IsLongClickable(&click);
-    if (!click) {
+    if (!IsLongClickable()) {
         SetLongClickable(TRUE);
     }
     mOnItemLongClickListener = listener;
+
     return NOERROR;
 }
 
@@ -347,13 +379,9 @@ ECode AdapterView::SetOnItemLongClickListener(
  * @return The callback to be invoked with an item in this AdapterView has
  *         been clicked and held, or NULL id no callback as been set.
  */
-ECode AdapterView::GetOnItemLongClickListener(
-    /* [out] */ IAdapterViewOnItemLongClickListener** result)
+AutoPtr<IAdapterViewOnItemLongClickListener> AdapterView::GetOnItemLongClickListener()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mOnItemLongClickListener;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return mOnItemLongClickListener;
 }
 
 /**
@@ -366,16 +394,13 @@ ECode AdapterView::SetOnItemSelectedListener(
     /* [in] */ IAdapterViewOnItemSelectedListener* listener)
 {
     mOnItemSelectedListener = listener;
+
     return NOERROR;
 }
 
-ECode AdapterView::GetOnItemSelectedListener(
-    /* [out] */ IAdapterViewOnItemSelectedListener** result)
+AutoPtr<IAdapterViewOnItemSelectedListener> AdapterView::GetOnItemSelectedListener()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mOnItemSelectedListener;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return mOnItemSelectedListener;
 }
 
 /**
@@ -390,6 +415,7 @@ ECode AdapterView::AddView(
     /* [in] */ IView* child)
 {
     Logger::E("AdapterView", "addView(View) is not supported in AdapterView");
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -408,6 +434,7 @@ ECode AdapterView::AddView(
 {
     Logger::E("AdapterView",
         "addView(View, Int32) is not supported in AdapterView");
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -418,6 +445,7 @@ ECode AdapterView::AddView(
 {
     Logger::E("AdapterView",
         "addView(View, Int32) is not supported in AdapterView");
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -436,6 +464,7 @@ ECode AdapterView::AddView(
 {
     Logger::E("AdapterView",
         "addView(View, LayoutParams) is not supported in AdapterView");
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -456,6 +485,7 @@ ECode AdapterView::AddView(
 {
     Logger::E("AdapterView",
         "addView(View, Int32, LayoutParams) is not supported in AdapterView");
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -472,6 +502,7 @@ ECode AdapterView::RemoveView(
 {
     Logger::E("AdapterView",
         "removeView(View) is not supported in AdapterView");
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -488,6 +519,7 @@ ECode AdapterView::RemoveViewAt(
 {
     Logger::E("AdapterView",
         "removeViewAt(Int32) is not supported in AdapterView");
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -501,19 +533,19 @@ ECode AdapterView::RemoveAllViews()
 {
     Logger::E("AdapterView",
         "removeAllViews() is not supported in AdapterView");
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 //@Override
-ECode AdapterView::OnLayout(
+void AdapterView::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
     /* [in] */ Int32 r,
     /* [in] */ Int32 b)
 {
-    GetHeight(&mLayoutHeight);
-    return NOERROR;
+    mLayoutHeight = GetHeight();
 }
 
 /**
@@ -522,12 +554,9 @@ ECode AdapterView::OnLayout(
  * @return Int32 Position (starting at 0), or {@link #IAdapterView::INVALID_POSITION} if there is nothing selected.
  */
 //@ViewDebug.CapturedViewProperty
-ECode AdapterView::GetSelectedItemPosition(
-    /* [out] */ Int32* result)
+Int32 AdapterView::GetSelectedItemPosition()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mNextSelectedPosition;
-    return NOERROR;
+    return mNextSelectedPosition;
 }
 
 /**
@@ -535,36 +564,31 @@ ECode AdapterView::GetSelectedItemPosition(
  * if nothing is selected.
  */
 //@ViewDebug.CapturedViewProperty
-ECode AdapterView::GetSelectedItemId(
-    /* [out] */ Int32* result)
+Int64 AdapterView::GetSelectedItemId()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mNextSelectedRowId;
-    return NOERROR;
+    return mNextSelectedRowId;
 }
 
 /**
  * @return The data corresponding to the currently selected item, or
  * NULL if there is nothing selected.
  */
-ECode AdapterView::GetSelectedItem(
-    /* [out] */ IInterface** result)
+AutoPtr<IInterface> AdapterView::GetSelectedItem()
 {
-    VALIDATE_NOT_NULL(result);
     AutoPtr<IAdapter> adapter;
     THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
-    Int32 selection = 0;
-    GetSelectedItemPosition(&selection);
+    Int32 selection = GetSelectedItemPosition();
     if (adapter != NULL) {
         Int32 count;
         adapter->GetCount(&count);
         if (count > 0 && selection >= 0) {
-            adapter->GetItem(selection, (IInterface**)result);
+            AutoPtr<IInterface> item;
+            adapter->GetItem(selection, (IInterface**)&item);
+            return item;
         }
     }
 
-    *result = NULL;
-    return NOERROR;
+    return AutoPtr<IInterface>(NULL);
 }
 
 /**
@@ -573,12 +597,9 @@ ECode AdapterView::GetSelectedItem(
  *         larger than the number of visible view.)
  */
 //@ViewDebug.CapturedViewProperty
-ECode AdapterView::GetCount(
-    /* [out] */ Int32* result)
+Int32 AdapterView::GetCount()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mItemCount;
-    return NOERROR;
+    return mItemCount;
 }
 
 /**
@@ -590,21 +611,17 @@ ECode AdapterView::GetCount(
  * @return the position within the adapter's data set of the view, or {@link #IAdapterView::INVALID_POSITION}
  *         if the view does not correspond to a list item (or it is not currently visible).
  */
-ECode AdapterView::GetPositionForView(
-    /* [in] */ IView* view,
-    /* [out] */ Int32* result)
+Int32 AdapterView::GetPositionForView(
+    /* [in] */ IView* view)
 {
-    VALIDATE_NOT_NULL(view);
-    VALIDATE_NOT_NULL(result);
-
+    assert(view);
     AutoPtr<IView> listItem = view;
     AutoPtr<IViewParent> vp;
     listItem->GetParent((IViewParent**)&vp);
     AutoPtr<IView> v = IView::Probe(vp);
-    while (TO_IINTERFACE(v) != TO_IINTERFACE(this)) {
+    while (v.Get() != THIS_PROBE(IView)) {
         if (v == NULL) {
-            *result = IAdapterView::INVALID_POSITION;
-            return NOERROR;
+            return IAdapterView::INVALID_POSITION;
         }
         listItem = v;
         vp = NULL;
@@ -613,19 +630,16 @@ ECode AdapterView::GetPositionForView(
     }
 
     // Search the children for the list item
-    Int32 childCount = 0;
-    GetChildCount(&childCount);
+    Int32 childCount = GetChildCount();
     for (Int32 i = 0; i < childCount; i++) {
-        AutoPtr<IView> child;// = GetChildAt(i);
+        AutoPtr<IView> child = GetChildAt(i);
         if (child.Get() == listItem) {
-            *result = mFirstPosition + i;
-            return NOERROR;
+            return mFirstPosition + i;
         }
     }
 
     // Child not found!
-    *result = IAdapterView::INVALID_POSITION;
-    return NOERROR;
+    return IAdapterView::INVALID_POSITION;
 }
 
 /**
@@ -634,12 +648,9 @@ ECode AdapterView::GetPositionForView(
  *
  * @return The position within the adapter's data set
  */
-ECode AdapterView::GetFirstVisiblePosition(
-    /* [out] */ Int32* result)
+Int32 AdapterView::GetFirstVisiblePosition()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mFirstPosition;
-    return NOERROR;
+    return mFirstPosition;
 }
 
 /**
@@ -648,14 +659,9 @@ ECode AdapterView::GetFirstVisiblePosition(
  *
  * @return The position within the adapter's data set
  */
-ECode AdapterView::GetLastVisiblePosition(
-    /* [out] */ Int32* result)
+Int32 AdapterView::GetLastVisiblePosition()
 {
-    VALIDATE_NOT_NULL(result);
-    Int32 count = 0;
-    GetChildCount(&count);
-    *result = mFirstPosition + count - 1;
-    return NOERROR;
+    return mFirstPosition + GetChildCount() - 1;
 }
 
 /**
@@ -680,8 +686,8 @@ ECode AdapterView::SetEmptyView(
     if (adapter != NULL) {
         adapter->IsEmpty(&empty);
     }
-
     UpdateEmptyStatus(empty);
+
     return NOERROR;
 }
 
@@ -692,13 +698,9 @@ ECode AdapterView::SetEmptyView(
  *
  * @return The view to show if the adapter is empty.
  */
-ECode AdapterView::GetEmptyView(
-    /* [out] */ IView** result)
+AutoPtr<IView> AdapterView::GetEmptyView()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mEmptyView;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return mEmptyView;
 }
 
 /**
@@ -707,12 +709,8 @@ ECode AdapterView::GetEmptyView(
  *
  * @return True if the view is in filter mode, FALSE otherwise.
  */
-ECode AdapterView::IsInFilterMode(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    return NOERROR;
+Boolean AdapterView::IsInFilterMode() {
+    return FALSE;
 }
 
 //@Override
@@ -733,9 +731,7 @@ ECode AdapterView::SetFocusable(
         mDesiredFocusableInTouchModeState = FALSE;
     }
 
-    Boolean isInMode = FALSE;
-    IsInFilterMode(&isInMode);
-    return ViewGroup::SetFocusable(focusable && (!empty || isInMode));
+    return ViewGroup::SetFocusable(focusable && (!empty || IsInFilterMode()));
 }
 
 //@Override
@@ -756,10 +752,8 @@ ECode AdapterView::SetFocusableInTouchMode(
         mDesiredFocusableState = TRUE;
     }
 
-    Boolean isInMode = FALSE;
-    IsInFilterMode(&isInMode);
     return ViewGroup::SetFocusableInTouchMode(
-        focusable && (!empty || isInMode));
+        focusable && (!empty || IsInFilterMode()));
 }
 
 ECode AdapterView::CheckFocus()
@@ -773,9 +767,7 @@ ECode AdapterView::CheckFocus()
         empty = (count == 0);
     }
 
-    Boolean isInMode = FALSE;
-    IsInFilterMode(&isInMode);
-    Boolean focusable = !empty || isInMode;
+    Boolean focusable = !empty || IsInFilterMode();
     // The order in which we set focusable in touch mode/focusable may matter
     // for the client, see View.setFocusableInTouchMode() comments for more
     // details
@@ -788,6 +780,7 @@ ECode AdapterView::CheckFocus()
         }
         UpdateEmptyStatus(isEmpty);
     }
+
     return NOERROR;
 }
 
@@ -799,9 +792,7 @@ ECode AdapterView::CheckFocus()
 void AdapterView::UpdateEmptyStatus(
     /* [in] */ Boolean empty)
 {
-    Boolean isInMode = FALSE;
-    IsInFilterMode(&isInMode);
-    if (isInMode) {
+    if (IsInFilterMode()) {
         empty = FALSE;
     }
 
@@ -836,38 +827,34 @@ void AdapterView::UpdateEmptyStatus(
  * @param position Which data to get
  * @return The data associated with the specified position in the list
  */
-ECode AdapterView::GetItemAtPosition(
-    /* [in] */ Int32 position,
-    /* [out] */ IInterface** result)
+AutoPtr<IInterface> AdapterView::GetItemAtPosition(
+    /* [in] */ Int32 position)
 {
-    VALIDATE_NOT_NULL(result);
     AutoPtr<IAdapter> adapter;
     THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
     if (adapter == NULL || position < 0) {
-        *result = AutoPtr<IInterface>(NULL);
+        return AutoPtr<IInterface>(NULL);
     }
     else {
-        adapter->GetItem(position, (IInterface**)result);
+        AutoPtr<IInterface> item;
+        adapter->GetItem(position, (IInterface**)&item);
+        return item;
     }
-    return NOERROR;
 }
 
-ECode AdapterView::GetItemIdAtPosition(
-    /* [in] */ Int32 position,
-    /* [out] */ Int64* result)
+Int64 AdapterView::GetItemIdAtPosition(
+    /* [in] */ Int32 position)
 {
-    VALIDATE_NOT_NULL(result);
     AutoPtr<IAdapter> adapter;
     THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
     if (adapter == NULL || position < 0) {
-        *result = IAdapterView::INVALID_ROW_ID;
+        return IAdapterView::INVALID_ROW_ID;
     }
     else {
-        Int64 itemId = 0;
+        Int64 itemId;
         adapter->GetItemId(position, &itemId);
-        *result = itemId;
+        return itemId;
     }
-    return NOERROR;
 }
 
 //@Override
@@ -885,7 +872,7 @@ ECode AdapterView::SetOnClickListener(
  */
 //@Override
 ECode AdapterView::DispatchSaveInstanceState(
-    /* [in] */ ISparseArray* container)
+    /* [in] */ IObjectInt32Map* container)
 {
     return DispatchFreezeSelfOnly(container);
 }
@@ -895,7 +882,7 @@ ECode AdapterView::DispatchSaveInstanceState(
  */
 //@Override
 ECode AdapterView::DispatchRestoreInstanceState(
-    /* [in] */ ISparseArray* container)
+    /* [in] */ IObjectInt32Map* container)
 {
     return DispatchThawSelfOnly(container);
 }
@@ -904,9 +891,8 @@ ECode AdapterView::DispatchRestoreInstanceState(
 ECode AdapterView::OnDetachedFromWindow()
 {
     ViewGroup::OnDetachedFromWindow();
-    if (mSelectionNotifier != NULL) {
-        //-- func is should in View: RemoveCallbacks(mSelectionNotifier);
-    }
+    if (mSelectionNotifier != NULL)
+        RemoveCallbacks(mSelectionNotifier);
     return NOERROR;
 }
 
@@ -925,7 +911,7 @@ void AdapterView::SelectionChanged()
             if (mSelectionNotifier == NULL) {
                 mSelectionNotifier = new SelectionNotifier(this);
             }
-            //Post(mSelectionNotifier);
+            Post(mSelectionNotifier);
         }
         else {
             FireOnSelected();
@@ -940,11 +926,9 @@ void AdapterView::FireOnSelected()
         return;
     }
 
-    Int32 selection = 0;
-    GetSelectedItemPosition(&selection);
+    Int32 selection = GetSelectedItemPosition();
     if (selection >= 0) {
-        AutoPtr<IView> v;
-        GetSelectedView((IView**)&v);
+        AutoPtr<IView> v = GetSelectedView();
         AutoPtr<IAdapter> adapter;
         THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
         Int64 itemId;
@@ -969,64 +953,46 @@ void AdapterView::PerformAccessibilityActionsOnSelected()
     if (!enable) {
         return;
     }
-
-    Int32 position = 0;
-    GetSelectedItemPosition(&position);
+    Int32 position = GetSelectedItemPosition();
     if (position >= 0) {
         // we fire selection events here not in View
         SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_SELECTED);
     }
 }
 
-ECode AdapterView::DispatchPopulateAccessibilityEvent(
-    /* [in] */ IAccessibilityEvent* event,
-    /* [out] */ Boolean* result)
+Boolean AdapterView::DispatchPopulateAccessibilityEvent(
+    /* [in] */ IAccessibilityEvent* event)
 {
-    VALIDATE_NOT_NULL(result);
-    AutoPtr<IView> selectedView;
-    GetSelectedView((IView**)&selectedView);
+    AutoPtr<IView> selectedView = GetSelectedView();
     Int32 visible;
     Boolean hasDispatch;
     selectedView->GetVisibility(&visible);
     selectedView->DispatchPopulateAccessibilityEvent(event, &hasDispatch);
     if (selectedView != NULL && visible == IView::VISIBLE
         && hasDispatch) {
-        *result = TRUE;
-        return NOERROR;
+            return TRUE;
     }
-
-    *result = FALSE;
-    return NOERROR;
+    return FALSE;
 }
 
 //@Override
-ECode AdapterView::OnRequestSendAccessibilityEvent(
+Boolean AdapterView::OnRequestSendAccessibilityEvent(
     /* [in] */ IView* child,
-    /* [in] */ IAccessibilityEvent* event,
-    /* [out] */ Boolean* result)
+    /* [in] */ IAccessibilityEvent* event)
 {
-    VALIDATE_NOT_NULL(child);
-    VALIDATE_NOT_NULL(event);
-    VALIDATE_NOT_NULL(result);
-
-    Boolean sendAccess = FALSE;
-    ViewGroup::OnRequestSendAccessibilityEvent(child, event, &sendAccess);
-    if (sendAccess) {
+    if (ViewGroup::OnRequestSendAccessibilityEvent(child, event)) {
         // Add a record for ourselves as well.
+
         AutoPtr<IAccessibilityEvent> record;
         CAccessibilityEvent::Obtain((IAccessibilityEvent**)&record);
         OnInitializeAccessibilityEvent(record);
         // Populate with the text of the requesting child.
         Boolean temp;
         child->DispatchPopulateAccessibilityEvent(record, &temp);
-        IAccessibilityRecord* recordTmp = IAccessibilityRecord::Probe(record);
-        event->AppendRecord(recordTmp);
-        *result = TRUE;
-        return NOERROR;
+        event->AppendRecord(record);
+        return TRUE;
     }
-
-    *result = FALSE;
-    return NOERROR;
+    return FALSE;
 }
 
 //@Override
@@ -1036,11 +1002,10 @@ ECode AdapterView::OnInitializeAccessibilityNodeInfo(
     View::OnInitializeAccessibilityNodeInfo(info);
     String classNameStr("AdapterView");
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));
+    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
     info->SetClassName(className);
     info->SetScrollable(IsScrollableForAccessibility());
-    AutoPtr<IView> selectedView;
-    GetSelectedView((IView**)&selectedView);
+    AutoPtr<IView> selectedView = GetSelectedView();
     if (selectedView != NULL) {
         Boolean enabled;
         selectedView->IsEnabled(&enabled);
@@ -1053,35 +1018,41 @@ ECode AdapterView::OnInitializeAccessibilityNodeInfo(
 ECode AdapterView::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    VALIDATE_NOT_NULL(event);
-    IAccessibilityRecord* eventTmp = IAccessibilityRecord::Probe(event);
     View::OnInitializeAccessibilityEvent(event);
     String classNameStr("AdapterView");
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));
-    eventTmp->SetClassName(className);
-    eventTmp->SetScrollable(IsScrollableForAccessibility());
-    AutoPtr<IView> selectedView;
-    GetSelectedView((IView**)&selectedView);
+    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
+    event->SetClassName(className);
+    event->SetScrollable(IsScrollableForAccessibility());
+    AutoPtr<IView> selectedView = GetSelectedView();
     if (selectedView != NULL) {
         Boolean enabled;
         selectedView->IsEnabled(&enabled);
-        eventTmp->SetEnabled(enabled);
+        event->SetEnabled(enabled);
     }
-
-    Int32 tmp = 0;
-    GetSelectedItemPosition(&tmp);
-    eventTmp->SetCurrentItemIndex(tmp);
-
-    GetFirstVisiblePosition(&tmp);
-    eventTmp->SetFromIndex(tmp);
-
-    GetLastVisiblePosition(&tmp);
-    eventTmp->SetToIndex(tmp);
-
-    GetCount(&tmp);
-    eventTmp->SetItemCount(tmp);
+    event->SetCurrentItemIndex(GetSelectedItemPosition());
+    event->SetFromIndex(GetFirstVisiblePosition());
+    event->SetToIndex(GetLastVisiblePosition());
+    event->SetItemCount(GetCount());
     return NOERROR;
+}
+
+Boolean AdapterView::IsScrollableForAccessibility()
+{
+    AutoPtr<IAdapter> adapter;
+    THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
+    if (adapter != NULL) {
+        Int32 itemCount;
+        adapter->GetCount(&itemCount);
+        return itemCount > 0
+            && (GetFirstVisiblePosition() > 0 || GetLastVisiblePosition() < itemCount - 1);
+    }
+    return FALSE;
+}
+
+Boolean AdapterView::CanAnimate()
+{
+    return ViewGroup::CanAnimate() && mItemCount > 0;
 }
 
 void AdapterView::HandleDataChanged()
@@ -1115,7 +1086,7 @@ void AdapterView::HandleDataChanged()
 
         if (!found) {
             // Try to use the same position if we can't find matching data
-            GetSelectedItemPosition(&newPos);
+            newPos = GetSelectedItemPosition();
 
             // Pin position to the available range
             if (newPos >= count) {
@@ -1151,28 +1122,9 @@ void AdapterView::HandleDataChanged()
         CheckSelectionChanged();
     }
 
-    NotifySubtreeAccessibilityStateChangedIfNeeded();
-}
+    //TODO: Hmm, we do not know the old state so this is sub-optimal
+    NotifyAccessibilityStateChanged();
 
-Boolean AdapterView::IsScrollableForAccessibility()
-{
-    AutoPtr<IAdapter> adapter;
-    THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
-    if (adapter != NULL) {
-        Int32 itemCount = 0;
-        adapter->GetCount(&itemCount);
-        Int32 firstPosition = 0;
-        GetFirstVisiblePosition(&firstPosition);
-        Int32 lastPosition = 0;
-        GetLastVisiblePosition(&lastPosition);
-        return itemCount > 0 && (firstPosition > 0 || lastPosition < itemCount - 1);
-    }
-    return FALSE;
-}
-
-Boolean AdapterView::CanAnimate()
-{
-    return ViewGroup::CanAnimate() && mItemCount > 0;
 }
 
 void AdapterView::CheckSelectionChanged()
@@ -1185,6 +1137,14 @@ void AdapterView::CheckSelectionChanged()
     }
 }
 
+/**
+ * Searches the adapter for a position matching mSyncRowId. The search starts at mSyncPosition
+ * and then alternates between moving up and moving down until 1) we find the right position, or
+ * 2) we run out of time, or 3) we have looked at every position
+ *
+ * @return Position of the row that matches mSyncRowId, or {@link #IAdapterView::INVALID_POSITION} if it can't
+ *         be found
+ */
 Int32 AdapterView::FindSyncPosition()
 {
     Int32 count = mItemCount;
@@ -1265,6 +1225,14 @@ Int32 AdapterView::FindSyncPosition()
     return IAdapterView::INVALID_POSITION;
 }
 
+/**
+ * Find a position that can be selected (i.e., is not a separator).
+ *
+ * @param position The starting position to look at.
+ * @param lookDown Whether to look down for other positions.
+ * @return The next selectable position starting at position and then searching either up or
+ *         down. Returns {@link #IAdapterView::INVALID_POSITION} if nothing can be found.
+ */
 Int32 AdapterView::LookForSelectablePosition(
     /* [in] */ Int32 position,
     /* [in] */ Boolean lookDown)
@@ -1272,18 +1240,27 @@ Int32 AdapterView::LookForSelectablePosition(
     return position;
 }
 
+/**
+ * Utility to keep mSelectedPosition and mSelectedRowId in sync
+ * @param position Our current position
+ */
 void AdapterView::SetSelectedPositionInt(
     /* [in] */ Int32 position)
 {
     mSelectedPosition = position;
-    GetItemIdAtPosition(position, &mSelectedRowId);
+    mSelectedRowId = GetItemIdAtPosition(position);
 }
 
+/**
+ * Utility to keep mNextSelectedPosition and mNextSelectedRowId in sync
+ * @param position Intended value for mSelectedPosition the next time we go
+ * through layout
+ */
 void AdapterView::SetNextSelectedPositionInt(
     /* [in] */ Int32 position)
 {
     mNextSelectedPosition = position;
-    GetItemIdAtPosition(position, &mNextSelectedRowId);
+    mNextSelectedRowId = GetItemIdAtPosition(position);
     // If we are trying to sync to the selection, update that too
     if (mNeedSync && mSyncMode == SYNC_SELECTED_POSITION && position >= 0) {
         mSyncPosition = position;
@@ -1291,16 +1268,19 @@ void AdapterView::SetNextSelectedPositionInt(
     }
 }
 
+/**
+ * Remember enough information to restore the screen state when the data has
+ * changed.
+ *
+ */
 void AdapterView::RememberSyncState()
 {
-    Int32 clildCount = 0;
-    GetChildCount(&clildCount);
-    if (clildCount > 0) {
+    if (GetChildCount() > 0) {
         mNeedSync = TRUE;
         mSyncHeight = mLayoutHeight;
         if (mSelectedPosition >= 0) {
             // Sync the selection state
-            AutoPtr<IView> v;// = GetChildAt(mSelectedPosition - mFirstPosition);
+            AutoPtr<IView> v = GetChildAt(mSelectedPosition - mFirstPosition);
             mSyncRowId = mNextSelectedRowId;
             mSyncPosition = mNextSelectedPosition;
             if (v != NULL) {
@@ -1310,7 +1290,7 @@ void AdapterView::RememberSyncState()
         }
         else {
             // Sync the based on the offset of the first view
-            AutoPtr<IView> v;// = GetChildAt(0);
+            AutoPtr<IView> v = GetChildAt(0);
             AutoPtr<IAdapter> adapter;
             THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
             Int32 count;
@@ -1330,6 +1310,35 @@ void AdapterView::RememberSyncState()
             mSyncMode = SYNC_FIRST_POSITION;
         }
     }
+}
+
+ECode AdapterView::Init(
+    /* [in] */ IContext* context)
+{
+    ViewGroup::Init(context);
+    return NOERROR;
+}
+
+ECode AdapterView::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    ViewGroup::Init(context, attrs);
+    return NOERROR;
+}
+
+ECode AdapterView::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyle)
+{
+    ViewGroup::Init(context, attrs, defStyle);
+
+    if(GetImportantForAccessibility() == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+    {
+        SetImportantForAccessibility(IView::IMPORTANT_FOR_ACCESSIBILITY_YES);
+    }
+    return NOERROR;
 }
 
 }// namespace Widget

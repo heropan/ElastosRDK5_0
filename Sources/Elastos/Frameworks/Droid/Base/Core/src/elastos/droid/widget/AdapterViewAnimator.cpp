@@ -1,32 +1,29 @@
 
-#include "elastos/droid/animation/AnimatorInflater.h"
-#include "elastos/droid/animation/CObjectAnimatorHelper.h"
-#include "elastos/droid/content/CIntentFilterComparison.h"
-#include "elastos/droid/R.h"
-#include "elastos/droid/view/CViewConfiguration.h"
-#include "elastos/droid/view/CViewGroupLayoutParams.h"
-#include "elastos/droid/widget/AdapterViewAnimator.h"
-#include "elastos/droid/widget/CFrameLayout.h"
-#include "elastos/core/IntegralToString.h"
 #include <elastos/core/Math.h>
+//#include <elastos/utility/logging/Logger.h>
+#include <animation/AnimatorInflater.h>
+#include <animation/CObjectAnimatorHelper.h>
+#include <content/CIntentFilterComparison.h>
+#include <view/CViewGroupLayoutParams.h>
+#include <view/CViewConfiguration.h>
+#include <widget/AdapterViewAnimator.h>
+#include <widget/CFrameLayout.h>
 
-using Elastos::Droid::Animation::AnimatorInflater;
-using Elastos::Droid::Animation::CObjectAnimatorHelper;
+using Elastos::Core::CStringWrapper;
+//using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Animation::IAnimator;
+using Elastos::Droid::Animation::AnimatorInflater;
 using Elastos::Droid::Animation::IObjectAnimatorHelper;
-using Elastos::Droid::Animation::IValueAnimator;
-using Elastos::Droid::Content::CIntentFilterComparison;
+using Elastos::Droid::Animation::CObjectAnimatorHelper;
 using Elastos::Droid::Content::IIntentFilterComparison;
-using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
-using Elastos::Droid::View::CViewConfiguration;
+using Elastos::Droid::Content::CIntentFilterComparison;
+using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::Widget::CFrameLayout;
+using Elastos::Droid::View::EIID_IViewGroup;
+using Elastos::Droid::View::CViewConfiguration;
 using Elastos::Droid::Widget::IFrameLayout;
-using Elastos::Core::CString;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::IntegralToString;
+using Elastos::Droid::Widget::CFrameLayout;
 
 namespace Elastos {
 namespace Droid {
@@ -37,168 +34,6 @@ const Int32 AdapterViewAnimator::DEFAULT_ANIMATION_DURATION;
 const Int32 AdapterViewAnimator::TOUCH_MODE_NONE;
 const Int32 AdapterViewAnimator::TOUCH_MODE_DOWN_IN_CURRENT_VIEW;
 const Int32 AdapterViewAnimator::TOUCH_MODE_HANDLED;
-
-//=====================================================================
-//               AdapterViewAnimator::ViewAndMetaData
-//=====================================================================
-AdapterViewAnimator::ViewAndMetaData::ViewAndMetaData(
-    /* [in] */ IView* v,
-    /* [in] */ Int32 relativeIndex,
-    /* [in] */ Int32 adapterPosition,
-    /* [in] */ Int64 itemId)
-    : mView(v)
-    , mRelativeIndex(relativeIndex)
-    , mAdapterPosition(adapterPosition)
-    , mItemId(itemId)
-{
-}
-
-//=====================================================================
-//               AdapterViewAnimator::CheckForTap
-//=====================================================================
-CAR_INTERFACE_IMPL(AdapterViewAnimator::CheckForTap, Object, IRunnable)
-
-AdapterViewAnimator::CheckForTap::CheckForTap(
-    /* [in] */ AdapterViewAnimator* host)
-    : mHost(host)
-{
-    assert(mHost);
-}
-
-ECode AdapterViewAnimator::CheckForTap::Run()
-{
-    if (mHost->mTouchMode == mHost->TOUCH_MODE_DOWN_IN_CURRENT_VIEW) {
-        AutoPtr<IView> v;
-        mHost->GetCurrentView((IView**)&v);
-        mHost->ShowTapFeedback(v);
-    }
-    return NOERROR;
-}
-
-//=====================================================================
-//               AdapterViewAnimator::ActionUpRun
-//=====================================================================
-CAR_INTERFACE_IMPL(AdapterViewAnimator::ActionUpRun, Object, IRunnable)
-
-AdapterViewAnimator::ActionUpRun::ActionUpRun(
-    /* [in] */ AdapterViewAnimator* host,
-    /* [in] */ ViewAndMetaData* data,
-    /* [in] */ IView* v)
-    : mHost(host)
-    , mData(data)
-    , mView(v)
-{
-    assert(mHost);
-}
-
-ECode AdapterViewAnimator::ActionUpRun::Run()
-{
-    mHost->HideTapFeedback(mView);
-    AutoPtr<IRunnable> run = new ActionUpInner(mHost, mData, mView);
-    //mHost->Post(run);
-    return NOERROR;
-}
-
-//=====================================================================
-//               AdapterViewAnimator::ActionUpInner
-//=====================================================================
-CAR_INTERFACE_IMPL(AdapterViewAnimator::ActionUpInner, Object, IRunnable)
-
-AdapterViewAnimator::ActionUpInner::ActionUpInner(
-    /* [in] */ AdapterViewAnimator* host,
-    /* [in] */ ViewAndMetaData* data,
-    /* [in] */ IView* v)
-    : mHost(host)
-    , mData(data)
-    , mView(v)
-{
-    assert(mHost);
-}
-
-ECode AdapterViewAnimator::ActionUpInner::Run()
-{
-    Boolean resTmp = FALSE;
-    if (mData != NULL) {
-        mHost->PerformItemClick(mView, mData->mAdapterPosition, mData->mItemId, &resTmp);
-    }
-    else {
-        mHost->PerformItemClick(mView, 0, 0, &resTmp);
-    }
-    return NOERROR;
-}
-
-//=====================================================================
-//               AdapterViewAnimator::CheckDataRun
-//=====================================================================
-CAR_INTERFACE_IMPL(AdapterViewAnimator::CheckDataRun, Object, IRunnable)
-
-AdapterViewAnimator::CheckDataRun::CheckDataRun(
-    /* [in] */ AdapterViewAnimator* host)
-    : mHost(host)
-{
-    assert(mHost);
-}
-
-ECode AdapterViewAnimator::CheckDataRun::Run()
-{
-    mHost->HandleDataChanged();
-    Int32 count = 0;
-    mHost->GetCount(&count);
-    if (mHost->mWhichChild >= mHost->GetWindowSize()) {
-        mHost->mWhichChild = 0;
-        mHost->ShowOnly(mHost->mWhichChild, FALSE);
-    }
-    else if (mHost->mOldItemCount != count) {
-        mHost->ShowOnly(mHost->mWhichChild, FALSE);
-    }
-
-    mHost->RefreshChildren();
-    mHost->RequestLayout();
-    return NOERROR;
-}
-
-//=====================================================================
-//               AdapterViewAnimator::InternalInsetsInfo
-//=====================================================================
-AdapterViewAnimator::SavedState::SavedState(
-    /* [in] */ IParcelable* superState,
-    /* [in] */ Int32 whichChild)
-    //: ViewBaseSavedState(superState);
-    : mWhichChild(whichChild)
-{
-}
-
-/**
- * Constructor called from {@link #CREATOR}
- */
-//private SavedState(Parcel in) {
-//    super(in);
-//    this.whichChild = in.readInt();
-//}
-
-ECode AdapterViewAnimator::SavedState::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ Int32 flags)
-{
-    assert(0);
-    //ViewBaseSavedState::WriteToParcel(out, flags);
-    //out->WriteInt(this->mWhichChild);
-    return NOERROR;
-}
-
-ECode AdapterViewAnimator::SavedState::ToString(
-    /* [out] */ String* result)
-{
-    VALIDATE_NOT_NULL(result);
-    String strWhichChild = IntegralToString::ToString(this->mWhichChild);
-    *result = String("AdapterViewAnimator.SavedState{ whichChild = ") + strWhichChild + String(" }");
-    return NOERROR;
-}
-
-//=====================================================================
-//                      AdapterViewAnimator
-//=====================================================================
-CAR_INTERFACE_IMPL(AdapterViewAnimator, AdapterView, IAdapterViewAnimator)
 
 AdapterViewAnimator::AdapterViewAnimator()
     : mWhichChild(0)
@@ -218,46 +53,45 @@ AdapterViewAnimator::AdapterViewAnimator()
 {
 }
 
-ECode AdapterViewAnimator::constructor(
-    /* [in] */ IContext* context)
-{
-    return constructor(context, NULL);
-}
-
-ECode AdapterViewAnimator::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return constructor(context, attrs, 0);
-}
-
-ECode AdapterViewAnimator::constructor(
+AdapterViewAnimator::AdapterViewAnimator(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
+    /* [in] */ Int32 defStyle)
+    : mWhichChild(0)
+    , mAnimateFirstTime(TRUE)
+    , mActiveOffset(0)
+    , mMaxNumActiveViews(1)
+    , mCurrentWindowStart(0)
+    , mCurrentWindowEnd(-1)
+    , mCurrentWindowStartUnbounded(0)
+    , mDeferNotifyDataSetChanged(FALSE)
+    , mFirstTime(TRUE)
+    , mLoopViews(TRUE)
+    , mReferenceChildWidth(-1)
+    , mReferenceChildHeight(-1)
+    , mRestoreWhichChild(-1)
+    , mTouchMode(TOUCH_MODE_NONE)
 {
-    return constructor(context, attrs, defStyleAttr, 0);
+    Init(context, attrs, defStyle);
 }
 
-ECode AdapterViewAnimator::constructor(
+ECode AdapterViewAnimator::Init(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
+    /* [in] */ Int32 defStyle)
 {
-    AdapterView::constructor(context, attrs, defStyleAttr, defStyleRes);
+    AdapterView::Init(context, attrs, defStyle);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AdapterViewAnimator),
             ARRAY_SIZE(R::styleable::AdapterViewAnimator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
     Int32 resource = 0;
     a->GetResourceId(R::styleable::AdapterViewAnimator_inAnimation, 0, &resource);
     if (resource > 0) {
         SetOutAnimation(context, resource);
-    }
-    else {
+    } else {
         SetOutAnimation(GetDefaultOutAnimation());
     }
 
@@ -271,18 +105,15 @@ ECode AdapterViewAnimator::constructor(
 }
 
 ECode AdapterViewAnimator::SetDisplayedChild(
-    /* [in] */ Int32 whichChild)
+        /* [in] */ Int32 whichChild)
 {
     SetDisplayedChild(whichChild, TRUE);
     return NOERROR;
 }
 
-ECode AdapterViewAnimator::GetDisplayedChild(
-    /* [out] */ Int32* result)
+Int32 AdapterViewAnimator::GetDisplayedChild()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mWhichChild;
-    return NOERROR;
+    return mWhichChild;
 }
 
 ECode AdapterViewAnimator::ShowNext()
@@ -297,132 +128,105 @@ ECode AdapterViewAnimator::ShowPrevious()
     return NOERROR;
 }
 
-ECode AdapterViewAnimator::OnTouchEvent(
-    /* [in] */ IMotionEvent* event,
-    /* [out] */ Boolean* result)
+Boolean AdapterViewAnimator::OnTouchEvent(
+    /* [in] */ IMotionEvent* ev)
 {
-    VALIDATE_NOT_NULL(event);
-    VALIDATE_NOT_NULL(result);
-
     Int32 action = 0;
-    event->GetAction(&action);
+    ev->GetAction(&action);
     Boolean handled = FALSE;
     switch (action) {
         case IMotionEvent::ACTION_DOWN:
-            {
-                AutoPtr<IView> v;
-                GetCurrentView((IView**)&v);
-                if (v) {
-                    Float x = 0, y = 0;
-                    event->GetX(&x);
-                    event->GetY(&y);
-                    if (IsTransformedTouchPointInView(x, y, v, NULL)) {
-                        if (mPendingCheckForTap == NULL) {
-                            mPendingCheckForTap = new CheckForTap(this);
-                        }
-                        mTouchMode = TOUCH_MODE_DOWN_IN_CURRENT_VIEW;
-                        //PostDelayed(mPendingCheckForTap, CViewConfiguration::GetTapTimeout());
+        {
+            AutoPtr<IView> v = GetCurrentView();
+            if (v) {
+                Float x = 0, y = 0;
+                ev->GetX(&x);
+                ev->GetY(&y);
+                if (IsTransformedTouchPointInView(x, y, v, NULL)) {
+                    if (mPendingCheckForTap == NULL) {
+                        mPendingCheckForTap = new CheckForTap(this);
                     }
+                    mTouchMode = TOUCH_MODE_DOWN_IN_CURRENT_VIEW;
+                    PostDelayed(mPendingCheckForTap, CViewConfiguration::GetTapTimeout());
                 }
             }
             break;
+        }
+
         case IMotionEvent::ACTION_MOVE: break;
         case IMotionEvent::ACTION_POINTER_UP: break;
         case IMotionEvent::ACTION_UP:
-            {
-                if (mTouchMode == TOUCH_MODE_DOWN_IN_CURRENT_VIEW) {
-                    AutoPtr<IView> v;
-                    GetCurrentView((IView**)&v);
-                    AutoPtr<ViewAndMetaData> viewData = GetMetaDataForChild(v);
-                    if (v) {
-                        Float x = 0, y = 0;
-                        event->GetX(&x);
-                        event->GetY(&y);
-                        if (IsTransformedTouchPointInView(x, y, v, NULL)) {
-                            AutoPtr<IHandler> handler;// = GetHandler();
-                            if (handler) {
-                                handler->RemoveCallbacks(mPendingCheckForTap);
-                                ShowTapFeedback(v);
-                                AutoPtr<IRunnable> run = new ActionUpRun(this, viewData, v);
-                                //PostDelayed(run, CViewConfiguration::GetTapTimeout());
-                            }
-
-                            handled = TRUE;
-                        }
-                    }
-                    mTouchMode = TOUCH_MODE_NONE;
-                }
-            }
-            break;
-        case IMotionEvent::ACTION_CANCEL:
-            {
-                AutoPtr<IView> v;
-                GetCurrentView((IView**)&v);
+        {
+            if (mTouchMode == TOUCH_MODE_DOWN_IN_CURRENT_VIEW) {
+                AutoPtr<IView> v = GetCurrentView();
+                AutoPtr<ViewAndMetaData> viewData = GetMetaDataForChild(v);
                 if (v) {
-                    HideTapFeedback(v);
+                    Float x = 0, y = 0;
+                    ev->GetX(&x);
+                    ev->GetY(&y);
+                    if (IsTransformedTouchPointInView(x, y, v, NULL)) {
+                        AutoPtr<IHandler> handler = GetHandler();
+                        if (handler) {
+                            handler->RemoveCallbacks(mPendingCheckForTap);
+                            ShowTapFeedback(v);
+                            AutoPtr<IRunnable> run = new ActionUpRun(this, viewData, v);
+                            PostDelayed(run, CViewConfiguration::GetTapTimeout());
+                        }
+
+                        handled = TRUE;
+                    }
                 }
                 mTouchMode = TOUCH_MODE_NONE;
             }
             break;
-    }
+        }
 
-    *result = handled;
-    return NOERROR;
+        case IMotionEvent::ACTION_CANCEL:
+        {
+                AutoPtr<IView> v = GetCurrentView();
+                if (v ) {
+                    HideTapFeedback(v);
+                }
+                mTouchMode = TOUCH_MODE_NONE;
+        }
+    }
+    return handled;
 }
 
-ECode AdapterViewAnimator::OnSaveInstanceState(
-    /* [out] */ IParcelable** result)
+AutoPtr<IParcelable> AdapterViewAnimator::OnSaveInstanceState()
 {
-    VALIDATE_NOT_NULL(result);
     AutoPtr<IParcelable> superState = AdapterView::OnSaveInstanceState();
     if (mRemoteViewsAdapter) {
         mRemoteViewsAdapter->SaveRemoteViewsCache();
     }
-
-    //*result = new SavedState(superState, mWhichChild);
-    //REFCOUNT_ADD(*result);
-    return NOERROR;
+    //return new SavedState(superState, mWhichChild);
+    return NULL;
 }
 
 void AdapterViewAnimator::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
-    SavedState* ss = (SavedState*)state;
-    //AdapterView::OnRestoreInstanceState(ss->GetSuperState());
 
-    // Here we set mWhichChild in addition to setDisplayedChild
-    // We do the former in case mAdapter is null, and hence setDisplayedChild won't
-    // set mWhichChild
-    mWhichChild = ss->mWhichChild;
+    /*SavedState ss = (SavedState) state;
+    super.onRestoreInstanceState(ss.getSuperState());
 
-    // When using RemoteAdapters, the async connection process can lead to
-    // onRestoreInstanceState to be called before setAdapter(), so we need to save the previous
-    // values to restore the list position after we connect, and can skip setting the displayed
-    // child until then.
-    if (mRemoteViewsAdapter != NULL && mAdapter == NULL) {
+    mWhichChild = ss.whichChild;
+
+    if (mRemoteViewsAdapter != null && mAdapter == null) {
         mRestoreWhichChild = mWhichChild;
-    }
-    else {
-        SetDisplayedChild(mWhichChild, FALSE);
-    }
+    } else {
+        setDisplayedChild(mWhichChild, false);
+    }*/
 }
 
-ECode AdapterViewAnimator::GetCurrentView(
-    /* [out] */ IView** result)
+AutoPtr<IView> AdapterViewAnimator::GetCurrentView()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = GetViewAtRelativeIndex(mActiveOffset);
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return GetViewAtRelativeIndex(mActiveOffset);
 }
 
-ECode AdapterViewAnimator::GetInAnimation(
-    /* [out] */ IObjectAnimator** result)
+AutoPtr<IObjectAnimator> AdapterViewAnimator::GetInAnimation()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mInAnimation;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return mInAnimation;
 }
 
 ECode AdapterViewAnimator::SetInAnimation(
@@ -436,19 +240,14 @@ ECode AdapterViewAnimator::SetInAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {
-    AutoPtr<IAnimator> anim;
-    AnimatorInflater::LoadAnimator(context, resourceID, (IAnimator**)&anim);
+    AutoPtr<IAnimator> anim = AnimatorInflater::LoadAnimator(context, resourceID);
     SetInAnimation(IObjectAnimator::Probe(anim));
     return NOERROR;
 }
 
-ECode AdapterViewAnimator::GetOutAnimation(
-    /* [out] */ IObjectAnimator** result)
+AutoPtr<IObjectAnimator> AdapterViewAnimator::GetOutAnimation()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mOutAnimation;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return mOutAnimation;
 }
 
 ECode AdapterViewAnimator::SetOutAnimation(
@@ -462,8 +261,7 @@ ECode AdapterViewAnimator::SetOutAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {
-    AutoPtr<IAnimator> anim;
-    AnimatorInflater::LoadAnimator(context, resourceID, (IAnimator**)&anim);
+    AutoPtr<IAnimator> anim = AnimatorInflater::LoadAnimator(context, resourceID);
     SetInAnimation(IObjectAnimator::Probe(anim));
     return NOERROR;
 }
@@ -479,30 +277,22 @@ ECode AdapterViewAnimator::GetBaseline(
     /* [out] */ Int32* baseline)
 {
     VALIDATE_NOT_NULL(baseline);
-    AutoPtr<IView> currentView;
-    GetCurrentView((IView**)&currentView);
-    if (currentView != NULL) {
-        currentView->GetBaseline(baseline);
-    }
-    else {
+    if (GetCurrentView() != NULL) {
+        GetCurrentView()->GetBaseline(baseline);
+    } else {
         AdapterView::GetBaseline(baseline);
     }
     return NOERROR;
 }
 
-ECode AdapterViewAnimator::GetAdapter(
-    /* [out] */ IAdapter** result)
+AutoPtr<IAdapter> AdapterViewAnimator::GetAdapter()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mAdapter;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return mAdapter;
 }
 
 ECode AdapterViewAnimator::SetAdapter(
     /* [in] */ IAdapter* adapter)
 {
-    VALIDATE_NOT_NULL(adapter);
     if (mAdapter && mDataSetObserver) {
         mAdapter->UnregisterDataSetObserver(mDataSetObserver);
     }
@@ -515,17 +305,16 @@ ECode AdapterViewAnimator::SetAdapter(
         mAdapter->RegisterDataSetObserver(mDataSetObserver);
         mAdapter->GetCount(&mItemCount);
     }
-
     SetFocusable(true);
     mWhichChild = 0;
     ShowOnly(mWhichChild, FALSE);
+
     return NOERROR;
 }
 
 ECode AdapterViewAnimator::SetRemoteViewsAdapter(
     /* [in] */ IIntent* intent)
 {
-    VALIDATE_NOT_NULL(intent);
     if (mRemoteViewsAdapter) {
         AutoPtr<IIntentFilterComparison> fcNew, fcOld;
         CIntentFilterComparison::New(intent, (IIntentFilterComparison**)&fcNew);
@@ -545,7 +334,7 @@ ECode AdapterViewAnimator::SetRemoteViewsAdapter(
     Boolean ready = FALSE;
     mRemoteViewsAdapter->IsDataReady(&ready);
     if (ready) {
-        SetAdapter(IAdapter::Probe(mRemoteViewsAdapter));
+        SetAdapter(mRemoteViewsAdapter);
     }
     return NOERROR;
 }
@@ -553,7 +342,6 @@ ECode AdapterViewAnimator::SetRemoteViewsAdapter(
 ECode AdapterViewAnimator::SetRemoteViewsOnClickHandler(
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
-    VALIDATE_NOT_NULL(handler);
     if (mRemoteViewsAdapter) {
         mRemoteViewsAdapter->SetRemoteViewsOnClickHandler(handler);
     }
@@ -567,13 +355,9 @@ ECode AdapterViewAnimator::SetSelection(
     return NOERROR;
 }
 
-ECode AdapterViewAnimator::GetSelectedView(
-    /* [out] */ IView** result)
+AutoPtr<IView> AdapterViewAnimator::GetSelectedView()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = GetViewAtRelativeIndex(mActiveOffset);
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return GetViewAtRelativeIndex(mActiveOffset);
 }
 
 ECode AdapterViewAnimator::DeferNotifyDataSetChanged()
@@ -582,16 +366,13 @@ ECode AdapterViewAnimator::DeferNotifyDataSetChanged()
     return NOERROR;
 }
 
-ECode AdapterViewAnimator::OnRemoteAdapterConnected(
-    /* [out] */ Boolean* result)
+Boolean AdapterViewAnimator::OnRemoteAdapterConnected()
 {
-    VALIDATE_NOT_NULL(result);
-    if (TO_IINTERFACE(mRemoteViewsAdapter) != TO_IINTERFACE(mAdapter)) {
-        SetAdapter(IAdapter::Probe(mRemoteViewsAdapter));
+    if (mRemoteViewsAdapter != mAdapter) {
+        SetAdapter(mRemoteViewsAdapter);
 
         if (mDeferNotifyDataSetChanged) {
-            IBaseAdapter* baseAdapterTmp = IBaseAdapter::Probe(mRemoteViewsAdapter);
-            baseAdapterTmp->NotifyDataSetChanged();
+            mRemoteViewsAdapter->NotifyDataSetChanged();
             mDeferNotifyDataSetChanged = FALSE;
         }
 
@@ -599,18 +380,12 @@ ECode AdapterViewAnimator::OnRemoteAdapterConnected(
             SetDisplayedChild(mRestoreWhichChild, FALSE);
             mRestoreWhichChild = -1;
         }
-
-        *result = FALSE;
-        return NOERROR;
-    }
-    else if (mRemoteViewsAdapter) {
+        return FALSE;
+    } else if (mRemoteViewsAdapter) {
         mRemoteViewsAdapter->SuperNotifyDataSetChanged();
-        *result = TRUE;
-        return NOERROR;
+        return TRUE;
     }
-
-    *result = FALSE;
-    return NOERROR;
+    return FALSE;
 }
 
 ECode AdapterViewAnimator::OnRemoteAdapterDisconnected()
@@ -632,22 +407,19 @@ ECode AdapterViewAnimator::FyiWillBeAdvancedByHostKThx()
 ECode AdapterViewAnimator::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    VALIDATE_NOT_NULL(event);
     AdapterView::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> csq;
-    CString::New(String("AdapterViewAnimator"), (ICharSequence**)&csq);
-    IAccessibilityRecord* recordTmp = IAccessibilityRecord::Probe(event);
-    recordTmp->SetClassName(csq);
+    CStringWrapper::New(String("AdapterViewAnimator"), (ICharSequence**)&csq);
+    event->SetClassName(csq);
     return NOERROR;
 }
 
 ECode AdapterViewAnimator::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
-    VALIDATE_NOT_NULL(info);
     AdapterView::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> csq;
-    CString::New(String("AdapterViewAnimator"), (ICharSequence**)&csq);
+    CStringWrapper::New(String("AdapterViewAnimator"), (ICharSequence**)&csq);
     info->SetClassName(csq);
     return NOERROR;
 }
@@ -674,14 +446,12 @@ void AdapterViewAnimator::TransformViewForTransition(
     /* [in] */ IView* v,
     /* [in] */ Boolean animate)
 {
-    IAnimation* animationTmp = IAnimation::Probe(mInAnimation);
     if (fromIndex == -1) {
-        //animationTmp->SetTarget(TO_IINTERFACE(v));
-        animationTmp->Start();
-    }
-    else if (toIndex == -1) {
-        //animationTmp->SetTarget(TO_IINTERFACE(v));
-        animationTmp->Start();
+        mInAnimation->SetTarget((IInterface*)v->Probe(EIID_IInterface));
+        mInAnimation->Start();
+    } else if (toIndex == -1) {
+        mOutAnimation->SetTarget((IInterface*)v->Probe(EIID_IInterface));
+        mOutAnimation->Start();
     }
 }
 
@@ -694,8 +464,7 @@ AutoPtr<IObjectAnimator> AdapterViewAnimator::GetDefaultInAnimation()
     CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
     AutoPtr<IObjectAnimator> anim;
     helper->OfFloat(NULL, String("alpha"), array, (IObjectAnimator**)&anim);
-    //IValueAnimator* valueAnimator = IValueAnimator::Probe(anim);
-    //valueAnimator->SetDuration(DEFAULT_ANIMATION_DURATION);
+    anim->SetDuration(DEFAULT_ANIMATION_DURATION);
     return anim;
 }
 
@@ -708,16 +477,14 @@ AutoPtr<IObjectAnimator> AdapterViewAnimator::GetDefaultOutAnimation()
     CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
     AutoPtr<IObjectAnimator> anim;
     helper->OfFloat(NULL, String("alpha"), array, (IObjectAnimator**)&anim);
-    //IValueAnimator* valueAnimator = IValueAnimator::Probe(anim);
-    //valueAnimator->SetDuration(DEFAULT_ANIMATION_DURATION);
+    anim->SetDuration(DEFAULT_ANIMATION_DURATION);
     return anim;
 }
 
 void AdapterViewAnimator::ApplyTransformForChildAtIndex(
     /* [in] */ IView* child,
     /* [in] */ Int32 relativeIndex)
-{
-}
+{}
 
 Int32 AdapterViewAnimator::Modulo(
     /* [in] */ Int32 pos,
@@ -725,8 +492,7 @@ Int32 AdapterViewAnimator::Modulo(
 {
     if (size > 0) {
         return (size + (pos % size)) % size;
-    }
-    else {
+    } else {
         return 0;
     }
 }
@@ -747,26 +513,22 @@ AutoPtr<IView> AdapterViewAnimator::GetViewAtRelativeIndex(
 Int32 AdapterViewAnimator::GetNumActiveViews()
 {
     if (mAdapter) {
-        Int32 count = 0;
-        GetCount(&count);
-        return Elastos::Core::Math::Min(count + 1, mMaxNumActiveViews);
+        return Elastos::Core::Math::Min(GetCount() + 1, mMaxNumActiveViews);
+    } else {
+        return mMaxNumActiveViews;
     }
-    return mMaxNumActiveViews;
 }
 
 Int32 AdapterViewAnimator::GetWindowSize()
 {
     if (mAdapter) {
-        Int32 adapterCount = 0;
-        GetCount(&adapterCount);
+        Int32 adapterCount = GetCount();
         if (adapterCount <= GetNumActiveViews() && mLoopViews) {
             return adapterCount * mMaxNumActiveViews;
-        }
-        else {
+        } else {
             return adapterCount;
         }
-    }
-    else {
+    } else {
         return 0;
     }
 }
@@ -785,12 +547,11 @@ AutoPtr<IViewGroupLayoutParams> AdapterViewAnimator::CreateOrReuseLayoutParams(
 void AdapterViewAnimator::RefreshChildren()
 {
     if (!mAdapter) return;
-    Int32 adapterCount = 0;
     for (Int32 i = mCurrentWindowStart; i < mCurrentWindowEnd; i++) {
         Int32 index = Modulo(i, GetWindowSize());
-        GetCount(&adapterCount);
+        Int32 adapterCount = GetCount();
         AutoPtr<IView> updatedChild;
-        mAdapter->GetView(Modulo(i, adapterCount), NULL, IViewGroup::Probe(this), (IView**)&updatedChild);
+        mAdapter->GetView(Modulo(i, adapterCount), NULL, (IViewGroup*)this->Probe(EIID_IViewGroup), (IView**)&updatedChild);
         Int32 mode = 0;
         if ((updatedChild->GetImportantForAccessibility(&mode), mode) == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
             updatedChild->SetImportantForAccessibility(IView::IMPORTANT_FOR_ACCESSIBILITY_YES);
@@ -799,11 +560,10 @@ void AdapterViewAnimator::RefreshChildren()
         if(mViewsMap.Find(index) != mViewsMap.End()) {
             AutoPtr<IView> v = (mViewsMap.Find(index))->mSecond->mView;
             AutoPtr<IFrameLayout> fl = IFrameLayout::Probe(v);
-            IViewGroup* viewGroup = IViewGroup::Probe(fl);
             assert(fl != NULL);
             if(updatedChild) {
-                viewGroup->RemoveAllViewsInLayout();
-                viewGroup->AddView(updatedChild);
+                fl->RemoveAllViewsInLayout();
+                fl->AddView(updatedChild);
             }
         }
     }
@@ -821,8 +581,7 @@ void AdapterViewAnimator::ShowOnly(
     /* [in] */ Boolean animate)
 {
     if (!mAdapter) return;
-    Int32 adapterCount = 0;
-    GetCount(&adapterCount);
+    Int32 adapterCount = GetCount();
     if (adapterCount == 0) return;
     // is right?
     List<Int32>::Iterator it = mPreviousViews.Begin();
@@ -861,8 +620,7 @@ void AdapterViewAnimator::ShowOnly(
         Boolean remove = FALSE;
         if (!wrap && (iter->mFirst < rangeStart || iter->mFirst > rangeEnd)) {
             remove = TRUE;
-        }
-        else if (wrap && (iter->mFirst > rangeEnd && iter->mFirst < rangeStart)) {
+        } else if (wrap && (iter->mFirst > rangeEnd && iter->mFirst < rangeStart)) {
             remove = TRUE;
         }
 
@@ -899,28 +657,25 @@ void AdapterViewAnimator::ShowOnly(
                 mViewsMap.Find(index)->mSecond->mRelativeIndex = newRelativeIndex;
                 ApplyTransformForChildAtIndex(view, newRelativeIndex);
                 TransformViewForTransition(oldRelativeIndex, newRelativeIndex, view, animate);
-            }
-            else {
+            } else {
                 Int32 adapterPosition = Modulo(i, adapterCount);
                 AutoPtr<IView> newView;
-                mAdapter->GetView(adapterPosition, NULL, IViewGroup::Probe(this), (IView**)&newView);
+                mAdapter->GetView(adapterPosition, NULL, (IViewGroup*)this->Probe(EIID_IViewGroup), (IView**)&newView);
                 Int64 itemId = 0;
                 mAdapter->GetItemId(adapterPosition, &itemId);
 
                 AutoPtr<IFrameLayout> fl = GetFrameForChild();
 
-                IViewGroup* viewGroupTmp = IViewGroup::Probe(fl);
                 if (newView) {
-                    viewGroupTmp->AddView(newView);
+                    fl->AddView(newView);
                 }
 
-                AutoPtr<ViewAndMetaData> source = new ViewAndMetaData((IView*)IView::Probe(fl), newRelativeIndex, adapterPosition, itemId);
+                AutoPtr<ViewAndMetaData> source = new ViewAndMetaData(fl, newRelativeIndex, adapterPosition, itemId);
                 mViewsMap.Insert(HashMap<Int32, AutoPtr<ViewAndMetaData> >::ValueType(index, source));
 
-                IView* viewTmp = IView::Probe(fl);
-                AddChild(viewTmp);
-                ApplyTransformForChildAtIndex(viewTmp, newRelativeIndex);
-                TransformViewForTransition(-1, newRelativeIndex, (IView*)IView::Probe(fl), animate);
+                AddChild(fl);
+                ApplyTransformForChildAtIndex(fl, newRelativeIndex);
+                TransformViewForTransition(-1, newRelativeIndex, fl, animate);
             }
 
             mViewsMap.Find(index)->mSecond->mView->BringToFront();
@@ -953,7 +708,7 @@ void AdapterViewAnimator::HideTapFeedback(
 
 void AdapterViewAnimator::CancelHandleClick()
 {
-    AutoPtr<IView> v;// = GetCurrentView();
+    AutoPtr<IView> v = GetCurrentView();
     if (v) {
         HideTapFeedback(v);
     }
@@ -973,14 +728,12 @@ void AdapterViewAnimator::OnMeasure(
 
     if (heightSpecMode == MeasureSpec::UNSPECIFIED) {
         heightSpecSize = haveChildRefSize ? mReferenceChildHeight + mPaddingTop + mPaddingBottom : 0;
-    }
-    else if (heightSpecMode == MeasureSpec::AT_MOST) {
+    } else if (heightSpecMode == MeasureSpec::AT_MOST) {
         if (haveChildRefSize) {
             Int32 height = mReferenceChildHeight + mPaddingTop + mPaddingBottom;
             if (height > heightSpecSize) {
                 heightSpecSize |= IView::MEASURED_STATE_TOO_SMALL;
-            }
-            else {
+            } else {
                 heightSpecSize = height;
             }
         }
@@ -988,14 +741,12 @@ void AdapterViewAnimator::OnMeasure(
 
     if (widthSpecMode == MeasureSpec::UNSPECIFIED) {
         widthSpecSize = haveChildRefSize ? mReferenceChildWidth + mPaddingLeft + mPaddingRight : 0;
-    }
-    else if (heightSpecMode == MeasureSpec::AT_MOST) {
+    } else if (heightSpecMode == MeasureSpec::AT_MOST) {
         if (haveChildRefSize) {
             Int32 width = mReferenceChildWidth + mPaddingLeft + mPaddingRight;
             if (width > widthSpecSize) {
                 widthSpecSize |= IView::MEASURED_STATE_TOO_SMALL;
-            }
-            else {
+            } else {
                 widthSpecSize = width;
             }
         }
@@ -1009,12 +760,12 @@ void AdapterViewAnimator::CheckForAndHandleDataChanged()
     Boolean dataChanged = mDataChanged;
     if (dataChanged) {
         AutoPtr<IRunnable> run = new CheckDataRun(this);
-        //Post(run);
+        Post(run);
     }
     mDataChanged = false;
 }
 
-ECode AdapterViewAnimator::OnLayout(
+void AdapterViewAnimator::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
@@ -1023,11 +774,9 @@ ECode AdapterViewAnimator::OnLayout(
 {
     CheckForAndHandleDataChanged();
 
-    Int32 childCount = 0;
-    GetChildCount(&childCount);
+    Int32 childCount = GetChildCount();
     for (Int32 i = 0; i < childCount; i++) {
-        AutoPtr<IView> child;
-        GetChildAt(i, (IView**)&child);
+        AutoPtr<IView> child = GetChildAt(i);
 
         Int32 mw = 0, mh =0;
         child->GetMeasuredWidth(&mw);
@@ -1037,7 +786,6 @@ ECode AdapterViewAnimator::OnLayout(
 
         child->Layout(mPaddingLeft, mPaddingTop, childRight, childBottom);
     }
-    return NOERROR;
 }
 
 void AdapterViewAnimator::InitViewAnimator()
@@ -1048,21 +796,19 @@ void AdapterViewAnimator::SetDisplayedChild(
     /* [in] */ Int32 whichChild,
     /* [in] */ Boolean animate)
 {
-    assert(0);
     if (mAdapter) {
         mWhichChild = whichChild;
         if (whichChild >= GetWindowSize()) {
             mWhichChild = mLoopViews ? 0 : GetWindowSize() - 1;
-        }
-        else if (whichChild < 0) {
+        } else if (whichChild < 0) {
             mWhichChild = mLoopViews ? GetWindowSize() - 1 : 0;
         }
 
-        Boolean hasFocus = FALSE;// GetFocusedChild() != NULL;
+        Boolean hasFocus = GetFocusedChild() != NULL;
 
         ShowOnly(mWhichChild, animate);
         if (hasFocus) {
-            //RequestFocus(IView::FOCUS_FORWARD);
+            RequestFocus(IView::FOCUS_FORWARD);
         }
     }
 }
@@ -1094,24 +840,116 @@ void AdapterViewAnimator::AddChild(
 
 void AdapterViewAnimator::MeasureChildren()
 {
-    assert(0);
-    Int32 count = 0;
-    GetChildCount(&count);
-    Int32 measureWidth = 0;
-    GetMeasuredWidth(&measureWidth);
-    Int32 measureHeight = 0;
-    GetMeasuredHeight(&measureHeight);
-    Int32 childWidth = measureWidth - mPaddingLeft - mPaddingRight;
-    Int32 childHeight = measureHeight - mPaddingTop - mPaddingBottom;
+    Int32 count = GetChildCount();
+    Int32 childWidth = GetMeasuredWidth() - mPaddingLeft - mPaddingRight;
+    Int32 childHeight = GetMeasuredHeight() - mPaddingTop - mPaddingBottom;
 
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView> child;// = GetChildAt(i);
+        AutoPtr<IView> child = GetChildAt(i);
         child->Measure(MeasureSpec::MakeMeasureSpec(childWidth, MeasureSpec::EXACTLY),
-            MeasureSpec::MakeMeasureSpec(childHeight, MeasureSpec::EXACTLY));
+                MeasureSpec::MakeMeasureSpec(childHeight, MeasureSpec::EXACTLY));
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+//                      AdapterViewAnimator::ViewAndMetaData
+/////////////////////////////////////////////////////////////////////////////////////
+AdapterViewAnimator::ViewAndMetaData::ViewAndMetaData(
+    /* [in] */ IView* v,
+    /* [in] */ Int32 relativeIndex,
+    /* [in] */ Int32 adapterPosition,
+    /* [in] */ Int64 itemId)
+    : mView(v)
+    , mRelativeIndex(relativeIndex)
+    , mAdapterPosition(adapterPosition)
+    , mItemId(itemId)
+{
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+//                      AdapterViewAnimator::CheckForTap
+/////////////////////////////////////////////////////////////////////////////////////
+AdapterViewAnimator::CheckForTap::CheckForTap(
+    /* [in] */ AdapterViewAnimator* host)
+    : mHost(host)
+{}
+
+ECode AdapterViewAnimator::CheckForTap::Run()
+{
+    if (mHost->mTouchMode == mHost->TOUCH_MODE_DOWN_IN_CURRENT_VIEW) {
+        AutoPtr<IView> v = mHost->GetCurrentView();
+        mHost->ShowTapFeedback(v);
+    }
+    return NOERROR;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+//                      AdapterViewAnimator::ActionUpRun
+/////////////////////////////////////////////////////////////////////////////////////
+AdapterViewAnimator::ActionUpRun::ActionUpRun(
+    /* [in] */ AdapterViewAnimator* host,
+    /* [in] */ ViewAndMetaData* data,
+    /* [in] */ IView* v)
+    : mHost(host)
+    , mData(data)
+    , mView(v)
+{}
+
+ECode AdapterViewAnimator::ActionUpRun::Run()
+{
+    mHost->HideTapFeedback(mView);
+    AutoPtr<IRunnable> run = new ActionUpInner(mHost, mData, mView);
+    mHost->Post(run);
+    return NOERROR;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+//                      AdapterViewAnimator::ActionUpInner
+/////////////////////////////////////////////////////////////////////////////////////
+AdapterViewAnimator::ActionUpInner::ActionUpInner(
+    /* [in] */ AdapterViewAnimator* host,
+    /* [in] */ ViewAndMetaData* data,
+    /* [in] */ IView* v)
+    : mHost(host)
+    , mData(data)
+    , mView(v)
+{}
+
+ECode AdapterViewAnimator::ActionUpInner::Run()
+{
+    if (mData != NULL) {
+        mHost->PerformItemClick(mView, mData->mAdapterPosition, mData->mItemId);
+    }
+    else {
+        mHost->PerformItemClick(mView, 0, 0);
+    }
+    return NOERROR;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+//                      AdapterViewAnimator::CheckDataRun
+/////////////////////////////////////////////////////////////////////////////////////
+AdapterViewAnimator::CheckDataRun::CheckDataRun(
+    /* [in] */ AdapterViewAnimator* host)
+    : mHost(host)
+{}
+
+ECode AdapterViewAnimator::CheckDataRun::Run()
+{
+    mHost->HandleDataChanged();
+    if (mHost->mWhichChild >= mHost->GetWindowSize()) {
+        mHost->mWhichChild = 0;
+        mHost->ShowOnly(mHost->mWhichChild, FALSE);
+    }
+    else if (mHost->mOldItemCount != mHost->GetCount()) {
+        mHost->ShowOnly(mHost->mWhichChild, FALSE);
+    }
+
+    mHost->RefreshChildren();
+    mHost->RequestLayout();
+    return NOERROR;
 }
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-
