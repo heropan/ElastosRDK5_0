@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_NOTIFICATIONSTYLE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Widget::IRemoteViews;
@@ -15,8 +16,12 @@ namespace App {
  * object.
  */
 class NotificationStyle
+    : public Object
+    , public INotificationStyle
 {
 public:
+    CAR_INTERFACE_DECL()
+
     NotificationStyle();
 
     virtual ~NotificationStyle();

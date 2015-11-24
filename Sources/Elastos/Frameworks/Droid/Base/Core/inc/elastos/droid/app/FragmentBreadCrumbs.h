@@ -3,19 +3,14 @@
 
 #include "elastos/droid/view/ViewGroup.h"
 
-using Elastos::Droid::Animation::ILayoutTransition;
 using Elastos::Droid::App::IFragmentManagerBackStackEntry;
 using Elastos::Droid::App::IFragmentManagerOnBackStackChangedListener;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Util::IAttributeSet;
-using Elastos::Droid::View::IGravity;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::ILayoutInflater;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::Widget::ILinearLayout;
-using Elastos::Droid::Widget::ITextView;
 
 namespace Elastos {
 namespace Droid {
@@ -41,7 +36,7 @@ class FragmentBreadCrumbs
 private:
     class MyOnClickListener
         : public Object
-        , public IViewOnClickListener()
+        , public IViewOnClickListener
     {
     public:
         CAR_INTERFACE_DECL()
@@ -172,13 +167,13 @@ private:
         /* [in] */ Int32 index);
 
 private:
-
+    static const String TAG;
     AutoPtr<IViewOnClickListener> mOnClickListener;
 
     AutoPtr<IActivity> mActivity;
     AutoPtr<ILayoutInflater> mInflater;
     AutoPtr<ILinearLayout> mContainer;
-    Int32 mMaxVisible = -1;
+    Int32 mMaxVisible;
 
     // Hahah
     AutoPtr<IBackStackRecord> mTopEntry;
@@ -193,7 +188,7 @@ private:
     Int32 mLayoutResId;
     Int32 mTextColor;
 
-    static const Int32 DEFAULT_GRAVITY;// = Gravity.START | Gravity.CENTER_VERTICAL;
+    static const Int32 DEFAULT_GRAVITY;
 };
 
 } // namespace App

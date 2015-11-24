@@ -49,9 +49,13 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CNotification();
 
-    ~CNotification();
+    virtual ~CNotification();
 
     CARAPI constructor();
 

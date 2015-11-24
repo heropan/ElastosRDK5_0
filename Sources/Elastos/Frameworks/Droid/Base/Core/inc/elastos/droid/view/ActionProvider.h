@@ -57,6 +57,19 @@ class ActionProvider
 public:
     CAR_INTERFACE_DECL()
 
+    ActionProvider();
+
+    virtual ~ActionProvider();
+
+    /**
+     * Creates a new instance. ActionProvider classes should always implement a
+     * constructor that takes a single Context parameter for inflating from menu XML.
+     *
+     * @param context Context for accessing resources.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* ctx);
+
     /**
      * Factory method called by the Android framework to create new action views.
      *
@@ -68,10 +81,8 @@ public:
      *
      * @deprecated use {@link #onCreateActionView(MenuItem)}
      */
-    virtual CARAPI_(AutoPtr<IView>) OnCreateActionView() = 0;
-
     virtual CARAPI OnCreateActionView(
-            /* [out] */ IView** view);
+            /* [out] */ IView** view) = 0;
 
     /**
      * Factory method called by the Android framework to create new action views.
@@ -85,10 +96,7 @@ public:
      * @param forItem MenuItem to create the action view for
      * @return the new action view
      */
-    virtual CARAPI_(AutoPtr<IView>) OnCreateActionView(
-        /* [in] */ IMenuItem* forItem);
-
-    virtual CARAPI OnCreateActionView(
+    CARAPI OnCreateActionView(
         /* [in] */ IMenuItem* forItem,
         /* [out] */ IView** view);
 
@@ -100,9 +108,7 @@ public:
      *         it is bound to, false otherwise. The default implementation returns false.
      * @see #isVisible()
      */
-    virtual CARAPI_(Boolean) OverridesItemVisibility();
-
-    virtual CARAPI OverridesItemVisibility(
+    CARAPI OverridesItemVisibility(
         /* [out] */ Boolean* visibility);
 
     /**
@@ -115,9 +121,7 @@ public:
      * @return true if the MenuItem this ActionProvider is bound to is visible, false if
      *         it is invisible. The default implementation returns true.
      */
-    virtual CARAPI_(Boolean) IsVisible();
-
-    virtual CARAPI IsVisible(
+    CARAPI IsVisible(
         /* [out] */ Boolean* visible);
 
     /**
@@ -126,7 +130,7 @@ public:
      * {@link #isVisible()}. If {@link #overridesItemVisibility()} returns false, this call
      * will have no effect.
      */
-    virtual CARAPI RefreshVisibility();
+    CARAPI RefreshVisibility();
 
     /**
      * Performs an optional default action.
@@ -163,9 +167,7 @@ public:
      * The default implementation does not perform any action and returns false.
      * </p>
      */
-    virtual CARAPI_(Boolean) OnPerformDefaultAction();
-
-    virtual CARAPI OnPerformDefaultAction(
+    CARAPI OnPerformDefaultAction(
         /* [out] */ Boolean* rst);
 
     /**
@@ -178,9 +180,7 @@ public:
      *
      * @return true if the item backed by this provider should have an associated submenu
      */
-    virtual CARAPI_(Boolean) HasSubMenu();
-
-    virtual CARAPI HasSubMenu(
+    CARAPI HasSubMenu(
         /* [out] */ Boolean* rst);
 
     /**
@@ -192,7 +192,7 @@ public:
      *
      * @param subMenu Submenu that will be displayed
      */
-    virtual CARAPI OnPrepareSubMenu(
+    CARAPI OnPrepareSubMenu(
         /* [in] */ ISubMenu* subMenu);
 
     /**
@@ -202,13 +202,13 @@ public:
      *
      * @hide Pending future API approval
      */
-    virtual CARAPI SubUiVisibilityChanged(
+    CARAPI SubUiVisibilityChanged(
         /* [in] */ Boolean isVisible);
 
     /**
      * @hide Internal use only
      */
-    virtual CARAPI SetSubUiVisibilityListener(
+    CARAPI SetSubUiVisibilityListener(
         /* [in] */ ISubUiVisibilityListener* listener);
 
     /**
@@ -217,7 +217,7 @@ public:
      *
      * @param listener listener to set
      */
-    virtual CARAPI SetVisibilityListener(
+    CARAPI SetVisibilityListener(
         /* [in] */ IVisibilityListener* listener);
 
 private:

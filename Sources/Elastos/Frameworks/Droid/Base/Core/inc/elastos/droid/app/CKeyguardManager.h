@@ -1,11 +1,13 @@
 #ifndef __ELASTOS_DROID_APP_CKEYGUARDMANAGER_H__
 #define __ELASTOS_DROID_APP_CKEYGUARDMANAGER_H__
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_App_CKeyguardManager.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::View::IIWindowManager;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -19,21 +21,24 @@ namespace App {
  * {@link android.app.KeyguardManager.KeyguardLock}.
  */
 CarClass(CKeyguardManager)
+    , public Object
+    , public IKeyguardManager
 {
 public:
     class KeyguardLock
-        : public ElRefBase
+        : public Object
         , public IKeyguardManagerKeyguardLock
     {
     public:
-        KeyguardLock(
-            /* [in] */ const String& tag,
-            /* [in] */ CKeyguardManager* owner)
-            : mTag(tag)
-            , mOwner(owner)
-        {}
-
         CAR_INTERFACE_DECL();
+
+        KeyguardLock();
+
+        virtual ~KeyguardLock();
+
+        CARAPI constructor(
+            /* [in] */ const String& tag,
+            /* [in] */ IKeyguardManager* owner);
 
         /**
          * Disable the keyguard from showing.  If the keyguard is currently
@@ -46,7 +51,8 @@ public:
          * is enabled that requires a password.
          *
          * <p>This method requires the caller to hold the permission
-         * {@link android.Manifest.permission#DISABLE_KEYGUARD}.
+         * {@link android.Manife
+         st.permission#DISABLE_KEYGUARD}.
          *
          * @see #reenableKeyguard()
          */
@@ -75,7 +81,22 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor();
+
+    /**
+     * Get an intent to prompt the user to confirm credentials (pin, pattern or password)
+     * for the current user of the device. The caller is expected to launch this activity using
+     * {@link android.app.Activity#startActivityForResult(Intent, int)} and check for
+     * {@link android.app.Activity#RESULT_OK} if the user successfully completes the challenge.
+     *
+     * @return the intent for launching the activity or null if no password is required.
+     **/
+    CARAPI CreateConfirmDeviceCredentialIntent(
+        /* [in] */ ICharSequence* title,
+        /* [in] */ ICharSequence* description,
+        /* [out] */ IIntent** intent);
 
     /**
      * @deprecated Use {@link android.view.WindowManager.LayoutParams#FLAG_DISMISS_KEYGUARD}

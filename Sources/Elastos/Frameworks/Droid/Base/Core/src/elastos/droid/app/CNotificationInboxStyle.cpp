@@ -8,6 +8,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CNotificationInboxStyle, NotificationStyle, INotificationInboxStyle)
+
+CAR_OBJECT_IMPL(CNotificationInboxStyle)
+
 CNotificationInboxStyle::CNotificationInboxStyle()
 {
 }
@@ -22,12 +26,6 @@ ECode CNotificationInboxStyle::constructor()
 }
 
 ECode CNotificationInboxStyle::constructor(
-    /* [in] */ INotificationBuilder* builder)
-{
-    return NotificationStyle::SetBuilder(builder);
-}
-
-ECode CNotificationInboxStyle::SetBuilder(
     /* [in] */ INotificationBuilder* builder)
 {
     return NotificationStyle::SetBuilder(builder);

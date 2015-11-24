@@ -1,7 +1,5 @@
 module {
 
-    interface Elastos.Droid.Widget.IListAdapter;
-    interface Elastos.Droid.Widget.IListView;
     interface Elastos.Droid.View.IViewOnClickListener;
 
     namespace Elastos {
@@ -41,30 +39,6 @@ module {
 
         SetExtendedSettingsClickListener(
             [in] IViewOnClickListener* listener);
-
-         /**
-         * Get the position of the currently selected list item.
-         */
-        GetSelectedItemPosition(
-            [out] Int32* pos);
-
-        /**
-         * Get the cursor row ID of the currently selected list item.
-         */
-        GetSelectedItemId(
-            [out] Int64* id);
-
-        /**
-         * Get the activity's list view widget.
-         */
-        GetListView(
-            [out] IListView** listView);
-
-        /**
-         * Get the ListAdapter associated with this activity's ListView.
-         */
-        GetListAdapter(
-            [out] IListAdapter** listAdapter);
     }
 
     } // namespace App

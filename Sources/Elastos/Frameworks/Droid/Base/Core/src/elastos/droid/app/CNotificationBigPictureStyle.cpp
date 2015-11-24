@@ -8,6 +8,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_DECL(CNotificationBigPictureStyle, NotificationStyle, INotificationBigPictureStyle)
+
+CAR_OBJECT_IMPL(CNotificationBigPictureStyle)
+
 CNotificationBigPictureStyle::CNotificationBigPictureStyle()
     : mBigLargeIconSet(FALSE)
 {

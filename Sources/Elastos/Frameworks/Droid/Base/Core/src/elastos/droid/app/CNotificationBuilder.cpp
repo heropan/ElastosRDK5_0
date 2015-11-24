@@ -1,10 +1,10 @@
-#include "CNotificationBuilder.h"
+#include "elastos/droid/app/CNotificationBuilder.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/app/CNotificationAction.h"
 #include "elastos/droid/app/CNotification.h"
-#include "elastos/droid/widget/CRemoteViews.h"
+// #include "elastos/droid/widget/CRemoteViews.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
@@ -13,7 +13,7 @@ using Elastos::Text::INumberFormatHelper;
 using Elastos::Text::CNumberFormatHelper;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Widget::CRemoteViews;
+// using Elastos::Droid::Widget::CRemoteViews;
 
 namespace Elastos {
 namespace Droid {
@@ -26,6 +26,10 @@ const Boolean CNotificationBuilder::DBG = FALSE;
 const String CNotificationBuilder::EXTRA_REBUILD_CONTEXT_APPLICATION_INFO("android.rebuild.applicationInfo");
 
 const Boolean CNotificationBuilder::STRIP_AND_REBUILD = TRUE;
+
+CAR_INTERFACE_IMPL(CNotificationBuilder, Object, INotificationBuilder)
+
+CAR_OBJECT_IMPL(CNotificationBuilder)
 
 CNotificationBuilder::CNotificationBuilder()
     : mWhen(0)
@@ -702,7 +706,8 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
     AutoPtr<IRemoteViews> contentView;
     AutoPtr<IApplicationInfo> ai;
     mContext->GetApplicationInfo((IApplicationInfo**)&ai);
-    CRemoteViews::New(ai, resId, (IRemoteViews**)&contentView);
+    assert(0 && "TODO");
+    // CRemoteViews::New(ai, resId, (IRemoteViews**)&contentView);
 
     Boolean showLine3 = FALSE;
     Boolean showLine2 = FALSE;
@@ -936,9 +941,10 @@ AutoPtr<IRemoteViews> CNotificationBuilder::GenerateActionButton(
     String name;
     mContext->GetPackageName(&name);
 
-    CRemoteViews::New(name,
-        tombstone ? GetActionTombstoneLayoutResource() : GetActionLayoutResource(),
-        (IRemoteViews**)&button);
+    assert(0 && "TODO");
+    // CRemoteViews::New(name,
+    //     tombstone ? GetActionTombstoneLayoutResource() : GetActionLayoutResource(),
+    //     (IRemoteViews**)&button);
 
     Int32 icon;
     action->GetIcon(&icon);
