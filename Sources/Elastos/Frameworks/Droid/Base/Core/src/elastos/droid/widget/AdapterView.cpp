@@ -873,40 +873,38 @@ ECode AdapterView::GetItemIdAtPosition(
 ECode AdapterView::GetAdapter(
     /* [out] */ IAdapter** adapter)
 {
-    assert(0);
-    //-- TODO
+    // abstract function, nothing to do here
     return NOERROR;
 }
 
 ECode AdapterView::SetAdapter(
     /* [in] */ IAdapter* adapter)
 {
-    assert(0);
-    //-- TODO
+    // abstract function, nothing to do here
     return NOERROR;
 }
 
 ECode AdapterView::GetSelectedItemId(
     /* [out] */ Int64* itemId)
 {
-    assert(0);
-    //-- TODO
+    VALIDATE_NOT_NULL(itemId);
+    *itemId = mNextSelectedRowId;
     return NOERROR;
 }
 
 ECode AdapterView::GetSelectedView(
     /* [out] */ IView** view)
 {
-    assert(0);
-    //-- TODO
+    VALIDATE_NOT_NULL(view);
+    *view = NULL;
+    // abstract function, nothing to do here
     return NOERROR;
 }
 
 ECode AdapterView::SetSelection(
     /* [in] */ Int32 position)
 {
-    assert(0);
-    //-- TODO
+    // abstract function, nothing to do here
     return NOERROR;
 }
 
@@ -916,7 +914,6 @@ ECode AdapterView::SetOnClickListener(
 {
     Logger::E("AdapterView", "Don't call setOnClickListener for an AdapterView. "
             "You probably want setOnItemClickListener instead");
-
     return E_RUNTIME_EXCEPTION;
 }
 

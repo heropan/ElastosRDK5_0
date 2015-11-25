@@ -1,8 +1,19 @@
 
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/R.h"
 #include "elastos/droid/widget/AdapterViewFlipper.h"
+#include "elastos/core/StringUtils.h"
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
+using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::EIID_IHandler;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -161,21 +172,18 @@ ECode AdapterViewFlipper::constructor(
     //
     // a.recycle();
 
-//    AdapterViewAnimator::constructor(context, attrs, defStyleAttr, defStyleRes);
-//    AutoPtr<ITypedArray> a;
-//    AutoPtr< ArrayOf<Int32> > styleFlipper;
-//    context->ObtainStyledAttributes(attrs,
-//            com.android.internal.R.styleable.AdapterViewFlipper, defStyleAttr, defStyleRes);
-//    mFlipInterval = a.getInt(
-//            com.android.internal.R.styleable.AdapterViewFlipper_flipInterval, DEFAULT_INTERVAL);
-//    mAutoStart = a.getBoolean(
-//            com.android.internal.R.styleable.AdapterViewFlipper_autoStart, false);
+    AdapterViewAnimator::constructor(context, attrs, defStyleAttr, defStyleRes);
 
-//    // A view flipper should cycle through the views
-//    mLoopViews = true;
+    AutoPtr< ArrayOf<Int32> > styleFlipper = ArrayOf<Int32>::Alloc(const_cast<Int32*>(R::styleable::AdapterViewFlipper),
+        ARRAY_SIZE(R::styleable::AdapterViewFlipper));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, styleFlipper, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+    a->GetInt32(R::styleable::AdapterViewFlipper_flipInterval, DEFAULT_INTERVAL, &mFlipInterval);
+    a->GetBoolean(R::styleable::AdapterViewFlipper_autoStart, FALSE, &mAutoStart);
 
-//    a.recycle();
-
+    // A view flipper should cycle through the views
+    mLoopViews = TRUE;
+    a->Recycle();
     return NOERROR;
 }
 
@@ -186,7 +194,9 @@ ECode AdapterViewFlipper::SetAdapter(
     // ==================before translated======================
     // super.setAdapter(adapter);
     // updateRunning();
-    assert(0);
+
+    AdapterViewAnimator::SetAdapter(adapter);
+    UpdateRunning();
     return NOERROR;
 }
 
@@ -196,8 +206,9 @@ ECode AdapterViewFlipper::GetFlipInterval(
     VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mFlipInterval;
-    assert(0);
-    return 0;
+
+    *result = mFlipInterval;
+    return NOERROR;
 }
 
 ECode AdapterViewFlipper::SetFlipInterval(
@@ -205,7 +216,8 @@ ECode AdapterViewFlipper::SetFlipInterval(
 {
     // ==================before translated======================
     // mFlipInterval = flipInterval;
-    assert(0);
+
+    mFlipInterval = flipInterval;
     return NOERROR;
 }
 
@@ -214,7 +226,9 @@ ECode AdapterViewFlipper::StartFlipping()
     // ==================before translated======================
     // mStarted = true;
     // updateRunning();
-    assert(0);
+
+    mStarted = TRUE;
+    UpdateRunning();
     return NOERROR;
 }
 
@@ -223,7 +237,9 @@ ECode AdapterViewFlipper::StopFlipping()
     // ==================before translated======================
     // mStarted = false;
     // updateRunning();
-    assert(0);
+
+    mStarted = FALSE;
+    UpdateRunning();
     return NOERROR;
 }
 
@@ -238,7 +254,16 @@ ECode AdapterViewFlipper::ShowNext()
     //     mHandler.sendMessageDelayed(msg, mFlipInterval);
     // }
     // super.showNext();
-    assert(0);
+
+    if (mRunning) {
+        mHandler->RemoveMessages(FLIP_MSG);
+        AutoPtr<IMessage> msg;
+        mHandler->ObtainMessage(FLIP_MSG, (IMessage**)&msg);
+        Boolean resTmp = FALSE;
+        mHandler->SendMessageDelayed(msg, mFlipInterval, &resTmp);
+    }
+
+    AdapterViewAnimator::ShowNext();
     return NOERROR;
 }
 
@@ -253,7 +278,16 @@ ECode AdapterViewFlipper::ShowPrevious()
     //     mHandler.sendMessageDelayed(msg, mFlipInterval);
     // }
     // super.showPrevious();
-    assert(0);
+
+    if (mRunning) {
+        mHandler->RemoveMessages(FLIP_MSG);
+        AutoPtr<IMessage> msg;
+        mHandler->ObtainMessage(FLIP_MSG, (IMessage**)&msg);
+        Boolean resTmp = FALSE;
+        mHandler->SendMessageDelayed(msg, mFlipInterval, &resTmp);
+    }
+
+    AdapterViewAnimator::ShowPrevious();
     return NOERROR;
 }
 
@@ -263,8 +297,9 @@ ECode AdapterViewFlipper::IsFlipping(
     VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mStarted;
-    assert(0);
-    return FALSE;
+
+    *result = mStarted;
+    return NOERROR;
 }
 
 ECode AdapterViewFlipper::SetAutoStart(
@@ -272,7 +307,8 @@ ECode AdapterViewFlipper::SetAutoStart(
 {
     // ==================before translated======================
     // mAutoStart = autoStart;
-    assert(0);
+
+    mAutoStart = autoStart;
     return NOERROR;
 }
 
@@ -282,8 +318,9 @@ ECode AdapterViewFlipper::IsAutoStart(
     VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // return mAutoStart;
-    assert(0);
-    return FALSE;
+
+    *result = mAutoStart;
+    return NOERROR;
 }
 
 ECode AdapterViewFlipper::FyiWillBeAdvancedByHostKThx()
@@ -291,7 +328,9 @@ ECode AdapterViewFlipper::FyiWillBeAdvancedByHostKThx()
     // ==================before translated======================
     // mAdvancedByHost = true;
     // updateRunning(false);
-    assert(0);
+
+    mAdvancedByHost = TRUE;
+    UpdateRunning(FALSE);
     return NOERROR;
 }
 
@@ -302,7 +341,12 @@ ECode AdapterViewFlipper::OnInitializeAccessibilityEvent(
     // ==================before translated======================
     // super.onInitializeAccessibilityEvent(event);
     // event.setClassName(AdapterViewFlipper.class.getName());
-    assert(0);
+
+    AdapterViewAnimator::OnInitializeAccessibilityEvent(event);
+    IAccessibilityRecord* recordTmp = IAccessibilityRecord::Probe(event);
+    AutoPtr<ICharSequence> charSequenceTmp;
+    CString::New(String("AdapterViewFlipper")/*AdapterViewFlipper.class.getName()*/, (ICharSequence**)&charSequenceTmp);
+    recordTmp->SetClassName(charSequenceTmp);
     return NOERROR;
 }
 
@@ -313,7 +357,12 @@ ECode AdapterViewFlipper::OnInitializeAccessibilityNodeInfo(
     // ==================before translated======================
     // super.onInitializeAccessibilityNodeInfo(info);
     // info.setClassName(AdapterViewFlipper.class.getName());
-    assert(0);
+
+    AdapterViewAnimator::OnInitializeAccessibilityNodeInfo(info);
+    IAccessibilityRecord* recordTmp = IAccessibilityRecord::Probe(info);
+    AutoPtr<ICharSequence> charSequenceTmp;
+    CString::New(String("AdapterViewFlipper")/*AdapterViewFlipper.class.getName()*/, (ICharSequence**)&charSequenceTmp);
+    recordTmp->SetClassName(charSequenceTmp);
     return NOERROR;
 }
 
@@ -342,7 +391,31 @@ ECode AdapterViewFlipper::OnAttachedToWindow()
     //     // Automatically start when requested
     //     startFlipping();
     // }
-    assert(0);
+
+    AdapterViewAnimator::OnAttachedToWindow();
+    // Listen for broadcasts related to user-presence
+    AutoPtr<IIntentFilter> filter;
+    CIntentFilter::New((IIntentFilter**)&filter);
+    filter->AddAction(IIntent::ACTION_SCREEN_OFF);
+    filter->AddAction(IIntent::ACTION_USER_PRESENT);
+
+    // OK, this is gross but needed. This class is supported by the
+    // remote views machanism and as a part of that the remote views
+    // can be inflated by a context for another user without the app
+    // having interact users permission - just for loading resources.
+    // For exmaple, when adding widgets from a user profile to the
+    // home screen. Therefore, we register the receiver as the current
+    // user not the one the context is for.
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IUserHandle> userHandle; // =android.os.Process.myUserHandle();
+    AutoPtr<IIntent> intent;
+    context->RegisterReceiverAsUser(mReceiver, userHandle, filter, String(""), mHandler, (IIntent**)&intent);
+
+    if (mAutoStart) {
+        // Automatically start when requested
+        StartFlipping();
+    }
     return NOERROR;
 }
 
@@ -354,7 +427,14 @@ ECode AdapterViewFlipper::OnDetachedFromWindow()
     //
     // getContext().unregisterReceiver(mReceiver);
     // updateRunning();
-    assert(0);
+
+    AdapterViewAnimator::OnDetachedFromWindow();
+    mVisible = FALSE;
+
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    context->UnregisterReceiver(mReceiver);
+    UpdateRunning();
     return NOERROR;
 }
 
@@ -365,7 +445,10 @@ void AdapterViewFlipper::OnWindowVisibilityChanged(
     // super.onWindowVisibilityChanged(visibility);
     // mVisible = (visibility == VISIBLE);
     // updateRunning(false);
-    assert(0);
+
+    AdapterViewAnimator::OnWindowVisibilityChanged(visibility);
+    mVisible = (visibility == VISIBLE);
+    UpdateRunning(FALSE);
 }
 
 ECode AdapterViewFlipper::UpdateRunning()
@@ -374,7 +457,8 @@ ECode AdapterViewFlipper::UpdateRunning()
     // // by default when we update running, we want the
     // // current view to animate in
     // updateRunning(true);
-    assert(0);
+
+    UpdateRunning(TRUE);
     return NOERROR;
 }
 
@@ -398,7 +482,29 @@ ECode AdapterViewFlipper::UpdateRunning(
     //     Log.d(TAG, "updateRunning() mVisible=" + mVisible + ", mStarted=" + mStarted
     //             + ", mUserPresent=" + mUserPresent + ", mRunning=" + mRunning);
     // }
-    assert(0);
+
+    Boolean running = !mAdvancedByHost && mVisible && mStarted && mUserPresent && mAdapter != NULL;
+    if (running != mRunning) {
+        if (running) {
+            ShowOnly(mWhichChild, flipNow);
+            AutoPtr<IMessage> msg;
+            mHandler->ObtainMessage(FLIP_MSG, (IMessage**)&msg);
+            Boolean resTmp = FALSE;
+            mHandler->SendMessageDelayed(msg, mFlipInterval, &resTmp);
+        }
+        else {
+            mHandler->RemoveMessages(FLIP_MSG);
+        }
+        mRunning = running;
+    }
+    if (LOGD) {
+        String sVisible = StringUtils::BooleanToString(mVisible);
+        String sStarted = StringUtils::BooleanToString(mStarted);
+        String sUserPresent = StringUtils::BooleanToString(mUserPresent);
+        String sRunning = StringUtils::BooleanToString(mRunning);
+        Logger::D(TAG, String("updateRunning() mVisible=") + sVisible + String(", mStarted=") + sStarted
+                + String(", mUserPresent=") + sUserPresent + String(", mRunning=") + sRunning);
+    }
     return NOERROR;
 }
 
