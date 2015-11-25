@@ -110,15 +110,15 @@ SOURCES += MediaRouteButton.cpp
 #SOURCES += NativeActivity.cpp
 
 #SOURCES += CNativeContentView.cpp
-#SOURCES += CNotification.cpp
-#SOURCES += CNotificationAction.cpp
-#SOURCES += CNotificationBuilder.cpp
-#SOURCES += NotificationStyle.cpp
-#SOURCES += CNotificationBigPictureStyle.cpp
-#SOURCES += CNotificationBigTextStyle.cpp
-#SOURCES += CNotificationInboxStyle.cpp
-#SOURCES += CNotificationMediaStyle.cpp
-#SOURCES += NotificationManager.cpp
+SOURCES += CNotification.cpp
+SOURCES += CNotificationAction.cpp
+SOURCES += CNotificationBuilder.cpp
+SOURCES += NotificationStyle.cpp
+SOURCES += CNotificationBigPictureStyle.cpp
+SOURCES += CNotificationBigTextStyle.cpp
+SOURCES += CNotificationInboxStyle.cpp
+SOURCES += CNotificationMediaStyle.cpp
+SOURCES += NotificationManager.cpp
 
 SOURCES += PackageDeleteObserver.cpp
 SOURCES += PackageInstallObserver.cpp
@@ -132,7 +132,8 @@ SOURCES += CProfilerInfo.cpp
 #SOURCES += CProgressDialog.cpp
 
 SOURCES += QueuedWork.cpp
-#SOURCES += RemoteInput.cpp
+SOURCES += CRemoteInput.cpp
+SOURCES += CRemoteInputHelper.cpp
 #SOURCES += CResourcesManager.cpp
 SOURCES += CResultInfo.cpp
 #SOURCES += SearchDialog.cpp

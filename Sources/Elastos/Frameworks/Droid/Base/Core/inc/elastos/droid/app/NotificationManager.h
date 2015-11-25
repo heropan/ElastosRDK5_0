@@ -3,10 +3,13 @@
 #define __ELASTOS_DROID_APP_NOTIFICATIONMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
@@ -14,11 +17,15 @@ namespace Droid {
 namespace App {
 
 class NotificationManager
-    : public ElRefBase
+    : public Object
     , public INotificationManager
 {
 public:
     CAR_INTERFACE_DECL();
+
+    NotificationManager();
+
+    virtual ~NotificationManager();
 
     /** @hide */
     static AutoPtr<IINotificationManager> GetService();
@@ -27,7 +34,7 @@ public:
     static AutoPtr<INotificationManager> From(
         /* [in] */ IContext* context);
 
-    /* package */ NotificationManager(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IHandler* handler);
 
@@ -104,13 +111,15 @@ public:
     /**
      * @hide
      */
-    AutoPtr<IComponentName> GetEffectsSuppressor();
+    CARAPI GetEffectsSuppressor(
+        /* [out] */ IComponentName** cn);
 
     /**
      * @hide
      */
-    Boolean MatchesCallFilter(
-        /* [in] */ IBundle* extras);
+    CARAPI MatchesCallFilter(
+        /* [in] */ IBundle* extras,
+        /* [out] */ Boolean* result);
 
 private:
     static const String TAG;

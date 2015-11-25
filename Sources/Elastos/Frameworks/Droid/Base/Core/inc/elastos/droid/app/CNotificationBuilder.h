@@ -6,20 +6,23 @@
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::Widget::IRemoteViews;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Internal::Utility::INotificationColorUtil;
 using Elastos::Utility::Etl::List;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Text::INumberFormat;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::Utility::ITypedValue;
-using Elastos::Droid::Widget::IRemoteViews;
-using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IResources;
 
 namespace Elastos {
 namespace Droid {
@@ -543,7 +546,7 @@ public:
      * metadata or change options on this builder.
      */
     CARAPI Extend(
-        /* [in] */ IExtender* extender);
+        /* [in] */ INotificationExtender* extender);
 
     /**
      * Sets {@link Notification#color}.
@@ -557,7 +560,7 @@ public:
 
     static Int32 CalculateTopPadding(
         /* [in] */ IContext* ctx,
-        /* [in] */ Boolean* hasThreeLines,
+        /* [in] */ Boolean hasThreeLines,
         /* [in] */ Float fontScale);
 
     /**
@@ -597,7 +600,7 @@ public:
     /**
      * @hide
      */
-    AutoPtr<INotification> Rebuild(
+    static AutoPtr<INotification> Rebuild(
         /* [in] */ IContext* context,
         /* [in] */ INotification* n);
 
@@ -613,17 +616,8 @@ public:
     CARAPI Rebuild(
         /* [out] */ INotification** result);
 
-    // static Class<? extends Style> GetNotificationStyleClass(
-    //     /* [in] */ const String& templateClass) {
-    //     Class<? extends Style>[] classes = new Class[]{
-    //             BigTextStyle.class, BigPictureStyle.class, InboxStyle.class, MediaStyle.class};
-    //     for (Class<? extends Style> innerClass : classes) {
-    //         if (templateClass.equals(innerClass.getName())) {
-    //             return innerClass;
-    //         }
-    //     }
-    //     return null;
-    // }
+    static AutoPtr<IClassInfo> GetNotificationStyleClass(
+        /* [in] */ const String& templateClass);
 
     CARAPI SetBuilderContentView(
         /* [in] */ INotification* n,
@@ -638,7 +632,7 @@ public:
         /* [in] */ IRemoteViews* headsUpContentView);
 
     CARAPI RestoreFromNotification(
-        /* [in] */ INotification* n)
+        /* [in] */ INotification* n);
 
     CARAPI GetSubText(
         /* [out] */ ICharSequence** text);
@@ -655,25 +649,11 @@ public:
      *
      * @hide
      */
-    AutoPtr<INotification> BuildInto(
-        /* [in] */ INotification* n)
-    {
-        build().cloneInto(n, true);
-        return n;
-    }
+    CARAPI BuildInto(
+        /* [in] */ INotification* n);
 
-private:
-    /**
-     * The ApplicationInfo of the package that created the notification, used to create
-     * a context to rebuild the notification via a Builder.
-     * @hide
-     */
-    static const String EXTRA_REBUILD_CONTEXT_APPLICATION_INFO;
-        // = "android.rebuild.applicationInfo";
-
-    // Whether to enable stripping (at post time) & rebuilding (at listener receive time) of
-    // memory intensive resources.
-    const static Boolean STRIP_AND_REBUILD;// = true;
+    CARAPI_(AutoPtr<ICharSequence>) ProcessLegacyText(
+        /* [in] */ ICharSequence* charSequence);
 
     Int32 GetBaseLayoutResource();
 
@@ -689,10 +669,126 @@ private:
 
     Int32 GetActionTombstoneLayoutResource();
 
+    CARAPI_(Boolean) AddProfileBadge(
+        /* [in] */ IRemoteViews* contentView,
+        /* [in] */ Int32 resId);
+
+    CARAPI ShrinkLine3Text(
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI_(AutoPtr<IRemoteViews>) ApplyStandardTemplate(
+        /* [in] */ Int32 resId);
+
+    CARAPI_(AutoPtr<IRemoteViews>) ApplyStandardTemplate(
+        /* [in] */ Int32 resId,
+        /* [in] */ Boolean hasProgress);
+
+    /**
+     * @return true if the built notification will show the time or the chronometer; false
+     *         otherwise
+     */
+    CARAPI_(Boolean) ShowsTimeOrChronometer();
+
+private:
+    CARAPI_(void) SetFlag(
+        /* [in] */ Int32 mask,
+        /* [in] */ Boolean value);
+
+    CARAPI_(AutoPtr<IDrawable>) GetProfileBadgeDrawable();
+
+    CARAPI_(AutoPtr<IBitmap>) GetProfileBadge();
+
+    CARAPI UnshrinkLine3Text(
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI ResetStandardTemplate(
+        /* [in] */ IRemoteViews* contentView);
+
+    /**
+     * Logic to find out whether the notification is going to have three lines in the contracted
+     * layout. This is used to adjust the top padding.
+     *
+     * @return true if the notification is going to have three lines; false if the notification
+     *         is going to have one or two lines
+     */
+    CARAPI_(Boolean) HasThreeLines();
+
+    CARAPI ResetStandardTemplateWithActions(
+        /* [in] */ IRemoteViews* big);
+
+    CARAPI_(AutoPtr<IRemoteViews>) MakeContentView();
+
+    CARAPI_(AutoPtr<IRemoteViews>) MakeTickerView();
+
+    CARAPI_(AutoPtr<IRemoteViews>) MakeBigContentView();
+
+    CARAPI_(AutoPtr<IRemoteViews>) MakeHeadsUpContentView();
+
+    CARAPI_(AutoPtr<IRemoteViews>) GenerateActionButton(
+        /* [in] */ INotificationAction * action);
+
+    /**
+     * @return Whether we are currently building a notification from a legacy (an app that
+     *         doesn't create material notifications by itself) app.
+     */
+    CARAPI_(Boolean) IsLegacy();
+
+    CARAPI ProcessLegacyAction(
+        /* [in] */ INotificationAction* action,
+        /* [in] */ IRemoteViews* button);
+
+    /**
+     * Apply any necessary background to smallIcons being used in the largeIcon spot.
+     */
+    CARAPI ProcessSmallIconAsLarge(
+        /* [in] */ Int32 largeIconId,
+        /* [in] */ IRemoteViews* contentView);
+
+    /**
+     * Apply any necessary background to a largeIcon if it's a fake smallIcon (that is,
+     * if it's grayscale).
+     */
+    // TODO: also check bounds, transparency, that sort of thing.
+    CARAPI ProcessLargeLegacyIcon(
+        /* [in] */ IBitmap* largeIcon,
+        /* [in] */ IRemoteViews* contentView);
+
+    /**
+     * Add a colored circle behind the largeIcon slot.
+     */
+    CARAPI ApplyLargeIconBackground(
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI RemoveLargeIconBackground(
+        /* [in] */ IRemoteViews* contentView);
+
+    /**
+     * Recolor small icons when used in the R.id.right_icon slot.
+     */
+    CARAPI ProcessSmallRightIcon(
+        /* [in] */ Int32 smallIconDrawableId,
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI_(Int32) SanitizeColor();
+
+    CARAPI_(Int32) ResolveColor();
+
 public:
     const static Int32 MAX_ACTION_BUTTONS;
     const static Float LARGE_TEXT_SCALE;// = 1.3f;
     const static Boolean DBG;
+
+    /**
+     * The ApplicationInfo of the package that created the notification, used to create
+     * a context to rebuild the notification via a Builder.
+     * @hide
+     */
+    static const String EXTRA_REBUILD_CONTEXT_APPLICATION_INFO;
+        // = "android.rebuild.applicationInfo";
+
+    // Whether to enable stripping (at post time) & rebuilding (at listener receive time) of
+    // memory intensive resources.
+    const static Boolean STRIP_AND_REBUILD;// = true;
 
     AutoPtr<IContext> mContext;
 
@@ -762,112 +858,7 @@ public:
      * This field is only valid during the build phase.
      */
     Boolean mHasThreeLines;
-
-private:
-    CARAPI_(void) SetFlag(
-        /* [in] */ Int32 mask,
-        /* [in] */ Boolean value);
-
-    CARAPI_(AutoPtr<IDrawable>) GetProfileBadgeDrawable();
-
-    CARAPI_(AutoPtr<IBitmap>) GetProfileBadge();
-
-    CARAPI_(Boolean) AddProfileBadge(
-        /* [in] */ IRemoteViews* contentView,
-        /* [in] */ Int32 resId);
-
-    CARAPI ShrinkLine3Text(
-        /* [in] */ IRemoteViews* contentView);
-
-    CARAPI UnshrinkLine3Text(
-        /* [in] */ IRemoteViews* contentView);
-
-    CARAPI ResetStandardTemplate(
-        /* [in] */ IRemoteViews* contentView);
-
-    CARAPI_(AutoPtr<IRemoteViews>) ApplyStandardTemplate(
-        /* [in] */ Int32 resId)
-
-    CARAPI_(AutoPtr<IRemoteViews>) ApplyStandardTemplate(
-        /* [in] */ Int32 resId,
-        /* [in] */ Boolean hasProgress);
-
-    /**
-     * @return true if the built notification will show the time or the chronometer; false
-     *         otherwise
-     */
-    CARAPI_(Boolean) ShowsTimeOrChronometer();
-
-    /**
-     * Logic to find out whether the notification is going to have three lines in the contracted
-     * layout. This is used to adjust the top padding.
-     *
-     * @return true if the notification is going to have three lines; false if the notification
-     *         is going to have one or two lines
-     */
-    CARAPI_(Boolean) HasThreeLines();
-
-    CARAPI ResetStandardTemplateWithActions(
-        /* [in] */ IRemoteViews* big);
-
-    CARAPI_(AutoPtr<IRemoteViews>) MakeContentView();
-
-    CARAPI_(AutoPtr<IRemoteViews>) MakeTickerView();
-
-    CARAPI_(AutoPtr<IRemoteViews>) MakeBigContentView();
-
-    CARAPI_(AutoPtr<IRemoteViews>) MakeHeadsUpContentView();
-
-    CARAPI_(AutoPtr<IRemoteViews>) GenerateActionButton(
-        /* [in] */ INotificationAction * action);
-    /**
-     * @return Whether we are currently building a notification from a legacy (an app that
-     *         doesn't create material notifications by itself) app.
-     */
-    CARAPI_(Boolean) IsLegacy();
-
-    CARAPI ProcessLegacyAction(
-        /* [in] */ INotificaitonAction* action,
-        /* [in] */ IRemoteViews* button);
-
-    CARAPI_(AutoPtr<ICharSequence> ProcessLegacyText(
-        /* [in] */ ICharSequence* charSequence);
-
-    /**
-     * Apply any necessary background to smallIcons being used in the largeIcon spot.
-     */
-    CARAPI ProcessSmallIconAsLarge(
-        /* [in] */ Int32 largeIconId,
-        /* [in] */ IRemoteViews* contentView);
-
-    /**
-     * Apply any necessary background to a largeIcon if it's a fake smallIcon (that is,
-     * if it's grayscale).
-     */
-    // TODO: also check bounds, transparency, that sort of thing.
-    CARAPI ProcessLargeLegacyIcon(
-        /* [in] */ IBitmap* largeIcon,
-        /* [in] */ IRemoteViews* contentView);
-
-    /**
-     * Add a colored circle behind the largeIcon slot.
-     */
-    CARAPI ApplyLargeIconBackground(
-        /* [in] */ IRemoteViews* contentView);
-
-    CARAPI RemoveLargeIconBackground(
-        /* [in] */ IRemoteViews* contentView);
-
-    /**
-     * Recolor small icons when used in the R.id.right_icon slot.
-     */
-    CARAPI ProcessSmallRightIcon(
-        /* [in] */ Int32 smallIconDrawableId,
-        /* [in] */ IRemoteViews* contentView);
-
-    CARAPI_(Int32) SanitizeColor();
-
-    CARAPI_(Int32) ResolveColor();
+};
 
 } // namespace App
 } // namespace Droid

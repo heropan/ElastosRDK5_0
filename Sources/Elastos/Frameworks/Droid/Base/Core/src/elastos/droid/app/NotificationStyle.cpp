@@ -2,9 +2,12 @@
 #include "elastos/droid/app/CNotificationBuilder.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/CoreUtils.h>
 
 using Elastos::Droid::View::IView;
+using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::R;
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -62,17 +65,17 @@ AutoPtr<IRemoteViews> NotificationStyle::GetStandardView(
         return NULL;
 
     // Nasty.
-    AutoPtr<ICharSequence> oldBuilderContentTitle;
-    mBuilder->GetContentTitle((ICharSequence**)&oldBuilderContentTitle);
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    AutoPtr<ICharSequence> oldBuilderContentTitle = builder->mContentTitle;
 
     if (mBigContentTitle != NULL) {
-        mBuilder->SetContentTitle(mBigContentTitle);
+        builder->SetContentTitle(mBigContentTitle);
     }
 
     AutoPtr<IRemoteViews> contentView;
-    mBuilder->ApplyStandardTemplateWithActions(layoutId, (IRemoteViews**)&contentView);
+    builder->ApplyStandardTemplateWithActions(layoutId, (IRemoteViews**)&contentView);
 
-    mBuilder->SetContentTitle(oldBuilderContentTitle);
+    builder->SetContentTitle(oldBuilderContentTitle);
 
     Boolean visiable = TRUE;
     if (mBigContentTitle != NULL) {
@@ -90,17 +93,17 @@ AutoPtr<IRemoteViews> NotificationStyle::GetStandardView(
         overflowText = mSummaryText;
     }
     else {
-        mBuilder->GetSubText((ICharSequence**)&overflowText);
+        builder->GetSubText((ICharSequence**)&overflowText);
     }
 
     if (overflowText != NULL) {
-        contentView->SetTextViewText(R::id::text, mBuilder->ProcessLegacyText(overflowText));
+        contentView->SetTextViewText(R::id::text, builder->ProcessLegacyText(overflowText));
         contentView->SetViewVisibility(R::id::overflow_divider, IView::VISIBLE);
         contentView->SetViewVisibility(R::id::line3, IView::VISIBLE);
     }
     else {
         // Clear text in case we use the line to show the profile badge.
-        contentView->SetTextViewText(R::id::text, String(""));
+        contentView->SetTextViewText(R::id::text, CoreUtils::Convert(""));
         contentView->SetViewVisibility(R::id::overflow_divider, IView::GONE);
         contentView->SetViewVisibility(R::id::line3, IView::GONE);
     }
@@ -111,15 +114,16 @@ AutoPtr<IRemoteViews> NotificationStyle::GetStandardView(
 ECode NotificationStyle::ApplyTopPadding(
     /* [in] */ IRemoteViews* contentView)
 {
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
     AutoPtr<IResources> res;
-    mBuilder->mContext->GetResources((IResources**)&res);
+    builder->mContext->GetResources((IResources**)&res);
     AutoPtr<IConfiguration> cfg;
-    res->GetConfiguration((IConfiguration**)&cfg)
+    res->GetConfiguration((IConfiguration**)&cfg);
     Float fontScale;
     cfg->GetFontScale(&fontScale);
     Int32 topPadding = CNotificationBuilder::CalculateTopPadding(
-        mBuilder->mContext,
-        mBuilder->mHasThreeLines, fontScale);
+        builder->mContext,
+        builder->mHasThreeLines, fontScale);
     return contentView->SetViewPadding(R::id::line1, 0, topPadding, 0, 0);
 }
 
@@ -127,12 +131,12 @@ ECode NotificationStyle::AddExtras(
     /* [in] */ IBundle* extras)
 {
     if (mSummaryTextSet) {
-        extras->PutCharSequence(EXTRA_SUMMARY_TEXT, mSummaryText);
+        extras->PutCharSequence(INotification::EXTRA_SUMMARY_TEXT, mSummaryText);
     }
-    if (mBigContentTitle != null) {
-        extras->PutCharSequence(EXTRA_TITLE_BIG, mBigContentTitle);
+    if (mBigContentTitle != NULL) {
+        extras->PutCharSequence(INotification::EXTRA_TITLE_BIG, mBigContentTitle);
     }
-    extras->PutString(EXTRA_TEMPLATE, String("CNotificationStyle"));
+    extras->PutString(INotification::EXTRA_TEMPLATE, String("CNotificationStyle"));
     return NOERROR;
 }
 
@@ -140,28 +144,28 @@ ECode NotificationStyle::RestoreFromExtras(
     /* [in] */ IBundle* extras)
 {
     Boolean bval;
-    extras->ContainsKey(EXTRA_SUMMARY_TEXT, &bval);
+    extras->ContainsKey(INotification::EXTRA_SUMMARY_TEXT, &bval);
     if (bval) {
         mSummaryText = NULL;
-        extras->GetCharSequence(EXTRA_SUMMARY_TEXT, (ICharSequence**)&mSummaryText);
+        extras->GetCharSequence(INotification::EXTRA_SUMMARY_TEXT, (ICharSequence**)&mSummaryText);
         mSummaryTextSet = TRUE;
     }
-    extras->ContainsKey(EXTRA_TITLE_BIG, &bval)
-    if (bval)) {
+    extras->ContainsKey(INotification::EXTRA_TITLE_BIG, &bval);
+    if (bval) {
         mBigContentTitle = NULL;
-        extras->GetCharSequence(EXTRA_TITLE_BIG, (ICharSequence**)&mBigContentTitle);
+        extras->GetCharSequence(INotification::EXTRA_TITLE_BIG, (ICharSequence**)&mBigContentTitle);
     }
     return NOERROR;
 }
 
-AutoPtr<INotification> NotificationStyle::BuildStyled(
+ECode NotificationStyle::BuildStyled(
     /* [in] */ INotification* wip)
 {
     PopulateTickerView(wip);
     PopulateContentView(wip);
     PopulateBigContentView(wip);
     PopulateHeadsUpContentView(wip);
-    return wip;
+    return NOERROR;
 }
 
 ECode NotificationStyle::PopulateTickerView(
@@ -194,7 +198,7 @@ ECode NotificationStyle::Build(
     VALIDATE_NOT_NULL(result)
     *result = NULL;
     FAIL_RETURN(CheckBuilder())
-    return mBuilder->Build();
+    return mBuilder->Build(result);
 }
 
 Boolean NotificationStyle::HasProgress()

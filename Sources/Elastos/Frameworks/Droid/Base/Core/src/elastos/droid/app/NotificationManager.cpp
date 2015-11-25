@@ -1,14 +1,12 @@
 
 #include "elastos/droid/app/NotificationManager.h"
+#include "elastos/droid/app/CNotificationBuilder.h"
 #include "elastos/droid/os/ServiceManager.h"
-#ifdef DROID_CORE
-#include "elastos/droid/os/CUserHandleHelper.h"
-#endif
+#include "elastos/droid/os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Os::IUserHandleHelper;
-using Elastos::Droid::Os::CUserHandleHelper;
+using Elastos::Droid::Os::UserHandle;
 
 namespace Elastos {
 namespace Droid {
@@ -20,7 +18,14 @@ const Boolean NotificationManager::localLOGV = TRUE;
 
 AutoPtr<IINotificationManager> NotificationManager::sService;
 
-CAR_INTERFACE_IMPL(NotificationManager, INotificationManager);
+CAR_INTERFACE_IMPL(NotificationManager, Object, INotificationManager);
+
+NotificationManager::NotificationManager()
+{
+}
+
+NotificationManager::~NotificationManager()
+{}
 
 /** @hide */
 AutoPtr<IINotificationManager> NotificationManager::GetService()
@@ -43,11 +48,13 @@ AutoPtr<INotificationManager> NotificationManager::From(
     return mgr;
 }
 
-NotificationManager::NotificationManager(
+ECode NotificationManager::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IHandler* handler)
-    : mContext(context)
-{}
+{
+    mContext = context;
+    return NOERROR;
+}
 
 ECode NotificationManager::Notify(
     /* [in] */ Int32 id,
@@ -69,8 +76,7 @@ ECode NotificationManager::Notify(
     mContext->GetPackageName(&pkgName);
 
     if (localLOGV) {
-        String notificationStr;
-        notification->ToString(&notificationStr);
+        String notificationStr = Object::ToString(notification);
         Slogger::V(TAG, "%s: notify(%d, %s)", pkgName.string(), id, notificationStr.string());
     }
 
@@ -80,22 +86,23 @@ ECode NotificationManager::Notify(
         AutoPtr<IUri> newSound;
         sound->GetCanonicalUri((IUri**)&newSound);
         notification->SetSound(newSound);
-        if (StrictMode.vmFileUriExposureEnabled()) {
-            notification.sound.checkFileUriExposed("Notification.sound");
-        }
+        assert(0 && "TODO");
+        // if (StrictMode.vmFileUriExposureEnabled()) {
+        //     newSound->CheckFileUriExposed("Notification.sound");
+        // }
     }
 
-    Notification stripped = notification.clone();
-    Builder.stripForDelivery(stripped);
+    AutoPtr<IInterface> tmp;
+    notification->Clone((IInterface**)&tmp);
+    AutoPtr<INotification> stripped = INotification::Probe(tmp);
+    CNotificationBuilder::StripForDelivery(stripped);
 
-    Int32 userId = 0;
-    AutoPtr<IUserHandleHelper> handleHelper;
-    FAIL_RETURN(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&handleHelper));
-    FAIL_RETURN(handleHelper->GetMyUserId(&userId));
+    Int32 userId = UserHandle::GetMyUserId();
 
+    AutoPtr<ArrayOf<Int32> > idIn = ArrayOf<Int32>::Alloc(1);
     AutoPtr<ArrayOf<Int32> > idOut;
     FAIL_RETURN(service->EnqueueNotificationWithTag(
-            pkgName, pkgName, tag, id, stripped, (ArrayOf<Int32>**)&idOut, userId));
+        pkgName, pkgName, tag, id, stripped, idIn, userId, (ArrayOf<Int32>**)&idOut));
     if (idOut == NULL || idOut->GetLength() == 0 || id != (*idOut)[0]) {
         Slogger::W(TAG, "notify: id corrupted: sent %d, got back %d",
             id, (idOut && idOut->GetLength() > 0) ? (*idOut)[0] : -1);
@@ -118,26 +125,29 @@ ECode NotificationManager::NotifyAsUser(
         AutoPtr<IUri> newSound;
         sound->GetCanonicalUri((IUri**)&newSound);
         notification->SetSound(newSound);
-        if (StrictMode.vmFileUriExposureEnabled()) {
-            notification.sound.checkFileUriExposed("Notification.sound");
-        }
+        assert(0 && "TODO");
+        // if (StrictMode.vmFileUriExposureEnabled()) {
+        //     newSound->CheckFileUriExposed("Notification.sound");
+        // }
     }
 
     if (localLOGV) {
-        String notificationStr;
-        notification->ToString(&notificationStr);
+        String notificationStr = Object::ToString(notification);
         Slogger::V(TAG, "%s: notify(%d, %s)", pkgName.string(), id, notificationStr.string());
     }
 
-    Notification stripped = notification.clone();
-    Builder.stripForDelivery(stripped);
+    AutoPtr<IInterface> tmp;
+    notification->Clone((IInterface**)&tmp);
+    AutoPtr<INotification> stripped = INotification::Probe(tmp);
+    CNotificationBuilder::StripForDelivery(stripped);
 
     Int32 identifier;
     user->GetIdentifier(&identifier);
 
     AutoPtr<ArrayOf<Int32> > idOut;
+    AutoPtr<ArrayOf<Int32> > idIn = ArrayOf<Int32>::Alloc(1);
     FAIL_RETURN(service->EnqueueNotificationWithTag(
-            pkgName, pkgName, tag, id, stripped, (ArrayOf<Int32>**)&idOut, identifier));
+        pkgName, pkgName, tag, id, stripped, idIn, identifier, (ArrayOf<Int32>**)&idOut));
     if (idOut == NULL || idOut->GetLength() == 0 || id != (*idOut)[0]) {
         Slogger::W(TAG, "notify: id corrupted: sent %d, got back %d",
             id, (idOut && idOut->GetLength() > 0) ? (*idOut)[0] : -1);
@@ -159,10 +169,7 @@ ECode NotificationManager::Cancel(
     String cap;
     mContext->GetPackageName(&cap);
 //    if (localLOGV) Log.v(TAG, pkg + ": cancel(" + id + ")");
-    Int32 userId = 0;
-    AutoPtr<IUserHandleHelper> handleHelper;
-    FAIL_RETURN(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&handleHelper));
-    FAIL_RETURN(handleHelper->GetMyUserId(&userId));
+    Int32 userId = UserHandle::GetMyUserId();
     return service->CancelNotificationWithTag(cap, tag, id, userId);
 }
 
@@ -186,32 +193,25 @@ ECode NotificationManager::CancelAll()
     String cap;
     mContext->GetPackageName(&cap);
 //    if (localLOGV) Log.v(TAG, pkg + ": cancelAll()");
-    Int32 userId = 0;
-    AutoPtr<IUserHandleHelper> handleHelper;
-    FAIL_RETURN(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&handleHelper));
-    FAIL_RETURN(handleHelper->GetMyUserId(&userId));
+    Int32 userId = UserHandle::GetMyUserId();
     return service->CancelAllNotifications(cap, userId);
 }
 
-AutoPtr<IComponentName> NotificationManager::GetEffectsSuppressor()
+ECode NotificationManager::GetEffectsSuppressor(
+    /* [out] */ IComponentName** cn)
 {
-    INotificationManager service = getService();
-    try {
-        return service.getEffectsSuppressor();
-    } catch (RemoteException e) {
-        return null;
-    }
+    VALIDATE_NOT_NULL(cn)
+    AutoPtr<IINotificationManager> service = GetService();
+    return service->GetEffectsSuppressor(cn);
 }
 
-Boolean NotificationManager::MatchesCallFilter(
-    /* [in] */ IBundle* extras)
+ECode NotificationManager::MatchesCallFilter(
+    /* [in] */ IBundle* extras,
+    /* [out] */ Boolean* result)
 {
-    INotificationManager service = getService();
-    try {
-        return service.matchesCallFilter(extras);
-    } catch (RemoteException e) {
-        return false;
-    }
+    VALIDATE_NOT_NULL(result)
+    AutoPtr<IINotificationManager> service = GetService();
+    return service->MatchesCallFilter(extras, result);
 }
 
 }

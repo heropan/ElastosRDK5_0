@@ -762,6 +762,31 @@ ECode CAssetManager::AddAssetPaths(
     return NOERROR;
 }
 
+ECode CAssetManager::AddOverlayPath(
+    /* [in] */ const String& idmapPath,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    if(idmapPath.IsNull()) {
+        return NOERROR;
+    }
+
+    android::AssetManager* am = (android::AssetManager*)mObject;
+    if (am == NULL) {
+        return NOERROR;
+    }
+
+    android::String8 idmapPath8(idmapPath.string());
+    int32_t cookie;
+    bool res = am->addOverlayPath(idmapPath8, &cookie);
+    if (res) {
+        *result = cookie;
+    }
+    return NOERROR;
+}
+
 ECode CAssetManager::IsUpToDate(
     /* [out] */ Boolean* isUpdated)
 {

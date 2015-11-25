@@ -1,9 +1,9 @@
 
-
 #ifndef __ELASTOS_DROID_APP_CRESOURCEMANAGER_H__
 #define __ELASTOS_DROID_APP_CRESOURCEMANAGER_H__
 
 #include "_Elastos_Droid_App_CResourcesManager.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Res::IAssetManager;
@@ -15,7 +15,6 @@ using Elastos::Droid::Hardware::Display::IDisplayManagerGlobal;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Utility::IArrayMap;
 using Elastos::Droid::Utility::IDisplayMetrics;
-using Elastos::Droid::Utility::ISlog;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IDisplayAdjustments;
 
@@ -31,109 +30,38 @@ CarClass(CResourcesManager)
     , public IResourcesManager
 {
 public:
+    CAR_INTERFACE_DECL()
 
-    public static AutoPtr<IResourcesManager> GetInstance()
-    {
-        synchronized(ResourcesManager.class) {
-            if (sResourcesManager == null) {
-                sResourcesManager = new ResourcesManager();
-            }
-            return sResourcesManager;
-        }
-    }
+    CAR_OBJECT_DECL()
 
-    public CARAPI GetConfiguration(
-        /* [out] */ IConfiguration** config)
-    {
-        return mResConfiguration;
-    }
+    CResourcesManager();
 
-    public CARAPI FlushDisplayMetricsLocked()
-    {
-        mDefaultDisplayMetrics.clear();
-    }
+    CARAPI constructor();
 
-    public CARAPI GetDisplayMetricsLocked(
+    static AutoPtr<IResourcesManager> GetInstance();
+
+    CARAPI GetConfiguration(
+        /* [out] */ IConfiguration** config);
+
+    CARAPI FlushDisplayMetricsLocked();
+
+    CARAPI GetDisplayMetricsLocked(
         /* [in] */ Int32 displayId,
-        /* [out] */ IDisplayMetrics** displayMetrics)
-    {
-        return getDisplayMetricsLocked(displayId, DisplayAdjustments.DEFAULT_DISPLAY_ADJUSTMENTS);
-    }
+        /* [out] */ IDisplayMetrics** displayMetrics);
 
-    public CARAPI GetDisplayMetricsLocked(
+    CARAPI GetDisplayMetricsLocked(
         /* [in] */ Int32 displayId,
         /* [in] */ IDisplayAdjustments* daj,
-        /* [out] */ IDisplayMetrics** displayMetrics)
-    {
-        boolean isDefaultDisplay = (displayId == Display.DEFAULT_DISPLAY);
-        DisplayMetrics dm = isDefaultDisplay ? mDefaultDisplayMetrics.get(daj) : null;
-        if (dm != null) {
-            return dm;
-        }
-        dm = new DisplayMetrics();
-
-        DisplayManagerGlobal displayManager = DisplayManagerGlobal.getInstance();
-        if (displayManager == null) {
-            // may be null early in system startup
-            dm.setToDefaults();
-            return dm;
-        }
-
-        if (isDefaultDisplay) {
-            mDefaultDisplayMetrics.put(daj, dm);
-        }
-
-        Display d = displayManager.getCompatibleDisplay(displayId, daj);
-        if (d != null) {
-            d.getMetrics(dm);
-        } else {
-            // Display no longer exists
-            // FIXME: This would not be a problem if we kept the Display object around
-            // instead of using the raw display id everywhere.  The Display object caches
-            // its information even after the display has been removed.
-            dm.setToDefaults();
-        }
-        //Slog.i("foo", "New metrics: w=" + metrics.widthPixels + " h="
-        //        + metrics.heightPixels + " den=" + metrics.density
-        //        + " xdpi=" + metrics.xdpi + " ydpi=" + metrics.ydpi);
-        return dm;
-    }
+        /* [out] */ IDisplayMetrics** displayMetrics);
 
     void ApplyNonDefaultDisplayMetricsToConfigurationLocked(
         /* [in] */ IDisplayMetrics* dm,
-        /* [in] */ IConfiguration* config)
-    {
-        config.touchscreen = Configuration.TOUCHSCREEN_NOTOUCH;
-        config.densityDpi = dm.densityDpi;
-        config.screenWidthDp = (int)(dm.widthPixels / dm.density);
-        config.screenHeightDp = (int)(dm.heightPixels / dm.density);
-        int sl = Configuration.resetScreenLayout(config.screenLayout);
-        if (dm.widthPixels > dm.heightPixels) {
-            config.orientation = Configuration.ORIENTATION_LANDSCAPE;
-            config.screenLayout = Configuration.reduceScreenLayout(sl,
-                    config.screenWidthDp, config.screenHeightDp);
-        } else {
-            config.orientation = Configuration.ORIENTATION_PORTRAIT;
-            config.screenLayout = Configuration.reduceScreenLayout(sl,
-                    config.screenHeightDp, config.screenWidthDp);
-        }
-        config.smallestScreenWidthDp = config.screenWidthDp; // assume screen does not rotate
-        config.compatScreenWidthDp = config.screenWidthDp;
-        config.compatScreenHeightDp = config.screenHeightDp;
-        config.compatSmallestScreenWidthDp = config.smallestScreenWidthDp;
-    }
+        /* [in] */ IConfiguration* config);
 
-    public CARAPI ApplyCompatConfiguration(
+    CARAPI ApplyCompatConfiguration(
         /* [in] */ Int32 displayDensity,
         /* [in] */ IConfiguration* compatConfiguration,
-        /* [out] */ Boolean* result)
-    {
-        if (mResCompatibilityInfo != null && !mResCompatibilityInfo.supportsScreen()) {
-            mResCompatibilityInfo.applyToConfiguration(displayDensity, compatConfiguration);
-            return TRUE;
-        }
-        return FALSE;
-    }
+        /* [out] */ Boolean* result);
 
     /**
      * Creates the top level Resources for applications with the given compatibility info.
@@ -144,8 +72,8 @@ public:
      * @param compatInfo the compability info. Must not be null.
      * @param token the application token for determining stack bounds.
      */
-    public CARAPI GetTopLevelResources(
-        /* [in] */ String resDir,
+    CARAPI GetTopLevelResources(
+        /* [in] */ const String& resDir,
         /* [in] */ ArrayOf<String>* splitResDirs,
         /* [in] */ ArrayOf<String>* overlayDirs,
         /* [in] */ ArrayOf<String>* libDirs,
@@ -154,194 +82,28 @@ public:
         /* [in] */ ICompatibilityInfo* compatInfo,
         /* [in] */ IBinder* token,
         /* [out] */ IResources** res);
-    {
-        final float scale = compatInfo.applicationScale;
-        ResourcesKey key = new ResourcesKey(resDir, displayId, overrideConfiguration, scale, token);
-        Resources r;
-        synchronized(this) {
-            // Resources is app scale dependent.
-            if (FALSE) {
-                Slog.w(TAG, "getTopLevelResources: " + resDir + " / " + scale);
-            }
-            WeakReference<Resources> wr = mActiveResources.get(key);
-            r = wr != null ? wr.get() : null;
-            //if (r != null) Slog.i(TAG, "isUpToDate " + resDir + ": " + r.getAssets().isUpToDate());
-            if (r != null && r.getAssets().isUpToDate()) {
-                if (FALSE) {
-                    Slog.w(TAG, "Returning cached resources " + r + " " + resDir
-                            + ": appScale=" + r.getCompatibilityInfo().applicationScale);
-                }
-                return r;
-            }
-        }
 
-        //if (r != null) {
-        //    Slog.w(TAG, "Throwing away out-of-date resources!!!! "
-        //            + r + " " + resDir);
-        //}
-
-        AssetManager assets = new AssetManager();
-        // resDir can be null if the 'android' package is creating a new Resources object.
-        // This is fine, since each AssetManager automatically loads the 'android' package
-        // already.
-        if (resDir != null) {
-            if (assets.addAssetPath(resDir) == 0) {
-                return null;
-            }
-        }
-
-        if (splitResDirs != null) {
-            for (String splitResDir : splitResDirs) {
-                if (assets.addAssetPath(splitResDir) == 0) {
-                    return null;
-                }
-            }
-        }
-
-        if (overlayDirs != null) {
-            for (String idmapPath : overlayDirs) {
-                assets.addOverlayPath(idmapPath);
-            }
-        }
-
-        if (libDirs != null) {
-            for (String libDir : libDirs) {
-                if (assets.addAssetPath(libDir) == 0) {
-                    Slog.w(TAG, "Asset path '" + libDir +
-                            "' does not exist or contains no resources.");
-                }
-            }
-        }
-
-        //Slog.i(TAG, "Resource: key=" + key + ", display metrics=" + metrics);
-        DisplayMetrics dm = getDisplayMetricsLocked(displayId);
-        Configuration config;
-        boolean isDefaultDisplay = (displayId == Display.DEFAULT_DISPLAY);
-        final boolean hasOverrideConfig = key.hasOverrideConfiguration();
-        if (!isDefaultDisplay || hasOverrideConfig) {
-            config = new Configuration(getConfiguration());
-            if (!isDefaultDisplay) {
-                applyNonDefaultDisplayMetricsToConfigurationLocked(dm, config);
-            }
-            if (hasOverrideConfig) {
-                config.updateFrom(key.mOverrideConfiguration);
-            }
-        } else {
-            config = getConfiguration();
-        }
-        r = new Resources(assets, dm, config, compatInfo, token);
-        if (FALSE) {
-            Slog.i(TAG, "Created app resources " + resDir + " " + r + ": "
-                    + r.getConfiguration() + " appScale="
-                    + r.getCompatibilityInfo().applicationScale);
-        }
-
-        synchronized(this) {
-            WeakReference<Resources> wr = mActiveResources.get(key);
-            Resources existing = wr != null ? wr.get() : null;
-            if (existing != null && existing.getAssets().isUpToDate()) {
-                // Someone else already created the resources while we were
-                // unlocked; go ahead and use theirs.
-                r.getAssets().close();
-                return existing;
-            }
-
-            // XXX need to remove entries when weak references go away
-            mActiveResources.put(key, new WeakReference<Resources>(r));
-            return r;
-        }
-    }
-
-    public CARAPI ApplyConfigurationToResourcesLocked(
+    CARAPI ApplyConfigurationToResourcesLocked(
         /* [in] */ IConfiguration* config,
         /* [in] */ ICompatibilityInfo* compat,
-        /* [out] */ Boolean* result)
-    {
-        if (mResConfiguration == null) {
-            mResConfiguration = new Configuration();
-        }
-        if (!mResConfiguration.isOtherSeqNewer(config) && compat == null) {
-            if (DEBUG_CONFIGURATION) Slog.v(TAG, "Skipping new config: curSeq="
-                    + mResConfiguration.seq + ", newSeq=" + config.seq);
-            return FALSE;
-        }
-        int changes = mResConfiguration.updateFrom(config);
-        flushDisplayMetricsLocked();
-        DisplayMetrics defaultDisplayMetrics = getDisplayMetricsLocked(Display.DEFAULT_DISPLAY);
-
-        if (compat != null && (mResCompatibilityInfo == null ||
-                !mResCompatibilityInfo.equals(compat))) {
-            mResCompatibilityInfo = compat;
-            changes |= ActivityInfo.CONFIG_SCREEN_LAYOUT
-                    | ActivityInfo.CONFIG_SCREEN_SIZE
-                    | ActivityInfo.CONFIG_SMALLEST_SCREEN_SIZE;
-        }
-
-        // set it for java, this also affects newly created Resources
-        if (config.locale != null) {
-            Locale.setDefault(config.locale);
-        }
-
-        Resources.updateSystemConfiguration(config, defaultDisplayMetrics, compat);
-
-        ApplicationPackageManager.configurationChanged();
-        //Slog.i(TAG, "Configuration changed in " + currentPackageName());
-
-        Configuration tmpConfig = null;
-
-        for (int i=mActiveResources.size()-1; i>=0; i--) {
-            ResourcesKey key = mActiveResources.keyAt(i);
-            Resources r = mActiveResources.valueAt(i).get();
-            if (r != null) {
-                if (DEBUG_CONFIGURATION) Slog.v(TAG, "Changing resources "
-                        + r + " config to: " + config);
-                int displayId = key.mDisplayId;
-                boolean isDefaultDisplay = (displayId == Display.DEFAULT_DISPLAY);
-                DisplayMetrics dm = defaultDisplayMetrics;
-                final boolean hasOverrideConfiguration = key.hasOverrideConfiguration();
-                if (!isDefaultDisplay || hasOverrideConfiguration) {
-                    if (tmpConfig == null) {
-                        tmpConfig = new Configuration();
-                    }
-                    tmpConfig.setTo(config);
-                    if (!isDefaultDisplay) {
-                        dm = getDisplayMetricsLocked(displayId);
-                        applyNonDefaultDisplayMetricsToConfigurationLocked(dm, tmpConfig);
-                    }
-                    if (hasOverrideConfiguration) {
-                        tmpConfig.updateFrom(key.mOverrideConfiguration);
-                    }
-                    r.updateConfiguration(tmpConfig, dm, compat);
-                } else {
-                    r.updateConfiguration(config, dm, compat);
-                }
-                //Slog.i(TAG, "Updated app resources " + v.getKey()
-                //        + " " + r + ": " + r.getConfiguration());
-            } else {
-                //Slog.i(TAG, "Removing old resources " + v.getKey());
-                mActiveResources.removeAt(i);
-            }
-        }
-
-        return changes != 0;
-    }
+        /* [out] */ Boolean* result);
 
 private:
-    static final String TAG = "ResourcesManager";
-    static final boolean DEBUG_CACHE = FALSE;
-    static final boolean DEBUG_STATS = TRUE;
+    static const String TAG;
+    static const Boolean DEBUG_CACHE;
+    static const Boolean DEBUG_STATS;
 
-    private static ResourcesManager sResourcesManager;
-    final ArrayMap<ResourcesKey, WeakReference<Resources> > mActiveResources
-            = new ArrayMap<ResourcesKey, WeakReference<Resources> >();
+    static ResourcesManager sResourcesManager;
+    static Object sLock;
 
-    final ArrayMap<DisplayAdjustments, DisplayMetrics> mDefaultDisplayMetrics
-            = new ArrayMap<DisplayAdjustments, DisplayMetrics>();
+    AutoPtr<IArrayMap> mActiveResources;//= new ArrayMap<ResourcesKey, WeakReference<Resources> >();
 
-    CompatibilityInfo mResCompatibilityInfo;
+    AutoPtr<IArrayMap>  mDefaultDisplayMetrics;//= new ArrayMap<DisplayAdjustments, DisplayMetrics>();
 
-    Configuration mResConfiguration;
-    final Configuration mTmpConfig = new Configuration();
+    AutoPtr<ICompatibilityInfo> mResCompatibilityInfo;
+
+    AutoPtr<IConfiguration> mResConfiguration;
+    AutoPtr<IConfiguration> mTmpConfig;
 };
 
 } // namespace App

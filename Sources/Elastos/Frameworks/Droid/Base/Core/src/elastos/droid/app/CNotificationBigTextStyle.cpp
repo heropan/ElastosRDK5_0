@@ -1,4 +1,6 @@
 #include "elastos/droid/app/CNotificationBigTextStyle.h"
+#include "elastos/droid/app/CNotification.h"
+#include "elastos/droid/app/CNotificationBuilder.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
@@ -12,7 +14,7 @@ const Int32 CNotificationBigTextStyle::MAX_LINES = 13;
 const Int32 CNotificationBigTextStyle::LINES_CONSUMED_BY_ACTIONS = 3;
 const Int32 CNotificationBigTextStyle::LINES_CONSUMED_BY_SUMMARY = 2;
 
-CAR_INTERFACE_DECL(CNotificationBigTextStyle, NotificationStyle, INotificationBigTextStyle)
+CAR_INTERFACE_IMPL(CNotificationBigTextStyle, NotificationStyle, INotificationBigTextStyle)
 
 CAR_OBJECT_IMPL(CNotificationBigTextStyle)
 
@@ -35,30 +37,24 @@ ECode CNotificationBigTextStyle::constructor(
     return NotificationStyle::SetBuilder(builder);
 }
 
-ECode CNotificationBigTextStyle::SetBuilder(
-    /* [in] */ INotificationBuilder* builder)
-{
-    return NotificationStyle::SetBuilder(builder);
-}
-
 ECode CNotificationBigTextStyle::SetBigContentTitle(
     /* [in] */ ICharSequence* title)
 {
-    InternalSetBigContentTitle(SafeCharSequence(title));
+    InternalSetBigContentTitle(CNotification::SafeCharSequence(title));
     return NOERROR;
 }
 
 ECode CNotificationBigTextStyle::SetSummaryText(
     /* [in] */ ICharSequence* cs)
 {
-    InternalSetSummaryText(SafeCharSequence(cs));
+    InternalSetSummaryText(CNotification::SafeCharSequence(cs));
     return NOERROR;
 }
 
 ECode CNotificationBigTextStyle::BigText(
     /* [in] */ ICharSequence* cs)
 {
-    mBigText = SafeCharSequence(cs);
+    mBigText = CNotification::SafeCharSequence(cs);
     return NOERROR;
 }
 
@@ -67,7 +63,7 @@ ECode CNotificationBigTextStyle::AddExtras(
 {
     NotificationStyle::AddExtras(extras);
 
-    extras->PutCharSequence(EXTRA_BIG_TEXT, mBigText);
+    extras->PutCharSequence(INotification::EXTRA_BIG_TEXT, mBigText);
     return NOERROR;
 }
 
@@ -77,7 +73,7 @@ ECode CNotificationBigTextStyle::RestoreFromExtras(
     NotificationStyle::RestoreFromExtras(extras);
 
     mBigText = NULL;
-    extras->GetCharSequence(EXTRA_BIG_TEXT, (ICharSequence**)&mBigText);
+    extras->GetCharSequence(INotification::EXTRA_BIG_TEXT, (ICharSequence**)&mBigText);
     return NOERROR;
 }
 
@@ -85,62 +81,35 @@ AutoPtr<IRemoteViews> CNotificationBigTextStyle::MakeBigContentView()
 {
     assert(mBuilder != NULL);
 
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
     // Nasty
-    CharSequence oldBuilderContentText = mBuilder.mContentText;
-    mBuilder.mContentText = null;
+    AutoPtr<ICharSequence> oldBuilderContentText = builder->mContentText;
+    builder->mContentText = NULL;
 
-    RemoteViews contentView = getStandardView(mBuilder.getBigTextLayoutResource());
+    AutoPtr<IRemoteViews> contentView = GetStandardView(builder->GetBigTextLayoutResource());
 
-    mBuilder.mContentText = oldBuilderContentText;
+    builder->mContentText = oldBuilderContentText;
 
-    contentView.setTextViewText(R.id.big_text, mBuilder.processLegacyText(mBigText));
-    contentView.setViewVisibility(R.id.big_text, View.VISIBLE);
-    contentView.setInt(R.id.big_text, "setMaxLines", calculateMaxLines());
-    contentView.setViewVisibility(R.id.text2, View.GONE);
+    contentView->SetTextViewText(R::id::big_text, builder->ProcessLegacyText(mBigText));
+    contentView->SetViewVisibility(R::id::big_text, IView::VISIBLE);
+    contentView->SetInt32(R::id::big_text, String("setMaxLines"), CalculateMaxLines());
+    contentView->SetViewVisibility(R::id::text2, IView::GONE);
 
-    applyTopPadding(contentView);
+    ApplyTopPadding(contentView);
 
-    mBuilder.shrinkLine3Text(contentView);
+    builder->ShrinkLine3Text(contentView);
 
-    mBuilder.addProfileBadge(contentView, R.id.profile_badge_large_template);
+    builder->AddProfileBadge(contentView, R::id::profile_badge_large_template);
 
     return contentView;
-
-    // // Remove the content text so line3 only shows if you have a summary
-    // Boolean hadThreeLines = TRUE;
-
-    // AutoPtr<ICharSequence> tmpSeq;
-    // mBuilder->GetContentText((ICharSequence**)&tmpSeq);
-    // if (tmpSeq == NULL) hadThreeLines = FALSE;
-
-    // if (hadThreeLines) {
-    //     tmpSeq = NULL;
-    //     mBuilder->GetSubText((ICharSequence**)&tmpSeq);
-    //     if (tmpSeq == NULL) hadThreeLines = FALSE;
-    // }
-
-    // mBuilder->SetContentText(NULL);
-
-    // AutoPtr<IRemoteViews> contentView = GetStandardView(R::layout::notification_template_big_text);
-    // if (contentView) {
-    //     if (hadThreeLines) {
-    //         // vertical centering
-    //         contentView->SetViewPadding(R::id::line1, 0, 0, 0, 0);
-    //     }
-
-    //     contentView->SetTextViewText(R::id::big_text, mBigText);
-    //     contentView->SetViewVisibility(R::id::big_text, IView::VISIBLE);
-    //     contentView->SetViewVisibility(R::id::text2, IView::GONE);
-    // }
-
-    // return contentView;
 }
 
 Int32 CNotificationBigTextStyle::CalculateMaxLines()
 {
-    int lineCount = MAX_LINES;
-    boolean hasActions = mBuilder.mActions.size() > 0;
-    boolean hasSummary = (mSummaryTextSet ? mSummaryText : mBuilder.mSubText) != null;
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    Int32 lineCount = MAX_LINES;
+    Boolean hasActions = builder->mActions.GetSize() > 0;
+    Boolean hasSummary = (mSummaryTextSet ? mSummaryText : builder->mSubText) != NULL;
     if (hasActions) {
         lineCount -= LINES_CONSUMED_BY_ACTIONS;
     }
@@ -149,16 +118,18 @@ Int32 CNotificationBigTextStyle::CalculateMaxLines()
     }
 
     // If we have less top padding at the top, we can fit less lines.
-    if (!mBuilder.mHasThreeLines) {
+    if (!builder->mHasThreeLines) {
         lineCount--;
     }
     return lineCount;
 }
 
-CARAPI CNotificationBigTextStyle::PopulateBigContentView(
+ECode CNotificationBigTextStyle::PopulateBigContentView(
     /* [in] */ INotification* wip)
 {
-    mBuilder.setBuilderBigContentView(wip, makeBigContentView());
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    builder->SetBuilderBigContentView(wip, MakeBigContentView());
+    return NOERROR;
 }
 
 } // namespace App

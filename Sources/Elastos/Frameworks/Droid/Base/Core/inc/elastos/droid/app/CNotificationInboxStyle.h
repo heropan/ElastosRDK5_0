@@ -4,9 +4,8 @@
 
 #include "_Elastos_Droid_App_CNotificationInboxStyle.h"
 #include "elastos/droid/app/NotificationStyle.h"
-#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -50,9 +49,6 @@ public:
     CARAPI constructor(
         /* [in] */ INotificationBuilder* builder);
 
-    CARAPI Build(
-        /* [out] */ INotification** notification);
-
     /**
      * Overrides ContentTitle in the big form of the template.
      * This defaults to the value passed to setContentTitle().
@@ -88,7 +84,7 @@ private:
     AutoPtr<IRemoteViews> MakeBigContentView();
 
 private:
-    List<AutoPtr<ICharSequence> > mTexts;
+    AutoPtr<IArrayList> mTexts;
 };
 
 } // namespace App

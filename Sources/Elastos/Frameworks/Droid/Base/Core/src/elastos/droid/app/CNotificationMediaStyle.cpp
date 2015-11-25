@@ -1,5 +1,19 @@
 
 #include "elastos/droid/app/CNotificationMediaStyle.h"
+#include "elastos/droid/app/CNotificationBuilder.h"
+#include "elastos/droid/app/CNotification.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::R;
+using Elastos::Droid::Graphics::PorterDuffMode_SRC_ATOP;
+using Elastos::Droid::View::IView;
+using Elastos::Utility::Logging::Logger;
+
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 const Int32 CNotificationMediaStyle::MAX_MEDIA_BUTTONS_IN_COMPACT = 3;
 const Int32 CNotificationMediaStyle::MAX_MEDIA_BUTTONS = 5;
@@ -41,29 +55,30 @@ ECode CNotificationMediaStyle::SetMediaSession(
 }
 
 ECode CNotificationMediaStyle::BuildStyled(
-    /* [in] */ INotification* wip,
-    /* [out] */ INotification** result)
+    /* [in] */ INotification* wip)
 {
-    VALIDATION(result)
     NotificationStyle::BuildStyled(wip);
     String category;
     wip->GetCategory(&category);
     if (category.IsNull()) {
         wip->SetCategory(INotification::CATEGORY_TRANSPORT);
     }
-    return wip;
+
+    return NOERROR;
 }
 
 ECode CNotificationMediaStyle::PopulateContentView(
     /* [in] */ INotification* wip)
 {
-    return mBuilder->SetBuilderContentView(wip, MakeMediaContentView());
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    return builder->SetBuilderContentView(wip, MakeMediaContentView());
 }
 
 ECode CNotificationMediaStyle::PopulateBigContentView(
     /* [in] */ INotification* wip)
 {
-    return mBuilder->SetBuilderBigContentView(wip, MakeMediaBigContentView());
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    return builder->SetBuilderBigContentView(wip, MakeMediaBigContentView());
 }
 
 ECode CNotificationMediaStyle::AddExtras(
@@ -72,10 +87,11 @@ ECode CNotificationMediaStyle::AddExtras(
     NotificationStyle::AddExtras(extras);
 
     if (mToken != NULL) {
-        extras->PutParcelable(EXTRA_MEDIA_SESSION, mToken);
+        extras->PutParcelable(INotification::EXTRA_MEDIA_SESSION,
+            IParcelable::Probe(mToken));
     }
     if (mActionsToShowInCompact != NULL) {
-        extras->PutInt32Array(EXTRA_COMPACT_ACTIONS, mActionsToShowInCompact);
+        extras->PutInt32Array(INotification::EXTRA_COMPACT_ACTIONS, mActionsToShowInCompact);
     }
     return NOERROR;
 }
@@ -86,15 +102,17 @@ ECode CNotificationMediaStyle::RestoreFromExtras(
     NotificationStyle::RestoreFromExtras(extras);
 
     Boolean bval;
-    extras->ContainsKey(EXTRA_MEDIA_SESSION, &bval);
+    extras->ContainsKey(INotification::EXTRA_MEDIA_SESSION, &bval);
     if (bval) {
-        mToken = NULL;
-        extras->GetParcelable(EXTRA_MEDIA_SESSION, &mToken);
+        AutoPtr<IParcelable> p;
+        extras->GetParcelable(INotification::EXTRA_MEDIA_SESSION, (IParcelable**)&p);
+        mToken = IMediaSessionToken::Probe(p);
     }
-    extras->ContainsKey(EXTRA_COMPACT_ACTIONS, &bval);
+    extras->ContainsKey(INotification::EXTRA_COMPACT_ACTIONS, &bval);
     if (bval) {
         mActionsToShowInCompact = NULL;
-        extras->GetInt32Array(EXTRA_COMPACT_ACTIONS, (ArrayOf<Int32>**)&mActionsToShowInCompact);
+        extras->GetInt32Array(INotification::EXTRA_COMPACT_ACTIONS,
+            (ArrayOf<Int32>**)&mActionsToShowInCompact);
     }
     return NOERROR;
 }
@@ -116,9 +134,9 @@ AutoPtr<IRemoteViews> CNotificationMediaStyle::GenerateMediaActionButton(
 
     Boolean tombstone = (pi == NULL);
 
-    CNotificationBuilder* cb = (CNotificationBuilder*)mBuilder->Get();
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
     String pkgName;
-    cb->mContext->GetPackageName(&pkgName);
+    builder->mContext->GetPackageName(&pkgName);
 
     AutoPtr<IRemoteViews> button;
     assert(0 && "TODO");
@@ -135,15 +153,13 @@ AutoPtr<IRemoteViews> CNotificationMediaStyle::GenerateMediaActionButton(
 
 AutoPtr<IRemoteViews> CNotificationMediaStyle::MakeMediaContentView()
 {
-    CNotificationBuilder* cb = (CNotificationBuilder*)mBuilder->Get();
-    AutoPtr<IRemoteViews> view;
-    mBuilder->ApplyStandardTemplate(
-        R::layout::notification_template_material_media, FALSE /* hasProgress */,
-        (IRemoteViews**)&view);
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    AutoPtr<IRemoteViews> view = builder->ApplyStandardTemplate(
+        R::layout::notification_template_material_media, FALSE /* hasProgress */);
 
     using Elastos::Core::Math;
 
-    Int32 numActions = cb->mActions.GetSize();
+    Int32 numActions = builder->mActions.GetSize();
     Int32 N = mActionsToShowInCompact == NULL
             ? 0
             : Math::Min(mActionsToShowInCompact->GetLength(), MAX_MEDIA_BUTTONS_IN_COMPACT);
@@ -154,10 +170,10 @@ AutoPtr<IRemoteViews> CNotificationMediaStyle::MakeMediaContentView()
                 Logger::E("CNotificationMediaStyle",
                     "setShowActionsInCompactView: action %d out of bounds (max %d)",
                     i, numActions - 1);
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+                return NULL;
             }
 
-            AutoPtr<INotificationAction> action = cb->mActions[(*mActionsToShowInCompact)[i]];
+            AutoPtr<INotificationAction> action = builder->mActions[(*mActionsToShowInCompact)[i]];
             AutoPtr<IRemoteViews> button = GenerateMediaActionButton(action);
             view->AddView(R::id::media_actions, button);
         }
@@ -169,23 +185,23 @@ AutoPtr<IRemoteViews> CNotificationMediaStyle::MakeMediaContentView()
 
 AutoPtr<IRemoteViews> CNotificationMediaStyle::MakeMediaBigContentView()
 {
-    CNotificationBuilder* cb = (CNotificationBuilder*)mBuilder->Get();
-    Int32 actionCount = Math::Min(cb->mActions.GetSize(), MAX_MEDIA_BUTTONS);
-    AutoPtr<IRemoteViews> big;
-    mBuilder->ApplyStandardTemplate(GetBigLayoutResource(actionCount),
-            FALSE /* hasProgress */, (IRemoteViews**)&big);
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    Int32 actionCount = Elastos::Core::Math::Min(
+        (Int32)builder->mActions.GetSize(), MAX_MEDIA_BUTTONS);
+    AutoPtr<IRemoteViews> big = builder->ApplyStandardTemplate(
+        GetBigLayoutResource(actionCount), FALSE /* hasProgress */);
 
     if (actionCount > 0) {
         big->RemoveAllViews(R::id::media_actions);
         for (Int32 i = 0; i < actionCount; i++) {
-            AutoPtr<IRemoteViews> button = GenerateMediaActionButton(cb->mActions[i]);
+            AutoPtr<IRemoteViews> button = GenerateMediaActionButton(builder->mActions[i]);
             big->AddView(R::id::media_actions, button);
         }
     }
     StyleText(big);
     HideRightIcon(big);
     ApplyTopPadding(big);
-    big->SetViewVisibility(android.R::id::progress, IView::GONE);
+    big->SetViewVisibility(R::id::progress, IView::GONE);
     return big;
 }
 
@@ -208,15 +224,15 @@ void CNotificationMediaStyle::HideRightIcon(
 void CNotificationMediaStyle::StyleText(
     /* [in] */ IRemoteViews* contentView)
 {
-    CNotificationBuilder* cb = (CNotificationBuilder*)mBuilder->Get();
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
     AutoPtr<IResources> res;
-    cb->mContext->GetResources((IResources**)&res);
+    builder->mContext->GetResources((IResources**)&res);
     Int32 primaryColor, secondaryColor;
     res->GetColor(R::color::notification_media_primary_color, &primaryColor);
     res->GetColor(R::color::notification_media_secondary_color, &secondaryColor);
     contentView->SetTextColor(R::id::title, primaryColor);
-    if (mBuilder->ShowsTimeOrChronometer()) {
-        if (mBuilder->mUseChronometer) {
+    if (builder->ShowsTimeOrChronometer()) {
+        if (builder->mUseChronometer) {
             contentView->SetTextColor(R::id::chronometer, secondaryColor);
         } else {
             contentView->SetTextColor(R::id::time, secondaryColor);

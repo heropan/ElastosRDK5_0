@@ -35,6 +35,7 @@ module
 
         EnqueueNotificationWithTag(
             [in] String pkg,
+            [in] String opPkg,
             [in] String tag,
             [in] Int32 id,
             [in] INotification* notification,

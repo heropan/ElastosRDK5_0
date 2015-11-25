@@ -9,31 +9,31 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-    /**
-     * Helper class for generating large-format notifications that include a lot of text.
-     *
-     * This class is a "rebuilder": It consumes a Builder object and modifies its behavior, like so:
-     * <pre class="prettyprint">
-     * Notification noti = new Notification.BigTextStyle(
-     *      new Notification.Builder()
-     *         .setContentTitle(&quot;New mail from &quot; + sender.toString())
-     *         .setContentText(subject)
-     *         .setSmallIcon(R.drawable.new_mail)
-     *         .setLargeIcon(aBitmap))
-     *      .bigText(aVeryLongString)
-     *      .build();
-     * </pre>
-     *
-     * @see Notification#bigContentView
-     */
+/**
+ * Helper class for generating large-format notifications that include a lot of text.
+ *
+ * This class is a "rebuilder": It consumes a Builder object and modifies its behavior, like so:
+ * <pre class="prettyprint">
+ * Notification noti = new Notification.BigTextStyle(
+ *      new Notification.Builder()
+ *         .setContentTitle(&quot;New mail from &quot; + sender.toString())
+ *         .setContentText(subject)
+ *         .setSmallIcon(R.drawable.new_mail)
+ *         .setLargeIcon(aBitmap))
+ *      .bigText(aVeryLongString)
+ *      .build();
+ * </pre>
+ *
+ * @see Notification#bigContentView
+ */
 CarClass(CNotificationBigTextStyle)
     , public NotificationStyle
     , public INotificationBigTextStyle
 {
 public:
-    CNotificationBigPictureStyle();
+    CAR_INTERFACE_DECL()
 
-    virtual ~CNotificationBigPictureStyle();
+    CAR_OBJECT_DECL()
 
     CNotificationBigTextStyle();
 
@@ -43,12 +43,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ INotificationBuilder* builder);
-
-    CARAPI SetBuilder(
-        /* [in] */ INotificationBuilder* builder);
-
-    CARAPI Build(
-        /* [out] */ INotification** notification);
 
     /**
      * Overrides ContentTitle in the big form of the template.

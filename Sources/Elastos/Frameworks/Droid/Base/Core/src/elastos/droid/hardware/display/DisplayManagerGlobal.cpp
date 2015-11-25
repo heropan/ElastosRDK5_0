@@ -30,7 +30,7 @@ const String DisplayManagerGlobal::TAG("DisplayManagerGlobal");
 const Boolean DisplayManagerGlobal::DEBUG;
 const Boolean DisplayManagerGlobal::USE_CACHE;
 
-AutoPtr<DisplayManagerGlobal> DisplayManagerGlobal::sInstance;
+AutoPtr<IDisplayManagerGlobal> DisplayManagerGlobal::sInstance;
 Object DisplayManagerGlobal::sInstanceLock;
 
 DisplayManagerGlobal::DisplayListenerDelegate::DisplayListenerDelegate(
@@ -163,14 +163,14 @@ DisplayManagerGlobal::~DisplayManagerGlobal()
     mDisplayListeners.Clear();
 }
 
-AutoPtr<DisplayManagerGlobal> DisplayManagerGlobal::GetInstance()
+AutoPtr<IDisplayManagerGlobal> DisplayManagerGlobal::GetInstance()
 {
     synchronized(sInstanceLock) {
         if (sInstance == NULL) {
             AutoPtr<IInterface> service = ServiceManager::GetService(IContext::DISPLAY_SERVICE);
             if (service != NULL) {
                 AutoPtr<IIDisplayManager> idm = IIDisplayManager::Probe(service);
-                sInstance = new DisplayManagerGlobal(idm);
+                sInstance = (IDisplayManagerGlobal*)new DisplayManagerGlobal(idm);
             }
             else {
                 Logger::E(TAG, "GetInstance() failed to get service %s", IContext::DISPLAY_SERVICE.string());

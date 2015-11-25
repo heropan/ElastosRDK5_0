@@ -1,36 +1,122 @@
 
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/StringUtils.h>
-#include <elastos/core/StringBuilder.h>
-#include "elastos/droid/os/UserHandle.h"
-#include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/app/CNotification.h"
 #include "elastos/droid/app/CPendingIntentHelper.h"
 #include "elastos/droid/app/CPendingIntent.h"
 #include "elastos/droid/app/CNotificationAction.h"
-#include "elastos/droid/widget/CRemoteViews.h"
+#include "elastos/droid/app/CNotificationBuilder.h"
+#include "elastos/droid/app/CBuilderRemoteViews.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CParcel.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/text/TextUtils.h"
+// #include "elastos/droid/media/CAudioAttributes.h"
+// #include "elastos/droid/media/CAudioAttributesBuilder.h"
+#include "elastos/droid/graphics/CBitmap.h"
+// #include "elastos/droid/widget/CRemoteViews.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/CoreUtils.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::R;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::CParcel;
+using Elastos::Droid::Text::TextUtils;
+// using Elastos::Droid::Media::CAudioAttributes;
+// using Elastos::Droid::Media::CAudioAttributesBuilder;
+using Elastos::Droid::Media::IAudioAttributesBuilder;
+using Elastos::Droid::Graphics::CBitmap;
+// using Elastos::Droid::Widget::CRemoteViews;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Text::INumberFormatHelper;
 using Elastos::Text::CNumberFormatHelper;
-using Elastos::Droid::R;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Graphics::CBitmap;
-using Elastos::Droid::Os::UserHandle;
-using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Widget::CRemoteViews;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
+//==========================================================================
+// CNotification::BuilderRemoteViews
+//==========================================================================
+CAR_INTERFACE_IMPL(CNotification::BuilderRemoteViews, Object, IBuilderRemoteViews)
+
+CNotification::BuilderRemoteViews::BuilderRemoteViews()
+{}
+
+ECode CNotification::BuilderRemoteViews::constructor()
+{
+    return NOERROR;
+}
+
+ECode CNotification::BuilderRemoteViews::constructor(
+    /* [in] */ IApplicationInfo* appInfo,
+    /* [in] */ Int32 layoutId)
+{
+    assert(0 && "TODO");
+    // return RemoteViews::constructor(appInfo, layoutId);
+    return NOERROR;
+}
+
+// @Override
+ECode CNotification::BuilderRemoteViews::Clone(
+    /* [out] */ IRemoteViews** result)
+{
+    VALIDATE_NOT_NULL(result)
+    AutoPtr<IInterface> obj;
+    Clone((IInterface**)&obj);
+    *result = IRemoteViews::Probe(obj);
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode CNotification::BuilderRemoteViews::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IParcel> parcel;
+    CParcel::New((IParcel**)&parcel);
+    assert(0 && "TODO");
+    // WriteToParcel(p);
+    parcel->SetDataPosition(0);
+
+    AutoPtr<IBuilderRemoteViews> brv;
+    CBuilderRemoteViews::New((IBuilderRemoteViews**)&brv);
+    IParcelable::Probe(brv)->ReadFromParcel(parcel);
+    *obj = brv.Get();
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+//==========================================================================
+// CNotification
+//==========================================================================
+
+static AutoPtr<IAudioAttributes> InitAUDIO_ATTRIBUTES_DEFAULT()
+{
+    AutoPtr<IAudioAttributes> attrs;
+    // AutoPtr<IAudioAttributesBuilder> builder;
+    // CAudioAttributesBuilder::NewByFriend((CAudioAttributesBuilder**)&builder);
+
+    // builder->SetContentType(IAudioAttributes::CONTENT_TYPE_SONIFICATION);
+    // builder->SetUsage(IAudioAttributes::USAGE_NOTIFICATION)
+    // builder->Build((IAudioAttributes**)&attrs);
+
+    return attrs;
+}
+
 const String CNotification::TAG("Notification");
 
 const Int32 CNotification::MAX_CHARSEQUENCE_LENGTH = 5120;//5 * 1024;
+
+const AutoPtr<IAudioAttributes> CNotification::AUDIO_ATTRIBUTES_DEFAULT = InitAUDIO_ATTRIBUTES_DEFAULT();
 
 CAR_INTERFACE_IMPL_2(CNotification, Object, INotification, IParcelable)
 
@@ -48,7 +134,9 @@ CNotification::CNotification()
     , mDefaults(0)
     , mFlags(0)
     , mPriority(0)
-{}
+{
+    mAudioAttributes = AUDIO_ATTRIBUTES_DEFAULT;
+}
 
 CNotification::~CNotification()
 {}
@@ -312,6 +400,22 @@ ECode CNotification::SetAudioStreamType(
     return NOERROR;
 }
 
+ECode CNotification::GetAudioAttributes (
+    /* [out] */ IAudioAttributes** attrs)
+{
+    VALIDATE_NOT_NULL(attrs)
+    *attrs = mAudioAttributes;
+    REFCOUNT_ADD(*attrs)
+    return NOERROR;
+}
+
+ECode CNotification::SetAudioAttributes (
+    /* [in] */ IAudioAttributes* attrs)
+{
+    mAudioAttributes = attrs;
+    return NOERROR;
+}
+
 ECode CNotification::GetVibrate(
     /* [out, callee] */ ArrayOf<Int64>** vibrate)
 {
@@ -426,11 +530,25 @@ ECode CNotification::GetGroup(
     return NOERROR;
 }
 
+ECode CNotification::SetGroup(
+    /* [in] */ const String& group)
+{
+    mGroupKey = group;
+    return NOERROR;
+}
+
 ECode CNotification::GetSortKey(
     /* [out] */ String* sortKey)
 {
     VALIDATE_NOT_NULL(sortKey)
     *sortKey = mSortKey;
+    return NOERROR;
+}
+
+ECode CNotification::SetSortKey(
+    /* [in] */ const String& sortKey)
+{
+    mSortKey = sortKey;
     return NOERROR;
 }
 
@@ -488,73 +606,31 @@ ECode CNotification::SetLatestEventInfo(
     /* [in] */ ICharSequence* contentText,
     /* [in] */ IPendingIntent* contentIntent)
 {
-    Notification.Builder builder = new Notification.Builder(context);
+    AutoPtr<CNotificationBuilder> builder;
+    CNotificationBuilder::NewByFriend(context, (CNotificationBuilder**)&builder);
 
     // First, ensure that key pieces of information that may have been set directly
     // are preserved
-    builder.setWhen(this.when);
-    builder.setSmallIcon(this.icon);
-    builder.setPriority(this.priority);
-    builder.setTicker(this.tickerText);
-    builder.setNumber(this.number);
-    builder.setColor(this.color);
-    builder.mFlags = this.flags;
-    builder.setSound(this.sound, this.audioStreamType);
-    builder.setDefaults(this.defaults);
-    builder.setVibrate(this.vibrate);
+    builder->SetWhen(mWhen);
+    builder->SetSmallIcon(mIcon);
+    builder->SetPriority(mPriority);
+    builder->SetTicker(mTickerText);
+    builder->SetNumber(mNumber);
+    builder->SetColor(mColor);
+    builder->mFlags = mFlags;
+    builder->SetSound(mSound, mAudioStreamType);
+    builder->SetDefaults(mDefaults);
+    builder->SetVibrate(mVibrate);
 
     // now apply the latestEventInfo fields
-    if (contentTitle != null) {
-        builder.setContentTitle(contentTitle);
+    if (contentTitle != NULL) {
+        builder->SetContentTitle(contentTitle);
     }
-    if (contentText != null) {
-        builder.setContentText(contentText);
+    if (contentText != NULL) {
+        builder->SetContentText(contentText);
     }
-    builder.setContentIntent(contentIntent);
-    builder.buildInto(this);
-
-    // AutoPtr<IRemoteViews> contentView;
-    // String packageName;
-
-    // FAIL_RETURN(context->GetPackageName(&packageName));
-    // FAIL_RETURN(CRemoteViews::New(packageName, R::layout::notification_template_base,
-    //     (IRemoteViews**)&contentView));
-
-    // if (mIcon != 0) {
-    //     contentView->SetImageViewResource(R::id::icon, mIcon);
-    // }
-    // if (mPriority < INotification::PRIORITY_LOW) {
-    //     contentView->SetInt32(R::id::icon,
-    //             String("SetBackgroundResource"),
-    //             R::drawable::notification_template_icon_low_bg);
-    //     contentView->SetInt32(R::id::status_bar_latest_event_content,
-    //             String("SetBackgroundResource"),
-    //             R::drawable::notification_bg_low);
-    // }
-    // if (contentTitle != NULL) {
-    //     contentView->SetTextViewText(R::id::title, contentTitle);
-    // }
-    // if (contentText != NULL) {
-    //     contentView->SetTextViewText(R::id::text, contentText);
-    // }
-    // if (mWhen != 0) {
-    //     contentView->SetViewVisibility(R::id::time, IView::VISIBLE);
-    //     contentView->SetInt64(R::id::time, String("SetTime"), mWhen);
-    // }
-    // if (mNumber != 0) {
-    //     AutoPtr<INumberFormatHelper> helper;
-    //     CNumberFormatHelper::AcquireSingleton((INumberFormatHelper**)&helper);
-    //     AutoPtr<INumberFormat> f;
-    //     helper->GetIntegerInstance((INumberFormat**)&f);
-    //     AutoPtr<ICharSequence> cs;
-    //     String str;
-    //     f->FormatInt64(mNumber, &str);
-    //     CString::New(str, (ICharSequence**)&cs);
-    //     contentView->SetTextViewText(R::id::info, cs);
-    // }
-
-    // mContentView = contentView;
-    // mContentIntent = contentIntent;
+    builder->SetContentIntent(contentIntent);
+    builder->BuildInto(this);
 
     return NOERROR;
 }
@@ -581,6 +657,83 @@ ECode CNotification::SetUser(
         }
     }
 
+    return NOERROR;
+}
+
+ECode CNotification::GetHeadsUpContentView(
+    /* [out] */ IRemoteViews** view)
+{
+    VALIDATE_NOT_NULL(view)
+    *view = mHeadsUpContentView;
+    REFCOUNT_ADD(*view)
+    return NOERROR;
+}
+
+ECode CNotification::SetHeadsUpContentView(
+    /* [in] */ IRemoteViews* view)
+{
+    mHeadsUpContentView = view;
+    return NOERROR;
+}
+
+ECode CNotification::GetVisibility(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mVisibility;
+    return NOERROR;
+}
+
+ECode CNotification::SetVisibility(
+    /* [in] */ Int32 value)
+{
+    mVisibility = value;
+    return NOERROR;
+}
+
+ECode CNotification::GetColor(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mColor;
+    return NOERROR;
+}
+
+ECode CNotification::SetColor(
+    /* [in] */ Int32 color)
+{
+    mColor = color;
+    return NOERROR;
+}
+
+ECode CNotification::GetCategory(
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mCategory;
+    return NOERROR;
+}
+
+ECode CNotification::SetCategory(
+    /* [in] */ const String& result)
+{
+    mCategory = result;
+    return NOERROR;
+}
+
+ECode CNotification::SetPublicVersion(
+    /* [in] */ INotification* value)
+{
+    mPublicVersion = value;
+    return NOERROR;
+}
+
+ECode CNotification::GetPublicVersion(
+    /* [out] */ INotification** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mPublicVersion;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -621,7 +774,8 @@ ECode CNotification::ReadFromParcel(
     mTickerView = NULL;
     parcel->ReadInt32(&value);
     if (value != 0) {
-        CRemoteViews::New((IRemoteViews**)&mTickerView);
+        assert(0 && "TODO");
+        // CRemoteViews::New((IRemoteViews**)&mTickerView);
         parcelable = IParcelable::Probe(mTickerView);
         parcelable->ReadFromParcel(parcel);
     }
@@ -629,7 +783,8 @@ ECode CNotification::ReadFromParcel(
     mContentView = NULL;
     parcel->ReadInt32(&value);
     if (value != 0) {
-        CRemoteViews::New((IRemoteViews**)&mContentView);
+        assert(0 && "TODO");
+        // CRemoteViews::New((IRemoteViews**)&mContentView);
         parcelable = IParcelable::Probe(mContentView);
         parcelable->ReadFromParcel(parcel);
     }
@@ -656,7 +811,9 @@ ECode CNotification::ReadFromParcel(
     parcel->ReadInt32(&mAudioStreamType);
     parcel->ReadInt32(&value);
     if (value != 0) {
-        audioAttributes = AudioAttributes.CREATOR.createFromParcel(parcel);
+        assert(0 && "TODO");
+        // CAudioAttributes::New((IAudioAttributes**)&mAudioAttributes);
+        IParcelable::Probe(mAudioAttributes)->ReadFromParcel(parcel);
     }
 
     mVibrate = NULL;
@@ -676,67 +833,53 @@ ECode CNotification::ReadFromParcel(
 
     parcel->ReadInt32(&mPriority);
 
-    category = parcel.readString();
+    parcel->ReadString(&mCategory);
+    parcel->ReadString(&mGroupKey);
+    parcel->ReadString(&mSortKey);
 
-    mGroupKey = parcel.readString();
+    mExtras = Elastos::Droid::Os::CParcel::ReadBundle(parcel);// may be NULL
 
-    mSortKey = parcel.readString();
+    mActions = NULL;
+    parcel->ReadInt32(&value);
+    if (value >= 0) {
+        Int32 size = value;
+        mActions = ArrayOf<INotificationAction*>::Alloc(size);
+        for (Int32 i = 0; i < size; ++i) {
+            AutoPtr<INotificationAction> nc;
+            parcel->ReadInt32(&value);
+            if (value != 0) {
+                CNotificationAction::New((INotificationAction**)&nc);
+                IParcelable::Probe(nc)->ReadFromParcel(parcel);
+            }
 
-    extras = parcel.readBundle(); // may be null
-
-    actions = parcel.createTypedArray(Action.CREATOR); // may be null
-
-    if (parcel.readInt() != 0) {
-        bigContentView = RemoteViews.CREATOR.createFromParcel(parcel);
+            mActions->Set(i, nc);
+        }
     }
 
-    if (parcel.readInt() != 0) {
-        headsUpContentView = RemoteViews.CREATOR.createFromParcel(parcel);
+    parcel->ReadInt32(&value);
+    if (value != 0) {
+        assert(0 && "TODO");
+        // CRemoteViews::New((IRemoteViews**)&mBigContentView);
+        IParcelable::Probe(mBigContentView)->ReadFromParcel(parcel);
     }
 
-    visibility = parcel.readInt();
-
-    if (parcel.readInt() != 0) {
-        publicVersion = Notification.CREATOR.createFromParcel(parcel);
+    parcel->ReadInt32(&value);
+    if (value != 0) {
+        assert(0 && "TODO");
+        // CRemoteViews::New((IRemoteViews**)&mHeadsUpContentView);
+        IParcelable::Probe(mHeadsUpContentView)->ReadFromParcel(parcel);
     }
 
-    color = parcel.readInt();
+    parcel->ReadInt32(&mVisibility);
 
-    // mKind = NULL;
-    // parcel->ReadArrayOfString((ArrayOf<String> **)&mKind); // may set kind to null
+    parcel->ReadInt32(&value);
+    if (value != 0) {
+        mPublicVersion = NULL;
+        CNotification::New((INotification**)&mPublicVersion);
+        IParcelable::Probe(mPublicVersion)->ReadFromParcel(parcel);
+    }
 
-    // parcel->ReadInt32(&value);
-    // if (value != 0) {
-    //     mExtras = NULL;
-    //     CBundle::New((IBundle**)&mExtras);
-    //     parcelable = IParcelable::Probe(mExtras);
-    //     parcelable->ReadFromParcel(parcel);
-    // }
-
-    // mActions = NULL;
-    // parcel->ReadInt32(&value);
-    // if (value >= 0) {
-    //     Int32 size = value;
-    //     mActions = ArrayOf<INotificationAction*>::Alloc(size);
-    //     for (Int32 i = 0; i < size; ++i) {
-    //         AutoPtr<INotificationAction> nc;
-    //         parcel->ReadInt32(&value);
-    //         if (value != 0) {
-    //             CNotificationAction::New((INotificationAction**)&nc);
-    //             parcelable = IParcelable::Probe(nc);
-    //             parcelable->ReadFromParcel(parcel);
-    //         }
-
-    //         mActions->Set(i, nc);
-    //     }
-    // }
-
-    // parcel->ReadInt32(&value);
-    // if (value != 0) {
-    //     CRemoteViews::New((IRemoteViews**)&mBigContentView);
-    //     parcelable = IParcelable::Probe(mBigContentView);
-    //     parcelable->ReadFromParcel(parcel);
-    // }
+    parcel->ReadInt32(&mColor);
 
     return NOERROR;
 }
@@ -784,16 +927,14 @@ ECode CNotification::WriteToParcel(
 
     if (mContentView != NULL) {
         parcel->WriteInt32(1);
-        parcelable = IParcelable::Probe(mContentView);
-        parcelable->WriteToParcel(parcel);
+        IParcelable::Probe(mContentView)->WriteToParcel(parcel);
     } else {
         parcel->WriteInt32(0);
     }
 
     if (mLargeIcon != NULL) {
         parcel->WriteInt32(1);
-        parcelable = IParcelable::Probe(mLargeIcon);
-        parcelable->WriteToParcel(parcel);
+        IParcelable::Probe(mLargeIcon)->WriteToParcel(parcel);
     } else {
         parcel->WriteInt32(0);
     }
@@ -809,11 +950,11 @@ ECode CNotification::WriteToParcel(
     }
 
     parcel->WriteInt32(mAudioStreamType);
-    if (audioAttributes != null) {
-        parcel->WriteInt(1);
-        audioAttributes.writeToParcel(parcel, 0);
+    if (mAudioAttributes != NULL) {
+        parcel->WriteInt32(1);
+        IParcelable::Probe(mAudioAttributes)->WriteToParcel(parcel);
     } else {
-        parcel->WriteInt(0);
+        parcel->WriteInt32(0);
     }
 
     parcel->WriteArrayOf((Handle32)mVibrate.Get());
@@ -824,8 +965,7 @@ ECode CNotification::WriteToParcel(
 
     if (mFullScreenIntent != NULL) {
         parcel->WriteInt32(1);
-        parcelable = IParcelable::Probe(mFullScreenIntent);
-        parcelable->WriteToParcel(parcel);
+        IParcelable::Probe(mFullScreenIntent)->WriteToParcel(parcel);
     } else {
         parcel->WriteInt32(0);
     }
@@ -838,71 +978,54 @@ ECode CNotification::WriteToParcel(
 
     parcel->WriteString(mSortKey);
 
-    parcel->WriteBundle(extras); // null ok
+    Elastos::Droid::Os::CParcel::WriteBundle(parcel, mExtras); // NULL ok
 
-    parcel->WriteTypedArray(actions, 0); // null ok
-
-    if (bigContentView != null) {
-        parcel->WriteInt(1);
-        bigContentView.writeToParcel(parcel, 0);
-    } else {
-        parcel->WriteInt(0);
+    if (mActions != NULL) {
+        Int32 N = mActions->GetLength();
+        parcel->WriteInt32(N);
+        for (Int32 i = 0; i < N; ++i) {
+            INotificationAction* action = (*mActions)[i];
+            if (action != NULL) {
+                parcel->WriteInt32(1);
+                IParcelable::Probe(action)->WriteToParcel(parcel);
+            }
+            else {
+                parcel->WriteInt32(0);
+            }
+        }
+    }
+    else {
+        parcel->WriteInt32(-1);
     }
 
-    if (headsUpContentView != null) {
-        parcel->WriteInt(1);
-        headsUpContentView.writeToParcel(parcel, 0);
-    } else {
-        parcel->WriteInt(0);
+
+    if (mBigContentView != NULL) {
+        parcel->WriteInt32(1);
+        IParcelable::Probe(mBigContentView)->WriteToParcel(parcel);
+    }
+    else {
+        parcel->WriteInt32(0);
     }
 
-    parcel->WriteInt(visibility);
-
-    if (publicVersion != null) {
-        parcel->WriteInt(1);
-        publicVersion.writeToParcel(parcel, 0);
-    } else {
-        parcel->WriteInt(0);
+    if (mHeadsUpContentView != NULL) {
+        parcel->WriteInt32(1);
+        IParcelable::Probe(mHeadsUpContentView)->WriteToParcel(parcel);
+    }
+    else {
+        parcel->WriteInt32(0);
     }
 
-    parcel->WriteInt(color);
+    parcel->WriteInt32(mVisibility);
 
-    // parcel->WriteArrayOfString(mKind); // ok for NULL
+    if (mPublicVersion != NULL) {
+        parcel->WriteInt32(1);
+        IParcelable::Probe(mPublicVersion)->WriteToParcel(parcel);
+    }
+    else {
+        parcel->WriteInt32(0);
+    }
 
-    // if (mExtras != NULL) {
-    //     parcel->WriteInt32(1);
-    //     parcelable = IParcelable::Probe(mExtras);
-    //     parcelable->WriteToParcel(parcel);
-    // } else {
-    //     parcel->WriteInt32(0);
-    // }
-
-    // if (mActions == NULL) {
-    //     parcel->WriteInt32(-1);
-    // }
-    // else {
-    //     Int32 size = mActions->GetLength();
-    //     parcel->WriteInt32(size);
-    //     INotificationAction* nc;
-    //     for (Int32 i = 0; i < size; ++i) {
-    //         nc = (*mActions)[i];
-    //         if (nc != NULL) {
-    //             parcel->WriteInt32(1);
-    //             parcelable = IParcelable::Probe(nc);
-    //             parcelable->WriteToParcel(parcel);
-    //         } else {
-    //             parcel->WriteInt32(0);
-    //         }
-    //     }
-    // }
-
-    // if (mBigContentView != NULL) {
-    //     parcel->WriteInt32(1);
-    //     parcelable = IParcelable::Probe(mBigContentView);
-    //     parcelable->WriteToParcel(parcel);
-    // } else {
-    //     parcel->WriteInt32(0);
-    // }
+    parcel->WriteInt32(mColor);
 
     return NOERROR;
 }
@@ -912,23 +1035,18 @@ ECode CNotification::ToString(
 {
     VALIDATE_NOT_NULL(info);
 
-    Int32 tmpInt;
-    String tmpStr;
-
     StringBuilder sb("Notification={pri=");
     sb += mPriority;
     sb += ", contentView=";
     if (mContentView != NULL) {
-        mContentView->ToString(&tmpStr);
-        sb += tmpStr;
+        sb += Object::ToString(mContentView);
     } else {
         sb += ("NULL");
     }
 
     sb += ", ticker=";
     if (mTickerText != NULL) {
-        mTickerText->ToString(&tmpStr);
-        sb += tmpStr;
+        sb += Object::ToString(mTickerText);;
     }
     else {
         sb += ("NULL");
@@ -938,7 +1056,7 @@ ECode CNotification::ToString(
     if (mVibrate != NULL && mVibrate->GetLength() > 0) {
         sb += "{";
         for (Int32 i = 0; i < mVibrate->GetLength(); i++) {
-            if (i > 0) sb += ', ';
+            if (i > 0) sb += ", ";
             sb += (*mVibrate)[i];
         }
         sb += "}";
@@ -950,8 +1068,7 @@ ECode CNotification::ToString(
 
     sb += ", sound=";
     if (mSound != NULL) {
-        mSound->ToString(&tmpStr);
-        sb += tmpStr;
+        sb += Object::ToString(mSound);
     } else if ((mDefaults & DEFAULT_SOUND) != 0) {
         sb += "default";
     } else {
@@ -959,79 +1076,35 @@ ECode CNotification::ToString(
     }
 
     sb += ", defaults=0x";
-    sb += StringUtils::Int32ToHexString(mDefaults);
+    sb += StringUtils::ToHexString(mDefaults);
     sb += ", flags=0x";
-    sb += StringUtils::Int32ToHexString(mFlags);
+    sb += StringUtils::ToHexString(mFlags);
 
-    sb.append(String.format(" color=0x%08x", this.color));
-    if (this.category != null) {
-        sb.append(" category=");
-        sb.append(this.category);
+    sb += " color=0x";
+    sb += StringUtils::ToHexString(mColor);
+    if (!mCategory.IsNull()) {
+        sb += " category=";
+        sb += mCategory;
     }
-    if (this.mGroupKey != null) {
-        sb.append(" groupKey=");
-        sb.append(this.mGroupKey);
+    if (!mGroupKey.IsNull()) {
+        sb += " groupKey=";
+        sb += mGroupKey;
     }
-    if (this.mSortKey != null) {
-        sb.append(" sortKey=");
-        sb.append(this.mSortKey);
-    }
-    if (actions != null) {
-        sb.append(" actions=");
-        sb.append(actions.length);
-    }
-    sb.append(" vis=");
-    sb.append(visibilityToString(this.visibility));
-    if (this.publicVersion != null) {
-        sb.append(" publicVersion=");
-        sb.append(publicVersion.toString());
+    if (!mSortKey.IsNull()) {
+        sb += " sortKey=";
+        sb += mSortKey;
     }
 
-    // sb += ", kind={";
-    // if (mKind == NULL) {
-    //     sb += ("NULL");
-    // } else {
-    //     for (Int32 i = 0; i < mKind->GetLength(); i++) {
-    //         if (i > 0) sb += ", ";
-    //         sb += (*mKind)[i];
-    //     }
-    // }
-    // sb += ("}");
-
-    // if (mActions != NULL) {
-    //     Int32 size = mActions->GetLength();
-    //     sb += ", ";
-    //     sb += size;
-    //     sb += " action";
-    //     if (size > 1) sb += "s";
-
-    //     if (size > 0) {
-    //         sb += "={";
-    //         String tmpStr;
-    //         AutoPtr<INotificationAction> action;
-    //         for (Int32 i = 0; i < size; ++i) {
-    //             if (i > 0) sb += ", ";
-    //             sb += i;
-    //             sb += "=";
-    //             action = (*mActions)[i];
-    //             if (action != NULL) {
-    //                 AutoPtr<ICharSequence> tmpSeq;
-    //                 action->GetTitle((ICharSequence**)&tmpSeq);
-    //                 if (tmpSeq != NULL) {
-    //                     tmpSeq->ToString(&tmpStr);
-    //                     sb += tmpStr;
-    //                 }
-    //             }
-    //             else {
-    //                 sb += "NULL";
-    //             }
-    //         }
-    //         sb += "}";
-    //     }
-    // }
-    // else {
-    //     sb += ", 0 action";
-    // }
+    if (mActions != NULL) {
+        sb += " actions=";
+        sb += mActions->GetLength();
+    }
+    sb += " vis=";
+    sb += VisibilityToString(mVisibility);
+    if (mPublicVersion != NULL) {
+        sb += " publicVersion=";
+        sb += Object::ToString(mPublicVersion);
+    }
 
     sb += ("}");
 
@@ -1039,197 +1112,248 @@ ECode CNotification::ToString(
     return NOERROR;
 }
 
-CARAPI CNotification::Clone(
-    /* [out] */ IInterface** itfc);
+ECode CNotification::Clone(
+    /* [out] */ IInterface** result)
 {
-    Notification that = new Notification();
-    cloneInto(that, true);
-    return that;
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    AutoPtr<INotification> that;
+    CNotification::New((INotification**)&that);
+    CloneInto(that, TRUE);
+    *result = that;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-CARAPI CNotification::CloneInto(
-    /* [in] */ INotification* that,
-    /* [in] */ Boolean heavy);
+ECode CNotification::CloneInto(
+    /* [in] */ INotification* thatObj,
+    /* [in] */ Boolean heavy)
 {
-    that.when = this.when;
-    that.icon = this.icon;
-    that.number = this.number;
+    CNotification* that = (CNotification*)thatObj;
+    that->mWhen = this->mWhen;
+    that->mIcon = this->mIcon;
+    that->mNumber = this->mNumber;
 
     // PendingIntents are global, so there's no reason (or way) to clone them.
-    that.contentIntent = this.contentIntent;
-    that.deleteIntent = this.deleteIntent;
-    that.fullScreenIntent = this.fullScreenIntent;
+    that->mContentIntent = this->mContentIntent;
+    that->mDeleteIntent = this->mDeleteIntent;
+    that->mFullScreenIntent = this->mFullScreenIntent;
 
-    if (this.tickerText != null) {
-        that.tickerText = this.tickerText.toString();
+    if (this->mTickerText != NULL) {
+        String str = Object::ToString(this->mTickerText);
+        that->mTickerText = CoreUtils::Convert(str);
     }
-    if (heavy && this.tickerView != null) {
-        that.tickerView = this.tickerView.clone();
+    if (heavy && this->mTickerView != NULL) {
+        that->mTickerText = NULL;
+        this->mTickerView->Clone((IRemoteViews**)&that->mTickerText);
     }
-    if (heavy && this.contentView != null) {
-        that.contentView = this.contentView.clone();
+    if (heavy && this->mContentView != NULL) {
+        that->mContentView = NULL;
+        this->mContentView->Clone((IRemoteViews**)&that->mContentView);
     }
-    if (heavy && this.largeIcon != null) {
-        that.largeIcon = Bitmap.createBitmap(this.largeIcon);
+    if (heavy && this->mLargeIcon != NULL) {
+        that->mLargeIcon = NULL;
+        CBitmap::CreateBitmap(this->mLargeIcon, (IBitmap**)&that->mLargeIcon);
     }
-    that.iconLevel = this.iconLevel;
-    that.sound = this.sound; // android.net.Uri is immutable
-    that.audioStreamType = this.audioStreamType;
-    if (this.audioAttributes != null) {
-        that.audioAttributes = new AudioAttributes.Builder(this.audioAttributes).build();
-    }
-
-    final long[] vibrate = this.vibrate;
-    if (vibrate != null) {
-        final int N = vibrate.length;
-        final long[] vib = that.vibrate = new long[N];
-        System.arraycopy(vibrate, 0, vib, 0, N);
+    that->mIconLevel = this->mIconLevel;
+    that->mSound = this->mSound; // android.net.Uri is immutable
+    that->mAudioStreamType = this->mAudioStreamType;
+    if (this->mAudioAttributes != NULL) {
+        AutoPtr<IAudioAttributesBuilder> builder;
+        assert(0 && "TODO");
+        // CAudioAttributesBuilder::New(this->mAudioAttributes, (IAudioAttributesBuilder**)&builder);
+        that->mAudioAttributes = NULL;
+        builder->Build((IAudioAttributes**)&that->mAudioAttributes);
     }
 
-    that.ledARGB = this.ledARGB;
-    that.ledOnMS = this.ledOnMS;
-    that.ledOffMS = this.ledOffMS;
-    that.defaults = this.defaults;
+    if (this->mVibrate != NULL) {
+        Int32 N = this->mVibrate->GetLength();
+        that->mVibrate = ArrayOf<Int64>::Alloc(N);
+        that->mVibrate->Copy(this->mVibrate);
+    }
 
-    that.flags = this.flags;
+    that->mLedARGB = this->mLedARGB;
+    that->mLedOnMS = this->mLedOnMS;
+    that->mLedOffMS = this->mLedOffMS;
+    that->mDefaults = this->mDefaults;
 
-    that.priority = this.priority;
+    that->mFlags = this->mFlags;
 
-    that.category = this.category;
+    that->mPriority = this->mPriority;
 
-    that.mGroupKey = this.mGroupKey;
+    that->mCategory = this->mCategory;
 
-    that.mSortKey = this.mSortKey;
+    that->mGroupKey = this->mGroupKey;
 
-    if (this.extras != null) {
-        try {
-            that.extras = new Bundle(this.extras);
-            // will unparcel
-            that.extras.size();
-        } catch (BadParcelableException e) {
-            Log.e(TAG, "could not unparcel extras from notification: " + this, e);
-            that.extras = null;
+    that->mSortKey = this->mSortKey;
+
+    if (this->mExtras != NULL) {
+        that->mExtras = NULL;
+        CBundle::New(this->mExtras, (IBundle**)&that->mExtras);
+        Int32 size;
+        ECode ec = that->mExtras->GetSize(&size); // will unparcel
+        if (ec == (ECode)E_BAD_PARCELABLE_EXCEPTION) {
+            Logger::E(TAG, "could not unparcel extras from notification: %s", Object::ToString(this).string());
+            that->mExtras = NULL;
         }
     }
 
-    if (this.actions != null) {
-        that.actions = new Action[this.actions.length];
-        for(int i=0; i<this.actions.length; i++) {
-            that.actions[i] = this.actions[i].clone();
+    if (this->mActions != NULL) {
+        that->mActions = ArrayOf<INotificationAction*>::Alloc(this->mActions->GetLength());
+        for(Int32 i = 0; i < this->mActions->GetLength(); i++) {
+            INotificationAction* action = (*this->mActions)[i];
+            AutoPtr<IInterface> copy;
+            ICloneable::Probe(action)->Clone((IInterface**)&copy);
+            that->mActions->Set(i, INotificationAction::Probe(copy));
         }
     }
 
-    if (heavy && this.bigContentView != null) {
-        that.bigContentView = this.bigContentView.clone();
+    if (heavy && this->mBigContentView != NULL) {
+        that->mBigContentView = NULL;
+        this->mBigContentView->Clone((IRemoteViews**)&that->mBigContentView);
     }
 
-    if (heavy && this.headsUpContentView != null) {
-        that.headsUpContentView = this.headsUpContentView.clone();
+    if (heavy && this->mHeadsUpContentView != NULL) {
+        that->mHeadsUpContentView = NULL;
+        this->mHeadsUpContentView->Clone((IRemoteViews**)&that->mHeadsUpContentView);
     }
 
-    that.visibility = this.visibility;
+    that->mVisibility = this->mVisibility;
 
-    if (this.publicVersion != null) {
-        that.publicVersion = new Notification();
-        this.publicVersion.cloneInto(that.publicVersion, heavy);
+    if (this->mPublicVersion != NULL) {
+        that->mPublicVersion = NULL;
+        CNotification::New((INotification**)&that->mPublicVersion);
+        this->mPublicVersion->CloneInto(that->mPublicVersion, heavy);
     }
 
-    that.color = this.color;
+    that->mColor = this->mColor;
 
     if (!heavy) {
-        that.lightenPayload(); // will clean out extras
+        that->LightenPayload(); // will clean out extras
     }
+    return NOERROR;
 }
 
-/**
- * Removes heavyweight parts of the Notification object for archival or for sending to
- * listeners when the full contents are not necessary.
- * @hide
- */
-CARAPI CNotification::LightenPayload() {
-    tickerView = null;
-    contentView = null;
-    bigContentView = null;
-    headsUpContentView = null;
-    largeIcon = null;
-    if (extras != null) {
-        extras.remove(Notification.EXTRA_LARGE_ICON);
-        extras.remove(Notification.EXTRA_LARGE_ICON_BIG);
-        extras.remove(Notification.EXTRA_PICTURE);
-        extras.remove(Notification.EXTRA_BIG_TEXT);
+ECode CNotification::LightenPayload()
+{
+    mTickerView = NULL;
+    mContentView = NULL;
+    mBigContentView = NULL;
+    mHeadsUpContentView = NULL;
+    mLargeIcon = NULL;
+    if (mExtras != NULL) {
+        mExtras->Remove(INotification::EXTRA_LARGE_ICON);
+        mExtras->Remove(INotification::EXTRA_LARGE_ICON_BIG);
+        mExtras->Remove(INotification::EXTRA_PICTURE);
+        mExtras->Remove(INotification::EXTRA_BIG_TEXT);
         // Prevent light notifications from being rebuilt.
-        extras.remove(Builder.EXTRA_NEEDS_REBUILD);
+        mExtras->Remove(INotificationBuilder::EXTRA_NEEDS_REBUILD);
     }
+    return NOERROR;
 }
 
-/**
- * Make sure this CharSequence is safe to put into a bundle, which basically
- * means it had better not be some custom Parcelable implementation.
- * @hide
- */
 AutoPtr<ICharSequence> CNotification::SafeCharSequence(
     /* [in] */ ICharSequence* cs)
 {
-    if (cs == null) return cs;
-    if (cs.length() > MAX_CHARSEQUENCE_LENGTH) {
-        cs = cs.subSequence(0, MAX_CHARSEQUENCE_LENGTH);
+    if (cs == NULL) return cs;
+
+    AutoPtr<ICharSequence> result = cs;
+    Int32 length;
+    result->GetLength(&length);
+    if (length > MAX_CHARSEQUENCE_LENGTH) {
+        result = NULL;
+        cs->SubSequence(0, MAX_CHARSEQUENCE_LENGTH, (ICharSequence**)&result);
     }
-    if (cs instanceof Parcelable) {
-        Log.e(TAG, "warning: " + cs.getClass().getCanonicalName()
-                + " instance is a custom Parcelable and not allowed in Notification");
-        return cs.toString();
+    if (IParcelable::Probe(cs) != NULL) {
+        EGuid clsId;
+        IObject::Probe(cs)->GetClassID(&clsId);
+        Logger::E(TAG, "warning: %s instance is a custom Parcelable and not allowed in Notification",
+            clsId.mUunm);
+        String str = Object::ToString(result);
+        return CoreUtils::Convert(str);
     }
 
-    return cs;
+    return result;
 }
 
 String CNotification::VisibilityToString(
     /* [in] */ Int32 vis)
 {
     switch (vis) {
-        case VISIBILITY_PRIVATE:
-            return "PRIVATE";
-        case VISIBILITY_PUBLIC:
-            return "PUBLIC";
-        case VISIBILITY_SECRET:
-            return "SECRET";
-        default:
-            return "UNKNOWN(" + String.valueOf(vis) + ")";
+        case INotification::VISIBILITY_PRIVATE:
+            return String("PRIVATE");
+        case INotification::VISIBILITY_PUBLIC:
+            return String("PUBLIC");
+        case INotification::VISIBILITY_SECRET:
+            return String("SECRET");
+        default:{
+            StringBuilder sb("UNKNOWN(");
+            sb += vis;
+            sb += ")";
+            return sb.ToString();
+        }
     }
+    return String(NULL);
 }
 
 Boolean CNotification::IsValid()
 {
     // Would like to check for icon!=0 here, too, but NotificationManagerService accepts that
     // for legacy reasons.
-    return contentView != null || extras.getBoolean(Builder.EXTRA_REBUILD_CONTENT_VIEW);
+    Boolean bval;
+    return mContentView != NULL || (mExtras->GetBoolean(INotificationBuilder::EXTRA_REBUILD_CONTENT_VIEW, &bval), bval);
 }
 
 Boolean CNotification::IsGroupSummary()
 {
-    return mGroupKey != null && (flags & FLAG_GROUP_SUMMARY) != 0;
+    return mGroupKey != NULL && (mFlags & FLAG_GROUP_SUMMARY) != 0;
 }
 
 Boolean CNotification::IsGroupChild()
 {
-    return mGroupKey != null && (flags & FLAG_GROUP_SUMMARY) == 0;
+    return mGroupKey != NULL && (mFlags & FLAG_GROUP_SUMMARY) == 0;
 }
 
-static AutoPtr<ArrayOf<INotification*> > CNotification::GetNotificationArrayFromBundle(
+ECode CNotification::IsValid(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = IsValid();
+    return NOERROR;
+}
+
+ECode CNotification::IsGroupSummary(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = IsGroupSummary();
+    return NOERROR;
+}
+
+ECode CNotification::IsGroupChild(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = IsGroupChild();
+    return NOERROR;
+}
+
+AutoPtr<ArrayOf<INotification*> > CNotification::GetNotificationArrayFromBundle(
     /* [in] */ IBundle* bundle,
     /* [in] */ const String& key)
 {
-    Parcelable[] array = bundle.getParcelableArray(key);
-    if (array instanceof Notification[] || array == null) {
-        return (Notification[]) array;
+    AutoPtr<ArrayOf<IParcelable*> > array;
+    bundle->GetParcelableArray(key, (ArrayOf<IParcelable*>**)&array);
+    if (array == NULL) {
+        return NULL;
     }
-    Notification[] typedArray = Arrays.copyOf(array, array.length,
-            Notification[].class);
-    bundle.putParcelableArray(key, typedArray);
-    return typedArray;
+    Int32 size = array->GetLength();
+    AutoPtr<ArrayOf<INotification*> > result = ArrayOf<INotification*>::Alloc(size);
+    for (Int32 i = 0; i < size; ++i) {
+        result->Set(i, INotification::Probe((*array)[i]));
+    }
+    return result;
 }
-
-
 
 }
 }

@@ -14,6 +14,9 @@
 #include "elastos/droid/app/CJobSchedulerImpl.h"
 #include "elastos/droid/app/CKeyguardManagerKeyguardLock.h"
 #include "elastos/droid/app/CMediaRouteButton.h"
+#include "elastos/droid/app/CNotificationManager.h"
+#include "elastos/droid/app/CBuilderRemoteViews.h"
+#include "elastos/droid/app/CRemoteInputBuilder.h"
 #include "elastos/droid/app/CUiAutomation.h"
 #include "elastos/droid/app/CUiAutomationConnection.h"
 #include "elastos/droid/app/CVoiceInteractor.h"
@@ -22,7 +25,6 @@
 #include "elastos/droid/app/CVoiceInteractorCompleteVoiceRequest.h"
 #include "elastos/droid/app/CVoiceInteractorAbortVoiceRequest.h"
 #include "elastos/droid/app/CVoiceInteractorCommandRequest.h"
-
 
 namespace Elastos {
 namespace Droid {
@@ -43,6 +45,9 @@ CAR_OBJECT_IMPL(CInstrumentation)
 CAR_OBJECT_IMPL(CJobSchedulerImpl)
 CAR_OBJECT_IMPL(CKeyguardManagerKeyguardLock)
 CAR_OBJECT_IMPL(CMediaRouteButton)
+CAR_OBJECT_IMPL(CNotificationManager)
+CAR_OBJECT_IMPL(CBuilderRemoteViews)
+CAR_OBJECT_IMPL(CRemoteInputBuilder)
 CAR_OBJECT_IMPL(CUiAutomation)
 CAR_OBJECT_IMPL(CUiAutomationConnection)
 CAR_OBJECT_IMPL(CVoiceInteractor)

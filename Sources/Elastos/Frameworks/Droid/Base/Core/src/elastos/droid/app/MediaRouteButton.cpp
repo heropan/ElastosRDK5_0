@@ -470,11 +470,12 @@ void MediaRouteButton::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
+    using Elastos::Droid::View::View;
     Int32 widthSize, heightSize, widthMode, heightMode;
-    Elastos::Droid::View::View::MeasureSpec::GetSize(widthMeasureSpec);
-    Elastos::Droid::View::View::MeasureSpec::GetSize(heightMeasureSpec);
-    Elastos::Droid::View::View::MeasureSpec::GetMode(widthMeasureSpec);
-    Elastos::Droid::View::View::MeasureSpec::GetMode(heightMeasureSpec);
+    widthSize = View::MeasureSpec::GetSize(widthMeasureSpec);
+    heightSize = View::MeasureSpec::GetSize(heightMeasureSpec);
+    widthMode = View::MeasureSpec::GetMode(widthMeasureSpec);
+    heightMode = View::MeasureSpec::GetMode(heightMeasureSpec);
 
     using Elastos::Core::Math;
 

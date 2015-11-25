@@ -1,15 +1,20 @@
-#include "CNotificationAction.h"
-#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/app/CNotificationAction.h"
 #include "elastos/droid/app/CPendingIntent.h"
+// #include "elastos/droid/app/CRemoteInput.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/CParcel.h"
+#include "elastos/droid/text/TextUtils.h"
 
+using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::App::CPendingIntent;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::EIID_ICloneable;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-CAR_INTERFACE_IMPL_2(CNotificationAction, Object, INotificationAction, IParcelable)
+CAR_INTERFACE_IMPL_3(CNotificationAction, Object, INotificationAction, IParcelable, ICloneable)
 
 CAR_OBJECT_IMPL(CNotificationAction)
 
@@ -69,8 +74,25 @@ ECode CNotificationAction::WriteToParcel(
         out->WriteInt32(0);
     }
 
-    out.writeBundle(mExtras);
-    out.writeTypedArray(mRemoteInputs, flags);
+    Elastos::Droid::Os::CParcel::WriteBundle(out, mExtras);
+
+    if (mRemoteInputs != NULL) {
+        Int32 N = mRemoteInputs->GetLength();
+        out->WriteInt32(N);
+        for (Int32 i = 0; i < N; ++i) {
+            IRemoteInput* ri = (*mRemoteInputs)[i];
+            if (ri != NULL) {
+                out->WriteInt32(1);
+                IParcelable::Probe(ri)->WriteToParcel(out);
+            }
+            else {
+                out->WriteInt32(0);
+            }
+        }
+    }
+    else {
+        out->WriteInt32(-1);
+    }
     return NOERROR;
 }
 
@@ -91,12 +113,27 @@ ECode CNotificationAction::ReadFromParcel(
         parcleable->ReadFromParcel(in);
     }
 
-    mExtras = in.readBundle();
-    mRemoteInputs = in.createTypedArray(RemoteInput.CREATOR);
+    mExtras = Elastos::Droid::Os::CParcel::ReadBundle(in);
+
+    mRemoteInputs = NULL;
+    in->ReadInt32(&value);
+    if (value >= 0) {
+        mRemoteInputs = ArrayOf<IRemoteInput*>::Alloc(value);
+        for (Int32 i = 0; i < value; ++i) {
+            in->ReadInt32(&value);
+            if (value == 1) {
+                AutoPtr<IRemoteInput> ri;
+                // CRemoteInput::New((IRemoteInput**)&ri);
+                IParcelable::Probe(ri)->ReadFromParcel(in);
+                mRemoteInputs->Set(i, ri);
+            }
+        }
+    }
+
     return NOERROR;
 }
 
-CARAPI CNotificationAction::GetExtras(
+ECode CNotificationAction::GetExtras(
     /* [out] */ IBundle** extras)
 {
     VALIDATE_NOT_NULL(extras)
@@ -105,7 +142,7 @@ CARAPI CNotificationAction::GetExtras(
     return NOERROR;
 }
 
-CARAPI CNotificationAction::GetRemoteInputs(
+ECode CNotificationAction::GetRemoteInputs(
     /* [out, callee] */ ArrayOf<IRemoteInput*>** inputs)
 {
     VALIDATE_NOT_NULL(inputs)
@@ -115,22 +152,21 @@ CARAPI CNotificationAction::GetRemoteInputs(
 }
 
 ECode CNotificationAction::Clone(
-    /* [out] */ INotificationAction** action)
+    /* [out] */ IInterface** obj)
 {
-    assert(0 && "TODO");
-    // VALIDATE_NOT_NULL(action);
-    // *action->mIcon = mIcon;
-    // mTitle->ToString(&(*action->mTitle));
-    // *action->mActionIntent = mActionIntent;
-    // return NOERROR;
+    VALIDATE_NOT_NULL(obj)
 
-    return new Action(
-            icon,
-            title,
-            actionIntent, // safe to alias
-            new Bundle(mExtras),
-            getRemoteInputs());
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<IBundle> bundle;
+    CBundle::New(mExtras, (IBundle**)&bundle);
+    AutoPtr<ArrayOf<IRemoteInput*> > ris;
+    GetRemoteInputs((ArrayOf<IRemoteInput*>**)&ris);
+    AutoPtr<INotificationAction> na;
+    CNotificationAction::New(
+        mIcon, mTitle, mActionIntent,
+        bundle, ris, (INotificationAction**)&na);
+    *obj = na.Get();
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
 }
 
 ECode CNotificationAction::GetIcon(

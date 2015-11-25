@@ -4,8 +4,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Widget::IRemoteViews;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -38,13 +39,25 @@ public:
     CARAPI Build(
         /* [out] */ INotification** result);
 
-public:
-    AutoPtr<ICharSequence> mBigContentTitle;
-    AutoPtr<ICharSequence> mSummaryText;
-    Boolean mSummaryTextSet;
-    AutoPtr<INotificationBuilder> mBuilder;
+    /**
+     * @hide
+     */
+    CARAPI AddExtras(
+        /* [in] */ IBundle* extras);
 
-protected:
+    /**
+     * @hide
+     */
+    CARAPI BuildStyled(
+        /* [in] */ INotification* wip);
+
+    /**
+     * @hide
+     * @return true if the style positions the progress bar on the second line; false if the
+     *         style hides the progress bar
+     */
+    CARAPI_(Boolean) HasProgress();
+
     /**
      * Overrides ContentTitle in the big form of the template.
      * This defaults to the value passed to setContentTitle().
@@ -75,20 +88,9 @@ protected:
     /**
      * @hide
      */
-    CARAPI AddExtras(
-        /* [in] */ IBundle* extras);
-
-    /**
-     * @hide
-     */
     CARAPI RestoreFromExtras(
         /* [in] */ IBundle* extras);
 
-    /**
-     * @hide
-     */
-    AutoPtr<INotification> BuildStyled(
-        /* [in] */ INotification* wip);
 
     // The following methods are split out so we can re-create notification partially.
     /**
@@ -115,12 +117,12 @@ protected:
     CARAPI PopulateHeadsUpContentView(
         /* [in] */ INotification* wip);
 
-    /**
-     * @hide
-     * @return true if the style positions the progress bar on the second line; false if the
-     *         style hides the progress bar
-     */
-    CARAPI_(Boolean) HasProgress();
+public:
+    AutoPtr<ICharSequence> mBigContentTitle;
+    AutoPtr<ICharSequence> mSummaryText;
+    Boolean mSummaryTextSet;
+    AutoPtr<INotificationBuilder> mBuilder;
+};
 
 } // namespace App
 } // namespace Droid

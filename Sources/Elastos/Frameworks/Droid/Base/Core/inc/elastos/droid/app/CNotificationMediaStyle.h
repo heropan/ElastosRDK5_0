@@ -5,6 +5,12 @@
 #include "_Elastos_Droid_App_CNotificationMediaStyle.h"
 #include "elastos/droid/app/NotificationStyle.h"
 
+using Elastos::Droid::Media::Session::IMediaSessionToken;
+
+namespace Elastos {
+namespace Droid {
+namespace App {
+
 /**
  * Notification style for media playback notifications.
  *
@@ -83,8 +89,7 @@ public:
      */
     //@Override
     CARAPI BuildStyled(
-        /* [in] */ INotification* wip,
-        /* [out] */ INotification** result);
+        /* [in] */ INotification* wip);
 
     /**
      * @hide

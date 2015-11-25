@@ -74,6 +74,7 @@ module
     merge("app/Presentation.car");
     merge("app/ProfilerInfo.car");
     merge("app/ProgressDialog.car");
+    merge("app/RemoteInput.car");
     merge("app/ResultInfo.car");
     merge("app/ResourcesManager.car");
     merge("app/SearchManager.car");
@@ -161,6 +162,7 @@ module
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
+    interface Elastos.Droid.Content.Pm.IApplicationInfo;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
@@ -976,87 +978,107 @@ module
         interface IInstrumentationActivityResult;
     }
 
-//     class CNotificationAction {
-//         constructor();
+    [deprecated, local, parcelable]
+    class CNotificationAction {
+        constructor();
 
-//         constructor(
-//             [in] Int32 icon_,
-//             [in] ICharSequence* title_,
-//             [in] IPendingIntent* intent_);
+        constructor(
+            [in] Int32 icon_,
+            [in] ICharSequence* title_,
+            [in] IPendingIntent* intent_);
 
-//         interface INotificationAction;
-//         interface IParcelable;
-//     }
+        constructor(
+            [in] Int32 icon_,
+            [in] ICharSequence* title_,
+            [in] IPendingIntent* intent_,
+            [in] IBundle* extras,
+            [in] ArrayOf<IRemoteInput*>* remoteInputs);
 
-//     [local]
-//     class CNotificationBuilder {
-//         constructor(
-//             [in] IContext* ctx);
+        interface INotificationAction;
+        interface IParcelable;
+    }
 
-//         interface INotificationBuilder;
-//     }
+    [local]
+    class CNotificationBuilder {
+        constructor(
+            [in] IContext* ctx);
 
-//     [local]
-//     class CNotificationBigPictureStyle {
-//         constructor();
+        constructor(
+            [in] IContext* ctx,
+            [in] INotification* n);
 
-//         constructor(
-//             [in] INotificationBuilder* builder);
+        interface INotificationBuilder;
+    }
 
-//         interface INotificationBigPictureStyle;
-//     }
+    [local]
+    class CNotificationBigPictureStyle {
+        constructor();
 
-//     [local]
-//     class CNotificationBigTextStyle {
-//         constructor();
+        constructor(
+            [in] INotificationBuilder* builder);
 
-//         constructor(
-//             [in] INotificationBuilder* builder);
+        interface INotificationBigPictureStyle;
+    }
 
-//         interface INotificationBigTextStyle;
-//     }
+    [local]
+    class CNotificationBigTextStyle {
+        constructor();
 
-//     [local]
-//     class CNotificationInboxStyle {
-//         constructor();
+        constructor(
+            [in] INotificationBuilder* builder);
 
-//         constructor(
-//             [in] INotificationBuilder* builder);
+        interface INotificationBigTextStyle;
+    }
 
-//         interface INotificationInboxStyle;
-//     }
+    [local]
+    class CNotificationInboxStyle {
+        constructor();
 
-//     [local]
-//     class CNotificationMediaStyle {
-//         constructor();
+        constructor(
+            [in] INotificationBuilder* builder);
 
-//         constructor(
-//             [in] INotificationBuilder* builder);
+        interface INotificationInboxStyle;
+    }
 
-//         interface INotificationMediaStyle;
-//     }
+    [local]
+    class CNotificationMediaStyle {
+        constructor();
 
-//     [local, parcelable]
-//     class CNotification {
-//         constructor();
+        constructor(
+            [in] INotificationBuilder* builder);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Int32 icon,
-//             [in] ICharSequence* tickerText,
-//             [in] Int64 when,
-//             [in] ICharSequence* contentTitle,
-//             [in] ICharSequence* contentText,
-//             [in] IIntent* contentIntent);
+        interface INotificationMediaStyle;
+    }
 
-//         constructor(
-//             [in] Int32 icon,
-//             [in] ICharSequence* tickerText,
-//             [in] Int64 when);
+    [local, parcelable]
+    class CNotification {
+        constructor();
 
-//         interface INotification;
-//         interface IParcelable;
-//     }
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 icon,
+            [in] ICharSequence* tickerText,
+            [in] Int64 when,
+            [in] ICharSequence* contentTitle,
+            [in] ICharSequence* contentText,
+            [in] IIntent* contentIntent);
+
+        constructor(
+            [in] Int32 icon,
+            [in] ICharSequence* tickerText,
+            [in] Int64 when);
+
+        interface INotification;
+        interface IParcelable;
+    }
+
+    class CNotificationManager {
+        constructor(
+            [in] IContext* context,
+            [in] IHandler* handler);
+
+        interface INotificationManager;
+    }
 
 //     class CPermissionController {
 //         constructor(
@@ -1555,6 +1577,46 @@ module
         interface IDrawableCallback;
         interface IKeyEventCallback;
         interface IAccessibilityEventSource;
+    }
+
+    [deprecated]
+    class CRemoteInput {
+        constructor();
+
+        constructor(
+            [in] String resultKey,
+            [in] ICharSequence* label,
+            [in] ArrayOf<ICharSequence*>* choices,
+            [in] Int32 flags,
+            [in] IBundle* extras);
+
+        interface IRemoteInput;
+        interface IParcelable;
+    }
+
+    singleton class CRemoteInputHelper {
+        interface IRemoteInputHelper;
+    }
+
+    class CRemoteInputBuilder {
+        constructor(
+            [in] String resultKey);
+
+        interface IRemoteInputBuilder;
+    }
+
+    class CBuilderRemoteViews {
+        constructor();
+
+        constructor(
+            [in] IApplicationInfo* appInfo,
+            [in] Int32 layoutId);
+
+        interface IBuilderRemoteViews;
+        //assert(0 && "TODO");
+        //interface IRemoteViews;
+        //interface IParcelable;
+        //interface IFilter;
     }
 
     }

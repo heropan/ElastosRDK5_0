@@ -74,11 +74,6 @@ public:
             /* [in] */ Int32 uid,
             /* [in] */ Boolean foregroundActivities);
 
-        CARAPI OnImportanceChanged(
-            /* [in] */ Int32 pid,
-            /* [in] */ Int32 uid,
-            /* [in] */ Int32 procState) { return NOERROR; }
-
         CARAPI OnProcessStateChanged(
             /* [in] */ Int32 pid,
             /* [in] */ Int32 uid,
