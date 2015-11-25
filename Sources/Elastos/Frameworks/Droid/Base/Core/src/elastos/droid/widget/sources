@@ -275,5 +275,7 @@ SOURCES += CAdapterViewFlipper.cpp
 #SOURCES += CStackViewLayoutParams.cpp
 #SOURCES += ActivityChooserModel.cpp
 #SOURCES += CActivityChooserModelHelper.cpp
+SOURCES += SimpleMonthView.cpp
+SOURCES += CSimpleMonthView.cpp
 
 #ELASTOS_LIBS += internal/internal.lib

@@ -183,6 +183,7 @@ module
    interface Elastos.Droid.Widget.IAdapterView;
    interface Elastos.Droid.Widget.IAdapterViewAnimator;
    interface Elastos.Droid.Widget.IAdapterViewFlipper;
+   interface Elastos.Droid.Widget.ISimpleMonthView;
 
     namespace Elastos {
     namespace Droid {
@@ -2087,28 +2088,28 @@ module
    //      interface IKeyEventCallback;
    //  }
 
-	[local]
-	class CAdapterViewAnimator {
-	    constructor(
-	        [in] IContext* ctx);
+    [local]
+    class CAdapterViewAnimator {
+        constructor(
+            [in] IContext* ctx);
 
-	    constructor(
-	        [in] IContext* ctx,
-	        [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-	    constructor(
-	        [in] IContext* ctx,
-	        [in] IAttributeSet* attrs,
-	        [in] Int32 defStyleAttr);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-	    constructor(
-	        [in] IContext* ctx,
-	        [in] IAttributeSet* attrs,
-	        [in] Int32 defStyleAttr,
-	        [in] Int32 defStyleRes);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
-	    interface IAdapterViewAnimator;
-	}
+        interface IAdapterViewAnimator;
+    }
 
    //  [local]
    //  class CStackView {
@@ -2223,51 +2224,68 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-	[local]
-	class CAdapterView {
-		constructor(
-        	[in] IContext* context);
+    [local]
+    class CAdapterView {
+        constructor(
+            [in] IContext* context);
 
-	    constructor(
-	        [in] IContext* context,
-	        [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
 
-	    constructor(
-	        [in] IContext* context,
-	        [in] IAttributeSet* attrs,
-	        [in] Int32 defStyle);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-	    constructor(
-	        [in] IContext* context,
-	        [in] IAttributeSet* attrs,
-	        [in] Int32 defStyle,
-	        [in] Int32 defStyleRes);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle,
+            [in] Int32 defStyleRes);
 
-		interface IAdapterView;
-	}
+        interface IAdapterView;
+    }
 
-	[local]
-	class CAdapterViewFlipper {
-		constructor(
-        	[in] IContext* context);
+    [local]
+    class CAdapterViewFlipper {
+        constructor(
+            [in] IContext* context);
 
-	    constructor(
-	        [in] IContext* context,
-	        [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
 
-	    constructor(
-	        [in] IContext* context,
-	        [in] IAttributeSet* attrs,
-	        [in] Int32 defStyleAttr);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-	    constructor(
-	        [in] IContext* context,
-	        [in] IAttributeSet* attrs,
-	        [in] Int32 defStyleAttr,
-	        [in] Int32 defStyleRes);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
-		interface IAdapterViewFlipper;
-	}
+        interface IAdapterViewFlipper;
+    }
+
+    [local]
+    class CSimpleMonthView {
+        constructor(
+            [in] IContext* context);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
+
+        interface ISimpleMonthView;
+    }
 
     } // namespace Widget
     } // namespace Droid
