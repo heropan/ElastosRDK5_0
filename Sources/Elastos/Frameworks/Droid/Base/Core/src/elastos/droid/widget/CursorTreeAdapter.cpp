@@ -1,47 +1,35 @@
 
 #include "elastos/droid/widget/CursorTreeAdapter.h"
-#include "elastos/droid/widget/CCursorFilter.h"
+// #include "elastos/droid/widget/CCursorFilter.h"
 #include "elastos/droid/os/CHandler.h"
 
+using Elastos::Droid::Database::EIID_IDataSetObserver;
 using Elastos::Droid::Os::CHandler;
-
-/**
- * Constructor. The adapter will call {@link Cursor#requery()} on the cursor whenever
- * it changes so that the most recent data is always displayed.
- *
- * @param cursor The cursor from which to get the data for the groups.
- */
+using Elastos::Core::CString;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL_3(CursorTreeAdapter, BaseExpandableListAdapter, ICursorTreeAdapter, IFilterable, ICursorFilterClient);
 CursorTreeAdapter::CursorTreeAdapter()
     : mAutoRequery(FALSE)
 {}
 
-CursorTreeAdapter::CursorTreeAdapter(
+ECode CursorTreeAdapter::constructor(
     /* [in] */ ICursor* cursor,
     /* [in] */ IContext* context)
 {
-    Init(cursor, context);
+    return Init(cursor, context);
 }
 
-/**
- * Constructor.
- *
- * @param cursor The cursor from which to get the data for the groups.
- * @param context The context
- * @param autoRequery If TRUE the adapter will call {@link Cursor#requery()}
- *        on the cursor whenever it changes so the most recent data is
- *        always displayed.
- */
-CursorTreeAdapter::CursorTreeAdapter(
+ECode CursorTreeAdapter::constructor(
     /* [in] */ ICursor* cursor,
     /* [in] */ IContext* context,
     /* [in] */ Boolean autoRequery)
 {
-    Init(cursor, context, autoRequery);
+    return Init(cursor, context, autoRequery);
 }
 
 ECode CursorTreeAdapter::Init(
@@ -57,16 +45,6 @@ ECode CursorTreeAdapter::Init(
     return NOERROR;
 }
 
-/**
- * Gets the cursor helper for the children in the given group.
- *
- * @param groupPosition The group whose children will be returned
- * @param requestCursor Whether to request a Cursor via
- *            {@link #getChildrenCursor(Cursor)} (TRUE), or to assume a call
- *            to {@link #setChildrenCursor(Int32, Cursor)} will happen shortly
- *            (FALSE).
- * @return The cursor helper for the children of the given group
- */
 AutoPtr<CursorTreeAdapter::MyCursorHelper> CursorTreeAdapter::GetChildrenCursorHelper(
     /* [in] */ Int32 groupPosition,
     /* [in] */ Boolean requestCursor)
@@ -88,12 +66,6 @@ AutoPtr<CursorTreeAdapter::MyCursorHelper> CursorTreeAdapter::GetChildrenCursorH
     return cursorHelper;
 }
 
-/**
- * Sets the group Cursor.
- *
- * @param cursor The Cursor to set for the group. If there is an existing cursor
- * it will be closed.
- */
 ECode CursorTreeAdapter::SetGroupCursor(
     /* [in] */ ICursor* cursor)
 {
@@ -101,15 +73,6 @@ ECode CursorTreeAdapter::SetGroupCursor(
     return NOERROR;
 }
 
-/**
- * Sets the children Cursor for a particular group. If there is an existing cursor
- * it will be closed.
- * <p>
- * This is useful when asynchronously querying to prevent blocking the UI.
- *
- * @param groupPosition The group whose children are being set via this Cursor.
- * @param childrenCursor The Cursor that contains the children of the group.
- */
 ECode CursorTreeAdapter::SetChildrenCursor(
     /* [in] */ Int32 groupPosition,
     /* [in] */ ICursor* childrenCursor)
@@ -129,72 +92,101 @@ ECode CursorTreeAdapter::SetChildrenCursor(
     return NOERROR;
 }
 
-AutoPtr<ICursor> CursorTreeAdapter::GetChild(
+ECode CursorTreeAdapter::GetChild(
     /* [in] */ Int32 groupPosition,
-    /* [in] */ Int32 childPosition)
+    /* [in] */ Int32 childPosition,
+    /* [out] */ ICursor** cursor)
 {
+    VALIDATE_NOT_NULL(cursor);
     // Return this group's children Cursor pointing to the particular child
-    return GetChildrenCursorHelper(groupPosition, TRUE)->MoveTo(childPosition);
+    AutoPtr<ICursor> c = GetChildrenCursorHelper(groupPosition, TRUE)->MoveTo(childPosition);
+    *cursor = c;
+    REFCOUNT_ADD(*cursor);
+    return NOERROR;
 }
 
-Int64 CursorTreeAdapter::GetChildId(
+ECode CursorTreeAdapter::GetChildId(
     /* [in] */ Int32 groupPosition,
-    /* [in] */ Int32 childPosition)
+    /* [in] */ Int32 childPosition,
+    /* [out] */ Int64* id)
 {
-    return GetChildrenCursorHelper(groupPosition, TRUE)->GetId(childPosition);
+    VALIDATE_NOT_NULL(id);
+    *id = GetChildrenCursorHelper(groupPosition, TRUE)->GetId(childPosition);
+    return NOERROR;
 }
 
-Int32 CursorTreeAdapter::GetChildrenCount(
-    /* [in] */ Int32 groupPosition)
+ECode CursorTreeAdapter::GetChildrenCount(
+    /* [in] */ Int32 groupPosition,
+    /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count);
     AutoPtr<MyCursorHelper> helper = GetChildrenCursorHelper(groupPosition, TRUE);
-    return (mGroupCursorHelper->IsValid() && helper != NULL) ? helper->GetCount() : 0;
+    *count = (mGroupCursorHelper->IsValid() && helper != NULL) ? helper->GetCount() : 0;
+    return NOERROR;
 }
 
-AutoPtr<ICursor> CursorTreeAdapter::GetGroup(
-    /* [in] */ Int32 groupPosition)
+ECode CursorTreeAdapter::GetGroup(
+    /* [in] */ Int32 groupPosition,
+    /* [out] */ ICursor** cursor)
 {
+    VALIDATE_NOT_NULL(cursor);
     // Return the group Cursor pointing to the given group
-    return mGroupCursorHelper->MoveTo(groupPosition);
+    AutoPtr<ICursor> c = mGroupCursorHelper->MoveTo(groupPosition);
+    *cursor = c;
+    REFCOUNT_ADD(*cursor);
+    return NOERROR;
 }
 
-Int32 CursorTreeAdapter::GetGroupCount()
+ECode CursorTreeAdapter::GetGroupCount(
+    /* [out] */ Int32* count)
 {
-    return mGroupCursorHelper->GetCount();
+    VALIDATE_NOT_NULL(count);
+    *count = mGroupCursorHelper->GetCount();
+    return NOERROR;
 }
 
-Int64 CursorTreeAdapter::GetGroupId(
-    /* [in] */ Int32 groupPosition)
+ECode CursorTreeAdapter::GetGroupId(
+    /* [in] */ Int32 groupPosition,
+    /* [out] */ Int64* id)
 {
-    return mGroupCursorHelper->GetId(groupPosition);
+    VALIDATE_NOT_NULL(id);
+    *id = mGroupCursorHelper->GetId(groupPosition);
+    return NOERROR;
 }
 
-AutoPtr<IView> CursorTreeAdapter::GetGroupView(
+ECode CursorTreeAdapter::GetGroupView(
     /* [in] */ Int32 groupPosition,
     /* [in] */ Boolean isExpanded,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
+    VALIDATE_NOT_NULL(view);
     AutoPtr<ICursor> cursor = mGroupCursorHelper->MoveTo(groupPosition);
     assert(cursor != NULL);
 
     AutoPtr<IView> v;
     if (convertView == NULL) {
         v = NewGroupView(mContext, cursor, isExpanded, parent);
-    } else {
+    }
+    else {
         v = convertView;
     }
     BindGroupView(v, mContext, cursor, isExpanded);
-    return v;
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
-AutoPtr<IView> CursorTreeAdapter::GetChildView(
+ECode CursorTreeAdapter::GetChildView(
     /* [in] */ Int32 groupPosition,
     /* [in] */ Int32 childPosition,
     /* [in] */ Boolean isLastChild,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
+    VALIDATE_NOT_NULL(view);
     AutoPtr<MyCursorHelper> cursorHelper = GetChildrenCursorHelper(groupPosition, TRUE);
 
     AutoPtr<ICursor> cursor = cursorHelper->MoveTo(childPosition);
@@ -203,23 +195,32 @@ AutoPtr<IView> CursorTreeAdapter::GetChildView(
     AutoPtr<IView> v;
     if (convertView == NULL) {
         v = NewChildView(mContext, cursor, isLastChild, parent);
-    } else {
+    }
+    else {
         v = convertView;
     }
     BindChildView(v, mContext, cursor, isLastChild);
-    return v;
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
-Boolean CursorTreeAdapter::IsChildSelectable(
+ECode CursorTreeAdapter::IsChildSelectable(
     /* [in] */ Int32 groupPosition,
-    /* [in] */ Int32 childPosition)
+    /* [in] */ Int32 childPosition,
+    /* [out] */ Boolean* result)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(result);
+    *result = TRUE;
+    return NOERROR;
 }
 
-Boolean CursorTreeAdapter::HasStableIds()
+ECode CursorTreeAdapter::HasStableIds(
+    /* [out] */ Boolean* result)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(result);
+    *result = TRUE;
+    return NOERROR;
 }
 
 void CursorTreeAdapter::ReleaseCursorHelpers()
@@ -240,13 +241,6 @@ ECode CursorTreeAdapter::NotifyDataSetChanged()
     return NOERROR;
 }
 
-/**
- * Notifies a data set change, but with the option of not releasing any
- * cached cursors.
- *
- * @param releaseCursors Whether to release and deactivate any cached
- *            cursors.
- */
 ECode CursorTreeAdapter::NotifyDataSetChanged(
     /* [in] */ Boolean releaseCursors)
 {
@@ -271,12 +265,6 @@ ECode CursorTreeAdapter::OnGroupCollapsed(
     return NOERROR;
 }
 
-/**
- * Deactivates the Cursor and removes the helper from cache.
- *
- * @param groupPosition The group whose children Cursor and helper should be
- *            deactivated.
- */
 ECode CursorTreeAdapter::DeactivateChildrenCursorHelper(
     /* [in] */ Int32 groupPosition)
 {
@@ -287,50 +275,55 @@ ECode CursorTreeAdapter::DeactivateChildrenCursorHelper(
     return NOERROR;
 }
 
-/**
- * @see CursorAdapter#convertToString(Cursor)
- */
-String CursorTreeAdapter::ConvertToString(
-    /* [in] */ ICursor* cursor)
+ECode CursorTreeAdapter::ConvertToString(
+    /* [in] */ ICursor* cursor,
+    /* [out] */ ICharSequence** str)
 {
-    String str;
-    return cursor == NULL ? String("") : (/*cursor->ToString(&str),*/ str);
+    VALIDATE_NOT_NULL(str);
+    String value("");
+    if (cursor != NULL) {
+        IObject::Probe(cursor)->ToString(&value);
+    }
+    return CString::New(value, str);
 }
 
-/**
- * @see CursorAdapter#runQueryOnBackgroundThread(CharSequence)
- */
-AutoPtr<ICursor> CursorTreeAdapter::RunQueryOnBackgroundThread(
-    /* [in] */ ICharSequence* constraint)
+ECode CursorTreeAdapter::RunQueryOnBackgroundThread(
+    /* [in] */ ICharSequence* constraint,
+    /* [out] */ ICursor** cursor)
 {
+    VALIDATE_NOT_NULL(cursor);
     if (mFilterQueryProvider != NULL) {
-        AutoPtr<ICursor> cursor;
-        mFilterQueryProvider->RunQuery(constraint, (ICursor**)&cursor);
-        return cursor;
+        return mFilterQueryProvider->RunQuery(constraint, cursor);
     }
 
-    return mGroupCursorHelper->GetCursor();
+    AutoPtr<ICursor> c = mGroupCursorHelper->GetCursor();
+    *cursor = c;
+    REFCOUNT_ADD(*cursor);
+    return NOERROR;
 }
 
-AutoPtr<IFilter> CursorTreeAdapter::GetFilter()
+ECode CursorTreeAdapter::GetFilter(
+    /* [out] */ IFilter** filter)
 {
+    VALIDATE_NOT_NULL(filter);
     if (mCursorFilter == NULL) {
-        CCursorFilter::New(THIS_PROBE(ICursorFilterClient), (ICursorFilter**)&mCursorFilter);
+        assert(0 && "TODO");
+        // CCursorFilter::New(THIS_PROBE(ICursorFilterClient), (ICursorFilter**)&mCursorFilter);
     }
-    return mCursorFilter;
+    *filter = IFilter::Probe(mCursorFilter);
+    REFCOUNT_ADD(*filter);
+    return NOERROR;
 }
 
-/**
- * @see CursorAdapter#getFilterQueryProvider()
- */
-AutoPtr<IFilterQueryProvider> CursorTreeAdapter::GetFilterQueryProvider()
+ECode CursorTreeAdapter::GetFilterQueryProvider(
+    /* [out] */ IFilterQueryProvider** provider)
 {
-    return mFilterQueryProvider;
+    VALIDATE_NOT_NULL(provider);
+    *provider = mFilterQueryProvider;
+    REFCOUNT_ADD(*provider);
+    return NOERROR;
 }
 
-/**
- * @see CursorAdapter#setFilterQueryProvider(FilterQueryProvider)
- */
 ECode CursorTreeAdapter::SetFilterQueryProvider(
     /* [in] */ IFilterQueryProvider* filterQueryProvider)
 {
@@ -339,9 +332,6 @@ ECode CursorTreeAdapter::SetFilterQueryProvider(
     return NOERROR;
 }
 
-/**
- * @see CursorAdapter#changeCursor(Cursor)
- */
 ECode CursorTreeAdapter::ChangeCursor(
     /* [in] */ ICursor* cursor)
 {
@@ -349,19 +339,20 @@ ECode CursorTreeAdapter::ChangeCursor(
     return NOERROR;
 }
 
-/**
- * @see CursorAdapter#getCursor()
- */
-AutoPtr<ICursor> CursorTreeAdapter::GetCursor()
+ECode CursorTreeAdapter::GetCursor(
+    /* [out] */ ICursor** cursor)
 {
-    AutoPtr<ICursor> cursor = mGroupCursorHelper->GetCursor();
-
-    return cursor;
+    VALIDATE_NOT_NULL(cursor);
+    AutoPtr<ICursor> c = mGroupCursorHelper->GetCursor();
+    *cursor = c;
+    REFCOUNT_ADD(*cursor);
+    return NOERROR;
 }
 
 CursorTreeAdapter::MyCursorHelper::MyCursorHelper(
     /* [in] */ ICursor* cursor,
-    /* [in] */ CursorTreeAdapter* owner) : mOwner(owner)
+    /* [in] */ CursorTreeAdapter* owner)
+    : mOwner(owner)
 {
     Boolean cursorPresent = cursor != NULL;
     mCursor = cursor;
@@ -389,7 +380,8 @@ Int32 CursorTreeAdapter::MyCursorHelper::GetCount()
         Int32 count;
         mCursor->GetCount(&count);
         return count;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -404,10 +396,12 @@ Int64 CursorTreeAdapter::MyCursorHelper::GetId(
             Int64 columnValue;
             mCursor->GetInt64(mRowIDColumn, &columnValue);
             return columnValue;
-        } else {
+        }
+        else {
             return 0;
         }
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -416,9 +410,10 @@ AutoPtr<ICursor> CursorTreeAdapter::MyCursorHelper::MoveTo(
     /* [in] */ Int32 position)
 {
     Boolean res;
-    if (mDataValid && (mCursor != NULL) && (mCursor->MoveToPosition(position, &res), res)) {
+    if (mDataValid && mCursor != NULL && (mCursor->MoveToPosition(position, &res), res)) {
         return mCursor;
-    } else {
+    }
+    else {
         return NULL;
     }
 }
@@ -438,7 +433,8 @@ void CursorTreeAdapter::MyCursorHelper::ChangeCursor(
         mDataValid = TRUE;
         // notify the observers about the new cursor
         mOwner->NotifyDataSetChanged(releaseCursors);
-    } else {
+    }
+    else {
         mRowIDColumn = -1;
         mDataValid = FALSE;
         // notify the observers about the lack of a data set
@@ -454,7 +450,7 @@ void CursorTreeAdapter::MyCursorHelper::Deactivate()
 
     mCursor->UnregisterContentObserver(mContentObserver);
     mCursor->UnregisterDataSetObserver(mDataSetObserver);
-    mCursor->Close();
+    ICloseable::Probe(mCursor)->Close();
     mCursor = NULL;
 }
 
@@ -465,8 +461,8 @@ Boolean CursorTreeAdapter::MyCursorHelper::IsValid()
 
 CursorTreeAdapter::MyCursorHelper::MyContentObserver::MyContentObserver(
     /* [in] */ MyCursorHelper* owner)
-    : ContentObserver(mHandler)
 {
+    ContentObserver::constructor(mHandler);
     mOwner = owner;
 }
 
@@ -489,8 +485,7 @@ ECode CursorTreeAdapter::MyCursorHelper::MyContentObserver::OnChange(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(CursorTreeAdapter::MyCursorHelper::MyDataSetObserver, IDataSetObserver)
-
+CAR_INTERFACE_IMPL(CursorTreeAdapter::MyCursorHelper::MyDataSetObserver, Object, IDataSetObserver)
 ECode CursorTreeAdapter::MyCursorHelper::MyDataSetObserver::OnChanged()
 {
     mOwner->mDataValid = TRUE;

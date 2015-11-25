@@ -6,7 +6,7 @@
 
 using Elastos::Core::Math;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Net::IUriHelper;
@@ -16,10 +16,11 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(SimpleCursorTreeAdapter, ResourceCursorTreeAdapter, ISimpleCursorTreeAdapter);
 SimpleCursorTreeAdapter::SimpleCursorTreeAdapter()
 {}
 
-SimpleCursorTreeAdapter::SimpleCursorTreeAdapter(
+ECode SimpleCursorTreeAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* cursor,
     /* [in] */ Int32 collapsedGroupLayout,
@@ -30,12 +31,14 @@ SimpleCursorTreeAdapter::SimpleCursorTreeAdapter(
     /* [in] */ Int32 lastChildLayout,
     /* [in] */ ArrayOf<String>* childFrom,
     /* [in] */ ArrayOf<Int32>* childTo)
-    : ResourceCursorTreeAdapter(context, cursor, collapsedGroupLayout, expandedGroupLayout, childLayout, lastChildLayout)
 {
-    ASSERT_SUCCEEDED(InitSelf(groupFrom, groupTo, childFrom, childTo));
+    ASSERT_SUCCEEDED(ResourceCursorTreeAdapter::constructor(context, cursor,
+        collapsedGroupLayout, expandedGroupLayout, childLayout, lastChildLayout));
+    ASSERT_SUCCEEDED(Init(groupFrom, groupTo, childFrom, childTo));
+    return NOERROR;
 }
 
-SimpleCursorTreeAdapter::SimpleCursorTreeAdapter(
+ECode SimpleCursorTreeAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* cursor,
     /* [in] */ Int32 collapsedGroupLayout,
@@ -45,12 +48,13 @@ SimpleCursorTreeAdapter::SimpleCursorTreeAdapter(
     /* [in] */ Int32 childLayout,
     /* [in] */ ArrayOf<String>* childFrom,
     /* [in] */ ArrayOf<Int32>* childTo)
-    : ResourceCursorTreeAdapter(context, cursor, collapsedGroupLayout, expandedGroupLayout, childLayout)
 {
-    ASSERT_SUCCEEDED(InitSelf(groupFrom, groupTo, childFrom, childTo));
+    ASSERT_SUCCEEDED(ResourceCursorTreeAdapter::constructor(context, cursor, collapsedGroupLayout, expandedGroupLayout, childLayout));
+    ASSERT_SUCCEEDED(Init(groupFrom, groupTo, childFrom, childTo));
+    return NOERROR;
 }
 
-SimpleCursorTreeAdapter::SimpleCursorTreeAdapter(
+ECode SimpleCursorTreeAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* cursor,
     /* [in] */ Int32 groupLayout,
@@ -59,14 +63,19 @@ SimpleCursorTreeAdapter::SimpleCursorTreeAdapter(
     /* [in] */ Int32 childLayout,
     /* [in] */ ArrayOf<String>* childFrom,
     /* [in] */ ArrayOf<Int32>* childTo)
-    : ResourceCursorTreeAdapter(context, cursor, groupLayout, childLayout)
 {
-    ASSERT_SUCCEEDED(InitSelf(groupFrom, groupTo, childFrom, childTo));
+    ASSERT_SUCCEEDED(ResourceCursorTreeAdapter::constructor(context, cursor, groupLayout, childLayout));
+    ASSERT_SUCCEEDED(Init(groupFrom, groupTo, childFrom, childTo));
+    return NOERROR;
 }
 
-AutoPtr<ISimpleCursorTreeAdapterViewBinder> SimpleCursorTreeAdapter::GetViewBinder()
+ECode SimpleCursorTreeAdapter::GetViewBinder(
+    /* [out] */ ISimpleCursorTreeAdapterViewBinder** viewBinder)
 {
-    return mViewBinder;
+    VALIDATE_NOT_NULL(viewBinder);
+    *viewBinder = mViewBinder;
+    REFCOUNT_ADD(*viewBinder);
+    return NOERROR;
 }
 
 ECode SimpleCursorTreeAdapter::SetViewBinder(
@@ -81,57 +90,8 @@ ECode SimpleCursorTreeAdapter::SetViewText(
     /* [in] */ const String& text)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(text, (ICharSequence**)&cs);
+    CString::New(text, (ICharSequence**)&cs);
     return v->SetText(cs);
-}
-
-ECode SimpleCursorTreeAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 collapsedGroupLayout,
-    /* [in] */ Int32 expandedGroupLayout,
-    /* [in] */ ArrayOf<String>* groupFrom,
-    /* [in] */ ArrayOf<Int32>* groupTo,
-    /* [in] */ Int32 childLayout,
-    /* [in] */ Int32 lastChildLayout,
-    /* [in] */ ArrayOf<String>* childFrom,
-    /* [in] */ ArrayOf<Int32>* childTo)
-{
-    ASSERT_SUCCEEDED(ResourceCursorTreeAdapter::Init(context, cursor,
-        collapsedGroupLayout, expandedGroupLayout, childLayout, lastChildLayout));
-    ASSERT_SUCCEEDED(InitSelf(groupFrom, groupTo, childFrom, childTo));
-    return NOERROR;
-}
-
-ECode SimpleCursorTreeAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 collapsedGroupLayout,
-    /* [in] */ Int32 expandedGroupLayout,
-    /* [in] */ ArrayOf<String>* groupFrom,
-    /* [in] */ ArrayOf<Int32>* groupTo,
-    /* [in] */ Int32 childLayout,
-    /* [in] */ ArrayOf<String>* childFrom,
-    /* [in] */ ArrayOf<Int32>* childTo)
-{
-    ASSERT_SUCCEEDED(ResourceCursorTreeAdapter::Init(context, cursor, collapsedGroupLayout, expandedGroupLayout, childLayout));
-    ASSERT_SUCCEEDED(InitSelf(groupFrom, groupTo, childFrom, childTo));
-    return NOERROR;
-}
-
-ECode SimpleCursorTreeAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 groupLayout,
-    /* [in] */ ArrayOf<String>* groupFrom,
-    /* [in] */ ArrayOf<Int32>* groupTo,
-    /* [in] */ Int32 childLayout,
-    /* [in] */ ArrayOf<String>* childFrom,
-    /* [in] */ ArrayOf<Int32>* childTo)
-{
-    ASSERT_SUCCEEDED(ResourceCursorTreeAdapter::Init(context, cursor, groupLayout, childLayout));
-    ASSERT_SUCCEEDED(InitSelf(groupFrom, groupTo, childFrom, childTo));
-    return NOERROR;
 }
 
 ECode SimpleCursorTreeAdapter::BindChildView(
@@ -187,7 +147,7 @@ ECode SimpleCursorTreeAdapter::SetViewImage(
     return NOERROR;
 }
 
-ECode SimpleCursorTreeAdapter::InitSelf(
+ECode SimpleCursorTreeAdapter::Init(
     /* [in] */ ArrayOf<String>* groupFromNames,
     /* [in] */ ArrayOf<Int32>* groupTo,
     /* [in] */ ArrayOf<String>* childFromNames,

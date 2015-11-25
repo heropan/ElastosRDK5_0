@@ -3,6 +3,11 @@
 #define __ELASTOS_DROID_WIDGET_SIMPLECURSORTREEADAPTER_H__
 
 #include "elastos/droid/widget/ResourceCursorTreeAdapter.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+
 /**
  * An easy adapter to map columns from a cursor to TextViews or ImageViews
  * defined in an XML file. You can specify which columns you want, which views
@@ -19,14 +24,15 @@
  * {@link #setViewImage(ImageView, String)} is invoked. If no appropriate
  * binding can be found, an {@link IllegalStateException} is thrown.
  */
-namespace Elastos {
-namespace Droid {
-namespace Widget {
-
-class SimpleCursorTreeAdapter : public ResourceCursorTreeAdapter
+class SimpleCursorTreeAdapter
+    : public ResourceCursorTreeAdapter
+    , public ISimpleCursorTreeAdapter
 {
 public:
+    CAR_INTERFACE_DECL();
+
     SimpleCursorTreeAdapter();
+
     /**
      * Constructor.
      *
@@ -60,7 +66,7 @@ public:
      *            TextViews or ImageViews. The first N views in this list are
      *            given the values of the first N columns in the from parameter.
      */
-    SimpleCursorTreeAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
         /* [in] */ Int32 collapsedGroupLayout,
@@ -101,7 +107,7 @@ public:
      *            TextViews or ImageViews. The first N views in this list are
      *            given the values of the first N columns in the from parameter.
      */
-    SimpleCursorTreeAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
         /* [in] */ Int32 collapsedGroupLayout,
@@ -138,7 +144,7 @@ public:
      *            TextViews or ImageViews. The first N views in this list are
      *            given the values of the first N columns in the from parameter.
      */
-    SimpleCursorTreeAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
         /* [in] */ Int32 groupLayout,
@@ -148,7 +154,8 @@ public:
         /* [in] */ ArrayOf<String>* childFrom,
         /* [in] */ ArrayOf<Int32>* childTo);
 
-    virtual CARAPI_(AutoPtr<ISimpleCursorTreeAdapterViewBinder>) GetViewBinder();
+    virtual CARAPI GetViewBinder(
+        /* [out] */ ISimpleCursorTreeAdapterViewBinder** viewBinder);
 
     /**
      * Sets the binder used to bind data to views.
@@ -176,39 +183,6 @@ public:
         /* [in] */ const String& text);
 
 protected:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ICursor* cursor,
-        /* [in] */ Int32 collapsedGroupLayout,
-        /* [in] */ Int32 expandedGroupLayout,
-        /* [in] */ ArrayOf<String>* groupFrom,
-        /* [in] */ ArrayOf<Int32>* groupTo,
-        /* [in] */ Int32 childLayout,
-        /* [in] */ Int32 lastChildLayout,
-        /* [in] */ ArrayOf<String>* childFrom,
-        /* [in] */ ArrayOf<Int32>* childTo);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ICursor* cursor,
-        /* [in] */ Int32 collapsedGroupLayout,
-        /* [in] */ Int32 expandedGroupLayout,
-        /* [in] */ ArrayOf<String>* groupFrom,
-        /* [in] */ ArrayOf<Int32>* groupTo,
-        /* [in] */ Int32 childLayout,
-        /* [in] */ ArrayOf<String>* childFrom,
-        /* [in] */ ArrayOf<Int32>* childTo);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ICursor* cursor,
-        /* [in] */ Int32 groupLayout,
-        /* [in] */ ArrayOf<String>* groupFrom,
-        /* [in] */ ArrayOf<Int32>* groupTo,
-        /* [in] */ Int32 childLayout,
-        /* [in] */ ArrayOf<String>* childFrom,
-        /* [in] */ ArrayOf<Int32>* childTo);
-
     virtual CARAPI BindChildView(
         /* [in] */ IView* view,
         /* [in] */ IContext* context,
@@ -234,12 +208,11 @@ protected:
         /* [in] */ const String& value);
 
 private:
-    CARAPI InitSelf(
+    CARAPI Init(
         /* [in] */ ArrayOf<String>* groupFromNames,
         /* [in] */ ArrayOf<Int32>* groupTo,
         /* [in] */ ArrayOf<String>* childFromNames,
         /* [in] */ ArrayOf<Int32>* childTo);
-
 
     CARAPI BindView(
         /* [in] */ IView* view,
@@ -285,4 +258,5 @@ private:
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-#endif
+
+#endif // __ELASTOS_DROID_WIDGET_SIMPLECURSORTREEADAPTER_H__

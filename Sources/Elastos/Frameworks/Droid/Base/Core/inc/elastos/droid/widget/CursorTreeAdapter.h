@@ -1,10 +1,26 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_CURSORTREEADAPTER_H__
-#define __ELASTOS_DROID_WIDGET_CURSORTREEADAPTER_H__
+#ifndef  __ELASTOS_DROID_WIDGET_CURSORTREEADAPTER_H__
+#define  __ELASTOS_DROID_WIDGET_CURSORTREEADAPTER_H__
 
 #include "elastos/droid/widget/BaseExpandableListAdapter.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include <elastos/utility/etl/HashMap.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Database::IContentObserver;
+using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Database::IDataSetObserver;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::Etl::HashMap;
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+
 /**
  * An adapter that exposes data from a series of {@link Cursor}s to an
  * {@link ExpandableListView} widget. The top-level {@link Cursor} (that is
@@ -13,32 +29,24 @@
  * particular group. The Cursors must include a column named "_id" or this class
  * will not work.
  */
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Database::IContentObserver;
-using Elastos::Droid::Database::ContentObserver;
-using Elastos::Droid::Database::IDataSetObserver;
-using Elastos::Droid::Database::EIID_IDataSetObserver;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::View::IViewGroup;
-
-namespace Elastos {
-namespace Droid {
-namespace Widget {
-
-class CursorTreeAdapter : public BaseExpandableListAdapter
+class CursorTreeAdapter
+    : public BaseExpandableListAdapter
+    , public ICursorTreeAdapter
+    , public IFilterable
+    , public ICursorFilterClient
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CursorTreeAdapter();
+
     /**
      * Constructor. The adapter will call {@link Cursor#requery()} on the cursor whenever
      * it changes so that the most recent data is always displayed.
      *
      * @param cursor The cursor from which to get the data for the groups.
      */
-    CursorTreeAdapter(
+    CARAPI constructor(
         /* [in] */ ICursor* cursor,
         /* [in] */ IContext* context);
 
@@ -51,13 +59,11 @@ public:
      *        on the cursor whenever it changes so the most recent data is
      *        always displayed.
      */
-    CursorTreeAdapter(
+    CARAPI constructor(
         /* [in] */ ICursor* cursor,
         /* [in] */ IContext* context,
         /* [in] */ Boolean autoRequery);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
     /**
      * Sets the group Cursor.
      *
@@ -80,43 +86,53 @@ public:
         /* [in] */ Int32 groupPosition,
         /* [in] */ ICursor* childrenCursor);
 
-    virtual CARAPI_(AutoPtr<ICursor>) GetChild(
+    virtual CARAPI GetChild(
         /* [in] */ Int32 groupPosition,
-        /* [in] */ Int32 childPosition);
+        /* [in] */ Int32 childPosition,
+        /* [out] */ ICursor** cursor);
 
-    virtual CARAPI_(Int64) GetChildId(
+    virtual CARAPI GetChildId(
         /* [in] */ Int32 groupPosition,
-        /* [in] */ Int32 childPosition);
+        /* [in] */ Int32 childPosition,
+        /* [out] */ Int64* id);
 
-    virtual CARAPI_(Int32) GetChildrenCount(
-        /* [in] */ Int32 groupPosition);
+    virtual CARAPI GetChildrenCount(
+        /* [in] */ Int32 groupPosition,
+        /* [out] */ Int32* count);
 
-    virtual CARAPI_(AutoPtr<ICursor>) GetGroup(
-        /* [in] */ Int32 groupPosition);
+    virtual CARAPI GetGroup(
+        /* [in] */ Int32 groupPosition,
+        /* [out] */ ICursor** cursor);
 
-    virtual CARAPI_(Int32) GetGroupCount();
+    virtual CARAPI GetGroupCount(
+        /* [out] */ Int32* count);
 
-    virtual CARAPI_(Int64) GetGroupId(
-        /* [in] */ Int32 groupPosition);
+    virtual CARAPI GetGroupId(
+        /* [in] */ Int32 groupPosition,
+        /* [out] */ Int64* id);
 
-    virtual CARAPI_(AutoPtr<IView>) GetGroupView(
+    virtual CARAPI GetGroupView(
         /* [in] */ Int32 groupPosition,
         /* [in] */ Boolean isExpanded,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    virtual CARAPI_(AutoPtr<IView>) GetChildView(
+    virtual CARAPI GetChildView(
         /* [in] */ Int32 groupPosition,
         /* [in] */ Int32 childPosition,
         /* [in] */ Boolean isLastChild,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    virtual CARAPI_(Boolean) IsChildSelectable(
+    virtual CARAPI IsChildSelectable(
         /* [in] */ Int32 groupPosition,
-        /* [in] */ Int32 childPosition);
+        /* [in] */ Int32 childPosition,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) HasStableIds();
+    virtual CARAPI HasStableIds(
+        /* [out] */ Boolean* result);
 
     virtual CARAPI NotifyDataSetChanged();
 
@@ -147,21 +163,25 @@ public:
     /**
      * @see CursorAdapter#convertToString(Cursor)
      */
-    virtual CARAPI_(String) ConvertToString(
-        /* [in] */ ICursor* cursor);
+    virtual CARAPI ConvertToString(
+        /* [in] */ ICursor* cursor,
+        /* [out] */ ICharSequence** str);
 
     /**
      * @see CursorAdapter#runQueryOnBackgroundThread(CharSequence)
      */
-    virtual CARAPI_(AutoPtr<ICursor>) RunQueryOnBackgroundThread(
-        /* [in] */ ICharSequence* constraint);
+    virtual CARAPI RunQueryOnBackgroundThread(
+        /* [in] */ ICharSequence* constraint,
+        /* [out] */ ICursor** cursor);
 
-    virtual CARAPI_(AutoPtr<IFilter>) GetFilter();
+    virtual CARAPI GetFilter(
+        /* [out] */ IFilter** filter);
 
     /**
      * @see CursorAdapter#getFilterQueryProvider()
      */
-    virtual CARAPI_(AutoPtr<IFilterQueryProvider>) GetFilterQueryProvider();
+    virtual CARAPI GetFilterQueryProvider(
+        /* [out] */ IFilterQueryProvider** provider);
 
     /**
      * @see CursorAdapter#setFilterQueryProvider(FilterQueryProvider)
@@ -178,12 +198,10 @@ public:
     /**
      * @see CursorAdapter#getCursor()
      */
-    virtual CARAPI_(AutoPtr<ICursor>) GetCursor();
-
+    virtual CARAPI GetCursor(
+        /* [out] */ ICursor** cursor);
 
 protected:
-    CursorTreeAdapter();
-
     /**
      * Gets the Cursor for the children at the given group. Subclasses must
      * implement this method to return the children data for a particular group.
@@ -285,7 +303,7 @@ private:
      */
 
 protected:
-    class MyCursorHelper : public ElRefBase
+    class MyCursorHelper : public Object
     {
     public:
         MyCursorHelper(
@@ -325,12 +343,11 @@ protected:
 
         private:
             MyCursorHelper* mOwner;
-
         };
 
         class MyDataSetObserver
-            : public IDataSetObserver
-            , public ElRefBase
+            : public Object
+            , public IDataSetObserver
         {
         public:
             CAR_INTERFACE_DECL()
@@ -393,4 +410,5 @@ private:
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-#endif
+
+#endif // __ELASTOS_DROID_WIDGET_CURSORTREEADAPTER_H__

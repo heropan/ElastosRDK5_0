@@ -1,19 +1,28 @@
-#ifndef __ELASTOS_DROID_WIDGET_RESOURCECURSORTREEADAPTER_H__
-#define __ELASTOS_DROID_WIDGET_RESOURCECURSORTREEADAPTER_H__
+
+#ifndef  __ELASTOS_DROID_WIDGET_RESOURCECURSORTREEADAPTER_H__
+#define  __ELASTOS_DROID_WIDGET_RESOURCECURSORTREEADAPTER_H__
+
 #include "elastos/droid/widget/CursorTreeAdapter.h"
-/**
- * A fairly simple ExpandableListAdapter that creates views defined in an XML
- * file. You can specify the XML file that defines the appearance of the views.
- */
+
 using Elastos::Droid::View::ILayoutInflater;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ResourceCursorTreeAdapter : public CursorTreeAdapter
+/**
+ * A fairly simple ExpandableListAdapter that creates views defined in an XML
+ * file. You can specify the XML file that defines the appearance of the views.
+ */
+class ResourceCursorTreeAdapter
+    : public CursorTreeAdapter
+    , public IResourceCursorTreeAdapter
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    ResourceCursorTreeAdapter();
+
     /**
      * Constructor.
      *
@@ -29,14 +38,13 @@ public:
      * @param lastChildLayout resource identifier of a layout file that defines
      *            the views for the last child of a group.
      */
-     ResourceCursorTreeAdapter(
+     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
         /* [in] */ Int32 collapsedGroupLayout,
         /* [in] */ Int32 expandedGroupLayout,
         /* [in] */ Int32 childLayout,
         /* [in] */ Int32 lastChildLayout);
-
 
     /**
      * Constructor.
@@ -51,7 +59,7 @@ public:
      * @param childLayout resource identifier of a layout file that defines the
      *            views for all children.
      */
-    ResourceCursorTreeAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
         /* [in] */ Int32 collapsedGroupLayout,
@@ -69,56 +77,25 @@ public:
      * @param childLayout resource identifier of a layout file that defines the
      *            views for all children.
      */
-    ResourceCursorTreeAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
         /* [in] */ Int32 groupLayout,
         /* [in] */ Int32 childLayout);
 
-    virtual CARAPI_(AutoPtr<IView>) NewChildView(
+    virtual CARAPI NewChildView(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
         /* [in] */ Boolean isLastChild,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    virtual CARAPI_(AutoPtr<IView>) NewGroupView(
+    virtual CARAPI NewGroupView(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
         /* [in] */ Boolean isExpanded,
-        /* [in] */ IViewGroup* parent);
-
-protected:
-    ResourceCursorTreeAdapter();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ICursor* cursor,
-        /* [in] */ Int32 collapsedGroupLayout,
-        /* [in] */ Int32 expandedGroupLayout,
-        /* [in] */ Int32 childLayout,
-        /* [in] */ Int32 lastChildLayout);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ICursor* cursor,
-        /* [in] */ Int32 collapsedGroupLayout,
-        /* [in] */ Int32 expandedGroupLayout,
-        /* [in] */ Int32 childLayout);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ICursor* cursor,
-        /* [in] */ Int32 groupLayout,
-        /* [in] */ Int32 childLayout);
-private:
-    CARAPI InitSelf(
-        /* [in] */ IContext* context,
-        /* [in] */ ICursor* cursor,
-        /* [in] */ Int32 collapsedGroupLayout,
-        /* [in] */ Int32 expandedGroupLayout,
-        /* [in] */ Int32 childLayout,
-        /* [in] */ Int32 lastChildLayout);
-
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
 private:
      Int32 mCollapsedGroupLayout;
@@ -126,11 +103,10 @@ private:
      Int32 mChildLayout;
      Int32 mLastChildLayout;
      AutoPtr<ILayoutInflater> mInflater;
-
-
 };
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-#endif
+
+#endif // __ELASTOS_DROID_WIDGET_RESOURCECURSORTREEADAPTER_H__

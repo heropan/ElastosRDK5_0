@@ -954,7 +954,7 @@ ECode AnimatorSet::Clone(
         }
     }
 
-    *object = (IInterface*)newObject->Probe(EIID_IInterface);
+    *object = newObject->Probe(EIID_IAnimatorSet);
     REFCOUNT_ADD(*object);
     return NOERROR;
 }

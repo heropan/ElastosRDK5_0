@@ -347,7 +347,7 @@ ECode ObjectAnimator::Clone(
     anim->mTarget = mTarget;
     anim->mPropertyName = mPropertyName;
     anim->mProperty = mProperty;
-    *object = (IInterface*)newObject->Probe(EIID_IInterface);
+    *object = newObject->Probe(EIID_IObjectAnimator);
     REFCOUNT_ADD(*object);
     return NOERROR;
 }

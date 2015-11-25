@@ -980,7 +980,7 @@ ECode ValueAnimator::Clone(
     CValueAnimator::NewByFriend((CValueAnimator**)&newObject);
     CloneSuperData(newObject.Get());
     CloneInternal(newObject);
-    *object = (IInterface*)newObject->Probe(EIID_IInterface);
+    *object = newObject->Probe(EIID_IValueAnimator);
     REFCOUNT_ADD(*object)
     return NOERROR;
 }

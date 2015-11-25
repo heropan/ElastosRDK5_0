@@ -27,6 +27,17 @@ module
             [in] Boolean isLastChild,
             [in] IViewGroup* parent,
             [out] IView** view);
+
+        /**
+         * Instantiates a new View for a group.
+         * @param isExpanded Whether the group is currently expanded.
+         * @param parent The eventual parent of this new View.
+         * @return A new group View
+         */
+        NewGroupView(
+            [in] Boolean isExpanded,
+            [in] IViewGroup* parent,
+            [out] IView** view);
     }
 
     } // namespace Widget

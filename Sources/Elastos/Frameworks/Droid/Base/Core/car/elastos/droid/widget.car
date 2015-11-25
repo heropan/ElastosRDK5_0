@@ -125,6 +125,8 @@ module
     merge("widget/RemoteViewsListAdapter.car");
     merge("widget/Toolbar.car");
     merge("widget/ActionMenuPresenter.car");
+    merge("widget/SimpleMonthView.car");
+    merge("widget/SimpleMonthAdapter.car");
 
    //  using interface Elastos.Core.ICharSequence;
    using interface Elastos.Utility.IList;
@@ -132,7 +134,7 @@ module
     interface Elastos.Droid.Content.IContext;
    //  interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Utility.IAttributeSet;
-   //  interface Elastos.Droid.Database.ICursor;
+    interface Elastos.Droid.Database.ICursor;
    //  interface Elastos.Droid.Database.IDataSetObserver;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
    //  interface Elastos.Droid.Graphics.Drawable.IBitmapDrawable;
@@ -1464,28 +1466,46 @@ module
         interface IFilterable;
     }
 
-   //  [local, deprecated]
-   //  class CSimpleCursorAdapter {
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] Int32 layout,
-   //          [in] ICursor* c,
-   //          [in] ArrayOf<String>* from,
-   //          [in] ArrayOf<Int32>* to);
+    [local, deprecated]
+    class CSimpleCursorAdapter {
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 layout,
+            [in] ICursor* c,
+            [in] ArrayOf<String>* from,
+            [in] ArrayOf<Int32>* to);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] Int32 layout,
-   //          [in] ICursor* c,
-   //          [in] ArrayOf<String>* from,
-   //          [in] ArrayOf<Int32>* to,
-   //          [in] Int32 flags);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 layout,
+            [in] ICursor* c,
+            [in] ArrayOf<String>* from,
+            [in] ArrayOf<Int32>* to,
+            [in] Int32 flags);
 
-   //      interface ISimpleCursorAdapter;
-   //      interface IFilterable;
-   //      interface ISpinnerAdapter;
-   //      interface ICursorFilterClient;
-   //  }
+        interface ISimpleCursorAdapter;
+        interface IResourceCursorAdapter;
+        interface ICursorAdapter;
+        interface IBaseAdapter;
+        interface IListAdapter;
+        interface IAdapter;
+        interface IFilterable;
+        interface ISpinnerAdapter;
+        interface ICursorFilterClient;
+    }
+
+    class CSimpleMonthAdapter {
+        constructor(
+            [in] IContext* ctx,
+            [in] IDatePickerController* controller);
+
+        interface ISimpleMonthAdapter;
+        interface IBaseAdapter;
+        interface IListAdapter;
+        interface ISpinnerAdapter;
+        interface IAdapter;
+        interface IOnDayClickListener;
+    }
 
    //  [local]
    //  class CProgressBar {
@@ -2155,47 +2175,49 @@ module
    //      interface IStackViewLayoutParams;
    //  }
 
-   //  [local, deprecated]
-   //  class CSimpleExpandableListAdapter {
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IObjectContainer* groupData,
-   //          [in] Int32 groupLayout,
-   //          [in] ArrayOf<String>* groupFrom,
-   //          [in] ArrayOf<Int32>* groupTo,
-   //          [in] IObjectContainer* childData,
-   //          [in] Int32 childLayout,
-   //          [in] ArrayOf<String>* childFrom,
-   //          [in] ArrayOf<Int32>* childTo);
+    [local, deprecated]
+    class CSimpleExpandableListAdapter {
+        constructor(
+            [in] IContext* ctx,
+            [in] IList* groupData,
+            [in] Int32 groupLayout,
+            [in] ArrayOf<String>* groupFrom,
+            [in] ArrayOf<Int32>* groupTo,
+            [in] IList* childData,
+            [in] Int32 childLayout,
+            [in] ArrayOf<String>* childFrom,
+            [in] ArrayOf<Int32>* childTo);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IObjectContainer* groupData,
-   //          [in] Int32 expandedGroupLayout,
-   //          [in] Int32 collapsedGroupLayout,
-   //          [in] ArrayOf<String>* groupFrom,
-   //          [in] ArrayOf<Int32>* groupTo,
-   //          [in] IObjectContainer* childData,
-   //          [in] Int32 childLayout,
-   //          [in] ArrayOf<String>* childFrom,
-   //          [in] ArrayOf<Int32>* childTo);
+        constructor(
+            [in] IContext* ctx,
+            [in] IList* groupData,
+            [in] Int32 expandedGroupLayout,
+            [in] Int32 collapsedGroupLayout,
+            [in] ArrayOf<String>* groupFrom,
+            [in] ArrayOf<Int32>* groupTo,
+            [in] IList* childData,
+            [in] Int32 childLayout,
+            [in] ArrayOf<String>* childFrom,
+            [in] ArrayOf<Int32>* childTo);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IObjectContainer* groupData,
-   //          [in] Int32 expandedGroupLayout,
-   //          [in] Int32 collapsedGroupLayout,
-   //          [in] ArrayOf<String>* groupFrom,
-   //          [in] ArrayOf<Int32>* groupTo,
-   //          [in] IObjectContainer* childData,
-   //          [in] Int32 childLayout,
-   //          [in] Int32 lastChildLayout,
-   //          [in] ArrayOf<String>* childFrom,
-   //          [in] ArrayOf<Int32>* childTo);
+        constructor(
+            [in] IContext* ctx,
+            [in] IList* groupData,
+            [in] Int32 expandedGroupLayout,
+            [in] Int32 collapsedGroupLayout,
+            [in] ArrayOf<String>* groupFrom,
+            [in] ArrayOf<Int32>* groupTo,
+            [in] IList* childData,
+            [in] Int32 childLayout,
+            [in] Int32 lastChildLayout,
+            [in] ArrayOf<String>* childFrom,
+            [in] ArrayOf<Int32>* childTo);
 
-   //      interface ISimpleExpandableListAdapter;
-   //      interface IHeterogeneousExpandableList;
-   //  }
+        interface ISimpleExpandableListAdapter;
+        interface IBaseExpandableListAdapter;
+        interface IExpandableListAdapter;
+        interface IHeterogeneousExpandableList;
+    }
 
    //  [local, deprecated]
    //  class CHeaderViewListAdapter {

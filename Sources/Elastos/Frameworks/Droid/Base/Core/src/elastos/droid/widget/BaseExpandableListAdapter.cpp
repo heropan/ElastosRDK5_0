@@ -1,10 +1,15 @@
 
 #include "elastos/droid/widget/BaseExpandableListAdapter.h"
+#include "elastos/droid/database/CDataSetObservable.h"
+
+using Elastos::Droid::Database::CDataSetObservable;
+using Elastos::Droid::Database::IObservable;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(BaseExpandableListAdapter, Object, IBaseExpandableListAdapter);
 BaseExpandableListAdapter::BaseExpandableListAdapter()
 {
     CDataSetObservable::New((IDataSetObservable**)&mDataSetObservable);
@@ -13,35 +18,32 @@ BaseExpandableListAdapter::BaseExpandableListAdapter()
 ECode BaseExpandableListAdapter::RegisterDataSetObserver(
     /* [in] */ IDataSetObserver* observer)
 {
-    mDataSetObservable->RegisterObserver(observer);
+    IObservable::Probe(mDataSetObservable)->RegisterObserver(observer);
     return NOERROR;
 }
 
 ECode BaseExpandableListAdapter::UnregisterDataSetObserver(
     /* [in] */ IDataSetObserver* observer)
 {
-    return mDataSetObservable->UnregisterObserver(observer);
+    return IObservable::Probe(mDataSetObservable)->UnregisterObserver(observer);
 }
 
-/**
- * @see DataSetObservable#notifyInvalidated()
- */
 ECode BaseExpandableListAdapter::NotifyDataSetInvalidated()
 {
     return mDataSetObservable->NotifyInvalidated();
 }
 
-/**
- * @see DataSetObservable#notifyChanged()
- */
 ECode BaseExpandableListAdapter::NotifyDataSetChanged()
 {
     return mDataSetObservable->NotifyChanged();
 }
 
-Boolean BaseExpandableListAdapter::AreAllItemsEnabled()
+ECode BaseExpandableListAdapter::AreAllItemsEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = TRUE;
+    return NOERROR;
 }
 
 ECode BaseExpandableListAdapter::OnGroupCollapsed(
@@ -56,87 +58,67 @@ ECode BaseExpandableListAdapter::OnGroupExpanded(
     return NOERROR;
 }
 
-/**
- * Override this method if you foresee a clash in IDs based on this scheme:
- * <p>
- * Base implementation returns a Int64:
- * <li> bit 0: Whether this ID points to a child (unset) or group (set), so for this method
- *             this bit will be 1.
- * <li> bit 1-31: Lower 31 bits of the groupId
- * <li> bit 32-63: Lower 32 bits of the childId.
- * <p>
- * {@inheritDoc}
- */
-Int64 BaseExpandableListAdapter::GetCombinedChildId(
+ECode BaseExpandableListAdapter::GetCombinedChildId(
     /* [in] */ Int64 groupId,
-    /* [in] */ Int64 childId)
+    /* [in] */ Int64 childId,
+    /* [out] */ Int64* id)
 {
-    return 0x8000000000000000L | ((groupId & 0x7FFFFFFF) << 32) | (childId & 0xFFFFFFFF);
+    VALIDATE_NOT_NULL(id);
+    *id = 0x8000000000000000L | ((groupId & 0x7FFFFFFF) << 32) | (childId & 0xFFFFFFFF);
+    return NOERROR;
 }
 
-/**
- * Override this method if you foresee a clash in IDs based on this scheme:
- * <p>
- * Base implementation returns a Int64:
- * <li> bit 0: Whether this ID points to a child (unset) or group (set), so for this method
- *             this bit will be 0.
- * <li> bit 1-31: Lower 31 bits of the groupId
- * <li> bit 32-63: Lower 32 bits of the childId.
- * <p>
- * {@inheritDoc}
- */
-Int64 BaseExpandableListAdapter::GetCombinedGroupId(
-    /* [in] */ Int64 groupId)
+ECode BaseExpandableListAdapter::GetCombinedGroupId(
+    /* [in] */ Int64 groupId,
+    /* [out] */ Int64* id)
 {
-    return (groupId & 0x7FFFFFFF) << 32;
+    VALIDATE_NOT_NULL(id);
+    *id = (groupId & 0x7FFFFFFF) << 32;
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-Boolean BaseExpandableListAdapter::IsEmpty()
+ECode BaseExpandableListAdapter::IsEmpty(
+    /* [out] */ Boolean* empty)
 {
-    return GetGroupCount() == 0;
+    VALIDATE_NOT_NULL(empty);
+    Int32 count = 0;
+    *empty = (GetGroupCount(&count), count) == 0;
+    return NOERROR;
 }
 
-
-/**
- * {@inheritDoc}
- * @return 0 for any group or child position, since only one child type count is declared.
- */
-Int32 BaseExpandableListAdapter::GetChildType(
+ECode BaseExpandableListAdapter::GetChildType(
     /* [in] */ Int32 groupPosition,
-    /* [in] */ Int32 childPosition)
+    /* [in] */ Int32 childPosition,
+    /* [out] */ Int32* type)
 {
-    return 0;
+    VALIDATE_NOT_NULL(type);
+    *type = 0;
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- * @return 1 as a default value in BaseExpandableListAdapter.
- */
-Int32 BaseExpandableListAdapter::GetChildTypeCount()
+ECode BaseExpandableListAdapter::GetChildTypeCount(
+    /* [out] */ Int32* count)
 {
-    return 1;
+    VALIDATE_NOT_NULL(count);
+    *count = 1;
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- * @return 0 for any groupPosition, since only one group type count is declared.
- */
-Int32 BaseExpandableListAdapter::GetGroupType(
-    /* [in] */ Int32 groupPosition)
+ECode BaseExpandableListAdapter::GetGroupType(
+    /* [in] */ Int32 groupPosition,
+    /* [out] */ Int32* type)
 {
-    return 0;
+    VALIDATE_NOT_NULL(type);
+    *type = 0;
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- * @return 1 as a default value in BaseExpandableListAdapter.
- */
-Int32 BaseExpandableListAdapter::GetGroupTypeCount()
+ECode BaseExpandableListAdapter::GetGroupTypeCount(
+    /* [out] */ Int32* count)
 {
-    return 1;
+    VALIDATE_NOT_NULL(count);
+    *count = 1;
+    return NOERROR;
 }
 
 }// namespace Elastos

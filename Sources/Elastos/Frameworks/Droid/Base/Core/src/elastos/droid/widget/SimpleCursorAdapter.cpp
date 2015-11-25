@@ -1,10 +1,10 @@
 
 #include "elastos/droid/widget/SimpleCursorAdapter.h"
-#include <elastos/StringToIntegral.h>
+#include <elastos/core/StringUtils.h>
 #include "elastos/droid/net/CUriHelper.h"
 
-using Elastos::Core::StringToIntegral;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::StringUtils;
+using Elastos::Core::CString;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Net::IUri;
@@ -13,34 +13,33 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(SimpleCursorAdapter, ResourceCursorAdapter, ISimpleCursorAdapter);
 SimpleCursorAdapter::SimpleCursorAdapter()
     : mStringConversionColumn(-1)
 {
 }
 
-SimpleCursorAdapter::SimpleCursorAdapter(
+ECode SimpleCursorAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 layout,
     /* [in] */ ICursor* c,
     /* [in] */ ArrayOf<String>* from,
     /* [in] */ ArrayOf<Int32>* to)
-    : ResourceCursorAdapter(context, layout, c)
-    , mStringConversionColumn(-1)
- {
-    InitImpl(c, from, to);
+{
+    ResourceCursorAdapter::constructor(context, layout, c);
+    return InitImpl(c, from, to);
 }
 
-SimpleCursorAdapter::SimpleCursorAdapter(
+ECode SimpleCursorAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 layout,
     /* [in] */ ICursor* c,
     /* [in] */ ArrayOf<String>* from,
     /* [in] */ ArrayOf<Int32>* to,
     /* [in] */ Int32 flags)
-    : ResourceCursorAdapter(context, layout, c, flags)
-    , mStringConversionColumn(-1)
 {
-    InitImpl(c, from, to);
+    ResourceCursorAdapter::constructor(context, layout, c, flags);
+    return InitImpl(c, from, to);
 }
 
 ECode SimpleCursorAdapter::InitImpl(
@@ -51,32 +50,9 @@ ECode SimpleCursorAdapter::InitImpl(
     VALIDATE_NOT_NULL(from);
     VALIDATE_NOT_NULL(to);
 
-    mTo = to->Clone();
-    mOriginalFrom = from->Clone();
+    mTo = to;
+    mOriginalFrom = from;
     return FindColumns(c, from);
-}
-
-ECode SimpleCursorAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 layout,
-    /* [in] */ ICursor* c,
-    /* [in] */ ArrayOf<String>* from,
-    /* [in] */ ArrayOf<Int32>* to)
-{
-    ResourceCursorAdapter::Init(context, layout, c);
-    return InitImpl(c, from, to);
-}
-
-ECode SimpleCursorAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 layout,
-    /* [in] */ ICursor* c,
-    /* [in] */ ArrayOf<String>* from,
-    /* [in] */ ArrayOf<Int32>* to,
-    /* [in] */ Int32 flags)
-{
-    ResourceCursorAdapter::Init(context, layout, c, flags);
-    return InitImpl(c, from, to);
 }
 
 ECode SimpleCursorAdapter::BindView(
@@ -122,9 +98,13 @@ ECode SimpleCursorAdapter::BindView(
     return NOERROR;
 }
 
-AutoPtr<ISimpleCursorAdapterViewBinder> SimpleCursorAdapter::GetViewBinder()
+ECode SimpleCursorAdapter::GetViewBinder(
+    /* [out] */ ISimpleCursorAdapterViewBinder** viewBinder)
 {
-    return mViewBinder;
+    VALIDATE_NOT_NULL(viewBinder);
+    *viewBinder = mViewBinder;
+    REFCOUNT_ADD(*viewBinder);
+    return NOERROR;
 }
 
 ECode SimpleCursorAdapter::SetViewBinder(
@@ -140,8 +120,8 @@ ECode SimpleCursorAdapter::SetViewImage(
 {
     VALIDATE_NOT_NULL(v);
 
-    Int32 intVal;
-    ECode ec = StringToIntegral::Parse(value, &intVal);
+    Int32 intVal = 0;
+    ECode ec = StringUtils::Parse(value, &intVal);
     if (SUCCEEDED(ec)) {
         return v->SetImageResource(intVal);
     }
@@ -163,13 +143,16 @@ ECode SimpleCursorAdapter::SetViewText(
     VALIDATE_NOT_NULL(v);
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(text, (ICharSequence**)&seq);
+    CString::New(text, (ICharSequence**)&seq);
     return v->SetText(seq);
 }
 
-Int32 SimpleCursorAdapter::GetStringConversionColumn()
+ECode SimpleCursorAdapter::GetStringConversionColumn(
+    /* [in] */ Int32* column)
 {
-    return mStringConversionColumn;
+    VALIDATE_NOT_NULL(column);
+    *column = mStringConversionColumn;
+    return NOERROR;
 }
 
 ECode SimpleCursorAdapter::SetStringConversionColumn(
@@ -179,9 +162,13 @@ ECode SimpleCursorAdapter::SetStringConversionColumn(
     return NOERROR;
 }
 
-AutoPtr<ICursorToStringConverter> SimpleCursorAdapter::GetCursorToStringConverter()
+ECode SimpleCursorAdapter::GetCursorToStringConverter(
+    /* [out] */ ICursorToStringConverter** converter)
 {
-    return mCursorToStringConverter;
+    VALIDATE_NOT_NULL(converter);
+    *converter = mCursorToStringConverter;
+    REFCOUNT_ADD(*converter);
+    return NOERROR;
 }
 
 ECode SimpleCursorAdapter::SetCursorToStringConverter(
@@ -191,29 +178,27 @@ ECode SimpleCursorAdapter::SetCursorToStringConverter(
     return NOERROR;
 }
 
-AutoPtr<ICharSequence> SimpleCursorAdapter::ConvertToString(
-    /* [in] */ ICursor* cursor)
+ECode SimpleCursorAdapter::ConvertToString(
+    /* [in] */ ICursor* cursor,
+    /* [out] */ ICharSequence** seq)
 {
-    AutoPtr<ICharSequence> seq;
     if (mCursorToStringConverter != NULL) {
-        mCursorToStringConverter->ConvertToString(cursor, (ICharSequence**)&seq);
-        return seq;
+        return mCursorToStringConverter->ConvertToString(cursor, seq);
     }
     else if (mStringConversionColumn > -1) {
         String str;
         cursor->GetString(mStringConversionColumn, &str);
-        CStringWrapper::New(str, (ICharSequence**)&seq);
-        return seq;
+        return CString::New(str, seq);
     }
 
-    return ResourceCursorAdapter::ConvertToString(cursor);
+    return ResourceCursorAdapter::ConvertToString(cursor, seq);
 }
 
 ECode SimpleCursorAdapter::FindColumns(
     /* [in] */ ICursor* c,
     /* [in] */ ArrayOf<String>* from)
 {
-    if (c != NULL && from != NULL) {
+    if (c != NULL) {
         Int32 count = from->GetLength();
         if (mFrom == NULL || mFrom->GetLength() != count) {
             mFrom = NULL;
@@ -230,14 +215,16 @@ ECode SimpleCursorAdapter::FindColumns(
     return NOERROR;
 }
 
-AutoPtr<ICursor> SimpleCursorAdapter::SwapCursor(
-    /* [in] */ ICursor* c)
+ECode SimpleCursorAdapter::SwapCursor(
+    /* [in] */ ICursor* c,
+    /* [out] */ ICursor** cursor)
 {
+    VALIDATE_NOT_NULL(cursor);
     // super.swapCursor() will notify observers before we have
     // a valid mapping, make sure we have a mapping before this
     // happens
     FindColumns(c, mOriginalFrom);
-    return ResourceCursorAdapter::SwapCursor(c);
+    return ResourceCursorAdapter::SwapCursor(c, cursor);
 }
 
 ECode SimpleCursorAdapter::ChangeCursorAndColumns(
@@ -246,11 +233,9 @@ ECode SimpleCursorAdapter::ChangeCursorAndColumns(
     /* [in] */ ArrayOf<Int32>* to)
 {
     mOriginalFrom = NULL;
+    mOriginalFrom = from;
     mTo = NULL;
-    if (from)
-        mOriginalFrom = from->Clone();
-    if (to)
-        mTo = to->Clone();
+    mTo = to;
 
     // super.changeCursor() will notify observers before we have
     // a valid mapping, make sure we have a mapping before this
@@ -259,8 +244,6 @@ ECode SimpleCursorAdapter::ChangeCursorAndColumns(
     return ResourceCursorAdapter::ChangeCursor(c);
 }
 
-
-}// namespace Elastos
-}// namespace Droid
-}// namespace Widget
-
+} // namespace Elastos
+} // namespace Droid
+} // namespace Widget

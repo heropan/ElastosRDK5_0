@@ -32,9 +32,13 @@ namespace Widget {
  * {@link #convertToString(android.database.Cursor)} and
  * {@link #runQueryOnBackgroundThread(CharSequence)} for more information.
  */
-class SimpleCursorAdapter : public ResourceCursorAdapter
+class SimpleCursorAdapter
+    : public ResourceCursorAdapter
+    , public ISimpleCursorAdapter
 {
 public:
+    CAR_INTERFACE_DECL();
+
     SimpleCursorAdapter();
 
     /**
@@ -45,7 +49,7 @@ public:
      * responsiveness or even Application Not Responding errors.  As an alternative,
      * use {@link android.app.LoaderManager} with a {@link android.content.CursorLoader}.
      */
-    SimpleCursorAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 layout,
         /* [in] */ ICursor* c,
@@ -70,7 +74,7 @@ public:
      * @param flags Flags used to determine the behavior of the adapter,
      * as per {@link CursorAdapter#CursorAdapter(Context, Cursor, Int32)}.
      */
-    SimpleCursorAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 layout,
         /* [in] */ ICursor* c,
@@ -115,7 +119,8 @@ public:
      * @see #bindView(android.view.View, android.content.Context, android.database.Cursor)
      * @see #setViewBinder(android.widget.SimpleCursorAdapter.ViewBinder)
      */
-    CARAPI_(AutoPtr<ISimpleCursorAdapterViewBinder>) GetViewBinder();
+    virtual CARAPI GetViewBinder(
+        /* [out] */ ISimpleCursorAdapterViewBinder** viewBinder);
 
     /**
      * Sets the binder used to bind data to views.
@@ -126,7 +131,7 @@ public:
      * @see #bindView(android.view.View, android.content.Context, android.database.Cursor)
      * @see #getViewBinder()
      */
-    CARAPI SetViewBinder(
+    virtual CARAPI SetViewBinder(
         /* [in] */ ISimpleCursorAdapterViewBinder* viewBinder);
 
     /**
@@ -144,7 +149,7 @@ public:
      * @param v ImageView to receive an image
      * @param value the value retrieved from the cursor
      */
-    CARAPI SetViewImage(
+    virtual CARAPI SetViewImage(
         /* [in] */ IImageView* v,
         /* [in] */ const String& value);
 
@@ -159,7 +164,7 @@ public:
      * @param v TextView to receive text
      * @param text the text to be set for the TextView
      */
-    CARAPI SetViewText(
+    virtual CARAPI SetViewText(
         /* [in] */ ITextView* v,
         /* [in] */ const String& text);
 
@@ -174,7 +179,8 @@ public:
      * @see #setCursorToStringConverter(android.widget.SimpleCursorAdapter.CursorToStringConverter)
      * @see #getCursorToStringConverter()
      */
-    Int32 GetStringConversionColumn();
+    virtual CARAPI GetStringConversionColumn(
+        /* [in] */ Int32* column);
 
     /**
      * Defines the index of the column in the Cursor used to get a String
@@ -190,7 +196,7 @@ public:
      * @see #setCursorToStringConverter(android.widget.SimpleCursorAdapter.CursorToStringConverter)
      * @see #getCursorToStringConverter()
      */
-    CARAPI SetStringConversionColumn(
+    virtual CARAPI SetStringConversionColumn(
         /* [in] */ Int32 stringConversionColumn);
 
     /**
@@ -205,7 +211,8 @@ public:
      * @see #setStringConversionColumn(Int32)
      * @see android.widget.CursorAdapter#convertToString(android.database.Cursor)
      */
-    CARAPI_(AutoPtr<ICursorToStringConverter>) GetCursorToStringConverter();
+    virtual CARAPI GetCursorToStringConverter(
+        /* [out] */ ICursorToStringConverter** converter);
 
     /**
      * Sets the converter  used to convert the filtering Cursor
@@ -219,7 +226,7 @@ public:
      * @see #setStringConversionColumn(Int32)
      * @see android.widget.CursorAdapter#convertToString(android.database.Cursor)
      */
-    CARAPI SetCursorToStringConverter(
+    virtual CARAPI SetCursorToStringConverter(
         /* [in] */ ICursorToStringConverter* cursorToStringConverter);
 
     /**
@@ -233,11 +240,13 @@ public:
      *
      * @return a non-null CharSequence representing the cursor
      */
-    virtual CARAPI_(AutoPtr<ICharSequence>) ConvertToString(
-        /* [in] */ ICursor* cursor);
+    virtual CARAPI ConvertToString(
+        /* [in] */ ICursor* cursor,
+        /* [out] */ ICharSequence** str);
 
-    virtual CARAPI_(AutoPtr<ICursor>) SwapCursor(
-        /* [in] */ ICursor* c);
+    virtual CARAPI SwapCursor(
+        /* [in] */ ICursor* c,
+        /* [out] */ ICursor** cursor);
 
     /**
      * Change the cursor and change the column-to-view mappings at the same time.
@@ -256,21 +265,6 @@ public:
         /* [in] */ ArrayOf<Int32>* to);
 
 protected:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 layout,
-        /* [in] */ ICursor* c,
-        /* [in] */ ArrayOf<String>* from,
-        /* [in] */ ArrayOf<Int32>* to);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 layout,
-        /* [in] */ ICursor* c,
-        /* [in] */ ArrayOf<String>* from,
-        /* [in] */ ArrayOf<Int32>* to,
-        /* [in] */ Int32 flags);
-
     CARAPI InitImpl(
         /* [in] */ ICursor* c,
         /* [in] */ ArrayOf<String>* from,
@@ -311,9 +305,8 @@ private:
     AutoPtr<ArrayOf<String> > mOriginalFrom;
 };
 
-
-}// namespace Elastos
-}// namespace Droid
-}// namespace Widget
+} // namespace Elastos
+} // namespace Droid
+} // namespace Widget
 
 #endif // __ELASTOS_DROID_WIDGET_SIMPLECURSORADAPTER_H__

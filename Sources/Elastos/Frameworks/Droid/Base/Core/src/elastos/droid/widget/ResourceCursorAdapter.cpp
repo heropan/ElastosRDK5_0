@@ -1,47 +1,43 @@
+
 #include "elastos/droid/widget/ResourceCursorAdapter.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(ResourceCursorAdapter, CursorAdapter, IResourceCursorAdapter);
 ResourceCursorAdapter::ResourceCursorAdapter()
     : mLayout(0)
     , mDropDownLayout(0)
 {}
 
-ResourceCursorAdapter::ResourceCursorAdapter(
+ECode ResourceCursorAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 layout,
     /* [in] */ ICursor* c)
-    : CursorAdapter(context, c)
-    , mLayout(0)
-    , mDropDownLayout(0)
 {
-    InitImpl(context, layout);
+    CursorAdapter::constructor(context, c);
+    return InitImpl(context, layout);
 }
 
-ResourceCursorAdapter::ResourceCursorAdapter(
+ECode ResourceCursorAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 layout,
     /* [in] */ ICursor* c,
     /* [in] */ Boolean autoRequery)
-    : CursorAdapter(context, c, autoRequery)
-    , mLayout(0)
-    , mDropDownLayout(0)
 {
-    InitImpl(context, layout);
+    CursorAdapter::constructor(context, c, autoRequery);
+    return InitImpl(context, layout);
 }
 
-ResourceCursorAdapter::ResourceCursorAdapter(
+ECode ResourceCursorAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 layout,
     /* [in] */ ICursor* c,
     /* [in] */ Int32 flags)
-    : CursorAdapter(context, c, flags)
-    , mLayout(0)
-    , mDropDownLayout(0)
 {
-    InitImpl(context, layout);
+    CursorAdapter::constructor(context, c, flags);
+    return InitImpl(context, layout);
 }
 
 ECode ResourceCursorAdapter::InitImpl(
@@ -51,57 +47,27 @@ ECode ResourceCursorAdapter::InitImpl(
     VALIDATE_NOT_NULL(context);
 
     mLayout = mDropDownLayout = layout;
-    return context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE,
-        (IInterface**)&mInflater);
+    return context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
 }
 
-ECode ResourceCursorAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 layout,
-    /* [in] */ ICursor* c)
-{
-    CursorAdapter::Init(context, c);
-    return InitImpl(context, layout);
-}
-
-ECode ResourceCursorAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 layout,
-    /* [in] */ ICursor* c,
-    /* [in] */ Boolean autoRequery)
-{
-    CursorAdapter::Init(context, c, autoRequery);
-    return InitImpl(context, layout);
-}
-
-ECode ResourceCursorAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 layout,
-    /* [in] */ ICursor* c,
-    /* [in] */ Int32 flags)
-{
-    CursorAdapter::Init(context, c, flags);
-    return InitImpl(context, layout);
-}
-
-AutoPtr<IView> ResourceCursorAdapter::NewView(
+ECode ResourceCursorAdapter::NewView(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* cursor,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    AutoPtr<IView> view;
-    mInflater->Inflate(mLayout, parent, FALSE, (IView**)&view);
-    return view;
+    VALIDATE_NOT_NULL(view);
+    return mInflater->Inflate(mLayout, parent, FALSE, view);
 }
 
-AutoPtr<IView> ResourceCursorAdapter::NewDropDownView(
+ECode ResourceCursorAdapter::NewDropDownView(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* cursor,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    AutoPtr<IView> view;
-    mInflater->Inflate(mDropDownLayout, parent, FALSE, (IView**)&view);
-    return view;
+    VALIDATE_NOT_NULL(view);
+    return mInflater->Inflate(mDropDownLayout, parent, FALSE, view);
 }
 
 ECode ResourceCursorAdapter::SetViewResource(
@@ -118,6 +84,6 @@ ECode ResourceCursorAdapter::SetDropDownViewResource(
     return NOERROR;
 }
 
-}// namespace Elastos
-}// namespace Droid
-}// namespace Widget
+} // namespace Elastos
+} // namespace Droid
+} // namespace Widget
