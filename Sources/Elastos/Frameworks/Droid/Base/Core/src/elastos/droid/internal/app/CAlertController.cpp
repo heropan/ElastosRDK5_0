@@ -1,34 +1,39 @@
 
+#include "elastos/droid/internal/app/CAlertController.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/droid/R.h"
-#include "elastos/droid/os/CMessageHelper.h"
-#include "elastos/droid/app/CAlertController.h"
-#include "elastos/droid/view/CViewGroupLayoutParams.h"
-#include "elastos/droid/utility/CTypedValue.h"
-#include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::R;
-using Elastos::Droid::Utility::ITypedValue;
-using Elastos::Droid::Utility::CTypedValue;
-using Elastos::Droid::Os::EIID_IHandler;
+using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::Content::EIID_IDialogInterface;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::CMessageHelper;
-using Elastos::Droid::Content::EIID_IDialogInterface;
-using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::View::EIID_IViewOnApplyWindowInsetsListener;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::View::EIID_IViewGroup;
-using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
+using Elastos::Droid::View::LayoutInflater;
+using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Droid::Widget::IAbsListView;
+using Elastos::Droid::Widget::IAdapter;
+using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IFrameLayout;
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
-using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -38,76 +43,12 @@ namespace App {
 //==============================================================================
 //                  CAlertController::ButtonViewOnClickListener
 //==============================================================================
-const Int32 CAlertController::ButtonHandler::MSG_DISMISS_DIALOG = 1;
-
-CAlertController::ButtonHandler::ButtonHandler(
-    /* [in] */ IDialogInterface* dialog)
-{
-    Slogger::V("CAlertController", " >> create ButtonHandler(): %p", this);
-
-    AutoPtr<IWeakReferenceSource> wr = IWeakReferenceSource::Probe(dialog);
-    if (wr) {
-        wr->GetWeakReference((IWeakReference**)&mDialog);
-    }
-}
-
-CAlertController::ButtonHandler::~ButtonHandler()
-{
-    Slogger::V("CAlertController", " >> destory ButtonHandler(): %p", this);
-}
-
-ECode CAlertController::ButtonHandler::HandleMessage(
-    /* [in] */ IMessage* msg)
-{
-    Int32 what;
-    msg->GetWhat(&what);
-    switch (what) {
-        case IDialogInterface::BUTTON_POSITIVE:
-        case IDialogInterface::BUTTON_NEGATIVE:
-        case IDialogInterface::BUTTON_NEUTRAL: {
-            AutoPtr<IInterface> obj;
-            msg->GetObj((IInterface**)&obj);
-            IDialogInterfaceOnClickListener* listener = IDialogInterfaceOnClickListener::Probe(obj);
-            if (listener) {
-                AutoPtr<IDialogInterface> dialog;
-                mDialog->Resolve(EIID_IDialogInterface, (IInterface**)&dialog);
-                listener->OnClick(dialog, what);
-            }
-            break;
-        }
-
-        case MSG_DISMISS_DIALOG: {
-            AutoPtr<IInterface> obj;
-            msg->GetObj((IInterface**)&obj);
-            CAlertController* ac = (CAlertController*)IAlertController::Probe(obj);
-            ac->mDialogInterface->Dismiss();
-            // TODO
-            // AutoPtr<IDialogInterface> dialog;
-            // ac->mWeakDialogInterface->Resolve(EIID_IDialogInterface, (IInterface**)&obj);
-            // if (dialog) {
-            //     dialog->Dismiss();
-            // }
-            break;
-        }
-    }
-    return NOERROR;
-}
-
-//==============================================================================
-//                  CAlertController::ButtonViewOnClickListener
-//==============================================================================
-CAR_INTERFACE_IMPL(CAlertController::ButtonViewOnClickListener, IViewOnClickListener);
+CAR_INTERFACE_IMPL(CAlertController::ButtonViewOnClickListener, Object, IViewOnClickListener);
 
 CAlertController::ButtonViewOnClickListener::ButtonViewOnClickListener(
     /* [in] */ IWeakReference* host)
     : mWeakHost(host)
 {
-    Slogger::V("CAlertController", " >> create ButtonViewOnClickListener(): %p", this);
-}
-
-CAlertController::ButtonViewOnClickListener::~ButtonViewOnClickListener()
-{
-    Slogger::V("CAlertController", " >> destory ~ButtonViewOnClickListener(): %p", this);
 }
 
 ECode CAlertController::ButtonViewOnClickListener::OnClick(
@@ -140,10 +81,147 @@ ECode CAlertController::ButtonViewOnClickListener::OnClick(
 
     // Post a message so we dismiss after the above handlers are executed
     AutoPtr<IMessage> msg;
-    helper->Obtain(mHost->mHandler, ButtonHandler::MSG_DISMISS_DIALOG,
-        ac->Probe(EIID_IAlertController), (IMessage**)&msg);
+    helper->Obtain(mHost->mHandler, ButtonHandler::MSG_DISMISS_DIALOG, ac, (IMessage**)&msg);
     msg->SendToTarget();
 
+    return NOERROR;
+}
+
+//==============================================================================
+//                  CAlertController::ButtonHandler
+//==============================================================================
+const Int32 CAlertController::ButtonHandler::MSG_DISMISS_DIALOG = 1;
+
+CAlertController::ButtonHandler::ButtonHandler(
+    /* [in] */ IDialogInterface* dialog)
+{
+    AutoPtr<IWeakReferenceSource> wr = IWeakReferenceSource::Probe(dialog);
+    if (wr) {
+        wr->GetWeakReference((IWeakReference**)&mDialog);
+    }
+}
+
+ECode CAlertController::ButtonHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    Int32 what;
+    msg->GetWhat(&what);
+    switch (what) {
+        case IDialogInterface::BUTTON_POSITIVE:
+        case IDialogInterface::BUTTON_NEGATIVE:
+        case IDialogInterface::BUTTON_NEUTRAL: {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
+            IDialogInterfaceOnClickListener* listener = IDialogInterfaceOnClickListener::Probe(obj);
+            if (listener) {
+                AutoPtr<IDialogInterface> dialog;
+                mDialog->Resolve(EIID_IDialogInterface, (IInterface**)&dialog);
+                listener->OnClick(dialog, what);
+            }
+            break;
+        }
+
+        case MSG_DISMISS_DIALOG: {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
+            IDialogInterface::Probe(obj)->Dismiss();
+            break;
+        }
+    }
+    return NOERROR;
+}
+
+//==============================================================================
+//                  CAlertController::OnApplyWindowInsetsListener
+//==============================================================================
+CAR_INTERFACE_IMPL(CAlertController::OnApplyWindowInsetsListener, Object, IViewOnApplyWindowInsetsListener);
+
+CAlertController::OnApplyWindowInsetsListener::OnApplyWindowInsetsListener(
+    /* [in] */ CAlertController* host)
+    : mHost(host)
+{}
+
+// @Override
+ECode CAlertController::OnApplyWindowInsetsListener::OnApplyWindowInsets(
+    /* [in] */ IView* view,
+    /* [in] */ IWindowInsets* insets,
+    /* [out] */ IWindowInsets** outsets)
+{
+    AutoPtr<IView> parent;
+    mHost->mWindow->FindViewById(R::id::parentPanel, (IView**)&parent);
+
+    Boolean isRound;
+    if (insets->IsRound(&isRound), isRound) {
+        // TODO: Get the padding as a function of the window size.
+        AutoPtr<IResources> res;
+        mHost->mContext->GetResources((IResources**)&res);
+        Int32 roundOffset;
+        res->GetDimensionPixelOffset(
+            R::dimen::alert_dialog_round_padding, &roundOffset);
+        parent->SetPadding(roundOffset, roundOffset, roundOffset, roundOffset);
+    }
+    return insets->ConsumeSystemWindowInsets(outsets);
+}
+
+//==============================================================================
+//                  CAlertController::RecycleListView
+//==============================================================================
+
+// CAR_INTERFACE_IMPL(CAlertController::RecycleListView, ListView, IRecycleListView);
+CAR_INTERFACE_IMPL(CAlertController::RecycleListView, Object, IRecycleListView);
+
+CAlertController::RecycleListView::RecycleListView()
+    : mRecycleOnMeasure(TRUE)
+{
+}
+
+ECode CAlertController::RecycleListView::constructor(
+    /* [in] */ IContext* context)
+{
+    assert(0);
+    return NOERROR;
+    // return ListView::constructor(context);
+}
+
+ECode CAlertController::RecycleListView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    assert(0);
+    return NOERROR;
+    // return ListView::constructor(context, attrs);
+}
+
+ECode CAlertController::RecycleListView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    assert(0);
+    return NOERROR;
+    // return ListView::constructor(context, attrs, defStyleAttr,);
+}
+
+ECode CAlertController::RecycleListView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    assert(0);
+    return NOERROR;
+    // return ListView::constructor(context, attrs, defStyleAttr, defStyleRes);
+}
+
+Boolean CAlertController::RecycleListView::RecycleOnMeasure()
+{
+    return mRecycleOnMeasure;
+}
+
+ECode CAlertController::RecycleListView::SetRecycleOnMeasure(
+    /* [in] */ Boolean recycleOnMeasure)
+{
+    mRecycleOnMeasure = recycleOnMeasure;
     return NOERROR;
 }
 
@@ -151,27 +229,34 @@ ECode CAlertController::ButtonViewOnClickListener::OnClick(
 //                  CAlertController
 //==============================================================================
 
+CAR_INTERFACE_IMPL(CAlertController, Object, IAlertController)
+
+CAR_OBJECT_IMPL(CAlertController)
+
 CAlertController::CAlertController()
-    : mViewSpacingLeft(0)
+    : mViewLayoutResId(0)
+    , mViewSpacingLeft(0)
     , mViewSpacingTop(0)
     , mViewSpacingRight(0)
     , mViewSpacingBottom(0)
     , mViewSpacingSpecified(FALSE)
-    , mIconId(-1)
+    , mIconId(0)
     , mForceInverseBackground(FALSE)
     , mCheckedItem(-1)
     , mAlertDialogLayout(0)
+    , mButtonPanelSideLayout(0)
     , mListLayout(0)
     , mMultiChoiceItemLayout(0)
     , mSingleChoiceItemLayout(0)
     , mListItemLayout(0)
+    , mButtonPanelLayoutHint(IAlertDialog::LAYOUT_HINT_NONE)
 {
-    Slogger::V("CAlertController", " >> create CAlertController(): %p", this);
+    // Slogger::V("CAlertController", " >> create CAlertController(): %p", this);
 }
 
 CAlertController::~CAlertController()
 {
-    Slogger::V("CAlertController", " >> destory ~CAlertController(): %p", this);
+    // Slogger::V("CAlertController", " >> destory ~CAlertController(): %p", this);
 }
 
 Boolean CAlertController::ShouldCenterSingleButton(
@@ -194,10 +279,7 @@ ECode CAlertController::constructor(
     /* [in] */ IWindow* window)
 {
     mContext = context;
-    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(di);
-    assert(wrs != NULL && "Error: Invalid dialog interface, IWeakReferenceSource not implemented!");
-    // wrs->GetWeakReference((IWeakReference**)&mWeakDialogInterface);
-    mDialogInterface = di;  // TODO memery leak. luo.zhaohui
+    mDialogInterface = di;
     mWindow = window;
     mHandler = new ButtonHandler(di);
     AutoPtr<IWeakReference> wr;
@@ -213,6 +295,8 @@ ECode CAlertController::constructor(
     assert(a != NULL);
     a->GetResourceId(R::styleable::AlertDialog_layout,
             R::layout::alert_dialog, &mAlertDialogLayout);
+    a->GetResourceId(R::styleable::AlertDialog_buttonPanelSideLayout,
+            R::layout::alert_dialog, &mButtonPanelSideLayout);
     a->GetResourceId(
             R::styleable::AlertDialog_listLayout,
             R::layout::select_dialog, &mListLayout);
@@ -227,62 +311,6 @@ ECode CAlertController::constructor(
             R::layout::select_dialog_item, &mListItemLayout);
 
     a->Recycle();
-    return NOERROR;
-}
-
-ECode CAlertController::GetDialogInterface(
-    /* [out] */ IDialogInterface** dialog)
-{
-    VALIDATE_NOT_NULL(dialog);
-    *dialog = mDialogInterface;
-    REFCOUNT_ADD(*dialog);
-    return NOERROR;
-    // return mWeakDialogInterface->Resolve(EIID_IDialogInterface, (IInterface**)dialog);
-}
-
-ECode CAlertController::GetSingleChoiceItemLayout(
-    /* [out] */ Int32* layout)
-{
-    VALIDATE_NOT_NULL(layout);
-    *layout = mSingleChoiceItemLayout;
-    return NOERROR;
-}
-
-ECode CAlertController::GetMultiChoiceItemLayout(
-    /* [out] */ Int32* layout)
-{
-    VALIDATE_NOT_NULL(layout);
-    *layout = mMultiChoiceItemLayout;
-    return NOERROR;
-}
-
-ECode CAlertController::GetListLayout(
-    /* [out] */ Int32* layout)
-{
-    VALIDATE_NOT_NULL(layout);
-    *layout = mListLayout;
-    return NOERROR;
-}
-
-ECode CAlertController::GetListItemLayout(
-    /* [out] */ Int32* layout)
-{
-    VALIDATE_NOT_NULL(layout);
-    *layout = mListItemLayout;
-    return NOERROR;
-}
-
-ECode CAlertController::SetAdapter(
-    /* [in] */ IListAdapter* adapter)
-{
-    mAdapter = adapter;
-    return NOERROR;
-}
-
-ECode CAlertController::SetCheckedItem(
-    /* [in] */ Int32 checkedItem)
-{
-    mCheckedItem = checkedItem;
     return NOERROR;
 }
 
@@ -320,16 +348,23 @@ ECode CAlertController::InstallContent()
     /* We use a custom title so never request a window title */
     Boolean result;
     mWindow->RequestFeature(IWindow::FEATURE_NO_TITLE, &result);
-
-    if (mView == NULL || !CanTextInput(mView)) {
-        mWindow->SetFlags(IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM,
-                IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM);
-    }
-
-    mWindow->SetContentView(mAlertDialogLayout);
-
+    Int32 contentView = SelectContentView();
+    mWindow->SetContentView(contentView);
     SetupView();
+    SetupDecor();
     return NOERROR;
+}
+
+Int32 CAlertController::SelectContentView()
+{
+    if (mButtonPanelSideLayout == 0) {
+        return mAlertDialogLayout;
+    }
+    if (mButtonPanelLayoutHint == IAlertDialog::LAYOUT_HINT_SIDE) {
+        return mButtonPanelSideLayout;
+    }
+    // TODO: use layout hint side for long messages/lists
+    return mAlertDialogLayout;
 }
 
 ECode CAlertController::SetTitle(
@@ -360,9 +395,19 @@ ECode CAlertController::SetMessage(
 }
 
 ECode CAlertController::SetView(
+    /* [in] */ Int32 layoutResId)
+{
+    mView = NULL;
+    mViewLayoutResId = layoutResId;
+    mViewSpacingSpecified = FALSE;
+    return NOERROR;
+}
+
+ECode CAlertController::SetView(
        /* [in] */ IView* view)
 {
     mView = view;
+    mViewLayoutResId = 0;
     mViewSpacingSpecified = FALSE;
     return NOERROR;
 }
@@ -375,11 +420,19 @@ ECode CAlertController::SetView(
     /* [in] */ Int32 viewSpacingBottom)
 {
     mView = view;
+    mViewLayoutResId = 0;
     mViewSpacingSpecified = TRUE;
     mViewSpacingLeft = viewSpacingLeft;
     mViewSpacingTop = viewSpacingTop;
     mViewSpacingRight = viewSpacingRight;
     mViewSpacingBottom = viewSpacingBottom;
+    return NOERROR;
+}
+
+ECode CAlertController::SetButtonPanelLayoutHint(
+    /* [in] */ Int32 layoutHint)
+{
+    mButtonPanelLayoutHint = layoutHint;
     return NOERROR;
 }
 
@@ -398,19 +451,16 @@ ECode CAlertController::SetButton(
         case IDialogInterface::BUTTON_POSITIVE:
             mButtonPositiveText = text;
             mButtonPositiveMessage = msg;
-            mButtonPositiveClickListener = listener;
             break;
 
         case IDialogInterface::BUTTON_NEGATIVE:
             mButtonNegativeText = text;
             mButtonNegativeMessage = msg;
-            mButtonNegativeClickListener = listener;
             break;
 
         case IDialogInterface::BUTTON_NEUTRAL:
             mButtonNeutralText = text;
             mButtonNeutralMessage = msg;
-            mButtonNeutralClickListener = listener;
             break;
 
         default:
@@ -424,12 +474,15 @@ ECode CAlertController::SetButton(
 ECode CAlertController::SetIcon(
    /* [in] */ Int32 resId)
 {
+    mIcon = NULL;
     mIconId = resId;
+
     if (mIconView != NULL) {
-        if (resId > 0) {
+        if (resId != 0) {
             mIconView->SetImageResource(mIconId);
-        } else if (resId == 0) {
-            mIconView->SetVisibility(IView::GONE);
+        }
+        else {
+            IView::Probe(mIconView)->SetVisibility(IView::GONE);
         }
     }
     return NOERROR;
@@ -439,8 +492,15 @@ ECode CAlertController::SetIcon(
    /* [in] */ IDrawable* icon)
 {
     mIcon = icon;
-    if ((mIconView != NULL) && (mIcon != NULL)) {
-        mIconView->SetImageDrawable(icon);
+    mIconId = 0;
+
+    if (mIconView != NULL) {
+        if (mIcon != NULL) {
+            mIconView->SetImageDrawable(icon);
+        }
+        else {
+            IView::Probe(mIconView)->SetVisibility(IView::GONE);
+        }
     }
     return NOERROR;
 }
@@ -500,8 +560,7 @@ ECode CAlertController::GetButton(
             *button = mButtonNeutral;
             break;
         default:
-            Slogger::E("CAlertController", "GetButton: Button does not exist");
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            break;
     }
 
     REFCOUNT_ADD(*button);
@@ -515,8 +574,7 @@ ECode CAlertController::OnKeyDown(
 {
     VALIDATE_NOT_NULL(result);
     Boolean handled;
-    mScrollView->ExecuteKeyEvent(event, &handled);
-    *result = mScrollView != NULL && handled;
+    *result = mScrollView != NULL && (mScrollView->ExecuteKeyEvent(event, &handled), handled);
     return NOERROR;
 }
 
@@ -527,25 +585,34 @@ ECode CAlertController::OnKeyUp(
 {
     VALIDATE_NOT_NULL(result);
     Boolean handled;
-    mScrollView->ExecuteKeyEvent(event, &handled);
-    *result = mScrollView != NULL && handled;
+    *result = mScrollView != NULL && (mScrollView->ExecuteKeyEvent(event, &handled), handled);
     return NOERROR;
+}
+
+void CAlertController::SetupDecor()
+{
+    AutoPtr<IView> decor;
+    mWindow->GetDecorView((IView**)&decor);
+    AutoPtr<IView> parent;
+    mWindow->FindViewById(R::id::parentPanel, (IView**)&parent);
+    if (parent != NULL && decor != NULL) {
+        AutoPtr<OnApplyWindowInsetsListener> listener = new OnApplyWindowInsetsListener(this);
+        decor->SetOnApplyWindowInsetsListener(listener);
+        decor->SetFitsSystemWindows(TRUE);
+        decor->RequestApplyInsets();
+    }
 }
 
 void CAlertController::SetupView()
 {
-    AutoPtr<IView> tempView;
-    mWindow->FindViewById(R::id::contentPanel, (IView**)&tempView);
-    AutoPtr<ILinearLayout> contentPanel = ILinearLayout::Probe(tempView);
-    assert(contentPanel != NULL);
-
-    SetupContent(contentPanel);
+    AutoPtr<IView> contentPanel;
+    mWindow->FindViewById(R::id::contentPanel, (IView**)&contentPanel);
+    SetupContent(ILinearLayout::Probe(contentPanel));
 
     Boolean hasButtons = SetupButtons();
 
-    tempView = NULL;
-    mWindow->FindViewById(R::id::topPanel, (IView**)&tempView);
-    AutoPtr<ILinearLayout> topPanel = ILinearLayout::Probe(tempView);
+    AutoPtr<IView> topPanel;
+    mWindow->FindViewById(R::id::topPanel, (IView**)&topPanel);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::AlertDialog),
@@ -554,54 +621,75 @@ void CAlertController::SetupView()
     mContext->ObtainStyledAttributes(
         NULL, attrIds, R::attr::alertDialogStyle, 0, (ITypedArray**)&a);
 
-    Boolean hasTitle = SetupTitle(topPanel);
+    Boolean hasTitle = SetupTitle(ILinearLayout::Probe(topPanel));
 
     AutoPtr<IView> buttonPanel;
     mWindow->FindViewById(R::id::buttonPanel, (IView**)&buttonPanel);
     if (!hasButtons) {
         buttonPanel->SetVisibility(IView::GONE);
+        AutoPtr<IView> spacer;
+        mWindow->FindViewById(R::id::textSpacerNoButtons, (IView**)&spacer);
+        if (spacer != NULL) {
+            spacer->SetVisibility(IView::VISIBLE);
+        }
         mWindow->SetCloseOnTouchOutsideIfNotSet(TRUE);
     }
 
-    AutoPtr<IFrameLayout> customPanel;
+    AutoPtr<IView> customPanel;
+    mWindow->FindViewById(R::id::customPanel, (IView**)&customPanel);
+    AutoPtr<IView> customView;
     if (mView != NULL) {
-        tempView = NULL;
-        mWindow->FindViewById(R::id::customPanel, (IView**)&tempView);
-        customPanel = IFrameLayout::Probe(tempView);
+         customView = mView;
+    }
+    else if (mViewLayoutResId != 0) {
+        AutoPtr<ILayoutInflater> inflater;
+        LayoutInflater::From(mContext, (ILayoutInflater**)&inflater);
+        inflater->Inflate(mViewLayoutResId, IViewGroup::Probe(customPanel), FALSE, (IView**)&customView);
+    }
+    else {
+        customView = NULL;
+    }
 
-        tempView = NULL;
+    Boolean hasCustomView = customView != NULL;
+    if (!hasCustomView || !CanTextInput(customView)) {
+        mWindow->SetFlags(IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM,
+            IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM);
+    }
+
+    if (hasCustomView) {
+        AutoPtr<IView> tempView;
         mWindow->FindViewById(R::id::custom, (IView**)&tempView);
         AutoPtr<IFrameLayout> custom = IFrameLayout::Probe(tempView);
 
         AutoPtr<IViewGroupLayoutParams> lParams;
         CViewGroupLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::MATCH_PARENT,
                 (IViewGroupLayoutParams**)&lParams);
-        custom->AddView(mView, lParams);
+        IViewGroup::Probe(custom)->AddView(customView, lParams);
         if (mViewSpacingSpecified) {
-            custom->SetPadding(mViewSpacingLeft, mViewSpacingTop, mViewSpacingRight,
+            IView::Probe(custom)->SetPadding(mViewSpacingLeft, mViewSpacingTop, mViewSpacingRight,
                     mViewSpacingBottom);
         }
         if (mListView != NULL) {
-            AutoPtr<ILinearLayoutLayoutParams> vglParams;
-            customPanel->GetLayoutParams((IViewGroupLayoutParams**)&vglParams);
+            AutoPtr<IViewGroupLayoutParams> vlp;
+            customPanel->GetLayoutParams((IViewGroupLayoutParams**)&vlp);
+            AutoPtr<ILinearLayoutLayoutParams> vglParams = ILinearLayoutLayoutParams::Probe(vlp);
             vglParams->SetWeight(0);
         }
     }
     else {
-        tempView = NULL;
-        mWindow->FindViewById(R::id::customPanel, (IView**)&tempView);
-        AutoPtr<IFrameLayout> fLayout = IFrameLayout::Probe(tempView);
-        fLayout->SetVisibility(IView::GONE);
+        customPanel->SetVisibility(IView::GONE);
     }
+
 
     /* Only display the divider if we have a title and a
      * custom view or a message.
      */
     if (hasTitle) {
         AutoPtr<IView> divider;
-        if (mMessage != NULL || mView != NULL || mListView != NULL) {
+        if (mMessage != NULL || customView != NULL || mListView != NULL) {
             mWindow->FindViewById(R::id::titleDivider, (IView**)&divider);
-        } else {
+        }
+        else {
             mWindow->FindViewById(R::id::titleDividerTop, (IView**)&divider);
         }
 
@@ -610,8 +698,8 @@ void CAlertController::SetupView()
         }
     }
 
-    SetBackground(topPanel, contentPanel, customPanel, hasButtons, a, hasTitle, buttonPanel);
-
+    SetBackground(a, topPanel, contentPanel, customPanel,
+        buttonPanel, hasTitle, hasCustomView, hasButtons);
     a->Recycle();
 }
 
@@ -622,12 +710,12 @@ Boolean CAlertController::SetupTitle(
 
     if (mCustomTitleView != NULL) {
         // Add the custom title view directly to the topPanel layout
-        AutoPtr<ILinearLayoutLayoutParams> lp;
+        AutoPtr<IViewGroupLayoutParams> lp;
         CLinearLayoutLayoutParams::New(
-                ILinearLayoutLayoutParams::MATCH_PARENT, ILinearLayoutLayoutParams::WRAP_CONTENT,
-                (ILinearLayoutLayoutParams**)&lp);
+            IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
+            (IViewGroupLayoutParams**)&lp);
 
-        topPanel->AddView(mCustomTitleView, 0, lp);
+        IViewGroup::Probe(topPanel)->AddView(mCustomTitleView, 0, lp);
 
         // Hide the title template
         AutoPtr<IView> titleTemplate;
@@ -635,18 +723,17 @@ Boolean CAlertController::SetupTitle(
         titleTemplate->SetVisibility(IView::GONE);
     }
     else {
-        Boolean hasTextTitle = !TextUtils::IsEmpty(mTitle);
-
-        AutoPtr<IView> tmpView;
-        mWindow->FindViewById(R::id::icon, (IView**)&tmpView);
-        mIconView = IImageView::Probe(tmpView.Get());
+        AutoPtr<IView> iconView;
+        mWindow->FindViewById(R::id::icon, (IView**)&iconView);
+        mIconView = IImageView::Probe(iconView.Get());
         assert(mIconView != NULL);
 
+        Boolean hasTextTitle = !TextUtils::IsEmpty(mTitle);
         if (hasTextTitle) {
             /* Display the title if a title is supplied, else hide it */
-            tmpView = NULL;
-            mWindow->FindViewById(R::id::alertTitle, (IView**)&tmpView);
-            mTitleView = ITextView::Probe(tmpView.Get());
+            AutoPtr<IView> titleView;
+            mWindow->FindViewById(R::id::alertTitle, (IView**)&titleView);
+            mTitleView = ITextView::Probe(titleView.Get());
             assert(mTitleView != NULL);
             mTitleView->SetText(mTitle);
 
@@ -654,23 +741,23 @@ Boolean CAlertController::SetupTitle(
              * icons we use them instead of the default ones. If the
              * user has specified 0 then make it disappear.
              */
-            if (mIconId > 0) {
+            if (mIconId != 0) {
                 mIconView->SetImageResource(mIconId);
             }
             else if (mIcon != NULL) {
                 mIconView->SetImageDrawable(mIcon);
             }
-            else if (mIconId == 0) {
+            else {
                 /* Apply the padding from the icon to ensure the
                  * title is aligned correctly.
                  */
                 Int32 left, top, right, bottom;
-                mIconView->GetPaddingLeft(&left);
-                mIconView->GetPaddingTop(&top);
-                mIconView->GetPaddingRight(&right);
-                mIconView->GetPaddingBottom(&bottom);
-                mTitleView->SetPadding(left, top, right, bottom);
-                mIconView->SetVisibility(IView::GONE);
+                iconView->GetPaddingLeft(&left);
+                iconView->GetPaddingTop(&top);
+                iconView->GetPaddingRight(&right);
+                iconView->GetPaddingBottom(&bottom);
+                titleView->SetPadding(left, top, right, bottom);
+                iconView->SetVisibility(IView::GONE);
             }
         }
         else {
@@ -678,8 +765,8 @@ Boolean CAlertController::SetupTitle(
             AutoPtr<IView> titleTemplate;
             mWindow->FindViewById(R::id::title_template, (IView**)&titleTemplate);
             titleTemplate->SetVisibility(IView::GONE);
-            mIconView->SetVisibility(IView::GONE);
-            topPanel->SetVisibility(IView::GONE);
+            iconView->SetVisibility(IView::GONE);
+            IView::Probe(topPanel)->SetVisibility(IView::GONE);
             hasTitle = FALSE;
         }
     }
@@ -689,16 +776,16 @@ Boolean CAlertController::SetupTitle(
 void CAlertController::SetupContent(
     /* [in] */ ILinearLayout* contentPanel)
 {
-    AutoPtr<IView> tmpView;
-    mWindow->FindViewById(R::id::scrollView, (IView**)&tmpView);
-    mScrollView = IScrollView::Probe(tmpView.Get());
+    AutoPtr<IView> scrollView;
+    mWindow->FindViewById(R::id::scrollView, (IView**)&scrollView);
+    mScrollView = IScrollView::Probe(scrollView.Get());
     assert(mScrollView != NULL);
-    mScrollView->SetFocusable(FALSE);
+    scrollView->SetFocusable(FALSE);
 
     // Special case for users that only want to display a String
-    tmpView = NULL;
-    mWindow->FindViewById(R::id::message, (IView**)&tmpView);
-    mMessageView = ITextView::Probe(tmpView.Get());
+    AutoPtr<IView> messageView;
+    mWindow->FindViewById(R::id::message, (IView**)&messageView);
+    mMessageView = ITextView::Probe(messageView.Get());
     if (mMessageView == NULL) {
         return;
     }
@@ -707,25 +794,23 @@ void CAlertController::SetupContent(
         mMessageView->SetText(mMessage);
     }
     else {
-        mMessageView->SetVisibility(IView::GONE);
-        mScrollView->RemoveViewInLayout(mMessageView);
+        messageView->SetVisibility(IView::GONE);
+        IViewGroup::Probe(mScrollView)->RemoveViewInLayout(messageView);
 
         if (mListView != NULL) {
-            contentPanel->RemoveViewInLayout(mScrollView);
+            IViewGroup::Probe(contentPanel)->RemoveViewInLayout(scrollView);
 
-            Int32 lp = ILinearLayoutLayoutParams::MATCH_PARENT;
-            AutoPtr<ILinearLayoutLayoutParams> linearParams;
-            CLinearLayoutLayoutParams::New(lp, lp, (ILinearLayoutLayoutParams**)&linearParams);
-            contentPanel->AddView(
-                IView::Probe(mListView.Get()),
-                IViewGroupLayoutParams::Probe(linearParams.Get()));
+            Int32 lp = IViewGroupLayoutParams::MATCH_PARENT;
+            AutoPtr<IViewGroupLayoutParams> linearParams;
+            CLinearLayoutLayoutParams::New(lp, lp, (IViewGroupLayoutParams**)&linearParams);
+            IViewGroup::Probe(contentPanel)->AddView(IView::Probe(mListView), linearParams);
 
-            AutoPtr<ILinearLayoutLayoutParams> lParams;
-            CLinearLayoutLayoutParams::New(lp, lp, 1.0f, (ILinearLayoutLayoutParams**)&lParams);
-            contentPanel->SetLayoutParams(lParams);
+            AutoPtr<IViewGroupLayoutParams> lParams;
+            CLinearLayoutLayoutParams::New(lp, lp, 1.0f, (IViewGroupLayoutParams**)&lParams);
+            IView::Probe(contentPanel)->SetLayoutParams(lParams);
         }
         else {
-            contentPanel->SetVisibility(IView::GONE);
+            IView::Probe(contentPanel)->SetVisibility(IView::GONE);
         }
     }
 }
@@ -737,44 +822,47 @@ Boolean CAlertController::SetupButtons()
     Int32 BIT_BUTTON_NEUTRAL = 4;
     Int32 whichButtons = 0;
 
-    AutoPtr<IView> tempView;
-    mWindow->FindViewById(R::id::button1, (IView**)&tempView);
-    mButtonPositive = IButton::Probe(tempView);
+    AutoPtr<IView> buttonPositive;
+    mWindow->FindViewById(R::id::button1, (IView**)&buttonPositive);
+    mButtonPositive = IButton::Probe(buttonPositive);
     assert(mButtonPositive != NULL);
-    mButtonPositive->SetOnClickListener(mButtonHandler);
+    buttonPositive->SetOnClickListener(mButtonHandler);
 
     if (TextUtils::IsEmpty(mButtonPositiveText)) {
-        mButtonPositive->SetVisibility(IView::GONE);
-    } else {
-        mButtonPositive->SetText(mButtonPositiveText);
-        mButtonPositive->SetVisibility(IView::VISIBLE);
+        buttonPositive->SetVisibility(IView::GONE);
+    }
+    else {
+        ITextView::Probe(mButtonPositive)->SetText(mButtonPositiveText);
+        buttonPositive->SetVisibility(IView::VISIBLE);
         whichButtons = whichButtons | BIT_BUTTON_POSITIVE;
     }
 
-    tempView = NULL;
-    mWindow->FindViewById(R::id::button2, (IView**)&tempView);
-    mButtonNegative = IButton::Probe(tempView);
-    mButtonNegative->SetOnClickListener(mButtonHandler);
+    AutoPtr<IView> buttonNegative;
+    mWindow->FindViewById(R::id::button2, (IView**)&buttonNegative);
+    mButtonNegative = IButton::Probe(buttonNegative);
+    buttonNegative->SetOnClickListener(mButtonHandler);
 
     if (TextUtils::IsEmpty(mButtonNegativeText)) {
-        mButtonNegative->SetVisibility(IView::GONE);
-    } else {
-        mButtonNegative->SetText(mButtonNegativeText);
-        mButtonNegative->SetVisibility(IView::VISIBLE);
+        buttonNegative->SetVisibility(IView::GONE);
+    }
+    else {
+        ITextView::Probe(mButtonNegative)->SetText(mButtonNegativeText);
+        buttonNegative->SetVisibility(IView::VISIBLE);
 
         whichButtons = whichButtons | BIT_BUTTON_NEGATIVE;
     }
 
-    tempView = NULL;
-    mWindow->FindViewById(R::id::button3, (IView**)&tempView);
-    mButtonNeutral = IButton::Probe(tempView);
-    mButtonNeutral->SetOnClickListener(mButtonHandler);
+    AutoPtr<IView> buttonNeutral;
+    mWindow->FindViewById(R::id::button3, (IView**)&buttonNeutral);
+    mButtonNeutral = IButton::Probe(buttonNeutral);
+    buttonNeutral->SetOnClickListener(mButtonHandler);
 
     if (TextUtils::IsEmpty(mButtonNeutralText)) {
-        mButtonNeutral->SetVisibility(IView::GONE);
-    } else {
-        mButtonNeutral->SetText(mButtonNeutralText);
-        mButtonNeutral->SetVisibility(IView::VISIBLE);
+        buttonNeutral->SetVisibility(IView::GONE);
+    }
+    else {
+        ITextView::Probe(mButtonNeutral)->SetText(mButtonNeutralText);
+        buttonNeutral->SetVisibility(IView::VISIBLE);
 
         whichButtons = whichButtons | BIT_BUTTON_NEUTRAL;
     }
@@ -786,9 +874,11 @@ Boolean CAlertController::SetupButtons()
          */
         if (whichButtons == BIT_BUTTON_POSITIVE) {
             CenterButton(mButtonPositive);
-        } else if (whichButtons == BIT_BUTTON_NEGATIVE) {
-            CenterButton(mButtonNeutral);
-        } else if (whichButtons == BIT_BUTTON_NEUTRAL) {
+        }
+        else if (whichButtons == BIT_BUTTON_NEGATIVE) {
+            CenterButton(mButtonNegative);
+        }
+        else if (whichButtons == BIT_BUTTON_NEUTRAL) {
             CenterButton(mButtonNeutral);
         }
     }
@@ -799,11 +889,12 @@ Boolean CAlertController::SetupButtons()
 void CAlertController::CenterButton(
     /* [in] */ IButton* button)
 {
-    AutoPtr<ILinearLayoutLayoutParams> params;
-    button->GetLayoutParams((IViewGroupLayoutParams**)&params);
+    AutoPtr<IViewGroupLayoutParams> lp;
+    IView::Probe(button)->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+    AutoPtr<ILinearLayoutLayoutParams> params = ILinearLayoutLayoutParams::Probe(lp);
     params->SetGravity(IGravity::CENTER_HORIZONTAL);
     params->SetWeight(0.5f);
-    button->SetLayoutParams(params);
+    IView::Probe(button)->SetLayoutParams(lp);
     AutoPtr<IView> leftSpacer;
     mWindow->FindViewById(R::id::leftSpacer, (IView**)&leftSpacer);
     if (leftSpacer != NULL) {
@@ -817,42 +908,47 @@ void CAlertController::CenterButton(
 }
 
 void CAlertController::SetBackground(
-    /* [in] */ ILinearLayout* topPanel,
-    /* [in] */ ILinearLayout* contentPanel,
-    /* [in] */ IView* customPanel,
-    /* [in] */ Boolean hasButtons,
     /* [in] */ ITypedArray* a,
+    /* [in] */ IView* topPanel,
+    /* [in] */ IView* contentPanel,
+    /* [in] */ IView* customPanel,
+    /* [in] */ IView* buttonPanel,
     /* [in] */ Boolean hasTitle,
-    /* [in] */ IView* buttonPanel)
+    /* [in] */ Boolean hasCustomView,
+    /* [in] */ Boolean hasButtons)
 {
-    /* Get all the different background required */
-    Int32 fullDark;
-    a->GetResourceId(
-            R::styleable::AlertDialog_fullDark,  R::drawable::popup_full_dark, &fullDark);
-    Int32 topDark;
-    a->GetResourceId(
-            R::styleable::AlertDialog_topDark,  R::drawable::popup_top_dark, &topDark);
-    Int32 centerDark;
-    a->GetResourceId(
-            R::styleable::AlertDialog_centerDark,  R::drawable::popup_center_dark, &centerDark);
-    Int32 bottomDark;
-    a->GetResourceId(
-            R::styleable::AlertDialog_bottomDark,  R::drawable::popup_bottom_dark, &bottomDark);
-    Int32 fullBright;
-    a->GetResourceId(
-            R::styleable::AlertDialog_fullBright,  R::drawable::popup_full_bright, &fullBright);
-    Int32 topBright;
-    a->GetResourceId(
-            R::styleable::AlertDialog_topBright,  R::drawable::popup_top_bright, &topBright);
-    Int32 centerBright;
-    a->GetResourceId(
-            R::styleable::AlertDialog_centerBright,  R::drawable::popup_center_bright, &centerBright);
-    Int32 bottomBright;
-    a->GetResourceId(
-            R::styleable::AlertDialog_bottomBright,  R::drawable::popup_bottom_bright, &bottomBright);
-    Int32 bottomMedium;
-    a->GetResourceId(
-            R::styleable::AlertDialog_bottomMedium,  R::drawable::popup_bottom_medium, &bottomMedium);
+    Int32 fullDark = 0;
+    Int32 topDark = 0;
+    Int32 centerDark = 0;
+    Int32 bottomDark = 0;
+    Int32 fullBright = 0;
+    Int32 topBright = 0;
+    Int32 centerBright = 0;
+    Int32 bottomBright = 0;
+    Int32 bottomMedium = 0;
+
+    // If the needsDefaultBackgrounds attribute is set, we know we're
+    // inheriting from a framework style.
+    Boolean needsDefaultBackgrounds;
+    a->GetBoolean(
+        R::styleable::AlertDialog_needsDefaultBackgrounds, TRUE, &needsDefaultBackgrounds);
+
+    if (needsDefaultBackgrounds) {
+        fullDark = R::drawable::popup_full_dark;
+        topDark = R::drawable::popup_top_dark;
+        centerDark = R::drawable::popup_center_dark;
+        bottomDark = R::drawable::popup_bottom_dark;
+        fullBright = R::drawable::popup_full_bright;
+        topBright = R::drawable::popup_top_bright;
+        centerBright = R::drawable::popup_center_bright;
+        bottomBright = R::drawable::popup_bottom_bright;
+        bottomMedium = R::drawable::popup_bottom_medium;
+    }
+
+    a->GetResourceId(R::styleable::AlertDialog_topBright, topBright, &topBright);
+    a->GetResourceId(R::styleable::AlertDialog_topDark, topDark, &topDark);
+    a->GetResourceId(R::styleable::AlertDialog_centerBright, centerBright, &centerBright);
+    a->GetResourceId(R::styleable::AlertDialog_centerDark, centerDark, &centerDark);
 
     /*
      * We now set the background of all of the sections of the alert.
@@ -884,17 +980,19 @@ void CAlertController::SetBackground(
     contentPanel->GetVisibility(&visibility);
     if (visibility == IView::GONE) {
         views->Set(pos, NULL);
-    } else {
+    }
+    else {
         views->Set(pos, contentPanel);
     }
-
     (*light)[pos] = mListView != NULL;
     pos++;
-    if (customPanel != NULL) {
+
+    if (hasCustomView) {
         views->Set(pos, customPanel);
         (*light)[pos] = mForceInverseBackground;
         pos++;
     }
+
     if (hasButtons) {
         views->Set(pos, buttonPanel);
         (*light)[pos] = TRUE;
@@ -909,7 +1007,8 @@ void CAlertController::SetBackground(
         if (lastView != NULL) {
             if (!setView) {
                 lastView->SetBackgroundResource(lastLight ? topBright : topDark);
-            } else {
+            }
+            else {
                 lastView->SetBackgroundResource(lastLight ? centerBright : centerDark);
             }
             setView = TRUE;
@@ -920,47 +1019,35 @@ void CAlertController::SetBackground(
 
     if (lastView != NULL) {
         if (setView) {
+            a->GetResourceId(R::styleable::AlertDialog_bottomBright,
+                bottomBright, &bottomBright);
+            a->GetResourceId(R::styleable::AlertDialog_bottomMedium,
+                bottomMedium, &bottomMedium);
+            a->GetResourceId(R::styleable::AlertDialog_bottomDark,
+                bottomDark, &bottomDark);
 
             /* ListViews will use the Bright background but buttons use
              * the Medium background.
              */
             lastView->SetBackgroundResource(
                     lastLight ? (hasButtons ? bottomMedium : bottomBright) : bottomDark);
-        } else {
+        }
+        else {
+            a->GetResourceId(R::styleable::AlertDialog_fullBright,
+                fullBright, &fullBright);
+            a->GetResourceId(R::styleable::AlertDialog_fullDark,
+                fullDark, &fullDark);
+
             lastView->SetBackgroundResource(lastLight ? fullBright : fullDark);
         }
     }
 
-    /* TODO: uncomment section below. The logic for this should be if
-     * it's a Contextual menu being displayed AND only a Cancel button
-     * is shown then do this.
-     */
-    //      if (hasButtons && (mListView != null)) {
-
-        /* Yet another *special* case. If there is a ListView with buttons
-         * don't put the buttons on the bottom but instead put them in the
-         * footer of the ListView this will allow more items to be
-         * displayed.
-         */
-
-        /*
-        contentPanel.setBackgroundResource(bottomBright);
-        buttonPanel.setBackgroundResource(centerMedium);
-        ViewGroup parent = (ViewGroup) mWindow.findViewById(R.id.parentPanel);
-        parent.removeView(buttonPanel);
-        AbsListView.LayoutParams params = new AbsListView.LayoutParams(
-                AbsListView.LayoutParams.MATCH_PARENT,
-                AbsListView.LayoutParams.MATCH_PARENT);
-        buttonPanel.setLayoutParams(params);
-        mListView.addFooterView(buttonPanel);
-        */
-    //    }
-
-    if ((mListView != NULL) && (mAdapter != NULL)) {
-        mListView->SetAdapter(mAdapter);
+    AutoPtr<IAdapterView> listView = IAdapterView::Probe(mListView);
+    if (listView != NULL && mAdapter != NULL) {
+        listView->SetAdapter(IAdapter::Probe(mAdapter));
         if (mCheckedItem > -1) {
-            mListView->SetItemChecked(mCheckedItem, TRUE);
-            mListView->SetSelection(mCheckedItem);
+            IAbsListView::Probe(listView)->SetItemChecked(mCheckedItem, TRUE);
+            listView->SetSelection(mCheckedItem);
         }
     }
 }

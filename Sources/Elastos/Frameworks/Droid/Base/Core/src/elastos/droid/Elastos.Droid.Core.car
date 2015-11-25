@@ -18,11 +18,11 @@ module
     merge("../../../car/elastos/droid/view.car");
     merge("../../../car/elastos/droid/hardware.car");
     merge("../../../car/elastos/droid/accessibilityservice.car");
+    merge("../../../car/elastos/droid/widget.car");
     merge("../../../car/elastos/droid/internal/app.car");
     merge("../../../car/elastos/droid/app.car");
     merge("../../../car/elastos/droid/net.car");
     merge("../../../car/elastos/droid/nfc.car");
-    merge("../../../car/elastos/droid/widget.car");
     merge("../../../car/elastos/droid/text2.car");
     merge("../../../car/elastos/droid/gesture.car");
     merge("../../../car/elastos/droid/preference.car");

@@ -2,8 +2,6 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_ALERTACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_ALERTACTIVITY_H__
 
-#include "elastos/droid/app/CAlertControllerAlertParams.h"
-#include "elastos/droid/app/CAlertController.h"
 #include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
@@ -16,23 +14,11 @@ namespace App {
 
 class AlertActivity
     : public Activity
+    , public IAlertActivity
     , public IDialogInterface
 {
 public:
-    AlertActivity()
-        : mAlert(NULL)
-        , mAlertParams(NULL)
-    {}
-
-    virtual ~AlertActivity()
-    {}
-
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    CAR_INTERFACE_DECL()
 
     CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
@@ -40,15 +26,6 @@ public:
     CARAPI Cancel();
 
     CARAPI Dismiss();
-
-    /**
-     * Sets up the alert, including applying the parameters to the alert model,
-     * and installing the alert's content.
-     *
-     * @see #mAlert
-     * @see #mAlertParams
-     */
-    CARAPI_(void) SetupAlert();
 
     CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
@@ -62,16 +39,26 @@ public:
 
 protected:
     /**
+     * Sets up the alert, including applying the parameters to the alert model,
+     * and installing the alert's content.
+     *
+     * @see #mAlert
+     * @see #mAlertParams
+     */
+    virtual CARAPI_(void) SetupAlert();
+
+protected:
+    /**
      * The model for the alert.
      *
      * @see #mAlertParams
      */
-    AutoPtr<CAlertController> mAlert;
+    AutoPtr<IAlertController> mAlert;
 
     /**
      * The parameters for the alert.
      */
-    AutoPtr<CAlertControllerAlertParams> mAlertParams;
+    AutoPtr<IAlertControllerAlertParams> mAlertParams;
 };
 
 } // namespace App

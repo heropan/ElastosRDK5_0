@@ -1,3 +1,4 @@
+DIRS += app
 DIRS += content
 DIRS += database
 DIRS += http

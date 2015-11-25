@@ -1733,33 +1733,6 @@ module
    //  }
 
    //  [local]
-   //  class CRecycleListView {
-   //      constructor(
-   //          [in] IContext* ctx);
-
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
-
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
-
-   //      interface IRecycleListView;
-   //      interface ITextWatcher;
-   //      interface IOnGlobalLayoutListener;
-   //      interface IFilterListener;
-   //      interface IOnTouchModeChangeListener;
-   //      interface IRemoteAdapterConnectionCallback;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
-
-   //  [local]
    //  class CListPopupWindow {
    //      constructor(
    //          [in] IContext* ctx);
