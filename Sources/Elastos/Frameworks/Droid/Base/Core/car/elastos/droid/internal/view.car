@@ -24,10 +24,10 @@ module
     merge("view/menu/SubMenuBuilder.car");
     merge("view/ActionBarPolicy.car");
     // merge("view/BaseIWindow.car");
-    merge("view/IInputContext.car");
+    // merge("view/IInputContext.car");
     merge("view/IInputContextCallback.car");
     merge("view/IInputMethod.car");
-    merge("view/IInputMethodClient.car");
+    // merge("view/IInputMethodClient.car");
     merge("view/IInputMethodManager.car");
     merge("view/IInputMethodSession.car");
     merge("view/IInputSessionCallback.car");

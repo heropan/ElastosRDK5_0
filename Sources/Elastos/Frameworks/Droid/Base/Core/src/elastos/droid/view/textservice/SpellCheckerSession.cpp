@@ -1,11 +1,19 @@
 
+#include "elastos/droid/view/textservice/SpellCheckerSession.h"
+
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Textservice {
 
+//========================================================================================
+//              SpellCheckerSession::
+//========================================================================================
+CAR_INTERFACE_IMPL_2(SpellCheckerSession, Object, ISpellCheckerSession)
+
 const String SpellCheckerSession::TAG;// = SpellCheckerSession.class.getSimpleName();
 const Boolean SpellCheckerSession::DBG = FALSE;
+const String SpellCheckerSession::SERVICE_META_DATA("android.view.textservice.scs");
 const Int32 SpellCheckerSession::MSG_ON_GET_SUGGESTION_MULTIPLE = 1;
 const Int32 SpellCheckerSession::MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE = 2;
 
@@ -14,10 +22,6 @@ const Int32 SpellCheckerSession::SpellCheckerSessionListenerImpl::TASK_GET_SUGGE
 const Int32 SpellCheckerSession::SpellCheckerSessionListenerImpl::TASK_CLOSE = 3;
 const Int32 SpellCheckerSession::SpellCheckerSessionListenerImpl::TASK_GET_SUGGESTIONS_MULTIPLE_FOR_SENTENCE = 4;
 
-/**
- * Constructor
- * @hide
- */
 SpellCheckerSession::SpellCheckerSession(
     /* [in] */ ISpellCheckerInfo* info,
     /* [in] */ ITextServicesManager* tsm,
@@ -44,36 +48,21 @@ void SpellCheckerSession::Init(
     mSubtype = subtype;
 }
 
-/**
- * @return true if the connection to a text service of this session is disconnected and not
- * alive.
- */
 Boolean SpellCheckerSession::IsSessionDisconnected()
 {
     return mSpellCheckerSessionListenerImpl->IsDisconnected();
 }
 
-/**
- * Get the spell checker service info this spell checker session has.
- * @return SpellCheckerInfo for the specified locale.
- */
 AutoPtr<ISpellCheckerInfo> SpellCheckerSession::GetSpellChecker()
 {
     return mSpellCheckerSessionListenerImpl;
 }
 
-/**
- * Cancel pending and running spell check tasks
- */
 void SpellCheckerSession::Cancel()
 {
     mSpellCheckerSessionListenerImpl->Cancel();
 }
 
-/**
- * Finish this session and allow TextServicesManagerService to disconnect the bound spell
- * checker.
- */
 void SpellCheckerSession::Close()
 {
     mIsUsed = FALSE;
@@ -85,11 +74,6 @@ void SpellCheckerSession::Close()
     //}
 }
 
-/**
- * Get suggestions from the specified sentences
- * @param textInfos an array of text metadata for a spell checker
- * @param suggestionsLimit the maximum number of suggestions that will be returned
- */
 void SpellCheckerSession::GetSentenceSuggestions(
     /* [in] */ ArrayOf<ITextInfo*>* textInfos,
     /* [in] */ Int32 suggestionsLimit)
@@ -98,13 +82,6 @@ void SpellCheckerSession::GetSentenceSuggestions(
                 textInfos, suggestionsLimit);
 }
 
-/**
- * Get candidate strings for a substring of the specified text.
- * @param textInfo text metadata for a spell checker
- * @param suggestionsLimit the maximum number of suggestions that will be returned
- * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
- */
-//@Deprecated
 void SpellCheckerSession::GetSuggestions(
     /* [in] */ ITextInfo* textInfo,
     /* [in] */ Int32 suggestionsLimit)
@@ -114,14 +91,6 @@ void SpellCheckerSession::GetSuggestions(
     GetSuggestions(textInfoArray, suggestionsLimit, FALSE);
 }
 
-/**
- * A batch process of getSuggestions
- * @param textInfos an array of text metadata for a spell checker
- * @param suggestionsLimit the maximum number of suggestions that will be returned
- * @param sequentialWords true if textInfos can be treated as sequential words.
- * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
- */
-//@Deprecated
 void SpellCheckerSession::GetSuggestions(
     /* [in] */ ArrayOf<ITextInfo*>* textInfos,
     /* [in] */ Int32 suggestionsLimit,
@@ -134,17 +103,11 @@ void SpellCheckerSession::GetSuggestions(
             textInfos, suggestionsLimit, sequentialWords);
 }
 
-/**
- * @hide
- */
 AutoPtr<ITextServicesSessionListener> SpellCheckerSession::GetTextServicesSessionListener()
 {
     return mInternalListener;
 }
 
-/**
- * @hide
- */
 AutoPtr<ISpellCheckerSessionListener> SpellCheckerSession::GetSpellCheckerSessionListener()
 {
     return mSpellCheckerSessionListenerImpl;
@@ -157,7 +120,6 @@ SpellCheckerSession::SpellCheckerSessionListenerImpl::SpellCheckerSessionListene
     mHandler = handler;
 }
 
-/* synchronized */
 void SpellCheckerSession::SpellCheckerSessionListenerImpl::OnServiceConnected(
     /* [in] */ ISpellCheckerSession* session)
 {
@@ -230,7 +192,6 @@ void SpellCheckerSession::SpellCheckerSessionListenerImpl::OnGetSuggestions(
     }
 }
 
-//@Override
 void SpellCheckerSession::SpellCheckerSessionListenerImpl::OnGetSentenceSuggestions(
     /* [in] */ ArrayOf<ISentenceSuggestionsInfo*>* results)
 {
@@ -351,7 +312,6 @@ SpellCheckerSession::InternalListener::InternalListener(
     mParentSpellCheckerSessionListenerImpl = spellCheckerSessionListenerImpl;
 }
 
-//@Override
 void SpellCheckerSession::InternalListener::OnServiceConnected(
     /* [in] */ ISpellCheckerSession* session)
 {

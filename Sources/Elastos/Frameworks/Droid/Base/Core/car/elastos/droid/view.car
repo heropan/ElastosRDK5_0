@@ -149,6 +149,7 @@ module
     merge("view/inputmethod/EditorInfo.car");
     merge("view/inputmethod/ExtractedText.car");
     merge("view/inputmethod/ExtractedTextRequest.car");
+    merge("view/inputmethod/IInputMethodSubtypeArray.car");
     merge("view/inputmethod/InputBinding.car");
     merge("view/inputmethod/InputConnection.car");
     merge("view/inputmethod/InputMethod.car");
@@ -156,6 +157,7 @@ module
     merge("view/inputmethod/InputMethodSession.car");
     merge("view/inputmethod/InputMethodManager.car");
     merge("view/inputmethod/InputMethodSubtype.car");
+    merge("view/inputmethod/SparseRectFArray.car");
 
     merge("view/textservice/SentenceSuggestionsInfo.car");
     merge("view/textservice/SpellCheckerInfo.car");
@@ -165,10 +167,13 @@ module
     merge("view/textservice/TextInfo.car");
     merge("view/textservice/TextServicesManager.car");
     merge("internal/view/BaseIWindow.car");
+    merge("internal/view/IInputContext.car");
+    merge("internal/view/IInputMethodClient.car");
 
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Utility.IMap;
+    using interface Elastos.Utility.IList;
 
     interface Elastos.Droid.Animation.ITimeInterpolator;
     interface Elastos.Droid.Content.IContext;
@@ -181,14 +186,14 @@ module
     interface Elastos.Droid.Internal.View.Animation.INativeInterpolatorFactory;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     // interface Elastos.Droid.Internal.View.IInputBindResult;
-    // interface Elastos.Droid.Internal.View.IIInputMethodManager;
-    // interface Elastos.Droid.Internal.View.IInputContext;
+    interface Elastos.Droid.Internal.View.IIInputMethodManager;
+    interface Elastos.Droid.Internal.View.IInputContext;
     // interface Elastos.Droid.Internal.View.IInputContextCallback;
-    // interface Elastos.Droid.Internal.View.IInputMethodClient;
+    interface Elastos.Droid.Internal.View.IInputMethodClient;
     // interface Elastos.Droid.Internal.View.IIInputMethodSession;
     interface Elastos.Droid.Internal.View.IBaseIWindow;
     interface Elastos.Droid.Os.IBinder;
-    // interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IHandler;
     // interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IKeyEventCallback;
@@ -1331,7 +1336,7 @@ module
         interface IMagnificationSpec;
         interface IParcelable;
     }
-    
+
     class CViewTreeObserver {
         constructor();
 
@@ -1956,33 +1961,33 @@ module
         interface IParcelable;
     }
 
-    // class CInputMethodManager {
-    //     constructor(
-    //         [in] IIInputMethodManager* service,
-    //         [in] ILooper* looper);
+    class CInputMethodManager {
+        constructor(
+            [in] IIInputMethodManager* service,
+            [in] ILooper* looper);
 
-    //     interface IInputMethodManager;
-    // }
+        interface IInputMethodManager;
+    }
 
-    // [local]
-    // class CControlledInputConnectionWrapper {
-    //     constructor(
-    //         [in] ILooper* mainLooper,
-    //         [in] IInputConnection* conn,
-    //         [in] IInputMethodManager* inputMethodManager);
+    [local]
+    class CControlledInputConnectionWrapper {
+        constructor(
+            [in] ILooper* mainLooper,
+            [in] IInputConnection* conn,
+            [in] IInputMethodManager* inputMethodManager);
 
-    //     interface IInputContext;
-    //     interface IBinder;
-    // }
+        interface IInputContext;
+        interface IBinder;
+    }
 
-    // [local]
-    // class CIInputMethodClient {
-    //     constructor(
-    //         [in] IInputMethodManager* agmer);
+    [local]
+    class CIInputMethodClient {
+        constructor(
+            [in] IInputMethodManager* agmer);
 
-    //     interface IInputMethodClient;
-    //     interface IBinder;
-    // }
+        interface IInputMethodClient;
+        interface IBinder;
+    }
 
     [local]
     class CBaseInputConnection {
@@ -2024,36 +2029,27 @@ module
     }
 
     // [local]
-    // class CInputMethodInfo {
-    //     constructor();
+    class CInputMethodInfo {
+        constructor();
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IResolveInfo* service);
+        constructor(
+            [in] IContext* ctx,
+            [in] IResolveInfo* service);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IResolveInfo* service,
-    //         [in] IMap* additionalSubtypesMap);
+        constructor(
+            [in] IContext* ctx,
+            [in] IResolveInfo* service,
+            [in] IMap* additionalSubtypesMap);
 
-    //     constructor(
-    //         [in] String capsuelName,
-    //         [in] String className,
-    //         [in] ICharSequence* label,
-    //         [in] String settingsActivity);
+        constructor(
+            [in] String capsuelName,
+            [in] String className,
+            [in] ICharSequence* label,
+            [in] String settingsActivity);
 
-    //     interface IInputMethodInfo;
-    //     interface IParcelable;
-    // }
-
-    // [local]
-    // class CInputMethodManagerInputMethodCallback {
-    //     constructor(
-    //         [in] IInputMethodManager* imm);
-
-    //     interface IInputMethodCallback;
-    //     interface IBinder;
-    // }
+        interface IInputMethodInfo;
+        interface IParcelable;
+    }
 
     class CCorrectionInfo {
         constructor();
@@ -2068,45 +2064,55 @@ module
     }
 
     // [local]
-    // singleton class CInputMethodSubtypeHelper {
-    //     interface IInputMethodSubtypeHelper;
-    // }
+    singleton class CInputMethodSubtypeHelper {
+        interface IInputMethodSubtypeHelper;
+    }
 
-    // class CInputMethodSubtype {
-    //     constructor();
+    class CInputMethodSubtype {
+        constructor();
 
-    //     constructor(
-    //         [in] Int32 nameId,
-    //         [in] Int32 iconId,
-    //         [in] String locale,
-    //         [in] String mode,
-    //         [in] String extraValue,
-    //         [in] Boolean isAuxiliary);
+        constructor(
+            [in] Int32 nameId,
+            [in] Int32 iconId,
+            [in] String locale,
+            [in] String mode,
+            [in] String extraValue,
+            [in] Boolean isAuxiliary,
+            [in] Boolean overridesImplicitlyEnabledSubtype);
 
-    //     constructor(
-    //         [in] Int32 nameId,
-    //         [in] Int32 iconId,
-    //         [in] String locale,
-    //         [in] String mode,
-    //         [in] String extraValue,
-    //         [in] Boolean isAuxiliary,
-    //         [in] Boolean overridesImplicitlyEnabledSubtype);
+        constructor(
+            [in] Int32 nameId,
+            [in] Int32 iconId,
+            [in] String locale,
+            [in] String mode,
+            [in] String extraValue,
+            [in] Boolean isAuxiliary,
+            [in] Boolean overridesImplicitlyEnabledSubtype,
+            [in] Int32 id);
 
-    //     constructor(
-    //         [in] Int32 nameId,
-    //         [in] Int32 iconId,
-    //         [in] String locale,
-    //         [in] String mode,
-    //         [in] String extraValue,
-    //         [in] Boolean isAuxiliary,
-    //         [in] Boolean overridesImplicitlyEnabledSubtype,
-    //         [in] Int32 id);
+        constructor(
+            [in] IInputMethodSubtypeBuilder* builder);
 
-    //     interface IInputMethodSubtype;
-    //     interface IParcelable;
-    // }
+        interface IInputMethodSubtype;
+        interface IParcelable;
+    }
 
+    class CInputMethodSubtypeArray {
+        constructor();
 
+        constructor(
+            [in] IList* subtypes);
+
+        interface IInputMethodSubtypeArray;
+        interface IParcelable;
+    }
+
+    class CSparseRectFArray {
+        constructor();
+
+        interface ISparseRectFArray;
+        interface IParcelable;
+    }
 
     } // InputMethod
     } // namespace View

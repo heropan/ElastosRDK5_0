@@ -56,13 +56,15 @@ namespace Textservice {
  *
  */
 class SpellCheckerSession
+    : public Object
+    , public ISpellCheckerSession
 {
 public:
     /**
      * Constructor
      * @hide
      */
-    SpellCheckerSession(
+    CARAPI constructor(
         /* [in] */ ISpellCheckerInfo* info,
         /* [in] */ ITextServicesManager* tsm,
         /* [in] */ ISpellCheckerSessionListener* listener,
@@ -72,31 +74,33 @@ public:
      * @return true if the connection to a text service of this session is disconnected and not
      * alive.
      */
-    CARAPI_(Boolean) IsSessionDisconnected();
+    CARAPI IsSessionDisconnected(
+        /* [out] */ Boolean* result);
 
     /**
      * Get the spell checker service info this spell checker session has.
      * @return SpellCheckerInfo for the specified locale.
      */
-    CARAPI_(AutoPtr<ISpellCheckerInfo>) GetSpellChecker();
+    CARAPI GetSpellChecker(
+        /* [out] */ ISpellCheckerInfo** info);
 
     /**
      * Cancel pending and running spell check tasks
      */
-    CARAPI_(void) Cancel();
+    CARAPI Cancel();
 
     /**
      * Finish this session and allow TextServicesManagerService to disconnect the bound spell
      * checker.
      */
-    CARAPI_(void) Close();
+    CARAPI Close();
 
     /**
      * Get suggestions from the specified sentences
      * @param textInfos an array of text metadata for a spell checker
      * @param suggestionsLimit the maximum number of suggestions that will be returned
      */
-    CARAPI_(void) GetSentenceSuggestions(
+    CARAPI GetSentenceSuggestions(
         /* [in] */ ArrayOf<ITextInfo*>* textInfos,
         /* [in] */ Int32 suggestionsLimit);
 
@@ -107,7 +111,7 @@ public:
      * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
      */
     //@Deprecated
-    CARAPI_(void) GetSuggestions(
+    CARAPI GetSuggestions(
         /* [in] */ ITextInfo* textInfo,
         /* [in] */ Int32 suggestionsLimit);
 
@@ -119,7 +123,7 @@ public:
      * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
      */
     //@Deprecated
-    CARAPI_(void) GetSuggestions(
+    CARAPI GetSuggestions(
         /* [in] */ ArrayOf<ITextInfo*>* textInfos,
         /* [in] */ Int32 suggestionsLimit,
         /* [in] */ Boolean sequentialWords);
@@ -141,121 +145,7 @@ protected:
         /* [in] */ ISpellCheckerSessionListener* listener,
         /* [in] */ ISpellCheckerSubtype* subtype);
 
-/*    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        if (mIsUsed) {
-            Log.e(TAG, "SpellCheckerSession was not finished properly." +
-                    "You should call finishShession() when you finished to use a spell checker.");
-            close();
-        }
-    }*/
-
-private:
-
-    class SpellCheckerSessionListenerImpl;// extends ISpellCheckerSessionListener.Stub
-    {
-    public:
-        SpellCheckerSessionListenerImpl(
-            /* [in] */ Handler handler);
-
-        /* synchronized */
-        CARAPI_(void) OnServiceConnected(
-            /* [in] */ ISpellCheckerSession* session);
-
-        CARAPI_(void) Cancel();
-
-        CARAPI_(void) GetSuggestionsMultiple(
-            /* [in] */ ArrayOf<ITextInfo*>* textInfos,
-            /* [in] */ Int32 suggestionsLimit,
-            /* [in] */ Boolean sequentialWords);
-
-        CARAPI_(void) GetSentenceSuggestionsMultiple(
-            /* [in] */ ArrayOf<ITextInfo*>* textInfos,
-            /* [in] */ Int32 suggestionsLimit);
-
-        CARAPI_(void) Close();
-
-        CARAPI_(Boolean) IsDisconnected();
-
-        //@Override
-        CARAPI_(void) OnGetSuggestions(
-            /* [in] */ ArrayOf<ISuggestionsInfo*>* results);
-
-        //@Override
-        CARAPI_(void) OnGetSentenceSuggestions(
-            /* [in] */ ArrayOf<ISentenceSuggestionsInfo*>* results);
-
-    private:
-
-        class SpellCheckerParams
-        {
-        public:
-            SpellCheckerParams(
-                /* [in] */ Int32 what,
-                /* [in] */ ArrayOf<ITextInfo*>* textInfos,
-                /* [in] */ Int32 suggestionsLimit,
-                /* [in] */ Boolean sequentialWords)
-            {
-                mWhat = what;
-                mTextInfos = textInfos;
-                mSuggestionsLimit = suggestionsLimit;
-                mSequentialWords = sequentialWords;
-            }
-
-        public:
-
-            Int32 mWhat;
-            AutoPtr<ArrayOf<ITextInfo*> > mTextInfos;
-            Int32 mSuggestionsLimit;
-            Boolean mSequentialWords;
-            AutoPtr<ISpellCheckerSession> mSession;
-        };
-
-    private:
-
-        static const Int32 TASK_CANCEL = 1;
-        static const Int32 TASK_GET_SUGGESTIONS_MULTIPLE = 2;
-        static const Int32 TASK_CLOSE = 3;
-        static const Int32 TASK_GET_SUGGESTIONS_MULTIPLE_FOR_SENTENCE = 4;
-
-    private:
-        CARAPI_(void) ProcessTask(
-            /* [in] */ ISpellCheckerSession* session,
-            /* [in] */ SpellCheckerParams* scp,
-            /* [in] */ Boolean async);
-
-        CARAPI_(void) ProcessOrEnqueueTask(
-            /* [in] */ SpellCheckerParams* scp);
-
-    private:
-
-//        private final Queue<SpellCheckerParams> mPendingTasks =
-//                new LinkedList<SpellCheckerParams>();
-        Handler mHandler;
-
-        Boolean mOpened;
-        AutoPtr<ISpellCheckerSession> mISpellCheckerSession;
-        HandlerThread mThread;
-        Handler mAsyncHandler;
-
-        Object mLock;
-    };
-
-    class InternalListener //extends ITextServicesSessionListener.Stub
-    {
-    public:
-
-        InternalListener(
-            /* [in] */ SpellCheckerSessionListenerImpl* spellCheckerSessionListenerImpl);
-
-        //@Override
-        CARAPI_(void) OnServiceConnected(
-            /* [in] */ ISpellCheckerSession* session);
-
-    private:
-        SpellCheckerSessionListenerImpl* mParentSpellCheckerSessionListenerImpl;
-    };
+    CARAPI_(void) Finalize();
 
 private:
     CARAPI_(void) HandleOnGetSuggestionsMultiple(
@@ -263,17 +153,22 @@ private:
 
     CARAPI_(void) HandleOnGetSentenceSuggestionsMultiple(
         /* [in] */ ArrayOf<ISentenceSuggestionsInfo*>* suggestionInfos);
+public:
+    /**
+     * Name under which a SpellChecker service component publishes information about itself.
+     * This meta-data must reference an XML resource.
+     **/
+    static const String SERVICE_META_DATA;
 
 private:
+    static const String TAG;
+    static const Boolean DBG;
 
-    static const String TAG;// = SpellCheckerSession.class.getSimpleName();
-    static const Boolean DBG = FALSE;
+    static const Int32 MSG_ON_GET_SUGGESTION_MULTIPLE;
+    static const Int32 MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE;
 
-    static const Int32 MSG_ON_GET_SUGGESTION_MULTIPLE = 1;
-    static const Int32 MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE = 2;
-
-    InternalListener* mInternalListener;
-    AutoPtr<ITextServicesManager> mTextServicesManager;
+    AutoPtr<IInternalListener>* mInternalListener;
+    AutoPtr<IITextServicesManager> mTextServicesManager;
     AutoPtr<ISpellCheckerInfo> mSpellCheckerInfo;
     AutoPtr<ISpellCheckerSessionListenerImpl> mSpellCheckerSessionListenerImpl;
     AutoPtr<ISpellCheckerSubtype> mSubtype;
@@ -282,19 +177,7 @@ private:
     AutoPtr<ISpellCheckerSessionListener> mSpellCheckerSessionListener;
 
     /** Handler that will execute the main tasks */
-    Handler mHandler;/* = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_ON_GET_SUGGESTION_MULTIPLE:
-                    handleOnGetSuggestionsMultiple((SuggestionsInfo[]) msg.obj);
-                    break;
-                case MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE:
-                    handleOnGetSentenceSuggestionsMultiple((SentenceSuggestionsInfo[]) msg.obj);
-                    break;
-            }
-        }
-    };*/
+    AutoPtr<IHandler> mHandler;
 };
 
 }   //namespace Textservice

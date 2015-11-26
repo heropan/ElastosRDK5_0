@@ -1,31 +1,37 @@
 
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 #include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CMatrix.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/Looper.h"
-#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/utility/CSparseArray.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/ViewRootImpl.h"
-#include "elastos/droid/view/CInputBindResult.h"
+//#include "elastos/droid/view/CInputBindResult.h"
 #include "elastos/droid/view/inputmethod/CEditorInfo.h"
 #include "elastos/droid/view/inputmethod/CBaseInputConnection.h"
-#include "elastos/droid/view/inputmethod/CInputMethodManagerInputMethodCallback.h"
 #include "elastos/droid/view/inputmethod/CIInputMethodClient.h"
 #include "elastos/droid/view/inputmethod/CControlledInputConnectionWrapper.h"
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::CObjectMap;
-
 using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::CMatrix;
 using Elastos::Droid::Os::Looper;
-using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::ServiceManager;
+using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::View::View;
 using Elastos::Droid::View::ViewRootImpl;
-using Elastos::Droid::View::InputMethod::CInputMethodManagerInputMethodCallback;
+//using Elastos::Droid::View::CInputBindResult;
 using Elastos::Droid::View::InputMethod::CControlledInputConnectionWrapper;
+
+using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -35,17 +41,32 @@ namespace InputMethod {
 const Boolean CInputMethodManager::DEBUG = FALSE;
 const String CInputMethodManager::TAG("CInputMethodManager");
 
-Mutex CInputMethodManager::sInstanceSync;
+const String CInputMethodManager::PENDING_EVENT_COUNTER("aq:imm");
 AutoPtr<IInputMethodManager> CInputMethodManager::sInstance;
-const Int64 CInputMethodManager::INPUT_METHOD_NOT_RESPONDING_TIMEOUT;
-const Int32 CInputMethodManager::MAX_PENDING_EVENT_POOL_SIZE;
+const Int64 CInputMethodManager::INPUT_METHOD_NOT_RESPONDING_TIMEOUT = 2500;
+
+const Int32 CInputMethodManager::DISPATCH_IN_PROGRESS = -1;
+
+const Int32 CInputMethodManager::DISPATCH_NOT_HANDLED = 0;
+
+const Int32 CInputMethodManager::DISPATCH_HANDLED = 1;
 
 const Int32 CInputMethodManager::MSG_DUMP = 1;
 const Int32 CInputMethodManager::MSG_BIND = 2;
 const Int32 CInputMethodManager::MSG_UNBIND = 3;
 const Int32 CInputMethodManager::MSG_SET_ACTIVE = 4;
-const Int32 CInputMethodManager::MSG_EVENT_TIMEOUT = 5;
+const Int32 CInputMethodManager::MSG_SEND_INPUT_EVENT = 5;
+const Int32 CInputMethodManager::MSG_TIMEOUT_INPUT_EVENT = 6;
+const Int32 CInputMethodManager::MSG_FLUSH_INPUT_EVENT = 7;
+const Int32 CInputMethodManager::MSG_SET_USER_ACTION_NOTIFICATION_SEQUENCE_NUMBER = 9;
 
+const Int32 CInputMethodManager::REQUEST_UPDATE_CURSOR_ANCHOR_INFO_NONE = 0x0;
+
+const Int32 CInputMethodManager::NOT_AN_ACTION_NOTIFICATION_SEQUENCE_NUMBER = -1;
+
+//========================================================================================
+//              CInputMethodManager::MyHandler::
+//========================================================================================
 ECode CInputMethodManager::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
@@ -82,26 +103,92 @@ ECode CInputMethodManager::MyHandler::HandleMessage(
             mHost->HandleSetActive(arg1 != 0);
             break;
         }
-        case CInputMethodManager::MSG_EVENT_TIMEOUT:
-            mHost->HandleEventTimeout(arg1);
+        case CInputMethodManager::MSG_SEND_INPUT_EVENT: {
+            PendingEvent* pe = (PendingEvent*)IRunnable::Probe(obj);
+            mHost->SendInputEventAndReportResultOnMainLooper(pe);
             break;
+        }
+        case CInputMethodManager::MSG_TIMEOUT_INPUT_EVENT: {
+            mHost->FinishedInputEvent(arg1, FALSE, TRUE);
+            break;
+        }
+        case CInputMethodManager::MSG_FLUSH_INPUT_EVENT: {
+            mHost->FinishedInputEvent(arg1, FALSE, FALSE);
+            break;
+        }
+        case CInputMethodManager::MSG_SET_USER_ACTION_NOTIFICATION_SEQUENCE_NUMBER: {
+            {
+                AutoLock lock(mHost->mHLock);
+                mHost->mNextUserActionNotificationSequenceNumber = arg1;
+            }
+        }
     }
 
     return NOERROR;
 }
 
+//========================================================================================
+//              CInputMethodManager::StartInputRunnable::
+//========================================================================================
 ECode CInputMethodManager::StartInputRunnable::Run()
 {
     mHost->StartInputInner(NULL, 0, 0, 0);
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(CInputMethodManager::PendingEvent, IInterface)
+//========================================================================================
+//              CInputMethodManager::ImeInputEventSender::
+//========================================================================================
+CInputMethodManager::ImeInputEventSender::ImeInputEventSender(
+    /* [in] */ IInputChannel* inputChannel,
+    /* [in] */ ILooper* looper,
+    /* [in] */ CInputMethodManager* h) : mHost(h) // : InputEventSender(inputChannel, looper)
+{
+}
 
-CInputMethodManager::PendingEvent::PendingEvent()
-    : mStartTime(0)
-    , mSeq(0)
-{}
+ECode CInputMethodManager::ImeInputEventSender::OnInputEventFinished(
+    /* [in] */ Int32 seq,
+    /* [in] */ Boolean handled)
+{
+    mHost->FinishedInputEvent(seq, handled, FALSE);
+    return NOERROR;
+}
+
+//========================================================================================
+//              CInputMethodManager::PendingEvent::
+//========================================================================================
+CInputMethodManager::PendingEvent::PendingEvent(
+    /* [in] */ CInputMethodManager* host) : mHost(host)
+{
+}
+
+void CInputMethodManager::PendingEvent::Recycle()
+{
+    mEvent = NULL;
+    mToken = NULL;
+    mInputMethodId = NULL;
+    mCallback = NULL;
+    mHandler = NULL;
+    mHandled = FALSE;
+}
+
+ECode CInputMethodManager::PendingEvent::Run()
+{
+    mCallback->OnFinishedInputEvent(mToken, mHandled);
+
+    {
+        AutoLock lock(mHost->mHLock);
+        mHost->RecyclePendingEventLocked(this);
+    }
+    return NOERROR;
+}
+
+//========================================================================================
+//              CInputMethodManager::
+//========================================================================================
+CAR_INTERFACE_IMPL(CInputMethodManager, Object, IInputMethodManager)
+
+CAR_OBJECT_IMPL(CInputMethodManager)
 
 CInputMethodManager::CInputMethodManager()
     : mActive(FALSE)
@@ -113,13 +200,22 @@ CInputMethodManager::CInputMethodManager()
     , mCursorCandStart(0)
     , mCursorCandEnd(0)
     , mBindSequence(-1)
-    , mPendingEventPoolSize(0)
+    , mNextUserActionNotificationSequenceNumber(NOT_AN_ACTION_NOTIFICATION_SEQUENCE_NUMBER)
+    , mLastSentUserActionNotificationSequenceNumber(NOT_AN_ACTION_NOTIFICATION_SEQUENCE_NUMBER)
+    , mRequestUpdateCursorAnchorInfoMonitorMode(REQUEST_UPDATE_CURSOR_ANCHOR_INFO_NONE)
 {
     CRect::New((IRect**)&mTmpCursorRect);
     CRect::New((IRect**)&mCursorRect);
     CIInputMethodClient::New(this, (IInputMethodClient**)&mClient);
-    CBaseInputConnection::New(this, FALSE, (IBaseInputConnection**)&mDummyInputConnection);
-    CInputMethodManagerInputMethodCallback::New(this, (IInputMethodCallback**)&mInputMethodCallback);
+
+//    mPendingEventPool = new Pools::SimplePool<PendingEvent>(20);
+    CSparseArray::New(20, (ISparseArray**)&mPendingEvents);
+
+    mViewTopLeft = ArrayOf<Int32>::Alloc(2);
+
+    CMatrix::New((IMatrix**)&mViewToScreenMatrix);
+
+    CBaseInputConnection::New(this, FALSE, (IInputConnection**)&mDummyInputConnection);
 }
 
 ECode CInputMethodManager::constructor(
@@ -132,31 +228,18 @@ ECode CInputMethodManager::constructor(
     CControlledInputConnectionWrapper::New(looper, mDummyInputConnection,
         this, (IInputContext**)&mIInputContext);
 
-    if (sInstance == NULL) {
-        sInstance = this;
-    }
     return NOERROR;
 }
 
-AutoPtr<IInputMethodManager> CInputMethodManager::GetInstance(
-    /* [in] */ IContext* context)
+AutoPtr<IInputMethodManager> CInputMethodManager::GetInstance()
 {
-    AutoPtr<ILooper> mainLooper;
-    context->GetMainLooper((ILooper**)&mainLooper);
-    return GetInstance(mainLooper);
-}
+//     AutoLock lock(CInputMethodManager.class);
 
-AutoPtr<IInputMethodManager> CInputMethodManager::GetInstance(
-    /* [in] */ ILooper* mainLooper)
-{
-    AutoLock lock(sInstanceSync);
-
-    if (sInstance != NULL) {
-        return sInstance;
+    if (sInstance == NULL) {
+        AutoPtr<IIInputMethodManager> service =
+                (IIInputMethodManager*)ServiceManager::GetService(IContext::INPUT_METHOD_SERVICE).Get();
+        ASSERT_SUCCEEDED(CInputMethodManager::New(service, Looper::GetMainLooper(), (IInputMethodManager**)&sInstance));
     }
-    AutoPtr<IIInputMethodManager> service =
-            (IIInputMethodManager*)ServiceManager::GetService(IContext::INPUT_METHOD_SERVICE).Get();
-    ASSERT_SUCCEEDED(CInputMethodManager::New(service, mainLooper, (IInputMethodManager**)&sInstance));
     return sInstance;
 }
 
@@ -184,7 +267,7 @@ ECode CInputMethodManager::GetInputContext(
 }
 
 ECode CInputMethodManager::GetInputMethodList(
-    /* [in] */ IObjectContainer** infos)
+    /* [in] */ IList** infos)
 {
     VALIDATE_NOT_NULL(infos);
     // try {
@@ -195,7 +278,7 @@ ECode CInputMethodManager::GetInputMethodList(
 }
 
 ECode CInputMethodManager::GetEnabledInputMethodList(
-    /* [out] */ IObjectContainer** list)
+    /* [out] */ IList** list)
 {
     VALIDATE_NOT_NULL(list);
     // try {
@@ -208,11 +291,21 @@ ECode CInputMethodManager::GetEnabledInputMethodList(
 ECode CInputMethodManager::GetEnabledInputMethodSubtypeList(
     /* [in] */ IInputMethodInfo* imi,
     /* [in] */ Boolean allowsImplicitlySelectedSubtypes,
-    /* [out] */ IObjectContainer** infos)
+    /* [out] */ IList** infos)
 {
     VALIDATE_NOT_NULL(infos);
     // try {
-    return mService->GetEnabledInputMethodSubtypeList(imi, allowsImplicitlySelectedSubtypes, infos);
+    AutoPtr<IInterface> p;
+    if (imi != NULL) {
+        String id;
+        imi->GetId(&id);
+        AutoPtr<ICharSequence> cs;
+        CString::New(id, (ICharSequence**)&cs);
+        p = cs;
+    }
+    assert(0 && "TODO"); // internal IIInputMethodManager method define wrong.
+//    return mService->GetEnabledInputMethodSubtypeList(p, allowsImplicitlySelectedSubtypes, infos);
+    return NOERROR;
     // } catch (RemoteException e) {
     //     throw new RuntimeException(e);
     // }
@@ -329,10 +422,32 @@ ECode CInputMethodManager::IsAcceptingText(
 
 void CInputMethodManager::ClearBindingLocked()
 {
+    if (DEBUG) {
+        Logger::V(TAG, "Clearing binding!");
+    }
     ClearConnectionLocked();
+    SetInputChannelLocked(NULL);
     mBindSequence = -1;
     mCurId = NULL;
     mCurMethod = NULL;
+}
+
+void CInputMethodManager::SetInputChannelLocked(
+    /* [in] */ IInputChannel* channel)
+{
+    if (mCurChannel.Get() != channel) {
+        if (mCurSender != NULL) {
+            FlushPendingEventsLocked();
+            assert(0 && "TODO");
+//            mCurSender->Dispose();
+            mCurSender = NULL;
+        }
+        if (mCurChannel != NULL) {
+            assert(0 && "TODO");
+//            mCurChannel->Dispose();
+        }
+        mCurChannel = channel;
+    }
 }
 
 void CInputMethodManager::ClearConnectionLocked()
@@ -368,9 +483,6 @@ void CInputMethodManager::FinishInputLocked()
     }
 }
 
-/**
- * Notifies the served view that the current InputConnection will no longer be used.
- */
 void CInputMethodManager::NotifyInputConnectionFinished()
 {
     if (mServedView != NULL && mServedInputConnection != NULL) {
@@ -379,7 +491,8 @@ void CInputMethodManager::NotifyInputConnectionFinished()
         // this call on its window's Handler so it will be on the correct
         // thread and outside of our lock.
         View* view = VIEW_PROBE(mServedView);
-        AutoPtr<ViewRootImpl> viewRootImpl = view->GetViewRootImpl();
+        AutoPtr<IViewRootImpl> viewRootImpl;
+        view->GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
         if (viewRootImpl != NULL) {
             // This will result in a call to reportFinishInputConnection() below.
             viewRootImpl->DispatchFinishInputConnection(mServedInputConnection);
@@ -395,7 +508,7 @@ ECode CInputMethodManager::ReportFinishInputConnection(
         ic->FinishComposingText(&ret);
         // To avoid modifying the public InputConnection interface
         if (IBaseInputConnection::Probe(ic) != NULL) {
-            BaseInputConnection* baseConnection = reinterpret_cast<BaseInputConnection*>(ic->Probe(EIID_BaseInputConnection));
+            BaseInputConnection* baseConnection = (BaseInputConnection*)IBaseInputConnection::Probe(ic);
             baseConnection->ReportFinish();
         }
     }
@@ -591,7 +704,7 @@ Boolean CInputMethodManager::StartInputInner(
         view = mServedView;
 
         // Make sure we have a window token for the served view.
-        // if (DEBUG) Log.v(TAG, "Starting input: view=" + view);
+        if (DEBUG) Logger::V(TAG, "Starting input: view=%p", view.Get());
         if (view == NULL) {
             if (DEBUG) Logger::V(TAG, "ABORT input: no served view!");
             return FALSE;
@@ -679,6 +792,7 @@ Boolean CInputMethodManager::StartInputInner(
             mCursorCandStart = -1;
             mCursorCandEnd = -1;
             mCursorRect->SetEmpty();
+            mCursorAnchorInfo = NULL;
             CControlledInputConnectionWrapper::NewByFriend(looper, ic, this,
                 (CControlledInputConnectionWrapper**)&servedContext);
         }
@@ -711,15 +825,25 @@ Boolean CInputMethodManager::StartInputInner(
             String id;
             res->GetId(&id);
             if (!id.IsNull()) {
+                assert(0 && "TODO");
+                // AutoPtr<CInputBindResult> mRes = (CInputBindResult*)res.Get();
+                // SetInputChannelLocked(mRes->mChannel);
                 res->GetSequence(&mBindSequence);
                 mCurMethod = NULL;
-                res->GetIIMSession((IIInputMethodSession**)&mCurMethod);
+                // res->GetIIMSession((IIInputMethodSession**)&mCurMethod);
                 mCurId = id;
+                // mNextUserActionNotificationSequenceNumber =
+                //                 mRes->mUserActionNotificationSequenceNumber;
             }
-            else if (mCurMethod == NULL) {
-                // This means there is no input method available.
-                if (DEBUG) Logger::V(TAG, "ABORT input: no input method!");
-                return TRUE;
+            else {
+                // if (mRes->mChannel != NULL && mRes->mChannel != mCurChannel) {
+                //     mRes->mChannel->Dispose();
+                // }
+                if (mCurMethod == NULL) {
+                    // This means there is no input method available.
+                    if (DEBUG) Logger::V(TAG, "ABORT input: no input method!");
+                    return TRUE;
+                }
             }
         }
         if (mCurMethod != NULL && mCompletions != NULL) {
@@ -761,16 +885,17 @@ ECode CInputMethodManager::FocusIn(
 void CInputMethodManager::FocusInLocked(
     /* [in] */ IView* view)
 {
-    // if (DEBUG) Log.v(TAG, "focusIn: " + view);
-    if(DEBUG)
+    if (DEBUG) Logger::V(TAG, "focusIn: %p", view);
+    if (DEBUG) {
         Logger::V(TAG, "CInputMethodManager::FocusInLocked, line:%d, view:%p", __LINE__, view);
+    }
 
     AutoPtr<IView> rootView;
     view->GetRootView((IView**)&rootView);
     if (mCurRootView != rootView) {
         // This is a request from a window that isn't in the window with
         // IME focus, so ignore it.
-        // if (DEBUG) Log.v(TAG, "Not IME target window, ignoring");
+        if (DEBUG) Logger::V(TAG, "Not IME target window, ignoring");
         return;
     }
 
@@ -783,9 +908,13 @@ ECode CInputMethodManager::FocusOut(
 {
     AutoLock lock(mHLock);
 
-    // if (DEBUG) Log.v(TAG, "focusOut: " + view
-    //         + " mServedView=" + mServedView
-    //         + " winFocus=" + view.hasWindowFocus());
+
+    if (DEBUG) {
+        Boolean hasFs = FALSE;
+        view->HasWindowFocus(&hasFs);
+        Logger::V(TAG, "focusOut: %p mServedView=%p winFocus=%d", view,
+                    mServedView.Get(), hasFs);
+    }
     if (mNextServedView.Get() != view) {
         // The following code would auto-hide the IME if we end up
         // with no more views with focus.  This can happen, however,
@@ -805,7 +934,8 @@ void CInputMethodManager::ScheduleCheckFocusLocked(
     /* [in] */ IView* view)
 {
     View* _view = VIEW_PROBE(view);
-    AutoPtr<ViewRootImpl> viewRootImpl = _view->GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRootImpl;
+    _view->GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
     if (viewRootImpl != NULL) {
         viewRootImpl->DispatchCheckFocus();
     }
@@ -835,9 +965,16 @@ Boolean CInputMethodManager::CheckFocusNoStartInput(
         if (mServedView == mNextServedView && !forceNewFocus) {
             return FALSE;
         }
-        // if (DEBUG) Log.v(TAG, "checkFocus: view=" + mServedView
-        //         + " next=" + mNextServedView
-        //         + " restart=" + mNextServedNeedsStart);
+        if (DEBUG) {
+            String s("<none>");
+            if (mServedView != NULL) {
+                AutoPtr<IContext> cxt;
+                mServedView->GetContext((IContext**)&cxt);
+                cxt->GetPackageName(&s);
+            }
+            Logger::V(TAG, "checkFocus: view=%p next=%p forceNewFocus=%d package=%s",
+                mServedView.Get(), mNextServedView.Get(), forceNewFocus, (const char*)s);
+        }
 
         if (mNextServedView == NULL) {
             FinishInputLocked();
@@ -885,12 +1022,10 @@ ECode CInputMethodManager::OnWindowFocus(
     {
         AutoLock lock(mHLock);
 
-        // if (DEBUG) Log.v(TAG, "onWindowFocus: " + focusedView
-        //         + " softInputMode=" + softInputMode
-        //         + " first=" + first + " flags=#"
-        //         + Integer.toHexString(windowFlags));
+        if (DEBUG) Logger::V(TAG, "onWindowFocus: %p softInputMode=%d first=%d flags=#%s",
+                         focusedView, softInputMode, first, (const char*)StringUtils::ToHexString(windowFlags));
         if (mHasBeenInactive) {
-            // if (DEBUG) Log.v(TAG, "Has been inactive!  Starting fresh");
+            if (DEBUG) Logger::V(TAG, "Has been inactive!  Starting fresh");
             mHasBeenInactive = FALSE;
             forceNewFocus = TRUE;
         }
@@ -928,7 +1063,7 @@ ECode CInputMethodManager::OnWindowFocus(
         AutoLock lock(mHLock);
 
         // try {
-        //     if (DEBUG) Log.v(TAG, "Reporting focus gain, without startInput");
+        if (DEBUG) Logger::V(TAG, "Reporting focus gain, without startInput");
         AutoPtr<IInputBindResult> result;
         mService->WindowGainedFocus(mClient, binder,
                 controlFlags, softInputMode, windowFlags, NULL, NULL, (IInputBindResult**)&result);
@@ -967,16 +1102,21 @@ ECode CInputMethodManager::UpdateSelection(
         if (mCursorSelStart != selStart || mCursorSelEnd != selEnd
                 || mCursorCandStart != candidatesStart
                 || mCursorCandEnd != candidatesEnd) {
-            // if (DEBUG) Log.d(TAG, "updateSelection");
+            if (DEBUG) Logger::D(TAG, "updateSelection");
 
             // try {
-                // if (DEBUG) Log.v(TAG, "SELECTION CHANGE: " + mCurMethod);
-            mCurMethod->UpdateSelection(mCursorSelStart, mCursorSelEnd,
-                    selStart, selEnd, candidatesStart, candidatesEnd);
+            if (DEBUG) Logger::V(TAG, "SELECTION CHANGE: %p", mCurMethod.Get());
+            Int32 oldSelStart = mCursorSelStart;
+            Int32 oldSelEnd = mCursorSelEnd;
+            // Update internal values before sending updateSelection to the IME, because
+            // if it changes the text within its onUpdateSelection handler in a way that
+            // does not move the cursor we don't want to call it again with the same values.
             mCursorSelStart = selStart;
             mCursorSelEnd = selEnd;
             mCursorCandStart = candidatesStart;
             mCursorCandEnd = candidatesEnd;
+            mCurMethod->UpdateSelection(oldSelStart, oldSelEnd,
+                            selStart, selEnd, candidatesStart, candidatesEnd);
             // } catch (RemoteException e) {
             //     Log.w(TAG, "IME died: " + mCurId, e);
             // }
@@ -1000,7 +1140,7 @@ ECode CInputMethodManager::ViewClicked(
             return NOERROR;
         }
         // try {
-        //     if (DEBUG) Log.v(TAG, "onViewClicked: " + focusChanged);
+        if (DEBUG) Logger::V(TAG, "onViewClicked: %d", focusChanged);
         return mCurMethod->ViewClicked(focusChanged);
         // } catch (RemoteException e) {
         //     Log.w(TAG, "IME died: " + mCurId, e);
@@ -1015,6 +1155,32 @@ ECode CInputMethodManager::IsWatchingCursor(
 {
     VALIDATE_NOT_NULL(isWatching);
     *isWatching = FALSE;
+    return NOERROR;
+}
+
+ECode CInputMethodManager::IsCursorAnchorInfoEnabled(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    {
+        AutoLock lock(mHLock);
+
+        Boolean isImmediate = (mRequestUpdateCursorAnchorInfoMonitorMode &
+                IInputConnection::CURSOR_UPDATE_IMMEDIATE) != 0;
+        Boolean isMonitoring = (mRequestUpdateCursorAnchorInfoMonitorMode &
+                IInputConnection::CURSOR_UPDATE_MONITOR) != 0;
+        *result = isImmediate || isMonitoring;
+        return NOERROR;
+    }
+}
+
+ECode CInputMethodManager::SetUpdateCursorAnchorInfoMode(
+    /* [in] */ Int32 flags)
+{
+    AutoLock lock(mHLock);
+
+    mRequestUpdateCursorAnchorInfoMonitorMode = flags;
     return NOERROR;
 }
 
@@ -1042,7 +1208,7 @@ ECode CInputMethodManager::UpdateCursor(
             // if (DEBUG) Log.d(TAG, "updateCursor");
 
             // try {
-                // if (DEBUG) Log.v(TAG, "CURSOR CHANGE: " + mCurMethod);
+            if (DEBUG) Logger::V(TAG, "CURSOR CHANGE: %p", mCurMethod.Get());
             mCurMethod->UpdateCursor(mTmpCursorRect);
             mCursorRect->Set(mTmpCursorRect);
             // } catch (RemoteException e) {
@@ -1051,6 +1217,50 @@ ECode CInputMethodManager::UpdateCursor(
         }
     }
     return NOERROR;
+}
+
+ECode CInputMethodManager::UpdateCursorAnchorInfo(
+    /* [in] */ IView* view,
+    /* [in] */ ICursorAnchorInfo* cursorAnchorInfo)
+{
+    if (view == NULL || cursorAnchorInfo == NULL) {
+        return NOERROR;
+    }
+    CheckFocus();
+    {
+        AutoLock lock(mHLock);
+
+        Boolean bProxy = FALSE;
+        if ((!Object::Equals(IInterface::Probe(mServedView), IInterface::Probe(view)) &&
+                (mServedView == NULL || !(mServedView->CheckInputConnectionProxy(view, &bProxy), bProxy)))
+                || mCurrentTextBoxAttribute == NULL || mCurMethod == NULL) {
+            return NOERROR;
+        }
+        // If immediate bit is set, we will call updateCursorAnchorInfo() even when the data has
+        // not been changed from the previous call.
+        Boolean isImmediate = (mRequestUpdateCursorAnchorInfoMonitorMode &
+                IInputConnection::CURSOR_UPDATE_IMMEDIATE) != 0;
+        if (!isImmediate && Object::Equals(mCursorAnchorInfo, cursorAnchorInfo)) {
+            // TODO: Consider always emitting this message once we have addressed redundant
+            // calls of this method from android.widget.Editor.
+            if (DEBUG) {
+                Logger::W(TAG, "Ignoring redundant updateCursorAnchorInfo: info=%p",
+                         cursorAnchorInfo);
+            }
+            return NOERROR;
+        }
+        if (DEBUG) Logger::V(TAG, "updateCursorAnchorInfo: %p", cursorAnchorInfo);
+        // try {
+        mCurMethod->UpdateCursorAnchorInfo(cursorAnchorInfo);
+        mCursorAnchorInfo = cursorAnchorInfo;
+        // Clear immediate bit (if any).
+        mRequestUpdateCursorAnchorInfoMonitorMode &=
+                ~IInputConnection::CURSOR_UPDATE_IMMEDIATE;
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "IME died: " + mCurId, e);
+        // }
+        return NOERROR;
+    }
 }
 
 ECode CInputMethodManager::SendAppPrivateCommand(
@@ -1069,7 +1279,7 @@ ECode CInputMethodManager::SendAppPrivateCommand(
             return NOERROR;
         }
         // try {
-            // if (DEBUG) Log.v(TAG, "APP PRIVATE COMMAND " + action + ": " + data);
+        if (DEBUG) Logger::V(TAG, "APP PRIVATE COMMAND %s: %p", (const char*)action, data);
         mCurMethod->AppPrivateCommand(action, data);
         // } catch (RemoteException e) {
         //     Log.w(TAG, "IME died: " + mCurId, e);
@@ -1123,220 +1333,202 @@ ECode CInputMethodManager::ShowSoftInputFromInputMethod(
     // }
 }
 
-ECode CInputMethodManager::DispatchKeyEvent(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 seq,
-    /* [in] */ IKeyEvent* key,
-    /* [in] */ IInputMethodManagerFinishedEventCallback* callback)
+ECode CInputMethodManager::DispatchInputEvent(
+    /* [in] */ IInputEvent* event,
+    /* [in] */ IInterface* token,
+    /* [in] */ IInputMethodManagerFinishedInputEventCallback* callback,
+    /* [in] */ IHandler* handler,
+    /* [out] */ Int32* result)
 {
-    Boolean handled = FALSE;
     {
         AutoLock lock(mHLock);
-
-        if (DEBUG) Logger::D(TAG, "dispatchKeyEvent");
 
         if (mCurMethod != NULL) {
-            Int32 action = 0, keyCode = 0;
-            key->GetAction(&action);
-            key->GetKeyCode(&keyCode);
-            if (action == IKeyEvent::ACTION_DOWN && keyCode == IKeyEvent::KEYCODE_SYM) {
-                ShowInputMethodPickerLocked();
-                handled = TRUE;
-            }
-            else {
-                // try {
-                if (DEBUG) Logger::V(TAG, "DISPATCH KEY: %p, %s", mCurMethod.Get(), mCurId.string());
-                Int64 startTime = SystemClock::GetUptimeMillis();
-                EnqueuePendingEventLocked(startTime, seq, mCurId, callback);
-                ECode ec = mCurMethod->DispatchKeyEvent(seq, key, mInputMethodCallback);
-                if (FAILED(ec)) {
-                    Int32 action = 0;
-                    key->GetAction(&action);
-                    Logger::W(TAG, "IME died: %s dropping: key action %d", mCurId.string(), action);
+            if (IKeyEvent::Probe(event) != NULL) {
+                AutoPtr<IKeyEvent> keyEvent = IKeyEvent::Probe(event);
+                Int32 act = 0, kc = 0, rc = 0;
+                keyEvent->GetAction(&act);
+                keyEvent->GetKeyCode(&kc);
+                keyEvent->GetRepeatCount(&rc);
+                if (act == IKeyEvent::ACTION_DOWN
+                        && kc == IKeyEvent::KEYCODE_SYM
+                        && rc == 0) {
+                    ShowInputMethodPickerLocked();
+                    *result = DISPATCH_HANDLED;
+                    return NOERROR;
                 }
-                return ec;
-                // } catch (RemoteException e) {
-                //     Log.w(TAG, "IME died: " + mCurId + " dropping: " + key, e);
-                // }
             }
+
+            if (DEBUG) Logger::V(TAG, "DISPATCH INPUT EVENT: %p", mCurMethod.Get());
+
+            AutoPtr<PendingEvent> p = ObtainPendingEventLocked(
+                    event, token, mCurId, callback, handler);
+            Boolean bIsCurTh = FALSE;
+            if ((mMainLooper->IsCurrentThread(&bIsCurTh), bIsCurTh)) {
+                // Already running on the IMM thread so we can send the event immediately.
+                *result = SendInputEventOnMainLooperLocked(p);
+                return NOERROR;
+            }
+
+            // Post the event to the IMM thread.
+            AutoPtr<IMessage> msg;
+            mH->ObtainMessage(MSG_SEND_INPUT_EVENT, IInterface::Probe(IRunnable::Probe(p)), (IMessage**)&msg);
+            msg->SetAsynchronous(TRUE);
+            Boolean bSend = FALSE;
+            mH->SendMessage(msg, &bSend);
+            *result = DISPATCH_IN_PROGRESS;
+            return NOERROR;
         }
     }
-
-    return callback->FinishedEvent(seq, handled);
+    *result = DISPATCH_NOT_HANDLED;
+    return NOERROR;
 }
 
-ECode CInputMethodManager::DispatchTrackballEvent(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 seq,
-    /* [in] */ IMotionEvent* motion,
-    /* [in] */ IInputMethodManagerFinishedEventCallback* callback)
+void CInputMethodManager::SendInputEventAndReportResultOnMainLooper(
+    /* [in] */ PendingEvent* p)
 {
+    Boolean handled;
     {
         AutoLock lock(mHLock);
-        if (DEBUG) Logger::D(TAG, "dispatchTrackballEvent");
 
-        if (mCurMethod != NULL && mCurrentTextBoxAttribute != NULL) {
-            // try {
-            if (DEBUG) Logger::V(TAG, "DISPATCH TRACKBALL: %p, %s", mCurMethod.Get(), mCurId.string());
-            Int64 startTime = SystemClock::GetUptimeMillis();
-            EnqueuePendingEventLocked(startTime, seq, mCurId, callback);
-            ECode ec = mCurMethod->DispatchTrackballEvent(seq, motion, mInputMethodCallback);
-            if (FAILED(ec)) {
-                Logger::W(TAG, "IME died: %s dropping trackball action %p", mCurId.string(), motion);
-            }
-            return ec;
-            // } catch (RemoteException e) {
-            //     Log.w(TAG, "IME died: " + mCurId + " dropping trackball: " + motion, e);
-            // }
+        Int32 result = SendInputEventOnMainLooperLocked(p);
+        if (result == DISPATCH_IN_PROGRESS) {
+            return;
         }
+
+        handled = (result == DISPATCH_HANDLED);
     }
 
-    return callback->FinishedEvent(seq, FALSE);
+    InvokeFinishedInputEventCallback(p, handled);
 }
 
-ECode CInputMethodManager::DispatchGenericMotionEvent(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 seq,
-    /* [in] */ IMotionEvent* motion,
-    /* [in] */ IInputMethodManagerFinishedEventCallback* callback)
+Int32 CInputMethodManager::SendInputEventOnMainLooperLocked(
+    /* [in] */ PendingEvent* p)
 {
+    if (mCurChannel != NULL) {
+        if (mCurSender == NULL) {
+            AutoPtr<ILooper> lp;
+            mH->GetLooper((ILooper**)&lp);
+            mCurSender = new ImeInputEventSender(mCurChannel, lp, this);
+        }
+
+        AutoPtr<IInputEvent> event = p->mEvent;
+        Int32 seq = 0;
+        event->GetSequenceNumber(&seq);
+        assert(0 && "TODO");
+        // if (mCurSender->SendInputEvent(seq, event)) {
+        //     mPendingEvents.put(seq, p);
+        //     Trace.traceCounter(Trace.TRACE_TAG_INPUT, PENDING_EVENT_COUNTER,
+        //             mPendingEvents.size());
+
+        //     Message msg = mH.obtainMessage(MSG_TIMEOUT_INPUT_EVENT, p);
+        //     msg.setAsynchronous(true);
+        //     mH.sendMessageDelayed(msg, INPUT_METHOD_NOT_RESPONDING_TIMEOUT);
+        //     return DISPATCH_IN_PROGRESS;
+        // }
+
+        Logger::W(TAG, "Unable to send input event to IME: %s dropping: %p",
+                (const char*)mCurId, event.Get());
+    }
+    return DISPATCH_NOT_HANDLED;
+}
+
+void CInputMethodManager::FinishedInputEvent(
+    /* [in] */ Int32 seq,
+    /* [in] */ Boolean handled,
+    /* [in] */ Boolean timeout)
+{
+    AutoPtr<PendingEvent> p;
     {
         AutoLock lock(mHLock);
-        if (DEBUG) Logger::D(TAG, "dispatchGenericMotionEvent");
 
-        if (mCurMethod != NULL && mCurrentTextBoxAttribute != NULL) {
-            // try {
-            if (DEBUG) Logger::V(TAG, "DISPATCH GENERIC MOTION: %p, %s", mCurMethod.Get(), mCurId.string());
-            Int64 startTime = SystemClock::GetUptimeMillis();
-            EnqueuePendingEventLocked(startTime, seq, mCurId, callback);
-            ECode ec = mCurMethod->DispatchGenericMotionEvent(seq, motion, mInputMethodCallback);
-            if (FAILED(ec)) {
-                Logger::W(TAG, "IME died: %s dropping generic motion %p", mCurId.string(), motion);
-            }
-            return ec;
-            // } catch (RemoteException e) {
-            //     Log.w(TAG, "IME died: " + mCurId + " dropping generic motion: " + motion, e);
-            // }
+        Int32 index = 0;
+        mPendingEvents->IndexOfKey(seq, &index);
+        if (index < 0) {
+            return; // spurious, event already finished or timed out
+        }
+
+        AutoPtr<IInterface> o;
+        mPendingEvents->ValueAt(index, (IInterface**)&o);
+        p = (PendingEvent*)(Runnable*)IRunnable::Probe(o);
+        mPendingEvents->RemoveAt(index);
+//        Trace.traceCounter(Trace.TRACE_TAG_INPUT, PENDING_EVENT_COUNTER, mPendingEvents.size());
+
+        if (timeout) {
+            Logger::W(TAG, "Timeout waiting for IME to handle input event after %d ms: %s",
+                     INPUT_METHOD_NOT_RESPONDING_TIMEOUT, (const char*)(p->mInputMethodId));
+        }
+        else {
+            mH->RemoveMessages(MSG_TIMEOUT_INPUT_EVENT, IInterface::Probe(IRunnable::Probe(p)));
         }
     }
 
-    return callback->FinishedEvent(seq, FALSE);
+    InvokeFinishedInputEventCallback(p, handled);
 }
 
-void CInputMethodManager::FinishedEvent(
-    /* [in] */ Int32 seq,
+void CInputMethodManager::InvokeFinishedInputEventCallback(
+    /* [in] */ PendingEvent* p,
     /* [in] */ Boolean handled)
 {
-    AutoPtr<IInputMethodManagerFinishedEventCallback> callback;
-    {
-        AutoLock lock(mHLock);
-
-        AutoPtr<PendingEvent> p = DequeuePendingEventLocked(seq);
-        if (p == NULL) {
-            return; // spurious, event already finished or timed out
-        }
-        mH->RemoveMessages(MSG_EVENT_TIMEOUT, p);
-        callback = p->mCallback;
-        RecyclePendingEventLocked(p);
-    }
-    callback->FinishedEvent(seq, handled);
-}
-
-void CInputMethodManager::TimeoutEvent(
-    /* [in] */ Int32 seq)
-{
-    AutoPtr<IInputMethodManagerFinishedEventCallback> callback;
-    {
-        AutoLock lock(mHLock);
-
-        AutoPtr<PendingEvent> p = DequeuePendingEventLocked(seq);
-        if (p == NULL) {
-            return; // spurious, event already finished or timed out
-        }
-        Int64 delay = SystemClock::GetUptimeMillis() - p->mStartTime;
-        Logger::W(TAG, "Timeout waiting for IME to handle input event after %lld ms: %s", delay, p->mInputMethodId.string());
-        callback = p->mCallback;
-        RecyclePendingEventLocked(p);
-    }
-    callback->FinishedEvent(seq, FALSE);
-}
-
-void CInputMethodManager::EnqueuePendingEventLocked(
-    /* [in] */ Int64 startTime,
-    /* [in] */ Int32 seq,
-    /* [in] */ const String& inputMethodId,
-    /* [in] */ IInputMethodManagerFinishedEventCallback* callback)
-{
-    AutoPtr<PendingEvent> p = ObtainPendingEventLocked(startTime, seq, inputMethodId, callback);
-    p->mNext = mFirstPendingEvent;
-    mFirstPendingEvent = p;
-
-    AutoPtr<IMessage> msg;
-    mH->ObtainMessage(MSG_EVENT_TIMEOUT, seq, 0, p, (IMessage**)&msg);
-    msg->SetAsynchronous(TRUE);
-    Boolean result;
-    mH->SendMessageDelayed(msg, INPUT_METHOD_NOT_RESPONDING_TIMEOUT, &result);
-}
-
-AutoPtr<CInputMethodManager::PendingEvent> CInputMethodManager::DequeuePendingEventLocked(
-    /* [in] */ Int32 seq)
-{
-    AutoPtr<PendingEvent> p = mFirstPendingEvent;
-    if (p == NULL) {
-        return NULL;
-    }
-    if (p->mSeq == seq) {
-        mFirstPendingEvent = p->mNext;
+    p->mHandled = handled;
+    AutoPtr<ILooper> lp;
+    p->mHandler->GetLooper((ILooper**)&lp);
+    Boolean bIsCurTh = FALSE;
+    if ((lp->IsCurrentThread(&bIsCurTh), bIsCurTh)) {
+        // Already running on the callback handler thread so we can send the
+        // callback immediately.
+        p->Run();
     }
     else {
-        AutoPtr<PendingEvent> prev;
-        do {
-            prev = p;
-            p = p->mNext;
-            if (p == NULL) {
-                return NULL;
-            }
-        } while (p->mSeq != seq);
-        prev->mNext = p->mNext;
+        // Post the event to the callback handler thread.
+        // In this case, the callback will be responsible for recycling the event.
+        assert(0 && "TODO");
+        AutoPtr<IMessage> msg;// = Message.obtain(p.mHandler, p);
+        msg->SetAsynchronous(TRUE);
+        msg->SendToTarget();
     }
-    p->mNext = NULL;
-    return p;
+}
+
+void CInputMethodManager::FlushPendingEventsLocked()
+{
+    mH->RemoveMessages(MSG_FLUSH_INPUT_EVENT);
+
+    Int32 count = 0;
+    mPendingEvents->GetSize(&count);
+    for (Int32 i = 0; i < count; i++) {
+        Int32 seq = 0;
+        mPendingEvents->KeyAt(i, &seq);
+        AutoPtr<IMessage> msg;
+        mH->ObtainMessage(MSG_FLUSH_INPUT_EVENT, seq, 0, (IMessage**)&msg);
+        msg->SetAsynchronous(TRUE);
+        msg->SendToTarget();
+    }
 }
 
 AutoPtr<CInputMethodManager::PendingEvent> CInputMethodManager::ObtainPendingEventLocked(
-    /* [in] */ Int64 startTime,
-    /* [in] */ Int32 seq,
+    /* [in] */ IInputEvent* event,
+    /* [in] */ IInterface* token,
     /* [in] */ const String& inputMethodId,
-    /* [in] */ IInputMethodManagerFinishedEventCallback* callback)
+    /* [in] */ IInputMethodManagerFinishedInputEventCallback* callback,
+    /* [in] */ IHandler* handler)
 {
-    AutoPtr<PendingEvent> p = mPendingEventPool;
-    if (p != NULL) {
-        mPendingEventPoolSize -= 1;
-        mPendingEventPool = p->mNext;
-        p->mNext = NULL;
+    AutoPtr<PendingEvent> p = mPendingEventPool->AcquireItem();
+    if (p == NULL) {
+        p = new PendingEvent(this);
     }
-    else {
-        p = new PendingEvent();
-    }
-
-    p->mStartTime = startTime;
-    p->mSeq = seq;
+    p->mEvent = event;
+    p->mToken = token;
     p->mInputMethodId = inputMethodId;
     p->mCallback = callback;
+    p->mHandler = handler;
     return p;
 }
 
 void CInputMethodManager::RecyclePendingEventLocked(
     /* [in] */ PendingEvent* p)
 {
-    p->mInputMethodId = NULL;
-    p->mCallback = NULL;
-
-    if (mPendingEventPoolSize < MAX_PENDING_EVENT_POOL_SIZE) {
-        mPendingEventPoolSize += 1;
-        p->mNext = mPendingEventPool;
-        mPendingEventPool = p;
-    }
+    p->Recycle();
+    mPendingEventPool->ReleaseItem(p);
 }
 
 ECode CInputMethodManager::ShowInputMethodPicker()
@@ -1376,7 +1568,7 @@ ECode CInputMethodManager::GetCurrentInputMethodSubtype(
         return mService->GetCurrentInputMethodSubtype(subtype);
         // } catch (RemoteException e) {
         //     Log.w(TAG, "IME died: " + mCurId, e);
-        //     return null;
+        //     return NULL;
         // }
     }
 }
@@ -1397,46 +1589,73 @@ ECode CInputMethodManager::SetCurrentInputMethodSubtype(
     }
 }
 
-ECode CInputMethodManager::GetShortcutInputMethodsAndSubtypes(
-    /* [out] */ IObjectMap** ret)
+ECode CInputMethodManager::NotifyUserAction()
 {
-    assert(0);
-    VALIDATE_NOT_NULL(ret);
+    AutoLock lock(mHLock);
+
+    if (mLastSentUserActionNotificationSequenceNumber ==
+            mNextUserActionNotificationSequenceNumber) {
+        if (DEBUG) {
+            Logger::W(TAG, "Ignoring notifyUserAction as it has already been sent."
+                     " mLastSentUserActionNotificationSequenceNumber: %d"
+                     " mNextUserActionNotificationSequenceNumber: %d",
+                     mLastSentUserActionNotificationSequenceNumber,
+                     mNextUserActionNotificationSequenceNumber);
+        }
+        return NOERROR;
+    }
+    // try {
+    if (DEBUG) {
+        Logger::W(TAG, "notifyUserAction: "
+                 " mLastSentUserActionNotificationSequenceNumber: %d"
+                 " mNextUserActionNotificationSequenceNumber: %d",
+                 mLastSentUserActionNotificationSequenceNumber,
+                 mNextUserActionNotificationSequenceNumber);
+    }
+    mService->NotifyUserAction(mNextUserActionNotificationSequenceNumber);
+    mLastSentUserActionNotificationSequenceNumber =
+            mNextUserActionNotificationSequenceNumber;
+    // } catch (RemoteException e) {
+    //     Log.w(TAG, "IME died: " + mCurId, e);
+    // }
+    return NOERROR;
+}
+
+ECode CInputMethodManager::GetShortcutInputMethodsAndSubtypes(
+    /* [out] */ IMap** res)
+{
+    VALIDATE_NOT_NULL(res);
     {
         AutoLock lock(mHLock);
 
-        CObjectMap::New(ret);
+        AutoPtr<IHashMap> ret;
+        CHashMap::New((IHashMap**)&ret);
         // try {
         // TODO: We should change the return type from List<Object> to List<Parcelable>
-        AutoPtr<IObjectContainer> info;
-        mService->GetShortcutInputMethodsAndSubtypes((IObjectContainer**)&info);
+        AutoPtr<IList> info;
+        mService->GetShortcutInputMethodsAndSubtypes((IList**)&info);
         // "info" has imi1, subtype1, subtype2, imi2, subtype2, imi3, subtype3..in the list
-        AutoPtr<IObjectContainer> subtypes;
-
-        AutoPtr<IObjectEnumerator> infoEnum;
-        info->GetObjectEnumerator((IObjectEnumerator**)&infoEnum);
-        Boolean hasNext = FALSE;
-        while(infoEnum->MoveNext(&hasNext), hasNext) {
-            AutoPtr<IInterface> o;
-            infoEnum->Current((IInterface**)&o);
-
-            if (IInputMethodInfo::Probe(o) != NULL) {
-                Boolean contains = FALSE;
-                if ((*ret)->ContainsKey(o, &contains), contains) {
-                    // Log.e(TAG, "IMI list already contains the same InputMethod.");
-                    break;
+        AutoPtr<IArrayList> subtypes;
+        Int32 N = 0;
+        info->GetSize(&N);
+        if (info != NULL && N > 0) {
+            for (Int32 i = 0; i < N; ++i) {
+                AutoPtr<IInterface> o;
+                info->Get(i, (IInterface**)&o);
+                if (IInputMethodInfo::Probe(o) != NULL) {
+                    Boolean bContainK = FALSE;
+                    if ((ret->ContainsKey(o, &bContainK), bContainK)) {
+                        Logger::E(TAG, "IMI list already contains the same InputMethod.");
+                        break;
+                    }
+                    CArrayList::New((IArrayList**)&subtypes);
+                    ret->Put(o, subtypes);
                 }
-
-                // subtypes = new ArrayList<InputMethodSubtype>();
-                subtypes = NULL;
-                CObjectContainer::New((IObjectContainer**)&subtypes);
-                (*ret)->Put(IInputMethodInfo::Probe(o), subtypes);
-            }
-            else if (subtypes != NULL && IInputMethodSubtype::Probe(o) != NULL) {
-                subtypes->Add(IInputMethodSubtype::Probe(o));
+                else if (subtypes != NULL && IInputMethodSubtype::Probe(o) != NULL) {
+                    subtypes->Add(IInputMethodSubtype::Probe(o));
+                }
             }
         }
-
         // } catch (RemoteException e) {
         //     Log.w(TAG, "IME died: " + mCurId, e);
         // }
@@ -1444,10 +1663,26 @@ ECode CInputMethodManager::GetShortcutInputMethodsAndSubtypes(
     }
 }
 
+ECode CInputMethodManager::GetInputMethodWindowVisibleHeight(
+    /* [out] */ Int32* height)
+{
+    VALIDATE_NOT_NULL(height)
+    {
+        AutoLock lock(mHLock);
+//         try {
+        return mService->GetInputMethodWindowVisibleHeight(height);
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "IME died: " + mCurId, e);
+        //     return 0;
+        // }
+    }
+}
+
 ECode CInputMethodManager::SwitchToLastInputMethod(
     /* [in] */ IBinder* imeToken,
     /* [out] */ Boolean* switched)
 {
+    VALIDATE_NOT_NULL(switched)
     {
         AutoLock lock(mHLock);
         // try {
@@ -1464,10 +1699,27 @@ ECode CInputMethodManager::SwitchToNextInputMethod(
     /* [in] */ Boolean onlyCurrentIme,
     /* [out] */ Boolean* switched)
 {
+    VALIDATE_NOT_NULL(switched)
     {
         AutoLock lock(mHLock);
         // try {
         return mService->SwitchToNextInputMethod(imeToken, onlyCurrentIme, switched);
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "IME died: " + mCurId, e);
+        //     return false;
+        // }
+    }
+}
+
+ECode CInputMethodManager::ShouldOfferSwitchingToNextInputMethod(
+    /* [in] */ IBinder* token,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    {
+        AutoLock lock(mHLock);
+        // try {
+        return mService->ShouldOfferSwitchingToNextInputMethod(token, result);
         // } catch (RemoteException e) {
         //     Log.w(TAG, "IME died: " + mCurId, e);
         //     return false;
@@ -1499,7 +1751,7 @@ ECode CInputMethodManager::GetLastInputMethodSubtype(
         return mService->GetLastInputMethodSubtype(subtype);
         // } catch (RemoteException e) {
         //     Log.w(TAG, "IME died: " + mCurId, e);
-        //     return null;
+        //     return NULL;
         // }
     }
 }
@@ -1513,14 +1765,23 @@ void CInputMethodManager::HandleBind(
 
         Int32 sequence;
         res->GetSequence(&sequence);
+        assert(0 && "TODO");
+//         AutoPtr<CInputBindResult> cres = (CInputBindResult*)res;
         if (mBindSequence < 0 || mBindSequence != sequence) {
-            // Log.w(TAG, "Ignoring onBind: cur seq=" + mBindSequence
-            //         + ", given seq=" + res.sequence);
+            // Logger::W(TAG, "Ignoring onBind: cur seq=%d, given seq=%d",
+            //     mBindSequence, cres->mSequence);
+            // if (cres->mChannel != NULL && cres->mChannel != mCurChannel) {
+            //     cres->mChannel->Dispose();
+            // }
             return;
         }
 
+        mRequestUpdateCursorAnchorInfoMonitorMode =
+                                REQUEST_UPDATE_CURSOR_ANCHOR_INFO_NONE;
+
+//         SetInputChannelLocked(cres->mChannel);
         mCurMethod = NULL;
-        res->GetIIMSession((IIInputMethodSession**)&mCurMethod);
+        // res->GetIIMSession((IIInputMethodSession**)&mCurMethod);
         res->GetId(&mCurId);
         mBindSequence = sequence;
     }
@@ -1530,78 +1791,81 @@ void CInputMethodManager::HandleBind(
 void CInputMethodManager::HandleUnBind(
     /* [in] */ Int32 sequence)
 {
-    Boolean startInput = FALSE;
-    AutoLock lock(mHLock);
-
-    if (mBindSequence == sequence) {
-        if (FALSE) {
-            assert(0);
-            // XXX the server has already unbound!
-            // if (mCurMethod != NULL && mCurrentTextBoxAttribute != NULL) {
-            //     try {
-            //         mCurMethod.finishInput();
-            //     } catch (RemoteException e) {
-            //         Log.w(TAG, "IME died: " + mCurId, e);
-            //     }
-            // }
-        }
-        ClearBindingLocked();
-
-        // If we were actively using the last input method, then
-        // we would like to re-connect to the next input method.
-        Boolean focused = FALSE;
-        if (mServedView != NULL && (mServedView->IsFocused(&focused), focused)) {
-            mServedConnecting = TRUE;
-        }
-        if (mActive) {
-            startInput = TRUE;
-        }
+    if (DEBUG) {
+        Logger::I(TAG, "handleMessage: MSG_UNBIND %d", sequence);
     }
-    if (startInput) {
-        StartInputInner(NULL, 0, 0, 0);
+    Boolean startInput = FALSE;
+    {
+        AutoLock lock(mHLock);
+
+        if (mBindSequence == sequence) {
+            if (FALSE) {
+                // XXX the server has already unbound!
+                if (mCurMethod != NULL && mCurrentTextBoxAttribute != NULL) {
+                    // try {
+                        mCurMethod->FinishInput();
+                    // } catch (RemoteException e) {
+                    //     Log.w(TAG, "IME died: " + mCurId, e);
+                    // }
+                }
+            }
+            ClearBindingLocked();
+
+            // If we were actively using the last input method, then
+            // we would like to re-connect to the next input method.
+            Boolean focused = FALSE;
+            if (mServedView != NULL && (mServedView->IsFocused(&focused), focused)) {
+                mServedConnecting = TRUE;
+            }
+            if (mActive) {
+                startInput = TRUE;
+            }
+        }
+        if (startInput) {
+            StartInputInner(NULL, 0, 0, 0);
+        }
     }
 }
 
 void CInputMethodManager::HandleSetActive(
     /* [in] */ Boolean active)
 {
-    AutoLock lock(mHLock);
+    if (DEBUG) {
+        Logger::I(TAG, "handleMessage: MSG_SET_ACTIVE %d, was %d", active, mActive);
+    }
+    {
+        AutoLock lock(mHLock);
 
-    mActive = active;
-    mFullscreenMode = FALSE;
-    if (!active) {
-        // Some other client has starting using the IME, so note
-        // that this happened and make sure our own editor's
-        // state is reset.
-        mHasBeenInactive = TRUE;
-        // try {
-        // Note that finishComposingText() is allowed to run
-        // even when we are not active.
-        mIInputContext->FinishComposingText();
-        // } catch (RemoteException e) {
-        // }
-        // Check focus again in case that "onWindowFocus" is called before
-        // handling this message.
-        Boolean hasFocus = FALSE;
-        if (mServedView != NULL && (mServedView->HasWindowFocus(&hasFocus), hasFocus)) {
-            // "finishComposingText" has been already called above. So we
-            // should not call mServedInputConnection.finishComposingText here.
-            // Also, please note that this handler thread could be different
-            // from a thread that created mServedView. That could happen
-            // the current activity is running in the system process.
-            // In that case, we really should not call
-            // mServedInputConnection.finishComposingText.
-            if (CheckFocusNoStartInput(mHasBeenInactive, FALSE)) {
-                StartInputInner(NULL, 0, 0, 0);
+        mActive = active;
+        mFullscreenMode = FALSE;
+        if (!active) {
+            // Some other client has starting using the IME, so note
+            // that this happened and make sure our own editor's
+            // state is reset.
+            mHasBeenInactive = TRUE;
+            // try {
+            // Note that finishComposingText() is allowed to run
+            // even when we are not active.
+            mIInputContext->FinishComposingText();
+            // } catch (RemoteException e) {
+            // }
+            // Check focus again in case that "onWindowFocus" is called before
+            // handling this message.
+            Boolean hasFocus = FALSE;
+            if (mServedView != NULL && (mServedView->HasWindowFocus(&hasFocus), hasFocus)) {
+                // "finishComposingText" has been already called above. So we
+                // should not call mServedInputConnection.finishComposingText here.
+                // Also, please note that this handler thread could be different
+                // from a thread that created mServedView. That could happen
+                // the current activity is running in the system process.
+                // In that case, we really should not call
+                // mServedInputConnection.finishComposingText.
+                if (CheckFocusNoStartInput(mHasBeenInactive, FALSE)) {
+                    StartInputInner(NULL, 0, 0, 0);
+                }
             }
         }
     }
-}
-
-void CInputMethodManager::HandleEventTimeout(
-    /* [in] */ Int32 seq)
-{
-    TimeoutEvent(seq);
 }
 
 } // namespace InputMethod

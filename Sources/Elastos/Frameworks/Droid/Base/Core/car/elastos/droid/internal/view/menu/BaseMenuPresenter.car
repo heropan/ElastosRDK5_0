@@ -5,7 +5,7 @@ module
     interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.Internal.View.Menu.IMenuItemImpl;
     interface Elastos.Droid.Internal.View.Menu.IMenuItemView;
-
+    interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
 
     namespace Elastos {
     namespace Droid {

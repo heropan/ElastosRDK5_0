@@ -1,6 +1,11 @@
 
-#ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_SPELLCHECKERINFO_H__
-#define __ELASTOS_DROID_VIEW_TEXTSERVICE_SPELLCHECKERINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERINFO_H__
+#define __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERINFO_H__
+
+#include "_Elastos_Droid_View_Textservice_CSpellCheckerInfo.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -10,9 +15,19 @@ namespace Textservice {
 /**
  * This class is used to specify meta information of a spell checker.
  */
-CarClass(CSpellCheckerInfo), public SpellCheckerInfo
+CarClass(CSpellCheckerInfo)
+    , public Object
+    , public ISpellCheckerInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CSpellCheckerInfo();
+
+    CARAPI constructor();
 
     /**
      * Constructor.
@@ -21,13 +36,6 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IResolveInfo* service);
-
-    /**
-     * Constructor.
-     * @hide
-     */
-    CARAPI constructor(
-        /* [in] */ IParcel* source);
 
     /**
      * Return a unique ID for this spell checker.  The ID is generated from
@@ -114,7 +122,7 @@ public:
         /* [out] */ ISpellCheckerSubtype** subtype);
 
 private:
-    static const CString TAG;// = SpellCheckerInfo.class.getSimpleName();
+    static const CString TAG;
     AutoPtr<IResolveInfo> mService;
     String mId;
     Int32 mLabel;
@@ -128,8 +136,7 @@ private:
     /**
      * The array of subtypes.
      */
-    //ArrayList<SpellCheckerSubtype> mSubtypes = new ArrayList<SpellCheckerSubtype>();
-    List<AutoPtr<ISpellCheckerSubtype> > mSubtypes;
+    AutoPtr<IArrayList> mSubtypes;
 };
 
 }   //namespace Textservice
@@ -137,4 +144,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__ELASTOS_DROID_VIEW_TEXTSERVICE_SPELLCHECKERINFO_H__
+#endif //__ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERINFO_H__

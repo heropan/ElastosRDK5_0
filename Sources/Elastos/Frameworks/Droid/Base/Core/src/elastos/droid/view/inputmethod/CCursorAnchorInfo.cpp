@@ -3,6 +3,7 @@
 #include "elastos/droid/graphics/CMatrix.h"
 #include "elastos/droid/text/CSpannedString.h"
 #include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/view/inputmethod/CSparseRectFArray.h"
 
 #include <elastos/core/Math.h>
 #include <elastos/utility/Objects.h>
@@ -12,6 +13,7 @@ using Elastos::Droid::Graphics::CMatrix;
 using Elastos::Droid::Text::ISpannedString;
 using Elastos::Droid::Text::CSpannedString;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::View::InputMethod::CSparseRectFArray;
 
 using Elastos::Utility::Objects;
 using Elastos::Utility::Logging::Logger;
@@ -93,11 +95,10 @@ ECode CCursorAnchorInfo::Builder::AddCharacterBounds(
         Logger::E(TAG, "index must not be a negative integer.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    assert(0 && "TODO");
-    // if (mCharacterBoundsArrayBuilder == NULL) {
-    //     mCharacterBoundsArrayBuilder = new SparseRectFArrayBuilder();
-    // }
-    // mCharacterBoundsArrayBuilder->Append(index, left, top, right, bottom, flags);
+    if (mCharacterBoundsArrayBuilder == NULL) {
+        mCharacterBoundsArrayBuilder = new CSparseRectFArray::SparseRectFArrayBuilder();
+    }
+    mCharacterBoundsArrayBuilder->Append(index, left, top, right, bottom, flags);
     return NOERROR;
 }
 
@@ -115,20 +116,20 @@ ECode CCursorAnchorInfo::Builder::Build(
     VALIDATE_NOT_NULL(info)
 
     if (!mMatrixInitialized) {
-        assert(0 && "TODO");
         // Coordinate transformation matrix is mandatory when at least one positional
         // parameter is specified.
-        // Boolean hasCharacterBounds = (mCharacterBoundsArrayBuilder != NULL
-        //         && !mCharacterBoundsArrayBuilder->IsEmpty());
-        // if (hasCharacterBounds
-        //         || !Elastos::Core::Math::IsNaN(mInsertionMarkerHorizontal)
-        //         || !Elastos::Core::Math::IsNaN(mInsertionMarkerTop)
-        //         || !Elastos::Core::Math::IsNaN(mInsertionMarkerBaseline)
-        //         || !Elastos::Core::Math::IsNaN(mInsertionMarkerBottom)) {
-        //     // throw new IllegalArgumentException("Coordinate transformation matrix is " +
-        //     //         "required when positional parameters are specified.");
-        //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // }
+        Boolean bIsEmp = FALSE;
+        Boolean hasCharacterBounds = (mCharacterBoundsArrayBuilder != NULL
+                && !(mCharacterBoundsArrayBuilder->IsEmpty(&bIsEmp), bIsEmp));
+        if (hasCharacterBounds
+                || !Elastos::Core::Math::IsNaN(mInsertionMarkerHorizontal)
+                || !Elastos::Core::Math::IsNaN(mInsertionMarkerTop)
+                || !Elastos::Core::Math::IsNaN(mInsertionMarkerBaseline)
+                || !Elastos::Core::Math::IsNaN(mInsertionMarkerBottom)) {
+            // throw new IllegalArgumentException("Coordinate transformation matrix is " +
+            //         "required when positional parameters are specified.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
     }
     AutoPtr<ICursorAnchorInfo> res;
     CCursorAnchorInfo::New(this, (ICursorAnchorInfo**)&res);
@@ -150,10 +151,9 @@ ECode CCursorAnchorInfo::Builder::Reset()
     mInsertionMarkerBottom = Elastos::Core::Math::FLOAT_NAN;
     mMatrix->Set(CMatrix::IDENTITY_MATRIX);
     mMatrixInitialized = FALSE;
-    assert(0 && "TODO");
-    // if (mCharacterBoundsArrayBuilder != NULL) {
-    //     mCharacterBoundsArrayBuilder->Reset();
-    // }
+    if (mCharacterBoundsArrayBuilder != NULL) {
+        mCharacterBoundsArrayBuilder->Reset();
+    }
     return NOERROR;
 }
 
@@ -181,7 +181,9 @@ ECode CCursorAnchorInfo::ReadFromParcel(
     assert(0 && "TODO");
 //    mCharacterBoundsArray = source.readParcelable(SparseRectFArray.class.getClassLoader());
     CMatrix::New((IMatrix**)&mMatrix);
-//    mMatrix->SetValues(source->CreateFloatArray());
+    AutoPtr<ArrayOf<Float> > arr;
+    source->ReadArrayOf((Handle32*)&arr);
+    mMatrix->SetValues(arr);
     return NOERROR;
 }
 
@@ -201,7 +203,7 @@ ECode CCursorAnchorInfo::WriteToParcel(
 //    dest.writeParcelable(mCharacterBoundsArray, flags);
     AutoPtr<ArrayOf<Float> > matrixArray = ArrayOf<Float>::Alloc(9);
     mMatrix->GetValues(matrixArray);
-//    dest.writeFloatArray(matrixArray);
+    dest->WriteArrayOf((Handle32)matrixArray.Get());
     return NOERROR;
 }
 
@@ -332,9 +334,9 @@ ECode CCursorAnchorInfo::constructor(
     mInsertionMarkerTop = cBuilder->mInsertionMarkerTop;
     mInsertionMarkerBaseline = cBuilder->mInsertionMarkerBaseline;
     mInsertionMarkerBottom = cBuilder->mInsertionMarkerBottom;
-    assert(0 && "TODO");
-    // mCharacterBoundsArray = cBuilder->mCharacterBoundsArrayBuilder != NULL ?
-    //         cBuilder->mCharacterBoundsArrayBuilder->Build() : NULL;
+    if (cBuilder->mCharacterBoundsArrayBuilder != NULL) {
+        cBuilder->mCharacterBoundsArrayBuilder->Build((ISparseRectFArray**)&mCharacterBoundsArray);
+    }
     CMatrix::New(cBuilder->mMatrix, (IMatrix**)&mMatrix);
     return NOERROR;
 }
@@ -427,13 +429,11 @@ ECode CCursorAnchorInfo::GetCharacterBounds(
 {
     VALIDATE_NOT_NULL(rect)
 
-    assert(0 && "TODO");
-    // if (mCharacterBoundsArray == NULL) {
-    //     *rect = NULL;
-    //     return NOERROR;
-    // }
-    // *rect = mCharacterBoundsArray->Get(index);
-    return NOERROR;
+    if (mCharacterBoundsArray == NULL) {
+        *rect = NULL;
+        return NOERROR;
+    }
+    return mCharacterBoundsArray->Get(index, rect);
 }
 
 ECode CCursorAnchorInfo::GetCharacterBoundsFlags(
@@ -442,13 +442,11 @@ ECode CCursorAnchorInfo::GetCharacterBoundsFlags(
 {
     VALIDATE_NOT_NULL(result)
 
-    assert(0 && "TODO");
-    // if (mCharacterBoundsArray == NULL) {
-    //     *result = 0;
-    //     return NOERROR;
-    // }
-    // *result = mCharacterBoundsArray->GetFlags(index, 0);
-    return NOERROR;
+    if (mCharacterBoundsArray == NULL) {
+        *result = 0;
+        return NOERROR;
+    }
+    return mCharacterBoundsArray->GetFlags(index, 0, result);
 }
 
 ECode CCursorAnchorInfo::GetMatrix(

@@ -14,10 +14,6 @@ ECode CSpellCheckerSession::constructor(
     return NOERROR;
 }
 
-/**
- * @return true if the connection to a text service of this session is disconnected and not
- * alive.
- */
 ECode CSpellCheckerSession::IsSessionDisconnected(
     /* [out]*/ Boolean* bFlag)
 {
@@ -26,10 +22,6 @@ ECode CSpellCheckerSession::IsSessionDisconnected(
     return NOERROR;
 }
 
-/**
- * Get the spell checker service info this spell checker session has.
- * @return SpellCheckerInfo for the specified locale.
- */
 ECode CSpellCheckerSession::GetSpellChecker(
     /* [out] */ ISpellCheckerInfo** info)
 {
@@ -38,30 +30,18 @@ ECode CSpellCheckerSession::GetSpellChecker(
     return NOERROR;
 }
 
-/**
- * Cancel pending and running spell check tasks
- */
 ECode CSpellCheckerSession::Cancel()
 {
     SpellCheckerSession::Cancel();
     return NOERROR;
 }
 
-/**
- * Finish this session and allow TextServicesManagerService to disconnect the bound spell
- * checker.
- */
 ECode CSpellCheckerSession::Close()
 {
     SpellCheckerSession::Close();
     return NOERROR;
 }
 
-/**
- * Get suggestions from the specified sentences
- * @param textInfos an array of text metadata for a spell checker
- * @param suggestionsLimit the maximum number of suggestions that will be returned
- */
 ECode CSpellCheckerSession::GetSentenceSuggestions(
     /* [in] */ ArrayOf<ITextInfo*>* textInfos,
     /* [in] */ Int32 suggestionsLimit)
@@ -70,13 +50,6 @@ ECode CSpellCheckerSession::GetSentenceSuggestions(
     return NOERROR;
 }
 
-/**
- * Get candidate strings for a substring of the specified text.
- * @param textInfo text metadata for a spell checker
- * @param suggestionsLimit the maximum number of suggestions that will be returned
- * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
- */
-//@Deprecated
 ECode CSpellCheckerSession::GetSuggestions(
     /* [in] */ ITextInfo* textInfo,
     /* [in] */ Int32 suggestionsLimit)
@@ -85,14 +58,6 @@ ECode CSpellCheckerSession::GetSuggestions(
     return NOERROR;
 }
 
-/**
- * A batch process of getSuggestions
- * @param textInfos an array of text metadata for a spell checker
- * @param suggestionsLimit the maximum number of suggestions that will be returned
- * @param sequentialWords true if textInfos can be treated as sequential words.
- * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
- */
-//@Deprecated
 ECode CSpellCheckerSession::GetSuggestions(
     /* [in] */ ArrayOf<ITextInfo*>* textInfos,
     /* [in] */ Int32 suggestionsLimit,
@@ -102,9 +67,6 @@ ECode CSpellCheckerSession::GetSuggestions(
     return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode CSpellCheckerSession::GetTextServicesSessionListener(
     /* [out] */ ITextServicesSessionListener** listener)
 {
@@ -115,9 +77,6 @@ ECode CSpellCheckerSession::GetTextServicesSessionListener(
     return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode CSpellCheckerSession::GetSpellCheckerSessionListener(
     /* [out]*/ ISpellCheckerSessionListener** listener)
 {

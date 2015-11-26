@@ -1,10 +1,20 @@
 
 #include "elastos/droid/view/inputmethod/CIInputMethodClient.h"
 
+using Elastos::Droid::Internal::View::EIID_IInputMethodClient;
+using Elastos::Droid::Os::EIID_IBinder;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
+
+//========================================================================================
+//              CIInputMethodClient::
+//========================================================================================
+CAR_INTERFACE_IMPL_2(CIInputMethodClient, Object, IInputMethodClient, IBinder)
+
+CAR_OBJECT_IMPL(CIInputMethodClient)
 
 ECode CIInputMethodClient::constructor(
     /* [in] */ IInputMethodManager* host)
@@ -55,10 +65,14 @@ ECode CIInputMethodClient::ToString(
     return E_NOT_IMPLEMENTED;
 }
 
-@Override
-public void setUserActionNotificationSequenceNumber(int sequenceNumber) {
-    mH.sendMessage(mH.obtainMessage(MSG_SET_USER_ACTION_NOTIFICATION_SEQUENCE_NUMBER,
-            sequenceNumber, 0));
+ECode CIInputMethodClient::SetUserActionNotificationSequenceNumber(
+    /* [in] */ Int32 sequenceNumber)
+{
+    AutoPtr<IMessage> msg;
+    mHost->mH->ObtainMessage(mHost->MSG_SET_USER_ACTION_NOTIFICATION_SEQUENCE_NUMBER,
+            sequenceNumber, 0, (IMessage**)&msg);
+    Boolean result;
+    return mHost->mH->SendMessage(msg, &result);
 }
 
 } // namespace InputMethod

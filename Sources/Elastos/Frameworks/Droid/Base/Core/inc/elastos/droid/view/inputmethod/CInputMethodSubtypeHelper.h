@@ -4,26 +4,32 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_View_InputMethod_CInputMethodSubtypeHelper.h"
-#include <elastos/utility/etl/List.h>
+#include <elastos/core/Singleton.h>
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
+
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
 
-
 CarClass(CInputMethodSubtypeHelper)
+    , public Singleton
+    , public IInputMethodSubtypeHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI Sort(
         /* [in] */ IContext* context,
         /* [in] */ Int32 flags,
         /* [in] */ IInputMethodInfo* imi,
-        /* [in] */ IObjectContainer* subtypeList,
-        /* [out, callee] */ IObjectContainer** sortedSubtypeList);
+        /* [in] */ IList* subtypeList,
+        /* [out, callee] */ IList** sortedSubtypeList);
 };
 
 

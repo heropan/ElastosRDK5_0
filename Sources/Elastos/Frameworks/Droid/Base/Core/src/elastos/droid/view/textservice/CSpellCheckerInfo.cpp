@@ -1,8 +1,31 @@
 
-/**
- * Constructor.
- * @hide
- */
+#include "elastos/droid/view/textservice/CSpellCheckerInfo.h"
+
+namespace Elastos {
+namespace Droid {
+namespace View {
+namespace Textservice {
+
+//========================================================================================
+//              CSpellCheckerInfo::
+//========================================================================================
+CAR_INTERFACE_IMPL_2(CSpellCheckerInfo, Object, ISpellCheckerInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CSpellCheckerInfo)
+
+CSpellCheckerInfo::CSpellCheckerInfo()
+    : mId("")
+    , mLabel(0)
+    , mSettingsActivityName("")
+{
+    CArrayList::New((IArrayList**)&mSubtypes);
+}
+
+ECode CSpellCheckerInfo::constructor()
+{
+    return NOERROR;
+}
+
 ECode CSpellCheckerInfo::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IResolveInfo* service)
@@ -10,17 +33,16 @@ ECode CSpellCheckerInfo::constructor(
     mService = service;
 
     CResolveInfo* info = (CResolveInfo*)(service.Get());
-    AutoPtr<IServiceInfo> si = info->serviceInfo;
-    //mId = new ComponentName(si.packageName, si.name).flattenToShortString();
-    CServiceInfo* csi = (CServiceInfo*)(si.Get());
-    AutoPtr<IComponentName> componentName;
-    CComponentName::New(csi->packageName, si->name, (IComponentName**)&componentName);
-    componentName->FlattenToShortString(&mId);
+    AutoPtr<IServiceInfo> si = info->mServiceInfo;
+    AutoPtr<CServiceInfo> _si = (CServiceInfo*)si.Get();
+    AutoPtr<IComponentName> name;
+    CComponentName::New(_si->mPackageName, _si->mName, (IComponentName**)&name);
+    name->FlattenToShortString(&mId);
 
     AutoPtr<IPackageManager> pm;
     context->GetPackageManager((IPackageManager**)&pm);
     Int32 label = 0;
-    String settingsActivityComponent;
+    String settingsActivityComponent(NULL);
 
     AutoPtr<IXmlResourceParser> parser;
     //try {
@@ -32,10 +54,10 @@ ECode CSpellCheckerInfo::constructor(
         assert(parser != NULL);
 
         AutoPtr<IResources> res;
-        pm->GetResourcesForApplication(si->applicationInfo, (IResources**)&res);
+        pm->GetResourcesForApplication(_si->mApplicationInfo, (IResources**)&res);
         AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(parser);
-        Int32 type;
-        while ((parser->Next(&type), type) != IXmlPullParser::END_DOCUMENT
+        Int32 type = 0;
+        while ((IXmlPullParser::Probe(parser)->Next(&type), type) != IXmlPullParser::END_DOCUMENT
                 && type != IXmlPullParser::START_TAG) {
         }
 
@@ -91,12 +113,8 @@ ECode CSpellCheckerInfo::constructor(
     return NOERROR;
 }
 
-/**
- * Constructor.
- * @hide
- */
-ECode CSpellCheckerInfo::constructor(
-    /* [in] */ IParcel* source)
+ECode CSpellCheckerInfo::ReadFromParcel(
+    /* [in] */ IParcel* parcel)
 {
     source->ReadInt32(&mLabel);
     source->ReadString(&mId);
@@ -107,10 +125,6 @@ ECode CSpellCheckerInfo::constructor(
     return NOERROR;
 }
 
-/**
- * Return a unique ID for this spell checker.  The ID is generated from
- * the package and class name implementing the method.
- */
 ECode CSpellCheckerInfo::GetId(
     /* [out] */ String* id)
 {
@@ -119,9 +133,6 @@ ECode CSpellCheckerInfo::GetId(
     return NOERROR;
 }
 
-/**
- * Return the component of the service that implements.
- */
 ECode CSpellCheckerInfo::GetComponent(
     /* [out] */ IComponentName** component)
 {
@@ -136,9 +147,6 @@ ECode CSpellCheckerInfo::GetComponent(
     return NOERROR;
 }
 
-/**
- * Return the .apk package that implements this.
- */
 ECode CSpellCheckerInfo::GetPackageName(
     /* [out] */ String* name)
 {
@@ -147,19 +155,6 @@ ECode CSpellCheckerInfo::GetPackageName(
     return NOERROR;
 }
 
-ECode CSpellCheckerInfo::ReadFromParcel(
-        /* [in] */ IParcel* parcel)
-{
-//    return new SpellCheckerInfo(source);
-}
-
-/**
- * Used to package this object into a {@link Parcel}.
- *
- * @param dest The {@link Parcel} to be written.
- * @param flags The flags used for parceling.
- */
-//@Override
 ECode CSpellCheckerInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
@@ -172,11 +167,6 @@ ECode CSpellCheckerInfo::WriteToParcel(
     return NOERROR;
 }
 
-/**
- * Load the user-displayed label for this spell checker.
- *
- * @param pm Supply a PackageManager used to load the spell checker's resources.
- */
 ECode CSpellCheckerInfo::LoadLabel(
     /* [in] */ IPackageManager* pm,
     /* [out] */ ICharSequence** lable)
@@ -194,11 +184,6 @@ ECode CSpellCheckerInfo::LoadLabel(
     return pm->GetText(packageName, mLabel, applicationInfo);
 }
 
-/**
- * Load the user-displayed icon for this spell checker.
- *
- * @param pm Supply a PackageManager used to load the spell checker's resources.
- */
 ECode CSpellCheckerInfo::LoadIcon(
     /* [in] */ IPackageManager* pm,
     /* [out] */ IDrawable** drawable)
@@ -206,28 +191,15 @@ ECode CSpellCheckerInfo::LoadIcon(
     return mService->LoadIcon(pm, drawable);
 }
 
-/**
- * Return the raw information about the Service implementing this
- * spell checker.  Do not modify the returned object.
- */
 ECode CSpellCheckerInfo::GetServiceInfo(
     /* [out] */ IServiceInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    *info = ((CResolveInfo*)(mService.Get()))->serviceInfo;
+    *info = ((CResolveInfo*)(mService.Get()))->mServiceInfo;
     REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
-/**
- * Return the class name of an activity that provides a settings UI.
- * You can launch this activity be starting it with
- * an {@link android.content.Intent} whose action is MAIN and with an
- * explicit {@link android.content.ComponentName}
- * composed of {@link #getPackageName} and the class name returned here.
- *
- * <p>A null will be returned if there is no settings activity.
- */
 ECode CSpellCheckerInfo::GetSettingsActivity(
     /* [out] */ String* name)
 {
@@ -236,28 +208,24 @@ ECode CSpellCheckerInfo::GetSettingsActivity(
     return NOERROR;
 }
 
-/**
- * Return the count of the subtypes.
- */
 ECode CSpellCheckerInfo::GetSubtypeCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    *count = mSubtypes.GetSize();
-    return NOERROR;
+    return mSubtypes->GetSize(count);
 }
 
-/**
- * Return the subtype at the specified index.
- *
- * @param index the index of the subtype to return.
- */
 ECode CSpellCheckerInfo::GetSubtypeAt(
     /* [in] */ Int32 index,
     /* [out] */ ISpellCheckerSubtype** subtype)
 {
     VALIDATE_NOT_NULL(subtype);
-    *subtype = mSubtypes[index];
+    *subtype = (*mSubtypes)[index];
     REFCOUNT_ADD(*subtype);
     return NOERROR;
 }
+
+} // namespace Textservice
+} // namespace View
+} // namespace Droid
+} // namespace Elastos

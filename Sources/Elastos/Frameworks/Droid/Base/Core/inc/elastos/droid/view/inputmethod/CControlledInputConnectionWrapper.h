@@ -2,31 +2,43 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CCONTROLLEDINPUTCONNECTIONWRAPPER_H__
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CCONTROLLEDINPUTCONNECTIONWRAPPER_H__
 
-//#include "_Elastos_Droid_View_InputMethod_CControlledInputConnectionWrapper.h"
-#include "elastos/droid/view/IInputConnectionWrapper.h"
+#include "_Elastos_Droid_View_InputMethod_CControlledInputConnectionWrapper.h"
+//#include "elastos/droid/view/IInputConnectionWrapper.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Internal::View::IInputContext;
 using Elastos::Droid::Internal::View::IInputContextCallback;
+
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
 
-CarClass(CControlledInputConnectionWrapper), public IInputConnectionWrapper
+CarClass(CControlledInputConnectionWrapper)
+    , public Object
+    , public IInputContext
+    , public IBinder
+//    , public IInputConnectionWrapper  // internal
 {
 public:
-    CControlledInputConnectionWrapper();
+    CAR_INTERFACE_DECL()
 
-    virtual CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
+
+    CControlledInputConnectionWrapper();
 
     CARAPI constructor(
         /* [in] */ ILooper* mainLooper,
         /* [in] */ IInputConnection* conn,
         /* [in] */ IInputMethodManager* agmer);
 
-   CARAPI GetTextAfterCursor(
+    CARAPI GetTextAfterCursor(
         /* [in] */ Int32 length,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 seq,
@@ -107,6 +119,11 @@ public:
 
     CARAPI GetDescription(
         /* [out] */ String* str);
+
+    CARAPI RequestUpdateCursorAnchorInfo(
+        /* [in] */ Int32 cursorUpdateMode,
+        /* [in] */ Int32 seq,
+        /* [in] */ IInputContextCallback* cb);
 
     CARAPI_(Boolean) IsActive();
 

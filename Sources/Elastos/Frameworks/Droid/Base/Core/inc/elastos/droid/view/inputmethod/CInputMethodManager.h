@@ -1,18 +1,20 @@
 
-#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CLOCALINPUTMETHODMANAGER_H__
-#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CLOCALINPUTMETHODMANAGER_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODMANAGER_H__
+#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODMANAGER_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-//#include "_Elastos_Droid_View_InputMethod_CInputMethodManager.h"
+#include "_Elastos_Droid_View_InputMethod_CInputMethodManager.h"
 #include "elastos/droid/view/inputmethod/CControlledInputConnectionWrapper.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
-#include <elastos/utility/etl/List.h>
+#include "elastos/droid/utility/Pools.h"
 
-using Elastos::Utility::IObjectMap;
+#include <elastos/core/Object.h>
+
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
@@ -23,6 +25,11 @@ using Elastos::Droid::Internal::View::IInputContext;
 using Elastos::Droid::Internal::View::IInputMethodClient;
 using Elastos::Droid::Internal::View::IIInputMethodManager;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Utility::Pools;
+
+using Elastos::Utility::IMap;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -30,20 +37,24 @@ namespace View {
 namespace InputMethod {
 
 CarClass(CInputMethodManager)
+    , public Object
+    , public IInputMethodManager
 {
 private:
-    class MyHandler : public HandlerBase
+    class MyHandler
+        : public Handler
     {
     public:
         MyHandler(
             /* [in] */ ILooper* looper,
             /* [in] */ CInputMethodManager* host)
-            : HandlerBase(looper)
+            : Handler(looper, NULL, TRUE)
             , mHost(host)
         {}
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         CInputMethodManager* mHost;
     };
@@ -58,29 +69,55 @@ private:
         {}
 
         CARAPI Run();
+
     private:
         CInputMethodManager* mHost;
     };
 
-    class PendingEvent
-        : public ElRefBase
-        , public IInterface
+    class ImeInputEventSender
+        : public Object
+//        : public InputEventSender
     {
     public:
-        CAR_INTERFACE_DECL()
+        ImeInputEventSender(
+            /* [in] */ IInputChannel* inputChannel,
+            /* [in] */ ILooper* looper,
+            /* [in] */ CInputMethodManager* h);
 
-        PendingEvent();
+        CARAPI OnInputEventFinished(
+            /* [in] */ Int32 seq,
+            /* [in] */ Boolean handled);
 
     public:
-        AutoPtr<PendingEvent> mNext;
+        CInputMethodManager* mHost;
+    };
 
-        Int64 mStartTime;
-        Int32 mSeq;
+    class PendingEvent
+        : public Runnable
+    {
+    public:
+        PendingEvent(
+            /* [in] */ CInputMethodManager* host);
+
+        CARAPI_(void) Recycle();
+
+        CARAPI Run();
+
+    public:
+        AutoPtr<IInputEvent> mEvent;
+        AutoPtr<IInterface> mToken;
         String mInputMethodId;
-        AutoPtr<IInputMethodManagerFinishedEventCallback> mCallback;
+        AutoPtr<IInputMethodManagerFinishedInputEventCallback> mCallback;
+        AutoPtr<IHandler> mHandler;
+        Boolean mHandled;
+        CInputMethodManager* mHost;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CInputMethodManager();
 
     //TODO: will delete. Because LocalInputMethodManager is private in java code.
@@ -93,16 +130,7 @@ public:
      * doesn't already exist.
      * @hide
      */
-    static CARAPI_(AutoPtr<IInputMethodManager>) GetInstance(
-        /* [in] */ IContext* context);
-
-    /**
-     * Internally, the input method manager can't be context-dependent, so
-     * we have this here for the places that need it.
-     * @hide
-     */
-    static CARAPI_(AutoPtr<IInputMethodManager>) GetInstance(
-        /* [in] */ ILooper* mainLooper);
+    static CARAPI_(AutoPtr<IInputMethodManager>) GetInstance();
 
     /**
      * Private optimization: retrieve the global InputMethodManager instance,
@@ -120,15 +148,15 @@ public:
         /* [out] */ IInputContext** context);
 
     CARAPI GetInputMethodList(
-        /* [out] */ IObjectContainer** infos);
+        /* [out] */ IList** infos);
 
     CARAPI GetEnabledInputMethodList(
-        /* [out] */ IObjectContainer** list);
+        /* [out] */ IList** list);
 
     CARAPI GetEnabledInputMethodSubtypeList(
         /* [in] */ IInputMethodInfo* imi,
         /* [in] */ Boolean allowsImplicitlySelectedSubtypes,
-        /* [out] */ IObjectContainer** infos);
+        /* [out] */ IList** infos);
 
     CARAPI ShowStatusIcon(
         /* [in] */ IBinder* imeToken,
@@ -190,6 +218,9 @@ public:
      * Reset all of the state associated with being bound to an input method.
      */
     /* package */ CARAPI_(void) ClearBindingLocked();
+
+    CARAPI_(void) SetInputChannelLocked(
+        /* [in] */ IInputChannel* channel);
 
     /**
      * Reset all of the state associated with a served view being connected
@@ -420,6 +451,23 @@ public:
         /* [out] */ Boolean* isWatching);
 
     /**
+     * Return true if the current input method wants to be notified when cursor/anchor location
+     * is changed.
+     *
+     * @hide
+     */
+    CARAPI IsCursorAnchorInfoEnabled(
+        /* [out] */ Boolean* result);
+
+    /**
+     * Set the requested mode for {@link #updateCursorAnchorInfo(View, CursorAnchorInfo)}.
+     *
+     * @hide
+     */
+    CARAPI SetUpdateCursorAnchorInfoMode(
+        /* [in] */ Int32 flags);
+
+    /**
      * Report the current cursor location in its window.
      */
     CARAPI UpdateCursor(
@@ -428,6 +476,14 @@ public:
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
+
+    /**
+     * Report positional change of the text insertion point and/or characters in the composition
+     * string.
+     */
+    CARAPI UpdateCursorAnchorInfo(
+        /* [in] */ IView* view,
+        /* [in] */ ICursorAnchorInfo* cursorAnchorInfo);
 
     /**
      * Call {@link InputMethodSession#appPrivateCommand(String, Bundle)
@@ -496,35 +552,21 @@ public:
         /* [in] */ Int32 flags);
 
     /**
+     * Dispatches an input event to the IME.
+     *
+     * Returns {@link #DISPATCH_HANDLED} if the event was handled.
+     * Returns {@link #DISPATCH_NOT_HANDLED} if the event was not handled.
+     * Returns {@link #DISPATCH_IN_PROGRESS} if the event is in progress and the
+     * callback will be invoked later.
+     *
      * @hide
      */
-    CARAPI DispatchKeyEvent(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 seq,
-        /* [in] */ IKeyEvent* key,
-        /* [in] */ IInputMethodManagerFinishedEventCallback* callback);
-
-    CARAPI DispatchTrackballEvent(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 seq,
-        /* [in] */ IMotionEvent* motion,
-        /* [in] */ IInputMethodManagerFinishedEventCallback* callback);
-
-    /**
-     * @hide
-     */
-    CARAPI DispatchGenericMotionEvent(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 seq,
-        /* [in] */ IMotionEvent* motion,
-        /* [in] */ IInputMethodManagerFinishedEventCallback* callback);
-
-    CARAPI_(void) FinishedEvent(
-        /* [in] */ Int32 seq,
-        /* [in] */ Boolean handled);
-
-    CARAPI_(void) TimeoutEvent(
-        /* [in] */ Int32 seq);
+    CARAPI DispatchInputEvent(
+        /* [in] */ IInputEvent* event,
+        /* [in] */ IInterface* token,
+        /* [in] */ IInputMethodManagerFinishedInputEventCallback* callback,
+        /* [in] */ IHandler* handler,
+        /* [out] */ Int32* result);
 
     CARAPI ShowInputMethodPicker();
 
@@ -555,10 +597,23 @@ public:
         /* [out] */ Boolean* switched);
 
     /**
+     * Notify that a user took some action with this input method.
+     * @hide
+     */
+    CARAPI NotifyUserAction();
+
+    /**
      * Returns a map of all shortcut input method info and their subtypes.
      */
     CARAPI GetShortcutInputMethodsAndSubtypes(
-        /* [out] */ IObjectMap** subtypes);
+        /* [out] */ IMap** subtypes);
+
+    /**
+     * @return The current height of the input method window.
+     * @hide
+     */
+    CARAPI GetInputMethodWindowVisibleHeight(
+        /* [out] */ Int32* height);
 
     /**
      * Force switch to the last used input method and subtype. If the last input method didn't have
@@ -587,6 +642,21 @@ public:
         /* [in] */ IBinder* imeToken,
         /* [in] */ Boolean onlyCurrentIme,
         /* [out] */ Boolean* switched);
+
+    /**
+     * Returns true if the current IME needs to offer the users ways to switch to a next input
+     * method (e.g. a globe key.).
+     * When an IME sets supportsSwitchingToNextInputMethod and this method returns true,
+     * the IME has to offer ways to to invoke {@link #switchToNextInputMethod} accordingly.
+     * <p> Note that the system determines the most appropriate next input method
+     * and subtype in order to provide the consistent user experience in switching
+     * between IMEs and subtypes.
+     * @param imeToken Supplies the identifying token given to an input method when it was started,
+     * which allows it to perform this operation on itself.
+     */
+    CARAPI ShouldOfferSwitchingToNextInputMethod(
+        /* [in] */ IBinder* token,
+        /* [out] */ Boolean* result);
 
     /**
      * Set additional input method subtypes. Only a process which shares the same uid with the IME
@@ -619,8 +689,23 @@ public:
     CARAPI_(void) HandleSetActive(
         /* [in] */ Boolean active);
 
-    CARAPI_(void) HandleEventTimeout(
-        /* [in] */ Int32 seq);
+    // Must be called on the main looper
+    CARAPI_(void) SendInputEventAndReportResultOnMainLooper(
+        /* [in] */ PendingEvent* p);
+
+    // Must be called on the main looper
+    CARAPI_(Int32) SendInputEventOnMainLooperLocked(
+        /* [in] */ PendingEvent* p);
+
+    CARAPI_(void) FinishedInputEvent(
+        /* [in] */ Int32 seq,
+        /* [in] */ Boolean handled,
+        /* [in] */ Boolean timeout);
+
+    // Assumes the event has already been removed from the queue.
+    CARAPI_(void) InvokeFinishedInputEventCallback(
+        /* [in] */ PendingEvent* p,
+        /* [in] */ Boolean handled);
 
 private:
     /**
@@ -632,20 +717,14 @@ private:
         /* [in] */ Boolean forceNewFocus,
         /* [in] */ Boolean finishComposingText);
 
-    CARAPI_(void) EnqueuePendingEventLocked(
-        /* [in] */ Int64 startTime,
-        /* [in] */ Int32 seq,
-        /* [in] */ const String& inputMethodId,
-        /* [in] */ IInputMethodManagerFinishedEventCallback* callback);
-
-    CARAPI_(AutoPtr<PendingEvent>) DequeuePendingEventLocked(
-        /* [in] */ Int32 seq);
+    CARAPI_(void) FlushPendingEventsLocked();
 
     CARAPI_(AutoPtr<PendingEvent>) ObtainPendingEventLocked(
-        /* [in] */ Int64 startTime,
-        /* [in] */ Int32 seq,
+        /* [in] */ IInputEvent* event,
+        /* [in] */ IInterface* token,
         /* [in] */ const String& inputMethodId,
-        /* [in] */ IInputMethodManagerFinishedEventCallback* callback);
+        /* [in] */ IInputMethodManagerFinishedInputEventCallback* callback,
+        /* [in] */ IHandler* handler);
 
     CARAPI_(void) RecyclePendingEventLocked(
         /* [in] */ PendingEvent* p);
@@ -656,19 +735,31 @@ public:
     static const Boolean DEBUG;
     static const String TAG;
 
-    static Object sInstanceSync;
+    static const String PENDING_EVENT_COUNTER;
     static AutoPtr<IInputMethodManager> sInstance;
 
     /**
      * Timeout in milliseconds for delivering a key to an IME.
      */
-    static const Int64 INPUT_METHOD_NOT_RESPONDING_TIMEOUT = 2500;
+    static const Int64 INPUT_METHOD_NOT_RESPONDING_TIMEOUT;
 
-    static const Int32 MSG_DUMP;// = 1;
-    static const Int32 MSG_BIND;// = 2;
-    static const Int32 MSG_UNBIND;// = 3;
-    static const Int32 MSG_SET_ACTIVE;// = 4;
-    static const Int32 MSG_EVENT_TIMEOUT;// = 5;
+    static const Int32 MSG_DUMP;
+    static const Int32 MSG_BIND;
+    static const Int32 MSG_UNBIND;
+    static const Int32 MSG_SET_ACTIVE;
+    static const Int32 MSG_SEND_INPUT_EVENT;
+    static const Int32 MSG_TIMEOUT_INPUT_EVENT;
+    static const Int32 MSG_FLUSH_INPUT_EVENT;
+    static const Int32 MSG_SET_USER_ACTION_NOTIFICATION_SEQUENCE_NUMBER;
+
+    /** @hide */
+    static const Int32 DISPATCH_IN_PROGRESS;
+
+    /** @hide */
+    static const Int32 DISPATCH_NOT_HANDLED;
+
+    /** @hide */
+    static const Int32 DISPATCH_HANDLED;
 
     AutoPtr<IIInputMethodManager> mService;
     AutoPtr<ILooper> mMainLooper;
@@ -759,18 +850,55 @@ public:
      */
     AutoPtr<IIInputMethodSession> mCurMethod;
 
-    AutoPtr<PendingEvent> mPendingEventPool;
-    Int32 mPendingEventPoolSize;
-    AutoPtr<PendingEvent> mFirstPendingEvent;
+    AutoPtr<IInputChannel> mCurChannel;
+    AutoPtr<ImeInputEventSender> mCurSender;
+
+    AutoPtr<Pools::Pool<PendingEvent> > mPendingEventPool;
+    AutoPtr<ISparseArray> mPendingEvents;
 
     AutoPtr<IInputMethodClient> mClient;
 
     AutoPtr<IInputConnection> mDummyInputConnection;
 
-    AutoPtr<IInputMethodCallback> mInputMethodCallback;
-
 private:
-    static const Int32 MAX_PENDING_EVENT_POOL_SIZE = 4;
+    /**
+     * Represents an invalid action notification sequence number. {@link InputMethodManagerService}
+     * always issues a positive integer for action notification sequence numbers. Thus -1 is
+     * guaranteed to be different from any valid sequence number.
+     */
+    static const Int32 NOT_AN_ACTION_NOTIFICATION_SEQUENCE_NUMBER;
+    /**
+     * The next sequence number that is to be sent to {@link InputMethodManagerService} via
+     * {@link IInputMethodManager#notifyUserAction(int)} at once when a user action is observed.
+     */
+    Int32 mNextUserActionNotificationSequenceNumber;
+
+    /**
+     * The last sequence number that is already sent to {@link InputMethodManagerService}.
+     */
+    Int32 mLastSentUserActionNotificationSequenceNumber;
+
+    /**
+     * The instance that has previously been sent to the input method.
+     */
+    AutoPtr<ICursorAnchorInfo> mCursorAnchorInfo;
+
+    /**
+     * The buffer to retrieve the view location in screen coordinates in {@link #updateCursor}.
+     */
+    AutoPtr<ArrayOf<Int32> > mViewTopLeft;
+
+    /**
+     * The matrix to convert the view location into screen coordinates in {@link #updateCursor}.
+     */
+    AutoPtr<IMatrix> mViewToScreenMatrix;
+
+    static const Int32 REQUEST_UPDATE_CURSOR_ANCHOR_INFO_NONE;
+
+    /**
+     * The monitor mode for {@link #updateCursorAnchorInfo(View, CursorAnchorInfo)}.
+     */
+    Int32 mRequestUpdateCursorAnchorInfoMonitorMode;
 };
 
 } // namespace InputMethod
@@ -778,4 +906,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif   //__ELASTOS_DROID_VIEW_INPUTMETHOD_CLOCALINPUTMETHODMANAGER_H__
+#endif   //__ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODMANAGER_H__

@@ -2,16 +2,27 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CSENTENCESUGGESTIONSINFO_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_CSENTENCESUGGESTIONSINFO_H__
 
+#include "_Elastos_Droid_View_Textservice_CSentenceSuggestionsInfo.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Textservice {
 
-#include "_Elastos_Droid_View_Textservice_CSentenceSuggestionsInfo.h"
-
 CarClass(CSentenceSuggestionsInfo)
+    , public Object
+    , public ISentenceSuggestionsInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     /**
      * Constructor.
@@ -24,11 +35,8 @@ public:
         /* [in] */ ArrayOf<Int32>* offsets,
         /* [in] */ ArrayOf<Int32>* lengths);
 
-    CARAPI constructor(
-        /* [in] */ IParcel* source);
-
     CARAPI ReadFromParcel(
-        /* [in] */ IParcel* parcel);
+        /* [in] */ IParcel* source);
 
     /**
      * Used to package this object into a {@link Parcel}.

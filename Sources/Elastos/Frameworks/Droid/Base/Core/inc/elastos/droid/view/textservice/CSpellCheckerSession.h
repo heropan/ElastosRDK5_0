@@ -2,6 +2,11 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERSESSION_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERSESSION_H__
 
+#include "_Elastos_Droid_View_Textservice_CSpellCheckerSession.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
@@ -56,8 +61,12 @@ namespace Textservice {
  *
  */
 CarClass(CSpellCheckerSession)
+    , public SpellCheckerSession
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CSpellCheckerSession();
 
     CARAPI constructor(
         /* [in] */ ISpellCheckerInfo* info,
