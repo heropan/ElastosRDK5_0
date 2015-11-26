@@ -659,32 +659,35 @@ ECode CArrayMap::PutAll(
 ECode CArrayMap::Remove(
     /* [in] */ IInterface* key)
 {
-    AutoPtr<IInterface> old;
-    return Remove(key, (IInterface**)&old);
+    return Remove(key, NULL);
 }
 
 ECode CArrayMap::Remove(
     /* [in] */ IInterface* key,
     /* [out] */ IInterface** result)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 index;
     GetIndexOfKey(key, &index);
     if (index >= 0) {
         return RemoveAt(index, result);
     }
 
-    *result = NULL;
+    if (result) {
+        *result = NULL;
+    }
     return NOERROR;
+}
+
+ECode CArrayMap::RemoveAt(
+    /* [in] */ Int32 index)
+{
+    return RemoveAt(index, NULL);
 }
 
 ECode CArrayMap::RemoveAt(
     /* [in] */ Int32 index,
     /* [out] */ IInterface** result)
 {
-    VALIDATE_NOT_NULL(result)
-
     AutoPtr<IInterface> old = (*mArray)[(index << 1) + 1];
     if (mSize <= 1) {
         // Now empty.
@@ -731,8 +734,10 @@ ECode CArrayMap::RemoveAt(
         }
     }
 
-    *result = old;
-    REFCOUNT_ADD(*result)
+    if (result) {
+        *result = old;
+        REFCOUNT_ADD(*result)
+    }
     return NOERROR;
 }
 
@@ -751,7 +756,7 @@ ECode CArrayMap::Equals(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
 
-    if (TO_IINTERFACE(this) == object) {
+    if (TO_IINTERFACE(this) == IInterface::Probe(object)) {
         *result = TRUE;
         return NOERROR;
     }

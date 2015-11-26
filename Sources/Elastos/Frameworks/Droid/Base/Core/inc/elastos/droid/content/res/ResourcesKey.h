@@ -29,6 +29,9 @@ public:
 
     Boolean HasOverrideConfiguration();
 
+    CARAPI HasOverrideConfiguration(
+        /* [out] */ Boolean* result);
+
     CARAPI GetHashCode(
         /* [out] */ Int32* hash);
 
@@ -38,6 +41,18 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* str);
+
+    CARAPI GetDisplayId(
+        /* [out] */ Int32* displayId);
+
+    CARAPI SetDisplayId(
+        /* [in] */ Int32 displayId);
+
+    CARAPI GetOverrideConfiguration(
+        /* [out] */ IConfiguration** config);
+
+    CARAPI SetOverrideConfiguration(
+        /* [in] */ IConfiguration* config);
 
 public:
     Int32 mDisplayId;

@@ -224,6 +224,10 @@ AutoPtr< ArrayOf<String> > CContextImpl::EMPTY_FILE_LIST = ArrayOf<String>::Allo
 
 AutoPtr<IWallpaperManager> CContextImpl::sWallpaperManager;
 
+CAR_INTERFACE_IMPL(CContextImpl, ContextWrapper, IContextImpl)
+
+CAR_OBJECT_IMPL(CContextImpl)
+
 CContextImpl::CContextImpl()
     : mThemeResource(0)
     , mRestricted(FALSE)
@@ -606,29 +610,29 @@ ECode CContextImpl::GetSharedPreferences(
 
     SharedPreferencesImpl sp;
     synchronized(ContextImpl.class) {
-        if (sSharedPrefs == null) {
+        if (sSharedPrefs == NULL) {
             sSharedPrefs = new ArrayMap<String, ArrayMap<String, SharedPreferencesImpl>>();
         }
 
         final String packageName = getPackageName();
         ArrayMap<String, SharedPreferencesImpl> packagePrefs = sSharedPrefs.get(packageName);
-        if (packagePrefs == null) {
+        if (packagePrefs == NULL) {
             packagePrefs = new ArrayMap<String, SharedPreferencesImpl>();
             sSharedPrefs.put(packageName, packagePrefs);
         }
 
-        // At least one application in the world actually passes in a null
+        // At least one application in the world actually passes in a NULL
         // name.  This happened to work because when we generated the file name
-        // we would stringify it to "null.xml".  Nice.
+        // we would stringify it to "NULL.xml".  Nice.
         if (mPackageInfo.getApplicationInfo().targetSdkVersion <
                 Build.VERSION_CODES.KITKAT) {
-            if (name == null) {
-                name = "null";
+            if (name == NULL) {
+                name = "NULL";
             }
         }
 
         sp = packagePrefs.get(name);
-        if (sp == null) {
+        if (sp == NULL) {
             File prefsFile = getSharedPrefsFile(name);
             sp = new SharedPreferencesImpl(prefsFile, mode);
             packagePrefs.put(name, sp);
@@ -720,7 +724,7 @@ AutoPtr<IFile> CContextImpl::CreateFilesDirLocked(
                 return file;
             }
             Log.w(TAG, "Unable to create files subdir " + file.getPath());
-            return null;
+            return NULL;
         }
         FileUtils.setPermissions(
                 file.getPath(),
@@ -785,7 +789,7 @@ ECode CContextImpl::GetNoBackupFilesDir(
     /* [out] */ IFile** filesDir)
 {
     // synchronized(mSync) {
-    //     if (mNoBackupFilesDir == null) {
+    //     if (mNoBackupFilesDir == NULL) {
     //         mNoBackupFilesDir = new File(getDataDirFile(), "no_backup");
     //     }
     //     return createFilesDirLocked(mNoBackupFilesDir);
@@ -814,13 +818,13 @@ ECode CContextImpl::GetExternalFilesDirs(
     /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** filesDirs)
 {
     synchronized(mSync) {
-        if (mExternalFilesDirs == null) {
+        if (mExternalFilesDirs == NULL) {
             mExternalFilesDirs = Environment.buildExternalStorageAppFilesDirs(getPackageName());
         }
 
         // Splice in requested type, if any
         File[] dirs = mExternalFilesDirs;
-        if (type != null) {
+        if (type != NULL) {
             dirs = Environment.buildPaths(dirs, type);
         }
 
@@ -892,7 +896,7 @@ ECode CContextImpl::GetObbDirs(
     /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs)
 {
     synchronized(mSync) {
-        if (mExternalObbDirs == null) {
+        if (mExternalObbDirs == NULL) {
             mExternalObbDirs = Environment.buildExternalStorageAppObbDirs(getPackageName());
         }
 
@@ -967,7 +971,7 @@ ECode CContextImpl::GetExternalCacheDirs(
     /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs)
 {
     synchronized(mSync) {
-        if (mExternalCacheDirs == null) {
+        if (mExternalCacheDirs == NULL) {
             mExternalCacheDirs = Environment.buildExternalStorageAppCacheDirs(getPackageName());
         }
 
@@ -1008,7 +1012,7 @@ ECode CContextImpl::GetExternalMediaDirs(
     /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs)
 {
     synchronized(mSync) {
-        if (mExternalMediaDirs == null) {
+        if (mExternalMediaDirs == NULL) {
             mExternalMediaDirs = Environment.buildExternalStorageAppMediaDirs(getPackageName());
         }
 
@@ -1927,7 +1931,7 @@ ECode CContextImpl::RegisterReceiverInternal(
             appThread, mBasePackageName,
             rd, filter, broadcastPermission, userId, intent);
 //     } catch (RemoteException e) {
-//         return null;
+//         return NULL;
 //     }
     return NOERROR;
 }
@@ -1953,14 +1957,23 @@ ECode CContextImpl::UnregisterReceiver(
 ECode CContextImpl::ValidateServiceIntent(
     /* [in] */ IIntent* service)
 {
-    if (service.getComponent() == null && service.getPackage() == null) {
-        if (getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
-            IllegalArgumentException ex = new IllegalArgumentException(
-                    "Service Intent must be explicit: " + service);
-            throw ex;
-        } else {
-            Log.w(TAG, "Implicit intents with startService are not safe: " + service
-                    + " " + Debug.getCallers(2, 3));
+    AutoPtr<IComponentName> cn;
+    service->GetComponent((IComponentName**)&cn);
+    String pkgName;
+    service->GetPackage(&pkgName);
+    if (cn == NULL && pkgName.IsNull()) {
+        AutoPtr<IApplicationInfo> ai;
+        GetApplicationInfo((IApplicationInfo**)&ai);
+        Int32 targetSdkVersion;
+        ai->GetTargetSdkVersion(&targetSdkVersion);
+        if (targetSdkVersion >= Build::VERSION_CODES::LOLLIPOP) {
+            Logger::E(TAG, "IllegalArgumentException : Service Intent must be explicit: %s",
+                Object::ToString(service));
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        else {
+            Logger::W(TAG, "Implicit intents with startService are not safe: %s",
+                Object::ToString(service)); //Debug.getCallers(2, 3));
         }
     }
     return NOERROR;
@@ -2029,7 +2042,7 @@ ECode CContextImpl::StartServiceCommon(
         REFCOUNT_ADD(*name);
         return NOERROR;
 //     } catch (RemoteException e) {
-//         return null;
+//         return NULL;
 //     }
 }
 
@@ -2109,8 +2122,8 @@ ECode CContextImpl::BindServiceCommon(
 
     AutoPtr<IIServiceConnection> sd;
     if (conn == NULL) {
-        Slogger::E(TAG, "connection is null");
-//        throw new IllegalArgumentException("connection is null");
+        Slogger::E(TAG, "connection is NULL");
+//        throw new IllegalArgumentException("connection is NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (mPackageInfo != NULL) {
@@ -2167,8 +2180,8 @@ ECode CContextImpl::UnbindService(
     /* [in] */ Elastos::Droid::Content::IServiceConnection* conn)
 {
     if (conn == NULL) {
-        Slogger::E(TAG, "connection is null");
-//        throw new IllegalArgumentException("connection is null");
+        Slogger::E(TAG, "connection is NULL");
+//        throw new IllegalArgumentException("connection is NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (mPackageInfo != NULL) {
@@ -2525,7 +2538,7 @@ ECode CContextImpl::GetSystemService(
         REFCOUNT_ADD(*object);
         // } catch (RemoteException rex) {
         //     Log.e(TAG, "Failed to create StorageManager", rex);
-        //     return null;
+        //     return NULL;
         // }
         return NOERROR;
     }
@@ -2771,11 +2784,11 @@ ECode CContextImpl::GetSystemService(
     //         IBinder b = ServiceManager.getService(PERSISTENT_DATA_BLOCK_SERVICE);
     //         IPersistentDataBlockService persistentDataBlockService =
     //                 IPersistentDataBlockService.Stub.asInterface(b);
-    //         if (persistentDataBlockService != null) {
+    //         if (persistentDataBlockService != NULL) {
     //             return new PersistentDataBlockManager(persistentDataBlockService);
     //         } else {
     //             // not supported
-    //             return null;
+    //             return NULL;
     //         }
     //     }
     // });
@@ -2808,12 +2821,12 @@ AutoPtr<IWallpaperManager> CContextImpl::GetWallpaperManager()
 // {
 //     IBinder b = ServiceManager.getService(DROPBOX_SERVICE);
 //     IDropBoxManagerService service = IDropBoxManagerService.Stub.asInterface(b);
-//     if (service == null) {
+//     if (service == NULL) {
 //         // Don't return a DropBoxManager that will NPE upon use.
 //         // This also avoids caching a broken DropBoxManager in
 //         // getDropBoxManager during early boot, before the
 //         // DROPBOX_SERVICE is registered.
-//         return null;
+//         return NULL;
 //     }
 //     return new DropBoxManager(service);
 // }
@@ -2828,7 +2841,7 @@ ECode CContextImpl::CheckPermission(
     *result = 0;
 
     if (permission.IsNull()) {
-//        throw new IllegalArgumentException("permission is null");
+//        throw new IllegalArgumentException("permission is NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -2850,7 +2863,7 @@ ECode CContextImpl::CheckCallingPermission(
     *value = 0;
 
     if (permission.IsNull()) {
-//        throw new IllegalArgumentException("permission is null");
+//        throw new IllegalArgumentException("permission is NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -2870,7 +2883,7 @@ ECode CContextImpl::CheckCallingOrSelfPermission(
     *perm = 0;
 
     if (permission.IsNull()) {
-//        throw new IllegalArgumentException("permission is null");
+//        throw new IllegalArgumentException("permission is NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -3217,21 +3230,35 @@ ECode CContextImpl::CreateApplicationContext(
     /* [in] */ Int32 flags,
     /* [out] */ IContext** ctx)
 {
-    LoadedPkg pi = mMainThread.getPackageInfo(application, mResources.getCompatibilityInfo(),
-            flags | CONTEXT_REGISTER_PACKAGE);
-    if (pi != null) {
-        final boolean restricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
-        ContextImpl c = new ContextImpl(this, mMainThread, pi, mActivityToken,
-                new UserHandle(UserHandle.getUserId(application.uid)), restricted,
-                mDisplay, mOverrideConfiguration);
-        if (c.mResources != null) {
-            return c;
+    VALIDATE_NOT_NULL(ctx);
+    *ctx = NULL;
+    AutoPtr<ICompatibilityInfo> ci;
+    mResources->GetCompatibilityInfo((ICompatibilityInfo**)&ci);
+    AutoPtr<ILoadedPkg> pi;
+    mMainThread->GetPackageInfo(application, ci,
+        flags | IContext::CONTEXT_REGISTER_PACKAGE, (ILoadedPkg**)&pi);
+    if (pi != NULL) {
+        Boolean restricted = (flags & IContext::CONTEXT_RESTRICTED) == IContext::CONTEXT_RESTRICTED;
+        Int32 uid;
+        application->GetUid(&uid);
+        Int32 userId = UserHandle::GetUserId(uid);
+        AutoPtr<IUserHandle> uh;
+        CUserHandle::New(userId, (IUserHandle**)&uh);
+        AutoPtr<IContextImpl> c;
+        CContextImpl::New(this, mMainThread, pi, mActivityToken,
+            uh, restricted,
+            mDisplay, mOverrideConfiguration, (IContextImpl**)&c);
+        if (((CContextImpl*)c.Get())->mResources != NULL) {
+            *ctx = IContext::Probe(c);
+            REFCOUNT_ADD(*ctx)
+            return NOERROR;
         }
     }
 
-    throw new PackageManager.NameNotFoundException(
-            "Application package " + application.packageName + " not found");
-    return NOERROR;
+    String pkgName;
+    applicationScale->GetPackageName(&pkgName);
+    Logger::E(TAG, "NameNotFoundException: Application package %s not found", pkgName.string());
+    return E_NAME_NOT_FOUND_EXCEPTION;;
 }
 
 ECode CContextImpl::CreatePackageContext(
@@ -3254,60 +3281,39 @@ ECode CContextImpl::CreatePackageContextAsUser(
     VALIDATE_NOT_NULL(ctx);
     *ctx = NULL;
 
-    final boolean restricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
-    if (packageName.equals("system") || packageName.equals("android")) {
-        return new ContextImpl(this, mMainThread, mPackageInfo, mActivityToken,
-                user, restricted, mDisplay, mOverrideConfiguration);
+    Boolean restricted = (flags & IContext::CONTEXT_RESTRICTED) == IContext::CONTEXT_RESTRICTED;
+    if (packageName.Equals("system") || packageName.Equals("android")) {
+        AutoPtr<IContextImpl> c;
+        CContextImpl::New(this, mMainThread, mPackageInfo, mActivityToken,
+            uh, restricted, mDisplay, mOverrideConfiguration, (IContextImpl**)&c);
+        *ctx = IContext::Probe(c);
+        REFCOUNT_ADD(*ctx)
+        return NOERROR;
     }
 
-    LoadedPkg pi = mMainThread.getPackageInfo(packageName, mResources.getCompatibilityInfo(),
-            flags | CONTEXT_REGISTER_PACKAGE, user.getIdentifier());
-    if (pi != null) {
-        ContextImpl c = new ContextImpl(this, mMainThread, pi, mActivityToken,
-                user, restricted, mDisplay, mOverrideConfiguration);
-        if (c.mResources != null) {
-            return c;
+    AutoPtr<ICompatibilityInfo> ci;
+    mResources->GetCompatibilityInfo((ICompatibilityInfo**)&ci);
+    Int32 uid;
+    user->GetIdentifier(&uid);
+    AutoPtr<ILoadedPkg> pi;
+    mMainThread->GetPackageInfo(packageName, ci,
+        flags | IContext::CONTEXT_REGISTER_PACKAGE, uid, (ILoadedPkg**)&pi);
+    if (pi != NULL) {
+        AutoPtr<IContextImpl> c;
+        CContextImpl::New(this, mMainThread, pi, mActivityToken,
+            uh, restricted, mDisplay, mOverrideConfiguration, (IContextImpl**)&c);
+        if (((CContextImpl*)c.Get())->mResources != NULL) {
+            *ctx = IContext::Probe(c);
+            REFCOUNT_ADD(*ctx)
+            return NOERROR;
         }
+
     }
 
     // Should be a better exception.
-    throw new PackageManager.NameNotFoundException(
-            "Application package " + packageName + " not found");
+    Logger::E(TAG, "NameNotFoundException : Application package %s not found",
+        packageName.string());
 
-    // if (packageName.Equals("system") || packageName.Equals("android")) {
-    //     AutoPtr<CContextImpl> sysContext;
-    //     mMainThread->GetSystemContext((IContextImpl**)&sysContext);
-    //     AutoPtr<CContextImpl> context;
-    //     CContextImpl::New(sysContext, (IContextImpl**)&context);
-    //     context->mRestricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
-    //     context->Init(mPackageInfo, NULL, mMainThread, mResources, mBasePackageName, user);
-    //     *ctx = context;
-    //     REFCOUNT_ADD(*ctx);
-    //     return NOERROR;
-    // }
-
-    // Int32 identifier = 0;
-    // user->GetIdentifier(&identifier);
-    // AutoPtr<ICompatibilityInfo> comInfo;
-    // mResources->GetCompatibilityInfo((ICompatibilityInfo**)&comInfo);
-    // AutoPtr<LoadedPkg> pi =
-    //     mMainThread->GetPackageInfo(packageName, (CCompatibilityInfo*)comInfo.Get(), flags,
-    //             identifier);
-    // if (pi != NULL) {
-    //     AutoPtr<CContextImpl> c;
-    //     CContextImpl::New((IContextImpl**)&c);
-    //     c->mRestricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
-    //     c->Init(pi, NULL, mMainThread, mResources, mBasePackageName, user);
-    //     if (c->mResources != NULL) {
-    //         *ctx = c;
-    //         REFCOUNT_ADD(*ctx);
-    //         return NOERROR;
-    //     }
-    // }
-
-    // Should be a better exception.
-//    throw new PackageManager.NameNotFoundException(
-//        "Application package " + packageName + " not found");
     return E_NAME_NOT_FOUND_EXCEPTION;
 
 }
@@ -3320,29 +3326,17 @@ ECode CContextImpl::CreateConfigurationContext(
     *ctx = NULL;
 
     if (overrideConfiguration == NULL) {
-//        throw new IllegalArgumentException("overrideConfiguration must not be null");
+//        throw new IllegalArgumentException("overrideConfiguration must not be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    return new ContextImpl(this, mMainThread, mPackageInfo, mActivityToken,
-            mUser, mRestricted, mDisplay, overrideConfiguration);
+    AutoPtr<IContextImpl> c;
+    CContextImpl::New(this, mMainThread, mPackageInfo, mActivityToken,
+        mUser, mRestricted, mDisplay, overrideConfiguration, (IContextImpl**)&c);
 
-//     AutoPtr<CContextImpl> c;
-//     CContextImpl::New((IContextImpl**)&c);
-//     c->Init(mPackageInfo, NULL, mMainThread);
-//     String resDir;
-//     mPackageInfo->GetResDir(&resDir);
-//     AutoPtr<ICompatibilityInfo> comInfo;
-//     mResources->GetCompatibilityInfo((ICompatibilityInfo**)&comInfo);
-//     c->mResources = NULL;
-//     mMainThread->GetTopLevelResources(
-//             resDir, GetDisplayId(), overrideConfiguration,
-//             (CCompatibilityInfo*)comInfo.Get(), (IResources**)&c->mResources);
-
-    *ctx = c;
+    *ctx = IContext::Probe(c);
     REFCOUNT_ADD(*ctx);
     return NOERROR;
-
 }
 
 ECode CContextImpl::CreateDisplayContext(
@@ -3353,38 +3347,17 @@ ECode CContextImpl::CreateDisplayContext(
     *ctx = NULL;
 
     if (display == NULL) {
-//         throw new IllegalArgumentException("display must not be null");
+//         throw new IllegalArgumentException("display must not be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    return new ContextImpl(this, mMainThread, mPackageInfo, mActivityToken,
-            mUser, mRestricted, display, mOverrideConfiguration);
+    AutoPtr<IContextImpl> c;
+    CContextImpl::New(this, mMainThread, mPackageInfo, mActivityToken,
+        mUser, mRestricted, display, mOverrideConfiguration, (IContextImpl**)&c);
 
-    // Int32 displayId;
-    // display->GetDisplayId(&displayId);
-    // AutoPtr<ICompatibilityInfo> ci = CCompatibilityInfo::DEFAULT_COMPATIBILITY_INFO;
-    // AutoPtr<ICompatibilityInfoHolder> cih;
-    // GetCompatibilityInfo(displayId, (ICompatibilityInfoHolder**)&cih);
-    // if (cih != NULL) {
-    //     ci = NULL;
-    //     cih->Get((ICompatibilityInfo**)&ci);
-    // }
-
-    // AutoPtr<CContextImpl> context;
-    // CContextImpl::New((IContextImpl**)&context);
-    // context->Init(mPackageInfo, NULL, mMainThread);
-    // context->mDisplay = display;
-    // String resDir;
-    // mPackageInfo->GetResDir(&resDir);
-    // context->mResources = NULL;
-    // mMainThread->GetTopLevelResources(
-    //         resDir, displayId, NULL, (CCompatibilityInfo*)ci.Get()
-    //         , (IResources**)&context->mResources);
-
-    *ctx = context;
+    *ctx = IContext::Probe(c);
     REFCOUNT_ADD(*ctx);
     return NOERROR;
-
 }
 
 Int32 CContextImpl::GetDisplayId()
@@ -3416,30 +3389,41 @@ ECode CContextImpl::GetDisplayAdjustments(
 AutoPtr<CContextImpl> CContextImpl::CreateSystemContext(
     /* [in] */ IActivityThread* mainThread)
 {
-    // AutoPtr<CContextImpl> context;
-    // ASSERT_SUCCEEDED(CContextImpl::NewByFriend((CContextImpl**)&context));
-    // AutoPtr<IUserHandle> user;
-    // Process::MyUserHandle((IUserHandle**)&user);
-    // context->Init(CResources::GetSystem(), (CActivityThread*)mainThread, user);
-    // return context;
+    AutoPtr<ILoadedPkg> packageInfo = new LoadedPkg(mainThread);
 
-    LoadedPkg packageInfo = new LoadedPkg(mainThread);
-    ContextImpl context = new ContextImpl(null, mainThread,
-            packageInfo, null, null, false, null, null);
-    context.mResources.updateConfiguration(context.mResourcesManager.getConfiguration(),
-            context.mResourcesManager.getDisplayMetricsLocked(Display.DEFAULT_DISPLAY));
-    return context;
+    AutoPtr<CContextImpl> ci;
+    CContextImpl::NewByFriend(NULL, mainThread,
+        packageInfo, NULL, NULL, FALSE, NULL, NULL, (CContextImpl**)&ci);
+
+    AutoPtr<IConfiguration> config;
+    ci->mResourcesManager->GetConfiguration((IConfiguration**)&config);
+    AutoPtr<IDisplayMetrics> dm;
+    ci->mResourcesManager->GetDisplayMetricsLocked(IDisplay::DEFAULT_DISPLAY, (IDisplayMetrics**)&dm);
+    ci->mResources->UpdateConfiguration(config, dm);
+    *ctx = IContext::Probe(c);
+    REFCOUNT_ADD(*ctx);
+    return NOERROR;
 }
 
-AutoPtr<CContextImpl> CContextImpl::CreateActivityContext(
+ECode CContextImpl::CreateActivityContext(
     /* [in] */ IActivityThread* mainThread,
-     /* [in] */ LoadedPkg* packageInfo,
-     /* [in] */ IBinder* activityToken)
+    /* [in] */ ILoadedPkg* packageInfo,
+    /* [in] */ IBinder* activityToken,
+    /* [out] */ CContextImpl** result)
 {
-    if (packageInfo == null) throw new IllegalArgumentException("packageInfo");
-    if (activityToken == null) throw new IllegalArgumentException("activityInfo");
-    return new ContextImpl(null, mainThread,
-            packageInfo, activityToken, null, false, null, null);
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    if (packageInfo == NULL || activityToken == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    AutoPtr<CContextImpl> c;
+    CContextImpl::NewByFriend(NULL, mainThread,
+        packageInfo, activityToken, NULL, FALSE, NULL, NULL, (CContextImpl**)&c);
+    *result = c;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode CContextImpl::constructor(
@@ -3458,33 +3442,33 @@ ECode CContextImpl::constructor(
     mActivityToken = activityToken;
     mRestricted = restricted;
 
-    if (user == null) {
-        user = Process.myUserHandle();
-    }
     mUser = user;
+    if (mUser == NULL) {
+        mUser = Process::MyUserHandle();
+    }
 
     mPackageInfo = packageInfo;
     mResourcesManager = ResourcesManager.getInstance();
     mDisplay = display;
     mOverrideConfiguration = overrideConfiguration;
 
-    final int displayId = getDisplayId();
-    CompatibilityInfo compatInfo = null;
-    if (container != null) {
+    Int32 displayId = getDisplayId();
+    CompatibilityInfo compatInfo = NULL;
+    if (container != NULL) {
         compatInfo = container.getDisplayAdjustments(displayId).getCompatibilityInfo();
     }
-    if (compatInfo == null && displayId == Display.DEFAULT_DISPLAY) {
+    if (compatInfo == NULL && displayId == Display.DEFAULT_DISPLAY) {
         compatInfo = packageInfo.getCompatibilityInfo();
     }
     mDisplayAdjustments.setCompatibilityInfo(compatInfo);
     mDisplayAdjustments.setActivityToken(activityToken);
 
     Resources resources = packageInfo.getResources(mainThread);
-    if (resources != null) {
-        if (activityToken != null
+    if (resources != NULL) {
+        if (activityToken != NULL
                 || displayId != Display.DEFAULT_DISPLAY
-                || overrideConfiguration != null
-                || (compatInfo != null && compatInfo.applicationScale
+                || overrideConfiguration != NULL
+                || (compatInfo != NULL && compatInfo.applicationScale
                         != resources.getCompatibilityInfo().applicationScale)) {
             resources = mResourcesManager.getTopLevelResources(packageInfo.getResDir(),
                     packageInfo.getSplitResDirs(), packageInfo.getOverlayDirs(),
@@ -3494,7 +3478,7 @@ ECode CContextImpl::constructor(
     }
     mResources = resources;
 
-    if (container != null) {
+    if (container != NULL) {
         mBasePackageName = container.mBasePackageName;
         mOpPackageName = container.mOpPackageName;
     } else {
@@ -3511,7 +3495,7 @@ ECode CContextImpl::constructor(
         }
     }
 
-    mContentResolver = new ApplicationContentResolver(this, mainThread, user);
+    mContentResolver = new ApplicationContentResolver(this, mainThread, mUser);
 }
 
 // ECode CContextImpl::constructor(
@@ -3581,7 +3565,6 @@ ECode CContextImpl::constructor(
 //     return NOERROR;
 // }
 
-
 ECode CContextImpl::InstallSystemApplicationInfo(
     /* [in] */ IApplicationInfo* info,
     /* [in] */ IClassLoader* classLoader)
@@ -3627,7 +3610,7 @@ void CContextImpl::SetOuterContext(
     /* [in] */ IContext* context)
 {
     mOuterContext = NULL;
-    AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)context->Probe(EIID_IWeakReferenceSource);
+    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(context);
     assert(wrs != NULL);
     wrs->GetWeakReference((IWeakReference**)&mOuterContext);
 }
@@ -3682,7 +3665,8 @@ AutoPtr<IFile> CContextImpl::ValidateFilePath(
         CFile::New(dirPath, (IFile**)&dir);
         String _name = name.Substring(name.LastIndexOf(separatorChar));
         CFile::New(dir, _name, (IFile**)&f);
-    } else {
+    }
+    else {
         dir = GetDatabasesDir();
         MakeFilename(dir, name, (IFile**)&f);
     }
@@ -3719,37 +3703,38 @@ ECode CContextImpl::MakeFilename(
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
-/**
- * Ensure that given directories exist, trying to create them if missing. If
- * unable to create, they are filtered by replacing with {@code null}.
- */
 AutoPtr<ArrayOf<IFile*> > CContextImpl::EnsureDirsExistOrFilter(
     /* [in] */ ArrayOf<IFile*>* dirs)
 {
-    File[] result = new File[dirs.length];
-    for (int i = 0; i < dirs.length; i++) {
-        File dir = dirs[i];
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
+    AutoPtr<ArrayOf<IFile*> > result = ArrayOf<IFile*>::Alloc(dirs->GetLength());
+    String packageName;
+    GetPackageName(&packageName);
+    Boolean bval;
+    for (Int32 i = 0; i < dirs->GetLength(); i++) {
+        AutoPtr<IFile> dir = (*dirs)[i];
+        dir->Exists(&bval);
+        if (!bval) {
+            dir->Mkdirs(&bval);
+            if (!bval) {
+                dir->Exists(&bval);
                 // recheck existence in case of cross-process race
-                if (!dir.exists()) {
+                if (!bval) {
                     // Failing to mkdir() may be okay, since we might not have
                     // enough permissions; ask vold to create on our behalf.
-                    final IMountService mount = IMountService.Stub.asInterface(
-                            ServiceManager.getService("mount"));
-                    int res = -1;
-                    try {
-                        res = mount.mkdirs(getPackageName(), dir.getAbsolutePath());
-                    } catch (RemoteException e) {
-                    }
+                    AutoPtr<IInterface> obj = ServiceManager::GetService(String("mount"));
+                    AutoPtr<IIMountService> mount = IIMountService::Probe(obj)
+                    Int32 res = -1;
+                    String path;
+                    dir->GetAbsolutePath(&path);
+                    mount->Mkdirs(packageName, path, &res);
                     if (res != 0) {
-                        Log.w(TAG, "Failed to ensure directory: " + dir);
-                        dir = null;
+                        Logger::W(TAG, "Failed to ensure directory: %s", dir.string());
+                        dir = NULL;
                     }
                 }
             }
         }
-        result[i] = dir;
+        result->Set(i, dir);
     }
     return result;
 }

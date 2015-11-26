@@ -1338,23 +1338,6 @@ ECode CNotification::IsGroupChild(
     return NOERROR;
 }
 
-AutoPtr<ArrayOf<INotification*> > CNotification::GetNotificationArrayFromBundle(
-    /* [in] */ IBundle* bundle,
-    /* [in] */ const String& key)
-{
-    AutoPtr<ArrayOf<IParcelable*> > array;
-    bundle->GetParcelableArray(key, (ArrayOf<IParcelable*>**)&array);
-    if (array == NULL) {
-        return NULL;
-    }
-    Int32 size = array->GetLength();
-    AutoPtr<ArrayOf<INotification*> > result = ArrayOf<INotification*>::Alloc(size);
-    for (Int32 i = 0; i < size; ++i) {
-        result->Set(i, INotification::Probe((*array)[i]));
-    }
-    return result;
-}
-
 }
 }
 }

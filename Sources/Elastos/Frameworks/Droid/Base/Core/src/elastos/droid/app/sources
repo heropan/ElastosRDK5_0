@@ -119,6 +119,7 @@ SOURCES += CNotificationBigTextStyle.cpp
 SOURCES += CNotificationInboxStyle.cpp
 SOURCES += CNotificationMediaStyle.cpp
 SOURCES += NotificationManager.cpp
+SOURCES += CNotificationWearableExtender.cpp
 
 SOURCES += PackageDeleteObserver.cpp
 SOURCES += PackageInstallObserver.cpp
@@ -134,7 +135,7 @@ SOURCES += CProfilerInfo.cpp
 SOURCES += QueuedWork.cpp
 SOURCES += CRemoteInput.cpp
 SOURCES += CRemoteInputHelper.cpp
-#SOURCES += CResourcesManager.cpp
+SOURCES += CResourcesManager.cpp
 SOURCES += CResultInfo.cpp
 #SOURCES += SearchDialog.cpp
 #SOURCES += CSearchManager.cpp
@@ -158,8 +159,6 @@ SOURCES += CWallpaperInfo.cpp
 SOURCES += CWallpaperManager.cpp
 SOURCES += CWallpaperManagerHelper.cpp
 SOURCES += CGlobalsWallpaperManagerCallback.cpp
-
-#SOURCES += WearableExtender.cpp
 
 #============================================
 

@@ -379,15 +379,6 @@ public:
     CARAPI IsGroupChild(
         /* [out] */ Boolean* result);
 
-    /**
-    * Get an array of Notification objects from a parcelable array bundle field.
-    * Update the bundle to have a typed array so fetches in the future don't need
-    * to do an array copy.
-     */
-    static AutoPtr<ArrayOf<INotification*> > GetNotificationArrayFromBundle(
-        /* [in] */ IBundle* bundle,
-        /* [in] */ const String& key);
-
 public:
     static const String TAG;// = "Notification";
 

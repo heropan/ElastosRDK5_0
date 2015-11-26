@@ -8,6 +8,7 @@
 #include "elastos/droid/app/CDownloadManager.h"
 #include "elastos/droid/app/SharedPreferencesImpl.h"
 #include "elastos/droid/content/ContentResolver.h"
+#include "elastos/droid/content/ContextWrapper.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IClassLoader;
@@ -58,6 +59,8 @@ namespace Droid {
 namespace App {
 
 CarClass(CContextImpl)
+    , public ContextWrapper
+    , public IContextImpl
 {
 private:
     class ApplicationContentResolver : public ContentResolver
@@ -107,9 +110,13 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CContextImpl();
 
-    ~CContextImpl();
+    virtual ~CContextImpl();
 
     CARAPI constructor();
 
@@ -651,10 +658,11 @@ public:
     static CARAPI_(AutoPtr<CContextImpl>) CreateSystemContext(
         /* [in] */ IActivityThread* mainThread);
 
-    static CARAPI_(AutoPtr<CContextImpl>) CreateActivityContext(
+    static CARAPI CreateActivityContext(
         /* [in] */ IActivityThread* mainThread,
-         /* [in] */ LoadedPkg* packageInfo,
-         /* [in] */ IBinder* activityToken);
+        /* [in] */ ILoadedPkg* packageInfo,
+        /* [in] */ IBinder* activityToken,
+        /* [out] */ CContextImpl** result);
 
     /* private */
     CARAPI constructor(

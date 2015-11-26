@@ -4,13 +4,9 @@
 
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/os/Runnable.h"
-#ifdef DROID_CORE
-#include "elastos/droid/os/CHandler.h"
-#endif
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::App::Fragment;
 using Elastos::Droid::Widget::IListView;
 using Elastos::Droid::Widget::EIID_IListView;
@@ -29,11 +25,11 @@ class ListFragment
     , public IListFragment
 {
 public:
-    class _Runnable
+    class MyRunnable
         : public Runnable
     {
     public:
-        _Runnable(
+        MyRunnable(
             /* [in] */ ListFragment* host)
             : mHost(host)
         {}
@@ -44,17 +40,17 @@ public:
         ListFragment* mHost;
     };
 
-    class _OnItemClickListener
-        : public ElRefBase
+    class MyOnItemClickListener
+        : public Object
         , public IAdapterViewOnItemClickListener
     {
     public:
-        _OnItemClickListener(
+        CAR_INTERFACE_DECL();
+
+        MyOnItemClickListener(
             /* [in] */ ListFragment* host)
             : mHost(host)
         {}
-
-        CAR_INTERFACE_DECL();
 
         CARAPI OnItemClick(
             /* [in] */ IAdapterView* parent,
@@ -67,18 +63,13 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     ListFragment();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    virtual ~ListFragment();
 
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    CARAPI constructor();
 
     CARAPI OnCreateView(
         /* [in] */ ILayoutInflater* inflater,
@@ -144,8 +135,8 @@ public:
 
 private:
     AutoPtr<IHandler> mHandler;
-    AutoPtr<_Runnable> mRequestFocus;
-    AutoPtr<_OnItemClickListener> mOnClickListener;
+    AutoPtr<MyRunnable> mRequestFocus;
+    AutoPtr<MyOnItemClickListener> mOnClickListener;
 };
 
 } //namespace App
