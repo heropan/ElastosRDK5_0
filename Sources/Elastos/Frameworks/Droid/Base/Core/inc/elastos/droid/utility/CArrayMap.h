@@ -222,6 +222,9 @@ public:
         /* [out] */ IInterface** result);
 
     CARAPI RemoveAt(
+        /* [in] */ Int32 index);
+
+    CARAPI RemoveAt(
         /* [in] */ Int32 index,
         /* [out] */ IInterface** value);
 

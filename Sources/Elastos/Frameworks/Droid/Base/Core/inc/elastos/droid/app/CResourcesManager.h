@@ -93,7 +93,7 @@ private:
     static const Boolean DEBUG_CACHE;
     static const Boolean DEBUG_STATS;
 
-    static ResourcesManager sResourcesManager;
+    static AutoPtr<IResourcesManager> sResourcesManager;
     static Object sLock;
 
     AutoPtr<IArrayMap> mActiveResources;//= new ArrayMap<ResourcesKey, WeakReference<Resources> >();

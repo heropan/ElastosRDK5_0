@@ -1,26 +1,39 @@
 
 #include "elastos/droid/app/CResourcesManager.h"
+#include "elastos/droid/app/ApplicationPackageManager.h"
+#include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/content/res/CConfiguration.h"
 #include "elastos/droid/content/res/CAssetManager.h"
+#include "elastos/droid/content/res/CResources.h"
+#include "elastos/droid/content/res/ResourcesKey.h"
 #include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/view/DisplayAdjustments.h"
 #include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Content::Res::IAssetManager;
 using Elastos::Droid::Content::Res::CAssetManager;
+using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Content::Res::ResourcesKey;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::View::DisplayAdjustments;
 using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Hardware::Display::DisplayManagerGlobal;
 using Elastos::Droid::Hardware::Display::IDisplayManagerGlobal;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Elastos::Utility::Logging::Logger;
+
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 CAR_INTERFACE_IMPL(CResourcesManager, Object, IResourcesManager)
+
 CAR_OBJECT_IMPL(CResourcesManager)
 
 const String CResourcesManager::TAG("ResourcesManager");
@@ -64,7 +77,7 @@ ECode CResourcesManager::GetConfiguration(
 ECode CResourcesManager::FlushDisplayMetricsLocked()
 {
     mDefaultDisplayMetrics->Clear();
-    return NOERROR
+    return NOERROR;
 }
 
 ECode CResourcesManager::GetDisplayMetricsLocked(
@@ -72,7 +85,7 @@ ECode CResourcesManager::GetDisplayMetricsLocked(
     /* [out] */ IDisplayMetrics** displayMetrics)
 {
     return GetDisplayMetricsLocked(displayId,
-        IDisplayAdjustments::DEFAULT_DISPLAY_ADJUSTMENTS, displayMetrics);
+        DisplayAdjustments::DEFAULT_DISPLAY_ADJUSTMENTS, displayMetrics);
 }
 
 ECode CResourcesManager::GetDisplayMetricsLocked(
@@ -86,7 +99,7 @@ ECode CResourcesManager::GetDisplayMetricsLocked(
     Boolean isDefaultDisplay = (displayId == IDisplay::DEFAULT_DISPLAY);
     AutoPtr<IDisplayMetrics> dm;
     if (isDefaultDisplay) {
-        AutoPtr<IInterface obj;
+        AutoPtr<IInterface> obj;
         mDefaultDisplayMetrics->Get(TO_IINTERFACE(daj), (IInterface**)&obj);
         dm = IDisplayMetrics::Probe(obj);
     }
@@ -183,7 +196,7 @@ ECode CResourcesManager::GetTopLevelResources(
     /* [in] */ IConfiguration* overrideConfiguration,
     /* [in] */ ICompatibilityInfo* compatInfo,
     /* [in] */ IBinder* token,
-    /* [out] */ IResources** result);
+    /* [out] */ IResources** result)
 {
     VALIDATE_NOT_NULL(result)
     *result = NULL;
@@ -200,7 +213,7 @@ ECode CResourcesManager::GetTopLevelResources(
         AutoPtr<IInterface> obj, resObj;
         mActiveResources->Get(TO_IINTERFACE(key), (IInterface**)&obj);
         IWeakReference* wr = IWeakReference::Probe(obj);
-        wr->Resolve((IInterface**)&resObj);
+        wr->Resolve(EIID_IInterface, (IInterface**)&resObj);
         if (resObj != NULL) {
             r = IResources::Probe(resObj);
 
@@ -218,7 +231,7 @@ ECode CResourcesManager::GetTopLevelResources(
                     Logger::W(TAG, "Returning cached resources %s %s : appScale=%f",
                         Object::ToString(r).string(), resDir.string(), applicationScale);
                 }
-                *result - r;
+                *result = r;
                 REFCOUNT_ADD(*result)
                 return NOERROR;
             }
@@ -254,8 +267,9 @@ ECode CResourcesManager::GetTopLevelResources(
     }
 
     if (overlayDirs != NULL) {
+        Int32 ival;
         for (Int32 i = 0; i < overlayDirs->GetLength(); ++i) {
-            assets->AddOverlayPath((*overlayDirs)[i]);
+            assets->AddOverlayPath((*overlayDirs)[i], &ival);
         }
     }
 
@@ -280,14 +294,18 @@ ECode CResourcesManager::GetTopLevelResources(
     if (!isDefaultDisplay || hasOverrideConfig) {
         AutoPtr<IConfiguration> c;
         GetConfiguration((IConfiguration**)&c);
-        CConfiguration(c, (IConfiguration**)&config);
+        CConfiguration::New(c, (IConfiguration**)&config);
         if (!isDefaultDisplay) {
             ApplyNonDefaultDisplayMetricsToConfigurationLocked(dm, config);
         }
         if (hasOverrideConfig) {
-            config->MupdateFrom(key.mOverrideConfiguration);
+            AutoPtr<IConfiguration> config;
+            key->GetOverrideConfiguration((IConfiguration**)&config);
+            Int32 ival;
+            config->UpdateFrom(config, &ival);
         }
-    } else {
+    }
+    else {
         GetConfiguration((IConfiguration**)&config);
     }
 
@@ -312,7 +330,7 @@ ECode CResourcesManager::GetTopLevelResources(
         AutoPtr<IResources> existing;
         if (obj != NULL) {
             IWeakReference* wr = IWeakReference::Probe(obj);
-            wr->Resolve((IInterface**)&resObj);
+            wr->Resolve(EIID_IInterface, (IInterface**)&resObj);
             if (resObj != NULL) {
                 existing = IResources::Probe(resObj);
                 AutoPtr<IAssetManager> assets;
@@ -329,13 +347,14 @@ ECode CResourcesManager::GetTopLevelResources(
                 }
             }
 
-        // XXX need to remove entries when weak references go away
-        IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(r);
-        AutoPtr<IWeakReference> wr;
-        wrs->GetWeakReference((IWeakReference**)&wr);
-        mActiveResources->Put(TO_IINTERFACE(key), TO_IINTERFACE(wr));
-        *result = r;
-        REFCOUNT_ADD(*result)
+            // XXX need to remove entries when weak references go away
+            IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(r);
+            wr = NULL;
+            wrs->GetWeakReference((IWeakReference**)&wr);
+            mActiveResources->Put(TO_IINTERFACE(key), TO_IINTERFACE(wr));
+            *result = r;
+            REFCOUNT_ADD(*result)
+        }
     }
 
     return NOERROR;
@@ -346,78 +365,109 @@ ECode CResourcesManager::ApplyConfigurationToResourcesLocked(
     /* [in] */ ICompatibilityInfo* compat,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     if (mResConfiguration == NULL) {
-        mResConfiguration = new Configuration();
+        CConfiguration::New((IConfiguration**)&mResConfiguration);
     }
-    if (!mResConfiguration.isOtherSeqNewer(config) && compat == NULL) {
-        if (DEBUG_CONFIGURATION) Slog.v(TAG, "Skipping new config: curSeq="
-                + mResConfiguration.seq + ", newSeq=" + config->mseq);
-        return FALSE;
+
+    Boolean bval;
+    mResConfiguration->IsOtherSeqNewer(config, &bval);
+    if (!bval && compat == NULL) {
+        if (CActivityThread::DEBUG_CONFIGURATION) {
+            Int32 s1, s2;
+            mResConfiguration->GetSeq(&s1);
+            config->GetSeq(&s2);
+            Logger::V(TAG, "Skipping new config: curSeq=%d, newSeq=%d",
+                s1, s2);
+        }
+        return NOERROR;
     }
-    int changes = mResConfiguration.updateFrom(config);
-    flushDisplayMetricsLocked();
-    DisplayMetrics defaultDisplayMetrics = GetDisplayMetricsLocked(Display.DEFAULT_DISPLAY);
+
+    Int32 changes;
+    mResConfiguration->UpdateFrom(config, &changes);
+    FlushDisplayMetricsLocked();
+    AutoPtr<IDisplayMetrics> defaultDisplayMetrics;
+    GetDisplayMetricsLocked(IDisplay::DEFAULT_DISPLAY, (IDisplayMetrics**)&defaultDisplayMetrics);
 
     if (compat != NULL && (mResCompatibilityInfo == NULL ||
-            !mResCompatibilityInfo.equals(compat))) {
+            !Object::Equals(mResCompatibilityInfo, compat))) {
         mResCompatibilityInfo = compat;
-        changes |= ActivityInfo.CONFIG_SCREEN_LAYOUT
-                | ActivityInfo.CONFIG_SCREEN_SIZE
-                | ActivityInfo.CONFIG_SMALLEST_SCREEN_SIZE;
+        changes |= IActivityInfo::CONFIG_SCREEN_LAYOUT
+                | IActivityInfo::CONFIG_SCREEN_SIZE
+                | IActivityInfo::CONFIG_SMALLEST_SCREEN_SIZE;
     }
 
     // set it for java, this also affects newly created Resources
-    if (config->mlocale != NULL) {
-        Locale.setDefault(config->mlocale);
+    AutoPtr<ILocale> locale;
+    config->GetLocale((ILocale**)&locale);
+    if (locale != NULL) {
+        AutoPtr<ILocaleHelper> helper;
+        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
+        helper->SetDefault(locale);
     }
 
-    Resources.updateSystemConfiguration(config, defaultDisplayMetrics, compat);
+    CResources::UpdateSystemConfiguration(config, defaultDisplayMetrics, compat);
 
-    ApplicationPackageManager.configurationChanged();
+    ApplicationPackageManager::ConfigurationChanged();
     //Logger::I(TAG, "Configuration changed in " + currentPackageName());
 
-    Configuration tmpConfig = NULL;
+    AutoPtr<IConfiguration> tmpConfig;
 
-    for (int i=mActiveResources.size()-1; i>=0; i--) {
-        ResourcesKey key = mActiveResources.keyAt(i);
-        Resources r = mActiveResources.valueAt(i).get();
+    Int32 size;
+    mActiveResources->GetSize(&size);
+    for (Int32 i = size - 1; i >= 0; i--) {
+        AutoPtr<IInterface> ko, vo;
+        mActiveResources->GetKeyAt(i, (IInterface**)&ko);
+        mActiveResources->GetValueAt(i, (IInterface**)&vo);
+        ResourcesKey* key = (ResourcesKey*)IResourcesKey::Probe(ko);
+        IResources* r = IResources::Probe(vo);
+
         if (r != NULL) {
-            if (DEBUG_CONFIGURATION) Slog.v(TAG, "Changing resources "
-                    + r + " config to: " + config);
-            int displayId = key.mDisplayId;
-            Boolean isDefaultDisplay = (displayId == Display.DEFAULT_DISPLAY);
-            DisplayMetrics dm = defaultDisplayMetrics;
-            final Boolean hasOverrideConfiguration = key.hasOverrideConfiguration();
+            if (CActivityThread::DEBUG_CONFIGURATION) {
+                // Logger::V(TAG, "Changing resources "
+                //     + r + " config to: " + config);
+            }
+
+            Int32 displayId = key->mDisplayId;
+            Boolean isDefaultDisplay = (displayId == IDisplay::DEFAULT_DISPLAY);
+            AutoPtr<IDisplayMetrics> dm = defaultDisplayMetrics;
+            Boolean hasOverrideConfiguration = key->HasOverrideConfiguration();
             if (!isDefaultDisplay || hasOverrideConfiguration) {
                 if (tmpConfig == NULL) {
-                    tmpConfig = new Configuration();
+                    CConfiguration::New((IConfiguration**)&tmpConfig);
                 }
-                tmpConfig.setTo(config);
+                tmpConfig->SetTo(config);
+
                 if (!isDefaultDisplay) {
-                    dm = GetDisplayMetricsLocked(displayId);
-                    applyNonDefaultDisplayMetricsToConfigurationLocked(dm, tmpConfig);
+                    dm = NULL;
+                    GetDisplayMetricsLocked(displayId, (IDisplayMetrics**)&dm);
+                    ApplyNonDefaultDisplayMetricsToConfigurationLocked(dm, tmpConfig);
                 }
+
                 if (hasOverrideConfiguration) {
-                    tmpConfig.updateFrom(key.mOverrideConfiguration);
+                    Int32 ival;
+                    tmpConfig->UpdateFrom(key->mOverrideConfiguration, &ival);
                 }
-                r.updateConfiguration(tmpConfig, dm, compat);
-            } else {
-                r.updateConfiguration(config, dm, compat);
+                r->UpdateConfiguration(tmpConfig, dm, compat);
+            }
+            else {
+                r->UpdateConfiguration(config, dm, compat);
             }
             //Logger::I(TAG, "Updated app resources " + v.getKey()
             //        + " " + r + ": " + r.getConfiguration());
-        } else {
+        }
+        else {
             //Logger::I(TAG, "Removing old resources " + v.getKey());
-            mActiveResources.removeAt(i);
+            mActiveResources->RemoveAt(i);
         }
     }
 
-    return changes != 0;
+    *result = changes != 0;
+    return NOERROR;
 }
-
 
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
-
-#endif //__ELASTOS_DROID_APP_CRESOURCEMANAGER_H__
