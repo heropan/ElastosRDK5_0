@@ -6,6 +6,16 @@ module
     namespace Widget {
 
     interface IExpandableListPosition {
+		/**
+	     * This data type represents a child position
+	     */
+		const Int32 CHILD = 1;
+
+		/**
+	     * This data type represents a group position
+	     */
+		const Int32 GROUP = 2;
+
         GetPackedPosition(
             [out] Int64* pos);
 
@@ -37,5 +47,4 @@ module
     }// namespace Widget
     }// namespace Droid
     }// namespace Elastos
-
 }

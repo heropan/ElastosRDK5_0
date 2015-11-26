@@ -1,113 +1,211 @@
 
-#include "elastos/droid/widget/ExpandableListPosition.h"
 #include "elastos/droid/widget/CExpandableListPosition.h"
+#include "elastos/droid/widget/ExpandableListPosition.h"
+#include "elastos/core/AutoLock.h"
+
+using Elastos::Droid::Widget::CExpandableListPosition;
+using Elastos::Droid::Widget::EIID_IExpandableListPosition;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-Mutex ExpandableListPosition::sLock;
-List<AutoPtr<IExpandableListPosition> > ExpandableListPosition::sPool;
+//=====================================================================
+//                        ExpandableListPosition
+//=====================================================================
+const Int32 ExpandableListPosition::MAX_POOL_SIZE;
+AutoPtr<IArrayList> ExpandableListPosition::sPool = ExpandableListPosition::InitSPool();
+Object ExpandableListPosition::sLock;
 
-void ExpandableListPosition::ResetState()
-{
-    groupPos = 0;
-    childPos = 0;
-    flatListPos = 0;
-    type = 0;
-}
+CAR_INTERFACE_IMPL(ExpandableListPosition, Object, IExpandableListPosition)
 
-ExpandableListPosition::ExpandableListPosition() :
-    groupPos(0),
-    childPos(0),
-    flatListPos(0),
-    type(0)
+ExpandableListPosition::ExpandableListPosition()
+    : mGroupPos(0)
+    , mChildPos(0)
+    , mFlatListPos(0)
+    , mType(0)
 {
 }
 
-Int64 ExpandableListPosition::GetPackedPosition()
+ECode ExpandableListPosition::constructor()
 {
-    if (type == CHILD) return ExpandableListView::GetPackedPositionForChild(groupPos, childPos);
-    else return ExpandableListView::GetPackedPositionForGroup(groupPos);
-    return 0;
+    return NOERROR;
 }
 
-AutoPtr<IExpandableListPosition> ExpandableListPosition::ObtainGroupPosition(
+ECode ExpandableListPosition::GetPackedPosition(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // ==================before translated======================
+    // if (type == CHILD) return ExpandableListView.getPackedPositionForChild(groupPos, childPos);
+    // else return ExpandableListView.getPackedPositionForGroup(groupPos);
+
+    if (mType == IExpandableListPosition::CHILD) {
+        //*result = ExpandableListView::GetPackedPositionForChild(groupPos, childPos);
+    }
+    else {
+        //*result = ExpandableListView::GetPackedPositionForGroup(groupPos);
+    }
+    return NOERROR;
+}
+
+AutoPtr<ExpandableListPosition> ExpandableListPosition::ObtainGroupPosition(
     /* [in] */ Int32 groupPosition)
 {
+    // ==================before translated======================
+    // return obtain(GROUP, groupPosition, 0, 0);
+
     return Obtain(GROUP, groupPosition, 0, 0);
 }
 
-AutoPtr<IExpandableListPosition> ExpandableListPosition::ObtainChildPosition(
+AutoPtr<ExpandableListPosition> ExpandableListPosition::ObtainChildPosition(
     /* [in] */ Int32 groupPosition,
     /* [in] */ Int32 childPosition)
 {
-    return Obtain(CHILD, groupPosition, childPosition, 0);
+    // ==================before translated======================
+    // return obtain(CHILD, groupPosition, childPosition, 0);
+
+    return Obtain(IExpandableListPosition::CHILD, groupPosition, childPosition, 0);
 }
 
-AutoPtr<IExpandableListPosition> ExpandableListPosition::ObtainPosition(
+AutoPtr<ExpandableListPosition> ExpandableListPosition::ObtainPosition(
     /* [in] */ Int64 packedPosition)
 {
-    if (packedPosition == ExpandableListView::PACKED_POSITION_VALUE_NULL) {
+    // ==================before translated======================
+    // if (packedPosition == ExpandableListView.PACKED_POSITION_VALUE_NULL) {
+    //     return null;
+    // }
+    //
+    // ExpandableListPosition elp = getRecycledOrCreate();
+    // elp.groupPos = ExpandableListView.getPackedPositionGroup(packedPosition);
+    // if (ExpandableListView.getPackedPositionType(packedPosition) ==
+    //         ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+    //     elp.type = CHILD;
+    //     elp.childPos = ExpandableListView.getPackedPositionChild(packedPosition);
+    // } else {
+    //     elp.type = GROUP;
+    // }
+    // return elp;
+
+    if (packedPosition == -1/*ExpandableListView::PACKED_POSITION_VALUE_NULL*/) {
         return NULL;
     }
 
-    AutoPtr<IExpandableListPosition> elp = GetRecycledOrCreate();
-    ((CExpandableListPosition*)elp.Get())->groupPos = ExpandableListView::GetPackedPositionGroup(packedPosition);
-    if (ExpandableListView::GetPackedPositionType(packedPosition) ==
-        ExpandableListView::PACKED_POSITION_TYPE_CHILD) {
-        ((CExpandableListPosition*)elp.Get())->type = CHILD;
-        ((CExpandableListPosition*)elp.Get())->childPos = ExpandableListView::GetPackedPositionChild(packedPosition);
-    } else {
-        ((CExpandableListPosition*)elp.Get())->type = GROUP;
+    AutoPtr<ExpandableListPosition> elp = GetRecycledOrCreate();
+    elp->mGroupPos = -1;//ExpandableListView::GetPackedPositionGroup(packedPosition);
+    if (-1/*ExpandableListView::GetPackedPositionType(packedPosition) == ExpandableListView::PACKED_POSITION_TYPE_CHILD*/) {
+        elp->mType = IExpandableListPosition::CHILD;
+        elp->mChildPos = -1;//ExpandableListView::GetPackedPositionChild(packedPosition);
+    }
+    else {
+        elp->mType = IExpandableListPosition::GROUP;
     }
     return elp;
 }
 
-AutoPtr<IExpandableListPosition> ExpandableListPosition::Obtain(
+AutoPtr<ExpandableListPosition> ExpandableListPosition::Obtain(
     /* [in] */ Int32 type,
     /* [in] */ Int32 groupPos,
     /* [in] */ Int32 childPos,
     /* [in] */ Int32 flatListPos)
 {
-    AutoPtr<IExpandableListPosition> elp = GetRecycledOrCreate();
-    ((CExpandableListPosition*)elp.Get())->type = type;
-    ((CExpandableListPosition*)elp.Get())->groupPos = groupPos;
-    ((CExpandableListPosition*)elp.Get())->childPos = childPos;
-    ((CExpandableListPosition*)elp.Get())->flatListPos = flatListPos;
-    return elp;
-}
+    // ==================before translated======================
+    // ExpandableListPosition elp = getRecycledOrCreate();
+    // elp.type = type;
+    // elp.groupPos = groupPos;
+    // elp.childPos = childPos;
+    // elp.flatListPos = flatListPos;
+    // return elp;
 
-AutoPtr<IExpandableListPosition> ExpandableListPosition::GetRecycledOrCreate()
-{
-    AutoPtr<IExpandableListPosition> elp;
-    {
-        AutoLock lock(sLock);
-        if (sPool.IsEmpty() == FALSE) {
-            elp = sPool.GetFront();
-        } else {
-            CExpandableListPosition::New((IExpandableListPosition**)&elp);
-        }
-    }
-    ((CExpandableListPosition*)elp.Get())->ResetState();
+    AutoPtr<ExpandableListPosition> elp = GetRecycledOrCreate();
+    elp->mType = type;
+    elp->mGroupPos = groupPos;
+    elp->mChildPos = childPos;
+    elp->mFlatListPos = flatListPos;
     return elp;
 }
 
 ECode ExpandableListPosition::Recycle()
 {
-    AutoLock lock(mLock);
-        if (sPool.GetSize() < MAX_POOL_SIZE) {
-            AutoPtr<IExpandableListPosition> pm = THIS_PROBE(IExpandableListPosition);//= (IExpandableListPosition*)ExpandableListPosition::Probe(this);
-            sPool.PushBack(pm);
+    // ==================before translated======================
+    // synchronized (sPool) {
+    //     if (sPool.size() < MAX_POOL_SIZE) {
+    //         sPool.add(this);
+    //     }
+    // }
 
-        }
-
+    AutoLock lock(sLock);
+    Int32 size = 0;
+    sPool->GetSize(&size);
+    if (size < MAX_POOL_SIZE) {
+        sPool->Add(TO_IINTERFACE(this));
+    }
     return NOERROR;
+}
+
+ECode ExpandableListPosition::ResetState()
+{
+    // ==================before translated======================
+    // groupPos = 0;
+    // childPos = 0;
+    // flatListPos = 0;
+    // type = 0;
+
+    mGroupPos = 0;
+    mChildPos = 0;
+    mFlatListPos = 0;
+    mType = 0;
+    return NOERROR;
+}
+
+AutoPtr<ExpandableListPosition> ExpandableListPosition::GetRecycledOrCreate()
+{
+    // ==================before translated======================
+    // ExpandableListPosition elp;
+    // synchronized (sPool) {
+    //     if (sPool.size() > 0) {
+    //         elp = sPool.remove(0);
+    //     } else {
+    //         return new ExpandableListPosition();
+    //     }
+    // }
+    // elp.resetState();
+    // return elp;
+
+    AutoPtr<ExpandableListPosition> elp;
+    // synchronized
+    {
+        AutoLock lock(sLock);
+        Int32 size = 0;
+        sPool->GetSize(&size);
+        if (size > 0) {
+            AutoPtr<IInterface> interfaceTmp;
+            sPool->Get(0, (IInterface**)&interfaceTmp);
+            sPool->Remove(interfaceTmp);
+
+            IObject* objTmp = IObject::Probe(interfaceTmp);
+            elp = (ExpandableListPosition*)objTmp;
+        }
+        else {
+            CExpandableListPosition::New((IExpandableListPosition**)&elp);
+        }
+    }
+
+    elp->ResetState();
+    return elp;
+}
+
+AutoPtr<IArrayList> ExpandableListPosition::InitSPool()
+{
+    AutoPtr<IArrayList> result;
+    CArrayList::New(MAX_POOL_SIZE, (IArrayList**)&result);
+    return result;
 }
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-
 
 

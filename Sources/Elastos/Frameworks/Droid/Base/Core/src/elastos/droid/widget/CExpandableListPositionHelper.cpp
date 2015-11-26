@@ -1,11 +1,14 @@
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/widget/CExpandableListPositionHelper.h"
 
-using Elastos::Droid::Widget::IExpandableListPosition;
+#include "elastos/droid/widget/CExpandableListPositionHelper.h"
+#include "elastos/droid/widget/ExpandableListPosition.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
+
+CAR_SINGLETON_IMPL(CExpandableListPositionHelper)
+
+CAR_INTERFACE_IMPL(CExpandableListPositionHelper, Singleton, IExpandableListPositionHelper)
 
 ECode CExpandableListPositionHelper::ObtainGroupPosition(
     /* [in] */ Int32 groupPosition,
@@ -13,9 +16,9 @@ ECode CExpandableListPositionHelper::ObtainGroupPosition(
 {
     VALIDATE_NOT_NULL(position);
     *position = ExpandableListPosition::ObtainGroupPosition(groupPosition);
+    REFCOUNT_ADD(*position);
     return NOERROR;
 }
-
 
 ECode CExpandableListPositionHelper::ObtainChildPosition(
     /* [in] */ Int32 groupPosition,
@@ -24,6 +27,7 @@ ECode CExpandableListPositionHelper::ObtainChildPosition(
 {
     VALIDATE_NOT_NULL(position);
     *position = ExpandableListPosition::ObtainChildPosition(groupPosition, childPosition);
+    REFCOUNT_ADD(*position);
     return NOERROR;
 }
 
@@ -33,6 +37,7 @@ ECode CExpandableListPositionHelper::ObtainPosition(
 {
     VALIDATE_NOT_NULL(position);
     *position = ExpandableListPosition::ObtainPosition(packedPosition);
+    REFCOUNT_ADD(*position);
     return NOERROR;
 }
 
@@ -45,6 +50,7 @@ ECode CExpandableListPositionHelper::Obtain(
 {
     VALIDATE_NOT_NULL(position);
     *position = ExpandableListPosition::Obtain(type, groupPos, childPos, flatListPos);
+    REFCOUNT_ADD(*position);
     return NOERROR;
 }
 

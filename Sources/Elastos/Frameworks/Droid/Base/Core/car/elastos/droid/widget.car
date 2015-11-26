@@ -180,12 +180,16 @@ module
    //  interface Elastos.Droid.Media.IAudioService;
    //  interface Elastos.Droid.InputMethodService.IKeyboardView;
    //  interface Elastos.Droid.InputMethodService.IOnKeyboardActionListener;
-    interface Elastos.Droid.Widget.IAdapterView;
-    interface Elastos.Droid.Widget.IAdapterViewAnimator;
-    interface Elastos.Droid.Widget.IAdapterViewFlipper;
-    interface Elastos.Droid.Widget.ISimpleMonthView;
-    interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
-    interface Elastos.Droid.View.Animation.IInterpolator;
+   interface Elastos.Droid.Widget.IAdapterView;
+   interface Elastos.Droid.Widget.IAdapterViewAnimator;
+   interface Elastos.Droid.Widget.IAdapterViewFlipper;
+   interface Elastos.Droid.Widget.ISimpleMonthView;
+   interface Elastos.Droid.Widget.IExpandableListAdapter;
+   interface Elastos.Droid.Widget.IExpandableListConnector;
+   interface Elastos.Droid.Widget.IExpandableListPosition;
+   interface Elastos.Droid.Widget.IExpandableListPositionHelper;
+   interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
+   interface Elastos.Droid.View.Animation.IInterpolator;
 
     namespace Elastos {
     namespace Droid {
@@ -1364,10 +1368,10 @@ module
    //      interface IPopupWindow;
    //  }
 
-   //  [local]
-   //  class CExpandableListPosition {
-   //      interface IExpandableListPosition;
-   //  }
+	[local]
+	class CExpandableListPosition {
+		interface IExpandableListPosition;
+	}
 
    //  [local]
    //  class CExpandableListView {
@@ -1388,16 +1392,17 @@ module
    //      interface IExpandableListViewHelper;
    //  }
 
-   //  singleton class CExpandableListPositionHelper {
-   //      interface IExpandableListPositionHelper;
-   //  }
+	singleton class CExpandableListPositionHelper {
+		interface IExpandableListPositionHelper;
+	}
 
-   //  [local]
-   //  class CExpandableListConnector {
-   //      interface IExpandableListConnector;
-   //      interface IFilterable;
-   //      interface ISpinnerAdapter;
-   //  }
+	[local]
+	class CExpandableListConnector {
+		constructor(
+        	[in] IExpandableListAdapter* expandableListAdapter);
+
+		interface IExpandableListConnector;
+	}
 
    //  singleton class CPositionMetadataHelper {
    //      interface IPositionMetadataHelper;

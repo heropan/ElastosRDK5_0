@@ -474,7 +474,7 @@ Boolean SimpleMonthView::DispatchHoverEvent(
     Boolean resTmp = FALSE;
     mTouchHelper->DispatchHoverEvent(event, &resTmp);
     if (resTmp) {
-        return true;
+        return TRUE;
     }
     return View::DispatchHoverEvent(event);
 }
@@ -978,7 +978,6 @@ String SimpleMonthView::GetMonthAndYearString()
     String result;
     formatter->ToString(&result);
     return result;
-
 }
 
 void SimpleMonthView::DrawMonthTitle(
@@ -1154,11 +1153,11 @@ void SimpleMonthView::OnDayClick(
         AutoPtr<ICalendar> date;
         helper->GetInstance((ICalendar**)&date);
         date->Set(mYear, mMonth, day);
-        //mOnDayClickListener->OnDayClick(this, date);
+        mOnDayClickListener->OnDayClick(this, date);
     }
 
     // This is a no-op if accessibility is turned off.
-    //mTouchHelper->SendEventForVirtualView(day, IAccessibilityEvent::TYPE_VIEW_CLICKED);
+    // car need contain this func: mTouchHelper->SendEventForVirtualView(day, IAccessibilityEvent::TYPE_VIEW_CLICKED);
 }
 
 } // namespace Widget
