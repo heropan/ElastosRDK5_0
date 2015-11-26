@@ -230,6 +230,11 @@ parse_args() {
             -x | --debug)
                 opt_debug=yes
                 ;;
+            -s | --export)
+                shift
+                opt_export="$1"
+                echo $1
+                ;;
             *)
                 if [[ -z "$target_desc" ]]; then
                     target_desc="$1"
@@ -259,7 +264,11 @@ para_emake_destroy() {
     if [[ $abort_reason ]]; then
         log_error Aborted Due To $abort_reason
     fi
-
+    local ELAPSED_TIME=$(( `date +%s`-$START_TIME ))
+    local HOURS=`echo $ELAPSED_TIME/3600 | bc`
+    local MINUTES=`echo $ELAPSED_TIME/60%60 | bc`
+    local SECONDS=`echo $ELAPSED_TIME%60 | bc`
+    echo "para-emake finished, elapsed time: $HOURS Hours, $MINUTES Minutes, $SECONDS Seconds."
     cleanup_stack_pop_all
 }
 
@@ -268,7 +277,17 @@ load_job_desc_file() {
     job_desc_path+=${target_desc/_/-}-paralist
     if [[ ! -f "$job_desc_path" ]]; then
         echo No paralist found: $job_desc_path
-        exit 1
+        job_desc_path=${target_desc/_/-}-paralist
+        if [[ ! -f "$job_desc_path" ]]; then
+            echo No paralist found: $job_desc_path
+            exit 1
+        fi
+    fi
+
+    if [[ -n $opt_export ]]; then
+        if [[ -f ~/day_log/$target_desc"-compileError" ]]; then
+            rm ~/day_log/$target_desc"-compileError"
+        fi
     fi
 
     while read line; do
@@ -306,6 +325,9 @@ para_emake_check_existence() {
 
 build_emake() {
     cd "$src_path"
+    if [ -n "$opt_export" ]; then
+        export $opt_export
+    fi
     local CLOSE_EMAKE_TIMES=1;emake $opt_make_opts
 }
 
@@ -353,6 +375,7 @@ build_car() {
 
 build() {
     trap abort ERR
+    [[ -z $opt_export ]] || trap checkerror ERR
     trap 'exit 130' TERM
     trap cleanup_stack_pop_all EXIT
 
@@ -404,7 +427,11 @@ abort() {
 
     if [[ $$ == $BASHPID ]]; then
         trap '' TERM
-        kill -TERM 0
+        if [[ -n $opt_export ]]; then
+            kill -TERM $$
+        else
+            kill -TERM 0
+        fi
     else
         kill -ABRT $$
     fi
@@ -413,6 +440,12 @@ abort() {
     aborted=yes
 
     exit 130
+}
+
+#This function is only used for the error handling of the test section
+checkerror() {
+    ret=1
+    echo "11">>~/day_log/$target_desc"-compileError"
 }
 
 is_aborted() {
@@ -434,7 +467,11 @@ run_once() {
         *)
             if [[ ! -d "$sources_path/$run_type" ]]; then
                 log_error Source directory not found @$job_desc_index: $run_type
-                return 1
+                if [[ -n $opt_export ]]; then
+                    return
+                else
+                    return 1
+                fi
             fi
 
             local src_dir="$run_type"
@@ -481,16 +518,27 @@ para_emake_init() {
     fi
 
     setup_path="$XDK_ROOT/Setup"
-    if [[ ! -f "$setup_path/Config/$target_desc.sh" ]]; then
-        echo Unsupported Platform: $target_desc
-        exit 1
+    if [[ -n $opt_export ]]; then
+        if [[ ! -f "$setup_path/Config/arm_android.sh" ]]; then
+            echo Unsupported Platform: arm_android
+            exit 1
+        fi
+    else
+        if [[ ! -f "$setup_path/Config/$target_desc.sh" ]]; then
+            echo Unsupported Platform: $target_desc
+            exit 1
+        fi
     fi
 
     targets_path="$XDK_ROOT/Targets"
 
     pushd "$setup_path" >/dev/null
     set -o allexport
-    source $XDK_ROOT/Setup/SetEnv.sh $target_desc
+    if [[ -n "$opt_export" ]]; then
+        source $XDK_ROOT/Setup/SetEnv.sh arm_android
+    else
+        source $XDK_ROOT/Setup/SetEnv.sh $target_desc
+    fi
     if [[ "$build_version" == "rls" ]]; then
         chv rls
     fi
@@ -540,7 +588,6 @@ para_emake_build() {
 }
 
 para_emake_process_targets() {
-    local START_TIME=`date +%s`
     is_disabled check_point || check_point_init
 
     trap on_user_interrupt INT
@@ -559,13 +606,12 @@ para_emake_process_targets() {
         LD_LIBRARY_PATH="$build_tools_path:$LD_LIBRARY_PATH" \
         para_emake_$target
     done
-    local ELAPSED_TIME=$(( `date +%s`-$START_TIME ))
-    local HOURS=`echo $ELAPSED_TIME/3600 | bc`
-    local MINUTES=`echo $ELAPSED_TIME/60%60 | bc`
-    local SECONDS=`echo $ELAPSED_TIME%60 | bc`
-    echo "Para-emake Build finished, elapsed time: $HOURS Hours, $MINUTES Minutes, $SECONDS Seconds."
 }
 
+START_TIME=`date +%s`
+echo $$
 parse_args "$@"
 para_emake_init
 para_emake_process_targets
+echo "******************************"
+date
