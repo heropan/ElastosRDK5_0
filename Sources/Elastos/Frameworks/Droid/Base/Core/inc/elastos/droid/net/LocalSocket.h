@@ -215,9 +215,6 @@ public:
     CARAPI GetFileDescriptor(
         /* [out] */ IFileDescriptor** result);
 
-    /* package */
-    static const Int32 SOCKET_UNKNOWN;
-
 private:
     /**
      * It's difficult to discern from the spec when impl.create() should be
@@ -228,6 +225,11 @@ private:
      */
     CARAPI ImplCreateIfNeeded();
 
+public:
+    /** unknown socket type (used for constructor with existing file descriptor) */
+    /* package */ static const Int32 SOCKET_UNKNOWN;
+
+private:
     AutoPtr<ILocalSocketImpl> mImpl;
 
     /* volatile */ Boolean mImplCreated;
@@ -239,15 +241,6 @@ private:
     Boolean mIsConnected;
 
     Int32 mSockType;
-
-    /** Datagram socket type */
-    static const Int32 SOCKET_DGRAM;
-
-    /** Stream socket type */
-    static const Int32 SOCKET_STREAM;
-
-    /** Sequential packet socket type */
-    static const Int32 SOCKET_SEQPACKET;
 };
 
 } // namespace Net

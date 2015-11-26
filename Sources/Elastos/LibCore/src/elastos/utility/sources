@@ -8,6 +8,7 @@ include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../inc/;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/math;
@@ -58,7 +59,7 @@ SOURCES += CLinkedHashMap.cpp
 SOURCES += CLinkedHashSet.cpp
 SOURCES += CLinkedList.cpp
 SOURCES += ListResourceBundle.cpp
-SOURCES += CLocale.cpp
+SOURCES += Locale.cpp
 SOURCES += CLocaleBuilder.cpp
 SOURCES += CLocaleHelper.cpp
 SOURCES += MapEntry.cpp

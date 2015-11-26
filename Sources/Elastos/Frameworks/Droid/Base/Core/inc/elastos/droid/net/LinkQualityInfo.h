@@ -39,12 +39,6 @@ public:
         /* [in] */ IParcel* dest);
 
     /**
-     * @hide
-     */
-    CARAPI InitializeFromParcel(
-        /* [in] */ IParcel* in);
-
-    /**
      * returns the type of network this link is connected to
      * @return network type as defined by {@link android.net.ConnectivityManager} or
      * {@link android.net.LinkQualityInfo#UNKNOWN_INT}
@@ -163,6 +157,7 @@ public:
     CARAPI SetDataSampleDuration(
         /* [in] */ Int32 dataSampleDuration);
 
+public:
     /**
      * Represents a value that you can use to test if an integer field is set to a good value
      */
@@ -185,6 +180,7 @@ public:
     static const Int32 sOBJECT_TYPE_LINK_QUALITY_INFO;
     static const Int32 sOBJECT_TYPE_WIFI_LINK_QUALITY_INFO;
     static const Int32 sOBJECT_TYPE_MOBILE_LINK_QUALITY_INFO;
+
 private:
     /**
      * Represents a value that you can use to test if an integer field is set to a good value

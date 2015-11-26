@@ -36,6 +36,8 @@ public:
 
     virtual ~Object();
 
+    CARAPI constructor();
+
     CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 

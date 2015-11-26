@@ -113,6 +113,12 @@ Double StringUtils::ParseDouble(
     return value;
 }
 
+Boolean StringUtils::ParseBoolean(
+    /* [in] */ const String& input)
+{
+    return input.EqualsIgnoreCase("true");
+}
+
 ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [out] */ Int16* result)

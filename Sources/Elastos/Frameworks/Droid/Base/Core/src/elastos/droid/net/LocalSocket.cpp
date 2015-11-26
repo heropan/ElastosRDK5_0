@@ -10,9 +10,6 @@ namespace Net {
 CAR_INTERFACE_IMPL_2(LocalSocket, Object, ILocalSocket, ICloseable)
 
 const Int32 LocalSocket::SOCKET_UNKNOWN = 0;
-const Int32 LocalSocket::SOCKET_DGRAM = 1;
-const Int32 LocalSocket::SOCKET_STREAM = 2;
-const Int32 LocalSocket::SOCKET_SEQPACKET = 3;
 
 ECode LocalSocket::constructor()
 {

@@ -84,7 +84,11 @@ public:
         /* [out] */ IMap** rethashmap);
 
 private:
-    MailTo();
+    CARAPI constructor();
+
+    CARAPI GetField(
+        /* [in] */ const String& name,
+        /* [out] */ String* result);
 
 private:
     AutoPtr <IHashMap> mHeaders;
@@ -99,6 +103,5 @@ private:
 } // namespace Net
 } // namepsace Droid
 } // namespace Elastos
-
 
 #endif // __ELASTOS_DROID_NET_MAILTO_H__

@@ -1,0 +1,48 @@
+.
+Building /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/dhcp
+.
+Building /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http
+.
+Building /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/nsd
+Compiling /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp ...
+In file included from ../Elastos.Droid.Core_server.h:7:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Network.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp: In member function 'Elastos::ECode Elastos::Droid::Net::Network::NetworkBoundSocketFactory::ConnectToHost(const Elastos::String&, Elastos::Int32, Elastos::Net::ISocketAddress*, Elastos::Net::ISocket**)':
+../Elastos.CoreLibrary.h:5893:24: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_IO_EXCEPTION 0xa2010000
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:285:19: note: in expansion of macro 'E_IO_EXCEPTION'
+         if (ec == E_IO_EXCEPTION) {
+                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp: In static member function 'static Elastos::Boolean Elastos::Droid::Net::Network::GetHTTP_KEEP_ALIVE()':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:369:5: error: 'CSystem' has not been declared
+     CSystem::AcquireSingleton((ISystem**)&system);
+     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:372:12: error: 'StringUtile' has not been declared
+     return StringUtile::ParseBoolean(property);
+            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp: In static member function 'static Elastos::Int32 Elastos::Droid::Net::Network::GetHTTP_MAX_CONNECTIONS()':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:378:5: error: 'CSystem' has not been declared
+     CSystem::AcquireSingleton((ISystem**)&system);
+     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:381:66: error: expected ':' before ';' token
+     return HTTP_KEEP_ALIVE ? StringUtils::ParseInt32(property), 0;
+                                                                  ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:381:66: error: expected primary-expression before ';' token
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp: In static member function 'static Elastos::Int32 Elastos::Droid::Net::Network::GetHTTP_KEEP_ALIVE_DURATION_MS()':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:387:5: error: 'CSystem' has not been declared
+     CSystem::AcquireSingleton((ISystem**)&system);
+     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp: In static member function 'static Elastos::Boolean Elastos::Droid::Net::Network::GetHTTP_KEEP_ALIVE()':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:373:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp: In static member function 'static Elastos::Int32 Elastos::Droid::Net::Network::GetHTTP_MAX_CONNECTIONS()':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Network.cpp:382:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+make[1]: *** [Network.o] Error 1
+make: *** [all] Error 2
+Build finished, elapsed time: 0 Hours, 0 Minutes, 2 Seconds.

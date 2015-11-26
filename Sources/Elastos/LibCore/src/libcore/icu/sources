@@ -8,6 +8,7 @@ include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../inc/;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;

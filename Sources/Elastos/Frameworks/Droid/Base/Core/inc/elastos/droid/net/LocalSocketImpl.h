@@ -212,11 +212,11 @@ public:
 
     CARAPI GetOption(
         /* [in] */ Int32 optID,
-        /* [out] */ IObject** result);
+        /* [out] */ IInterface** result);
 
     CARAPI SetOption(
         /* [in] */ Int32 optID,
-        /* [in] */ IObject* value);
+        /* [in] */ IInterface* value);
 
     /**
      * Enqueues a set of file descriptors to send to the peer. The queue

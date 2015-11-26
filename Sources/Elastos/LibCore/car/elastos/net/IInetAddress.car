@@ -319,6 +319,21 @@ module
             [out, callee] ArrayOf<IInetAddress*>* interAddress);
 
         /**
+         * Operates identically to {@code getAllByName} except host resolution is
+         * performed on the network designated by {@code netId}.
+         *
+         * @param host the hostname or literal IP string to be resolved.
+         * @param netId the network to use for host resolution.
+         * @return the array of addresses associated with the specified host.
+         * @throws UnknownHostException if the address lookup fails.
+         * @hide internal use only
+         */
+        GetAllByNameOnNet(
+            [in] String host,
+            [in] Int32 netId,
+            [out, callee] ArrayOf<IInetAddress*>* addresses);
+
+        /**
          * Returns the address of a host according to the given host string name
          * {@code host}. The host string may be either a machine name or a dotted
          * string IP address. If the latter, the {@code hostName} field is
@@ -334,6 +349,22 @@ module
         GetByName(
             [in] String host,
             [out] IInetAddress** interAddr);
+
+        /**
+         * Operates identically to {@code getByName} except host resolution is
+         * performed on the network designated by {@code netId}.
+         *
+         * @param host
+         *            the hostName to be resolved to an address or {@code null}.
+         * @param netId the network to use for host resolution.
+         * @return the {@code InetAddress} instance representing the host.
+         * @throws UnknownHostException if the address lookup fails.
+         * @hide internal use only
+         */
+        GetByNameOnNet(
+            [in] String host,
+            [in] Int32 netId,
+            [out] IInetAddress** address);
 
         /**
          * Returns an {@code InetAddress} for the local host if possible, or the

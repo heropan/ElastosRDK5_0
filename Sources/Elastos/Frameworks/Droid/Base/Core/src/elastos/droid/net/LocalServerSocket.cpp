@@ -1,5 +1,7 @@
 
 #include "elastos/droid/net/LocalServerSocket.h"
+#include "elastos/droid/net/CLocalSocketAddress.h"
+#include "elastos/droid/net/CLocalSocket.h"
 
 namespace Elastos {
 namespace Droid {
@@ -12,80 +14,57 @@ const Int32 LocalServerSocket::LISTEN_BACKLOG = 50;
 ECode LocalServerSocket::constructor(
     /* [in] */ const String& name)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     mImpl = new LocalSocketImpl();
 
     mImpl->Create(ILocalSocket::SOCKET_STREAM);
 
-    FAIL_RETURN(CLocalSocketAddress::New(name, (ILocalSocketAddress**)&mLocalAddress));
+    CLocalSocketAddress::New(name, (ILocalSocketAddress**)&mLocalAddress);
     FAIL_RETURN(mImpl->Bind(mLocalAddress));
     return mImpl->Listen(LISTEN_BACKLOG);
-#endif
 }
 
 ECode LocalServerSocket::constructor(
     /* [in] */ IFileDescriptor* fd)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    mImpl = new LocalSocketImpl(fd);
+    mImpl = new LocalSocketImpl();
+    mImpl->constructor(fd);
     FAIL_RETURN(mImpl->Listen(LISTEN_BACKLOG));
     return mImpl->GetSockAddress((ILocalSocketAddress**)&mLocalAddress);
-#endif
 }
 
 ECode LocalServerSocket::GetLocalSocketAddress(
     /* [out] */ ILocalSocketAddress** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     *result = mLocalAddress;
     REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode LocalServerSocket::Accept(
     /* [out] */ ILocalSocket** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
 
     LocalSocketImpl* acceptedImpl = new LocalSocketImpl();
 
     mImpl->Accept(acceptedImpl);
 
-    AutoPtr<ILocalSocket> lsocket;
-    CLocalSocket::New((Handle32)acceptedImpl, ILocalSocket::SOCKET_UNKNOWN, (ILocalSocket**)&lsocket);
-    *result = lsocket;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
-#endif
+    return CLocalSocket::New(acceptedImpl, LocalSocket::SOCKET_UNKNOWN, result);
 }
 
 ECode LocalServerSocket::GetFileDescriptor(
     /* [out] */ IFileDescriptor** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-    AutoPtr<IFileDescriptor> fd;
-    fd = mImpl->GetFileDescriptor();
-    *result = fd;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
-#endif
+
+    return mImpl->GetFileDescriptor(result);
 }
 
 ECode LocalServerSocket::Close()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     return mImpl->Close();
-#endif
 }
 
 

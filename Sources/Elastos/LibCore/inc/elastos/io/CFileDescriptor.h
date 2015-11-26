@@ -36,6 +36,14 @@ public:
     CARAPI Valid(
         /* [out] */ Boolean* isValid);
 
+    /**
+     * Returns the int fd. It's highly unlikely you should be calling this. Please discuss
+     * your needs with a libcore maintainer before using this method.
+     * @hide internal use only
+     */
+    CARAPI GetInt(
+        /* [out] */ Int32* result);
+
     CARAPI ToString(
         /* [out] */ String* str);
 

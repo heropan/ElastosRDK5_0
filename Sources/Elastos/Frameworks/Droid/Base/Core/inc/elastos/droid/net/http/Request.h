@@ -181,10 +181,9 @@ private:
      * @param request   the request, to obtain the executed method
      * @param response  the response, to obtain the status code
      */
-    static CARAPI CanResponseHaveBody(
+    static CARAPI_(Boolean) CanResponseHaveBody(
         /* [in] */ IHttpRequest* request,
-        /* [in] */ Int32 status,
-        /* [out] */ Boolean* result);
+        /* [in] */ Int32 status);
 
     /**
      * Supply an InputStream that provides the body of a request.  It's

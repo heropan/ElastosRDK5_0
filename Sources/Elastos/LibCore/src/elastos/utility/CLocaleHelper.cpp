@@ -15,7 +15,7 @@ ECode CLocaleHelper::ForLanguageTag(
 {
     VALIDATE_NOT_NULL(locale);
 
-    return CLocale::ForLanguageTag(languageTag, locale);
+    return Locale::ForLanguageTag(languageTag, locale);
 }
 
 ECode CLocaleHelper::GetAvailableLocales(
@@ -23,7 +23,7 @@ ECode CLocaleHelper::GetAvailableLocales(
 {
     VALIDATE_NOT_NULL(locales);
 
-    return CLocale::GetAvailableLocales(locales);
+    return Locale::GetAvailableLocales(locales);
 }
 
 ECode CLocaleHelper::GetDefault(

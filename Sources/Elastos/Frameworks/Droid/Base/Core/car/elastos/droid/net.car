@@ -356,6 +356,10 @@ module
         interface ILocalSocketAddressNamespace;
     }
 
+    class CMailTo {
+        interface IMailTo;
+    }
+
     singleton class CMailToHelper {
         interface IMailToHelper;
     }

@@ -3,6 +3,7 @@
 #include "CHashTable.h"
 #include "CVector.h"
 #include "CHugeEnumSet.h"
+#include "elastos/utility/CLocale.h"
 #include "CMiniEnumSet.h"
 #include "CUnsafeArrayList.h"
 #include "CRandom.h"
@@ -18,6 +19,7 @@ CAR_OBJECT_IMPL(CHashSet)
 CAR_OBJECT_IMPL(CHashTable)
 CAR_OBJECT_IMPL(CVector)
 CAR_OBJECT_IMPL(CHugeEnumSet)
+CAR_OBJECT_IMPL(CLocale)
 CAR_OBJECT_IMPL(CMiniEnumSet)
 CAR_OBJECT_IMPL(CUnsafeArrayList)
 CAR_OBJECT_IMPL(CRandom)

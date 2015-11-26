@@ -1,9 +1,10 @@
 
-#include "CLocale.h"
+#include "Locale.h"
 #include "ICUUtil.h"
 #include "StringBuilder.h"
 #include "CSystem.h"
 #include "CString.h"
+#include "CLocale.h"
 #include "CLocaleBuilder.h"
 #include "Collections.h"
 #include "CTreeSet.h"
@@ -36,30 +37,30 @@ static AutoPtr<ILocale> CreateLocale(
     return (ILocale*)l.Get();
 }
 
-const AutoPtr<ILocale> CLocale::CANADA = CreateLocale(String("en"), String("CA"));
-const AutoPtr<ILocale> CLocale::CANADA_FRENCH = CreateLocale(String("fr"), String("CA"));
-const AutoPtr<ILocale> CLocale::CHINA = CreateLocale(String("zh"), String("CN"));
-const AutoPtr<ILocale> CLocale::CHINESE = CreateLocale(String("zh"), String(""));
-const AutoPtr<ILocale> CLocale::ENGLISH = CreateLocale(String("en"), String(""));
-const AutoPtr<ILocale> CLocale::FRANCE = CreateLocale(String("fr"), String("FR"));
-const AutoPtr<ILocale> CLocale::FRENCH = CreateLocale(String("fr"), String(""));
-const AutoPtr<ILocale> CLocale::GERMAN = CreateLocale(String("de"), String(""));
-const AutoPtr<ILocale> CLocale::GERMANY = CreateLocale(String("de"), String("DE"));
-const AutoPtr<ILocale> CLocale::ITALIAN = CreateLocale(String("it"), String(""));
-const AutoPtr<ILocale> CLocale::ITALY = CreateLocale(String("it"), String("IT"));
-const AutoPtr<ILocale> CLocale::JAPAN = CreateLocale(String("ja"), String("JP"));
-const AutoPtr<ILocale> CLocale::JAPANESE = CreateLocale(String("ja"), String(""));
-const AutoPtr<ILocale> CLocale::KOREA = CreateLocale(String("ko"), String("KR"));
-const AutoPtr<ILocale> CLocale::KOREAN = CreateLocale(String("ko"), String(""));
-const AutoPtr<ILocale> CLocale::PRC = CreateLocale(String("zh"), String("CN"));
-const AutoPtr<ILocale> CLocale::ROOT = CreateLocale(String(""), String(""));
-const AutoPtr<ILocale> CLocale::SIMPLIFIED_CHINESE = CreateLocale(String("zh"), String("CN"));
-const AutoPtr<ILocale> CLocale::TAIWAN = CreateLocale(String("zh"), String("TW"));
-const AutoPtr<ILocale> CLocale::TRADITIONAL_CHINESE = CreateLocale(String("zh"), String("TW"));
-const AutoPtr<ILocale> CLocale::UK = CreateLocale(String("en"), String("GB"));
-const AutoPtr<ILocale> CLocale::US = CreateLocale(String("en"), String("US"));
+const AutoPtr<ILocale> Locale::CANADA = CreateLocale(String("en"), String("CA"));
+const AutoPtr<ILocale> Locale::CANADA_FRENCH = CreateLocale(String("fr"), String("CA"));
+const AutoPtr<ILocale> Locale::CHINA = CreateLocale(String("zh"), String("CN"));
+const AutoPtr<ILocale> Locale::CHINESE = CreateLocale(String("zh"), String(""));
+const AutoPtr<ILocale> Locale::ENGLISH = CreateLocale(String("en"), String(""));
+const AutoPtr<ILocale> Locale::FRANCE = CreateLocale(String("fr"), String("FR"));
+const AutoPtr<ILocale> Locale::FRENCH = CreateLocale(String("fr"), String(""));
+const AutoPtr<ILocale> Locale::GERMAN = CreateLocale(String("de"), String(""));
+const AutoPtr<ILocale> Locale::GERMANY = CreateLocale(String("de"), String("DE"));
+const AutoPtr<ILocale> Locale::ITALIAN = CreateLocale(String("it"), String(""));
+const AutoPtr<ILocale> Locale::ITALY = CreateLocale(String("it"), String("IT"));
+const AutoPtr<ILocale> Locale::JAPAN = CreateLocale(String("ja"), String("JP"));
+const AutoPtr<ILocale> Locale::JAPANESE = CreateLocale(String("ja"), String(""));
+const AutoPtr<ILocale> Locale::KOREA = CreateLocale(String("ko"), String("KR"));
+const AutoPtr<ILocale> Locale::KOREAN = CreateLocale(String("ko"), String(""));
+const AutoPtr<ILocale> Locale::PRC = CreateLocale(String("zh"), String("CN"));
+const AutoPtr<ILocale> Locale::ROOT = CreateLocale(String(""), String(""));
+const AutoPtr<ILocale> Locale::SIMPLIFIED_CHINESE = CreateLocale(String("zh"), String("CN"));
+const AutoPtr<ILocale> Locale::TAIWAN = CreateLocale(String("zh"), String("TW"));
+const AutoPtr<ILocale> Locale::TRADITIONAL_CHINESE = CreateLocale(String("zh"), String("TW"));
+const AutoPtr<ILocale> Locale::UK = CreateLocale(String("en"), String("GB"));
+const AutoPtr<ILocale> Locale::US = CreateLocale(String("en"), String("US"));
 
-String CLocale::UNDETERMINED_LANGUAGE("und");
+String Locale::UNDETERMINED_LANGUAGE("und");
 
 static AutoPtr<ArrayOf<IObjectStreamField*> > InitSerialPersistentFields()
 {
@@ -72,7 +73,7 @@ static AutoPtr<ArrayOf<IObjectStreamField*> > InitSerialPersistentFields()
     // new ObjectStreamField("extensions", String.class),
     return notimpl;
 }
-AutoPtr<ArrayOf<IObjectStreamField*> > CLocale::sSerialPersistentFields = InitSerialPersistentFields();
+AutoPtr<ArrayOf<IObjectStreamField*> > Locale::sSerialPersistentFields = InitSerialPersistentFields();
 
 static AutoPtr< StringMap > InitGRANDFATHERED_LOCALES()
 {
@@ -114,20 +115,21 @@ static AutoPtr< StringMap > InitGRANDFATHERED_LOCALES()
     return map;
 }
 
-AutoPtr< StringMap > CLocale::GRANDFATHERED_LOCALES = InitGRANDFATHERED_LOCALES();
+AutoPtr< StringMap > Locale::GRANDFATHERED_LOCALES = InitGRANDFATHERED_LOCALES();
 
 /**
  * The current default locale. It is temporarily assigned to US because we
  * need a default locale to lookup the real default locale.
  */
-AutoPtr<ILocale> CLocale::sDefaultLocale = CLocale::US;
-Boolean CLocale::sIsInited = FALSE;
+AutoPtr<ILocale> Locale::sDefaultLocale = Locale::US;
+Boolean Locale::sIsInited = FALSE;
 
-CAR_INTERFACE_IMPL_3(CLocale, Object, ILocale, ICloneable, ISerializable)
+CAR_INTERFACE_IMPL_3(Locale, Object, ILocale, ICloneable, ISerializable)
 
-CAR_OBJECT_IMPL(CLocale)
+Locale::~Locale()
+{}
 
-ECode CLocale::ForLanguageTag(
+ECode Locale::ForLanguageTag(
     /* [in] */ const String& languageTag,
     /* [out] */ ILocale** locale)
 {
@@ -141,12 +143,11 @@ ECode CLocale::ForLanguageTag(
     return ForLanguageTag(languageTag, FALSE /* strict */, locale);
 }
 
-CLocale::CLocale()
+Locale::Locale()
     : mHasValidatedFields(FALSE)
-{
-}
+{}
 
-ECode CLocale::constructor(
+ECode Locale::constructor(
     /* [in] */ Boolean hasValidatedFields,
     /* [in] */ const String& lowerCaseLanguageCode,
     /* [in] */ const String& upperCaseCountryCode)
@@ -165,7 +166,7 @@ ECode CLocale::constructor(
     return NOERROR;
 }
 
-ECode CLocale::constructor()
+ECode Locale::constructor()
 {
     mLanguageCode = "en";
     mCountryCode = "US";
@@ -173,7 +174,7 @@ ECode CLocale::constructor()
     return NOERROR;
 }
 
-ECode CLocale::constructor(
+ECode Locale::constructor(
     /* [in] */ const String& language)
 {
     String empty("");
@@ -184,7 +185,7 @@ ECode CLocale::constructor(
         FALSE /* has validated fields */);
 }
 
-ECode CLocale::constructor(
+ECode Locale::constructor(
     /* [in] */ const String& language,
     /* [in] */ const String& country)
 {
@@ -196,7 +197,7 @@ ECode CLocale::constructor(
         FALSE /* has validated fields */);
 }
 
-ECode CLocale::constructor(
+ECode Locale::constructor(
     /* [in] */ const String& language,
     /* [in] */ const String& country,
     /* [in] */ const String& variant)
@@ -208,7 +209,7 @@ ECode CLocale::constructor(
         FALSE /* has validated fields */);
 }
 
-ECode CLocale::constructor(
+ECode Locale::constructor(
     /* [in] */ const String& language,
     /* [in] */ const String& country,
     /* [in] */ const String& variant,
@@ -272,7 +273,7 @@ ECode CLocale::constructor(
     return NOERROR;
 }
 
-ECode CLocale::Clone(
+ECode Locale::Clone(
     /* [out] */ IInterface** newObj)
 {
     VALIDATE_NOT_NULL(newObj);
@@ -286,7 +287,7 @@ ECode CLocale::Clone(
     return NOERROR;
 }
 
-ECode CLocale::CloneImpl(
+ECode Locale::CloneImpl(
     /* [in] */ ILocale* locale)
 {
     assert(locale);
@@ -309,7 +310,7 @@ ECode CLocale::CloneImpl(
     return NOERROR;
 }
 
-ECode CLocale::Equals(
+ECode Locale::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* result)
 {
@@ -333,13 +334,13 @@ ECode CLocale::Equals(
     return NOERROR;
 }
 
-ECode CLocale::GetAvailableLocales(
+ECode Locale::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
     return ICUUtil::GetAvailableLocales(locales);
 }
 
-ECode CLocale::GetCountry(
+ECode Locale::GetCountry(
     /* [out] */ String* country)
 {
     VALIDATE_NOT_NULL(country);
@@ -347,7 +348,7 @@ ECode CLocale::GetCountry(
     return NOERROR;
 }
 
-AutoPtr<ILocale> CLocale::GetDefault()
+AutoPtr<ILocale> Locale::GetDefault()
 {
     if (!sIsInited) {
         sIsInited = TRUE;
@@ -368,13 +369,13 @@ AutoPtr<ILocale> CLocale::GetDefault()
     return sDefaultLocale;
 }
 
-ECode CLocale::GetDisplayCountry(
+ECode Locale::GetDisplayCountry(
     /* [out] */ String* country)
 {
     return GetDisplayCountry(GetDefault(), country);
 }
 
-ECode CLocale::GetDisplayCountry(
+ECode Locale::GetDisplayCountry(
     /* [in] */ ILocale* locale,
     /* [out] */ String* country)
 {
@@ -403,13 +404,13 @@ ECode CLocale::GetDisplayCountry(
     return NOERROR;
 }
 
-ECode CLocale::GetDisplayLanguage(
+ECode Locale::GetDisplayLanguage(
     /* [out] */ String* language)
 {
     return GetDisplayLanguage(GetDefault(), language);
 }
 
-ECode CLocale::GetDisplayLanguage(
+ECode Locale::GetDisplayLanguage(
     /* [in] */ ILocale* locale,
     /* [out] */ String* language)
 {
@@ -444,13 +445,13 @@ ECode CLocale::GetDisplayLanguage(
     return NOERROR;
 }
 
-ECode CLocale::GetDisplayName(
+ECode Locale::GetDisplayName(
     /* [out] */ String* name)
 {
     return GetDisplayName(GetDefault(), name);;
 }
 
-ECode CLocale::GetDisplayName(
+ECode Locale::GetDisplayName(
     /* [in] */ ILocale* locale,
     /* [out] */ String* name)
 {
@@ -503,13 +504,13 @@ ECode CLocale::GetDisplayName(
     return buffer.ToString(name);
 }
 
-ECode CLocale::GetDisplayVariant(
+ECode Locale::GetDisplayVariant(
     /* [out] */ String* variantName)
 {
     return GetDisplayVariant(GetDefault(), variantName);;
 }
 
-ECode CLocale::GetDisplayVariant(
+ECode Locale::GetDisplayVariant(
     /* [in] */ ILocale* locale,
     /* [out] */ String* variantName)
 {
@@ -539,7 +540,7 @@ ECode CLocale::GetDisplayVariant(
     return NOERROR;
 }
 
-ECode CLocale::GetISO3Country(
+ECode Locale::GetISO3Country(
     /* [out] */ String* country)
 {
     VALIDATE_NOT_NULL(country);
@@ -558,7 +559,7 @@ ECode CLocale::GetISO3Country(
     return NOERROR;
 }
 
-ECode CLocale::GetISO3Language(
+ECode Locale::GetISO3Language(
     /* [out] */ String* code)
 {
     VALIDATE_NOT_NULL(code);
@@ -579,21 +580,21 @@ ECode CLocale::GetISO3Language(
     return NOERROR;
 }
 
-ECode CLocale::GetISOCountries(
+ECode Locale::GetISOCountries(
     /* [out] */ ArrayOf<String>** codes)
 {
     VALIDATE_NOT_NULL(codes);
     return ICUUtil::GetISOCountries(codes);
 }
 
-ECode CLocale::GetISOLanguages(
+ECode Locale::GetISOLanguages(
     /* [out] */ ArrayOf<String>** codes)
 {
     VALIDATE_NOT_NULL(codes);
     return ICUUtil::GetISOLanguages(codes);
 }
 
-ECode CLocale::GetLanguage(
+ECode Locale::GetLanguage(
     /* [out] */ String* language)
 {
     VALIDATE_NOT_NULL(language);
@@ -601,7 +602,7 @@ ECode CLocale::GetLanguage(
     return NOERROR;
 }
 
-ECode CLocale::GetVariant(
+ECode Locale::GetVariant(
     /* [out] */ String* variant)
 {
     VALIDATE_NOT_NULL(variant);
@@ -609,7 +610,7 @@ ECode CLocale::GetVariant(
     return NOERROR;
 }
 
-ECode CLocale::GetScript(
+ECode Locale::GetScript(
     /* [out] */ String* script)
 {
     VALIDATE_NOT_NULL(script);
@@ -617,7 +618,7 @@ ECode CLocale::GetScript(
     return NOERROR;
 }
 
-ECode CLocale::GetDisplayScript(
+ECode Locale::GetDisplayScript(
     /* [out] */ String* script)
 {
     VALIDATE_NOT_NULL(script);
@@ -625,7 +626,7 @@ ECode CLocale::GetDisplayScript(
     return GetDisplayScript(locale, script);
 }
 
-ECode CLocale::GetDisplayScript(
+ECode Locale::GetDisplayScript(
     /* [in] */ ILocale* locale,
     /* [out] */ String* script)
 {
@@ -647,7 +648,7 @@ ECode CLocale::GetDisplayScript(
     return NOERROR;
 }
 
-ECode CLocale::ToLanguageTag(
+ECode Locale::ToLanguageTag(
     /* [out] */ String* tag)
 {
     VALIDATE_NOT_NULL(tag);
@@ -659,7 +660,7 @@ ECode CLocale::ToLanguageTag(
     return NOERROR;
 }
 
-String CLocale::MakeLanguageTag()
+String Locale::MakeLanguageTag()
 {
     // We only need to revalidate the language, country and variant because
     // the rest of the fields can only be set via the builder which validates
@@ -783,7 +784,7 @@ String CLocale::MakeLanguageTag()
     return sb.ToString();
 }
 
-AutoPtr<ArrayOf<String> > CLocale::SplitIllformedVariant(
+AutoPtr<ArrayOf<String> > Locale::SplitIllformedVariant(
     /* [in] */ const String& variant)
 {
     String normalizedVariant = variant.Replace('_', '-');
@@ -849,7 +850,7 @@ AutoPtr<ArrayOf<String> > CLocale::SplitIllformedVariant(
     return split;
 }
 
-String CLocale::ConcatenateRange(
+String Locale::ConcatenateRange(
     /* [in] */ ArrayOf<String>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -865,13 +866,13 @@ String CLocale::ConcatenateRange(
     return builder.ToString();
 }
 
-ECode CLocale::GetExtensionKeys(
+ECode Locale::GetExtensionKeys(
     /* [out] */ ISet** keys)
 {
     return mExtensions->GetKeySet(keys);
 }
 
-ECode CLocale::GetExtension(
+ECode Locale::GetExtension(
     /* [in] */ Char32 extensionKey,
     /* [out] */ String* extension)
 {
@@ -884,7 +885,7 @@ ECode CLocale::GetExtension(
     return csq->ToString(extension);
 }
 
-ECode CLocale::GetUnicodeLocaleType(
+ECode Locale::GetUnicodeLocaleType(
     /* [in] */ const String& keyWord,
     /* [out] */ String* type)
 {
@@ -897,7 +898,7 @@ ECode CLocale::GetUnicodeLocaleType(
     return csq->ToString(type);
 }
 
-ECode CLocale::GetUnicodeLocaleAttributes(
+ECode Locale::GetUnicodeLocaleAttributes(
     /* [out] */ ISet** keys)
 {
     VALIDATE_NOT_NULL(keys);
@@ -906,13 +907,13 @@ ECode CLocale::GetUnicodeLocaleAttributes(
     return NOERROR;
 }
 
-ECode CLocale::GetUnicodeLocaleKeys(
+ECode Locale::GetUnicodeLocaleKeys(
     /* [out] */ ISet** keys)
 {
     return mUnicodeKeywords->GetKeySet(keys);
 }
 
-ECode CLocale::GetHashCode(
+ECode Locale::GetHashCode(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
@@ -925,7 +926,7 @@ ECode CLocale::GetHashCode(
     return NOERROR;
 }
 
-ECode CLocale::SetDefault(
+ECode Locale::SetDefault(
     /* [in] */ ILocale* locale)
 {
     if (locale == NULL) {
@@ -940,7 +941,7 @@ ECode CLocale::SetDefault(
     return NOERROR;
 }
 
-ECode CLocale::ToString(
+ECode Locale::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -950,7 +951,7 @@ ECode CLocale::ToString(
     return NOERROR;
 }
 
-String CLocale::ToNewString(
+String Locale::ToNewString(
     /* [in] */ const String& languageCode,
     /* [in] */ const String& countryCode,
     /* [in] */ const String& variantCode,
@@ -1008,7 +1009,7 @@ String CLocale::ToNewString(
 }
 
 
-ECode CLocale::WriteObject(
+ECode Locale::WriteObject(
     /* [in] */ IObjectOutputStream* stream)
 {
     assert(0 && "TODO");
@@ -1027,7 +1028,7 @@ ECode CLocale::WriteObject(
     return NOERROR;
 }
 
-ECode CLocale::ReadObject(
+ECode Locale::ReadObject(
     /* [in] */ IObjectOutputStream* stream)
 {
     assert(0 && "TODO");
@@ -1048,7 +1049,7 @@ ECode CLocale::ReadObject(
     return NOERROR;
 }
 
-ECode CLocale::ReadExtensions(
+ECode Locale::ReadExtensions(
     /* [in] */ const String& extensions)
 {
     assert(0 && "TODO");
@@ -1070,7 +1071,7 @@ ECode CLocale::ReadExtensions(
     return NOERROR;
 }
 
-String CLocale::SerializeExtensions(
+String Locale::SerializeExtensions(
     /* [in] */ IMap* extensionsMap)
 {
     assert(0 && "TODO");
@@ -1093,7 +1094,7 @@ String CLocale::SerializeExtensions(
     return sb.ToString();
 }
 
-ECode CLocale::ParseSerializedExtensions(
+ECode Locale::ParseSerializedExtensions(
         /* [in] */ const String& extString,
         /* [in] */ IMap* outputMap)
 {
@@ -1137,7 +1138,7 @@ ECode CLocale::ParseSerializedExtensions(
     return NOERROR;
 }
 
-Boolean CLocale::IsUnM49AreaCode(
+Boolean Locale::IsUnM49AreaCode(
     /* [in] */ const String& code)
 {
     if (code.GetLength() != 3) {
@@ -1154,7 +1155,7 @@ Boolean CLocale::IsUnM49AreaCode(
     return TRUE;
 }
 
-Boolean CLocale::IsAsciiAlphaNum(
+Boolean Locale::IsAsciiAlphaNum(
     /* [in] */ const String& string)
 {
     AutoPtr<ArrayOf<Char32> > chars = string.GetChars();
@@ -1170,7 +1171,7 @@ Boolean CLocale::IsAsciiAlphaNum(
     return TRUE;
 }
 
-Boolean CLocale::IsValidBcp47Alpha(
+Boolean Locale::IsValidBcp47Alpha(
     /* [in] */ const String& attributeOrType,
     /* [in] */ Int32 lowerBound,
     /* [in] */ Int32 upperBound)
@@ -1192,7 +1193,7 @@ Boolean CLocale::IsValidBcp47Alpha(
     return TRUE;
 }
 
-Boolean CLocale::IsValidBcp47Alphanum(
+Boolean Locale::IsValidBcp47Alphanum(
     /* [in] */ const String& attributeOrType,
     /* [in] */ Int32 lowerBound,
     /* [in] */ Int32 upperBound)
@@ -1205,7 +1206,7 @@ Boolean CLocale::IsValidBcp47Alphanum(
     return IsAsciiAlphaNum(attributeOrType);
 }
 
-ECode CLocale::TitleCaseAsciiWord(
+ECode Locale::TitleCaseAsciiWord(
     /* [in] */ const String& word,
     /* [out] */ String* str)
 {
@@ -1221,7 +1222,7 @@ ECode CLocale::TitleCaseAsciiWord(
     // }
 }
 
-Boolean CLocale::IsValidTypeList(
+Boolean Locale::IsValidTypeList(
     /* [in] */ const String& lowerCaseTypeList)
 {
     AutoPtr<ArrayOf<String> > splitList;
@@ -1236,7 +1237,7 @@ Boolean CLocale::IsValidTypeList(
     return TRUE;
 }
 
-void CLocale::AddUnicodeExtensionToExtensionsMap(
+void Locale::AddUnicodeExtensionToExtensionsMap(
     /* [in] */ ISet* attributes,
     /* [in] */ IMap* keywords,
     /* [in] */ IMap* extensions)
@@ -1316,7 +1317,7 @@ void CLocale::AddUnicodeExtensionToExtensionsMap(
     extensions->Put(TO_IINTERFACE(ch), TO_IINTERFACE(csq));
 }
 
-void CLocale::ParseUnicodeExtension(
+void Locale::ParseUnicodeExtension(
     /* [in] */ ArrayOf<String>* subtags,
     /* [in] */ IMap* keywords,
     /* [in] */ ISet* attributes)
@@ -1366,7 +1367,7 @@ void CLocale::ParseUnicodeExtension(
     }
 }
 
-String CLocale::JoinBcp47Subtags(
+String Locale::JoinBcp47Subtags(
     /* [in] */ IList* strings)
 {
     assert(strings);
@@ -1391,7 +1392,7 @@ String CLocale::JoinBcp47Subtags(
     return sb.ToString();
 }
 
-String CLocale::AdjustLanguageCode(
+String Locale::AdjustLanguageCode(
     /* [in] */ const String& languageCode)
 {
     String adjusted = languageCode.ToLowerCase(/*Locale.US*/);
@@ -1408,7 +1409,7 @@ String CLocale::AdjustLanguageCode(
     return adjusted;
 }
 
-String CLocale::ConvertGrandfatheredTag(
+String Locale::ConvertGrandfatheredTag(
     /* [in] */ const String& original)
 {
     StringMapIterator it = GRANDFATHERED_LOCALES->Find(original);
@@ -1418,7 +1419,7 @@ String CLocale::ConvertGrandfatheredTag(
     return original;
 }
 
-void CLocale::ExtractVariantSubtags(
+void Locale::ExtractVariantSubtags(
     /* [in] */ ArrayOf<String>* subtags,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -1437,7 +1438,7 @@ void CLocale::ExtractVariantSubtags(
     }
 }
 
-Int32 CLocale::ExtractExtensions(
+Int32 Locale::ExtractExtensions(
     /* [in] */ ArrayOf<String>* subtags,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
@@ -1519,7 +1520,7 @@ Int32 CLocale::ExtractExtensions(
     return i;
 }
 
-ECode CLocale::ForLanguageTag(
+ECode Locale::ForLanguageTag(
     /* @Nonnull */ /* [in] */ const String& tag,
     /* [in] */ Boolean strict,
     /* [out] */ ILocale** locale)

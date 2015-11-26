@@ -2,6 +2,8 @@
 #include "elastos/droid/net/LinkQualityInfo.h"
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::Net::IConnectivityManager;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -32,24 +34,6 @@ LinkQualityInfo::LinkQualityInfo()
 ECode LinkQualityInfo::constructor()
 {
     return NOERROR;
-}
-
-ECode LinkQualityInfo::InitializeFromParcel(
-    /* [in] */ IParcel* in)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mNetworkType = in.readInt();
-        mNormalizedSignalStrength = in.readInt();
-        mPacketCount = in.readLong();
-        mPacketErrorCount = in.readLong();
-        mTheoreticalTxBandwidth = in.readInt();
-        mTheoreticalRxBandwidth = in.readInt();
-        mTheoreticalLatency = in.readInt();
-        mLastDataSampleTime = in.readLong();
-        mDataSampleDuration = in.readInt();
-
-#endif
 }
 
 ECode LinkQualityInfo::GetNetworkType(
@@ -199,53 +183,31 @@ ECode LinkQualityInfo::SetDataSampleDuration(
 ECode LinkQualityInfo::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                public LinkQualityInfo createFromParcel(Parcel in) {
-                    int objectType = in.readInt();
-                    if (objectType == OBJECT_TYPE_LINK_QUALITY_INFO) {
-                        LinkQualityInfo li = new LinkQualityInfo();
-                        li.initializeFromParcel(in);
-                        return li;
-                    } else if (objectType == OBJECT_TYPE_WIFI_LINK_QUALITY_INFO) {
-                        return WifiLinkQualityInfo.createFromParcelBody(in);
-                    } else if (objectType == OBJECT_TYPE_MOBILE_LINK_QUALITY_INFO) {
-                        return MobileLinkQualityInfo.createFromParcelBody(in);
-                    } else {
-                        return null;
-                    }
-                }
-                public LinkQualityInfo[] newArray(int size) {
-                    return new LinkQualityInfo[size];
-                }
-
-#endif
+    parcel->ReadInt32(&mNetworkType);
+    parcel->ReadInt32(&mNormalizedSignalStrength);
+    parcel->ReadInt64(&mPacketCount);
+    parcel->ReadInt64(&mPacketErrorCount);
+    parcel->ReadInt32(&mTheoreticalTxBandwidth);
+    parcel->ReadInt32(&mTheoreticalRxBandwidth);
+    parcel->ReadInt32(&mTheoreticalLatency);
+    parcel->ReadInt64(&mLastDataSampleTime);
+    parcel->ReadInt32(&mDataSampleDuration);
+    return NOERROR;
 }
 
 ECode LinkQualityInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                public LinkQualityInfo createFromParcel(Parcel in) {
-                    int objectType = in.readInt();
-                    if (objectType == OBJECT_TYPE_LINK_QUALITY_INFO) {
-                        LinkQualityInfo li = new LinkQualityInfo();
-                        li.initializeFromParcel(in);
-                        return li;
-                    } else if (objectType == OBJECT_TYPE_WIFI_LINK_QUALITY_INFO) {
-                        return WifiLinkQualityInfo.createFromParcelBody(in);
-                    } else if (objectType == OBJECT_TYPE_MOBILE_LINK_QUALITY_INFO) {
-                        return MobileLinkQualityInfo.createFromParcelBody(in);
-                    } else {
-                        return null;
-                    }
-                }
-                public LinkQualityInfo[] newArray(int size) {
-                    return new LinkQualityInfo[size];
-                }
-
-#endif
+    dest->WriteInt32(mNetworkType);
+    dest->WriteInt32(mNormalizedSignalStrength);
+    dest->WriteInt64(mPacketCount);
+    dest->WriteInt64(mPacketErrorCount);
+    dest->WriteInt32(mTheoreticalTxBandwidth);
+    dest->WriteInt32(mTheoreticalRxBandwidth);
+    dest->WriteInt32(mTheoreticalLatency);
+    dest->WriteInt64(mLastDataSampleTime);
+    dest->WriteInt32(mDataSampleDuration);
+    return NOERROR;
 }
 
 } // namespace Net

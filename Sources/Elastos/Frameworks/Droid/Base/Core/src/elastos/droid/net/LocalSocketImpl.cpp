@@ -952,7 +952,7 @@ ECode LocalSocketImpl::SendUrgentData(
 
 ECode LocalSocketImpl::GetOption(
     /* [in] */ Int32 optID,
-    /* [out] */ IObject** result)
+    /* [out] */ IInterface** result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
@@ -981,7 +981,7 @@ ECode LocalSocketImpl::GetOption(
 
 ECode LocalSocketImpl::SetOption(
     /* [in] */ Int32 optID,
-    /* [in] */ IObject* value)
+    /* [in] */ IInterface* value)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.

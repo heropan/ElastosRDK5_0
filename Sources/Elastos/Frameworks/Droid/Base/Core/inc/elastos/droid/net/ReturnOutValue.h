@@ -98,4 +98,33 @@ AutoPtr<T_REV> ReturnOutValue(ECode (*func)(T_PARA1*, T_REV**), AutoPtr<T_PARA1>
 #ifndef RETURN_OUT_VALUE
 #define RETN_OUT_VAL(obj, func, arg...) ReturnOutValue(obj, (obj)->func, ##arg)
 #endif // RETURN_OUT_VALUE
+
+template <typename T>
+inline void funcReturnVal(T** result)
+{
+    if (*result == NULL) return;
+    REFCOUNT_ADD(*result)
+}
+
+template <typename T>
+inline void funcReturnVal(ArrayOf<T*>** result)
+{
+    if (*result == NULL) return;
+    REFCOUNT_ADD(*result)
+}
+
+template <typename T>
+inline void funcReturnVal(T* result)
+{
+    return;
+}
+
+#ifndef FUNC_RETURN_ERROR_CODE
+#define FUNC_RETURN_ERROR_CODE(obj, errCode) *result = obj;\
+                                funcReturnVal(result);\
+                                return errCode;
+
+#define FUNC_RETURN(obj) FUNC_RETURN_ERROR_CODE(obj, NOERROR)
+#endif // FUNC_RETURN_ERROR_CODE
+
 #endif // __ELASTOS_DROID_NET_RETURNOUTVALUE_H__

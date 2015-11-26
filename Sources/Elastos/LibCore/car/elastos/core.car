@@ -172,6 +172,14 @@ module
         interface ICloseGuardHelper;
     }
 
+    class CObject {
+        constructor();
+
+        interface IObject;
+        interface ISynchronize;
+        interface IWeakReferenceSource;
+    }
+
     singleton class CSystem {
          constructor();
 

@@ -22,6 +22,14 @@ module
          * your needs with a libcore maintainer before using this method.
          * @hide internal use only
          */
+        GetInt(
+            [out] Int32* result);
+
+        /**
+         * Returns the int fd. It's highly unlikely you should be calling this. Please discuss
+         * your needs with a libcore maintainer before using this method.
+         * @hide internal use only
+         */
         GetDescriptor(
             [out] Int32* fd);
 

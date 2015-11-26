@@ -38,18 +38,19 @@ public:
     public:
         MdstHandler(
             /* [in] */ ILooper* looper,
-            /* [in] */ IMobileDataStateTracker* mdst);
+            /* [in] */ MobileDataStateTracker* mdst);
 
         // @Override
         CARAPI HandleMessage(
-            /* [in] */ AutoPtr<IMessage> msg);
+            /* [in] */ IMessage* msg);
 
     private:
-        AutoPtr<IMobileDataStateTracker> mMdst;
-
+        AutoPtr<MobileDataStateTracker> mMdst;
     };
 
-    class NetworkDataEntry {
+    class NetworkDataEntry
+        : public Object
+    {
     public:
         NetworkDataEntry(Int32 i1, Int32 i2, Int32 i3, Int32 i4)
             : mNetworkType(i1)
@@ -70,11 +71,19 @@ private:
         : public BroadcastReceiver
     {
     public:
+        MobileDataStateReceiver(
+            /* [in] */ MobileDataStateTracker* host);
+
         // @Override
         CARAPI OnReceive(
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
+
+    private:
+        MobileDataStateTracker* mHost;
     };
+
+    friend class MobileDataStateReceiver;
 
 public:
     CAR_INTERFACE_DECL()
@@ -268,7 +277,7 @@ private:
      */
     CARAPI SetDetailedState(
         /* [in] */ NetworkInfoDetailedState state,
-        /* [in] */ const String& reason,
+        /* [in, out] */ String& reason,
         /* [in] */ const String& extraInfo);
 
     /**
@@ -278,31 +287,28 @@ private:
      * {@code false} to disable it.
      * @return an integer value representing the outcome of the request.
      */
-    CARAPI SetEnableApn(
+    CARAPI_(Int32) SetEnableApn(
         /* [in] */ const String& apnType,
-        /* [in] */ Boolean enable,
-        /* [out] */ Int32* result);
+        /* [in] */ Boolean enable);
 
     CARAPI Log(
-        /* [in] */ const String& s);
+        /* [in] */ const char* fmt, ...);
 
     CARAPI Loge(
-        /* [in] */ const String& s);
+        /* [in] */ const char* fmt, ...);
 
     static CARAPI Sloge(
-        /* [in] */ const String& s);
+        /* [in] */ const char* fmt, ...);
 
-    static CARAPI GetNetworkDataEntry(
-        /* [in] */ Int32 networkType,
-        /* [out] */ NetworkDataEntry** result);
+    static CARAPI_(AutoPtr<NetworkDataEntry>) GetNetworkDataEntry(
+        /* [in] */ Int32 networkType);
 
-    static CARAPI GetNormalizedSignalStrength(
+    static CARAPI_(Int32) GetNormalizedSignalStrength(
         /* [in] */ Int32 networkType,
-        /* [in] */ ISignalStrength* ss,
-        /* [out] */ Int32* result);
+        /* [in] */ ISignalStrength* ss);
 
     // added for initialize mTheoreticalBWTable only
-    static CARAPI_(AutoPtr<ArrayOf<NetworkDataEntry> >) CreateTheoreticalBWTable();
+    static CARAPI_(AutoPtr<ArrayOf<NetworkDataEntry*> >) CreateTheoreticalBWTable();
 
 public:
     // maintained in DataConnectionTracker.
@@ -351,10 +357,13 @@ private:
 
     static const Int32 UNKNOWN;
 
-    static AutoPtr<ArrayOf<NetworkDataEntry> > mTheoreticalBWTable;
+    static AutoPtr<ArrayOf<NetworkDataEntry*> > mTheoreticalBWTable;
 };
 
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Net::MobileDataStateTracker::NetworkDataEntry, IInterface)
+
 #endif // __ELASTOS_DROID_NET_MOBILEDATASTATETRACKER_H__
