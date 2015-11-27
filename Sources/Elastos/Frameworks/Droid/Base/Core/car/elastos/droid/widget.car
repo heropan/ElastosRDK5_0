@@ -583,25 +583,32 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CImageView {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CImageView {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IImageView;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IImageView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  class CAbsListViewSavedState {
    //      constructor(
@@ -723,25 +730,27 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CImageButton {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CImageButton {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-   //      interface IImageButton;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface IImageButton;
+        interface IImageView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CImageSwitcher {
@@ -1390,13 +1399,14 @@ module
    //      interface IGroupMetadataHelper;
    //  }
 
-   //  [local]
-   //  class CCursorFilter {
-   //      constructor(
-   //          [in] ICursorFilterClient* client);
+    [local]
+    class CCursorFilter {
+        constructor(
+            [in] ICursorFilterClient* client);
 
-   //      interface ICursorFilter;
-   //  }
+        interface ICursorFilter;
+        interface IFilter;
+    }
 
    //  class CAlphabetIndexer {
    //      constructor(
@@ -1508,31 +1518,32 @@ module
         interface IOnDayClickListener;
     }
 
-   //  [local]
-   //  class CProgressBar {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CProgressBar {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle,
-   //          [in] Int32 styleRes);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
-   //      interface IProgressBar;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface IProgressBar;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CSeekBar {

@@ -11,6 +11,8 @@ using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::IColorFilter;
+using Elastos::Droid::Graphics::IXfermode;
+using Elastos::Droid::Graphics::MatrixScaleToFit;
 using Elastos::Droid::Graphics::PorterDuffMode;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 
@@ -18,40 +20,53 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
-class ImageView : public Elastos::Droid::View::View
+class ImageView
+    : public Elastos::Droid::View::View
+    , public IImageView
 {
 public:
+    CAR_INTERFACE_DECL();
+
     ImageView();
 
-    ImageView(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    ImageView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    ImageView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
 
-    virtual CARAPI_(Boolean) GetAdjustViewBounds();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    virtual CARAPI GetAdjustViewBounds(
+        /* [out] */ Boolean* result);
 
     virtual CARAPI SetAdjustViewBounds(
         /* [in] */ Boolean adjustViewBounds);
 
-    virtual CARAPI_(Int32) GetMaxWidth();
+    virtual CARAPI GetMaxWidth(
+        /* [out] */ Int32* width);
 
     virtual CARAPI SetMaxWidth(
         /* [in] */ Int32 maxWidth);
 
-    virtual CARAPI_(Int32) GetMaxHeight();
+    virtual CARAPI GetMaxHeight(
+        /* [out] */ Int32* height);
 
     virtual CARAPI SetMaxHeight(
         /* [in] */ Int32 maxHeight);
 
-    virtual CARAPI_(AutoPtr<IDrawable>) GetDrawable();
+    virtual CARAPI GetDrawable(
+        /* [out] */ IDrawable** drawable);
 
     virtual CARAPI SetImageResource(
         /* [in] */ Int32 resId);
@@ -62,11 +77,60 @@ public:
     virtual CARAPI SetImageDrawable(
         /* [in] */ IDrawable* drawable);
 
+    /**
+     * Applies a tint to the image drawable. Does not modify the current tint
+     * mode, which is {@link PorterDuff.Mode#SRC_IN} by default.
+     * <p>
+     * Subsequent calls to {@link #setImageDrawable(Drawable)} will automatically
+     * mutate the drawable and apply the specified tint and tint mode using
+     * {@link Drawable#setTintList(ColorStateList)}.
+     *
+     * @param tint the tint to apply, may be {@code null} to clear tint
+     *
+     * @attr ref android.R.styleable#ImageView_tint
+     * @see #getImageTintList()
+     * @see Drawable#setTintList(ColorStateList)
+     */
+    CARAPI SetImageTintList(
+        /* [in] */ /*@Nullable*/ IColorStateList* tint);
+
+    /**
+     * @return the tint applied to the image drawable
+     * @attr ref android.R.styleable#ImageView_tint
+     * @see #setImageTintList(ColorStateList)
+     */
+    // @Nullable
+    CARAPI GetImageTintList(
+        /* [out] */ IColorStateList** list);
+
+    /**
+     * Specifies the blending mode used to apply the tint specified by
+     * {@link #setImageTintList(ColorStateList)}} to the image drawable. The default
+     * mode is {@link PorterDuff.Mode#SRC_IN}.
+     *
+     * @param tintMode the blending mode used to apply the tint, may be
+     *                 {@code null} to clear tint
+     * @attr ref android.R.styleable#ImageView_tintMode
+     * @see #getImageTintMode()
+     * @see Drawable#setTintMode(PorterDuff.Mode)
+     */
+    CARAPI SetImageTintMode(
+        /* [in] */ /*@Nullable*/ PorterDuffMode tintMode);
+
+    /**
+     * @return the blending mode used to apply the tint to the image drawable
+     * @attr ref android.R.styleable#ImageView_tintMode
+     * @see #setImageTintMode(PorterDuff.Mode)
+     */
+    // @Nullable
+    CARAPI GetImageTintMode(
+        /* [out] */ PorterDuffMode* mode);
+
     virtual CARAPI SetImageBitmap(
         /* [in] */ IBitmap* bm);
 
     virtual CARAPI SetImageState(
-        /* [in] */ const ArrayOf<Int32>* state,
+        /* [in] */ ArrayOf<Int32>* state,
         /* [in] */ Boolean merge);
 
     virtual CARAPI SetImageLevel(
@@ -75,14 +139,17 @@ public:
     virtual CARAPI SetScaleType(
         /* [in] */ ImageViewScaleType scaleType);
 
-    virtual CARAPI_(ImageViewScaleType) GetScaleType();
+    virtual CARAPI GetScaleType(
+        /* [out] */ ImageViewScaleType* type);
 
-    virtual CARAPI_(AutoPtr<IMatrix>) GetImageMatrix();
+    virtual CARAPI GetImageMatrix(
+        /* [out] */ IMatrix** matrix);
 
     virtual CARAPI SetImageMatrix(
         /* [in] */ IMatrix* matrix);
 
-    virtual CARAPI_(Boolean) GetCropToPadding();
+    virtual CARAPI GetCropToPadding(
+        /* [out] */ Boolean* result);
 
     virtual CARAPI SetCropToPadding(
         /* [in] */ Boolean cropToPadding);
@@ -93,7 +160,8 @@ public:
     virtual CARAPI SetBaselineAlignBottom(
         /* [in] */ Boolean aligned);
 
-    virtual CARAPI_(Boolean) GetBaselineAlignBottom();
+    virtual CARAPI GetBaselineAlignBottom(
+        /* [out] */ Boolean* result);
 
     virtual CARAPI SetColorFilter(
         /* [in] */ Int32 color);
@@ -102,20 +170,32 @@ public:
         /* [in] */ Int32 color,
         /* [in] */ PorterDuffMode mode);
 
-    virtual CARAPI_(AutoPtr<IColorFilter>) GetColorFilter();
+    virtual CARAPI GetColorFilter(
+        /* [out] */ IColorFilter** filter);
 
     virtual CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
 
     virtual CARAPI ClearColorFilter();
 
-    virtual CARAPI_(Int32) GetImageAlpha();
+    /**
+     * @hide Candidate for future API inclusion
+     */
+    CARAPI SetXfermode(
+        /* [in] */ IXfermode* mode);
+
+    virtual CARAPI GetImageAlpha(
+        /* [out] */ Int32* alpha);
 
     virtual CARAPI SetImageAlpha(
         /* [in] */ Int32 alpha);
 
     virtual CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
+
+    // @Override
+    CARAPI IsOpaque(
+        /* [out] */ Boolean* opaque);
 
     CARAPI GetBaseline(
         /* [out] */ Int32* baseLine);
@@ -128,7 +208,8 @@ public:
 
     virtual CARAPI JumpDrawablesToCurrentState();
 
-    virtual CARAPI_(Boolean) HasOverlappingRendering();
+    virtual CARAPI HasOverlappingRendering(
+        /* [out] */ Boolean* has);
 
     virtual CARAPI OnPopulateAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
@@ -141,6 +222,19 @@ public:
 
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
+
+    // @Override
+    CARAPI OnRtlPropertiesChanged(
+        /* [in] */ Int32 layoutDirection);
+
+    // @Override
+    CARAPI DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
+    /** @hide */
+    CARAPI AnimateTransform(
+        /* [in] */ IMatrix* matrix);
 
 protected:
     CARAPI_(Boolean) VerifyDrawable(
@@ -164,18 +258,6 @@ protected:
 
     CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
 
     CARAPI OnAttachedToWindow();
 
@@ -206,7 +288,12 @@ private:
     CARAPI InitFromAttributes(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyle,
+        /* [in] */ Int32 defStyleRes);
+
+    CARAPI_(void) ApplyImageTint();
+
+    CARAPI_(Boolean) IsFilledByImage();
 
 private:
     static const ImageViewScaleType sScaleTypeArray[];
@@ -225,11 +312,17 @@ private:
 
     // these are applied to the drawable
     AutoPtr<IColorFilter> mColorFilter;
+    Boolean mHasColorFilter;
+    AutoPtr<IXfermode> mXfermode;
     Int32 mAlpha;
     Int32 mViewAlphaScale;
     Boolean mColorMod;
 
     AutoPtr<IDrawable> mDrawable;
+    AutoPtr<IColorStateList> mDrawableTintList;
+    PorterDuffMode mDrawableTintMode;
+    Boolean mHasDrawableTint;
+    Boolean mHasDrawableTintMode;
     AutoPtr<ArrayOf<Int32> > mState;
     Boolean mMergeState;
     Int32 mLevel;
@@ -246,8 +339,9 @@ private:
     Int32 mBaseline;
 
     Boolean mBaselineAlignBottom;
+    // AdjustViewBounds behavior will be in compatibility mode for older apps.
+    Boolean mAdjustViewBoundsCompat;
 };
-
 
 } // namespace Widget
 } // namespace Droid

@@ -14,12 +14,14 @@ namespace Widget {
  * and convert the results into String that can be used by auto-completion
  * widgets.</p>
  */
-class CursorFilter : public Filter
+class CursorFilter
+    : public Filter
+    , public ICursorFilter
 {
 public:
-    CursorFilter();
+    CAR_INTERFACE_DECL();
 
-    CursorFilter(
+    CARAPI constructor(
         /* [in] */ ICursorFilterClient* client);
 
     virtual CARAPI ConvertResultToString(

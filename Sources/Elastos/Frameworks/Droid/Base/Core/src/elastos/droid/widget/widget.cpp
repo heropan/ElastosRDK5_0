@@ -12,6 +12,10 @@
 #include "elastos/droid/widget/CSimpleMonthAdapter.h"
 #include "elastos/droid/widget/CAbsoluteLayoutLayoutParams.h"
 #include "elastos/droid/widget/CAbsoluteLayout.h"
+#include "elastos/droid/widget/CCursorFilter.h"
+#include "elastos/droid/widget/CImageView.h"
+#include "elastos/droid/widget/CImageButton.h"
+#include "elastos/droid/widget/CProgressBar.h"
 
 namespace Elastos {
 namespace Droid {
@@ -30,6 +34,10 @@ CAR_OBJECT_IMPL(CSimpleExpandableListAdapter);
 CAR_OBJECT_IMPL(CSimpleMonthAdapter);
 CAR_OBJECT_IMPL(CAbsoluteLayoutLayoutParams);
 CAR_OBJECT_IMPL(CAbsoluteLayout);
+CAR_OBJECT_IMPL(CCursorFilter);
+CAR_OBJECT_IMPL(CImageView);
+CAR_OBJECT_IMPL(CImageButton);
+CAR_OBJECT_IMPL(CProgressBar);
 
 } // namespace Widget
 } // namespace Droid
