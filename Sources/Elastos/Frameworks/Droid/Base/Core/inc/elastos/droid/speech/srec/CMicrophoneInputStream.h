@@ -55,9 +55,9 @@ public:
         /* [out] */ IInterface** lockobj);
 };
 
-}//namespace Srec
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Srec
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_SPEECH_SREC_CMICROPHONEINPUTSTREAM_H__

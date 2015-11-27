@@ -12,7 +12,7 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-const CString PlaybackSynthesisCallback::TAG = "PlaybackSynthesisRequest";
+const String PlaybackSynthesisCallback::TAG("PlaybackSynthesisRequest");
 const Boolean PlaybackSynthesisCallback::DBG = FALSE;
 
 const Int32 PlaybackSynthesisCallback::MIN_AUDIO_BUFFER_SIZE = 8192;

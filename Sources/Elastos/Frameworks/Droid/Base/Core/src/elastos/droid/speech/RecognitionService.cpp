@@ -8,9 +8,9 @@ namespace Elastos {
 namespace Droid {
 namespace Speech {
 
-const CString RecognitionService::SERVICE_INTERFACE = "android.speech.RecognitionService";
-const CString RecognitionService::SERVICE_META_DATA = "android.speech";
-const CString RecognitionService::TAG = "RecognitionService";
+const String RecognitionService::SERVICE_INTERFACE("android.speech.RecognitionService");
+const String RecognitionService::SERVICE_META_DATA("android.speech");
+const String RecognitionService::TAG("RecognitionService");
 const Boolean RecognitionService::DBG = FALSE;
 const Int32 RecognitionService::MSG_START_LISTENING = 1;
 const Int32 RecognitionService::MSG_STOP_LISTENING = 2;
@@ -18,49 +18,22 @@ const Int32 RecognitionService::MSG_CANCEL = 3;
 const Int32 RecognitionService::MSG_RESET = 4;
 
 /******************************RecognitionService::RecognitionServiceCallback*************************/
-PInterface RecognitionService::RecognitionServiceCallback::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IRecognitionServiceCallback*)this;
-    }
-    else if (riid == EIID_IRecognitionServiceCallback) {
-        return (IRecognitionServiceCallback*)this;
-    }
-    return NULL;
-}
+CAR_INTERFACE_IMPL(RecognitionService::RecognitionServiceCallback::RecognitionServiceCallback, Object, IRecognitionServiceCallback)
 
-UInt32 RecognitionService::RecognitionServiceCallback::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+RecognitionService::RecognitionServiceCallback::RecognitionServiceCallback()
+{}
 
-UInt32 RecognitionService::RecognitionServiceCallback::Release()
-{
-    return ElRefBase::Release();
-}
+RecognitionService::RecognitionServiceCallback::~RecognitionServiceCallback()
+{}
 
-ECode RecognitionService::RecognitionServiceCallback::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
+ECode RecognitionService::RecognitionServiceCallback::constructor()
 {
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (Object == (IInterface*)(IRecognitionServiceCallback*)this) {
-        *iID = EIID_IRecognitionServiceCallback;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
     return NOERROR;
 }
 
 RecognitionService::RecognitionServiceCallback::RecognitionServiceCallback(
-    /* [in]  */ IIRecognitionListener* listener,
-    /* [in]  */ RecognitionService* rs)
+    /* [in] */ IIRecognitionListener* listener,
+    /* [in] */ RecognitionService* rs)
 {
     mListener = listener;
     mHost = rs;
@@ -76,7 +49,7 @@ ECode RecognitionService::RecognitionServiceCallback::BeginningOfSpeech()
 }
 
 ECode RecognitionService::RecognitionServiceCallback::BufferReceived(
-    /* [in]  */ ArrayOf<Byte>* buffer)
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
     mListener->OnBufferReceived(buffer);
     return NOERROR;
@@ -89,7 +62,7 @@ ECode RecognitionService::RecognitionServiceCallback::EndOfSpeech()
 }
 
 ECode RecognitionService::RecognitionServiceCallback::Error(
-    /* [in]  */ Int32 error)
+    /* [in] */ Int32 error)
 {
     Boolean result;
     mHost->mHandler->SendEmptyMessage(RecognitionService::MSG_RESET, &result);
@@ -98,21 +71,21 @@ ECode RecognitionService::RecognitionServiceCallback::Error(
 }
 
 ECode RecognitionService::RecognitionServiceCallback::PartialResults(
-    /* [in]  */ IBundle* partialResults)
+    /* [in] */ IBundle* partialResults)
 {
     mListener->OnPartialResults(partialResults);
     return NOERROR;
 }
 
 ECode RecognitionService::RecognitionServiceCallback::ReadyForSpeech(
-    /* [in]  */ IBundle* params)
+    /* [in] */ IBundle* params)
 {
     mListener->OnReadyForSpeech(params);
     return NOERROR;
 }
 
 ECode RecognitionService::RecognitionServiceCallback::Results(
-    /* [in]  */ IBundle* results)
+    /* [in] */ IBundle* results)
 {
     Boolean result;
     mHost->mHandler->SendEmptyMessage(RecognitionService::MSG_RESET, &result);
@@ -121,18 +94,17 @@ ECode RecognitionService::RecognitionServiceCallback::Results(
 }
 
 ECode RecognitionService::RecognitionServiceCallback::RmsChanged(
-    /* [in]  */ Float rmsdB)
+    /* [in] */ Float rmsdB)
 {
     mListener->OnRmsChanged(rmsdB);
     return NOERROR;
 }
 
 /******************************RecognitionService::RecognitionServiceStartListeningArgs*************************/
-CAR_INTERFACE_IMPL(RecognitionService::RecognitionServiceStartListeningArgs, IInterface)
 
 RecognitionService::RecognitionServiceStartListeningArgs::RecognitionServiceStartListeningArgs(
-    /* [in]  */ IIntent* intent,
-    /* [in]  */ IIRecognitionListener* listener)
+    /* [in] */ IIntent* intent,
+    /* [in] */ IIRecognitionListener* listener)
 {
     mIntent = intent;
     mListener = listener;
@@ -168,17 +140,26 @@ ECode RecognitionService::RecognitionServiceHandler::HandleMessage(
 }
 
 /******************************RecognitionService::RecognitionServiceBinder*************************/
-CAR_INTERFACE_IMPL(RecognitionService::RecognitionServiceBinder, IIRecognitionService)
+CAR_INTERFACE_IMPL(RecognitionService::RecognitionServiceBinder, Object, IIRecognitionService)
+
+RecognitionService::RecognitionServiceBinder::RecognitionServiceBinder()
+{}
+
+RecognitionService::RecognitionServiceBinder::~RecognitionServiceBinder()
+{}
+
+RecognitionService::RecognitionServiceBinder::constructor()
+{}
 
 RecognitionService::RecognitionServiceBinder::RecognitionServiceBinder(
-    /* [in]  */ RecognitionService* service)
+    /* [in] */ RecognitionService* service)
 {
     mInternalService = service;
 }
 
 ECode RecognitionService::RecognitionServiceBinder::StartListening(
-    /* [in]  */ IIntent* recognizerIntent,
-    /* [in]  */ IIRecognitionListener* listener)
+    /* [in] */ IIntent* recognizerIntent,
+    /* [in] */ IIRecognitionListener* listener)
 {
     if (DBG){
         //Java:    Log.d(TAG, "startListening called by:" + listener.asBinder());
@@ -198,7 +179,7 @@ ECode RecognitionService::RecognitionServiceBinder::StartListening(
 }
 
 ECode RecognitionService::RecognitionServiceBinder::StopListening(
-    /* [in]  */ IIRecognitionListener* listener)
+    /* [in] */ IIRecognitionListener* listener)
 {
     if (DBG){
         //Java:    Log.d(TAG, "stopListening called by:" + listener.asBinder());
@@ -217,7 +198,7 @@ ECode RecognitionService::RecognitionServiceBinder::StopListening(
 }
 
 ECode RecognitionService::RecognitionServiceBinder::Cancel(
-    /* [in]  */ IIRecognitionListener* listener)
+    /* [in] */ IIRecognitionListener* listener)
 {
     if (DBG){
         //Java:    Log.d(TAG, "cancel called by:" + listener.asBinder());
@@ -242,8 +223,8 @@ ECode RecognitionService::RecognitionServiceBinder::ClearReference()
 
 /******************************RecognitionService*************************/
 void RecognitionService::DispatchStartListening(
-    /* [in]  */ IIntent* intent,
-    /* [in]  */ IIRecognitionListener* listener)
+    /* [in] */ IIntent* intent,
+    /* [in] */ IIRecognitionListener* listener)
 {
     if (mCurrentCallback == NULL) {
         if (DBG){
@@ -266,7 +247,7 @@ void RecognitionService::DispatchStartListening(
 }
 
 void RecognitionService::DispatchStopListening(
-    /* [in]  */ IIRecognitionListener* listener)
+    /* [in] */ IIRecognitionListener* listener)
 {
     //try {
         if (mCurrentCallback == NULL) {
@@ -287,7 +268,7 @@ void RecognitionService::DispatchStopListening(
 }
 
 void RecognitionService::DispatchCancel(
-    /* [in]  */ IIRecognitionListener* listener)
+    /* [in] */ IIRecognitionListener* listener)
 {
     if (mCurrentCallback == NULL) {
         if (DBG){
@@ -313,7 +294,7 @@ void RecognitionService::DispatchClearCallback()
 }
 
 Boolean RecognitionService::CheckPermissions(
-    /* [in]  */ IIRecognitionListener* listener)
+    /* [in] */ IIRecognitionListener* listener)
 {
     if (DBG){
         //Java:    Log.d(TAG, "checkPermissions");
@@ -334,7 +315,7 @@ Boolean RecognitionService::CheckPermissions(
 }
 
 AutoPtr</*IIBinder*/IBinder> RecognitionService::OnBind(
-    /* [in]  */ IIntent* intent)
+    /* [in] */ IIntent* intent)
 {
     if (DBG){
         //Java:    Log.d(TAG, "onBind, intent=" + intent);

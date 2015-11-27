@@ -16,51 +16,29 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-/******************************AudioPlaybackQueueItem::MediaPlayerOnErrorListener*************************/
-PInterface AudioPlaybackQueueItem::MediaPlayerOnErrorListener::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-//        return (IInterface*)(IMediaPlayerOnErrorListener*)this;
-    }
-//    else if (riid == EIID_IMediaPlayerOnErrorListener) {
-//        return (IMediaPlayerOnErrorListener*)this;
-//    }
-    return NULL;
-}
+/******************
+ * AudioPlaybackQueueItem::MediaPlayerOnErrorListener
+ *******************************************************************************************************/
 
-UInt32 AudioPlaybackQueueItem::MediaPlayerOnErrorListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+CAR_OBJECT_IMPL(AudioPlaybackQueueItem::MediaPlayerOnErrorListener, Object, IMediaPlayerOnErrorListener);
 
-UInt32 AudioPlaybackQueueItem::MediaPlayerOnErrorListener::Release()
-{
-    return ElRefBase::Release();
-}
+AudioPlaybackQueueItem::MediaPlayerOnErrorListener::MediaPlayerOnErrorListener()
+{}
 
-ECode AudioPlaybackQueueItem::MediaPlayerOnErrorListener::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+AudioPlaybackQueueItem::MediaPlayerOnErrorListener::~MediaPlayerOnErrorListener()
+{}
 
-//    if (Object == (IInterface*)(IMediaPlayerOnErrorListener*)this) {
-//        *iID = EIID_IMediaPlayerOnErrorListener;
-//    }
-//    else {
-        return E_INVALID_ARGUMENT;
-//    }
+ECode AudioPlaybackQueueItem::MediaPlayerOnErrorListener::constructor()
+{
     return NOERROR;
 }
 
-AudioPlaybackQueueItem::MediaPlayerOnErrorListener::MediaPlayerOnErrorListener(
+ECode AudioPlaybackQueueItem::MediaPlayerOnErrorListener::constructor(
     /* [in] */ AudioPlaybackQueueItem* apqi)
 {
     mApqi = apqi;
+
+    return NOERROR;
 }
 
 ECode AudioPlaybackQueueItem::MediaPlayerOnErrorListener::OnError(
@@ -133,7 +111,7 @@ ECode AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::OnCompletion(
 }
 
 /******************************AudioPlaybackQueueItem*************************/
-const CString AudioPlaybackQueueItem::TAG = "TTS.AudioQueueItem";
+const String AudioPlaybackQueueItem::TAG("TTS.AudioQueueItem");
 
 PInterface AudioPlaybackQueueItem::Probe(
     /* [in] */ REIID riid)

@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_SPEECH_CSPEECHRECOGNIZERHELPER_H__
 #define __ELASTOS_DROID_SPEECH_CSPEECHRECOGNIZERHELPER_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include <elastos/core/Singleton.h>
 #include "_Elastos_Droid_Speech_CSpeechRecognizerHelper.h"
 
 using Elastos::Droid::Content::IContext;
@@ -13,8 +15,14 @@ namespace Droid {
 namespace Speech {
 
 CarClass(CSpeechRecognizerHelper)
+    , public Singleton
+    , public ISpeechRecognizerHelper
 {
 public:
+    CAR_SINGLETON_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI IsRecognitionAvailable(
         /* [in] */ IContext * pContext,
         /* [out] */ Boolean * pRet);
@@ -31,8 +39,9 @@ public:
 private:
 };
 
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_SPEECH_CSPEECHRECOGNIZERHELPER_H__
+

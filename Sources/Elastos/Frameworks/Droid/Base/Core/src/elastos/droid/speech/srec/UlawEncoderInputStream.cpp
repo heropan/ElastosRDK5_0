@@ -10,9 +10,34 @@ namespace Droid {
 namespace Speech {
 namespace Srec {
 
-const CString UlawEncoderInputStream::TAG = "UlawEncoderInputStream";
+const String UlawEncoderInputStream::TAG("UlawEncoderInputStream");
 const Int32 UlawEncoderInputStream::MAX_ULAW = 8192;
 const Int32 UlawEncoderInputStream::SCALE_BITS = 16;
+
+UlawEncoderInputStream::UlawEncoderInputStream()
+{}
+
+UlawEncoderInputStream::~UlawEncoderInputStream()
+{}
+
+ECode UlawEncoderInputStream::constructor()
+{
+    return NOERROR;
+}
+
+ECode UlawEncoderInputStream::constructor(
+    /* [in] */ IInputStream* in,
+    /* [in] */ Int32 max)
+{
+    mIn = in;
+    mMax = max;
+
+    mBuf = ArrayOf<Byte>::Alloc(1024);
+    mBufCount = 0;
+    mOneByte = ArrayOf<Byte>::Alloc(1);
+
+    return NOERROR;
+}
 
 void UlawEncoderInputStream::Encode(
     /* [in] */ ArrayOf<Byte>* pcmBuf,
@@ -81,28 +106,6 @@ Int32 UlawEncoderInputStream::MaxAbsPcm(
     return max;
 }
 
-UlawEncoderInputStream::UlawEncoderInputStream()
-{}
-
-UlawEncoderInputStream::UlawEncoderInputStream(
-    /* [in] */ IInputStream* in,
-    /* [in] */ Int32 max)
-{
-    Init(in, max);
-}
-
-void UlawEncoderInputStream::Init(
-    /* [in] */ IInputStream* in,
-    /* [in] */ Int32 max)
-{
-    mIn = in;
-    mMax = max;
-
-    mBuf = ArrayOf<Byte>::Alloc(1024);
-    mBufCount = 0;
-    mOneByte = ArrayOf<Byte>::Alloc(1);
-}
-
 ECode UlawEncoderInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
@@ -142,14 +145,14 @@ ECode UlawEncoderInputStream::ReadBytes(
 
 ECode UlawEncoderInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buf,
-    /* [out] */ Int32* number)// throws IOException
+    /* [out] */ Int32* number)
 {
     ReadBytes(buf, 0, buf->GetLength(), number);
     return NOERROR;
 }
 
 ECode UlawEncoderInputStream::Read(
-    /* [out] */ Int32* value) //throws IOException
+    /* [out] */ Int32* value)
 {
     Int32 n;
     ReadBytes(mOneByte, 0, 1, &n);
@@ -161,7 +164,7 @@ ECode UlawEncoderInputStream::Read(
     return NOERROR;
 }
 
-ECode UlawEncoderInputStream::Close()//throws IOException
+ECode UlawEncoderInputStream::Close()
 {
     if (mIn != NULL) {
         AutoPtr<IInputStream> in = mIn;
@@ -172,7 +175,7 @@ ECode UlawEncoderInputStream::Close()//throws IOException
 }
 
 ECode UlawEncoderInputStream::Available(
-    /* [out] */ Int32* number)// throws IOException
+    /* [out] */ Int32* number)
 {
     Int32 numberAvailable;
     *number = ((mIn->Available(&numberAvailable), numberAvailable) + mBufCount) / 2;

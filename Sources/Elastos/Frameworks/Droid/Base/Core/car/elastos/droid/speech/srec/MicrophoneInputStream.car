@@ -17,9 +17,9 @@ module
     interface IMicrophoneInputStream {
     }
 
-    }//namespace Srec
-    }//namespace Speech
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Srec
+    } // namespace Speech
+    } // namespace Droid
+    } // namespace Elastos
 
 }

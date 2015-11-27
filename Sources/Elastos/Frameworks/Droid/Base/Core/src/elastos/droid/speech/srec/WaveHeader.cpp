@@ -8,25 +8,23 @@ namespace Droid {
 namespace Speech {
 namespace Srec {
 
-const CString WaveHeader::TAG = "WaveHeader";
+const String WaveHeader::TAG("WaveHeader");
 const Int32 WaveHeader::HEADER_LENGTH = 44;
 
 WaveHeader::WaveHeader()
 {
-    Init(0, 0, 0, 0, 0);
+    constructor(0, 0, 0, 0, 0);
 }
 
-WaveHeader::WaveHeader(
-    /* [in] */ Int16 format,
-    /* [in] */ Int16 numChannels,
-    /* [in] */ Int32 sampleRate,
-    /* [in] */ Int16 bitsPerSample,
-    /* [in] */ Int32 numBytes)
+WaveHeader::~WaveHeader()
+{}
+
+ECode WaveHeader::constructor()
 {
-    Init(format, numChannels, sampleRate, bitsPerSample, numBytes);
+    return NOERROR;
 }
 
-void WaveHeader::Init(
+ECode WaveHeader::constructor(
     /* [in] */ Int16 format,
     /* [in] */ Int16 numChannels,
     /* [in] */ Int32 sampleRate,
@@ -38,6 +36,8 @@ void WaveHeader::Init(
     mNumChannels = numChannels;
     mBitsPerSample = bitsPerSample;
     mNumBytes = numBytes;
+
+    return NOERROR;
 }
 
 Int16 WaveHeader::GetFormat()
@@ -101,7 +101,7 @@ ECode WaveHeader::SetNumBytes(
 }
 
 Int32 WaveHeader::Read(
-    /* [in] */ IInputStream* in)// throws IOException
+    /* [in] */ IInputStream* in)
 {
     /* RIFF header */
     ReadId(in, String("RIFF"));
@@ -141,7 +141,7 @@ Int32 WaveHeader::Read(
 
 void WaveHeader::ReadId(
     /* [in] */ IInputStream* in,
-    /* [in] */ const String& id)// throws IOException
+    /* [in] */ const String& id)
 {
     AutoPtr<ArrayOf<Char32> > chars = id.GetChars();
     Int32 inR;
@@ -155,7 +155,7 @@ void WaveHeader::ReadId(
 }
 
 Int32 WaveHeader::ReadInt(
-    /* [in] */ IInputStream* in)// throws IOException
+    /* [in] */ IInputStream* in)
 {
     Int32 val;
     in->Read(&val);
@@ -163,7 +163,7 @@ Int32 WaveHeader::ReadInt(
 }
 
 Int16 WaveHeader::ReadShort(
-    /* [in] */ IInputStream* in)// throws IOException
+    /* [in] */ IInputStream* in)
 {
     Int32 val;
     in->Read(&val);
@@ -171,7 +171,7 @@ Int16 WaveHeader::ReadShort(
 }
 
 Int32 WaveHeader::Write(
-    /* [in] */ IOutputStream* out)// throws IOException
+    /* [in] */ IOutputStream* out)
 {
     /* RIFF header */
     WriteId(out, String("RIFF"));
@@ -197,7 +197,7 @@ Int32 WaveHeader::Write(
 
 void WaveHeader::WriteId(
     /* [in] */ IOutputStream* out,
-    /* [in] */ const String& id)// throws IOException
+    /* [in] */ const String& id)
 {
     AutoPtr<ArrayOf<Char32> > chars = id.GetChars();
     for (Int32 i = 0; i < chars->GetLength(); i++){
@@ -207,7 +207,7 @@ void WaveHeader::WriteId(
 
 void WaveHeader::WriteInt(
     /* [in] */ IOutputStream* out,
-    /* [in] */ Int32 val)// throws IOException
+    /* [in] */ Int32 val)
 {
     out->Write(val >> 0);
     out->Write(val >> 8);
@@ -217,7 +217,7 @@ void WaveHeader::WriteInt(
 
 void WaveHeader::WriteShort(
     /* [in] */ IOutputStream* out,
-    /* [in] */ Int16 val)// throws IOException
+    /* [in] */ Int16 val)
 {
     out->Write(val >> 0);
     out->Write(val >> 8);

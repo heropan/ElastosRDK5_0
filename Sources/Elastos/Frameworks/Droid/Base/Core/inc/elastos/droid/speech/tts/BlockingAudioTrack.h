@@ -18,7 +18,7 @@ namespace Tts {
  * playback.
  */
 class BlockingAudioTrack
-    : public ElRefBase
+    : public Object
 {
 public:
     BlockingAudioTrack(
@@ -80,44 +80,43 @@ private:
         /* [in] */ Float max);
 
 private:
-    static const CString TAG;// = "TTS.BlockingAudioTrack";
-    static const Boolean DBG;// = FALSE;
+    static const String TAG;        // = "TTS.BlockingAudioTrack";
+    static const Boolean DBG;       // = FALSE;
 
 
     /**
      * The minimum increment of time to wait for an AudioTrack to finish
      * playing.
      */
-    static const Int64 MIN_SLEEP_TIME_MS;// = 20;
+    static const Int64 MIN_SLEEP_TIME_MS;
 
     /**
      * The maximum increment of time to sleep while waiting for an AudioTrack
      * to finish playing.
      */
-    static const Int64 MAX_SLEEP_TIME_MS;// = 2500;
+    static const Int64 MAX_SLEEP_TIME_MS;
 
     /**
      * The maximum amount of time to wait for an audio track to make progress while
      * it remains in PLAYSTATE_PLAYING. This should never happen in normal usage, but
      * could happen in exceptional circumstances like a media_server crash.
      */
-    static const Int64 MAX_PROGRESS_WAIT_MS;// = MAX_SLEEP_TIME_MS;
+    static const Int64 MAX_PROGRESS_WAIT_MS;
 
     /**
      * Minimum size of the buffer of the underlying {@link android.media.AudioTrack}
      * we create.
      */
-    static const Int32 MIN_AUDIO_BUFFER_SIZE;// = 8192;
+    static const Int32 MIN_AUDIO_BUFFER_SIZE;
 
+    Int32 mStreamType;
+    Int32 mSampleRateInHz;
+    Int32 mAudioFormat;
+    Int32 mChannelCount;
+    Float mVolume;
+    Float mPan;
 
-    Int32 mStreamType;// = 0;
-    Int32 mSampleRateInHz;// = 0;
-    Int32 mAudioFormat;// = 0;
-    Int32 mChannelCount;// = 0;
-    Float mVolume;// = 0.0;
-    Float mPan;// = 0.0;
-
-    Int32 mBytesPerFrame;// = 0;
+    Int32 mBytesPerFrame;
     /**
      * A "short utterance" is one that uses less bytes than the audio
      * track buffer size (mAudioBufferSize). In this case, we need to call
@@ -126,18 +125,18 @@ private:
      *
      * Not volatile, accessed only from the audio playback thread.
      */
-    Boolean mIsShortUtterance;// = FALSE;
+    Boolean mIsShortUtterance;
     /**
      * Will be valid after a call to {@link #init()}.
      */
-    Int32 mAudioBufferSize;// = 0;
-    Int32 mBytesWritten;// = 0;
+    Int32 mAudioBufferSize;
+    Int32 mBytesWritten;
 
     // Need to be seen by stop() which can be called from another thread. mAudioTrack will be
     // set to null only after waitAndRelease().
     Object mAudioTrackLock;
     AutoPtr<IAudioTrack> mAudioTrack;
-    /*volatile*/ Boolean mStopped;// = FALSE;
+    /*volatile*/ Boolean mStopped;
 
 };
 

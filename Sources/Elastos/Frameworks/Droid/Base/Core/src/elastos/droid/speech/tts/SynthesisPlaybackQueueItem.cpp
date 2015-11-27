@@ -178,7 +178,7 @@ void SynthesisPlaybackQueueItem::Put(
     //}
 }
 
-AutoPtr< ArrayOf<Byte> > SynthesisPlaybackQueueItem::Take()// throws InterruptedException
+AutoPtr< ArrayOf<Byte> > SynthesisPlaybackQueueItem::Take()
 {
     //try {
         //Java:    mListLock.lock();

@@ -15,7 +15,7 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-const CString BlockingAudioTrack::TAG = "TTS.BlockingAudioTrack";
+const String BlockingAudioTrack::TAG("TTS.BlockingAudioTrack");
 const Boolean DBG = FALSE;
 
 const Int64 BlockingAudioTrack::MIN_SLEEP_TIME_MS = 20;

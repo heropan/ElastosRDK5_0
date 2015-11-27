@@ -1,8 +1,10 @@
 #ifndef __ELASTOS_DROID_SPEECH_RecognizerIntent_H__
 #define __ELASTOS_DROID_SPEECH_RecognizerIntent_H__
 
-//
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
+
+using Elastos::Droid::Speech::IRecognizerIntent;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::App::IActivity;
@@ -15,35 +17,22 @@ namespace Speech {
  * Constants for supporting speech recognition through starting an {@link Intent}
  */
 //public
-class RecognizerIntent {
+class RecognizerIntent
+    : public Object
+    , public IRecognizerIntent
+{
 public:
-    /**
-     * Returns the broadcast intent to fire with
-     * {@link Context#sendOrderedBroadcast(Intent, String, BroadcastReceiver, android.os.Handler, int, String, Bundle)}
-     * to receive details from the package that implements voice search.
-     * <p>
-     * This is based on the value specified by the voice search {@link Activity} in
-     * {@link #DETAILS_META_DATA}, and if this is not specified, will return null. Also if there
-     * is no chosen default to resolve for {@link #ACTION_WEB_SEARCH}, this will return null.
-     * <p>
-     * If an intent is returned and is fired, a {@link Bundle} of extras will be returned to the
-     * provided result receiver, and should ideally contain values for
-     * {@link #EXTRA_LANGUAGE_PREFERENCE} and {@link #EXTRA_SUPPORTED_LANGUAGES}.
-     * <p>
-     * (Whether these are actually provided is up to the particular implementation. It is
-     * recommended that {@link Activity}s implementing {@link #ACTION_WEB_SEARCH} provide this
-     * information, but it is not required.)
-     *
-     * @param context a context object
-     * @return the broadcast intent to fire or null if not available
-     */
     //public static final
     static AutoPtr<IIntent> GetVoiceDetailsIntent(
-        /* [in]  */ IContext* context);
+        /* [in] */ IContext* context);
 
-private:
-    //private
+    CAR_INTERFACE_DECL();
+
     RecognizerIntent();
+
+    virtual ~RecognizerIntent();
+
+    constructor();
 
 public:
     /**
@@ -54,7 +43,7 @@ public:
      * implementation.
      */
     //public final static
-    static const CString EXTRA_CALLING_PACKAGE;// = "calling_package";
+    static const String EXTRA_CALLING_PACKAGE;         // = "calling_package";
 
     /**
      * Starts an activity that will prompt the user for speech and send it through a
@@ -90,7 +79,7 @@ public:
      * make sure to catch {@link ActivityNotFoundException}.
      */
     //public static final
-    static const CString ACTION_RECOGNIZE_SPEECH;// = "android.speech.action.RECOGNIZE_SPEECH";
+    static const String ACTION_RECOGNIZE_SPEECH;       // = "android.speech.action.RECOGNIZE_SPEECH";
 
     /**
      * Starts an activity that will prompt the user for speech, send it through a
@@ -125,7 +114,7 @@ public:
      * make sure to catch {@link ActivityNotFoundException}.
      */
     //public static final
-    static const CString ACTION_WEB_SEARCH;// = "android.speech.action.WEB_SEARCH";
+    static const String ACTION_WEB_SEARCH;             // = "android.speech.action.WEB_SEARCH";
 
     /**
      * Starts an activity that will prompt the user for speech without requiring the user's
@@ -153,7 +142,7 @@ public:
      * </ul>
      */
     //public static final
-    static const CString ACTION_VOICE_SEARCH_HANDS_FREE;// = "android.speech.action.VOICE_SEARCH_HANDS_FREE";
+    static const String ACTION_VOICE_SEARCH_HANDS_FREE;    // = "android.speech.action.VOICE_SEARCH_HANDS_FREE";
 
     /**
      * Optional boolean to indicate that a "hands free" voice search was performed while the device
@@ -165,7 +154,7 @@ public:
      * before proceeding.
      */
     //public static final
-    static const CString EXTRA_SECURE;// = "android.speech.extras.EXTRA_SECURE";
+    static const String EXTRA_SECURE;                      // = "android.speech.extras.EXTRA_SECURE";
 
     /**
      * The minimum length of an utterance. We will not stop recording before this amount of time.
@@ -176,7 +165,7 @@ public:
      * depending on the recognizer implementation, these values may have no effect.
      */
     //public static final
-    static const CString EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS;// = "android.speech.extras.SPEECH_INPUT_MINIMUM_LENGTH_MILLIS";
+    static const String EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS;  // = "android.speech.extras.SPEECH_INPUT_MINIMUM_LENGTH_MILLIS";
 
     /**
      * The amount of time that it should take after we stop hearing speech to consider the input
@@ -188,7 +177,7 @@ public:
      * Additionally, depending on the recognizer implementation, these values may have no effect.
      */
     //public static final
-    static const CString EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS;// = "android.speech.extras.SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS";
+    static const String EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS; // = "android.speech.extras.SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS";
 
     /**
      * The amount of time that it should take after we stop hearing speech to consider the input
@@ -201,7 +190,7 @@ public:
      * Additionally, depending on the recognizer implementation, these values may have no effect.
      */
     //public static final
-    static const CString EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS;// = "android.speech.extras.SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS";
+    static const String EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS;    // = "android.speech.extras.SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS";
 
     /**
      * Informs the recognizer which speech model to prefer when performing
@@ -213,7 +202,7 @@ public:
      *  @see #LANGUAGE_MODEL_WEB_SEARCH
      */
     //public static final
-    static const CString EXTRA_LANGUAGE_MODEL;// = "android.speech.extra.LANGUAGE_MODEL";
+    static const String EXTRA_LANGUAGE_MODEL;                      // = "android.speech.extra.LANGUAGE_MODEL";
 
     /**
      * Use a language model based on free-form speech recognition.  This is a value to use for
@@ -221,18 +210,18 @@ public:
      * @see #EXTRA_LANGUAGE_MODEL
      */
     //public static final
-    static const CString LANGUAGE_MODEL_FREE_FORM;// = "free_form";
+    static const String LANGUAGE_MODEL_FREE_FORM;                  // = "free_form";
     /**
      * Use a language model based on web search terms.  This is a value to use for
      * {@link #EXTRA_LANGUAGE_MODEL}.
      * @see #EXTRA_LANGUAGE_MODEL
      */
     //public static final
-    static const CString LANGUAGE_MODEL_WEB_SEARCH;// = "web_search";
+    static const String LANGUAGE_MODEL_WEB_SEARCH;                 // = "web_search";
 
     /** Optional text prompt to show to the user when asking them to speak. */
     //public static final
-    static const CString EXTRA_PROMPT;// = "android.speech.extra.PROMPT";
+    static const String EXTRA_PROMPT;                              // = "android.speech.extra.PROMPT";
 
     /**
      * Optional IETF language tag (as defined by BCP 47), for example "en-US". This tag informs the
@@ -240,7 +229,7 @@ public:
      * {@link java.util.Locale#getDefault()}.
      */
     //public static final
-    static const CString EXTRA_LANGUAGE;// = "android.speech.extra.LANGUAGE";
+    static const String EXTRA_LANGUAGE;                            // = "android.speech.extra.LANGUAGE";
 
     /**
      * Optional value which can be used to indicate the referer url of a page in which
@@ -248,14 +237,14 @@ public:
      * uses of speech on a given page.
      */
     //public static final
-    static const CString EXTRA_ORIGIN;// = "android.speech.extra.ORIGIN";
+    static const String EXTRA_ORIGIN;                              // = "android.speech.extra.ORIGIN";
 
     /**
      * Optional limit on the maximum number of results to return. If omitted the recognizer
      * will choose how many results to return. Must be an integer.
      */
     //public static final
-    static const CString EXTRA_MAX_RESULTS;// = "android.speech.extra.MAX_RESULTS";
+    static const String EXTRA_MAX_RESULTS;                         // = "android.speech.extra.MAX_RESULTS";
 
     /**
      * Optional boolean, to be used with {@link #ACTION_WEB_SEARCH}, to indicate whether to
@@ -263,7 +252,7 @@ public:
      * that other types of actions can be taken based on the user's speech.
      */
     //public static final
-    static const CString EXTRA_WEB_SEARCH_ONLY;// = "android.speech.extra.WEB_SEARCH_ONLY";
+    static const String EXTRA_WEB_SEARCH_ONLY;                     // = "android.speech.extra.WEB_SEARCH_ONLY";
 
     /**
      * Optional boolean to indicate whether partial results should be returned by the recognizer
@@ -271,7 +260,7 @@ public:
      * results in some or all cases.
      */
     //public static final
-    static const CString EXTRA_PARTIAL_RESULTS;// = "android.speech.extra.PARTIAL_RESULTS";
+    static const String EXTRA_PARTIAL_RESULTS;                     // = "android.speech.extra.PARTIAL_RESULTS";
 
     /**
      * When the intent is {@link #ACTION_RECOGNIZE_SPEECH}, the speech input activity will
@@ -280,7 +269,7 @@ public:
      * PendingIntent will be sent to its target.
      */
     //public static final
-    static const CString EXTRA_RESULTS_PENDINGINTENT;// = "android.speech.extra.RESULTS_PENDINGINTENT";
+    static const String EXTRA_RESULTS_PENDINGINTENT;               // = "android.speech.extra.RESULTS_PENDINGINTENT";
 
     /**
      * If you use {@link #EXTRA_RESULTS_PENDINGINTENT} to supply a forwarding intent, you can
@@ -288,23 +277,23 @@ public:
      * will be added to this bundle, and the combined bundle will be sent to the target.
      */
     //public static final
-    static const CString EXTRA_RESULTS_PENDINGINTENT_BUNDLE;// = "android.speech.extra.RESULTS_PENDINGINTENT_BUNDLE";
+    static const String EXTRA_RESULTS_PENDINGINTENT_BUNDLE;        // = "android.speech.extra.RESULTS_PENDINGINTENT_BUNDLE";
 
     /** Result code returned when no matches are found for the given speech */
     //public static final
-    static const Int32 RESULT_NO_MATCH;// = Activity.RESULT_FIRST_USER;
+    static const Int32 RESULT_NO_MATCH;                             // = Activity.RESULT_FIRST_USER;
     /** Result code returned when there is a generic client error */
     //public static final
-    static const Int32 RESULT_CLIENT_ERROR;// = Activity.RESULT_FIRST_USER + 1;
+    static const Int32 RESULT_CLIENT_ERROR;                         // = Activity.RESULT_FIRST_USER + 1;
     /** Result code returned when the recognition server returns an error */
     //public static final
-    static const Int32 RESULT_SERVER_ERROR;// = Activity.RESULT_FIRST_USER + 2;
+    static const Int32 RESULT_SERVER_ERROR;                         // = Activity.RESULT_FIRST_USER + 2;
     /** Result code returned when a network error was encountered */
     //public static final
-    static const Int32 RESULT_NETWORK_ERROR;// = Activity.RESULT_FIRST_USER + 3;
+    static const Int32 RESULT_NETWORK_ERROR;                        // = Activity.RESULT_FIRST_USER + 3;
     /** Result code returned when an audio error was encountered */
     //public static final
-    static const Int32 RESULT_AUDIO_ERROR;// = Activity.RESULT_FIRST_USER + 4;
+    static const Int32 RESULT_AUDIO_ERROR;                          // = Activity.RESULT_FIRST_USER + 4;
 
     /**
      * An ArrayList&lt;String&gt; of the recognition results when performing
@@ -315,7 +304,7 @@ public:
      * the lack of this extra indicates failure.
      */
     //public static final
-    static const CString EXTRA_RESULTS;// = "android.speech.extra.RESULTS";
+    static const String EXTRA_RESULTS;                             // = "android.speech.extra.RESULTS";
 
     /**
      * A float array of confidence scores of the recognition results when performing
@@ -332,7 +321,7 @@ public:
      * returned in an activity result.
      */
     //public static final
-    static const CString EXTRA_CONFIDENCE_SCORES;// = "android.speech.extra.CONFIDENCE_SCORES";
+    static const String EXTRA_CONFIDENCE_SCORES;                   // = "android.speech.extra.CONFIDENCE_SCORES";
 
     /**
      * Meta-data name under which an {@link Activity} implementing {@link #ACTION_WEB_SEARCH} can
@@ -352,7 +341,7 @@ public:
      * are required to implement this. Thus retrieving this meta-data may be null.
      */
     //public static final
-    static const CString DETAILS_META_DATA;// = "android.speech.DETAILS";
+    static const String DETAILS_META_DATA;                         // = "android.speech.DETAILS";
 
     /**
      * A broadcast intent which can be fired to the {@link BroadcastReceiver} component specified
@@ -370,7 +359,7 @@ public:
      * information, but it is not required.)
      */
     //public static final
-    static const CString ACTION_GET_LANGUAGE_DETAILS;// = "android.speech.action.GET_LANGUAGE_DETAILS";
+    static const String ACTION_GET_LANGUAGE_DETAILS;               // = "android.speech.action.GET_LANGUAGE_DETAILS";
 
     /**
      * Specify this boolean extra in a broadcast of {@link #ACTION_GET_LANGUAGE_DETAILS} to
@@ -379,7 +368,7 @@ public:
      * in the response.
      */
     //public static final
-    static const CString EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE;// = "android.speech.extra.ONLY_RETURN_LANGUAGE_PREFERENCE";
+    static const String EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE;     // = "android.speech.extra.ONLY_RETURN_LANGUAGE_PREFERENCE";
 
     /**
      * The key to the extra in the {@link Bundle} returned by {@link #ACTION_GET_LANGUAGE_DETAILS}
@@ -387,7 +376,7 @@ public:
      * specified - a locale string like "en-US".
      */
     //public static final
-    static const CString EXTRA_LANGUAGE_PREFERENCE;// = "android.speech.extra.LANGUAGE_PREFERENCE";
+    static const String EXTRA_LANGUAGE_PREFERENCE;                 // = "android.speech.extra.LANGUAGE_PREFERENCE";
 
     /**
      * The key to the extra in the {@link Bundle} returned by {@link #ACTION_GET_LANGUAGE_DETAILS}
@@ -396,7 +385,31 @@ public:
      * etc.
      */
     //public static final
-    static const CString EXTRA_SUPPORTED_LANGUAGES;// = "android.speech.extra.SUPPORTED_LANGUAGES";
+    static const String EXTRA_SUPPORTED_LANGUAGES;                 // = "android.speech.extra.SUPPORTED_LANGUAGES";
+public:
+    /**
+     * Returns the broadcast intent to fire with
+     * {@link Context#sendOrderedBroadcast(Intent, String, BroadcastReceiver, android.os.Handler, int, String, Bundle)}
+     * to receive details from the package that implements voice search.
+     * <p>
+     * This is based on the value specified by the voice search {@link Activity} in
+     * {@link #DETAILS_META_DATA}, and if this is not specified, will return null. Also if there
+     * is no chosen default to resolve for {@link #ACTION_WEB_SEARCH}, this will return null.
+     * <p>
+     * If an intent is returned and is fired, a {@link Bundle} of extras will be returned to the
+     * provided result receiver, and should ideally contain values for
+     * {@link #EXTRA_LANGUAGE_PREFERENCE} and {@link #EXTRA_SUPPORTED_LANGUAGES}.
+     * <p>
+     * (Whether these are actually provided is up to the particular implementation. It is
+     * recommended that {@link Activity}s implementing {@link #ACTION_WEB_SEARCH} provide this
+     * information, but it is not required.)
+     *
+     * @param context a context object
+     * @return the broadcast intent to fire or null if not available
+     */
+    //public static final
+    static AutoPtr<IIntent> GetVoiceDetailsIntent(
+        /* [in] */ IContext* context);
 };
 
 } // namespace Speech

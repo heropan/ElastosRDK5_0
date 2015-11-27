@@ -18,7 +18,7 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-const CString FileSynthesisCallback::TAG = "FileSynthesisRequest";
+const String FileSynthesisCallback::TAG("FileSynthesisRequest");
 const Boolean FileSynthesisCallback::DBG = FALSE;
 
 const Int32 FileSynthesisCallback::MAX_AUDIO_BUFFER_SIZE = 8192;
@@ -26,34 +26,64 @@ const Int32 FileSynthesisCallback::MAX_AUDIO_BUFFER_SIZE = 8192;
 const Int32 FileSynthesisCallback::WAV_HEADER_LENGTH = 44;
 const Int16 FileSynthesisCallback::WAV_FORMAT_PCM = 0x0001;
 
+CAR_INTERFACE_IMPL(FileSynthesisCallback, Object, ISynthesisCallback);
 
-FileSynthesisCallback::FileSynthesisCallback(
-    /* [in] */ IFile* fileName)
+FileSynthesisCallback::FileSynthesisCallback()
+{}
+
+FileSynthesisCallback::~FileSynthesisCallback()
+{}
+
+FileSynthesisCallback::constructor()
+{}
+
+FileSynthesisCallback::constructor(
+    /* [in] */ IFileChannel fileChannel,
+    /* [in] */ UtteranceProgressDispatcher dispatcher,
+    /* [in] */ IInterface callerIdentity,
+    /* [in] */ Boolean clientIsUsingV2);
 {
-    mFileName = fileName;
-
+    mFileChannel = fileChannel;
     mSampleRateInHz = 0;
     mAudioFormat = 0;
     mChannelCount = 0;
-    mStopped = FALSE;
+    mStarted = FALSE;
     mDone = FALSE;
 }
 
-//@Override
-void FileSynthesisCallback::Stop()
+ECode FileSynthesisCallback::Stop()
 {
     AutoLock lock(mStateLock);
-    mStopped = TRUE;
+
+    if (mDone) {
+        return NOERROR;
+    }
+    if (mStatusCode == TextToSpeech::STOPPED) {
+        return NOERROR;
+    }
+
+    mStatusCode = TextToSpeech::STOPPED;
     CleanUp();
+    if (mDispatcher != NULL) {
+        mDispatcher->DispatchOnStop();
+    }
+
+    return NOERROR;
 }
 
-void FileSynthesisCallback::CleanUp()
+ECode FileSynthesisCallback::CleanUp()
 {
-    CloseFileAndWidenPermissions();
-    if (mFile != NULL) {
-        Boolean bDelete;
-        mFileName->Delete(&bDelete);
-    }
+    CloseFile();
+
+    return NOERROR;
+}
+
+/**
+ * Must be called while holding the monitor on {@link #mStateLock}.
+ */
+void FileSynthesisCallback::CloseFile() {
+    // File will be closed by the SpeechItem in the speech service.
+    mFileChannel = NULL;
 }
 
 void FileSynthesisCallback::CloseFileAndWidenPermissions()
@@ -120,154 +150,257 @@ Boolean FileSynthesisCallback::IsDone()
     return mDone;
 }
 
-Int32 FileSynthesisCallback::Start(
+ECode FileSynthesisCallback::Start(
     /* [in] */ Int32 sampleRateInHz,
     /* [in] */ Int32 audioFormat,
-    /* [in] */ Int32 channelCount)
+    /* [in] */ Int32 channelCount,
+    /* [out] */ Int32* ret)
 {
     if (DBG) {
         //Java:    Log.d(TAG, "FileSynthesisRequest.start(" + sampleRateInHz + "," + audioFormat + "," + channelCount + ")");
         String strOut = String("FileSynthesisRequest.start(")+StringUtils::Int32ToString(sampleRateInHz)+String(",")+StringUtils::Int32ToString(audioFormat)+String(",")+StringUtils::Int32ToString(channelCount)+String(")\n");
         Logger::D(TAG, strOut);
     }
-    AutoLock lock(mStateLock);
-    if (mStopped) {
-        if (DBG){
-            //Java:    Log.d(TAG, "Request has been aborted.");
-            Logger::D(TAG, String("Request has been aborted.\n"));
+
+    AutoPtr<IFileChannel> fileChannel;
+
+    synchronized (this) {
+        if (mStatusCode == ITextToSpeech::STOPPED) {
+            if (DBG)
+                Logger::D(TAG, "Request has been aborted.");
+            *ret = ErrorCodeOnStop();
+            return NOERROR;
         }
-        return ITextToSpeech::TTS_ERROR;
-    }
-    if (mFile != NULL) {
-        CleanUp();
-        //throw new IllegalArgumentException("FileSynthesisRequest.start() called twice");
-        Logger::E(TAG, String("FileSynthesisRequest.start() called twice\n"));
-        return 0;// E_ILLEGAL_ARGUMENT_EXCEPTION;
+        if (mStatusCode != ITextToSpeech::TTS_SUCCESS) {
+            if (DBG)
+                Logger::D(TAG, "Error was raised");
+            *ret = TextToSpeech::TTS_ERROR;
+            return NOERROR;
+        }
+        if (mStarted) {
+            Logger::E(TAG, "Start called twice");
+            *ret = ITextToSpeech::TTS_ERROR;
+            return NOERROR;
+        }
+        mStarted = TRUE;
+        mSampleRateInHz = sampleRateInHz;
+        mAudioFormat = audioFormat;
+        mChannelCount = channelCount;
+
+        if (mDispatcher != NULL) {
+            mDispatcher->DispatchOnStart();
+        }
+        fileChannel = mFileChannel;
     }
 
-    if (!MaybeCleanupExistingFile(mFileName)) {
-        return ITextToSpeech::TTS_ERROR;
+    ECode ec = fileChannel->Write(ByteBuffer->Allocate(WAV_HEADER_LENGTH));
+
+    if (FAILED(ec)) {
+        Logger::E(TAG, "Failed to write wav header to output file descriptor", ex);
+        synchronized (this) {
+            CleanUp();
+            mStatusCode = ITextToSpeech::ERROR_OUTPUT;
+        }
+        *ret = TextToSpeech::TTS_ERROR;
+        return NOERROR;
     }
 
-    mSampleRateInHz = sampleRateInHz;
-    mAudioFormat = audioFormat;
-    mChannelCount = channelCount;
-    //try {
-        mFile = NULL;
-        CRandomAccessFile::New(mFileName.Get(), String("rw"), (IRandomAccessFile**)&mFile);
-        // Reserve space for WAV header
-        AutoPtr< ArrayOf<Byte> > aryB = ArrayOf<Byte>::Alloc(WAV_HEADER_LENGTH);
-        mFile->WriteBytes(*aryB);
-        return ITextToSpeech::TTS_SUCCESS;
-    //} catch (IOException ex) {
-        //Java:    Log.e(TAG, "Failed to open " + mFileName + ": " + ex);
-        String strPath;
-        mFileName->GetAbsolutePath(&strPath);
-        Logger::E(TAG, String("Failed to open ")+strPath+String(": ")+String("\n"));
+    Logger::E(TAG, "Failed to write wav header to output file descriptor", ex);
+    synchronized (this) {
         CleanUp();
-        return ITextToSpeech::TTS_ERROR;
-    //}
+        mStatusCode = ITextToSpeech::ERROR_OUTPUT;
+    }
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-Int32 FileSynthesisCallback::AudioAvailable(
+ECode FileSynthesisCallback::AudioAvailable(
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
-    /* [in] */ Int32 length)
+    /* [in] */ Int32 length,
+    /* [out] */ Int32* ret)
 {
     if (DBG) {
         //Java:    Log.d(TAG, "FileSynthesisRequest.audioAvailable(" + buffer + "," + offset + "," + length + ")");
-        Logger::D(TAG, String("FileSynthesisRequest.audioAvailable\n"));
+        Logger::D(TAG, "FileSynthesisRequest.audioAvailable\n");
     }
-    AutoLock lock(mStateLock);
-    if (mStopped) {
-        if (DBG){
-            //Java:    Log.d(TAG, "Request has been aborted.");
-            Logger::D(TAG, String("Request has been aborted.\n"));
+
+    synchronized (this) {
+        if (mStatusCode == ITextToSpeech::STOPPED) {
+            if (DBG)
+                Logger::D(TAG, "Request has been aborted.");
+            *ret = ErrorCodeOnStop();
+            return NOERROR;
         }
-        return ITextToSpeech::TTS_ERROR;
+        if (mStatusCode != ITextToSpeech::SUCCESS) {
+            if (DBG)
+                Logger::D(TAG, "Error was raised");
+            *ret = TextToSpeech.TTS_ERROR;
+            return NOERROR;
+        }
+        if (mFileChannel == null) {
+            Logger::E(TAG, "File not open");
+            mStatusCode = ITextToSpeech::ERROR_OUTPUT;
+            *ret = ITextToSpeech::ERROR;
+            return NOERROR;
+        }
+        if (!mStarted) {
+            Logger::E(TAG, "Start method was not called");
+            *ret = ITextToSpeech::TTS_ERROR;
+            return NOERROR;
+        }
+        fileChannel = mFileChannel;
     }
-    if (mFile == NULL) {
-        //Java:    Log.e(TAG, "File not open");
-        Logger::E(TAG, String("File not open\n"));
-        return ITextToSpeech::TTS_ERROR;
+
+    ECode ec = fileChannel->Write(ByteBuffer->Wrap(buffer,  offset,  length));
+
+    if (FAILED(ec)) {
+        Logger::E(TAG, "Failed to write to output file descriptor");
+        synchronized (this) {
+            CleanUp();
+            mStatusCode = ITextToSpeech::ERROR_OUTPUT;
+        }
+        *ret = TextToSpeech::TTS_ERROR;
+        return NOERROR;
     }
-    //try {
-        mFile->WriteBytes(*buffer, offset, length);
-        return ITextToSpeech::TTS_SUCCESS;
-    //} catch (IOException ex) {
-        //Java:    Log.e(TAG, "Failed to write to " + mFileName + ": " + ex);
-        String strPath;
-        Logger::E(TAG, String("Failed to write to ")+(mFileName->GetAbsolutePath(&strPath), strPath)+String(": ")+String("\n"));
-        CleanUp();
-        return ITextToSpeech::TTS_ERROR;
-    //}
+
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-Int32 FileSynthesisCallback::Done()
+ECode FileSynthesisCallback::Done()
+        /* [out] */ Int32* ret);
 {
     if (DBG){
         //Java:    Log.d(TAG, "FileSynthesisRequest.done()");
         Logger::D(TAG, String("FileSynthesisRequest.done()\n"));
     }
-    AutoLock lock(mStateLock);
-    if (mDone) {
-        if (DBG){
-            //Java:    Log.d(TAG, "Duplicate call to done()");
-            Logger::D(TAG, String("Duplicate call to done()\n"));
+
+    AutoPtr<IFileChannel> fileChannel;
+
+    Int32 sampleRateInHz = 0;
+    Int32 audioFormat = 0;
+    Int32 channelCount = 0;
+
+    synchronized (this) {
+        if (mDone) {
+            if (DBG){
+                //Java:    Log.d(TAG, "Duplicate call to done()");
+                Logger::W(TAG, String("Duplicate call to done()\n"));
+            }
+            // This is not an error that would prevent synthesis. Hence no
+            // setStatusCode is set.
+            *ret = ITextToSpeech::TTS_ERROR;
+            return NOERROR;
         }
-        // This preserves existing behaviour. Earlier, if done was called twice
-        // we'd return ERROR because mFile == null and we'd add to logspam.
-        return ITextToSpeech::TTS_ERROR;
-    }
-    if (mStopped) {
-        if (DBG){
-            //Java:    Log.d(TAG, "Request has been aborted.");
-            Logger::D(TAG, String("Request has been aborted.\n"));
+
+
+        if (mStatusCode == ITextToSpeech::STOPPED) {
+            if (DBG) Log.d(TAG, "Request has been aborted.");
+            *ret = ErrorCodeOnStop();
+            return NOERROR;
         }
-        return ITextToSpeech::TTS_ERROR;
-    }
-    if (mFile == NULL) {
-        //Java:    Log.e(TAG, "File not open");
-        Logger::E(TAG, String("File not open\n"));
-        return ITextToSpeech::TTS_ERROR;
-    }
-    //try {
-        // Write WAV header at start of file
-        mFile->Seek(0);
-        Int64 fileLen;
-        Int32 dataLength = (Int32) ((mFile->GetLength(&fileLen), fileLen) - WAV_HEADER_LENGTH);
-        mFile->WriteBytes( *(MakeWavHeader(mSampleRateInHz, mAudioFormat, mChannelCount, dataLength).Get()));
-        CloseFileAndWidenPermissions();
+        if (mDispatcher != NULL && mStatusCode != ITextToSpeech::TTS_SUCCESS &&
+                mStatusCode != ITextToSpeech::STOPPED) {
+            mDispatcher->DispatchOnError(mStatusCode);
+            *ret = ITextToSpeech::TTS_ERROR;
+            return NOERROR;
+        }
+        if (mFileChannel == null) {
+            Logger::E(TAG, "File not open");
+            *ret = ITextToSpeech::TTS_ERROR;
+            return NOERROR;
+        }
         mDone = TRUE;
-        return ITextToSpeech::TTS_SUCCESS;
-    //} catch (IOException ex) {
-        //Java:    Log.e(TAG, "Failed to write to " + mFileName + ": " + ex);
-        String strPath;
-        Logger::E(TAG, String("Failed to write to ")+(mFileName->GetAbsolutePath(&strPath), strPath)+String(": \n"));
-        CleanUp();
-        return ITextToSpeech::TTS_ERROR;
-    //}
+        fileChannel = mFileChannel;
+        sampleRateInHz = mSampleRateInHz;
+        audioFormat = mAudioFormat;
+        channelCount = mChannelCount;
+    }
+
+    ECode ec;
+    Int64 size;
+    Int32 number;
+
+    // Write WAV header at start of file
+    fileChannel->SetPosition(0);
+    fileChannel->GetSize(&size);
+
+    int dataLength = (int) (size - WAV_HEADER_LENGTH);
+    fileChannel->Write(MakeWavHeader(sampleRateInHz, audioFormat, channelCount, dataLength), &number);
+
+    synchronized (mStateLock) {
+        CloseFile();
+        if (mDispatcher != null) {
+            mDispatcher->ispatchOnSuccess();
+        }
+        *ret = TextToSpeech::TTS_SUCCESS;
+        return NOERROR;
+    }
+
+    if (FAILED(ec)) {
+        Logger::E(TAG, "Failed to write to output file descriptor");
+        synchronized (this) {
+            CleanUp();
+        }
+        *ret = TextToSpeech::TTS_ERROR;
+        return NOERROR;
+    }
+
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-//@Override
-//public
 ECode FileSynthesisCallback::Error()
+{
+    return error(ITextToSpeech.ERROR_SYNTHESIS);
+}
+
+ECode FileSynthesisCallback::Error(
+    /* [in] */ Int32 errorCode)
 {
     //Java:    if (DBG) Log.d(TAG, "FileSynthesisRequest.error()");
     Logger::D(TAG, String("FileSynthesisRequest.error()\n"));
     AutoLock lock(mStateLock);
+    if (mDone) {
+        return NOERROR;
+    }
+
     CleanUp();
+     mStatusCode = errorCode;
     return NOERROR;
 }
 
-AutoPtr< ArrayOf<Byte> > FileSynthesisCallback::MakeWavHeader(
+ECode HasStarted(
+    /* [out] */ Boolean* started)
+{
+    synchronized (mStateLock) {
+        *started = mStarted;
+    }
+    return NOERROR;
+}
+
+ECode HasFinished(
+    /* [out] */ Boolean* finished)
+{
+    synchronized (mStateLock) {
+        *finished = mDone;
+    }
+    return NOERROR;
+}
+
+AutoPtr<IByteBuffer> FileSynthesisCallback::MakeWavHeader(
     /* [in] */ Int32 sampleRateInHz,
     /* [in] */ Int32 audioFormat,
     /* [in] */ Int32 channelCount,
     /* [in] */ Int32 dataLength)
 {
-    // TODO: is AudioFormat.ENCODING_DEFAULT always the same as ENCODING_PCM_16BIT?
-    Int32 sampleSizeInBytes = (audioFormat == /*IAudioFormat::ENCODING_PCM_8BIT*/3 ? 1 : 2);
+    Int32 sampleSizeInBytes;
+//TODO: Need CAudioFormatBuilder
+    //CAudioFormatBuilder::New((IAudioFormatBuilder**)&builder);
+    //builder->Build((IAudioFormat**)&mFormat);
+    //IAudioFormat->GetBytesPerSample(audioFormat, &sampleSizeInBytes);
+
     Int32 byteRate = sampleRateInHz * sampleSizeInBytes * channelCount;
     Int16 blockAlign = (Int16) (sampleSizeInBytes * channelCount);
     Int16 bitsPerSample = (Int16) (sampleSizeInBytes * 8);
@@ -321,13 +454,10 @@ AutoPtr< ArrayOf<Byte> > FileSynthesisCallback::MakeWavHeader(
     //Java:    header.putInt(dataLength);
     header->PutInt32(dataLength);
 
-    AutoPtr< ArrayOf<Byte> > headerBuf;// = ArrayOf<Byte>::Alloc(WAV_HEADER_LENGTH);
-    header->GetArray((ArrayOf<Byte>**)&headerBuf);
+    header->Flip();
 
-    return headerBuf;
+    return header;
 }
-
-
 
 } // namespace Tts
 } // namespace Speech

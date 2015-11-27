@@ -14,6 +14,7 @@ namespace Droid {
 namespace Speech {
 
 CarClass(CRecognizerIntent)
+    , IRecognizerIntent
 {
 public:
     CARAPI GetVoiceDetailsIntent(
@@ -23,8 +24,8 @@ public:
 private:
 };
 
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_SPEECH_CRECOGNIZERINTENT_H__

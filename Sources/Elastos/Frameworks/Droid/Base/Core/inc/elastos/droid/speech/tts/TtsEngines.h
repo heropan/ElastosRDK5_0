@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_TtsEngines_H__
 #define __ELASTOS_DROID_SPEECH_TTS_TtsEngines_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include "elastos/droid/speech/tts/TextToSpeech.h"
 #include <elastos/utility/etl/List.h>
 
@@ -25,24 +27,24 @@ namespace Tts {
  * @hide
  */
 //public class
-class TtsEngines {
+class TtsEngines
+    : public Object
+    , public ITtsEngines
+{
 private:
     //private static class
     class EngineInfoComparator
-        : public ElRefBase
+        : public Object
 //        , public IComparator
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        EngineInfoComparator();
 
-        CARAPI_(UInt32) Release();
+        virtual ~EngineInfoComparator();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
+        CARAPI constructor();
 
     public:
         /**
@@ -75,6 +77,14 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
+    TtsEngines();
+
+    virtual ~TtsEngines();
+
+    constructor();
+
     //public
     TtsEngines(
         /* [in] */ IContext* ctx);
@@ -130,33 +140,40 @@ public:
 
 public:
     /**
-     * Returns the locale string for a given TTS engine. Attempts to read the
+     * Returns the default locale for a given TTS engine. Attempts to read the
      * value from {@link Settings.Secure#TTS_DEFAULT_LOCALE}, failing which the
-     * old style value from {@link Settings.Secure#TTS_DEFAULT_LANG} is read. If
-     * both these values are empty, the default phone locale is returned.
+     * default phone locale is returned.
      *
      * @param engineName the engine to return the locale for.
-     * @return the locale string preference for this engine. Will be non null
-     *         and non empty.
+     * @return the locale preference for this engine. Will be non null.
      */
     //public
-    CARAPI_(String) GetLocalePrefForEngine(
-        /* [in] */ const String& engineName);
+    CARAPI GetLocalePrefForEngine(
+        /* [in] */ const String& engineName,
+        /* [in] */ ILocale** locale);
 
     /**
-     * Parses a locale preference value delimited by {@link #LOCALE_DELIMITER}.
-     * Varies from {@link String#split} in that it will always return an array
-     * of length 3 with non null values.
+     * Returns the default locale for a given TTS engine from given settings string. */
+    CARAPI GetLocalePrefForEngine(
+        /* [in] */ const String& engineName,
+        /* [in] */ const String& prefValue,
+        /* [in] */ ILocale** locale);
+
+    /**
+     * Parses a locale encoded as a string, and tries its best to return a valid {@link Locale}
+     * object, even if the input string is encoded using the old-style 3 character format e.g.
+     * "deu-deu". At the end, we test if the resulting locale can return ISO3 language and
+     * country codes ({@link Locale#getISO3Language()} and {@link Locale#getISO3Country()}),
+     * if it fails to do so, we return null.
      */
     //public
-    static CARAPI_(AutoPtr< ArrayOf<String> >) ParseLocalePref(
-        /* [in] */ const String& pref);
+    static CARAPI_(AutoPtr<ILocale>) parseLocaleString(
+        /* [in] */ const String& localeString);
 
-public:
     //public synchronized
-    CARAPI_(void) UpdateLocalePrefForEngine(
+    CARAPI UpdateLocalePrefForEngine(
         /* [in] */ const String& name,
-        /* [in] */ const String& newLocale);
+        /* [in] */ const ILocale* newLocale);
 
 protected:
     TtsEngines();
@@ -219,12 +236,22 @@ protected:
 
 private:
     //private
-    static const CString TAG;// = "TtsEngines";
+    static const String TAG;                // = "TtsEngines";
     //private
-    static const Boolean DBG;// = FALSE;
+    static const Boolean DBG;               // = FALSE;
 
-    //private
-    static const CString LOCALE_DELIMITER;// = "-";
+    /** Locale delimiter used by the old-style 3 char locale string format (like "eng-usa") */
+    static const String LOCALE_DELIMITER_OLD;   // = "-";
+
+    /** Locale delimiter used by the new-style locale string format (Locale.toString() results,
+     * like "en_US") */
+    static const String LOCALE_DELIMITER_NEW;   // = "-";
+
+    /** Mapping of various language strings to the normalized Locale form */
+    static final Map<String, String> sNormalizeLanguage;
+
+    /** Mapping of various country strings to the normalized Locale form */
+    static final Map<String, String> sNormalizeCountry;
 
     //private final
     AutoPtr<IContext> mContext;
@@ -237,7 +264,7 @@ private:
      * {@link com.android.internal.R.styleable#TextToSpeechEngine}
      */
     //private
-    static const CString XML_TAG_NAME;// = "tts-engine";
+    static const String XML_TAG_NAME;       // = "tts-engine";
 };
 
 } // namespace Tts

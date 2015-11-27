@@ -7,12 +7,12 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/CLooperHelper.h"
 
-
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Core::CString;
 using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Content::EIID_IServiceConnection;
 using Elastos::Droid::Content::CIntent;
@@ -25,8 +25,8 @@ namespace Elastos {
 namespace Droid {
 namespace Speech {
 
-const CString SpeechRecognizer::RESULTS_RECOGNITION = "results_recognition";
-const CString SpeechRecognizer::CONFIDENCE_SCORES = "confidence_scores";
+const String SpeechRecognizer::RESULTS_RECOGNITION("results_recognition");
+const String SpeechRecognizer::CONFIDENCE_SCORES("confidence_scores");
 const Int32 SpeechRecognizer::ERROR_NETWORK_TIMEOUT = 1;
 const Int32 SpeechRecognizer::ERROR_NETWORK = 2;
 const Int32 SpeechRecognizer::ERROR_AUDIO = 3;
@@ -38,7 +38,7 @@ const Int32 SpeechRecognizer::ERROR_RECOGNIZER_BUSY = 8;
 const Int32 SpeechRecognizer::ERROR_INSUFFICIENT_PERMISSIONS = 9;
 
 const Boolean SpeechRecognizer::DBG = FALSE;
-const CString SpeechRecognizer::TAG = "SpeechRecognizer";
+const String SpeechRecognizer::TAG("SpeechRecognizer");
 
 const Int32 SpeechRecognizer::MSG_START = 1;
 const Int32 SpeechRecognizer::MSG_STOP = 2;
@@ -73,23 +73,35 @@ ECode SpeechRecognizer::SpeechRecognizerHandler::HandleMessage(
 
 /******************************SpeechRecognizer::SpeechRecognizerConnection*************************/
 
-CAR_INTERFACE_IMPL(SpeechRecognizer::SpeechRecognizerConnection, IServiceConnection)
+CAR_INTERFACE_IMPL(SpeechRecognizer::SpeechRecognizerConnection, Object, IServiceConnection);
+
+SpeechRecognizer::SpeechRecognizerConnection::SpeechRecognizerConnection()
+{}
+
+SpeechRecognizer::SpeechRecognizerConnection::~SpeechRecognizerConnection()
+{}
+
+ECode SpeechRecognizer::SpeechRecognizerConnection::constructor()
+{}
+
+SpeechRecognizer::SpeechRecognizerConnection::SpeechRecognizerConnection(
+    /* [in] */ SpeechRecognizer* sr)
+{
+    mHost = sr;
+}
 
 ECode SpeechRecognizer::SpeechRecognizerConnection::OnServiceConnected(
     /* [in] */ IComponentName* name,
-    /* [in] */ /*IIBinder*/IBinder* service)
+    /* [in] */ IBinder* service)
 {
     // always done on the application main thread, so no need to send message to mHandler
     mHost->mService = (IIRecognitionService*)service;
     if (mHost->DBG) {
-        //Java:    Log.d(TAG, "onServiceConnected - Success");
         Logger::D(TAG, String("onServiceConnected - Success\n"));
     }
 
     Boolean result;
     while (!(mHost->mPendingTasks).IsEmpty()) {
-        // mPendingTasks.poll()
-        assert(0);
         AutoPtr<IMessage> msg = mHost->mPendingTasks.GetFront();
         mHost->mPendingTasks.PopFront();
 
@@ -106,16 +118,9 @@ ECode SpeechRecognizer::SpeechRecognizerConnection::OnServiceDisconnected(
     mHost->mConnection = NULL;
     (mHost->mPendingTasks).Clear();
     if (mHost->DBG){
-        //Java:    Log.d(TAG, "onServiceDisconnected - Success");
         Logger::D(TAG, String("onServiceDisconnected - Success\n"));
     }
     return NOERROR;
-}
-
-SpeechRecognizer::SpeechRecognizerConnection::SpeechRecognizerConnection(
-    /* [in] */ SpeechRecognizer* sr)
-{
-    mHost = sr;
 }
 
 const Int32 SpeechRecognizer::SpeechRecognizerInternalListener::MSG_BEGINNING_OF_SPEECH = 1;
@@ -182,12 +187,18 @@ ECode SpeechRecognizer::SpeechRecognizerInternalListener::SpeechRecognizerIntern
 }
 
 /******************************SpeechRecognizer::SpeechRecognizerInternalListener*************************/
-CAR_INTERFACE_IMPL(SpeechRecognizer::SpeechRecognizerInternalListener, IIRecognitionListener)
+CAR_INTERFACE_IMPL(SpeechRecognizer::SpeechRecognizerInternalListener, Object, IIRecognitionListener)
 
 SpeechRecognizer::SpeechRecognizerInternalListener::SpeechRecognizerInternalListener()
 {
     mInternalHandler = new SpeechRecognizerInternalListenerHandler(this);
 }
+
+SpeechRecognizer::SpeechRecognizerInternalListener::~SpeechRecognizerInternalListener()
+{}
+
+ECode SpeechRecognizer::SpeechRecognizerInternalListener::constructor()
+{}
 
 ECode SpeechRecognizer::SpeechRecognizerInternalListener::OnBeginningOfSpeech()
 {
@@ -270,6 +281,7 @@ ECode SpeechRecognizer::SpeechRecognizerInternalListener::OnEvent(
 }
 
 /******************************SpeechRecognizer*************************/
+CAR_INTERFACE_IMPL(SpeechRecognizer, Object, ISpeechRecognizer);
 
 SpeechRecognizer::SpeechRecognizer()
 {
@@ -277,14 +289,15 @@ SpeechRecognizer::SpeechRecognizer()
     mListener = new SpeechRecognizerInternalListener();
 }
 
-SpeechRecognizer::SpeechRecognizer(
-    /* [in] */ IContext* context,
-    /* [in] */ IComponentName* serviceComponent)
+SpeechRecognizer::~SpeechRecognizer()
+{}
+
+ECode SpeechRecognizer::constructor()
 {
-    Init(context, serviceComponent);
+    return NOERROR;
 }
 
-void SpeechRecognizer::Init(
+ECode SpeechRecognizer::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IComponentName* serviceComponent)
 {
@@ -292,6 +305,8 @@ void SpeechRecognizer::Init(
     mServiceComponent = serviceComponent;
     mHandler = new SpeechRecognizerHandler(this);
     mListener = new SpeechRecognizerInternalListener();
+
+    return NOERROR;
 }
 
 Boolean SpeechRecognizer::IsRecognitionAvailable(
@@ -306,27 +321,27 @@ Boolean SpeechRecognizer::IsRecognitionAvailable(
     return !(list.IsEmpty()) && list.IsEmpty() == FALSE;
 }
 
-// AutoPtr<ISpeechRecognizer> SpeechRecognizer::CreateSpeechRecognizer(
-//     /* [in] */ IContext* context)
-// {
-//     return CreateSpeechRecognizer(context, NULL);
-// }
+ AutoPtr<ISpeechRecognizer> SpeechRecognizer::CreateSpeechRecognizer(
+     /* [in] */ IContext* context)
+ {
+     return CreateSpeechRecognizer(context, NULL);
+ }
 
-// AutoPtr<ISpeechRecognizer> SpeechRecognizer::CreateSpeechRecognizer(
-//     /* [in] */ IContext* context,
-//     /* [in] */ IComponentName* serviceComponent)
-// {
-//     if (context == NULL) {
-//         //Java:    throw new IllegalArgumentException("Context cannot be null)");
-//         Logger::E(TAG, String("Context cannot be null\n"));
-//         return NULL;
-//     }
-//     CheckIsCalledFromMainThread();
+ AutoPtr<ISpeechRecognizer> SpeechRecognizer::CreateSpeechRecognizer(
+     /* [in] */ IContext* context,
+     /* [in] */ IComponentName* serviceComponent)
+ {
+     if (context == NULL) {
+         // Java:    throw new IllegalArgumentException("Context cannot be null)");
+         Logger::E(TAG, String("Context cannot be null\n"));
+         return NULL;
+     }
+     CheckIsCalledFromMainThread();
 
-//     AutoPtr<ISpeechRecognizer> sr;
-//     CSpeechRecognizer::NewByFriend(context, serviceComponent, (ISpeechRecognizer**)&sr);
-//     return sr;
-// }
+     AutoPtr<ISpeechRecognizer> sr;
+     CSpeechRecognizer::NewByFriend(context, serviceComponent, (ISpeechRecognizer**)&sr);
+     return sr;
+ }
 
 void SpeechRecognizer::SetRecognitionListener(
     /* [in] */ IRecognitionListener* listener)
@@ -377,7 +392,6 @@ void SpeechRecognizer::StartListening(
         mContext -> BindService(serviceIntent, mConnection, IContext::BIND_AUTO_CREATE, &bBindService);
 
         if (!bBindService) {
-            //Java:    Log.e(TAG, "bind to recognition service failed");
             Logger::E(TAG, String("bind to recognition service failed\n"));
             mConnection = NULL;
             mService = NULL;
@@ -410,18 +424,25 @@ void SpeechRecognizer::Cancel()
 
 void SpeechRecognizer::CheckIsCalledFromMainThread()
 {
-    //Java:    if (Looper.myLooper() != Looper.getMainLooper()) {throw new RuntimeException("SpeechRecognizer should be used only from the application's main thread");}
+    /**
+     * Java:
+     *   if (Looper.myLooper() != Looper.getMainLooper()) {
+     *       throw new RuntimeException(
+     *               "SpeechRecognizer should be used only from the application's main thread");
+     *   }
+     */
     AutoPtr<ILooperHelper> myLooperHelper;
     CLooperHelper::AcquireSingletonByFriend((CLooperHelper**)&myLooperHelper);
     AutoPtr<ILooper> myLooper;
     myLooperHelper->MyLooper((ILooper**)&myLooper);
-    if(/*myLooper==mainLooper*/FALSE){
+    if (/*myLooper==mainLooper*/FALSE) {
         Logger::E(TAG, String("SpeechRecognizer should be used only from the application's main thread\n"));
     }
 }
 
 void SpeechRecognizer::PutMessage(
-    /* [in] */ IMessage* msg) {
+    /* [in] */ IMessage* msg)
+{
     if (mService == NULL) {
         mPendingTasks.PushFront(msg);
     }
@@ -431,6 +452,7 @@ void SpeechRecognizer::PutMessage(
     }
 }
 
+/** sends the actual message to the service */
 void SpeechRecognizer::HandleStartListening(
     /* [in] */ IIntent* recognizerIntent)
 {
@@ -452,6 +474,7 @@ void SpeechRecognizer::HandleStartListening(
     //}
 }
 
+/** sends the actual message to the service */
 void SpeechRecognizer::HandleStopMessage()
 {
     if (!CheckOpenConnection()) {
@@ -472,6 +495,7 @@ void SpeechRecognizer::HandleStopMessage()
     //}
 }
 
+/** sends the actual message to the service */
 void SpeechRecognizer::HandleCancelMessage()
 {
     if (!CheckOpenConnection()) {

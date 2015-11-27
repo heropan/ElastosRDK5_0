@@ -8,6 +8,10 @@ namespace Droid {
 namespace Speech {
 namespace Srec {
 
+CAR_SINGLETON_IMPL(CUlawEncoderInputStreamHelper)
+
+CAR_INTERFACE_IMPL(CUlawEncoderInputStreamHelper, Singleton, IUlawEncoderInputStreamHelper)
+
 ECode CUlawEncoderInputStreamHelper::Encode(
     /* [in] */ ArrayOf<Byte>* pcmBuf,
     /* [in] */ Int32 pcmOffset,
@@ -16,7 +20,7 @@ ECode CUlawEncoderInputStreamHelper::Encode(
     /* [in] */ Int32 length,
     /* [in] */ Int32 max)
 {
-    CUlawEncoderInputStream::Encode(pcmBuf, pcmOffset, ulawBuf, ulawOffset, length, max);
+    UlawEncoderInputStream::Encode(pcmBuf, pcmOffset, ulawBuf, ulawOffset, length, max);
     return NOERROR;
 }
 
@@ -27,12 +31,12 @@ ECode CUlawEncoderInputStreamHelper::MaxAbsPcm(
     /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret = CUlawEncoderInputStream::MaxAbsPcm(pcmBuf, offset, length);
+    *ret = UlawEncoderInputStream::MaxAbsPcm(pcmBuf, offset, length);
     return NOERROR;
 }
 
-}//namespace Srec
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Srec
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 

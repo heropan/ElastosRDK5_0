@@ -12,47 +12,23 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-const CString AudioPlaybackHandler::TAG = "TTS.AudioPlaybackHandler";
+const String AudioPlaybackHandler::TAG("TTS.AudioPlaybackHandler");
 const Boolean AudioPlaybackHandler::DBG = FALSE;
 
-/******************************AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop*************************/
-PInterface AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IRunnable*)this;
-    }
-    else if (riid == EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-    return NULL;
-}
+/******************
+ * AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop
+ *******************************************************************************************************/
 
-UInt32 AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+CAR_OBJECT_IMPL(AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop, Object, IRunnable);
 
-UInt32 AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::Release()
-{
-    return ElRefBase::Release();
-}
+AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::AudioPlaybackHandlerMessageLoop()
+{}
 
-ECode AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::~AudioPlaybackHandlerMessageLoop()
+{}
 
-    if (Object == (IInterface*)(IRunnable*)this) {
-        *iID = EIID_IRunnable;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
+ECode AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::constructor()
+{
     return NOERROR;
 }
 

@@ -18,16 +18,33 @@ namespace Srec {
  * @hide
  */
 class UlawEncoderInputStream
-    : public InputStream
+    : public Object
+    , public IInputStream
+    , public IUlawEncoderInputStream
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    /**
+     * Create an InputStream which takes 16 bit pcm data and produces ulaw data.
+     * @param in InputStream containing 16 bit pcm data.
+     * @param max pcm value corresponding to maximum ulaw value.
+     */
+    UlawEncoderInputStream();
+
+    ~UlawEncoderInputStream();
+
+    CARAPI constructor(
+        /* [in]  */ IInputStream* in,
+        /* [in]  */ Int32 max);
+
     static CARAPI_(void) Encode(
-        /* [in] */ ArrayOf<Byte>* pcmBuf,
-        /* [in] */ Int32 pcmOffset,
-        /* [in] */ ArrayOf<Byte>* ulawBuf,
-        /* [in] */ Int32 ulawOffset,
-        /* [in] */ Int32 length,
-        /* [in] */ Int32 max);
+        /* [in]  */ ArrayOf<Byte>* pcmBuf,
+        /* [in]  */ Int32 pcmOffset,
+        /* [in]  */ ArrayOf<Byte>* ulawBuf,
+        /* [in]  */ Int32 ulawOffset,
+        /* [in]  */ Int32 length,
+        /* [in]  */ Int32 max);
 
     /**
      * Compute the maximum of the absolute value of the pcm samples.
@@ -38,28 +55,15 @@ public:
      * @return maximum abs of pcm data values
      */
     static CARAPI_(Int32) MaxAbsPcm(
-        /* [in] */ ArrayOf<Byte>* pcmBuf,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length);
-
-    /**
-     * Create an InputStream which takes 16 bit pcm data and produces ulaw data.
-     * @param in InputStream containing 16 bit pcm data.
-     * @param max pcm value corresponding to maximum ulaw value.
-     */
-    UlawEncoderInputStream(
-        /* [in] */ IInputStream* in,
-        /* [in] */ Int32 max);
-
-    CARAPI_(void) Init(
-        /* [in] */ IInputStream* in,
-        /* [in] */ Int32 max);
+        /* [in]  */ ArrayOf<Byte>* pcmBuf,
+        /* [in]  */ Int32 offset,
+        /* [in]  */ Int32 length);
 
     //@Override
     CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buf,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
+        /* [in]  */ Int32 offset,
+        /* [in]  */ Int32 length,
         /* [out] */ Int32* number);
 
     //@Override
@@ -78,23 +82,60 @@ public:
     CARAPI Available(
         /* [out] */ Int32* number);// throws IOException
 
-protected:
-    UlawEncoderInputStream();
+    CARAPI Close();
+
+    CARAPI Available(
+        /* [out] */ Int32* number);
+
+    CARAPI Mark(
+        /* [in]  */ Int32 readLimit);
+
+    CARAPI IsMarkSupported(
+        /* [out] */ Boolean* supported);
+
+    CARAPI Read(
+        /* [out] */ Int32* value);
+
+    CARAPI ReadBytes(
+        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [out] */ Int32* number);
+
+    CARAPI ReadBytes(
+        /* [out] */ ArrayOf<Byte>* buffer,
+        /* [in]  */ Int32 offset,
+        /* [in]  */ Int32 length,
+        /* [out] */ Int32* number);
+
+    CARAPI Reset();
+
+    CARAPI Skip(
+        /* [in]  */ Int64 byteCount,
+        /* [out] */ Int64* number);
+
+    virtual CARAPI_(PInterface) Probe(
+        /* [in]  */ REIID riid);
+
+    CARAPI constructor(
+        /* [in]  */ IInputStream* in,
+        /* [in]  */ Int32 max);
+
+    CARAPI GetLock(
+        /* [out] */ IInterface** lockobj);
 
 private:
-    static const CString TAG;// = "UlawEncoderInputStream";
+    static const String TAG;        // = "UlawEncoderInputStream";
 
-    static const Int32 MAX_ULAW;// = 8192;
-    static const Int32 SCALE_BITS;// = 16;
+    static const Int32 MAX_ULAW;    // = 8192;
+    static const Int32 SCALE_BITS;  // = 16;
 
     AutoPtr<IInputStream> mIn;
 
     Int32 mMax;// = 0;
 
-    AutoPtr< ArrayOf<Byte> > mBuf;// = ArrayOf<Byte>::Alloc(1024);
-    Int32 mBufCount;// = 0; // should be 0 or 1
+    AutoPtr< ArrayOf<Byte> > mBuf;  // = ArrayOf<Byte>::Alloc(1024);
+    Int32 mBufCount;                // = 0; // should be 0 or 1
 
-    AutoPtr< ArrayOf<Byte> > mOneByte;// = ArrayOf<Byte>::Alloc(1);
+    AutoPtr< ArrayOf<Byte> > mOneByte;  // = ArrayOf<Byte>::Alloc(1);
 };
 
 } // namespace Srec

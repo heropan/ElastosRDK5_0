@@ -18,7 +18,7 @@ ECode CRecognizerIntent::GetVoiceDetailsIntent(
     return NOERROR;
 }
 
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 

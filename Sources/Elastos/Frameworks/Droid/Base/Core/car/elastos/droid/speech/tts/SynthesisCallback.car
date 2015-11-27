@@ -122,9 +122,9 @@ module
             [out] Boolean* finished);
     }
 
-    }//namespace Tts
-    }//namespace Speech
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Tts
+    } // namespace Speech
+    } // namespace Droid
+    } // namespace Elastos
 
 }

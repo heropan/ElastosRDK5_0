@@ -10,9 +10,16 @@ namespace Elastos {
 namespace Droid {
 namespace Speech {
 
-CarClass(CSpeechRecognizer) , public SpeechRecognizer
+CarClass(CSpeechRecognizer)
+    , public SpeechRecognizer
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CSpeechRecognizer();
+
+    virtual ~CSpeechRecognizer();
+
     CARAPI SetRecognitionListener(
         /* [in] */ IRecognitionListener * pListener);
 
@@ -62,8 +69,8 @@ public:
 private:
 };
 
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_SPEECH_CSPEECHRECOGNIZER_H__

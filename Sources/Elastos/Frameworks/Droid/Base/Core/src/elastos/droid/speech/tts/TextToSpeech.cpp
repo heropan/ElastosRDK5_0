@@ -27,46 +27,20 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-/******************************TextToSpeech::TextToSpeechEngineInfo*************************/
-PInterface TextToSpeech::TextToSpeechEngineInfo::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(ITextToSpeechEngineInfo*)this;
-    }
-    else if (riid == EIID_ITextToSpeechEngineInfo) {
-        return (ITextToSpeechEngineInfo*)this;
-    }
-    return NULL;
-}
+/******************
+ * TextToSpeech::TextToSpeechEngineInfo
+ *******************************************************************************************************/
 
-UInt32 TextToSpeech::TextToSpeechEngineInfo::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+CAR_INTERFACE_IMPL(TextToSpeech::TextToSpeechEngineInfo, Object, ITextToSpeechEngineInfo)
 
-UInt32 TextToSpeech::TextToSpeechEngineInfo::Release()
-{
-    return ElRefBase::Release();
-}
+TextToSpeech::TextToSpeechEngineInfo::TextToSpeechEngineInfo()
+{}
 
-ECode TextToSpeech::TextToSpeechEngineInfo::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+TextToSpeech::TextToSpeechEngineInfo::~TextToSpeechEngineInfo()
+{}
 
-    if (Object == (IInterface*)(ITextToSpeechEngineInfo*)this) {
-        *iID = EIID_ITextToSpeechEngineInfo;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+ECode TextToSpeech::TextToSpeechEngineInfo::constructor()
+{}
 
 ECode TextToSpeech::TextToSpeechEngineInfo::ToString(
     /* [out] */ String* ret)
@@ -349,49 +323,24 @@ Handle32 TextToSpeech::TextToSpeechActionRSynthesizeToFile::Run(
     return (Handle32)nRet;
 }
 
+/******************
+ * TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback
+ *******************************************************************************************************/
 
-/******************************TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback*************************/
-PInterface TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::Probe(
-    /* [in] */ REIID riid)
+CAR_INTERFACE_IMPL(TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback, Object, IITextToSpeechCallback)
+
+TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::TextToSpeechConnectionCallback()
+{}
+
+TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::~TextToSpeechConnectionCallback()
+{}
+
+ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::constructor()
 {
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IITextToSpeechCallback*)this;
-    }
-    else if (riid == EIID_IITextToSpeechCallback) {
-        return (IITextToSpeechCallback*)this;
-    }
-    return NULL;
-}
-
-UInt32 TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (Object == (IInterface*)(IITextToSpeechCallback*)this) {
-        *iID = EIID_IITextToSpeechCallback;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
     return NOERROR;
 }
 
-TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::TextToSpeechConnectionCallback(
+ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::constructor(
     /* [in] */ TextToSpeech* tts)
 {
     mTts = tts;
@@ -427,46 +376,12 @@ ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::OnSt
     return NOERROR;
 }
 
-/******************************TextToSpeech::TextToSpeechConnection*************************/
-PInterface TextToSpeech::TextToSpeechConnection::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IServiceConnection*)this;
-    }
-    else if (riid == EIID_IServiceConnection) {
-        return (IServiceConnection*)this;
-    }
-    return NULL;
-}
 
-UInt32 TextToSpeech::TextToSpeechConnection::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+/******************
+ * TextToSpeech::TextToSpeechConnection
+ *******************************************************************************************************/
 
-UInt32 TextToSpeech::TextToSpeechConnection::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode TextToSpeech::TextToSpeechConnection::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (Object == (IInterface*)(IServiceConnection*)this) {
-        *iID = EIID_IServiceConnection;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(TextToSpeech::TextToSpeechConnection, Object, IServiceConnection)
 
 TextToSpeech::TextToSpeechConnection::TextToSpeechConnection(
     /* [in] */ TextToSpeech* pTts)
@@ -561,52 +476,37 @@ Handle32 TextToSpeech::TextToSpeechConnection::RunAction(
 
 /******************************TextToSpeech*************************/
 const Int32 TextToSpeech::QUEUE_DESTROY = 2;
-const CString TextToSpeech::TAG = "TextToSpeech";
+const String TextToSpeech::TAG("TextToSpeech");
+
+CAR_INTERFACE_IMPL(TextToSpeech, Object, ITextToSpeech)
 
 TextToSpeech::TextToSpeech()
 {}
 
-TextToSpeech::TextToSpeech(
+TextToSpeech::~TextToSpeech()
+{}
+
+ECode TextToSpeech::constructor()
+{
+    return NOERROR;
+}
+
+ECode TextToSpeech::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ITextToSpeechOnInitListener* listener)
 {
-    Init(context, listener, String(NULL));
+    return constructor(context, listener, String(NULL));
 }
 
-TextToSpeech::TextToSpeech(
+ECode TextToSpeech::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ITextToSpeechOnInitListener* listener,
     /* [in] */ const String& engine)
 {
-    Init(context, listener, engine, String(NULL), TRUE);
+    return constructor(context, listener, engine, String(NULL), TRUE);
 }
 
-TextToSpeech::TextToSpeech(
-    /* [in] */ IContext* context,
-    /* [in] */ ITextToSpeechOnInitListener* listener,
-    /* [in] */ const String& engine,
-    /* [in] */ const String& packageName,
-    /* [in] */ Boolean useFallback)
-{
-    Init(context, listener, engine, packageName, useFallback);
-}
-
-void TextToSpeech::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ ITextToSpeechOnInitListener* listener)
-{
-    Init(context, listener, String(NULL));
-}
-
-void TextToSpeech::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ ITextToSpeechOnInitListener* listener,
-    /* [in] */ const String& engine)
-{
-    Init(context, listener, engine, String(NULL), TRUE);
-}
-
-void TextToSpeech::Init(
+ECode TextToSpeech::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ITextToSpeechOnInitListener* listener,
     /* [in] */ const String& engine,
@@ -631,6 +531,8 @@ void TextToSpeech::Init(
         mContext->GetPackageName(&mPackageName);
     }
     InitTts();
+
+    return NOERROR;
 }
 
 Handle32 TextToSpeech::RunActionNoReconnect(

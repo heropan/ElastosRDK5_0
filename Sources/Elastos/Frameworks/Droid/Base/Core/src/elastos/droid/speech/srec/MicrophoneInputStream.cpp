@@ -10,21 +10,22 @@ namespace Droid {
 namespace Speech {
 namespace Srec {
 
-const CString MicrophoneInputStream::TAG = "MicrophoneInputStream";
+const String MicrophoneInputStream::TAG("MicrophoneInputStream");
 
 MicrophoneInputStream::MicrophoneInputStream()
 {}
 
-MicrophoneInputStream::MicrophoneInputStream(
-    /* [in] */ Int32 sampleRate,
-    /* [in] */ Int32 fifoDepth) //Java:    throws IOException
+MicrophoneInputStream::~MicrophoneInputStream()
+{}
+
+ECode MicrophoneInputStream::constructor()
 {
-    Init(sampleRate, fifoDepth);
+    return NOERROR;
 }
 
-ECode MicrophoneInputStream::Init(
+ECode MicrophoneInputStream::constructor(
     /* [in] */ Int32 sampleRate,
-    /* [in] */ Int32 fifoDepth) //Java:    throws IOException
+    /* [in] */ Int32 fifoDepth)
 {
     mOneByte = ArrayOf<Byte>::Alloc(1);
     mAudioRecord = AudioRecordNew(sampleRate, fifoDepth);
@@ -114,18 +115,24 @@ void MicrophoneInputStream::Finalize()// throws Throwable
 Int32 MicrophoneInputStream::AudioRecordNew(
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 fifoDepth)
-{return 0;}
+{
+    return 0;
+}
 
 Int32 MicrophoneInputStream::AudioRecordStart(
     /* [in] */ Int32 audioRecord)
-{return 0;}
+{
+    return 0;
+}
 
 Int32 MicrophoneInputStream::AudioRecordRead(
     /* [in] */ Int32 audioRecord,
     /* [in] */ ArrayOf<Byte>* b,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)// throws IOException
-{return 0;}
+{
+    return 0;
+}
 
 void MicrophoneInputStream::AudioRecordStop(
     /* [in] */ Int32 audioRecord)// throws IOException

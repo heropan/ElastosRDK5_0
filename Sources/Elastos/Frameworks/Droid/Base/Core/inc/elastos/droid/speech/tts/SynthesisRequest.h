@@ -1,8 +1,9 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_SynthesisRequest_H__
 #define __ELASTOS_DROID_SPEECH_TTS_SynthesisRequest_H__
 
-#include "Elastos.Droid.Core_server.h"
-//
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
+
 using Elastos::Droid::Os::IBundle;
 
 namespace Elastos {
@@ -28,55 +29,68 @@ namespace Tts {
  */
 //final
 class SynthesisRequest
+    : public Object
+    , public ISynthesisRequest
 {
 public:
-    SynthesisRequest(
-        /* [in] */ const String& text,
-        /* [in] */ IBundle* params);
+    CAR_INTERFACE_DECL();
 
-    CARAPI_(void) Init(
+    SynthesisRequest();
+
+    virtual ~SynthesisRequest();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ const String& text,
         /* [in] */ IBundle* params);
 
     /**
      * Gets the text which should be synthesized.
      */
-    CARAPI_(String) GetText();
+    CARAPI GetText(
+        /* [out] */ String* ret);
 
     /**
      * Gets the ISO 3-letter language code for the language to use.
      */
-    CARAPI_(String) GetLanguage();
+    CARAPI GetLanguage(
+        /* [out] */ String* ret);
 
     /**
      * Gets the ISO 3-letter country code for the language to use.
      */
-    CARAPI_(String) GetCountry();
+    CARAPI GetCountry(
+        /* [out] */ String* ret);
 
     /**
      * Gets the language variant to use.
      */
-    CARAPI_(String) GetVariant();
+    CARAPI GetVariant(
+        /* [out] */ String* ret);
 
     /**
      * Gets the speech rate to use. The normal rate is 100.
      */
-    CARAPI_(Int32) GetSpeechRate();
+    CARAPI GetSpeechRate(
+        /* [out] */ Int32* ret);
 
     /**
      * Gets the pitch to use. The normal pitch is 100.
      */
-    CARAPI_(Int32) GetPitch();
+    CARAPI GetPitch(
+        /* [out] */ Int32* ret);
 
     /**
      * Gets the additional params, if any.
      */
-    CARAPI_(AutoPtr<IBundle>) GetParams();
+    CARAPI GetParams(
+        /* [out] */ IBundle** ret);
 
     /**
      * Sets the locale for the request.
      */
-    CARAPI_(void) SetLanguage(
+    CARAPI SetLanguage(
         /* [in] */ const String& language,
         /* [in] */ const String& country,
         /* [in] */ const String& variant);
@@ -84,17 +98,14 @@ public:
     /**
      * Sets the speech rate.
      */
-    CARAPI_(void) SetSpeechRate(
+    CARAPI SetSpeechRate(
         /* [in] */ Int32 speechRate);
 
     /**
      * Sets the pitch.
      */
-    CARAPI_(void) SetPitch(
+    CARAPI SetPitch(
         /* [in] */ Int32 pitch);
-
-protected:
-    SynthesisRequest();
 
 private:
     String mText;

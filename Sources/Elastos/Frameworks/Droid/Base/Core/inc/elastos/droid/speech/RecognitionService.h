@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_SPEECH_RecognitionService_H__
 #define __ELASTOS_DROID_SPEECH_RecognitionService_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include "elastos/droid/app/Service.h"
 #include "elastos/droid/os/HandlerBase.h"
 #include "Elastos.Droid.Core_server.h"
@@ -31,12 +33,16 @@ public:
      */
     //public
     class RecognitionServiceCallback
-        : public ElRefBase
+        : public Object
         , public IRecognitionServiceCallback
     {
         friend class RecognitionService;
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
+
+        RecognitionServiceCallback();
+
+        virtual ~RecognitionServiceCallback();
 
     public:
         /**
@@ -130,14 +136,12 @@ public:
 
 private:
     class RecognitionServiceStartListeningArgs
-        : public ElRefBase
-        , public IInterface
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
         RecognitionServiceStartListeningArgs(
-            /* [in]  */ IIntent* intent,
-            /* [in]  */ IIRecognitionListener* listener);
+            /* [in] */ IIntent* intent,
+            /* [in] */ IIRecognitionListener* listener);
 
     public:
         AutoPtr<IIntent> mIntent;
@@ -165,11 +169,15 @@ private:
     /** Binder of the recognition service */
     //private static
     class RecognitionServiceBinder
-        : public ElRefBase
+        : public Object
         , public IIRecognitionService
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
+
+        RecognitionServiceBinder();
+
+        virtual ~RecognitionServiceBinder();
 
     public:
         //public
@@ -321,10 +329,7 @@ private:
 
     //private final
     AutoPtr<IHandler>  mHandler;// = new RecognitionServiceHandler(this);
-
 };
-
-
 
 } // namespace Speech
 } // namepsace Droid

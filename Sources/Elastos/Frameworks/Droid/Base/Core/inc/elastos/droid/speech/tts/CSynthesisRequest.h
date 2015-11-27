@@ -16,36 +16,16 @@ CarClass(CSynthesisRequest)
     , public SynthesisRequest
 {
 public:
-    CARAPI GetText(
-        /* [out] */ String* ret);
+    CAR_OBJECT_DECL();
 
-    CARAPI GetLanguage(
-        /* [out] */ String* ret);
+    CSynthesisRequest();
 
-    CARAPI GetCountry(
-        /* [out] */ String* ret);
-
-    CARAPI GetVariant(
-        /* [out] */ String* ret);
-
-    CARAPI GetSpeechRate(
-        /* [out] */ Int32* ret);
-
-    CARAPI GetPitch(
-        /* [out] */ Int32* ret);
-
-    CARAPI GetParams(
-        /* [out] */ IBundle** ret);
-
-    CARAPI constructor(
-        /* [in] */ const String& text,
-        /* [in] */ IBundle* params);
-
+    virtual ~CSynthesisRequest();
 };
 
-}//namespace Tts
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Tts
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_SPEECH_TTS_CSYNTHESISREQUEST_H__

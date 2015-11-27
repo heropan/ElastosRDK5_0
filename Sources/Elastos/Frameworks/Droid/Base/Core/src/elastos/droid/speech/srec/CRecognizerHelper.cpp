@@ -8,12 +8,16 @@ namespace Droid {
 namespace Speech {
 namespace Srec {
 
+CAR_SINGLETON_IMPL(CRecognizerHelper)
+
+CAR_INTERFACE_IMPL(CRecognizerHelper, Singleton, IRecognizerHelper)
+
 ECode CRecognizerHelper::GetConfigDir(
     /* [in] */ ILocale* locale,
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=CRecognizer::GetConfigDir(locale);
+    *ret = Recognizer::GetConfigDir(locale);
     return NOERROR;
 }
 
@@ -22,12 +26,11 @@ ECode CRecognizerHelper::EventToString(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=CRecognizer::EventToString(event);
+    *ret = Recognizer::EventToString(event);
     return NOERROR;
 }
 
-}//namespace Srec
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
-
+} // namespace Srec
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos

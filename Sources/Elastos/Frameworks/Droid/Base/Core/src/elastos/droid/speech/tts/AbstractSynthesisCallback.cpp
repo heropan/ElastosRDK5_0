@@ -6,43 +6,20 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-PInterface AbstractSynthesisCallback::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(ISynthesisCallback*)this;
-    }
-    else if (riid == EIID_ISynthesisCallback) {
-        return (ISynthesisCallback*)this;
-    }
-    return NULL;
-}
+/******************
+ * AbstractSynthesisCallback
+ *******************************************************************************************************/
 
-UInt32 AbstractSynthesisCallback::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+CAR_OBJECT_IMPL(AbstractSynthesisCallback, Object, ISynthesisCallback);
 
-UInt32 AbstractSynthesisCallback::Release()
-{
-    return ElRefBase::Release();
-}
+AbstractSynthesisCallback::AbstractSynthesisCallback()
+{}
 
-ECode AbstractSynthesisCallback::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+AbstractSynthesisCallback::~AbstractSynthesisCallback()
+{}
 
-    if (Object == (IInterface*)(ISynthesisCallback*)this) {
-        *iID = EIID_ISynthesisCallback;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
+ECode AbstractSynthesisCallback::constructor()
+{
     return NOERROR;
 }
 

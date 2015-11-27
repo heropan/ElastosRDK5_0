@@ -10,7 +10,7 @@ namespace Tts {
 
 //abstract
 class PlaybackQueueItem
-    : public ElRefBase
+    : public Object
 //    , public IRunnable
 {
 public:

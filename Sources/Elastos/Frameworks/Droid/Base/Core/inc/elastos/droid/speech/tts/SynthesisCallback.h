@@ -1,8 +1,9 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_SynthesisCallback_H__
 #define __ELASTOS_DROID_SPEECH_TTS_SynthesisCallback_H__
 
-#include "Elastos.Droid.Core_server.h"
-////
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Speech {
@@ -20,15 +21,21 @@ namespace Tts {
  * indicate that an error has occurred, but if the call is made after a call
  * to {@link #done}, it might be discarded.
  */
+
+//
 //public interface
-class SynthesisCallback {
+//
+class SynthesisCallback
+    : public ISynthesisCallback
+{
 public:
     /**
      * @return the maximum number of bytes that the TTS engine can pass in a single call of
      *         {@link #audioAvailable}. Calls to {@link #audioAvailable} with data lengths
      *         larger than this value will not succeed.
      */
-    virtual CARAPI_(Int32) GetMaxBufferSize() = 0;
+    virtual CARAPI GetMaxBufferSize(
+        /* [out] */ Int32* ret) = 0;
 
     /**
      * The service should call this when it starts to synthesize audio for this
@@ -43,10 +50,11 @@ public:
      * @param channelCount The number of channels. Must be {@code 1} or {@code 2}.
      * @return {@link TextToSpeech#SUCCESS} or {@link TextToSpeech#ERROR}.
      */
-    virtual CARAPI_(Int32) Start(
+    virtual CARAPI Start(
         /* [in] */ Int32 sampleRateInHz,
         /* [in] */ Int32 audioFormat,
-        /* [in] */ Int32 channelCount) = 0;
+        /* [in] */ Int32 channelCount,
+        /* [out] */ Int32* ret) = 0;
 
     /**
      * The service should call this method when synthesized audio is ready for consumption.
@@ -61,10 +69,11 @@ public:
      *         less than or equal to the return value of {@link #getMaxBufferSize}.
      * @return {@link TextToSpeech#SUCCESS} or {@link TextToSpeech#ERROR}.
      */
-    virtual CARAPI_(Int32) AudioAvailable(
+    virtual CARAPI AudioAvailable(
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
-        /* [in] */ Int32 length) = 0;
+        /* [in] */ Int32 length,
+        /* [out] */ Int32* ret) = 0;
 
     /**
      * The service should call this method when all the synthesized audio for a request has
@@ -75,7 +84,8 @@ public:
      *
      * @return {@link TextToSpeech#SUCCESS} or {@link TextToSpeech#ERROR}.
      */
-    virtual CARAPI_(Int32) Done() = 0;
+    virtual CARAPI Done(
+        /* [out] */ Int32* ret) = 0;
 
     /**
      * The service should call this method if the speech synthesis fails.
@@ -85,8 +95,40 @@ public:
      */
     virtual CARAPI Error() = 0;
 
-};
+    /**
+     * The service should call this method if the speech synthesis fails.
+     *
+     * This method should only be called on the synthesis thread,
+     * while in {@link TextToSpeechService#onSynthesizeText}.
+     *
+     * @param errorCode Error code to pass to the client. One of the ERROR_ values from
+     *      {@link TextToSpeech}
+     */
+    virtual CARAPI Error(
+        /* [in] */ Int32 errorCode) = 0;
 
+    /**
+     * Check if {@link #start} was called or not.
+     *
+     * This method should only be called on the synthesis thread,
+     * while in {@link TextToSpeechService#onSynthesizeText}.
+     *
+     * Useful for checking if a fallback from network request is possible.
+     */
+    virtual CARAPI HasStarted(
+        /* [out] */ Boolean* started) = 0;
+
+    /**
+     * Check if {@link #done} was called or not.
+     *
+     * This method should only be called on the synthesis thread,
+     * while in {@link TextToSpeechService#onSynthesizeText}.
+     *
+     * Useful for checking if a fallback from network request is possible.
+     */
+    virtual CARAPI HasFinished(
+        /* [out] */ Boolean* finished) = 0;
+};
 
 } // namespace Tts
 } // namespace Speech

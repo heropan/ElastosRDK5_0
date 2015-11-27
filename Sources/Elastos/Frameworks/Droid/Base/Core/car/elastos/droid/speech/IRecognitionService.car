@@ -51,8 +51,8 @@ module
             [in] IIRecognitionListener* listener);
     }
 
-    }//namespace Speech
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Speech
+    } // namespace Droid
+    } // namespace Elastos
 
 }

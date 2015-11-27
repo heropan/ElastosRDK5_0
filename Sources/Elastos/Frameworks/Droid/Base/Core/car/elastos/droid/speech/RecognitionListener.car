@@ -96,8 +96,8 @@ module
             [in] IBundle* params);
     }
 
-    }//namespace Speech
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Speech
+    } // namespace Droid
+    } // namespace Elastos
 
 }

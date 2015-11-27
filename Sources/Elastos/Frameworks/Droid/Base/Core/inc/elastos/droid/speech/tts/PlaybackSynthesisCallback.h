@@ -58,36 +58,36 @@ public:
     CARAPI Error();
 
 private:
-    static const CString TAG;// = "PlaybackSynthesisRequest";
-    static const Boolean DBG;// = FALSE;
+    static const String TAG;            // = "PlaybackSynthesisRequest";
+    static const Boolean DBG;           // = FALSE;
 
-    static const Int32 MIN_AUDIO_BUFFER_SIZE;// = 8192;
+    static const Int32 MIN_AUDIO_BUFFER_SIZE;       // = 8192;
 
     /**
      * Audio stream type. Must be one of the STREAM_ contants defined in
      * {@link android.media.AudioManager}.
      */
-    /*const*/ Int32 mStreamType;// = 0;
+    Int32 mStreamType;                    // = 0;
 
     /**
      * Volume, in the range [0.0f, 1.0f]. The default value is
      * {@link TextToSpeech.Engine#DEFAULT_VOLUME} (1.0f).
      */
-    /*const*/ Float mVolume;// = 0.0;
+    Float mVolume;                        // = 0.0;
 
     /**
      * Left/right position of the audio, in the range [-1.0f, 1.0f].
      * The default value is {@link TextToSpeech.Engine#DEFAULT_PAN} (0.0f).
      */
-    /*const*/ Float mPan;// = 0.0;
+    Float mPan;// = 0.0;
 
     /**
      * Guards {@link #mAudioTrackHandler}, {@link #mItem} and {@link #mStopped}.
      */
-    /*const*/ Object mStateLock;
+    Object mStateLock;
 
     // Handler associated with a thread that plays back audio requests.
-    /*const*/ AutoPtr<AudioPlaybackHandler> mAudioTrackHandler;
+    AutoPtr<AudioPlaybackHandler> mAudioTrackHandler;
     // A request "token", which will be non null after start() has been called.
     AutoPtr<SynthesisPlaybackQueueItem> mItem;// = NULL;
     // Whether this request has been stopped. This is useful for keeping
@@ -95,11 +95,11 @@ private:
     // a non-null value of mItem will provide the same information.
     Boolean mStopped;// = FALSE;
 
-    volatile Boolean mDone;// = FALSE;
+    volatile Boolean mDone;             // = FALSE;
 
-    /*const*/ AutoPtr<ITextToSpeechServiceUtteranceProgressDispatcher> mDispatcher;
-    /*const*/ AutoPtr<IInterface> mCallerIdentity;
-    /*const*/ AutoPtr<EventLogger> mLogger;
+    AutoPtr<ITextToSpeechServiceUtteranceProgressDispatcher> mDispatcher;
+    AutoPtr<IInterface> mCallerIdentity;
+    AutoPtr<EventLogger> mLogger;
 };
 
 } // namespace Tts
