@@ -80,7 +80,7 @@ module
          */
         GetLocalePrefForEngine(
             [in] String engineName,
-            [out] ILocale* ret);
+            [out] ILocale** ret);
 
         /**
          * Returns the default locale for a given TTS engine from given settings string.
