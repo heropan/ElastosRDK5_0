@@ -37,7 +37,7 @@ class LocalActivityManager
 public:
     // Internal token for an Activity being managed by LocalActivityManager.
     class LocalActivityRecord
-        : public Object,
+        : public Object
         , public ILocalActivityRecord
         , public IBinder
     {
@@ -51,6 +51,9 @@ public:
         CARAPI constructor(
             /* [in] */ const String& _id,
             /* [in] */ IIntent* _intent);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
         String mId;                // Unique name of this record.
         AutoPtr<IIntent> mIntent;                  // Which activity to run here.
@@ -291,12 +294,12 @@ private:
         /* [in] */ Int32 desiredState);
 
 public:
-    static const Int32 RESTORED = 0;      // State restored, but no StartActivity().
-    static const Int32 INITIALIZING = 1;  // Ready to launch (after StartActivity()).
-    static const Int32 CREATED = 2;       // Created, not started or resumed.
-    static const Int32 STARTED = 3;       // Created and started, not resumed.
-    static const Int32 RESUMED = 4;       // Created started and resumed.
-    static const Int32 DESTROYED = 5;     // No longer with us.
+    static const Int32 RESTORED;      // State restored, but no StartActivity().
+    static const Int32 INITIALIZING;  // Ready to launch (after StartActivity()).
+    static const Int32 CREATED;       // Created, not started or resumed.
+    static const Int32 STARTED;       // Created and started, not resumed.
+    static const Int32 RESUMED;       // Created started and resumed.
+    static const Int32 DESTROYED;     // No longer with us.
 
 private:
     static const String TAG;

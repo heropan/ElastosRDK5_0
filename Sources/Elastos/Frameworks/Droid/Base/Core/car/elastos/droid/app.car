@@ -632,6 +632,24 @@ module
         interface IActivityNonConfigurationInstances;
     }
 
+    [local]
+    class CLocalActivityManager {
+        constructor(
+            [in] IActivity* parent,
+            [in] Boolean singleMode);
+
+        interface ILocalActivityManager;
+    }
+
+    class CLocalActivityRecord {
+        constructor(
+            [in] String _id,
+            [in] IIntent* _intent);
+
+        interface ILocalActivityRecord;
+        interface IBinder;
+    }
+
     [local, parcelable]
     class CActionKeyInfo{
         constructor();
@@ -1372,13 +1390,13 @@ module
         interface IBinder;
     }
 
-//     [local]
-//     class CStatusBarManager {
-//         constructor(
-//             [in] IContext* ctx);
+    [local]
+    class CStatusBarManager {
+        constructor(
+            [in] IContext* ctx);
 
-//         interface IStatusBarManager;
-//     }
+        interface IStatusBarManager;
+    }
 
     class CTaskStackBuilder {
         constructor(

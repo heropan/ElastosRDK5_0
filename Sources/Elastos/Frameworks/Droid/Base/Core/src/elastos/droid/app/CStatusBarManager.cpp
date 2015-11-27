@@ -1,16 +1,21 @@
 
-#include "CStatusBarManager.h"
+#include "elastos/droid/app/CStatusBarManager.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/CBinder.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::CBinder;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
+
+CAR_INTERFACE_IMPL(CStatusBarManager, Object, IStatusBarManager)
+
+CAR_OBJECT_IMPL(CStatusBarManager)
 
 CStatusBarManager::CStatusBarManager()
 {
@@ -134,7 +139,7 @@ ECode CStatusBarManager::SetIconVisibility(
 }
 
 String CStatusBarManager::WindowStateToString(
-    /* [in] */ Int32 state);
+    /* [in] */ Int32 state)
 {
     if (state == WINDOW_STATE_HIDING) return String("WINDOW_STATE_HIDING");
     if (state == WINDOW_STATE_HIDDEN) return String("WINDOW_STATE_HIDDEN");

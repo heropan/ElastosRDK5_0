@@ -1,6 +1,6 @@
 
 #include "elastos/droid/app/ActivityGroup.h"
-//#include "elastos/droid/app/CLocalActivityManager.h"
+#include "elastos/droid/app/CLocalActivityManager.h"
 
 namespace Elastos {
 namespace Droid {
@@ -19,15 +19,14 @@ ActivityGroup::~ActivityGroup()
 
 ECode ActivityGroup::constructor()
 {
-    return constructor(true);
+    return constructor(TRUE);
 }
 
 ECode ActivityGroup::constructor(
     /* [in] */ Boolean singleActivityMode)
 {
-    assert(0 && "TODO");
-    // CLocalActivityManager::New(IActivity::Probe(this),
-    //     singleActivityMode, (ILocalActivityManager**)&mLocalActivityManager);
+    CLocalActivityManager::New(IActivity::Probe(this),
+        singleActivityMode, (ILocalActivityManager**)&mLocalActivityManager);
     return NOERROR;
 }
 

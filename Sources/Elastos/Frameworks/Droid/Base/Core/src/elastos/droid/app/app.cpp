@@ -17,10 +17,13 @@
 #include "elastos/droid/app/CLauncherActivityListItem.h"
 #include "elastos/droid/app/CListActivity.h"
 #include "elastos/droid/app/CListFragment.h"
+#include "elastos/droid/app/CLocalActivityManager.h"
+#include "elastos/droid/app/CLocalActivityRecord.h"
 #include "elastos/droid/app/CMediaRouteButton.h"
 #include "elastos/droid/app/CNotificationManager.h"
 #include "elastos/droid/app/CBuilderRemoteViews.h"
 #include "elastos/droid/app/CRemoteInputBuilder.h"
+//#include "elastos/droid/app/CTabActivity.h"
 #include "elastos/droid/app/CUiAutomation.h"
 #include "elastos/droid/app/CUiAutomationConnection.h"
 #include "elastos/droid/app/CVoiceInteractor.h"
@@ -52,10 +55,13 @@ CAR_OBJECT_IMPL(CLauncherActivityListItem)
 CAR_OBJECT_IMPL(CLauncherActivityIconResizer)
 CAR_OBJECT_IMPL(CListActivity)
 CAR_OBJECT_IMPL(CListFragment)
+CAR_OBJECT_IMPL(CLocalActivityManager)
+CAR_OBJECT_IMPL(CLocalActivityRecord)
 CAR_OBJECT_IMPL(CMediaRouteButton)
 CAR_OBJECT_IMPL(CNotificationManager)
 CAR_OBJECT_IMPL(CBuilderRemoteViews)
 CAR_OBJECT_IMPL(CRemoteInputBuilder)
+//CAR_OBJECT_IMPL(CTabActivity)
 CAR_OBJECT_IMPL(CUiAutomation)
 CAR_OBJECT_IMPL(CUiAutomationConnection)
 CAR_OBJECT_IMPL(CVoiceInteractor)

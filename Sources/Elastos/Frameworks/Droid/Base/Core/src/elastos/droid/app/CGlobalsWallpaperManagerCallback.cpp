@@ -60,6 +60,7 @@ ECode CGlobalsWallpaperManagerCallback::OnWallpaperChanged()
         mWallpaper = NULL;
         mDefaultWallpaper = NULL;
     }
+    return NOERROR;
 }
 
 AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::PeekWallpaperBitmap(

@@ -1,13 +1,23 @@
 #include "elastos/droid/app/LocalActivityManager.h"
+#include "elastos/droid/app/CLocalActivityManager.h"
+#include "elastos/droid/app/CLocalActivityRecord.h"
+#include "elastos/droid/app/CActivityNonConfigurationInstances.h"
+#include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/os/CActivityThread.h"
-#include "elastos/droid/utility/CArrayMap.h>"
+#include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/core/CoreUtils.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Utility::CArrayList;
 using Elastos::Core::CoreUtils;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -26,13 +36,19 @@ LocalActivityManager::LocalActivityRecord::LocalActivityRecord()
 LocalActivityManager::LocalActivityRecord::~LocalActivityRecord()
 {}
 
-ECode LocalActivityManager::LocalActivityRecord::::constructor(
+ECode LocalActivityManager::LocalActivityRecord::constructor(
     /* [in] */ const String& _id,
     /* [in] */ IIntent* _intent)
 {
     mId = _id;
     mIntent = _intent;
     return NOERROR;
+}
+
+ECode LocalActivityManager::LocalActivityRecord::ToString(
+    /* [out] */ String* info)
+{
+    return Object::ToString(info);
 }
 
 //==========================================================
@@ -64,7 +80,7 @@ ECode LocalActivityManager::constructor(
     /* [in] */ IActivity* parent,
     /* [in] */ Boolean singleMode)
 {
-    mActivityThread = CActivityThread::CurrentActivityThread();
+    mActivityThread = CActivityThread::GetCurrentActivityThread();
     mParent = parent;
     mSingleMode = singleMode;
     return NOERROR;
@@ -86,7 +102,8 @@ ECode LocalActivityManager::MoveToState(
         mParent->GetLastNonConfigurationChildInstances((IHashMap**)&lastNonConfigurationInstances);
         AutoPtr<IInterface> instanceObj;
         if (lastNonConfigurationInstances != NULL) {
-            lastNonConfigurationInstances->Get(r->mId, (IInterface**)&instanceObj);
+            AutoPtr<ICharSequence> seq = CoreUtils::Convert(r->mId);
+            lastNonConfigurationInstances->Get(seq.Get(), (IInterface**)&instanceObj);
         }
         AutoPtr<IActivityNonConfigurationInstances> instance;
         if (instanceObj != NULL) {
@@ -96,7 +113,7 @@ ECode LocalActivityManager::MoveToState(
 
         // We need to have always created the activity.
         if (localLOGV) Logger::V(TAG, "%s: starting %s",
-            , r->mId.string(), Object::ToString(r->mIntent).string());
+            r->mId.string(), Object::ToString(r->mIntent).string());
 
         if (r->mActivityInfo == NULL) {
             mActivityThread->ResolveActivityInfo(r->mIntent, (IActivityInfo**)&r->mActivityInfo);
@@ -113,7 +130,8 @@ ECode LocalActivityManager::MoveToState(
 
         if (desiredState == RESUMED) {
             if (localLOGV) Logger::V(TAG, "%s: resuming", r->mId.string());
-            mActivityThread->PerformResumeActivity(r, TRUE);
+            AutoPtr<IActivityClientRecord> tmp;
+            mActivityThread->PerformResumeActivity(IBinder::Probe(record), TRUE, (IActivityClientRecord**)&tmp);
             r->mCurState = RESUMED;
         }
 
@@ -123,20 +141,21 @@ ECode LocalActivityManager::MoveToState(
         // of our own (it is now STARTED, while we are only CREATED).
         // If we just leave things as-is, we'll deal with it as the
         // group's state catches up.
-        return;
+        return NOERROR;
     }
 
     switch (r->mCurState) {
         case CREATED:
             if (desiredState == STARTED) {
                 if (localLOGV) Logger::V(TAG, "%s: restarting", r->mId.string());
-                mActivityThread->PerformRestartActivity(r);
+                mActivityThread->PerformRestartActivity(IBinder::Probe(record));
                 r->mCurState = STARTED;
             }
             if (desiredState == RESUMED) {
                 if (localLOGV) Logger::V(TAG, "%s : restarting and resuming", r->mId.string());
-                mActivityThread->PerformRestartActivity(r);
-                mActivityThread->PerformResumeActivity(r, TRUE);
+                mActivityThread->PerformRestartActivity(IBinder::Probe(record));
+                AutoPtr<IActivityClientRecord> tmp;
+                mActivityThread->PerformResumeActivity(IBinder::Probe(record), TRUE, (IActivityClientRecord**)&tmp);
                 r->mCurState = RESUMED;
             }
             return NOERROR;
@@ -145,13 +164,14 @@ ECode LocalActivityManager::MoveToState(
             if (desiredState == RESUMED) {
                 // Need to resume it...
                 if (localLOGV) Logger::V(TAG, "%s : resuming", r->mId.string());
-                mActivityThread->PerformResumeActivity(r, TRUE);
+                AutoPtr<IActivityClientRecord> tmp;
+                mActivityThread->PerformResumeActivity(IBinder::Probe(record), TRUE, (IActivityClientRecord**)&tmp);
                 r->mInstanceState = NULL;
                 r->mCurState = RESUMED;
             }
             if (desiredState == CREATED) {
                 if (localLOGV) Logger::V(TAG, "%s : stopping", r->mId.string());
-                mActivityThread->PerformStopActivity(r, FALSE);
+                mActivityThread->PerformStopActivity(IBinder::Probe(record), FALSE);
                 r->mCurState = CREATED;
             }
             return NOERROR;
@@ -166,7 +186,7 @@ ECode LocalActivityManager::MoveToState(
                 if (localLOGV) Logger::V(TAG, "%s : pausing", r->mId.string());
                 PerformPause(r, mFinishing);
                 if (localLOGV) Logger::V(TAG, "%s : stopping", r->mId.string());
-                mActivityThread->PerformStopActivity(r, FALSE);
+                mActivityThread->PerformStopActivity(IBinder::Probe(record), FALSE);
                 r->mCurState = CREATED;
             }
             return NOERROR;
@@ -175,12 +195,13 @@ ECode LocalActivityManager::MoveToState(
 }
 
 ECode LocalActivityManager::PerformPause(
-    /* [in] */ ILocalActivityRecord* r,
+    /* [in] */ ILocalActivityRecord* record,
     /* [in] */ Boolean finishing)
 {
+    LocalActivityRecord* r = (LocalActivityRecord*)record;
     Boolean needState = r->mInstanceState == NULL;
     AutoPtr<IBundle> instanceState;
-    mActivityThread->PerformPauseActivity(r, finishing, needState, (IBundle**)&instanceState);
+    mActivityThread->PerformPauseActivity(IBinder::Probe(record), finishing, needState, (IBundle**)&instanceState);
     if (needState) {
         r->mInstanceState = instanceState;
     }
@@ -204,10 +225,10 @@ ECode LocalActivityManager::StartActivity(
     Boolean sameIntent = FALSE;
 
     AutoPtr<IActivityInfo> aInfo;
-
+    AutoPtr<ICharSequence> idObj = CoreUtils::Convert(id);
     // Already have information about the new activity id?
     AutoPtr<IInterface> obj;
-    mActivities->Get(id, (IInterface**)&obj);
+    mActivities->Get(obj, (IInterface**)&obj);
     LocalActivityRecord* r = (LocalActivityRecord*)ILocalActivityRecord::Probe(obj);
     if (r == NULL) {
         // Need to create it...
@@ -234,12 +255,11 @@ ECode LocalActivityManager::StartActivity(
 
         // If there was a previous activity, and it is not the current
         // activity, we need to stop it.
-        if (old != NULL && old != ILocalActivityRecord::Probe(r) && mCurState == RESUMED) {
+        if (old != NULL && old.Get() != ILocalActivityRecord::Probe(obj) && mCurState == RESUMED) {
             MoveToState(old, STARTED);
         }
     }
 
-    AutoPtr<ICharSequence> idObj = CoreUtils::Convert(id);
     if (adding) {
         // It's a brand new world.
         mActivities->Put(idObj.Get(), TO_IINTERFACE(r));
@@ -249,23 +269,23 @@ ECode LocalActivityManager::StartActivity(
         // If the new activity is the same as the current one, then
         // we may be able to reuse it.
         String n1, n2, p1, p2;
-        aInfo->GetName(&n1);
-        r->mActivityInfo->GetName(&n2);
-        aInfo->GetPackageName(&p1);
-        r->mActivityInfo->GetPackageName(&p2);
+        IPackageItemInfo::Probe(aInfo)->GetName(&n1);
+        IPackageItemInfo::Probe(r->mActivityInfo)->GetName(&n2);
+        IPackageItemInfo::Probe(aInfo)->GetPackageName(&p1);
+        IPackageItemInfo::Probe(r->mActivityInfo)->GetPackageName(&p2);
         Int32 mode, flags;
         aInfo->GetLaunchMode(&mode);
         aInfo->GetFlags(&flags);
 
         if (aInfo == r->mActivityInfo || (n1.Equals(n2) && p1.Equals(p2))) {
             if (mode != IActivityInfo::LAUNCH_MULTIPLE
-                || (flags & IIntent::FLAG_MANAGER_SINGLE_TOP) != 0) {
+                || (flags & IIntent::FLAG_ACTIVITY_SINGLE_TOP) != 0) {
                 // The activity wants onNewIntent() called.
                 AutoPtr<IArrayList> intents;
                 CArrayList::New((IArrayList**)&intents);
                 intents->Add(intent);
                 if (localLOGV) Logger::V(TAG, "%s : new intent", r->mId.string());
-                mActivityThread->PerformNewIntents(r, intents);
+                mActivityThread->PerformNewIntents(IBinder::Probe(obj), IList::Probe(intents));
                 r->mIntent = intent;
                 MoveToState(r, mCurState);
                 if (mSingleMode) {
@@ -277,7 +297,7 @@ ECode LocalActivityManager::StartActivity(
             }
 
             aInfo->GetFlags(&flags);
-            if (sameIntent && (flags & IIntent::FLAG_MANAGER_CLEAR_TOP) == 0) {
+            if (sameIntent && (flags & IIntent::FLAG_ACTIVITY_CLEAR_TOP) == 0) {
                 // We are showing the same thing, so this activity is
                 // just resumed and stays as-is.
                 r->mIntent = intent;
@@ -314,15 +334,17 @@ ECode LocalActivityManager::StartActivity(
 }
 
 AutoPtr<IWindow> LocalActivityManager::PerformDestroy(
-    /* [in] */ ILocalActivityRecord* r,
+    /* [in] */ ILocalActivityRecord* record,
     /* [in] */ Boolean finish)
 {
+    LocalActivityRecord* r = (LocalActivityRecord*)record;
     AutoPtr<IWindow> win = r->mWindow;
     if (r->mCurState == RESUMED && !finish) {
         PerformPause(r, finish);
     }
     if (localLOGV) Logger::V(TAG, "%s : destroying", r->mId.string());
-    mActivityThread->PerformDestroyActivity(r, finish);
+    AutoPtr<IActivityClientRecord> tmp;
+    mActivityThread->PerformDestroyActivity(IBinder::Probe(record), finish, (IActivityClientRecord**)&tmp);
     r->mActivity = NULL;
     r->mWindow = NULL;
     if (finish) {
@@ -342,11 +364,11 @@ ECode LocalActivityManager::DestroyActivity(
 
     AutoPtr<ICharSequence> idObj = CoreUtils::Convert(id);
     AutoPtr<IInterface> obj;
-    mActivities->Get(id, (IInterface**)&obj);
+    mActivities->Get(idObj, (IInterface**)&obj);
     LocalActivityRecord* r = (LocalActivityRecord*)ILocalActivityRecord::Probe(obj);
     AutoPtr<IWindow> win;
     if (r != NULL) {
-        PerformDestroy(r, finish, (IWindow**)&win);
+        win = PerformDestroy(r, finish);
         if (finish) {
             mActivities->Remove(idObj);
             mActivityArray->Remove(obj);
@@ -390,7 +412,7 @@ ECode LocalActivityManager::GetActivity(
 
     AutoPtr<ICharSequence> idObj = CoreUtils::Convert(id);
     AutoPtr<IInterface> obj;
-    mActivities->Get(id, (IInterface**)&obj);
+    mActivities->Get(idObj, (IInterface**)&obj);
 
     if (obj != NULL) {
         LocalActivityRecord* r = (LocalActivityRecord*)ILocalActivityRecord::Probe(obj);
@@ -404,8 +426,8 @@ ECode LocalActivityManager::DispatchCreate(
     /* [in] */ IBundle* state)
 {
     if (state != NULL) {
-        AutoPtr<IKeySet> keyset;
-        state->GetKeySet((IKeySet**)&keyset);
+        AutoPtr<ISet> keyset;
+        state->GetKeySet((ISet**)&keyset);
         AutoPtr<IIterator> it;
         keyset->GetIterator((IIterator**)&it);
         Boolean hasNext;
@@ -425,7 +447,7 @@ ECode LocalActivityManager::DispatchCreate(
                 }
                 else {
                     AutoPtr<ILocalActivityRecord> record;
-                    CLocalActivityRecord::New(id, NULL, (ILocalActivityRecord**)&record)
+                    CLocalActivityRecord::New(id, NULL, (ILocalActivityRecord**)&record);
                     r = (LocalActivityRecord*)record.Get();
                     r->mInstanceState = astate;
                     mActivities->Put(idObj, record.Get());
@@ -456,7 +478,7 @@ ECode LocalActivityManager::SaveInstanceState(
     mActivityArray->GetSize(&N);
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IInterface> obj;
-        mActivities->Get(id, (IInterface**)&obj);
+        mActivityArray->Get(i, (IInterface**)&obj);
         LocalActivityRecord* r = (LocalActivityRecord*)ILocalActivityRecord::Probe(obj);
         if (state == NULL) {
             CBundle::New((IBundle**)&state);
@@ -532,16 +554,18 @@ ECode LocalActivityManager::DispatchPause(
 ECode LocalActivityManager::DispatchStop()
 {
     mCurState = CREATED;
+    Int32 N;
     mActivityArray->GetSize(&N);
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IInterface> obj;
         mActivityArray->Get(i, (IInterface**)&obj);
         MoveToState(ILocalActivityRecord::Probe(obj), CREATED);
     }
+    return NOERROR;
 }
 
 ECode LocalActivityManager::DispatchRetainNonConfigurationInstance(
-    /* [out] */ IHashMap** map);
+    /* [out] */ IHashMap** map)
 {
     VALIDATE_NOT_NULL(map)
     *map = NULL;
@@ -582,14 +606,15 @@ ECode LocalActivityManager::DispatchDestroy(
     /* [in] */ Boolean finishing)
 {
     Int32 N;
-    mActivityArray->GetSize(&size);
+    mActivityArray->GetSize(&N);
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IInterface> obj;
         mActivityArray->Get(i, (IInterface**)&obj);
         LocalActivityRecord* r = (LocalActivityRecord*)ILocalActivityRecord::Probe(obj);
 
         if (localLOGV) Logger::V(TAG, "%s : destroying", r->mId.string());
-        mActivityThread->PerformDestroyActivity(IBinder::Probe(obj, finishing);
+        AutoPtr<IActivityClientRecord> tmp;
+        mActivityThread->PerformDestroyActivity(IBinder::Probe(obj), finishing, (IActivityClientRecord**)&tmp);
     }
     mActivities->Clear();
     mActivityArray->Clear();
