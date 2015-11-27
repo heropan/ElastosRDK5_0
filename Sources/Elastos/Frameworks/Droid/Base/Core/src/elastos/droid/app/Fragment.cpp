@@ -345,7 +345,7 @@ Fragment::Fragment()
 Fragment::~Fragment()
 {}
 
-ECode Fragment::Initialize()
+ECode Fragment::constructor()
 {
     return NOERROR;
 }

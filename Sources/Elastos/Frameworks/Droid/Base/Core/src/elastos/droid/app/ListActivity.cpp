@@ -1,12 +1,13 @@
 
 #include "elastos/droid/app/ListActivity.h"
 #include "elastos/droid/R.h"
-#ifdef DROID_CORE
 #include "elastos/droid/os/CHandler.h"
-#endif
+#include <elastos/core/AutoLock.h>
 
+using Elastos::Droid::R;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::Widget::IAdapter;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
 
 namespace Elastos {
@@ -17,12 +18,12 @@ namespace App {
 // ListActivity::MyListener
 //====================================================
 
+CAR_INTERFACE_IMPL(ListActivity::MyListener, Object, IAdapterViewOnItemClickListener)
+
 ListActivity::MyListener::MyListener(
     /* [in] */ ListActivity* host)
     : mHost(host)
 {}
-
-CAR_INTERFACE_IMPL(ListActivity::MyListener, IAdapterViewOnItemClickListener)
 
 ECode ListActivity::MyListener::OnItemClick(
     /* [in] */ IAdapterView* parent,
@@ -32,7 +33,6 @@ ECode ListActivity::MyListener::OnItemClick(
 {
     return mHost->OnListItemClick(IListView::Probe(parent), v, position, id);
 }
-
 
 //====================================================
 // ListActivity::RequestRunnable
@@ -45,13 +45,14 @@ ListActivity::RequestRunnable::RequestRunnable(
 
 ECode ListActivity::RequestRunnable::Run()
 {
-    return (IViewParent::Probe(mHost->mList))->FocusableViewAvailable(mHost->mList);
+    return (IViewParent::Probe(mHost->mList))->FocusableViewAvailable(IView::Probe(mHost->mList));
 }
 
 
 //====================================================
 // ListActivity
 //====================================================
+CAR_INTERFACE_IMPL(ListActivity, Activity, IListActivity)
 
 ListActivity::ListActivity()
     : mFinishedStart(FALSE)
@@ -64,50 +65,9 @@ ListActivity::ListActivity()
 ListActivity::~ListActivity()
 {}
 
-PInterface ListActivity::Probe(
-    /* [in] */ REIID riid)
+ECode ListActivity::constructor()
 {
-    if (riid == EIID_IListActivity) {
-        return (IListActivity*)this;
-    }
-    return Activity::Probe(riid);
-}
-
-UInt32 ListActivity::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ListActivity::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ListActivity::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == (IInterface *)(IListActivity *)this) {
-        *pIID = EIID_IListActivity;
-        return NOERROR;
-    }
-    return ListActivity::GetInterfaceID(pObject, pIID);
-}
-
-ECode ListActivity::GetBaseContext(
-    /* [out] */ IContext** ctx)
-{
-    return Activity::GetBaseContext(ctx);
-}
-
-ECode ListActivity::ApplyOverrideConfiguration(
-    /* [in] */ IConfiguration* overrideConfiguration)
-{
-    return Activity::ApplyOverrideConfiguration(overrideConfiguration);
+    return Activity::constructor();
 }
 
 ECode ListActivity::OnContentChanged()
@@ -122,9 +82,9 @@ ECode ListActivity::OnContentChanged()
         return E_RUNTIME_EXCEPTION;
     }
     if (emptyView != NULL) {
-        mList->SetEmptyView(emptyView);
+        IAdapterView::Probe(mList)->SetEmptyView(emptyView);
     }
-    mList->SetOnItemClickListener(mOnClickListener);
+    IAdapterView::Probe(mList)->SetOnItemClickListener(mOnClickListener);
     if (mFinishedStart) {
         SetListAdapter(mAdapter);
     }
@@ -139,36 +99,36 @@ ECode ListActivity::SetListAdapter(
     /* [in] */ IListAdapter* adapter)
 {
     AutoLock lock(mLock);
-    EnsureList();
+    FAIL_RETURN(EnsureList())
     mAdapter = adapter;
-    return mList->SetAdapter(adapter);
+    return IAdapterView::Probe(mList)->SetAdapter(IAdapter::Probe(adapter));
 }
 
 ECode ListActivity::SetSelection(
     /* [in] */ Int32 position)
 {
-    return mList->SetSelection(position);
+    return IAdapterView::Probe(mList)->SetSelection(position);
 }
 
 ECode ListActivity::GetSelectedItemPosition(
     /* [our] */ Int32* pos)
 {
     VALIDATE_NOT_NULL(pos)
-    return mList->GetSelectedItemPosition(pos);
+    return IAdapterView::Probe(mList)->GetSelectedItemPosition(pos);
 }
 
 ECode ListActivity::GetSelectedItemId(
     /* [our] */ Int64* id)
 {
     VALIDATE_NOT_NULL(id)
-    return mList->GetSelectedItemId(id);
+    return IAdapterView::Probe(mList)->GetSelectedItemId(id);
 }
 
 ECode ListActivity::GetListView(
     /* [out] */ IListView** listView)
 {
     VALIDATE_NOT_NULL(listView)
-    EnsureList();
+    FAIL_RETURN(EnsureList())
     *listView = mList;
     REFCOUNT_ADD(*listView)
     return NOERROR;
@@ -195,7 +155,7 @@ ECode ListActivity::OnListItemClick(
 ECode ListActivity::OnRestoreInstanceState(
     /* [in] */ IBundle* state)
 {
-    EnsureList();
+    FAIL_RETURN(EnsureList())
     return Activity::OnRestoreInstanceState(state);
 }
 
@@ -205,12 +165,12 @@ ECode ListActivity::OnDestroy()
     return Activity::OnDestroy();
 }
 
-void ListActivity::EnsureList()
+ECode ListActivity::EnsureList()
 {
     if (mList != NULL) {
-        return;
+        return NOERROR;
     }
-    Activity::SetContentView(R::layout::list_content_simple);
+    return Activity::SetContentView(R::layout::list_content_simple);
 }
 
 } // namespace App

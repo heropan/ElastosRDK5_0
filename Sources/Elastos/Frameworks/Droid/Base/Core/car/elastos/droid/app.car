@@ -161,6 +161,7 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntentReceiver;
     interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Content.Pm.IPackageManager;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
@@ -1176,6 +1177,52 @@ module
 
     singleton class CFragmentHelper {
         interface IFragmentHelper;
+    }
+
+    class CListActivity {
+        constructor();
+
+        interface IListActivity;
+        interface IActivity;
+        interface IContext;
+        interface IContextThemeWrapper;
+        interface ILayoutInflaterFactory;
+        interface ILayoutInflaterFactory2;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IOnWindowDismissedCallback;
+    }
+
+    class CListFragment {
+        constructor();
+
+        interface IListFragment;
+        interface IFragment;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IViewOnCreateContextMenuListener;
+    }
+
+    [local]
+    class CLauncherActivityListItem {
+        constructor();
+
+        constructor(
+            [in] IPackageManager* pm,
+            [in] IResolveInfo* resolveInfo,
+            [in] ILauncherActivityIconResizer* resizer);
+
+        interface ILauncherActivityListItem;
+    }
+
+    class CLauncherActivityIconResizer {
+        constructor(
+            [in] ILauncherActivity* host);
+
+        interface ILauncherActivityIconResizer;
     }
 
 //     [local]

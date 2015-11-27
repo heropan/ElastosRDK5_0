@@ -117,11 +117,11 @@ public:
         /* [out] */ IListAdapter** listadapter);
 
 private:
-    CARAPI_(void) SetListShown(
+    CARAPI SetListShown(
         /* [in] */ Boolean shown,
         /* [in] */ Boolean animate);
 
-    CARAPI_(void) EnsureList();
+    CARAPI EnsureList();
 
 public:
     AutoPtr<IListAdapter> mAdapter;

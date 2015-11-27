@@ -88,7 +88,7 @@ ECode TaskDrainer::constructor(
 ECode TaskDrainer::TaskStarted(
     /* [in] */ IInterface* task)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (VERBOSE) {
             StringBuilder sb;
             sb += TAG;
@@ -122,7 +122,7 @@ ECode TaskDrainer::TaskStarted(
 ECode TaskDrainer::TaskFinished(
     /* [in] */ IInterface* task)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (VERBOSE) {
             StringBuilder sb;
             sb += TAG;
@@ -152,7 +152,7 @@ ECode TaskDrainer::TaskFinished(
 
 ECode TaskDrainer::BeginDrain()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (!mDraining) {
             if (VERBOSE) {
                 StringBuilder sb;

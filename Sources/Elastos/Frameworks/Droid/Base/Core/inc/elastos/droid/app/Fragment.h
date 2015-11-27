@@ -127,7 +127,7 @@ public:
 
     virtual ~Fragment();
 
-    CARAPI Initialize();
+    CARAPI constructor();
 
     CARAPI GetState(
         /* [out] */ Int32* state);

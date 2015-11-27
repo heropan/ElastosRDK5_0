@@ -891,7 +891,7 @@ module
         OnLowMemory();
 
         OnTrimMemory(
-            [in] Int32* level);
+            [in] Int32 level);
 
         /**
          * Called when the view previously created by {@link #onCreateView} has
@@ -1358,8 +1358,7 @@ module
             [out] Boolean* result);
 
         PerformOptionsMenuClosed(
-            [in] IMenu* item,
-            [out] Boolean* result);
+            [in] IMenu* item);
 
         PerformSaveInstanceState(
             [in] IBundle* outState);

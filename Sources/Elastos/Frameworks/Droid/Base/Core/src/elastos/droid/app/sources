@@ -96,9 +96,9 @@ SOURCES += IntentService.cpp
 SOURCES += JobSchedulerImpl.cpp
 SOURCES += CKeyguardManager.cpp
 SOURCES += COnKeyguardExitResult.cpp
-#SOURCES += LauncherActivity.cpp
-#SOURCES += ListActivity.cpp
-#SOURCES += ListFragment.cpp
+SOURCES += LauncherActivity.cpp
+SOURCES += ListActivity.cpp
+SOURCES += ListFragment.cpp
 
 SOURCES += LoadedPkg.cpp
 SOURCES += CInnerReceiver.cpp

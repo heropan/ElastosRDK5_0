@@ -13,6 +13,10 @@
 #include "elastos/droid/app/CInstrumentation.h"
 #include "elastos/droid/app/CJobSchedulerImpl.h"
 #include "elastos/droid/app/CKeyguardManagerKeyguardLock.h"
+#include "elastos/droid/app/CLauncherActivityIconResizer.h"
+#include "elastos/droid/app/CLauncherActivityListItem.h"
+#include "elastos/droid/app/CListActivity.h"
+#include "elastos/droid/app/CListFragment.h"
 #include "elastos/droid/app/CMediaRouteButton.h"
 #include "elastos/droid/app/CNotificationManager.h"
 #include "elastos/droid/app/CBuilderRemoteViews.h"
@@ -44,6 +48,10 @@ CAR_OBJECT_IMPL(CFragmentState)
 CAR_OBJECT_IMPL(CInstrumentation)
 CAR_OBJECT_IMPL(CJobSchedulerImpl)
 CAR_OBJECT_IMPL(CKeyguardManagerKeyguardLock)
+CAR_OBJECT_IMPL(CLauncherActivityListItem)
+CAR_OBJECT_IMPL(CLauncherActivityIconResizer)
+CAR_OBJECT_IMPL(CListActivity)
+CAR_OBJECT_IMPL(CListFragment)
 CAR_OBJECT_IMPL(CMediaRouteButton)
 CAR_OBJECT_IMPL(CNotificationManager)
 CAR_OBJECT_IMPL(CBuilderRemoteViews)
@@ -56,6 +64,8 @@ CAR_OBJECT_IMPL(CVoiceInteractorConfirmationRequest)
 CAR_OBJECT_IMPL(CVoiceInteractorCompleteVoiceRequest)
 CAR_OBJECT_IMPL(CVoiceInteractorAbortVoiceRequest)
 CAR_OBJECT_IMPL(CVoiceInteractorCommandRequest)
+
+
 
 
 } // namespace App

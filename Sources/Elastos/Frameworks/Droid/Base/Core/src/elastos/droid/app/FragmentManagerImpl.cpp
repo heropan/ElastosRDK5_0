@@ -2322,12 +2322,11 @@ ECode FragmentManagerImpl::DispatchOptionsMenuClosed(
     /* [in] */ IMenu* menu)
 {
     if (!mAdded.IsEmpty()) {
-        Boolean result;
         List<AutoPtr<IFragment> >::Iterator it;
         for (it = mAdded.Begin(); it != mAdded.End(); ++it) {
             AutoPtr<IFragment> f = *it;
             if (f != NULL) {
-                f->PerformOptionsMenuClosed(menu, &result);
+                f->PerformOptionsMenuClosed(menu);
             }
         }
     }

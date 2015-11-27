@@ -199,7 +199,7 @@ ArrayAdapter::~ArrayAdapter()
 ECode ArrayAdapter::Add(
     /* [in] */ IInterface* object)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
             mOriginalValues->Add(object);
         } else {
@@ -215,7 +215,7 @@ ECode ArrayAdapter::Add(
 ECode ArrayAdapter::AddAll(
     /* [in] */ ICollection* collection)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
             mOriginalValues->AddAll(collection);
         } else {
@@ -230,7 +230,7 @@ ECode ArrayAdapter::AddAll(
 ECode ArrayAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface* >* items)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         AutoPtr<ICollections> cs;
         CCollections::AcquireSingleton((ICollections**)&cs);
         if (mOriginalValues != NULL) {
@@ -249,7 +249,7 @@ ECode ArrayAdapter::Insert(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 index)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
             mOriginalValues->Add(index, object);
         } else {
@@ -264,7 +264,7 @@ ECode ArrayAdapter::Insert(
 ECode ArrayAdapter::Remove(
     /* [in] */ IInterface* object)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
             mOriginalValues->Remove(object);
         } else {
@@ -278,7 +278,7 @@ ECode ArrayAdapter::Remove(
 
 ECode ArrayAdapter::Clear()
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
             mOriginalValues->Clear();
         } else {
@@ -293,7 +293,7 @@ ECode ArrayAdapter::Clear()
 ECode ArrayAdapter::Sort(
     /* [in] */ IComparator* comparator)
 {
-    synchronized (mLock) {
+    synchronized(mLock) {
         AutoPtr<ICollections> cs;
         CCollections::AcquireSingleton((ICollections**)&cs);
         if (mOriginalValues != NULL) {
