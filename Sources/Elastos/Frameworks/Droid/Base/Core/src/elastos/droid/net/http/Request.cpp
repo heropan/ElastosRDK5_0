@@ -1,5 +1,6 @@
 
 #include "elastos/droid/net/http/Request.h"
+#include "elastos/droid/net/ReturnOutValue.h"
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IMapEntry;
@@ -42,7 +43,7 @@ Request::Request()
     , mLoadingPaused(FALSE)
 {
 #if 0 // TODO: Translate codes below
-    mClientResource = new Object();
+    CObject::New((IInterface**)&mClientResource);
 #endif
 }
 
@@ -86,14 +87,14 @@ ECode Request::SetLoadingPaused(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mClientResource);
+    synchronized(this) {
+        mLoadingPaused = pause;
 
-    mLoadingPaused = pause;
-
-    // Wake up the paused thread if we're unpausing the load.
-    if (!mLoadingPaused) {
-        // TODO:
-        // Notify();
+        // Wake up the paused thread if we're unpausing the load.
+        if (!mLoadingPaused) {
+            // TODO:
+            // Notify();
+        }
     }
 
     return NOERROR;
@@ -115,7 +116,7 @@ ECode Request::GetEventHandler(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return mEventHandler;
+    FUNC_RETURN(mEventHandler);
 #endif
 }
 
@@ -151,10 +152,16 @@ ECode Request::AddHeaders(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    HashMap<String, String>::Iterator it = headers->Begin();
-    for (; it != headers->End(); ++it) {
-        String name = it->mFirst;
-        String value = it->mSecond;
+    AutoPtr<ICollection> collection;
+    FOR_EACH(it, collection) {
+        AutoPtr<IInterface> pair;
+        it->GetNext((IInterface**)&pair);
+        ROVI(pair, GetFirst, IInterface, first);
+        ROVI(pair, GetSecond, IInterface, second);
+        String name;
+        ICharSequence::Probe(first)->ToString(&name);
+        String value;
+        ICharSequence::Probe(second)->ToString(&value)
         AddHeader(name, value);
     }
 
@@ -173,16 +180,20 @@ ECode Request::SendRequest(
 
     if (HttpLog::LOGV) {
         String name;
-        // TODO:
-        // mHost->GetSchemeName(&name);
-        HttpLog::V(String("Request.sendRequest() ") + name + String("://") + GetHostPort());
-        // if (FALSE) {
-        //     Iterator i = mHttpRequest.headerIterator();
-        //     while (i.hasNext()) {
-        //         Header header = (Header)i.next();
-        //         HttpLog.v(header.getName() + ": " + header.getValue());
-        //     }
-        // }
+        mHost->GetSchemeName(&name);
+        ROV(this, GetHostPort, [] String, hostPort);
+        HttpLog::V("Request.sendRequest() %s://%s", name.string(), hostPort.string());
+        // HttpLog.v(mHttpRequest.getRequestLine().toString());
+        if (FALSE) {
+            ROVI(mHttpRequest, HeaderIterator, [] IIterator, i);
+            ROV(i, HasNext, [] Boolean, hasNext);
+            while(hasNext) {
+                ROVI(i, GetNext, [] IInterface, header);
+                ROV(IHeader::Probe(header), GetName, [] String, name);
+                ROV(header, GetValue, [] Int32, value);
+                HttpLog::V("%s: %d", name.string(), value);
+            }
+        }
     }
 
     AutoPtr<IHttpContext> context;
@@ -500,10 +511,9 @@ ECode Request::Complete()
 #endif
 }
 
-ECode Request::CanResponseHaveBody(
+Boolean Request::CanResponseHaveBody(
     /* [in] */ IHttpRequest* request,
-    /* [in] */ Int32 status,
-    /* [out] */ Boolean* result)
+    /* [in] */ Int32 status)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below

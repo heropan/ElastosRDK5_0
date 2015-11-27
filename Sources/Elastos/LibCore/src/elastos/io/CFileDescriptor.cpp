@@ -81,6 +81,14 @@ ECode CFileDescriptor::Valid(
     return NOERROR;
 }
 
+ECode CFileDescriptor::GetInt(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mDescriptor;
+    return NOERROR;
+}
+
 ECode CFileDescriptor::GetDescriptor(
     /* [out] */ Int32* fd)
 {

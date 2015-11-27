@@ -69,11 +69,6 @@ public:
         /* [in] */ Int32 netId,
         /* [out, callee] */ ArrayOf<IInetAddress*>** addresses);
 
-    static CARAPI GetAllByNameImpl(
-        /* [in] */ const String& host,
-        /* [in] */ Int32 netId,
-        /* [out, callee] */ ArrayOf<IInetAddress*>** addresses);
-
     static CARAPI GetByName(
         /* [in] */ const String& host,
         /* [out] */ IInetAddress** address);
@@ -192,6 +187,11 @@ protected:
         /* [in] */ Int32 start);
 
 private:
+    static CARAPI GetAllByNameImpl(
+        /* [in] */ const String& host,
+        /* [in] */ Int32 netId,
+        /* [out, callee] */ ArrayOf<IInetAddress*>** addresses);
+
     static CARAPI LookupHostByName(
         /* [in] */ const String& host,
         /* [in] */ Int32 netId,

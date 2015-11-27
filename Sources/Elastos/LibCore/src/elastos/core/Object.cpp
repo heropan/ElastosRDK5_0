@@ -22,6 +22,11 @@ Object::~Object()
     DecrementDllLockCount();
 }
 
+ECode Object::constructor()
+{
+    return NOERROR;
+}
+
 UInt32 Object::AddRef()
 {
     return ElRefBase::AddRef();

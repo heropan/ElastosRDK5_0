@@ -40,6 +40,9 @@ public:
         /* [in] */ const String& input,
         /* [in] */ Double defValue = 0.0);
 
+    static CARAPI_(Boolean) ParseBoolean(
+        /* [in] */ const String& input);
+
     // From string with error code
     //
     static CARAPI Parse(

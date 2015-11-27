@@ -364,17 +364,16 @@ ECode RequestHandle::ProcessRequest()
 #endif
 }
 
-ECode RequestHandle::ComputeDigestAuthResponse(
+String RequestHandle::ComputeDigestAuthResponse(
     /* [in] */ const String& username,
     /* [in] */ const String& password,
     /* [in] */ const String& realm,
     /* [in] */ const String& nonce,
     /* [in] */ const String& QOP,
     /* [in] */ const String& algorithm,
-    /* [in] */ const String& opaque,
-    /* [out] */ String* result)
+    /* [in] */ const String& opaque)
 {
-    return E_NOT_IMPLEMENTED;
+    return String(NULL);
 #if 0 // TODO: Translate codes below
     if (username.IsNullOrEmpty()
         || password.IsNullOrEmpty()
@@ -434,16 +433,15 @@ ECode RequestHandle::AuthorizationHeader(
 #endif
 }
 
-ECode RequestHandle::ComputeDigest(
+String RequestHandle::ComputeDigest(
     /* [in] */ const String& A1,
     /* [in] */ const String& A2,
     /* [in] */ const String& nonce,
     /* [in] */ const String& QOP,
     /* [in] */ const String& nc,
-    /* [in] */ const String& cnonce,
-    /* [out] */ String* result)
+    /* [in] */ const String& cnonce)
 {
-    return E_NOT_IMPLEMENTED;
+    return String(NULL);
 #if 0 // TODO: Translate codes below
     if (HttpLog::LOGV) {
         HttpLog::V(String("computeDigest(): QOP: ") + QOP);
@@ -503,11 +501,10 @@ String RequestHandle::H(
 #endif
 }
 
-ECode RequestHandle::BufferToHex(
-    /* [in] */ ArrayOf<Byte>* buffer,
-    /* [out] */ String* result)
+String RequestHandle::BufferToHex(
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
-    return E_NOT_IMPLEMENTED;
+    return String(NULL);
 #if 0 // TODO: Translate codes below
     const Char16 hexChars[] =
             { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
@@ -517,14 +514,13 @@ ECode RequestHandle::BufferToHex(
         if (length > 0) {
             AutoPtr<StringBuilder> hex = new StringBuilder(2 * length);
 
-            // TODO:
-            // for (Int32 i = 0; i < length; ++i) {
-                // Byte l = (Byte) (buffer[i] & 0x0F);
-                // Byte h = (Byte)((buffer[i] & 0xF0) >> 4);
+            for (Int32 i = 0; i < length; ++i) {
+                Byte l = (Byte) (buffer[i] & 0x0F);
+                Byte h = (Byte)((buffer[i] & 0xF0) >> 4);
 
-                // hex->Append(hexChars[h]);
-                // hex->Append(hexChars[l]);
-            // }
+                hex->Append(hexChars[h]);
+                hex->Append(hexChars[l]);
+            }
 
             *str = hex->ToString();
             return NOERROR;
@@ -539,14 +535,14 @@ ECode RequestHandle::BufferToHex(
 #endif
 }
 
-ECode RequestHandle::ComputeCnonce(
-    /* [out] */ String* result)
+String RequestHandle::ComputeCnonce()
 {
-    return E_NOT_IMPLEMENTED;
+    return String(NULL);
 #if 0 // TODO: Translate codes below
-    // Random* rand = new Random();
+    AutoPtr<IRandom> rand;
+    CRandom()::New((IRandom**)&rand);
     Int32 nextInt;
-    // nextInt = rand->NextInt();
+    rand->NextInt32(&nextInt);
     nextInt = (nextInt == 0x80000000/*IInteger::MIN_VALUE*/) ?
             0x7FFFFFFF/*IInteger::MAX_VALUE*/ : Elastos::Core::Math::Abs(nextInt);
     *str = StringUtils::ToString(nextInt, 16);
@@ -554,13 +550,12 @@ ECode RequestHandle::ComputeCnonce(
 #endif
 }
 
-ECode RequestHandle::DoubleQuote(
-    /* [in] */ const String& param,
-    /* [out] */ String* result)
+String RequestHandle::DoubleQuote(
+    /* [in] */ const String& param)
 {
-    return E_NOT_IMPLEMENTED;
+    return String(NULL);
 #if 0 // TODO: Translate codes below
-    if (param != NULL) {
+    if (param != String(NULL)) {
         return String("\"") + param + String("\"");
     }
 

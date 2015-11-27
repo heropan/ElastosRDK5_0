@@ -15,7 +15,7 @@ ECode CMobileDataStateTrackerHelper::NetworkTypeToApnType(
     /* [in] */ Int32 netType,
     /* [out] */ String* result)
 {
-    return CMobileDataStateTracker::NetworkTypeToApnType(netType, result);
+    return MobileDataStateTracker::NetworkTypeToApnType(netType, result);
 }
 
 } // namespace Net

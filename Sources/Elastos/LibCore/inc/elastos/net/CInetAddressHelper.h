@@ -25,9 +25,19 @@ public:
         /* [in] */ const String& host,
         /* [out, callee] */ ArrayOf<IInetAddress*>** interAddress);
 
+    CARAPI GetAllByNameOnNet(
+        /* [in] */ const String& host,
+        /* [in] */ Int32 netId,
+        /* [out, callee] */ ArrayOf<IInetAddress*>** addresses);
+
     CARAPI GetByName(
         /* [in] */ const String& host,
         /* [out] */ IInetAddress** interAddr);
+
+    CARAPI GetByNameOnNet(
+        /* [in] */ const String& host,
+        /* [in] */ Int32 netId,
+        /* [out] */ IInetAddress** address);
 
     CARAPI GetLocalHost(
         /* [out] */ IInetAddress** interAddr);

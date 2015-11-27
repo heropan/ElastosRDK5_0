@@ -21,6 +21,8 @@ class MobileLinkQualityInfo
 public:
     CAR_INTERFACE_DECL()
 
+    MobileLinkQualityInfo();
+
     /**
      * @hide
      */
@@ -197,9 +199,13 @@ public:
     CARAPI SetLteCqi(
         /* [in] */ Int32 lteCqi);
 
-private:
-    MobileLinkQualityInfo();
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* parcel);
 
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
+
+private:
     // Represents TelephonyManager.NetworkType
     Int32 mMobileNetworkType;
 

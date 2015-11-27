@@ -73,8 +73,6 @@ class LocalSocketAddressNamespace
 public:
     CAR_INTERFACE_DECL()
 
-    Int32 mValue;
-
     ECode constructor(
         /* [in] */ Int32 id)
     {
@@ -101,6 +99,9 @@ public:
         mId = id;
         return NOERROR;
     }
+
+public:
+    Int32 mValue;
 
 private:
     /** The id matches with a #define in include/cutils/sockets.h */
