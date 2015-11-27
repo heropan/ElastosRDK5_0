@@ -42,8 +42,8 @@ ECode SyncStateContractHelpers::Get(
 
     AutoPtr<ICursor> c;
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(2);
-    FAIL_RETURN(account->GetName(&(*args)[0]))
-    FAIL_RETURN(account->GetType(&(*args)[1]))
+    account->GetName(&(*args)[0]);
+    account->GetType(&(*args)[1]);
     FAIL_RETURN(provider->Query(uri, DATA_PROJECTION, SELECT_BY_ACCOUNT, args, String(NULL), (ICursor**)&c))
 
     // Unable to query the provider
@@ -79,16 +79,16 @@ ECode SyncStateContractHelpers::Set(
     FAIL_RETURN(CContentValues::New((IContentValues**)&values))
 
     AutoPtr<IArrayOf> array;
-    FAIL_RETURN(CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array))
-    FAIL_RETURN(values->PutBytes(ISyncStateContractColumns::DATA, array))
+    CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array);
+    values->PutBytes(ISyncStateContractColumns::DATA, array);
     String name, type;
-    FAIL_RETURN(account->GetName(&name))
-    FAIL_RETURN(account->GetType(&type))
+    account->GetName(&name);
+    account->GetType(&type);
     AutoPtr<ICharSequence> cname, ctype;
-    FAIL_RETURN(CString::New(name, (ICharSequence**)&cname))
-    FAIL_RETURN(CString::New(type, (ICharSequence**)&ctype))
-    FAIL_RETURN(values->PutString(ISyncStateContractColumns::ACCOUNT_NAME, cname))
-    FAIL_RETURN(values->PutString(ISyncStateContractColumns::ACCOUNT_TYPE, ctype))
+    CString::New(name, (ICharSequence**)&cname);
+    CString::New(type, (ICharSequence**)&ctype);
+    values->PutString(ISyncStateContractColumns::ACCOUNT_NAME, cname);
+    values->PutString(ISyncStateContractColumns::ACCOUNT_TYPE, ctype);
     AutoPtr<IUri> _uri;
     return provider->Insert(uri, values, (IUri**)&_uri);
 }
@@ -103,19 +103,19 @@ ECode SyncStateContractHelpers::Insert(
     VALIDATE_NOT_NULL(retUri);
 
     AutoPtr<IContentValues> values;
-    FAIL_RETURN(CContentValues::New((IContentValues**)&values))
+    CContentValues::New((IContentValues**)&values);
 
     AutoPtr<IArrayOf> array;
-    FAIL_RETURN(CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array))
-    FAIL_RETURN(values->PutBytes(ISyncStateContractColumns::DATA, array))
+    CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array);
+    values->PutBytes(ISyncStateContractColumns::DATA, array);
     String name, type;
-    FAIL_RETURN(account->GetName(&name))
-    FAIL_RETURN(account->GetType(&type))
+    account->GetName(&name);
+    account->GetType(&type);
     AutoPtr<ICharSequence> cname, ctype;
-    FAIL_RETURN(CString::New(name, (ICharSequence**)&cname))
-    FAIL_RETURN(CString::New(type, (ICharSequence**)&ctype))
-    FAIL_RETURN(values->PutString(ISyncStateContractColumns::ACCOUNT_NAME, cname))
-    FAIL_RETURN(values->PutString(ISyncStateContractColumns::ACCOUNT_TYPE, ctype))
+    CString::New(name, (ICharSequence**)&cname);
+    CString::New(type, (ICharSequence**)&ctype);
+    values->PutString(ISyncStateContractColumns::ACCOUNT_NAME, cname);
+    values->PutString(ISyncStateContractColumns::ACCOUNT_TYPE, ctype);
     return provider->Insert(uri, values, retUri);
 }
 
@@ -125,65 +125,76 @@ ECode SyncStateContractHelpers::Update(
     /* [in] */ const ArrayOf<Byte>& data)
 {
     AutoPtr<IContentValues> values;
-    FAIL_RETURN(CContentValues::New((IContentValues**)&values))
+    CContentValues::New((IContentValues**)&values);
 
     AutoPtr<IArrayOf> array;
-    FAIL_RETURN(CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array))
+    CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array);
     FAIL_RETURN(values->PutBytes(ISyncStateContractColumns::DATA, array))
     Int32 rowsAffected;
     return provider->Update(uri, values, String(NULL), NULL, &rowsAffected);
 }
 
+ECode SyncStateContractHelpers::GetWithUri(
+   /* [in] */ IContentProviderClient* provider,
+   /* [in] */ IUri* uri,
+   /* [in] */ IAccount* account,
+   /* [out] */ IPair** value)
+{
+    VALIDATE_NOT_NULL(value);
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
 ECode SyncStateContractHelpers::NewSetOperation(
-        /* [in] */ IUri* uri,
-        /* [in] */ IAccount* account,
-        /* [in] */ const ArrayOf<Byte>& data,
-        /* [out] */ IContentProviderOperation** operation)
+    /* [in] */ IUri* uri,
+    /* [in] */ IAccount* account,
+    /* [in] */ const ArrayOf<Byte>& data,
+    /* [out] */ IContentProviderOperation** operation)
 {
     VALIDATE_NOT_NULL(operation);
 
     AutoPtr<IContentValues> values;
-    FAIL_RETURN(CContentValues::New((IContentValues**)&values))
+    CContentValues::New((IContentValues**)&values);
 
     AutoPtr<IArrayOf> array;
-    FAIL_RETURN(CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array))
-    FAIL_RETURN(values->PutBytes(ISyncStateContractColumns::DATA, array))
+    CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array);
+    values->PutBytes(ISyncStateContractColumns::DATA, array);
 
     AutoPtr<IContentProviderOperationHelper> helper;
-    FAIL_RETURN(CContentProviderOperationHelper::AcquireSingleton((IContentProviderOperationHelper**)&helper))
+    CContentProviderOperationHelper::AcquireSingleton((IContentProviderOperationHelper**)&helper);
     AutoPtr<IContentProviderOperationBuilder> builder;
-    FAIL_RETURN(helper->NewInsert(uri, (IContentProviderOperationBuilder**)&builder))
+    helper->NewInsert(uri, (IContentProviderOperationBuilder**)&builder);
 
     String name, type;
-    FAIL_RETURN(account->GetName(&name))
-    FAIL_RETURN(account->GetType(&type))
+    account->GetName(&name);
+    account->GetType(&type);
     AutoPtr<ICharSequence> cname, ctype;
-    FAIL_RETURN(CString::New(name, (ICharSequence**)&cname))
-    FAIL_RETURN(CString::New(type, (ICharSequence**)&ctype))
-    FAIL_RETURN(builder->WithValue(ISyncStateContractColumns::ACCOUNT_NAME, (IInterface*)cname))
-    FAIL_RETURN(builder->WithValue(ISyncStateContractColumns::ACCOUNT_TYPE, (IInterface*)ctype))
+    CString::New(name, (ICharSequence**)&cname);
+    CString::New(type, (ICharSequence**)&ctype);
+    builder->WithValue(ISyncStateContractColumns::ACCOUNT_NAME, (IInterface*)cname);
+    builder->WithValue(ISyncStateContractColumns::ACCOUNT_TYPE, (IInterface*)ctype);
     return builder->Build(operation);
 }
 
 ECode SyncStateContractHelpers::NewUpdateOperation(
-        /* [in] */ IUri* uri,
-        /* [in] */ const ArrayOf<Byte>& data,
-        /* [out] */ IContentProviderOperation** operation)
+    /* [in] */ IUri* uri,
+    /* [in] */ const ArrayOf<Byte>& data,
+    /* [out] */ IContentProviderOperation** operation)
 {
     VALIDATE_NOT_NULL(operation);
 
     AutoPtr<IContentValues> values;
-    FAIL_RETURN(CContentValues::New((IContentValues**)&values))
+    CContentValues::New((IContentValues**)&values);
 
     AutoPtr<IArrayOf> array;
-    FAIL_RETURN(CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array))
-    FAIL_RETURN(values->PutBytes(ISyncStateContractColumns::DATA, array))
+    CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array);
+    values->PutBytes(ISyncStateContractColumns::DATA, array);
 
     AutoPtr<IContentProviderOperationHelper> helper;
-    FAIL_RETURN(CContentProviderOperationHelper::AcquireSingleton((IContentProviderOperationHelper**)&helper))
+    CContentProviderOperationHelper::AcquireSingleton((IContentProviderOperationHelper**)&helper);
     AutoPtr<IContentProviderOperationBuilder> builder;
-    FAIL_RETURN(helper->NewUpdate(uri, (IContentProviderOperationBuilder**)&builder))
-    FAIL_RETURN(builder->WithValues(values))
+    helper->NewUpdate(uri, (IContentProviderOperationBuilder**)&builder);
+    builder->WithValues(values);
     return builder->Build(operation);
 }
 

@@ -46,25 +46,25 @@ public:
         /* [in] */ IContentProviderClient* provider,
         /* [in] */ IUri* uri,
         /* [in] */ IAccount* account,
-        /* [in] */ const ArrayOf<Byte>& data);
+        /* [in] */ ArrayOf<Byte>* data);
 
     static CARAPI Insert(
         /* [in] */ IContentProviderClient* provider,
         /* [in] */ IUri* uri,
         /* [in] */ IAccount* account,
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [out] */ IUri** retUri);
 
     static CARAPI Update(
         /* [in] */ IContentProviderClient* provider,
         /* [in] */ IUri* uri,
-        /* [in] */ const ArrayOf<Byte>& data);
+        /* [in] */ ArrayOf<Byte>* data);
 
-    //GetWithUri(
-    //    /* [in] */ IContentProviderClient* provider,
-    //    /* [in] */ IUri* uri,
-    //    /* [in] */ IAccount* account,
-    //    /* [out] */ Pair<IUri*, ArrayOf<Byte> >* value);
+    static CARAPI GetWithUri(
+       /* [in] */ IContentProviderClient* provider,
+       /* [in] */ IUri* uri,
+       /* [in] */ IAccount* account,
+       /* [out] */ IPair** value);
 
     /**
      * Creates and returns a ContentProviderOperation that assigns the data array as the
@@ -78,7 +78,7 @@ public:
     static CARAPI NewSetOperation(
         /* [in] */ IUri* uri,
         /* [in] */ IAccount* account,
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [out] */ IContentProviderOperation** operation);
 
     /**
@@ -91,7 +91,7 @@ public:
      */
     static CARAPI NewUpdateOperation(
         /* [in] */ IUri* uri,
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [out] */ IContentProviderOperation** operation);
 
 private:

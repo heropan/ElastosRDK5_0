@@ -1,41 +1,37 @@
-
+#include "elastos/droid/provider/BrowserContract.h"
 #include "elastos/droid/provider/CBrowserContractSettings.h"
 
+namespace Elastos {
+namespace Droid {
+namespace Provider {
 
-ECode CBrowserContractSettings::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CBrowserContractSettings)
+
+CAR_INTERFACE_IMPL(CBrowserContractSettings, Singleton, IBrowserContractSettings)
 
 ECode CBrowserContractSettings::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
-//    *uri =Uri.withAppendedPath(AUTHORITY_URI, "settings");
+    VALIDATE_NOT_NULL(uri);
+    *uri = BrowserContract::Settings::CONTENT_URI;
+    REFCOUNT_ADD(*uri);
+    return NOERROR;
 }
 
 ECode CBrowserContractSettings::IsSyncEnabled(
     /* [in] */ IContext* context,
     /* [out] */ Boolean* res)
 {
-//     Cursor cursor = null;
-//     try {
-//         cursor = context.getContentResolver().query(CONTENT_URI, new String[] { VALUE },
-//                 KEY + "=?", new String[] { KEY_SYNC_ENABLED }, null);
-//         if (cursor == null || !cursor.moveToFirst()) {
-//             return false;
-//         }
-//         return cursor.getInt(0) != 0;
-//     } finally {
-//         if (cursor != null) cursor.close();
-//     }
+    return BrowserContract::Settings::IsSyncEnabled(context, res);
 }
 
 ECode CBrowserContractSettings::SetSyncEnabled(
     /* [in] */ IContext* context,
     /* [in] */ Boolean enabled)
 {
-//     ContentValues values = new ContentValues();
-//     values.put(KEY, KEY_SYNC_ENABLED);
-//     values.put(VALUE, enabled ? 1 : 0);
-//     context.getContentResolver().insert(CONTENT_URI, values);
+    return BrowserContract::Settings::SetSyncEnabled(context, enabled);
 }
+
+} // namespace Provider
+} // namespace Droid
+} // namespace Elastos

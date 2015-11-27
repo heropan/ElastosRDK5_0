@@ -944,6 +944,10 @@ module
             [in] IFileDescriptor* fd,
             [in] IPrintWriter* writer,
             [in] ArrayOf<String>* args);
+
+        /** {@hide} */
+        EnforceWritePermissionInner(
+            [in] IUri* uri);
     }
 
     /**
