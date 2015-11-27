@@ -170,7 +170,7 @@ module
    //  interface Elastos.Droid.View.IOnTouchModeChangeListener;
    //  interface Elastos.Droid.View.IWindowCallback;
    //  interface Elastos.Droid.Text.ITextWatcher;
-   interface Elastos.Droid.Widget.ILinearLayoutLayoutParams;
+    interface Elastos.Droid.Widget.ILinearLayoutLayoutParams;
    //  interface Elastos.Droid.Widget.ITextView;
    //  interface Elastos.Droid.Widget.IRemoteViewsAdapterServiceConnection;
    //  interface Elastos.Droid.Widget.ISeekBarOnSeekBarChangeListener;
@@ -180,10 +180,12 @@ module
    //  interface Elastos.Droid.Media.IAudioService;
    //  interface Elastos.Droid.InputMethodService.IKeyboardView;
    //  interface Elastos.Droid.InputMethodService.IOnKeyboardActionListener;
-   interface Elastos.Droid.Widget.IAdapterView;
-   interface Elastos.Droid.Widget.IAdapterViewAnimator;
-   interface Elastos.Droid.Widget.IAdapterViewFlipper;
-   interface Elastos.Droid.Widget.ISimpleMonthView;
+    interface Elastos.Droid.Widget.IAdapterView;
+    interface Elastos.Droid.Widget.IAdapterViewAnimator;
+    interface Elastos.Droid.Widget.IAdapterViewFlipper;
+    interface Elastos.Droid.Widget.ISimpleMonthView;
+    interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
+    interface Elastos.Droid.View.Animation.IInterpolator;
 
     namespace Elastos {
     namespace Droid {
@@ -249,6 +251,12 @@ module
             [in] IContext* ctx,
             [in] IAttributeSet* attrs,
             [in] Int32 defStyle);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle,
+            [in] Int32 defStyleRes);
 
         interface IAbsoluteLayout;
         interface IViewGroup;
@@ -1886,6 +1894,36 @@ module
    //      interface INumberPickerHelper;
    //  }
 
+    [local]
+    class COverScroller{
+        constructor(
+            [in] IContext* context);
+
+        constructor(
+            [in] IContext* context,
+            [in] IInterpolator* interpolator);
+
+        constructor(
+            [in] IContext* context,
+            [in] IInterpolator* interpolator,
+            [in] Boolean flywheel);
+
+        constructor(
+            [in] IContext* context,
+            [in] IInterpolator* interpolator,
+            [in] Float bounceCoefficientX,
+            [in] Float bounceCoefficientY);
+
+        constructor(
+            [in] IContext* context,
+            [in] IInterpolator* interpolator,
+            [in] Float bounceCoefficientX,
+            [in] Float bounceCoefficientY,
+            [in] Boolean flywheel);
+
+        interface IOverScroller;
+    }
+
    //  [local]
    //  class CPopupMenu {
 
@@ -2011,51 +2049,62 @@ module
    //      interface IRatingBar;
    //  }
 
-   //  [local]
-   //  class CGridLayout {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CGridLayout {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-   //      interface IGridLayout;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
 
-   //  [local]
-   //  class CGridLayoutLayoutParams {
-   //      constructor();
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle,
+            [in] Int32 defStyleRes);
 
-   //      constructor(
-   //          [in] ISpec* rowSpec,
-   //          [in] ISpec* columnSpec);
+        interface IGridLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
-   //      constructor(
-   //          [in] IViewGroupLayoutParams* vglp);
+    [local]
+    class CGridLayoutLayoutParams {
+        constructor();
 
-   //      constructor(
-   //          [in] IViewGroupMarginLayoutParams* vmlp);
+        constructor(
+            [in] IGridLayoutSpec* rowSpec,
+            [in] IGridLayoutSpec* columnSpec);
 
-   //      constructor(
-   //          [in] IGridLayoutLayoutParams* that);
+        constructor(
+            [in] IViewGroupLayoutParams* vglp);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IViewGroupMarginLayoutParams* vmlp);
 
-   //      interface IGridLayoutLayoutParams;
-   //  }
+        constructor(
+            [in] IGridLayoutLayoutParams* that);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface IViewGroupLayoutParams;
+        interface IViewGroupMarginLayoutParams;
+        interface IGridLayoutLayoutParams;
+    }
 
    //  [local]
    //  class CViewFlipper {

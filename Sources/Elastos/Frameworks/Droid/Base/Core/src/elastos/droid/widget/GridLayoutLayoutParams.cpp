@@ -13,40 +13,13 @@ static AutoPtr<GridLayout::Interval> InitDSpan() {
     return val;
 }
 
-const Int32 GridLayoutLayoutParams::DEFAULT_WIDTH;
-const Int32 GridLayoutLayoutParams::DEFAULT_HEIGHT;
 const Int32 GridLayoutLayoutParams::DEFAULT_MARGIN = Elastos::Core::Math::INT32_MIN_VALUE;
 const Int32 GridLayoutLayoutParams::DEFAULT_ROW = Elastos::Core::Math::INT32_MIN_VALUE;
 const Int32 GridLayoutLayoutParams::DEFAULT_COLUMN = Elastos::Core::Math::INT32_MIN_VALUE;
 const AutoPtr<GridLayout::Interval> GridLayoutLayoutParams::DEFAULT_SPAN = InitDSpan();
 const Int32 GridLayoutLayoutParams::DEFAULT_SPAN_SIZE = DEFAULT_SPAN->Size();
 
-const Int32 GridLayoutLayoutParams::MARGIN;
-const Int32 GridLayoutLayoutParams::LEFT_MARGIN;
-const Int32 GridLayoutLayoutParams::TOP_MARGIN;
-const Int32 GridLayoutLayoutParams::RIGHT_MARGIN;
-const Int32 GridLayoutLayoutParams::BOTTOM_MARGIN;
-const Int32 GridLayoutLayoutParams::COLUMN;
-const Int32 GridLayoutLayoutParams::COLUMN_SPAN;
-const Int32 GridLayoutLayoutParams::ROW;
-const Int32 GridLayoutLayoutParams::ROW_SPAN;
-const Int32 GridLayoutLayoutParams::GRAVITY;
-
-GridLayoutLayoutParams::GridLayoutLayoutParams(
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height,
-    /* [in] */ Int32 left,
-    /* [in] */ Int32 top,
-    /* [in] */ Int32 right,
-    /* [in] */ Int32 bottom,
-    /* [in] */ GridLayout::Spec* rowSpec,
-    /* [in] */ GridLayout::Spec* columnSpec)
-    : ViewGroupMarginLayoutParams(width, height)
-{
-    SetMargins(left, top, right, bottom);
-    mRowSpec = rowSpec;
-    mColumnSpec = columnSpec;
-}
+CAR_INTERFACE_IMPL(GridLayoutLayoutParams, ViewGroupMarginLayoutParams, IGridLayoutLayoutParams)
 
 void GridLayoutLayoutParams::ReInitSuper(
     /* [in] */ IContext* context,
@@ -88,55 +61,23 @@ void GridLayoutLayoutParams::Init(
         a->GetInt32(COLUMN, DEFAULT_COLUMN, &column);
         Int32 colSpan = 0;
         a->GetInt32(COLUMN_SPAN, DEFAULT_SPAN_SIZE, &colSpan);
-        mColumnSpec = GridLayout::NewInstance(column, colSpan, GridLayout::GetAlignment(gravity, TRUE));
+        Float colWeight;
+        a->GetFloat(COLUMN_WEIGHT, GridLayout::Spec::DEFAULT_WEIGHT, &colWeight);
+        mColumnSpec = GridLayout::GetSpec(column, colSpan, GridLayout::GetAlignment(gravity, TRUE), colWeight);
 
         Int32 row = 0;
         a->GetInt32(ROW, DEFAULT_ROW, &row);
         Int32 rowSpan = 0;
         a->GetInt32(ROW_SPAN, DEFAULT_SPAN_SIZE, &rowSpan);
-        mRowSpec = GridLayout::NewInstance(row, rowSpan, GridLayout::GetAlignment(gravity, FALSE));
+        mRowSpec = GridLayout::GetSpec(row, rowSpan, GridLayout::GetAlignment(gravity, FALSE), colWeight);
 //    } finally {
         a->Recycle();
 //    }
 }
 
-GridLayoutLayoutParams::GridLayoutLayoutParams(
-    /* [in] */ ISpec* rowSpec,
-    /* [in] */ ISpec* columnSpec)
-{
-    Init(rowSpec, columnSpec);
-}
 
 GridLayoutLayoutParams::GridLayoutLayoutParams()
-{
-    Init(GridLayout::Spec::UNDEFINED, GridLayout::Spec::UNDEFINED);
-}
-
-GridLayoutLayoutParams::GridLayoutLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* params)
-    : ViewGroupMarginLayoutParams(params)
 {}
-
-GridLayoutLayoutParams::GridLayoutLayoutParams(
-    /* [in] */ ViewGroupMarginLayoutParams* params)
-    : ViewGroupMarginLayoutParams(params)
-{}
-
-GridLayoutLayoutParams::GridLayoutLayoutParams(
-    /* [in] */ GridLayoutLayoutParams* that)
-    : ViewGroupMarginLayoutParams(that)
-    , mRowSpec(that->mRowSpec)
-    , mColumnSpec(that->mColumnSpec)
-{}
-
-GridLayoutLayoutParams::GridLayoutLayoutParams(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : ViewGroupMarginLayoutParams(context, attrs)
-{
-    ReInitSuper(context, attrs);
-    Init(context, attrs);
-}
 
 ECode GridLayoutLayoutParams::SetGravity(
     /* [in] */ Int32 gravity)
@@ -145,6 +86,40 @@ ECode GridLayoutLayoutParams::SetGravity(
     AutoPtr<GridLayout::Spec> col = (GridLayout::Spec*)mColumnSpec.Get();
     mRowSpec = row->CopyWriteAlignment(GridLayout::GetAlignment(gravity, FALSE));
     mColumnSpec = col->CopyWriteAlignment(GridLayout::GetAlignment(gravity, TRUE));
+    return NOERROR;
+}
+
+ECode GridLayoutLayoutParams::SetRowSpec(
+    /* [in] */ IGridLayoutSpec* r)
+{
+    mRowSpec = r;
+    return NOERROR;
+}
+
+ECode GridLayoutLayoutParams::SetColumnSpec(
+    /* [in] */ IGridLayoutSpec* c)
+{
+    mColumnSpec = c;
+    return NOERROR;
+}
+
+ECode GridLayoutLayoutParams::GetRowSpec(
+    /* [out] */ IGridLayoutSpec** r)
+{
+    VALIDATE_NOT_NULL(r)
+
+    *r = mRowSpec;
+    REFCOUNT_ADD(*r)
+    return NOERROR;
+}
+
+ECode GridLayoutLayoutParams::GetColumnSpec(
+    /* [out] */ IGridLayoutSpec** c)
+{
+    VALIDATE_NOT_NULL(c)
+
+    *c = mColumnSpec;
+    REFCOUNT_ADD(*c)
     return NOERROR;
 }
 
@@ -176,9 +151,9 @@ ECode GridLayoutLayoutParams::Equals(
     GridLayoutLayoutParams* that = (GridLayoutLayoutParams*) glp;
 
     Boolean equals = FALSE;
-    mColumnSpec->Equals(that->mColumnSpec, &equals);
+    IObject::Probe(mColumnSpec)->Equals(that->mColumnSpec, &equals);
     if (!equals) return NOERROR;
-    mRowSpec->Equals(that->mRowSpec, &equals);
+    IObject::Probe(mRowSpec)->Equals(that->mRowSpec, &equals);
     if (!equals) return NOERROR;
 
     *result = TRUE;
@@ -191,9 +166,9 @@ ECode GridLayoutLayoutParams::GetHashCode(
     VALIDATE_NOT_NULL(hash)
 
     Int32 result = 0;
-    mRowSpec->GetHashCode(&result);
+    IObject::Probe(mRowSpec)->GetHashCode(&result);
     Int32 col = 0;
-    mColumnSpec->GetHashCode(&col);
+    IObject::Probe(mColumnSpec)->GetHashCode(&col);
     result = 31 * result + col;
     *hash = result;
     return NOERROR;
@@ -208,69 +183,64 @@ ECode GridLayoutLayoutParams::SetBaseAttributes(
     return attributes->GetLayoutDimension(heightAttr, DEFAULT_HEIGHT, &mHeight);
 }
 
-ECode GridLayoutLayoutParams::Init(
+ECode GridLayoutLayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
-    /* [in] */ GridLayout::Spec* rowSpec,
-    /* [in] */ GridLayout::Spec* columnSpec)
+    /* [in] */ IGridLayoutSpec* rowSpec,
+    /* [in] */ IGridLayoutSpec* columnSpec)
 {
-    ViewGroupMarginLayoutParams::Init(width, height);
+    FAIL_RETURN(ViewGroupMarginLayoutParams::constructor(width, height))
     SetMargins(left, top, right, bottom);
     mRowSpec = rowSpec;
     mColumnSpec = columnSpec;
     return NOERROR;
 }
 
-ECode GridLayoutLayoutParams::Init()
+ECode GridLayoutLayoutParams::constructor()
 {
-    return Init(GridLayout::Spec::UNDEFINED, GridLayout::Spec::UNDEFINED);
+    return constructor(GridLayout::Spec::UNDEFINED, GridLayout::Spec::UNDEFINED);
 }
 
-ECode GridLayoutLayoutParams::Init(
-    /* [in] */ ISpec* rowSpec,
-    /* [in] */ ISpec* columnSpec)
+ECode GridLayoutLayoutParams::constructor(
+    /* [in] */ IGridLayoutSpec* rowSpec,
+    /* [in] */ IGridLayoutSpec* columnSpec)
 {
-    AutoPtr<GridLayout::Spec> row = (GridLayout::Spec*)rowSpec;
-    AutoPtr<GridLayout::Spec> col = (GridLayout::Spec*)columnSpec;
-    Init(DEFAULT_WIDTH, DEFAULT_HEIGHT,
+    return constructor(DEFAULT_WIDTH, DEFAULT_HEIGHT,
         DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN,
-        row, col);
-    return NOERROR;
+        rowSpec, columnSpec);
 }
 
-ECode GridLayoutLayoutParams::Init(
+ECode GridLayoutLayoutParams::constructor(
     /* [in] */ IViewGroupLayoutParams* params)
 {
-    ViewGroupMarginLayoutParams::Init(params);
-    return NOERROR;
+    return ViewGroupMarginLayoutParams::constructor(params);
 }
 
-ECode GridLayoutLayoutParams::Init(
+ECode GridLayoutLayoutParams::constructor(
     /* [in] */ IViewGroupMarginLayoutParams* params)
 {
-    ViewGroupMarginLayoutParams::Init(params);
-    return NOERROR;
+    return ViewGroupMarginLayoutParams::constructor(params);
 }
 
-ECode GridLayoutLayoutParams::Init(
+ECode GridLayoutLayoutParams::constructor(
     /* [in] */ IGridLayoutLayoutParams* that)
 {
-    ViewGroupMarginLayoutParams::Init(that);
-    AutoPtr<CGridLayoutLayoutParams> cgl = (CGridLayoutLayoutParams*)that;
+    FAIL_RETURN(ViewGroupMarginLayoutParams::constructor(IViewGroupMarginLayoutParams::Probe(that)))
+    AutoPtr<GridLayoutLayoutParams> cgl = (GridLayoutLayoutParams*)that;
     mRowSpec = cgl->mRowSpec;
     mColumnSpec = cgl->mColumnSpec;
     return NOERROR;
 }
 
-ECode GridLayoutLayoutParams::Init(
+ECode GridLayoutLayoutParams::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    ViewGroupMarginLayoutParams::Init(context, attrs);
+    FAIL_RETURN(ViewGroupMarginLayoutParams::constructor(context, attrs))
     ReInitSuper(context, attrs);
     Init(context, attrs);
     return NOERROR;

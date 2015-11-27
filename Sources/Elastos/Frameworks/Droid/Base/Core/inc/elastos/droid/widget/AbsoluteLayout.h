@@ -50,6 +50,12 @@ public:
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
 
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle,
+        /* [in] */ Int32 defStyleRes);
+
     //@Override
     CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,

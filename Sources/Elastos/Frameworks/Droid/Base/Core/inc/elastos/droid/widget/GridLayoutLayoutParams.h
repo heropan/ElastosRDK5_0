@@ -4,31 +4,33 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/GridLayout.h"
 #include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
-#include <R.h>
+#include <elastos/droid/R.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::ViewGroupMarginLayoutParams;
 using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::Widget::ISpec;
+using Elastos::Droid::Widget::IGridLayoutSpec;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class GridLayoutLayoutParams : public ViewGroupMarginLayoutParams
+class GridLayoutLayoutParams
+    : public ViewGroupMarginLayoutParams
+    , public IGridLayoutLayoutParams
 {
 private:
-    GridLayoutLayoutParams(
+    CARAPI constructor(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom,
-        /* [in] */ GridLayout::Spec* rowSpec,
-        /* [in] */ GridLayout::Spec* columnSpec);
+        /* [in] */ IGridLayoutSpec* rowSpec,
+        /* [in] */ IGridLayoutSpec* columnSpec);
 
     CARAPI_(void) ReInitSuper(
         /* [in] */ IContext* context,
@@ -39,27 +41,43 @@ private:
         /* [in] */ IAttributeSet* attrs);
 
 public:
-    GridLayoutLayoutParams(
-        /* [in] */ ISpec* rowSpec,
-        /* [in] */ ISpec* columnSpec);
+    CAR_INTERFACE_DECL()
 
     GridLayoutLayoutParams();
 
-    GridLayoutLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* params);
+    CARAPI constructor(
+        /* [in] */ IGridLayoutSpec* rowSpec,
+        /* [in] */ IGridLayoutSpec* columnSpec);
 
-    GridLayoutLayoutParams(
-        /* [in] */ ViewGroupMarginLayoutParams* params);
+    CARAPI constructor();
 
-    GridLayoutLayoutParams(
-        /* [in] */ GridLayoutLayoutParams* that);
+    CARAPI constructor(
+        /* [in] */ IViewGroupLayoutParams* params);
 
-    GridLayoutLayoutParams(
+    CARAPI constructor(
+        /* [in] */ IViewGroupMarginLayoutParams* params);
+
+    CARAPI constructor(
+        /* [in] */ IGridLayoutLayoutParams* that);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
     CARAPI SetGravity(
         /* [in] */ Int32 gravity);
+
+    CARAPI SetRowSpec(
+        /* [in] */ IGridLayoutSpec* r);
+
+    CARAPI SetColumnSpec(
+        /* [in] */ IGridLayoutSpec* c);
+
+    CARAPI GetRowSpec(
+        /* [out] */ IGridLayoutSpec** r);
+
+    CARAPI GetColumnSpec(
+        /* [out] */ IGridLayoutSpec** c);
 
     CARAPI_(void) SetRowSpecSpan(
         /* [in] */ GridLayout::Interval* span);
@@ -80,35 +98,6 @@ protected:
         /* [in] */ Int32 widthAttr,
         /* [in] */ Int32 heightAttr);
 
-    CARAPI Init(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Int32 left,
-        /* [in] */ Int32 top,
-        /* [in] */ Int32 right,
-        /* [in] */ Int32 bottom,
-        /* [in] */ GridLayout::Spec* rowSpec,
-        /* [in] */ GridLayout::Spec* columnSpec);
-
-    CARAPI Init();
-
-    CARAPI Init(
-        /* [in] */ ISpec* rowSpec,
-        /* [in] */ ISpec* columnSpec);
-
-    CARAPI Init(
-        /* [in] */ IViewGroupLayoutParams* params);
-
-    CARAPI Init(
-        /* [in] */ IViewGroupMarginLayoutParams* params);
-
-    CARAPI Init(
-        /* [in] */ IGridLayoutLayoutParams* that);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
 private:
     static const Int32 DEFAULT_WIDTH = IViewGroupLayoutParams::WRAP_CONTENT;
     static const Int32 DEFAULT_HEIGHT = IViewGroupLayoutParams::WRAP_CONTENT;
@@ -125,13 +114,15 @@ private:
     static const Int32 BOTTOM_MARGIN = R::styleable::ViewGroup_MarginLayout_layout_marginBottom;
     static const Int32 COLUMN = R::styleable::GridLayout_Layout_layout_column;
     static const Int32 COLUMN_SPAN = R::styleable::GridLayout_Layout_layout_columnSpan;
+    static const Int32 COLUMN_WEIGHT = R::styleable::GridLayout_Layout_layout_columnWeight;
     static const Int32 ROW = R::styleable::GridLayout_Layout_layout_row;
     static const Int32 ROW_SPAN = R::styleable::GridLayout_Layout_layout_rowSpan;
+    static const Int32 ROW_WEIGHT = R::styleable::GridLayout_Layout_layout_rowWeight;
     static const Int32 GRAVITY = R::styleable::GridLayout_Layout_layout_gravity;
 
 public:
-    AutoPtr<ISpec> mRowSpec;
-    AutoPtr<ISpec> mColumnSpec;
+    AutoPtr<IGridLayoutSpec> mRowSpec;
+    AutoPtr<IGridLayoutSpec> mColumnSpec;
 };
 
 } // namespace Widget

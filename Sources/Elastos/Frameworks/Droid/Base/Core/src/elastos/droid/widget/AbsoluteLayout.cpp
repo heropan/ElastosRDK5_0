@@ -173,6 +173,15 @@ ECode AbsoluteLayout::constructor(
     return ViewGroup::constructor(context, attrs, defStyle);
 }
 
+ECode AbsoluteLayout::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyle,
+    /* [in] */ Int32 defStyleRes)
+{
+    return ViewGroup::constructor(context, attrs, defStyle, defStyleRes);
+}
+
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos

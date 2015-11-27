@@ -121,8 +121,7 @@ module
      * @Deprecated
      */
     ExtendDuration(
-        [in] Int32 extend,
-        [out] Int32* dur);
+        [in] Int32 extend);
 
 
     /**
