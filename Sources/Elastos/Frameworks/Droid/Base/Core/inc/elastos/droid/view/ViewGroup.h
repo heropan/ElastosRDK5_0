@@ -4,12 +4,18 @@
 
 #include "elastos/droid/view/View.h"
 
-using Elastos::Core::IComparable;
-using Elastos::Droid::Graphics::IPointF;
 using Elastos::Droid::Animation::ITransitionListener;
 using Elastos::Droid::Animation::ILayoutTransition;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Graphics::IPointF;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::Animation::IAnimationAnimationListener;
+using Elastos::Droid::View::Animation::IAnimationParameters;
 using Elastos::Droid::View::Animation::ILayoutAnimationController;
+using Elastos::Core::IComparable;
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +31,308 @@ class ViewGroup
 {
     friend class View;
     friend class COverlayViewGroup;
+public:
+
+    class LayoutParams
+        : public Object
+        , public IViewGroupLayoutParams
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        /**
+         * Used internally by MarginLayoutParams.
+         * @hide
+         */
+        LayoutParams();
+
+        virtual ~LayoutParams();
+
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ IContext* c,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height);
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupLayoutParams* source);
+
+        virtual CARAPI SetWidth(
+            /* [in] */ Int32 width);
+
+        virtual CARAPI SetHeight(
+            /* [in] */ Int32 height);
+
+        virtual CARAPI GetWidth(
+            /* [out] */ Int32* width);
+
+        virtual CARAPI GetHeight(
+            /* [out] */ Int32* height);
+
+        virtual CARAPI SetLayoutAnimationParameters(
+            /* [in] */ IAnimationParameters* ap);
+
+        virtual CARAPI GetLayoutAnimationParameters(
+            /* [out] */ IAnimationParameters** ap);
+
+        virtual CARAPI ResolveLayoutDirection(
+            /* [in] */ Int32 layoutDirection);
+
+        virtual CARAPI OnDebugDraw(
+            /* [in] */ IView* view,
+            /* [in] */ ICanvas* canvas,
+            /* [in] */ IPaint* paint);
+
+    protected:
+        /**
+         * Extracts the layout parameters from the supplied attributes.
+         *
+         * @param a the style attributes to extract the parameters from
+         * @param widthAttr the identifier of the width attribute
+         * @param heightAttr the identifier of the height attribute
+         */
+        virtual CARAPI SetBaseAttributes(
+            /* [in] */ ITypedArray* a,
+            /* [in] */ Int32 widthAttr,
+            /* [in] */ Int32 heightAttr);
+
+        /**
+         * Converts the specified size to a readable String.
+         *
+         * @param size the size to convert
+         * @return a String instance representing the supplied size
+         *
+         * @hide
+         */
+        static CARAPI SizeToString(
+            /* [in] */ Int32 size,
+            /* [out] */ String* des);
+
+    public:
+        /**
+         * Information about how wide the view wants to be. Can be one of the
+         * constants FILL_PARENT (replaced by MATCH_PARENT ,
+         * in API Level 8) or WRAP_CONTENT. or an exact size.
+         */
+        Int32 mWidth;
+
+        /**
+         * Information about how tall the view wants to be. Can be one of the
+         * constants FILL_PARENT (replaced by MATCH_PARENT ,
+         * in API Level 8) or WRAP_CONTENT. or an exact size.
+         */
+        Int32 mHeight;
+
+        /**
+         * Used to animate layouts.
+         */
+        AutoPtr<IAnimationParameters> mLayoutAnimationParameters;
+    };
+
+    class MarginLayoutParams
+        : public LayoutParams
+        , public IViewGroupMarginLayoutParams
+    {
+    public:
+        MarginLayoutParams();
+
+        CAR_INTERFACE_DECL()
+
+        virtual CARAPI GetLeftMargin(
+            /* [out] */ Int32* leftMargin);
+
+        virtual CARAPI SetLeftMargin(
+            /* [in] */ Int32 leftMargin);
+
+        /**
+         * The top margin in pixels of the child.
+         * Call {@link ViewGroup#setLayoutParams(LayoutParams)} after reassigning a new value
+         * to this field.
+         */
+        virtual CARAPI GetTopMargin(
+            /* [out] */ Int32* topMargin);
+
+        virtual CARAPI SetTopMargin(
+            /* [in] */ Int32 topMargin);
+
+        /**
+         * The right margin in pixels of the child.
+         * Call {@link ViewGroup#setLayoutParams(LayoutParams)} after reassigning a new value
+         * to this field.
+         */
+        virtual CARAPI GetRightMargin(
+            /* [out] */ Int32* rightMargin);
+
+        virtual CARAPI SetRightMargin(
+            /* [in] */ Int32 rightMargin);
+
+        /**
+         * The bottom margin in pixels of the child.
+         * Call {@link ViewGroup#setLayoutParams(LayoutParams)} after reassigning a new value
+         * to this field.
+         */
+        virtual CARAPI GetBottomMargin(
+            /* [out] */ Int32* bottomMargin);
+
+        virtual CARAPI SetBottomMargin(
+            /* [in] */ Int32 bottomMargin);
+
+        /**
+         * Sets the margins, in pixels.
+         *
+         * @param left the left margin size
+         * @param top the top margin size
+         * @param right the right margin size
+         * @param bottom the bottom margin size
+         *
+         * @attr ref android.R.styleable#ViewGroup_MarginLayout_layout_marginLeft
+         * @attr ref android.R.styleable#ViewGroup_MarginLayout_layout_marginTop
+         * @attr ref android.R.styleable#ViewGroup_MarginLayout_layout_marginRight
+         * @attr ref android.R.styleable#ViewGroup_MarginLayout_layout_marginBottom
+         */
+        virtual CARAPI SetMargins(
+            /* [in] */ Int32 left,
+            /* [in] */ Int32 top,
+            /* [in] */ Int32 right,
+            /* [in] */ Int32 bottom);
+
+        virtual CARAPI GetMargins(
+            /* [out] */ Int32* left,
+            /* [out] */ Int32* top,
+            /* [out] */ Int32* right,
+            /* [out] */ Int32* bottom);
+
+        virtual CARAPI SetMarginsRelative(
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 top,
+            /* [in] */ Int32 end,
+            /* [in] */ Int32 bottom);
+
+        virtual CARAPI SetMarginStart(
+            /* [in] */ Int32 start);
+
+        virtual CARAPI GetMarginStart(
+            /* [out] */ Int32* start);
+
+        virtual CARAPI SetMarginEnd(
+            /* [in] */ Int32 end);
+
+        virtual CARAPI GetMarginEnd(
+            /* [out] */ Int32* end);
+
+        virtual CARAPI IsMarginRelative(
+            /* [out] */ Boolean* set);
+
+        virtual CARAPI SetLayoutDirection(
+            /* [in] */ Int32 layoutDirection);
+
+        virtual CARAPI GetLayoutDirection(
+            /* [out] */ Int32* layoutDirection);
+
+        virtual CARAPI GetMarginFlags(
+            /* [out] */ Byte* leftMargin);
+
+        virtual CARAPI SetMarginFlags(
+            /* [in] */ Byte leftMargin);
+
+        /**
+         * This will be called by {@link android.view.View#requestLayout()}. Left and Right margins
+         * may be overridden depending on layout direction.
+         */
+        //@Override
+        virtual CARAPI ResolveLayoutDirection(
+            /* [in] */ Int32 layoutDirection);
+
+        virtual CARAPI OnDebugDraw(
+            /* [in] */ IView* view,
+            /* [in] */ ICanvas* canvas);
+
+        virtual CARAPI IsLayoutRtl(
+            /* [out] */ Boolean* rtl);
+
+        CARAPI constructor(
+            /* [in] */ IContext* c,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height);
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupMarginLayoutParams* source);
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupLayoutParams* source);
+
+        virtual CARAPI CopyMarginsFrom(
+            /* [in] */ IViewGroupMarginLayoutParams* source);
+
+    private:
+        CARAPI_(void) DoResolveMargins();
+
+    public:
+        /**
+         * The left margin in pixels of the child.
+         * Call {@link ViewGroup#setLayoutParams(LayoutParams)} after reassigning a new value
+         * to this field.
+         */
+        Int32 mLeftMargin;
+
+        /**
+         * The top margin in pixels of the child.
+         * Call {@link ViewGroup#setLayoutParams(LayoutParams)} after reassigning a new value
+         * to this field.
+         */
+        Int32 mTopMargin;
+
+        /**
+         * The right margin in pixels of the child.
+         * Call {@link ViewGroup#setLayoutParams(LayoutParams)} after reassigning a new value
+         * to this field.
+         */
+        Int32 mRightMargin;
+
+        /**
+         * The bottom margin in pixels of the child.
+         * Call {@link ViewGroup#setLayoutParams(LayoutParams)} after reassigning a new value
+         * to this field.
+         */
+        Int32 mBottomMargin;
+
+    private:
+        /**
+         * The start margin in pixels of the child.
+         * Call {@link ViewGroup#setLayoutParams(LayoutParams)} after reassigning a new value
+         * to this field.
+         */
+        //@ViewDebug.ExportedProperty(category = "layout")
+        Int32 mStartMargin;
+
+        /**
+         * The end margin in pixels of the child.
+         * Call {@link ViewGroup#setLayoutParams(LayoutParams)} after reassigning a new value
+         * to this field.
+         */
+        //@ViewDebug.ExportedProperty(category = "layout")
+        Int32 mEndMargin;
+
+        Byte mMarginFlags;
+
+        static const Int32 DEFAULT_MARGIN_RELATIVE;
+        static const Int32 LAYOUT_DIRECTION_MASK;
+        static const Int32 LEFT_MARGIN_UNDEFINED_MASK;// = 0x00000004;
+        static const Int32 RIGHT_MARGIN_UNDEFINED_MASK;// = 0x00000008;
+        static const Int32 RTL_COMPATIBILITY_MODE_MASK;// = 0x00000010;
+        static const Int32 NEED_RESOLUTION_MASK;// = 0x00000020;
+
+        static const Int32 DEFAULT_MARGIN_RESOLVED;// = 0;
+        static const Int32 UNDEFINED_MARGIN;// = DEFAULT_MARGIN_RELATIVE;
+    };
+
 private:
     class NotifyAnimationListenerRunnable
         : public Runnable

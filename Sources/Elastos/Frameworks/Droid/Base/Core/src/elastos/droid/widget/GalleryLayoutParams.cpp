@@ -11,20 +11,20 @@ GalleryLayoutParams::GalleryLayoutParams()
 GalleryLayoutParams::GalleryLayoutParams(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
-    : ViewGroupLayoutParams(c, attrs)
+    : LayoutParams(c, attrs)
 {
 }
 
 GalleryLayoutParams::GalleryLayoutParams(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
-    : ViewGroupLayoutParams(w, h)
+    : LayoutParams(w, h)
 {
 }
 
 GalleryLayoutParams::GalleryLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* source)
-    : ViewGroupLayoutParams(source)
+    /* [in] */ ViewGroup::LayoutParams* source)
+    : LayoutParams(source)
 {
 }
 
@@ -32,20 +32,20 @@ ECode GalleryLayoutParams::Init(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
-    return ViewGroupLayoutParams::Init(c, attrs);
+    return LayoutParams::Init(c, attrs);
 }
 
 ECode GalleryLayoutParams::Init(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
 {
-    return ViewGroupLayoutParams::Init(w, h);
+    return LayoutParams::Init(w, h);
 }
 
 ECode GalleryLayoutParams::Init(
         /* [in] */ IViewGroupLayoutParams* source)
 {
-    return ViewGroupLayoutParams::Init(source);
+    return LayoutParams::Init(source);
 }
 
 }// namespace Widget

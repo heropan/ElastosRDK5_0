@@ -3,13 +3,13 @@
 #define __ELASTOS_DROID_WIDGET_CRELATIVELAYOUTLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_Widget_CRelativeLayoutLayoutParams.h"
-#include "elastos/droid/widget/RelativeLayoutLayoutParams.h"
+#include "elastos/droid/widget/RelativeLayout.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-CarClass(CRelativeLayoutLayoutParams), public RelativeLayoutLayoutParams
+CarClass(CRelativeLayoutLayoutParams), public RelativeLayout::LayoutParams
 {
 public:
     CAR_OBJECT_DECL();

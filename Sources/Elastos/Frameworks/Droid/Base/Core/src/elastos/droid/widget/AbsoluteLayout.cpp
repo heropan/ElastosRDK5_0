@@ -1,11 +1,95 @@
 
 #include "elastos/droid/widget/AbsoluteLayout.h"
-#include <elastos/core/Math.h>
 #include "elastos/droid/widget/CAbsoluteLayoutLayoutParams.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
+
+
+CAR_INTERFACE_IMPL(AbsoluteLayout::LayoutParams, ViewGroup::LayoutParams, IAbsoluteLayoutLayoutParams)
+
+AbsoluteLayout::LayoutParams::LayoutParams()
+    : mX(0)
+    , mY(0)
+{}
+
+ECode AbsoluteLayout::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y)
+{
+    ViewGroup::LayoutParams::constructor(width, height);
+    mX = x;
+    mY = y;
+    return NOERROR;
+}
+
+ECode AbsoluteLayout::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    ViewGroup::LayoutParams::constructor(c, attrs);
+    return InitFromAttributes(c, attrs);
+}
+
+ECode AbsoluteLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* source)
+{
+    return ViewGroup::LayoutParams::constructor(source);
+}
+
+ECode AbsoluteLayout::LayoutParams::InitFromAttributes(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    VALIDATE_NOT_NULL(c);
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::AbsoluteLayout_Layout),
+            ARRAY_SIZE(R::styleable::AbsoluteLayout_Layout));
+    AutoPtr<ITypedArray> a;
+    FAIL_RETURN(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
+    FAIL_RETURN(a->GetDimensionPixelOffset(
+            R::styleable::AbsoluteLayout_Layout_layout_x, 0, &mX));
+    FAIL_RETURN(a->GetDimensionPixelOffset(
+            R::styleable::AbsoluteLayout_Layout_layout_y, 0, &mY));
+    return a->Recycle();
+}
+
+ECode AbsoluteLayout::LayoutParams::SetX(
+    /* [in] */ Int32 x)
+{
+    mX = x;
+    return NOERROR;
+}
+
+ECode AbsoluteLayout::LayoutParams::SetY(
+    /* [in] */ Int32 y)
+{
+    mY = y;
+    return NOERROR;
+}
+
+ECode AbsoluteLayout::LayoutParams::GetX(
+    /* [out] */ Int32* x)
+{
+    VALIDATE_NOT_NULL(x)
+    *x = mX;
+    return NOERROR;
+}
+
+ECode AbsoluteLayout::LayoutParams::GetY(
+    /* [out] */ Int32* y)
+{
+    VALIDATE_NOT_NULL(y)
+    *y = mY;
+    return NOERROR;
+}
+
 
 CAR_INTERFACE_IMPL(AbsoluteLayout, ViewGroup, IAbsoluteLayout)
 

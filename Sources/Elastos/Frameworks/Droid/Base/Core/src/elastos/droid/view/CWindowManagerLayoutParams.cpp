@@ -22,7 +22,7 @@ namespace Droid {
 namespace View {
 
 CAR_OBJECT_IMPL(CWindowManagerLayoutParams);
-CAR_INTERFACE_IMPL_2(CWindowManagerLayoutParams, ViewGroupLayoutParams, IWindowManagerLayoutParams, IParcelable);
+CAR_INTERFACE_IMPL_2(CWindowManagerLayoutParams, ViewGroup::LayoutParams, IWindowManagerLayoutParams, IParcelable);
 CWindowManagerLayoutParams::CWindowManagerLayoutParams()
     : mX(0)
     , mY(0)
@@ -767,7 +767,7 @@ ECode CWindowManagerLayoutParams::WriteToParcel(
 
 ECode CWindowManagerLayoutParams::constructor()
 {
-    ViewGroupLayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
+    ViewGroup::LayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
 
     mType = TYPE_APPLICATION;
     mFormat = IPixelFormat::OPAQUE;
@@ -777,7 +777,7 @@ ECode CWindowManagerLayoutParams::constructor()
 ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 type)
 {
-    ViewGroupLayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
+    ViewGroup::LayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
 
     mType = type;
     mFormat = IPixelFormat::OPAQUE;
@@ -788,7 +788,7 @@ ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 type,
     /* [in] */ Int32 flags)
 {
-    ViewGroupLayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
+    ViewGroup::LayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
 
     mType = type;
     mFlags = flags;
@@ -801,7 +801,7 @@ ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 format)
 {
-    ViewGroupLayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
+    ViewGroup::LayoutParams::constructor(MATCH_PARENT, MATCH_PARENT);
 
     mType = type;
     mFlags = flags;
@@ -816,7 +816,7 @@ ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 format)
 {
-    ViewGroupLayoutParams::constructor(w, h);
+    ViewGroup::LayoutParams::constructor(w, h);
 
     mType = type;
     mFlags = flags;
@@ -833,7 +833,7 @@ ECode CWindowManagerLayoutParams::constructor(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 format)
 {
-    ViewGroupLayoutParams::constructor(w, h);
+    ViewGroup::LayoutParams::constructor(w, h);
     mX = xpos;
     mY = ypos;
     mType = type;

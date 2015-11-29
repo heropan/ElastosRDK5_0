@@ -28,7 +28,7 @@ AbsListViewLayoutParams::AbsListViewLayoutParams(
 AbsListViewLayoutParams::AbsListViewLayoutParams(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
-    : ViewGroupLayoutParams(width, height)
+    : LayoutParams(width, height)
     , mViewType(0)
     , mRecycledHeaderFooter(FALSE)
     , mForceAdd(FALSE)
@@ -40,7 +40,7 @@ AbsListViewLayoutParams::AbsListViewLayoutParams(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 viewType)
-    : ViewGroupLayoutParams(width, height)
+    : LayoutParams(width, height)
     , mViewType(viewType)
     , mRecycledHeaderFooter(FALSE)
     , mForceAdd(FALSE)
@@ -50,8 +50,8 @@ AbsListViewLayoutParams::AbsListViewLayoutParams(
 }
 
 AbsListViewLayoutParams::AbsListViewLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* source)
-    : ViewGroupLayoutParams(source)
+    /* [in] */ ViewGroup::LayoutParams* source)
+    : LayoutParams(source)
     , mViewType(0)
     , mRecycledHeaderFooter(FALSE)
     , mForceAdd(FALSE)
@@ -61,7 +61,7 @@ ECode AbsListViewLayoutParams::Init(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
-    return ViewGroupLayoutParams::Init(c, attrs);
+    return LayoutParams::Init(c, attrs);
 }
 
 ECode AbsListViewLayoutParams::SetItemId(
@@ -139,7 +139,7 @@ ECode AbsListViewLayoutParams::Init(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    return ViewGroupLayoutParams::Init(width, height);
+    return LayoutParams::Init(width, height);
 }
 
 ECode AbsListViewLayoutParams::Init(
@@ -147,7 +147,7 @@ ECode AbsListViewLayoutParams::Init(
     /* [in] */ Int32 height,
     /* [in] */ Int32 viewType)
 {
-    ViewGroupLayoutParams::Init(width, height);
+    LayoutParams::Init(width, height);
     mViewType = viewType;
 
     return NOERROR;
@@ -156,7 +156,7 @@ ECode AbsListViewLayoutParams::Init(
 ECode AbsListViewLayoutParams::Init(
     /* [in] */ IViewGroupLayoutParams* source)
 {
-    return ViewGroupLayoutParams::Init(source);
+    return LayoutParams::Init(source);
 }
 
 }// namespace Widget

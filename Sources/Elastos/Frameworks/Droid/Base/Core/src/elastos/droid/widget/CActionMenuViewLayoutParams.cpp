@@ -8,8 +8,8 @@ namespace Droid {
 namespace View {
 namespace Menu {
 
-IVIEWGROUPLP_METHODS_IMPL(CActionMenuViewLayoutParams, LinearLayoutLayoutParams)
-IVIEWGROUPMARGINLP_METHODS_IMPL(CActionMenuViewLayoutParams, LinearLayoutLayoutParams)
+IVIEWGROUPLP_METHODS_IMPL(CActionMenuViewLayoutParams, LinearLayout::LayoutParams)
+IVIEWGROUPMARGINLP_METHODS_IMPL(CActionMenuViewLayoutParams, LinearLayout::LayoutParams)
 
 CActionMenuViewLayoutParams::CActionMenuViewLayoutParams()
     : mIsOverflowButton(0)
@@ -24,14 +24,14 @@ ECode CActionMenuViewLayoutParams::constructor(
     /* [in] */ IContext* ctx,
     /* [in] */ IAttributeSet* attrs)
 {
-    LinearLayoutLayoutParams::Init(ctx, attrs);
+    LinearLayout::LayoutParams::Init(ctx, attrs);
     return NOERROR;
 }
 
 ECode CActionMenuViewLayoutParams::constructor(
     /* [in] */ IViewGroupLayoutParams* other)
 {
-    LinearLayoutLayoutParams::Init(other);
+    LinearLayout::LayoutParams::Init(other);
     return NOERROR;
 }
 
@@ -39,7 +39,7 @@ ECode CActionMenuViewLayoutParams::constructor(
     /* [in] */ IActionMenuViewLayoutParams* actLp)
 {
     IViewGroupMarginLayoutParams* temp = IViewGroupMarginLayoutParams::Probe(actLp);
-    LinearLayoutLayoutParams::Init(temp);
+    LinearLayout::LayoutParams::Init(temp);
     actLp->GetIsOverflowButton(&mIsOverflowButton);
     return NOERROR;
 }
@@ -48,7 +48,7 @@ ECode CActionMenuViewLayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    LinearLayoutLayoutParams::Init(width, height);
+    LinearLayout::LayoutParams::Init(width, height);
     mIsOverflowButton = FALSE;
     return NOERROR;
 }
@@ -58,7 +58,7 @@ ECode CActionMenuViewLayoutParams::constructor(
     /* [in] */ Int32 height,
     /* [in] */ Boolean isOverflowButton)
 {
-    LinearLayoutLayoutParams::Init(width, height);
+    LinearLayout::LayoutParams::Init(width, height);
     mIsOverflowButton = isOverflowButton;
     return NOERROR;
 }
@@ -66,27 +66,27 @@ ECode CActionMenuViewLayoutParams::constructor(
 ECode CActionMenuViewLayoutParams::GetWeight(
         /* [out] */ Float* weight)
 {
-    *weight = LinearLayoutLayoutParams::GetWeight();
+    *weight = LinearLayout::LayoutParams::GetWeight();
     return NOERROR;
 }
 
 ECode CActionMenuViewLayoutParams::SetWeight(
         /* [in] */ Float weight)
 {
-    return LinearLayoutLayoutParams::SetWeight(weight);
+    return LinearLayout::LayoutParams::SetWeight(weight);
 }
 
 ECode CActionMenuViewLayoutParams::GetGravity(
         /* [out] */ Int32* gravity)
 {
-    *gravity = LinearLayoutLayoutParams::GetGravity();
+    *gravity = LinearLayout::LayoutParams::GetGravity();
     return NOERROR;
 }
 
 ECode CActionMenuViewLayoutParams::SetGravity(
         /* [in] */ Int32 gravity)
 {
-    return LinearLayoutLayoutParams::SetGravity(gravity);
+    return LinearLayout::LayoutParams::SetGravity(gravity);
 }
 
 

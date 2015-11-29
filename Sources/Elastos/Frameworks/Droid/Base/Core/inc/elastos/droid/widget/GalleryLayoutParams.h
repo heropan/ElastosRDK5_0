@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_WIDGET_GALLERYLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_GALLERYLAYOUTPARAMS_H__
 
-#include "elastos/droid/view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
 
+using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 
 namespace Elastos {
@@ -17,7 +18,7 @@ namespace Widget {
  *
  */
 
-class GalleryLayoutParams : public Elastos::Droid::View::ViewGroupLayoutParams
+class GalleryLayoutParams : public ViewGroup::LayoutParams
 {
 public:
     GalleryLayoutParams(
@@ -29,7 +30,7 @@ public:
         /* [in] */ Int32 h);
 
     GalleryLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* source);
+        /* [in] */ ViewGroup::LayoutParams* source);
 
     CARAPI Init(
         /* [in] */ IContext* c,

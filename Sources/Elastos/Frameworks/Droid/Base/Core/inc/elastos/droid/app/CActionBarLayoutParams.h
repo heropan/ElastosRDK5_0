@@ -3,12 +3,11 @@
 #define __ELASTOS_DROID_APP_CACTIONBARLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_App_CActionBarLayoutParams.h"
-#include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::IView;
-using Elastos::Droid::View::ViewGroupMarginLayoutParams;
 using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 namespace Elastos {
 namespace Droid {
@@ -19,7 +18,7 @@ namespace App {
  *
  * @attr ref android.R.styleable#ActionBar_LayoutParams_layout_gravity
  */
-CarClass(CActionBarLayoutParams), public ViewGroupMarginLayoutParams
+CarClass(CActionBarLayoutParams), public ViewGroup::MarginLayoutParams
 {
 public:
     CActionBarLayoutParams();

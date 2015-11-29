@@ -4,7 +4,7 @@
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/Gravity.h"
 #include <elastos/core/Math.h>
-
+#include "elastos/droid/R.h"
 using Elastos::Droid::View::Gravity;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IViewGroupMarginLayoutParams;
@@ -20,6 +20,108 @@ const Int32 LinearLayout::INDEX_CENTER_VERTICAL;
 const Int32 LinearLayout::INDEX_TOP;
 const Int32 LinearLayout::INDEX_BOTTOM;
 const Int32 LinearLayout::INDEX_FILL;
+
+
+CAR_INTERFACE_IMPL(LinearLayout::LayoutParams, MarginLayoutParams, ILinearLayoutLayoutParams);
+LinearLayout::LayoutParams::LayoutParams()
+    : mWeight(0)
+    , mGravity(-1)
+{}
+
+ECode LinearLayout::LayoutParams::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    FAIL_RETURN(MarginLayoutParams::constructor(context, attrs));
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::LinearLayout_Layout),
+            ARRAY_SIZE(R::styleable::LinearLayout_Layout));
+    AutoPtr<ITypedArray> a;
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
+            attrs, attrIds, (ITypedArray**)&a));
+
+    a->GetFloat(R::styleable::LinearLayout_Layout_layout_weight,
+            0, &mWeight);
+    a->GetInt32(R::styleable::LinearLayout_Layout_layout_gravity,
+            -1, &mGravity);
+
+    a->Recycle();
+    return NOERROR;
+}
+
+ECode LinearLayout::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    MarginLayoutParams::constructor(width, height);
+    mWeight = 0;
+    return NOERROR;
+}
+
+ECode LinearLayout::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Float weight)
+{
+    MarginLayoutParams::constructor(width, height);
+    mWeight = weight;
+    return NOERROR;
+}
+
+ECode LinearLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* source)
+{
+    MarginLayoutParams::constructor(source);
+    return NOERROR;
+}
+
+ECode LinearLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupMarginLayoutParams* source)
+{
+    MarginLayoutParams::constructor(source);
+    return NOERROR;
+}
+
+ECode LinearLayout::LayoutParams::constructor(
+    /* [in] */ ILinearLayoutLayoutParams* source)
+{
+    MarginLayoutParams::constructor(IViewGroupMarginLayoutParams::Probe(source));
+    mWeight = ((LayoutParams*)source)->mWeight;
+    mGravity = ((LayoutParams*)source)->mGravity;
+    return NOERROR;
+}
+
+ECode LinearLayout::LayoutParams::SetWeight(
+    /* [in] */ Float weight)
+{
+    mWeight = weight;
+    return NOERROR;
+}
+
+ECode LinearLayout::LayoutParams::GetWeight(
+    /* [out] */ Float* weight)
+{
+    VALIDATE_NOT_NULL(weight);
+    *weight = mWeight;
+    return NOERROR;
+}
+
+ECode LinearLayout::LayoutParams::SetGravity(
+    /* [in] */ Int32 gravity)
+{
+    mGravity = gravity;
+    return NOERROR;
+}
+
+ECode LinearLayout::LayoutParams::GetGravity(
+    /* [out] */ Int32* gravity)
+{
+    VALIDATE_NOT_NULL(gravity);
+    *gravity = mGravity;
+    return NOERROR;
+}
+
 
 CAR_INTERFACE_IMPL(LinearLayout, ViewGroup, ILinearLayout);
 LinearLayout::LinearLayout()

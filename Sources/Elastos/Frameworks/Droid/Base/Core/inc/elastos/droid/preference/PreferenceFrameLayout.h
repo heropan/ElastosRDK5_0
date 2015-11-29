@@ -4,7 +4,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 //#include "elastos/droid/widget/FrameLayout.h"
-// #include "elastos/droid/widget/FrameLayoutLayoutParams.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::View::IView;
@@ -17,7 +16,6 @@ using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
 using Elastos::Droid::Widget::IFrameLayout;
 //using Elastos::Droid::Widget::FrameLayout;
 using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
-// using Elastos::Droid::Widget::FrameLayoutLayoutParams;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -42,7 +40,7 @@ class PreferenceFrameLayout
 {
 public:
     class LayoutParams
-        //: public FrameLayoutLayoutParams
+        //: public FrameLayout::LayoutParams
         : public Object
         , public IFrameLayoutLayoutParams
     {

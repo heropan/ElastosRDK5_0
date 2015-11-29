@@ -3,20 +3,17 @@
 #define __ELASTOS_DROID_VIEW_CVIEWGROUPMARGINLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_View_CViewGroupMarginLayoutParams.h"
-#include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CViewGroupMarginLayoutParams)
-    , public ViewGroupMarginLayoutParams
+    , public ViewGroup::MarginLayoutParams
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI ToString(
-        /* [out] */ String* description);
 };
 
 } // namespace View

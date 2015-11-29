@@ -3,17 +3,16 @@
 
 #include "_Elastos_Droid_View_Menu_CActionMenuViewLayoutParams.h"
 
-#include "elastos/droid/widget/LinearLayoutLayoutParams.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
-using Elastos::Droid::Widget::LinearLayoutLayoutParams;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Menu {
 
-CarClass(CActionMenuViewLayoutParams) , public LinearLayoutLayoutParams
+CarClass(CActionMenuViewLayoutParams) , public LinearLayout::LayoutParams
 {
 public:
     CActionMenuViewLayoutParams();

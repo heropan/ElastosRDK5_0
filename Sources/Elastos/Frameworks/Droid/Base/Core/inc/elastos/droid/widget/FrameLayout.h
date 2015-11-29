@@ -7,6 +7,8 @@
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 
 using Elastos::Droid::View::ViewGroup;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +18,81 @@ class FrameLayout
     : public ViewGroup
     , public IFrameLayout
 {
+public:
+
+    class LayoutParams
+        : public ViewGroup::MarginLayoutParams
+        , public IFrameLayoutLayoutParams
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        LayoutParams();
+
+        CARAPI constructor(
+            /* [in] */ IContext* c,
+            /* [in] */ IAttributeSet* attrs);
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height);
+
+        /**
+         * Creates a new set of layout parameters with the specified width, height
+         * and weight.
+         *
+         * @param width the width, either {@link #MATCH_PARENT},
+         *        {@link #WRAP_CONTENT} or a fixed size in pixels
+         * @param height the height, either {@link #MATCH_PARENT},
+         *        {@link #WRAP_CONTENT} or a fixed size in pixels
+         * @param gravity the gravity
+         *
+         * @see android.view.Gravity
+         */
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height,
+            /* [in] */ Int32 gravity);
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ IViewGroupLayoutParams* source);
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ IViewGroupMarginLayoutParams* source);
+
+        /**
+         * Copy constructor. Clones the width, height, margin values, and
+         * gravity of the source.
+         *
+         * @param source The layout params to copy from.
+         */
+        CARAPI constructor(
+            /* [in] */ IFrameLayoutLayoutParams* source);
+
+        CARAPI SetGravity(
+            /* [in] */ Int32 gravity);
+
+        CARAPI GetGravity(
+            /* [out] */ Int32* gravity);
+
+    public:
+        /**
+         * Gravity for the view associated with these LayoutParams.
+         *
+         * @see android.view.Gravity
+         */
+        Int32 mGravity;
+    };
+
 public:
     CAR_INTERFACE_DECL();
 

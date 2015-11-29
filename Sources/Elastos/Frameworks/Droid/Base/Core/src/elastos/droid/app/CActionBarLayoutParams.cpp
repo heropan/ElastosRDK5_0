@@ -18,7 +18,7 @@ ECode CActionBarLayoutParams::constructor(
         /* [in] */ IContext* ctx,
         /* [in] */ IAttributeSet* attrs)
 {
-    ViewGroupMarginLayoutParams::Init(ctx, attrs);
+    MarginLayoutParams::Init(ctx, attrs);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::ActionBar_LayoutParams),
@@ -35,7 +35,7 @@ ECode CActionBarLayoutParams::constructor(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height)
 {
-    ViewGroupMarginLayoutParams::Init(width, height);
+    MarginLayoutParams::Init(width, height);
     mGravity = IGravity::CENTER_VERTICAL | IGravity::START;
     return NOERROR;
 }
@@ -45,7 +45,7 @@ ECode CActionBarLayoutParams::constructor(
         /* [in] */ Int32 height,
         /* [in] */ Int32 gravity)
 {
-    ViewGroupMarginLayoutParams::Init(width, height);
+    MarginLayoutParams::Init(width, height);
     mGravity = gravity;
     return NOERROR;
 }
@@ -53,7 +53,7 @@ ECode CActionBarLayoutParams::constructor(
 ECode CActionBarLayoutParams::constructor(
         /* [in] */ Int32 gravity)
 {
-    ViewGroupMarginLayoutParams::Init(IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::MATCH_PARENT);
+    MarginLayoutParams::Init(IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::MATCH_PARENT);
     mGravity = gravity;
     return NOERROR;
 }
@@ -61,7 +61,7 @@ ECode CActionBarLayoutParams::constructor(
 ECode CActionBarLayoutParams::constructor(
         /* [in] */ IActionBarLayoutParams* ablp)
 {
-    ViewGroupMarginLayoutParams::Init(ablp);
+    MarginLayoutParams::Init(ablp);
     ablp->GetGravity(&mGravity);
     return NOERROR;
 }
@@ -69,7 +69,7 @@ ECode CActionBarLayoutParams::constructor(
 ECode CActionBarLayoutParams::constructor(
         /* [in] */ IViewGroupLayoutParams* vglp)
 {
-    ViewGroupMarginLayoutParams::Init(vglp);
+    MarginLayoutParams::Init(vglp);
     return NOERROR;
 }
 
@@ -90,49 +90,49 @@ ECode CActionBarLayoutParams::SetGravity(
 ECode CActionBarLayoutParams::GetLeftMargin(
         /* [out] */ Int32* leftMargin)
 {
-    return ViewGroupMarginLayoutParams::GetLeftMargin(leftMargin);
+    return MarginLayoutParams::GetLeftMargin(leftMargin);
 }
 
 ECode CActionBarLayoutParams::SetLeftMargin(
         /* [in] */ Int32 leftMargin)
 {
-    return ViewGroupMarginLayoutParams::SetLeftMargin(leftMargin);
+    return MarginLayoutParams::SetLeftMargin(leftMargin);
 }
 
 ECode CActionBarLayoutParams::GetTopMargin(
         /* [out] */ Int32* topMargin)
 {
-    return ViewGroupMarginLayoutParams::GetTopMargin(topMargin);
+    return MarginLayoutParams::GetTopMargin(topMargin);
 }
 
 ECode CActionBarLayoutParams::SetTopMargin(
         /* [in] */ Int32 topMargin)
 {
-    return ViewGroupMarginLayoutParams::SetTopMargin(topMargin);
+    return MarginLayoutParams::SetTopMargin(topMargin);
 }
 
 ECode CActionBarLayoutParams::GetRightMargin(
         /* [out] */ Int32* rightMargin)
 {
-    return ViewGroupMarginLayoutParams::GetRightMargin(rightMargin);
+    return MarginLayoutParams::GetRightMargin(rightMargin);
 }
 
 ECode CActionBarLayoutParams::SetRightMargin(
         /* [in] */ Int32 rightMargin)
 {
-    return ViewGroupMarginLayoutParams::SetRightMargin(rightMargin);
+    return MarginLayoutParams::SetRightMargin(rightMargin);
 }
 
 ECode CActionBarLayoutParams::GetBottomMargin(
         /* [out] */ Int32* bottomMargin)
 {
-    return ViewGroupMarginLayoutParams::GetBottomMargin(bottomMargin);
+    return MarginLayoutParams::GetBottomMargin(bottomMargin);
 }
 
 ECode CActionBarLayoutParams::SetBottomMargin(
         /* [in] */ Int32 bottomMargin)
 {
-    return ViewGroupMarginLayoutParams::SetBottomMargin(bottomMargin);
+    return MarginLayoutParams::SetBottomMargin(bottomMargin);
 }
 
 ECode CActionBarLayoutParams::SetMargins(
@@ -141,7 +141,7 @@ ECode CActionBarLayoutParams::SetMargins(
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom)
 {
-    return ViewGroupMarginLayoutParams::SetMargins(left, top, right, bottom);
+    return MarginLayoutParams::SetMargins(left, top, right, bottom);
 }
 
 ECode CActionBarLayoutParams::GetMargins(
@@ -150,7 +150,7 @@ ECode CActionBarLayoutParams::GetMargins(
         /* [out] */ Int32* right,
         /* [out] */ Int32* bottom)
 {
-    return ViewGroupMarginLayoutParams::GetMargins(left, top, right, bottom);
+    return MarginLayoutParams::GetMargins(left, top, right, bottom);
 }
 
 ECode CActionBarLayoutParams::SetMarginsRelative(
@@ -159,111 +159,111 @@ ECode CActionBarLayoutParams::SetMarginsRelative(
         /* [in] */ Int32 end,
         /* [in] */ Int32 bottom)
 {
-    return ViewGroupMarginLayoutParams::SetMarginsRelative(start, top, end, bottom);
+    return MarginLayoutParams::SetMarginsRelative(start, top, end, bottom);
 }
 
 ECode CActionBarLayoutParams::SetMarginStart(
         /* [in] */ Int32 start)
 {
-    return ViewGroupMarginLayoutParams::SetMarginStart(start);
+    return MarginLayoutParams::SetMarginStart(start);
 }
 
 ECode CActionBarLayoutParams::GetMarginStart(
         /* [out] */ Int32* startMargin)
 {
-    *startMargin = ViewGroupMarginLayoutParams::GetMarginStart();
+    *startMargin = MarginLayoutParams::GetMarginStart();
     return NOERROR;
 }
 
 ECode CActionBarLayoutParams::SetMarginEnd(
         /* [in] */ Int32 end)
 {
-    return ViewGroupMarginLayoutParams::SetMarginEnd(end);
+    return MarginLayoutParams::SetMarginEnd(end);
 }
 
 ECode CActionBarLayoutParams::GetMarginEnd(
         /* [out] */ Int32* endMargin)
 {
-    *endMargin = ViewGroupMarginLayoutParams::GetMarginEnd();
+    *endMargin = MarginLayoutParams::GetMarginEnd();
     return NOERROR;
 }
 
 ECode CActionBarLayoutParams::IsMarginRelative(
         /* [out] */ Boolean* set)
 {
-    *set = ViewGroupMarginLayoutParams::IsMarginRelative();
+    *set = MarginLayoutParams::IsMarginRelative();
     return NOERROR;
 }
 
 ECode CActionBarLayoutParams::SetLayoutDirection(
         /* [in] */ Int32 layoutDirection)
 {
-    return ViewGroupMarginLayoutParams::SetLayoutDirection(layoutDirection);
+    return MarginLayoutParams::SetLayoutDirection(layoutDirection);
 }
 
 ECode CActionBarLayoutParams::GetLayoutDirection(
         /* [out] */ Int32* layoutDirection)
 {
-    *layoutDirection = ViewGroupMarginLayoutParams::GetLayoutDirection();
+    *layoutDirection = MarginLayoutParams::GetLayoutDirection();
     return NOERROR;
 }
 
 ECode CActionBarLayoutParams::IsLayoutRtl(
         /* [out] */ Boolean* rtl)
 {
-    *rtl = ViewGroupMarginLayoutParams::IsLayoutRtl();
+    *rtl = MarginLayoutParams::IsLayoutRtl();
     return NOERROR;
 }
 
 ECode CActionBarLayoutParams::SetWidth(
         /* [in] */ Int32 width)
 {
-    return ViewGroupMarginLayoutParams::SetWidth(width);
+    return MarginLayoutParams::SetWidth(width);
 }
 
 ECode CActionBarLayoutParams::SetHeight(
         /* [in] */ Int32 height)
 {
-    return ViewGroupMarginLayoutParams::SetHeight(height);
+    return MarginLayoutParams::SetHeight(height);
 }
 
 ECode CActionBarLayoutParams::GetWidth(
         /* [out] */ Int32* width)
 {
-    *width = ViewGroupMarginLayoutParams::GetWidth();
+    *width = MarginLayoutParams::GetWidth();
     return NOERROR;
 }
 
 ECode CActionBarLayoutParams::GetHeight(
         /* [out] */ Int32* height)
 {
-    *height = ViewGroupMarginLayoutParams::GetHeight();
+    *height = MarginLayoutParams::GetHeight();
     return NOERROR;
 }
 
 ECode CActionBarLayoutParams::SetLayoutAnimationParameters(
         /* [in] */ IAnimationParameters* ap)
 {
-    return ViewGroupMarginLayoutParams::SetLayoutAnimationParameters(ap);
+    return MarginLayoutParams::SetLayoutAnimationParameters(ap);
 }
 
 ECode CActionBarLayoutParams::GetLayoutAnimationParameters(
         /* [out] */ IAnimationParameters** ap)
 {
-    return ViewGroupMarginLayoutParams::GetLayoutAnimationParameters(ap);
+    return MarginLayoutParams::GetLayoutAnimationParameters(ap);
 }
 
 ECode CActionBarLayoutParams::ResolveLayoutDirection(
         /* [in] */ Int32 layoutDirection)
 {
-    return ViewGroupMarginLayoutParams::ResolveLayoutDirection(layoutDirection);
+    return MarginLayoutParams::ResolveLayoutDirection(layoutDirection);
 }
 
 ECode CActionBarLayoutParams::OnDebugDraw(
         /* [in] */ IView* view,
         /* [in] */ ICanvas* canvas)
 {
-    return ViewGroupMarginLayoutParams::OnDebugDraw(view, canvas);
+    return MarginLayoutParams::OnDebugDraw(view, canvas);
 }
 
 } // namespace App

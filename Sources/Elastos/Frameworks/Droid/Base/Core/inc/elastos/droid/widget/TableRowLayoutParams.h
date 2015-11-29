@@ -2,8 +2,6 @@
 #ifndef __ELASTOS_DROID_WIDGET_TABLEROWLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_TABLEROWLAYOUTPARAMS_H__
 
-#include "elastos/droid/widget/LinearLayoutLayoutParams.h"
-
 namespace Elastos {
 namespace Droid {
 namespace Widget {
@@ -18,7 +16,7 @@ extern "C" const InterfaceID EIID_TableRowLayoutParams;
  * @attr ref android.R.styleable#TableRow_Cell_layout_column
  * @attr ref android.R.styleable#TableRow_Cell_layout_span
  */
-class TableRowLayoutParams : public LinearLayoutLayoutParams
+class TableRowLayoutParams : public LinearLayout::LayoutParams
 {
     friend class TableRow;
 
@@ -75,13 +73,13 @@ public:
      * {@inheritDoc}
      */
     TableRowLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* p);
+        /* [in] */ ViewGroup::LayoutParams* p);
 
     /**
      * {@inheritDoc}
      */
     TableRowLayoutParams(
-        /* [in] */ ViewGroupMarginLayoutParams* source);
+        /* [in] */ ViewGroup::MarginLayoutParams* source);
 
     virtual CARAPI SetColumn(
         /* [in] */ Int32 column);

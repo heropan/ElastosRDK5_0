@@ -20,6 +20,82 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+
+CAR_INTERFACE_IMPL(FrameLayout::LayoutParams, ViewGroup::MarginLayoutParams, IFrameLayoutLayoutParams);
+FrameLayout::LayoutParams::LayoutParams()
+    : mGravity(-1)
+{}
+
+ECode FrameLayout::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    FAIL_RETURN(ViewGroup::MarginLayoutParams::constructor(c, attrs));
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::FrameLayout_Layout),
+            ARRAY_SIZE(R::styleable::FrameLayout_Layout));
+    AutoPtr<ITypedArray> a;
+    ASSERT_SUCCEEDED(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
+    a->GetInt32(R::styleable::FrameLayout_Layout_layout_gravity, -1, &mGravity);
+
+    a->Recycle();
+    return NOERROR;
+}
+
+ECode FrameLayout::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    return ViewGroup::MarginLayoutParams::constructor(width, height);
+}
+
+ECode FrameLayout::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 gravity)
+{
+    ViewGroup::MarginLayoutParams::constructor(width, height);
+    mGravity = gravity;
+    return NOERROR;
+}
+
+ECode FrameLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* source)
+{
+    return ViewGroup::MarginLayoutParams::constructor(source);
+}
+
+ECode FrameLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupMarginLayoutParams* source)
+{
+    return ViewGroup::MarginLayoutParams::constructor(source);
+}
+
+ECode FrameLayout::LayoutParams::constructor(
+    /* [in] */ IFrameLayoutLayoutParams* source)
+{
+    ViewGroup::MarginLayoutParams::constructor(IViewGroupMarginLayoutParams::Probe(source));
+    mGravity = ((LayoutParams*)source)->mGravity;
+    return NOERROR;
+}
+
+ECode FrameLayout::LayoutParams::GetGravity(
+    /* [out] */ Int32* gravity)
+{
+    VALIDATE_NOT_NULL(gravity);
+    *gravity = mGravity;
+    return NOERROR;
+}
+
+ECode FrameLayout::LayoutParams::SetGravity(
+    /* [in] */ Int32 gravity)
+{
+    mGravity = gravity;
+    return NOERROR;
+}
+
+
 static Int32 InitDefaultChildGravity()
 {
     return IGravity::TOP | IGravity::START;

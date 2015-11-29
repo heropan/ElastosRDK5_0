@@ -2,12 +2,12 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_SIZEADAPTIVELAYOUTLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_SIZEADAPTIVELAYOUTLAYOUTPARAMS_H__
 
-#include "elastos/droid/view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::View::ViewGroupLayoutParams;
+using Elastos::Droid::View::ViewGroup;
 
 namespace Elastos {
 namespace Droid {
@@ -22,7 +22,7 @@ namespace Internal {
  * @attr ref android.R.styleable#SizeAdaptiveLayout_Layout_layout_minHeight
  * @attr ref android.R.styleable#SizeAdaptiveLayout_Layout_layout_maxHeight
  */
-class SizeAdaptiveLayoutLayoutParams : public ViewGroupLayoutParams
+class SizeAdaptiveLayoutLayoutParams : public ViewGroup::LayoutParams
 {
 public:
     /**

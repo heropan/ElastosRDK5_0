@@ -12,7 +12,7 @@ namespace Widget {
 TableLayoutLayoutParams::TableLayoutLayoutParams(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
-    : LinearLayoutLayoutParams(c, attrs)
+    : LinearLayout::LayoutParams(c, attrs)
 {
 }
 
@@ -22,7 +22,7 @@ TableLayoutLayoutParams::TableLayoutLayoutParams(
 TableLayoutLayoutParams::TableLayoutLayoutParams(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
-    : LinearLayoutLayoutParams(w, h)
+    : LinearLayout::LayoutParams(w, h)
 {
 }
 
@@ -33,7 +33,7 @@ TableLayoutLayoutParams::TableLayoutLayoutParams(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
     /* [in] */ Float initWeight)
-    : LinearLayoutLayoutParams(
+    : LinearLayout::LayoutParams(
             IViewGroupLayoutParams::MATCH_PARENT, h, initWeight)
 {
 }
@@ -44,7 +44,7 @@ TableLayoutLayoutParams::TableLayoutLayoutParams(
  * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.</p>
  */
 TableLayoutLayoutParams::TableLayoutLayoutParams()
-    : LinearLayoutLayoutParams(
+    : LinearLayout::LayoutParams(
             IViewGroupLayoutParams::MATCH_PARENT,
             IViewGroupLayoutParams::WRAP_CONTENT)
 {
@@ -54,8 +54,8 @@ TableLayoutLayoutParams::TableLayoutLayoutParams()
  * {@inheritDoc}
  */
 TableLayoutLayoutParams::TableLayoutLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* p)
-    : LinearLayoutLayoutParams(p)
+    /* [in] */ ViewGroup::LayoutParams* p)
+    : LinearLayout::LayoutParams(p)
 {
 }
 
@@ -63,8 +63,8 @@ TableLayoutLayoutParams::TableLayoutLayoutParams(
  * {@inheritDoc}
  */
 TableLayoutLayoutParams::TableLayoutLayoutParams(
-    /* [in] */ ViewGroupMarginLayoutParams* source)
-    : LinearLayoutLayoutParams(source)
+    /* [in] */ ViewGroup::MarginLayoutParams* source)
+    : LinearLayout::LayoutParams(source)
 {
 }
 

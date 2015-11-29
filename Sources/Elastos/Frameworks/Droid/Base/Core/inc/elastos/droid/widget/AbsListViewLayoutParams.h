@@ -2,17 +2,17 @@
 #ifndef __ELASTOS_DROID_WIDGET_ABSLISTVIEWLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_ABSLISTVIEWLAYOUTPARAMS_H__
 
-#include "elastos/droid/view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::View::ViewGroupLayoutParams;
+using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class AbsListViewLayoutParams : public ViewGroupLayoutParams
+class AbsListViewLayoutParams : public ViewGroup::LayoutParams
 {
 public:
     AbsListViewLayoutParams();
@@ -52,7 +52,7 @@ public:
      * {@inheritDoc}
      */
     AbsListViewLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* source);
+        /* [in] */ ViewGroup::LayoutParams* source);
 
     CARAPI Init(
         /* [in] */ IContext* c,

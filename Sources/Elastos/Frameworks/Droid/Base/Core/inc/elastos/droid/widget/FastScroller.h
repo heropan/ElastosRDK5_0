@@ -70,6 +70,7 @@ private:
         FastScroller* mHost;
     };
 
+public:
     class Leftroperty : public Int32Property
     {
     public:

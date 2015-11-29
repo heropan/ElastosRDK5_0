@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_View_CWindowManagerLayoutParams.h"
-#include "elastos/droid/view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::IBinder;
@@ -14,7 +14,7 @@ namespace Droid {
 namespace View {
 
 CarClass(CWindowManagerLayoutParams)
-    , public ViewGroupLayoutParams
+    , public ViewGroup::LayoutParams
     , public IWindowManagerLayoutParams
     , public IParcelable
 {

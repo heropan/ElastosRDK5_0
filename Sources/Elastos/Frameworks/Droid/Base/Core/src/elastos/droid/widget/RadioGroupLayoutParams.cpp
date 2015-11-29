@@ -16,7 +16,7 @@ RadioGroupLayoutParams::RadioGroupLayoutParams()
 RadioGroupLayoutParams::RadioGroupLayoutParams(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
-    : LinearLayoutLayoutParams(c, attrs)
+    : LinearLayout::LayoutParams(c, attrs)
 {
 }
 
@@ -26,7 +26,7 @@ RadioGroupLayoutParams::RadioGroupLayoutParams(
 RadioGroupLayoutParams::RadioGroupLayoutParams(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
-    : LinearLayoutLayoutParams(width, height)
+    : LinearLayout::LayoutParams(width, height)
 {}
 
 /**
@@ -36,23 +36,23 @@ RadioGroupLayoutParams::RadioGroupLayoutParams(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Float weight)
-    : LinearLayoutLayoutParams(width, height, weight)
+    : LinearLayout::LayoutParams(width, height, weight)
 {}
 
 /**
  * {@inheritDoc}
  */
 RadioGroupLayoutParams::RadioGroupLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* p)
-    : LinearLayoutLayoutParams(p)
+    /* [in] */ ViewGroup::LayoutParams* p)
+    : LinearLayout::LayoutParams(p)
 {}
 
 /**
  * {@inheritDoc}
  */
 RadioGroupLayoutParams::RadioGroupLayoutParams(
-    /* [in] */ ViewGroupMarginLayoutParams* source)
-    : LinearLayoutLayoutParams(source)
+    /* [in] */ ViewGroup::MarginLayoutParams* source)
+    : LinearLayout::LayoutParams(source)
 {}
 
 /**
