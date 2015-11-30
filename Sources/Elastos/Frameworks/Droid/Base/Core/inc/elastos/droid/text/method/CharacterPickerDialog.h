@@ -72,7 +72,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ IView* view,
         /* [in] */ IEditable* text,
-        /* [in] */ String options,
+        /* [in] */ const String& options,
         /* [in] */ Boolean insert);
 
     CARAPI OnItemClick(

@@ -62,7 +62,7 @@ public:
      * @param tag the name of the default tab
      */
     CARAPI SetDefaultTab(
-        /* [in] */ String tag);
+        /* [in] */ const String& tag);
 
     /**
      * Sets the default tab that is the first tab highlighted.
@@ -78,7 +78,7 @@ public:
      * @return the {@link TabHost} the activity is using to host its tabs.
      */
     CARAPI GetTabHost(
-        /* [out] */ ITabWidget** tab);
+        /* [out] */ ITabHost** tab);
 
     /**
      * Returns the {@link TabWidget} the activity is using to draw the actual tabs.
@@ -103,15 +103,15 @@ protected:
         /* [in] */ ICharSequence* title);
 
     //@Override
-    protected CARAPI OnRestoreInstanceState(
+    CARAPI OnRestoreInstanceState(
         /* [in] */ IBundle* state);
 
     //@Override
-    protected CARAPI OnPostCreate(
+    CARAPI OnPostCreate(
         /* [in] */ IBundle* icicle);
 
     //@Override
-    protected CARAPI OnSaveInstanceState(
+    CARAPI OnSaveInstanceState(
         /* [in] */ IBundle* outState);
 
 private:

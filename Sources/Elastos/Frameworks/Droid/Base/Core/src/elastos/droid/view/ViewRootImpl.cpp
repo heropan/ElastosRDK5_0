@@ -5219,7 +5219,7 @@ ECode ViewRootImpl::FocusSearch(
 }
 
 ECode ViewRootImpl::Dump(
-    /* [in] */ String prefix,
+    /* [in] */ const String& prefix,
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* writer,
     /* [in] */ ArrayOf<String> * args)
@@ -5265,7 +5265,7 @@ ECode ViewRootImpl::Dump(
 }
 
 void ViewRootImpl::DumpViewHierarchy(
-    /* [in] */ String prefix,
+    /* [in] */ const String& prefix,
     /* [in] */ IPrintWriter* writer,
     /* [in] */ IView* view)
 {
@@ -5287,11 +5287,12 @@ void ViewRootImpl::DumpViewHierarchy(
     if (N <= 0) {
         return;
     }
-    prefix = prefix + String("  ");
+    String newPrefix(prefix);
+    newPrefix += "  ";
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IView> temp;
         grp->GetChildAt(i, (IView**)&temp);
-        DumpViewHierarchy(prefix, writer, temp);
+        DumpViewHierarchy(newPrefix, writer, temp);
     }
 }
 
@@ -6797,7 +6798,7 @@ Boolean ViewRootImpl::InputStage::ShouldDropInputEvent(
 }
 
 ECode ViewRootImpl::InputStage::Dump(
-    /* [in] */ String prefix,
+    /* [in] */ const String& prefix,
     /* [in] */ IPrintWriter* writer)
 {
     if (mNext != NULL) {
@@ -6812,13 +6813,13 @@ ECode ViewRootImpl::InputStage::Dump(
 ViewRootImpl::AsyncInputStage::AsyncInputStage(
     /* [in] */ ViewRootImpl* host,
     /* [in] */ InputStage* next,
-    /* [in] */ String traceCounter)
+    /* [in] */ const String& traceCounter)
     : InputStage(host, next)
     , mTraceCounter(traceCounter)
 {}
 
 ECode ViewRootImpl::AsyncInputStage::Dump(
-    /* [in] */ String prefix,
+    /* [in] */ const String& prefix,
     /* [in] */ IPrintWriter* writer)
 {
     writer->Print(prefix);
@@ -6959,7 +6960,7 @@ CAR_INTERFACE_IMPL(ViewRootImpl::NativePreImeInputStage, AsyncInputStage, IInput
 ViewRootImpl::NativePreImeInputStage::NativePreImeInputStage(
     /* [in] */ ViewRootImpl* host,
     /* [in] */ InputStage* next,
-    /* [in] */ String traceCounter)
+    /* [in] */ const String& traceCounter)
     : AsyncInputStage(host, next, traceCounter)
 {}
 
@@ -7024,7 +7025,7 @@ CAR_INTERFACE_IMPL(ViewRootImpl::ImeInputStage, AsyncInputStage, IInputMethodMan
 ViewRootImpl::ImeInputStage::ImeInputStage(
     /* [in] */ ViewRootImpl* host,
     /* [in] */ InputStage* next,
-    /* [in] */ String traceCounter)
+    /* [in] */ const String& traceCounter)
     : AsyncInputStage(host, next, traceCounter)
 {}
 
@@ -7145,7 +7146,7 @@ Int32 ViewRootImpl::EarlyPostImeInputStage::ProcessPointerEvent(
 ViewRootImpl::NativePostImeInputStage::NativePostImeInputStage(
     /* [in] */ ViewRootImpl* host,
     /* [in] */ InputStage* next,
-    /* [in] */ String traceCounter)
+    /* [in] */ const String& traceCounter)
     : AsyncInputStage(host, next, traceCounter)
 {}
 
@@ -8358,7 +8359,7 @@ String ViewRootImpl::QueuedInputEvent::ToString()
 }
 
 Boolean ViewRootImpl::QueuedInputEvent::FlagToString(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 flag,
     /* [in] */ Boolean hasPrevious,
     /* [in] */ IStringBuilder* sb)

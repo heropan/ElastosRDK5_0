@@ -499,8 +499,8 @@ String UtteranceSpeechItem::GetUtteranceId()
 
 String UtteranceSpeechItem::GetStringParam(
     /* [in] */ IBundle params,
-    /* [in] */ String key,
-    /* [in] */ String defaultValue)
+    /* [in] */ const String& key,
+    /* [in] */ const String& defaultValue)
 {
     String value;
 
@@ -514,7 +514,7 @@ String UtteranceSpeechItem::GetStringParam(
 
 Int32 UtteranceSpeechItem::GetIntParam(
     /* [in] */ IBundle params,
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Int32 defaultValue)
 {
     Int32 value;
@@ -529,7 +529,7 @@ Int32 UtteranceSpeechItem::GetIntParam(
 
 Float UtteranceSpeechItem::GetFloatParam(
     /* [in] */ IBundle params,
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Float defaultValue)
 {
     Float value;
@@ -664,7 +664,7 @@ TextToSpeechService::SynthesisToFileOutputStreamSpeechItemV1::SynthesisToFileOut
     /* [in] */ Int32 callerUid,
     /* [in] */ Int32 callerPid,
     /* [in] */ IBundle params,
-    /* [in] */ String utteranceId,
+    /* [in] */ const String& utteranceId,
     /* [in] */ ICharSequence text,
     /* [in] */ IFileOutputStream fileOutputStream)
 {
@@ -701,7 +701,7 @@ TextToSpeechService::AudioSpeechItemV1::AudioSpeechItemV1(
             /* [in] */ Int64 callerUid,
             /* [in] */ Int64 callerPid,
             /* [in] */ Bundle params,
-            /* [in] */ String utteranceId,
+            /* [in] */ const String& utteranceId,
             /* [in] */ Uri uri)
 {
 #if 0

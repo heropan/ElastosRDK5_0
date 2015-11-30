@@ -475,10 +475,10 @@ AutoPtr<IDrawable> CTvInputInfo::LoadServiceIcon(
 ECode CTvInputInfo::CreateTvInputInfo(
     /* [in] */ IContext * context,
     /* [in] */ IResolveInfo * service,
-    /* [in] */ String id,
-    /* [in] */ String parentId,
+    /* [in] */ const String& id,
+    /* [in] */ const String& parentId,
     /* [in] */ Int32 inputType,
-    /* [in] */ String label,
+    /* [in] */ const String& label,
     /* [in] */ IUri * iconUri,
     /* [in] */ Boolean isConnectedToHdmiSwitch,
     /* [out] */ ITvInputInfo ** result)

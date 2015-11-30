@@ -372,7 +372,7 @@ public:
      * @see #keycodeToString(int)
      */
     static CARAPI KeyCodeFromString(
-        /* [in] */ String symbolicName,
+        /* [in] */ const String& symbolicName,
         /* [out] */ Int32* keyCode);
 
     /**

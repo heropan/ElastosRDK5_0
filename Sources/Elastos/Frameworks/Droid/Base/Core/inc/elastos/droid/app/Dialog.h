@@ -456,12 +456,12 @@ public:
 protected:
     Dialog();
 
-    virtual CARAPI_(void) OnCreate(
+    virtual CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI_(void) OnStart();
+    virtual CARAPI OnStart();
 
-    virtual CARAPI_(void) OnStop();
+    virtual CARAPI OnStop();
 
     CARAPI Init(
         /* [in] */ IContext* context,

@@ -83,6 +83,7 @@ module
     merge("app/SharedElementCallback.car");
     merge("app/StatusBarManager.car");
     merge("app/TaskStackBuilder.car");
+    merge("app/TabActivity.car");
     merge("app/TimePickerDialog.car");
     merge("app/UiAutomation.car");
     merge("app/UiModeManager.car");
@@ -181,6 +182,9 @@ module
     interface Elastos.Droid.View.IOnWindowDismissedCallback;
     interface Elastos.Droid.View.IOnKeyguardExitResult;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.Widget.IExpandableListViewOnChildClickListener;
+    interface Elastos.Droid.Widget.IExpandableListViewOnGroupCollapseListener;
+    interface Elastos.Droid.Widget.IExpandableListViewOnGroupExpandListener;
     interface Elastos.Droid.Content.IComponentCallbacks;
     interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceClient;
@@ -1241,6 +1245,63 @@ module
             [in] ILauncherActivity* host);
 
         interface ILauncherActivityIconResizer;
+    }
+
+    class CExpandableListActivity {
+        constructor();
+
+        interface IExpandableListActivity;
+        interface IExpandableListViewOnChildClickListener;
+        interface IExpandableListViewOnGroupCollapseListener;
+        interface IExpandableListViewOnGroupExpandListener;
+
+        interface IActivity;
+        interface IContext;
+        interface IContextThemeWrapper;
+        interface ILayoutInflaterFactory;
+        interface ILayoutInflaterFactory2;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IOnWindowDismissedCallback;
+    }
+
+    class CTabActivity {
+        constructor();
+
+        interface ITabActivity;
+
+        interface IActivity;
+        interface IContext;
+        interface IContextThemeWrapper;
+        interface ILayoutInflaterFactory;
+        interface ILayoutInflaterFactory2;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IOnWindowDismissedCallback;
+    }
+
+    class CAliasActivity {
+        constructor();
+
+        interface IAliasActivity;
+
+        interface IActivity;
+        interface IContext;
+        interface IContextThemeWrapper;
+        interface ILayoutInflaterFactory;
+        interface ILayoutInflaterFactory2;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IOnWindowDismissedCallback;
     }
 
 //     [local]

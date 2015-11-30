@@ -11,7 +11,7 @@ module
     interface IExpandableListView;
 
     /** Used for being notified when a group is collapsed */
-    interface IOnGroupCollapseListener {
+    interface IExpandableListViewOnGroupCollapseListener {
         /**
          * Callback method to be invoked when a group in this expandable list has
          * been collapsed.
@@ -23,7 +23,7 @@ module
     }
 
     /** Used for being notified when a group is expanded */
-    interface IOnGroupExpandListener {
+    interface IExpandableListViewOnGroupExpandListener {
         /**
          * Callback method to be invoked when a group in this expandable list has
          * been expanded.
@@ -39,7 +39,7 @@ module
      * expandable list has been clicked.
      */
     [local]
-    interface IOnGroupClickListener {
+    interface IExpandableListViewOnGroupClickListener {
         /**
          * Callback method to be invoked when a group in this expandable list has
          * been clicked.
@@ -63,7 +63,7 @@ module
      * expandable list has been clicked.
      */
     [local]
-    interface IOnChildClickListener {
+    interface IExpandableListViewOnChildClickListener {
         /**
          * Callback method to be invoked when a child in this expandable list has
          * been clicked.IExpandableListContextMenuInfo
@@ -166,16 +166,16 @@ module
             [out] Boolean* collapse);
 
         SetOnGroupCollapseListener(
-            [in] IOnGroupCollapseListener* onGroupCollapseListener);
+            [in] IExpandableListViewOnGroupCollapseListener* onGroupCollapseListener);
 
         SetOnGroupExpandListener(
-            [in] IOnGroupExpandListener* onGroupExpandListener);
+            [in] IExpandableListViewOnGroupExpandListener* onGroupExpandListener);
 
         SetOnGroupClickListener(
-            [in] IOnGroupClickListener* onGroupClickListener);
+            [in] IExpandableListViewOnGroupClickListener* onGroupClickListener);
 
         SetOnChildClickListener(
-            [in] IOnChildClickListener* onChildClickListener);
+            [in] IExpandableListViewOnChildClickListener* onChildClickListener);
 
         /**
          * Converts a flat list position (the raw position of an item (child or group)

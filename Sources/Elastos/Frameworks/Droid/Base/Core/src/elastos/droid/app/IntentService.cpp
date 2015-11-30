@@ -49,7 +49,7 @@ IntentService::~IntentService()
 {}
 
 ECode IntentService::constructor(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     FAIL_RETURN(Service::constructor())
     mName = name;

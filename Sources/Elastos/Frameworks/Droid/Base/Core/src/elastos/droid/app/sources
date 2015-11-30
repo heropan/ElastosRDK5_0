@@ -41,7 +41,7 @@ SOURCES += CAlarmClockInfo.cpp
 #SOURCES += AlertDialog.cpp
 #SOURCES += CAlertDialog.cpp
 #SOURCES += CAlertDialogBuilder.cpp
-#SOURCES += AliasActivity.cpp
+SOURCES += AliasActivity.cpp
 
 SOURCES += AppGlobals.cpp
 SOURCES += AppImportanceMonitor.cpp
@@ -74,7 +74,7 @@ SOURCES += CContentProviderHolder.cpp
 
 SOURCES += EnterTransitionCoordinator.cpp
 SOURCES += ExitTransitionCoordinator.cpp
-#SOURCES += ExpandableListActivity.cpp
+SOURCES += ExpandableListActivity.cpp
 
 SOURCES += FastBitmapDrawable.cpp
 SOURCES += Fragment.cpp
@@ -126,8 +126,7 @@ SOURCES += PackageInstallObserver.cpp
 SOURCES += CPendingIntent.cpp
 SOURCES += CPendingIntentFinishedDispatcher.cpp
 SOURCES += CPendingIntentHelper.cpp
-#SOURCES += CPresentation.cpp
-#SOURCES += Presentation.cpp
+##SOURCES += Presentation.cpp
 SOURCES += CProfilerInfo.cpp
 #SOURCES += ProgressDialog.cpp
 #SOURCES += CProgressDialog.cpp
@@ -144,9 +143,9 @@ SOURCES += CResultInfo.cpp
 
 SOURCES += Service.cpp
 SOURCES += SharedElementCallback.cpp
-#SOURCES += SharedPreferencesImpl.cpp
+##SOURCES += SharedPreferencesImpl.cpp
 SOURCES += CStatusBarManager.cpp
-##SOURCES += TabActivity.cpp
+SOURCES += TabActivity.cpp
 SOURCES += CTaskStackBuilder.cpp
 SOURCES += CTaskStackBuilderHelper.cpp
 #SOURCES += TimePickerDialog.cpp

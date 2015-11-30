@@ -20,7 +20,7 @@ ECode TabActivity::constructor()
 }
 
 ECode TabActivity::SetDefaultTab(
-    /* [in] */ String tag)
+    /* [in] */ const String& tag)
 {
     mDefaultTab = tag;
     mDefaultTabIndex = -1;
@@ -120,7 +120,7 @@ ECode TabActivity::OnChildTitleChanged(
     AutoPtr<ILocalActivityManager> mgr;
     GetLocalActivityManager((ILocalActivityManager**)&mgr);
     AutoPtr<IActivity> activity;
-    mgr->GetCurrentActivity((IActivity**)&activity)
+    mgr->GetCurrentActivity((IActivity**)&activity);
     if (activity.Get() == childActivity) {
         AutoPtr<IView> tabView;
         mTabHost->GetCurrentTabView((IView**)&tabView);
@@ -132,7 +132,7 @@ ECode TabActivity::OnChildTitleChanged(
 }
 
 ECode TabActivity::GetTabHost(
-    /* [out] */ ITabWidget** tab)
+    /* [out] */ ITabHost** tab)
 {
     FAIL_RETURN(EnsureTabHost())
     *tab = mTabHost;

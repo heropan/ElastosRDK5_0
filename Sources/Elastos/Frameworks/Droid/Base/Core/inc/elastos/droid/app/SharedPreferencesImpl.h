@@ -6,17 +6,17 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/List.h>
-#include <elastos/Map.h>
+#include <elastos/utility/etl/Map.h>
 #include <elastos/core/Object.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::IFileOutputStream;
 using Elastos::Utility::ISet;
+using Elastos::Utility::IMap;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::List;
-using Elastos::Utility::Map;
-using Elastos::Utility::IObjectMap;
+using Elastos::Utility::Etl::Map;
 using Elastos::Utility::Concurrent::ICountDownLatch;
 using Elastos::Droid::Content::ISharedPreferences;
 using Elastos::Droid::Content::ISharedPreferencesEditor;
@@ -29,12 +29,12 @@ namespace Droid {
 namespace App {
 
 class SharedPreferencesImpl
-    : public ElRefBase
-    , public Object
+    : public Object
     , public ISharedPreferences
 {
 private:
-    class MemoryCommitResult: public ElRefBase
+    class MemoryCommitResult
+        : public Object
     {
     public:
         MemoryCommitResult();
@@ -53,8 +53,7 @@ private:
 
 public:
     class EditorImpl
-        : public ElRefBase
-        , public Object
+        : public Object
         , public ISharedPreferencesEditor
     {
     private:
@@ -100,10 +99,10 @@ public:
         };
 
     public:
+        CAR_INTERFACE_DECL();
+
         EditorImpl(
             /* [in] */ SharedPreferencesImpl* host);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI PutString(
             /* [in] */ const String& key,
@@ -184,11 +183,11 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     SharedPreferencesImpl(
         /* [in] */ IFile* file,
         /* [in] */ Int32 mode);
-
-    CAR_INTERFACE_DECL();
 
     CARAPI RegisterOnSharedPreferenceChangeListener(
         /* [in] */ ISharedPreferencesOnSharedPreferenceChangeListener* listener);
@@ -197,7 +196,7 @@ public:
         /* [in] */ ISharedPreferencesOnSharedPreferenceChangeListener* listener);
 
     CARAPI GetAll(
-        /* [out] */ IObjectMap** result);
+        /* [out] */ IMap** result);
 
     CARAPI GetString(
         /* [in] */ const String& key,
