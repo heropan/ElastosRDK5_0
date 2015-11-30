@@ -1,4 +1,15 @@
 
+#include <dlfcn.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <android/dlext.h>
+
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/WebViewFactory.h"
 #include <elastos/utility/logging/Logger.h>
@@ -9,6 +20,9 @@ using Elastos::Utility::Logging::Logger;
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
+
+static void* gReservedAddress = NULL;
+static size_t gReservedSize = 0;
 
 const String WebViewFactory::CHROMIUM_WEBVIEW_FACTORY("com.android.webview.chromium.WebViewChromiumFactoryProvider");
 
@@ -359,8 +373,57 @@ void WebViewFactory::LoadNativeLibrary()
 Boolean WebViewFactory::NativeReserveAddressSpace(
     /* [in] */ Int64 addressSpaceToReserve)
 {
-    assert(0);
-    return FALSE;
+    size_t vsize = static_cast<size_t>(addressSpaceToReserve);
+    void *addr = mmap(NULL, vsize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (addr == MAP_FAILED) {
+        Logger::E(LOGTAG, "Failed to reserve %zd bytes of address space for future load of libelwebviewchromium.so: %s", vsize, strerror(errno));
+        return FALSE;
+    }
+    gReservedAddress = addr;
+    gReservedSize = vsize;
+    Logger::I(LOGTAG, "Reserved  %zd bytes at %p", vsize, addr);
+    return TRUE;
+}
+
+Boolean DoCreateRelroFile(const char* lib, const char* relro) {
+    // Try to unlink the old file, since if this is being called, the old one is
+    // obsolete.
+    if (unlink(relro) != 0 && errno != ENOENT) {
+          // If something went wrong other than the file not existing, log a warning
+          // but continue anyway in the hope that we can successfully overwrite the
+          // existing file with rename() later.
+        Logger::W("WebViewFactory", "Failed to unlink old file %s: %s", relro, strerror(errno));
+    }
+    static const char tmpsuffix[] = ".XXXXXX";
+    char relro_tmp[strlen(relro) + sizeof(tmpsuffix)];
+    strlcpy(relro_tmp, relro, sizeof(relro_tmp));
+    strlcat(relro_tmp, tmpsuffix, sizeof(relro_tmp));
+    int tmp_fd = TEMP_FAILURE_RETRY(mkstemp(relro_tmp));
+    if (tmp_fd == -1) {
+        Logger::W("WebViewFactory", "Failed to create temporary file %s: %s", relro_tmp, strerror(errno));
+        return FALSE;
+    }
+    android_dlextinfo extinfo;
+    extinfo.flags = ANDROID_DLEXT_RESERVED_ADDRESS | ANDROID_DLEXT_WRITE_RELRO;
+    extinfo.reserved_addr = gReservedAddress;
+    extinfo.reserved_size = gReservedSize;
+    extinfo.relro_fd = tmp_fd;
+    void* handle = android_dlopen_ext(lib, RTLD_NOW, &extinfo);
+    int close_result = close(tmp_fd);
+    if (handle == NULL) {
+        Logger::W("WebViewFactory", "Failed to load library %s: %s", lib, dlerror());
+        unlink(relro_tmp);
+        return FALSE;
+    }
+    if (close_result != 0 ||
+            chmod(relro_tmp, S_IRUSR | S_IRGRP | S_IROTH) != 0 ||
+            rename(relro_tmp, relro) != 0) {
+        Logger::W("WebViewFactory", "Failed to update relro file %s: %s", relro, strerror(errno));
+        unlink(relro_tmp);
+        return FALSE;
+    }
+    //Logger::W("WebViewFactory", "Created relro file %s for library %s", relro, lib);
+    return TRUE;
 }
 
 Boolean WebViewFactory::NativeCreateRelroFile(
@@ -369,8 +432,41 @@ Boolean WebViewFactory::NativeCreateRelroFile(
     /* [in] */ const String& relro32,
     /* [in] */ const String& relro64)
 {
-    assert(0);
-    return FALSE;
+#ifdef __LP64__
+    String lib = lib64;
+    String relro = relro64;
+    (void)lib32; (void)relro32;
+#else
+    String lib = lib32;
+    String relro = relro32;
+    (void)lib64; (void)relro64;
+#endif
+    Boolean ret = FALSE;
+    if (!lib.IsNullOrEmpty() && !relro.IsNullOrEmpty()) {
+        ret = DoCreateRelroFile(lib.string(), relro.string());
+    }
+    return ret;
+}
+
+Boolean DoLoadWithRelroFile(const char* lib, const char* relro) {
+    int relro_fd = TEMP_FAILURE_RETRY(open(relro, O_RDONLY));
+    if (relro_fd == -1) {
+        Logger::W("WebViewFactory", "Failed to open relro file %s: %s", relro, strerror(errno));
+        return FALSE;
+    }
+    android_dlextinfo extinfo;
+    extinfo.flags = ANDROID_DLEXT_RESERVED_ADDRESS | ANDROID_DLEXT_USE_RELRO;
+    extinfo.reserved_addr = gReservedAddress;
+    extinfo.reserved_size = gReservedSize;
+    extinfo.relro_fd = relro_fd;
+    void* handle = android_dlopen_ext(lib, RTLD_NOW, &extinfo);
+    close(relro_fd);
+    if (handle == NULL) {
+        Logger::W("WebViewFactory", "Failed to load library %s: %s", lib, dlerror());
+        return FALSE;
+    }
+    //Logger::I("WebViewFactory", "Loaded library %s with relro file %s", lib, relro);
+    return TRUE;
 }
 
 Boolean WebViewFactory::NativeLoadWithRelroFile(
@@ -379,8 +475,20 @@ Boolean WebViewFactory::NativeLoadWithRelroFile(
     /* [in] */ const String& relro32,
     /* [in] */ const String& relro64)
 {
-    assert(0);
-    return FALSE;
+#ifdef __LP64__
+    String lib = lib64;
+    String relro = relro64;
+    (void)lib32; (void)relro32;
+#else
+    String lib = lib32;
+    String relro = relro32;
+    (void)lib64; (void)relro64;
+#endif
+    Boolean ret = FALSE;
+    if (!lib.IsNullOrEmpty() && !relro.IsNullOrEmpty()) {
+        ret = DoLoadWithRelroFile(lib.string(), relro.string());
+    }
+    return ret;
 }
 
 } // namespace Webkit
