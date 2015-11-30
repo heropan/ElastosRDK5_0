@@ -166,6 +166,8 @@ module
     merge("view/textservice/SuggestionsInfo.car");
     merge("view/textservice/TextInfo.car");
     merge("view/textservice/TextServicesManager.car");
+    merge("view/textservice/SpellCheckerSessionListenerImpl.car");
+    merge("view/textservice/InternalListener.car");
     merge("internal/view/BaseIWindow.car");
     merge("internal/view/IInputContext.car");
     merge("internal/view/IInputMethodClient.car");
@@ -231,6 +233,9 @@ module
     interface Elastos.Droid.Graphics.ISurfaceTexture;
     interface Elastos.Droid.Graphics.ICanvasProperty;
     interface Elastos.Droid.Animation.IAnimator;
+    interface Elastos.Droid.View.Internal.TextService.IISpellCheckerSessionListener;
+    interface Elastos.Droid.View.Internal.TextService.IITextServicesSessionListener;
+    interface Elastos.Droid.View.Internal.TextService.IITextServicesManager;
 
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
@@ -2138,6 +2143,127 @@ module
     }
 
     } // InputMethod
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace TextService {
+
+    [deprecated]
+    class CSentenceSuggestionsInfo {
+        constructor();
+
+        constructor(
+            [in] ArrayOf<ISuggestionsInfo*>* suggestionsInfos,
+            [in] ArrayOf<Int32>* offsets,
+            [in] ArrayOf<Int32>* lengths);
+
+        interface ISentenceSuggestionsInfo;
+        interface IParcelable;
+    }
+
+    class CSpellCheckerInfo {
+        constructor();
+
+        constructor(
+            [in] IContext* context,
+            [in] IResolveInfo* service);
+
+        interface ISpellCheckerInfo;
+        interface IParcelable;
+    }
+
+    class CSpellCheckerSubtype {
+        constructor();
+
+        constructor(
+            [in] Int32 nameId,
+            [in] String locale,
+            [in] String extraValue);
+
+        interface ISpellCheckerSubtype;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CSuggestionsInfo {
+        constructor();
+
+        constructor(
+            [in] Int32 suggestionsAttributes,
+            [in] ArrayOf<String>* suggestions);
+
+        constructor(
+            [in] Int32 suggestionsAttributes,
+            [in] ArrayOf<String>* suggestions,
+            [in] Int32 cookie,
+            [in] Int32 sequence);
+
+        interface ISuggestionsInfo;
+        interface IParcelable;
+    }
+
+    class CTextInfo {
+        constructor();
+
+        constructor(
+            [in] String text);
+
+        constructor(
+            [in] String text,
+            [in] Int32 cookie,
+            [in] Int32 sequence);
+
+        constructor(
+            [in] ICharSequence* charSequence,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] Int32 cookie,
+            [in] Int32 sequenceNumber);
+
+        interface ITextInfo;
+        interface IParcelable;
+    }
+
+    class CTextServicesManager {
+        constructor();
+
+        interface ITextServicesManager;
+    }
+
+    class CSpellCheckerSessionListenerImpl {
+
+        constructor(
+            [in] IHandler* handler);
+
+        interface ISpellCheckerSessionListenerImpl;
+        interface IISpellCheckerSessionListener;
+    }
+
+    class CInternalListener {
+
+        constructor(
+            [in] ISpellCheckerSessionListenerImpl* spellCheckerSessionListenerImpl);
+
+        interface IInternalListener;
+        interface IITextServicesSessionListener;
+    }
+
+    class CSpellCheckerSession {
+
+        constructor(
+            [in] ISpellCheckerInfo* info,
+            [in] IITextServicesManager* tsm,
+            [in] ISpellCheckerSessionListener* listener,
+            [in] ISpellCheckerSubtype* subtype);
+
+        interface ISpellCheckerSession;
+    }
+
+    } // namespace TextService
     } // namespace View
     } // namepsace Droid
     } // namespace Elastos

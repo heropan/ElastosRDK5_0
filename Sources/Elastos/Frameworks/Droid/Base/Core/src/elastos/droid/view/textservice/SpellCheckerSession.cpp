@@ -1,324 +1,154 @@
 
 #include "elastos/droid/view/textservice/SpellCheckerSession.h"
+#include "elastos/droid/view/textservice/CSpellCheckerSessionListenerImpl.h"
+#include "elastos/droid/view/textservice/CInternalListener.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
+namespace TextService {
+
+//========================================================================================
+//              SpellCheckerSession::MyHandler::
+//========================================================================================
+ECode SpellCheckerSession::MyHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    Int32 what;
+    msg->GetWhat(&what);
+    AutoPtr<IInterface> obj;
+    msg->GetObj((IInterface**)&obj);
+
+    switch (what) {
+        case ISpellCheckerSession::MSG_ON_GET_SUGGESTION_MULTIPLE: {
+            assert(0 && "TODO");
+//            mHost->HandleOnGetSuggestionsMultiple((SuggestionsInfo[]) obj);
+            break;
+        }
+        case ISpellCheckerSession::MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE: {
+            assert(0 && "TODO");
+//            mHost->HandleOnGetSentenceSuggestionsMultiple((SentenceSuggestionsInfo[]) obj);
+            break;
+        }
+    }
+    return NOERROR;
+}
 
 //========================================================================================
 //              SpellCheckerSession::
 //========================================================================================
-CAR_INTERFACE_IMPL_2(SpellCheckerSession, Object, ISpellCheckerSession)
+CAR_INTERFACE_IMPL(SpellCheckerSession, Object, ISpellCheckerSession)
 
-const String SpellCheckerSession::TAG;// = SpellCheckerSession.class.getSimpleName();
+const String SpellCheckerSession::TAG("SpellCheckerSession");
 const Boolean SpellCheckerSession::DBG = FALSE;
 const String SpellCheckerSession::SERVICE_META_DATA("android.view.textservice.scs");
-const Int32 SpellCheckerSession::MSG_ON_GET_SUGGESTION_MULTIPLE = 1;
-const Int32 SpellCheckerSession::MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE = 2;
 
-const Int32 SpellCheckerSession::SpellCheckerSessionListenerImpl::TASK_CANCEL = 1;
-const Int32 SpellCheckerSession::SpellCheckerSessionListenerImpl::TASK_GET_SUGGESTIONS_MULTIPLE = 2;
-const Int32 SpellCheckerSession::SpellCheckerSessionListenerImpl::TASK_CLOSE = 3;
-const Int32 SpellCheckerSession::SpellCheckerSessionListenerImpl::TASK_GET_SUGGESTIONS_MULTIPLE_FOR_SENTENCE = 4;
-
-SpellCheckerSession::SpellCheckerSession(
-    /* [in] */ ISpellCheckerInfo* info,
-    /* [in] */ ITextServicesManager* tsm,
-    /* [in] */ ISpellCheckerSessionListener* listener,
-    /* [in] */ ISpellCheckerSubtype* subtype)
+SpellCheckerSession::SpellCheckerSession()
 {
-    Init(info, tsm, listener, subtype);
+    mHandler = new MyHandler(this);
 }
 
-void SpellCheckerSession::Init(
+ECode SpellCheckerSession::constructor(
     /* [in] */ ISpellCheckerInfo* info,
-    /* [in] */ ITextServicesManager* tsm,
+    /* [in] */ IITextServicesManager* tsm,
     /* [in] */ ISpellCheckerSessionListener* listener,
     /* [in] */ ISpellCheckerSubtype* subtype)
 {
-    assert(info != NULL && listener != NULL && tsm != NULL);
+    if (info == NULL || listener == NULL || tsm == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
 
     mSpellCheckerInfo = info;
-    mSpellCheckerSessionListenerImpl = new SpellCheckerSessionListenerImpl(mHandler);
-    mInternalListener = new InternalListener(mSpellCheckerSessionListenerImpl);
+    CSpellCheckerSessionListenerImpl::New(mHandler, (ISpellCheckerSessionListenerImpl**)&mSpellCheckerSessionListenerImpl);
+    CInternalListener::New(mSpellCheckerSessionListenerImpl, (IInternalListener**)&mInternalListener);
     mTextServicesManager = tsm;
     mIsUsed = TRUE;
     mSpellCheckerSessionListener = listener;
     mSubtype = subtype;
+    return NOERROR;
 }
 
-Boolean SpellCheckerSession::IsSessionDisconnected()
+ECode SpellCheckerSession::IsSessionDisconnected(
+    /* [out] */ Boolean* result)
 {
-    return mSpellCheckerSessionListenerImpl->IsDisconnected();
+    VALIDATE_NOT_NULL(result)
+    return mSpellCheckerSessionListenerImpl->IsDisconnected(result);
 }
 
-AutoPtr<ISpellCheckerInfo> SpellCheckerSession::GetSpellChecker()
+ECode SpellCheckerSession::GetSpellChecker(
+    /* [out] */ ISpellCheckerInfo** info)
 {
-    return mSpellCheckerSessionListenerImpl;
+    VALIDATE_NOT_NULL(info)
+    *info = ISpellCheckerInfo::Probe(mSpellCheckerSessionListenerImpl);
+    REFCOUNT_ADD(*info)
+    return NOERROR;
 }
 
-void SpellCheckerSession::Cancel()
+ECode SpellCheckerSession::Cancel()
 {
-    mSpellCheckerSessionListenerImpl->Cancel();
+    return mSpellCheckerSessionListenerImpl->Cancel();
 }
 
-void SpellCheckerSession::Close()
+ECode SpellCheckerSession::Close()
 {
     mIsUsed = FALSE;
-    //try {
-        mSpellCheckerSessionListenerImpl->Close();
-        mTextServicesManager->FinishSpellCheckerService(mSpellCheckerSessionListenerImpl);
-    //} catch (RemoteException e) {
-        // do nothing
-    //}
+    mSpellCheckerSessionListenerImpl->Close();
+    mTextServicesManager->FinishSpellCheckerService(IISpellCheckerSessionListener::Probe(mSpellCheckerSessionListenerImpl));
+    return NOERROR;
 }
 
-void SpellCheckerSession::GetSentenceSuggestions(
+ECode SpellCheckerSession::GetSentenceSuggestions(
     /* [in] */ ArrayOf<ITextInfo*>* textInfos,
     /* [in] */ Int32 suggestionsLimit)
 {
-    mSpellCheckerSessionListenerImpl->GetSentenceSuggestionsMultiple(
+    return mSpellCheckerSessionListenerImpl->GetSentenceSuggestionsMultiple(
                 textInfos, suggestionsLimit);
 }
 
-void SpellCheckerSession::GetSuggestions(
+ECode SpellCheckerSession::GetSuggestions(
     /* [in] */ ITextInfo* textInfo,
     /* [in] */ Int32 suggestionsLimit)
 {
     AutoPtr<ArrayOf<ITextInfo*> > textInfoArray = ArrayOf<ITextInfo*>::Alloc(1);
-    textInfoArray[0] = textInfo;
+    (*textInfoArray)[0] = textInfo;
     GetSuggestions(textInfoArray, suggestionsLimit, FALSE);
+    return NOERROR;
 }
 
-void SpellCheckerSession::GetSuggestions(
+ECode SpellCheckerSession::GetSuggestions(
     /* [in] */ ArrayOf<ITextInfo*>* textInfos,
     /* [in] */ Int32 suggestionsLimit,
     /* [in] */ Boolean sequentialWords)
 {
-//    if (DBG) {
-//        Log.w(TAG, "getSuggestions from " + mSpellCheckerInfo.getId());
-//    }
+    if (DBG) {
+        String strID;
+        mSpellCheckerInfo->GetId(&strID);
+        Logger::W(TAG, "getSuggestions from %s", (const char*)strID);
+    }
     mSpellCheckerSessionListenerImpl->GetSuggestionsMultiple(
             textInfos, suggestionsLimit, sequentialWords);
+    return NOERROR;
 }
 
-AutoPtr<ITextServicesSessionListener> SpellCheckerSession::GetTextServicesSessionListener()
+ECode SpellCheckerSession::GetTextServicesSessionListener(
+    /* [out] */ IITextServicesSessionListener** listener)
 {
-    return mInternalListener;
+    VALIDATE_NOT_NULL(listener)
+    *listener = IITextServicesSessionListener::Probe(mInternalListener);
+    REFCOUNT_ADD(*listener)
+    return NOERROR;
 }
 
-AutoPtr<ISpellCheckerSessionListener> SpellCheckerSession::GetSpellCheckerSessionListener()
+ECode SpellCheckerSession::GetSpellCheckerSessionListener(
+    /* [out]*/ IISpellCheckerSessionListener** listener)
 {
-    return mSpellCheckerSessionListenerImpl;
-}
-
-SpellCheckerSession::SpellCheckerSessionListenerImpl::SpellCheckerSessionListenerImpl(
-    /* [in] */ Handler handler)
-{
-    mOpened = FALSE;
-    mHandler = handler;
-}
-
-void SpellCheckerSession::SpellCheckerSessionListenerImpl::OnServiceConnected(
-    /* [in] */ ISpellCheckerSession* session)
-{
-    Object::AutoLock lock(mLock);
-//    if (DBG) {
-//        Log.w(TAG, "SpellCheckerSession connected.");
-//    }
-    mParentSpellCheckerSessionListenerImpl->OnServiceConnected(session);
-}
-
-void SpellCheckerSession::SpellCheckerSessionListenerImpl::Cancel()
-{
-//    if (DBG) {
-//        Log.w(TAG, "cancel");
-//    }
-    AutoPtr<SpellCheckerParams> params = new SpellCheckerParams(TASK_CANCEL, NULL, 0, FALSE);
-    ProcessOrEnqueueTask(params);
-}
-
-void SpellCheckerSession::SpellCheckerSessionListenerImpl::GetSuggestionsMultiple(
-    /* [in] */ ArrayOf<ITextInfo*>* textInfos,
-    /* [in] */ Int32 suggestionsLimit,
-    /* [in] */ Boolean sequentialWords)
-{
-//  if (DBG) {
-//      Log.w(TAG, "getSuggestionsMultiple");
-//  }
-    AutoPtr<SpellCheckerParams> params = new SpellCheckerParams(TASK_GET_SUGGESTIONS_MULTIPLE, textInfos,
-            suggestionsLimit, sequentialWords);
-    ProcessOrEnqueueTask(params);
-}
-
-void SpellCheckerSession::SpellCheckerSessionListenerImpl::GetSentenceSuggestionsMultiple(
-    /* [in] */ ArrayOf<ITextInfo*>* textInfos,
-    /* [in] */ Int32 suggestionsLimit)
-{
-//    if (DBG) {
-//        Log.w(TAG, "getSentenceSuggestionsMultiple");
-//    }
-    AutoPtr<SpellCheckerParams> params = new SpellCheckerParams(TASK_GET_SUGGESTIONS_MULTIPLE_FOR_SENTENCE,
-            textInfos, suggestionsLimit, FALSE);
-    ProcessOrEnqueueTask(params);
-}
-
-void SpellCheckerSession::SpellCheckerSessionListenerImpl::Close()
-{
-//    if (DBG) {
-//        Log.w(TAG, "close");
-//    }
-
-    ProcessOrEnqueueTask(new SpellCheckerParams(TASK_CLOSE, NULL, 0, FALSE));
-}
-
-Boolean SpellCheckerSession::SpellCheckerSessionListenerImpl::IsDisconnected()
-{
-    return mOpened && mISpellCheckerSession == NULL;
-}
-
-//@Override
-void SpellCheckerSession::SpellCheckerSessionListenerImpl::OnGetSuggestions(
-    /* [in] */ ArrayOf<ISuggestionsInfo*>* results)
-{
-    //synchronized(this)
-    {
-        Object::AutoLock lock(mLock);
-//        if (mHandler != null) {
-//            mHandler.sendMessage(Message.obtain(mHandler,
-//                    MSG_ON_GET_SUGGESTION_MULTIPLE, results));
-//        }
-    }
-}
-
-void SpellCheckerSession::SpellCheckerSessionListenerImpl::OnGetSentenceSuggestions(
-    /* [in] */ ArrayOf<ISentenceSuggestionsInfo*>* results)
-{
-//    mHandler.sendMessage(
-//        Message.obtain(mHandler, MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE, results));
-}
-
-void SpellCheckerSession::SpellCheckerSessionListenerImpl::ProcessTask(
-    /* [in] */ ISpellCheckerSession* session,
-    /* [in] */ SpellCheckerParams* scp,
-    /* [in] */ Boolean async)
-{/*
-    if (async || mAsyncHandler == null) {
-        switch (scp.mWhat) {
-            case TASK_CANCEL:
-                if (DBG) {
-                    Log.w(TAG, "Cancel spell checker tasks.");
-                }
-                try {
-                    session.onCancel();
-                } catch (RemoteException e) {
-                    Log.e(TAG, "Failed to cancel " + e);
-                }
-                break;
-            case TASK_GET_SUGGESTIONS_MULTIPLE:
-                if (DBG) {
-                    Log.w(TAG, "Get suggestions from the spell checker.");
-                }
-                try {
-                    session.onGetSuggestionsMultiple(scp.mTextInfos,
-                            scp.mSuggestionsLimit, scp.mSequentialWords);
-                } catch (RemoteException e) {
-                    Log.e(TAG, "Failed to get suggestions " + e);
-                }
-                break;
-            case TASK_GET_SUGGESTIONS_MULTIPLE_FOR_SENTENCE:
-                if (DBG) {
-                    Log.w(TAG, "Get sentence suggestions from the spell checker.");
-                }
-                try {
-                    session.onGetSentenceSuggestionsMultiple(
-                            scp.mTextInfos, scp.mSuggestionsLimit);
-                } catch (RemoteException e) {
-                    Log.e(TAG, "Failed to get suggestions " + e);
-                }
-                break;
-            case TASK_CLOSE:
-                if (DBG) {
-                    Log.w(TAG, "Close spell checker tasks.");
-                }
-                try {
-                    session.onClose();
-                } catch (RemoteException e) {
-                    Log.e(TAG, "Failed to close " + e);
-                }
-                break;
-        }
-    } else {
-        // The interface is to a local object, so need to execute it
-        // asynchronously.
-        scp.mSession = session;
-        mAsyncHandler.sendMessage(Message.obtain(mAsyncHandler, 1, scp));
-    }
-
-    if (scp.mWhat == TASK_CLOSE) {
-        // If we are closing, we want to clean up our state now even
-        // if it is pending as an async operation.
-        synchronized(this) {
-            mISpellCheckerSession = null;
-            mHandler = null;
-            if (mThread != null) {
-                mThread.quit();
-            }
-            mThread = null;
-            mAsyncHandler = null;
-        }
-    }*/
-}
-
-void SpellCheckerSession::SpellCheckerSessionListenerImpl::ProcessOrEnqueueTask(
-    /* [in] */ SpellCheckerParams* scp)
-{
-//    if (DBG) {
-//        Log.d(TAG, "process or enqueue task: " + mISpellCheckerSession);
-//    }
-/*
-    AutoPtr<ISpellCheckerSession> session;
-    //synchronized(this)
-    {
-        Object::AutoLock lock(mLock);
-        session = mISpellCheckerSession;
-        if (session == NULL) {
-            SpellCheckerParams* closeTask = NULL;
-            if (scp->mWhat == TASK_CANCEL) {
-                while (!mPendingTasks.isEmpty()) {
-                    final SpellCheckerParams tmp = mPendingTasks.poll();
-                    if (tmp.mWhat == TASK_CLOSE) {
-                        // Only one close task should be processed, while we need to remove
-                        // all close tasks from the queue
-                        closeTask = tmp;
-                    }
-                }
-            }
-            mPendingTasks.offer(scp);
-            if (closeTask != null) {
-                mPendingTasks.offer(closeTask);
-            }
-            return;
-        }
-    }
-    processTask(session, scp, false);
-    */
-}
-
-SpellCheckerSession::InternalListener::InternalListener(
-    /* [in] */ SpellCheckerSessionListenerImpl* spellCheckerSessionListenerImpl)
-{
-    mParentSpellCheckerSessionListenerImpl = spellCheckerSessionListenerImpl;
-}
-
-void SpellCheckerSession::InternalListener::OnServiceConnected(
-    /* [in] */ ISpellCheckerSession* session)
-{
-//    if (DBG) {
-//        Log.w(TAG, "SpellCheckerSession connected.");
-//    }
-    mParentSpellCheckerSessionListenerImpl->OnServiceConnected(session);
+    VALIDATE_NOT_NULL(listener)
+    *listener = IISpellCheckerSessionListener::Probe(mSpellCheckerSessionListenerImpl);
+    REFCOUNT_ADD(*listener)
+    return NOERROR;
 }
 
 void SpellCheckerSession::HandleOnGetSuggestionsMultiple(
@@ -333,7 +163,7 @@ void SpellCheckerSession::HandleOnGetSentenceSuggestionsMultiple(
     mSpellCheckerSessionListener->OnGetSentenceSuggestions(suggestionInfos);
 }
 
-}   //namespace Textservice
+}   //namespace TextService
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos

@@ -2,10 +2,19 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_SPELLCHECKERSESSION_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_SPELLCHECKERSESSION_H__
 
+#include "elastos/droid/os/Handler.h"
+
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::View::Internal::TextService::IITextServicesSessionListener;
+using Elastos::Droid::View::Internal::TextService::IISpellCheckerSessionListener;
+using Elastos::Droid::View::Internal::TextService::IITextServicesManager;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
+namespace TextService {
 
 /**
  * The SpellCheckerSession interface provides the per client functionality of SpellCheckerService.
@@ -59,14 +68,36 @@ class SpellCheckerSession
     : public Object
     , public ISpellCheckerSession
 {
+private:
+    /** Handler that will execute the main tasks */
+    class MyHandler
+        : public Handler
+    {
+    public:
+        MyHandler(
+            /* [in] */ SpellCheckerSession* host)
+            : mHost(host)
+        {}
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        SpellCheckerSession* mHost;
+    };
+
 public:
+    CAR_INTERFACE_DECL()
+
+    SpellCheckerSession();
+
     /**
      * Constructor
      * @hide
      */
     CARAPI constructor(
         /* [in] */ ISpellCheckerInfo* info,
-        /* [in] */ ITextServicesManager* tsm,
+        /* [in] */ IITextServicesManager* tsm,
         /* [in] */ ISpellCheckerSessionListener* listener,
         /* [in] */ ISpellCheckerSubtype* subtype);
 
@@ -131,20 +162,16 @@ public:
     /**
      * @hide
      */
-    CARAPI_(AutoPtr<ITextServicesSessionListener>) GetTextServicesSessionListener();
+    CARAPI GetTextServicesSessionListener(
+        /* [out] */ IITextServicesSessionListener** listener);
 
     /**
      * @hide
      */
-    CARAPI_(AutoPtr<ISpellCheckerSessionListener>) GetSpellCheckerSessionListener();
+    CARAPI GetSpellCheckerSessionListener(
+        /* [out]*/ IISpellCheckerSessionListener** listener);
 
 protected:
-    CARAPI_(void) Init(
-        /* [in] */ ISpellCheckerInfo* info,
-        /* [in] */ ITextServicesManager* tsm,
-        /* [in] */ ISpellCheckerSessionListener* listener,
-        /* [in] */ ISpellCheckerSubtype* subtype);
-
     CARAPI_(void) Finalize();
 
 private:
@@ -164,10 +191,7 @@ private:
     static const String TAG;
     static const Boolean DBG;
 
-    static const Int32 MSG_ON_GET_SUGGESTION_MULTIPLE;
-    static const Int32 MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE;
-
-    AutoPtr<IInternalListener>* mInternalListener;
+    AutoPtr<IInternalListener> mInternalListener;
     AutoPtr<IITextServicesManager> mTextServicesManager;
     AutoPtr<ISpellCheckerInfo> mSpellCheckerInfo;
     AutoPtr<ISpellCheckerSessionListenerImpl> mSpellCheckerSessionListenerImpl;
@@ -180,7 +204,7 @@ private:
     AutoPtr<IHandler> mHandler;
 };
 
-}   //namespace Textservice
+}   //namespace TextService
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos

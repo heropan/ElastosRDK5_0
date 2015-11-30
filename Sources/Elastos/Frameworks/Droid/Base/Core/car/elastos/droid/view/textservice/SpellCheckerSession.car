@@ -92,6 +92,9 @@ module
          **/
         const String SERVICE_META_DATA = "android.view.textservice.scs";
 
+        const Int32 MSG_ON_GET_SUGGESTION_MULTIPLE = 1;
+        const Int32 MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE = 2;
+
         /**
          * @return true if the connection to a text service of this session is disconnected and not
          * alive.

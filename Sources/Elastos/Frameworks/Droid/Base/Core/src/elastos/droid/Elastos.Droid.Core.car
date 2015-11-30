@@ -16,6 +16,7 @@ module
     merge("../../../car/elastos/droid/content.car");
     merge("../../../car/elastos/droid/internal/location.car");
     merge("../../../car/elastos/droid/location.car");
+    merge("../../../car/elastos/droid/internal/textservice.car");
     merge("../../../car/elastos/droid/view.car");
     merge("../../../car/elastos/droid/hardware.car");
     merge("../../../car/elastos/droid/accessibilityservice.car");
@@ -48,7 +49,6 @@ module
     merge("../../../car/elastos/droid/internal/preference.car");
     merge("../../../car/elastos/droid/internal/statusbar.car");
     merge("../../../car/elastos/droid/internal/telephony.car");
-    merge("../../../car/elastos/droid/internal/textservice.car");
     merge("../../../car/elastos/droid/internal/view.car");
     merge("../../../car/elastos/droid/internal/widget.car");
     merge("../../../car/elastos/droid/internal/os/storage.car");

@@ -4,7 +4,7 @@
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
+namespace TextService {
 
 //========================================================================================
 //              CSentenceSuggestionsInfo::
@@ -33,9 +33,9 @@ ECode CSentenceSuggestionsInfo::constructor(
     }
 
     Int32 infoSize = suggestionsInfos->GetLength();
-    mSuggestionsInfos->CopyOf(suggestionsInfos, 0, infoSize);
+    mSuggestionsInfos->Copy(suggestionsInfos, 0, infoSize);
     mOffsets->Copy(offsets, 0, infoSize);
-    mLengths->CopyOf(lengths, 0, infoSize);
+    mLengths->Copy(lengths, 0, infoSize);
 
     return NOERROR;
 }
@@ -121,7 +121,7 @@ ECode CSentenceSuggestionsInfo::GetLengthAt(
     return NOERROR;
 }
 
-} // namespace Textservice
+} // namespace TextService
 } // namespace View
 } // namespace Droid
 } // namespace Elastos

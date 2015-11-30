@@ -2,15 +2,13 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERSESSION_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERSESSION_H__
 
-#include "_Elastos_Droid_View_Textservice_CSpellCheckerSession.h"
-#include <elastos/core/Object.h>
-
-using Elastos::Core::Object;
+#include "_Elastos_Droid_View_TextService_CSpellCheckerSession.h"
+#include "elastos/droid/view/textservice/SpellCheckerSession.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
+namespace TextService {
 
 /**
  * The SpellCheckerSession interface provides the per client functionality of SpellCheckerService.
@@ -65,87 +63,9 @@ CarClass(CSpellCheckerSession)
 {
 public:
     CAR_OBJECT_DECL()
-
-    CSpellCheckerSession();
-
-    CARAPI constructor(
-        /* [in] */ ISpellCheckerInfo* info,
-        /* [in] */ ITextServicesManager* tsm,
-        /* [in] */ ISpellCheckerSessionListener* listener,
-        /* [in] */ ISpellCheckerSubtype* subtype);
-
-    /**
-     * @return true if the connection to a text service of this session is disconnected and not
-     * alive.
-     */
-    CARAPI IsSessionDisconnected(
-        /* [out]*/ Boolean* bFlag);
-
-    /**
-     * Get the spell checker service info this spell checker session has.
-     * @return SpellCheckerInfo for the specified locale.
-     */
-    CARAPI GetSpellChecker(
-        /* [out] */ ISpellCheckerInfo** info);
-
-    /**
-     * Cancel pending and running spell check tasks
-     */
-    CARAPI Cancel();
-
-    /**
-     * Finish this session and allow TextServicesManagerService to disconnect the bound spell
-     * checker.
-     */
-    CARAPI Close();
-
-    /**
-     * Get suggestions from the specified sentences
-     * @param textInfos an array of text metadata for a spell checker
-     * @param suggestionsLimit the maximum number of suggestions that will be returned
-     */
-    CARAPI GetSentenceSuggestions(
-        /* [in] */ ArrayOf<ITextInfo*>* textInfos,
-        /* [in] */ Int32 suggestionsLimit);
-
-    /**
-     * Get candidate strings for a substring of the specified text.
-     * @param textInfo text metadata for a spell checker
-     * @param suggestionsLimit the maximum number of suggestions that will be returned
-     * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
-     */
-    //@Deprecated
-    CARAPI GetSuggestions(
-        /* [in] */ ITextInfo* textInfo,
-        /* [in] */ Int32 suggestionsLimit);
-
-    /**
-     * A batch process of getSuggestions
-     * @param textInfos an array of text metadata for a spell checker
-     * @param suggestionsLimit the maximum number of suggestions that will be returned
-     * @param sequentialWords true if textInfos can be treated as sequential words.
-     * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
-     */
-    //@Deprecated
-    CARAPI GetSuggestions(
-        /* [in] */ ArrayOf<ITextInfo*>* textInfos,
-        /* [in] */ Int32 suggestionsLimit,
-        /* [in] */ Boolean sequentialWords);
-
-    /**
-     * @hide
-     */
-    CARAPI GetTextServicesSessionListener(
-        /* [out] */ ITextServicesSessionListener** listener);
-
-    /**
-     * @hide
-     */
-    CARAPI GetSpellCheckerSessionListener(
-        /* [out]*/ ISpellCheckerSessionListener** listener);
 };
 
-}   //namespace Textservice
+}   //namespace TextService
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos

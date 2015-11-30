@@ -2,15 +2,25 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERINFO_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERINFO_H__
 
-#include "_Elastos_Droid_View_Textservice_CSpellCheckerInfo.h"
+#include "_Elastos_Droid_View_TextService_CSpellCheckerInfo.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+
+using Elastos::Core::CString;
 using Elastos::Core::Object;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
+namespace TextService {
 
 /**
  * This class is used to specify meta information of a spell checker.
@@ -139,7 +149,7 @@ private:
     AutoPtr<IArrayList> mSubtypes;
 };
 
-}   //namespace Textservice
+}   //namespace TextService
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos
