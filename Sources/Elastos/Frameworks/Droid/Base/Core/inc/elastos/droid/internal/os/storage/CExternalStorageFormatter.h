@@ -7,16 +7,17 @@
 #include "elastos/droid/os/storage/StorageEventListener.h"
 #include <elastos/core/Thread.h>
 
-using Elastos::Droid::App::Service;
 using Elastos::Droid::App::IProgressDialog;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IMountService;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
-using Elastos::Droid::Os::IStorageVolume;
-using Elastos::Droid::Os::IStorageManager;
+using Elastos::Droid::Os::Storage::IMountService;
+using Elastos::Droid::Os::Storage::IStorageEventListener;
+using Elastos::Droid::Os::Storage::IStorageVolume;
+using Elastos::Droid::Os::Storage::IStorageManager;
 using Elastos::Droid::Os::Storage::StorageEventListener;
 using Elastos::Core::Thread;
 
@@ -27,8 +28,9 @@ namespace Os {
 namespace Storage {
 
 CarClass(CExternalStorageFormatter)
-    , public Service
+    , public Elastos::Droid::App::Service
     , public IExternalStorageFormatter
+    , public IDialogInterfaceOnCancelListener
 {
 private:
     class MyStorageEventListener : public StorageEventListener
@@ -50,9 +52,28 @@ private:
     {
     public:
         MyThread(
-            /* [in] */ CExternalStorageFormatter* owner);
+            /* [in] */ CExternalStorageFormatter* owner,
+            /* [in] */ const String& extStoragePath);
 
         CARAPI Run();
+
+    private:
+        CExternalStorageFormatter* mOwner;
+        String mExtStoragePath;
+    };
+
+    class OnCancelListener
+        : public Object
+        , public IDialogInterfaceOnCancelListener
+    {
+    public:
+        OnCancelListener(
+            /* [in] */ CExternalStorageFormatter* owner);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnCancel(
+        /* [in] */ IDialogInterface* dialog);
 
     private:
         CExternalStorageFormatter* mOwner;
@@ -65,18 +86,20 @@ public:
 
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
     CARAPI OnCreate();
 
     CARAPI OnStartCommand(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
-        /* [in] */ Int32 startId
+        /* [in] */ Int32 startId,
         /* [out] */ Int32* cmd);
 
     CARAPI OnDestroy();
 
     CARAPI OnBind(
-        /* [in] */ IIntent* intent
+        /* [in] */ IIntent* intent,
         /* [out] */ IBinder** result);
 
     CARAPI OnCancel(
@@ -91,9 +114,7 @@ protected:
     CARAPI_(void) Fail(
         /* [in] */ Int32 msg);
 
-    CARAPI_(void) UpdateProgressState(
-        /* [in] */ const String& path,
-        /* [in] */ const String& newState);
+    CARAPI_(void) UpdateProgressState();
 
 public:
     static const String TAG;

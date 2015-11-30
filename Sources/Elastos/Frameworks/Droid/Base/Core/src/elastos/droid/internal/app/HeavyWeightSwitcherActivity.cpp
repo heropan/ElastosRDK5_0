@@ -1,68 +1,82 @@
 
-#include "elastos/droid/app/CHeavyWeightSwitcherActivity.h"
+#include "elastos/droid/internal/app/HeavyWeightSwitcherActivity.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/R.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CString;
-using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::Widget::IImageView;
-using Elastos::Droid::Utility::ITypedValue;
-using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::App::ActivityManagerNative;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::Widget::IImageView;
+using Elastos::Droid::Widget::ITextView;
+using Elastos::Core::CString;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace App {
 
-CAR_INTERFACE_IMPL(SwitchOldListener, IViewOnClickListener)
+CAR_INTERFACE_IMPL(HeavyWeightSwitcherActivity::SwitchOldListener, Object, IViewOnClickListener)
 
-ECode SwitchOldListener::OnClick(
+ECode HeavyWeightSwitcherActivity::SwitchOldListener::OnClick(
     /* [in] */ IView* v)
 {
-//    try {
     ActivityManagerNative::GetDefault()->MoveTaskToFront(mHost->mCurTask, 0, NULL);
-//    } catch (RemoteException e) {
-//    }
     mHost->Finish();
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(SwitchNewListener, IViewOnClickListener)
+CAR_INTERFACE_IMPL(HeavyWeightSwitcherActivity::SwitchNewListener, Object, IViewOnClickListener)
 
-ECode SwitchNewListener::OnClick(
+ECode HeavyWeightSwitcherActivity::SwitchNewListener::OnClick(
     /* [in] */ IView* v)
 {
-//    try {
     ActivityManagerNative::GetDefault()->FinishHeavyWeightApp();
-//    } catch (RemoteException e) {
-//    }
-//    try {
+
+    ECode ec;
     if (mHost->mHasResult) {
-        mHost->StartIntentSenderForResult(mHost->mStartIntent, -1, NULL,
+        ec = mHost->StartIntentSenderForResult(mHost->mStartIntent, -1, NULL,
                 IIntent::FLAG_ACTIVITY_FORWARD_RESULT,
                 IIntent::FLAG_ACTIVITY_FORWARD_RESULT, 0);
-    } else {
-        mHost->StartIntentSenderForResult(mHost->mStartIntent, -1, NULL, 0, 0, 0);
     }
-//    } catch (IntentSender.SendIntentException ex) {
-//        Log.w("HeavyWeightSwitcherActivity", "Failure starting", ex);
-//    }
+    else {
+        ec = mHost->StartIntentSenderForResult(mHost->mStartIntent, -1, NULL, 0, 0, 0);
+    }
+
+    if (ec == (ECode)E_SEND_INTENT_EXCEPTION) {
+       Logger::W("HeavyWeightSwitcherActivity", "Failure starting");
+    }
     mHost->Finish();
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(CancelListener, IViewOnClickListener)
+CAR_INTERFACE_IMPL(HeavyWeightSwitcherActivity::CancelListener, Object, IViewOnClickListener)
 
-ECode CancelListener::OnClick(
+ECode HeavyWeightSwitcherActivity::CancelListener::OnClick(
     /* [in] */ IView* v)
 {
     mHost->Finish();
     return NOERROR;
 }
 
-ECode CHeavyWeightSwitcherActivity::OnCreate(
+CAR_INTERFACE_IMPL(HeavyWeightSwitcherActivity, Activity, IHeavyWeightSwitcherActivity)
+
+HeavyWeightSwitcherActivity::HeavyWeightSwitcherActivity()
+    : mStartIntent(NULL)
+    , mHasResult(FALSE)
+    , mCurApp(String(NULL))
+    , mCurTask(0)
+    , mNewApp(String(NULL))
+    , mSwitchOldListener(new SwitchOldListener(this))
+    , mSwitchNewListener(new SwitchNewListener(this))
+    , mCancelListener(new CancelListener(this))
+{}
+
+ECode HeavyWeightSwitcherActivity::OnCreate(
     /* [in] */ IBundle* savedInstanceState)
 {
     Activity::OnCreate(savedInstanceState);
@@ -72,27 +86,29 @@ ECode CHeavyWeightSwitcherActivity::OnCreate(
 
     AutoPtr<IIntent> intent;
     GetIntent((IIntent**)&intent);
-//    GetIntent()->GetParcelableExtra(KEY_INTENT, (IParcelable**)&mStartIntent->Probe(EIID_IParcelable));
+    AutoPtr<IParcelable> parcelable;
+    intent->GetParcelableExtra(KEY_INTENT, (IParcelable**)&parcelable);
+    mStartIntent = IIntentSender::Probe(parcelable);
     intent->GetBooleanExtra(IHeavyWeightSwitcherActivity::KEY_HAS_RESULT, FALSE, &mHasResult);
     intent->GetStringExtra(IHeavyWeightSwitcherActivity::KEY_CUR_APP, &mCurApp);
     intent->GetInt32Extra(IHeavyWeightSwitcherActivity::KEY_CUR_TASK, 0, &mCurTask);
     intent->GetStringExtra(IHeavyWeightSwitcherActivity::KEY_NEW_APP, &mNewApp);
 
-    SetContentView(0/*com.android.internal.R.layout.heavy_weight_switcher*/);
+    SetContentView(R::layout::heavy_weight_switcher);
 
-    SetIconAndText(0/*R.id.old_app_icon*/, 0/*R.id.old_app_action*/, 0/*R.id.old_app_description*/,
-            mCurApp, 0/*R.string.old_app_action*/, 0/*R.string.old_app_description*/);
-    SetIconAndText(0/*R.id.new_app_icon*/, 0/*R.id.new_app_action*/, 0/*R.id.new_app_description*/,
-            mNewApp, 0/*R.string.new_app_action*/, 0/*R.string.new_app_description*/);
+    SetIconAndText(R::id::old_app_icon, R::id::old_app_action, R::id::old_app_description,
+            mCurApp, R::string::old_app_action, R::string::old_app_description);
+    SetIconAndText(R::id::new_app_icon, R::id::new_app_action, R::id::new_app_description,
+            mNewApp, R::string::new_app_action, R::string::new_app_description);
 
     AutoPtr<IView> button;
-    FindViewById(0/*R.id.switch_old*/, (IView**)&button);
+    FindViewById(R::id::switch_old, (IView**)&button);
     button->SetOnClickListener(mSwitchOldListener);
     button = NULL;
-    FindViewById(0/*R.id.switch_new*/, (IView**)&button);
+    FindViewById(R::id::switch_new, (IView**)&button);
     button->SetOnClickListener(mSwitchNewListener);
     button = NULL;
-    FindViewById(0/*R.id.cancel*/, (IView**)&button);
+    FindViewById(R::id::cancel, (IView**)&button);
     button->SetOnClickListener(mCancelListener);
 
     AutoPtr<ITypedValue> out;
@@ -100,35 +116,38 @@ ECode CHeavyWeightSwitcherActivity::OnCreate(
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
     Boolean founded;
-    theme->ResolveAttribute(0/*android.R.attr.alertDialogIcon*/, out, TRUE, &founded);
+    theme->ResolveAttribute(R::attr::alertDialogIcon, out, TRUE, &founded);
     Int32 resId;
     out->GetResourceId(&resId);
-    GetWindow()->SetFeatureDrawableResource(IWindow::FEATURE_LEFT_ICON,
-            resId);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    window->SetFeatureDrawableResource(IWindow::FEATURE_LEFT_ICON,resId);
     return NOERROR;
 }
 
-void CHeavyWeightSwitcherActivity::SetText(
+ECode HeavyWeightSwitcherActivity::SetText(
     /* [in] */ Int32 id,
     /* [in] */ ICharSequence* text)
 {
     AutoPtr<ITextView> tView;
     FindViewById(id, (IView**)(ITextView**)&tView);
     tView->SetText(text);
+    return NOERROR;
 }
 
-void CHeavyWeightSwitcherActivity::SetDrawable(
+ECode HeavyWeightSwitcherActivity::SetDrawable(
     /* [in] */ Int32 id,
     /* [in] */ IDrawable* dr)
 {
     if (dr != NULL) {
-        AutoPtr<IImageView> imageView;
-        FindViewById(id, (IView**)(IImageView**)&imageView);
-        imageView->SetImageDrawable(dr);
+        AutoPtr<IView> imageView;
+        FindViewById(id, (IView**)&imageView);
+        IImageView::Probe(imageView)->SetImageDrawable(dr);
     }
+    return NOERROR;
 }
 
-void CHeavyWeightSwitcherActivity::SetIconAndText(
+ECode HeavyWeightSwitcherActivity::SetIconAndText(
     /* [in] */ Int32 iconId,
     /* [in] */ Int32 actionId,
     /* [in] */ Int32 descriptionId,
@@ -140,16 +159,15 @@ void CHeavyWeightSwitcherActivity::SetIconAndText(
     CString::New(String(""), (ICharSequence**)&appName);
     AutoPtr<IDrawable> appIcon;
     if (mCurApp != NULL) {
-//         try {
         AutoPtr<IPackageManager> pkgManager;
         GetPackageManager((IPackageManager**)&pkgManager);
         AutoPtr<IApplicationInfo> info;
         pkgManager->GetApplicationInfo(packageName, 0, (IApplicationInfo**)&info);
-        appName = NULL;
-        info->LoadLabel(pkgManager, (ICharSequence**)&appName);
-        info->LoadIcon(pkgManager, (IDrawable**)&appIcon);
-//         } catch (PackageManager.NameNotFoundException e) {
-//         }
+        if (info) {
+            appName = NULL;
+            IPackageItemInfo::Probe(info)->LoadLabel(pkgManager, (ICharSequence**)&appName);
+            IPackageItemInfo::Probe(info)->LoadIcon(pkgManager, (IDrawable**)&appIcon);
+        }
     }
 
     SetDrawable(iconId, appIcon);
@@ -163,6 +181,7 @@ void CHeavyWeightSwitcherActivity::SetIconAndText(
     AutoPtr<ICharSequence> txt;
     GetText(descriptionStr, (ICharSequence**)&txt);
     SetText(descriptionId, txt);
+    return NOERROR;
 }
 
 } //namespace App

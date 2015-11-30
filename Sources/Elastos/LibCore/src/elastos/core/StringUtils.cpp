@@ -619,16 +619,14 @@ ECode StringUtils::ParsePositiveInt64(
 }
 
 String StringUtils::Format(
-    /* [in] */ const String& input,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
 {
-    return Format(CLocale::GetDefault(), input, format, args);
+    return Format(CLocale::GetDefault(), format, args);
 }
 
 String StringUtils::Format(
     /* [in] */ ILocale* locale,
-    /* [in] */ const String& input,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
 {

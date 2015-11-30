@@ -6,6 +6,8 @@ namespace Droid {
 namespace Os {
 namespace Storage {
 
+CAR_INTERFACE_IMPL(StorageEventListener, Object, IStorageEventListener)
+
 ECode StorageEventListener::OnUsbMassStorageConnectionChanged(
     /* [in] */ Boolean connected)
 {

@@ -1,75 +1,20 @@
 
-#ifndef __ELASTOS_DROID_INTERNAL_APP_EXTERNALMEDIAFORMATACTIVITY_H__
-#define __ELASTOS_DROID_INTERNAL_APP_EXTERNALMEDIAFORMATACTIVITY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_CEXTERNALMEDIAFORMATACTIVITY_H__
+#define __ELASTOS_DROID_INTERNAL_APP_CEXTERNALMEDIAFORMATACTIVITY_H__
 
-#include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/app/AlertActivity.h"
 #include "_Elastos_Droid_Internal_App_CExternalMediaFormatActivity.h"
-
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IDialogInterface;
-using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Droid::Content::IBroadcastReceiver;
+#include "elastos/droid/internal/app/ExternalMediaFormatActivity.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace App {
 
-class CExternalMediaFormatActivity : public AlertActivity
+CarClass(CExternalMediaFormatActivity)
+    , public ExternalMediaFormatActivity
 {
-private:
-    class StorageReceiver : public BroadcastReceiver
-    {
-    public:
-        StorageReceiver(
-            /* [in] */ CExternalMediaFormatActivity* host);
-
-        CARAPI OnReceive(
-            /* [in] */ IContext* context,
-            /* [in] */ IIntent* intent);
-
-        CARAPI ToString(
-            /* [out] */ String* info)
-        {
-            VALIDATE_NOT_NULL(info);
-            *info = String("StorageReceiver: ");
-            (*info).AppendFormat("%p", this);
-            return NOERROR;
-        }
-    private:
-        CExternalMediaFormatActivity* mHost;
-    };
-
 public:
-    CExternalMediaFormatActivity();
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI OnCreate(
-        /* [in] */ IBundle* savedInstanceState);
-
-    CARAPI OnStart();
-
-    CARAPI OnResume();
-
-    CARAPI OnPause();
-
-    CARAPI OnStop();
-
-    CARAPI OnDestroy();
-
-    CARAPI OnClick(
-        /* [in] */ IDialogInterface* dialog,
-        /* [in] */ Int32 which);
-
-private:
-    static const Int32 POSITIVE_BUTTON = IAlertDialog::BUTTON_POSITIVE;
-
-    AutoPtr<IBroadcastReceiver> mStorageReceiver;
+    CAR_OBJECT_DECL()
 };
 
 } //namespace App
@@ -77,4 +22,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__ELASTOS_DROID_INTERNAL_APP_EXTERNALMEDIAFORMATACTIVITY_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_CEXTERNALMEDIAFORMATACTIVITY_H__

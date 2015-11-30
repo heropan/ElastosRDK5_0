@@ -1,7 +1,7 @@
 
 #include "elastos/droid/internal/app/AlertActivity.h"
-// #include "elastos/droid/internal/app/CAlertControllerAlertParams.h"
-// #include "elastos/droid/internal/app/CAlertController.h"
+#include "elastos/droid/internal/app/CAlertControllerAlertParams.h"
+#include "elastos/droid/internal/app/CAlertController.h"
 
 using Elastos::Droid::Content::EIID_IDialogInterface;
 
@@ -17,8 +17,8 @@ ECode AlertActivity::OnCreate(
 {
     Activity::OnCreate(savedInstanceState);
 
-    // CAlertController::New(this, this, GetWindow(), (IAlertController**)&mAlert);
-    // CAlertControllerAlertParams::New(this, (IAlertControllerAlertParams**)&mAlertParams);
+    CAlertController::New(this, this, GetWindow(), (IAlertController**)&mAlert);
+    CAlertControllerAlertParams::New(this, (IAlertControllerAlertParams**)&mAlertParams);
     return NOERROR;
 }
 
