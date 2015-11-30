@@ -128,20 +128,19 @@ ECode NetworkStatsEntry::ToString(
 }
 
 ECode NetworkStatsEntry::Equals(
-    /* [in] */ IObject* o,
+    /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                if (o instanceof Entry) {
+                if (INetworkStatsEntry::Probe(o) != NULL) {
                     final Entry e = (Entry) o;
                     return uid == e.uid && set == e.set && tag == e.tag && rxBytes == e.rxBytes
                             && rxPackets == e.rxPackets && txBytes == e.txBytes
                             && txPackets == e.txPackets && operations == e.operations
                             && iface.equals(e.iface);
                 }
-                return false;
-
+                return FALSE;
 #endif
 }
 

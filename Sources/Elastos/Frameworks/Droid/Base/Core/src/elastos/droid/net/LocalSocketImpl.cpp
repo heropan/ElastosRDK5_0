@@ -685,7 +685,6 @@ ECode LocalSocketImpl::constructor()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-
 #endif
 }
 
@@ -695,7 +694,6 @@ ECode LocalSocketImpl::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         this.fd = fd;
-
 #endif
 }
 
@@ -716,7 +714,7 @@ ECode LocalSocketImpl::Create(
 #if 0 // TODO: Translate codes below
         // no error if socket already created
         // need this for LocalServerSocket.accept()
-        if (fd == null) {
+        if (fd == NULL) {
             int osType;
             switch (sockType) {
                 case LocalSocket.SOCKET_DGRAM:
@@ -733,12 +731,11 @@ ECode LocalSocketImpl::Create(
             }
             try {
                 fd = Os.socket(OsConstants.AF_UNIX, osType, 0);
-                mFdCreatedInternally = true;
+                mFdCreatedInternally = TRUE;
             } catch (ErrnoException e) {
                 e.rethrowAsIOException();
             }
         }
-
 #endif
 }
 
@@ -747,8 +744,8 @@ ECode LocalSocketImpl::Close()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(LocalSocketImpl.this) {
-            if ((fd == null) || (mFdCreatedInternally == false)) {
-                fd = null;
+            if ((fd == NULL) || (mFdCreatedInternally == FALSE)) {
+                fd = NULL;
                 return;
             }
             try {
@@ -756,9 +753,8 @@ ECode LocalSocketImpl::Close()
             } catch (ErrnoException e) {
                 e.rethrowAsIOException();
             }
-            fd = null;
+            fd = NULL;
         }
-
 #endif
 }
 
@@ -926,7 +922,6 @@ ECode LocalSocketImpl::GetFileDescriptor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return fd;
-
 #endif
 }
 
@@ -935,8 +930,7 @@ ECode LocalSocketImpl::SupportsUrgentData(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return false;
-
+        return FALSE;
 #endif
 }
 
@@ -1069,7 +1063,6 @@ ECode LocalSocketImpl::Finalize()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         close();
-
 #endif
 }
 
@@ -1082,9 +1075,8 @@ ECode LocalSocketImpl::SocketInputStream::Available(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
                 FileDescriptor myFd = fd;
-                if (myFd == null) throw new IOException("socket closed");
+                if (myFd == NULL) throw new IOException("socket closed");
                 return available_native(myFd);
-
 #endif
 }
 
@@ -1215,7 +1207,7 @@ ECode LocalSocketImpl::SocketOutputStream::Flush()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
                 FileDescriptor myFd = fd;
-                if (myFd == null) throw new IOException("socket closed");
+                if (myFd == NULL) throw new IOException("socket closed");
                 while(pending_native(myFd) > 0) {
                     try {
                         Thread.sleep(10);
@@ -1223,7 +1215,6 @@ ECode LocalSocketImpl::SocketOutputStream::Flush()
                         return;
                     }
                 }
-
 #endif
 }
 

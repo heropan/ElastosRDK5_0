@@ -64,7 +64,6 @@ ECode CertificateChainValidator::GetInstance(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return NoPreloadHolder.sInstance;
-
 #endif
 }
 
@@ -74,9 +73,9 @@ ECode CertificateChainValidator::constructor()
 #if 0 // TODO: Translate codes below
         try {
             TrustManagerFactory tmf = TrustManagerFactory.getInstance("X.509");
-            tmf.init((KeyStore) null);
+            tmf.init((KeyStore) NULL);
             for (TrustManager tm : tmf.getTrustManagers()) {
-                if (tm instanceof X509TrustManager) {
+                if (IX509TrustManager::Probe(tm) != NULL) {
                     mTrustManager = (X509TrustManager) tm;
                 }
             }
@@ -85,11 +84,10 @@ ECode CertificateChainValidator::constructor()
         } catch (KeyStoreException e) {
             throw new RuntimeException("X.509 TrustManagerFactory cannot be initialized", e);
         }
-        if (mTrustManager == null) {
+        if (mTrustManager == NULL) {
             throw new RuntimeException(
                     "None of the X.509 TrustManagers are X509TrustManager");
         }
-
 #endif
 }
 
@@ -109,20 +107,19 @@ ECode CertificateChainValidator::DoHandshakeAndValidateServerCertificates(
         // retrieve the chain of the server peer certificates
         Certificate[] peerCertificates =
             sslSocket.getSession().getPeerCertificates();
-        if (peerCertificates == null || peerCertificates.length == 0) {
+        if (peerCertificates == NULL || peerCertificates.length == 0) {
             closeSocketThrowException(
                 sslSocket, "failed to retrieve peer certificates");
         } else {
             // update the SSL certificate associated with the connection
-            if (connection != null) {
-                if (peerCertificates[0] != null) {
+            if (connection != NULL) {
+                if (peerCertificates[0] != NULL) {
                     connection.setCertificate(
                         new SslCertificate((X509Certificate)peerCertificates[0]));
                 }
             }
         }
         return verifyServerDomainAndCertificates((X509Certificate[]) peerCertificates, domain, "RSA");
-
 #endif
 }
 
@@ -134,13 +131,13 @@ ECode CertificateChainValidator::VerifyServerCertificates(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (certChain == null || certChain.length == 0) {
+        if (certChain == NULL || certChain.length == 0) {
             throw new IllegalArgumentException("bad certificate chain");
         }
         X509Certificate[] serverCertificates = new X509Certificate[certChain.length];
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            for (int i = 0; i < certChain.length; ++i) {
+            for (Int32 i = 0; i < certChain.length; ++i) {
                 serverCertificates[i] = (X509Certificate) cf.generateCertificate(
                         new ByteArrayInputStream(certChain[i]));
             }
@@ -148,7 +145,6 @@ ECode CertificateChainValidator::VerifyServerCertificates(
             throw new IOException("can't read certificate", e);
         }
         return verifyServerDomainAndCertificates(serverCertificates, domain, authType);
-
 #endif
 }
 
@@ -159,7 +155,7 @@ ECode CertificateChainValidator::HandleTrustStorageUpdate()
         TrustManagerFactory tmf;
         try {
             tmf = TrustManagerFactory.getInstance("X.509");
-            tmf.init((KeyStore) null);
+            tmf.init((KeyStore) NULL);
         } catch (NoSuchAlgorithmException e) {
             Slog.w(TAG, "Couldn't find default X.509 TrustManagerFactory");
             return;
@@ -168,20 +164,19 @@ ECode CertificateChainValidator::HandleTrustStorageUpdate()
             return;
         }
         TrustManager[] tms = tmf.getTrustManagers();
-        boolean sentUpdate = false;
+        boolean sentUpdate = FALSE;
         for (TrustManager tm : tms) {
             try {
                 Method updateMethod = tm.getClass().getDeclaredMethod("handleTrustStorageUpdate");
-                updateMethod.setAccessible(true);
+                updateMethod.setAccessible(TRUE);
                 updateMethod.invoke(tm);
-                sentUpdate = true;
+                sentUpdate = TRUE;
             } catch (Exception e) {
             }
         }
         if (!sentUpdate) {
             Slog.w(TAG, "Didn't find a TrustManager to handle CA list update");
         }
-
 #endif
 }
 
@@ -244,7 +239,6 @@ ECode CertificateChainValidator::GetTrustManager(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mTrustManager;
-
 #endif
 }
 
@@ -269,15 +263,14 @@ ECode CertificateChainValidator::CloseSocketThrowException(
         if (HttpLog.LOGV) {
             HttpLog.v("validation error: " + errorMessage);
         }
-        if (socket != null) {
+        if (socket != NULL) {
             SSLSession session = socket.getSession();
-            if (session != null) {
+            if (session != NULL) {
                 session.invalidate();
             }
             socket.close();
         }
         throw new SSLHandshakeException(errorMessage);
-
 #endif
 }
 

@@ -17,12 +17,11 @@ ECode PacProxySelector::constructor()
 #if 0 // TODO: Translate codes below
         mProxyService = IProxyService.Stub.asInterface(
                 ServiceManager.getService(PROXY_SERVICE));
-        if (mProxyService == null) {
+        if (mProxyService == NULL) {
             // Added because of b10267814 where mako is restarting.
             Log.e(TAG, "PacManager: no proxy service");
         }
         mDefaultList = Lists.newArrayList(java.net.Proxy.NO_PROXY);
-
 #endif
 }
 
@@ -32,15 +31,15 @@ ECode PacProxySelector::Select(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (mProxyService == null) {
+        if (mProxyService == NULL) {
             mProxyService = IProxyService.Stub.asInterface(
                     ServiceManager.getService(PROXY_SERVICE));
         }
-        if (mProxyService == null) {
+        if (mProxyService == NULL) {
             Log.e(TAG, "select: no proxy service return NO_PROXY");
             return Lists.newArrayList(java.net.Proxy.NO_PROXY);
         }
-        String response = null;
+        String response = NULL;
         String urlString;
         try {
             urlString = uri.toURL().toString();
@@ -52,11 +51,10 @@ ECode PacProxySelector::Select(
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        if (response == null) {
+        if (response == NULL) {
             return mDefaultList;
         }
         return parseResponse(response);
-
 #endif
 }
 
@@ -74,12 +72,12 @@ ECode PacProxySelector::ParseResponse(
                 ret.add(java.net.Proxy.NO_PROXY);
             } else if (trimmed.startsWith(PROXY)) {
                 Proxy proxy = proxyFromHostPort(Type.HTTP, trimmed.substring(PROXY.length()));
-                if (proxy != null) {
+                if (proxy != NULL) {
                     ret.add(proxy);
                 }
             } else if (trimmed.startsWith(SOCKS)) {
                 Proxy proxy = proxyFromHostPort(Type.SOCKS, trimmed.substring(SOCKS.length()));
-                if (proxy != null) {
+                if (proxy != NULL) {
                     ret.add(proxy);
                 }
             }
@@ -88,7 +86,6 @@ ECode PacProxySelector::ParseResponse(
             ret.add(java.net.Proxy.NO_PROXY);
         }
         return ret;
-
 #endif
 }
 
@@ -102,13 +99,12 @@ ECode PacProxySelector::ProxyFromHostPort(
         try {
             String[] hostPort = hostPortString.split(":");
             String host = hostPort[0];
-            int port = Integer.parseInt(hostPort[1]);
+            Int32 port = Integer.parseInt(hostPort[1]);
             return new Proxy(type, InetSocketAddress.createUnresolved(host, port));
         } catch (NumberFormatException|ArrayIndexOutOfBoundsException e) {
             Log.d(TAG, "Unable to parse proxy " + hostPortString + " " + e);
-            return null;
+            return NULL;
         }
-
 #endif
 }
 
@@ -119,7 +115,6 @@ ECode PacProxySelector::ConnectFailed(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-
 #endif
 }
 

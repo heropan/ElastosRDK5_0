@@ -123,7 +123,7 @@ ECode LinkAddress::ToString(
 }
 
 ECode LinkAddress::Equals(
-    /* [in] */ IObject* obj,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)

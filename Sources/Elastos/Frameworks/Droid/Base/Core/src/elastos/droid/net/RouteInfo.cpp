@@ -33,9 +33,9 @@ ECode RouteInfo::constructor(
             default:
                 throw new IllegalArgumentException("Unknown route type " + type);
         }
-        if (destination == null) {
-            if (gateway != null) {
-                if (gateway instanceof Inet4Address) {
+        if (destination == NULL) {
+            if (gateway != NULL) {
+                if (IInet4Address::Probe(gateway) != NULL) {
                     destination = new IpPrefix(Inet4Address.ANY, 0);
                 } else {
                     destination = new IpPrefix(Inet6Address.ANY, 0);
@@ -49,7 +49,7 @@ ECode RouteInfo::constructor(
         // TODO: set mGateway to null if there is no gateway. This is more correct, saves space, and
         // matches the documented behaviour. Before we can do this we need to fix all callers (e.g.,
         // ConnectivityService) to stop doing things like r.getGateway().equals(), ... .
-        if (gateway == null) {
+        if (gateway == NULL) {
             if (destination.getAddress() instanceof Inet4Address) {
                 gateway = Inet4Address.ANY;
             } else {
@@ -58,9 +58,9 @@ ECode RouteInfo::constructor(
         }
         mHasGateway = (!gateway.isAnyLocalAddress());
         if ((destination.getAddress() instanceof Inet4Address &&
-                 (gateway instanceof Inet4Address == false)) ||
+                 ((IInet4Address::Probe(gateway) != NULL) == FALSE)) ||
                 (destination.getAddress() instanceof Inet6Address &&
-                 (gateway instanceof Inet6Address == false))) {
+                 ((IInet6Address::Probe(gateway) != NULL) == FALSE))) {
             throw new IllegalArgumentException("address family mismatch in RouteInfo constructor");
         }
         mDestination = destination;  // IpPrefix objects are immutable.
@@ -68,7 +68,6 @@ ECode RouteInfo::constructor(
         mInterface = iface;          // Strings are immutable.
         mType = type;
         mIsHost = isHost();
-
 #endif
 }
 
@@ -80,7 +79,6 @@ ECode RouteInfo::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         this(destination, gateway, iface, RTN_UNICAST);
-
 #endif
 }
 
@@ -91,10 +89,9 @@ ECode RouteInfo::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this(destination == null ? null :
+        this(destination == NULL ? NULL :
                 new IpPrefix(destination.getAddress(), destination.getPrefixLength()),
                 gateway, iface);
-
 #endif
 }
 
@@ -104,8 +101,7 @@ ECode RouteInfo::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this(destination, gateway, null);
-
+        this(destination, gateway, NULL);
 #endif
 }
 
@@ -115,8 +111,7 @@ ECode RouteInfo::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this(destination, gateway, null);
-
+        this(destination, gateway, NULL);
 #endif
 }
 
@@ -125,8 +120,7 @@ ECode RouteInfo::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this((IpPrefix) null, gateway, null);
-
+        this((IpPrefix) NULL, gateway, NULL);
 #endif
 }
 
@@ -135,8 +129,7 @@ ECode RouteInfo::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this(destination, null, null);
-
+        this(destination, NULL, NULL);
 #endif
 }
 
@@ -145,8 +138,7 @@ ECode RouteInfo::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this(destination, null, null);
-
+        this(destination, NULL, NULL);
 #endif
 }
 
@@ -156,8 +148,7 @@ ECode RouteInfo::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this(destination, null, null, type);
-
+        this(destination, NULL, NULL, type);
 #endif
 }
 
@@ -168,8 +159,7 @@ ECode RouteInfo::MakeHostRoute(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return makeHostRoute(host, null, iface);
-
+        return makeHostRoute(host, NULL, iface);
 #endif
 }
 
@@ -181,13 +171,12 @@ ECode RouteInfo::MakeHostRoute(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (host == null) return null;
-        if (host instanceof Inet4Address) {
+        if (host == NULL) return NULL;
+        if (IInet4Address::Probe(host) != NULL) {
             return new RouteInfo(new IpPrefix(host, 32), gateway, iface);
         } else {
             return new RouteInfo(new IpPrefix(host, 128), gateway, iface);
         }
-
 #endif
 }
 
@@ -200,7 +189,6 @@ ECode RouteInfo::IsHost(
                 mDestination.getPrefixLength() == 32) ||
                (mDestination.getAddress() instanceof Inet6Address &&
                 mDestination.getPrefixLength() == 128);
-
 #endif
 }
 
@@ -210,7 +198,6 @@ ECode RouteInfo::GetDestination(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mDestination;
-
 #endif
 }
 
@@ -220,7 +207,6 @@ ECode RouteInfo::GetDestinationLinkAddress(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return new LinkAddress(mDestination.getAddress(), mDestination.getPrefixLength());
-
 #endif
 }
 
@@ -230,7 +216,6 @@ ECode RouteInfo::GetGateway(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mGateway;
-
 #endif
 }
 
@@ -240,7 +225,6 @@ ECode RouteInfo::GetInterface(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mInterface;
-
 #endif
 }
 
@@ -250,7 +234,6 @@ ECode RouteInfo::GetType(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mType;
-
 #endif
 }
 
@@ -260,7 +243,6 @@ ECode RouteInfo::IsDefaultRoute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mType == RTN_UNICAST && mDestination.getPrefixLength() == 0;
-
 #endif
 }
 
@@ -270,7 +252,6 @@ ECode RouteInfo::IsIPv4Default(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return isDefaultRoute() && mDestination.getAddress() instanceof Inet4Address;
-
 #endif
 }
 
@@ -280,7 +261,6 @@ ECode RouteInfo::IsIPv6Default(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return isDefaultRoute() && mDestination.getAddress() instanceof Inet6Address;
-
 #endif
 }
 
@@ -290,7 +270,6 @@ ECode RouteInfo::IsHostRoute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mIsHost;
-
 #endif
 }
 
@@ -300,7 +279,6 @@ ECode RouteInfo::HasGateway(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mHasGateway;
-
 #endif
 }
 
@@ -310,12 +288,11 @@ ECode RouteInfo::Matches(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (destination == null) return false;
+        if (destination == NULL) return FALSE;
         // match the route destination and destination with prefix length
         InetAddress dstNet = NetworkUtils.getNetworkPart(destination,
                 mDestination.getPrefixLength());
         return mDestination.getAddress().equals(dstNet);
-
 #endif
 }
 
@@ -326,12 +303,12 @@ ECode RouteInfo::SelectBestRoute(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if ((routes == null) || (dest == null)) return null;
-        RouteInfo bestRoute = null;
+        if ((routes == NULL) || (dest == NULL)) return NULL;
+        RouteInfo bestRoute = NULL;
         // pick a longest prefix match under same address type
         for (RouteInfo route : routes) {
             if (NetworkUtils.addressTypeMatches(route.mDestination.getAddress(), dest)) {
-                if ((bestRoute != null) &&
+                if ((bestRoute != NULL) &&
                         (bestRoute.mDestination.getPrefixLength() >=
                         route.mDestination.getPrefixLength())) {
                     continue;
@@ -340,7 +317,6 @@ ECode RouteInfo::SelectBestRoute(
             }
         }
         return bestRoute;
-
 #endif
 }
 
@@ -350,21 +326,20 @@ ECode RouteInfo::ToString(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         String val = "";
-        if (mDestination != null) val = mDestination.toString();
+        if (mDestination != NULL) val = mDestination.toString();
         if (mType == RTN_UNREACHABLE) {
             val += " unreachable";
         } else if (mType == RTN_THROW) {
             val += " throw";
         } else {
             val += " ->";
-            if (mGateway != null) val += " " + mGateway.getHostAddress();
-            if (mInterface != null) val += " " + mInterface;
+            if (mGateway != NULL) val += " " + mGateway.getHostAddress();
+            if (mInterface != NULL) val += " " + mInterface;
             if (mType != RTN_UNICAST) {
                 val += " unknown type " + mType;
             }
         }
         return val;
-
 #endif
 }
 
@@ -374,14 +349,13 @@ ECode RouteInfo::Equals(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (this == obj) return true;
-        if (!(obj instanceof RouteInfo)) return false;
+        if (this == obj) return TRUE;
+        if (!(IRouteInfo::Probe(obj) != NULL)) return FALSE;
         RouteInfo target = (RouteInfo) obj;
         return Objects.equals(mDestination, target.getDestination()) &&
                 Objects.equals(mGateway, target.getGateway()) &&
                 Objects.equals(mInterface, target.getInterface()) &&
                 mType == target.getType();
-
 #endif
 }
 
@@ -391,10 +365,9 @@ ECode RouteInfo::GetHashCode(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return (mDestination.hashCode() * 41)
-                + (mGateway == null ? 0 :mGateway.hashCode() * 47)
-                + (mInterface == null ? 0 :mInterface.hashCode() * 67)
+                + (mGateway == NULL ? 0 :mGateway.hashCode() * 47)
+                + (mInterface == NULL ? 0 :mInterface.hashCode() * 67)
                 + (mType * 71);
-
 #endif
 }
 
@@ -404,20 +377,19 @@ ECode RouteInfo::ReadFromParcel(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         public RouteInfo createFromParcel(Parcel in) {
-            IpPrefix dest = in.readParcelable(null);
-            InetAddress gateway = null;
+            IpPrefix dest = in.readParcelable(NULL);
+            InetAddress gateway = NULL;
             byte[] addr = in.createByteArray();
             try {
                 gateway = InetAddress.getByAddress(addr);
             } catch (UnknownHostException e) {}
             String iface = in.readString();
-            int type = in.readInt();
+            Int32 type = in.readInt();
             return new RouteInfo(dest, gateway, iface, type);
         }
-        public RouteInfo[] newArray(int size) {
+        public RouteInfo[] newArray(Int32 size) {
             return new RouteInfo[size];
         }
-
 #endif
 }
 
@@ -427,20 +399,19 @@ ECode RouteInfo::WriteToParcel(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         public RouteInfo createFromParcel(Parcel in) {
-            IpPrefix dest = in.readParcelable(null);
-            InetAddress gateway = null;
+            IpPrefix dest = in.readParcelable(NULL);
+            InetAddress gateway = NULL;
             byte[] addr = in.createByteArray();
             try {
                 gateway = InetAddress.getByAddress(addr);
             } catch (UnknownHostException e) {}
             String iface = in.readString();
-            int type = in.readInt();
+            Int32 type = in.readInt();
             return new RouteInfo(dest, gateway, iface, type);
         }
-        public RouteInfo[] newArray(int size) {
+        public RouteInfo[] newArray(Int32 size) {
             return new RouteInfo[size];
         }
-
 #endif
 }
 

@@ -15,13 +15,12 @@ ECode NetworkRequest::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (nc == null) {
+        if (nc == NULL) {
             throw new NullPointerException();
         }
         requestId = rId;
         networkCapabilities = nc;
         this.legacyType = legacyType;
-
 #endif
 }
 
@@ -33,7 +32,6 @@ ECode NetworkRequest::constructor(
         networkCapabilities = new NetworkCapabilities(that.networkCapabilities);
         requestId = that.requestId;
         this.legacyType = that.legacyType;
-
 #endif
 }
 
@@ -43,16 +41,15 @@ ECode NetworkRequest::ReadFromParcel(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
             public NetworkRequest createFromParcel(Parcel in) {
-                NetworkCapabilities nc = (NetworkCapabilities)in.readParcelable(null);
-                int legacyType = in.readInt();
-                int requestId = in.readInt();
+                NetworkCapabilities nc = (NetworkCapabilities)in.readParcelable(NULL);
+                Int32 legacyType = in.readInt();
+                Int32 requestId = in.readInt();
                 NetworkRequest result = new NetworkRequest(nc, legacyType, requestId);
                 return result;
             }
-            public NetworkRequest[] newArray(int size) {
+            public NetworkRequest[] newArray(Int32 size) {
                 return new NetworkRequest[size];
             }
-
 #endif
 }
 
@@ -62,16 +59,15 @@ ECode NetworkRequest::WriteToParcel(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
             public NetworkRequest createFromParcel(Parcel in) {
-                NetworkCapabilities nc = (NetworkCapabilities)in.readParcelable(null);
-                int legacyType = in.readInt();
-                int requestId = in.readInt();
+                NetworkCapabilities nc = (NetworkCapabilities)in.readParcelable(NULL);
+                Int32 legacyType = in.readInt();
+                Int32 requestId = in.readInt();
                 NetworkRequest result = new NetworkRequest(nc, legacyType, requestId);
                 return result;
             }
-            public NetworkRequest[] newArray(int size) {
+            public NetworkRequest[] newArray(Int32 size) {
                 return new NetworkRequest[size];
             }
-
 #endif
 }
 
@@ -82,24 +78,23 @@ ECode NetworkRequest::ToString(
 #if 0 // TODO: Translate codes below
         return "NetworkRequest [ id=" + requestId + ", legacyType=" + legacyType +
                 ", " + networkCapabilities.toString() + " ]";
-
 #endif
 }
 
 ECode NetworkRequest::Equals(
-    /* [in] */ IObject* obj,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (obj instanceof NetworkRequest == false) return false;
+
+        if (INetworkRequest::Probe(obj) == NULL) return FALSE;
         NetworkRequest that = (NetworkRequest)obj;
         return (that.legacyType == this.legacyType &&
                 that.requestId == this.requestId &&
-                ((that.networkCapabilities == null && this.networkCapabilities == null) ||
-                 (that.networkCapabilities != null &&
+                ((that.networkCapabilities == NULL && this.networkCapabilities == NULL) ||
+                 (that.networkCapabilities != NULL &&
                   that.networkCapabilities.equals(this.networkCapabilities))));
-
 #endif
 }
 
@@ -110,7 +105,6 @@ ECode NetworkRequest::GetHashCode(
 #if 0 // TODO: Translate codes below
         return requestId + (legacyType * 1013) +
                 (networkCapabilities.hashCode() * 1051);
-
 #endif
 }
 
@@ -166,7 +160,6 @@ ECode NetworkRequestBuilder::Build(
 #if 0 // TODO: Translate codes below
             return new NetworkRequest(mNetworkCapabilities, ConnectivityManager.TYPE_NONE,
                     ConnectivityManager.REQUEST_ID_UNSET);
-
 #endif
 }
 
@@ -178,7 +171,6 @@ ECode NetworkRequestBuilder::AddCapability(
 #if 0 // TODO: Translate codes below
             mNetworkCapabilities.addCapability(capability);
             return this;
-
 #endif
 }
 
@@ -190,7 +182,6 @@ ECode NetworkRequestBuilder::RemoveCapability(
 #if 0 // TODO: Translate codes below
             mNetworkCapabilities.removeCapability(capability);
             return this;
-
 #endif
 }
 
@@ -202,7 +193,6 @@ ECode NetworkRequestBuilder::AddTransportType(
 #if 0 // TODO: Translate codes below
             mNetworkCapabilities.addTransportType(transportType);
             return this;
-
 #endif
 }
 
@@ -214,7 +204,6 @@ ECode NetworkRequestBuilder::RemoveTransportType(
 #if 0 // TODO: Translate codes below
             mNetworkCapabilities.removeTransportType(transportType);
             return this;
-
 #endif
 }
 
@@ -226,7 +215,6 @@ ECode NetworkRequestBuilder::SetLinkUpstreamBandwidthKbps(
 #if 0 // TODO: Translate codes below
             mNetworkCapabilities.setLinkUpstreamBandwidthKbps(upKbps);
             return this;
-
 #endif
 }
 
@@ -238,7 +226,6 @@ ECode NetworkRequestBuilder::SetLinkDownstreamBandwidthKbps(
 #if 0 // TODO: Translate codes below
             mNetworkCapabilities.setLinkDownstreamBandwidthKbps(downKbps);
             return this;
-
 #endif
 }
 
@@ -250,7 +237,6 @@ ECode NetworkRequestBuilder::SetNetworkSpecifier(
 #if 0 // TODO: Translate codes below
             mNetworkCapabilities.setNetworkSpecifier(networkSpecifier);
             return this;
-
 #endif
 }
 

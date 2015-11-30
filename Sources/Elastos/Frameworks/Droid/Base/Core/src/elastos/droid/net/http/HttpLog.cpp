@@ -10,8 +10,8 @@ namespace Net {
 namespace Http {
 
 const String HttpLog::LOGTAG("http");
-const Boolean HttpLog::DEBUG = false;
-const Boolean HttpLog::LOGV = false;
+const Boolean HttpLog::DEBUG = FALSE;
+const Boolean HttpLog::LOGV = FALSE;
 
 ECode HttpLog::V(
     /* [in] */ const char* fmt, ...)

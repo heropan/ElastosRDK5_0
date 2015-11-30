@@ -18,7 +18,6 @@ ECode ScoredNetwork::constructor(
 #if 0 // TODO: Translate codes below
         this.networkKey = networkKey;
         this.rssiCurve = rssiCurve;
-
 #endif
 }
 
@@ -30,9 +29,8 @@ ScoredNetwork::ScoredNetwork(
         if (in.readByte() == 1) {
             rssiCurve = RssiCurve.CREATOR.createFromParcel(in);
         } else {
-            rssiCurve = null;
+            rssiCurve = NULL;
         }
-
 #endif
 }
 
@@ -42,12 +40,11 @@ ECode ScoredNetwork::Equals(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return TRUE;
+        if (o == NULL || getClass() != o.getClass()) return FALSE;
         ScoredNetwork that = (ScoredNetwork) o;
         return Objects.equals(networkKey, that.networkKey) &&
                 Objects.equals(rssiCurve, that.rssiCurve);
-
 #endif
 }
 
@@ -57,7 +54,6 @@ ECode ScoredNetwork::GetHashCode(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return Objects.hash(networkKey, rssiCurve);
-
 #endif
 }
 
@@ -67,7 +63,6 @@ ECode ScoredNetwork::ToString(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return "ScoredNetwork[key=" + networkKey + ",score=" + rssiCurve + "]";
-
 #endif
 }
 
@@ -81,10 +76,9 @@ ECode ScoredNetwork::ReadFromParcel(
                     return new ScoredNetwork(in);
                 }
                 @Override
-                public ScoredNetwork[] newArray(int size) {
+                public ScoredNetwork[] newArray(Int32 size) {
                     return new ScoredNetwork[size];
                 }
-
 #endif
 }
 
@@ -99,10 +93,9 @@ ECode ScoredNetwork::WriteToParcel(
                     return new ScoredNetwork(in);
                 }
                 @Override
-                public ScoredNetwork[] newArray(int size) {
+                public ScoredNetwork[] newArray(Int32 size) {
                     return new ScoredNetwork[size];
                 }
-
 #endif
 }
 

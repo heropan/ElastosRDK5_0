@@ -374,7 +374,7 @@ ECode HttpAuthHeader::ParseStale(
 #if 0 // TODO: Translated before. Need check.
     if (value != NULL) {
         if (value.EqualsIgnoreCase("true")) {
-            mStale = true;
+            mStale = TRUE;
         }
     }
     return NOERROR;

@@ -156,8 +156,7 @@ module
          * @hide
          */
         AddCapability(
-            [in] Int32 capability,
-            [out] INetworkCapabilities** result);
+            [in] Int32 capability);
 
         /**
          * Removes (if found) the given capability from this {@code NetworkCapability} instance.
@@ -167,8 +166,7 @@ module
          * @hide
          */
         RemoveCapability(
-            [in] Int32 capability,
-            [out] INetworkCapabilities** result);
+            [in] Int32 capability);
 
         /**
          * Gets all the capabilities set on this {@code NetworkCapability} instance.
@@ -204,8 +202,7 @@ module
          * @hide
          */
         AddTransportType(
-            [in] Int32 transportType,
-            [out] INetworkCapabilities** result);
+            [in] Int32 transportType);
 
         /**
          * Removes (if found) the given transport from this {@code NetworkCapability} instance.
@@ -215,8 +212,7 @@ module
          * @hide
          */
         RemoveTransportType(
-            [in] Int32 transportType,
-            [out] INetworkCapabilities** result);
+            [in] Int32 transportType);
 
         /**
          * Gets all the transports set on this {@code NetworkCapability} instance.

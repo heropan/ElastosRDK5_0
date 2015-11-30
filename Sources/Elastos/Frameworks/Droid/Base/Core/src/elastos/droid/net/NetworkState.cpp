@@ -14,8 +14,7 @@ ECode NetworkState::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this(networkInfo, linkProperties, networkCapabilities, null, null);
-
+        this(networkInfo, linkProperties, networkCapabilities, NULL, NULL);
 #endif
 }
 
@@ -33,7 +32,6 @@ ECode NetworkState::constructor(
         this.networkCapabilities = networkCapabilities;
         this.subscriberId = subscriberId;
         this.networkId = networkId;
-
 #endif
 }
 
@@ -42,12 +40,11 @@ ECode NetworkState::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        networkInfo = in.readParcelable(null);
-        linkProperties = in.readParcelable(null);
-        networkCapabilities = in.readParcelable(null);
+        networkInfo = in.readParcelable(NULL);
+        linkProperties = in.readParcelable(NULL);
+        networkCapabilities = in.readParcelable(NULL);
         subscriberId = in.readString();
         networkId = in.readString();
-
 #endif
 }
 

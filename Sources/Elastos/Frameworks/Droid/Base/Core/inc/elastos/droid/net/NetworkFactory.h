@@ -34,7 +34,9 @@ class NetworkFactory
     , public INetworkFactory
 {
 private:
-    class NetworkRequestInfo {
+    class NetworkRequestInfo
+        : public Object
+    {
     public:
         NetworkRequestInfo(INetworkRequest* request, Int32 score)
             : mRequest(request)
@@ -118,7 +120,7 @@ public:
         /* [in] */ INetworkCapabilities* netCap);
 
     CARAPI Log(
-        /* [in] */ const String& s);
+        /* [in] */ const char* fmt, ...);
 
 private:
     CARAPI HandleAddRequest(
@@ -141,6 +143,7 @@ private:
 
     static CARAPI_(AutoPtr<ISparseArray>) CreateSparseArray();
 
+private:
     static const Boolean DBG;
 
     static const Boolean VDBG;
@@ -160,10 +163,10 @@ private:
      */
     static const Int32 CMD_SET_FILTER;
 
-    const IContext* mContext;
+    /* const */ AutoPtr<IContext> mContext;
 
     // LOG_TAG has duplicated macro
-    const String mLOG_TAG;
+    /* const */ String mLOG_TAG;
 
     /* const */ AutoPtr<ISparseArray> mNetworkRequests;
 
@@ -179,4 +182,7 @@ private:
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Net::NetworkFactory::NetworkRequestInfo, IInterface)
+
 #endif // __ELASTOS_DROID_NET_NETWORKFACTORY_H__

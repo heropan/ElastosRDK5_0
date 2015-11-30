@@ -45,7 +45,6 @@ ECode DhcpAckPacket::ToString(
                 ", netmask " + mSubnetMask +
                 ", gateway " + mGateway + dnsServers +
                 ", lease time " + mLeaseTime;
-
 #endif
 }
 
@@ -64,7 +63,6 @@ ECode DhcpAckPacket::BuildPacket(
             DHCP_BOOTREPLY, mBroadcast);
         result.flip();
         return result;
-
 #endif
 }
 
@@ -87,7 +85,6 @@ ECode DhcpAckPacket::FinishPacket(
         addTlv(buffer, DHCP_BROADCAST_ADDRESS, mBroadcastAddress);
         addTlv(buffer, DHCP_DNS_SERVER, mDnsServers);
         addTlvEnd(buffer);
-
 #endif
 }
 
@@ -102,7 +99,6 @@ ECode DhcpAckPacket::GetInt(
         } else {
             return v.intValue();
         }
-
 #endif
 }
 
@@ -113,7 +109,6 @@ ECode DhcpAckPacket::DoNextOp(
 #if 0 // TODO: Translate codes below
         machine.onAckReceived(mYourIp, mSubnetMask, mGateway, mDnsServers,
             mServerIdentifier, getInt(mLeaseTime));
-
 #endif
 }
 

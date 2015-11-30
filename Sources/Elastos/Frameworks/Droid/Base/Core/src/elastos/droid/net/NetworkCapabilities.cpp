@@ -1,5 +1,17 @@
 
 #include "elastos/droid/net/NetworkCapabilities.h"
+#include "elastos/droid/net/Network.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/text/TextUtils.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Text::TextUtils;
+
+using Elastos::Core::Math;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -8,7 +20,7 @@ namespace Net {
 CAR_INTERFACE_IMPL_2(NetworkCapabilities, Object, IParcelable, INetworkCapabilities)
 
 const String NetworkCapabilities::TAG = String("NetworkCapabilities");
-const Boolean NetworkCapabilities::DBG = false;
+const Boolean NetworkCapabilities::DBG = FALSE;
 const Int32 NetworkCapabilities::MIN_NET_CAPABILITY = INetworkCapabilities::NET_CAPABILITY_MMS;
 const Int32 NetworkCapabilities::MAX_NET_CAPABILITY = INetworkCapabilities::NET_CAPABILITY_NOT_VPN;
 const Int32 NetworkCapabilities::MIN_TRANSPORT = INetworkCapabilities::TRANSPORT_CELLULAR;
@@ -20,517 +32,433 @@ NetworkCapabilities::NetworkCapabilities()
 
 ECode NetworkCapabilities::constructor()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-
-#endif
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::constructor(
     /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (nc != null) {
-            mNetworkCapabilities = nc.mNetworkCapabilities;
-            mTransportTypes = nc.mTransportTypes;
-            mLinkUpBandwidthKbps = nc.mLinkUpBandwidthKbps;
-            mLinkDownBandwidthKbps = nc.mLinkDownBandwidthKbps;
-            mNetworkSpecifier = nc.mNetworkSpecifier;
-        }
-
-#endif
+    if (nc != NULL) {
+        mNetworkCapabilities = ((NetworkCapabilities*)nc)->mNetworkCapabilities;
+        mTransportTypes = ((NetworkCapabilities*)nc)->mTransportTypes;
+        mLinkUpBandwidthKbps = ((NetworkCapabilities*)nc)->mLinkUpBandwidthKbps;
+        mLinkDownBandwidthKbps = ((NetworkCapabilities*)nc)->mLinkDownBandwidthKbps;
+        mNetworkSpecifier = ((NetworkCapabilities*)nc)->mNetworkSpecifier;
+    }
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::AddCapability(
-    /* [in] */ Int32 capability,
-    /* [out] */ INetworkCapabilities** result)
+    /* [in] */ Int32 capability)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (capability < MIN_NET_CAPABILITY || capability > MAX_NET_CAPABILITY) {
-            throw new IllegalArgumentException("NetworkCapability out of range");
-        }
-        mNetworkCapabilities |= 1 << capability;
-        return this;
-
-#endif
+    if (capability < MIN_NET_CAPABILITY || capability > MAX_NET_CAPABILITY) {
+        Logger::E(TAG, "NetworkCapability out of range");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mNetworkCapabilities |= 1 << capability;
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::RemoveCapability(
-    /* [in] */ Int32 capability,
-    /* [out] */ INetworkCapabilities** result)
+    /* [in] */ Int32 capability)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (capability < MIN_NET_CAPABILITY || capability > MAX_NET_CAPABILITY) {
-            throw new IllegalArgumentException("NetworkCapability out of range");
-        }
-        mNetworkCapabilities &= ~(1 << capability);
-        return this;
-
-#endif
+    if (capability < MIN_NET_CAPABILITY || capability > MAX_NET_CAPABILITY) {
+        Logger::E(TAG, "NetworkCapability out of range");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mNetworkCapabilities &= ~(1 << capability);
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::GetCapabilities(
     /* [out, callee] */ ArrayOf<Int32>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return enumerateBits(mNetworkCapabilities);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FUNC_RETURN(EnumerateBits(mNetworkCapabilities));
 }
 
 ECode NetworkCapabilities::HasCapability(
     /* [in] */ Int32 capability,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (capability < MIN_NET_CAPABILITY || capability > MAX_NET_CAPABILITY) {
-            return false;
-        }
-        return ((mNetworkCapabilities & (1 << capability)) != 0);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (capability < MIN_NET_CAPABILITY || capability > MAX_NET_CAPABILITY) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    *result = ((mNetworkCapabilities & (1 << capability)) != 0);
+    return NOERROR;
 }
 
-ECode NetworkCapabilities::EnumerateBits(
-    /* [in] */ Int64 val,
-    /* [out, callee] */ ArrayOf<Int32>** result)
+AutoPtr<ArrayOf<Int32> > NetworkCapabilities::EnumerateBits(
+    /* [in] */ Int64 val)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        int size = Long.bitCount(val);
-        int[] result = new int[size];
-        int index = 0;
-        int resource = 0;
-        while (val > 0) {
-            if ((val & 1) == 1) result[index++] = resource;
-            val = val >> 1;
-            resource++;
-        }
-        return result;
-
-#endif
+    Int32 size = Elastos::Core::Math::BitCount(val);
+    AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(size);
+    Int32 index = 0;
+    Int32 resource = 0;
+    while (val > 0) {
+        if ((val & 1) == 1) (*result)[index++] = resource;
+        val = val >> 1;
+        resource++;
+    }
+    return result;
 }
 
 ECode NetworkCapabilities::CombineNetCapabilities(
     /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.mNetworkCapabilities |= nc.mNetworkCapabilities;
-
-#endif
+    mNetworkCapabilities |= ((NetworkCapabilities*)nc)->mNetworkCapabilities;
+    return NOERROR;
 }
 
-ECode NetworkCapabilities::SatisfiedByNetCapabilities(
-    /* [in] */ INetworkCapabilities* nc,
-    /* [out] */ Boolean* result)
+Boolean NetworkCapabilities::SatisfiedByNetCapabilities(
+    /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return ((nc.mNetworkCapabilities & this.mNetworkCapabilities) == this.mNetworkCapabilities);
-
-#endif
+    return ((((NetworkCapabilities*)nc)->mNetworkCapabilities & mNetworkCapabilities) == mNetworkCapabilities);
 }
 
-ECode NetworkCapabilities::EqualsNetCapabilities(
-    /* [in] */ INetworkCapabilities* nc,
-    /* [out] */ Boolean* result)
+Boolean NetworkCapabilities::EqualsNetCapabilities(
+    /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (nc.mNetworkCapabilities == this.mNetworkCapabilities);
-
-#endif
+    return (((NetworkCapabilities*)nc)->mNetworkCapabilities == mNetworkCapabilities);
 }
 
 ECode NetworkCapabilities::AddTransportType(
-    /* [in] */ Int32 transportType,
-    /* [out] */ INetworkCapabilities** result)
+    /* [in] */ Int32 transportType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (transportType < MIN_TRANSPORT || transportType > MAX_TRANSPORT) {
-            throw new IllegalArgumentException("TransportType out of range");
-        }
-        mTransportTypes |= 1 << transportType;
-        setNetworkSpecifier(mNetworkSpecifier); // used for exception checking
-        return this;
-
-#endif
+    if (transportType < MIN_TRANSPORT || transportType > MAX_TRANSPORT) {
+        Logger::E(TAG, "TransportType out of range");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mTransportTypes |= 1 << transportType;
+    SetNetworkSpecifier(mNetworkSpecifier); // used for exception checking
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::RemoveTransportType(
-    /* [in] */ Int32 transportType,
-    /* [out] */ INetworkCapabilities** result)
+    /* [in] */ Int32 transportType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (transportType < MIN_TRANSPORT || transportType > MAX_TRANSPORT) {
-            throw new IllegalArgumentException("TransportType out of range");
-        }
-        mTransportTypes &= ~(1 << transportType);
-        setNetworkSpecifier(mNetworkSpecifier); // used for exception checking
-        return this;
-
-#endif
+    if (transportType < MIN_TRANSPORT || transportType > MAX_TRANSPORT) {
+        Logger::E(TAG, "TransportType out of range");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mTransportTypes &= ~(1 << transportType);
+    SetNetworkSpecifier(mNetworkSpecifier); // used for exception checking
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::GetTransportTypes(
     /* [out, callee] */ ArrayOf<Int32>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return enumerateBits(mTransportTypes);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FUNC_RETURN(EnumerateBits(mTransportTypes));
 }
 
 ECode NetworkCapabilities::HasTransport(
     /* [in] */ Int32 transportType,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (transportType < MIN_TRANSPORT || transportType > MAX_TRANSPORT) {
-            return false;
-        }
-        return ((mTransportTypes & (1 << transportType)) != 0);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (transportType < MIN_TRANSPORT || transportType > MAX_TRANSPORT) {
+        return FALSE;
+    }
+    *result = ((mTransportTypes & (1 << transportType)) != 0);
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::CombineTransportTypes(
     /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.mTransportTypes |= nc.mTransportTypes;
-
-#endif
+    mTransportTypes |= ((NetworkCapabilities*)nc)->mTransportTypes;
+    return NOERROR;
 }
 
-ECode NetworkCapabilities::SatisfiedByTransportTypes(
-    /* [in] */ INetworkCapabilities* nc,
-    /* [out] */ Boolean* result)
+Boolean NetworkCapabilities::SatisfiedByTransportTypes(
+    /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return ((this.mTransportTypes == 0) ||
-                ((this.mTransportTypes & nc.mTransportTypes) != 0));
-
-#endif
+    return ((mTransportTypes == 0) ||
+            ((mTransportTypes & ((NetworkCapabilities*)nc)->mTransportTypes) != 0));
 }
 
-ECode NetworkCapabilities::EqualsTransportTypes(
-    /* [in] */ INetworkCapabilities* nc,
-    /* [out] */ Boolean* result)
+Boolean NetworkCapabilities::EqualsTransportTypes(
+    /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (nc.mTransportTypes == this.mTransportTypes);
-
-#endif
+    return (((NetworkCapabilities*)nc)->mTransportTypes == mTransportTypes);
 }
 
 ECode NetworkCapabilities::SetLinkUpstreamBandwidthKbps(
     /* [in] */ Int32 upKbps)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mLinkUpBandwidthKbps = upKbps;
-
-#endif
+    mLinkUpBandwidthKbps = upKbps;
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::GetLinkUpstreamBandwidthKbps(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mLinkUpBandwidthKbps;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FUNC_RETURN(mLinkUpBandwidthKbps);
 }
 
 ECode NetworkCapabilities::SetLinkDownstreamBandwidthKbps(
     /* [in] */ Int32 downKbps)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mLinkDownBandwidthKbps = downKbps;
-
-#endif
+    mLinkDownBandwidthKbps = downKbps;
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::GetLinkDownstreamBandwidthKbps(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mLinkDownBandwidthKbps;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FUNC_RETURN(mLinkDownBandwidthKbps);
 }
 
 ECode NetworkCapabilities::CombineLinkBandwidths(
     /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.mLinkUpBandwidthKbps =
-                Math.max(this.mLinkUpBandwidthKbps, nc.mLinkUpBandwidthKbps);
-        this.mLinkDownBandwidthKbps =
-                Math.max(this.mLinkDownBandwidthKbps, nc.mLinkDownBandwidthKbps);
-
-#endif
+    mLinkUpBandwidthKbps =
+            Elastos::Core::Math::Max(mLinkUpBandwidthKbps, ((NetworkCapabilities*)nc)->mLinkUpBandwidthKbps);
+    mLinkDownBandwidthKbps =
+            Elastos::Core::Math::Max(mLinkDownBandwidthKbps, ((NetworkCapabilities*)nc)->mLinkDownBandwidthKbps);
+    return NOERROR;
 }
 
-ECode NetworkCapabilities::SatisfiedByLinkBandwidths(
-    /* [in] */ INetworkCapabilities* nc,
-    /* [out] */ Boolean* result)
+Boolean NetworkCapabilities::SatisfiedByLinkBandwidths(
+    /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return !(this.mLinkUpBandwidthKbps > nc.mLinkUpBandwidthKbps ||
-                this.mLinkDownBandwidthKbps > nc.mLinkDownBandwidthKbps);
-
-#endif
+    return !(mLinkUpBandwidthKbps > ((NetworkCapabilities*)nc)->mLinkUpBandwidthKbps ||
+            mLinkDownBandwidthKbps > ((NetworkCapabilities*)nc)->mLinkDownBandwidthKbps);
 }
 
-ECode NetworkCapabilities::EqualsLinkBandwidths(
-    /* [in] */ INetworkCapabilities* nc,
-    /* [out] */ Boolean* result)
+Boolean NetworkCapabilities::EqualsLinkBandwidths(
+    /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (this.mLinkUpBandwidthKbps == nc.mLinkUpBandwidthKbps &&
-                this.mLinkDownBandwidthKbps == nc.mLinkDownBandwidthKbps);
-
-#endif
+    return (mLinkUpBandwidthKbps == ((NetworkCapabilities*)nc)->mLinkUpBandwidthKbps &&
+            mLinkDownBandwidthKbps == ((NetworkCapabilities*)nc)->mLinkDownBandwidthKbps);
 }
 
 ECode NetworkCapabilities::SetNetworkSpecifier(
     /* [in] */ const String& networkSpecifier)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (TextUtils.isEmpty(networkSpecifier) == false && Long.bitCount(mTransportTypes) != 1) {
-            throw new IllegalStateException("Must have a single transport specified to use " +
-                    "setNetworkSpecifier");
-        }
-        mNetworkSpecifier = networkSpecifier;
-
-#endif
+    if (TextUtils::IsEmpty(networkSpecifier) == FALSE && Elastos::Core::Math::BitCount(mTransportTypes) != 1) {
+        Logger::E(TAG, ("Must have a single transport specified to use setNetworkSpecifier"));
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    mNetworkSpecifier = networkSpecifier;
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::GetNetworkSpecifier(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mNetworkSpecifier;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FUNC_RETURN(mNetworkSpecifier);
 }
 
 ECode NetworkCapabilities::CombineSpecifiers(
     /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String otherSpecifier = nc.getNetworkSpecifier();
-        if (TextUtils.isEmpty(otherSpecifier)) return;
-        if (TextUtils.isEmpty(mNetworkSpecifier) == false) {
-            throw new IllegalStateException("Can't combine two networkSpecifiers");
-        }
-        setNetworkSpecifier(otherSpecifier);
-
-#endif
+    String otherSpecifier;
+    ((NetworkCapabilities*)nc)->GetNetworkSpecifier(&otherSpecifier);
+    if (TextUtils::IsEmpty(otherSpecifier)) return NOERROR;
+    if (TextUtils::IsEmpty(mNetworkSpecifier) == FALSE) {
+        Logger::E(TAG, "Can't combine two networkSpecifiers");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    SetNetworkSpecifier(otherSpecifier);
+    return NOERROR;
 }
 
-ECode NetworkCapabilities::SatisfiedBySpecifier(
-    /* [in] */ INetworkCapabilities* nc,
-    /* [out] */ Boolean* result)
+Boolean NetworkCapabilities::SatisfiedBySpecifier(
+    /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (TextUtils.isEmpty(mNetworkSpecifier) ||
-                mNetworkSpecifier.equals(nc.mNetworkSpecifier));
-
-#endif
+    return (TextUtils::IsEmpty(mNetworkSpecifier) ||
+            mNetworkSpecifier.Equals(((NetworkCapabilities*)nc)->mNetworkSpecifier));
 }
 
-ECode NetworkCapabilities::EqualsSpecifier(
-    /* [in] */ INetworkCapabilities* nc,
-    /* [out] */ Boolean* result)
+Boolean NetworkCapabilities::EqualsSpecifier(
+    /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (TextUtils.isEmpty(mNetworkSpecifier)) {
-            return TextUtils.isEmpty(nc.mNetworkSpecifier);
-        } else {
-            return mNetworkSpecifier.equals(nc.mNetworkSpecifier);
-        }
-
-#endif
+    if (TextUtils::IsEmpty(mNetworkSpecifier)) {
+        return TextUtils::IsEmpty(((NetworkCapabilities*)nc)->mNetworkSpecifier);
+    }
+    return mNetworkSpecifier.Equals(((NetworkCapabilities*)nc)->mNetworkSpecifier);
 }
 
 ECode NetworkCapabilities::CombineCapabilities(
     /* [in] */ INetworkCapabilities* nc)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        combineNetCapabilities(nc);
-        combineTransportTypes(nc);
-        combineLinkBandwidths(nc);
-        combineSpecifiers(nc);
-
-#endif
+    CombineNetCapabilities(nc);
+    CombineTransportTypes(nc);
+    CombineLinkBandwidths(nc);
+    CombineSpecifiers(nc);
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::SatisfiedByNetworkCapabilities(
     /* [in] */ INetworkCapabilities* nc,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (nc != null &&
-                satisfiedByNetCapabilities(nc) &&
-                satisfiedByTransportTypes(nc) &&
-                satisfiedByLinkBandwidths(nc) &&
-                satisfiedBySpecifier(nc));
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FUNC_RETURN(nc != NULL &&
+            SatisfiedByNetCapabilities(nc) &&
+            SatisfiedByTransportTypes(nc) &&
+            SatisfiedByLinkBandwidths(nc) &&
+            SatisfiedBySpecifier(nc));
 }
 
 ECode NetworkCapabilities::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (obj == null || (obj instanceof NetworkCapabilities == false)) return false;
-        NetworkCapabilities that = (NetworkCapabilities)obj;
-        return (equalsNetCapabilities(that) &&
-                equalsTransportTypes(that) &&
-                equalsLinkBandwidths(that) &&
-                equalsSpecifier(that));
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if(TO_IINTERFACE(this) != IInterface::Probe(obj)) FUNC_RETURN(FALSE);
+    if (obj == NULL || (INetworkCapabilities::Probe(obj) == NULL)) FUNC_RETURN(FALSE);
+    AutoPtr<NetworkCapabilities> that = (NetworkCapabilities*)INetworkCapabilities::Probe(obj);
+    FUNC_RETURN(EqualsNetCapabilities(that) &&
+            EqualsTransportTypes(that) &&
+            EqualsLinkBandwidths(that) &&
+            EqualsSpecifier(that));
 }
 
 ECode NetworkCapabilities::HashCode(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return ((int)(mNetworkCapabilities & 0xFFFFFFFF) +
-                ((int)(mNetworkCapabilities >> 32) * 3) +
-                ((int)(mTransportTypes & 0xFFFFFFFF) * 5) +
-                ((int)(mTransportTypes >> 32) * 7) +
-                (mLinkUpBandwidthKbps * 11) +
-                (mLinkDownBandwidthKbps * 13) +
-                (TextUtils.isEmpty(mNetworkSpecifier) ? 0 : mNetworkSpecifier.hashCode() * 17));
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FUNC_RETURN((Int32)(mNetworkCapabilities & 0xFFFFFFFF) +
+            ((Int32)(mNetworkCapabilities >> 32) * 3) +
+            ((Int32)(mTransportTypes & 0xFFFFFFFF) * 5) +
+            ((Int32)(mTransportTypes >> 32) * 7) +
+            (mLinkUpBandwidthKbps * 11) +
+            (mLinkDownBandwidthKbps * 13) +
+            (TextUtils::IsEmpty(mNetworkSpecifier) ? 0 : mNetworkSpecifier.GetHashCode() * 17));
 }
 
 ECode NetworkCapabilities::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public NetworkCapabilities createFromParcel(Parcel in) {
-                NetworkCapabilities netCap = new NetworkCapabilities();
-                netCap.mNetworkCapabilities = in.readLong();
-                netCap.mTransportTypes = in.readLong();
-                netCap.mLinkUpBandwidthKbps = in.readInt();
-                netCap.mLinkDownBandwidthKbps = in.readInt();
-                netCap.mNetworkSpecifier = in.readString();
-                return netCap;
-            }
-            public NetworkCapabilities[] newArray(int size) {
-                return new NetworkCapabilities[size];
-            }
-#endif
+    parcel->ReadInt64(&mTransportTypes);
+    parcel->ReadInt32(&mLinkUpBandwidthKbps);
+    parcel->ReadInt32(&mLinkDownBandwidthKbps);
+    parcel->ReadString(&mNetworkSpecifier);
+    parcel->ReadInt64(&mNetworkCapabilities);
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public NetworkCapabilities createFromParcel(Parcel in) {
-                NetworkCapabilities netCap = new NetworkCapabilities();
-                netCap.mNetworkCapabilities = in.readLong();
-                netCap.mTransportTypes = in.readLong();
-                netCap.mLinkUpBandwidthKbps = in.readInt();
-                netCap.mLinkDownBandwidthKbps = in.readInt();
-                netCap.mNetworkSpecifier = in.readString();
-                return netCap;
-            }
-            public NetworkCapabilities[] newArray(int size) {
-                return new NetworkCapabilities[size];
-            }
-#endif
+    dest->WriteInt64(mTransportTypes);
+    dest->WriteInt32(mLinkUpBandwidthKbps);
+    dest->WriteInt32(mLinkDownBandwidthKbps);
+    dest->WriteString(mNetworkSpecifier);
+    dest->WriteInt64(mNetworkCapabilities);
+    return NOERROR;
 }
 
 ECode NetworkCapabilities::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        int[] types = getTransportTypes();
-        String transports = (types.length > 0 ? " Transports: " : "");
-        for (int i = 0; i < types.length;) {
-            switch (types[i]) {
-                case TRANSPORT_CELLULAR:    transports += "CELLULAR"; break;
-                case TRANSPORT_WIFI:        transports += "WIFI"; break;
-                case TRANSPORT_BLUETOOTH:   transports += "BLUETOOTH"; break;
-                case TRANSPORT_ETHERNET:    transports += "ETHERNET"; break;
-                case TRANSPORT_VPN:         transports += "VPN"; break;
-            }
-            if (++i < types.length) transports += "|";
-        }
-        types = getCapabilities();
-        String capabilities = (types.length > 0 ? " Capabilities: " : "");
-        for (int i = 0; i < types.length; ) {
-            switch (types[i]) {
-                case NET_CAPABILITY_MMS:            capabilities += "MMS"; break;
-                case NET_CAPABILITY_SUPL:           capabilities += "SUPL"; break;
-                case NET_CAPABILITY_DUN:            capabilities += "DUN"; break;
-                case NET_CAPABILITY_FOTA:           capabilities += "FOTA"; break;
-                case NET_CAPABILITY_IMS:            capabilities += "IMS"; break;
-                case NET_CAPABILITY_CBS:            capabilities += "CBS"; break;
-                case NET_CAPABILITY_WIFI_P2P:       capabilities += "WIFI_P2P"; break;
-                case NET_CAPABILITY_IA:             capabilities += "IA"; break;
-                case NET_CAPABILITY_RCS:            capabilities += "RCS"; break;
-                case NET_CAPABILITY_XCAP:           capabilities += "XCAP"; break;
-                case NET_CAPABILITY_EIMS:           capabilities += "EIMS"; break;
-                case NET_CAPABILITY_NOT_METERED:    capabilities += "NOT_METERED"; break;
-                case NET_CAPABILITY_INTERNET:       capabilities += "INTERNET"; break;
-                case NET_CAPABILITY_NOT_RESTRICTED: capabilities += "NOT_RESTRICTED"; break;
-                case NET_CAPABILITY_TRUSTED:        capabilities += "TRUSTED"; break;
-                case NET_CAPABILITY_NOT_VPN:        capabilities += "NOT_VPN"; break;
-            }
-            if (++i < types.length) capabilities += "&";
-        }
-        String upBand = ((mLinkUpBandwidthKbps > 0) ? " LinkUpBandwidth>=" +
-                mLinkUpBandwidthKbps + "Kbps" : "");
-        String dnBand = ((mLinkDownBandwidthKbps > 0) ? " LinkDnBandwidth>=" +
-                mLinkDownBandwidthKbps + "Kbps" : "");
-        String specifier = (mNetworkSpecifier == null ?
-                "" : " Specifier: <" + mNetworkSpecifier + ">");
-        return "[" + transports + capabilities + upBand + dnBand + specifier + "]";
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<ArrayOf<Int32> > types;
+    GetTransportTypes((ArrayOf<Int32>**)&types);
+    String transports = (types->GetLength() > 0 ? String(" Transports: ") : String(""));
+    for (Int32 i = 0; i < types->GetLength();) {
+        switch ((*types)[i]) {
+            case TRANSPORT_CELLULAR:
+                transports += "CELLULAR";
+                break;
+            case TRANSPORT_WIFI:
+                transports += "WIFI";
+                break;
+            case TRANSPORT_BLUETOOTH:
+                transports += "BLUETOOTH";
+                break;
+            case TRANSPORT_ETHERNET:
+                transports += "ETHERNET";
+                break;
+            case TRANSPORT_VPN:
+                transports += "VPN";
+                break;
+        }
+        if (++i < types->GetLength()) transports += "|";
+    }
+    GetCapabilities((ArrayOf<Int32>**)&types);
+    String capabilities = (types->GetLength() > 0 ? String(" Capabilities: ") : String(""));
+    for (Int32 i = 0; i < types->GetLength(); ) {
+        switch ((*types)[i]) {
+            case NET_CAPABILITY_MMS:
+                capabilities += "MMS";
+                break;
+            case NET_CAPABILITY_SUPL:
+                capabilities += "SUPL";
+                break;
+            case NET_CAPABILITY_DUN:
+                capabilities += "DUN";
+                break;
+            case NET_CAPABILITY_FOTA:
+                capabilities += "FOTA";
+                break;
+            case NET_CAPABILITY_IMS:
+                capabilities += "IMS";
+                break;
+            case NET_CAPABILITY_CBS:
+                capabilities += "CBS";
+                break;
+            case NET_CAPABILITY_WIFI_P2P:
+                capabilities += "WIFI_P2P";
+                break;
+            case NET_CAPABILITY_IA:
+                capabilities += "IA";
+                break;
+            case NET_CAPABILITY_RCS:
+                capabilities += "RCS";
+                break;
+            case NET_CAPABILITY_XCAP:
+                capabilities += "XCAP";
+                break;
+            case NET_CAPABILITY_EIMS:
+                capabilities += "EIMS";
+                break;
+            case NET_CAPABILITY_NOT_METERED:
+                capabilities += "NOT_METERED";
+                break;
+            case NET_CAPABILITY_INTERNET:
+                capabilities += "INTERNET";
+                break;
+            case NET_CAPABILITY_NOT_RESTRICTED:
+                capabilities += "NOT_RESTRICTED";
+                break;
+            case NET_CAPABILITY_TRUSTED:
+                capabilities += "TRUSTED";
+                break;
+            case NET_CAPABILITY_NOT_VPN:
+                capabilities += "NOT_VPN";
+                break;
+        }
+        if (++i < types->GetLength()) capabilities += "&";
+    }
+    String upBand = ((mLinkUpBandwidthKbps > 0) ? String(" LinkUpBandwidth>=") +
+            StringUtils::ToString(mLinkUpBandwidthKbps) + "Kbps" : String(""));
+    String dnBand = ((mLinkDownBandwidthKbps > 0) ? String(" LinkDnBandwidth>=") +
+            StringUtils::ToString(mLinkDownBandwidthKbps) + "Kbps" : String(""));
+    String specifier = (mNetworkSpecifier == NULL ?
+            String("") : String(" Specifier: <") + mNetworkSpecifier + ">");
+    FUNC_RETURN(String("[") + transports + capabilities + upBand + dnBand + specifier + "]");
 }
-
 
 } // namespace Net
 } // namespace Droid

@@ -31,12 +31,12 @@ public:
         /* [in] */ Boolean roaming);
 
     // @Override
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     // @Override
     CARAPI Equals(
-        /* [in] */ IObject* obj,
+        /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
     // @Override

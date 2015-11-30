@@ -36,7 +36,7 @@ ECode HttpResponseCache::GetInstalled(
             return new HttpResponseCache(
                     (com.android.okhttp.HttpResponseCache) installed);
         }
-        return null;
+        return NULL;
 #endif
 }
 
@@ -152,7 +152,7 @@ ECode HttpResponseCache::Close()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (ResponseCache.getDefault() == this.delegate) {
-            ResponseCache.setDefault(null);
+            ResponseCache.setDefault(NULL);
         }
         delegate.close();
 #endif
@@ -163,7 +163,7 @@ ECode HttpResponseCache::Delete()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (ResponseCache.getDefault() == this.delegate) {
-            ResponseCache.setDefault(null);
+            ResponseCache.setDefault(NULL);
         }
         delegate.delete();
 #endif

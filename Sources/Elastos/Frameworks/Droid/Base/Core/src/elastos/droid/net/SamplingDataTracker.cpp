@@ -26,14 +26,14 @@ ECode SamplingDataTracker::GetSamplingSnapshots(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        BufferedReader reader = null;
+        BufferedReader reader = NULL;
         try {
             reader = new BufferedReader(new FileReader("/proc/net/dev"));
             // Skip over the line bearing column titles (there are 2 lines)
             String line;
             reader.readLine();
             reader.readLine();
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != NULL) {
                 // remove leading whitespace
                 line = line.trim();
                 String[] tokens = line.split("[ ]+");
@@ -79,7 +79,7 @@ ECode SamplingDataTracker::GetSamplingSnapshots(
                 Iterator it = mapIfaceToSample.entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry kvpair = (Map.Entry)it.next();
-                    if (kvpair.getValue() == null) {
+                    if (kvpair.getValue() == NULL) {
                         Slog.d(TAG, "could not find snapshot for interface " + kvpair.getKey());
                     }
                 }
@@ -90,14 +90,13 @@ ECode SamplingDataTracker::GetSamplingSnapshots(
             Slog.e(TAG, "could not read /proc/net/dev");
         } finally {
             try {
-                if (reader != null) {
+                if (reader != NULL) {
                     reader.close();
                 }
             } catch (IOException e) {
                 Slog.e(TAG, "could not close /proc/net/dev");
             }
         }
-
 #endif
 }
 
@@ -109,7 +108,6 @@ ECode SamplingDataTracker::StartSampling(
         synchronized(mSamplingDataLock) {
             mLastSample = s;
         }
-
 #endif
 }
 
@@ -119,18 +117,17 @@ ECode SamplingDataTracker::StopSampling(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(mSamplingDataLock) {
-            if (mLastSample != null) {
+            if (mLastSample != NULL) {
                 if (s.mTimestamp - mLastSample.mTimestamp > MINIMUM_SAMPLING_INTERVAL
                         && getSampledPacketCount(mLastSample, s) > MINIMUM_SAMPLED_PACKETS) {
                     mBeginningSample = mLastSample;
                     mEndingSample = s;
-                    mLastSample = null;
+                    mLastSample = NULL;
                 } else {
                     if (DBG) Slog.d(TAG, "Throwing current sample away because it is too small");
                 }
             }
         }
-
 #endif
 }
 
@@ -144,9 +141,8 @@ ECode SamplingDataTracker::ResetSamplingData()
             // 'ending sample' effectively shortening sampling interval, but that
             // requires extra work (specifically, reading the sample needs to be
             // done asynchronously)
-            mLastSample = null;
+            mLastSample = NULL;
         }
-
 #endif
 }
 
@@ -156,13 +152,12 @@ ECode SamplingDataTracker::GetSampledTxByteCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(mSamplingDataLock) {
-            if (mBeginningSample != null && mEndingSample != null) {
+            if (mBeginningSample != NULL && mEndingSample != NULL) {
                 return mEndingSample.mTxByteCount - mBeginningSample.mTxByteCount;
             } else {
                 return LinkQualityInfo.UNKNOWN_LONG;
             }
         }
-
 #endif
 }
 
@@ -172,13 +167,12 @@ ECode SamplingDataTracker::GetSampledTxPacketCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(mSamplingDataLock) {
-            if (mBeginningSample != null && mEndingSample != null) {
+            if (mBeginningSample != NULL && mEndingSample != NULL) {
                 return mEndingSample.mTxPacketCount - mBeginningSample.mTxPacketCount;
             } else {
                 return LinkQualityInfo.UNKNOWN_LONG;
             }
         }
-
 #endif
 }
 
@@ -188,13 +182,12 @@ ECode SamplingDataTracker::GetSampledTxPacketErrorCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(mSamplingDataLock) {
-            if (mBeginningSample != null && mEndingSample != null) {
+            if (mBeginningSample != NULL && mEndingSample != NULL) {
                 return mEndingSample.mTxPacketErrorCount - mBeginningSample.mTxPacketErrorCount;
             } else {
                 return LinkQualityInfo.UNKNOWN_LONG;
             }
         }
-
 #endif
 }
 
@@ -204,13 +197,12 @@ ECode SamplingDataTracker::GetSampledRxByteCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(mSamplingDataLock) {
-            if (mBeginningSample != null && mEndingSample != null) {
+            if (mBeginningSample != NULL && mEndingSample != NULL) {
                 return mEndingSample.mRxByteCount - mBeginningSample.mRxByteCount;
             } else {
                 return LinkQualityInfo.UNKNOWN_LONG;
             }
         }
-
 #endif
 }
 
@@ -220,13 +212,12 @@ ECode SamplingDataTracker::GetSampledRxPacketCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(mSamplingDataLock) {
-            if (mBeginningSample != null && mEndingSample != null) {
+            if (mBeginningSample != NULL && mEndingSample != NULL) {
                 return mEndingSample.mRxPacketCount - mBeginningSample.mRxPacketCount;
             } else {
                 return LinkQualityInfo.UNKNOWN_LONG;
             }
         }
-
 #endif
 }
 
@@ -236,7 +227,6 @@ ECode SamplingDataTracker::GetSampledPacketCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return getSampledPacketCount(mBeginningSample, mEndingSample);
-
 #endif
 }
 
@@ -247,14 +237,13 @@ ECode SamplingDataTracker::GetSampledPacketCount(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (begin != null && end != null) {
+        if (begin != NULL && end != NULL) {
             long rxPacketCount = end.mRxPacketCount - begin.mRxPacketCount;
             long txPacketCount = end.mTxPacketCount - begin.mTxPacketCount;
             return rxPacketCount + txPacketCount;
         } else {
             return LinkQualityInfo.UNKNOWN_LONG;
         }
-
 #endif
 }
 
@@ -263,14 +252,13 @@ ECode SamplingDataTracker::GetSampledPacketErrorCount(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (mBeginningSample != null && mEndingSample != null) {
+        if (mBeginningSample != NULL && mEndingSample != NULL) {
             long rxPacketErrorCount = getSampledRxPacketErrorCount();
             long txPacketErrorCount = getSampledTxPacketErrorCount();
             return rxPacketErrorCount + txPacketErrorCount;
         } else {
             return LinkQualityInfo.UNKNOWN_LONG;
         }
-
 #endif
 }
 
@@ -280,13 +268,12 @@ ECode SamplingDataTracker::GetSampledRxPacketErrorCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(mSamplingDataLock) {
-            if (mBeginningSample != null && mEndingSample != null) {
+            if (mBeginningSample != NULL && mEndingSample != NULL) {
                 return mEndingSample.mRxPacketErrorCount - mBeginningSample.mRxPacketErrorCount;
             } else {
                 return LinkQualityInfo.UNKNOWN_LONG;
             }
         }
-
 #endif
 }
 
@@ -296,13 +283,12 @@ ECode SamplingDataTracker::GetSampleTimestamp(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(mSamplingDataLock) {
-            if (mEndingSample != null) {
+            if (mEndingSample != NULL) {
                 return mEndingSample.mTimestamp;
             } else {
                 return LinkQualityInfo.UNKNOWN_LONG;
             }
         }
-
 #endif
 }
 
@@ -312,13 +298,12 @@ ECode SamplingDataTracker::GetSampleDuration(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(mSamplingDataLock) {
-            if (mBeginningSample != null && mEndingSample != null) {
+            if (mBeginningSample != NULL && mEndingSample != NULL) {
                 return (int) (mEndingSample.mTimestamp - mBeginningSample.mTimestamp);
             } else {
                 return LinkQualityInfo.UNKNOWN_INT;
             }
         }
-
 #endif
 }
 
@@ -333,7 +318,6 @@ ECode SamplingDataTracker::SetCommonLinkQualityInfoFields(
             li.setPacketCount(getSampledPacketCount());
             li.setPacketErrorCount(getSampledPacketErrorCount());
         }
-
 #endif
 }
 

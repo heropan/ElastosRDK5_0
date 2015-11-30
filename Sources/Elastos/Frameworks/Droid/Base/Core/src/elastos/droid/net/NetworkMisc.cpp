@@ -7,65 +7,43 @@ namespace Net {
 
 CAR_INTERFACE_IMPL_2(NetworkMisc, Object, IParcelable, INetworkMisc)
 
+NetworkMisc::NetworkMisc()
+    : mAllowBypass(FALSE)
+    , mExplicitlySelected(FALSE)
+{}
+
 ECode NetworkMisc::constructor()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-
-#endif
+    return NOERROR;
 }
 
 ECode NetworkMisc::constructor(
     /* [in] */ INetworkMisc* nm)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (nm != null) {
-            allowBypass = nm.allowBypass;
-            explicitlySelected = nm.explicitlySelected;
-        }
-
-#endif
+    if (nm != NULL) {
+        mAllowBypass = ((NetworkMisc*)nm)->mAllowBypass;
+        mExplicitlySelected = ((NetworkMisc*)nm)->mExplicitlySelected;
+    }
+    return NOERROR;
 }
 
 ECode NetworkMisc::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        @Override
-        public NetworkMisc createFromParcel(Parcel in) {
-            NetworkMisc networkMisc = new NetworkMisc();
-            networkMisc.allowBypass = in.readInt() != 0;
-            networkMisc.explicitlySelected = in.readInt() != 0;
-            return networkMisc;
-        }
-        @Override
-        public NetworkMisc[] newArray(int size) {
-            return new NetworkMisc[size];
-        }
-
-#endif
+    Int32 i;
+    parcel->ReadInt32(&i);
+    mAllowBypass = i != 0;
+    parcel->ReadInt32(&i);
+    mExplicitlySelected = i != 0;
+    return NOERROR;
 }
 
 ECode NetworkMisc::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        @Override
-        public NetworkMisc createFromParcel(Parcel in) {
-            NetworkMisc networkMisc = new NetworkMisc();
-            networkMisc.allowBypass = in.readInt() != 0;
-            networkMisc.explicitlySelected = in.readInt() != 0;
-            return networkMisc;
-        }
-        @Override
-        public NetworkMisc[] newArray(int size) {
-            return new NetworkMisc[size];
-        }
-
-#endif
+    dest->WriteInt32(mAllowBypass ? 1 : 0);
+    dest->WriteInt32(mExplicitlySelected ? 1 : 0);
+    return NOERROR;
 }
 
 ECode NetworkMisc::GetAllowBypass(

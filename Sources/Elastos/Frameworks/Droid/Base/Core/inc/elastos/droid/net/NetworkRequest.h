@@ -45,7 +45,7 @@ public:
         /* [out] */ String* result);
 
     CARAPI Equals(
-        /* [in] */ IObject* obj,
+        /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
     CARAPI GetHashCode(

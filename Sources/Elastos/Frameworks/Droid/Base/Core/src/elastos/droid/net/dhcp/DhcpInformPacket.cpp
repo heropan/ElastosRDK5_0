@@ -19,8 +19,7 @@ ECode DhcpInformPacket::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        super(transId, clientIp, yourIp, nextIp, relayIp, clientMac, false);
-
+        super(transId, clientIp, yourIp, nextIp, relayIp, clientMac, FALSE);
 #endif
 }
 
@@ -31,7 +30,6 @@ ECode DhcpInformPacket::ToString(
 #if 0 // TODO: Translate codes below
         String s = super.toString();
         return s + " INFORM";
-
 #endif
 }
 
@@ -45,10 +43,9 @@ ECode DhcpInformPacket::BuildPacket(
 #if 0 // TODO: Translate codes below
         ByteBuffer result = ByteBuffer.allocate(MAX_LENGTH);
         fillInPacket(encap, mClientIp, mYourIp, destUdp, srcUdp, result,
-            DHCP_BOOTREQUEST, false);
+            DHCP_BOOTREQUEST, FALSE);
         result.flip();
         return result;
-
 #endif
 }
 
@@ -63,7 +60,6 @@ ECode DhcpInformPacket::FinishPacket(
         addTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_REQUEST);
         addTlv(buffer, DHCP_PARAMETER_LIST, mRequestedParams);
         addTlvEnd(buffer);
-
 #endif
 }
 
@@ -73,13 +69,11 @@ ECode DhcpInformPacket::DoNextOp(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         InetAddress clientRequest =
-            mRequestedIp == null ? mClientIp : mRequestedIp;
+            mRequestedIp == NULL ? mClientIp : mRequestedIp;
         machine.onInformReceived(mTransId, mClientMac, clientRequest,
             mRequestedParams);
-
 #endif
 }
-
 
 } // namespace Dhcp
 } // namespace Net
