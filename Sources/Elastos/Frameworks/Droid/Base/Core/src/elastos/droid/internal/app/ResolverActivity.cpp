@@ -860,6 +860,8 @@ Int64 ResolverActivity::ResolverComparator::GetPackageTimeSpent(
     return 0;
 }
 
+CAR_INTERFACE_IMPL_2(ResolverActivity, Activity, IResolverActivity, IAdapterViewOnItemClickListener)
+
 ResolverActivity::ResolverActivity()
     : mLaunchedFromUid(0)
     , mAdapter(NULL)
@@ -1284,10 +1286,9 @@ ECode ResolverActivity::OnItemClick(
         GetPackageManager((IPackageManager**)&pm);
         AutoPtr<ICharSequence> label;
         IPackageItemInfo::Probe(activityInfo)->LoadLabel(pm, (ICharSequence**)&label);
-        String strLabel;
-        label->ToString(&strLabel);
-        String strText;
-        strText.AppendFormat(format.string(), strLabel.string());
+        AutoPtr<ArrayOf<IInterface*> > params = ArrayOf<IInterface*>::Alloc(1);
+        params->Set(0, label);
+        String strText = StringUtils::Format(format, params);
 
         assert(0);
         AutoPtr<IToast> toast;

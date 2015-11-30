@@ -2,26 +2,19 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_CDISABLECARMODEACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_CDISABLECARMODEACTIVITY_H__
 
-#include "elastos/droid/app/Activity.h"
 #include "_Elastos_Droid_Internal_App_CDisableCarModeActivity.h"
-
-using Elastos::Droid::App::Activity;
+#include "elastos/droid/internal/app/DisableCarModeActivity.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace App {
 
-class CDisableCarModeActivity : public Activity
+CarClass(CDisableCarModeActivity)
+    , public DisableCarModeActivity
 {
 public:
-    CARAPI OnCreate(
-        /* [in] */ IBundle* savedInstanceState);
-
-    CARAPI constructor();
-
-private:
-    static const String TAG;
+    CAR_OBJECT_DECL()
 };
 
 } //namespace App

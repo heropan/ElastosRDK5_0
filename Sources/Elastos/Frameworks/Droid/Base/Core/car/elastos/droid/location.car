@@ -21,7 +21,6 @@ module
     merge("location/IGpsStatusListener.car");
     merge("location/IGpsStatusProvider.car");
     merge("location/LocationRequest.car");
-    merge("location/ProviderProperties.car");
     merge("location/Location.car");
     merge("location/ILocationListener.car");
     merge("location/LocationListener.car");
@@ -48,6 +47,7 @@ module
 
     interface Elastos.Utility.ILocale;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Internal.Location.IProviderProperties;
     interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IBinder;
 

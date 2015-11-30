@@ -8,9 +8,9 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-#VPATH += $(MAKEDIR)/storage
+VPATH += $(MAKEDIR)/storage
 
-#SOURCES += CExternalStorageFormatter.cpp
+SOURCES += CExternalStorageFormatter.cpp
 SOURCES += AndroidPrintStream.cpp
 SOURCES += BackgroundThread.cpp
 SOURCES += BaseCommand.cpp

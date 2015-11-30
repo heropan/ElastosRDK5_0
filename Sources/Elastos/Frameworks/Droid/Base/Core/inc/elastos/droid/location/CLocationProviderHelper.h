@@ -5,6 +5,8 @@
 #include "_Elastos_Droid_Location_CLocationProviderHelper.h"
 #include <elastos/core/Singleton.h>
 
+using Elastos::Droid::Internal::Location::IProviderProperties;
+
 namespace Elastos {
 namespace Droid {
 namespace Location {

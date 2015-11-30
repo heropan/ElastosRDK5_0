@@ -2,18 +2,27 @@
 #include "elastos/droid/internal/os/storage/CExternalStorageFormatter.h"
 // #include "elastos/droid/app/CProgressDialog.h"
 #include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/os/Environment.h"
 #include "elastos/droid/os/ServiceManager.h"
+// #include "elastos/droid/widget/CToastHelper.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 // using Elastos::Droid::App::CProgressDialog;
+using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::App::IDialog;
 using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnCancelListener;
+using Elastos::Droid::Os::Environment;
+using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::Widget::IToast;
 using Elastos::Droid::Widget::IToastHelper;
-using Elastos::Droid::Widget::CToastHelper;
+// using Elastos::Droid::Widget::CToastHelper;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -35,12 +44,15 @@ ECode CExternalStorageFormatter::MyStorageEventListener::OnStorageStateChanged(
 {
     Logger::I(TAG, "Received storage state changed notification that %s changed state from %s to %s",
         path.string(), oldState.string(), newState.string());
-    return mOwner->UpdateProgressState();
+    mOwner->UpdateProgressState();
+    return NOERROR;
 }
 
 CExternalStorageFormatter::MyThread::MyThread(
-    /* [in] */ CExternalStorageFormatter* owner)
+    /* [in] */ CExternalStorageFormatter* owner,
+    /* [in] */ const String& extStoragePath)
     : mOwner(owner)
+    , mExtStoragePath(extStoragePath)
 {
 }
 
@@ -48,10 +60,12 @@ ECode CExternalStorageFormatter::MyThread::Run()
 {
     Boolean success = FALSE;
     AutoPtr<IMountService> mountService = mOwner->GetMountService();
-    if (FAILED(mountService->FormatVolume(extStoragePath))) {
+    Int32 res;
+    if (FAILED(mountService->FormatVolume(mExtStoragePath, &res))) {
         AutoPtr<IToastHelper> toastHelper;
-        CToastHelper::AcquireSingleton((IToastHelper**)&toastHelper);
-        AuotPtr<IToast> toast;
+        assert(0);
+        // CToast;Helper::AcquireSingleton((IToastHelper**)&toastHelper);
+        AutoPtr<IToast> toast;
         toastHelper->MakeText(mOwner, R::string::format_error, IToast::LENGTH_LONG, (IToast**)&toast);
         toast->Show();
     }
@@ -59,36 +73,50 @@ ECode CExternalStorageFormatter::MyThread::Run()
         success = TRUE;
 
     if (success) {
-        if (mFactoryReset) {
+        if (mOwner->mFactoryReset) {
             AutoPtr<IIntent> intent;
             CIntent::New(IIntent::ACTION_MASTER_CLEAR, (IIntent**)&intent);
             intent->AddFlags(IIntent::FLAG_RECEIVER_FOREGROUND);
-            intent->PutExtra(IIntent::EXTRA_REASON, mReason);
-            SendBroadcast(intent);
+            intent->PutExtra(IIntent::EXTRA_REASON, mOwner->mReason);
+            mOwner->SendBroadcast(intent);
             // Intent handling is asynchronous -- assume it will happen soon.
-            StopSelf();
+            mOwner->StopSelf();
             return NOERROR;
         }
     }
     // If we didn't succeed, or aren't doing a full factory
     // reset, then it is time to remount the storage.
-    if (!success && mAlwaysReset) {
+    if (!success && mOwner->mAlwaysReset) {
         AutoPtr<IIntent> intent;
         CIntent::New(IIntent::ACTION_MASTER_CLEAR, (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_FOREGROUND);
-        intent->PutExtra(IIntent::EXTRA_REASON, mReason);
-        SendBroadcast(intent);
+        intent->PutExtra(IIntent::EXTRA_REASON, mOwner->mReason);
+        mOwner->SendBroadcast(intent);
     }
     else {
-        if (FAILED(mountService->MountVolume(extStoragePath))) {
+        if (FAILED(mountService->MountVolume(mExtStoragePath, &res))) {
             Logger::W(TAG, "Failed talking with mount service");
         }
     }
-    StopSelf();
+    mOwner->StopSelf();
     return NOERROR;
 }
 
-static const String TAG("ExternalStorageFormatter");
+CAR_INTERFACE_IMPL(CExternalStorageFormatter::OnCancelListener, Object, IDialogInterfaceOnCancelListener)
+
+CExternalStorageFormatter::OnCancelListener::OnCancelListener(
+    /* [in] */ CExternalStorageFormatter* owner)
+    : mOwner(owner)
+{
+}
+
+ECode CExternalStorageFormatter::OnCancelListener::OnCancel(
+    /* [in] */ IDialogInterface* dialog)
+{
+    return mOwner->OnCancel(dialog);
+}
+
+const String CExternalStorageFormatter::TAG("ExternalStorageFormatter");
 
 static AutoPtr<IComponentName> InitComponentName()
 {
@@ -97,16 +125,21 @@ static AutoPtr<IComponentName> InitComponentName()
     return cn;
 }
 
-static const AutoPtr<IComponentName> COMPONENT_NAME = InitComponentName();
+const AutoPtr<IComponentName> CExternalStorageFormatter::COMPONENT_NAME = InitComponentName();
 
 CAR_OBJECT_IMPL(CExternalStorageFormatter);
 CAR_INTERFACE_IMPL(CExternalStorageFormatter, Service, IExternalStorageFormatter);
 
 CExternalStorageFormatter::CExternalStorageFormatter()
-    , mFactoryReset(FALSE)
+    : mFactoryReset(FALSE)
     , mAlwaysReset(FALSE)
 {
     mStorageListener = new MyStorageEventListener(this);
+}
+
+ECode CExternalStorageFormatter::constructor()
+{
+    return NOERROR;
 }
 
 ECode CExternalStorageFormatter::OnCreate()
@@ -134,9 +167,10 @@ ECode CExternalStorageFormatter::OnCreate()
 ECode CExternalStorageFormatter::OnStartCommand(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 flags,
-    /* [in] */ Int32 startId
-    /* [out] */ Int32 pCmd)
+    /* [in] */ Int32 startId,
+    /* [out] */ Int32* cmd)
 {
+    VALIDATE_NOT_NULL(cmd)
     String action;
     intent->GetAction(&action);
     if (FORMAT_AND_FACTORY_RESET.Equals(action)) {
@@ -156,20 +190,22 @@ ECode CExternalStorageFormatter::OnStartCommand(
     if (mProgressDialog == NULL) {
         assert(0 && "TODO:CProgressDialog is not implemented!");
         // CProgressDialog::New(this, (IProgressDialog**)&mProgressDialog);
+        AutoPtr<IDialog> dialog = IDialog::Probe(mProgressDialog);
         mProgressDialog->SetIndeterminate(TRUE);
-        mProgressDialog->SetCancelable(TRUE);
+        dialog->SetCancelable(TRUE);
         AutoPtr<IWindow> window;
-        mProgressDialog->GetWindow((IWindow**)&window);
+        dialog->GetWindow((IWindow**)&window);
         window->SetType(IWindowManagerLayoutParams::TYPE_SYSTEM_ALERT);
         if (!mAlwaysReset) {
-            mProgressDialog->SetOnCancelListener(this);
+            AutoPtr<OnCancelListener> listener = new OnCancelListener(this);
+            dialog->SetOnCancelListener(listener);
         }
-        TryUnmountExternalStorage2();
-        UpdateProgressState(NULL, NULL);
-        mProgressDialog->Show();
+        UpdateProgressState();
+        dialog->Show();
     }
 
-    return Service::START_REDELIVER_INTENT;
+    *cmd = Service::START_REDELIVER_INTENT;
+    return NOERROR;
 }
 
 ECode CExternalStorageFormatter::OnDestroy()
@@ -178,14 +214,14 @@ ECode CExternalStorageFormatter::OnDestroy()
         mStorageManager->UnregisterListener(mStorageListener);
     }
     if (mProgressDialog != NULL) {
-        mProgressDialog->Dismiss();
+        IDialogInterface::Probe(mProgressDialog)->Dismiss();
     }
     mWakeLock->ReleaseLock();
     return Service::OnDestroy();
 }
 
 ECode CExternalStorageFormatter::OnBind(
-    /* [in] */ IIntent* intent
+    /* [in] */ IIntent* intent,
     /* [out] */ IBinder** result)
 {
     VALIDATE_NOT_NULL(result);
@@ -199,11 +235,12 @@ ECode CExternalStorageFormatter::OnCancel(
     AutoPtr<IMountService> mountService = GetMountService();
     String extStoragePath;
     if (mStorageVolume == NULL)
-        Environment::GetLegacyExternalStorageDirectory()->ToString(&extStoragePath) :
+        Environment::GetLegacyExternalStorageDirectory()->ToString(&extStoragePath);
     else
         mStorageVolume->GetPath(&extStoragePath);
 
-    if (FAILED(mountService->MountVolume(extStoragePath)))
+    Int32 res;
+    if (FAILED(mountService->MountVolume(extStoragePath, &res)))
         Logger::W(TAG, "Failed talking with mount service");
 
     StopSelf();
@@ -214,8 +251,9 @@ void CExternalStorageFormatter::Fail(
     /* [in] */ Int32 msg)
 {
     AutoPtr<IToastHelper> toastHelper;
-    CToastHelper::AcquireSingleton((IToastHelper**)&toastHelper);
-    AuotPtr<IToast> toast;
+    assert(0);
+    // CToastHelper::AcquireSingleton((IToastHelper**)&toastHelper);
+    AutoPtr<IToast> toast;
     toastHelper->MakeText(this, msg, IToast::LENGTH_LONG, (IToast**)&toast);
     toast->Show();
 
@@ -229,9 +267,7 @@ void CExternalStorageFormatter::Fail(
     StopSelf();
 }
 
-void CExternalStorageFormatter::UpdateProgressState(
-    /* [in] */ const String& path,
-    /* [in] */ const String& newState)
+void CExternalStorageFormatter::UpdateProgressState()
 {
     String status;
     if (mStorageVolume == NULL)
@@ -248,7 +284,7 @@ void CExternalStorageFormatter::UpdateProgressState(
         AutoPtr<IMountService> mountService = GetMountService();
         String extStoragePath;
         if (mStorageVolume == NULL)
-            Environment::GetLegacyExternalStorageDirectory()->ToString(&extStoragePath) :
+            Environment::GetLegacyExternalStorageDirectory()->ToString(&extStoragePath);
         else
             mStorageVolume->GetPath(&extStoragePath);
 
@@ -264,12 +300,13 @@ void CExternalStorageFormatter::UpdateProgressState(
         AutoPtr<IMountService> mountService = GetMountService();
         String extStoragePath;
         if (mStorageVolume == NULL)
-            Environment::GetLegacyExternalStorageDirectory()->ToString(&extStoragePath) :
+            Environment::GetLegacyExternalStorageDirectory()->ToString(&extStoragePath);
         else
             mStorageVolume->GetPath(&extStoragePath);
 
         if (mountService != NULL) {
-            AutoPtr<MyThread> thread = new MyThread();
+            AutoPtr<MyThread> thread = new MyThread(this ,extStoragePath);
+            thread->constructor();
             thread->Start();
         }
         else {
@@ -290,7 +327,7 @@ void CExternalStorageFormatter::UpdateProgressState(
     }
     else {
         Fail(R::string::media_unknown_state);
-        Logger::W(TAG, "Unknown storage state: " + status);
+        Logger::W(TAG, "Unknown storage state: %s", status.string());
         StopSelf();
     }
 }
@@ -299,14 +336,20 @@ ECode CExternalStorageFormatter::UpdateProgressDialog(
     /* [in] */ Int32 msg)
 {
     if (mProgressDialog == NULL) {
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setIndeterminate(TRUE);
-        mProgressDialog.setCancelable(FALSE);
-        mProgressDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        mProgressDialog.show();
+        assert(0 && "TODO:CProgressDialog is not implemented!");
+        // CProgressDialog::New(this, (IProgressDialog**)&mProgressDialog);
+        AutoPtr<IDialog> dialog = IDialog::Probe(mProgressDialog);
+        mProgressDialog->SetIndeterminate(TRUE);
+        dialog->SetCancelable(FALSE);
+        AutoPtr<IWindow> window;
+        dialog->GetWindow((IWindow**)&window);
+        window->SetType(IWindowManagerLayoutParams::TYPE_SYSTEM_ALERT);
+        dialog->Show();
     }
 
-    mProgressDialog.setMessage(getText(msg));
+    AutoPtr<ICharSequence> text;
+    GetText(msg, (ICharSequence**)&text);
+    IAlertDialog::Probe(mProgressDialog)->SetMessage(text);
     return NOERROR;
 }
 

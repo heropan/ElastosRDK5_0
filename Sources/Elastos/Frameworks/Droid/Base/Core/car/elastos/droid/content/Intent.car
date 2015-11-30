@@ -4230,6 +4230,15 @@ module
             [in] IClipData* clip);
 
         /**
+         * This is NOT a secure mechanism to identify the user who sent the intent.
+         * When the intent is sent to a different user, it is used to fix uris by adding the userId
+         * who sent the intent.
+         * @hide
+         */
+        SetContentUserHint(
+            [in] Int32 contentUserHint);
+
+        /**
          * Add extended data to the intent.  The name must include a package
          * prefix, for example the app com.android.contacts would use names
          * like "com.android.contacts.ShowAll".

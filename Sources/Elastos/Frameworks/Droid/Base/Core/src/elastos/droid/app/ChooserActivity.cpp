@@ -10,6 +10,8 @@ namespace Droid {
 namespace Internal {
 namespace App {
 
+CAR_INTERFACE_IMPL(ChooserActivity, ResolverActivity, IChooserActivity)
+
 ECode ChooserActivity::OnCreate(
     /* [in] */ IBundle* savedInstanceState)
 {

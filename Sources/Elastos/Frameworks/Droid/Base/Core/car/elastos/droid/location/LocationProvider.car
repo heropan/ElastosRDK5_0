@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Internal.Location.IProviderProperties;
+
     namespace Elastos {
     namespace Droid {
     namespace Location {
