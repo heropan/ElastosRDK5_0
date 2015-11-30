@@ -31,7 +31,7 @@ class ViewGroup
 {
     friend class View;
     friend class COverlayViewGroup;
-<<<<<<< HEAD
+
 public:
 
     class LayoutParams
@@ -334,9 +334,8 @@ public:
         static const Int32 UNDEFINED_MARGIN;// = DEFAULT_MARGIN_RELATIVE;
     };
 
-=======
     friend class GhostView;
->>>>>>> modify code
+
 private:
     class NotifyAnimationListenerRunnable
         : public Runnable

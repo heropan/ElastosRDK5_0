@@ -4228,12 +4228,6 @@ public:
         /* [in] */ Int32 end,
         /* [in] */ Int32 bottom);
 
-    CARAPI GetPadding(
-        /* [out] */ Int32* left,
-        /* [out] */ Int32* top,
-        /* [out] */ Int32* right,
-        /* [out] */ Int32* bottom);
-
     virtual CARAPI GetPaddingTop(
         /* [out] */ Int32* res);
 
