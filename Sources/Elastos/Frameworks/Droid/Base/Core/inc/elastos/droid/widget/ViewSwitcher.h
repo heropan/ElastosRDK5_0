@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_VIEWSWITCHER_H__
 #define __ELASTOS_DROID_WIDGET_VIEWSWITCHER_H__
 
-#include "ViewAnimator.h"
+#include "elastos/droid/widget/ViewAnimator.h"
 
 /**
  * {@link ViewAnimator} that switches between two views, and has a factory
@@ -14,17 +14,19 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ViewSwitcher : public ViewAnimator
+class ViewSwitcher
+    : public ViewAnimator
+    , public IViewSwitcher
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Creates a new empty ViewSwitcher.
      *
      * @param context the application's environment
      */
-    ViewSwitcher();
-
-    ViewSwitcher(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -34,7 +36,7 @@ public:
      * @param context the application environment
      * @param attrs a collection of attributes
      */
-    ViewSwitcher(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -64,8 +66,6 @@ public:
     CARAPI GetNextView(
         /* [out] */ IView** v);
 
-
-
     /**
      * Sets the factory used to create the two views between which the
      * ViewSwitcher will flip. Instead of using a factory, you can call
@@ -83,18 +83,10 @@ public:
      */
     CARAPI Reset();
 
-protected:
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
 private:
     CARAPI ObtainView(
         /* [out] */ IView** v);
+
 protected:
     /**
      * The factory used to create the two children.
@@ -106,4 +98,4 @@ protected:
 }// namespace Droid
 }// namespace Widget
 
-#endif
+#endif // __ELASTOS_DROID_WIDGET_VIEWSWITCHER_H__

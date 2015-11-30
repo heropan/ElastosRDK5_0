@@ -16,6 +16,14 @@
 #include "elastos/droid/widget/CImageView.h"
 #include "elastos/droid/widget/CImageButton.h"
 #include "elastos/droid/widget/CProgressBar.h"
+#include "elastos/droid/widget/CGallery.h"
+#include "elastos/droid/widget/CGalleryLayoutParams.h"
+#include "elastos/droid/widget/CScroller.h"
+#include "elastos/droid/widget/CViewAnimator.h"
+#include "elastos/droid/widget/CViewSwitcher.h"
+#include "elastos/droid/widget/CImageSwitcher.h"
+#include "elastos/droid/widget/CAdapterViewAnimator.h"
+#include "elastos/droid/widget/CAdapterViewFlipper.h"
 
 namespace Elastos {
 namespace Droid {
@@ -38,6 +46,14 @@ CAR_OBJECT_IMPL(CCursorFilter);
 CAR_OBJECT_IMPL(CImageView);
 CAR_OBJECT_IMPL(CImageButton);
 CAR_OBJECT_IMPL(CProgressBar);
+CAR_OBJECT_IMPL(CGallery);
+CAR_OBJECT_IMPL(CGalleryLayoutParams);
+CAR_OBJECT_IMPL(CScroller);
+CAR_OBJECT_IMPL(CViewAnimator);
+CAR_OBJECT_IMPL(CViewSwitcher);
+CAR_OBJECT_IMPL(CImageSwitcher);
+CAR_OBJECT_IMPL(CAdapterViewAnimator);
+CAR_OBJECT_IMPL(CAdapterViewFlipper);
 
 } // namespace Widget
 } // namespace Droid

@@ -1,3 +1,4 @@
+
 #ifndef __ELASTOS_DROID_WIDGET_IMAGESWITCHER_H__
 #define __ELASTOS_DROID_WIDGET_IMAGESWITCHER_H__
 
@@ -14,13 +15,17 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ImageSwitcher : public ViewSwitcher
+class ImageSwitcher
+    : public ViewSwitcher
+    , public IImageSwitcher
 {
 public:
-    ImageSwitcher(
+    CAR_INTERFACE_DECL();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    ImageSwitcher(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -39,16 +44,6 @@ public:
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-protected:
-    ImageSwitcher();
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
 private:
     const static String IMAGESWITCHER_NAME;
 };
@@ -57,4 +52,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_IMAGESWITCHER_H__
+#endif // __ELASTOS_DROID_WIDGET_IMAGESWITCHER_H__

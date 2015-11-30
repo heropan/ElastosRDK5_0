@@ -29,6 +29,7 @@ ECode CComposeShader::constructor(
     Init(NativeCreate1(((Shader*)(IShader*)shaderA->Probe(EIID_Shader))->mNativeInstance,
             ((Shader*)(IShader*)shaderB->Probe(EIID_Shader))->mNativeInstance,
             (mode != NULL) ? ((Xfermode*)(IXfermode*)mode->Probe(EIID_Xfermode))->mNativeInstance : 0));
+    return NOERROR;
 }
 
 ECode CComposeShader::constructor(

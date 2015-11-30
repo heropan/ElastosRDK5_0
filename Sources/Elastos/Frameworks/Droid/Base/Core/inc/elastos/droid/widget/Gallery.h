@@ -4,13 +4,17 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/widget/AbsSpinner.h"
 #include "elastos/droid/widget/Scroller.h"
 
 using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IGestureDetector;
+using Elastos::Droid::View::IGestureDetectorOnGestureListener;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::Widget::IScroller;
 
 namespace Elastos {
@@ -35,9 +39,37 @@ namespace Widget {
  * @attr ref android.R.styleable#Gallery_spacing
  * @attr ref android.R.styleable#Gallery_gravity
  */
-
-class Gallery : public AbsSpinner
+class Gallery
+    : public AbsSpinner
+    , public IGallery
+    , public IGestureDetectorOnGestureListener
 {
+public:
+    /**
+     * Gallery extends LayoutParams to provide a place to hold current
+     * Transformation information along with previous position/transformation
+     * info.
+     *
+     */
+    class LayoutParams
+        : public ViewGroup::LayoutParams
+        , public IGalleryLayoutParams
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        CARAPI constructor(
+            /* [in] */ IContext* c,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI constructor(
+            /* [in] */ Int32 w,
+            /* [in] */ Int32 h);
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupLayoutParams* source);
+    };
+
 private:
     /**
      * Responsible for fling behavior. Use {@link #startUsingVelocity(Int32)} to
@@ -107,8 +139,72 @@ private:
         Gallery* mHost;
     };
 
+    class DetectorOnGestureListener
+        : public Object
+        , public IGestureDetectorOnGestureListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        DetectorOnGestureListener(
+            /* [in] */ Gallery* host);
+
+        virtual CARAPI OnDown(
+            /* [in] */ IMotionEvent* e,
+            /* [out] */ Boolean* res);
+
+        virtual CARAPI OnShowPress(
+            /* [in] */ IMotionEvent* e);
+
+        virtual CARAPI OnSingleTapUp(
+            /* [in] */ IMotionEvent* e,
+            /* [out] */ Boolean* res);
+
+        virtual CARAPI OnScroll(
+            /* [in] */ IMotionEvent* e1,
+            /* [in] */ IMotionEvent* e2,
+            /* [in] */ Float distanceX,
+            /* [in] */ Float distanceY,
+            /* [out] */ Boolean* res);
+
+        virtual CARAPI OnLongPress(
+            /* [in] */ IMotionEvent* e);
+
+        virtual CARAPI OnFling(
+            /* [in] */ IMotionEvent* e1,
+            /* [in] */ IMotionEvent* e2,
+            /* [in] */ Float velocityX,
+            /* [in] */ Float velocityY,
+            /* [out] */ Boolean* res);
+
+    private:
+        Gallery* mHost;
+    };
+
 public:
+    CAR_INTERFACE_DECL();
+
+    Gallery();
+
     virtual ~Gallery();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     /**
      * Whether or not to callback on any {@link #getOnItemSelectedListener()}
@@ -203,53 +299,58 @@ public:
         /* [in] */ Boolean animate);
 
     //@Override
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     /**
      * {@inheritDoc}
      */
-    virtual CARAPI_(Boolean) OnSingleTapUp(
-        /* [in] */ IMotionEvent* e);
+    virtual CARAPI OnSingleTapUp(
+        /* [in] */ IMotionEvent* e,
+        /* [out] */ Boolean* res);
 
     /**
      * {@inheritDoc}
      */
-    virtual CARAPI_(Boolean) OnFling(
+    virtual CARAPI OnFling(
         /* [in] */ IMotionEvent* e1,
         /* [in] */ IMotionEvent* e2,
         /* [in] */ Float velocityX,
-        /* [in] */ Float velocityY);
+        /* [in] */ Float velocityY,
+        /* [out] */ Boolean* res);
 
     /**
      * {@inheritDoc}
      */
-    virtual CARAPI_(Boolean) OnScroll(
+    virtual CARAPI OnScroll(
         /* [in] */ IMotionEvent* e1,
         /* [in] */ IMotionEvent* e2,
         /* [in] */ Float distanceX,
-        /* [in] */ Float distanceY);
+        /* [in] */ Float distanceY,
+        /* [out] */ Boolean* res);
 
     /**
      * {@inheritDoc}
      */
-    virtual CARAPI_(Boolean) OnDown(
-        /* [in] */ IMotionEvent* e);
+    virtual CARAPI OnDown(
+        /* [in] */ IMotionEvent* e,
+        /* [out] */ Boolean* res);
 
     /**
      * Called when a touch event's action is MotionEvent.ACTION_UP.
      */
-    virtual CARAPI_(ECode) OnUp();
+    virtual CARAPI OnUp();
 
     /**
      * Called when a touch event's action is MotionEvent.ACTION_CANCEL.
      */
-    virtual CARAPI_(ECode) OnCancel();
+    virtual CARAPI OnCancel();
 
     /**
      * {@inheritDoc}
      */
-    virtual CARAPI_(ECode) OnLongPress(
+    virtual CARAPI OnLongPress(
         /* [in] */ IMotionEvent* e);
 
     // Unused methods from GestureDetector.OnGestureListener below
@@ -257,39 +358,42 @@ public:
     /**
      * {@inheritDoc}
      */
-    CARAPI_(ECode) OnShowPress(
+    virtual CARAPI OnShowPress(
         /* [in] */ IMotionEvent* e);
 
     //@Override
-    CARAPI_(void) DispatchSetSelected(
+    CARAPI DispatchSetSelected(
         /* [in] */ Boolean selected);
 
     //@Override
-    CARAPI_(Boolean) ShowContextMenuForChild(
-        /* [in] */ IView* originalView);
-
-    using AbsSpinner::ShowContextMenu;
-
-    //@Override
-    CARAPI_(Boolean) ShowContextMenu();
+    CARAPI ShowContextMenuForChild(
+        /* [in] */ IView* originalView,
+        /* [out] */ Boolean* res);
 
     //@Override
-    CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    CARAPI ShowContextMenu(
+        /* [out] */ Boolean* res);
+
+    //@Override
+    CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
     /**
      * Handles left, right, and clicking
      * @see android.view.View#onKeyDown
      */
     //@Override
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
     //@Override
-    CARAPI_(Boolean) OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI_(Boolean) MovePrevious();
 
@@ -314,19 +418,12 @@ public:
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-    virtual CARAPI_(Boolean) PerformAccessibilityAction(
+    virtual CARAPI PerformAccessibilityAction(
         /* [in] */ Int32 action,
-        /* [in] */ IBundle* arguments);
-
+        /* [in] */ IBundle* arguments,
+        /* [out] */ Boolean* res);
 
 protected:
-    Gallery();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::galleryStyle);
-
     //@Override
     CARAPI_(Boolean) GetChildStaticTransformation(
         /* [in] */ IView* child,
@@ -358,7 +455,7 @@ protected:
     CARAPI_(AutoPtr<IViewGroupLayoutParams>) GenerateDefaultLayoutParams();
 
     //@Override
-    CARAPI_(void) OnLayout(
+    CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,
@@ -508,18 +605,17 @@ private:
     CARAPI InitFromAttributes(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
 private:
-
-    static const Boolean localLOGV = FALSE;
+    static const Boolean localLOGV;
 
     /**
      * Duration in milliseconds from the start of a scroll during which we're
      * unsure whether the user is scrolling or flinging.
      */
-    static const Int32 SCROLL_TO_FLING_UNCERTAINTY_TIMEOUT = 250;
+    static const Int32 SCROLL_TO_FLING_UNCERTAINTY_TIMEOUT;
 
     static const String GALLERY_NAME;
 

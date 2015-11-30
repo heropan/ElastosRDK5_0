@@ -2537,38 +2537,6 @@ ECode Canvas::GetNativeCanvas(
     return NOERROR;
 }
 
-static void DoDrawBitmap(
-    /* [in] */ SkCanvas* canvas,
-    /* [in] */ SkBitmap* bitmap,
-    /* [in] */ IRect* srcIRect,
-    /* [in] */ const SkRect& dst,
-    /* [in] */ SkPaint* paint,
-    /* [in] */ Int32 screenDensity,
-    /* [in] */ Int32 bitmapDensity)
-{
-    SkIRect src, *srcPtr = NULL;
-
-    if (NULL != srcIRect) {
-        src.set(((CRect*)srcIRect)->mLeft,
-                ((CRect*)srcIRect)->mTop,
-                ((CRect*)srcIRect)->mRight,
-                ((CRect*)srcIRect)->mBottom);
-        srcPtr = &src;
-    }
-
-    if (screenDensity != 0 && screenDensity != bitmapDensity) {
-        SkPaint filteredPaint;
-        if (paint) {
-            filteredPaint = *paint;
-        }
-        filteredPaint.setFilterBitmap(true);
-        canvas->drawBitmapRect(*bitmap, srcPtr, dst, &filteredPaint);
-    }
-    else {
-        canvas->drawBitmapRect(*bitmap, srcPtr, dst, paint);
-    }
-}
-
 ECode Canvas::IsRecordingFor(
     /* [in] */ IInterface* it,
     /* [out] */ Boolean* res)

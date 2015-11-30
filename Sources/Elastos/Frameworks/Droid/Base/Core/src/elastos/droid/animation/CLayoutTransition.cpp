@@ -5,13 +5,13 @@
 #include "elastos/droid/animation/PropertyValuesHolder.h"
 #include "elastos/droid/animation/CObjectAnimator.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
-// #include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
-// #include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
 #include <elastos/utility/logging/Slogger.h>
 
-// using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
+using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::Animation::IAccelerateDecelerateInterpolator;
-// using Elastos::Droid::View::Animation::CDecelerateInterpolator;
+using Elastos::Droid::View::Animation::CDecelerateInterpolator;
 using Elastos::Droid::View::Animation::IDecelerateInterpolator;
 using Elastos::Droid::View::IOnPreDrawListener;
 using Elastos::Droid::View::IViewTreeObserver;
@@ -47,14 +47,13 @@ Boolean CLayoutTransition::sInit = CLayoutTransition::InitStatics();
 
 Boolean CLayoutTransition::InitStatics()
 {
-    assert(0 && "TODO");
-    // AutoPtr<CAccelerateDecelerateInterpolator> cdi;
-    // CAccelerateDecelerateInterpolator::NewByFriend((CAccelerateDecelerateInterpolator**)&cdi);
-    // ACCEL_DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IAccelerateDecelerateInterpolator*)cdi.Get());
+    AutoPtr<CAccelerateDecelerateInterpolator> cdi;
+    CAccelerateDecelerateInterpolator::NewByFriend((CAccelerateDecelerateInterpolator**)&cdi);
+    ACCEL_DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IAccelerateDecelerateInterpolator*)cdi.Get());
 
-    // AutoPtr<CDecelerateInterpolator> di;
-    // CDecelerateInterpolator::NewByFriend((CDecelerateInterpolator**)&di);
-    // DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IDecelerateInterpolator*)di.Get());
+    AutoPtr<CDecelerateInterpolator> di;
+    CDecelerateInterpolator::NewByFriend((CDecelerateInterpolator**)&di);
+    DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IDecelerateInterpolator*)di.Get());
     sAppearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
     sDisappearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
     sChangingAppearingInterpolator = DECEL_INTERPOLATOR;

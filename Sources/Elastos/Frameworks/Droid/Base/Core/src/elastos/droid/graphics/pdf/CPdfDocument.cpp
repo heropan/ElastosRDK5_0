@@ -125,8 +125,8 @@ CAR_INTERFACE_IMPL(CPdfDocument::Page, Object, IPdfDocumentPage);
 CPdfDocument::Page::Page(
     /* [in] */ ICanvas* canvas,
     /* [in] */ PageInfo* pageInfo)
-    : mCanvas(canvas)
-    , mPageInfo(pageInfo)
+    : mPageInfo(pageInfo)
+    , mCanvas(canvas)
 {
 }
 

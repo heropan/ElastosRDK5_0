@@ -64,7 +64,7 @@ module
          * negative.
          */
         GetCurrVelocity(
-            [out] Int32* velocity);
+            [out] Float* velocity);
 
         /**
          * Returns the start X offset in the scroll.
@@ -227,11 +227,10 @@ module
          * @hide
          */
         IsScrollingInDirection(
-            [in] Int32 xvel,
-            [in] Int32 yvel,
+            [in] Float xvel,
+            [in] Float yvel,
             [out] Boolean* result);
     }
-
 
     } // namespace Widget
     } // namespace Droid

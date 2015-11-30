@@ -6,43 +6,41 @@
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::Animation::CAnimationUtils;
 using Elastos::Droid::View::Animation::IAnimationUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(ViewAnimator, FrameLayout, IViewAnimator);
 ViewAnimator::ViewAnimator()
     : mWhichChild(0)
     , mFirstTime(TRUE)
     , mAnimateFirstTime(TRUE)
 {}
 
-ViewAnimator::ViewAnimator(
+ECode ViewAnimator::constructor(
     /* [in] */ IContext* context)
-    : FrameLayout(context)
-    , mWhichChild(0)
-    , mFirstTime(TRUE)
-    , mAnimateFirstTime(TRUE)
 {
+    FrameLayout::constructor(context);
     InitViewAnimator(context, NULL);
+    return NOERROR;
 }
 
-ViewAnimator::ViewAnimator(
+ECode ViewAnimator::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : FrameLayout(context, attrs)
-    , mWhichChild(0)
-    , mFirstTime(TRUE)
-    , mAnimateFirstTime(TRUE)
 {
+    FrameLayout::constructor(context, attrs);
+
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ViewAnimator),
             ARRAY_SIZE(R::styleable::ViewAnimator));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
+    FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));
     Int32 resource;
     a->GetResourceId(R::styleable::ViewAnimator_inAnimation, 0, &resource);
@@ -62,6 +60,7 @@ ViewAnimator::ViewAnimator(
 
     a->Recycle();
     InitViewAnimator(context, NULL);
+    return NOERROR;
 }
 
 void ViewAnimator::InitViewAnimator(
@@ -93,17 +92,22 @@ ECode ViewAnimator::SetDisplayedChild(
     /* [in] */ Int32 whichChild)
 {
     mWhichChild = whichChild;
-    if (whichChild >= GetChildCount()) {
+    Int32 count = 0;
+    GetChildCount(&count);
+    if (whichChild >= count) {
         mWhichChild = 0;
     } else if (whichChild < 0) {
-        mWhichChild = GetChildCount() - 1;
+        mWhichChild = count - 1;
     }
-    Boolean hasFocus = GetFocusedChild() != NULL;
+    AutoPtr<IView> view;
+    GetFocusedChild((IView**)&view);
+    Boolean hasFocus = view.Get() != NULL;
     // This will clear old focus if we had it
     ShowOnly(mWhichChild);
     if (hasFocus) {
+        Boolean tmp = FALSE;
         // Try to retake focus if we had it
-        RequestFocus(IView::FOCUS_FORWARD);
+        RequestFocus(IView::FOCUS_FORWARD, &tmp);
     }
     return NOERROR;
 }
@@ -129,9 +133,11 @@ ECode ViewAnimator::ShowOnly(
     /* [in] */ Int32 childIndex,
     /* [in] */ Boolean animate)
 {
-    Int32 count = GetChildCount();
+    Int32 count = 0;
+    GetChildCount(&count);
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         if (i == childIndex) {
             if (animate && mInAnimation != NULL) {
                 child->StartAnimation(mInAnimation);
@@ -166,7 +172,8 @@ ECode ViewAnimator::AddView(
     /* [in] */ IViewGroupLayoutParams* params)
 {
     FrameLayout::AddView(child, index, params);
-    if (GetChildCount() == 1) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) == 1) {
         child->SetVisibility(IView::VISIBLE);
     } else {
         child->SetVisibility(IView::GONE);
@@ -189,7 +196,8 @@ ECode ViewAnimator::RemoveAllViews()
 ECode ViewAnimator::RemoveView(
     /* [IN] */ IView* view)
 {
-    Int32 index = IndexOfChild(view);
+    Int32 index = 0;
+    IndexOfChild(view, &index);
     if (index >= 0) {
         RemoveViewAt(index);
     }
@@ -200,7 +208,8 @@ ECode ViewAnimator::RemoveViewAt(
     /* [in] */ Int32 index)
 {
     FrameLayout::RemoveViewAt(index);
-    Int32 childCount = GetChildCount();
+    Int32 childCount = 0;
+    GetChildCount(&childCount);
     if (childCount == 0) {
         mWhichChild = 0;
         mFirstTime = TRUE;
@@ -225,7 +234,8 @@ ECode ViewAnimator::RemoveViews(
     /* [in] */ Int32 count)
 {
     FrameLayout::RemoveViews(start, count);
-    if (GetChildCount() == 0) {
+    Int32 n = 0;
+    if ((GetChildCount(&n), n) == 0) {
         mWhichChild = 0;
         mFirstTime = TRUE;
     } else if (mWhichChild >= start && mWhichChild < start + count) {
@@ -245,15 +255,14 @@ ECode ViewAnimator::RemoveViewsInLayout(
 ECode ViewAnimator::GetCurrentView(
     /* [out] */ IView** curView)
 {
-    AutoPtr<IView> temp = GetChildAt(mWhichChild);
-    *curView = temp;
-    REFCOUNT_ADD(*curView);
-    return NOERROR;
+    VALIDATE_NOT_NULL(curView);
+    return GetChildAt(mWhichChild, curView);
 }
 
 ECode ViewAnimator::GetInAnimation(
     /* [out] */ IAnimation** anim)
 {
+    VALIDATE_NOT_NULL(anim);
     *anim = mInAnimation;
     REFCOUNT_ADD(*anim);
     return NOERROR;
@@ -269,6 +278,7 @@ ECode ViewAnimator::SetInAnimation(
 ECode ViewAnimator::GetOutAnimation(
     /* [out] */ IAnimation** anim)
 {
+    VALIDATE_NOT_NULL(anim);
     *anim = mOutAnimation;
     REFCOUNT_ADD(*anim);
     return NOERROR;
@@ -306,6 +316,7 @@ ECode ViewAnimator::SetOutAnimation(
 ECode ViewAnimator::GetAnimateFirstView(
     /* [out] */ Boolean* animate)
 {
+    VALIDATE_NOT_NULL(animate);
     *animate = mAnimateFirstTime;
     return NOERROR;
 }
@@ -320,6 +331,7 @@ ECode ViewAnimator::SetAnimateFirstView(
 ECode ViewAnimator::GetBaseline(
     /* [out] */ Int32* baseline)
 {
+    VALIDATE_NOT_NULL(baseline);
     AutoPtr<IView> view;
     GetCurrentView((IView**)&view);
     Int32 viewBaseline;
@@ -336,8 +348,8 @@ ECode ViewAnimator::OnInitializeAccessibilityEvent(
     FrameLayout::OnInitializeAccessibilityEvent(event);
     String className("CViewAnimator");
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(className, (ICharSequence**)&cs);
-    event->SetClassName(cs);
+    CString::New(className, (ICharSequence**)&cs);
+    IAccessibilityRecord::Probe(event)->SetClassName(cs);
     return NOERROR;
 }
 
@@ -347,49 +359,8 @@ ECode ViewAnimator::OnInitializeAccessibilityNodeInfo(
     FrameLayout::OnInitializeAccessibilityNodeInfo(info);
     String className("CViewAnimator");
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(className, (ICharSequence**)&cs);
+    CString::New(className, (ICharSequence**)&cs);
     info->SetClassName(cs);
-    return NOERROR;
-}
-
-ECode ViewAnimator::Init(
-    /* [in] */ IContext* context)
-{
-    FrameLayout::Init(context);
-    InitViewAnimator(context, NULL);
-    return NOERROR;
-}
-
-ECode ViewAnimator::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    FrameLayout::Init(context, attrs);
-
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::ViewAnimator),
-            ARRAY_SIZE(R::styleable::ViewAnimator));
-    AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributes(
-            attrs, attrIds, (ITypedArray**)&a));
-    Int32 resource;
-    a->GetResourceId(R::styleable::ViewAnimator_inAnimation, 0, &resource);
-
-    if (resource > 0) {
-        SetInAnimation(context, resource);
-    }
-
-    a->GetResourceId(R::styleable::ViewAnimator_outAnimation, 0, &resource);
-    if (resource > 0) {
-        SetOutAnimation(context, resource);
-    }
-
-    Boolean flag;
-    a->GetBoolean(R::styleable::ViewAnimator_animateFirstView, TRUE, &flag);
-    SetAnimateFirstView(flag);
-
-    a->Recycle();
-    InitViewAnimator(context, NULL);
     return NOERROR;
 }
 

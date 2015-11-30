@@ -3,14 +3,6 @@
 #define __ELASTOS_DROID_WIDGET_VIEWANIMATOR_H__
 
 #include "elastos/droid/widget/FrameLayout.h"
-/**
- * Base class for a {@link FrameLayout} container that will perform animations
- * when switching between its views.
- *
- * @attr ref android.R.styleable#ViewAnimator_inAnimation
- * @attr ref android.R.styleable#ViewAnimator_outAnimation
- * @attr ref android.R.styleable#ViewAnimator_animateFirstView
- */
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -25,13 +17,27 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ViewAnimator : public FrameLayout
+/**
+ * Base class for a {@link FrameLayout} container that will perform animations
+ * when switching between its views.
+ *
+ * @attr ref android.R.styleable#ViewAnimator_inAnimation
+ * @attr ref android.R.styleable#ViewAnimator_outAnimation
+ * @attr ref android.R.styleable#ViewAnimator_animateFirstView
+ */
+class ViewAnimator
+    : public FrameLayout
+    , public IViewAnimator
 {
 public:
-    ViewAnimator(
+    CAR_INTERFACE_DECL();
+
+    ViewAnimator();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    ViewAnimator(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -203,7 +209,6 @@ public:
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
-
     /**
      * Shows only the specified child. The other displays Views exit the screen,
      * optionally with the with the {@link #getOutAnimation() out animation} and
@@ -228,15 +233,6 @@ protected:
     CARAPI ShowOnly(
         /* [in] */ Int32 childIndex);
 
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    ViewAnimator();
-
 private:
     CARAPI_(void) InitViewAnimator(
         /* [in] */ IContext* context,
@@ -255,4 +251,4 @@ protected:
 }// namespace Droid
 }// namespace Widget
 
-#endif
+#endif // __ELASTOS_DROID_WIDGET_VIEWANIMATOR_H__

@@ -18,10 +18,6 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-extern "C" const InterfaceID EIID_AnimatorSet;
-extern "C" const InterfaceID EIID_DependencyListener;
-extern "C" const InterfaceID EIID_AnimatorSetListener;
-
 class AnimatorSet
     : public Animator
     , public IAnimatorSet
@@ -38,9 +34,10 @@ private:
     class DependencyListener
         : public Object
         , public IAnimatorListener
+        , public IDependencyListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         DependencyListener(
             /* [in] */ AnimatorSet* animatorset,
@@ -88,11 +85,12 @@ private:
     };
 
     class AnimatorSetListener
-        : public IAnimatorListener
-        , public Object
+        : public Object
+        , public IAnimatorListener
+        , public IAnimatorSetListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         AnimatorSetListener(
             /* [in] */ AnimatorSet* animatorSet);

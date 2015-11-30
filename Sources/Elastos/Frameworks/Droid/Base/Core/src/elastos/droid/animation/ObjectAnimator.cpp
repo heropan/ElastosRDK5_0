@@ -237,7 +237,7 @@ ECode ObjectAnimator::InitAnimation()
         if (target != NULL) {
             const Int32 numValues = mValues->GetLength();
             for (Int32 i = 0; i < numValues; ++i) {
-                (reinterpret_cast<PropertyValuesHolder*>((*mValues)[i]->Probe(EIID_PropertyValuesHolder)))->SetupSetterAndGetter(target);
+                ((PropertyValuesHolder*)((*mValues)[i]))->SetupSetterAndGetter(target);
             }
         }
 
@@ -291,7 +291,7 @@ ECode ObjectAnimator::SetupStartValues()
         Int32 numValues = mValues->GetLength();
         for (Int32 i = 0; i < numValues; ++i) {
             AutoPtr<IPropertyValuesHolder> holder = (*mValues)[i];
-            reinterpret_cast<PropertyValuesHolder*>(holder->Probe(EIID_PropertyValuesHolder))->SetupStartValue(target);
+            ((PropertyValuesHolder*)holder.Get())->SetupStartValue(target);
         }
     }
 
@@ -308,7 +308,7 @@ ECode ObjectAnimator::SetupEndValues()
         Int32 numValues = mValues->GetLength();
         for (Int32 i = 0; i < numValues; ++i) {
             AutoPtr<IPropertyValuesHolder> holder = (*mValues)[i];
-            reinterpret_cast<PropertyValuesHolder*>(holder->Probe(EIID_PropertyValuesHolder))->SetupEndValue(target);
+            ((PropertyValuesHolder*)holder.Get())->SetupEndValue(target);
         }
     }
 
@@ -330,7 +330,7 @@ ECode ObjectAnimator::AnimateValue(
     Int32 numValues = mValues->GetLength();
     for (Int32 i = 0; i < numValues; ++i) {
         AutoPtr<IPropertyValuesHolder> holder = (*mValues)[i];
-        PropertyValuesHolder* ptr = reinterpret_cast<PropertyValuesHolder*>(holder->Probe(EIID_PropertyValuesHolder));
+        PropertyValuesHolder* ptr = (PropertyValuesHolder*)holder.Get();
         ptr->SetAnimatedValue(target);
     }
     return NOERROR;

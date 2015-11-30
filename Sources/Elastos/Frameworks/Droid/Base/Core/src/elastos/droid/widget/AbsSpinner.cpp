@@ -1,22 +1,20 @@
 
 #include "elastos/droid/widget/AbsSpinner.h"
-#include "elastos/droid/view/CViewGroupLayoutParams.h"
-#include "elastos/droid/widget/CAbsSpinnerSavedState.h"
 #include "elastos/droid/widget/CArrayAdapter.h"
-//#include "utils/AutoStringArray.h"
-#include "elastos/droid/utility/CParcelableObjectContainer.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+// #include "elastos/droid/widget/CAbsSpinnerSavedState.h"
 #include <elastos/core/Math.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::Utility::CParcelableObjectContainer;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::CViewGroupLayoutParams;
-using Elastos::Droid::Widget::CAbsSpinnerSavedState;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+// using Elastos::Droid::Widget::CAbsSpinnerSavedState;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(AbsSpinner, AdapterView, IAbsSpinner);
 AbsSpinner::AbsSpinner()
     : mHeightMeasureSpec(0)
     , mWidthMeasureSpec(0)
@@ -29,38 +27,38 @@ AbsSpinner::AbsSpinner()
     mRecycler = new RecycleBin(this);
 }
 
-AbsSpinner::AbsSpinner(
+ECode AbsSpinner::constructor(
     /* [in] */ IContext* context)
-    : AdapterView(context)
-    , mHeightMeasureSpec(0)
-    , mWidthMeasureSpec(0)
-    , mSelectionLeftPadding(0)
-    , mSelectionTopPadding(0)
-    , mSelectionRightPadding(0)
-    , mSelectionBottomPadding(0)
 {
-    CRect::NewByFriend((CRect**)&mSpinnerPadding);
-    mRecycler = new RecycleBin(this);
+    ASSERT_SUCCEEDED(AdapterView::constructor(context));
     InitAbsSpinner();
+    return NOERROR;
 }
 
-AbsSpinner::AbsSpinner(
+ECode AbsSpinner::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, 0);
+}
+
+ECode AbsSpinner::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : AdapterView(context, attrs, defStyle)
-    , mHeightMeasureSpec(0)
-    , mWidthMeasureSpec(0)
-    , mSelectionLeftPadding(0)
-    , mSelectionTopPadding(0)
-    , mSelectionRightPadding(0)
-    , mSelectionBottomPadding(0)
+    /* [in] */ Int32 defStyleAttr)
 {
-    CRect::NewByFriend((CRect**)&mSpinnerPadding);
-    mRecycler = new RecycleBin(this);
-    InitAbsSpinner();
+    return constructor(context, attrs, defStyleAttr, 0);
+}
 
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+ECode AbsSpinner::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    ASSERT_SUCCEEDED(AdapterView::constructor(context, attrs, defStyleAttr, defStyleRes));
+    InitAbsSpinner();
+    return InitFromAttributes(context, attrs, defStyleAttr, defStyleRes);
 }
 
 AbsSpinner::~AbsSpinner()
@@ -70,28 +68,25 @@ AbsSpinner::~AbsSpinner()
 ECode AbsSpinner::InitFromAttributes(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AbsSpinner),
             ARRAY_SIZE(R::styleable::AbsSpinner));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     AutoPtr<ArrayOf<ICharSequence*> > entries;
     a->GetTextArray(R::styleable::AbsSpinner_entries, (ArrayOf<ICharSequence*>**)&entries);
     if (entries != NULL) {
-        AutoPtr<IObjectContainer> strs;
-        CParcelableObjectContainer::New((IObjectContainer**)&strs);
-
-        Int32 size = entries->GetLength();
-        for (Int32 i = 0; i < size; i++) {
-            strs->Add((*entries)[i]);
+        AutoPtr<ArrayOf<IInterface*> > e = ArrayOf<IInterface*>::Alloc(entries->GetLength());
+        for (Int32 i = 0; i < entries->GetLength(); i++) {
+            e->Set(i, (*entries)[i]);
         }
-
         AutoPtr<IArrayAdapter> adapter;
-        CArrayAdapter::New(context, R::layout::simple_spinner_item, strs, (IArrayAdapter**)&adapter);
+        CArrayAdapter::New(context, R::layout::simple_spinner_item, e, (IArrayAdapter**)&adapter);
         adapter->SetDropDownViewResource(R::layout::simple_spinner_dropdown_item);
         SetAdapter((IAdapter*)adapter->Probe(EIID_IAdapter));
     }
@@ -100,39 +95,12 @@ ECode AbsSpinner::InitFromAttributes(
     return NOERROR;
 }
 
-ECode AbsSpinner::Init(
-    /* [in] */ IContext* context)
-{
-    ASSERT_SUCCEEDED(AdapterView::Init(context));
-    InitAbsSpinner();
-    return NOERROR;
-}
-
-ECode AbsSpinner::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    ASSERT_SUCCEEDED(AdapterView::Init(context, attrs, defStyle));
-    InitAbsSpinner();
-    return InitFromAttributes(context, attrs, defStyle);
-}
-
-/**
- * Common code for different constructor flavors
- */
 void AbsSpinner::InitAbsSpinner()
 {
     SetFocusable(TRUE);
     SetWillNotDraw(FALSE);
 }
 
-/**
- * The Adapter is used to provide the data which backs this Spinner.
- * It also provides methods to transform spinner items based on their position
- * relative to the selected item.
- * @param adapter The SpinnerAdapter to use for this Spinner
- */
 ECode AbsSpinner::SetAdapter(
     /* [in] */ IAdapter* adapter)
 {
@@ -141,7 +109,7 @@ ECode AbsSpinner::SetAdapter(
     }
 
     if (mAdapter != NULL) {
-        mAdapter->UnregisterDataSetObserver(mDataSetObserver);
+        IAdapter::Probe(mAdapter)->UnregisterDataSetObserver(mDataSetObserver);
         ResetList();
     }
 
@@ -152,11 +120,11 @@ ECode AbsSpinner::SetAdapter(
 
     if (mAdapter != NULL) {
         mOldItemCount = mItemCount;
-        mAdapter->GetCount(&mItemCount);
+        IAdapter::Probe(mAdapter)->GetCount(&mItemCount);
         CheckFocus();
 
         mDataSetObserver = new AdapterDataSetObserver(this);
-        mAdapter->RegisterDataSetObserver(mDataSetObserver);
+        IAdapter::Probe(mAdapter)->RegisterDataSetObserver(mDataSetObserver);
 
         Int32 position = mItemCount > 0 ? 0 : IAdapterView::INVALID_POSITION;
 
@@ -180,9 +148,6 @@ ECode AbsSpinner::SetAdapter(
     return NOERROR;
 }
 
-/**
- * Clear out all children from the list
- */
 void AbsSpinner::ResetList()
 {
     mDataChanged = FALSE;
@@ -197,14 +162,6 @@ void AbsSpinner::ResetList()
     Invalidate();
 }
 
-/**
- * @see android.view.View#measure(Int32, Int32)
- *
- * Figure out the dimensions of this Spinner. The width comes from
- * the widthMeasureSpec as Spinnners can't have their width set to
- * UNSPECIFIED. The height is based on the height of the selected item
- * plus padding.
- */
 void AbsSpinner::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
@@ -230,14 +187,15 @@ void AbsSpinner::OnMeasure(
     Int32 preferredWidth = 0;
     Boolean needsMeasuring = TRUE;
 
-    Int32 selectedPosition = GetSelectedItemPosition();
+    Int32 selectedPosition = 0;
+    GetSelectedItemPosition(&selectedPosition);
     Int32 count = 0;
-    if (selectedPosition >= 0 && mAdapter != NULL && selectedPosition < (mAdapter->GetCount(&count), count)) {
+    if (selectedPosition >= 0 && mAdapter != NULL && selectedPosition < (IAdapter::Probe(mAdapter)->GetCount(&count), count)) {
         // Try looking in the recycler. (Maybe we were measured once already)
         AutoPtr<IView> view = mRecycler->Get(selectedPosition);
         if (view == NULL) {
             // Make a new one
-            mAdapter->GetView(selectedPosition, NULL, THIS_PROBE(IViewGroup), (IView**)&view);
+            IAdapter::Probe(mAdapter)->GetView(selectedPosition, NULL, THIS_PROBE(IViewGroup), (IView**)&view);
         }
 
         if (view != NULL) {
@@ -314,27 +272,28 @@ ECode AbsSpinner::GenerateDefaultLayoutParams(
 
 void AbsSpinner::RecycleAllViews()
 {
-    Int32 childCount = GetChildCount();
+    Int32 childCount = 0;
+    GetChildCount(&childCount);
     Int32 position = mFirstPosition;
 
     // All views go in recycler
     for (Int32 i = 0; i < childCount; i++) {
-        AutoPtr<IView> v = GetChildAt(i);
+        AutoPtr<IView> v;
+        GetChildAt(i, (IView**)&v);
         Int32 index = position + i;
         mRecycler->Put(index, v);
     }
 }
 
-/**
- * Jump directly to a specific item in the adapter data.
- */
 ECode AbsSpinner::SetSelection(
     /* [in] */ Int32 position,
     /* [in] */ Boolean animate)
 {
     // Animate only if requested position is already on screen somewhere
+    Int32 count = 0;
+    GetChildCount(&count);
     Boolean shouldAnimate = animate && mFirstPosition <= position &&
-            position <= mFirstPosition + GetChildCount() - 1;
+            position <= mFirstPosition + count - 1;
     SetSelectionInt(position, shouldAnimate);
 
     return NOERROR;
@@ -371,16 +330,16 @@ void AbsSpinner::SetSelectionInt(
     }
 }
 
-//abstract void layout(Int32 delta, Boolean animate);
-
-AutoPtr<IView> AbsSpinner::GetSelectedView()
+ECode AbsSpinner::GetSelectedView(
+    /* [out] */ IView** view)
 {
+    VALIDATE_NOT_NULL(view);
     if (mItemCount > 0 && mSelectedPosition >= 0) {
-        return GetChildAt(mSelectedPosition - mFirstPosition);
+        return GetChildAt(mSelectedPosition - mFirstPosition, view);
     }
-    else {
-        return NULL;
-    }
+
+    *view = NULL;
+    return NOERROR;
 }
 
 ECode AbsSpinner::RequestLayout()
@@ -392,20 +351,29 @@ ECode AbsSpinner::RequestLayout()
     return NOERROR;
 }
 
-AutoPtr<IAdapter> AbsSpinner::GetAdapter()
+ECode AbsSpinner::GetAdapter(
+    /* [out] */ IAdapter** adapter)
 {
-    return mAdapter;
+    VALIDATE_NOT_NULL(adapter);
+    *adapter = IAdapter::Probe(mAdapter);
+    REFCOUNT_ADD(*adapter);
+    return NOERROR;
 }
 
-Int32 AbsSpinner::GetCount()
+ECode AbsSpinner::GetCount(
+    /* [out] */ Int32* count)
 {
-    return mItemCount;
+    VALIDATE_NOT_NULL(count);
+    *count = mItemCount;
+    return NOERROR;
 }
 
-Int32 AbsSpinner::PointToPosition(
+ECode AbsSpinner::PointToPosition(
     /* [in] */ Int32 x,
-    /* [in] */ Int32 y)
+    /* [in] */ Int32 y,
+    /* [out] */ Int32* position)
 {
+    VALIDATE_NOT_NULL(position);
     AutoPtr<IRect> frame = mTouchFrame;
     if (frame == NULL) {
         mTouchFrame = NULL;
@@ -413,9 +381,11 @@ Int32 AbsSpinner::PointToPosition(
         frame = mTouchFrame;
     }
 
-    Int32 count = GetChildCount();
+    Int32 count = 0;
+    GetChildCount(&count);
     for (Int32 i = count - 1; i >= 0; i--) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         Int32 visible;
         child->GetVisibility(&visible);
         if (visible == IView::VISIBLE) {
@@ -424,45 +394,50 @@ Int32 AbsSpinner::PointToPosition(
             Boolean contains;
             frame->Contains(x, y, &contains);
             if (contains) {
-                return mFirstPosition + i;
+                *position = mFirstPosition + i;
+                return NOERROR;
             }
         }
     }
-    return IAdapterView::INVALID_POSITION;
+    *position = IAdapterView::INVALID_POSITION;
+    return NOERROR;
 }
 
 AutoPtr<IParcelable> AbsSpinner::OnSaveInstanceState()
 {
     AutoPtr<IParcelable> superState = AdapterView::OnSaveInstanceState();
-    AutoPtr<CAbsSpinnerSavedState> ss;
-    CAbsSpinnerSavedState::NewByFriend(superState, (CAbsSpinnerSavedState**)&ss);
-    ss->mSelectedId = GetSelectedItemId();
-    if (ss->mSelectedId >= 0) {
-        ss->mPosition = GetSelectedItemPosition();
-    }
-    else {
-        ss->mPosition = IAdapterView::INVALID_POSITION;
-    }
-    return (IParcelable*)ss->Probe(EIID_IParcelable);
+    assert(0 && "TODO");
+    // AutoPtr<CAbsSpinnerSavedState> ss;
+    // CAbsSpinnerSavedState::NewByFriend(superState, (CAbsSpinnerSavedState**)&ss);
+    // ss->mSelectedId = GetSelectedItemId();
+    // if (ss->mSelectedId >= 0) {
+    //     ss->mPosition = GetSelectedItemPosition();
+    // }
+    // else {
+    //     ss->mPosition = IAdapterView::INVALID_POSITION;
+    // }
+    // return (IParcelable*)ss->Probe(EIID_IParcelable);
+    return NOERROR;
 }
 
 void AbsSpinner::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
-    AutoPtr<CAbsSpinnerSavedState> ss = (CAbsSpinnerSavedState*)IAbsSpinnerSavedState::Probe(state);
+    assert(0 && "TODO");
+    // AutoPtr<CAbsSpinnerSavedState> ss = (CAbsSpinnerSavedState*)IAbsSpinnerSavedState::Probe(state);
 
-    AutoPtr<IParcelable> p;
-    ss->GetSuperState((IParcelable**)&p);
-    AdapterView::OnRestoreInstanceState(p);
+    // AutoPtr<IParcelable> p;
+    // ss->GetSuperState((IParcelable**)&p);
+    // AdapterView::OnRestoreInstanceState(p);
 
-    if (ss->mSelectedId >= 0) {
-        mDataChanged = TRUE;
-        mNeedSync = TRUE;
-        mSyncRowId = ss->mSelectedId;
-        mSyncPosition = ss->mPosition;
-        mSyncMode = AdapterView::SYNC_SELECTED_POSITION;
-        RequestLayout();
-    }
+    // if (ss->mSelectedId >= 0) {
+    //     mDataChanged = TRUE;
+    //     mNeedSync = TRUE;
+    //     mSyncRowId = ss->mSelectedId;
+    //     mSyncPosition = ss->mPosition;
+    //     mSyncMode = AdapterView::SYNC_SELECTED_POSITION;
+    //     RequestLayout();
+    // }
 }
 
 AbsSpinner::RecycleBin::RecycleBin(
@@ -515,8 +490,8 @@ ECode AbsSpinner::OnInitializeAccessibilityEvent(
     AdapterView::OnInitializeAccessibilityEvent(event);
     String classNameStr("AbsSpinner");
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
-    event->SetClassName(className);
+    FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));
+    IAccessibilityRecord::Probe(event)->SetClassName(className);
     return NOERROR;
 }
 
@@ -526,7 +501,7 @@ ECode AbsSpinner::OnInitializeAccessibilityNodeInfo(
     AdapterView::OnInitializeAccessibilityNodeInfo(info);
     String classNameStr("AbsSpinner");
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
+    FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));
     info->SetClassName(className);
     return NOERROR;
 }

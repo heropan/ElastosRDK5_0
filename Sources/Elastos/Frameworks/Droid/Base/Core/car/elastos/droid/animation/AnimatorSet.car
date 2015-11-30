@@ -228,6 +228,20 @@ module
             [in] Int64 delay);
     }
 
+    /**
+     * @Involve
+     * interface IAnimatorListener
+     */
+    interface IDependencyListener {
+    }
+
+    /**
+     * @Involve
+     * interface IAnimatorListener
+     */
+    interface IAnimatorSetListener {
+    }
+
     }   //namespace Animation
     }   //namespace Droid
     }   //namespace Elastos
