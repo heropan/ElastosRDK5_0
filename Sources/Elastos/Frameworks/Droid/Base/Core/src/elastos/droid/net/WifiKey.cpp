@@ -24,7 +24,6 @@ ECode WifiKey::constructor(
         }
         this.ssid = ssid;
         this.bssid = bssid;
-
 #endif
 }
 
@@ -34,21 +33,19 @@ WifiKey::WifiKey(
 #if 0 // TODO: Translate codes below
         ssid = in.readString();
         bssid = in.readString();
-
 #endif
 }
 
 ECode WifiKey::Equals(
-    /* [in] */ IObject* o,
+    /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return TRUE;
+        if (o == NULL || getClass() != o.getClass()) return FALSE;
         WifiKey wifiKey = (WifiKey) o;
         return Objects.equals(ssid, wifiKey.ssid) && Objects.equals(bssid, wifiKey.bssid);
-
 #endif
 }
 
@@ -58,7 +55,6 @@ ECode WifiKey::HashCode(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return Objects.hash(ssid, bssid);
-
 #endif
 }
 
@@ -68,7 +64,6 @@ ECode WifiKey::ToString(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return "WifiKey[SSID=" + ssid + ",BSSID=" + bssid + "]";
-
 #endif
 }
 
@@ -82,10 +77,9 @@ ECode WifiKey::ReadFromParcel(
                     return new WifiKey(in);
                 }
                 @Override
-                public WifiKey[] newArray(int size) {
+                public WifiKey[] newArray(Int32 size) {
                     return new WifiKey[size];
                 }
-
 #endif
 }
 
@@ -99,10 +93,9 @@ ECode WifiKey::WriteToParcel(
                     return new WifiKey(in);
                 }
                 @Override
-                public WifiKey[] newArray(int size) {
+                public WifiKey[] newArray(Int32 size) {
                     return new WifiKey[size];
                 }
-
 #endif
 }
 

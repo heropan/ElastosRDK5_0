@@ -1,5 +1,25 @@
 
 #include "elastos/droid/net/NetworkPolicyManager.h"
+#include "elastos/droid/net/Network.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/text/format/CTime.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Collect::ISets;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IPackageInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::ISignature;
+using Elastos::Droid::Os::CUserHandle;
+using Elastos::Droid::Text::Format::CTime;
+using Elastos::Droid::Text::Format::ITime;
+
+using Elastos::IO::IPrintWriter;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -12,171 +32,141 @@ const Boolean NetworkPolicyManager::ALLOW_PLATFORM_APP_POLICY = TRUE;
 ECode NetworkPolicyManager::constructor(
     /* [in] */ IINetworkPolicyManager* service)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (service == NULL) {
-        //throw new IllegalArgumentException("missing INetworkPolicyManager");
+        Logger::E("NetworkPolicyManager", "missing INetworkPolicyManager");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mService = service;
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::From(
     /* [in] */ IContext* context,
     /* [out] */ INetworkPolicyManager** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     ASSERT_SUCCEEDED(context->GetSystemService(IContext::NETWORK_POLICY_SERVICE, (IInterface**)result));
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::SetUidPolicy(
     /* [in] */ Int32 uid,
     /* [in] */ Int32 policy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     return mService->SetUidPolicy(uid, policy);
-#endif
 }
 
 ECode NetworkPolicyManager::AddUidPolicy(
     /* [in] */ Int32 uid,
     /* [in] */ Int32 policy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            mService.addUidPolicy(uid, policy);
-        } catch (RemoteException e) {
-        }
-
-#endif
+        // try {
+    ECode ec = mService->AddUidPolicy(uid, policy);
+        // } catch (RemoteException e) {
+    if (ec == E_REMOTE_EXCEPTION) return NOERROR;
+        // }
+    return ec;
 }
 
 ECode NetworkPolicyManager::RemoveUidPolicy(
     /* [in] */ Int32 uid,
     /* [in] */ Int32 policy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            mService.removeUidPolicy(uid, policy);
-        } catch (RemoteException e) {
-        }
-
-#endif
+        // try {
+    ECode ec = mService->RemoveUidPolicy(uid, policy);
+        // } catch (RemoteException e) {
+    if (ec == E_REMOTE_EXCEPTION) return NOERROR;
+        // }
+    return ec;
 }
 
 ECode NetworkPolicyManager::GetUidPolicy(
     /* [in] */ Int32 uid,
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     ECode ec = mService->GetUidPolicy(uid, result);
     if(FAILED(ec)) *result = POLICY_NONE;
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::GetUidsWithPolicy(
     /* [in] */ Int32 policy,
     /* [out, callee] */ ArrayOf<Int32>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     AutoPtr< ArrayOf<Int32> > outputarray;
     ECode ec = mService->GetUidsWithPolicy(policy, (ArrayOf<Int32>**)&outputarray);
     if(FAILED(ec)) outputarray = ArrayOf<Int32>::Alloc(0);
     *result = outputarray;
     REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::GetPowerSaveAppIdWhitelist(
     /* [out, callee] */ ArrayOf<Int32>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            return mService.getPowerSaveAppIdWhitelist();
-        } catch (RemoteException e) {
-            return new int[0];
-        }
-
-#endif
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+        // try {
+    ECode ec =  mService->GetPowerSaveAppIdWhitelist(result);
+        // } catch (RemoteException e) {
+    if (ec == E_REMOTE_EXCEPTION) {
+        *result = ArrayOf<Int32>::Alloc(0);
+        return NOERROR;
+    }
+        // }
+    return ec;
 }
 
 ECode NetworkPolicyManager::RegisterListener(
     /* [in] */ IINetworkPolicyListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     return mService->RegisterListener(listener);
-#endif
 }
 
 ECode NetworkPolicyManager::UnregisterListener(
     /* [in] */ IINetworkPolicyListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     return mService->UnregisterListener(listener);
-#endif
 }
 
 ECode NetworkPolicyManager::SetNetworkPolicies(
     /* [in] */ ArrayOf<INetworkPolicy*>* policies)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     return mService->SetNetworkPolicies(policies);
-#endif
 }
 
 ECode NetworkPolicyManager::GetNetworkPolicies(
     /* [out, callee] */ ArrayOf<INetworkPolicy*>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     AutoPtr< ArrayOf<INetworkPolicy*> > outputarray;
     ECode ec = mService->GetNetworkPolicies((ArrayOf<INetworkPolicy*>**)&outputarray);
     if(FAILED(ec)) outputarray = NULL;
     *result = outputarray;
     REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::SetRestrictBackground(
     /* [in] */ Boolean restrictBackground)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     return mService->SetRestrictBackground(restrictBackground);
-#endif
 }
 
 ECode NetworkPolicyManager::GetRestrictBackground(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     ECode ec = mService->GetRestrictBackground(result);
     if(FAILED(ec)) *result = FALSE;
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::ComputeLastCycleBoundary(
@@ -184,13 +174,12 @@ ECode NetworkPolicyManager::ComputeLastCycleBoundary(
     /* [in] */ INetworkPolicy* policy,
     /* [out] */ Int64* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     Int32 cycleday;
     policy->GetCycleDay(&cycleday);
     if (cycleday == INetworkPolicy::CYCLE_NONE) {
-        //throw new IllegalArgumentException("Unable to compute boundary without cycleDay");
+        Logger::E("NetworkPolicyManager", "Unable to compute boundary without cycleDay");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String cycleTimezone;
@@ -225,7 +214,6 @@ ECode NetworkPolicyManager::ComputeLastCycleBoundary(
     }
     cycle->ToMillis(TRUE, result);
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::ComputeNextCycleBoundary(
@@ -233,13 +221,12 @@ ECode NetworkPolicyManager::ComputeNextCycleBoundary(
     /* [in] */ INetworkPolicy* policy,
     /* [out] */ Int64* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     Int32 cycleday;
     policy->GetCycleDay(&cycleday);
     if (cycleday == INetworkPolicy::CYCLE_NONE) {
-        //throw new IllegalArgumentException("Unable to compute boundary without cycleDay");
+        Logger::E("NetworkPolicyManager", "Unable to compute boundary without cycleDay");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ITime> now;
@@ -275,15 +262,12 @@ ECode NetworkPolicyManager::ComputeNextCycleBoundary(
     }
     cycle->ToMillis(TRUE, result);
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::SnapToCycleDay(
     /* [in] */ ITime* time,
     /* [in] */ Int32 cycleDay)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     Int32 maximum;
     time->GetActualMaximum(ITime::MONTH_DAY, &maximum);
     if (cycleDay > maximum) {
@@ -302,7 +286,6 @@ ECode NetworkPolicyManager::SnapToCycleDay(
     Int64 ret;
     time->Normalize(TRUE, &ret);
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::IsUidValidForPolicy(
@@ -310,89 +293,93 @@ ECode NetworkPolicyManager::IsUidValidForPolicy(
     /* [in] */ Int32 uid,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     //first, quick-reject non-applications
-    if (!(UserHandle::IsApp(uid))) {
+    if (!(CUserHandle::IsApp(uid))) {
         *result = FALSE;
     }
 
     if (!ALLOW_PLATFORM_APP_POLICY) {
         AutoPtr<IPackageManager> pm;
         context->GetPackageManager((IPackageManager**)&pm);
-        AutoPtr<IObjectContainer> systemSignature;
-        CObjectContainer::New((IObjectContainer**)&systemSignature);
-        //try {
+        AutoPtr<IHashSet> systemSignature;
+        CHashSet::New((IHashSet**)&systemSignature);
+            //try {
         AutoPtr<IPackageInfo> packageinfo;
-        pm->GetPackageInfo(String("android"), IPackageManager::GET_SIGNATURES, (IPackageInfo**)&packageinfo);
+        ECode ec = pm->GetPackageInfo(String("android"), IPackageManager::GET_SIGNATURES, (IPackageInfo**)&packageinfo);
+        if (FAILED(ec)) {
+            if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+                Logger::E("NetworkPolicyManager", "problem finding system signature");
+                return E_RUNTIME_EXCEPTION;
+            }
+            return NOERROR;
+        }
         AutoPtr< ArrayOf<ISignature*> > signatures;
         packageinfo->GetSignatures((ArrayOf<ISignature*>**)&signatures);
-
-        for (Int32 i = 0; i< signatures->GetLength(); i++)
-        {
-            systemSignature->Add((*signatures)[i]);
-        }
-//      } catch (NameNotFoundException e) {
-//          throw new RuntimeException("problem finding system signature", e);
-//      }
-//      reject apps signed with platform cert
+        AutoPtr<ISets> sets;
+        // TODO: Waiting for Sets
+        assert(0);
+        // CSets::AcquireSingleton((ISets**)&sets);
+        // sets->NewHashSet(signatures, (IHashSet**)&systemSignature);
+            // } catch (NameNotFoundException e) {
+            // }
+            // try {
+        // reject apps signed with platform cert
         AutoPtr< ArrayOf<String> > uids;
         pm->GetPackagesForUid(uid, (ArrayOf<String>**)&uids);
         for (Int32 i = 0; i< uids->GetLength(); i++) {
-            AutoPtr<IObjectContainer> packageSignature;
-            CObjectContainer::New((IObjectContainer**)&packageSignature);
+            AutoPtr<IHashSet> packageSignature;
+            CHashSet::New((IHashSet**)&packageSignature);
             AutoPtr<IPackageInfo> Uidspackageinfo;
-            pm->GetPackageInfo((*uids)[i], IPackageManager::GET_SIGNATURES, (IPackageInfo**)&Uidspackageinfo);
+            ECode ec = pm->GetPackageInfo((*uids)[i], IPackageManager::GET_SIGNATURES, (IPackageInfo**)&Uidspackageinfo);
+            if (FAILED(ec)) {
+                if (ec != E_NAME_NOT_FOUND_EXCEPTION) return ec;
+            }
+
             AutoPtr< ArrayOf<ISignature*> > Uidssignatures;
             packageinfo->GetSignatures((ArrayOf<ISignature*>**)&Uidssignatures);
             for (Int32 j = 0; j< Uidssignatures->GetLength(); j++) {
                 packageSignature->Add((*Uidssignatures)[i]);
             }
             Boolean bol;
-            packageSignature->ContainsAll(systemSignature, &bol);
+            packageSignature->ContainsAll(ICollection::Probe(systemSignature), &bol);
             if (bol) {
                 *result = FALSE;
                 return NOERROR;
             }
         }
-
+            // } catch (NameNotFoundException e) {
+            // }
     }
 
     //nothing found above; we can apply policy to UID
     *result = TRUE;
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::DumpPolicy(
     /* [in] */ IPrintWriter* fout,
     /* [in] */ Int32 policy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    fout->WriteString(String("["));
+    fout->Print(String("["));
     if ((policy & POLICY_REJECT_METERED_BACKGROUND) != 0) {
-        fout->WriteString(String("REJECT_METERED_BACKGROUND"));
+        fout->Print(String("REJECT_METERED_BACKGROUND"));
     }
-    fout->WriteString(String("]"));
+    fout->Print(String("]"));
     return NOERROR;
-#endif
 }
 
 ECode NetworkPolicyManager::DumpRules(
     /* [in] */ IPrintWriter* fout,
     /* [in] */ Int32 rules)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    fout->WriteString(String("["));
+    fout->Print(String("["));
     if ((rules & RULE_REJECT_METERED) != 0) {
-        fout->WriteString(String("REJECT_METERED"));
+        fout->Print(String("REJECT_METERED"));
     }
-    fout->WriteString(String("]"));
+    fout->Print(String("]"));
     return NOERROR;
-#endif
 }
 
 } // namespace Net

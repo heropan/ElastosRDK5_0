@@ -65,7 +65,7 @@ ECode IpPrefix::constructor(
 }
 
 ECode IpPrefix::Equals(
-    /* [in] */ IObject* obj,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)

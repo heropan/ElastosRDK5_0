@@ -26,8 +26,8 @@ const String ProxyDataTracker::KEY_REPLY_TO_MESSENGER_BINDER_BUNDLE = String("re
 ProxyDataTracker::ProxyDataTracker()
 {
 #if 0 // TODO: Translate codes below
-    private AtomicBoolean mReconnectRequested = new AtomicBoolean(false);
-    private AtomicBoolean mIsProxyAvailable = new AtomicBoolean(false);
+    private AtomicBoolean mReconnectRequested = new AtomicBoolean(FALSE);
+    private AtomicBoolean mIsProxyAvailable = new AtomicBoolean(FALSE);
     private final AtomicInteger mDefaultGatewayAddr = new AtomicInteger(0);
 
     private final BroadcastReceiver mProxyStatusServiceListener = new BroadcastReceiver() {
@@ -42,7 +42,7 @@ ECode ProxyDataTracker::constructor()
         mNetworkInfo = new NetworkInfo(ConnectivityManager.TYPE_PROXY, 0, NETWORK_TYPE, "");
         mLinkProperties = new LinkProperties();
         mNetworkCapabilities = new NetworkCapabilities();
-        mNetworkInfo.setIsAvailable(true);
+        mNetworkInfo.setIsAvailable(TRUE);
         try {
             mLinkProperties.addDnsServer(InetAddress.getByName(DNS1));
             mLinkProperties.addDnsServer(InetAddress.getByName(DNS2));
@@ -73,7 +73,7 @@ ECode ProxyDataTracker::StartMonitoring(
         mContext.registerReceiver(mProxyStatusServiceListener,
                 new IntentFilter(ACTION_PROXY_STATUS_CHANGE),
                 PERMISSION_PROXY_STATUS_SENDER,
-                null);
+                NULL);
 #endif
 }
 
@@ -82,18 +82,18 @@ ECode ProxyDataTracker::Teardown(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        setTeardownRequested(true);
-        mReconnectRequested.set(false);
+        setTeardownRequested(TRUE);
+        mReconnectRequested.set(FALSE);
         try {
-            if (mIsProxyAvailable.get() && mProxyStatusService != null) {
-                mProxyStatusService.send(Message.obtain(null, MSG_TEAR_DOWN_REQUEST));
+            if (mIsProxyAvailable.get() && mProxyStatusService != NULL) {
+                mProxyStatusService.send(Message.obtain(NULL, MSG_TEAR_DOWN_REQUEST));
             }
         } catch (RemoteException e) {
             Log.e(TAG, "Unable to connect to proxy status service", e);
-            return false;
+            return FALSE;
         }
-        setDetailedState(NetworkInfo.DetailedState.DISCONNECTED, REASON_DISABLED, null);
-        return true;
+        setDetailedState(NetworkInfo.DetailedState.DISCONNECTED, REASON_DISABLED, NULL);
+        return TRUE;
 #endif
 }
 
@@ -102,24 +102,24 @@ ECode ProxyDataTracker::Reconnect(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        mReconnectRequested.set(true);
-        setTeardownRequested(false);
+        mReconnectRequested.set(TRUE);
+        setTeardownRequested(FALSE);
         if (!mIsProxyAvailable.get()) {
             Log.w(TAG, "Reconnect requested even though proxy service is not up. Bailing.");
-            return false;
+            return FALSE;
         }
-        setDetailedState(NetworkInfo.DetailedState.CONNECTING, REASON_ENABLED, null);
+        setDetailedState(NetworkInfo.DetailedState.CONNECTING, REASON_ENABLED, NULL);
         try {
-            mProxyStatusService.send(Message.obtain(null, MSG_SETUP_REQUEST));
+            mProxyStatusService.send(Message.obtain(NULL, MSG_SETUP_REQUEST));
         } catch (RemoteException e) {
             Log.e(TAG, "Unable to connect to proxy status service", e);
-            setDetailedState(NetworkInfo.DetailedState.DISCONNECTED, REASON_PROXY_DOWN, null);
-            return false;
+            setDetailedState(NetworkInfo.DetailedState.DISCONNECTED, REASON_PROXY_DOWN, NULL);
+            return FALSE;
         }
         // We'll assume proxy is set up successfully. If not, a status change broadcast will be
         // received afterwards to indicate any failure.
-        setDetailedState(NetworkInfo.DetailedState.CONNECTED, REASON_ENABLED, null);
-        return true;
+        setDetailedState(NetworkInfo.DetailedState.CONNECTED, REASON_ENABLED, NULL);
+        return TRUE;
 #endif
 }
 
@@ -167,12 +167,12 @@ ECode ProxyDataTracker::InnerSub_BroadcastReceiver::OnReceive(
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_PROXY_STATUS_CHANGE)) {
-                mIsProxyAvailable.set(intent.getBooleanExtra(KEY_IS_PROXY_AVAILABLE, false));
+                mIsProxyAvailable.set(intent.getBooleanExtra(KEY_IS_PROXY_AVAILABLE, FALSE));
                 if (mIsProxyAvailable.get()) {
                     Bundle bundle = intent.getBundleExtra(KEY_REPLY_TO_MESSENGER_BINDER_BUNDLE);
-                    if (bundle == null || bundle.getBinder(KEY_REPLY_TO_MESSENGER_BINDER) == null) {
+                    if (bundle == NULL || bundle.getBinder(KEY_REPLY_TO_MESSENGER_BINDER) == NULL) {
                         Log.e(TAG, "no messenger binder in the intent to send future requests");
-                        mIsProxyAvailable.set(false);
+                        mIsProxyAvailable.set(FALSE);
                         return;
                     }
                     mProxyStatusService =
@@ -183,7 +183,7 @@ ECode ProxyDataTracker::InnerSub_BroadcastReceiver::OnReceive(
                     }
                 } else {
                     setDetailedState(NetworkInfo.DetailedState.DISCONNECTED,
-                            REASON_PROXY_DOWN, null);
+                            REASON_PROXY_DOWN, NULL);
                 }
             } else {
                 Log.d(TAG, "Unrecognized broadcast intent");

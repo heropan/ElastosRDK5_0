@@ -37,7 +37,7 @@ ECode NetworkScorerAppManager::GetAllValidScorers(
         for (ResolveInfo receiver : receivers) {
             // This field is a misnomer, see android.content.pm.ResolveInfo#activityInfo
             final ActivityInfo receiverInfo = receiver.activityInfo;
-            if (receiverInfo == null) {
+            if (receiverInfo == NULL) {
                 // Should never happen with queryBroadcastReceivers, but invalid nonetheless.
                 continue;
             }
@@ -53,13 +53,13 @@ ECode NetworkScorerAppManager::GetAllValidScorers(
                 continue;
             }
             // Optionally, this package may specify a configuration activity.
-            String configurationActivityClassName = null;
+            String configurationActivityClassName = NULL;
             Intent intent = new Intent(NetworkScoreManager.ACTION_CUSTOM_ENABLE);
             intent.setPackage(receiverInfo.packageName);
             List<ResolveInfo> configActivities = pm.queryIntentActivities(intent, 0 /* flags */);
             if (!configActivities.isEmpty()) {
                 ActivityInfo activityInfo = configActivities.get(0).activityInfo;
-                if (activityInfo != null) {
+                if (activityInfo != NULL) {
                     configurationActivityClassName = activityInfo.name;
                 }
             }
@@ -69,7 +69,6 @@ ECode NetworkScorerAppManager::GetAllValidScorers(
                     receiverInfo.loadLabel(pm), configurationActivityClassName));
         }
         return scorers;
-
 #endif
 }
 
@@ -82,7 +81,6 @@ ECode NetworkScorerAppManager::GetActiveScorer(
         String scorerPackage = Settings.Global.getString(context.getContentResolver(),
                 Settings.Global.NETWORK_SCORER_APP);
         return getScorer(context, scorerPackage);
-
 #endif
 }
 
@@ -97,25 +95,24 @@ ECode NetworkScorerAppManager::SetActiveScorer(
                 Settings.Global.NETWORK_SCORER_APP);
         if (TextUtils.equals(oldPackageName, packageName)) {
             // No change.
-            return true;
+            return TRUE;
         }
         Log.i(TAG, "Changing network scorer from " + oldPackageName + " to " + packageName);
-        if (packageName == null) {
+        if (packageName == NULL) {
             Settings.Global.putString(context.getContentResolver(),
-                    Settings.Global.NETWORK_SCORER_APP, null);
-            return true;
+                    Settings.Global.NETWORK_SCORER_APP, NULL);
+            return TRUE;
         } else {
             // We only make the change if the new package is valid.
-            if (getScorer(context, packageName) != null) {
+            if (getScorer(context, packageName) != NULL) {
                 Settings.Global.putString(context.getContentResolver(),
                         Settings.Global.NETWORK_SCORER_APP, packageName);
-                return true;
+                return TRUE;
             } else {
                 Log.w(TAG, "Requested network scorer is not valid: " + packageName);
-                return false;
+                return FALSE;
             }
         }
-
 #endif
 }
 
@@ -127,20 +124,19 @@ ECode NetworkScorerAppManager::IsCallerActiveScorer(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         NetworkScorerAppData defaultApp = getActiveScorer(context);
-        if (defaultApp == null) {
-            return false;
+        if (defaultApp == NULL) {
+            return FALSE;
         }
         AppOpsManager appOpsMgr = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
         try {
             appOpsMgr.checkPackage(callingUid, defaultApp.mPackageName);
         } catch (SecurityException e) {
-            return false;
+            return FALSE;
         }
         // To be extra safe, ensure the caller holds the SCORE_NETWORKS permission. It always
         // should, since it couldn't become the active scorer otherwise, but this can't hurt.
         return context.checkCallingPermission(Manifest.permission.SCORE_NETWORKS) ==
                 PackageManager.PERMISSION_GRANTED;
-
 #endif
 }
 
@@ -152,7 +148,7 @@ ECode NetworkScorerAppManager::GetScorer(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (TextUtils.isEmpty(packageName)) {
-            return null;
+            return NULL;
         }
         Collection<NetworkScorerAppData> applications = getAllValidScorers(context);
         for (NetworkScorerAppData app : applications) {
@@ -160,8 +156,7 @@ ECode NetworkScorerAppManager::GetScorer(
                 return app;
             }
         }
-        return null;
-
+        return NULL;
 #endif
 }
 
@@ -180,7 +175,6 @@ ECode NetworkScorerAppData::constructor(
                 mScorerName = scorerName;
                 mPackageName = packageName;
                 mConfigurationActivityClassName = configurationActivityClassName;
-
 #endif
 }
 

@@ -95,7 +95,6 @@ ECode NetworkStatsHistory::constructor(
         operations = readLongArray(in);
         bucketCount = bucketStart.length;
         totalBytes = in.readLong();
-
 #endif
 }
 
@@ -1021,7 +1020,7 @@ ECode NetworkStatsHistoryDataStreamUtils::ReadFullLongArray(
     if (size < 0) return E_PROTOCOL_EXCEPTION;
     AutoPtr< ArrayOf<Int64> > values = ArrayOf<Int64>::Alloc(size);
 
-    for (int i = 0; i < values->GetLength(); i++) {
+    for (Int32 i = 0; i < values->GetLength(); i++) {
         IDataInput::Probe(in)->ReadInt64(&(*values)[i]);
     }
     *result =values;
@@ -1088,7 +1087,7 @@ ECode NetworkStatsHistoryDataStreamUtils::ReadVarLongArray(
     }
     if (size < 0) return E_PROTOCOL_EXCEPTION;
     AutoPtr< ArrayOf<Int64> > values = ArrayOf<Int64>::Alloc(size);
-    for (int i = 0; i < values->GetLength(); i++) {
+    for (Int32 i = 0; i < values->GetLength(); i++) {
         IDataInput::Probe(in)->ReadInt64(&(*values)[i]);
     }
     *result =values;
@@ -1113,7 +1112,7 @@ ECode NetworkStatsHistoryDataStreamUtils::WriteVarLongArray(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     IDataOutput::Probe(out)->WriteInt32(size);
-    for (int i = 0; i < size; i++) {
+    for (Int32 i = 0; i < size; i++) {
         DataStreamUtils::WriteVarLong(out, (*values)[i]);
     }
     return NOERROR;
@@ -1137,7 +1136,7 @@ ECode NetworkStatsHistoryParcelUtils::ReadLongArray(
         return NOERROR;
     }
     AutoPtr< ArrayOf<Int64> > values = ArrayOf<Int64>::Alloc(size);
-    for (int i = 0; i < values->GetLength(); i++) {
+    for (Int32 i = 0; i < values->GetLength(); i++) {
         in->ReadInt64(&(*values)[i]);
     }
     *result =values;
@@ -1162,7 +1161,7 @@ ECode NetworkStatsHistoryParcelUtils::WriteLongArray(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     out->WriteInt32(size);
-    for (int i = 0; i < size; i++) {
+    for (Int32 i = 0; i < size; i++) {
         out->WriteInt64((*values)[i]);
     }
     return NOERROR;

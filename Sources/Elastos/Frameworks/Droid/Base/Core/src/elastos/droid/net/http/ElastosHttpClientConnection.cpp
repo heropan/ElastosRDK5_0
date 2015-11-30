@@ -23,7 +23,6 @@ ECode ElastosHttpClientConnection::constructor()
 #if 0 // TODO: Translate codes below
         this.entityserializer =  new EntitySerializer(
                 new StrictContentLengthStrategy());
-
 #endif
 }
 
@@ -33,33 +32,32 @@ ECode ElastosHttpClientConnection::Bind(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (socket == null) {
+        if (socket == NULL) {
             throw new IllegalArgumentException("Socket may not be null");
         }
-        if (params == null) {
+        if (params == NULL) {
             throw new IllegalArgumentException("HTTP parameters may not be null");
         }
         assertNotOpen();
         socket.setTcpNoDelay(HttpConnectionParams.getTcpNoDelay(params));
         socket.setSoTimeout(HttpConnectionParams.getSoTimeout(params));
-        int linger = HttpConnectionParams.getLinger(params);
+        Int32 linger = HttpConnectionParams.getLinger(params);
         if (linger >= 0) {
             socket.setSoLinger(linger > 0, linger);
         }
         this.socket = socket;
-        int buffersize = HttpConnectionParams.getSocketBufferSize(params);
+        Int32 buffersize = HttpConnectionParams.getSocketBufferSize(params);
         this.inbuffer = new SocketInputBuffer(socket, buffersize, params);
         this.outbuffer = new SocketOutputBuffer(socket, buffersize, params);
         maxHeaderCount = params.getIntParameter(
                 CoreConnectionPNames.MAX_HEADER_COUNT, -1);
         maxLineLength = params.getIntParameter(
                 CoreConnectionPNames.MAX_LINE_LENGTH, -1);
-        this.requestWriter = new HttpRequestWriter(outbuffer, null, params);
+        this.requestWriter = new HttpRequestWriter(outbuffer, NULL, params);
         this.metrics = new HttpConnectionMetricsImpl(
                 inbuffer.getMetrics(),
                 outbuffer.getMetrics());
-        this.open = true;
-
+        this.open = TRUE;
 #endif
 }
 
@@ -291,7 +289,6 @@ ECode ElastosHttpClientConnection::DoFlush()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         this.outbuffer.flush();
-
 #endif
 }
 
@@ -320,18 +317,18 @@ ECode ElastosHttpClientConnection::ParseResponseHeader(
                 current, new ParserCursor(0, current.length()));
 
         if (HttpLog.LOGV) HttpLog.v("read: " + statusline);
-        int statusCode = statusline.getStatusCode();
+        Int32 statusCode = statusline.getStatusCode();
         // Parse header body
-        CharArrayBuffer previous = null;
-        int headerNumber = 0;
-        while(true) {
-            if (current == null) {
+        CharArrayBuffer previous = NULL;
+        Int32 headerNumber = 0;
+        while(TRUE) {
+            if (current == NULL) {
                 current = new CharArrayBuffer(64);
             } else {
                 // This must be he buffer used to parse the status
                 current.clear();
             }
-            int l = inbuffer.readLine(current);
+            Int32 l = inbuffer.readLine(current);
             if (l == -1 || current.length() < 1) {
                 break;
             }
@@ -340,11 +337,11 @@ ECode ElastosHttpClientConnection::ParseResponseHeader(
             // Detect LWS-char see HTTP/1.0 or HTTP/1.1 Section 2.2
             // discussion on folded headers
             char first = current.charAt(0);
-            if ((first == ' ' || first == '\t') && previous != null) {
+            if ((first == ' ' || first == '\t') && previous != NULL) {
                 // we have continuation folded header
                 // so append value
-                int start = 0;
-                int length = current.length();
+                Int32 start = 0;
+                Int32 length = current.length();
                 while (start < length) {
                     char ch = current.charAt(start);
                     if (ch != ' ' && ch != '\t') {
@@ -360,25 +357,24 @@ ECode ElastosHttpClientConnection::ParseResponseHeader(
                 previous.append(' ');
                 previous.append(current, start, current.length() - start);
             } else {
-                if (previous != null) {
+                if (previous != NULL) {
                     headers.parseHeader(previous);
                 }
                 headerNumber++;
                 previous = current;
-                current = null;
+                current = NULL;
             }
             if (maxHeaderCount > 0 && headerNumber >= maxHeaderCount) {
                 throw new IOException("Maximum header count exceeded");
             }
         }
-        if (previous != null) {
+        if (previous != NULL) {
             headers.parseHeader(previous);
         }
         if (statusCode >= 200) {
             this.metrics.incrementResponseCount();
         }
         return statusline;
-
 #endif
 }
 
@@ -392,28 +388,27 @@ ECode ElastosHttpClientConnection::ReceiveResponseEntity(
         BasicHttpEntity entity = new BasicHttpEntity();
         long len = determineLength(headers);
         if (len == ContentLengthStrategy.CHUNKED) {
-            entity.setChunked(true);
+            entity.setChunked(TRUE);
             entity.setContentLength(-1);
             entity.setContent(new ChunkedInputStream(inbuffer));
         } else if (len == ContentLengthStrategy.IDENTITY) {
-            entity.setChunked(false);
+            entity.setChunked(FALSE);
             entity.setContentLength(-1);
             entity.setContent(new IdentityInputStream(inbuffer));
         } else {
-            entity.setChunked(false);
+            entity.setChunked(FALSE);
             entity.setContentLength(len);
             entity.setContent(new ContentLengthInputStream(inbuffer, len));
         }
         String contentTypeHeader = headers.getContentType();
-        if (contentTypeHeader != null) {
+        if (contentTypeHeader != NULL) {
             entity.setContentType(contentTypeHeader);
         }
         String contentEncodingHeader = headers.getContentEncoding();
-        if (contentEncodingHeader != null) {
+        if (contentEncodingHeader != NULL) {
             entity.setContentEncoding(contentEncodingHeader);
         }
        return entity;
-
 #endif
 }
 
@@ -465,7 +460,6 @@ ECode ElastosHttpClientConnection::GetMetrics(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return this.metrics;
-
 #endif
 }
 

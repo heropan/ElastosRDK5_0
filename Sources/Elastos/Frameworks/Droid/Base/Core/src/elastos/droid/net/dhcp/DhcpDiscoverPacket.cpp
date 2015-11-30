@@ -18,7 +18,6 @@ ECode DhcpDiscoverPacket::constructor(
 #if 0 // TODO: Translate codes below
         super(transId, Inet4Address.ANY, Inet4Address.ANY, Inet4Address.ANY,
             Inet4Address.ANY, clientMac, broadcast);
-
 #endif
 }
 
@@ -30,7 +29,6 @@ ECode DhcpDiscoverPacket::ToString(
         String s = super.toString();
         return s + " DISCOVER " +
                 (mBroadcast ? "broadcast " : "unicast ");
-
 #endif
 }
 
@@ -45,10 +43,9 @@ ECode DhcpDiscoverPacket::BuildPacket(
         ByteBuffer result = ByteBuffer.allocate(MAX_LENGTH);
         InetAddress destIp = Inet4Address.ALL;
         fillInPacket(encap, Inet4Address.ALL, Inet4Address.ANY, destUdp, srcUdp,
-            result, DHCP_BOOTREQUEST, true);
+            result, DHCP_BOOTREQUEST, TRUE);
         result.flip();
         return result;
-
 #endif
 }
 
@@ -60,7 +57,6 @@ ECode DhcpDiscoverPacket::FinishPacket(
         addTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_DISCOVER);
         addTlv(buffer, DHCP_PARAMETER_LIST, mRequestedParams);
         addTlvEnd(buffer);
-
 #endif
 }
 
@@ -72,7 +68,6 @@ ECode DhcpDiscoverPacket::DoNextOp(
         // currently omitted: host name
         machine.onDiscoverReceived(mBroadcast, mTransId, mClientMac,
             mRequestedParams);
-
 #endif
 }
 

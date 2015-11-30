@@ -201,11 +201,11 @@ ECode CPppoeStateTracker::StartMonitoring(
             return;
         }
 
-        int state = mEM.getPppoeState();
+        Int32 state = mEM.getPppoeState();
         if (state != mEM.PPPOE_STATE_DISABLED) {
             if (state == mEM.PPPOE_STATE_UNKNOWN){
                 // maybe this is the first time we run, so set it to enabled
-                mEM.setPppoeEnabled(true);
+                mEM.setPppoeEnabled(TRUE);
             } else {
                 try {
                     resetInterface();
@@ -418,13 +418,13 @@ ECode CPppoeStateTracker::ConfigureInterface(
         mLinkProperties = dhcpInfoInternal.makeLinkProperties();
         mLinkProperties.setInterfaceName(ifname);
         Log.v(TAG, "IP configuration succeeded");
-        return true;
+        return TRUE;
     } catch (RemoteException re) {
         Log.v(TAG, "IP configuration failed: " + re);
-        return false;
+        return FALSE;
     } catch (IllegalStateException e) {
         Log.v(TAG, "IP configuration failed: " + e);
-        return false;
+        return FALSE;
     }
     */
     return E_NOT_IMPLEMENTED;

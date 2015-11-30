@@ -17,8 +17,7 @@ ECode ProxyInfo::BuildDirectProxy(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return new ProxyInfo(host, port, null);
-
+        return new ProxyInfo(host, port, NULL);
 #endif
 }
 
@@ -32,7 +31,6 @@ ECode ProxyInfo::BuildDirectProxy(
 #if 0 // TODO: Translate codes below
         String[] array = exclList.toArray(new String[exclList.size()]);
         return new ProxyInfo(host, port, TextUtils.join(",", array), array);
-
 #endif
 }
 
@@ -43,7 +41,6 @@ ECode ProxyInfo::BuildPacProxy(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return new ProxyInfo(pacUri);
-
 #endif
 }
 
@@ -58,7 +55,6 @@ ECode ProxyInfo::constructor(
         mPort = port;
         setExclusionList(exclList);
         mPacFileUrl = Uri.EMPTY;
-
 #endif
 }
 
@@ -70,11 +66,10 @@ ECode ProxyInfo::constructor(
         mHost = LOCAL_HOST;
         mPort = LOCAL_PORT;
         setExclusionList(LOCAL_EXCL_LIST);
-        if (pacFileUrl == null) {
+        if (pacFileUrl == NULL) {
             throw new NullPointerException();
         }
         mPacFileUrl = pacFileUrl;
-
 #endif
 }
 
@@ -87,7 +82,6 @@ ECode ProxyInfo::constructor(
         mPort = LOCAL_PORT;
         setExclusionList(LOCAL_EXCL_LIST);
         mPacFileUrl = Uri.parse(pacFileUrl);
-
 #endif
 }
 
@@ -100,11 +94,10 @@ ECode ProxyInfo::constructor(
         mHost = LOCAL_HOST;
         mPort = localProxyPort;
         setExclusionList(LOCAL_EXCL_LIST);
-        if (pacFileUrl == null) {
+        if (pacFileUrl == NULL) {
             throw new NullPointerException();
         }
         mPacFileUrl = pacFileUrl;
-
 #endif
 }
 
@@ -128,7 +121,7 @@ ECode ProxyInfo::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (source != null) {
+        if (source != NULL) {
             mHost = source.getHost();
             mPort = source.getPort();
             mPacFileUrl = source.mPacFileUrl;
@@ -137,7 +130,6 @@ ECode ProxyInfo::constructor(
         } else {
             mPacFileUrl = Uri.EMPTY;
         }
-
 #endif
 }
 
@@ -146,12 +138,11 @@ ECode ProxyInfo::GetSocketAddress(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        InetSocketAddress inetSocketAddress = null;
+        InetSocketAddress inetSocketAddress = NULL;
         try {
             inetSocketAddress = new InetSocketAddress(mHost, mPort);
         } catch (IllegalArgumentException e) { }
         return inetSocketAddress;
-
 #endif
 }
 
@@ -161,7 +152,6 @@ ECode ProxyInfo::GetPacFileUrl(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mPacFileUrl;
-
 #endif
 }
 
@@ -171,7 +161,6 @@ ECode ProxyInfo::GetHost(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mHost;
-
 #endif
 }
 
@@ -181,7 +170,6 @@ ECode ProxyInfo::GetPort(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mPort;
-
 #endif
 }
 
@@ -191,7 +179,6 @@ ECode ProxyInfo::GetExclusionList(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mParsedExclusionList;
-
 #endif
 }
 
@@ -201,7 +188,6 @@ ECode ProxyInfo::GetExclusionListAsString(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mExclusionList;
-
 #endif
 }
 
@@ -211,12 +197,11 @@ ECode ProxyInfo::SetExclusionList(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mExclusionList = exclusionList;
-        if (mExclusionList == null) {
+        if (mExclusionList == NULL) {
             mParsedExclusionList = new String[0];
         } else {
             mParsedExclusionList = exclusionList.toLowerCase(Locale.ROOT).split(",");
         }
-
 #endif
 }
 
@@ -225,11 +210,10 @@ ECode ProxyInfo::IsValid(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (!Uri.EMPTY.equals(mPacFileUrl)) return true;
-        return Proxy.PROXY_VALID == Proxy.validate(mHost == null ? "" : mHost,
+        if (!Uri.EMPTY.equals(mPacFileUrl)) return TRUE;
+        return Proxy.PROXY_VALID == Proxy.validate(mHost == NULL ? "" : mHost,
                                                 mPort == 0 ? "" : Integer.toString(mPort),
-                                                mExclusionList == null ? "" : mExclusionList);
-
+                                                mExclusionList == NULL ? "" : mExclusionList);
 #endif
 }
 
@@ -239,7 +223,7 @@ ECode ProxyInfo::MakeProxy(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         java.net.Proxy proxy = java.net.Proxy.NO_PROXY;
-        if (mHost != null) {
+        if (mHost != NULL) {
             try {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(mHost, mPort);
                 proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, inetSocketAddress);
@@ -247,7 +231,6 @@ ECode ProxyInfo::MakeProxy(
             }
         }
         return proxy;
-
 #endif
 }
 
@@ -260,29 +243,28 @@ ECode ProxyInfo::ToString(
         if (!Uri.EMPTY.equals(mPacFileUrl)) {
             sb.append("PAC Script: ");
             sb.append(mPacFileUrl);
-        } else if (mHost != null) {
+        } else if (mHost != NULL) {
             sb.append("[");
             sb.append(mHost);
             sb.append("] ");
             sb.append(Integer.toString(mPort));
-            if (mExclusionList != null) {
+            if (mExclusionList != NULL) {
                     sb.append(" xl=").append(mExclusionList);
             }
         } else {
-            sb.append("[ProxyProperties.mHost == null]");
+            sb.append("[ProxyProperties.mHost == NULL]");
         }
         return sb.toString();
-
 #endif
 }
 
 ECode ProxyInfo::Equals(
-    /* [in] */ IObject* o,
+    /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (!(o instanceof ProxyInfo)) return false;
+        if (!(IProxyInfo::Probe(o) != NULL)) return FALSE;
         ProxyInfo p = (ProxyInfo)o;
         // If PAC URL is present in either then they must be equal.
         // Other parameters will only be for fall back.
@@ -290,19 +272,18 @@ ECode ProxyInfo::Equals(
             return mPacFileUrl.equals(p.getPacFileUrl()) && mPort == p.mPort;
         }
         if (!Uri.EMPTY.equals(p.mPacFileUrl)) {
-            return false;
+            return FALSE;
         }
-        if (mExclusionList != null && !mExclusionList.equals(p.getExclusionListAsString())) {
-            return false;
+        if (mExclusionList != NULL && !mExclusionList.equals(p.getExclusionListAsString())) {
+            return FALSE;
         }
-        if (mHost != null && p.getHost() != null && mHost.equals(p.getHost()) == false) {
-            return false;
+        if (mHost != NULL && p.getHost() != NULL && mHost.equals(p.getHost()) == FALSE) {
+            return FALSE;
         }
-        if (mHost != null && p.mHost == null) return false;
-        if (mHost == null && p.mHost != null) return false;
-        if (mPort != p.mPort) return false;
-        return true;
-
+        if (mHost != NULL && p.mHost == NULL) return FALSE;
+        if (mHost == NULL && p.mHost != NULL) return FALSE;
+        if (mPort != p.mPort) return FALSE;
+        return TRUE;
 #endif
 }
 
@@ -311,10 +292,9 @@ ECode ProxyInfo::HashCode(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return ((null == mHost) ? 0 : mHost.hashCode())
-        + ((null == mExclusionList) ? 0 : mExclusionList.hashCode())
+        return ((NULL == mHost) ? 0 : mHost.hashCode())
+        + ((NULL == mExclusionList) ? 0 : mExclusionList.hashCode())
         + mPort;
-
 #endif
 }
 
@@ -324,11 +304,11 @@ ECode ProxyInfo::ReadFromParcel(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
             public ProxyInfo createFromParcel(Parcel in) {
-                String host = null;
-                int port = 0;
+                String host = NULL;
+                Int32 port = 0;
                 if (in.readByte() != 0) {
                     Uri url = Uri.CREATOR.createFromParcel(in);
-                    int localPort = in.readInt();
+                    Int32 localPort = in.readInt();
                     return new ProxyInfo(url, localPort);
                 }
                 if (in.readByte() != 0) {
@@ -341,10 +321,9 @@ ECode ProxyInfo::ReadFromParcel(
                         new ProxyInfo(host, port, exclList, parsedExclList);
                 return proxyProperties;
             }
-            public ProxyInfo[] newArray(int size) {
+            public ProxyInfo[] newArray(Int32 size) {
                 return new ProxyInfo[size];
             }
-
 #endif
 }
 
@@ -354,11 +333,11 @@ ECode ProxyInfo::WriteToParcel(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
             public ProxyInfo createFromParcel(Parcel in) {
-                String host = null;
-                int port = 0;
+                String host = NULL;
+                Int32 port = 0;
                 if (in.readByte() != 0) {
                     Uri url = Uri.CREATOR.createFromParcel(in);
-                    int localPort = in.readInt();
+                    Int32 localPort = in.readInt();
                     return new ProxyInfo(url, localPort);
                 }
                 if (in.readByte() != 0) {
@@ -371,10 +350,9 @@ ECode ProxyInfo::WriteToParcel(
                         new ProxyInfo(host, port, exclList, parsedExclList);
                 return proxyProperties;
             }
-            public ProxyInfo[] newArray(int size) {
+            public ProxyInfo[] newArray(Int32 size) {
                 return new ProxyInfo[size];
             }
-
 #endif
 }
 

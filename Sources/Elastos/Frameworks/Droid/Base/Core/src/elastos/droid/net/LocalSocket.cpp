@@ -1,7 +1,15 @@
 
 #include "elastos/droid/net/LocalSocket.h"
+#include "elastos/droid/net/LocalSocketImpl.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Core::CInteger32;
+using Elastos::Core::IInteger32;
+using Elastos::Net::ISocketOptions;
 using Elastos::IO::EIID_ICloseable;
+using Elastos::IO::IFileDescriptor;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -13,111 +21,96 @@ const Int32 LocalSocket::SOCKET_UNKNOWN = 0;
 
 ECode LocalSocket::constructor()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this(SOCKET_STREAM);
-
-#endif
+    return constructor(SOCKET_STREAM);
 }
 
 ECode LocalSocket::constructor(
     /* [in] */ Int32 sockType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this(new LocalSocketImpl(), sockType);
-        isBound = false;
-        isConnected = false;
-
-#endif
+    AutoPtr<LocalSocketImpl> localSocketImpl = new LocalSocketImpl();
+    localSocketImpl->constructor();
+    constructor(localSocketImpl, sockType);
+    mIsBound = FALSE;
+    mIsConnected = FALSE;
+    return NOERROR;
 }
 
 ECode LocalSocket::constructor(
     /* [in] */ IFileDescriptor* fd)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this(new LocalSocketImpl(fd), SOCKET_UNKNOWN);
-        isBound = true;
-        isConnected = true;
-
-#endif
+    AutoPtr<LocalSocketImpl> localSocketImpl = new LocalSocketImpl();
+    localSocketImpl->constructor(fd);
+    constructor(localSocketImpl, SOCKET_UNKNOWN);
+    mIsBound = TRUE;
+    mIsConnected = TRUE;
+    return NOERROR;
 }
 
 ECode LocalSocket::constructor(
     /* [in] */ ILocalSocketImpl* impl,
     /* [in] */ Int32 sockType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.impl = impl;
-        this.sockType = sockType;
-        this.isConnected = false;
-        this.isBound = false;
-
-#endif
+    mImpl = impl;
+    mSockType = sockType;
+    mIsConnected = FALSE;
+    mIsBound = FALSE;
+    return NOERROR;
 }
 
 ECode LocalSocket::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return super.toString() + " impl:" + impl;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    Object::ToString(result);
+    *result += " impl:";
+    String s;
+    IObject::Probe(mImpl)->ToString(&s);
+    *result += s;
+    return NOERROR;
 }
 
 ECode LocalSocket::ImplCreateIfNeeded()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate before. Need check.
     if (!mImplCreated) {
-        AutoLock lock(mLock);
-
-        if (!mImplCreated) {
-//            try {
-            mImpl->Create(mSocketType);
-//            } finally {
-            mImplCreated = TRUE;
-//            }
+        synchronized(this) {
+            if (!mImplCreated) {
+    //            try {
+                mImpl->Create(mSockType);
+    //            } finally {
+                mImplCreated = TRUE;
+    //            }
+            }
         }
     }
-#endif
+    return NOERROR;
 }
 
 ECode LocalSocket::Connect(
     /* [in] */ ILocalSocketAddress* endpoint)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    AutoLock lock(mLock);
+    synchronized(this) {
+        if (mIsConnected) {
+            Logger::E("LocalSocket", "already connected");
+            return E_IO_EXCEPTION;
+        }
 
-    if (mIsConnected) {
-//        throw new IOException("already connected");
-        return E_IO_EXCEPTION;
+        ImplCreateIfNeeded();
+        ((LocalSocketImpl*)mImpl.Get())->Connect(endpoint, 0);
+        mIsConnected = TRUE;
+        mIsBound = TRUE;
     }
-
-    ImplCreateIfNeeded();
-    mImpl->Connect(endpoint, 0);
-    mIsConnected = TRUE;
-    mIsBound = TRUE;
     return NOERROR;
-#endif
 }
 
 ECode LocalSocket::Bind(
     /* [in] */ ILocalSocketAddress* bindpoint)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     ImplCreateIfNeeded();
 
-    {
-        AutoLock lock(mLock);
-
+    synchronized(this) {
         if (mIsBound) {
-//            throw new IOException("already bound");
+            Logger::E("LocalSocket", "already bound");
             return E_IO_EXCEPTION;
         }
 
@@ -126,264 +119,207 @@ ECode LocalSocket::Bind(
         mIsBound = TRUE;
     }
     return NOERROR;
-#endif
 }
 
 ECode LocalSocket::GetLocalSocketAddress(
-    /* [out] */ ILocalSocketAddress** result)
+    /* [out] */ ILocalSocketAddress** address)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(address);
+
     *address = mLocalAddress;
     REFCOUNT_ADD(*address)
     return NOERROR;
-#endif
 }
 
 ECode LocalSocket::GetInputStream(
-    /* [out] */ IInputStream** result)
+    /* [out] */ IInputStream** is)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(is);
+
     ImplCreateIfNeeded();
-    return mImpl->GetInputStream(is);
-#endif
+    return ((LocalSocketImpl*)mImpl.Get())->GetInputStream(is);
 }
 
 ECode LocalSocket::GetOutputStream(
-    /* [out] */ IOutputStream** result)
+    /* [out] */ IOutputStream** os)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(os);
+
     ImplCreateIfNeeded();
-    return mImpl->GetOutputStream(os);
-#endif
+    return ((LocalSocketImpl*)mImpl.Get())->GetOutputStream(os);
 }
 
 ECode LocalSocket::Close()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     ImplCreateIfNeeded();
     return mImpl->Close();
-#endif
 }
 
 ECode LocalSocket::ShutdownInput()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     ImplCreateIfNeeded();
-    return mImpl->ShutdownInput();
-#endif
+    return ((LocalSocketImpl*)mImpl.Get())->ShutdownInput();
 }
 
 ECode LocalSocket::ShutdownOutput()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     ImplCreateIfNeeded();
-    return mImpl->ShutdownOutput();
-#endif
+    return ((LocalSocketImpl*)mImpl.Get())->ShutdownOutput();
 }
 
 ECode LocalSocket::SetReceiveBufferSize(
     /* [in] */ Int32 size)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     AutoPtr<IInteger32> sizeObj;
     CInteger32::New(size, (IInteger32**)&sizeObj);
-    return mImpl->SetOption(ISocketOptions::SO_RCVBUF, sizeObj);
-#endif
+    return mImpl->SetOption(ISocketOptions::_SO_RCVBUF, sizeObj);
 }
 
 ECode LocalSocket::GetReceiveBufferSize(
-    /* [out] */ Int32* result)
+    /* [out] */ Int32* size)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(size);
+
     AutoPtr<IInteger32> sizeObj;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_RCVBUF, (IInterface**)&sizeObj));
+    FAIL_RETURN(mImpl->GetOption(ISocketOptions::_SO_RCVBUF, (IInterface**)&sizeObj));
     return sizeObj->GetValue(size);
-#endif
 }
 
 ECode LocalSocket::SetSoTimeout(
     /* [in] */ Int32 n)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     AutoPtr<IInteger32> nObj;
     CInteger32::New(n, (IInteger32**)&nObj);
-    return mImpl->SetOption(ISocketOptions::SO_TIMEOUT, nObj);
-#endif
+    return mImpl->SetOption(ISocketOptions::_SO_TIMEOUT, nObj);
 }
 
 ECode LocalSocket::GetSoTimeout(
-    /* [out] */ Int32* result)
+    /* [out] */ Int32* n)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(n);
+
     AutoPtr<IInteger32> nObj;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_TIMEOUT, (IInterface**)&nObj));
+    FAIL_RETURN(mImpl->GetOption(ISocketOptions::_SO_TIMEOUT, (IInterface**)&nObj));
     return nObj->GetValue(n);
-#endif
 }
 
 ECode LocalSocket::SetSendBufferSize(
-    /* [in] */ Int32 n)
+    /* [in] */ Int32 size)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     AutoPtr<IInteger32> sizeObj;
     CInteger32::New(size, (IInteger32**)&sizeObj);
-    return mImpl->SetOption(ISocketOptions::SO_SNDBUF, sizeObj);
-#endif
+    return mImpl->SetOption(ISocketOptions::_SO_SNDBUF, sizeObj);
 }
 
 ECode LocalSocket::GetSendBufferSize(
-    /* [out] */ Int32* result)
+    /* [out] */ Int32* size)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(size);
+
     AutoPtr<IInteger32> sizeObj;
-    FAIL_RETURN(mImpl->GetOption(ISocketOptions::SO_SNDBUF, (IInterface**)&sizeObj));
+    FAIL_RETURN(mImpl->GetOption(ISocketOptions::_SO_SNDBUF, (IInterface**)&sizeObj));
     return sizeObj->GetValue(size);
-#endif
 }
 
 ECode LocalSocket::GetRemoteSocketAddress(
     /* [out] */ ILocalSocketAddress** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-//    throw new UnsupportedOperationException();
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
-#endif
 }
 
 ECode LocalSocket::IsConnected(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(mLock);
-    *result = mIsConnected;
+
+    synchronized(this) {
+        *result = mIsConnected;
+    }
     return NOERROR;
-#endif
 }
 
 ECode LocalSocket::IsClosed(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-//    throw new UnsupportedOperationException();
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
-#endif
 }
 
 ECode LocalSocket::IsBound(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(mLock);
-    *result = mIsBound;
+
+    synchronized(this) {
+        *result = mIsBound;
+    }
     return NOERROR;
-#endif
 }
 
 ECode LocalSocket::IsOutputShutdown(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-//    throw new UnsupportedOperationException();
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
-#endif
 }
 
 ECode LocalSocket::IsInputShutdown(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-//    throw new UnsupportedOperationException();
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
-#endif
 }
 
 ECode LocalSocket::Connect(
     /* [in] */ ILocalSocketAddress* endpoint,
     /* [in] */ Int32 timeout)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-//    throw new UnsupportedOperationException();
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
-#endif
 }
 
 ECode LocalSocket::SetFileDescriptorsForSend(
     /* [in] */ ArrayOf<IFileDescriptor*>* fds)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     mImpl->SetFileDescriptorsForSend(fds);
     return NOERROR;
-#endif
 }
 
 ECode LocalSocket::GetAncillaryFileDescriptors(
     /* [out, callee] */ ArrayOf<IFileDescriptor*>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
-    AutoPtr< ArrayOf<IFileDescriptor*> > fds = mImpl->GetAncillaryFileDescriptors();
+
+    AutoPtr<ArrayOf<IFileDescriptor*> > fds;
+    mImpl->GetAncillaryFileDescriptors((ArrayOf<IFileDescriptor*>**)&fds);
     *result = fds;
     REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode LocalSocket::GetPeerCredentials(
     /* [out] */ ICredentials** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     return mImpl->GetPeerCredentials(result);
-#endif
 }
 
 ECode LocalSocket::GetFileDescriptor(
-    /* [out] */ IFileDescriptor** result)
+    /* [out] */ IFileDescriptor** fd)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(fd);
-    AutoPtr<IFileDescriptor> _fd = mImpl->GetFileDescriptor();
+
+    AutoPtr<IFileDescriptor> _fd;
+    ((LocalSocketImpl*)mImpl.Get())->GetFileDescriptor((IFileDescriptor**)&_fd);
     *fd = _fd;
     REFCOUNT_ADD(*fd);
     return NOERROR;
-#endif
 }
-
 
 } // namespace Net
 } // namespace Droid

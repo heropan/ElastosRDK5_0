@@ -20,8 +20,7 @@ ECode DhcpNakPacket::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         super(transId, Inet4Address.ANY, Inet4Address.ANY, nextIp, relayIp,
-            clientMac, false);
-
+            clientMac, FALSE);
 #endif
 }
 
@@ -31,8 +30,7 @@ ECode DhcpNakPacket::ToString(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         String s = super.toString();
-        return s + " NAK, reason " + (mMessage == null ? "(none)" : mMessage);
-
+        return s + " NAK, reason " + (mMessage == NULL ? "(none)" : mMessage);
 #endif
 }
 
@@ -51,7 +49,6 @@ ECode DhcpNakPacket::BuildPacket(
             DHCP_BOOTREPLY, mBroadcast);
         result.flip();
         return result;
-
 #endif
 }
 
@@ -64,7 +61,6 @@ ECode DhcpNakPacket::FinishPacket(
         addTlv(buffer, DHCP_SERVER_IDENTIFIER, mServerIdentifier);
         addTlv(buffer, DHCP_MESSAGE, mMessage);
         addTlvEnd(buffer);
-
 #endif
 }
 
@@ -74,7 +70,6 @@ ECode DhcpNakPacket::DoNextOp(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         machine.onNakReceived();
-
 #endif
 }
 

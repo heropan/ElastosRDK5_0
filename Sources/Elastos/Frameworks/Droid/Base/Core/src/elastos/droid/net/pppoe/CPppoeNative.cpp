@@ -516,7 +516,7 @@ ECode CPppoeNative::IsInterfaceAdded(
         ALOGE("Device name NULL!");
         return 0;
     }
-    while (true) {
+    while (TRUE) {
         ALOGE("android_net_pppoe_isInterfaceAdded undefined!");
     }
 

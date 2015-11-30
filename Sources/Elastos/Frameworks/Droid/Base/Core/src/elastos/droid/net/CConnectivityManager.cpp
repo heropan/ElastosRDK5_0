@@ -69,7 +69,7 @@ AutoPtr<IAtomicInteger32> CreateAtomicInterger32()
 }
 
 const String CConnectivityManager::TAG = String("ConnectivityManager");
-const Boolean CConnectivityManager::LEGACY_DBG = true;
+const Boolean CConnectivityManager::LEGACY_DBG = TRUE;
 const AutoPtr<IHashMap> CConnectivityManager::sLegacyRequests = CreateHashMap();
 const Int32 CConnectivityManager::BASE = 0x00080000;
 const Int32 CConnectivityManager::EXPIRE_LEGACY_REQUEST = BASE + 10;
@@ -539,8 +539,7 @@ ECode CConnectivityManager::MaybeMarkCapabilitiesRestricted(
     }
     // All the capabilities are typically provided by restricted networks.
     // Conclude that this network is restricted.
-    AutoPtr<INetworkCapabilities> tmp;
-    return nc->RemoveCapability(INetworkCapabilities::NET_CAPABILITY_NOT_RESTRICTED, (INetworkCapabilities**)&tmp);
+    return nc->RemoveCapability(INetworkCapabilities::NET_CAPABILITY_NOT_RESTRICTED);
 }
 
 ECode CConnectivityManager::NetworkCapabilitiesForFeature(
@@ -579,9 +578,8 @@ ECode CConnectivityManager::NetworkCapabilitiesForFeature(
         }
         AutoPtr<INetworkCapabilities> netCap;
         CNetworkCapabilities::New((INetworkCapabilities**)&netCap);
-        AutoPtr<INetworkCapabilities> tmp;
-        FAIL_RETURN(netCap->AddTransportType(INetworkCapabilities::TRANSPORT_CELLULAR, (INetworkCapabilities**)&tmp))
-        FAIL_RETURN(tmp->AddCapability(cap, (INetworkCapabilities**)&netCap))
+        FAIL_RETURN(netCap->AddTransportType(INetworkCapabilities::TRANSPORT_CELLULAR))
+        FAIL_RETURN(netCap->AddCapability(cap))
         FAIL_RETURN(MaybeMarkCapabilitiesRestricted(netCap))
         *result = netCap;
         REFCOUNT_ADD(*result)
@@ -591,9 +589,8 @@ ECode CConnectivityManager::NetworkCapabilitiesForFeature(
         if (feature.Equals("p2p")) {
             AutoPtr<INetworkCapabilities> netCap;
             CNetworkCapabilities::New((INetworkCapabilities**)&netCap);
-            AutoPtr<INetworkCapabilities> tmp;
-            FAIL_RETURN(netCap->AddTransportType(INetworkCapabilities::TRANSPORT_WIFI, (INetworkCapabilities**)&tmp))
-            FAIL_RETURN(netCap->AddCapability(INetworkCapabilities::NET_CAPABILITY_WIFI_P2P, (INetworkCapabilities**)&tmp))
+            FAIL_RETURN(netCap->AddTransportType(INetworkCapabilities::TRANSPORT_WIFI))
+            FAIL_RETURN(netCap->AddCapability(INetworkCapabilities::NET_CAPABILITY_WIFI_P2P))
             FAIL_RETURN(MaybeMarkCapabilitiesRestricted(netCap))
             *result = netCap;
             REFCOUNT_ADD(*result)
@@ -1085,12 +1082,12 @@ ECode CConnectivityManager::IsDefaultNetworkActive(
         if (E_REMOTE_EXCEPTION != ec) {
             return ec;
         }
-        *result = false;
+        *result = FALSE;
         return NOERROR;
     }
     ec = nms->IsNetworkActive(result);
     if (E_REMOTE_EXCEPTION == ec) {
-        *result = false;
+        *result = FALSE;
         return NOERROR;
     }
     return ec;

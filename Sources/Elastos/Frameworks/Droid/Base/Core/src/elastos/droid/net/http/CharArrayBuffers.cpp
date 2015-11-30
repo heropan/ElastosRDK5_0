@@ -16,14 +16,14 @@ ECode CharArrayBuffers::ContainsIgnoreCaseTrimmed(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int len = buffer.length();
+        Int32 len = buffer.length();
         char[] chars = buffer.buffer();
         while (beginIndex < len && HTTP.isWhitespace(chars[beginIndex])) {
             beginIndex++;
         }
-        int size = str.length();
+        Int32 size = str.length();
         boolean ok = len >= beginIndex + size;
-        for (int j=0; ok && (j<size); j++) {
+        for (Int32 j=0; ok && (j<size); j++) {
             char a = chars[beginIndex+j];
             char b = str.charAt(j);
             if (a != b) {
@@ -33,7 +33,6 @@ ECode CharArrayBuffers::ContainsIgnoreCaseTrimmed(
             }
         }
         return ok;
-
 #endif
 }
 
@@ -44,10 +43,10 @@ ECode CharArrayBuffers::SetLowercaseIndexOf(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int beginIndex = 0;
-        int endIndex = buffer.length();
+        Int32 beginIndex = 0;
+        Int32 endIndex = buffer.length();
         char[] chars = buffer.buffer();
-        for (int i = beginIndex; i < endIndex; i++) {
+        for (Int32 i = beginIndex; i < endIndex; i++) {
             char current = chars[i];
             if (current == ch) {
                 return i;
@@ -58,7 +57,6 @@ ECode CharArrayBuffers::SetLowercaseIndexOf(
             }
         }
         return -1;
-
 #endif
 }
 
@@ -72,7 +70,6 @@ ECode CharArrayBuffers::ToLower(
             c += uppercaseAddon;
         }
         return c;
-
 #endif
 }
 

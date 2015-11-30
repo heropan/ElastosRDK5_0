@@ -60,7 +60,7 @@ public:
      * @hide
      */
     CARAPI IsNetworkTypeWifi(
-        /* [in] */ int networkType,
+        /* [in] */ Int32 networkType,
         /* [out] */ Boolean* result);
 
     /**

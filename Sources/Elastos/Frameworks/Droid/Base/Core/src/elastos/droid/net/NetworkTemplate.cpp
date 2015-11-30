@@ -168,7 +168,6 @@ NetworkTemplate::NetworkTemplate(
         mMatchRule = in.readInt();
         mSubscriberId = in.readString();
         mNetworkId = in.readString();
-
 #endif
 }
 

@@ -58,7 +58,7 @@ ECode Proxy::GetProxy(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         String host = "";
-        if ((url != null) && !isLocalHost(host)) {
+        if ((url != NULL) && !isLocalHost(host)) {
             URI uri = URI.create(url);
             ProxySelector proxySelector = ProxySelector.getDefault();
             List<java.net.Proxy> proxyList = proxySelector.select(uri);
@@ -67,7 +67,6 @@ ECode Proxy::GetProxy(
             }
         }
         return java.net.Proxy.NO_PROXY;
-
 #endif
 }
 
@@ -77,14 +76,13 @@ ECode Proxy::GetHost(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        java.net.Proxy proxy = getProxy(ctx, null);
-        if (proxy == java.net.Proxy.NO_PROXY) return null;
+        java.net.Proxy proxy = getProxy(ctx, NULL);
+        if (proxy == java.net.Proxy.NO_PROXY) return NULL;
         try {
             return ((InetSocketAddress)(proxy.address())).getHostName();
         } catch (Exception e) {
-            return null;
+            return NULL;
         }
-
 #endif
 }
 
@@ -94,14 +92,13 @@ ECode Proxy::GetPort(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        java.net.Proxy proxy = getProxy(ctx, null);
+        java.net.Proxy proxy = getProxy(ctx, NULL);
         if (proxy == java.net.Proxy.NO_PROXY) return -1;
         try {
             return ((InetSocketAddress)(proxy.address())).getPort();
         } catch (Exception e) {
             return -1;
         }
-
 #endif
 }
 
@@ -111,9 +108,8 @@ ECode Proxy::GetDefaultHost(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         String host = System.getProperty("http.proxyHost");
-        if (TextUtils.isEmpty(host)) return null;
+        if (TextUtils.isEmpty(host)) return NULL;
         return host;
-
 #endif
 }
 
@@ -122,13 +118,12 @@ ECode Proxy::GetDefaultPort(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (getDefaultHost() == null) return -1;
+        if (getDefaultHost() == NULL) return -1;
         try {
             return Integer.parseInt(System.getProperty("http.proxyPort"));
         } catch (NumberFormatException e) {
             return -1;
         }
-
 #endif
 }
 
@@ -141,12 +136,11 @@ ECode Proxy::GetPreferredHttpHost(
 #if 0 // TODO: Translate codes below
         java.net.Proxy prefProxy = getProxy(context, url);
         if (prefProxy.equals(java.net.Proxy.NO_PROXY)) {
-            return null;
+            return NULL;
         } else {
             InetSocketAddress sa = (InetSocketAddress)prefProxy.address();
             return new HttpHost(sa.getHostName(), sa.getPort(), "http");
         }
-
 #endif
 }
 
@@ -156,22 +150,21 @@ ECode Proxy::IsLocalHost(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (host == null) {
-            return false;
+        if (host == NULL) {
+            return FALSE;
         }
         try {
-            if (host != null) {
+            if (host != NULL) {
                 if (host.equalsIgnoreCase("localhost")) {
-                    return true;
+                    return TRUE;
                 }
                 if (NetworkUtils.numericToInetAddress(host).isLoopbackAddress()) {
-                    return true;
+                    return TRUE;
                 }
             }
         } catch (IllegalArgumentException iex) {
         }
-        return false;
-
+        return FALSE;
 #endif
 }
 
@@ -190,7 +183,7 @@ ECode Proxy::Validate(
         if (hostname.length() > 0 && port.length() == 0) return PROXY_PORT_EMPTY;
         if (port.length() > 0) {
             if (hostname.length() == 0) return PROXY_HOSTNAME_EMPTY;
-            int portVal = -1;
+            Int32 portVal = -1;
             try {
                 portVal = Integer.parseInt(port);
             } catch (NumberFormatException ex) {
@@ -199,7 +192,6 @@ ECode Proxy::Validate(
             if (portVal <= 0 || portVal > 0xFFFF) return PROXY_PORT_INVALID;
         }
         return PROXY_VALID;
-
 #endif
 }
 
@@ -208,18 +200,17 @@ ECode Proxy::SetHttpProxySystemProperty(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        String host = null;
-        String port = null;
-        String exclList = null;
+        String host = NULL;
+        String port = NULL;
+        String exclList = NULL;
         Uri pacFileUrl = Uri.EMPTY;
-        if (p != null) {
+        if (p != NULL) {
             host = p.getHost();
             port = Integer.toString(p.getPort());
             exclList = p.getExclusionListAsString();
             pacFileUrl = p.getPacFileUrl();
         }
         setHttpProxySystemProperty(host, port, exclList, pacFileUrl);
-
 #endif
 }
 
@@ -231,23 +222,23 @@ ECode Proxy::SetHttpProxySystemProperty(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (exclList != null) exclList = exclList.replace(",", "|");
-        if (false) Log.d(TAG, "setHttpProxySystemProperty :"+host+":"+port+" - "+exclList);
-        if (host != null) {
+        if (exclList != NULL) exclList = exclList.replace(",", "|");
+        if (FALSE) Log.d(TAG, "setHttpProxySystemProperty :"+host+":"+port+" - "+exclList);
+        if (host != NULL) {
             System.setProperty("http.proxyHost", host);
             System.setProperty("https.proxyHost", host);
         } else {
             System.clearProperty("http.proxyHost");
             System.clearProperty("https.proxyHost");
         }
-        if (port != null) {
+        if (port != NULL) {
             System.setProperty("http.proxyPort", port);
             System.setProperty("https.proxyPort", port);
         } else {
             System.clearProperty("http.proxyPort");
             System.clearProperty("https.proxyPort");
         }
-        if (exclList != null) {
+        if (exclList != NULL) {
             System.setProperty("http.nonProxyHosts", exclList);
             System.setProperty("https.nonProxyHosts", exclList);
         } else {
@@ -259,7 +250,6 @@ ECode Proxy::SetHttpProxySystemProperty(
         } else {
             ProxySelector.setDefault(sDefaultProxySelector);
         }
-
 #endif
 }
 

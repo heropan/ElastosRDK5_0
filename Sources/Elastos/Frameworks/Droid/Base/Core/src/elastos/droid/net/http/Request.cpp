@@ -209,7 +209,8 @@ ECode Request::SendRequest(
     if (HttpLog::LOGV) {
         String name;
         // mHost->GetSchemeName(&name);
-        HttpLog::V(String("Request.requestSent() ")  + name + String("://") + GetHostPort() + mPath);
+        ROV(this, GetHostPort, [] String, hostPort);
+        HttpLog::V("Request.requestSent() %s://%s%s", name.string(), hostPort.string(), mPath.string());
     }
 #endif
 }

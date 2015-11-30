@@ -62,7 +62,7 @@ ECode IdleCache::CacheConnection(
                 entry->mTimeout = time + TIMEOUT;
                 mCount++;
                 if (HttpLog::LOGV) mCached++;
-                ret = true;
+                ret = TRUE;
                 if (mThread == NULL) {
                     mThread = new IdleReaper(this);
                     mThread->Start();

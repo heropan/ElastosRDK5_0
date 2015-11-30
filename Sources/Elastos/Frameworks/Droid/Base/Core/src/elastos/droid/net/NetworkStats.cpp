@@ -41,7 +41,6 @@ ECode NetworkStats::constructor(
             this.txPackets = EmptyArray.LONG;
             this.operations = EmptyArray.LONG;
         }
-
 #endif
 }
 
@@ -62,7 +61,6 @@ ECode NetworkStats::constructor(
         txBytes = parcel.createLongArray();
         txPackets = parcel.createLongArray();
         operations = parcel.createLongArray();
-
 #endif
 }
 
@@ -149,7 +147,7 @@ ECode NetworkStats::AddValues(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (size >= capacity) {
-            final int newLength = Math.max(size, 10) * 3 / 2;
+            final Int32 newLength = Math.max(size, 10) * 3 / 2;
             iface = Arrays.copyOf(iface, newLength);
             uid = Arrays.copyOf(uid, newLength);
             set = Arrays.copyOf(set, newLength);
@@ -172,7 +170,6 @@ ECode NetworkStats::AddValues(
         operations[size] = entry.operations;
         size++;
         return this;
-
 #endif
 }
 
@@ -223,7 +220,6 @@ ECode NetworkStats::SetElapsedRealtime(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         elapsedRealtime = time;
-
 #endif
 }
 
@@ -244,7 +240,6 @@ ECode NetworkStats::Size(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return size;
-
 #endif
 }
 
@@ -254,7 +249,6 @@ ECode NetworkStats::InternalSize(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return capacity;
-
 #endif
 }
 
@@ -357,14 +351,13 @@ ECode NetworkStats::FindIndex(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        for (int i = 0; i < size; i++) {
+        for (Int32 i = 0; i < size; i++) {
             if (uid == this.uid[i] && set == this.set[i] && tag == this.tag[i]
                     && Objects.equals(iface, this.iface[i])) {
                 return i;
             }
         }
         return -1;
-
 #endif
 }
 
@@ -378,10 +371,10 @@ ECode NetworkStats::FindIndexHinted(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        for (int offset = 0; offset < size; offset++) {
-            final int halfOffset = offset / 2;
+        for (Int32 offset = 0; offset < size; offset++) {
+            final Int32 halfOffset = offset / 2;
             // search outwards from hint index, alternating forward and backward
-            final int i;
+            final Int32 i;
             if (offset % 2 == 0) {
                 i = (hintIndex + halfOffset) % size;
             } else {
@@ -393,7 +386,6 @@ ECode NetworkStats::FindIndexHinted(
             }
         }
         return -1;
-
 #endif
 }
 
@@ -612,11 +604,10 @@ ECode NetworkStats::GetTotalPackets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         long total = 0;
-        for (int i = size-1; i >= 0; i--) {
+        for (Int32 i = size-1; i >= 0; i--) {
             total += rxPackets[i] + txPackets[i];
         }
         return total;
-
 #endif
 }
 
@@ -644,8 +635,7 @@ ECode NetworkStats::Subtract(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return subtract(left, right, observer, cookie, null);
-
+        return subtract(left, right, observer, cookie, NULL);
 #endif
 }
 
@@ -661,7 +651,7 @@ ECode NetworkStats::Subtract(
 #if 0 // TODO: Translate codes below
         long deltaRealtime = left.elapsedRealtime - right.elapsedRealtime;
         if (deltaRealtime < 0) {
-            if (observer != null) {
+            if (observer != NULL) {
                 observer.foundNonMonotonic(left, -1, right, -1, cookie);
             }
             deltaRealtime = 0;
@@ -669,20 +659,20 @@ ECode NetworkStats::Subtract(
         // result will have our rows, and elapsed time between snapshots
         final Entry entry = new Entry();
         final NetworkStats result;
-        if (recycle != null && recycle.capacity >= left.size) {
+        if (recycle != NULL && recycle.capacity >= left.size) {
             result = recycle;
             result.size = 0;
             result.elapsedRealtime = deltaRealtime;
         } else {
             result = new NetworkStats(deltaRealtime, left.size);
         }
-        for (int i = 0; i < left.size; i++) {
+        for (Int32 i = 0; i < left.size; i++) {
             entry.iface = left.iface[i];
             entry.uid = left.uid[i];
             entry.set = left.set[i];
             entry.tag = left.tag[i];
             // find remote row that matches, and subtract
-            final int j = right.findIndexHinted(entry.iface, entry.uid, entry.set, entry.tag, i);
+            final Int32 j = right.findIndexHinted(entry.iface, entry.uid, entry.set, entry.tag, i);
             if (j == -1) {
                 // newly appearing row, return entire value
                 entry.rxBytes = left.rxBytes[i];
@@ -699,7 +689,7 @@ ECode NetworkStats::Subtract(
                 entry.operations = left.operations[i] - right.operations[j];
                 if (entry.rxBytes < 0 || entry.rxPackets < 0 || entry.txBytes < 0
                         || entry.txPackets < 0 || entry.operations < 0) {
-                    if (observer != null) {
+                    if (observer != NULL) {
                         observer.foundNonMonotonic(left, i, right, j, cookie);
                     }
                     entry.rxBytes = Math.max(entry.rxBytes, 0);
@@ -712,7 +702,6 @@ ECode NetworkStats::Subtract(
             result.addValues(entry);
         }
         return result;
-
 #endif
 }
 
@@ -792,14 +781,13 @@ ECode NetworkStats::WithoutUids(
 #if 0 // TODO: Translated before. Need check.
         final NetworkStats stats = new NetworkStats(elapsedRealtime, 10);
         Entry entry = new Entry();
-        for (int i = 0; i < size; i++) {
+        for (Int32 i = 0; i < size; i++) {
             entry = getValues(i, entry);
             if (!ArrayUtils.contains(uids, entry.uid)) {
                 stats.addValues(entry);
             }
         }
         return stats;
-
 #endif
 }
 
@@ -916,10 +904,9 @@ ECode NetworkStats::WriteToParcel(
             return new NetworkStats(in);
         }
         @Override
-        public NetworkStats[] newArray(int size) {
+        public NetworkStats[] newArray(Int32 size) {
             return new NetworkStats[size];
         }
-
 #endif
 }
 

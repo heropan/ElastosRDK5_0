@@ -15,7 +15,6 @@ ECode NetworkScoreManager::constructor(
         mContext = context;
         IBinder iBinder = ServiceManager.getService(Context.NETWORK_SCORE_SERVICE);
         mService = INetworkScoreService.Stub.asInterface(iBinder);
-
 #endif
 }
 
@@ -25,11 +24,10 @@ ECode NetworkScoreManager::GetActiveScorerPackage(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         NetworkScorerAppData app = NetworkScorerAppManager.getActiveScorer(mContext);
-        if (app == null) {
-            return null;
+        if (app == NULL) {
+            return NULL;
         }
         return app.mPackageName;
-
 #endif
 }
 
@@ -42,9 +40,8 @@ ECode NetworkScoreManager::UpdateScores(
         try {
             return mService.updateScores(networks);
         } catch (RemoteException e) {
-            return false;
+            return FALSE;
         }
-
 #endif
 }
 
@@ -56,9 +53,8 @@ ECode NetworkScoreManager::ClearScores(
         try {
             return mService.clearScores();
         } catch (RemoteException e) {
-            return false;
+            return FALSE;
         }
-
 #endif
 }
 
@@ -71,9 +67,8 @@ ECode NetworkScoreManager::SetActiveScorer(
         try {
             return mService.setActiveScorer(packageName);
         } catch (RemoteException e) {
-            return false;
+            return FALSE;
         }
-
 #endif
 }
 
@@ -85,7 +80,6 @@ ECode NetworkScoreManager::DisableScoring()
             mService.disableScoring();
         } catch (RemoteException e) {
         }
-
 #endif
 }
 
@@ -96,8 +90,8 @@ ECode NetworkScoreManager::RequestScores(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         String activeScorer = getActiveScorerPackage();
-        if (activeScorer == null) {
-            return false;
+        if (activeScorer == NULL) {
+            return FALSE;
         }
         Intent intent = new Intent(ACTION_SCORE_NETWORKS);
         intent.setPackage(activeScorer);
@@ -106,8 +100,7 @@ ECode NetworkScoreManager::RequestScores(
         // A scorer should never become active if its package doesn't hold SCORE_NETWORKS, but
         // ensure the package still holds it to be extra safe.
         mContext.sendBroadcastAsUser(intent, UserHandle.OWNER, Manifest.permission.SCORE_NETWORKS);
-        return true;
-
+        return TRUE;
 #endif
 }
 
@@ -121,7 +114,6 @@ ECode NetworkScoreManager::RegisterNetworkScoreCache(
             mService.registerNetworkScoreCache(networkType, scoreCache);
         } catch (RemoteException e) {
         }
-
 #endif
 }
 

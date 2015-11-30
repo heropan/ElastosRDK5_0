@@ -29,7 +29,6 @@ ECode NetworkQuotaInfo::constructor(
         mEstimatedBytes = in.readLong();
         mSoftLimitBytes = in.readLong();
         mHardLimitBytes = in.readLong();
-
 #endif
 }
 

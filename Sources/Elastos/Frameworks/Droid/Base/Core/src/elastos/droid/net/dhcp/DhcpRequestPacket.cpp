@@ -16,7 +16,6 @@ ECode DhcpRequestPacket::constructor(
 #if 0 // TODO: Translate codes below
         super(transId, clientIp, Inet4Address.ANY, Inet4Address.ANY,
           Inet4Address.ANY, clientMac, broadcast);
-
 #endif
 }
 
@@ -28,8 +27,7 @@ ECode DhcpRequestPacket::ToString(
         String s = super.toString();
         return s + " REQUEST, desired IP " + mRequestedIp + " from host '"
             + mHostName + "', param list length "
-            + (mRequestedParams == null ? 0 : mRequestedParams.length);
-
+            + (mRequestedParams == NULL ? 0 : mRequestedParams.length);
 #endif
 }
 
@@ -46,7 +44,6 @@ ECode DhcpRequestPacket::BuildPacket(
             result, DHCP_BOOTREQUEST, mBroadcast);
         result.flip();
         return result;
-
 #endif
 }
 
@@ -65,7 +62,6 @@ ECode DhcpRequestPacket::FinishPacket(
         addTlv(buffer, DHCP_SERVER_IDENTIFIER, mServerIdentifier);
         addTlv(buffer, DHCP_CLIENT_IDENTIFIER, clientId);
         addTlvEnd(buffer);
-
 #endif
 }
 
@@ -75,12 +71,11 @@ ECode DhcpRequestPacket::DoNextOp(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         InetAddress clientRequest =
-            mRequestedIp == null ? mClientIp : mRequestedIp;
+            mRequestedIp == NULL ? mClientIp : mRequestedIp;
         Log.v(TAG, "requested IP is " + mRequestedIp + " and client IP is " +
             mClientIp);
         machine.onRequestReceived(mBroadcast, mTransId, mClientMac,
             clientRequest, mRequestedParams, mHostName);
-
 #endif
 }
 

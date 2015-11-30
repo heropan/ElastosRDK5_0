@@ -299,7 +299,7 @@ ECode HttpsConnection::OpenConnection(
         // need to.
         {
             AutoLock lock(mSuspendLock);
-            mSuspended = true;
+            mSuspended = TRUE;
         }
         // don't hold the lock while calling out to the event handler
         Boolean canHandle;

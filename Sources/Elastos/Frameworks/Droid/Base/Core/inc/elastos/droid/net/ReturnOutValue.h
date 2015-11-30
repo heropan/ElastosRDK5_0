@@ -89,15 +89,11 @@ AutoPtr<T_REV> ReturnOutValue(ECode (*func)(T_PARA1*, T_REV**), AutoPtr<T_PARA1>
     return ReturnOutValue(func, para1.Get());
 }
 
-#ifndef FOR_EACH
 #define FOR_EACH(iterator, container) AutoPtr<IIterator> iterator;      \
     container->GetIterator((IIterator**)&iterator);                     \
     while (ReturnOutValue(iterator, iterator->HasNext))
-#endif // FOR_EACH
 
-#ifndef RETURN_OUT_VALUE
 #define RETN_OUT_VAL(obj, func, arg...) ReturnOutValue(obj, (obj)->func, ##arg)
-#endif // RETURN_OUT_VALUE
 
 template <typename T>
 inline void funcReturnVal(T** result)
@@ -114,17 +110,49 @@ inline void funcReturnVal(ArrayOf<T*>** result)
 }
 
 template <typename T>
+inline void funcReturnVal(ArrayOf<T>** result)
+{
+    if (*result == NULL) return;
+    REFCOUNT_ADD(*result)
+}
+
+template <typename T>
 inline void funcReturnVal(T* result)
 {
     return;
 }
 
-#ifndef FUNC_RETURN_ERROR_CODE
 #define FUNC_RETURN_ERROR_CODE(obj, errCode) *result = obj;\
                                 funcReturnVal(result);\
                                 return errCode;
 
 #define FUNC_RETURN(obj) FUNC_RETURN_ERROR_CODE(obj, NOERROR)
-#endif // FUNC_RETURN_ERROR_CODE
+
+template <typename T_OBJ>
+class Redefine
+    : public Object
+{
+public:
+    Redefine(T_OBJ* obj)
+        : mPtr(obj)
+    {}
+
+    template <typename T_REV>
+    T_REV Func(ECode (T_OBJ::*func)(T_REV*))
+    {
+        T_REV rev;
+        (mPtr->*func)(&rev);
+        return rev;
+    }
+private:
+    T_OBJ* mPtr;
+};
+
+template <typename T>
+AutoPtr<Redefine<T> > Ptr(T* obj)
+{
+    AutoPtr<Redefine<T> > rev = new Redefine<T>(obj);
+    return rev;
+}
 
 #endif // __ELASTOS_DROID_NET_RETURNOUTVALUE_H__
