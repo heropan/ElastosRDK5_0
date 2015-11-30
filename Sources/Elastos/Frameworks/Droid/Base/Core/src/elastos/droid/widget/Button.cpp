@@ -1,33 +1,26 @@
 
 #include "elastos/droid/widget/Button.h"
 
-using Elastos::Core::CStringWrapper;
-using Elastos::Core::CPathClassLoader;
-using Elastos::Core::IClassLoader;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(Button, TextView, IButton);
 
 Button::Button()
 {
 }
 
-Button::Button(
+ECode Button::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : TextView(context, attrs, defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
-}
-
-ECode Button::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    return TextView::Init(context, attrs, defStyle);
+    return TextView::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
 ECode Button::OnInitializeAccessibilityEvent(
@@ -35,8 +28,8 @@ ECode Button::OnInitializeAccessibilityEvent(
 {
     TextView::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> txt;
-    CStringWrapper::New(String("Button"), (ICharSequence**)&txt);
-    return event->SetClassName(txt);
+    CString::New(String("Button"), (ICharSequence**)&txt);
+    return IAccessibilityRecord::Probe(event)->SetClassName(txt);
 }
 
 ECode Button::OnInitializeAccessibilityNodeInfo(
@@ -44,7 +37,7 @@ ECode Button::OnInitializeAccessibilityNodeInfo(
 {
     TextView::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> txt;
-    CStringWrapper::New(String("Button"), (ICharSequence**)&txt);
+    CString::New(String("Button"), (ICharSequence**)&txt);
     return info->SetClassName(txt);
 }
 
