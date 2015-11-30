@@ -3,6 +3,7 @@ module
     merge("provider/AlarmClock.car");
     merge("provider/BaseColumns.car");
     merge("provider/Browser.car");
+    merge("provider/BrowserContract.car");
     merge("provider/CalendarContract.car");
     merge("provider/CallLog.car");
     merge("provider/Contacts.car");
@@ -13,6 +14,10 @@ module
     merge("provider/LiveFolders.car");
     merge("provider/MediaStore.car");
     merge("provider/OpenableColumns.car");
+    merge("provider/SearchIndexableData.car");
+    merge("provider/SearchIndexableResource.car");
+    merge("provider/SearchIndexablesContract.car");
+    merge("provider/SearchIndexablesProvider.car");
     merge("provider/SearchRecentSuggestions.car");
     merge("provider/Settings.car");
     merge("provider/SyncConstValue.car");
@@ -20,10 +25,132 @@ module
     merge("provider/UserDictionary.car");
     merge("provider/VoicemailContract.car");
 
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Net.IUri;
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Provider {
+    namespace Elastos {
+    namespace Droid {
+    namespace Provider {
+
+    singleton class CBrowserContract
+    {
+        interface IBrowserContract;
+    }
+
+    singleton class CBrowserContractChromeSyncColumns
+    {
+        interface IBrowserContractChromeSyncColumns;
+    }
+
+    singleton class CBrowserContractBookmarks
+    {
+        interface IBrowserContractBookmarks;
+    }
+
+    singleton class CBrowserContractAccounts
+    {
+        interface IBrowserContractAccounts;
+    }
+
+    singleton class CBrowserContractHistory
+    {
+        interface IBrowserContractHistory;
+    }
+
+    singleton class CBrowserContractSearches
+    {
+        interface IBrowserContractSearches;
+    }
+
+    singleton class CBrowserContractImages
+    {
+        interface IBrowserContractImages;
+    }
+
+    singleton class CBrowserContractSyncState
+    {
+        interface IBrowserContractSyncState;
+    }
+
+
+    singleton class CBrowserContractImageMappings
+    {
+        interface IBrowserContractImageMappings;
+    }
+
+    singleton class CBrowserContractCombined
+    {
+        interface IBrowserContractCombined;
+    }
+
+    singleton class CBrowserContractSettings
+    {
+        interface IBrowserContractSettings;
+    }
+
+    singleton class CSearchIndexablesContract
+    {
+        interface ISearchIndexablesContract;
+    }
+
+    singleton class CSearchIndexablesContractXmlResource
+    {
+        interface ISearchIndexablesContractXmlResource;
+    }
+
+    singleton class CSearchIndexablesContractRawData
+    {
+        interface ISearchIndexablesContractRawData;
+    }
+
+    singleton class CSearchIndexablesContractNonIndexableKey
+    {
+        interface ISearchIndexablesContractNonIndexableKey;
+    }
+
+    /**
+     * Search Indexable Resource.
+     *
+     * This class wraps a set of reference information representing data that can be indexed from a
+     * resource which would typically be a {@link android.preference.PreferenceScreen}.
+     *
+     * xmlResId: the resource ID of a {@link android.preference.PreferenceScreen} XML file.
+     *
+     * @see SearchIndexableData
+     * @see android.preference.PreferenceScreen
+     *
+     * @hide
+     */
+    [deprecated]
+    class CSearchIndexableResource
+    {
+        /**
+         * Constructor.
+         *
+         * @param context the Context associated with the data.
+         */
+        constructor(
+            [in] IContext* context);
+
+        /**
+         * Constructor.
+         *
+         * @param rank the rank of the data.
+         * @param xmlResId the resource ID of a {@link android.preference.PreferenceScreen} XML file.
+         * @param className the class name associated with the data (generally a
+         *                  {@link android.app.Fragment}).
+         * @param iconResId the resource ID associated with the data.
+         */
+        constructor(
+            [in] Int32 rank,
+            [in] Int32 xmlResId,
+            [in] String className,
+            [in] Int32 iconResId);
+
+        interface ISearchIndexableResource;
+        interface ISearchIndexableData;
+    }
+
 
     // singleton class CSettings
     // {
@@ -666,7 +793,14 @@ module
     //     interface ICalendarContractSyncState;
     // }
 
-    // }//namespace Provider
-    // }//namespace Droid
-    // }//namespace Elastos
+    singleton class CDocumentsContract
+    {
+        constructor();
+
+        interface IDocumentsContract;
+    }
+
+    } // namespace Provider
+    } // namespace Droid
+    } // namespace Elastos
 }

@@ -1,49 +1,65 @@
-
 #include "elastos/droid/provider/CBrowserContractSyncState.h"
+#include "elastos/droid/provider/BrowserContract.h"
 
+using Elastos::Droid::Net::IUri;
 
-ECode CBrowserContractSyncState::constructor()
+namespace Elastos {
+namespace Droid {
+namespace Provider {
+
+CAR_SINGLETON_IMPL(CBrowserContractSyncState)
+
+CAR_INTERFACE_IMPL(CBrowserContractSyncState, Object, IBrowserContractSyncState)
+
+ECode CBrowserContractSyncState::GetCONTENT_DIRECTORY(
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = BrowserContract::SyncState::CONTENT_DIRECTORY;
     return NOERROR;
 }
 
 ECode CBrowserContractSyncState::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
-//    *uri = Uri.withAppendedPath(AUTHORITY_URI, CONTENT_DIRECTORY);
+    VALIDATE_NOT_NULL(uri);
+    *uri = BrowserContract::SyncState::CONTENT_URI;
+    REFCOUNT_ADD(*uri);
+    return NOERROR;
 }
 
 ECode CBrowserContractSyncState::Get(
     /* [in] */ IContentProviderClient* provider,
     /* [in] */ IAccount* account,
-    /* [out] */ ArrayOf<Byte>* value)
+    /* [out, callee] */ ArrayOf<Byte>** value)
 {
-//    return SyncStateContract.Helpers.get(provider, CONTENT_URI, account);
+    return BrowserContract::SyncState::Get(provider, account, value);
 }
 
 ECode CBrowserContractSyncState::GetWithUri(
     /* [in] */ IContentProviderClient* provider,
     /* [in] */ IAccount* account,
-    /* [out] */ Pair<IUri*, ArrayOf<Byte> >* value)
+    /* [out] */ IPair** value)
 {
-//    return SyncStateContract.Helpers.getWithUri(provider, CONTENT_URI, account);
+    return BrowserContract::SyncState::GetWithUri(provider, account, value);
 }
 
 ECode CBrowserContractSyncState::Set(
     /* [in] */ IContentProviderClient* provider,
     /* [in] */ IAccount* account,
-    /* [in] */ ArrayOf<Byte> data)
+    /* [in] */ ArrayOf<Byte>* data)
 {
-//    SyncStateContract.Helpers.set(provider, CONTENT_URI, account, data);
+    return BrowserContract::SyncState::Set(provider, account, data);
 }
 
-/**
- * @see android.provider.SyncStateContract.Helpers#newSetOperation
- */
 ECode CBrowserContractSyncState::NewSetOperation(
     /* [in] */ IAccount* account,
-    /* [in] */ ArrayOf<Byte> data,
+    /* [in] */ ArrayOf<Byte>* data,
     /* [out] */ IContentProviderOperation** operation)
 {
-//    return SyncStateContract.Helpers.newSetOperation(CONTENT_URI, account, data);
+    return BrowserContract::SyncState::NewSetOperation(account, data, operation);
 }
+
+} // namespace Provider
+} // namespace Droid
+} // namespace Elastos

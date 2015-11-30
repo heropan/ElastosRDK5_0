@@ -1,20 +1,23 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTCOMBINED_H__
 #define __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTCOMBINED_H__
 
 #include "_Elastos_Droid_Provider_CBrowserContractCombined.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CBrowserContractCombined)
+    , public Singleton
+    , public IBrowserContractCombined
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for this table
@@ -23,8 +26,8 @@ public:
         /* [out] */ IUri** uri);
 };
 
-}
-}
-}
+} // namespace Provider
+} // namespace Droid
+} // namespace Elastos
 
-#endif //__CBROWSERCONTRACTIMAGES_H__
+#endif //__ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTCOMBINED_H__

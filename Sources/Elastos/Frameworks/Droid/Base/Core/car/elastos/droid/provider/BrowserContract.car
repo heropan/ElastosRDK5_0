@@ -1,5 +1,11 @@
-module {
+module
+{
+    interface Elastos.Droid.Accounts.IAccount;
+    interface Elastos.Droid.Content.IContentProviderClient;
+    interface Elastos.Droid.Content.IContentProviderOperation;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Utility.IPair;
 
     namespace Elastos {
     namespace Droid {
@@ -29,7 +35,6 @@ module {
         /** A content:// style uri to the authority for the browser provider */
         GetAUTHORITY_URI(
             [out] IUri** uri);
-
     }
 
     interface IBrowserContractBaseSyncColumns {
@@ -46,16 +51,18 @@ module {
     }
 
     interface IBrowserContractChromeSyncColumns {
-        /** The server unique ID for an item */
-        const String SERVER_UNIQUE = IBrowserContractBaseSyncColumns::SYNC3;
-
         const String FOLDER_NAME_ROOT = "google_chrome";
         const String FOLDER_NAME_BOOKMARKS = "google_chrome_bookmarks";
         const String FOLDER_NAME_BOOKMARKS_BAR = "bookmark_bar";
         const String FOLDER_NAME_OTHER_BOOKMARKS = "other_bookmarks";
 
+        /** The server unique ID for an item */
+        GetSERVER_UNIQUE(
+            [out] String* result);
+
         /** The client unique ID for an item */
-        const String CLIENT_UNIQUE = IBrowserContractBaseSyncColumns::SYNC4;
+        GetCLIENT_UNIQUE(
+            [out] String* result);
     }
 
     /**
@@ -192,10 +199,10 @@ module {
     /**
      * @Involve
      * interface IBrowserContractCommonColumns
+     * interface IBrowserContractImageColumns
+     * interface IBrowserContractSyncColumns
      */
-    interface IBrowserContractBookmarks,
-            IBrowserContractImageColumns, IBrowserContractSyncColumns {
-
+    interface IBrowserContractBookmarks {
         /**
          * Used in {@link Bookmarks#TYPE} column and indicats the row is a bookmark.
          */
@@ -254,7 +261,7 @@ module {
                 /**
          * The MIME type of {@link #CONTENT_URI} providing a directory of bookmarks.
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/bookmark";
+        const String CONTENT_TYPE = "vnd.android.cursor.dir/bookmark";
 
         /**
          * The MIME type of a {@link #CONTENT_URI} of a single bookmark.
@@ -335,7 +342,7 @@ module {
          * The content:// style URI for the default folder
          * @hide
          */
-        GetCONTENT_URIDEFAULTFOLDER(
+        GetCONTENT_URI_DEFAULT_FOLDER(
             [out] IUri** uri);
 
         /**
@@ -381,10 +388,10 @@ module {
     /**
      * @Involve
      * interface IBrowserContractCommonColumns
+     * interface IBrowserContractHistoryColumns
+     * interface IBrowserContractImageColumns
      */
-    interface IBrowserContractHistory,
-            IBrowserContractHistoryColumns, IBrowserContractImageColumns {
-
+    interface IBrowserContractHistory {
         /**
          * The MIME type of {@link #CONTENT_URI} providing a directory of browser history items.
          */
@@ -442,9 +449,11 @@ module {
      * @Involve
      * interface ISyncStateContractColumns
      */
+    [deprecated]
     interface IBrowserContractSyncState{
-        const String CONTENT_DIRECTORY =
-                ISyncStateContractConstants::CONTENT_DIRECTORY;
+
+        GetCONTENT_DIRECTORY(
+            [out] String* result);
 
         /**
          * The content:// style URI for this table
@@ -458,7 +467,7 @@ module {
         Get(
             [in] IContentProviderClient* provider,
             [in] IAccount* account,
-            [out] ArrayOf<Byte>* value);
+            [out, callee] ArrayOf<Byte>* value);
 
         /**
          * @see android.provider.SyncStateContract.Helpers#get
@@ -466,7 +475,7 @@ module {
         GetWithUri(
             [in] IContentProviderClient* provider,
             [in] IAccount* account,
-            [out] Pair<IUri*, ArrayOf<Byte> >* value);
+            [out] IPair** value);
 
         /**
          * @see android.provider.SyncStateContract.Helpers#set
@@ -474,14 +483,14 @@ module {
         Set(
             [in] IContentProviderClient* provider,
             [in] IAccount* account,
-            [in] ArrayOf<Byte> data);
+            [in] ArrayOf<Byte>* data);
 
         /**
          * @see android.provider.SyncStateContract.Helpers#newSetOperation
          */
         NewSetOperation(
             [in] IAccount* account,
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [out] IContentProviderOperation** operation);
     }
 
@@ -573,11 +582,10 @@ module {
     /**
      * @Involve
      * interface IBrowserContractCommonColumns
+     * interface IBrowserContractHistoryColumns
+     * interface IBrowserContractImageColumns
      */
-    interface IBrowserContractCombined,
-            IBrowserContractHistoryColumns,
-            IBrowserContractImageColumns {
-
+    interface IBrowserContractCombined {
         /**
          * Flag indicating that an item is a bookmark. A value of 1 indicates a bookmark, a value
          * of 0 indicates a history item.
@@ -610,6 +618,12 @@ module {
         const String KEY_SYNC_ENABLED = "sync_enabled";
 
         /**
+         * The content:// style URI for this table
+         */
+        GetCONTENT_URI(
+            [out] IUri** uri);
+
+        /**
          * Returns true if bookmark sync is enabled
          */
         IsSyncEnabled(
@@ -622,12 +636,6 @@ module {
         SetSyncEnabled(
             [in] IContext* ctx,
             [in] Boolean enabled);
-
-        /**
-         * The content:// style URI for this table
-         */
-        GetCONTENT_URI(
-            [out] IUri** uri);
     }
 
     } // namespace Provider

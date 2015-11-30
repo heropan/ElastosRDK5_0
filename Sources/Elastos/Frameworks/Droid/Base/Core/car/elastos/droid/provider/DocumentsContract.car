@@ -1,5 +1,5 @@
-module {
-
+module
+{
     using interface Elastos.IO.IFile;
 
     interface Elastos.Droid.Content.IContext;
@@ -241,6 +241,9 @@ module {
          * @see #getSearchDocumentsQuery(Uri)
          */
         BuildSearchDocumentsUri(
+            [in] String authority,
+            [in] String rootId,
+            [in] String query,
             [out] IUri** uri);
 
         /**
@@ -394,8 +397,7 @@ module {
         /** {@hide} */
         DeleteDocument(
             [in] IContentProviderClient* client,
-            [in] IUri* documentUri,
-            [out] Boolean* result);
+            [in] IUri* documentUri);
 
         /**
          * Open the given image for thumbnail purposes, using any embedded EXIF
@@ -770,9 +772,6 @@ module {
          */
         const Int32 FLAG_ADVANCED = 1 << 17;
     }
-
-
-
 
     } // namespace Provider
     } // namespace Droid
