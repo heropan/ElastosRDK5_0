@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_UTILITY_SPARSEINT32ARRAY_H__
-#define __ELASTOS_DROID_UTILITY_SPARSEINT32ARRAY_H__
+#ifndef __ELASTOS_DROID_UTILITY_SPARSEBOOLEANARRAY_H__
+#define __ELASTOS_DROID_UTILITY_SPARSEBOOLEANARRAY_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
@@ -12,9 +12,10 @@ namespace Droid {
 namespace Utility {
 
 /**
- * SparseIntArrays map integers to integers.  Unlike a normal array of integers,
+ * SparseBooleanArrays map integers to booleans.
+ * Unlike a normal array of booleans
  * there can be gaps in the indices.  It is intended to be more memory efficient
- * than using a HashMap to map Integers to Integers, both because it avoids
+ * than using a HashMap to map Integers to Booleans, both because it avoids
  * auto-boxing keys and values and its data structure doesn't rely on an extra entry object
  * for each mapping.
  *
@@ -32,23 +33,23 @@ namespace Utility {
  * keys in ascending order, or the values corresponding to the keys in ascending
  * order in the case of <code>valueAt(int)</code>.</p>
  */
-class SparseInt32Array
+class SparseBooleanArray
     : public Object
-    , public ISparseInt32Array
+    , public ISparseBooleanArray
     , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL();
 
-    SparseInt32Array();
+    SparseBooleanArray();
 
     /**
-     * Creates a new SparseIntArray containing no mappings.
+     * Creates a new SparseBooleanArray containing no mappings.
      */
     CARAPI constructor();
 
     /**
-     * Creates a new SparseIntArray containing no mappings that will not
+     * Creates a new SparseBooleanArray containing no mappings that will not
      * require any additional memory allocation to store the specified
      * number of mappings.  If you supply an initial capacity of 0, the
      * sparse array will be initialized with a light-weight representation
@@ -62,21 +63,21 @@ public:
         /* [out] */ IInterface** clone);
 
     /**
-     * Gets the Int32 mapped from the specified key, or <code>0</code>
+     * Gets the boolean mapped from the specified key, or <code>false</code>
      * if no such mapping has been made.
      */
     CARAPI Get(
         /* [in] */ Int32 key,
-        /* [out] */ Int32* value);
+        /* [out] */ Boolean* value);
 
     /**
-     * Gets the Int32 mapped from the specified key, or the specified value
+     * Gets the boolean mapped from the specified key, or the specified value
      * if no such mapping has been made.
      */
     CARAPI Get(
         /* [in] */ Int32 key,
-        /* [in] */ Int32 valueIfKeyNotFound,
-        /* [out] */ Int32* value);
+        /* [in] */ Boolean valueIfKeyNotFound,
+        /* [out] */ Boolean* value);
 
     /**
      * Removes the mapping from the specified key, if there was any.
@@ -84,9 +85,7 @@ public:
     CARAPI Delete(
         /* [in] */ Int32 key);
 
-    /**
-     * Removes the mapping at the given index.
-     */
+    /** @hide */
     CARAPI RemoveAt(
         /* [in] */ Int32 index);
 
@@ -97,10 +96,10 @@ public:
      */
     CARAPI Put(
         /* [in] */ Int32 key,
-        /* [in] */ Int32 value);
+        /* [in] */ Boolean value);
 
     /**
-     * Returns the number of key-value mappings that this SparseIntArray
+     * Returns the number of key-value mappings that this SparseBooleanArray
      * currently stores.
      */
     CARAPI GetSize(
@@ -109,7 +108,7 @@ public:
     /**
      * Given an index in the range <code>0...size()-1</code>, returns
      * the key from the <code>index</code>th key-value mapping that this
-     * SparseIntArray stores.
+     * SparseBooleanArray stores.
      *
      * <p>The keys corresponding to indices in ascending order are guaranteed to
      * be in ascending order, e.g., <code>keyAt(0)</code> will return the
@@ -123,7 +122,7 @@ public:
     /**
      * Given an index in the range <code>0...size()-1</code>, returns
      * the value from the <code>index</code>th key-value mapping that this
-     * SparseIntArray stores.
+     * SparseBooleanArray stores.
      *
      * <p>The values corresponding to indices in ascending order are guaranteed
      * to be associated with keys in ascending order, e.g.,
@@ -133,7 +132,12 @@ public:
      */
     CARAPI ValueAt(
         /* [in] */ Int32 index,
-        /* [out] */ Int32* value);
+        /* [out] */ Boolean* value);
+
+    /** @hide */
+    CARAPI SetValueAt(
+        /* [in] */ Int32 index,
+        /* [in] */ Boolean value);
 
     /**
      * Returns the index for which {@link #keyAt} would return the
@@ -153,11 +157,11 @@ public:
      * find only one of them.
      */
     CARAPI IndexOfValue(
-        /* [in] */ Int32 value,
+        /* [in] */ Boolean value,
         /* [out] */ Int32* index);
 
     /**
-     * Removes all key-value mappings from this SparseIntArray.
+     * Removes all key-value mappings from this SparseBooleanArray.
      */
     CARAPI Clear();
 
@@ -167,7 +171,7 @@ public:
      */
     CARAPI Append(
         /* [in] */ Int32 key,
-        /* [in] */ Int32 value);
+        /* [in] */ Boolean value);
 
     /**
      * {@inheritDoc}
@@ -180,7 +184,7 @@ public:
 
 private:
     AutoPtr<ArrayOf<Int32> > mKeys;
-    AutoPtr<ArrayOf<Int32> > mValues;
+    AutoPtr<ArrayOf<Boolean> > mValues;
     Int32 mSize;
 };
 
@@ -188,5 +192,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_UTILITY_SPARSEINT32ARRAY_H__
+#endif // __ELASTOS_DROID_UTILITY_SPARSEBOOLEANARRAY_H__
 

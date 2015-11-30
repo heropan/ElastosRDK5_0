@@ -101,7 +101,7 @@ module
          * associated with the largest key.</p>
          */
         ValueAt(
-            [in] Int32* index,
+            [in] Int32 index,
             [out] Boolean* value);
 
         /** @hide */
@@ -142,15 +142,6 @@ module
         Append(
             [in] Int32 key,
             [in] Boolean value);
-
-        /**
-         * {@inheritDoc}
-         *
-         * <p>This implementation composes a string by iterating over its mappings.
-         */
-        // @Override
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Utility

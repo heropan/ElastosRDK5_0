@@ -3,6 +3,7 @@
 #include "elastos/droid/utility/CInt64SparseArray.h"
 #include "elastos/droid/utility/CMonthDisplayHelper.h"
 #include "elastos/droid/utility/CSparseArray.h"
+#include "elastos/droid/utility/CSparseBooleanArray.h"
 #include "elastos/droid/utility/CSparseInt32Array.h"
 
 namespace Elastos {
@@ -14,6 +15,7 @@ CAR_OBJECT_IMPL(CBase64OutputStream)
 CAR_OBJECT_IMPL(CInt64SparseArray)
 CAR_OBJECT_IMPL(CMonthDisplayHelper)
 CAR_OBJECT_IMPL(CSparseArray)
+CAR_OBJECT_IMPL(CSparseBooleanArray)
 CAR_OBJECT_IMPL(CSparseInt32Array)
 
 } // namespace Utility

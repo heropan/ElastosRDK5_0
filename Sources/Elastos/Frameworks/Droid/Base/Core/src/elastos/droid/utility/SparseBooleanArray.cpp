@@ -1,6 +1,6 @@
 
-#include "elastos/droid/utility/SparseInt32Array.h"
-#include "elastos/droid/utility/CSparseInt32Array.h"
+#include "elastos/droid/utility/SparseBooleanArray.h"
+#include "elastos/droid/utility/CSparseBooleanArray.h"
 #include "elastos/droid/utility/ContainerHelpers.h"
 #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/internal/utility/GrowingArrayUtils.h"
@@ -17,40 +17,40 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-CAR_INTERFACE_IMPL_2(SparseInt32Array, Object, ISparseInt32Array, ICloneable);
+CAR_INTERFACE_IMPL_2(SparseBooleanArray, Object, ISparseBooleanArray, ICloneable);
 
-SparseInt32Array::SparseInt32Array()
+SparseBooleanArray::SparseBooleanArray()
     : mSize(0)
 {}
 
-ECode SparseInt32Array::constructor()
+ECode SparseBooleanArray::constructor()
 {
     return constructor(10);
 }
 
-ECode SparseInt32Array::constructor(
+ECode SparseBooleanArray::constructor(
     /* [in] */ Int32 initialCapacity)
 {
     if (initialCapacity == 0) {
         mKeys = EmptyArray::INT32;
-        mValues = EmptyArray::INT32;
+        mValues = EmptyArray::BOOLEAN;
     }
     else {
         mKeys = ArrayUtils::NewUnpaddedInt32Array(initialCapacity);
-        mValues = ArrayOf<Int32>::Alloc(mKeys->GetLength());
+        mValues = ArrayOf<Boolean>::Alloc(mKeys->GetLength());
     }
     mSize = 0;
     return NOERROR;
 }
 
-ECode SparseInt32Array::Clone(
+ECode SparseBooleanArray::Clone(
     /* [out] */ IInterface** clone)
 {
     VALIDATE_NOT_NULL(clone);
     *clone = NULL;
 
-    AutoPtr<CSparseInt32Array> cloneObj;
-    CSparseInt32Array::NewByFriend((CSparseInt32Array**)&cloneObj);
+    AutoPtr<CSparseBooleanArray> cloneObj;
+    CSparseBooleanArray::NewByFriend((CSparseBooleanArray**)&cloneObj);
     // try {
     cloneObj->mKeys = mKeys->Clone();
     cloneObj->mValues = mValues->Clone();
@@ -58,23 +58,23 @@ ECode SparseInt32Array::Clone(
     // } catch (CloneNotSupportedException cnse) {
     //     /* ignore */
     // }
-    *clone = (ISparseInt32Array*)cloneObj.Get();
+    *clone = (ISparseBooleanArray*)cloneObj.Get();
     REFCOUNT_ADD(*clone);
     return NOERROR;
 }
 
-ECode SparseInt32Array::Get(
+ECode SparseBooleanArray::Get(
     /* [in] */ Int32 key,
-    /* [out] */ Int32* value)
+    /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
-    return Get(key, 0, value);
+    return Get(key, FALSE, value);
 }
 
-ECode SparseInt32Array::Get(
+ECode SparseBooleanArray::Get(
     /* [in] */ Int32 key,
-    /* [in] */ Int32 valueIfKeyNotFound,
-    /* [out] */ Int32* value)
+    /* [in] */ Boolean valueIfKeyNotFound,
+    /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
     Int32 i = ContainerHelpers::BinarySearch(mKeys, mSize, key);
@@ -89,18 +89,20 @@ ECode SparseInt32Array::Get(
     }
 }
 
-ECode SparseInt32Array::Delete(
+ECode SparseBooleanArray::Delete(
     /* [in] */ Int32 key)
 {
     Int32 i = ContainerHelpers::BinarySearch(mKeys, mSize, key);
 
     if (i >= 0) {
-        RemoveAt(i);
+        mKeys->Copy(i, mKeys, i + 1, mSize - (i + 1));
+        mValues->Copy(i, mValues, i + 1, mSize - (i + 1));
+        mSize--;
     }
     return NOERROR;
 }
 
-ECode SparseInt32Array::RemoveAt(
+ECode SparseBooleanArray::RemoveAt(
     /* [in] */ Int32 index)
 {
     mKeys->Copy(index, mKeys, index + 1, mSize - (index + 1));
@@ -109,9 +111,9 @@ ECode SparseInt32Array::RemoveAt(
     return NOERROR;
 }
 
-ECode SparseInt32Array::Put(
+ECode SparseBooleanArray::Put(
     /* [in] */ Int32 key,
-    /* [in] */ Int32 value)
+    /* [in] */ Boolean value)
 {
     Int32 i = ContainerHelpers::BinarySearch(mKeys, mSize, key);
 
@@ -128,7 +130,7 @@ ECode SparseInt32Array::Put(
     return NOERROR;
 }
 
-ECode SparseInt32Array::GetSize(
+ECode SparseBooleanArray::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size);
@@ -136,7 +138,7 @@ ECode SparseInt32Array::GetSize(
     return NOERROR;
 }
 
-ECode SparseInt32Array::KeyAt(
+ECode SparseBooleanArray::KeyAt(
     /* [in] */ Int32 index,
     /* [out] */ Int32* key)
 {
@@ -145,16 +147,24 @@ ECode SparseInt32Array::KeyAt(
     return NOERROR;
 }
 
-ECode SparseInt32Array::ValueAt(
+ECode SparseBooleanArray::ValueAt(
     /* [in] */ Int32 index,
-    /* [out] */ Int32* value)
+    /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
     *value = (*mValues)[index];
     return NOERROR;
 }
 
-ECode SparseInt32Array::IndexOfKey(
+ECode SparseBooleanArray::SetValueAt(
+    /* [in] */ Int32 index,
+    /* [in] */ Boolean value)
+{
+    mValues->Set(index, value);
+    return NOERROR;
+}
+
+ECode SparseBooleanArray::IndexOfKey(
     /* [in] */ Int32 key,
     /* [out] */ Int32* index)
 {
@@ -164,8 +174,8 @@ ECode SparseInt32Array::IndexOfKey(
     return NOERROR;
 }
 
-ECode SparseInt32Array::IndexOfValue(
-    /* [in] */ Int32 value,
+ECode SparseBooleanArray::IndexOfValue(
+    /* [in] */ Boolean value,
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
@@ -181,15 +191,15 @@ ECode SparseInt32Array::IndexOfValue(
     return NOERROR;
 }
 
-ECode SparseInt32Array::Clear()
+ECode SparseBooleanArray::Clear()
 {
     mSize = 0;
     return NOERROR;
 }
 
-ECode SparseInt32Array::Append(
+ECode SparseBooleanArray::Append(
     /* [in] */ Int32 key,
-    /* [in] */ Int32 value)
+    /* [in] */ Boolean value)
 {
     if (mSize != 0 && key <= (*mKeys)[mSize - 1]) {
         Put(key, value);
@@ -203,7 +213,7 @@ ECode SparseInt32Array::Append(
     return NOERROR;
 }
 
-ECode SparseInt32Array::ToString(
+ECode SparseBooleanArray::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -223,7 +233,7 @@ ECode SparseInt32Array::ToString(
         KeyAt(i, &key);
         buffer.Append(key);
         buffer.AppendChar('=');
-        Int32 value;
+        Boolean value;
         ValueAt(i, &value);
         buffer.Append(value);
     }

@@ -40,6 +40,7 @@ SOURCES += CSizeF.cpp
 SOURCES += CSizeFHelper.cpp
 SOURCES += Int64SparseArray.cpp
 SOURCES += SparseArray.cpp
+SOURCES += SparseBooleanArray.cpp
 SOURCES += SparseInt32Array.cpp
 SOURCES += Spline.cpp
 SOURCES += StateSet.cpp

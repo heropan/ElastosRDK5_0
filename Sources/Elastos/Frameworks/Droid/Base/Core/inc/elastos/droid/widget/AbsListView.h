@@ -3,20 +3,12 @@
 #define __ELASTOS_DROID_WIDGET_ABSLISTVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
-#include <elastos/utility/etl/List.h>
-#include <elastos/IntegralToString.h>
 #include "elastos/droid/widget/AdapterView.h"
-#include "elastos/droid/widget/EdgeEffect.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/view/View.h"
-#include "elastos/droid/view/CViewConfigurationHelper.h"
-#include "elastos/droid/content/CIntentFilterComparison.h"
-#include "elastos/droid/view/CKeyEventHelper.h"
-#include "elastos/droid/view/IInputConnectionWrapper.h"
-#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/view/ViewGroup.h"
 #include <Elastos.CoreLibrary.h>
-#include "elastos/droid/R.h"
 
 namespace Elastos {
 namespace Droid {
@@ -24,56 +16,216 @@ namespace Widget {
 
 class CAbsListViewSavedState;
 
-using Elastos::Core::IRunnable;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::View::IOnGlobalLayoutListener;
-using Elastos::Droid::View::EIID_IOnGlobalLayoutListener;
-using Elastos::Droid::View::IOnTouchModeChangeListener;
-using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IStrictModeSpan;
-using Elastos::Droid::Widget::IFilterListener;
-using Elastos::Droid::Widget::IAbsListViewSavedState;
-using Elastos::Droid::Widget::IMultiChoiceModeListener;
-using Elastos::Droid::Text::ITextWatcher;
-using Elastos::Droid::Text::EIID_ITextWatcher;
-using Elastos::Droid::Text::IEditable;
-using Elastos::Droid::Text::EIID_IEditable;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::CRect;
-using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IStrictModeSpan;
+using Elastos::Droid::Text::IEditable;
+using Elastos::Droid::Text::ITextWatcher;
+using Elastos::Droid::Text::IEditable;
+using Elastos::Droid::Text::INoCopySpan;
 using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Utility::IInt64SparseArray;
+using Elastos::Droid::Utility::ISparseBooleanArray;
+using Elastos::Droid::View::Animation::IInterpolator;
+using Elastos::Droid::View::InputMethod::ICompletionInfo;
+using Elastos::Droid::View::InputMethod::ICorrectionInfo;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
+using Elastos::Droid::View::InputMethod::IExtractedText;
+using Elastos::Droid::View::InputMethod::IExtractedTextRequest;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IOnGlobalLayoutListener;
+using Elastos::Droid::View::IOnTouchModeChangeListener;
 using Elastos::Droid::View::View;
-using Elastos::Droid::Widget::IPopupWindow;
-//using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::ViewGroup;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::IActionMode;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::IMenuItem;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IKeyEvent;
-using Elastos::Droid::Text::IEditable;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::View::IInputConnectionWrapper;
 using Elastos::Droid::View::VelocityTracker;
-using Elastos::Droid::View::Animation::IInterpolator;
+using Elastos::Droid::Widget::IFilterListener;
+using Elastos::Droid::Widget::IAbsListViewLayoutParams;
+using Elastos::Droid::Widget::IAbsListViewSavedState;
+using Elastos::Droid::Widget::IAdapter;
+using Elastos::Droid::Widget::IListAdapter;
+using Elastos::Droid::Widget::IMultiChoiceModeListener;
+using Elastos::Droid::Widget::IPopupWindow;
 using Elastos::Droid::Widget::CAbsListViewSavedState;
-using Elastos::Droid::R;
+using Elastos::Core::IRunnable;
+using Elastos::Core::IThread;
+using Elastos::Utility::IArrayList;
 
-class OverScroller;
 class FastScroller;
 
-typedef List<AutoPtr<IView> > ViewList;
-typedef typename ViewList::Iterator ViewListIterator;
-typedef typename ViewList::ReverseIterator ViewListReverseIterator;
-typedef HashMap<Int32, AutoPtr<IView> > ViewMap;
-typedef typename ViewMap::Iterator ViewMapIterator;
-
 class AbsListView
-     : public AdapterView
+    : public AdapterView
+    , public ITextWatcher
+    , public INoCopySpan
+    , public IOnGlobalLayoutListener
+    , public IFilterListener
+    , public IOnTouchModeChangeListener
+    , public IRemoteAdapterConnectionCallback
 {
     friend class FastScroller;
+public:
+    class LayoutParams
+        : public ViewGroup::LayoutParams
+        , public IAbsListViewLayoutParams
+    {
+        friend class AbsListView;
+    public:
+        CAR_INTERFACE_DECL();
+
+        LayoutParams();
+
+        ~LayoutParams();
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ IContext* c,
+            /* [in] */ IAttributeSet* attrs);
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height);
+
+        /**
+         * Creates a new set of layout parameters with the specified width, height
+         * and weight.
+         *
+         * @param width the width, either {@link #MATCH_PARENT},
+         *        {@link #WRAP_CONTENT} or a fixed size in pixels
+         * @param height the height, either {@link #MATCH_PARENT},
+         *        {@link #WRAP_CONTENT} or a fixed size in pixels
+         * @param gravity the gravity
+         *
+         * @see android.view.Gravity
+         */
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height,
+            /* [in] */ Int32 viewType);
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ IViewGroupLayoutParams* source);
+
+        CARAPI SetItemId(
+            /* [in] */ Int64 itemId);
+
+        CARAPI SetScrappedFromPosition(
+            /* [in] */ Int32 scrappedFromPosition);
+
+        CARAPI SetForceAdd(
+            /* [in] */ Boolean force);
+
+        CARAPI SetRecycledHeaderFooter(
+            /* [in] */ Boolean footer);
+
+        CARAPI SetViewType(
+            /* [in] */ Int32 type);
+
+        CARAPI GetItemId(
+            /* [out] */ Int64* itemId);
+
+        CARAPI GetScrappedFromPosition(
+            /* [out] */ Int32* scrappedFromPosition);
+
+        CARAPI GetForceAdd(
+            /* [in] */ Boolean* force);
+
+        CARAPI GetRecycledHeaderFooter(
+            /* [in] */ Boolean* footer);
+
+        CARAPI GetViewType(
+            /* [in] */ Int32* type);
+    public:
+        /**
+         * View type for this view, as returned by
+         * {@link android.widget.Adapter#getItemViewType(int) }
+         */
+        Int32 mViewType;
+
+        /**
+         * When this boolean is set, the view has been added to the AbsListView
+         * at least once. It is used to know whether headers/footers have already
+         * been added to the list view and whether they should be treated as
+         * recycled views or not.
+         */
+        Boolean mRecycledHeaderFooter;
+
+        Boolean mForceAdd;
+
+        /**
+         * The position the view was removed from when pulled out of the
+         * scrap heap.
+         * @hide
+         */
+        Int32 mScrappedFromPosition;
+
+        /**
+         * The ID the view represents
+         */
+        Int64 mItemId;
+    };
+
+    class SavedState
+        : public View::BaseSavedState
+        , public IAbsListViewSavedState
+    {
+    friend class AbsListView;
+    public:
+        CAR_INTERFACE_DECL();
+
+        SavedState();
+
+        ~SavedState();
+
+        CARAPI constructor(
+            /* [in] */ IParcelable* superState);
+
+        CARAPI constructor();
+
+    public:
+        // @Override
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* dest);
+
+        // @Override
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+
+        // @Override
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+    protected:
+        Int64 mSelectedId;
+        Int64 mFirstId;
+        Int32 mViewTop;
+        Int32 mPosition;
+        Int32 mHeight;
+        String mFilter;
+        Boolean mInActionMode;
+        Int32 mCheckedItemCount;
+        AutoPtr<ISparseBooleanArray> mCheckState;
+        AutoPtr<IInt64SparseArray> mCheckIdState;
+    };
+
 protected:
     class ListItemAccessibilityDelegate
         : public View::AccessibilityDelegate
@@ -82,10 +234,17 @@ protected:
         ListItemAccessibilityDelegate(
             /* [in] */ AbsListView* host);
 
-        virtual CARAPI OnInitializeAccessibilityNodeInfo(
+        //@Override
+        CARAPI CreateAccessibilityNodeInfo(
+            /* [in] */ IView* host,
+            /* [out] */ IAccessibilityNodeInfo** info);
+
+        //@Override
+        CARAPI OnInitializeAccessibilityNodeInfo(
             /* [in] */ IView* host,
             /* [in] */ IAccessibilityNodeInfo* info);
 
+        //@Override
         CARAPI PerformAccessibilityAction(
             /* [in] */ IView* host,
             /* [in] */ Int32 action,
@@ -95,14 +254,327 @@ protected:
         AbsListView* mHost;
     };
 
+    class AdapterDataSetObserver
+        : public AdapterView::AdapterDataSetObserver
+    {
+    public:
 
-/**
- * A base class for Runnables that will check that their view is still attached to
- * the original window as when the Runnable was created.
- *
- */
+        AdapterDataSetObserver(
+            /* [in] */ AbsListView* host);
+
+        //@Override
+        CARAPI OnChanged();
+
+        //@Override
+        CARAPI OnInvalidated();
+
+    private:
+        AbsListView* mHost;
+    };
+
+    class MultiChoiceModeWrapper
+        : public Object
+        , public IMultiChoiceModeListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        MultiChoiceModeWrapper(
+            /* [in] */ AbsListView* host);
+
+        CARAPI SetWrapped(
+            /* [in] */ IMultiChoiceModeListener* wrapped);
+
+        CARAPI HasWrappedCallback(
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI OnCreateActionMode(
+            /* [in] */ IActionMode* mode,
+            /* [in] */ IMenu* menu,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI OnPrepareActionMode(
+            /* [in] */ IActionMode* mode,
+            /* [in] */ IMenu* menu,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI OnActionItemClicked(
+            /* [in] */ IActionMode* mode,
+            /* [in] */ IMenuItem* item,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI OnDestroyActionMode(
+            /* [in] */ IActionMode* mode);
+
+        // @Override
+        CARAPI OnItemCheckedStateChanged(
+            /* [in] */ IActionMode* mode,
+            /* [in] */ Int32 position,
+            /* [in] */ Int64 id,
+            /* [in] */ Boolean checked);
+
+    private:
+        AbsListView* mHost;
+        AutoPtr<IMultiChoiceModeListener> mWrapped;
+    };
+
+    /**
+     * The RecycleBin facilitates reuse of views across layouts. The RecycleBin has two levels of
+     * storage: ActiveViews and ScrapViews. ActiveViews are those views which were onscreen at the
+     * start of a layout. By construction, they are displaying current information. At the end of
+     * layout, all views in ActiveViews are demoted to ScrapViews. ScrapViews are old views that
+     * could potentially be used by the adapter to avoid allocating views unnecessarily.
+     *
+     * @see android.widget.AbsListView#setRecyclerListener(android.widget.AbsListView.RecyclerListener)
+     * @see android.widget.AbsListView.RecyclerListener
+     */
+    class RecycleBin
+        : public Object
+    {
+        friend class AbsListView;
+    public:
+        RecycleBin(
+            /* [in] */ AbsListView* host);
+
+        ~RecycleBin();
+
+        CARAPI SetViewTypeCount(
+            /* [in] */ Int32 viewTypeCount);
+
+        CARAPI_(void) MarkChildrenDirty();
+
+        CARAPI_(Boolean) ShouldRecycleViewType(
+            /* [in] */ Int32 viewType);
+
+        /**
+         * Clears the scrap heap.
+         */
+        CARAPI_(void) Clear();
+
+        /**
+         * Fill ActiveViews with all of the children of the AbsListView.
+         *
+         * @param childCount The minimum number of views mActiveViews should hold
+         * @param firstActivePosition The position of the first view that will be stored in
+         *        mActiveViews
+         */
+        CARAPI_(void) FillActiveViews(
+            /* [in] */ Int32 childCount,
+            /* [in] */ Int32 firstActivePosition);
+
+        /**
+         * Get the view corresponding to the specified position. The view will be removed from
+         * mActiveViews if it is found.
+         *
+         * @param position The position to look up in mActiveViews
+         * @return The view if it is found, NULL otherwise
+         */
+        CARAPI_(AutoPtr<IView>) GetActiveView(
+            /* [in] */ Int32 position);
+
+        CARAPI_(AutoPtr<IView>) GetTransientStateView(
+            /* [in] */ Int32 position);
+
+        /**
+         * Dumps and fully detaches any currently saved views with transient
+         * state.
+         */
+        CARAPI_(void) ClearTransientStateViews();
+
+        /**
+         * @return A view from the ScrapViews collection. These are unordered.
+         */
+        CARAPI_(AutoPtr<IView>) GetScrapView(
+            /* [in] */ Int32 position);
+
+        /**
+         * Puts a view into the list of scrap views.
+         * <p>
+         * If the list data hasn't changed or the adapter has stable IDs, views
+         * with transient state will be preserved for later retrieval.
+         *
+         * @param scrap The view to add
+         * @param position The view's position within its parent
+         */
+        CARAPI_(void) AddScrapView(
+            /* [in ]*/ IView* scrap,
+            /* [in] */ Int32 position);
+
+        /**
+         * Finish the removal of any views that skipped the scrap heap.
+         */
+        CARAPI_(void) RemoveSkippedScrap();
+
+        /**
+         * Move all views remaining in mActiveViews to mScrapViews.
+         */
+        CARAPI_(void) ScrapActiveViews();
+
+        /**
+         * Puts all views in the scrap heap into the supplied list.
+         */
+        CARAPI_(void) ReclaimScrapViews(
+            /* [in] */ IList* views);
+
+        /**
+         * Updates the cache color hint of all known views.
+         *
+         * @param color The new cache color hint.
+         */
+        CARAPI_(void) SetCacheColorHint(
+            /* [in] */ Int32 color);
+
+    private:
+        /**
+         * Makes sure that the size of mScrapViews does not exceed the size of
+         * mActiveViews, which can happen if an adapter does not recycle its
+         * views. Removes cached transient state views that no longer have
+         * transient state.
+         */
+        CARAPI_(void) PruneScrapViews();
+
+        CARAPI_(AutoPtr<IView>) RetrieveFromScrap(
+            /* [in] */ IArrayList* scrapViews,
+            /* [in] */ Int32 position);
+
+        CARAPI_(void) ClearScrap(
+            /* [in] */ IArrayList* scrap);
+
+        CARAPI_(void) ClearAccessibilityFromScrap(
+            /* [in] */ IView* view);
+
+        CARAPI_(void) RemoveDetachedView(
+            /* [in] */ IView* child,
+            /* [in] */ Boolean animate);
+
+    private:
+        AutoPtr<IRecyclerListener> mRecyclerListener;
+
+        /**
+         * The position of the first view stored in mActiveViews.
+         */
+        Int32 mFirstActivePosition;
+
+        /**
+         * Views that were on screen at the start of layout. This array is populated at the start of
+         * layout, and at the end of layout all view in mActiveViews are moved to mScrapViews.
+         * Views in mActiveViews represent a contiguous range of Views, with position of the first
+         * view store in mFirstActivePosition.
+         */
+        AutoPtr< ArrayOf<IView*> > mActiveViews;
+
+        /**
+         * Unsorted views that can be used by the adapter as a convert view.
+         */
+        AutoPtr< ArrayOf<IArrayList*> > mScrapViews;
+
+
+        Int32 mViewTypeCount;
+
+        AutoPtr<IArrayList> mCurrentScrap;
+
+        AutoPtr<IArrayList> mSkippedScrap;
+
+        AutoPtr<ISparseArray> mTransientStateViews;
+        AutoPtr<IInt64SparseArray> mTransientStateViewsById;
+
+        AbsListView* mHost;
+    };
+
+    class AbsPositionScroller
+        : public Object
+    {
+    public:
+        virtual ~AbsPositionScroller();
+
+        virtual CARAPI_(void) Start(
+            /* [in] */ const Int32 position) = 0;
+
+        virtual CARAPI_(void) Start(
+            /* [in] */ const Int32 position,
+            /* [in] */ const Int32 boundPosition) = 0;
+
+        virtual CARAPI_(void) StartWithOffset(
+            /* [in] */ Int32 position,
+            /* [in] */ Int32 offset) = 0;
+
+        virtual CARAPI_(void) StartWithOffset(
+            /* [in] */ Int32 position,
+            /* [in] */ Int32 offset,
+            /* [in] */ const Int32 duration) = 0;
+
+        virtual CARAPI_(void) Stop() = 0;
+    };
+
+    class PositionScroller
+        : public AbsPositionScroller
+        , public IRunnable
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        PositionScroller(
+            /* [in] */ AbsListView* host);
+
+        CARAPI_(void) Start(
+            /* [in] */ const Int32 position);
+
+        CARAPI_(void) Start(
+            /* [in] */ const Int32 position,
+            /* [in] */ const Int32 boundPosition);
+
+        CARAPI_(void) StartWithOffset(
+            /* [in] */ Int32 position,
+            /* [in] */ Int32 offset);
+
+        CARAPI_(void) StartWithOffset(
+            /* [in] */ Int32 position,
+            /* [in] */ Int32 offset,
+            /* [in] */ const Int32 duration);
+
+        CARAPI_(void) Stop();
+
+        virtual CARAPI Run();
+
+    private:
+        CARAPI_(void) ScrollToVisible(
+            /* [in] */ Int32 targetPos,
+            /* [in] */ Int32 boundPos,
+            /* [in] */ Int32 duration);
+
+    private:
+        static const Int32 SCROLL_DURATION;
+
+        static const Int32 MOVE_DOWN_POS;
+        static const Int32 MOVE_UP_POS;
+        static const Int32 MOVE_DOWN_BOUND;
+        static const Int32 MOVE_UP_BOUND;
+        static const Int32 MOVE_OFFSET;
+
+    private:
+        AbsListView* mHost;
+        Int32 mMode;
+        Int32 mTargetPos;
+        Int32 mBoundPos;
+        Int32 mLastSeenPos;
+        Int32 mScrollDuration;
+        Int32 mExtraScroll;
+        Int32 mOffsetFromTop;
+        friend class AbsListView;
+    };
+
 private:
-    class WindowRunnnable : public Runnable
+    /**
+     * A base class for Runnables that will check that their view is still attached to
+     * the original window as when the Runnable was created.
+     *
+     */
+    class WindowRunnnable
+        : public Runnable
     {
     public:
         WindowRunnnable(
@@ -114,55 +586,46 @@ private:
 
         virtual CARAPI Run() { return NOERROR; }
 
-    protected:
+    public:
         AbsListView* mHost;
 
     private:
         Int32 mOriginalAttachCount;
     };
 
-private:
-    class AbsListViewPerformClick
+    class PerformClick
         : public WindowRunnnable
     {
-        friend class AbsListView;
     public:
-
-        AbsListViewPerformClick (
+        PerformClick(
             /* [in] */ AbsListView* host);
 
         virtual CARAPI Run();
 
-    private:
-        //AutoPtr<IView> mChild;
+    public:
         Int32 mClickMotionPosition;
     };
 
-private:
     class CheckForLongPress
         : public WindowRunnnable
     {
     public:
-
-        CheckForLongPress (
+        CheckForLongPress(
             /* [in] */ AbsListView* host);
 
         virtual CARAPI Run();
     };
 
-private:
     class CheckForKeyLongPress
         : public WindowRunnnable
     {
     public:
-
-        CheckForKeyLongPress (
+        CheckForKeyLongPress(
             /* [in] */ AbsListView* host);
 
         CARAPI Run();
     };
 
-protected:
     class CheckForTap
         : public Runnable
     {
@@ -172,21 +635,22 @@ protected:
 
         CARAPI Run();
 
+    public:
+        Float mX;
+        Float mY;
     private:
         AbsListView* mHost;
     };
 
-private:
-/*
- * The member mCheckFlywheel in FlingRunnable is a sub-Runnable
- * so you need implement it here
- */
+    /*
+     * The member mCheckFlywheel in FlingRunnable is a sub-Runnable
+     * so you need implement it here
+     */
     class FlingRunnable;
     class FlingRunnableInner
-            : public Runnable
+        : public Runnable
     {
     public:
-
         FlingRunnableInner(
             /* [in] */ FlingRunnable* host,
             /* [in] */ AbsListView* mainHost);
@@ -194,20 +658,18 @@ private:
         CARAPI Run();
 
     private:
-
         FlingRunnable* mHost;
         AbsListView* mMainHost;
     };
 
-private:
-/**
- * Responsible for fling behavior. Use {@link #start(Int32)} to
- * initiate a fling. Each frame of the fling is handled in {@link #run()}.
- * A FlingRunnable will keep re-posting itself until the fling is done.
- *
- */
+    /**
+     * Responsible for fling behavior. Use {@link #start(Int32)} to
+     * initiate a fling. Each frame of the fling is handled in {@link #run()}.
+     * A FlingRunnable will keep re-posting itself until the fling is done.
+     *
+     */
     class FlingRunnable
-            : public Runnable
+        : public Runnable
     {
     public:
         FlingRunnable(
@@ -236,36 +698,168 @@ private:
         CARAPI_(void) FlywheelTouch();
 
     private:
+        AbsListView* mHost;
 
-        static const Int32 FLYWHEEL_TIMEOUT = 40; // milliseconds
-
-    private:
         /**
          * Tracks the decay of a fling scroll
          */
-        AutoPtr<OverScroller> mScroller;
+        AutoPtr<IOverScroller> mScroller;
+
+        Int32 mLastFlingY;
 
         /**
          * Y value reported by mScroller on the previous fling
          */
-        Int32 mLastFlingY;
-
-        AbsListView* mHost;
-
         AutoPtr<FlingRunnableInner> mCheckFlywheel;
+
+        static const Int32 FLYWHEEL_TIMEOUT = 40; // milliseconds
 
         friend class FlingRunnableInner;
         friend class AbsListView;
     };
 
-private:
-// This class is create for the runnable in PositionScroller::Start functions
-    class PositionScroller;
-    class PositionScrollerStartRunnable
-            : public Runnable
+    class InputConnectionWrapper
+        : public Object
+        , public IInputConnection
     {
     public:
+        CAR_INTERFACE_DECL();
 
+        InputConnectionWrapper(
+            /* [in] */ AbsListView* host,
+            /* [in] */ IEditorInfo* outAttrs);
+
+        ~InputConnectionWrapper();
+
+        CARAPI_(AutoPtr<IInputConnection>) GetTarget();
+
+        // @Override
+        CARAPI ReportFullscreenMode(
+            /* [in] */ Boolean enabled,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI PerformEditorAction(
+            /* [in] */ Int32 actionCode,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI SendKeyEvent(
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI GetTextBeforeCursor(
+            /* [in] */ Int32 length,
+            /* [in] */ Int32 flags,
+            /* [out] */ ICharSequence** seq);
+
+        // @Override
+        CARAPI GetTextAfterCursor(
+            /* [in] */ Int32 length,
+            /* [in] */ Int32 flags,
+            /* [out] */ ICharSequence** seq);
+
+        // @Override
+        CARAPI GetSelectedText(
+            /* [in] */ Int32 flags,
+            /* [out] */ ICharSequence** seq);
+
+        // @Override
+        CARAPI GetCursorCapsMode(
+            /* [in] */ Int32 reqModes,
+            /* [out] */ Int32* afterLength);
+
+        // @Override
+        CARAPI GetExtractedText(
+            /* [in] */ IExtractedTextRequest* request,
+            /* [in] */ Int32 flags,
+            /* [out] */ IExtractedText** text);
+
+        // @Override
+        CARAPI DeleteSurroundingText(
+            /* [in] */ Int32 beforeLength,
+            /* [in] */ Int32 afterLength,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI SetComposingText(
+            /* [in] */ ICharSequence* text,
+            /* [in] */ Int32 newCursorPosition,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI SetComposingRegion(
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 end,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI FinishComposingText(
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI CommitText(
+            /* [in] */ ICharSequence* text,
+            /* [in] */ Int32 newCursorPosition,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI CommitCompletion(
+            /* [in] */ ICompletionInfo* text,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI CommitCorrection(
+            /* [in] */ ICorrectionInfo* correctionInfo,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI SetSelection(
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 end,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI PerformContextMenuAction(
+            /* [in] */ Int32 id,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI BeginBatchEdit(
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI EndBatchEdit(
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI ClearMetaKeyStates(
+            /* [in] */ Int32 states,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI PerformPrivateCommand(
+            /* [in] */ const String& action,
+            /* [in] */ IBundle* data,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI RequestCursorUpdates(
+            /* [in] */ Int32 cursorUpdateMode,
+            /* [out] */ Boolean* result);
+
+    private:
+        AbsListView* mHost;
+        AutoPtr<IEditorInfo> mOutAttrs;
+        AutoPtr<IInputConnection> mTarget;
+    };
+
+    // This class is create for the runnable in PositionScroller::Start functions
+    class PositionScrollerStartRunnable
+        : public Runnable
+    {
+    public:
         PositionScrollerStartRunnable(
             /* [in] */ Int32 paramsCount,
             /* [in] */ Int32 param1,
@@ -274,8 +868,8 @@ private:
             /* [in] */ PositionScroller* host);
 
         CARAPI Run();
-    private:
 
+    private:
         const Int32 mParamsCount;
         Int32 mParam1;
         Int32 mParam2;
@@ -284,230 +878,27 @@ private:
     };
 
 private:
-    class PositionScroller
-            : public Runnable
+    // The sub-Runnable in AbsListView::SetFastScrollEnabled, SetFastScrollAlwaysVisible
+    class SetFastScrollRunnable
+        : public Runnable
     {
     public:
-        PositionScroller(
-            /* [in] */ AbsListView* host);
+        SetFastScrollRunnable(
+            /* [in] */ AbsListView* host,
+            /* [in] */ Boolean res,
+            /* [in] */ Int32 id);
 
-        CARAPI_(void) Start(
-            /* [in] */ const Int32 position);
-
-        CARAPI_(void) Start(
-            /* [in] */ const Int32 position,
-            /* [in] */ const Int32 boundPosition);
-
-        CARAPI_(void) StartWithOffset(
-            /* [in] */ Int32 position,
-            /* [in] */ Int32 offset);
-
-        CARAPI_(void) StartWithOffset(
-            /* [in] */ Int32 position,
-            /* [in] */ Int32 offset,
-            /* [in] */ const Int32 duration);
-
-        CARAPI_(void) ScrollToVisible(
-            /* [in] */ Int32 targetPos,
-            /* [in] */ Int32 boundPos,
-            /* [in] */ Int32 duration);
-
-        CARAPI_(void) Stop();
-
-        virtual CARAPI Run();
-
-    private:
-        static const Int32 SCROLL_DURATION = 200;
-
-        static const Int32 MOVE_DOWN_POS = 1;
-        static const Int32 MOVE_UP_POS = 2;
-        static const Int32 MOVE_DOWN_BOUND = 3;
-        static const Int32 MOVE_UP_BOUND = 4;
-        static const Int32 MOVE_OFFSET = 5;
+        CARAPI Run();
 
     private:
         AbsListView* mHost;
-        Int32 mMode;
-        Int32 mTargetPos;
-        Int32 mBoundPos;
-        Int32 mLastSeenPos;
-        Int32 mScrollDuration;
-        Int32 mExtraScroll; //const
-        Int32 mOffsetFromTop;
-        friend class AbsListView;
+        Boolean mRes;
+        Int32 mId;
     };
 
-
-
-protected:
-    class AdapterDataSetObserver
-            : public AdapterView::AdapterDataSetObserver
-    {
-    public:
-
-        AdapterDataSetObserver(
-            /* [in] */ AbsListView* host);
-
-        //@Override
-        CARAPI OnChanged();
-
-        //@Override
-        CARAPI OnInvalidated();
-
-    private:
-        AbsListView* mOwner;
-    };
-
-protected:
-    class MultiChoiceModeWrapper
-            : public IMultiChoiceModeListener
-            , public ElRefBase
-    {
-    public:
-
-    CAR_INTERFACE_DECL()
-
-    private:
-        AutoPtr<IMultiChoiceModeListener> mWrapped;
-
-        AbsListView* mHost;
-    public:
-
-        MultiChoiceModeWrapper(
-            /* [in] */ AbsListView* host);
-
-        CARAPI SetWrapped(
-            /* [in] */ IMultiChoiceModeListener* wrapped);
-
-        CARAPI HasWrappedCallback(
-            /* [out] */ Boolean* result);
-
-        CARAPI OnCreateActionMode(
-            /* [in] */ IActionMode* mode,
-            /* [in] */ IMenu* menu,
-            /* [out] */ Boolean* result);
-
-        CARAPI OnPrepareActionMode(
-            /* [in] */ IActionMode* mode,
-            /* [in] */ IMenu* menu,
-            /* [out] */ Boolean* result);
-
-        CARAPI OnActionItemClicked(
-            /* [in] */ IActionMode* mode,
-            /* [in] */ IMenuItem* item,
-            /* [out] */ Boolean* result);
-
-        CARAPI OnDestroyActionMode(
-            /* [in] */ IActionMode* mode);
-
-        CARAPI OnItemCheckedStateChanged(
-            /* [in] */ IActionMode* mode,
-            /* [in] */ Int32 position,
-            /* [in] */ Int64 id,
-            /* [in] */ Boolean checked);
-    };
-
-protected:
-/**
- * The RecycleBin facilitates reuse of views across layouts. The RecycleBin has two levels of
- * storage: ActiveViews and ScrapViews. ActiveViews are those views which were onscreen at the
- * start of a layout. By construction, they are displaying current information. At the end of
- * layout, all views in ActiveViews are demoted to ScrapViews. ScrapViews are old views that
- * could potentially be used by the adapter to avoid allocating views unnecessarily.
- *
- * @see android.widget.AbsListView#setRecyclerListener(android.widget.AbsListView.RecyclerListener)
- * @see android.widget.AbsListView.RecyclerListener
- */
-    class RecycleBin : public ElRefBase
-    {
-        friend class AbsListView;
-    public:
-        RecycleBin(
-            /* [in] */ AbsListView* host);
-
-        ~RecycleBin();
-
-        CARAPI SetViewTypeCount(
-            /* [in] */ Int32 viewTypeCount);
-
-        CARAPI_(void) MarkChildrenDirty();
-
-        CARAPI_(Boolean) ShouldRecycleViewType(
-            /* [in] */ Int32 viewType);
-
-        CARAPI_(void) Clear();
-
-        CARAPI_(void) AddScrapView(
-            /* [in ]*/ IView* scrap,
-            /* [in] */ Int32 position);
-
-        CARAPI_(void) FillActiveViews(
-            /* [in] */ Int32 childCount,
-            /* [in] */ Int32 firstActivePosition);
-
-        CARAPI_(AutoPtr<IView>) GetActiveView(
-            /* [in] */ Int32 position);
-
-        CARAPI_(AutoPtr<IView>) GetTransientStateView(
-            /* [in] */ Int32 position);
-
-        /**
-         * Dump any currently saved views with transient state.
-         */
-        CARAPI_(void) ClearTransientStateViews();
-
-        CARAPI_(AutoPtr<IView>) GetScrapView(
-            /* [in] */ Int32 position);
-
-        CARAPI_(void) ScrapActiveViews();
-
-        CARAPI_(void) RemoveSkippedScrap();
-
-        CARAPI_(void) ReclaimScrapViews(
-            /* [in] */ IObjectContainer* views);
-
-        CARAPI_(void) SetCacheColorHint(
-            /* [in] */ Int32 color);
-
-    private:
-        CARAPI_(void) PruneScrapViews();
-
-    private:
-        AutoPtr<IRecyclerListener> mRecyclerListener;
-
-        /**
-         * The position of the first view stored in mActiveViews.
-         */
-        Int32 mFirstActivePosition;
-
-        /**
-         * Views that were on screen at the start of layout. This array is populated at the start of
-         * layout, and at the end of layout all view in mActiveViews are moved to mScrapViews.
-         * Views in mActiveViews represent a contiguous range of Views, with position of the first
-         * view store in mFirstActivePosition.
-         */
-        AutoPtr<ArrayOf<IView*> > mActiveViews;
-
-        /**
-         * Unsorted views that can be used by the adapter as a convert view.
-         */
-        AutoPtr<ArrayOf<ViewList*> > mScrapViews;
-
-        Int32 mViewTypeCount;
-
-        AutoPtr<ViewList> mCurrentScrap;
-
-        AutoPtr<ViewList> mSkippedScrap;
-
-        AutoPtr< HashMap<Int32, AutoPtr<IView> > > mTransientStateViews;
-
-        AbsListView* mHost;
-    };
-
-private:
     // The sub-Runnable in AbsListView::ClearScrollingCache
     class ClearScrollingCacheRunnable
-            : public Runnable
+        : public Runnable
     {
     public:
         ClearScrollingCacheRunnable(
@@ -519,9 +910,9 @@ private:
         AbsListView* mHost;
     };
 
-    // The sub-Runnable for AbsListView::mTouchModeReset
+    // The sub-Runnable for AbsListView::OnTouchUp
     class TouchModeResetRunnable
-            : public Runnable
+        : public Runnable
     {
     public:
         TouchModeResetRunnable(
@@ -530,27 +921,37 @@ private:
             /* [in] */ IView* v);
 
         CARAPI Run();
+
     private:
         AutoPtr<IRunnable> mRunnable;
         AbsListView* mHost;
         AutoPtr<IView> mView;
-
     };
 
-protected:
+public:
+    CAR_INTERFACE_DECL();
 
     AbsListView();
 
-public:
-    AbsListView(
+    ~AbsListView();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    AbsListView(
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = R::attr::absListViewStyle/* com.android.internal.R.attr.absListViewStyle */);
+        /* [in] */ Int32 defStyleAttr);
 
-    ~AbsListView();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     //@Override
     CARAPI SetOverScrollMode(
@@ -562,9 +963,6 @@ public:
     //@Override
     CARAPI SetAdapter(
         /* [in] */ IAdapter* adapter);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     /**
      * Returns the number of items currently selected. This will only be valid
@@ -579,7 +977,8 @@ public:
      * @see #getCheckedItemPositions()
      * @see #getCheckedItemIds()
      */
-    virtual CARAPI_(Int32) GetCheckedItemCount();
+    CARAPI GetCheckedItemCount(
+        /* [out] */ Int32* count);
 
     /**
      * Returns the checked state of the specified position. The result is only
@@ -592,7 +991,7 @@ public:
      *
      * @see #setChoiceMode(int)
      */
-    virtual CARAPI IsItemChecked(
+    CARAPI IsItemChecked(
         /* [in] */ Int32 position,
         /* [out] */ Boolean* result);
 
@@ -605,7 +1004,7 @@ public:
      *
      * @see #setChoiceMode(int)
      */
-    virtual CARAPI GetCheckedItemPosition(
+    CARAPI GetCheckedItemPosition(
             /* [out] */ Int32* result);
 
     /**
@@ -613,13 +1012,12 @@ public:
      * the choice mode has not been set to {@link #CHOICE_MODE_NONE}.
      *
      * @return  A SparseBooleanArray which will return true for each call to
-     *          get(int position) where position is a position in the list,
-     *          or <code>null</code> if the choice mode is set to
-     *          {@link #CHOICE_MODE_NONE}.
+     *          get(int position) where position is a checked position in the
+     *          list and false otherwise, or <code>null</code> if the choice
+     *          mode is set to {@link #CHOICE_MODE_NONE}.
      */
-//    virtual AutoPtr<HashMap<Int32, Boolean> > GetCheckedItemPositions();
-
-    virtual AutoPtr<IObjectInt32Map> GetCheckedItemPositions();
+    CARAPI GetCheckedItemPositions(
+        /* [out] */ ISparseBooleanArray** arr);
 
     /**
      * Returns the set of checked items ids. The result is only valid if the
@@ -629,13 +1027,13 @@ public:
      * @return A new array which contains the id of each checked item in the
      *         list.
      */
-    virtual CARAPI GetCheckedItemIds(
-            /* [out] */ ArrayOf<Int64>** result);
+    CARAPI GetCheckedItemIds(
+        /* [out] */ ArrayOf<Int64>** result);
 
     /**
      * Clear any choices previously set
      */
-    virtual CARAPI ClearChoices();
+    CARAPI ClearChoices();
 
     /**
      * Sets the checked state of the specified position. The is only valid if
@@ -645,21 +1043,23 @@ public:
      * @param position The item whose checked state is to be checked
      * @param value The new checked state for the item
      */
-    virtual CARAPI SetItemChecked(
+    CARAPI SetItemChecked(
         /* [in] */ Int32 position,
         /* [in] */ Boolean value);
 
-    virtual CARAPI_(Boolean) PerformItemClick(
+    // @Override
+    CARAPI PerformItemClick(
         /* [in] */ IView* view,
         /* [in] */ Int32 position,
-        /* [in] */ Int64 id);
+        /* [in] */ Int64 id,
+        /* [out] */ Boolean* result);
 
     /**
      * @see #setChoiceMode(int)
      *
      * @return The current choice mode
      */
-    virtual CARAPI GetChoiceMode(
+    CARAPI GetChoiceMode(
         /* [out] */ Int32* result);
 
     /**
@@ -671,7 +1071,7 @@ public:
      * @param choiceMode One of {@link #CHOICE_MODE_NONE}, {@link #CHOICE_MODE_SINGLE}, or
      * {@link #CHOICE_MODE_MULTIPLE}
      */
-    virtual CARAPI SetChoiceMode(
+    CARAPI SetChoiceMode(
         /* [in] */ Int32 choiceMode);
 
     /**
@@ -683,58 +1083,83 @@ public:
      *
      * @see #setChoiceMode(int)
      */
-    virtual CARAPI SetMultiChoiceModeListener(
+    CARAPI SetMultiChoiceModeListener(
         /* [in] */ IMultiChoiceModeListener* listener);
 
-
     /**
-     * Enables fast scrolling by letting the user quickly scroll through lists by
-     * dragging the fast scroll thumb. The adapter attached to the list may want
-     * to implement {@link SectionIndexer} if it wishes to display alphabet preview and
-     * jump between sections of the list.
+     * Specifies whether fast scrolling is enabled or disabled.
+     * <p>
+     * When fast scrolling is enabled, the user can quickly scroll through lists
+     * by dragging the fast scroll thumb.
+     * <p>
+     * If the adapter backing this list implements {@link SectionIndexer}, the
+     * fast scroller will display section header previews as the user scrolls.
+     * Additionally, the user will be able to quickly jump between sections by
+     * tapping along the length of the scroll bar.
+     *
      * @see SectionIndexer
      * @see #isFastScrollEnabled()
-     * @param enabled whether or not to enable fast scrolling
+     * @param enabled true to enable fast scrolling, false otherwise
      */
-    virtual CARAPI SetFastScrollEnabled(
+    CARAPI SetFastScrollEnabled(
         /* [in] */ Boolean enabled);
 
     /**
-     * Set whether or not the fast scroller should always be shown in place of the
-     * standard scrollbars. Fast scrollers shown in this way will not fade out and will
-     * be a permanent fixture within the list. Best combined with an inset scroll bar style
-     * that will ensure enough padding. This will enable fast scrolling if it is not
-     * already enabled.
+     * Specifies the style of the fast scroller decorations.
      *
-     * @param alwaysShow true if the fast scroller should always be displayed.
+     * @param styleResId style resource containing fast scroller properties
+     * @see android.R.styleable#FastScroll
+     */
+    CARAPI SetFastScrollStyle(
+        /* [in] */ Int32 styleResId);
+
+    /**
+     * Set whether or not the fast scroller should always be shown in place of
+     * the standard scroll bars. This will enable fast scrolling if it is not
+     * already enabled.
+     * <p>
+     * Fast scrollers shown in this way will not fade out and will be a
+     * permanent fixture within the list. This is best combined with an inset
+     * scroll bar style to ensure the scroll bar does not overlap content.
+     *
+     * @param alwaysShow true if the fast scroller should always be displayed,
+     *            false otherwise
      * @see #setScrollBarStyle(int)
      * @see #setFastScrollEnabled(boolean)
      */
-    virtual CARAPI SetFastScrollAlwaysVisible(
+    CARAPI SetFastScrollAlwaysVisible(
         /* [in] */ Boolean alwaysShow);
 
     /**
-     * Returns true if the fast scroller is set to always show on this view rather than
-     * fade out when not in use.
+     * Returns true if the fast scroller is set to always show on this view.
      *
-     * @return true if the fast scroller will always show.
+     * @return true if the fast scroller will always show
      * @see #setFastScrollAlwaysVisible(boolean)
      */
-    virtual CARAPI_(Boolean) IsFastScrollAlwaysVisible();
+    CARAPI IsFastScrollAlwaysVisible(
+        /* [out] */ Boolean* result);
 
     //@Override
-    virtual CARAPI_(Int32) GetVerticalScrollbarWidth();
+    CARAPI GetVerticalScrollbarWidth(
+        /* [out] */ Int32* width);
 
     /**
-     * Returns the current state of the fast scroll feature.
-     * @see #setFastScrollEnabled(Boolean)
-     * @return TRUE if fast scroll is enabled, FALSE otherwise
+     * Returns true if the fast scroller is enabled.
+     *
+     * @see #setFastScrollEnabled(boolean)
+     * @return true if fast scroll is enabled, false otherwise
      */
-    virtual CARAPI_(Boolean) IsFastScrollEnabled();
+    // @ViewDebug.ExportedProperty
+    CARAPI IsFastScrollEnabled(
+        /* [out] */ Boolean* isEnabled);
 
     //@Override
-    virtual CARAPI SetVerticalScrollbarPosition(
-            /* [in] */ Int32 result);
+    CARAPI SetVerticalScrollbarPosition(
+        /* [in] */ Int32 result);
+
+    //@Override
+    CARAPI SetScrollBarStyle(
+        /* [in] */ Int32 style);
 
     /**
      * When smooth scrollbar is enabled, the position and size of the scrollbar thumb
@@ -754,7 +1179,7 @@ public:
      * @see #setSmoothScrollbarEnabled(Boolean)
      * @attr ref android.R.styleable#AbsListView_smoothScrollbar
      */
-    virtual CARAPI SetSmoothScrollbarEnabled(
+    CARAPI SetSmoothScrollbarEnabled(
         /* [in] */ Boolean enabled);
 
     /**
@@ -765,15 +1190,39 @@ public:
      * @see #setSmoothScrollbarEnabled(Boolean)
      */
     //@ViewDebug.ExportedProperty
-    virtual CARAPI_(Boolean) IsSmoothScrollbarEnabled();
+    CARAPI IsSmoothScrollbarEnabled(
+        /* [out] */ Boolean* isEnabled);
 
     /**
      * Set the listener that will receive notifications every time the list scrolls.
      *
      * @param l the scroll listener
      */
-    virtual CARAPI SetOnScrollListener(
+    CARAPI SetOnScrollListener(
         /* [in] */ IAbsListViewOnScrollListener* l);
+
+    // @Override
+    CARAPI SendAccessibilityEvent(
+        /* [in] */ Int32 eventType);
+
+    //@Override
+    CARAPI OnInitializeAccessibilityEvent(
+        /* [in] */ IAccessibilityEvent* event);
+
+    //@Override
+    CARAPI OnInitializeAccessibilityNodeInfo(
+        /* [in] */ IAccessibilityNodeInfo* info);
+
+    CARAPI PerformAccessibilityAction(
+        /* [in] */ Int32 action,
+        /* [in] */ IBundle* arguments,
+        /* [out] */ Boolean* res);
+
+    /** @hide */
+    // @Override
+    CARAPI FindViewByAccessibilityIdTraversal(
+        /* [in] */ Int32 accessibilityId,
+        /* [out] */ IView** view);
 
     /**
      * Indicates whether the children's drawing cache is used during a scroll.
@@ -785,7 +1234,8 @@ public:
      * @see View#setDrawingCacheEnabled(Boolean)
      */
     //@ViewDebug.ExportedProperty
-    virtual CARAPI_(Boolean) IsScrollingCacheEnabled();
+    CARAPI IsScrollingCacheEnabled(
+        /* [out] */ Boolean* isEnabled);
 
     /**
      * Enables or disables the children's drawing cache during a scroll.
@@ -800,7 +1250,7 @@ public:
      * @see #isScrollingCacheEnabled()
      * @see View#setDrawingCacheEnabled(Boolean)
      */
-    virtual CARAPI SetScrollingCacheEnabled(
+    CARAPI SetScrollingCacheEnabled(
         /* [in] */ Boolean enabled);
 
     /**
@@ -813,7 +1263,7 @@ public:
      *
      * @see Filterable
      */
-    virtual CARAPI SetTextFilterEnabled(
+    CARAPI SetTextFilterEnabled(
         /* [in] */ Boolean textFilterEnabled);
 
     /**
@@ -825,7 +1275,8 @@ public:
      * @see Filterable
      */
     //@ViewDebug.ExportedProperty
-    virtual CARAPI_(Boolean) IsTextFilterEnabled();
+    CARAPI IsTextFilterEnabled(
+        /* [out] */ Boolean* isEnabled);
 
     //@Override
     CARAPI GetFocusedRect(
@@ -838,7 +1289,8 @@ public:
      * @return TRUE if the content is stacked from the bottom edge, FALSE otherwise
      */
     //@ViewDebug.ExportedProperty
-    virtual CARAPI_(Boolean) IsStackFromBottom();
+    CARAPI IsStackFromBottom(
+        /* [out] */ Boolean* isStackFromBottom);
 
     /**
      * When stack from bottom is set to TRUE, the list fills its content starting from
@@ -847,7 +1299,7 @@ public:
      * @param stackFromBottom TRUE to pin the view's content to the bottom edge,
      *        FALSE to pin the view's content to the top edge
      */
-    virtual CARAPI SetStackFromBottom(
+    CARAPI SetStackFromBottom(
         /* [in] */ Boolean stackFromBottom);
 
     //@Override
@@ -863,18 +1315,23 @@ public:
      *
      * @see #setTextFilterEnabled
      */
-    virtual CARAPI SetFilterText(
+    CARAPI SetFilterText(
         /* [in] */ const String& filterText);
 
     /**
      * Returns the list's text filter, if available.
      * @return the list's text filter or NULL if filtering isn't enabled
      */
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetTextFilter();
+    CARAPI GetTextFilter(
+        /* [out] */ ICharSequence** textFilter);
+
+    //@Override
+    CARAPI RequestLayout();
 
     //@Override
     //@ViewDebug.ExportedProperty
-    CARAPI_(AutoPtr<IView>) GetSelectedView();
+    CARAPI GetSelectedView(
+        /* [out] */ IView** view);
 
     /**
      * List padding is the maximum of the normal view's padding and the padding of the selector.
@@ -884,7 +1341,8 @@ public:
      *
      * @return The top list padding.
      */
-    virtual CARAPI_(Int32) GetListPaddingTop();
+    CARAPI GetListPaddingTop(
+        /* [out] */ Int32* top);
 
     /**
      * List padding is the maximum of the normal view's padding and the padding of the selector.
@@ -894,7 +1352,8 @@ public:
      *
      * @return The bottom list padding.
      */
-    virtual CARAPI_(Int32) GetListPaddingBottom();
+    CARAPI GetListPaddingBottom(
+        /* [out] */ Int32* bottom);
 
     /**
      * List padding is the maximum of the normal view's padding and the padding of the selector.
@@ -904,7 +1363,8 @@ public:
      *
      * @return The left list padding.
      */
-    virtual CARAPI_(Int32) GetListPaddingLeft();
+    CARAPI GetListPaddingLeft(
+        /* [out] */ Int32* left);
 
     /**
      * List padding is the maximum of the normal view's padding and the padding of the selector.
@@ -914,7 +1374,21 @@ public:
      *
      * @return The right list padding.
      */
-    virtual CARAPI_(Int32) GetListPaddingRight();
+    CARAPI GetListPaddingRight(
+        /* [out] */ Int32* right);
+
+    /**
+     * Initializes an {@link AccessibilityNodeInfo} with information about a
+     * particular item in the list.
+     *
+     * @param view View representing the list item.
+     * @param position Position of the list item within the adapter.
+     * @param info Node info to populate.
+     */
+    CARAPI OnInitializeAccessibilityNodeInfoForItem(
+        /* [in] */ IView* view,
+        /* [in] */ Int32 position,
+        /* [in] */ IAccessibilityNodeInfo* info);
 
     /**
      * Controls whether the selection highlight drawable should be drawn on top of the item or
@@ -925,7 +1399,7 @@ public:
      *
      * @attr ref android.R.styleable#AbsListView_drawSelectorOnTop
      */
-    virtual CARAPI SetDrawSelectorOnTop(
+    CARAPI SetDrawSelectorOnTop(
         /* [in] */ Boolean onTop);
 
     /**
@@ -935,10 +1409,10 @@ public:
      *
      * @attr ref android.R.styleable#AbsListView_listSelector
      */
-    virtual CARAPI SetSelector(
+    CARAPI SetSelector(
         /* [in] */ Int32 resID);
 
-    virtual CARAPI SetSelector(
+    CARAPI SetSelector(
         /* [in] */ IDrawable* sel);
 
     /**
@@ -947,9 +1421,10 @@ public:
      *
      * @return the drawable used to display the selector
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetSelector();
+    CARAPI GetSelector(
+        /* [out] */ IDrawable** selector);
 
-    virtual CARAPI SetScrollIndicators(
+    CARAPI SetScrollIndicators(
         /* [in] */ IView* up,
         /* [in] */ IView* down);
 
@@ -957,23 +1432,48 @@ public:
     CARAPI_(Boolean) VerifyDrawable(
         /* [in] */ IDrawable* dr);
 
+    CARAPI JumpDrawablesToCurrentState();
+
     //@Override
     CARAPI OnWindowFocusChanged(
         /* [in] */ Boolean hasWindowFocus);
 
     //@Override
-    CARAPI_(Boolean) ShowContextMenuForChild(
-        /* [in] */ IView* originalView);
+    CARAPI OnRtlPropertiesChanged(
+        /* [in] */ Int32 layoutDirection);
 
     //@Override
-    CARAPI_(Boolean) OnKeyDown(
-        /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+    CARAPI OnCancelPendingInputEvents();
+
+    // You must override all ShowContextMenu function in super class
+    // to avoid hiding for C++；
+    // The function will invoke the one in super class directly；
+    CARAPI ShowContextMenu(
+        /* [out] */ Boolean* res);
 
     //@Override
-    CARAPI_(Boolean) OnKeyUp(
+    CARAPI ShowContextMenu(
+        /* [in] */ Float x,
+        /* [in] */ Float y,
+        /* [in] */ Int32 metaState,
+        /* [out] */ Boolean* res);
+
+    //@Override
+    CARAPI ShowContextMenuForChild(
+        /* [in] */ IView* originalView,
+        /* [out] */ Boolean* res);
+
+    //@Override
+    CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
+
+    //@Override
+    CARAPI OnKeyUp(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
     /**
      * Maps a point to a position in the list.
@@ -983,9 +1483,10 @@ public:
      * @return The position of the item which contains the specified point, or
      *         {@link #AdapterView_INVALID_POSITION} if the point does not intersect an item.
      */
-    virtual CARAPI_(Int32) PointToPosition(
+    CARAPI PointToPosition(
         /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
+        /* [in] */ Int32 y,
+        /* [out] */ Int32* position);
 
     /**
      * Maps a point to a the rowId of the item which intersects that point.
@@ -995,40 +1496,146 @@ public:
      * @return The rowId of the item which contains the specified point, or {@link #AdapterView_INVALID_ROW_ID}
      *         if the point does not intersect an item.
      */
-    virtual CARAPI_(Int64) PointToRowId(
+    CARAPI PointToRowId(
         /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
+        /* [in] */ Int32 y,
+        /* [out] */ Int64* rowId);
 
-    virtual CARAPI OnTouchModeChanged(
+    CARAPI OnTouchModeChanged(
         /* [in] */ Boolean isInTouchMode);
 
     //@Override
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* res);
 
-    using AdapterView::Draw;
+    CARAPI OnGenericMotionEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
+
+    /**
+     * Initiate a fling with the given velocity.
+     *
+     * <p>Applications can use this method to manually initiate a fling as if the user
+     * initiated it via touch interaction.</p>
+     *
+     * @param velocityY Vertical velocity in pixels per second. Note that this is velocity of
+     *                  content, not velocity of a touch that initiated the fling.
+     */
+    CARAPI Fling(
+        /* [in] */ Int32 velocityY);
+
+    // @Override
+    CARAPI OnStartNestedScroll(
+        /* [in] */ IView* child,
+        /* [in] */ IView* target,
+        /* [in] */ Int32 nestedScrollAxes,
+        /* [out] */ Boolean* res);
+
+    // @Override
+    CARAPI OnNestedScrollAccepted(
+        /* [in] */ IView* child,
+        /* [in] */ IView* target,
+        /* [in] */ Int32 axes);
+
+    // @Override
+    CARAPI OnNestedScroll(
+        /* [in] */ IView* target,
+        /* [in] */ Int32 dxConsumed,
+        /* [in] */ Int32 dyConsumed,
+        /* [in] */ Int32 dxUnconsumed,
+        /* [in] */ Int32 dyUnconsumed);
+
+    // @Override
+    CARAPI OnNestedFling(
+        /* [in] */ IView* target,
+        /* [in] */ Float velocityX,
+        /* [in] */ Float velocityY,
+        /* [in] */ Boolean consumed,
+        /* [out] */ Boolean* res);
+
     //@Override
     CARAPI Draw(
         /* [in] */ ICanvas* canvas);
 
+    CARAPI SetOverScrollEffectPadding(
+        /* [in] */ Int32 leftPadding,
+        /* [in] */ Int32 rightPadding);
+
+    CARAPI RequestDisallowInterceptTouchEvent(
+        /* [in] */ Boolean disallowIntercept);
+
+    CARAPI OnInterceptHoverEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
+
     //@Override
-    CARAPI_(Boolean) OnInterceptTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI OnInterceptTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* res);
 
     /**
      * {@inheritDoc}
      */
     //@Override
     CARAPI AddTouchables(
-        /* [in] */ IObjectContainer* views);
+        /* [in] */ IArrayList* views);
+
+     /**
+     * The amount of friction applied to flings. The default value
+     * is {@link ViewConfiguration#getScrollFriction}.
+     */
+    CARAPI SetFriction(
+        /* [in] */ Float friction);
+
+    /**
+     * Sets a scale factor for the fling velocity. The initial scale
+     * factor is 1.0.
+     *
+     * @param scale The scale factor to multiply the velocity by.
+     */
+    CARAPI SetVelocityScale(
+        /* [in] */ Float scale);
 
     /**
      * Smoothly scroll to the specified adapter position. The view will
      * scroll such that the indicated position is displayed.
      * @param position Scroll to this adapter position.
      */
-    virtual CARAPI SmoothScrollToPosition(
+    CARAPI SmoothScrollToPosition(
         /* [in] */ Int32 position);
+
+    /**
+     * Smoothly scroll to the specified adapter position. The view will scroll
+     * such that the indicated position is displayed <code>offset</code> pixels below
+     * the top edge of the view. If this is impossible, (e.g. the offset would scroll
+     * the first or last item beyond the boundaries of the list) it will get as close
+     * as possible. The scroll will take <code>duration</code> milliseconds to complete.
+     *
+     * @param position Position to scroll to
+     * @param offset Desired distance in pixels of <code>position</code> from the top
+     *               of the view when scrolling is finished
+     * @param duration Number of milliseconds to use for the scroll
+     */
+    CARAPI SmoothScrollToPositionFromTop(
+        /* [in] */ Int32 position,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 duration);
+
+    /**
+     * Smoothly scroll to the specified adapter position. The view will scroll
+     * such that the indicated position is displayed <code>offset</code> pixels below
+     * the top edge of the view. If this is impossible, (e.g. the offset would scroll
+     * the first or last item beyond the boundaries of the list) it will get as close
+     * as possible.
+     *
+     * @param position Position to scroll to
+     * @param offset Desired distance in pixels of <code>position</code> from the top
+     *               of the view when scrolling is finished
+     */
+    CARAPI SmoothScrollToPositionFromTop(
+        /* [in] */ Int32 position,
+        /* [in] */ Int32 offset);
 
     /**
      * Smoothly scroll to the specified adapter position. The view will
@@ -1039,7 +1646,7 @@ public:
      * @param boundPosition Do not scroll if it would move this adapter
      *          position out of view.
      */
-    virtual CARAPI SmoothScrollToPosition(
+    CARAPI SmoothScrollToPosition(
         /* [in] */ Int32 position,
         /* [in] */ Int32 boundPosition);
 
@@ -1048,20 +1655,40 @@ public:
      * @param distance Distance to scroll in pixels.
      * @param duration Duration of the scroll animation in milliseconds.
      */
-    virtual CARAPI SmoothScrollBy(
+    CARAPI SmoothScrollBy(
         /* [in] */ Int32 distance,
         /* [in] */ Int32 duration);
 
     /**
+     * Scrolls the list items within the view by a specified number of pixels.
+     *
+     * @param y the amount of pixels to scroll by vertically
+     * @see #canScrollList(int)
+     */
+    CARAPI ScrollListBy(
+        /* [in] */ Int32 y);
+
+    /**
+     * Check if the items in the list can be scrolled in a certain direction.
+     *
+     * @param direction Negative to check scrolling up, positive to check
+     *            scrolling down.
+     * @return true if the list can be scrolled in the specified direction,
+     *         false otherwise.
+     * @see #scrollListBy(int)
+     */
+    CARAPI CanScrollList(
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* canScrollList);
+
+    /**
      * Causes all the views to be rebuilt and redrawn.
      */
-    virtual CARAPI InvalidateViews();
+    CARAPI InvalidateViews();
 
     /**
      * Return an InputConnection for editing of the filter text.
      */
-
-    //zhangjingcheng , this is not complete
     //@Override
     CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(
         /* [in] */ IEditorInfo* outAttrs);
@@ -1071,26 +1698,30 @@ public:
      * and this allows the proxying to happen.
      */
     //@Override
-    CARAPI_(Boolean) CheckInputConnectionProxy(
-        /* [in] */ IView* view);
+    CARAPI CheckInputConnectionProxy(
+        /* [in] */ IView* view,
+        /* [out] */ Boolean* res);
 
     /**
      * Clear the text filter.
      */
-    virtual CARAPI ClearTextFilter();
+    CARAPI ClearTextFilter();
 
     /**
      * Returns if the ListView currently has a text filter.
      */
-    virtual CARAPI_(Boolean) HasTextFilter();
+    CARAPI HasTextFilter(
+        /* [out] */ Boolean* hasTextFilter);
 
-    virtual CARAPI OnGlobalLayout();
+    //@Override
+    CARAPI OnGlobalLayout();
 
     /**
      * For our text watcher that is associated with the text filter.  Does
      * nothing.
      */
-    virtual CARAPI BeforeTextChanged(
+    //@Override
+    CARAPI BeforeTextChanged(
         /* [in] */ ICharSequence* s,
         /* [in] */ Int32 start,
         /* [in] */ Int32 count,
@@ -1101,16 +1732,23 @@ public:
      * the actual filtering as the text changes, and takes care of hiding and
      * showing the popup displaying the currently entered filter text.
      */
-    virtual CARAPI OnTextChanged(
+    //@Override
+    CARAPI OnTextChanged(
         /* [in] */ ICharSequence* s,
         /* [in] */ Int32 start,
         /* [in] */ Int32 before,
         /* [in] */ Int32 count);
 
-    virtual CARAPI AfterTextChanged(
+    /**
+     * For our text watcher that is associated with the text filter.  Does
+     * nothing.
+     */
+    //@Override
+    CARAPI AfterTextChanged(
         /* [in] */ IEditable* s);
 
-    virtual CARAPI OnFilterComplete(
+    //@Override
+    CARAPI OnFilterComplete(
         /* [in] */ Int32 count);
 
     //@Override
@@ -1128,7 +1766,7 @@ public:
      * @see #AbsListView_TRANSCRIPT_MODE_NORMAL
      * @see #AbsListView_TRANSCRIPT_MODE_ALWAYS_SCROLL
      */
-    virtual CARAPI SetTranscriptMode(
+    CARAPI SetTranscriptMode(
         /* [in] */ Int32 mode);
 
     /**
@@ -1137,10 +1775,12 @@ public:
      * @return {@link #AbsListView_TRANSCRIPT_MODE_DISABLED}, {@link #AbsListView_TRANSCRIPT_MODE_NORMAL} or
      *         {@link #AbsListView_TRANSCRIPT_MODE_ALWAYS_SCROLL}
      */
-    virtual CARAPI_(Int32) GetTranscriptMode();
+    CARAPI GetTranscriptMode(
+        /* [out] */ Int32* mode);
 
     //@Override
-    CARAPI_(Int32) GetSolidColor();
+    CARAPI GetSolidColor(
+        /* [out] */ Int32* color);
 
     /**
      * When set to a non-zero value, the cache color hint indicates that this list is always drawn
@@ -1148,7 +1788,7 @@ public:
      *
      * @param color The background color
      */
-    virtual CARAPI SetCacheColorHint(
+    CARAPI SetCacheColorHint(
         /* [in] */ Int32 color);
 
     /**
@@ -1157,7 +1797,8 @@ public:
      *
      * @return The cache color hint
      */
-    virtual CARAPI_(Int32) GetCacheColorHint();
+    CARAPI GetCacheColorHint(
+        /* [out] */ Int32* colorHint);
 
     /**
      * Move all views (excluding headers and footers) held by this AbsListView into the supplied
@@ -1166,8 +1807,45 @@ public:
      *
      * @param views A list into which to put the reclaimed views
      */
-    virtual CARAPI ReclaimViews(
-        /* [in] */ IObjectContainer* views);
+    CARAPI ReclaimViews(
+        /* [in] */ IList* views);
+
+    /**
+     * Sets up this AbsListView to use a remote views adapter which connects to a RemoteViewsService
+     * through the specified intent.
+     * @param intent the intent used to identify the RemoteViewsService for the adapter to connect to.
+     */
+    CARAPI SetRemoteViewsAdapter(
+        /* [in] */ IIntent* intent);
+
+    /**
+     * Sets up the onClickHandler to be used by the RemoteViewsAdapter when inflating RemoteViews
+     *
+     * @param handler The OnClickHandler to use when inflating RemoteViews.
+     *
+     * @hide
+     */
+    CARAPI SetRemoteViewsOnClickHandler(
+        /* [in] */ IRemoteViewsOnClickHandler* handler);
+
+    /**
+     * This defers a notifyDataSetChanged on the pending RemoteViewsAdapter if it has not
+     * connected yet.
+     */
+    // @Override
+    CARAPI DeferNotifyDataSetChanged();
+
+    /**
+     * Called back when the adapter connects to the RemoteViewsService.
+     */
+    // @Override
+    CARAPI_(Boolean) OnRemoteAdapterConnected();
+
+    /**
+     * Called back when the adapter disconnects from the RemoteViewsService.
+     */
+    // @Override
+    CARAPI OnRemoteAdapterDisconnected();
 
     /**
      * Sets the recycler listener to be notified whenever a View is set aside in
@@ -1180,162 +1858,50 @@ public:
      * @see android.widget.AbsListView.RecycleBin
      * @see android.widget.AbsListView.RecyclerListener
      */
-    virtual CARAPI SetRecyclerListener(
+    CARAPI SetRecyclerListener(
         /* [in] */ IRecyclerListener* listener);
 
-
-    CARAPI SendAccessibilityEvent(
-        /* [in] */ Int32 eventType);
-
     /**
-     * @see #onInitializeAccessibilityEvent(AccessibilityEvent)
+     * Sets the selected item and positions the selection y pixels from the top edge
+     * of the ListView. (If in touch mode, the item will not be selected but it will
+     * still be positioned appropriately.)
      *
-     * Note: Called from the default {@link AccessibilityDelegate}.
+     * @param position Index (starting at 0) of the data item to be selected.
+     * @param y The distance from the top edge of the ListView (plus padding) that the
+     *        item will be positioned.
      */
-    CARAPI OnInitializeAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event);
-
-    CARAPI OnInitializeAccessibilityNodeInfo(
-        /* [in] */ IAccessibilityNodeInfo* info);
-
-
-    CARAPI_(Boolean) PerformAccessibilityAction(
-            /* [in] */ Int32 action,
-            /* [in] */ IBundle* arguments);
-
-    virtual CARAPI JumpDrawablesToCurrentState();
-
-    // You must override all ShowContextMenu function in super class
-    // to avoid hiding for C++；
-    // The function will invoke the one in super class directly；
-    CARAPI_(Boolean) ShowContextMenu();
-
-    CARAPI_(Boolean) ShowContextMenu(
-        /* [in] */ Float x,
-        /* [in] */ Float y,
-        /* [in] */ Int32 metaState);
-
-    CARAPI_(Boolean) OnGenericMotionEvent(
-        /* [in] */ IMotionEvent* event);
-
-    virtual CARAPI SetOverScrollEffectPadding(
-        /* [in] */ Int32 leftPadding,
-        /* [in] */ Int32 rightPadding);
-
-    CARAPI RequestDisallowInterceptTouchEvent(
-        /* [in] */ Boolean disallowIntercept);
-
-     /**
-     * The amount of friction applied to flings. The default value
-     * is {@link ViewConfiguration#getScrollFriction}.
-     *
-     * @return A scalar dimensionless value representing the coefficient of
-     *         friction.
-     */
-    virtual CARAPI SetFriction(
-        /* [in] */ Float friction);
-
-    /**
-     * Sets a scale factor for the fling velocity. The initial scale
-     * factor is 1.0.
-     *
-     * @param scale The scale factor to multiply the velocity by.
-     */
-    virtual CARAPI SetVelocityScale(
-        /* [in] */ Float scale);
-
-     /**
-     * Smoothly scroll to the specified adapter position. The view will scroll
-     * such that the indicated position is displayed <code>offset</code> pixels from
-     * the top edge of the view. If this is impossible, (e.g. the offset would scroll
-     * the first or last item beyond the boundaries of the list) it will get as close
-     * as possible. The scroll will take <code>duration</code> milliseconds to complete.
-     *
-     * @param position Position to scroll to
-     * @param offset Desired distance in pixels of <code>position</code> from the top
-     *               of the view when scrolling is finished
-     * @param duration Number of milliseconds to use for the scroll
-     */
-    virtual CARAPI SmoothScrollToPositionFromTop(
+    CARAPI SetSelectionFromTop(
         /* [in] */ Int32 position,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 duration);
-
-    /**
-     * Smoothly scroll to the specified adapter position. The view will scroll
-     * such that the indicated position is displayed <code>offset</code> pixels from
-     * the top edge of the view. If this is impossible, (e.g. the offset would scroll
-     * the first or last item beyond the boundaries of the list) it will get as close
-     * as possible.
-     *
-     * @param position Position to scroll to
-     * @param offset Desired distance in pixels of <code>position</code> from the top
-     *               of the view when scrolling is finished
-     */
-    virtual CARAPI SmoothScrollToPositionFromTop(
-        /* [in] */ Int32 position,
-        /* [in] */ Int32 offset);
-
-    /**
-     * Sets up this AbsListView to use a remote views adapter which connects to a RemoteViewsService
-     * through the specified intent.
-     * @param intent the intent used to identify the RemoteViewsService for the adapter to connect to.
-     */
-    virtual CARAPI SetRemoteViewsAdapter(
-        /* [in] */ IIntent* intent);
-
-    /**
-     * Sets up the onClickHandler to be used by the RemoteViewsAdapter when inflating RemoteViews
-     *
-     * @param handler The OnClickHandler to use when inflating RemoteViews.
-     *
-     * @hide
-     */
-    virtual CARAPI SetRemoteViewsOnClickHandler(
-        /* [in] */ IRemoteViewsOnClickHandler* handler);
-
-    /**
-     * This defers a notifyDataSetChanged on the pending RemoteViewsAdapter if it has not
-     * connected yet.
-     */
-    virtual CARAPI DeferNotifyDataSetChanged();
-
-    /**
-     * Called back when the adapter connects to the RemoteViewsService.
-     */
-    virtual CARAPI_(Boolean) OnRemoteAdapterConnected();
-
-    /**
-     * Called back when the adapter disconnects from the RemoteViewsService.
-     */
-    virtual CARAPI OnRemoteAdapterDisconnected();
-
+        /* [in] */ Int32 y);
 
 protected:
-    static CARAPI_(Int32) GetDistance(
+    /**
+     * What is the distance between the source and destination rectangles given the direction of
+     * focus navigation between them? The direction basically helps figure out more quickly what is
+     * self evident by the relationship between the rects...
+     *
+     * @param source the source rectangle
+     * @param dest the destination rectangle
+     * @param direction the direction
+     * @return the distance between the rectangles
+     */
+    static CARAPI GetDistance(
         /* [in] */ IRect* sourceRect,
         /* [in] */ IRect* destRect,
-        /* [in] */ Int32 direction);
-
-    static CARAPI_(AutoPtr<IView>) RetrieveFromScrap(
-        /* [in] */ List<AutoPtr<IView> >* scrapViews,
-        /* [in] */ Int32 position);
+        /* [in] */ Int32 direction,
+        /* [out] */ Int32* result);
 
 protected:
-
     /**
-     * If there is a selection returns false.
-     * Otherwise resurrects the selection and returns true if resurrected.
+     * If fast scroll is enabled, then don't draw the vertical scrollbar.
+     * @hide
      */
-    CARAPI_(Boolean) ResurrectSelectionIfNeeded();
-
-    CARAPI_(AutoPtr<IViewGroupLayoutParams>) GenerateLayoutParams(
-        /* [in] */ IViewGroupLayoutParams* p);
-
-    //@Override
+    // @Override
     CARAPI_(Boolean) IsVerticalScrollBarHidden();
 
     virtual CARAPI InvokeOnItemScrollListener();
+
+    CARAPI_(Int32) GetSelectionModeForAccessibility();
 
     virtual CARAPI RequestLayoutIfNecessary();
 
@@ -1344,9 +1910,6 @@ protected:
         /* [in] */ Boolean gainFocus,
         /* [in] */ Int32 direction,
         /* [in] */ IRect* previouslyFocusedRect);
-
-    //@Override
-    CARAPI RequestLayout();
 
     virtual CARAPI_(void) ResetList();
 
@@ -1371,7 +1934,7 @@ protected:
         /* [in] */ Int32 heightMeasureSpec);
 
     //@Override
-    CARAPI_(void) OnLayout(
+    CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,
@@ -1385,7 +1948,15 @@ protected:
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
 
-    virtual CARAPI_(void) LayoutChildren();
+    virtual CARAPI LayoutChildren();
+
+    /*
+     * @param focusedView view that holds accessibility focus
+     * @return direct child that contains accessibility focus, or null if no
+     *         child contains accessibility focus
+     */
+    virtual CARAPI_(AutoPtr<IView>) GetAccessibilityFocusedChild(
+        /* [in] */ IView* focusedView);
 
     virtual CARAPI_(void) UpdateScrollIndicators();
 
@@ -1393,26 +1964,74 @@ protected:
         /* [in] */ Int32 position,
         /* [in] */ ArrayOf<Boolean>* isScrap);
 
-    virtual CARAPI_(void) PositionSelector(
+    /**
+     * Positions the selector in a way that mimics touch.
+     */
+    virtual CARAPI_(void) PositionSelectorLikeTouch(
+        /* [in] */ Int32 position,
+        /* [in] */ IView* sel,
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
+    /**
+     * Positions the selector in a way that mimics keyboard focus.
+     */
+    virtual CARAPI_(void) PositionSelectorLikeFocus(
+        /* [in] */ Int32 position,
+        /* [in] */ IView* sel);
+
+    CARAPI_(void) PositionSelector(
         /* [in] */ Int32 position,
         /* [in] */ IView* sel);
 
     //@Override
-    virtual CARAPI_(void) DispatchDraw(
+    CARAPI_(void) DispatchDraw(
         /* [in] */ ICanvas* canvas);
 
     //@Override
-    virtual CARAPI_(void) OnSizeChanged(
+    CARAPI_(Boolean) IsPaddingOffsetRequired();
+
+    //@Override
+    CARAPI_(Int32) GetLeftPaddingOffset();
+
+    //@Override
+    CARAPI_(Int32) GetTopPaddingOffset();
+
+    //@Override
+    CARAPI_(Int32) GetRightPaddingOffset();
+
+    //@Override
+    CARAPI_(Int32) GetBottomPaddingOffset();
+
+    //@Override
+    CARAPI_(void) OnSizeChanged(
         /* [in] */ Int32 w,
         /* [in] */ Int32 h,
         /* [in] */ Int32 oldw,
         /* [in] */ Int32 oldh);
 
+    /**
+     * @return True if the current touch mode requires that we draw the selector in the pressed
+     *         state.
+     */
     virtual CARAPI_(Boolean) TouchModeDrawsInPressedState();
 
+    /**
+     * Indicates whether this view is in a state where the selector should be drawn. This will
+     * happen if we have focus but are not in touch mode, or we are in the middle of displaying
+     * the pressed state for an item.
+     *
+     * @return True if the selector should be shown
+     */
     virtual CARAPI_(Boolean) ShouldShowSelector();
 
+    /**
+     * Sets the selector state to "pressed" and posts a CheckForKeyLongPress to see if
+     * this is a Int64 press.
+     */
     virtual CARAPI_(void) KeyPressed();
+
+    virtual CARAPI_(void) UpdateSelectorState();
 
     //@Override
     virtual CARAPI DrawableStateChanged();
@@ -1428,10 +2047,26 @@ protected:
     //@Override
     virtual CARAPI OnDetachedFromWindow();
 
+    /**
+     * Creates the ContextMenuInfo returned from {@link #getContextMenuInfo()}. This
+     * methods knows the view, position and ID of the item that received the
+     * Int64 press.
+     *
+     * @param view The view that received the Int64 press.
+     * @param position The position of the item that received the Int64 press.
+     * @param id The ID of the item that received the Int64 press.
+     * @return The extra information that should be returned by
+     *         {@link #getContextMenuInfo()}.
+     */
     virtual CARAPI_(AutoPtr<IContextMenuInfo>) CreateContextMenuInfo(
         /* [in] */ IView* view,
         /* [in] */ Int32 position,
         /* [in] */ Int64 id);
+
+    virtual CARAPI_(Boolean) PerformLongPress(
+        /* [in] */ IView* child,
+        /* [in] */ Int32 longPressPosition,
+        /* [in] */ Int64 longPressId);
 
     //@Override
     virtual CARAPI_(AutoPtr<IContextMenuInfo>) GetContextMenuInfo();
@@ -1447,34 +2082,112 @@ protected:
         /* [in] */ Boolean clampedX,
         /* [in] */ Boolean clampedY);
 
+    /**
+     * Fires an "on scroll state changed" event to the registered
+     * {@link android.widget.AbsListView.OnScrollListener}, if any. The state change
+     * is fired only if the specified state is different from the previously known state.
+     *
+     * @param newState The new scroll state.
+     */
     virtual CARAPI_(void) ReportScrollStateChange(
         /* [in] */ Int32 newState);
+
+    /**
+     * Override this for better control over position scrolling.
+     */
+    virtual CARAPI_(AutoPtr<AbsListView::AbsPositionScroller>) CreatePositionScroller();
+
+    virtual CARAPI_(void) SmoothScrollBy(
+        /* [in] */ Int32 distance,
+        /* [in] */ Int32 duration,
+        /* [in] */ Boolean linear);
+
+    /**
+     * Allows RemoteViews to scroll relatively to a position.
+     */
+    virtual CARAPI_(void) SmoothScrollByOffset(
+        /* [in] */ Int32 position);
 
     virtual CARAPI_(Boolean) TrackMotionScroll(
         /* [in] */ Int32 deltaY,
         /* [in] */ Int32 incrementalDeltaY);
 
+    /**
+     * Returns the number of header views in the list. Header views are special views
+     * at the top of the list that should not be recycled during a layout.
+     *
+     * @return The number of header views, 0 in the default implementation.
+     */
     virtual CARAPI_(Int32) GetHeaderViewsCount();
 
+    /**
+     * Returns the number of footer views in the list. Footer views are special views
+     * at the bottom of the list that should not be recycled during a layout.
+     *
+     * @return The number of footer views, 0 in the default implementation.
+     */
     virtual CARAPI_(Int32) GetFooterViewsCount();
 
+    /**
+     * Fills the gap left open by a touch-scroll. During a touch scroll, children that
+     * remain on screen are shifted and the other ones are discarded. The role of this
+     * method is to fill the gap thus created by performing a partial layout in the
+     * empty space.
+     *
+     * @param down true if the scroll is going down, false if it is going up
+     */
     virtual CARAPI FillGap(
         /* [in] */ Boolean down) = 0;
 
     virtual CARAPI_(void) HideSelector();
 
+    /**
+     * @return A position to select. First we try mSelectedPosition. If that has been clobbered by
+     * entering touch mode, we then try mResurrectToPosition. Values are pinned to the range
+     * of items available in the adapter
+     */
     virtual CARAPI_(Int32) ReconcileSelectedPosition();
 
+    /**
+     * Find the row closest to y. This row will be used as the motion row when scrolling
+     *
+     * @param y Where the user touched
+     * @return The position of the first (or only) item in the row containing y
+     */
     virtual CARAPI_(Int32) FindMotionRow(
         /* [in] */ Int32 y) = 0;
 
+    /**
+     * Find the row closest to y. This row will be used as the motion row when scrolling.
+     *
+     * @param y Where the user touched
+     * @return The position of the first (or only) item in the row closest to y
+     */
     virtual CARAPI_(Int32) FindClosestMotionRow(
         /* [in] */ Int32 y);
 
+    /**
+     * If there is a selection returns false.
+     * Otherwise resurrects the selection and returns true if resurrected.
+     */
+    virtual CARAPI_(Boolean) ResurrectSelectionIfNeeded();
+
+    /**
+     * Makes the item at the supplied position selected.
+     *
+     * @param position the position of the new selection
+     */
     virtual CARAPI SetSelectionInt(
         /* [in] */ Int32 position) = 0;
 
+    /**
+     * Attempt to bring the selection back if the user is switching from touch
+     * to trackball mode
+     * @return Whether selection was set to something.
+     */
     virtual CARAPI_(Boolean) ResurrectSelection();
+
+    virtual CARAPI_(void) ConfirmCheckedPositionsById();
 
     //@Override
     virtual CARAPI_(void) HandleDataChanged();
@@ -1484,101 +2197,52 @@ protected:
         /* [in] */ Int32 hint);
 
     //@Override
-    virtual CARAPI_(Boolean) IsInFilterMode();
+    virtual CARAPI IsInFilterMode(
+        /* [out] */ Boolean* result);
 
+    /**
+     * Sends a key to the text filter window
+     *
+     * @param keyCode The keycode for the event
+     * @param event The actual key event
+     *
+     * @return True if the text filter handled the event, FALSE otherwise.
+     */
     virtual CARAPI_(Boolean) SendToTextFilter(
         /* [in] */ Int32 keyCode,
         /* [in] */ Int32 count,
         /* [in] */ IKeyEvent* event);
 
     //@Override
-    virtual CARAPI_(Boolean) CheckLayoutParams(
-        /* [in] */ IViewGroupLayoutParams* p);
-
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);/*com.android.internal.R.attr.absListViewStyle*/
-
-    CARAPI_(Boolean) IsPaddingOffsetRequired();
-
-    CARAPI_(Int32) GetLeftPaddingOffset();
-
-    CARAPI_(Int32) GetTopPaddingOffset();
-
-    CARAPI_(Int32) GetRightPaddingOffset();
-
-    CARAPI_(Int32) GetBottomPaddingOffset();
-
     CARAPI GenerateDefaultLayoutParams(
         /* [out] */ IViewGroupLayoutParams** result);
+
+    CARAPI_(AutoPtr<IViewGroupLayoutParams>) GenerateLayoutParams(
+        /* [in] */ IViewGroupLayoutParams* p);
+
+    //@Override
+    virtual CARAPI_(Boolean) CheckLayoutParams(
+        /* [in] */ IViewGroupLayoutParams* p);
 
     /**
      * Hints the RemoteViewsAdapter, if it exists, about which views are currently
      * being displayed by the AbsListView.
      */
-    CARAPI_(void) SetVisibleRangeHint(
+    virtual CARAPI_(void) SetVisibleRangeHint(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
     /**
-     * Allows RemoteViews to scroll relatively to a position.
+     * Returns the height of the view for the specified position.
+     *
+     * @param position the item position
+     * @return view height in pixels
      */
-    CARAPI SmoothScrollByOffset(
+    virtual CARAPI_(Int32) GetHeightForPosition(
         /* [in] */ Int32 position);
-
 
 private:
     CARAPI InitAbsListView();
-
-    CARAPI_(Boolean) ContentFits();
-
-    CARAPI UseDefaultSelector();
-
-    CARAPI_(Boolean) AcceptFilter();
-
-    CARAPI_(void) PositionSelector(
-        /* [in] */ Int32 l,
-        /* [in] */ Int32 t,
-        /* [in] */ Int32 r,
-        /* [in] */ Int32 b);
-
-    CARAPI_(void) DrawSelector(
-        /* [in] */ ICanvas* canvas);
-
-    CARAPI_(Boolean) PerformLongPress(
-        /* [in] */ IView* child,
-        /* [in] */ Int32 longPressPosition,
-        /* [in] */ Int64 longPressId);
-
-    CARAPI_(Boolean) StartScrollIfNeeded(
-        /* [in] */ Int32 y);
-
-    CARAPI_(void) OnSecondaryPointerUp(
-        /* [in] */ IMotionEvent* ev);
-
-    CARAPI_(void) CreateScrollingCache();
-
-    CARAPI_(void) ClearScrollingCache();
-
-    CARAPI_(void) DismissPopup();
-
-    CARAPI_(void) ShowPopup();
-
-    CARAPI_(void) PositionPopup();
-
-    CARAPI_(void) CreateTextFilter(
-        /* [in] */ Boolean animateEntrance);
-
-    CARAPI_(void) FinishGlows();
 
     /**
      * Perform a quick, in-place update of the checked or activated state
@@ -1587,10 +2251,55 @@ private:
      */
     CARAPI_(void) UpdateOnScreenCheckedViews();
 
-    CARAPI_(void) UpdateSelectorState();
+    CARAPI_(Boolean) ContentFits();
+
+    CARAPI_(void) SetFastScrollerEnabledUiThread(
+        /* [in] */ Boolean enabled);
+
+    CARAPI_(void) SetFastScrollerAlwaysVisibleUiThread(
+        /* [in] */ Boolean alwaysShow);
+
+    /**
+     * @return whether the current thread is the one that created the view
+     */
+    CARAPI_(Boolean) IsOwnerThread();
+
+    CARAPI UseDefaultSelector();
+
+    CARAPI_(Boolean) AcceptFilter();
+
+    CARAPI_(Boolean) CanScrollUp();
+
+    CARAPI_(Boolean) CanScrollDown();
+
+    CARAPI_(void) SetItemViewLayoutParams(
+        /* [in] */ IView* child,
+        /* [in] */ Int32 position);
+
+    CARAPI_(void) DrawSelector(
+        /* [in] */ ICanvas* canvas);
+
+    CARAPI_(Boolean) StartScrollIfNeeded(
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y,
+        /* [in] */ IMotionEvent* vtev);
 
     CARAPI_(void) ScrollIfNeeded(
-        /* [in] */ Int32 y);
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y,
+        /* [in] */ IMotionEvent* vtev);
+
+    CARAPI_(void) OnTouchDown(
+        /* [in] */ IMotionEvent* ev);
+
+    CARAPI_(void) OnTouchMove(
+        /* [in] */ IMotionEvent* ev,
+        /* [in] */ IMotionEvent* vtev);
+
+    CARAPI_(void) OnTouchUp(
+        /* [in] */ IMotionEvent* ev);
+
+    CARAPI_(void) OnTouchCancel();
 
     CARAPI_(void) InitOrResetVelocityTracker();
 
@@ -1598,106 +2307,129 @@ private:
 
     CARAPI_(void) RecycleVelocityTracker();
 
-    CARAPI_(void) SmoothScrollBy(
-        /* [in] */ Int32 distance,
-        /* [in] */ Int32 duration,
-        /* [in] */ Boolean linear);
+    CARAPI_(void) OnSecondaryPointerUp(
+        /* [in] */ IMotionEvent* ev);
 
-    CARAPI_(void) ConfirmCheckedPositionsById();
+    CARAPI_(void) CreateScrollingCache();
 
+    CARAPI_(void) ClearScrollingCache();
+
+    /**
+     * Removes the filter window
+     */
+    CARAPI_(void) DismissPopup();
+
+    /**
+     * Shows the filter window
+     */
+    CARAPI_(void) ShowPopup();
+
+    CARAPI_(void) PositionPopup();
+
+    /**
+     * Creates the window for the text filter and populates it with an EditText field;
+     *
+     * @param animateEntrance true if the window should appear with an animation
+     */
+    CARAPI_(void) CreateTextFilter(
+        /* [in] */ Boolean animateEntrance);
+
+    CARAPI_(AutoPtr<IEditText>) GetTextFilterInput();
+
+    CARAPI_(void) FinishGlows();
 
 protected:
     /**
      * Indicates that we are not in the middle of a touch gesture
      */
-    static const Int32 TOUCH_MODE_REST = -1;
+    static const Int32 TOUCH_MODE_REST;
 
     /**
      * Indicates we just received the touch event and we are waiting to see if the it is a tap or a
      * scroll gesture.
      */
-    static const Int32 TOUCH_MODE_DOWN = 0;
+    static const Int32 TOUCH_MODE_DOWN;
 
     /**
      * Indicates the touch has been recognized as a tap and we are now waiting to see if the touch
      * is a longpress
      */
-    static const Int32 TOUCH_MODE_TAP = 1;
+    static const Int32 TOUCH_MODE_TAP;
 
     /**
      * Indicates we have waited for everything we can wait for, but the user's finger is still down
      */
-    static const Int32 TOUCH_MODE_DONE_WAITING = 2;
+    static const Int32 TOUCH_MODE_DONE_WAITING;
 
     /**
      * Indicates the touch gesture is a scroll
      */
-    static const Int32 TOUCH_MODE_SCROLL = 3;
+    static const Int32 TOUCH_MODE_SCROLL;
 
     /**
      * Indicates the view is in the process of being flung
      */
-    static const Int32 TOUCH_MODE_FLING = 4;
+    static const Int32 TOUCH_MODE_FLING;
 
     /**
      * Indicates the touch gesture is an overscroll - a scroll beyond the beginning or end.
      */
-    static const Int32 TOUCH_MODE_OVERSCROLL = 5;
+    static const Int32 TOUCH_MODE_OVERSCROLL;
 
     /**
      * Indicates the view is being flung outside of normal content bounds
      * and will spring back.
      */
-    static const Int32 TOUCH_MODE_OVERFLING = 6;
+    static const Int32 TOUCH_MODE_OVERFLING;
 
     /**
      * Regular layout - usually an unsolicited layout from the view system
      */
-    static const Int32 LAYOUT_NORMAL = 0;
+    static const Int32 LAYOUT_NORMAL;
 
     /**
      * Show the first item
      */
-    static const Int32 LAYOUT_FORCE_TOP = 1;
+    static const Int32 LAYOUT_FORCE_TOP;
 
     /**
      * Force the selected item to be on somewhere on the screen
      */
-    static const Int32 LAYOUT_SET_SELECTION = 2;
+    static const Int32 LAYOUT_SET_SELECTION;
 
     /**
      * Show the last item
      */
-    static const Int32 LAYOUT_FORCE_BOTTOM = 3;
+    static const Int32 LAYOUT_FORCE_BOTTOM;
 
     /**
      * Make a mSelectedItem appear in a specific location and build the rest of
      * the views from there. The top is specified by mSpecificTop.
      */
-    static const Int32 LAYOUT_SPECIFIC = 4;
+    static const Int32 LAYOUT_SPECIFIC;
 
     /**
      * Layout to sync as a result of a data change. Restore mSyncPosition to have its top
      * at mSpecificTop
      */
-    static const Int32 LAYOUT_SYNC = 5;
+    static const Int32 LAYOUT_SYNC;
 
     /**
      * Layout as a result of using the navigation keys
      */
-    static const Int32 LAYOUT_MOVE_SELECTION = 6;
+    static const Int32 LAYOUT_MOVE_SELECTION;
 
     /**
      * Content height divided by this is the overscroll limit.
      */
-    static const Int32 OVERSCROLL_LIMIT_DIVISOR = 3;
+    static const Int32 OVERSCROLL_LIMIT_DIVISOR;
 
     /**
      * How many positions in either direction we will search to try to
      * find a checked item with a stable ID that moved position across
      * a data set change. If the item isn't found it will be unselected.
      */
-    static const Int32 CHECK_POSITION_SEARCH_DISTANCE = 20;
+    static const Int32 CHECK_POSITION_SEARCH_DISTANCE;
 
     /**
      * Used for smooth scrolling at a consistent rate
@@ -1706,21 +2438,25 @@ protected:
 
 private:
     /**
+     * The thread that created this view.
+     */
+    AutoPtr<IThread> mOwnerThread;
+
+    /**
      * Used to request a layout when we changed touch mode
      */
-    static const Int32 TOUCH_MODE_UNKNOWN = -1;
-    static const Int32 TOUCH_MODE_ON = 0;
-    static const Int32 TOUCH_MODE_OFF = 1;
-    static const Boolean PROFILE_SCROLLING = FALSE;
-    static const Boolean PROFILE_FLINGING = FALSE;
+    static const Int32 TOUCH_MODE_UNKNOWN;
+    static const Int32 TOUCH_MODE_ON;
+    static const Int32 TOUCH_MODE_OFF;
+    static const Boolean PROFILE_SCROLLING;
+    static const Boolean PROFILE_FLINGING;
     /**
      * Sentinel value for no current active pointer.
      * Used by {@link #mActivePointerId}.
      */
-    static const Int32 INVALID_POINTER = -1;
+    static const Int32 INVALID_POINTER;
 
 protected:
-
     /**
      * Controls if/how the user may choose/check items in the list
      */
@@ -1745,14 +2481,14 @@ protected:
     /**
      * Running state of which positions are currently checked
      */
-    AutoPtr< HashMap<Int32, Boolean> > mCheckStates;
+    AutoPtr<ISparseBooleanArray> mCheckStates;
 
     /**
      * Running state of which IDs are currently checked.
      * If there is a value for a given key, the checked state for that ID is true
      * and the value holds the last known position in the adapter for that id.
      */
-    AutoPtr< HashMap<Int64, Int32> > mCheckedIdStates;
+    AutoPtr<IInt64SparseArray> mCheckedIdStates;
 
     /**
      * Controls how the next layout will happen
@@ -1913,6 +2649,11 @@ protected:
     Boolean mFastScrollEnabled;
 
     /**
+     * Whether or not to always show the fast scroll feature on this list
+     */
+    Boolean mFastScrollAlwaysVisible;
+
+    /**
      * Keeps track of our accessory window
      */
     AutoPtr<IPopupWindow> mPopup;
@@ -1947,17 +2688,11 @@ protected:
     /**
      * Handles scrolling between positions within the list.
      */
-    AutoPtr<PositionScroller> mPositionScroller;
+    AutoPtr<AbsPositionScroller> mPositionScroller;
 
     AutoPtr<IRunnable> mPositionScrollAfterLayout;
 
-    /**
-     * Track if we are currently attached to a window.
-     */
-    Boolean mIsAttached;
-
 private:
-
     /**
      * The remote adapter containing the data to be displayed by this view to be set
      */
@@ -2029,7 +2764,7 @@ private:
     /**
      * The last CheckForTap runnable we posted, if any
      */
-    AutoPtr<IRunnable> mPendingCheckForTap;
+    AutoPtr<CheckForTap> mPendingCheckForTap;
 
     /**
      * The last CheckForKeyLongPress runnable we posted, if any
@@ -2039,7 +2774,7 @@ private:
     /**
      * Acts upon click
      */
-    AutoPtr<AbsListViewPerformClick> mPerformClick;
+    AutoPtr<PerformClick> mPerformClick;
 
     /**
      * Delayed action for touch mode.
@@ -2071,7 +2806,13 @@ private:
     /**
      * Helper object that renders and controls the fast scroll thumb.
      */
-    AutoPtr<FastScroller> mFastScroller;
+    AutoPtr<FastScroller> mFastScroll;
+
+    /**
+     * Temporary holder for fast scroller style until a FastScroller object
+     * is created.
+     */
+    Int32 mFastScrollStyle;
 
     Boolean mGlobalLayoutListenerAddedFilter;
 
@@ -2087,6 +2828,15 @@ private:
     Int32 mMaximumVelocity;
 
     Float mVelocityScale;
+
+    AutoPtr< ArrayOf<Int32> > mScrollOffset;
+    AutoPtr< ArrayOf<Int32> > mScrollConsumed;
+
+    // Used for offsetting MotionEvents that we feed to the VelocityTracker.
+    // In the future it would be nice to be able to give this to the VelocityTracker
+    // directly, or alternatively put a VT into absolute-positioning mode that only
+    // reads the raw screen-coordinate x/y values.
+    Int32 mNestedYOffset;
 
     // True when the popup should be hidden because of a call to
     // dispatchDisplayHint()
@@ -2159,6 +2909,11 @@ private:
      * it.
      */
     AutoPtr<CAbsListViewSavedState> mPendingSync;
+
+    /**
+     * Whether the view is in the process of detaching from its window.
+     */
+    Boolean mIsDetaching;
 
 };
 

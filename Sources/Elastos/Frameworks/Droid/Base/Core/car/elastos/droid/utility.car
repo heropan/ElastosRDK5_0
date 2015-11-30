@@ -226,6 +226,16 @@ module
         interface ICloneable;
     }
 
+    class CSparseBooleanArray {
+        constructor();
+
+        constructor(
+            [in] Int32 initialCapacity);
+
+        interface ISparseBooleanArray;
+        interface ICloneable;
+    }
+
     class CSparseInt32Array {
         constructor();
 

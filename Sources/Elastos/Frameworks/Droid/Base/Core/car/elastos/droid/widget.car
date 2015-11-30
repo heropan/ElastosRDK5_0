@@ -154,6 +154,7 @@ module
     interface Elastos.Droid.View.IViewManager;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.View.IViewBaseSavedState;
    //  interface Elastos.Droid.View.IOnPreDrawListener;
    //  interface Elastos.Droid.View.IGestureDetectorOnGestureListener;
    //  interface Elastos.Droid.View.IOnTouchModeChangeListener;
@@ -622,15 +623,16 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  class CAbsListViewSavedState {
-   //      constructor(
-   //          [in] IParcelable* superState);
+    class CAbsListViewSavedState {
+        constructor(
+            [in] IParcelable* superState);
 
-   //      constructor();
+        constructor();
 
-   //      interface IAbsListViewSavedState;
-   //      interface IParcelable;
-   //  }
+        interface IAbsListViewSavedState;
+        interface IViewBaseSavedState;
+        interface IParcelable;
+    }
 
    //  [local]
    //  class CDialerFilter {
@@ -996,26 +998,27 @@ module
    //      interface IProgressBarSavedState;
    //  }
 
-   //  [local]
-   //  class CAbsListViewLayoutParams {
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+    [local]
+    class CAbsListViewLayoutParams {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] Int32 w,
-   //          [in] Int32 h);
+        constructor(
+            [in] Int32 w,
+            [in] Int32 h);
 
-   //      constructor(
-   //          [in] Int32 w,
-   //          [in] Int32 h,
-   //          [in] Int32 viewType);
+        constructor(
+            [in] Int32 w,
+            [in] Int32 h,
+            [in] Int32 viewType);
 
-   //      constructor(
-   //          [in] IViewGroupLayoutParams* source);
+        constructor(
+            [in] IViewGroupLayoutParams* source);
 
-   //      interface IAbsListViewLayoutParams;
-   //  }
+        interface IAbsListViewLayoutParams;
+        interface IViewGroupLayoutParams;
+  }
 
    //  [local]
    // class CScroller {
