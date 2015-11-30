@@ -7,11 +7,17 @@
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/Typeface.h"
+//#include "elastos/droid/provider/CSettingsSecure.h"
+#include "elastos/droid/text/Layout.h"
+#include "elastos/droid/text/CDynamicLayout.h"
+#include "elastos/droid/text/CStaticLayout.h"
+#include "elastos/droid/text/BoringLayout.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/CTextPaint.h"
 #include "elastos/droid/text/CSpannedString.h"
 #include "elastos/droid/text/CSpannableString.h"
+#include "elastos/droid/text/TextDirectionHeuristics.h"
 #include "elastos/droid/text/method/CMetaKeyKeyListenerHelper.h"
 #include "elastos/droid/text/CBoringLayoutMetrics.h"
 #include "elastos/droid/text/CEditableFactory.h"
@@ -30,19 +36,28 @@
 #include "elastos/droid/text/method/CPasswordTransformationMethodHelper.h"
 #include "elastos/droid/text/method/CDateTimeKeyListenerHelper.h"
 #include "elastos/droid/text/method/CDialerKeyListenerHelper.h"
+#include "elastos/droid/text/method/CSingleLineTransformationMethodHelper.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/AsyncTask.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/utility/CTypedValueHelper.h"
-//#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 //#include "elastos/droid/view/CViewConfigurationHelper.h"
 //#include "elastos/droid/view/CKeyEvent.h"
 #include "elastos/droid/view/Gravity.h"
 #include "elastos/droid/view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
+#include "elastos/droid/view/inputmethod/BaseInputConnection.h"
+//#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IUndoOwner;
+using Elastos::Droid::Content::IClipDataItem;
+using Elastos::Droid::Content::IClipDataHelper;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IClipboardManager;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::IColorStateListHelper;
@@ -58,11 +73,21 @@ using Elastos::Droid::Graphics::Insets;
 using Elastos::Droid::Graphics::Typeface;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
 using Elastos::Droid::InputMethodService::EIID_IExtractEditText;
+using Elastos::Droid::Provider::ISettingsSecure;
+//using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Text::Layout;
+using Elastos::Droid::Text::ILengthFilter;
+using Elastos::Droid::Text::IDynamicLayout;
+using Elastos::Droid::Text::CDynamicLayout;
+using Elastos::Droid::Text::IStaticLayout;
+using Elastos::Droid::Text::BoringLayout;
+using Elastos::Droid::Text::CStaticLayout;
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::IInputType;
 using Elastos::Droid::Text::CTextPaint;
 using Elastos::Droid::Text::EIID_IGetChars;
+using Elastos::Droid::Text::EIID_IParcelableSpan;
 using Elastos::Droid::Text::EIID_IGraphicsOperations;
 using Elastos::Droid::Text::EIID_ITextWatcher;
 using Elastos::Droid::Text::EIID_ISpanWatcher;
@@ -74,9 +99,13 @@ using Elastos::Droid::Text::CBoringLayoutMetrics;
 using Elastos::Droid::Text::CLengthFilter;
 using Elastos::Droid::Text::ISpannableString;
 using Elastos::Droid::Text::CSpannableString;
+using Elastos::Droid::Text::TextDirectionHeuristics;
 using Elastos::Droid::Text::Style::ISuggestionSpan;
+using Elastos::Droid::Text::Style::EIID_IClickableSpan;
 using Elastos::Droid::Text::Style::EIID_ISuggestionSpan;
 using Elastos::Droid::Text::Style::EIID_IURLSpan;
+using Elastos::Droid::Text::Style::EIID_ISpellCheckSpan;
+using Elastos::Droid::Text::Style::IClickableSpan;
 using Elastos::Droid::Text::Utility::Linkify;
 using Elastos::Droid::Text::Method::ITextKeyListener;
 using Elastos::Droid::Text::Method::DigitsKeyListener;
@@ -111,7 +140,13 @@ using Elastos::Droid::Text::Method::CDateTimeKeyListenerHelper;
 using Elastos::Droid::Text::Method::IDateTimeKeyListener;
 using Elastos::Droid::Text::Method::IDialerKeyListenerHelper;
 using Elastos::Droid::Text::Method::CDialerKeyListenerHelper;
+using Elastos::Droid::Text::Method::ISingleLineTransformationMethod;
+using Elastos::Droid::Text::Method::ISingleLineTransformationMethodHelper;
+using Elastos::Droid::Text::Method::CSingleLineTransformationMethodHelper;
 using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::IBaseBundle;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::ITypedValueHelper;
@@ -120,263 +155,30 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IDispatcherState;
 using Elastos::Droid::View::IViewTreeObserver;
+using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_IFrameCallback;
 using Elastos::Droid::View::EIID_IOnPreDrawListener;
 using Elastos::Droid::View::IViewConfigurationHelper;
+using Elastos::Droid::View::IHapticFeedbackConstants;
 //using Elastos::Droid::View::CViewConfigurationHelper;
 using Elastos::Droid::View::Gravity;
 //using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IViewConfiguration;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::CAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
+using Elastos::Droid::View::InputMethod::BaseInputConnection;
 //using Elastos::Droid::View::InputMethod::CInputMethodManager;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Utility::Logging::Logger;
-
-/*#include <elastos.h>
-
-#include <elastos/core/Character.h>
-#include "elastos/droid/R.h"
-
-#include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/os/AsyncTask.h"
-
-
-
-
-
-#include "elastos/droid/text/BoringLayout.h"
-#include "elastos/droid/text/CStaticLayout.h"
-#include "elastos/droid/text/CDynamicLayout.h"
-
-
-
-
-#include "elastos/droid/text/CSpannedString.h"
-#include "elastos/droid/text/TextDirectionHeuristics.h"
-#include "elastos/droid/text/method/MetaKeyKeyListener.h"
-#include "elastos/droid/text/method/TextKeyListener.h"
-
-#include "elastos/droid/text/method/TimeKeyListener.h"
-#include "elastos/droid/text/method/TimeKeyListener.h"
-#include "elastos/droid/text/method/DialerKeyListener.h"
-#include "elastos/droid/text/method/DialerKeyListener.h"
-
-
-
-
-
-#include "elastos/droid/text/method/CSingleLineTransformationMethodHelper.h"
-
-
-
-
-
-
-#include "elastos/droid/text/method/DigitsKeyListener.h"
-
-
-
-
-
-
-
-#include "elastos/droid/view/ViewRootImpl.h"
-
-#include "elastos/droid/view/animation/AnimationUtils.h"
-
-//#include "elastos/droid/view/inputmethod/CExtractedTextRequest.h"
-#include "elastos/droid/view/inputmethod/BaseInputConnection.h"
-
-#include "elastos/droid/widget/CTextViewSavedState.h"
-//#include "elastos/droid/widget/CTextViewCommitSelectionReceiver.h"
-#include "elastos/droid/widget/internal/CEditableInputConnection.h"
-
-#include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
-#include "elastos/droid/provider/CSettingsSecure.h"
-#include "elastos/droid/graphics/CTypefaceHelper.h"
-*/
-
-/*
-
-using Elastos::Core::EIID_ICharSequence;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
-
-
-using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
-
-
-
-
-
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Os::AsyncTask;
-
-using Elastos::Droid::Utility::ITypedValue;
-//using Elastos::Droid::Utility::CTypedValue;
-
-
-
-using Elastos::Droid::InputMethodService::IExtractEditText;
-
-using Elastos::Droid::Content::IClipboardManager;
-using Elastos::Droid::Content::IClipDataItem;
-using Elastos::Droid::Content::IClipData;
-using Elastos::Droid::Content::IClipDataHelper;
-//using Elastos::Droid::Content::CClipDataHelper;
-
-
-
-//using Elastos::Droid::Content::Res::CResourcesHelper;
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Content::Res::IResourcesHelper;
-
-
-
-
-
-
-using Elastos::Droid::Provider::ISettingsSecure;
-using Elastos::Droid::Provider::CSettingsSecure;
-using Elastos::Droid::Text::EIID_IGetChars;
-using Elastos::Droid::Text::EIID_IGraphicsOperations;
-using Elastos::Droid::Text::EIID_ITextWatcher;
-using Elastos::Droid::Text::EIID_ISpanWatcher;
-using Elastos::Droid::Text::EIID_INoCopySpan;
-using Elastos::Droid::Text::EIID_IParcelableSpan;
-using Elastos::Droid::Text::EIID_ISpannable;
-using Elastos::Droid::Text::EIID_ISpanned;
-using Elastos::Droid::Text::EIID_IEditable;
-
-
-using Elastos::Droid::Text::Layout;
-using Elastos::Droid::Text::IParcelableSpan;
-using Elastos::Droid::Text::IStaticLayout;
-using Elastos::Droid::Text::CStaticLayout;
-using Elastos::Droid::Text::IDynamicLayout;
-using Elastos::Droid::Text::CDynamicLayout;
-using Elastos::Droid::Text::BoringLayout;
-
-using Elastos::Droid::Text::TextDirectionHeuristics;
-
-
-
-
-
-
-using Elastos::Droid::Text::CSpannedString;
-using Elastos::Droid::Text::ALIGN_NORMAL;
-using Elastos::Droid::Text::ALIGN_OPPOSITE;
-using Elastos::Droid::Text::ALIGN_CENTER;
-using Elastos::Droid::Text::ALIGN_LEFT;
-using Elastos::Droid::Text::ALIGN_RIGHT;
-using Elastos::Droid::Text::ALIGN_NONE;
-using Elastos::Droid::Text::TextUtilsTruncateAt;
-using Elastos::Droid::Text::TextUtilsTruncateAt_START;
-using Elastos::Droid::Text::TextUtilsTruncateAt_MIDDLE;
-using Elastos::Droid::Text::TextUtilsTruncateAt_END;
-using Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE;
-using Elastos::Droid::Text::TextUtilsTruncateAt_NONE;
-using Elastos::Droid::Text::TextUtilsTruncateAt_END_SMALL;
-
-
-using Elastos::Droid::Text::Style::EIID_ISpellCheckSpan;
-using Elastos::Droid::Text::Style::EIID_IClickableSpan;
-using Elastos::Droid::Text::Style::ISpellCheckSpan;
-using Elastos::Droid::Text::Style::IClickableSpan;
-using Elastos::Droid::Text::Style::IUpdateAppearance;
-using Elastos::Droid::Text::Style::IParagraphStyle;
-
-
-
-
-
-
-using Elastos::Droid::Text::Method::CMetaKeyKeyListenerHelper;
-
-
-
-
-
-
-
-
-
-
-using Elastos::Droid::Text::Method::EIID_IKeyListener;
-
-
-
-
-using Elastos::Droid::Text::Method::IArrowKeyMovementMethodHelper;
-
-//
-
-
-using Elastos::Droid::Text::Method::IArrowKeyMovementMethod;
-
-using Elastos::Droid::Text::Method::CArrowKeyMovementMethodHelper;
-using Elastos::Droid::Text::Method::ISingleLineTransformationMethod;
-using Elastos::Droid::Text::Method::ISingleLineTransformationMethodHelper;
-using Elastos::Droid::Text::Method::CSingleLineTransformationMethodHelper;
-
-using Elastos::Droid::Text::Method::EIID_ITransformationMethod2;
-
-using Elastos::Droid::Text::Method::Capitalize_NONE;
-using Elastos::Droid::Text::Method::Capitalize_SENTENCES;
-using Elastos::Droid::Text::Method::Capitalize_WORDS;
-using Elastos::Droid::Text::Method::Capitalize_CHARACTERS;
-//using Elastos::Droid::Text::Method::CMetaKeyKeyListenerHelper;
-
-
-using Elastos::Droid::Text::Method::CAllCapsTransformationMethod;
-
-
-
-
-
-using Elastos::Droid::Graphics::ITypefaceHelper;
-using Elastos::Droid::Graphics::CTypefaceHelper;
-using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
-using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
-
-using Elastos::Droid::View::EIID_IView;
-using Elastos::Droid::View::EIID_IOnPreDrawListener;
-
-using Elastos::Droid::View::ViewRootImpl;
-
-
-using Elastos::Droid::View::IHapticFeedbackConstants;
-using Elastos::Droid::View::IKeyCharacterMap;
-using Elastos::Droid::View::ILineTextSegmentIterator;
-using Elastos::Droid::View::IPageTextSegmentIterator;
-using Elastos::Droid::View::Animation::AnimationUtils;
-
-using Elastos::Droid::View::Accessibility::CAccessibilityManager;
-using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
-using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
-using Elastos::Droid::View::InputMethod::IEditorInfo;
-
-using Elastos::Droid::View::InputMethod::BaseInputConnection;
-using Elastos::Droid::View::Textservice::ISpellCheckerSubtype;
-// using Elastos::Droid::View::Textservice::ITextServicesManager;
-
-using Elastos::Droid::Widget::BufferType_NORMAL;
-using Elastos::Droid::Widget::BufferType_SPANNABLE;
-using Elastos::Droid::Widget::BufferType_EDITABLE;
-using Elastos::Droid::Widget::Internal::CEditableInputConnection;
-using Elastos::Droid::Widget::Internal::IEditableInputConnection;*/
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -1232,9 +1034,10 @@ static AutoPtr<CRectF> InitCRectF()
     return r;
 }
 
-static AutoPtr<ArrayOf<IInputFilter*> > InitNO_FILTERS()
+static AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> > InitNO_FILTERS()
 {
-    AutoPtr<ArrayOf<IInputFilter*> > filters = ArrayOf<IInputFilter*>::Alloc(0);
+    AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> > filters
+        = ArrayOf<Elastos::Droid::Text::IInputFilter*>::Alloc(0);
     return filters;
 }
 
@@ -2249,9 +2052,10 @@ ECode TextView::InitFromAttributes(
     }
 
     if (maxlength >= 0) {
-        AutoPtr<IInputFilter> lenFilter;
-        CLengthFilter::New(maxlength, (IInputFilter**)&lenFilter);
-        AutoPtr<ArrayOf<IInputFilter*> > lenFilters = ArrayOf<IInputFilter*>::Alloc(1);
+        AutoPtr<Elastos::Droid::Text::IInputFilter> lenFilter;
+        CLengthFilter::New(maxlength, (Elastos::Droid::Text::IInputFilter**)&lenFilter);
+        AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> > lenFilters
+            = ArrayOf<Elastos::Droid::Text::IInputFilter*>::Alloc(1);
         lenFilters->Set(0, lenFilter);
         SetFilters(lenFilters);
     }
@@ -4571,7 +4375,7 @@ ECode TextView::SetText(
         assert(mEditableFactory != NULL);
         AutoPtr<IEditable> t;
         mEditableFactory->NewEditable(text, (IEditable**)&t);
-        text = t;
+        text = ICharSequence::Probe(t);
         SetFilters(t, mFilters);
         assert(0);
         AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::PeekInstance();
@@ -4582,7 +4386,7 @@ ECode TextView::SetText(
     else if (type == BufferType_SPANNABLE || mMovement != NULL) {
         AutoPtr<ISpannable> t;
         mSpannableFactory->NewSpannable(text, (ISpannable**)&t);
-        text = t;
+        text = ICharSequence::Probe(t);
     }
     else {
         assert(0);
@@ -4602,7 +4406,7 @@ ECode TextView::SetText(
         }
 
         if (Linkify::AddLinks(s2, mAutoLinkMask)) {
-            text = s2;
+            text = ICharSequence::Probe(s2);
             type = (type == BufferType_EDITABLE) ? BufferType_EDITABLE : BufferType_SPANNABLE;
 
             mText = text;
@@ -4849,10 +4653,10 @@ AutoPtr<ICharSequence> TextView::RemoveSuggestionSpans(
        AutoPtr<ISpannable> spannable;
        if (ISpannable::Probe(text)) {
            spannable = ISpannable::Probe(text);
-           retText = spannable;
+           retText = ICharSequence::Probe(spannable);
        } else {
             CSpannableString::New(text, (ISpannableString**)&spannable);
-            retText = spannable;
+            retText = ICharSequence::Probe(spannable);
        }
 
        Int32 length(0);
@@ -4890,7 +4694,7 @@ ECode TextView::SetInputType(
          SetTypefaceFromAttrs(nullStr /* fontFamily */, MONOSPACE, 0);
     }
     else if (isVisiblePassword) {
-        if (mTransformation == ptm) {
+        if (mTransformation.Get() == ITransformationMethod::Probe(ptm)) {
             forceUpdate = TRUE;
         }
         SetTypefaceFromAttrs(nullStr /* fontFamily */, MONOSPACE, 0);
@@ -4898,7 +4702,7 @@ ECode TextView::SetInputType(
     else if (wasPassword || wasVisiblePassword) {
         // not in password mode, clean up typeface and transformation
         SetTypefaceFromAttrs(nullStr /* fontFamily */, -1, -1);
-        if (mTransformation == ptm) {
+        if (mTransformation.Get() == ITransformationMethod::Probe(ptm)) {
             forceUpdate = TRUE;
         }
     }
@@ -5298,7 +5102,7 @@ void TextView::RestartMarqueeIfNeeded()
 }
 
 ECode TextView::SetFilters(
-    /* [in] */ ArrayOf<IInputFilter*>* filters)
+    /* [in] */ ArrayOf<Elastos::Droid::Text::IInputFilter*>* filters)
 {
     if (filters == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -5317,7 +5121,7 @@ ECode TextView::SetFilters(
 
 ECode TextView::SetFilters(
     /* [in] */ IEditable* e,
-    /* [in] */ ArrayOf<IInputFilter*>* filters)
+    /* [in] */ ArrayOf<Elastos::Droid::Text::IInputFilter*>* filters)
 {
     assert(0);
     /*if (mEditor) {
@@ -5352,7 +5156,7 @@ ECode TextView::SetFilters(
     return NOERROR;
 }
 
-AutoPtr<ArrayOf<IInputFilter*> > TextView::GetFilters()
+AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> > TextView::GetFilters()
 {
    return mFilters;
 }
@@ -6846,19 +6650,20 @@ AutoPtr<IInputConnection> TextView::OnCreateInputConnection(
             outAttrs->SetActionLabel(mEditor->mInputContentType->mImeActionLabel);
             outAttrs->SetActionId(mEditor->mInputContentType->mImeActionId);
             outAttrs->SetExtras(mEditor->mInputContentType->mExtras);
-        }*/
+        }
         else {
            outAttrs->SetImeOptions(IEditorInfo::IME_NULL);
-        }
+        }*/
 
         Int32 options = 0;
-        if (FocusSearch(IView::FOCUS_DOWN) != NULL) {
+        AutoPtr<IView> searchedView;
+        if (NULL != (FocusSearch(IView::FOCUS_DOWN, (IView**)&searchedView), searchedView)) {
             outAttrs->GetImeOptions(&options);
             options |= IEditorInfo::IME_FLAG_NAVIGATE_NEXT;
             outAttrs->SetImeOptions(options);
         }
 
-        if (FocusSearch(IView::FOCUS_UP) != NULL) {
+        if (NULL != (FocusSearch(IView::FOCUS_UP, (IView**)&searchedView), searchedView)) {
             outAttrs->GetImeOptions(&options);
             options |= IEditorInfo::IME_FLAG_NAVIGATE_PREVIOUS;
             outAttrs->SetImeOptions(options);
@@ -6898,7 +6703,8 @@ AutoPtr<IInputConnection> TextView::OnCreateInputConnection(
         outAttrs->SetHintText(mHint);
         if (IEditable::Probe(mText) != NULL) {
            AutoPtr<IInputConnection> ic;
-           CEditableInputConnection::New(THIS_PROBE(ITextView), (IEditableInputConnection**)&ic);
+           assert(0);
+           //CEditableInputConnection::New(THIS_PROBE(ITextView), (IEditableInputConnection**)&ic);
            outAttrs->SetInitialSelStart(GetSelectionStart());
            outAttrs->SetInitialSelEnd(GetSelectionEnd());
 
@@ -6917,7 +6723,8 @@ Boolean TextView::ExtractText(
     /* [in] */ IExtractedText* outText)
 {
     CreateEditorIfNeeded();
-    return mEditor->ExtractText(request, outText);
+    assert(0);
+    //return mEditor->ExtractText(request, outText);
 }
 
 /**
@@ -6931,7 +6738,7 @@ void TextView::RemoveParcelableSpans(
     /* [in] */ Int32 end)
 {
     AutoPtr<ArrayOf<IInterface*> > spans;
-    spannable->GetSpans(start, end, EIID_IParcelableSpan, (ArrayOf<IInterface*>**)&spans);
+    ISpanned::Probe(spannable)->GetSpans(start, end, EIID_IParcelableSpan, (ArrayOf<IInterface*>**)&spans);
     for (Int32 i = spans->GetLength() - 1; i > 0; --i) {
         spannable->RemoveSpan((*spans)[i]);
     }
@@ -6953,14 +6760,14 @@ ECode TextView::SetExtractedText(
         }
         else if (start < 0) {
             Int32 length;
-            content->GetLength(&length);
+            ICharSequence::Probe(content)->GetLength(&length);
             RemoveParcelableSpans(ISpannable::Probe(content), 0, length);
-            content->GetLength(&length);
+            ICharSequence::Probe(content)->GetLength(&length);
             content->Replace(0, length, tt);
         }
         else {
             Int32 N;
-            content->GetLength(&N);
+            ICharSequence::Probe(content)->GetLength(&N);
             if (start > N) start = N;
             Int32 end;
             text->GetPartialEndOffset(&end);
@@ -7005,14 +6812,15 @@ ECode TextView::SetExtractedText(
 ECode TextView::SetExtracting(
     /* [in] */ IExtractedTextRequest* req)
 {
-    if (mEditor != NULL && mEditor->mInputMethodState != NULL) {
+    assert(0);
+    /*if (mEditor != NULL && mEditor->mInputMethodState != NULL) {
         mEditor->mInputMethodState->mExtractedTextRequest = req;
 
         // This would stop a possible selection mode, but no such mode is started in case
         // extracted mode will start. Some text is selected though, and will trigger an action mode
         // in the extracted view.
         mEditor->HideControllers();
-    }
+    }*/
     return NOERROR;
 }
 
@@ -7075,7 +6883,8 @@ void TextView::NullLayouts()
     mBoring = mHintBoring = NULL;
 
     // Since it depends on the value of mLayout
-    if (mEditor != NULL) mEditor->PrepareCursorControllers();
+    assert(0);
+    //if (mEditor != NULL) mEditor->PrepareCursorControllers();
 }
 
 void TextView::AssumeLayout()
@@ -7099,55 +6908,57 @@ void TextView::AssumeLayout()
 LayoutAlignment TextView::GetLayoutAlignment()
 {
     LayoutAlignment alignment;
-
-    if (GetTextAlignment()) {
-        switch (mResolvedTextAlignment) {
-                case IView::TEXT_ALIGNMENT_GRAVITY:
-                    switch (mGravity & IGravity::RELATIVE_HORIZONTAL_GRAVITY_MASK) {
-                        case IGravity::START:
-                            alignment = ALIGN_NORMAL;
-                            break;
-                        case IGravity::END:
-                            alignment = ALIGN_OPPOSITE;
-                            break;
-                        case IGravity::LEFT:
-                            alignment = ALIGN_LEFT;
-                            break;
-                        case IGravity::RIGHT:
-                            alignment = ALIGN_RIGHT;
-                            break;
-                        case IGravity::CENTER_HORIZONTAL:
-                            alignment = ALIGN_CENTER;
-                            break;
-                        default:
-                            alignment = ALIGN_NORMAL;
-                            break;
-                    }
+    Int32 alignmentNum;
+    switch (GetTextAlignment(&alignmentNum), alignmentNum) {
+        case IView::TEXT_ALIGNMENT_GRAVITY:
+            switch (mGravity & IGravity::RELATIVE_HORIZONTAL_GRAVITY_MASK) {
+                case IGravity::START:
+                    alignment = Elastos::Droid::Text::ALIGN_NORMAL;
                     break;
-                case IView::TEXT_ALIGNMENT_TEXT_START:
-                    alignment = ALIGN_NORMAL;
+                case IGravity::END:
+                    alignment = Elastos::Droid::Text::ALIGN_OPPOSITE;
                     break;
-                case IView::TEXT_ALIGNMENT_TEXT_END:
-                    alignment = ALIGN_OPPOSITE;
+                case IGravity::LEFT:
+                    alignment = Elastos::Droid::Text::ALIGN_LEFT;
                     break;
-                case IView::TEXT_ALIGNMENT_CENTER:
-                    alignment = ALIGN_CENTER;
+                case IGravity::RIGHT:
+                    alignment = Elastos::Droid::Text::ALIGN_RIGHT;
                     break;
-                case IView::TEXT_ALIGNMENT_VIEW_START:
-                    alignment = (GetLayoutDirection() == IView::LAYOUT_DIRECTION_RTL) ?
-                        ALIGN_RIGHT : ALIGN_LEFT;
+                case IGravity::CENTER_HORIZONTAL:
+                    alignment = Elastos::Droid::Text::ALIGN_CENTER;
                     break;
-                case IView::TEXT_ALIGNMENT_VIEW_END:
-                    alignment = (GetLayoutDirection() == IView::LAYOUT_DIRECTION_RTL) ?
-                        ALIGN_LEFT : ALIGN_RIGHT;
-                    break;
-                case IView::TEXT_ALIGNMENT_INHERIT:
-                    // This should never happen as we have already resolved the text alignment
-                    // but better safe than sorry so we just fall through
                 default:
-                    alignment = ALIGN_NORMAL;
+                    alignment = Elastos::Droid::Text::ALIGN_NORMAL;
                     break;
+            }
+            break;
+        case IView::TEXT_ALIGNMENT_TEXT_START:
+            alignment = Elastos::Droid::Text::ALIGN_NORMAL;
+            break;
+        case IView::TEXT_ALIGNMENT_TEXT_END:
+            alignment = Elastos::Droid::Text::ALIGN_OPPOSITE;
+            break;
+        case IView::TEXT_ALIGNMENT_CENTER:
+            alignment = Elastos::Droid::Text::ALIGN_CENTER;
+            break;
+        case IView::TEXT_ALIGNMENT_VIEW_START: {
+            Int32 direction;
+            alignment = ((GetLayoutDirection(&direction), direction) == IView::LAYOUT_DIRECTION_RTL) ?
+                Elastos::Droid::Text::ALIGN_RIGHT : Elastos::Droid::Text::ALIGN_LEFT;
+            break;
         }
+        case IView::TEXT_ALIGNMENT_VIEW_END: {
+            Int32 direction;
+            alignment = ((GetLayoutDirection(&direction), direction) == IView::LAYOUT_DIRECTION_RTL) ?
+                Elastos::Droid::Text::ALIGN_LEFT : Elastos::Droid::Text::ALIGN_RIGHT;
+            break;
+        }
+        case IView::TEXT_ALIGNMENT_INHERIT:
+            // This should never happen as we have already resolved the text alignment
+            // but better safe than sorry so we just fall through
+        default:
+            alignment = Elastos::Droid::Text::ALIGN_NORMAL;
+            break;
     }
     return alignment;
 }
@@ -7180,18 +6991,20 @@ void TextView::MakeNewLayout(
     LayoutAlignment alignment = GetLayoutAlignment();
 
     Boolean testDirChange = mSingleLine && mLayout != NULL &&
-        (alignment == ALIGN_NORMAL || alignment == ALIGN_OPPOSITE);
+        (alignment == Elastos::Droid::Text::ALIGN_NORMAL
+        || alignment == Elastos::Droid::Text::ALIGN_OPPOSITE);
     Int32 oldDir = 0;
     if (testDirChange) mLayout->GetParagraphDirection(0, &oldDir);
 
     AutoPtr<IKeyListener> keyListener = GetKeyListener();
-    Boolean shouldEllipsize = mEllipsize != TextUtilsTruncateAt_NONE && keyListener == NULL;
+    Boolean shouldEllipsize = mEllipsize !=
+        Elastos::Droid::Text::TextUtilsTruncateAt_NONE && keyListener == NULL;
     Boolean switchEllipsize = mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE &&
         mMarqueeFadeMode != MARQUEE_FADE_NORMAL;
     TextUtilsTruncateAt effectiveEllipsize = mEllipsize;
     if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE &&
         mMarqueeFadeMode == MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
-            effectiveEllipsize = TextUtilsTruncateAt_END_SMALL;
+            effectiveEllipsize = Elastos::Droid::Text::TextUtilsTruncateAt_END_SMALL;
     }
 
     if (mTextDir == NULL) {
@@ -7208,7 +7021,7 @@ void TextView::MakeNewLayout(
             shouldEllipsize, oppositeEllipsize, effectiveEllipsize != mEllipsize);
     }
 
-    shouldEllipsize = mEllipsize != TextUtilsTruncateAt_NONE;
+    shouldEllipsize = mEllipsize != Elastos::Droid::Text::TextUtilsTruncateAt_NONE;
     mHintLayout = NULL;
 
     if (mHint != NULL) {
@@ -7233,9 +7046,9 @@ void TextView::MakeNewLayout(
                             hintBoring, mIncludePad, (IBoringLayout**)&mHintLayout);
                 }
                 else {
-                    mHintLayout = BoringLayout::Make(mHint, mTextPaint,
-                            hintWidth, alignment, mSpacingMult, mSpacingAdd,
-                            hintBoring, mIncludePad);
+                    mHintLayout = ILayout::Probe(BoringLayout::Make(mHint, mTextPaint,
+                        hintWidth, alignment, mSpacingMult, mSpacingAdd,
+                        hintBoring, mIncludePad));
                 }
 
                 mSavedHintLayout = (IBoringLayout*)mHintLayout.Get();
@@ -7249,10 +7062,10 @@ void TextView::MakeNewLayout(
                             ellipsisWidth, (IBoringLayout**)&mHintLayout);
                 }
                 else {
-                    mHintLayout = BoringLayout::Make(mHint, mTextPaint,
-                            hintWidth, alignment, mSpacingMult, mSpacingAdd,
-                            hintBoring, mIncludePad, mEllipsize,
-                            ellipsisWidth);
+                    mHintLayout = ILayout::Probe(BoringLayout::Make(mHint, mTextPaint,
+                        hintWidth, alignment, mSpacingMult, mSpacingAdd,
+                        hintBoring, mIncludePad, mEllipsize,
+                        ellipsisWidth));
                 }
             }
             else if (shouldEllipsize) {
@@ -7307,7 +7120,8 @@ void TextView::MakeNewLayout(
     }
 
     // CursorControllers need a non-NULL mLayout
-    if (mEditor != NULL) mEditor->PrepareCursorControllers();
+    assert(0);
+    //if (mEditor != NULL) mEditor->PrepareCursorControllers();
 
 }
 
@@ -7326,7 +7140,7 @@ AutoPtr<ILayout> TextView::MakeSingleLayout(
         AutoPtr<IKeyListener> keyListener = GetKeyListener();
         ASSERT_SUCCEEDED(CDynamicLayout::New(mText, mTransformed, mTextPaint, wantWidth,
             alignment, mTextDir, mSpacingMult, mSpacingAdd, mIncludePad,
-            keyListener == NULL ? effectiveEllipsize : TextUtilsTruncateAt_NONE,
+            keyListener == NULL ? effectiveEllipsize : Elastos::Droid::Text::TextUtilsTruncateAt_NONE,
             ellipsisWidth, (IDynamicLayout**)&result));
     }
     else {
@@ -7342,15 +7156,19 @@ AutoPtr<ILayout> TextView::MakeSingleLayout(
             Int32 bwidth;
             boring->GetWidth(&bwidth);
             if (bwidth <= wantWidth &&
-                (effectiveEllipsize == TextUtilsTruncateAt_NONE || bwidth <= ellipsisWidth)) {
+                (effectiveEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_NONE
+                || bwidth <= ellipsisWidth)) {
                     if (useSaved && mSavedLayout != NULL) {
+                        AutoPtr<IBoringLayout> temp;
                         mSavedLayout->ReplaceOrMake(mTransformed, mTextPaint,
                             wantWidth, alignment, mSpacingMult, mSpacingAdd,
-                            boring, mIncludePad, (IBoringLayout**)&result);
+                            boring, mIncludePad, (IBoringLayout**)&temp);
+                        result = ILayout::Probe(temp);
+
                     } else {
-                        result = BoringLayout::Make(mTransformed, mTextPaint,
+                        result = ILayout::Probe(BoringLayout::Make(mTransformed, mTextPaint,
                             wantWidth, alignment, mSpacingMult, mSpacingAdd,
-                            boring, mIncludePad);
+                            boring, mIncludePad));
                     }
                     if (useSaved) {
                         mSavedLayout = (IBoringLayout*) result.Get();
@@ -7362,10 +7180,10 @@ AutoPtr<ILayout> TextView::MakeSingleLayout(
                         boring, mIncludePad, effectiveEllipsize,
                         ellipsisWidth, (IBoringLayout**)&result);
                 } else {
-                    result = BoringLayout::Make(mTransformed, mTextPaint,
+                    result = ILayout::Probe(BoringLayout::Make(mTransformed, mTextPaint,
                         wantWidth, alignment, mSpacingMult, mSpacingAdd,
                         boring, mIncludePad, effectiveEllipsize,
-                        ellipsisWidth);
+                        ellipsisWidth));
                 }
             } else if (shouldEllipsize) {
                 ASSERT_SUCCEEDED(CStaticLayout::New(mTransformed,
@@ -7398,20 +7216,22 @@ AutoPtr<ILayout> TextView::MakeSingleLayout(
 Boolean TextView::CompressText(
     /* [in] */ Float width)
 {
-    if (IsHardwareAccelerated()) return FALSE;
+    Boolean isHardwareAccelerated;
+    if (IsHardwareAccelerated(&isHardwareAccelerated), isHardwareAccelerated) return FALSE;
 
     // Only compress the text if it hasn't been compressed by the previous pass
     Float scaleX;
-    mTextPaint->GetTextScaleX(&scaleX);
+    IPaint::Probe(mTextPaint)->GetTextScaleX(&scaleX);
     if (width > 0.0f && mLayout != NULL && GetLineCount() == 1 && !mUserSetTextScaleX &&
             scaleX == 1.0f) {
         Float textWidth;
         mLayout->GetLineWidth(0, &textWidth);
         Float overflow = (textWidth + 1.0f - width) / width;
         if (overflow > 0.0f && overflow <= Marquee::MARQUEE_DELTA_MAX) {
-            mTextPaint->SetTextScaleX(1.0f - overflow - 0.005f);
+            IPaint::Probe(mTextPaint)->SetTextScaleX(1.0f - overflow - 0.005f);
             AutoPtr<IRunnable> runnable = new CompressTextRunnable(this);
-            Post(runnable);
+            Boolean isPost;
+            Post(runnable, &isPost);
             return TRUE;
         }
     }
@@ -7494,7 +7314,7 @@ void TextView::OnMeasure(
         width = widthSize;
     }
     else {
-        if (mLayout != NULL && mEllipsize == TextUtilsTruncateAt_NONE) {
+        if (mLayout != NULL && mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_NONE) {
             des = Desired(mLayout);
         }
 
@@ -7528,7 +7348,7 @@ void TextView::OnMeasure(
         if (mHint != NULL) {
             Int32 hintDes = -1;
             Int32 hintWidth;
-            if (mHintLayout != NULL && mEllipsize == TextUtilsTruncateAt_NONE) {
+            if (mHintLayout != NULL && mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_NONE) {
                 hintDes = Desired(mHintLayout);
             }
 
@@ -7599,7 +7419,7 @@ void TextView::OnMeasure(
             width - GetCompoundPaddingLeft() - GetCompoundPaddingRight());
 
         Boolean widthChanged = (mHint == NULL) &&
-            (mEllipsize == TextUtilsTruncateAt_NONE) &&
+            (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_NONE) &&
             (want > layoutWidth) &&
             (IBoringLayout::Probe(mLayout) || (fromexisting && des >= 0 && des <= want));
         Boolean maximumChanged = (mMaxMode != mOldMaxMode) || (mMaximum != mOldMaximum);
@@ -7661,7 +7481,7 @@ Int32 TextView::GetDesiredHeight()
 {
     return Elastos::Core::Math::Max(
             GetDesiredHeight(mLayout, TRUE),
-            GetDesiredHeight(mHintLayout, mEllipsize != TextUtilsTruncateAt_NONE));
+            GetDesiredHeight(mHintLayout, mEllipsize != Elastos::Droid::Text::TextUtilsTruncateAt_NONE));
 }
 
 Int32 TextView::GetDesiredHeight(
@@ -7741,8 +7561,8 @@ void TextView::CheckForResize()
         // Check if our height changed
         if (lh == IViewGroupLayoutParams::WRAP_CONTENT) {
             Int32 desiredHeight = GetDesiredHeight();
-
-            if (desiredHeight != GetHeight()) {
+            Int32 height;
+            if (desiredHeight != (GetHeight(&height), height)) {
                 sizeChanged = TRUE;
             }
         }
@@ -7879,15 +7699,15 @@ Boolean TextView::BringTextIntoView()
     Int32 scrollx, scrolly;
 
     // Convert to left, center, or right alignment.
-    if (a == ALIGN_NORMAL) {
+    if (a == Elastos::Droid::Text::ALIGN_NORMAL) {
         a = dir == ILayout::DIR_LEFT_TO_RIGHT ?
-                ALIGN_LEFT : ALIGN_RIGHT;
-    } else if (a == ALIGN_OPPOSITE){
+            Elastos::Droid::Text::ALIGN_LEFT : Elastos::Droid::Text::ALIGN_RIGHT;
+    } else if (a == Elastos::Droid::Text::ALIGN_OPPOSITE){
         a = dir == ILayout::DIR_LEFT_TO_RIGHT ?
-                ALIGN_RIGHT : ALIGN_LEFT;
+            Elastos::Droid::Text::ALIGN_RIGHT : Elastos::Droid::Text::ALIGN_LEFT;
     }
 
-    if (a == ALIGN_CENTER) {
+    if (a == Elastos::Droid::Text::ALIGN_CENTER) {
         /*
          * Keep centered if possible, or, if it is too wide to fit,
          * keep leading edge in view.
@@ -7911,7 +7731,7 @@ Boolean TextView::BringTextIntoView()
             }
         }
     }
-    else if (a == ALIGN_RIGHT) {
+    else if (a == Elastos::Droid::Text::ALIGN_RIGHT) {
         Float lr;
         layout->GetLineRight(line, &lr);
         Int32 right = (Int32) Elastos::Core::Math::Ceil(lr);
@@ -7947,7 +7767,8 @@ Boolean TextView::BringTextIntoView()
 Boolean TextView::BringPointIntoView(
     /* [in] */ Int32 offset)
 {
-    if (IsLayoutRequested()) {
+    Boolean isLayoutRequested;
+    if (IsLayoutRequested(&isLayoutRequested), isLayoutRequested) {
         mDeferScroll = offset;
         return FALSE;
     }
@@ -7966,21 +7787,21 @@ Boolean TextView::BringPointIntoView(
     LayoutAlignment alignment;
     layout->GetParagraphAlignment(line, &alignment);
     switch (alignment) {
-        case ALIGN_LEFT:
+        case Elastos::Droid::Text::ALIGN_LEFT:
             grav = 1;
             break;
 
-        case ALIGN_RIGHT:
+        case Elastos::Droid::Text::ALIGN_RIGHT:
             grav = -1;
             break;
-        case ALIGN_NORMAL:
+        case Elastos::Droid::Text::ALIGN_NORMAL:
             layout->GetParagraphDirection(line, &grav);
             break;
-        case ALIGN_OPPOSITE:
+        case Elastos::Droid::Text::ALIGN_OPPOSITE:
             layout->GetParagraphDirection(line, &grav);
             grav = -grav;
             break;
-        case ALIGN_CENTER:
+        case Elastos::Droid::Text::ALIGN_CENTER:
         default:
             grav = 0;
             break;
@@ -7998,7 +7819,7 @@ Boolean TextView::BringPointIntoView(
     // right where it is most likely to be annoying.
     Boolean clamped = grav > 0;
     // FIXME: Is it okay to truncate this, or should we round?
-    Int32 tempX;
+    Float tempX;
     layout->GetPrimaryHorizontal(offset, clamped, &tempX);
     Int32 x = tempX;
     Int32 top, bottom;
@@ -8137,8 +7958,8 @@ Boolean TextView::BringPointIntoView(
 
         changed = TRUE;
     }
-
-    if (IsFocused()) {
+    Boolean isFocused;
+    if (IsFocused(&isFocused), isFocused) {
         // This offsets because GetInterestingRect() is in terms of viewport coordinates, but
         // requestRectangleOnScreen() is in terms of content coordinates.
 
@@ -8152,8 +7973,8 @@ Boolean TextView::BringPointIntoView(
         mTempRect->Set(x - 2, top, x + 2, bottom);
         GetInterestingRect(mTempRect, line);
         mTempRect->Offset(mScrollX, mScrollY);
-
-        if (RequestRectangleOnScreen(mTempRect)) {
+        Boolean requestRectangleOnScreen;
+        if (RequestRectangleOnScreen(mTempRect, &requestRectangleOnScreen)) {
             changed = TRUE;
         }
     }
@@ -8303,13 +8124,13 @@ void TextView::Debug(
 Int32 TextView::GetSelectionStart()
 {
     AutoPtr<ICharSequence> text = GetText();
-    return Selection::GetSelectionStart(ISpannable::Probe(text));
+    return Selection::GetSelectionStart(ICharSequence::Probe(text));
 }
 
 Int32 TextView::GetSelectionEnd()
 {
     AutoPtr<ICharSequence> text = GetText();
-    return Selection::GetSelectionEnd(ISpannable::Probe(text));
+    return Selection::GetSelectionEnd(ICharSequence::Probe(text));
 }
 
 Boolean TextView::HasSelection()
@@ -8329,11 +8150,12 @@ ECode TextView::SetAllCaps(
     /* [in] */ Boolean allCaps)
 {
     if (allCaps) {
-        AutoPtr<IContext> c = GetContext();
+        AutoPtr<IContext> c;
+        GetContext((IContext**)&c);
         AutoPtr<IAllCapsTransformationMethod> method;
 //TODO        CAllCapsTransformationMethod::New(c, &method);
         assert(0 && "TODO");
-        SetTransformationMethod(method);
+        SetTransformationMethod(ITransformationMethod::Probe(method));
     } else {
         SetTransformationMethod(NULL);
     }
@@ -8352,14 +8174,15 @@ ECode TextView::SetSingleLine(
 void TextView::SetInputTypeSingleLine(
     /* [in] */ Boolean singleLine)
 {
-    if (mEditor != NULL &&
+    assert(0);
+    /*if (mEditor != NULL &&
             (mEditor->mInputType & IInputType::TYPE_MASK_CLASS) == IInputType::TYPE_CLASS_TEXT) {
         if (singleLine) {
             mEditor->mInputType &= ~IInputType::TYPE_TEXT_FLAG_MULTI_LINE;
         } else {
             mEditor->mInputType |= IInputType::TYPE_TEXT_FLAG_MULTI_LINE;
         }
-    }
+    }*/
 }
 
 ECode TextView::ApplySingleLine(
@@ -8429,7 +8252,8 @@ ECode TextView::SetSelectAllOnFocus(
     /* [in] */ Boolean selectAllOnFocus)
 {
     CreateEditorIfNeeded();
-    mEditor->mSelectAllOnFocus = selectAllOnFocus;
+    assert(0);
+    //mEditor->mSelectAllOnFocus = selectAllOnFocus;
 
     if (selectAllOnFocus && !(ISpannable::Probe(mText))) {
         SetText(mText, BufferType_SPANNABLE);
@@ -8440,7 +8264,8 @@ ECode TextView::SetSelectAllOnFocus(
 ECode TextView::SetCursorVisible(
     /* [in] */ Boolean visible)
 {
-    if (visible && mEditor == NULL) return NOERROR; // visible is the default value with no edit data
+    assert(0);
+    /*if (visible && mEditor == NULL) return NOERROR; // visible is the default value with no edit data
     CreateEditorIfNeeded();
     if (mEditor->mCursorVisible != visible) {
         mEditor->mCursorVisible = visible;
@@ -8450,14 +8275,15 @@ ECode TextView::SetCursorVisible(
 
         // InsertionPointCursorController depends on mCursorVisible
         mEditor->PrepareCursorControllers();
-    }
+    }*/
     return NOERROR;
 }
 
 Boolean TextView::IsCursorVisible()
 {
     // TRUE is the default value
-    return mEditor == NULL ? TRUE : mEditor->mCursorVisible;
+    assert(0);
+    //return mEditor == NULL ? TRUE : mEditor->mCursorVisible;
 }
 
 Boolean TextView::CanMarquee()
@@ -8476,11 +8302,15 @@ void TextView::StartMarquee()
     AutoPtr<IKeyListener> keyListener = GetKeyListener();
     if (keyListener != NULL) return;
 
-    if (CompressText(GetWidth() - GetCompoundPaddingLeft() - GetCompoundPaddingRight())) {
+    Int32 width;
+    GetWidth(&width);
+    if (CompressText(width - GetCompoundPaddingLeft() - GetCompoundPaddingRight())) {
         return;
     }
-
-    if ((mMarquee == NULL || mMarquee->IsStopped()) && (IsFocused() || IsSelected()) &&
+    Boolean isFocused, isSelected;
+    if ((mMarquee == NULL || mMarquee->IsStopped())
+        && ((IsFocused(&isFocused), isFocused)
+        || (IsSelected(&isSelected), isSelected)) &&
         GetLineCount() == 1 && CanMarquee()) {
 
         if (mMarqueeFadeMode == MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
@@ -8587,16 +8417,16 @@ void TextView::RemoveIntersectingNonAdjacentSpans(
     if (!text) return;
 
     AutoPtr<ArrayOf<IInterface*> > spans;
-    text->GetSpans(start, end, type, (ArrayOf<IInterface*>**)&spans);
+    ISpanned::Probe(text)->GetSpans(start, end, type, (ArrayOf<IInterface*>**)&spans);
     Int32 length = spans->GetLength();
     for (Int32 i = length - 1; i > 0; --i) {
         Int32 spanStart, spanEnd;
-        text->GetSpanStart((*spans)[i], &spanStart);
-        text->GetSpanEnd((*spans)[i], &spanEnd);
+        ISpanned::Probe(text)->GetSpanStart((*spans)[i], &spanStart);
+        ISpanned::Probe(text)->GetSpanEnd((*spans)[i], &spanEnd);
         // Spans that are adjacent to the edited region will be handled in
         // updateSpellCheckSpans. Result depends on what will be added (space or text)
         if (spanEnd == start || spanStart == end) break;
-        text->RemoveSpan((*spans)[i]);
+        ISpannable::Probe(text)->RemoveSpan((*spans)[i]);
     }
 }
 
@@ -8609,7 +8439,7 @@ void TextView::RemoveAdjacentSuggestionSpans(
     AutoPtr< ArrayOf<IInterface*> > temp;
     (ISpanned::Probe(text))->GetSpans(pos, pos, EIID_ISuggestionSpan, (ArrayOf<IInterface*>**)&temp);
 
-    AutoPtr< ArrayOf<ISuggestionSpan> > spans = ArrayOf<ISuggestionSpan>::Alloc(temp->GetLength());
+    AutoPtr< ArrayOf<ISuggestionSpan*> > spans = ArrayOf<ISuggestionSpan*>::Alloc(temp->GetLength());
     for (Int32 i = 0; i < temp->GetLength(); i++) {
         spans->Set(i, ISuggestionSpan::Probe((*temp)[i]));
     }
@@ -8619,9 +8449,10 @@ void TextView::RemoveAdjacentSuggestionSpans(
         (ISpanned::Probe(text))->GetSpanStart((*temp)[i], &spanStart);
         (ISpanned::Probe(text))->GetSpanEnd((*temp)[i], &spanEnd);
         if (spanEnd == pos || spanStart == pos) {
-            if (SpellChecker::HaveWordBoundariesChanged(text, pos, pos, spanStart, spanEnd)) {
+            assert(0);
+            /*if (SpellChecker::HaveWordBoundariesChanged(text, pos, pos, spanStart, spanEnd)) {
                 (ISpannable::Probe(text))->RemoveSpan((*temp)[i]);
-            }
+            }*/
         }
     }
 }
@@ -8638,7 +8469,8 @@ void TextView::SendOnTextChanged(
     }
 
     if (mEditor != NULL) {
-        mEditor->SendOnTextChanged(start, after);
+        assert(0);
+        //mEditor->SendOnTextChanged(start, after);
     }
 }
 
@@ -8665,7 +8497,8 @@ void TextView::UpdateAfterEdit()
 
     if (curs >= 0) {
         mHighlightPathBogus = TRUE;
-        if (mEditor != NULL) mEditor->MakeBlink();
+        assert(0);
+        //if (mEditor != NULL) mEditor->MakeBlink();
         BringPointIntoView(curs);
     }
 }
@@ -8676,7 +8509,8 @@ void TextView::HandleTextChanged(
     /* [in] */ Int32 before,
     /* [in] */ Int32 after)
 {
-    InputMethodState* ims = mEditor == NULL ? NULL : mEditor->mInputMethodState.Get();
+    assert(0);
+    /*InputMethodState* ims = mEditor == NULL ? NULL : mEditor->mInputMethodState.Get();
 
     if (ims == NULL || ims->mBatchEditNesting == 0) {
         UpdateAfterEdit();
@@ -8692,7 +8526,7 @@ void TextView::HandleTextChanged(
             ims->mChangedEnd = Elastos::Core::Math::Max(ims->mChangedEnd, start + before - ims->mChangedDelta);
         }
         ims->mChangedDelta += after-before;
-    }
+    }*/
 
     ResetErrorChangedFlag();
     SendOnTextChanged(buffer, start, before, after);
@@ -8709,8 +8543,8 @@ ECode TextView::SpanChange(
 {
     // XXX Make the start and end move together if this ends up
     // spending too much time invalidating.
-
-    Boolean selChanged = FALSE;
+    assert(0);
+    /*Boolean selChanged = FALSE;
     Int32 newSelStart=-1, newSelEnd=-1;
 
     InputMethodState* ims = mEditor == NULL ? NULL : mEditor->mInputMethodState.Get();
@@ -8821,7 +8655,7 @@ ECode TextView::SpanChange(
             && ISpellCheckSpan::Probe(what)) {
             mEditor->mSpellChecker->OnSpellCheckSpanRemoved(
                     (ISpellCheckSpan*)(ISpellCheckSpan::Probe(what)));
-    }
+    }*/
 
     return NOERROR;
 }
@@ -8843,7 +8677,8 @@ ECode TextView::OnStartTemporaryDetach()
 
     // Tell the editor that we are temporarily detached. It can use this to preserve
     // selection state as needed.
-    if (mEditor != NULL) mEditor->mTemporaryDetach = TRUE;
+    assert(0);
+    //if (mEditor != NULL) mEditor->mTemporaryDetach = TRUE;
 
     return ec;
 }
@@ -8854,7 +8689,8 @@ ECode TextView::OnFinishTemporaryDetach()
     // Only track when onStartTemporaryDetach() is called directly,
     // usually because this instance is an editable field in a list
     if (!mDispatchTemporaryDetach) mTemporaryDetach = FALSE;
-    if (mEditor != NULL) mEditor->mTemporaryDetach = FALSE;
+    assert(0);
+    //if (mEditor != NULL) mEditor->mTemporaryDetach = FALSE;
     return ec;
 }
 
@@ -8868,8 +8704,8 @@ void TextView::OnFocusChanged(
         View::OnFocusChanged(focused, direction, previouslyFocusedRect);
         return;
     }
-
-    if (mEditor != NULL) mEditor->OnFocusChanged(focused, direction);
+    assert(0);
+    //if (mEditor != NULL) mEditor->OnFocusChanged(focused, direction);
 
     if (focused) {
         AutoPtr<ISpannable> spannable = ISpannable::Probe(mText);
@@ -8895,8 +8731,8 @@ ECode TextView::OnWindowFocusChanged(
     /* [in] */ Boolean hasWindowFocus)
 {
     View::OnWindowFocusChanged(hasWindowFocus);
-
-    if (mEditor != NULL) mEditor->OnWindowFocusChanged(hasWindowFocus);
+    assert(0);
+    //if (mEditor != NULL) mEditor->OnWindowFocusChanged(hasWindowFocus);
 
     StartStopMarquee(hasWindowFocus);
     return NOERROR;
@@ -8908,7 +8744,8 @@ ECode TextView::OnVisibilityChanged(
 {
     View::OnVisibilityChanged(changedView, visibility);
     if (mEditor != NULL && visibility != IView::VISIBLE) {
-        mEditor->HideControllers();
+        assert(0);
+        //mEditor->HideControllers();
     }
 
     return NOERROR;
@@ -8926,7 +8763,8 @@ ECode TextView::ClearComposingText()
 ECode TextView::SetSelected(
     /* [in] */ Boolean selected)
 {
-    Boolean wasSelected = IsSelected();
+    Boolean wasSelected;
+    IsSelected(&wasSelected);
 
     View::SetSelected(selected);
 
@@ -8948,25 +8786,31 @@ Boolean TextView::OnTouchEvent(
     Int32 action;
     event->GetActionMasked(&action);
 
-    if (mEditor != NULL) mEditor->OnTouchEvent(event);
+    assert(0);
+    //if (mEditor != NULL) mEditor->OnTouchEvent(event);
 
-    Boolean superResult = View::OnTouchEvent(event);
+    Boolean superResult;
+    View::OnTouchEvent(event, &superResult);
 
     /*
      * Don't handle the release after a long press, because it will
      * move the selection away from whatever the menu action was
      * trying to affect.
      */
-    if (mEditor != NULL && mEditor->mDiscardNextActionUp && action == IMotionEvent::ACTION_UP) {
+    assert(0);
+    /*if (mEditor != NULL && mEditor->mDiscardNextActionUp && action == IMotionEvent::ACTION_UP) {
         mEditor->mDiscardNextActionUp = FALSE;
         return superResult;
-    }
-
+    }*/
+    assert(0);
+    Boolean isFocused;
     Boolean touchIsFinished = (action == IMotionEvent::ACTION_UP) &&
-            (mEditor == NULL || !mEditor->mIgnoreActionUpEvent) && IsFocused();
-
-     if ((mMovement != NULL || OnCheckIsTextEditor()) && IsEnabled()
-         && ISpannable::Probe(mText) && mLayout != NULL) {
+            /*(mEditor == NULL || !mEditor->mIgnoreActionUpEvent) &&*/
+        (IsFocused(&isFocused), isFocused);
+    Boolean isEnabled;
+     if ((mMovement != NULL || OnCheckIsTextEditor())
+        && (IsEnabled(&isEnabled), isEnabled)
+        && ISpannable::Probe(mText) && mLayout != NULL) {
         AutoPtr<ISpannable> spannable = ISpannable::Probe(mText);
         Boolean handled = FALSE;
 
@@ -8981,13 +8825,13 @@ Boolean TextView::OnTouchEvent(
             // on non editable text that support text selection.
             // We reproduce its behavior here to open links for these.
             AutoPtr<ArrayOf<IInterface*> > links;
-            spannable->GetSpans(GetSelectionStart(),
+            ISpanned::Probe(spannable)->GetSpans(GetSelectionStart(),
                     GetSelectionEnd(), EIID_IClickableSpan, (ArrayOf<IInterface*>**)&links);
 
             if (links->GetLength() > 0) {
                 AutoPtr<IClickableSpan> cs = IClickableSpan::Probe((*links)[0]);
                 if (cs) {
-                    cs->OnClick(THIS_PROBE(ITextView));
+                    cs->OnClick(THIS_PROBE(IView));
                     handled = TRUE;
                 }
             }
@@ -8998,16 +8842,18 @@ Boolean TextView::OnTouchEvent(
             assert(0);
             AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::PeekInstance();
             ViewClicked(imm);
-            if (!textIsSelectable && mEditor->mShowSoftInputOnFocus) {
+            assert(0);
+            /*if (!textIsSelectable && mEditor->mShowSoftInputOnFocus) {
                 Boolean result = (imm != NULL);
                 if (result) {
                     imm->ShowSoftInput(THIS_PROBE(IView), 0, &result);
                 }
                 handled |= result; ;
-            }
+            }*/
 
             // The above condition ensures that the mEditor is not NULL
-            mEditor->OnTouchUpEvent(event);
+            assert(0);
+            //mEditor->OnTouchUpEvent(event);
 
             handled = TRUE;
         }
@@ -9037,23 +8883,29 @@ Boolean TextView::OnGenericMotionEvent(
 //            // interface directly.
 //        }
     }
-    return View::OnGenericMotionEvent(event);
+    Boolean res;
+    View::OnGenericMotionEvent(event, &res);
+    return res;
 }
 
 Boolean TextView::IsTextEditable()
 {
-    return mText != NULL && IEditable::Probe(mText) && OnCheckIsTextEditor() && IsEnabled();
+    Boolean isEnabled;
+    return mText != NULL && IEditable::Probe(mText)
+        && OnCheckIsTextEditor() && (IsEnabled(&isEnabled), isEnabled);
 }
 
 Boolean TextView::DidTouchFocusSelect()
 {
-    return mEditor != NULL && mEditor->mTouchFocusSelected;
+    assert(0);
+    return mEditor != NULL; //&& mEditor->mTouchFocusSelected;
 }
 
 ECode TextView::CancelLongPress()
 {
+    assert(0);
     ECode ec = View::CancelLongPress();
-    if (mEditor != NULL) mEditor->mIgnoreActionUpEvent = TRUE;
+    //if (mEditor != NULL) mEditor->mIgnoreActionUpEvent = TRUE;
     return ec;
 }
 
@@ -9069,8 +8921,9 @@ Boolean TextView::OnTrackballEvent(
             return TRUE;
         }
     }
-
-    return View::OnTrackballEvent(event);
+    Boolean result;
+    View::OnTrackballEvent(event, &result);
+    return result;
 }
 
 ECode TextView::SetScroller(
@@ -9086,7 +8939,9 @@ Float TextView::GetLeftFadingEdgeStrength()
         if (mMarquee != NULL && !mMarquee->IsStopped()) {
             AutoPtr<Marquee> marquee = mMarquee;
             if (marquee->ShouldDrawLeftFade()) {
-                return marquee->mScroll / GetHorizontalFadingEdgeLength();
+                Int32 length;
+                GetHorizontalFadingEdgeLength(&length);
+                return marquee->mScroll / length;
             } else {
                 return 0.0f;
             }
@@ -9097,12 +8952,15 @@ Float TextView::GetLeftFadingEdgeStrength()
             switch (mGravity & IGravity::HORIZONTAL_GRAVITY_MASK) {
                 case IGravity::LEFT:
                     return 0.0f;
-                case IGravity::RIGHT:
+                case IGravity::RIGHT: {
+                    Int32 length;
+                    GetHorizontalFadingEdgeLength(&length);
                     return (lr - (mRight - mLeft) -
                             GetCompoundPaddingLeft() - GetCompoundPaddingRight() -
-                            ll) / GetHorizontalFadingEdgeLength();
+                            ll) / length;
+                }
                 case IGravity::CENTER_HORIZONTAL:
-                case Gravity.FILL_HORIZONTAL:
+                case IGravity::FILL_HORIZONTAL:
                 {
                     Int32 textDirection;
                     mLayout->GetParagraphDirection(0, &textDirection);
@@ -9112,8 +8970,10 @@ Float TextView::GetLeftFadingEdgeStrength()
                         Float lineRight, lineLeft;
                         mLayout->GetLineRight(0, &lineRight);
                         mLayout->GetLineLeft(0, &lineLeft);
+                        Int32 length;
+                        GetHorizontalFadingEdgeLength(&length);
                         return (lineRight - (mRight - mLeft) - GetCompoundPaddingLeft() - GetCompoundPaddingRight() -
-                            lineLeft) / GetHorizontalFadingEdgeLength();
+                            lineLeft) / length;
                     }
                 }
             }
@@ -9128,19 +8988,25 @@ Float TextView::GetRightFadingEdgeStrength()
             mMarqueeFadeMode != MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
         if (mMarquee != NULL && !mMarquee->IsStopped()) {
             AutoPtr<Marquee> marquee = mMarquee;
-            return (marquee->mMaxFadeScroll - marquee->mScroll) / GetHorizontalFadingEdgeLength();
+            Int32 length;
+            GetHorizontalFadingEdgeLength(&length);
+            return (marquee->mMaxFadeScroll - marquee->mScroll) / length;
         } else if (GetLineCount() == 1) {
             Int32 textWidth = 0;
             Float lineWidth;
             mLayout->GetLineWidth(0, &lineWidth);
 
-            Int32 layoutDirection = GetLayoutDirection();
+            Int32 layoutDirection;
+            GetLayoutDirection(&layoutDirection);
             Int32 absoluteGravity = Gravity::GetAbsoluteGravity(mGravity, layoutDirection);
             switch (absoluteGravity & IGravity::HORIZONTAL_GRAVITY_MASK) {
-                case IGravity::LEFT:
+                case IGravity::LEFT: {
                     textWidth = (mRight - mLeft) - GetCompoundPaddingLeft() -
                             GetCompoundPaddingRight();
-                    return (lineWidth - textWidth) / GetHorizontalFadingEdgeLength();
+                    Int32 length;
+                    GetHorizontalFadingEdgeLength(&length);
+                    return (lineWidth - textWidth) / length;
+                }
                 case IGravity::RIGHT:
                     return 0.0f;
                 case IGravity::CENTER_HORIZONTAL:
@@ -9151,9 +9017,10 @@ Float TextView::GetRightFadingEdgeStrength()
                     if (textDirection == ILayout::DIR_RIGHT_TO_LEFT) {
                         return 0.0f;
                     } else {
+                        Int32 length;
+                        GetHorizontalFadingEdgeLength(&length);
                         return (lineWidth - ((mRight - mLeft) -
-                            GetCompoundPaddingLeft() - GetCompoundPaddingRight())) /
-                            GetHorizontalFadingEdgeLength();
+                            GetCompoundPaddingLeft() - GetCompoundPaddingRight())) / length;
                     }
                 }
             }
@@ -9189,7 +9056,9 @@ Int32 TextView::ComputeVerticalScrollRange()
 
 Int32 TextView::ComputeVerticalScrollExtent()
 {
-    return GetHeight() - GetCompoundPaddingTop() - GetCompoundPaddingBottom();
+    Int32 height;
+    GetHeight(&height);
+    return height - GetCompoundPaddingTop() - GetCompoundPaddingBottom();
 }
 
 ECode TextView::FindViewsWithText(
@@ -9265,7 +9134,8 @@ Int32 TextView::GetTextColor(
     /* [in] */ ITypedArray* attrs,
     /* [in] */ Int32 def)
 {
-    AutoPtr<IColorStateList> colors = GetTextColors(context, attrs);
+    AutoPtr<IColorStateList> colors;
+    GetTextColors(context, attrs, (IColorStateList**)&colors);
 
     if (colors == NULL) {
         return def;
@@ -9310,14 +9180,17 @@ Boolean TextView::OnKeyShortcut(
         break;
     }
 
-    return View::OnKeyShortcut(keyCode, event);
+    Boolean res;
+    View::OnKeyShortcut(keyCode, event, &res);
+    return res;
 }
 
 Boolean TextView::CanSelectText()
 {
     Int32 len;
     mText->GetLength(&len);
-    return len != 0 && mEditor != NULL && mEditor->HasSelectionController();
+    assert(0);
+    //return len != 0 && mEditor != NULL && mEditor->HasSelectionController();
 }
 
 Boolean TextView::TextCanBeSelected()
@@ -9329,9 +9202,10 @@ Boolean TextView::TextCanBeSelected()
     if (mMovement == NULL || mMovement->CanSelectArbitrarily(&result), !result) {
         return FALSE;
     }
-
+    Boolean isEnabled;
     return IsTextEditable() ||
-        (IsTextSelectable() && ISpannable::Probe(mText) && IsEnabled());
+        (IsTextSelectable() && ISpannable::Probe(mText)
+        && (IsEnabled(&isEnabled), isEnabled));
 }
 
 AutoPtr<ILocale> TextView::GetTextServicesLocale(
@@ -9367,6 +9241,7 @@ void TextView::UpdateTextServicesLocaleAsync()
 
 void TextView::UpdateTextServicesLocaleLocked()
 {
+    assert(0);
     // TODO
     // AutoPtr<IInterface> obj;
     // mContext->GetSystemService(IContext::TEXT_SERVICES_MANAGER_SERVICE, (IInterface**)&obj);
@@ -9387,13 +9262,14 @@ void TextView::UpdateTextServicesLocaleLocked()
     //    }
     // }
 
-    mCurrentSpellCheckerLocaleCache = locale;
+    // mCurrentSpellCheckerLocaleCache = locale;
 }
 
 ECode TextView::OnLocaleChanged()
 {
     // Will be re-created on demand in getWordIterator with the proper new locale
-    mEditor->mWordIterator = NULL;
+    assert(0);
+    //mEditor->mWordIterator = NULL;
     return NOERROR;
 }
 
@@ -9404,8 +9280,9 @@ ECode TextView::OnLocaleChanged()
  */
 AutoPtr<IWordIterator> TextView::GetWordIterator()
 {
+    assert(0);
     if (mEditor != NULL) {
-        return mEditor->GetWordIterator();
+        //return mEditor->GetWordIterator();
     } else {
         return NULL;
     }
@@ -9420,9 +9297,9 @@ ECode TextView::OnPopulateAccessibilityEvent(
     if (!isPassword || ShouldSpeakPasswordsForAccessibility()) {
         AutoPtr<ICharSequence> text = GetTextForAccessibility();
         if (!TextUtils::IsEmpty(text)) {
-            AutoPtr<IObjectContainer> container;
-            event->GetText((IObjectContainer**)&container);
-            container->Add(text->Probe(EIID_IInterface));
+            AutoPtr<IList> list;
+            IAccessibilityRecord::Probe(event)->GetText((IList**)&list);
+            list->Add(text);
         }
     }
     return NOERROR;
@@ -9439,7 +9316,8 @@ Boolean TextView::ShouldSpeakPasswordsForAccessibility()
 
     Int32 pwd = 0;
     AutoPtr<ISettingsSecure> ss;
-    CSettingsSecure::AcquireSingleton((ISettingsSecure**)&ss);
+    assert(0);
+    //CSettingsSecure::AcquireSingleton((ISettingsSecure**)&ss);
     assert(ss != NULL);
     AutoPtr<IContentResolver> res;
     mContext->GetContentResolver((IContentResolver**)&res);
@@ -9452,19 +9330,19 @@ ECode TextView::OnInitializeAccessibilityEvent(
 {
     View::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(String("TextView"), (ICharSequence**)&csq);
-    event->SetClassName(csq);
+    CString::New(String("TextView"), (ICharSequence**)&csq);
+    IAccessibilityRecord::Probe(event)->SetClassName(csq);
     Boolean isPassword = HasPasswordTransformationMethod();
-    event->SetPassword(isPassword);
+    IAccessibilityRecord::Probe(event)->SetPassword(isPassword);
 
     Int32 type;
     event->GetEventType(&type);
     if (type == IAccessibilityEvent::TYPE_VIEW_TEXT_SELECTION_CHANGED) {
         Int32 tl;
         mText->GetLength(&tl);
-        event->SetFromIndex(Selection::GetSelectionStart(mText));
-        event->SetToIndex(Selection::GetSelectionEnd(mText));
-        event->SetItemCount(tl);
+        IAccessibilityRecord::Probe(event)->SetFromIndex(Selection::GetSelectionStart(mText));
+        IAccessibilityRecord::Probe(event)->SetToIndex(Selection::GetSelectionEnd(mText));
+        IAccessibilityRecord::Probe(event)->SetItemCount(tl);
     }
     return NOERROR;
 }
@@ -9474,7 +9352,7 @@ ECode TextView::OnInitializeAccessibilityNodeInfo(
 {
     View::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(String("TextView"), (ICharSequence**)&csq);
+    CString::New(String("TextView"), (ICharSequence**)&csq);
     info->SetClassName(csq);
     Boolean isPassword = HasPasswordTransformationMethod();
     info->SetPassword(isPassword);
@@ -9488,12 +9366,13 @@ ECode TextView::OnInitializeAccessibilityNodeInfo(
     }
 
     if (mEditor) {
-        info->SetInputType(mEditor->mInputType);
+        assert(0);
+        /*info->SetInputType(mEditor->mInputType);
 
         if (mEditor->mError) {
             info->SetContentInvalid(TRUE);
             info->SetError(mEditor->mError);
-        }
+        }*/
     }
 
     if (!TextUtils::IsEmpty(mText)) {
@@ -9506,7 +9385,8 @@ ECode TextView::OnInitializeAccessibilityNodeInfo(
                 | IAccessibilityNodeInfo::MOVEMENT_GRANULARITY_PAGE);
     }
 
-    if (IsFocused()) {
+    Boolean isFocused;
+    if (IsFocused(&isFocused), isFocused) {
         if (CanSelectText()) {
             info->AddAction(IAccessibilityNodeInfo::ACTION_SET_SELECTION);
         }
@@ -9523,10 +9403,10 @@ ECode TextView::OnInitializeAccessibilityNodeInfo(
 
     Int32 numFilters = mFilters->GetLength();
     for (Int32 i = 0; i < numFilters; i++) {
-        AutoPtr<IInputFilter> filter = mFilters[i];
-        if (IInputFilterLengthFilter::Probe(filter)) {
+        AutoPtr<Elastos::Droid::Text::IInputFilter> filter = (*mFilters)[i];
+        if (ILengthFilter::Probe(filter)) {
             Int32 max;
-            (IInputFilterLengthFilter::Probe(filter))->GetMax(&max);
+            (ILengthFilter::Probe(filter))->GetMax(&max);
             info->SetMaxTextLength(max);
         }
     }
@@ -9541,40 +9421,50 @@ Boolean TextView::PerformAccessibilityAction(
     /* [in] */ Int32 action,
     /* [in] */ IBundle* arguments)
 {
+    Boolean result;
     switch (action) {
         case IAccessibilityNodeInfo::ACTION_CLICK:
         {
             Boolean handled = FALSE;
 
             // Simulate View.onTouchEvent for an ACTION_UP event.
-            if (IsClickable() || IsLongClickable()) {
-                if (IsFocusable() && !IsFocused()) {
-                    RequestFocus();
+            Boolean isClickable, isLongClickable;
+            if ((IsClickable(&isClickable), isClickable)
+                || (IsLongClickable(&isLongClickable), isLongClickable)) {
+                Boolean isFocusable, isFocused;
+                if ((IsFocusable(&isFocusable), isFocusable)
+                    && (IsFocused(&isFocused), !isFocused)) {
+                    RequestFocus(&isFocused);
                 }
 
-                PerformClick();
+                PerformClick(&isFocused);
                 handled = TRUE;
             }
 
             // Simulate TextView.onTouchEvent for an ACTION_UP event.
-            if ((mMovement || OnCheckIsTextEditor()) && IsEnabled() && ISpannable::Probe(mText)
-                && mLayout && (IsTextEditable() || IsTextSelectable()) && IsFocused()) {
+            Boolean isEnabled, isFocused;
+            if ((mMovement || OnCheckIsTextEditor())
+                && (IsEnabled(&isEnabled), isEnabled) && ISpannable::Probe(mText)
+                && mLayout && (IsTextEditable() || IsTextSelectable())
+                && (IsFocused(&isFocused), isFocused)) {
                 // Show the IME, except when selecting in read-only text.
                 assert(0);
                 AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::PeekInstance();
                 ViewClicked(imm);
-                if (!IsTextSelectable() && mEditor->mShowSoftInputOnFocus && imm) {
+                assert(0);
+                /*if (!IsTextSelectable() && mEditor->mShowSoftInputOnFocus && imm) {
                     Boolean show;
                     imm->ShowSoftInput(THIS_PROBE(IView), 0, &show);
                     handled |= show;
-                }
+                }*/
             }
 
             return handled;
         }
         case IAccessibilityNodeInfo::ACTION_COPY:
         {
-            if (IsFocused() && CanCopy()) {
+            Boolean isFocused;
+            if ((IsFocused(&isFocused), isFocused) && CanCopy()) {
                 if (OnTextContextMenuItem(R::id::copy)) {
                     return TRUE;
                 }
@@ -9584,7 +9474,8 @@ Boolean TextView::PerformAccessibilityAction(
 
         case IAccessibilityNodeInfo::ACTION_PASTE:
         {
-            if (IsFocused() && CanPaste()) {
+            Boolean isFocused;
+            if ((IsFocused(&isFocused), isFocused) && CanPaste()) {
                 if (OnTextContextMenuItem(R::id::paste)) {
                     return TRUE;
                 }
@@ -9594,7 +9485,8 @@ Boolean TextView::PerformAccessibilityAction(
 
         case IAccessibilityNodeInfo::ACTION_CUT:
         {
-            if (IsFocused() && CanCut()) {
+            Boolean isFocused;
+            if ((IsFocused(&isFocused), isFocused) && CanCut()) {
                 if (OnTextContextMenuItem(R::id::cut)) {
                     return TRUE;
                 }
@@ -9604,7 +9496,8 @@ Boolean TextView::PerformAccessibilityAction(
 
         case IAccessibilityNodeInfo::ACTION_SET_SELECTION:
         {
-            if (IsFocused() && CanSelectText()) {
+            Boolean isFocused;
+            if ((IsFocused(&isFocused), isFocused) && CanSelectText()) {
                 AutoPtr<ICharSequence> text = GetIterableTextForAccessibility();
                 if (!text) {
                     return FALSE;
@@ -9629,7 +9522,8 @@ Boolean TextView::PerformAccessibilityAction(
                         Selection::SetSelection(ISpannable::Probe(text), start, end);
                         // Make sure selection mode is engaged.
                         if (mEditor) {
-                            mEditor->StartSelectionActionMode();
+                            assert(0);
+                            //mEditor->StartSelectionActionMode();
                         }
                         return TRUE;
                     }
@@ -9639,7 +9533,8 @@ Boolean TextView::PerformAccessibilityAction(
         return FALSE;
 
         default:
-            return View::PerformAccessibilityAction(action, arguments);
+            View::PerformAccessibilityAction(action, arguments, &result);
+            return result;
     }
 }
 
@@ -9673,10 +9568,10 @@ void TextView::SendAccessibilityEventTypeViewTextChanged(
     AutoPtr<IAccessibilityEvent> event;
     CAccessibilityEvent::Obtain(IAccessibilityEvent::TYPE_VIEW_TEXT_CHANGED, (IAccessibilityEvent**)&event);
     assert(event != NULL);
-    event->SetFromIndex(fromIndex);
-    event->SetRemovedCount(removedCount);
-    event->SetAddedCount(addedCount);
-    event->SetBeforeText(beforeText);
+    IAccessibilityRecord::Probe(event)->SetFromIndex(fromIndex);
+    IAccessibilityRecord::Probe(event)->SetRemovedCount(removedCount);
+    IAccessibilityRecord::Probe(event)->SetAddedCount(addedCount);
+    IAccessibilityRecord::Probe(event)->SetBeforeText(beforeText);
     SendAccessibilityEventUnchecked(event);
 }
 
@@ -9693,12 +9588,14 @@ Boolean TextView::IsInputMethodTarget()
 Boolean TextView::OnTextContextMenuItem(
     /* [in] */ Int32 id)
 {
-    AutoPtr<IContext> c = GetContext();
+    AutoPtr<IContext> c;
+    GetContext((IContext**)&c);
     Int32 min = 0;
     Int32 max = 0;
     mText->GetLength(&max);
 
-    if (IsFocused()) {
+    Boolean isFocused;
+    if (IsFocused(&isFocused), isFocused) {
         Int32 selStart = GetSelectionStart();
         Int32 selEnd = GetSelectionEnd();
 
@@ -9757,19 +9654,21 @@ AutoPtr<ICharSequence> TextView::GetTransformedText(
 
 Boolean TextView::PerformLongClick()
 {
-    Boolean handled = FALSE;
-
-    if (View::PerformLongClick()) {
+    Boolean handled = FALSE, result;
+    View::PerformLongClick(&result);
+    if (result) {
         handled = TRUE;
     }
 
     if (mEditor != NULL) {
-        handled |= mEditor->PerformLongClick(handled);
+        assert(0);
+        //handled |= mEditor->PerformLongClick(handled);
     }
 
     if (handled) {
-        PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS);
-        if (mEditor != NULL) mEditor->mDiscardNextActionUp = TRUE;
+        PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS, &result);
+        assert(0);
+        //if (mEditor != NULL) mEditor->mDiscardNextActionUp = TRUE;
     }
 
     return handled;
@@ -9783,13 +9682,15 @@ void TextView::OnScrollChanged(
 {
     View::OnScrollChanged(horiz, vert, oldHoriz, oldVert);
     if (mEditor != NULL) {
-        mEditor->OnScrollChanged();
+        assert(0);
+        //mEditor->OnScrollChanged();
     }
 }
 
 Boolean TextView::IsSuggestionsEnabled()
 {
-    if (mEditor == NULL) return FALSE;
+    assert(0);
+    /*if (mEditor == NULL) return FALSE;
     if ((mEditor->mInputType & IInputType::TYPE_MASK_CLASS) != IInputType::TYPE_CLASS_TEXT) {
         return FALSE;
     }
@@ -9800,25 +9701,28 @@ Boolean TextView::IsSuggestionsEnabled()
             variation == IInputType::TYPE_TEXT_VARIATION_EMAIL_SUBJECT ||
             variation == IInputType::TYPE_TEXT_VARIATION_LONG_MESSAGE ||
             variation == IInputType::TYPE_TEXT_VARIATION_SHORT_MESSAGE ||
-            variation == IInputType::TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
+            variation == IInputType::TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);*/
 }
 
 ECode TextView::SetCustomSelectionActionModeCallback(
     /* [in] */ IActionModeCallback* actionModeCallback)
 {
     CreateEditorIfNeeded();
-    mEditor->mCustomSelectionActionModeCallback = actionModeCallback;
+    assert(0);
+    //mEditor->mCustomSelectionActionModeCallback = actionModeCallback;
     return NOERROR;
 }
 
 AutoPtr<IActionModeCallback> TextView::GetCustomSelectionActionModeCallback()
 {
-    return mEditor == NULL ? NULL : mEditor->mCustomSelectionActionModeCallback;
+    assert(0);
+    //return mEditor == NULL ? NULL : mEditor->mCustomSelectionActionModeCallback;
 }
 
 void TextView::StopSelectionActionMode()
 {
-    mEditor->StopSelectionActionMode();
+    assert(0);
+    //mEditor->StopSelectionActionMode();
 }
 
 Boolean TextView::CanCut()
@@ -9829,10 +9733,11 @@ Boolean TextView::CanCut()
 
     Int32 tl;
     mText->GetLength(&tl);
-    if (tl > 0 && HasSelection() && IEditable::Probe(mText)
+    assert(0);
+    /*if (tl > 0 && HasSelection() && IEditable::Probe(mText)
         && mEditor != NULL && mEditor->mKeyListener != NULL) {
         return TRUE;
-    }
+    }*/
 
     return FALSE;
 }
@@ -9854,17 +9759,19 @@ Boolean TextView::CanCopy()
 
 Boolean TextView::CanPaste()
 {
-    AutoPtr<IContext> c = GetContext();
+    AutoPtr<IContext> c;
+    GetContext((IContext**)&c);
     AutoPtr<IClipboardManager> cm;
     c->GetSystemService(IContext::CLIPBOARD_SERVICE, (IInterface**)&cm);
     if (!cm) return FALSE;
 
     Boolean hasClip;
     cm->HasPrimaryClip(&hasClip);
-    return (IEditable::Probe(mText)
+    assert(0);
+    /*return (IEditable::Probe(mText)
         && mEditor != NULL && mEditor->mKeyListener != NULL
         && GetSelectionStart() >= 0 && GetSelectionEnd() >= 0
-        && hasClip);
+        && hasClip);*/
 }
 
 Boolean TextView::SelectAllText()
@@ -9879,7 +9786,8 @@ void TextView::Paste(
     /* [in] */ Int32 min,
     /* [in] */ Int32 max)
 {
-    AutoPtr<IContext> c = GetContext();
+    AutoPtr<IContext> c;
+    GetContext((IContext**)&c);
     AutoPtr<IClipboardManager> clipboard;
     c->GetSystemService(IContext::CLIPBOARD_SERVICE, (IInterface**)&clipboard);
     if (!clipboard) return;
@@ -9894,7 +9802,7 @@ void TextView::Paste(
         AutoPtr<ICharSequence> paste;
         AutoPtr<IEditable> editable = IEditable::Probe(mText);
         AutoPtr<ICharSequence> newlineCS;
-        CStringWrapper::New(String("\n"), (ICharSequence**)&newlineCS);
+        CString::New(String("\n"), (ICharSequence**)&newlineCS);
 
         for (Int32 i = 0; i < count; i++) {
             item = NULL;
@@ -9920,7 +9828,8 @@ void TextView::Paste(
 void TextView::SetPrimaryClip(
     /* [in] */ IClipData* clip)
 {
-    AutoPtr<IContext> c = GetContext();
+    AutoPtr<IContext> c;
+    GetContext((IContext**)&c);
     AutoPtr<IClipboardManager> clipboard;
     c->GetSystemService(IContext::CLIPBOARD_SERVICE, (IInterface**)&clipboard);
     if (!clipboard) return;
@@ -9945,8 +9854,11 @@ Float TextView::ConvertToLocalHorizontalCoordinate(
     x -= GetTotalPaddingLeft();
     // Clamp the position to inside of the view.
     x = Elastos::Core::Math::Max(0.0f, x);
-    x = Elastos::Core::Math::Min((Float)(GetWidth() - GetTotalPaddingRight() - 1.0), x);
-    x += GetScrollX();
+    Int32 width, scrollx;
+    GetWidth(&width);
+    x = Elastos::Core::Math::Min((Float)(width - GetTotalPaddingRight() - 1.0), x);
+    GetScrollX(&scrollx);
+    x += scrollx;
     return x;
 }
 
@@ -9956,8 +9868,11 @@ Int32 TextView::GetLineAtCoordinate(
     y -= GetTotalPaddingTop();
     // Clamp the position to inside of the view.
     y = Elastos::Core::Math::Max(0.0f, y);
-    y = Elastos::Core::Math::Min((Float)(GetHeight() - GetTotalPaddingBottom() - 1.0f), y);
-    y += GetScrollY();
+    Int32 height, scrolly;
+    GetHeight(&height);
+    y = Elastos::Core::Math::Min((Float)(height - GetTotalPaddingBottom() - 1.0f), y);
+    GetScrollY(&scrolly);
+    y += scrolly;
     AutoPtr<ILayout> layout = GetLayout();
     Int32 result;
     layout->GetLineForVertical((Int32)y, &result);
@@ -9981,12 +9896,16 @@ Boolean TextView::OnDragEvent(
     Int32 action;
     event->GetAction(&action);
     switch (action) {
-        case IDragEvent::ACTION_DRAG_STARTED:
-            return mEditor != NULL && mEditor->HasInsertionController();
+        case IDragEvent::ACTION_DRAG_STARTED:{
+            assert(0);
+            //return mEditor != NULL && mEditor->HasInsertionController();
+        }
 
-        case IDragEvent::ACTION_DRAG_ENTERED:
-            RequestFocus();
+        case IDragEvent::ACTION_DRAG_ENTERED: {
+            Boolean focus;
+            RequestFocus(&focus);
             return TRUE;
+        }
 
         case IDragEvent::ACTION_DRAG_LOCATION: {
             Float x, y;
@@ -9996,10 +9915,11 @@ Boolean TextView::OnDragEvent(
             Selection::SetSelection(ISpannable::Probe(mText), offset);
             return TRUE;
         }
-        case IDragEvent::ACTION_DROP:
-            if (mEditor != NULL) mEditor->OnDrop(event);
+        case IDragEvent::ACTION_DROP: {
+            assert(0);
+            //if (mEditor != NULL) mEditor->OnDrop(event);
             return TRUE;
-
+        }
         case IDragEvent::ACTION_DRAG_ENDED:
         case IDragEvent::ACTION_DRAG_EXITED:
         default:
@@ -10010,12 +9930,13 @@ Boolean TextView::OnDragEvent(
 
 Boolean TextView::IsInBatchEditMode()
 {
-    if (mEditor == NULL) return FALSE;
+    assert(0);
+    /*if (mEditor == NULL) return FALSE;
     InputMethodState* ims = mEditor->mInputMethodState.Get();
     if (ims != NULL) {
         return ims->mBatchEditNesting > 0;
     }
-    return mEditor->mInBatchEditControllers;
+    return mEditor->mInBatchEditControllers;*/
 }
 
 ECode TextView::OnRtlPropertiesChanged(
@@ -10041,10 +9962,12 @@ AutoPtr<ITextDirectionHeuristic> TextView::GetTextDirectionHeuristic()
     }
 
     // Always need to resolve layout direction first
-    Boolean defaultIsRtl = (GetLayoutDirection() == IView::LAYOUT_DIRECTION_RTL);
+    Int32 direction;
+    Boolean defaultIsRtl = ((GetLayoutDirection(&direction), direction)
+        == IView::LAYOUT_DIRECTION_RTL);
 
     // Now, we can select the heuristic
-    switch (GetTextDirection()) {
+    switch (GetTextDirection(&direction), direction) {
         default:
         case IView::TEXT_DIRECTION_FIRST_STRONG:
             result = (defaultIsRtl ? TextDirectionHeuristics::FIRSTSTRONG_RTL :
@@ -10124,7 +10047,7 @@ void TextView::SetSpan_internal(
 {
     AutoPtr<IEditable> editable = IEditable::Probe(mText);
     if (editable) {
-        editable->SetSpan(span, start, end, flags);
+        ISpannable::Probe(editable)->SetSpan(span, start, end, flags);
     }
 }
 
@@ -10133,13 +10056,14 @@ void TextView::SetCursorPosition_internal(
     /* [in] */ Int32 end)
 {
     AutoPtr<IEditable> editable = IEditable::Probe(mText);
-    Selection::SetSelection(editable, start, end);
+    Selection::SetSelection(ISpannable::Probe(editable), start, end);
 }
 
 void TextView::CreateEditorIfNeeded()
 {
     if (mEditor == NULL) {
-        mEditor = new Editor(this);
+        assert(0);
+        //mEditor = new Editor(this);
     }
 }
 
@@ -10178,7 +10102,9 @@ AutoPtr<ITextSegmentIterator> TextView::GetIteratorForGranularity(
             }
         } break;
     }
-    return View::GetIteratorForGranularity(granularity);
+    AutoPtr<ITextSegmentIterator> iterator;
+    View::GetIteratorForGranularity(granularity, (ITextSegmentIterator**)&iterator);
+    return NOERROR;
 }
 
 Int32 TextView::GetAccessibilitySelectionStart()
@@ -10208,7 +10134,8 @@ ECode TextView::SetAccessibilitySelection(
     // since we are doing so explicitlty by other means and these
     // controllers interact with how selection behaves.
     if (mEditor) {
-        mEditor->HideControllers();
+        assert(0);
+        //mEditor->HideControllers();
     }
     AutoPtr<ICharSequence> text = GetIterableTextForAccessibility();
     Int32 textLen;

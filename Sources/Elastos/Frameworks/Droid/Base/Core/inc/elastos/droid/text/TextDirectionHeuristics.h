@@ -36,11 +36,6 @@ public:
     static AutoPtr<ITextDirectionHeuristic> GetANYRTL_LTR();
     static AutoPtr<ITextDirectionHeuristic> GetLOCALE();
 
-private:
-    static const Int32 STATE_TRUE;// = 0;
-    static const Int32 STATE_FALSE;// = 1;
-    static const Int32 STATE_UNKNOWN;// = 2;
-
     /** Always decides that the direction is left to right. */
     static AutoPtr<ITextDirectionHeuristic> LTR;
 
@@ -56,14 +51,6 @@ private:
     static AutoPtr<ITextDirectionHeuristic> FIRSTSTRONG_LTR;
 
     /**
-     * Determines the direction based on the first strong directional character,
-     * including bidi format chars, falling back to right to left if it
-     * finds none.  This is similar to the default behavior of the Unicode
-     * Bidirectional Algorithm, just with different fallback behavior.
-     */
-    static AutoPtr<ITextDirectionHeuristic> FIRSTSTRONG_RTL;
-
-    /**
      * If the text contains any strong right to left non-format character, determines
      * that the direction is right to left, falling back to left to right if it
      * finds none.
@@ -74,6 +61,19 @@ private:
      * Force the paragraph direction to the Locale direction. Falls back to left to right.
      */
     static AutoPtr<ITextDirectionHeuristic> LOCALE;
+
+    /**
+     * Determines the direction based on the first strong directional character,
+     * including bidi format chars, falling back to right to left if it
+     * finds none.  This is similar to the default behavior of the Unicode
+     * Bidirectional Algorithm, just with different fallback behavior.
+     */
+    static AutoPtr<ITextDirectionHeuristic> FIRSTSTRONG_RTL;
+
+private:
+    static const Int32 STATE_TRUE;// = 0;
+    static const Int32 STATE_FALSE;// = 1;
+    static const Int32 STATE_UNKNOWN;// = 2;
 
 private:
 

@@ -1,6 +1,15 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTEVENTSENDER_H__
 #define __ELASTOS_DROID_VIEW_INPUTEVENTSENDER_H__
 
+#include "elastos/droid/ext/frameworkext.h"
+#include <MessageQueue.h>
+
+
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessageQueue;
+
+using Elastos::Core::ICloseGuard;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
@@ -27,7 +36,7 @@ public:
     CARAPI SendInputEvent(
         /* [in] */ Int32 seq,
         /* [in] */ IInputEvent* event,
-        /* [out] */ Boolean res);
+        /* [out] */ Boolean* res);
 
 protected:
     CARAPI Finalize();
@@ -59,14 +68,18 @@ private:
         /* [in] */ Int32 seq,
         /* [in] */ IMotionEvent* eventObj);
 
-    CARAPI_(AutoPtr<IInputChannel>) GetInputChannel
-        /* [in] */ IInterface* inputChannelObj);
-
-    CARAPI_(sp<InputChannel>) GetNativeInputChannel(
+    AutoPtr<IInputChannel> GetInputChannel(
         /* [in] */ IInputChannel* inputChannelObj);
 
-    CARAPI_(sp<MessageQueue>) GetMessageQueue(
+    android::sp<android::MessageQueue>& GetMessageQueue(
         /* [in] */ IMessageQueue* messageQueueObj);
+
+    CARAPI GetKeyEvent(
+        /* [in] */ IKeyEvent* eventObj,
+        /* [out] */ IKeyEvent** result);
+
+    CARAPI_(AutoPtr<IMotionEvent>) GetMotionEvent(
+        /* [in] */ IMotionEvent* eventObj);
 
 
 

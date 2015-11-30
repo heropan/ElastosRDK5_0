@@ -1,5 +1,8 @@
 #include "elastos/droid/view/InputEventSender.h"
 
+
+using Elastos::Core::CCloseGuard;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
@@ -8,27 +11,27 @@ namespace View {
 //                  NativeInputChannel
 //=========================================================
 
-typedef void (*InputChannelObjDisposeCallback)(jobject inputChannelObj,
-        const sp<InputChannel>& inputChannel, void* data)
+/*typedef void (*InputChannelObjDisposeCallback)(IInputChannel* inputChannelObj,
+        const sp<IInputChannel>& inputChannel, void* data)
 
 class NativeInputChannel
 {
 public:
-    NativeInputChannel(const sp<InputChannel>& inputChannel);
+    NativeInputChannel(const sp<IInputChannel>& inputChannel);
     ~NativeInputChannel();
 
-    inline sp<InputChannel> getInputChannel() { return mInputChannel; }
+    inline sp<IInputChannel> getInputChannel() { return mInputChannel; }
 
     void setDisposeCallback(InputChannelObjDisposeCallback callback, void* data);
-    void invokeAndRemoveDisposeCallback(jobject obj);
+    void invokeAndRemoveDisposeCallback(IInputChannel* obj);
 
 private:
-    sp<InputChannel> mInputChannel;
+    sp<IInputChannel> mInputChannel;
     InputChannelObjDisposeCallback mDisposeCallback;
     void* mDisposeData;
 };
 
-NativeInputChannel::NativeInputChannel(const sp<InputChannel>& inputChannel) :
+NativeInputChannel::NativeInputChannel(const sp<IInputChannel>& inputChannel) :
     mInputChannel(inputChannel), mDisposeCallback(NULL)
 {}
 
@@ -41,19 +44,19 @@ void NativeInputChannel::setDisposeCallback(InputChannelObjDisposeCallback callb
     mDisposeData = data;
 }
 
-void NativeInputChannel::invokeAndRemoveDisposeCallback(jobject obj) {
+void NativeInputChannel::invokeAndRemoveDisposeCallback(IInputChannel obj) {
     if (mDisposeCallback) {
         mDisposeCallback(obj, mInputChannel, mDisposeData);
         mDisposeCallback = NULL;
         mDisposeData = NULL;
     }
-}
+}*/
 
 //==========================================================
 //              NativeInputEventSender
 //==========================================================
 
-class NativeInputEventSender
+/*class NativeInputEventSender
     : public LooperCallback
 {
 public:
@@ -87,23 +90,21 @@ private:
 
 
 NativeInputEventSender::NativeInputEventSender(
-    jobject senderWeak,
+    IWeakReference* senderWeak,
     const sp<InputChannel>& inputChannel,
     const sp<MessageQueue>& messageQueue)
-    : mSenderWeakGlobal(env->NewGlobalRef(senderWeak))
+    : mSenderWeakGlobal(senderWeak)
     , mInputPublisher(inputChannel)
     , mMessageQueue(messageQueue)
     , mNextPublishedSeq(1)
 {
 #if DEBUG_DISPATCH_CYCLE
-    ALOGD("channel '%s' ~ Initializing input event sender.", getInputChannelName());
+    Slogger::D("channel '%s' ~ Initializing input event sender.", getInputChannelName());
 #endif
 }
 
 NativeInputEventSender::~NativeInputEventSender()
 {
-    JNIEnv* env = AndroidRuntime::getJNIEnv();
-    env->DeleteGlobalRef(mSenderWeakGlobal);
 }
 
 status_t NativeInputEventSender::initialize()
@@ -116,7 +117,7 @@ status_t NativeInputEventSender::initialize()
 void NativeInputEventSender::dispose()
 {
 #if DEBUG_DISPATCH_CYCLE
-    ALOGD("channel '%s' ~ Disposing input event sender.", getInputChannelName());
+    Slogger::D("channel '%s' ~ Disposing input event sender.", getInputChannelName());
 #endif
 
     mMessageQueue->getLooper()->removeFd(mInputPublisher.getChannel()->getFd());
@@ -125,7 +126,7 @@ void NativeInputEventSender::dispose()
 status_t NativeInputEventSender::sendKeyEvent(uint32_t seq, const KeyEvent* event)
 {
 #if DEBUG_DISPATCH_CYCLE
-    ALOGD("channel '%s' ~ Sending key event, seq=%u.", getInputChannelName(), seq);
+    Slogger::D("channel '%s' ~ Sending key event, seq=%u.", getInputChannelName(), seq);
 #endif
 
     uint32_t publishedSeq = mNextPublishedSeq++;
@@ -247,13 +248,13 @@ status_t NativeInputEventSender::receiveFinishedSignals()
             }
         }
     }
-}
+}*/
 
 //==========================================================
 //          NativeMessageQueue
 //==========================================================
 
-class NativeMessageQueue
+/*class NativeMessageQueue
     : public MessageQueue
 {
 public:
@@ -278,18 +279,10 @@ MessageQueue::MessageQueue() {
 MessageQueue::~MessageQueue() {
 }
 
-bool MessageQueue::raiseAndClearException(const char* msg) {
-    jthrowable exceptionObj = env->ExceptionOccurred();
-    if (exceptionObj) {
-        env->ExceptionClear();
-        raiseException(env, msg, exceptionObj);
-        env->DeleteLocalRef(exceptionObj);
-        return true;
-    }
-    return false;
-}
-
-NativeMessageQueue::NativeMessageQueue() : mInCallback(false), mExceptionObj(NULL) {
+NativeMessageQueue::NativeMessageQueue()
+    : mInCallback(FALSE)
+    , mExceptionObj(NULL)
+{
     mLooper = Looper::getForThread();
     if (mLooper == NULL) {
         mLooper = new Looper(false);
@@ -300,37 +293,27 @@ NativeMessageQueue::NativeMessageQueue() : mInCallback(false), mExceptionObj(NUL
 NativeMessageQueue::~NativeMessageQueue() {
 }
 
-void NativeMessageQueue::raiseException(JNIEnv* env, const char* msg, jthrowable exceptionObj) {
+void NativeMessageQueue::raiseException(const char* msg, ECode exceptionObj) {
     if (exceptionObj) {
         if (mInCallback) {
-            if (mExceptionObj) {
-                env->DeleteLocalRef(mExceptionObj);
-            }
-            mExceptionObj = jthrowable(env->NewLocalRef(exceptionObj));
-            ALOGE("Exception in MessageQueue callback: %s", msg);
-            jniLogException(env, ANDROID_LOG_ERROR, LOG_TAG, exceptionObj);
+            mExceptionObj = exceptionObj);
         } else {
-            ALOGE("Exception: %s", msg);
-            jniLogException(env, ANDROID_LOG_ERROR, LOG_TAG, exceptionObj);
-            LOG_ALWAYS_FATAL("raiseException() was called when not in a callback, exiting.");
         }
     }
 }
 
-void NativeMessageQueue::pollOnce(JNIEnv* env, int timeoutMillis) {
+void NativeMessageQueue::pollOnce(int timeoutMillis) {
     mInCallback = true;
     mLooper->pollOnce(timeoutMillis);
     mInCallback = false;
     if (mExceptionObj) {
-        env->Throw(mExceptionObj);
-        env->DeleteLocalRef(mExceptionObj);
         mExceptionObj = NULL;
     }
 }
 
 void NativeMessageQueue::wake() {
     mLooper->wake();
-}
+}*/
 
 //==========================================================
 
@@ -343,7 +326,7 @@ CAR_INTERFACE_IMPL(InputEventSender, Object, IInputEventSender)
 InputEventSender::InputEventSender()
     : mSenderPtr(0)
 {
-    mCloseGuard = CCloseGuard::Get();
+    //mCloseGuard = CCloseGuard::Get();
 }
 
 ECode InputEventSender::constructor(
@@ -359,7 +342,7 @@ ECode InputEventSender::constructor(
 
     mInputChannel = inputChannel;
     looper->GetQueue((IMessageQueue**)&mMessageQueue);
-    /*mSenderPtr = nativeInit(new WeakReference<InputEventSender>(this),
+    /*mSenderPtr = NativeInit(new WeakReference<InputEventSender>(this),
             inputChannel, mMessageQueue);*/
 
     mCloseGuard->Open(String("dispose"));
@@ -424,7 +407,7 @@ ECode InputEventSender::OnInputEventFinished(
 ECode InputEventSender::SendInputEvent(
     /* [in] */ Int32 seq,
     /* [in] */ IInputEvent* event,
-    /* [out] */ Boolean res)
+    /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res)
     if (event == NULL) {
@@ -440,7 +423,7 @@ ECode InputEventSender::SendInputEvent(
     if (IKeyEvent::Probe(event)) {
         return NativeSendKeyEvent(mSenderPtr, seq, IKeyEvent::Probe(event));
     } else {
-        return NativeSendMotionEvent(mSenderPtr, seq, IKeyEvent::Probe(event));
+        return NativeSendMotionEvent(mSenderPtr, seq, IMotionEvent::Probe(event));
     }
 }
 
@@ -458,7 +441,7 @@ ECode InputEventSender::NativeInit(
     /* [in] */ IMessageQueue* messageQueueObj,
     /* [out] */ Int64 res)
 {
-    sp<InputChannel> inputChannel = GetInputChannel(inputChannelObj);
+    /*sp<InputChannel> inputChannel = GetInputChannel(inputChannelObj);
 
     if (inputChannel == NULL) {
         Slogger::D("InputChannel is not initialized.");
@@ -485,23 +468,25 @@ ECode InputEventSender::NativeInit(
 
     status_t status = sender->initialize();
     if (status) {
-        String8 message;
-        message.appendFormat("Failed to initialize input event sender.  status=%d", status);
-        jniThrowRuntimeException(env, message.string());
-        return 0;
+        String message("Failed to initialize input event sender.  status=");
+        message += String(StringUtils::ToString(status));
+        Slogger::D("%s\n", message.string());
+        *res = 0;
+        return E_RUNTIME_EXCEPTION;
     }
 
     sender->incStrong(gInputEventSenderClassInfo.clazz); // retain a reference for the object
-    return reinterpret_cast<jlong>(sender.get());
+    *res = reinterpret_cast<Int64>(sender.get());*/
+    return NOERROR;
 }
 
 void InputEventSender::NativeDispose(
     /* [in] */ Int64 senderPtr)
 {
-    sp<NativeInputEventSender> sender =
+    /*sp<NativeInputEventSender> sender =
             reinterpret_cast<NativeInputEventSender*>(senderPtr);
     sender->dispose();
-    sender->decStrong(gInputEventSenderClassInfo.clazz);
+    sender->decStrong(gInputEventSenderClassInfo.clazz);*/
 }
 
 Boolean InputEventSender::NativeSendKeyEvent(
@@ -509,12 +494,12 @@ Boolean InputEventSender::NativeSendKeyEvent(
     /* [in] */ Int32 seq,
     /* [in] */ IKeyEvent* eventObj)
 {
-    sp<NativeInputEventSender> sender =
+    /*sp<NativeInputEventSender> sender =
             reinterpret_cast<NativeInputEventSender*>(senderPtr);
-    KeyEvent event;
-    android_view_KeyEvent_toNative(env, eventObj, &event);
+    AutoPtr<IKeyEvent> event;
+    GetKeyEvent(eventObj, (IKeyEvent**)&event);
     status_t status = sender->sendKeyEvent(seq, &event);
-    return !status;
+    return !status;*/
 }
 
 Boolean InputEventSender::NativeSendMotionEvent(
@@ -522,28 +507,48 @@ Boolean InputEventSender::NativeSendMotionEvent(
     /* [in] */ Int32 seq,
     /* [in] */ IMotionEvent* eventObj)
 {
-    sp<NativeInputEventSender> sender =
+    /*sp<NativeInputEventSender> sender =
             reinterpret_cast<NativeInputEventSender*>(senderPtr);
-    MotionEvent* event = android_view_MotionEvent_getNativePtr(env, eventObj);
+    AutoPtr<IMotionEvent> event;
+    GetMotionEvent(eventObj, (IMotionEvent**)&event);
     status_t status = sender->sendMotionEvent(seq, event);
-    return !status;
+    return !status;*/
 }
 
-sp<InputChannel> InputEventSender::GetInputChannel(
+AutoPtr<IInputChannel> InputEventSender::GetInputChannel(
     /* [in] */ IInputChannel* inputChannelObj)
 {
 
-    Handle64 longPtr = ((InputChannel*)inputChannelObj)->mNative;
+    /*Handle64 longPtr = ((InputChannel*)inputChannelObj)->mNative;
     AutoPtr<NativeInputChannel> nativeInputChannel =
         reinterpret_cast<NativeInputChannel>(longPtr);
-    return nativeInputChannel != NULL ? nativeInputChannel->getInputChannel() : NULL;
+    return nativeInputChannel != NULL ? nativeInputChannel->getInputChannel() : NULL;*/
 }
 
-sp<MessageQueue> InputEventSender::GetMessageQueue(
+android::sp<android::MessageQueue>& InputEventSender::GetMessageQueue(
     /* [in] */ IMessageQueue* messageQueueObj)
 {
-    Int64 ptr = ((CMessageQueue*)messageQueueObj)->mPtr;
-    return reinterpret_cast<NativeMessageQueue*>(ptr);
+    /*Int64 ptr = ((CMessageQueue*)messageQueueObj)->mPtr;
+    return reinterpret_cast<NativeMessageQueue*>(ptr);*/
+}
+
+ECode InputEventSender::GetKeyEvent(
+    /* [in] */ IKeyEvent* eventObj,
+    /* [out] */ IKeyEvent** result)
+{
+    /*VALIDATE_NOT_NULL(result)
+    KeyEvent* temp = (KeyEvent*)eventObj;
+    CKeyEvent::New(temp->mDownTime, temp->mEventTime, temp->mAction, temp->mKeyCode, temp->mRepeatCount,
+        temp->mMetaState, temp->mDeviceId, temp->mScanCode, temp->mFlags, temp->mSource, result);*/
+    return NOERROR;
+}
+
+AutoPtr<IMotionEvent> InputEventSender::GetMotionEvent(
+    /* [in] */ IMotionEvent* eventObj)
+{
+    /*VALIDATE_NOT_NULL(result)
+    MotionEvent* temp = (MotionEvent*)eventObj;
+    return reinterpret_cast<IMotionEvent*>(temp->mNativePtr);*/
 }
 
 } // namespace View

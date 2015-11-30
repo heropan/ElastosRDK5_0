@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_WIDGET_CVIEW_H__
-#define __ELASTOS_DROID_WIDGET_CVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_CVIEW_H__
+#define __ELASTOS_DROID_VIEW_CVIEW_H__
 
 #include "_Elastos_Droid_View_CView.h"
 #include "elastos/droid/view/View.h"
@@ -21,4 +21,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_CVIEW_H__
+#endif //__ELASTOS_DROID_VIEW_CVIEW_H__

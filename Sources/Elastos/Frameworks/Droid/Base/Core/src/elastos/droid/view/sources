@@ -17,7 +17,8 @@ INCLUDES += $(PREBUILD_INC)/hwui
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES = AbsSavedState.cpp
+SOURCES = view.cpp
+SOURCES += AbsSavedState.cpp
 SOURCES += ActionMode.cpp
 SOURCES += ActionProvider.cpp
 SOURCES += DisplayAdjustments.cpp
@@ -137,7 +138,6 @@ SOURCES += CWindowManagerGlobalSessionCallback.cpp
 SOURCES += ViewTreeObserver.cpp
 SOURCES += CViewTreeObserver.cpp
 SOURCES += View.cpp
-SOURCES += CView.cpp
 SOURCES += ViewGroup.cpp
 #SOURCES += CViewRootImplW.cpp
 SOURCES += ViewRootImpl.cpp
@@ -183,6 +183,8 @@ SOURCES += CInputQueue.cpp
 SOURCES += OrientationEventListener.cpp
 SOURCES += OrientationListener.cpp
 SOURCES += CViewAnimationUtilsHelper.cpp
+SOURCES += InputEventSender.cpp
+
 
 ELASTOS_LIBS += inputmethod/inputmethod.lib
 ELASTOS_LIBS += accessibility/accessibility.lib

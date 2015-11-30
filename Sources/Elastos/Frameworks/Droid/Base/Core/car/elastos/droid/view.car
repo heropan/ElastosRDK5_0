@@ -281,6 +281,29 @@ module
         interface IAccessibilityEventSource;
     }
 
+    class CAbsSavedState
+    {
+        constructor();
+
+        constructor(
+            [in] IParcelable* superState);
+
+        interface IAbsSavedState;
+        interface IParcelable;
+    }
+
+    class CViewBaseSavedState
+    {
+        constructor();
+
+        constructor(
+            [in] IParcelable* state);
+
+        interface IViewBaseSavedState;
+        interface IAbsSavedState;
+        interface IParcelable;
+    }
+
     class CWindowManagerGlobalSessionCallback {
         constructor();
 

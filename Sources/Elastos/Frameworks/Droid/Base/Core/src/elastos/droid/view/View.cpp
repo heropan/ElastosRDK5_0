@@ -4791,6 +4791,24 @@ ECode View::IsAccessibilityFocused(
     return NOERROR;
 }
 
+ECode View::GetPadding(
+    /* [out] */ Int32* left,
+    /* [out] */ Int32* top,
+    /* [out] */ Int32* right,
+    /* [out] */ Int32* bottom)
+{
+    VALIDATE_NOT_NULL(left);
+    VALIDATE_NOT_NULL(top);
+    VALIDATE_NOT_NULL(right);
+    VALIDATE_NOT_NULL(bottom);
+
+    *left = mPaddingLeft;
+    *top = mPaddingTop;
+    *right = mPaddingRight;
+    *bottom = mPaddingBottom;
+    return NOERROR;
+}
+
 ECode View::RequestAccessibilityFocus(
     /* [out] */ Boolean* res)
 {
@@ -18500,6 +18518,38 @@ Boolean View::InLiveRegion()
     }
 
     return FALSE;
+}
+
+/////////////////////////////////////////////////////////
+//              View::BaseSavedState
+/////////////////////////////////////////////////////////
+
+CAR_INTERFACE_IMPL(View::BaseSavedState, AbsSavedState, IViewBaseSavedState)
+
+View::BaseSavedState::BaseSavedState()
+{}
+
+ECode View::BaseSavedState::constructor()
+{
+    return AbsSavedState::constructor();
+}
+
+ECode View::BaseSavedState::constructor(
+    /* [in] */ IParcelable* superState)
+{
+    return AbsSavedState::constructor(superState);
+}
+
+ECode View::BaseSavedState::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    AbsSavedState::WriteToParcel(dest);
+}
+
+ECode View::BaseSavedState::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    AbsSavedState::ReadFromParcel(source);
 }
 
 /////////////////////////////////////////////////////////

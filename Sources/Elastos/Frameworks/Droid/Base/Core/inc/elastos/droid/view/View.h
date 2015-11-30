@@ -10,6 +10,8 @@
 #include "elastos/droid/utility/FloatProperty.h"
 #include "elastos/droid/utility/Pools.h"
 
+#include "elastos/droid/view/AbsSavedState.h"
+
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 
@@ -45,6 +47,7 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
 //using Elastos::Droid::View::CSurface;
+using Elastos::Droid::View::AbsSavedState;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
@@ -1335,6 +1338,27 @@ protected:
     };
 
 public:
+    class BaseSavedState
+        : public AbsSavedState
+        , public IViewBaseSavedState
+    {
+    public:
+        BaseSavedState();
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ IParcelable* superState);
+
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* dest);
+
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+    };
+
     class AlpahFloatProperty
         : public FloatProperty
     {
@@ -4815,6 +4839,12 @@ public:
      */
     virtual CARAPI IsAccessibilityFocused(
         /* [out] */ Boolean* res);
+
+    CARAPI GetPadding(
+        /* [out] */ Int32* left,
+        /* [out] */ Int32* top,
+        /* [out] */ Int32* right,
+        /* [out] */ Int32* bottom);
 
 protected:
     virtual CARAPI_(void) InitializeFadingEdge(
