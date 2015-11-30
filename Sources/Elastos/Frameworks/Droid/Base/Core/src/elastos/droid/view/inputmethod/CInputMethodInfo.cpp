@@ -79,7 +79,7 @@ ECode CInputMethodInfo::constructor(
 ECode CInputMethodInfo::constructor(
     /* [in] */ IResolveInfo* ri,
     /* [in] */ Boolean isAuxIme,
-    /* [in] */ String settingsActivity,
+    /* [in] */ const String& settingsActivity,
     /* [in] */ IList* subtypes,
     /* [in] */ Int32 isDefaultResId,
     /* [in] */ Boolean forceDefault)
@@ -91,7 +91,7 @@ ECode CInputMethodInfo::constructor(
 ECode CInputMethodInfo::constructor(
     /* [in] */ IResolveInfo* ri,
     /* [in] */ Boolean isAuxIme,
-    /* [in] */ String settingsActivity,
+    /* [in] */ const String& settingsActivity,
     /* [in] */ IList* subtypes,
     /* [in] */ Int32 isDefaultResId,
     /* [in] */ Boolean forceDefault,
@@ -114,8 +114,8 @@ ECode CInputMethodInfo::constructor(
 }
 
 AutoPtr<IResolveInfo> CInputMethodInfo::BuildDummyResolveInfo(
-    /* [in] */ String packageName,
-    /* [in] */ String className,
+    /* [in] */ const String& packageName,
+    /* [in] */ const String& className,
     /* [in] */ ICharSequence* label)
 {
     AutoPtr<IResolveInfo> ri;

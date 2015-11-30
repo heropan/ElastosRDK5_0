@@ -97,7 +97,7 @@ ECode CharacterPickerDialog::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IView* view,
     /* [in] */ IEditable* text,
-    /* [in] */ String options,
+    /* [in] */ const String& options,
     /* [in] */ Boolean insert)
 {
     FAIL_RETURN(constructor(context, R.style.Theme_Panel));

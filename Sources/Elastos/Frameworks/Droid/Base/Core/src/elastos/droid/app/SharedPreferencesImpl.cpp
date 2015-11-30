@@ -1,19 +1,25 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/app/CActivityThread.h"
-#include "elastos/droid/app/CContextImpl.h"
-//#include "elastos/droid/app/QueuedWork.h"
+// #include "elastos/droid/app/CContextImpl.h"
+#include "elastos/droid/app/QueuedWork.h"
 #include "elastos/droid/utility/XmlUtils.h"
 #include "elastos/droid/app/SharedPreferencesImpl.h"
 #include <os/FileUtils.h>
 #include <os/Looper.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::App::CActivityThread;
+using Elastos::Droid::App::QueuedWork;
+using Elastos::Droid::Content::EIID_ISharedPreferences;
+using Elastos::Droid::Content::EIID_ISharedPreferencesEditor;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Utility::XmlUtils;
+
 using Elastos::Core::CBoolean;
 using Elastos::Core::CFloat;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CInteger64;
-
 using Elastos::Core::CString;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IFloat;
@@ -22,12 +28,10 @@ using Elastos::Core::IInteger64;
 using Elastos::Core::IBlockGuard;
 using Elastos::Core::CBlockGuard;
 using Elastos::Core::IBlockGuardPolicy;
-using Elastos::Droid::App::CActivityThread;
-//using Elastos::Droid::App::QueuedWork;
-using Elastos::Droid::Content::EIID_ISharedPreferences;
-using Elastos::Droid::Content::EIID_ISharedPreferencesEditor;
-using Elastos::Droid::Os::Looper;
-using Elastos::Droid::Utility::XmlUtils;
+using Elastos::Utility::Concurrent::CCountDownLatch;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::CHashSet;
 using Elastos::IO::CBufferedInputStream;
 using Elastos::IO::CFile;
 using Elastos::IO::CFileInputStream;
@@ -36,10 +40,7 @@ using Elastos::IO::CIoUtils;
 using Elastos::IO::IBufferedInputStream;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IIoUtils;
-using Elastos::Utility::Concurrent::CCountDownLatch;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::CObjectMap;
-using Elastos::Utility::CHashSet;
+
 using Libcore::IO::CLibcore;
 using Libcore::IO::CStructStat;
 using Libcore::IO::ILibcore;
@@ -53,7 +54,7 @@ namespace App {
 
 
 //==============================================================================
-//          ++ SharedPreferencesImpl::MemoryCommitResult ++
+// SharedPreferencesImpl
 //==============================================================================
 
 SharedPreferencesImpl::MemoryCommitResult::MemoryCommitResult()
@@ -71,13 +72,10 @@ void SharedPreferencesImpl::MemoryCommitResult::SetDiskWriteResult(
 }
 
 //==============================================================================
-//          -- SharedPreferencesImpl::MemoryCommitResult --
+// SharedPreferencesImpl::EditorImpl
 //==============================================================================
 
-
-//==============================================================================
-//          ++ SharedPreferencesImpl::EditorImpl ++
-//==============================================================================
+CAR_INTERFACE_IMPL(SharedPreferencesImpl::EditorImpl, Object, ISharedPreferencesEditor);
 
 SharedPreferencesImpl::EditorImpl::AwaitCommitRunnable::AwaitCommitRunnable(
     /* [in] */ MemoryCommitResult* mcr)
@@ -102,7 +100,7 @@ ECode SharedPreferencesImpl::EditorImpl::PostWriteRunnable::Run()
     mAwaitCommitRunnable->Run();
     //TODO
     Slogger::W(TAG, "[TODO] PostWriteRunnable::Run == There need the class QueuedWork...");
-    //QueuedWork::Remove(mAwaitCommitRunnable);
+    QueuedWork::Remove(mAwaitCommitRunnable);
     return NOERROR;
 }
 
@@ -126,8 +124,6 @@ SharedPreferencesImpl::EditorImpl::EditorImpl(
     , mHost(host)
 {
 }
-
-CAR_INTERFACE_IMPL(SharedPreferencesImpl::EditorImpl, ISharedPreferencesEditor);
 
 ECode SharedPreferencesImpl::EditorImpl::PutString(
     /* [in] */ const String& key,
@@ -217,8 +213,7 @@ ECode SharedPreferencesImpl::EditorImpl::Apply()
     AutoPtr<MemoryCommitResult> mcr = CommitToMemory();
     AutoPtr<AwaitCommitRunnable> awaitCommitRunnable = new AwaitCommitRunnable(mcr);
 
-    //TODO
-    //QueuedWork::Add(awaitCommitRunnable);
+    QueuedWork::Add(awaitCommitRunnable);
     Slogger::W(TAG, "[TODO] Apply == There need the class QueuedWork...");
     AutoPtr<PostWriteRunnable> postWriteRunnable = new PostWriteRunnable(awaitCommitRunnable);
     mHost->EnqueueDiskWrite(mcr, postWriteRunnable);
@@ -341,7 +336,7 @@ void SharedPreferencesImpl::EditorImpl::NotifyListeners(
 }
 
 //==============================================================================
-//          -- SharedPreferencesImpl::EditorImpl --
+// SharedPreferencesImpl::LoadFromDiskLockedRunnable
 //==============================================================================
 
 SharedPreferencesImpl::LoadFromDiskLockedRunnable::LoadFromDiskLockedRunnable(
@@ -357,6 +352,9 @@ ECode SharedPreferencesImpl::LoadFromDiskLockedRunnable::Run()
     return NOERROR;
 }
 
+//==============================================================================
+// SharedPreferencesImpl::WriteToDiskRunnable
+//==============================================================================
 SharedPreferencesImpl::WriteToDiskRunnable::WriteToDiskRunnable(
     /* [in] */ MemoryCommitResult* mcr,
     /* [in] */ Runnable* postWriteRunnable,
@@ -383,10 +381,19 @@ ECode SharedPreferencesImpl::WriteToDiskRunnable::Run()
     return NOERROR;
 }
 
+//==============================================================================
+// SharedPreferencesImpl
+//==============================================================================
+static AutoPtr<IInterface> InitContent()
+{
+    AutoPtr<IObject> obj;
+    CObject::New((IObject**)&obj);
+    return (IInterface*)obj.Get();
+}
 
 const String SharedPreferencesImpl::TAG("SharedPreferencesImpl");
 const Boolean SharedPreferencesImpl::DEBUG = FALSE;
-AutoPtr<IInterface> SharedPreferencesImpl::mContent; // = new Object();//TODO
+AutoPtr<IInterface> SharedPreferencesImpl::mContent = InitContent();
 
 SharedPreferencesImpl::SharedPreferencesImpl(
     /* [in] */ IFile* file,
@@ -401,32 +408,6 @@ SharedPreferencesImpl::SharedPreferencesImpl(
     mMap = new HashMap<String, AutoPtr<IInterface> >();
     mBackupFile = MakeBackupFile(file);
     StartLoadFromDisk();
-}
-
-PInterface SharedPreferencesImpl::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_ISharedPreferences) {
-        return (PInterface)(ISharedPreferences*)this;
-    }
-    return NULL;
-}
-
-UInt32 SharedPreferencesImpl::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 SharedPreferencesImpl::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode SharedPreferencesImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 void SharedPreferencesImpl::StartLoadFromDisk()
@@ -460,7 +441,7 @@ void SharedPreferencesImpl::LoadFromDiskLocked()
         Slogger::W(TAG, "Attempt to read preferences file %p without permission", mFile.Get());
     }
 
-    AutoPtr<IObjectMap> map;
+    AutoPtr<IMap> map;
     AutoPtr<IStructStat> stat;
 
     do {
@@ -601,12 +582,11 @@ void SharedPreferencesImpl::AwaitLoadedLocked()
         // thread, since the real read will be in a different
         // thread and otherwise ignored by StrictMode.
 
-        // TODO CBlockGuard
-        // AutoPtr<IBlockGuard> helper;
-        // CBlockGuard::AcquireSingleton((IBlockGuard**)&helper);
-        // AutoPtr<IBlockGuardPolicy> policy;
-        // helper->GetThreadPolicy((IBlockGuardPolicy**)&policy);
-        // policy->OnReadFromDisk();
+        AutoPtr<IBlockGuard> helper;
+        CBlockGuard::AcquireSingleton((IBlockGuard**)&helper);
+        AutoPtr<IBlockGuardPolicy> policy;
+        helper->GetThreadPolicy((IBlockGuardPolicy**)&policy);
+        policy->OnReadFromDisk();
     }
     while (!mLoaded) {
         Wait();
@@ -614,20 +594,25 @@ void SharedPreferencesImpl::AwaitLoadedLocked()
 }
 
 ECode SharedPreferencesImpl::GetAll(
-    /* [out] */ IObjectMap** result)
+    /* [out] */ IMap** result)
 {
     VALIDATE_NOT_NULL(result);
-    CObjectMap::New(result);
+    *result = NULL;
+
+    AutoPtr<IMap> map;
+    CHashMap::New((IMap**)&map)
 
     AutoLock lock(this);
     AwaitLoadedLocked();
     //noinspection unchecked
     HashMap<String, AutoPtr<IInterface> >::Iterator it;
     for (it = mMap->Begin(); it != mMap->End(); ++it) {
-        AutoPtr<ICharSequence> key;
-        CString::New(it->mFirst, (ICharSequence**)&key);
-        (*result)->Put(key, it->mSecond);
+        AutoPtr<ICharSequence> key = CoreUtils::Convert(it->mFirst)
+        map->Put(key.Get(), it->mSecond);
     }
+
+    *result = map;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -913,8 +898,8 @@ void SharedPreferencesImpl::WriteToFile(
     }
 
     assert(mcr->mMapToWriteToDisk != NULL);
-    AutoPtr<IObjectMap> map;
-    CObjectMap::New((IObjectMap**)&map);
+    AutoPtr<IMap> map;
+    CObjectMap::New((IMap**)&map);
     HashMap<String, AutoPtr<IInterface> >::Iterator ator = mcr->mMapToWriteToDisk->Begin();
     for (; ator != mcr->mMapToWriteToDisk->End(); ++ator) {
         AutoPtr<ICharSequence> key;
@@ -929,7 +914,8 @@ void SharedPreferencesImpl::WriteToFile(
     FileUtils::Sync(str, &isSync);
     FAIL_GOTO(str->Close(), failed);
     FAIL_GOTO(mFile->GetPath(&path), failed);
-    CContextImpl::SetFilePermissionsFromMode(path, mMode, 0);
+    assert(0 && "TODO");
+    // CContextImpl::SetFilePermissionsFromMode(path, mMode, 0);
 
     FAIL_GOTO(Os::Stat(path, (IStructStat**)&stat), failed);
     {

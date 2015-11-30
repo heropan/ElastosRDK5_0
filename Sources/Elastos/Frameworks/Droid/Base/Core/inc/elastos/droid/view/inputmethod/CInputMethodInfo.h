@@ -76,7 +76,7 @@ public:
     CARAPI constructor(
         /* [in] */ IResolveInfo* ri,
         /* [in] */ Boolean isAuxIme,
-        /* [in] */ String settingsActivity,
+        /* [in] */ const String& settingsActivity,
         /* [in] */ IList* subtypes,
         /* [in] */ Int32 isDefaultResId,
         /* [in] */ Boolean forceDefault);
@@ -88,7 +88,7 @@ public:
     CARAPI constructor(
         /* [in] */ IResolveInfo* ri,
         /* [in] */ Boolean isAuxIme,
-        /* [in] */ String settingsActivity,
+        /* [in] */ const String& settingsActivity,
         /* [in] */ IList* subtypes,
         /* [in] */ Int32 isDefaultResId,
         /* [in] */ Boolean forceDefault,
@@ -172,8 +172,8 @@ private:
         /* [in] */ IMap* additionalSubtypesMap);
 
     static AutoPtr<IResolveInfo> BuildDummyResolveInfo(
-        /* [in] */ String packageName,
-        /* [in] */ String className,
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& className,
         /* [in] */ ICharSequence* label);
 
 private:

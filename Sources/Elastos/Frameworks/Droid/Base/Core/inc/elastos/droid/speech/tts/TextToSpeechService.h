@@ -291,17 +291,17 @@ public:
 
         String GetStringParam(
             /* [in] */ IBundle params,
-            /* [in] */ String key,
-            /* [in] */ String defaultValue);
+            /* [in] */ const String& key,
+            /* [in] */ const String& defaultValue);
 
         Int32 GetIntParam(
             /* [in] */ IBundle params,
-            /* [in] */ String key,
+            /* [in] */ const String& key,
             /* [in] */ Int32 defaultValue);
 
         Float GetFloatParam(
             /* [in] */ IBundle params,
-            /* [in] */ String key,
+            /* [in] */ const String& key,
             /* [in] */ Float defaultValue);
     };
 
@@ -319,7 +319,7 @@ public:
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
             /* [in] */ Bundle params,
-            /* [in] */ String utteranceId);
+            /* [in] */ const String& utteranceId);
 
         Boolean HasLanguage();
 
@@ -359,7 +359,7 @@ public:
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
             /* [in] */ IBundle params,
-            /* [in] */ String utteranceId,
+            /* [in] */ const String& utteranceId,
             /* [in] */ ICharSequence text);
 
         ICharSequence getText();
@@ -398,7 +398,7 @@ private:
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
             /* [in] */ IBundle params,
-            /* [in] */ String utteranceId,
+            /* [in] */ const String& utteranceId,
             /* [in] */ ICharSequence text,
             /* [in] */ IFileOutputStream fileOutputStream);
 
@@ -463,7 +463,7 @@ private:
             /* [in] */ Int64 callerUid,
             /* [in] */ Int64 callerPid,
             /* [in] */ Bundle params,
-            /* [in] */ String utteranceId,
+            /* [in] */ const String& utteranceId,
             /* [in] */ Uri uri);
 
         Boolean isValid();
@@ -490,7 +490,7 @@ private:
             /* [in] */ IInterface callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ String utteranceId,
+            /* [in] */ const String& utteranceId,
             /* [in] */ Int64 duration);
 
         Boolean isValid();
@@ -520,9 +520,9 @@ private:
             /* [in] */ IInterface callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ String language,
-            /* [in] */ String country,
-            /* [in] */ String variant);
+            /* [in] */ const String& language,
+            /* [in] */ const String& country,
+            /* [in] */ const String& variant);
 
         Boolean isValid();
 
@@ -546,7 +546,7 @@ private:
             /* [in] */ IInterface callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ String voiceName) {
+            /* [in] */ const String& voiceName) {
 
         Boolean isValid();
 

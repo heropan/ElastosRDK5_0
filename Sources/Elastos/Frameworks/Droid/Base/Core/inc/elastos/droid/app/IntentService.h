@@ -77,7 +77,7 @@ public:
      * @param name Used to name the worker thread, important only for debugging.
      */
     CARAPI constructor(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Sets intent redelivery preferences.  Usually called from the constructor

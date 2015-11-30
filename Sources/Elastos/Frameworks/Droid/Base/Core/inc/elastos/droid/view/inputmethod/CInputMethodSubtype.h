@@ -396,9 +396,9 @@ private:
     static CARAPI_(AutoPtr<InputMethodSubtypeBuilder>) GetBuilder(
         /* [in] */ Int32 nameId,
         /* [in] */ Int32 iconId,
-        /* [in] */ String locale,
-        /* [in] */ String mode,
-        /* [in] */ String extraValue,
+        /* [in] */ const String& locale,
+        /* [in] */ const String& mode,
+        /* [in] */ const String& extraValue,
         /* [in] */ Boolean isAuxiliary,
         /* [in] */ Boolean overridesImplicitlyEnabledSubtype,
         /* [in] */ Int32 id,
