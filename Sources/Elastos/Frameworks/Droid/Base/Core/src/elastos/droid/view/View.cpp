@@ -4791,24 +4791,6 @@ ECode View::IsAccessibilityFocused(
     return NOERROR;
 }
 
-ECode View::GetPadding(
-    /* [out] */ Int32* left,
-    /* [out] */ Int32* top,
-    /* [out] */ Int32* right,
-    /* [out] */ Int32* bottom)
-{
-    VALIDATE_NOT_NULL(left);
-    VALIDATE_NOT_NULL(top);
-    VALIDATE_NOT_NULL(right);
-    VALIDATE_NOT_NULL(bottom);
-
-    *left = mPaddingLeft;
-    *top = mPaddingTop;
-    *right = mPaddingRight;
-    *bottom = mPaddingBottom;
-    return NOERROR;
-}
-
 ECode View::RequestAccessibilityFocus(
     /* [out] */ Boolean* res)
 {
