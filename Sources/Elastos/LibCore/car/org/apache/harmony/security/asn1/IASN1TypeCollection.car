@@ -15,22 +15,22 @@ module
     [deprecated]
     interface IASN1TypeCollection {
 //        SetType(
-//            [in] ArrayOf<IASN1Type*>* type);
+//            [in] ArrayOf<IASN1Type*>* value);
 //
         GetType(
-            [out, callee] ArrayOf<IASN1Type*>* type);
+            [out, callee] ArrayOf<IASN1Type*>* value);
 
 //        SetOPTIONAL(
-//            [in] ArrayOf<Boolean>* optional);
+//            [in] ArrayOf<Boolean>* value);
 //
         GetOPTIONAL(
-            [out, callee] ArrayOf<Boolean>* optional);
+            [out, callee] ArrayOf<Boolean>* value);
 
 //        SetDEFAULT(
-//            [in] ArrayOf<IInterface*>* default);
+//            [in] ArrayOf<IInterface*>* value);
 //
         GetDEFAULT(
-            [out, callee] ArrayOf<IInterface*>* default);
+            [out, callee] ArrayOf<IInterface*>* value);
 
         GetValues(
             [in] IInterface* object,

@@ -733,6 +733,11 @@ int InterfaceCopy(
 
     if (bNameSpace) pDest->mDesc->mAttribs |= InterfaceAttrib_t_external;
 
+    if (pSrc->mFileIndex != 0) {
+        r = CreateFileDirEntry(pSrcModule->mFileDirs[pSrc->mFileIndex]->mPath, pDestModule);
+        pDest->mFileIndex = r;
+    }
+
     _Return (n);
 }
 

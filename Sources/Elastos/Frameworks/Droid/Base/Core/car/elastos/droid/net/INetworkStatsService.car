@@ -17,7 +17,7 @@ module
 
         /** Return network layer usage total for traffic that matches template. */
         GetNetworkTotalBytes(
-            [in] INetworkTemplate* template,
+            [in] INetworkTemplate* templateObj,
             [in] Int64 start,
             [in] Int64 end,
             [out] Int64* result);

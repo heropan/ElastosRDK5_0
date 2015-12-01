@@ -666,7 +666,7 @@ module
          *            the value to enable or disable this option.
          */
         SetFollowRedirects(
-            [in] Boolean auto);
+            [in] Boolean autoValue);
     }
 
     } // namespace Net

@@ -64,6 +64,7 @@ lube.lbo :  $(MAKEDIR)/background/backcpp.lub       \
             $(MAKEDIR)/header/decltype.lub          \
             $(MAKEDIR)/header/decluuid.lub          \
             $(MAKEDIR)/header/header.lub            \
+            $(MAKEDIR)/header/header2.lub           \
             $(MAKEDIR)/header/clienth.lub           \
             $(MAKEDIR)/header/serverh.lub           \
             $(MAKEDIR)/header/genericcallback.lub \

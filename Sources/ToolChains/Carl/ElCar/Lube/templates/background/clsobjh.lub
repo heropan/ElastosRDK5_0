@@ -8,8 +8,7 @@ $OUTPUT "${fullname}.h"
 #ifndef __CAR_${fullname}_H__
 #define __CAR_${fullname}_H__
 
-#include "${module.name}_server.h"
-#include <elaatomics.h>
+${GenerateDependHeaderForClass(class)}
 
 ${ClassNamespaceBegin(class)}
 class ${name} :

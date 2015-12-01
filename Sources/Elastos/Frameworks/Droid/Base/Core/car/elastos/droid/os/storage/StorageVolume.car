@@ -139,7 +139,7 @@ module
 
     interface IStorageVolumeHelper {
         FromTemplate(
-            [in] IStorageVolume* template,
+            [in] IStorageVolume* templateObj,
             [in] IFile* path,
             [in] IUserHandle* userHandle,
             [out] IStorageVolume** owner);

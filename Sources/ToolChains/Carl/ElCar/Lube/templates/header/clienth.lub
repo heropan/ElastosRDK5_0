@@ -10,6 +10,7 @@ $
 
 #ifndef _NO_INCLIST
 #include <elastos.h>
+using namespace Elastos;
 $WITH all libraries DO
 ${CreateHFiles(name)}
 ${CreateCPPFiles(name)}
@@ -21,9 +22,6 @@ $
 $
 $TEMPLATE "decltype.lub"
 $
-
-#include <_${name}.h>
-$TEMPLATE "classobj.lub"
 
 #endif // __CAR_${Upper(name)}_H__
 $

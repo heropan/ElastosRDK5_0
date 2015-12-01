@@ -6,4 +6,4 @@ $INPUT module
 $
 $TEMPLATE "clienth.lub"
 $TEMPLATE "baseh.lub"
-$TEMPLATE "cstyleh.lub"
+$TEMPLATE "classobj.lub"

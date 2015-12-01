@@ -963,7 +963,7 @@ module
         SelectRouteInt(
             [in] Int32 types,
             [in] IMediaRouterRouteInfo * route,
-            [in] Boolean explicit);
+            [in] Boolean isExplicit);
 
         /**
          * Add an app-specified route for media to the MediaRouter.

@@ -28,7 +28,7 @@ module
 		SetSelectedRoute(
 			[in] IIMediaRouterClient * client,
 			[in] String routeId,
-			[in] Boolean explicit);
+			[in] Boolean isExplicit);
 
 		RequestSetVolume(
 			[in] IIMediaRouterClient * client,

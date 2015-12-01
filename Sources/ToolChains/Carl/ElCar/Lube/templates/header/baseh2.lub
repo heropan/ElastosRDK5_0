@@ -4,4 +4,4 @@ $;;=========================================================================
 $
 $INPUT module
 
-${GenerateModuleImplementation(module)}
+${GenerateModuleImplementation2(module)}

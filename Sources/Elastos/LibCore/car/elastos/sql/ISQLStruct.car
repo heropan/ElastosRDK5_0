@@ -15,7 +15,7 @@ module
          *             if a database error occurs.
          */
         GetSQLTypeName(
-            [out] String* typename);
+            [out] String* name);
 
         /**
          * Gets the values of the attributes of this SQL structured type. This

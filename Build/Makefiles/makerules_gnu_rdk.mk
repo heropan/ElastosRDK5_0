@@ -187,7 +187,7 @@ endif
 %.mk: $(MAKEDIR)/%.car
 		$(CAR) $(CAR_FLAGS) -a -c $*.cls -E $*Ex.cls $<
 		@echo Generating H, CPP files from $*.cls ...
-		$(LUBE) $(LUBE_FLAGS) -C$*Ex.cls -f -T header -T serverh -T cls2abrg \
+		$(LUBE) $(LUBE_FLAGS) -C$*Ex.cls -f -T header -T cls2abrg \
 				-T background $(LUBE_TS)
 		$(CAR) $(CAR_FLAGS) $(DEPEND_CAR_FLAGS) $< >$*.d
 		@echo >>$*.d

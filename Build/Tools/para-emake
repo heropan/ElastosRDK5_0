@@ -345,7 +345,6 @@ build_car() {
         -n \
         -u \
         -T header \
-        -T serverh \
         -T cls2abrg \
         -T background
     cleanup_stack_pop_and_drop

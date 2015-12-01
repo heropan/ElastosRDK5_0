@@ -256,7 +256,7 @@ module
          * @return SQLite error code
          */
         LastError(
-            [out] Int32* errno);
+            [out] Int32* error_code);
 
         /**
          * Internal: set error code.

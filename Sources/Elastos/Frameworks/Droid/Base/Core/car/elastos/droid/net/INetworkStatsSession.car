@@ -12,20 +12,20 @@ module
     interface IINetworkStatsSession {
         /** Return network layer usage summary for traffic that matches template. */
         GetSummaryForNetwork(
-            [in] INetworkTemplate* template,
+            [in] INetworkTemplate* templateObj,
             [in] Int64 start,
             [in] Int64 end,
             [out] INetworkStats** result);
 
         /** Return historical network layer stats for traffic that matches template. */
         GetHistoryForNetwork(
-            [in] INetworkTemplate* template,
+            [in] INetworkTemplate* templateObj,
             [in] Int32 fields,
             [out] INetworkStatsHistory** result);
 
         /** Return network layer usage summary per UID for traffic that matches template. */
         GetSummaryForAllUid(
-            [in] INetworkTemplate* template,
+            [in] INetworkTemplate* templateObj,
             [in] Int64 start,
             [in] Int64 end,
             [in] Boolean includeTags,
@@ -33,7 +33,7 @@ module
 
         /** Return historical network layer stats for specific UID traffic that matches template. */
         GetHistoryForUid(
-            [in] INetworkTemplate* template,
+            [in] INetworkTemplate* templateObj,
             [in] Int32 uid,
             [in] Int32 set,
             [in] Int32 tag,

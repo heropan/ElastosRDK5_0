@@ -32,7 +32,7 @@ module
 
         ComposeSearchUrl(
             [in] String inQuery,
-            [in] String template,
+            [in] String templateStr,
             [in] String queryPlaceHolder,
             [out] String* url);
 

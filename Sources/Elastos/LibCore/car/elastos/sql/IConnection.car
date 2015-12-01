@@ -188,7 +188,7 @@ module
          *             if there is a problem accessing the database.
          */
         GetAutoCommit(
-            [out] Boolean* auto);
+            [out] Boolean* autoValue);
 
         /**
          * Gets this {@code Connection} object's current catalog name.

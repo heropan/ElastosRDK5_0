@@ -5,7 +5,7 @@ $
 $INPUT module
 $OUTPUT "${name}.cpp"
 
-#include "${name}.h"
+${GenerateDependHeaderForModule(module)}
 
 using namespace Elastos;
 

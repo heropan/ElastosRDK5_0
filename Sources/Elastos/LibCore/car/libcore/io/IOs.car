@@ -527,7 +527,7 @@ module
             [out] IStructStatVfs** statfs);
 
         Strerror(
-            [in] Int32 errno,
+            [in] Int32 errnum,
             [out] String* strerr);
 
         Strsignal(

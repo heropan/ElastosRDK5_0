@@ -8,7 +8,7 @@ $OUTPUT "_${fullname}.h"
 #ifndef __CAR_${fullname}_H__
 #define __CAR_${fullname}_H__
 
-#include "${module.name}_server.h"
+${GenerateDependHeaderForClass(class)}
 $IF attrib is "singleton"
 #include <spinlock.h>
 $END IF

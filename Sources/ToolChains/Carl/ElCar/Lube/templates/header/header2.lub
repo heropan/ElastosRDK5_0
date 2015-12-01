@@ -3,5 +3,6 @@ $;; Copyright (c) 2000-2005,  Elastos, Inc.  All Rights Reserved.
 $;;=========================================================================
 $
 $INPUT module
-
-${GenerateModuleImplementation(module)}
+$
+$TEMPLATE "clienth.lub"
+$TEMPLATE "baseh2.lub"

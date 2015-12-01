@@ -20,10 +20,8 @@
 #include <eltypes.h>
 #ifdef _CAR_RUNTIME
 #define _NO_INCLIST
-#include <elasys_server.h>
-#else
-#include <elasys.h>
 #endif
+#include <_ElastosCore.h>
 #include <callback.h>
 #include <carapi.h>
 

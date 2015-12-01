@@ -55,7 +55,7 @@ module
 
         /** Snooze limit on policy matching given template. */
         SnoozeLimit(
-            [in] INetworkTemplate* template);
+            [in] INetworkTemplate* templateObj);
 
         /** Control if background data is restricted system-wide. */
         SetRestrictBackground(

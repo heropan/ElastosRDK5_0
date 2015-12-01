@@ -86,7 +86,9 @@ DECL_USERFUNC(EnumNamespaceBegin);
 DECL_USERFUNC(EnumNamespaceEnd);
 DECL_USERFUNC(GenerateModuleDeclaration);
 DECL_USERFUNC(GenerateModuleImplementation);
-
+DECL_USERFUNC(GenerateModuleImplementation2);
+DECL_USERFUNC(GenerateDependHeaderForClass);
+DECL_USERFUNC(GenerateDependHeaderForModule);
 
 const UserFuncEntry g_userFuncs[] = {
     USERFUNC_(Embed, ARGTYPE_STRING, \
@@ -197,6 +199,12 @@ const UserFuncEntry g_userFuncs[] = {
             "Generate the declaration of the module"),
     USERFUNC_(GenerateModuleImplementation, ARGTYPE_(Object_Module, Member_None), \
             "Generate the implementation of the module"),
+    USERFUNC_(GenerateModuleImplementation2, ARGTYPE_(Object_Module, Member_None), \
+            "Generate the implementation of the module"),
+    USERFUNC_(GenerateDependHeaderForClass, ARGTYPE_(Object_Class, Member_None), \
+            "Generate the depend header files for class"),
+    USERFUNC_(GenerateDependHeaderForModule, ARGTYPE_(Object_Module, Member_None), \
+            "Generate the depend header files for class"),
 };
 const int c_cUserFuncs = sizeof(g_userFuncs) / sizeof(UserFuncEntry);
 
@@ -1004,7 +1012,7 @@ IMPL_USERFUNC(CreateHFiles)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     //Compare .h file and .dll/.cls file to avoid repeated building problem
     nRet = CmpHModTime(szName);
 
-    if (nRet >= 0) nRet = ctx.ExecTemplate("header");
+    if (nRet >= 0) nRet = ctx.ExecTemplate("header2");
 
     DisposeFlattedCLS(pModule);
     if (nRet < 0 && nRet != HTIME_GT_DLLTIME)
@@ -2388,6 +2396,163 @@ IMPL_USERFUNC(GenerateModuleDeclaration)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID 
     return LUBE_OK;
 }
 
+void ConvertToDefine(const char* srcStr, char* destStr)
+{
+    strcpy(destStr, srcStr);
+    char* begin = destStr;
+    while (begin != NULL) {
+        char* dot = strchr(begin, '.');
+        if (dot != NULL) {
+            *dot = '_';
+            begin = dot + 1;
+        }
+        else begin = NULL;
+    }
+}
+
+void ConvertToCPlusPlusNamespace(const char* srcNs, char* destNs)
+{
+    char *pszNamespace = (char*)malloc(strlen(srcNs) + 1);
+    strcpy(pszNamespace, srcNs);
+    char *begin = pszNamespace;
+    while (begin != NULL) {
+        char *dot = strchr(begin, '.');
+        if (dot != NULL) *dot = '\0';
+        strcat(destNs, begin);
+        strcat(destNs, "::");
+        if (dot != NULL) begin = dot + 1;
+        else begin = NULL;
+    }
+    free(pszNamespace);
+}
+
+void NamespaceBegin(const char* ns, FILE* pFile)
+{
+    char *pszNamespace = (char*)malloc(strlen(ns) + 1);
+    strcpy(pszNamespace, ns);
+    char *begin = pszNamespace;
+    while (begin != NULL) {
+        char *dot = strchr(begin, '.');
+        if (dot != NULL) *dot = '\0';
+        fprintf(pFile, "namespace %s {\n", begin);
+        if (dot != NULL) begin = dot + 1;
+        else begin = NULL;
+    }
+    free(pszNamespace);
+}
+
+void NamespaceEnd(const char* ns, FILE* pFile)
+{
+    char *pszNamespace = (char*)malloc(strlen(ns) + 1);
+    strcpy(pszNamespace, ns);
+    char *begin = pszNamespace;
+    while (begin != NULL) {
+        char *dot = strchr(begin, '.');
+        if (dot != NULL) *dot = '\0';
+        fprintf(pFile, "}\n", begin);
+        if (dot != NULL) begin = dot + 1;
+        else begin = NULL;
+    }
+    free(pszNamespace);
+}
+
+const char *ParamNamespaceType(ParamDescriptor* pParamDesc, char *szType, CLSModule* pModule)
+{
+    const char *pszType;
+    TypeDescriptor type;
+    memset(&type, 0, sizeof(type));
+
+    TypeDescriptor *pType = &pParamDesc->mType;
+    DWORD attribs = pParamDesc->mAttribs;
+
+    if ((Type_struct == pType->mType)
+            || (Type_EMuid == pType->mType)
+            || (Type_EGuid == pType->mType)) {
+        if (0 == pType->mPointer) {
+            sprintf(szType, "const %s &",
+                    Type2CString(pModule, pType));
+            pszType = szType;
+        }
+        else {
+            pszType = Type2CString(pModule, pType);
+        }
+    }
+    else if (Type_alias == pType->mType) {
+        GetOriginalType(pModule, pType, &type);
+        if ((Type_EMuid == type.mType)
+                || (Type_EGuid == type.mType)
+                || (Type_struct == type.mType)) {
+            if (attribs & ParamAttrib_in) {
+                if (0 == type.mPointer) {
+                    assert(0 == pType->mPointer);
+                    sprintf(szType, "const %s &",
+                            Type2CString(pModule, pType));
+                    pszType = szType;
+                }
+                else {
+                    pszType = Type2CString(pModule, pType);
+                }
+            }
+            else pszType = Type2CString(pModule, pType);
+        }
+        else if (Type_ArrayOf == type.mType) {
+            if (attribs & ParamAttrib_in) {
+                if (0 == type.mPointer) {
+                    assert(0 == pType->mPointer);
+                    sprintf(szType, "const %s &",
+                            Type2CString(pModule, pType));
+                    pszType = szType;
+                }
+                else {
+                    pszType = Type2CString(pModule, pType);
+                }
+            }
+            else {
+                if (attribs & ParamAttrib_callee) {
+                    if (0 == pType->mPointer) {
+                        assert(1 == type.mPointer);
+                        sprintf(szType, "%s *", Type2CString(pModule, pType));
+                    }
+                    else if (1 == pType->mPointer) {
+                        assert(0 == type.mPointer);
+                        sprintf(szType, "%s **", Type2CString(pModule, pType));
+                    }
+                    pszType = szType;
+                }
+                else {
+                    assert(0 == pType->mPointer);
+                    assert(0 == type.mPointer);
+                    sprintf(szType, "%s *", Type2CString(pModule, pType));
+                    pszType = szType;
+                }
+            }
+        }
+        else pszType = Type2CString(pModule, pType);
+    }
+    else if (Type_ArrayOf == pType->mType) {
+        if (attribs & ParamAttrib_in) {
+            if (0 == pType->mPointer) {
+                sprintf(szType, "const ArrayOf<%s> &",
+                        Type2CString(pModule, pType->mNestedType));
+            }
+            else sprintf(szType, "%s", Type2CString(pModule, pType));
+        }
+        else {
+            //attribs == ParamAttrib_out
+            sprintf(szType, "ArrayOf<%s>",
+                    Type2CString(pModule, pType->mNestedType));
+            if (0 == pType->mPointer) strcat(szType, " *");
+            else strcat(szType, " **");
+        }
+        pszType = szType;
+    }
+    else {
+        pszType = Type2CString(pModule, pType);
+    }
+
+    return pszType;
+}
+
 void OutputInterface(InterfaceDirEntry* pItfDir, CLSModule* pModule)
 {
     char *pPath;
@@ -2396,83 +2561,168 @@ void OutputInterface(InterfaceDirEntry* pItfDir, CLSModule* pModule)
 
     if (pItfDir->mFileIndex == 0) {
         pPath = (char*)malloc(strlen(pModule->mName) + 4);
-        strcat(pPath, "_");
+        strcpy(pPath, "_");
         strcat(pPath, pModule->mName);
-        strcat(pPath, ".");
-        strcat(pPath, "h");
+        strcat(pPath, ".h");
     }
     else {
-        pPath = (char*)malloc(strlen(pModule->mFileDirs[pItfDir->mFileIndex]->mPath) + 1);
+        pPath = (char*)malloc(strlen(pModule->mFileDirs[pItfDir->mFileIndex]->mPath) + 3);
         strcpy(pPath, pModule->mFileDirs[pItfDir->mFileIndex]->mPath);
-    }
-
-    nRet == access(pPath, 0);
-    pFile = fopen(pPath, "a+t");
-printf("======== pPath: %s nRet: %d\n", pPath, nRet);
-    if (nRet != 0) {
-        fprintf(pFile, "#include<%s.h>\n", pModule->mName);
+        strcat(pPath, ".h");
     }
 
     char buffer[1024];
-    buffer[0] = '\0';
-    if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0' &&
-        strcmp(pItfDir->mNameSpace, "systypes")) {
-        char *pszNamespace = (char*)malloc(strlen(pItfDir->mNameSpace) + 1);
-        strcpy(pszNamespace, pItfDir->mNameSpace);
-        char *begin = pszNamespace;
-        while (begin != NULL) {
-            char *dot = strchr(begin, '.');
-            if (dot != NULL) *dot = '\0';
-            strcat(buffer, begin);
-            strcat(buffer, "_");
-            if (dot != NULL) begin = dot + 1;
-            else begin = NULL;
-        }
-        free(pszNamespace);
-    }
-    strcat(buffer, pItfDir->mName);
+    ConvertToDefine(pPath, buffer);
 
-    fprintf(pFile, "\n");
-    fprintf(pFile, "#ifndef __INTERFACE_%s_DEFINED__\n", buffer);
-    fprintf(pFile, "#define __INTERFACE_%s_DEFINED__\n", buffer);
+    nRet = access(pPath, 0);
+    if (nRet != 0) {
+        pFile = fopen(pPath, "w+t");
+
+        if (pItfDir->mFileIndex != 0) {
+            fprintf(pFile, "#ifndef __%s__\n", buffer);
+            fprintf(pFile, "#define __%s__\n", buffer);
+            fprintf(pFile, "\n");
+            fprintf(pFile, "#include <_%s>\n", pPath);
+            fprintf(pFile, "\n");
+            fprintf(pFile, "#endif // __%s__\n", buffer);
+            fclose(pFile);
+
+            char *pPath2 = (char*)malloc(strlen(pPath) + 2);
+            strcpy(pPath2, "_");
+            strcat(pPath2, pPath);
+            pFile = fopen(pPath2, "w+t");
+            ConvertToDefine(pPath2, buffer);
+            free(pPath2);
+        }
+
+        fprintf(pFile, "#ifndef __%s__\n", buffer);
+        fprintf(pFile, "#define __%s__\n", buffer);
+        fprintf(pFile, "\n");
+        fprintf(pFile, "#include <%s.h>\n", pModule->mName);
+        fprintf(pFile, "\n");
+        fprintf(pFile, "EXTERN_C ELAPI _Impl_AcquireCallbackHandler(PInterface pServerObj, _ELASTOS REIID iid, PInterface *ppHandler);\n");
+        fprintf(pFile, "EXTERN_C ELAPI _Impl_CheckClsId(PInterface pServerObj, const _ELASTOS ClassID* pClassid, PInterface *ppServerObj);\n");
+        fprintf(pFile, "\n");
+    }
+    else {
+        if (pItfDir->mFileIndex != 0) {
+            char *pPath2 = (char*)malloc(strlen(pPath) + 2);
+            strcpy(pPath2, "_");
+            strcat(pPath2, pPath);
+            pFile = fopen(pPath2, "r+t");
+            ConvertToDefine(pPath2, buffer);
+            free(pPath2);
+        }
+        else {
+            pFile = fopen(pPath, "r+t");
+        }
+        fseek(pFile, -1 * (strlen(buffer) +  15), SEEK_END);
+    }
 
     //namespace begin
-    if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0') {
-        char *pszNamespace = (char*)malloc(strlen(pItfDir->mNameSpace) + 1);
-        strcpy(pszNamespace, pItfDir->mNameSpace);
-        char *begin = pszNamespace;
-        while (begin != NULL) {
-            char *dot = strchr(begin, '.');
-            if (dot != NULL) *dot = '\0';
-            fprintf(pFile, "namespace %s {\n", begin);
-            if (dot != NULL) begin = dot + 1;
-            else begin = NULL;
-        }
-        free(pszNamespace);
+    if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0' &&
+        strcmp(pItfDir->mNameSpace, "systypes")) {
+        NamespaceBegin(pItfDir->mNameSpace, pFile);
     }
 
-    char buffer2[1024];
-    buffer2[0] = '\0';
+    buffer[0] = '\0';
     InterfaceDirEntry* pParentItfDir = pModule->mInterfaceDirs[pItfDir->mDesc->mParentIndex];
     if (pParentItfDir->mNameSpace != NULL && pParentItfDir->mNameSpace[0] != '\0' &&
         strcmp(pParentItfDir->mNameSpace, "systypes")) {
-        char *pszNamespace = (char*)malloc(strlen(pParentItfDir->mNameSpace) + 1);
-        strcpy(pszNamespace, pParentItfDir->mNameSpace);
-        char *begin = pszNamespace;
-        while (begin != NULL) {
-            char *dot = strchr(begin, '.');
-            if (dot != NULL) *dot = '\0';
-            strcat(buffer2, begin);
-            strcat(buffer2, "::");
-            if (dot != NULL) begin = dot + 1;
-            else begin = NULL;
-        }
-        free(pszNamespace);
+        ConvertToCPlusPlusNamespace(pParentItfDir->mNameSpace, buffer);
     }
 
     fprintf(pFile, "CAR_INTERFACE(\"%s\")\n", Uuid2IString(&pItfDir->mDesc->mIID, TRUE));
-    fprintf(pFile, "%s : public %s%s\n", pItfDir->mName, buffer2, pParentItfDir->mName);
+    fprintf(pFile, "%s : public %s%s\n", pItfDir->mName, buffer, pParentItfDir->mName);
     fprintf(pFile, "{\n");
+
+    //interface const
+    for (int i = 0; i < pItfDir->mDesc->mConstCount; i++) {
+        InterfaceConstDescriptor* pItfConst = pItfDir->mDesc->mConsts[i];
+        switch (pItfConst->mType) {
+            case TYPE_BOOLEAN:
+                fprintf(pFile, "    static const _ELASTOS Boolean %s;\n", pItfConst->mName);
+                break;
+            case TYPE_CHAR32:
+                fprintf(pFile, "    static const _ELASTOS Char32 %s = ", pItfConst->mName);
+                if (pItfConst->mV.mInt32Value.mFormat == FORMAT_DECIMAL) {
+                    fprintf(pFile, "%d;\n", pItfConst->mV.mInt32Value.mValue);
+                }
+                else if (pItfConst->mV.mInt32Value.mFormat == FORMAT_HEX) {
+                    fprintf(pFile, "0x%08x;\n", pItfConst->mV.mInt32Value.mValue);
+                }
+                else {
+                    switch(pItfConst->mV.mInt32Value.mValue) {
+                        case '\a' :
+                            fprintf(pFile, "\'\\a\';\n");
+                            break;
+                        case 'b' :
+                            fprintf(pFile, "\'\\b\';\n");
+                            break;
+                        case 'f' :
+                            fprintf(pFile, "\'\\f\';\n");
+                            break;
+                        case 'n' :
+                            fprintf(pFile, "\'\\n\';\n");
+                            break;
+                        case 'r' :
+                            fprintf(pFile, "\'\\r\';\n");
+                            break;
+                        case 't' :
+                            fprintf(pFile, "\'\\t\';\n");
+                            break;
+                        case 'v' :
+                            fprintf(pFile, "\'\\v\';\n");
+                            break;
+                        case '\\':
+                            fprintf(pFile, "\'\\\\\';\n");
+                            break;
+                        case '\'':
+                            fprintf(pFile, "\'\\\'\';\n");
+                            break;
+                        case '\"':
+                            fprintf(pFile, "\'\\\"\';\n");
+                            break;
+                        case '0' :
+                            fprintf(pFile, "\'\\0\';\n");
+                            break;
+                        default:
+                            fprintf(pFile, "\'%c\';\n", pItfConst->mV.mInt32Value.mValue);
+                    }
+                }
+                break;
+            case TYPE_BYTE:
+                fprintf(pFile, "    static const _ELASTOS Byte %s = ", pItfConst->mName);
+                fprintf(pFile, pItfConst->mV.mInt32Value.mFormat == FORMAT_HEX ? "0x%08x;\n":"%d;\n",
+                        (unsigned char)pItfConst->mV.mInt32Value.mValue);
+                break;
+            case TYPE_INTEGER16:
+                fprintf(pFile, "    static const _ELASTOS Int16 %s = ", pItfConst->mName);
+                fprintf(pFile, pItfConst->mV.mInt32Value.mFormat == FORMAT_HEX ? "0x%08x;\n":"%d;\n",
+                        (short)pItfConst->mV.mInt32Value.mValue);
+                break;
+            case TYPE_INTEGER32:
+                fprintf(pFile, "    static const _ELASTOS Int32 %s = ", pItfConst->mName);
+                fprintf(pFile, pItfConst->mV.mInt32Value.mFormat == FORMAT_HEX ? "0x%08x;\n":"%d;\n",
+                        pItfConst->mV.mInt32Value.mValue);
+                break;
+            case TYPE_INTEGER64:
+                fprintf(pFile, "    static const _ELASTOS Int64 %s;\n", pItfConst->mName);
+                break;
+            case TYPE_FLOAT:
+                fprintf(pFile, "    static const _ELASTOS Float %s = %f;\n", pItfConst->mName, pItfConst->mV.mDoubleValue);
+                break;
+            case TYPE_DOUBLE:
+                fprintf(pFile, "    static const _ELASTOS Double %s = %f;\n", pItfConst->mName, pItfConst->mV.mDoubleValue);
+                break;
+            case TYPE_STRING:
+                fprintf(pFile, "    static const _ELASTOS String %s;\n", pItfConst->mName);
+                break;
+            default:
+                assert(0);
+                break;
+        }
+    }
 
     //method
     fprintf(pFile, "    virtual CARAPI_(PInterface) Probe(\n");
@@ -2496,101 +2746,8 @@ printf("======== pPath: %s nRet: %d\n", pPath, nRet);
         fprintf(pFile, "    virtual CARAPI %s(", pMethod->mName);
         for (int j = 0; j < pMethod->mParamCount; j++) {
             ParamDescriptor* pParamDesc = pMethod->mParams[j];
-
-            //ParamNamespaceType
-            TypeDescriptor *pType = &pParamDesc->mType;
-            const char *pszType;
             char szType[128];
-            TypeDescriptor type;
-
-            memset(&type, 0, sizeof(type));
-
-            DWORD attribs = pParamDesc->mAttribs;
-
-            if ((Type_struct == pType->mType)
-                    || (Type_EMuid == pType->mType)
-                    || (Type_EGuid == pType->mType)) {
-                if (0 == pType->mPointer) {
-                    sprintf(szType, "const %s &",
-                            Type2CString(pModule, pType));
-                    pszType = szType;
-                }
-                else {
-                    pszType = Type2CString(pModule, pType);
-                }
-            }
-            else if (Type_alias == pType->mType) {
-                GetOriginalType(pModule, pType, &type);
-                if ((Type_EMuid == type.mType)
-                        || (Type_EGuid == type.mType)
-                        || (Type_struct == type.mType)) {
-                    if (attribs & ParamAttrib_in) {
-                        if (0 == type.mPointer) {
-                            assert(0 == pType->mPointer);
-                            sprintf(szType, "const %s &",
-                                    Type2CString(pModule, pType));
-                            pszType = szType;
-                        }
-                        else {
-                            pszType = Type2CString(pModule, pType);
-                        }
-                    }
-                    else pszType = Type2CString(pModule, pType);
-                }
-                else if (Type_ArrayOf == type.mType) {
-                    if (attribs & ParamAttrib_in) {
-                        if (0 == type.mPointer) {
-                            assert(0 == pType->mPointer);
-                            sprintf(szType, "const %s &",
-                                    Type2CString(pModule, pType));
-                            pszType = szType;
-                        }
-                        else {
-                            pszType = Type2CString(pModule, pType);
-                        }
-                    }
-                    else {
-                        if (attribs & ParamAttrib_callee) {
-                            if (0 == pType->mPointer) {
-                                assert(1 == type.mPointer);
-                                sprintf(szType, "%s *", Type2CString(pModule, pType));
-                            }
-                            else if (1 == pType->mPointer) {
-                                assert(0 == type.mPointer);
-                                sprintf(szType, "%s **", Type2CString(pModule, pType));
-                            }
-                            pszType = szType;
-                        }
-                        else {
-                            assert(0 == pType->mPointer);
-                            assert(0 == type.mPointer);
-                            sprintf(szType, "%s *", Type2CString(pModule, pType));
-                            pszType = szType;
-                        }
-                    }
-                }
-                else pszType = Type2CString(pModule, pType);
-            }
-            else if (Type_ArrayOf == pType->mType) {
-                if (attribs & ParamAttrib_in) {
-                    if (0 == pType->mPointer) {
-                        sprintf(szType, "const ArrayOf<%s> &",
-                                Type2CString(pModule, pType->mNestedType));
-                    }
-                    else sprintf(szType, "%s", Type2CString(pModule, pType));
-                }
-                else {
-                    //attribs == ParamAttrib_out
-                    sprintf(szType, "ArrayOf<%s>",
-                            Type2CString(pModule, pType->mNestedType));
-                    if (0 == pType->mPointer) strcat(szType, " *");
-                    else strcat(szType, " **");
-                }
-                pszType = szType;
-            }
-            else {
-                pszType = Type2CString(pModule, pType);
-            }
+            const char *pszType = ParamNamespaceType(pParamDesc, szType, pModule);
 
             fprintf(pFile, "\n        /* [%s] */ %s %s",
                     ParamAttrib2String(pParamDesc->mAttribs),
@@ -2605,21 +2762,14 @@ printf("======== pPath: %s nRet: %d\n", pPath, nRet);
     fprintf(pFile, "};\n");
 
     //namespace end
-    if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0') {
-        char *pszNamespace = (char*)malloc(strlen(pItfDir->mNameSpace) + 1);
-        strcpy(pszNamespace, pItfDir->mNameSpace);
-        char *begin = pszNamespace;
-        while (begin != NULL) {
-            char *dot = strchr(begin, '.');
-            if (dot != NULL) *dot = '\0';
-            fprintf(pFile, "}\n");
-            if (dot != NULL) begin = dot + 1;
-            else begin = NULL;
-        }
-        free(pszNamespace);
+    if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0' &&
+        strcmp(pItfDir->mNameSpace, "systypes")) {
+        NamespaceEnd(pItfDir->mNameSpace, pFile);
     }
 
-    fprintf(pFile, "#endif // __INTERFACE_${%s}_DEFINED__\n", buffer);
+    ConvertToDefine(pPath, buffer);
+    fprintf(pFile, "\n");
+    fprintf(pFile, "#endif // __%s__\n", buffer);
 
     fclose(pFile);
 
@@ -2630,12 +2780,413 @@ IMPL_USERFUNC(GenerateModuleImplementation)(PLUBECTX pCtx, PSTATEDESC pDesc, PVO
 {
     assert(NULL != pCtx->m_pModule && pvArg == pCtx->m_pModule);
     CLSModule* module = pCtx->m_pModule;
-printf("======== begin\n");
+
     //handle interfaces
     for (int i = 0; i < module->mDefinedInterfaceCount; i++) {
         InterfaceDirEntry* itfDir = module->mInterfaceDirs[module->mDefinedInterfaceIndexes[i]];
         OutputInterface(itfDir, module);
     }
-printf("======== end\n");
+
+    return LUBE_OK;
+}
+
+void OutputClass(ClassDirEntry* pClsDir, CLSModule* pModule)
+{
+    char *pPath;
+    int nRet;
+    FILE *pFile;
+
+    if (pClsDir->mDesc->mAttribs & ClassAttrib_t_clsobj) return;
+
+    if (pClsDir->mFileIndex == 0) {
+        pPath = (char*)malloc(strlen(pModule->mName) + 4);
+        strcpy(pPath, "_");
+        strcat(pPath, pModule->mName);
+        strcat(pPath, ".");
+        strcat(pPath, "h");
+    }
+    else {
+        pPath = (char*)malloc(strlen(pModule->mFileDirs[pClsDir->mFileIndex]->mPath) + 1);
+        strcpy(pPath, pModule->mFileDirs[pClsDir->mFileIndex]->mPath);
+    }
+
+    char buffer[1024];
+    ConvertToDefine(pPath, buffer);
+
+    nRet = access(pPath, 0);
+    if (nRet != 0) {
+        pFile = fopen(pPath, "w+t");
+
+        if (pClsDir->mFileIndex != 0) {
+            fprintf(pFile, "#ifndef __%s__\n", buffer);
+            fprintf(pFile, "#define __%s__\n", buffer);
+            fprintf(pFile, "\n");
+            fprintf(pFile, "#include <_%s>\n", pPath);
+            fprintf(pFile, "\n");
+            fprintf(pFile, "#endif // __%s__\n", buffer);
+            fclose(pFile);
+
+            char *pPath2 = (char*)malloc(strlen(pPath) + 2);
+            strcpy(pPath2, "_");
+            strcat(pPath2, pPath);
+            pFile = fopen(pPath2, "w+t");
+            ConvertToDefine(pPath2, buffer);
+            free(pPath2);
+        }
+
+        fprintf(pFile, "#ifndef __%s__", buffer);
+        fprintf(pFile, "\n");
+        fprintf(pFile, "#include <%s.h>\n", pModule->mName);
+        fprintf(pFile, "EXTERN_C ELAPI _Impl_CheckClsId(PInterface pServerObj, const _ELASTOS ClassID* pClassid, PInterface *ppServerObj);\n");
+        fprintf(pFile, "\n");
+    }
+    else {
+        if (pClsDir->mFileIndex != 0) {
+            char *pPath2 = (char*)malloc(strlen(pPath) + 2);
+            strcpy(pPath2, "_");
+            strcat(pPath2, pPath);
+            pFile = fopen(pPath2, "r+t");
+            ConvertToDefine(pPath2, buffer);
+            free(pPath2);
+        }
+        else {
+            pFile = fopen(pPath, "r+t");
+        }
+        fseek(pFile, -1 * (strlen(buffer) +  15), SEEK_END);
+    }
+
+    //namespace begin
+    if (pClsDir->mNameSpace != NULL && pClsDir->mNameSpace[0] != '\0' &&
+        strcmp(pClsDir->mNameSpace, "systypes")) {
+        NamespaceBegin(pClsDir->mNameSpace, pFile);
+    }
+
+    fprintf(pFile, "class %s\n", pClsDir->mName);
+    fprintf(pFile, "{\n");
+    fprintf(pFile, "public:\n");
+
+    if (pClsDir->mDesc->mAttribs & ClassAttrib_hasctor) {
+        InterfaceDirEntry* pCtorInterface = pModule->mInterfaceDirs[pClsDir->mDesc->mCtorIndex];
+        for (int i = 0; i < pCtorInterface->mDesc->mMethodCount; i++) {
+            MethodDescriptor* pMethod = pCtorInterface->mDesc->mMethods[i];
+            if (pMethod->mAttribs & MethodAttrib_NonDefaultCtor) {
+                if (pClsDir->mDesc->mAttribs & ClassAttrib_singleton) {
+                    fprintf(pFile, "    static _ELASTOS ECode _AcquireSingleton(\n");
+                }
+                else {
+                    fprintf(pFile, "    static _ELASTOS ECode _New(\n");
+                }
+                for (int j = 0; j < pMethod->mParamCount; j++) {
+                    ParamDescriptor* pParamDesc = pMethod->mParams[j];
+                    if (j < pMethod->mParamCount - 1) {
+                        char szType[128];
+                        const char *pszType = ParamNamespaceType(pParamDesc, szType, pModule);
+
+                        fprintf(pFile, "        /* [%s] */ %s %s,\n",
+                                ParamAttrib2String(pParamDesc->mAttribs),
+                                ImplNamespaceType(pszType),
+                                pParamDesc->mName);
+                    }
+                    else {
+                        fprintf(pFile, "        /* [out] */ IInterface** __object)\n");
+                    }
+                }
+                fprintf(pFile, "    {\n");
+                fprintf(pFile, "        _ELASTOS ECode ec;\n");
+                fprintf(pFile, "        I%sClassObject* pClassObject;\n", pClsDir->mName);
+                fprintf(pFile, "        PInterface pObject = NULL;\n");
+                fprintf(pFile, "\n");
+                fprintf(pFile, "        ec = _CObject_AcquireClassFactory(ECLSID_%s, RGM_SAME_DOMAIN,\n", pClsDir->mName);
+                fprintf(pFile, "                EIID_I%sClassObject, (IInterface**)&pClassObject);\n", pClsDir->mName);
+                fprintf(pFile, "        if (FAILED(ec)) return ec;\n");
+                fprintf(pFile, "\n");
+                fprintf(pFile, "        ec = pClassObject->%s(", pMethod->mName);
+                for (int j = 0; j < pMethod->mParamCount; j++) {
+                    ParamDescriptor* pParamDesc = pMethod->mParams[j];
+                    if (j < pMethod->mParamCount - 1) {
+                        fprintf(pFile, "%s, ", pParamDesc->mName);
+                    }
+                    else {
+                        fprintf(pFile, "&pObject);\n");
+                    }
+                }
+                fprintf(pFile, "\n");
+                fprintf(pFile, "        *__object = pObject;\n");
+                fprintf(pFile, "\n");
+                fprintf(pFile, "        pClassObject->Release();\n");
+                fprintf(pFile, "\n");
+                fprintf(pFile, "        return ec;\n");
+                fprintf(pFile, "    }\n");
+                fprintf(pFile, "\n");
+            }
+        }
+    }
+
+    if (!(pClsDir->mDesc->mAttribs & ClassAttrib_hasctor) ||
+            (pClsDir->mDesc->mAttribs & ClassAttrib_hasDefaultCtor)) {
+        for (int i = 0; i < pClsDir->mDesc->mInterfaceCount; i++) {
+            InterfaceDirEntry* pItfDir = pModule->mInterfaceDirs[pClsDir->mDesc->mInterfaces[i]->mIndex];
+            if (!(pItfDir->mDesc->mAttribs & InterfaceAttrib_clsobj)) {
+                if (pClsDir->mDesc->mAttribs & ClassAttrib_singleton) {
+                    fprintf(pFile, "    static _ELASTOS ECode AcquireSingleton(\n");
+                }
+                else {
+                    fprintf(pFile, "    static _ELASTOS ECode New(\n");
+                }
+
+                buffer[0] = '\0';
+                if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0' &&
+                    strcmp(pItfDir->mNameSpace, "systypes")) {
+                    ConvertToCPlusPlusNamespace(pItfDir->mNameSpace, buffer);
+                }
+
+                fprintf(pFile, "        /* [out] */ %s%s** __object)\n", buffer, pItfDir->mName);
+                fprintf(pFile, "    {\n");
+                fprintf(pFile, "        return _CObject_CreateInstance(ECLSID_%s, RGM_SAME_DOMAIN, %sEIID_%s, (PInterface*)__object);\n",
+                        pClsDir->mName, buffer, pItfDir->mName);
+                fprintf(pFile, "    }\n");
+                fprintf(pFile, "\n");
+            }
+        }
+    }
+
+    if (pClsDir->mDesc->mAttribs & ClassAttrib_hasctor) {
+        InterfaceDirEntry* pCtorInterface = pModule->mInterfaceDirs[pClsDir->mDesc->mCtorIndex];
+        for (int i = 0; i < pCtorInterface->mDesc->mMethodCount; i++) {
+            MethodDescriptor* pMethod = pCtorInterface->mDesc->mMethods[i];
+            if (pMethod->mAttribs & MethodAttrib_NonDefaultCtor) {
+                for (int i = 0; i < pClsDir->mDesc->mInterfaceCount; i++) {
+                    InterfaceDirEntry* pItfDir = pModule->mInterfaceDirs[pClsDir->mDesc->mInterfaces[i]->mIndex];
+                    if (!(pItfDir->mDesc->mAttribs & InterfaceAttrib_clsobj)) {
+                        if (pClsDir->mDesc->mAttribs & ClassAttrib_singleton) {
+                            fprintf(pFile, "    static _ELASTOS ECode AcquireSingleton(\n");
+                        }
+                        else {
+                            fprintf(pFile, "    static _ELASTOS ECode New(\n");
+                        }
+                        for (int j = 0; j < pMethod->mParamCount; j++) {
+                            ParamDescriptor* pParamDesc = pMethod->mParams[j];
+                            if (j < pMethod->mParamCount - 1) {
+                                char szType[128];
+                                const char *pszType = ParamNamespaceType(pParamDesc, szType, pModule);
+
+                                fprintf(pFile, "        /* [%s] */ %s %s,\n",
+                                        ParamAttrib2String(pParamDesc->mAttribs),
+                                        ImplNamespaceType(pszType),
+                                        pParamDesc->mName);
+                            }
+                            else {
+                                buffer[0] = '\0';
+                                if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0' &&
+                                    strcmp(pItfDir->mNameSpace, "systypes")) {
+                                    ConvertToCPlusPlusNamespace(pItfDir->mNameSpace, buffer);
+                                }
+
+                                fprintf(pFile, "        /* [out] */ %s%s** __%s)\n",
+                                        buffer, pItfDir->mName, pItfDir->mName);
+                            }
+                        }
+                        fprintf(pFile, "    {\n");
+                        fprintf(pFile, "        IInterface* __pNewObj;\n");
+                        fprintf(pFile, "\n");
+                        fprintf(pFile, "        _ELASTOS ECode ec = ");
+                        if (pClsDir->mDesc->mAttribs & ClassAttrib_singleton) {
+                            fprintf(pFile, "_AcquireSingleton(");
+                        }
+                        else {
+                            fprintf(pFile, "_New(");
+                        }
+                        for (int j = 0; j < pMethod->mParamCount; j++) {
+                            ParamDescriptor* pParamDesc = pMethod->mParams[j];
+                            if (j < pMethod->mParamCount - 1) {
+                                fprintf(pFile, "%s, ", pParamDesc->mName);
+                            }
+                            else {
+                                fprintf(pFile, "&__pNewObj);\n");
+                            }
+                        }
+                        fprintf(pFile, "        if (FAILED(ec)) return ec;\n");
+                        fprintf(pFile, "\n");
+
+                        buffer[0] = '\0';
+                        if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0' &&
+                            strcmp(pItfDir->mNameSpace, "systypes")) {
+                            ConvertToCPlusPlusNamespace(pItfDir->mNameSpace, buffer);
+                        }
+
+                        fprintf(pFile, "        *__%s = (%s%s*)__pNewObj->Probe(%sEIID_%s);\n",
+                                pItfDir->mName, buffer, pItfDir->mName, buffer, pItfDir->mName);
+                        fprintf(pFile, "        if (*__%s) __pNewObj->AddRef();\n",
+                                pItfDir->mName, pItfDir->mName);
+                        fprintf(pFile, "        else ec = E_NO_INTERFACE;\n");
+                        fprintf(pFile, "        __pNewObj->Release();\n");
+                        fprintf(pFile, "\n");
+                        fprintf(pFile, "        return ec;\n");
+                        fprintf(pFile, "    }\n");
+                        fprintf(pFile, "\n");
+                    }
+                }
+            }
+        }
+    }
+
+    fprintf(pFile, "};\n");
+
+    //namespace end
+    if (pClsDir->mNameSpace != NULL && pClsDir->mNameSpace[0] != '\0' &&
+        strcmp(pClsDir->mNameSpace, "systypes")) {
+        NamespaceEnd(pClsDir->mNameSpace, pFile);
+    }
+
+    ConvertToDefine(pPath, buffer);
+    fprintf(pFile, "\n");
+    fprintf(pFile, "#endif // __%s__\n", buffer);
+
+    fclose(pFile);
+
+    free(pPath);
+}
+
+IMPL_USERFUNC(GenerateModuleImplementation2)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
+{
+    assert(NULL != pCtx->m_pModule && pvArg == pCtx->m_pModule);
+    CLSModule* module = pCtx->m_pModule;
+
+    //handle interfaces
+    for (int i = 0; i < module->mDefinedInterfaceCount; i++) {
+        InterfaceDirEntry* itfDir = module->mInterfaceDirs[module->mDefinedInterfaceIndexes[i]];
+        OutputInterface(itfDir, module);
+    }
+
+    //handle classes
+    for (int i = 0; i < module->mClassCount; i++) {
+        ClassDirEntry* clsDir = module->mClassDirs[i];
+        OutputClass(clsDir, module);
+    }
+
+    return LUBE_OK;
+}
+
+class HeaderFile
+{
+public:
+    HeaderFile()
+        : mName(NULL)
+        , mNext(NULL)
+    {}
+
+    ~HeaderFile()
+    {
+        free(mName);
+        mNext = NULL;
+    }
+
+    void Clear()
+    {
+        HeaderFile* current = mNext;
+        HeaderFile* next = NULL;
+        while (current != NULL) {
+            next = current->mNext;
+            delete current;
+            current = next;
+        }
+        mNext = NULL;
+    }
+
+    void AddHeader(char* file)
+    {
+        if (mNext == NULL) {
+            mNext = new HeaderFile(file);
+            return;
+        }
+
+        HeaderFile* current = mNext;
+        while (true) {
+            if (!strcmp(current->mName, file)) return;
+            if (current->mNext == NULL) break;
+            current = current->mNext;
+        }
+
+        current->mNext = new HeaderFile(file);
+    }
+
+    void Print(PLUBECTX pCtx)
+    {
+        HeaderFile* current = mNext;
+        while (current != NULL) {
+            current->PrintHeader(pCtx);
+            current = current->mNext;
+        }
+    }
+
+    void PrintHeader(PLUBECTX pCtx)
+    {
+        pCtx->PutString(mName);
+    }
+
+private:
+    HeaderFile(char* file)
+        : mNext(NULL)
+    {
+        mName = (char*)malloc(strlen(file) + 1);
+        strcpy(mName, file);
+    }
+
+private:
+    char* mName;
+    HeaderFile* mNext;
+};
+
+static HeaderFile sHeaders;
+
+IMPL_USERFUNC(GenerateDependHeaderForClass)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
+{
+    assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
+
+    sHeaders.Clear();
+
+    ClassDirEntry *pClsDir = pCtx->m_pClass;
+    if (pClsDir->mFileIndex != 0) {
+        char buffer[512];
+        strcpy(buffer, "#include \"");
+        strcat(buffer, pCtx->m_pModule->mFileDirs[pClsDir->mFileIndex]->mPath);
+        strcat(buffer, ".h\"\n");
+        sHeaders.AddHeader(buffer);
+    }
+    else {
+        char buffer[512];
+        strcpy(buffer, "#include \"_");
+        strcat(buffer, pCtx->m_pModule->mName);
+        strcat(buffer, ".h\"\n");
+        sHeaders.AddHeader(buffer);
+    }
+    for (int i = 0; i < pClsDir->mDesc->mInterfaceCount; i++) {
+        ClassInterface *pClsIntf = pClsDir->mDesc->mInterfaces[i];
+        InterfaceDirEntry *pItfDir = pCtx->m_pModule->mInterfaceDirs[pClsIntf->mIndex];
+        if (pItfDir->mFileIndex != 0) {
+            char buffer[512];
+            strcpy(buffer, "#include \"");
+            strcat(buffer, pCtx->m_pModule->mFileDirs[pItfDir->mFileIndex]->mPath);
+            strcat(buffer, ".h\"\n");
+            sHeaders.AddHeader(buffer);
+        }
+    }
+
+    sHeaders.Print(pCtx);
+
+    return LUBE_OK;
+}
+
+IMPL_USERFUNC(GenerateDependHeaderForModule)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
+{
+    assert(NULL != pCtx->m_pModule && pvArg == pCtx->m_pModule);
+    CLSModule* module = pCtx->m_pModule;
+
+    for (int i = 1; i < module->mFileCount; i++) {
+        pCtx->PutString("#include \"");
+        pCtx->PutString(module->mFileDirs[i]->mPath);
+        pCtx->PutString(".h\"\n");
+    }
+
     return LUBE_OK;
 }

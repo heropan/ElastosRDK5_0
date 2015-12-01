@@ -139,7 +139,6 @@ static const KeywordToken s_keywords_n[] = {
 static const KeywordToken s_keywords_o[] = {
     { "oneway", Token_K_oneway },
     { "out", Token_K_out },
-    { "outputfile", Token_K_file },
 };
 
 static const KeywordToken s_keywords_p[] = {
@@ -158,6 +157,7 @@ static const KeywordToken s_keywords_s[] = {
     { "scriptable", Token_K_scriptable },
     { "singleton", Token_K_singleton },
     { "struct", Token_K_struct },
+    { "submodule", Token_K_submodule },
     { "substitutes", Token_K_substitutes },
 };
 
