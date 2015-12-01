@@ -147,7 +147,7 @@ AutoPtr<IWebViewFactoryProvider> WebViewFactory::GetProvider()
  * Perform any WebView loading preparations that must happen in the zygote.
  * Currently, this means allocating address space to load the real JNI library later.
  */
-void WebViewFactory::PrepareWebViewInZygote()
+ECode WebViewFactory::PrepareWebViewInZygote()
 {
     assert(0);
     // TODO
@@ -170,6 +170,7 @@ void WebViewFactory::PrepareWebViewInZygote()
     //     // Log and discard errors at this stage as we must not crash the zygote.
     //     Log.e(LOGTAG, "error preparing native loader", t);
     // }
+    return E_NOT_IMPLEMENTED;
 }
 
 /**
@@ -178,7 +179,7 @@ void WebViewFactory::PrepareWebViewInZygote()
  * This must be called in the system server.
  * Currently, this means spawning the child processes which will create the relro files.
  */
-void WebViewFactory::PrepareWebViewInSystemServer()
+ECode WebViewFactory::PrepareWebViewInSystemServer()
 {
     AutoPtr< ArrayOf<String> > nativePaths;
     // try {
@@ -187,10 +188,10 @@ void WebViewFactory::PrepareWebViewInSystemServer()
     //     // Log and discard errors at this stage as we must not crash the system server.
     //     Log.e(LOGTAG, "error preparing webview native library", t);
     // }
-    PrepareWebViewInSystemServer(nativePaths);
+    return PrepareWebViewInSystemServer(nativePaths);
 }
 
-void WebViewFactory::PrepareWebViewInSystemServer(
+ECode WebViewFactory::PrepareWebViewInSystemServer(
     /* [in] */ ArrayOf<String>* nativeLibraryPaths)
 {
     if (DEBUG) {
@@ -209,9 +210,11 @@ void WebViewFactory::PrepareWebViewInSystemServer(
         if (DEBUG) Logger::V(LOGTAG, "Create 64 bit relro");
         CreateRelroFile(TRUE /* is64Bit */, nativeLibraryPaths);
     }
+
+    return NOERROR;
 }
 
-void WebViewFactory::OnWebViewUpdateInstalled()
+ECode WebViewFactory::OnWebViewUpdateInstalled()
 {
     assert(0);
     // TODO
@@ -251,6 +254,7 @@ void WebViewFactory::OnWebViewUpdateInstalled()
     //     Log.e(LOGTAG, "error preparing webview native library", t);
     // }
     // prepareWebViewInSystemServer(nativeLibs);
+    return E_NOT_IMPLEMENTED;
 }
 
 AutoPtr< ArrayOf<String> > WebViewFactory::GetWebViewNativeLibraryPaths()
