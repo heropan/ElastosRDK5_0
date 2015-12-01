@@ -6,13 +6,15 @@
 #include "elastos/droid/widget/CompoundButton.h"
 #include "elastos/droid/view/VelocityTracker.h"
 
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::ITypeface;
+using Elastos::Droid::Utility::IFloatProperty;
 using Elastos::Droid::View::VelocityTracker;
 using Elastos::Droid::Text::Method::ITransformationMethod2;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -41,9 +43,34 @@ namespace Widget {
  * @attr ref android.R.styleable#Switch_thumbTextPadding
  * @attr ref android.R.styleable#Switch_track
  */
-class Switch : public CompoundButton
+class Switch
+    : public CompoundButton
+    , public ISwitch
 {
 public:
+    class SwitchProperty
+        : public FloatProperty
+    {
+    public:
+        SwitchProperty(
+            /* [in] */ const String& name);
+
+        CARAPI Set(
+            /* [in] */ IInterface* obj,
+            /* [in] */ IInterface* value);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+    };
+
+public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Construct a new Switch with a default style determined by the given theme attribute,
      * overriding specific style attributes as requested.
@@ -53,10 +80,13 @@ public:
      * @param defStyle An attribute ID within the active theme containing a reference to the
      *                 default style for this widget. e.g. android.R.attr.switchStyle.
      */
-    Switch(
+    Switch();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::switchStyle);
+        /* [in] */ Int32 defStyleAttr = R::attr::switchStyle,
+        /* [in] */ Int32 defStyleRes = 0);
 
     /**
      * Sets the switch text color, size, style, hint color, and highlight color
@@ -256,12 +286,15 @@ public:
     CARAPI SetChecked(
         /* [in] */ Boolean checked);
 
-    CARAPI_(void) OnLayout(
+    CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
+
+    CARAPI Draw(
+        /* [in] */ ICanvas* canvas);
 
     CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
@@ -287,21 +320,26 @@ public:
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-protected:
-    Switch();
+    CARAPI SetSplitTrack(
+        /* [in] */ Boolean splitTrack);
 
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::switchStyle);
+    CARAPI GetSplitTrack(
+        /* [out] */ Boolean* res);
 
-    CARAPI InitImpl(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::switchStyle);
+    CARAPI SetShowText(
+        /* [in] */ Boolean showText);
+
+    CARAPI GetShowText(
+        /* [out] */ Boolean* text);
+
+    CARAPI Toggle();
+
+    CARAPI DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
 
 private:
-    void SetSwitchTypefaceByIndex(
+    CARAPI_(void) SetSwitchTypefaceByIndex(
         /* [in] */ Int32 typefaceIndex,
         /* [in] */ Int32 styleIndex);
 
@@ -311,11 +349,11 @@ private:
     /**
      * @return true if (x, y) is within the target area of the switch thumb
      */
-    Boolean HitThumb(
+    CARAPI_(Boolean) HitThumb(
         /* [in] */ Float x,
         /* [in] */ Float y);
 
-    void CancelSuperTouch(
+    CARAPI_(void) CancelSuperTouch(
         /* [in] */ IMotionEvent* ev);
 
     /**
@@ -323,20 +361,26 @@ private:
      *
      * @param ev Event that triggered the end of drag mode - ACTION_UP or ACTION_CANCEL
      */
-    void StopDrag(
+    CARAPI_(void) StopDrag(
         /* [in] */ IMotionEvent* ev);
 
-    void AnimateThumbToCheckedState(
+    CARAPI_(void) AnimateThumbToCheckedState(
         /* [in] */ Boolean newCheckedState);
 
-    Boolean GetTargetCheckedState();
+    CARAPI_(Boolean) GetTargetCheckedState();
 
-    void SetThumbPosition(
-        /* [in] */ Boolean checked);
+    CARAPI_(void) SetThumbPosition(
+        /* [in] */ Float position);
 
-    Int32 GetThumbScrollRange();
+    CARAPI_(Int32) GetThumbScrollRange();
+
+    CARAPI_(Int32) GetThumbOffset();
+
+    CARAPI_(void) CancelPositionAnimator();
 
 private:
+
+    static const Int32 THUMB_ANIMATION_DURATION = 250;
     static const Int32 TOUCH_MODE_IDLE = 0;
     static const Int32 TOUCH_MODE_DOWN = 1;
     static const Int32 TOUCH_MODE_DRAGGING = 2;
@@ -351,8 +395,10 @@ private:
     Int32 mThumbTextPadding;
     Int32 mSwitchMinWidth;
     Int32 mSwitchPadding;
+    Boolean mSplitTrack;
     AutoPtr<ICharSequence> mTextOn;
     AutoPtr<ICharSequence> mTextOff;
+    Boolean mShowText;
 
     Int32 mTouchMode;
     Int32 mTouchSlop;
@@ -376,11 +422,14 @@ private:
     AutoPtr<ILayout> mOnLayout;
     AutoPtr<ILayout> mOffLayout;
     AutoPtr<ITransformationMethod2> mSwitchTransformationMethod;
+    AutoPtr<IObjectAnimator> mPositionAnimator;
 
     AutoPtr<IRect> mTempRect;// = new Rect();
 
     static const AutoPtr<ArrayOf<Int32> > CHECKED_STATE_SET;
     const static String SWITCH_NAME;
+
+    static AutoPtr<IFloatProperty> THUMB_POS;
 };
 
 } // namespace Widget
