@@ -11,20 +11,20 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class Button : public TextView
+class Button
+    : public TextView
+    , public IButton
 {
 public:
+    CAR_INTERFACE_DECL()
+
     Button();
 
-    Button(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::buttonStyle);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::buttonStyle);
+        /* [in] */ Int32 defStyleAttr = R::attr::buttonStyle,
+        /* [in] */ Int32 defStyleRes = 0);
 
     //@Override
     virtual CARAPI OnInitializeAccessibilityEvent(

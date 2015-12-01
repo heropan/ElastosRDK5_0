@@ -5,6 +5,8 @@
 #include "elastos/droid/R.h"
 #include "elastos/droid/widget/TextView.h"
 
+using Elastos::Droid::Widget::TextView;
+
 namespace Elastos {
 namespace Droid {
 namespace Widget {
@@ -28,13 +30,20 @@ namespace Widget {
  * {@link android.R.styleable#TextView TextView Attributes},
  * {@link android.R.styleable#View View Attributes}
  */
-class EditText : public Elastos::Droid::Widget::TextView
+class EditText
+    : public TextView
+    , public IEditText
 {
 public:
-    EditText(
+    CAR_INTERFACE_DECL()
+
+    EditText();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::editTextStyle/*com.android.internal.R.attr.editTextStyle*/);
+        /* [in] */ Int32 defStyleAttr = R::attr::editTextStyle/*com.android.internal.R.attr.editTextStyle*/,
+        /* [in] */ Int32 defStyleRes = 0);
 
     //@Override
     virtual CARAPI_(AutoPtr<ICharSequence>) GetText();
@@ -80,20 +89,19 @@ public:
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
+    virtual CARAPI PerformAccessibilityAction(
+        /* [in] */ Int32 action,
+        /* [in] */ IBundle* arguments,
+        /* [out] */ Boolean* res);
+
 
 protected:
-    EditText();
 
     //@Override
     CARAPI_(Boolean) GetDefaultEditable();
 
     //@Override
     CARAPI_(AutoPtr<IMovementMethod>) GetDefaultMovementMethod();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::editTextStyle/*com.android.internal.R.attr.editTextStyle*/);
 
 private:
     const static String EDITTEXT_NAME;

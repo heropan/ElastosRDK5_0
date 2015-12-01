@@ -125,9 +125,6 @@ module
          */
         GetButtonTintMode(
             [out] PorterDuffMode* tintMode);
-
-        GetButtonDrawable(
-            [out] IDrawable** d);
     }
 
     } // namespace Widget
