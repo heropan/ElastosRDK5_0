@@ -1,8 +1,12 @@
 TARGET_NAME= p2p
 TARGET_TYPE= lib
 
-INCLUDES += ../../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/
+include $(MAKEDIR)/../../../../../../../sources.inc
+
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/
+
+C_DEFINES += -DDROID_CORE
 
 SOURCES = CWifiP2pConfig.cpp
 SOURCES += CWifiP2pDevice.cpp
@@ -14,4 +18,6 @@ SOURCES += CWifiP2pProvDiscEvent.cpp
 SOURCES += CWifiP2pWfdInfo.cpp
 SOURCES += CWifiP2pManager.cpp
 SOURCES += CWifiP2pManagerChannel.cpp
-SOURCES += CWifiP2pService.cpp
+#SOURCES += CWifiP2pService.cpp
+
+ELASTOS_LIBS += nsd/nsd.lib

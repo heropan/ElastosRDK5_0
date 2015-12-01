@@ -2,7 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PUPNPSERVICEREQUESTHELPER_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PUPNPSERVICEREQUESTHELPER_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pUpnpServiceRequestHelper.h"
+#include "_Elastos_Droid_Wifi_P2p_Nsd_CWifiP2pUpnpServiceRequestHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -11,8 +12,14 @@ namespace P2p {
 namespace Nsd {
 
 CarClass(CWifiP2pUpnpServiceRequestHelper)
+    , public Singleton
+    , public IWifiP2pUpnpServiceRequestHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI NewInstance(
         /* [out] */ IWifiP2pUpnpServiceRequest** instance);
 
@@ -21,9 +28,10 @@ public:
         /* [out] */ IWifiP2pUpnpServiceRequest** instance);
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
+
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PUPNPSERVICEREQUESTHELPER_H__

@@ -1,5 +1,5 @@
 
-#include "CWifiP2pServiceRequest.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceRequest.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -8,36 +8,7 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-ECode CWifiP2pServiceRequest::constructor()
-{
-    return NOERROR;
-}
-
-ECode CWifiP2pServiceRequest::constructor(
-    /* [in] */ Int32 protocolType,
-    /* [in] */ const String& query)
-{
-    return WifiP2pServiceRequest::Init(protocolType, query);
-}
-
-ECode CWifiP2pServiceRequest::constructor(
-    /* [in] */ Int32 serviceType,
-    /* [in] */ Int32 length,
-    /* [in] */ Int32 transId,
-    /* [in] */ const String& query)
-{
-    return WifiP2pServiceRequest::Init(
-        serviceType, length, transId, query);
-}
-
-PInterface CWifiP2pServiceRequest::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_WifiP2pServiceRequest) {
-        return reinterpret_cast<PInterface>((WifiP2pServiceRequest*)this);
-    }
-    return _CWifiP2pServiceRequest::Probe(riid);
-}
+CAR_OBJECT_IMPL(CWifiP2pServiceRequest)
 
 ECode CWifiP2pServiceRequest::GetTransactionId(
     /* [out] */ Int32* transactionId)
@@ -102,8 +73,8 @@ ECode CWifiP2pServiceRequest::NewInstance(
     return NewInstance(protocolType, String(NULL), instance);
 }
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

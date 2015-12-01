@@ -1,18 +1,18 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/WifiMonitor.h"
+#include "elastos/droid/wifi/WifiMonitor.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include <cutils/properties.h>
 #ifdef DROID_CORE
-#include "elastos/droid/net/wifi/CWifiSsidHelper.h"
-#include "elastos/droid/net/wifi/CStateChangeResult.h"
-#include "elastos/droid/net/wifi/p2p/CWifiP2pDevice.h"
-#include "elastos/droid/net/wifi/p2p/CWifiP2pConfig.h"
-#include "elastos/droid/net/wifi/p2p/CWifiP2pGroup.h"
-#include "elastos/droid/net/wifi/p2p/CWifiP2pProvDiscEvent.h"
-#include "elastos/droid/net/wifi/p2p/nsd/CWifiP2pServiceResponse.h"
-#include "elastos/droid/net/wifi/p2p/nsd/CWifiP2pServiceResponseHelper.h"
+#include "elastos/droid/wifi/CWifiSsidHelper.h"
+#include "elastos/droid/wifi/CStateChangeResult.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pDevice.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pConfig.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pGroup.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pProvDiscEvent.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceResponse.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceResponseHelper.h"
 #endif
 #include "elastos/droid/utility/ArrayUtils.h"
 

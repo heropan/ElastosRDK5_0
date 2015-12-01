@@ -1,14 +1,21 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CScanResult.h"
-#include "elastos/droid/net/wifi/CWifiSsid.h"
+#include "elastos/droid/wifi/CScanResult.h"
+#include "elastos/droid/wifi/CScanResultHelper.h"
+#include "elastos/droid/wifi/CWifiSsid.h"
 #include <elastos/core/StringBuffer.h>
 
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
 using Elastos::Core::StringBuffer;
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
+
+CAR_INTERFACE_IMPL_2(CScanResult, Object, IScanResult, IParcelable)
+
+CAR_OBJECT_IMPL(CScanResult)
 
 ECode CScanResult::constructor()
 {
@@ -25,7 +32,9 @@ ECode CScanResult::constructor(
 {
     mWifiSsid = wifiSsid;
     if (wifiSsid != NULL) {
-        wifiSsid->ToString(&mSSID);
+        assert(0);
+        // TODO
+        // wifiSsid->ToString(&mSSID);
     }
     else {
         mSSID = IWifiSsid::NONE;
@@ -35,6 +44,39 @@ ECode CScanResult::constructor(
     mLevel = level;
     mFrequency = frequency;
     mTimestamp = tsf;
+    mDistanceCm = UNSPECIFIED;
+    mDistanceSdCm = UNSPECIFIED;
+
+    return NOERROR;
+}
+
+ECode CScanResult::constructor(
+    /* [in] */ IWifiSsid* wifiSsid,
+    /* [in] */ const String& BSSID,
+    /* [in] */ const String& caps,
+    /* [in] */ Int32 level,
+    /* [in] */ Int32 frequency,
+    /* [in] */ Int64 tsf,
+    /* [in] */ Int32 distCm,
+    /* [in] */ Int32 distSdCm)
+{
+    mWifiSsid = wifiSsid;
+    if (wifiSsid != NULL) {
+        assert(0);
+        // TODO
+        // wifiSsid->ToString(&mSSID);
+    }
+    else {
+        mSSID = IWifiSsid::NONE;
+    }
+    mBSSID = BSSID;
+    mCapabilities = caps;
+    mLevel = level;
+    mFrequency = frequency;
+    mTimestamp = tsf;
+    mDistanceCm = distCm;
+    mDistanceSdCm = distSdCm;
+
     return NOERROR;
 }
 
@@ -49,6 +91,15 @@ ECode CScanResult::constructor(
         source->GetLevel(&mLevel);
         source->GetFrequency(&mFrequency);
         source->GetTimestamp(&mTimestamp);
+        source->GetDistanceCm(&mDistanceCm);
+        source->GetDistanceSdCm(&mDistanceSdCm);
+        source->GetSeen(&mSeen);
+        source->GetAutoJoinStatus(&mAutoJoinStatus);
+        source->GetUntrusted(&mUntrusted);
+        source->GetNumConnection(&mNumConnection);
+        source->GetNumUsage(&mNumUsage);
+        source->GetNumIpConfigFailures(&mNumIpConfigFailures);
+        source->GetIsAutoJoinCandidate(&mIsAutoJoinCandidate);
     }
     return NOERROR;
 }
@@ -159,6 +210,221 @@ ECode CScanResult::SetTimestamp(
     return NOERROR;
 }
 
+ECode CScanResult::GetSeen(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mSeen;
+    return NOERROR;
+}
+
+ECode CScanResult::SetSeen(
+    /* [in] */ Int64 seen)
+{
+    mSeen = seen;
+    return NOERROR;
+}
+
+ECode CScanResult::GetIsAutoJoinCandidate(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mIsAutoJoinCandidate;
+    return NOERROR;
+}
+
+ECode CScanResult::SetIsAutoJoinCandidate(
+    /* [in] */ Int32 isAutoJoinCandidate)
+{
+    mIsAutoJoinCandidate = isAutoJoinCandidate;
+    return NOERROR;
+}
+
+ECode CScanResult::GetAutoJoinStatus(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mAutoJoinStatus;
+    return NOERROR;
+}
+
+ECode CScanResult::GetNumIpConfigFailures(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumIpConfigFailures;
+    return NOERROR;
+}
+
+ECode CScanResult::SetNumIpConfigFailures(
+    /* [in] */ Int32 numIpConfigFailures)
+{
+    mNumIpConfigFailures = mNumIpConfigFailures;
+    return NOERROR;
+}
+
+ECode CScanResult::GetBlackListTimestamp(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mBlackListTimestamp;
+    return NOERROR;
+}
+
+ECode CScanResult::SetBlackListTimestamp(
+    /* [in] */ Int64 blackListTimestamp)
+{
+    mBlackListTimestamp = blackListTimestamp;
+    return NOERROR;
+}
+
+ECode CScanResult::GetUntrusted(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mUntrusted;
+    return NOERROR;
+}
+
+ECode CScanResult::SetUntrusted(
+    /* [in] */ Boolean untrusted)
+{
+    mUntrusted = untrusted;
+    return NOERROR;
+}
+
+ECode CScanResult::GetNumConnection(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumConnection;
+    return NOERROR;
+}
+
+ECode CScanResult::SetNumConnection(
+    /* [in] */ Int32 numConnection)
+{
+    mNumConnection = numConnection;
+    return NOERROR;
+}
+
+ECode CScanResult::GetNumUsage(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumUsage;
+    return NOERROR;
+}
+
+ECode CScanResult::SetNumUsage(
+    /* [in] */ Int32 numUsage)
+{
+    mNumUsage = numUsage;
+    return NOERROR;
+}
+
+ECode CScanResult::GetDistanceCm(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mDistanceCm;
+    return NOERROR;
+}
+
+ECode CScanResult::SetDistanceCm(
+    /* [in] */ Int32 distanceCm)
+{
+    mDistanceCm = distanceCm;
+    return NOERROR;
+}
+
+ECode CScanResult::GetDistanceSdCm(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mDistanceSdCm;
+    return NOERROR;
+}
+
+ECode CScanResult::SetDistanceSdCm(
+    /* [in] */ Int32 distanceSdCm)
+{
+    mDistanceSdCm = distanceSdCm;
+    return NOERROR;
+}
+
+ECode CScanResult::GetInformationElements(
+    /* [out, callee] */ ArrayOf<IScanResultInformationElement*>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mInformationElements;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode CScanResult::SetInformationElements(
+    /* [in] */ ArrayOf<IScanResultInformationElement*>* informationElements)
+{
+    mInformationElements = informationElements;
+    return NOERROR;
+}
+
+ECode CScanResult::AverageRssi(
+    /* [in] */ Int32 previousRssi,
+    /* [in] */ Int64 previousSeen,
+    /* [in] */ Int32 maxAge)
+{
+    if (mSeen == 0) {
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
+        system->GetCurrentTimeMillis(&mSeen);
+    }
+
+    Int64 age = mSeen - previousSeen;
+
+    if (previousSeen > 0 && age > 0 && age < maxAge/2) {
+        // Average the RSSI with previously seen instances of this scan result
+        Double alpha = 0.5 - (Double) age / (Double) maxAge;
+        mLevel = (Int32) ((Double) mLevel * (1 - alpha) + (Double) previousRssi * alpha);
+    }
+
+    return NOERROR;
+}
+
+ECode CScanResult::SetAutoJoinStatus(
+    /* [in] */ Int32 status)
+{
+    if (status < 0) status = 0;
+    if (status == 0) {
+        mBlackListTimestamp = 0;
+    }
+    else if (status > mAutoJoinStatus) {
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
+        system->GetCurrentTimeMillis(&mBlackListTimestamp);
+    }
+    mAutoJoinStatus = status;
+    return NOERROR;
+}
+
+ECode CScanResult::Is24GHz(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<IScanResultHelper> helper;
+    CScanResultHelper::AcquireSingleton((IScanResultHelper**)&helper);
+    return helper->Is24GHz(mFrequency, result);
+}
+
+ECode CScanResult::Is5GHz(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<IScanResultHelper> helper;
+    CScanResultHelper::AcquireSingleton((IScanResultHelper**)&helper);
+    return helper->Is5GHz(mFrequency, result);
+}
+
 ECode CScanResult::ToString(
     /* [out] */ String* value)
 {
@@ -172,7 +438,9 @@ ECode CScanResult::ToString(
     }
     else {
         String temp;
-        mWifiSsid->ToString(&temp);
+        assert(0);
+        // TODO
+        // mWifiSsid->ToString(&temp);
         sb.Append(temp);
     }
 
@@ -186,8 +454,29 @@ ECode CScanResult::ToString(
     sb.Append(mFrequency);
     sb.Append(", timestamp: ");
     sb.Append(mTimestamp);
-    *value = sb.ToString();
-    return NOERROR;
+    sb.Append(", distance: ");
+    if (mDistanceCm != UNSPECIFIED) {
+        sb.Append(mDistanceCm);
+    }
+    else {
+        sb.Append("?");
+    }
+    sb.Append("(cm)");
+    sb.Append(", distanceSd: ");
+    if (mDistanceSdCm != UNSPECIFIED) {
+        sb.Append(mDistanceSdCm);
+    }
+    else {
+        sb.Append("?");
+    }
+    sb.Append("(cm)");
+
+    if (mAutoJoinStatus != 0) {
+        sb.Append(", status: ");
+        sb.Append(mAutoJoinStatus);
+    }
+
+    return sb.ToString(value);
 }
 
 ECode CScanResult::ReadFromParcel(
@@ -197,7 +486,9 @@ ECode CScanResult::ReadFromParcel(
     source->ReadInterfacePtr((Handle32*)&obj);
     mWifiSsid = IWifiSsid::Probe(obj);
     if (mWifiSsid != NULL) {
-        mWifiSsid->ToString(&mSSID);
+        assert(0);
+        // TODO
+        // mWifiSsid->ToString(&mSSID);
     }
     else mSSID = IWifiSsid::NONE;
     source->ReadString(&mBSSID);
@@ -217,6 +508,35 @@ ECode CScanResult::WriteToParcel(
     dest->WriteInt32(mLevel);
     dest->WriteInt32(mFrequency);
     dest->WriteInt64(mTimestamp);
+    dest->WriteInt32(mDistanceCm);
+    dest->WriteInt32(mDistanceSdCm);
+    dest->WriteInt64(mSeen);
+    dest->WriteInt32(mAutoJoinStatus);
+    dest->WriteInt32(mUntrusted ? 1 : 0);
+    dest->WriteInt32(mNumConnection);
+    dest->WriteInt32(mNumUsage);
+    dest->WriteInt32(mNumIpConfigFailures);
+    dest->WriteInt32(mIsAutoJoinCandidate);
+    if (mInformationElements != NULL) {
+        Int32 length = mInformationElements->GetLength();
+        dest->WriteInt32(length);
+        for (Int32 i = 0; i < length; i++) {
+            Int32 id;
+            (*mInformationElements)[i]->GetId(&id);
+            AutoPtr< ArrayOf<Byte> > bytes;
+            (*mInformationElements)[i]->GetBytes((ArrayOf<Byte>**)&bytes);
+            Int32 len = bytes->GetLength();
+            dest->WriteInt32(id);
+            dest->WriteInt32(len);
+            assert(0);
+            // TODO
+            // dest->WriteByteArray(bytes);
+        }
+    }
+    else {
+        dest->WriteInt32(0);
+    }
+
     return NOERROR;
 }
 

@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationGroupCipher.h"
+#include "elastos/droid/wifi/CWifiConfigurationGroupCipher.h"
 
 namespace Elastos {
 namespace Droid {
@@ -17,6 +17,10 @@ static AutoPtr< ArrayOf<String> > InitStrings()
 }
 
 const AutoPtr< ArrayOf<String> > CWifiConfigurationGroupCipher::sStrings = InitStrings();
+
+CAR_INTERFACE_IMPL(CWifiConfigurationGroupCipher, Singleton, IWifiConfigurationGroupCipher)
+
+CAR_SINGLETON_IMPL(CWifiConfigurationGroupCipher)
 
 ECode CWifiConfigurationGroupCipher::GetStrings(
     /* [out, callee] */ ArrayOf<String>** strings)

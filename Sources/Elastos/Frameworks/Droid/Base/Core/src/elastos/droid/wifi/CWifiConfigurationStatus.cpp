@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationStatus.h"
+#include "elastos/droid/wifi/CWifiConfigurationStatus.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +16,10 @@ static AutoPtr< ArrayOf<String> > InitStrings()
 }
 
 const AutoPtr< ArrayOf<String> > CWifiConfigurationStatus::sStrings = InitStrings();
+
+CAR_INTERFACE_IMPL(CWifiConfigurationStatus, Singleton, IWifiConfigurationStatus)
+
+CAR_SINGLETON_IMPL(CWifiConfigurationStatus)
 
 ECode CWifiConfigurationStatus::GetStrings(
     /* [out, callee] */ ArrayOf<String>** strings)

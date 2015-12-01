@@ -1,19 +1,24 @@
 
-#include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CWifiInfoHelper.h"
-#include "elastos/droid/net/wifi/CWifiInfo.h"
+#include "elastos/droid/wifi/CWifiInfoHelper.h"
+#include "elastos/droid/wifi/CWifiInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 
+CAR_INTERFACE_IMPL(CWifiInfoHelper, Singleton, IWifiInfoHelper)
+
+CAR_SINGLETON_IMPL(CWifiInfoHelper)
+
 ECode CWifiInfoHelper::GetDetailedStateOf(
-    /* [in] */ SupplicantState suppState,
+    /* [in] */ ISupplicantState* suppState,
     /* [out] */ NetworkInfoDetailedState* detailedState)
 {
     VALIDATE_NOT_NULL(detailedState);
-    *detailedState = CWifiInfo::GetDetailedStateOf(suppState);
-    return NOERROR;
+    assert(0);
+    // TODO
+    // *detailedState = CWifiInfo::GetDetailedStateOf(suppState);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiInfoHelper::RemoveDoubleQuotes(

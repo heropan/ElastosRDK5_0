@@ -1,14 +1,14 @@
 
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFIINFO_H__
-#define  __ELASTOS_DROID_NET_WIFI_CWIFIINFO_H__
+#define __ELASTOS_DROID_NET_WIFI_CWIFIINFO_H__
 
+#include "_Elastos_Droid_Wifi_CWifiInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "_Elastos_Droid_Net_Wifi_CWifiInfo.h"
 #include <elastos/utility/etl/HashMap.h>
-
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Net::IInetAddress;
+using Elastos::Droid::Net::INetworkUtils;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
 
 namespace Elastos {
@@ -20,8 +20,15 @@ namespace Wifi {
  * is in the process of being set up.
  */
 CarClass(CWifiInfo)
+    , public Object
+    , public IWifiInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWifiInfo();
 
     CARAPI constructor();
@@ -36,13 +43,99 @@ public:
     CARAPI constructor(
         /* [in] */ IWifiInfo* source);
 
-    /**
-     * Returns the service set identifier (SSID) of the current 802.11 network.
-     * If the SSID can be decoded as UTF-8, it will be returned surrounded by double
-     * quotation marks. Otherwise, it is returned as a string of hex digits. The
-     * SSID may be {@code NULL} if there is no network currently connected.
-     * @return the SSID
-     */
+    CARAPI GetTxBad(
+        /* [out] */ Int64* result);
+
+    CARAPI SetTxBad(
+        /* [in] */ Int64 txBad);
+
+    CARAPI GetTxRetries(
+        /* [out] */ Int64* result);
+
+    CARAPI SetTxRetries(
+        /* [in] */ Int64 txRetries);
+
+    CARAPI GetTxSuccess(
+        /* [out] */ Int64* result);
+
+    CARAPI SetTxSuccess(
+        /* [in] */ Int64 txSuccess);
+
+    CARAPI GetRxSuccess(
+        /* [out] */ Int64* result);
+
+    CARAPI SetRxSuccess(
+        /* [in] */ Int64 rxSuccess);
+
+    CARAPI GetTxBadRate(
+        /* [out] */ Double* result);
+
+    CARAPI SetTxBadRate(
+        /* [in] */ Double txBadRate);
+
+    CARAPI GetTxRetriesRate(
+        /* [out] */ Double* result);
+
+    CARAPI SetTxRetriesRate(
+        /* [in] */ Double txRetriesRate);
+
+    CARAPI GetTxSuccessRate(
+        /* [out] */ Double* result);
+
+    CARAPI SetTxSuccessRate(
+        /* [in] */ Double txSuccessRate);
+
+    CARAPI GetRxSuccessRate(
+        /* [out] */ Double* result);
+
+    CARAPI SetRxSuccessRate(
+        /* [in] */ Double rxSuccessRate);
+
+    CARAPI GetBadRssiCount(
+        /* [out] */ Int32* result);
+
+    CARAPI SetBadRssiCount(
+        /* [in] */ Int32 badRssiCount);
+
+    CARAPI GetLinkStuckCount(
+        /* [out] */ Int32* result);
+
+    CARAPI SetLinkStuckCount(
+        /* [in] */ Int32 linkStuckCount);
+
+    CARAPI GetLowRssiCount(
+        /* [out] */ Int32* result);
+
+    CARAPI SetLowRssiCount(
+        /* [in] */ Int32 lowRssiCount);
+
+    CARAPI GetScore(
+        /* [out] */ Int32* result);
+
+    CARAPI SetScore(
+        /* [in] */ Int32 score);
+
+    CARAPI UpdatePacketRates(
+        /* [in] */ IWifiLinkLayerStats* stats);
+
+    CARAPI UpdatePacketRates(
+        /* [in] */ Int64 txPackets,
+        /* [in] */ Int64 rxPackets);
+
+    CARAPI Reset();
+
+    CARAPI GetFrequency(
+        /* [out] */ Int32* result);
+
+    CARAPI SetFrequency(
+        /* [in] */ Int32 frequency);
+
+    CARAPI Is24GHz(
+        /* [out] */ Boolean* result);
+
+    CARAPI Is5GHz(
+        /* [out] */ Boolean* result);
+
     CARAPI GetSSID(
         /* [out] */ String* ssid);
 
@@ -101,7 +194,7 @@ public:
      * @return the current {@link SupplicantState SupplicantState}
      */
     CARAPI GetSupplicantState(
-        /* [out] */ SupplicantState* state);
+        /* [out] */ ISupplicantState** state);
 
     CARAPI GetIpAddress(
         /* [out] */ Int32* addr);
@@ -112,10 +205,6 @@ public:
      */
     CARAPI GetHiddenSSID(
         /* [out] */ Boolean* hide);
-
-    /** {@hide} */
-    CARAPI SetHiddenSSID(
-        /* [in] */ Boolean hiddenSSID);
 
    /**
      * Map a supplicant state into a fine-grained network connectivity state.
@@ -194,9 +283,9 @@ public:
         /* [in] */ Int32 id);
 
     CARAPI SetSupplicantState(
-        /* [in] */ SupplicantState state);
+        /* [in] */ ISupplicantState* state);
 
-    ECode SetInetAddress(
+    CARAPI SetInetAddress(
         /* [in] */ IInetAddress* address);
 
     /**
@@ -205,13 +294,13 @@ public:
      * @param stateName the name of the state, as a <code>String</code> returned
      * in an event sent by {@code wpa_supplicant}.
      */
-    void SetSupplicantState(
+    CARAPI_(void) SetSupplicantState(
         /* [in] */ const String& stateName);
 
-    static SupplicantState ValueOf(
+    static CARAPI_(SupplicantState) ValueOf(
         /* [in] */ const String& stateName);
 
-    static Int32 InternalInit();
+    static CARAPI_(Int32) InternalInit();
 
 private:
     static String TAG;
@@ -239,8 +328,22 @@ private:
     static String LINK_SPEED_UNITS;
     Int32 mLinkSpeed;
 
+    Int32 mFrequency;
     AutoPtr<IInetAddress> mIpAddress;
     String mMacAddress;
+
+    Int64 mTxBad;
+    Int64 mTxRetries;
+    Int64 mTxSuccess;
+    Int64 mRxSuccess;
+    Double mTxBadRate;
+    Double mTxRetriesRate;
+    Double mTxSuccessRate;
+    Double mRxSuccessRate;
+    Int32 mBadRssiCount;
+    Int32 mLinkStuckCount;
+    Int32 mLowRssiCount;
+    Int32 mScore;
 
     /**
      * Flag indicating that AP has hinted that upstream connection is metered,

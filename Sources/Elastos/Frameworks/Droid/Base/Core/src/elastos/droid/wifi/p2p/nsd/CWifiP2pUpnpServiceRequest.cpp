@@ -1,9 +1,9 @@
 
-#include "CWifiP2pUpnpServiceRequest.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pUpnpServiceRequest.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "CWifiP2pServiceRequest.h"
-#include "CWifiP2pServiceInfo.h"
-#include "WifiP2pServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceRequest.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/WifiP2pServiceInfo.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -14,27 +14,19 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
+CAR_OBJECT_IMPL(CWifiP2pUpnpServiceRequest)
 
-PInterface CWifiP2pUpnpServiceRequest::Probe(
-    /* [in] */ REIID riid)
+ECode CWifiP2pUpnpServiceRequest::constructor()
 {
-    if (riid == EIID_WifiP2pServiceInfo) {
-        return reinterpret_cast<PInterface>((WifiP2pServiceRequest*)this);
-    }
-    return _CWifiP2pUpnpServiceRequest::Probe(riid);
+    return WifiP2pServiceRequest::constructor(
+        IWifiP2pServiceInfo::SERVICE_TYPE_UPNP, String(NULL));
 }
 
 ECode CWifiP2pUpnpServiceRequest::constructor(
     /* [in] */ const String& query)
 {
-    return WifiP2pServiceRequest::Init(
+    return WifiP2pServiceRequest::constructor(
         IWifiP2pServiceInfo::SERVICE_TYPE_UPNP, query);
-}
-
-ECode CWifiP2pUpnpServiceRequest::constructor()
-{
-    return WifiP2pServiceRequest::Init(
-        IWifiP2pServiceInfo::SERVICE_TYPE_UPNP, String(NULL));
 }
 
 ECode CWifiP2pUpnpServiceRequest::GetTransactionId(
@@ -104,7 +96,9 @@ ECode CWifiP2pUpnpServiceRequest::NewInstance(
     }
 
     String sb;
-    FAIL_RETURN(sb.AppendFormat("%02x", IWifiP2pUpnpServiceInfo::VERSION_1_0));
+    assert(0);
+    // TODO
+    // FAIL_RETURN(sb.AppendFormat(Locale.US,"%02x", IWifiP2pUpnpServiceInfo::VERSION_1_0));
     String temp;
     FAIL_RETURN(WifiP2pServiceInfo::Bin2HexStr(st.string(), st.GetByteLength(), &temp));
     sb += temp;
@@ -116,8 +110,8 @@ ECode CWifiP2pUpnpServiceRequest::NewInstance(
     return NOERROR;
 }
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

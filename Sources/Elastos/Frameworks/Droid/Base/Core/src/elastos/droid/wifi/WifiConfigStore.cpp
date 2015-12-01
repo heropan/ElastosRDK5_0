@@ -1,27 +1,27 @@
 
-#include "elastos/droid/net/wifi/WifiConfigStore.h"
+#include "elastos/droid/wifi/WifiConfigStore.h"
 #include "elastos/droid/net/NetworkUtils.h"
 #ifdef DROID_CORE
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/net/CLinkProperties.h"
-#include "elastos/droid/net/CProxyProperties.h"
+// TODO #include "elastos/droid/net/CProxyProperties.h"
 #include "elastos/droid/net/CLinkAddress.h"
 #include "elastos/droid/net/CRouteInfo.h"
-#include "elastos/droid/net/wifi/CWifiConfiguration.h"
-#include "elastos/droid/net/wifi/CWifiSsid.h"
-#include "elastos/droid/net/wifi/CWifiSsidHelper.h"
-#include "elastos/droid/net/wifi/CWpsResult.h"
-#include "elastos/droid/net/wifi/CWpsInfo.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationKeyMgmt.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationProtocol.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationAuthAlgorithm.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationPairwiseCipher.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationGroupCipher.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationHelper.h"
+#include "elastos/droid/wifi/CWifiConfiguration.h"
+#include "elastos/droid/wifi/CWifiSsid.h"
+#include "elastos/droid/wifi/CWifiSsidHelper.h"
+#include "elastos/droid/wifi/CWpsResult.h"
+#include "elastos/droid/wifi/CWpsInfo.h"
+#include "elastos/droid/wifi/CWifiConfigurationKeyMgmt.h"
+#include "elastos/droid/wifi/CWifiConfigurationProtocol.h"
+#include "elastos/droid/wifi/CWifiConfigurationAuthAlgorithm.h"
+#include "elastos/droid/wifi/CWifiConfigurationPairwiseCipher.h"
+#include "elastos/droid/wifi/CWifiConfigurationGroupCipher.h"
+#include "elastos/droid/wifi/CWifiConfigurationHelper.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CUserHandleHelper.h"
-#include "elastos/droid/utility/CParcelableObjectContainer.h"
+// TODO #include "elastos/droid/utility/CParcelableObjectContainer.h"
 #endif
 #include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Logger.h>
@@ -57,7 +57,7 @@ using Elastos::Net::IInetAddress;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Net::CLinkProperties;
-using Elastos::Droid::Net::CProxyProperties;
+// TODO using Elastos::Droid::Net::CProxyProperties;
 using Elastos::Droid::Net::CLinkAddress;
 using Elastos::Droid::Net::CRouteInfo;
 using Elastos::Droid::Os::ILooper;
@@ -67,7 +67,7 @@ using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::IUserHandleHelper;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Utility::CParcelableObjectContainer;
+// TODO using Elastos::Droid::Utility::CParcelableObjectContainer;
 
 #ifndef FAIL_GOTO
 #define FAIL_GOTO(expr, label) \
@@ -84,7 +84,6 @@ namespace Wifi {
 //==============================================================
 // WifiConfigStore::DelayedDiskWrite
 //==============================================================
-CAR_INTERFACE_IMPL(WifiConfigStore::DelayedDiskWrite::DiskWriteRunnable, IRunnable)
 
 ECode WifiConfigStore::DelayedDiskWrite::DiskWriteRunnable::Run()
 {
@@ -355,7 +354,9 @@ void WifiConfigStore::Initialize()
 AutoPtr<IObjectContainer> WifiConfigStore::GetConfiguredNetworks()
 {
     AutoPtr<IObjectContainer> networks;
-    CParcelableObjectContainer::New((IObjectContainer**)&networks);
+    assert(0);
+    // TODO
+    // CParcelableObjectContainer::New((IObjectContainer**)&networks);
     HashMap<Int32, AutoPtr<IWifiConfiguration> >::Iterator ator = mConfiguredNetworks.Begin();
     for (; ator != mConfiguredNetworks.End(); ++ator) {
         AutoPtr<IWifiConfiguration> newCig;
@@ -714,88 +715,88 @@ AutoPtr<ILinkProperties> WifiConfigStore::GetLinkProperties(
     return NULL;
 }
 
-AutoPtr<DhcpInfoInternal> WifiConfigStore::GetIpConfiguration(
-    /* [in] */ Int32 netId)
-{
-    AutoPtr<DhcpInfoInternal> dhcpInfoInternal = new DhcpInfoInternal();
-    AutoPtr<ILinkProperties> linkProperties = GetLinkProperties(netId);
+// AutoPtr<DhcpInfoInternal> WifiConfigStore::GetIpConfiguration(
+//     /* [in] */ Int32 netId)
+// {
+//     AutoPtr<DhcpInfoInternal> dhcpInfoInternal = new DhcpInfoInternal();
+//     AutoPtr<ILinkProperties> linkProperties = GetLinkProperties(netId);
 
-    if (linkProperties != NULL) {
-        AutoPtr<IObjectContainer> addresses;
-        linkProperties->GetLinkAddresses((IObjectContainer**)&addresses);
-        if (addresses != NULL) {
-            AutoPtr<IObjectEnumerator> enumerator;
-            addresses->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-            Boolean hasNext = FALSE;
-            if (enumerator->MoveNext(&hasNext), hasNext) {
-                AutoPtr<IInterface> obj;
-                enumerator->Current((IInterface**)&obj);
-                ILinkAddress* linkAddress = ILinkAddress::Probe(obj);
-                assert(linkAddress != NULL);
+//     if (linkProperties != NULL) {
+//         AutoPtr<IObjectContainer> addresses;
+//         linkProperties->GetLinkAddresses((IObjectContainer**)&addresses);
+//         if (addresses != NULL) {
+//             AutoPtr<IObjectEnumerator> enumerator;
+//             addresses->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+//             Boolean hasNext = FALSE;
+//             if (enumerator->MoveNext(&hasNext), hasNext) {
+//                 AutoPtr<IInterface> obj;
+//                 enumerator->Current((IInterface**)&obj);
+//                 ILinkAddress* linkAddress = ILinkAddress::Probe(obj);
+//                 assert(linkAddress != NULL);
 
-                AutoPtr<IInetAddress> ia;
-                linkAddress->GetAddress((IInetAddress**)&ia);
-                ia->GetHostAddress(&dhcpInfoInternal->mIpAddress);
+//                 AutoPtr<IInetAddress> ia;
+//                 linkAddress->GetAddress((IInetAddress**)&ia);
+//                 ia->GetHostAddress(&dhcpInfoInternal->mIpAddress);
 
-                AutoPtr<IObjectContainer> routes;
-                linkProperties->GetRoutes((IObjectContainer**)&routes);
-                AutoPtr<IObjectEnumerator> emu;
-                routes->GetObjectEnumerator((IObjectEnumerator**)&emu);
-                while (emu->MoveNext(&hasNext), hasNext) {
-                    AutoPtr<IInterface> obj;
-                    emu->Current((IInterface**)&obj);
-                    IRouteInfo* route = IRouteInfo::Probe(obj);
-                    dhcpInfoInternal->AddRoute(route);
-                }
+//                 AutoPtr<IObjectContainer> routes;
+//                 linkProperties->GetRoutes((IObjectContainer**)&routes);
+//                 AutoPtr<IObjectEnumerator> emu;
+//                 routes->GetObjectEnumerator((IObjectEnumerator**)&emu);
+//                 while (emu->MoveNext(&hasNext), hasNext) {
+//                     AutoPtr<IInterface> obj;
+//                     emu->Current((IInterface**)&obj);
+//                     IRouteInfo* route = IRouteInfo::Probe(obj);
+//                     dhcpInfoInternal->AddRoute(route);
+//                 }
 
-                linkAddress->GetNetworkPrefixLength(&dhcpInfoInternal->mPrefixLength);
+//                 linkAddress->GetNetworkPrefixLength(&dhcpInfoInternal->mPrefixLength);
 
-                AutoPtr<IObjectContainer> dnses;
-                linkProperties->GetDnses((IObjectContainer**)&dnses);
-                AutoPtr<IObjectEnumerator> emuDns;
-                dnses->GetObjectEnumerator((IObjectEnumerator**)&emuDns);
-                if (emuDns->MoveNext(&hasNext), hasNext) {
-                    AutoPtr<IInterface> obj;
-                    emu->Current((IInterface**)&obj);
-                    IInetAddress* addr = IInetAddress::Probe(obj);
-                    addr->GetHostAddress(&dhcpInfoInternal->mDns1);
-                    if (emuDns->MoveNext(&hasNext), hasNext) {
-                        obj = NULL;
-                        emu->Current((IInterface**)&obj);
-                        addr = IInetAddress::Probe(obj);
-                        addr->GetHostAddress(&dhcpInfoInternal->mDns2);
-                    }
-                }
-            }
-        }
-    }
+//                 AutoPtr<IObjectContainer> dnses;
+//                 linkProperties->GetDnses((IObjectContainer**)&dnses);
+//                 AutoPtr<IObjectEnumerator> emuDns;
+//                 dnses->GetObjectEnumerator((IObjectEnumerator**)&emuDns);
+//                 if (emuDns->MoveNext(&hasNext), hasNext) {
+//                     AutoPtr<IInterface> obj;
+//                     emu->Current((IInterface**)&obj);
+//                     IInetAddress* addr = IInetAddress::Probe(obj);
+//                     addr->GetHostAddress(&dhcpInfoInternal->mDns1);
+//                     if (emuDns->MoveNext(&hasNext), hasNext) {
+//                         obj = NULL;
+//                         emu->Current((IInterface**)&obj);
+//                         addr = IInetAddress::Probe(obj);
+//                         addr->GetHostAddress(&dhcpInfoInternal->mDns2);
+//                     }
+//                 }
+//             }
+//         }
+//     }
 
-    return dhcpInfoInternal;
-}
+//     return dhcpInfoInternal;
+// }
 
-void WifiConfigStore::SetIpConfiguration(
-    /* [in] */ Int32 netId,
-    /* [in] */ DhcpInfoInternal* dhcpInfo)
-{
-    AutoPtr<ILinkProperties> linkProperties = dhcpInfo->MakeLinkProperties();
+// void WifiConfigStore::SetIpConfiguration(
+//     /* [in] */ Int32 netId,
+//     /* [in] */ DhcpInfoInternal* dhcpInfo)
+// {
+//     AutoPtr<ILinkProperties> linkProperties = dhcpInfo->MakeLinkProperties();
 
-    AutoPtr<IWifiConfiguration> config;
-    HashMap<Int32, AutoPtr<IWifiConfiguration> >::Iterator it = mConfiguredNetworks.Find(netId);
-    if (it != mConfiguredNetworks.End()) {
-        config = it->mSecond;
-    }
-    if (config != NULL) {
-        AutoPtr<ILinkProperties> lp;
-        config->GetLinkProperties((ILinkProperties**)&lp);
-        // add old proxy details
-        if(lp != NULL) {
-            AutoPtr<IProxyProperties> proxy;
-            lp->GetHttpProxy((IProxyProperties**)&proxy);
-            linkProperties->SetHttpProxy(proxy);
-        }
-        config->SetLinkProperties(linkProperties);
-    }
-}
+//     AutoPtr<IWifiConfiguration> config;
+//     HashMap<Int32, AutoPtr<IWifiConfiguration> >::Iterator it = mConfiguredNetworks.Find(netId);
+//     if (it != mConfiguredNetworks.End()) {
+//         config = it->mSecond;
+//     }
+//     if (config != NULL) {
+//         AutoPtr<ILinkProperties> lp;
+//         config->GetLinkProperties((ILinkProperties**)&lp);
+//         // add old proxy details
+//         if(lp != NULL) {
+//             AutoPtr<IProxyProperties> proxy;
+//             lp->GetHttpProxy((IProxyProperties**)&proxy);
+//             linkProperties->SetHttpProxy(proxy);
+//         }
+//         config->SetLinkProperties(linkProperties);
+//     }
+// }
 
 void WifiConfigStore::ClearIpConfiguration(
     /* [in] */ Int32 netId)
@@ -822,8 +823,11 @@ AutoPtr<IProxyProperties> WifiConfigStore::GetProxyProperties(
     if (linkProperties != NULL) {
         AutoPtr<IProxyProperties> proxy, result;
         linkProperties->GetHttpProxy((IProxyProperties**)&proxy);
-        CProxyProperties::New(proxy, (IProxyProperties**)&result);
-        return result;
+        assert(0);
+        // TODO
+        // CProxyProperties::New(proxy, (IProxyProperties**)&result);
+        // return result;
+        return NULL;
     }
     return NULL;
 }
@@ -1115,8 +1119,10 @@ void WifiConfigStore::ReadIpAndProxyConfigurations()
                     case ProxySettings_STATIC: {
                         config->SetProxySettings(proxySettings);
                         AutoPtr<IProxyProperties> proxyProperties;
-                        CProxyProperties::New(proxyHost, proxyPort, exclusionList,
-                                (IProxyProperties**)&proxyProperties);
+                        assert(0);
+                        // TODO
+                        // CProxyProperties::New(proxyHost, proxyPort, exclusionList,
+                        //         (IProxyProperties**)&proxyProperties);
 
                         linkProperties->SetHttpProxy(proxyProperties);
                         break;

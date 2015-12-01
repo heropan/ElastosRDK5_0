@@ -2,13 +2,15 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICEINFO_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICEINFO_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceInfo.h"
+#include "_Elastos_Droid_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceInfo.h"
 #include "WifiP2pServiceInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Net::Nsd::IDnsSdTxtRecord;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IList;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -28,8 +30,7 @@ namespace Nsd {
 CarClass(CWifiP2pDnsSdServiceInfo), public WifiP2pServiceInfo
 {
 public:
-    PInterface Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
@@ -56,7 +57,7 @@ public:
     static CARAPI NewInstance(
         /* [in] */ const String& instanceName,
         /* [in] */ const String& serviceType,
-        /* [in] */ IObjectStringMap* txtMap, // Map<String, String>
+        /* [in] */ IMap* txtMap, // Map<String, String>
         /* [out] */ IWifiP2pDnsSdServiceInfo** instance);
 
 public:
@@ -138,9 +139,10 @@ private:
     static CStatic sStatic;
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
+
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICEINFO_H__

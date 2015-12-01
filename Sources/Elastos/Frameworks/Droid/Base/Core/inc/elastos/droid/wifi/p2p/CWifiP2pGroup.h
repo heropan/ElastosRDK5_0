@@ -2,11 +2,12 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUP_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUP_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pGroup.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pGroup.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::ICollection;
 using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {
@@ -15,8 +16,15 @@ namespace Wifi {
 namespace P2p {
 
 CarClass(CWifiP2pGroup)
+    , public Object
+    , public IWifiP2pGroup
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWifiP2pGroup();
 
     CARAPI constructor();
@@ -65,6 +73,9 @@ public:
     CARAPI Contains(
         /* [in] */ IWifiP2pDevice* device,
         /* [out] */ Boolean* ret);
+
+    CARAPI GetClientList(
+        /* [out] */ ICollection** result);
 
     CARAPI GetClientList(
         /* [out, callee] */ ArrayOf<IWifiP2pDevice*>** list);
@@ -121,9 +132,9 @@ private:
     static AutoPtr<IPattern> mGroupStartedPattern;
 };
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUP_H__

@@ -359,7 +359,7 @@ ECode WebView::FindListenerDistributor::OnFindResultReceived(
 
 const String WebView::LOGTAG("WebView_proxy");
 
-volatile Boolean WebView::sEnforceThreadChecking = FALSE;
+Boolean WebView::sEnforceThreadChecking = FALSE;
 
 Object WebView::sLock;
 
@@ -368,51 +368,6 @@ CAR_INTERFACE_IMPL(WebView, Object, IWebView);
 WebView::WebView()
 {
     mWebViewThread = Looper::GetMyLooper();
-}
-
-/**
- * Constructs a new WebView with layout parameters, a default style and a set
- * of custom Javscript interfaces to be added to this WebView at initialization
- * time. This guarantees that these interfaces will be available when the JS
- * context is initialized.
- *
- * @param context a Context object used to access application assets
- * @param attrs an AttributeSet passed to our parent
- * @param defStyle the default style resource ID
- * @param javaScriptInterfaces a Map of interface names, as keys, and
- *                             object implementing those interfaces, as
- *                             values
- * @param privateBrowsing whether this WebView will be initialized in
- *                        private mode
- * @hide This is used internally by dumprendertree, as it requires the javaScript interfaces to
- *       be added synchronously, before a subsequent loadUrl call takes effect.
- */
-WebView::WebView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ IMap* javaScriptInterfaces,
-    /* [in] */ Boolean privateBrowsing)
-{
-    mWebViewThread = Looper::GetMyLooper();
-    ASSERT_SUCCEEDED(Init(context, attrs, defStyle, javaScriptInterfaces,
-            privateBrowsing));
-}
-
-/**
- * @hide
- */
-//@SuppressWarnings("deprecation")  // for super() call into deprecated base class constructor.
-WebView::WebView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes,
-    /* [in] */ IMap* javaScriptInterfaces,
-    /* [in] */ Boolean privateBrowsing)
-{
-    mWebViewThread = Looper::GetMyLooper();
-    ASSERT_SUCCEEDED(Init(context, attrs, defStyleAttr, defStyleRes, javaScriptInterfaces, privateBrowsing));
 }
 
 ECode WebView::constructor(
@@ -442,7 +397,7 @@ ECode WebView::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    return Init(context, attrs, defStyleAttr, defStyleRes, NULL, FALSE);
+    return constructor(context, attrs, defStyleAttr, defStyleRes, NULL, FALSE);
 }
 
 ECode WebView::constructor(
@@ -451,10 +406,10 @@ ECode WebView::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Boolean privateBrowsing)
 {
-    return Init(context, attrs, defStyleAttr, 0, NULL, privateBrowsing);
+    return constructor(context, attrs, defStyleAttr, 0, NULL, privateBrowsing);
 }
 
-ECode WebView::Init(
+ECode WebView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle,
@@ -462,7 +417,6 @@ ECode WebView::Init(
     /* [in] */ Boolean privateBrowsing)
 {
     if (context == NULL) {
-        //throw new IllegalArgumentException("Invalid context argument");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     assert(0);
@@ -474,7 +428,7 @@ ECode WebView::Init(
     return mProvider->Init(javaScriptInterfaces, privateBrowsing);
 }
 
-ECode WebView::Init(
+ECode WebView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -486,8 +440,7 @@ ECode WebView::Init(
     // TODO
     // super(context, attrs, defStyleAttr, defStyleRes);
     if (context == NULL) {
-        assert(0);
-        //throw new IllegalArgumentException("Invalid context argument");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IApplicationInfo> appInfo;
     context->GetApplicationInfo((IApplicationInfo**)&appInfo);
@@ -633,7 +586,7 @@ ECode WebView::SavePassword(
 {
     FAIL_RETURN(CheckThread());
     if (DebugFlags::TRACE_API) {
-        Logger::D(LOGTAG, "savePassword=%s", (const char*)host);
+        Logger::D(LOGTAG, "savePassword=%s", host.string());
     }
     return mProvider->SavePassword(host, username, password);
 }
@@ -659,7 +612,7 @@ ECode WebView::SetHttpAuthUsernamePassword(
 {
     FAIL_RETURN(CheckThread());
     if (DebugFlags::TRACE_API) {
-        Logger::D(LOGTAG, "setHttpAuthUsernamePassword=%s", (const char*)host);
+        Logger::D(LOGTAG, "setHttpAuthUsernamePassword=%s", host.string());
     }
     return mProvider->SetHttpAuthUsernamePassword(host, realm, username, password);
 }
@@ -798,7 +751,7 @@ ECode WebView::SavePicture(
     if (DebugFlags::TRACE_API) {
         String name;
         dest->GetName(&name);
-        Logger::D(LOGTAG, "savePicture=%s", (const char*)name);
+        Logger::D(LOGTAG, "savePicture=%s", name.string());
     }
     return mProvider->SavePicture(b, dest, result);
 }
@@ -819,12 +772,12 @@ ECode WebView::RestorePicture(
     /* [in] */ IFile* src,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(src);
+    VALIDATE_NOT_NULL(result);
     FAIL_RETURN(CheckThread());
     if (DebugFlags::TRACE_API) {
         String name;
         src->GetName(&name);
-        Logger::D(LOGTAG, "restorePicture=%s", (const char*)name);
+        Logger::D(LOGTAG, "restorePicture=%s", name.string());
     }
     return mProvider->RestorePicture(b, src, result);
 }
@@ -895,7 +848,7 @@ ECode WebView::LoadUrl(
         }
         String headersStr;
         headers.ToString(&headersStr);
-        Logger::D(LOGTAG, "loadUrl(extra headers)=%s%s%s", (const char*)url, "\n", (const char*)headersStr);
+        Logger::D(LOGTAG, "loadUrl(extra headers)=%s%s%s", url.string(), "\n", headersStr.string());
     }
     return mProvider->LoadUrl(url, additionalHttpHeaders);
 }
@@ -910,7 +863,7 @@ ECode WebView::LoadUrl(
 {
     FAIL_RETURN(CheckThread());
     if (DebugFlags::TRACE_API) {
-        Logger::D(LOGTAG, "loadUrl=%s", (const char*)url);
+        Logger::D(LOGTAG, "loadUrl=%s", url.string());
     }
     return mProvider->LoadUrl(url);
 }
@@ -930,7 +883,7 @@ ECode WebView::PostUrl(
     FAIL_RETURN(CheckThread());
 
     if (DebugFlags::TRACE_API) {
-        Logger::D(LOGTAG, "postUrl=%s", (const char*)url);
+        Logger::D(LOGTAG, "postUrl=%s", url.string());
     }
 
     if (URLUtil::IsNetworkUrl(url)) {
@@ -1014,7 +967,7 @@ ECode WebView::LoadDataWithBaseURL(
 {
     FAIL_RETURN(CheckThread());
     if (DebugFlags::TRACE_API) {
-        Logger::D(LOGTAG, "loadDataWithBaseURL=%s", (const char*)baseUrl);
+        Logger::D(LOGTAG, "loadDataWithBaseURL=%s", baseUrl.string());
     }
     return mProvider->LoadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
 }
@@ -1025,7 +978,7 @@ ECode WebView::EvaluateJavascript(
 {
     FAIL_RETURN(CheckThread());
     if (DebugFlags::TRACE_API) {
-        Logger::D(LOGTAG, "evaluateJavascript=%s", (const char*)script);
+        Logger::D(LOGTAG, "evaluateJavascript=%s", script.string());
     }
     return mProvider->EvaluateJavaScript(script, resultCallback);
 }
@@ -1061,7 +1014,7 @@ ECode WebView::SaveWebArchive(
 {
     FAIL_RETURN(CheckThread());
     if (DebugFlags::TRACE_API) {
-        Logger::D(LOGTAG, "saveWebArchive(auto)=%s", (const char*)basename);
+        Logger::D(LOGTAG, "saveWebArchive(auto)=%s", basename.string());
     }
     return mProvider->SaveWebArchive(basename, autoname, callback);
 }
@@ -1660,7 +1613,7 @@ ECode WebView::ClearSslPreferences()
  *                   The embedder can pass null if not interested in the
  *                   callback. The runnable will be called in UI thread.
  */
-void WebView::ClearClientCertPreferences(
+ECode WebView::ClearClientCertPreferences(
     /* [in] */ IRunnable* onCleared)
 {
     if (DebugFlags::TRACE_API) {
@@ -1668,7 +1621,7 @@ void WebView::ClearClientCertPreferences(
     }
     AutoPtr<IWebViewFactoryProviderStatics> statics;
     GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&statics);
-    statics->ClearClientCertPreferences(onCleared);
+    return statics->ClearClientCertPreferences(onCleared);
 }
 
 /**
@@ -1978,7 +1931,7 @@ ECode WebView::AddJavascriptInterface(
 {
     FAIL_RETURN(CheckThread());
     if (DebugFlags::TRACE_API) {
-        Logger::D(LOGTAG, "addJavascriptInterface=%s", (const char*)name);
+        Logger::D(LOGTAG, "addJavascriptInterface=%s", name.string());
     }
     return mProvider->AddJavascriptInterface(object, name);
 }
@@ -1995,7 +1948,7 @@ ECode WebView::RemoveJavascriptInterface(
 {
     FAIL_RETURN(CheckThread());
     if (DebugFlags::TRACE_API) {
-        Logger::D(LOGTAG, "removeJavascriptInterface=%s", (const char*)name);
+        Logger::D(LOGTAG, "removeJavascriptInterface=%s", name.string());
     }
     return mProvider->RemoveJavascriptInterface(name);
 }

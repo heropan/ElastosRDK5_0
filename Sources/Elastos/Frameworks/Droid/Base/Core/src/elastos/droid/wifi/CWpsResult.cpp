@@ -1,5 +1,5 @@
 
-#include "elastos/droid/net/wifi/CWpsResult.h"
+#include "elastos/droid/wifi/CWpsResult.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
@@ -41,6 +41,34 @@ static WpsResultStatus StringToStatus(
 
     assert(0 && "Should not happen!");
     return WpsResultStatus_FAILURE;
+}
+
+CAR_INTERFACE_IMPL(CWpsResult, Object, IWpsResult)
+
+CAR_OBJECT_IMPL(CWpsResult)
+
+ECode CWpsResult::constructor()
+{
+    mStatus = WpsResultStatus_FAILURE;
+    return NOERROR;
+}
+
+ECode CWpsResult::constructor(
+    /* [in] */ WpsResultStatus status)
+{
+    mStatus = status;
+    return NOERROR;
+}
+
+ECode CWpsResult::constructor(
+    /* [in] */ IWpsResult* source)
+{
+    if (source != NULL) {
+        FAIL_RETURN(source->GetStatus(&mStatus));
+        FAIL_RETURN(source->GetPin(&mPin));
+    }
+
+    return NOERROR;
 }
 
 ECode CWpsResult::GetStatus(
@@ -115,30 +143,6 @@ ECode CWpsResult::WriteToParcel(
     return NOERROR;
 }
 
-ECode CWpsResult::constructor()
-{
-    mStatus = WpsResultStatus_FAILURE;
-    return NOERROR;
-}
-
-ECode CWpsResult::constructor(
-    /* [in] */ WpsResultStatus status)
-{
-    mStatus = status;
-    return NOERROR;
-}
-
-ECode CWpsResult::constructor(
-    /* [in] */ IWpsResult* source)
-{
-    if (source != NULL) {
-        FAIL_RETURN(source->GetStatus(&mStatus));
-        FAIL_RETURN(source->GetPin(&mPin));
-    }
-
-    return NOERROR;
-}
-
-}
-}
-}
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

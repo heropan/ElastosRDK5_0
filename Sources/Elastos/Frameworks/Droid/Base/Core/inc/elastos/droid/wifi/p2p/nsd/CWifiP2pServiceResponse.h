@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICERESPONSE_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICERESPONSE_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pServiceResponse.h"
+#include "_Elastos_Droid_Wifi_P2p_Nsd_CWifiP2pServiceResponse.h"
 #include "WifiP2pServiceResponse.h"
 
 namespace Elastos {
@@ -14,17 +14,7 @@ namespace Nsd {
 CarClass(CWifiP2pServiceResponse), public WifiP2pServiceResponse
 {
 public:
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 serviceType,
-        /* [in] */ Int32 status,
-        /* [in] */ Int32 transId,
-        /* [in] */ IWifiP2pDevice* device,
-        /* [in] */ ArrayOf<Byte>* data);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
 
     CARAPI GetServiceType(
         /* [out] */ Int32* serviceType);
@@ -65,9 +55,10 @@ public:
         /* [out, callee] */ ArrayOf<IWifiP2pServiceResponse*>** list);
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
+
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICERESPONSE_H__

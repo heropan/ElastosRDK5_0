@@ -1,7 +1,6 @@
 
 module
 {
-    merge("wifi/BatchedScanResult.car");
     merge("wifi/BatchedScanSettings.car");
     merge("wifi/IRttManager.car");
     merge("wifi/IWifiManager.car");
@@ -46,8 +45,8 @@ module
     merge("wifi/p2p/nsd/WifiP2pUpnpServiceRequest.car");
     merge("wifi/p2p/nsd/WifiP2pUpnpServiceResponse.car");
 
-    // interface Elastos.Droid.Content.IContext;
-    // interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.ILooper;
     // enum Elastos.Droid.Net.Wifi.SupplicantState;
     // enum Elastos.Droid.Net.Wifi.WpsResultStatus;
     // interface Elastos.Droid.Net.Wifi.IWpsInfo;
@@ -65,448 +64,643 @@ module
     // interface Elastos.Droid.Net.Wifi.IWifiConfigurationPairwiseCipher;
     // interface Elastos.Droid.Net.Wifi.IIWifiManager;
     // interface Elastos.Droid.Net.Wifi.IWifiManager;
+    interface Elastos.Droid.Wifi.P2p.IWifiP2pDevice;
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Net {
-    // namespace Wifi {
-    //     class CWpsResult {
-    //         constructor();
+    namespace Elastos {
+    namespace Droid {
+    namespace Wifi {
+        class CBatchedScanSettings {
+            constructor();
 
-    //         constructor(
-    //             [in] WpsResultStatus s);
+            constructor(
+                [in] IBatchedScanSettings* source);
 
-    //         interface IWpsResult;
-    //     }
+            interface IBatchedScanSettings;
+            interface IParcelable;
+        }
 
-    //     class CWpsInfo {
-    //         constructor();
+        class CRttManager {
+            constructor(
+                [in] IContext* context,
+                [in] IIRttManager* service);
 
-    //         constructor(
-    //             [in] IWpsInfo* source);
+            interface IRttManager;
+        }
 
-    //         interface IWpsInfo;
-    //     }
+        class CRttManagerRttParams {
+            constructor();
 
-    //     singleton class CWifiSsidHelper {
-    //         interface IWifiSsidHelper;
-    //     }
+            interface IRttManagerRttParams;
+        }
 
-    //     class CWifiSsid {
-    //         constructor();
+        class CRttManagerCapabilities {
+            constructor();
 
-    //         interface IWifiSsid;
-    //         interface IParcelable;
-    //     }
+            interface IRttManagerCapabilities;
+        }
 
-    //     class CWifiConfiguration {
-    //         constructor();
+        [deprecated]
+        class CRttManagerParcelableRttParams {
+            constructor(
+                [in] ArrayOf<IRttManagerRttParams*>* params);
 
-    //         constructor(
-    //             [in] IWifiConfiguration* source);
+            interface IRttManagerParcelableRttParams;
+            interface IParcelable;
+        }
 
-    //         interface IWifiConfiguration;
-    //         interface IParcelable;
-    //     }
+        class CRttManagerRttResult {
+            constructor();
 
-    //     singleton class CSupplicantStateHelper {
-    //         interface ISupplicantStateHelper;
-    //     }
+            interface IRttManagerRttResult;
+        }
 
-    //     singleton class CWifiConfigurationStatus {
-    //         interface IWifiConfigurationStatus;
-    //     }
+        [deprecated]
+        class CRttManagerParcelableRttResults {
+            constructor(
+                [in] ArrayOf<IRttManagerRttResult*>* result);
 
-    //     class CScanResult {
-    //         constructor();
+            interface IRttManagerParcelableRttResults;
+            interface IParcelable;
+        }
 
-    //         constructor(
-    //             [in] IWifiSsid* wifiSsid,
-    //             [in] String BSSID,
-    //             [in] String caps,
-    //             [in] Int32 level,
-    //             [in] Int32 frequency,
-    //             [in] Int64 tsf);
+        class CScanSettings {
+            constructor();
 
-    //         constructor(
-    //             [in] IScanResult* source);
+            constructor(
+                [in] IScanSettings* source);
 
-    //         interface IScanResult;
-    //         interface IParcelable;
-    //     }
+            interface IScanSettings;
+            interface IParcelable;
+        }
 
-    //     class CStateChangeResult {
-    //         constructor(
-    //             [in] Int32 networkId,
-    //             [in] IWifiSsid* wifiSsid,
-    //             [in] String BSSID,
-    //             [in] SupplicantState state);
+        class CWifiActivityEnergyInfo {
+            constructor(
+                [in] Int32 stackState,
+                [in] Int32 txTime,
+                [in] Int32 rxTime,
+                [in] Int32 idleTime,
+                [in] Int32 energyUsed);
 
-    //         interface IStateChangeResult;
-    //     }
+            interface IWifiActivityEnergyInfo;
+            interface IParcelable;
+        }
 
-    //     class CSupplicantState {
-    //         constructor();
+        class CWifiChannel {
+            constructor();
 
-    //         constructor(
-    //             [in] SupplicantState state);
+            interface IWifiChannel;
+            interface IParcelable;
+        }
 
-    //         interface ISupplicantState;
-    //         interface IParcelable;
-    //     }
+        class CWifiConnectionStatistics {
+            constructor();
 
-    //     class CWifiInfo {
-    //         constructor();
+            constructor(
+                [in] IWifiConnectionStatistics* source);
 
-    //         /**
-    //          * Constructor for faking WifiInfo
-    //          * @hide
-    //          */
-    //         constructor(
-    //             [in] Boolean fake);
+            interface IWifiConnectionStatistics;
+            interface IParcelable;
+        }
 
-    //         constructor(
-    //             [in] IWifiInfo* source);
+        class CWifiEnterpriseConfig {
+            constructor();
 
-    //         interface IWifiInfo;
-    //         interface IParcelable;
-    //     }
+            constructor(
+                [in] IWifiEnterpriseConfig* source);
 
-    //     singleton class CWifiInfoHelper {
-    //         interface IWifiInfoHelper;
-    //     }
+            interface IWifiEnterpriseConfig;
+            interface IParcelable;
+        }
 
-    //     class CRssiPacketCountInfo {
-    //         constructor();
+        singleton class CWifiEnterpriseConfigEap {
+            interface IWifiEnterpriseConfigEap;
+        }
 
-    //         constructor(
-    //             [in] IParcel* parcel);
+        singleton class CWifiEnterpriseConfigPhase2 {
+            interface IWifiEnterpriseConfigPhase2;
+        }
 
-    //         interface IRssiPacketCountInfo;
-    //     }
+        class CWifiLinkLayerStats {
+            constructor();
 
-    //     singleton class CWifiConfigurationPairwiseCipher {
-    //         interface IWifiConfigurationPairwiseCipher;
-    //     }
+            interface IWifiLinkLayerStats;
+            interface IParcelable;
+        }
 
-    //     singleton class CWifiConfigurationKeyMgmt {
-    //         interface IWifiConfigurationKeyMgmt;
-    //     }
+        class CWifiNetworkConnectionStatistics {
+            constructor();
 
-    //     singleton class CWifiConfigurationGroupCipher {
-    //         interface IWifiConfigurationGroupCipher;
-    //     }
+            constructor(
+                [in] Int32 connection,
+                [in] Int32 usage);
 
-    //     class CEnterpriseField {
-    //         constructor(
-    //             [in] String varName);
+            constructor(
+                [in] IWifiNetworkConnectionStatistics* source);
 
-    //         interface IWifiConfigurationEnterpriseField;
-    //     }
+            interface IWifiNetworkConnectionStatistics;
+            interface IParcelable;
+        }
 
-    //     singleton class CWifiConfigurationAuthAlgorithm {
-    //         interface IWifiConfigurationAuthAlgorithm;
-    //     }
+        class CWifiScanner {
+            constructor(
+                [in] IContext* context,
+                [in] IIWifiScanner* service);
 
-    //     singleton class CWifiConfigurationProtocol {
-    //         interface IWifiConfigurationProtocol;
-    //     }
+            interface IWifiScanner;
+        }
 
-    //     singleton class CWifiConfigurationHelper {
-    //         interface IWifiConfigurationHelper;
-    //     }
+        class CWifiScannerChannelSpec {
+            constructor(
+                [in] Int32 frequency);
 
-    //     [local]
-    //     class CWifiManager {
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] IIWifiManager* wifiMgr);
+            interface IWifiScannerChannelSpec;
+        }
 
-    //         interface IWifiManager;
-    //     }
+        class CWifiScannerScanSettings {
+            constructor();
 
-    //     singleton class CWifiManagerHelper {
-    //         interface IWifiManagerHelper;
-    //     }
+            interface IWifiScannerScanSettings;
+            interface IParcelable;
+        }
 
-    // namespace P2p {
+        [deprecated]
+        class CWifiScannerParcelableScanResults {
+            constructor(
+                [in] ArrayOf<IScanResult*>* results);
 
-    //     class CWifiP2pConfig {
-    //         constructor();
+            interface IWifiScannerParcelableScanResults;
+            interface IParcelable;
+        }
 
-    //         constructor(
-    //             [in] String supplicantEvent);
+        class CWifiScannerBssidInfo {
+            constructor();
 
-    //         interface IWifiP2pConfig;
-    //         interface IParcelable;
-    //     }
+            interface IWifiScannerBssidInfo;
+        }
 
-    //     class CWifiP2pDevice {
-    //         constructor();
+        class CWifiScannerWifiChangeSettings {
+            constructor();
 
-    //         constructor(
-    //             [in] String string);
+            interface IWifiScannerWifiChangeSettings;
+            interface IParcelable;
+        }
 
-    //         constructor(
-    //             [in] IWifiP2pDevice* source);
+        class CWifiScannerHotlistSettings {
+            constructor();
 
-    //         interface IWifiP2pDevice;
-    //         interface IParcelable;
-    //     }
+            interface IWifiScannerHotlistSettings;
+            interface IParcelable;
+        }
 
-    //     [deprecated]
-    //     class CWifiP2pDeviceList {
-    //         constructor();
+        class CWifiScannerOperationResult {
+            constructor(
+                [in] Int32 reason,
+                [in] String description);
 
-    //         constructor(
-    //             [in] IWifiP2pDeviceList* source);
+            interface IWifiScannerOperationResult;
+            interface IParcelable;
+        }
 
-    //         constructor(
-    //             [in] ArrayOf<IWifiP2pDevice*>* devices);
+        class CWpsResult {
+            constructor();
 
-    //         interface IWifiP2pDeviceList;
-    //         interface IParcelable;
-    //     }
+            constructor(
+                [in] WpsResultStatus s);
 
-    //     class CWifiP2pGroup {
-    //         constructor();
+            interface IWpsResult;
+        }
 
-    //         constructor(
-    //             [in] String supplicantEvent);
+        class CWpsInfo {
+            constructor();
 
-    //         constructor(
-    //             [in] IWifiP2pGroup* source);
+            constructor(
+                [in] IWpsInfo* source);
 
-    //         interface IWifiP2pGroup;
-    //         interface IParcelable;
-    //     }
+            interface IWpsInfo;
+        }
 
-    //     class CWifiP2pGroupList {
-    //         constructor();
+        singleton class CWifiSsidHelper {
+            interface IWifiSsidHelper;
+        }
 
-    //         constructor(
-    //             [in] IWifiP2pGroupList* source,
-    //             [in] IGroupDeleteListener* listener);
+        class CWifiSsid {
+            constructor();
 
-    //         interface IWifiP2pGroupList;
-    //         interface IParcelable;
-    //     }
+            interface IWifiSsid;
+            interface IParcelable;
+        }
 
-    //     class CWifiP2pInfo {
-    //         constructor();
+        [local]
+        class CWifiConfiguration {
+            constructor();
 
-    //         constructor(
-    //             [in] IWifiP2pInfo* source);
+            constructor(
+                [in] IWifiConfiguration* source);
 
-    //         interface IWifiP2pInfo;
-    //         interface IParcelable;
-    //     }
+            interface IWifiConfiguration;
+            interface IParcelable;
+        }
 
-    //     class CWifiP2pManager {
-    //         interface IWifiP2pManager;
-    //     }
+        class CWifiConfigurationVisibility {
+            constructor();
 
-    //     [local]
-    //     class CWifiP2pManagerChannel {
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] ILooper * looper,
-    //             [in] IWifiP2pManagerChannelListener* l);
+            constructor(
+                [in] IWifiConfigurationVisibility* source);
 
-    //         interface IWifiP2pManagerChannel;
-    //     }
+            interface IWifiConfigurationVisibility;
+        }
 
-    //     class CWifiP2pProvDiscEvent {
-    //         constructor();
+        singleton class CSupplicantStateHelper {
+            interface ISupplicantStateHelper;
+        }
 
-    //         constructor(
-    //             [in] String string);
+        singleton class CWifiConfigurationStatus {
+            interface IWifiConfigurationStatus;
+        }
 
-    //         interface IWifiP2pProvDiscEvent;
-    //     }
+        class CScanResult {
+            constructor();
 
-    //     [local]
-    //     class CWifiP2pService {
-    //         constructor(
-    //             [in] IContext* ctx);
+            constructor(
+                [in] IWifiSsid* wifiSsid,
+                [in] String BSSID,
+                [in] String caps,
+                [in] Int32 level,
+                [in] Int32 frequency,
+                [in] Int64 tsf);
 
-    //         interface IWifiP2pService;
-    //     }
+            constructor(
+                [in] IWifiSsid* wifiSsid,
+                [in] String BSSID,
+                [in] String caps,
+                [in] Int32 level,
+                [in] Int32 frequency,
+                [in] Int64 tsf,
+                [in] Int32 distCm,
+                [in] Int32 distSdCm);
 
-    //     class CWifiP2pWfdInfo {
-    //         constructor();
+            constructor(
+                [in] IScanResult* source);
 
-    //         constructor(
-    //             [in] Int32 devInfo,
-    //             [in] Int32 ctrlPort,
-    //             [in] Int32 maxTput);
+            interface IScanResult;
+            interface IParcelable;
+        }
 
-    //         constructor(
-    //             [in] IWifiP2pWfdInfo* source);
+        class CScanResultInformationElement {
+            constructor();
 
-    //         interface IWifiP2pWfdInfo;
-    //         interface IParcelable;
-    //     }
+            constructor(
+                [in] IScanResultInformationElement* rhs);
 
-    //     namespace Nsd {
-    //         [deprecated]
-    //         class CWifiP2pServiceInfo {
-    //             constructor();
+            interface IScanResultInformationElement;
+        }
 
-    //             constructor(
-    //                 [in] ArrayOf<String>* queryList);
+        singleton class CScanResultHelper {
+            interface IScanResultHelper;
+        }
 
-    //             interface IWifiP2pServiceInfo;
-    //             interface IParcelable;
-    //         }
+        class CSupplicantState {
+            constructor();
 
-    //         class CWifiP2pServiceRequest {
-    //             constructor();
+            constructor(
+                [in] SupplicantState state);
 
-    //             constructor(
-    //                 [in] Int32 protocolType,
-    //                 [in] String query);
+            interface ISupplicantState;
+            interface IParcelable;
+        }
 
-    //             constructor(
-    //                 [in] Int32 serviceType,
-    //                 [in] Int32 length,
-    //                 [in] Int32 transId,
-    //                 [in] String query);
+        class CWifiInfo {
+            constructor();
 
-    //             interface IWifiP2pServiceRequest;
-    //             interface IParcelable;
-    //         }
+            /**
+             * Constructor for faking WifiInfo
+             * @hide
+             */
+            constructor(
+                [in] Boolean fake);
 
-    //         singleton class CWifiP2pServiceRequestHelper {
-    //             interface IWifiP2pServiceRequestHelper;
-    //         }
+            constructor(
+                [in] IWifiInfo* source);
 
-    //         [deprecated]
-    //         class CWifiP2pServiceResponse {
-    //             constructor();
+            interface IWifiInfo;
+            interface IParcelable;
+        }
 
-    //             constructor(
-    //                 [in] Int32 serviceType,
-    //                 [in] Int32 status,
-    //                 [in] Int32 transId,
-    //                 [in] IWifiP2pDevice* device,
-    //                 [in] ArrayOf<Byte>* data);
+        singleton class CWifiInfoHelper {
+            interface IWifiInfoHelper;
+        }
 
-    //             interface IWifiP2pServiceResponse;
-    //             interface IParcelable;
-    //         }
+        class CRssiPacketCountInfo {
+            constructor();
 
-    //         singleton class CWifiP2pServiceResponseHelper {
-    //             interface IWifiP2pServiceResponseHelper;
-    //         }
+            constructor(
+                [in] IParcel* parcel);
 
-    //         class CWifiP2pServiceResponseStatus {
-    //             interface IWifiP2pServiceResponseStatus;
-    //         }
+            interface IRssiPacketCountInfo;
+        }
 
-    //         [deprecated]
-    //         class CWifiP2pDnsSdServiceInfo {
-    //             constructor();
+        singleton class CWifiConfigurationPairwiseCipher {
+            interface IWifiConfigurationPairwiseCipher;
+        }
 
-    //             constructor(
-    //                 [in] ArrayOf<String>* queryList);
+        singleton class CWifiConfigurationKeyMgmt {
+            interface IWifiConfigurationKeyMgmt;
+        }
 
-    //             interface IWifiP2pDnsSdServiceInfo;
-    //             interface IParcelable;
-    //         }
+        singleton class CWifiConfigurationGroupCipher {
+            interface IWifiConfigurationGroupCipher;
+        }
 
-    //         singleton class CWifiP2pDnsSdServiceInfoHelper {
-    //             interface IWifiP2pDnsSdServiceInfoHelper;
-    //         }
+        singleton class CWifiConfigurationAuthAlgorithm {
+            interface IWifiConfigurationAuthAlgorithm;
+        }
 
-    //         class CWifiP2pDnsSdServiceRequest {
-    //             constructor(
-    //                 [in] String query);
+        singleton class CWifiConfigurationProtocol {
+            interface IWifiConfigurationProtocol;
+        }
 
-    //             constructor();
+        singleton class CWifiConfigurationHelper {
+            interface IWifiConfigurationHelper;
+        }
 
-    //             constructor(
-    //                 [in] String dnsQuery,
-    //                 [in] Int32 dnsType,
-    //                 [in] Int32 versionNumber);
+        [local]
+        class CWifiManager {
+            constructor(
+                [in] IContext* ctx,
+                [in] IIWifiManager* wifiMgr);
 
-    //             interface IWifiP2pDnsSdServiceRequest;
-    //             interface IParcelable;
-    //         }
+            interface IWifiManager;
+        }
 
-    //         singleton class CWifiP2pDnsSdServiceRequestHelper {
-    //             interface IWifiP2pDnsSdServiceRequestHelper;
-    //         }
+        singleton class CWifiManagerHelper {
+            interface IWifiManagerHelper;
+        }
 
-    //         [deprecated]
-    //         class CWifiP2pDnsSdServiceResponse {
-    //             constructor();
+    namespace P2p {
 
-    //             constructor(
-    //                 [in] Int32 status,
-    //                 [in] Int32 transId,
-    //                 [in] IWifiP2pDevice* device,
-    //                 [in] ArrayOf<Byte>* data);
+        class CWifiP2pConfig {
+            constructor();
 
-    //             interface IWifiP2pDnsSdServiceResponse;
-    //             interface IParcelable;
-    //         }
+            constructor(
+                [in] String supplicantEvent);
 
-    //         singleton class CWifiP2pDnsSdServiceResponseHelper {
-    //             interface IWifiP2pDnsSdServiceResponseHelper;
-    //         }
+            interface IWifiP2pConfig;
+            interface IParcelable;
+        }
 
-    //         [deprecated]
-    //         class CWifiP2pUpnpServiceInfo {
-    //             constructor();
+        class CWifiP2pDevice {
+            constructor();
 
-    //             constructor(
-    //                 [in] ArrayOf<String>* queryList);
+            constructor(
+                [in] String string);
 
-    //             interface IWifiP2pUpnpServiceInfo;
-    //             interface IParcelable;
-    //         }
+            constructor(
+                [in] IWifiP2pDevice* source);
 
-    //         singleton class CWifiP2pUpnpServiceInfoHelper {
-    //             interface IWifiP2pUpnpServiceInfoHelper;
-    //         }
+            interface IWifiP2pDevice;
+            interface IParcelable;
+        }
 
-    //         class CWifiP2pUpnpServiceRequest {
-    //             constructor(
-    //                 [in] String query);
+        [deprecated]
+        class CWifiP2pDeviceList {
+            constructor();
 
-    //             constructor();
+            constructor(
+                [in] IWifiP2pDeviceList* source);
 
-    //             interface IWifiP2pUpnpServiceRequest;
-    //             interface IParcelable;
-    //         }
+            constructor(
+                [in] ArrayOf<IWifiP2pDevice*>* devices);
 
-    //         singleton class CWifiP2pUpnpServiceRequestHelper {
-    //             interface IWifiP2pUpnpServiceRequestHelper;
-    //         }
+            interface IWifiP2pDeviceList;
+            interface IParcelable;
+        }
 
-    //         [deprecated]
-    //         class CWifiP2pUpnpServiceResponse {
-    //             constructor();
+        class CWifiP2pGroup {
+            constructor();
 
-    //             constructor(
-    //                 [in] Int32 status,
-    //                 [in] Int32 transId,
-    //                 [in] IWifiP2pDevice* device,
-    //                 [in] ArrayOf<Byte>* data);
+            constructor(
+                [in] String supplicantEvent);
 
-    //             interface IWifiP2pUpnpServiceResponse;
-    //             interface IParcelable;
-    //         }
+            constructor(
+                [in] IWifiP2pGroup* source);
 
-    //         singleton class CWifiP2pUpnpServiceResponseHelper {
-    //             interface IWifiP2pUpnpServiceResponseHelper;
-    //         }
-    //     }
-    // }
+            interface IWifiP2pGroup;
+            interface IParcelable;
+        }
 
-    // }
-    // }
-    // }
-    // }
+        class CWifiP2pGroupList {
+            constructor();
+
+            constructor(
+                [in] IWifiP2pGroupList* source,
+                [in] IWifiP2pGroupListGroupDeleteListener* listener);
+
+            interface IWifiP2pGroupList;
+            interface IParcelable;
+        }
+
+        class CWifiP2pInfo {
+            constructor();
+
+            constructor(
+                [in] IWifiP2pInfo* source);
+
+            interface IWifiP2pInfo;
+            interface IParcelable;
+        }
+
+        class CWifiP2pManager {
+            constructor();
+
+            interface IWifiP2pManager;
+        }
+
+        [local]
+        class CWifiP2pManagerChannel {
+            constructor(
+                [in] IContext* ctx,
+                [in] ILooper * looper,
+                [in] IWifiP2pManagerChannelListener* l);
+
+            interface IWifiP2pManagerChannel;
+        }
+
+        class CWifiP2pProvDiscEvent {
+            constructor();
+
+            constructor(
+                [in] String string);
+
+            interface IWifiP2pProvDiscEvent;
+        }
+
+        class CWifiP2pWfdInfo {
+            constructor();
+
+            constructor(
+                [in] Int32 devInfo,
+                [in] Int32 ctrlPort,
+                [in] Int32 maxTput);
+
+            constructor(
+                [in] IWifiP2pWfdInfo* source);
+
+            interface IWifiP2pWfdInfo;
+            interface IParcelable;
+        }
+
+        namespace Nsd {
+            [deprecated]
+            class CWifiP2pServiceInfo {
+                constructor();
+
+                constructor(
+                    [in] ArrayOf<String>* queryList);
+
+                interface IWifiP2pServiceInfo;
+                interface IParcelable;
+            }
+
+            class CWifiP2pServiceRequest {
+                constructor();
+
+                constructor(
+                    [in] Int32 protocolType,
+                    [in] String query);
+
+                constructor(
+                    [in] Int32 serviceType,
+                    [in] Int32 length,
+                    [in] Int32 transId,
+                    [in] String query);
+
+                interface IWifiP2pServiceRequest;
+                interface IParcelable;
+            }
+
+            singleton class CWifiP2pServiceRequestHelper {
+                interface IWifiP2pServiceRequestHelper;
+            }
+
+            [deprecated]
+            class CWifiP2pServiceResponse {
+                constructor();
+
+                constructor(
+                    [in] Int32 serviceType,
+                    [in] Int32 status,
+                    [in] Int32 transId,
+                    [in] IWifiP2pDevice* device,
+                    [in] ArrayOf<Byte>* data);
+
+                interface IWifiP2pServiceResponse;
+                interface IParcelable;
+            }
+
+            singleton class CWifiP2pServiceResponseHelper {
+                interface IWifiP2pServiceResponseHelper;
+            }
+
+            class CWifiP2pServiceResponseStatus {
+                constructor();
+
+                interface IWifiP2pServiceResponseStatus;
+            }
+
+            [deprecated]
+            class CWifiP2pDnsSdServiceInfo {
+                constructor();
+
+                constructor(
+                    [in] ArrayOf<String>* queryList);
+
+                interface IWifiP2pDnsSdServiceInfo;
+                interface IParcelable;
+            }
+
+            singleton class CWifiP2pDnsSdServiceInfoHelper {
+                interface IWifiP2pDnsSdServiceInfoHelper;
+            }
+
+            class CWifiP2pDnsSdServiceRequest {
+                constructor(
+                    [in] String query);
+
+                constructor();
+
+                constructor(
+                    [in] String dnsQuery,
+                    [in] Int32 dnsType,
+                    [in] Int32 versionNumber);
+
+                interface IWifiP2pDnsSdServiceRequest;
+                interface IParcelable;
+            }
+
+            singleton class CWifiP2pDnsSdServiceRequestHelper {
+                interface IWifiP2pDnsSdServiceRequestHelper;
+            }
+
+            [deprecated]
+            class CWifiP2pDnsSdServiceResponse {
+                constructor();
+
+                constructor(
+                    [in] Int32 status,
+                    [in] Int32 transId,
+                    [in] IWifiP2pDevice* device,
+                    [in] ArrayOf<Byte>* data);
+
+                interface IWifiP2pDnsSdServiceResponse;
+                interface IParcelable;
+            }
+
+            [deprecated]
+            class CWifiP2pUpnpServiceInfo {
+                constructor();
+
+                constructor(
+                    [in] ArrayOf<String>* queryList);
+
+                interface IWifiP2pUpnpServiceInfo;
+                interface IParcelable;
+            }
+
+            singleton class CWifiP2pUpnpServiceInfoHelper {
+                interface IWifiP2pUpnpServiceInfoHelper;
+            }
+
+            class CWifiP2pUpnpServiceRequest {
+                constructor(
+                    [in] String query);
+
+                constructor();
+
+                interface IWifiP2pUpnpServiceRequest;
+                interface IParcelable;
+            }
+
+            singleton class CWifiP2pUpnpServiceRequestHelper {
+                interface IWifiP2pUpnpServiceRequestHelper;
+            }
+
+            [deprecated]
+            class CWifiP2pUpnpServiceResponse {
+                constructor();
+
+                constructor(
+                    [in] Int32 status,
+                    [in] Int32 transId,
+                    [in] IWifiP2pDevice* device,
+                    [in] ArrayOf<Byte>* data);
+
+                interface IWifiP2pUpnpServiceResponse;
+                interface IParcelable;
+            }
+        }
+    }
+
+    }
+    }
+    }
 }

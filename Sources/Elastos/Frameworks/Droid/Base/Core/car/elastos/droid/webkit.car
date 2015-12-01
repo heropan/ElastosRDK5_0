@@ -10,6 +10,7 @@ module
     merge("webkit/ValueCallback.car");
     merge("webkit/GeolocationPermissions.car");
     merge("webkit/HttpAuthHandler.car");
+    merge("webkit/JsDialogHelper.car");
     merge("webkit/JsResult.car");
     merge("webkit/JsPromptResult.car");
     merge("webkit/MimeTypeMap.car");
@@ -48,6 +49,7 @@ module
     interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.IMessage;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IView;
@@ -130,6 +132,21 @@ module
                 [in] IJsResultReceiver* receiver);
 
             interface IJsResult;
+        }
+
+        class CJsDialogHelper {
+            constructor(
+                [in] IJsPromptResult* result,
+                [in] Int32 type,
+                [in] String defaultValue,
+                [in] String message,
+                [in] String url);
+
+            constructor(
+                [in] IJsPromptResult* result,
+                [in] IMessage* msg);
+
+            interface IJsDialogHelper;
         }
 
         singleton class CMimeTypeMapHelper {

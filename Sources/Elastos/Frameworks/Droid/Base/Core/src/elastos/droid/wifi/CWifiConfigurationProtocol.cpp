@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationProtocol.h"
+#include "elastos/droid/wifi/CWifiConfigurationProtocol.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,6 +15,10 @@ static AutoPtr< ArrayOf<String> > InitStrings()
 }
 
 const AutoPtr< ArrayOf<String> > CWifiConfigurationProtocol::sStrings = InitStrings();
+
+CAR_INTERFACE_IMPL(CWifiConfigurationProtocol, Singleton, IWifiConfigurationProtocol)
+
+CAR_SINGLETON_IMPL(CWifiConfigurationProtocol)
 
 ECode CWifiConfigurationProtocol::GetStrings(
     /* [out, callee] */ ArrayOf<String>** strings)

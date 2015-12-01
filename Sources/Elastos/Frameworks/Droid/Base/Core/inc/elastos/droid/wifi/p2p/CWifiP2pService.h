@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_NET_CWIFIP2PSERVICE_H__
 #define __ELASTOS_DROID_NET_CWIFIP2PSERVICE_H__
 
-#include "_Elastos_Droid_Net_CWifiP2pService.h"
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pService.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
@@ -60,7 +60,7 @@ public:
      * and the local services registered by the client.
      */
     class ClientInfo
-        : public ElRefBase
+        : public Object
     {
     public:
         ClientInfo(
@@ -104,11 +104,11 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("DefaultState");
             }
@@ -123,11 +123,11 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("P2pNotSupportedState");
             }
@@ -142,17 +142,17 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
             // @Override
-            virtual CARAPI Exit();
+            CARAPI Exit();
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("P2pDisablingState");
             }
@@ -167,14 +167,14 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("P2pDisabledState");
             }
@@ -189,14 +189,14 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("P2pEnablingState");
             }
@@ -211,17 +211,17 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
             // @Override
-            virtual CARAPI Exit();
+            CARAPI Exit();
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("P2pEnabledState");
             }
@@ -236,14 +236,14 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("InactiveState");
             }
@@ -258,14 +258,14 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("GroupCreatingState");
             }
@@ -280,17 +280,17 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
             // @Override
-            virtual CARAPI Exit();
+            CARAPI Exit();
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("UserAuthorizingInvitationState");
             }
@@ -305,14 +305,14 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("ProvisionDiscoveryState");
             }
@@ -327,14 +327,14 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("GroupNegotiationState");
             }
@@ -349,18 +349,18 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             CARAPI NotifyFrequencyConflict();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI Exit();
+            CARAPI Exit();
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("FrequencyConflictState");
             }
@@ -376,16 +376,16 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI Exit();
+            CARAPI Exit();
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("GroupCreatedState");
             }
@@ -400,17 +400,17 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
             // @Override
-            virtual CARAPI Exit();
+            CARAPI Exit();
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("UserAuthorizingJoinState");
             }
@@ -425,14 +425,14 @@ public:
                 /* [in] */ P2pStateMachine* host);
 
             // @Override
-            virtual CARAPI Enter();
+            CARAPI Enter();
 
             // @Override
-            virtual CARAPI ProcessMessage(
+            CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* result);
 
-            virtual CARAPI_(String) GetName()
+            CARAPI_(String) GetName()
             {
                 return String("OngoingGroupRemovalState");
             }
@@ -984,9 +984,9 @@ public:
     String mForegroundAppPkgName;
 };
 
-}
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
+
 #endif // __ELASTOS_DROID_NET_CWIFIP2PSERVICE_H__

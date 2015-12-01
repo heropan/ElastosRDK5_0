@@ -2,7 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PDEVICE_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PDEVICE_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pDevice.h"
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pDevice.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Regex::IPattern;
 
@@ -17,9 +18,24 @@ namespace P2p {
  * {@see WifiP2pManager}
  */
 CarClass(CWifiP2pDevice)
+    , public Object
+    , public IWifiP2pDevice
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWifiP2pDevice();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& string);
+
+    CARAPI constructor(
+        /* [in] */ IWifiP2pDevice* source);
 
     CARAPI GetDeviceName(
         /* [out] */ String* deviceName);
@@ -115,13 +131,8 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ const String& string);
-
-    CARAPI constructor(
-        /* [in] */ IWifiP2pDevice* source);
+    CARAPI UpdateSupplicantDetails(
+            /* [in] */ IWifiP2pDevice* device);
 
 private:
     //supported formats: 0x1abc, 0X1abc, 1abc
@@ -131,26 +142,26 @@ private:
 private:
     // These definitions match the ones in wpa_supplicant
     /* WPS config methods supported */
-    static const Int32 WPS_CONFIG_DISPLAY         ;//= 0x0008;
-    static const Int32 WPS_CONFIG_PUSHBUTTON      ;//= 0x0080;
-    static const Int32 WPS_CONFIG_KEYPAD          ;//= 0x0100;
+    static const Int32 WPS_CONFIG_DISPLAY         = 0x0008;
+    static const Int32 WPS_CONFIG_PUSHBUTTON      = 0x0080;
+    static const Int32 WPS_CONFIG_KEYPAD          = 0x0100;
 
     /* Device Capability bitmap */
-    static const Int32 DEVICE_CAPAB_SERVICE_DISCOVERY         ;//= 1;
-    static const Int32 DEVICE_CAPAB_CLIENT_DISCOVERABILITY    ;//= 1<<1;
-    static const Int32 DEVICE_CAPAB_CONCURRENT_OPER           ;//= 1<<2;
-    static const Int32 DEVICE_CAPAB_INFRA_MANAGED             ;//= 1<<3;
-    static const Int32 DEVICE_CAPAB_DEVICE_LIMIT              ;//= 1<<4;
-    static const Int32 DEVICE_CAPAB_INVITATION_PROCEDURE      ;//= 1<<5;
+    static const Int32 DEVICE_CAPAB_SERVICE_DISCOVERY         = 1;
+    static const Int32 DEVICE_CAPAB_CLIENT_DISCOVERABILITY    = 1<<1;
+    static const Int32 DEVICE_CAPAB_CONCURRENT_OPER           = 1<<2;
+    static const Int32 DEVICE_CAPAB_INFRA_MANAGED             = 1<<3;
+    static const Int32 DEVICE_CAPAB_DEVICE_LIMIT              = 1<<4;
+    static const Int32 DEVICE_CAPAB_INVITATION_PROCEDURE      = 1<<5;
 
     /* Group Capability bitmap */
-    static const Int32 GROUP_CAPAB_GROUP_OWNER                ;//= 1;
-    static const Int32 GROUP_CAPAB_PERSISTENT_GROUP           ;//= 1<<1;
-    static const Int32 GROUP_CAPAB_GROUP_LIMIT                ;//= 1<<2;
-    static const Int32 GROUP_CAPAB_INTRA_BSS_DIST             ;//= 1<<3;
-    static const Int32 GROUP_CAPAB_CROSS_CONN                 ;//= 1<<4;
-    static const Int32 GROUP_CAPAB_PERSISTENT_RECONN          ;//= 1<<5;
-    static const Int32 GROUP_CAPAB_GROUP_FORMATION            ;//= 1<<6;
+    static const Int32 GROUP_CAPAB_GROUP_OWNER                = 1;
+    static const Int32 GROUP_CAPAB_PERSISTENT_GROUP           = 1<<1;
+    static const Int32 GROUP_CAPAB_GROUP_LIMIT                = 1<<2;
+    static const Int32 GROUP_CAPAB_INTRA_BSS_DIST             = 1<<3;
+    static const Int32 GROUP_CAPAB_CROSS_CONN                 = 1<<4;
+    static const Int32 GROUP_CAPAB_PERSISTENT_RECONN          = 1<<5;
+    static const Int32 GROUP_CAPAB_GROUP_FORMATION            = 1<<6;
 
     String mDeviceName;
     String mDeviceAddress;
@@ -192,9 +203,9 @@ private:
     static AutoPtr<IPattern> mFourTokenPattern;
 };
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PDEVICE_H__

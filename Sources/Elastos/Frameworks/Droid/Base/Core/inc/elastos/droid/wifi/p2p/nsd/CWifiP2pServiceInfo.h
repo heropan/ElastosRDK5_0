@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICEINFO_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICEINFO_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pServiceInfo.h"
+#include "_Elastos_Droid_Wifi_P2p_Nsd_CWifiP2pServiceInfo.h"
 #include "WifiP2pServiceInfo.h"
+
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -14,16 +16,10 @@ namespace Nsd {
 CarClass(CWifiP2pServiceInfo), public WifiP2pServiceInfo
 {
 public:
-    PInterface Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ ArrayOf<String>* queryList);
+    CAR_OBJECT_DECL()
 
     CARAPI GetSupplicantQueryList(
-        /* [out, callee] */ ArrayOf<String>** list);
+        /* [out] */ ArrayOf<String>** list);
 
     CARAPI Equals(
         /* [in] */ IInterface* obj,
@@ -39,9 +35,10 @@ public:
         /* [in] */ IParcel* dest);
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
+
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICEINFO_H__

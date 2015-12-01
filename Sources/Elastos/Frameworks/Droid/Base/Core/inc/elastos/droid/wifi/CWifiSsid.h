@@ -2,7 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFISSID_H__
 #define __ELASTOS_DROID_NET_WIFI_CWIFISSID_H__
 
-#include "_Elastos_Droid_Net_Wifi_CWifiSsid.h"
+#include "_Elastos_Droid_Wifi_CWifiSsid.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IByteArrayOutputStream;
 
@@ -11,9 +12,22 @@ namespace Droid {
 namespace Wifi {
 
 CarClass(CWifiSsid)
+    , public Object
+    , public IWifiSsid
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
+
+    CARAPI GetOctets(
+        /* [out] */ IByteArrayOutputStream** result);
+
+    CARAPI IsHidden(
+        /* [out] */ Boolean* result);
 
     CARAPI GetOctets(
         /* [out, callee] */ ArrayOf<Byte>** octets);

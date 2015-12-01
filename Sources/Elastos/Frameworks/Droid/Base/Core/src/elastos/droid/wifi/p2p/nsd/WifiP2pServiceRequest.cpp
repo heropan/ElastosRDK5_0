@@ -1,5 +1,5 @@
 
-#include "WifiP2pServiceRequest.h"
+#include "elastos/droid/wifi/p2p/nsd/WifiP2pServiceRequest.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/logging/Slogger.h>
 
@@ -11,9 +11,7 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-// 3c4c8e59-0cb8-4da7-a58c-3b43354b028c
-extern "C" const InterfaceID EIID_WifiP2pServiceRequest =
-    { 0x3c4c8e59, 0x0cb8, 0x4da7, { 0xa5, 0x8c, 0x3b, 0x43, 0x35, 0x4b, 0x02, 0x8c } };
+CAR_INTERFACE_IMPL_2(WifiP2pServiceRequest, Object, IWifiP2pServiceRequest, IParcelable)
 
 WifiP2pServiceRequest::WifiP2pServiceRequest()
     : mProtocolType(0)
@@ -22,7 +20,12 @@ WifiP2pServiceRequest::WifiP2pServiceRequest()
 {
 }
 
-ECode WifiP2pServiceRequest::Init(
+ECode WifiP2pServiceRequest::constructor()
+{
+    return NOERROR;
+}
+
+ECode WifiP2pServiceRequest::constructor(
     /* [in] */ Int32 protocolType,
     /* [in] */ const String& query)
 {
@@ -40,7 +43,7 @@ ECode WifiP2pServiceRequest::Init(
     return NOERROR;
 }
 
-ECode WifiP2pServiceRequest::Init(
+ECode WifiP2pServiceRequest::constructor(
     /* [in] */ Int32 serviceType,
     /* [in] */ Int32 length,
     /* [in] */ Int32 transId,
@@ -76,10 +79,12 @@ ECode WifiP2pServiceRequest::GetSupplicantQuery(
 
     String sb;
     // length is retained as little endian format.
-    sb.AppendFormat("%02x", (mLength) & 0xff);
-    sb.AppendFormat("%02x", (mLength >> 8) & 0xff);
-    sb.AppendFormat("%02x", mProtocolType);
-    sb.AppendFormat("%02x", mTransId);
+    assert(0);
+    // TODO
+    // sb.AppendFormat(Locale.US, "%02x", (mLength) & 0xff);
+    // sb.AppendFormat(Locale.US, "%02x", (mLength >> 8) & 0xff);
+    // sb.AppendFormat(Locale.US, "%02x", mProtocolType);
+    // sb.AppendFormat(Locale.US, "%02x", mTransId);
     if (!mQuery.IsNull()) {
         sb += mQuery;
     }
@@ -106,7 +111,7 @@ ECode WifiP2pServiceRequest::ValidateQuery(
     }
 
     // check whether query is hex string.
-    String query1 = query.ToLowerCase();;
+    String query1;// TODO = query.ToLowerCase(Locale.ROOT);
     Char32 c;
     AutoPtr<ArrayOf<Char32> > charArray = query1.GetChars();
     if (charArray) {
@@ -142,8 +147,8 @@ ECode WifiP2pServiceRequest::Equals(
      * Not compare transaction id.
      * Transaction id may be changed on each service discovery operation.
      */
-    WifiP2pServiceRequest* psr =
-    reinterpret_cast<WifiP2pServiceRequest*>(other->Probe(EIID_WifiP2pServiceRequest));
+    WifiP2pServiceRequest* psr;// TODO =
+    // TODO reinterpret_cast<WifiP2pServiceRequest*>(other->Probe(EIID_WifiP2pServiceRequest));
     assert(psr != NULL);
 
     if (psr->mProtocolType != mProtocolType || psr->mLength != mLength) {
@@ -204,9 +209,8 @@ ECode WifiP2pServiceRequest::WriteToParcel(
     return NOERROR;
 }
 
-
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICERESPONSEHELPER_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICERESPONSEHELPER_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceResponseHelper.h"
+#include "_Elastos_Droid_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceResponseHelper.h"
 
 using Elastos::Droid::Wifi::P2p::IWifiP2pDevice;
 
@@ -23,9 +23,10 @@ public:
         /* [out] */ IWifiP2pDnsSdServiceResponse** instance);
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
+
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICERESPONSEHELPER_H__

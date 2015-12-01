@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PUPNPSERVICEREQUEST_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PUPNPSERVICEREQUEST_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pUpnpServiceRequest.h"
+#include "_Elastos_Droid_Wifi_P2p_Nsd_CWifiP2pUpnpServiceRequest.h"
 #include "WifiP2pServiceRequest.h"
 
 namespace Elastos {
@@ -22,8 +22,12 @@ namespace Nsd {
 CarClass(CWifiP2pUpnpServiceRequest), public WifiP2pServiceRequest
 {
 public:
-    PInterface Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& query);
 
     CARAPI GetTransactionId(
         /* [out] */ Int32* transactionId);
@@ -47,11 +51,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI constructor(
-        /* [in] */ const String& query);
-
-    CARAPI constructor();
-
 public:
     static CARAPI NewInstance(
         /* [out] */ IWifiP2pUpnpServiceRequest** instance);
@@ -59,14 +58,12 @@ public:
     static CARAPI NewInstance(
         /* [in] */ const String& st,
         /* [out] */ IWifiP2pUpnpServiceRequest ** instance);
-
-private:
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PUPNPSERVICEREQUEST_H__

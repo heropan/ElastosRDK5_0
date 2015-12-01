@@ -1,5 +1,5 @@
 
-#include "CWifiP2pWfdInfo.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pWfdInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
@@ -18,12 +18,16 @@ const  String CWifiP2pWfdInfo::TAG("WifiP2pWfdInfo");
 /** One of {@link #WFD_SOURCE}, {@link #PRIMARY_SINK}, {@link #SECONDARY_SINK}
  * or {@link #SOURCE_OR_PRIMARY_SINK}
  */
-const  Int32 CWifiP2pWfdInfo::DEVICE_TYPE                            = 0x3;
-const  Int32 CWifiP2pWfdInfo::COUPLED_SINK_SUPPORT_AT_SOURCE         = 0x4;
-const  Int32 CWifiP2pWfdInfo::COUPLED_SINK_SUPPORT_AT_SINK           = 0x8;
-const  Int32 CWifiP2pWfdInfo::SESSION_AVAILABLE                      = 0x30;
-const  Int32 CWifiP2pWfdInfo::SESSION_AVAILABLE_BIT1                 = 0x10;
-const  Int32 CWifiP2pWfdInfo::SESSION_AVAILABLE_BIT2                 = 0x20;
+const  Int32 CWifiP2pWfdInfo::DEVICE_TYPE;
+const  Int32 CWifiP2pWfdInfo::COUPLED_SINK_SUPPORT_AT_SOURCE;
+const  Int32 CWifiP2pWfdInfo::COUPLED_SINK_SUPPORT_AT_SINK;
+const  Int32 CWifiP2pWfdInfo::SESSION_AVAILABLE;
+const  Int32 CWifiP2pWfdInfo::SESSION_AVAILABLE_BIT1;
+const  Int32 CWifiP2pWfdInfo::SESSION_AVAILABLE_BIT2;
+
+CAR_INTERFACE_IMPL_2(CWifiP2pWfdInfo, Object, IWifiP2pWfdInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiP2pWfdInfo)
 
 CWifiP2pWfdInfo::CWifiP2pWfdInfo()
     : mDeviceInfo(0)
@@ -56,6 +60,7 @@ ECode CWifiP2pWfdInfo::constructor(
 {
     if (source != NULL) {
         CWifiP2pWfdInfo* obj = (CWifiP2pWfdInfo*)source;
+        mWfdEnabled = obj->mWfdEnabled;
         mDeviceInfo = obj->mDeviceInfo;
         mCtrlPort = obj->mCtrlPort;
         mMaxThroughput = obj->mMaxThroughput;
@@ -221,8 +226,10 @@ ECode CWifiP2pWfdInfo::GetDeviceInfoHex(
     VALIDATE_NOT_NULL(deviceInfoHex);
 
     String s;
-    FAIL_RETURN(s.AppendFormat(
-        "%04x%04x%04x%04x", 6, mDeviceInfo, mCtrlPort, mMaxThroughput));
+    assert(0);
+    // TODO
+    // FAIL_RETURN(s.AppendFormat(
+    //     Locale.US, "%04x%04x%04x%04x", 6, mDeviceInfo, mCtrlPort, mMaxThroughput));
     *deviceInfoHex = s;
 
     return NOERROR;
@@ -239,7 +246,7 @@ ECode CWifiP2pWfdInfo::ToString(
     sb += "\n   WFD DeviceInfo: ";
     sb += mDeviceInfo;
     sb += ", 0X";
-    sb += StringUtils::Int32ToHexString(mDeviceInfo);
+    sb += StringUtils::ToHexString(mDeviceInfo);
     sb += "\n   WFD CtrlPort: ";
     sb += mCtrlPort;
     sb += "\n   WFD MaxThroughput: ";
@@ -277,8 +284,7 @@ ECode CWifiP2pWfdInfo::WriteToParcel(
     return NOERROR;
 }
 
-
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

@@ -1,10 +1,10 @@
 
-#include "CWifiP2pGroup.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pGroup.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include "CWifiP2pDevice.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pDevice.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -32,6 +32,10 @@ static AutoPtr<IPattern> InitPattern()
 }
 
 AutoPtr<IPattern> CWifiP2pGroup::mGroupStartedPattern = InitPattern();
+
+CAR_INTERFACE_IMPL_2(CWifiP2pGroup, Object, IWifiP2pGroup, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiP2pGroup)
 
 CWifiP2pGroup::CWifiP2pGroup()
     : mNetId(0)
@@ -67,17 +71,25 @@ ECode CWifiP2pGroup::constructor(
             return NOERROR;
         }
 
-        FAIL_RETURN(match->Group(1, &mNetworkName));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(match->Group(1, &mNetworkName));
         //freq and psk are unused right now
         //int freq = Integer.parseInt(match.group(2));
         //String psk = match.group(3);
-        FAIL_RETURN(match->Group(4, &mPassphrase));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(match->Group(4, &mPassphrase));
 
         String temp;
-        FAIL_RETURN(match->Group(5, &temp));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(match->Group(5, &temp));
         FAIL_RETURN(CWifiP2pDevice::New(temp, (IWifiP2pDevice**)&mOwner));
 
-        FAIL_RETURN(match->Group(6, &temp));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(match->Group(6, &temp));
         if (!temp.IsNull()) {
             mNetId = IWifiP2pGroup::PERSISTENT_NET_ID;
         }
@@ -137,7 +149,9 @@ ECode CWifiP2pGroup::constructor(
         FAIL_RETURN(source->IsGroupOwner(&mIsGroupOwner));
 
         AutoPtr<ArrayOf<IWifiP2pDevice*> > list;
-        FAIL_RETURN(source->GetClientList((ArrayOf<IWifiP2pDevice*>**)&list));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(source->GetClientList((ArrayOf<IWifiP2pDevice*>**)&list));
 
         if (list != NULL) {
             for (Int32 i = 0; i < list->GetLength(); ++i) {
@@ -223,7 +237,9 @@ ECode CWifiP2pGroup::AddClient(
     Boolean ret;
     List<AutoPtr<IWifiP2pDevice> >::Iterator it;
     for (it = mClients.Begin(); it != mClients.End(); ++it) {
-        FAIL_RETURN(device->Equals(*it, &ret));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(device->Equals(*it, &ret));
         if (ret) return NOERROR;
     }
 
@@ -253,7 +269,9 @@ ECode CWifiP2pGroup::RemoveClient(
     Boolean equal;
     List<AutoPtr<IWifiP2pDevice> >::Iterator it;
     for (it = mClients.Begin(); it != mClients.End(); ++it) {
-        FAIL_RETURN(device->Equals(*it, &equal));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(device->Equals(*it, &equal));
         if (equal) {
             mClients.Erase(it);
             *ret = TRUE;
@@ -282,7 +300,9 @@ ECode CWifiP2pGroup::Contains(
     *ret = FALSE;
 
     Boolean equal;
-    FAIL_RETURN(mOwner->Equals(device, &equal));
+    assert(0);
+    // TODO
+    // FAIL_RETURN(mOwner->Equals(device, &equal));
     if (equal) {
         *ret = TRUE;
         return NOERROR;
@@ -290,7 +310,9 @@ ECode CWifiP2pGroup::Contains(
 
     List<AutoPtr<IWifiP2pDevice> >::Iterator it;
     for (it = mClients.Begin(); it != mClients.End(); ++it) {
-        FAIL_RETURN(device->Equals(*it, &equal));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(device->Equals(*it, &equal));
         if (equal) {
             *ret = TRUE;
             return NOERROR;
@@ -298,6 +320,14 @@ ECode CWifiP2pGroup::Contains(
     }
 
     return NOERROR;
+}
+
+ECode CWifiP2pGroup::GetClientList(
+    /* [out] */ ICollection** result)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiP2pGroup::GetClientList(
@@ -390,13 +420,17 @@ ECode CWifiP2pGroup::ToString(
 
     sb += "\n GO: ";
     String temp;
-    mOwner->ToString(&temp);
+    assert(0);
+    // TODO
+    // mOwner->ToString(&temp);
     sb += temp;
 
     List<AutoPtr<IWifiP2pDevice> >::Iterator it;
     for (it = mClients.Begin(); it != mClients.End(); ++it) {
         sb += "\n Client: ";
-        (*it)->ToString(&temp);
+        assert(0);
+        // TODO
+        // (*it)->ToString(&temp);
         sb += temp;
     }
 
@@ -457,8 +491,7 @@ ECode CWifiP2pGroup::WriteToParcel(
     return NOERROR;
 }
 
-
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

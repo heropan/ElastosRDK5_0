@@ -1,5 +1,5 @@
 
-#include "elastos/droid/net/wifi/CWpsInfo.h"
+#include "elastos/droid/wifi/CWpsInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 
@@ -8,6 +8,28 @@ using Elastos::Core::StringBuilder;
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
+
+CAR_INTERFACE_IMPL(CWpsInfo, Object, IWpsInfo)
+
+CAR_OBJECT_IMPL(CWpsInfo)
+
+ECode CWpsInfo::constructor()
+{
+    mSetup = IWpsInfo::INVALID;
+    return NOERROR;
+}
+
+ECode CWpsInfo::constructor(
+    /* [in] */ IWpsInfo* source)
+{
+    if (source != NULL) {
+        FAIL_RETURN(source->GetSetup(&mSetup));
+        FAIL_RETURN(source->GetBSSID(&mBSSID));
+        FAIL_RETURN(source->GetPin(&mPin));
+    }
+
+    return NOERROR;
+}
 
 ECode CWpsInfo::GetSetup(
     /* [out] */ Int32* setup)
@@ -105,24 +127,6 @@ ECode CWpsInfo::WriteToParcel(
     return NOERROR;
 }
 
-ECode CWpsInfo::constructor()
-{
-    mSetup = IWpsInfo::INVALID;
-    return NOERROR;
-}
-
-ECode CWpsInfo::constructor(
-    /* [in] */ IWpsInfo* source)
-{
-    if (source != NULL) {
-        FAIL_RETURN(source->GetSetup(&mSetup));
-        FAIL_RETURN(source->GetBSSID(&mBSSID));
-        FAIL_RETURN(source->GetPin(&mPin));
-    }
-
-    return NOERROR;
-}
-
-}
-}
-}
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

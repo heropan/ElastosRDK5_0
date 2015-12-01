@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_STATECHANGERESULT_H__
 #define __ELASTOS_DROID_NET_WIFI_STATECHANGERESULT_H__
 
-#include "_Elastos_Droid_Net_Wifi_CStateChangeResult.h"
+#include "_Elastos_Droid_Wifi_CStateChangeResult.h"
 
 namespace Elastos {
 namespace Droid {

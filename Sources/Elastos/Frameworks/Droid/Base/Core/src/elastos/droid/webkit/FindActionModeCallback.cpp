@@ -134,9 +134,7 @@ ECode FindActionModeCallback::SetWebView(
     /* [in] */ CWebView* webView)
 {
     if (NULL == webView) {
-        //throw new AssertionError("WebView supplied to "
-        //        + "FindActionModeCallback cannot be null");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ASSERTION_ERROR;
     }
     mWebView = webView;
     assert(0);

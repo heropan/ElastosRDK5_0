@@ -173,7 +173,8 @@ ECode CCacheManager::GetCacheFileBaseDir(
     /* [out] */ IFile** dir)
 {
     VALIDATE_NOT_NULL(dir);
-    *dir = CacheManager::GetCacheFileBaseDir();
+    AutoPtr<IFile> _dir = CacheManager::GetCacheFileBaseDir();
+    *dir = _dir;
     REFCOUNT_ADD(*dir);
     return NOERROR;
 }
@@ -208,7 +209,8 @@ ECode CCacheManager::GetCacheFile(
     /* [out] */ ICacheManagerCacheResult** cacheResult)
 {
     VALIDATE_NOT_NULL(cacheResult);
-    *cacheResult = CacheManager::GetCacheFile(url,  headers);
+    AutoPtr<ICacheManagerCacheResult> _cacheResult = CacheManager::GetCacheFile(url,  headers);
+    *cacheResult = _cacheResult;
     REFCOUNT_ADD(*cacheResult);
     return NOERROR;
 }

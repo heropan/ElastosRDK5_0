@@ -1,5 +1,5 @@
 
-#include "CWifiP2pInfo.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 
@@ -11,6 +11,10 @@ namespace Elastos {
 namespace Droid {
 namespace Wifi {
 namespace P2p {
+
+CAR_INTERFACE_IMPL_2(CWifiP2pInfo, Object, IWifiP2pInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiP2pInfo)
 
 ECode CWifiP2pInfo::GetGroupFormed(
     /* [out] */ Boolean* formed)
@@ -28,6 +32,14 @@ ECode CWifiP2pInfo::SetGroupFormed(
     mGroupFormed = formed;
 
     return NOERROR;
+}
+
+ECode CWifiP2pInfo::GetIsGroupOwner(
+    /* [out] */ Boolean* result)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiP2pInfo::IsGroupOwner(
@@ -80,7 +92,9 @@ ECode CWifiP2pInfo::ToString(
     sb += " groupOwnerAddress: ";
     if (mGroupOwnerAddress) {
         String temp;
-        mGroupOwnerAddress->ToString(&temp);
+        assert(0);
+        // TODO
+        // mGroupOwnerAddress->ToString(&temp);
         sb += temp;
     }
     else {
@@ -146,7 +160,9 @@ ECode CWifiP2pInfo::constructor(
 {
     if (source != NULL) {
         FAIL_RETURN(source->GetGroupFormed(&mGroupFormed));
-        FAIL_RETURN(source->IsGroupOwner(&mIsGroupOwner));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(source->IsGroupOwner(&mIsGroupOwner));
         FAIL_RETURN(source->GetGroupOwnerAddress(
             (IInetAddress**)&mGroupOwnerAddress));
     }
@@ -154,7 +170,7 @@ ECode CWifiP2pInfo::constructor(
     return NOERROR;
 }
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

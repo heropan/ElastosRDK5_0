@@ -1,5 +1,5 @@
 
-#include "elastos/droid/net/wifi/SupplicantStateHelper.h"
+#include "elastos/droid/wifi/SupplicantStateHelper.h"
 
 namespace Elastos {
 namespace Droid {

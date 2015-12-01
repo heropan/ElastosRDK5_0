@@ -1,12 +1,16 @@
 
-#include "CWifiP2pDnsSdServiceRequestHelper.h"
-#include "CWifiP2pDnsSdServiceRequest.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pDnsSdServiceRequestHelper.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pDnsSdServiceRequest.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 namespace P2p {
 namespace Nsd {
+
+CAR_INTERFACE_IMPL(CWifiP2pDnsSdServiceRequestHelper, Singleton, IWifiP2pDnsSdServiceRequestHelper)
+
+CAR_SINGLETON_IMPL(CWifiP2pDnsSdServiceRequestHelper)
 
 ECode CWifiP2pDnsSdServiceRequestHelper::NewInstance(
     /* [out] */ IWifiP2pDnsSdServiceRequest** instance)
@@ -30,8 +34,8 @@ ECode CWifiP2pDnsSdServiceRequestHelper::NewInstance(
         instanceName, serviceType, instance);
 }
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

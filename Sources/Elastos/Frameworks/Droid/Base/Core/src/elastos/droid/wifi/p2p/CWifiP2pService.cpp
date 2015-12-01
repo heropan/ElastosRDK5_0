@@ -1,4 +1,4 @@
-#include "CWifiP2pService.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pService.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -164,9 +164,9 @@ Int32 CWifiP2pService::mDisableP2pTimeoutIndex = 0;
 CWifiP2pService::ClientInfo::ClientInfo(
     /* [in] */ IMessenger* m,
     /* [in] */ CWifiP2pService* host)
+    : mMessenger(m)
+    , mHost(host)
 {
-    mMessenger = m;
-    mHost = host;
 }
 
 ECode CWifiP2pService::ClientInfo::GetMessenger(
@@ -987,7 +987,8 @@ Int32 CWifiP2pService::P2pStateMachine::Connect(
                 // Save network id. It'll be used when an invitation result event is received.
                 mSavedPeerConfig->SetNetId(netId);
                 return CONNECT_SUCCESS;
-            } else {
+            }
+            else {
                 Loge("p2pReinvoke() failed, update networks");
                 UpdatePersistentNetworks(RELOAD);
                 // continue with negotiation
@@ -3535,9 +3536,11 @@ ECode CWifiP2pService::P2pStateMachine::GroupNegotiationState::ProcessMessage(
                     mHost->HandleGroupCreationFailure();
                     mHost->TransitionTo(mHost->mInactiveState);
                 }
-            } else if (status == P2pStatus_NO_COMMON_CHANNEL) {
+            }
+            else if (status == P2pStatus_NO_COMMON_CHANNEL) {
                 mHost->TransitionTo(mHost->mFrequencyConflictState);
-            } else {
+            }
+            else {
                 mHost->HandleGroupCreationFailure();
                 mHost->TransitionTo(mHost->mInactiveState);
             }
@@ -3890,7 +3893,8 @@ ECode CWifiP2pService::P2pStateMachine::GroupCreatedState::ProcessMessage(
                         mHost->mWifiNative->P2pGroupRemove(name);
                         // We end up sending connection changed broadcast
                         // when this happens at exit()
-                    } else {
+                    }
+                    else {
                         // Notify when a client disconnects from group
                         mHost->SendP2pConnectionChangedBroadcast();
                     }
@@ -3962,7 +3966,8 @@ ECode CWifiP2pService::P2pStateMachine::GroupCreatedState::ProcessMessage(
             if (mHost->mWifiNative->P2pGroupRemove(name)) {
                 mHost->TransitionTo(mHost->mOngoingGroupRemovalState);
                 mHost->ReplyToMessage(message, IWifiP2pManager::REMOVE_GROUP_SUCCEEDED);
-            } else {
+            }
+            else {
                 mHost->HandleGroupRemoved();
                 mHost->TransitionTo(mHost->mInactiveState);
                 mHost->ReplyToMessage(message, IWifiP2pManager::REMOVE_GROUP_FAILED,
@@ -4001,7 +4006,8 @@ ECode CWifiP2pService::P2pStateMachine::GroupCreatedState::ProcessMessage(
             sp->Get(String("dhcp.p2p.ipaddress"), &ipaddress);
             if (!ipaddress.IsNull()) {
                 SystemProperties::Set(String("dhcp.p2p.ipaddress"), emptyStr);
-            } else {
+            }
+            else {
                 mHost->Loge("ipaddress not set in the property yet.");
             }
 
@@ -4100,7 +4106,8 @@ ECode CWifiP2pService::P2pStateMachine::GroupCreatedState::ProcessMessage(
                     //add end
                     mHost->SendP2pPeersChangedBroadcast();
                     mHost->ReplyToMessage(message, IWifiP2pManager::CONNECT_SUCCEEDED);
-                } else {
+                }
+                else {
                     mHost->ReplyToMessage(message, IWifiP2pManager::CONNECT_FAILED,
                         IWifiP2pManager::ERROR);
                     mHost->mWifiP2pDevice = NULL;
@@ -4307,8 +4314,7 @@ ECode CWifiP2pService::P2pStateMachine::OngoingGroupRemovalState::ProcessMessage
     return NOERROR;
 }
 
-
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

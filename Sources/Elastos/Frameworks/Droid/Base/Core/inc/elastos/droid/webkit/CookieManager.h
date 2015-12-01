@@ -5,6 +5,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Net::IWebAddress;
+using Elastos::Core::ICloneable;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -17,6 +19,7 @@ namespace Webkit {
 class CookieManager
     : public Object
     , public ICookieManager
+    , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL();
@@ -95,6 +98,11 @@ public:
         /* [in] */ const String& url,
         /* [in] */ const String& value);
 
+    CARAPI SetCookie(
+        /* [in] */ String url,
+        /* [in] */ String value,
+        /* [in] */ IValueCallback* callBack);
+
     /**
      * Gets the cookies for the given URL.
      *
@@ -102,7 +110,7 @@ public:
      * @return value the cookies as a string, using the format of the 'Cookie'
      *               HTTP request header
      */
-    virtual CARAPI GetCookie(
+    CARAPI GetCookie(
         /* [in] */ const String& url,
         /* [out] */ String* cookie);
 
@@ -234,13 +242,6 @@ public:
     static CARAPI_(void) SetAcceptFileSchemeCookies(
         /* [in] */ Boolean accept);
 
-    /**
-     * Flushes all cookies managed by the Chrome HTTP stack to flash.
-     *
-     * @hide Package level api, called from CookieSyncManager
-     */
-    virtual CARAPI_(void) FlushCookieStore();
-
     CARAPI ToString(
         /* [out] */ String* info);
 
@@ -250,6 +251,16 @@ protected:
      */
     CookieManager();
 
+    CARAPI Clone(
+        /* [out] */ IInterface** object);
+
+    /**
+     * Flushes all cookies managed by the Chrome HTTP stack to flash.
+     *
+     * @hide Package level api, called from CookieSyncManager
+     */
+    virtual CARAPI_(void) FlushCookieStore();
+
     /**
      * Implements {@link #setAcceptFileSchemeCookies(boolean)}.
      *
@@ -257,10 +268,6 @@ protected:
      */
     virtual CARAPI_(void) SetAcceptFileSchemeCookiesImpl(
         /* [in] */ Boolean accept);
-
-
-    //@Override
-    virtual CARAPI_(IInterface*) Clone();
 
     /**
      * Implements {@link #allowFileSchemeCookies()}.

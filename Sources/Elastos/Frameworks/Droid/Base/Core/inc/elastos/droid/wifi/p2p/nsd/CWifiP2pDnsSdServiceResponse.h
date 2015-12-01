@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICERESPONSE_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICERESPONSE_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceResponse.h"
+#include "_Elastos_Droid_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceResponse.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "WifiP2pServiceResponse.h"
@@ -13,6 +13,7 @@ using Elastos::IO::IDataInputStream;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IDataInput;
 using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -28,6 +29,8 @@ namespace Nsd {
 CarClass(CWifiP2pDnsSdServiceResponse), public WifiP2pServiceResponse
 {
 public:
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -35,9 +38,6 @@ public:
         /* [in] */ Int32 transId,
         /* [in] */ IWifiP2pDevice* device,
         /* [in] */ ArrayOf<Byte>* data);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI GetServiceType(
         /* [out] */ Int32* serviceType);
@@ -80,7 +80,7 @@ public:
         /* [out] */ String* instanceName);
 
     CARAPI GetTxtRecord(
-        /* [out] */ IObjectStringMap** txtRecord);
+        /* [out] */ IMap** txtRecord);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -192,12 +192,13 @@ private:
      * This field is only used when the dns type equals to
      * {@link WifiP2pDnsSdServiceInfo#DNS_TYPE_TXT}.
      */
-    AutoPtr<IObjectStringMap> mTxtRecord;
+    AutoPtr<IMap> mTxtRecord;
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
+
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICERESPONSE_H__

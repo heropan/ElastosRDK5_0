@@ -1,10 +1,14 @@
 
-#include "elastos/droid/net/wifi/CWifiSsidHelper.h"
-#include "elastos/droid/net/wifi/CWifiSsid.h"
+#include "elastos/droid/wifi/CWifiSsidHelper.h"
+#include "elastos/droid/wifi/CWifiSsid.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
+
+CAR_INTERFACE_IMPL(CWifiSsidHelper, Singleton, IWifiSsidHelper)
+
+CAR_SINGLETON_IMPL(CWifiSsidHelper)
 
 ECode CWifiSsidHelper::CreateFromAsciiEncoded(
     /* [in] */ const String& asciiEncoded,

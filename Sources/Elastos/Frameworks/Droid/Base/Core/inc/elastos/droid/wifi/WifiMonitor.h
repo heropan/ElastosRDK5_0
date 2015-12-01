@@ -21,7 +21,7 @@ namespace Wifi {
  *
  * @hide
  */
-class WifiMonitor : public ElRefBase
+class WifiMonitor : public Object
 {
 public:
     class MonitorThread

@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PMANAGER_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PMANAGER_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pManager.h"
-#include "elastos/droid/ext/frameworkdef.h"
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pManager.h"
+#include <elastos/core/Object.h>
 
 using namespace Elastos::Droid::Wifi::P2p::Nsd;
 using Elastos::Droid::Content::IContext;
@@ -15,8 +15,15 @@ namespace Wifi {
 namespace P2p {
 
 CarClass(CWifiP2pManager)
+    , public Object
+    , public IWifiP2pManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     CARAPI GetService(
         /* [out] */ IIWifiP2pManager** service);
@@ -38,6 +45,12 @@ public:
         /* [in] */ ILooper* srcLooper,
         /* [in] */ IWifiP2pManagerChannelListener* listener,
         /* [out] */ IWifiP2pManagerChannel** channel);
+
+    CARAPI InitializeInternal(
+        /* [in] */ IContext* srcContext,
+        /* [in] */ ILooper* srcLooper,
+        /* [in] */ IWifiP2pManagerChannelListener* listener,
+        /* [out] */ IWifiP2pManagerChannel** result);
 
     /**
      * Initiate peer discovery. A discovery process involves scanning for available Wi-Fi peers
@@ -155,6 +168,22 @@ public:
      */
     CARAPI RemoveGroup(
         /* [in] */ IWifiP2pManagerChannel* c,
+        /* [in] */ IWifiP2pManagerActionListener* listener);
+
+    CARAPI Listen(
+        /* [in] */ IWifiP2pManagerChannel* c,
+        /* [in] */ Boolean bEnable,
+        /* [in] */ IWifiP2pManagerActionListener* listener);
+
+    CARAPI SetWifiP2pChannels(
+        /* [in] */ IWifiP2pManagerChannel* c,
+        /* [in] */ Int32 lc,
+        /* [in] */ Int32 oc,
+        /* [in] */ IWifiP2pManagerActionListener* listener);
+
+    CARAPI StartWps(
+        /* [in] */ IWifiP2pManagerChannel* c,
+        /* [in] */ IWpsInfo* wps,
         /* [in] */ IWifiP2pManagerActionListener* listener);
 
     /**
@@ -397,28 +426,6 @@ public:
         /* [in] */ IWifiP2pManagerActionListener* listener);
 
     /**
-     * Set dialog listener to over-ride system dialogs on p2p events. This function
-     * allows an application to receive notifications on connection requests from
-     * peers so that it can customize the user experience for connection with
-     * peers.
-     *
-     * <p> The function call immediately returns after sending a request
-     * to the framework. The application is notified of a success or failure to attach
-     * to the system through listener callbacks {@link DialogListener#onAttached} or
-     * {@link DialogListener#onDetached}.
-     *
-     * <p> Note that only foreground application will be successful in overriding the
-     * system dialogs.
-     * @hide
-     *
-     * @param c is the channel created at {@link #initialize}
-     * @param listener for callback on a dialog event.
-     */
-    CARAPI SetDialogListener(
-        /* [in] */ IWifiP2pManagerChannel* c,
-        /* [in] */ IWifiP2pManagerDialogListener* listener);
-
-    /**
      * Delete a stored persistent group from the system settings.
      *
      * <p> The function call immediately returns after sending a persistent group removal request
@@ -451,6 +458,9 @@ public:
         /* [in] */ IWifiP2pManagerChannel* c,
         /* [in] */ IWifiP2pManagerPersistentGroupInfoListener* listener);
 
+    CARAPI SetMiracastMode(
+        /* [in] */ Int32 mode);
+
     /**
      * Get a reference to WifiP2pService handler. This is used to establish
      * an AsyncChannel communication with WifiService
@@ -460,6 +470,27 @@ public:
      */
     CARAPI GetMessenger(
         /* [out] */ IMessenger** msg);
+
+    CARAPI GetP2pStateMachineMessenger(
+        /* [out] */ IMessenger** result);
+
+    CARAPI GetNfcHandoverRequest(
+        /* [in] */ IWifiP2pManagerChannel* c,
+        /* [in] */ IWifiP2pManagerHandoverMessageListener* listener);
+
+    CARAPI GetNfcHandoverSelect(
+        /* [in] */ IWifiP2pManagerChannel* c,
+        /* [in] */ IWifiP2pManagerHandoverMessageListener* listener);
+
+    CARAPI InitiatorReportNfcHandover(
+        /* [in] */ IWifiP2pManagerChannel* c,
+        /* [in] */ const String& handoverSelect,
+        /* [in] */ IWifiP2pManagerActionListener* listener);
+
+    CARAPI ResponderReportNfcHandover(
+        /* [in] */ IWifiP2pManagerChannel* c,
+        /* [in] */ const String& handoverRequest,
+        /* [in] */ IWifiP2pManagerActionListener* listener);
 
 private:
     static CARAPI CheckChannel(
@@ -471,6 +502,15 @@ private:
     static CARAPI CheckServiceRequest(
         /* [in] */ IWifiP2pServiceRequest* req);
 
+    static CARAPI CheckP2pConfig(
+        /* [in] */ IWifiP2pConfig* c);
+
+    CARAPI_(AutoPtr<IWifiP2pManagerChannel>) InitalizeChannel(
+        /* [in] */ IContext* srcContext,
+        /* [in] */ ILooper* srcLooper,
+        /* [in] */ IWifiP2pManagerChannelListener* listener,
+        /* [in] */ IMessenger* messenger);
+
 public:
     static const String TAG;
     static const Boolean DBG;
@@ -480,9 +520,9 @@ public:
     AutoPtr<IIWifiP2pManager> mService;
 };
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PMANAGER_H__

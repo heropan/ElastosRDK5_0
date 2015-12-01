@@ -257,7 +257,6 @@ ECode WebViewClient::OnReceivedClientCertRequest(
     /* [in] */ IWebView* view,
     /* [in] */ IClientCertRequest* request)
 {
-    VALIDATE_NOT_NULL(request);
     return request->Cancel();
 }
 

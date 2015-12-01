@@ -1,6 +1,6 @@
 
-#include "CWifiP2pDevice.h"
-#include "CWifiP2pWfdInfo.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pDevice.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pWfdInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuffer.h>
@@ -24,27 +24,26 @@ static Boolean DBG = FALSE;
 
 // These definitions match the ones in wpa_supplicant
 /* WPS config methods supported */
-const Int32 CWifiP2pDevice::WPS_CONFIG_DISPLAY         = 0x0008;
-const Int32 CWifiP2pDevice::WPS_CONFIG_PUSHBUTTON      = 0x0080;
-const Int32 CWifiP2pDevice::WPS_CONFIG_KEYPAD          = 0x0100;
+const Int32 CWifiP2pDevice::WPS_CONFIG_DISPLAY;
+const Int32 CWifiP2pDevice::WPS_CONFIG_PUSHBUTTON;
+const Int32 CWifiP2pDevice::WPS_CONFIG_KEYPAD;
 
 /* Device Capability bitmap */
-const Int32 CWifiP2pDevice::DEVICE_CAPAB_SERVICE_DISCOVERY         = 1;
-const Int32 CWifiP2pDevice::DEVICE_CAPAB_CLIENT_DISCOVERABILITY    = 1<<1;
-const Int32 CWifiP2pDevice::DEVICE_CAPAB_CONCURRENT_OPER           = 1<<2;
-const Int32 CWifiP2pDevice::DEVICE_CAPAB_INFRA_MANAGED             = 1<<3;
-const Int32 CWifiP2pDevice::DEVICE_CAPAB_DEVICE_LIMIT              = 1<<4;
-const Int32 CWifiP2pDevice::DEVICE_CAPAB_INVITATION_PROCEDURE      = 1<<5;
+const Int32 CWifiP2pDevice::DEVICE_CAPAB_SERVICE_DISCOVERY;
+const Int32 CWifiP2pDevice::DEVICE_CAPAB_CLIENT_DISCOVERABILITY;
+const Int32 CWifiP2pDevice::DEVICE_CAPAB_CONCURRENT_OPER;
+const Int32 CWifiP2pDevice::DEVICE_CAPAB_INFRA_MANAGED;
+const Int32 CWifiP2pDevice::DEVICE_CAPAB_DEVICE_LIMIT;
+const Int32 CWifiP2pDevice::DEVICE_CAPAB_INVITATION_PROCEDURE;
 
 /* Group Capability bitmap */
-const Int32 CWifiP2pDevice::GROUP_CAPAB_GROUP_OWNER                = 1;
-const Int32 CWifiP2pDevice::GROUP_CAPAB_PERSISTENT_GROUP           = 1<<1;
-const Int32 CWifiP2pDevice::GROUP_CAPAB_GROUP_LIMIT                = 1<<2;
-const Int32 CWifiP2pDevice::GROUP_CAPAB_INTRA_BSS_DIST             = 1<<3;
-const Int32 CWifiP2pDevice::GROUP_CAPAB_CROSS_CONN                 = 1<<4;
-const Int32 CWifiP2pDevice::GROUP_CAPAB_PERSISTENT_RECONN          = 1<<5;
-const Int32 CWifiP2pDevice::GROUP_CAPAB_GROUP_FORMATION            = 1<<6;
-
+const Int32 CWifiP2pDevice::GROUP_CAPAB_GROUP_OWNER;
+const Int32 CWifiP2pDevice::GROUP_CAPAB_PERSISTENT_GROUP;
+const Int32 CWifiP2pDevice::GROUP_CAPAB_GROUP_LIMIT;
+const Int32 CWifiP2pDevice::GROUP_CAPAB_INTRA_BSS_DIST;
+const Int32 CWifiP2pDevice::GROUP_CAPAB_CROSS_CONN;
+const Int32 CWifiP2pDevice::GROUP_CAPAB_PERSISTENT_RECONN;
+const Int32 CWifiP2pDevice::GROUP_CAPAB_GROUP_FORMATION;
 
 static AutoPtr<IPattern> InitPattern(
     /* [in] */ const String& p)
@@ -57,13 +56,17 @@ static AutoPtr<IPattern> InitPattern(
 }
 
 AutoPtr<IPattern> CWifiP2pDevice::mDetailedDevicePattern
-    = InitPattern(String("((?:[0-9a-f]{2}:){5}[0-9a-f]{2}) (\\d+ )?p2p_dev_addr=((?:[0-9a-f]{2}:){5}[0-9a-f]{2}) pri_dev_type=(\\d+-[0-9a-fA-F]+-\\d+) name='(.*)' config_methods=(0x[0-9a-fA-F]+) dev_capab=(0x[0-9a-fA-F]+) group_capab=(0x[0-9a-fA-F]+)( wfd_dev_info=0x000006([0-9a-fA-F]{12}))?"));
+    = InitPattern(String("((?:[0-9a-f]{2}:){5}[0-9a-f]{2}) (\\d+ )?p2p_dev_addr=((?:[0-9a-f]{2}:){5}[0-9a-f]{2}) pri_dev_type=(\\d+-[0-9a-fA-F]+-\\d+) name='(.*)' config_methods=(0x[0-9a-fA-F]+) dev_capab=(0x[0-9a-fA-F]+) group_capab=(0x[0-9a-fA-F]+)( wfd_dev_info=0x([0-9a-fA-F]{12}))?"));
 AutoPtr<IPattern> CWifiP2pDevice::mTwoTokenPattern
     = InitPattern(String("(p2p_dev_addr=)?((?:[0-9a-f]{2}:){5}[0-9a-f]{2})"));
 AutoPtr<IPattern> CWifiP2pDevice::mThreeTokenPattern
     = InitPattern(String("(?:[0-9a-f]{2}:){5}[0-9a-f]{2} p2p_dev_addr=((?:[0-9a-f]{2}:){5}[0-9a-f]{2})"));
 AutoPtr<IPattern> CWifiP2pDevice::mFourTokenPattern
     = InitPattern(String("(?:[0-9a-f]{2}:){5}[0-9a-f]{2} p2p_dev_addr=((?:[0-9a-f]{2}:){5}[0-9a-f]{2}) wfd_dev_info=0x000006([0-9a-fA-F]{12})"));
+
+CAR_INTERFACE_IMPL_2(CWifiP2pDevice, Object, IWifiP2pDevice, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiP2pDevice)
 
 CWifiP2pDevice::CWifiP2pDevice()
     : mDeviceName("")
@@ -325,11 +328,28 @@ ECode CWifiP2pDevice::IsGroupLimit(
 ECode CWifiP2pDevice::Update(
     /* [in] */ IWifiP2pDevice* device)
 {
-    if (device == NULL) return NOERROR;
+    UpdateSupplicantDetails(device);
+    return device->GetStatus(&mStatus);
+}
 
-    String temp;
-    FAIL_RETURN(device->GetDeviceAddress(&temp));
-    if (temp.IsNull()) return NOERROR;
+ECode CWifiP2pDevice::UpdateSupplicantDetails(
+    /* [in] */ IWifiP2pDevice* device)
+{
+    if (device == NULL) {
+        // throw new IllegalArgumentException("device is null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    String deviceAddress;
+    device->GetDeviceAddress(&deviceAddress);
+    if (deviceAddress == NULL) {
+        // throw new IllegalArgumentException("deviceAddress is null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (!mDeviceAddress.Equals(deviceAddress)) {
+        // throw new IllegalArgumentException("deviceAddress does not match");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     FAIL_RETURN(device->GetDeviceName(&mDeviceName));
     FAIL_RETURN(device->GetPrimaryDeviceType(&mPrimaryDeviceType));
@@ -343,6 +363,7 @@ ECode CWifiP2pDevice::Update(
     mWfdInfo = wfdInfo;
 
     if (DBG) {
+        String temp;
         ToString(&temp);
         Slogger::D("WifiP2pDevice", "Update : %s", temp.string());
     }
@@ -383,28 +404,30 @@ ECode CWifiP2pDevice::ToString(
     VALIDATE_NOT_NULL(str);
 
     StringBuffer sbuf;
-    sbuf.AppendCStr("Device: ");
-    sbuf.AppendString(mDeviceName);
-    sbuf.AppendCStr("\n deviceAddress: ");
-    sbuf.AppendString(mDeviceAddress);
-    sbuf.AppendCStr("\n primary type: ");
-    sbuf.AppendString(mPrimaryDeviceType);
-    sbuf.AppendCStr("\n secondary type: ");
-    sbuf.AppendString(mSecondaryDeviceType);
-    sbuf.AppendCStr("\n wps: ");
-    sbuf.AppendInt32(mWpsConfigMethodsSupported);
-    sbuf.AppendCStr("\n grpcapab: ");
-    sbuf.AppendInt32(mGroupCapability);
-    sbuf.AppendCStr("\n devcapab: ");
-    sbuf.AppendInt32(mDeviceCapability);
-    sbuf.AppendCStr("\n status: ");
-    sbuf.AppendInt32(mStatus);
-    sbuf.AppendCStr("\n wfdInfo:");
+    sbuf.Append("Device: ");
+    sbuf.Append(mDeviceName);
+    sbuf.Append("\n deviceAddress: ");
+    sbuf.Append(mDeviceAddress);
+    sbuf.Append("\n primary type: ");
+    sbuf.Append(mPrimaryDeviceType);
+    sbuf.Append("\n secondary type: ");
+    sbuf.Append(mSecondaryDeviceType);
+    sbuf.Append("\n wps: ");
+    sbuf.Append(mWpsConfigMethodsSupported);
+    sbuf.Append("\n grpcapab: ");
+    sbuf.Append(mGroupCapability);
+    sbuf.Append("\n devcapab: ");
+    sbuf.Append(mDeviceCapability);
+    sbuf.Append("\n status: ");
+    sbuf.Append(mStatus);
+    sbuf.Append("\n wfdInfo:");
     String temp("NULL");
     if (mWfdInfo != NULL) {
-        FAIL_RETURN(mWfdInfo->ToString(&temp));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(mWfdInfo->ToString(&temp));
     }
-    sbuf.AppendString(temp);
+    sbuf.Append(temp);
     *str = sbuf.ToString();
     return NOERROR;
 }
@@ -448,7 +471,8 @@ ECode CWifiP2pDevice::WriteToParcel(
     if (mWfdInfo != NULL) {
         FAIL_RETURN(dest->WriteInt32(1));
         FAIL_RETURN(dest->WriteInterfacePtr(mWfdInfo.Get()));
-    } else {
+    }
+    else {
         FAIL_RETURN(dest->WriteInt32(0));
     }
 
@@ -500,7 +524,9 @@ ECode CWifiP2pDevice::constructor(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
 
-            FAIL_RETURN(match->Group(2, &mDeviceAddress));
+            assert(0);
+            // TODO
+            // FAIL_RETURN(match->Group(2, &mDeviceAddress));
             return NOERROR;
         case 3:
             FAIL_RETURN(mThreeTokenPattern->Matcher(dataString, (IMatcher**)&match));
@@ -510,31 +536,9 @@ ECode CWifiP2pDevice::constructor(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
 
-            FAIL_RETURN(match->Group(1, &mDeviceAddress));
-            return NOERROR;
-        case 4:
-            FAIL_RETURN(mFourTokenPattern->Matcher(
-                    dataString, (IMatcher**)&match));
-            FAIL_RETURN(match->Find(&ret));
-            if (!ret) {
-                Slogger::E("WifiP2pDevice", "E_ILLEGAL_ARGUMENT_EXCEPTION:Malformed supplicant event %s", dataString.string());
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            }
-
-            FAIL_RETURN(match->Group(1, &mDeviceAddress));
-            {
-                String str;
-                FAIL_RETURN(match->Group(2, &str));
-                if (!str.IsNull()) {
-                    String str1 = str.Substring(0, 4);
-                    String str2 = str.Substring(4, 8);
-                    String str3 = str.Substring(8, 12);
-                    Int32 a = ParseHex(str1);
-                    Int32 b = ParseHex(str2);
-                    Int32 c = ParseHex(str3);
-                    FAIL_RETURN(CWifiP2pWfdInfo::New(a, b, c, (IWifiP2pWfdInfo**)&mWfdInfo));
-                }
-            }
+            assert(0);
+            // TODO
+            // FAIL_RETURN(match->Group(1, &mDeviceAddress));
             return NOERROR;
         default:
             FAIL_RETURN(mDetailedDevicePattern->Matcher(dataString, (IMatcher**)&match));
@@ -544,22 +548,34 @@ ECode CWifiP2pDevice::constructor(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
 
-            FAIL_RETURN(match->Group(3, &mDeviceAddress));
-            FAIL_RETURN(match->Group(4, &mPrimaryDeviceType));
-            FAIL_RETURN(match->Group(5, &mDeviceName));
+            assert(0);
+            // TODO
+            // FAIL_RETURN(match->Group(3, &mDeviceAddress));
+            // FAIL_RETURN(match->Group(4, &mPrimaryDeviceType));
+            // FAIL_RETURN(match->Group(5, &mDeviceName));
 
             String temp;
-            FAIL_RETURN(match->Group(6, &temp));
+            assert(0);
+            // TODO
+            // FAIL_RETURN(match->Group(6, &temp));
             mWpsConfigMethodsSupported = ParseHex(temp);
-            FAIL_RETURN(match->Group(7, &temp));
+            assert(0);
+            // TODO
+            // FAIL_RETURN(match->Group(7, &temp));
             mDeviceCapability = ParseHex(temp);
-            FAIL_RETURN(match->Group(8, &temp));
+            assert(0);
+            // TODO
+            // FAIL_RETURN(match->Group(8, &temp));
             mGroupCapability = ParseHex(temp);
 
-            FAIL_RETURN(match->Group(9, &temp));
+            assert(0);
+            // TODO
+            // FAIL_RETURN(match->Group(9, &temp));
             if (!temp.IsNull()) {
                 String str;
-                FAIL_RETURN(match->Group(10, &str));
+                assert(0);
+                // TODO
+                // FAIL_RETURN(match->Group(10, &str));
 
                 String str1 = str.Substring(0, 4);
                 String str2 = str.Substring(4, 8);
@@ -596,7 +612,9 @@ ECode CWifiP2pDevice::constructor(
         FAIL_RETURN(source->GetDeviceCapability(&mDeviceCapability));
         FAIL_RETURN(source->GetGroupCapability(&mGroupCapability));
         FAIL_RETURN(source->GetStatus(&mStatus));
-        FAIL_RETURN(source->GetWfdInfo((IWifiP2pWfdInfo**)&mWfdInfo));
+        AutoPtr<IWifiP2pWfdInfo> wfdInfo;
+        FAIL_RETURN(source->GetWfdInfo((IWifiP2pWfdInfo**)&wfdInfo));
+        CWifiP2pWfdInfo::New(wfdInfo, (IWifiP2pWfdInfo**)&mWfdInfo);
 
         if (DBG) {
             String info;
@@ -619,7 +637,7 @@ Int32 CWifiP2pDevice::ParseHex(
     }
 
     // try {
-    ECode ec = StringUtils::ParseInt32(hexStr, 16, &num);
+    ECode ec = StringUtils::Parse(hexStr, 16, &num);
     if (FAILED(ec)) {
         Slogger::E("WifiP2pDevice", "Failed to parse hex string %s", str.string());
     }
@@ -630,7 +648,7 @@ Int32 CWifiP2pDevice::ParseHex(
     return num;
 }
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

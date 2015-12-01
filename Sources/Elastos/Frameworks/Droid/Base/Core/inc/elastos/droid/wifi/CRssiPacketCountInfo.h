@@ -2,52 +2,66 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CRSSIPACKETCOUNTINFO_H__
 #define __ELASTOS_DROID_NET_WIFI_CRSSIPACKETCOUNTINFO_H__
 
-#include "_Elastos_Droid_Net_Wifi_CRssiPacketCountInfo.h"
+#include "_Elastos_Droid_Wifi_CRssiPacketCountInfo.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 
 CarClass(CRssiPacketCountInfo)
+    , public Object
+    , public IRssiPacketCountInfo
 {
 public:
-    CARAPI GetRssi(
-        /* [out] */ Int32 * pRssi);
+    CAR_INTERFACE_DECL()
 
-    CARAPI SetRssi(
-        /* [in] */ Int32 rssi);
-
-    CARAPI GetTxgood(
-        /* [out] */ Int32 * pTxgood);
-
-    CARAPI SetTxgood(
-        /* [in] */ Int32 txgood);
-
-    CARAPI GetTxbad(
-        /* [out] */ Int32 * pTxbad);
-
-    CARAPI SetTxbad(
-        /* [in] */ Int32 txbad);
-
-    CARAPI ReadFromParcel(
-        /* [in] */ IParcel * pSource);
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel * pDest);
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IParcel* parcel);
 
+    CARAPI GetRssi(
+        /* [out] */ Int32* rssi);
+
+    CARAPI SetRssi(
+        /* [in] */ Int32 rssi);
+
+    CARAPI GetTxgood(
+        /* [out] */ Int32* txgood);
+
+    CARAPI SetTxgood(
+        /* [in] */ Int32 txgood);
+
+    CARAPI GetTxbad(
+        /* [out] */ Int32* txbad);
+
+    CARAPI SetTxbad(
+        /* [in] */ Int32 txbad);
+
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* source);
+
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
+
+    CARAPI GetRxgood(
+        /* [out] */ Int32* result);
+
+    CARAPI SetRxgood(
+        /* [in] */ Int32 rxgood);
+
 private:
     Int32 mRssi;
     Int32 mTxgood;
     Int32 mTxbad;
+    Int32 mRxgood;
 };
 
-}
-}
-}
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_CRSSIPACKETCOUNTINFO_H__

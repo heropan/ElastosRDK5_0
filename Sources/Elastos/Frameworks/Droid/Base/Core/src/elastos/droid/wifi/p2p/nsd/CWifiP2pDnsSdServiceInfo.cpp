@@ -1,18 +1,18 @@
 
-#include "CWifiP2pDnsSdServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pDnsSdServiceInfo.h"
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringBuilder.h>
-#include "WifiP2pServiceInfo.h"
-#include "CWifiP2pServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/WifiP2pServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceInfo.h"
 #include "elastos/droid/net/nsd/CDnsSdTxtRecord.h"
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Net::Nsd::CDnsSdTxtRecord;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Net::Nsd::CDnsSdTxtRecord;
 
 namespace Elastos {
 namespace Droid {
@@ -22,14 +22,7 @@ namespace Nsd {
 
 CWifiP2pDnsSdServiceInfo::CStatic CWifiP2pDnsSdServiceInfo::sStatic;
 
-PInterface CWifiP2pDnsSdServiceInfo::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_WifiP2pServiceInfo) {
-        return reinterpret_cast<PInterface>((WifiP2pServiceInfo*)this);
-    }
-    return _CWifiP2pDnsSdServiceInfo::Probe(riid);
-}
+CAR_OBJECT_IMPL(CWifiP2pDnsSdServiceInfo)
 
 ECode CWifiP2pDnsSdServiceInfo::constructor()
 {
@@ -39,13 +32,13 @@ ECode CWifiP2pDnsSdServiceInfo::constructor()
 ECode CWifiP2pDnsSdServiceInfo::constructor(
     /* [in] */ ArrayOf<String>* queryList)
 {
-    return WifiP2pServiceInfo::Init(queryList);
+    return WifiP2pServiceInfo::constructor(queryList);
 }
 
 ECode CWifiP2pDnsSdServiceInfo::NewInstance(
     /* [in] */ const String& instanceName,
     /* [in] */ const String& serviceType,
-    /* [in] */ IObjectStringMap* txtMap,
+    /* [in] */ IMap* txtMap,
     /* [out] */ IWifiP2pDnsSdServiceInfo** instance)
 {
     if (instanceName.IsNullOrEmpty() || serviceType.IsNullOrEmpty()) {
@@ -57,14 +50,18 @@ ECode CWifiP2pDnsSdServiceInfo::NewInstance(
     CDnsSdTxtRecord::New((IDnsSdTxtRecord**)&txtRecord);
     if (txtMap != NULL) {
         AutoPtr<ArrayOf<String> > keys;
-        txtMap->GetKeys((ArrayOf<String> **)&keys);
+        assert(0);
+        // TODO
+        // txtMap->GetKeys((ArrayOf<String> **)&keys);
         if (keys != NULL) {
             String key;
             ICharSequence* seq;
             for (Int32 i = 0; i < keys->GetLength(); ++i) {
                 key = (*keys)[i];
                 AutoPtr<IInterface> obj;
-                txtMap->Get(key, (IInterface**)&obj);
+                assert(0);
+                // TODO
+                // txtMap->Get(key, (IInterface**)&obj);
                 seq = ICharSequence::Probe(obj);
                 String value;
                 if (seq != NULL) {
@@ -108,7 +105,11 @@ ECode CWifiP2pDnsSdServiceInfo::CreatePtrServiceQuery(
     sb += " ";
 
     String lenStr;
-    lenStr.AppendFormat("%02x", instanceName.GetByteLength());
+    assert(0);
+    // TODO
+    // String usStr;
+    // Locale::US->ToString(&usStr);
+    // lenStr.AppendFormat(usStr, "%02x", instanceName.GetByteLength());
     sb += lenStr;
 
     FAIL_RETURN(WifiP2pServiceInfo::Bin2HexStr(
@@ -183,13 +184,17 @@ ECode CWifiP2pDnsSdServiceInfo::CreateRequest(
      * |   Type (2)           | Version (1) |
      */
     if (dnsType == IWifiP2pDnsSdServiceInfo::DNS_TYPE_TXT) {
-        temp = dnsName.ToLowerCase();
+        assert(0);
+        // TODO
+        // temp = dnsName.ToLowerCase(Locale.ROOT); // TODO: is this right?
     }
 
     String result;
     FAIL_RETURN(CompressDnsName(temp, &result));
-    result.AppendFormat("%04x", dnsType);
-    result.AppendFormat("%02x", version);
+    assert(0);
+    // TODO
+    // result.AppendFormat(Locale.US, "%04x", dnsType);
+    // result.AppendFormat(Locale.US, "%02x", version);
 
     *request = result;
     return NOERROR;
@@ -220,7 +225,9 @@ ECode CWifiP2pDnsSdServiceInfo::CompressDnsName(
         if (i == -1) {
             if (!dnsName.IsNullOrEmpty()) {
                 String value;
-                value.AppendFormat("%02x", dnsName.GetLength());
+                assert(0);
+                // TODO
+                // value.AppendFormat(Locale.US, "%02x", dnsName.GetLength());
                 sb += value;
 
                 FAIL_RETURN(WifiP2pServiceInfo::Bin2HexStr(
@@ -235,7 +242,9 @@ ECode CWifiP2pDnsSdServiceInfo::CompressDnsName(
         String name = dnsName.Substring(0, i);
         dnsName = dnsName.Substring(i + 1);
         String value;
-        value.AppendFormat("%02x", name.GetLength());
+        assert(0);
+        // TODO
+        // value.AppendFormat(Locale.US, "%02x", name.GetLength());
         sb += value;
 
         FAIL_RETURN(WifiP2pServiceInfo::Bin2HexStr(
@@ -278,8 +287,8 @@ ECode CWifiP2pDnsSdServiceInfo::GetSupplicantQueryList(
     return WifiP2pServiceInfo::GetSupplicantQueryList(list);
 }
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

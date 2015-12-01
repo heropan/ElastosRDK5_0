@@ -1,5 +1,5 @@
 
-#include "WifiP2pServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/WifiP2pServiceInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
@@ -9,17 +9,20 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
 
-// e6a7bf0e-cd3f-4fb3-8029-739415e17bfd
-extern "C" const InterfaceID EIID_WifiP2pServiceInfo =
-    { 0xe6a7bf0e, 0xcd3f, 0x4fb3, { 0x80, 0x29, 0x73, 0x94, 0x15, 0xe1, 0x7b, 0xfd } };
-
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-ECode WifiP2pServiceInfo::Init(
+CAR_INTERFACE_IMPL_2(WifiP2pServiceInfo, Object, IWifiP2pServiceInfo, IParcelable)
+
+ECode WifiP2pServiceInfo::constructor()
+{
+    return NOERROR;
+}
+
+ECode WifiP2pServiceInfo::constructor(
     /* [in] */ ArrayOf<String>* queryList)
 {
     if (queryList == NULL) {
@@ -52,7 +55,7 @@ ECode WifiP2pServiceInfo::Bin2HexStr(
 
     for (Int32 i = 0; i < data.GetLength(); ++i) {
        // try {
-       s = StringUtils::Int32ToHexString((data[i] & 0xff));
+       s = StringUtils::ToString((data[i] & 0xff));
        // } catch (Exception e) {
        //     e.printStackTrace();
        //     return null;
@@ -81,7 +84,7 @@ ECode WifiP2pServiceInfo::Bin2HexStr(
     String s;
     for (Int32 i = 0; i < length; ++i) {
        // try {
-      s = StringUtils::Int32ToHexString((data[i] & 0xff));
+      s = StringUtils::ToString((data[i] & 0xff));
        // } catch (Exception e) {
        //     e.printStackTrace();
        //     return null;
@@ -114,10 +117,13 @@ ECode WifiP2pServiceInfo::Equals(
        return NOERROR;
     }
 
-    WifiP2pServiceInfo* servInfo = reinterpret_cast<WifiP2pServiceInfo*>(
-      obj->Probe(EIID_WifiP2pServiceInfo));
+    assert(0);
+    WifiP2pServiceInfo* servInfo;// TODO = reinterpret_cast<WifiP2pServiceInfo*>(
+      // TODO obj->Probe(EIID_WifiP2pServiceInfo));
     assert(servInfo != NULL);
-    *isEqual = ArrayOf<String>::Equals(mQueryList, servInfo->mQueryList);
+    assert(0);
+    // TODO
+    // *isEqual = ArrayOf<String>::Equals(mQueryList, servInfo->mQueryList);
     return NOERROR;
 }
 
@@ -150,9 +156,8 @@ ECode WifiP2pServiceInfo::WriteToParcel(
     return dest->WriteArrayOfString(mQueryList);
 }
 
-
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

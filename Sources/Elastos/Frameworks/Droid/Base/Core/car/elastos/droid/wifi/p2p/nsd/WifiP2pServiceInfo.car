@@ -54,7 +54,7 @@ module
         * @hide
         */
         GetSupplicantQueryList(
-            [out] IList** result);
+            [out, callee] ArrayOf<String>* result);
     }
 
     } // namespace Nsd

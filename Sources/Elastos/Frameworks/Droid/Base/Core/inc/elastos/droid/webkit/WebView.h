@@ -1198,7 +1198,7 @@ public:
      *                   The embedder can pass null if not interested in the
      *                   callback. The runnable will be called in UI thread.
      */
-    static CARAPI_(void) ClearClientCertPreferences(
+    static CARAPI ClearClientCertPreferences(
         /* [in] */ IRunnable* onCleared);
 
     /**
@@ -1729,7 +1729,7 @@ protected:
      * @hide This is used internally by dumprendertree, as it requires the javaScript interfaces to
      *       be added synchronously, before a subsequent loadUrl call takes effect.
      */
-    WebView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle,
@@ -1740,7 +1740,7 @@ protected:
      * @hide
      */
     //@SuppressWarnings("deprecation")  // for super() call into deprecated base class constructor.
-    WebView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
@@ -1822,21 +1822,6 @@ protected:
         /* [in] */ ICanvas* canvas);
 
 private:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle,
-        /* [in] */ IMap* javaScriptInterfaces,
-        /* [in] */ Boolean privateBrowsing);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes,
-        /* [in] */ IMap* javaScriptInterfaces,
-        /* [in] */ Boolean privateBrowsing);
-
     // Only used by android.webkit.FindActionModeCallback.
     CARAPI_(void) SetFindDialogFindListener(
         /* [in] */ IWebViewFindListener* listener);
@@ -1858,7 +1843,7 @@ private:
     // Throwing an exception for incorrect thread usage if the
     // build target is JB MR2 or newer. Defaults to false, and is
     // set in the WebView constructor.
-    static volatile Boolean sEnforceThreadChecking;
+    static /*volatile*/ Boolean sEnforceThreadChecking;
 
     //-------------------------------------------------------------------------
     // Private internal stuff
