@@ -1,11 +1,12 @@
 module
 {
+	interface Elastos.Droid.Widget.IPopupWindowOnDismissListener;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
-    interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IViewOnTouchListener;
-    interface Elastos.Droid.View.IKeyEvent;
-    interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
-    interface Elastos.Droid.Widget.IPopupWindowOnDismissListener;
+    using interface Elastos.Droid.View.IView;
+    using interface Elastos.Droid.View.IViewOnTouchListener;
+    using interface Elastos.Droid.View.IKeyEvent;
+    using interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
+    using interface Elastos.Droid.View.IMotionEvent;
 
     namespace Elastos {
     namespace Droid {
@@ -43,58 +44,49 @@ module
          */
         const Int32 POSITION_PROMPT_BELOW = 1;
 
+        /**
+         * Alias for {@link ViewGroup.LayoutParams#MATCH_PARENT}.
+         * If used to specify a popup width, the popup will match the width of the anchor view.
+         * If used to specify a popup height, the popup will fill available space.
+         */
         const Int32 MATCH_PARENT = -1;
 
+        /**
+         * Alias for {@link ViewGroup.LayoutParams#WRAP_CONTENT}.
+         * If used to specify a popup width, the popup will use the width of its content.
+         */
         const Int32 WRAP_CONTENT = -2;
 
-        const Int32 INPUT_METHOD_FROM_FOCUSABLE = 0;
+        /**
+         * Mode for {@link #setInputMethodMode(int)}: the requirements for the
+         * input method should be based on the focusability of the popup.  That is
+         * if it is focusable than it needs to work with the input method, else
+         * it doesn't.
+         */
+        const Int32 INPUT_METHOD_FROM_FOCUSABLE =  0;
 
+        /**
+         * Mode for {@link #setInputMethodMode(int)}: this popup always needs to
+         * work with an input method, regardless of whether it is focusable.  This
+         * means that it will always be displayed so that the user can also operate
+         * the input method while it is shown.
+         */
         const Int32 INPUT_METHOD_NEEDED = 1;
 
+        /**
+         * Mode for {@link #setInputMethodMode(int)}: this popup never needs to
+         * work with an input method, regardless of whether it is focusable.  This
+         * means that it will always be displayed to use as much space on the
+         * screen as needed, regardless of whether this covers the input method.
+         */
         const Int32 INPUT_METHOD_NOT_NEEDED = 2;
 
-//        /**
-//         * Alias for {@link ViewGroup.LayoutParams#MATCH_PARENT}.
-//         * If used to specify a popup width, the popup will match the width of the anchor view.
-//         * If used to specify a popup height, the popup will fill available space.
-//         */
-//        const Int32 MATCH_PARENT = IViewGroupLayoutParams::MATCH_PARENT;
-//
-//        /**
-//         * Alias for {@link ViewGroup.LayoutParams#WRAP_CONTENT}.
-//         * If used to specify a popup width, the popup will use the width of its content.
-//         */
-//        const Int32 WRAP_CONTENT = IViewGroupLayoutParams::WRAP_CONTENT;
-//
-//        /**
-//         * Mode for {@link #setInputMethodMode(int)}: the requirements for the
-//         * input method should be based on the focusability of the popup.  That is
-//         * if it is focusable than it needs to work with the input method, else
-//         * it doesn't.
-//         */
-//          const Int32 INPUT_METHOD_FROM_FOCUSABLE =  IPopupWindow::INPUT_METHOD_FROM_FOCUSABLE;
-//
-//        /**
-//         * Mode for {@link #setInputMethodMode(int)}: this popup always needs to
-//         * work with an input method, regardless of whether it is focusable.  This
-//         * means that it will always be displayed so that the user can also operate
-//         * the input method while it is shown.
-//         */
-//          const Int32 INPUT_METHOD_NEEDED = IPopupWindow::INPUT_METHOD_NEEDED;
-//
-//        /**
-//         * Mode for {@link #setInputMethodMode(int)}: this popup never needs to
-//         * work with an input method, regardless of whether it is focusable.  This
-//         * means that it will always be displayed to use as much space on the
-//         * screen as needed, regardless of whether this covers the input method.
-//         */
-//          const Int32 INPUT_METHOD_NOT_NEEDED =   IPopupWindow::INPUT_METHOD_NOT_NEEDED;
-//        /**
-//         * Sets the adapter that provides the data and the views to represent the data
-//         * in this popup window.
-//         *
-//         * @param adapter The adapter to use to create this window's content.
-//         */
+        /**
+         * Sets the adapter that provides the data and the views to represent the data
+         * in this popup window.
+         *
+         * @param adapter The adapter to use to create this window's content.
+         */
         SetAdapter(
             [in] IListAdapter* adapter);
 
@@ -557,6 +549,27 @@ module
         CreateDragToOpenListener(
             [in] IView* src,
             [out] IViewOnTouchListener** l);
+    }
+
+    /**
+     * Abstract class that forwards touch events to a {@link ListPopupWindow}.
+     *
+     * @hide
+     */
+    [local]
+    interface IListPopupWindowForwardingListener {
+        /**
+         * Returns the popup to which this listener is forwarding events.
+         * <p>
+         * Override this to return the correct popup. If the popup is displayed
+         * asynchronously, you may also need to override
+         * {@link #onForwardingStopped} to prevent premature cancelation of
+         * forwarding.
+         *
+         * @return the popup to which this listener is forwarding events
+         */
+        GetPopup(
+        	[out] IListPopupWindow** result);
     }
 
     } // namespace Widget
