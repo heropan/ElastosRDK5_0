@@ -171,7 +171,7 @@ ifeq "$(TARGET_TYPE)" "eco"
 	fromdos __$*.rc
 	perl $(XDK_TOOLS)/version.pl "__Elastos_CAR" "`pwd`" "$(XDK_TARGETS)" "$<" "$(XDK_RUNTIME_PLATFORM)"
 	perl $(XDK_TOOLS)/cls_trans.pl __$*.rc 'NA'
-	perl $(XDK_TOOLS)/res_trans.pl __$*.rc "rc" "$(SOURCES)"
+	perl $(XDK_TOOLS)/res_trans.pl __$*.rc "rc"
 	if [ -e "__section.cpp" ]; then \
 		$(CXX) $(CPP_FLAGS) $(C_FLAGS) -o __section.o __section.cpp; \
 		$(MV) __section.cpp __section0.cpp; \
