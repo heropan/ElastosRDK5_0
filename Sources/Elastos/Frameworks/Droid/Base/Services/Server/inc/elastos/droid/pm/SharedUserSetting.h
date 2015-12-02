@@ -54,7 +54,7 @@ public:
 
     Int32 mUserId;
 
-    HashSet<PackageSetting*> mPackages; // TODO using IWeakReference
+    HashSet<AutoPtr<PackageSetting> > mPackages; // TODO using IWeakReference
 
     AutoPtr<PackageSignatures> mSignatures;
 };

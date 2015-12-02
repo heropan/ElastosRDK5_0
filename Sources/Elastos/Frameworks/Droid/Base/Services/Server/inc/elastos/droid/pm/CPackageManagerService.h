@@ -8,31 +8,39 @@
 #include "pm/Installer.h"
 #include "pm/Settings.h"
 #include "pm/CUserManagerService.h"
+#include "pm/ServiceThread.h"
+#include "pm/PackageInstallerService.h"
 #include "elastos/droid/content/pm/PackageParser.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/FileObserver.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
+#include <elastos/core/Thread.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Core::IInteger32;
+using Elastos::Core::Thread;
+using Elastos::IO::IFile;
+using Elastos::IO::IFilenameFilter;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::ISet;
-using Elastos::IO::IFile;
-using Elastos::IO::IFilenameFilter;
-
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IArrayMap;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IList;
+using Elastos::Utility::Concurrent::Atomic::IAtomicInteger64;
+using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::Content::IIntentReceiver;
 using Elastos::Droid::Content::IIntentSender;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
-using Elastos::Droid::Internal::Content::CPackageHelper;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IServiceInfo;
@@ -56,6 +64,7 @@ using Elastos::Droid::Content::Pm::IPackageDataObserver;
 using Elastos::Droid::Content::Pm::IPackageStatsObserver;
 using Elastos::Droid::Content::Pm::IPackageMoveObserver;
 using Elastos::Droid::Content::Pm::IPackageInfoLite;
+using Elastos::Droid::Internal::App::IMediaContainerService;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBinder;
@@ -64,9 +73,10 @@ using Elastos::Droid::Os::IFileObserver;
 using Elastos::Droid::Os::FileObserver;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandlerThread;
-using Elastos::Droid::Internal::App::IMediaContainerService;
+using Elastos::Droid::Text::Format::IDateUtils;
+using Elastos::Droid::Utility::ISparseArray;
 
 namespace Elastos {
 namespace Droid {
@@ -75,13 +85,9 @@ namespace Pm {
 
 class CPackageManagerService;
 
-class InstallArgs
-    : public ElRefBase
-    , public IInterface
+class InstallArgs : public Object
 {
 public:
-    CAR_INTERFACE_DECL()
-
     InstallArgs(
         /* [in] */ IUri* packageURI,
         /* [in] */ IPackageInstallObserver* observer,
@@ -180,6 +186,134 @@ CarClass(CPackageManagerService)
 public:/* package */
     friend class CResourcesChangedReceiver;
 
+    class SharedLibraryEntry : public Object
+    {
+    public:
+        SharedLibraryEntry(
+            /* [in] */ const String& path,
+            /* [in] */ const String& apk)
+            : mPath(path)
+            , mApk(apk)
+        {}
+
+    public:
+        String mPath;
+        String mApk;
+    };
+
+    // Set of pending broadcasts for aggregating enable/disable of components.
+    class PendingPackageBroadcasts : public Object
+    {
+    public:
+        PendingPackageBroadcasts();
+
+        CARAPI_(AutoPtr<IList>) Get(
+            /* [in] */ Int32 userId,
+            /* [in] */ const String& packageName);
+
+        CARAPI_(void) Put(
+            /* [in] */ Int32 userId,
+            /* [in] */ const String& packageName,
+            /* [in] */ IArrayList* components);
+
+        CARAPI_(void) Remove(
+            /* [in] */ Int32 userId,
+            /* [in] */ const String& packageName);
+
+        CARAPI_(void) Remove(
+            /* [in] */ Int32 userId);
+
+        CARAPI_(Int32) UserIdCount();
+
+        CARAPI_(Int32) UserIdAt(
+            /* [in] */ Int32 n);
+
+        CARAPI_(AutoPtr<IHashMap>) PackagesForUserId(
+            /* [in] */ Int32 userId);
+
+        CARAPI_(Int32) Size();
+
+        CARAPI_(void) Clear();
+
+    private:
+        CARAPI_(AutoPtr<IHashMap>) GetOrAllocate(
+            /* [in] */ Int32 userId);
+
+    public:
+        // for each user id, a map of <package name -> components within that package>
+        AutoPtr<ISparseArray> mUidMap;
+    };
+
+    class DefaultContainerConnection
+        : public Object
+        , public IServiceConnection
+    {
+    public:
+        DefaultContainerConnection(
+            /* [in] */ CPackageManagerService* owner)
+            : mHost(owner)
+        {}
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnServiceConnected(
+            /* [in] */ IComponentName* name,
+            /* [in] */ IBinder* service);
+
+        CARAPI OnServiceDisconnected(
+            /* [in] */ IComponentName* name);
+
+    private:
+        CPackageManagerService* mHost;
+    };
+
+    // Recordkeeping of restore-after-install operations that are currently in flight
+    // between the Package Manager and the Backup Manager
+    class PostInstallData : public Object
+    {
+    public:
+        PostInstallData(
+            /* [in] */ InstallArgs* a,
+            /* [in] */ PackageInstalledInfo* r)
+            : mArgs(a)
+            , mRes(r)
+        {}
+
+    public:
+        AutoPtr<InstallArgs> mArgs;
+        AutoPtr<PackageInstalledInfo> mRes;
+    };
+
+    class HandlerParams;
+
+    class PackageHandler : public Handler
+    {
+    public:
+        PackageHandler(
+            /* [in] */ ILooper* looper,
+            /* [in] */ CPackageManagerService* host)
+            : HandlerBase(looper)
+            , mBound(FALSE)
+            , mHost(host)
+        {}
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+        CARAPI_(void) DoHandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        CARAPI_(Boolean) ConnectToService();
+
+        CARAPI_(void) DisconnectService();
+
+    private:
+        Boolean mBound;
+        List<AutoPtr<HandlerParams> > mPendingInstalls
+        CPackageManagerService* mHost;
+    };
+
     class DeletePackageRunnable : public Runnable
     {
     public:
@@ -226,84 +360,11 @@ public:/* package */
         CPackageManagerService* mHost;
     };
 
-    class PackageHandler : public HandlerBase
-    {
-    public:
-        PackageHandler(
-            /* [in] */ ILooper* looper,
-            /* [in] */ CPackageManagerService* host)
-            : HandlerBase(looper)
-            , mHost(host)
-        {}
-
-        CARAPI HandleMessage(
-            /* [in] */ IMessage* msg);
-
-        CARAPI_(void) DoHandleMessage(
-            /* [in] */ IMessage* msg);
-
-    private:
-        CPackageManagerService* mHost;
-    };
-
-    class DefaultContainerConnection
-        : public ElRefBase
-        , public IServiceConnection
-    {
-    public:
-        DefaultContainerConnection(
-            /* [in] */ CPackageManagerService* owner)
-            : mHost(owner)
-        {}
-
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-
-        CARAPI OnServiceConnected(
-            /* [in] */ IComponentName* name,
-            /* [in] */ IBinder* service);
-
-        CARAPI OnServiceDisconnected(
-            /* [in] */ IComponentName* name);
-
-    private:
-        CPackageManagerService* mHost;
-    };
-
     class PackageInstalledInfo;
 
-    // Recordkeeping of restore-after-install operations that are currently in flight
-    // between the Package Manager and the Backup Manager
-    class PostInstallData : public ElRefBase
+    class HandlerParams : public Object
     {
     public:
-        PostInstallData(
-            /* [in] */ InstallArgs* a,
-            /* [in] */ PackageInstalledInfo* r)
-            : mArgs(a)
-            , mRes(r)
-        {}
-
-    public:
-        AutoPtr<InstallArgs> mArgs;
-        AutoPtr<PackageInstalledInfo> mRes;
-    };
-
-    class HandlerParams
-        : public ElRefBase
-        , public IInterface
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
         HandlerParams()
             : mRetries(0)
             , mHost(NULL)
@@ -715,9 +776,60 @@ public:/* package */
         CPackageManagerService* mHost;
     };
 
-    class NotifyRunnable
-        : public ElRefBase
-        , public IRunnable
+private:
+    class PackageUsage : public Object
+    {
+    private:
+        class WriteThread : public Thread
+        {
+        public:
+            WriteThread(
+                /* [in] */ const String& threadName,
+                /* [in] */ PackageUsage* host);
+
+            CARAPI Run();
+
+        private:
+            PackageUsage* mHost;
+        };
+
+    public:
+        PackageUsage(
+            /* [in] */ CPackageManagerService* host);
+
+        CARAPI_(Boolean) IsHistoricalPackageUsageAvailable();
+
+        CARAPI_(void) Write(
+            /* [in] */ Boolean force);
+
+        CARAPI_(void) ReadLP();
+
+    private:
+        CARAPI_(void) WriteInternal();
+
+        CARAPI ReadToken(
+            /* [in] */ IInputStream* in,
+            /* [in] */ StringBuilder sb,
+            /* [in] */ Char32 endOfToken,
+            /* [in] */ String* token);
+
+        CARAPI_(AutoPtr<IAtomicFile>) GetFile();
+
+    private:
+        static const Int32 WRITE_INTERVAL = (DEBUG_DEXOPT) ? 0 : 30*60*1000; // 30m in ms
+
+        Object mFileLock;
+        AutoPtr<IAtomicInteger64> mLastWritten;
+        AutoPtr<IAtomicBoolean> mBackgroundWriteRunning;
+
+        Boolean mIsHistoricalPackageUsageAvailable;
+
+        CPackageManagerService* mHost;
+
+        friend class WriteThread;
+    };
+
+    class NotifyRunnable : public Runnable
     {
     public:
         NotifyRunnable(
@@ -729,8 +841,6 @@ public:/* package */
             , mObserver(observer)
         {}
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Run();
 
     private:
@@ -739,9 +849,7 @@ public:/* package */
         AutoPtr<IPackageDataObserver> mObserver;
     };
 
-    class FreeStorageRunnable
-        : public ElRefBase
-        , public IRunnable
+    class FreeStorageRunnable : public Runnable
     {
     public:
         FreeStorageRunnable(
@@ -753,14 +861,25 @@ public:/* package */
             , mPi(pi)
         {}
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Run();
 
     private:
         CPackageManagerService* mHost;
         Int64 mFreeStorageSize;
         AutoPtr<IIntentSender> mPi;
+    };
+
+    class PackageComparator
+        : public Object
+        , public IComparator
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI Compare(
+            /* [in] */ IInterface* lhs,
+            /* [in] */ IInterface* rhs,
+            /* [out] */ Int32* result);
     };
 
     class DeleteFilenameFilter
@@ -854,9 +973,7 @@ public:/* package */
         Boolean mReportStatus;
     };
 
-    class ProcessRunnable
-        : public ElRefBase
-        , public IRunnable
+    class ProcessRunnable : public Runnable
     {
     public:
         ProcessRunnable(
@@ -868,8 +985,6 @@ public:/* package */
             , mCurrentStatus(currentStatus)
         {}
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Run();
 
     private:
@@ -878,7 +993,6 @@ public:/* package */
         Int32 mCurrentStatus;
     };
 
-private:
     class ActivityIntentResolver
         : public IntentResolver<PackageParser::ActivityIntentInfo, IResolveInfo>
     {
@@ -1099,12 +1213,15 @@ public:
         /* [in] */ Boolean factoryTest,
         /* [in] */ Boolean onlyCore);
 
+    CARAPI_(AutoPtr<IBundle>) ExtrasForInstallResult(
+        /* [in] */ PackageInstalledInfo* res);
+
     CARAPI_(void) ScheduleWriteSettingsLocked();
 
     CARAPI_(void) ScheduleWritePackageRestrictionsLocked(
         /* [in] */ Int32 userId);
 
-    static CARAPI_(AutoPtr<IIPackageManager>) Main(
+    static CARAPI_(AutoPtr<CPackageManagerService>) Main(
         /* [in] */ IContext* context,
         /* [in] */ Installer* installer,
         /* [in] */ Boolean factoryTest,
@@ -1122,8 +1239,6 @@ public:
 
     CARAPI_(void) CleanupInstallFailedPackage(
         /* [in] */ PackageSetting* ps);
-
-    CARAPI_(void) ReadPermissions();
 
     CARAPI_(void) ReadPermission(
         /* [in] */ IXmlPullParser* parser,
@@ -1149,6 +1264,11 @@ public:
         /* [in] */ PackageParser::Package* p,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId);
+
+    CARAPI IsPackageAvailable(
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 userId,
+        /* [out] */ Boolean* result);
 
     CARAPI GetPackageInfo(
         /* [in] */ const String& packageName,
@@ -1185,7 +1305,7 @@ public:
     CARAPI QueryPermissionsByGroup(
         /* [in] */ const String& group,
         /* [in] */ Int32 flags,
-        /* [out, callee] */ IObjectContainer** infos);
+        /* [out, callee] */ IList** infos);
 
     CARAPI GetPermissionGroupInfo(
         /* [in] */ const String& name,
@@ -1194,7 +1314,7 @@ public:
 
     CARAPI GetAllPermissionGroups(
         /* [in] */ Int32 flags,
-        /* [out, callee] */ IObjectContainer** infos);
+        /* [out, callee] */ IList** infos);
 
     CARAPI_(AutoPtr<IApplicationInfo>) GenerateApplicationInfoFromSettingsLPw(
         /* [in] */ const String& packageName,
@@ -1220,11 +1340,20 @@ public:
         /* [in] */ Int64 freeStorageSize,
         /* [in] */ IIntentSender* pi);
 
+    CARAPI FreeStorage(
+        /* [in] */ Int64 freeStorageSize);
+
     CARAPI GetActivityInfo(
         /* [in] */ IComponentName* component,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
         /* [out] */ IActivityInfo** info);
+
+    CARAPI ActivitySupportsIntent(
+        /* [in] */ IComponentName* className,
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [out] */ Boolean* result);
 
     CARAPI GetReceiverInfo(
         /* [in] */ IComponentName* component,
@@ -1246,6 +1375,9 @@ public:
 
     CARAPI GetSystemSharedLibraryNames(
         /* [out, callee] */ ArrayOf<String>** names);
+
+    // ActionsCode(songzhining, new code: add extra hardware feature support)
+    CARAPI_(AutoPtr< HashMap<String, AutoPtr<IFeatureInfo> > >) GetFeaturesLocked();
 
     CARAPI GetSystemAvailableFeatures(
         /* [out] */ ArrayOf<IFeatureInfo*>** infos);
@@ -1275,6 +1407,16 @@ public:
     static CARAPI_(Boolean) ComparePermissionInfos(
         /* [in] */ IPermissionInfo* pi1,
         /* [in] */ IPermissionInfo* pi2);
+
+    CARAPI_(Int32) PermissionInfoFootprint(
+        /* [in] */ IPermissionInfo* info);
+
+    CARAPI_(Int32) CalculateCurrentPermissionFootprintLocked(
+        /* [in] */ BasePermission* tree);
+
+    CARAPI EnforcePermissionCapLocked(
+        /* [in] */ IPermissionInfo* info,
+        /* [in] */ BasePermission* tree);
 
     CARAPI AddPermissionLocked(
         /* [in] */ IPermissionInfo* info,
@@ -1314,6 +1456,19 @@ public:
         /* [in] */ Int32 uid2,
         /* [out] */ Int32* result);
 
+    /**
+     * Compares two sets of signatures. Returns:
+     * <br />
+     * {@link PackageManager#SIGNATURE_NEITHER_SIGNED}: if both signature sets are null,
+     * <br />
+     * {@link PackageManager#SIGNATURE_FIRST_NOT_SIGNED}: if the first signature set is null,
+     * <br />
+     * {@link PackageManager#SIGNATURE_SECOND_NOT_SIGNED}: if the second signature set is null,
+     * <br />
+     * {@link PackageManager#SIGNATURE_MATCH}: if the two signature sets are identical,
+     * <br />
+     * {@link PackageManager#SIGNATURE_NO_MATCH}: if the two signature sets differ.
+     */
     CARAPI_(Int32) CompareSignatures(
         /* [in] */ ArrayOf<ISignature*>* s1,
         /* [in] */ ArrayOf<ISignature*>* s2);
@@ -1330,6 +1485,14 @@ public:
         /* [in] */ const String& sharedUserName,
         /* [out] */ Int32* uid);
 
+    CARAPI GetFlagsForUid(
+        /* [in] */ Int32 uid,
+        /* [out] */ Int32* result);
+
+    CARAPI IsUidPrivileged(
+        /* [in] */ Int32 uid,
+        /* [out] */ Boolean* result);
+
     CARAPI ResolveIntent(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& resolvedType,
@@ -1337,20 +1500,47 @@ public:
         /* [in] */ Int32 userId,
         /* [out] */ IResolveInfo** resolveInfo);
 
+    CARAPI SetLastChosenActivity(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [in] */ Int32 flags,
+        /* [in] */ IIntentFilter* filter,
+        /* [in] */ Int32 match,
+        /* [in] */ IComponentName* activity);
+
+    CARAPI GetLastChosenActivity(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [in] */ Int32 flags,
+        /* [out] */ IResolveInfo** info);
+
     CARAPI_(AutoPtr<IResolveInfo>) FindPreferredActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& resolvedType,
         /* [in] */ Int32 flags,
-        /* [in] */ IObjectContainer* query,
+        /* [in] */ IList* query,
         /* [in] */ Int32 priority,
+        /* [in] */ Boolean always,
+        /* [in] */ Boolean removeMatches,
+        /* [in] */ Boolean debug,
         /* [in] */ Int32 userId);
+
+    /*
+     * Returns if intent can be forwarded from the sourceUserId to the targetUserId
+     */
+    CARAPI CanForwardTo(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [in] */ Int32 sourceUserId,
+        /* [in] */ Int32 targetUserId,
+        /* [out] */ Boolean* result);
 
     CARAPI QueryIntentActivities(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& resolvedType,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
-        /* [out, callee] */ IObjectContainer** infos);
+        /* [out, callee] */ IList** infos);
 
     CARAPI QueryIntentActivityOptions(
         /* [in] */ IComponentName* caller,
@@ -1360,14 +1550,14 @@ public:
         /* [in] */ const String& resolvedType,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
-        /* [out] */ IObjectContainer** infos);
+        /* [out] */ IList** infos);
 
     CARAPI QueryIntentReceivers(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& resolvedType,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
-        /* [out] */ IObjectContainer** receivers);
+        /* [out] */ IList** receivers);
 
     CARAPI ResolveService(
         /* [in] */ IIntent* intent,
@@ -1381,23 +1571,34 @@ public:
         /* [in] */ const String& resolvedType,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
-        /* [out] */ IObjectContainer** services);
+        /* [out] */ IList** services);
+
+    CARAPI QueryIntentContentProviders(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 userId,
+        /* [out] */ IList** infos);
 
     CARAPI GetInstalledPackages(
         /* [in] */ Int32 flags,
-        /* [in] */ const String& lastRead,
+        /* [in] */ Int32 userId,
+        /* [out] */ IParceledListSlice** slice);
+
+    CARAPI GetPackagesHoldingPermissions(
+        /* [in] */ ArrayOf<String>* permissions,
+        /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
         /* [out] */ IParceledListSlice** slice);
 
     CARAPI GetInstalledApplications(
         /* [in] */ Int32 flags,
-        /* [in] */ const String& lastRead,
         /* [in] */ Int32 userId,
         /* [out] */ IParceledListSlice** slice);
 
     CARAPI GetPersistentApplications(
         /* [in] */ Int32 flags,
-        /* [out, callee] */ IObjectContainer** infos);
+        /* [out, callee] */ IList** infos);
 
     CARAPI ResolveContentProvider(
         /* [in] */ const String& name,
@@ -1406,14 +1607,14 @@ public:
         /* [out] */ IProviderInfo** info);
 
     CARAPI QuerySyncProviders(
-        /* [in, out] */ IObjectContainer* outNames,
-        /* [in, out] */ IObjectContainer* outInfo);
+        /* [in, out] */ IList* outNames,
+        /* [in, out] */ IList* outInfo);
 
     CARAPI QueryContentProviders(
         /* [in] */ const String& processName,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** providers);
+        /* [out] */ IList** providers);
 
     CARAPI GetInstrumentationInfo(
         /* [in] */ IComponentName* name,
@@ -1423,9 +1624,13 @@ public:
     CARAPI QueryInstrumentation(
         /* [in] */ const String& targetPackage,
         /* [in] */ Int32 flags,
-        /* [out, callee] */ IObjectContainer** infos);
+        /* [out, callee] */ IList** infos);
 
     static CARAPI_(void) ReportSettingsProblem(
+        /* [in] */ Int32 priority,
+        /* [in] */ const String& msg);
+
+    static CARAPI_(void) LogCriticalInfo(
         /* [in] */ Int32 priority,
         /* [in] */ const String& msg);
 
@@ -1439,6 +1644,9 @@ public:
         /* [in] */ PackageParser::Package* pkg,
         /* [in] */ Boolean forceDex,
         /* [in] */ Boolean defer);
+
+    static CARAPI_(AutoPtr< ArrayOf<String> >) GetDexCodeInstructionSets(
+        /* [in] */ List<String>& instructionSets);
 
     CARAPI_(AutoPtr<IFile>) GetDataPathForUser(
         /* [in] */ Int32 userId);
@@ -1562,7 +1770,7 @@ public:
 
     CARAPI GetPreferredPackages(
         /* [in] */ Int32 flags,
-        /* [out, callee] */ IObjectContainer** infos);
+        /* [out, callee] */ IList** infos);
 
     CARAPI AddPreferredActivity(
         /* [in] */ IIntentFilter* filter,
@@ -1585,8 +1793,8 @@ public:
         /* [in] */ Int32 userId);
 
     CARAPI GetPreferredActivities(
-        /* [in, out] */ IObjectContainer* outFilters,
-        /* [in, out] */ IObjectContainer* outActivities,
+        /* [in, out] */ IList* outFilters,
+        /* [in, out] */ IList* outActivities,
         /* [in] */ const String& packageName,
         /* [out] */ Int32* count);
 
@@ -1678,6 +1886,10 @@ public:
         /* [out] */ Boolean* result);
 
 private:
+    static CARAPI_(void) GetDefaultDisplayMetrics(
+        /* [in] */ IContext* context,
+        /* [in] */ IDisplayMetrics* metrics);
+
     CARAPI_(String) GetRequiredVerifierLPr();
 
     CARAPI_(void) ReadPermissionsFromXml(
@@ -1687,11 +1899,23 @@ private:
         /* [in] */ Int32 uid,
         /* [in] */ Int32 userId);
 
+    /**
+     * Checks if the request is from the system or an app that has INTERACT_ACROSS_USERS
+     * or INTERACT_ACROSS_USERS_FULL permissions, if the userid is not for the caller.
+     * @param checkShell TODO(yamasani):
+     * @param message the message to log on security exception
+     */
     CARAPI EnforceCrossUserPermission(
         /* [in] */ Int32 callingUid,
         /* [in] */ Int32 userId,
         /* [in] */ Boolean requireFullPermission,
+        /* [in] */ Boolean checkShell,
         /* [in] */ const String& message);
+
+    CARAPI EnforceShellRestriction(
+        /* [in] */ const String& restriction,
+        /* [in] */ Int32 callingUid,
+        /* [in] */ Int32 userHandle);
 
     CARAPI_(AutoPtr<BasePermission>) FindPermissionTreeLP(
         /* [in] */ const String& permName);
@@ -1700,34 +1924,112 @@ private:
         /* [in] */ const String& permName,
         /* [out] */ BasePermission** permission);
 
+    static CARAPI CheckGrantRevokePermissions(
+        /* [in] */ PackageParser::Package* pkg,
+        /* [in] */ BasePermission* bp);
+
+    /**
+     * If the database version for this type of package (internal storage or
+     * external storage) is less than the version where package signatures
+     * were updated, return true.
+     */
+    CARAPI_(Boolean) IsCompatSignatureUpdateNeeded(
+        /* [in] */ PackageParser::Package* scannedPkg);
+
+    /**
+     * Used for backward compatibility to make sure any packages with
+     * certificate chains get upgraded to the new style. {@code existingSigs}
+     * will be in the old format (since they were stored on disk from before the
+     * system upgrade) and {@code scannedSigs} will be in the newer format.
+     */
+    CARAPI_(Int32) CompareSignaturesCompat(
+        /* [in] */ PackageSignatures* existingSigs,
+        /* [in] */ PackageParser::Package* scannedPkg);
+
+    CARAPI_(Boolean) IsRecoverSignatureUpdateNeeded(
+        /* [in] */ PackageParser::Package* scannedPkg);
+
+    CARAPI_(Int32) CompareSignaturesRecover(
+        /* [in] */ PackageSignatures* existingSigs,
+        /* [in] */ PackageParser::Package* scannedPkg);
+
     CARAPI ChooseBestActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& resolvedType,
         /* [in] */ Int32 flags,
-        /* [in] */ IObjectContainer* query,
+        /* [in] */ IList* query,
         /* [in] */ Int32 userId,
         /* [out] */ IResolveInfo** resolveInfo);
 
-    CARAPI_(Int32) GetContinuationPoint(
-        /* [in] */ const ArrayOf<String>& keys,
-        /* [in] */ const String& key);
+    CARAPI_(AutoPtr<IResolveInfo>) FindPersistentPreferredActivityLP(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [in] */ Int32 flags,
+        /* [in] */ IList* query,
+        /* [in] */ Boolean debug,
+        /* [in] */ Int32 userId);
 
-    CARAPI ScanDirLI(
+    CARAPI(AutoPtr< List<AutoPtr<CrossProfileIntentFilter> > >) GetMatchingCrossProfileIntentFilters(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [in] */ Int32 userId);
+
+    CARAPI(AutoPtr<IResolveInfo>) QuerySkipCurrentProfileIntents(
+        /* [in] */ List<AutoPtr<CrossProfileIntentFilter> >* matchingFilters,
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 sourceUserId);
+
+    // Return matching ResolveInfo if any for skip current profile intent filters.
+    CARAPI(AutoPtr<IResolveInfo>) QueryCrossProfileIntents(
+        /* [in] */ List<AutoPtr<CrossProfileIntentFilter> >* matchingFilters,
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 sourceUserId);
+
+    CARAPI(AutoPtr<IResolveInfo>) CheckTargetCanHandle(
+        /* [in] */ CrossProfileIntentFilter* filter,
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& resolvedType,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 sourceUserId);
+
+    CARAPI(AutoPtr<IResolveInfo>) CreateForwardingResolveInfo(
+        /* [in] */ IIntentFilter* filter,
+        /* [in] */ Int32 sourceUserId,
+        /* [in] */ Int32 targetUserId);
+
+    CARAPI_(void) AddPackageHoldingPermissions(
+        /* [in] */ IArrayList* list,
+        /* [in] */ PackageSetting* ps,
+        /* [in] */ ArrayOf<String>* permissions,
+        /* [in] */ ArrayOf<Boolean>* tmp,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 userId);
+
+    CARAPI_(void) CreateIdmapsForPackageLI(
+        /* [in] */ PackageParser::Package* pkg);
+
+    CARAPI_(Boolean) CreateIdmapForPackagePairLI(
+        /* [in] */ PackageParser::Package* pkg,
+        /* [in] */ PackageParser::Package* opkg);
+
+    CARAPI_(void) ScanDirLI(
         /* [in] */ IFile* dir,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 scanMode,
-        /* [in] */ Int64 currentTime,
-        /* [in] */ ArrayOf<Byte>* readBuffer);
+        /* [in] */ Int64 currentTime);
 
     static CARAPI_(AutoPtr<IFile>) GetSettingsProblemFile();
 
-    CARAPI_(Boolean) CollectCertificatesLI(
+    CARAPI CollectCertificatesLI(
         /* [in] */ PackageParser* pp,
         /* [in] */ PackageSetting* ps,
         /* [in] */ PackageParser::Package* pkg,
         /* [in] */ IFile* srcFile,
-        /* [in] */ Int32 parseFlags,
-        /* [in] */ ArrayOf<Byte>* readBuffer);
+        /* [in] */ Int32 parseFlags);
 
     CARAPI_(AutoPtr<PackageParser::Package>) ScanPackageLI(
         /* [in] */ IFile* scanFile,
@@ -2068,60 +2370,17 @@ private:
         /* [in] */ InstallArgs* args,
         /* [in] */ Int32 currentStatus);
 
-    CARAPI_(Boolean) ConnectToService();
-
-    CARAPI_(void) DisconnectService();
-
-    CARAPI_(void) HandleInitCopy(
-        /* [in] */ HandlerParams* params);
-
-    CARAPI_(void) HandleMCSBound(
-        /* [in] */ IMediaContainerService* service);
-
-    CARAPI_(void) HandleMCSReconnect();
-
-    CARAPI_(void) HandleMCSUnbind();
-
-    CARAPI_(void) HandleMCSGiveUp();
-
-    CARAPI_(void) HandleSendPendingBroadcast();
-
-    CARAPI_(void) HandlePostInstall(
-        /* [in] */ Int32 token);
-
-    CARAPI_(void) HandleCheckPendingVerification(
-        /* [in] */ Int32 verificationId);
-
-    CARAPI_(void) HandlePackageVerified(
-        /* [in] */ Int32 verificationId,
-        /* [in] */ PackageVerificationResponse* response);
-
     CARAPI_(void) HandleDeletePackage(
         /* [in] */ const String& packageName,
         /* [in] */ IPackageDeleteObserver* observer,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 uid);
 
-    CARAPI_(void) HandleStartCleaningPackage(
-        /* [in] */ const String& packageName,
-        /* [in] */ Int32 userId,
-        /* [in] */ Boolean andCode);
-
-    CARAPI_(void) HandleUpdatedMediaStatus(
-        /* [in] */ Boolean reportStatus,
-        /* [in] */ Boolean doGc,
-        /* [in] */ ISet* args);
-
-    CARAPI_(void) HandleWriteSettings();
-
-    CARAPI_(void) HandleWritePackageRestriction();
-
-
 public:/*package*/
     static const String TAG;
-    static const Boolean DEBUG_SETTINGS;
-    static const Boolean DEBUG_UPGRADE;
-    static const Int32 SCAN_MONITOR = 1 << 0;
+    static const Boolean DEBUG_SETTINGS = FALSE;
+    static const Boolean DEBUG_PREFERRED = FALSE;
+    static const Boolean DEBUG_UPGRADE = FALSE;
     static const Int32 SCAN_NO_DEX = 1 << 1;
     static const Int32 SCAN_FORCE_DEX = 1 << 2;
     static const Int32 SCAN_UPDATE_SIGNATURE = 1 << 3;
@@ -2130,6 +2389,9 @@ public:/*package*/
     static const Int32 SCAN_UPDATE_TIME = 1 << 6;
     static const Int32 SCAN_DEFER_DEX = 1 << 7;
     static const Int32 SCAN_BOOTING = 1 << 8;
+    static const Int32 SCAN_TRUSTED_OVERLAY = 1<<9;
+    static const Int32 SCAN_DELETE_DATA_ON_FAILURES = 1<<10;
+    static const Int32 SCAN_REPLACING = 1<<11;
 
     static const Int32 REMOVE_CHATTY = 1 << 16;
 
@@ -2137,21 +2399,13 @@ public:/*package*/
 
     static const AutoPtr<IComponentName> DEFAULT_CONTAINER_COMPONENT;
 
-    static const String sTempContainerPrefix;
-
-    AutoPtr<IHandlerThread> mHandlerThread;
+    AutoPtr<ServiceThread> mHandlerThread;
     AutoPtr<IHandler> mHandler;//   final PackageHandler mHandler;
-    Boolean mBound;
-    List<AutoPtr<HandlerParams> > mPendingInstalls;
-
-    const Int32 mSdkVersion;
-//      final String mSdkCodename = "REL".equals(Build.VERSION.CODENAME)
-//              ? null : Build.VERSION.CODENAME;
 
     AutoPtr<IContext> mContext;
     Boolean mFactoryTest;
     Boolean mOnlyCore;
-    Boolean mNoDexOpt;
+    Boolean mLazyDexOpt;
     AutoPtr<IDisplayMetrics> mMetrics;
     Int32 mDefParseFlags;
     AutoPtr< ArrayOf<String> > mSeparateProcesses;
@@ -2165,30 +2419,12 @@ public:/*package*/
     /** The location for ASEC container files on internal storage. */
     String mAsecInternalPath;
 
-    // This is the object monitoring the framework dir.
-    AutoPtr<IFileObserver> mFrameworkInstallObserver;
-
-    // This is the object monitoring the system app dir.
-    AutoPtr<IFileObserver> mSystemInstallObserver;
-
-    // This is the object monitoring the system app dir.
-    AutoPtr<IFileObserver> mVendorInstallObserver;
-
-    // This is the object monitoring mAppInstallDir.
-    AutoPtr<IFileObserver> mAppInstallObserver;
-
-    // This is the object monitoring mDrmAppPrivateInstallDir.
-    AutoPtr<IFileObserver> mDrmAppInstallObserver;
-
     // Used for priviledge escalation.  MUST NOT BE CALLED WITH mPackages
     // LOCK HELD.  Can be called with mInstallLock held.
     AutoPtr<Installer> mInstaller;
 
-    AutoPtr<IFile> mFrameworkDir;
-    AutoPtr<IFile> mSystemAppDir;
-    AutoPtr<IFile> mVendorAppDir;
+    /** Directory where installed third-party apps stored */
     AutoPtr<IFile> mAppInstallDir;
-    AutoPtr<IFile> mDalvikCacheDir;
 
     // Directory containing the private parts (e.g. code and non-resource assets) of forward-locked
     // apps.
@@ -2198,17 +2434,8 @@ public:/*package*/
 
     // Lock for state used when installing and doing other long running
     // operations.  Methods that must be called with this lock held have
-    // the prefix "LI".
+    // the suffix "LI".
     Object mInstallLock;
-
-    // These are the directories in the 3rd party applications installed dir
-    // that we have currently loaded packages from.  Keys are the application's
-    // installed zip file (absolute codePath), and values are Package.
-    HashMap<String, AutoPtr<PackageParser::Package> > mAppDirs;
-
-    // Information for the parser to write more useful error messages.
-    AutoPtr<IFile> mScanningPath;
-    Int32 mLastScanError;
 
     // Keys are String (package name), values are Package.  This also serves
     // as the lock for the global state.  Methods that must be called with
@@ -2216,26 +2443,23 @@ public:/*package*/
     HashMap<String, AutoPtr<PackageParser::Package> > mPackages;
     Object mPackagesLock;
 
+    // Tracks available target package names -> overlay package paths.
+    HashMap<String, AutoPtr< HashMap<String, AutoPtr<PackageParser::Package> > > > mOverlays;
+
     AutoPtr<Settings> mSettings;
     Boolean mRestoredSettings;
 
-    // Group-ids that are given to all packages as read from etc/permissions/*.xml.
+    // System configuration read by SystemConfig.
     AutoPtr< ArrayOf<Int32> > mGlobalGids;
+    AutoPtr<ISparseArray> mSystemPermissions;/*SparseArray<HashSet<String>> ;*/
+    AutoPtr< HashMap<String, AutoPtr<IFeatureInfo> > > mAvailableFeatures;
+    // ActionsCode(songzhining, new code: add extra hardware feature support)
+    AutoPtr< HashMap<String, AutoPtr<IFeatureInfo> > > mExtraFeatures;
+    // If mac_permissions.xml was found for seinfo labeling.
+    Boolean mFoundPolicyFile;
 
-    // These are the built-in uid -> permission mappings that were read from the
-    // etc/permissions.xml file.
-    HashMap<Int32, AutoPtr<HashSet<String> > > mSystemPermissions;
-
-    // These are the built-in shared libraries that were read from the
-    // etc/permissions.xml file.
-    HashMap<String, String> mSharedLibraries;
-
-    // Temporary for building the final shared libraries for an .apk.
-    AutoPtr< ArrayOf<String> > mTmpSharedLibraries;
-
-    // These are the features this devices supports that were read from the
-    // etc/permissions.xml file.
-    HashMap<String, AutoPtr<IFeatureInfo> > mAvailableFeatures;
+    // Currently known shared libraries.
+    HashMap<String, AutoPtr<SharedLibraryEntry> > mSharedLibraries;
 
     // All available activities, for your resolving pleasure.
     AutoPtr<ActivityIntentResolver> mActivities;
@@ -2246,12 +2470,12 @@ public:/*package*/
     // All available services, for your resolving pleasure.
     AutoPtr<ServiceIntentResolver> mServices;
 
-    // Keys are String (provider class name), values are Provider.
-    HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Provider> > mProvidersByComponent;
+    // All available providers, for your resolving pleasure.
+    AutoPtr<ProviderIntentResolver> mProviders;
 
     // Mapping from provider base names (first directory in content URI codePath)
     // to the provider information.
-    HashMap<String, AutoPtr<PackageParser::Provider> > mProviders;
+    HashMap<String, AutoPtr<PackageParser::Provider> > mProvidersByAuthority;
 
     // Mapping from instrumentation class names to info about them.
     HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Instrumentation> > mInstrumentation;
@@ -2269,7 +2493,15 @@ public:/*package*/
     /** List of packages waiting for verification. */
     HashMap<Int32, AutoPtr<PackageVerificationState> > mPendingVerification;
 
-    List< AutoPtr<PackageParser::Package> > mDeferredDexOpt;
+    /** Set of packages associated with each app op permission. */
+    AutoPtr<IArrayMap> mAppOpPermissionPackages;/*ArrayMap<String, ArraySet<String>> mAppOpPermissionPackages = new ArrayMap<>();*/
+
+    AutoPtr<PackageInstallerService> mInstallerService;
+
+    AutoPtr< HashSet<AutoPtr<PackageParser::Package> > > mDeferredDexOpt;
+
+    // Cache of users who need badging.
+    AutoPtr<ISparseBooleanArray> mUserNeedsBadging;
 
     Boolean mSystemReady;
     Boolean mSafeMode;
@@ -2280,9 +2512,11 @@ public:/*package*/
     AutoPtr<IResolveInfo> mResolveInfo;
     AutoPtr<IComponentName> mResolveComponentName;
     AutoPtr<PackageParser::Package> mPlatformPackage;
+    AutoPtr<IComponentName> mCustomResolverComponentName;
 
-    // Set of pending broadcasts for aggregating enable/disable of components.
-    HashMap< String, AutoPtr<List<String> > > mPendingBroadcasts;
+    Boolean mResolverReplaced;
+
+    AutoPtr<PendingPackageBroadcasts> mPendingBroadcasts;
 
     static const Int32 SEND_PENDING_BROADCAST = 1;
     static const Int32 MCS_BOUND = 3;
@@ -2323,33 +2557,49 @@ public:/*package*/
     static const Boolean DEBUG_SD_INSTALL;
 
 private:
-    static const Boolean DEBUG_PREFERRED;
-    static const Boolean DEBUG_INSTALL;
-    static const Boolean DEBUG_REMOVE;
-    static const Boolean DEBUG_BROADCASTS;
-    static const Boolean DEBUG_SHOW_INFO;
-    static const Boolean DEBUG_PACKAGE_INFO;
-    static const Boolean DEBUG_INTENT_MATCHING;
-    static const Boolean DEBUG_PACKAGE_SCANNING;
-    static const Boolean DEBUG_APP_DIR_OBSERVER;
-    static const Boolean DEBUG_VERIFY;
+    static const Boolean DEBUG_INSTALL = FALSE;
+    static const Boolean DEBUG_REMOVE = FALSE;
+    static const Boolean DEBUG_BROADCASTS = FALSE;
+    static const Boolean DEBUG_SHOW_INFO = FALSE;
+    static const Boolean DEBUG_PACKAGE_INFO = FALSE;
+    static const Boolean DEBUG_INTENT_MATCHING = FALSE;
+    static const Boolean DEBUG_PACKAGE_SCANNING = FALSE;
+    static const Boolean DEBUG_VERIFY = FALSE;
+    static const Boolean DEBUG_DEXOPT = FALSE;
+    static const Boolean DEBUG_ABI_SELECTION = FALSE;
 
     static const Int32 RADIO_UID = IProcess::PHONE_UID;
     static const Int32 LOG_UID = IProcess::LOG_UID;
     static const Int32 NFC_UID = IProcess::NFC_UID;
     static const Int32 BLUETOOTH_UID = IProcess::BLUETOOTH_UID;
+    static const Int32 SHELL_UID = IProcess::SHELL_UID;
 
-    static const Boolean GET_CERTIFICATES = TRUE;
+    // Cap the size of permission trees that 3rd party apps can define
+    static const Int32 MAX_PERMISSION_TREE_FOOTPRINT = 32768;     // characters of text
 
-    static const Int32 REMOVE_EVENTS =
-        IFileObserver::CLOSE_WRITE | IFileObserver::DELETE | IFileObserver::MOVED_FROM;
-    static const Int32 ADD_EVENTS =
-        IFileObserver::CLOSE_WRITE /*| IFileObserver::CREATE*/ | IFileObserver::MOVED_TO;
-
-    static const Int32 OBSERVER_EVENTS = REMOVE_EVENTS | ADD_EVENTS;
     // Suffix used during package installation when copying/moving
     // package apks to install directory.
     static const String INSTALL_PACKAGE_SUFFIX;
+
+    /**
+     * Timeout (in milliseconds) after which the watchdog should declare that
+     * our handler thread is wedged.  The usual default for such things is one
+     * minute but we sometimes do very lengthy I/O operations on this thread,
+     * such as installing multi-gigabyte applications, so ours needs to be longer.
+     */
+    static const Int64 WATCHDOG_TIMEOUT = 1000 * 60 * 10;     // ten minutes
+
+    /**
+     * Wall-clock timeout (in milliseconds) after which we *require* that an fstrim
+     * be run on this device.  We use the value in the Settings.Global.MANDATORY_FSTRIM_INTERVAL
+     * settings entry if available, otherwise we use the hardcoded default.  If it's been
+     * more than this long since the last fstrim, we force one during the boot sequence.
+     *
+     * This backstops other fstrim scheduling:  if the device is alive at midnight+idle,
+     * one gets run at the next available charging+idle time.  This final mandatory
+     * no-fstrim check kicks in only of the other scheduling criteria is never met.
+     */
+    static const Int64 DEFAULT_MANDATORY_FSTRIM_INTERVAL = 3 * IDateUtils::DAY_IN_MILLIS;
 
     /**
      * Whether verification is enabled by default.
@@ -2372,13 +2622,32 @@ private:
 
     static const String PACKAGE_MIME_TYPE;
 
-    static const String LIB_DIR_NAME;
+    static const String VENDOR_OVERLAY_DIR;
+    static const String VENDOR_APP_DIR;
+
+    static String sPreferredInstructionSet;
+
+    static const String IDMAP_PREFIX;
+    static const String IDMAP_SUFFIX;
+
+    static const String SD_ENCRYPTION_KEYSTORE_NAME;
+
+    static const String SD_ENCRYPTION_ALGORITHM;
 
     /**
-     * Directory to which applications installed internally have native
-     * libraries copied.
+     * Messages for {@link #mHandler} that need to wait for system ready before
+     * being dispatched.
      */
-    AutoPtr<IFile> mAppLibInstallDir;
+    AutoPtr<IArrayList> mPostSystemReadyMessages;
+
+    /**
+     * Directory to which applications installed internally have their
+     * 32 bit native libraries copied.
+     */
+    AutoPtr<IFile> mAppLib32InstallDir;
+
+    // If a recursive restorecon of /data/data/<pkg> is needed.
+    Boolean mShouldRestoreconData;
 
     /** Token for keys in mPendingVerification. */
     Int32 mPendingVerificationToken;
@@ -2395,11 +2664,12 @@ private:
 
     String mRequiredVerifierPackage;
 
-    static const String SD_ENCRYPTION_KEYSTORE_NAME;
-
-    static const String SD_ENCRYPTION_ALGORITHM;
+    AutoPtr<PackageUsage> mPackageUsage;
 
     Boolean mMediaMounted;
+
+    friend class PackageUsage;
+    friend class PackageHandler;
 };
 
 } // namespace Pm
