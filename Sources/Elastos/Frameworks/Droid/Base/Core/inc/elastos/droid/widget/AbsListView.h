@@ -520,6 +520,8 @@ protected:
         PositionScroller(
             /* [in] */ AbsListView* host);
 
+        virtual ~PositionScroller();
+
         CARAPI_(void) Start(
             /* [in] */ const Int32 position);
 
@@ -1839,7 +1841,8 @@ public:
      * Called back when the adapter connects to the RemoteViewsService.
      */
     // @Override
-    CARAPI_(Boolean) OnRemoteAdapterConnected();
+    CARAPI OnRemoteAdapterConnected(
+        /* [out] */ Boolean* result);
 
     /**
      * Called back when the adapter disconnects from the RemoteViewsService.
@@ -2342,94 +2345,94 @@ protected:
     /**
      * Indicates that we are not in the middle of a touch gesture
      */
-    static const Int32 TOUCH_MODE_REST;
+    static const Int32 TOUCH_MODE_REST = -1;
 
     /**
      * Indicates we just received the touch event and we are waiting to see if the it is a tap or a
      * scroll gesture.
      */
-    static const Int32 TOUCH_MODE_DOWN;
+    static const Int32 TOUCH_MODE_DOWN = 0;
 
     /**
      * Indicates the touch has been recognized as a tap and we are now waiting to see if the touch
      * is a longpress
      */
-    static const Int32 TOUCH_MODE_TAP;
+    static const Int32 TOUCH_MODE_TAP = 1;
 
     /**
      * Indicates we have waited for everything we can wait for, but the user's finger is still down
      */
-    static const Int32 TOUCH_MODE_DONE_WAITING;
+    static const Int32 TOUCH_MODE_DONE_WAITING = 2;
 
     /**
      * Indicates the touch gesture is a scroll
      */
-    static const Int32 TOUCH_MODE_SCROLL;
+    static const Int32 TOUCH_MODE_SCROLL = 3;
 
     /**
      * Indicates the view is in the process of being flung
      */
-    static const Int32 TOUCH_MODE_FLING;
+    static const Int32 TOUCH_MODE_FLING = 4;
 
     /**
      * Indicates the touch gesture is an overscroll - a scroll beyond the beginning or end.
      */
-    static const Int32 TOUCH_MODE_OVERSCROLL;
+    static const Int32 TOUCH_MODE_OVERSCROLL = 5;
 
     /**
      * Indicates the view is being flung outside of normal content bounds
      * and will spring back.
      */
-    static const Int32 TOUCH_MODE_OVERFLING;
+    static const Int32 TOUCH_MODE_OVERFLING = 6;
 
     /**
      * Regular layout - usually an unsolicited layout from the view system
      */
-    static const Int32 LAYOUT_NORMAL;
+    static const Int32 LAYOUT_NORMAL = 0;
 
     /**
      * Show the first item
      */
-    static const Int32 LAYOUT_FORCE_TOP;
+    static const Int32 LAYOUT_FORCE_TOP = 1;
 
     /**
      * Force the selected item to be on somewhere on the screen
      */
-    static const Int32 LAYOUT_SET_SELECTION;
+    static const Int32 LAYOUT_SET_SELECTION = 2;
 
     /**
      * Show the last item
      */
-    static const Int32 LAYOUT_FORCE_BOTTOM;
+    static const Int32 LAYOUT_FORCE_BOTTOM = 3;
 
     /**
      * Make a mSelectedItem appear in a specific location and build the rest of
      * the views from there. The top is specified by mSpecificTop.
      */
-    static const Int32 LAYOUT_SPECIFIC;
+    static const Int32 LAYOUT_SPECIFIC = 4;
 
     /**
      * Layout to sync as a result of a data change. Restore mSyncPosition to have its top
      * at mSpecificTop
      */
-    static const Int32 LAYOUT_SYNC;
+    static const Int32 LAYOUT_SYNC = 5;
 
     /**
      * Layout as a result of using the navigation keys
      */
-    static const Int32 LAYOUT_MOVE_SELECTION;
+    static const Int32 LAYOUT_MOVE_SELECTION = 6;
 
     /**
      * Content height divided by this is the overscroll limit.
      */
-    static const Int32 OVERSCROLL_LIMIT_DIVISOR;
+    static const Int32 OVERSCROLL_LIMIT_DIVISOR = 3;
 
     /**
      * How many positions in either direction we will search to try to
      * find a checked item with a stable ID that moved position across
      * a data set change. If the item isn't found it will be unselected.
      */
-    static const Int32 CHECK_POSITION_SEARCH_DISTANCE;
+    static const Int32 CHECK_POSITION_SEARCH_DISTANCE = 20;
 
     /**
      * Used for smooth scrolling at a consistent rate

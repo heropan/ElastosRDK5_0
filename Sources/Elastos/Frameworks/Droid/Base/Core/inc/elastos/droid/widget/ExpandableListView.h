@@ -49,23 +49,136 @@ namespace Widget {
  * @attr ref android.R.styleable#ExpandableListView_childIndicatorLeft
  * @attr ref android.R.styleable#ExpandableListView_childIndicatorRight
  * @attr ref android.R.styleable#ExpandableListView_childDivider
+ * @attr ref android.R.styleable#ExpandableListView_indicatorStart
+ * @attr ref android.R.styleable#ExpandableListView_indicatorEnd
+ * @attr ref android.R.styleable#ExpandableListView_childIndicatorStart
+ * @attr ref android.R.styleable#ExpandableListView_childIndicatorEnd
  */
 
-class ExpandableListView : public ListView
+class ExpandableListView
+    : public ListView
+    , public IExpandableListView
 {
 public:
+    /**
+     * Extra menu information specific to an {@link ExpandableListView} provided
+     * to the
+     * {@link android.view.View.OnCreateContextMenuListener#onCreateContextMenu(ContextMenu, View, ContextMenuInfo) }
+     * callback when a context menu is brought up for this AdapterView.
+     */
+    class ExpandableListContextMenuInfo
+        : public Object
+        , public IExpandableListContextMenuInfo
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        ExpandableListContextMenuInfo();
+
+        ~ExpandableListContextMenuInfo();
+
+        CARAPI constructor(
+            /* [in] */ IView* targetView,
+            /* [in] */ Int64 packedPosition,
+            /* [in] */ Int64 id);
+
+        CARAPI SetTargetView(
+            /* [in] */ IView* targetView);
+
+        CARAPI GetTargetView(
+            /* [out] */ IView** targetView);
+
+        CARAPI SetPackedPosition(
+            /* [in] */ Int64 packedPosition);
+
+        CARAPI GetPackedPosition(
+            /* [out] */ Int64* packedPosition);
+
+        CARAPI SetId(
+            /* [in] */ Int64 id);
+
+        CARAPI GetId(
+            /* [out] */ Int64* id);
+
+    public:
+        /**
+         * The view for which the context menu is being displayed. This
+         * will be one of the children Views of this {@link ExpandableListView}.
+         */
+        AutoPtr<IView> mTargetView;
+
+        /**
+         * The packed position in the list represented by the adapter for which
+         * the context menu is being displayed. Use the methods
+         * {@link ExpandableListView#getPackedPositionType},
+         * {@link ExpandableListView#getPackedPositionChild}, and
+         * {@link ExpandableListView#getPackedPositionGroup} to unpack this.
+         */
+        Int64 mPackedPosition;
+
+        /**
+         * The ID of the item (group or child) for which the context menu is
+         * being displayed.
+         */
+        Int64 mId;
+    };
+
+    class SavedState
+        : public View::BaseSavedState
+        , public IExpandableListViewSavedState
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        SavedState();
+
+        ~SavedState();
+
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ IParcelable* superState,
+            /* [in] */ IArrayList* expandedGroupMetadataList);
+
+    public:
+        // @Override
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* out);
+
+        // @Override
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* in);
+    public:
+        AutoPtr<IArrayList> mExpandedGroupMetadataList; // element is IGroupMetadata
+    };
+
+public:
+    CAR_INTERFACE_DECL();
+
     ExpandableListView();
 
-    ExpandableListView(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::expandableListViewStyle);
+    ~ExpandableListView();
 
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::expandableListViewStyle);
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    CARAPI OnRtlPropertiesChanged(
+        /* [in] */ Int32 layoutDirection);
 
     /**
      * Sets the drawable that will be drawn adjacent to every child in the list. This will
@@ -74,13 +187,8 @@ public:
      *
      * @param childDivider The drawable to use.
      */
-    virtual CARAPI SetChildDivider(
+    CARAPI SetChildDivider(
         /* [in] */ IDrawable* childDivider);
-
-    virtual CARAPI_(void) DrawDivider(
-        /* [in] */ ICanvas* canvas,
-        /* [in] */ IRect* bounds,
-        /* [in] */ Int32 childIndex);
 
     /**
      * This overloaded method should not be used, instead use
@@ -88,13 +196,16 @@ public:
      * <p>
      * {@inheritDoc}
      */
-    virtual CARAPI SetAdapter(
+    // @Override
+    CARAPI SetAdapter(
         /* [in] */ IAdapter* adapter);
 
     /**
      * This method should not be used, use {@link #getExpandableListAdapter()}.
      */
-    virtual CARAPI_(AutoPtr<IAdapter>) GetAdapter();
+    // @Override
+    CARAPI GetAdapter(
+        /* [out] */ IAdapter** adapter);
 
     /**
      * Register a callback to be invoked when an item has been clicked and the
@@ -104,39 +215,28 @@ public:
      * <p />
      * {@inheritDoc}
      */
-    virtual CARAPI SetOnItemClickListener(
+    CARAPI SetOnItemClickListener(
         /* [in] */ IAdapterViewOnItemClickListener* l);
 
     /**
      * Sets the adapter that provides data to this view.
      * @param adapter The adapter that provides data to this view.
      */
-    virtual CARAPI SetAdapter(
+    CARAPI SetAdapter(
         /* [in] */ IExpandableListAdapter* adapter);
 
     /**
      * Gets the adapter that provides data to this view.
      * @return The adapter that provides data to this view.
      */
-    virtual CARAPI_(AutoPtr<IExpandableListAdapter>) GetExpandableListAdapter();
+    CARAPI GetExpandableListAdapter(
+        /* [out] */ IExpandableListAdapter** adapter);
 
-    virtual CARAPI_(Boolean) PerformItemClick(
+    CARAPI PerformItemClick(
         /* [in] */ IView* v,
         /* [in] */ Int32 position,
-        /* [in] */ Int64 id);
-
-    /**
-     * This will either expand/collapse groups (if a group was clicked) or pass
-     * on the click to the proper child (if a child was clicked)
-     *
-     * @param position The flat list position. This has already been factored to
-     *            remove the header/footer.
-     * @param id The ListAdapter ID, not the group or child ID.
-     */
-    virtual CARAPI_(Boolean) HandleItemClick(
-        /* [in] */ IView* v,
-        /* [in] */ Int32 position,
-        /* [in] */ Int64 id);
+        /* [in] */ Int64 id,
+        /* [out] */ Boolean* result);
 
     /**
      * Expand a group in the grouped list view
@@ -145,8 +245,9 @@ public:
      * @return True if the group was expanded, false otherwise (if the group
      *         was already expanded, this will return false)
      */
-    virtual CARAPI_(Boolean) ExpandGroup(
-        /* [in] */ Int32 groupPos);
+    CARAPI ExpandGroup(
+        /* [in] */ Int32 groupPos,
+        /* [out] */ Boolean* expanded);
 
     /**
      * Expand a group in the grouped list view
@@ -156,9 +257,10 @@ public:
      * @return True if the group was expanded, false otherwise (if the group
      *         was already expanded, this will return false)
      */
-    virtual CARAPI_(Boolean) ExpandGroup(
+    CARAPI ExpandGroup(
         /* [in] */ Int32 groupPos,
-        /* [in] */ Boolean animate);
+        /* [in] */ Boolean animate,
+        /* [out] */ Boolean* expanded);
 
     /**
      * Collapse a group in the grouped list view
@@ -167,20 +269,21 @@ public:
      * @return True if the group was collapsed, false otherwise (if the group
      *         was already collapsed, this will return false)
      */
-    virtual CARAPI_(Boolean) CollapseGroup(
-        /* [in] */ Int32 groupPos);
+    CARAPI CollapseGroup(
+        /* [in] */ Int32 groupPos,
+        /* [out] */ Boolean* collapse);
 
-    virtual CARAPI SetOnGroupCollapseListener(
-        /* [in] */ IOnGroupCollapseListener* onGroupCollapseListener);
+    CARAPI SetOnGroupCollapseListener(
+        /* [in] */ IExpandableListViewOnGroupCollapseListener* onGroupCollapseListener);
 
-    virtual CARAPI SetOnGroupExpandListener(
-        /* [in] */ IOnGroupExpandListener* onGroupExpandListener);
+    CARAPI SetOnGroupExpandListener(
+        /* [in] */ IExpandableListViewOnGroupExpandListener* onGroupExpandListener);
 
-    virtual CARAPI SetOnGroupClickListener(
-        /* [in] */ IOnGroupClickListener* onGroupClickListener);
+    CARAPI SetOnGroupClickListener(
+        /* [in] */ IExpandableListViewOnGroupClickListener* onGroupClickListener);
 
-    virtual CARAPI SetOnChildClickListener(
-        /* [in] */ IOnChildClickListener* onChildClickListener);
+    CARAPI SetOnChildClickListener(
+        /* [in] */ IExpandableListViewOnChildClickListener* onChildClickListener);
 
     /**
      * Converts a flat list position (the raw position of an item (child or group)
@@ -196,8 +299,9 @@ public:
      *         in packed position representation. #PACKED_POSITION_VALUE_NULL if
      *         the position corresponds to a header or a footer item.
      */
-    virtual CARAPI_(Int64) GetExpandableListPosition(
-        /* [in] */ Int32 flatListPosition);
+    CARAPI GetExpandableListPosition(
+        /* [in] */ Int32 flatListPosition,
+        /* [out] */ Int64* position);
 
     /**
      * Converts a group and/or child position to a flat list position. This is
@@ -210,8 +314,9 @@ public:
      *            {@link #getPackedPositionForGroup(Int32)}.
      * @return The flat list position for the given child or group.
      */
-    virtual CARAPI_(Int32) GetFlatListPosition(
-        /* [in] */ Int64 packedPosition);
+    CARAPI GetFlatListPosition(
+        /* [in] */ Int64 packedPosition,
+        /* [out] */ Int32* position);
 
     /**
      * Gets the position of the currently selected group or child (along with
@@ -221,7 +326,8 @@ public:
      *         child's position and type. #PACKED_POSITION_VALUE_NULL if no selection
      *         or if selection is on a header or a footer item.
      */
-    virtual CARAPI_(Int64) GetSelectedPosition();
+    CARAPI GetSelectedPosition(
+        /* [out] */ Int64* position);
 
     /**
      * Gets the ID of the currently selected group or child. Can return -1 if no
@@ -230,13 +336,14 @@ public:
      * @return The ID of the currently selected group or child. -1 if no
      *         selection.
      */
-    virtual CARAPI_(Int64) GetSelectedId();
+    CARAPI GetSelectedId(
+        /* [out] */ Int64* id);
 
     /**
      * Sets the selection to the specified group.
      * @param groupPosition The position of the group that should be selected.
      */
-    virtual CARAPI SetSelectedGroup(
+    CARAPI SetSelectedGroup(
         /* [in] */ Int32 groupPosition);
 
     /**
@@ -250,10 +357,11 @@ public:
      *            it is collapsed.
      * @return Whether the selection was successfully set on the child.
      */
-    virtual CARAPI_(Boolean) SetSelectedChild(
+    CARAPI SetSelectedChild(
         /* [in] */ Int32 groupPosition,
         /* [in] */ Int32 childPosition,
-        /* [in] */ Boolean shouldExpandGroup);
+        /* [in] */ Boolean shouldExpandGroup,
+        /* [out] */ Boolean* res);
 
     /**
      * Whether the given group is currently expanded.
@@ -261,8 +369,9 @@ public:
      * @param groupPosition The group to check.
      * @return Whether the group is currently expanded.
      */
-    virtual CARAPI_(Boolean) IsGroupExpanded(
-        /* [in] */ Int32 groupPosition);
+    CARAPI IsGroupExpanded(
+        /* [in] */ Int32 groupPosition,
+        /* [out] */ Boolean* expanded);
 
     /**
      * Gets the type of a packed position. See
@@ -333,11 +442,6 @@ public:
     static CARAPI_(Int64) GetPackedPositionForGroup(
         /* [in] */ Int32 groupPosition);
 
-    virtual CARAPI_(AutoPtr<IContextMenuInfo>) CreateContextMenuInfo(
-        /* [in] */ IView* view,
-        /* [in] */ Int32 flatListPosition,
-        /* [in] */ Int64 id);
-
      /**
      * Sets the indicator to be drawn next to a child.
      *
@@ -345,7 +449,7 @@ public:
      *            child is the last child for a group, the state
      *            {@link android.R.attr#state_last} will be set.
      */
-    virtual CARAPI SetChildIndicator(
+    CARAPI SetChildIndicator(
         /* [in] */ IDrawable* childIndicator);
 
     /**
@@ -359,9 +463,24 @@ public:
      * @param right The right position (relative to the left bounds of this
      *            View) to end the drawing of the indicator.
      */
-    virtual CARAPI SetChildIndicatorBounds(
+    CARAPI SetChildIndicatorBounds(
         /* [in] */ Int32 left,
         /* [in] */ Int32 right);
+
+    /**
+     * Sets the relative drawing bounds for the child indicator. For either, you can
+     * specify {@link #CHILD_INDICATOR_INHERIT} to use inherit from the general
+     * indicator's bounds.
+     *
+     * @see #setIndicatorBounds(int, int)
+     * @param start The start position (relative to the start bounds of this View)
+     *            to start drawing the indicator.
+     * @param end The end position (relative to the end bounds of this
+     *            View) to end the drawing of the indicator.
+     */
+    CARAPI SetChildIndicatorBoundsRelative(
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end);
 
     /**
      * Sets the indicator to be drawn next to a group.
@@ -371,7 +490,7 @@ public:
      *            set. If the group is expanded, the state
      *            {@link android.R.attr#state_expanded} will be set.
      */
-    virtual CARAPI SetGroupIndicator(
+    CARAPI SetGroupIndicator(
         /* [in] */ IDrawable* groupIndicator);
 
     /**
@@ -385,26 +504,88 @@ public:
      * @param right The right position (relative to the left bounds of this
      *            View) to end the drawing of the indicator.
      */
-    virtual CARAPI SetIndicatorBounds(
+    CARAPI SetIndicatorBounds(
         /* [in] */ Int32 left,
         /* [in] */ Int32 right);
 
-    virtual CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
+    /**
+     * Sets the relative drawing bounds for the indicators (at minimum, the group indicator
+     * is affected by this; the child indicator is affected by this if the
+     * child indicator bounds are set to inherit).
+     *
+     * @see #setChildIndicatorBounds(int, int)
+     * @param start The start position (relative to the start bounds of this View)
+     *            to start drawing the indicator.
+     * @param end The end position (relative to the end bounds of this
+     *            View) to end the drawing of the indicator.
+     */
+    SetIndicatorBoundsRelative(
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end);
 
-    virtual CARAPI_(void) OnRestoreInstanceState(
+    CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
+
+    CARAPI_(void) OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
 
-    virtual CARAPI OnInitializeAccessibilityEvent(
+    CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
-    virtual CARAPI OnInitializeAccessibilityNodeInfo(
+    CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
     virtual CARAPI_(void) DispatchDraw(
         /* [in] */ ICanvas* canvas);
 
+    virtual CARAPI_(void) DrawDivider(
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ IRect* bounds,
+        /* [in] */ Int32 childIndex);
+
+    /**
+     * This will either expand/collapse groups (if a group was clicked) or pass
+     * on the click to the proper child (if a child was clicked)
+     *
+     * @param position The flat list position. This has already been factored to
+     *            remove the header/footer.
+     * @param id The ListAdapter ID, not the group or child ID.
+     */
+    virtual CARAPI_(Boolean) HandleItemClick(
+        /* [in] */ IView* v,
+        /* [in] */ Int32 position,
+        /* [in] */ Int64 id);
+
+    virtual CARAPI_(AutoPtr<IContextMenuInfo>) CreateContextMenuInfo(
+        /* [in] */ IView* view,
+        /* [in] */ Int32 flatListPosition,
+        /* [in] */ Int64 id);
+
 private:
+    /**
+     * Return true if we are in RTL compatibility mode (either before Jelly Bean MR1 or
+     * RTL not supported)
+     */
+    CARAPI_(Boolean) IsRtlCompatibilityMode();
+
+    /**
+     * Return true if the application tag in the AndroidManifest has set "supportRtl" to true
+     */
+    CARAPI_(Boolean) HasRtlSupport();
+
+    /**
+     * Resolve start/end indicator. start/end indicator always takes precedence over left/right
+     * indicator when defined.
+     */
+    CARAPI_(void) ResolveIndicator();
+
+    /**
+     * Resolve start/end child indicator. start/end child indicator always takes precedence over
+     * left/right child indicator when defined.
+     */
+    CARAPI_(void) ResolveChildIndicator();
+
+
     /**
      * Gets the indicator for the item at the given position. If the indicator
      * is stateful, the state will be given to the indicator.
@@ -413,14 +594,14 @@ private:
      *            should be returned.
      * @return The indicator in the proper state.
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetIndicator(
+    CARAPI_(AutoPtr<IDrawable>) GetIndicator(
         /* [in] */ IPositionMetadata* pos);
 
     /**
      * @param position An absolute (including header and footer) flat list position.
      * @return true if the position corresponds to a header or a footer item.
      */
-    virtual CARAPI_(Boolean) IsHeaderOrFooterPosition(
+    CARAPI_(Boolean) IsHeaderOrFooterPosition(
         /* [in] */ Int32 position);
 
     /**
@@ -430,7 +611,7 @@ private:
      * @param flatListPosition The absolute flat position
      * @return A group/child flat position as expected by the connector.
      */
-    virtual CARAPI_(Int32) GetFlatPositionForConnector(
+    CARAPI_(Int32) GetFlatPositionForConnector(
         /* [in] */ Int32 flatListPosition);
 
     /**
@@ -440,7 +621,7 @@ private:
      * @param flatListPosition The child/group flat position
      * @return An absolute flat position.
      */
-    virtual CARAPI_(Int32) GetAbsoluteFlatPosition(
+    CARAPI_(Int32) GetAbsoluteFlatPosition(
         /* [in] */ Int32 flatListPosition);
 
     /**
@@ -451,107 +632,32 @@ private:
      * @param position The position of the child or group whose ID should be
      *            returned.
      */
-    virtual CARAPI_(Int64) GetChildOrGroupId(
+    CARAPI_(Int64) GetChildOrGroupId(
         /* [in] */ IExpandableListPosition* position);
 
-    /**
-     * Extra menu information specific to an {@link ExpandableListView} provided
-     * to the
-     * {@link android.view.View.OnCreateContextMenuListener#onCreateContextMenu(ContextMenu, View, ContextMenuInfo) }
-     * callback when a context menu is brought up for this AdapterView.
-     */
-    class ExpandableListContextMenuInfo
-        : public IContextMenuInfo, public ElRefBase
-    {
-    public:
-        CAR_INTERFACE_DECL()
-    public:
-        ExpandableListContextMenuInfo(
-            /* [in] */ IView* targetView,
-            /* [in] */ Int64 packedPosition,
-            /* [in] */ Int64 id);
-
-        /**
-         * The view for which the context menu is being displayed. This
-         * will be one of the children Views of this {@link ExpandableListView}.
-         */
-        AutoPtr<IView> mTargetView;
-
-        /**
-         * The packed position in the list represented by the adapter for which
-         * the context menu is being displayed. Use the methods
-         * {@link ExpandableListView#getPackedPositionType},
-         * {@link ExpandableListView#getPackedPositionChild}, and
-         * {@link ExpandableListView#getPackedPositionGroup} to unpack this.
-         */
-        Int64 mPackedPosition;
-
-        /**
-         * The ID of the item (group or child) for which the context menu is
-         * being displayed.
-         */
-        Int64 mId;
-    };
-
-public:
-    /**
-     * The packed position represents a group.
-     */
-    static const Int32 PACKED_POSITION_TYPE_GROUP = 0;
-
-    /**
-     * The packed position represents a child.
-     */
-    static const Int32 PACKED_POSITION_TYPE_CHILD = 1;
-
-    /**
-     * The packed position represents a neither/null/no preference.
-     */
-    static const Int32 PACKED_POSITION_TYPE_NULL = 2;
-
-    /**
-     * The value for a packed position that represents neither/null/no
-     * preference. This value is not otherwise possible since a group type
-     * (first bit 0) should not have a child position filled.
-     */
-    static const Int64 PACKED_POSITION_VALUE_NULL = 0x00000000FFFFFFFFL;
-
-    /**
-     * Denotes when a child indicator should inherit this bound from the generic
-     * indicator bounds
-     */
-    static const Int32 CHILD_INDICATOR_INHERIT = -1;
+    static CARAPI_(AutoPtr< ArrayOf< ArrayOf<Int32>* > >) InitGROUP_STATE_SETS();
 
 private:
-    AutoPtr<IOnGroupCollapseListener> mOnGroupCollapseListener;
-
-    AutoPtr<IOnGroupExpandListener> mOnGroupExpandListener;
-
-    AutoPtr<IOnGroupClickListener> mOnGroupClickListener;
-
-    AutoPtr<IOnChildClickListener> mOnChildClickListener;
-
-
     /** The mask (in packed position representation) for the child */
-    static const Int64 PACKED_POSITION_MASK_CHILD = 0x00000000FFFFFFFFL;
+    static const Int64 PACKED_POSITION_MASK_CHILD;
 
     /** The mask (in packed position representation) for the group */
-    static const Int64 PACKED_POSITION_MASK_GROUP = 0x7FFFFFFF00000000L;
+    static const Int64 PACKED_POSITION_MASK_GROUP;
 
     /** The mask (in packed position representation) for the type */
-    static const Int64 PACKED_POSITION_MASK_TYPE  = 0x8000000000000000L;
+    static const Int64 PACKED_POSITION_MASK_TYPE;
 
     /** The shift amount (in packed position representation) for the group */
-    static const Int64 PACKED_POSITION_SHIFT_GROUP = 32;
+    static const Int64 PACKED_POSITION_SHIFT_GROUP;
 
     /** The shift amount (in packed position representation) for the type */
-    static const Int64 PACKED_POSITION_SHIFT_TYPE  = 63;
+    static const Int64 PACKED_POSITION_SHIFT_TYPE;
 
     /** The mask (in integer child position representation) for the child */
-    static const Int64 PACKED_POSITION_INT_MASK_CHILD = 0xFFFFFFFF;
+    static const Int64 PACKED_POSITION_INT_MASK_CHILD;
 
     /** The mask (in integer group position representation) for the group */
-    static const Int64 PACKED_POSITION_INT_MASK_GROUP = 0x7FFFFFFF;
+    static const Int64 PACKED_POSITION_INT_MASK_GROUP;
 
     /** Serves as the glue/translator between a ListView and an ExpandableListView */
     AutoPtr<IExpandableListConnector> mConnector;
@@ -565,6 +671,12 @@ private:
     /** Right bound for drawing the indicator. */
     Int32 mIndicatorRight;
 
+    /** Start bound for drawing the indicator. */
+    Int32 mIndicatorStart;
+
+    /** End bound for drawing the indicator. */
+    Int32 mIndicatorEnd;
+
     /**
      * Left bound for drawing the indicator of a child. Value of
      * {@link #CHILD_INDICATOR_INHERIT} means use mIndicatorLeft.
@@ -577,38 +689,63 @@ private:
      */
     Int32 mChildIndicatorRight;
 
+    /**
+     * Start bound for drawing the indicator of a child. Value of
+     * {@link #CHILD_INDICATOR_INHERIT} means use mIndicatorStart.
+     */
+    Int32 mChildIndicatorStart;
+
+    /**
+     * End bound for drawing the indicator of a child. Value of
+     * {@link #CHILD_INDICATOR_INHERIT} means use mIndicatorEnd.
+     */
+    Int32 mChildIndicatorEnd;
+
+    /**
+     * Denotes an undefined value for an indicator
+     */
+    static const Int32 INDICATOR_UNDEFINED;
+
     /** The indicator drawn next to a group. */
     AutoPtr<IDrawable> mGroupIndicator;
 
     /** The indicator drawn next to a child. */
     AutoPtr<IDrawable> mChildIndicator;
 
-    static Int32 EMPTY_STATE_SET[];
+    static const AutoPtr< ArrayOf<Int32> > EMPTY_STATE_SET;
 
     /** State indicating the group is expanded. */
-    static Int32 GROUP_EXPANDED_STATE_SET[];
+    static const AutoPtr< ArrayOf<Int32> > GROUP_EXPANDED_STATE_SET;
 
     /** State indicating the group is empty (has no children). */
-    static Int32 GROUP_EMPTY_STATE_SET[];
+    static const AutoPtr< ArrayOf<Int32> > GROUP_EMPTY_STATE_SET;
 
     /** State indicating the group is expanded and empty (has no children). */
-    static Int32 GROUP_EXPANDED_EMPTY_STATE_SET[];
+    static const AutoPtr< ArrayOf<Int32> > GROUP_EXPANDED_EMPTY_STATE_SET;
 
     /** States for the group where the 0th bit is expanded and 1st bit is empty. */
-    static Int32* GROUP_STATE_SETS[];
+    static const AutoPtr< ArrayOf< ArrayOf<Int32>* > > GROUP_STATE_SETS;
 
     /** State indicating the child is the last within its group. */
-    static Int32 CHILD_LAST_STATE_SET[];
+    static const AutoPtr< ArrayOf<Int32> > CHILD_LAST_STATE_SET;
 
     /** Drawable to be used as a divider when it is adjacent to any children */
     AutoPtr<IDrawable> mChildDivider;
 
     // Bounds of the indicator to be drawn
     AutoPtr<IRect> mIndicatorRect;
+
+    AutoPtr<IExpandableListViewOnGroupCollapseListener> mOnGroupCollapseListener;
+
+    AutoPtr<IExpandableListViewOnGroupExpandListener> mOnGroupExpandListener;
+
+    AutoPtr<IExpandableListViewOnGroupClickListener> mOnGroupClickListener;
+
+    AutoPtr<IExpandableListViewOnChildClickListener> mOnChildClickListener;
 };
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_WIDGET_EXPANDABLELISTVIEW_H__

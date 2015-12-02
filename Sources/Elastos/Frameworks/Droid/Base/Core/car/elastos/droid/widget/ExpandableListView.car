@@ -85,12 +85,36 @@ module
             [out] Boolean* handle);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IContextMenuInfo
+     */
+    [local]
     interface IExpandableListContextMenuInfo {
+        SetTargetView(
+            [in] IView* targetView);
+
+        GetTargetView(
+            [out] IView** targetView);
+
+        SetPackedPosition(
+            [in] Int64 packedPosition);
+
+        GetPackedPosition(
+            [out] Int64* packedPosition);
+
+        SetId(
+            [in] Int64 id);
+
+        GetId(
+            [out] Int64* id);
     }
 
     /**
      * @Involve
      * interface Elastos.Droid.View.IViewBaseSavedState
+     * interface Elastos.Droid.View.IAbsSavedState
+     * interface IParcelable
      */
     interface IExpandableListViewSavedState {
     }
@@ -100,6 +124,7 @@ module
      * extends Elastos.Droid.View.IView
      * extends Elastos.Droid.View.IViewGroup
      * extends Elastos.Droid.Widget.IAdapterView
+     * extends Elastos.Droid.Widget.IAbsListView
      * extends Elastos.Droid.Widget.IListView
      *
      * interface Elastos.Droid.View.IViewParent
@@ -117,6 +142,33 @@ module
 
     [local]
     interface IExpandableListView {
+        /**
+         * The packed position represents a group.
+         */
+        const Int32 PACKED_POSITION_TYPE_GROUP = 0;
+
+        /**
+         * The packed position represents a child.
+         */
+        const Int32 PACKED_POSITION_TYPE_CHILD = 1;
+
+        /**
+         * The packed position represents a neither/null/no preference.
+         */
+        const Int32 PACKED_POSITION_TYPE_NULL = 2;
+
+        /**
+         * The value for a packed position that represents neither/null/no
+         * preference. This value is not otherwise possible since a group type
+         * (first bit 0) should not have a child position filled.
+         */
+        const Int64 PACKED_POSITION_VALUE_NULL = 0x00000000FFFFFFFF;
+
+        /**
+         * Denotes when a child indicator should inherit this bound from the generic
+         * indicator bounds
+         */
+        const Int32 CHILD_INDICATOR_INHERIT = -1;
 
         OnRtlPropertiesChanged(
             [in] Int32 layoutDirection);

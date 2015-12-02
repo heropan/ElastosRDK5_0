@@ -102,23 +102,23 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const Int32 AbsListView::TOUCH_MODE_REST = -1;
-const Int32 AbsListView::TOUCH_MODE_DOWN = 0;
-const Int32 AbsListView::TOUCH_MODE_TAP = 1;
-const Int32 AbsListView::TOUCH_MODE_DONE_WAITING = 2;
-const Int32 AbsListView::TOUCH_MODE_SCROLL = 3;
-const Int32 AbsListView::TOUCH_MODE_FLING = 4;
-const Int32 AbsListView::TOUCH_MODE_OVERSCROLL = 5;
-const Int32 AbsListView::TOUCH_MODE_OVERFLING = 6;
-const Int32 AbsListView::LAYOUT_NORMAL = 0;
-const Int32 AbsListView::LAYOUT_FORCE_TOP = 1;
-const Int32 AbsListView::LAYOUT_SET_SELECTION = 2;
-const Int32 AbsListView::LAYOUT_FORCE_BOTTOM = 3;
-const Int32 AbsListView::LAYOUT_SPECIFIC = 4;
-const Int32 AbsListView::LAYOUT_SYNC = 5;
-const Int32 AbsListView::LAYOUT_MOVE_SELECTION = 6;
-const Int32 AbsListView::OVERSCROLL_LIMIT_DIVISOR = 3;
-const Int32 AbsListView::CHECK_POSITION_SEARCH_DISTANCE = 20;
+const Int32 AbsListView::TOUCH_MODE_REST;
+const Int32 AbsListView::TOUCH_MODE_DOWN;
+const Int32 AbsListView::TOUCH_MODE_TAP;
+const Int32 AbsListView::TOUCH_MODE_DONE_WAITING;
+const Int32 AbsListView::TOUCH_MODE_SCROLL;
+const Int32 AbsListView::TOUCH_MODE_FLING;
+const Int32 AbsListView::TOUCH_MODE_OVERSCROLL;
+const Int32 AbsListView::TOUCH_MODE_OVERFLING;
+const Int32 AbsListView::LAYOUT_NORMAL;
+const Int32 AbsListView::LAYOUT_FORCE_TOP;
+const Int32 AbsListView::LAYOUT_SET_SELECTION;
+const Int32 AbsListView::LAYOUT_FORCE_BOTTOM;
+const Int32 AbsListView::LAYOUT_SPECIFIC;
+const Int32 AbsListView::LAYOUT_SYNC;
+const Int32 AbsListView::LAYOUT_MOVE_SELECTION;
+const Int32 AbsListView::OVERSCROLL_LIMIT_DIVISOR;
+const Int32 AbsListView::CHECK_POSITION_SEARCH_DISTANCE;
 const Int32 AbsListView::TOUCH_MODE_UNKNOWN = -1;
 const Int32 AbsListView::TOUCH_MODE_ON = 0;
 const Int32 AbsListView::TOUCH_MODE_OFF = 1;
@@ -282,7 +282,6 @@ AbsListView::SavedState::~SavedState()
     mCheckState = NULL;
     mCheckIdState = NULL;
 }
-
 
 ECode AbsListView::SavedState::constructor()
 {
@@ -1225,6 +1224,15 @@ void AbsListView::RecycleBin::RemoveDetachedView(
 }
 
 //==============================================================================
+//          AbsListView::AbsPositionScroller
+//==============================================================================
+
+AbsListView::AbsPositionScroller::~AbsPositionScroller()
+{
+    Logger::I("AbsListView", "AbsPositionScroller::~AbsPositionScroller()");
+}
+
+//==============================================================================
 //          AbsListView::PositionScroller
 //==============================================================================
 
@@ -1243,6 +1251,11 @@ AbsListView::PositionScroller::PositionScroller(
     AutoPtr<IViewConfiguration> configuration = ViewConfiguration::Get(mHost->mContext);
 
     configuration->GetScaledFadingEdgeLength(&mExtraScroll);
+}
+
+AbsListView::PositionScroller::~PositionScroller()
+{
+    Logger::I("AbsListView", "PositionScroller::~PositionScroller()");
 }
 
 void AbsListView::PositionScroller::Start(
@@ -8119,8 +8132,12 @@ ECode AbsListView::DeferNotifyDataSetChanged()
     return NOERROR;
 }
 
-Boolean AbsListView::OnRemoteAdapterConnected()
+ECode AbsListView::OnRemoteAdapterConnected(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+
     AutoPtr<IRemoteViewsAdapter> temp = IRemoteViewsAdapter::Probe(mAdapter);
     if (temp != NULL && mRemoteAdapter != temp) {
         SetAdapter(IAdapter::Probe(mRemoteAdapter));
@@ -8128,13 +8145,14 @@ Boolean AbsListView::OnRemoteAdapterConnected()
             IBaseAdapter::Probe(mRemoteAdapter)->NotifyDataSetChanged();
             mDeferNotifyDataSetChanged = FALSE;
         }
-        return FALSE;
+        return NOERROR;
     }
     else if (mRemoteAdapter != NULL) {
         mRemoteAdapter->SuperNotifyDataSetChanged();
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
-    return FALSE;
+    return NOERROR;
 }
 
 ECode AbsListView::OnRemoteAdapterDisconnected()

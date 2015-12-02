@@ -8,7 +8,7 @@ namespace Widget {
 CAR_OBJECT_IMPL(CAbsListViewSavedState);
 
 ECode CAbsListViewSavedState::GetSuperState(
-        /* [out] */  IParcelable** superState)
+    /* [out] */  IParcelable** superState)
 {
     VALIDATE_NOT_NULL(superState);
     AutoPtr<IParcelable> temp = View::BaseSavedState::GetSuperState();

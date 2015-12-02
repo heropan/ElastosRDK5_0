@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(CExpandableListViewHelper, Singleton, IExpandableListViewHelper);
+
+CAR_SINGLETON_IMPL(CExpandableListViewHelper);
+
 ECode CExpandableListViewHelper::GetPackedPositionType(
     /* [in] */ Int64 packedPosition,
     /* [out] */ Int32* type)
