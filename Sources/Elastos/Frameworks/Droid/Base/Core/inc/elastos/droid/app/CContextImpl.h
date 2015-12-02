@@ -11,48 +11,50 @@
 #include "elastos/droid/content/ContextWrapper.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Core::IClassLoader;
-using Elastos::Core::ICharSequence;
-using Elastos::IO::IFile;
-using Elastos::IO::IFileInputStream;
-using Elastos::IO::IFileOutputStream;
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IInputStream;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Utility::IAttributeSet;
+// using Elastos::Core::IClassLoader;
+// using Elastos::Core::ICharSequence;
+// using Elastos::IO::IFile;
+// using Elastos::IO::IFileInputStream;
+// using Elastos::IO::IFileOutputStream;
+// using Elastos::IO::IFileDescriptor;
+// using Elastos::IO::IInputStream;
+// using Elastos::Droid::Os::ILooper;
+// using Elastos::Droid::Os::IHandler;
+// using Elastos::Droid::Os::IBundle;
+// using Elastos::Droid::Os::IBinder;
+// using Elastos::Droid::Os::IUserHandle;
+// using Elastos::Droid::Net::IUri;
+// using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Content::ContentResolver;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IIntentSender;
+using Elastos::Droid::Content::ContextWrapper;
+// using Elastos::Droid::Content::IIntent;
+// using Elastos::Droid::Content::IIntentSender;
 using Elastos::Droid::Content::IIntentFilter;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Content::IComponentCallbacks;
-using Elastos::Droid::Content::ISharedPreferences;
-using Elastos::Droid::Content::IBroadcastReceiver;
-using Elastos::Droid::Content::IServiceConnection;
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::IResourcesTheme;
-using Elastos::Droid::Content::Res::IAssetManager;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::View::IDisplay;
-using Elastos::Droid::View::ICompatibilityInfoHolder;
-using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Database::IDatabaseErrorHandler;
-using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
-using Elastos::Droid::Database::Sqlite::ISQLiteDatabaseCursorFactory;
-
+// using Elastos::Droid::Content::IContext;
+// using Elastos::Droid::Content::IContentResolver;
+// using Elastos::Droid::Content::IComponentName;
+// using Elastos::Droid::Content::IComponentCallbacks;
+// using Elastos::Droid::Content::ISharedPreferences;
+// using Elastos::Droid::Content::IBroadcastReceiver;
+// using Elastos::Droid::Content::IServiceConnection;
+// using Elastos::Droid::Content::Res::ITypedArray;
+// using Elastos::Droid::Content::Res::IConfiguration;
+// using Elastos::Droid::Content::Res::IResources;
+// using Elastos::Droid::Content::Res::IResourcesTheme;
+// using Elastos::Droid::Content::Res::IAssetManager;
+// using Elastos::Droid::Content::Pm::IPackageManager;
+// using Elastos::Droid::Content::Pm::IApplicationInfo;
+// using Elastos::Droid::Content::Pm::IActivityInfo;
+// using Elastos::Droid::View::IDisplay;
+// using Elastos::Droid::View::ICompatibilityInfoHolder;
+// using Elastos::Droid::Graphics::IBitmap;
+// using Elastos::Droid::Graphics::Drawable::IDrawable;
+// using Elastos::Droid::Database::ICursor;
+// using Elastos::Droid::Database::IDatabaseErrorHandler;
+// using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
+// using Elastos::Droid::Database::Sqlite::ISQLiteDatabaseCursorFactory;
+using Elastos::Droid::Utility::IArrayMap;
 
 namespace Elastos {
 namespace Droid {
@@ -63,10 +65,15 @@ CarClass(CContextImpl)
     , public IContextImpl
 {
 private:
-    class ApplicationContentResolver : public ContentResolver
+    class ApplicationContentResolver
+        : public ContentResolver
     {
     public:
-        ApplicationContentResolver(
+        ApplicationContentResolver();
+
+        virtual ~ApplicationContentResolver();
+
+        CARAPI constructor(
             /* [in] */ IContext* context,
             /* [in] */ CActivityThread* mainThread,
             /* [in] */ IUserHandle* user);
@@ -118,10 +125,15 @@ public:
 
     virtual ~CContextImpl();
 
-    CARAPI constructor();
-
     CARAPI constructor(
-        /* [in] */ IContextImpl* context);
+        /* [in]*/ IContextImpl* container,
+        /* [in] */ IActivityThread* mainThread,
+        /* [in] */ ILoadedPkg* packageInfo,
+        /* [in] */ IBinder* activityToken,
+        /* [in] */ IUserHandle* user,
+        /* [in] */ Boolean restricted,
+        /* [in] */ IDisplay* display,
+        /* [in] */ IConfiguration* overrideConfiguration);
 
     static CARAPI_(AutoPtr<CContextImpl>) GetImpl(
         /* [in] */ IContext* context);
@@ -252,13 +264,13 @@ public:
 
     CARAPI GetExternalFilesDirs(
         /* [in] */ const String& type,
-        /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** filesDirs);
+         /* [out, callee] */ ArrayOf<IFile*>** filesDirs);
 
     CARAPI GetObbDir(
         /* [out] */ IFile** obbDir);
 
     CARAPI GetObbDirs(
-        /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs);
+         /* [out, callee] */ ArrayOf<IFile*>** dirs);
 
     CARAPI GetCacheDir(
         /* [out] */ IFile** cacheDir);
@@ -270,10 +282,10 @@ public:
         /* [out] */ IFile** externalDir);
 
     CARAPI GetExternalCacheDirs(
-        /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs);
+         /* [out, callee] */ ArrayOf<IFile*>** dirs);
 
     CARAPI GetExternalMediaDirs(
-        /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs);
+         /* [out, callee] */ ArrayOf<IFile*>** dirs);
 
     CARAPI GetFileList(
         /* [out, callee] */ ArrayOf<String>** fileList);
@@ -658,22 +670,16 @@ public:
     static CARAPI_(AutoPtr<CContextImpl>) CreateSystemContext(
         /* [in] */ IActivityThread* mainThread);
 
+    static CARAPI CreateAppContext(
+        /* [in] */ IActivityThread* mainThread,
+        /* [in] */ ILoadedPkg* packageInfo,
+        /* [out] */ IContextImpl** result);
+
     static CARAPI CreateActivityContext(
         /* [in] */ IActivityThread* mainThread,
         /* [in] */ ILoadedPkg* packageInfo,
         /* [in] */ IBinder* activityToken,
-        /* [out] */ CContextImpl** result);
-
-    /* private */
-    CARAPI constructor(
-        /* [in]*/ IContextImpl* container,
-        /* [in] */ IActivityThread* mainThread,
-        /* [in] */ LoadedPkg packageInfo,
-        /* [in] */ IBinder* activityToken,
-        /* [in] */ IUserHandle* user,
-        /* [in] */ Boolean restricted,
-        /* [in] */ IDisplay* display,
-        /* [in] */ IConfiguration* overrideConfiguration);
+        /* [out] */ IContextImpl** result);
 
     CARAPI InstallSystemApplicationInfo(
         /* [in] */ IApplicationInfo* info,
@@ -788,18 +794,23 @@ private:
         /* [in] */ Int32 flags,
         /* [in] */ IUserHandle* userHandle,
         /* [out] */ Boolean* succeeded);
-private:
-    const static String TAG;
-    const static Boolean DEBUG;
 
-    static HashMap<String, AutoPtr<SharedPreferencesImpl> > sSharedPrefs;
-    static Object sSharedPrefsLock;
+    Int32 ResolveUserId(
+        /* [in] */ IUri* uri);
 
 public:
     AutoPtr<CActivityThread> mMainThread;
     AutoPtr<LoadedPkg> mPackageInfo;
 
 private:
+    const static String TAG;
+    const static Boolean DEBUG;
+
+    /**
+     * Map from package name, to preference name, to cached preferences.
+     */
+    static AutoPtr<IArrayMap> sSharedPrefs;
+
     AutoPtr<IBinder> mActivityToken;
 
     AutoPtr<IUserHandle> mUser;
@@ -828,6 +839,7 @@ private:
     AutoPtr<IContext> mReceiverRestrictedContext;
 
     Object mSync;
+    static Object sLock;
 
     //@GuardedBy("mSync")
     AutoPtr<IFile> mDatabasesDir;

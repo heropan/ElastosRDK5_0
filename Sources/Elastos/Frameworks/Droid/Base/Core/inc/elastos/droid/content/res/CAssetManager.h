@@ -10,6 +10,7 @@
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::ISparseArray;
 using Elastos::IO::ICloseable;
 using Elastos::IO::InputStream;
 using Elastos::Utility::Etl::HashMap;
@@ -508,8 +509,8 @@ public:
     /**
      * {@hide}
      */
-    AutoPtr<HashMap<Int32, String> > GetAssignedPackageIdentifiers();
-
+    GetAssignedPackageIdentifiers(
+        /* [out] */ ISparseArray** array);
 
     CARAPI GetNativeAssetManager(
         /* [out] */ Int32* assetMgr);

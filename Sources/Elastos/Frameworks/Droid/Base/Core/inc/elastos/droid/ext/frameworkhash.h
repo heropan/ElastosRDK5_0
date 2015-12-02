@@ -27,6 +27,7 @@ DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IBroadcastReceiver)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IComponentName)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IContext)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IServiceConnection)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::ISharedPreferencesOnSharedPreferenceChangeListener)
 
 //
 // Location
@@ -46,7 +47,9 @@ DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Os::IBinder)
 //
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::View::IView)
 
-
+//
+// Widget
+//
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Widget::IGridLayoutSpec)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Widget::IInterval)
 

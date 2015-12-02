@@ -1,8 +1,9 @@
 
-#ifndef __ELASTOS_DROID_APP_CDOWNLOADMANAGERHELPER_H__
-#define __ELASTOS_DROID_APP_CDOWNLOADMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_APP_CDOWNLOADMANAGER_HELPER_H__
+#define __ELASTOS_DROID_APP_CDOWNLOADMANAGER_HELPER_H__
 
 #include "_Elastos_Droid_App_CDownloadManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -11,8 +12,14 @@ namespace Droid {
 namespace App {
 
 CarClass(CDownloadManagerHelper)
+    , public Singleton
+    , public IDownloadManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetUNDERLYINGCOLUMNS(
         /* [out] */ ArrayOf<String>** columns);
     /**
@@ -55,4 +62,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_APP_CDOWNLOADMANAGERHELPER_H__
+#endif //__ELASTOS_DROID_APP_CDOWNLOADMANAGER_HELPER_H__

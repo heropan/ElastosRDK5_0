@@ -1,22 +1,27 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/SharedPreferencesImpl.h"
 #include "elastos/droid/app/CActivityThread.h"
 // #include "elastos/droid/app/CContextImpl.h"
 #include "elastos/droid/app/QueuedWork.h"
-#include "elastos/droid/utility/XmlUtils.h"
-#include "elastos/droid/app/SharedPreferencesImpl.h"
-#include <os/FileUtils.h>
-#include <os/Looper.h>
-#include <elastos/utility/logging/Slogger.h>
+#include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/Looper.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/droid/system/Os.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/CoreUtils.h>
 
 using Elastos::Droid::App::CActivityThread;
 using Elastos::Droid::App::QueuedWork;
 using Elastos::Droid::Content::EIID_ISharedPreferences;
 using Elastos::Droid::Content::EIID_ISharedPreferencesEditor;
 using Elastos::Droid::Os::Looper;
-using Elastos::Droid::Utility::XmlUtils;
+using Elastos::Droid::Os::FileUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 
 using Elastos::Core::CBoolean;
+using Elastos::Core::CObject;
 using Elastos::Core::CFloat;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CInteger64;
@@ -28,24 +33,33 @@ using Elastos::Core::IInteger64;
 using Elastos::Core::IBlockGuard;
 using Elastos::Core::CBlockGuard;
 using Elastos::Core::IBlockGuardPolicy;
+using Elastos::Core::CThread;
+using Elastos::Utility::Concurrent::IExecutor;
+using Elastos::Utility::Concurrent::IExecutorService;
 using Elastos::Utility::Concurrent::CCountDownLatch;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::CHashSet;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CWeakHashMap;
+using Elastos::IO::ICloseable;
 using Elastos::IO::CBufferedInputStream;
 using Elastos::IO::CFile;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::CFileOutputStream;
-using Elastos::IO::CIoUtils;
 using Elastos::IO::IBufferedInputStream;
 using Elastos::IO::ICloseable;
-using Elastos::IO::IIoUtils;
-
+using Libcore::IO::IIoUtils;
+using Libcore::IO::CIoUtils;
 using Libcore::IO::CLibcore;
-using Libcore::IO::CStructStat;
 using Libcore::IO::ILibcore;
 using Libcore::IO::IOs;
-using Libcore::IO::IStructStat;
+using Elastos::Droid::System::IStructStat;
+using Elastos::Droid::System::CStructStat;
 
 
 namespace Elastos {
@@ -54,7 +68,7 @@ namespace App {
 
 
 //==============================================================================
-// SharedPreferencesImpl
+// SharedPreferencesImpl::MemoryCommitResult
 //==============================================================================
 
 SharedPreferencesImpl::MemoryCommitResult::MemoryCommitResult()
@@ -70,12 +84,6 @@ void SharedPreferencesImpl::MemoryCommitResult::SetDiskWriteResult(
     mWriteToDiskResult = result;
     mWrittenToDiskLatch->CountDown();
 }
-
-//==============================================================================
-// SharedPreferencesImpl::EditorImpl
-//==============================================================================
-
-CAR_INTERFACE_IMPL(SharedPreferencesImpl::EditorImpl, Object, ISharedPreferencesEditor);
 
 SharedPreferencesImpl::EditorImpl::AwaitCommitRunnable::AwaitCommitRunnable(
     /* [in] */ MemoryCommitResult* mcr)
@@ -99,7 +107,7 @@ ECode SharedPreferencesImpl::EditorImpl::PostWriteRunnable::Run()
 {
     mAwaitCommitRunnable->Run();
     //TODO
-    Slogger::W(TAG, "[TODO] PostWriteRunnable::Run == There need the class QueuedWork...");
+    Logger::W(TAG, "[TODO] PostWriteRunnable::Run == There need the class QueuedWork...");
     QueuedWork::Remove(mAwaitCommitRunnable);
     return NOERROR;
 }
@@ -118,11 +126,18 @@ ECode SharedPreferencesImpl::EditorImpl::NotifyListenersRunnable::Run()
     return NOERROR;
 }
 
+//==============================================================================
+// SharedPreferencesImpl::EditorImpl
+//==============================================================================
+
+CAR_INTERFACE_IMPL(SharedPreferencesImpl::EditorImpl, Object, ISharedPreferencesEditor);
+
 SharedPreferencesImpl::EditorImpl::EditorImpl(
     /* [in] */ SharedPreferencesImpl* host)
     : mClear(FALSE)
     , mHost(host)
 {
+    CHashMap::New((IMap**)&mModified);
 }
 
 ECode SharedPreferencesImpl::EditorImpl::PutString(
@@ -130,9 +145,9 @@ ECode SharedPreferencesImpl::EditorImpl::PutString(
     /* [in] */ const String& value)
 {
     AutoLock lock(this);
-    AutoPtr<ICharSequence> pValue;
-    CString::New(value, (ICharSequence**)&pValue);
-    mModified[key] = pValue;
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    AutoPtr<ICharSequence> valueObj = CoreUtils::Convert(value);
+    mModified->Put(keyObj.Get(), valueObj.Get());
     return NOERROR;
 }
 
@@ -141,11 +156,12 @@ ECode SharedPreferencesImpl::EditorImpl::PutStringSet(
     /* [in] */ ISet* values)
 {
     AutoLock lock(this);
-    AutoPtr<ISet> newValues;
+    AutoPtr<ISet> valueObj;
     if (values != NULL) {
-        CHashSet::New(values, (ISet**)&newValues);
+        CHashSet::New(ICollection::Probe(values), (ISet**)&valueObj);
     }
-    mModified[key] = newValues;
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    mModified->Put(keyObj.Get(), valueObj.Get());
     return NOERROR;
 }
 
@@ -154,9 +170,10 @@ ECode SharedPreferencesImpl::EditorImpl::PutInt32(
     /* [in] */ Int32 value)
 {
     AutoLock lock(this);
-    AutoPtr<IInteger32> pValue;
-    CInteger32::New(value, (IInteger32**)&pValue);
-    mModified[key] = pValue;
+    AutoPtr<IInteger32> valueObj;
+    CInteger32::New(value, (IInteger32**)&valueObj);
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    mModified->Put(keyObj.Get(), valueObj.Get());
     return NOERROR;
 }
 
@@ -165,9 +182,10 @@ ECode SharedPreferencesImpl::EditorImpl::PutInt64(
     /* [in] */ Int64 value)
 {
     AutoLock lock(this);
-    AutoPtr<IInteger64> pValue;
-    CInteger64::New(value, (IInteger64**)&pValue);
-    mModified[key] = pValue;
+    AutoPtr<IInteger64> valueObj;
+    CInteger64::New(value, (IInteger64**)&valueObj);
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    mModified->Put(keyObj.Get(), valueObj.Get());
     return NOERROR;
 }
 
@@ -176,9 +194,10 @@ ECode SharedPreferencesImpl::EditorImpl::PutFloat(
     /* [in] */ Float value)
 {
     AutoLock lock(this);
-    AutoPtr<IFloat> pValue;
-    CFloat::New(value, (IFloat**)&pValue);
-    mModified[key] = pValue;
+    AutoPtr<IFloat> valueObj;
+    CFloat::New(value, (IFloat**)&valueObj);
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    mModified->Put(keyObj.Get(), valueObj.Get());
     return NOERROR;
 }
 
@@ -187,9 +206,10 @@ ECode SharedPreferencesImpl::EditorImpl::PutBoolean(
     /* [in] */ Boolean value)
 {
     AutoLock lock(this);
-    AutoPtr<IBoolean> pValue;
-    CBoolean::New(value, (IBoolean**)&pValue);
-    mModified[key] = pValue;
+    AutoPtr<IBoolean> valueObj;
+    CBoolean::New(value, (IBoolean**)&valueObj);
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    mModified->Put(keyObj.Get(), valueObj.Get());
     return NOERROR;
 }
 
@@ -197,7 +217,8 @@ ECode SharedPreferencesImpl::EditorImpl::Remove(
     /* [in] */ const String& key)
 {
     AutoLock lock(this);
-    mModified[key] = this;
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    mModified->Put(keyObj.Get(), TO_IINTERFACE(this));
     return NOERROR;
 }
 
@@ -214,7 +235,7 @@ ECode SharedPreferencesImpl::EditorImpl::Apply()
     AutoPtr<AwaitCommitRunnable> awaitCommitRunnable = new AwaitCommitRunnable(mcr);
 
     QueuedWork::Add(awaitCommitRunnable);
-    Slogger::W(TAG, "[TODO] Apply == There need the class QueuedWork...");
+    Logger::W(TAG, "[TODO] Apply == There need the class QueuedWork...");
     AutoPtr<PostWriteRunnable> postWriteRunnable = new PostWriteRunnable(awaitCommitRunnable);
     mHost->EnqueueDiskWrite(mcr, postWriteRunnable);
 
@@ -234,57 +255,84 @@ AutoPtr<SharedPreferencesImpl::MemoryCommitResult> SharedPreferencesImpl::Editor
         // We optimistically don't make a deep copy until
         // a memory commit comes in when we're already
         // writing to disk.
-        mcr->mMapToWriteToDisk = mHost->mMap;
+        if (mHost->mDiskWritesInFlight > 0) {
+            // We can't modify our mMap as a currently
+            // in-flight write owns it.  Clone it before
+            // modifying it.
+            // noinspection unchecked
+            mHost->mMap = NULL;
+            CHashMap::New((IHashMap**)&mHost->mMap);
+        }
+
+        mcr->mMapToWriteToDisk = IMap::Probe(mHost->mMap);
         mHost->mDiskWritesInFlight++;
 
-        Boolean hasListeners = mHost->mListeners.IsEmpty() == FALSE;
+        Boolean hasListeners;
+        mHost->mListeners->IsEmpty(&hasListeners);
+        hasListeners = !hasListeners;
         if (hasListeners) {
-            HashMap<AutoPtr<ISharedPreferencesOnSharedPreferenceChangeListener>, AutoPtr<IInterface> > \
-                ::Iterator listenerIt;
-            for (listenerIt = mHost->mListeners.Begin(); listenerIt != mHost->mListeners.End(); ++listenerIt) {
-                mcr->mListeners.Insert(listenerIt->mFirst);
-            }
+            mcr->mKeysModified = NULL;
+            CArrayList::New((IList**)&mcr->mKeysModified);
+
+            AutoPtr<ISet> keySet;
+            mHost->mListeners->GetKeySet((ISet**)&keySet);
+            CHashSet::New(ICollection::Probe(keySet), (ISet**)&mcr->mListeners);
         }
 
         {
             AutoLock lock(this);
             if (mClear) {
-                if (!mHost->mMap->IsEmpty()) {
+                Boolean isEmpty;
+                mHost->mMap->IsEmpty(&isEmpty);
+                if (!isEmpty) {
                     mcr->mChangesMade = TRUE;
                     mHost->mMap->Clear();
                 }
                 mClear = FALSE;
             }
-            HashMap<String, AutoPtr<IInterface> >::Iterator it;
-            for(it = mModified.Begin(); it != mModified.End(); ++it) {
-                String k = it->mFirst;
-                AutoPtr<IInterface> v = it->mSecond;
-                HashMap<String, AutoPtr<IInterface> >::Iterator itr = mHost->mMap->Find(k);
+
+            AutoPtr<ISet> entrySet;
+            mModified->GetEntrySet((ISet**)&entrySet);
+            AutoPtr<IIterator> it;
+            entrySet->GetIterator((IIterator**)&it);
+            AutoPtr<IInterface> thisObj = TO_IINTERFACE(this);
+            Boolean hasNext, contains;
+            IMapEntry* entry;
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> obj, k, v;
+                it->GetNext((IInterface**)&obj);
+                entry = IMapEntry::Probe(obj);
+                entry->GetKey((IInterface**)&k);
+                entry->GetValue((IInterface**)&v);
+
                 // "this" is the magic value for a removal mutation. In addition,
                 // setting a value to "null" for a given key is specified to be
                 // equivalent to calling remove on that key.
-                if (v == this || v == NULL) {
-                    if (itr == mHost->mMap->End()) {
+                mHost->mMap->ContainsKey(k, &contains);
+                if (v.Get() == thisObj || v.Get() == NULL) {
+                    if (!contains) {
                         continue;
                     }
-                    mHost->mMap->Erase(itr);
+                    mHost->mMap->Remove(k);
                 }
                 else {
-                    if (itr != mHost->mMap->End()) {
-                        AutoPtr<IInterface> existingValue = itr->mSecond;
-                        if (existingValue != NULL && existingValue == v) {
+                    if (contains) {
+                        AutoPtr<IInterface> existingValue;
+                        mHost->mMap->Get(k, (IInterface**)&existingValue);
+                        if (existingValue != NULL && Object::Equals(existingValue, v)) {
                             continue;
                         }
                     }
-                    (*mHost->mMap)[k] = v;
+                    mHost->mMap->Put(k, v);
                 }
 
                 mcr->mChangesMade = TRUE;
                 if (hasListeners) {
-                    mcr->mKeysModified.PushBack(k);
+                    mcr->mKeysModified->Add(k);
                 }
             }
-        mModified.Clear();
+
+            mModified->Clear();
         }
     }
     return mcr;
@@ -311,23 +359,33 @@ ECode SharedPreferencesImpl::EditorImpl::Commit(
 void SharedPreferencesImpl::EditorImpl::NotifyListeners(
     /* [in] */ MemoryCommitResult* mcr)
 {
-    if (mcr->mKeysModified.IsEmpty()) {
+    Int32 size = 0;
+    if (mcr->mListeners == NULL || mcr->mKeysModified == NULL
+        || (mcr->mKeysModified->GetSize(&size), size) == 0) {
         return;
     }
+
     if (Looper::GetMyLooper() == Looper::GetMainLooper()) {
-        List<String>::ReverseIterator it;
-        for (it = mcr->mKeysModified.RBegin(); it != mcr->mKeysModified.REnd(); ++it) {
-            const String key = (String)*it;
-            HashSet<AutoPtr<ISharedPreferencesOnSharedPreferenceChangeListener> >::Iterator itr;
-            for (itr = mcr->mListeners.Begin(); itr != mcr->mListeners.End(); ++itr) {
-                AutoPtr<ISharedPreferencesOnSharedPreferenceChangeListener> listener
-                        = *itr;
+        ISharedPreferencesOnSharedPreferenceChangeListener* listener = NULL;
+        Boolean hasNext;
+        for (Int32 i = size - 1; i >= 0; i--) {
+            AutoPtr<IInterface> keyObj;
+            mcr->mKeysModified->Get(i, (IInterface**)&keyObj);
+            String key = Object::ToString(keyObj);
+
+            AutoPtr<IIterator> it;
+            mcr->mListeners->GetIterator((IIterator**)&it);
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> listenerObj;
+                it->GetNext((IInterface**)&listenerObj);
+                listener = ISharedPreferencesOnSharedPreferenceChangeListener::Probe(listenerObj);
                 if (listener != NULL) {
                     listener->OnSharedPreferenceChanged(mHost, key);
                 }
             }
         }
-    } else {
+    }
+    else {
         AutoPtr<NotifyListenersRunnable> notifyListenersRunnable = new NotifyListenersRunnable(this, mcr);
         // Run this function on the main thread.
         Boolean isSuccess = FALSE;
@@ -368,7 +426,8 @@ SharedPreferencesImpl::WriteToDiskRunnable::WriteToDiskRunnable(
 ECode SharedPreferencesImpl::WriteToDiskRunnable::Run()
 {
     {
-        AutoLock lock(mHost->mWritingToDiskLock);
+        Object& obj = mHost->mWritingToDiskLock;
+        AutoLock lock(obj);
         mHost->WriteToFile(mMcr);
     }
     {
@@ -387,7 +446,7 @@ ECode SharedPreferencesImpl::WriteToDiskRunnable::Run()
 static AutoPtr<IInterface> InitContent()
 {
     AutoPtr<IObject> obj;
-    CObject::New((IObject**)&obj);
+    Elastos::Core::CObject::New((IObject**)&obj);
     return (IInterface*)obj.Get();
 }
 
@@ -395,19 +454,28 @@ const String SharedPreferencesImpl::TAG("SharedPreferencesImpl");
 const Boolean SharedPreferencesImpl::DEBUG = FALSE;
 AutoPtr<IInterface> SharedPreferencesImpl::mContent = InitContent();
 
-SharedPreferencesImpl::SharedPreferencesImpl(
-    /* [in] */ IFile* file,
-    /* [in] */ Int32 mode)
-    : mFile(file)
-    , mMode(mode)
-    , mDiskWritesInFlight(0)
+CAR_INTERFACE_IMPL(SharedPreferencesImpl, Object, ISharedPreferences);
+
+SharedPreferencesImpl::SharedPreferencesImpl()
+    : mDiskWritesInFlight(0)
     , mLoaded(FALSE)
     , mStatTimestamp(0)
     , mStatSize(0)
+{}
+
+SharedPreferencesImpl::~SharedPreferencesImpl()
+{}
+
+ECode SharedPreferencesImpl::constructor(
+    /* [in] */ IFile* file,
+    /* [in] */ Int32 mode)
 {
-    mMap = new HashMap<String, AutoPtr<IInterface> >();
+    Elastos::Core::CObject::New((IObject**)&mWritingToDiskLock);
+    CWeakHashMap::New((IWeakHashMap**)&mListeners);
     mBackupFile = MakeBackupFile(file);
+
     StartLoadFromDisk();
+    return NOERROR;
 }
 
 void SharedPreferencesImpl::StartLoadFromDisk()
@@ -416,7 +484,8 @@ void SharedPreferencesImpl::StartLoadFromDisk()
         AutoLock lock(this);
         mLoaded = FALSE;
     }
-    LoadFromDiskLockedRunnable* runnable = new LoadFromDiskLockedRunnable(this);
+
+    AutoPtr<IRunnable> runnable = (IRunnable*)new LoadFromDiskLockedRunnable(this);
     AutoPtr<IThread> thread;
     CThread::New(runnable, String("SharedPreferencesImpl-load"), (IThread**)&thread);
     thread->Start();
@@ -438,65 +507,56 @@ void SharedPreferencesImpl::LoadFromDiskLocked()
     // Debugging
     Boolean isCanRead = FALSE;
     if ((mFile->Exists(&isCanRead), isCanRead) && !(mFile->CanRead(&isCanRead), isCanRead)) {
-        Slogger::W(TAG, "Attempt to read preferences file %p without permission", mFile.Get());
+        Logger::W(TAG, "Attempt to read preferences file %p without permission", mFile.Get());
     }
 
-    AutoPtr<IMap> map;
+    AutoPtr<IHashMap> map;
     AutoPtr<IStructStat> stat;
 
     do {
         ECode ec = NOERROR;
         String path;
         mFile->GetPath(&path);
-        ec = Os::Stat(path, (IStructStat**)&stat);
+        ec = Elastos::Droid::System::Os::Stat(path, (IStructStat**)&stat);
         if (FAILED(ec)) {
             break;
         }
 
         mFile->CanRead(&isCanRead);
         if (isCanRead) {
-            AutoPtr<IFileInputStream> fileStr;
-            ec = CFileInputStream::New(mFile, (IFileInputStream**)&fileStr);
+            AutoPtr<IInputStream> fileStr;
+            ec = CFileInputStream::New(mFile, (IInputStream**)&fileStr);
             if (FAILED(ec)) {
                 break;
             }
             AutoPtr<IIoUtils> ioUtils;
             CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
-            AutoPtr<IBufferedInputStream> str;
+            AutoPtr<IInputStream> str;
+            ec = CBufferedInputStream::New(fileStr, 16*1024, (IInputStream**)&str);
             AutoPtr<ICloseable> closeable = ICloseable::Probe(str);
-            ec = CBufferedInputStream::New(fileStr, 16*1024, (IBufferedInputStream**)&str);
             if (FAILED(ec)) {
                 ioUtils->CloseQuietly(closeable);
                 break;
             }
 
-            map = XmlUtils::ReadMapXml(str);
+            XmlUtils::ReadMapXml(str, (IHashMap**)&map);
             ioUtils->CloseQuietly(closeable);
         }
     } while (FALSE);
 
     mLoaded = TRUE;
     if (map != NULL) {
-        mMap->Clear();
-        AutoPtr<ArrayOf<IInterface*> > keys;
-        map->GetKeys((ArrayOf<IInterface*>**)&keys);
-        assert(keys != NULL);
-        String key;
-        for (Int32 i = 0; i < keys->GetLength(); i++) {
-            assert(ICharSequence::Probe((*keys)[i]) != NULL);
-            ICharSequence::Probe((*keys)[i])->ToString(&key);
-            AutoPtr<IInterface> value;
-            map->Get((*keys)[i], (IInterface**)&value);
-            (*mMap)[key] = value;
-        }
-
+        mMap = map;
         stat->GetMtime(&mStatTimestamp);
         stat->GetSize(&mStatSize);
+    }
+    else {
+        mMap = NULL;
+        CHashMap::New((IHashMap**)&mMap);
     }
 
     NotifyAll();
 }
-
 
 AutoPtr<IFile> SharedPreferencesImpl::MakeBackupFile(
     /* [in] */ IFile* prefsFile)
@@ -543,7 +603,7 @@ Boolean SharedPreferencesImpl::HasFileChangedUnexpectedly()
     String path;
     mFile->GetPath(&path);
 
-    ECode ec = Os::Stat(path, (IStructStat**)&stat);
+    ECode ec = Elastos::Droid::System::Os::Stat(path, (IStructStat**)&stat);
     if(FAILED(ec)) {
         return TRUE;
     }
@@ -562,17 +622,14 @@ ECode SharedPreferencesImpl::RegisterOnSharedPreferenceChangeListener(
     /* [in] */ ISharedPreferencesOnSharedPreferenceChangeListener* listener)
 {
     AutoLock lock(this);
-    mListeners[listener] = mContent;
-    return NOERROR;
+    return mListeners->Put(listener, mContent.Get());
 }
 
 ECode SharedPreferencesImpl::UnregisterOnSharedPreferenceChangeListener(
     /* [in] */ ISharedPreferencesOnSharedPreferenceChangeListener* listener)
 {
     AutoLock lock(this);
-    HashMap<AutoPtr<ISharedPreferencesOnSharedPreferenceChangeListener>, AutoPtr<IInterface> >::Iterator it = mListeners.Find(listener);
-    mListeners.Erase(it);
-    return NOERROR;
+    return mListeners->Remove(listener);
 }
 
 void SharedPreferencesImpl::AwaitLoadedLocked()
@@ -597,20 +654,12 @@ ECode SharedPreferencesImpl::GetAll(
     /* [out] */ IMap** result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = NULL;
-
-    AutoPtr<IMap> map;
-    CHashMap::New((IMap**)&map)
 
     AutoLock lock(this);
     AwaitLoadedLocked();
     //noinspection unchecked
-    HashMap<String, AutoPtr<IInterface> >::Iterator it;
-    for (it = mMap->Begin(); it != mMap->End(); ++it) {
-        AutoPtr<ICharSequence> key = CoreUtils::Convert(it->mFirst)
-        map->Put(key.Get(), it->mSecond);
-    }
-
+    AutoPtr<IMap> map;
+    CHashMap::New(IMap::Probe(mMap), (IMap**)&map);
     *result = map;
     REFCOUNT_ADD(*result)
     return NOERROR;
@@ -622,39 +671,43 @@ ECode SharedPreferencesImpl::GetString(
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value);
-    AutoLock lock(this);
     *value = defValue;
 
+    AutoLock lock(this);
     AwaitLoadedLocked();
-    if (key.IsNull()) {
-        return NOERROR;
-    }
 
-    if (mMap->Find(key) != mMap->End()) {
-        AutoPtr<IInterface> obj = mMap->Find(key)->mSecond;
-        if (obj != NULL) {
-            AutoPtr<ICharSequence> pValue = ICharSequence::Probe(obj);
-            pValue->ToString(value);
-        }
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    AutoPtr<IInterface> valueObj;
+    mMap->Get(keyObj.Get(), (IInterface**)&valueObj);
+
+    if (valueObj != NULL) {
+        *value = Object::ToString(valueObj);
     }
     return NOERROR;
 }
 
 ECode SharedPreferencesImpl::GetStringSet(
     /* [in] */ const String& key,
-    /* [in] */ ISet* defValues,
-    /* [out] */ ISet** values)
+    /* [in] */ ISet* defValue,
+    /* [out] */ ISet** value)
 {
-    VALIDATE_NOT_NULL(values)
+    VALIDATE_NOT_NULL(value);
+
     AutoLock lock(this);
     AwaitLoadedLocked();
-    HashMap<String, AutoPtr<IInterface> >::Iterator it = mMap->Find(key);
-    AutoPtr<ISet> v;
-    if (it != mMap->End()) {
-        v = ISet::Probe(it->mSecond);
+
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    AutoPtr<IInterface> valueObj;
+    mMap->Get(keyObj.Get(), (IInterface**)&valueObj);
+
+    if (valueObj != NULL) {
+        *value = ISet::Probe(valueObj);
+        REFCOUNT_ADD(*value);
     }
-    *values = v;
-    REFCOUNT_ADD(*values);
+    else {
+        *value = defValue;
+        REFCOUNT_ADD(*value);
+    }
     return NOERROR;
 }
 
@@ -664,21 +717,19 @@ ECode SharedPreferencesImpl::GetInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
-    AutoLock lock(this);
     *value = defValue;
 
+    AutoLock lock(this);
     AwaitLoadedLocked();
-    if (key.IsNull()) {
-        return NOERROR;
+
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    AutoPtr<IInterface> valueObj;
+    mMap->Get(keyObj.Get(), (IInterface**)&valueObj);
+
+    if (valueObj != NULL) {
+        IInteger32::Probe(valueObj)->GetValue(value);
     }
 
-    if (mMap->Find(key) != mMap->End()) {
-        AutoPtr<IInterface> obj = mMap->Find(key)->mSecond;
-        if (obj != NULL) {
-            AutoPtr<IInteger32> pValue = IInteger32::Probe(obj);
-            pValue->GetValue(value);
-        }
-    }
     return NOERROR;
 }
 
@@ -688,21 +739,19 @@ ECode SharedPreferencesImpl::GetInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
-    AutoLock lock(this);
     *value = defValue;
 
+    AutoLock lock(this);
     AwaitLoadedLocked();
-    if (key.IsNull()) {
-        return NOERROR;
+
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    AutoPtr<IInterface> valueObj;
+    mMap->Get(keyObj.Get(), (IInterface**)&valueObj);
+
+    if (valueObj != NULL) {
+        IInteger64::Probe(valueObj)->GetValue(value);
     }
 
-    if (mMap->Find(key) != mMap->End()) {
-        AutoPtr<IInterface> obj = mMap->Find(key)->mSecond;
-        if (obj != NULL) {
-            AutoPtr<IInteger64> pValue = IInteger64::Probe(obj);
-            pValue->GetValue(value);
-        }
-    }
     return NOERROR;
 }
 
@@ -712,21 +761,19 @@ ECode SharedPreferencesImpl::GetFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
-    AutoLock lock(this);
     *value = defValue;
 
+    AutoLock lock(this);
     AwaitLoadedLocked();
-    if (key.IsNull()) {
-        return NOERROR;
+
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    AutoPtr<IInterface> valueObj;
+    mMap->Get(keyObj.Get(), (IInterface**)&valueObj);
+
+    if (valueObj != NULL) {
+        IFloat::Probe(valueObj)->GetValue(value);
     }
 
-    if (mMap->Find(key) != mMap->End()) {
-        AutoPtr<IInterface> obj = mMap->Find(key)->mSecond;
-        if (obj != NULL) {
-            AutoPtr<IFloat> pValue = IFloat::Probe(obj);
-            pValue->GetValue(value);
-        }
-    }
     return NOERROR;
 }
 
@@ -736,42 +783,33 @@ ECode SharedPreferencesImpl::GetBoolean(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
-    AutoLock lock(this);
     *value = defValue;
 
+    AutoLock lock(this);
     AwaitLoadedLocked();
-    if (key.IsNull()) {
-        return NOERROR;
+
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    AutoPtr<IInterface> valueObj;
+    mMap->Get(keyObj.Get(), (IInterface**)&valueObj);
+
+    if (valueObj != NULL) {
+        IBoolean::Probe(valueObj)->GetValue(value);
     }
 
-    if (mMap->Find(key) != mMap->End()) {
-        AutoPtr<IInterface> obj = mMap->Find(key)->mSecond;
-        if (obj != NULL) {
-            AutoPtr<IBoolean> pValue = IBoolean::Probe(obj);
-            pValue->GetValue(value);
-        }
-    }
     return NOERROR;
 }
 
 ECode SharedPreferencesImpl::Contains(
     /* [in] */ const String& key,
-    /* [out] */ Boolean* isContain) {
+    /* [out] */ Boolean* isContain)
+{
     VALIDATE_NOT_NULL(isContain);
 
     AutoLock lock(this);
     AwaitLoadedLocked();
-    if (key.IsNull()) {
-        *isContain = FALSE;
-        return NOERROR;
-    }
 
-    if (mMap->Find(key) != mMap->End()) {
-        *isContain = TRUE;
-    } else {
-        *isContain = FALSE;
-    }
-    return NOERROR;
+    AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
+    return mMap->ContainsKey(keyObj.Get(), isContain);
 }
 
 ECode SharedPreferencesImpl::Edit(
@@ -790,7 +828,7 @@ ECode SharedPreferencesImpl::Edit(
         AwaitLoadedLocked();
     }
     AutoPtr<EditorImpl> editorImpl = new EditorImpl(this);
-    *result = (ISharedPreferencesEditor*)editorImpl->Probe(EIID_ISharedPreferencesEditor);
+    *result = (ISharedPreferencesEditor*)editorImpl.Get();
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
@@ -818,13 +856,10 @@ void SharedPreferencesImpl::EnqueueDiskWrite(
         }
     }
 
-    Slogger::W(TAG, "[TODO] EnqueueDiskWrite == There need the class QueuedWork...");
-    writeToDiskRunnable->Run();
-    //TODO
-    // AutoPtr<IExecutorService> singleThreadExecutor;
-    // QueuedWork::SingleThreadExecutor(singleThreadExecutor);
-    // assert(singleThreadExecutor != NULL);
-    // singleThreadExecutor->Execute(writeToDiskRunnable);
+    AutoPtr<IExecutorService> singleThreadExecutor;
+    QueuedWork::SingleThreadExecutor((IExecutorService**)&singleThreadExecutor);
+    assert(singleThreadExecutor != NULL);
+    IExecutor::Probe(singleThreadExecutor)->Execute(writeToDiskRunnable);
 }
 
 AutoPtr<IFileOutputStream> SharedPreferencesImpl::CreateFileOutputStream(
@@ -837,7 +872,7 @@ AutoPtr<IFileOutputStream> SharedPreferencesImpl::CreateFileOutputStream(
         Boolean successed = FALSE;
 
         if (!(parent->Mkdir(&successed), successed)) {
-            Slogger::E(TAG, "Couldn't create directory for SharedPreferences file %p", file);
+            Logger::E(TAG, "Couldn't create directory for SharedPreferences file %p", file);
             return NULL;
         }
         String path;
@@ -849,7 +884,7 @@ AutoPtr<IFileOutputStream> SharedPreferencesImpl::CreateFileOutputStream(
 
         str = NULL;
         if (CFileOutputStream::New(file, (IFileOutputStream**)&str) == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
-            Slogger::E(TAG, "Couldn't create SharedPreferences file %p", file);
+            Logger::E(TAG, "Couldn't create SharedPreferences file %p", file);
         }
     }
     return str;
@@ -897,27 +932,17 @@ void SharedPreferencesImpl::WriteToFile(
         return;
     }
 
-    assert(mcr->mMapToWriteToDisk != NULL);
-    AutoPtr<IMap> map;
-    CObjectMap::New((IMap**)&map);
-    HashMap<String, AutoPtr<IInterface> >::Iterator ator = mcr->mMapToWriteToDisk->Begin();
-    for (; ator != mcr->mMapToWriteToDisk->End(); ++ator) {
-        AutoPtr<ICharSequence> key;
-        CString::New(ator->mFirst, (ICharSequence**)&key);
-        map->Put(key, ator->mSecond);
-    }
-
     Boolean isSync = FALSE, isDeleteFile = FALSE;
     String path;
     AutoPtr<IStructStat> stat;
-    FAIL_GOTO(XmlUtils::WriteMapXml(map, str), failed);
-    FileUtils::Sync(str, &isSync);
-    FAIL_GOTO(str->Close(), failed);
+    FAIL_GOTO(XmlUtils::WriteMapXml(mcr->mMapToWriteToDisk, IOutputStream::Probe(str)), failed);
+    isSync = FileUtils::Sync(str);
+    FAIL_GOTO(ICloseable::Probe(str)->Close(), failed);
     FAIL_GOTO(mFile->GetPath(&path), failed);
     assert(0 && "TODO");
     // CContextImpl::SetFilePermissionsFromMode(path, mMode, 0);
 
-    FAIL_GOTO(Os::Stat(path, (IStructStat**)&stat), failed);
+    FAIL_GOTO(Elastos::Droid::System::Os::Stat(path, (IStructStat**)&stat), failed);
     {
         AutoLock lock(this);
         stat->GetMtime(&mStatTimestamp);

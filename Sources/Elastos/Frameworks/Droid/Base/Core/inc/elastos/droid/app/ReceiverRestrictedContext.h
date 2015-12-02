@@ -15,14 +15,19 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class ReceiverRestrictedContext : public ContextWrapper
+class ReceiverRestrictedContext
+    : public ContextWrapper
+    , public IReceiverRestrictedContext
 {
 public:
-    ReceiverRestrictedContext(
-        /* [in] */ IContext* base);
+    CAR_INTERFACE_DECL()
 
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
+    ReceiverRestrictedContext();
+
+    virtual ~ReceiverRestrictedContext();
+
+    CARAPI constructor(
+        /* [in] */ IContext* base);
 
     CARAPI RegisterReceiver(
         /* [in] */ IBroadcastReceiver* receiver,
@@ -49,12 +54,6 @@ public:
         /* [in] */ IServiceConnection* conn,
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* succeeded);
-
-protected:
-    ReceiverRestrictedContext();
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
 };
 
 } // namespace App

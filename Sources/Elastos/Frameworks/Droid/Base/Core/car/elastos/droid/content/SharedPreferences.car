@@ -3,6 +3,7 @@ module
 {
     interface Elastos.Droid.Content.ISharedPreferences;
     using interface Elastos.Utility.IMap;
+    using interface Elastos.Utility.ISet;
 
     namespace Elastos {
     namespace Droid {
@@ -62,7 +63,7 @@ module
          */
         PutStringSet(
             [in] String key,
-            [in] ArrayOf<String>* values);
+            [in] ISet* values);
 
         /**
          * Set an int value in the preferences editor, to be written back once
@@ -281,8 +282,8 @@ module
          */
         GetStringSet(
             [in] String key,
-            [in] ArrayOf<String>* defValues,
-            [out, callee] ArrayOf<String>* values);
+            [in] ISet* defValues,
+            [out] ISet** values);
 
         /**
          * Retrieve an int value from the preferences.

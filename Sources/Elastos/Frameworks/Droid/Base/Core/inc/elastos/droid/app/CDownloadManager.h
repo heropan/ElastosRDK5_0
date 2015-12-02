@@ -18,18 +18,35 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+/**
+ * The download manager is a system service that handles long-running HTTP downloads. Clients may
+ * request that a URI be downloaded to a particular destination file. The download manager will
+ * conduct the download in the background, taking care of HTTP interactions and retrying downloads
+ * after failures or across connectivity changes and system reboots.
+ *
+ * Instances of this class should be obtained through
+ * {@link android.content.Context#getSystemService(String)} by passing
+ * {@link android.content.Context#DOWNLOAD_SERVICE}.
+ *
+ * Apps that request downloads through this API should register a broadcast receiver for
+ * {@link #ACTION_NOTIFICATION_CLICKED} to appropriately handle when the user clicks on a running
+ * download in a notification or from the downloads UI.
+ *
+ * Note that the application must have the {@link android.Manifest.permission#INTERNET}
+ * permission to use this class.
+ */
 CarClass(CDownloadManager)
+    , public Object
+    , public IDownloadManager
 {
 private:
     class CursorTranslator
-        : public ElRefBase
-        , public CursorWrapper
-        , public ICursorWrapper
+        : public CursorWrapper
     {
     public:
-        CAR_INTERFACE_DECL();
+        CursorTranslator();
 
-        CursorTranslator(
+        CARAPI constructor(
             /* [in] */ ICursor* cursor,
             /* [in] */ IUri* baseUri);
 
@@ -44,129 +61,6 @@ private:
         CARAPI GetString(
             /* [in] */ Int32 columnIndex,
             /* [out] */ String* value);
-
-        CARAPI GetWrappedCursor(
-            /* [out] */ ICursor** cursor);
-
-        CARAPI Close();
-
-        CARAPI IsClosed(
-            /* [out] */ Boolean* isClosed);
-
-        CARAPI GetCount(
-            /* [out] */ Int32* count);
-
-        CARAPI Deactivate();
-
-        CARAPI MoveToFirst(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI GetColumnCount(
-            /* [out] */ Int32* count);
-
-        CARAPI GetColumnIndex(
-            /* [in] */ const String& columnName,
-            /* [out] */ Int32* index);
-
-        CARAPI GetColumnIndexOrThrow(
-            /* [in] */  const String& columnName,
-            /* [out] */ Int32* columnIndex);
-
-        CARAPI GetColumnName(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ String* name);
-
-        CARAPI GetColumnNames(
-            /* [out, callee] */ ArrayOf<String>** columnNames);
-
-        CARAPI GetDouble(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Double* value);
-
-        CARAPI GetExtras(
-            /* [out] */ IBundle** extras);
-
-        CARAPI GetFloat(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Float* value);
-
-        CARAPI GetInt16(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Int16* value);
-
-        CARAPI CopyStringToBuffer(
-            /* [in] */ Int32 columnIndex,
-            /* [in] */ ICharArrayBuffer* buffer);
-
-        CARAPI GetBlob(
-            /* [in] */  Int32 columnIndex,
-            /* [out,callee] */ ArrayOf<Byte>** blob);
-
-        CARAPI GetWantsAllOnMoveCalls(
-            /* [out] */ Boolean* value);
-
-        CARAPI IsAfterLast(
-            /* [out] */ Boolean* result);
-
-        CARAPI IsBeforeFirst(
-            /* [out] */ Boolean* result);
-
-        CARAPI IsFirst(
-            /* [out] */ Boolean* result);
-
-        CARAPI IsLast(
-            /* [out] */ Boolean* result);
-
-        CARAPI GetType(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Int32* type);
-
-        CARAPI IsNull(
-            /* [in] */ Int32 columnIndex,
-            /* [out] */ Boolean* result);
-
-        CARAPI MoveToLast(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI Move(
-            /* [in] */ Int32 offset,
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI MoveToPosition(
-            /* [in] */ Int32 position,
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI MoveToNext(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI GetPosition(
-            /* [out] */ Int32* position);
-
-        CARAPI MoveToPrevious(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI RegisterContentObserver(
-            /* [in] */ IContentObserver* observer);
-
-        CARAPI RegisterDataSetObserver(
-            /* [in] */IDataSetObserver* observer);
-
-        CARAPI Requery(
-            /* [out] */ Boolean* succeeded);
-
-        CARAPI Respond(
-            /* [in] */ IBundle* extras,
-            /* [out] */ IBundle** bundle);
-
-        CARAPI SetNotificationUri(
-            /* [in] */ IContentResolver* cr,
-            /* [in] */ IUri* uri);
-
-        CARAPI UnregisterContentObserver(
-            /* [in] */ IContentObserver* observer);
-
-        CARAPI UnregisterDataSetObserver(
-            /* [in] */ IDataSetObserver* observer);
 
     private:
         CARAPI_(String) GetLocalUri();
@@ -188,6 +82,11 @@ private:
     };
 
 public:
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IContentResolver* resolver,
         /* [in] */ const String& packageName);
@@ -344,6 +243,17 @@ public:
         /* [in] */ const String& path,
         /* [in] */ Int64 length,
         /* [in] */ Boolean showNotification,
+        /* [out] */ Int64* id);
+
+    /** {@hide} */
+    CARAPI AddCompletedDownload(
+        /* [in] */ const String& title,
+        /* [in] */ const String& description,
+        /* [in] */ Boolean isMediaScannerScannable,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& path,
+        /* [in] */ Int64 length,
+        /* [in] */ Boolean showNotification,
         /* [in] */ Boolean allowWrite,
         /* [out] */ Int64* id);
 
@@ -373,8 +283,6 @@ private:
     static CARAPI ValidateArgumentIsNonEmpty(
         /* [in] */ const String& paramName,
         /* [in] */ const String& val);
-
-    static CARAPI_(AutoPtr<ArrayOf<String> >) InitUNDERLYINGCOLUMNS();
 
 public:
     /**

@@ -1,10 +1,13 @@
-
 #include "elastos/droid/app/CDownloadManagerHelper.h"
 #include "elastos/droid/app/CDownloadManager.h"
 
 namespace Elastos {
 namespace Droid {
 namespace App {
+
+CAR_INTERFACE_IMPL(CDownloadManagerHelper, Singleton, IDownloadManagerHelper)
+
+CAR_SINGLETON_IMPL(CDownloadManagerHelper)
 
 ECode CDownloadManagerHelper::GetUNDERLYINGCOLUMNS(
     /* [out] */ ArrayOf<String>** columns)

@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_APP_CDOWNLOADMANAGERREQUEST_H__
 #define __ELASTOS_DROID_APP_CDOWNLOADMANAGERREQUEST_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_App_CDownloadManagerRequest.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
-#include <elastos/Pair.h>
+#include <elastos/utility/etl/Pair.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFile;
@@ -20,10 +20,16 @@ namespace Droid {
 namespace App {
 
 CarClass(CDownloadManagerRequest)
+    , public Object
+    , public IDownloadManagerRequest
 {
 friend class CDownloadManager;
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CDownloadManagerRequest();
 
     CARAPI constructor(
@@ -141,6 +147,23 @@ public:
      */
     CARAPI SetMimeType(
         /* [in] */ const String& mimeType);
+
+    /**
+     * Control whether a system notification is posted by the download manager while this
+     * download is running. If enabled, the download manager posts notifications about downloads
+     * through the system {@link android.app.NotificationManager}. By default, a notification is
+     * shown.
+     *
+     * If set to false, this requires the permission
+     * android.permission.DOWNLOAD_WITHOUT_NOTIFICATION.
+     *
+     * @param show whether the download manager should show a notification for this download.
+     * @return this object
+     * @deprecated use {@link #setNotificationVisibility(int)}
+     */
+    //@Deprecated
+    CARAPI SetShowRunningNotification(
+        /* [in] */ Boolean show);
 
     /**
      * Control whether a system notification is posted by the download manager while this
