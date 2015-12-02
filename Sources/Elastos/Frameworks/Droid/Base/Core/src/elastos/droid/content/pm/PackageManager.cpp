@@ -1,7 +1,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/pm/PackageManager.h"
-// #include "elastos/droid/content/pm/PackageParser.h"
+#include "elastos/droid/content/pm/PackageParser.h"
 #include "elastos/droid/os/CUserHandleHelper.h"
 #include "elastos/droid/os/CEnvironment.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
@@ -13,6 +14,7 @@ using Elastos::Droid::Os::IUserHandleHelper;
 using Elastos::Droid::Os::CUserHandleHelper;
 using Elastos::Droid::Os::IEnvironment;
 using Elastos::Droid::Os::CEnvironment;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -29,6 +31,39 @@ const String PackageManager::TAG("PackageManager");
 
 CAR_INTERFACE_IMPL(PackageManager, Object, IPackageManager)
 
+PackageManager::PackageManager()
+{}
+
+PackageManager::~PackageManager()
+{}
+
+ECode PackageManager::BuildPermissionRequestIntent(
+    /* [in] */ ArrayOf<String>* permissions,
+    /* [out] */ IIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    *intent = NULL;
+    if (permissions == NULL) {
+        // throw new NullPointerException("permissions cannot be null");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    for (Int32 i = 0; i < permissions->GetLength(); ++i) {
+        String permission = (*permissions)[i];
+        if (permission.IsNull()) {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
+
+    AutoPtr<IIntent> i;
+    CIntent::New(ACTION_REQUEST_PERMISSION, (IIntent**)&i);
+    i->PutExtra(EXTRA_REQUEST_PERMISSION_PERMISSION_LIST, permissions);
+    i->SetPackage(String("com.android.packageinstaller"));
+    *intent = i;
+    REFCOUNT_ADD(*intent)
+    return NOERROR;
+}
+
 ECode PackageManager::GetPackageArchiveInfo(
     /* [in] */ const String& archiveFilePath,
     /* [in] */ Int32 flags,
@@ -37,22 +72,25 @@ ECode PackageManager::GetPackageArchiveInfo(
     VALIDATE_NOT_NULL(pkgInfo)
     *pkgInfo = NULL;
 
-    // AutoPtr<PackageParser> parser = new PackageParser();
-    // AutoPtr<IFile> apkFile;
-    // CFile::New(archiveFilePath, (IFile**)&apkFile);
+    AutoPtr<PackageParser> parser = new PackageParser();
+    AutoPtr<IFile> apkFile;
+    CFile::New(archiveFilePath, (IFile**)&apkFile);
 
-    // // try {
-    // AutoPtr<PackageParser::Package> pkg;
-    // FAIL_RETURN(parser->ParseMonolithicPackage(apkFile, 0, (PackageParser::Package**)&pkg))
-    // if ((flags & GET_SIGNATURES) != 0) {
-    //     FAIL_RETURN(parser->CollectCertificates(pkg, 0))
-    //     FAIL_RETURN(parser->CollectManifestDigest(pkg))
-    // }
+    // try {
+    AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(PackageParser::CERTIFICATE_BUFFER_SIZE);
+    AutoPtr<PackageParser::Package> pkg;
+    ECode ec = parser->ParseMonolithicPackage(apkFile, 0, buffer, (PackageParser::Package**)&pkg);
+    FAIL_RETURN(ec)
 
-    // AutoPtr<PackageUserState> state = new PackageUserState();
-    // AutoPtr<IPackageInfo> pi = PackageParser::GeneratePackageInfo(pkg, NULL, flags, 0, 0, NULL, state);
-    // *pkgInfo = pkg;
-    // REFCOUNT_ADD(*pkgInfo)
+    if ((flags & GET_SIGNATURES) != 0) {
+        FAIL_RETURN(parser->CollectCertificates(pkg, 0, buffer))
+        FAIL_RETURN(parser->CollectManifestDigest(pkg))
+    }
+
+    AutoPtr<PackageUserState> state = new PackageUserState();
+    AutoPtr<IPackageInfo> pi = PackageParser::GeneratePackageInfo(pkg, NULL, flags, 0, 0, NULL, state);
+    *pkgInfo = pi;
+    REFCOUNT_ADD(*pkgInfo)
     return NOERROR;
     // } catch (PackageParserException e) {
     //     return null;

@@ -827,6 +827,22 @@ public:
     static CloseQuietly(
         /* [in] */ IStrictJarFile* jarFile);
 
+    /**
+     * Parse the given APK file, treating it as as a single monolithic package.
+     * <p>
+     * Note that this <em>does not</em> perform signature verification; that
+     * must be done separately in {@link #collectCertificates(Package, int)}.
+     *
+     * @deprecated external callers should move to
+     *             {@link #parsePackage(File, int)}. Eventually this method will
+     *             be marked private.
+     */
+    CARAPI ParseMonolithicPackage(
+        /* [in] */ IFile* packageFile,
+        /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
+        /* [out] */ Package** pkgLite);
+
 private:
 
     static CARAPI_(Boolean) IsApkFile(
@@ -881,22 +897,6 @@ private:
      * must be done separately in {@link #collectCertificates(Package, int)}.
      */
     CARAPI ParseClusterPackage(
-        /* [in] */ IFile* packageFile,
-        /* [in] */ Int32 flags,
-        /* [in] */ ArrayOf<Byte>* readBuffer,
-        /* [out] */ Package** pkgLite);
-
-    /**
-     * Parse the given APK file, treating it as as a single monolithic package.
-     * <p>
-     * Note that this <em>does not</em> perform signature verification; that
-     * must be done separately in {@link #collectCertificates(Package, int)}.
-     *
-     * @deprecated external callers should move to
-     *             {@link #parsePackage(File, int)}. Eventually this method will
-     *             be marked private.
-     */
-    CARAPI ParseMonolithicPackage(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<Byte>* readBuffer,

@@ -235,7 +235,7 @@ public:
     CARAPI constructor(
         /* [in] */ IActivityThread* activityThread);
 
-    CARAPI_(void) InstallSystemApplicationInfo(
+    CARAPI InstallSystemApplicationInfo(
         /* [in] */ IApplicationInfo* info,
         /* [in] */ IClassLoader* classLoader);
 
@@ -356,6 +356,11 @@ private:
      * Java library that expects it to be set.
      */
     CARAPI_(void) InitializeJavaContextClassLoader();
+
+    CARAPI RewriteRValues(
+        /* [in] */ IClassLoader* cl,
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 id);
 
 public:
     String mPackageName;

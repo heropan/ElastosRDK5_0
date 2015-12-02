@@ -62,15 +62,16 @@ SOURCES += CBackStackState.cpp
 SOURCES += CBackStackRecordTransitionState.cpp
 
 SOURCES += CContentProviderHolder.cpp
-#SOURCES += CContextImpl.cpp
+SOURCES += CContextImpl.cpp
+SOURCES += ReceiverRestrictedContext.cpp
 #SOURCES += DatePickerDialog.cpp
 #SOURCES += Dialog.cpp
 #SOURCES += CDialog.cpp
 #SOURCES += DialogFragment.cpp
-#SOURCES += CDownloadManager.cpp
-#SOURCES += CDownloadManagerHelper.cpp
-#SOURCES += CDownloadManagerQuery.cpp
-#SOURCES += CDownloadManagerRequest.cpp
+SOURCES += CDownloadManager.cpp
+SOURCES += CDownloadManagerHelper.cpp
+SOURCES += CDownloadManagerQuery.cpp
+SOURCES += CDownloadManagerRequest.cpp
 
 SOURCES += EnterTransitionCoordinator.cpp
 SOURCES += ExitTransitionCoordinator.cpp
@@ -126,7 +127,7 @@ SOURCES += PackageInstallObserver.cpp
 SOURCES += CPendingIntent.cpp
 SOURCES += CPendingIntentFinishedDispatcher.cpp
 SOURCES += CPendingIntentHelper.cpp
-##SOURCES += Presentation.cpp
+#SOURCES += Presentation.cpp
 SOURCES += CProfilerInfo.cpp
 #SOURCES += ProgressDialog.cpp
 #SOURCES += CProgressDialog.cpp
@@ -143,7 +144,7 @@ SOURCES += CResultInfo.cpp
 
 SOURCES += Service.cpp
 SOURCES += SharedElementCallback.cpp
-##SOURCES += SharedPreferencesImpl.cpp
+SOURCES += SharedPreferencesImpl.cpp
 SOURCES += CStatusBarManager.cpp
 SOURCES += TabActivity.cpp
 SOURCES += CTaskStackBuilder.cpp
@@ -162,7 +163,6 @@ SOURCES += CGlobalsWallpaperManagerCallback.cpp
 #============================================
 
 #SOURCES += CActionBarLayoutParams.cpp
-#SOURCES += ReceiverRestrictedContext.cpp
 #SOURCES += COnActivityPausedListener.cpp
 #SOURCES += CPermissionController.cpp
 #SOURCES += CActionBarImpl.cpp
@@ -175,7 +175,6 @@ SOURCES += CGlobalsWallpaperManagerCallback.cpp
 #SOURCES += CHeavyWeightSwitcherActivity.cpp
 #SOURCES += NetInitiatedActivity.cpp
 #SOURCES += PlatLogoActivity.cpp
-#SOURCES += CReceiverRestrictedContext.cpp
 #SOURCES += CExternalMediaFormatActivity.cpp
 #SOURCES += ChooserActivity.cpp
 #SOURCES += CDisableCarModeActivity.cpp

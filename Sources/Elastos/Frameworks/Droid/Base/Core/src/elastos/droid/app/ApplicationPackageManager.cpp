@@ -62,6 +62,7 @@ namespace App {
 const String ApplicationPackageManager::TAG("ApplicationPackageManager");
 const Boolean ApplicationPackageManager::DEBUG = FALSE;
 const Boolean ApplicationPackageManager::DEBUG_ICONS = FALSE;
+Int32 ApplicationPackageManager::sDefaultFlags = IPackageManager::GET_SHARED_LIBRARY_FILES;
 
 Object ApplicationPackageManager::sSync;
 HashMap<AutoPtr<ApplicationPackageManager::ResourceName>, AutoPtr<IWeakReference> > ApplicationPackageManager::sIconCache;

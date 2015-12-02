@@ -152,6 +152,7 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Os.IRemoteCallback;
     interface Elastos.Droid.Os.IPersistableBundle;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
@@ -160,12 +161,17 @@ module
     interface Elastos.Droid.Content.IIntentSender;
     interface Elastos.Droid.Content.IIntentFilter;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IContextWrapper;
     interface Elastos.Droid.Content.IIntentReceiver;
     interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Content.IContentResolver;
+    interface Elastos.Droid.Content.IComponentCallbacks;
+    interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.Content.Pm.IPackageManager;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
+    interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
@@ -173,6 +179,7 @@ module
     interface Elastos.Droid.View.IViewManager;
     interface Elastos.Droid.View.IViewParent;
     interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IDisplay;
     interface Elastos.Droid.View.IContextThemeWrapper;
     interface Elastos.Droid.View.ILayoutInflaterFactory;
     interface Elastos.Droid.View.ILayoutInflaterFactory2;
@@ -185,8 +192,6 @@ module
     interface Elastos.Droid.Widget.IExpandableListViewOnChildClickListener;
     interface Elastos.Droid.Widget.IExpandableListViewOnGroupCollapseListener;
     interface Elastos.Droid.Widget.IExpandableListViewOnGroupExpandListener;
-    interface Elastos.Droid.Content.IComponentCallbacks;
-    interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceClient;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Utility.IArrayMap;
@@ -198,7 +203,6 @@ module
     interface Elastos.Droid.App.Job.IJobScheduler;
     interface Elastos.Droid.App.Job.IIJobScheduler;
 
-//     interface Elastos.Droid.Content.IContentResolver;
 //     interface Elastos.Droid.Content.IDialogInterface;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
@@ -208,14 +212,6 @@ module
 //     interface Elastos.Droid.View.IWindowCallback;
 //     interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
 //     interface Elastos.Droid.View.IViewGroupLayoutParams;
-//
-//     interface Elastos.Droid.App.IFragmentManagerHelper;
-//     interface Elastos.Droid.App.IFragmentManagerImplHelper;
-//     interface Elastos.Droid.App.IFragmentManagerImpl;
-//     interface Elastos.Droid.App.IActivity;
-//     interface Elastos.Droid.App.IDialog;
-//     interface Elastos.Droid.Net.IUri;
-
 
     namespace Elastos {
     namespace Droid {
@@ -346,15 +342,22 @@ module
     namespace Droid {
     namespace App {
 
-//     [local]
-//     class CContextImpl {
-//         constructor();
+    [local]
+    class CContextImpl {
+        constructor(
+            [in] IContextImpl* container,
+            [in] IActivityThread* mainThread,
+            [in] ILoadedPkg* packageInfo,
+            [in] IBinder* activityToken,
+            [in] IUserHandle* user,
+            [in] Boolean restricted,
+            [in] IDisplay* display,
+            [in] IConfiguration* overrideConfiguration);
 
-//         constructor(
-//             [in] IContextImpl* ctx);
-
-//         interface IContextImpl;
-//     }
+        interface IContextImpl;
+        interface IContextWrapper;
+        interface IContext;
+    }
 
         class CAlarmManager {
             constructor(
@@ -1331,13 +1334,15 @@ module
             //interface IOnWindowDismissedCallback
 //     }
 
-//     [local]
-//     class CReceiverRestrictedContext {
-//         constructor(
-//             [in] IContext* ctx);
+    [local]
+    class CReceiverRestrictedContext {
+        constructor(
+            [in] IContext* ctx);
 
-//         interface IReceiverRestrictedContext;
-//     }
+        interface IReceiverRestrictedContext;
+        interface IContextWrapper;
+        interface IContext;
+    }
 
 //     [local]
 //     class CAlertDialog {
@@ -1569,31 +1574,33 @@ module
         interface IParcelable;
     }
 
-//     class CDownloadManager {
-//         constructor(
-//             [in] IContentResolver* resolver,
-//             [in] String packageName);
+    class CDownloadManager {
+        constructor(
+            [in] IContentResolver* resolver,
+            [in] String packageName);
 
-//         interface IDownloadManager;
-//     }
+        interface IDownloadManager;
+    }
 
-//     singleton class CDownloadManagerHelper {
-//         interface IDownloadManagerHelper;
-//     }
+    singleton class CDownloadManagerHelper {
+        interface IDownloadManagerHelper;
+    }
 
-//     class CDownloadManagerRequest {
-//         constructor(
-//             [in] IUri* uri);
+    class CDownloadManagerRequest {
+        constructor(
+            [in] IUri* uri);
 
-//         constructor(
-//             [in] String uriString);
+        constructor(
+            [in] String uriString);
 
-//         interface IDownloadManagerRequest;
-//     }
+        interface IDownloadManagerRequest;
+    }
 
-//     class CDownloadManagerQuery {
-//         interface IDownloadManagerQuery;
-//     }
+    class CDownloadManagerQuery {
+        constructor();
+
+        interface IDownloadManagerQuery;
+    }
 
     [local]
     class CVoiceInteractor {

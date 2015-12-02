@@ -1096,6 +1096,9 @@ public:
     static CARAPI Main(
         /* [in] */ const ArrayOf<String>& args);
 
+    CARAPI AppNotRespondingViaProvider(
+        /* [in] */ IBinder* provider);
+
 private:
 
     CARAPI GetPackageInfo(
@@ -1310,9 +1313,6 @@ private:
     CARAPI_(void) IncProviderRefLocked(
         /* [in] */ ProviderRefCount* prc,
         /* [in] */ Boolean stable);
-
-    CARAPI AppNotRespondingViaProvider(
-        /* [in] */ IBinder* provider);
 
     CARAPI_(AutoPtr<ProviderClientRecord>) InstallProviderAuthoritiesLocked(
         /* [in] */ IIContentProvider* provider,

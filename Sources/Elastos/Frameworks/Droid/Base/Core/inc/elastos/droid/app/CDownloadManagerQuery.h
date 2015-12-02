@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_App_CDownloadManagerQuery.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IInteger32;
@@ -17,9 +18,18 @@ namespace Droid {
 namespace App {
 
 CarClass(CDownloadManagerQuery)
+    , public Object
+    , public IDownloadManagerQuery
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
+
     CDownloadManagerQuery();
+
     /**
      * Include only the downloads with the given IDs.
      * @return this object
