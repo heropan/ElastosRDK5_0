@@ -3,14 +3,12 @@
 #include "elastos/droid/webkit/native/content/browser/input/DateDialogNormalizer.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::IInteger32;
-// TODO using Elastos::Core::CInteger32;
 using Elastos::Droid::App::EIID_IAlertDialog;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::EIID_IView;
-using Elastos::Droid::Widget::EIID_IOnTimeChangedListener;
+using Elastos::Droid::Widget::EIID_ITimePickerOnTimeChangedListener;
 using Elastos::Droid::Widget::EIID_IDatePickerOnDateChangedListener;
 
 namespace Elastos {
@@ -21,7 +19,7 @@ namespace Browser {
 namespace Input {
 
 CAR_INTERFACE_IMPL_4(DateTimePickerDialog, Object, IAlertDialog,
-        IDialogInterfaceOnClickListener, IDatePickerOnDateChangedListener, IOnTimeChangedListener);
+        IDialogInterfaceOnClickListener, IDatePickerOnDateChangedListener, ITimePickerOnTimeChangedListener);
 
 /**
  * @param context The context the dialog is to run in.
@@ -76,31 +74,20 @@ DateTimePickerDialog::DateTimePickerDialog(
     // TODO
     // view->FindViewById(R::id::date_picker, (IView**)&mDatePicker);
     DateDialogNormalizer::Normalize(mDatePicker, this,
-            year, monthOfYear, dayOfMonth, hourOfDay, minute, mMinTimeMillis, mMaxTimeMillis);
+        year, monthOfYear, dayOfMonth, hourOfDay, minute, mMinTimeMillis, mMaxTimeMillis);
 
     assert(0);
     // TODO
     // view->FindViewById(R::id::time_picker, (IView**)&mTimePicker);
     mTimePicker->SetIs24HourView(is24HourView);
-    AutoPtr<IInteger32> iHourOfDay;
-    assert(0);
-    // TODO
-    // CInteger32::New(hourOfDay, (IInteger32**)&iHourOfDay);
-    mTimePicker->SetCurrentHour(iHourOfDay);
-    AutoPtr<IInteger32> iMinute;
-    assert(0);
-    // TODO
-    // CInteger32::New(minute, (IInteger32**)&iMinute);
-    mTimePicker->SetCurrentMinute(iMinute);
+    mTimePicker->SetCurrentHour(hourOfDay);
+    mTimePicker->SetCurrentMinute(minute);
     mTimePicker->SetOnTimeChangedListener(this);
-    AutoPtr<IInteger32> iCurrentHour, iCurrentMinute;
-    mTimePicker->GetCurrentHour((IInteger32**)&iCurrentHour);
-    mTimePicker->GetCurrentMinute((IInteger32**)&iCurrentMinute);
+
     Int32 currentHour, currentMinute;
-    iCurrentHour->GetValue(&currentHour);
-    iCurrentMinute->GetValue(&currentMinute);
-    OnTimeChanged(mTimePicker, currentHour,
-            currentMinute);
+    mTimePicker->GetCurrentHour(&currentHour);
+    mTimePicker->GetCurrentMinute(&currentMinute);
+    OnTimeChanged(mTimePicker, currentHour, currentMinute);
 }
 
 //@Override
@@ -120,14 +107,10 @@ ECode DateTimePickerDialog::TryNotifyDateTimeSet()
         mDatePicker->GetYear(&year);
         mDatePicker->GetMonth(&month);
         mDatePicker->GetDayOfMonth(&dayOfMonth);
-        AutoPtr<IInteger32> iCurrentHour;
-        mTimePicker->GetCurrentHour((IInteger32**)&iCurrentHour);
-        iCurrentHour->GetValue(&currentHour);
-        AutoPtr<IInteger32> iCurrentMinute;
-        mTimePicker->GetCurrentMinute((IInteger32**)&iCurrentMinute);
-        iCurrentMinute->GetValue(&currentMinute);
+        mTimePicker->GetCurrentHour(&currentHour);
+        mTimePicker->GetCurrentMinute(&currentMinute);
         mCallBack->OnDateTimeSet(mDatePicker, mTimePicker, year,
-                month, dayOfMonth, currentHour, currentMinute);
+            month, dayOfMonth, currentHour, currentMinute);
     }
 
     return NOERROR;
@@ -143,12 +126,8 @@ ECode DateTimePickerDialog::OnDateChanged(
     // Signal a time change so the max/min checks can be applied.
     if (mTimePicker != NULL) {
         Int32 hour, minute;
-        AutoPtr<IInteger32> iHour;
-        mTimePicker->GetCurrentHour((IInteger32**)&iHour);
-        iHour->GetValue(&hour);
-        AutoPtr<IInteger32> iMinute;
-        mTimePicker->GetCurrentMinute((IInteger32**)&iMinute);
-        iMinute->GetValue(&minute);
+        mTimePicker->GetCurrentHour(&hour);
+        mTimePicker->GetCurrentMinute(&minute);
         OnTimeChanged(mTimePicker, hour, minute);
     }
 
@@ -166,12 +145,8 @@ ECode DateTimePickerDialog::OnTimeChanged(
     // TODO
     // CTime::New((ITime**)&time);
     Int32 currentMinute, currentHour, dayOfMonth, month, year;
-    AutoPtr<IInteger32> iCurrentMinute;
-    mTimePicker->GetCurrentMinute((IInteger32**)&iCurrentMinute);
-    iCurrentMinute->GetValue(&currentMinute);
-    AutoPtr<IInteger32> iCurrentHour;
-    mTimePicker->GetCurrentHour((IInteger32**)&iCurrentHour);
-    iCurrentHour->GetValue(&currentHour);
+    mTimePicker->GetCurrentMinute(&currentMinute);
+    mTimePicker->GetCurrentHour(&currentHour);
     mDatePicker->GetDayOfMonth(&dayOfMonth);
     mDatePicker->GetMonth(&month);
     mDatePicker->GetYear(&year);
@@ -191,16 +166,8 @@ ECode DateTimePickerDialog::OnTimeChanged(
     Int32 tHour, tMinute;
     time->GetHour(&tHour);
     time->GetMinute(&tMinute);
-    AutoPtr<IInteger32> itHour;
-    assert(0);
-    // TODO
-    // CInteger32::New(tHour, (IInteger32**)&itHour);
-    mTimePicker->SetCurrentHour(itHour);
-    AutoPtr<IInteger32> itMinute;
-    assert(0);
-    // TODO
-    // CInteger32::New(tMinute, (IInteger32**)&itMinute);
-    mTimePicker->SetCurrentMinute(itMinute);
+    mTimePicker->SetCurrentHour(tHour);
+    mTimePicker->SetCurrentMinute(tMinute);
 
     return NOERROR;
 }
@@ -220,16 +187,8 @@ void DateTimePickerDialog::UpdateDateTime(
     /* [in] */ Int32 minuteOfHour)
 {
     mDatePicker->UpdateDate(year, monthOfYear, dayOfMonth);
-    AutoPtr<IInteger32> iHourOfDay;
-    assert(0);
-    // TODO
-    // CInteger32::New(hourOfDay, (IInteger32**)&iHourOfDay);
-    mTimePicker->SetCurrentHour(iHourOfDay);
-    AutoPtr<IInteger32> iMinuteOfHour;
-    assert(0);
-    // TODO
-    // CInteger32::New(minuteOfHour, (IInteger32**)&iMinuteOfHour);
-    mTimePicker->SetCurrentMinute(iMinuteOfHour);
+    mTimePicker->SetCurrentHour(hourOfDay);
+    mTimePicker->SetCurrentMinute(minuteOfHour);
 }
 
 } // namespace Input

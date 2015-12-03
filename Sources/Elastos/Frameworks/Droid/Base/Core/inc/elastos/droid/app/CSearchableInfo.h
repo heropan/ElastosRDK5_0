@@ -3,6 +3,7 @@
 
 #include "_Elastos_Droid_App_CSearchableInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
@@ -16,343 +17,359 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-CarClass(CSearchableInfo) {
-
+CarClass(CSearchableInfo)
+    , public Object
+    , public ISearchableInfo
+    , public IParcelable
+{
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CSearchableInfo();
 
     CARAPI constructor();
 
+    /**
+     * Constructor
+     *
+     * Given a ComponentName, get the searchability info
+     * and build a local copy of it.  Use the factory, not this.
+     *
+     * @param activityContext runtime context for the activity that the searchable info is about.
+     * @param attr The attribute set we found in the XML file, contains the values that are used to
+     * construct the object.
+     * @param cName The component name of the searchable activity
+     * @throws IllegalArgumentException if the searchability info is invalid or insufficient
+     */
     CARAPI constructor(
         /* [in] */ IContext* activityContext,
         /* [in] */ IAttributeSet* attr,
         /* [in] */ IComponentName* cName);
-/**
- * Gets the search suggestion content provider authority.
- *
- * @return The search suggestions authority, or {@code null} if not set.
- * @see android.R.styleable#Searchable_searchSuggestAuthority
- */
-
+    /**
+     * Gets the search suggestion content provider authority.
+     *
+     * @return The search suggestions authority, or {@code null} if not set.
+     * @see android.R.styleable#Searchable_searchSuggestAuthority
+     */
     CARAPI GetSuggestAuthority(
         /* [out] */ String* auth);
 
-/**
- * Gets the name of the package where the suggestion provider lives,
- * or {@code null}.
- */
+    /**
+     * Gets the name of the package where the suggestion provider lives,
+     * or {@code null}.
+     */
     CARAPI GetSuggestPackage(
         /* [out] */ String* pkg);
 
-/**
- * Gets the component name of the searchable activity.
- *
- * @return A component name, never {@code null}.
- */
+    /**
+     * Gets the component name of the searchable activity.
+     *
+     * @return A component name, never {@code null}.
+     */
     CARAPI GetSearchActivity(
         /* [out] */ IComponentName** nameRst);
 
-/**
- * Checks whether the badge should be a text label.
- *
- * @see android.R.styleable#Searchable_searchMode
- *
- * @hide This feature is deprecated, no need to add it to the API.
- */
+    /**
+     * Checks whether the badge should be a text label.
+     *
+     * @see android.R.styleable#Searchable_searchMode
+     *
+     * @hide This feature is deprecated, no need to add it to the API.
+     */
     CARAPI UseBadgeLabel(
         /* [out] */ Boolean* isUsing);
 
-/**
- * Checks whether the badge should be an icon.
- *
- * @see android.R.styleable#Searchable_searchMode
- *
- * @hide This feature is deprecated, no need to add it to the API.
- */
+    /**
+     * Checks whether the badge should be an icon.
+     *
+     * @see android.R.styleable#Searchable_searchMode
+     *
+     * @hide This feature is deprecated, no need to add it to the API.
+     */
     CARAPI UseBadgeIcon(
         /* [out] */ Boolean* isUsing);
 
-/**
- * Checks whether the text in the query field should come from the suggestion intent data.
- *
- * @see android.R.styleable#Searchable_searchMode
- */
+    /**
+     * Checks whether the text in the query field should come from the suggestion intent data.
+     *
+     * @see android.R.styleable#Searchable_searchMode
+     */
     CARAPI ShouldRewriteQueryFromData(
         /* [out] */ Boolean* isShould);
 
-/**
- * Checks whether the text in the query field should come from the suggestion title.
- *
- * @see android.R.styleable#Searchable_searchMode
- */
+    /**
+     * Checks whether the text in the query field should come from the suggestion title.
+     *
+     * @see android.R.styleable#Searchable_searchMode
+     */
     CARAPI ShouldRewriteQueryFromText(
         /* [out] */ Boolean* isShould);
 
-/**
- * Gets the resource id of the description string to use for this source in system search
- * settings, or {@code 0} if none has been specified.
- *
- * @see android.R.styleable#Searchable_searchSettingsDescription
- */
+    /**
+     * Gets the resource id of the description string to use for this source in system search
+     * settings, or {@code 0} if none has been specified.
+     *
+     * @see android.R.styleable#Searchable_searchSettingsDescription
+     */
     CARAPI GetSettingsDescriptionId(
         /* [out] */ Boolean* id);
 
-/**
- * Gets the content provider path for obtaining search suggestions.
- *
- * @return The suggestion path, or {@code null} if not set.
- * @see android.R.styleable#Searchable_searchSuggestPath
- */
+    /**
+     * Gets the content provider path for obtaining search suggestions.
+     *
+     * @return The suggestion path, or {@code null} if not set.
+     * @see android.R.styleable#Searchable_searchSuggestPath
+     */
     CARAPI GetSuggestPath(
         /* [out] */ String* path);
 
-/**
- * Gets the selection for obtaining search suggestions.
- *
- * @see android.R.styleable#Searchable_searchSuggestSelection
- */
+    /**
+     * Gets the selection for obtaining search suggestions.
+     *
+     * @see android.R.styleable#Searchable_searchSuggestSelection
+     */
     CARAPI GetSuggestSelection(
         /* [out] */ String* selection);
 
-/**
- * Gets the optional intent action for use with these suggestions. This is
- * useful if all intents will have the same action
- * (e.g. {@link android.content.Intent#ACTION_VIEW})
- *
- * This can be overriden in any given suggestion using the column
- * {@link SearchManager#SUGGEST_COLUMN_INTENT_ACTION}.
- *
- * @return The default intent action, or {@code null} if not set.
- * @see android.R.styleable#Searchable_searchSuggestIntentAction
- */
+    /**
+     * Gets the optional intent action for use with these suggestions. This is
+     * useful if all intents will have the same action
+     * (e.g. {@link android.content.Intent#ACTION_VIEW})
+     *
+     * This can be overriden in any given suggestion using the column
+     * {@link SearchManager#SUGGEST_COLUMN_INTENT_ACTION}.
+     *
+     * @return The default intent action, or {@code null} if not set.
+     * @see android.R.styleable#Searchable_searchSuggestIntentAction
+     */
     CARAPI GetSuggestIntentAction(
         /* [out] */ String* action);
 
-/**
- * Gets the optional intent data for use with these suggestions.  This is
- * useful if all intents will have similar data URIs,
- * but you'll likely need to provide a specific ID as well via the column
- * {@link SearchManager#SUGGEST_COLUMN_INTENT_DATA_ID}, which will be appended to the
- * intent data URI.
- *
- * This can be overriden in any given suggestion using the column
- * {@link SearchManager#SUGGEST_COLUMN_INTENT_DATA}.
- *
- * @return The default intent data, or {@code null} if not set.
- * @see android.R.styleable#Searchable_searchSuggestIntentData
- */
+    /**
+     * Gets the optional intent data for use with these suggestions.  This is
+     * useful if all intents will have similar data URIs,
+     * but you'll likely need to provide a specific ID as well via the column
+     * {@link SearchManager#SUGGEST_COLUMN_INTENT_DATA_ID}, which will be appended to the
+     * intent data URI.
+     *
+     * This can be overriden in any given suggestion using the column
+     * {@link SearchManager#SUGGEST_COLUMN_INTENT_DATA}.
+     *
+     * @return The default intent data, or {@code null} if not set.
+     * @see android.R.styleable#Searchable_searchSuggestIntentData
+     */
     CARAPI GetSuggestIntentData(
         /* [out] */ String* data);
 
-/**
- * Gets the suggestion threshold.
- *
- * @return The suggestion threshold, or {@code 0} if not set.
- * @see android.R.styleable#Searchable_searchSuggestThreshold
- */
+    /**
+     * Gets the suggestion threshold.
+     *
+     * @return The suggestion threshold, or {@code 0} if not set.
+     * @see android.R.styleable#Searchable_searchSuggestThreshold
+     */
     CARAPI GetSuggestThreshold(
         /* [out] */ Int32* threshold);
 
-/**
- * Get the context for the searchable activity.
- *
- * @param context You need to supply a context to start with
- * @return Returns a context related to the searchable activity
- * @hide
- */
+    /**
+     * Get the context for the searchable activity.
+     *
+     * @param context You need to supply a context to start with
+     * @return Returns a context related to the searchable activity
+     * @hide
+     */
     CARAPI GetActivityContext(
         /* [in] */ IContext* inCtx,
         /* [out] */ IContext** outCtx);
 
-/**
- * Get the context for the suggestions provider.
- *
- * @param context You need to supply a context to start with
- * @param activityContext If we can determine that the provider and the activity are the
- *        same, we'll just return this one.
- * @return Returns a context related to the suggestion provider
- * @hide
- */
+    /**
+     * Get the context for the suggestions provider.
+     *
+     * @param context You need to supply a context to start with
+     * @param activityContext If we can determine that the provider and the activity are the
+     *        same, we'll just return this one.
+     * @return Returns a context related to the suggestion provider
+     * @hide
+     */
     CARAPI GetProviderContext(
         /* [in] */ IContext* ctx,
         /* [in] */ IContext* activityCtx,
         /* [out] */ IContext** rstCtx);
 
-
-/**
- * If any action keys were defined for this searchable activity, look up and return.
- *
- * @param keyCode The key that was pressed
- * @return Returns the action key info, or {@code null} if none defined.
- *
- * @hide ActionKeyInfo is hidden
- */
+    /**
+     * If any action keys were defined for this searchable activity, look up and return.
+     *
+     * @param keyCode The key that was pressed
+     * @return Returns the action key info, or {@code null} if none defined.
+     *
+     * @hide ActionKeyInfo is hidden
+     */
     CARAPI FindActionKey(
         /* [in] */ Int32 keyCode,
         /* [out] */ IActionKeyInfo** info);
 
-/**
- * Gets the "label" (user-visible name) of this searchable context. This must be
- * read using the searchable Activity's resources.
- *
- * @return A resource id, or {@code 0} if no label was specified.
- * @see android.R.styleable#Searchable_label
- *
- * @hide deprecated functionality
- */
+    /**
+     * Gets the "label" (user-visible name) of this searchable context. This must be
+     * read using the searchable Activity's resources.
+     *
+     * @return A resource id, or {@code 0} if no label was specified.
+     * @see android.R.styleable#Searchable_label
+     *
+     * @hide deprecated functionality
+     */
     CARAPI GetLabelId(
         /* [out] */ Int32* id);
 
-/**
- * Gets the resource id of the hint text. This must be
- * read using the searchable Activity's resources.
- *
- * @return A resource id, or {@code 0} if no hint was specified.
- * @see android.R.styleable#Searchable_hint
- */
+    /**
+     * Gets the resource id of the hint text. This must be
+     * read using the searchable Activity's resources.
+     *
+     * @return A resource id, or {@code 0} if no hint was specified.
+     * @see android.R.styleable#Searchable_hint
+     */
     CARAPI GetHintId(
         /* [out] */ Int32* id);
 
-/**
- * Gets the icon id specified by the Searchable_icon meta-data entry. This must be
- * read using the searchable Activity's resources.
- *
- * @return A resource id, or {@code 0} if no icon was specified.
- * @see android.R.styleable#Searchable_icon
- *
- * @hide deprecated functionality
- */
+    /**
+     * Gets the icon id specified by the Searchable_icon meta-data entry. This must be
+     * read using the searchable Activity's resources.
+     *
+     * @return A resource id, or {@code 0} if no icon was specified.
+     * @see android.R.styleable#Searchable_icon
+     *
+     * @hide deprecated functionality
+     */
     CARAPI GetIconId(
         /* [out] */ Int32* id);
 
-/**
- * Checks if the searchable activity wants the voice search button to be shown.
- *
- * @see android.R.styleable#Searchable_voiceSearchMode
- */
+    /**
+     * Checks if the searchable activity wants the voice search button to be shown.
+     *
+     * @see android.R.styleable#Searchable_voiceSearchMode
+     */
     CARAPI GetVoiceSearchEnabled(
         /* [out] */ Boolean* enabled);
 
-/**
- * Checks if voice search should start web search.
- *
- * @see android.R.styleable#Searchable_voiceSearchMode
- */
+    /**
+     * Checks if voice search should start web search.
+     *
+     * @see android.R.styleable#Searchable_voiceSearchMode
+     */
     CARAPI GetVoiceSearchLaunchWebSearch(
         /* [out] */ Boolean* mode);
 
-/**
- * Checks if voice search should start in-app search.
- *
- * @see android.R.styleable#Searchable_voiceSearchMode
- */
+    /**
+     * Checks if voice search should start in-app search.
+     *
+     * @see android.R.styleable#Searchable_voiceSearchMode
+     */
     CARAPI GetVoiceSearchLaunchRecognizer(
         /* [out] */ Boolean* mode);
 
-/**
- * Gets the resource id of the voice search language model string.
- *
- * @return A resource id, or {@code 0} if no language model was specified.
- * @see android.R.styleable#Searchable_voiceLanguageModel
- */
+    /**
+     * Gets the resource id of the voice search language model string.
+     *
+     * @return A resource id, or {@code 0} if no language model was specified.
+     * @see android.R.styleable#Searchable_voiceLanguageModel
+     */
     CARAPI GetVoiceLanguageModeId(
         /* [out] */ Int32* modeId);
 
-/**
- * Gets the resource id of the voice prompt text string.
- *
- * @return A resource id, or {@code 0} if no voice prompt text was specified.
- * @see android.R.styleable#Searchable_voicePromptText
- */
+    /**
+     * Gets the resource id of the voice prompt text string.
+     *
+     * @return A resource id, or {@code 0} if no voice prompt text was specified.
+     * @see android.R.styleable#Searchable_voicePromptText
+     */
     CARAPI GetVoicePromptTextId(
         /* [out] */ Int32* textId);
 
-/**
- * Gets the resource id of the spoken language to recognize in voice search.
- *
- * @return A resource id, or {@code 0} if no language was specified.
- * @see android.R.styleable#Searchable_voiceLanguage
- */
+    /**
+     * Gets the resource id of the spoken language to recognize in voice search.
+     *
+     * @return A resource id, or {@code 0} if no language was specified.
+     * @see android.R.styleable#Searchable_voiceLanguage
+     */
     CARAPI GetVoiceLanguageId(
         /* [out] */ Int32* id);
 
-/**
- * The maximum number of voice recognition results to return.
- *
- * @return the max results count, if specified in the searchable
- *         activity's metadata, or {@code 0} if not specified.
- * @see android.R.styleable#Searchable_voiceMaxResults
- */
+    /**
+     * The maximum number of voice recognition results to return.
+     *
+     * @return the max results count, if specified in the searchable
+     *         activity's metadata, or {@code 0} if not specified.
+     * @see android.R.styleable#Searchable_voiceMaxResults
+     */
     CARAPI GetVoiceMaxResults(
         /* [out] */ Int32* results);
 
-/**
- * Gets the resource id of replacement text for the "Search" button.
- *
- * @return A resource id, or {@code 0} if no replacement text was specified.
- * @see android.R.styleable#Searchable_searchButtonText
- * @hide This feature is deprecated, no need to add it to the API.
- */
+    /**
+     * Gets the resource id of replacement text for the "Search" button.
+     *
+     * @return A resource id, or {@code 0} if no replacement text was specified.
+     * @see android.R.styleable#Searchable_searchButtonText
+     * @hide This feature is deprecated, no need to add it to the API.
+     */
     CARAPI GetSearchButtonText(
         /* [out] */ Int32* text);
 
-/**
- * Gets the input type as specified in the searchable attributes. This will default to
- * {@link InputType#TYPE_CLASS_TEXT} if not specified (which is appropriate
- * for free text input).
- *
- * @return the input type
- * @see android.R.styleable#Searchable_inputType
- */
+    /**
+     * Gets the input type as specified in the searchable attributes. This will default to
+     * {@link InputType#TYPE_CLASS_TEXT} if not specified (which is appropriate
+     * for free text input).
+     *
+     * @return the input type
+     * @see android.R.styleable#Searchable_inputType
+     */
     CARAPI GetInputType(
         /* [out] */ Int32* type);
 
-/**
- * Gets the input method options specified in the searchable attributes.
- * This will default to {@link EditorInfo#IME_ACTION_GO} if not specified (which is
- * appropriate for a search box).
- *
- * @return the input type
- * @see android.R.styleable#Searchable_imeOptions
- */
+    /**
+     * Gets the input method options specified in the searchable attributes.
+     * This will default to {@link EditorInfo#IME_ACTION_GO} if not specified (which is
+     * appropriate for a search box).
+     *
+     * @return the input type
+     * @see android.R.styleable#Searchable_imeOptions
+     */
     CARAPI GetImeOptions(
         /* [out] */ Int32* options);
 
-/**
- * Checks whether the searchable should be included in global search.
- *
- * @return The value of the {@link android.R.styleable#Searchable_includeInGlobalSearch}
- *         attribute, or {@code false} if the attribute is not set.
- * @see android.R.styleable#Searchable_includeInGlobalSearch
- */
+    /**
+     * Checks whether the searchable should be included in global search.
+     *
+     * @return The value of the {@link android.R.styleable#Searchable_includeInGlobalSearch}
+     *         attribute, or {@code false} if the attribute is not set.
+     * @see android.R.styleable#Searchable_includeInGlobalSearch
+     */
     CARAPI ShouldIncludeInGlobalSearch(
         /* [out] */ Boolean* isShould);
 
-/**
- * Checks whether this searchable activity should be queried for suggestions if a prefix
- * of the query has returned no results.
- *
- * @see android.R.styleable#Searchable_queryAfterZeroResults
- */
+    /**
+     * Checks whether this searchable activity should be queried for suggestions if a prefix
+     * of the query has returned no results.
+     *
+     * @see android.R.styleable#Searchable_queryAfterZeroResults
+     */
     CARAPI QueryAfterZeroResults(
         /* [out] */ Boolean* results);
 
-/**
- * Checks whether this searchable activity has auto URL detection turned on.
- *
- * @see android.R.styleable#Searchable_autoUrlDetect
- */
+    /**
+     * Checks whether this searchable activity has auto URL detection turned on.
+     *
+     * @see android.R.styleable#Searchable_autoUrlDetect
+     */
     CARAPI AutoUrlDetect(
         /* [out] */ Boolean* autoDetect);
 
-/**
- * Instantiates a new SearchableInfo from the data in a Parcel that was
- * previously written with {@link #writeToParcel(Parcel, int)}.
- *
- * @param in The Parcel containing the previously written SearchableInfo,
- * positioned at the location in the buffer where it was written.
- */
+    /**
+     * Instantiates a new SearchableInfo from the data in a Parcel that was
+     * previously written with {@link #writeToParcel(Parcel, int)}.
+     *
+     * @param in The Parcel containing the previously written SearchableInfo,
+     * positioned at the location in the buffer where it was written.
+     */
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
@@ -364,25 +381,6 @@ public:
         /* [in] */ IActivityInfo* activityInfo,
         /* [in] */ Int32 userId,
         /* [out] */ ISearchableInfo** info);
-
-protected:
-    /**
- * Constructor
- *
- * Given a ComponentName, get the searchability info
- * and build a local copy of it.  Use the factory, not this.
- *
- * @param activityContext runtime context for the activity that the searchable info is about.
- * @param attr The attribute set we found in the XML file, contains the values that are used to
- * construct the object.
- * @param cName The component name of the searchable activity
- * @throws IllegalArgumentException if the searchability info is invalid or insufficient
- */
-
-    CARAPI Init(
-        /* [in] */ IContext* activityContext,
-        /* [in] */ IAttributeSet* attr,
-        /* [in] */ IComponentName* cName);
 
 private:
 
@@ -401,7 +399,7 @@ private:
         /* [in] */ IActionKeyInfo* keyInfo);
 
 private:
-        // general debugging support
+    // general debugging support
     static const Boolean DBG = FALSE;
     static const String TAG;
 
@@ -441,7 +439,7 @@ private:
     // since keycodes for the hard keys are < 127. For such values, Integer.valueOf()
     // uses shared Integer objects.
     // This is not final, to allow lazy initialization.
-    HashMap<Int32 , AutoPtr<IActionKeyInfo> > mActionKeys;
+    HashMap<Int32, AutoPtr<IActionKeyInfo> > mActionKeys;
     String mSuggestProviderPackage;
 
     // Flag values for Searchable_voiceSearchMode

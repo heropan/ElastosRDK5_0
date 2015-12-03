@@ -5,11 +5,9 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CSearchableInfoHelper, Singleton, ISearchableInfoHelper)
 
-ECode CSearchableInfoHelper::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CSearchableInfoHelper)
 
 ECode CSearchableInfoHelper::GetActivityMetaData(
     /* [in] */ IContext* ctx,

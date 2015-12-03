@@ -4,9 +4,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-CAR_INTERFACE_IMPL_3(CSearchManager, Object, ISearchManager, IDialogInterfaceOnDismissListener, IDialogInterfaceOnCancelListener)
+CAR_INTERFACE_IMPL_3(CSearchManager, Object, ISearchManager, \
+    IDialogInterfaceOnDismissListener, IDialogInterfaceOnCancelListener)
 
-CAR_OBJECT_IMPL()
+CAR_OBJECT_IMPL(CSearchManager)
 
 CSearchManager::CSearchManager()
 {
@@ -230,12 +231,12 @@ ECode CSearchManager::GetSuggestions(
 ECode CSearchManager::GetSearchablesInGlobalSearch(
     /* [out] */ IObjectContainer **info)
 {
-        // try {
-            return mService->GetSearchablesInGlobalSearch(info);
-        // } catch (RemoteException e) {
-        //     Log.e(TAG, "getSearchablesInGlobalSearch() failed: " + e);
-        //     return null;
-        // }
+    // try {
+        return mService->GetSearchablesInGlobalSearch(info);
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "getSearchablesInGlobalSearch() failed: " + e);
+    //     return null;
+    // }
 }
 
 ECode CSearchManager::GetAssistIntent(
@@ -253,16 +254,16 @@ ECode CSearchManager::GetAssistIntent(
     /* [out] */ IIntent **intent)
 {
     VALIDATE_NOT_NULL(intent);
+    *intent = NULL;
+
     //try {
     if (mService == NULL) {
-        *intent = NULL;
         return NOERROR;
     }
 
     AutoPtr<IComponentName> comp;
     mService->GetAssistIntent(userHandle, &comp);
     if (comp == NULL) {
-        *intent = NULL;
         return NOERROR;
     }
     AutoPtr<IIntent> pIntent;
@@ -293,15 +294,18 @@ ECode CSearchManager::LaunchAssistAction(
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* result)
 {
-    try {
-        if (mService == null) {
-            return false;
-        }
-        return mService.launchAssistAction(requestType, hint, userHandle);
-    } catch (RemoteException re) {
-        Log.e(TAG, "launchAssistAction() failed: " + re);
-        return false;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (mService == NULL) {
+        return NOERROR;
     }
+    // try {
+        return mService->LaunchAssistAction(requestType, hint, userHandle, result);
+    // } catch (RemoteException re) {
+    //     Log.e(TAG, "launchAssistAction() failed: " + re);
+    //     return false;
+    // }
 }
 
 void CSearchManager::EnsureSearchDialog()

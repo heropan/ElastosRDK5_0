@@ -86,6 +86,9 @@ ProgressDialog::ProgressDialog()
     InitFormats();
 }
 
+ProgressDialog::~ProgressDialog()
+{}
+
 ECode ProgressDialog::constructor(
     /* [in] */ IContext* context)
 {

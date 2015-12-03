@@ -78,6 +78,7 @@ module
     merge("app/ResultInfo.car");
     merge("app/ResourcesManager.car");
     merge("app/SearchManager.car");
+    merge("app/SearchDialog.car");
     merge("app/SearchableInfo.car");
     merge("app/Service.car");
     merge("app/SharedElementCallback.car");
@@ -1457,6 +1458,9 @@ module
         interface IOnWindowDismissedCallback;
     }
 
+    singleton class CProgressDialogHelper {
+        interface IProgressDialogHelper;
+    }
 
     [local, parcelable]
     class CWallpaperInfo {

@@ -122,6 +122,7 @@ SOURCES += CPendingIntentHelper.cpp
 #SOURCES += Presentation.cpp
 SOURCES += CProfilerInfo.cpp
 SOURCES += ProgressDialog.cpp
+SOURCES += CProgressDialogHelper.cpp
 SOURCES += QueuedWork.cpp
 SOURCES += CRemoteInput.cpp
 SOURCES += CRemoteInputHelper.cpp

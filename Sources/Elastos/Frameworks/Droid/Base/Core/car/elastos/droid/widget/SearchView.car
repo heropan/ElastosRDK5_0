@@ -45,7 +45,7 @@ module
             [out] Boolean* res);
     }
 
-    interface IOnCloseListener {
+    interface ISearchViewOnCloseListener {
 
         /**
          * The user is attempting to close the SearchView.
@@ -176,7 +176,7 @@ module
          * @param listener the listener to call when the user closes the SearchView.
          */
         SetOnCloseListener(
-            [in] IOnCloseListener* listener);
+            [in] ISearchViewOnCloseListener* listener);
 
         /**
          * Sets a listener to inform when the focus of the query text field changes.

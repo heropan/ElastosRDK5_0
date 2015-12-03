@@ -14,7 +14,7 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::IDatePicker;
 using Elastos::Droid::Widget::IDatePickerOnDateChangedListener;
 using Elastos::Droid::Widget::ITimePicker;
-using Elastos::Droid::Widget::IOnTimeChangedListener;
+using Elastos::Droid::Widget::ITimePickerOnTimeChangedListener;
 
 // import org.chromium.content.R;
 
@@ -30,7 +30,7 @@ class DateTimePickerDialog
     , public IAlertDialog
     , public IDialogInterfaceOnClickListener
     , public IDatePickerOnDateChangedListener
-    , public IOnTimeChangedListener
+    , public ITimePickerOnTimeChangedListener
 {
 public:
     /**

@@ -309,7 +309,7 @@ module
          * KeyEvent.Callback.onKeyMultiple()}: always returns false (doesn't handle
          * the event).
          */
-        OnKeyUp(
+        OnKeyMultiple(
             [in] Int32 keyCode,
             [in] Int32 repeatCount,
             [in] IKeyEvent* event,

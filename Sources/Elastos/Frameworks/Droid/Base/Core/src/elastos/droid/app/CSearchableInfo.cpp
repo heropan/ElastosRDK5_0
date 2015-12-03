@@ -40,6 +40,10 @@ const Int32 CSearchableInfo::VOICE_SEARCH_SHOW_BUTTON;
 const Int32 CSearchableInfo::VOICE_SEARCH_LAUNCH_WEB_SEARCH;
 const Int32 CSearchableInfo::VOICE_SEARCH_LAUNCH_RECOGNIZER;
 
+CAR_INTERFACE_IMPL_2(CSearchableInfo, Object, ISearchableInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CSearchableInfo)
+
 CSearchableInfo::CSearchableInfo()
     : mLabelId(0)
     , mHintId(0)
@@ -66,14 +70,6 @@ ECode CSearchableInfo::constructor()
 }
 
 ECode CSearchableInfo::constructor(
-    /* [in] */ IContext* activityContext,
-    /* [in] */ IAttributeSet* attr,
-    /* [in] */ IComponentName* cName)
-{
-    return Init(activityContext, attr, cName);
-}
-
-ECode CSearchableInfo::Init(
     /* [in] */ IContext* activityContext,
     /* [in] */ IAttributeSet* attr,
     /* [in] */ IComponentName* cName)
