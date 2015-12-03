@@ -4,6 +4,7 @@
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
+using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
 using Elastos::Droid::Content::IDialogInterfaceOnDismissListener;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnCancelListener;
@@ -13,61 +14,34 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-const char* DialogFragment::SAVED_DIALOG_STATE_TAG = "android:savedDialogState";
-const char* DialogFragment::SAVED_STYLE = "android:style";
-const char* DialogFragment::SAVED_THEME = "android:theme";
-const char* DialogFragment::SAVED_CANCELABLE = "android:cancelable";
-const char* DialogFragment::SAVED_SHOWS_DIALOG = "android:showsDialog";
-const char* DialogFragment::SAVED_BACK_STACK_ID = "android:backStackId";
+const String DialogFragment::SAVED_DIALOG_STATE_TAG("android:savedDialogState");
+const String DialogFragment::SAVED_STYLE("android:style");
+const String DialogFragment::SAVED_THEME("android:theme");
+const String DialogFragment::SAVED_CANCELABLE("android:cancelable");
+const String DialogFragment::SAVED_SHOWS_DIALOG("android:showsDialog");
+const String DialogFragment::SAVED_BACK_STACK_ID("android:backStackId");
 
-PInterface DialogFragment::Probe(
-        /* [in] */ REIID riid)
+CAR_INTERFACE_IMPL_3(DialogFragment, Fragment, IDialogFragment, \
+    IDialogInterfaceOnCancelListener, IDialogInterfaceOnDismissListener)
+
+DialogFragment::DialogFragment()
+    : mStyle(IDialogFragment::STYLE_NORMAL)
+    , mTheme(0)
+    , mCancelable(TRUE)
+    , mShowsDialog(TRUE)
+    , mBackStackId(-1)
+    , mDialog(NULL)
+    , mViewDestroyed(FALSE)
+    , mDismissed(FALSE)
+    , mShownByMe(FALSE)
+{}
+
+DialogFragment::~DialogFragment()
+{}
+
+ECode DialogFragment::constructor()
 {
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IDialogFragment*)this;
-    }
-    else if (riid == EIID_IObject) {
-        return (IObject*)this;
-    }
-    else if (riid == EIID_IFragment) {
-        return (IFragment*)this;
-    }
-    else if (riid == EIID_IDialogFragment) {
-        return (IDialogFragment*)this;
-    }
-    else if (riid == EIID_IDialogInterfaceOnCancelListener) {
-        return (IDialogInterfaceOnCancelListener*)this;
-    }
-    else if (riid == EIID_IDialogInterfaceOnDismissListener) {
-        return (IDialogInterfaceOnDismissListener*)this;
-    }
-    return NULL;
-}
-
-ECode DialogFragment::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(IFragment *)this) {
-        *pIID = EIID_IFragment;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IObject *)this) {
-        *pIID = EIID_IObject;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IComponentCallbacks2 *)this) {
-        *pIID = EIID_IComponentCallbacks2;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IViewOnCreateContextMenuListener *)this) {
-        *pIID = EIID_IViewOnCreateContextMenuListener;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
+    return NOERROR;
 }
 
 ECode DialogFragment::SetStyle(
@@ -133,7 +107,7 @@ void DialogFragment::DismissInternal(
     mDismissed = TRUE;
     mShownByMe = FALSE;
     if (mDialog != NULL) {
-        mDialog->Dismiss();
+        IDialogInterface::Probe(mDialog)->Dismiss();
         mDialog = NULL;
     }
     mViewDestroyed = TRUE;
@@ -238,11 +212,11 @@ ECode DialogFragment::OnCreate(
     mShowsDialog = mContainerId == 0;
 
     if (savedInstanceState != NULL) {
-        savedInstanceState->GetInt32(String(SAVED_STYLE), IDialogFragment::STYLE_NORMAL, &mStyle);
-        savedInstanceState->GetInt32(String(SAVED_THEME), 0, &mTheme);
-        savedInstanceState->GetBoolean(String(SAVED_CANCELABLE), TRUE, &mCancelable);
-        savedInstanceState->GetBoolean(String(SAVED_SHOWS_DIALOG), mShowsDialog, &mShowsDialog);
-        savedInstanceState->GetInt32(String(SAVED_BACK_STACK_ID), -1, &mBackStackId);
+        savedInstanceState->GetInt32(SAVED_STYLE, IDialogFragment::STYLE_NORMAL, &mStyle);
+        savedInstanceState->GetInt32(SAVED_THEME, 0, &mTheme);
+        savedInstanceState->GetBoolean(SAVED_CANCELABLE, TRUE, &mCancelable);
+        savedInstanceState->GetBoolean(SAVED_SHOWS_DIALOG, mShowsDialog, &mShowsDialog);
+        savedInstanceState->GetInt32(SAVED_BACK_STACK_ID, -1, &mBackStackId);
     }
     return NOERROR;
 }
@@ -252,6 +226,8 @@ ECode DialogFragment::GetLayoutInflater(
     /* [out] */ ILayoutInflater** inflater)
 {
     VALIDATE_NOT_NULL(inflater)
+    *inflater = NULL;
+
     if (!mShowsDialog) {
         return Fragment::GetLayoutInflater(savedInstanceState, inflater);
     }
@@ -259,41 +235,49 @@ ECode DialogFragment::GetLayoutInflater(
     mDialog = NULL;
     OnCreateDialog(savedInstanceState, (IDialog**)&mDialog);
     switch (mStyle) {
-        case IDialogFragment::STYLE_NO_INPUT:
-            {
-                AutoPtr<IWindow> window;
-                mDialog->GetWindow((IWindow**)&window);
-                window->AddFlags(
-                        IWindowManagerLayoutParams::FLAG_NOT_FOCUSABLE |
-                        IWindowManagerLayoutParams::FLAG_NOT_TOUCHABLE);
-                // fall through...
-            }
-        case IDialogFragment::STYLE_NO_FRAME:
-        case IDialogFragment::STYLE_NO_TITLE:
-            {
-                Boolean support;
-                mDialog->RequestWindowFeature(IWindow::FEATURE_NO_TITLE, &support);
-            }
+    case IDialogFragment::STYLE_NO_INPUT:
+        {
+            AutoPtr<IWindow> window;
+            mDialog->GetWindow((IWindow**)&window);
+            window->AddFlags(
+                    IWindowManagerLayoutParams::FLAG_NOT_FOCUSABLE |
+                    IWindowManagerLayoutParams::FLAG_NOT_TOUCHABLE);
+            // fall through...
+        }
+    case IDialogFragment::STYLE_NO_FRAME:
+    case IDialogFragment::STYLE_NO_TITLE:
+        {
+            Boolean support;
+            mDialog->RequestWindowFeature(IWindow::FEATURE_NO_TITLE, &support);
+        }
     }
+    AutoPtr<IContext> ctx;
     if (mDialog != NULL) {
-        AutoPtr<IContext> ctx;
         mDialog->GetContext((IContext**)&ctx);
-        ctx->GetSystemService(
-                IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)inflater);
-        return NOERROR;
     }
-    return mActivity->GetSystemService(
-            IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)inflater);
+    else {
+        ctx = IContext::Probe(mActivity);
+    }
+
+    AutoPtr<IInterface> obj;
+    ctx->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&obj);
+    *inflater = ILayoutInflater::Probe(obj);
+    REFCOUNT_ADD(*inflater)
+    return NOERROR;
 }
 
 ECode DialogFragment::OnCreateDialog(
     /* [in] */ IBundle* savedInstanceState,
     /* [out] */ IDialog** dialog)
 {
+    VALIDATE_NOT_NULL(dialog)
+    *dialog = NULL;
+
     AutoPtr<IActivity> activity;
     GetActivity((IActivity**)&activity);
     Int32 theme;
     GetTheme(&theme);
+    assert(0 && "TODO");
 //    CDialog::New((IContext*)activity.Get(), theme, dialog);
     return NOERROR;
 }
@@ -353,7 +337,7 @@ ECode DialogFragment::OnActivityCreated(
     }
     if (savedInstanceState != NULL) {
         AutoPtr<IBundle> dialogState;
-        savedInstanceState->GetBundle(String(SAVED_DIALOG_STATE_TAG), (IBundle**)&dialogState);
+        savedInstanceState->GetBundle(SAVED_DIALOG_STATE_TAG, (IBundle**)&dialogState);
         if (dialogState != NULL) {
             mDialog->OnRestoreInstanceState(dialogState);
         }
@@ -379,23 +363,23 @@ ECode DialogFragment::OnSaveInstanceState(
         AutoPtr<IBundle> dialogState;
         mDialog->OnSaveInstanceState((IBundle**)&dialogState);
         if (dialogState != NULL) {
-            outState->PutBundle(String(SAVED_DIALOG_STATE_TAG), dialogState);
+            outState->PutBundle(SAVED_DIALOG_STATE_TAG, dialogState);
         }
     }
     if (mStyle != IDialogFragment::STYLE_NORMAL) {
-        outState->PutInt32(String(SAVED_STYLE), mStyle);
+        outState->PutInt32(SAVED_STYLE, mStyle);
     }
     if (mTheme != 0) {
-        outState->PutInt32(String(SAVED_THEME), mTheme);
+        outState->PutInt32(SAVED_THEME, mTheme);
     }
     if (!mCancelable) {
-        outState->PutBoolean(String(SAVED_CANCELABLE), mCancelable);
+        outState->PutBoolean(SAVED_CANCELABLE, mCancelable);
     }
     if (!mShowsDialog) {
-        outState->PutBoolean(String(SAVED_SHOWS_DIALOG), mShowsDialog);
+        outState->PutBoolean(SAVED_SHOWS_DIALOG, mShowsDialog);
     }
     if (mBackStackId != -1) {
-        outState->PutInt32(String(SAVED_BACK_STACK_ID), mBackStackId);
+        outState->PutInt32(SAVED_BACK_STACK_ID, mBackStackId);
     }
     return NOERROR;
 }
@@ -417,7 +401,7 @@ ECode DialogFragment::OnDestroyView()
         // the dialog -- we don't want this to cause the fragment to
         // actually be removed.
         mViewDestroyed = TRUE;
-        mDialog->Dismiss();
+        IDialogInterface::Probe(mDialog)->Dismiss();
         mDialog = NULL;
     }
     return NOERROR;
@@ -430,21 +414,21 @@ ECode DialogFragment::Dump(
     /* [in] */ ArrayOf<String>* args)
 {
     Fragment::Dump(prefix, fd, writer, args);
-    writer->PrintString(prefix); writer->PrintStringln(String("DialogFragment:"));
-    writer->PrintString(prefix); writer->PrintString(String("  mStyle="));
-    writer->PrintInt32(mStyle);
-    writer->PrintString(String(" mTheme=0x"));
-//    writer->PrintStringln(Integer.toHexString(mTheme));
-    writer->PrintString(prefix); writer->PrintString(String("  mCancelable="));
-    writer->PrintBoolean(mCancelable);
-    writer->PrintString(String(" mShowsDialog=")); writer->PrintBoolean(mShowsDialog);
-    writer->PrintString(String(" mBackStackId=")); writer->PrintInt32ln(mBackStackId);
-    writer->PrintString(prefix); writer->PrintString(String("  mDialog="));
-    writer->PrintObjectln((IInterface*)mDialog);
-    writer->PrintString(prefix); writer->PrintString(String("  mViewDestroyed="));
-    writer->PrintBoolean(mViewDestroyed);
-    writer->PrintString(String(" mDismissed=")); writer->PrintBoolean(mDismissed);
-    writer->PrintString(String(" mShownByMe=")); writer->PrintBooleanln(mShownByMe);
+    writer->Print(prefix); writer->Println(String("DialogFragment:"));
+    writer->Print(prefix); writer->Print(String("  mStyle="));
+    writer->Print(mStyle);
+    writer->Print(String(" mTheme=0x"));
+//    writer->Println(Integer.toHexString(mTheme));
+    writer->Print(prefix); writer->Print(String("  mCancelable="));
+    writer->Print(mCancelable);
+    writer->Print(String(" mShowsDialog=")); writer->Print(mShowsDialog);
+    writer->Print(String(" mBackStackId=")); writer->Print(mBackStackId);
+    writer->Print(prefix); writer->Print(String("  mDialog="));
+    writer->Print((IInterface*)mDialog.Get());
+    writer->Print(prefix); writer->Print(String("  mViewDestroyed="));
+    writer->Print(mViewDestroyed);
+    writer->Print(String(" mDismissed=")); writer->Print(mDismissed);
+    writer->Print(String(" mShownByMe=")); writer->Println(mShownByMe);
     return NOERROR;
 }
 

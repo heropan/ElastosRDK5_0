@@ -15,26 +15,32 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class AlertDialog : public Dialog
+class AlertDialog
+    : public Dialog
+    , public IAlertDialog
 {
     friend class CAlertDialogBuilder;
 
 public:
-    ~AlertDialog();
+    CAR_INTERFACE_DECL()
 
-    AlertDialog(
+    AlertDialog();
+
+    virtual ~AlertDialog();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    AlertDialog(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 theme);
 
-    AlertDialog(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 theme,
         /* [in] */ Boolean createThemeContextWrapper);
 
-    AlertDialog(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Boolean cancelable,
         /* [in] */ IDialogInterfaceOnCancelListener* cancelListener);
@@ -53,15 +59,17 @@ public:
      *            {@link DialogInterface#BUTTON_POSITIVE}.
      * @return The button from the dialog, or NULL if a button does not exist.
      */
-    virtual CARAPI_(AutoPtr<IButton>) GetButton(
-        /* [in] */ Int32 whichButton);
+    CARAPI GetButton(
+        /* [in] */ Int32 whichButton,
+        /* [out] */ IButton** button);
 
     /**
      * Gets the list view used in the dialog.
      *
      * @return The {@link ListView} from the dialog.
      */
-    virtual CARAPI_(AutoPtr<IListView>) GetListView();
+    CARAPI GetListView(
+        /* [out] */ IListView** listView);
 
     using Dialog::SetTitle;
 
@@ -72,16 +80,16 @@ public:
     /**
      * @see Builder#setCustomTitle(View)
      */
-    virtual CARAPI SetCustomTitle(
+    CARAPI SetCustomTitle(
         /* [in] */ IView* customTitleView);
 
-    virtual CARAPI SetMessage(
+    CARAPI SetMessage(
         /* [in] */ ICharSequence* message);
 
     /**
      * Set the view to display in that dialog.
      */
-    virtual CARAPI SetView(
+    CARAPI SetView(
         /* [in] */ IView* view);
 
     /**
@@ -94,7 +102,7 @@ public:
      * @param viewSpacingRight Extra space to appear to the right of {@code view}
      * @param viewSpacingBottom Extra space to appear below {@code view}
      */
-    virtual CARAPI SetView(
+    CARAPI SetView(
         /* [in] */ IView* view,
         /* [in] */ Int32 viewSpacingLeft,
         /* [in] */ Int32 viewSpacingTop,
@@ -118,7 +126,7 @@ public:
      * @param text The text to display in positive button.
      * @param msg The {@link Message} to be sent when clicked.
      */
-    virtual CARAPI SetButton(
+    CARAPI SetButton(
         /* [in] */ Int32 whichButton,
         /* [in] */ ICharSequence* text,
         /* [in] */ IMessage* msg);
@@ -133,7 +141,7 @@ public:
      * @param text The text to display in positive button.
      * @param listener The {@link DialogInterface.OnClickListener} to use.
      */
-    virtual CARAPI SetButton(
+    CARAPI SetButton(
         /* [in] */ Int32 whichButton,
         /* [in] */ ICharSequence* text,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
@@ -143,10 +151,10 @@ public:
      * @param resId the resourceId of the drawable to use as the icon or 0
      * if you don't want an icon.
      */
-    virtual CARAPI SetIcon(
+    CARAPI SetIcon(
         /* [in] */ Int32 resId);
 
-    virtual CARAPI SetIcon(
+    CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
     /**
@@ -157,42 +165,25 @@ public:
     CARAPI SetIconAttribute(
         /* [in] */ Int32 attrId);
 
-    virtual CARAPI SetInverseBackgroundForced(
+    CARAPI SetInverseBackgroundForced(
         /* [in] */ Boolean forceInverseBackground);
 
     //@Override
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(Boolean) OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
 protected:
-    AlertDialog();
-
     //@Override
-    void OnCreate(
+    CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 theme);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 theme,
-        /* [in] */ Boolean createThemeContextWrapper);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Boolean cancelable,
-        /* [in] */ IDialogInterfaceOnCancelListener* cancelListener);
 
 private:
     AutoPtr<IAlertController> mAlert;

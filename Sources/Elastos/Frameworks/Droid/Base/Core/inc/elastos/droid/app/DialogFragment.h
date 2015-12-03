@@ -28,101 +28,87 @@ class DialogFragment
     , public IDialogInterfaceOnDismissListener
 {
 public:
-    DialogFragment()
-        : mStyle(IDialogFragment::STYLE_NORMAL)
-        , mTheme(0)
-        , mCancelable(TRUE)
-        , mShowsDialog(TRUE)
-        , mBackStackId(-1)
-        , mDialog(NULL)
-        , mViewDestroyed(FALSE)
-        , mDismissed(FALSE)
-        , mShownByMe(FALSE)
-    {}
+    CAR_INTERFACE_DECL()
 
-    virtual ~DialogFragment()
-    {}
+    DialogFragment();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    virtual ~DialogFragment();
 
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    CARAPI constructor();
 
-    virtual CARAPI SetStyle(
+    CARAPI SetStyle(
         /* [in] */ Int32 style,
         /* [in] */ Int32 theme);
 
-    virtual CARAPI Show(
+    CARAPI Show(
         /* [in] */ IFragmentManager* manager,
         /* [in] */ const String& tag);
 
-    virtual CARAPI Show(
+    CARAPI Show(
         /* [in] */ IFragmentTransaction* transaction,
         /* [in] */ const String& tag,
         /* [out] */ Int32* id);
 
-    virtual CARAPI Dismiss();
+    CARAPI Dismiss();
 
-    virtual CARAPI DismissAllowingStateLoss();
+    CARAPI DismissAllowingStateLoss();
 
-    virtual CARAPI_(void) DismissInternal(
+    CARAPI_(void) DismissInternal(
         /* [in] */ Boolean allowStateLoss);
 
-    virtual CARAPI GetDialog(
+    CARAPI GetDialog(
         /* [out] */ IDialog** dialog);
 
-    virtual CARAPI GetTheme(
+    CARAPI GetTheme(
         /* [out] */ Int32* theme);
 
-    virtual CARAPI SetCancelable(
+    CARAPI SetCancelable(
         /* [in] */ Boolean cancelable);
 
-    virtual CARAPI IsCancelable(
+    CARAPI IsCancelable(
         /* [out] */ Boolean* cancelable);
 
-    virtual CARAPI SetShowsDialog(
+    CARAPI SetShowsDialog(
         /* [in] */ Boolean showsDialog);
 
-    virtual CARAPI GetShowsDialog(
+    CARAPI GetShowsDialog(
         /* [out] */ Boolean* showsDialog);
 
-    virtual CARAPI OnAttach(
+    CARAPI OnAttach(
         /* [in] */ IActivity* activity);
 
-    virtual CARAPI OnDetach();
+    CARAPI OnDetach();
 
-    virtual CARAPI OnCreate(
+    CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI GetLayoutInflater(
+    CARAPI GetLayoutInflater(
         /* [in] */ IBundle* savedInstanceState,
         /* [out] */ ILayoutInflater** inflater);
 
-    virtual CARAPI OnCreateDialog(
+    CARAPI OnCreateDialog(
         /* [in] */ IBundle* savedInstanceState,
         /* [out] */ IDialog** dialog);
 
-    virtual CARAPI OnCancel(
+    CARAPI OnCancel(
         /* [in] */ IDialogInterface* dialog);
 
-    virtual CARAPI OnDismiss(
+    CARAPI OnDismiss(
         /* [in] */ IDialogInterface* dialog);
 
-    virtual CARAPI OnActivityCreated(
+    CARAPI OnActivityCreated(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI OnStart();
+    CARAPI OnStart();
 
-    virtual CARAPI OnSaveInstanceState(
+    CARAPI OnSaveInstanceState(
         /* [in] */ IBundle* outState);
 
-    virtual CARAPI OnStop();
+    CARAPI OnStop();
 
-    virtual CARAPI OnDestroyView();
+    CARAPI OnDestroyView();
 
-    virtual CARAPI Dump(
+    CARAPI Dump(
         /* [in] */ const String& prefix,
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IPrintWriter* writer,
@@ -141,12 +127,12 @@ public:
     Boolean mShownByMe;
 
 private:
-    static const char* SAVED_DIALOG_STATE_TAG;
-    static const char* SAVED_STYLE;
-    static const char* SAVED_THEME;
-    static const char* SAVED_CANCELABLE;
-    static const char* SAVED_SHOWS_DIALOG;
-    static const char* SAVED_BACK_STACK_ID;
+    static const String SAVED_DIALOG_STATE_TAG;
+    static const String SAVED_STYLE;
+    static const String SAVED_THEME;
+    static const String SAVED_CANCELABLE;
+    static const String SAVED_SHOWS_DIALOG;
+    static const String SAVED_BACK_STACK_ID;
 
 };
 

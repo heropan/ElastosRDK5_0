@@ -167,6 +167,10 @@ module
     interface Elastos.Droid.Content.IContentResolver;
     interface Elastos.Droid.Content.IComponentCallbacks;
     interface Elastos.Droid.Content.IComponentCallbacks2;
+    interface Elastos.Droid.Content.IDialogInterface;
+    interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
+    interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
+    interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener;
     interface Elastos.Droid.Content.Pm.IPackageManager;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
@@ -188,10 +192,13 @@ module
     interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
     interface Elastos.Droid.View.IOnWindowDismissedCallback;
     interface Elastos.Droid.View.IOnKeyguardExitResult;
+    interface Elastos.Droid.View.IWindow;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     interface Elastos.Droid.Widget.IExpandableListViewOnChildClickListener;
     interface Elastos.Droid.Widget.IExpandableListViewOnGroupCollapseListener;
     interface Elastos.Droid.Widget.IExpandableListViewOnGroupExpandListener;
+    interface Elastos.Droid.Widget.IDatePickerOnDateChangedListener;
+    interface Elastos.Droid.Widget.ITimePickerOnTimeChangedListener;
     interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceClient;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Utility.IArrayMap;
@@ -204,13 +211,7 @@ module
     interface Elastos.Droid.App.Job.IIJobScheduler;
 
 //     interface Elastos.Droid.Content.IDialogInterface;
-//     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
-//     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
-//     interface Elastos.Droid.View.IDisplay;
-//     interface Elastos.Droid.View.IWindow;
-//     interface Elastos.Droid.View.IKeyEventCallback;
-//     interface Elastos.Droid.View.IWindowCallback;
-//     interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
+//
 //     interface Elastos.Droid.View.IViewGroupLayoutParams;
 
     namespace Elastos {
@@ -922,21 +923,6 @@ module
         interface IBinder;
     }
 
-//     [local]
-//     class CProgressDialog {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Int32 theme);
-
-//         interface IProgressDialog;
-//         interface IWindowCallback;
-//         interface IViewOnCreateContextMenuListener;
-//         interface IKeyEventCallback;
-//     }
-
     class CResultInfo {
         constructor();
 
@@ -1307,32 +1293,44 @@ module
         interface IOnWindowDismissedCallback;
     }
 
-//     [local]
-//     class CDialog {
-//         constructor(
-//             [in] IContext* ctx);
+    [local]
+    class CDialog {
+        constructor(
+            [in] IContext* ctx);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Int32 theme);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Int32 theme,
-//             [in] Boolean createContextThemeWrapper);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme,
+            [in] Boolean createContextThemeWrapper);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Boolean cancelable,
-//             [in] IDialogInterfaceOnCancelListener* cancelListener);
+        constructor(
+            [in] IContext* ctx,
+            [in] Boolean cancelable,
+            [in] IDialogInterfaceOnCancelListener* cancelListener);
 
-            //interface IDialog
-            //interface IDialogInterface
-            //interface IWindowCallback
-            //interface IKeyEventCallback
-            //interface IViewOnCreateContextMenuListener
-            //interface IOnWindowDismissedCallback
-//     }
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
+
+    class CDialogFragment {
+        constructor();
+
+        interface IDialogFragment;
+        interface IDialogInterfaceOnCancelListener;
+        interface IDialogInterfaceOnDismissListener;
+        interface IFragment;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IViewOnCreateContextMenuListener;
+    }
 
     [local]
     class CReceiverRestrictedContext {
@@ -1344,42 +1342,121 @@ module
         interface IContext;
     }
 
-//     [local]
-//     class CAlertDialog {
-//         constructor(
-//             [in] IContext* ctx);
+    [local]
+    class CAlertDialog {
+        constructor(
+            [in] IContext* ctx);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Int32 theme);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Int32 theme,
-//             [in] Boolean createThemeContextWrapper);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme,
+            [in] Boolean createThemeContextWrapper);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Boolean cancelable,
-//             [in] IDialogInterfaceOnCancelListener* cancelListener);
+        constructor(
+            [in] IContext* ctx,
+            [in] Boolean cancelable,
+            [in] IDialogInterfaceOnCancelListener* cancelListener);
 
-//         interface IAlertDialog;
-//         interface IWindowCallback;
-//         interface IKeyEventCallback;
-//         interface IViewOnCreateContextMenuListener;
-//     }
+        interface IAlertDialog;
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
 
-//     [local]
-//     class CAlertDialogBuilder {
-//         constructor(
-//             [in] IContext* ctx);
+    [local]
+    class CAlertDialogBuilder {
+        constructor(
+            [in] IContext* ctx);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Int32 theme);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme);
 
-//         interface IAlertDialogBuilder;
-//     }
+        interface IAlertDialogBuilder;
+    }
+
+    class CTimePickerDialog {
+        constructor(
+            [in] IContext* ctx,
+            [in] ITimePickerDialogOnTimeSetListener* cb,
+            [in] Int32 hourOfDay,
+            [in] Int32 minute,
+            [in] Boolean is24HourView);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme,
+            [in] ITimePickerDialogOnTimeSetListener* cb,
+            [in] Int32 hourOfDay,
+            [in] Int32 minute,
+            [in] Boolean is24HourView);
+
+        interface ITimePickerDialog;
+        interface IDialogInterfaceOnClickListener;
+        interface ITimePickerOnTimeChangedListener;
+        interface IAlertDialog;
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
+
+    class CDatePickerDialog {
+        constructor(
+            [in] IContext* ctx,
+            [in] IDatePickerDialogOnDateSetListener* cb,
+            [in] Int32 year,
+            [in] Int32 monthOfYear,
+            [in] Int32 dayOfMonth);
+
+        constructor(
+            [in] IContext* context,
+            [in] Int32 theme,
+            [in] IDatePickerDialogOnDateSetListener* cb,
+            [in] Int32 year,
+            [in] Int32 monthOfYear,
+            [in] Int32 dayOfMonth);
+
+        interface IDatePickerDialog;
+        interface IDialogInterfaceOnClickListener;
+        interface IDatePickerOnDateChangedListener;
+        interface IAlertDialog;
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
+
+    [local]
+    class CProgressDialog {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme);
+
+        interface IProgressDialog;
+        interface IAlertDialog;
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
+
 
     [local, parcelable]
     class CWallpaperInfo {

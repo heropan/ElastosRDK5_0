@@ -189,7 +189,7 @@ ECode TimePicker::SetOnTimeChangedListener(
     return NOERROR;
 }
 
-AutoPtr<IInteger32> TimePicker::GetCurrentHour()
+Int32 TimePicker::GetCurrentHour()
 {
     PEL("TimePicker::GetCurrentHour")
     Int32 currentHour = 0;
@@ -207,7 +207,7 @@ AutoPtr<IInteger32> TimePicker::GetCurrentHour()
 }
 
 ECode TimePicker::SetCurrentHour(
-    /* [in] */ IInteger32* currentHour)
+    /* [in] */ Int32 currentHour)
 {
     PEL("TimePicker::SetCurrentHour")
     Int32 current = 0, old = 0;
@@ -258,7 +258,7 @@ Boolean TimePicker::Is24HourView()
     return mIs24HourView;
 }
 
-CARAPI_(AutoPtr<IInteger32>) TimePicker::GetCurrentMinute()
+Int32 TimePicker::GetCurrentMinute()
 {
     PEL("TimePicker::GetCurrentMinute")
     Int32 value = 0;
@@ -269,7 +269,7 @@ CARAPI_(AutoPtr<IInteger32>) TimePicker::GetCurrentMinute()
 }
 
 ECode TimePicker::SetCurrentMinute(
-    /* [in] */ IInteger32* currentMinute)
+    /* [in] */ Int32 currentMinute)
 {
     PEL("TimePicker::SetCurrentMinute")
     Int32 current = 0, old = 0;

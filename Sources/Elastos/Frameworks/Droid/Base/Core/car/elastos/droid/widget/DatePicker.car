@@ -18,7 +18,7 @@ module
      *
      * @hide
      */
-    interface IValidationCallback {
+    interface IDatePickerValidationCallback {
         OnValidationChanged(
             [in] Boolean valid);
     }
@@ -112,7 +112,7 @@ module
             [out] Boolean* shown);
 
         SetValidationCallback(
-            [in] IValidationCallback* cb);
+            [in] IDatePickerValidationCallback* cb);
 
         OnConfigurationChanged(
             [in] IConfiguration* newConfig);
@@ -196,7 +196,7 @@ module
          * @hide
          */
         SetValidationCallback(
-            [in] IValidationCallback* cb);
+            [in] IDatePickerValidationCallback* cb);
 
         /**
          * Gets whether the {@link CalendarView} is shown.

@@ -3,24 +3,27 @@
 #define __ELASTOS_DROID_APP_DIALOG_H__
 
 #include "elastos/droid/os/Runnable.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::IActionBar;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
 using Elastos::Droid::Content::IDialogInterfaceOnDismissListener;
 using Elastos::Droid::Content::IDialogInterfaceOnShowListener;
 using Elastos::Droid::Content::IDialogInterfaceOnKeyListener;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Internal::App::IActionBarImpl;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::View::IWindow;
+using Elastos::Droid::View::IWindowCallback;
+using Elastos::Droid::View::IOnWindowDismissedCallback;
+using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::IMenuItem;
@@ -34,6 +37,7 @@ using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::IActionMode;
 using Elastos::Droid::View::IWindowManager;
+using Elastos::Droid::View::IViewOnCreateContextMenuListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 
 namespace Elastos {
@@ -47,7 +51,7 @@ class Dialog
     , public IWindowCallback
     , public IKeyEventCallback
     , public IViewOnCreateContextMenuListener
-    , public IWindowOnWindowDismissedCallback
+    , public IOnWindowDismissedCallback
 {
 private:
     static const Int32 DISMISS = 0x43;
@@ -58,7 +62,8 @@ private:
     static const String DIALOG_HIERARCHY_TAG;
 
 private:
-    class DismissAction : public Runnable
+    class DismissAction
+        : public Runnable
     {
     public:
         DismissAction(
@@ -70,7 +75,8 @@ private:
         Dialog* mHost;
     };
 
-    class ListenersHandler : public HandlerBase
+    class ListenersHandler
+        : public Handler
     {
     public:
         ListenersHandler(
@@ -83,6 +89,12 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    Dialog();
+
+    virtual ~Dialog();
+
     /**
      * Create a Dialog window that uses the default dialog frame style.
      *
@@ -90,7 +102,7 @@ public:
      *                uses the window manager and theme in this context to
      *                present its UI.
      */
-    Dialog(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -105,60 +117,67 @@ public:
      * styles.  This theme is applied on top of the current theme in
      * <var>context</var>.  If 0, the default dialog theme will be used.
      */
-    Dialog(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 theme);
 
-    Dialog(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 theme,
         /* [in] */ Boolean createContextThemeWrapper);
 
-    Dialog(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Boolean cancelable,
         /* [in] */ IDialogInterfaceOnCancelListener* cancelListener);
 
-    virtual ~Dialog();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
-    CARAPI_(AutoPtr<IContext>) GetContext();
+    /**
+     * Retrieve the Context this Dialog is running in.
+     *
+     * @return Context The Context used by the Dialog.
+     */
+    CARAPI GetContext(
+        /* [out] */ IContext** context);
 
     /**
      * Retrieve the {@link ActionBar} attached to this dialog, if present.
      *
      * @return The ActionBar attached to the dialog or null if no ActionBar is present.
      */
-    CARAPI_(AutoPtr<IActionBar>) GetActionBar();
+    CARAPI GetActionBar(
+        /* [out] */ IActionBar** actionBar);
 
     CARAPI SetOwnerActivity(
         /* [in] */ IActivity* activity);
 
-    CARAPI_(AutoPtr<IActivity>) GetOwnerActivity();
+    CARAPI GetOwnerActivity(
+        /* [out] */ IActivity** activity);
 
-    virtual CARAPI_(Boolean) IsShowing();
+    CARAPI IsShowing(
+        /* [out] */ Boolean* showing);
 
-    virtual CARAPI Create();
+    CARAPI Create();
 
-    virtual CARAPI Show();
+    CARAPI Show();
 
-    virtual CARAPI Hide();
+    CARAPI Hide();
 
-    virtual CARAPI Dismiss();
+    CARAPI Dismiss();
 
-    virtual CARAPI DispatchOnCreate(
+    CARAPI DispatchOnCreate(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI_(AutoPtr<IBundle>) OnSaveInstanceState();
+    CARAPI OnSaveInstanceState(
+        /* [out] */ IBundle** result);
 
-    virtual CARAPI OnRestoreInstanceState(
+    CARAPI OnRestoreInstanceState(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI_(AutoPtr<IWindow>) GetWindow();
+    CARAPI GetWindow(
+        /* [out] */ IWindow** window);
 
-    virtual CARAPI_(AutoPtr<IView>) GetCurrentFocus();
+    CARAPI GetCurrentFocus(
+        /* [out] */ IView** view);
 
    /**
      * Finds a child view with the given identifier. Returns null if the
@@ -168,57 +187,65 @@ public:
      * @param id the identifier of the view to find
      * @return The view with the given id or null.
      */
-    virtual CARAPI_(AutoPtr<IView>) FindViewById(
-        /* [in] */ Int32 id);
+    CARAPI FindViewById(
+        /* [in] */ Int32 id,
+        /* [out] */ IView** view);
 
-    virtual CARAPI SetContentView(
+    CARAPI SetContentView(
         /* [in] */ Int32 layoutResID);
 
-    virtual CARAPI SetContentView(
+    CARAPI SetContentView(
         /* [in] */ IView* view);
 
-    virtual CARAPI SetContentView(
+    CARAPI SetContentView(
         /* [in] */ IView* view,
         /* [in] */ IViewGroupLayoutParams* params);
 
-    virtual CARAPI AddContentView(
+    CARAPI AddContentView(
         /* [in] */ IView* view,
         /* [in] */ IViewGroupLayoutParams* params);
 
-    virtual CARAPI SetTitle(
+    CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    virtual CARAPI SetTitle(
+    CARAPI SetTitle(
         /* [in] */ Int32 titleId);
 
-    virtual CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnKeyLongPress(
+    CARAPI OnKeyLongPress(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnKeyMultiple(
+    CARAPI OnKeyMultiple(
         /* [in] */ Int32 keyCode,
         /* [in] */ Int32 repeatCount,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI OnBackPressed();
+    CARAPI OnBackPressed();
 
-    virtual CARAPI_(Boolean) OnKeyShortcut(
+    CARAPI OnKeyShortcut(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnTrackballEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     /**
      * Called when a generic motion event was not handled by any of the
@@ -245,27 +272,29 @@ public:
      * @return Return true if you have consumed the event, false if you haven't.
      * The default implementation always returns false.
      */
-    virtual CARAPI_(Boolean) OnGenericMotionEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnGenericMotionEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI OnWindowAttributesChanged(
+    CARAPI OnWindowAttributesChanged(
         /* [in] */ IWindowManagerLayoutParams* params);
 
-    virtual CARAPI OnContentChanged();
+    CARAPI OnContentChanged();
 
-    virtual CARAPI OnWindowFocusChanged(
+    CARAPI OnWindowFocusChanged(
         /* [in] */ Boolean hasFocus);
 
-    virtual CARAPI OnAttachedToWindow();
+    CARAPI OnAttachedToWindow();
 
-    virtual CARAPI OnDetachedFromWindow();
+    CARAPI OnDetachedFromWindow();
 
     /** @hide */
     //@Override
     CARAPI OnWindowDismissed();
 
-    virtual CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     /**
      * Called to process a key shortcut event.
@@ -276,14 +305,17 @@ public:
      * @param event The key shortcut event.
      * @return True if this event was consumed.
      */
-    virtual CARAPI_(Boolean) DispatchKeyShortcutEvent(
-        /* [in] */ IKeyEvent* event);
+    CARAPI DispatchKeyShortcutEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) DispatchTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI DispatchTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) DispatchTrackballEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI DispatchTrackballEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* result);
 
     /**
      * Called to process generic motion events.  You can override this to
@@ -295,81 +327,94 @@ public:
      *
      * @return boolean Return true if this event was consumed.
      */
-    virtual CARAPI_(Boolean) DispatchGenericMotionEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI DispatchGenericMotionEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) DispatchPopulateAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event);
+    CARAPI DispatchPopulateAccessibilityEvent(
+        /* [in] */ IAccessibilityEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(AutoPtr<IView>) OnCreatePanelView(
-        /* [in] */ Int32 featureId);
-
-    virtual CARAPI_(Boolean) OnCreatePanelMenu(
+    CARAPI OnCreatePanelView(
         /* [in] */ Int32 featureId,
-        /* [in] */ IMenu* menu);
+        /* [out] */ IView** view);
 
-    virtual CARAPI_(Boolean) OnPreparePanel(
+    CARAPI OnCreatePanelMenu(
+        /* [in] */ Int32 featureId,
+        /* [in] */ IMenu* menu,
+        /* [out] */ Boolean* result);
+
+    CARAPI OnPreparePanel(
         /* [in] */ Int32 featureId,
         /* [in] */ IView* view,
-        /* [in] */ IMenu* menu);
+        /* [in] */ IMenu* menu,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnMenuOpened(
+    CARAPI OnMenuOpened(
+        /* [in] */ Int32 featureId,
+        /* [in] */ IMenu* menu,
+        /* [out] */ Boolean* result);
+
+    CARAPI OnMenuItemSelected(
+        /* [in] */ Int32 featureId,
+        /* [in] */ IMenuItem* item,
+        /* [out] */ Boolean* result);
+
+    CARAPI OnPanelClosed(
         /* [in] */ Int32 featureId,
         /* [in] */ IMenu* menu);
 
-    virtual CARAPI_(Boolean) OnMenuItemSelected(
-        /* [in] */ Int32 featureId,
-        /* [in] */ IMenuItem* item);
+    CARAPI OnCreateOptionsMenu(
+        /* [in] */ IMenu* menu,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI OnPanelClosed(
-        /* [in] */ Int32 featureId,
+    CARAPI OnPrepareOptionsMenu(
+        /* [in] */ IMenu* menu,
+        /* [out] */ Boolean* result);
+
+    CARAPI OnOptionsItemSelected(
+        /* [in] */ IMenuItem* item,
+        /* [out] */ Boolean* result);
+
+    CARAPI OnOptionsMenuClosed(
         /* [in] */ IMenu* menu);
 
-    virtual CARAPI_(Boolean) OnCreateOptionsMenu(
-        /* [in] */ IMenu* menu);
+    CARAPI OpenOptionsMenu();
 
-    virtual CARAPI_(Boolean) OnPrepareOptionsMenu(
-        /* [in] */ IMenu* menu);
-
-    virtual CARAPI_(Boolean) OnOptionsItemSelected(
-        /* [in] */ IMenuItem* item);
-
-    virtual CARAPI OnOptionsMenuClosed(
-        /* [in] */ IMenu* menu);
-
-    virtual CARAPI OpenOptionsMenu();
-
-    virtual CARAPI CloseOptionsMenu();
+    CARAPI CloseOptionsMenu();
 
     /**
      * @see Activity#invalidateOptionsMenu()
      */
-    virtual CARAPI InvalidateOptionsMenu();
+    CARAPI InvalidateOptionsMenu();
 
-    virtual CARAPI OnCreateContextMenu(
+    CARAPI OnCreateContextMenu(
         /* [in] */ IContextMenu* menu,
         /* [in] */ IView* v,
         /* [in] */ IContextMenuInfo* menuInfo);
 
-    virtual CARAPI RegisterForContextMenu(
+    CARAPI RegisterForContextMenu(
         /* [in] */ IView* view);
 
-    virtual CARAPI UnregisterForContextMenu(
+    CARAPI UnregisterForContextMenu(
         /* [in] */ IView* view);
 
-    virtual CARAPI OpenContextMenu(
+    CARAPI OpenContextMenu(
         /* [in] */ IView* view);
 
-    virtual CARAPI_(Boolean) OnContextItemSelected(
-        /* [in] */ IMenuItem* item);
+    CARAPI OnContextItemSelected(
+        /* [in] */ IMenuItem* item,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI OnContextMenuClosed(
+    CARAPI OnContextMenuClosed(
         /* [in] */ IMenu* menu);
 
-    virtual CARAPI_(Boolean) OnSearchRequested();
+    CARAPI OnSearchRequested(
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(AutoPtr<IActionMode>) OnWindowStartingActionMode(
-        /* [in] */ IActionModeCallback* callback);
+    CARAPI OnWindowStartingActionMode(
+        /* [in] */ IActionModeCallback* callback,
+        /* [out] */ IActionMode** mode);
 
     /**
      * {@inheritDoc}
@@ -377,7 +422,7 @@ public:
      * Note that if you override this method you should always call through
      * to the superclass implementation by calling super.onActionModeStarted(mode).
      */
-    virtual CARAPI OnActionModeStarted(
+    CARAPI OnActionModeStarted(
         /* [in] */ IActionMode* mode);
 
     /**
@@ -386,14 +431,15 @@ public:
      * Note that if you override this method you should always call through
      * to the superclass implementation by calling super.onActionModeFinished(mode).
      */
-    virtual CARAPI OnActionModeFinished(
+    CARAPI OnActionModeFinished(
         /* [in] */ IActionMode* mode);
 
-    virtual CARAPI TakeKeyEvents(
+    CARAPI TakeKeyEvents(
         /* [in] */ Boolean get);
 
-    CARAPI_(Boolean) RequestWindowFeature(
-        /* [in] */ Int32 featureId);
+    CARAPI RequestWindowFeature(
+        /* [in] */ Int32 featureId,
+        /* [out] */ Boolean* result);
 
     CARAPI SetFeatureDrawableResource(
         /* [in] */ Int32 featureId,
@@ -411,42 +457,45 @@ public:
         /* [in] */ Int32 featureId,
         /* [in] */ Int32 alpha);
 
-    virtual CARAPI_(AutoPtr<ILayoutInflater>) GetLayoutInflater();
+    CARAPI GetLayoutInflater(
+        /* [out] */ ILayoutInflater** inflater);
 
-    virtual CARAPI SetCancelable(
+    CARAPI SetCancelable(
         /* [in] */ Boolean flag);
 
-    virtual CARAPI SetCanceledOnTouchOutside(
+    CARAPI SetCanceledOnTouchOutside(
         /* [in] */ Boolean cancel);
 
-    virtual CARAPI Cancel();
+    CARAPI Cancel();
 
-    virtual CARAPI SetOnCancelListener(
+    CARAPI SetOnCancelListener(
         /* [in] */ IDialogInterfaceOnCancelListener* listener);
 
-    virtual CARAPI SetOnDismissListener(
+    CARAPI SetOnDismissListener(
         /* [in] */ IDialogInterfaceOnDismissListener* listener);
 
-    virtual CARAPI SetOnShowListener(
+    CARAPI SetOnShowListener(
         /* [in] */ IDialogInterfaceOnShowListener* listener);
 
-    virtual CARAPI SetCancelMessage(
+    CARAPI SetCancelMessage(
         /* [in] */ IMessage* msg);
 
-    virtual CARAPI SetDismissMessage(
+    CARAPI SetDismissMessage(
         /* [in] */ IMessage* msg);
 
-    virtual CARAPI_(Boolean) TakeCancelAndDismissListeners(
+    CARAPI TakeCancelAndDismissListeners(
         /* [in] */ const String& msg,
         /* [in] */ IDialogInterfaceOnCancelListener* cancel,
-        /* [in] */ IDialogInterfaceOnDismissListener* dismiss);
+        /* [in] */ IDialogInterfaceOnDismissListener* dismiss,
+        /* [out] */ Boolean* result);
 
     CARAPI SetVolumeControlStream(
         /* [in] */ Int32 streamType);
 
-    CARAPI_(Int32) GetVolumeControlStream();
+    CARAPI GetVolumeControlStream(
+        /* [out] */ Int32* volume);
 
-    virtual CARAPI SetOnKeyListener(
+    CARAPI SetOnKeyListener(
         /* [in] */ IDialogInterfaceOnKeyListener* onKeyListener);
 
     static CARAPI_(Int32) GetResourceId(
@@ -454,7 +503,6 @@ public:
             /* [in] */ Int32 attrId);
 
 protected:
-    Dialog();
 
     virtual CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
@@ -462,20 +510,6 @@ protected:
     virtual CARAPI OnStart();
 
     virtual CARAPI OnStop();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 theme = 0);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 theme,
-        /* [in] */ Boolean createContextThemeWrapper);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Boolean cancelable,
-        /* [in] */ IDialogInterfaceOnCancelListener* cancelListener);
 
 private:
     CARAPI_(void) DismissDialog();
