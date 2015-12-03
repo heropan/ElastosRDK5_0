@@ -1,3 +1,4 @@
+
 #ifndef __ELASTOS_DROID_WIDGET_CEDGEEFFECT_H__
 #define __ELASTOS_DROID_WIDGET_CEDGEEFFECT_H__
 
@@ -12,7 +13,7 @@ CarClass(CEdgeEffect)
     , public EdgeEffect
 {
 public:
-    CAR_OBJECT_DECL();
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Widget
@@ -20,3 +21,4 @@ public:
 } // namespace Elastos
 
 #endif //__ELASTOS_DROID_WIDGET_CEDGEEFFECT_H__
+

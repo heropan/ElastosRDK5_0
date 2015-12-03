@@ -4,235 +4,252 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/FrameLayout.h"
-#include <R.h>
 
-using Elastos::Utility::ILocale;
-using Elastos::Core::IInteger32;
-using Elastos::Utility::ICalendar;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::View::IViewOnClickListener;
-using Elastos::Droid::View::IView;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
-using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Widget::IOnTimeChangedListener;
-using Elastos::Droid::Widget::INumberPickerOnValueChangeListener;
-using Elastos::Droid::Widget::ITimePicker;
-using Elastos::Droid::Widget::INumberPicker;
-using Elastos::Droid::Widget::IEditText;
-using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::Widget::IButton;
+using Elastos::Droid::Widget::FrameLayout;
+using Elastos::Droid::Widget::ITimePickerAbstractTimePickerDelegate;
+using Elastos::Core::IInteger32;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class TimePicker : public FrameLayout
+// @Widget
+class TimePicker
+    : public FrameLayout
+    , public ITimePicker
 {
-private:
-    class TimePickerOnTimeChangedListener
-    : public IOnTimeChangedListener
-    , public ElRefBase
+public:
+    class TimePickerDelegate
+        : public Object
     {
     public:
-        TimePickerOnTimeChangedListener();
+        virtual CARAPI SetCurrentHour(
+            /* [in] */ Int32 currentHour) = 0;
 
-        CAR_INTERFACE_DECL();
+        virtual CARAPI GetCurrentHour(
+            /* [out] */ Int32* result) = 0;
 
-        CARAPI OnTimeChanged(
-            /* [in] */ ITimePicker* view,
-            /* [in] */ Int32 hourOfDay,
-            /* [in] */ Int32 minute);
+        virtual CARAPI SetCurrentMinute(
+            /* [in] */ Int32 currentMinute) = 0;
+
+        virtual CARAPI GetCurrentMinute(
+            /* [out] */ Int32* result) = 0;
+
+        virtual CARAPI SetIs24HourView(
+            /* [in] */ Boolean is24HourView) = 0;
+
+        virtual CARAPI Is24HourView(
+            /* [out] */ Boolean* result) = 0;
+
+        virtual CARAPI SetOnTimeChangedListener(
+            /* [in] */ ITimePickerOnTimeChangedListener* onTimeChangedListener) = 0;
+
+        virtual CARAPI SetValidationCallback(
+            /* [in] */ ITimePickerValidationCallback* callback) = 0;
+
+        virtual CARAPI SetEnabled(
+            /* [in] */ Boolean enabled) = 0;
+
+        virtual CARAPI IsEnabled(
+            /* [out] */ Boolean* result) = 0;
+
+        virtual CARAPI GetBaseline(
+            /* [out] */ Int32* result) = 0;
+
+        virtual CARAPI OnConfigurationChanged(
+            /* [in] */ IConfiguration* newConfig) = 0;
+
+        virtual CARAPI OnSaveInstanceState(
+            /* [in] */ IParcelable* superState,
+            /* [out] */ IParcelable** result) = 0;
+
+        virtual CARAPI OnRestoreInstanceState(
+            /* [in] */ IParcelable* state) = 0;
+
+        virtual CARAPI DispatchPopulateAccessibilityEvent(
+            /* [in] */ IAccessibilityEvent* event,
+            /* [out] */ Boolean* result) = 0;
+
+        virtual CARAPI OnPopulateAccessibilityEvent(
+            /* [in] */ IAccessibilityEvent* event) = 0;
+
+        virtual CARAPI OnInitializeAccessibilityEvent(
+            /* [in] */ IAccessibilityEvent* event) = 0;
+
+        virtual CARAPI OnInitializeAccessibilityNodeInfo(
+            /* [in] */ IAccessibilityNodeInfo* info) = 0;
     };
 
-    class HourChangeListener
-        : public INumberPickerOnValueChangeListener
-        , public ElRefBase
+    /**
+      * An abstract class which can be used as a start for TimePicker implementations
+      */
+    class AbstractTimePickerDelegate
+        : public TimePickerDelegate
+        , public ITimePickerAbstractTimePickerDelegate
     {
     public:
-        HourChangeListener(
-            /* [in] */ TimePicker* host);
+        CAR_INTERFACE_DECL()
 
-        CAR_INTERFACE_DECL();
+        AbstractTimePickerDelegate();
 
-        CARAPI OnValueChange(
-            /* [in] */ INumberPicker* picker,
-            /* [in] */ Int32 oldVal,
-            /* [in] */ Int32 newVal);
+        CARAPI constructor(
+            /* [in] */ ITimePicker* delegator,
+            /* [in] */ IContext* context);
 
-    private:
-        TimePicker* mHost;
-    };
+        virtual CARAPI SetCurrentLocale(
+            /* [in] */ ILocale* locale);
 
-    class MinuteChangeListener
-        : public INumberPickerOnValueChangeListener
-        , public ElRefBase
-    {
-    public:
-        MinuteChangeListener(
-            /* [in] */ TimePicker* host);
+        // @Override
+        CARAPI SetValidationCallback(
+            /* [in] */ ITimePickerValidationCallback* callback);
 
-        CAR_INTERFACE_DECL();
+    protected:
+        virtual CARAPI_(void) OnValidationChanged(
+            /* [in] */ Boolean valid);
 
-        CARAPI OnValueChange(
-            /* [in] */ INumberPicker* picker,
-            /* [in] */ Int32 oldVal,
-            /* [in] */ Int32 newVal);
-
-    private:
-        TimePicker* mHost;
-    };
-
-    class AmPmChangeListener
-        : public INumberPickerOnValueChangeListener
-        , public ElRefBase
-    {
-    public:
-        AmPmChangeListener(
-            /* [in] */ TimePicker* host);
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI OnValueChange(
-            /* [in] */ INumberPicker* picker,
-            /* [in] */ Int32 oldVal,
-            /* [in] */ Int32 newVal);
-
-    private:
-        TimePicker* mHost;
-    };
-
-    class AmPmClickListener
-        : public IViewOnClickListener
-        , public ElRefBase
-    {
-    public:
-        AmPmClickListener(
-            /* [in] */ TimePicker* host);
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI OnClick(
-            /* [in] */ IView* v);
-
-    private:
-        TimePicker* mHost;
+    protected:
+        // The delegator
+        AutoPtr<ITimePicker> mDelegator;
+        // The context
+        AutoPtr<IContext> mContext;
+        // The current locale
+        AutoPtr<ILocale> mCurrentLocale;
+        // Callbacks
+        AutoPtr<ITimePickerOnTimeChangedListener> mOnTimeChangedListener;
+        AutoPtr<ITimePickerValidationCallback> mValidationCallback;
     };
 
 public:
-    TimePicker(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::timePickerStyle);
+    CAR_INTERFACE_DECL()
 
+    TimePicker();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    /**
+      * Set the current hour.
+      */
+    virtual CARAPI SetCurrentHour(
+        /* [in] */ Int32 currentHour);
+
+    /**
+      * @return The current hour in the range (0-23).
+      */
+    virtual CARAPI GetCurrentHour(
+        /* [out] */ Int32* result);
+
+    /**
+      * Set the current minute (0-59).
+      */
+    virtual CARAPI SetCurrentMinute(
+        /* [in] */ Int32 currentMinute);
+
+    /**
+      * @return The current minute.
+      */
+    virtual CARAPI GetCurrentMinute(
+        /* [out] */ Int32* result);
+
+    /**
+      * Set whether in 24 hour or AM/PM mode.
+      *
+      * @param is24HourView True = 24 hour mode. False = AM/PM.
+      */
+    virtual CARAPI SetIs24HourView(
+        /* [in] */ Boolean is24HourView);
+
+    /**
+      * @return true if this is in 24 hour view else false.
+      */
+    virtual CARAPI Is24HourView(
+        /* [out] */ Boolean* result);
+
+    /**
+      * Set the callback that indicates the time has been adjusted by the user.
+      *
+      * @param onTimeChangedListener the callback, should not be null.
+      */
+    virtual CARAPI SetOnTimeChangedListener(
+        /* [in] */ ITimePickerOnTimeChangedListener* onTimeChangedListener);
+
+    /**
+      * Sets the callback that indicates the current time is valid.
+      *
+      * @param callback the callback, may be null
+      * @hide
+      */
+    virtual CARAPI SetValidationCallback(
+        /* [in] */ ITimePickerValidationCallback* callback);
+
+    // @Override
     CARAPI SetEnabled(
         /* [in] */ Boolean enabled);
 
+    // @Override
     CARAPI_(Boolean) IsEnabled();
 
-    CARAPI SetOnTimeChangedListener(
-        /* [in] */ IOnTimeChangedListener* onTimeChangedListener);
+    // @Override
+    CARAPI_(Int32) GetBaseline();
 
-    CARAPI_(Int32) GetCurrentHour();
-
-    CARAPI SetCurrentHour(
-        /* [in] */ Int32 currentHour);
-
-    CARAPI SetIs24HourView(
-        /* [in] */ Boolean is24HourView);
-
-    CARAPI_(Boolean) Is24HourView();
-
-    CARAPI_(Int32) GetCurrentMinute();
-
-    CARAPI SetCurrentMinute(
-        /* [in] */ Int32 currentMinute);
-
-    CARAPI GetBaseline(
-        /* [out] */ Int32* baseline);
-
+    // @Override
     CARAPI_(Boolean) DispatchPopulateAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
+    // @Override
     CARAPI OnPopulateAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
+    // @Override
     CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
+    // @Override
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-
-
 protected:
-    TimePicker();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::timePickerStyle);
-
+    // @Override
     CARAPI_(void) OnConfigurationChanged(
         /* [in] */ IConfiguration* newConfig);
 
+    // @Override
     CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
 
+    // @Override
     CARAPI_(void) OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
 
 private:
-    CARAPI SetCurrentLocale(
-        /* [in] */ ILocale* locale);
-
-    CARAPI UpdateHourControl();
-
-    CARAPI UpdateAmPmControl();
-
-    CARAPI OnTimeChanged();
-
-    CARAPI SetContentDescriptions();
-
-    CARAPI TrySetContentDescription(
-        /* [in] */ IView* root,
-        /* [in] */ Int32 viewId,
-        /* [in] */ Int32 contDescResId);
-
-    CARAPI UpdateInputState();
-
-
-private:
-    static const Boolean DEFAULT_ENABLED_STATE = TRUE;
-    static const Int32 HOURS_IN_HALF_DAY = 12;
-
-    AutoPtr<IOnTimeChangedListener> NO_OP_CHANGE_LISTENER;
-
-    Boolean mIs24HourView;
-    Boolean mIsAm;
-
-    AutoPtr<INumberPicker> mHourSpinner;
-    AutoPtr<INumberPicker> mMinuteSpinner;
-    AutoPtr<INumberPicker> mAmPmSpinner;
-    AutoPtr<IEditText> mHourSpinnerInput;
-    AutoPtr<IEditText> mMinuteSpinnerInput;
-    AutoPtr<IEditText> mAmPmSpinnerInput;
-    AutoPtr<ITextView> mDivider;
-    AutoPtr<IButton> mAmPmButton;
-
-    AutoPtr< ArrayOf<String> > mAmPmStrings;
-
-    Boolean mIsEnabled;
-    AutoPtr<IOnTimeChangedListener> mOnTimeChangedListener;
-    AutoPtr<ICalendar> mTempCalendar;
-    AutoPtr<ILocale> mCurrentLocale;
-
-
-
+    static const Int32 MODE_SPINNER = 1;
+    static const Int32 MODE_CLOCK = 2;
+    /*const*/ AutoPtr<TimePickerDelegate> mDelegate;
 };
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_TIMEPICKER_H__
+#endif // __ELASTOS_DROID_WIDGET_TIMEPICKER_H__
+

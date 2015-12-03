@@ -2,56 +2,62 @@
 #ifndef __ELASTOS_DROID_WIDGET_CHRONOMETER_H__
 #define __ELASTOS_DROID_WIDGET_CHRONOMETER_H__
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/widget/TextView.h"
-#include "elastos/droid/R.h"
+#include "elastos/core/StringBuilder.h"
 
-using Elastos::Droid::R;
-using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::IFormatter;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-/**
- * Class that implements a simple timer.
- * <p>
- * You can give it a start time in the {@link SystemClock#elapsedRealtime} timebase,
- * and it counts up from that, or if you don't give it a base time, it will use the
- * time at which you call {@link #start}.  By default it will display the current
- * timer value in the form "MM:SS" or "H:MM:SS", or you can use {@link #setFormat}
- * to format the timer value into an arbitrary string.
- *
- * @attr ref android.R.styleable#Chronometer_format
- */
-class Chronometer : public TextView
+class Chronometer
+    : public Object//TextView
+    , public IChronometer
 {
 private:
-    class MyHandler : public HandlerBase
+    class InnerHandler
+        : public Handler
     {
     public:
-        MyHandler(
-            /* [in] */ Chronometer* host)
-            : mHost(host)
-        {}
+        InnerHandler(
+            /* [in] */ Chronometer* host);
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         Chronometer* mHost;
     };
 
 public:
-    Chronometer();
-    ~Chronometer();
+    CAR_INTERFACE_DECL()
 
-    /**
-     * Initialize with standard view layout information and style.
-     * Sets the base to the current time.
-     */
-    Chronometer(
+    Chronometer();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle,
+        /* [in] */ Int32 defStyleRes);
 
     /**
      * Set the time that the count-up timer is in reference to.
@@ -64,7 +70,8 @@ public:
     /**
      * Return the base time as set through {@link #setBase}.
      */
-    virtual CARAPI_(Int64) GetBase();
+    virtual CARAPI GetBase(
+        /* [out] */ Int64* result);
 
     /**
      * Sets the format string used for display.  The Chronometer will display
@@ -83,7 +90,8 @@ public:
     /**
      * Returns the current format string as set through {@link #setFormat}.
      */
-    virtual CARAPI_(String) GetFormat();
+    virtual CARAPI GetFormat(
+        /* [out] */ String* result);
 
     /**
      * Sets the listener to be called when the chronometer changes.
@@ -97,7 +105,8 @@ public:
      * @return The listener (may be null) that is listening for chronometer change
      *         events.
      */
-    virtual CARAPI_(AutoPtr<IOnChronometerTickListener>) GetOnChronometerTickListener();
+    virtual CARAPI GetOnChronometerTickListener(
+        /* [out] */ IOnChronometerTickListener** result);
 
     /**
      * Start counting up.  This does not affect the base as set from {@link #setBase}, just
@@ -140,20 +149,6 @@ protected:
     virtual CARAPI_(void) OnWindowVisibilityChanged(
         /* [in] */ Int32 visibility);
 
-protected:
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
 private:
     CARAPI_(void) Init();
 
@@ -161,33 +156,27 @@ private:
 
     CARAPI_(void) UpdateRunning();
 
-    CARAPI InitInternal(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
 private:
     static const String TAG;
-
     Int64 mBase;
     Boolean mVisible;
     Boolean mStarted;
     Boolean mRunning;
     Boolean mLogged;
     String mFormat;
-    //Formatter mFormatter;
+    AutoPtr<IFormatter> mFormatter;
     AutoPtr<ILocale> mFormatterLocale;
-    AutoPtr<ArrayOf<IInterface*> > mFormatterArgs;// = new Object[1];
+    AutoPtr< ArrayOf<IInterface*> > mFormatterArgs;
     AutoPtr<StringBuilder> mFormatBuilder;
     AutoPtr<IOnChronometerTickListener> mOnChronometerTickListener;
-    StringBuilder mRecycle;// = new StringBuilder(8);
-
+    StringBuilder mRecycle;
     static const Int32 TICK_WHAT = 2;
-
-    AutoPtr<IHandler> mHandler;// = new Handler();
+    AutoPtr<InnerHandler> mHandler;
 };
 
-}// namespace Elastos
-}// namespace Droid
-}// namespace Widget
+} // namespace Widget
+} // namespace Droid
+} // namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_WIDGET_CHRONOMETER_H__
+
