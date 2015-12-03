@@ -6,8 +6,9 @@ module
     namespace Internal {
     namespace Policy {
 
+    /** {@hide} */
     [local]
-    interface IKeyguardServiceConstants {
+    interface IIKeyguardServiceConstants {
         /**
          * Constant for {@link com.android.internal.policy.IKeyguardService#setHidden(boolean)}:
          * Don't change the keyguard window flags.

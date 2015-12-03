@@ -46,13 +46,13 @@ module
     merge("../../../car/elastos/droid/internal/inputmethod.car");
     merge("../../../car/elastos/droid/internal/logging.car");
     merge("../../../car/elastos/droid/internal/net.car");
-    merge("../../../car/elastos/droid/internal/policy.car");
     merge("../../../car/elastos/droid/internal/preference.car");
     merge("../../../car/elastos/droid/internal/statusbar.car");
     merge("../../../car/elastos/droid/internal/telephony.car");
     merge("../../../car/elastos/droid/internal/view.car");
     merge("../../../car/elastos/droid/internal/widget.car");
     merge("../../../car/elastos/droid/internal/os/storage.car");
+    merge("../../../car/elastos/droid/internal/policy.car");
 
     merge("../../../car/elastos/droid/inputmethodservice.car");
     merge("../../../car/elastos/droid/media.car");

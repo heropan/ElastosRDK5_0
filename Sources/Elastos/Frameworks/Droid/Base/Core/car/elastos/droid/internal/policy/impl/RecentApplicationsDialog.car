@@ -10,12 +10,12 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Content.IDialogInterface
-     * interface IWindowCallback
-     * interface IKeyEventCallback
-     * interface IOnCreateContextMenuListener
-     * interface IOnWindowDismissedCallback
+     * interface Elastos.Droid.View.IWindowCallback
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.IViewOnCreateContextMenuListener
+     * interface Elastos.Droid.View.IOnWindowDismissedCallback
      * interface Elastos.Droid.App.IDialog
-     * interface Elastos.Droid.App.IViewOnClickListener
+     * interface Elastos.Droid.View.IViewOnClickListener
      */
     [local]
     interface IRecentApplicationsDialog {

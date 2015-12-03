@@ -10,7 +10,6 @@ module
     interface IIKeyguardExitCallback {
         OnKeyguardExitResult(
             [in] Boolean success);
-
     }
 
     } // Policy

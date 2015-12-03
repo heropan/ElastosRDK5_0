@@ -8,7 +8,7 @@ module
 
     /** {@hide} */
     [oneway]
-    interface IFaceLockCallback {
+    interface IIFaceLockCallback {
         Unlock();
 
         Cancel();

@@ -19,7 +19,7 @@ module
      * within the com.android.internal.policy.impl package
      */
     [local]
-    interface IPolicy {
+    interface IIPolicy {
         MakeNewWindow(
             [in] IContext* ctx,
             [out] IWindow** window);
