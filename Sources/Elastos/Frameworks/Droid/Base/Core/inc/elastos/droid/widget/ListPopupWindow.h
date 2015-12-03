@@ -90,7 +90,7 @@ public:
 
         ForwardingListener();
 
-        CARAPI contructor(
+        CARAPI constructor(
             /* [in] */ IView* src);
 
         /**

@@ -6,11 +6,9 @@ module
     interface Elastos.Droid.View.IViewOnTouchListener;
     interface Elastos.Droid.View.IView;
 
-
     namespace Elastos {
     namespace Droid {
     namespace Widget {
-
 
     interface IPopupWindowOnDismissListener {
         /**
@@ -46,18 +44,22 @@ module
         const Int32 INPUT_METHOD_NOT_NEEDED = 2;
 
         /**
-         * <p>Return the drawable used as the popup window's background.</p>
+         * Return the drawable used as the popup window's background.
          *
-         * @return the background drawable or null
+         * @return the background drawable or {@code null} if not set
+         * @see #setBackgroundDrawable(Drawable)
+         * @attr ref android.R.styleable#PopupWindow_popupBackground
          */
         GetBackground(
             [out] IDrawable** background);
 
         /**
-         * <p>Change the background drawable for this popup window. The background
-         * can be set to null.</p>
+         * Specifies the background drawable for this popup window. The background
+         * can be set to {@code null}.
          *
          * @param background the popup's background
+         * @see #getBackground()
+         * @attr ref android.R.styleable#PopupWindow_popupBackground
          */
         SetBackgroundDrawable(
             [in] IDrawable* background);
@@ -318,6 +320,9 @@ module
         SetClipToScreenEnabled(
             [in] Boolean enabled);
 
+        SetAllowScrollingAnchorParent(
+            [in] Boolean enabled);
+
         /**
          * <p>Indicates whether the popup window supports splitting touches.</p>
          *
@@ -553,15 +558,13 @@ module
          * @param anchor the view on which to pin the popup window
          * @param xoff A horizontal offset from the anchor in pixels
          * @param yoff A vertical offset from the anchor in pixels
-         * @param gravity Alignment of the popup relative to the anchor
          *
          * @see #dismiss()
          */
         ShowAsDropDown(
             [in] IView* anchor,
             [in] Int32 xoff,
-            [in] Int32 yoff,
-            [in] Int32 gravity);
+            [in] Int32 yoff);
 
         /**
          * <p>Display the content view in a popup window anchored to the bottom-left
@@ -574,13 +577,17 @@ module
          * location, the popup will be moved correspondingly.</p>
          *
          * @param anchor the view on which to pin the popup window
+         * @param xoff A horizontal offset from the anchor in pixels
+         * @param yoff A vertical offset from the anchor in pixels
+         * @param gravity Alignment of the popup relative to the anchor
          *
          * @see #dismiss()
          */
         ShowAsDropDown(
             [in] IView* anchor,
             [in] Int32 xoff,
-            [in] Int32 yoff);
+            [in] Int32 yoff,
+            [in] Int32 gravity);
 
         /**
          * Indicates whether the popup is showing above (the y coordinate of the popup's bottom
@@ -667,7 +674,7 @@ module
 
         /**
          * Updates the state of the popup window, if it is currently being displayed,
-         * from the currently set state.  This include:
+         * from the currently set state.  This includes:
          * {@link #setClippingEnabled(boolean)}, {@link #setFocusable(boolean)},
          * {@link #setIgnoreCheekPress()}, {@link #setInputMethodMode(int)},
          * {@link #setTouchable(boolean)}, and {@link #setAnimationStyle(int)}.
@@ -757,9 +764,6 @@ module
             [in] Int32 yoff,
             [in] Int32 width,
             [in] Int32 height);
-
-        SetAllowScrollingAnchorParent(
-            [in] Boolean enabled);
     }
 
     } // namespace Widget

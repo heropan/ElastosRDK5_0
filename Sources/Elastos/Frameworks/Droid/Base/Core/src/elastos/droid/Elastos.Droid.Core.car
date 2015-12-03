@@ -20,6 +20,7 @@ module
     merge("../../../car/elastos/droid/view.car");
     merge("../../../car/elastos/droid/hardware.car");
     merge("../../../car/elastos/droid/accessibilityservice.car");
+    merge("../../../car/elastos/droid/internal/view2.car");
     merge("../../../car/elastos/droid/widget.car");
     merge("../../../car/elastos/droid/internal/app.car");
     merge("../../../car/elastos/droid/app.car");

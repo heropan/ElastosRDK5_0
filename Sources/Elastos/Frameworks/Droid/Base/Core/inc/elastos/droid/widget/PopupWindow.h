@@ -4,187 +4,146 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CRect.h"
-
 #include "elastos/droid/widget/FrameLayout.h"
-#include "elastos/droid/R.h"
 
-using Elastos::Droid::R;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IKeyEventCallback;
+using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IOnScrollChangedListener;
-using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::View::IViewGroupMarginLayoutParams;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewOnTouchListener;
+using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::IWindowManager;
-using Elastos::Droid::View::IViewParent;
-using Elastos::Droid::View::IViewManager;
-using Elastos::Droid::View::IKeyEventCallback;
-using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
-using Elastos::Droid::View::IOnPreDrawListener;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
 class PopupWindow
+    : public Object
+    , public IPopupWindow
 {
 private:
-    class _PopupViewContainer : public FrameLayout
+    class PopupViewContainer
+        : public FrameLayout
     {
     public:
-        _PopupViewContainer(
-            /* [in] */ IContext* ctx,
-            /* [in] */ PopupWindow* owner)
-        : FrameLayout(ctx)
-        , mOwner(owner)
-        {}
+        PopupViewContainer(
+            /* [in] */ IContext* context,
+            /* [in] */ PopupWindow* host);
 
-        virtual CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid) = 0;
+        // @Override
+        virtual CARAPI DispatchKeyEvent(
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean* res);
 
-        //@Override
-        virtual CARAPI_(Boolean) DispatchKeyEvent(
-            /* [in] */ IKeyEvent* event);
+        // @Override
+        virtual CARAPI DispatchTouchEvent(
+            /* [in] */ IMotionEvent* event,
+            /* [out] */ Boolean* res);
 
-        //@Override
-        virtual CARAPI_(Boolean) DispatchTouchEvent(
-            /* [in] */ IMotionEvent* event);
+        // @Override
+        virtual CARAPI OnTouchEvent(
+            /* [in] */ IMotionEvent* event,
+            /* [out] */ Boolean* res);
 
-        //@Override
-        virtual CARAPI_(Boolean) OnTouchEvent(
-            /* [in] */ IMotionEvent* event);
-
-        //@Override
+        // @Override
         virtual CARAPI SendAccessibilityEvent(
             /* [in] */ Int32 eventType);
 
     protected:
-        //@Override
+        // @Override
         virtual CARAPI OnCreateDrawableState(
             /* [in] */ Int32 extraSpace,
             /* [out] */ ArrayOf<Int32>** drawableState);
 
     private:
-        PopupWindow* mOwner;
-    };
-
-    class PopupViewContainer
-        : public ElRefBase
-        , public _PopupViewContainer
-        , public IFrameLayout
-        , public IViewParent
-        , public IViewManager
-        , public IDrawableCallback
-        , public IKeyEventCallback
-        , public IAccessibilityEventSource
-        , public IWeakReferenceSource
-    {
-    public:
-        PopupViewContainer(
-            /* [in] */ IContext* ctx,
-            /* [in] */ PopupWindow* owner)
-        : _PopupViewContainer(ctx, owner)
-        {}
-
-        IVIEW_METHODS_DECL()
-
-        IVIEWGROUP_METHODS_DECL()
-
-        IVIEWPARENT_METHODS_DECL()
-
-        IVIEWMANAGER_METHODS_DECL()
-
-        IDRAWABLECALLBACK_METHODS_DECL()
-
-        IKEYEVENTCALLBACK_METHODS_DECL()
-
-        IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-
-        CARAPI GetWeakReference(
-            /* [out] */ IWeakReference** weakReference);
-
-        //=========== IFrameLayout methods ================//
-        CARAPI SetForegroundGravity(
-            /* [in] */ Int32 foregroundGravity);
-
-        CARAPI GetForegroundGravity(
-            /* [out] */ Int32* foregroundGravity);
-
-        CARAPI SetForeground(
-            /* [in] */ IDrawable* drawable);
-
-        CARAPI GetForeground(
-            /* [out] */ IDrawable** foreground);
-
-        CARAPI SetMeasureAllChildren(
-            /* [in] */ Boolean measureAll);
-
-        CARAPI GetMeasureAllChildren(
-            /* [out] */ Boolean* measureAll);
-
-        CARAPI GetConsiderGoneChildrenWhenMeasuring(
-            /* [out] */ Boolean* measureAll);
-
-        static const char* TAG;// = "PopupWindow.PopupViewContainer";
+        PopupWindow* mHost;
+        static const String TAG;
     };
 
     class PopupWindowScrollChangedListener
-        : public ElRefBase
+        : public Object
         , public IOnScrollChangedListener
     {
     public:
         PopupWindowScrollChangedListener(
-            /* [in] */ PopupWindow* owner)
-        : mOwner(owner)
-        {}
+            /* [in] */ PopupWindow* host);
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         CARAPI OnScrollChanged();
 
     private:
-        PopupWindow* mOwner;
+        PopupWindow* mHost;
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
+    PopupWindow();
+
+    ~PopupWindow();
+
     /**
      * <p>Create a new empty, non focusable popup window of dimension (0,0).</p>
      *
-     * <p>The popup does provide a background.</p>
+     * <p>The popup does not provide any background. This should be handled
+     * by the content view.</p>
      */
-    PopupWindow();
+    CARAPI constructor();
 
     /**
      * <p>Create a new empty, non focusable popup window of dimension (0,0).</p>
      *
      * <p>The popup does provide a background.</p>
      */
-    PopupWindow(
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    /**
+     * <p>Create a new empty, non focusable popup window of dimension (0,0).</p>
+     *
+     * <p>The popup does provide a background.</p>
+     */
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::popupWindowStyle);
+        /* [in] */ IAttributeSet* attrs);
+
+    /**
+     * <p>Create a new empty, non focusable popup window of dimension (0,0).</p>
+     *
+     * <p>The popup does provide a background.</p>
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
 
     /**
      * <p>Create a new, empty, non focusable popup window of dimension (0,0).</p>
      *
      * <p>The popup does not provide a background.</p>
      */
-    PopupWindow(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes);
+
+    /**
+     * <p>Create a new non focusable popup window which can display the
+     * <tt>contentView</tt>. The dimension of the window are (0,0).</p>
+     *
+     * <p>The popup does not provide any background. This should be handled
+     * by the content view.</p>
+     *
+     * @param contentView the popup's content
+     */
+    CARAPI constructor(
+        /* [in] */ IView* contentView);
 
     /**
      * <p>Create a new empty, non focusable popup window. The dimension of the
@@ -196,7 +155,24 @@ public:
      * @param width the popup's width
      * @param height the popup's height
      */
-    PopupWindow(
+    CARAPI constructor(
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height);
+
+    /**
+     * <p>Create a new non focusable popup window which can display the
+     * <tt>contentView</tt>. The dimension of the window must be passed to
+     * this constructor.</p>
+     *
+     * <p>The popup does not provide any background. This should be handled
+     * by the content view.</p>
+     *
+     * @param contentView the popup's content
+     * @param width the popup's width
+     * @param height the popup's height
+     */
+    CARAPI constructor(
+        /* [in] */ IView* contentView,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
@@ -212,34 +188,58 @@ public:
      * @param height the popup's height
      * @param focusable true if the popup can be focused, false otherwise
      */
-    PopupWindow(
+    CARAPI constructor(
         /* [in] */ IView* contentView,
-        /* [in] */ Int32 width = 0,
-        /* [in] */ Int32 height = 0,
-        /* [in] */ Boolean focusable = FALSE);
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Boolean focusable);
 
     /**
-     * <p>Return the drawable used as the popup window's background.</p>
+     * Return the drawable used as the popup window's background.
      *
-     * @return the background drawable or null
+     * @return the background drawable or {@code null} if not set
+     * @see #setBackgroundDrawable(Drawable)
+     * @attr ref android.R.styleable#PopupWindow_popupBackground
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetBackground();
+    CARAPI GetBackground(
+        /* [out] */ IDrawable** background);
 
     /**
-     * <p>Change the background drawable for this popup window. The background
-     * can be set to null.</p>
+     * Specifies the background drawable for this popup window. The background
+     * can be set to {@code null}.
      *
      * @param background the popup's background
+     * @see #getBackground()
+     * @attr ref android.R.styleable#PopupWindow_popupBackground
      */
-    virtual CARAPI SetBackgroundDrawable(
+    CARAPI SetBackgroundDrawable(
         /* [in] */ IDrawable* background);
+
+    /**
+     * @return the elevation for this popup window in pixels
+     * @see #setElevation(float)
+     * @attr ref android.R.styleable#PopupWindow_popupElevation
+     */
+    CARAPI GetElevation(
+        /* [out] */ Float* elevation);
+
+    /**
+     * Specifies the elevation for this popup window.
+     *
+     * @param elevation the popup's elevation in pixels
+     * @see #getElevation()
+     * @attr ref android.R.styleable#PopupWindow_popupElevation
+     */
+    CARAPI SetElevation(
+        /* [in] */ Float elevation);
 
     /**
      * <p>Return the animation style to use the popup appears and disappears</p>
      *
      * @return the animation style to use the popup appears and disappears
      */
-    virtual CARAPI_(Int32) GetAnimationStyle();
+    CARAPI GetAnimationStyle(
+        /* [out] */ Int32* style);
 
     /**
      * Set the flag on popup to ignore cheek press eventt; by default this flag
@@ -252,7 +252,7 @@ public:
      *
      * @see #update()
      */
-    virtual CARAPI SetIgnoreCheekPress();
+    CARAPI SetIgnoreCheekPress();
 
     /**
      * <p>Change the animation style resource for this popup.</p>
@@ -267,7 +267,7 @@ public:
      *
      * @see #update()
      */
-    virtual CARAPI SetAnimationStyle(
+    CARAPI SetAnimationStyle(
         /* [in] */ Int32 animationStyle);
 
     /**
@@ -277,7 +277,8 @@ public:
      *
      * @see #setContentView(android.view.View)
      */
-    virtual CARAPI_(AutoPtr<IView>) GetContentView();
+    CARAPI GetContentView(
+        /* [out] */ IView** contentView);
 
     /**
      * <p>Change the popup's content. The content is represented by an instance
@@ -291,14 +292,14 @@ public:
      * @see #getContentView()
      * @see #isShowing()
      */
-    virtual CARAPI SetContentView(
+    CARAPI SetContentView(
         /* [in] */ IView* contentView);
 
     /**
      * Set a callback for all touch events being dispatched to the popup
      * window.
      */
-    virtual CARAPI SetTouchInterceptor(
+    CARAPI SetTouchInterceptor(
         /* [in] */ IViewOnTouchListener* l);
 
     /**
@@ -308,7 +309,8 @@ public:
      *
      * @see #setFocusable(boolean)
      */
-    virtual CARAPI_(Boolean) IsFocusable();
+    CARAPI IsFocusable(
+        /* [out] */ Boolean* isFocusable);
 
     /**
      * <p>Changes the focusability of the popup window. When focusable, the
@@ -326,15 +328,16 @@ public:
      * @see #isShowing()
      * @see #update()
      */
-    virtual CARAPI SetFocusable(
-         /* [in] */ Boolean focusable);
+    CARAPI SetFocusable(
+        /* [in] */ Boolean focusable);
 
     /**
      * Return the current value in {@link #setInputMethodMode(int)}.
      *
      * @see #setInputMethodMode(int)
      */
-    virtual CARAPI_(Int32) GetInputMethodMode();
+    CARAPI GetInputMethodMode(
+        /* [out] */ Int32* inputMethodMode);
 
     /**
      * Control how the popup operates with an input method: one of
@@ -348,7 +351,7 @@ public:
      * @see #getInputMethodMode()
      * @see #update()
      */
-    virtual CARAPI SetInputMethodMode(
+    CARAPI SetInputMethodMode(
         /* [in] */ Int32 mode);
 
     /**
@@ -361,7 +364,7 @@ public:
      * @see android.view.WindowManager.LayoutParams#softInputMode
      * @see #getSoftInputMode()
      */
-    virtual CARAPI SetSoftInputMode(
+    CARAPI SetSoftInputMode(
         /* [in] */ Int32 mode);
 
     /**
@@ -370,7 +373,8 @@ public:
      * @see #setSoftInputMode(int)
      * @see android.view.WindowManager.LayoutParams#softInputMode
      */
-    virtual CARAPI_(Int32) GetSoftInputMode();
+    CARAPI GetSoftInputMode(
+        /* [out] */ Int32* softInputMode);
 
     /**
      * <p>Indicates whether the popup window receives touch events.</p>
@@ -379,7 +383,8 @@ public:
      *
      * @see #setTouchable(boolean)
      */
-    virtual CARAPI_(Boolean) IsTouchable();
+    CARAPI IsTouchable(
+        /* [out] */ Boolean* touchable);
 
     /**
      * <p>Changes the touchability of the popup window. When touchable, the
@@ -396,7 +401,7 @@ public:
      * @see #isShowing()
      * @see #update()
      */
-    virtual CARAPI SetTouchable(
+    CARAPI SetTouchable(
         /* [in] */ Boolean touchable);
 
     /**
@@ -407,7 +412,8 @@ public:
      *
      * @see #setOutsideTouchable(boolean)
      */
-    virtual CARAPI_(Boolean) IsOutsideTouchable();
+    CARAPI IsOutsideTouchable(
+        /* [out] */ Boolean* touchable);
 
     /**
      * <p>Controls whether the pop-up will be informed of touch events outside
@@ -426,7 +432,7 @@ public:
      * @see #isShowing()
      * @see #update()
      */
-    virtual CARAPI SetOutsideTouchable(
+    CARAPI SetOutsideTouchable(
         /* [in] */ Boolean touchable);
 
     /**
@@ -436,7 +442,8 @@ public:
      *
      * @see #setClippingEnabled(boolean)
      */
-    virtual CARAPI_(Boolean) IsClippingEnabled();
+    CARAPI IsClippingEnabled(
+        /* [out] */ Boolean* enabled);
 
     /**
      * <p>Allows the popup window to extend beyond the bounds of the screen. By default the
@@ -452,7 +459,25 @@ public:
      * @see #isClippingEnabled()
      * @see #update()
      */
-    virtual CARAPI SetClippingEnabled(
+    CARAPI SetClippingEnabled(
+        /* [in] */ Boolean enabled);
+
+    /**
+     * Clip this popup window to the screen, but not to the containing window.
+     *
+     * @param enabled True to clip to the screen.
+     * @hide
+     */
+    CARAPI SetClipToScreenEnabled(
+        /* [in] */ Boolean enabled);
+
+    /**
+     * Allow PopupWindow to scroll the anchor's parent to provide more room
+     * for the popup. Enabled by default.
+     *
+     * @param enabled True to scroll the anchor's parent when more room is desired by the popup.
+     */
+    CARAPI SetAllowScrollingAnchorParent(
         /* [in] */ Boolean enabled);
 
     /**
@@ -463,7 +488,8 @@ public:
      * @see #setSplitTouchEnabled(boolean)
      * @hide
      */
-    virtual CARAPI_(Boolean) IsSplitTouchEnabled();
+    CARAPI IsSplitTouchEnabled(
+        /* [out] */ Boolean* enabled);
 
     /**
      * <p>Allows the popup window to split touches across other windows that also
@@ -479,7 +505,7 @@ public:
      * @see #isSplitTouchEnabled()
      * @hide
      */
-    virtual CARAPI SetSplitTouchEnabled(
+    CARAPI SetSplitTouchEnabled(
         /* [in] */ Boolean enabled);
 
     /**
@@ -489,7 +515,8 @@ public:
      * @return true if the window will always be positioned in screen coordinates.
      * @hide
      */
-    virtual CARAPI_(Boolean) IsLayoutInScreenEnabled();
+    CARAPI IsLayoutInScreenEnabled(
+        /* [out] */ Boolean* enabled);
 
     /**
      * <p>Allows the popup window to force the flag
@@ -499,7 +526,22 @@ public:
      * @param enabled true if the popup should always be positioned in screen coordinates
      * @hide
      */
-    virtual CARAPI SetLayoutInScreenEnabled(
+    CARAPI SetLayoutInScreenEnabled(
+        /* [in] */ Boolean enabled);
+
+    /**
+     * Allows the popup window to force the flag
+     * {@link WindowManager.LayoutParams#FLAG_LAYOUT_INSET_DECOR}, overriding default behavior.
+     * This will cause the popup to inset its content to account for system windows overlaying
+     * the screen, such as the status bar.
+     *
+     * <p>This will often be combined with {@link #setLayoutInScreenEnabled(boolean)}.
+     *
+     * @param enabled true if the popup's views should inset content to account for system windows,
+     *                the way that decor views behave for full-screen windows.
+     * @hide
+     */
+    CARAPI SetLayoutInsetDecor(
         /* [in] */ Boolean enabled);
 
     /**
@@ -509,14 +551,23 @@ public:
      * @param layoutType Layout type for this window.
      * @hide
      */
-    virtual CARAPI SetWindowLayoutType(
+    CARAPI SetWindowLayoutType(
         /* [in] */ Int32 layoutType);
 
     /**
      * @return The layout type for this window.
      * @hide
      */
-    virtual CARAPI_(Int32) GetWindowLayoutType();
+    CARAPI_(Int32) GetWindowLayoutType(
+        /* [out] */ Int32* layoutType);
+
+    /**
+     * Set whether this window is touch modal or if outside touches will be sent to
+     * other windows behind it.
+     * @hide
+     */
+    CARAPI SetTouchModal(
+        /* [in] */ Boolean touchModal);
 
     /**
      * <p>Change the width and height measure specs that are given to the
@@ -540,7 +591,7 @@ public:
      * {@link ViewGroup.LayoutParams#MATCH_PARENT}, or 0 to use the absolute
      * height.
      */
-    virtual CARAPI SetWindowLayoutMode(
+    CARAPI SetWindowLayoutMode(
         /* [in] */ Int32 widthSpec,
         /* [in] */ Int32 heightSpec);
 
@@ -551,7 +602,8 @@ public:
      *
      * @see #setHeight(int)
      */
-    virtual CARAPI_(Int32) GetHeight();
+    CARAPI GetHeight(
+        /* [out] */ Int32* height);
 
     /**
      * <p>Change the popup's height MeasureSpec</p>
@@ -564,7 +616,7 @@ public:
      * @see #getHeight()
      * @see #isShowing()
      */
-    virtual CARAPI SetHeight(
+    CARAPI SetHeight(
         /* [in] */ Int32 height);
 
     /**
@@ -574,7 +626,8 @@ public:
      *
      * @see #setWidth(int)
      */
-    virtual CARAPI_(Int32) GetWidth();
+    CARAPI GetWidth(
+        /* [out] */ Int32* width);
 
     /**
      * <p>Change the popup's width MeasureSpec</p>
@@ -587,7 +640,7 @@ public:
      * @see #getWidth()
      * @see #isShowing()
      */
-    virtual CARAPI SetWidth(
+    CARAPI SetWidth(
         /* [in] */ Int32 width);
 
     /**
@@ -595,7 +648,8 @@ public:
      *
      * @return true if the popup is showing, false otherwise
      */
-    virtual CARAPI_(Boolean) IsShowing();
+    CARAPI IsShowing(
+        /* [out] */ Boolean* isShowing);
 
     /**
      * <p>
@@ -611,8 +665,25 @@ public:
      * @param x the popup's x location offset
      * @param y the popup's y location offset
      */
-    virtual CARAPI ShowAtLocation(
+    CARAPI ShowAtLocation(
         /* [in] */ IView* parent,
+        /* [in] */ Int32 gravity,
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
+
+    /**
+     * Display the content view in a popup window at the specified location.
+     *
+     * @param token Window token to use for creating the new window
+     * @param gravity the gravity which controls the placement of the popup window
+     * @param x the popup's x location offset
+     * @param y the popup's y location offset
+     *
+     * @hide Internal use only. Applications should use
+     *       {@link #showAtLocation(View, int, int, int)} instead.
+     */
+    CARAPI ShowAtLocation(
+        /* [in] */ IBinder* token,
         /* [in] */ Int32 gravity,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
@@ -628,7 +699,7 @@ public:
      *
      * @see #dismiss()
      */
-    virtual CARAPI ShowAsDropDown(
+    CARAPI ShowAsDropDown(
         /* [in] */ IView* anchor);
 
     /**
@@ -642,13 +713,38 @@ public:
      * location, the popup will be moved correspondingly.</p>
      *
      * @param anchor the view on which to pin the popup window
+     * @param xoff A horizontal offset from the anchor in pixels
+     * @param yoff A vertical offset from the anchor in pixels
      *
      * @see #dismiss()
      */
-    virtual CARAPI ShowAsDropDown(
+    CARAPI ShowAsDropDown(
         /* [in] */ IView* anchor,
         /* [in] */ Int32 xoff,
         /* [in] */ Int32 yoff);
+
+    /**
+     * <p>Display the content view in a popup window anchored to the bottom-left
+     * corner of the anchor view offset by the specified x and y coordinates.
+     * If there is not enough room on screen to show
+     * the popup in its entirety, this method tries to find a parent scroll
+     * view to scroll. If no parent scroll view can be scrolled, the bottom-left
+     * corner of the popup is pinned at the top left corner of the anchor view.</p>
+     * <p>If the view later scrolls to move <code>anchor</code> to a different
+     * location, the popup will be moved correspondingly.</p>
+     *
+     * @param anchor the view on which to pin the popup window
+     * @param xoff A horizontal offset from the anchor in pixels
+     * @param yoff A vertical offset from the anchor in pixels
+     * @param gravity Alignment of the popup relative to the anchor
+     *
+     * @see #dismiss()
+     */
+    CARAPI ShowAsDropDown(
+        /* [in] */ IView* anchor,
+        /* [in] */ Int32 xoff,
+        /* [in] */ Int32 yoff,
+        /* [in] */ Int32 gravity);
 
     /**
      * Indicates whether the popup is showing above (the y coordinate of the popup's bottom
@@ -661,7 +757,8 @@ public:
      *
      * @return True if this popup is showing above the anchor view, false otherwise.
      */
-    virtual CARAPI_(Boolean) IsAboveAnchor();
+    CARAPI IsAboveAnchor(
+        /* [out] */ Boolean* isAboveAnchor);
 
     /**
      * Returns the maximum height that is available for the popup to be
@@ -673,8 +770,9 @@ public:
      * @return The maximum available height for the popup to be completely
      *         shown.
      */
-    virtual CARAPI_(Int32) GetMaxAvailableHeight(
-        /* [in] */ IView* anchor);
+    CARAPI GetMaxAvailableHeight(
+        /* [in] */ IView* anchor,
+        /* [out] */ Int32* maxAvailableHeight);
 
     /**
      * Returns the maximum height that is available for the popup to be
@@ -687,9 +785,10 @@ public:
      * @return The maximum available height for the popup to be completely
      *         shown.
      */
-    virtual CARAPI_(Int32) GetMaxAvailableHeight(
+    CARAPI GetMaxAvailableHeight(
         /* [in] */ IView* anchor,
-        /* [in] */ Int32 yOffset);
+        /* [in] */ Int32 yOffset,
+        /* [out] */ Int32* maxAvailableHeight);
 
     /**
      * Returns the maximum height that is available for the popup to be
@@ -708,10 +807,11 @@ public:
      *
      * @hide Pending API council approval.
      */
-    virtual CARAPI_(Int32) GetMaxAvailableHeight(
+    CARAPI GetMaxAvailableHeight(
         /* [in] */ IView* anchor,
         /* [in] */ Int32 yOffset,
-        /* [in] */ Boolean ignoreBottomDecorations);
+        /* [in] */ Boolean ignoreBottomDecorations,
+        /* [out] */ Int32* maxAvailableHeight);
 
     /**
      * <p>Dispose of the popup window. This method can be invoked only after
@@ -720,24 +820,24 @@ public:
      *
      * @see #showAsDropDown(android.view.View)
      */
-    virtual CARAPI Dismiss();
+    CARAPI Dismiss();
 
     /**
      * Sets the listener to be called when the window is dismissed.
      *
      * @param onDismissListener The listener.
      */
-    virtual CARAPI SetOnDismissListener(
+    CARAPI SetOnDismissListener(
         /* [in] */ IPopupWindowOnDismissListener* onDismissListener);
 
     /**
      * Updates the state of the popup window, if it is currently being displayed,
-     * from the currently set state.  This include:
+     * from the currently set state.  This includes:
      * {@link #setClippingEnabled(boolean)}, {@link #setFocusable(boolean)},
      * {@link #setIgnoreCheekPress()}, {@link #setInputMethodMode(int)},
      * {@link #setTouchable(boolean)}, and {@link #setAnimationStyle(int)}.
      */
-    virtual CARAPI Update();
+    CARAPI Update();
 
     /**
      * <p>Updates the dimension of the popup window. Calling this function
@@ -747,7 +847,7 @@ public:
      * @param width the new width
      * @param height the new height
      */
-    virtual CARAPI Update(
+    CARAPI Update(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
@@ -762,7 +862,7 @@ public:
      * @param width the new width, can be -1 to ignore
      * @param height the new height, can be -1 to ignore
      */
-    virtual CARAPI Update(
+    CARAPI Update(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
@@ -781,7 +881,7 @@ public:
      * @param force reposition the window even if the specified position
      *              already seems to correspond to the LayoutParams
      */
-    virtual CARAPI Update(
+    CARAPI Update(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
@@ -797,7 +897,7 @@ public:
      * @param width the new width, can be -1 to ignore
      * @param height the new height, can be -1 to ignore
      */
-    virtual CARAPI Update(
+    CARAPI Update(
         /* [in] */ IView* anchor,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
@@ -816,91 +916,10 @@ public:
      * @param width the new width, can be -1 to ignore
      * @param height the new height, can be -1 to ignore
      */
-    virtual CARAPI Update(
-        /* [in] */ IView* anchor,
-        /* [in] */ Int32 xoff,
-        /* [in] */ Int32 yoff,
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    /**
-     * Clip this popup window to the screen, but not to the containing window.
-     *
-     * @param enabled True to clip to the screen.
-     * @hide
-     */
-    virtual CARAPI SetClipToScreenEnabled(
-        /* [in] */ Boolean enabled);
-
-    /**
-     * Allows the popup window to force the flag
-     * {@link WindowManager.LayoutParams#FLAG_LAYOUT_INSET_DECOR}, overriding default behavior.
-     * This will cause the popup to inset its content to account for system windows overlaying
-     * the screen, such as the status bar.
-     *
-     * <p>This will often be combined with {@link #setLayoutInScreenEnabled(boolean)}.
-     *
-     * @param enabled true if the popup's views should inset content to account for system windows,
-     *                the way that decor views behave for full-screen windows.
-     * @hide
-     */
-    virtual CARAPI SetLayoutInsetDecor(
-        /* [in] */ Boolean enabled);
-
-    /**
-     * Set whether this window is touch modal or if outside touches will be sent to
-     * other windows behind it.
-     * @hide
-     */
-    virtual CARAPI SetTouchModal(
-        /* [in] */ Boolean touchModal);
-
-    /**
-     * Display the content view in a popup window at the specified location.
-     *
-     * @param token Window token to use for creating the new window
-     * @param gravity the gravity which controls the placement of the popup window
-     * @param x the popup's x location offset
-     * @param y the popup's y location offset
-     *
-     * @hide Internal use only. Applications should use
-     *       {@link #showAtLocation(View, int, int, int)} instead.
-     */
-    virtual CARAPI ShowAtLocation(
-        /* [in] */ IBinder* token,
-        /* [in] */ Int32 gravity,
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
-
-    /**
-     * Allow PopupWindow to scroll the anchor's parent to provide more room
-     * for the popup. Enabled by default.
-     *
-     * @param enabled True to scroll the anchor's parent when more room is desired by the popup.
-     */
-    virtual CARAPI SetAllowScrollingAnchorParent(
-        /* [in] */ Boolean enabled);
-
-protected:
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyleAttr = 0x01010076/*com.android.internal.R.attr.popupWindowStyle*/,
-        /* [in] */ Int32 defStyleRes = 0);
-
-    CARAPI Init(
-        /* [in] */ IView* contentView = NULL,
-        /* [in] */ Int32 width = 0,
-        /* [in] */ Int32 height = 0,
-        /* [in] */ Boolean focusable = FALSE);
-
     CARAPI Update(
         /* [in] */ IView* anchor,
-        /* [in] */ Boolean updateLocation,
         /* [in] */ Int32 xoff,
         /* [in] */ Int32 yoff,
-        /* [in] */ Boolean updateDimension,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
@@ -947,34 +966,49 @@ private:
 
    CARAPI_(Int32) ComputeAnimationResource();
 
-   /**
-     * <p>Positions the popup window on screen. When the popup window is too
-     * tall to fit under the anchor, a parent scroll view is seeked and scrolled
-     * up to reclaim space. If scrolling is not possible or not enough, the
-     * popup window gets moved on top of the anchor.</p>
-     *
-     * <p>The height must have been set on the layout parameters prior to
-     * calling this method.</p>
+    /**
+     * Positions the popup window on screen. When the popup window is too tall
+     * to fit under the anchor, a parent scroll view is seeked and scrolled up
+     * to reclaim space. If scrolling is not possible or not enough, the popup
+     * window gets moved on top of the anchor.
+     * <p>
+     * The height must have been set on the layout parameters prior to calling
+     * this method.
      *
      * @param anchor the view on which the popup window must be anchored
      * @param p the layout parameters used to display the drop down
-     *
+     * @param xoff horizontal offset used to adjust for background padding
+     * @param yoff vertical offset used to adjust for background padding
+     * @param gravity horizontal gravity specifying popup alignment
      * @return true if the popup is translated upwards to fit on screen
      */
     CARAPI_(Boolean) FindDropDownPosition(
         /* [in] */ IView* anchor,
         /* [in] */ IWindowManagerLayoutParams* p,
         /* [in] */ Int32 xoff,
-        /* [in] */ Int32 yoff);
+        /* [in] */ Int32 yoff,
+        /* [in] */ Int32 gravity);
+
+    CARAPI_(void) Update(
+        /* [in] */ IView* anchor,
+        /* [in] */ Boolean updateLocation,
+        /* [in] */ Int32 xoff,
+        /* [in] */ Int32 yoff,
+        /* [in] */ Boolean updateDimension,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 gravity);
 
    CARAPI_(void) UnregisterForScrollChanged();
 
    CARAPI_(void) RegisterForScrollChanged(
        /* [in] */ IView* anchor,
        /* [in] */ Int32 xoff,
-       /* [in] */ Int32 yoff);
+       /* [in] */ Int32 yoff,
+       /* [in] */ Int32 gravity);
 
 private:
+    static const Int32 DEFAULT_ANCHORED_GRAVITY;
     AutoPtr<IContext> mContext;
     AutoPtr<IWindowManager> mWindowManager;
 
@@ -1008,6 +1042,8 @@ private:
     Int32 mPopupWidth;
     Int32 mPopupHeight;
 
+    Float mElevation;
+
     AutoPtr<ArrayOf<Int32> > mDrawingLocation;//[2];
     AutoPtr<ArrayOf<Int32> > mScreenLocation;//[2];
     AutoPtr<IRect> mTempRect;
@@ -1015,6 +1051,10 @@ private:
     AutoPtr<IDrawable> mBackground;
     AutoPtr<IDrawable> mAboveAnchorBackgroundDrawable;
     AutoPtr<IDrawable> mBelowAnchorBackgroundDrawable;
+
+    // Temporary animation centers. Should be moved into window params?
+    Int32 mAnchorRelativeX;
+    Int32 mAnchorRelativeY;
 
     Boolean mAboveAnchor;
     Int32 mWindowLayoutType;
@@ -1031,6 +1071,8 @@ private:
     AutoPtr<IOnScrollChangedListener> mOnScrollChangedListener;
     Int32 mAnchorXoff;
     Int32 mAnchorYoff;
+    Int32 mAnchoredGravity;
+    Boolean mOverlapAnchor;
 
     Boolean mPopupViewInitialLayoutDirectionInherited;
 };

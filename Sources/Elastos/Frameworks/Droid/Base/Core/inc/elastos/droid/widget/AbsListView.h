@@ -25,7 +25,6 @@ using Elastos::Droid::Os::IStrictModeSpan;
 using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Text::ITextWatcher;
 using Elastos::Droid::Text::IEditable;
-using Elastos::Droid::Text::INoCopySpan;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::Utility::IInt64SparseArray;
@@ -66,8 +65,8 @@ class FastScroller;
 
 class AbsListView
     : public AdapterView
+    , public IAbsListView
     , public ITextWatcher
-    , public INoCopySpan
     , public IOnGlobalLayoutListener
     , public IFilterListener
     , public IOnTouchModeChangeListener

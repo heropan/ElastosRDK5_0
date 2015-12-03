@@ -44,7 +44,6 @@ using Elastos::Droid::Os::Build;
 using Elastos::Droid::Text::EIID_ITextWatcher;
 using Elastos::Droid::Text::EIID_IEditable;
 using Elastos::Droid::Text::IInputType;
-using Elastos::Droid::Text::EIID_INoCopySpan;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Utility::StateSet;
 using Elastos::Droid::Utility::CSparseArray;
@@ -2671,7 +2670,7 @@ ECode AbsListView::TouchModeResetRunnable::Run()
 //                  AbsListView
 //==============================================================================
 
-CAR_INTERFACE_IMPL_6(AbsListView, AdapterView, ITextWatcher, INoCopySpan, IOnGlobalLayoutListener,
+CAR_INTERFACE_IMPL_6(AbsListView, AdapterView, IAbsListView, ITextWatcher, IOnGlobalLayoutListener,
         IFilterListener, IOnTouchModeChangeListener, IRemoteAdapterConnectionCallback);
 
 AbsListView::AbsListView()

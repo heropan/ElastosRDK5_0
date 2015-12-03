@@ -169,8 +169,8 @@ module
    //  interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
     interface Elastos.Droid.View.Animation.IInterpolator;
    //  interface Elastos.Droid.View.IViewOnLongClickListener;
-   //  interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
-   //  interface Elastos.Droid.View.Menu.IMenuBuilderCallback;
+    interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
+    interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
    //  interface Elastos.Droid.View.ICollapsibleActionView;
    //  interface Elastos.Droid.View.IWindowCallback;
     interface Elastos.Droid.Text.ITextWatcher;
@@ -1347,48 +1347,48 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CPopupWindow {
-   //      constructor();
+    [local]
+    class CPopupWindow {
+        constructor();
 
-   //      constructor(
-   //          [in] IContext* ctx);
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle,
-   //          [in] Int32 defStyleRes);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
-   //      constructor(
-   //          [in] IView* contentView);
+        constructor(
+            [in] IView* contentView);
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height);
 
-   //      constructor(
-   //          [in] IView* contentView,
-   //          [in] Int32 width,
-   //          [in] Int32 height);
+        constructor(
+            [in] IView* contentView,
+            [in] Int32 width,
+            [in] Int32 height);
 
-   //      constructor(
-   //          [in] IView* contentView,
-   //          [in] Int32 width,
-   //          [in] Int32 height,
-   //          [in] Boolean focusable);
+        constructor(
+            [in] IView* contentView,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Boolean focusable);
 
-   //      interface IPopupWindow;
-   //  }
+        interface IPopupWindow;
+    }
 
 	[local]
 	class CExpandableListPosition {
@@ -2021,17 +2021,21 @@ module
         interface IOverScroller;
     }
 
-   //  [local]
-   //  class CPopupMenu {
+    [local]
+    class CPopupMenu {
+        constructor(
+            [in] IContext* ctx,
+            [in] IView* anchor);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IView* anchor);
+        constructor(
+            [in] IContext* ctx,
+            [in] IView* anchor,
+            [in] Int32 gravity);
 
-   //      interface IPopupMenu;
-   //      interface IMenuBuilderCallback;
-   //      interface IMenuPresenterCallback;
-   //  }
+        interface IPopupMenu;
+        interface IMenuBuilderCallback;
+        interface IMenuPresenterCallback;
+    }
 
    //  [local]
    //  class CSpace {

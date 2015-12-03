@@ -108,7 +108,7 @@ ListPopupWindow::ForwardingListener::ForwardingListener()
 {
 }
 
-ECode ListPopupWindow::ForwardingListener::contructor(
+ECode ListPopupWindow::ForwardingListener::constructor(
     /* [in] */ IView* src)
 {
     VALIDATE_NOT_NULL(src);
