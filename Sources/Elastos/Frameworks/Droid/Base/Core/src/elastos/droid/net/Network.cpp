@@ -189,7 +189,7 @@ ECode Network::Equals(
     FUNC_RETURN(mNetId == other->mNetId);
 }
 
-ECode Network::HashCode(
+ECode Network::GetHashCode(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)

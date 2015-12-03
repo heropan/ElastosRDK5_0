@@ -21,7 +21,7 @@ const Byte DhcpPacket::IP_VERSION_HEADER_LEN = 0x45;
 const Int16 DhcpPacket::IP_FLAGS_OFFSET = 0x4000;
 const Byte DhcpPacket::IP_TOS_LOWDELAY = 0x10;
 const Byte DhcpPacket::IP_TTL = 0x40;
-const String DhcpPacket::TAG = String("DhcpPacket");
+const String DhcpPacket::TAG("DhcpPacket");
 const Int32 DhcpPacket::MAX_LENGTH = 1500;
 const Byte DhcpPacket::DHCP_SUBNET_MASK = 1;
 const Byte DhcpPacket::DHCP_ROUTER = 3;

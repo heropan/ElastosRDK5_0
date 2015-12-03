@@ -24,10 +24,10 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(MailTo, Object, IMailTo)
 
-const String MailTo::TO = String("to");
-const String MailTo::BODY = String("body");
-const String MailTo::CC = String("cc");
-const String MailTo::SUBJECT = String("subject");
+const String MailTo::TO("to");
+const String MailTo::BODY("body");
+const String MailTo::CC("cc");
+const String MailTo::SUBJECT("subject");
 
 ECode MailTo::GetField(
     /* [in] */ const String& name,

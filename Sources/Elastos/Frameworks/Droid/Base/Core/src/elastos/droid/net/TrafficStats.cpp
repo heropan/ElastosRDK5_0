@@ -21,8 +21,8 @@ ECode TrafficStats::GetStatsService(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (sStatsService == NULL) {
-            sStatsService = INetworkStatsService.Stub.asInterface(
-                    ServiceManager.getService(Context.NETWORK_STATS_SERVICE));
+            sStatsService = INetworkStatsService::Probe(
+                    ServiceManager::GetService(Context.NETWORK_STATS_SERVICE));
         }
         return sStatsService;
 #endif
@@ -603,12 +603,13 @@ ECode CTrafficStats::GetUidRxBytes(
 
 INetworkStatsService* CTrafficStats::GetStatsService()
 {
-    AutoLock lock(sProfilingLock);
+    synchronized(sProfilingLock) {
 
-    if (sStatsService!=NULL)
-        return sStatsService;
+        if (sStatsService!=NULL)
+            return sStatsService;
 
-    sStatsService =(INetworkStatsService*)ServiceManager::GetService(IContext::NETWORK_STATS_SERVICE).Get();
+        sStatsService =(INetworkStatsService*)ServiceManager::GetService(IContext::NETWORK_STATS_SERVICE).Get();
+    }
     return sStatsService;
 }
 
@@ -676,15 +677,17 @@ ECode CTrafficStats::UntagSocket(
 ECode CTrafficStats::StartDataProfiling(
     /* [in] */ IContext* context)
 {
-    AutoLock lock(sProfilingLock);
+    synchronized(sProfilingLock) {
 
-    if (sActiveProfilingStart != NULL) {
-        Slogger::E(TAG, "already profiling data");
-        return E_RUNTIME_EXCEPTION;
+        if (sActiveProfilingStart != NULL) {
+            Slogger::E(TAG, "already profiling data");
+            return E_RUNTIME_EXCEPTION;
+        }
+
+        // take snapshot in time; we calculate delta later
+        sActiveProfilingStart = GetDataLayerSnapshotForUid(context);
     }
-
-    // take snapshot in time; we calculate delta later
-    sActiveProfilingStart = GetDataLayerSnapshotForUid(context);
+    return NOERROR;
 }
 
 ECode CTrafficStats::StopDataProfiling(
@@ -692,21 +695,22 @@ ECode CTrafficStats::StopDataProfiling(
     /* [out] */ INetworkStats** retvalue)
 {
     VALIDATE_NOT_NULL(retvalue);
-    AutoLock lock(sProfilingLock);
+    synchronized(sProfilingLock) {
 
-    if (sActiveProfilingStart == NULL) {
-        Slogger::E(TAG, "not profiling data");
-        return E_RUNTIME_EXCEPTION;
+        if (sActiveProfilingStart == NULL) {
+            Slogger::E(TAG, "not profiling data");
+            return E_RUNTIME_EXCEPTION;
+        }
+
+        // subtract starting values and return delta
+        AutoPtr<INetworkStats> profilingStop = GetDataLayerSnapshotForUid(context);
+        AutoPtr<INetworkStats> profilingDelta;
+        CNetworkStats::Subtract(profilingStop, sActiveProfilingStart, NULL, NULL, (INetworkStats**)&profilingDelta);
+
+        sActiveProfilingStart = NULL;
+        *retvalue = profilingDelta;
+        REFCOUNT_ADD(*retvalue);
     }
-
-    // subtract starting values and return delta
-    AutoPtr<INetworkStats> profilingStop = GetDataLayerSnapshotForUid(context);
-    AutoPtr<INetworkStats> profilingDelta;
-    CNetworkStats::Subtract(profilingStop, sActiveProfilingStart, NULL, NULL, (INetworkStats**)&profilingDelta);
-
-    sActiveProfilingStart = NULL;
-    *retvalue = profilingDelta;
-    REFCOUNT_ADD(*retvalue);
     return NOERROR;
 }
 

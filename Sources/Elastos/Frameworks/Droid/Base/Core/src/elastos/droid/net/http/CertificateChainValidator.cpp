@@ -157,11 +157,11 @@ ECode CertificateChainValidator::HandleTrustStorageUpdate()
             tmf = TrustManagerFactory.getInstance("X.509");
             tmf.init((KeyStore) NULL);
         } catch (NoSuchAlgorithmException e) {
-            Slog.w(TAG, "Couldn't find default X.509 TrustManagerFactory");
-            return;
+            Slogger::W(TAG, "Couldn't find default X.509 TrustManagerFactory");
+            return NOERROR;
         } catch (KeyStoreException e) {
-            Slog.w(TAG, "Couldn't initialize default X.509 TrustManagerFactory", e);
-            return;
+            Slogger::W(TAG, "Couldn't initialize default X.509 TrustManagerFactory", e);
+            return NOERROR;
         }
         TrustManager[] tms = tmf.getTrustManagers();
         boolean sentUpdate = FALSE;
@@ -175,7 +175,7 @@ ECode CertificateChainValidator::HandleTrustStorageUpdate()
             }
         }
         if (!sentUpdate) {
-            Slog.w(TAG, "Didn't find a TrustManager to handle CA list update");
+            Slogger::W(TAG, "Didn't find a TrustManager to handle CA list update");
         }
 #endif
 }

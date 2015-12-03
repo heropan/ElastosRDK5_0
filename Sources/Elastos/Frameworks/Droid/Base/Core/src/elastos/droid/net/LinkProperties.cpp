@@ -6,7 +6,6 @@
 #include "elastos/droid/net/LinkProperties.h"
 #include "elastos/droid/net/ReturnOutValue.h"
 #include "elastos/droid/text/TextUtils.h"
-#include <elastos/core/Object.h>
 #include <elastos/core/Singleton.h>
 #include <elastos/utility/Objects.h>
 #include <elastos/utility/etl/List.h>

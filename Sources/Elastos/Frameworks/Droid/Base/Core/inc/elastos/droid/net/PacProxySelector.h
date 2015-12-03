@@ -41,15 +41,15 @@ public:
         /* [in] */ ECode failure);
 
 private:
-    static CARAPI ParseResponse(
-        /* [in] */ const String& response,
-        /* [out] */ IList** result);
+    static CARAPI_(AutoPtr<IList>) ParseResponse(
+        /* [in] */ const String& response);
 
     static CARAPI ProxyFromHostPort(
         /* [in] */ ProxyType type,
         /* [in] */ const String& hostPortString,
         /* [out] */ Elastos::Net::IProxy** result);
 
+private:
     static const String TAG;
 
     static const String SOCKS;

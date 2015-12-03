@@ -229,7 +229,7 @@ public:
         /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     CARAPI ReadFromParcel(

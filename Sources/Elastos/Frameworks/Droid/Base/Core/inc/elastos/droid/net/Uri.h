@@ -619,7 +619,7 @@ public:
         /* [in] */ IUri* prefix,
         /* [out] */ Boolean* result);
 
-    static CARAPI GetEmpty(
+    static CARAPI GetEMPTY(
             /* [out] */ IUri** result);
 
 private:

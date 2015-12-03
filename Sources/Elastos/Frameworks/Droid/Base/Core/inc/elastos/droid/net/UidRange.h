@@ -33,7 +33,7 @@ public:
         /* [out] */ Int32* result);
 
     // @Override
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     // @Override

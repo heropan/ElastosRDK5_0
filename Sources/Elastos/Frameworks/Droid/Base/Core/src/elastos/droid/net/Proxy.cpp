@@ -1,52 +1,75 @@
 
 #include "elastos/droid/net/Proxy.h"
+#include "elastos/droid/net/CProxy.h"
+#include "elastos/droid/net/CPacProxySelector.h"
+#include "elastos/droid/net/Network.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/net/PacProxySelector.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/net/Uri.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/net/ProxySelector.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Net::IConnectivityManager;
+using Elastos::Droid::Net::NetworkUtils;
+
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
+using Elastos::Core::StringUtils;
+using Elastos::Net::CProxy;
+using Elastos::Net::CURIHelper;
+using Elastos::Net::IInetAddress;
+using Elastos::Net::IInetSocketAddress;
+using Elastos::Net::IProxySelectorHelper;
+using Elastos::Net::IURIHelper;
+using Elastos::Net::ProxySelector;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::Regex::IMatcher;
+using Elastos::Utility::Regex::IPatternHelper;
+using Org::Apache::Http::CHttpHost;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-const String Proxy::NAME_IP_REGEX = String("[a-zA-Z0-9]+(\\-[a-zA-Z0-9]+)*(\\.[a-zA-Z0-9]+(\\-[a-zA-Z0-9]+)*)*");
-const String Proxy::EXCL_REGEX = String("[a-zA-Z0-9*]+(\\-[a-zA-Z0-9*]+)*(\\.[a-zA-Z0-9*]+(\\-[a-zA-Z0-9*]+)*)*");
+const String Proxy::NAME_IP_REGEX("[a-zA-Z0-9]+(\\-[a-zA-Z0-9]+)*(\\.[a-zA-Z0-9]+(\\-[a-zA-Z0-9]+)*)*");
+const String Proxy::EXCL_REGEX("[a-zA-Z0-9*]+(\\-[a-zA-Z0-9*]+)*(\\.[a-zA-Z0-9*]+(\\-[a-zA-Z0-9*]+)*)*");
 const String Proxy::EXCLLIST_REGEXP = String("^$|^") + EXCL_REGEX + "(," + EXCL_REGEX + ")*$";
 const Boolean Proxy::DEBUG = FALSE;
-const String Proxy::TAG = String("Proxy");
+const String Proxy::TAG("Proxy");
 AutoPtr<IConnectivityManager> Proxy::sConnectivityManager = NULL;
 const String Proxy::HOSTNAME_REGEXP = String("^$|^") + NAME_IP_REGEX + "$";
 
-const AutoPtr<IPattern> Proxy::HOSTNAME_PATTERN = getHOSTNAME_PATTERN();
-const AutoPtr<IPattern> Proxy::EXCLLIST_PATTERN = getEXCLLIST_PATTERN();
-const AutoPtr<IProxySelector> Proxy::DEFAULT_PROXY_SELECTOR = getDEFAULT_PROXY_SELECTOR();
+AutoPtr<IPattern> Proxy::HOSTNAME_PATTERN = getHOSTNAME_PATTERN();
+AutoPtr<IPattern> Proxy::EXCLLIST_PATTERN = getEXCLLIST_PATTERN();
+AutoPtr<IProxySelector> Proxy::sDefaultProxySelector = getDEFAULT_PROXY_SELECTOR();
 
 AutoPtr<IPattern> Proxy::getHOSTNAME_PATTERN()
 {
     AutoPtr<IPattern> rev;
-#if 0 // TODO: Translate codes below
-        HOSTNAME_PATTERN = Pattern.compile(HOSTNAME_REGEXP);
-#else
-    assert(0);
-#endif
+    AutoPtr<IPatternHelper> helper;
+    CPatternHelper::AcquireSingleton((IPatternHelper**)&helper);
+    helper->Compile(HOSTNAME_REGEXP, (IPattern**)&rev);
     return rev;
 }
 
 AutoPtr<IPattern> Proxy::getEXCLLIST_PATTERN()
 {
     AutoPtr<IPattern> rev;
-#if 0 // TODO: Translate codes below
-        EXCLLIST_PATTERN = Pattern.compile(EXCLLIST_REGEXP);
-#else
-    assert(0);
-#endif
+    AutoPtr<IPatternHelper> helper;
+    CPatternHelper::AcquireSingleton((IPatternHelper**)&helper);
+    helper->Compile(EXCLLIST_REGEXP, (IPattern**)&rev);
     return rev;
 }
 
 AutoPtr<IProxySelector> Proxy::getDEFAULT_PROXY_SELECTOR()
 {
     AutoPtr<IProxySelector> rev;
-#if 0 // TODO: Translate codes below
-        sDefaultProxySelector = ProxySelector.getDefault();
-#else
-    assert(0);
-#endif
+    ProxySelector::GetDefault((IProxySelector**)&rev);
     return rev;
 }
 
@@ -55,325 +78,42 @@ ECode Proxy::GetProxy(
     /* [in] */ const String& url,
     /* [out] */ Elastos::Net::IProxy** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String host = "";
-        if ((url != NULL) && !isLocalHost(host)) {
-            URI uri = URI.create(url);
-            ProxySelector proxySelector = ProxySelector.getDefault();
-            List<java.net.Proxy> proxyList = proxySelector.select(uri);
-            if (proxyList.size() > 0) {
-                return proxyList.get(0);
-            }
+    VALIDATE_NOT_NULL(result)
+
+    String host("");
+    if ((url != String(NULL)) && !IsLocalHost(host)) {
+        AutoPtr<IURIHelper> helper;
+        CURIHelper::AcquireSingleton((IURIHelper**)&helper);
+        AutoPtr<IURI> uri;
+        helper->Create(url, (IURI**)&uri);
+        AutoPtr<IProxySelector> proxySelector;
+        ProxySelector::GetDefault((IProxySelector**)&proxySelector);
+        AutoPtr<IList> proxyList;
+        proxySelector->Select(uri, (IList**)&proxyList);
+        if (Ptr(proxyList)->Func(proxyList->GetSize) > 0) {
+            AutoPtr<IInterface> obj;
+            proxyList->Get(0, (IInterface**)&obj);
+            FUNC_RETURN(Elastos::Net::IProxy::Probe(obj));
         }
-        return java.net.Proxy.NO_PROXY;
-#endif
+    }
+    AutoPtr<Elastos::Net::IProxyHelper> helper;
+    Elastos::Net::CProxyHelper::AcquireSingleton((Elastos::Net::IProxyHelper**)&helper);
+    AutoPtr<Elastos::Net::IProxy> noPorxy;
+    helper->GetNO_PROXY(result);
+    return NOERROR;
 }
 
 ECode Proxy::GetHost(
     /* [in] */ IContext* ctx,
-    /* [out] */ String* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        java.net.Proxy proxy = getProxy(ctx, NULL);
-        if (proxy == java.net.Proxy.NO_PROXY) return NULL;
-        try {
-            return ((InetSocketAddress)(proxy.address())).getHostName();
-        } catch (Exception e) {
-            return NULL;
-        }
-#endif
-}
-
-ECode Proxy::GetPort(
-    /* [in] */ IContext* ctx,
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        java.net.Proxy proxy = getProxy(ctx, NULL);
-        if (proxy == java.net.Proxy.NO_PROXY) return -1;
-        try {
-            return ((InetSocketAddress)(proxy.address())).getPort();
-        } catch (Exception e) {
-            return -1;
-        }
-#endif
-}
-
-ECode Proxy::GetDefaultHost(
-    /* [out] */ String* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String host = System.getProperty("http.proxyHost");
-        if (TextUtils.isEmpty(host)) return NULL;
-        return host;
-#endif
-}
-
-ECode Proxy::GetDefaultPort(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (getDefaultHost() == NULL) return -1;
-        try {
-            return Integer.parseInt(System.getProperty("http.proxyPort"));
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-#endif
-}
-
-ECode Proxy::GetPreferredHttpHost(
-    /* [in] */ IContext* context,
-    /* [in] */ const String& url,
-    /* [out] */ IHttpHost** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        java.net.Proxy prefProxy = getProxy(context, url);
-        if (prefProxy.equals(java.net.Proxy.NO_PROXY)) {
-            return NULL;
-        } else {
-            InetSocketAddress sa = (InetSocketAddress)prefProxy.address();
-            return new HttpHost(sa.getHostName(), sa.getPort(), "http");
-        }
-#endif
-}
-
-ECode Proxy::IsLocalHost(
-    /* [in] */ const String& host,
-    /* [out] */ Boolean* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (host == NULL) {
-            return FALSE;
-        }
-        try {
-            if (host != NULL) {
-                if (host.equalsIgnoreCase("localhost")) {
-                    return TRUE;
-                }
-                if (NetworkUtils.numericToInetAddress(host).isLoopbackAddress()) {
-                    return TRUE;
-                }
-            }
-        } catch (IllegalArgumentException iex) {
-        }
-        return FALSE;
-#endif
-}
-
-ECode Proxy::Validate(
-    /* [in] */ const String& hostname,
-    /* [in] */ const String& port,
-    /* [in] */ const String& exclList,
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Matcher match = HOSTNAME_PATTERN.matcher(hostname);
-        Matcher listMatch = EXCLLIST_PATTERN.matcher(exclList);
-        if (!match.matches()) return PROXY_HOSTNAME_INVALID;
-        if (!listMatch.matches()) return PROXY_EXCLLIST_INVALID;
-        if (hostname.length() > 0 && port.length() == 0) return PROXY_PORT_EMPTY;
-        if (port.length() > 0) {
-            if (hostname.length() == 0) return PROXY_HOSTNAME_EMPTY;
-            Int32 portVal = -1;
-            try {
-                portVal = Integer.parseInt(port);
-            } catch (NumberFormatException ex) {
-                return PROXY_PORT_INVALID;
-            }
-            if (portVal <= 0 || portVal > 0xFFFF) return PROXY_PORT_INVALID;
-        }
-        return PROXY_VALID;
-#endif
-}
-
-ECode Proxy::SetHttpProxySystemProperty(
-    /* [in] */ IProxyInfo* p)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String host = NULL;
-        String port = NULL;
-        String exclList = NULL;
-        Uri pacFileUrl = Uri.EMPTY;
-        if (p != NULL) {
-            host = p.getHost();
-            port = Integer.toString(p.getPort());
-            exclList = p.getExclusionListAsString();
-            pacFileUrl = p.getPacFileUrl();
-        }
-        setHttpProxySystemProperty(host, port, exclList, pacFileUrl);
-#endif
-}
-
-ECode Proxy::SetHttpProxySystemProperty(
-    /* [in] */ const String& host,
-    /* [in] */ const String& port,
-    /* [in] */ const String& exclList,
-    /* [in] */ IUri* pacFileUrl)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (exclList != NULL) exclList = exclList.replace(",", "|");
-        if (FALSE) Log.d(TAG, "setHttpProxySystemProperty :"+host+":"+port+" - "+exclList);
-        if (host != NULL) {
-            System.setProperty("http.proxyHost", host);
-            System.setProperty("https.proxyHost", host);
-        } else {
-            System.clearProperty("http.proxyHost");
-            System.clearProperty("https.proxyHost");
-        }
-        if (port != NULL) {
-            System.setProperty("http.proxyPort", port);
-            System.setProperty("https.proxyPort", port);
-        } else {
-            System.clearProperty("http.proxyPort");
-            System.clearProperty("https.proxyPort");
-        }
-        if (exclList != NULL) {
-            System.setProperty("http.nonProxyHosts", exclList);
-            System.setProperty("https.nonProxyHosts", exclList);
-        } else {
-            System.clearProperty("http.nonProxyHosts");
-            System.clearProperty("https.nonProxyHosts");
-        }
-        if (!Uri.EMPTY.equals(pacFileUrl)) {
-            ProxySelector.setDefault(new PacProxySelector());
-        } else {
-            ProxySelector.setDefault(sDefaultProxySelector);
-        }
-#endif
-}
-
-
-} // namespace Net
-} // namespace Droid
-} // namespace Elastos
-
-#if 0 // old CProxy.cpp
-#include "elastos/droid/net/CProxy.h"
-#include "elastos/droid/net/NetworkUtils.h"
-#include "elastos/droid/net/CConnectivityManager.h"
-#include "elastos/droid/text/TextUtils.h"
-#include <elastos/core/StringUtils.h>
-
-using Elastos::Core::StringUtils;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Utility::Regex::CPatternHelper;
-using Elastos::Net::CURI;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Net::NetworkUtils;
-using Elastos::Droid::Net::CConnectivityManager;
-
-namespace Elastos {
-namespace Droid {
-namespace Net {
-
-const String CProxy::TAG("Proxy");
-const Boolean CProxy::DEBUG= FALSE;
-
-// Hostname / IP REGEX validation
-// Matches blank input, ips, and domain names
-const String CProxy::NAME_IP_REGEX("[a-zA-Z0-9]+(\\-[a-zA-Z0-9]+)*(\\.[a-zA-Z0-9]+(\\-[a-zA-Z0-9]+)*)*");
-const String CProxy::HOSTNAME_REGEXP = String("^$|^") + CProxy::NAME_IP_REGEX +  String("$");
-const String CProxy::EXCLLIST_REGEXP = String("$|^(.?") + NAME_IP_REGEX  +  String(")+(,(.?") + NAME_IP_REGEX +  String("))*$");
-AutoPtr<IConnectivityManager> CProxy::mConnectivityManager = NULL;
-AutoPtr<IPattern> CProxy::HOSTNAME_PATTERN = NULL;
-AutoPtr<IPattern> CProxy::EXCLLIST_PATTERN = NULL;
-
-
-/**
- * A convenience class for accessing the user and default proxy
- * settings.
- */
-
-CProxy::CProxy()
-{
-    AutoPtr<IPatternHelper> patterhelper;
-    AutoPtr<IIConnectivityManager> temp;
-    CConnectivityManager::New(temp, (IConnectivityManager**)&mConnectivityManager);
-    CPatternHelper::AcquireSingleton((IPatternHelper**)&patterhelper);
-    patterhelper->Compile(HOSTNAME_REGEXP, (IPattern**)&HOSTNAME_PATTERN);
-    patterhelper->Compile(EXCLLIST_REGEXP, (IPattern**)&EXCLLIST_PATTERN);
-    Elastos::Net::CProxyHelper::AcquireSingleton((Elastos::Net::IProxyHelper**)&proxyhelper);
-}
-
-CProxy::~CProxy(){}
-
-/**
-* Return the proxy object to be used for the URL given as parameter.
-* @param ctx A Context used to get the settings for the proxy host.
-* @param url A URL to be accessed. Used to evaluate exclusion list.
-* @return Proxy (java.net) object containing the host name. If the
-*         user did not set a hostname it returns the default host.
-*         A null value means that no host is to be used.
-* {@hide}
-*/
-ECode CProxy::GetProxy(
-    /* [in] */ IContext* ctx,
-    /* [in] */ const String& url,
-    /* [out] */ Elastos::Net::IProxy** outProxy)
-{
-    VALIDATE_NOT_NULL(outProxy);
-    String host;
-    if (!(url.IsNull()))
-    {
-        AutoPtr<IURI> uri;
-        CURI::New((IURI**)&uri);
-        if(uri != NULL)
-            uri->GetHost(&host);
-    }
-
-    if (!IsLocalHost(host))
-    {
-        if (mConnectivityManager == NULL) {
-            ctx->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&mConnectivityManager);
-        }
-        if (mConnectivityManager == NULL) {
-            return proxyhelper->GetNO_PROXY(outProxy);
-        }
-        AutoPtr<IProxyProperties> proxyProperties;
-        mConnectivityManager->GetProxy((IProxyProperties**)&proxyProperties);
-
-        if (proxyProperties != NULL) {
-            Boolean bol;
-            proxyProperties->IsExcluded(host, &bol);
-            if (!bol) {
-                return proxyProperties->MakeProxy(outProxy);
-            }
-        }
-    }
-    return proxyhelper->GetNO_PROXY(outProxy);
-}
-
-/**
-* Return the proxy host set by the user.
-* @param ctx A Context used to get the settings for the proxy host.
-* @return String containing the host name. If the user did not set a host
-*         name it returns the default host. A null value means that no
-*         host is to be used.
-* @deprecated Use standard java vm proxy values to find the host, port
-*         and exclusion list.  This call ignores the exclusion list.
-*/
-ECode CProxy::GetHost(
-    /* [in] */ IContext* ctx,
     /* [out] */ String* host)
 {
     VALIDATE_NOT_NULL(host);
+
+    AutoPtr<Elastos::Net::IProxyHelper> helper;
+    Elastos::Net::CProxyHelper::AcquireSingleton((Elastos::Net::IProxyHelper**)&helper);
     AutoPtr<Elastos::Net::IProxy> proxy;
     AutoPtr<Elastos::Net::IProxy> noproxy;
-    proxyhelper->GetNO_PROXY((Elastos::Net::IProxy**)&noproxy);
+    helper->GetNO_PROXY((Elastos::Net::IProxy**)&noproxy);
     String str;
     GetProxy(ctx, str, (Elastos::Net::IProxy**)&proxy);
     if (proxy == noproxy) {
@@ -386,22 +126,18 @@ ECode CProxy::GetHost(
     return address->GetHostName(host);
 }
 
-/**
-* Return the proxy port set by the user.
-* @param ctx A Context used to get the settings for the proxy port.
-* @return The port number to use or -1 if no proxy is to be used.
-* @deprecated Use standard java vm proxy values to find the host, port
-*         and exclusion list.  This call ignores the exclusion list.
-*/
-ECode CProxy::GetPort(
+ECode Proxy::GetPort(
     /* [in] */ IContext* ctx,
     /* [out] */ Int32* portNum)
 {
     VALIDATE_NOT_NULL(portNum);
-    AutoPtr<Elastos::Net::IProxy> proxy;
+
+    AutoPtr<Elastos::Net::IProxyHelper> helper;
+    Elastos::Net::CProxyHelper::AcquireSingleton((Elastos::Net::IProxyHelper**)&helper);
     AutoPtr<Elastos::Net::IProxy> noproxy;
-    proxyhelper->GetNO_PROXY((Elastos::Net::IProxy**)&noproxy);
+    helper->GetNO_PROXY((Elastos::Net::IProxy**)&noproxy);
     String str;
+    AutoPtr<Elastos::Net::IProxy> proxy;
     GetProxy(ctx, str, (Elastos::Net::IProxy**)&proxy);
     if (proxy == noproxy) {
          *portNum = -1;
@@ -414,36 +150,22 @@ ECode CProxy::GetPort(
     return address->GetPort(portNum);
 }
 
-/**
-* Return the default proxy host specified by the carrier.
-* @return String containing the host name or null if there is no proxy for
-* this carrier.
-* @deprecated Use standard java vm proxy values to find the host, port and
-*         exclusion list.  This call ignores the exclusion list and no
-*         longer reports only mobile-data apn-based proxy values.
-*/
-ECode CProxy::GetDefaultHost(
+ECode Proxy::GetDefaultHost(
     /* [out] */ String* host)
 {
     VALIDATE_NOT_NULL(host);
+
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     system->GetProperty(String("http.proxyHost"), host);
     return NOERROR;
 }
 
-/**
-* Return the default proxy port specified by the carrier.
-* @return The port number to be used with the proxy host or -1 if there is
-* no proxy for this carrier.
-* @deprecated Use standard java vm proxy values to find the host, port and
-*         exclusion list.  This call ignores the exclusion list and no
-*         longer reports only mobile-data apn-based proxy values.
-*/
-ECode CProxy::GetDefaultPort(
+ECode Proxy::GetDefaultPort(
     /* [out] */ Int32* port)
 {
     VALIDATE_NOT_NULL(port);
+
     String host;
     GetDefaultHost(&host);
     if (host.IsNull()) {
@@ -459,28 +181,18 @@ ECode CProxy::GetDefaultPort(
     return NOERROR;
 }
 
-/**
-* Returns the preferred proxy to be used by clients. This is a wrapper
-* around {@link android.net.Proxy#getHost()}.
-*
-* @param context the context which will be passed to
-* {@link android.net.Proxy#getHost()}
-* @param url the target URL for the request
-* @note Calling this method requires permission
-* android.permission.ACCESS_NETWORK_STATE
-* @return The preferred proxy to be used by clients, or null if there
-* is no proxy.
-* {@hide}
-*/
-ECode CProxy::GetPreferredHttpHost(
+ECode Proxy::GetPreferredHttpHost(
     /* [in] */ IContext* context,
     /* [in] */ const String& url,
     /* [out] */ IHttpHost** httpHost)
 {
     VALIDATE_NOT_NULL(httpHost);
-    AutoPtr<Elastos::Net::IProxy> prefProxy;
+
+    AutoPtr<Elastos::Net::IProxyHelper> helper;
+    Elastos::Net::CProxyHelper::AcquireSingleton((Elastos::Net::IProxyHelper**)&helper);
     AutoPtr<Elastos::Net::IProxy> noproxy;
-    proxyhelper->GetNO_PROXY((Elastos::Net::IProxy**)&noproxy);
+    helper->GetNO_PROXY((Elastos::Net::IProxy**)&noproxy);
+    AutoPtr<Elastos::Net::IProxy> prefProxy;
     GetProxy(context, url, (Elastos::Net::IProxy**)&prefProxy);
     if (prefProxy == noproxy) {
         *httpHost = NULL;
@@ -493,14 +205,12 @@ ECode CProxy::GetPreferredHttpHost(
         sa->GetHostName(&hostName);
         Int32 portNum;
         sa->GetPort(&portNum);
-        assert(0);
-        // TODO:
-        // return CHttpHost::New(hostName, portNum, "http", httpHost);
+        return CHttpHost::New(hostName, portNum, String("http"), httpHost);
     }
     return NOERROR;
 }
 
-Boolean CProxy::IsLocalHost(
+Boolean Proxy::IsLocalHost(
     /* [in] */ const String& host)
 {
     if (host.IsNull()) {
@@ -523,196 +233,115 @@ Boolean CProxy::IsLocalHost(
     return FALSE;
 }
 
-/**
-* Validate syntax of hostname, port and exclusion list entries
-* {@hide}
-*/
-ECode CProxy::Validate(
+ECode Proxy::Validate(
     /* [in] */ const String& hostname,
     /* [in] */ const String& port,
-    /* [in] */ const String& exclList)
+    /* [in] */ const String& exclList,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     AutoPtr<IMatcher> match;
     HOSTNAME_PATTERN->Matcher(hostname, (IMatcher**)&match);
     AutoPtr<IMatcher> listMatch;
     EXCLLIST_PATTERN->Matcher(exclList, (IMatcher**)&listMatch);
-
-    Boolean isMatch;
-    match->Matches(&isMatch);
-    if (!isMatch) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    Boolean isListMatch;
-    listMatch->Matches(&isListMatch);
-    if (!isListMatch) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    Int32 hostlength = hostname.GetLength();
-    Int32 portlength = port.GetLength();
-    if (hostlength > 0 && portlength == 0) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    if (portlength > 0) {
-        if (hostlength == 0) {
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
+    if (!Ptr(match)->Func(match->Matches)) FUNC_RETURN(IProxy::PROXY_HOSTNAME_INVALID);
+    if (!Ptr(listMatch)->Func(listMatch->Matches)) FUNC_RETURN(IProxy::PROXY_EXCLLIST_INVALID);
+    if (hostname.GetLength() > 0 && port.GetLength() == 0) FUNC_RETURN(IProxy::PROXY_PORT_EMPTY);
+    if (port.GetLength() > 0) {
+        if (hostname.GetLength() == 0) FUNC_RETURN(IProxy::PROXY_HOSTNAME_EMPTY);
         Int32 portVal = -1;
-        portVal = StringUtils::ParseInt32(port);
-
-        if (portVal <= 0 || portVal > 0xFFFF) {
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        // try {
+        ECode ec = StringUtils::Parse(port, &portVal);
+        // } catch (NumberFormatException ex) {
+        if (FAILED(ec)) {
+            if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+                *result = IProxy::PROXY_PORT_INVALID;
+                return NOERROR;
+            }
+            else return ec;
         }
+        // }
+        if (portVal <= 0 || portVal > 0xFFFF) FUNC_RETURN(IProxy::PROXY_PORT_INVALID);
     }
+    *result = IProxy::PROXY_VALID;
     return NOERROR;
 }
 
-/** @hide */
-ECode CProxy::GetAndroidProxySelectorRoutePlanner(
-    /* [in] */ IContext* context,
-    /* [out] */ IHttpRoutePlanner** planner)
-{
-//    VALIDATE_NOT_NULL(planner);
-//    AutoPtr<ISchemeRegistry> reg;
-//    CSchemeRegistry::New(&reg);
-//    AutoPtr<IProxySelector> sel;
-//    ProxySelector::GetDefault((IProxySelector**)&sel);
-//    (AndroidProxySelectorRoutePlanner*)*planner = new AndroidProxySelectorRoutePlanner(reg, sel, context, this);
-//    REFCOUNT_ADD(*planner);
-//    return NOERROR;
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-}
-
-/** @hide */
-ECode CProxy::SetHttpProxySystemProperty(
-    /* [in] */ IProxyProperties* proxyp)
+ECode Proxy::SetHttpProxySystemProperty(
+    /* [in] */ IProxyInfo* proxyp)
 {
     String host;
     String port;
     String exclList;
+    AutoPtr<IUri> pacFileUrl;
+    Uri::GetEMPTY((IUri**)&pacFileUrl);
     if (proxyp != NULL) {
         proxyp->GetHost(&host);
         Int32 portNum;
         proxyp->GetPort(&portNum);
         port = StringUtils::ToString(portNum);
-        proxyp->GetExclusionList(&exclList);
+        proxyp->GetExclusionListAsString(&exclList);
+        proxyp->GetPacFileUrl((IUri**)&pacFileUrl);
     }
-    SetHttpProxySystemProperty(host, port, exclList);
+    SetHttpProxySystemProperty(host, port, exclList, pacFileUrl);
     return NOERROR;
 }
 
-/** @hide */
-ECode CProxy::SetHttpProxySystemProperty(
+ECode Proxy::SetHttpProxySystemProperty(
     /* [in] */ const String& host,
     /* [in] */ const String& port,
-    /* [in] */ const String& exclList)
+    /* [in] */ const String& exclList,
+    /* [in] */ IUri* pacFileUrl)
 {
-    // AutoPtr<ISystem> system;
-    // Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-    // String host;
-    // system->GetProperty(String("http.proxyHost"), &host);
+    AutoPtr<ISystem> system;
+    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 
-//    if (!(exclList.IsNull()))
-//    exclList = exclList.el(",","|");
-//    if (FALSE)
-//    Log.d(TAG, "setHttpProxySystemProperty :"+host+":"+port+" - "+exclList);
-//    if (host != NULL) {
-//    System::SetProperty("http.proxyHost", host);
-//    System::SetProperty("https.proxyHost", host);
-//    } else {
-//    System::ClearProperty("http.proxyHost");
-//    System::ClearProperty("https.proxyHost");
-//    }
-//    if (port != NULL) {
-//    System::SetProperty("http.proxyPort", port);
-//    System::SetProperty("https.proxyPort", port);
-//    } else {
-//    System::ClearProperty("http.proxyPort");
-//    System::ClearProperty("https.proxyPort");
-//    }
-//    if (exclList != NULL) {
-//    System::SetProperty("http.nonProxyHosts", exclList);
-//    System::SetProperty("https.nonProxyHosts", exclList);
-//    } else {
-//    System::ClearProperty("http.nonProxyHosts");
-//    System::ClearProperty("https.nonProxyHosts");
-//    }
-//    return NOERROR;
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    String tmpExclList(exclList);
+    if (!(tmpExclList.IsNull())) {
+        tmpExclList = tmpExclList.Replace(',', '|');
+    }
+    String s;
+    if (FALSE)
+        Logger::D(TAG, "setHttpProxySystemProperty :%s:%s - %s", host.string(), port.string(), tmpExclList.string());
+    if (host != String(NULL)) {
+        system->SetProperty(String("http.proxyHost"), host, &s);
+        system->SetProperty(String("https.proxyHost"), host, &s);
+    }
+    else {
+        system->ClearProperty(String("http.proxyHost"), &s);
+        system->ClearProperty(String("https.proxyHost"), &s);
+    }
+    if (port != String(NULL)) {
+        system->SetProperty(String("http.proxyPort"), port, &s);
+        system->SetProperty(String("https.proxyPort"), port, &s);
+    }
+    else {
+        system->ClearProperty(String("http.proxyPort"), &s);
+        system->ClearProperty(String("https.proxyPort"), &s);
+    }
+    if (tmpExclList != String(NULL)) {
+        system->SetProperty(String("http.nonProxyHosts"), tmpExclList, &s);
+        system->SetProperty(String("https.nonProxyHosts"), tmpExclList, &s);
+    } else {
+        system->ClearProperty(String("http.nonProxyHosts"), &s);
+        system->ClearProperty(String("https.nonProxyHosts"), &s);
+    }
+    AutoPtr<IUri> empty;
+    Uri::GetEMPTY((IUri**)&empty);
+    AutoPtr<IProxySelectorHelper> helper;
+    Boolean isEquals;
+    IObject::Probe(empty)->Equals(pacFileUrl, &isEquals);
+    if (!isEquals) {
+        AutoPtr<IPacProxySelector> newProxySelector;
+        CPacProxySelector::New((IPacProxySelector**)&newProxySelector);
+        ProxySelector::SetDefault(IProxySelector::Probe(newProxySelector));
+    } else {
+        ProxySelector::SetDefault(sDefaultProxySelector);
+    }
+    return NOERROR;
 }
 
-// CProxy::AndroidProxySelectorRoutePlanner::AndroidProxySelectorRoutePlanner(
-//     /* [in] */ ISchemeRegistry * schreg,
-//     /* [in] */ IProxySelector * prosel,
-//     /* [in] */ IContext * context,
-//     /* [in] */ CProxy * host)
-// {
-//     /*// super(schreg, prosel) of org.apache.http.impl.conn.ProxySelectorRoutePlanner...
-//     ProxySelectorRoutePlanner::AndroidProxySelectorRoutePlanner(schreg, prosel);//??
-//     mContext = context;
-//     mHost = host;*/
-// }
-
-CProxy::AndroidProxySelectorRoutePlanner::~AndroidProxySelectorRoutePlanner()
-{}
-
-//@Override
-//IHttpRoute* CProxy::AndroidProxySelectorRoutePlanner::DetermineRoute(
-//    /* [in] */ IHttpHost* target,
-//    /* [in] */ IHttpRequest* request,
-//    /* [in] */ IHttpContext* context)
-//{
-//    String hostName;
-//    target->GetHostName(&hostName);
-
-//    AutoPtr<IHttpHost> proxy;
-//    mHost->GetPreferredHttpHost(mContext, hostName, &proxy);
-//    AutoPtr<IHttpRoute> route;
-//    if (proxy == NULL) {
-//        CHttpRoute::New(target, &route);
-//   } else {
-//        CHttpRoute::New(target, NULL, proxy, FALSE, &route);
-//    }
-//    return route;
-//    assert(0);
-//}
-
-//@Override
-AutoPtr<Elastos::Net::IProxy> CProxy::AndroidProxySelectorRoutePlanner::ChooseProxy(
-    /* [in] */ List<Elastos::Net::IProxy*> proxies,
-    /* [in] */ IHttpHost* target,
-    /* [in] */ IHttpRequest* request,
-    /* [in] */ IHttpContext* context)
-{
-//String hostName;
-//target->GetHostName(&hostName);
-//    AutoPtr<Elastos::Net::IProxy> proxy;
-//    mHost->GetProxy(mContext, &hostName, &proxy);
-//    return proxy;
-    assert(0);
-    return NULL;
-}
-
-//@Override
-AutoPtr<IHttpHost> CProxy::AndroidProxySelectorRoutePlanner::DetermineProxy(
-    /* [in] */ IHttpHost* target,
-    /* [in] */ IHttpRequest* request,
-    /* [in] */ IHttpContext* context)
-{
-//    AutoPtr<IHttpHost> host;
-//    String hostName;
-//     target->GetHostName(&hostName);
-//     mHost->GetPreferredHttpHost(mContext, &hostName, &host);
-//     return host;
-    assert(0);
-    return NULL;
-}
-
-
-} //namespace Net
-} //namespace Droid
-} //namespace Elastos
-#endif
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

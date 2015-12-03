@@ -127,7 +127,7 @@ ECode Request::AddHeader(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     if (name.IsNullOrEmpty()) {
-        String damage = String("Null http header name");
+        String damage("Null http header name");
         HttpLog::E(damage);
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -314,16 +314,17 @@ ECode Request::ReadResponse(
         Int32 lowWater = buf->GetLength() / 2;
         while (len != -1) {
             {
-                AutoLock lock(mClientResource);
+                synchronized(mClientResource) {
 
-                while (mLoadingPaused) {
-                    // Put this (network loading) thread to sleep if WebCore
-                    // has asked us to. This can happen with plugins for
-                    // example, if we are streaming data but the plugin has
-                    // filled its internal buffers.
-                    // if(FAILED(Wait()) {
-                    //     HttpLog::E(String("Interrupted exception whilst network thread paused at WebCore's request."));
-                    // }
+                    while (mLoadingPaused) {
+                        // Put this (network loading) thread to sleep if WebCore
+                        // has asked us to. This can happen with plugins for
+                        // example, if we are streaming data but the plugin has
+                        // filled its internal buffers.
+                        // if(FAILED(Wait()) {
+                        //     HttpLog::E(String("Interrupted exception whilst network thread paused at WebCore's request."));
+                        // }
+                    }
                 }
             }
 
@@ -382,23 +383,22 @@ ECode Request::Cancel()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mClientResource);
+    synchronized(mClientResource) {
+        if (HttpLog::LOGV) {
+            HttpLog::V(String("Request.cancel(): ") + GetUri());
+        }
 
-    if (HttpLog::LOGV) {
-        HttpLog::V(String("Request.cancel(): ") + GetUri());
+        // Ensure that the network thread is not blocked by a hanging request from WebCore to
+        // pause the load.
+        mLoadingPaused = FALSE;
+        // TODO:
+        // Notify();
+
+        mCancelled = TRUE;
+        if (mConnection != NULL) {
+            mConnection->Cancel();
+        }
     }
-
-    // Ensure that the network thread is not blocked by a hanging request from WebCore to
-    // pause the load.
-    mLoadingPaused = FALSE;
-    // TODO:
-    // Notify();
-
-    mCancelled = TRUE;
-    if (mConnection != NULL) {
-        mConnection->Cancel();
-    }
-
     return NOERROR;
 #endif
 }
@@ -489,13 +489,12 @@ ECode Request::WaitUntilComplete()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mClientResource);
-
-    if (HttpLog::LOGV) HttpLog::V(String("Request.waitUntilComplete()"));
-    // TODO:
-    // mClientResource.Wait();
-    if (HttpLog::LOGV) HttpLog::V(String("Request.waitUntilComplete() done waiting"));
-
+    synchronized(mClientResource) {
+        if (HttpLog::LOGV) HttpLog::V(String("Request.waitUntilComplete()"));
+        // TODO:
+        // mClientResource.Wait();
+        if (HttpLog::LOGV) HttpLog::V(String("Request.waitUntilComplete() done waiting"));
+    }
     return NOERROR;
 #endif
 }
@@ -504,10 +503,10 @@ ECode Request::Complete()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mClientResource);
-
-    // TODO:
-    // return mClientResource.NotifyAll();
+    synchronized(mClientResource) {
+        // TODO:
+        // return mClientResource.NotifyAll();
+    }
     return E_NOT_IMPLEMENTED;
 #endif
 }

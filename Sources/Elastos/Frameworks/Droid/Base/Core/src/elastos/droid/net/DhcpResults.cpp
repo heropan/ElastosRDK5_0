@@ -21,7 +21,7 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(DhcpResults, StaticIpConfiguration, IDhcpResults)
 
-const String DhcpResults::TAG = String("DhcpResults");
+const String DhcpResults::TAG("DhcpResults");
 
 ECode DhcpResults::GetServerAddress(
     /* [out] */ IInetAddress** result)

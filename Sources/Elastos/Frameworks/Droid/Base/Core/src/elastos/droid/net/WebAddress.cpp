@@ -59,7 +59,7 @@ ECode WebAddress::constructor(
             if (t != NULL && t.length() > 0) {
                 // The ':' character is not returned by the regex.
                 try {
-                    mPort = Integer.parseInt(t);
+                    mPort = StringUtils::ParseInt32(t);
                 } catch (NumberFormatException ex) {
                     throw new ParseException("Bad port");
                 }

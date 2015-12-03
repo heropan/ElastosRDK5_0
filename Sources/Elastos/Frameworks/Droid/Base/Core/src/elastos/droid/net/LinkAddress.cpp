@@ -3,7 +3,6 @@
 #include "elastos/droid/net/ReturnOutValue.h"
 #include "elastos/droid/net/NetworkUtils.h"
 #include "elastos/droid/system/OsConstants.h"
-#include <elastos/core/Object.h>
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::System::OsConstants;

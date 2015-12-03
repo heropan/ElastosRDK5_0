@@ -1,4 +1,5 @@
 
+#include "URI.h"
 #include "CURI.h"
 #include "CURL.h"
 #include "InetAddress.h"
@@ -15,20 +16,18 @@ using Elastos::Core::EIID_IComparable;
 using Elastos::IO::EIID_ISerializable;
 using Libcore::Net::Url::UrlUtils;
 
-const String CURI::UNRESERVED("_-!.~\'()*");
-const String CURI::PUNCTUATION(",;:$&+=");
-const AutoPtr<UriCodec> CURI::USER_INFO_ENCODER = new CURI::PartEncoder(String(""));
-const AutoPtr<UriCodec> CURI::PATH_ENCODER = new CURI::PartEncoder(String("/@"));
-const AutoPtr<UriCodec> CURI::AUTHORITY_ENCODER = new CURI::PartEncoder(String("@[]"));
-const AutoPtr<UriCodec> CURI::FILE_AND_QUERY_ENCODER = new CURI::PartEncoder(String("/@?"));
-const AutoPtr<UriCodec> CURI::ALL_LEGAL_ENCODER = new CURI::PartEncoder(String("?/[]@"));
-const AutoPtr<UriCodec> CURI::ASCII_ONLY = new CURI::ASCIIEncoder();
+const String URI::UNRESERVED("_-!.~\'()*");
+const String URI::PUNCTUATION(",;:$&+=");
+const AutoPtr<UriCodec> URI::USER_INFO_ENCODER = new URI::PartEncoder(String(""));
+const AutoPtr<UriCodec> URI::PATH_ENCODER = new URI::PartEncoder(String("/@"));
+const AutoPtr<UriCodec> URI::AUTHORITY_ENCODER = new URI::PartEncoder(String("@[]"));
+const AutoPtr<UriCodec> URI::FILE_AND_QUERY_ENCODER = new URI::PartEncoder(String("/@?"));
+const AutoPtr<UriCodec> URI::ALL_LEGAL_ENCODER = new URI::PartEncoder(String("?/[]@"));
+const AutoPtr<UriCodec> URI::ASCII_ONLY = new URI::ASCIIEncoder();
 
-CAR_INTERFACE_IMPL_3(CURI, Object, IURI, ISerializable, IComparable)
+CAR_INTERFACE_IMPL_3(URI, Object, IURI, ISerializable, IComparable)
 
-CAR_OBJECT_IMPL(CURI)
-
-CURI::CURI()
+URI::URI()
     : mPort(-1)
     , mOpaque(FALSE)
     , mAbsolute(FALSE)
@@ -37,18 +36,18 @@ CURI::CURI()
 {
 }
 
-ECode CURI::constructor()
+ECode URI::constructor()
 {
     return NOERROR;
 }
 
-ECode CURI::constructor(
+ECode URI::constructor(
     /* [in] */ const String& uri)
 {
     return ParseURI(uri, FALSE);
 }
 
-ECode CURI::constructor(
+ECode URI::constructor(
     /* [in] */ const String& scheme,
     /* [in] */ const String& schemeSpecificPart,
     /* [in] */ const String& fragment)
@@ -72,7 +71,7 @@ ECode CURI::constructor(
     return ParseURI(uriStr, FALSE);
 }
 
-ECode CURI::constructor(
+ECode URI::constructor(
     /* [in] */ const String& scheme,
     /* [in] */ const String& userInfo,
     /* [in] */ const String& host,
@@ -147,7 +146,7 @@ ECode CURI::constructor(
     return ParseURI(uriStr, TRUE);
 }
 
-ECode CURI::constructor(
+ECode URI::constructor(
     /* [in] */ const String& scheme,
     /* [in] */ const String& host,
     /* [in] */ const String& path,
@@ -156,7 +155,7 @@ ECode CURI::constructor(
     return constructor(scheme, String(NULL), host, -1, path, String(NULL), fragment);
 }
 
-ECode CURI::constructor(
+ECode URI::constructor(
     /* [in] */ const String& scheme,
     /* [in] */ const String& authority,
     /* [in] */ const String& path,
@@ -199,7 +198,7 @@ ECode CURI::constructor(
     return ParseURI(uriStr, FALSE);
 }
 
-ECode CURI::ParseURI(
+ECode URI::ParseURI(
     /* [in] */ const String& uri,
     /* [in] */ Boolean forceServer)
 {
@@ -268,7 +267,7 @@ ECode CURI::ParseURI(
     return ParseAuthority(forceServer);
 }
 
-ECode CURI::ValidateScheme(
+ECode URI::ValidateScheme(
     /* [in] */ const String& uri,
     /* [in] */ Int32 end,
     /* [out] */ String* result)
@@ -290,7 +289,7 @@ ECode CURI::ValidateScheme(
     return NOERROR;
 }
 
-ECode CURI::ParseAuthority(
+ECode URI::ParseAuthority(
     /* [in] */ Boolean forceServer)
 {
     if (mAuthority.IsNull()) {
@@ -364,7 +363,7 @@ ECode CURI::ParseAuthority(
     return NOERROR;
 }
 
-ECode CURI::ValidateUserInfo(
+ECode URI::ValidateUserInfo(
     /* [in] */ const String& uri,
     /* [in] */ const String& userInfo,
     /* [in] */ Int32 index)
@@ -381,7 +380,7 @@ ECode CURI::ValidateUserInfo(
     return NOERROR;
 }
 
-ECode CURI::IsValidHost(
+ECode URI::IsValidHost(
     /* [in] */ Boolean forceServer,
     /* [in] */ const String& host,
     /* [out] */ Boolean* isValid)
@@ -443,7 +442,7 @@ ECode CURI::IsValidHost(
     return NOERROR;
 }
 
-Boolean CURI::IsValidDomainName(
+Boolean URI::IsValidDomainName(
     /* [in] */ const String& host)
 {
     ECode ec = UriCodec::ValidateSimple(host, String("-."));
@@ -475,7 +474,7 @@ Boolean CURI::IsValidDomainName(
     return TRUE;
 }
 
-ECode CURI::CompareTo(
+ECode URI::CompareTo(
     /* [in] */ IInterface* uri,
     /* [out] */ Int32* result)
 {
@@ -490,7 +489,7 @@ ECode CURI::CompareTo(
     Int32 ret;
 
     // compare schemes
-    CURI* uriObj = (CURI*)uo;
+    URI* uriObj = (URI*)uo;
     if (!mScheme.IsNull() || !uriObj->mScheme.IsNull()) {
         return mScheme.Compare(uriObj->mScheme);
     }
@@ -613,14 +612,14 @@ ECode CURI::CompareTo(
     return NOERROR;
 }
 
-ECode CURI::Create(
+ECode URI::Create(
     /* [in] */ const String& uri,
     /* [out] */ IURI** obj)
 {
     VALIDATE_NOT_NULL(obj);
 
 //    try {
-    AutoPtr<CURI> outuri;
+    AutoPtr<URI> outuri;
     ECode ec = CURI::NewByFriend(uri, (CURI**)&outuri);
     if (ec == (ECode)E_URI_SYNTAX_EXCEPTION) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -633,9 +632,9 @@ ECode CURI::Create(
 //    }
 }
 
-AutoPtr<IURI> CURI::Duplicate()
+AutoPtr<IURI> URI::Duplicate()
 {
-    AutoPtr<CURI> clone;
+    AutoPtr<URI> clone;
     CURI::NewByFriend((CURI**)&clone);
     clone->mAbsolute = mAbsolute;
     clone->mAuthority = mAuthority;
@@ -652,7 +651,7 @@ AutoPtr<IURI> CURI::Duplicate()
     return (IURI*)clone.Get();
 }
 
-String CURI::ConvertHexToLowerCase(
+String URI::ConvertHexToLowerCase(
     /* [in] */ const String& s)
 {
     StringBuilder result;
@@ -674,7 +673,7 @@ String CURI::ConvertHexToLowerCase(
     return resultStr;
 }
 
-Boolean CURI::EscapedEquals(
+Boolean URI::EscapedEquals(
     /* [in] */ const String& first,
     /* [in] */ const String& second)
 {
@@ -718,7 +717,7 @@ Boolean CURI::EscapedEquals(
     return FALSE;
 }
 
-ECode CURI::GetHashCode(
+ECode URI::GetHashCode(
     /* [out] */ Int32* hash)
 {
     VALIDATE_NOT_NULL(hash);
@@ -732,7 +731,7 @@ ECode CURI::GetHashCode(
 }
 
 //todo:implement the function of comparable
-ECode CURI::Equals(
+ECode URI::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
@@ -743,7 +742,7 @@ ECode CURI::Equals(
         return NOERROR;
     }
 
-    CURI* uri = (CURI*)IURI::Probe(o);
+    URI* uri = (URI*)IURI::Probe(o);
 
     if ((uri->mFragment.IsNull() && !mFragment.IsNull())
         || (!uri->mFragment.IsNull() && mFragment.IsNull())) {
@@ -847,7 +846,7 @@ ECode CURI::Equals(
     }
 }
 
-ECode CURI::GetScheme(
+ECode URI::GetScheme(
     /* [out] */ String* scheme)
 {
     VALIDATE_NOT_NULL(scheme);
@@ -856,13 +855,13 @@ ECode CURI::GetScheme(
     return NOERROR;
 }
 
-ECode CURI::GetSchemeSpecificPart(
+ECode URI::GetSchemeSpecificPart(
     /* [out] */ String* schemeSpecific)
 {
     return Decode(mSchemeSpecificPart, schemeSpecific);
 }
 
-ECode CURI::GetRawSchemeSpecificPart(
+ECode URI::GetRawSchemeSpecificPart(
     /* [out] */ String* schemeSpecific)
 {
     VALIDATE_NOT_NULL(schemeSpecific);
@@ -871,13 +870,13 @@ ECode CURI::GetRawSchemeSpecificPart(
     return NOERROR;
 }
 
-ECode CURI::GetAuthority(
+ECode URI::GetAuthority(
     /* [out] */ String* authority)
 {
     return Decode(mAuthority, authority);
 }
 
-ECode CURI::GetRawAuthority(
+ECode URI::GetRawAuthority(
     /* [out] */ String* authority)
 {
     VALIDATE_NOT_NULL(authority);
@@ -886,13 +885,13 @@ ECode CURI::GetRawAuthority(
     return NOERROR;
 }
 
-ECode CURI::GetUserInfo(
+ECode URI::GetUserInfo(
     /* [out] */ String* userInfo)
 {
     return Decode(mUserInfo, userInfo);
 }
 
-ECode CURI::GetRawUserInfo(
+ECode URI::GetRawUserInfo(
     /* [out] */ String* userInfo)
 {
     VALIDATE_NOT_NULL(userInfo);
@@ -901,7 +900,7 @@ ECode CURI::GetRawUserInfo(
     return NOERROR;
 }
 
-ECode CURI::GetHost(
+ECode URI::GetHost(
     /* [out] */ String* host)
 {
     VALIDATE_NOT_NULL(host);
@@ -910,7 +909,7 @@ ECode CURI::GetHost(
     return NOERROR;
 }
 
-ECode CURI::GetPort(
+ECode URI::GetPort(
     /* [out] */ Int32* port)
 {
     VALIDATE_NOT_NULL(port);
@@ -919,7 +918,7 @@ ECode CURI::GetPort(
     return NOERROR;
 }
 
-ECode CURI::GetEffectivePort(
+ECode URI::GetEffectivePort(
     /* [out] */ Int32* port)
 {
     VALIDATE_NOT_NULL(port);
@@ -928,7 +927,7 @@ ECode CURI::GetEffectivePort(
     return NOERROR;
 }
 
-Int32 CURI::GetEffectivePort(
+Int32 URI::GetEffectivePort(
     /* [in] */ const String& scheme,
     /* [in] */ Int32 specifiedPort)
 {
@@ -947,13 +946,13 @@ Int32 CURI::GetEffectivePort(
     }
 }
 
-ECode CURI::GetPath(
+ECode URI::GetPath(
     /* [out] */ String* path)
 {
     return Decode(mPath, path);
 }
 
-ECode CURI::GetRawPath(
+ECode URI::GetRawPath(
     /* [out] */ String* path)
 {
     VALIDATE_NOT_NULL(path);
@@ -962,13 +961,13 @@ ECode CURI::GetRawPath(
     return NOERROR;
 }
 
-ECode CURI::GetQuery(
+ECode URI::GetQuery(
     /* [out] */ String* query)
 {
     return Decode(mQuery, query);
 }
 
-ECode CURI::GetRawQuery(
+ECode URI::GetRawQuery(
     /* [out] */ String* query)
 {
     VALIDATE_NOT_NULL(query);
@@ -977,13 +976,13 @@ ECode CURI::GetRawQuery(
     return NOERROR;
 }
 
-ECode CURI::GetFragment(
+ECode URI::GetFragment(
     /* [out] */ String* fragment)
 {
     return Decode(mFragment, fragment);
 }
 
-ECode CURI::GetRawFragment(
+ECode URI::GetRawFragment(
     /* [out] */ String* fragment)
 {
     VALIDATE_NOT_NULL(fragment);
@@ -992,7 +991,7 @@ ECode CURI::GetRawFragment(
     return NOERROR;
 }
 
-ECode CURI::IsAbsolute(
+ECode URI::IsAbsolute(
     /* [out] */ Boolean* isAbsolute)
 {
     VALIDATE_NOT_NULL(isAbsolute);
@@ -1001,7 +1000,7 @@ ECode CURI::IsAbsolute(
     return NOERROR;
 }
 
-ECode CURI::IsOpaque(
+ECode URI::IsOpaque(
     /* [out] */ Boolean* isOpaque)
 {
     VALIDATE_NOT_NULL(isOpaque);
@@ -1010,7 +1009,7 @@ ECode CURI::IsOpaque(
     return NOERROR;
 }
 
-String CURI::Normalize(
+String URI::Normalize(
     /* [in] */ const String& path,
     /* [in] */ Boolean discardRelativePrefix)
 {
@@ -1031,7 +1030,7 @@ String CURI::Normalize(
     return result;
 }
 
-ECode CURI::Normalize(
+ECode URI::Normalize(
     /* [out] */ IURI** uri)
 {
     VALIDATE_NOT_NULL(uri)
@@ -1053,14 +1052,14 @@ ECode CURI::Normalize(
     // get an exact copy of the URI re-calculate the scheme specific part
     // since the path of the normalized URI is different from this URI.
     AutoPtr<IURI> result = Duplicate();
-    ((CURI*)result.Get())->mPath = normalizedPath;
-    ((CURI*)result.Get())->SetSchemeSpecificPart();
+    ((URI*)result.Get())->mPath = normalizedPath;
+    ((URI*)result.Get())->SetSchemeSpecificPart();
     *uri = result;
     REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
-ECode CURI::ParseServerAuthority(
+ECode URI::ParseServerAuthority(
     /* [out] */ IURI** uri)
 {
     VALIDATE_NOT_NULL(uri)
@@ -1073,13 +1072,13 @@ ECode CURI::ParseServerAuthority(
     return NOERROR;
 }
 
-ECode CURI::Relativize(
+ECode URI::Relativize(
     /* [in] */ IURI* relative,
     /* [out] */ IURI** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    CURI* relativeObj = (CURI*)relative;
+    URI* relativeObj = (URI*)relative;
     if (relativeObj->mOpaque || mOpaque) {
         *uri = relative;
         REFCOUNT_ADD(*uri);
@@ -1123,7 +1122,7 @@ ECode CURI::Relativize(
         }
     }
 
-    AutoPtr<CURI> result;
+    AutoPtr<URI> result;
     CURI::NewByFriend((CURI**)&result);
     result->mFragment = relativeObj->mFragment;
     result->mQuery = relativeObj->mQuery;
@@ -1136,13 +1135,13 @@ ECode CURI::Relativize(
     return NOERROR;
 }
 
-ECode CURI::Resolve(
+ECode URI::Resolve(
     /* [in] */ IURI* relative,
     /* [out] */ IURI** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    CURI* relativeObj = (CURI*)relative;
+    URI* relativeObj = (URI*)relative;
     if (relativeObj->mAbsolute || mOpaque) {
         *uri = relative;
         REFCOUNT_ADD(*uri);
@@ -1153,7 +1152,7 @@ ECode CURI::Resolve(
         // If the relative URI has an authority, the result is the relative
         // with this URI's scheme.
         AutoPtr<IURI> result = relativeObj->Duplicate();
-        CURI* cResult = (CURI*)result.Get();
+        URI* cResult = (URI*)result.Get();
         cResult->mScheme = mScheme;
         cResult->mAbsolute = mAbsolute;
         *uri = result;
@@ -1164,7 +1163,7 @@ ECode CURI::Resolve(
     if ((relativeObj->mPath).IsEmpty() && relativeObj->mScheme == NULL && relativeObj->mQuery == NULL) {
         // if the relative URI only consists of at most a fragment,
         AutoPtr<IURI> result = Duplicate();
-        CURI* cResult = (CURI*)result.Get();
+        URI* cResult = (URI*)result.Get();
         cResult->mFragment = relativeObj->mFragment;
         *uri = result;
         REFCOUNT_ADD(*uri);
@@ -1172,7 +1171,7 @@ ECode CURI::Resolve(
     }
 
     AutoPtr<IURI> result = Duplicate();
-    CURI* cResult = (CURI*)result.Get();
+    URI* cResult = (URI*)result.Get();
     cResult->mFragment = relativeObj->mFragment;
     cResult->mQuery = relativeObj->mQuery;
     String resolvedPath;
@@ -1194,7 +1193,7 @@ ECode CURI::Resolve(
     return NOERROR;
 }
 
-void CURI::SetSchemeSpecificPart()
+void URI::SetSchemeSpecificPart()
 {
     // ssp = [//authority][path][?query]
     StringBuilder ssp;
@@ -1212,7 +1211,7 @@ void CURI::SetSchemeSpecificPart()
     mString = NULL;
 }
 
-ECode CURI::Resolve(
+ECode URI::Resolve(
     /* [in] */ const String& relative,
     /* [out] */ IURI** uri)
 {
@@ -1223,7 +1222,7 @@ ECode CURI::Resolve(
     return Resolve(relativeURI, uri);
 }
 
-ECode CURI::Decode(
+ECode URI::Decode(
     /* [in] */ const String& s,
     /* [out] */ String* decodedS)
 {
@@ -1239,7 +1238,7 @@ ECode CURI::Decode(
     return NOERROR;
 }
 
-ECode CURI::ToASCIIString(
+ECode URI::ToASCIIString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -1252,7 +1251,7 @@ ECode CURI::ToASCIIString(
     return NOERROR;
 }
 
-ECode CURI::ToString(
+ECode URI::ToString(
     /* [out] */ String* s)
 {
     VALIDATE_NOT_NULL(s);
@@ -1296,7 +1295,7 @@ ECode CURI::ToString(
     return NOERROR;
 }
 
-String CURI::GetHashString()
+String URI::GetHashString()
 {
     StringBuilder result;
     if (!mScheme.IsNull()) {
@@ -1347,7 +1346,7 @@ String CURI::GetHashString()
     return ConvertHexToLowerCase(resultTemp);
 }
 
-ECode CURI::ToURL(
+ECode URI::ToURL(
     /* [out] */ IURL** url)
 {
     VALIDATE_NOT_NULL(url);

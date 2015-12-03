@@ -7,7 +7,6 @@
 #include "elastos/droid/os/CMessenger.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/utility/CSparseArray.h"
-#include <elastos/core/Object.h>
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IContext;

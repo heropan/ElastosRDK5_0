@@ -100,7 +100,7 @@ ECode StaticIpConfiguration::ToString(
 #endif
 }
 
-ECode StaticIpConfiguration::HashCode(
+ECode StaticIpConfiguration::GetHashCode(
     /* [out] */ Int32* result)
 {
     return E_NOT_IMPLEMENTED;

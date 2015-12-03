@@ -692,6 +692,10 @@ module
         interface ISerializable;
     }
 
+    singleton class CURIHelper {
+        interface IURIHelper;
+    }
+
     class CURL {
         /**
          * Creates a new URL instance by parsing {@code spec}.

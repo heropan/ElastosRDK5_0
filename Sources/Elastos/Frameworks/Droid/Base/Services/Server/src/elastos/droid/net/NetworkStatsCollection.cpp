@@ -243,7 +243,9 @@ AutoPtr<INetworkStats> NetworkStatsCollection::GetSummary(
             history->GetValues(start, end, now, historyEntry, (INetworkStatsHistoryEntry**)&newEntry);
             historyEntry = newEntry;
 
-            entry->SetIface(INetworkStats::IFACE_ALL);
+            String ifaceAll;
+            NetworkStats::GetIFACE_ALL(&ifaceAll);
+            entry->SetIface(ifaceAll);
             entry->SetUid(key->mUid);
             entry->SetSet(key->mSet);
             entry->SetTag(key->mTag);

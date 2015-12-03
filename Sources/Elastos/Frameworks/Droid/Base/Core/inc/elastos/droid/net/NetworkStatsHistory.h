@@ -58,7 +58,7 @@ public:
     CARAPI WriteToStream(
         /* [in] */ IDataOutputStream* out);
 
-    CARAPI Size(
+    CARAPI GetSize(
         /* [out] */ Int32* result);
 
     CARAPI GetBucketDuration(
@@ -227,11 +227,10 @@ private:
         /* [in] */ Int32 index,
         /* [in] */ Int64 start);
 
-    static CARAPI GetLong(
+    static CARAPI_(Int64) GetLong(
         /* [in] */ ArrayOf<Int64>* array,
         /* [in] */ Int32 i,
-        /* [in] */ Int64 value,
-        /* [out] */ Int64* result);
+        /* [in] */ Int64 value);
 
     static CARAPI SetLong(
         /* [in] */ ArrayOf<Int64>* array,
@@ -243,6 +242,7 @@ private:
         /* [in] */ Int32 i,
         /* [in] */ Int64 value);
 
+private:
     static const Int32 VERSION_INIT;
 
     static const Int32 VERSION_ADD_PACKETS;
@@ -253,19 +253,19 @@ private:
 
     Int32 mBucketCount;
 
-    ArrayOf<Int64>* mBucketStart;
+    AutoPtr<ArrayOf<Int64> > mBucketStart;
 
-    ArrayOf<Int64>* mActiveTime;
+    AutoPtr<ArrayOf<Int64> > mActiveTime;
 
-    ArrayOf<Int64>* mRxBytes;
+    AutoPtr<ArrayOf<Int64> > mRxBytes;
 
-    ArrayOf<Int64>* mRxPackets;
+    AutoPtr<ArrayOf<Int64> > mRxPackets;
 
-    ArrayOf<Int64>* mTxBytes;
+    AutoPtr<ArrayOf<Int64> > mTxBytes;
 
-    ArrayOf<Int64>* mTxPackets;
+    AutoPtr<ArrayOf<Int64> > mTxPackets;
 
-    ArrayOf<Int64>* mOperations;
+    AutoPtr<ArrayOf<Int64> > mOperations;
 
     Int64 mTotalBytes;
 };

@@ -8,7 +8,7 @@ namespace Net {
 CAR_INTERFACE_IMPL(SamplingDataTracker, Object, ISamplingDataTracker)
 
 const Boolean SamplingDataTracker::DBG = FALSE;
-const String SamplingDataTracker::TAG = String("SamplingDataTracker");
+const String SamplingDataTracker::TAG("SamplingDataTracker");
 
 SamplingDataTracker::SamplingDataTracker()
     : MINIMUM_SAMPLING_INTERVAL(15 * 1000)
@@ -45,7 +45,7 @@ ECode SamplingDataTracker::GetSamplingSnapshots(
                  *            (Transmit)bytes packets errs drop fifo colls carrier compress
                 */
                 String currentIface = tokens[0].split(":")[0];
-                if (DBG) Slog.d(TAG, "Found data for interface " + currentIface);
+                if (DBG) Slogger::D(TAG, "Found data for interface " + currentIface);
                 if (mapIfaceToSample.containsKey(currentIface)) {
                     try {
                         SamplingSnapshot ss = new SamplingSnapshot();
@@ -57,17 +57,17 @@ ECode SamplingDataTracker::GetSamplingSnapshots(
                         ss.mRxPacketErrorCount = Long.parseLong(tokens[11]);
                         ss.mTimestamp          = SystemClock.elapsedRealtime();
                         if (DBG) {
-                            Slog.d(TAG, "Interface = " + currentIface);
-                            Slog.d(TAG, "ByteCount = " + String.valueOf(ss.mTxByteCount));
-                            Slog.d(TAG, "TxPacketCount = " + String.valueOf(ss.mTxPacketCount));
-                            Slog.d(TAG, "TxPacketErrorCount = "
+                            Slogger::D(TAG, "Interface = " + currentIface);
+                            Slogger::D(TAG, "ByteCount = " + String.valueOf(ss.mTxByteCount));
+                            Slogger::D(TAG, "TxPacketCount = " + String.valueOf(ss.mTxPacketCount));
+                            Slogger::D(TAG, "TxPacketErrorCount = "
                                     + String.valueOf(ss.mTxPacketErrorCount));
-                            Slog.d(TAG, "RxByteCount = " + String.valueOf(ss.mRxByteCount));
-                            Slog.d(TAG, "RxPacketCount = " + String.valueOf(ss.mRxPacketCount));
-                            Slog.d(TAG, "RxPacketErrorCount = "
+                            Slogger::D(TAG, "RxByteCount = " + String.valueOf(ss.mRxByteCount));
+                            Slogger::D(TAG, "RxPacketCount = " + String.valueOf(ss.mRxPacketCount));
+                            Slogger::D(TAG, "RxPacketErrorCount = "
                                     + String.valueOf(ss.mRxPacketErrorCount));
-                            Slog.d(TAG, "Timestamp = " + String.valueOf(ss.mTimestamp));
-                            Slog.d(TAG, "---------------------------");
+                            Slogger::D(TAG, "Timestamp = " + String.valueOf(ss.mTimestamp));
+                            Slogger::D(TAG, "---------------------------");
                         }
                         mapIfaceToSample.put(currentIface, ss);
                     } catch (NumberFormatException e) {
@@ -80,21 +80,21 @@ ECode SamplingDataTracker::GetSamplingSnapshots(
                 while (it.hasNext()) {
                     Map.Entry kvpair = (Map.Entry)it.next();
                     if (kvpair.getValue() == NULL) {
-                        Slog.d(TAG, "could not find snapshot for interface " + kvpair.getKey());
+                        Slogger::D(TAG, "could not find snapshot for interface " + kvpair.getKey());
                     }
                 }
             }
         } catch(FileNotFoundException e) {
-            Slog.e(TAG, "could not find /proc/net/dev");
+            Slogger::E(TAG, "could not find /proc/net/dev");
         } catch (IOException e) {
-            Slog.e(TAG, "could not read /proc/net/dev");
+            Slogger::E(TAG, "could not read /proc/net/dev");
         } finally {
             try {
                 if (reader != NULL) {
                     reader.close();
                 }
             } catch (IOException e) {
-                Slog.e(TAG, "could not close /proc/net/dev");
+                Slogger::E(TAG, "could not close /proc/net/dev");
             }
         }
 #endif
@@ -124,7 +124,7 @@ ECode SamplingDataTracker::StopSampling(
                     mEndingSample = s;
                     mLastSample = NULL;
                 } else {
-                    if (DBG) Slog.d(TAG, "Throwing current sample away because it is too small");
+                    if (DBG) Slogger::D(TAG, "Throwing current sample away because it is too small");
                 }
             }
         }
@@ -135,7 +135,7 @@ ECode SamplingDataTracker::ResetSamplingData()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (DBG) Slog.d(TAG, "Resetting sampled network data");
+        if (DBG) Slogger::D(TAG, "Resetting sampled network data");
         synchronized(mSamplingDataLock) {
             // We could just take another sample here and treat it as an
             // 'ending sample' effectively shortening sampling interval, but that

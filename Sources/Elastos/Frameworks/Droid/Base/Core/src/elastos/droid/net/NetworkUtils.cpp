@@ -5,7 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
-const String NetworkUtils::TAG = String("NetworkUtils");
+const String NetworkUtils::TAG("NetworkUtils");
+
+NetworkUtils::NetworkUtils()
+{}
 
 ECode NetworkUtils::ResetConnections(
     /* [in] */ const String& interfaceName,
@@ -252,7 +255,7 @@ ECode NetworkUtils::ParseIpAndMask(
         Int32 prefixLength = -1;
         try {
             String[] pieces = ipAndMaskString.split("/", 2);
-            prefixLength = Integer.parseInt(pieces[1]);
+            prefixLength = StringUtils::ParseInt32(pieces[1]);
             address = InetAddress.parseNumericAddress(pieces[0]);
         } catch (NullPointerException e) {            // Null string.
         } catch (ArrayIndexOutOfBoundsException e) {  // No prefix length.
@@ -291,7 +294,7 @@ ECode NetworkUtils::HexToInet6Address(
                     addrHexString.substring(16,20), addrHexString.substring(20,24),
                     addrHexString.substring(24,28), addrHexString.substring(28,32)));
         } catch (Exception e) {
-            Log.e("NetworkUtils", "error in hexToInet6Address(" + addrHexString + "): " + e);
+            Logger::E("NetworkUtils", "error in hexToInet6Address(" + addrHexString + "): " + e);
             throw new IllegalArgumentException(e);
         }
 #endif
@@ -326,7 +329,7 @@ ECode NetworkUtils::TrimV4AddrZeros(
         for (Int32 i = 0; i < 4; i++) {
             try {
                 if (octets[i].length() > 3) return addr;
-                builder.append(Integer.parseInt(octets[i]));
+                builder.append(StringUtils::ParseInt32(octets[i]));
             } catch (NumberFormatException e) {
                 return addr;
             }

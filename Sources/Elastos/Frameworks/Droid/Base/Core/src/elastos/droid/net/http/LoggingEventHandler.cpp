@@ -132,7 +132,6 @@ ECode LoggingEventHandler::HandleSslErrorRequest(
 #endif
 }
 
-
 } // namespace Http
 } // namespace Net
 } // namespace Droid

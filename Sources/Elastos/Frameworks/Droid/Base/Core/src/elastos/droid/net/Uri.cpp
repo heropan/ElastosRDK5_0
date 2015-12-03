@@ -2055,8 +2055,8 @@ const String Uri::NOT_CACHED("NOT CACHED");
 const Char32 Uri::HEX_DIGITS[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 const Int32 Uri::NOT_FOUND = -1;
 const Int32 Uri::NOT_CALCULATED = -2;
-const String Uri::NOT_HIERARCHICAL = String("This isn't a hierarchical URI.");
-const String Uri::DEFAULT_ENCODING = String("UTF-8");
+const String Uri::NOT_HIERARCHICAL("This isn't a hierarchical URI.");
+const String Uri::DEFAULT_ENCODING("UTF-8");
 const Int32 Uri::NULL_TYPE_ID = 0;
 
 AutoPtr<IUri> Uri::CreateEmpty()
@@ -2087,7 +2087,7 @@ AutoPtr<IUri> Uri::CreateEmpty()
 }
 const AutoPtr<IUri> Uri::EMPTY = CreateEmpty();
 
-ECode Uri::GetEmpty(
+ECode Uri::GetEMPTY(
     /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(*result)
@@ -2564,7 +2564,7 @@ ECode Uri::GetCanonicalUri(
                 final String legacyPath = Environment.getLegacyExternalStorageDirectory()
                         .toString();
                 // Splice in user-specific path when legacy path is found
-                if (canonicalPath.startsWith(legacyPath)) {
+                if (canonicalPath.StartWith(legacyPath)) {
                     return Uri.fromFile(new File(
                             Environment.getExternalStorageDirectory().toString(),
                             canonicalPath.substring(legacyPath.length() + 1)));

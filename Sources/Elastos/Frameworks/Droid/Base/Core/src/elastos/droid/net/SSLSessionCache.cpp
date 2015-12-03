@@ -7,7 +7,7 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(SSLSessionCache, Object, ISSLSessionCache)
 
-const String SSLSessionCache::TAG = String("SSLSessionCache");
+const String SSLSessionCache::TAG("SSLSessionCache");
 
 ECode SSLSessionCache::GetSessionCache(
     /* [out] */ ISSLClientSessionCache** result)

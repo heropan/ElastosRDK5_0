@@ -7,7 +7,7 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(SntpClient, Object, ISntpClient)
 
-const String SntpClient::TAG = String("SntpClient");
+const String SntpClient::TAG("SntpClient");
 const Int32 SntpClient::REFERENCE_TIME_OFFSET = 16;
 const Int32 SntpClient::ORIGINATE_TIME_OFFSET = 24;
 const Int32 SntpClient::RECEIVE_TIME_OFFSET = 32;
@@ -73,7 +73,7 @@ ECode SntpClient::RequestTime(
             mNtpTimeReference = responseTicks;
             mRoundTripTime = roundTripTime;
         } catch (Exception e) {
-            if (FALSE) Log.d(TAG, "request time failed: " + e);
+            if (FALSE) Logger::D(TAG, "request time failed: " + e);
             return FALSE;
         } finally {
             if (socket != NULL) {

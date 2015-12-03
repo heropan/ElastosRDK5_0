@@ -664,23 +664,24 @@ Boolean CSSLCertificateSocketFactory::IsSslCheckRelaxed()
 /*synchronized*/
 AutoPtr<ISSLSocketFactory> CSSLCertificateSocketFactory::GetDelegate()
 {
-    AutoLock lock(mLock);
-    // Relax the SSL check if instructed (for this factory, or systemwide)
-    if (!mSecure || IsSslCheckRelaxed()) {
-        if (mInsecureFactory == NULL) {
-            if (mSecure) {
-                //Log.w(TAG, "*** BYPASSING SSL SECURITY CHECKS (socket.relaxsslcheck=yes) ***");
-            } else {
-                //Log.w(TAG, "Bypassing SSL security checks at caller's request");
+    synchronized(mLock) {
+        // Relax the SSL check if instructed (for this factory, or systemwide)
+        if (!mSecure || IsSslCheckRelaxed()) {
+            if (mInsecureFactory == NULL) {
+                if (mSecure) {
+                    //Log.w(TAG, "*** BYPASSING SSL SECURITY CHECKS (socket.relaxsslcheck=yes) ***");
+                } else {
+                    //Log.w(TAG, "Bypassing SSL security checks at caller's request");
+                }
+                mInsecureFactory = MakeSocketFactory(mKeyManagers, CSSLCertificateSocketFactory::INSECURE_TRUST_MANAGER);
             }
-            mInsecureFactory = MakeSocketFactory(mKeyManagers, CSSLCertificateSocketFactory::INSECURE_TRUST_MANAGER);
+            return mInsecureFactory;
+        } else {
+            if (mSecureFactory == NULL) {
+                mSecureFactory = MakeSocketFactory(mKeyManagers, mTrustManagers);
+            }
+            return mSecureFactory;
         }
-        return mInsecureFactory;
-    } else {
-        if (mSecureFactory == NULL) {
-            mSecureFactory = MakeSocketFactory(mKeyManagers, mTrustManagers);
-        }
-        return mSecureFactory;
     }
 }
 

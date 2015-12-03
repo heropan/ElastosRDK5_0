@@ -44,8 +44,8 @@ ECode VpnService::GetService(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return IConnectivityManager.Stub.asInterface(
-                ServiceManager.getService(Context.CONNECTIVITY_SERVICE));
+        return IConnectivityManager::Probe(
+                ServiceManager::GetService(Context.CONNECTIVITY_SERVICE));
 #endif
 }
 
@@ -378,8 +378,8 @@ ECode VpnServiceBuilder::VerifyApp(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                IPackageManager pm = IPackageManager.Stub.asInterface(
-                        ServiceManager.getService("package"));
+                IPackageManager pm = IPackageManager::Probe(
+                        ServiceManager::GetService("package"));
                 try {
                     pm.getApplicationInfo(packageName, 0, UserHandle.getCallingUserId());
                 } catch (RemoteException e) {

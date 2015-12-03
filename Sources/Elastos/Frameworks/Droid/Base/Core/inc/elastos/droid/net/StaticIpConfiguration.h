@@ -68,7 +68,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* result);
 
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     // @Override

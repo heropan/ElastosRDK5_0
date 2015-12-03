@@ -387,13 +387,13 @@ String RequestHandle::ComputeDigestAuthResponse(
     String A2 = mMethod  + String(":") + mUrl;
 
     // because we do not preemptively send authorization headers, nc is always 1
-    String nc = String("00000001");
+    String nc("00000001");
     String cnonce;
     FAIL_RETURN(ComputeCnonce(&cnonce));
     String digest;
     FAIL_RETURN(ComputeDigest(A1, A2, nonce, QOP, nc, cnonce, &digest));
 
-    String response = String("");
+    String response("");
     response += String("username=") + DoubleQuote(username) + String(", ");
     response += String("realm=")    + DoubleQuote(realm)    + String(", ");
     response += String("nonce=")    + DoubleQuote(nonce)    + String(", ");

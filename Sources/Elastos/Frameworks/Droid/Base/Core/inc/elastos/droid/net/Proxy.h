@@ -128,9 +128,8 @@ private:
 
     static CARAPI_(AutoPtr<IProxySelector>) getDEFAULT_PROXY_SELECTOR();
 
-    static CARAPI IsLocalHost(
-        /* [in] */ const String& host,
-        /* [out] */ Boolean* result);
+    static CARAPI_(Boolean) IsLocalHost(
+        /* [in] */ const String& host);
 
     // Hostname / IP REGEX validation
     // Matches blank input, ips, and domain names
@@ -145,15 +144,15 @@ private:
 
     static const String TAG;
 
-    static const AutoPtr<IProxySelector> DEFAULT_PROXY_SELECTOR;
+    static /* const */ AutoPtr<IProxySelector> sDefaultProxySelector;
 
     static AutoPtr<IConnectivityManager> sConnectivityManager;
 
     static const String HOSTNAME_REGEXP;
 
-    static const AutoPtr<IPattern> HOSTNAME_PATTERN;
+    static /* const */ AutoPtr<IPattern> HOSTNAME_PATTERN;
 
-    static const AutoPtr<IPattern> EXCLLIST_PATTERN;
+    static /* const */ AutoPtr<IPattern> EXCLLIST_PATTERN;
 };
 
 } // namespace Net

@@ -349,7 +349,7 @@ ECode UrlQuerySanitizer::ParseEntry(
          ValueSanitizer valueSanitizer =
             getEffectiveValueSanitizer(unescapedParameter);
         if (valueSanitizer == NULL) {
-            return;
+            return NOERROR;
         }
         String unescapedValue = unescape(value);
         String sanitizedValue = valueSanitizer.sanitize(unescapedValue);
@@ -367,7 +367,7 @@ ECode UrlQuerySanitizer::AddSanitizedEntry(
                 new ParameterValuePair(parameter, value));
         if (mPreferFirstRepeatedParameter) {
             if (mEntries.containsKey(parameter)) {
-                return;
+                return NOERROR;
             }
         }
         mEntries.put(parameter, value);
@@ -528,8 +528,8 @@ ECode UrlQuerySanitizerParameterValuePair::SetValue(
 
 CAR_INTERFACE_IMPL_2(UrlQuerySanitizerIllegalCharacterValueSanitizer, Object, IUrlQuerySanitizerValueSanitizer, IUrlQuerySanitizerIllegalCharacterValueSanitizer)
 
-const String UrlQuerySanitizerIllegalCharacterValueSanitizer::JAVASCRIPT_PREFIX = String("javascript:");
-const String UrlQuerySanitizerIllegalCharacterValueSanitizer::VBSCRIPT_PREFIX = String("vbscript:");
+const String UrlQuerySanitizerIllegalCharacterValueSanitizer::JAVASCRIPT_PREFIX("javascript:");
+const String UrlQuerySanitizerIllegalCharacterValueSanitizer::VBSCRIPT_PREFIX("vbscript:");
 const Int32 UrlQuerySanitizerIllegalCharacterValueSanitizer::MIN_SCRIPT_PREFIX_LENGTH = Elastos::Core::Math::Min(JAVASCRIPT_PREFIX.GetLength(), VBSCRIPT_PREFIX.GetLength());
 
 ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::constructor(
@@ -554,8 +554,8 @@ ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::Sanitize(
                 if ((mFlags & SCRIPT_URL_OK) != 0) {
                     if (length >= MIN_SCRIPT_PREFIX_LENGTH) {
                         String asLower = value.toLowerCase(Locale.ROOT);
-                        if (asLower.startsWith(JAVASCRIPT_PREFIX)  ||
-                            asLower.startsWith(VBSCRIPT_PREFIX)) {
+                        if (asLower.StartWith(JAVASCRIPT_PREFIX)  ||
+                            asLower.StartWith(VBSCRIPT_PREFIX)) {
                             return "";
                         }
                     }

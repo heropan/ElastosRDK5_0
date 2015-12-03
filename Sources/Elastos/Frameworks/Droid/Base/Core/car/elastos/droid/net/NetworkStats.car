@@ -49,8 +49,7 @@ module
             [in] Int64 rxBytes,
             [in] Int64 rxPackets,
             [in] Int64 txBytes,
-            [in] Int64 txPackets,
-            [out] INetworkStats** result);
+            [in] Int64 txPackets);
 
         // @VisibleForTesting
         AddValues(
@@ -62,8 +61,7 @@ module
             [in] Int64 rxPackets,
             [in] Int64 txBytes,
             [in] Int64 txPackets,
-            [in] Int64 operations,
-            [out] INetworkStats** result);
+            [in] Int64 operations);
 
         /**
          * Add new stats entry, copying from given {@link Entry}. The {@link Entry}
@@ -93,11 +91,11 @@ module
         GetElapsedRealtimeAge(
             [out] Int64* result);
 
-        Size(
+        GetSize(
             [out] Int32* result);
 
         // @VisibleForTesting
-        InternalSize(
+        GetInternalSize(
             [out] Int32* result);
 
         // @Deprecated

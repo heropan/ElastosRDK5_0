@@ -746,7 +746,7 @@ ECode LocalSocketImpl::Close()
         synchronized(LocalSocketImpl.this) {
             if ((fd == NULL) || (mFdCreatedInternally == FALSE)) {
                 fd = NULL;
-                return;
+                return NOERROR;
             }
             try {
                 Os.close(fd);
@@ -838,14 +838,15 @@ ECode LocalSocketImpl::GetInputStream(
     }
 
     {
-        AutoLock lock(mLock);
+        synchronized(mLock) {
 
-        if (mFis == NULL) {
-            mFis = new SocketInputStream(this);
+            if (mFis == NULL) {
+                mFis = new SocketInputStream(this);
+            }
+
+            *is = mFis;
+            REFCOUNT_ADD(*is);
         }
-
-        *is = mFis;
-        REFCOUNT_ADD(*is);
         return NOERROR;
     }
 #endif
@@ -864,14 +865,14 @@ ECode LocalSocketImpl::GetOutputStream(
     }
 
     {
-        AutoLock lock(mLock);
+        synchronized(mLock) {
+            if (mFos == NULL) {
+                mFos = new SocketOutputStream(this);
+            }
 
-        if (mFos == NULL) {
-            mFos = new SocketOutputStream(this);
+            *os = mFos;
+            REFCOUNT_ADD(*os);
         }
-
-        *os = mFos;
-        REFCOUNT_ADD(*os);
         return NOERROR;
     }
 #endif
@@ -1015,9 +1016,11 @@ ECode LocalSocketImpl::SetFileDescriptorsForSend(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
-    AutoLock lock(mWriteMonitor);
+    synchronized(mWriteMonitor) {
 
-    mOutboundFileDescriptors = fds;
+        mOutboundFileDescriptors = fds;
+    }
+    return NOERROR;
 #endif
 }
 
@@ -1026,11 +1029,12 @@ ECode LocalSocketImpl::GetAncillaryFileDescriptors(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
-    AutoLock lock(mReadMonitor);
+    synchronized(mReadMonitor) {
 
-    AutoPtr< ArrayOf<IFileDescriptor*> > result = mInboundFileDescriptors;
+        AutoPtr< ArrayOf<IFileDescriptor*> > result = mInboundFileDescriptors;
 
-    mInboundFileDescriptors = NULL;
+        mInboundFileDescriptors = NULL;
+    }
     return result;
 #endif
 }
@@ -1093,14 +1097,13 @@ ECode LocalSocketImpl::SocketInputStream::Read(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
-    AutoLock lock(mOwner->mReadMonitor);
-
-    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
-    if (myFd == NULL) {
-        // throw new IOException("socket closed");
-        return E_IO_EXCEPTION;
+    synchronized(mOwner->mReadMonitor) {
+        AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
+        if (myFd == NULL) {
+            // throw new IOException("socket closed");
+            return E_IO_EXCEPTION;
+        }
     }
-
     return mOwner->NativeRead(myFd, result);
 #endif
 }
@@ -1124,19 +1127,19 @@ ECode LocalSocketImpl::SocketInputStream::Read(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
-    AutoLock lock(mOwner->mReadMonitor);
+    synchronized(mOwner->mReadMonitor) {
+        AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
+        if (myFd == NULL) {
+            // throw new IOException("socket closed");
+            return E_IO_EXCEPTION;
+        }
 
-    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
-    if (myFd == NULL) {
-        // throw new IOException("socket closed");
-        return E_IO_EXCEPTION;
+        if (off < 0 || len < 0 || (off + len) > b->GetLength()) {
+    //        throw new ArrayIndexOutOfBoundsException();
+            return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+        }
+
     }
-
-    if (off < 0 || len < 0 || (off + len) > b->GetLength()) {
-//        throw new ArrayIndexOutOfBoundsException();
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-
     return mOwner->NativeReadba(b, off, len, myFd, result);
 #endif
 }
@@ -1169,17 +1172,18 @@ ECode LocalSocketImpl::SocketOutputStream::Write(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
-    AutoLock lock(mOwner->mWriteMonitor);
+    synchronized(mOwner->mWriteMonitor) {
 
-    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
-    if (myFd == NULL) {
-        // throw new IOException("socket closed");
-        return E_IO_EXCEPTION;
-    }
+        AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
+        if (myFd == NULL) {
+            // throw new IOException("socket closed");
+            return E_IO_EXCEPTION;
+        }
 
-    if (off < 0 || len < 0 || (off + len) > b.GetLength()) {
-//        throw new ArrayIndexOutOfBoundsException();
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+        if (off < 0 || len < 0 || (off + len) > b.GetLength()) {
+    //        throw new ArrayIndexOutOfBoundsException();
+            return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+        }
     }
     return mOwner->NativeWriteba(b, off, len, myFd);
 #endif
@@ -1190,14 +1194,14 @@ ECode LocalSocketImpl::SocketOutputStream::Write(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
-    AutoLock lock(mOwner->mWriteMonitor);
+    synchronized(mOwner->mWriteMonitor) {
 
-    AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
-    if (myFd == NULL) {
-        // throw new IOException("socket closed");
-        return E_IO_EXCEPTION;
+        AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
+        if (myFd == NULL) {
+            // throw new IOException("socket closed");
+            return E_IO_EXCEPTION;
+        }
     }
-
     return mOwner->NativeWrite(b, myFd);
 #endif
 }
@@ -1212,7 +1216,7 @@ ECode LocalSocketImpl::SocketOutputStream::Flush()
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException ie) {
-                        return;
+                        return NOERROR;
                     }
                 }
 #endif
@@ -1434,11 +1438,12 @@ ECode LocalSocketImpl::Create(
  */
 ECode LocalSocketImpl::Close()
 {
-    AutoLock lock(mLock);
+    synchronized(mLock) {
 
-    if (mFd == NULL) return NOERROR;
-    FAIL_RETURN(NativeClose(mFd));
-    mFd = NULL;
+        if (mFd == NULL) return NOERROR;
+        FAIL_RETURN(NativeClose(mFd));
+        mFd = NULL;
+    }
     return NOERROR;
 }
 #endif

@@ -19,7 +19,7 @@ namespace Net {
 
 CAR_INTERFACE_IMPL_2(NetworkCapabilities, Object, IParcelable, INetworkCapabilities)
 
-const String NetworkCapabilities::TAG = String("NetworkCapabilities");
+const String NetworkCapabilities::TAG("NetworkCapabilities");
 const Boolean NetworkCapabilities::DBG = FALSE;
 const Int32 NetworkCapabilities::MIN_NET_CAPABILITY = INetworkCapabilities::NET_CAPABILITY_MMS;
 const Int32 NetworkCapabilities::MAX_NET_CAPABILITY = INetworkCapabilities::NET_CAPABILITY_NOT_VPN;
@@ -332,7 +332,7 @@ ECode NetworkCapabilities::Equals(
             EqualsSpecifier(that));
 }
 
-ECode NetworkCapabilities::HashCode(
+ECode NetworkCapabilities::GetHashCode(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)

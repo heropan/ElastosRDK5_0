@@ -49,11 +49,6 @@ public:
         /* [in] */ IParcel* parcel);
 
     // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
-    // @Override
     CARAPI Clone(
         /* [out] */ INetworkStats** result);
 
@@ -63,8 +58,7 @@ public:
         /* [in] */ Int64 rxBytes,
         /* [in] */ Int64 rxPackets,
         /* [in] */ Int64 txBytes,
-        /* [in] */ Int64 txPackets,
-        /* [out] */ INetworkStats** result);
+        /* [in] */ Int64 txPackets);
 
     // @VisibleForTesting
     CARAPI AddValues(
@@ -76,8 +70,7 @@ public:
         /* [in] */ Int64 rxPackets,
         /* [in] */ Int64 txBytes,
         /* [in] */ Int64 txPackets,
-        /* [in] */ Int64 operations,
-        /* [out] */ INetworkStats** result);
+        /* [in] */ Int64 operations);
 
     /**
      * Add new stats entry, copying from given {@link Entry}. The {@link Entry}
@@ -107,11 +100,11 @@ public:
     CARAPI GetElapsedRealtimeAge(
         /* [out] */ Int64* result);
 
-    CARAPI Size(
+    CARAPI GetSize(
         /* [out] */ Int32* result);
 
     // @VisibleForTesting
-    CARAPI InternalSize(
+    CARAPI GetInternalSize(
         /* [out] */ Int32* result);
 
     // @Deprecated
@@ -341,13 +334,13 @@ private:
      * @param limitIface Set of {@link #iface} to include in total; or {@code
      *            null} to include all ifaces.
      */
-    CARAPI GetTotal(
+    CARAPI_(AutoPtr<INetworkStatsEntry>) GetTotal(
         /* [in] */ INetworkStatsEntry* recycle,
         /* [in] */ IHashSet* limitIface,
         /* [in] */ Int32 limitUid,
-        /* [in] */ Boolean includeTags,
-        /* [out] */ INetworkStatsEntry** result);
+        /* [in] */ Boolean includeTags);
 
+private:
     /** {@link #iface} value when interface details unavailable. */
     static const String IFACE_ALL;
 

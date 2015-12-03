@@ -81,6 +81,7 @@ public:
 private:
     static CARAPI_(AutoPtr<IIntent>) CreateScoreIntent();
 
+private:
     static const AutoPtr<IIntent> SCORE_INTENT;
 
     /** This class cannot be instantiated. */

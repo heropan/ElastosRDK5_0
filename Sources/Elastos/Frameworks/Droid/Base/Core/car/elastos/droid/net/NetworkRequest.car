@@ -70,8 +70,7 @@ module
          *         {@code builder.addCapability(...).addCapability();}.
          */
         AddCapability(
-            [in] Int32 capability,
-            [out] INetworkRequestBuilder** result);
+            [in] Int32 capability);
 
         /**
          * Removes (if found) the given capability from this builder instance.
@@ -80,8 +79,7 @@ module
          * @return The builder to facilitate chaining.
          */
         RemoveCapability(
-            [in] Int32 capability,
-            [out] INetworkRequestBuilder** result);
+            [in] Int32 capability);
 
         /**
          * Adds the given transport requirement to this builder.  These represent
@@ -94,8 +92,7 @@ module
          * @return The builder to facilitate chaining.
          */
         AddTransportType(
-            [in] Int32 transportType,
-            [out] INetworkRequestBuilder** result);
+            [in] Int32 transportType);
 
         /**
          * Removes (if found) the given transport from this builder instance.
@@ -104,22 +101,19 @@ module
          * @return The builder to facilitate chaining.
          */
         RemoveTransportType(
-            [in] Int32 transportType,
-            [out] INetworkRequestBuilder** result);
+            [in] Int32 transportType);
 
         /**
          * @hide
          */
         SetLinkUpstreamBandwidthKbps(
-            [in] Int32 upKbps,
-            [out] INetworkRequestBuilder** result);
+            [in] Int32 upKbps);
 
         /**
          * @hide
          */
         SetLinkDownstreamBandwidthKbps(
-            [in] Int32 downKbps,
-            [out] INetworkRequestBuilder** result);
+            [in] Int32 downKbps);
 
         /**
          * Sets the optional bearer specific network specifier.
@@ -136,8 +130,7 @@ module
          *                         networks.
          */
         SetNetworkSpecifier(
-            [in] String networkSpecifier,
-            [out] INetworkRequestBuilder** result);
+            [in] String networkSpecifier);
     }
 
     } // namespace Net

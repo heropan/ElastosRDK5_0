@@ -1,9 +1,9 @@
 
-#ifndef __ELASTOS_NET_CURI_H__
-#define __ELASTOS_NET_CURI_H__
+#ifndef __ELASTOS_NET_CURIHELPER_H__
+#define __ELASTOS_NET_CURIHELPER_H__
 
-#include "_Elastos_Net_CURI.h"
-#include "elastos/net/URI.h"
+#include "_Elastos_Net_CURIHelper.h"
+#include "elastos/core/Singleton.h"
 
 namespace Elastos {
 namespace Net {
@@ -112,14 +112,26 @@ namespace Net {
  *
  * <p>The {@link URL} class can be used to retrieve resources by their URI.
  */
-CarClass(CURI)
-    , public URI
+CarClass(CURIHelper)
+    , public Singleton
+    , public IURIHelper
 {
 public:
-    CAR_OBJECT_DECL()
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
+    CARAPI Create(
+        /* [in] */ const String& uri,
+        /* [out] */ IURI** obj);
+
+    CARAPI GetEffectivePort(
+        /* [in] */ const String& scheme,
+        /* [in] */ Int32 specifiedPort,
+        /* [out] */ Int32* result);
 };
 
 } // namespace Net
 } // namespace Elastos
 
-#endif // __ELASTOS_NET_CURI_H__
+#endif //  __ELASTOS_NET_CURIHELPER_H__

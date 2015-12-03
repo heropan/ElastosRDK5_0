@@ -797,7 +797,9 @@ ECode CNetworkStatsService::GetDataLayerSnapshotForUid(
     for (Int32 i = 0; i < size; i++) {
         entry = NULL;
         networkLayer->GetValues(i, entry, (INetworkStatsEntry**)&entry);
-        entry->SetIface(INetworkStats::IFACE_ALL);
+        String ifaceAll;
+        CNetworkStats::GetIFACE_ALL(&ifaceAll);
+        entry->SetIface(ifaceAll);
         dataLayer->CombineValues(entry);
     }
     *datalayerOut = dataLayer;

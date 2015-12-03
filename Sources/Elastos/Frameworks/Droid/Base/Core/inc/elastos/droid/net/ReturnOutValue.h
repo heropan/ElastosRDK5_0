@@ -1,8 +1,155 @@
+
 #ifndef __ELASTOS_DROID_NET_RETURNOUTVALUE_H__
 #define __ELASTOS_DROID_NET_RETURNOUTVALUE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 
+using Elastos::Utility::IIterator;
+
+//======================================================================
+// FOR_EACH
+//======================================================================
+/**
+ * Usage:
+ * If java code likes that followed
+ *
+ * for(RouteInfo route : mRoutes) {
+ *    ...
+ * }
+ *
+ * and if mRoutes is a Collection object or sub class of Collection,
+ * you can use the macro FOR_EACH as followed
+ *
+ * FOR_EACH(iter, mRoutes) {
+ *    AutoPtr<IRouteInfo> route = Ptr(iter)->Func(iter->GetNexe);
+ *    ...
+ * }
+ *
+ */
+#define FOR_EACH(iterator, container) AutoPtr<IIterator> iterator;      \
+        container->GetIterator((IIterator**)&iterator);                 \
+        while (ReturnOutValue(iterator, iterator->HasNext))
+
+//======================================================================
+// FUNC_RETURN
+//======================================================================
+/**
+ * Usage:
+ * Use
+ *
+ * FUNC_RETURN(value);
+ *
+ * instead of
+ *
+ * *result = value;
+ * return NOERROR;
+ *
+ * or
+ *
+ * *result = value;
+ * REFCOUNT_ADD(value)
+ * return NOERROR;
+ *
+ * to avoid forgetting of REFCOUNT_ADD.
+ * If the error code is not NOERROR, replace
+ *
+ * FUNC_RETURN(value);
+ *
+ * with
+ *
+ * FUNC_RETURN_ERROR_CODE(value, errcode);
+ *
+ */
+template <typename T>
+inline void funcReturnVal(T** result)
+{
+    if (*result == NULL) return;
+    REFCOUNT_ADD(*result)
+}
+
+template <typename T>
+inline void funcReturnVal(ArrayOf<T*>** result)
+{
+    if (*result == NULL) return;
+    REFCOUNT_ADD(*result)
+}
+
+template <typename T>
+inline void funcReturnVal(ArrayOf<T>** result)
+{
+    if (*result == NULL) return;
+    REFCOUNT_ADD(*result)
+}
+
+template <typename T>
+inline void funcReturnVal(T* result)
+{
+    return;
+}
+
+#define FUNC_RETURN_ERROR_CODE(obj, errCode) *result = obj;\
+                                funcReturnVal(result);\
+                                return errCode;
+
+#define FUNC_RETURN(obj) FUNC_RETURN_ERROR_CODE(obj, NOERROR)
+
+//======================================================================
+// Ptr()->Func()
+//======================================================================
+/**
+ * Usage:
+ * Use
+ *
+ * if(Ptr(map)->Func(map->IsEmpty)) {
+ *     ...
+ * }
+ *
+ * to replace
+ *
+ * Boolean b;
+ * map->IsEmpty(&b);
+ * if (b) {
+ *     ...
+ * }
+ *
+ */
+template <typename T_OBJ>
+class Redefine
+    : public Object
+{
+public:
+    Redefine(T_OBJ* obj)
+        : mPtr(obj)
+    {}
+
+    template <typename T_REV>
+    T_REV Func(ECode (T_OBJ::*func)(T_REV*))
+    {
+        T_REV rev;
+        (mPtr->*func)(&rev);
+        return rev;
+    }
+private:
+    T_OBJ* mPtr;
+};
+
+template <typename T>
+AutoPtr<Redefine<T> > Ptr(T* obj)
+{
+    AutoPtr<Redefine<T> > rev = new Redefine<T>(obj);
+    return rev;
+}
+
+template <typename T>
+AutoPtr<Redefine<T> > Ptr(AutoPtr<T>& obj)
+{
+    return Ptr(obj.Get());
+}
+
+// @Deprecated
+//======================================================================
+// RETN_OUT_VAL
+//======================================================================
 template <typename T_OBJ, typename T_REV>
 T_REV ReturnOutValue(T_OBJ* obj, ECode (T_OBJ::*func)(T_REV*))
 {
@@ -89,70 +236,6 @@ AutoPtr<T_REV> ReturnOutValue(ECode (*func)(T_PARA1*, T_REV**), AutoPtr<T_PARA1>
     return ReturnOutValue(func, para1.Get());
 }
 
-#define FOR_EACH(iterator, container) AutoPtr<IIterator> iterator;      \
-    container->GetIterator((IIterator**)&iterator);                     \
-    while (ReturnOutValue(iterator, iterator->HasNext))
-
 #define RETN_OUT_VAL(obj, func, arg...) ReturnOutValue(obj, (obj)->func, ##arg)
-
-template <typename T>
-inline void funcReturnVal(T** result)
-{
-    if (*result == NULL) return;
-    REFCOUNT_ADD(*result)
-}
-
-template <typename T>
-inline void funcReturnVal(ArrayOf<T*>** result)
-{
-    if (*result == NULL) return;
-    REFCOUNT_ADD(*result)
-}
-
-template <typename T>
-inline void funcReturnVal(ArrayOf<T>** result)
-{
-    if (*result == NULL) return;
-    REFCOUNT_ADD(*result)
-}
-
-template <typename T>
-inline void funcReturnVal(T* result)
-{
-    return;
-}
-
-#define FUNC_RETURN_ERROR_CODE(obj, errCode) *result = obj;\
-                                funcReturnVal(result);\
-                                return errCode;
-
-#define FUNC_RETURN(obj) FUNC_RETURN_ERROR_CODE(obj, NOERROR)
-
-template <typename T_OBJ>
-class Redefine
-    : public Object
-{
-public:
-    Redefine(T_OBJ* obj)
-        : mPtr(obj)
-    {}
-
-    template <typename T_REV>
-    T_REV Func(ECode (T_OBJ::*func)(T_REV*))
-    {
-        T_REV rev;
-        (mPtr->*func)(&rev);
-        return rev;
-    }
-private:
-    T_OBJ* mPtr;
-};
-
-template <typename T>
-AutoPtr<Redefine<T> > Ptr(T* obj)
-{
-    AutoPtr<Redefine<T> > rev = new Redefine<T>(obj);
-    return rev;
-}
 
 #endif // __ELASTOS_DROID_NET_RETURNOUTVALUE_H__

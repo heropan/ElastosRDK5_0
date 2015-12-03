@@ -135,8 +135,7 @@ public:
      *         {@code builder.addCapability(...).addCapability();}.
      */
     CARAPI AddCapability(
-        /* [in] */ Int32 capability,
-        /* [out] */ INetworkRequestBuilder** result);
+        /* [in] */ Int32 capability);
 
     /**
      * Removes (if found) the given capability from this builder instance.
@@ -145,8 +144,7 @@ public:
      * @return The builder to facilitate chaining.
      */
     CARAPI RemoveCapability(
-        /* [in] */ Int32 capability,
-        /* [out] */ INetworkRequestBuilder** result);
+        /* [in] */ Int32 capability);
 
     /**
      * Adds the given transport requirement to this builder.  These represent
@@ -159,8 +157,7 @@ public:
      * @return The builder to facilitate chaining.
      */
     CARAPI AddTransportType(
-        /* [in] */ Int32 transportType,
-        /* [out] */ INetworkRequestBuilder** result);
+        /* [in] */ Int32 transportType);
 
     /**
      * Removes (if found) the given transport from this builder instance.
@@ -169,22 +166,19 @@ public:
      * @return The builder to facilitate chaining.
      */
     CARAPI RemoveTransportType(
-        /* [in] */ Int32 transportType,
-        /* [out] */ INetworkRequestBuilder** result);
+        /* [in] */ Int32 transportType);
 
     /**
      * @hide
      */
     CARAPI SetLinkUpstreamBandwidthKbps(
-        /* [in] */ Int32 upKbps,
-        /* [out] */ INetworkRequestBuilder** result);
+        /* [in] */ Int32 upKbps);
 
     /**
      * @hide
      */
     CARAPI SetLinkDownstreamBandwidthKbps(
-        /* [in] */ Int32 downKbps,
-        /* [out] */ INetworkRequestBuilder** result);
+        /* [in] */ Int32 downKbps);
 
     /**
      * Sets the optional bearer specific network specifier.
@@ -201,8 +195,7 @@ public:
      *                         networks.
      */
     CARAPI SetNetworkSpecifier(
-        /* [in] */ const String& networkSpecifier,
-        /* [out] */ INetworkRequestBuilder** result);
+        /* [in] */ const String& networkSpecifier);
 
 private:
     CARAPI_(AutoPtr<INetworkCapabilities>) CreateNetworkCapabilities();

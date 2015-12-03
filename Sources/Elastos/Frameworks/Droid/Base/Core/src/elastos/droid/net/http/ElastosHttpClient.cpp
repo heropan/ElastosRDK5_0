@@ -24,7 +24,7 @@ ElastosHttpClient::~ElastosHttpClient()
 #if 0 // TODO: Translate codes below
         super.finalize();
         if (mLeakedException != NULL) {
-            Log.e(TAG, "Leak found", mLeakedException);
+            Logger::E(TAG, "Leak found", mLeakedException);
             mLeakedException = NULL;
         }
 #endif
@@ -453,7 +453,7 @@ ECode ElastosHttpClient::IsBinaryContent(
         if (headers != NULL) {
             for (Header header : headers) {
                 for (String contentType : textContentTypes) {
-                    if (header.getValue().startsWith(contentType)) {
+                    if (header.getValue().StartWith(contentType)) {
                         return FALSE;
                     }
                 }

@@ -49,7 +49,7 @@ ECode WifiKey::Equals(
 #endif
 }
 
-ECode WifiKey::HashCode(
+ECode WifiKey::GetHashCode(
     /* [out] */ Int32* result)
 {
     return E_NOT_IMPLEMENTED;

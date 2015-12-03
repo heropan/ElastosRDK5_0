@@ -181,6 +181,7 @@ private:
 
     static CARAPI_(AutoPtr<ArrayOf<Int32> >) CreateDataUsageNetworkTypes();
 
+private:
     /**
      * Set of {@link NetworkInfo#getType()} that reflect data usage.
      */

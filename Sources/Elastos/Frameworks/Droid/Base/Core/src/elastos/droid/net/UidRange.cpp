@@ -40,7 +40,7 @@ ECode UidRange::GetStartUser(
 #endif
 }
 
-ECode UidRange::HashCode(
+ECode UidRange::GetHashCode(
     /* [out] */ Int32* result)
 {
     return E_NOT_IMPLEMENTED;

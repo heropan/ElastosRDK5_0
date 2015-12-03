@@ -197,8 +197,8 @@ ECode CPppoeStateTracker::StartMonitoring(
         CHandler::New()
         mTrackerTarget = new Handler(target.getLooper(), mTrackerHandlerCallback);
         if (mEM == NULL) {
-            Slog.i(TAG,"failed to start startMonitoring");
-            return;
+            Slogger::I(TAG,"failed to start startMonitoring");
+            return NOERROR;
         }
 
         Int32 state = mEM.getPppoeState();
@@ -210,7 +210,7 @@ ECode CPppoeStateTracker::StartMonitoring(
                 try {
                     resetInterface();
                 } catch (UnknownHostException e) {
-                    Slog.e(TAG, "Wrong pppoe configuration");
+                    Slogger::E(TAG, "Wrong pppoe configuration");
                 }
             }
         }
@@ -408,8 +408,8 @@ ECode CPppoeStateTracker::ConfigureInterface(
 {
     // wait for INetworkManagementService.Stub.asInterface
     /*
-    IBinder b = ServiceManager.getService(Context.NETWORKMANAGEMENT_SERVICE);
-    INetworkManagementService netd = INetworkManagementService.Stub.asInterface(b);
+    IBinder b = ServiceManager::GetService(Context.NETWORKMANAGEMENT_SERVICE);
+    INetworkManagementService netd = INetworkManagementService::Probe(b);
     InterfaceConfiguration ifcg = new InterfaceConfiguration();
     ifcg.setLinkAddress(dhcpInfoInternal.makeLinkAddress());
     Log.v(TAG, "configureInterfaceStatic: ifname:" + ifname);

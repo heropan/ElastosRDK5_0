@@ -71,10 +71,10 @@ ECode CUriHelper::WithAppendedPath(
     return Uri::WithAppendedPath(baseUri, pathSegment, result);
 }
 
-ECode CUriHelper::GetEmpty(
+ECode CUriHelper::GetEMPTY(
     /* [out] */ IUri** result)
 {
-    return Uri::GetEmpty(result);
+    return Uri::GetEMPTY(result);
 }
 
 } // namespace Net

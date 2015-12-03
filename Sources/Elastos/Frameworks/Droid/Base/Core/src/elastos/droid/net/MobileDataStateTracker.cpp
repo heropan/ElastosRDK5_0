@@ -350,7 +350,7 @@ CAR_INTERFACE_IMPL(MobileDataStateTracker, BaseNetworkStateTracker, IMobileDataS
 
 AutoPtr<ArrayOf<MobileDataStateTracker::NetworkDataEntry*> > MobileDataStateTracker::mTheoreticalBWTable = MobileDataStateTracker::CreateTheoreticalBWTable();
 
-const String MobileDataStateTracker::TAG = String("MobileDataStateTracker");
+const String MobileDataStateTracker::TAG("MobileDataStateTracker");
 const Boolean MobileDataStateTracker::DBG = FALSE;
 const Boolean MobileDataStateTracker::VDBG = FALSE;
 const Int32 MobileDataStateTracker::UNKNOWN = ILinkQualityInfo::UNKNOWN_INT;
