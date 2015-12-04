@@ -4,10 +4,11 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Content::IContentProviderClient;
 using Elastos::Droid::Content::IContentProviderOperation;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Utility::IPair;
 
 namespace Elastos {
 namespace Droid {

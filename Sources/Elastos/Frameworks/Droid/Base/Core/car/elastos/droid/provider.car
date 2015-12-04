@@ -32,6 +32,11 @@ module
     namespace Droid {
     namespace Provider {
 
+    singleton class CBrowser
+    {
+        interface IBrowser;
+    }
+
     singleton class CBrowserContract
     {
         interface IBrowserContract;
@@ -169,7 +174,7 @@ module
 
     // singleton class CSettingsNameValueTable
     // {
-    //     interface ISettingsNameValueTable;
+    //    interface ISettingsNameValueTable;
     // }
 
     // singleton class CSettingsSecure
@@ -398,10 +403,10 @@ module
     //     interface IContactsExtensionsColumns;
     // }
 
-    // singleton class CSyncStateContractHelpers
-    // {
-    //     interface ISyncStateContractHelpers;
-    // }
+    singleton class CSyncStateContractHelpers
+    {
+        interface ISyncStateContractHelpers;
+    }
 
     // singleton class CContactsContract
     // {
@@ -795,9 +800,63 @@ module
 
     singleton class CDocumentsContract
     {
-        constructor();
-
         interface IDocumentsContract;
+    }
+
+    singleton class CUserDictionary
+    {
+        interface IUserDictionary;
+    }
+
+    singleton class CUserDictionaryWords
+    {
+        interface IUserDictionaryWords;
+    }
+
+    singleton class CVoicemailContractVoicemails
+    {
+        interface IVoicemails;
+    }
+
+    singleton class CVoicemailContractStatus
+    {
+        interface IVoicemailContractStatus;
+    }
+
+    /**
+     * This is a utility class providing access to
+     * {@link android.content.SearchRecentSuggestionsProvider}.
+     *
+     * <p>Unlike some utility classes, this one must be instantiated and properly initialized, so that
+     * it can be configured to operate with the search suggestions provider that you have created.
+     *
+     * <p>Typically, you will do this in your searchable activity, each time you receive an incoming
+     * {@link android.content.Intent#ACTION_SEARCH ACTION_SEARCH} Intent.  The code to record each
+     * incoming query is as follows:
+     * <pre class="prettyprint">
+     *      SearchSuggestions suggestions = new SearchSuggestions(this,
+     *              MySuggestionsProvider.AUTHORITY, MySuggestionsProvider.MODE);
+     *      suggestions.saveRecentQuery(queryString, null);
+     * </pre>
+     *
+     * <p>For a working example, see SearchSuggestionSampleProvider and SearchQueryResults in
+     * samples/ApiDemos/app.
+     *
+     * <div class="special reference">
+     * <h3>Developer Guides</h3>
+     * <p>For information about using search suggestions in your application, read the
+     * <a href="{@docRoot}guide/topics/search/adding-recent-query-suggestions.html">Adding Recent Query
+     * Suggestions</a> developer guide.</p>
+     * </div>
+     */
+    class CSearchRecentSuggestions
+    {
+        constructor(
+            [in] IContext* context,
+            [in] String authority,
+            [in] Int32 mode);
+
+        interface ISearchRecentSuggestions;
     }
 
     } // namespace Provider
