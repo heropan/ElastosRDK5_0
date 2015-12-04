@@ -14,7 +14,6 @@ module
 
     [local]
     interface IPolicyControl {
-
         Dump(
             [in] String prefix,
             [in] IPrintWriter* pw);

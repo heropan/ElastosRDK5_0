@@ -15,6 +15,7 @@ ELASTOS_LIBS += http/http.lib
 ELASTOS_LIBS += inputmethod/inputmethod.lib
 ELASTOS_LIBS += net/net.lib
 ELASTOS_LIBS += os/os.lib
+ELASTOS_LIBS += policy/policy.lib
 ELASTOS_LIBS += preference/preference.lib
 ELASTOS_LIBS += statusbar/statusbar.lib
 ELASTOS_LIBS += transition/transition.lib

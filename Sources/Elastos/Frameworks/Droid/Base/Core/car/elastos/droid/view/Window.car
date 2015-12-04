@@ -550,8 +550,7 @@ module
             [in] IOnWindowDismissedCallback* dcb);
 
         /** @hide */
-        DispatchOnWindowDismissed(
-            [in] IOnWindowDismissedCallback* dcb);
+        DispatchOnWindowDismissed();
 
         /**
          * Take ownership of this window's surface.  The window's view hierarchy

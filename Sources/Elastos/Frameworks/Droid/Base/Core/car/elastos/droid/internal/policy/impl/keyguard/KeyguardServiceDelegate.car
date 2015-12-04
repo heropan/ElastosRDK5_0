@@ -21,25 +21,10 @@ module
     }
 
     /**
-     *@Involve
-     *interface Elastos.Droid.Internal.Policy.IIKeyguardShowCallback
-     */
-    interface IKeyguardShowDelegate {
-    }
-
-    /**
-     *@Involve
-     *interface Elastos.Droid.Internal.Policy.IIKeyguardExitCallback
-     */
-    interface IKeyguardExitDelegate {
-    }
-
-    /**
      * A local class that keeps a cache of keyguard state that can be restored in the event
      * keyguard crashes. It currently also allows runtime-selectable
      * local or remote instances of keyguard.
      */
-    [local]
     interface IKeyguardServiceDelegate {
         const String KEYGUARD_PACKAGE = "com.android.systemui";
         const String KEYGUARD_CLASS = "com.android.systemui.keyguard.KeyguardService";

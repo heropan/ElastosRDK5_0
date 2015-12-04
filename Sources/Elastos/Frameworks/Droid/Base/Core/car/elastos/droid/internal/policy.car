@@ -26,12 +26,12 @@ module
     merge("policy/impl/WindowOrientationListener.car");
 
     merge("policy/impl/keyguard/KeyguardServiceDelegate.car");
-    merge("policy/impl/keyguard/KeyguardServiceWrapper.car");
+    //merge("policy/impl/keyguard/KeyguardServiceWrapper.car");
 
+    interface Elastos.Droid.Animation.ITimeInterpolator;
     interface Elastos.Droid.App.IDialog;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IDialogInterface;
-    interface Elastos.Droid.Graphics.IInterpolator;
     interface Elastos.Droid.Internal.Policy.IIKeyguardExitCallback;
     interface Elastos.Droid.Internal.Policy.IIKeyguardService;
     interface Elastos.Droid.Internal.Policy.IIKeyguardShowCallback;
@@ -54,14 +54,17 @@ module
     interface Elastos.Droid.Internal.Policy.Impl.ISystemGesturesPointerEventListenerCallbacks;
     interface Elastos.Droid.Internal.Policy.Impl.IWakeGestureListener;
     interface Elastos.Droid.Internal.Policy.Impl.IWindowOrientationListener;
-    interface Elastos.Droid.Internal.Policy.Impl.Keyguard.IKeyguardExitDelegate;
+    //interface Elastos.Droid.Internal.Policy.Impl.Keyguard.IKeyguardExitDelegate;
     interface Elastos.Droid.Internal.Policy.Impl.Keyguard.IKeyguardServiceDelegate;
     interface Elastos.Droid.Internal.Policy.Impl.Keyguard.IKeyguardServiceDelegateShowListener;
-    interface Elastos.Droid.Internal.Policy.Impl.Keyguard.IKeyguardServiceWrapper;
-    interface Elastos.Droid.Internal.Policy.Impl.Keyguard.IKeyguardShowDelegate;
+    //interface Elastos.Droid.Internal.Policy.Impl.Keyguard.IKeyguardServiceWrapper;
+    //interface Elastos.Droid.Internal.Policy.Impl.Keyguard.IKeyguardShowDelegate;
     interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
     interface Elastos.Droid.Internal.Widget.ILockPatternUtils;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Utility.IAttributeSet;
+    interface Elastos.Droid.View.Animation.IInterpolator;
     interface Elastos.Droid.View.IFallbackEventHandler;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.ILayoutInflater;
@@ -77,211 +80,224 @@ module
     interface Elastos.Droid.Widget.ILinearLayout;
 
     using interface Elastos.Core.IRunnable;
-    using interface Elastos.Droid.Os.IHandler;
 
-    //namespace Elastos {
-    //namespace Droid {
-    //namespace Internal {
-    //namespace Policy {
-    //namespace Impl {
-    //namespace Keyguard {
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Policy {
+    namespace Impl {
+    namespace Keyguard {
 
-    //    [local]
-    //    class CKeyguardServiceDelegate {
-    //        constructor(
-    //            [in] IContext* ctx,
-    //            [in] ILockPatternUtils* lockPatternUtils);
+        [local]
+        class CKeyguardServiceDelegate {
+            constructor(
+                [in] IContext* ctx,
+                [in] ILockPatternUtils* lockPatternUtils);
 
-    //        interface IKeyguardServiceDelegate;
-    //    }
+            interface IKeyguardServiceDelegate;
+        }
 
-    //    class CKeyguardServiceWrapper {
-    //        constructor(
-    //            [in] IIKeyguardService* service);
+        class CKeyguardServiceWrapper {
+            constructor(
+                [in] IIKeyguardService* service);
 
-    //        interface IKeyguardServiceWrapper;
-    //        interface IIKeyguardService;
-    //    }
+            //interface IKeyguardServiceWrapper;
+            interface IIKeyguardService;
+        }
 
-    //    // A delegate class to map a particular invocation with a ShowListener object.
-    //    class CKeyguardShowDelegate {
-    //        constructor(
-    //            [in] IKeyguardServiceDelegateShowListener* showListener);
+        // A delegate class to map a particular invocation with a ShowListener object.
+        class CKeyguardShowDelegate {
+            constructor(
+                [in] IKeyguardServiceDelegate* hostKeyguardServiceDelegate,
+                [in] IKeyguardServiceDelegateShowListener* showListener);
 
-    //        interface IKeyguardShowDelegate;
-    //        interface IIKeyguardShowCallback;
-    //    }
+            interface IBinder;
+            interface IIKeyguardShowCallback;
+        }
 
-    //    //A delegate class to map a particular invocation with an OnKeyguardExitResult object.
-    //    class CKeyguardExitDelegate {
-    //        constructor(
-    //            [in] IOnKeyguardExitResult* onKeyguardExitResult);
+        //A delegate class to map a particular invocation with an OnKeyguardExitResult object.
+        class CKeyguardExitDelegate {
+            constructor(
+                [in] IKeyguardServiceDelegate* hostKeyguardServiceDelegate,
+                [in] IOnKeyguardExitResult* onKeyguardExitResult);
 
-    //        interface IKeyguardExitDelegate;
-    //        interface IIKeyguardExitCallback;
-    //    }
+            interface IBinder;
+            interface IIKeyguardExitCallback;
+        }
 
-    //} // Keyguard
-    //} // Impl
-    //} // Policy
-    //} // Internal
-    //} // Droid
-    //} // Elastos
+    } // Keyguard
+    } // Impl
+    } // Policy
+    } // Internal
+    } // Droid
+    } // Elastos
 
-    //namespace Elastos {
-    //namespace Droid {
-    //namespace Internal {
-    //namespace Policy {
-    //namespace Impl {
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Policy {
+    namespace Impl {
 
-    //    class CBarController {
-    //        constructor(
-    //            [in] String tag,
-    //            [in] Int32 transientFlag,
-    //            [in] Int32 unhideFlag,
-    //            [in] Int32 translucentFlag,
-    //            [in] Int32 statusBarManagerId,
-    //            [in] Int32 translucentWmFlag);
+        class CBarController {
+            constructor(
+                [in] String tag,
+                [in] Int32 transientFlag,
+                [in] Int32 unhideFlag,
+                [in] Int32 translucentFlag,
+                [in] Int32 statusBarManagerId,
+                [in] Int32 translucentWmFlag);
 
-    //        interface IBarController;
-    //    }
+            interface IBarController;
+        }
 
-    //    class CEnableAccessibilityController {
-    //        constructor(
-    //            [in] IContext* context,
-    //            [in] IRunnable* onAccessibilityEnabledCallback);
+        class CEnableAccessibilityController {
+            constructor(
+                [in] IContext* ctx,
+                [in] IRunnable* onAccessibilityEnabledCallback);
 
-    //        interface IEnableAccessibilityController;
-    //    }
+            interface IEnableAccessibilityController;
+        }
 
-    //    singleton class CEnableAccessibilityControllerHelper {
+        singleton class CEnableAccessibilityControllerHelper {
 
-    //        interface IEnableAccessibilityControllerHelper;
-    //    }
+            interface IEnableAccessibilityControllerHelper;
+        }
 
-    //    class CImmersiveModeConfirmation {
-    //        constructor(
-    //            [in] IContext* context);
+        class CImmersiveModeConfirmation {
+            constructor(
+                [in] IContext* ctx);
 
-    //        interface IImmersiveModeConfirmation;
-    //    }
+            interface IImmersiveModeConfirmation;
+        }
 
-    //    class CLogDecelerateInterpolator {
-    //        constructor(
-    //            [in] Int32 base,
-    //            [in] Int32 drift);
+        class CLogDecelerateInterpolator {
+            constructor(
+                [in] Int32 base,
+                [in] Int32 drift);
 
-    //        interface ILogDecelerateInterpolator;
-    //        interface IInterpolator;
-    //    }
+            interface ILogDecelerateInterpolator;
+            interface IInterpolator;
+            interface ITimeInterpolator;
+        }
 
-    //    class CPhoneFallbackEventHandler {
-    //        constructor(
-    //            [in] IContext* context);
+        class CPhoneFallbackEventHandler {
+            constructor(
+                [in] IContext* ctx);
 
-    //        interface IPhoneFallbackEventHandler;
-    //        interface IFallbackEventHandler;
-    //    }
+            interface IPhoneFallbackEventHandler;
+            interface IFallbackEventHandler;
+        }
 
-    //    class CPhoneLayoutInflater {
-    //         constructor(
-    //             [in] IContext* ctx);
+        class CPhoneLayoutInflater {
+             constructor(
+                 [in] IContext* ctx);
 
-    //        interface IPhoneLayoutInflater;
-    //        interface ILayoutInflater;
-    //    }
+            interface IPhoneLayoutInflater;
+            interface ILayoutInflater;
+        }
 
-    //    class CPhoneWindow {
-    //        constructor(
-    //            [in] IContext* ctx);
+        class CPhoneWindow {
+            constructor(
+                [in] IContext* ctx);
 
-    //        interface IPhoneWindow;
-    //        interface IWindow;
-    //        interface IMenuBuilderCallback;
-    //    }
+            interface IPhoneWindow;
+            interface IWindow;
+            interface IMenuBuilderCallback;
+        }
 
-    //    class CPhoneWindowRotationWatcher {
-    //        constructor();
+        class CPhoneWindowRotationWatcher {
+            constructor(
+                [in] IPhoneWindow* owner);
 
-    //        interface IPhoneWindowRotationWatcher;
-    //        interface IRotationWatcher;
-    //    }
+            interface IPhoneWindowRotationWatcher;
+            interface IBinder;
+            interface IRotationWatcher;
+        }
 
-    //    class CPhoneWindowManager {
-    //        constructor();
+        class CPhoneWindowSavedState {
+            constructor();
 
-    //        interface IPhoneWindowManager;
-    //        interface IWindowManagerPolicy;
-    //    }
+            constructor(
+                [in] IParcelable* state);
 
-    //    class CPolicy {
-    //        constructor();
+            interface IPhoneWindowSavedState;
+            interface IParcelable;
+        }
 
-    //        interface IIPolicy;
-    //    }
+        //class CPhoneWindowManager {
+        //    constructor();
 
-    //    class CPolicyControl {
-    //        constructor();
+        //    interface IPhoneWindowManager;
+        //    interface IWindowManagerPolicy;
+        //}
 
-    //        interface IPolicyControl;
-    //    }
+        //class CPolicy {
+        //    constructor();
 
-    //    class CRecentApplicationsBackground {
-    //        constructor(
-    //            [in] IContext* context);
+        //    interface IIPolicy;
+        //}
 
-    //        constructor(
-    //            [in] IContext* context,
-    //            [in] IAttributeSet* attrs);
+        //singleton class CPolicyControl {
 
-    //        interface IRecentApplicationsBackground;
-    //        interface ILinearLayout;
-    //    }
+        //    interface IPolicyControl;
+        //}
 
-    //    class CRecentApplicationsDialog {
-    //        constructor(
-    //            [in] IContext* context);
+        //class CRecentApplicationsBackground {
+        //    constructor(
+        //        [in] IContext* ctx);
 
-    //        interface IRecentApplicationsDialog;
-    //        interface IViewOnClickListener;
-    //        interface IDialog;
-    //        interface IOnWindowDismissedCallback;
-    //        interface IViewOnCreateContextMenuListener;
-    //        interface IKeyEventCallback;
-    //        interface IWindowCallback;
-    //        interface IDialogInterface;
-    //    }
+        //    constructor(
+        //        [in] IContext* ctx,
+        //        [in] IAttributeSet* attrs);
 
-    //    class CSystemGesturesPointerEventListener {
-    //        constructor(
-    //            [in] IContext* context,
-    //            [in] ISystemGesturesPointerEventListenerCallbacks* cb);
+        //    interface IRecentApplicationsBackground;
+        //    interface ILinearLayout;
+        //}
 
-    //        interface ISystemGesturesPointerEventListener;
-    //        interface IPointerEventListener;
-    //    }
+        //class CRecentApplicationsDialog {
+        //    constructor(
+        //        [in] IContext* ctx);
 
-    //    class CWakeGestureListener {
-    //        constructor(
-    //            [in] IContext* context,
-    //            [in] IHandler* handler);
+        //    interface IRecentApplicationsDialog;
+        //    interface IViewOnClickListener;
+        //    interface IDialog;
+        //    interface IOnWindowDismissedCallback;
+        //    interface IViewOnCreateContextMenuListener;
+        //    interface IKeyEventCallback;
+        //    interface IWindowCallback;
+        //    interface IDialogInterface;
+        //}
 
-    //        interface IWakeGestureListener;
-    //    }
+        //class CSystemGesturesPointerEventListener {
+        //    constructor(
+        //        [in] IContext* ctx,
+        //        [in] ISystemGesturesPointerEventListenerCallbacks* cb);
 
-    //    class CWindowOrientationListener {
-    //        constructor(
-    //            [in] IContext* context,
-    //            [in] IHandler* handler);
+        //    interface ISystemGesturesPointerEventListener;
+        //    interface IPointerEventListener;
+        //}
 
-    //        interface IWindowOrientationListener;
-    //    }
+        ////class CWakeGestureListener {
+        ////    constructor(
+        ////        [in] IContext* ctx,
+        ////        [in] IHandler* handler);
 
-    //} // Impl
-    //} // Policy
-    //} // Internal
-    //} // Droid
-    //} // Elastos
+        ////    interface IWakeGestureListener;
+        ////}
+
+        ////class CWindowOrientationListener {
+        ////    constructor(
+        ////        [in] IContext* ctx,
+        ////        [in] IHandler* handler);
+
+        ////    interface IWindowOrientationListener;
+        ////}
+
+    } // Impl
+    } // Policy
+    } // Internal
+    } // Droid
+    } // Elastos
 
     //namespace Elastos {
     //namespace Droid {
