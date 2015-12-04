@@ -37,7 +37,7 @@ SOURCES += SimpleMonthAdapter.cpp
 SOURCES += ImageView.cpp
 SOURCES += AbsoluteLayout.cpp
 #SOURCES += CBlinkLayout.cpp
-#SOURCES += CalendarView.cpp
+SOURCES += CalendarView.cpp
 
 #SOURCES += CCalendarView.cpp
 #SOURCES += DialerFilter.cpp

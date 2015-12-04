@@ -2,7 +2,10 @@
 module
 {
 
+    interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -30,6 +33,123 @@ module
             [in] Int32 dayOfMonth);
     }
 
+    /**
+     * A delegate interface that defined the public API of the CalendarView. Allows different
+     * CalendarView implementations. This would need to be implemented by the CalendarView delegates
+     * for the real behavior.
+     */
+    interface ICalendarViewDelegate {
+
+        SetShownWeekCount(
+            [in] Int32 count);
+
+        GetShownWeekCount(
+            [out] Int32* result);
+
+        SetSelectedWeekBackgroundColor(
+            [in] Int32 color);
+
+        GetSelectedWeekBackgroundColor(
+            [out] Int32* result);
+
+        SetFocusedMonthDateColor(
+            [in] Int32 color);
+
+        GetFocusedMonthDateColor(
+            [out] Int32* result);
+
+        SetUnfocusedMonthDateColor(
+            [in] Int32 color);
+
+        GetUnfocusedMonthDateColor(
+            [out] Int32* result);
+
+        SetWeekNumberColor(
+            [in] Int32 color);
+
+        GetWeekNumberColor(
+            [out] Int32* result);
+
+        SetWeekSeparatorLineColor(
+            [in] Int32 color);
+
+        GetWeekSeparatorLineColor(
+            [out] Int32* result);
+
+        SetSelectedDateVerticalBar(
+            [in] Int32 resourceId);
+
+        SetSelectedDateVerticalBar(
+            [in] IDrawable* drawable);
+
+        GetSelectedDateVerticalBar(
+            [out] IDrawable** result);
+
+        SetWeekDayTextAppearance(
+            [in] Int32 resourceId);
+
+        GetWeekDayTextAppearance(
+            [out] Int32* result);
+
+        SetDateTextAppearance(
+            [in] Int32 resourceId);
+
+        GetDateTextAppearance(
+            [out] Int32* result);
+
+        SetEnabled(
+            [in] Boolean enabled);
+
+        IsEnabled(
+            [out] Boolean* result);
+
+        SetMinDate(
+            [in] Int64 minDate);
+
+        GetMinDate(
+            [out] Int64* result);
+
+        SetMaxDate(
+            [in] Int64 maxDate);
+
+        GetMaxDate(
+            [out] Int64* result);
+
+        SetShowWeekNumber(
+            [in] Boolean showWeekNumber);
+
+        GetShowWeekNumber(
+            [out] Boolean* result);
+
+        SetFirstDayOfWeek(
+            [in] Int32 firstDayOfWeek);
+
+        GetFirstDayOfWeek(
+            [out] Int32* result);
+
+        SetDate(
+            [in] Int64 date);
+
+        SetDate(
+            [in] Int64 date,
+            [in] Boolean animate,
+            [in] Boolean center);
+
+        GetDate(
+            [out] Int64* result);
+
+        SetOnDateChangeListener(
+            [in] IOnDateChangeListener* listener);
+
+        OnConfigurationChanged(
+            [in] IConfiguration* newConfig);
+
+        OnInitializeAccessibilityEvent(
+            [in] IAccessibilityEvent* event);
+
+        OnInitializeAccessibilityNodeInfo(
+            [in] IAccessibilityNodeInfo* info);
+    }
 
     /**
      * This class is a calendar widget for displaying and selecting dates. The range
