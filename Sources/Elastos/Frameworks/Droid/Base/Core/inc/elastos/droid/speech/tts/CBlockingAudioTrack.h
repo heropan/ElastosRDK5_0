@@ -2,24 +2,23 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_CTtsEngines_h__
 #define __ELASTOS_DROID_SPEECH_TTS_CTtsEngines_h__
 
-#include "_Elastos_Droid_Speech_Tts_CTtsEngines.h"
-
-#include "elastos/droid/speech/tts/TtsEngines.h"
+#include "_Elastos_Droid_Speech_Tts_BlockingAudioTrack.h"
+#include "elastos/droid/speech/tts/BlockingAudioTrack.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Speech {
 namespace Tts {
 
-CarClass(CTtsEngines)
-    , public TtsEngines
+CarClass(CBlockingAudioTrack)
+    , public BlockingAudioTrack
 {
 public:
     CAR_OBJECT_DECL();
 
-    CTtsEngines();
+    CBlockingAudioTrack();
 
-    virtual ~CTtsEngines();
+    virtual ~CBlockingAudioTrack();
 };
 
 } // namespace Tts

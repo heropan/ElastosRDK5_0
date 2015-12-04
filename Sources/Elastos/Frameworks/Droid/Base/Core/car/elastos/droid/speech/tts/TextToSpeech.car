@@ -33,6 +33,7 @@ module
          * Denotes a successful operation.
          */
         const Int32 TTS_SUCCESS = 0;
+
         /**
          * Denotes a generic operation failure.
          */
@@ -87,9 +88,11 @@ module
          * from other callees are not discarded.
          */
         const Int32 QUEUE_FLUSH = 0;
+
         /**
          * Queue mode where the new entry is added at the end of the playback queue.
          */
+
         const Int32 QUEUE_ADD = 1;
         /**
          * Queue mode where the entire playback queue is purged. This is different
@@ -139,40 +142,40 @@ module
         //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
         const String ACTION_TTS_QUEUE_PROCESSING_COMPLETED = "android.speech.tts.TTS_QUEUE_PROCESSING_COMPLETED";
 
-    /**
-     * Releases the resources used by the TextToSpeech engine.
-     * It is good practice for instance to call this method in the onDestroy() method of an Activity
-     * so the TextToSpeech engine can be cleanly stopped.
-     */
+        /**
+         * Releases the resources used by the TextToSpeech engine.
+         * It is good practice for instance to call this method in the onDestroy() method of an Activity
+         * so the TextToSpeech engine can be cleanly stopped.
+         */
         Shutdown();
 
-    /**
-     * Adds a mapping between a string of text and a sound resource in a
-     * package. After a call to this method, subsequent calls to
-     * {@link #speak(String, int, HashMap)} will play the specified sound resource
-     * if it is available, or synthesize the text it is missing.
-     *
-     * @param text
-     *            The string of text. Example: <code>"south_south_east"</code>
-     *
-     * @param packagename
-     *            Pass the packagename of the application that contains the
-     *            resource. If the resource is in your own application (this is
-     *            the most common case), then put the packagename of your
-     *            application here.<br/>
-     *            Example: <b>"com.google.marvin.compass"</b><br/>
-     *            The packagename can be found in the AndroidManifest.xml of
-     *            your application.
-     *            <p>
-     *            <code>&lt;manifest xmlns:android=&quot;...&quot;
-     *      package=&quot;<b>com.google.marvin.compass</b>&quot;&gt;</code>
-     *            </p>
-     *
-     * @param resourceId
-     *            Example: <code>R.raw.south_south_east</code>
-     *
-     * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
-     */
+        /**
+         * Adds a mapping between a string of text and a sound resource in a
+         * package. After a call to this method, subsequent calls to
+         * {@link #speak(String, int, HashMap)} will play the specified sound resource
+         * if it is available, or synthesize the text it is missing.
+         *
+         * @param text
+         *            The string of text. Example: <code>"south_south_east"</code>
+         *
+         * @param packagename
+         *            Pass the packagename of the application that contains the
+         *            resource. If the resource is in your own application (this is
+         *            the most common case), then put the packagename of your
+         *            application here.<br/>
+         *            Example: <b>"com.google.marvin.compass"</b><br/>
+         *            The packagename can be found in the AndroidManifest.xml of
+         *            your application.
+         *            <p>
+         *            <code>&lt;manifest xmlns:android=&quot;...&quot;
+         *      package=&quot;<b>com.google.marvin.compass</b>&quot;&gt;</code>
+         *            </p>
+         *
+         * @param resourceId
+         *            Example: <code>R.raw.south_south_east</code>
+         *
+         * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
+         */
         AddSpeech(
             [in] String text,
             [in] String packagename,
@@ -357,7 +360,6 @@ module
             [in] IBundle* params,
             [in] String utteranceId,
             [out] Int32* ret);
-
 
         /**
          * Speaks the string using the specified queuing strategy and speech parameters.
@@ -1345,7 +1347,6 @@ module
          */
         const String KEY_FEATURE_NETWORK_RETRIES_COUNT = "networkRetriesCount";
     }
-
 
     /**
      * Information about an installed text-to-speech engine.

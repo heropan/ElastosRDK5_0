@@ -1,9 +1,11 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_BlockingAudioTrack_H__
 #define __ELASTOS_DROID_SPEECH_TTS_BlockingAudioTrack_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Droid::Media::IAudioTrack;
+using Elastos::Droid::Media::IBlockingAudioTrack;
 
 namespace Elastos {
 namespace Droid {
@@ -19,25 +21,35 @@ namespace Tts {
  */
 class BlockingAudioTrack
     : public Object
+    , public IBlockingAudioTrack
 {
 public:
-    BlockingAudioTrack(
-        /* [in] */ Int32 streamType,
+    CAR_INTERFACE_DECL();
+
+    BlockingAudioTrack();
+
+    virtual ~BlockingAudioTrack();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ AudioOutputParams *audioParams,
         /* [in] */ Int32 sampleRate,
         /* [in] */ Int32 audioFormat,
-        /* [in] */ Int32 channelCount,
-        /* [in] */ Float volume,
-        /* [in] */ Float pan);
+        /* [in] */ Int32 channelCount);
 
-    CARAPI_(Boolean) Init();
+    CARAPI Init(
+        /* [out] */ Boolean* ret);
 
-    CARAPI_(void) Stop();
+    CARAPI Stop();
 
-    CARAPI_(Int32) Write(
+    CARAPI Write(
         /* [in] */ ArrayOf<Byte>* data);
+        /* [out] */ Int32* ret);
 
-    CARAPI_(void) WaitAndRelease();
+    CARAPI WaitAndRelease();
 
+public:
     static CARAPI_(Int32) GetChannelConfig(
         /* [in] */ Int32 channelCount);
 
@@ -51,18 +63,13 @@ private:
 
     CARAPI_(AutoPtr<IAudioTrack>) CreateStreamingAudioTrack();
 
-    static CARAPI_(Int32) GetBytesPerFrame(
-        /* [in] */ Int32 audioFormat);
-
     CARAPI_(void) BlockUntilDone(
-        /* [in] */ IAudioTrack* audioTrack
-        );
+        /* [in] */ IAudioTrack* audioTrack);
 
     CARAPI_(void) BlockUntilEstimatedCompletion();
 
     CARAPI_(void) BlockUntilCompletion(
-        /* [in] */ IAudioTrack* audioTrack
-        );
+        /* [in] */ IAudioTrack* audioTrack);
 
     static CARAPI_(void) SetupVolume(
         /* [in] */ IAudioTrack* audioTrack,
@@ -82,7 +89,6 @@ private:
 private:
     static const String TAG;        // = "TTS.BlockingAudioTrack";
     static const Boolean DBG;       // = FALSE;
-
 
     /**
      * The minimum increment of time to wait for an AudioTrack to finish
@@ -109,7 +115,7 @@ private:
      */
     static const Int32 MIN_AUDIO_BUFFER_SIZE;
 
-    Int32 mStreamType;
+    AudioOutputParams* mAudioParams;
     Int32 mSampleRateInHz;
     Int32 mAudioFormat;
     Int32 mChannelCount;
@@ -137,7 +143,7 @@ private:
     Object mAudioTrackLock;
     AutoPtr<IAudioTrack> mAudioTrack;
     /*volatile*/ Boolean mStopped;
-
+    Int32 mSessionId;
 };
 
 } // namespace Tts

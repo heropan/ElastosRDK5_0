@@ -7,10 +7,6 @@ include $(MAKEDIR)/../../../../../../sources.inc
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
 
-INCLUDES += $(PREBUILD_INC)/skia/utils
-INCLUDES += $(PREBUILD_INC)/skia/core
-INCLUDES += $(PREBUILD_INC)/skia/effects
-
 C_DEFINES += -DDROID_CORE
 
 SOURCES = CRecognizerIntent.cpp
@@ -21,5 +17,5 @@ SOURCES += RecognizerIntent.cpp
 SOURCES += RecognizerResultsIntent.cpp
 SOURCES += SpeechRecognizer.cpp
 
-ELASTOS_LIBS += srec/srec.lib
-ELASTOS_LIBS += tts/tts.lib
+ELASTOS_LIBS += srec/speech.srec.lib
+ELASTOS_LIBS += tts/speech.tts.lib

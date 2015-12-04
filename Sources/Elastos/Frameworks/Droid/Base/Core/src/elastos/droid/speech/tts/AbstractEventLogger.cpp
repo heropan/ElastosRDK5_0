@@ -36,8 +36,7 @@ ECode AbstractEventLogger::constructor(
     mRequestProcessingStartTime = -1;
     mEngineStartTime = -1;
     mEngineCompleteTime = -1;
-    mError = FALSE;
-    mStopped = FALSE;
+
     mLogWritten = FALSE;
 
     return NOERROR;

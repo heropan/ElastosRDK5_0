@@ -16,10 +16,13 @@ namespace Tts {
  * {@link #start}, then {@link #audioAvailable} until all audio has been provided, then finally
  * {@link #done}.
  *
- *
  * {@link #error} can be called at any stage in the synthesis process to
  * indicate that an error has occurred, but if the call is made after a call
  * to {@link #done}, it might be discarded.
+ *
+ * {@link #done} must be called at the end of synthesis, regardless of errors.
+ *
+ * All methods can be only called on the synthesis thread.
  */
 
 //
@@ -48,7 +51,8 @@ public:
      * @param audioFormat Audio format of the generated audio. Must be one of
      *         the ENCODING_ constants defined in {@link android.media.AudioFormat}.
      * @param channelCount The number of channels. Must be {@code 1} or {@code 2}.
-     * @return {@link TextToSpeech#SUCCESS} or {@link TextToSpeech#ERROR}.
+     * @return {@link TextToSpeech#SUCCESS}, {@link TextToSpeech#ERROR} or
+     *          {@link TextToSpeech#STOPPED}.
      */
     virtual CARAPI Start(
         /* [in] */ Int32 sampleRateInHz,
@@ -67,7 +71,8 @@ public:
      * @param offset The offset into {@code buffer} where the audio data starts.
      * @param length The number of bytes of audio data in {@code buffer}. This must be
      *         less than or equal to the return value of {@link #getMaxBufferSize}.
-     * @return {@link TextToSpeech#SUCCESS} or {@link TextToSpeech#ERROR}.
+     * @return {@link TextToSpeech#SUCCESS}, {@link TextToSpeech#ERROR} or
+     *          {@link TextToSpeech#STOPPED}.
      */
     virtual CARAPI AudioAvailable(
         /* [in] */ ArrayOf<Byte>* buffer,
@@ -82,7 +87,10 @@ public:
      * This method should only be called on the synthesis thread,
      * while in {@link TextToSpeechService#onSynthesizeText}.
      *
-     * @return {@link TextToSpeech#SUCCESS} or {@link TextToSpeech#ERROR}.
+     * This method has to be called if {@link #start} and/or {@link #error} was called.
+     *
+     * @return {@link TextToSpeech#SUCCESS}, {@link TextToSpeech#ERROR} or
+     *          {@link TextToSpeech#STOPPED}.
      */
     virtual CARAPI Done(
         /* [out] */ Int32* ret) = 0;

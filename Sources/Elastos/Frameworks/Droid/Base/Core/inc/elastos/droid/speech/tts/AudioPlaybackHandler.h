@@ -53,13 +53,13 @@ public:
 
     CARAPI_(void) Start();
 
+    CARAPI_(void) Stop();
+
     CARAPI_(void) Enqueue(
         /* [in] */ PlaybackQueueItem* item);
 
     CARAPI_(void) StopForApp(
         /* [in] */ IInterface* callerIdentity);
-
-    CARAPI_(void) Stop();
 
     /**
      * @return false iff the queue is empty and no queue item is currently

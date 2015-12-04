@@ -17,7 +17,6 @@ namespace Tts {
 
 class AudioPlaybackQueueItem
     : public PlaybackQueueItem
-    , public IRunnable
 {
 private:
     class MediaPlayerOnErrorListener
@@ -90,13 +89,23 @@ public:
         /* [in] */ IInterface* callerIdentity,
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
-        /* [in] */ Int32 streamType);
+        /* [in] */ AudioOutputParams audioParams);
 
     //@Override
     CARAPI Run();
 
 private:
     CARAPI_(void) Finish();
+
+    CARAPI_(void) SetupVolume(
+        /* [in] */ IMediaPlayer *player,
+        /* [in] */ Float volume,
+        /* [in] */ Float pan);
+
+    CARAPI_(Float) Clip(
+            /* [in] */ Float value,
+            /* [in] */ Float min,
+            /* [in] */ Float max);
 
     //@Override
     CARAPI Stop(
@@ -108,6 +117,7 @@ private:
     AutoPtr<IContext> mContext;
     AutoPtr<IUri> mUri;
     Int32 mStreamType;
+    AudioOutputParams *mAudioParams;
 
 //    AutoPtr<IConditionVariable> mDone;
 //    AutoPtr<IMediaPlayer> mPlayer;

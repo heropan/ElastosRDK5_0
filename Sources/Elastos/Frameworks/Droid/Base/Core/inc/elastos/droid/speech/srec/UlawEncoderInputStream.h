@@ -32,13 +32,13 @@ public:
      */
     UlawEncoderInputStream();
 
-    ~UlawEncoderInputStream();
+    virtual ~UlawEncoderInputStream();
 
     CARAPI constructor(
         /* [in]  */ IInputStream* in,
         /* [in]  */ Int32 max);
 
-    static CARAPI_(void) Encode(
+    static CARAPI Encode(
         /* [in]  */ ArrayOf<Byte>* pcmBuf,
         /* [in]  */ Int32 pcmOffset,
         /* [in]  */ ArrayOf<Byte>* ulawBuf,
@@ -54,10 +54,11 @@ public:
      * @param length number of pcm samples (not number of input bytes)
      * @return maximum abs of pcm data values
      */
-    static CARAPI_(Int32) MaxAbsPcm(
+    static CARAPI MaxAbsPcm(
         /* [in]  */ ArrayOf<Byte>* pcmBuf,
         /* [in]  */ Int32 offset,
-        /* [in]  */ Int32 length);
+        /* [in]  */ Int32 length,
+        /* [out] */ Int32* ret);
 
     //@Override
     CARAPI ReadBytes(

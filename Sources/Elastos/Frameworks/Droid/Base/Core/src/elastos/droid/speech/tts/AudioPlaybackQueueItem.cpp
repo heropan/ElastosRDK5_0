@@ -7,9 +7,16 @@
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Logger;
-//using Elastos::Droid::media::EIID_IMediaPlayerOnErrorListener;
-//using Elastos::Droid::media::EIID_IMediaPlayerOnCompletionListener;
 using Elastos::Droid::Speech::Tts::ITextToSpeechServiceUtteranceProgressDispatcher;
+using Elastos::Droid::Media::IMetadata;
+using Elastos::Droid::Media::CMediaPlayer;
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Media::IMediaPlayerOnPreparedListener;
+using Elastos::Droid::Media::IMediaPlayerOnCompletionListener;
+using Elastos::Droid::Media::IMediaPlayerOnErrorListener;
+using Elastos::Droid::Media::IMediaPlayerOnInfoListener;
+using Elastos::Droid::Media::IMediaPlayerOnVideoSizeChangedListener;
+using Elastos::Droid::Media::IMediaPlayerOnBufferingUpdateListener;
 
 namespace Elastos {
 namespace Droid {
@@ -48,52 +55,17 @@ ECode AudioPlaybackQueueItem::MediaPlayerOnErrorListener::OnError(
     /* [out] */ Boolean* ret)
 {
     //Java:    Log.w(TAG, "Audio playback error: " + what + ", " + extra);
-    Logger::W(TAG, String("Audio playback error: ") + StringUtils::Int32ToString(what) + String(", ") + StringUtils::Int32ToString(extra) + String("\n"));
+    Logger::W(AudioPlaybackQueueItem::TAG, "Audio playback error: what:%d, extra:%d\n", what, extra);
 //    (mApqi->mDone)->Open();
     *ret = TRUE;
     return NOERROR;
 }
 
-/******************************AudioPlaybackQueueItem::MediaPlayerOnCompletionListener*************************/
-PInterface AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-//        return (IInterface*)(IMediaPlayerOnCompletionListener*)this;
-    }
-//    else if (riid == EIID_IMediaPlayerOnCompletionListener) {
-//        return (IMediaPlayerOnCompletionListener*)this;
-//    }
-    return NULL;
-}
+/******************
+ * AudioPlaybackQueueItem::MediaPlayerOnCompletionListener
+ *******************************************************************************************************/
 
-UInt32 AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-//    if (Object == (IInterface*)(IMediaPlayerOnCompletionListener*)this) {
-//        *iID = EIID_IMediaPlayerOnCompletionListener;
-//    }
-//    else {
-        return E_INVALID_ARGUMENT;
-//    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(AudioPlaybackQueueItem::MediaPlayerOnCompletionListener, Object, IMediaPlayerOnCompletionListener);
 
 AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::MediaPlayerOnCompletionListener(
     /* [in] */ AudioPlaybackQueueItem* apqi)
@@ -103,98 +75,83 @@ AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::MediaPlayerOnCompletion
 
 ECode AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::OnCompletion(
 //    /* [in] */ IMediaPlayer* mp
-    )
+)
 {
     mApqi->mFinished = TRUE;
 //    (mApqi->mDone)->Open();
     return NOERROR;
 }
 
-/******************************AudioPlaybackQueueItem*************************/
+/******************
+ * AudioPlaybackQueueItem
+ *******************************************************************************************************/
+
 const String AudioPlaybackQueueItem::TAG("TTS.AudioQueueItem");
 
-PInterface AudioPlaybackQueueItem::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IRunnable*)this;
-    }
-    else if (riid == EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-    return NULL;
-}
+CAR_INTERFACE_IMPL(AudioPlaybackQueueItem, Object, IRunnable);
 
-UInt32 AudioPlaybackQueueItem::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+AudioPlaybackQueueItem::AudioPlaybackQueueItem()
+{}
 
-UInt32 AudioPlaybackQueueItem::Release()
-{
-    return ElRefBase::Release();
-}
+AudioPlaybackQueueItem::~AudioPlaybackQueueItem()
+{}
 
-ECode AudioPlaybackQueueItem::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
+ECode AudioPlaybackQueueItem::constructor()
 {
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (Object == (IInterface*)(IRunnable*)this) {
-        *iID = EIID_IRunnable;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
     return NOERROR;
 }
 
-AudioPlaybackQueueItem::AudioPlaybackQueueItem(
+ECode AudioPlaybackQueueItem::constructor(
     /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
     /* [in] */ IInterface* callerIdentity,
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri,
-    /* [in] */ Int32 streamType) : PlaybackQueueItem(dispatcher, callerIdentity)
+    /* [in] */ AudioOutputParams *audioParams)
+    : PlaybackQueueItem(dispatcher, callerIdentity)
 {
     mContext = context;
     mUri = uri;
-    mStreamType = streamType;
+    mAudioParams = audioParams;
 
 //    CConditionVariable::New((IConditionVariable**)&mDone);
 //    mPlayer = NULL;
     mFinished = FALSE;
+
+    return NOERROR;
 }
 
 ECode AudioPlaybackQueueItem::Run()
 {
     AutoPtr<ITextToSpeechServiceUtteranceProgressDispatcher> dispatcher = GetDispatcher();
+
+    Int32 sessionId = mAudioParams->mSessionId;
+
     dispatcher->DispatchOnStart();
-//    mPlayer = CMediaPlayer::Create(mContext, mUri);
+//    mPlayer = CMediaPlayer::Create(
+//                mContext, mUri, null, mAudioParams.mAudioAttributes,
+//                sessionId > 0 ? sessionId : AudioSystem.AUDIO_SESSION_ALLOCATE);
     if (/*mPlayer == NULL*/FALSE) {
-        dispatcher->DispatchOnError();
-        return NOERROR;
+        dispatcher->DispatchOnError(ITextToSpeech::ERROR_OUTPUT);
+        return E_INVALID_PARAMETER_EXCEPTION;
     }
 
-    //try {
-        AutoPtr<MediaPlayerOnErrorListener> mpoer = new MediaPlayerOnErrorListener(this);
+    AutoPtr<MediaPlayerOnErrorListener> mpoer = new MediaPlayerOnErrorListener(this);
 //        mPlayer->SetOnErrorListener(mpoer);
-        AutoPtr<MediaPlayerOnCompletionListener> mpocl = new MediaPlayerOnCompletionListener(this);
-//        mPlayer->SetOnCompletionListener(mpocl);
-//        mPlayer->SetAudioStreamType(mStreamType);
-//        mPlayer->Start();
-//        mDone->Block();
-        Finish();
-    //} catch (IllegalArgumentException ex) {
-        //Java:    Log.w(TAG, "MediaPlayer failed", ex);
-        /*
+    AutoPtr<MediaPlayerOnCompletionListener> mpocl = new MediaPlayerOnCompletionListener(this);
+
+    if (mpoer == NULL || mpocl == NULL) {
         Logger::W(TAG, String("MediaPlayer failed\n"));
         mDone->Open();
-        */
-    //}
+
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    SetupVolume(mPlayer, mAudioParams->mVolume, mAudioParams->mPan);
+//    mPlayer->SetOnCompletionListener(mpocl);
+//    mPlayer->SetAudioStreamType(mStreamType);
+//    mPlayer->Start();
+//    mDone->Block();
+    Finish();
 
     if (mFinished) {
         dispatcher->DispatchOnDone();
@@ -203,6 +160,32 @@ ECode AudioPlaybackQueueItem::Run()
     }
     return NOERROR;
 }
+
+void AudioPlaybackQueueItem::SetupVolume(
+    /* [in] */ IMediaPlayer *player,
+    /* [in] */ Float volume,
+    /* [in] */ Float pan)
+{
+    Float vol = Clip(volume, 0.0f, 1.0f);
+    Float panning = Clip(pan, -1.0f, 1.0f);
+
+    Float volLeft = vol, volRight = vol;
+    if (panning > 0.0f) {
+        volLeft *= (1.0f - panning);
+    } else if (panning < 0.0f) {
+        volRight *= (1.0f + panning);
+    }
+    player->SetVolume(volLeft, volRight);
+}
+
+Float AudioPlaybackQueueItem::Clip(
+    /* [in] */ Float value,
+    /* [in] */ Float min,
+    /* [in] */ Float max)
+{
+    return value < min ? min : (value < max ? value : max);
+}
+
 
 void AudioPlaybackQueueItem::Finish()
 {
@@ -215,7 +198,7 @@ void AudioPlaybackQueueItem::Finish()
 }
 
 ECode AudioPlaybackQueueItem::Stop(
-    /* [in] */ Boolean isError)
+    /* [in] */ Int32 errorCode)
 {
 //    mDone->Open();
     return NOERROR;

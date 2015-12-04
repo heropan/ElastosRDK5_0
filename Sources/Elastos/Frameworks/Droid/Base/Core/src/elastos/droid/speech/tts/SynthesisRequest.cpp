@@ -30,7 +30,18 @@ ECode SynthesisRequest::constructor(
     /* [in] */ const String& text,
     /* [in] */ IBundle* params)
 {
+    CString::New(text, (ICharSequence**)&mText);
+
+    // Makes a copy of params.
+    return CBundle::New(params, (IBundle**)&mParams);
+}
+
+ECode SynthesisRequest::constructor(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ IBundle* params)
+{
     mText = text;
+
     // Makes a copy of params.
     return CBundle::New(params, (IBundle**)&mParams);
 }
@@ -40,6 +51,22 @@ ECode CSynthesisRequest::GetText(
 {
     VALIDATE_NOT_NULL(ret);
     *ret = mText;
+    return NOERROR;
+}
+
+ECode CSynthesisRequest::GetCharSequenceText(
+    /* [out] */ ICharSequence** ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = mText;
+    return NOERROR;
+}
+
+ECode CSynthesisRequest::GetVoiceName(
+    /* [out] */ String* ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = mVoiceName;
     return NOERROR;
 }
 
@@ -92,6 +119,14 @@ ECode CSynthesisRequest::GetParams(
     return NOERROR;
 }
 
+ECode CSynthesisRequest::GetCallerUid(
+    /* [out] */ Int32* ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = mCallerUid;
+    return NOERROR;
+}
+
 ECode SynthesisRequest::SetLanguage(
     /* [in] */ const String& language,
     /* [in] */ const String& country,
@@ -102,6 +137,11 @@ ECode SynthesisRequest::SetLanguage(
     mVariant = variant;
 }
 
+ECode SynthesisRequest::SetVoiceName(
+    /* [in] */ const String& voiceName)
+{
+    mVoiceName = voiceName;
+}
 ECode SynthesisRequest::SetSpeechRate(
     /* [in] */ Int32 speechRate)
 {
@@ -112,6 +152,12 @@ ECode SynthesisRequest::SetPitch(
     /* [in] */ Int32 pitch)
 {
     mPitch = pitch;
+}
+
+ECode SynthesisRequest::SetCallerUid(
+    /* [in] */ Int32 uid)
+{
+    mCallerUid = uid;
 }
 
 } // namespace Tts

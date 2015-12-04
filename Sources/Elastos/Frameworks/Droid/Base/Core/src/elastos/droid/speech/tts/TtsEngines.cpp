@@ -140,34 +140,56 @@ TtsEngines::TtsEngines()
 
 }
 
+TtsEngines::~TtsEngines()
+{}
+
+ECode TtsEngines::constructor()
+{
+    return NOERROR;
+}
+
 ECode TtsEngines::constructor(
     /* [in] */ IContext* ctx)
 {
     mContext = ctx;
+    return NOERROR;
 }
 
-String TtsEngines::GetDefaultEngine()
+ECode CTtsEngines::GetDefaultEngine(
+    /* [out] */ String* pRet)
 {
+    VALIDATE_NOT_NULL(pRet);
+
     //Java:    String engine = getString(mContext.getContentResolver(), Settings.Secure.TTS_DEFAULT_SYNTH);
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
     String engine;// = GetString(cr.Get(), /*ISettingsSecure::TTS_DEFAULT_SYNTH*/String("tts_default_synth"));
-    return IsEngineInstalled(engine) ? engine : GetHighestRankedEngineName();
+    *pRet = IsEngineInstalled(engine) ? engine : GetHighestRankedEngineName();
+
+    return NOERROR;
 }
 
-String TtsEngines::GetHighestRankedEngineName()
+Code CTtsEngines::GetHighestRankedEngineName(
+    /* [out] */ String * pRet)
 {
+    VALIDATE_NOT_NULL(pRet);
+
     AutoPtr< List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > > engines = GetEngines();
 
     if (engines != NULL && !engines->IsEmpty() && ((*engines)[0])->system) {
-        return (*engines)[0]->name;
+        *pRet = (*engines)[0]->name;
     }
-    return String(NULL);
+    *pRet = String(NULL);
+
+    return NOERROR;
 }
 
-AutoPtr<TextToSpeech::TextToSpeechEngineInfo> TtsEngines::GetEngineInfo(
-    /* [in] */ const String& packageName)
+ECode CTtsEngines::GetEngineInfo(
+    /* [in] */ const String& packageName,
+    /* [out] */ ITextToSpeechEngineInfo** ppRet)
 {
+    VALIDATE_NOT_NULL(ppRet);
+
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IIntent> intent;
@@ -192,13 +214,18 @@ AutoPtr<TextToSpeech::TextToSpeechEngineInfo> TtsEngines::GetEngineInfo(
     // package name. Since the "engine name" is the same as
     // the package name.
     if (resolveInfos.IsEmpty() && resolveInfos.GetSize() == 1) {
-        return GetEngineInfo(resolveInfos[0], pm.Get());
+        *ppRet = GetEngineInfo(resolveInfos[0], pm.Get());
     }
-    return NULL;
+    *ppRet = NULL;
+
+    return NOERROR;
 }
 
-AutoPtr< List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > > TtsEngines::GetEngines()
+ECode CTtsEngines::GetEngines(
+    /* [out] */ IArrayList** ppRet)
 {
+    VALIDATE_NOT_NULL(ppRet);
+
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IIntent> intent;
@@ -220,7 +247,8 @@ AutoPtr< List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > > TtsEngines::Get
     }
     if (resolveInfos.IsEmpty()){
         AutoPtr<List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > > enginesNull;
-        return enginesNull;    //Java:     return Collections.emptyList();
+        *ppRet = enginesNull;    //Java:     return Collections.emptyList();
+        return NOERROR;
     }
 
     AutoPtr< List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > > engines;// = new ArrayList<EngineInfo>(resolveInfos.size());
@@ -235,7 +263,8 @@ AutoPtr< List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > > TtsEngines::Get
     }
     engines->Sort(EngineInfoComparator::Comparator);
 
-    return engines;
+    *ppRet = engines;
+    return NOERROR;
 }
 
 Boolean TtsEngines::IsSystemEngine(
@@ -248,18 +277,21 @@ Boolean TtsEngines::IsSystemEngine(
     return appInfo != NULL && (flags & IApplicationInfo::FLAG_SYSTEM) != 0;
 }
 
-Boolean TtsEngines::IsEngineInstalled(
-    /* [in] */ const String& engine)
+ECode CTtsEngines::IsEngineInstalled(
+    /* [in] */ const String& engine,
+    /* [out] */ Boolean* pRet)
 {
     if (engine.IsNullOrEmpty()) {
-        return FALSE;
+        *pRet = FALSE;
     }
 
-    return GetEngineInfo(engine) != NULL;
+    *pRet = (GetEngineInfo(engine) != NULL);
+    return NOERROR;
 }
 
-AutoPtr<IIntent> TtsEngines::GetSettingsIntent(
-    /* [in] */ const String& engine)
+ECode CTtsEngines::GetSettingsIntent(
+    /* [in] */ const String& engine,
+    /* [out] */ IIntent** ppRet)
 {
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
@@ -293,15 +325,17 @@ AutoPtr<IIntent> TtsEngines::GetSettingsIntent(
         if (service != NULL) {
             String settings = SettingsActivityFromServiceInfo(service.Get(), pm.Get());
             if (!settings.IsNull()) {
-                AutoPtr<IIntent> i;
-                CIntent::New((IIntent**)&i);
-                i->SetClassName(engine, settings);
-                return i;
+                AutoPtr<IIntent> intent;
+                CIntent::New((IIntent**)&intent);
+                intent->SetClassName(engine, settings);
+                *ppRet = intent;
+                return NOERROR;
             }
         }
     }
 
-    return NULL;
+    *ppRet = NULL;
+    return NOERROR;
 }
 
 String TtsEngines::SettingsActivityFromServiceInfo(
@@ -400,7 +434,7 @@ ECode TtsEngines::GetLocalePrefForEngine(
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
 
-    return GetLocalePrefForEngine(engineName, /*GetString(cr.Get(), ISettingsSecure::TTS_DEFAULT_LOCALE)*/String(NULL));
+    return GetLocalePrefForEngine(engineName, /*GetString(cr.Get(), ISettingsSecure::TTS_DEFAULT_LOCALE)*/String(NULL), ret);
 }
 
 ECode GetLocalePrefForEngine(
@@ -425,7 +459,7 @@ ECode GetLocalePrefForEngine(
     }
 
 
-    if (DBG){
+    if (DBG) {
         //Java:    Log.d(TAG, "getLocalePrefForEngine(" + engineName + ")= " + locale);
         Logger::D(TAG, String("getLocalePrefForEngine(")+ engineName + String(")= ") + localeString+String("\n"));
     }
@@ -436,8 +470,9 @@ ECode GetLocalePrefForEngine(
 }
 
 
-AutoPtr<ILocale> TtsEngines::parseLocaleString(
+ECode TtsEngines::ParseLocaleString(
     /* [in] */ const String& localeString)
+    /* [in] */ ILocale** ret)
 {
     String language("");
     String country("")
@@ -729,7 +764,7 @@ ECode TtsEngines::UpdateLocalePrefForEngine(
         newPrefList = UpdateValueInCommaSeparatedList(prefList, engineName, String(""));
     }
 
-    if (DBG){
+    if (DBG) {
         //Java:    Log.d(TAG, "updateLocalePrefForEngine(), writing: " + newPrefList.toString());
         Logger::D(TAG, String("updateLocalePrefForEngine(), writing: ")+ newPrefList + String("\n"));
 

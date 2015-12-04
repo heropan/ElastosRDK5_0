@@ -1,30 +1,35 @@
 
-TARGET_NAME= tts
-TARGET_TYPE= lib
+TARGET_NAME = speech.tts
+TARGET_TYPE = lib
 
-include $(MAKEDIR)/../../../../../../../sources.inc
+include $(MAKEDIR)/../../../../../../sources.inc
 
-INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES = AbstractSynthesisCallback.cpp
-SOURCES += AudioPlaybackHandler.cpp
-SOURCES += AudioPlaybackQueueItem.cpp
+SOURCES = AbstractEventLogger.cpp
 SOURCES += BlockingAudioTrack.cpp
-SOURCES += CSynthesisRequest.cpp
-SOURCES += CTextToSpeech.cpp
-SOURCES += CTtsEngines.cpp
 SOURCES += CTtsEnginesHelper.cpp
-SOURCES += EventLogger.cpp
-SOURCES += FileSynthesisCallback.cpp
 SOURCES += PlaybackQueueItem.cpp
-SOURCES += PlaybackSynthesisCallback.cpp
-SOURCES += SilencePlaybackQueueItem.cpp
 SOURCES += SynthesisPlaybackQueueItem.cpp
-SOURCES += SynthesisRequest.cpp
-SOURCES += TextToSpeech.cpp
-SOURCES += TextToSpeechService.cpp
 SOURCES += TtsEngines.cpp
+SOURCES += AbstractSynthesisCallback.cpp
+SOURCES += CSynthesisRequest.cpp
+SOURCES += EventLogger.cpp
+SOURCES += PlaybackSynthesisCallback.cpp
+SOURCES += SynthesisRequest.cpp
 SOURCES += UtteranceProgressListener.cpp
+SOURCES += AudioPlaybackHandler.cpp
+SOURCES += CTextToSpeech.cpp
+SOURCES += EventLoggerV1.cpp
+SOURCES += SilencePlaybackQueueItem.cpp
+SOURCES += TextToSpeech.cpp
+SOURCES += AudioPlaybackQueueItem.cpp
+SOURCES += CTtsEngines.cpp
+SOURCES += FileSynthesisCallback.cpp
+SOURCES += TextToSpeechService.cpp
+SOURCES += CFileSynthesisCallback.cpp
+SOURCES += CBlockingAudioTrack
+

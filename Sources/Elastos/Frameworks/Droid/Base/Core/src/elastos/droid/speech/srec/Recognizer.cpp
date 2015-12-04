@@ -32,16 +32,18 @@ Recognizer::RecognizerGrammar::~RecognizerGrammar()
 
 ECode Recognizer::RecognizerGrammar::constructor()
 {
-    return  NOERROR;
+    return NOERROR;
 }
 
 Recognizer::RecognizerGrammar::constructor(
     /* [in] */ const String& g2gFileName,
-    /* [in] */ Recognizer* r)
+    /* [in] */ IRecognizer* r)
 {
     mR = r;
     mGrammar = mR->SR_GrammarLoad(g2gFileName);
-    mR -> SR_GrammarSetupVocabulary(mGrammar, r->mVocabulary);
+    Int32 i;
+    r->GetVocabulary(&i);
+    mR -> SR_GrammarSetupVocabulary(mGrammar, i);
 
     return NOERROR;
 }
@@ -73,7 +75,7 @@ void Recognizer::RecognizerGrammar::SetupRecognizer()
 }
 
 void Recognizer::RecognizerGrammar::Save(
-    /* [in] */ const String& g2gFileName)// throws IOException
+    /* [in] */ const String& g2gFileName)
 {
     mR->SR_GrammarSave(mGrammar, g2gFileName);
 }
@@ -92,8 +94,8 @@ void Recognizer::RecognizerGrammar::Finalize()
     if (mGrammar != 0) {
         Destroy();
         //Java:    throw new IllegalStateException("someone forgot to destroy Grammar");
-        Logger::E(TAG, String("IllegalStateException:someone forgot to destroy Grammar\n"));
-        return;// E_ILLEGAL_STATE_EXCEPTION;
+        Logger::E(TAG, "IllegalStateException:someone forgot to destroy Grammar\n");
+        return;     // E_ILLEGAL_STATE_EXCEPTION;
     }
 }
 
@@ -172,7 +174,7 @@ Int32 Recognizer::PutAudio(
 }
 
 void Recognizer::PutAudio(
-    /* [in] */ IInputStream* audio)// throws IOException
+    /* [in] */ IInputStream* audio)
 {
     // make sure the audio buffer is allocated
     if (mPutAudioBuffer == NULL){
@@ -188,7 +190,7 @@ void Recognizer::PutAudio(
     // put it into the Recognizer
     else if (nbytes != SR_RecognizerPutAudio(mRecognizer, mPutAudioBuffer, 0, nbytes, FALSE)) {
         //Java:    throw new IOException("SR_RecognizerPutAudio failed nbytes=" + nbytes);
-        Logger::E(TAG, String("IOException:SR_RecognizerPutAudio failed nbytes=") + StringUtils::Int32ToString(nbytes) + String("\n"));
+        Logger::E(TAG, "IOException:SR_RecognizerPutAudio failed nbytes=%d\n", nbytes);
     }
 }
 
@@ -238,18 +240,18 @@ String Recognizer::GetAcousticState()
 ECode Recognizer::Destroy()
 {
     //try {
-        if (mVocabulary != 0){
+        if (mVocabulary != 0) {
             SR_VocabularyDestroy(mVocabulary);
         }
     //} finally {
         mVocabulary = 0;
         //try {
-            if (mRecognizer != 0){
+            if (mRecognizer != 0) {
                 SR_RecognizerUnsetup(mRecognizer);
             }
         //} finally {
             //try {
-                if (mRecognizer != 0){
+                if (mRecognizer != 0) {
                     SR_RecognizerDestroy(mRecognizer);
                 }
             //} finally {
@@ -265,12 +267,19 @@ ECode Recognizer::Destroy()
     return NOERROR;
 }
 
+ECode Recognizer::GetVocabulary(
+    /* [out] */ Int32* ret)
+{
+    *ret = mVocabulary;
+    return NOERROR;
+}
+
 void Recognizer::Finalize()// throws Throwable
 {
     if (mVocabulary != 0 || mRecognizer != 0) {
         Destroy();
         //Java:    throw new IllegalStateException("someone forgot to destroy Recognizer");
-        Logger::E(TAG, String("IllegalStateException:someone forgot to destroy Recognizer\n"));
+        Logger::E(TAG, "IllegalStateException:someone forgot to destroy Recognizer\n");
     }
 }
 

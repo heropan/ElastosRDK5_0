@@ -68,40 +68,41 @@ public:
             /* [out] */ String* ret);
 
     public:
-        //@Override
-        CARAPI_(String) ToString();
-
-    public:
         /**
          * Engine package name..
          */
-        String name;// = NULL;
+        String name;
         /**
          * Localized label for the engine.
          */
-        String label;// = NULL;
+        String label;
         /**
          * Icon for the engine.
          */
-        Int32 icon;// = 0;
+        Int32 icon;
         /**
          * Whether this engine is a part of the system
          * image.
          *
          * @hide
          */
-        Boolean system;// = FALSE;
+        Boolean system;
         /**
          * The priority the engine declares for the the intent filter
          * {@code android.intent.action.TTS_SERVICE}
          *
          * @hide
          */
-        Int32 priority;// = 0;
+        Int32 priority;
     };
 
 private:
-    //interface Action<R>
+    /**
+     * Java:
+     * private interface Action<R> {
+     *    R run(ITextToSpeechService service) throws RemoteException;
+     * }
+     */
     class TextToSpeechActionR
         : public Object
     {
@@ -340,11 +341,20 @@ private:
         //public
         CARAPI_(AutoPtr</*IIBinder*/IInterface>) GetCallerIdentity();
 
+        /**
+         * Clear connection related fields and cancel mOnServiceConnectedAsyncTask if set.
+         *
+         * @return true if we cancel mOnSetupConnectionAsyncTask in progress.
+         */
+        CARAPI_(Boolean) ClearServiceConnection();
+
         //@Override
         CARAPI OnServiceDisconnected(
             /* [in] */ IComponentName* name);
 
         CARAPI_(void) Disconnect();
+
+        CARAPI_(Boolean) IsEstablished();
 
         //<R>
         CARAPI_(Handle32) RunAction(
@@ -792,7 +802,8 @@ private:
     CARAPI_(Handle32) RunActionNoReconnect(
         /* [in] */ TextToSpeechActionR* action,
         /* [in] */ Handle32 errorResult,
-        /* [in] */ const String& method);
+        /* [in] */ const String& method,
+        /* [in] */ Boolean onlyEstablishedConnection);
 
     //private <R>
     CARAPI_(Handle32) RunAction(
@@ -805,7 +816,8 @@ private:
         /* [in] */ TextToSpeechActionR* action,
         /* [in] */ Handle32 errorResult,
         /* [in] */ const String& method,
-        /* [in] */ Boolean reconnect);
+        /* [in] */ Boolean reconnect,
+        /* [in] */ Boolean onlyEstablishedConnection);
 
     CARAPI_(Int32) InitTts();
 
@@ -816,6 +828,14 @@ private:
         /* [in] */ Int32 result);
 
     CARAPI_(AutoPtr</*IIBinder*/IInterface>) GetCallerIdentity();
+
+    /**
+     * Limit of length of input string passed to speak and synthesizeToFile.
+     *
+     * @see #speak
+     * @see #synthesizeToFile
+     */
+    CARAPI_(Int32) GetMaxSpeechInputLength();
 
 private:
     CARAPI_(AutoPtr<IUri>) MakeResourceUri(

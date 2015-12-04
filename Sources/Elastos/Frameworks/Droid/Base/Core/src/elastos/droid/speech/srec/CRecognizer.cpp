@@ -1,4 +1,3 @@
-
 #include "elastos/droid/speech/srec/CRecognizer.h"
 #include "elastos/droid/ext/frameworkext.h"
 

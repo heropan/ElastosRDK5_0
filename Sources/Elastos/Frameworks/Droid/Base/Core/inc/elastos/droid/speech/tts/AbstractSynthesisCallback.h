@@ -25,22 +25,8 @@ namespace Tts {
 //
 class AbstractSynthesisCallback
     : public Object
-    , public ISynthesisCallback
     , public SynthesisCallback
 {
-public:
-    /**
-     * Checks whether the synthesis request completed successfully.
-     */
-    virtual CARAPI_(Boolean) IsDone() = 0;
-
-    /**
-     * Aborts the speech request.
-     *
-     * Can be called from multiple threads.
-     */
-    virtual CARAPI_(void) Stop() = 0;
-
 public:
     CAR_INTERFACE_DECL();
 
@@ -63,7 +49,7 @@ public:
      *
      * Can be called from multiple threads.
      */
-    CARAPI Stop();
+    virtual CARAPI Stop();
 
     /**
      * Get status code for a "stop".
