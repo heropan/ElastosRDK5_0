@@ -49,11 +49,6 @@ ECode TextToSpeech::TextToSpeechEngineInfo::ToString(
     return NOERROR;
 }
 
-String TextToSpeech::TextToSpeechEngineInfo::ToString()
-{
-    return String("EngineInfo{name=") + name + String("}");
-}
-
 /******************************TextToSpeech::TextToSpeechActionR*************************/
 //None
 
@@ -344,6 +339,7 @@ ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::cons
     /* [in] */ TextToSpeech* tts)
 {
     mTts = tts;
+    return NOERROR;
 }
 
 ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::OnDone(
@@ -383,11 +379,23 @@ ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::OnSt
 
 CAR_INTERFACE_IMPL(TextToSpeech::TextToSpeechConnection, Object, IServiceConnection)
 
-TextToSpeech::TextToSpeechConnection::TextToSpeechConnection(
+TextToSpeech::TextToSpeechConnection::TextToSpeechConnection()
+{}
+
+TextToSpeech::TextToSpeechConnection::~TextToSpeechConnection()
+{}
+
+ECode TextToSpeech::TextToSpeechConnection::constructor()
+{
+    return NOERROR;
+}
+
+ECode TextToSpeech::TextToSpeechConnection::constructor(
     /* [in] */ TextToSpeech* pTts)
 {
     mTts = pTts;
     mCallback = new TextToSpeechConnectionCallback(mTts);
+    return NOERROR;
 }
 
 ECode TextToSpeech::TextToSpeechConnection::OnServiceConnected(
@@ -425,6 +433,24 @@ ECode TextToSpeech::TextToSpeechConnection::OnServiceConnected(
     return mCallback;
 }
 
+Boolean TextToSpeech::ClearServiceConnection()
+{
+    synchronized(mStartLock) {
+        Boolean result = false;
+        if (mOnSetupConnectionAsyncTask != NULL) {
+            result = mOnSetupConnectionAsyncTask->Cancel(FALSE);
+            mOnSetupConnectionAsyncTask = NULL;
+        }
+
+        mService = NULL;
+        // If this is the active connection, clear it
+        if (mServiceConnection == this) {
+            mServiceConnection = NULL;
+        }
+        return result;
+    }
+}
+
 ECode TextToSpeech::TextToSpeechConnection::OnServiceDisconnected(
     /* [in] */ IComponentName* name)
 {
@@ -434,6 +460,18 @@ ECode TextToSpeech::TextToSpeechConnection::OnServiceDisconnected(
     if ((mTts->mServiceConnection).Get() == this) {
         mTts->mServiceConnection = NULL;
     }
+
+    Logger::I(TAG, String("Asked to disconnect from ") + name);
+    if (clearServiceConnection()) {
+        /* We need to protect against a rare case where engine
+         * dies just after successful connection - and we process onServiceDisconnected
+         * before OnServiceConnectedAsyncTask.onPostExecute. onServiceDisconnected cancels
+         * OnServiceConnectedAsyncTask.onPostExecute and we don't call dispatchOnInit
+         * with ERROR as argument.
+         */
+        DispatchOnInit(ERROR);
+    }
+
     return NOERROR;
 }
 
@@ -441,12 +479,7 @@ void TextToSpeech::TextToSpeechConnection::Disconnect()
 {
     (mTts->mContext)->UnbindService(this);
 
-    AutoLock lock(mTts->mStartLock);
-    mService = NULL;
-    // If this is the active connection, clear it
-    if ((mTts->mServiceConnection).Get() == this) {
-        (mTts->mServiceConnection) = NULL;
-    }
+    clearServiceConnection();
 }
 
 Handle32 TextToSpeech::TextToSpeechConnection::RunAction(
@@ -462,6 +495,12 @@ Handle32 TextToSpeech::TextToSpeechConnection::RunAction(
             Logger::W(mTts->TAG, method + String(" failed: not connected to TTS engine\n"));
             return errorResult;
         }
+
+        if (onlyEstablishedConnection && !isEstablished()) {
+            Logger::W(TAG, method + String(" failed: TTS engine connection not fully set up"));
+            return errorResult;
+        }
+
         return action->Run(mService);
     //} catch (RemoteException ex) {
         //Java:    Log.e(TAG, method + " failed", ex);
@@ -998,6 +1037,11 @@ AutoPtr< List< AutoPtr<ITextToSpeechEngineInfo> > > TextToSpeech::GetEngines()
     }
 
     return lRet;
+}
+
+Int32 TextToSpeech::GetMaxSpeechInputLength()
+{
+    return 4000;
 }
 
 } // namespace Tts

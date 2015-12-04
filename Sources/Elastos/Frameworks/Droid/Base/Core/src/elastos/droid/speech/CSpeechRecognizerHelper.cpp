@@ -6,9 +6,9 @@ namespace Elastos {
 namespace Droid {
 namespace Speech {
 
-CAR_SINGLETON_IMPL(CSpeechRecognizerHelper::IsRecognitionAvailable)
+CAR_SINGLETON_IMPL(CSpeechRecognizerHelper)
 
-CAR_INTERFACE_IMPL(CSpeechRecognizerHelper::IsRecognitionAvailable, Singleton, ISpeechRecognizerHelper)
+CAR_INTERFACE_IMPL(CSpeechRecognizerHelper, Singleton, ISpeechRecognizerHelper)
 
 ECode CSpeechRecognizerHelper::IsRecognitionAvailable(
     /* [in] */ IContext * pContext,

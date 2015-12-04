@@ -115,7 +115,7 @@ public:
          */
         CARAPI constructor(
             /* [in] */ const String& g2gFileName,
-            /* [in] */ Recognizer* r);// throws IOException
+            /* [in] */ IRecognizer* r);// throws IOException
 
         /**
          * Reset all slots.
@@ -329,6 +329,9 @@ public:
      * Clean up resources.
      */
     CARAPI Destroy();
+
+    CARAPI GetVocabulary(
+        /* [out] */ Int32* ret);
 
 public:
     /**
@@ -658,19 +661,19 @@ private:
     // private static native void SR_RecognizerResultGetLocale(int recognizer, ESR_Locale* locale);
 
 private:
-    static CString TAG;// = "Recognizer";
+    static String TAG;          // = "Recognizer";
 
     // handle to SR_Vocabulary object
-    Int32 mVocabulary;// = 0;
+    Int32 mVocabulary;
 
     // handle to SR_Recognizer object
-    Int32 mRecognizer;// = 0;
+    Int32 mRecognizer;
 
     // Grammar currently associated with Recognizer via SR_GrammarSetupRecognizer
-    AutoPtr<RecognizerGrammar> mActiveGrammar;// = NULL;
+    AutoPtr<RecognizerGrammar> mActiveGrammar;
 
     // audio buffer for putAudio(InputStream)
-    AutoPtr< ArrayOf<Byte> > mPutAudioBuffer;// = NULL;
+    AutoPtr<ArrayOf<Byte> > mPutAudioBuffer;
 
 };
 

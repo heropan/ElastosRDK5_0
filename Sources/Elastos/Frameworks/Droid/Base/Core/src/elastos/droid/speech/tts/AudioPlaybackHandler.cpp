@@ -1,9 +1,7 @@
 #include "elastos/droid/speech/tts/AudioPlaybackHandler.h"
 #include <elastos/utility/logging/Logger.h>
-#include <Elastos.CoreLibrary.h>
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::CThread;
 using Elastos::Utility::Logging::Logger;
 
@@ -36,28 +34,29 @@ ECode AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::Run()
 {
     while (TRUE) {
         AutoPtr<PlaybackQueueItem> item = NULL;
-            //try {
-                item = (mAph->mQueue).GetFront();
-                //(mAph->mQueue).Pop();
-                (mAph->mQueue).PopFront();
-            //} catch (InterruptedException ie) {
-                /*
-                if (DBG){
-                    //Java:    Log.d(TAG, "MessageLoop : Shutting down (interrupted)");
-                    Logger::D(TAG, String("MessageLoop : Shutting down (interrupted)\n"));
-                }
-                return E_INTERRUPTED_EXCEPTION;
-                */
-            //}
+        //try {
+            item = (mAph->mQueue).GetFront();
+            //(mAph->mQueue).Pop();
+            (mAph->mQueue).PopFront();
+        //} catch (InterruptedException ie) {
+            /*
+            if (DBG){
+                //Java:    Log.d(TAG, "MessageLoop : Shutting down (interrupted)");
+                Logger::D(TAG, String("MessageLoop : Shutting down (interrupted)\n"));
+            }
+            return E_INTERRUPTED_EXCEPTION;
+            */
+        //}
 
-            // If stop() or stopForApp() are called between mQueue.take()
-            // returning and mCurrentWorkItem being set, the current work item
-            // will be run anyway.
+        // If stop() or stopForApp() are called between mQueue.take()
+        // returning and mCurrentWorkItem being set, the current work item
+        // will be run anyway.
 
-            mAph->mCurrentWorkItem = item;
-            item->Run();
-            mAph->mCurrentWorkItem = NULL;
+        mAph->mCurrentWorkItem = item;
+        item->Run();
+        mAph->mCurrentWorkItem = NULL;
     }
+
     return NOERROR;
 }
 
@@ -73,7 +72,7 @@ AudioPlaybackHandler::AudioPlaybackHandler()
 {
     //Java:    mHandlerThread = new Thread(new MessageLoop(), "TTS.AudioPlaybackThread");
     AutoPtr<AudioPlaybackHandlerMessageLoop> aphMl = new AudioPlaybackHandlerMessageLoop(this);
-    CThread::New( aphMl, String("TTS.AudioPlaybackThread"), (IThread**)&mHandlerThread);
+    CThread::New(aphMl, String("TTS.AudioPlaybackThread"), (IThread**)&mHandlerThread);
 }
 
 void AudioPlaybackHandler::Start()
@@ -88,7 +87,7 @@ void AudioPlaybackHandler::Stop(
         return;
     }
 
-    item->Stop(FALSE);
+    item->Stop(ITextToSpeech::STOPPED);
 }
 
 void AudioPlaybackHandler::Enqueue(
@@ -108,7 +107,7 @@ void AudioPlaybackHandler::StopForApp(
 {
     if (DBG){
         //Java:    Log.d(TAG, "Removing all callback items for : " + callerIdentity);
-        Logger::D(TAG, String("Removing all callback items for : ") + String("\n"));
+        Logger::D(TAG, "Removing all callback items for : \n");
     }
     RemoveWorkItemsFor(callerIdentity);
 
@@ -122,7 +121,7 @@ void AudioPlaybackHandler::Stop()
 {
     if (DBG){
         //Java:    Log.d(TAG, "Stopping all items");
-        Logger::D(TAG, String("Stopping all items\n"));
+        Logger::D(TAG, "Stopping all items\n");
     }
     RemoveAllMessages();
 
@@ -156,11 +155,10 @@ void AudioPlaybackHandler::RemoveWorkItemsFor(
     /* [in] */ IInterface* callerIdentity)
 {
     Int32 queueLen = mQueue.GetSize();
-    for(Int32 i = 0; i<queueLen; i++)
-    {
+    for(Int32 i = 0; i<queueLen; i++) {
         AutoPtr<PlaybackQueueItem> item = mQueue.GetFront();
         AutoPtr<IInterface> ci;
-        ci = item->GetCallerIdentity();   //item->GetCallerIdentity((IInterface**)&ciT);
+        ci = item->GetCallerIdentity();
         if (ci.Get() != callerIdentity) {
             //mQueue.Push(item);
             mQueue.PushBack(item);

@@ -1,5 +1,4 @@
 #include "elastos/droid/speech/tts/AbstractSynthesisCallback.h"
-#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
@@ -23,47 +22,20 @@ ECode AbstractSynthesisCallback::constructor()
     return NOERROR;
 }
 
-ECode AbstractSynthesisCallback::GetMaxBufferSize(
-    /* [out] */ Int32* ret)
+ECode AbstractSynthesisCallback::constructor(
+    /* [in] */ Boolean clientIsUsingV2)
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = SynthesisCallback::GetMaxBufferSize();
+    mClientIsUsingV2 = clientIsUsingV2;
+
     return NOERROR;
 }
 
-ECode AbstractSynthesisCallback::Start(
-    /* [in] */ Int32 sampleRateInHz,
-    /* [in] */ Int32 audioFormat,
-    /* [in] */ Int32 channelCount,
-    /* [out] */ Int32* ret)
+ECode AbstractSynthesisCallback::ErrorCodeOnStop(
+    /* [out] */ Int32* ret);
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = SynthesisCallback::Start(sampleRateInHz, audioFormat, channelCount);
-    return NOERROR;
-}
+    *ret = mClientIsUsingV2 ? TextToSpeech.STOPPED : TextToSpeech.ERROR;
 
-ECode AbstractSynthesisCallback::AudioAvailable(
-    /* [in] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
-    /* [out] */ Int32* ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret = SynthesisCallback::AudioAvailable(buffer, offset, length);
     return NOERROR;
-}
-
-ECode AbstractSynthesisCallback::Done(
-    /* [out] */ Int32* ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret = SynthesisCallback::Done();
-    return NOERROR;
-}
-
-ECode AbstractSynthesisCallback::Error()
-{
-    return SynthesisCallback::Error();
 }
 
 } // namespace Tts

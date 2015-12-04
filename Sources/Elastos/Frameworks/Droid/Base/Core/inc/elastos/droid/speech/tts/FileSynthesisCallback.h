@@ -26,7 +26,7 @@ public:
 
     ~FileSynthesisCallback();
 
-    FileSynthesisCallback(
+    constructor(
         /* [in] */ IFileChannel fileChannel,
         /* [in] */ UtteranceProgressDispatcher dispatcher,
         /* [in] */ IInterface callerIdentity,

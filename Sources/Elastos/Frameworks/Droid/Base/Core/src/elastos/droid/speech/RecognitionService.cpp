@@ -161,10 +161,9 @@ ECode RecognitionService::RecognitionServiceBinder::StartListening(
     /* [in] */ IIntent* recognizerIntent,
     /* [in] */ IIRecognitionListener* listener)
 {
-    if (DBG){
+    if (DBG) {
         //Java:    Log.d(TAG, "startListening called by:" + listener.asBinder());
-        String strOut = String("startListening called by:") + String("\n");
-        Logger::D(TAG, strOut);
+        Logger::D(TAG, "startListening called by:\n");
     }
     if (mInternalService != NULL && mInternalService->CheckPermissions(listener)) {
         AutoPtr<RecognitionServiceStartListeningArgs> rslArgs =
@@ -181,10 +180,9 @@ ECode RecognitionService::RecognitionServiceBinder::StartListening(
 ECode RecognitionService::RecognitionServiceBinder::StopListening(
     /* [in] */ IIRecognitionListener* listener)
 {
-    if (DBG){
+    if (DBG) {
         //Java:    Log.d(TAG, "stopListening called by:" + listener.asBinder());
-        String strOut = String("stopListening called by:") + String("\n");
-        Logger::D(TAG, strOut);
+        Logger::D(TAG, "stopListening called by:\n");
 
     }
     if (mInternalService != NULL && mInternalService->CheckPermissions(listener)) {
@@ -202,8 +200,7 @@ ECode RecognitionService::RecognitionServiceBinder::Cancel(
 {
     if (DBG){
         //Java:    Log.d(TAG, "cancel called by:" + listener.asBinder());
-        String strOut = String("cancel called by:") + String("\n");
-        Logger::D(TAG, strOut);
+        Logger::D(TAG, "cancel called by:\n");
     }
     if (mInternalService != NULL && mInternalService->CheckPermissions(listener)) {
         AutoPtr<IMessage> msg;
@@ -229,8 +226,7 @@ void RecognitionService::DispatchStartListening(
     if (mCurrentCallback == NULL) {
         if (DBG){
             //Java:    Log.d(TAG, "created new mCurrentCallback, listener = " + listener.asBinder());
-            String strOut = String("created new mCurrentCallback, listener = ") + String("\n");
-            Logger::D(TAG, strOut);
+            Logger::D(TAG, "created new mCurrentCallback, listener = \n");
         }
         mCurrentCallback = new RecognitionServiceCallback(listener, this);
         OnStartListening(intent, mCurrentCallback);
@@ -239,10 +235,10 @@ void RecognitionService::DispatchStartListening(
             listener->OnError(ISpeechRecognizer::ERROR_RECOGNIZER_BUSY);
         //} catch (RemoteException e) {
             //Java:    Log.d(TAG, "onError call from startListening failed");
-            Logger::D(TAG, String("onError call from startListening failed\n"));
+            Logger::D(TAG, "onError call from startListening failed\n");
         //}
         //Java:    Log.i(TAG, "concurrent startListening received - ignoring this call");
-        Logger::I(TAG, String("concurrent startListening received - ignoring this call\n"));
+        Logger::I(TAG, "concurrent startListening received - ignoring this call\n");
     }
 }
 
@@ -253,17 +249,17 @@ void RecognitionService::DispatchStopListening(
         if (mCurrentCallback == NULL) {
             listener->OnError(ISpeechRecognizer::ERROR_CLIENT);
             //Java:    Log.w(TAG, "stopListening called with no preceding startListening - ignoring");
-            Logger::W(TAG, String("stopListening called with no preceding startListening - ignoring\n"));
+            Logger::W(TAG, "stopListening called with no preceding startListening - ignoring\n");
         } else if ( (mCurrentCallback->mListener).Get() != listener) {
             listener->OnError(ISpeechRecognizer::ERROR_RECOGNIZER_BUSY);
             //Java:    Log.w(TAG, "stopListening called by other caller than startListening - ignoring");
-            Logger::W(TAG, String("stopListening called by other caller than startListening - ignoring\n"));
+            Logger::W(TAG, "stopListening called by other caller than startListening - ignoring\n");
         } else { // the correct state
             OnStopListening(mCurrentCallback);
         }
     //} catch (RemoteException e) { // occurs if onError fails
         //Java:    Log.d(TAG, "onError call from stopListening failed");
-        Logger::D(TAG, String("onError call from stopListening failed\n"));
+        Logger::D(TAG, "onError call from stopListening failed\n");
     //}
 }
 
@@ -273,17 +269,17 @@ void RecognitionService::DispatchCancel(
     if (mCurrentCallback == NULL) {
         if (DBG){
             //Java:    Log.d(TAG, "cancel called with no preceding startListening - ignoring");
-            Logger::D(TAG, String("cancel called with no preceding startListening - ignoring\n"));
+            Logger::D(TAG, "cancel called with no preceding startListening - ignoring\n");
         }
     } else if ( (mCurrentCallback->mListener).Get() != listener) {
         //Java:    Log.w(TAG, "cancel called by client who did not call startListening - ignoring");
-        Logger::W(TAG, String("cancel called by client who did not call startListening - ignoring\n"));
+        Logger::W(TAG, "cancel called by client who did not call startListening - ignoring\n");
     } else { // the correct state
         OnCancel(mCurrentCallback);
         mCurrentCallback = NULL;
         if (DBG){
             //Java:    Log.d(TAG, "canceling - setting mCurrentCallback to null");
-            Logger::D(TAG, String("canceling - setting mCurrentCallback to null\n"));
+            Logger::D(TAG, "canceling - setting mCurrentCallback to null\n");
         }
     }
 }
@@ -296,20 +292,20 @@ void RecognitionService::DispatchClearCallback()
 Boolean RecognitionService::CheckPermissions(
     /* [in] */ IIRecognitionListener* listener)
 {
-    if (DBG){
+    if (DBG) {
         //Java:    Log.d(TAG, "checkPermissions");
-        Logger::D(TAG, String("checkPermissions\n"));
+        Logger::D(TAG, "checkPermissions\n");
     }
     if (/*RecognitionService.this.checkCallingOrSelfPermission(Elastos::Droid::Manifest::permission::RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED*/FALSE) {
         return TRUE;
     }
     //try {
         //Java:    Log.e(TAG, "call for recognition service without RECORD_AUDIO permissions");
-        Logger::E(TAG, String("call for recognition service without RECORD_AUDIO permissions\n"));
+        Logger::E(TAG, "call for recognition service without RECORD_AUDIO permissions\n");
         listener->OnError(ISpeechRecognizer::ERROR_INSUFFICIENT_PERMISSIONS);
     //} catch (RemoteException re) {
         //Java:    Log.e(TAG, "sending ERROR_INSUFFICIENT_PERMISSIONS message failed", re);
-        Logger::E(TAG, String("sending ERROR_INSUFFICIENT_PERMISSIONS message failed\n"));
+        Logger::E(TAG, "sending ERROR_INSUFFICIENT_PERMISSIONS message failed\n");
     //}
     return FALSE;
 }
@@ -317,20 +313,20 @@ Boolean RecognitionService::CheckPermissions(
 AutoPtr</*IIBinder*/IBinder> RecognitionService::OnBind(
     /* [in] */ IIntent* intent)
 {
-    if (DBG){
+    if (DBG) {
         //Java:    Log.d(TAG, "onBind, intent=" + intent);
         String strIntent;
         intent->ToString(&strIntent);
-        Logger::D(TAG, String("onBind, intent=") + strIntent + String("\n"));
+        Logger::D(TAG, "onBind, intent=%s\n", strIntent);
     }
     return /*mBinder*/NULL;
 }
 
 ECode RecognitionService::OnDestroy()
 {
-    if (DBG){
+    if (DBG) {
         //Java:    Log.d(TAG, "onDestroy");
-        Logger::D(TAG, String("onDestroy\n"));
+        Logger::D(TAG, "onDestroy\n");
     }
     mCurrentCallback = NULL;
     mBinder->ClearReference();

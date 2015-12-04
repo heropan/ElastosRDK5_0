@@ -6,12 +6,14 @@
 #include "elastos/droid/speech/tts/TextToSpeech.h"
 #include <elastos/utility/etl/List.h>
 
-//using Elastos::Utility::IComparator;
+using Elastos::Utility::IComparator;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IServiceInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::IContext;
+using Elastos::Utility::IArrayList;
+
 namespace Elastos {
 namespace Droid {
 namespace Speech {
@@ -24,6 +26,8 @@ namespace Tts {
  * Comments in this class the use the shorthand "system engines" for engines that
  * are a part of the system image.
  *
+ * This class is thread-safe/
+ *
  * @hide
  */
 //public class
@@ -35,7 +39,7 @@ private:
     //private static class
     class EngineInfoComparator
         : public Object
-//        , public IComparator
+        , public IComparator
     {
     public:
         CAR_INTERFACE_DECL();
@@ -73,7 +77,7 @@ private:
         EngineInfoComparator();
 
     public:
-        static AutoPtr<EngineInfoComparator> INSTANCE;// = new EngineInfoComparator();
+        static AutoPtr<EngineInfoComparator> INSTANCE;      // = new EngineInfoComparator();
     };
 
 public:
@@ -85,11 +89,7 @@ public:
 
     constructor();
 
-    //public
-    TtsEngines(
-        /* [in] */ IContext* ctx);
-
-    CARAPI_(void) Init(
+    constructor(
         /* [in] */ IContext* ctx);
 
     /**
@@ -97,48 +97,46 @@ public:
      *         is available on the device, the default is returned. Otherwise,
      *         the highest ranked engine is returned as per {@link EngineInfoComparator}.
      */
-    //public
-    CARAPI_(String) GetDefaultEngine();
+    CARAPI GetDefaultEngine(
+        /* [out] */ String * pRet);
 
     /**
      * @return the package name of the highest ranked system engine, {@code null}
      *         if no TTS engines were present in the system image.
      */
-    //public
-    CARAPI_(String) GetHighestRankedEngineName();
+    CARAPI GetHighestRankedEngineName(
+        /* [out] */ String * pRet);
 
     /**
      * Returns the engine info for a given engine name. Note that engines are
      * identified by their package name.
      */
-    //public
-    CARAPI_(AutoPtr<TextToSpeech::TextToSpeechEngineInfo>) GetEngineInfo(
-        /* [in] */ const String& packageName);
+    CARAPI GetEngineInfo(
+        /* [in] */ const String& packageName,
+        /* [out] */ ITextToSpeechEngineInfo** ppRet);
 
     /**
      * Gets a list of all installed TTS engines.
      *
      * @return A list of engine info objects. The list can be empty, but never {@code null}.
      */
-    //public
-    CARAPI_(AutoPtr< List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > >) GetEngines();
+    CARAPI GetEngines(
+        /* [out] */ IArrayList** ppRet);
 
-public:
     /**
      * @return true if a given engine is installed on the system.
      */
-    //public
-    CARAPI_(Boolean) IsEngineInstalled(
-        /* [in] */ const String& engine);
+    CARAPI IsEngineInstalled(
+        /* [in] */ const String& engine,;
+        /* [out] */ Boolean* pRet);
 
     /**
      * @return an intent that can launch the settings activity for a given tts engine.
      */
-    //public
-    CARAPI_(AutoPtr<IIntent>) GetSettingsIntent(
-        /* [in] */ const String& engine);
+    CARAPI GetSettingsIntent(
+        /* [in] */ const String& engine,
+        /* [out] */ IIntent** ppRet);
 
-public:
     /**
      * Returns the default locale for a given TTS engine. Attempts to read the
      * value from {@link Settings.Secure#TTS_DEFAULT_LOCALE}, failing which the
@@ -147,13 +145,13 @@ public:
      * @param engineName the engine to return the locale for.
      * @return the locale preference for this engine. Will be non null.
      */
-    //public
     CARAPI GetLocalePrefForEngine(
         /* [in] */ const String& engineName,
         /* [in] */ ILocale** locale);
 
     /**
-     * Returns the default locale for a given TTS engine from given settings string. */
+     * Returns the default locale for a given TTS engine from given settings string.
+     */
     CARAPI GetLocalePrefForEngine(
         /* [in] */ const String& engineName,
         /* [in] */ const String& prefValue,
@@ -166,20 +164,16 @@ public:
      * country codes ({@link Locale#getISO3Language()} and {@link Locale#getISO3Country()}),
      * if it fails to do so, we return null.
      */
-    //public
-    static CARAPI_(AutoPtr<ILocale>) parseLocaleString(
-        /* [in] */ const String& localeString);
+    CARAPI ParseLocaleString(
+        /* [in] */ const String& localeString)
+        /* [in] */ ILocale** ret);
 
     //public synchronized
     CARAPI UpdateLocalePrefForEngine(
         /* [in] */ const String& name,
         /* [in] */ const ILocale* newLocale);
 
-protected:
-    TtsEngines();
-
 private:
-    //private
     CARAPI_(Boolean) IsSystemEngine(
         /* [in] */ IServiceInfo* info);
 

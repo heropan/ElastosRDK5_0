@@ -14,6 +14,8 @@ const String UlawEncoderInputStream::TAG("UlawEncoderInputStream");
 const Int32 UlawEncoderInputStream::MAX_ULAW = 8192;
 const Int32 UlawEncoderInputStream::SCALE_BITS = 16;
 
+CAR_INTERFACE_IMPL(UlawEncoderInputStream, Object, IInputStream);
+
 UlawEncoderInputStream::UlawEncoderInputStream()
 {}
 
@@ -39,7 +41,7 @@ ECode UlawEncoderInputStream::constructor(
     return NOERROR;
 }
 
-void UlawEncoderInputStream::Encode(
+ECode UlawEncoderInputStream::Encode(
     /* [in] */ ArrayOf<Byte>* pcmBuf,
     /* [in] */ Int32 pcmOffset,
     /* [in] */ ArrayOf<Byte>* ulawBuf,
@@ -87,11 +89,14 @@ void UlawEncoderInputStream::Encode(
     }
 }
 
-Int32 UlawEncoderInputStream::MaxAbsPcm(
+ECode UlawEncoderInputStream::MaxAbsPcm(
     /* [in] */ ArrayOf<Byte>* pcmBuf,
     /* [in] */ Int32 offset,
-    /* [in] */ Int32 length)
+    /* [in] */ Int32 length,
+    /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret);
+
     Int32 max = 0;
     for (Int32 i = 0; i < length; i++) {
         Int32 pcm = (0xff & (*pcmBuf)[offset++]) + ((*pcmBuf)[offset++] << 8);
@@ -103,18 +108,19 @@ Int32 UlawEncoderInputStream::MaxAbsPcm(
             max = pcm;
         }
     }
-    return max;
+    *ret = max;
+    return NOERROR;
 }
 
 ECode UlawEncoderInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
-    /* [out] */ Int32* number)//throws IOException
+    /* [out] */ Int32* number)
 {
     if (mIn == NULL){
         //Java:    throw new IllegalStateException("not open");
-        Logger::E(TAG, String("IllegalStateException:not open\n"));
+        Logger::E(TAG, "IllegalStateException:not open\n");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 

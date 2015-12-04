@@ -1,4 +1,3 @@
-
 #include "elastos/droid/speech/srec/CMicrophoneInputStream.h"
 #include "elastos/droid/ext/frameworkext.h"
 

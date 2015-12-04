@@ -288,6 +288,9 @@ module
          * Clean up resources.
          */
         Destroy();
+
+        GetVocabulary(
+            [out] Int32* ret);
     }
 
     interface IRecognizerHelper {
