@@ -173,6 +173,7 @@ ProgressBar::ProgressBar()
     , mMaxWidth(0)
     , mMinHeight(0)
     , mMaxHeight(0)
+    , mMirrorForRtl(FALSE)
     , mProgress(0)
     , mSecondaryProgress(0)
     , mMax(0)
@@ -188,7 +189,6 @@ ProgressBar::ProgressBar()
     , mInDrawing(FALSE)
     , mAttached(FALSE)
     , mRefreshIsPosted(FALSE)
-    , mMirrorForRtl(FALSE)
 {}
 
 ECode ProgressBar::constructor(

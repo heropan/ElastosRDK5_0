@@ -8,38 +8,118 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class RatingBar : public AbsSeekBar
+class RatingBar
+    : public AbsSeekBar
+    , public IRatingBar
 {
 public:
-    RatingBar(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::ratingBarStyle);
+    CAR_INTERFACE_DECL();
 
-    virtual CARAPI SetOnRatingBarChangeListener(
+    RatingBar();
+
+    ~RatingBar();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    /**
+     * Sets the listener to be called when the rating changes.
+     *
+     * @param listener The listener.
+     */
+    CARAPI SetOnRatingBarChangeListener(
         /* [in] */ IOnRatingBarChangeListener* listener);
 
-    virtual CARAPI_(AutoPtr<IOnRatingBarChangeListener>) GetOnRatingBarChangeListener();
+    /**
+     * @return The listener (may be null) that is listening for rating change
+     *         events.
+     */
+    CARAPI GetOnRatingBarChangeListener(
+        /* [out] */ IOnRatingBarChangeListener** listener);
 
-    virtual CARAPI SetIsIndicator(
+    /**
+     * Whether this rating bar should only be an indicator (thus non-changeable
+     * by the user).
+     *
+     * @param isIndicator Whether it should be an indicator.
+     *
+     * @attr ref android.R.styleable#RatingBar_isIndicator
+     */
+    CARAPI SetIsIndicator(
         /* [in] */ Boolean isIndicator);
 
-    virtual CARAPI_(Boolean) IsIndicator();
+    /**
+     * @return Whether this rating bar is only an indicator.
+     *
+     * @attr ref android.R.styleable#RatingBar_isIndicator
+     */
+    CARAPI IsIndicator(
+        /* [out] */ Boolean* isIndicator);
 
-    virtual CARAPI SetNumStars(
+    /**
+     * Sets the number of stars to show. In order for these to be shown
+     * properly, it is recommended the layout width of this widget be wrap
+     * content.
+     *
+     * @param numStars The number of stars.
+     */
+    CARAPI SetNumStars(
         /* [in] */ Int32 numStars);
 
-    virtual CARAPI_(Int32) GetNumStars();
+    /**
+     * Returns the number of stars shown.
+     * @return The number of stars shown.
+     */
+    CARAPI GetNumStars(
+        /* [out] */ Int32* numStars);
 
-    virtual CARAPI SetRating(
+    /**
+     * Sets the rating (the number of stars filled).
+     *
+     * @param rating The rating to set.
+     */
+    CARAPI SetRating(
         /* [in] */ Float rating);
 
-    virtual CARAPI_(Float) GetRating();
+    /**
+     * Gets the current rating (number of stars filled).
+     *
+     * @return The current rating.
+     */
+    CARAPI GetRating(
+        /* [out] */ Float* rating);
 
-    virtual CARAPI SetStepSize(
+    /**
+     * Sets the step size (granularity) of this rating bar.
+     *
+     * @param stepSize The step size of this rating bar. For example, if
+     *            half-star granularity is wanted, this would be 0.5.
+     */
+    CARAPI SetStepSize(
         /* [in] */ Float stepSize);
 
-    virtual CARAPI_(Float) GetStepSize();
+    /**
+     * Gets the step size of this rating bar.
+     *
+     * @return The step size.
+     */
+    CARAPI GetStepSize(
+        /* [out] */ Float* stepSize);
 
     virtual CARAPI SetMax(
         /* [in] */ Int32 max);
@@ -50,7 +130,6 @@ public:
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-
 private:
     CARAPI_(Float) GetProgressPerStar();
 
@@ -58,13 +137,6 @@ private:
         /* [in] */ Int32 progress);
 
 protected:
-    RatingBar();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::ratingBarStyle);
-
     CARAPI_(AutoPtr<IShape>) GetDrawableShape();
 
     CARAPI_(void) OnProgressRefresh(
@@ -81,12 +153,13 @@ protected:
 
     CARAPI_(void) OnKeyChange();
 
+    virtual CARAPI_(void) AnimateSetProgress(
+        /* [in] */ Int32 progress);
 
     CARAPI DispatchRatingChange(
         /* [in] */ Boolean fromUser);
 
 private:
-
     static const String RATINGBAR_NAME;
     Int32 mNumStars;
 

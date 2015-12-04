@@ -869,6 +869,7 @@ protected:
     Int32 mMinHeight;
     Int32 mMaxHeight;
     AutoPtr<IBitmap> mSampleTile;
+    Boolean mMirrorForRtl;
 
 private:
     Int32 mProgress;
@@ -898,7 +899,6 @@ private:
 
     Boolean mAttached;
     Boolean mRefreshIsPosted;
-    Boolean mMirrorForRtl;
 
     List<AutoPtr<RefreshData> > mRefreshData;
 
