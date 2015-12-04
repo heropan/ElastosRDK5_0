@@ -677,6 +677,48 @@ module
         SetRestrictionsChallenge(
             [in] String newPin,
             [out] Boolean* challenge);
+
+        /**
+         * @hide
+         * @param pin The PIN to verify, or null to get the number of milliseconds to wait for before
+         * allowing the user to enter the PIN.
+         * @return Returns a positive number (including zero) for how many milliseconds before
+         * you can accept another PIN, when the input is null or the input doesn't match the saved PIN.
+         * Returns {@link #PIN_VERIFICATION_SUCCESS} if the input matches the saved PIN. Returns
+         * {@link #PIN_VERIFICATION_FAILED_NOT_SET} if there is no PIN set.
+         */
+        CheckRestrictionsChallenge(
+            [in] String pin,
+            [out] Int32* result);
+
+        /**
+         * @hide
+         * Checks whether the user has restrictions that are PIN-protected. An application that
+         * participates in restrictions can check if the owner has requested a PIN challenge for
+         * any restricted operations. If there is a PIN in effect, the application should launch
+         * the PIN challenge activity {@link android.content.Intent#ACTION_RESTRICTIONS_CHALLENGE}.
+         * @see android.content.Intent#ACTION_RESTRICTIONS_CHALLENGE
+         * @return whether a restrictions PIN is in effect.
+         */
+        HasRestrictionsChallenge(
+            [out] Boolean* result);
+
+        /** @hide */
+        RemoveRestrictions();
+
+        /**
+         * @hide
+         * Set restrictions that should apply to any future guest user that's created.
+         */
+        SetDefaultGuestRestrictions(
+            [in] IBundle* restrictions);
+
+        /**
+         * @hide
+         * Gets the default guest restrictions.
+         */
+        GetDefaultGuestRestrictions(
+            [out] IBundle** bundle);
     }
 
     interface IUserManagerHelper {

@@ -1,43 +1,65 @@
 
-#include "elastos/droid/app/LocalePicker.h"
+#include "elastos/droid/internal/app/LocalePicker.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 //#include "elastos/droid/app/backup/CBackupManagerHelper.h"
 #include "elastos/droid/content/res/CResources.h"
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/Character.h>
+// #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/R.h"
+#include "elastos/core/CoreUtils.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::Character;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::Core::EIID_IComparable;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::App::Backup::IBackupManagerHelper;
 //using Elastos::Droid::App::Backup::CBackupManagerHelper;
-using Elastos::Droid::Widget::IListAdapter;
-using Elastos::Droid::Widget::EIID_IArrayAdapter;
-using Elastos::Droid::Widget::EIID_IBaseAdapter;
-using Elastos::Droid::Widget::EIID_IListAdapter;
-using Elastos::Droid::Widget::EIID_IAdapter;
-using Elastos::Droid::Widget::EIID_ISpinnerAdapter;
-using Elastos::Droid::Widget::ISpinnerAdapter;
+using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IAssetManager;
-
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IConfiguration;
+// using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Widget::IAdapter;
+using Elastos::Droid::Widget::IListAdapter;
+using Elastos::Droid::Widget::ISpinnerAdapter;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::EIID_IComparable;
+using Elastos::Core::ICharSequence;
+using Elastos::Text::CCollatorHelper;
+using Elastos::Text::ICollatorHelper;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace App {
 
+ECode LocalePicker::LocalArrayAdapter::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 resource,
+    /* [in] */ Int32 textViewResourceId,
+    /* [in] */ IList* objects,
+    /* [in] */ ILayoutInflater* inflater)
+{
+    FAIL_RETURN(ArrayAdapter::constructor(context, resource, textViewResourceId, objects));
+    mInflater = inflater;
+    mLayoutId = resource;
+    mFieldId = textViewResourceId;
+    return NOERROR;
+}
 
-AutoPtr<IView> _LocalArrayAdapter::GetView(
+ECode LocalePicker::LocalArrayAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** retView)
 {
+    VALIDATE_NOT_NULL(retView);
     AutoPtr<IView> view;
     AutoPtr<ITextView> text;
     if (convertView == NULL) {
@@ -54,94 +76,34 @@ AutoPtr<IView> _LocalArrayAdapter::GetView(
         text = ITextView::Probe(tempView);
     }
 
-    AutoPtr<LocalePicker::LocaleInfo> item =
-            (LocalePicker::LocaleInfo*)GetItem(position)->Probe(EIID_IComparable);
+    AutoPtr<IInterface> _item;
+    GetItem(position, (IInterface**)&_item);
+    AutoPtr<LocaleInfo> item = (LocaleInfo*)ILocaleInfo::Probe(_item);
     String string;
     item->ToString(&string);
-    AutoPtr<ICharSequence> cText;
-    CString::New(string, (ICharSequence**)&cText);
-    text->SetText(cText);
+    text->SetText(CoreUtils::Convert(string));
     AutoPtr<ILocale> locale;
     item->GetLocale((ILocale**)&locale);
     text->SetTextLocale(locale);
 
-    return view;
-}
-
-IARRAYADAPTER_METHODS_IMPL(LocalArrayAdapter, _LocalArrayAdapter);
-IBASEADAPTER_METHODS_IMPL(LocalArrayAdapter, _LocalArrayAdapter);
-ILISTADAPTER_METHODS_IMPL(LocalArrayAdapter, _LocalArrayAdapter);
-IADAPTER_METHODS_IMPL(LocalArrayAdapter, _LocalArrayAdapter);
-ISPINNERADAPTER_METHODS_IMPL(LocalArrayAdapter, _LocalArrayAdapter);
-
-UInt32 LocalArrayAdapter::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 LocalArrayAdapter::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface LocalArrayAdapter::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IArrayAdapter*)this;
-    }
-    else if (riid == EIID_IArrayAdapter) {
-        return (PInterface)(IArrayAdapter*)this;
-    }
-    else if (riid == EIID_IBaseAdapter) {
-        return (PInterface)(IBaseAdapter*)this;
-    }
-    else if (riid == EIID_IListAdapter) {
-        return (PInterface)(IListAdapter*)this;
-    }
-    else if (riid == EIID_IAdapter) {
-        return (PInterface)(IAdapter*)this;
-    }
-    else if (riid == EIID_ISpinnerAdapter) {
-        return (PInterface)(ISpinnerAdapter*)this;
-    }
-    return NULL;
-}
-
-ECode LocalArrayAdapter::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(IArrayAdapter *)this) {
-        *pIID = EIID_IArrayAdapter;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IBaseAdapter *)this) {
-        *pIID = EIID_IBaseAdapter;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IListAdapter *)this) {
-        *pIID = EIID_IListAdapter;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IAdapter *)this) {
-        *pIID = EIID_IAdapter;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(ISpinnerAdapter *)this) {
-        *pIID = EIID_ISpinnerAdapter;
-        return NOERROR;
-    }
-
-
-    return E_INVALID_ARGUMENT;
+    *retView = view;
+    REFCOUNT_ADD(*retView);
+    return NOERROR;
 }
 
 const String LocalePicker::TAG("LocalePicker");
 
-CAR_INTERFACE_IMPL(LocalePicker::LocaleInfo, IComparable);
+CAR_INTERFACE_IMPL_2(LocalePicker::LocaleInfo, Object, ILocaleInfo, IComparable);
+
+static AutoPtr<ICollator> InitCollator()
+{
+    AutoPtr<ICollatorHelper> helper;
+    CCollatorHelper::AcquireSingleton((ICollatorHelper**)&helper);
+    AutoPtr<ICollator> collator;
+    helper->GetInstance((ICollator**)&collator);
+    return collator;
+}
+const AutoPtr<ICollator> sCollator = InitCollator();
 
 LocalePicker::LocaleInfo::LocaleInfo(
     /* [in] */ const String& label,
@@ -149,7 +111,6 @@ LocalePicker::LocaleInfo::LocaleInfo(
     : mLabel(label)
     , mLocale(locale)
 {
-    Init();
 }
 
 ECode LocalePicker::LocaleInfo::GetLabel(
@@ -181,29 +142,132 @@ ECode LocalePicker::LocaleInfo::ToString(
 }
 
 ECode LocalePicker::LocaleInfo::CompareTo(
-    /* [in] */ IInterface* another,
+    /* [in] */ IInterface* _another,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
 
-//    return sCollator->Compare(mLabel, (LocaleInfo*)another->mLabel);
-    return E_NOT_IMPLEMENTED;
+    LocaleInfo* another = (LocaleInfo*)IComparable::Probe(_another);
+    return sCollator->Compare(mLabel, another->mLabel, result);
 }
 
-ECode LocalePicker::Init()
+CAR_INTERFACE_IMPL(LocalePicker, ListFragment, ILocalePicker)
+
+ECode LocalePicker::GetAllAssetLocales(
+    /* [in] */ IContext* context,
+    /* [in] */ Boolean isInDeveloperMode,
+    /* [out] */ IList** list)
 {
-//    return Collator::GetInstance((ICollator**)&sCollator);
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(list);
+
+    AutoPtr<IResources> resources;
+    context->GetResources((IResources**)&resources);
+    AutoPtr<IAssetManager> assetMgr;
+    CResources::GetSystem()->GetAssets((IAssetManager**)&assetMgr);
+    AutoPtr<ArrayOf<String> > locales;
+    assetMgr->GetLocales((ArrayOf<String>**)&locales);
+
+    AutoPtr<IList> localeList;
+    CArrayList::New(locales->GetLength(), (IList**)&localeList);
+    for (Int32 i = 0; i < locales->GetLength(); i++) {
+        Boolean b;
+        localeList->Add(CoreUtils::Convert((*locales)[i]), &b);
+    }
+
+    // Don't show the pseudolocales unless we're in developer mode. http://b/17190407.
+    if (!isInDeveloperMode) {
+        localeList->Remove(CoreUtils::Convert(String("ar-XB")));
+        localeList->Remove(CoreUtils::Convert(String("en-XA")));
+    }
+
+    AutoPtr<ICollections> collections;
+    CCollections::AcquireSingleton((ICollections**)&collections);
+    collections->Sort(localeList);
+    AutoPtr<ArrayOf<String> > specialLocaleCodes;
+    resources->GetStringArray(R::array::special_locale_codes, (ArrayOf<String>**)&specialLocaleCodes);
+    AutoPtr<ArrayOf<String> > specialLocaleNames;
+    resources->GetStringArray(R::array::special_locale_names, (ArrayOf<String>**)&specialLocaleNames);
+
+    Int32 size;
+    localeList->GetSize(&size);
+    AutoPtr<IList> localeInfos;
+    CArrayList::New(size, (IList**)&localeInfos);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> item;
+        localeList->Get(i, (IInterface**)&item);
+        String locale;
+        ICharSequence::Probe(item)->ToString(&locale);
+        AutoPtr<ILocaleHelper> lHelper;
+        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&lHelper);
+        AutoPtr<ILocale> l;
+        lHelper->ForLanguageTag(locale.Replace('_', '-'), (ILocale**)&l);
+        String language, country ;
+        if (l == NULL || (l->GetLanguage(&language), language.Equals("und"))
+            || language.IsEmpty() || (l->GetCountry(&country), country.IsEmpty())) {
+            continue;
+        }
+
+        Boolean isEmpty;
+        localeInfos->IsEmpty(&isEmpty);
+        String dl;
+        l->GetDisplayLanguage(l, &dl);
+        if (isEmpty) {
+            if (DEBUG) {
+                Logger::V(TAG, "adding initial %s", ToTitleCase(dl).string());
+            }
+            AutoPtr<ILocaleInfo> info = new LocaleInfo(ToTitleCase(dl), l);
+            localeInfos->Add(info);
+        }
+        else {
+            // check previous entry:
+            //  same lang and a country -> upgrade to full name and
+            //    insert ours with full name
+            //  diff lang -> insert ours with lang-only name
+            Int32 count;
+            localeInfos->GetSize(&count);
+            AutoPtr<IInterface> item;
+            localeInfos->Get(count - 1, (IInterface**)&item);
+            LocaleInfo* previous = (LocaleInfo*)ILocaleInfo::Probe(item);
+            String prevLang;
+            previous->mLocale->GetLanguage(&prevLang);
+            if (prevLang.Equals(language) && !prevLang.Equals("zz")) {
+                if (DEBUG) {
+                    Logger::V(TAG, "backing up and fixing %s to %s", previous->mLabel.string(),
+                        GetDisplayName(previous->mLocale, specialLocaleCodes, specialLocaleNames).string());
+                }
+                previous->mLabel = ToTitleCase(GetDisplayName(
+                        previous->mLocale, specialLocaleCodes, specialLocaleNames));
+                if (DEBUG) {
+                    Logger::V(TAG, "  and adding %s", ToTitleCase(
+                        GetDisplayName(l, specialLocaleCodes, specialLocaleNames)).string());
+                }
+                AutoPtr<ILocaleInfo> info = new LocaleInfo(ToTitleCase(
+                    GetDisplayName(l, specialLocaleCodes, specialLocaleNames)), l);
+                localeInfos->Add(info);
+            }
+            else {
+                String displayName = ToTitleCase(dl);
+                if (DEBUG) {
+                    Logger::V(TAG, "Adding %s", displayName.string());
+                }
+                AutoPtr<ILocaleInfo> info = new LocaleInfo(displayName, l);
+                localeInfos->Add(info);
+            }
+        }
+    }
+
+    collections->Sort(localeInfos);
+    *list = localeInfos;
+    REFCOUNT_ADD(*list);
+    return NOERROR;
 }
 
 ECode LocalePicker::ConstructAdapter(
     /* [in] */ IContext* context,
     /* [out] */ IArrayAdapter** adapter)
 {
-    VALIDATE_NOT_NULL(adapter);
-
-    return ConstructAdapter(context, 0/*R.layout.locale_picker_item*/, 0/*R.id.locale*/,
-            adapter);
+    return ConstructAdapter(context, R::layout::locale_picker_item,
+        R::id::locale, adapter);
 }
 
 ECode LocalePicker::ConstructAdapter(
@@ -214,91 +278,21 @@ ECode LocalePicker::ConstructAdapter(
 {
     VALIDATE_NOT_NULL(adapter);
 
-    AutoPtr<IResources> resources;
-    context->GetResources((IResources**)&resources);
-    AutoPtr<IAssetManager> assetMgr;
-    CResources::GetSystem()->GetAssets((IAssetManager**)&assetMgr);
-    AutoPtr<ArrayOf<String> > locales;
-    assetMgr->GetLocales((ArrayOf<String>**)&locales);
-    AutoPtr<ArrayOf<String> > specialLocaleCodes;
-    resources->GetStringArray(0/*R.array.special_locale_codes*/, (ArrayOf<String>**)&specialLocaleCodes);
-    AutoPtr<ArrayOf<String> > specialLocaleNames;
-    resources->GetStringArray(0/*R.array.special_locale_names*/, (ArrayOf<String>**)&specialLocaleNames);
-//     Arrays.sort(locales);
-    Int32 origSize = locales->GetLength();
-    AutoPtr<ArrayOf<LocaleInfo*> > preprocess = ArrayOf<LocaleInfo*>::Alloc(origSize);
-    Int32 finalSize = 0;
-    for (Int32 i = 0 ; i < origSize; i++ ) {
-        const String s = (*locales)[i];
-        const Int32 len = s.GetLength();
-        if (len == 5) {
-            String language = s.Substring(0, 2);
-            String country = s.Substring(3, 5);
-            AutoPtr<ILocale> l;
-//            CLocale::New(language, country, (ILocale**)&l);
-
-            if (finalSize == 0) {
-                if (DEBUG) {
-                    String lang;
-                    l->GetDisplayLanguage(l, &lang);
-                    Slogger::V(TAG, "adding initial %s", ToTitleCase(lang).string());
-                }
-                String language;
-                l->GetDisplayLanguage(l, &language);
-                preprocess->Set(finalSize++, new LocaleInfo(ToTitleCase(language), l));
-            } else {
-                // check previous entry:
-                //  same lang and a country -> upgrade to full name and
-                //    insert ours with full name
-                //  diff lang -> insert ours with lang-only name
-                String lang;
-                (*preprocess)[finalSize-1]->mLocale->GetLanguage(&lang);
-                if (lang == language) {
-                    if (DEBUG) {
-                        Slogger::V(TAG, "backing up and fixing %s to %s",
-                                (*preprocess)[finalSize-1]->mLabel.string(),
-                                GetDisplayName((*preprocess)[finalSize-1]->mLocale,
-                                        specialLocaleCodes, specialLocaleNames).string());
-                    }
-                    (*preprocess)[finalSize-1]->mLabel = ToTitleCase(
-                            GetDisplayName((*preprocess)[finalSize-1]->mLocale,
-                                    specialLocaleCodes, specialLocaleNames));
-                    if (DEBUG) {
-                        Slogger::V(TAG, "  and adding %s", ToTitleCase(
-                                GetDisplayName(l, specialLocaleCodes, specialLocaleNames)).string());
-                    }
-                    preprocess->Set(finalSize++,
-                            new LocaleInfo(ToTitleCase(
-                                    GetDisplayName(
-                                            l, specialLocaleCodes, specialLocaleNames)), l));
-                } else {
-                    String displayName;
-                    if (s == String("zz_ZZ")) {
-                        displayName = String("Pseudo...");
-                    } else {
-                        String lang;
-                        l->GetDisplayLanguage(l, &lang);
-                        displayName = ToTitleCase(lang);
-                    }
-                    if (DEBUG) {
-                        Slogger::V(TAG, "adding %s", displayName.string());
-                    }
-                    preprocess->Set(finalSize++, new LocaleInfo(displayName, l));
-                }
-            }
-        }
-    }
-
-    AutoPtr<IObjectContainer> localeInfos;
-    for (Int32 i = 0; i < finalSize; i++) {
-        localeInfos->Add((IInterface*)(*preprocess)[i]);
-    }
-//     Arrays.sort(localeInfos);
+    AutoPtr<IContentResolver> cr;
+    context->GetContentResolver((IContentResolver**)&cr);
+    Int32 value;
+    assert(0);
+    // Settings::Global::GetInt32(cr, Settings::Global::DEVELOPMENT_SETTINGS_ENABLED, 0, &value);
+    Boolean isInDeveloperMode = value != 0;
+    AutoPtr<IList> localeInfos;
+    GetAllAssetLocales(context, isInDeveloperMode, (IList**)&localeInfos);
 
     AutoPtr<ILayoutInflater> inflater;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE,
             (IInterface**)(ILayoutInflater**)&inflater);
-    *adapter = new LocalArrayAdapter(context, layoutId, fieldId, localeInfos, inflater);
+    AutoPtr<LocalArrayAdapter> localAdapter = new LocalArrayAdapter();
+    localAdapter->constructor(context, layoutId, fieldId, localeInfos, inflater);
+    *adapter = localAdapter;
     REFCOUNT_ADD(*adapter);
     return NOERROR;
 }
@@ -310,7 +304,7 @@ String LocalePicker::ToTitleCase(
         return s;
     }
 
-    return String((char*)Character::ToUpperCase(s.GetChar(0))) + s.Substring(1);
+    return s.ToUpperCase(0, 1);
 }
 
 String LocalePicker::GetDisplayName(
@@ -339,8 +333,8 @@ ECode LocalePicker::OnActivityCreated(
     AutoPtr<IActivity> activity;
     GetActivity((IActivity**)&activity);
     AutoPtr<IArrayAdapter> adapter;
-    ConstructAdapter((IContext*)activity, (IArrayAdapter**)&adapter);
-    SetListAdapter((IListAdapter*)adapter->Probe(EIID_IListAdapter));
+    ConstructAdapter(IContext::Probe(activity), (IArrayAdapter**)&adapter);
+    SetListAdapter(IListAdapter::Probe(adapter));
     return NOERROR;
 }
 
@@ -357,7 +351,7 @@ ECode LocalePicker::OnResume()
     AutoPtr<IListView> lview;
     GetListView((IListView**)&lview);
     Boolean result;
-    lview->RequestFocus(&result);
+    IView::Probe(lview)->RequestFocus(&result);
     return NOERROR;
 }
 
@@ -371,8 +365,8 @@ ECode LocalePicker::OnListItemClick(
         AutoPtr<IListAdapter> ladapter;
         GetListAdapter((IListAdapter**)&ladapter);
         AutoPtr<IInterface> item;
-        ladapter->GetItem(position, (IInterface**)&item);
-        AutoPtr<ILocale> locale = ((LocaleInfo*)item->Probe(EIID_IComparable))->mLocale;
+        IAdapter::Probe(ladapter)->GetItem(position, (IInterface**)&item);
+        AutoPtr<ILocale> locale = ((LocaleInfo*)ILocaleInfo::Probe(item))->mLocale;
         mListener->OnLocaleSelected(locale);
     }
     return NOERROR;

@@ -37,7 +37,6 @@ module
     merge("../../../car/elastos/droid/wifi.car");
     merge("../../../car/elastos/droid/emoji.car");
 
-    merge("../../../car/elastos/droid/internal/app2.car");
     merge("../../../car/elastos/droid/internal/appwidget.car");
     merge("../../../car/elastos/droid/internal/backup.car");
     merge("../../../car/elastos/droid/internal/content.car");
@@ -53,6 +52,7 @@ module
     merge("../../../car/elastos/droid/internal/widget.car");
     merge("../../../car/elastos/droid/internal/os/storage.car");
     merge("../../../car/elastos/droid/internal/policy.car");
+    merge("../../../car/elastos/droid/internal/app2.car");
 
     merge("../../../car/elastos/droid/inputmethodservice.car");
     merge("../../../car/elastos/droid/media.car");

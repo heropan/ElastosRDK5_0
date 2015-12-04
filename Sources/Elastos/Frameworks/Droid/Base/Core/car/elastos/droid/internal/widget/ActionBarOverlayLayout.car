@@ -61,7 +61,7 @@ module
             [out] Int32* offset);
 
         SetActionBarHideOffset(
-            [out] Int32* offset);
+            [in] Int32 offset);
     }
 
     }// namespace Widget
