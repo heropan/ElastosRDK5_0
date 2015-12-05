@@ -2297,6 +2297,15 @@ AutoPtr<ICharSequence> TextView::GetText()
     return mText;
 }
 
+ECode TextView::GetText(
+    /* [out] */ ICharSequence** text)
+{
+    VALIDATE_NOT_NULL(text)
+    *text = mText;
+    REFCOUNT_ADD(*text)
+    return NOERROR;
+}
+
 Int32 TextView::GetLength()
 {
     Int32 len;
@@ -2304,9 +2313,26 @@ Int32 TextView::GetLength()
     return len;
 }
 
+ECode TextView::GetLength(
+    /* [out] */ Int32* length)
+{
+    VALIDATE_NOT_NULL(length)
+    mText->GetLength(length);
+    return NOERROR;
+}
+
 AutoPtr<IEditable> TextView::GetEditableText()
 {
     return AutoPtr<IEditable>(IEditable::Probe(mText));
+}
+
+ECode TextView::GetEditableText(
+    /* [out] */ IEditable** editable)
+{
+    VALIDATE_NOT_NULL(editable)
+    *editable = IEditable::Probe(mText);
+    REFCOUNT_ADD(*editable)
+    return NOERROR;
 }
 
 Int32 TextView::GetLineHeight()
@@ -2316,9 +2342,26 @@ Int32 TextView::GetLineHeight()
     return Elastos::Core::Math::Round(spacing * mSpacingMult + mSpacingAdd);
 }
 
+ECode TextView::GetLineHeight(
+    /* [out] */ Int32* height)
+{
+    VALIDATE_NOT_NULL(height);
+    *height = GetLineHeight();
+    return NOERROR;
+}
+
 AutoPtr<ILayout> TextView::GetLayout()
 {
     return mLayout;
+}
+
+ECode TextView::GetLayout(
+    /* [out] */ ILayout** layout)
+{
+    VALIDATE_NOT_NULL(layout)
+    *layout = mLayout;
+    REFCOUNT_ADD(*layout)
+    return NOERROR;
 }
 
 AutoPtr<ILayout> TextView::GetHintLayout()
@@ -2364,6 +2407,15 @@ AutoPtr<IKeyListener> TextView::GetKeyListener()
     assert(0);
     //return mEditor == NULL ? NULL : mEditor->mKeyListener;
     return NULL;
+}
+
+ECode TextView::GetKeyListener(
+    /* [out] */ IKeyListener** listener)
+{
+    VALIDATE_NOT_NULL(listener)
+    *listener = GetKeyListener();
+    REFCOUNT_ADD(*listener)
+    return NOERROR;
 }
 
 ECode TextView::SetKeyListener(
@@ -2422,6 +2474,15 @@ AutoPtr<IMovementMethod> TextView::GetMovementMethod()
     return mMovement;
 }
 
+ECode TextView::GetMovementMethod(
+    /* [out] */ IMovementMethod** movement)
+{
+    VALIDATE_NOT_NULL(movement)
+    *movement = mMovement;
+    REFCOUNT_ADD(*movement)
+    return NOERROR;
+}
+
 ECode TextView::SetMovementMethod(
     /* [in] */ IMovementMethod* movement)
 {
@@ -2462,6 +2523,15 @@ void TextView::FixFocusableAndClickableSettings()
 AutoPtr<ITransformationMethod> TextView::GetTransformationMethod()
 {
     return mTransformation;
+}
+
+ECode TextView::GetTransformationMethod(
+    /* [out] */ ITransformationMethod** method)
+{
+    VALIDATE_NOT_NULL(method)
+    *method = mTransformation;
+    REFCOUNT_ADD(*method)
+    return NOERROR;
 }
 
 ECode TextView::SetTransformationMethod(
@@ -2509,6 +2579,14 @@ Int32 TextView::GetCompoundPaddingTop()
     }
 }
 
+ECode TextView::GetCompoundPaddingTop(
+    /* [out] */ Int32* top)
+{
+    VALIDATE_NOT_NULL(top)
+    *top = GetCompoundPaddingTop();
+    return NOERROR;
+}
+
 Int32 TextView::GetCompoundPaddingBottom()
 {
     AutoPtr<Drawables> dr = mDrawables;
@@ -2518,6 +2596,14 @@ Int32 TextView::GetCompoundPaddingBottom()
     else {
         return mPaddingBottom + dr->mDrawablePadding + dr->mDrawableSizeBottom;
     }
+}
+
+ECode TextView::GetCompoundPaddingBottom(
+    /* [out] */ Int32* bottom)
+{
+    VALIDATE_NOT_NULL(bottom)
+    *bottom = GetCompoundPaddingBottom();
+    return NOERROR;
 }
 
 Int32 TextView::GetCompoundPaddingLeft()
@@ -2531,6 +2617,14 @@ Int32 TextView::GetCompoundPaddingLeft()
     }
 }
 
+ECode TextView::GetCompoundPaddingLeft(
+    /* [out] */ Int32* left)
+{
+    VALIDATE_NOT_NULL(left)
+    *left = GetCompoundPaddingLeft();
+    return NOERROR;
+}
+
 Int32 TextView::GetCompoundPaddingRight()
 {
     AutoPtr<Drawables> dr = mDrawables;
@@ -2540,6 +2634,14 @@ Int32 TextView::GetCompoundPaddingRight()
     else {
         return mPaddingRight + dr->mDrawablePadding + dr->mDrawableSizeRight;
     }
+}
+
+ECode TextView::GetCompoundPaddingRight(
+    /* [out] */ Int32* right)
+{
+    VALIDATE_NOT_NULL(right)
+    *right = GetCompoundPaddingRight();
+    return NOERROR;
 }
 
 Int32 TextView::GetCompoundPaddingStart()
@@ -2556,6 +2658,14 @@ Int32 TextView::GetCompoundPaddingStart()
     return 0;
 }
 
+ECode TextView::GetCompoundPaddingStart(
+    /* [out] */ Int32* start)
+{
+    VALIDATE_NOT_NULL(start)
+    *start = GetCompoundPaddingStart();
+    return NOERROR;
+}
+
 Int32 TextView::GetCompoundPaddingEnd()
 {
     ResolveDrawables();
@@ -2568,6 +2678,14 @@ Int32 TextView::GetCompoundPaddingEnd()
             return GetCompoundPaddingLeft();
     }
     return 0;
+}
+
+ECode TextView::GetCompoundPaddingEnd(
+    /* [out] */ Int32* end)
+{
+    VALIDATE_NOT_NULL(end)
+    *end = GetCompoundPaddingEnd();
+    return NOERROR;
 }
 
 Int32 TextView::GetExtendedPaddingTop()
@@ -2610,6 +2728,14 @@ Int32 TextView::GetExtendedPaddingTop()
     }
 }
 
+ECode TextView::GetExtendedPaddingTop(
+    /* [out] */ Int32* top)
+{
+    VALIDATE_NOT_NULL(top)
+    *top = GetExtendedPaddingTop();
+    return NOERROR;
+}
+
 Int32 TextView::GetExtendedPaddingBottom()
 {
     if (mMaxMode != LINES) {
@@ -2650,9 +2776,25 @@ Int32 TextView::GetExtendedPaddingBottom()
     }
 }
 
+ECode TextView::GetExtendedPaddingBottom(
+    /* [out] */ Int32* bottom)
+{
+    VALIDATE_NOT_NULL(bottom)
+    *bottom = GetExtendedPaddingBottom();
+    return NOERROR;
+}
+
 Int32 TextView::GetTotalPaddingLeft()
 {
     return GetCompoundPaddingLeft();
+}
+
+ECode TextView::GetTotalPaddingLeft(
+    /* [out] */ Int32* left)
+{
+    VALIDATE_NOT_NULL(left)
+    *left = GetCompoundPaddingLeft();
+    return NOERROR;
 }
 
 Int32 TextView::GetTotalPaddingRight()
@@ -2660,9 +2802,25 @@ Int32 TextView::GetTotalPaddingRight()
     return GetCompoundPaddingRight();
 }
 
+ECode TextView::GetTotalPaddingRight(
+    /* [out] */ Int32* right)
+{
+    VALIDATE_NOT_NULL(right)
+    *right = GetCompoundPaddingRight();
+    return NOERROR;
+}
+
 Int32 TextView::GetTotalPaddingStart()
 {
     return GetCompoundPaddingStart();
+}
+
+ECode TextView::GetTotalPaddingStart(
+    /* [out] */ Int32* start)
+{
+    VALIDATE_NOT_NULL(start)
+    *start = GetCompoundPaddingStart();
+    return NOERROR;
 }
 
 Int32 TextView::GetTotalPaddingEnd()
@@ -2670,14 +2828,38 @@ Int32 TextView::GetTotalPaddingEnd()
     return GetCompoundPaddingEnd();
 }
 
+ECode TextView::GetTotalPaddingEnd(
+    /* [out] */ Int32* end)
+{
+    VALIDATE_NOT_NULL(end)
+    *end = GetCompoundPaddingEnd();
+    return NOERROR;
+}
+
 Int32 TextView::GetTotalPaddingTop()
 {
     return GetExtendedPaddingTop() + GetVerticalOffset(TRUE);
 }
 
+ECode TextView::GetTotalPaddingTop(
+    /* [out] */ Int32* top)
+{
+    VALIDATE_NOT_NULL(top)
+    *top = GetTotalPaddingTop();
+    return NOERROR;
+}
+
 Int32 TextView::GetTotalPaddingBottom()
 {
     return GetExtendedPaddingBottom() + GetBottomVerticalOffset(TRUE);
+}
+
+ECode TextView::GetTotalPaddingBottom(
+    /* [out] */ Int32* bottom)
+{
+    VALIDATE_NOT_NULL(bottom)
+    *bottom = GetTotalPaddingBottom();
+    return NOERROR;
 }
 
 ECode TextView::SetCompoundDrawables(
@@ -3085,6 +3267,15 @@ AutoPtr<ArrayOf<IDrawable*> > TextView::GetCompoundDrawables()
     return drawables;
 }
 
+ECode TextView::GetCompoundDrawables(
+    /* [out, callee] */ ArrayOf<IDrawable*>** drawables)
+{
+    VALIDATE_NOT_NULL(drawables)
+    *drawables = GetCompoundDrawables();
+    REFCOUNT_ADD(*drawables)
+    return NOERROR;
+}
+
 AutoPtr<ArrayOf<IDrawable*> > TextView::GetCompoundDrawablesRelative()
 {
     AutoPtr<ArrayOf<IDrawable*> > drawables = ArrayOf<IDrawable*>::Alloc(4);
@@ -3101,6 +3292,15 @@ AutoPtr<ArrayOf<IDrawable*> > TextView::GetCompoundDrawablesRelative()
         drawables->Set(3, NULL);
     }
     return drawables;
+}
+
+ECode TextView::GetCompoundDrawablesRelative(
+    /* [out, callee] */ ArrayOf<IDrawable*>** drawables)
+{
+    VALIDATE_NOT_NULL(drawables)
+    *drawables = GetCompoundDrawablesRelative();
+    REFCOUNT_ADD(*drawables)
+    return NOERROR;
 }
 
 ECode TextView::SetCompoundDrawablePadding(
@@ -3129,6 +3329,14 @@ Int32 TextView::GetCompoundDrawablePadding()
 {
     AutoPtr<Drawables> dr = mDrawables;
     return dr != NULL ? dr->mDrawablePadding : 0;
+}
+
+ECode TextView::GetCompoundDrawablePadding(
+    /* [out] */ Int32* pad)
+{
+    VALIDATE_NOT_NULL(pad)
+    *pad = GetCompoundDrawablePadding();
+    return NOERROR;
 }
 
 ECode TextView::SetPadding(
@@ -3172,6 +3380,14 @@ ECode TextView::SetPaddingRelative(
 Int32 TextView::GetAutoLinkMask()
 {
     return mAutoLinkMask;
+}
+
+Int32 TextView::GetAutoLinkMask(
+    /* [out] */ Int32* mask)
+{
+    VALIDATE_NOT_NULL(mask)
+    *mask = mAutoLinkMask;
+    return NOERROR;
 }
 
 ECode TextView::SetTextAppearance(
@@ -3284,6 +3500,15 @@ AutoPtr<ILocale> TextView::GetTextLocale()
     return locale;
 }
 
+ECode TextView::GetTextLocale(
+    /* [out] */ ILocale** locale)
+{
+    VALIDATE_NOT_NULL(locale)
+    *locale = GetTextLocale();
+    REFCOUNT_ADD(*locale)
+    return NOERROR;
+}
+
 ECode TextView::SetTextLocale(
     /* [in] */ ILocale* locale)
 {
@@ -3295,6 +3520,14 @@ Float TextView::GetTextSize()
     Float size;
     IPaint::Probe(mTextPaint)->GetTextSize(&size);
     return size;
+}
+
+ECode TextView::GetTextSize(
+    /* [out] */ Float* size)
+{
+    VALIDATE_NOT_NULL(size)
+    IPaint::Probe(mTextPaint)->GetTextSize(size);
+    return NOERROR;
 }
 
 Float TextView::GetScaledTextSize()
@@ -3372,6 +3605,14 @@ Float TextView::GetTextScaleX()
     return scaleX;
 }
 
+ECode TextView::GetTextScaleX(
+    /* [out] */ Float* size)
+{
+    VALIDATE_NOT_NULL(size)
+    IPaint::Probe(mTextPaint)->GetTextScaleX(size);
+    return NOERROR;
+}
+
 ECode TextView::SetTextScaleX(
     /* [in] */ Float size)
 {
@@ -3414,6 +3655,14 @@ AutoPtr<ITypeface> TextView::GetTypeface()
     return tyepface;
 }
 
+ECode TextView::GetTypeface(
+    /* [out] */ ITypeface** face)
+{
+    VALIDATE_NOT_NULL(face)
+    IPaint::Probe(mTextPaint)->GetTypeface(face);
+    return NOERROR;
+}
+
 ECode TextView::SetElegantTextHeight(
     /* [in] */ Boolean elegant)
 {
@@ -3426,6 +3675,14 @@ Float TextView::GetLetterSpacing()
     Float res;
     IPaint::Probe(mTextPaint)->GetLetterSpacing(&res);
     return res;
+}
+
+ECode TextView::GetLetterSpacing(
+    /* [out] */ Float* spacing)
+{
+    VALIDATE_NOT_NULL(spacing)
+    IPaint::Probe(mTextPaint)->GetLetterSpacing(spacing);
+    return NOERROR;
 }
 
 ECode TextView::SetLetterSpacing(
@@ -3450,6 +3707,14 @@ String TextView::GetFontFeatureSettings()
     String res;
     IPaint::Probe(mTextPaint)->GetFontFeatureSettings(&res);
     return res;
+}
+
+ECode TextView::GetFontFeatureSettings(
+    /* [out] */ String* settings)
+{
+    VALIDATE_NOT_NULL(settings)
+    IPaint::Probe(mTextPaint)->GetFontFeatureSettings(settings);
+    return NOERROR;
 }
 
 ECode TextView::SetFontFeatureSettings(
@@ -3498,9 +3763,26 @@ AutoPtr<IColorStateList> TextView::GetTextColors()
     return mTextColor;
 }
 
+ECode TextView::GetTextColors(
+    /* [out] */ IColorStateList** colors)
+{
+    VALIDATE_NOT_NULL(colors)
+    *colors = mTextColor;
+    REFCOUNT_ADD(*colors)
+    return NOERROR;
+}
+
 Int32 TextView::GetCurrentTextColor()
 {
     return mCurTextColor;
+}
+
+ECode TextView::GetCurrentTextColor(
+    /* [out] */ Int32* colors)
+{
+    VALIDATE_NOT_NULL(colors)
+    *colors = mCurTextColor;
+    return NOERROR;
 }
 
 ECode TextView::SetHighlightColor(
@@ -3518,6 +3800,14 @@ Int32 TextView::GetHighlightColor()
     return mHighlightColor;
 }
 
+ECode TextView::GetHighlightColor(
+    /* [out] */ Int32* color)
+{
+    VALIDATE_NOT_NULL(color)
+    *color = mHighlightColor;
+    return NOERROR;
+}
+
 ECode TextView::SetShowSoftInputOnFocus(
     /* [in] */ Boolean show)
 {
@@ -3533,6 +3823,14 @@ Boolean TextView::GetShowSoftInputOnFocus()
     assert(0);
     //return mEditor == NULL || mEditor->mShowSoftInputOnFocus;
     return FALSE;
+}
+
+ECode TextView::GetShowSoftInputOnFocus(
+    /* [out] */ Boolean* show)
+{
+    VALIDATE_NOT_NULL(show)
+    *show = GetShowSoftInputOnFocus();
+    return NOERROR;
 }
 
 ECode TextView::SetShadowLayer(
@@ -3561,9 +3859,25 @@ Float TextView::GetShadowRadius()
     return mShadowRadius;
 }
 
+ECode TextView::GetShadowRadius(
+    /* [out] */ Float* radius)
+{
+    VALIDATE_NOT_NULL(radius)
+    *radius = GetShadowRadius();
+    return NOERROR;
+}
+
 Float TextView::GetShadowDx()
 {
     return mShadowDx;
+}
+
+ECode TextView::GetShadowDx(
+    /* [out] */ Float* dx)
+{
+    VALIDATE_NOT_NULL(dx)
+    *dx = GetShadowDx();
+    return NOERROR;
 }
 
 Float TextView::GetShadowDy()
@@ -3571,14 +3885,39 @@ Float TextView::GetShadowDy()
     return mShadowDy;
 }
 
+ECode TextView::GetShadowDy(
+    /* [out] */ Float* dy)
+{
+    VALIDATE_NOT_NULL(dy)
+    *dy = GetShadowDy();
+    return NOERROR;
+}
+
 Int32 TextView::GetShadowColor()
 {
     return  mShadowColor;
 }
 
+ECode TextView::GetShadowColor(
+    /* [out] */ Int32* color)
+{
+    VALIDATE_NOT_NULL(color)
+    *color = GetShadowColor();
+    return NOERROR;
+}
+
 AutoPtr<ITextPaint> TextView::GetPaint()
 {
     return mTextPaint;
+}
+
+ECode TextView::GetPaint(
+    /* [out] */ ITextPaint** paint)
+{
+    VALIDATE_NOT_NULL(paint)
+    *paint = GetPaint();
+    REFCOUNT_ADD(*paint)
+    return NOERROR;
 }
 
 ECode TextView::SetAutoLinkMask(
@@ -3600,6 +3939,14 @@ Boolean TextView::GetLinksClickable()
     return mLinksClickable;
 }
 
+ECode TextView::GetLinksClickable(
+    /* [out] */ Boolean* whether)
+{
+    VALIDATE_NOT_NULL(whether)
+    *whether = GetLinksClickable();
+    return NOERROR;
+}
+
 AutoPtr< ArrayOf<IURLSpan*> > TextView::GetUrls()
 {
     AutoPtr< ArrayOf<IURLSpan*> > urls;
@@ -3618,6 +3965,15 @@ AutoPtr< ArrayOf<IURLSpan*> > TextView::GetUrls()
     }
 
     return urls;
+}
+
+ECode TextView::GetUrls(
+    /* [out, callee] */ ArrayOf<IURLSpan*>** urls)
+{
+    VALIDATE_NOT_NULL(urls)
+    *urls = GetUrls();
+    REFCOUNT_ADD(*urls)
+    return NOERROR;
 }
 
 ECode TextView::SetHintTextColor(
@@ -3644,9 +4000,26 @@ AutoPtr<IColorStateList> TextView::GetHintTextColors()
     return mHintTextColor;
 }
 
+ECode TextView::GetHintTextColors(
+    /* [out] */ IColorStateList** colors)
+{
+    VALIDATE_NOT_NULL(colors)
+    *colors = GetHintTextColors();
+    REFCOUNT_ADD(*colors)
+    return NOERROR;
+}
+
 Int32 TextView::GetCurrentHintTextColor()
 {
     return mHintTextColor != NULL ? mCurHintTextColor : mCurTextColor;
+}
+
+ECode TextView::GetCurrentHintTextColor(
+    /* [out] */ Int32* color)
+{
+    VALIDATE_NOT_NULL(color)
+    *color = GetCurrentHintTextColor();
+    return NOERROR;
 }
 
 ECode TextView::SetLinkTextColor(
@@ -3671,6 +4044,15 @@ ECode TextView::SetLinkTextColor(
 AutoPtr<IColorStateList> TextView::GetLinkTextColors()
 {
     return mLinkTextColor;
+}
+
+ECode TextView::GetLinkTextColors(
+    /* [out] */ IColorStateList** colors)
+{
+    VALIDATE_NOT_NULL(colors)
+    *colors = GetLinkTextColors();
+    REFCOUNT_ADD(*colors)
+    return NOERROR;
 }
 
 ECode TextView::SetGravity(
@@ -3714,11 +4096,27 @@ Int32 TextView::GetGravity()
     return mGravity;
 }
 
+ECode TextView::GetGravity(
+    /* [out] */ Int32* gravity)
+{
+    VALIDATE_NOT_NULL(gravity)
+    *gravity = GetGravity();
+    return NOERROR;
+}
+
 Int32 TextView::GetPaintFlags()
 {
     Int32 flag;
     IPaint::Probe(mTextPaint)->GetFlags(&flag);
     return flag;
+}
+
+ECode TextView::GetPaintFlags(
+    /* [out] */ Int32* flags)
+{
+    VALIDATE_NOT_NULL(flags)
+    *flags = GetPaintFlags();
+    return NOERROR;
 }
 
 ECode TextView::SetPaintFlags(
@@ -3758,6 +4156,14 @@ Boolean TextView::GetHorizontallyScrolling()
     return mHorizontallyScrolling;
 }
 
+ECode TextView::GetHorizontallyScrolling(
+    /* [out] */ Boolean* whether)
+{
+    VALIDATE_NOT_NULL(whether)
+    *whether = GetHorizontallyScrolling();
+    return NOERROR;
+}
+
 ECode TextView::SetMinLines(
     /* [in] */ Int32 minlines)
 {
@@ -3772,6 +4178,14 @@ ECode TextView::SetMinLines(
 Int32 TextView::GetMinLines()
 {
     return mMinMode == LINES ? mMinimum : -1;
+}
+
+ECode TextView::GetMinLines(
+    /* [out] */ Int32* minlines)
+{
+    VALIDATE_NOT_NULL(minlines)
+    *minlines = GetMinLines();
+    return NOERROR;
 }
 
 ECode TextView::SetMinHeight(
@@ -3790,6 +4204,14 @@ Int32 TextView::GetMinHeight()
     return mMinMode == PIXELS ? mMinimum : -1;
 }
 
+ECode TextView::GetMinHeight(
+   /* [out] */ Int32* minHeight)
+{
+    VALIDATE_NOT_NULL(minHeight)
+    *minHeight = GetMinHeight();
+    return NOERROR;
+}
+
 ECode TextView::SetMaxLines(
     /* [in] */ Int32 maxlines)
 {
@@ -3806,6 +4228,14 @@ Int32 TextView::GetMaxLines()
     return mMaxMode == LINES ? mMaximum : -1;
 }
 
+ECode TextView::GetMaxLines(
+    /* [out] */ Int32* maxlines)
+{
+    VALIDATE_NOT_NULL(maxlines)
+    *maxlines = GetMaxLines();
+    return NOERROR;
+}
+
 ECode TextView::SetMaxHeight(
     /* [in] */ Int32 maxHeight)
 {
@@ -3820,6 +4250,14 @@ ECode TextView::SetMaxHeight(
 Int32 TextView::GetMaxHeight()
 {
     return mMaxMode == PIXELS ? mMaximum : -1;
+}
+
+ECode TextView::GetMaxHeight(
+    /* [out] */ Int32* maxHeight)
+{
+    VALIDATE_NOT_NULL(maxHeight)
+    *maxHeight = GetMaxHeight();
+    return NOERROR;
 }
 
 ECode TextView::SetLines(
@@ -3860,6 +4298,14 @@ Int32 TextView::GetMinEms()
     return mMinWidthMode == EMS ? mMinWidth : -1;
 }
 
+ECode TextView::GetMinEms(
+    /* [out] */ Int32* minems)
+{
+    VALIDATE_NOT_NULL(minems)
+    *minems = GetMinEms();
+    return NOERROR;
+}
+
 ECode TextView::SetMinWidth(
     /* [in] */ Int32 minpixels)
 {
@@ -3874,6 +4320,14 @@ ECode TextView::SetMinWidth(
 Int32 TextView::GetMinWidth()
 {
     return mMinWidthMode == PIXELS ? mMinWidth : -1;
+}
+
+ECode TextView::GetMinWidth(
+    /* [out] */ Int32* minpixels)
+{
+    VALIDATE_NOT_NULL(minpixels)
+    *minpixels = GetMinWidth();
+    return NOERROR;
 }
 
 ECode TextView::SetMaxEms(
@@ -3906,6 +4360,14 @@ ECode TextView::SetMaxWidth(
 Int32 TextView::GetMaxWidth()
 {
     return mMaxWidthMode == PIXELS ? mMaxWidth : -1;
+}
+
+ECode TextView::GetMaxWidth(
+    /* [out] */ Int32* maxpixels)
+{
+    VALIDATE_NOT_NULL(maxpixels)
+    *maxpixels = GetMaxWidth();
+    return NOERROR;
 }
 
 ECode TextView::SetEms(
@@ -3953,9 +4415,25 @@ Float TextView::GetLineSpacingMultiplier()
     return mSpacingMult;
 }
 
+ECode TextView::GetLineSpacingMultiplier(
+    /* [out] */ Float* multiplier)
+{
+    VALIDATE_NOT_NULL(multiplier)
+    *multiplier = GetLineSpacingMultiplier();
+    return NOERROR;
+}
+
 Float TextView::GetLineSpacingExtra()
 {
     return mSpacingAdd;
+}
+
+ECode TextView::GetLineSpacingExtra(
+    /* [out] */ Float* extra)
+{
+    VALIDATE_NOT_NULL(extra)
+    *extra = GetLineSpacingExtra();
+    return NOERROR;
 }
 
 ECode TextView::Append(
@@ -4254,8 +4732,13 @@ Boolean TextView::GetFreezesText()
     return mFreezesText;
 }
 
-///////////////////////////////////////////////////////////////////////////
-
+ECode TextView::GetFreezesText(
+    /* [out] */ Boolean* text)
+{
+    VALIDATE_NOT_NULL(text)
+    *text = GetFreezesText();
+    return NOERROR;
+}
 
 ECode TextView::SetEditableFactory(
     /* [in] */ IEditableFactory* factory)
@@ -4633,6 +5116,15 @@ AutoPtr<ICharSequence> TextView::GetHint()
     return mHint;
 }
 
+ECode TextView::GetHint(
+    /* [out] */ ICharSequence** hint)
+{
+    VALIDATE_NOT_NULL(hint)
+    *hint = GetHint();
+    REFCOUNT_ADD(*hint)
+    return NOERROR;
+}
+
 Boolean TextView::IsSingleLine()
 {
     return mSingleLine;
@@ -4850,6 +5342,14 @@ Int32 TextView::GetInputType()
     return 0;
 }
 
+ECode TextView::GetInputType(
+    /* [out] */ Int32* type)
+{
+    VALIDATE_NOT_NULL(type)
+    *type = GetInputType();
+    return NOERROR;
+}
+
 ECode TextView::SetImeOptions(
     /* [in] */ Int32 imeOptions)
 {
@@ -4866,6 +5366,14 @@ Int32 TextView::GetImeOptions()
     /*return (mEditor != NULL && mEditor->mInputContentType != NULL)
             ? mEditor->mInputContentType->mImeOptions : IEditorInfo::IME_NULL;*/
     return 0;
+}
+
+ECode TextView::GetImeOptions(
+    /* [out] */ Int32* options)
+{
+    VALIDATE_NOT_NULL(options)
+    *options = GetImeOptions();
+    return NOERROR;
 }
 
 ECode TextView::SetImeActionLabel(
@@ -4888,12 +5396,29 @@ AutoPtr<ICharSequence> TextView::GetImeActionLabel()
     return NULL;
 }
 
+ECode TextView::GetImeActionLabel(
+    /* [out] */ ICharSequence** label)
+{
+    VALIDATE_NOT_NULL(label)
+    *label = GetImeActionLabel();
+    REFCOUNT_ADD(*label)
+    return NOERROR;
+}
+
 Int32 TextView::GetImeActionId()
 {
     assert(0);
     /*return mEditor != NULL && mEditor->mInputContentType != NULL
             ? mEditor->mInputContentType->mImeActionId : 0;*/
     return 0;
+}
+
+ECode TextView::GetImeActionId(
+    /* [out] */ Int32* id)
+{
+    VALIDATE_NOT_NULL(id)
+    *id = GetImeActionId();
+    return NOERROR;
 }
 
 ECode TextView::SetOnEditorActionListener(
@@ -5007,6 +5532,14 @@ String TextView::GetPrivateImeOptions()
                     ? mEditor->mInputContentType->mPrivateImeOptions : String("");*/
 }
 
+ECode TextView::GetPrivateImeOptions(
+    /* [out] */ String* options)
+{
+    VALIDATE_NOT_NULL(options)
+    *options = GetPrivateImeOptions();
+    return NOERROR;
+}
+
 ECode TextView::SetInputExtras(
     /* [in] */ Int32 xmlResId)
 {
@@ -5041,10 +5574,29 @@ AutoPtr<IBundle> TextView::GetInputExtras(
     return mEditor->mInputContentType->mExtras;*/
 }
 
+ECode TextView::GetInputExtras(
+    /* [in] */ Boolean create,
+    /* [out] */ IBundle** bundle)
+{
+    VALIDATE_NOT_NULL(bundle)
+    *bundle = GetInputExtras(create);
+    REFCOUNT_ADD(*bundle)
+    return NOERROR;
+}
+
 AutoPtr<ICharSequence> TextView::GetError()
 {
     assert(0);
     //return mEditor == NULL ? NULL : mEditor->mError;
+}
+
+ECode TextView::GetError(
+    /* [out] */ ICharSequence** error)
+{
+    VALIDATE_NOT_NULL(error)
+    *error = GetError();
+    REFCOUNT_ADD(*error)
+    return NOERROR;
 }
 
 ECode TextView::SetError(
@@ -5161,7 +5713,16 @@ AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> > TextView::GetFilters()
    return mFilters;
 }
 
-/////////////////////////////////////////////////////////////////////////
+ECode TextView::GetFilters(
+    /* [out, callee] */ ArrayOf<Elastos::Droid::Text::IInputFilter*>** filters)
+{
+    VALIDATE_NOT_NULL(filters)
+    AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> > temp = GetFilters();
+    *filters = temp;
+    REFCOUNT_ADD(*filters);
+    return NOERROR;
+}
+
 
 Int32 TextView::GetBoxHeight(
     /* [in] */ ILayout* l)
@@ -5412,6 +5973,14 @@ void TextView::UnregisterForPreDraw()
     observer->RemoveOnPreDrawListener(THIS_PROBE(IOnPreDrawListener));
     mPreDrawRegistered = FALSE;
     mPreDrawListenerDetached = FALSE;
+}
+
+ECode TextView::OnPreDraw(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = OnPreDraw();
+    return NOERROR;
 }
 
 Boolean TextView::OnPreDraw()
@@ -5670,6 +6239,14 @@ Boolean TextView::IsTextSelectable()
     return FALSE;
 }
 
+ECode TextView::IsTextSelectable(
+    /* [out] */ Boolean* selectable)
+{
+    VALIDATE_NOT_NULL(selectable)
+    *selectable = IsTextSelectable();
+    return NOERROR;
+}
+
 ECode TextView::SetTextIsSelectable(
     /* [in] */ Boolean selectable)
 {
@@ -5797,6 +6374,14 @@ AutoPtr<IPath> TextView::GetUpdatedHighlightPath()
 Int32 TextView::GetHorizontalOffsetForDrawables()
 {
     return 0;
+}
+
+ECode TextView::GetHorizontalOffsetForDrawables(
+    /* [out] */ Int32* offset)
+{
+    VALIDATE_NOT_NULL(offset)
+    *offset = GetHorizontalOffsetForDrawables();
+    return NOERROR;
 }
 
 void TextView::OnDraw(
@@ -6067,6 +6652,14 @@ Int32 TextView::GetLineCount()
     return count;
 }
 
+ECode TextView::GetLineCount(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = GetLineCount();
+    return NOERROR;
+}
+
 Int32 TextView::GetLineBounds(
     /* [in] */ Int32 line,
     /* [in] */ IRect* bounds)
@@ -6090,6 +6683,16 @@ Int32 TextView::GetLineBounds(
         }
         return baseline + voffset;
     }
+}
+
+ECode TextView::GetLineBounds(
+    /* [in] */ Int32 line,
+    /* [in] */ IRect* bounds,
+    /* [out] */ Int32* y)
+{
+    VALIDATE_NOT_NULL(y)
+    *y = GetLineBounds(line, bounds);
+    return NOERROR;
 }
 
 ECode TextView::GetBaseline(
@@ -6727,6 +7330,16 @@ Boolean TextView::ExtractText(
     //return mEditor->ExtractText(request, outText);
 }
 
+ECode TextView::ExtractText(
+    /* [in] */ IExtractedTextRequest* request,
+    /* [in] */ IExtractedText* outText,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = ExtractText(request, outText);
+    return NOERROR;
+}
+
 /**
  * This is used to remove all style-impacting spans from text before new
  * extracted text is being replaced into it, so that we don't have any
@@ -6864,6 +7477,16 @@ Boolean TextView::OnPrivateIMECommand(
     /* [in] */ IBundle* data)
 {
     return FALSE;
+}
+
+ECode TextView::OnPrivateIMECommand(
+    /* [in] */ const String& action,
+    /* [in] */ IBundle* data,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = OnPrivateIMECommand(action, data);
+    return NOERROR;
 }
 
 void TextView::NullLayouts()
@@ -7287,6 +7910,14 @@ ECode TextView::SetIncludeFontPadding(
 Boolean TextView::GetIncludeFontPadding()
 {
     return mIncludePad;
+}
+
+ECode TextView::GetIncludeFontPadding(
+    /* [out] */ Boolean* padding)
+{
+    VALIDATE_NOT_NULL(padding)
+    *padding = GetIncludeFontPadding();
+    return NOERROR;
 }
 
 void TextView::OnMeasure(
@@ -7982,6 +8613,15 @@ Boolean TextView::BringPointIntoView(
     return changed;
 }
 
+ECode TextView::BringPointIntoView(
+    /* [in] */ Int32 offset,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = BringPointIntoView(offset);
+    return NOERROR;
+}
+
 Boolean TextView::MoveCursorToVisibleOffset()
 {
     if (!(ISpannable::Probe(mText))) {
@@ -8040,6 +8680,14 @@ Boolean TextView::MoveCursorToVisibleOffset()
         return TRUE;
     }
     return FALSE;
+}
+
+ECode TextView::MoveCursorToVisibleOffset(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = MoveCursorToVisibleOffset();
+    return NOERROR;
 }
 
 ECode TextView::ComputeScroll()
@@ -8127,10 +8775,26 @@ Int32 TextView::GetSelectionStart()
     return Selection::GetSelectionStart(ICharSequence::Probe(text));
 }
 
+ECode TextView::GetSelectionStart(
+    /* [out] */ Int32* start)
+{
+    VALIDATE_NOT_NULL(start)
+    *start = GetSelectionStart();
+    return NOERROR;
+}
+
 Int32 TextView::GetSelectionEnd()
 {
     AutoPtr<ICharSequence> text = GetText();
     return Selection::GetSelectionEnd(ICharSequence::Probe(text));
+}
+
+ECode TextView::GetSelectionEnd(
+    /* [out] */ Int32* end)
+{
+    VALIDATE_NOT_NULL(end)
+    *end = GetSelectionEnd();
+    return NOERROR;
 }
 
 Boolean TextView::HasSelection()
@@ -8139,6 +8803,14 @@ Boolean TextView::HasSelection()
     Int32 selectionEnd = GetSelectionEnd();
 
     return selectionStart >= 0 && selectionStart != selectionEnd;
+}
+
+ECode TextView::HasSelection(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = HasSelection();
+    return NOERROR;
 }
 
 ECode TextView::SetSingleLine()
@@ -8243,9 +8915,25 @@ Int32 TextView::GetMarqueeRepeatLimit()
     return mMarqueeRepeatLimit;
 }
 
+ECode TextView::GetMarqueeRepeatLimit(
+    /* [out] */ Int32* marqueeLimit)
+{
+    VALIDATE_NOT_NULL(marqueeLimit)
+    *marqueeLimit = mMarqueeRepeatLimit;
+    return NOERROR;
+}
+
 TextUtilsTruncateAt TextView::GetEllipsize()
 {
     return mEllipsize;
+}
+
+ECode TextView::GetEllipsize(
+    /* [out] */ TextUtilsTruncateAt* size)
+{
+    VALIDATE_NOT_NULL(size)
+    *size = mEllipsize;
+    return NOERROR;
 }
 
 ECode TextView::SetSelectAllOnFocus(
@@ -8284,6 +8972,14 @@ Boolean TextView::IsCursorVisible()
     // TRUE is the default value
     assert(0);
     //return mEditor == NULL ? TRUE : mEditor->mCursorVisible;
+}
+
+ECode TextView::IsCursorVisible(
+    /* [out] */ Boolean* visible)
+{
+    VALIDATE_NOT_NULL(visible)
+    *visible = IsCursorVisible();
+    return NOERROR;
 }
 
 Boolean TextView::CanMarquee()
@@ -8901,6 +9597,14 @@ Boolean TextView::DidTouchFocusSelect()
     return mEditor != NULL; //&& mEditor->mTouchFocusSelected;
 }
 
+ECode TextView::DidTouchFocusSelect(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = DidTouchFocusSelect();
+    return NOERROR;
+}
+
 ECode TextView::CancelLongPress()
 {
     assert(0);
@@ -9223,6 +9927,15 @@ AutoPtr<ILocale> TextView::GetTextServicesLocale(
             : mCurrentSpellCheckerLocaleCache;
 }
 
+ECode TextView::GetTextServicesLocale(
+    /* [out] */ ILocale** locale)
+{
+    VALIDATE_NOT_NULL(locale)
+    *locale = GetTextServicesLocale();
+    REFCOUNT_ADD(*locale)
+    return NOERROR;
+}
+
 AutoPtr<ILocale> TextView::GetTextServicesLocale()
 {
     return GetTextServicesLocale(FALSE);
@@ -9286,6 +9999,15 @@ AutoPtr<IWordIterator> TextView::GetWordIterator()
     } else {
         return NULL;
     }
+}
+
+ECode TextView::GetWordIterator(
+    /* [out] */ IWordIterator** iterator)
+{
+    VALIDATE_NOT_NULL(iterator)
+    *iterator = GetWordIterator();
+    REFCOUNT_ADD(*iterator)
+    return NOERROR;
 }
 
 ECode TextView::OnPopulateAccessibilityEvent(
@@ -9559,6 +10281,15 @@ AutoPtr<ICharSequence> TextView::GetTextForAccessibility()
     return text;
 }
 
+ECode TextView::GetTextForAccessibility(
+    /* [out] */ ICharSequence** text)
+{
+    VALIDATE_NOT_NULL(text)
+    *text = GetTextForAccessibility();
+    REFCOUNT_ADD(*text)
+    return NOERROR;
+}
+
 void TextView::SendAccessibilityEventTypeViewTextChanged(
     /* [in] */ ICharSequence* beforeText,
     /* [in] */ Int32 fromIndex,
@@ -9583,6 +10314,23 @@ Boolean TextView::IsInputMethodTarget()
     if (result)
         imm->IsActive(THIS_PROBE(IView), &result);
     return result;
+}
+
+ECode TextView::IsInputMethodTarget(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = IsInputMethodTarget();
+    return NOERROR;
+}
+
+ECode TextView::OnTextContextMenuItem(
+    /* [in] */ Int32 id,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = OnTextContextMenuItem(id);
+    return NOERROR;
 }
 
 Boolean TextView::OnTextContextMenuItem(
@@ -9704,6 +10452,14 @@ Boolean TextView::IsSuggestionsEnabled()
             variation == IInputType::TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);*/
 }
 
+ECode TextView::IsSuggestionsEnabled(
+    /* [out] */ Boolean* enabled)
+{
+    VALIDATE_NOT_NULL(enabled)
+    *enabled = IsSuggestionsEnabled();
+    return NOERROR;
+}
+
 ECode TextView::SetCustomSelectionActionModeCallback(
     /* [in] */ IActionModeCallback* actionModeCallback)
 {
@@ -9717,6 +10473,15 @@ AutoPtr<IActionModeCallback> TextView::GetCustomSelectionActionModeCallback()
 {
     assert(0);
     //return mEditor == NULL ? NULL : mEditor->mCustomSelectionActionModeCallback;
+}
+
+ECode TextView::GetCustomSelectionActionModeCallback(
+    /* [out] */ IActionModeCallback** actionModeCallback)
+{
+    VALIDATE_NOT_NULL(actionModeCallback)
+    *actionModeCallback = GetCustomSelectionActionModeCallback();
+    REFCOUNT_ADD(*actionModeCallback)
+    return NOERROR;
 }
 
 void TextView::StopSelectionActionMode()
@@ -9846,6 +10611,16 @@ Int32 TextView::GetOffsetForPosition(
     Int32 line = GetLineAtCoordinate(y);
     Int32 offset = GetOffsetAtCoordinate(line, x);
     return offset;
+}
+
+ECode TextView::GetOffsetForPosition(
+    /* [in] */ Float x,
+    /* [in] */ Float y,
+    /* [out] */ Int32* offset)
+{
+    VALIDATE_NOT_NULL(offset)
+    *offset = GetOffsetForPosition(x, y);
+    return NOERROR;
 }
 
 Float TextView::ConvertToLocalHorizontalCoordinate(

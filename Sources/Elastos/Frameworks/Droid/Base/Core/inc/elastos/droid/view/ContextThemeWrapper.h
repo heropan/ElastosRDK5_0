@@ -21,6 +21,8 @@ public:
 
     virtual ~ContextThemeWrapper();
 
+    CARAPI constructor();
+
     CARAPI constructor(
         /* [in] */ IContext* base,
         /* [in] */ Int32 themeres);

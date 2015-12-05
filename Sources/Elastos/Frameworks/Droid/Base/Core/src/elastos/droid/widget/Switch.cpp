@@ -299,6 +299,14 @@ Int32 Switch::GetSwitchPadding()
     return mSwitchPadding;
 }
 
+ECode Switch::GetSwitchPadding(
+    /* [out] */ Int32* padding)
+{
+    VALIDATE_NOT_NULL(padding)
+    *padding = GetSwitchPadding();
+    return NOERROR;
+}
+
 ECode Switch::SetSwitchMinWidth(
     /* [in] */ Int32 pixels)
 {
@@ -312,6 +320,14 @@ Int32 Switch::GetSwitchMinWidth()
     return mSwitchMinWidth;
 }
 
+ECode Switch::GetSwitchMinWidth(
+    /* [out] */ Int32* width)
+{
+    VALIDATE_NOT_NULL(width)
+    *width = GetSwitchMinWidth();
+    return NOERROR;
+}
+
 ECode Switch::SetThumbTextPadding(
     /* [in] */ Int32 pixels)
 {
@@ -323,6 +339,14 @@ ECode Switch::SetThumbTextPadding(
 Int32 Switch::GetThumbTextPadding()
 {
     return mThumbTextPadding;
+}
+
+ECode Switch::GetThumbTextPadding(
+    /* [out] */ Int32* padding)
+{
+    VALIDATE_NOT_NULL(padding)
+    *padding = GetThumbTextPadding();
+    return NOERROR;
 }
 
 ECode Switch::SetTrackDrawable(
@@ -355,6 +379,16 @@ AutoPtr<IDrawable> Switch::GetTrackDrawable()
     return mTrackDrawable;
 }
 
+ECode Switch::GetTrackDrawable(
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable);
+    AutoPtr<IDrawable> temp = GetTrackDrawable();
+    *drawable = temp;
+    REFCOUNT_ADD(*drawable)
+    return NOERROR;
+}
+
 ECode Switch::SetThumbDrawable(
     /* [in] */ IDrawable* thumb)
 {
@@ -383,6 +417,16 @@ ECode Switch::SetThumbResource(
 AutoPtr<IDrawable> Switch::GetThumbDrawable()
 {
     return mThumbDrawable;
+}
+
+ECode Switch::GetThumbDrawable(
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable)
+    AutoPtr<IDrawable> temp = GetThumbDrawable();
+    *drawable = temp;
+    REFCOUNT_ADD(*drawable)
+    return NOERROR;
 }
 
 /**
@@ -420,6 +464,16 @@ AutoPtr<ICharSequence> Switch::GetTextOn()
     return mTextOn;
 }
 
+ECode Switch::GetTextOn(
+    /* [out] */ ICharSequence** c)
+{
+    VALIDATE_NOT_NULL(c)
+    AutoPtr<ICharSequence> temp = GetTextOn();
+    *c = temp;
+    REFCOUNT_ADD(*c)
+    return NOERROR;
+}
+
 ECode Switch::SetTextOn(
     /* [in] */ ICharSequence* textOn)
 {
@@ -431,6 +485,16 @@ ECode Switch::SetTextOn(
 AutoPtr<ICharSequence> Switch::GetTextOff()
 {
     return mTextOff;
+}
+
+ECode Switch::GetTextOff(
+    /* [out] */ ICharSequence** off)
+{
+    VALIDATE_NOT_NULL(off)
+    AutoPtr<ICharSequence> temp = GetTextOff();
+    *off = temp;
+    REFCOUNT_ADD(*off)
+    return NOERROR;
 }
 
 ECode Switch::SetTextOff(

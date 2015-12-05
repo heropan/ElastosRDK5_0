@@ -106,6 +106,14 @@ Boolean CompoundButton::IsChecked()
     return mChecked;
 }
 
+ECode CompoundButton::IsChecked(
+    /* [out] */ Boolean* isChecked)
+{
+    VALIDATE_NOT_NULL(isChecked)
+    *isChecked = IsChecked();
+    return NOERROR;
+}
+
 /**
  * <p>Changes the checked state of this button.</p>
  *

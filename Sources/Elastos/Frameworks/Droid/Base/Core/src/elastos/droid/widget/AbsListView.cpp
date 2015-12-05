@@ -6781,7 +6781,7 @@ void AbsListView::SmoothScrollBy(
     }
 }
 
-void AbsListView::SmoothScrollByOffset(
+ECode AbsListView::SmoothScrollByOffset(
     /* [in] */ Int32 position)
 {
     Int32 index = -1;
@@ -6831,6 +6831,8 @@ void AbsListView::SmoothScrollByOffset(
             SmoothScrollToPosition(Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(count, index + position)));
         }
     }
+
+    return NOERROR;
 }
 
 void AbsListView::CreateScrollingCache()

@@ -72,6 +72,9 @@ public:
 
     virtual CARAPI_(Boolean) IsChecked();
 
+    CARAPI IsChecked(
+        /* [out] */ Boolean* isChecked);
+
     /**
      * <p>Changes the checked state of this button.</p>
      *

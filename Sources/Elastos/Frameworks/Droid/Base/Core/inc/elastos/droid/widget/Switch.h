@@ -140,6 +140,9 @@ public:
      */
     CARAPI_(Int32) GetSwitchPadding();
 
+    CARAPI GetSwitchPadding(
+        /* [out] */ Int32* padding);
+
     /**
      * Set the minimum width of the switch in pixels. The switch's width will be the maximum
      * of this value and its measured width as determined by the switch drawables and text used.
@@ -161,6 +164,9 @@ public:
      */
     CARAPI_(Int32) GetSwitchMinWidth();
 
+    CARAPI GetSwitchMinWidth(
+        /* [out] */ Int32* width);
+
     /**
      * Set the horizontal padding around the text drawn on the switch itself.
      *
@@ -179,6 +185,9 @@ public:
      * @attr ref android.R.styleable#Switch_thumbTextPadding
      */
     CARAPI_(Int32) GetThumbTextPadding();
+
+    CARAPI GetThumbTextPadding(
+        /* [out] */ Int32* padding);
 
     /**
      * Set the drawable used for the track that the switch slides within.
@@ -208,6 +217,9 @@ public:
      * @attr ref android.R.styleable#Switch_track
      */
     CARAPI_(AutoPtr<IDrawable>) GetTrackDrawable();
+
+    CARAPI GetTrackDrawable(
+        /* [out] */ IDrawable** drawable);
 
     /**
      * Set the drawable used for the switch "thumb" - the piece that the user
@@ -241,12 +253,18 @@ public:
       */
     CARAPI_(AutoPtr<IDrawable>) GetThumbDrawable();
 
+    CARAPI GetThumbDrawable(
+        /* [out] */ IDrawable** drawable);
+
     /**
      * Returns the text displayed when the button is in the checked state.
      *
      * @attr ref android.R.styleable#Switch_textOn
      */
     CARAPI_(AutoPtr<ICharSequence>) GetTextOn();
+
+    CARAPI GetTextOn(
+        /* [out] */ ICharSequence** c);
 
     /**
      * Sets the text displayed when the button is in the checked state.
@@ -263,6 +281,9 @@ public:
      */
     CARAPI_(AutoPtr<ICharSequence>) GetTextOff();
 
+    CARAPI GetTextOff(
+        /* [out] */ ICharSequence** off);
+
     /**
      * Sets the text displayed when the button is not in the checked state.
      *
@@ -271,7 +292,6 @@ public:
     CARAPI SetTextOff(
         /* [in] */ ICharSequence* textOff);
 
-    ///////////////////////////////////////////////////////////////////////////
     //    @Override
     CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,

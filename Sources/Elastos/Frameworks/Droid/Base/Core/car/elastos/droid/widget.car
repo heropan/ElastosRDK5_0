@@ -159,7 +159,7 @@ module
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     interface Elastos.Droid.View.IViewBaseSavedState;
-   //  interface Elastos.Droid.View.IOnPreDrawListener;
+    interface Elastos.Droid.View.IOnPreDrawListener;
     interface Elastos.Droid.View.IGestureDetectorOnGestureListener;
     interface Elastos.Droid.View.IOnGlobalLayoutListener;
     interface Elastos.Droid.View.IOnTouchModeChangeListener;
@@ -171,6 +171,7 @@ module
    //  interface Elastos.Droid.View.IViewOnLongClickListener;
     interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
     interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
+    interface Elastos.Droid.View.IOnGlobalLayoutListener;
    //  interface Elastos.Droid.View.ICollapsibleActionView;
    //  interface Elastos.Droid.View.IWindowCallback;
     interface Elastos.Droid.Text.ITextWatcher;
@@ -802,26 +803,34 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  [local]
-   //  class CButton {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CButton {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IButton;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IButton;
+        interface ITextView;
+        interface IView;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CCheckBox {
@@ -867,27 +876,37 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CSwitch {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CSwitch {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface ISwitch;
-   //      interface ICheckable;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface ISwitch;
+        interface ICompoundButton;
+        interface IButton;
+        interface ITextView;
+        interface IView;
+        interface ICheckable;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CToggleButton {
@@ -1286,52 +1305,67 @@ module
    //      interface ITextViewHelper;
    //  }
 
-   //  [local]
-   //  class CTextView {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CTextView {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface ITextView;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface ITextView;
+        interface IView;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  singleton class CActivityChooserModelHelper {
    //      interface IActivityChooserModelHelper;
    //  }
 
 
-   //  [local]
-   //  class CEditText {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CEditText {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IEditText;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IEditText;
+        interface ITextView;
+        interface IView;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CNumberPickerCustomEditText {
@@ -1881,32 +1915,36 @@ module
 		interface IListPopupWindow;
 	}
 
-   //  [local]
-   //  class CGridView {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CGridView {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-   //      interface IGridView;
-   //      interface ITextWatcher;
-   //      interface IOnGlobalLayoutListener;
-   //      interface IFilterListener;
-   //      interface IOnTouchModeChangeListener;
-   //      interface IRemoteAdapterConnectionCallback;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface IGridView;
+        interface IAbsListView;
+        interface IAdapterView;
+        interface IViewGroup;
+        interface IView;
+        interface ITextWatcher;
+        interface IOnGlobalLayoutListener;
+        interface IFilterListener;
+        interface IOnTouchModeChangeListener;
+        interface IRemoteAdapterConnectionCallback;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CHorizontalScrollView {

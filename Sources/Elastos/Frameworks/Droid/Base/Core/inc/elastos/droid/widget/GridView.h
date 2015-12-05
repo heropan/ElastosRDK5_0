@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/AbsListView.h"
+#include "elastos/droid/R.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,9 +17,21 @@ namespace Widget {
  * <p>See the <a href="{@docRoot}resources/tutorials/views/hello-gridview.html">Grid
  * View tutorial</a>.</p>
  */
-class GridView : public AbsListView
+class GridView
+    : public AbsListView
+    , public IGridView
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    GridView();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs = NULL,
+        /* [in] */ Int32 defStyleAttr = R::attr::gridViewStyle,
+        /* [in] */ Int32 defStyleRes = 0);
+
     virtual CARAPI SetRemoteViewsAdapter(
         /* [in] */ IIntent* intent);
 
@@ -47,17 +60,38 @@ public:
 
     virtual CARAPI_(Int32) GetGravity();
 
+    CARAPI GetGravity(
+        /* [out] */ Int32* gravity);
+
     virtual CARAPI_(Int32) GetHorizontalSpacing();
+
+    CARAPI GetHorizontalSpacing(
+        /* [out] */ Int32* spacing);
 
     virtual CARAPI_(Int32) GetRequestedHorizontalSpacing();
 
+    CARAPI GetRequestedHorizontalSpacing(
+        /* [out] */ Int32* spacing);
+
     CARAPI_(Int32) GetVerticalSpacing();
+
+    CARAPI GetVerticalSpacing(
+        /* [out] */ Int32* spacing);
 
     CARAPI_(Int32) GetColumnWidth();
 
+    CARAPI GetColumnWidth(
+        /* [out] */ Int32* width);
+
     CARAPI_(Int32) GetRequestedColumnWidth();
 
+    CARAPI GetRequestedColumnWidth(
+        /* [out] */ Int32* width);
+
     CARAPI_(Int32) GetNumColumns();
+
+    CARAPI GetNumColumns(
+        /* [out] */ Int32* columns);
 
     CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
@@ -95,11 +129,19 @@ public:
 
     virtual CARAPI_(Int32) GetStretchMode();
 
+    CARAPI GetStretchMode(
+        /* [out] */ Int32* mode);
+
     virtual CARAPI SetColumnWidth(
         /* [in] */ Int32 columnWidth);
 
     virtual CARAPI SetNumColumns(
         /* [in] */ Int32 numColumns);
+
+    CARAPI OnInitializeAccessibilityNodeInfoForItem(
+        /* [in] */ IView* view,
+        /* [in] */ Int32 position,
+        /* [in] */ IAccessibilityNodeInfo* info);
 
 
 private:
@@ -214,13 +256,6 @@ private:
     CARAPI AdjustViewsUpOrDown();
 
 protected:
-    GridView();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::gridViewStyle);
-
     CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
@@ -231,7 +266,7 @@ protected:
         /* [in] */ Int32 index,
         /* [in] */ Int32 count);
 
-    CARAPI_(void) LayoutChildren();
+    CARAPI LayoutChildren();
 
     CARAPI SetSelectionInt(
         /* [in] */ Int32 position);

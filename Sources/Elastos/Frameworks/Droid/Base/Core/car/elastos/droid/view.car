@@ -179,6 +179,7 @@ module
 
     interface Elastos.Droid.Animation.ITimeInterpolator;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IContextWrapper;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Res.IResourcesTheme;
@@ -284,6 +285,31 @@ module
         interface IDrawableCallback;
         interface IKeyEventCallback;
         interface IAccessibilityEventSource;
+    }
+
+    class CMenuInflater
+    {
+        constructor (
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IInterface* realOwner);
+
+        interface IMenuInflater;
+    }
+
+    class CContextThemeWrapper
+    {
+        constructor ();
+
+        constructor(
+            [in] IContext* base,
+            [in] Int32 themeres);
+
+        interface IContext;
+        interface IContextWrapper;
+        interface IContextThemeWrapper;
     }
 
     class CAbsSavedState

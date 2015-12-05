@@ -289,7 +289,7 @@ public:
      * scroll such that the indicated position is displayed.
      * @param offset The amount to offset from the adapter position to scroll to.
      */
-    virtual CARAPI_(void) SmoothScrollByOffset(
+    virtual CARAPI SmoothScrollByOffset(
         /* [in] */ Int32 offset);
 
     //@Override

@@ -2107,7 +2107,7 @@ protected:
     /**
      * Allows RemoteViews to scroll relatively to a position.
      */
-    virtual CARAPI_(void) SmoothScrollByOffset(
+    virtual CARAPI SmoothScrollByOffset(
         /* [in] */ Int32 position);
 
     virtual CARAPI_(Boolean) TrackMotionScroll(

@@ -962,10 +962,11 @@ ECode ListView::SmoothScrollToPosition(
     return AbsListView::SmoothScrollToPosition(position);
 }
 
-void ListView::SmoothScrollByOffset(
+ECode ListView::SmoothScrollByOffset(
     /* [in] */ Int32 offset)
 {
     AbsListView::SmoothScrollByOffset(offset);
+    return NOERROR;
 }
 
 AutoPtr<IView> ListView::MoveSelection(
