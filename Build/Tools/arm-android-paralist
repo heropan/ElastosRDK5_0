@@ -329,22 +329,22 @@
 #> Elastos/Frameworks/Droid/Commands
 - Elastos/Frameworks/Droid/DCARServer
 - Elastos/Frameworks/Droid/DCARServiceManager
-#  Elastos/Frameworks/Droid/Base/Test/inc
-#> Elastos/Frameworks/Droid/Base/Test/src/eunit Eunit.car
-#  Elastos/Frameworks/Droid/Base/Test/src/eunit/framework
-#  Elastos/Frameworks/Droid/Base/Test/src/eunit/runner
-#  Elastos/Frameworks/Droid/Base/Test/src/eunit/textui
-#> Elastos/Frameworks/Droid/Base/Test/src/eunit
-#> Elastos/Frameworks/Droid/Base/Test/src/lib Eunit.eco
-#  Elastos/Frameworks/Droid/Base/Test/src/lib
-#> Elastos/Frameworks/Droid/Base/Test/src
-#  Elastos/Frameworks/Droid/Base/Test-runner/inc
-#> Elastos/Frameworks/Droid/Base/Test-runner/src Elastos.Droid.Test.car
-#- Elastos/Frameworks/Droid/Base/Test-runner/src/droid/test/suitebuilder
-#- Elastos/Frameworks/Droid/Base/Test-runner/src/droid/test
-#- Elastos/Frameworks/Droid/Base/Test-runner/src/droid
-#> Elastos/Frameworks/Droid/Base/Test-runner/src
+  Elastos/Frameworks/Droid/Base/Test/inc
+> Elastos/Frameworks/Droid/Base/Test/src/eunit Eunit.car
+  Elastos/Frameworks/Droid/Base/Test/src/eunit/framework
+  Elastos/Frameworks/Droid/Base/Test/src/eunit/runner
+  Elastos/Frameworks/Droid/Base/Test/src/eunit/textui
+> Elastos/Frameworks/Droid/Base/Test/src/eunit
+> Elastos/Frameworks/Droid/Base/Test/src/lib Eunit.eco
+  Elastos/Frameworks/Droid/Base/Test/src/lib
+> Elastos/Frameworks/Droid/Base/Test/src
+  Elastos/Frameworks/Droid/Base/Test-runner/inc
+> Elastos/Frameworks/Droid/Base/Test-runner/src/elastos Elastos.Droid.Test.car
+- Elastos/Frameworks/Droid/Base/Test-runner/src/elastos/droid/test/suitebuilder
+- Elastos/Frameworks/Droid/Base/Test-runner/src/elastos/droid/test
+- Elastos/Frameworks/Droid/Base/Test-runner/src/elastos/droid
+> Elastos/Frameworks/Droid/Base/Test-runner/src/elastos
 #> Elastos/Frameworks/Droid/Base/Test-runner/lib Elastos.Droid.Test.eco
 #> Elastos/Frameworks/Droid/Base/Test-runner/lib
-#> Elastos/Frameworks/Droid/Base/Test-runner
+> Elastos/Frameworks/Droid/Base/Test-runner
 > Elastos

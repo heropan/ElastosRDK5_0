@@ -6,7 +6,7 @@
 #endif
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Eunit {
 namespace Framework {
@@ -188,7 +188,7 @@ ECode TestCase::RunBare()
 ECode TestCase::RunTest()
 {
     AutoPtr<ICharSequence> cseq;
-    CStringWrapper::New(mName, (ICharSequence**)&cseq);
+    CString::New(mName, (ICharSequence**)&cseq);
     FAIL_RETURN(AssertNotNull(String("TestCase.mName cannot be null"), cseq)); // Some VMs crash when calling getMethod(null,null);
     AutoPtr<IMethodInfo> runMethod;
     // try {
@@ -199,7 +199,7 @@ ECode TestCase::RunTest()
     AutoPtr<IClassInfo> clazz;
     ECode ec = _CObject_ReflectClassInfo(Probe(EIID_ITest), (IClassInfo**)&clazz);
     if (SUCCEEDED(ec)) {
-        ec = clazz->GetMethodInfo(mName.string(), (IMethodInfo**)&runMethod);
+        ec = clazz->GetMethodInfo(mName, String("")/*TODO*/, (IMethodInfo**)&runMethod);
     }
     if (FAILED(ec)) return Fail(String("Method \"") + mName + String("\" not found"));
     // } catch (NoSuchMethodException e) {
@@ -243,9 +243,9 @@ ECode TestCase::ToString(
     GetName(&name);
     AutoPtr<IClassInfo> clazz;
     _CObject_ReflectClassInfo(Probe(EIID_ITest), (IClassInfo**)&clazz);
-    StringBuf_<512> clazzName;
+    String clazzName;
     clazz->GetName(&clazzName);
-    *str = name + "(" + String((const char*)clazzName) + ")";
+    *str = name + "(" + clazzName + ")";
     return NOERROR;
 }
 

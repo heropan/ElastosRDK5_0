@@ -43,9 +43,9 @@ AutoPtr<ITest> CTestSuite::CreateTest(
     ECode ec = GetTestConstructor(theClass, (IConstructorInfo**)&constructor);
     if (FAILED(ec)) {
         StringBuilder sb("Class ");
-        StringBuf_<512> nameBuf;
-        theClass->GetName(&nameBuf);
-        sb.Append((const char*)nameBuf);
+        String name;
+        theClass->GetName(&name);
+        sb.Append(name);
         sb.Append(" has no public constructor TestCase(String name) or TestCase()");
         return Warning(sb.ToString());
     }
@@ -95,7 +95,7 @@ ECode CTestSuite::GetTestConstructor(
     VALIDATE_NOT_NULL(constructor);
     Int32 count;
     theClass->GetConstructorCount(&count);
-    BufferOf<IConstructorInfo*>* constructors = BufferOf<IConstructorInfo*>::Alloc(count);
+    AutoPtr< ArrayOf<IConstructorInfo*> > constructors = ArrayOf<IConstructorInfo*>::Alloc(count);
     theClass->GetAllConstructorInfos(constructors);
     AutoPtr<IConstructorInfo> ctor0, ctor1;
     for (Int32 i = 0; i < count; i++) {
@@ -116,11 +116,6 @@ ECode CTestSuite::GetTestConstructor(
             }
         }
     }
-    for (Int32 i = 0; i < count; i++) {
-        (*constructors)[i]->Release();
-        (*constructors)[i] = NULL;
-    }
-    BufferOf<IConstructorInfo*>::Free(constructors);
 
     if (ctor1 != NULL) {
         *constructor = ctor1;
@@ -168,9 +163,7 @@ ECode CTestSuite::constructor(
 void CTestSuite::AddTestsFromTestCase(
     /* [in] */ IClassInfo* theClass)
 {
-    StringBuf_<512> name;
-    theClass->GetName(&name);
-    mName = (const char*)name;
+    theClass->GetName(&mName);
     // try {
     AutoPtr<IConstructorInfo> constructor;
     ECode ec = GetTestConstructor(theClass, (IConstructorInfo**)&constructor); // Avoid generating multiple error messages
@@ -194,19 +187,16 @@ void CTestSuite::AddTestsFromTestCase(
 
     List<String> names;
     AutoPtr<IInterfaceInfo> itfInfo;
-    ec = theClass->GetInterfaceInfo("ITest", (IInterfaceInfo**)&itfInfo);
+    ec = theClass->GetInterfaceInfo(String("ITest"), (IInterfaceInfo**)&itfInfo);
     if (SUCCEEDED(ec) && itfInfo != NULL) {
         Int32 count;
         theClass->GetMethodCount(&count);
-        BufferOf<IMethodInfo*>* methodInfos = BufferOf<IMethodInfo*>::Alloc(count);
+        AutoPtr< ArrayOf<IMethodInfo*> > methodInfos = ArrayOf<IMethodInfo*>::Alloc(count);
         theClass->GetAllMethodInfos(methodInfos);
         for (Int32 i = 0; i < count; i++) {
             AutoPtr<IMethodInfo> method = (*methodInfos)[i];
             AddTestMethod(method, names, theClass);
-            (*methodInfos)[i]->Release();
-            (*methodInfos)[i] = NULL;
         }
-        BufferOf<IMethodInfo*>::Free(methodInfos);
     }
     // Class<?> superClass= theClass;
     // List<String> names= new ArrayList<String>();
@@ -217,7 +207,7 @@ void CTestSuite::AddTestsFromTestCase(
     // }
     Int32 size;
     if (mTests->GetSize(&size), size == 0) {
-        AutoPtr<ITest> test = Warning(String("No tests found in ") + (const char*)name);
+        AutoPtr<ITest> test = Warning(String("No tests found in ") + mName);
         AddTest(test);
     }
 }
@@ -253,16 +243,16 @@ AutoPtr<ITest> CTestSuite::TestCaseForClass(
     /* [in] */ IClassInfo* each)
 {
     AutoPtr<IInterfaceInfo> itfInfo;
-    each->GetInterfaceInfo("ITestCase", (IInterfaceInfo**)&itfInfo);
+    each->GetInterfaceInfo(String("ITestCase"), (IInterfaceInfo**)&itfInfo);
     if (itfInfo != NULL) {
         AutoPtr<ITest> test;
         CTestSuite::New(each, (ITest**)&test);
         return test;
     }
     else {
-        StringBuf_<512> name;
+        String name;
         each->GetName(&name);
-        return Warning(String((const char*)name) + " does not extend TestCase");
+        return Warning(name + " does not extend TestCase");
     }
 }
 
@@ -392,7 +382,7 @@ ECode CTestSuite::CountTestCases(
     mTests->GetSize(&N);
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<ITest> each;
-        mTests->ElementAt(i, (IInterface**)&each);
+        mTests->GetElementAt(i, (IInterface**)&each);
         Int32 n;
         each->CountTestCases(&n);
         count += n;
@@ -416,7 +406,7 @@ ECode CTestSuite::Run(
     mTests->GetSize(&N);
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<ITest> each;
-        mTests->ElementAt(i, (IInterface**)&each);
+        mTests->GetElementAt(i, (IInterface**)&each);
         Boolean shouldStop;
         if (result->ShouldStop(&shouldStop), shouldStop) {
             break;
@@ -464,7 +454,7 @@ ECode CTestSuite::Tests(
     /* [out] */ IEnumeration** tests)
 {
     VALIDATE_NOT_NULL(tests);
-    return mTests->Elements(tests);
+    return mTests->GetElements(tests);
 }
 
 ECode CTestSuite::ToString(
@@ -482,10 +472,9 @@ void CTestSuite::AddTestMethod(
     /* [in] */ List<String>& names,
     /* [in] */ IClassInfo* theClass)
 {
-    StringBuf_<512> name;
+    String name;
     m->GetName(&name);
-    String nameStr((const char*)name);
-    if (Find(names.Begin(), names.End(), nameStr) != names.End()) {
+    if (Find(names.Begin(), names.End(), name) != names.End()) {
         return;
     }
     // if (! isPublicTestMethod(m)) {
@@ -493,8 +482,8 @@ void CTestSuite::AddTestMethod(
     //         addTest(warning("Test method isn't public: "+ m.getName() + "(" + theClass.getCanonicalName() + ")"));
     //     return;
     // }
-    names.PushBack(nameStr);
-    AutoPtr<ITest> test = CreateTest(theClass, nameStr);
+    names.PushBack(name);
+    AutoPtr<ITest> test = CreateTest(theClass, name);
     AddTest(test);
 }
 

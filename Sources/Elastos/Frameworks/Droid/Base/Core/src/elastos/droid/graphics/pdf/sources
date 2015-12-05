@@ -16,7 +16,6 @@ INCLUDES += $(PREBUILD_INC)/pdfium/fpdfsdk/include
 INCLUDES += $(PREBUILD_INC)/pdfium/core/include
 
 C_DEFINES += -DDROID_CORE
-CPP_FLAGS += -std=c++0x
 
 SOURCES = CPdfDocument.cpp
 SOURCES += CPdfRenderer.cpp

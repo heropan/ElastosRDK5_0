@@ -23,6 +23,7 @@ using Elastos::Droid::Utility::ITypedValueHelper;
 using Elastos::Droid::Utility::CTypedValueHelper;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::EIID_IViewOnTouchListener;
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -30,6 +31,7 @@ using Elastos::Core::ISystem;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::IDate;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;

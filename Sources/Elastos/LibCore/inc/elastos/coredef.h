@@ -9,6 +9,9 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include <elastos.h>
+using namespace Elastos;
+
 #define ANDROID_SMP 1
 
 /*

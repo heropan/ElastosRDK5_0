@@ -52,7 +52,7 @@ module
          */
         //public List<EngineInfo>
         GetEngines(
-            [out] IArrayList** ret);
+            [out] IList** ret);
 
         /**
          * @return true if a given engine is installed on the system.

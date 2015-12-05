@@ -9,8 +9,8 @@ DIRS += App_process
 
 #DIRS = ServiceManager
 #DIRS += Base/Services/Server/src
-#DIRS += Base/Test
-#DIRS += Base/Test-runner
+DIRS += Base/Test
+DIRS += Base/Test-runner
 #DIRS += Lib
 #DIRS += JavaProxy
 #DIRS += Base/Packages/

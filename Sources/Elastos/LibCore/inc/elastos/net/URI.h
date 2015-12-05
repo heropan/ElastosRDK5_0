@@ -265,20 +265,20 @@ public:
     static const AutoPtr<UriCodec> ASCII_ONLY;
 
 private:
-    ECO_LOCAL String mString;
-    ECO_LOCAL String mScheme;
-    ECO_LOCAL String mSchemeSpecificPart;
-    ECO_LOCAL String mAuthority;
-    ECO_LOCAL String mUserInfo;
-    ECO_LOCAL String mHost;
-    ECO_LOCAL Int32 mPort;
-    ECO_LOCAL String mPath;
-    ECO_LOCAL String mQuery;
-    ECO_LOCAL String mFragment;
-    ECO_LOCAL Boolean mOpaque;
-    ECO_LOCAL Boolean mAbsolute;
-    ECO_LOCAL Boolean mServerAuthority;
-    ECO_LOCAL Int32 mHash;
+    String mString;
+    String mScheme;
+    String mSchemeSpecificPart;
+    String mAuthority;
+    String mUserInfo;
+    String mHost;
+    Int32 mPort;
+    String mPath;
+    String mQuery;
+    String mFragment;
+    Boolean mOpaque;
+    Boolean mAbsolute;
+    Boolean mServerAuthority;
+    Int32 mHash;
 };
 
 } // namespace Net

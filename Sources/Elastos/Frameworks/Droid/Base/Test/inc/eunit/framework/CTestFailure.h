@@ -2,14 +2,21 @@
 #ifndef __CTESTFAILURE_H__
 #define __CTESTFAILURE_H__
 
-#include "_CTestFailure.h"
+#include "_Eunit_Framework_CTestFailure.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Eunit {
 namespace Framework {
 
 CarClass(CTestFailure)
+    , public Object
+    , public ITestFailure
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor(
         /* [in] */ ITest* failedTest,
         /* [in] */ ECode ec,

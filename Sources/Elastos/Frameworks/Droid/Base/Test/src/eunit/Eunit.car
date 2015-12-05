@@ -1,7 +1,7 @@
 
 module
 {
-    importlib("Elastos.Core.eco");
+    importlib("Elastos.CoreLibrary.eco");
 
     merge("../../car/eunit/framework.car");
     merge("../../car/eunit/runner.car");

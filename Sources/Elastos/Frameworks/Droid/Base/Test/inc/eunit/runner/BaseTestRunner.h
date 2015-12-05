@@ -2,15 +2,15 @@
 #ifndef __EUNIT_RUNNER_BASETESTRUNNER_H__
 #define __EUNIT_RUNNER_BASETESTRUNNER_H__
 
-#include <cmdef.h>
+#include <elastos/coredef.h>
 #ifdef EUNIT
 #include "Eunit_server.h"
 #else
 #include <Eunit.h>
 #endif
-#include <Elastos.CoreLibrary.h>
+#include <elastos/core/Object.h>
 
-using namespace Elastos;
+using Elastos::Core::Object;
 using Elastos::IO::IFile;
 using Elastos::Utility::IProperties;
 using Eunit::Framework::ITest;
@@ -21,7 +21,7 @@ namespace Eunit {
 namespace Runner {
 
 class BaseTestRunner
-    : public ElRefBase
+    : public Object
     , public ITestListener
     , public IBaseTestRunner
 {

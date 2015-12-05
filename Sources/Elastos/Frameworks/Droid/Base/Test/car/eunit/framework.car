@@ -17,7 +17,7 @@ module
     class CTestFailure {
         constructor(
             [in] ITest* failedTest,
-            [in] ECode ec,
+            [in] ECode ecError,
             [in] String message,
             [in] String backtrace);
 
