@@ -2,7 +2,7 @@
 #ifndef __ACTIVITYTESTCASE_H__
 #define __ACTIVITYTESTCASE_H__
 
-#include <ext/frameworkdef.h>
+#include <elastos/droid/ext/frameworkdef.h>
 #ifdef DROID_TEST
 #include <Elastos.Droid.Test_server.h>
 #else
