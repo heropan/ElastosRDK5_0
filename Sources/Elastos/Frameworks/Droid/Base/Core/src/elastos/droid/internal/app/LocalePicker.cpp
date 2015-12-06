@@ -103,7 +103,7 @@ static AutoPtr<ICollator> InitCollator()
     helper->GetInstance((ICollator**)&collator);
     return collator;
 }
-const AutoPtr<ICollator> sCollator = InitCollator();
+const AutoPtr<ICollator> LocalePicker::LocaleInfo::sCollator = InitCollator();
 
 LocalePicker::LocaleInfo::LocaleInfo(
     /* [in] */ const String& label,

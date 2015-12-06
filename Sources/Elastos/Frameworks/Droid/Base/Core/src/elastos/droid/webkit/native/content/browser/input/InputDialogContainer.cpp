@@ -15,9 +15,11 @@ using Elastos::Droid::App::IAlertDialogBuilder;
 using Elastos::Droid::App::IDialog;
 using Elastos::Droid::App::EIID_IDialog;
 using Elastos::Droid::App::EIID_IAlertDialog;
+using Elastos::Droid::App::EIID_IDatePickerDialogOnDateSetListener;
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::EIID_IDialogInterface;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnDismissListener;
 // TODO using Elastos::Droid::Text::Format::CDateFormat;
 using Elastos::Droid::Text::Format::IDateFormat;
 using Elastos::Droid::View::IView;
@@ -110,6 +112,7 @@ ECode InputDialogContainer::InnerDialogInterfaceOnClickListener::OnClick(
 //=========================================================================
 //        InputDialogContainer::InnerDialogInterfaceOnDismissListener
 //=========================================================================
+CAR_INTERFACE_IMPL(InputDialogContainer::InnerDialogInterfaceOnDismissListener, Object, IDialogInterfaceOnDismissListener);
 
 InputDialogContainer::InnerDialogInterfaceOnDismissListener::InnerDialogInterfaceOnDismissListener(
     /* [in] */ InputDialogContainer* owner)
@@ -132,6 +135,7 @@ ECode InputDialogContainer::InnerDialogInterfaceOnDismissListener::OnDismiss(
 //=============================================================================
 //       InputDialogContainer::SetButtonDialogInterfaceOnClickListener
 //=============================================================================
+CAR_INTERFACE_IMPL(InputDialogContainer::SetButtonDialogInterfaceOnClickListener, Object, IDialogInterfaceOnClickListener);
 
 InputDialogContainer::SetButtonDialogInterfaceOnClickListener::SetButtonDialogInterfaceOnClickListener(
     /* [in] */ InputDialogContainer* owner)
@@ -153,6 +157,7 @@ ECode InputDialogContainer::SetButtonDialogInterfaceOnClickListener::OnClick(
 //================================================================================================
 //         InputDialogContainer::SetOnDismissListenerDialogInterfaceOnDismissListener
 //================================================================================================
+CAR_INTERFACE_IMPL(InputDialogContainer::SetOnDismissListenerDialogInterfaceOnDismissListener, Object, IDialogInterfaceOnDismissListener);
 
 InputDialogContainer::SetOnDismissListenerDialogInterfaceOnDismissListener::SetOnDismissListenerDialogInterfaceOnDismissListener(
     /* [in] */ InputDialogContainer* owner)
@@ -174,6 +179,7 @@ ECode InputDialogContainer::SetOnDismissListenerDialogInterfaceOnDismissListener
 //==================================================================
 //              InputDialogContainer::DateListener
 //==================================================================
+CAR_INTERFACE_IMPL(InputDialogContainer::DateListener, Object, IDatePickerDialogOnDateSetListener);
 
 InputDialogContainer::DateListener::DateListener(
     /* [in] */ InputDialogContainer* owner,

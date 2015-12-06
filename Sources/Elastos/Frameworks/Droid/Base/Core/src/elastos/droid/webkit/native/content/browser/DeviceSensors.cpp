@@ -26,6 +26,7 @@ using Elastos::Utility::EIID_IIterable;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IList;
+using Elastos::Utility::Concurrent::EIID_ICallable;
 using Elastos::Utility::Logging::Logger;
 
 
@@ -78,6 +79,7 @@ void DeviceSensors::SensorManagerProxyImpl::UnregisterListener(
 //===============================================================
 //                DeviceSensors::InnerCallable
 //===============================================================
+CAR_INTERFACE_IMPL(DeviceSensors::InnerCallable, Object, ICallable);
 
 DeviceSensors::InnerCallable::InnerCallable(
     /* [in] */ DeviceSensors* owner)
