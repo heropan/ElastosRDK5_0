@@ -1,16 +1,15 @@
 
 #include "elastos/droid/widget/AutoCompleteTextView.h"
-#include "elastos/droid/widget/CListPopupWindow.h"
-#include "elastos/droid/R.h"
-#include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/text/Selection.h"
 #include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/view/inputmethod/CCompletionInfo.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
+#include "elastos/droid/widget/CListPopupWindow.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/Selection.h"
 #include <elastos/core/Math.h>
 
-using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::R;
+using Elastos::Droid::Database::IDataSetObserver;
+using Elastos::Droid::Database::EIID_IDataSetObserver;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::INoCopySpan;
@@ -18,22 +17,23 @@ using Elastos::Droid::Text::EIID_INoCopySpan;
 using Elastos::Droid::Text::ITextWatcher;
 using Elastos::Droid::Text::EIID_ITextWatcher;
 using Elastos::Droid::Text::IInputType;
-using Elastos::Droid::View::IDispatcherState;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::LayoutInflater;
+using Elastos::Droid::View::IDispatcherState;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
-using Elastos::Droid::View::EIID_IViewOnClickListener;
-using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::InputMethod::CCompletionInfo;
 using Elastos::Droid::View::InputMethod::CInputMethodManager;
 using Elastos::Droid::View::InputMethod::ICompletionInfo;
-using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::Widget::ITextView;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-CAR_INTERFACE_IMPL(AutoCompleteTextView::MyWatcher, Object, ITextWatcher);
+CAR_INTERFACE_IMPL(AutoCompleteTextView::MyWatcher, Object, ITextWatcher)
+
 AutoCompleteTextView::MyWatcher::MyWatcher(
     /* [in] */ AutoCompleteTextView* host)
     : mHost(host)
@@ -43,6 +43,7 @@ ECode AutoCompleteTextView::MyWatcher::AfterTextChanged(
     /* [in] */ IEditable* s)
 {
     mHost->DoAfterTextChanged();
+
     return NOERROR;
 }
 
@@ -53,6 +54,7 @@ ECode AutoCompleteTextView::MyWatcher::BeforeTextChanged(
     /* [in] */ Int32 after)
 {
     mHost->DoBeforeTextChanged();
+
     return NOERROR;
 }
 
@@ -65,7 +67,13 @@ ECode AutoCompleteTextView::MyWatcher::OnTextChanged(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(AutoCompleteTextView::DropDownItemClickListener, Object, IAdapterViewOnItemClickListener);
+CAR_INTERFACE_IMPL(AutoCompleteTextView::DropDownItemClickListener, Object, IAdapterViewOnItemClickListener)
+
+AutoCompleteTextView::DropDownItemClickListener::DropDownItemClickListener(
+    /* [in] */ AutoCompleteTextView* host)
+    : mHost(host)
+{}
+
 ECode AutoCompleteTextView::DropDownItemClickListener::OnItemClick(
     /* [in] */ IAdapterView* parent,
     /* [in] */ IView* v,
@@ -77,7 +85,8 @@ ECode AutoCompleteTextView::DropDownItemClickListener::OnItemClick(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(AutoCompleteTextView::PassThroughClickListener, Object, IViewOnClickListener);
+CAR_INTERFACE_IMPL(AutoCompleteTextView::PassThroughClickListener, Object, IViewOnClickListener)
+
 AutoCompleteTextView::PassThroughClickListener::PassThroughClickListener(
     /* [in] */ AutoCompleteTextView* host)
     : mHost(host)
@@ -88,79 +97,79 @@ ECode AutoCompleteTextView::PassThroughClickListener::OnClick(
 {
     mHost->OnClickImpl();
 
-    if (mWrapped != NULL) {
+    if (mWrapped != NULL)
         mWrapped->OnClick(v);
-    }
 
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(AutoCompleteTextView::PopupDataSetObserver::PopupDataSetObserverOnchangedRunnable, Object, IRunnable);
-AutoCompleteTextView::PopupDataSetObserver::PopupDataSetObserverOnchangedRunnable::PopupDataSetObserverOnchangedRunnable(
-    /* [in] */ PopupDataSetObserver* host)
-    : mHost(host)
+AutoCompleteTextView::PopupDataSetObserverOnchangedRunnable::PopupDataSetObserverOnchangedRunnable(
+    /* [in] */ AutoCompleteTextView* host)
 {
+    mHost = host;
 }
 
-ECode AutoCompleteTextView::PopupDataSetObserver::PopupDataSetObserverOnchangedRunnable::Run()
+ECode AutoCompleteTextView::PopupDataSetObserverOnchangedRunnable::Run()
 {
-    AutoPtr<IInterface> view;
-    mHost->mViewReference->Resolve(EIID_IAutoCompleteTextView, (IInterface**)&view);
-    AutoPtr<IAutoCompleteTextView> textView = IAutoCompleteTextView::Probe(view);
-    if (textView == NULL) {
-        return NOERROR;
-    }
-    AutoCompleteTextView* autoTextView = (AutoCompleteTextView*)textView.Get();
-    AutoPtr<IListAdapter> adapter = autoTextView->mAdapter;
-    if (adapter == NULL) {
-        return NOERROR;
-    }
-    Int32 count = 0;
-    IAdapter::Probe(adapter)->GetCount(&count);
-    autoTextView->UpdateDropDownForFilter(count);
-    return NOERROR;
+   if (mHost->mAdapter != NULL) {
+       Int32 count;
+       IAdapter::Probe(mHost->mAdapter)->GetCount(&count);
+       mHost->UpdateDropDownForFilter(count);
+   }
+   return NOERROR;
 }
+
+CAR_INTERFACE_IMPL(AutoCompleteTextView::PopupDataSetObserver, Object, IDataSetObserver)
 
 AutoCompleteTextView::PopupDataSetObserver::PopupDataSetObserver(
-    /* [in] */ IWeakReference* host)
-    : mViewReference(host)
+    /* [in] */ AutoCompleteTextView* host)
 {
-    mUpdateRunnable = new PopupDataSetObserverOnchangedRunnable(this);
+    if (host != NULL) {
+        host->GetWeakReference((IWeakReference**)&mHost);
+    }
 }
 
 ECode AutoCompleteTextView::PopupDataSetObserver::OnChanged()
 {
-    AutoPtr<IInterface> view;
-    mViewReference->Resolve(EIID_IAutoCompleteTextView, (IInterface**)&view);
-    AutoPtr<IAutoCompleteTextView> textView = IAutoCompleteTextView::Probe(view);
-    if (textView != NULL && (((AutoCompleteTextView*)textView.Get())->mAdapter) != NULL) {
-        // If the popup is not showing already, showing it will cause
-        // the list of data set observers attached to the adapter to
-        // change. We can't do it from here, because we are in the middle
-        // of iterating through the list of observers.
-        Boolean result = FALSE;
-        IView::Probe(textView)->Post(mUpdateRunnable, &result);
+    if (mHost != NULL) {
+        AutoPtr<IAutoCompleteTextView> tmp;
+        mHost->Resolve(EIID_IAutoCompleteTextView, (IInterface**)&tmp);
+        AutoCompleteTextView* impl = (AutoCompleteTextView*)tmp.Get();
+        if (impl != NULL && impl->mAdapter != NULL) {
+            // If the popup is not showing already, showing it will cause
+            // the list of data set observers attached to the adapter to
+            // change. We can't do it from here, because we are in the middle
+            // of iterating throught he list of observers.
+            impl->mPopRunnable = new PopupDataSetObserverOnchangedRunnable(impl);
+            Boolean rst;
+            impl->Post(impl->mPopRunnable, &rst);
+        }
     }
 
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(AutoCompleteTextView::PopupWindowOnDismissListener, Object, IPopupWindowOnDismissListener);
-ECode AutoCompleteTextView::PopupWindowOnDismissListener::OnDismiss()
+ECode AutoCompleteTextView::PopupDataSetObserver::OnInvalidated()
 {
-    return mDismissListener->OnDismiss();
+    return NOERROR;
 }
+
+CAR_INTERFACE_IMPL(AutoCompleteTextView::PopupWindowOnDismissListener, Object, IPopupWindowOnDismissListener)
 
 AutoCompleteTextView::PopupWindowOnDismissListener::PopupWindowOnDismissListener(
     /* [in] */ IAutoCompleteTextViewOnDismissListener* l)
     : mDismissListener(l)
 {}
 
+ECode AutoCompleteTextView::PopupWindowOnDismissListener::OnDismiss()
+{
+    return mDismissListener->OnDismiss();
+}
 
-const Boolean AutoCompleteTextView::DEBUG = FALSE;
-const Int32 AutoCompleteTextView::EXPAND_MAX = 3;
+const String AutoCompleteTextView::TAG("AutoCompleteTextView");
 
-CAR_INTERFACE_IMPL_2(AutoCompleteTextView, EditText, IAutoCompleteTextView, IFilterListener);
+CAR_INTERFACE_IMPL(AutoCompleteTextView, EditText, IAutoCompleteTextView)
+
 AutoCompleteTextView::AutoCompleteTextView()
     : mHintResource(0)
     , mThreshold(0)
@@ -189,9 +198,9 @@ ECode AutoCompleteTextView::constructor(
 ECode AutoCompleteTextView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
+    /* [in] */ Int32 defStyle)
 {
-    return constructor(context, attrs, defStyleAttr, 0);
+    return constructor(context, attrs, defStyle, 0);
 }
 
 ECode AutoCompleteTextView::constructor(
@@ -200,8 +209,11 @@ ECode AutoCompleteTextView::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    ASSERT_SUCCEEDED(EditText::constructor(context, attrs, defStyleAttr, defStyleRes));
-    CListPopupWindow::New(context, attrs, defStyleAttr, defStyleRes, (IListPopupWindow**)&mPopup);
+    FAIL_RETURN(EditText::constructor(context, attrs, defStyleAttr, defStyleRes))
+
+    CListPopupWindow::New(
+        context, attrs, defStyleAttr, defStyleRes,
+        (IListPopupWindow**)&mPopup);
 
     mPopup->SetSoftInputMode(IWindowManagerLayoutParams::SOFT_INPUT_ADJUST_RESIZE);
     mPopup->SetPromptPosition(IListPopupWindow::POSITION_PROMPT_BELOW);
@@ -210,12 +222,13 @@ ECode AutoCompleteTextView::constructor(
             ARRAY_SIZE(R::styleable::AutoCompleteTextView));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
-            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+            attrs, attrIds, defStyleAttr, defStyleRes,(ITypedArray**)&a);
 
     a->GetInt32(R::styleable::AutoCompleteTextView_completionThreshold, 2, &mThreshold);
 
     AutoPtr<IDrawable> dropDownSelector;
-    a->GetDrawable(R::styleable::AutoCompleteTextView_dropDownSelector, (IDrawable**)&dropDownSelector);
+    a->GetDrawable(R::styleable::AutoCompleteTextView_dropDownSelector,
+        (IDrawable**)&dropDownSelector);
     mPopup->SetListSelector(dropDownSelector);
 
     // Get the anchor's id now, but the view won't be ready, so wait to actually get the
@@ -281,16 +294,28 @@ ECode AutoCompleteTextView::SetOnClickListener(
     return NOERROR;
 }
 
+/**
+ * Private hook into the on click event, dispatched from {@link PassThroughClickListener}
+ */
 void AutoCompleteTextView::OnClickImpl()
 {
     // If the dropdown is showing, bring the keyboard to the front
     // when the user touches the text field.
-    Boolean showing = FALSE;
-    if (IsPopupShowing(&showing), showing) {
+    Boolean isPopupShowing;
+    if (IsPopupShowing(&isPopupShowing), isPopupShowing) {
         EnsureImeVisible(TRUE);
     }
 }
 
+/**
+ * <p>Sets the optional hint text that is displayed at the bottom of the
+ * the matching list.  This can be used as a cue to the user on how to
+ * best use the list, or to provide extra information.</p>
+ *
+ * @param hint the text to be displayed to the user
+ *
+ * @attr ref android.R.styleable#AutoCompleteTextView_completionHint
+ */
 ECode AutoCompleteTextView::SetCompletionHint(
     /* [in] */ ICharSequence* hint)
 {
@@ -298,9 +323,9 @@ ECode AutoCompleteTextView::SetCompletionHint(
 
     if (hint != NULL) {
         if (mHintView == NULL) {
+            AutoPtr<ILayoutInflater> layoutInflater;
             AutoPtr<IContext> context;
             GetContext((IContext**)&context);
-            AutoPtr<ILayoutInflater> layoutInflater;
             LayoutInflater::From(context, (ILayoutInflater**)&layoutInflater);
             AutoPtr<IView> view;
             layoutInflater->Inflate(mHintResource, NULL, (IView**)&view);
@@ -308,7 +333,8 @@ ECode AutoCompleteTextView::SetCompletionHint(
             view->FindViewById(R::id::text1, (IView**)&hintView);
             hintView->SetText(mHintText);
             mHintView = hintView;
-            mPopup->SetPromptView(IView::Probe(hintView));
+            AutoPtr<IView> param = IView::Probe(hintView);
+            mPopup->SetPromptView(param);
         } else {
             mHintView->SetText(hint);
         }
@@ -319,37 +345,80 @@ ECode AutoCompleteTextView::SetCompletionHint(
     return NOERROR;
 }
 
+/**
+ * Gets the optional hint text displayed at the bottom of the the matching list.
+ *
+ * @return The hint text, if any
+ *
+ * @see #setCompletionHint(CharSequence)
+ *
+ * @attr ref android.R.styleable#AutoCompleteTextView_completionHint
+ */
 ECode AutoCompleteTextView::GetCompletionHint(
     /* [out] */ ICharSequence** hint)
 {
-    VALIDATE_NOT_NULL(hint);
+    VALIDATE_NOT_NULL(hint)
+
     *hint = mHintText;
-    REFCOUNT_ADD(*hint);
     return NOERROR;
 }
 
+/**
+ * <p>Returns the current width for the auto-complete drop down list. This can
+ * be a fixed width, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill the screen, or
+ * {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the width of its anchor view.</p>
+ *
+ * @return the width for the drop down list
+ *
+ * @attr ref android.R.styleable#AutoCompleteTextView_dropDownWidth
+ */
 ECode AutoCompleteTextView::GetDropDownWidth(
     /* [out] */ Int32* width)
 {
-    VALIDATE_NOT_NULL(width);
     return mPopup->GetWidth(width);
 }
 
+/**
+ * <p>Sets the current width for the auto-complete drop down list. This can
+ * be a fixed width, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill the screen, or
+ * {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the width of its anchor view.</p>
+ *
+ * @param width the width to use
+ *
+ * @attr ref android.R.styleable#AutoCompleteTextView_dropDownWidth
+ */
 ECode AutoCompleteTextView::SetDropDownWidth(
     /* [in] */ Int32 width)
 {
-    mPopup->SetWidth(width);
-
-    return NOERROR;
+    return mPopup->SetWidth(width);
 }
 
+/**
+ * <p>Returns the current height for the auto-complete drop down list. This can
+ * be a fixed height, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill
+ * the screen, or {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the height
+ * of the drop down's content.</p>
+ *
+ * @return the height for the drop down list
+ *
+ * @attr ref android.R.styleable#AutoCompleteTextView_dropDownHeight
+ */
 ECode AutoCompleteTextView::GetDropDownHeight(
     /* [out] */ Int32* height)
 {
-    VALIDATE_NOT_NULL(height);
     return mPopup->GetHeight(height);
 }
 
+/**
+ * <p>Sets the current height for the auto-complete drop down list. This can
+ * be a fixed height, or {@link ViewGroup.LayoutParams#MATCH_PARENT} to fill
+ * the screen, or {@link ViewGroup.LayoutParams#WRAP_CONTENT} to fit the height
+ * of the drop down's content.</p>
+ *
+ * @param height the height to use
+ *
+ * @attr ref android.R.styleable#AutoCompleteTextView_dropDownHeight
+ */
 ECode AutoCompleteTextView::SetDropDownHeight(
     /* [in] */ Int32 height)
 {
@@ -358,14 +427,29 @@ ECode AutoCompleteTextView::SetDropDownHeight(
     return NOERROR;
 }
 
+/**
+ * <p>Returns the id for the view that the auto-complete drop down list is anchored to.</p>
+ *
+ * @return the view's id, or {@link View#NO_ID} if none specified
+ *
+ * @attr ref android.R.styleable#AutoCompleteTextView_dropDownAnchor
+ */
 ECode AutoCompleteTextView::GetDropDownAnchor(
-    /* [out] */ Int32* anchor)
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(anchor);
-    *anchor = mDropDownAnchorId;
+    *result = mDropDownAnchorId;
     return NOERROR;
 }
 
+/**
+ * <p>Sets the view to which the auto-complete drop down list should anchor. The view
+ * corresponding to this id will not be loaded until the next time it is needed to avoid
+ * loading a view which is not yet instantiated.</p>
+ *
+ * @param id the id to anchor the drop down list view to
+ *
+ * @attr ref android.R.styleable#AutoCompleteTextView_dropDownAnchor
+ */
 ECode AutoCompleteTextView::SetDropDownAnchor(
     /* [in] */ Int32 id)
 {
@@ -375,30 +459,55 @@ ECode AutoCompleteTextView::SetDropDownAnchor(
     return NOERROR;
 }
 
+/**
+ * <p>Gets the background of the auto-complete drop-down list.</p>
+ *
+ * @return the background drawable
+ *
+ * @attr ref android.R.styleable#PopupWindow_popupBackground
+ */
 ECode AutoCompleteTextView::GetDropDownBackground(
     /* [out] */ IDrawable** drawable)
 {
-    VALIDATE_NOT_NULL(drawable);
     return mPopup->GetBackground(drawable);
 }
 
+/**
+ * <p>Sets the background of the auto-complete drop-down list.</p>
+ *
+ * @param d the drawable to set as the background
+ *
+ * @attr ref android.R.styleable#PopupWindow_popupBackground
+ */
 ECode AutoCompleteTextView::SetDropDownBackgroundDrawable(
     /* [in] */ IDrawable* d)
 {
     return mPopup->SetBackgroundDrawable(d);
 }
 
+/**
+ * <p>Sets the background of the auto-complete drop-down list.</p>
+ *
+ * @param id the id of the drawable to set as the background
+ *
+ * @attr ref android.R.styleable#PopupWindow_popupBackground
+ */
 ECode AutoCompleteTextView::SetDropDownBackgroundResource(
     /* [in] */ Int32 id)
 {
+    AutoPtr<IDrawable> drawable;
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
-    AutoPtr<IDrawable> drawable;
     context->GetDrawable(id, (IDrawable**)&drawable);
 
     return mPopup->SetBackgroundDrawable(drawable);
 }
 
+/**
+ * <p>Sets the vertical offset used for the auto-complete drop-down list.</p>
+ *
+ * @param offset the vertical offset
+ */
 ECode AutoCompleteTextView::SetDropDownVerticalOffset(
     /* [in] */ Int32 offset)
 {
@@ -407,13 +516,22 @@ ECode AutoCompleteTextView::SetDropDownVerticalOffset(
     return NOERROR;
 }
 
+/**
+ * <p>Gets the vertical offset used for the auto-complete drop-down list.</p>
+ *
+ * @return the vertical offset
+ */
 ECode AutoCompleteTextView::GetDropDownVerticalOffset(
     /* [out] */ Int32* offset)
 {
-    VALIDATE_NOT_NULL(offset);
     return mPopup->GetVerticalOffset(offset);
 }
 
+/**
+ * <p>Sets the horizontal offset used for the auto-complete drop-down list.</p>
+ *
+ * @param offset the horizontal offset
+ */
 ECode AutoCompleteTextView::SetDropDownHorizontalOffset(
     /* [in] */ Int32 offset)
 {
@@ -422,13 +540,29 @@ ECode AutoCompleteTextView::SetDropDownHorizontalOffset(
     return NOERROR;
 }
 
+/**
+ * <p>Gets the horizontal offset used for the auto-complete drop-down list.</p>
+ *
+ * @return the horizontal offset
+ */
 ECode AutoCompleteTextView::GetDropDownHorizontalOffset(
     /* [out] */ Int32* offset)
 {
-    VALIDATE_NOT_NULL(offset);
     return mPopup->GetHorizontalOffset(offset);
 }
 
+/**
+ * <p>Sets the animation style of the auto-complete drop-down list.</p>
+ *
+ * <p>If the drop-down is showing, calling this method will take effect only
+ * the next time the drop-down is shown.</p>
+ *
+ * @param animationStyle animation style to use when the drop-down appears
+ *      and disappears.  Set to -1 for the default animation, 0 for no
+ *      animation, or a resource identifier for an explicit animation.
+ *
+ * @hide Pending API council approval
+ */
 ECode AutoCompleteTextView::SetDropDownAnimationStyle(
     /* [in] */ Int32 animationStyle)
 {
@@ -437,34 +571,72 @@ ECode AutoCompleteTextView::SetDropDownAnimationStyle(
     return NOERROR;
 }
 
+/**
+ * <p>Returns the animation style that is used when the drop-down list appears and disappears
+ * </p>
+ *
+ * @return the animation style that is used when the drop-down list appears and disappears
+ *
+ * @hide Pending API council approval
+ */
 ECode AutoCompleteTextView::GetDropDownAnimationStyle(
-    /* [out] */ Int32* style)
+    /* [out] */ Int32* animationStyle)
 {
-    VALIDATE_NOT_NULL(style);
-    return mPopup->GetAnimationStyle(style);
+    return mPopup->GetAnimationStyle(animationStyle);
 }
 
+/**
+ * @return Whether the drop-down is visible as long as there is {@link #enoughToFilter()}
+ *
+ * @hide Pending API council approval
+ */
 ECode AutoCompleteTextView::IsDropDownAlwaysVisible(
     /* [out] */ Boolean* visible)
 {
-    VALIDATE_NOT_NULL(visible);
     return mPopup->IsDropDownAlwaysVisible(visible);
 }
 
+/**
+ * Sets whether the drop-down should remain visible as long as there is there is
+ * {@link #enoughToFilter()}.  This is useful if an unknown number of results are expected
+ * to show up in the adapter sometime in the future.
+ *
+ * The drop-down will occupy the entire screen below {@link #getDropDownAnchor} regardless
+ * of the size or content of the list.  {@link #getDropDownBackground()} will fill any space
+ * that is not used by the list.
+ *
+ * @param dropDownAlwaysVisible Whether to keep the drop-down visible.
+ *
+ * @hide Pending API council approval
+ */
 ECode AutoCompleteTextView::SetDropDownAlwaysVisible(
     /* [in] */ Boolean dropDownAlwaysVisible)
 {
-    return mPopup->SetDropDownAlwaysVisible(dropDownAlwaysVisible);
-}
+    mPopup->SetDropDownAlwaysVisible(dropDownAlwaysVisible);
 
-ECode AutoCompleteTextView::IsDropDownDismissedOnCompletion(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = mDropDownDismissedOnCompletion;
     return NOERROR;
 }
 
+/**
+ * Checks whether the drop-down is dismissed when a suggestion is clicked.
+ *
+ * @hide Pending API council approval
+ */
+ECode AutoCompleteTextView::IsDropDownDismissedOnCompletion(
+    /* [out] */ Boolean* completion)
+{
+    *completion = mDropDownDismissedOnCompletion;
+    return NOERROR;
+}
+
+/**
+ * Sets whether the drop-down is dismissed when a suggestion is clicked. This is
+ * TRUE by default.
+ *
+ * @param dropDownDismissedOnCompletion Whether to dismiss the drop-down.
+ *
+ * @hide Pending API council approval
+ */
 ECode AutoCompleteTextView::SetDropDownDismissedOnCompletion(
     /* [in] */ Boolean dropDownDismissedOnCompletion)
 {
@@ -473,14 +645,35 @@ ECode AutoCompleteTextView::SetDropDownDismissedOnCompletion(
     return NOERROR;
 }
 
+/**
+ * <p>Returns the number of characters the user must type before the drop
+ * down list is shown.</p>
+ *
+ * @return the minimum number of characters to type to show the drop down
+ *
+ * @see #setThreshold(Int32)
+ */
 ECode AutoCompleteTextView::GetThreshold(
-    /* [out] */ Int32* value)
+    /* [out] */ Int32* threshold)
 {
-    VALIDATE_NOT_NULL(value);
-    *value = mThreshold;
+    *threshold = mThreshold;
     return NOERROR;
 }
 
+/**
+ * <p>Specifies the minimum number of characters the user has to type in the
+ * edit box before the drop down list is shown.</p>
+ *
+ * <p>When <code>threshold</code> is less than or equals 0, a threshold of
+ * 1 is applied.</p>
+ *
+ * @param threshold the number of characters to type before the drop down
+ *                  is shown
+ *
+ * @see #getThreshold()
+ *
+ * @attr ref android.R.styleable#AutoCompleteTextView_completionThreshold
+ */
 ECode AutoCompleteTextView::SetThreshold(
     /* [in] */ Int32 threshold)
 {
@@ -493,6 +686,12 @@ ECode AutoCompleteTextView::SetThreshold(
     return NOERROR;
 }
 
+/**
+ * <p>Sets the listener that will be notified when the user clicks an item
+ * in the drop down list.</p>
+ *
+ * @param l the item click listener
+ */
 ECode AutoCompleteTextView::SetOnItemClickListener(
     /* [in] */ IAdapterViewOnItemClickListener* l)
 {
@@ -501,6 +700,19 @@ ECode AutoCompleteTextView::SetOnItemClickListener(
     return NOERROR;
 }
 
+ECode AutoCompleteTextView::GetItemClickListener(
+    /* [out] */ IAdapterViewOnItemClickListener** l)
+{
+    *l = mItemClickListener;
+    return NOERROR;
+}
+
+/**
+ * <p>Sets the listener that will be notified when the user selects an item
+ * in the drop down list.</p>
+ *
+ * @param l the item selected listener
+ */
 ECode AutoCompleteTextView::SetOnItemSelectedListener(
     /* [in] */ IAdapterViewOnItemSelectedListener* l)
 {
@@ -509,42 +721,39 @@ ECode AutoCompleteTextView::SetOnItemSelectedListener(
     return NOERROR;
 }
 
-ECode AutoCompleteTextView::GetItemClickListener(
-    /* [out] */ IAdapterViewOnItemClickListener** listener)
-{
-    VALIDATE_NOT_NULL(listener);
-    *listener = mItemClickListener;
-    REFCOUNT_ADD(*listener);
-    return NOERROR;
-}
-
-ECode AutoCompleteTextView::GetItemSelectedListener(
-    /* [out] */ IAdapterViewOnItemSelectedListener** listener)
-{
-    VALIDATE_NOT_NULL(listener);
-    *listener = mItemSelectedListener;
-    REFCOUNT_ADD(*listener);
-    return NOERROR;
-}
-
+/**
+ * <p>Returns the listener that is notified whenever the user clicks an item
+ * in the drop down list.</p>
+ *
+ * @return the item click listener
+ */
 ECode AutoCompleteTextView::GetOnItemClickListener(
-    /* [out] */ IAdapterViewOnItemClickListener** listener)
+    /* [out] */ IAdapterViewOnItemClickListener** l)
 {
-    VALIDATE_NOT_NULL(listener);
-    *listener = mItemClickListener;
-    REFCOUNT_ADD(*listener);
+    *l = mItemClickListener;
+    REFCOUNT_ADD(*l)
     return NOERROR;
 }
 
+/**
+ * <p>Returns the listener that is notified whenever the user selects an
+ * item in the drop down list.</p>
+ *
+ * @return the item selected listener
+ */
 ECode AutoCompleteTextView::GetOnItemSelectedListener(
-    /* [out] */ IAdapterViewOnItemSelectedListener** listener)
+    /* [out] */ IAdapterViewOnItemSelectedListener** l)
 {
-    VALIDATE_NOT_NULL(listener);
-    *listener = mItemSelectedListener;
-    REFCOUNT_ADD(*listener);
+    *l = mItemSelectedListener;
+    REFCOUNT_ADD(*l)
     return NOERROR;
 }
 
+/**
+ * Set a listener that will be invoked whenever the AutoCompleteTextView's
+ * list of completions is dismissed.
+ * @param dismissListener Listener to invoke when completions are dismissed
+ */
 ECode AutoCompleteTextView::SetOnDismissListener(
     /* [in] */ IAutoCompleteTextViewOnDismissListener* dismissListener)
 {
@@ -556,22 +765,43 @@ ECode AutoCompleteTextView::SetOnDismissListener(
     return NOERROR;
 }
 
+/**
+ * <p>Returns a filterable list adapter used for auto completion.</p>
+ *
+ * @return a data adapter used for auto completion
+ */
 ECode AutoCompleteTextView::GetAdapter(
     /* [out] */ IListAdapter** adapter)
 {
-    VALIDATE_NOT_NULL(adapter);
     *adapter = mAdapter;
-    REFCOUNT_ADD(*adapter);
+    REFCOUNT_ADD(*adapter)
     return NOERROR;
 }
 
+/**
+ * <p>Changes the list of data used for auto completion. The provided list
+ * must be a filterable list adapter.</p>
+ *
+ * <p>The caller is still responsible for managing any resources used by the adapter.
+ * Notably, when the AutoCompleteTextView is closed or released, the adapter is not notified.
+ * A common case is the use of {@link android.widget.CursorAdapter}, which
+ * contains a {@link android.database.Cursor} that must be closed.  This can be done
+ * automatically (see
+ * {@link android.app.Activity#startManagingCursor(android.database.Cursor)
+ * startManagingCursor()}),
+ * or by manually closing the cursor when the AutoCompleteTextView is dismissed.</p>
+ *
+ * @param adapter the adapter holding the auto completion data
+ *
+ * @see #getAdapter()
+ * @see android.widget.Filterable
+ * @see android.widget.ListAdapter
+ */
 ECode AutoCompleteTextView::SetAdapter(
     /* [in] */ IListAdapter* adapter)
 {
     if (mObserver == NULL) {
-        AutoPtr<IWeakReference> wr;
-        GetWeakReference((IWeakReference**)&wr);
-        mObserver = new PopupDataSetObserver(wr);
+        mObserver = new PopupDataSetObserver(this);
     }
     else if (mAdapter != NULL) {
         IAdapter::Probe(mAdapter)->UnregisterDataSetObserver(mObserver);
@@ -580,7 +810,7 @@ ECode AutoCompleteTextView::SetAdapter(
     if (mAdapter != NULL) {
         //noinspection unchecked
         if(mFilter) mFilter = NULL;
-        AutoPtr<IFilterable> fTemp = (IFilterable*)mAdapter->Probe(EIID_IFilterable);
+        AutoPtr<IFilterable> fTemp = IFilterable::Probe(mAdapter);
         fTemp->GetFilter((IFilter**)&mFilter);
         IAdapter::Probe(adapter)->RegisterDataSetObserver(mObserver);
     }
@@ -596,12 +826,13 @@ ECode AutoCompleteTextView::SetAdapter(
 ECode AutoCompleteTextView::OnKeyPreIme(
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
+    /* [in] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
-    Boolean visible = FALSE, showing = FALSE;
-    if (keyCode == IKeyEvent::KEYCODE_BACK && (IsPopupShowing(&showing), showing)
-            && (mPopup->IsDropDownAlwaysVisible(&visible), !visible)) {
+    Boolean visible;
+    mPopup->IsDropDownAlwaysVisible(&visible);
+    Boolean isPopupShowing;
+    if (keyCode == IKeyEvent::KEYCODE_BACK && (IsPopupShowing(&isPopupShowing), isPopupShowing)
+            && !visible) {
         // special case for the back key, we do not even try to send it
         // to the drop down list but instead, consume it immediately
 
@@ -610,11 +841,14 @@ ECode AutoCompleteTextView::OnKeyPreIme(
 
         Int32 count;
         event->GetRepeatCount(&count);
+
+
+
         if (action == IKeyEvent::ACTION_DOWN && count == 0) {
             AutoPtr<IDispatcherState> state ;
             GetKeyDispatcherState((IDispatcherState**)&state);
             if (state != NULL) {
-                state->StartTracking(event, this->Probe(EIID_IAutoCompleteTextView));
+                state->StartTracking(event, (IAutoCompleteTextView*)this);
             }
             *result = TRUE;
             return NOERROR;
@@ -636,15 +870,15 @@ ECode AutoCompleteTextView::OnKeyPreIme(
             }
         }
     }
-    return EditText::OnKeyPreIme(keyCode, event, result);
+    // return EditText::OnKeyPreIme(keyCode, event, result); zhangjingcheng
+    return NOERROR;
 }
 
 ECode AutoCompleteTextView::OnKeyUp(
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
+    /* [in] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     Boolean consumed;
     mPopup->OnKeyUp(keyCode, event, &consumed);
     if (consumed) {
@@ -665,23 +899,24 @@ ECode AutoCompleteTextView::OnKeyUp(
         }
     }
 
-    Boolean res = FALSE, showing = FALSE;
+    Boolean res;
     event->HasNoModifiers(&res);
-    if ((IsPopupShowing(&showing), showing) && keyCode == IKeyEvent::KEYCODE_TAB && res) {
+    Boolean isPopupShowing;
+    if ((IsPopupShowing(&isPopupShowing), isPopupShowing) && keyCode == IKeyEvent::KEYCODE_TAB && res) {
         PerformCompletion();
         *result = TRUE;
         return NOERROR;
     }
 
-    return EditText::OnKeyUp(keyCode, event, result);
+    // return EditText::OnKeyUp(keyCode, event, result); zhangjingcheng
+    return NOERROR;
 }
 
 ECode AutoCompleteTextView::OnKeyDown(
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
+    /* [in] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     Boolean res;
     mPopup->OnKeyDown(keyCode, event, &res);
     if (res) {
@@ -689,8 +924,8 @@ ECode AutoCompleteTextView::OnKeyDown(
         return NOERROR;
     }
 
-    Boolean showing = FALSE;
-    if (IsPopupShowing(&showing), !showing) {
+    Boolean isPopupShowing;
+    if (IsPopupShowing(&isPopupShowing), !isPopupShowing) {
         switch(keyCode) {
             case IKeyEvent::KEYCODE_DPAD_DOWN:
                 event->HasNoModifiers(&res);
@@ -701,17 +936,17 @@ ECode AutoCompleteTextView::OnKeyDown(
     }
 
     event->HasNoModifiers(&res);
-    if ((IsPopupShowing(&showing), showing) && (keyCode == IKeyEvent::KEYCODE_TAB) && res) {
+    if ((IsPopupShowing(&isPopupShowing), isPopupShowing) && (keyCode == IKeyEvent::KEYCODE_TAB) && res) {
         *result = TRUE;
         return NOERROR;
     }
 
     mLastKeyCode = keyCode;
-    Boolean handled = FALSE;
-    EditText::OnKeyDown(keyCode, event, &handled);
+    Boolean handled;
+    // EditText::OnKeyDown(keyCode, event, &handled); zhangjingcheng
     mLastKeyCode = IKeyEvent::KEYCODE_UNKNOWN;
 
-    if (handled && (IsPopupShowing(&showing), showing)) {
+    if (handled && (IsPopupShowing(&isPopupShowing), isPopupShowing)) {
         ClearListSelection();
     }
 
@@ -719,20 +954,31 @@ ECode AutoCompleteTextView::OnKeyDown(
     return NOERROR;
 }
 
+/**
+ * Returns <code>TRUE</code> if the amount of text in the field meets
+ * or exceeds the {@link #getThreshold} requirement.  You can override
+ * this to impose a different standard for when filtering will be
+ * triggered.
+ */
 ECode AutoCompleteTextView::EnoughToFilter(
-    /* [out] */ Boolean* result)
+    /* [in] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     /*if (DEBUG) Log.v(TAG, "Enough to filter: len=" + getText().length()
             + " threshold=" + mThreshold);*/
 
-    AutoPtr<ICharSequence> text;
-    GetText((ICharSequence**)&text);
-    Int32 len = 0;
-    text->GetLength(&len);
+    AutoPtr<ICharSequence> chars;
+    GetText((ICharSequence**)&chars);
+    Int32 len;
+    chars->GetLength(&len);
     *result = len >= mThreshold;
     return NOERROR;
 }
+
+/**
+ * This is used to watch for edits to the text view.  Note that we call
+ * to methods on the auto complete text view class so that we can access
+ * private vars without going through thunks.
+ */
 
 void AutoCompleteTextView::DoBeforeTextChanged()
 {
@@ -753,25 +999,27 @@ void AutoCompleteTextView::DoAfterTextChanged()
     // called performCompletion() and we shouldn't do any more processing.
     /*if (DEBUG) Log.v(TAG, "after text changed: openBefore=" + mOpenBefore
             + " open=" + isPopupShowing());*/
-    Boolean showing = FALSE;
-    if (mOpenBefore && (IsPopupShowing(&showing), !showing)) {
+    Boolean isPopupShowing;
+    if (mOpenBefore && (IsPopupShowing(&isPopupShowing), !isPopupShowing)) {
         return;
     }
 
     // the drop down is shown only when a minimum number of characters
     // was typed in the text view
-    Boolean res = FALSE;
-    if (EnoughToFilter(&res), res) {
-        if (mFilter.Get() != NULL) {
+    Boolean enough;
+    if (EnoughToFilter(&enough), enough) {
+        if (mFilter != NULL) {
             mPopupCanBeUpdated = TRUE;
-            AutoPtr<ICharSequence> text;
-            GetText((ICharSequence**)&text);
-            PerformFiltering(text, mLastKeyCode);
+            AutoPtr<ICharSequence> chars;
+            GetText((ICharSequence**)&chars);
+            PerformFiltering(chars, mLastKeyCode);
         }
     }
     else {
         // drop down is automatically dismissed when enough characters
         // are deleted from the text view
+
+        Boolean res;
         mPopup->IsDropDownAlwaysVisible(&res);
         if (!res) {
             DismissDropDown();
@@ -782,13 +1030,25 @@ void AutoCompleteTextView::DoAfterTextChanged()
     }
 }
 
+/**
+ * <p>Indicates whether the popup menu is showing.</p>
+ *
+ * @return TRUE if the popup menu is showing, FALSE otherwise
+ */
 ECode AutoCompleteTextView::IsPopupShowing(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean* isPopupShowing)
 {
-    VALIDATE_NOT_NULL(result);
-    return mPopup->IsShowing(result);
+    return mPopup->IsShowing(isPopupShowing);
 }
 
+/**
+ * <p>Converts the selected item from the drop down list into a sequence
+ * of character that can be used in the edit box.</p>
+ *
+ * @param selectedItem the item selected by the user for completion
+ *
+ * @return a sequence of characters representing the selected suggestion
+ */
 AutoPtr<ICharSequence> AutoCompleteTextView::ConvertSelectionToString(
     /* [in] */ IInterface* selectedItem)
 {
@@ -797,35 +1057,64 @@ AutoPtr<ICharSequence> AutoCompleteTextView::ConvertSelectionToString(
     return cs;
 }
 
+/**
+ * <p>Clear the list selection.  This may only be temporary, as user input will often bring
+ * it back.
+ */
 ECode AutoCompleteTextView::ClearListSelection()
 {
-    mPopup->ClearListSelection();
-
-    return NOERROR;
+    return mPopup->ClearListSelection();
 }
 
+/**
+ * Set the position of the dropdown view selection.
+ *
+ * @param position The position to move the selector to.
+ */
 ECode AutoCompleteTextView::SetListSelection(
     /* [in] */ Int32 position)
 {
-    mPopup->SetSelection(position);
-
-    return NOERROR;
+    return mPopup->SetSelection(position);
 }
 
+/**
+ * Get the position of the dropdown view selection, if there is one.  Returns
+ * {@link ListView#INVALID_POSITION ListView.INVALID_POSITION} if there is no dropdown or if
+ * there is no selection.
+ *
+ * @return the position of the current selection, if there is one, or
+ * {@link ListView#INVALID_POSITION ListView.INVALID_POSITION} if not.
+ *
+ * @see ListView#getSelectedItemPosition()
+ */
 ECode AutoCompleteTextView::GetListSelection(
     /* [out] */ Int32* selection)
 {
-    VALIDATE_NOT_NULL(selection);
     return mPopup->GetSelectedItemPosition(selection);
 }
 
+/**
+ * <p>Starts filtering the content of the drop down list. The filtering
+ * pattern is the content of the edit box. Subclasses should override this
+ * method to filter with a different pattern, for instance a substring of
+ * <code>text</code>.</p>
+ *
+ * @param text the filtering pattern
+ * @param keyCode the last character inserted in the edit box; beware that
+ * this will be NULL when text is being added through a soft input method.
+ */
 void AutoCompleteTextView::PerformFiltering(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 keyCode)
 {
-    mFilter->DoFilter(text, (IFilterListener*)this->Probe(EIID_IFilterListener));
+    mFilter->DoFilter(text, this);
 }
 
+/**
+ * <p>Performs the text completion by converting the selected item from
+ * the drop down list into a string, replacing the text box's content with
+ * this string and finally dismissing the drop down menu.</p>
+ */
 ECode AutoCompleteTextView::PerformCompletion()
 {
     PerformCompletion(NULL, -1, -1);
@@ -836,8 +1125,8 @@ ECode AutoCompleteTextView::PerformCompletion()
 ECode AutoCompleteTextView::OnCommitCompletion(
     /* [in] */ ICompletionInfo* completion)
 {
-    Boolean showing = FALSE;
-    if (IsPopupShowing(&showing), showing) {
+    Boolean isPopupShowing;
+    if (IsPopupShowing(&isPopupShowing), isPopupShowing) {
         Int32 pos;
         Boolean rst;
         completion->GetPosition(&pos);
@@ -852,8 +1141,8 @@ void AutoCompleteTextView::PerformCompletion(
     /* [in] */ Int32 position,
     /* [in] */ Int64 id)
 {
-    Boolean showing = FALSE;
-    if (IsPopupShowing(&showing), showing) {
+    Boolean isPopupShowing;
+    if (IsPopupShowing(&isPopupShowing), isPopupShowing) {
         AutoPtr<IInterface> selectedItem;
         if (position < 0) {
             mPopup->GetSelectedItem((IInterface**)&selectedItem);
@@ -871,9 +1160,8 @@ void AutoCompleteTextView::PerformCompletion(
 
         if (mItemClickListener != NULL) {
 
-            AutoPtr<IView> selView = selectedView;
-            if (selView == NULL || position < 0) {
-                mPopup->GetSelectedView((IView**)&selView);
+            if (selectedView == NULL || position < 0) {
+                mPopup->GetSelectedView(&selectedView);
                 mPopup->GetSelectedItemPosition(&position);
                 mPopup->GetSelectedItemId(&id);
             }
@@ -881,11 +1169,11 @@ void AutoCompleteTextView::PerformCompletion(
             AutoPtr<IListView> v;
             mPopup->GetListView((IListView**)&v);
 
-            mItemClickListener->OnItemClick(IAdapterView::Probe(v), selView, position, id);
+            mItemClickListener->OnItemClick(IAdapterView::Probe(v), selectedView, position, id);
         }
     }
 
-    Boolean visible = FALSE;
+    Boolean visible;
     mPopup->IsDropDownAlwaysVisible(&visible);
 
     if (mDropDownDismissedOnCompletion && !visible) {
@@ -893,14 +1181,25 @@ void AutoCompleteTextView::PerformCompletion(
     }
 }
 
+/**
+ * Identifies whether the view is currently performing a text completion, so subclasses
+ * can decide whether to respond to text changed events.
+ */
 ECode AutoCompleteTextView::IsPerformingCompletion(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean* isPerformingCompletion)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mBlockCompletion;
-    return NOERROR;
+     *isPerformingCompletion = mBlockCompletion;
+     return NOERROR;
 }
 
+/**
+ * Like {@link #setText(CharSequence)}, except that it can disable filtering.
+ *
+ * @param filter If <code>FALSE</code>, no filtering will be performed
+ *        as a result of this call.
+ *
+ * @hide Pending API council approval.
+ */
 ECode AutoCompleteTextView::SetText(
    /* [in] */ ICharSequence* text,
    /* [in] */ Boolean filter)
@@ -917,6 +1216,13 @@ ECode AutoCompleteTextView::SetText(
     return NOERROR;
 }
 
+/**
+ * <p>Performs the text completion by replacing the current text by the
+ * selected item. Subclasses should override this method to avoid replacing
+ * the whole content of the edit box.</p>
+ *
+ * @param text the selected suggestion in the drop down list
+ */
 void AutoCompleteTextView::ReplaceText(
     /* [in] */ ICharSequence* text)
 {
@@ -924,15 +1230,16 @@ void AutoCompleteTextView::ReplaceText(
 
     SetText(text);
     // make sure we keep the caret at the end of the text view
-    AutoPtr<ICharSequence> t;
-    GetText((ICharSequence**)&t);
-    AutoPtr<IEditable> spannable = IEditable::Probe(t);
+    AutoPtr<ICharSequence> chars;
+    GetText((ICharSequence**)&chars);
+    AutoPtr<IEditable> spannable = IEditable::Probe(chars);
     assert(spannable != NULL);
     Int32 len = 0;
     ICharSequence::Probe(spannable)->GetLength(&len);
     Selection::SetSelection(ISpannable::Probe(spannable), len);
 }
 
+/** {@inheritDoc} */
 ECode AutoCompleteTextView::OnFilterComplete(
     /* [in] */ Int32 count)
 {
@@ -945,8 +1252,9 @@ void AutoCompleteTextView::UpdateDropDownForFilter(
     /* [in] */ Int32 count)
 {
     // Not attached to window, don't update drop-down
-    Int32 visibility = 0;
-    if ((GetWindowVisibility(&visibility), visibility) == IView::GONE) return;
+    Int32 visible;
+    GetWindowVisibility(&visible);
+    if (visible == IView::GONE) return;
 
     /*
      * This checks enoughToFilter() again because filtering requests
@@ -958,17 +1266,16 @@ void AutoCompleteTextView::UpdateDropDownForFilter(
     Boolean dropDownAlwaysVisible;
     mPopup->IsDropDownAlwaysVisible(&dropDownAlwaysVisible);
 
-    Boolean enoughToFilter = FALSE;
+    Boolean enoughToFilter, isPopupShowing;
     EnoughToFilter(&enoughToFilter);
-    Boolean showing = FALSE;
     if ((count > 0 || dropDownAlwaysVisible) && enoughToFilter) {
-        Boolean hasFocus = FALSE;
+        Boolean hasFocus, hasWindowFocus;
         HasFocus(&hasFocus);
-        if (hasFocus && (HasWindowFocus(&hasFocus), hasFocus) && mPopupCanBeUpdated) {
+        HasWindowFocus(&hasWindowFocus);
+        if (hasFocus && hasWindowFocus && mPopupCanBeUpdated) {
             ShowDropDown();
         }
-    }
-    else if (!dropDownAlwaysVisible && (IsPopupShowing(&showing), showing)) {
+    } else if (!dropDownAlwaysVisible && (IsPopupShowing(&isPopupShowing), isPopupShowing)) {
         DismissDropDown();
         // When the filter text is changed, the first update from the adapter may show an empty
         // count (when the query is being performed on the network). Future updates when some
@@ -1038,11 +1345,14 @@ ECode AutoCompleteTextView::OnDetachedFromWindow()
     return EditText::OnDetachedFromWindow();
 }
 
+/**
+ * <p>Closes the drop down if present on screen.</p>
+ */
 ECode AutoCompleteTextView::DismissDropDown()
 {
     AutoPtr<IInputMethodManager> imm = CInputMethodManager::PeekInstance();
      if (imm != NULL) {
-        imm->DisplayCompletions((IView*)this->Probe(EIID_IView), NULL);
+        imm->DisplayCompletions(this, NULL);
      }
     mPopup->Dismiss();
     mPopupCanBeUpdated = FALSE;
@@ -1057,14 +1367,21 @@ Boolean AutoCompleteTextView::SetFrame(
 {
     Boolean result = EditText::SetFrame(l, t, r, b);
 
-    Boolean showing = FALSE;
-    if (IsPopupShowing(&showing), showing) {
+    Boolean isPopupShowing;
+    if (IsPopupShowing(&isPopupShowing), isPopupShowing) {
         ShowDropDown();
     }
 
     return result;
 }
 
+
+
+/**
+ * Issues a runnable to show the dropdown as soon as possible.
+ *
+ * @hide internal used only by SearchDialog
+ */
 ECode AutoCompleteTextView::ShowDropDownAfterLayout()
 {
     mPopup->PostShow();
@@ -1072,31 +1389,44 @@ ECode AutoCompleteTextView::ShowDropDownAfterLayout()
     return NOERROR;
 }
 
+/**
+ * Ensures that the drop down is not obscuring the IME.
+ * @param visible whether the ime should be in front. If FALSE, the ime is pushed to
+ * the background.
+ * @hide internal used only here and SearchDialog
+ */
 ECode AutoCompleteTextView::EnsureImeVisible(
     /* [in] */ Boolean visible)
 {
     mPopup->SetInputMethodMode(visible
         ? IPopupWindow::INPUT_METHOD_NEEDED : IPopupWindow::INPUT_METHOD_NOT_NEEDED);
 
-    Boolean result = FALSE;
-    mPopup->IsDropDownAlwaysVisible(&result);
+    Boolean isVisible;
+    mPopup->IsDropDownAlwaysVisible(&isVisible);
 
-    if (visible || (mFilter != NULL && (EnoughToFilter(&result), result))) {
+    Boolean enough;
+    if (visible || (mFilter != NULL && (EnoughToFilter(&enough), enough))) {
         ShowDropDown();
     }
 
     return NOERROR;
 }
 
+/**
+ * @hide internal used only here and SearchDialog
+ */
 ECode AutoCompleteTextView::IsInputMethodNotNeeded(
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean* isInputMethodNotNeeded)
 {
-    Int32 mode = 0;
+    Int32 mode;
     mPopup->GetInputMethodMode(&mode);
-    *result = mode == IPopupWindow::INPUT_METHOD_NOT_NEEDED;
+    *isInputMethodNotNeeded = mode == IPopupWindow::INPUT_METHOD_NOT_NEEDED;
     return NOERROR;
 }
 
+/**
+ * <p>Displays the drop down on screen.</p>
+ */
 ECode AutoCompleteTextView::ShowDropDown()
 {
     BuildImeCompletions();
@@ -1106,18 +1436,16 @@ ECode AutoCompleteTextView::ShowDropDown()
     if (view == NULL) {
         if (mDropDownAnchorId != IView::NO_ID) {
             AutoPtr<IView> anchorView;
-            AutoPtr<IView> rootView;
-            GetRootView((IView**)&rootView);
-            rootView->FindViewById(mDropDownAnchorId, (IView**)&anchorView);
+            AutoPtr<IView> root;
+            GetRootView((IView**)&root);
+            root->FindViewById(mDropDownAnchorId, (IView**)&anchorView);
             mPopup->SetAnchorView(anchorView);
-        }
-        else {
-            mPopup->SetAnchorView(THIS_PROBE(IView));
+        } else {
+            mPopup->SetAnchorView(this);
         }
     }
-
-    Boolean showing = FALSE;
-    if (IsPopupShowing(&showing), !showing) {
+    Boolean isPopupShowing;
+    if (IsPopupShowing(&isPopupShowing), !isPopupShowing) {
         // Make sure the list does not obscure the IME when shown for the first time.
         mPopup->SetInputMethodMode(IPopupWindow::INPUT_METHOD_NEEDED);
         mPopup->SetListItemExpandMax(EXPAND_MAX);
@@ -1131,6 +1459,13 @@ ECode AutoCompleteTextView::ShowDropDown()
     return NOERROR;
 }
 
+/**
+ * Forces outside touches to be ignored. Normally if {@link #isDropDownAlwaysVisible()} is
+ * FALSE, we allow outside touch to dismiss the dropdown. If this is set to TRUE, then we
+ * ignore outside touch even when the drop down is not set to always visible.
+ *
+ * @hide used only by SearchDialog
+ */
 ECode AutoCompleteTextView::SetForceIgnoreOutsideTouch(
     /* [in] */ Boolean forceIgnoreOutsideTouch)
 {
@@ -1172,12 +1507,20 @@ void AutoCompleteTextView::BuildImeCompletions()
                 completions = tmp;
             }
 
-            imm->DisplayCompletions((IView*)this->Probe(EIID_IView), completions);
+            imm->DisplayCompletions(this, completions);
         }
     }
 
 }
 
+/**
+ * Sets the validator used to perform text validation.
+ *
+ * @param validator The validator used to validate the text entered in this widget.
+ *
+ * @see #getValidator()
+ * @see #performValidation()
+ */
 ECode AutoCompleteTextView::SetValidator(
     /* [in] */ IValidator* validator)
 {
@@ -1186,15 +1529,27 @@ ECode AutoCompleteTextView::SetValidator(
     return NOERROR;
 }
 
+/**
+ * Returns the Validator set with {@link #setValidator},
+ * or <code>NULL</code> if it was not set.
+ *
+ * @see #setValidator(android.widget.AutoCompleteTextView.Validator)
+ * @see #performValidation()
+ */
 ECode AutoCompleteTextView::GetValidator(
     /* [out] */ IValidator** validator)
 {
-    VALIDATE_NOT_NULL(validator);
     *validator = mValidator;
-    REFCOUNT_ADD(*validator);
     return NOERROR;
 }
 
+/**
+ * If a validator was set on this view and the current string is not valid,
+ * ask the validator to fix it.
+ *
+ * @see #getValidator()
+ * @see #setValidator(android.widget.AutoCompleteTextView.Validator)
+ */
 ECode AutoCompleteTextView::PerformValidation()
 {
     if (mValidator == NULL) return NOERROR;
@@ -1214,6 +1569,11 @@ ECode AutoCompleteTextView::PerformValidation()
     return NOERROR;
 }
 
+/**
+ * Returns the Filter obtained from {@link Filterable#getFilter},
+ * or <code>NULL</code> if {@link #setAdapter} was not called with
+ * a Filterable.
+ */
 AutoPtr<IFilter> AutoCompleteTextView::GetFilter()
 {
     return mFilter;

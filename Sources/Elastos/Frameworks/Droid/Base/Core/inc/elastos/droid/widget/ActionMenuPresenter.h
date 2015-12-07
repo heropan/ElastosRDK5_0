@@ -1,209 +1,124 @@
 
-#ifndef __ELASTOS_DROID_VIEW_MENU_ACTIONMENUPRESENTER_H__
-#define  __ELASTOS_DROID_VIEW_MENU_ACTIONMENUPRESENTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_ACTIONMENUPRESENTER_H__
+#define  __ELASTOS_DROID_WIDGET_ACTIONMENUPRESENTER_H__
 
 #include "elastos/droid/widget/ImageButton.h"
 
-#include "elastos/droid/view/menu/MenuPopupHelper.h"
-#include "elastos/droid/view/menu/BaseMenuPresenter.h"
+#include "elastos/droid/internal/view/menu/BaseMenuPresenter.h"
+#include "elastos/droid/internal/view/menu/MenuPopupHelper.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/HashMap.h>
-
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::ISubUiVisibilityListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
-using Elastos::Droid::View::Menu::IActionMenuChildView;
-using Elastos::Droid::View::Menu::MenuPopupHelper;
-using Elastos::Droid::View::Menu::IActionMenuChildView;
-using Elastos::Droid::Widget::ImageButton;
-using Elastos::Droid::Widget::IImageButton;
-using Elastos::Droid::Widget::ImageViewScaleType;
-using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
-using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
-using Elastos::Droid::Widget::IPopupWindowOnDismissListener;
-using Elastos::Droid::Widget::EIID_IPopupWindowOnDismissListener;
+using Elastos::Droid::Internal::View::Menu::MenuPopupHelper;
+using Elastos::Droid::Internal::View::Menu::BaseMenuPresenter;
+using Elastos::Droid::Internal::View::Menu::IPopupCallback;
+using Elastos::Droid::Internal::View::Menu::IMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::ISubMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::IMenuView;
+using Elastos::Droid::Internal::View::Menu::IMenuItemView;
+using Elastos::Droid::Internal::View::Menu::IMenuItemImpl;
+using Elastos::Droid::Internal::View::Menu::IMenuPresenterCallback;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::View::IMenuItem;
 using Elastos::Droid::View::IViewOnKeyListener;
-using Elastos::Droid::View::EIID_IViewOnKeyListener;
 using Elastos::Droid::View::IOnGlobalLayoutListener;
-using Elastos::Droid::View::EIID_IOnGlobalLayoutListener;
 using Elastos::Droid::View::IViewOnAttachStateChangeListener;
-using Elastos::Droid::View::EIID_IViewOnAttachStateChangeListener;
 
 namespace Elastos {
 namespace Droid {
-namespace View {
-namespace Menu {
+namespace Widget {
 
-class ActionMenuPresenter : public BaseMenuPresenter
+class ActionMenuPresenter
+    : public BaseMenuPresenter
+    , public IActionMenuPresenter
 {
-private:
-    class _OverflowMenuButton
-        : public ImageButton
+public:
+    class SavedState
+        : public Object
+        , public IParcelable
     {
     public:
-        _OverflowMenuButton(
-            /* [in] */ ActionMenuPresenter* host);
+        CAR_INTERFACE_DECL()
 
-        //@Override
-        CARAPI_(Boolean) PerformClick();
+        SavedState();
 
+        CARAPI constructor();
 
-    protected:
-        ActionMenuPresenter*  mHost;
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* dest);
+
+    public:
+        Int32 mOpenSubMenuId;
+    };
+
+private:
+    class MyForwardingListener
+        // : public ListPopupWindow::ForwardingListener
+    // zhangjingcheng
+    {
+    public:
+        MyForwardingListener(
+            /* [in] */ IView* host,
+            /* [in] */ ActionMenuPresenter* hostEx);
+
+        CARAPI GetPopup(
+            /* [out] */ IListPopupWindow** window);
+
+        CARAPI OnForwardingStarted(
+            /* [out] */ Boolean* result);
+
+        CARAPI OnForwardingStopped(
+            /* [out] */ Boolean* result);
+
+    private:
+        ActionMenuPresenter* mHostEx;
     };
 
     class OverflowMenuButton
-        : public _OverflowMenuButton
-        , public IImageButton
-        , public IDrawableCallback
-        , public IKeyEventCallback
-        , public IAccessibilityEventSource
+        : public ImageButton
         , public IActionMenuChildView
-        , public IWeakReferenceSource
-        , public ElRefBase
     {
     public:
-        IVIEW_METHODS_DECL()
-
-        IDRAWABLECALLBACK_METHODS_DECL()
-
-        IKEYEVENTCALLBACK_METHODS_DECL()
-
-        IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
+        CAR_INTERFACE_DECL()
 
         OverflowMenuButton(
             /* [in] */ IContext* context,
             /* [in] */ ActionMenuPresenter* host);
 
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-
-        CARAPI GetWeakReference(
-            /* [out] */ IWeakReference** weakReference);
-
-        CARAPI NeedsDividerBefore(
-            /* [out] */ Boolean* need);
-
-        CARAPI NeedsDividerAfter(
-            /* [out] */ Boolean* need);
-
-        CARAPI GetAdjustViewBounds(
+        //@Override
+        CARAPI PerformClick(
             /* [out] */ Boolean* res);
 
-        CARAPI SetAdjustViewBounds(
-            /* [in] */ Boolean adjustViewBounds);
+        CARAPI NeedsDividerBefore(
+            /* [out] */ Boolean* rst);
 
-        CARAPI GetMaxWidth(
-            /* [out] */ Int32* width);
+        CARAPI NeedsDividerAfter(
+            /* [out] */ Boolean* rst);
 
-        CARAPI SetMaxWidth(
-            /* [in] */ Int32 maxWidth);
+        CARAPI OnInitializeAccessibilityNodeInfo(
+            /* [in] */ IAccessibilityNodeInfo* info);
 
-        CARAPI GetMaxHeight(
-            /* [out] */ Int32* height);
+        CARAPI_(Boolean) SetFrame(
+            /* [in] */ Int32 left,
+            /* [in] */ Int32 top,
+            /* [in] */ Int32 right,
+            /* [in] */ Int32 bottom);
 
-        CARAPI SetMaxHeight(
-            /* [in] */ Int32 maxHeight);
-
-        CARAPI GetDrawable(
-            /* [out] */ IDrawable** drawable);
-
-        CARAPI SetImageResource(
-            /* [in] */ Int32 resId);
-
-        CARAPI SetImageURI(
-            /* [in] */ IUri* uri);
-
-        CARAPI SetImageDrawable(
-            /* [in] */ IDrawable* drawable);
-
-        CARAPI SetImageBitmap(
-            /* [in] */ IBitmap* bm);
-
-        CARAPI SetImageState(
-            /* [in] */ ArrayOf<Int32>* state,
-            /* [in] */ Boolean mg);
-
-        CARAPI SetImageLevel(
-            /* [in] */ Int32 level);
-
-        CARAPI SetScaleType(
-            /* [in] */ ImageViewScaleType scaleType);
-
-        CARAPI GetScaleType(
-            /* [out] */ ImageViewScaleType* scaleType);
-
-        CARAPI GetImageMatrix(
-            /* [out] */ IMatrix** matrix);
-
-        CARAPI SetImageMatrix(
-            /* [in] */ IMatrix* matrix);
-
-        CARAPI GetCropToPadding(
-            /* [out] */ Boolean* padding);
-
-        CARAPI SetCropToPadding(
-            /* [in] */ Boolean cropToPadding);
-
-        CARAPI SetBaseline(
-            /* [in] */ Int32 baseline);
-
-        CARAPI SetBaselineAlignBottom(
-            /* [in] */ Boolean aligned);
-
-        CARAPI GetBaselineAlignBottom(
-            /* [out] */ Boolean* aligned);
-
-        CARAPI SetColorFilter(
-            /* [in] */ Int32 color);
-
-        CARAPI SetColorFilter(
-            /* [in] */ Int32 color,
-            /* [in] */ PorterDuffMode mode);
-
-        CARAPI ClearColorFilter();
-
-        CARAPI GetColorFilter(
-            /* [out] */ IColorFilter** filter);
-
-        CARAPI SetColorFilter(
-            /* [in] */ IColorFilter* cf);
-
-        CARAPI GetImageAlpha(
-            /* [out] */ Int32* alpha);
-
-        CARAPI SetImageAlpha(
-            /* [in] */ Int32 alpha);
-
-        CARAPI SetAlpha(
-            /* [in] */ Int32 alpha);
     protected:
-        CARAPI_(void) OnMeasure(
-            /* [in] */ Int32 widthMeasureSpec,
-            /* [in] */ Int32 heightMeasureSpec);
+        ActionMenuPresenter*  mHost;
+        AutoPtr<ArrayOf<Float> > mTempPts;
     };
 
     class OverflowPopup
         : public MenuPopupHelper
-        , public IMenuPopupHelper
-        , public IAdapterViewOnItemClickListener
-        , public IViewOnKeyListener
-        , public IOnGlobalLayoutListener
-        , public IPopupWindowOnDismissListener
-        , public IViewOnAttachStateChangeListener
-        , public IMenuPresenter
-        , public IWeakReferenceSource
-        , public ElRefBase
     {
     public:
         OverflowPopup(
@@ -213,92 +128,7 @@ private:
             /* [in] */ Boolean overflowOnly,
             /* [in] */ ActionMenuPresenter* host);
 
-        CAR_INTERFACE_DECL()
-
-        CARAPI GetWeakReference(
-            /* [out] */ IWeakReference** weakReference);
-
         CARAPI OnDismiss();
-
-        CARAPI SetAnchorView(
-            /* [in] */ IView* anchor);
-
-        CARAPI SetForceShowIcon(
-            /* [in] */ Boolean forceShow);
-
-        CARAPI TryShow(
-            /* [out] */ Boolean* rst);
-
-        CARAPI Show();
-
-        CARAPI Dismiss();
-
-        CARAPI IsShowing(
-            /* [out] */ Boolean* rst);
-
-        CARAPI OnItemClick(
-            /* [in] */ IAdapterView* parent,
-            /* [in] */ IView* view,
-            /* [in] */ Int32 position,
-            /* [in] */ Int64 id);
-
-        CARAPI OnKey(
-            /* [in] */ IView* v,
-            /* [in] */ Int32 keyCode,
-            /* [in] */ IKeyEvent* event,
-            /* [out] */ Boolean* result);
-
-        CARAPI OnGlobalLayout();
-
-        CARAPI OnViewAttachedToWindow(
-                    /* [in] */ IView* v);
-
-        CARAPI OnViewDetachedFromWindow(
-            /* [in] */ IView* v);
-
-        CARAPI InitForMenu(
-            /* [in] */ IContext* context,
-            /* [in] */ IMenuBuilder* menu);
-
-        CARAPI GetMenuView(
-            /* [in] */ IViewGroup* root,
-            /* [out] */ IMenuView** view);
-
-        CARAPI UpdateMenuView(
-            /* [in] */ Boolean cleared);
-
-        CARAPI SetCallback(
-            /* [in] */ IMenuPresenterCallback* cb);
-
-        CARAPI OnSubMenuSelected(
-            /* [in] */ ISubMenuBuilder* subMenu,
-            /* [out] */ Boolean* handled);
-
-        CARAPI OnCloseMenu(
-            /* [in] */ IMenuBuilder* menu,
-            /* [in] */ Boolean allMenusAreClosing);
-
-        CARAPI FlagActionItems(
-            /* [out] */ Boolean* shown);
-
-        CARAPI ExpandItemActionView(
-            /* [in] */ IMenuBuilder* menu,
-            /* [in] */ IMenuItemImpl* item,
-            /* [out] */ Boolean* expanded);
-
-        CARAPI CollapseItemActionView(
-            /* [in] */ IMenuBuilder* menu,
-            /* [in] */ IMenuItemImpl* item,
-            /* [out] */ Boolean* collapsed);
-
-        CARAPI GetId(
-            /* [out] */ Int32* id);
-
-        CARAPI OnSaveInstanceState(
-            /* [out] */ IParcelable** pa);
-
-        CARAPI OnRestoreInstanceState(
-            /* [in] */ IParcelable* state);
 
     private:
         ActionMenuPresenter*  mHost;
@@ -306,15 +136,6 @@ private:
 
     class ActionButtonSubmenu
         : public MenuPopupHelper
-        , public IMenuPopupHelper
-        , public IAdapterViewOnItemClickListener
-        , public IViewOnKeyListener
-        , public IOnGlobalLayoutListener
-        , public IPopupWindowOnDismissListener
-        , public IViewOnAttachStateChangeListener
-        , public IMenuPresenter
-        , public IWeakReferenceSource
-        , public ElRefBase
     {
     public:
         ActionButtonSubmenu(
@@ -322,99 +143,15 @@ private:
             /* [in] */ ISubMenuBuilder* subMenu,
             /* [in] */ ActionMenuPresenter* host);
 
-        CAR_INTERFACE_DECL()
-
-        CARAPI GetWeakReference(
-            /* [out] */ IWeakReference** weakReference);
-
         CARAPI OnDismiss();
 
-        CARAPI SetAnchorView(
-            /* [in] */ IView* anchor);
-
-        CARAPI SetForceShowIcon(
-            /* [in] */ Boolean forceShow);
-
-        CARAPI Show();
-
-        CARAPI TryShow(
-            /* [out] */ Boolean* rst);
-
-        CARAPI Dismiss();
-
-        CARAPI IsShowing(
-            /* [out] */ Boolean* rst);
-
-        CARAPI OnItemClick(
-            /* [in] */ IAdapterView* parent,
-            /* [in] */ IView* view,
-            /* [in] */ Int32 position,
-            /* [in] */ Int64 id);
-
-        CARAPI OnKey(
-            /* [in] */ IView* v,
-            /* [in] */ Int32 keyCode,
-            /* [in] */ IKeyEvent* event,
-            /* [out] */ Boolean* result);
-
-        CARAPI OnGlobalLayout();
-
-        CARAPI OnViewAttachedToWindow(
-                    /* [in] */ IView* v);
-
-        CARAPI OnViewDetachedFromWindow(
-            /* [in] */ IView* v);
-
-        CARAPI InitForMenu(
-            /* [in] */ IContext* context,
-            /* [in] */ IMenuBuilder* menu);
-
-        CARAPI GetMenuView(
-            /* [in] */ IViewGroup* root,
-            /* [out] */ IMenuView** view);
-
-        CARAPI UpdateMenuView(
-            /* [in] */ Boolean cleared);
-
-        CARAPI SetCallback(
-            /* [in] */ IMenuPresenterCallback* cb);
-
-        CARAPI OnSubMenuSelected(
-            /* [in] */ ISubMenuBuilder* subMenu,
-            /* [out] */ Boolean* handled);
-
-        CARAPI OnCloseMenu(
-            /* [in] */ IMenuBuilder* menu,
-            /* [in] */ Boolean allMenusAreClosing);
-
-        CARAPI FlagActionItems(
-            /* [out] */ Boolean* shown);
-
-        CARAPI ExpandItemActionView(
-            /* [in] */ IMenuBuilder* menu,
-            /* [in] */ IMenuItemImpl* item,
-            /* [out] */ Boolean* expanded);
-
-        CARAPI CollapseItemActionView(
-            /* [in] */ IMenuBuilder* menu,
-            /* [in] */ IMenuItemImpl* item,
-            /* [out] */ Boolean* collapsed);
-
-        CARAPI GetId(
-            /* [out] */ Int32* id);
-
-        CARAPI OnSaveInstanceState(
-            /* [out] */ IParcelable** pa);
-
-        CARAPI OnRestoreInstanceState(
-            /* [in] */ IParcelable* state);
     private:
         AutoPtr<ISubMenuBuilder> mSubMenu;
         ActionMenuPresenter*  mHost;
     };
 
     class PopupPresenterCallback
-        : public ElRefBase
+        : public Object
         , public IMenuPresenterCallback
     {
     public:
@@ -438,12 +175,9 @@ private:
     };
 
     class OpenOverflowRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
-        CAR_INTERFACE_DECL()
-
         OpenOverflowRunnable(
             /* [in] */ OverflowPopup* popup,
             /* [in] */ ActionMenuPresenter* host);
@@ -455,8 +189,45 @@ private:
         ActionMenuPresenter* mHost;
     };
 
+    class ActionMenuPopupCallback
+        : public Object
+        , public IPopupCallback
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        ActionMenuPopupCallback(
+            /* [in] */ ActionMenuPresenter* host);
+
+        CARAPI GetPopup(
+            /* [out] */ IListPopupWindow** popup);
+    private:
+        ActionMenuPresenter* mHost;
+    };
+
+    class MySubUiVisibilityListener
+        : public Object
+        , public ISubUiVisibilityListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        MySubUiVisibilityListener(
+            /* [in] */ ActionMenuPresenter* host);
+
+        CARAPI OnSubUiVisibilityChanged(
+            /* [in] */ Boolean isVisible);
+
+    private:
+        ActionMenuPresenter* mHost;
+    };
+
 public:
-    ActionMenuPresenter(
+    CAR_INTERFACE_DECL()
+
+    ActionMenuPresenter();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     //@Override
@@ -467,17 +238,17 @@ public:
     CARAPI OnConfigurationChanged(
         /* [in] */ IConfiguration* newConfig);
 
-    CARAPI_(void) SetWidthLimit(
+    CARAPI SetWidthLimit(
         /* [in] */ Int32 width,
         /* [in] */ Boolean strict);
 
-    CARAPI_(void) SetReserveOverflow(
+    CARAPI SetReserveOverflow(
         /* [in] */ Boolean reserveOverflow);
 
-    CARAPI_(void) SetItemLimit(
+    CARAPI SetItemLimit(
         /* [in] */ Int32 itemCount);
 
-    CARAPI_(void) SetExpandedActionViewsExclusive(
+    CARAPI SetExpandedActionViewsExclusive(
         /* [in] */ Boolean isExclusive);
 
     //@Override
@@ -493,14 +264,15 @@ public:
         /* [out] */ IView** view);
 
     //@Override
-    CARAPI_(void) BindItemView(
+    CARAPI BindItemView(
         /* [in] */ IMenuItemImpl* item,
         /* [in] */ IMenuItemView* itemView);
 
     //@Override
-    CARAPI_(Boolean) ShouldIncludeItem(
+    CARAPI ShouldIncludeItem(
         /* [in] */ Int32 childIndex,
-        /* [in] */ IMenuItemImpl* item);
+        /* [in] */ IMenuItemImpl* item,
+        /* [out] */ Boolean* result);
 
     //@Override
     CARAPI UpdateMenuView(
@@ -511,6 +283,11 @@ public:
         /* [in] */ IViewGroup* parent,
         /* [in] */ Int32 childIndex);
 
+    CARAPI FilterLeftoverView(
+        /* [in] */ IViewGroup* parent,
+        /* [in] */ Int32 childIndex,
+        /* [out] */ Boolean* filterLeftoverView);
+
     CARAPI OnSubMenuSelected(
         /* [in] */ ISubMenuBuilder* subMenu,
         /* [out] */ Boolean* result);
@@ -519,37 +296,46 @@ public:
      * Display the overflow menu if one is present.
      * @return TRUE if the overflow menu was shown, FALSE otherwise.
      */
-    CARAPI_(Boolean) ShowOverflowMenu();
+    CARAPI ShowOverflowMenu(
+        /* [out] */ Boolean* result);
 
     /**
      * Hide the overflow menu if it is currently showing.
      *
      * @return TRUE if the overflow menu was hidden, FALSE otherwise.
      */
-    CARAPI_(Boolean) HideOverflowMenu();
+    CARAPI HideOverflowMenu(
+        /* [out] */ Boolean* result);
 
     /**
      * Dismiss all popup menus - overflow and submenus.
      * @return TRUE if popups were dismissed, FALSE otherwise. (This can be because none were open.)
      */
-    CARAPI_(Boolean) DismissPopupMenus();
+    CARAPI DismissPopupMenus(
+        /* [out] */ Boolean* result);
 
     /**
      * Dismiss all submenu popups.
      *
      * @return TRUE if popups were dismissed, FALSE otherwise. (This can be because none were open.)
      */
-    CARAPI_(Boolean) HideSubMenus();
+    CARAPI HideSubMenus(
+        /* [out] */ Boolean* result);
 
     /**
      * @return TRUE if the overflow menu is currently showing
      */
-    CARAPI_(Boolean) IsOverflowMenuShowing();
+    CARAPI IsOverflowMenuShowing(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsOverflowMenuShowPending(
+        /* [out] */ Boolean* result);
 
     /**
      * @return TRUE if space has been reserved in the action menu for an overflow item.
      */
-    CARAPI_(Boolean) IsOverflowReserved();
+    CARAPI IsOverflowReserved(
+        /* [out] */ Boolean* result);
 
     CARAPI FlagActionItems(
         /* [out] */ Boolean* result);
@@ -567,12 +353,8 @@ public:
     CARAPI OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
 
-    //@Override
-    CARAPI OnSubUiVisibilityChanged(
-        /* [in] */ Boolean isVisible);
-
-protected:
-    ActionMenuPresenter();
+    CARAPI SetMenuView(
+        /* [in] */ IActionMenuView* menuView);
 
 private:
     CARAPI_(AutoPtr<IView>) FindViewForItem(
@@ -603,14 +385,13 @@ private:
     AutoPtr<ActionButtonSubmenu> mActionButtonPopup;
 
     AutoPtr<OpenOverflowRunnable> mPostedOpenRunnable;
-
+    AutoPtr<ActionMenuPopupCallback> mPopupCallback;
     AutoPtr<PopupPresenterCallback> mPopupPresenterCallback;
     Int32 mOpenSubMenuId;
 };
 
-} // namespace Menu
-} // namespace View
+} // namespace Widget
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ELASTOS_DROID_VIEW_MENU_ACTIONMENUPRESENTER_H__
+#endif  //__ELASTOS_DROID_WIDGET_ACTIONMENUPRESENTER_H__

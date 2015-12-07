@@ -3,6 +3,7 @@
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/Gravity.h"
+#include "elastos/droid/widget/ActionMenuPresenter.h"
 #include <elastos/core/Math.h>
 #include "elastos/droid/R.h"
 using Elastos::Droid::View::Gravity;
