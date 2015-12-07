@@ -6,6 +6,10 @@ namespace Droid {
 namespace App {
 namespace Backup {
 
+CAR_INTERFACE_IMPL(CWallpaperBackupHelperHelper, Singleton, IWallpaperBackupHelperHelper)
+
+CAR_SINGLETON_IMPL(CWallpaperBackupHelperHelper)
+
 ECode CWallpaperBackupHelperHelper::GetWALLPAPER_IMAGE(
     /* [out] */ String* image)
 {
@@ -21,7 +25,8 @@ ECode CWallpaperBackupHelperHelper::GetWALLPAPER_INFO(
     *info = CWallpaperBackupHelper::GetWALLPAPER_INFO();
     return NOERROR;
 }
-}
-}
-}
-}
+
+} // namespace Backup
+} // namespace App
+} // namespace Droid
+} // namespace Elastos

@@ -19,6 +19,8 @@ namespace Backup {
 CarClass(CFileBackupHelperBase), public FileBackupHelperBase
 {
 public:
+    CAR_OBJECT_DECL()
+
     ~CFileBackupHelperBase();
 
     /** @hide */
@@ -35,4 +37,5 @@ public:
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
-#endif
+
+#endif//__ELASTOS_DROID_APP_BACKUP_CFILEBACKUPHELPERBASE_H__

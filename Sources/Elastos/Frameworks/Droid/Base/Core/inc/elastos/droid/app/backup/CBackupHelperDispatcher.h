@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_APP_BACKUP_CBACKUPHELPERDISPATCHER_H__
 
 #include "_Elastos_Droid_App_Backup_CBackupHelperDispatcher.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
@@ -20,6 +20,8 @@ namespace Backup {
 
 /** @hide */
 CarClass(CBackupHelperDispatcher)
+    , public Object
+    , public IBackupHelperDispatcher
 {
 private:
     class Header : public ElRefBase
@@ -30,6 +32,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI AddHelper(

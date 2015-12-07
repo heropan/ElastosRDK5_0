@@ -3,6 +3,7 @@
 #define  __ELASTOS_DROID_APP_BACKUP_CBACKUPDATAINPUTSTREAM_H__
 
 #include "_Elastos_Droid_App_Backup_CBackupDataInputStream.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -26,8 +27,14 @@ namespace Backup {
  * @see BackupHelper
  */
 CarClass(CBackupDataInputStream) // TODO  public InputStream
+    , public Object
+    , public IBackupDataInputStream
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IBackupDataInput* data);
 

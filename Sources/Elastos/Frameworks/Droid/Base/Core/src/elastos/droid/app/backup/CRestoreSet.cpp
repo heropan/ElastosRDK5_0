@@ -5,6 +5,10 @@ namespace Droid {
 namespace App {
 namespace Backup {
 
+CAR_INTERFACE_IMPL(CRestoreSet, Object, IRestoreSet)
+
+CAR_OBJECT_IMPL(CRestoreSet)
+
 CRestoreSet::CRestoreSet()
     : mName(NULL)
     , mDevice(NULL)

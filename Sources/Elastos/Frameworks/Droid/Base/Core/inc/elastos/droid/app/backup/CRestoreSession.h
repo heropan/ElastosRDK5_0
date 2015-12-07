@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_BACKUP_CRESTORESESSION_H__
 
 #include "_Elastos_Droid_App_Backup_CRestoreSession.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::Backup::IRestoreObserver;
 using Elastos::Droid::App::Backup::IIRestoreSession;
@@ -14,8 +14,14 @@ namespace App {
 namespace Backup {
 
 CarClass(CRestoreSession)
+    , public Object
+    , public IRestoreSession
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IIRestoreSession* binder);

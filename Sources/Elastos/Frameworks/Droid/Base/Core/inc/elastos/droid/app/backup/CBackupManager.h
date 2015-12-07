@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGER_H__
 
 #include "_Elastos_Droid_App_Backup_CBackupManager.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::Backup::IIBackupManager;
 using Elastos::Droid::Content::IContext;
@@ -13,8 +13,14 @@ namespace App {
 namespace Backup {
 
 CarClass(CBackupManager)
+    , public Object
+    , public IBackupManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CBackupManager();
 
     ~CBackupManager();
@@ -83,8 +89,9 @@ private:
     static CARAPI_(void) CheckServiceBinder();
 };
 
-}
-}
-}
-}
+} // namespace Backup
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
+
 #endif // __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGER_H__
