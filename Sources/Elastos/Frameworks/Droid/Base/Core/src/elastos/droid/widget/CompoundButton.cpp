@@ -368,7 +368,8 @@ ECode CompoundButton::OnInitializeAccessibilityNodeInfo(
 
 Int32 CompoundButton::GetCompoundPaddingLeft()
 {
-    Int32 padding = Button::GetCompoundPaddingLeft();
+    Int32 padding = 0;
+    Button::GetCompoundPaddingLeft(&padding);
     Boolean isLayoutRtl;
     if (IsLayoutRtl(&isLayoutRtl), !isLayoutRtl) {
         AutoPtr<IDrawable> buttonDrawable = mButtonDrawable;
@@ -384,7 +385,8 @@ Int32 CompoundButton::GetCompoundPaddingLeft()
 
 Int32 CompoundButton::GetCompoundPaddingRight()
 {
-    Int32 padding = Button::GetCompoundPaddingRight();
+    Int32 padding = 0;
+    Button::GetCompoundPaddingRight(&padding);
     Boolean isLayoutRtl;
     if (IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
         AutoPtr<IDrawable> buttonDrawable = mButtonDrawable;

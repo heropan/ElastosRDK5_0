@@ -6,10 +6,7 @@
 #include "elastos/droid/widget/LinearLayout.h"
 #include "elastos/droid/widget/AutoCompleteTextView.h"
 
-
-
-
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::App::IActionKeyInfo;
 using Elastos::Droid::App::ISearchableInfo;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -31,14 +28,11 @@ using Elastos::Droid::Widget::ICursorAdapter;
 using Elastos::Droid::Widget::IOnCloseListener;
 using Elastos::Droid::Widget::IAutoCompleteTextView;
 using Elastos::Droid::Widget::ISearchView;
-using Elastos::Droid::App::IActionKeyInfo;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-
-extern "C" const InterfaceID EIID_SearchView;
-extern "C" const InterfaceID EIID_SearchAutoComplete;
 
 class SearchView : public LinearLayout
 {

@@ -1,21 +1,28 @@
 
 #include "elastos/droid/widget/HorizontalScrollView.h"
-#include "elastos/droid/widget/ScrollView.h"
+#include "elastos/droid/widget/CHorizontalScrollViewSavedState.h"
+// #include "elastos/droid/widget/ScrollView.h"
+#include "elastos/droid/os/Build.h"
 #include "elastos/droid/view/CViewConfigurationHelper.h"
-#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include "elastos/droid/view/FocusFinder.h"
 #include "elastos/droid/view/CMotionEvent.h"
-#include <elastos/core/Math.h>
 #include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
 #include "elastos/droid/view/animation/AnimationUtils.h"
 #include "elastos/droid/view/CViewGroupMarginLayoutParams.h"
-#include "elastos/droid/widget/CEdgeEffect.h"
+// #include "elastos/droid/widget/CEdgeEffect.h"
+#include "elastos/droid/widget/COverScroller.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Droid::Widget::ScrollView;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::IViewConfiguration;
 using Elastos::Droid::View::IViewConfigurationHelper;
 using Elastos::Droid::View::CViewConfigurationHelper;
-using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::FocusFinder;
@@ -23,27 +30,90 @@ using Elastos::Droid::View::EIID_IViewGroup;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::CMotionEvent;
 using Elastos::Droid::View::IInputDevice;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
-using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
-using Elastos::Droid::View::Animation::AnimationUtils;
+using Elastos::Droid::View::IViewBaseSavedState;
 using Elastos::Droid::View::CViewGroupMarginLayoutParams;
-using Elastos::Droid::Widget::CEdgeEffect;
+// using Elastos::Droid::Widget::CEdgeEffect;
+// using Elastos::Droid::Widget::ScrollView;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const String HorizontalScrollView::HORIZONTALSCROLLVIEW_NAME = String("HorizontalScrollView");
-const Int32 HorizontalScrollView::ANIMATED_SCROLL_GAP = ScrollView::ANIMATED_SCROLL_GAP;
-const Float HorizontalScrollView::MAX_SCROLL_FACTOR = ScrollView::MAX_SCROLL_FACTOR;
-const Int32 HorizontalScrollView::INVALID_POINTER;
+HorizontalScrollView::SavedState::SavedState()
+    : mScrollPosition(0)
+    , mIsLayoutRtl(FALSE)
+{
+}
 
+ECode HorizontalScrollView::SavedState::constructor()
+{
+    return NOERROR;
+}
+
+ECode HorizontalScrollView::SavedState::constructor(
+    /* [in] */ IParcelable* superState)
+{
+    return View::BaseSavedState::constructor(superState);
+}
+
+ECode HorizontalScrollView::SavedState::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    BaseSavedState::WriteToParcel(dest);
+    dest->WriteInt32(mScrollPosition);
+    dest->WriteInt32(mIsLayoutRtl ? 1 : 0);
+    return NOERROR;
+}
+
+ECode HorizontalScrollView::SavedState::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    BaseSavedState::ReadFromParcel(source);
+    source->ReadInt32(&mScrollPosition);
+    Int32 flag = 0;
+    source->ReadInt32(&flag);
+    if(flag == 1) {
+        mIsLayoutRtl = TRUE;
+    }
+    else {
+        mIsLayoutRtl = FALSE;
+    }
+    return NOERROR;
+}
+
+ECode HorizontalScrollView::SavedState::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    Int32 hash;
+    AutoPtr<ISystem> system;
+    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
+    system->IdentityHashCode(TO_IINTERFACE(this), &hash);
+    StringBuilder sb;
+    sb.Append("HorizontalScrollView.SavedState{");
+    sb.Append(StringUtils::ToHexString(hash));
+    sb.Append(" scrollPosition=");
+    sb.Append(mScrollPosition);
+    sb.Append(" isLayoutRtl=");
+    sb.Append(mIsLayoutRtl);
+    sb.Append("}");
+    return NOERROR;
+}
+
+const String HorizontalScrollView::HORIZONTALSCROLLVIEW_NAME("HorizontalScrollView");
+const Int32 HorizontalScrollView::ANIMATED_SCROLL_GAP = 250;// = ScrollView::ANIMATED_SCROLL_GAP; //TODO
+const Float HorizontalScrollView::MAX_SCROLL_FACTOR = 0.5;// = ScrollView::MAX_SCROLL_FACTOR; //TODO
+const Int32 HorizontalScrollView::INVALID_POINTER = -1;
+
+CAR_INTERFACE_IMPL(HorizontalScrollView, FrameLayout, IHorizontalScrollView);
 HorizontalScrollView::HorizontalScrollView()
     : mLastScroll(0)
-    , mScroller(NULL)
-    , mEdgeGlowLeft(NULL)
-    , mEdgeGlowRight(NULL)
     , mLastMotionX(0)
     , mIsLayoutDirty(TRUE)
     , mIsBeingDragged(FALSE)
@@ -55,81 +125,69 @@ HorizontalScrollView::HorizontalScrollView()
     , mOverscrollDistance(0)
     , mOverflingDistance(0)
     , mActivePointerId(INVALID_POINTER)
-
 {
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTempRect));
 }
 
-HorizontalScrollView::HorizontalScrollView(
+ECode HorizontalScrollView::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
+
+ECode HorizontalScrollView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::horizontalScrollViewStyle);
+}
+
+ECode HorizontalScrollView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : FrameLayout(context, attrs, defStyle)
-    , mLastScroll(0)
-    , mScroller(NULL)
-    , mEdgeGlowLeft(NULL)
-    , mEdgeGlowRight(NULL)
-    , mLastMotionX(0)
-    , mIsLayoutDirty(TRUE)
-    , mIsBeingDragged(FALSE)
-    , mFillViewport(FALSE)
-    , mSmoothScrollingEnabled(TRUE)
-    , mTouchSlop(0)
-    , mMinimumVelocity(0)
-    , mMaximumVelocity(0)
-    , mOverscrollDistance(0)
-    , mOverflingDistance(0)
-    , mActivePointerId(INVALID_POINTER)
+    /* [in] */ Int32 defStyleAttr)
 {
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTempRect));
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode HorizontalScrollView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    ASSERT_SUCCEEDED(FrameLayout::constructor(context, attrs, defStyleAttr, defStyleRes));
     InitScrollView();
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+
+    AutoPtr<ITypedArray> a;
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::HorizontalScrollView),
+            ARRAY_SIZE(R::styleable::HorizontalScrollView));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs,
+            attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
+
+    Boolean value;
+    a->GetBoolean(R::styleable::HorizontalScrollView_fillViewport, FALSE, &value);
+
+    FAIL_RETURN(SetFillViewport(value));
+    a->Recycle();
+
+    return NOERROR;
 }
 
 HorizontalScrollView::~HorizontalScrollView()
 {
 }
 
-ECode HorizontalScrollView::InitFromAttributes(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    AutoPtr<ITypedArray> a;
-
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::HorizontalScrollView),
-            ARRAY_SIZE(R::styleable::HorizontalScrollView));
-    FAIL_RETURN(context->ObtainStyledAttributes(attrs,
-            attrIds, defStyle, 0, (ITypedArray**)&a));
-
-    Boolean value;
-    a->GetBoolean(R::styleable::HorizontalScrollView_fillViewport, FALSE, &value);
-
-    FAIL_RETURN(SetFillViewport(value));
-
-    a->Recycle();
-
-    return NOERROR;
-}
-
-ECode HorizontalScrollView::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    ASSERT_SUCCEEDED(FrameLayout::Init(context, attrs, defStyle));
-    InitScrollView();
-    return InitFromAttributes(context, attrs, defStyle);
-}
-
 Float HorizontalScrollView::GetLeftFadingEdgeStrength()
 {
-    if (GetChildCount() == 0) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) == 0) {
         return 0.0;
     }
 
-    Int32 length = GetHorizontalFadingEdgeLength();
+    Int32 length = 0;
+    GetHorizontalFadingEdgeLength(&length);
 
     if (mScrollX < length) {
         return mScrollX / (Float)length;
@@ -140,14 +198,18 @@ Float HorizontalScrollView::GetLeftFadingEdgeStrength()
 
 Float HorizontalScrollView::GetRightFadingEdgeStrength()
 {
-    if (GetChildCount() == 0) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) == 0) {
         return 0.0;
     }
 
-    Int32 length = GetHorizontalFadingEdgeLength();
-    Int32 rightEdge = GetWidth() - mPaddingRight;
+    Int32 length = 0, w = 0;
+    GetHorizontalFadingEdgeLength(&length);
+    Int32 rightEdge = (GetWidth(&w), w) - mPaddingRight;
     Int32 right;
-    GetChildAt(0)->GetRight(&right);
+    AutoPtr<IView> child;
+    GetChildAt(0, (IView**)&child);
+    child->GetRight(&right);
     Int32 span = right - mScrollX - rightEdge;
     if (span < length) {
         return span / (Float)length;
@@ -156,14 +218,19 @@ Float HorizontalScrollView::GetRightFadingEdgeStrength()
     return 1.0;
 }
 
-Int32 HorizontalScrollView::GetMaxScrollAmount()
+ECode HorizontalScrollView::GetMaxScrollAmount(
+    /* [out] */ Int32* maxScrollAmount)
 {
-    return (Int32)(MAX_SCROLL_FACTOR * (mRight - mLeft));
+    VALIDATE_NOT_NULL(maxScrollAmount);
+    *maxScrollAmount = (Int32)(MAX_SCROLL_FACTOR * (mRight - mLeft));
+    return NOERROR;
 }
 
 void HorizontalScrollView::InitScrollView()
 {
-    mScroller = new OverScroller(GetContext());
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
+    COverScroller::New(ctx, (IOverScroller**)&mScroller);
     SetFocusable(TRUE);
     SetDescendantFocusability(ViewGroup::FOCUS_AFTER_DESCENDANTS);
     SetWillNotDraw(FALSE);
@@ -182,7 +249,8 @@ void HorizontalScrollView::InitScrollView()
 ECode HorizontalScrollView::AddView(
     /* [in] */ IView* child)
 {
-    if (GetChildCount() > 0) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) > 0) {
         //throw new IllegalStateException("HorizontalScrollView can host only one direct child");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -194,7 +262,8 @@ ECode HorizontalScrollView::AddView(
     /* [in] */ IView* child,
     /* [in] */ Int32 index)
 {
-    if (GetChildCount() > 0) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) > 0) {
         //throw new IllegalStateException("HorizontalScrollView can host only one direct child");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -206,7 +275,8 @@ ECode HorizontalScrollView::AddView(
     /* [in] */ IView* child,
     /* [in] */ IViewGroupLayoutParams* params)
 {
-    if (GetChildCount() > 0) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) > 0) {
         //throw new IllegalStateException("HorizontalScrollView can host only one direct child");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -219,7 +289,8 @@ ECode HorizontalScrollView::AddView(
     /* [in] */ Int32 index,
     /* [in] */ IViewGroupLayoutParams* params)
 {
-    if (GetChildCount() > 0) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) > 0) {
         //throw new IllegalStateException("HorizontalScrollView can host only one direct child");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -229,18 +300,22 @@ ECode HorizontalScrollView::AddView(
 
 Boolean HorizontalScrollView::CanScroll()
 {
-    AutoPtr<IView> child = GetChildAt(0);
+    AutoPtr<IView> child;
+    GetChildAt(0, (IView**)&child);
     if (child != NULL) {
-        Int32 childWidth = 0;
+        Int32 childWidth = 0, w = 0;
         child->GetWidth(&childWidth);
-        return GetWidth() < childWidth + mPaddingLeft + mPaddingRight;
+        return (GetWidth(&w), w) < childWidth + mPaddingLeft + mPaddingRight;
     }
     return FALSE;
 }
 
-Boolean HorizontalScrollView::IsFillViewport()
+ECode HorizontalScrollView::IsFillViewport(
+    /* [out] */ Boolean* isFilled)
 {
-    return mFillViewport;
+    VALIDATE_NOT_NULL(isFilled);
+    *isFilled = mFillViewport;
+    return NOERROR;
 }
 
 ECode HorizontalScrollView::SetFillViewport(
@@ -254,9 +329,12 @@ ECode HorizontalScrollView::SetFillViewport(
     return NOERROR;
 }
 
-Boolean HorizontalScrollView::IsSmoothScrollingEnabled()
+ECode HorizontalScrollView::IsSmoothScrollingEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return mSmoothScrollingEnabled;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = mSmoothScrollingEnabled;
+    return NOERROR;
 }
 
 ECode HorizontalScrollView::SetSmoothScrollingEnabled(
@@ -281,9 +359,12 @@ void HorizontalScrollView::OnMeasure(
         return;
     }
 
-    if (GetChildCount() > 0) {
-        AutoPtr<IView> child = GetChildAt(0);
-        Int32 width = GetMeasuredWidth();
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) > 0) {
+        AutoPtr<IView> child;
+        GetChildAt(0, (IView**)&child);
+        Int32 width = 0;
+        GetMeasuredWidth(&width);
         Int32 childWidth = 0;
         child->GetMeasuredHeight(&childWidth);
         if (childWidth < width) {
@@ -294,7 +375,7 @@ void HorizontalScrollView::OnMeasure(
 
             Int32 childHeightMeasureSpec = GetChildMeasureSpec(heightMeasureSpec,
                     mPaddingTop + mPaddingBottom,
-                    ((CFrameLayoutLayoutParams*)params.Get())->mHeight);
+                    ((FrameLayout::LayoutParams*)params.Get())->mHeight);
             width -= mPaddingLeft;
             width -= mPaddingRight;
             Int32 childWidthMeasureSpec =
@@ -305,20 +386,28 @@ void HorizontalScrollView::OnMeasure(
     }
 }
 
-Boolean HorizontalScrollView::DispatchKeyEvent(
-    /* [in] */ IKeyEvent* event)
+ECode HorizontalScrollView::DispatchKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return FrameLayout::DispatchKeyEvent(event) || ExecuteKeyEvent(event);
+    VALIDATE_NOT_NULL(result);
+    *result = (FrameLayout::DispatchKeyEvent(event, result), *result) || (ExecuteKeyEvent(event, result), *result);
+    return NOERROR;
 }
 
-Boolean HorizontalScrollView::ExecuteKeyEvent(
-    /* [in] */ IKeyEvent* event)
+ECode HorizontalScrollView::ExecuteKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
     mTempRect->SetEmpty();
 
     if (!CanScroll()) {
-        if (IsFocused()) {
-            AutoPtr<IView> currentFocused = FindFocus();
+        Boolean focused = FALSE;
+        if (IsFocused(&focused), focused) {
+            AutoPtr<IView> currentFocused;
+            FindFocus((IView**)&currentFocused);
             if (currentFocused.Get() == (IView*)this->Probe(EIID_IView)) {
                 currentFocused = NULL;
             }
@@ -329,12 +418,14 @@ Boolean HorizontalScrollView::ExecuteKeyEvent(
             if (nextFocused != NULL && nextFocused.Get() != (IView*)this->Probe(EIID_IView)) {
                 Boolean isFocus = FALSE;
                 nextFocused->RequestFocus(IView::FOCUS_RIGHT, &isFocus);
-                return isFocus;
-            } else {
-                return FALSE;
+                *result = isFocus;
+                return NOERROR;
+            }
+            else {
+                return NOERROR;
             }
         }
-        return FALSE;
+        return NOERROR;
     }
     Boolean handled = FALSE;
     Int32 action = 0;
@@ -347,38 +438,42 @@ Boolean HorizontalScrollView::ExecuteKeyEvent(
             case IKeyEvent::KEYCODE_DPAD_LEFT:
                 event->IsAltPressed(&isPressed);
                 if (!isPressed) {
-                    handled = ArrowScroll(IView::FOCUS_LEFT);
+                    ArrowScroll(IView::FOCUS_LEFT, &handled);
                 }
                 else {
-                    handled = FullScroll(IView::FOCUS_LEFT);
+                    FullScroll(IView::FOCUS_LEFT, &handled);
                 }
                 break;
             case IKeyEvent::KEYCODE_DPAD_RIGHT:
                 event->IsAltPressed(&isPressed);
                 if (!isPressed) {
-                    handled = ArrowScroll(IView::FOCUS_RIGHT);
+                    ArrowScroll(IView::FOCUS_RIGHT, &handled);
                 }
                 else {
-                    handled = FullScroll(IView::FOCUS_RIGHT);
+                    FullScroll(IView::FOCUS_RIGHT, &handled);
                 }
                 break;
             case IKeyEvent::KEYCODE_SPACE:
                 event->IsShiftPressed(&isPressed);
-                PageScroll(isPressed ? IView::FOCUS_LEFT : IView::FOCUS_RIGHT);
+                Boolean consumed = FALSE;
+                PageScroll(isPressed ? IView::FOCUS_LEFT : IView::FOCUS_RIGHT, &consumed);
                 break;
         }
     }
 
-    return handled;
+    *result = handled;
+    return NOERROR;
 }
 
 Boolean HorizontalScrollView::InChild(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    if (GetChildCount() > 0) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) > 0) {
         Int32 scrollX = mScrollX;
-        AutoPtr<IView> child = GetChildAt(0);
+        AutoPtr<IView> child;
+        GetChildAt(0, (IView**)&child);
         Int32 top, bottom, left, right;
         child->GetTop(&top);
         child->GetBottom(&bottom);
@@ -397,7 +492,8 @@ void HorizontalScrollView::InitOrResetVelocityTracker()
 {
     if (mVelocityTracker == NULL) {
         mVelocityTracker = VelocityTracker::Obtain();
-    } else {
+    }
+    else {
         mVelocityTracker->Clear();
     }
 }
@@ -427,18 +523,21 @@ ECode HorizontalScrollView::RequestDisallowInterceptTouchEvent(
     return NOERROR;
 }
 
-Boolean HorizontalScrollView::OnInterceptTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode HorizontalScrollView::OnInterceptTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     Int32 action = 0;
     ev->GetAction(&action);
     if ((action == IMotionEvent::ACTION_MOVE) && (mIsBeingDragged)) {
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
+    Boolean tmp = FALSE;
     switch (action & IMotionEvent::ACTION_MASK) {
-        case IMotionEvent::ACTION_MOVE:
-         {
+        case IMotionEvent::ACTION_MOVE: {
             Int32 activePointerId = mActivePointerId;
             if (activePointerId == INVALID_POINTER) {
                 // If we don't have a valid id, the touch down wasn't on content.
@@ -470,8 +569,7 @@ Boolean HorizontalScrollView::OnInterceptTouchEvent(
             break;
         }
 
-        case IMotionEvent::ACTION_DOWN:
-        {
+        case IMotionEvent::ACTION_DOWN: {
             Float y = 0;
             Float x = 0;
             ev->GetY(&y);
@@ -488,7 +586,8 @@ Boolean HorizontalScrollView::OnInterceptTouchEvent(
             InitOrResetVelocityTracker();
             mVelocityTracker->AddMovement(ev);
 
-            mIsBeingDragged = !mScroller->IsFinished();
+            mScroller->IsFinished(&mIsBeingDragged);
+            mIsBeingDragged = !mIsBeingDragged;
             break;
         }
 
@@ -496,13 +595,12 @@ Boolean HorizontalScrollView::OnInterceptTouchEvent(
         case IMotionEvent::ACTION_UP:
             mIsBeingDragged = FALSE;
             mActivePointerId = INVALID_POINTER;
-            if (mScroller->SpringBack(mScrollX, mScrollY, 0, GetScrollRange(), 0, 0)) {
+            if (mScroller->SpringBack(mScrollX, mScrollY, 0, GetScrollRange(), 0, 0, &tmp), tmp) {
                 PostInvalidateOnAnimation();
             }
             break;
 
-        case IMotionEvent::ACTION_POINTER_DOWN:
-        {
+        case IMotionEvent::ACTION_POINTER_DOWN: {
             Int32 index = 0;
             ev->GetActionIndex(&index);
             Float f = 0;
@@ -522,32 +620,40 @@ Boolean HorizontalScrollView::OnInterceptTouchEvent(
             break;
     }
 
-    return mIsBeingDragged;
+    *result = mIsBeingDragged;
+    return NOERROR;
 }
 
-Boolean HorizontalScrollView::OnTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode HorizontalScrollView::OnTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     InitVelocityTrackerIfNotExists();
     mVelocityTracker->AddMovement(ev);
 
     Int32 action = 0;
     ev->GetAction(&action);
 
+    Int32 count = 0;
+    Boolean tmp = FALSE;
     switch(action & IMotionEvent::ACTION_MASK) {
-        case IMotionEvent::ACTION_DOWN:
-        {
-            if(GetChildCount() == 0) {
-                return FALSE;
+        case IMotionEvent::ACTION_DOWN: {
+            if((GetChildCount(&count), count) == 0) {
+                *result = FALSE;
+                return NOERROR;
             }
-            if(mIsBeingDragged = !mScroller->IsFinished()) {
-                AutoPtr<IViewParent> parent = GetParent();
+            Boolean finished = FALSE;
+            mScroller->IsFinished(&finished);
+            if(mIsBeingDragged = !finished) {
+                AutoPtr<IViewParent> parent;
+                GetParent((IViewParent**)&parent);
                 if(parent != NULL) {
                     parent->RequestDisallowInterceptTouchEvent(TRUE);
                 }
             }
 
-            if(!mScroller->IsFinished()) {
+            if(!finished) {
                 mScroller->AbortAnimation();
             }
             Float motionX = 0;
@@ -571,14 +677,16 @@ Boolean HorizontalScrollView::OnTouchEvent(
             x = (Int32)fx;
             Int32 deltaX = mLastMotionX - x;
             if(!mIsBeingDragged && Elastos::Core::Math::Abs(deltaX) > mTouchSlop) {
-                AutoPtr<IViewParent> parent = GetParent();
+                AutoPtr<IViewParent> parent;
+                GetParent((IViewParent**)&parent);
                 if(parent != NULL) {
                     parent->RequestDisallowInterceptTouchEvent(TRUE);
                 }
                 mIsBeingDragged = TRUE;
                 if(deltaX > 0) {
                     deltaX -= mTouchSlop;
-                } else {
+                }
+                else {
                     deltaX += mTouchSlop;
                 }
 
@@ -589,10 +697,13 @@ Boolean HorizontalScrollView::OnTouchEvent(
                 Int32 oldX = mScrollX;
                 Int32 oldY = mScrollY;
                 Int32 range = GetScrollRange();
-                Int32 overscrollMode = GetOverScrollMode();
+                Int32 overscrollMode = 0;
+                GetOverScrollMode(&overscrollMode);
                 Boolean canOverscroll = overscrollMode == IView::OVER_SCROLL_ALWAYS
                     || (overscrollMode == IView::OVER_SCROLL_IF_CONTENT_SCROLLS && range > 0) ;
 
+                // Calling overScrollBy will call onOverScrolled, which
+                // calls onScrollChanged if applicable.
                 if(OverScrollBy(deltaX, 0, mScrollX, 0, range, 0,
                     mOverscrollDistance, 0, TRUE)) {
                     mVelocityTracker->Clear();
@@ -602,14 +713,25 @@ Boolean HorizontalScrollView::OnTouchEvent(
                 if(canOverscroll) {
                     Int32 pulledToX = oldX + deltaX;
                     if(pulledToX < 0) {
-                        mEdgeGlowLeft->OnPull((Float)deltaX/GetWidth());
+                        Int32 w = 0, h = 0;
+                        GetWidth(&w);
+                        GetHeight(&h);
+                        Float y = 0;
+                        ev->GetY(activePointerIndex, &y);
+                        mEdgeGlowLeft->OnPull((Float)deltaX / w, 1.f - y / h);
                         Boolean isFinished = FALSE;
                         mEdgeGlowRight->IsFinished(&isFinished);
                         if(isFinished) {
                             mEdgeGlowRight->OnRelease();
                         }
-                    } else if(pulledToX > range) {
-                        mEdgeGlowRight->OnPull((Float)deltaX/GetWidth());
+                    }
+                    else if(pulledToX > range) {
+                        Int32 w = 0, h = 0;
+                        GetWidth(&w);
+                        GetHeight(&h);
+                        Float y = 0;
+                        ev->GetY(activePointerIndex, &y);
+                        mEdgeGlowRight->OnPull((Float)deltaX / w, y / h);
                         Boolean isFinished = FALSE;
                         mEdgeGlowLeft->IsFinished(&isFinished);
                         if(isFinished) {
@@ -626,7 +748,7 @@ Boolean HorizontalScrollView::OnTouchEvent(
                 }
             }
         }
-            break;
+        break;
 
         case IMotionEvent::ACTION_UP:
             if(mIsBeingDragged) {
@@ -636,12 +758,12 @@ Boolean HorizontalScrollView::OnTouchEvent(
                 velocityTracker->GetXVelocity(mActivePointerId, &x);
                 Int32 initialVelocity = (Int32)x;
 
-                if(GetChildCount() > 0) {
+                if((GetChildCount(&count), count) > 0) {
                     if((Elastos::Core::Math::Abs(initialVelocity) > mMinimumVelocity)) {
                         Fling(-initialVelocity);
-                    } else {
-                        if(mScroller->SpringBack(mScrollX, mScrollY, 0,
-                            GetScrollRange(), 0, 0)) {
+                    }
+                    else {
+                        if(mScroller->SpringBack(mScrollX, mScrollY, 0, GetScrollRange(), 0, 0, &tmp), tmp) {
                             PostInvalidateOnAnimation();
                         }
                     }
@@ -659,9 +781,8 @@ Boolean HorizontalScrollView::OnTouchEvent(
             break;
 
         case IMotionEvent::ACTION_CANCEL:
-            if(mIsBeingDragged && GetChildCount() > 0) {
-                if(mScroller->SpringBack(mScrollX, mScrollY, 0,
-                    GetScrollRange(), 0, 0)) {
+            if(mIsBeingDragged && (GetChildCount(&count), count) > 0) {
+                if(mScroller->SpringBack(mScrollX, mScrollY, 0, GetScrollRange(), 0, 0, &tmp), tmp) {
                     PostInvalidateOnAnimation();
                 }
                 mActivePointerId = INVALID_POINTER;
@@ -679,7 +800,8 @@ Boolean HorizontalScrollView::OnTouchEvent(
             OnSecondaryPointerUp(ev);
             break;
     }
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
 void HorizontalScrollView::OnSecondaryPointerUp(
@@ -703,9 +825,11 @@ void HorizontalScrollView::OnSecondaryPointerUp(
     }
 }
 
-Boolean HorizontalScrollView::OnGenericMotionEvent(
-    /* [in] */ IMotionEvent* event)
+ECode HorizontalScrollView::OnGenericMotionEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     AutoPtr<CMotionEvent> cevent = (CMotionEvent*)event;
     Int32 source = 0;
     cevent->GetSource(&source);
@@ -722,7 +846,8 @@ Boolean HorizontalScrollView::OnGenericMotionEvent(
                         Float fhscroll = 0;
                         event->GetAxisValue(IMotionEvent::AXIS_VSCROLL, &fhscroll);
                         hscroll = -fhscroll;
-                    } else {
+                    }
+                    else {
                         event->GetAxisValue(IMotionEvent::AXIS_HSCROLL, &hscroll);
                     }
 
@@ -733,23 +858,28 @@ Boolean HorizontalScrollView::OnGenericMotionEvent(
                         Int32 newScrollX = oldScrollX + delta;
                         if(newScrollX < 0) {
                             newScrollX = 0;
-                        } else if(newScrollX > range) {
+                        }
+                        else if(newScrollX > range) {
                             newScrollX = range;
                         }
                         if(newScrollX != oldScrollX) {
                             FrameLayout::ScrollTo(newScrollX, mScrollY);
-                            return TRUE;
+                            *result = TRUE;
+                            return NOERROR;
                         }
                     }
                 }
         }
     }
-    return FrameLayout::OnGenericMotionEvent(event);
+    return FrameLayout::OnGenericMotionEvent(event, result);
 }
 
-Boolean HorizontalScrollView::ShouldDelayChildPressedState()
+ECode HorizontalScrollView::ShouldDelayChildPressedState(
+    /* [out] */ Boolean* compatibility)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(compatibility);
+    *compatibility = TRUE;
+    return NOERROR;
 }
 
 void HorizontalScrollView::OnOverScrolled(
@@ -758,56 +888,72 @@ void HorizontalScrollView::OnOverScrolled(
     /* [in] */ Boolean clampedX,
     /* [in] */ Boolean clampedY)
 {
-    if (!mScroller->IsFinished()) {
+    Boolean finished = 0;
+    if (mScroller->IsFinished(&finished), !finished) {
+        const Int32 oldX = mScrollX;
+        const Int32 oldY = mScrollY;
         mScrollX = scrollX;
         mScrollY = scrollY;
         InvalidateParentIfNeeded();
+        OnScrollChanged(mScrollX, mScrollY, oldX, oldY);
         if (clampedY) {
-            mScroller->SpringBack(mScrollX, mScrollY, 0, GetScrollRange(), 0, 0);
+            Boolean tmp = FALSE;
+            mScroller->SpringBack(mScrollX, mScrollY, 0, GetScrollRange(), 0, 0, &tmp);
         }
-    } else {
+    }
+    else {
         FrameLayout::ScrollTo(scrollX, scrollY);
     }
     AwakenScrollBars();
 }
 
-Boolean HorizontalScrollView::PerformAccessibilityAction(
+ECode HorizontalScrollView::PerformAccessibilityAction(
     /* [in] */ Int32 action,
-    /* [in] */ IBundle* arguments)
+    /* [in] */ IBundle* arguments,
+    /* [out] */ Boolean* result)
 {
-    if(FrameLayout::PerformAccessibilityAction(action, arguments)) {
-        return TRUE;
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    if(FrameLayout::PerformAccessibilityAction(action, arguments, result), *result) {
+        *result = TRUE;
+        return NOERROR;
     }
+
+    Boolean enabled = FALSE;
     switch(action) {
-        case IAccessibilityNodeInfo::ACTION_SCROLL_FORWARD:
-        {
-            if(!IsEnabled()) {
-                return FALSE;
+        case IAccessibilityNodeInfo::ACTION_SCROLL_FORWARD: {
+            if(IsEnabled(&enabled), !enabled) {
+                return NOERROR;
             }
-            Int32 viewportWidth = GetWidth() - mPaddingLeft - mPaddingRight;
+            Int32 w = 0;
+            GetWidth(&w);
+            Int32 viewportWidth = w - mPaddingLeft - mPaddingRight;
             Int32 targetScrollX = Elastos::Core::Math::Min(mScrollX + viewportWidth, GetScrollRange());
             if(targetScrollX != mScrollX) {
                 SmoothScrollTo(targetScrollX, 0);
-                return TRUE;
+                *result = TRUE;
+                return NOERROR;
             }
         }
-        return FALSE;
+        return NOERROR;
 
-        case IAccessibilityNodeInfo::ACTION_SCROLL_BACKWARD:
-        {
-            if(!IsEnabled()) {
-                return FALSE;
+        case IAccessibilityNodeInfo::ACTION_SCROLL_BACKWARD: {
+            if(IsEnabled(&enabled), !enabled) {
+                return NOERROR;
             }
-            Int32 viewportWidth = GetWidth() - mPaddingLeft - mPaddingRight;
+            Int32 w = 0;
+            GetWidth(&w);
+            Int32 viewportWidth = w - mPaddingLeft - mPaddingRight;
             Int32 targetScrollX = Elastos::Core::Math::Max(0, mScrollX - viewportWidth);
             if(targetScrollX != mScrollX) {
                 SmoothScrollTo(targetScrollX, 0);
-                return TRUE;
+                *result = TRUE;
+                return NOERROR;
             }
         }
-        return FALSE;
+        return NOERROR;
     }
-    return FALSE;
+    return NOERROR;
 }
 
 ECode HorizontalScrollView::OnInitializeAccessibilityNodeInfo(
@@ -815,15 +961,17 @@ ECode HorizontalScrollView::OnInitializeAccessibilityNodeInfo(
 {
     FrameLayout::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(HORIZONTALSCROLLVIEW_NAME, (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(HORIZONTALSCROLLVIEW_NAME, (ICharSequence**)&seq));
     info->SetClassName(seq);
     Int32 scrollRange = GetScrollRange();
     if(scrollRange > 0) {
         info->SetScrollable(TRUE);
-        if(IsEnabled() && mScrollX > 0) {
+        Boolean enabled = FALSE;
+        IsEnabled(&enabled);
+        if(enabled && mScrollX > 0) {
             info->AddAction(IAccessibilityNodeInfo::ACTION_SCROLL_BACKWARD);
         }
-        if(IsEnabled() && mScrollX < scrollRange) {
+        if(enabled && mScrollX < scrollRange) {
             info->AddAction(IAccessibilityNodeInfo::ACTION_SCROLL_FORWARD);
         }
     }
@@ -835,8 +983,8 @@ ECode HorizontalScrollView::OnInitializeAccessibilityEvent(
 {
     FrameLayout::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(HORIZONTALSCROLLVIEW_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
+    FAIL_RETURN(CString::New(HORIZONTALSCROLLVIEW_NAME, (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     AutoPtr<CAccessibilityEvent> cevent = (CAccessibilityEvent*)event;
     cevent->SetScrollable(GetScrollRange() > 0);
     cevent->SetScrollX(mScrollX);
@@ -848,13 +996,15 @@ ECode HorizontalScrollView::OnInitializeAccessibilityEvent(
 
 Int32 HorizontalScrollView::GetScrollRange()
 {
-    Int32 scrollRange = 0;
-    if (GetChildCount() > 0) {
-        AutoPtr<IView> child = GetChildAt(0);
-        Int32 childWidth;
+    Int32 scrollRange = 0, count = 0;
+    if ((GetChildCount(&count), count) > 0) {
+        AutoPtr<IView> child;
+        GetChildAt(0, (IView**)&child);
+        Int32 childWidth, w = 0;
+        GetWidth(&w);
         child->GetWidth(&childWidth);
         scrollRange = Elastos::Core::Math::Max(0,
-                 childWidth - (GetWidth() - mPaddingLeft - mPaddingRight));
+                 childWidth - (w - mPaddingLeft - mPaddingRight));
     }
     return scrollRange;
 }
@@ -864,9 +1014,11 @@ AutoPtr<IView> HorizontalScrollView::FindFocusableViewInMyBounds(
     /* [in] */ Int32 left,
     /* [in] */ IView* preferredFocusable)
 {
-    Int32 fadingEdgeLength = GetHorizontalFadingEdgeLength() / 2;
+    Int32 value = 0;
+    GetHorizontalFadingEdgeLength(&value);
+    Int32 fadingEdgeLength = value / 2;
     Int32 leftWithoutFadingEdge = left + fadingEdgeLength;
-    Int32 rightWithoutFadingEdge = left + GetWidth() - fadingEdgeLength;
+    Int32 rightWithoutFadingEdge = left + (GetWidth(&value), value) - fadingEdgeLength;
 
     if (preferredFocusable != NULL) {
         Int32 preferredLeft = 0;
@@ -888,28 +1040,25 @@ AutoPtr<IView> HorizontalScrollView::FindFocusableViewInBounds(
     /* [in] */ Int32 left,
     /* [in] */ Int32 right)
 {
-    AutoPtr<IObjectContainer> focusables;
-    ASSERT_SUCCEEDED(GetFocusables(IView::FOCUS_FORWARD, (IObjectContainer**)&focusables));
+    AutoPtr<IArrayList> focusables;
+    ASSERT_SUCCEEDED(GetFocusables(IView::FOCUS_FORWARD, (IArrayList**)&focusables));
 
     AutoPtr<IView> focusCandidate;
 
     Boolean foundFullyContainedFocusable = FALSE;
 
-    AutoPtr<IObjectEnumerator> objEmu;
-    ASSERT_SUCCEEDED(focusables->GetObjectEnumerator((IObjectEnumerator**)&objEmu));
-
-    Boolean isSucceeded = FALSE;
-    objEmu->MoveNext(&isSucceeded);
-    while (isSucceeded) {
-        AutoPtr<IView> view;
-        objEmu->Current((IInterface**)&view);
+    Int32 count = 0;
+    focusables->GetSize(&count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        focusables->Get(i, (IInterface**)&obj);
+        AutoPtr<IView> view = IView::Probe(obj);
         Int32 viewLeft = 0;
         Int32 viewRight = 0;
         view->GetLeft(&viewLeft);
         view->GetRight(&viewRight);
 
         if (left < viewRight && viewLeft < right) {
-
             Boolean viewIsFullyContained = (left < viewLeft) &&
                     (viewRight < right);
 
@@ -929,71 +1078,87 @@ AutoPtr<IView> HorizontalScrollView::FindFocusableViewInBounds(
                     if (viewIsFullyContained && viewIsCloserToBoundary) {
                         focusCandidate = view;
                     }
-                } else {
+                }
+                else {
                     if (viewIsFullyContained) {
                         focusCandidate = view;
                         foundFullyContainedFocusable = TRUE;
-                    } else if (viewIsCloserToBoundary) {
+                    }
+                    else if (viewIsCloserToBoundary) {
                         focusCandidate = view;
                     }
                 }
             }
         }
-        objEmu->MoveNext(&isSucceeded);
     }
 
     return focusCandidate;
 }
 
-Boolean HorizontalScrollView::PageScroll(
-    /* [in] */ Int32 direction)
+ECode HorizontalScrollView::PageScroll(
+    /* [in] */ Int32 direction,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     Boolean right = direction == IView::FOCUS_RIGHT;
-    Int32 width = GetWidth();
+    Int32 width = 0;
+    GetWidth(&width);
 
+    Int32 sx = 0;
+    GetScrollX(&sx);
     if (right) {
-        mTempRect->mLeft = GetScrollX() + width;
-        Int32 count = GetChildCount();
+        mTempRect->mLeft = sx + width;
+        Int32 count = 0;
+        GetChildCount(&count);
         if (count > 0) {
-            AutoPtr<IView> view = GetChildAt(0);
+            AutoPtr<IView> view;
+            GetChildAt(0, (IView**)&view);
             Int32 right;
             view->GetRight(&right);
             if (mTempRect->mLeft + width > right) {
                 mTempRect->mLeft = right - width;
             }
         }
-    } else {
-        mTempRect->mLeft = GetScrollX() - width;
+    }
+    else {
+        mTempRect->mLeft = sx - width;
         if (mTempRect->mLeft < 0) {
             mTempRect->mLeft = 0;
         }
     }
     mTempRect->mRight = mTempRect->mLeft + width;
 
-    return ScrollAndFocus(direction,
+    *result = ScrollAndFocus(direction,
             mTempRect->mLeft, mTempRect->mRight);
+    return NOERROR;
 }
 
-Boolean HorizontalScrollView::FullScroll(
-    /* [in] */ Int32 direction)
+ECode HorizontalScrollView::FullScroll(
+    /* [in] */ Int32 direction,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     Boolean right = direction == IView::FOCUS_RIGHT;
-    Int32 width = GetWidth();
+    Int32 width = 0;
+    GetWidth(&width);
 
     mTempRect->mLeft = 0;
     mTempRect->mRight = width;
 
     if (right) {
-        Int32 count = GetChildCount();
+        Int32 count = 0;
+        GetChildCount(&count);
         if (count > 0) {
-            AutoPtr<IView> view = GetChildAt(0);
+            AutoPtr<IView> view;
+            GetChildAt(0, (IView**)&view);
             view->GetRight(&mTempRect->mRight);
             mTempRect->mLeft = mTempRect->mRight - width;
         }
     }
 
-    return ScrollAndFocus(direction,
+    *result = ScrollAndFocus(direction,
             mTempRect->mLeft, mTempRect->mRight);
+    return NOERROR;
 }
 
 Boolean HorizontalScrollView::ScrollAndFocus(
@@ -1002,8 +1167,10 @@ Boolean HorizontalScrollView::ScrollAndFocus(
     /* [in] */ Int32 right)
 {
     Boolean handled = TRUE;
-    Int32 width = GetWidth();
-    Int32 containerLeft = GetScrollX();
+    Int32 width = 0;
+    GetWidth(&width);
+    Int32 containerLeft = 0;
+    GetScrollX(&containerLeft);
     Int32 containerRight = containerLeft + width;
     Boolean goLeft = direction == IView::FOCUS_LEFT;
 
@@ -1014,27 +1181,34 @@ Boolean HorizontalScrollView::ScrollAndFocus(
 
     if(left >= containerLeft && right <= containerRight) {
         handled = FALSE;
-    } else {
+    }
+    else {
         Int32 delta = goLeft ? (left - containerLeft) : (right - containerRight);
         DoScrollX(delta);
     }
 
-    if(newFocused != FindFocus()) {
+    AutoPtr<IView> currentFocused;
+    FindFocus((IView**)&currentFocused);
+    if(newFocused != currentFocused) {
         Boolean res = FALSE;
         newFocused->RequestFocus(direction, &res);
     }
     return handled;
 }
 
-Boolean HorizontalScrollView::ArrowScroll(
-    /* [in] */ Int32 direction)
+ECode HorizontalScrollView::ArrowScroll(
+    /* [in] */ Int32 direction,
+    /* [out] */ Boolean* result)
 {
-    AutoPtr<IView> currentFocused = FindFocus();
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<IView> currentFocused;
+    FindFocus((IView**)&currentFocused);
     if(currentFocused.Get() == (IView*)this->Probe(EIID_IView)) currentFocused = NULL;
     AutoPtr<IView> nextFocused;
     FocusFinder::GetInstance()->FindNextFocus((IViewGroup*)this->Probe(EIID_IViewGroup),
         currentFocused, direction, (IView**)&nextFocused);
-    Int32 maxJump = GetMaxScrollAmount();
+    Int32 maxJump = 0;
+    GetMaxScrollAmount(&maxJump);
 
     if(nextFocused.Get() && IsWithinDeltaOfScreen(nextFocused, maxJump)) {
         nextFocused->GetDrawingRect(mTempRect);
@@ -1043,21 +1217,29 @@ Boolean HorizontalScrollView::ArrowScroll(
         DoScrollX(scrollDelta);
         Boolean res = FALSE;
         nextFocused->RequestFocus(direction, &res);
-    } else {
+    }
+    else {
         Int32 scrollDelta = maxJump;
-        if(direction == IView::FOCUS_LEFT && GetScrollX() < scrollDelta) {
-            scrollDelta = GetScrollX();
-        } else if(direction == IView::FOCUS_RIGHT && GetChildCount() > 0) {
-            Int32 daRight = 0;
-            GetChildAt(0)->GetRight(&daRight);
-            Int32 screenRight = GetScrollX() + GetWidth();
+        Int32 count = 0;
+        Int32 sx = 0;
+        GetScrollX(&sx);
+        if(direction == IView::FOCUS_LEFT && sx < scrollDelta) {
+            scrollDelta = sx;
+        }
+        else if(direction == IView::FOCUS_RIGHT && (GetChildCount(&count), count) > 0) {
+            Int32 daRight = 0, w = 0;
+            AutoPtr<IView> child;
+            GetChildAt(0, (IView**)&child);
+            child->GetRight(&daRight);
+            Int32 screenRight = sx + (GetWidth(&w), w);
 
             if(daRight - screenRight < maxJump) {
                 scrollDelta = daRight - screenRight;
             }
         }
         if(scrollDelta == 0) {
-            return FALSE;
+            *result = FALSE;
+            return NOERROR;
         }
         DoScrollX(direction == IView::FOCUS_RIGHT ? scrollDelta : -scrollDelta);
     }
@@ -1066,14 +1248,16 @@ Boolean HorizontalScrollView::ArrowScroll(
         Boolean isFocused = FALSE;
         currentFocused->IsFocused(&isFocused);
         if (isFocused && IsOffScreen(currentFocused)) {
-            Int32 descendantFocusability = GetDescendantFocusability();
+            Int32 descendantFocusability = 0;
+            GetDescendantFocusability(&descendantFocusability);
             SetDescendantFocusability(IViewGroup::FOCUS_BEFORE_DESCENDANTS);
-            RequestFocus();
+            RequestFocus(&isFocused);
             SetDescendantFocusability(descendantFocusability);
         }
     }
 
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
 Boolean HorizontalScrollView::IsOffScreen(
@@ -1089,8 +1273,10 @@ Boolean HorizontalScrollView::IsWithinDeltaOfScreen(
     descendant->GetDrawingRect(mTempRect);
     OffsetDescendantRectToMyCoords(descendant, mTempRect);
 
-    return (mTempRect->mRight + delta) >= GetScrollX()
-            && (mTempRect->mLeft - delta) <= (GetScrollX() + GetWidth());
+    Int32 w = 0, sx = 0;
+    GetWidth(&w);
+    GetScrollX(&sx);
+    return (mTempRect->mRight + delta) >= sx && (mTempRect->mLeft - delta) <= (sx + w);
 }
 
 void HorizontalScrollView::DoScrollX(
@@ -1110,28 +1296,37 @@ ECode HorizontalScrollView::SmoothScrollBy(
     /* [in] */ Int32 dx,
     /* [in] */ Int32 dy)
 {
-    if(GetChildCount() == 0) {
+    Int32 count = 0;
+    if((GetChildCount(&count), count) == 0) {
         return NOERROR;
     }
 
-    Int64 duration = AnimationUtils::CurrentAnimationTimeMillis() - mLastScroll;
+    Int64 duration = 0;
+    AnimationUtils::CurrentAnimationTimeMillis(&duration);
+    duration = duration - mLastScroll;
     if(duration > ANIMATED_SCROLL_GAP) {
-        Int32 width = GetWidth() - mPaddingRight - mPaddingLeft;
+        Int32 width = 0;
+        GetWidth(&width);
+        width = width - mPaddingRight - mPaddingLeft;
         Int32 right = 0;
-        GetChildAt(0)->GetWidth(&right);
+        AutoPtr<IView> child;
+        GetChildAt(0, (IView**)&child);
+        child->GetWidth(&right);
         Int32 maxX= Elastos::Core::Math::Max(0, right - width);
         Int32 scrollX = mScrollX;
         dx = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(scrollX + dx, maxX)) - scrollX;
 
         mScroller->StartScroll(scrollX, mScrollY, dx, 0);
         PostInvalidateOnAnimation();
-    } else {
-        if(!mScroller->IsFinished()) {
+    }
+    else {
+        Boolean finished = FALSE;
+        if(mScroller->IsFinished(&finished), !finished) {
             mScroller->AbortAnimation();
         }
         ScrollBy(dx, dy);
     }
-    mLastScroll = AnimationUtils::CurrentAnimationTimeMillis();
+    AnimationUtils::CurrentAnimationTimeMillis(&mLastScroll);
     return NOERROR;
 }
 
@@ -1144,14 +1339,19 @@ ECode HorizontalScrollView::SmoothScrollTo(
 
 Int32 HorizontalScrollView::ComputeHorizontalScrollRange()
 {
-    Int32 count = GetChildCount();
-    Int32 contentWidth = GetWidth() - mPaddingLeft - mPaddingRight;
+    Int32 count = 0;
+    GetChildCount(&count);
+    Int32 contentWidth = 0;
+    GetWidth(&contentWidth);
+    contentWidth = contentWidth - mPaddingLeft - mPaddingRight;
     if (count == 0) {
         return contentWidth;
     }
 
     Int32 scrollRange = 0;
-    GetChildAt(0)->GetRight(&scrollRange);
+    AutoPtr<IView> child;
+    GetChildAt(0, (IView**)&child);
+    child->GetRight(&scrollRange);
     Int32 scrollX = mScrollX;
     Int32 overscrollRight = Elastos::Core::Math::Max(0, scrollRange - contentWidth);
     if (scrollX < 0) {
@@ -1212,15 +1412,19 @@ void HorizontalScrollView::MeasureChildWithMargins(
 
 ECode HorizontalScrollView::ComputeScroll()
 {
-   if(mScroller->ComputeScrollOffset()) {
+    Boolean result = FALSE;
+    if(mScroller->ComputeScrollOffset(&result), result) {
         Int32 oldX = mScrollX;
         Int32 oldY = mScrollY;
-        Int32 x = mScroller->GetCurrX();
-        Int32 y = mScroller->GetCurrY();
+        Int32 x = 0;
+        mScroller->GetCurrX(&x);
+        Int32 y = 0;
+        mScroller->GetCurrY(&y);
 
         if(oldX != x || oldY != y) {
             Int32 range = GetScrollRange();
-            Int32 overscrollMode = GetOverScrollMode();
+            Int32 overscrollMode = 0;
+            GetOverScrollMode(&overscrollMode);
             Boolean canOverscroll = overscrollMode == IView::OVER_SCROLL_ALWAYS
                 || (overscrollMode == IView::OVER_SCROLL_IF_CONTENT_SCROLLS && range >0);
 
@@ -1230,16 +1434,21 @@ ECode HorizontalScrollView::ComputeScroll()
 
             if(canOverscroll) {
                 if(x < 0 && oldX >= 0) {
-                    mEdgeGlowLeft->OnAbsorb((Int32) mScroller->GetCurrVelocity());
-                } else if(x > range && oldX <= range) {
-                    mEdgeGlowRight->OnAbsorb((Int32) mScroller->GetCurrVelocity());
+                    Float currVelocity = 0;
+                    mScroller->GetCurrVelocity(&currVelocity);
+                    mEdgeGlowLeft->OnAbsorb((Int32) currVelocity);
+                }
+                else if(x > range && oldX <= range) {
+                    Float currVelocity = 0;
+                    mScroller->GetCurrVelocity(&currVelocity);
+                    mEdgeGlowRight->OnAbsorb((Int32) currVelocity);
                 }
             }
         }
         if(!AwakenScrollBars()) {
             PostInvalidateOnAnimation();
         }
-   }
+    }
     return NOERROR;
 }
 
@@ -1277,20 +1486,26 @@ Boolean HorizontalScrollView::ScrollToChildRect(
 Int32 HorizontalScrollView::ComputeScrollDeltaToGetChildRectOnScreen(
     /* [in] */ IRect* rect)
 {
-    if(GetChildCount() == 0) return 0;
+    Int32 count = 0;
+    if((GetChildCount(&count), count) == 0) return 0;
 
-    Int32 width = GetWidth();
-    Int32 screenLeft = GetScrollX();
+    Int32 width = 0;
+    GetWidth(&width);
+    Int32 screenLeft = 0;
+    GetScrollX(&screenLeft);
     Int32 screenRight = screenLeft + width;
 
-    Int32 fadingEdge = GetHorizontalFadingEdgeLength();
+    Int32 fadingEdge = 0;
+    GetHorizontalFadingEdgeLength(&fadingEdge);
 
     CRect* cRect = (CRect*)rect;
     if(cRect->mLeft > 0) {
         screenLeft += fadingEdge;
     }
     Int32 childWidth= 0;
-    GetChildAt(0)->GetWidth(&childWidth);
+    AutoPtr<IView> child;
+    GetChildAt(0, (IView**)&child);
+    child->GetWidth(&childWidth);
     if(cRect->mRight < childWidth) {
         screenRight -= fadingEdge;
     }
@@ -1300,23 +1515,28 @@ Int32 HorizontalScrollView::ComputeScrollDeltaToGetChildRectOnScreen(
         cRect->GetWidth(&cWidth);
         if(cWidth > width) {
             scrollXDelta += (cRect->mLeft - screenLeft);
-        } else {
+        }
+        else {
             scrollXDelta += (cRect->mRight - screenRight);
         }
 
         Int32 right = 0;
-        GetChildAt(0)->GetRight(&right);
+        child->GetRight(&right);
         Int32 distanceToRight = right - screenRight;
         scrollXDelta = Elastos::Core::Math::Min(scrollXDelta, distanceToRight);
-    } else if(cRect->mLeft < screenLeft && cRect->mRight < screenRight) {
+    }
+    else if(cRect->mLeft < screenLeft && cRect->mRight < screenRight) {
         Int32 cWidth = 0;
         cRect->GetWidth(&cWidth);
         if(cWidth > width) {
             scrollXDelta -= (screenRight - cRect->mRight);
-        } else {
+        }
+        else {
             scrollXDelta -= (screenLeft - cRect->mLeft);
         }
-        scrollXDelta = Elastos::Core::Math::Max(scrollXDelta, -GetScrollX());
+        Int32 sx = 0;
+        GetScrollX(&sx);
+        scrollXDelta = Elastos::Core::Math::Max(scrollXDelta, -sx);
     }
     return scrollXDelta;
 }
@@ -1341,7 +1561,8 @@ Boolean HorizontalScrollView::OnRequestFocusInDescendants(
 {
     if (direction == IView::FOCUS_FORWARD) {
         direction = IView::FOCUS_RIGHT;
-    } else if (direction == IView::FOCUS_BACKWARD) {
+    }
+    else if (direction == IView::FOCUS_BACKWARD) {
         direction = IView::FOCUS_LEFT;
     }
 
@@ -1349,7 +1570,8 @@ Boolean HorizontalScrollView::OnRequestFocusInDescendants(
     if(previouslyFocusedRect) {
         FocusFinder::GetInstance()->FindNextFocusFromRect(
                     (IViewGroup*)this->Probe(EIID_IViewGroup), previouslyFocusedRect, direction, (IView**)&nextFocus);
-    } else {
+    }
+    else {
         FocusFinder::GetInstance()->FindNextFocus(
                     (IViewGroup*)this->Probe(EIID_IViewGroup), NULL, direction, (IView**)&nextFocus);
     }
@@ -1363,17 +1585,18 @@ Boolean HorizontalScrollView::OnRequestFocusInDescendants(
     }
 
     Boolean result = FALSE;
-    ASSERT_SUCCEEDED(
-            nextFocus->RequestFocus(direction, previouslyFocusedRect, &result));
+    ASSERT_SUCCEEDED(nextFocus->RequestFocus(direction, previouslyFocusedRect, &result));
 
     return result;
 }
 
-Boolean HorizontalScrollView::RequestChildRectangleOnScreen(
+ECode HorizontalScrollView::RequestChildRectangleOnScreen(
     /* [in] */ IView* child,
     /* [in] */ IRect* rectangle,
-    /* [in] */ Boolean immediate)
+    /* [in] */ Boolean immediate,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     Int32 left = 0;
     Int32 scrollX = 0;
     Int32 top = 0;
@@ -1384,7 +1607,8 @@ Boolean HorizontalScrollView::RequestChildRectangleOnScreen(
     child->GetScrollY(&scrollY);
     rectangle->Offset(left - scrollX, top - scrollY);
 
-    return ScrollToChildRect(rectangle, immediate);
+    *result = ScrollToChildRect(rectangle, immediate);
+    return NOERROR;
 }
 
 ECode HorizontalScrollView::RequestLayout()
@@ -1393,22 +1617,71 @@ ECode HorizontalScrollView::RequestLayout()
     return FrameLayout::RequestLayout();
 }
 
-void HorizontalScrollView::OnLayout(
+ECode HorizontalScrollView::OnLayout(
     /* [in] */ Boolean changed,
-    /* [in] */ Int32 left,
-    /* [in] */ Int32 top,
-    /* [in] */ Int32 right,
-    /* [in] */ Int32 bottom)
+    /* [in] */ Int32 l,
+    /* [in] */ Int32 t,
+    /* [in] */ Int32 r,
+    /* [in] */ Int32 b)
 {
-    FrameLayout::OnLayout(changed, left, top, right, bottom);
+    Int32 childWidth = 0;
+    Int32 childMargins = 0, count = 0;
+
+
+    if ((GetChildCount(&count), count) > 0) {
+        AutoPtr<IView> child;
+        GetChildAt(0, (IView**)&child);
+        child->GetMeasuredWidth(&childWidth);
+        AutoPtr<IViewGroupLayoutParams> params;
+        child->GetLayoutParams((IViewGroupLayoutParams**)&params);
+        AutoPtr<FrameLayout::LayoutParams> childParams = (FrameLayout::LayoutParams*) IFrameLayoutLayoutParams::Probe(params);
+        childMargins = childParams->mLeftMargin + childParams->mRightMargin;
+    }
+
+    Int32 available = r - l - GetPaddingLeftWithForeground() -
+            GetPaddingRightWithForeground() - childMargins;
+
+    Boolean forceLeftGravity = (childWidth > available);
+
+    LayoutChildren(l, t, r, b, forceLeftGravity);
+
     mIsLayoutDirty = FALSE;
-    if (mChildToScrollTo != NULL &&
-            IsViewDescendantOf(mChildToScrollTo.Get(), (IView*)this->Probe(EIID_IView))) {
+    // Give a child focus if it needs it
+    if (mChildToScrollTo != NULL && IsViewDescendantOf(mChildToScrollTo, this)) {
         ScrollToChild(mChildToScrollTo);
     }
     mChildToScrollTo = NULL;
 
+    Boolean tmp = 0;
+    if (IsLaidOut(&tmp), !tmp) {
+        Int32 scrollRange = Elastos::Core::Math::Max(0, childWidth - (r - l - mPaddingLeft - mPaddingRight));
+        IsLayoutRtl(&tmp);
+        if (mSavedState != NULL) {
+            if (tmp == mSavedState->mIsLayoutRtl) {
+                mScrollX = mSavedState->mScrollPosition;
+            }
+            else {
+                mScrollX = scrollRange - mSavedState->mScrollPosition;
+            }
+            mSavedState = NULL;
+        }
+        else {
+            if (tmp) {
+                mScrollX = scrollRange - mScrollX;
+            } // mScrollX default value is "0" for LTR
+        }
+        // Don't forget to clamp
+        if (mScrollX > scrollRange) {
+            mScrollX = scrollRange;
+        }
+        else if (mScrollX < 0) {
+            mScrollX = 0;
+        }
+    }
+
+    // Calling this with the present values causes it to re-claim them
     ScrollTo(mScrollX, mScrollY);
+    return NOERROR;
 }
 
 void HorizontalScrollView::OnSizeChanged(
@@ -1419,7 +1692,8 @@ void HorizontalScrollView::OnSizeChanged(
 {
     FrameLayout::OnSizeChanged(w, h, oldw, oldh);
 
-    AutoPtr<IView> currentFocused = FindFocus();
+    AutoPtr<IView> currentFocused;
+    FindFocus((IView**)&currentFocused);
     if (NULL == currentFocused || (IView*)this->Probe(EIID_IView) == currentFocused.Get()) {
         return;
     }
@@ -1452,17 +1726,25 @@ Boolean HorizontalScrollView::IsViewDescendantOf(
 ECode HorizontalScrollView::Fling(
     /* [in] */ Int32 velocityX)
 {
-    if(GetChildCount() > 0) {
-        Int32 width = GetWidth() - mPaddingRight - mPaddingLeft;
+    Int32 count = 0;
+    if((GetChildCount(&count), count) > 0) {
+        Int32 width = 0;
+        GetWidth(&width);
+        width = width - mPaddingRight - mPaddingLeft;
         Int32 right = 0;
-        GetChildAt(0)->GetWidth(&right);
+        AutoPtr<IView> child;
+        GetChildAt(0, (IView**)&child);
+        child->GetWidth(&right);
 
         mScroller->Fling(mScrollX, mScrollY, velocityX, 0, 0,
             Elastos::Core::Math::Max(0, right - width), 0, 0, width/2, 0);
         Boolean movingRight = velocityX > 0;
-        AutoPtr<IView> currentFocused = FindFocus();
+        AutoPtr<IView> currentFocused;
+        FindFocus((IView**)&currentFocused);
+        Int32 finalX = 0;
+        mScroller->GetFinalX(&finalX);
         AutoPtr<IView> newFocused = FindFocusableViewInMyBounds(movingRight,
-            mScroller->GetFinalX(), currentFocused);
+            finalX, currentFocused);
 
         if(!newFocused) {
             newFocused = (IView*)this->Probe(EIID_IView);
@@ -1482,14 +1764,16 @@ ECode HorizontalScrollView::ScrollTo(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    if (GetChildCount() > 0) {
-        AutoPtr<IView> child = GetChildAt(0);
-        Int32 width = 0;
+    Int32 count = 0;
+    if ((GetChildCount(&count)) > 0) {
+        AutoPtr<IView> child;
+        GetChildAt(0, (IView**)&child);
+        Int32 width = 0, value = 0;
         Int32 height = 0;
         child->GetWidth(&width);
         child->GetHeight(&height);
-        x = Clamp(x, GetWidth() - mPaddingRight - mPaddingLeft, width);
-        y = Clamp(y, GetHeight() - mPaddingBottom - mPaddingTop, height);
+        x = Clamp(x, (GetWidth(&value), value) - mPaddingRight - mPaddingLeft, width);
+        y = Clamp(y, (GetHeight(&value), value) - mPaddingBottom - mPaddingTop, height);
         if (x != mScrollX || y != mScrollY) {
             FAIL_RETURN(FrameLayout::ScrollTo(x, y));
         }
@@ -1502,11 +1786,15 @@ ECode HorizontalScrollView::SetOverScrollMode(
 {
     if (overScrollMode != IView::OVER_SCROLL_NEVER) {
         if (mEdgeGlowLeft == NULL) {
-            CEdgeEffect::New(GetContext(), (IEdgeEffect**)&mEdgeGlowLeft);
-            mEdgeGlowRight = NULL;
-            CEdgeEffect::New(GetContext(), (IEdgeEffect**)&mEdgeGlowRight);
+            assert(0 && "TODO");
+            AutoPtr<IContext> ctx;
+            GetContext((IContext**)&ctx);
+            // CEdgeEffect::New(ctx, (IEdgeEffect**)&mEdgeGlowLeft);
+            // mEdgeGlowRight = NULL;
+            // CEdgeEffect::New(ctx, (IEdgeEffect**)&mEdgeGlowRight);
         }
-    } else {
+    }
+    else {
         mEdgeGlowLeft = NULL;
         mEdgeGlowRight = NULL;
     }
@@ -1523,13 +1811,15 @@ ECode HorizontalScrollView::Draw(
         Boolean res = FALSE;
         mEdgeGlowLeft->IsFinished(&res);
         if (!res) {
-            Int32 restoreCount = 0;
+            Int32 restoreCount = 0, w = 0;
             canvas->Save(&restoreCount);
-            Int32 height = GetHeight() - mPaddingTop - mPaddingBottom;;
+            Int32 height = 0;
+            GetHeight(&height);
+            height = height - mPaddingTop - mPaddingBottom;;
 
             canvas->Rotate(270);
             canvas->Translate(-height + mPaddingTop, Elastos::Core::Math::Min(0, scrollX));
-            mEdgeGlowLeft->SetSize(height, GetWidth());
+            mEdgeGlowLeft->SetSize(height, (GetWidth(&w), w));
             Boolean isDraw = FALSE;
             mEdgeGlowLeft->Draw(canvas, &isDraw);
             if (isDraw) {
@@ -1542,8 +1832,9 @@ ECode HorizontalScrollView::Draw(
         if (!isFinished) {
             Int32 restoreCount = 0;
             canvas->Save(&restoreCount);
-            Int32 width = GetWidth();
-            Int32 height = GetHeight() - mPaddingTop - mPaddingBottom;
+            Int32 width = 0, h = 0;;
+            GetWidth(&width);
+            Int32 height = (GetHeight(&h), h) - mPaddingTop - mPaddingBottom;
 
             canvas->Rotate(90);
             canvas->Translate(-mPaddingTop, Elastos::Core::Math::Max(GetScrollRange(), scrollX) + width);
@@ -1571,6 +1862,45 @@ Int32 HorizontalScrollView::Clamp(
         return child - my;
     }
     return n;
+}
+
+void HorizontalScrollView::OnRestoreInstanceState(
+    /* [in] */ IParcelable* state)
+{
+    AutoPtr<IApplicationInfo> info;
+    mContext->GetApplicationInfo((IApplicationInfo**)&info);
+    Int32 targetSdkVersion = 0;
+    info->GetTargetSdkVersion(&targetSdkVersion);
+    if (targetSdkVersion <= Build::VERSION_CODES::JELLY_BEAN_MR2) {
+        // Some old apps reused IDs in ways they shouldn't have.
+        // Don't break them, but they don't get scroll state restoration.
+        FrameLayout::OnRestoreInstanceState(state);
+        return;
+    }
+    AutoPtr<SavedState> ss = (SavedState*) IViewBaseSavedState::Probe(state);
+    FrameLayout::OnRestoreInstanceState(ss->GetSuperState());
+    mSavedState = ss;
+    RequestLayout();
+}
+
+AutoPtr<IParcelable> HorizontalScrollView::OnSaveInstanceState()
+{
+    AutoPtr<IApplicationInfo> info;
+    mContext->GetApplicationInfo((IApplicationInfo**)&info);
+    Int32 targetSdkVersion = 0;
+    info->GetTargetSdkVersion(&targetSdkVersion);
+    if (targetSdkVersion <= Build::VERSION_CODES::JELLY_BEAN_MR2) {
+        // Some old apps reused IDs in ways they shouldn't have.
+        // Don't break them, but they don't get scroll state restoration.
+        return FrameLayout::OnSaveInstanceState();
+    }
+    AutoPtr<IParcelable> superState = FrameLayout::OnSaveInstanceState();
+    AutoPtr<IParcelable> _ss;
+    CHorizontalScrollViewSavedState::New(superState, (IParcelable**)&_ss);
+    SavedState* ss = (SavedState*)_ss.Get();
+    ss->mScrollPosition = mScrollX;
+    IsLayoutRtl(&ss->mIsLayoutRtl);
+    return ss;
 }
 
 } // namespace Widget

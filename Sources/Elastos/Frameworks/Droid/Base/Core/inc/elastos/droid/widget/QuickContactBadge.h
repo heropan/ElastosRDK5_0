@@ -1,36 +1,79 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__
-#define __ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__
+#ifndef  __ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__
+#define  __ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/ImageView.h"
+#include "elastos/droid/content/AsyncQueryHandler.h"
+
+using Elastos::Droid::Content::AsyncQueryHandler;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::View::IViewOnClickListener;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class QuickContactBadge : public ImageView
+class QuickContactBadge
+    : public ImageView
+    , public IQuickContactBadge
+    , public IViewOnClickListener
 {
 private:
     class QueryHandler : public AsyncQueryHandler
     {
     public:
         QueryHandler(
-            /* [in] */ IContentResolver* cr);
+            /* [in] */ IContentResolver* cr,
+            /* [in] */ QuickContactBadge* host);
 
     protected:
-        CARAPI_(void) OnQueryComplete(
+        CARAPI OnQueryComplete(
             /* [in] */ Int32 token,
             /* [in] */ IInterface* cookie,
             /* [in] */ ICursor* cursor);
+
+    private:
+        QuickContactBadge* mHost;
+    };
+
+    class QuickContactBadgeClickListener
+        : public Object
+        , public IViewOnClickListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        QuickContactBadgeClickListener(
+            /* [in] */ QuickContactBadge* host);
+
+        virtual CARAPI OnClick(
+            /* [in] */ IView* v);
+
+    private:
+        QuickContactBadge* mHost;
     };
 
 public:
-    QuickContactBadge(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
+    CAR_INTERFACE_DECL();
 
+    constructor(
+        /* [in] */ IContext* context);
+
+    constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual CARAPI SetMode(
         /* [in] */ Int32 size);
@@ -44,9 +87,54 @@ public:
         /* [in] */ const String& emailAddress,
         /* [in] */ Boolean lazyLookup);
 
+    /**
+     * Assign a contact based on an email address. This should only be used when
+     * the contact's URI is not available, as an extra query will have to be
+     * performed to lookup the URI based on the email.
+
+     @param emailAddress The email address of the contact.
+     @param lazyLookup If this is true, the lookup query will not be performed
+     until this view is clicked.
+     @param extras A bundle of extras to populate the contact edit page with if the contact
+     is not found and the user chooses to add the email address to an existing contact or
+     create a new contact. Uses the same string constants as those found in
+     {@link android.provider.ContactsContract.Intents.Insert}
+    */
+    CARAPI AssignContactFromEmail(
+        /* [in] */ const String& emailAddress,
+        /* [in] */ Boolean lazyLookup,
+        /* [in] */ IBundle* extras);
+
     virtual CARAPI AssignContactFromPhone(
         /* [in] */ const String& phoneNumber,
         /* [in] */ Boolean lazyLookup);
+
+    /**
+     * Assign a contact based on a phone number. This should only be used when
+     * the contact's URI is not available, as an extra query will have to be
+     * performed to lookup the URI based on the phone number.
+     *
+     * @param phoneNumber The phone number of the contact.
+     * @param lazyLookup If this is true, the lookup query will not be performed
+     * until this view is clicked.
+     * @param extras A bundle of extras to populate the contact edit page with if the contact
+     * is not found and the user chooses to add the phone number to an existing contact or
+     * create a new contact. Uses the same string constants as those found in
+     * {@link android.provider.ContactsContract.Intents.Insert}
+     */
+    CARAPI AssignContactFromPhone(
+        /* [in] */ const String& phoneNumber,
+        /* [in] */ Boolean lazyLookup,
+        /* [in] */ IBundle* extras);
+
+    /**
+     * Assigns the drawable that is to be drawn on top of the assigned contact photo.
+     *
+     * @param overlay Drawable to be drawn over the assigned contact photo. Must have a non-zero
+     *         instrinsic width and height.
+     */
+    CARAPI SetOverlay(
+        /* [in] */ IDrawable* overlay);
 
     virtual CARAPI OnClick(
         /* [in] */ IView* v);
@@ -58,17 +146,15 @@ public:
         /* [in] */ IAccessibilityNodeInfo* info);
 
     virtual CARAPI SetExcludeMimes(
-        /* [in] */ const ArrayOf<String> excludeMimes);
+        /* [in] */ ArrayOf<String>* excludeMimes);
+
+    // @Override
+    CARAPI DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
 
 protected:
-    QuickContactBadge();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
-
-    CARAPI_(void) DrawableStateChanged();
+    CARAPI DrawableStateChanged();
 
     CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
@@ -85,33 +171,29 @@ private:
     AutoPtr<IDrawable> mOverlay;
     AutoPtr<QueryHandler> mQueryHandler;
     AutoPtr<IDrawable> mDefaultAvatar;
+    AutoPtr<IBundle> mExtras;
 
 protected:
-    AutoPtr< ArrayOf<String> > mExcludeMimes;
+    AutoPtr<ArrayOf<String> > mExcludeMimes;
 
 public:
-    static const Int32 TOKEN_EMAIL_LOOKUP = 0;
-    static const Int32 TOKEN_PHONE_LOOKUP = 1;
-    static const Int32 TOKEN_EMAIL_LOOKUP_AND_TRIGGER = 2;
-    static const Int32 TOKEN_PHONE_LOOKUP_AND_TRIGGER = 3;
+    static const Int32 TOKEN_EMAIL_LOOKUP;
+    static const Int32 TOKEN_PHONE_LOOKUP;
+    static const Int32 TOKEN_EMAIL_LOOKUP_AND_TRIGGER;
+    static const Int32 TOKEN_PHONE_LOOKUP_AND_TRIGGER;
+    static const String EXTRA_URI_CONTENT;
 
-    static const String EMAIL_LOOKUP_PROJECTION[]; /*= new String[] {
-        RawContacts.CONTACT_ID,
-            Contacts.LOOKUP_KEY,
-    };*/
-    static const Int32 EMAIL_ID_COLUMN_INDEX = 0;
-    static const Int32 EMAIL_LOOKUP_STRING_COLUMN_INDEX = 1;
+    static const String EMAIL_LOOKUP_PROJECTION[];
+    static const Int32 EMAIL_ID_COLUMN_INDEX;
+    static const Int32 EMAIL_LOOKUP_STRING_COLUMN_INDEX;
 
-    static const String PHONE_LOOKUP_PROJECTION[]; /*= new String[] {
-        PhoneLookup._ID,
-            PhoneLookup.LOOKUP_KEY,
-    };*/
-    static const Int32 PHONE_ID_COLUMN_INDEX = 0;
-    static const Int32 PHONE_LOOKUP_STRING_COLUMN_INDEX = 1;
+    static const String PHONE_LOOKUP_PROJECTION[];
+    static const Int32 PHONE_ID_COLUMN_INDEX;
+    static const Int32 PHONE_LOOKUP_STRING_COLUMN_INDEX;
 };
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__
+#endif // __ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__

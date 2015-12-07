@@ -18,9 +18,13 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ScrollBarDrawable : public Elastos::Droid::Graphics::Drawable::Drawable
+class ScrollBarDrawable
+    : public Elastos::Droid::Graphics::Drawable::Drawable
+    , public IScrollBarDrawable
 {
 public:
+    CAR_INTERFACE_DECL();
+
     ScrollBarDrawable();
 
     /**
@@ -45,13 +49,15 @@ public:
      * Indicates whether the horizontal scrollbar track should always be drawn regardless of the
      * extent.
      */
-    CARAPI_(Boolean) GetAlwaysDrawHorizontalTrack();
+    CARAPI GetAlwaysDrawHorizontalTrack(
+        /* [out] */ Boolean* alwaysDrawTrack);
 
     /**
      * Indicates whether the vertical scrollbar track should always be drawn regardless of the
      * extent.
      */
-    CARAPI_(Boolean) GetAlwaysDrawVerticalTrack();
+    CARAPI GetAlwaysDrawVerticalTrack(
+        /* [out] */ Boolean* alwaysTrack);
 
     CARAPI SetParameters(
         /* [in] */ Int32 range,
@@ -74,16 +80,22 @@ public:
     CARAPI SetHorizontalTrackDrawable(
         /* [in] */ IDrawable* track);
 
-    CARAPI_(Int32) GetSize(
-        /* [in] */ Boolean vertical);
+    CARAPI GetSize(
+        /* [in] */ Boolean vertical,
+        /* [out] */ Int32* size);
 
     CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 
+    // @Override
+    CARAPI GetAlpha(
+        /* [out] */ Int32* alpha);
+
     CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
 
-    CARAPI_(Int32) GetOpacity();
+    CARAPI GetOpacity(
+        /* [out] */ Int32* opacity);
 
     // overrides from Drawable.Callback
 
@@ -131,9 +143,8 @@ private:
     Boolean mAlwaysDrawVerticalTrack;
 };
 
-
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_SCROLLBARDRAWABLE_H__
+#endif // __ELASTOS_DROID_WIDGET_SCROLLBARDRAWABLE_H__

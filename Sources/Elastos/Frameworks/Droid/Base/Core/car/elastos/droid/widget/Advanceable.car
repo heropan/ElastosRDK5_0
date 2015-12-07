@@ -12,7 +12,6 @@ module
      *
      */
     interface IAdvanceable {
-
         /**
          * Advances this collection, eg. shows the next view.
          */
@@ -24,6 +23,7 @@ module
          */
         FyiWillBeAdvancedByHostKThx();
     }
+
     }// namespace Widget
     }// namespace Droid
     }// namespace Elastos

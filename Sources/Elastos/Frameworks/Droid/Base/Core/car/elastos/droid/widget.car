@@ -137,6 +137,7 @@ module
     interface Elastos.Droid.Database.ICursor;
    //  interface Elastos.Droid.Database.IDataSetObserver;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
    //  interface Elastos.Droid.Graphics.Drawable.IBitmapDrawable;
    //  interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
    //  interface Elastos.Droid.Animation.IAnimatorListener;
@@ -163,10 +164,9 @@ module
     interface Elastos.Droid.View.IOnGlobalLayoutListener;
     interface Elastos.Droid.View.IOnTouchModeChangeListener;
    //  interface Elastos.Droid.View.IViewOnFocusChangeListener;
-   //  interface Elastos.Droid.View.IViewOnClickListener;
+    interface Elastos.Droid.View.IViewOnClickListener;
    //  interface Elastos.Droid.View.IViewOnTouchListener;
    //  interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
-    interface Elastos.Droid.View.Animation.IInterpolator;
    //  interface Elastos.Droid.View.IViewOnLongClickListener;
     interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
     interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
@@ -184,17 +184,17 @@ module
    //  interface Elastos.Droid.Media.IAudioService;
    //  interface Elastos.Droid.InputMethodService.IKeyboardView;
    //  interface Elastos.Droid.InputMethodService.IOnKeyboardActionListener;
-   interface Elastos.Droid.Widget.IAdapterView;
-   interface Elastos.Droid.Widget.IAdapterViewAnimator;
-   interface Elastos.Droid.Widget.IAdapterViewFlipper;
-   interface Elastos.Droid.Widget.ISimpleMonthView;
-   interface Elastos.Droid.Widget.IExpandableListAdapter;
-   interface Elastos.Droid.Widget.IExpandableListConnector;
-   interface Elastos.Droid.Widget.IExpandableListPosition;
-   interface Elastos.Droid.Widget.IExpandableListPositionHelper;
-   interface Elastos.Droid.Widget.IListPopupWindow;
-   interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
-   interface Elastos.Droid.View.Animation.IInterpolator;
+    interface Elastos.Droid.Widget.IAdapterView;
+    interface Elastos.Droid.Widget.IAdapterViewAnimator;
+    interface Elastos.Droid.Widget.IAdapterViewFlipper;
+    interface Elastos.Droid.Widget.ISimpleMonthView;
+    interface Elastos.Droid.Widget.IExpandableListAdapter;
+    interface Elastos.Droid.Widget.IExpandableListConnector;
+    interface Elastos.Droid.Widget.IExpandableListPosition;
+    interface Elastos.Droid.Widget.IExpandableListPositionHelper;
+    interface Elastos.Droid.Widget.IListPopupWindow;
+    interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
+    interface Elastos.Droid.View.Animation.IInterpolator;
 
     namespace Elastos {
     namespace Droid {
@@ -220,16 +220,71 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  class CScrollBarDrawable {
-   //      constructor();
+    class CScrollBarDrawable {
+        constructor();
 
-   //      interface IScrollBarDrawable;
-   //      interface IDrawableCallback;
-   //  }
+        interface IScrollBarDrawable;
+        interface IDrawable;
+    }
+
+    class CQuickContactBadge {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IQuickContactBadge;
+        interface IImageView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface IViewOnClickListener;
+    }
+
+    class CTextClock {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface ITextClock;
+        interface ITextView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface IOnPreDrawListener;
+    }
 
     [local]
     class CAbsoluteLayoutLayoutParams {
-
         constructor(
             [in] Int32 width,
             [in] Int32 height,
@@ -907,49 +962,68 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  [local]
-   //  class CToggleButton {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CToggleButton {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IToggleButton;
-   //      interface ICheckable;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
-   //  [local]
-   //  class CTwoLineListItem {
-   //      constructor(
-   //          [in] IContext* ctx);
+        interface IToggleButton;
+        interface ICheckable;
+        interface ICompoundButton;
+        interface IButton;
+        interface ITextView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface IOnPreDrawListener;
+    }
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+    [local]
+    class CTwoLineListItem {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      interface ITwoLineListItem;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface ITwoLineListItem;
+        interface IRelativeLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CRadioButton {
@@ -1947,27 +2021,48 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  [local]
-   //  class CHorizontalScrollView {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CHorizontalScrollView {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IHorizontalScrollView;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IHorizontalScrollView;
+        interface IFrameLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    class CHorizontalScrollViewSavedState
+    {
+        constructor();
+
+        constructor(
+            [in] IParcelable* state);
+
+        interface IViewBaseSavedState;
+        interface IAbsSavedState;
+        interface IParcelable;
+    }
 
    //  [local]
    //  class CMediaController {

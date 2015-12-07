@@ -40,12 +40,7 @@ ECode IconMenuView::OnClickListener::OnClick(
     return NOERROR;
 }
 
-#if 0
-CAR_INTERFACE_IMPL(IconMenuView::SavedState, ViewBaseSavedState, IIconMenuViewSavedState)
-#else
-CAR_INTERFACE_IMPL(IconMenuView::SavedState, Object, IIconMenuViewSavedState)
-#endif
-
+CAR_INTERFACE_IMPL(IconMenuView::SavedState, View::BaseSavedState, IIconMenuViewSavedState)
 IconMenuView::SavedState::SavedState()
     : mFocusedPosition(0)
 {}

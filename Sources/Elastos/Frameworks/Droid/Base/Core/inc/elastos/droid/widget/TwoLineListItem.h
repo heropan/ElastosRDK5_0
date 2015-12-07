@@ -1,25 +1,42 @@
 #ifndef __ELASTOS_DROID_WIDGET_TWOLINELISTITEM_H__
 #define __ELASTOS_DROID_WIDGET_TWOLINELISTITEM_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/RelativeLayout.h"
-#include <R.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class TwoLineListItem : public RelativeLayout
+class TwoLineListItem
+    : public RelativeLayout
+    , public ITwoLineListItem
 {
 public:
-    TwoLineListItem(
+    CAR_INTERFACE_DECL();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
+        /* [in] */ IAttributeSet* attrs);
 
-    virtual CARAPI_(AutoPtr<ITextView>) GetText1();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
 
-    virtual CARAPI_(AutoPtr<ITextView>) GetText2();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    virtual CARAPI GetText1(
+        /* [out] */ ITextView** textView);
+
+    virtual CARAPI GetText2(
+        /* [out] */ ITextView** textView);
 
     virtual CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
@@ -27,15 +44,7 @@ public:
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-
 protected:
-    TwoLineListItem();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
-
     CARAPI OnFinishInflate();
 
 private:
@@ -48,5 +57,3 @@ private:
 } // namespace Elastos
 
 #endif //__ELASTOS_DROID_WIDGET_TWOLINELISTITEM_H__
-
-

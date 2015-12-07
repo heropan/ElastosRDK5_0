@@ -2,14 +2,13 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_ICONMENUVIEW_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_ICONMENUVIEW_H__
 
-#include "elastos/droid/view/ViewBaseSavedState.h"
 #include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::View::IMenuItem;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::View::ViewBaseSavedState;
+using Elastos::Droid::View::View;
 using Elastos::Droid::View::ViewGroup;
 
 namespace Elastos {
@@ -28,11 +27,7 @@ class IconMenuView
     friend class IconMenuPresenter;
 public:
     class SavedState
-    #if 0
-        : public ViewBaseSavedState
-    #else
-        : public Object
-    #endif
+        : public View::BaseSavedState
         , public IIconMenuViewSavedState
     {
     public:

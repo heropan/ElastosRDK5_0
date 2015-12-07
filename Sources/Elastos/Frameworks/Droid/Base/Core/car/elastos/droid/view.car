@@ -1119,19 +1119,6 @@ module
     //         interface IAbsSavedStateHelper;
     //     }
 
-    //     class CViewBaseSavedState {
-    //         constructor(
-    //             [in] IParcelable* superState);
-
-    //         constructor(
-    //             [in] IParcel* source);
-
-    //         constructor();
-
-    //         interface IViewBaseSavedState;
-    //         interface IParcelable;
-    //     }
-
     singleton class CWindowManagerLayoutParamsHelper {
         interface IWindowManagerLayoutParamsHelper;
     }

@@ -3,11 +3,10 @@
 #define __ELASTOS_DROID_WIDGET_HORIZONTALSCROLLVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/widget/FrameLayout.h"
-#include "elastos/droid/widget/OverScroller.h"
 #include "elastos/droid/widget/EdgeEffect.h"
 #include "elastos/droid/view/VelocityTracker.h"
-//#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::View::IKeyEvent;
@@ -18,28 +17,65 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class HorizontalScrollView : public FrameLayout
+class HorizontalScrollView
+    : public FrameLayout
+    , public IHorizontalScrollView
 {
-private:
-    const static String HORIZONTALSCROLLVIEW_NAME;
+public:
+    class SavedState
+        : public View::BaseSavedState
+    {
+    public:
+        SavedState();
 
-    static const Int32 ANIMATED_SCROLL_GAP;
+        CARAPI constructor();
 
-    static const Float MAX_SCROLL_FACTOR;
+        CARAPI constructor(
+            /* [in] */ IParcelable* superState);
 
-    static const Int32 INVALID_POINTER = -1;
+        // @Override
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* dest);
+
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+
+        // @Override
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+    public:
+        Int32 mScrollPosition;
+        Boolean mIsLayoutRtl;
+    };
 
 public:
+    CAR_INTERFACE_DECL();
+
     HorizontalScrollView();
 
-    HorizontalScrollView(
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::scrollViewStyle);
+        /* [in] */ IAttributeSet* attrs);
 
-    ~HorizontalScrollView();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
 
-    virtual CARAPI_(Int32) GetMaxScrollAmount();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    virtual ~HorizontalScrollView();
+
+    virtual CARAPI GetMaxScrollAmount(
+        /* [out] */ Int32* maxScrollAmount);
 
     using FrameLayout::AddView;
 
@@ -59,36 +95,45 @@ public:
         /* [in] */ Int32 index,
         /* [in] */ IViewGroupLayoutParams* params);
 
-    virtual CARAPI_(Boolean) IsFillViewport();
+    virtual CARAPI IsFillViewport(
+        /* [out] */ Boolean* isFilled);
 
     virtual CARAPI SetFillViewport(
         /* [in] */ Boolean fillViewport);
 
-    virtual CARAPI_(Boolean) IsSmoothScrollingEnabled();
+    virtual CARAPI IsSmoothScrollingEnabled(
+        /* [out] */ Boolean* enabled);
 
     virtual CARAPI SetSmoothScrollingEnabled(
         /* [in] */ Boolean smoothScrollingEnabled);
 
-    CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) ExecuteKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    virtual CARAPI ExecuteKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) OnInterceptTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI OnInterceptTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) ArrowScroll(
-        /* [in] */ Int32 direction);
+    virtual CARAPI ArrowScroll(
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) FullScroll(
-        /* [in] */ Int32 direction);
+    virtual CARAPI FullScroll(
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) PageScroll(
-        /* [in] */ Int32 direction);
+    virtual CARAPI PageScroll(
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* result);
 
     virtual CARAPI SmoothScrollBy(
         /* [in] */ Int32 dx,
@@ -104,10 +149,11 @@ public:
         /* [in] */ IView* child,
         /* [in] */ IView* focused);
 
-    CARAPI_(Boolean) RequestChildRectangleOnScreen(
+    CARAPI RequestChildRectangleOnScreen(
         /* [in] */ IView* child,
         /* [in] */ IRect* rectangle,
-        /* [in] */ Boolean immediate);
+        /* [in] */ Boolean immediate,
+        /* [out] */ Boolean* result);
 
     CARAPI RequestLayout();
 
@@ -127,14 +173,17 @@ public:
     virtual CARAPI RequestDisallowInterceptTouchEvent(
         /* [in] */ Boolean disallowIntercept);
 
-    virtual CARAPI_(Boolean) OnGenericMotionEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnGenericMotionEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) ShouldDelayChildPressedState();
+    virtual CARAPI ShouldDelayChildPressedState(
+        /* [out] */ Boolean* compatibility);
 
-    virtual CARAPI_(Boolean) PerformAccessibilityAction(
+    virtual CARAPI PerformAccessibilityAction(
         /* [in] */ Int32 action,
-        /* [in] */ IBundle* arguments);
+        /* [in] */ IBundle* arguments,
+        /* [out] */ Boolean* result);
 
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
@@ -143,11 +192,6 @@ public:
         /* [in] */ IAccessibilityEvent* event);
 
 protected:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::scrollViewStyle);
-
     CARAPI_(Float) GetLeftFadingEdgeStrength();
 
     CARAPI_(Float) GetRightFadingEdgeStrength();
@@ -200,7 +244,7 @@ protected:
         /* [in] */ Int32 direction,
         /* [in] */ IRect* previouslyFocusedRect);
 
-    CARAPI_(void) OnLayout(
+    CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
@@ -212,6 +256,13 @@ protected:
         /* [in] */ Int32 h,
         /* [in] */ Int32 oldw,
         /* [in] */ Int32 oldh);
+
+    // @Override
+    CARAPI_(void) OnRestoreInstanceState(
+        /* [in] */ IParcelable* state);
+
+    // @Override
+    CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
 
 private:
     CARAPI_(void) InitScrollView();
@@ -344,11 +395,6 @@ private:
         /* [in] */ Int32 my,
         /* [in] */ Int32 child);
 
-    CARAPI InitFromAttributes(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
     CARAPI_(void) InitOrResetVelocityTracker();
 
     CARAPI_(void) InitVelocityTrackerIfNotExists();
@@ -356,13 +402,17 @@ private:
     CARAPI_(void) RecycleVelocityTracker();
 
 private:
+    const static String HORIZONTALSCROLLVIEW_NAME;
+    static const Int32 ANIMATED_SCROLL_GAP;
+    static const Float MAX_SCROLL_FACTOR;
+    static const Int32 INVALID_POINTER;
+
     Int64 mLastScroll;
 
     AutoPtr<CRect> mTempRect;
-    AutoPtr<OverScroller> mScroller;
+    AutoPtr<IOverScroller> mScroller;
     AutoPtr<IEdgeEffect> mEdgeGlowLeft;
     AutoPtr<IEdgeEffect> mEdgeGlowRight;
-
 
     /**
      * Position of the last motion event.
@@ -417,6 +467,7 @@ private:
      * drags/flings if multiple pointers are used.
      */
     Int32 mActivePointerId;
+    AutoPtr<SavedState> mSavedState;
 };
 
 } // namespace Widget

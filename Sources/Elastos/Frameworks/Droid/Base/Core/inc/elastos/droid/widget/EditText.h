@@ -46,7 +46,8 @@ public:
         /* [in] */ Int32 defStyleRes = 0);
 
     //@Override
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetText();
+    virtual CARAPI GetText(
+        /* [out] */ ICharSequence** text);
 
     using TextView::SetText;
 

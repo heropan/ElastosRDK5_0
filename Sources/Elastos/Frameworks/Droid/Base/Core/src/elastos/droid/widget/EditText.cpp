@@ -41,9 +41,11 @@ AutoPtr<IMovementMethod> EditText::GetDefaultMovementMethod()
     return result;
 }
 
-AutoPtr<ICharSequence> EditText::GetText()
+ECode EditText::GetText(
+    /* [out] */ ICharSequence** text)
 {
-    return TextView::GetText();
+    VALIDATE_NOT_NULL(text);
+    return TextView::GetText(text);
 }
 
 ECode EditText::SetText(
@@ -60,7 +62,9 @@ ECode EditText::SetSelection(
     /* [in] */ Int32 start,
     /* [in] */ Int32 stop)
 {
-    Selection::SetSelection(ISpannable::Probe(GetText().Get()), start, stop);
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
+    Selection::SetSelection(ISpannable::Probe(seq), start, stop);
     return NOERROR;
 }
 
@@ -70,7 +74,9 @@ ECode EditText::SetSelection(
 ECode EditText::SetSelection(
     /* [in] */ Int32 index)
 {
-    Selection::SetSelection(ISpannable::Probe(GetText().Get()), index);
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
+    Selection::SetSelection(ISpannable::Probe(seq), index);
     return NOERROR;
 }
 
@@ -79,7 +85,9 @@ ECode EditText::SetSelection(
  */
 ECode EditText::SelectAll()
 {
-    Selection::SelectAll(ISpannable::Probe(GetText().Get()));
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
+    Selection::SelectAll(ISpannable::Probe(seq));
     return NOERROR;
 }
 
@@ -89,7 +97,9 @@ ECode EditText::SelectAll()
 ECode EditText::ExtendSelection(
     /* [in] */ Int32 index)
 {
-    Selection::ExtendSelection(ISpannable::Probe(GetText().Get()), index);
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
+    Selection::ExtendSelection(ISpannable::Probe(seq), index);
     return NOERROR;
 }
 

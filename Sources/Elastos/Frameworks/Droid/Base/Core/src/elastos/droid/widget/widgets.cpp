@@ -29,6 +29,13 @@
 #include "elastos/droid/widget/CButton.h"
 #include "elastos/droid/widget/CSwitch.h"
 #include "elastos/droid/widget/CGridView.h"
+#include "elastos/droid/widget/CHorizontalScrollView.h"
+#include "elastos/droid/widget/CHorizontalScrollViewSavedState.h"
+#include "elastos/droid/widget/CScrollBarDrawable.h"
+#include "elastos/droid/widget/CQuickContactBadge.h"
+#include "elastos/droid/widget/CTextClock.h"
+#include "elastos/droid/widget/CToggleButton.h"
+#include "elastos/droid/widget/CTwoLineListItem.h"
 
 namespace Elastos {
 namespace Droid {
@@ -64,6 +71,13 @@ CAR_OBJECT_IMPL(CEditText);
 CAR_OBJECT_IMPL(CButton);
 CAR_OBJECT_IMPL(CSwitch);
 CAR_OBJECT_IMPL(CGridView);
+CAR_OBJECT_IMPL(CHorizontalScrollView);
+CAR_OBJECT_IMPL(CHorizontalScrollViewSavedState);
+CAR_OBJECT_IMPL(CScrollBarDrawable);
+CAR_OBJECT_IMPL(CQuickContactBadge);
+CAR_OBJECT_IMPL(CTextClock);
+CAR_OBJECT_IMPL(CToggleButton);
+CAR_OBJECT_IMPL(CTwoLineListItem);
 
 } // namespace Widget
 } // namespace Droid
