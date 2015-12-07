@@ -2,9 +2,9 @@
 #include "elastos/droid/hardware/display/DisplayViewport.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-//#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
 
-//using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 
@@ -17,9 +17,8 @@ CAR_INTERFACE_IMPL(DisplayViewport, Object, IDisplayViewport)
 
 DisplayViewport::DisplayViewport()
 {
-    assert(0 && "TODO CRect::New");
-    //CRect::New((IRect**)&mLogicalFrame);
-    //CRect::New((IRect**)&mPysicalFrame);
+    CRect::New((IRect**)&mLogicalFrame);
+    CRect::New((IRect**)&mPysicalFrame);
 }
 
 ECode DisplayViewport::CopyFrom(
