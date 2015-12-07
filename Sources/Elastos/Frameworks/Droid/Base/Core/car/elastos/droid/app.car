@@ -195,6 +195,7 @@ module
     interface Elastos.Droid.View.IOnKeyguardExitResult;
     interface Elastos.Droid.View.IWindow;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.Widget.ILinearLayout;
     interface Elastos.Droid.Widget.IExpandableListViewOnChildClickListener;
     interface Elastos.Droid.Widget.IExpandableListViewOnGroupCollapseListener;
     interface Elastos.Droid.Widget.IExpandableListViewOnGroupExpandListener;
@@ -641,6 +642,38 @@ module
         interface IActivityNonConfigurationInstances;
     }
 
+    class CNativeActivity {
+        constructor();
+
+        interface INativeActivity;
+        interface IActivity;
+        interface IContext;
+        interface IContextThemeWrapper;
+        interface ILayoutInflaterFactory;
+        interface ILayoutInflaterFactory2;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IOnWindowDismissedCallback;
+    }
+
+    class CNativeContentView {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface INativeContentView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
     [local]
     class CLocalActivityManager {
         constructor(
@@ -671,25 +704,69 @@ module
         interface IParcelable;
     }
 
-//     [local, parcelable]
-//     class CSearchableInfo{
-//         constructor();
+    class CSearchManager {
+        constructor(
+            [in] IContext* context,
+            [in] IHandler* handler);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs,
-//             [in] IComponentName* name);
+        interface ISearchManager;
+        interface IDialogInterfaceOnDismissListener;
+        interface IDialogInterfaceOnCancelListener;
+    }
 
-//         interface ISearchableInfo;
-//         interface IParcelable;
-//     }
+    [local, parcelable]
+    class CSearchableInfo{
+        constructor();
 
-//     [local]
-//     singleton class CSearchableInfoHelper{
-//         constructor();
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] IComponentName* name);
 
-//         interface ISearchableInfoHelper;
-//     }
+        interface ISearchableInfo;
+        interface IParcelable;
+    }
+
+    [local]
+    singleton class CSearchableInfoHelper{
+        interface ISearchableInfoHelper;
+    }
+
+    /** hide */
+    class CSearchBar {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx);
+
+        interface ISearchBar;
+        interface ILinearLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    /** hide */
+    [local]
+    class CSearchDialog {
+        constructor(
+            [in] IContext* ctx,
+            [in] ISearchManager* searchManager);
+
+        interface ISearchDialog;
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
 
     [local]
     class CActivityManager {
@@ -1105,29 +1182,25 @@ module
         interface ICloneable;
     }
 
-//     class CPermissionController {
-//         constructor(
-//             [in] IIActivityManager* activityManagerService);
+    [local]
+    class CPresentation {
+        constructor(
+            [in] IContext* ctx,
+            [in] IDisplay* display);
 
-//         interface IPermissionController;
-//     }
+        constructor(
+            [in] IContext* ctx,
+            [in] IDisplay* display,
+            [in] Int32 theme);
 
-//     [local, deprecated]
-//     class CPresentation {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IDisplay* display);
-
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IDisplay* display,
-//             [in] Int32 theme);
-
-//         interface IPresentation;
-//         interface IWindowCallback;
-//         interface IViewOnCreateContextMenuListener;
-//         interface IKeyEventCallback;
-//     }
+        interface IPresentation;
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
 
     class CContentProviderHolder {
         constructor();
@@ -1145,21 +1218,6 @@ module
         interface IActivityManagerWaitResult;
         interface IParcelable;
     }
-
-//     [local]
-//     class CNativeContentView {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
-
-//         interface IView;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
 
     [local, parcelable]
     class CFragmentSavedState {

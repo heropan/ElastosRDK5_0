@@ -601,21 +601,29 @@ Boolean TextUtils::IsEmpty(
 Int32 TextUtils::GetTrimmedLength(
     /* [in] */ ICharSequence* s)
 {
-    Int32 len;
-    s->GetLength(&len);
+    String str = Object::ToString(s);
+    return GetTrimmedLength(str);
+}
 
-    Char32 ch;
+Int32 TextUtils::GetTrimmedLength(
+    /* [in] */ const String& str)
+{
+    if (str.IsNullOrEmpty()) {
+        return 0;
+    }
+
+    AutoPtr<ArrayOf<Char32> > chars = str.GetChars();
     Int32 start = 0;
-    while (start < len && (s->GetCharAt(start, &ch), ch <= ' ')) {
-        start++;
+    for (; start < chars->GetLength(); ++start) {
+        if ((*chars)[start] > ' ')
+            break;
     }
-
-    Int32 end = len;
-    while (end > start && (s->GetCharAt(end - 1, &ch), ch <= ' ')) {
-        end--;
+    Int32 end = chars->GetLength();
+    for (; end > start; --end) {
+        if ((*chars)[end] > ' ')
+            break;
     }
-
-    return end - start;
+    return end -start;
 }
 
 Boolean TextUtils::Equals(

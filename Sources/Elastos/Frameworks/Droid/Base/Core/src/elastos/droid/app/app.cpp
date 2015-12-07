@@ -27,10 +27,15 @@
 #include "elastos/droid/app/CLocalActivityRecord.h"
 #include "elastos/droid/app/CMediaRouteButton.h"
 #include "elastos/droid/app/CNotificationManager.h"
+#include "elastos/droid/app/CNativeActivity.h"
+#include "elastos/droid/app/CNativeContentView.h"
 #include "elastos/droid/app/CBuilderRemoteViews.h"
+#include "elastos/droid/app/CPresentation.h"
 #include "elastos/droid/app/CProgressDialog.h"
 #include "elastos/droid/app/CReceiverRestrictedContext.h"
 #include "elastos/droid/app/CRemoteInputBuilder.h"
+#include "elastos/droid/app/CSearchBar.h"
+#include "elastos/droid/app/CSearchDialog.h"
 #include "elastos/droid/app/CTabActivity.h"
 #include "elastos/droid/app/CTimePickerDialog.h"
 #include "elastos/droid/app/CUiAutomation.h"
@@ -73,11 +78,16 @@ CAR_OBJECT_IMPL(CListFragment)
 CAR_OBJECT_IMPL(CLocalActivityManager)
 CAR_OBJECT_IMPL(CLocalActivityRecord)
 CAR_OBJECT_IMPL(CMediaRouteButton)
+CAR_OBJECT_IMPL(CNativeActivity)
+CAR_OBJECT_IMPL(CNativeContentView)
 CAR_OBJECT_IMPL(CNotificationManager)
 CAR_OBJECT_IMPL(CBuilderRemoteViews)
+CAR_OBJECT_IMPL(CPresentation)
 CAR_OBJECT_IMPL(CProgressDialog)
 CAR_OBJECT_IMPL(CReceiverRestrictedContext)
 CAR_OBJECT_IMPL(CRemoteInputBuilder)
+CAR_OBJECT_IMPL(CSearchBar)
+CAR_OBJECT_IMPL(CSearchDialog)
 CAR_OBJECT_IMPL(CTabActivity)
 CAR_OBJECT_IMPL(CTimePickerDialog)
 CAR_OBJECT_IMPL(CUiAutomation)
@@ -88,9 +98,6 @@ CAR_OBJECT_IMPL(CVoiceInteractorConfirmationRequest)
 CAR_OBJECT_IMPL(CVoiceInteractorCompleteVoiceRequest)
 CAR_OBJECT_IMPL(CVoiceInteractorAbortVoiceRequest)
 CAR_OBJECT_IMPL(CVoiceInteractorCommandRequest)
-
-
-
 
 } // namespace App
 } // namespace Droid

@@ -1,10 +1,12 @@
 
-#ifndef __ELASTOS_DROID_APP_PROGRESSDIALOG_H__
-#define __ELASTOS_DROID_APP_PROGRESSDIALOG_H__
+#ifndef __ELASTOS_DROID_APP_SERACH_DIALOG_H__
+#define __ELASTOS_DROID_APP_SERACH_DIALOG_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/Dialog.h"
+#include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
@@ -15,6 +17,8 @@ using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IActionMode;
+using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::IAutoCompleteTextView;
 using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Widget::ISearchView;
@@ -35,7 +39,7 @@ namespace App {
  */
 class SearchDialog
     : public Dialog
-    , public IProgressDialog
+    , public ISearchDialog
 {
 public:
     /**
@@ -74,6 +78,7 @@ public:
 
     private:
         AutoPtr<ISearchDialog> mSearchDialog;// weak-ref?? luozhaohui
+    };
 
 private:
     class ConfChangeBroadcastReceiver
@@ -135,7 +140,7 @@ private:
     public:
         CAR_INTERFACE_DECL()
 
-        MySearchViewOnSuggestionListener
+        MySearchViewOnSuggestionListener(
             /* [in] */ SearchDialog* host);
 
         CARAPI OnSuggestionSelect(
@@ -160,7 +165,7 @@ private:
             /* [in] */ SearchDialog* host);
 
         CARAPI OnClick(
-            /* [in] */ IView*view):
+            /* [in] */ IView*view);
     private:
         SearchDialog* mHost;
     };
@@ -387,12 +392,12 @@ private:
 private:
 
     // Debugging support
-    static const Boolean DBG;// = false;
-    static const String LOG_TAG;// = "SearchDialog";
+    static const Boolean DBG;
+    static const String TAG;
 
-    static const String INSTANCE_KEY_COMPONENT;// = "comp";
-    static const String INSTANCE_KEY_APPDATA;// = "data";
-    static const String INSTANCE_KEY_USER_QUERY;// = "uQry";
+    static const String INSTANCE_KEY_COMPONENT;
+    static const String INSTANCE_KEY_APPDATA;
+    static const String INSTANCE_KEY_USER_QUERY;
 
     // The string used for privateImeOptions to identify to the IME that it should not show
     // a microphone button since one already exists in the search dialog.
@@ -438,4 +443,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_APP_PROGRESSDIALOG_H__
+#endif // __ELASTOS_DROID_APP_SERACH_DIALOG_H__

@@ -513,7 +513,7 @@ public:
         /* [out] */ ISparseArray** array);
 
     CARAPI GetNativeAssetManager(
-        /* [out] */ Int32* assetMgr);
+        /* [out] */ Int64* assetMgr);
 
     /**
      * {@hide}

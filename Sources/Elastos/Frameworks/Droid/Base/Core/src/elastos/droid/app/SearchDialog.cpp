@@ -1,24 +1,50 @@
 
 #include "elastos/droid/app/SearchDialog.h"
-#include "elastos/droid/intent/CIntent.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/view/ViewConfiguration.h"
+#include "elastos/droid/R.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/CoreUtils.h>
 
+using Elastos::Droid::R;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::Pm::IComponentInfo;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Speech::IRecognizerIntent;
 using Elastos::Droid::Text::IInputType;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IKeyEvent;
-using Elastos::Droid::View::Inputmethod::IInputMethodManager;
+using Elastos::Droid::View::ICollapsibleActionView;
+using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::View::ViewConfiguration;
+using Elastos::Droid::View::IViewConfiguration;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::InputMethod::IInputMethodManager;
+using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::Widget::IEditText;
 using Elastos::Droid::Widget::ILinearLayout;
+using Elastos::Droid::Widget::EIID_ISearchViewOnCloseListener;
+using Elastos::Droid::Widget::EIID_ISearchViewOnQueryTextListener;
+using Elastos::Droid::Widget::EIID_ISearchViewOnSuggestionListener;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -79,7 +105,7 @@ ECode SearchDialog::ConfChangeBroadcastReceiver::OnReceive(
 {
     String action;
     intent->GetAction(&action);
-    if (action.Eequals(IIntent::ACTION_CONFIGURATION_CHANGED)) {
+    if (action.Equals(IIntent::ACTION_CONFIGURATION_CHANGED)) {
         mHost->OnConfigurationChanged();
     }
     return NOERROR;
@@ -108,7 +134,7 @@ ECode SearchDialog::MySearchViewOnCloseListener::OnClose(
 //===================================================================
 CAR_INTERFACE_IMPL(SearchDialog::MySearchViewOnQueryTextListener, Object, ISearchViewOnQueryTextListener)
 
-MySearchViewOnQueryTextListener(
+SearchDialog::MySearchViewOnQueryTextListener::MySearchViewOnQueryTextListener(
     /* [in] */ SearchDialog* host)
     : mHost(host)
 {}
@@ -137,7 +163,7 @@ ECode SearchDialog::MySearchViewOnQueryTextListener::OnQueryTextChange(
 //===================================================================
 CAR_INTERFACE_IMPL(SearchDialog::MySearchViewOnSuggestionListener, Object, ISearchViewOnSuggestionListener)
 
-SearchDialog::MySearchViewOnSuggestionListener::MySearchViewOnSuggestionListener
+SearchDialog::MySearchViewOnSuggestionListener::MySearchViewOnSuggestionListener(
     /* [in] */ SearchDialog* host)
     : mHost(host)
 {}
@@ -184,7 +210,7 @@ SearchDialog::MyViewOnClickListener::OnClick(
 
 // Debugging support
 const Boolean SearchDialog::DBG(FALSE);
-const String SearchDialog::LOG_TAG("SearchDialog");
+const String SearchDialog::TAG("SearchDialog");
 
 const String SearchDialog::INSTANCE_KEY_COMPONENT("comp");
 const String SearchDialog::INSTANCE_KEY_APPDATA("data");
@@ -247,11 +273,12 @@ ECode SearchDialog::OnCreate(
     GetWindow((IWindow**)&theWindow);
     AutoPtr<IWindowManagerLayoutParams> lp;
     theWindow->GetAttributes((IWindowManagerLayoutParams**)&lp);
-    lp->SetWidth(IViewGroupLayoutParams::MATCH_PARENT);
+    IViewGroupLayoutParams* vglp = IViewGroupLayoutParams::Probe(lp);
+    vglp->SetWidth(IViewGroupLayoutParams::MATCH_PARENT);
     // taking up the whole window (even when transparent) is less than ideal,
     // but necessary to show the popup window until the window manager supports
     // having windows anchored by their parent but not clipped by them.
-    lp->SetHeight(IViewGroupLayoutParams::MATCH_PARENT);
+    vglp->SetHeight(IViewGroupLayoutParams::MATCH_PARENT);
     lp->SetGravity(IGravity::TOP | IGravity::FILL_HORIZONTAL);
     lp->SetSoftInputMode(IWindowManagerLayoutParams::SOFT_INPUT_ADJUST_RESIZE);
     theWindow->SetAttributes(lp);
@@ -267,54 +294,55 @@ ECode SearchDialog::CreateContentView()
 
     // get the view elements for local access
     AutoPtr<IView> tmp;
-    FindViewById(R::id::earch_bar, (IView**)&tmp);
+    FindViewById(R::id::search_bar, (IView**)&tmp);
     AutoPtr<ISearchBar> searchBar = ISearchBar::Probe(tmp) ;
     searchBar->SetSearchDialog(this);
 
     tmp = NULL;
-    FindViewById(R::id::earch_view, (IView**)&tmp);
+    FindViewById(R::id::search_view, (IView**)&tmp);
     mSearchView = ISearchView::Probe(tmp) ;
     mSearchView->SetIconified(FALSE);
     mSearchView->SetOnCloseListener(mOnCloseListener);
     mSearchView->SetOnQueryTextListener(mOnQueryChangeListener);
     mSearchView->SetOnSuggestionListener(mOnSuggestionSelectionListener);
-    mSearchView->OnActionViewExpanded();
+    ICollapsibleActionView::Probe(mSearchView)->OnActionViewExpanded();
 
     mCloseSearch = NULL;
     FindViewById(R::id::closeButton, (IView**)&mCloseSearch);
     AutoPtr<IViewOnClickListener> listener = new MyViewOnClickListener(this);
     mCloseSearch->SetOnClickListener(listener);
 
+    IView* sv = IView::Probe(mSearchView);
     // TODO: Move the badge logic to SearchView or move the badge to search_bar.xml
     tmp = NULL;
-    mSearchView->FindViewById(R::id::earch_badge, (IView**)&tmp);
+    sv->FindViewById(R::id::search_badge, (IView**)&tmp);
     mBadgeLabel = ITextView::Probe(tmp) ;
 
     tmp = NULL;
-    mSearchView->FindViewById(R::id::earch_src_text, (IView**)&tmp);
-    mSearchAutoComplete = IAutoCompleteTextView::Probe(tmp) ;
+    sv->FindViewById(R::id::search_src_text, (IView**)&tmp);
+    mSearchAutoComplete = IAutoCompleteTextView::Probe(tmp);
 
     tmp = NULL;
-    FindViewById(R::id::earch_app_icon, (IView**)&tmp);
+    FindViewById(R::id::search_app_icon, (IView**)&tmp);
     mAppIcon = IImageView::Probe(tmp) ;
 
     mSearchPlate = NULL;
-    mSearchView->FindViewById(R::id::earch_plate, (IView**)&mSearchPlate);
+    sv->FindViewById(R::id::search_plate, (IView**)&mSearchPlate);
 
     AutoPtr<IContext> ctx;
     GetContext((IContext**)&ctx);
     mWorkingSpinner = NULL;
-    ctx->GetDrawable(R::drawable::search_spinner, ((IDrawable**)&mWorkingSpinner);
+    ctx->GetDrawable(R::drawable::search_spinner, (IDrawable**)&mWorkingSpinner);
     // TODO: Restore the spinner for slow suggestion lookups
     // mSearchAutoComplete->SetCompoundDrawablesWithIntrinsicBounds(
     //        NULL, NULL, mWorkingSpinner, NULL);
     SetWorking(FALSE);
 
     // pre-hide all the extraneous elements
-    mBadgeLabel->SetVisibility(IView::GONE);
+    IView::Probe(mBadgeLabel)->SetVisibility(IView::GONE);
 
     // Additional adjustments to make Dialog work for Search
-    mSearchAutoComplete->GetImeOptions(&mSearchAutoCompleteImeOptions);
+    ITextView::Probe(mSearchAutoComplete)->GetImeOptions(&mSearchAutoCompleteImeOptions);
     return NOERROR;
 }
 
@@ -350,7 +378,7 @@ Boolean SearchDialog::DoShow(
     // finally, load the user's initial text (which may trigger suggestions)
     SetUserQuery(initialQuery);
     if (selectInitialQuery) {
-        mSearchAutoComplete->SelectAll();
+        IEditText::Probe(mSearchAutoComplete)->SelectAll();
     }
 
     return TRUE;
@@ -361,14 +389,14 @@ Boolean SearchDialog::Show(
     /* [in] */ IBundle* appSearchData)
 {
     if (DBG) {
-        Logger::D(LOG_TAG, "show(%s, %s)",
+        Logger::D(TAG, "show(%s, %s)",
             Object::ToString(componentName).string(),
             Object::ToString(appSearchData).string());
     }
 
     AutoPtr<IInterface> obj;
     mContext->GetSystemService(IContext::SEARCH_SERVICE, (IInterface**)&obj);
-    AutoPtr<ISearchManager> searchManager; = ISearchManager::Probe(obj);
+    AutoPtr<ISearchManager> searchManager = ISearchManager::Probe(obj);
 
     // Try to get the searchable info for the provided component.
     mSearchable = NULL;
@@ -412,7 +440,8 @@ ECode SearchDialog::OnStart()
     filter->AddAction(IIntent::ACTION_CONFIGURATION_CHANGED);
     AutoPtr<IContext> ctx;
     GetContext((IContext**)&ctx);
-    return ctx->RegisterReceiver(mConfChangeListener, filter);
+    AutoPtr<IIntent> stickyIntent;
+    return ctx->RegisterReceiver(mConfChangeListener, filter, (IIntent**)&stickyIntent);
 }
 
 ECode SearchDialog::OnStop()
@@ -435,12 +464,13 @@ ECode SearchDialog::SetWorking(
     /* [in] */ Boolean working)
 {
     mWorkingSpinner->SetAlpha(working ? 255 : 0);
-    mWorkingSpinner->SetVisible(working, FALSE);
+    Boolean prev;
+    mWorkingSpinner->SetVisible(working, FALSE, &prev);
     return mWorkingSpinner->InvalidateSelf();
 }
 
 ECode SearchDialog::OnSaveInstanceState(
-    /* [out] */ IBundle** bundle)
+    /* [out] */ IBundle** result)
 {
     VALIDATE_NOT_NULL(result)
     *result  = NULL;
@@ -480,7 +510,7 @@ ECode SearchDialog::OnRestoreInstanceState(
         // for some reason, we couldn't re-instantiate
         return NOERROR;
     }
-    return NOERROR
+    return NOERROR;
 }
 
 ECode SearchDialog::OnConfigurationChanged()
@@ -503,7 +533,7 @@ Boolean SearchDialog::IsLandscapeMode(
     /* [in] */ IContext* context)
 {
     AutoPtr<IResources> res;
-    context->GetResources((IResources**)&res)
+    context->GetResources((IResources**)&res);
     AutoPtr<IConfiguration> configuration;
     res->GetConfiguration((IConfiguration**)&configuration);
     Int32 orientation;
@@ -538,16 +568,20 @@ void SearchDialog::UpdateUI()
                 inputType |= IInputType::TYPE_TEXT_FLAG_AUTO_COMPLETE;
             }
         }
-        mSearchAutoComplete->SetInputType(inputType);
+        ITextView* textView = ITextView::Probe(mSearchAutoComplete);
+        textView->SetInputType(inputType);
         mSearchable->GetImeOptions(&mSearchAutoCompleteImeOptions);
-        mSearchAutoComplete->SetImeOptions(mSearchAutoCompleteImeOptions);
+        textView->SetImeOptions(mSearchAutoCompleteImeOptions);
 
         // If the search dialog is going to show a voice search button, then don't let
         // the soft keyboard display a microphone button if it would have otherwise.
-        if (mSearchable->GetVoiceSearchEnabled()) {
-            mSearchAutoComplete->SetPrivateImeOptions(IME_OPTION_NO_MICROPHONE);
-        } else {
-            mSearchAutoComplete->SetPrivateImeOptions(NULL);
+        Boolean bval;
+        mSearchable->GetVoiceSearchEnabled(&bval);
+        if (bval) {
+            textView->SetPrivateImeOptions(IME_OPTION_NO_MICROPHONE);
+        }
+        else {
+            textView->SetPrivateImeOptions(String(NULL));
         }
     }
 }
@@ -570,20 +604,22 @@ void SearchDialog::UpdateSearchAppIcon()
     AutoPtr<IActivityInfo> info;
     pm->GetActivityInfo(mLaunchComponent, 0, (IActivityInfo**)&info);
     AutoPtr<IApplicationInfo> ai;
-    info->GetApplicationInfo((IApplicationInfo**)&ai);
+    IComponentInfo::Probe(info)->GetApplicationInfo((IApplicationInfo**)&ai);
     ECode ec = pm->GetApplicationIcon(ai, (IDrawable**)&icon);
-    if (DBG) Logger::D(LOG_TAG, "Using app-specific icon");
+    if (DBG) Logger::D(TAG, "Using app-specific icon");
     // } catch (NameNotFoundException e) {
     if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
         pm->GetDefaultActivityIcon((IDrawable**)&icon);
-        Logger::W(LOG_TAG, "%s not found, using generic app icon",
+        Logger::W(TAG, "%s not found, using generic app icon",
             Object::ToString(mLaunchComponent).string());
     // }
     }
 
     mAppIcon->SetImageDrawable(icon);
-    mAppIcon->SetVisibility(IView::VISIBLE);
-    mSearchPlate->SetPadding(SEARCH_PLATE_LEFT_PADDING_NON_GLOBAL, mSearchPlate->GetPaddingTop(), mSearchPlate->GetPaddingRight(), mSearchPlate->GetPaddingBottom());
+    IView::Probe(mAppIcon)->SetVisibility(IView::VISIBLE);
+    Int32 l, t, r, b;
+    mSearchPlate->GetPadding(&l, &t, &r, &b);
+    mSearchPlate->SetPadding(SEARCH_PLATE_LEFT_PADDING_NON_GLOBAL, t, r, b);
 }
 
 void SearchDialog::UpdateSearchBadge()
@@ -601,21 +637,21 @@ void SearchDialog::UpdateSearchBadge()
         mSearchable->GetIconId(&id);
         mActivityContext->GetDrawable(id, (IDrawable**)&icon);
         visibility = IView::VISIBLE;
-        // if (DBG) Logger::D(LOG_TAG, "Using badge icon: " + mSearchable->GetIconId());
+        // if (DBG) Logger::D(TAG, "Using badge icon: " + mSearchable->GetIconId());
     }
     else if (mSearchable->UseBadgeLabel(&bval), bval) {
         AutoPtr<IResources> res;
-        mActivityContext->GetResources((IResources**)&id);
+        mActivityContext->GetResources((IResources**)&res);
         Int32 id;
         mSearchable->GetLabelId(&id);
-        res->GetText(, (ICharSequence**)&text);
+        res->GetText(id, (ICharSequence**)&text);
         visibility = IView::VISIBLE;
-        // if (DBG) Logger::D(LOG_TAG, "Using badge label: " + mSearchable->GetLabelId());
+        // if (DBG) Logger::D(TAG, "Using badge label: " + mSearchable->GetLabelId());
     }
 
     mBadgeLabel->SetCompoundDrawablesWithIntrinsicBounds(icon, NULL, NULL, NULL);
     mBadgeLabel->SetText(text);
-    mBadgeLabel->SetVisibility(visibility);
+    IView::Probe(mBadgeLabel)->SetVisibility(visibility);
 }
 
 ECode SearchDialog::OnTouchEvent(
@@ -629,13 +665,13 @@ ECode SearchDialog::OnTouchEvent(
     Boolean bval;
     mSearchAutoComplete->IsPopupShowing(&bval);
     if (!bval && IsOutOfBounds(mSearchPlate, event)) {
-        if (DBG) Logger::D(LOG_TAG, "Pop-up not showing and outside of search plate.");
+        if (DBG) Logger::D(TAG, "Pop-up not showing and outside of search plate.");
         Cancel();
         *result = TRUE;
         return NOERROR;
     }
     // Let Dialog handle events outside the window while the pop-up is showing.
-    return Dialog::OnTouchEvent(event);
+    return Dialog::OnTouchEvent(event, result);
 }
 
 Boolean SearchDialog::IsOutOfBounds(
@@ -677,7 +713,8 @@ ECode SearchDialog::Hide()
         window->GetDecorView((IView**)&view);
         AutoPtr<IBinder> token;
         view->GetWindowToken((IBinder**)&token);
-        imm->HideSoftInputFromWindow(token, 0);
+        Boolean bval;
+        imm->HideSoftInputFromWindow(token, 0, &bval);
     }
 
     Dialog::Hide();
@@ -695,10 +732,11 @@ void SearchDialog::LaunchQuerySearch(
     /* [in] */ const String& actionMsg)
 {
     AutoPtr<ICharSequence> csq;
-    mSearchAutoComplete->GetText((ICharSequence**)&csq);
+    ITextView::Probe(mSearchAutoComplete)->GetText((ICharSequence**)&csq);
     String query = Object::ToString(csq);
     String action = IIntent::ACTION_SEARCH;
-    AutoPtr<IIntent> intent = CreateIntent(action, NULL, NULL, query, actionKey, actionMsg);
+    String nullStr;
+    AutoPtr<IIntent> intent = CreateIntent(action, NULL, nullStr, query, actionKey, actionMsg);
     LaunchIntent(intent);
 }
 
@@ -708,7 +746,7 @@ void SearchDialog::LaunchIntent(
     if (intent == NULL) {
         return;
     }
-    // Logger::D(LOG_TAG, "launching " + intent);
+    // Logger::D(TAG, "launching " + intent);
     // try {
         // If the intent was created from a suggestion, it will always have an explicit
         // component here.
@@ -722,9 +760,8 @@ void SearchDialog::LaunchIntent(
     // real in-app search, we still need to Dismiss the dialog.
     Dismiss();
     // } catch (RuntimeException ex) {
-    //     Log.e(LOG_TAG, "Failed launch activity: " + intent, ex);
+    //     Log.e(TAG, "Failed launch activity: " + intent, ex);
     // }
-    return NOERROR;
 }
 
 ECode SearchDialog::SetListSelection(
@@ -775,7 +812,7 @@ Boolean SearchDialog::IsEmpty(
     /* [in] */ IAutoCompleteTextView* actv)
 {
     AutoPtr<ICharSequence> text;
-    actv->GetText((ICharSequence**)&text);
+    ITextView::Probe(actv)->GetText((ICharSequence**)&text);
     return TextUtils::GetTrimmedLength(text) == 0;
 }
 
@@ -783,12 +820,28 @@ ECode SearchDialog::OnBackPressed()
 {
     // If the input method is covering the search dialog completely,
     // e->G. in landscape mode with no hard keyboard, Dismiss just the input method
-    InputMethodManager imm = (InputMethodManager)getContext()
-            ->GetSystemService(IContext::INPUT_METHOD_SERVICE);
-    if (imm != NULL && imm.isFullscreenMode() &&
-            imm.hideSoftInputFromWindow(getWindow()->GetDecorView()->GetWindowToken(), 0)) {
-        return;
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
+    AutoPtr<IInterface> obj;
+    ctx->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&obj);
+    AutoPtr<IInputMethodManager> imm = IInputMethodManager::Probe(obj);
+    if (imm != NULL) {
+        Boolean bval;
+        imm->IsFullscreenMode(&bval);
+        if (bval) {
+            AutoPtr<IWindow> window;
+            GetWindow((IWindow**)&window);
+            AutoPtr<IView> view;
+            window->GetDecorView((IView**)&view);
+            AutoPtr<IBinder> token;
+            view->GetWindowToken((IBinder**)&token);
+            imm->HideSoftInputFromWindow(token, 0, &bval);
+            if (bval) {
+                return NOERROR;
+            }
+        }
     }
+
     // Close search dialog
     Cancel();
     return NOERROR;
@@ -813,12 +866,10 @@ void SearchDialog::SetUserQuery(
         query = "";
     }
     mUserQuery = query;
-    mSearchAutoComplete->SetText(query);
-    mSearchAutoComplete->SetSelection(query.GetLength());
+    ITextView::Probe(mSearchAutoComplete)->SetText(CoreUtils::Convert(query));
+    IEditText::Probe(mSearchAutoComplete)->SetSelection(query.GetLength());
 }
 
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
-
-#endif // __ELASTOS_DROID_APP_PROGRESSDIALOG_H__

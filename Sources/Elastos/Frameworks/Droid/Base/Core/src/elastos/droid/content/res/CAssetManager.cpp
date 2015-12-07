@@ -2624,7 +2624,7 @@ Int64 CAssetManager::Ni()
 }
 
 ECode CAssetManager::GetNativeAssetManager(
-    /* [out] */ Int32* assetMgr)
+    /* [out] */ Int64* assetMgr)
 {
     VALIDATE_NOT_NULL(assetMgr);
     *assetMgr = mObject;

@@ -18,6 +18,7 @@ using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IProviderInfo;
 using Elastos::Droid::Content::Pm::CActivityInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::CComponentNameHelper;
 using Elastos::Droid::Content::IComponentNameHelper;
 using Elastos::Droid::Content::CComponentName;
@@ -112,7 +113,7 @@ ECode CSearchableInfo::constructor(
         AutoPtr<IProviderInfo> pi;
         pm->ResolveContentProvider(mSuggestAuthority, 0, (IProviderInfo**)&pi);
         if (pi != NULL) {
-            pi->GetPackageName(&suggestProviderPackage);
+            IPackageItemInfo::Probe(pi)->GetPackageName(&suggestProviderPackage);
         }
     }
     mSuggestProviderPackage = suggestProviderPackage;
@@ -499,22 +500,24 @@ ECode CSearchableInfo::GetActivityMetaData(
     AutoPtr<IContext> userContext;
     AutoPtr<IUserHandle> userHandle;
     CUserHandle::New(userId, (IUserHandle**)&userHandle);
-    FAIL_RETURN(ctx->CreatePackageContextAsUser(String("system"), 0, userHandle, (IContext**)&userContext));
+    FAIL_RETURN(ctx->CreatePackageContextAsUser(
+        String("system"), 0, userHandle, (IContext**)&userContext));
     // for each component, try to find metadata
     AutoPtr<IXmlResourceParser> xml;
     AutoPtr<IPackageManager> pm;
     userContext->GetPackageManager((IPackageManager**)&pm);
-    activityInfo->LoadXmlMetaData(pm, MD_LABEL_SEARCHABLE, (IXmlResourceParser**)&xml);
+    IPackageItemInfo* pi = IPackageItemInfo::Probe(activityInfo);
+    pi->LoadXmlMetaData(pm, MD_LABEL_SEARCHABLE, (IXmlResourceParser**)&xml);
     if (xml == NULL) {
         return NOERROR;
     }
 
     AutoPtr<IComponentName> cName;
     String pckName, name;
-    activityInfo->GetPackageName(&pckName);
-    activityInfo->GetName(&name);
+    pi->GetPackageName(&pckName);
+    pi->GetName(&name);
     CComponentName::New(pckName, name, (IComponentName**)&cName);
-    GetActivityMetaData(userContext, xml, cName, info);
+    GetActivityMetaData(userContext, IXmlPullParser::Probe(xml), cName, info);
     xml->Close();
 
     // if (DBG) {
