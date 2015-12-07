@@ -190,6 +190,8 @@ module
     interface Elastos.Droid.View.ILayoutInflaterFactory2;
     interface Elastos.Droid.View.IWindowCallback;
     interface Elastos.Droid.View.IKeyEventCallback;
+    interface Elastos.Droid.View.IViewGroupLayoutParams;
+    interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
     interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
     interface Elastos.Droid.View.IOnWindowDismissedCallback;
     interface Elastos.Droid.View.IOnKeyguardExitResult;
@@ -212,9 +214,6 @@ module
     interface Elastos.Droid.App.Job.IJobScheduler;
     interface Elastos.Droid.App.Job.IIJobScheduler;
 
-//     interface Elastos.Droid.Content.IDialogInterface;
-//
-//     interface Elastos.Droid.View.IViewGroupLayoutParams;
 
     namespace Elastos {
     namespace Droid {
@@ -1631,32 +1630,34 @@ module
         interface IBinder;
     }
 
-//     [local]
-//     class CActionBarLayoutParams {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+    [local]
+    class CActionBarLayoutParams {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-//         constructor(
-//             [in] Int32 width,
-//             [in] Int32 height);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height);
 
-//         constructor(
-//             [in] Int32 width,
-//             [in] Int32 height,
-//             [in] Int32 gravity);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 gravity);
 
-//         constructor(
-//             [in] Int32 gravity);
+        constructor(
+            [in] Int32 gravity);
 
-//         constructor(
-//             [in] IActionBarLayoutParams* ablp);
+        constructor(
+            [in] IActionBarLayoutParams* ablp);
 
-//         constructor(
-//             [in] IViewGroupLayoutParams* vglp);
+        constructor(
+            [in] IViewGroupLayoutParams* vglp);
 
-//         interface IActionBarLayoutParams;
-//     }
+        interface IActionBarLayoutParams;
+        interface IViewGroupMarginLayoutParams;
+        interface IViewGroupLayoutParams;
+    }
 
     class CKeyguardManager {
        constructor();

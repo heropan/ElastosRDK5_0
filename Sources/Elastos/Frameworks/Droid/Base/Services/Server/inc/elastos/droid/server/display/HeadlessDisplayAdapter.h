@@ -1,0 +1,59 @@
+
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_HEADLESSDISPLAYADAPTER_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_HEADLESSDISPLAYADAPTER_H__
+
+#include "elastos/droid/server/display/DisplayAdapter.h"
+#include "elastos/droid/server/display/DisplayDevice.h"
+#include "elastos/droid/server/display/DisplayDeviceInfo.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Server {
+namespace Display {
+
+/**
+ * Provides a fake default display for headless systems.
+ * <p>
+ * Display adapters are guarded by the {@link DisplayManagerService.SyncRoot} lock.
+ * </p>
+ */
+class HeadlessDisplayAdapter
+    : public DisplayAdapter
+{
+private:
+    class HeadlessDisplayDevice
+        : public DisplayDevice
+    {
+    public:
+        HeadlessDisplayDevice(
+            /* [in] */ HeadlessDisplayAdapter* owner);
+
+        //@Override
+        CARAPI_(AutoPtr<DisplayDeviceInfo>) GetDisplayDeviceInfoLocked();
+
+    private:
+        AutoPtr<DisplayDeviceInfo> mInfo;
+        HeadlessDisplayAdapter* mOwner;
+    };
+
+public:
+    // Called with SyncRoot lock held.
+    HeadlessDisplayAdapter(
+        /* [in] */ Object* syncRoot,
+        /* [in] */ IContext* context,
+        /* [in] */ IHandler* handler,
+        /* [in] */ IDisplayAdapterListener* listener);
+
+    //@Override
+    CARAPI_(void) RegisterLocked();
+
+private:
+    static const String TAG;
+};
+
+} // namespace Display
+} // namespace Server
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_HEADLESSDISPLAYADAPTER_H__

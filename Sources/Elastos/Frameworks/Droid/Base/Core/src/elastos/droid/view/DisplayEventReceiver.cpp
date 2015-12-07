@@ -14,7 +14,7 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-const char* DisplayEventReceiver::TAG = "DisplayEventReceiver";
+const String DisplayEventReceiver::TAG("DisplayEventReceiver");
 
 CAR_INTERFACE_IMPL(DisplayEventReceiver, Object, IDisplayEventReceiver)
 

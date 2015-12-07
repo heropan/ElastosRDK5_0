@@ -2,11 +2,6 @@
 #ifndef __ELASTOS_DROID_VIEW_NATIVEDISPLAYEVENTRECEIVER_H__
 #define __ELASTOS_DROID_VIEW_NATIVEDISPLAYEVENTRECEIVER_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
 #include "elastos/droid/os/NativeMessageQueue.h"
 #include <utils/Looper.h>
 #include <gui/DisplayEventReceiver.h>

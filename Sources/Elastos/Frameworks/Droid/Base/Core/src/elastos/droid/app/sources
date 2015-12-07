@@ -11,8 +11,7 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 SOURCES += app.cpp
 
 SOURCES += ActionBar.cpp
-#SOURCES += CActionBarLayoutParams.cpp
-#SOURCES += CActionBarImpl.cpp
+SOURCES += ActionBarLayoutParams.cpp
 SOURCES += CActionKeyInfo.cpp
 SOURCES += Activity.cpp
 SOURCES += ActivityGroup.cpp

@@ -1,13 +1,10 @@
 
-#
-# 请保持字母顺序
-#
-
 DIRS += accessibilityservice
 DIRS += app
 DIRS += animation
 DIRS += content
 DIRS += database
+DIRS += emoji
 DIRS += gesture
 DIRS += graphics
 DIRS += hardware
@@ -27,16 +24,15 @@ DIRS += systemui
 DIRS += text
 DIRS += transition
 DIRS += utility
+DIRS += webkit
 DIRS += widget
-DIRS += emoji
+DIRS += wifi
 
 #DIRS += impl
 #DIRS += bluetooth
 #DIRS += speech
 #DIRS += opengl
-DIRS += webkit
 #DIRS += privacy
-DIRS += wifi
 #DIRS += accounts
 #DIRS += telephony
 #DIRS += statusbar
