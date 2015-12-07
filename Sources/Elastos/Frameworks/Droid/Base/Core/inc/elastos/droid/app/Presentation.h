@@ -5,7 +5,7 @@
 #include "elastos/droid/app/Dialog.h"
 #include "elastos/droid/view/ContextThemeWrapper.h"
 
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::App::Dialog;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IContextThemeWrapper;
@@ -74,7 +74,9 @@ private:
         : public ContextThemeWrapper
     {
     public:
-        PresentationContextThemeWrapper(
+        PresentationContextThemeWrapper();
+
+        CARAPI constructor(
             /* [in] */ IContext* base,
             /* [in] */ Int32 theme,
             /* [in] */ IWindowManager* displayWindowManager);
@@ -92,11 +94,11 @@ public:
 
     virtual ~Presentation();
 
-    CARAP constructor(
+    CARAPI constructor(
         /* [in] */ IContext * context,
         /* [in] */ IDisplay * display);
 
-    CARAP constructor(
+    CARAPI constructor(
         /* [in] */ IContext * context,
         /* [in] */ IDisplay * display,
         /* [in] */ Int32 theme);

@@ -58,7 +58,7 @@ ECode Presentation::PresentationDisplayListener::OnDisplayChanged(
 //======================================================================================
 // Presentation::PresentationHandler
 //======================================================================================
-PresentationHandler::PresentationHandler(
+Presentation::PresentationHandler::PresentationHandler(
     /* [in] */ Presentation* host)
     : Handler(FALSE)
     , mHost(host)
@@ -82,13 +82,18 @@ ECode Presentation::PresentationHandler::HandleMessage(
 // Presentation::PresentationContextThemeWrapper
 //======================================================================================
 
-Presentation::PresentationContextThemeWrapper::PresentationContextThemeWrapper(
+Presentation::PresentationContextThemeWrapper::PresentationContextThemeWrapper()
+{}
+
+ECode Presentation::PresentationContextThemeWrapper::constructor(
     /* [in] */ IContext* base,
     /* [in] */ Int32 theme,
     /* [in] */ IWindowManager* displayWindowManager)
-    : ContextThemeWrapper(base, theme)
-    , mDisplayWindowManager(displayWindowManager)
-{}
+{
+    ContextThemeWrapper::constructor(base, theme);
+    mDisplayWindowManager = displayWindowManager;
+    return NOERROR;
+}
 
 ECode Presentation::PresentationContextThemeWrapper::GetSystemService(
     /* [in] */ const String& name,
@@ -132,9 +137,13 @@ ECode Presentation::constructor(
 
     mDisplay = display;
 
-    GetContext()->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&mDisplayManager);
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
+    ctx->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&mDisplayManager);
 
-    GetWindow()->SetGravity(IGravity::FILL);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    window->SetGravity(IGravity::FILL);
     SetCanceledOnTouchOutside(FALSE);
     return NOERROR;
 }
@@ -150,7 +159,9 @@ ECode Presentation::GetDisplay(
 ECode Presentation::GetResources(
     /* [out] */ IResources **resources)
 {
-    return GetContext()->GetResources(resources);
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
+    return ctx->GetResources(resources);
 }
 
 ECode Presentation::OnDisplayRemoved()
@@ -263,12 +274,14 @@ AutoPtr<IContext> Presentation::CreatePresentationContext(
     // We do this because the outer window manager have some extra information
     // such as the parent window, which is important if the presentation uses
     // an application window type.
-    AutoPtr<IWindowManager> outerWindowManager;
-    ASSERT_SUCCEEDED(outerContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&outerWindowManager));
+    AutoPtr<IInterface> obj;
+    ASSERT_SUCCEEDED(outerContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&obj));
+    IWindowManager* wm = IWindowManager::Probe(obj);
     AutoPtr<IWindowManager> displayWindowManager;
-    displayWindowManager = ((WindowManagerImpl*)outerWindowManager.Get())->CreatePresentationWindowManager(display);
-    AutoPtr<IContext> ctx = new PresentationContextThemeWrapper(displayContext, theme, displayWindowManager);
-    return ctx;
+    displayWindowManager = ((WindowManagerImpl*)wm)->CreatePresentationWindowManager(display);
+    AutoPtr<PresentationContextThemeWrapper> pct = new PresentationContextThemeWrapper();
+    pct->constructor(displayContext, theme, displayWindowManager);
+    return IContext::Probe(pct);
 }
 
 }

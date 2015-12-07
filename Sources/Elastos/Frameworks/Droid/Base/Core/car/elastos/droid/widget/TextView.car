@@ -83,7 +83,7 @@ module
 
     /**
      * @Involve
-     * extends Elastos.Droid.View.IView
+     * interface Elastos.Droid.View.IView
      *
      * interface Elastos.Droid.View.OnPreDrawListener
      * interface Elastos.Droid.View.IKeyEventCallback

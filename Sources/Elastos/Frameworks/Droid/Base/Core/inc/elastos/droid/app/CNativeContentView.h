@@ -3,35 +3,17 @@
 #define __ELASTOS_DROID_APP_CNATIVECONTENTVIEW_H__
 
 #include "_Elastos_Droid_App_CNativeContentView.h"
-#include "elastos/droid/view/View.h"
-
-
-using Elastos::Droid::View::View;
+#include "elastos/droid/app/NativeActivity.h"
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-CarClass(CNativeContentView), public Elastos::Droid::View::View
+CarClass(CNativeContentView)
+    , public NativeActivity::NativeContentView
 {
 public:
-    IVIEW_METHODS_DECL()
-
-    IDRAWABLECALLBACK_METHODS_DECL()
-
-    IKEYEVENTCALLBACK_METHODS_DECL()
-
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
-
-    CARAPI constructor(
-        /* [in] */ IContext* context);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
 };
 
 } // namespace App

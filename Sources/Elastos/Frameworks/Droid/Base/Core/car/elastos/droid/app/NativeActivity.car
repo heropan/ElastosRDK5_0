@@ -1,8 +1,26 @@
 module {
 
+    interface Elastos.Droid.App.INativeActivity;
+
     namespace Elastos {
     namespace Droid {
     namespace App {
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     * interface Elastos.Droid.View.OnPreDrawListener
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
+     */
+    interface INativeContentView {
+        SetNativeActivity(
+            [in] INativeActivity* activity);
+
+        GetNativeActivity(
+            [out] INativeActivity** activity);
+    }
 
     /**
      * Convenience for implementing an activity that will be implemented
@@ -26,7 +44,7 @@ module {
      * interface IActivity
      * interface ISurfaceHolderCallback2
      * interface IInputQueueCallback
-     * interface IViewTreeObserverOnGlobalLayoutListener
+     * interface IOnGlobalLayoutListener
      */
     interface INativeActivity {
         /**
@@ -43,6 +61,19 @@ module {
          * "ANativeActivity_onCreate" is used.
          */
         const String META_DATA_FUNC_NAME = "android.app.func_name";
+
+        SetWindowFlags(
+            [in] Int32 flags,
+            [in] Int32 mask);
+
+        SetWindowFormat(
+            [in] Int32 format);
+
+        ShowIme(
+            [in] Int32 mode);
+
+        HideIme(
+            [in] Int32 mode);
     }
 
     } // namespace App

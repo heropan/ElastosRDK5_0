@@ -27,7 +27,7 @@ protected:
     MessageQueue() {}
     virtual ~MessageQueue() {}
 
-protected:
+public:
     android::sp<android::Looper> mLooper;
 };
 
