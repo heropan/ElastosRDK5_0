@@ -7,8 +7,8 @@
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
+using Elastos::Core::CString;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IInteger32;
 using Elastos::Droid::Content::IContentResolver;
@@ -605,7 +605,7 @@ void CLockSettingsService::WriteToDb(
     AutoPtr<IContentValues> cv;
     CContentValues::New((IContentValues**)&cv);
     AutoPtr<ICharSequence> strValue;
-    CStringWrapper::New(key, (ICharSequence**)&strValue);
+    CString::New(key, (ICharSequence**)&strValue);
     cv->PutString(COLUMN_KEY, strValue);
 
     AutoPtr<IInteger32> intValue;
@@ -613,7 +613,7 @@ void CLockSettingsService::WriteToDb(
     cv->PutInt32(COLUMN_USERID, intValue);
 
     strValue = NULL;
-    CStringWrapper::New(value, (ICharSequence**)&strValue);
+    CString::New(value, (ICharSequence**)&strValue);
     cv->PutString(COLUMN_VALUE, strValue);
 
     db->BeginTransaction();

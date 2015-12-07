@@ -1,7 +1,7 @@
 
 #include "am/AppWaitingForDebuggerDialog.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -38,22 +38,22 @@ AppWaitingForDebuggerDialog::AppWaitingForDebuggerDialog(
     text.AppendCStr(" is waiting for the debugger to attach.");
 
     AutoPtr<ICharSequence> textMsg;
-    CStringWrapper::New(text.ToString(), (ICharSequence**)&textMsg);
+    CString::New(text.ToString(), (ICharSequence**)&textMsg);
     SetMessage(textMsg);
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(1, (IInterface*)app, (IMessage**)&msg);
     AutoPtr<ICharSequence> btMsg;
-    CStringWrapper::New(String("Force Close"), (ICharSequence**)&btMsg);
+    CString::New(String("Force Close"), (ICharSequence**)&btMsg);
     SetButton(IDialogInterface::BUTTON_POSITIVE, btMsg, msg);
     AutoPtr<ICharSequence> title;
-    CStringWrapper::New(String("Waiting For Debugger"), (ICharSequence**)&title);
+    CString::New(String("Waiting For Debugger"), (ICharSequence**)&title);
     SetTitle(title);
     AutoPtr<IWindowManagerLayoutParams> attrs;
     Dialog::GetWindow()->GetAttributes((IWindowManagerLayoutParams**)&attrs);
     String processName;
     app->mInfo->GetProcessName(&processName);
     AutoPtr<ICharSequence> attrsTitle;
-    CStringWrapper::New(String("Waiting For Debugger: ") + processName, (ICharSequence**)&attrsTitle);
+    CString::New(String("Waiting For Debugger: ") + processName, (ICharSequence**)&attrsTitle);
     attrs->SetTitle(attrsTitle);
     Dialog::GetWindow()->SetAttributes(attrs);
 }

@@ -9,7 +9,7 @@
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Os::CUserHandle;
@@ -203,14 +203,14 @@ ECode AccountManagerServiceSession::OnResult(
         String s;
         result->GetString(IAccountManager::KEY_AUTHTOKEN, &s);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(s, (ICharSequence**)&cs);
+        CString::New(s, (ICharSequence**)&cs);
         if (!TextUtils::IsEmpty(cs)) {
             String accountName, accountType;
             result->GetString(IAccountManager::KEY_ACCOUNT_NAME, &accountName);
             result->GetString(IAccountManager::KEY_ACCOUNT_TYPE, &accountType);
             AutoPtr<ICharSequence> accountNameCs, accountTypeCs;
-            CStringWrapper::New(accountName, (ICharSequence**)&accountNameCs);
-            CStringWrapper::New(accountType, (ICharSequence**)&accountTypeCs);
+            CString::New(accountName, (ICharSequence**)&accountNameCs);
+            CString::New(accountType, (ICharSequence**)&accountTypeCs);
             if (!TextUtils::IsEmpty(accountNameCs) && !TextUtils::IsEmpty(accountTypeCs)) {
                 AutoPtr<IAccount> account;
                 FAIL_RETURN(CAccount::New(accountName, accountType, (IAccount**)&account));

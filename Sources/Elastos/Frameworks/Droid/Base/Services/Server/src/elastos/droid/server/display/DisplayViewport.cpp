@@ -10,7 +10,7 @@ namespace Droid {
 namespace Server {
 namespace Display {
 
-CAR_INTERFACE_IMPL(DisplayViewport, IDisplayViewport, DisplayViewport)
+CAR_INTERFACE_IMPL(DisplayViewport, Object, IDisplayViewport)
 
 DisplayViewport::DisplayViewport()
     : mValid(FALSE)
@@ -56,7 +56,7 @@ ECode DisplayViewport::ToString(
 
     StringBuilder sb;
     sb.Append("DisplayViewport{valid=");
-    sb.AppendBoolean(mValid);
+    sb.Append(mValid);
     sb.Append(", displayId=");
     sb.Append(mDisplayId);
     sb.Append(", orientation=");

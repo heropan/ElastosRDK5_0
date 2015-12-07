@@ -8,7 +8,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
 using Elastos::Droid::Content::CIntent;
@@ -331,11 +331,11 @@ void LockdownVpnTracker::ShowNotification(
     String value;
     mContext->GetString(titleRes, &value);
     AutoPtr<ICharSequence> csValue;
-    CStringWrapper::New(value, (ICharSequence**)&csValue);
+    CString::New(value, (ICharSequence**)&csValue);
     builder->SetContentTitle(csValue);
     mContext->GetString(R::string::vpn_lockdown_reset, &value);
     csValue = NULL;
-    CStringWrapper::New(value, (ICharSequence**)&csValue);
+    CString::New(value, (ICharSequence**)&csValue);
     builder->SetContentText(csValue);
     builder->SetContentIntent(mResetIntent);
     builder->SetPriority(INotification::PRIORITY_LOW);

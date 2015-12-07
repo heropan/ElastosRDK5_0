@@ -80,14 +80,19 @@ public:
     virtual CARAPI_(void) PerformTraversalInTransactionLocked();
 
     /**
-     * Blanks the display, if supported.
+     * Sets the display state, if supported.
+     *
+     * @return A runnable containing work to be deferred until after we have
+     * exited the critical section, or null if none.
      */
-    virtual CARAPI_(void) BlankLocked();
+    virtual CARAPI_(AutoPtr<IRunnable>) RequestDisplayStateLocked(
+        /* [in] */ Int32 state);
 
     /**
-     * Unblanks the display, if supported.
+     * Sets the refresh rate, if supported.
      */
-    virtual CARAPI_(void) UnblankLocked();
+    virtual CARAPI_(void) RequestRefreshRateLocked(
+        /* [in] */ Float refreshRate);
 
     /**
      * Sets the display layer stack while in a transaction.

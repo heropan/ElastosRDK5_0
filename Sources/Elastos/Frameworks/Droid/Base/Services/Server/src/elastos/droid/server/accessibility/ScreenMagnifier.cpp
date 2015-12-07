@@ -15,7 +15,7 @@ using Elastos::Utility::ILocale;
 using Elastos::Utility::CLocaleHelper;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IInteger32;
 using Elastos::Droid::View::CScaleGestureDetector;
 using Elastos::Droid::View::CGestureDetector;
@@ -905,7 +905,7 @@ ECode ScreenMagnifier::ScreenStateObserver::OnReceive(
     String action;
     intent->GetAction(&action);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(action, (ICharSequence**)&seq);
+    CString::New(action, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MESSAGE_ON_SCREEN_STATE_CHANGE, (IMessage**)&msg);
     msg->SetObj(seq);

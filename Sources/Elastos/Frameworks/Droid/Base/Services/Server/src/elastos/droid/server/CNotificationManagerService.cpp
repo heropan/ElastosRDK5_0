@@ -15,7 +15,7 @@
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::StringUtils;
@@ -1430,7 +1430,7 @@ ECode CNotificationManagerService::EnqueueNotificationInternal(
             // Send accessibility events only for the current user.
             if (currentUser == userId) {
                 AutoPtr<ICharSequence> seq;
-                CStringWrapper::New(pkg, (ICharSequence**)&seq);
+                CString::New(pkg, (ICharSequence**)&seq);
                 SendAccessibilityEvent(notification, seq);
             }
         }
@@ -1628,7 +1628,7 @@ void CNotificationManagerService::SendAccessibilityEvent(
     eventHelper->Obtain(IAccessibilityEvent::TYPE_NOTIFICATION_STATE_CHANGED, (IAccessibilityEvent**)&event);
 
     AutoPtr<ICharSequence> clsSeq;
-    CStringWrapper::New(String("CNotification"), (ICharSequence**)&clsSeq);
+    CString::New(String("CNotification"), (ICharSequence**)&clsSeq);
     event->SetPackageName(packageName);
     event->SetClassName(clsSeq);
     event->SetParcelableData(IParcelable::Probe(notification));

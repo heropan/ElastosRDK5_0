@@ -6,23 +6,25 @@
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
-using Elastos::Utility::Regex::IPatternHelper;
-using Elastos::Utility::Regex::CPatternHelper;
-using Elastos::Utility::Regex::IMatcher;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::View::CSurface;
-using Elastos::Droid::View::ISurfaceHelper;
-using Elastos::Droid::View::CSurfaceHelper;
+using Elastos::Droid::View::ISurfaceControlHelper;
+using Elastos::Droid::View::CSurfaceControlHelper;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Provider::ISettingsGlobal;
-using Elastos::Droid::Provider::CSettingsGlobal;
+// using Elastos::Droid::Provider::CSettingsGlobal;
+using Elastos::Core::StringUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
+using Elastos::Utility::Regex::IPatternHelper;
+using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::Regex::IMatcher;
+using  Elastos::Utility::Regex::IMatchResult;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -42,7 +44,7 @@ AutoPtr<IPattern> InitPattern()
     AutoPtr<IPatternHelper> ph;
     CPatternHelper::AcquireSingleton((IPatternHelper**)&ph);
     AutoPtr<IPattern> pattern;
-    ph->Compile(String("(\\d+)x(\\d+)/(\\d+)"), (IPattern**)&pattern);
+    ph->Compile(String("(\\d+)x(\\d+)/(\\d+)(,[a-z]+)*"), (IPattern**)&pattern);
 
     return pattern;
 }
@@ -59,25 +61,40 @@ OverlayDisplayAdapter::OverlayDisplayDevice::OverlayDisplayDevice(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Float refreshRate,
+    /* [in] */ Int64 presentationDeadlineNanos,
     /* [in] */ Int32 densityDpi,
+    /* [in] */ Boolean secure,
+    /* [in] */ Int32 state,
     /* [in] */ ISurfaceTexture* surfaceTexture)
     : DisplayDevice(owner, displayToken)
     , mName(name)
     , mWidth(width)
     , mHeight(height)
     , mRefreshRate(refreshRate)
+    , mDisplayPresentationDeadlineNanos(presentationDeadlineNanos)
     , mDensityDpi(densityDpi)
+    , mSecure(secure)
+    , mState(state)
     , mSurfaceTexture(surfaceTexture)
     , mHost(owner)
 {
 }
 
-void OverlayDisplayAdapter::OverlayDisplayDevice::ClearSurfaceTextureLocked()
+void OverlayDisplayAdapter::OverlayDisplayDevice::DestroyLocked()
 {
     if (mSurfaceTexture != NULL) {
         mSurfaceTexture = NULL;
     }
     mHost->SendTraversalRequestLocked();
+
+    mSurfaceTexture = NULL;
+    if (mSurface != NULL) {
+        mSurface->ReleaseSurface();
+        mSurface = NULL;
+    }
+    AutoPtr<ISurfaceControlHelper> surfaceControl;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceControl);
+    surfaceControl->DestroyDisplay(GetDisplayTokenLocked());
 }
 
 void OverlayDisplayAdapter::OverlayDisplayDevice::PerformTraversalInTransactionLocked()
@@ -88,13 +105,13 @@ void OverlayDisplayAdapter::OverlayDisplayDevice::PerformTraversalInTransactionL
         }
         SetSurfaceInTransactionLocked(mSurface);
     }
-    else {
-        SetSurfaceInTransactionLocked(NULL);
-        if (mSurface != NULL) {
-            mSurface->Destroy();
-            mSurface = NULL;
-        }
-    }
+}
+
+void OverlayDisplayAdapter::OverlayDisplayDevice::SetStateLocked(
+    /* [in] */ Int32 state)
+{
+    mState = state;
+    mInfo = NULL;
 }
 
 AutoPtr<DisplayDeviceInfo> OverlayDisplayAdapter::OverlayDisplayDevice::GetDisplayDeviceInfoLocked()
@@ -108,9 +125,16 @@ AutoPtr<DisplayDeviceInfo> OverlayDisplayAdapter::OverlayDisplayDevice::GetDispl
         mInfo->mDensityDpi = mDensityDpi;
         mInfo->mXDpi = mDensityDpi;
         mInfo->mYDpi = mDensityDpi;
-        mInfo->mFlags = 0;
+
+        mInfo->mPresentationDeadlineNanos = mDisplayPresentationDeadlineNanos +
+            1000000000L / (Int32) mRefreshRate;   // display's deadline + 1 frame
+        mInfo->mFlags = DisplayDeviceInfo::FLAG_PRESENTATION;
+        if (mSecure) {
+            mInfo->mFlags |= DisplayDeviceInfo::FLAG_SECURE;
+        }
         mInfo->mType = IDisplay::TYPE_OVERLAY;
         mInfo->mTouch = DisplayDeviceInfo::TOUCH_NONE;
+        mInfo->mState = mState;
     }
     return mInfo;
 }
@@ -154,12 +178,14 @@ OverlayDisplayAdapter::OverlayDisplayHandle::OverlayDisplayHandle(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 densityDpi,
-    /* [in] */ Int32 gravity)
+    /* [in] */ Int32 gravity,
+    /* [in] */ Boolean secure)
     : mName(name)
     , mWidth(width)
     , mHeight(height)
     , mDensityDpi(densityDpi)
     , mGravity(gravity)
+    , mSecure(secure)
     , mHost(owner)
 {
     mShowRunnable = new ShowRunnable(this);
@@ -178,17 +204,21 @@ void OverlayDisplayAdapter::OverlayDisplayHandle::DismissLocked()
 
 ECode OverlayDisplayAdapter::OverlayDisplayHandle::OnWindowCreated(
     /* [in] */ ISurfaceTexture* surfaceTexture,
-    /* [in] */ Float refreshRate)
+    /* [in] */ Float refreshRate,
+    /* [in] */ Int64 presentationDeadlineNanos,
+    /* [in] */ Int32 state)
 {
     Slogger::D(TAG, "===================OverlayDisplayAdapter::OverlayDisplayHandle::OnWindowCreated()===========");
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
 
-    AutoPtr<ISurfaceHelper> surfaceHelper;
-    CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
+    AutoPtr<ISurfaceControlHelper> surfaceControl;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceControl);
     AutoPtr<IBinder> displayToken;
-    surfaceHelper->CreateDisplay(mName, FALSE, (IBinder**)&displayToken);
+    surfaceControl->CreateDisplay(mName, mSecure, (IBinder**)&displayToken);
     mDevice = new OverlayDisplayDevice(mHost, displayToken, mName,
-        mWidth, mHeight, refreshRate, mDensityDpi, surfaceTexture);
+        mWidth, mHeight, refreshRate, presentationDeadlineNanos,
+        mDensityDpi, mSecure, state, surfaceTexture);
 
     mHost->SendDisplayDeviceEventLocked(mDevice, DISPLAY_DEVICE_EVENT_ADDED);
     return NOERROR;
@@ -196,22 +226,40 @@ ECode OverlayDisplayAdapter::OverlayDisplayHandle::OnWindowCreated(
 
 ECode OverlayDisplayAdapter::OverlayDisplayHandle::OnWindowDestroyed()
 {
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
     if (mDevice != NULL) {
-        mDevice->ClearSurfaceTextureLocked();
+        mDevice->DestroyLocked();
         mHost->SendDisplayDeviceEventLocked(mDevice, DISPLAY_DEVICE_EVENT_REMOVED);
     }
+    return NOERROR;
+}
+
+// Called on the UI thread.
+// @Override
+ECode OverlayDisplayAdapter::OverlayDisplayHandle::OnStateChanged(
+    /* [in] */ Int32 state)
+{
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
+
+    if (mDevice != NULL) {
+        mDevice->SetStateLocked(state);
+        mHost->SendDisplayDeviceEventLocked(mDevice, DISPLAY_DEVICE_EVENT_CHANGED);
+    }
+
     return NOERROR;
 }
 
 void OverlayDisplayAdapter::OverlayDisplayHandle::DumpLocked(
     /* [in] */ IPrintWriter* pw)
 {
-    pw->PrintStringln(String("  ") + mName + ":");
-    pw->PrintStringln(String("    mWidth=") + StringUtils::Int32ToString(mWidth));
-    pw->PrintStringln(String("    mHeight=") + StringUtils::Int32ToString(mHeight));
-    pw->PrintStringln(String("    mDensityDpi=") + StringUtils::Int32ToString(mDensityDpi));
-    pw->PrintStringln(String("    mGravity=") + StringUtils::Int32ToString(mGravity));
+    pw->Println(String("  ") + mName + ":");
+    pw->Println(String("    mWidth=") + StringUtils::ToString(mWidth));
+    pw->Println(String("    mHeight=") + StringUtils::ToString(mHeight));
+    pw->Println(String("    mDensityDpi=") + StringUtils::ToString(mDensityDpi));
+    pw->Println(String("    mGravity=") + StringUtils::ToString(mGravity));
+    pw->Println(String("    mSecure=") + StringUtils::BooleanToString(mSecure));
 
     // // Try to dump the window state.
     // if (mWindow != NULL) {
@@ -225,19 +273,20 @@ void OverlayDisplayAdapter::OverlayDisplayHandle::HandleShow()
 {
     AutoPtr<OverlayDisplayWindow> window = new OverlayDisplayWindow(
         mHost->GetContext(), mName, mWidth, mHeight, mDensityDpi,
-        mGravity, this);
+        mGravity, mSecure, this);
     window->Show();
-    {
-        AutoLock lock(mHost->GetSyncRoot());
-        mWindow = window;
-    }
+
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
+    mWindow = window;
 }
 
 void OverlayDisplayAdapter::OverlayDisplayHandle::HandleDismiss()
 {
     AutoPtr<OverlayDisplayWindow> window;
     {
-        AutoLock lock(mHost->GetSyncRoot());
+        Object* obj = mHost->GetSyncRoot();
+        AutoLock lock(obj);
         window = mWindow;
         mWindow = NULL;
     }
@@ -260,11 +309,13 @@ ECode OverlayDisplayAdapter::RegisterRunnable::Run()
     AutoPtr<IContentResolver> cr;
     mHost->GetContext()->GetContentResolver((IContentResolver**)&cr);
     AutoPtr<ISettingsGlobal> sg;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
+    assert(0 && "TODO");
+    // CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
     AutoPtr<IUri> uri;
     sg->GetUriFor(ISettingsGlobal::OVERLAY_DISPLAY_DEVICES, (IUri**)&uri);
-    AutoPtr<IContentObserver> co = new OverlayDisplayContentObserver(
-        mHost->GetHandler(), mHost);
+    AutoPtr<OverlayDisplayContentObserver> ovdco = new OverlayDisplayContentObserver(mHost);
+    ovdco->constructor(mHost->GetHandler());
+    IContentObserver* co = (IContentObserver*)ovdco;
     cr->RegisterContentObserver(uri, TRUE, co);
 
     mHost->UpdateOverlayDisplayDevices();
@@ -277,10 +328,8 @@ ECode OverlayDisplayAdapter::RegisterRunnable::Run()
 //===================================================================================
 
 OverlayDisplayAdapter::OverlayDisplayContentObserver::OverlayDisplayContentObserver(
-    /* [in] */ IHandler* handler,
     /* [in] */ OverlayDisplayAdapter* host)
-    : ContentObserver(handler)
-    , mHost(host)
+    : mHost(host)
 {}
 
 ECode OverlayDisplayAdapter::OverlayDisplayContentObserver::OnChange(
@@ -310,8 +359,8 @@ void OverlayDisplayAdapter::DumpLocked(
 {
     DisplayAdapter::DumpLocked(pw);
 
-    pw->PrintStringln(String("mCurrentOverlaySetting=") + mCurrentOverlaySetting);
-    pw->PrintStringln(String("mOverlays: size=") + StringUtils::Int32ToString(mOverlays.GetSize()));
+    pw->Println(String("mCurrentOverlaySetting=") + mCurrentOverlaySetting);
+    pw->Println(String("mOverlays: size=") + StringUtils::ToString((Int32)mOverlays.GetSize()));
 
     List<AutoPtr<OverlayDisplayHandle> >::Iterator iter = mOverlays.Begin();
     for (; iter != mOverlays.End(); ++iter) {
@@ -330,7 +379,8 @@ void OverlayDisplayAdapter::RegisterLocked()
 
 void OverlayDisplayAdapter::UpdateOverlayDisplayDevices()
 {
-    AutoLock lock(GetSyncRoot());
+    Object* obj = GetSyncRoot();
+    AutoLock lock(obj);
 
     UpdateOverlayDisplayDevicesLocked();
 }
@@ -342,7 +392,8 @@ void OverlayDisplayAdapter::UpdateOverlayDisplayDevicesLocked()
     AutoPtr<IContentResolver> cr;
     context->GetContentResolver((IContentResolver**)&cr);
     AutoPtr<ISettingsGlobal> sg;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
+    assert(0 && "TODO");
+    // CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
     String value;
     sg->GetString(cr, ISettingsGlobal::OVERLAY_DISPLAY_DEVICES, &value);
     if (value.IsNull()) {
@@ -389,17 +440,20 @@ void OverlayDisplayAdapter::UpdateOverlayDisplayDevicesLocked()
                     break;
                 }
 
+                IMatchResult* mr = IMatchResult::Probe(matcher);
                 String strGroup;
-                matcher->Group(1, &strGroup);
-                ec = StringUtils::ParseInt32(strGroup, 10, &width);
+                mr->Group(1, &strGroup);
+                ec = StringUtils::Parse(strGroup, 10, &width);
                 if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) continue;
-                matcher->Group(2, &strGroup);
-                ec = StringUtils::ParseInt32(strGroup, 10, &height);
+                mr->Group(2, &strGroup);
+                ec = StringUtils::Parse(strGroup, 10, &height);
                 if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) continue;
-                matcher->Group(3, &strGroup);
-                ec = StringUtils::ParseInt32(strGroup, 10, &densityDpi);
+                mr->Group(3, &strGroup);
+                ec = StringUtils::Parse(strGroup, 10, &densityDpi);
                 if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) continue;
 
+                String flagString;
+                mr->Group(4, &flagString);
                 if (width >= MIN_WIDTH && width <= MAX_WIDTH
                     && height >= MIN_HEIGHT && height <= MAX_HEIGHT
                     && densityDpi >= IDisplayMetrics::DENSITY_LOW
@@ -410,11 +464,13 @@ void OverlayDisplayAdapter::UpdateOverlayDisplayDevicesLocked()
                     resources->GetString(R::string::display_manager_overlay_display_name, &name);
                     Int32 gravity = ChooseOverlayGravity(number);
 
-                    Slogger::I(TAG, "Showing overlay display device #%d: name=%s, width=%d, height=%d, densityDpi=%d",
-                        number, name.string(), width, height, densityDpi);
+                    Boolean secure = !flagString.IsNull() && flagString.Contains(",secure");
+
+                    Slogger::I(TAG, "Showing overlay display device #%d: name=%s, width=%d, height=%d, densityDpi=%d, secure=%d",
+                        number, name.string(), width, height, densityDpi, secure);
 
                     AutoPtr<OverlayDisplayHandle> handle = new OverlayDisplayHandle(this, name,
-                        width, height, densityDpi, gravity);
+                        width, height, densityDpi, gravity, secure);
                     mOverlays.PushBack(handle);
 
                     continue;

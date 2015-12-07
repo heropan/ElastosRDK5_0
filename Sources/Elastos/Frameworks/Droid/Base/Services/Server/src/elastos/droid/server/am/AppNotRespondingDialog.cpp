@@ -48,18 +48,18 @@ AppNotRespondingDialog::AppNotRespondingDialog(
         else {
             name1 = name2;
             name2 = NULL;
-            CStringWrapper::New(app->mProcessName, (ICharSequence**)&name2);
+            CString::New(app->mProcessName, (ICharSequence**)&name2);
             resid = R::string::anr_application_process;
         }
     }
     else {
         if (name1 != NULL) {
             name2 = NULL;
-            CStringWrapper::New(app->mProcessName, (ICharSequence**)&name2);
+            CString::New(app->mProcessName, (ICharSequence**)&name2);
             resid = R::string::anr_activity_process;
         }
         else {
-            CStringWrapper::New(app->mProcessName, (ICharSequence**)&name1);
+            CString::New(app->mProcessName, (ICharSequence**)&name1);
             resid = R::string::anr_process;
         }
     }
@@ -73,8 +73,8 @@ AppNotRespondingDialog::AppNotRespondingDialog(
     res->GetString(resid, arrayStr1, &str1);
     res->GetString(resid, arrayStr2, &str2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(str1, (ICharSequence**)&cs1);
-    CStringWrapper::New(str2, (ICharSequence**)&cs2);
+    CString::New(str1, (ICharSequence**)&cs1);
+    CString::New(str2, (ICharSequence**)&cs2);
     SetMessage(name2 != NULL ? cs1 : cs2);
 
     AutoPtr<ICharSequence> text1;
@@ -108,7 +108,7 @@ AppNotRespondingDialog::AppNotRespondingDialog(
     AutoPtr<IWindowManagerLayoutParams> attrs;
     Dialog::GetWindow()->GetAttributes((IWindowManagerLayoutParams**)&attrs);
     AutoPtr<ICharSequence> titlecs;
-    CStringWrapper::New(String("Application Not Responding: ") + processName, (ICharSequence**)&titlecs);
+    CString::New(String("Application Not Responding: ") + processName, (ICharSequence**)&titlecs);
     attrs->SetTitle(titlecs);
     attrs->SetPrivateFlags(IWindowManagerLayoutParams::PRIVATE_FLAG_SHOW_FOR_ALL_USERS);
     Dialog::GetWindow()->SetAttributes(attrs);

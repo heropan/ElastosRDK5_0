@@ -82,7 +82,7 @@ public:
      *
      * @param info The logical display information, may be NULL.
      */
-    CARAPI_(void) SetDisplayInfoOverrideFromWindowManagerLocked(
+    CARAPI_(Boolean) SetDisplayInfoOverrideFromWindowManagerLocked(
         /* [in] */ IDisplayInfo* info);
 
     /**
@@ -146,6 +146,20 @@ public:
     CARAPI_(void) SetHasContentLocked(
         /* [in] */ Boolean hasContent);
 
+    /**
+     * Requests the given refresh rate.
+     * @param requestedRefreshRate The desired refresh rate.
+     */
+    void SetRequestedRefreshRateLocked(
+        /* [in] */ Float requestedRefreshRate);
+
+    /**
+     * Gets the pending requested refresh rate.
+     *
+     * @return The pending refresh rate requested
+     */
+    CARAPI_(Float) GetRequestedRefreshRateLocked();
+
     CARAPI_(void) DumpLocked(
         /* [in] */ IPrintWriter* pw);
 
@@ -168,6 +182,9 @@ private:
 
     // True if the logical display has unique content.
     Boolean mHasContent;
+
+    // The pending requested refresh rate. 0 if no request is pending.
+    Float mRequestedRefreshRate;
 
     // Temporary rectangle used when needed.
     AutoPtr<IRect> mTempLayerStackRect;

@@ -6,7 +6,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::IDataOutputStream;
@@ -287,7 +287,7 @@ void NetworkStatsRecorder::RecordSnapshotLocked(
     CNetworkStatsHelper::AcquireSingleton((INetworkStatsHelper**)&helper);
     AutoPtr<INetworkStats> delta;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(mCookie, (ICharSequence**)&cs);
+    CString::New(mCookie, (ICharSequence**)&cs);
     helper->Subtract(snapshot, mLastSnapshot, mObserver, (IInterface*)cs.Get(), (INetworkStats**)&delta);
     Int64 end = currentTimeMillis;
     Int64 elapsedRealTime;

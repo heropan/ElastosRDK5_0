@@ -16,7 +16,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_IInteger32;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
@@ -332,7 +332,7 @@ AutoPtr<PackageSetting> Settings::AddPackageLPw(
             vc, pkgFlags);
     p->mAppId = uid;
     AutoPtr<ICharSequence> csName;
-    CStringWrapper::New(name, (ICharSequence**)&csName);
+    CString::New(name, (ICharSequence**)&csName);
     if (AddUserIdLPw(uid, p->Probe(EIID_IInterface), csName)) {
         mPackages[name] = p;
         return p;
@@ -361,7 +361,7 @@ AutoPtr<SharedUserSetting> Settings::AddSharedUserLPw(
     s = new SharedUserSetting(name, pkgFlags);
     s->mUserId = uid;
     AutoPtr<ICharSequence> csName;
-    CStringWrapper::New(name, (ICharSequence**)&csName);
+    CString::New(name, (ICharSequence**)&csName);
     if (AddUserIdLPw(uid, s->Probe(EIID_IInterface), csName)) {
         mSharedUsers[name] = s;
         return s;
@@ -564,7 +564,7 @@ AutoPtr<PackageSetting> Settings::GetPackageLPw(
                     }
                     // Add new setting to list of user ids
                     AutoPtr<ICharSequence> csName;
-                    CStringWrapper::New(name, (ICharSequence**)&csName);
+                    CString::New(name, (ICharSequence**)&csName);
                     AddUserIdLPw(p->mAppId, p->Probe(EIID_IInterface), csName);
                 }
                 else {
@@ -2431,7 +2431,7 @@ ECode Settings::ReadPermissionsLPw(
 
                     parser->GetAttributeValue(String(NULL), String("label"), &temp);
                     AutoPtr<ICharSequence> csq;
-                    CStringWrapper::New(temp, (ICharSequence**)&csq);
+                    CString::New(temp, (ICharSequence**)&csq);
 
                     pi->SetNonLocalizedLabel(csq);
                     pi->SetProtectionLevel(bp->mProtectionLevel);

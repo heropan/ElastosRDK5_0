@@ -23,7 +23,7 @@
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::IO::IIoUtils;
@@ -357,7 +357,7 @@ ECode Vpn::LegacyVpnRunner::Execute()
             CObjectContainer::New((IObjectContainer**)&dnsServers);
             for (Int32 i = 0; i < servers->GetLength(); i++) {
                 AutoPtr<ICharSequence> server;
-                CStringWrapper::New((*servers)[i], (ICharSequence**)&server);
+                CString::New((*servers)[i], (ICharSequence**)&server);
                 dnsServers->Add(server);
             }
             mConfig->SetDnsServers(dnsServers);
@@ -375,7 +375,7 @@ ECode Vpn::LegacyVpnRunner::Execute()
             CObjectContainer::New((IObjectContainer**)&searchDomains);
             for (Int32 i = 0; i < domains->GetLength(); i++) {
                 AutoPtr<ICharSequence> domain;
-                CStringWrapper::New((*domains)[i], (ICharSequence**)&domain);
+                CString::New((*domains)[i], (ICharSequence**)&domain);
                 searchDomains->Add(domain);
             }
             mConfig->SetSearchDomains(searchDomains);
@@ -860,7 +860,7 @@ void Vpn::ShowNotification(
         }
         else {
             AutoPtr<ICharSequence> csLabel;
-            CStringWrapper::New(label, (ICharSequence**)&csLabel);
+            CString::New(label, (ICharSequence**)&csLabel);
             AutoPtr< ArrayOf<IInterface*> > format = ArrayOf<IInterface*>::Alloc(1);
             format->Set(0, csLabel.Get());
             mContext->GetString(R::string::vpn_title_long, format, &title);
@@ -873,7 +873,7 @@ void Vpn::ShowNotification(
         }
         else {
             AutoPtr<ICharSequence> csSession;
-            CStringWrapper::New(session, (ICharSequence**)&csSession);
+            CString::New(session, (ICharSequence**)&csSession);
             AutoPtr< ArrayOf<IInterface*> > format = ArrayOf<IInterface*>::Alloc(1);
             format->Set(0, csSession.Get());
             mContext->GetString(R::string::vpn_text_long, format, &text);
@@ -885,10 +885,10 @@ void Vpn::ShowNotification(
         builder->SetSmallIcon(R::drawable::vpn_connected);
         builder->SetLargeIcon(icon);
         AutoPtr<ICharSequence> csTitle;
-        CStringWrapper::New(title, (ICharSequence**)&csTitle);
+        CString::New(title, (ICharSequence**)&csTitle);
         builder->SetContentTitle(csTitle);
         AutoPtr<ICharSequence> csText;
-        CStringWrapper::New(text, (ICharSequence**)&csText);
+        CString::New(text, (ICharSequence**)&csText);
         builder->SetContentText(csText);
         builder->SetContentIntent(mStatusIntent);
         builder->SetDefaults(0);

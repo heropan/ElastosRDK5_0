@@ -1,7 +1,7 @@
 
 #include "elastos/droid/server/display/PersistentDataStore.h"
 #include "elastos/droid/utility/Xml.h"
-#include "elastos/droid/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::IBoolean;
@@ -17,12 +17,13 @@ using Elastos::IO::IBufferedOutputStream;
 using Elastos::IO::CBufferedOutputStream;
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Hardware::Display::CWifiDisplay;
+// using Elastos::Droid::Hardware::Display::CWifiDisplay;
 using Elastos::Droid::Utility::CAtomicFile;
-using Elastos::Droid::Utility::CFastXmlSerializer;
-using Elastos::Droid::Utility::IFastXmlSerializer;
 using Elastos::Droid::Utility::Xml;
-using Elastos::Droid::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::CFastXmlSerializer;
+using Elastos::Droid::Internal::Utility::IFastXmlSerializer;
+using Elastos::Droid::Internal::Utility::XmlUtils;
+using Org::Xmlpull::V1::IXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
@@ -81,8 +82,7 @@ AutoPtr<IWifiDisplay> PersistentDataStore::ApplyWifiDisplayAlias(
 
         String deviceAddress;
         display->GetDeviceAddress(&deviceAddress);
-        List< AutoPtr<IWifiDisplay> >::Iterator find =
-            FindRememberedWifiDisplay(deviceAddress);
+        List< AutoPtr<IWifiDisplay> >::Iterator find = FindRememberedWifiDisplay(deviceAddress);
         String alias;
         if (find != mRememberedWifiDisplays.End()) {
             (*find)->GetDeviceAlias(&alias);
@@ -92,8 +92,15 @@ AutoPtr<IWifiDisplay> PersistentDataStore::ApplyWifiDisplayAlias(
         if (!alias2.Equals(alias)) {
             String deviceName;
             display->GetDeviceName(&deviceName);
+            Boolean isAvailable, canConnect, isRemembered;
+            display->IsAvailable(&isAvailable);
+            display->CanConnect(&canConnect);
+            display->IsRemembered(&isRemembered);
+
             AutoPtr<IWifiDisplay> wifiDisp;
-            CWifiDisplay::New(deviceAddress, deviceName, alias, (IWifiDisplay**)&wifiDisp);
+            assert(0 && "TODO");
+            // CWifiDisplay::New(deviceAddress, deviceName, alias,
+            //     isAvailable, canConnect, isRemembered, (IWifiDisplay**)&wifiDisp);
             return wifiDisp;
         }
     }
@@ -204,9 +211,10 @@ void PersistentDataStore::Load()
     //     return;
     // }
 
-    AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    AutoPtr<IBufferedInputStream> bis;
-    ec = CBufferedInputStream::New(is, (IBufferedInputStream**)&bis);
+    AutoPtr<IXmlPullParser> parser;
+    Xml::NewPullParser((IXmlPullParser**)&parser);
+    AutoPtr<IInputStream> bis;
+    ec = CBufferedInputStream::New(is, (IInputStream**)&bis);
     if (FAILED(ec)) goto _Exit_;
     ec = parser->SetInput(bis, String(NULL));
     if (FAILED(ec)) goto _Exit_;
@@ -229,12 +237,12 @@ _Exit_:
 void PersistentDataStore::Save()
 {
     AutoPtr<IFileOutputStream> os;
-    AutoPtr<IFastXmlSerializer> serializer;
-    AutoPtr<IBufferedOutputStream> bos;
+    AutoPtr<IXmlSerializer> serializer;
+    AutoPtr<IOutputStream> bos;
     Boolean success = FALSE;
     FAIL_GOTO(mAtomicFile->StartWrite((IFileOutputStream**)&os), _Exit2_);
-    FAIL_GOTO(CFastXmlSerializer::New((IFastXmlSerializer**)&serializer), _Exit1_);
-    FAIL_GOTO(CBufferedOutputStream::New(os, (IBufferedOutputStream**)&bos), _Exit1_);
+    FAIL_GOTO(CFastXmlSerializer::New((IXmlSerializer**)&serializer), _Exit1_);
+    FAIL_GOTO(CBufferedOutputStream::New(IOutputStream::Probe(os), (IOutputStream**)&bos), _Exit1_);
     FAIL_GOTO(serializer->SetOutput(bos, String("utf-8")), _Exit1_);
     FAIL_GOTO(SaveToXml(serializer), _Exit1_);
     FAIL_GOTO(serializer->Flush(), _Exit1_);
@@ -294,8 +302,9 @@ ECode PersistentDataStore::LoadRememberedWifiDisplaysFromXml(
             }
 
             AutoPtr<IWifiDisplay> wifiDisplay;
-            FAIL_RETURN(CWifiDisplay::New(
-                deviceAddress, deviceName, deviceAlias, (IWifiDisplay**)&wifiDisplay));
+            assert(0 && "TODO");
+            // FAIL_RETURN(CWifiDisplay::New(deviceAddress, deviceName, deviceAlias,
+            //     FALSE, FALSE, FALSE, (IWifiDisplay**)&wifiDisplay));
             mRememberedWifiDisplays.PushBack(wifiDisplay);
         }
     }
@@ -305,9 +314,7 @@ ECode PersistentDataStore::LoadRememberedWifiDisplaysFromXml(
 ECode PersistentDataStore::SaveToXml(
     /* [in] */ IXmlSerializer* serializer)
 {
-    AutoPtr<IBoolean> boolObj;
-    CBoolean::New(TRUE, (IBoolean**)&boolObj);
-    FAIL_RETURN(serializer->StartDocument(String(NULL), boolObj));
+    FAIL_RETURN(serializer->StartDocument(String(NULL), TRUE));
     FAIL_RETURN(serializer->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE));
     FAIL_RETURN(serializer->WriteStartTag(String(NULL), String("display-manager-state")));
     FAIL_RETURN(serializer->WriteStartTag(String(NULL), String("remembered-wifi-displays")));

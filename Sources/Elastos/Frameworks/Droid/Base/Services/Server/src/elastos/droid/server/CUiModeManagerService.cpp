@@ -6,7 +6,7 @@
 #include "elastos/droid/app/ActivityManagerNative.h"
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::App::ActivityManagerNative;
@@ -715,8 +715,8 @@ ECode CUiModeManagerService::AdjustStatusBarCarModeLocked()
             helper->GetActivityAsUser(mContext, 0, carModeOffIntent, 0,
                             NULL, CURRENT, (IPendingIntent**)&pi);
             AutoPtr<ICharSequence> strArg1, strArg2;
-            CStringWrapper::New(str1, (ICharSequence**)&strArg1);
-            CStringWrapper::New(str2, (ICharSequence**)&strArg2);
+            CString::New(str1, (ICharSequence**)&strArg1);
+            CString::New(str2, (ICharSequence**)&strArg2);
 
             n->SetLatestEventInfo(mContext, strArg1, strArg2, pi);
 

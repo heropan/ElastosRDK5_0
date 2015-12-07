@@ -16,7 +16,7 @@
 #include <elastos/core/StringUtils.h>
 #include <unistd.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CInteger32;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::ISystem;
@@ -481,7 +481,7 @@ ECode CMountService::OnDaemonConnectedThread::Run()
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("list"), (ICharSequence**)&cs);
+    CString::New(String("list"), (ICharSequence**)&cs);
     args->Set(0, cs);
     AutoPtr< ArrayOf<NativeDaemonEvent*> > events;
     ECode ec = mHost->mConnector->ExecuteForList(String("volume"), args, (ArrayOf<NativeDaemonEvent*>**)&events);
@@ -786,13 +786,13 @@ ECode CMountService::MountObbAction::HandleExecute()
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(4);
     AutoPtr<ICharSequence> cs1, cs2, cs3, cs4;
-    CStringWrapper::New(String("mount"), (ICharSequence**)&cs1);
+    CString::New(String("mount"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
-    CStringWrapper::New(mObbState->mVoldPath, (ICharSequence**)&cs2);
+    CString::New(mObbState->mVoldPath, (ICharSequence**)&cs2);
     args->Set(1, cs2);
-    CStringWrapper::New(hashedKey, (ICharSequence**)&cs3);
+    CString::New(hashedKey, (ICharSequence**)&cs3);
     args->Set(2, cs3);
-    CStringWrapper::New(StringUtils::Int32ToString(mObbState->mOwnerGid), (ICharSequence**)&cs4);
+    CString::New(StringUtils::Int32ToString(mObbState->mOwnerGid), (ICharSequence**)&cs4);
     args->Set(3, cs4);
     AutoPtr<NativeDaemonEvent> event;
     if (FAILED(mHost->mConnector->Execute(String("obb"), args, (NativeDaemonEvent**)&event))) {
@@ -883,14 +883,14 @@ ECode CMountService::UnmountObbAction::HandleExecute()
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("unmount"), (ICharSequence**)&cs1);
+    CString::New(String("unmount"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
-    CStringWrapper::New(mObbState->mVoldPath, (ICharSequence**)&cs2);
+    CString::New(mObbState->mVoldPath, (ICharSequence**)&cs2);
     args->Set(1, cs2);
     AutoPtr<NativeDaemonConnector::Command> cmd = new NativeDaemonConnector::Command(String("obb"), args);
     if (mForceUnmount) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String("force"), (ICharSequence**)&cs);
+        CString::New(String("force"), (ICharSequence**)&cs);
         cmd->AppendArg(cs);
     }
     AutoPtr<NativeDaemonEvent> event;
@@ -1209,11 +1209,11 @@ ECode CMountService::DoShareUnshareVolume(
 
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     AutoPtr<ICharSequence> cs1, cs2, cs3;
-    CStringWrapper::New(enable ? String("share") : String("unshare"), (ICharSequence**)&cs1);
+    CString::New(enable ? String("share") : String("unshare"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(path, (ICharSequence**)&cs2);
+    CString::New(path, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
-    CStringWrapper::New(method, (ICharSequence**)&cs3);
+    CString::New(method, (ICharSequence**)&cs3);
     args->Set(2, (IInterface*)cs3);
     AutoPtr<NativeDaemonEvent> event;
     ECode ec = mConnector->Execute(String("volume"), args, (NativeDaemonEvent**)&event);
@@ -1263,7 +1263,7 @@ void CMountService::UpdatePublicVolumeState(
              * remove those from the list of mounted OBBS.
              */
             AutoPtr<ICharSequence> seq;
-            CStringWrapper::New(path, (ICharSequence**)&seq);
+            CString::New(path, (ICharSequence**)&seq);
             AutoPtr<IMessage> msg;
             mObbActionHandler->ObtainMessage(OBB_FLUSH_MOUNT_STATE, (IMessage**)&msg);
             msg->SetObj(seq);
@@ -1542,9 +1542,9 @@ Int32 CMountService::DoMountVolume(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("mount"), (ICharSequence**)&cs1);
+    CString::New(String("mount"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(path, (ICharSequence**)&cs2);
+    CString::New(path, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
     AutoPtr<NativeDaemonEvent> event;
     if (FAILED(mConnector->Execute(String("volume"), args, (NativeDaemonEvent**)&event))) {
@@ -1657,20 +1657,20 @@ Int32 CMountService::DoUnmountVolume(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("unmount"), (ICharSequence**)&cs1);
+    CString::New(String("unmount"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(path, (ICharSequence**)&cs2);
+    CString::New(path, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
 
     AutoPtr<NativeDaemonConnector::Command> cmd = new NativeDaemonConnector::Command(String("volume"), args);
     if (removeEncryption) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String("force_and_revert"), (ICharSequence**)&cs);
+        CString::New(String("force_and_revert"), (ICharSequence**)&cs);
         cmd->AppendArg(cs);
     }
     else if (force) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String("force"), (ICharSequence**)&cs);
+        CString::New(String("force"), (ICharSequence**)&cs);
         cmd->AppendArg(cs);
     }
     AutoPtr<NativeDaemonEvent> event;
@@ -1720,9 +1720,9 @@ Int32 CMountService::DoFormatVolume(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("format"), (ICharSequence**)&cs1);
+    CString::New(String("format"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(path, (ICharSequence**)&cs2);
+    CString::New(path, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
     AutoPtr<NativeDaemonEvent> event;
     if (FAILED(mConnector->Execute(String("volume"), args, (NativeDaemonEvent**)&event))) {
@@ -1761,11 +1761,11 @@ Boolean CMountService::DoGetVolumeShared(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     AutoPtr<ICharSequence> cs1, cs2, cs3;
-    CStringWrapper::New(String("shared"), (ICharSequence**)&cs1);
+    CString::New(String("shared"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(path, (ICharSequence**)&cs2);
+    CString::New(path, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
-    CStringWrapper::New(method, (ICharSequence**)&cs3);
+    CString::New(method, (ICharSequence**)&cs3);
     args->Set(2, (IInterface*)cs3);
     if (FAILED(mConnector->Execute(String("volume"), args, (NativeDaemonEvent**)&event))) {
         Slogger::E(TAG, "Failed to read response to volume shared %s %s", path.string(), method.string());
@@ -2429,9 +2429,9 @@ ECode CMountService::GetStorageUsers(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("users"), (ICharSequence**)&cs1);
+    CString::New(String("users"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(path, (ICharSequence**)&cs2);
+    CString::New(path, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
     AutoPtr< ArrayOf<NativeDaemonEvent*> > events;
     if (FAILED(mConnector->ExecuteForList(String("storage"), args,
@@ -2491,7 +2491,7 @@ ECode CMountService::GetSecureContainerList(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("list"), (ICharSequence**)&cs);
+    CString::New(String("list"), (ICharSequence**)&cs);
     args->Set(0, (IInterface*)cs);
     AutoPtr< ArrayOf<NativeDaemonEvent*> > events;
     if (FAILED(mConnector->ExecuteForList(String("asec"), args,
@@ -2527,19 +2527,19 @@ ECode CMountService::CreateSecureContainer(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(7);
     AutoPtr<ICharSequence> cs1, cs2, cs3, cs4, cs5, cs6, cs7;
-    CStringWrapper::New(String("create"), (ICharSequence**)&cs1);
+    CString::New(String("create"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(id, (ICharSequence**)&cs2);
+    CString::New(id, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
-    CStringWrapper::New(StringUtils::Int32ToString(sizeMb), (ICharSequence**)&cs3);
+    CString::New(StringUtils::Int32ToString(sizeMb), (ICharSequence**)&cs3);
     args->Set(2, (IInterface*)cs3);
-    CStringWrapper::New(fstype, (ICharSequence**)&cs4);
+    CString::New(fstype, (ICharSequence**)&cs4);
     args->Set(3, (IInterface*)cs4);
-    CStringWrapper::New(key, (ICharSequence**)&cs5);
+    CString::New(key, (ICharSequence**)&cs5);
     args->Set(4, (IInterface*)cs5);
-    CStringWrapper::New(StringUtils::Int32ToString(ownerUid), (ICharSequence**)&cs6);
+    CString::New(StringUtils::Int32ToString(ownerUid), (ICharSequence**)&cs6);
     args->Set(5, (IInterface*)cs6);
-    CStringWrapper::New(external ? String("1") : String("0"), (ICharSequence**)&cs7);
+    CString::New(external ? String("1") : String("0"), (ICharSequence**)&cs7);
     args->Set(6, (IInterface*)cs7);
     AutoPtr<NativeDaemonEvent> event;
     if(FAILED(mConnector->Execute(String("asec"), args, (NativeDaemonEvent**)&event))) {
@@ -2569,9 +2569,9 @@ ECode CMountService::FinalizeSecureContainer(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("finalize"), (ICharSequence**)&cs1);
+    CString::New(String("finalize"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(id, (ICharSequence**)&cs2);
+    CString::New(id, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
     AutoPtr<NativeDaemonEvent> event;
     if (FAILED(mConnector->Execute(String("asec"), args, (NativeDaemonEvent**)&event))) {
@@ -2602,13 +2602,13 @@ ECode CMountService::FixPermissionsSecureContainer(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(4);
     AutoPtr<ICharSequence> cs1, cs2, cs3, cs4;
-    CStringWrapper::New(String("fixperms"), (ICharSequence**)&cs1);
+    CString::New(String("fixperms"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(id, (ICharSequence**)&cs2);
+    CString::New(id, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
-    CStringWrapper::New(String("fixperms"), (ICharSequence**)&cs3);
+    CString::New(String("fixperms"), (ICharSequence**)&cs3);
     args->Set(2, (IInterface*)cs3);
-    CStringWrapper::New(filename, (ICharSequence**)&cs4);
+    CString::New(filename, (ICharSequence**)&cs4);
     args->Set(3, (IInterface*)cs4);
     AutoPtr<NativeDaemonEvent> event;
     if (FAILED(mConnector->Execute(String("asec"), args, (NativeDaemonEvent**)&event))) {
@@ -2647,14 +2647,14 @@ ECode CMountService::DestroySecureContainer(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("destroy"), (ICharSequence**)&cs1);
+    CString::New(String("destroy"), (ICharSequence**)&cs1);
     args->Set(0, (IInterface*)cs1);
-    CStringWrapper::New(id, (ICharSequence**)&cs2);
+    CString::New(id, (ICharSequence**)&cs2);
     args->Set(1, (IInterface*)cs2);
     AutoPtr<NativeDaemonConnector::Command> cmd = new NativeDaemonConnector::Command(String("asec"), args);
     if (force) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String("force"), (ICharSequence**)&cs);
+        CString::New(String("force"), (ICharSequence**)&cs);
         cmd->AppendArg((IInterface*)cs);
     }
     AutoPtr<NativeDaemonEvent> event;
@@ -2714,13 +2714,13 @@ ECode CMountService::MountSecureContainer(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(4);
     AutoPtr<ICharSequence> cs1, cs2, cs3, cs4;
-    CStringWrapper::New(String("mount"), (ICharSequence**)&cs1);
+    CString::New(String("mount"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
-    CStringWrapper::New(id, (ICharSequence**)&cs2);
+    CString::New(id, (ICharSequence**)&cs2);
     args->Set(1, cs2);
-    CStringWrapper::New(key, (ICharSequence**)&cs3);
+    CString::New(key, (ICharSequence**)&cs3);
     args->Set(2, cs3);
-    CStringWrapper::New(StringUtils::Int32ToString(ownerUid), (ICharSequence**)&cs4);
+    CString::New(StringUtils::Int32ToString(ownerUid), (ICharSequence**)&cs4);
     args->Set(3, cs4);
     AutoPtr<NativeDaemonEvent> event;
     if (FAILED(mConnector->Execute(String("asec"), args, (NativeDaemonEvent**)&event))) {
@@ -2779,14 +2779,14 @@ ECode CMountService::UnmountSecureContainer(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("unmount"), (ICharSequence**)&cs1);
+    CString::New(String("unmount"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
-    CStringWrapper::New(id, (ICharSequence**)&cs2);
+    CString::New(id, (ICharSequence**)&cs2);
     args->Set(1, cs2);
     AutoPtr<NativeDaemonConnector::Command> cmd = new NativeDaemonConnector::Command(String("asec"), args);
     if (force) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String("force"), (ICharSequence**)&cs);
+        CString::New(String("force"), (ICharSequence**)&cs);
         cmd->AppendArg(cs);
     }
     AutoPtr<NativeDaemonEvent> event;
@@ -2861,11 +2861,11 @@ ECode CMountService::RenameSecureContainer(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     AutoPtr<ICharSequence> cs1, cs2, cs3;
-    CStringWrapper::New(String("rename"), (ICharSequence**)&cs1);
+    CString::New(String("rename"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
-    CStringWrapper::New(oldId, (ICharSequence**)&cs2);
+    CString::New(oldId, (ICharSequence**)&cs2);
     args->Set(1, cs2);
-    CStringWrapper::New(newId, (ICharSequence**)&cs3);
+    CString::New(newId, (ICharSequence**)&cs3);
     args->Set(2, cs3);
     AutoPtr<NativeDaemonEvent> event;
     if (FAILED(mConnector->Execute(String("asec"), args, (NativeDaemonEvent**)&event))) {
@@ -2891,9 +2891,9 @@ ECode CMountService::GetSecureContainerPath(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("path"), (ICharSequence**)&cs1);
+    CString::New(String("path"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
-    CStringWrapper::New(id, (ICharSequence**)&cs2);
+    CString::New(id, (ICharSequence**)&cs2);
     args->Set(1, cs2);
     if (FAILED(mConnector->Execute(String("asec"), args, (NativeDaemonEvent**)&event))) {
         Int32 code = 0;
@@ -2938,9 +2938,9 @@ ECode CMountService::GetSecureContainerFilesystemPath(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("fspath"), (ICharSequence**)&cs1);
+    CString::New(String("fspath"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
-    CStringWrapper::New(id, (ICharSequence**)&cs2);
+    CString::New(id, (ICharSequence**)&cs2);
     args->Set(1, cs2);
     if (FAILED(mConnector->Execute(String("asec"), args, (NativeDaemonEvent**)&event))) {
         Int32 code = 0;
@@ -3030,9 +3030,9 @@ ECode CMountService::GetMountedObbPath(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("path"), (ICharSequence**)&cs1);
+    CString::New(String("path"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
-    CStringWrapper::New(state->mVoldPath, (ICharSequence**)&cs2);
+    CString::New(state->mVoldPath, (ICharSequence**)&cs2);
     args->Set(1, cs2);
     if (FAILED(mConnector->Execute(String("obb"), args, (NativeDaemonEvent**)&event))) {
         Int32 code = 0;
@@ -3164,7 +3164,7 @@ ECode CMountService::GetEncryptionState(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("cryptocomplete"), (ICharSequence**)&cs);
+    CString::New(String("cryptocomplete"), (ICharSequence**)&cs);
     args->Set(0, cs);
     if (FAILED(mConnector->Execute(String("cryptfs"), args, (NativeDaemonEvent**)&event))) {
         Slogger::W(TAG, "Error in communicating with cryptfs in validating");
@@ -3196,7 +3196,7 @@ ECode CMountService::DecryptStorageRunnable::Run()
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("restart"), (ICharSequence**)&cs);
+    CString::New(String("restart"), (ICharSequence**)&cs);
     args->Set(0, cs);
     AutoPtr<NativeDaemonEvent> event;
     if (FAILED(mHost->mConnector->Execute(String("cryptfs"), args, (NativeDaemonEvent**)&event))) {
@@ -3216,7 +3216,7 @@ ECode CMountService::DecryptStorage(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(password, (ICharSequence**)&cs);
+    CString::New(password, (ICharSequence**)&cs);
     if (TextUtils::IsEmpty(cs)) {
         Slogger::E(TAG, "password cannot be empty");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -3236,7 +3236,7 @@ ECode CMountService::DecryptStorage(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1;
-    CStringWrapper::New(String("checkpw"), (ICharSequence**)&cs1);
+    CString::New(String("checkpw"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
     args->Set(1, cs);
     if (FAILED(mConnector->Execute(String("cryptfs"), args, (NativeDaemonEvent**)&event))) {
@@ -3273,7 +3273,7 @@ ECode CMountService::EncryptStorage(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(password, (ICharSequence**)&cs);
+    CString::New(password, (ICharSequence**)&cs);
     if (TextUtils::IsEmpty(cs)) {
         Slogger::E(TAG, "password cannot be empty");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -3292,9 +3292,9 @@ ECode CMountService::EncryptStorage(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(String("enablecrypto"), (ICharSequence**)&cs1);
+    CString::New(String("enablecrypto"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
-    CStringWrapper::New(String("inplace"), (ICharSequence**)&cs2);
+    CString::New(String("inplace"), (ICharSequence**)&cs2);
     args->Set(1, cs2);
     args->Set(2, cs);
     AutoPtr<NativeDaemonEvent> event;
@@ -3321,7 +3321,7 @@ ECode CMountService::ChangeEncryptionPassword(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(password, (ICharSequence**)&cs);
+    CString::New(password, (ICharSequence**)&cs);
     if (TextUtils::IsEmpty(cs)) {
         Slogger::E(TAG, "password cannot be empty");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -3341,7 +3341,7 @@ ECode CMountService::ChangeEncryptionPassword(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1;
-    CStringWrapper::New(String("changepw"), (ICharSequence**)&cs1);
+    CString::New(String("changepw"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
     args->Set(1, cs);
     if (FAILED(mConnector->Execute(String("cryptfs"), args, (NativeDaemonEvent**)&event))) {
@@ -3376,7 +3376,7 @@ ECode CMountService::VerifyEncryptionPassword(
             Elastos::Droid::Manifest::permission::CRYPT_KEEPER, String("no permission to access the crypt keeper")));
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(password, (ICharSequence**)&cs);
+    CString::New(password, (ICharSequence**)&cs);
     if (TextUtils::IsEmpty(cs)) {
         Slogger::E(TAG, "password cannot be empty");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -3393,7 +3393,7 @@ ECode CMountService::VerifyEncryptionPassword(
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs1;
-    CStringWrapper::New(String("verifypw"), (ICharSequence**)&cs1);
+    CString::New(String("verifypw"), (ICharSequence**)&cs1);
     args->Set(0, cs1);
     args->Set(1, cs);
     if (FAILED(mConnector->Execute(String("cryptfs"), args, (NativeDaemonEvent**)&event))) {

@@ -7,7 +7,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
 using Elastos::Droid::Content::IContext;
@@ -885,18 +885,18 @@ void WifiDisplayAdapter::HandleUpdateNotification()
         String str;
         r->GetString(R::string::wifi_display_notification_title, &str);
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(str, (ICharSequence**)&seq);
+        CString::New(str, (ICharSequence**)&seq);
         builder->SetContentTitle(seq);
         r->GetString(R::string::wifi_display_notification_message, &str);
         seq = NULL;
-        CStringWrapper::New(str, (ICharSequence**)&seq);
+        CString::New(str, (ICharSequence**)&seq);
         builder->SetContentText(seq);
         builder->SetContentIntent(mSettingsPendingIntent);
         builder->SetSmallIcon(R::drawable::ic_notify_wifidisplay);
         builder->SetOngoing(TRUE);
         r->GetString(R::string::wifi_display_notification_disconnect, &str);
         seq = NULL;
-        CStringWrapper::New(str, (ICharSequence**)&seq);
+        CString::New(str, (ICharSequence**)&seq);
         builder->AddAction(R::drawable::ic_menu_close_clear_cancel,
             seq, mDisconnectPendingIntent);
         builder->Build((INotification**)&notification);

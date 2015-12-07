@@ -5,13 +5,15 @@
 #include "elastos/droid/R.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Hardware::Display::EIID_IDisplayListener;
 using Elastos::Droid::View::EIID_IViewOnTouchListener;
 using Elastos::Droid::View::EIID_ISurfaceTextureListener;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::CGestureDetector;
@@ -29,7 +31,7 @@ const Boolean OverlayDisplayWindow::DEBUG = TRUE;
 //===================================================================================
 //          OverlayDisplayWindow::MyDisplayListener
 //===================================================================================
-CAR_INTERFACE_IMPL(OverlayDisplayWindow::MyDisplayListener, IDisplayListener);
+CAR_INTERFACE_IMPL(OverlayDisplayWindow::MyDisplayListener, Object, IDisplayListener);
 
 OverlayDisplayWindow::MyDisplayListener::MyDisplayListener(
     /* [in] */ OverlayDisplayWindow* owner)
@@ -52,6 +54,9 @@ ECode OverlayDisplayWindow::MyDisplayListener::OnDisplayChanged(
     if (displayId == defaultDisplayId) {
         if (mHost->UpdateDefaultDisplayInfo()) {
             mHost->Relayout();
+            Int32 state;
+            mHost->mDefaultDisplayInfo->GetState(&state);
+            mHost->mListener->OnStateChanged(state);
         }
         else {
             mHost->Dismiss();
@@ -76,7 +81,7 @@ ECode OverlayDisplayWindow::MyDisplayListener::OnDisplayRemoved(
 //          OverlayDisplayWindow::MySurfaceTextureListener
 //===================================================================================
 CAR_INTERFACE_IMPL(
-    OverlayDisplayWindow::MySurfaceTextureListener, ISurfaceTextureListener);
+    OverlayDisplayWindow::MySurfaceTextureListener, Object, ISurfaceTextureListener);
 
 OverlayDisplayWindow::MySurfaceTextureListener::MySurfaceTextureListener(
     /* [in] */ OverlayDisplayWindow* owner)
@@ -89,10 +94,15 @@ ECode OverlayDisplayWindow::MySurfaceTextureListener::OnSurfaceTextureAvailable(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    Float refreshRate;
-    mHost->mDefaultDisplayInfo->GetRefreshRate(&refreshRate);
-    if (mHost->mListener)
-        mHost->mListener->OnWindowCreated(surfaceTexture, refreshRate);
+    if (mHost->mListener) {
+        Float refreshRate;
+        mHost->mDefaultDisplayInfo->GetRefreshRate(&refreshRate);
+        Int32 state;
+        mHost->mDefaultDisplayInfo->GetState(&state);
+        Int64 nanos;
+        mHost->mDefaultDisplayInfo->GetPresentationDeadlineNanos(&nanos);
+        mHost->mListener->OnWindowCreated(surfaceTexture, refreshRate, nanos, state);
+    }
     return NOERROR;
 }
 
@@ -128,7 +138,7 @@ ECode OverlayDisplayWindow::MySurfaceTextureListener::OnSurfaceTextureUpdated(
 //          OverlayDisplayWindow::MyViewOnTouchListener
 //===================================================================================
 CAR_INTERFACE_IMPL(
-    OverlayDisplayWindow::MyViewOnTouchListener, IViewOnTouchListener);
+    OverlayDisplayWindow::MyViewOnTouchListener, Object, IViewOnTouchListener);
 
 OverlayDisplayWindow::MyViewOnTouchListener::MyViewOnTouchListener(
     /* [in] */ OverlayDisplayWindow* owner)
@@ -225,6 +235,7 @@ OverlayDisplayWindow::OverlayDisplayWindow(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 densityDpi,
+    /* [in] */ Boolean secure,
     /* [in] */ Int32 gravity,
     /* [in] */ IOverlayDisplayWindowListener* listener)
     : INITIAL_SCALE(0.5f)
@@ -237,6 +248,7 @@ OverlayDisplayWindow::OverlayDisplayWindow(
     , mWidth(width)
     , mHeight(height)
     , mDensityDpi(densityDpi)
+    , mSecure(secure)
     , mGravity(gravity)
     , mListener(listener)
     , mWindowVisible(FALSE)
@@ -251,6 +263,12 @@ OverlayDisplayWindow::OverlayDisplayWindow(
     context->GetResources((IResources**)&resources);
     assert(resources != NULL);
     resources->GetString(R::string::display_manager_overlay_display_title, &mTitle);
+
+    if (secure) {
+        String tmp;
+        resources->GetString(R::string::display_manager_overlay_display_secure_suffix, &tmp);
+        mTitle += tmp;
+    }
 
     AutoPtr<IInterface> service;
     context->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&service);
@@ -283,7 +301,8 @@ void OverlayDisplayWindow::Show()
 
         ClearLiveState();
         UpdateWindowParams();
-        mWindowManager->AddView(mWindowContent, mWindowParams);
+        IViewManager::Probe(mWindowManager)->AddView(mWindowContent,
+            IViewGroupLayoutParams::Probe(mWindowParams));
         mWindowVisible = TRUE;
     }
 }
@@ -292,7 +311,7 @@ void OverlayDisplayWindow::Dismiss()
 {
     if (mWindowVisible) {
         mDisplayManager->UnregisterDisplayListener(mDisplayListener);
-        mWindowManager->RemoveView(mWindowContent);
+        IViewManager::Probe(mWindowManager)->RemoveView(mWindowContent);
         mWindowVisible = FALSE;
     }
 }
@@ -301,7 +320,8 @@ void OverlayDisplayWindow::Relayout()
 {
     if (mWindowVisible) {
         UpdateWindowParams();
-        mWindowManager->UpdateViewLayout(mWindowContent, mWindowParams);
+        IViewManager::Probe(mWindowManager)->UpdateViewLayout(mWindowContent,
+            IViewGroupLayoutParams::Probe(mWindowParams));
     }
 }
 
@@ -349,10 +369,10 @@ void OverlayDisplayWindow::CreateWindow()
     AutoPtr<IView> view;
     mWindowContent->FindViewById(R::id::overlay_display_window_texture, (IView**)&view);
     mTextureView = ITextureView::Probe(view);
-    mTextureView->SetPivotX(0);
-    mTextureView->SetPivotY(0);
+    view->SetPivotX(0);
+    view->SetPivotY(0);
     AutoPtr<IViewGroupLayoutParams> layoutParams;
-    mTextureView->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
+    view->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
     layoutParams->SetWidth(mWidth);
     layoutParams->SetHeight(mHeight);
     mTextureView->SetOpaque(FALSE);
@@ -362,7 +382,7 @@ void OverlayDisplayWindow::CreateWindow()
     mWindowContent->FindViewById(R::id::overlay_display_window_title, (IView**)&view);
     mTitleTextView = ITextView::Probe(view);
     AutoPtr<ICharSequence> title;
-    CStringWrapper::New(mTitle, (ICharSequence**)&title);
+    CString::New(mTitle, (ICharSequence**)&title);
     mTitleTextView->SetText(title);
 
     mWindowParams = NULL;
@@ -376,6 +396,9 @@ void OverlayDisplayWindow::CreateWindow()
         | IWindowManagerLayoutParams::FLAG_NOT_FOCUSABLE
         | IWindowManagerLayoutParams::FLAG_NOT_TOUCH_MODAL
         | IWindowManagerLayoutParams::FLAG_HARDWARE_ACCELERATED;
+    if (mSecure) {
+        flags |= IWindowManagerLayoutParams::FLAG_SECURE;
+    }
     if (DISABLE_MOVE_AND_RESIZE) {
         flags |= IWindowManagerLayoutParams::FLAG_NOT_TOUCHABLE;
     }
@@ -432,20 +455,23 @@ void OverlayDisplayWindow::UpdateWindowParams()
             "x=%d, width=%d, height=%d", scale, offsetScale, x, width, height);
     }
 
-    mTextureView->SetScaleX(scale);
-    mTextureView->SetScaleY(scale);
+    IView* view = IView::Probe(mTextureView);
+    view->SetScaleX(scale);
+    view->SetScaleY(scale);
 
+    IViewGroupLayoutParams* vglp = IViewGroupLayoutParams::Probe(mWindowParams);
     mWindowParams->SetX(x);
     mWindowParams->SetY(y);
-    mWindowParams->SetWidth(width);
-    mWindowParams->SetHeight(height);
+    vglp->SetWidth(width);
+    vglp->SetHeight(height);
 }
 
 void OverlayDisplayWindow::SaveWindowParams()
 {
     mWindowParams->GetX(&mWindowX);
     mWindowParams->GetY(&mWindowY);
-    mTextureView->GetScaleX(&mWindowScale);
+    IView* view = IView::Probe(mTextureView);
+    view->GetScaleX(&mWindowScale);
     ClearLiveState();
 }
 

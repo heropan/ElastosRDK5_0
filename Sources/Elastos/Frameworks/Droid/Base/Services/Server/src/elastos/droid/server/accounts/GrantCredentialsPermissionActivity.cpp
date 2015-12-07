@@ -7,7 +7,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Content::CIntent;
@@ -129,7 +129,7 @@ ECode GrantCredentialsPermissionActivity::OnCreate(
     FAIL_RETURN(Activity::OnCreate(savedInstanceState));
     ASSERT_SUCCEEDED(SetContentView(R::layout::grant_credentials_permission));
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(StringUtils::Int32ToString(R::string::grant_permissions_header_text),
+    CString::New(StringUtils::Int32ToString(R::string::grant_permissions_header_text),
             (ICharSequence**)&csq);
     SetTitle(csq);
 
@@ -235,11 +235,11 @@ ECode GrantCredentialsPermissionActivity::OnCreate(
     ASSERT_SUCCEEDED(FindViewById(R::id::account_name, (IView**)(ITextView**)&nameT));
     String name;
     mAccount->GetName(&name);
-    CStringWrapper::New(name, (ICharSequence**)&csq);
+    CString::New(name, (ICharSequence**)&csq);
     nameT->SetText(csq);
     ASSERT_SUCCEEDED(FindViewById(R::id::account_type, (IView**)(ITextView**)&typeT));
     csq = NULL;
-    CStringWrapper::New(accountTypeLabel, (ICharSequence**)&csq);
+    CString::New(accountTypeLabel, (ICharSequence**)&csq);
     typeT->SetText(csq);
 
     return NOERROR;
@@ -303,7 +303,7 @@ AutoPtr<IView> GrantCredentialsPermissionActivity::NewPackageView(
     ASSERT_SUCCEEDED(view->FindViewById(R::id::package_label,
             (IView**)(ITextView**)&text));
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(packageLabel, (ICharSequence**)&csq);
+    CString::New(packageLabel, (ICharSequence**)&csq);
     text->SetText(csq);
     return view;
 }

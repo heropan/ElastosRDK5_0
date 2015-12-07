@@ -8,7 +8,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Concurrent::EIID_ICallable;
 using Elastos::Utility::Logging::Slogger;
 
@@ -169,7 +169,7 @@ ECode SessionCmdTask::Call(
     VALIDATE_NOT_NULL(result)
     String str;
     RunForResult(&str);
-    return CStringWrapper::New(str, (ICharSequence**)result);
+    return CString::New(str, (ICharSequence**)result);
 }
 
 ECode SessionCmdTask::RunForResult(

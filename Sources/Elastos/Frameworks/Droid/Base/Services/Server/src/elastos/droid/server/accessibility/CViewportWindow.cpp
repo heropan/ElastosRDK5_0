@@ -7,7 +7,7 @@ using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
 using Elastos::Droid::View::IGravity;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -110,7 +110,7 @@ ECode CViewportWindow::constructor(
     mWindowParams->SetFlags(flags);
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(WINDOW_TITLE, (ICharSequence**)&seq);
+    CString::New(WINDOW_TITLE, (ICharSequence**)&seq);
     mWindowParams->SetTitle(seq);
     mWindowParams->SetGravity(IGravity::CENTER);
     AutoPtr<IDisplayInfo> info = mDisplayProvider->GetDisplayInfo();

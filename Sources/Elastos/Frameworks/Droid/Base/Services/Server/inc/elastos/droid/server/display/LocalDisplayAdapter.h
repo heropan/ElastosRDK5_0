@@ -29,6 +29,21 @@ class LocalDisplayAdapter
     : public DisplayAdapter
 {
 private:
+    class RequestDisplayStateRunnable
+        : public Runnable
+    {
+    public:
+        RequestDisplayStateRunnable(
+            /* [in] */ IBinder* device,
+            /* [in] */ Int32 mode);
+
+        CARAPI Run();
+
+    private:
+        AutoPtr<IBinder> mToken;
+        Int32 mMode;
+    };
+
     class LocalDisplayDevice
         : public DisplayDevice
     {
@@ -37,10 +52,12 @@ private:
             /* [in] */ LocalDisplayAdapter* owner,
             /* [in] */ IBinder* displayToken,
             /* [in] */ Int32 builtInDisplayId,
-            /* [in] */ IPhysicalDisplayInfo* phys);
+            /* [in] */ ArrayOf<IPhysicalDisplayInfo*>* physicalDisplayInfos,
+            /* [in] */ Int32 activeDisplayInfo);
 
         CARAPI_(Boolean) UpdatePhysicalDisplayInfoLocked(
-            /* [in] */ IPhysicalDisplayInfo* phys);
+            /* [in] */ ArrayOf<IPhysicalDisplayInfo*>* physicalDisplayInfos,
+            /* [in] */ Int32 activeDisplayInfo);
 
         //@Override
         CARAPI_(void) ApplyPendingDisplayDeviceInfoChangesLocked();
@@ -49,22 +66,35 @@ private:
         CARAPI_(AutoPtr<DisplayDeviceInfo>) GetDisplayDeviceInfoLocked();
 
         //@Override
-        CARAPI_(void) BlankLocked();
+        AutoPtr<IRunnable> RequestDisplayStateLocked(
+            /* [in] */ Int32 state);
 
         //@Override
-        CARAPI_(void) UnblankLocked();
+        CARAPI_(void) RequestRefreshRateLocked(
+            /* [in] */ Float refreshRate);
 
         //@Override
         CARAPI_(void) DumpLocked(
             /* [in] */ IPrintWriter* pw);
 
     private:
+        void UpdateDeviceInfoLocked();
+
+        void UpdateSupportedRefreshRatesLocked(
+            /* [in] */ ArrayOf<IPhysicalDisplayInfo*>* physicalDisplayInfos,
+            /* [in] */ IPhysicalDisplayInfo* activePhys);
+
+    private:
         Int32 mBuiltInDisplayId;
         AutoPtr<IPhysicalDisplayInfo> mPhys;
+        Int32 mDefaultPhysicalDisplayInfo;
 
         AutoPtr<DisplayDeviceInfo> mInfo;
         Boolean mHavePendingChanges;
-        Boolean mBlanked;
+        Int32 mState;
+        AutoPtr<ArrayOf<Float> > mSupportedRefreshRates;
+        AutoPtr<ArrayOf<Int32> > mRefreshRateConfigIndices;
+        Float mLastRequestedRefreshRate;
         LocalDisplayAdapter* mHost;
     };
 
@@ -77,7 +107,7 @@ private:
             /* [in] */ LocalDisplayAdapter* owner);
 
         //@Override
-        CARAPI_(void) OnHotplug(
+        CARAPI OnHotplug(
             /* [in] */ Int64 timestampNanos,
             /* [in] */ Int32 builtInDisplayId,
             /* [in] */ Boolean connected);
@@ -99,8 +129,15 @@ public:
     //@Override
     CARAPI_(void) RegisterLocked();
 
+    static Int32 GetPowerModeForState(
+        /* [in] */ Int32 state);
+
 private:
-    CARAPI_(void) ScanDisplaysLocked();
+    CARAPI_(void) TryConnectDisplayLocked(
+        /* [in] */ Int32 builtInDisplayId);
+
+    CARAPI_(void) TryDisconnectDisplayLocked(
+        /* [in] */ Int32 builtInDisplayId);
 
 private:
     static const String TAG;
@@ -109,7 +146,6 @@ private:
 
     HashMap<Int32, AutoPtr<LocalDisplayDevice> > mDevices;
     AutoPtr<HotplugDisplayEventReceiver> mHotplugReceiver;
-    AutoPtr<IPhysicalDisplayInfo> mTempPhys;
 };
 
 } // namespace Display

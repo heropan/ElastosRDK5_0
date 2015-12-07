@@ -4,7 +4,7 @@
 #include "accounts/CAccountManagerService.h"
 #include "elastos/droid/text/TextUtils.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
@@ -44,11 +44,11 @@ String CAddAcountSession::ToDebugString(
     for (Int32 i = 0; i < mRequiredFeatures->GetLength(); i++) {
         String s = (*mRequiredFeatures)[i];
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(s, (ICharSequence**)&cs);
+        CString::New(s, (ICharSequence**)&cs);
         features->Add(cs);
     }
     AutoPtr<ICharSequence> str;
-    CStringWrapper::New(String(","), (ICharSequence**)&str);
+    CString::New(String(","), (ICharSequence**)&str);
     return AccountManagerServiceSession::ToDebugString(now) + String(", addAccount")
             + String(", accountType ") + mAccountType
             + String(", requiredFeatures ")

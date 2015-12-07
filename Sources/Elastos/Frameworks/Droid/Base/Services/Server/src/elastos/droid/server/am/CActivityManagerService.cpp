@@ -4536,7 +4536,7 @@ ECode CActivityManagerService::KillApplicationWithAppId(
         AutoPtr<IMessage> msg;
         mHandler->ObtainMessage(KILL_APPLICATION_MSG, appid, 0, (IMessage**)&msg);
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(pkg, (ICharSequence**)&seq);
+        CString::New(pkg, (ICharSequence**)&seq);
         msg->SetObj(seq->Probe(EIID_IInterface));
         Boolean result;
         mHandler->SendMessage(msg, &result);
@@ -13025,7 +13025,7 @@ ECode CActivityManagerService::AppendMemBucket(
             out.AppendInt64(bucket);
             out.AppendCStr(stackLike ? "MB." : "MB ");
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(label, (ICharSequence**)&cs);
+            CString::New(label, (ICharSequence**)&cs);
             out.AppendCharSequence(cs, start, end);
             return NOERROR;
         }
@@ -13033,7 +13033,7 @@ ECode CActivityManagerService::AppendMemBucket(
     out.AppendInt64(memKB/1024);
     out.AppendCStr(stackLike ? "MB." : "MB ");
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(label, (ICharSequence**)&cs);
+    CString::New(label, (ICharSequence**)&cs);
     out.AppendCharSequence(cs, start, end);
     return NOERROR;
 }
@@ -18912,14 +18912,14 @@ void CActivityManagerService::HandleShowUidErrorMsg()
         dWindow->SetType(IWindowManagerLayoutParams::TYPE_SYSTEM_ERROR);
         d->SetCancelable(FALSE);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(title, (ICharSequence**)&cs);
+        CString::New(title, (ICharSequence**)&cs);
         d->SetTitle(cs);
         cs = NULL;
-        CStringWrapper::New(text, (ICharSequence**)&cs);
+        CString::New(text, (ICharSequence**)&cs);
         d->SetMessage(cs);
         AutoPtr<IDialogInterfaceOnClickListener> listener = new ErrorMsgButtonOnClickListener(this);
         cs = NULL;
-        CStringWrapper::New(String("I'm Feeling Lucky"), (ICharSequence**)&cs);
+        CString::New(String("I'm Feeling Lucky"), (ICharSequence**)&cs);
         d->SetButton(IDialogInterface::BUTTON_POSITIVE, cs, listener);
         mUidAlert = d;
         d->Show();
@@ -18999,7 +18999,7 @@ void CActivityManagerService::HandlePostHeavyNotificationMsg(
         String text;
         mContext->GetString(R::string::heavy_weight_notification, labelArray, &text);
         AutoPtr<ICharSequence> textCs;
-        CStringWrapper::New(text, (ICharSequence**)&textCs);
+        CString::New(text, (ICharSequence**)&textCs);
         AutoPtr<INotification> notification;
         CNotification::New((INotification**)&notification);
         notification->SetIcon(R::drawable::stat_sys_adb); //context.getApplicationInfo().icon;

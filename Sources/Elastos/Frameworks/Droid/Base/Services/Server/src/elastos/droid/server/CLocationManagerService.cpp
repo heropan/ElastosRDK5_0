@@ -20,7 +20,7 @@ using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IThread;
 using Elastos::Core::CThread;
 using Elastos::Droid::R;
@@ -1125,7 +1125,7 @@ ECode CLocationManagerService::GetAllProviders(
             continue;
         }
         AutoPtr<ICharSequence> wrapper;
-        CStringWrapper::New(name, (ICharSequence**)&wrapper);
+        CString::New(name, (ICharSequence**)&wrapper);
         (*allProviders)->Add(wrapper.Get());
     }
 
@@ -1176,7 +1176,7 @@ ECode CLocationManagerService::GetProviders(
                 }
             }
             AutoPtr<ICharSequence> wrapper;
-            CStringWrapper::New(name, (ICharSequence**)&wrapper);
+            CString::New(name, (ICharSequence**)&wrapper);
             (*providers)->Add(wrapper);
         }
     }

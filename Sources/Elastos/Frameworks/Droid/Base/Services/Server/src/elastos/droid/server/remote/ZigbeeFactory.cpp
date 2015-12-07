@@ -6,7 +6,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IClassLoader;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Utility::Logging::Slogger;
@@ -218,7 +218,7 @@ AutoPtr<IInterface> ZigbeeFactory::SocketCmd_Task::DoInBackground(
 
     if (DBG) Slogger::D(ZigbeeFactory::TAG, "DoInBackground resultFromService %s", resultFromService.string());
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(resultFromService, (ICharSequence**)&cs);
+    CString::New(resultFromService, (ICharSequence**)&cs);
     return cs.Get();
 }
 

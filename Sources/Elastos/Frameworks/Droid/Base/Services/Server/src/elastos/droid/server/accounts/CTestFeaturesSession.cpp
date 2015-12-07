@@ -3,7 +3,7 @@
 #include "accounts/CTestFeaturesSession.h"
 #include "elastos/droid/text/TextUtils.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Accounts::IAccountManager;
 using Elastos::Droid::Text::TextUtils;
@@ -113,12 +113,12 @@ String CTestFeaturesSession::ToDebugString(
     String accountStr;
     mAccount->ToString(&accountStr);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String(","), (ICharSequence**)&cs);
+    CString::New(String(","), (ICharSequence**)&cs);
     AutoPtr<IObjectContainer> features;
     for (Int32 i = 0; i < mFeatures->GetLength(); i ++) {
         String s = (*mFeatures)[i];
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(s, (ICharSequence**)&cs);
+        CString::New(s, (ICharSequence**)&cs);
         features->Add(cs);
     }
     return AccountManagerServiceSession::ToDebugString(now) + String(", hasFeatures")

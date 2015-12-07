@@ -71,19 +71,19 @@ StrictModeViolationDialog::StrictModeViolationDialog(
         String resString;
         AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
         AutoPtr<ICharSequence> pNameCs;
-        CStringWrapper::New(processName, (ICharSequence**)&pNameCs);
+        CString::New(processName, (ICharSequence**)&pNameCs);
         args->Set(0, (IInterface*)name.Get());
         args->Set(1, (IInterface*)pNameCs.Get());
         res->GetString(R::string::smv_application, args, &resString);
         assert(0);
         AutoPtr<ICharSequence> resCs;
-        CStringWrapper::New(resString,(ICharSequence**)&resCs);
+        CString::New(resString,(ICharSequence**)&resCs);
         SetMessage(resCs);
     }
     else {
         res->GetString(R::string::smv_process, &(app->mProcessName));
         AutoPtr<ICharSequence> name;
-        CStringWrapper::New(app->mProcessName, (ICharSequence**)&name);
+        CString::New(app->mProcessName, (ICharSequence**)&name);
         SetMessage(name);
     }
 
@@ -113,7 +113,7 @@ StrictModeViolationDialog::StrictModeViolationDialog(
     String processName;
     app->mInfo->GetProcessName(&processName);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("Application Error: ") + processName, (ICharSequence**)&cs);
+    CString::New(String("Application Error: ") + processName, (ICharSequence**)&cs);
     window->SetTitle(cs);
 
     // After the timeout, pretend the user clicked the quit button

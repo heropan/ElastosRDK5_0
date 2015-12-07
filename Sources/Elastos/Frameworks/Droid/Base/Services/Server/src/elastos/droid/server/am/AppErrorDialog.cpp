@@ -67,23 +67,23 @@ AppErrorDialog::AppErrorDialog(
         String pName;
         app->mInfo->GetProcessName(&pName);
         AutoPtr<ICharSequence> pNamecs;
-        CStringWrapper::New(pName, (ICharSequence**)&pNamecs);
+        CString::New(pName, (ICharSequence**)&pNamecs);
         args->Set(1, (IInterface*)pNamecs.Get());
         String resStr;
         res->GetString(R::string::aerr_application, args, &resStr);
         AutoPtr<ICharSequence> resCs;
-        CStringWrapper::New(resStr, (ICharSequence**)&resCs);
+        CString::New(resStr, (ICharSequence**)&resCs);
         SetMessage(resCs);
     }
     else {
-        CStringWrapper::New(app->mProcessName, (ICharSequence**)&name);
+        CString::New(app->mProcessName, (ICharSequence**)&name);
         String s;
         AutoPtr<ArrayOf<IInterface*> > nameArray = ArrayOf<IInterface*>::Alloc(1);
         nameArray->Set(0, (IInterface*)name.Get());
         res->GetString(R::string::aerr_process,
                 nameArray, &s);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(s, (ICharSequence**)&cs);
+        CString::New(s, (ICharSequence**)&cs);
         SetMessage(cs);
     }
 
@@ -112,7 +112,7 @@ AppErrorDialog::AppErrorDialog(
     String processName;
     app->mInfo->GetProcessName(&processName);
     AutoPtr<ICharSequence> titlecs;
-    CStringWrapper::New(String("Application Error: ") + processName, (ICharSequence**)&titlecs);
+    CString::New(String("Application Error: ") + processName, (ICharSequence**)&titlecs);
     attrs->SetTitle(titlecs);
     Int32 flags;
     attrs->GetPrivateFlags(&flags);

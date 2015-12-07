@@ -16,7 +16,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::ISystem;
@@ -1056,13 +1056,13 @@ void CNetworkPolicyManagerService::EnqueueNotification(
 
             AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
             AutoPtr<ICharSequence> csFormatter;
-            CStringWrapper::New(strFormatter, (ICharSequence**)&csFormatter);
+            CString::New(strFormatter, (ICharSequence**)&csFormatter);
             args->Set(0, csFormatter.Get());
 
             String strbody;
             res->GetString(R::string::data_usage_limit_snoozed_body, args, &strbody);
             AutoPtr<ICharSequence> body;
-            CStringWrapper::New(strbody, (ICharSequence**)&body);
+            CString::New(strbody, (ICharSequence**)&body);
 
             AutoPtr<ICharSequence> title;
             AutoPtr<INetworkTemplate> netTmpl;
@@ -1437,7 +1437,7 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
     Int32 i;
     for (i = 0, miIt = mMeteredIfaces.Begin(); miIt != mMeteredIfaces.End(); ++miIt) {
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(*miIt, (ICharSequence**)&seq);
+        CString::New(*miIt, (ICharSequence**)&seq);
         meteredIfaces->Put(i, seq);
     }
 

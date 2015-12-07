@@ -17,7 +17,7 @@ using Elastos::IO::CFileOutputStream;
 using Elastos::Core::IByte;
 using Elastos::Core::CByte;
 using Elastos::Core::StringBuffer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::CThread;
@@ -274,7 +274,7 @@ ECode UsbDebuggingManager::ListenToSocket()
             Slogger::D(TAG, "Received public key: %s", (const char*) key);
 
             AutoPtr<ICharSequence> seq;
-            CStringWrapper::New(key, (ICharSequence**)&seq);
+            CString::New(key, (ICharSequence**)&seq);
             AutoPtr<IMessage> msg;
             mUsbDebuggingHandler->ObtainMessage(UsbDebuggingHandler::MESSAGE_ADB_CONFIRM, (IMessage**)&msg);
             msg->SetObj(seq);
@@ -502,7 +502,7 @@ void UsbDebuggingManager::AllowUsbDebugging(
     }
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(publicKey, (ICharSequence**)&seq);
+    CString::New(publicKey, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
     mUsbDebuggingHandler->ObtainMessage(UsbDebuggingHandler::MESSAGE_ADB_ALLOW, (IMessage**)&msg);
     msg->SetArg1(alwaysAllow ? 1 : 0);

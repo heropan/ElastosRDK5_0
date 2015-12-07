@@ -9,7 +9,7 @@
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Server::NativeDaemonEvent;
 using Elastos::Utility::Concurrent::CCountDownLatch;
@@ -451,9 +451,9 @@ Boolean CNsdService::RegisterService(
     service->GetPort(&port);
 
     AutoPtr<ICharSequence> actionSeq, nameSeq, typeSeq;
-    CStringWrapper::New(String("register"), (ICharSequence**)&actionSeq);
-    CStringWrapper::New(name, (ICharSequence**)&nameSeq);
-    CStringWrapper::New(type, (ICharSequence**)&typeSeq);
+    CString::New(String("register"), (ICharSequence**)&actionSeq);
+    CString::New(name, (ICharSequence**)&nameSeq);
+    CString::New(type, (ICharSequence**)&typeSeq);
     AutoPtr<IInteger32> portObj;
     CInteger32::New(port, (IInteger32**)&portObj);
 
@@ -485,7 +485,7 @@ Boolean CNsdService::UnregisterService(
     // try {
 
     AutoPtr<ICharSequence> actionSeq;
-    CStringWrapper::New(String("stop-register"), (ICharSequence**)&actionSeq);
+    CString::New(String("stop-register"), (ICharSequence**)&actionSeq);
     AutoPtr<IInteger32> regObj;
     CInteger32::New(regId, (IInteger32**)&regObj);
 
@@ -526,13 +526,13 @@ Boolean CNsdService::UpdateService(
     t->GetRawData((ArrayOf<Byte>**)&rawData);
 
     AutoPtr<ICharSequence> actionSeq, rawDataSeq;
-    CStringWrapper::New(String("update"), (ICharSequence**)&actionSeq);
+    CString::New(String("update"), (ICharSequence**)&actionSeq);
     AutoPtr<IInteger32> regObj, sizeObj;
     CInteger32::New(regId, (IInteger32**)&regObj);
     CInteger32::New(size, (IInteger32**)&sizeObj);
 
     String rawStr((const char*)rawData->GetPayload(), rawData->GetLength());
-    CStringWrapper::New(rawStr, (ICharSequence**)&rawDataSeq);
+    CString::New(rawStr, (ICharSequence**)&rawDataSeq);
 
     AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(4);
     args->Set(0, actionSeq->Probe(EIID_IInterface));
@@ -562,8 +562,8 @@ Boolean CNsdService::DiscoverServices(
     }
     // try {
     AutoPtr<ICharSequence> actionSeq, serviceTypeSeq;
-    CStringWrapper::New(String("discover"), (ICharSequence**)&actionSeq);
-    CStringWrapper::New(String("serviceType"), (ICharSequence**)&serviceTypeSeq);
+    CString::New(String("discover"), (ICharSequence**)&actionSeq);
+    CString::New(String("serviceType"), (ICharSequence**)&serviceTypeSeq);
     AutoPtr<IInteger32> idObj;
     CInteger32::New(discoveryId, (IInteger32**)&idObj);
 
@@ -594,7 +594,7 @@ Boolean CNsdService::StopServiceDiscovery(
     }
     // try {
     AutoPtr<ICharSequence> actionSeq;
-    CStringWrapper::New(String("stop-discover"), (ICharSequence**)&actionSeq);
+    CString::New(String("stop-discover"), (ICharSequence**)&actionSeq);
     AutoPtr<IInteger32> idObj;
     CInteger32::New(discoveryId, (IInteger32**)&idObj);
 
@@ -634,12 +634,12 @@ Boolean CNsdService::ResolveService(
     service->GetServiceType(&type);
 
     AutoPtr<ICharSequence> actionSeq, nameSeq, typeSeq, localSeq;
-    CStringWrapper::New(String("resolve"), (ICharSequence**)&actionSeq);
+    CString::New(String("resolve"), (ICharSequence**)&actionSeq);
     AutoPtr<IInteger32> idObj;
     CInteger32::New(resolveId, (IInteger32**)&idObj);
-    CStringWrapper::New(name, (ICharSequence**)&nameSeq);
-    CStringWrapper::New(type, (ICharSequence**)&typeSeq);
-    CStringWrapper::New(String("local."), (ICharSequence**)&localSeq);
+    CString::New(name, (ICharSequence**)&nameSeq);
+    CString::New(type, (ICharSequence**)&typeSeq);
+    CString::New(String("local."), (ICharSequence**)&localSeq);
 
     AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(5);
     args->Set(0, actionSeq->Probe(EIID_IInterface));
@@ -670,7 +670,7 @@ Boolean CNsdService::StopResolveService(
     if (DBG) Slogger::D(TAG, "stopResolveService: %d", resolveId);
     // try {
     AutoPtr<ICharSequence> actionSeq;
-    CStringWrapper::New(String("stop-resolve"), (ICharSequence**)&actionSeq);
+    CString::New(String("stop-resolve"), (ICharSequence**)&actionSeq);
     AutoPtr<IInteger32> idObj;
     CInteger32::New(resolveId, (IInteger32**)&idObj);
 
@@ -699,10 +699,10 @@ Boolean CNsdService::GetAddrInfo(
         resolveId, hostname.string());
     // try {
     AutoPtr<ICharSequence> actionSeq, hostnameSeq;
-    CStringWrapper::New(String("getaddrinfo"), (ICharSequence**)&actionSeq);
+    CString::New(String("getaddrinfo"), (ICharSequence**)&actionSeq);
     AutoPtr<IInteger32> idObj;
     CInteger32::New(resolveId, (IInteger32**)&idObj);
-    CStringWrapper::New(hostname, (ICharSequence**)&hostnameSeq);
+    CString::New(hostname, (ICharSequence**)&hostnameSeq);
 
     AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, actionSeq->Probe(EIID_IInterface));
@@ -729,7 +729,7 @@ Boolean CNsdService::StopGetAddrInfo(
     if (DBG) Slogger::D(TAG, "stopGetAdddrInfo: %d", resolveId);
     // try {
     AutoPtr<ICharSequence> actionSeq;
-    CStringWrapper::New(String("stop-getaddrinfo"), (ICharSequence**)&actionSeq);
+    CString::New(String("stop-getaddrinfo"), (ICharSequence**)&actionSeq);
     AutoPtr<IInteger32> idObj;
     CInteger32::New(resolveId, (IInteger32**)&idObj);
 

@@ -2,7 +2,7 @@
 #include "am/LaunchWarningWindow.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::App::EIID_IDialog;
 using Elastos::Droid::View::EIID_IWindowCallback;
 using Elastos::Droid::View::EIID_IKeyEventCallback;
@@ -117,7 +117,7 @@ LaunchWarningWindow::LaunchWarningWindow(
     String s;
     res->GetString(R::string::launch_warning_replace, labelcs, &s);
     AutoPtr<ICharSequence> ss;
-    CStringWrapper::New(s, (ICharSequence**)&ss);
+    CString::New(s, (ICharSequence**)&ss);
     text->SetText(ss);
 
     view = Dialog::FindViewById(R::id::original_app_icon);
@@ -135,7 +135,7 @@ LaunchWarningWindow::LaunchWarningWindow(
     curLabelcs->Set(0, curLabel);
     res->GetString(R::string::launch_warning_original, curLabelcs, &s);
     ss = NULL;
-    CStringWrapper::New(s, (ICharSequence**)&ss);
+    CString::New(s, (ICharSequence**)&ss);
     text->SetText(ss);
 }
 

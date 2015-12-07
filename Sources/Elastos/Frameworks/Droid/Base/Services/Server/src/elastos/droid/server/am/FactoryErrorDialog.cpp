@@ -3,7 +3,7 @@
 #include "elastos/droid/R.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Os::EIID_IHandler;
@@ -51,7 +51,7 @@ FactoryErrorDialog::FactoryErrorDialog(
     AutoPtr<IWindowManagerLayoutParams> attrs;
     window->GetAttributes((IWindowManagerLayoutParams**)&attrs);
     AutoPtr<ICharSequence> fcs;
-    CStringWrapper::New(String("Factory Error"), (ICharSequence**)&fcs);
+    CString::New(String("Factory Error"), (ICharSequence**)&fcs);
     attrs->SetTitle(fcs);
     window->SetAttributes(attrs);
 }

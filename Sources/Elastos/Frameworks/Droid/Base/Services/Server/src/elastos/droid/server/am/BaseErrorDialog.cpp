@@ -5,7 +5,7 @@
 #include "elastos/droid/R.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::App::EIID_IDialog;
@@ -65,7 +65,7 @@ ECode BaseErrorDialog::Init(
     AutoPtr<IWindowManagerLayoutParams> attrs;
     window->GetAttributes((IWindowManagerLayoutParams**)&attrs);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("Error Dialog") ,(ICharSequence**)&cs);
+    CString::New(String("Error Dialog") ,(ICharSequence**)&cs);
     attrs->SetTitle(cs);
     window->SetAttributes(attrs);
     SetIconAttribute(R::attr::alertDialogIcon);

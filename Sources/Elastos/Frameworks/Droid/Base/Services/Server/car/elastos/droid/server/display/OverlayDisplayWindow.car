@@ -11,9 +11,14 @@ module
     interface IOverlayDisplayWindowListener {
         OnWindowCreated(
             [in] ISurfaceTexture* surfaceTexture,
-            [in] Float refreshRate);
+            [in] Float refreshRate,
+            [in] Int64 presentationDeadlineNanos,
+            [in] Int32 state);
 
         OnWindowDestroyed();
+
+        OnStateChanged(
+            [in] Int32 state);
     }
 
     } // namespace Display

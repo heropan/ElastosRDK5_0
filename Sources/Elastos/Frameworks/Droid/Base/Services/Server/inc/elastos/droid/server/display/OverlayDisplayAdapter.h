@@ -36,16 +36,15 @@ class DisplayDeviceInfo;
  * Display adapters are guarded by the {@link DisplayManagerService.SyncRoot} lock.
  * </p>
  */
-class OverlayDisplayAdapter : public DisplayAdapter
+class OverlayDisplayAdapter
+    : public DisplayAdapter
 {
 private:
-
     class OverlayDisplayContentObserver
         : public ContentObserver
     {
     public:
         OverlayDisplayContentObserver(
-            /* [in] */ IHandler* handler,
             /* [in] */ OverlayDisplayAdapter* host);
 
         virtual CARAPI OnChange(
@@ -79,13 +78,19 @@ private:
             /* [in] */ Int32 width,
             /* [in] */ Int32 height,
             /* [in] */ Float refreshRate,
+            /* [in] */ Int64 presentationDeadlineNanos,
             /* [in] */ Int32 densityDpi,
+            /* [in] */ Boolean secure,
+            /* [in] */ Int32 state,
             /* [in] */ ISurfaceTexture* surfaceTexture);
 
-        CARAPI_(void) ClearSurfaceTextureLocked();
+        CARAPI_(void) DestroyLocked();
 
         //@Override
         CARAPI_(void) PerformTraversalInTransactionLocked();
+
+        CARAPI_(void) SetStateLocked(
+            /* [in] */ Int32 state);
 
         //@Override
         CARAPI_(AutoPtr<DisplayDeviceInfo>) GetDisplayDeviceInfoLocked();
@@ -95,10 +100,13 @@ private:
         Int32 mWidth;
         Int32 mHeight;
         Float mRefreshRate;
+        Int64 mDisplayPresentationDeadlineNanos;
         Int32 mDensityDpi;
+        Boolean mSecure;
 
-        AutoPtr<ISurface> mSurface;
+        Int32 mState;
         AutoPtr<ISurfaceTexture> mSurfaceTexture;
+        AutoPtr<ISurface> mSurface;
         AutoPtr<DisplayDeviceInfo> mInfo;
 
         OverlayDisplayAdapter* mHost;
@@ -152,7 +160,8 @@ private:
             /* [in] */ Int32 width,
             /* [in] */ Int32 height,
             /* [in] */ Int32 densityDpi,
-            /* [in] */ Int32 gravity);
+            /* [in] */ Int32 gravity,
+            /* [in] */ Boolean secure);
 
         CARAPI_(void) DismissLocked();
 
@@ -160,11 +169,18 @@ private:
         //@Override
         CARAPI OnWindowCreated(
             /* [in] */ ISurfaceTexture* surfaceTexture,
-            /* [in] */ Float refreshRate);
+            /* [in] */ Float refreshRate,
+            /* [in] */ Int64 presentationDeadlineNanos,
+            /* [in] */ Int32 state);
 
         // Called on the UI thread.
         //@Override
         CARAPI OnWindowDestroyed();
+
+        // Called on the UI thread.
+        // @Override
+        ECode OnStateChanged(
+            /* [in] */ Int32 state);
 
         CARAPI_(void) DumpLocked(
             /* [in] */ IPrintWriter* pw);
@@ -182,6 +198,7 @@ private:
         Int32 mHeight;
         Int32 mDensityDpi;
         Int32 mGravity;
+        Boolean mSecure;
 
         AutoPtr<IRunnable> mShowRunnable;
         AutoPtr<IRunnable> mDismissRunnable;

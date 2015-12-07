@@ -18,7 +18,7 @@
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IReader;
 using Elastos::IO::IStreams;
@@ -999,11 +999,11 @@ void CInputManagerService::ShowMissingKeyboardLayoutNotification()
         String str;
         r->GetString(R::string::select_keyboard_layout_notification_title, &str);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         builder->SetContentTitle(cs);
         r->GetString(R::string::select_keyboard_layout_notification_message, &str);
         cs = NULL;
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         builder->SetContentText(cs);
         builder->SetContentIntent(mKeyboardLayoutIntent);
         builder->SetSmallIcon(R::drawable::ic_settings_language);
@@ -1454,7 +1454,7 @@ void CInputManagerService::HandleSwitchKeyboardLayout(
                     String label;
                     keyboardLayout->GetLabel(&label);
                     AutoPtr<ICharSequence> labelcs;
-                    CStringWrapper::New(label, (ICharSequence**)&labelcs);
+                    CString::New(label, (ICharSequence**)&labelcs);
                     toastHelper->MakeText(
                         mContext, labelcs, IToast::LENGTH_SHORT,
                         (IToast**)&mSwitchedKeyboardLayoutToast);

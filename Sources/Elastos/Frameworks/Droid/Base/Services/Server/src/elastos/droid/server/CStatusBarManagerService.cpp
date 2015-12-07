@@ -8,7 +8,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::EIID_IBinder;
@@ -357,7 +357,7 @@ ECode CStatusBarManagerService::SetIcon(
         AutoPtr<IStatusBarIcon> icon;
 
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(contentDescription, (ICharSequence**)&seq);
+        CString::New(contentDescription, (ICharSequence**)&seq);
 
         CStatusBarIcon::New(iconPackage, UserHandle::OWNER, iconId,
                 iconLevel, 0,

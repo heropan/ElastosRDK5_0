@@ -5,7 +5,7 @@
 #include "elastos/droid/R.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Content::Pm::EIID_IXmlSerializerAndParser;
 using Elastos::Droid::Accounts::IAuthenticatorDescriptionHelper;
@@ -140,7 +140,7 @@ ECode AccountAuthenticatorCache::ParseServiceAttributes(
         return ec;
     }
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(accountType, (ICharSequence**)&csq);
+    CString::New(accountType, (ICharSequence**)&csq);
     if (TextUtils::IsEmpty(csq)) {
         return NOERROR;
     }

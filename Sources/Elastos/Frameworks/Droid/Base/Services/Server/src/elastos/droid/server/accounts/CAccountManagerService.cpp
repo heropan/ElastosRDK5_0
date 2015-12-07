@@ -26,7 +26,7 @@
 using Elastos::Core::StringUtils;
 using Elastos::Core::IArrayOf;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
 using Elastos::Core::CInteger32;
@@ -902,13 +902,13 @@ Boolean CAccountManagerService::AddAccountInternal(
     AutoPtr<IContentValues> values;
     ASSERT_SUCCEEDED(CContentValues::New((IContentValues**)&values));
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New((*accountInfo)[0], (ICharSequence**)&cs);
+    CString::New((*accountInfo)[0], (ICharSequence**)&cs);
     values->PutString(ACCOUNTS_NAME, cs);
     cs = NULL;
-    CStringWrapper::New((*accountInfo)[1], (ICharSequence**)&cs);
+    CString::New((*accountInfo)[1], (ICharSequence**)&cs);
     values->PutString(ACCOUNTS_TYPE, cs);
     cs = NULL;
-    CStringWrapper::New(password, (ICharSequence**)&cs);
+    CString::New(password, (ICharSequence**)&cs);
     values->PutString(ACCOUNTS_PASSWORD, cs);
     Int64 accountId;
     db->Insert(TABLE_ACCOUNTS, ACCOUNTS_NAME, values, &accountId);
@@ -956,13 +956,13 @@ Int64 CAccountManagerService::InsertExtraLocked(
     AutoPtr<IContentValues> values;
     ASSERT_SUCCEEDED(CContentValues::New((IContentValues**)&values));
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(key, (ICharSequence**)&csq);
+    CString::New(key, (ICharSequence**)&csq);
     values->PutString(EXTRAS_KEY, csq);
     AutoPtr<IInteger64> id;
     CInteger64::New(accountId, (IInteger64**)&id);
     values->PutInt64(EXTRAS_ACCOUNTS_ID, id);
     csq = NULL;
-    CStringWrapper::New(value, (ICharSequence**)&csq);
+    CString::New(value, (ICharSequence**)&csq);
     values->PutString(EXTRAS_VALUE, csq);
     Int64 result;
     db->Insert(TABLE_EXTRAS, EXTRAS_KEY, values, &result);
@@ -1228,10 +1228,10 @@ Boolean CAccountManagerService::SaveAuthTokenToDatabase(
     CInteger32::New(accountId, (IInteger32**)&aId);
     values->PutInt32(AUTHTOKENS_ACCOUNTS_ID, aId);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(type, (ICharSequence**)&cs);
+    CString::New(type, (ICharSequence**)&cs);
     values->PutString(AUTHTOKENS_TYPE, cs);
     cs = NULL;
-    CStringWrapper::New(authToken, (ICharSequence**)&cs);
+    CString::New(authToken, (ICharSequence**)&cs);
     values->PutString(AUTHTOKENS_AUTHTOKEN, cs);
     Int64 result;
     if (FAILED(db->Insert(TABLE_AUTHTOKENS, AUTHTOKENS_AUTHTOKEN, values, &result))) {
@@ -1361,7 +1361,7 @@ void CAccountManagerService::SetPasswordInternal(
         return;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(password, (ICharSequence**)&cs);
+    CString::New(password, (ICharSequence**)&cs);
     values->PutString(ACCOUNTS_PASSWORD, cs);
     Int64 accountId = GetAccountIdLocked(db, account);
     if (accountId >= 0) {
@@ -1486,7 +1486,7 @@ void CAccountManagerService::SetUserdataInternal(
         AutoPtr<IContentValues> values;
         CContentValues::New((IContentValues**)&values);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(value, (ICharSequence**)&cs);
+        CString::New(value, (ICharSequence**)&cs);
         values->PutString(EXTRAS_VALUE, cs);
         Int32 result;
         if (FAILED(db->Update(TABLE_EXTRAS, values, EXTRAS_ID + String("=")
@@ -1702,7 +1702,7 @@ void CAccountManagerService::CreateNoCredentialsPermissionNotification(
     AutoPtr<ICharSequence> cs;
     String name;
     account->GetName(&name);
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     AutoPtr< ArrayOf<ICharSequence*> > args = ArrayOf<ICharSequence*>::Alloc(1);
     args->Set(0, cs);
     String titleAndSubtitle;
@@ -1725,8 +1725,8 @@ void CAccountManagerService::CreateNoCredentialsPermissionNotification(
     piHelper->GetActivityAsUser(mContext, 0, intent,
             IPendingIntent::FLAG_CANCEL_CURRENT, NULL, user, (IPendingIntent**)&pendingIntent);
     AutoPtr<ICharSequence> titleCs, subtitleCs;
-    CStringWrapper::New(title, (ICharSequence**)&titleCs);
-    CStringWrapper::New(subtitle, (ICharSequence**)&subtitleCs);
+    CString::New(title, (ICharSequence**)&titleCs);
+    CString::New(subtitle, (ICharSequence**)&subtitleCs);
     n->SetLatestEventInfo(mContext, titleCs, subtitleCs, pendingIntent);
     AutoPtr<IInteger32> notificationId = GetCredentialPermissionNotificationId(
             account, authTokenType, uid);
@@ -2443,7 +2443,7 @@ void CAccountManagerService::DoNotification(
         AutoPtr<ICharSequence> namecs;
         String name;
         account->GetName(&name);
-        CStringWrapper::New(name, (ICharSequence**)&namecs);
+        CString::New(name, (ICharSequence**)&namecs);
         AutoPtr<IPendingIntentHelper> helper;
         assert(0);
         // ASSERT_SUCCEEDED(CPendingIntentHelper::AcquireSingleton(
@@ -2745,7 +2745,7 @@ void CAccountManagerService::GrantAppPermission(
         CInteger64::New(accountId, (IInteger64**)&integer64);
         values->PutInt64(GRANTS_ACCOUNTS_ID, integer64);
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(authTokenType, (ICharSequence**)&csq);
+        CString::New(authTokenType, (ICharSequence**)&csq);
         values->PutString(GRANTS_AUTH_TOKEN_TYPE, csq);
         AutoPtr<IInteger32> integer32;
         CInteger32::New(uid, (IInteger32**)&integer32);

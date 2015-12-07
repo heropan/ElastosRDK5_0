@@ -41,12 +41,12 @@ namespace Display {
  * No locks are held by this object and locks must not be held while making called into it.
  * </p>
  */
-class OverlayDisplayWindow : public ElRefBase
+class OverlayDisplayWindow : public Object
 {
 private:
-    class MyDisplayListener :
-        public ElRefBase,
-        public IDisplayListener
+    class MyDisplayListener
+        : public Object
+        , public IDisplayListener
     {
     public:
         CAR_INTERFACE_DECL();
@@ -70,9 +70,9 @@ private:
         OverlayDisplayWindow* mHost;
     };
 
-    class MySurfaceTextureListener :
-        public ElRefBase,
-        public ISurfaceTextureListener
+    class MySurfaceTextureListener
+        : public Object
+        , public ISurfaceTextureListener
     {
     public:
         CAR_INTERFACE_DECL();
@@ -105,9 +105,9 @@ private:
         OverlayDisplayWindow* mHost;
     };
 
-    class MyViewOnTouchListener :
-        public ElRefBase,
-        public IViewOnTouchListener
+    class MyViewOnTouchListener
+        : public Object
+        , public IViewOnTouchListener
     {
     public:
         CAR_INTERFACE_DECL();
@@ -126,7 +126,8 @@ private:
     };
 
 
-    class MyOnGestureListener : public GestureDetector::SimpleOnGestureListener
+    class MyOnGestureListener
+        : public GestureDetector::SimpleOnGestureListener
     {
     public:
         MyOnGestureListener(
@@ -143,7 +144,8 @@ private:
         OverlayDisplayWindow* mHost;
     };
 
-    class MyOnScaleGestureListener : public ScaleGestureDetector::SimpleOnScaleGestureListener
+    class MyOnScaleGestureListener
+        : public ScaleGestureDetector::SimpleOnScaleGestureListener
     {
     public:
         MyOnScaleGestureListener(
@@ -165,6 +167,7 @@ public:
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 densityDpi,
+        /* [in] */ Boolean secure,
         /* [in] */ Int32 gravity,
         /* [in] */ IOverlayDisplayWindowListener* listener);
 
@@ -208,6 +211,7 @@ private:
     const Int32 mWidth;
     const Int32 mHeight;
     const Int32 mDensityDpi;
+    const Boolean mSecure;
     const Int32 mGravity;
 
     AutoPtr<IOverlayDisplayWindowListener> mListener;

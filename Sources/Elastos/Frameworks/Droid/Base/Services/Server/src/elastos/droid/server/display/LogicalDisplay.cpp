@@ -1,10 +1,12 @@
 
 #include "elastos/droid/server/display/LogicalDisplay.h"
 #include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/Arrays.h>
 
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::CDisplayInfo;
 using Elastos::Droid::View::IDisplay;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Droid {
@@ -21,6 +23,7 @@ LogicalDisplay::LogicalDisplay(
     , mLayerStack(layerStack)
     , mPrimaryDisplayDevice(primaryDisplayDevice)
     , mHasContent(FALSE)
+    , mRequestedRefreshRate(0)
 {
     ASSERT_SUCCEEDED(CDisplayInfo::New((IDisplayInfo**)&mBaseDisplayInfo));
     ASSERT_SUCCEEDED(CRect::New((IRect**)&mTempLayerStackRect));
@@ -66,6 +69,9 @@ AutoPtr<IDisplayInfo> LogicalDisplay::GetDisplayInfoLocked()
             String name;
             mBaseDisplayInfo->GetName(&name);
             mInfo->SetName(name);
+            Int32 state;
+            mBaseDisplayInfo->GetState(&state);
+            mInfo->SetState(state);
         }
         else {
             mInfo->CopyFrom(mBaseDisplayInfo);
@@ -81,7 +87,7 @@ AutoPtr<IDisplayInfo> LogicalDisplay::GetDisplayInfoLocked()
  *
  * @param info The logical display information, may be NULL.
  */
-void LogicalDisplay::SetDisplayInfoOverrideFromWindowManagerLocked(
+Boolean LogicalDisplay::SetDisplayInfoOverrideFromWindowManagerLocked(
     /* [in] */ IDisplayInfo* info)
 {
     if (info != NULL) {
@@ -89,16 +95,20 @@ void LogicalDisplay::SetDisplayInfoOverrideFromWindowManagerLocked(
         if (mOverrideDisplayInfo == NULL) {
             CDisplayInfo::New(info, (IDisplayInfo**)&mOverrideDisplayInfo);
             mInfo = NULL;
+            return TRUE;
         }
-        else if (mOverrideDisplayInfo->Equals(info, &isEqual), !isEqual) {
+        else if (!Object::Equals(mOverrideDisplayInfo, info)) {
             mOverrideDisplayInfo->CopyFrom(info);
             mInfo = NULL;
+            return TRUE;
         }
     }
     else if (mOverrideDisplayInfo != NULL) {
         mOverrideDisplayInfo = NULL;
         mInfo = NULL;
+        return TRUE;
     }
+    return FALSE;
 }
 
 /**
@@ -156,6 +166,18 @@ void LogicalDisplay::UpdateLocked(
             flags |= IDisplay::FLAG_SECURE;
             mBaseDisplayInfo->SetFlags(flags);
         }
+        if ((deviceInfo->mFlags & DisplayDeviceInfo::FLAG_PRIVATE) != 0) {
+            Int32 flags;
+            mBaseDisplayInfo->GetFlags(&flags);
+            flags |= IDisplay::FLAG_PRIVATE;
+            mBaseDisplayInfo->SetFlags(flags);
+        }
+        if ((deviceInfo->mFlags & DisplayDeviceInfo::FLAG_PRESENTATION) != 0) {
+            Int32 flags;
+            mBaseDisplayInfo->GetFlags(&flags);
+            flags |= IDisplay::FLAG_PRESENTATION;
+            mBaseDisplayInfo->SetFlags(flags);
+        }
         mBaseDisplayInfo->SetType(deviceInfo->mType);
         mBaseDisplayInfo->SetAddress(deviceInfo->mAddress);
         mBaseDisplayInfo->SetName(deviceInfo->mName);
@@ -165,13 +187,24 @@ void LogicalDisplay::UpdateLocked(
         mBaseDisplayInfo->SetLogicalHeight(deviceInfo->mHeight);
         mBaseDisplayInfo->SetRotation(ISurface::ROTATION_0);
         mBaseDisplayInfo->SetRefreshRate(deviceInfo->mRefreshRate);
+
+        AutoPtr<ArrayOf<Float> > rates;
+        Arrays::CopyOf(deviceInfo->mSupportedRefreshRates,
+            deviceInfo->mSupportedRefreshRates->GetLength(), (ArrayOf<Float>**)&rates);
+        mBaseDisplayInfo->SetSupportedRefreshRates(rates);
+
         mBaseDisplayInfo->SetLogicalDensityDpi(deviceInfo->mDensityDpi);
         mBaseDisplayInfo->SetPhysicalXDpi(deviceInfo->mXDpi);
         mBaseDisplayInfo->SetPhysicalYDpi(deviceInfo->mYDpi);
+        mBaseDisplayInfo->SetAppVsyncOffsetNanos(deviceInfo->mAppVsyncOffsetNanos);
+        mBaseDisplayInfo->SetPresentationDeadlineNanos(deviceInfo->mPresentationDeadlineNanos);
+        mBaseDisplayInfo->SetState(deviceInfo->mState);
         mBaseDisplayInfo->SetSmallestNominalAppWidth(deviceInfo->mWidth);
         mBaseDisplayInfo->SetSmallestNominalAppHeight(deviceInfo->mHeight);
         mBaseDisplayInfo->SetLargestNominalAppWidth(deviceInfo->mWidth);
         mBaseDisplayInfo->SetLargestNominalAppHeight(deviceInfo->mHeight);
+        mBaseDisplayInfo->SetOwnerUid(deviceInfo->mOwnerUid);
+        mBaseDisplayInfo->SetOwnerPackageName(deviceInfo->mOwnerPackageName);
 
         mPrimaryDisplayDeviceInfo = deviceInfo;
         mInfo = NULL;
@@ -205,6 +238,9 @@ void LogicalDisplay::ConfigureDisplayInTransactionLocked(
     // Set the layer stack.
     device->SetLayerStackInTransactionLocked(isBlanked ? BLANK_LAYER_STACK : mLayerStack);
 
+    // Set the refresh rate
+    device->RequestRefreshRateLocked(mRequestedRefreshRate);
+
     // Set the viewport.
     // This is the area of the logical display that we intend to show on the
     // display device.  For now, it is always the full size of the logical display.
@@ -217,8 +253,7 @@ void LogicalDisplay::ConfigureDisplayInTransactionLocked(
     // The orientation specifies how the physical coordinate system of the display
     // is rotated when the contents of the logical display are rendered.
     Int32 orientation = ISurface::ROTATION_0;
-    if (device == mPrimaryDisplayDevice
-        && (displayDeviceInfo->mFlags & DisplayDeviceInfo::FLAG_ROTATES_WITH_CONTENT) != 0) {
+    if ((displayDeviceInfo->mFlags & DisplayDeviceInfo::FLAG_ROTATES_WITH_CONTENT) != 0) {
         displayInfo->GetRotation(&orientation);
     }
 
@@ -285,6 +320,26 @@ void LogicalDisplay::SetHasContentLocked(
     /* [in] */ Boolean hasContent)
 {
     mHasContent = hasContent;
+}
+
+/**
+ * Requests the given refresh rate.
+ * @param requestedRefreshRate The desired refresh rate.
+ */
+void LogicalDisplay::SetRequestedRefreshRateLocked(
+    /* [in] */ Float requestedRefreshRate)
+{
+    mRequestedRefreshRate = requestedRefreshRate;
+}
+
+/**
+ * Gets the pending requested refresh rate.
+ *
+ * @return The pending refresh rate requested
+ */
+Float LogicalDisplay::GetRequestedRefreshRateLocked()
+{
+    return mRequestedRefreshRate;
 }
 
 void LogicalDisplay::DumpLocked(

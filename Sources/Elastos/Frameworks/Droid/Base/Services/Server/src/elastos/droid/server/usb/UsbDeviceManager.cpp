@@ -28,7 +28,7 @@ using Elastos::Core::Character;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::IProcess;
@@ -1243,7 +1243,7 @@ void UsbDeviceManager::SetCurrentFunctions(
     }
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(functions, (ICharSequence**)&seq);
+    CString::New(functions, (ICharSequence**)&seq);
     mHandler->SendMessage(MSG_SET_CURRENT_FUNCTIONS, seq, makeDefault);
 }
 

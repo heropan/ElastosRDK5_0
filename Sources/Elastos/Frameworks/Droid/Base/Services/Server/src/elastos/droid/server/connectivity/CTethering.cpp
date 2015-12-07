@@ -8,7 +8,7 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
@@ -776,7 +776,7 @@ void CTethering::TetherMasterSM::TetherMasterUtilState::NotifyTetheredOfNewUpstr
     for (it = mOwner->mNotifyList.Begin(); it != mOwner->mNotifyList.End(); ++it) {
         AutoPtr<TetherInterfaceSM> sm = *it;
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(ifaceName, (ICharSequence**)&cs);
+        CString::New(ifaceName, (ICharSequence**)&cs);
         sm->SendMessage(TetherInterfaceSM::CMD_TETHER_CONNECTION_CHANGED, cs);
     }
 }
@@ -864,7 +864,7 @@ ECode CTethering::TetherMasterSM::TetherModeAliveState::ProcessMessage(
             if (VDBG) Logger::D(CTethering::TAG, "Tether Mode requested by %p", who);
             mOwner->mNotifyList.PushBack(who);
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(mOwner->mUpstreamIfaceName, (ICharSequence**)&cs);
+            CString::New(mOwner->mUpstreamIfaceName, (ICharSequence**)&cs);
             who->SendMessage(TetherInterfaceSM::CMD_TETHER_CONNECTION_CHANGED, cs);
             break;
         }
@@ -1527,12 +1527,12 @@ void CTethering::SendTetherStateChangedBroadcast()
             if (sm != NULL) {
                 if (sm->IsErrored()) {
                     AutoPtr<ICharSequence> cs;
-                    CStringWrapper::New(iface, (ICharSequence**)&cs);
+                    CString::New(iface, (ICharSequence**)&cs);
                     erroredList->Add(cs);
                 }
                 else if (sm->IsAvailable()) {
                     AutoPtr<ICharSequence> cs;
-                    CStringWrapper::New(iface, (ICharSequence**)&cs);
+                    CString::New(iface, (ICharSequence**)&cs);
                     availableList->Add(cs);
                 }
                 else if (sm->IsTethered()) {
@@ -1546,7 +1546,7 @@ void CTethering::SendTetherStateChangedBroadcast()
                         bluetoothTethered = TRUE;
                     }
                     AutoPtr<ICharSequence> cs;
-                    CStringWrapper::New(iface, (ICharSequence**)&cs);
+                    CString::New(iface, (ICharSequence**)&cs);
                     activeList->Add(cs);
                 }
             }

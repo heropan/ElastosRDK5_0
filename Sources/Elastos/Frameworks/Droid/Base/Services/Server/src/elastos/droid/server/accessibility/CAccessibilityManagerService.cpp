@@ -14,7 +14,7 @@
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::IUserHandle;
@@ -1986,7 +1986,7 @@ void CAccessibilityManagerService::ShowEnableTouchExplorationDialog(
     String str;
     mContext->GetString(R::string::enable_explore_by_touch_warning_message, args, &str);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(str, (ICharSequence**)&seq);
+    CString::New(str, (ICharSequence**)&seq);
     dialogBuilder->SetMessage(seq);
     mEnableTouchExplorationDialog = NULL;
     dialogBuilder->Create((IAlertDialog**)&mEnableTouchExplorationDialog);
@@ -2221,7 +2221,7 @@ void CAccessibilityManagerService::AnnounceNewUserIfNeeded()
         String name;
         userInfo->GetName(&name);
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(name, (ICharSequence**)&csq);
+        CString::New(name, (ICharSequence**)&csq);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
         args->Set(0, csq.Get());
         String message;
@@ -2233,7 +2233,7 @@ void CAccessibilityManagerService::AnnounceNewUserIfNeeded()
         AutoPtr<IObjectContainer> texts;
         event->GetText((IObjectContainer**)&texts);
         AutoPtr<ICharSequence> messageCsq;
-        CStringWrapper::New(message, (ICharSequence**)&messageCsq);
+        CString::New(message, (ICharSequence**)&messageCsq);
         texts->Add(messageCsq);
         event->SetWindowId(mSecurityPolicy->GetRetrievalAllowingWindowLocked());
         Boolean result;

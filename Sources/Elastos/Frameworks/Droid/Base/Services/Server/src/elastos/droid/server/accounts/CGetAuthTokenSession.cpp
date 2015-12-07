@@ -8,7 +8,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::Binder;
@@ -104,8 +104,8 @@ ECode CGetAuthTokenSession::OnResult(
             result->GetString(IAccountManager::KEY_ACCOUNT_NAME, &name);
             result->GetString(IAccountManager::KEY_ACCOUNT_TYPE, &type);
             AutoPtr<ICharSequence> nameCsq, typeCsq;
-            CStringWrapper::New(name, (ICharSequence**)&nameCsq);
-            CStringWrapper::New(type, (ICharSequence**)&typeCsq);
+            CString::New(name, (ICharSequence**)&nameCsq);
+            CString::New(type, (ICharSequence**)&typeCsq);
             if (TextUtils::IsEmpty(typeCsq) || TextUtils::IsEmpty(nameCsq)) {
                 return OnError(IAccountManager::ERROR_CODE_INVALID_RESPONSE,
                         String("the type and name should not be empty"));
@@ -124,7 +124,7 @@ ECode CGetAuthTokenSession::OnResult(
             String s;
             result->GetString(IAccountManager::KEY_AUTH_FAILED_MESSAGE, &s);
             AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(s, (ICharSequence**)&csq);
+            CString::New(s, (ICharSequence**)&csq);
             mHost->DoNotification(mAccounts, mAccount, csq, intent, mAccounts->mUserId);
         }
     }

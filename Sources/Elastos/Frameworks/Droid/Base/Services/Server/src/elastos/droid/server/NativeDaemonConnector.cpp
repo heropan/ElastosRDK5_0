@@ -11,7 +11,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;
 using Elastos::IO::IInputStream;
@@ -400,7 +400,7 @@ ECode NativeDaemonConnector::ListenToSocket()
                 if (event->IsClassUnsolicited()) {
                     // TODO: migrate to sending NativeDaemonEvent instances
                     AutoPtr<ICharSequence> seq;
-                    CStringWrapper::New(event->GetRawEvent(), (ICharSequence**)&seq);
+                    CString::New(event->GetRawEvent(), (ICharSequence**)&seq);
                     AutoPtr<IMessage> msg;
                     helper->Obtain(mCallbackHandler, event->GetCode(), seq, (IMessage**)&msg);
                     mCallbackHandler->SendMessage(msg, &result);
@@ -587,7 +587,7 @@ ECode NativeDaemonConnector::Execute(
 
     AutoPtr<ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(arg, (ICharSequence**)&seq);
+    CString::New(arg, (ICharSequence**)&seq);
     args->Set(0, seq->Probe(EIID_IInterface));
     return Execute(cmd, args, event);
 }

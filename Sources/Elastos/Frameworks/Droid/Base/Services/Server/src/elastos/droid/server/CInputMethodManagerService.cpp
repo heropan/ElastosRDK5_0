@@ -22,7 +22,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
 using Elastos::Core::CBoolean;
 using Elastos::Core::EIID_IComparable;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::CFile;
 using Elastos::IO::IFileOutputStream;
 using Elastos::Core::CObjectContainer;
@@ -1742,7 +1742,7 @@ void CInputMethodManagerService::InputMethodFileManager::ReadAdditionalInputMeth
             parser->GetAttributeValue(String(NULL)/*NULL*/, ATTR_ID, &currentImiId);
 
             AutoPtr<ICharSequence> tmp;
-            CStringWrapper::New(currentImiId, (ICharSequence**)&tmp);
+            CString::New(currentImiId, (ICharSequence**)&tmp);
             if (TextUtils::IsEmpty(tmp.Get())) {
                 // Slog.w(TAG, "Invalid imi id found in subtypes.xml");
                 continue;
@@ -1752,7 +1752,7 @@ void CInputMethodManagerService::InputMethodFileManager::ReadAdditionalInputMeth
             (*allSubtypes)[currentImiId] = tempSubtypesArray;
         } else if (NODE_SUBTYPE.Equals(nodeName) == 0) {
             AutoPtr<ICharSequence> tmp;
-            CStringWrapper::New(currentImiId, (ICharSequence**)&tmp);
+            CString::New(currentImiId, (ICharSequence**)&tmp);
 
             if (TextUtils::IsEmpty(tmp.Get()) || tempSubtypesArray == NULL) {
                 // Slog.w(TAG, "IME uninstalled or not valid.: " + currentImiId);
@@ -3128,13 +3128,13 @@ ECode CInputMethodManagerService::SetImeWindowStatus(
                 mCurrentSubtype->GetDisplayName(mContext, pkgName, appInfo, (ICharSequence**)&name);
                 AutoPtr<ICharSequence> name1;
                 if (TextUtils::IsEmpty(imiLabel)) {
-                    CStringWrapper::New(String(""), (ICharSequence**)&name1);
+                    CString::New(String(""), (ICharSequence**)&name1);
                 } else {
                     String tempStr("-");
                     String labelStr;
                     imiLabel->ToString(&labelStr);
                     tempStr.Append(labelStr);
-                    CStringWrapper::New(tempStr, (ICharSequence**)&name1);
+                    CString::New(tempStr, (ICharSequence**)&name1);
                 }
                 AutoPtr<ArrayOf<ICharSequence*> > texts = ArrayOf<ICharSequence*>::Alloc(2);
                 texts->Set(0, name);
@@ -3816,7 +3816,7 @@ ECode CInputMethodManagerService::ShowInputMethodAndSubtypeEnablerFromClient(
         }
 
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(inputMethodId, (ICharSequence**)&seq);
+        CString::New(inputMethodId, (ICharSequence**)&seq);
         AutoPtr<IMessage> msg;
         mCaller->ObtainMessage(MSG_SHOW_IM_SUBTYPE_ENABLER,
             seq, (IMessage**)&msg);
@@ -4023,7 +4023,7 @@ ECode CInputMethodManagerService::SetAdditionalInputMethodSubtypes(
     // By this IPC call, only a process which shares the same uid with the IME can add
     // additional input method subtypes to the IME.
     AutoPtr<ICharSequence> tmp;
-    CStringWrapper::New(imiId, (ICharSequence**)&tmp);
+    CString::New(imiId, (ICharSequence**)&tmp);
     if (imiId.IsNullOrEmpty() || subtypes == NULL || subtypes->GetLength() == 0) return NOERROR;
     {
         AutoLock lock(mMethodMapLock);

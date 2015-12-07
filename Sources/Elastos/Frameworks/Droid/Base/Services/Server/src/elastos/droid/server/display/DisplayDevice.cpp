@@ -3,8 +3,8 @@
 #include "elastos/droid/server/display/DisplayDevice.h"
 
 using Elastos::Droid::Graphics::CRect;
-using Elastos::Droid::View::ISurfaceHelper;
-using Elastos::Droid::View::CSurfaceHelper;
+using Elastos::Droid::View::ISurfaceControlHelper;
+using Elastos::Droid::View::CSurfaceControlHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -43,11 +43,14 @@ void DisplayDevice::PerformTraversalInTransactionLocked()
 {
 }
 
-void DisplayDevice::BlankLocked()
+AutoPtr<IRunnable> DisplayDevice::RequestDisplayStateLocked(
+    /* [in] */ Int32 state)
 {
+    return NULL;
 }
 
-void DisplayDevice::UnblankLocked()
+void DisplayDevice::RequestRefreshRateLocked(
+    /* [in] */ Float refreshRate)
 {
 }
 
@@ -56,9 +59,9 @@ void DisplayDevice::SetLayerStackInTransactionLocked(
 {
     if (mCurrentLayerStack != layerStack) {
         mCurrentLayerStack = layerStack;
-        AutoPtr<ISurfaceHelper> surfaceHelper;
-        CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
-        surfaceHelper->SetDisplayLayerStack(mDisplayToken, layerStack);
+        AutoPtr<ISurfaceControlHelper> surfaceControl;
+        CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceControl);
+        surfaceControl->SetDisplayLayerStack(mDisplayToken, layerStack);
     }
 }
 
@@ -85,9 +88,9 @@ void DisplayDevice::SetProjectionInTransactionLocked(
         }
         mCurrentDisplayRect->Set(displayRect);
 
-        AutoPtr<ISurfaceHelper> surfaceHelper;
-        CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
-        surfaceHelper->SetDisplayProjection(mDisplayToken,
+        AutoPtr<ISurfaceControlHelper> surfaceControl;
+        CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceControl);
+        surfaceControl->SetDisplayProjection(mDisplayToken,
             orientation, layerStackRect, displayRect);
     }
 }
@@ -97,9 +100,9 @@ void DisplayDevice::SetSurfaceInTransactionLocked(
 {
     if (mCurrentSurface.Get() != surface) {
         mCurrentSurface = surface;
-        AutoPtr<ISurfaceHelper> surfaceHelper;
-        CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
-        surfaceHelper->SetDisplaySurface(mDisplayToken, surface);
+        AutoPtr<ISurfaceControlHelper> surfaceControl;
+        CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceControl);
+        surfaceControl->SetDisplaySurface(mDisplayToken, surface);
     }
 }
 

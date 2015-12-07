@@ -15,7 +15,7 @@ using Elastos::IO::IFileReader;
 using Elastos::IO::CFileReader;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::CHandler;
@@ -415,7 +415,7 @@ void WiredAccessoryManager::UpdateLocked(
     mWakeLock->AcquireLock();
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(newName, (ICharSequence**)&seq);
+    CString::New(newName, (ICharSequence**)&seq);
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MSG_NEW_DEVICE_STATE, (IMessage**)&msg);

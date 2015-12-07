@@ -12,7 +12,7 @@
 #include <cutils/log.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
 using Elastos::IO::IFile;
@@ -347,7 +347,7 @@ void CNetworkManagementService::PrepareNativeDaemon()
         Slogger::D(TAG, "enabling bandwidth control");
         // try {
         AutoPtr<ICharSequence> cseq;
-        CStringWrapper::New(String("enable"), (ICharSequence**)&cseq);
+        CString::New(String("enable"), (ICharSequence**)&cseq);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
         args->Set(0, cseq.Get());
         AutoPtr<NativeDaemonEvent> event;
@@ -416,7 +416,7 @@ ECode CNetworkManagementService::ListInterfaces(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
      // try {
     AutoPtr<ICharSequence> cseq;
-    CStringWrapper::New(String("list"), (ICharSequence**)&cseq);
+    CString::New(String("list"), (ICharSequence**)&cseq);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq.Get());
     AutoPtr< ArrayOf<NativeDaemonEvent*> > events;
@@ -444,9 +444,9 @@ ECode CNetworkManagementService::GetInterfaceConfig(
     AutoPtr<NativeDaemonEvent> event;
      // try {
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("getcfg"), (ICharSequence**)&cseq0);
+    CString::New(String("getcfg"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -513,11 +513,11 @@ ECode CNetworkManagementService::SetInterfaceConfig(
     linkAddr->GetNetworkPrefixLength(&prefixLength);
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("getcfg"), (ICharSequence**)&cseq0);
+    CString::New(String("getcfg"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(hostAddr, (ICharSequence**)&cseq2);
+    CString::New(hostAddr, (ICharSequence**)&cseq2);
     AutoPtr<IInteger32> iint3;
     CInteger32::New(prefixLength, (IInteger32**)&iint3);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(4);
@@ -532,7 +532,7 @@ ECode CNetworkManagementService::SetInterfaceConfig(
     cfg->GetFlags((ArrayOf<String>**)&flags);
     for (Int32 i = 0; i < flags->GetLength(); i++) {
         AutoPtr<ICharSequence> flag;
-        CStringWrapper::New((*flags)[i], (ICharSequence**)&flag);
+        CString::New((*flags)[i], (ICharSequence**)&flag);
         cmd->AppendArg(flag);
     }
 
@@ -576,11 +576,11 @@ ECode CNetworkManagementService::SetInterfaceIpv6PrivacyExtensions(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("ipv6privacyextensions"), (ICharSequence**)&cseq0);
+    CString::New(String("ipv6privacyextensions"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(enable ? String("enable") : String("disable"), (ICharSequence**)&cseq2);
+    CString::New(enable ? String("enable") : String("disable"), (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -602,9 +602,9 @@ ECode CNetworkManagementService::ClearInterfaceAddresses(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("clearaddrs"), (ICharSequence**)&cseq0);
+    CString::New(String("clearaddrs"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -623,11 +623,11 @@ ECode CNetworkManagementService::EnableIpv6(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("ipv6"), (ICharSequence**)&cseq0);
+    CString::New(String("ipv6"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(String("enable"), (ICharSequence**)&cseq2);
+    CString::New(String("enable"), (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -647,11 +647,11 @@ ECode CNetworkManagementService::DisableIpv6(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("ipv6"), (ICharSequence**)&cseq0);
+    CString::New(String("ipv6"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(String("disable"), (ICharSequence**)&cseq2);
+    CString::New(String("disable"), (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -708,13 +708,13 @@ ECode CNetworkManagementService::ModifyRoute(
     /* [in] */ const String& type)
 {
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("route"), (ICharSequence**)&cseq0);
+    CString::New(String("route"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(action, (ICharSequence**)&cseq1);
+    CString::New(action, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(interfaceName, (ICharSequence**)&cseq2);
+    CString::New(interfaceName, (ICharSequence**)&cseq2);
     AutoPtr<ICharSequence> cseq3;
-    CStringWrapper::New(type, (ICharSequence**)&cseq3);
+    CString::New(type, (ICharSequence**)&cseq3);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(4);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -732,7 +732,7 @@ ECode CNetworkManagementService::ModifyRoute(
     String str;
     netAddr->GetHostAddress(&str);
     AutoPtr<ICharSequence> istr;
-    CStringWrapper::New(str, (ICharSequence**)&istr);
+    CString::New(str, (ICharSequence**)&istr);
     cmd->AppendArg(istr);
 
     Int32 num;
@@ -746,19 +746,19 @@ ECode CNetworkManagementService::ModifyRoute(
     if (gateway == NULL) {
         if (IInet4Address::Probe(netAddr) != NULL) {
             AutoPtr<ICharSequence> istr0;
-            CStringWrapper::New(String("0.0.0.0"), (ICharSequence**)&istr0);
+            CString::New(String("0.0.0.0"), (ICharSequence**)&istr0);
             cmd->AppendArg(istr0);
         }
         else {
             AutoPtr<ICharSequence> istr0;
-            CStringWrapper::New(String("::0"), (ICharSequence**)&istr0);
+            CString::New(String("::0"), (ICharSequence**)&istr0);
             cmd->AppendArg(istr0);
         }
     }
     else {
         gateway->GetHostAddress(&str);
         AutoPtr<ICharSequence> istr0;
-        CStringWrapper::New(str, (ICharSequence**)&istr0);
+        CString::New(str, (ICharSequence**)&istr0);
         cmd->AppendArg(istr0);
     }
     AutoPtr<NativeDaemonEvent> event;
@@ -918,7 +918,7 @@ ECode CNetworkManagementService::GetIpForwardingEnabled(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("status"), (ICharSequence**)&cseq0);
+    CString::New(String("status"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq0.Get());
     // try {
@@ -940,7 +940,7 @@ ECode CNetworkManagementService::SetIpForwardingEnabled(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(enable ? String("enable") : String("disable"), (ICharSequence**)&cseq0);
+    CString::New(enable ? String("enable") : String("disable"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq0.Get());
     // try {
@@ -961,14 +961,14 @@ ECode CNetworkManagementService::StartTethering(
      // an odd number of addrs will fail
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("start"), (ICharSequence**)&cseq0);
+    CString::New(String("start"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq0.Get());
     AutoPtr<NativeDaemonConnector::Command> cmd = new NativeDaemonConnector::Command(
         String("tether"), args);
     for (Int32 i = 0; i < dhcpRange->GetLength(); i++) {
         AutoPtr<ICharSequence> str;
-        CStringWrapper::New((*dhcpRange)[i], (ICharSequence**)&str);
+        CString::New((*dhcpRange)[i], (ICharSequence**)&str);
         cmd->AppendArg(str);
     }
 
@@ -986,7 +986,7 @@ ECode CNetworkManagementService::StopTethering()
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("stop"), (ICharSequence**)&cseq0);
+    CString::New(String("stop"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq0.Get());
     // try {
@@ -1006,7 +1006,7 @@ ECode CNetworkManagementService::IsTetheringStarted(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("status"), (ICharSequence**)&cseq0);
+    CString::New(String("status"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq0.Get());
 
@@ -1073,11 +1073,11 @@ ECode CNetworkManagementService::TetherInterface(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("interface"), (ICharSequence**)&cseq0);
+    CString::New(String("interface"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(String("add"), (ICharSequence**)&cseq1);
+    CString::New(String("add"), (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq2);
+    CString::New(iface, (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1097,11 +1097,11 @@ ECode CNetworkManagementService::UntetherInterface(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
         Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("interface"), (ICharSequence**)&cseq0);
+    CString::New(String("interface"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(String("remove"), (ICharSequence**)&cseq1);
+    CString::New(String("remove"), (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq2);
+    CString::New(iface, (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1122,9 +1122,9 @@ ECode CNetworkManagementService::ListTetheredInterfaces(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("interface"), (ICharSequence**)&cseq0);
+    CString::New(String("interface"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(String("list"), (ICharSequence**)&cseq1);
+    CString::New(String("list"), (ICharSequence**)&cseq1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1147,9 +1147,9 @@ ECode CNetworkManagementService::SetDnsForwarders(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("dns"), (ICharSequence**)&cseq0);
+    CString::New(String("dns"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(String("set"), (ICharSequence**)&cseq1);
+    CString::New(String("set"), (ICharSequence**)&cseq1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1161,7 +1161,7 @@ ECode CNetworkManagementService::SetDnsForwarders(
         String str;
         inetAddr->GetHostAddress(&str);
         AutoPtr<ICharSequence> cseq;
-        CStringWrapper::New(str, (ICharSequence**)&cseq);
+        CString::New(str, (ICharSequence**)&cseq);
         cmd->AppendArg(cseq);
     }
     AutoPtr<NativeDaemonEvent> event;
@@ -1178,9 +1178,9 @@ ECode CNetworkManagementService::GetDnsForwarders(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("dns"), (ICharSequence**)&cseq0);
+    CString::New(String("dns"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(String("list"), (ICharSequence**)&cseq1);
+    CString::New(String("list"), (ICharSequence**)&cseq1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1202,11 +1202,11 @@ ECode CNetworkManagementService::ModifyNat(
     /* [in] */ const String& externalInterface)
 {
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(action, (ICharSequence**)&cseq0);
+    CString::New(action, (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(internalInterface, (ICharSequence**)&cseq1);
+    CString::New(internalInterface, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(externalInterface, (ICharSequence**)&cseq2);
+    CString::New(externalInterface, (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1221,7 +1221,7 @@ ECode CNetworkManagementService::ModifyNat(
 
      if (internalNetworkInterface == NULL) {
         AutoPtr<ICharSequence> cseq;
-        CStringWrapper::New(String("0"), (ICharSequence**)&cseq);
+        CString::New(String("0"), (ICharSequence**)&cseq);
         cmd->AppendArg(cseq);
      } else {
         AutoPtr<IList> interfaceAddresses;
@@ -1241,9 +1241,9 @@ ECode CNetworkManagementService::ModifyNat(
             String str;
             addrOut->GetHostAddress(&str);
             AutoPtr<ICharSequence> c0;
-            CStringWrapper::New(str, (ICharSequence**)&c0);
+            CString::New(str, (ICharSequence**)&c0);
             AutoPtr<ICharSequence> c1;
-            CStringWrapper::New(String("/"), (ICharSequence**)&c1);
+            CString::New(String("/"), (ICharSequence**)&c1);
             AutoPtr<IInteger16> i2;
             CInteger16::New(prefixLen, (IInteger16**)&i2);
             cmd->AppendArg(c0);
@@ -1320,17 +1320,17 @@ ECode CNetworkManagementService::AttachPppd(
     inetAddr->GetHostAddress(&str4);
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("attach"), (ICharSequence**)&cseq0);
+    CString::New(String("attach"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(tty, (ICharSequence**)&cseq1);
+    CString::New(tty, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(str1, (ICharSequence**)&cseq2);
+    CString::New(str1, (ICharSequence**)&cseq2);
     AutoPtr<ICharSequence> cseq3;
-    CStringWrapper::New(str2, (ICharSequence**)&cseq3);
+    CString::New(str2, (ICharSequence**)&cseq3);
     AutoPtr<ICharSequence> cseq4;
-    CStringWrapper::New(str3, (ICharSequence**)&cseq4);
+    CString::New(str3, (ICharSequence**)&cseq4);
     AutoPtr<ICharSequence> cseq5;
-    CStringWrapper::New(str4, (ICharSequence**)&cseq5);
+    CString::New(str4, (ICharSequence**)&cseq5);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(6);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1349,9 +1349,9 @@ ECode CNetworkManagementService::DetachPppd(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("detach"), (ICharSequence**)&cseq0);
+    CString::New(String("detach"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(tty, (ICharSequence**)&cseq1);
+    CString::New(tty, (ICharSequence**)&cseq1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1379,9 +1379,9 @@ ECode CNetworkManagementService::StartAccessPoint(
     FAIL_RETURN(mConnector->DoCommand(strcmd, responses));
     if (wifiConfig == NULL) {
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("set"), (ICharSequence**)&cseq0);
+        CString::New(String("set"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(wlanIface, (ICharSequence**)&cseq1);
+        CString::New(wlanIface, (ICharSequence**)&cseq1);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
         args->Set(0, cseq0.Get());
         args->Set(1, cseq1.Get());
@@ -1393,15 +1393,15 @@ ECode CNetworkManagementService::StartAccessPoint(
         String strPreShareKey;
         wifiConfig->GetPreSharedKey(&strPreShareKey);
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("set"), (ICharSequence**)&cseq0);
+        CString::New(String("set"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(wlanIface, (ICharSequence**)&cseq1);
+        CString::New(wlanIface, (ICharSequence**)&cseq1);
         AutoPtr<ICharSequence> cseq2;
-        CStringWrapper::New(strSSID, (ICharSequence**)&cseq2);
+        CString::New(strSSID, (ICharSequence**)&cseq2);
         AutoPtr<ICharSequence> cseq3;
-        CStringWrapper::New(GetSecurityType(wifiConfig), (ICharSequence**)&cseq3);
+        CString::New(GetSecurityType(wifiConfig), (ICharSequence**)&cseq3);
         AutoPtr<ICharSequence> cseq4;
-        CStringWrapper::New(strPreShareKey, (ICharSequence**)&cseq4);
+        CString::New(strPreShareKey, (ICharSequence**)&cseq4);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(5);
         args->Set(0, cseq0.Get());
         args->Set(1, cseq1.Get());
@@ -1412,7 +1412,7 @@ ECode CNetworkManagementService::StartAccessPoint(
         mConnector->Execute(String("softap"), args, (NativeDaemonEvent**)&event);
     }
     AutoPtr<ICharSequence> cseq;
-    CStringWrapper::New(String("startap"), (ICharSequence**)&cseq);
+    CString::New(String("startap"), (ICharSequence**)&cseq);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq.Get());
     AutoPtr<NativeDaemonEvent> event;
@@ -1446,11 +1446,11 @@ ECode CNetworkManagementService::WifiFirmwareReload(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("fwreload"), (ICharSequence**)&cseq0);
+    CString::New(String("fwreload"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(wlanIface, (ICharSequence**)&cseq1);
+    CString::New(wlanIface, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(mode, (ICharSequence**)&cseq2);
+    CString::New(mode, (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1470,7 +1470,7 @@ ECode CNetworkManagementService::StopAccessPoint(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("stopap"), (ICharSequence**)&cseq0);
+    CString::New(String("stopap"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq0.Get());
     // try {
@@ -1492,9 +1492,9 @@ ECode CNetworkManagementService::SetAccessPoint(
 
      if (wifiConfig == NULL) {
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("set"), (ICharSequence**)&cseq0);
+        CString::New(String("set"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(wlanIface, (ICharSequence**)&cseq1);
+        CString::New(wlanIface, (ICharSequence**)&cseq1);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
         args->Set(0, cseq0.Get());
         args->Set(1, cseq1.Get());
@@ -1507,15 +1507,15 @@ ECode CNetworkManagementService::SetAccessPoint(
         wifiConfig->GetPreSharedKey(&presharedKey);
 
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("set"), (ICharSequence**)&cseq0);
+        CString::New(String("set"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(wlanIface, (ICharSequence**)&cseq1);
+        CString::New(wlanIface, (ICharSequence**)&cseq1);
         AutoPtr<ICharSequence> cseq2;
-        CStringWrapper::New(ssid, (ICharSequence**)&cseq2);
+        CString::New(ssid, (ICharSequence**)&cseq2);
         AutoPtr<ICharSequence> cseq3;
-        CStringWrapper::New(GetSecurityType(wifiConfig), (ICharSequence**)&cseq3);
+        CString::New(GetSecurityType(wifiConfig), (ICharSequence**)&cseq3);
         AutoPtr<ICharSequence> cseq4;
-        CStringWrapper::New(presharedKey, (ICharSequence**)&cseq4);
+        CString::New(presharedKey, (ICharSequence**)&cseq4);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(5);
         args->Set(0, cseq0.Get());
         args->Set(1, cseq1.Get());
@@ -1547,13 +1547,13 @@ ECode CNetworkManagementService::AddIdleTimer(
             return NOERROR;
         }
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("add"), (ICharSequence**)&cseq0);
+        CString::New(String("add"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+        CString::New(iface, (ICharSequence**)&cseq1);
         AutoPtr<ICharSequence> cseq2;
-        CStringWrapper::New(StringUtils::Int32ToString(timeout), (ICharSequence**)&cseq2);
+        CString::New(StringUtils::Int32ToString(timeout), (ICharSequence**)&cseq2);
         AutoPtr<ICharSequence> cseq3;
-        CStringWrapper::New(label, (ICharSequence**)&cseq3);
+        CString::New(label, (ICharSequence**)&cseq3);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(4);
         args->Set(0, cseq0.Get());
         args->Set(1, cseq1.Get());
@@ -1583,13 +1583,13 @@ ECode CNetworkManagementService::RemoveIdleTimer(
             return NOERROR;
         }
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("remove"), (ICharSequence**)&cseq0);
+        CString::New(String("remove"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+        CString::New(iface, (ICharSequence**)&cseq1);
         AutoPtr<ICharSequence> cseq2;
-        CStringWrapper::New(StringUtils::Int32ToString(params->mTimeout), (ICharSequence**)&cseq2);
+        CString::New(StringUtils::Int32ToString(params->mTimeout), (ICharSequence**)&cseq2);
         AutoPtr<ICharSequence> cseq3;
-        CStringWrapper::New(params->mLabel, (ICharSequence**)&cseq3);
+        CString::New(params->mLabel, (ICharSequence**)&cseq3);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(4);
         args->Set(0, cseq0.Get());
         args->Set(1, cseq1.Get());
@@ -1657,9 +1657,9 @@ ECode CNetworkManagementService::SetInterfaceQuota(
 
         // TODO: support quota shared across interfaces
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("setiquota"), (ICharSequence**)&cseq0);
+        CString::New(String("setiquota"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+        CString::New(iface, (ICharSequence**)&cseq1);
         AutoPtr<IInteger64> iint2;
         CInteger64::New(quotaBytes, (IInteger64**)&iint2);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
@@ -1695,9 +1695,9 @@ ECode CNetworkManagementService::RemoveInterfaceQuota(
         mActiveAlerts.Erase(iface);
         // TODO: support quota shared across interfaces
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("removeiquota"), (ICharSequence**)&cseq0);
+        CString::New(String("removeiquota"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+        CString::New(iface, (ICharSequence**)&cseq1);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
         args->Set(0, cseq0.Get());
         args->Set(1, cseq1.Get());
@@ -1735,9 +1735,9 @@ ECode CNetworkManagementService::SetInterfaceAlert(
         }
          // TODO: support alert shared across interfaces
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("setinterfacealert"), (ICharSequence**)&cseq0);
+        CString::New(String("setinterfacealert"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+        CString::New(iface, (ICharSequence**)&cseq1);
         AutoPtr<IInteger64> iint2;
         CInteger64::New(alertBytes, (IInteger64**)&iint2);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
@@ -1772,9 +1772,9 @@ ECode CNetworkManagementService::RemoveInterfaceAlert(
 
         // TODO: support alert shared across interfaces
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("removeinterfacealert"), (ICharSequence**)&cseq0);
+        CString::New(String("removeinterfacealert"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+        CString::New(iface, (ICharSequence**)&cseq1);
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
         args->Set(0, cseq0.Get());
         args->Set(1, cseq1.Get());
@@ -1797,7 +1797,7 @@ ECode CNetworkManagementService::SetGlobalAlert(
         return NOERROR;
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("setglobalalert"), (ICharSequence**)&cseq0);
+    CString::New(String("setglobalalert"), (ICharSequence**)&cseq0);
     AutoPtr<IInteger64> iint1;
     CInteger64::New(alertBytes, (IInteger64**)&iint1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
@@ -1829,9 +1829,9 @@ ECode CNetworkManagementService::SetUidNetworkRules(
         }
 
         AutoPtr<ICharSequence> cseq0;
-        CStringWrapper::New(String("setglobalalert"), (ICharSequence**)&cseq0);
+        CString::New(String("setglobalalert"), (ICharSequence**)&cseq0);
         AutoPtr<ICharSequence> cseq1;
-        CStringWrapper::New(
+        CString::New(
                 rejectOnQuotaInterfaces ? String("addnaughtyapps") : String("removenaughtyapps"), (ICharSequence**)&cseq1);
         AutoPtr<IInteger32> iint2;
         CInteger32::New(uid, (IInteger32**)&iint2);
@@ -1915,11 +1915,11 @@ ECode CNetworkManagementService::GetNetworkStatsTethering(
     *result = NULL;
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("gettetherstats"), (ICharSequence**)&cseq0);
+    CString::New(String("gettetherstats"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(ifaceIn, (ICharSequence**)&cseq1);
+    CString::New(ifaceIn, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(ifaceOut, (ICharSequence**)&cseq2);
+    CString::New(ifaceOut, (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -1960,9 +1960,9 @@ ECode CNetworkManagementService::SetInterfaceThrottle(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("setthrottle"), (ICharSequence**)&cseq0);
+    CString::New(String("setthrottle"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr<IInteger32> iint2;
     CInteger32::New(rxKbps, (IInteger32**)&iint2);
     AutoPtr<IInteger32> iint3;
@@ -1987,11 +1987,11 @@ ECode CNetworkManagementService::GetInterfaceThrottle(
     /* [out] */ Int32* throttle)
 {
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("getthrottle"), (ICharSequence**)&cseq0);
+    CString::New(String("getthrottle"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(rx ? String("rx") : String("tx"), (ICharSequence**)&cseq2);
+    CString::New(rx ? String("rx") : String("tx"), (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -2036,9 +2036,9 @@ ECode CNetworkManagementService::SetDefaultInterfaceForDns(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("setdefaultif"), (ICharSequence**)&cseq0);
+    CString::New(String("setdefaultif"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -2059,9 +2059,9 @@ ECode CNetworkManagementService::SetDnsServersForInterface(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("setifdns"), (ICharSequence**)&cseq0);
+    CString::New(String("setifdns"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -2077,7 +2077,7 @@ ECode CNetworkManagementService::SetDnsServersForInterface(
             String str;
             addr->GetHostAddress(&str);
             AutoPtr<ICharSequence> cseq;
-            CStringWrapper::New(str, (ICharSequence**)&cseq);
+            CString::New(str, (ICharSequence**)&cseq);
             cmd->AppendArg(cseq);
         }
     }
@@ -2092,7 +2092,7 @@ ECode CNetworkManagementService::FlushDefaultDnsCache()
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("flushdefaultif"), (ICharSequence**)&cseq0);
+    CString::New(String("flushdefaultif"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq0.Get());
     AutoPtr<NativeDaemonEvent> event;
@@ -2106,9 +2106,9 @@ ECode CNetworkManagementService::FlushInterfaceDnsCache(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("flushif"), (ICharSequence**)&cseq0);
+    CString::New(String("flushif"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -2127,7 +2127,7 @@ ECode CNetworkManagementService::SetFirewallEnabled(
     FAIL_RETURN(EnforceSystemUid());
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(enabled ? String("enable") : String("disable"), (ICharSequence**)&cseq0);
+    CString::New(enabled ? String("enable") : String("disable"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, cseq0.Get());
     AutoPtr<NativeDaemonEvent> event;
@@ -2156,11 +2156,11 @@ ECode CNetworkManagementService::SetFirewallInterfaceRule(
     String rule = allow ? ALLOW : DENY;
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("set_interface_rule"), (ICharSequence**)&cseq0);
+    CString::New(String("set_interface_rule"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(iface, (ICharSequence**)&cseq1);
+    CString::New(iface, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(rule, (ICharSequence**)&cseq2);
+    CString::New(rule, (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -2179,11 +2179,11 @@ ECode CNetworkManagementService::SetFirewallEgressSourceRule(
     String rule = allow ? ALLOW : DENY;
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("set_egress_source_rule"), (ICharSequence**)&cseq0);
+    CString::New(String("set_egress_source_rule"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(addr, (ICharSequence**)&cseq1);
+    CString::New(addr, (ICharSequence**)&cseq1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(rule, (ICharSequence**)&cseq2);
+    CString::New(rule, (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -2203,13 +2203,13 @@ ECode CNetworkManagementService::SetFirewallEgressDestRule(
     String rule = allow ? ALLOW : DENY;
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("set_egress_dest_rule"), (ICharSequence**)&cseq0);
+    CString::New(String("set_egress_dest_rule"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
-    CStringWrapper::New(addr, (ICharSequence**)&cseq1);
+    CString::New(addr, (ICharSequence**)&cseq1);
     AutoPtr<IInteger32> iint2;
     CInteger32::New(port, (IInteger32**)&iint2);
     AutoPtr<ICharSequence> cseq3;
-    CStringWrapper::New(rule, (ICharSequence**)&cseq3);
+    CString::New(rule, (ICharSequence**)&cseq3);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(4);
     args->Set(0, cseq0.Get());
     args->Set(1, cseq1.Get());
@@ -2229,11 +2229,11 @@ ECode CNetworkManagementService::SetFirewallUidRule(
     String rule = allow ? ALLOW : DENY;
 
     AutoPtr<ICharSequence> cseq0;
-    CStringWrapper::New(String("set_uid_rule"), (ICharSequence**)&cseq0);
+    CString::New(String("set_uid_rule"), (ICharSequence**)&cseq0);
     AutoPtr<IInteger32> iint1;
     CInteger32::New(uid, (IInteger32**)&iint1);
     AutoPtr<ICharSequence> cseq2;
-    CStringWrapper::New(rule, (ICharSequence**)&cseq2);
+    CString::New(rule, (ICharSequence**)&cseq2);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(3);
     args->Set(0, cseq0.Get());
     args->Set(1, iint1.Get());

@@ -3,7 +3,7 @@
 #include "CNetworkManagementService.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -46,7 +46,7 @@ ECode CNetworkPolicyManagerServiceAlertObserber::LimitReached(
 
     if (!CNetworkManagementService::LIMIT_GLOBAL_ALERT.Equals(limitName)) {
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(iface, (ICharSequence**)&seq);
+        CString::New(iface, (ICharSequence**)&seq);
         AutoPtr<IMessage> msg;
         mHost->mHandler->ObtainMessage(
             CNetworkPolicyManagerService::MSG_LIMIT_REACHED,
