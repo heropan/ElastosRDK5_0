@@ -115,7 +115,6 @@ module
     merge("widget/RecycleListView.car");
     merge("widget/SearchViewSearchAutoComplete.car");
     merge("widget/VolumePanel.car");
-    merge("widget/NumberPickerCustomEditText.car");
     merge("widget/RemoteViewsAdapterServiceConnection.car");
     merge("widget/ActionMenuView.car");
     merge("widget/OnDateChangedListener.car");
@@ -666,13 +665,13 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CEdgeEffect {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CEdgeEffect {
+        constructor(
+            [in] IContext* ctx);
 
-   //      interface IEdgeEffect;
-   //  }
+        interface IEdgeEffect;
+    }
 
    //  [local]
    //  class CDatePicker {
@@ -1367,19 +1366,21 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  [local]
-   //  class CNumberPickerCustomEditText {
+    [local]
+    class CNumberPickerCustomEditText {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
-
-   //      interface INumberPickerCustomEditText;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface INumberPickerCustomEditText;
+        interface IEditText;
+        interface ITextView;
+        interface IView;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
     [local]
     class CPopupWindow {
@@ -2012,31 +2013,40 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CNumberPicker {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CNumberPicker {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface INumberPicker;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
-   //  singleton class CNumberPickerHelper {
-   //      interface INumberPickerHelper;
-   //  }
+        interface INumberPicker;
+        interface ILinearLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    singleton class CNumberPickerHelper {
+        interface INumberPickerHelper;
+    }
 
     [local]
     class COverScroller{

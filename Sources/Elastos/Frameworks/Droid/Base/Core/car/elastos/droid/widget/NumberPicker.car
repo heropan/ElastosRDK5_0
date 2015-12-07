@@ -68,9 +68,23 @@ module
 
     /**
      * @Involve
+     * extends Elastos.Droid.Widget.IEditText
+     * extends Elastos.Droid.View.ITextView
      * extends Elastos.Droid.View.IView
-     * extends Elastos.Droid.View.IViewGroup
+     *
+     * interface Elastos.Droid.View.OnPreDrawListener
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
+     */
+    interface INumberPickerCustomEditText {
+    }
+
+    /**
+     * @Involve
      * extends Elastos.Droid.Widget.ILinearLayout
+     * extends Elastos.Droid.View.IViewGroup
+     * extends Elastos.Droid.View.IView
      *
      * interface Elastos.Droid.View.IViewParent
      * interface Elastos.Droid.View.IViewManager
@@ -86,7 +100,7 @@ module
          * @param onValueChangedListener The listener.
          */
         SetOnValueChangedListener(
-                [in] INumberPickerOnValueChangeListener* onValueChangedListener);
+            [in] INumberPickerOnValueChangeListener* onValueChangedListener);
 
         /**
          * Set listener to be notified for scroll state changes.
@@ -94,7 +108,7 @@ module
          * @param onScrollListener The listener.
          */
         SetOnScrollListener(
-                [in] INumberPickerOnScrollListener* onScrollListener);
+            [in] INumberPickerOnScrollListener* onScrollListener);
 
         /**
          * Set the formatter to be used for formatting the current value.
@@ -108,7 +122,7 @@ module
          *@see #setDisplayedValues(String[])
          */
         SetFormatter(
-                [in] INumberPickerFormatter* formatter);
+            [in] INumberPickerFormatter* formatter);
 
         /**
          * Set the current value for the number picker.
@@ -139,7 +153,7 @@ module
          * @see #setMaxValue(int)
          */
         SetValue(
-                [in] Int32 value);
+            [in] Int32 value);
 
         /**
          * Gets whether the selector wheel wraps when reaching the min/max value.
@@ -150,7 +164,7 @@ module
          * @see #getMaxValue()
          */
         GetWrapSelectorWheel(
-                [out] Boolean* isWrapSelectorWheel);
+            [out] Boolean* isWrapSelectorWheel);
 
         /**
          * Sets whether the selector wheel shown during flinging/scrolling should
@@ -170,7 +184,7 @@ module
          * @param wrapSelectorWheel Whether to wrap.
          */
         SetWrapSelectorWheel(
-                [in] Boolean wrapSelectorWheel);
+            [in] Boolean wrapSelectorWheel);
 
         /**
          * Sets the speed at which the numbers be incremented and decremented when
@@ -183,7 +197,7 @@ module
          *            will be incremented and decremented.
          */
         SetOnLongPressUpdateInterval(
-                [in] Int64 intervalMillis) ;
+            [in] Int64 intervalMillis) ;
 
         /**
          * Returns the value of the picker.
@@ -191,7 +205,7 @@ module
          * @return The value.
          */
         GetValue(
-                [out] Int32* value);
+            [out] Int32* value);
 
         /**
          * Returns the min value of the picker.
@@ -199,7 +213,7 @@ module
          * @return The min value
          */
         GetMinValue(
-                [out] Int32* MinValue);
+            [out] Int32* MinValue);
 
         /**
          * Sets the min value of the picker.
@@ -220,7 +234,7 @@ module
          * @return The max value.
          */
         GetMaxValue(
-                [out] Int32* MaxValue);
+            [out] Int32* MaxValue);
 
         /**
          * Sets the max value of the picker.    }
@@ -233,7 +247,7 @@ module
          * {@link #getMaxValue()} - {@link #getMinValue()} + 1.
          */
         SetMaxValue(
-                [in] Int32 maxValue);
+            [in] Int32 maxValue);
 
         /**
          * Gets the values to be displayed instead of string values.
@@ -241,7 +255,7 @@ module
          * @return The displayed values.
          */
         GetDisplayedValues(
-                [out, callee] ArrayOf<String>* displayedValues);
+            [out, callee] ArrayOf<String>* displayedValues);
 
         /**
          * Sets the values to be displayed.
@@ -253,7 +267,7 @@ module
          * {@link #getMaxValue()} - {@link #getMinValue()} + 1.
          */
         SetDisplayedValues(
-               [in] ArrayOf<String>* displayedValues);
+           [in] ArrayOf<String>* displayedValues);
     }
 
     interface INumberPickerHelper {
@@ -266,5 +280,3 @@ module
     } // namespace Droid
     } // namespace Elastos
 }
-
-
