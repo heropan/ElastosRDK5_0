@@ -9,6 +9,10 @@ namespace Droid {
 namespace App {
 namespace Backup {
 
+CAR_INTERFACE_IMPL(CFullBackupDataOutput, Object, IFullBackupDataOutput)
+
+CAR_OBJECT_IMPL(CFullBackupDataOutput)
+
 ECode CFullBackupDataOutput::constructor(
     /* [in] */ IParcelFileDescriptor* fdes)
 {

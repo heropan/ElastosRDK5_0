@@ -13,6 +13,8 @@ namespace Backup {
 
 const String FileBackupHelperBase::TAG("FileBackupHelperBase");
 
+CAR_INTERFACE_IMPL(FileBackupHelperBase, Object, IFileBackupHelperBase)
+
 FileBackupHelperBase::FileBackupHelperBase()
 {
     mExceptionLogged = FALSE;

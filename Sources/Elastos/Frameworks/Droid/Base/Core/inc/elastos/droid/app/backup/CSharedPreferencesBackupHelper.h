@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_APP_BACKUP_CSHAREDPREFERENCESBACKUPHELPER_H__
 
 #include "_Elastos_Droid_App_Backup_CSharedPreferencesBackupHelper.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/backup/FileBackupHelperBase.h"
 
 using Elastos::Droid::Content::IContext;
@@ -43,4 +42,5 @@ private:
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
-#endif
+
+#endif//__ELASTOS_DROID_APP_BACKUP_CSHAREDPREFERENCESBACKUPHELPER_H__

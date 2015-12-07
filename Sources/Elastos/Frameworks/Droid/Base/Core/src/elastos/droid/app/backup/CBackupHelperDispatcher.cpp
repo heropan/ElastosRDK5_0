@@ -20,6 +20,10 @@ namespace Backup {
 
 const String CBackupHelperDispatcher::TAG("BackupHelperDispatcher");
 
+CAR_INTERFACE_IMPL(CBackupHelperDispatcher, Object, IBackupHelperDispatcher)
+
+CAR_OBJECT_IMPL(CBackupHelperDispatcher)
+
 ECode CBackupHelperDispatcher::constructor()
 {
     return NOERROR;

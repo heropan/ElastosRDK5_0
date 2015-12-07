@@ -116,8 +116,7 @@ namespace Backup {
  */
 extern "C" const InterfaceID EIID_BackupAgent;
 class BackupAgent
-    : public ElRefBase
-    , public IObject
+    : public Object
     , public IBackupAgent
     , public IWeakReferenceSource
 {

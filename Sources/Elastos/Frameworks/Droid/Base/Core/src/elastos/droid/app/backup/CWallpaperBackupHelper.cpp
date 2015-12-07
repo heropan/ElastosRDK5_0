@@ -215,7 +215,7 @@ String CWallpaperBackupHelper::GetSTAGE_FILE()
     return STAGE_FILE;
 }
 
-}
-}
-}
-}
+} // namespace Backup
+} // namespace App
+} // namespace Droid
+} // namespace Elastos

@@ -12,6 +12,10 @@ namespace Backup {
 
 const String CRestoreSession::TAG("CRestoreSession");
 
+CAR_INTERFACE_IMPL(CRestoreSession, Object, IRestoreSession)
+
+CAR_OBJECT_IMPL(CRestoreSession)
+
 ECode CRestoreSession::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IIRestoreSession* binder)

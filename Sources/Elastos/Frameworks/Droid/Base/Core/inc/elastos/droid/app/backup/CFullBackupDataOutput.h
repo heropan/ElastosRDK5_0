@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_BACKUP_CFULLBACKUPDATAOUTPUT_H__
 
 #include "_Elastos_Droid_App_Backup_CFullBackupDataOutput.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
@@ -12,8 +12,14 @@ namespace App {
 namespace Backup {
 
 CarClass(CFullBackupDataOutput)
+    , public Object
+    , public IFullBackupDataOutput
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IParcelFileDescriptor* fd);
 

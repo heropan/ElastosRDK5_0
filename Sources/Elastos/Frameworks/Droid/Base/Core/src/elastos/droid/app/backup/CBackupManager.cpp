@@ -15,6 +15,10 @@ namespace Backup {
 const String CBackupManager::TAG("CBackupManager");
 AutoPtr<IIBackupManager> CBackupManager::sService;
 
+CAR_INTERFACE_IMPL(CBackupManager, Object, IBackupManager)
+
+CAR_OBJECT_IMPL(CBackupManager)
+
 CBackupManager::CBackupManager()
 {
 }

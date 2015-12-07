@@ -9,14 +9,25 @@ namespace Droid {
 namespace App {
 namespace Backup {
 
+//===============================================================
+//               CBackupDataInput::EntityHeader
+//===============================================================
+
 CBackupDataInput::EntityHeader::EntityHeader()
     : mDataSize(0)
 {
 }
 
+//===============================================================
+//                     CBackupDataInput
+//===============================================================
 
 const String CBackupDataInput::TAG("CBackupDataInput");
 const Boolean CBackupDataInput::DEBUG = FALSE;
+
+CAR_INTERFACE_IMPL(CBackupDataInput, Object, IBackupDataInput)
+
+CAR_OBJECT_IMPL(CBackupDataInput)
 
 CBackupDataInput::CBackupDataInput()
     : mHeaderReady(FALSE)

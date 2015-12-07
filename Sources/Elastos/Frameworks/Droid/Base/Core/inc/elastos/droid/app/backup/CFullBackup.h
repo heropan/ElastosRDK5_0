@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CFULLBACKUP_H__
 #define __ELASTOS_DROID_APP_BACKUP_CFULLBACKUP_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_App_Backup_CFullBackup.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::IO::IFile;
 using Elastos::Droid::Os::IParcelFileDescriptor;
@@ -13,8 +13,14 @@ namespace App {
 namespace Backup {
 
 CarClass(CFullBackup)
+    , public Singleton
+    , public IFullBackup
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI BackupToTar(
         /* [in] */ const String& packageName,
         /* [in] */ const String& domainName,

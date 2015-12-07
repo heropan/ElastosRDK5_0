@@ -12,6 +12,10 @@ namespace Backup {
 const String CBackupDataOutput::TAG("CBackupDataOutput");
 const Boolean CBackupDataOutput::DEBUG = FALSE;
 
+CAR_INTERFACE_IMPL(CBackupDataOutput, Object, IBackupDataOutput)
+
+CAR_OBJECT_IMPL(CBackupDataOutput)
+
 CBackupDataOutput::CBackupDataOutput()
     : mBackupWriter(0)
 {

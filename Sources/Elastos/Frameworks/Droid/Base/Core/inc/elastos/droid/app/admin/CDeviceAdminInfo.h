@@ -5,6 +5,7 @@
 #include "_Elastos_Droid_App_Admin_CDeviceAdminInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/utility/SparseArray.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 
@@ -23,6 +24,7 @@ using Elastos::Droid::Utility::SparseArray;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -30,11 +32,19 @@ namespace App {
 namespace Admin {
 
 CarClass(CDeviceAdminInfo)
+    , public Object
+    , public IDeviceAdminInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CDeviceAdminInfo();
 
-    CARAPI constructor();
+    CARAPI constructor(
+        /* [in] */ IParcel* source);
 
     /**
      * Constructor.
@@ -134,7 +144,7 @@ public:
 
     /** @hide */
     CARAPI GetUsedPolicies(
-        /* [out] */ IObjectContainer** policies);
+        /* [out] */ IArrayList** policies);
 
     /** @hide */
     CARAPI WritePoliciesToXml(

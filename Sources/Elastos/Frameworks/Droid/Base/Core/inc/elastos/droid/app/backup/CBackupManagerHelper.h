@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGERHELPER_H__
 
 #include "_Elastos_Droid_App_Backup_CBackupManagerHelper.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +10,14 @@ namespace App {
 namespace Backup {
 
 CarClass(CBackupManagerHelper)
+    , public Singleton
+    , public IBackupManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Convenience method for callers who need to indicate that some other package
      * needs a backup pass.  This can be useful in the case of groups of packages
@@ -28,9 +34,9 @@ public:
 
 };
 
-}
-}
-}
-}
+} // namespace Backup
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGERHELPER_H__
