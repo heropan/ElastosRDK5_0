@@ -10,9 +10,9 @@ using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class MultiAutoCompleteTextView : public AutoCompleteTextView
 {

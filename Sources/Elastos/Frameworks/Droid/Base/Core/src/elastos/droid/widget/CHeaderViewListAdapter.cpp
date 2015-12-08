@@ -1,8 +1,8 @@
 #include "elastos/droid/widget/CHeaderViewListAdapter.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ILISTADAPTER_METHODS_IMPL(CHeaderViewListAdapter, HeaderViewListAdapter)
 IADAPTER_METHODS_IMPL(CHeaderViewListAdapter, HeaderViewListAdapter)

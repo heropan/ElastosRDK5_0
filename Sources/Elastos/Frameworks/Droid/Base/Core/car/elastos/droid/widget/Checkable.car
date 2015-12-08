@@ -11,21 +11,20 @@ module
      *
      */
     interface ICheckable {
-        
         /**
          * Change the checked state of the view
-         * 
+         *
          * @param checked The new checked state
          */
         SetChecked(
             [in] Boolean checked);
-            
+
         /**
          * @return The current checked state of the view
          */
         IsChecked(
             [out] Boolean* isChecked);
-        
+
         /**
          * Change the checked state of the view to the inverse of its current state
          *

@@ -7,13 +7,16 @@ namespace View {
 
 CAR_INTERFACE_IMPL(ActionProvider, Object, IActionProvider)
 
-ECode ActionProvider::OnCreateActionView(
-        /* [out] */ IView** view)
+ActionProvider::ActionProvider()
 {
-    VALIDATE_NOT_NULL(view)
-    AutoPtr<IView> rst = OnCreateActionView();
-    *view = rst;
-    REFCOUNT_ADD(*view)
+}
+
+ActionProvider::~ActionProvider()
+{}
+
+ECode ActionProvider::constructor(
+    /* [in] */ IContext* ctx)
+{
     return NOERROR;
 }
 
@@ -21,18 +24,14 @@ ECode ActionProvider::OnCreateActionView(
     /* [in] */ IMenuItem* forItem,
     /* [out] */ IView** view)
 {
-    VALIDATE_NOT_NULL(view)
-    AutoPtr<IView> rst = OnCreateActionView(forItem);
-    *view = rst;
-    REFCOUNT_ADD(*view)
-    return NOERROR;
+    return OnCreateActionView(view);
 }
 
 ECode ActionProvider::OverridesItemVisibility(
     /* [out] */ Boolean* visibility)
 {
     VALIDATE_NOT_NULL(visibility)
-    *visibility = OverridesItemVisibility();
+    *visibility = FALSE;
     return NOERROR;
 }
 
@@ -40,7 +39,7 @@ ECode ActionProvider::IsVisible(
     /* [out] */ Boolean* visible)
 {
     VALIDATE_NOT_NULL(visible)
-    *visible = IsVisible();
+    *visible = TRUE;
     return NOERROR;
 }
 
@@ -48,7 +47,7 @@ ECode ActionProvider::OnPerformDefaultAction(
     /* [out] */ Boolean* rst)
 {
     VALIDATE_NOT_NULL(rst)
-    *rst = OnPerformDefaultAction();
+    *rst = FALSE;
     return NOERROR;
 }
 
@@ -56,42 +55,19 @@ ECode ActionProvider::HasSubMenu(
     /* [out] */ Boolean* rst)
 {
     VALIDATE_NOT_NULL(rst)
-    *rst = HasSubMenu();
+    *rst = FALSE;
     return NOERROR;
-}
-
-AutoPtr<IView> ActionProvider::OnCreateActionView(
-    /* [in] */ IMenuItem* forItem)
-{
-    return OnCreateActionView();
-}
-
-Boolean ActionProvider::OverridesItemVisibility()
-{
-    return FALSE;
-}
-
-Boolean ActionProvider::IsVisible()
-{
-    return TRUE;
 }
 
 ECode ActionProvider::RefreshVisibility()
 {
-    if (mVisibilityListener != NULL && OverridesItemVisibility()) {
-        mVisibilityListener->OnActionProviderVisibilityChanged(IsVisible());
+    Boolean bval;
+    OverridesItemVisibility(&bval);
+    if (mVisibilityListener != NULL && bval) {
+        IsVisible(&bval);
+        mVisibilityListener->OnActionProviderVisibilityChanged(bval);
     }
     return NOERROR;
-}
-
-Boolean ActionProvider::OnPerformDefaultAction()
-{
-    return FALSE;
-}
-
-Boolean ActionProvider::HasSubMenu()
-{
-    return FALSE;
 }
 
 ECode ActionProvider::OnPrepareSubMenu(

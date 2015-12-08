@@ -1,8 +1,9 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_UtteranceProgressListener_H__
 #define __ELASTOS_DROID_SPEECH_TTS_UtteranceProgressListener_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 
-#include "Elastos.Droid.Core_server.h"
 namespace Elastos {
 namespace Droid {
 namespace Speech {
@@ -18,35 +19,55 @@ namespace Tts {
  */
 //public abstract class
 class UtteranceProgressListener
-    : public ElRefBase
+    : public Object
+    , public IUtteranceProgressListener
 {
 private:
     class UtteranceProgressListenerStand
-        : public ElRefBase
+        : public Object
         , public IUtteranceProgressListener
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        UtteranceProgressListenerStand();
 
-        CARAPI_(UInt32) Release();
+        virtual ~UtteranceProgressListenerStand();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
-
+        constructor();
     public:
         //@Override
         //public synchronized void
         CARAPI OnDone(
             /* [in] */ const String & utteranceId);
 
+        /**
+         * Called when an error has occurred during processing. This can be called
+         * at any point in the synthesis process. Note that there might be calls
+         * to {@link #onStart(String)} for specified utteranceId but there will never
+         * be a call to both {@link #onDone(String)} and {@link #onError(String)} for
+         * the same utterance.
+         *
+         * @param utteranceId the utterance ID of the utterance.
+         * @deprecated Use {@link #onError(String,int)} instead
+         */
         //@Override
         //public void
         CARAPI OnError(
             /* [in] */ const String & utteranceId);
+        /**
+         * Called when an error has occurred during processing. This can be called
+         * at any point in the synthesis process. Note that there might be calls
+         * to {@link #onStart(String)} for specified utteranceId but there will never
+         * be a call to both {@link #onDone(String)} and {@link #onError(String,int)} for
+         * the same utterance. The default implementation calls {@link #onError(String)}.
+         *
+         * @param utteranceId the utterance ID of the utterance.
+         * @param errorCode one of the ERROR_* codes from {@link TextToSpeech}
+         */
+        CARAPI UtteranceProgressListenerStand::OnError(
+            /* [in] */ const String& utteranceId,
+            /* [in] */ Int32 errorCode)
 
         //@Override
         //public void
@@ -62,6 +83,13 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
+    UtteranceProgressListener();
+
+    ~UtteranceProgressListener();
+
+    constructor();
     /**
      * Called when an utterance "starts" as perceived by the caller. This will
      * be soon before audio is played back in the case of a {@link TextToSpeech#speak}
@@ -109,7 +137,6 @@ public:
     static AutoPtr<IUtteranceProgressListener> From(
         /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener);
 };
-
 
 } // namespace Tts
 } // namespace Speech

@@ -14,7 +14,7 @@ namespace Os {
 /**
  * Information about the current build, extracted from system properties.
  */
-class Build
+class ECO_PUBLIC Build
 {
 public:
     /** Various version strings. */
@@ -587,8 +587,8 @@ public:
     static const Boolean IS_DEBUGGABLE;
 
 private:
-    Build();
-    Build(const Build&);
+    ECO_LOCAL Build();
+    ECO_LOCAL Build(const Build&);
 
     // static {
     //     /*

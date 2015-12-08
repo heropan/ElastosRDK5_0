@@ -1,10 +1,13 @@
 
+#include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/widget/CompoundButton.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
 using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -19,27 +22,28 @@ static AutoPtr<ArrayOf<Int32> > Init_CHECKED_STATE_SET()
 
 AutoPtr<ArrayOf<Int32> > CompoundButton::CHECKED_STATE_SET =Init_CHECKED_STATE_SET();
 
+///////////////////////////////////////////////////////////////////////
+//              CompoundButton::CompoundButtonSavedState
+///////////////////////////////////////////////////////////////////////
 CompoundButton::CompoundButtonSavedState::CompoundButtonSavedState()
-    : ViewBaseSavedState()
-    , mChecked(FALSE)
-{
-}
-
-CompoundButton::CompoundButtonSavedState::CompoundButtonSavedState(
-    /* [in] */ IParcelable* superState)
-    : ViewBaseSavedState(superState)
-    , mChecked(FALSE)
-{
-}
-
-
-CompoundButton::CompoundButtonSavedState::~CompoundButtonSavedState()
+    : mChecked(FALSE)
 {}
+
+ECode CompoundButton::CompoundButtonSavedState::constructor()
+{
+    return NOERROR;
+}
+
+ECode CompoundButton::CompoundButtonSavedState::constructor(
+    /* [in] */ IParcelable* superState)
+{
+    return BaseSavedState::constructor(superState);
+}
 
 ECode CompoundButton::CompoundButtonSavedState::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    FAIL_RETURN(ViewBaseSavedState::WriteToParcel(dest));
+    BaseSavedState::WriteToParcel(dest);
     dest->WriteBoolean(mChecked);
     return NOERROR;
 }
@@ -47,38 +51,34 @@ ECode CompoundButton::CompoundButtonSavedState::WriteToParcel(
 ECode CompoundButton::CompoundButtonSavedState::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    FAIL_RETURN(ViewBaseSavedState::ReadFromParcel(source));
+    BaseSavedState::ReadFromParcel(source);
     source->ReadBoolean(&mChecked);
     return NOERROR;
 }
 
-ECode CompoundButton::CompoundButtonSavedState::Init()
-{
-    return ViewBaseSavedState::Init();
-}
-
-ECode CompoundButton::CompoundButtonSavedState::Init(
-    /* [in] */ IParcelable* superState)
-{
-    return ViewBaseSavedState::Init(superState);
-}
+///////////////////////////////////////////////////////////////////////
+//                      CompoundButton
+///////////////////////////////////////////////////////////////////////
+CAR_INTERFACE_IMPL_2(CompoundButton, Button, ICompoundButton, ICheckable)
 
 CompoundButton::CompoundButton()
     : mChecked(FALSE)
     , mButtonResource(0)
     , mBroadcasting(FALSE)
+    , mButtonTintMode(Elastos::Droid::Graphics::PorterDuffMode_NONE)
+    , mHasButtonTint(FALSE)
+    , mHasButtonTintMode(FALSE)
 {}
 
-CompoundButton::CompoundButton(
+ECode CompoundButton::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : Button(context, attrs, defStyle)
-    , mChecked(FALSE)
-    , mButtonResource(0)
-    , mBroadcasting(FALSE)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+    Button::constructor(context, attrs, defStyleAttr, defStyleRes);
+    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyleAttr, defStyleRes));
+    return NOERROR;
 }
 
 ECode CompoundButton::Toggle()
@@ -96,12 +96,22 @@ Boolean CompoundButton::PerformClick()
 
     /* When clicked, toggle the state */
     Toggle();
-    return Button::PerformClick();
+    Boolean result;
+    Button::PerformClick(&result);
+    return result;
 }
 
 Boolean CompoundButton::IsChecked()
 {
     return mChecked;
+}
+
+ECode CompoundButton::IsChecked(
+    /* [out] */ Boolean* isChecked)
+{
+    VALIDATE_NOT_NULL(isChecked)
+    *isChecked = IsChecked();
+    return NOERROR;
 }
 
 /**
@@ -116,7 +126,8 @@ ECode CompoundButton::SetChecked(
         mChecked = checked;
         RefreshDrawableState();
 
-        NotifyAccessibilityStateChanged();
+        NotifyViewAccessibilityStateChangedIfNeeded(
+            IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
 
         // Avoid infinite recursions if setChecked() is called from a listener
         if (mBroadcasting) {
@@ -184,7 +195,9 @@ ECode CompoundButton::SetButtonDrawable(
 
     AutoPtr<IDrawable> d;
     if (mButtonResource != 0) {
-        GetResources()->GetDrawable(mButtonResource, (IDrawable**)&d);
+        AutoPtr<IContext> ctx;
+        GetContext((IContext**)&ctx);
+        ctx->GetDrawable(mButtonResource, (IDrawable**)&d);
     }
     return SetButtonDrawable(d);
 }
@@ -197,27 +210,127 @@ ECode CompoundButton::SetButtonDrawable(
 ECode CompoundButton::SetButtonDrawable(
     /* [in] */ IDrawable* d)
 {
-    if (d != NULL) {
+    if (mButtonDrawable != 0) {
         if (mButtonDrawable != NULL) {
             mButtonDrawable->SetCallback(NULL);
             UnscheduleDrawable(mButtonDrawable);
         }
-        d->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
-        Boolean stateful;
-        AutoPtr<ArrayOf<Int32> > drawableState = GetDrawableState();
-        d->SetState(drawableState, &stateful);
-        d->SetVisible(GetVisibility() == IView::VISIBLE, FALSE, &stateful);
         mButtonDrawable = d;
-        mButtonDrawable->SetState(NULL, &stateful);
-        Int32 height;
-        mButtonDrawable->GetIntrinsicHeight(&height);
-        SetMinHeight(height);
+
+        if (d != NULL) {
+            d->SetCallback(THIS_PROBE(IDrawableCallback));
+            Int32 direction;
+            GetLayoutDirection(&direction);
+            d->SetLayoutDirection(direction);
+            Boolean isStateful;
+            if (d->IsStateful(&isStateful), isStateful) {
+                AutoPtr< ArrayOf<Int32> > state;
+                GetDrawableState((ArrayOf<Int32>**)&state);
+                d->SetState(state, &isStateful);
+            }
+            Int32 visibility;
+            GetVisibility(&visibility);
+            Boolean isDif;
+            d->SetVisible(visibility == IView::VISIBLE, FALSE, &isDif);
+            d->GetIntrinsicHeight(&visibility);
+            SetMinHeight(visibility);
+            ApplyButtonTint();
+        }
     }
-
-    RefreshDrawableState();
-
     return NOERROR;
 }
+
+
+/**
+ * Applies a tint to the button drawable. Does not modify the current tint
+ * mode, which is {@link PorterDuff.Mode#SRC_IN} by default.
+ * <p>
+ * Subsequent calls to {@link #setButtonDrawable(Drawable)} will
+ * automatically mutate the drawable and apply the specified tint and tint
+ * mode using
+ * {@link Drawable#setTintList(ColorStateList)}.
+ *
+ * @param tint the tint to apply, may be {@code null} to clear tint
+ *
+ * @attr ref android.R.styleable#CompoundButton_buttonTint
+ * @see #setButtonTintList(ColorStateList)
+ * @see Drawable#setTintList(ColorStateList)
+ */
+ECode CompoundButton::SetButtonTintList(
+    /* [in] */ IColorStateList* tint)
+{
+    mButtonTintList = tint;
+    mHasButtonTint = TRUE;
+
+    ApplyButtonTint();
+    return NOERROR;
+}
+
+/**
+ * @return the tint applied to the button drawable
+ * @attr ref android.R.styleable#CompoundButton_buttonTint
+ * @see #setButtonTintList(ColorStateList)
+ */
+//@Nullable
+ECode CompoundButton::GetButtonTintList(
+        /* [out] */ IColorStateList** tint)
+{
+    VALIDATE_NOT_NULL(tint)
+    *tint = mButtonTintList;
+    return NOERROR;
+}
+
+/**
+ * Specifies the blending mode used to apply the tint specified by
+ * {@link #setButtonTintList(ColorStateList)}} to the button drawable. The
+ * default mode is {@link PorterDuff.Mode#SRC_IN}.
+ *
+ * @param tintMode the blending mode used to apply the tint, may be
+ *                 {@code null} to clear tint
+ * @attr ref android.R.styleable#CompoundButton_buttonTintMode
+ * @see #getButtonTintMode()
+ * @see Drawable#setTintMode(PorterDuff.Mode)
+ */
+ECode CompoundButton::SetButtonTintMode(
+    /* [in] */ Elastos::Droid::Graphics::PorterDuffMode tintMode)
+{
+    mButtonTintMode = tintMode;
+    mHasButtonTintMode = TRUE;
+
+    ApplyButtonTint();
+    return NOERROR;
+}
+
+/**
+ * @return the blending mode used to apply the tint to the button drawable
+ * @attr ref android.R.styleable#CompoundButton_buttonTintMode
+ * @see #setButtonTintMode(PorterDuff.Mode)
+ */
+//@Nullable
+ECode CompoundButton::GetButtonTintMode(
+    /* [out] */ Elastos::Droid::Graphics::PorterDuffMode* tintMode)
+{
+    VALIDATE_NOT_NULL(tintMode);
+    *tintMode = mButtonTintMode;
+    return NOERROR;
+}
+
+ECode CompoundButton::ApplyButtonTint()
+{
+    if (mButtonDrawable != NULL && (mHasButtonTint || mHasButtonTintMode)) {
+        mButtonDrawable->Mutate((IDrawable**)&mButtonDrawable);
+
+        if (mHasButtonTint) {
+            mButtonDrawable->SetTintList(mButtonTintList);
+        }
+
+        if (mHasButtonTintMode) {
+            mButtonDrawable->SetTintMode(mButtonTintMode);
+        }
+    }
+    return NOERROR;
+}
+
 
 Int32 CompoundButton::GetHorizontalOffsetForDrawables()
 {
@@ -232,18 +345,13 @@ Int32 CompoundButton::GetHorizontalOffsetForDrawables()
     }
 }
 
-AutoPtr<IDrawable> CompoundButton::GetButtonDrawable()
-{
-    return mButtonDrawable;
-}
-
 ECode CompoundButton::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     Button::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> txt;
-    CStringWrapper::New(String("CompoundButton"), (ICharSequence**)&txt);
-    return event->SetClassName(txt);
+    CString::New(String("CompoundButton"), (ICharSequence**)&txt);
+    return IAccessibilityRecord::Probe(event)->SetClassName(txt);
 }
 
 ECode CompoundButton::OnInitializeAccessibilityNodeInfo(
@@ -251,7 +359,7 @@ ECode CompoundButton::OnInitializeAccessibilityNodeInfo(
 {
     FAIL_RETURN(Button::OnInitializeAccessibilityNodeInfo(info));
     AutoPtr<ICharSequence> txt;
-    CStringWrapper::New(String("CompoundButton"), (ICharSequence**)&txt);
+    CString::New(String("CompoundButton"), (ICharSequence**)&txt);
     FAIL_RETURN(info->SetClassName(txt));
     info->SetCheckable(TRUE);
     info->SetChecked(mChecked);
@@ -260,8 +368,10 @@ ECode CompoundButton::OnInitializeAccessibilityNodeInfo(
 
 Int32 CompoundButton::GetCompoundPaddingLeft()
 {
-    Int32 padding = Button::GetCompoundPaddingLeft();
-    if (!IsLayoutRtl()) {
+    Int32 padding = 0;
+    Button::GetCompoundPaddingLeft(&padding);
+    Boolean isLayoutRtl;
+    if (IsLayoutRtl(&isLayoutRtl), !isLayoutRtl) {
         AutoPtr<IDrawable> buttonDrawable = mButtonDrawable;
         if (buttonDrawable != NULL) {
             Int32 w;
@@ -275,8 +385,10 @@ Int32 CompoundButton::GetCompoundPaddingLeft()
 
 Int32 CompoundButton::GetCompoundPaddingRight()
 {
-    Int32 padding = Button::GetCompoundPaddingRight();
-    if (IsLayoutRtl()) {
+    Int32 padding = 0;
+    Button::GetCompoundPaddingRight(&padding);
+    Boolean isLayoutRtl;
+    if (IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
         AutoPtr<IDrawable> buttonDrawable = mButtonDrawable;
         if (buttonDrawable != NULL) {
 
@@ -291,8 +403,6 @@ Int32 CompoundButton::GetCompoundPaddingRight()
 void CompoundButton::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    Button::OnDraw(canvas);
-
     AutoPtr<IDrawable> buttonDrawable = mButtonDrawable;
     if (buttonDrawable != NULL) {
         Int32 verticalGravity = GetGravity() & IGravity::VERTICAL_GRAVITY_MASK;
@@ -305,18 +415,53 @@ void CompoundButton::OnDraw(
         Int32 top = 0;
         switch (verticalGravity) {
                 case IGravity::BOTTOM:
-                    top = GetHeight() - drawableHeight;
+                {
+                    Int32 height;
+                    GetHeight(&height);
+                    top = height - drawableHeight;
                     break;
+                }
                 case IGravity::CENTER_VERTICAL:
-                    top = (GetHeight() - drawableHeight) / 2;
+                {
+                    Int32 height;
+                    GetHeight(&height);
+                    top = (height - drawableHeight) / 2;
                     break;
+                }
+                default:
+                    top = 0;
         }
         Int32 bottom = top + drawableHeight;
-        Int32 left = IsLayoutRtl() ? GetWidth() - drawableWidth : 0;
-        Int32 right = IsLayoutRtl() ? GetWidth() : drawableWidth;
+        Int32 left = 0;
+        Int32 right = drawableWidth;
+        Boolean isLayoutRtl;
+        if (IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
+            Int32 width;
+            GetWidth(&width);
+            left = width - drawableWidth;
+            right = width;
+        }
 
         buttonDrawable->SetBounds(left, top, right, bottom);
-        buttonDrawable->Draw(canvas);
+        AutoPtr<IDrawable> background;
+        GetBackground((IDrawable**)&background);
+        if (background != NULL) {
+            background->SetHotspotBounds(left, top, right, bottom);
+        }
+    }
+
+    Button::OnDraw(canvas);
+
+    if (buttonDrawable != NULL) {
+        Int32 scrollX = mScrollX;
+        Int32 scrollY = mScrollY;
+        if (scrollX == 0 && scrollY == 0) {
+            buttonDrawable->Draw(canvas);
+        } else {
+            canvas->Translate((Float)scrollX, (Float)scrollY);
+            buttonDrawable->Draw(canvas);
+            canvas->Translate((Float)-scrollX, (Float)-scrollY);
+        }
     }
 }
 
@@ -342,7 +487,8 @@ ECode CompoundButton::DrawableStateChanged()
     FAIL_RETURN(Button::DrawableStateChanged());
 
     if (mButtonDrawable != NULL) {
-        AutoPtr<ArrayOf<Int32> > myDrawableState = GetDrawableState();
+        AutoPtr<ArrayOf<Int32> > myDrawableState;
+        GetDrawableState((ArrayOf<Int32>**)&myDrawableState);
 
         Boolean state;
         // Set the state of the Drawable
@@ -351,6 +497,19 @@ ECode CompoundButton::DrawableStateChanged()
         Invalidate();
     }
 
+    return NOERROR;
+}
+
+//@Override
+ECode CompoundButton::DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y)
+{
+    Button::DrawableHotspotChanged(x, y);
+
+    if (mButtonDrawable != NULL) {
+        mButtonDrawable->SetHotspot(x, y);
+    }
     return NOERROR;
 }
 
@@ -363,7 +522,6 @@ Boolean CompoundButton::VerifyDrawable(
 AutoPtr<IParcelable> CompoundButton::OnSaveInstanceState()
 {
 //    // Force our ancestor class to save its state
-//    SetFreezesText(TRUE);
 //    AutoPtr<IParcelable> superState = Button::OnSaveInstanceState();
 //
 //    CompoundButtonSavedState* ss = new CompoundButtonSavedState(superState);
@@ -394,31 +552,36 @@ ECode CompoundButton::JumpDrawablesToCurrentState()
     return NOERROR;
 }
 
-ECode CompoundButton::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    FAIL_RETURN(Button::Init(context, attrs, defStyle));
-    return InitFromAttributes(context, attrs, defStyle);
-}
 
 ECode CompoundButton::InitFromAttributes(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyle,
+    /* [in] */ Int32 defStyleRes)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::CompoundButton),
             ARRAY_SIZE(R::styleable::CompoundButton));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+            attrs, attrIds, defStyle, defStyleRes, (ITypedArray**)&a));
 
     AutoPtr<IDrawable> d;
     a->GetDrawable(R::styleable::CompoundButton_button, (IDrawable**)&d);
     if (d != NULL) {
         SetButtonDrawable(d);
+    }
+    Boolean hasValue;
+    if (a->HasValue(R::styleable::CompoundButton_buttonTintMode, &hasValue), hasValue) {
+        Int32 mode;
+        a->GetInt32(R::styleable::CompoundButton_buttonTintMode, -1, &mode);
+        Drawable::ParseTintMode(mode, mButtonTintMode, &mButtonTintMode);
+        mHasButtonTintMode = TRUE;
+    }
+
+    if (a->HasValue(R::styleable::CompoundButton_buttonTint, &hasValue), hasValue) {
+        a->GetColorStateList(R::styleable::CompoundButton_buttonTint, (IColorStateList**)&mButtonTintList);
+        mHasButtonTint = TRUE;
     }
 
     Boolean checked;
@@ -426,6 +589,8 @@ ECode CompoundButton::InitFromAttributes(
     SetChecked(checked);
 
     a->Recycle();
+
+    ApplyButtonTint();
     return NOERROR;
 }
 

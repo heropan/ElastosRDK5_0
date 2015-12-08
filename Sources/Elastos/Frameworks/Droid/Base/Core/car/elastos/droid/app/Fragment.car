@@ -19,6 +19,7 @@ module
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.Animation.IAnimator;
+    interface Elastos.Droid.Utility.ISparseArray;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.App.IActivity;
     interface Elastos.Droid.App.IFragment;
@@ -141,10 +142,10 @@ module
             [in] IBundle* fState);
 
         GetSavedViewState(
-            [out] IHashMap** viewState);
+            [out] ISparseArray** viewState);
 
         SetSavedViewState(
-            [in] IHashMap* viewState);
+            [in] ISparseArray* viewState);
 
         // Index into active fragment array.
         GetIndex(
@@ -890,7 +891,7 @@ module
         OnLowMemory();
 
         OnTrimMemory(
-            [in] Int32* level);
+            [in] Int32 level);
 
         /**
          * Called when the view previously created by {@link #onCreateView} has
@@ -1357,8 +1358,7 @@ module
             [out] Boolean* result);
 
         PerformOptionsMenuClosed(
-            [in] IMenu* item,
-            [out] Boolean* result);
+            [in] IMenu* item);
 
         PerformSaveInstanceState(
             [in] IBundle* outState);

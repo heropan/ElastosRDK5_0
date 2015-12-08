@@ -5,9 +5,8 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_View_InputMethod_CInputMethodInfo.h"
 #include "elastos/droid/content/pm/CResolveInfo.h"
-#include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IResolveInfo;
@@ -15,6 +14,10 @@ using Elastos::Droid::Content::Pm::CResolveInfo;
 using Elastos::Droid::Content::Pm::IServiceInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::View::InputMethod::IInputMethodSubtype;
+using Elastos::Droid::View::InputMethod::IInputMethodSubtypeArray;
+
+using Elastos::Utility::IMap;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -22,8 +25,15 @@ namespace View {
 namespace InputMethod {
 
 CarClass(CInputMethodInfo)
+    , public Object
+    , public IInputMethodInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CInputMethodInfo();
 
     CARAPI constructor();
@@ -51,13 +61,38 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IResolveInfo* service,
-        /* [in] */ IObjectStringMap* additionalSubtypesMap);
+        /* [in] */ IMap* additionalSubtypesMap);
 
     CARAPI constructor(
         /* [in] */ const String& packageName,
         /* [in] */ const String& className,
         /* [in] */ ICharSequence* label,
         /* [in] */ const String& settingsActivity);
+
+    /**
+     * Temporary API for creating a built-in input method for test.
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ IResolveInfo* ri,
+        /* [in] */ Boolean isAuxIme,
+        /* [in] */ const String& settingsActivity,
+        /* [in] */ IList* subtypes,
+        /* [in] */ Int32 isDefaultResId,
+        /* [in] */ Boolean forceDefault);
+
+    /**
+     * Temporary API for creating a built-in input method for test.
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ IResolveInfo* ri,
+        /* [in] */ Boolean isAuxIme,
+        /* [in] */ const String& settingsActivity,
+        /* [in] */ IList* subtypes,
+        /* [in] */ Int32 isDefaultResId,
+        /* [in] */ Boolean forceDefault,
+        /* [in] */ Boolean supportsSwitchingToNextInputMethod);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel *source);
@@ -101,8 +136,23 @@ public:
     CARAPI GetIsDefaultResourceId(
         /* [out] */ Int32* id);
 
+    /**
+     * Return whether or not this ime is a default ime or not.
+     * @hide
+     */
+    CARAPI IsDefault(
+        /* [in] */ IContext* context,
+        /* [out] */ Boolean* result);
+
     CARAPI IsAuxiliaryIme(
         /* [in] */ Boolean* auxIme);
+
+    /**
+     * @return true if this input method supports ways to switch to a next input method.
+     * @hide
+     */
+    CARAPI SupportsSwitchingToNextInputMethod(
+        /* [out] */ Boolean* supports);
 
     CARAPI GetHashCode(
         /* [out] */ Int32* code);
@@ -119,7 +169,12 @@ private:
     CARAPI Init(
         /* [in] */ IContext* context,
         /* [in] */ IResolveInfo* service,
-        /* [in] */ IObjectStringMap* additionalSubtypesMap);
+        /* [in] */ IMap* additionalSubtypesMap);
+
+    static AutoPtr<IResolveInfo> BuildDummyResolveInfo(
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& className,
+        /* [in] */ ICharSequence* label);
 
 private:
     static const String TAG;
@@ -150,11 +205,21 @@ private:
     Int32 mIsDefaultResId;
 
     /**
-     * The array of the subtypes.
+     * An array-like container of the subtypes.
      */
-    List<AutoPtr<IInputMethodSubtype> > mSubtypes;
+    AutoPtr<IInputMethodSubtypeArray> mSubtypes;
 
     Boolean mIsAuxIme;
+
+    /**
+     * Caveat: mForceDefault must be false for production. This flag is only for test.
+     */
+    Boolean mForceDefault;
+
+    /**
+     * The flag whether this IME supports ways to switch to a next input method (e.g. globe key.)
+     */
+    Boolean mSupportsSwitchingToNextInputMethod;
 };
 
 } // namespace InputMethod

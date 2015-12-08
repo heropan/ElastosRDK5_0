@@ -4,8 +4,8 @@
 
 #include "elastos/droid/app/Service.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/view/BaseSurfaceHolder.h"
-#include "elastos/droid/view/InputEventReceiver.h"
+// #include "elastos/droid/view/BaseSurfaceHolder.h"
+// #include "elastos/droid/view/InputEventReceiver.h"
 
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::BroadcastReceiver;

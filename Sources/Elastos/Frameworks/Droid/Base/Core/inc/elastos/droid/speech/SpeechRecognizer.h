@@ -1,7 +1,8 @@
 #ifndef __ELASTOS_DROID_SPEECH_SpeechRecognizer_H__
 #define __ELASTOS_DROID_SPEECH_SpeechRecognizer_H__
 
-
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>
@@ -23,11 +24,19 @@ namespace Speech {
  * This class provides access to the speech recognition service. This service allows access to the
  * speech recognizer. Do not instantiate this class directly, instead, call
  * {@link SpeechRecognizer#createSpeechRecognizer(Context)}. This class's methods must be
- * invoked only from the main application thread. Please note that the application must have
- * {@link android.Manifest.permission#RECORD_AUDIO} permission to use this class.
+ * invoked only from the main application thread.
+ *
+ * <p>The implementation of this API is likely to stream audio to remote servers to perform speech
+ * recognition. As such this API is not intended to be used for continuous recognition, which would
+ * consume a significant amount of battery and bandwidth.
+ *
+ * <p>Please note that the application must have {@link android.Manifest.permission#RECORD_AUDIO}
+ * permission to use this class.
  */
 //public class
 class SpeechRecognizer
+    : public Object
+    , public ISpeechRecognizer
 {
 private:
     class SpeechRecognizerHandler
@@ -53,20 +62,18 @@ private:
      */
     //private class
     class SpeechRecognizerConnection
-        : public ElRefBase
+        : public Object
         , public IServiceConnection
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        SpeechRecognizerConnection();
 
-        CARAPI_(UInt32) Release();
+        virtual ~SpeechRecognizerConnection();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
+        CARAPI constructor();
+
     public:
         //public void
         CARAPI OnServiceConnected(
@@ -92,7 +99,7 @@ private:
      */
     //private class
     class SpeechRecognizerInternalListener
-        : public ElRefBase
+        : public Object
         , public IIRecognitionListener
     {
     private:
@@ -117,7 +124,13 @@ private:
         friend class SpeechRecognizer;
 
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
+
+        SpeechRecognizerInternalListener();
+
+        ~SpeechRecognizerInternalListener();
+
+        CARAPI constructor();
 
         //public void
         CARAPI OnBeginningOfSpeech();
@@ -160,23 +173,23 @@ private:
         AutoPtr<IRecognitionListener> mInternalListener;
 
         //private final static
-        const static Int32 MSG_BEGINNING_OF_SPEECH;// = 1;
+        const static Int32 MSG_BEGINNING_OF_SPEECH;     // = 1;
         //private final static
-        const static Int32 MSG_BUFFER_RECEIVED;// = 2;
+        const static Int32 MSG_BUFFER_RECEIVED;         // = 2;
         //private final static
-        const static Int32 MSG_END_OF_SPEECH;// = 3;
+        const static Int32 MSG_END_OF_SPEECH;           // = 3;
         //private final static
-        const static Int32 MSG_ERROR;// = 4;
+        const static Int32 MSG_ERROR;                   // = 4;
         //private final static
-        const static Int32 MSG_READY_FOR_SPEECH;// = 5;
+        const static Int32 MSG_READY_FOR_SPEECH;        // = 5;
         //private final static
-        const static Int32 MSG_RESULTS;// = 6;
+        const static Int32 MSG_RESULTS;                 // = 6;
         //private final static
-        const static Int32 MSG_PARTIAL_RESULTS;// = 7;
+        const static Int32 MSG_PARTIAL_RESULTS;         // = 7;
         //private final static
-        const static Int32 MSG_RMS_CHANGED;// = 8;
+        const static Int32 MSG_RMS_CHANGED;             // = 8;
         //private final static
-        const static Int32 MSG_ON_EVENT;// = 9;
+        const static Int32 MSG_ON_EVENT;                // = 9;
 
     private:
         //private final Handler
@@ -208,7 +221,8 @@ public:
      * @return a new {@code SpeechRecognizer}
      */
     //public
-    //static CARAPI_(AutoPtr<ISpeechRecognizer>) CreateSpeechRecognizer( /* [in] */ IContext* context);
+    static CARAPI_(AutoPtr<ISpeechRecognizer>) CreateSpeechRecognizer(
+        /* [in] */ IContext* context);
 
     /**
      * Factory method to create a new {@code SpeechRecognizer}. Please note that
@@ -227,7 +241,9 @@ public:
      * @return a new {@code SpeechRecognizer}
      */
     //public
-    //static CARAPI_(AutoPtr<ISpeechRecognizer>) CreateSpeechRecognizer( /* [in] */ IContext* context, /* [in] */ IComponentName* serviceComponent);
+    static CARAPI_(AutoPtr<ISpeechRecognizer>) CreateSpeechRecognizer(
+        /* [in] */ IContext* context,
+        /* [in] */ IComponentName* serviceComponent);
 
     /**
      * Sets the listener that will receive all the callbacks. The previous unfinished commands will
@@ -282,23 +298,6 @@ public:
     CARAPI_(void) Destroy();
 
 protected:
-    SpeechRecognizer();
-
-protected:
-    /**
-     * The right way to create a {@code SpeechRecognizer} is by using
-     * {@link #createSpeechRecognizer} static factory method
-     */
-    //private
-    SpeechRecognizer(
-        /* [in] */ IContext* context,
-        /* [in] */ IComponentName* serviceComponent);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IComponentName* serviceComponent);
-
-protected:
     //private
     static CARAPI_(void) CheckIsCalledFromMainThread();
 
@@ -335,7 +334,7 @@ public:
      * recognition results, where the first element is the most likely candidate.
      */
     //public static final
-    static const CString RESULTS_RECOGNITION;// = "results_recognition";
+    static const CString RESULTS_RECOGNITION;       // = "results_recognition";
 
     /**
      * Key used to retrieve a float array from the {@link Bundle} passed to the
@@ -350,63 +349,66 @@ public:
      * This value is optional and might not be provided.
      */
     //public static final
-    static const CString CONFIDENCE_SCORES;// = "confidence_scores";
+    static const CString CONFIDENCE_SCORES;         // = "confidence_scores";
 
     /** Network operation timed out. */
     //public static final
-    static const Int32 ERROR_NETWORK_TIMEOUT;// = 1;
+    static const Int32 ERROR_NETWORK_TIMEOUT;       // = 1;
 
     /** Other network related errors. */
     //public static final
-    static const Int32 ERROR_NETWORK;// = 2;
+    static const Int32 ERROR_NETWORK;               // = 2;
 
     /** Audio recording error. */
     //public static final
-    static const Int32 ERROR_AUDIO;// = 3;
+    static const Int32 ERROR_AUDIO;                 // = 3;
 
     /** Server sends error status. */
     //public static final
-    static const Int32 ERROR_SERVER;// = 4;
+    static const Int32 ERROR_SERVER;                // = 4;
 
     /** Other client side errors. */
     //public static final
-    static const Int32 ERROR_CLIENT;// = 5;
+    static const Int32 ERROR_CLIENT;                // = 5;
 
     /** No speech input */
     //public static final
-    static const Int32 ERROR_SPEECH_TIMEOUT;// = 6;
+    static const Int32 ERROR_SPEECH_TIMEOUT;        // = 6;
 
     /** No recognition result matched. */
     //public static final
-    static const Int32 ERROR_NO_MATCH;// = 7;
+    static const Int32 ERROR_NO_MATCH;              // = 7;
 
     /** RecognitionService busy. */
     //public static final
-    static const Int32 ERROR_RECOGNIZER_BUSY;// = 8;
+    static const Int32 ERROR_RECOGNIZER_BUSY;       // = 8;
 
     /** Insufficient permissions */
     //public static final
-    static const Int32 ERROR_INSUFFICIENT_PERMISSIONS;// = 9;
+    static const Int32 ERROR_INSUFFICIENT_PERMISSIONS;  // = 9;
 
 protected:
     /** DEBUG value to enable verbose debug prints */
     //private final static
-    static const Boolean DBG;// = FALSE;
+    static const Boolean DBG;                       // = FALSE;
 
     /** Log messages identifier */
     //private static final
-    static const CString TAG;// = "SpeechRecognizer";
+    static const CString TAG;                       // = "SpeechRecognizer";
 
 private:
     /** action codes */
     //private final static
-    static const Int32 MSG_START;// = 1;
+    static const Int32 MSG_START;                   // = 1;
+
     //private final static
-    static const Int32 MSG_STOP;// = 2;
+    static const Int32 MSG_STOP;                    // = 2;
+
     //private final static
-    static const Int32 MSG_CANCEL;// = 3;
+    static const Int32 MSG_CANCEL;                  // = 3;
+
     //private final static
-    static const Int32 MSG_CHANGE_LISTENER;// = 4;
+    static const Int32 MSG_CHANGE_LISTENER;         // = 4;
 
     /** The actual RecognitionService endpoint */
     //private
@@ -426,18 +428,35 @@ private:
 
     /** Handler that will execute the main tasks */
     //private
-    AutoPtr<IHandler> mHandler;// = new SpeechRecognizerHandler();
+    AutoPtr<IHandler> mHandler;                             // = new SpeechRecognizerHandler();
 
     /**
      * Temporary queue, saving the messages until the connection will be established, afterwards,
      * only mHandler will receive the messages
      */
     //private final Queue<Message>
-    List< AutoPtr<IMessage> > mPendingTasks;// = new LinkedList<Message>();
+    List< AutoPtr<IMessage> > mPendingTasks;                // = new LinkedList<Message>();
 
     /** The Listener that will receive all the callbacks */
     //private final InternalListener
-    AutoPtr<SpeechRecognizerInternalListener> mListener;// = new SpeechRecognizerInternalListener();
+    AutoPtr<SpeechRecognizerInternalListener> mListener;    // = new SpeechRecognizerInternalListener();
+
+public:
+    CAR_INTERFACE_DECL();
+
+    SpeechRecognizer();
+
+    virtual ~SpeechRecognizer();
+
+    CARAPI constructor();
+
+    /**
+     * The right way to create a {@code SpeechRecognizer} is by using
+     * {@link #createSpeechRecognizer} static factory method
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IComponentName* serviceComponent);
 };
 
 } // namespace Speech

@@ -2,16 +2,27 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CSENTENCESUGGESTIONSINFO_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_CSENTENCESUGGESTIONSINFO_H__
 
+#include "_Elastos_Droid_View_TextService_CSentenceSuggestionsInfo.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
-
-#include "_Elastos_Droid_View_Textservice_CSentenceSuggestionsInfo.h"
+namespace TextService {
 
 CarClass(CSentenceSuggestionsInfo)
+    , public Object
+    , public ISentenceSuggestionsInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     /**
      * Constructor.
@@ -20,15 +31,12 @@ public:
      * @param lengths the array of lengths of suggestions
      */
     CARAPI constructor(
-        /* [in] */ ArrayOf<ISuggestionsInfo>* suggestionsInfos,
+        /* [in] */ ArrayOf<ISuggestionsInfo*>* suggestionsInfos,
         /* [in] */ ArrayOf<Int32>* offsets,
         /* [in] */ ArrayOf<Int32>* lengths);
 
-    CARAPI constructor(
-        /* [in] */ IParcel* source);
-
     CARAPI ReadFromParcel(
-        /* [in] */ IParcel* parcel);
+        /* [in] */ IParcel* source);
 
     /**
      * Used to package this object into a {@link Parcel}.
@@ -52,7 +60,7 @@ public:
      */
     CARAPI GetSuggestionsInfoAt(
         /* [in] */ Int32 i,
-        /* [out] */ ISuggestionsInfo* info);
+        /* [out] */ ISuggestionsInfo** info);
 
     /**
      * @param i the id of {@link SuggestionsInfo}s this instance holds
@@ -71,12 +79,12 @@ public:
         /* [out] */ Int32* length);
 
 private:
-    AutoPtr<ArrayOf<ISuggestionsInfo> > mSuggestionsInfos;
+    AutoPtr<ArrayOf<ISuggestionsInfo*> > mSuggestionsInfos;
     AutoPtr<ArrayOf<Int32> > mOffsets;
     AutoPtr<ArrayOf<Int32> > mLengths;
 };
 
-}   //namespace Textservice
+}   //namespace TextService
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos

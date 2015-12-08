@@ -18,7 +18,6 @@ ECode UidRange::constructor(
         if (startUid > stopUid) throw new IllegalArgumentException("Invalid UID range.");
         start = startUid;
         stop  = stopUid;
-
 #endif
 }
 
@@ -29,7 +28,6 @@ ECode UidRange::CreateForUser(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return new UidRange(userId * PER_USER_RANGE, (userId + 1) * PER_USER_RANGE - 1);
-
 #endif
 }
 
@@ -39,20 +37,18 @@ ECode UidRange::GetStartUser(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return start / PER_USER_RANGE;
-
 #endif
 }
 
-ECode UidRange::HashCode(
+ECode UidRange::GetHashCode(
     /* [out] */ Int32* result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int result = 17;
+        Int32 result = 17;
         result = 31 * result + start;
         result = 31 * result + stop;
         return result;
-
 #endif
 }
 
@@ -63,14 +59,13 @@ ECode UidRange::Equals(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (this == o) {
-            return true;
+            return TRUE;
         }
-        if (o instanceof UidRange) {
+        if (IUidRange::Probe(o) != NULL) {
             UidRange other = (UidRange) o;
             return start == other.start && stop == other.stop;
         }
-        return false;
-
+        return FALSE;
 #endif
 }
 
@@ -80,7 +75,6 @@ ECode UidRange::ToString(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return start + "-" + stop;
-
 #endif
 }
 
@@ -91,15 +85,14 @@ ECode UidRange::ReadFromParcel(
 #if 0 // TODO: Translate codes below
             @Override
             public UidRange createFromParcel(Parcel in) {
-                int start = in.readInt();
-                int stop = in.readInt();
+                Int32 start = in.readInt();
+                Int32 stop = in.readInt();
                 return new UidRange(start, stop);
             }
             @Override
-            public UidRange[] newArray(int size) {
+            public UidRange[] newArray(Int32 size) {
                 return new UidRange[size];
             }
-
 #endif
 }
 
@@ -110,15 +103,14 @@ ECode UidRange::WriteToParcel(
 #if 0 // TODO: Translate codes below
             @Override
             public UidRange createFromParcel(Parcel in) {
-                int start = in.readInt();
-                int stop = in.readInt();
+                Int32 start = in.readInt();
+                Int32 stop = in.readInt();
                 return new UidRange(start, stop);
             }
             @Override
-            public UidRange[] newArray(int size) {
+            public UidRange[] newArray(Int32 size) {
                 return new UidRange[size];
             }
-
 #endif
 }
 

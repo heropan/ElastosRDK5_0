@@ -16,7 +16,7 @@ namespace Utility {
  *
  * @hide Pending API council approval
  */
-class MathUtils
+class ECO_PUBLIC MathUtils
 {
 public:
     static Float Abs(Float v) {
@@ -155,12 +155,13 @@ public:
     static void RandomSeed(Int64 seed);
 
 private:
-    static const AutoPtr<IRandom> sRandom;// = new Random();
-    static const Float DEG_TO_RAD;// = 3.1415926f / 180.0f;
-    static const Float RAD_TO_DEG;// = 180.0f / 3.1415926f;
+    ECO_LOCAL static const AutoPtr<IRandom> sRandom;// = new Random();
+    ECO_LOCAL static const Float DEG_TO_RAD;// = 3.1415926f / 180.0f;
+    ECO_LOCAL static const Float RAD_TO_DEG;// = 180.0f / 3.1415926f;
 
 private:
-    MathUtils();
+    ECO_LOCAL MathUtils();
+    ECO_LOCAL MathUtils(const MathUtils&);
 };
 
 } // namespace Utility

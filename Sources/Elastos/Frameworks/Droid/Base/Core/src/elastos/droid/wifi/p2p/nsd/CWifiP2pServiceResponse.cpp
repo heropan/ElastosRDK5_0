@@ -1,7 +1,7 @@
-#include "CWifiP2pServiceResponse.h"
-#include "CWifiP2pDnsSdServiceResponse.h"
-#include "CWifiP2pUpnpServiceResponse.h"
-#include "CWifiP2pDevice.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceResponse.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pDnsSdServiceResponse.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pUpnpServiceResponse.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pDevice.h"
 #include <elastos/core/StringUtils.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -20,30 +20,7 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-PInterface CWifiP2pServiceResponse::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_WifiP2pServiceResponse) {
-        return reinterpret_cast<PInterface>((WifiP2pServiceResponse*)this);
-    }
-    return _CWifiP2pServiceResponse::Probe(riid);
-}
-
-ECode CWifiP2pServiceResponse::constructor()
-{
-    return NOERROR;
-}
-
-ECode CWifiP2pServiceResponse::constructor(
-    /* [in] */ Int32 serviceType,
-    /* [in] */ Int32 status,
-    /* [in] */ Int32 transId,
-    /* [in] */ IWifiP2pDevice* device,
-    /* [in] */ ArrayOf<Byte>* data)
-{
-    return WifiP2pServiceResponse::Init(
-        serviceType, status, transId, device, data);
-}
+CAR_OBJECT_IMPL(CWifiP2pServiceResponse)
 
 ECode CWifiP2pServiceResponse::GetServiceType(
     /* [out] */ Int32* serviceType)
@@ -143,7 +120,9 @@ ECode CWifiP2pServiceResponse::NewInstance(
     AutoPtr<IByteArrayInputStream> ins;
     FAIL_RETURN(CByteArrayInputStream::New(bin, (IByteArrayInputStream**)&ins));
     AutoPtr<IDataInputStream> dis;
-    FAIL_RETURN(CDataInputStream::New(ins, (IDataInputStream**)&dis));
+    assert(0);
+    // TODO
+    // FAIL_RETURN(CDataInputStream::New(ins, (IDataInputStream**)&dis));
     AutoPtr<IDataInput> idi = IDataInput::Probe(dis);
     if (idi == NULL) return E_NO_INTERFACE;
 
@@ -152,11 +131,13 @@ ECode CWifiP2pServiceResponse::NewInstance(
     List<AutoPtr<IWifiP2pServiceResponse> >::Iterator it;
     AutoPtr<ArrayOf<IWifiP2pServiceResponse*> > ret;
 
-    Byte temp1, temp2, transId;
+    Int32 temp1, temp2, transId;
     // try {
     Int32 number;
     while (TRUE) {
-        FAIL_GOTO(dis->Available(&number), L_ERR_EXIT);
+        assert(0);
+        // TODO
+        // FAIL_GOTO(dis->Available(&number), L_ERR_EXIT);
         if (number <= 0) break;
 
         /*
@@ -169,16 +150,16 @@ ECode CWifiP2pServiceResponse::NewInstance(
         // The length equals to 3 plus the number of octets in the vendor
         // specific content field. And this is little endian.
 
-        FAIL_GOTO(idi->ReadByte(&temp1), L_ERR_EXIT);
-        FAIL_GOTO(idi->ReadByte(&temp2), L_ERR_EXIT);
+        FAIL_GOTO(idi->ReadUnsignedByte(&temp1), L_ERR_EXIT);
+        FAIL_GOTO(idi->ReadUnsignedByte(&temp2), L_ERR_EXIT);
 
-        length = ((temp1 & 0xff) + ((temp2 & 0xff) << 8)) - 3;
+        length = (temp1 + (temp2 << 8)) - 3;
         if (length < 0) {
             return NOERROR;
         }
 
         FAIL_GOTO(idi->ReadUnsignedByte(&type), L_ERR_EXIT);
-        FAIL_GOTO(idi->ReadByte(&transId), L_ERR_EXIT);
+        FAIL_GOTO(idi->ReadUnsignedByte(&transId), L_ERR_EXIT);
         FAIL_GOTO(idi->ReadUnsignedByte(&status), L_ERR_EXIT);
 
         if (length == 0) {
@@ -192,7 +173,9 @@ ECode CWifiP2pServiceResponse::NewInstance(
             continue;
         }
         if (length > MAX_BUF_SIZE) {
-            FAIL_GOTO(dis->Skip(length, &temp), L_ERR_EXIT);
+            assert(0);
+            // TODO
+            // FAIL_GOTO(dis->Skip(length, &temp), L_ERR_EXIT);
             continue;
         }
 
@@ -205,13 +188,13 @@ ECode CWifiP2pServiceResponse::NewInstance(
             AutoPtr<CWifiP2pUpnpServiceResponse> rsp;
             FAIL_GOTO(CWifiP2pDnsSdServiceResponse::NewByFriend(
                 status, (Int32)transId, dev, data, (CWifiP2pDnsSdServiceResponse**)&rsp), L_ERR_EXIT);
-            resp = (IWifiP2pServiceResponse*)rsp->Probe(EIID_IWifiP2pServiceResponse);
+            resp = IWifiP2pServiceResponse::Probe(rsp);
         }
         else if (type == IWifiP2pServiceInfo::SERVICE_TYPE_UPNP) {
             AutoPtr<CWifiP2pUpnpServiceResponse> rsp;
             FAIL_GOTO(CWifiP2pUpnpServiceResponse::NewByFriend(
                 status, (Int32)transId, dev, data, (CWifiP2pUpnpServiceResponse**)&rsp), L_ERR_EXIT);
-            resp = (IWifiP2pServiceResponse*)rsp->Probe(EIID_IWifiP2pServiceResponse);
+            resp = IWifiP2pServiceResponse::Probe(rsp);
         }
         else {
             AutoPtr<CWifiP2pServiceResponse> rsp;
@@ -244,8 +227,8 @@ L_ERR_EXIT:
     return NOERROR;
 }
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

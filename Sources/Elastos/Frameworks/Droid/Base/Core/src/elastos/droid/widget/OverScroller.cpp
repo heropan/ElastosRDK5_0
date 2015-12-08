@@ -7,16 +7,17 @@
 #include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/widget/Scroller.h"
 
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::IViewConfigurationHelper;
 using Elastos::Droid::View::CViewConfigurationHelper;
+using Elastos::Utility::Logging::Logger;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 const Int32 OverScroller::DEFAULT_DURATION;
 const Int32 OverScroller::SCROLL_MODE;
@@ -24,169 +25,207 @@ const Int32 OverScroller::FLING_MODE;
 
 const Float GRAVITY_EARTH = 9.80665f;
 
-OverScroller::OverScroller(
+CAR_INTERFACE_IMPL(OverScroller, Object, IOverScroller)
+
+OverScroller::OverScroller()
+    : mMode(0)
+    , mFlywheel(FALSE)
+{}
+
+ECode OverScroller::constructor(
     /* [in] */ IContext* context)
 {
-    Init(context, NULL, TRUE);
+    return constructor(context, NULL);
 }
 
-OverScroller::OverScroller(
+ECode OverScroller::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IInterpolator* interpolator)
 {
-    Init(context, interpolator, TRUE);
+    return constructor(context, interpolator, TRUE);
 }
 
-OverScroller::OverScroller(
+ECode OverScroller::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IInterpolator* interpolator,
     /* [in] */ Boolean flywheel)
 {
-    Init(context, interpolator, TRUE);
+    if (interpolator == NULL) {
+        // mInterpolator = new Scroller.ViscousFluidInterpolator();
+    } else {
+        mInterpolator = interpolator;
+    }
+    mFlywheel = flywheel;
+    mScrollerX = new SplineOverScroller(context);
+    mScrollerY = new SplineOverScroller(context);
+    return NOERROR;
 }
 
-OverScroller::OverScroller(
+ECode OverScroller::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IInterpolator* interpolator,
     /* [in] */ Float bounceCoefficientX,
     /* [in] */ Float bounceCoefficientY)
 {
-    Init(context, interpolator, TRUE);
+    return constructor(context, interpolator, TRUE);
 }
 
-OverScroller::OverScroller(
+ECode OverScroller::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IInterpolator* interpolator,
     /* [in] */ Float bounceCoefficientX,
     /* [in] */ Float bounceCoefficientY,
     /* [in] */ Boolean flywheel)
 {
-    Init(context, interpolator, flywheel);
+    return constructor(context, interpolator, flywheel);
 }
 
-void OverScroller::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IInterpolator* interpolator,
-    /* [in] */ Boolean flywheel)
-{
-    mMode = 0;
-    mFlywheel = 0;
-    mInterpolator = interpolator;
-    mFlywheel = flywheel;
-
-    mScrollerX = new SplineOverScroller(context);
-    mScrollerY = new SplineOverScroller(context);
-}
-
-void OverScroller::SetInterpolator(
+ECode OverScroller::SetInterpolator(
     /* [in] */ IInterpolator* interpolator)
 {
-    mInterpolator = interpolator;
+    if (interpolator == NULL) {
+        // mInterpolator = new Scroller.ViscousFluidInterpolator();
+    } else {
+        mInterpolator = interpolator;
+    }
+    return NOERROR;
 }
 
-void OverScroller::SetFriction(
+ECode OverScroller::SetFriction(
     /* [in] */ Float friction)
 {
     mScrollerX->SetFriction(friction);
     mScrollerY->SetFriction(friction);
+    return NOERROR;
 }
 
-Boolean OverScroller::IsFinished()
+ECode OverScroller::IsFinished(
+    /* [in] */ Boolean* isFinished)
 {
-    return mScrollerX->mFinished && mScrollerY->mFinished;
+    *isFinished = mScrollerX->mFinished && mScrollerY->mFinished;
+    return NOERROR;
 }
 
-void OverScroller::ForceFinished(
+ECode OverScroller::ForceFinished(
     /* [in] */ Boolean finished)
 {
     mScrollerX->mFinished = mScrollerY->mFinished = finished;
+    return NOERROR;
 }
 
-Int32 OverScroller::GetCurrX()
+ECode OverScroller::GetCurrX(
+    /* [out] */ Int32* currX)
 {
-    return mScrollerX->mCurrentPosition;
+    *currX = mScrollerX->mCurrentPosition;
+    return NOERROR;
 }
 
-Int32 OverScroller::GetCurrY()
+ECode OverScroller::GetCurrY(
+    /* [out] */ Int32* currY)
 {
-    return mScrollerY->mCurrentPosition;
+    *currY = mScrollerY->mCurrentPosition;
+    return NOERROR;
 }
 
-Float OverScroller::GetCurrVelocity()
+ECode OverScroller::GetCurrVelocity(
+    /* [out] */ Float* currVelocity)
 {
     Float squaredNorm = mScrollerX->mCurrVelocity * mScrollerX->mCurrVelocity;
     squaredNorm += mScrollerY->mCurrVelocity * mScrollerY->mCurrVelocity;
-    return (Float)Elastos::Core::Math::Sqrt(squaredNorm);
+    *currVelocity = (Float)Elastos::Core::Math::Sqrt(squaredNorm);
+    return NOERROR;
 }
 
-Int32 OverScroller::GetStartX()
+ECode OverScroller::GetStartX(
+    /* [out] */ Int32* startX)
 {
-    return mScrollerX->mStart;
+    *startX = mScrollerX->mStart;
+    return NOERROR;
 }
 
-Int32 OverScroller::GetStartY()
+ECode OverScroller::GetStartY(
+    /* [out] */ Int32* startY)
 {
-    return mScrollerY->mStart;
+    *startY = mScrollerY->mStart;
+    return NOERROR;
 }
 
-Int32 OverScroller::GetFinalX()
+ECode OverScroller::GetFinalX(
+    /* [out] */ Int32* finalX)
 {
-    return mScrollerX->mFinal;
+    *finalX = mScrollerX->mFinal;
+    return NOERROR;
 }
 
-Int32 OverScroller::GetFinalY()
+ECode OverScroller::GetFinalY(
+    /* [out] */ Int32* finalY)
 {
-    return mScrollerY->mFinal;
+    *finalY = mScrollerY->mFinal;
+    return NOERROR;
 }
 
-Int32 OverScroller::GetDuration()
+ECode OverScroller::GetDuration(
+    /* [out] */ Int32* duration)
 {
-    return Elastos::Core::Math::Max(mScrollerX->mDuration, mScrollerY->mDuration);
+    *duration = Elastos::Core::Math::Max(mScrollerX->mDuration, mScrollerY->mDuration);
+    return NOERROR;
 }
 
-void OverScroller::ExtendDuration(
+ECode OverScroller::ExtendDuration(
     /* [in] */ Int32 extend)
 {
     mScrollerX->ExtendDuration(extend);
     mScrollerY->ExtendDuration(extend);
+    return NOERROR;
 }
 
-void OverScroller::SetFinalX(
+ECode OverScroller::ExtendDuration(
+    /* [in] */ Int32 extend,
+    /* [out */ Int32* result)
+{
+    mScrollerX->ExtendDuration(extend);
+    mScrollerY->ExtendDuration(extend);
+    return NOERROR;
+}
+
+ECode OverScroller::SetFinalX(
     /* [in] */ Int32 newX)
 {
     mScrollerX->SetFinalPosition(newX);
+    return NOERROR;
 }
 
-void OverScroller::SetFinalY(
+ECode OverScroller::SetFinalY(
     /* [in] */ Int32 newY)
 {
     mScrollerY->SetFinalPosition(newY);
+    return NOERROR;
 }
 
-Boolean OverScroller::ComputeScrollOffset()
+ECode OverScroller::ComputeScrollOffset(
+    /* [out] */ Boolean* scrollOffset)
 {
-    if (IsFinished()) {
-        return FALSE;
+    Boolean isFinished;
+    IsFinished(&isFinished);
+    if (isFinished) {
+        *scrollOffset = FALSE;
+        return NOERROR;
     }
 
     switch (mMode) {
     case SCROLL_MODE:
         {
-            Int64 time = AnimationUtils::CurrentAnimationTimeMillis();
+            Int64 time;
+            AnimationUtils::CurrentAnimationTimeMillis(&time);
             // Any scroller can be used for time, since they were started
             // together in scroll mode. We use X here.
             Int64 elapsedTime = time - mScrollerX->mStartTime;
 
             Int32 duration = mScrollerX->mDuration;
             if (elapsedTime < duration) {
-                Float q = (Float)(elapsedTime) / duration;
-
-                if (mInterpolator == NULL) {
-                    q = Scroller::ViscousFluid(q);
-                }
-                else {
-                    mInterpolator->GetInterpolation(q, &q);
-                }
+                Float per = (Float)(elapsedTime) / duration;
+                Float q;
+                ITimeInterpolator::Probe(mInterpolator)->GetInterpolation(per, &q);
 
                 mScrollerX->UpdateScroll(q);
                 mScrollerY->UpdateScroll(q);
@@ -219,19 +258,20 @@ Boolean OverScroller::ComputeScrollOffset()
         break;
     }
 
-    return TRUE;
+    *scrollOffset = TRUE;
+    return NOERROR;
 }
 
-void OverScroller::StartScroll(
+ECode OverScroller::StartScroll(
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 dx,
     /* [in] */ Int32 dy)
 {
-    StartScroll(startX, startY, dx, dy, DEFAULT_DURATION);
+    return StartScroll(startX, startY, dx, dy, DEFAULT_DURATION);
 }
 
-void OverScroller::StartScroll(
+ECode OverScroller::StartScroll(
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 dx,
@@ -241,15 +281,17 @@ void OverScroller::StartScroll(
     mMode = SCROLL_MODE;
     mScrollerX->StartScroll(startX, dx, duration);
     mScrollerY->StartScroll(startY, dy, duration);
+    return NOERROR;
 }
 
-Boolean OverScroller::SpringBack(
+ECode OverScroller::SpringBack(
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 minX,
     /* [in] */ Int32 maxX,
     /* [in] */ Int32 minY,
-    /* [in] */ Int32 maxY)
+    /* [in] */ Int32 maxY,
+    /* [out] */ Boolean* result)
 {
     mMode = FLING_MODE;
 
@@ -257,10 +299,24 @@ Boolean OverScroller::SpringBack(
     Boolean spingbackX = mScrollerX->Springback(startX, minX, maxX);
     Boolean spingbackY = mScrollerY->Springback(startY, minY, maxY);
 
-    return spingbackX || spingbackY;
+    *result = spingbackX || spingbackY;
+    return NOERROR;
 }
 
-void OverScroller::Fling(
+ECode OverScroller::Fling(
+    /* [in] */ Int32 startX,
+    /* [in] */ Int32 startY,
+    /* [in] */ Int32 velocityX,
+    /* [in] */ Int32 velocityY,
+    /* [in] */ Int32 minX,
+    /* [in] */ Int32 maxX,
+    /* [in] */ Int32 minY,
+    /* [in] */ Int32 maxY)
+{
+    return Fling(startX, startY, velocityX, velocityY, minX, maxX, minY, maxY, 0, 0);
+}
+
+ECode OverScroller::Fling(
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 velocityX,
@@ -269,11 +325,13 @@ void OverScroller::Fling(
     /* [in] */ Int32 maxX,
     /* [in] */ Int32 minY,
     /* [in] */ Int32 maxY,
-    /* [in] */ Int32 overX/* = 0*/,
-    /* [in] */ Int32 overY/* = 0*/)
+    /* [in] */ Int32 overX,
+    /* [in] */ Int32 overY)
 {
     // Continue a scroll or fling in progress
-    if (mFlywheel && !IsFinished()) {
+    Boolean isFinished;
+    IsFinished(&isFinished);
+    if (mFlywheel && !isFinished) {
         Float oldVelocityX = mScrollerX->mCurrVelocity;
         Float oldVelocityY = mScrollerY->mCurrVelocity;
         if (Elastos::Core::Math::Signum(velocityX) == Elastos::Core::Math::Signum(oldVelocityX) &&
@@ -286,54 +344,67 @@ void OverScroller::Fling(
     mMode = FLING_MODE;
     mScrollerX->Fling(startX, velocityX, minX, maxX, overX);
     mScrollerY->Fling(startY, velocityY, minY, maxY, overY);
+    return NOERROR;
 }
 
-void OverScroller::NotifyHorizontalEdgeReached(
+ECode OverScroller::NotifyHorizontalEdgeReached(
     /* [in] */ Int32 startX,
     /* [in] */ Int32 finalX,
     /* [in] */ Int32 overX)
 {
     mScrollerX->NotifyEdgeReached(startX, finalX, overX);
+    return NOERROR;
 }
 
-void OverScroller::NotifyVerticalEdgeReached(
+ECode OverScroller::NotifyVerticalEdgeReached(
     /* [in] */ Int32 startY,
     /* [in] */ Int32 finalY,
     /* [in] */ Int32 overY)
 {
     mScrollerY->NotifyEdgeReached(startY, finalY, overY);
+    return NOERROR;
 }
 
-Boolean OverScroller::IsOverScrolled()
+ECode OverScroller::IsOverScrolled(
+    /* [out] */ Boolean* isOverScrolled)
 {
-    return ((!mScrollerX->mFinished &&
+    *isOverScrolled = ((!mScrollerX->mFinished &&
         mScrollerX->mState != SplineOverScroller::SPLINE) ||
         (!mScrollerY->mFinished &&
         mScrollerY->mState != SplineOverScroller::SPLINE));
+    return NOERROR;
 }
 
-void OverScroller::AbortAnimation()
+ECode OverScroller::AbortAnimation()
 {
     mScrollerX->Finish();
     mScrollerY->Finish();
+    return NOERROR;
 }
 
-Int32 OverScroller::TimePassed()
+ECode OverScroller::TimePassed(
+    /* [out] */ Int32* timePassed)
 {
-    Int64 time = AnimationUtils::CurrentAnimationTimeMillis();
+    Int64 time;
+    AnimationUtils::CurrentAnimationTimeMillis(&time);
     Int64 startTime = Elastos::Core::Math::Min(mScrollerX->mStartTime, mScrollerY->mStartTime);
 
-    return (Int32)(time - startTime);
+    *timePassed = (Int32)(time - startTime);
+    return NOERROR;
 }
 
-Boolean OverScroller::IsScrollingInDirection(
+ECode OverScroller::IsScrollingInDirection(
     /* [in] */ Float xvel,
-    /* [in] */ Float yvel)
+    /* [in] */ Float yvel,
+    /* [out] */ Boolean* isScrollingInDirection)
 {
     Int32 dx = mScrollerX->mFinal - mScrollerX->mStart;
     Int32 dy = mScrollerY->mFinal - mScrollerY->mStart;
-    return !IsFinished() && Elastos::Core::Math::Signum(xvel) == Elastos::Core::Math::Signum(dx) &&
+    Boolean isFinished;
+    IsFinished(&isFinished);
+    *isScrollingInDirection = !isFinished && Elastos::Core::Math::Signum(xvel) == Elastos::Core::Math::Signum(dx) &&
             Elastos::Core::Math::Signum(yvel) == Elastos::Core::Math::Signum(dy);
+    return NOERROR;
 }
 
 
@@ -526,7 +597,8 @@ void SplineOverScroller::SetFinalPosition(
 void SplineOverScroller::ExtendDuration(
         /* [in] */ Int32 extend)
 {
-    Int64 time = AnimationUtils::CurrentAnimationTimeMillis();
+    Int64 time;
+    AnimationUtils::CurrentAnimationTimeMillis(&time);
     Int32 elapsedTime = (Int32) (time - mStartTime);
     mDuration = elapsedTime + extend;
     mFinished = FALSE;
@@ -542,7 +614,7 @@ Boolean SplineOverScroller::Springback(
     mStart = mFinal = start;
     mVelocity = 0;
 
-    mStartTime = AnimationUtils::CurrentAnimationTimeMillis();
+    AnimationUtils::CurrentAnimationTimeMillis(&mStartTime);
     mDuration = 0;
 
     if (start < min) {
@@ -583,7 +655,7 @@ void SplineOverScroller::Fling(
     mFinished = FALSE;
     mCurrVelocity = mVelocity = velocity;
     mDuration = mSplineDuration = 0;
-    mStartTime = AnimationUtils::CurrentAnimationTimeMillis();
+    AnimationUtils::CurrentAnimationTimeMillis(&mStartTime);
     mCurrentPosition = mStart = start;
 
     if (start > max || start < min) {
@@ -698,7 +770,7 @@ void SplineOverScroller::NotifyEdgeReached(
     // mState is used to detect successive notifications
     if (mState == SPLINE) {
         mOver = over;
-        mStartTime = AnimationUtils::CurrentAnimationTimeMillis();
+        AnimationUtils::CurrentAnimationTimeMillis(&mStartTime);
         // We were in Fling/scroll mode before: current velocity is such that distance to
         // edge is increasing. This ensures that StartAfterEdge will not start a new Fling.
         StartAfterEdge(start, end, end, (Int32) mCurrVelocity);
@@ -755,7 +827,8 @@ Boolean SplineOverScroller::ContinueWhenFinished()
 
 Boolean SplineOverScroller::Update()
 {
-    Int64 time = AnimationUtils::CurrentAnimationTimeMillis();
+    Int64 time;
+    AnimationUtils::CurrentAnimationTimeMillis(&time);
     Int64 currentTime = time - mStartTime;
 
     if (currentTime > mDuration) {

@@ -3,10 +3,14 @@
 #include <elastos/coredef.h>
 #include <elastos/core/Math.h>
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
+
+CAR_INTERFACE_IMPL(CBackupDataInputStream, Object, IBackupDataInputStream)
+
+CAR_OBJECT_IMPL(CBackupDataInputStream)
 
 ECode CBackupDataInputStream::constructor(
     /* [in] */ IBackupDataInput* data)

@@ -1,38 +1,34 @@
 
-#include "elastos/droid/net/wifi/CWifiManager.h"
-// #include "elastos/droid/net/wifi/CWifiConfiguration.h"
+#include "elastos/droid/internal/utility/CAsyncChannel.h"
+#include "elastos/droid/wifi/CWifiManager.h"
+// #include "elastos/droid/wifi/CWifiConfiguration.h"
 #include "elastos/droid/os/CBinder.h"
 #include "elastos/droid/os/CWorkSource.h"
 #include "elastos/droid/os/CHandlerThread.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::Concurrent::CCountDownLatch;
 using Elastos::Droid::Os::CBinder;
 using Elastos::Droid::Os::CWorkSource;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::CHandlerThread;
-using Elastos::Droid::Utility::IProtocol;
+using Elastos::Droid::Internal::Utility::CAsyncChannel;
+using Elastos::Droid::Internal::Utility::IProtocol;
+using Elastos::Core::AutoLock;
+using Elastos::Core::IThread;
+using Elastos::Utility::Concurrent::CCountDownLatch;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 
-const String CWifiManager::TAG("WifiManager");
-const Int32 CWifiManager::MIN_RSSI = -100;
-const Int32 CWifiManager::MAX_RSSI = -55;
-const Int32 CWifiManager::MAX_ACTIVE_LOCKS = 50;
-const Int32 CWifiManager::INVALID_KEY = 0;
-const Int32 CWifiManager::BASE = IProtocol::BASE_WIFI_MANAGER;
-
-Mutex CWifiManager::sThreadRefLock;
-Int32 CWifiManager::sThreadRefCount;
-AutoPtr<IHandlerThread> CWifiManager::sHandlerThread;
-
-
 //==============================================================
 // CWifiManager::WifiLock
 //==============================================================
+
+CAR_INTERFACE_IMPL(CWifiManager::WifiLock, Object, IWifiManagerWifiLock)
+
 CWifiManager::WifiLock::WifiLock(
     /* [in] */ Int32 lockType,
     /* [in] */ const String& tag,
@@ -55,15 +51,13 @@ CWifiManager::WifiLock::~WifiLock()
         Boolean result = FALSE;
         mOwner->mService->ReleaseWifiLock(mBinder, &result);
         {
-            AutoLock lock(mOwner->_m_syncLock);
+            AutoLock lock(mOwner);
             mOwner->mActiveLockCount--;
         }
         // } catch (RemoteException ignore) {
         // }
     }
 }
-
-CAR_INTERFACE_IMPL(CWifiManager::WifiLock, IWifiLock)
 
 ECode CWifiManager::WifiLock::AcquireLock()
 {
@@ -73,7 +67,7 @@ ECode CWifiManager::WifiLock::AcquireLock()
         Boolean result = FALSE;
         mOwner->mService->AcquireWifiLock(mBinder, mLockType, mTag, mWorkSource, &result);
         {
-            AutoLock lock(mOwner->_m_syncLock);
+            AutoLock lock(mOwner);
 
             if (mOwner->mActiveLockCount >= MAX_ACTIVE_LOCKS) {
                 mOwner->mService->ReleaseWifiLock(mBinder, &result);
@@ -98,7 +92,7 @@ ECode CWifiManager::WifiLock::ReleaseLock()
         Boolean result = FALSE;
         mOwner->mService->ReleaseWifiLock(mBinder, &result);
         {
-            AutoLock lock(mOwner->_m_syncLock);
+            AutoLock lock(mOwner);
             mOwner->mActiveLockCount--;
         }
         // } catch (RemoteException ignore) {
@@ -142,13 +136,16 @@ ECode CWifiManager::WifiLock::SetWorkSource(
         mWorkSource = NULL;
     }
     else if (mWorkSource == NULL) {
-        changed = mWorkSource != NULL;
-        CWorkSource::New(ws, (IWorkSource**)&mWorkSource);
-    }
-    else {
-        mWorkSource->Diff(ws, &changed);
-        if (changed) {
-            mWorkSource->Set(ws);
+        ws->ClearNames();
+        if (mWorkSource == NULL) {
+            changed = mWorkSource != NULL;
+            CWorkSource::New(ws, (IWorkSource**)&mWorkSource);
+        }
+        else {
+            mWorkSource->Diff(ws, &changed);
+            if (changed) {
+                mWorkSource->Set(ws);
+            }
         }
     }
     if (changed && mHeld) {
@@ -164,6 +161,9 @@ ECode CWifiManager::WifiLock::SetWorkSource(
 //==============================================================
 // CWifiManager::MulticastLock
 //==============================================================
+
+CAR_INTERFACE_IMPL(CWifiManager::MulticastLock, Object, IWifiManagerMulticastLock)
+
 CWifiManager::MulticastLock::MulticastLock(
     /* [in] */ const String& tag,
     /* [in] */ CWifiManager* owner)
@@ -182,8 +182,6 @@ CWifiManager::MulticastLock::~MulticastLock()
     ReleaseLock();
 }
 
-CAR_INTERFACE_IMPL(CWifiManager::MulticastLock, IMulticastLock)
-
 ECode CWifiManager::MulticastLock::AcquireLock()
 {
     {
@@ -193,7 +191,7 @@ ECode CWifiManager::MulticastLock::AcquireLock()
             // try {
             mOwner->mService->AcquireMulticastLock(mBinder, mTag);
             {
-                AutoLock lock(mOwner->_m_syncLock);
+                AutoLock lock(mOwner);
 
                 if (mOwner->mActiveLockCount >= MAX_ACTIVE_LOCKS) {
                     mOwner->mService->ReleaseMulticastLock();
@@ -219,7 +217,7 @@ ECode CWifiManager::MulticastLock::ReleaseLock()
         // try {
         mOwner->mService->ReleaseMulticastLock();
         {
-            AutoLock lock(mOwner->_m_syncLock);
+            AutoLock lock(mOwner);
             mOwner->mActiveLockCount--;
         }
         // } catch (RemoteException ignore) {
@@ -260,7 +258,7 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
 {
     Int32 arg2;
     message->GetArg2(&arg2);
-    AutoPtr<IInterface> listener = mOwner->RemoveListener(arg2);
+    AutoPtr<IInterface> listener = RemoveListener(arg2);
     Int32 what;
     message->GetWhat(&what);
     switch (what) {
@@ -270,17 +268,17 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
             Int32 arg1;
             message->GetArg1(&arg1);
             if (arg1 == AsyncChannel::STATUS_SUCCESSFUL) {
-                mOwner->mAsyncChannel->SendMessage(AsyncChannel::CMD_CHANNEL_FULL_CONNECTION);
+                sAsyncChannel->SendMessage(AsyncChannel::CMD_CHANNEL_FULL_CONNECTION);
             } else {
                 Logger::E(TAG, "Failed to set up channel connection");
                 // This will cause all further async API calls on the WifiManager
                 // to fail and throw an exception
-                if (mOwner->mAsyncChannel) {
-                    mOwner->mAsyncChannel->Disconnected();
-                    mOwner->mAsyncChannel = NULL;
+                if (sAsyncChannel) {
+                    sAsyncChannel->Disconnected();
+                    sAsyncChannel = NULL;
                 }
             }
-            mOwner->mConnected->CountDown();
+            sConnected->CountDown();
             break;
         }
         case AsyncChannel::CMD_CHANNEL_FULLY_CONNECTED:
@@ -290,9 +288,9 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
             // Logger::E(TAG, "ServiceHandler HandleMessage CMD_CHANNEL_DISCONNECTED Channel connection lost");
             // This will cause all further async API calls on the WifiManager
             // to fail and throw an exception
-            if (mOwner->mAsyncChannel) {
-                mOwner->mAsyncChannel->Disconnected();
-                mOwner->mAsyncChannel = NULL;
+            if (sAsyncChannel) {
+                sAsyncChannel->Disconnected();
+                sAsyncChannel = NULL;
             }
             mLooper->Quit();
             break;
@@ -300,7 +298,6 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
         case IWifiManager::CONNECT_NETWORK_FAILED:
         case IWifiManager::FORGET_NETWORK_FAILED:
         case IWifiManager::SAVE_NETWORK_FAILED:
-        case IWifiManager::CANCEL_WPS_FAILED:
         case IWifiManager::DISABLE_NETWORK_FAILED:
         {
             Int32 arg1;
@@ -314,7 +311,6 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
         case IWifiManager::CONNECT_NETWORK_SUCCEEDED:
         case IWifiManager::FORGET_NETWORK_SUCCEEDED:
         case IWifiManager::SAVE_NETWORK_SUCCEEDED:
-        case IWifiManager::CANCEL_WPS_SUCCEDED:
         case IWifiManager::DISABLE_NETWORK_SUCCEEDED:
             if (listener != NULL) {
                 IWifiManagerActionListener::Probe(listener)->OnSuccess();
@@ -328,16 +324,23 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
                 AutoPtr<IWpsResult> result = IWpsResult::Probe(obj);
                 String pin;
                 result->GetPin(&pin);
-                IWpsListener::Probe(listener)->OnStartSuccess(pin);
+                assert(0);
+                // TODO
+                // IWifiManagerWpsCallback::Probe(listener)->OnStartSuccess(pin);
+
                 //Listener needs to stay until completion or failure
-                AutoLock lock(mOwner->mListenerMapLock);
-                mOwner->mListenerMap[arg2] = listener;
+                AutoLock lock(sListenerMapLock);
+                assert(0);
+                // TODO
+                // sListenerMap[arg2] = listener;
             }
             break;
         }
         case IWifiManager::WPS_COMPLETED:
             if (listener != NULL) {
-                IWpsListener::Probe(listener)->OnCompletion();
+                assert(0);
+                // TODO
+                // IWifiManagerWpsCallback::Probe(listener)->OnCompletion();
             }
             break;
         case IWifiManager::WPS_FAILED:
@@ -345,10 +348,24 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
             Int32 arg1;
             message->GetArg1(&arg1);
             if (listener != NULL) {
-                IWpsListener::Probe(listener)->OnFailure(arg1);
+                assert(0);
+                // TODO
+                // IWifiManagerWpsCallback::Probe(listener)->OnFailure(arg1);
             }
             break;
         }
+        case IWifiManager::CANCEL_WPS_SUCCEDED:
+            if (listener != NULL) {
+                IWifiManagerWpsCallback::Probe(listener)->OnSucceeded();
+            }
+            break;
+        case IWifiManager::CANCEL_WPS_FAILED:
+            if (listener != NULL) {
+                Int32 arg1;
+                message->GetArg1(&arg1);
+                IWifiManagerWpsCallback::Probe(listener)->OnFailed(arg1);
+            }
+            break;
         case IWifiManager::RSSI_PKTCNT_FETCH_SUCCEEDED:
         {
             AutoPtr<IInterface> obj;
@@ -359,10 +376,10 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
                     Int32 txgood, txbad;
                     info->GetTxgood(&txgood);
                     info->GetTxbad(&txbad);
-                    ITxPacketCountListener::Probe(listener)->OnSuccess(txgood + txbad);
+                    IWifiManagerTxPacketCountListener::Probe(listener)->OnSuccess(txgood + txbad);
                 }
                 else {
-                    ITxPacketCountListener::Probe(listener)->OnFailure(IWifiManager::ERROR);
+                    IWifiManagerTxPacketCountListener::Probe(listener)->OnFailure(IWifiManager::ERROR);
                 }
             }
             break;
@@ -372,7 +389,7 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
             Int32 arg1;
             message->GetArg1(&arg1);
             if (listener != NULL) {
-                ITxPacketCountListener::Probe(listener)->OnFailure(arg1);
+                IWifiManagerTxPacketCountListener::Probe(listener)->OnFailure(arg1);
             }
             break;
         }
@@ -386,19 +403,50 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
 //==============================================================
 // CWifiManager
 //==============================================================
+
+static AutoPtr<ISparseArray> sListenerMap_Init()
+{
+    AutoPtr<ISparseArray> array;
+    assert(0);
+    // TODO
+    // CSparseArray::New((ISparseArray**)&array);
+    return array;
+}
+
+const String CWifiManager::TAG("WifiManager");
+const Int32 CWifiManager::MIN_RSSI = -100;
+const Int32 CWifiManager::MAX_RSSI = -55;
+const Int32 CWifiManager::MAX_ACTIVE_LOCKS = 50;
+const Int32 CWifiManager::INVALID_KEY = 0;
+const Int32 CWifiManager::BASE = IProtocol::BASE_WIFI_MANAGER;
+
+Int32 CWifiManager::sListenerKey = 1;
+AutoPtr<ISparseArray> CWifiManager::sListenerMap = sListenerMap_Init();
+Object CWifiManager::sListenerMapLock;
+
+AutoPtr<IAsyncChannel> CWifiManager::sAsyncChannel;
+AutoPtr<ICountDownLatch> CWifiManager::sConnected;
+
+Object CWifiManager::sThreadRefLock;
+Int32 CWifiManager::sThreadRefCount;
+AutoPtr<IHandlerThread> CWifiManager::sHandlerThread;
+
+CAR_INTERFACE_IMPL(CWifiManager, Object, IWifiManager)
+
+CAR_OBJECT_IMPL(CWifiManager)
+
 CWifiManager::CWifiManager()
     : mActiveLockCount(0)
-    , mListenerKey(1)
 {
-    mAsyncChannel = new AsyncChannel();
-    CCountDownLatch::New(1, (ICountDownLatch**)&mConnected);
+    sAsyncChannel = new AsyncChannel();
+    CCountDownLatch::New(1, (ICountDownLatch**)&sConnected);
 }
 
 CWifiManager::~CWifiManager()
 {
-    if (mAsyncChannel) {
-        mAsyncChannel->Disconnected();
-        mAsyncChannel = NULL;
+    if (sAsyncChannel) {
+        sAsyncChannel->Disconnected();
+        sAsyncChannel = NULL;
     }
 
     //try {
@@ -428,7 +476,7 @@ ECode CWifiManager::constructor(
 }
 
 ECode CWifiManager::GetConfiguredNetworks(
-    /* [out] */ IObjectContainer** networks)
+    /* [out] */ IList** networks)
 {
     VALIDATE_NOT_NULL(networks);
     // try {
@@ -573,24 +621,14 @@ ECode CWifiManager::StartScan(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded);
-    *succeeded = TRUE;
-    ECode ec = mService->StartScan(FALSE);
-    if (FAILED(ec)) {
-        *succeeded = FALSE;
-    }
-    return NOERROR;
-}
 
-ECode CWifiManager::StartScanActive(
-    /* [out] */ Boolean* succeeded)
-{
-    VALIDATE_NOT_NULL(succeeded)
-    *succeeded = TRUE;
-    ECode ec = mService->StartScan(TRUE);
-    if (FAILED(ec)) {
-        *succeeded = FALSE;
-    }
-    return NOERROR;
+    // try {
+        mService->StartScan(NULL, NULL);
+        *succeeded = TRUE;
+        return NOERROR;
+    // } catch (RemoteException e) {
+    //     return false;
+    // }
 }
 
 ECode CWifiManager::GetConnectionInfo(
@@ -610,13 +648,17 @@ ECode CWifiManager::GetConnectionInfo(
 }
 
 ECode CWifiManager::GetScanResults(
-    /* [out] */ IObjectContainer** results)
+    /* [out] */ IList** results)
 {
     VALIDATE_NOT_NULL(results);
     *results = NULL;
 
-    AutoPtr<IObjectContainer> temp;
-    FAIL_RETURN(mService->GetScanResults((IObjectContainer**)&temp));
+    AutoPtr<IList> temp;
+    String packageName;
+    mContext->GetOpPackageName(&packageName);
+    assert(0);
+    // TODO
+    // FAIL_RETURN(mService->GetScanResults(packageName, (IList**)&temp));
     *results = temp;
     REFCOUNT_ADD(*results);
     return NOERROR;
@@ -744,10 +786,10 @@ ECode CWifiManager::IsWifiEnabled(
 }
 
 ECode CWifiManager::GetTxPacketCount(
-    /* [in] */ ITxPacketCountListener* listener)
+    /* [in] */ IWifiManagerTxPacketCountListener* listener)
 {
     ValidateChannel();
-    mAsyncChannel->SendMessage(IWifiManager::RSSI_PKTCNT_FETCH, 0, PutListener(listener));
+    sAsyncChannel->SendMessage(IWifiManager::RSSI_PKTCNT_FETCH, 0, PutListener(listener));
     return NOERROR;
 }
 
@@ -926,12 +968,14 @@ Int32 CWifiManager::PutListener(
     if (listener == NULL) return INVALID_KEY;
     Int32 key = 0;
     {
-        AutoLock lock(mListenerMapLock);
+        AutoLock lock(sListenerMapLock);
 
         do {
-            key = mListenerKey++;
+            key = sListenerKey++;
         } while (key == INVALID_KEY);
-        mListenerMap[key] = listener;
+        assert(0);
+        // TODO
+        // sListenerMap[key] = listener;
     }
     return key;
 }
@@ -941,55 +985,74 @@ AutoPtr<IInterface> CWifiManager::RemoveListener(
 {
     if (key == INVALID_KEY) return NULL;
     {
-        AutoLock lock(mListenerMapLock);
+        AutoLock lock(sListenerMapLock);
 
         AutoPtr<IInterface> listener;
-        HashMap<Int32, AutoPtr<IInterface> >::Iterator it = mListenerMap.Find(key);
-        if (it != mListenerMap.End()) {
-            listener = it->mSecond;
-            mListenerMap.Erase(it);
-        }
+        assert(0);
+        // TODO
+        // HashMap<Int32, AutoPtr<IInterface> >::Iterator it = sListenerMap.Find(key);
+        // if (it != sListenerMap.End()) {
+        //     listener = it->mSecond;
+        //     sListenerMap.Erase(it);
+        // }
         return listener;
     }
 }
 
 void CWifiManager::Init()
 {
-    GetWifiServiceMessenger((IMessenger**)&mWifiServiceMessenger);
-    if (mWifiServiceMessenger == NULL) {
-        mAsyncChannel = NULL;
-        return;
-    }
-
-    {
-        AutoLock lock(sThreadRefLock);
-        if (++sThreadRefCount == 1) {
-            sHandlerThread = NULL;
-            CHandlerThread::New(String("WifiManager"), (IHandlerThread**)&sHandlerThread);
-            sHandlerThread->Start();
+    AutoLock lock(sThreadRefLock);
+    if (++sThreadRefCount == 1) {
+        AutoPtr<IMessenger> messenger;
+        GetWifiServiceMessenger((IMessenger**)&messenger);
+        if (messenger == NULL) {
+            sAsyncChannel = NULL;
+            return;
         }
-    }
 
-    AutoPtr<ILooper> l;
-    sHandlerThread->GetLooper((ILooper**)&l);
-    mHandler = new ServiceHandler(l, this);
-    mAsyncChannel->Connect(mContext, mHandler, mWifiServiceMessenger);
-    // try {
-    if (FAILED(mConnected->Await())) {
-    // } catch (InterruptedException e) {
-        Logger::E(TAG, "interrupted wait at init");
+        CHandlerThread::New(String("WifiManager"), (IHandlerThread**)&sHandlerThread);
+        CAsyncChannel::New((IAsyncChannel**)&sAsyncChannel);
+        CCountDownLatch::New(1, (ICountDownLatch**)&sConnected);
+
+        IThread::Probe(sHandlerThread)->Start();
+        AutoPtr<ILooper> looper;
+        sHandlerThread->GetLooper((ILooper**)&looper);
+        AutoPtr<IHandler> handler = new ServiceHandler(looper);
+        sAsyncChannel->Connect(mContext, handler, messenger);
+        // try {
+            sConnected->Await();
+        // } catch (InterruptedException e) {
+        //     Log.e(TAG, "interrupted wait at init");
+        // }
     }
 }
 
 ECode CWifiManager::ValidateChannel()
 {
-    if (mAsyncChannel == NULL) {
+    if (sAsyncChannel == NULL) {
         //throw new IllegalStateException
         Logger::E(TAG,
            "No permission to access and change wifi or a bad initialization");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     return NOERROR;
+}
+
+Int32 CWifiManager::GetSupportedFeatures()
+{
+    Int32 features;
+    // try {
+        mService->GetSupportedFeatures(&features);
+    // } catch (RemoteException e) {
+    //     return 0;
+    // }
+    return features;
+}
+
+Boolean CWifiManager::IsFeatureSupported(
+    /* [in] */ Int32 feature)
+{
+    return (GetSupportedFeatures() & feature) == feature;
 }
 
 ECode CWifiManager::Connect(
@@ -1003,7 +1066,7 @@ ECode CWifiManager::Connect(
     ValidateChannel();
     // Use INVALID_NETWORK_ID for arg1 when passing a config object
     // arg1 is used to pass network id when the network already exists
-    mAsyncChannel->SendMessage(CONNECT_NETWORK, IWifiConfiguration::INVALID_NETWORK_ID,
+    sAsyncChannel->SendMessage(CONNECT_NETWORK, IWifiConfiguration::INVALID_NETWORK_ID,
            PutListener(listener), config);
     return NOERROR;
 }
@@ -1017,7 +1080,7 @@ ECode CWifiManager::Connect(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ValidateChannel();
-    mAsyncChannel->SendMessage(CONNECT_NETWORK, networkId, PutListener(listener));
+    sAsyncChannel->SendMessage(CONNECT_NETWORK, networkId, PutListener(listener));
     return NOERROR;
 }
 
@@ -1030,7 +1093,7 @@ ECode CWifiManager::Save(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ValidateChannel();
-    mAsyncChannel->SendMessage(SAVE_NETWORK, 0, PutListener(listener), config);
+    sAsyncChannel->SendMessage(SAVE_NETWORK, 0, PutListener(listener), config);
     return NOERROR;
 }
 
@@ -1043,7 +1106,7 @@ ECode CWifiManager::Forget(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ValidateChannel();
-    mAsyncChannel->SendMessage(FORGET_NETWORK, netId, PutListener(listener));
+    sAsyncChannel->SendMessage(FORGET_NETWORK, netId, PutListener(listener));
     return NOERROR;
 }
 
@@ -1056,29 +1119,27 @@ ECode CWifiManager::Disable(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ValidateChannel();
-    mAsyncChannel->SendMessage(DISABLE_NETWORK, netId, PutListener(listener));
+    sAsyncChannel->SendMessage(DISABLE_NETWORK, netId, PutListener(listener));
     return NOERROR;
 }
 
 ECode CWifiManager::StartWps(
     /* [in] */ IWpsInfo* config,
-    /* [in] */ IWpsListener* listener)
+    /* [in] */ IWifiManagerWpsCallback* listener)
 {
     if (config == NULL) {
         // throw new IllegalArgumentException("config cannot be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ValidateChannel();
-    mAsyncChannel->SendMessage(START_WPS, 0, PutListener(listener), config);
-    return NOERROR;
+    return sAsyncChannel->SendMessage(START_WPS, 0, PutListener(listener), config);
 }
 
 ECode CWifiManager::CancelWps(
-    /* [in] */ IWifiManagerActionListener* listener)
+    /* [in] */ IWifiManagerWpsCallback* listener)
 {
     ValidateChannel();
-    mAsyncChannel->SendMessage(CANCEL_WPS, 0, PutListener(listener));
-    return NOERROR;
+    return sAsyncChannel->SendMessage(CANCEL_WPS, 0, PutListener(listener));
 }
 
 ECode CWifiManager::GetWifiServiceMessenger(
@@ -1098,21 +1159,6 @@ ECode CWifiManager::GetWifiServiceMessenger(
     //}
 }
 
-ECode CWifiManager::GetWifiStateMachineMessenger(
-    /* [out] */ IMessenger** msgr)
-{
-    VALIDATE_NOT_NULL(msgr);
-    //try {
-    ECode ec = mService->GetWifiStateMachineMessenger(msgr);
-    if (FAILED(ec)) {
-        *msgr = NULL;
-    }
-    return NOERROR;
-    //} catch (RemoteException e) {
-    //    return NULL;
-    //}
-}
-
 ECode CWifiManager::GetConfigFile(
     /* [out] */ String* cfgFile)
 {
@@ -1127,30 +1173,36 @@ ECode CWifiManager::GetConfigFile(
 ECode CWifiManager::CreateWifiLock(
     /* [in] */ Int32 lockType,
     /* [in] */ const String& tag,
-    /* [out] */ IWifiLock** lock)
+    /* [out] */ IWifiManagerWifiLock** lock)
 {
     VALIDATE_NOT_NULL(lock);
-    *lock = new WifiLock(lockType, tag, this);
+    assert(0);
+    // TODO
+    // *lock = new WifiLock(lockType, tag, this);
     REFCOUNT_ADD(*lock);
     return NOERROR;
 }
 
 ECode CWifiManager::CreateWifiLock(
     /* [in] */ const String& tag,
-    /* [out] */ IWifiLock** lock)
+    /* [out] */ IWifiManagerWifiLock** lock)
 {
     VALIDATE_NOT_NULL(lock);
-    *lock = new WifiLock(WIFI_MODE_FULL, tag, this);
+    assert(0);
+    // TODO
+    // *lock = new WifiLock(WIFI_MODE_FULL, tag, this);
     REFCOUNT_ADD(*lock);
     return NOERROR;
 }
 
 ECode CWifiManager::CreateMulticastLock(
     /* [in] */ const String& tag,
-    /* [out] */ IMulticastLock** lock)
+    /* [out] */ IWifiManagerMulticastLock** lock)
 {
     VALIDATE_NOT_NULL(lock);
-    *lock = new MulticastLock(tag, this);
+    assert(0);
+    // TODO
+    // *lock = new MulticastLock(tag, this);
     REFCOUNT_ADD(*lock);
     return NOERROR;
 }
@@ -1187,11 +1239,396 @@ ECode CWifiManager::InitializeMulticastFiltering(
     //}
 }
 
-ECode CWifiManager::CaptivePortalCheckComplete()
+ECode CWifiManager::GetPrivilegedConfiguredNetworks(
+    /* [out] */ IList** result)
 {
+    // try {
+        return mService->GetPrivilegedConfiguredNetworks(result);
+    // } catch (RemoteException e) {
+    //     return null;
+    // }
+}
+
+ECode CWifiManager::GetConnectionStatistics(
+    /* [out] */ IWifiConnectionStatistics** result)
+{
+    // try {
+        return mService->GetConnectionStatistics(result);
+    // } catch (RemoteException e) {
+    //     return null;
+    // }
+}
+
+ECode CWifiManager::GetChannelList(
+    /* [out] */ IList** result)
+{
+    // try {
+        return mService->GetChannelList(result);
+    // } catch (RemoteException e) {
+    //     return null;
+    // }
+}
+
+ECode CWifiManager::Is5GHzBandSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_INFRA_5G);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsPasspointSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_PASSPOINT);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsP2pSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_P2P);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsPortableHotspotSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_MOBILE_HOTSPOT);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsWifiScannerSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_SCANNER);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsNanSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_NAN);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsDeviceToDeviceRttSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_D2D_RTT);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsDeviceToApRttSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_D2AP_RTT);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsPreferredNetworkOffloadSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_PNO);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsAdditionalStaSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_ADDITIONAL_STA);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsTdlsSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_TDLS);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsOffChannelTdlsSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_TDLS_OFFCHANNEL);
+    return NOERROR;
+}
+
+ECode CWifiManager::IsEnhancedPowerReportingSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = IsFeatureSupported(WIFI_FEATURE_EPR);
+    return NOERROR;
+}
+
+ECode CWifiManager::GetControllerActivityEnergyInfo(
+    /* [in] */ Int32 updateType,
+    /* [out] */ IWifiActivityEnergyInfo** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if (mService == NULL) {
+        *result = NULL;
+        return NOERROR;
+    }
+
+    // try {
+        Boolean bFlag;
+        IsEnhancedPowerReportingSupported(&bFlag);
+        if (!bFlag) {
+            *result = NULL;
+            return NOERROR;
+        }
+
+        {
+            AutoLock lock(this);
+            mService->ReportActivityInfo(result);
+            Boolean bFlag;
+            (*result)->IsValid(&bFlag);
+            if (bFlag) {
+                return NOERROR;
+            }
+            else {
+                *result = NULL;
+                return NOERROR;
+            }
+        }
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "getControllerActivityEnergyInfo: " + e);
+    // }
+
+    *result = NULL;
+
+    return NOERROR;
+}
+
+ECode CWifiManager::StartScan(
+    /* [in] */ IWorkSource* workSource,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        mService->StartScan(NULL, workSource);
+        *result = TRUE;
+        return NOERROR;
+    // } catch (RemoteException e) {
+    //     return false;
+    // }
+}
+
+ECode CWifiManager::StartCustomizedScan(
+    /* [in] */ IScanSettings* requested,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        mService->StartScan(requested, NULL);
+        *result = TRUE;
+        return NOERROR;
+    // } catch (RemoteException e) {
+    //     return false;
+    // }
+}
+
+ECode CWifiManager::StartCustomizedScan(
+    /* [in] */ IScanSettings* requested,
+    /* [in] */ IWorkSource* workSource,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        mService->StartScan(requested, workSource);
+        *result = TRUE;
+        return NOERROR;
+    // } catch (RemoteException e) {
+    //     return false;
+    // }
+}
+
+ECode CWifiManager::RequestBatchedScan(
+    /* [in] */ IBatchedScanSettings* requested,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        AutoPtr<IBinder> binder;
+        CBinder::New((IBinder**)&binder);
+        return mService->RequestBatchedScan(requested, binder, NULL, result);
+    // } catch (RemoteException e) { return false; }
+}
+
+ECode CWifiManager::RequestBatchedScan(
+    /* [in] */ IBatchedScanSettings* requested,
+    /* [in] */ IWorkSource* workSource,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        AutoPtr<IBinder> binder;
+        CBinder::New((IBinder**)&binder);
+        return mService->RequestBatchedScan(requested, binder, workSource, result);
+    // } catch (RemoteException e) { return false; }
+}
+
+ECode CWifiManager::IsBatchedScanSupported(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        return mService->IsBatchedScanSupported(result);
+    // } catch (RemoteException e) { return false; }
+}
+
+ECode CWifiManager::StopBatchedScan(
+    /* [in] */ IBatchedScanSettings* requested)
+{
+    // try {
+        return mService->StopBatchedScan(requested);
+    // } catch (RemoteException e) {}
+}
+
+ECode CWifiManager::GetBatchedScanResults(
+    /* [out] */ IList** result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        String packageName;
+        mContext->GetOpPackageName(&packageName);
+        return mService->GetBatchedScanResults(packageName, result);
+    // } catch (RemoteException e) {
+    //     return null;
+    // }
+}
+
+ECode CWifiManager::PollBatchedScan()
+{
+    // try {
+        return mService->PollBatchedScan();
+    // } catch (RemoteException e) { }
+}
+
+ECode CWifiManager::GetWpsNfcConfigurationToken(
+    /* [in] */ Int32 netId,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        return mService->GetWpsNfcConfigurationToken(netId, result);
+    // } catch (RemoteException e) {
+    //     return null;
+    // }
+}
+
+ECode CWifiManager::IsScanAlwaysAvailable(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        return mService->IsScanAlwaysAvailable(result);
+    // } catch (RemoteException e) {
+    //     return false;
+    // }
+}
+
+ECode CWifiManager::SetTdlsEnabled(
+    /* [in] */ IInetAddress* remoteIPAddress,
+    /* [in] */ Boolean enable)
+{
+    // try {
+        String address;
+        remoteIPAddress->GetHostAddress(&address);
+        return mService->EnableTdls(address, enable);
+    // } catch (RemoteException e) {
+    //     // Just ignore the exception
+    // }
+}
+
+ECode CWifiManager::SetTdlsEnabledWithMacAddress(
+    /* [in] */ const String& remoteMacAddress,
+    /* [in] */ Boolean enable)
+{
+    // try {
+        return mService->EnableTdlsWithMacAddress(remoteMacAddress, enable);
+    // } catch (RemoteException e) {
+    //     // Just ignore the exception
+    // }
+}
+
+ECode CWifiManager::EnableVerboseLogging(
+    /* [in] */ Int32 verbose)
+{
+    // try {
+        return mService->EnableVerboseLogging(verbose);
+    // } catch (Exception e) {
+    //     //ignore any failure here
+    //     Log.e(TAG, "enableVerboseLogging " + e.toString());
+    // }
+}
+
+ECode CWifiManager::GetVerboseLoggingLevel(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
     //try {
-    return mService->CaptivePortalCheckComplete();
-    //} catch (RemoteException e) {}
+        return mService->GetVerboseLoggingLevel(result);
+    // } catch (RemoteException e) {
+    //     return 0;
+    // }
+}
+
+ECode CWifiManager::EnableAggressiveHandover(
+    /* [in] */ Int32 enabled)
+{
+    // try {
+        return mService->EnableAggressiveHandover(enabled);
+    // } catch (RemoteException e) {
+
+    // }
+}
+
+ECode CWifiManager::GetAggressiveHandover(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+        return mService->GetAggressiveHandover(result);
+    // } catch (RemoteException e) {
+    //     return 0;
+    // }
+}
+
+ECode CWifiManager::SetAllowScansWithTraffic(
+    /* [in] */ Int32 enabled)
+{
+    // try {
+        return mService->SetAllowScansWithTraffic(enabled);
+    // } catch (RemoteException e) {
+
+    // }
+}
+
+ECode CWifiManager::GetAllowScansWithTraffic(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    // try {
+        return mService->GetAllowScansWithTraffic(result);
+    // } catch (RemoteException e) {
+    //     return 0;
+    // }
 }
 
 } // namespace Wifi

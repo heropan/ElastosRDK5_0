@@ -16,6 +16,15 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CDownloadManagerQuery, Object, IDownloadManagerQuery)
+
+CAR_OBJECT_IMPL(CDownloadManagerQuery)
+
+ECode CDownloadManagerQuery::constructor()
+{
+    return NOERROR;
+}
+
 CDownloadManagerQuery::CDownloadManagerQuery()
     : mOrderByColumn(IDownloadsImpl::COLUMN_LAST_MODIFICATION)
     , mOrderDirection(IDownloadManagerQuery::ORDER_DESCENDING)
@@ -138,9 +147,9 @@ String CDownloadManagerQuery::JoinStrings(
     for (it = parts->Begin(); it != parts->End(); ++it) {
         String part = *it;
         if (!first) {
-            builder.AppendString(joiner);
+            builder += joiner;
         }
-        builder.AppendString(part);
+        builder += part;
         first = FALSE;
     }
     return builder.ToString();
@@ -150,7 +159,7 @@ String CDownloadManagerQuery::StatusClause(
     /* [in] */ const String& op,
     /* [in] */ Int32 value)
 {
-    return IDownloadsImpl::COLUMN_STATUS + op + "'" + StringUtils::Int32ToString(value) + "'";
+    return IDownloadsImpl::COLUMN_STATUS + op + "'" + StringUtils::ToString(value) + "'";
 }
 
 } // namespace App

@@ -13,9 +13,9 @@ using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Utility::IPrinter;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CarClass(CWallpaperInfo)
     , public Object

@@ -1,5 +1,6 @@
 
 #include "elastos/droid/net/MobileLinkQualityInfo.h"
+#include "elastos/droid/net/ReturnOutValue.h"
 
 namespace Elastos {
 namespace Droid {
@@ -27,288 +28,232 @@ ECode MobileLinkQualityInfo::CreateFromParcelBody(
     /* [in] */ IParcel* in,
     /* [out] */ IMobileLinkQualityInfo** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        MobileLinkQualityInfo li = new MobileLinkQualityInfo();
-        li.initializeFromParcel(in);
-        li.mMobileNetworkType = in.readInt();
-        li.mRssi = in.readInt();
-        li.mGsmErrorRate = in.readInt();
-        li.mCdmaDbm = in.readInt();
-        li.mCdmaEcio = in.readInt();
-        li.mEvdoDbm = in.readInt();
-        li.mEvdoEcio = in.readInt();
-        li.mEvdoSnr = in.readInt();
-        li.mLteSignalStrength = in.readInt();
-        li.mLteRsrp = in.readInt();
-        li.mLteRsrq = in.readInt();
-        li.mLteRssnr = in.readInt();
-        li.mLteCqi = in.readInt();
-        return li;
-
-#endif
+    AutoPtr<MobileLinkQualityInfo> li = new MobileLinkQualityInfo();
+    li->ReadFromParcel(in);
+    FUNC_RETURN(li);
 }
 
 ECode MobileLinkQualityInfo::GetMobileNetworkType(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mMobileNetworkType;
-
-#endif
+    *result = mMobileNetworkType;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetMobileNetworkType(
     /* [in] */ Int32 mobileNetworkType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mMobileNetworkType = mobileNetworkType;
-
-#endif
+    mMobileNetworkType = mobileNetworkType;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetRssi(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mRssi;
-
-#endif
+    *result = mRssi;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetRssi(
     /* [in] */ Int32 Rssi)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mRssi = Rssi;
-
-#endif
+    mRssi = Rssi;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetGsmErrorRate(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mGsmErrorRate;
-
-#endif
+    *result = mGsmErrorRate;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetGsmErrorRate(
     /* [in] */ Int32 gsmErrorRate)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mGsmErrorRate = gsmErrorRate;
-
-#endif
+    mGsmErrorRate = gsmErrorRate;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetCdmaDbm(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mCdmaDbm;
-
-#endif
+    *result = mCdmaDbm;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetCdmaDbm(
     /* [in] */ Int32 cdmaDbm)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mCdmaDbm = cdmaDbm;
-
-#endif
+    mCdmaDbm = cdmaDbm;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetCdmaEcio(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mCdmaEcio;
-
-#endif
+    *result = mCdmaEcio;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetCdmaEcio(
     /* [in] */ Int32 cdmaEcio)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mCdmaEcio = cdmaEcio;
-
-#endif
+    mCdmaEcio = cdmaEcio;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetEvdoDbm(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mEvdoDbm;
-
-#endif
+    *result = mEvdoDbm;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetEvdoDbm(
     /* [in] */ Int32 evdoDbm)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mEvdoDbm = evdoDbm;
-
-#endif
+    mEvdoDbm = evdoDbm;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetEvdoEcio(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mEvdoEcio;
-
-#endif
+    *result = mEvdoEcio;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetEvdoEcio(
     /* [in] */ Int32 evdoEcio)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mEvdoEcio = evdoEcio;
-
-#endif
+    mEvdoEcio = evdoEcio;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetEvdoSnr(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mEvdoSnr;
-
-#endif
+    *result = mEvdoSnr;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetEvdoSnr(
     /* [in] */ Int32 evdoSnr)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mEvdoSnr = evdoSnr;
-
-#endif
+    mEvdoSnr = evdoSnr;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetLteSignalStrength(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mLteSignalStrength;
-
-#endif
+    *result = mLteSignalStrength;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetLteSignalStrength(
     /* [in] */ Int32 lteSignalStrength)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mLteSignalStrength = lteSignalStrength;
-
-#endif
+    mLteSignalStrength = lteSignalStrength;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetLteRsrp(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mLteRsrp;
-
-#endif
+    *result = mLteRsrp;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetLteRsrp(
     /* [in] */ Int32 lteRsrp)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mLteRsrp = lteRsrp;
-
-#endif
+    mLteRsrp = lteRsrp;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetLteRsrq(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mLteRsrq;
-
-#endif
+    *result = mLteRsrq;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetLteRsrq(
     /* [in] */ Int32 lteRsrq)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mLteRsrq = lteRsrq;
-
-#endif
+    mLteRsrq = lteRsrq;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetLteRssnr(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mLteRssnr;
-
-#endif
+    *result = mLteRssnr;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetLteRssnr(
     /* [in] */ Int32 lteRssnr)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mLteRssnr = lteRssnr;
-
-#endif
+    mLteRssnr = lteRssnr;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::GetLteCqi(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mLteCqi;
-
-#endif
+    *result = mLteCqi;
+    return NOERROR;
 }
 
 ECode MobileLinkQualityInfo::SetLteCqi(
     /* [in] */ Int32 lteCqi)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mLteCqi = lteCqi;
-
-#endif
+    mLteCqi = lteCqi;
+    return NOERROR;
 }
 
+ECode MobileLinkQualityInfo::ReadFromParcel(
+        /* [in] */ IParcel* in)
+{
+    LinkQualityInfo::ReadFromParcel(in);
+    in->ReadInt32(&(mMobileNetworkType));
+    in->ReadInt32(&(mRssi));
+    in->ReadInt32(&(mGsmErrorRate));
+    in->ReadInt32(&(mCdmaDbm));
+    in->ReadInt32(&(mCdmaEcio));
+    in->ReadInt32(&(mEvdoDbm));
+    in->ReadInt32(&(mEvdoEcio));
+    in->ReadInt32(&(mEvdoSnr));
+    in->ReadInt32(&(mLteSignalStrength));
+    in->ReadInt32(&(mLteRsrp));
+    in->ReadInt32(&(mLteRsrq));
+    in->ReadInt32(&(mLteRssnr));
+    in->ReadInt32(&(mLteCqi));
+    return NOERROR;
+}
+
+ECode MobileLinkQualityInfo::WriteToParcel(
+        /* [in] */ IParcel* dest)
+{
+    LinkQualityInfo::WriteToParcel(dest);
+    dest->WriteInt32(mMobileNetworkType);
+    dest->WriteInt32(mRssi);
+    dest->WriteInt32(mGsmErrorRate);
+    dest->WriteInt32(mCdmaDbm);
+    dest->WriteInt32(mCdmaEcio);
+    dest->WriteInt32(mEvdoDbm);
+    dest->WriteInt32(mEvdoEcio);
+    dest->WriteInt32(mEvdoSnr);
+    dest->WriteInt32(mLteSignalStrength);
+    dest->WriteInt32(mLteRsrp);
+    dest->WriteInt32(mLteRsrq);
+    dest->WriteInt32(mLteRssnr);
+    dest->WriteInt32(mLteCqi);
+    return NOERROR;
+}
 
 } // namespace Net
 } // namespace Droid

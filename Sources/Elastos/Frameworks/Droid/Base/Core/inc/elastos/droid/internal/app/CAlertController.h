@@ -3,27 +3,31 @@
 #define __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLER_H__
 
 #include "_Elastos_Droid_Internal_App_CAlertController.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
+// #include "elastos/droid/widget/ListView.h"
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::View::IWindow;
-using Elastos::Droid::View::IKeyEvent;
-using Elastos::Droid::View::IViewOnClickListener;
-using Elastos::Droid::Widget::IButton;
-using Elastos::Droid::Widget::IListView;
-using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::Widget::IImageView;
-using Elastos::Droid::Widget::IScrollView;
-using Elastos::Droid::Widget::IListAdapter;
-using Elastos::Droid::Widget::ILinearLayout;
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewOnApplyWindowInsetsListener;
+using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::View::IWindow;
+using Elastos::Droid::View::IWindowInsets;
+using Elastos::Droid::Widget::IButton;
+using Elastos::Droid::Widget::IImageView;
+using Elastos::Droid::Widget::ILinearLayout;
+using Elastos::Droid::Widget::IListAdapter;
+using Elastos::Droid::Widget::IListView;
+using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::Widget::IScrollView;
+// using Elastos::Droid::Widget::ListView;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -31,30 +35,53 @@ namespace Internal {
 namespace App {
 
 CarClass(CAlertController)
+    , public Object
+    , public IAlertController
 {
+    friend class CAlertControllerAlertParams;
 public:
-    class ButtonHandler
-        : public HandlerBase
+    class RecycleListView
+        // : public ListView
+        : public Object
+        , public IRecycleListView
     {
     public:
-        // Button clicks have Message.what as the BUTTON{1,2,3} constant
-        static const Int32 MSG_DISMISS_DIALOG;// = 1;
+        RecycleListView();
 
-        ButtonHandler(
-            /* [in] */ IDialogInterface* dialog);
+        CAR_INTERFACE_DECL()
 
-        ~ButtonHandler();
+        CARAPI constructor(
+            /* [in] */ IContext* context);
 
-        virtual CARAPI HandleMessage(
-            /* [in] */ IMessage* msg);
+        CARAPI constructor(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI constructor(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs,
+            /* [in] */ Int32 defStyleAttr);
+
+        CARAPI constructor(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs,
+            /* [in] */ Int32 defStyleAttr,
+            /* [in] */ Int32 defStyleRes);
+
+        CARAPI SetRecycleOnMeasure(
+            /* [in] */ Boolean recycleOnMeasure);
+
+    protected:
+        CARAPI_(Boolean) RecycleOnMeasure();
 
     private:
-        //private WeakReference<DialogInterface> mDialog;
-        AutoPtr<IWeakReference> mDialog;
+        Boolean mRecycleOnMeasure;
+
     };
 
+private:
     class ButtonViewOnClickListener
-        : public ElRefBase
+        : public Object
         , public IViewOnClickListener
     {
     public:
@@ -63,8 +90,6 @@ public:
         ButtonViewOnClickListener(
             /* [in] */ IWeakReference* host);
 
-        ~ButtonViewOnClickListener();
-
         CARAPI OnClick(
             /* [in] */ IView* v);
 
@@ -72,36 +97,57 @@ public:
         AutoPtr<IWeakReference> mWeakHost;
     };
 
+    class ButtonHandler
+        : public Handler
+    {
+    public:
+        ButtonHandler(
+            /* [in] */ IDialogInterface* dialog);
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    public:
+        // Button clicks have Message.what as the BUTTON{1,2,3} constant
+        static const Int32 MSG_DISMISS_DIALOG;
+
+    private:
+        AutoPtr<IWeakReference> mDialog;
+    };
+
+    class OnApplyWindowInsetsListener
+        : public Object
+        , public IViewOnApplyWindowInsetsListener
+    {
+    public:
+        OnApplyWindowInsetsListener(
+            /* [in] */ CAlertController* host);
+
+        CAR_INTERFACE_DECL()
+
+        // @Override
+        CARAPI OnApplyWindowInsets(
+            /* [in] */ IView* view,
+            /* [in] */ IWindowInsets* insets,
+            /* [out] */ IWindowInsets** outsets);
+
+    private:
+        CAlertController* mHost;
+    };
+
 public:
     CAlertController();
 
     ~CAlertController();
 
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IDialogInterface* di,
         /* [in] */ IWindow* window);
-
-    CARAPI GetDialogInterface(
-        /* [out] */ IDialogInterface** dialog);
-
-    CARAPI GetSingleChoiceItemLayout(
-        /* [out] */ Int32* layout);
-
-    CARAPI GetMultiChoiceItemLayout(
-        /* [out] */ Int32* layout);
-
-    CARAPI GetListLayout(
-        /* [out] */ Int32* layout);
-
-    CARAPI GetListItemLayout(
-        /* [out] */ Int32* layout);
-
-    CARAPI SetAdapter(
-        /* [in] */ IListAdapter* adapter);
-
-    CARAPI SetCheckedItem(
-        /* [in] */ Int32 checkedItem);
 
     CARAPI InstallContent();
 
@@ -118,6 +164,12 @@ public:
         /* [in] */ ICharSequence* message);
 
     /**
+     * Set the view resource to display in the dialog.
+     */
+    CARAPI SetView(
+        /* [in] */ Int32 layoutResId);
+
+    /**
      * Set the view to display in the dialog.
      */
     CARAPI SetView(
@@ -132,6 +184,12 @@ public:
         /* [in] */ Int32 viewSpacingTop,
         /* [in] */ Int32 viewSpacingRight,
         /* [in] */ Int32 viewSpacingBottom);
+
+    /**
+     * Sets a hint for the best button panel layout.
+     */
+    CARAPI SetButtonPanelLayoutHint(
+        /* [in] */ Int32 layoutHint);
 
     /**
      * Sets a click listener or a message to be sent when the button is clicked.
@@ -152,13 +210,19 @@ public:
         /* [in] */ IMessage* msg);
 
     /**
-     * Set resId to 0 if you don't want an icon.
-     * @param resId the resourceId of the drawable to use as the icon or 0
-     * if you don't want an icon.
+     * Specifies the icon to display next to the alert title.
+     *
+     * @param resId the resource identifier of the drawable to use as the icon,
+     *            or 0 for no icon
      */
     CARAPI SetIcon(
         /* [in] */ Int32 resId);
 
+    /**
+     * Specifies the icon to display next to the alert title.
+     *
+     * @param icon the drawable to use as the icon or null for no icon
+     */
     CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
@@ -203,6 +267,10 @@ private:
     static CARAPI_(Boolean) ShouldCenterSingleButton(
         /* [in] */ IContext* context);
 
+    CARAPI_(Int32) SelectContentView();
+
+    CARAPI_(void) SetupDecor();
+
     CARAPI_(void) SetupView();
 
     CARAPI_(Boolean) SetupTitle(
@@ -217,18 +285,18 @@ private:
         /* [in] */ IButton* button);
 
     CARAPI_(void) SetBackground(
-        /* [in] */ ILinearLayout* topPanel,
-        /* [in] */ ILinearLayout* contentPanel,
-        /* [in] */ IView* customPanel,
-        /* [in] */ Boolean hasButtons,
         /* [in] */ ITypedArray* a,
+        /* [in] */ IView* topPanel,
+        /* [in] */ IView* contentPanel,
+        /* [in] */ IView* customPanel,
+        /* [in] */ IView* buttonPanel,
         /* [in] */ Boolean hasTitle,
-        /* [in] */ IView* buttonPanel);
+        /* [in] */ Boolean hasCustomView,
+        /* [in] */ Boolean hasButtons);
 
 private:
-    AutoPtr<IContext> mContext;
-    // AutoPtr<IWeakReference> mWeakDialogInterface;
-    AutoPtr<IDialogInterface> mDialogInterface;  // TODO memery leak. luo.zhaohui
+    IContext* mContext; // mContext is Activity, that usually hold this's reference
+    IDialogInterface* mDialogInterface;// mDialogInterface usually is XXXActivity too
     AutoPtr<IWindow> mWindow;
 
     AutoPtr<ICharSequence> mTitle;
@@ -239,43 +307,34 @@ private:
 
     AutoPtr<IView> mView;
 
+    Int32 mViewLayoutResId;
+
     Int32 mViewSpacingLeft;
-
     Int32 mViewSpacingTop;
-
     Int32 mViewSpacingRight;
-
     Int32 mViewSpacingBottom;
-
     Boolean mViewSpacingSpecified;
 
     AutoPtr<IButton> mButtonPositive;
     AutoPtr<ICharSequence> mButtonPositiveText;
     AutoPtr<IMessage> mButtonPositiveMessage;
-    AutoPtr<IDialogInterfaceOnClickListener> mButtonPositiveClickListener;
 
     AutoPtr<IButton> mButtonNegative;
     AutoPtr<ICharSequence> mButtonNegativeText;
     AutoPtr<IMessage> mButtonNegativeMessage;
-    AutoPtr<IDialogInterfaceOnClickListener> mButtonNegativeClickListener;
 
     AutoPtr<IButton> mButtonNeutral;
     AutoPtr<ICharSequence> mButtonNeutralText;
     AutoPtr<IMessage> mButtonNeutralMessage;
-    AutoPtr<IDialogInterfaceOnClickListener> mButtonNeutralClickListener;
 
     AutoPtr<IScrollView> mScrollView;
 
     Int32 mIconId;
-
     AutoPtr<IDrawable> mIcon;
 
     AutoPtr<IImageView> mIconView;
-
     AutoPtr<ITextView> mTitleView;
-
     AutoPtr<ITextView> mMessageView;
-
     AutoPtr<IView> mCustomTitleView;
 
     Boolean mForceInverseBackground;
@@ -285,10 +344,13 @@ private:
     Int32 mCheckedItem;
 
     Int32 mAlertDialogLayout;
+    Int32 mButtonPanelSideLayout;
     Int32 mListLayout;
     Int32 mMultiChoiceItemLayout;
     Int32 mSingleChoiceItemLayout;
     Int32 mListItemLayout;
+
+    Int32 mButtonPanelLayoutHint;
 
     AutoPtr<ButtonHandler> mHandler;
 

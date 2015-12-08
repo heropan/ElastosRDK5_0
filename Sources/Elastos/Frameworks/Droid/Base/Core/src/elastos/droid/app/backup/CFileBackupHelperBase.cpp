@@ -5,6 +5,8 @@ namespace Droid {
 namespace App {
 namespace Backup {
 
+CAR_OBJECT_IMPL(CFileBackupHelperBase)
+
 CFileBackupHelperBase::~CFileBackupHelperBase()
 {
 }
@@ -22,8 +24,7 @@ ECode CFileBackupHelperBase::WriteNewStateDescription(
     return FileBackupHelperBase::WriteNewStateDescription(fd);
 }
 
-}
-}
-}
-}
-
+} // namespace Backup
+} // namespace App
+} // namespace Droid
+} // namespace Elastos

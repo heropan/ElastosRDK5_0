@@ -16,9 +16,9 @@ using Elastos::Droid::View::EIID_IOnScrollChangedListener;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
 using Elastos::Droid::Widget::EIID_IFrameLayout;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 //=======================================================================================
 // BlinkLayout::BlickHandlerCallback

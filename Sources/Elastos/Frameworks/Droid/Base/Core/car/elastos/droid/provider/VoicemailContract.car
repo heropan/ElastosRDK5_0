@@ -304,7 +304,6 @@ module {
             [out] IUri** uri);
     }
 
-
     } // namespace Provider
     } // namespace Droid
     } // namespace Elastos

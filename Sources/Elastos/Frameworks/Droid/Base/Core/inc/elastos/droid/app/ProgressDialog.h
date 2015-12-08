@@ -6,89 +6,139 @@
 #include "elastos/droid/app/AlertDialog.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Text::INumberFormat;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Widget::IProgressBar;
 using Elastos::Droid::Widget::ITextView;
+using Elastos::Text::INumberFormat;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-class ProgressDialog : public AlertDialog
+/**
+ * <p>A dialog showing a progress indicator and an optional text message or view.
+ * Only a text message or a view can be used at the same time.</p>
+ * <p>The dialog can be made cancelable on back key press.</p>
+ * <p>The progress range is 0..10000.</p>
+ */
+class ProgressDialog
+    : public AlertDialog
+    , public IProgressDialog
 {
+private:
+    class ViewUpdateHandler
+        : public Handler
+    {
+    public:
+        ViewUpdateHandler(
+            /* [in] */ ProgressDialog* host);
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        ProgressDialog* mHost;
+    };
+
 public:
+    CAR_INTERFACE_DECL()
+
     ProgressDialog();
 
-    ProgressDialog(
+    virtual ~ProgressDialog();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ Int32 theme = Elastos::Droid::R::style::Theme_Dialog_Alert);
+        /* [in] */ Int32 theme);
 
-protected:
-
-    // @Override
-    CARAPI_(void) OnCreate(
-        /* [in] */ IBundle* savedInstanceState);
-
-    CARAPI Init(
+    static AutoPtr<IProgressDialog> Show(
         /* [in] */ IContext* context,
-        /* [in] */ Int32 theme = Elastos::Droid::R::style::Theme_Dialog_Alert);
+        /* [in] */ ICharSequence* title,
+        /* [in] */ ICharSequence* message);
 
-public:
-
-    // @Override
-    CARAPI_(void) OnStart();
-
-    // @Override
-    CARAPI_(void) OnStop();
-
-    virtual CARAPI SetProgress(
-        /* [in] */ Int32 value);
-
-    virtual CARAPI SetSecondaryProgress(
-        /* [in] */ Int32 secondaryProgress);
-
-    virtual CARAPI GetProgress(
-        /* [out] */ Int32* progress);
-
-    virtual CARAPI GetSecondaryProgress(
-        /* [out] */ Int32* secondaryProgress);
-
-    virtual CARAPI GetMax(
-        /* [out] */ Int32* max);
-
-    virtual CARAPI SetMax(
-        /* [in] */ Int32 max);
-
-    virtual CARAPI IncrementProgressBy(
-        /* [in] */ Int32 diff);
-
-    virtual CARAPI IncrementSecondaryProgressBy(
-        /* [in] */ Int32 diff);
-
-    virtual CARAPI SetProgressDrawable(
-        /* [in] */ IDrawable* d);
-
-    virtual CARAPI SetIndeterminateDrawable(
-        /* [in] */ IDrawable* d);
-
-    virtual CARAPI SetIndeterminate(
+    static AutoPtr<IProgressDialog> Show(
+        /* [in] */ IContext* context,
+        /* [in] */ ICharSequence* title,
+        /* [in] */ ICharSequence* message,
         /* [in] */ Boolean indeterminate);
 
-    virtual CARAPI IsIndeterminate(
+    static AutoPtr<IProgressDialog> Show(
+        /* [in] */ IContext* context,
+        /* [in] */ ICharSequence* title,
+        /* [in] */ ICharSequence* message,
+        /* [in] */ Boolean indeterminate,
+        /* [in] */ Boolean cancelable);
+
+    static AutoPtr<IProgressDialog> Show(
+        /* [in] */ IContext* context,
+        /* [in] */ ICharSequence* title,
+        /* [in] */ ICharSequence* message,
+        /* [in] */ Boolean indeterminate,
+        /* [in] */ Boolean cancelable,
+        /* [in] */ IDialogInterfaceOnCancelListener* cancelListener);
+
+    // @Override
+    CARAPI OnCreate(
+        /* [in] */ IBundle* savedInstanceState);
+
+    // @Override
+    CARAPI OnStart();
+
+    // @Override
+    CARAPI OnStop();
+
+    CARAPI SetProgress(
+        /* [in] */ Int32 value);
+
+    CARAPI SetSecondaryProgress(
+        /* [in] */ Int32 secondaryProgress);
+
+    CARAPI GetProgress(
+        /* [out] */ Int32* progress);
+
+    CARAPI GetSecondaryProgress(
+        /* [out] */ Int32* secondaryProgress);
+
+    CARAPI GetMax(
+        /* [out] */ Int32* max);
+
+    CARAPI SetMax(
+        /* [in] */ Int32 max);
+
+    CARAPI IncrementProgressBy(
+        /* [in] */ Int32 diff);
+
+    CARAPI IncrementSecondaryProgressBy(
+        /* [in] */ Int32 diff);
+
+    CARAPI SetProgressDrawable(
+        /* [in] */ IDrawable* d);
+
+    CARAPI SetIndeterminateDrawable(
+        /* [in] */ IDrawable* d);
+
+    CARAPI SetIndeterminate(
+        /* [in] */ Boolean indeterminate);
+
+    CARAPI IsIndeterminate(
         /* [out] */ Boolean* isIndeterminate);
 
     // @Override
-    virtual CARAPI SetMessage(
+    CARAPI SetMessage(
         /* [in] */ ICharSequence* message);
 
-    virtual CARAPI SetProgressStyle(
+    CARAPI SetProgressStyle(
         /* [in] */ Int32 style);
 
-    virtual CARAPI SetProgressNumberFormat(
+    CARAPI SetProgressNumberFormat(
         /* [in] */ const String& format);
 
-    virtual CARAPI SetProgressPercentFormat(
+    CARAPI SetProgressPercentFormat(
         /* [in] */ INumberFormat* format);
 
 private:

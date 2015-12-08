@@ -219,6 +219,9 @@ public:
     static CARAPI_(Int32) GetTrimmedLength(
         /* [in] */ ICharSequence* s);
 
+    static CARAPI_(Int32) GetTrimmedLength(
+        /* [in] */ const String& str);
+
     /**
      * Returns true if a and b are equal, including if they are both null.
      * <p><i>Note: In platform versions 1.1 and earlier, this method only worked well if

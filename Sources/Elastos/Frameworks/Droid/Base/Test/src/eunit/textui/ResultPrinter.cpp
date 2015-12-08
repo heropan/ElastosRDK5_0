@@ -2,7 +2,9 @@
 #include "eunit/textui/ResultPrinter.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 
+using Elastos::Core::AutoLock;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Eunit::Framework::EIID_ITestListener;
@@ -10,7 +12,7 @@ using Eunit::Framework::EIID_ITestListener;
 namespace Eunit {
 namespace Textui {
 
-CAR_INTERFACE_IMPL_2(ResultPrinter, ITestListener, IResultPrinter)
+CAR_INTERFACE_IMPL_2(ResultPrinter, Object, ITestListener, IResultPrinter)
 
 void ResultPrinter::Print(
     /* [in] */ ITestResult* result,
@@ -28,7 +30,7 @@ void ResultPrinter::PrintWaitPrompt()
     AutoPtr<IPrintStream> writer;
     GetWriter((IPrintStream**)&writer);
     writer->Println();
-    writer->PrintStringln(String("<RETURN> to continue"));
+    writer->Println(String("<RETURN> to continue"));
 }
 
 void ResultPrinter::PrintHeader(
@@ -37,7 +39,7 @@ void ResultPrinter::PrintHeader(
     AutoPtr<IPrintStream> writer;
     GetWriter((IPrintStream**)&writer);
     writer->Println();
-    writer->PrintStringln(String("Time: ") + ElapsedTimeAsString(runTime));
+    writer->Println(String("Time: ") + ElapsedTimeAsString(runTime));
 }
 
 void ResultPrinter::PrintErrors(
@@ -75,7 +77,7 @@ void ResultPrinter::PrintDefects(
         sb.Append(" ");
         sb.Append(type);
         sb.Append(":");
-        writer->PrintStringln(sb.ToString());
+        writer->Println(sb.ToString());
     }
     else {
         StringBuilder sb;
@@ -84,12 +86,12 @@ void ResultPrinter::PrintDefects(
         sb.Append(" ");
         sb.Append(type);
         sb.Append("s:");
-        writer->PrintStringln(sb.ToString());
+        writer->Println(sb.ToString());
     }
     Boolean hasMore;
     for (Int32 i = 1; (booBoos->HasMoreElements(&hasMore), hasMore); i++) {
         AutoPtr<IInterface> e;
-        booBoos->NextElement((IInterface**)&e);
+        booBoos->GetNextElement((IInterface**)&e);
         assert(ITestFailure::Probe(e) != NULL);
         PrintDefect(ITestFailure::Probe(e), i);
     }
@@ -116,7 +118,7 @@ void ResultPrinter::PrintDefectHeader(
     IObject::Probe(test)->ToString(&testStr);
     AutoPtr<IPrintStream> writer;
     GetWriter((IPrintStream**)&writer);
-    writer->PrintString(StringUtils::Int32ToString(count) + ") " + testStr);
+    writer->Print(StringUtils::ToString(count) + ") " + testStr);
 }
 
 void ResultPrinter::PrintDefectTrace(
@@ -134,7 +136,7 @@ void ResultPrinter::PrintFooter(
     Boolean successful;
     if (result->WasSuccessful(&successful), successful) {
         writer->Println();
-        writer->PrintString(String("OK"));
+        writer->Print(String("OK"));
         Int32 number;
         result->RunCount(&number);
         StringBuilder sb;
@@ -144,11 +146,11 @@ void ResultPrinter::PrintFooter(
         if (number == 1) sb.Append("");
         else sb.Append("s");
         sb.Append(")");
-        writer->PrintStringln(sb.ToString());
+        writer->Println(sb.ToString());
     }
     else{
         writer->Println();
-        writer->PrintStringln(String("FAILURES!!!"));
+        writer->Println(String("FAILURES!!!"));
         StringBuilder sb;
         sb.Append("Tests run: ");
         Int32 number;
@@ -160,7 +162,7 @@ void ResultPrinter::PrintFooter(
         sb.Append(",  Errors: ");
         result->ErrorCount(&number);
         sb.Append(number);
-        writer->PrintStringln(sb.ToString());
+        writer->Println(sb.ToString());
     }
     writer->Println();
 }
@@ -171,7 +173,7 @@ String ResultPrinter::ElapsedTimeAsString(
     // android-changed
     // The following line was altered for compatibility with
     // Android libraries.
-    return StringUtils::DoubleToString((Double)runTime / 1000);
+    return StringUtils::ToString((Double)runTime / 1000);
 }
 
 ECode ResultPrinter::GetWriter(
@@ -189,7 +191,7 @@ ECode ResultPrinter::AddError(
 {
     AutoPtr<IPrintStream> writer;
     GetWriter((IPrintStream**)&writer);
-    writer->PrintString(String("E"));
+    writer->Print(String("E"));
     return NOERROR;
 }
 
@@ -199,7 +201,7 @@ ECode ResultPrinter::AddFailure(
 {
     AutoPtr<IPrintStream> writer;
     GetWriter((IPrintStream**)&writer);
-    writer->PrintString(String("F"));
+    writer->Print(String("F"));
     return NOERROR;
 }
 
@@ -214,7 +216,7 @@ ECode ResultPrinter::StartTest(
 {
     AutoPtr<IPrintStream> writer;
     GetWriter((IPrintStream**)&writer);
-    writer->PrintString(String("."));
+    writer->Print(String("."));
     if (mColumn++ >= 40) {
         writer->Println();
         mColumn = 0;

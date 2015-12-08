@@ -1,11 +1,11 @@
 
-#include "CWifiP2pConfig.h"
-#include "CWifiP2pGroup.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pConfig.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pGroup.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "elastos/droid/net/wifi/CWpsInfo.h"
+#include "elastos/droid/wifi/CWpsInfo.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;
@@ -17,10 +17,98 @@ namespace Droid {
 namespace Wifi {
 namespace P2p {
 
+CAR_INTERFACE_IMPL_2(CWifiP2pConfig, Object, IWifiP2pConfig, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiP2pConfig)
+
 CWifiP2pConfig::CWifiP2pConfig()
     : mGroupOwnerIntent(-1)
     , mNetId(IWifiP2pGroup::PERSISTENT_NET_ID)
+    , mDeviceAddress("")
 {
+}
+
+ECode CWifiP2pConfig::constructor()
+{
+    //set defaults
+    FAIL_RETURN(CWpsInfo::New((IWpsInfo**)&mWps));
+    FAIL_RETURN(mWps->SetSetup(IWpsInfo::PBC));
+
+    return NOERROR;
+}
+
+ECode CWifiP2pConfig::constructor(
+    /* [in] */ const String& supplicantEvent)
+{
+    AutoPtr<ArrayOf<String> > tokens;
+    FAIL_RETURN(StringUtils::Split(supplicantEvent, String(" "), (ArrayOf<String>**)&tokens));
+
+    if (tokens == NULL || tokens->GetLength() < 2) {
+        Slogger::E("WifiP2pConfig", "E_ILLEGAL_ARGUMENT_EXCEPTION: Malformed supplicant event %s",
+            supplicantEvent.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    if (!(*tokens)[0].Equals(String("P2P-GO-NEG-REQUEST"))) {
+        Slogger::E("WifiP2pConfig", "E_ILLEGAL_ARGUMENT_EXCEPTION: Malformed supplicant event %s",
+            supplicantEvent.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    mDeviceAddress = (*tokens)[1];
+
+    FAIL_RETURN(CWpsInfo::New((IWpsInfo**)&mWps));
+
+    if (tokens->GetLength() > 2) {
+        AutoPtr<ArrayOf<String> > nameVal;
+        FAIL_RETURN(StringUtils::Split((*tokens)[2], String("="), (ArrayOf<String>**)&nameVal));
+        if (nameVal == NULL || nameVal->GetLength() < 1) {
+            Slogger::E("WifiP2pConfig", "E_ILLEGAL_ARGUMENT_EXCEPTION: %s", supplicantEvent.string());
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+
+        Int32 devPasswdId = 0;
+        ECode ec = StringUtils::Parse((*nameVal)[1], 10, &devPasswdId);
+        if (FAILED(ec)) {
+            devPasswdId = 0;
+        }
+
+        //Based on definitions in wps/wps_defs.h
+        switch (devPasswdId) {
+            //DEV_PW_USER_SPECIFIED = 0x0001,
+            case 0x01:
+                FAIL_RETURN(mWps->SetSetup(IWpsInfo::DISPLAY));
+                break;
+            //DEV_PW_PUSHBUTTON = 0x0004,
+            case 0x04:
+                FAIL_RETURN(mWps->SetSetup(IWpsInfo::PBC));
+                break;
+            //DEV_PW_REGISTRAR_SPECIFIED = 0x0005
+            case 0x05:
+                FAIL_RETURN(mWps->SetSetup(IWpsInfo::KEYPAD));
+                break;
+            default:
+                FAIL_RETURN(mWps->SetSetup(IWpsInfo::PBC));
+                break;
+        }
+    }
+
+    return NOERROR;
+}
+
+ECode CWifiP2pConfig::constructor(
+    /* [in] */ Elastos::Droid::Wifi::P2p::IWifiP2pConfig* source)
+{
+    if (source != NULL) {
+        FAIL_RETURN(source->GetDeviceAddress(&mDeviceAddress));
+        AutoPtr<IWpsInfo> temp;
+        FAIL_RETURN(source->GetWps((IWpsInfo**)&temp));
+        FAIL_RETURN(CWpsInfo::New(temp, (IWpsInfo**)&mWps));
+        FAIL_RETURN(source->GetGroupOwnerIntent(&mGroupOwnerIntent));
+        FAIL_RETURN(source->GetNetId(&mNetId));
+    }
+
+    return NOERROR;
 }
 
 ECode CWifiP2pConfig::GetDeviceAddress(
@@ -107,7 +195,9 @@ ECode CWifiP2pConfig::ToString(
     sb += "\n wps: ";
     String temp;
     if (mWps) {
-        mWps->ToString(&temp);
+        assert(0);
+        // TODO
+        // mWps->ToString(&temp);
     }
     sb += temp;
 
@@ -146,90 +236,13 @@ ECode CWifiP2pConfig::WriteToParcel(
     return NOERROR;
 }
 
-ECode CWifiP2pConfig::constructor()
+ECode CWifiP2pConfig::Invalidate()
 {
-    //set defaults
-    FAIL_RETURN(CWpsInfo::New((IWpsInfo**)&mWps));
-    FAIL_RETURN(mWps->SetSetup(IWpsInfo::PBC));
-
+    mDeviceAddress = "";
     return NOERROR;
 }
 
-ECode CWifiP2pConfig::constructor(
-    /* [in] */ const String& supplicantEvent)
-{
-    AutoPtr<ArrayOf<String> > tokens;
-    FAIL_RETURN(StringUtils::Split(supplicantEvent, String(" "), (ArrayOf<String>**)&tokens));
-
-    if (tokens == NULL || tokens->GetLength() < 2) {
-        Slogger::E("WifiP2pConfig", "E_ILLEGAL_ARGUMENT_EXCEPTION: Malformed supplicant event %s",
-            supplicantEvent.string());
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    if (!(*tokens)[0].Equals(String("P2P-GO-NEG-REQUEST"))) {
-        Slogger::E("WifiP2pConfig", "E_ILLEGAL_ARGUMENT_EXCEPTION: Malformed supplicant event %s",
-            supplicantEvent.string());
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    mDeviceAddress = (*tokens)[1];
-
-    FAIL_RETURN(CWpsInfo::New((IWpsInfo**)&mWps));
-
-    if (tokens->GetLength() > 2) {
-        AutoPtr<ArrayOf<String> > nameVal;
-        FAIL_RETURN(StringUtils::Split((*tokens)[2], String("="), (ArrayOf<String>**)&nameVal));
-        if (nameVal == NULL || nameVal->GetLength() < 1) {
-            Slogger::E("WifiP2pConfig", "E_ILLEGAL_ARGUMENT_EXCEPTION: %s", supplicantEvent.string());
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-
-        Int32 devPasswdId = 0;
-        ECode ec = StringUtils::ParseInt32((*nameVal)[1], 10, &devPasswdId);
-        if (FAILED(ec)) {
-            devPasswdId = 0;
-        }
-
-        //Based on definitions in wps/wps_defs.h
-        switch (devPasswdId) {
-            //DEV_PW_USER_SPECIFIED = 0x0001,
-            case 0x01:
-                FAIL_RETURN(mWps->SetSetup(IWpsInfo::DISPLAY));
-                break;
-            //DEV_PW_PUSHBUTTON = 0x0004,
-            case 0x04:
-                FAIL_RETURN(mWps->SetSetup(IWpsInfo::PBC));
-                break;
-            //DEV_PW_REGISTRAR_SPECIFIED = 0x0005
-            case 0x05:
-                FAIL_RETURN(mWps->SetSetup(IWpsInfo::KEYPAD));
-                break;
-            default:
-                FAIL_RETURN(mWps->SetSetup(IWpsInfo::PBC));
-                break;
-        }
-    }
-
-    return NOERROR;
-}
-
-ECode CWifiP2pConfig::constructor(
-    /* [in] */ Elastos::Droid::Wifi::P2p::IWifiP2pConfig* source)
-{
-    if (source != NULL) {
-        FAIL_RETURN(source->GetDeviceAddress(&mDeviceAddress));
-        AutoPtr<IWpsInfo> temp;
-        FAIL_RETURN(source->GetWps((IWpsInfo**)&temp));
-        FAIL_RETURN(CWpsInfo::New(temp, (IWpsInfo**)&mWps));
-        FAIL_RETURN(source->GetGroupOwnerIntent(&mGroupOwnerIntent));
-        FAIL_RETURN(source->GetNetId(&mNetId));
-    }
-
-    return NOERROR;
-}
-
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

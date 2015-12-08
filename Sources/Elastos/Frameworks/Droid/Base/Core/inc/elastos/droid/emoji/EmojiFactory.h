@@ -1,4 +1,3 @@
-
 #ifndef __ELASTOS_DROID_EMOJI_EMOJIFACTORY_H__
 #define __ELASTOS_DROID_EMOJI_EMOJIFACTORY_H__
 
@@ -34,6 +33,8 @@ public:
     EmojiFactory();
 
     virtual ~EmojiFactory();
+
+    constructor();
 
     constructor(
         /* [in] */ Int64 nativeEmojiFactory,

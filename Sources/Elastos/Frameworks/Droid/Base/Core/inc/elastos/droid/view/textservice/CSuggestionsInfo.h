@@ -2,17 +2,31 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CSUGGESTIONSINFO_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_CSUGGESTIONSINFO_H__
 
+#include "_Elastos_Droid_View_TextService_CSuggestionsInfo.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
+namespace TextService {
 
 /**
  * This class contains a metadata of suggestions from the text service
  */
 CarClass(CSuggestionsInfo)
+    , public Object
+    , public ISuggestionsInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
+
     /**
      * Constructor.
      * @param suggestionsAttributes from the text service
@@ -105,7 +119,7 @@ private:
     Int32 mSequence;
 };
 
-}   //namespace Textservice
+}   //namespace TextService
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos

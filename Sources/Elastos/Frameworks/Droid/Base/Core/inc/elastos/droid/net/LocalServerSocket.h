@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_NET_LOCALSERVERSOCKET_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/LocalSocketImpl.h"
 
 using Elastos::IO::IFileDescriptor;
 
@@ -82,7 +83,7 @@ public:
     CARAPI Close();
 
 private:
-    AutoPtr<ILocalSocketImpl> mImpl;
+    AutoPtr<LocalSocketImpl> mImpl;
     AutoPtr<ILocalSocketAddress> mLocalAddress;
 
     /** 50 seems a bit much, but it's what was here */

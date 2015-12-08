@@ -5,8 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
-const Boolean DebugFlags::COOKIE_SYNC_MANAGER = FALSE;
-const Boolean DebugFlags::TRACE_API = FALSE;
+const Boolean DebugFlags::COOKIE_SYNC_MANAGER;
+const Boolean DebugFlags::TRACE_API;
 const Boolean DebugFlags::TRACE_CALLBACK = FALSE;
 const Boolean DebugFlags::URL_UTIL = FALSE;
 const Boolean DebugFlags::WEB_SYNC_MANAGER = FALSE;

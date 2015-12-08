@@ -1,29 +1,22 @@
-#include "elastos/droid/widget/RatingBar.h"
-#include <elastos/core/Math.h>
-#include "Elastos.Core.h"
-#include "elastos/droid/graphics/drawable/shapes/CRectShape.h"
 
-using Elastos::Core::CStringWrapper;
+#include "elastos/droid/widget/RatingBar.h"
+#include "elastos/droid/graphics/drawable/shapes/CRectShape.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
+
 using Elastos::Droid::Graphics::Drawable::Shapes::CRectShape;
 using Elastos::Droid::Graphics::Drawable::Shapes::IRectShape;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::R;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+const String RatingBar::RATINGBAR_NAME("RatingBar");
 
-const String RatingBar::RATINGBAR_NAME("CRatingBar");
-
-RatingBar::RatingBar(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : AbsSeekBar(context, attrs, defStyle)
-    , mNumStars(5)
-    , mProgressOnStartTracking(0)
-{
-    Init(context, attrs, defStyle);
-}
+CAR_INTERFACE_IMPL(RatingBar, AbsSeekBar, IRatingBar);
 
 RatingBar::RatingBar()
     : mNumStars(5)
@@ -31,18 +24,45 @@ RatingBar::RatingBar()
 {
 }
 
-ECode RatingBar::Init(
+RatingBar::~RatingBar()
+{
+}
+
+ECode RatingBar::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
+
+ECode RatingBar::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::seekBarStyle);
+}
+
+ECode RatingBar::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    FAIL_RETURN(AbsSeekBar::Init(context, attrs, defStyle));
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode RatingBar::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    AbsSeekBar::constructor(context, attrs, defStyleAttr, defStyleRes);
+
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::RatingBar),
         ARRAY_SIZE(R::styleable::RatingBar));
 
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
     Int32 numStars = 0;
     a->GetInt32(R::styleable::RatingBar_numStars, mNumStars, &numStars);
     Boolean res = FALSE;
@@ -59,7 +79,8 @@ ECode RatingBar::Init(
 
     if(stepSize > 0) {
         SetStepSize(stepSize);
-    } else {
+    }
+    else {
         SetStepSize(0.5f);
     }
 
@@ -81,9 +102,13 @@ ECode RatingBar::SetOnRatingBarChangeListener(
     return NOERROR;
 }
 
-AutoPtr<IOnRatingBarChangeListener> RatingBar::GetOnRatingBarChangeListener()
+ECode RatingBar::GetOnRatingBarChangeListener(
+    /* [out] */ IOnRatingBarChangeListener** listener)
 {
-    return mOnRatingBarChangeListener;
+    VALIDATE_NOT_NULL(listener);
+    *listener = mOnRatingBarChangeListener;
+    REFCOUNT_ADD(*listener);
+    return NOERROR;
 }
 
 ECode RatingBar::SetIsIndicator(
@@ -94,9 +119,12 @@ ECode RatingBar::SetIsIndicator(
     return NOERROR;
 }
 
-Boolean RatingBar::IsIndicator()
+ECode RatingBar::IsIndicator(
+    /* [out] */ Boolean* isIndicator)
 {
-    return !mIsUserSeekable;
+    VALIDATE_NOT_NULL(isIndicator);
+    *isIndicator = !mIsUserSeekable;
+    return NOERROR;
 }
 
 ECode RatingBar::SetNumStars(
@@ -111,21 +139,29 @@ ECode RatingBar::SetNumStars(
     return NOERROR;
 }
 
-Int32 RatingBar::GetNumStars()
+ECode RatingBar::GetNumStars(
+    /* [out] */ Int32* numStars)
 {
-    return mNumStars;
+    VALIDATE_NOT_NULL(numStars);
+    *numStars = mNumStars;
+    return NOERROR;
 }
 
 ECode RatingBar::SetRating(
     /* [in] */ Float rating)
 {
-    SetProgress(Elastos::Core::Math::Round(rating * GetProgressPerStar()));
+    ProgressBar::SetProgress(Elastos::Core::Math::Round(rating * GetProgressPerStar()));
     return NOERROR;
 }
 
-Float RatingBar::GetRating()
+ECode RatingBar::GetRating(
+    /* [out] */ Float* rating)
 {
-    return GetProgress() / GetProgressPerStar();
+    VALIDATE_NOT_NULL(rating);
+    Int32 progress;
+    GetProgress(&progress);
+    *rating = progress / GetProgressPerStar();
+    return NOERROR;
 }
 
 ECode RatingBar::SetStepSize(
@@ -135,53 +171,58 @@ ECode RatingBar::SetStepSize(
         return NOERROR;
     }
     Float newMax = mNumStars / stepSize;
-    Int32 newProgress = (Int32)(newMax / GetMax() * GetProgress());
+    Int32 max;
+    GetMax(&max);
+    Int32 progress;
+    GetProgress(&progress);
+    Int32 newProgress = (Int32)(newMax / max * progress);
     SetMax((Int32)newMax);
-    SetProgress(newProgress);
+    ProgressBar::SetProgress(newProgress);
     return NOERROR;
 }
 
-Float RatingBar::GetStepSize()
+ECode RatingBar::GetStepSize(
+    /* [out] */ Float* stepSize)
 {
-    return (Float)GetNumStars() / GetMax();
-}
+    VALIDATE_NOT_NULL(stepSize);
 
-ECode RatingBar::SetMax(
-    /* [in] */ Int32 max)
-{
-    if (max <= 0) {
-        return NOERROR;
-    }
-    AbsSeekBar::SetMax(max);
-    return NOERROR;
-}
-
-ECode RatingBar::OnInitializeAccessibilityEvent(
-    /* [in] */ IAccessibilityEvent* event)
-{
-    AbsSeekBar::OnInitializeAccessibilityEvent(event);
-    AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(RATINGBAR_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
-    return NOERROR;
-}
-
-ECode RatingBar::OnInitializeAccessibilityNodeInfo(
-    /* [in] */ IAccessibilityNodeInfo* info)
-{
-    AbsSeekBar::OnInitializeAccessibilityNodeInfo(info);
-    AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(RATINGBAR_NAME, (ICharSequence**)&seq));
-    info->SetClassName(seq);
+    Int32 max;
+    GetMax(&max);
+    Int32 numStars;
+    GetNumStars(&numStars);
+    *stepSize = (Float)numStars / max;
     return NOERROR;
 }
 
 Float RatingBar::GetProgressPerStar()
 {
     if (mNumStars > 0) {
-        return 1.f * GetMax() / mNumStars;
-    } else {
+        Int32 max;
+        GetMax(&max);
+        return 1.f * max / mNumStars;
+    }
+    else {
         return 1.f;
+    }
+}
+
+AutoPtr<IShape> RatingBar::GetDrawableShape()
+{
+    AutoPtr<IRectShape> shape;
+    CRectShape::New((IRectShape**)&shape);
+    return IShape::Probe(shape);
+}
+
+void RatingBar::OnProgressRefresh(
+    /* [in] */ Float scale,
+    /* [in] */ Boolean fromUser)
+{
+    AbsSeekBar::OnProgressRefresh(scale, fromUser);
+    Int32 progress;
+    GetProgress(&progress);
+    UpdateSecondaryProgress(progress);
+    if (!fromUser) {
+        DispatchRatingChange(FALSE);
     }
 }
 
@@ -197,48 +238,36 @@ ECode RatingBar::UpdateSecondaryProgress(
     return NOERROR;
 }
 
-AutoPtr<IShape> RatingBar::GetDrawableShape()
-{
-    AutoPtr<IRectShape> shape;
-    CRectShape::New((IRectShape**)&shape);
-    return shape;
-}
-
-void RatingBar::OnProgressRefresh(
-    /* [in] */ Float scale,
-    /* [in] */ Boolean fromUser)
-{
-    AbsSeekBar::OnProgressRefresh(scale, fromUser);
-    UpdateSecondaryProgress(GetProgress());
-    if (!fromUser) {
-        DispatchRatingChange(FALSE);
-    }
-}
-
 void RatingBar::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    AbsSeekBar::OnMeasure(widthMeasureSpec, heightMeasureSpec);
+    synchronized(this) {
+        AbsSeekBar::OnMeasure(widthMeasureSpec, heightMeasureSpec);
 
-    if(mSampleTile != NULL) {
-        Int32 width = 0;
-        mSampleTile->GetWidth(&width);
-        width *= mNumStars;
-        SetMeasuredDimension(ResolveSizeAndState(width, widthMeasureSpec, 0), GetMeasuredHeight());
+        if(mSampleTile != NULL) {
+            Int32 width = 0;
+            mSampleTile->GetWidth(&width);
+            width *= mNumStars;
+            Int32 height;
+            GetMeasuredHeight(&height);
+            SetMeasuredDimension(ResolveSizeAndState(width, widthMeasureSpec, 0), height);
+        }
     }
 }
 
 void RatingBar::OnStartTrackingTouch()
 {
-    mProgressOnStartTracking = GetProgress();
+    GetProgress(&mProgressOnStartTracking);
     AbsSeekBar::OnStartTrackingTouch();
 }
 
 void RatingBar::OnStopTrackingTouch()
 {
     AbsSeekBar::OnStopTrackingTouch();
-    if (GetProgress() != mProgressOnStartTracking) {
+    Int32 progress;
+    GetProgress(&progress);
+    if (progress != mProgressOnStartTracking) {
         DispatchRatingChange(TRUE);
     }
 }
@@ -249,14 +278,52 @@ void RatingBar::OnKeyChange()
     DispatchRatingChange(TRUE);
 }
 
+void RatingBar::AnimateSetProgress(
+    /* [in] */ Int32 progress)
+{}
 
 ECode RatingBar::DispatchRatingChange(
     /* [in] */ Boolean fromUser)
 {
     if (mOnRatingBarChangeListener != NULL) {
-        mOnRatingBarChangeListener->OnRatingChanged((IRatingBar*)this->Probe(EIID_IRatingBar), GetRating(), fromUser);
+        Float rating;
+        GetRating(&rating);
+        mOnRatingBarChangeListener->OnRatingChanged((IRatingBar*)this, rating, fromUser);
     }
 
+    return NOERROR;
+}
+
+ECode RatingBar::SetMax(
+    /* [in] */ Int32 max)
+{
+    synchronized(this) {
+        if (max <= 0) {
+            return NOERROR;
+        }
+        AbsSeekBar::SetMax(max);
+        return NOERROR;
+    }
+    return NOERROR;
+}
+
+ECode RatingBar::OnInitializeAccessibilityEvent(
+    /* [in] */ IAccessibilityEvent* event)
+{
+    AbsSeekBar::OnInitializeAccessibilityEvent(event);
+    AutoPtr<ICharSequence> seq;
+    FAIL_RETURN(CString::New(RATINGBAR_NAME, (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
+    return NOERROR;
+}
+
+ECode RatingBar::OnInitializeAccessibilityNodeInfo(
+    /* [in] */ IAccessibilityNodeInfo* info)
+{
+    AbsSeekBar::OnInitializeAccessibilityNodeInfo(info);
+    AutoPtr<ICharSequence> seq;
+    FAIL_RETURN(CString::New(RATINGBAR_NAME, (ICharSequence**)&seq));
+    info->SetClassName(seq);
     return NOERROR;
 }
 

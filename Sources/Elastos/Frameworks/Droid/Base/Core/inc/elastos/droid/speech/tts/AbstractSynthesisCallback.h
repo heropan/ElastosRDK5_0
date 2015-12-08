@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_AbstractSynthesisCallback_H__
 #define __ELASTOS_DROID_SPEECH_TTS_AbstractSynthesisCallback_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include "elastos/droid/speech/tts/SynthesisCallback.h"
 
 namespace Elastos {
@@ -11,58 +13,58 @@ namespace Tts {
 /**
  * Defines additional methods the synthesis callback must implement that
  * are private to the TTS service implementation.
+ *
+ * All of these class methods (with the exception of {@link #stop()}) can be only called on the
+ * synthesis thread, while inside
+ * {@link TextToSpeechService#onSynthesizeText} or {@link TextToSpeechService#onSynthesizeTextV2}.
+ * {@link #stop()} is the exception, it may be called from multiple threads.
  */
-//abstract
+
+//
+//abstract class
+//
 class AbstractSynthesisCallback
-    : public ElRefBase
-    , public ISynthesisCallback
+    : public Object
     , public SynthesisCallback
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    AbstractSynthesisCallback();
+
+    virtual ~AbstractSynthesisCallback();
+
+    CARAPI constructor();
+
     /**
-     * Checks whether the synthesis request completed successfully.
+     * Constructor.
+     * @param clientIsUsingV2 If true, this callback will be used inside
+     *         {@link TextToSpeechService#onSynthesizeTextV2} method.
      */
-    virtual CARAPI_(Boolean) IsDone() = 0;
+     CARAPI constructor(
+        /* [in] */ Boolean clientIsUsingV2);
 
     /**
      * Aborts the speech request.
      *
      * Can be called from multiple threads.
      */
-    virtual CARAPI_(void) Stop() = 0;
+    virtual CARAPI Stop();
 
-public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* Object,
-        /* [out] */ InterfaceID* iID);
-
-public:
-    CARAPI GetMaxBufferSize(
+    /**
+     * Get status code for a "stop".
+     *
+     * V2 Clients will receive special status, V1 clients will receive standard error.
+     *
+     * This method should only be called on the synthesis thread,
+     * while in {@link TextToSpeechService#onSynthesizeText}.
+     */
+    ECode ErrorCodeOnStop(
         /* [out] */ Int32* ret);
 
-    CARAPI Start(
-        /* [in] */ Int32 sampleRateInHz,
-        /* [in] */ Int32 audioFormat,
-        /* [in] */ Int32 channelCount,
-        /* [out] */ Int32* ret);
-
-    CARAPI AudioAvailable(
-        /* [in] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
-        /* [out] */ Int32* ret);
-
-    CARAPI Done(
-        /* [out] */ Int32* ret);
-
-    CARAPI Error();
+protected:
+    /** If true, request comes from V2 TTS interface */
+    Boolean mClientIsUsingV2;
 };
 
 } // namespace Tts

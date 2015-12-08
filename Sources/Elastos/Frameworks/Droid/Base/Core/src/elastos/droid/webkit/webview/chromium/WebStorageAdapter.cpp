@@ -43,8 +43,8 @@ ECode WebStorageAdapter::InnerValueCallback::OnReceiveValue(
     // callback.onReceiveValue(originsMap);
 
     assert(0);
-    assert(NULL == mOwner);
-    assert(NULL == mCallback);
+    assert(NULL != mOwner);
+    assert(NULL != mCallback);
 
     IObject* objTmp = IObject::Probe(origins);
     AwQuotaManagerBridge::Origins* bridgeOrigins = (AwQuotaManagerBridge::Origins*)objTmp;

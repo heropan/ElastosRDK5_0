@@ -1,6 +1,6 @@
 #include "CAbsSpinnerSavedState.h"
 
-namespace Elastos{
+namespace Elastos {
 namespace Droid {
 namespace Widget {
 

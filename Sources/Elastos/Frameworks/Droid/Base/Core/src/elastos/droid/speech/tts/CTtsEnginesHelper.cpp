@@ -19,8 +19,8 @@ ECode CTtsEnginesHelper::ParseLocalePref(
     return NOERROR;
 }
 
-}//namespace Tts
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Tts
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 

@@ -26,7 +26,7 @@ namespace Widget {
 extern "C" const InterfaceID EIID_NODE =
     { 0x9cf99c13, 0x56c5, 0x4194, { 0xab, 0x03, 0xa8, 0x62, 0xce, 0xe2, 0xab, 0x06 } };
 
-static String TAG = String("RelativeLayout");
+static String TAG("RelativeLayout");
 
 //==============================================================================
 //  TopToBottomLeftToRightComparator
@@ -249,6 +249,407 @@ List< AutoPtr<Node> >& DependencyGraph::FindRoots(
         }
     }
     return mRoots;
+}
+
+CAR_INTERFACE_IMPL(RelativeLayout::LayoutParams, ViewGroup::MarginLayoutParams, IRelativeLayoutLayoutParams);
+RelativeLayout::LayoutParams::LayoutParams()
+    : mLeft(0)
+    , mTop(0)
+    , mRight(0)
+    , mBottom(0)
+    , mRulesChanged(FALSE)
+    , mIsRtlCompatibilityMode(FALSE)
+    , mAlignWithParent(FALSE)
+{
+    mRules = ArrayOf<Int32>::Alloc(IRelativeLayout::VERB_COUNT);
+    mInitialRules = ArrayOf<Int32>::Alloc(IRelativeLayout::VERB_COUNT);
+}
+
+ECode RelativeLayout::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    ASSERT_SUCCEEDED(MarginLayoutParams::constructor(c, attrs));
+    ASSERT_SUCCEEDED(InitFromAttributes(c, attrs));
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    ASSERT_SUCCEEDED(MarginLayoutParams::constructor(width, height));
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* source)
+{
+    ASSERT_SUCCEEDED(MarginLayoutParams::constructor(source));
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupMarginLayoutParams* source)
+{
+    ASSERT_SUCCEEDED(MarginLayoutParams::constructor(source));
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::constructor(
+    /* [in] */ IRelativeLayoutLayoutParams* _source)
+{
+    ASSERT_SUCCEEDED(MarginLayoutParams::constructor(IViewGroupMarginLayoutParams::Probe(_source)));
+
+    LayoutParams* source = (LayoutParams*)_source;
+    mIsRtlCompatibilityMode = source->mIsRtlCompatibilityMode;
+    mRulesChanged = source->mRulesChanged;
+    mAlignWithParent = source->mAlignWithParent;
+
+    mRules->Copy(IRelativeLayout::LEFT_OF, source->mRules, IRelativeLayout::LEFT_OF, IRelativeLayout::VERB_COUNT);
+    mInitialRules->Copy(IRelativeLayout::LEFT_OF, source->mInitialRules, IRelativeLayout::LEFT_OF, IRelativeLayout::VERB_COUNT);
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::InitFromAttributes(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::RelativeLayout_Layout),
+            ARRAY_SIZE(R::styleable::RelativeLayout_Layout));
+    AutoPtr<ITypedArray> a;
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
+            attrs, attrIds, (ITypedArray**)&a));
+
+    AutoPtr<IApplicationInfo> info;
+    context->GetApplicationInfo((IApplicationInfo**)&info);
+    Int32 targetSdkVersion = 0;
+    info->GetTargetSdkVersion(&targetSdkVersion);
+    Boolean isSupport = FALSE;
+    mIsRtlCompatibilityMode = (targetSdkVersion < Build::VERSION_CODES::JELLY_BEAN_MR1 ||
+            (info->HasRtlSupport(&isSupport), !isSupport));
+
+    Int32* rules = mRules->GetPayload();
+    //noinspection MismatchedReadAndWriteOfArray
+    // Int32* initialRules = mInitialRules->GetPayload();
+
+    Int32 N;
+    a->GetIndexCount(&N);
+    for (Int32 i = 0; i < N; i++) {
+        Int32 attr;
+        a->GetIndex(i, &attr);
+        Boolean val = FALSE;
+        switch (attr) {
+            case R::styleable::RelativeLayout_Layout_layout_alignWithParentIfMissing:
+                a->GetBoolean(attr, FALSE, &mAlignWithParent);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_toLeftOf:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::LEFT_OF);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_toRightOf:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::RIGHT_OF);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_above:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::ABOVE);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_below:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::BELOW);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignBaseline:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::ALIGN_BASELINE);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignLeft:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::ALIGN_LEFT);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignTop:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::ALIGN_TOP);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignRight:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::ALIGN_RIGHT);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignBottom:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::ALIGN_BOTTOM);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignParentLeft:
+                a->GetBoolean(attr, FALSE, &val);
+                *(rules + IRelativeLayout::ALIGN_PARENT_LEFT) = val ? 1 : 0;
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignParentTop:
+                a->GetBoolean(attr, FALSE, &val);
+                *(rules + IRelativeLayout::ALIGN_PARENT_TOP) = val ? 1 : 0;
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignParentRight:
+                a->GetBoolean(attr, FALSE, &val);
+                *(rules + IRelativeLayout::ALIGN_PARENT_RIGHT) = val ? 1 : 0;
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignParentBottom:
+                a->GetBoolean(attr, FALSE, &val);
+                *(rules + IRelativeLayout::ALIGN_PARENT_BOTTOM) = val ? 1 : 0;
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_centerInParent:
+                a->GetBoolean(attr, FALSE, &val);
+                *(rules + IRelativeLayout::CENTER_IN_PARENT) = val ? 1 : 0;
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_centerHorizontal:
+                a->GetBoolean(attr, FALSE, &val);
+                *(rules + IRelativeLayout::CENTER_HORIZONTAL) = val ? 1 : 0;
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_centerVertical:
+                a->GetBoolean(attr, FALSE, &val);
+                *(rules + IRelativeLayout::CENTER_VERTICAL) = val ? 1 : 0;
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_toStartOf:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::START_OF);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_toEndOf:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::END_OF);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignStart:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::END_OF);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignEnd:
+                a->GetResourceId(attr, 0, rules + IRelativeLayout::ALIGN_END);
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignParentStart:
+                a->GetBoolean(attr, FALSE, &val);
+                *(rules + IRelativeLayout::ALIGN_PARENT_START) = val ? 1 : 0;
+                break;
+            case R::styleable::RelativeLayout_Layout_layout_alignParentEnd:
+                a->GetBoolean(attr, FALSE, &val);
+                *(rules + IRelativeLayout::ALIGN_PARENT_END) = val ? 1 : 0;
+                break;
+        }
+    }
+
+    mRulesChanged = TRUE;
+    mInitialRules->Copy(IRelativeLayout::LEFT_OF, mRules, IRelativeLayout::LEFT_OF, IRelativeLayout::VERB_COUNT);
+
+    a->Recycle();
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::AddRule(
+    /* [in] */ Int32 verb)
+{
+    if (verb < 0 || verb >= mRules->GetLength())
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+
+    (*mRules)[verb] = IRelativeLayout::RelativeLayout_TRUE;
+    (*mInitialRules)[verb] = IRelativeLayout::RelativeLayout_TRUE;
+    mRulesChanged = TRUE;
+
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::AddRule(
+    /* [in] */ Int32 verb,
+    /* [in] */ Int32 anchor)
+{
+    if (verb < 0 || verb >= mRules->GetLength())
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+
+    (*mRules)[verb] = anchor;
+    (*mInitialRules)[verb] = anchor;
+    mRulesChanged = TRUE;
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::RemoveRule(
+    /* [in] */ Int32 verb)
+{
+    if (verb < 0 || verb >= mRules->GetLength())
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+
+    (*mRules)[verb] = 0;
+    (*mInitialRules)[verb] = 0;
+    mRulesChanged = TRUE;
+    return NOERROR;
+}
+
+Boolean RelativeLayout::LayoutParams::HasRelativeRules()
+{
+    return ((*mInitialRules)[IRelativeLayout::START_OF] != 0
+            || (*mInitialRules)[IRelativeLayout::END_OF] != 0
+            || (*mInitialRules)[IRelativeLayout::ALIGN_START] != 0
+            || (*mInitialRules)[IRelativeLayout::ALIGN_END] != 0
+            || (*mInitialRules)[IRelativeLayout::ALIGN_PARENT_START] != 0
+            || (*mInitialRules)[IRelativeLayout::ALIGN_PARENT_END] != 0);
+}
+
+void RelativeLayout::LayoutParams::ResolveRules(
+    /* [in] */ Int32 layoutDirection)
+{
+    Boolean isLayoutRtl = (layoutDirection == IView::LAYOUT_DIRECTION_RTL);
+    // Reset to initial state
+    mRules->Copy(IRelativeLayout::LEFT_OF, mInitialRules, IRelativeLayout::LEFT_OF, IRelativeLayout::VERB_COUNT);
+
+    // Apply rules depending on direction and if we are in RTL compatibility mode
+    if (mIsRtlCompatibilityMode) {
+        if ((*mRules)[IRelativeLayout::ALIGN_START] != 0) {
+            if ((*mRules)[IRelativeLayout::ALIGN_LEFT] == 0) {
+                // "left" rule is not defined but "start" rule is: use the "start" rule as
+                // the "left" rule
+                (*mRules)[IRelativeLayout::ALIGN_LEFT] = (*mRules)[IRelativeLayout::ALIGN_START];
+            }
+            (*mRules)[IRelativeLayout::ALIGN_START] = 0;
+        }
+
+        if ((*mRules)[IRelativeLayout::ALIGN_END] != 0) {
+            if ((*mRules)[IRelativeLayout::ALIGN_RIGHT] == 0) {
+                // "right" rule is not defined but "end" rule is: use the "end" rule as the
+                // "right" rule
+                (*mRules)[IRelativeLayout::ALIGN_RIGHT] = (*mRules)[IRelativeLayout::ALIGN_END];
+            }
+            (*mRules)[IRelativeLayout::ALIGN_END] = 0;
+        }
+
+        if ((*mRules)[IRelativeLayout::START_OF] != 0) {
+            if ((*mRules)[IRelativeLayout::LEFT_OF] == 0) {
+                // "left" rule is not defined but "start" rule is: use the "start" rule as
+                // the "left" rule
+                (*mRules)[IRelativeLayout::LEFT_OF] = (*mRules)[IRelativeLayout::START_OF];
+            }
+            (*mRules)[IRelativeLayout::START_OF] = 0;
+        }
+
+        if ((*mRules)[IRelativeLayout::END_OF] != 0) {
+            if ((*mRules)[IRelativeLayout::RIGHT_OF] == 0) {
+                // "right" rule is not defined but "end" rule is: use the "end" rule as the
+                // "right" rule
+                (*mRules)[IRelativeLayout::RIGHT_OF] = (*mRules)[IRelativeLayout::END_OF];
+            }
+            (*mRules)[IRelativeLayout::END_OF] = 0;
+        }
+
+        if ((*mRules)[IRelativeLayout::ALIGN_PARENT_START] != 0) {
+            if ((*mRules)[IRelativeLayout::ALIGN_PARENT_LEFT] == 0) {
+                // "left" rule is not defined but "start" rule is: use the "start" rule as
+                // the "left" rule
+                (*mRules)[IRelativeLayout::ALIGN_PARENT_LEFT] = (*mRules)[IRelativeLayout::ALIGN_PARENT_START];
+            }
+            (*mRules)[IRelativeLayout::ALIGN_PARENT_START] = 0;
+        }
+
+        if ((*mRules)[IRelativeLayout::ALIGN_PARENT_END] != 0) {
+            if ((*mRules)[IRelativeLayout::ALIGN_PARENT_RIGHT] == 0) {
+                // "right" rule is not defined but "end" rule is: use the "end" rule as the
+                // "right" rule
+                (*mRules)[IRelativeLayout::ALIGN_PARENT_RIGHT] = (*mRules)[IRelativeLayout::ALIGN_PARENT_END];
+            }
+            (*mRules)[IRelativeLayout::ALIGN_PARENT_END] = 0;
+        }
+    } else {
+        // JB MR1+ case
+        if (((*mRules)[IRelativeLayout::ALIGN_START] != 0 || (*mRules)[IRelativeLayout::ALIGN_END] != 0) &&
+                ((*mRules)[IRelativeLayout::ALIGN_LEFT] != 0 || (*mRules)[IRelativeLayout::ALIGN_RIGHT] != 0)) {
+            // "start"/"end" rules take precedence over "left"/"right" rules
+            (*mRules)[IRelativeLayout::ALIGN_LEFT] = 0;
+            (*mRules)[IRelativeLayout::ALIGN_RIGHT] = 0;
+        }
+        if ((*mRules)[IRelativeLayout::ALIGN_START] != 0) {
+            // "start" rule resolved to "left" or "right" depending on the direction
+            (*mRules)[isLayoutRtl ? IRelativeLayout::ALIGN_RIGHT : IRelativeLayout::ALIGN_LEFT] = (*mRules)[IRelativeLayout::ALIGN_START];
+            (*mRules)[IRelativeLayout::ALIGN_START] = 0;
+        }
+        if ((*mRules)[IRelativeLayout::ALIGN_END] != 0) {
+            // "end" rule resolved to "left" or "right" depending on the direction
+            (*mRules)[isLayoutRtl ? IRelativeLayout::ALIGN_LEFT : IRelativeLayout::ALIGN_RIGHT] = (*mRules)[IRelativeLayout::ALIGN_END];
+            (*mRules)[IRelativeLayout::ALIGN_END] = 0;
+        }
+
+        if (((*mRules)[IRelativeLayout::START_OF] != 0 || (*mRules)[IRelativeLayout::END_OF] != 0) &&
+                ((*mRules)[IRelativeLayout::LEFT_OF] != 0 || (*mRules)[IRelativeLayout::RIGHT_OF] != 0)) {
+            // "start"/"end" rules take precedence over "left"/"right" rules
+            (*mRules)[IRelativeLayout::LEFT_OF] = 0;
+            (*mRules)[IRelativeLayout::RIGHT_OF] = 0;
+        }
+        if ((*mRules)[IRelativeLayout::START_OF] != 0) {
+            // "start" rule resolved to "left" or "right" depending on the direction
+            (*mRules)[isLayoutRtl ? IRelativeLayout::RIGHT_OF : IRelativeLayout::LEFT_OF] = (*mRules)[IRelativeLayout::START_OF];
+            (*mRules)[IRelativeLayout::START_OF] = 0;
+        }
+        if ((*mRules)[IRelativeLayout::END_OF] != 0) {
+            // "end" rule resolved to "left" or "right" depending on the direction
+            (*mRules)[isLayoutRtl ? IRelativeLayout::LEFT_OF : IRelativeLayout::RIGHT_OF] = (*mRules)[IRelativeLayout::END_OF];
+            (*mRules)[IRelativeLayout::END_OF] = 0;
+        }
+
+        if (((*mRules)[IRelativeLayout::ALIGN_PARENT_START] != 0 || (*mRules)[IRelativeLayout::ALIGN_PARENT_END] != 0) &&
+                ((*mRules)[IRelativeLayout::ALIGN_PARENT_LEFT] != 0 || (*mRules)[IRelativeLayout::ALIGN_PARENT_RIGHT] != 0)) {
+            // "start"/"end" rules take precedence over "left"/"right" rules
+            (*mRules)[IRelativeLayout::ALIGN_PARENT_LEFT] = 0;
+            (*mRules)[IRelativeLayout::ALIGN_PARENT_RIGHT] = 0;
+        }
+        if ((*mRules)[IRelativeLayout::ALIGN_PARENT_START] != 0) {
+            // "start" rule resolved to "left" or "right" depending on the direction
+            (*mRules)[isLayoutRtl ? IRelativeLayout::ALIGN_PARENT_RIGHT : IRelativeLayout::ALIGN_PARENT_LEFT]
+                    = (*mRules)[IRelativeLayout::ALIGN_PARENT_START];
+            (*mRules)[IRelativeLayout::ALIGN_PARENT_START] = 0;
+        }
+        if ((*mRules)[IRelativeLayout::ALIGN_PARENT_END] != 0) {
+            // "end" rule resolved to "left" or "right" depending on the direction
+            (*mRules)[isLayoutRtl ? IRelativeLayout::ALIGN_PARENT_LEFT : IRelativeLayout::ALIGN_PARENT_RIGHT] = (*mRules)[IRelativeLayout::ALIGN_PARENT_END];
+            (*mRules)[IRelativeLayout::ALIGN_PARENT_END] = 0;
+        }
+    }
+    mRulesChanged = FALSE;
+}
+
+ECode RelativeLayout::LayoutParams::GetRules(
+    /* [in] */ Int32 layoutDirection,
+    /* [out, callee] */ ArrayOf<Int32>** rules)
+{
+    VALIDATE_NOT_NULL(rules);
+    Int32 ld = 0;
+    if (HasRelativeRules() &&
+            (mRulesChanged || layoutDirection != (GetLayoutDirection(&ld), ld))) {
+        ResolveRules(layoutDirection);
+        if (layoutDirection != ld) {
+            SetLayoutDirection(layoutDirection);
+        }
+    }
+    *rules = mRules;
+    REFCOUNT_ADD(*rules);
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::GetRules(
+    /* [out, callee] */ ArrayOf<Int32>** rules)
+{
+    VALIDATE_NOT_NULL(rules);
+    *rules = mRules;
+    REFCOUNT_ADD(*rules);
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::ResolveLayoutDirection(
+    /* [in] */ Int32 layoutDirection)
+{
+    Boolean isLayoutRtl = FALSE;
+    IsLayoutRtl(&isLayoutRtl);
+
+    Int32 ld = 0;
+    if (HasRelativeRules() && layoutDirection != (GetLayoutDirection(&ld), ld)) {
+        ResolveRules(layoutDirection);
+    }
+    // This will set the layout direction
+    return MarginLayoutParams::ResolveLayoutDirection(layoutDirection);
+}
+
+ECode RelativeLayout::LayoutParams::SetAlignWithParent(
+    /* [in] */ Boolean align)
+{
+    mAlignWithParent = align;
+    return NOERROR;
+}
+
+ECode RelativeLayout::LayoutParams::GetAlignWithParent(
+    /* [out] */ Boolean* align)
+{
+    VALIDATE_NOT_NULL(align);
+    *align = mAlignWithParent;
+    return NOERROR;
 }
 
 //==============================================================================
@@ -563,7 +964,7 @@ void RelativeLayout::OnMeasure(
             AutoPtr<ArrayOf<Int32> > rules;
             params->GetRules(layoutDirection, (ArrayOf<Int32>**)&rules);
 
-            RelativeLayoutLayoutParams* lp = (RelativeLayoutLayoutParams*)params.Get();
+            LayoutParams* lp = (LayoutParams*)params.Get();
             ApplyHorizontalSizeRules(lp, myWidth, rules);
             MeasureChildHorizontal(child, lp, myWidth, myHeight);
             if (PositionChildHorizontal(child, lp, myWidth, isWrapContentWidth)) {
@@ -591,7 +992,7 @@ void RelativeLayout::OnMeasure(
             AutoPtr<IRelativeLayoutLayoutParams> params;
             child->GetLayoutParams((IViewGroupLayoutParams**)&params);
 
-            RelativeLayoutLayoutParams* lp = (RelativeLayoutLayoutParams*)params.Get();
+            LayoutParams* lp = (LayoutParams*)params.Get();
             assert(lp);
             ApplyVerticalSizeRules(lp, myHeight);
             MeasureChild(child, lp, myWidth, myHeight);
@@ -644,7 +1045,7 @@ void RelativeLayout::OnMeasure(
                 AutoPtr<IRelativeLayoutLayoutParams> params;
                 child->GetLayoutParams((IViewGroupLayoutParams**)&params);
 
-                RelativeLayoutLayoutParams* lp = (RelativeLayoutLayoutParams*)params.Get();
+                LayoutParams* lp = (LayoutParams*)params.Get();
                 AlignBaseline(child, lp);
                 if (child != ignore || verticalGravity) {
                     left = Elastos::Core::Math::Min(left, lp->mLeft - lp->mLeftMargin);
@@ -683,7 +1084,7 @@ void RelativeLayout::OnMeasure(
                     AutoPtr<IRelativeLayoutLayoutParams> params;
                     child->GetLayoutParams((IViewGroupLayoutParams**)&params);
 
-                    RelativeLayoutLayoutParams* lp = (RelativeLayoutLayoutParams*)params.Get();
+                    LayoutParams* lp = (LayoutParams*)params.Get();
                     AutoPtr<ArrayOf<Int32> > rules;
                     lp->GetRules(layoutDirection, (ArrayOf<Int32>**)&rules);
                     if ((*rules)[IRelativeLayout::CENTER_IN_PARENT] != 0 ||
@@ -725,7 +1126,7 @@ void RelativeLayout::OnMeasure(
                     AutoPtr<IRelativeLayoutLayoutParams> params;
                     child->GetLayoutParams((IViewGroupLayoutParams**)&params);
 
-                    RelativeLayoutLayoutParams* lp = (RelativeLayoutLayoutParams*)params.Get();
+                    LayoutParams* lp = (LayoutParams*)params.Get();
                     AutoPtr<ArrayOf<Int32> > rules;
                     lp->GetRules(layoutDirection, (ArrayOf<Int32>**)&rules);
                     if ((*rules)[IRelativeLayout::CENTER_IN_PARENT] != 0 ||
@@ -762,7 +1163,7 @@ void RelativeLayout::OnMeasure(
                 if (visibility != IView::GONE && child != ignore) {
                     AutoPtr<IRelativeLayoutLayoutParams> params;
                     child->GetLayoutParams((IViewGroupLayoutParams**)&params);
-                    RelativeLayoutLayoutParams* lp = (RelativeLayoutLayoutParams*)params.Get();
+                    LayoutParams* lp = (LayoutParams*)params.Get();
                     if (horizontalGravity) {
                         lp->mLeft += horizontalOffset;
                         lp->mRight += horizontalOffset;
@@ -785,8 +1186,8 @@ void RelativeLayout::OnMeasure(
             if ((child->GetVisibility(&visibility), visibility) != IView::GONE) {
                 AutoPtr<IRelativeLayoutLayoutParams> params;
                 child->GetLayoutParams((IViewGroupLayoutParams**)&params);
-                ((RelativeLayoutLayoutParams*)params.Get())->mLeft -= offsetWidth;
-                ((RelativeLayoutLayoutParams*)params.Get())->mRight -= offsetWidth;
+                ((LayoutParams*)params.Get())->mLeft -= offsetWidth;
+                ((LayoutParams*)params.Get())->mRight -= offsetWidth;
             }
         }
     }
@@ -796,7 +1197,7 @@ void RelativeLayout::OnMeasure(
 
 void RelativeLayout::AlignBaseline(
     /* [in] */ IView* child,
-    /* [in] */ RelativeLayoutLayoutParams* params)
+    /* [in] */ LayoutParams* params)
 {
     assert(child != NULL && params != NULL);
 
@@ -808,7 +1209,7 @@ void RelativeLayout::AlignBaseline(
     Int32 anchorBaseline = GetRelatedViewBaseline(rules, IRelativeLayout::ALIGN_BASELINE);
 
     if (anchorBaseline != -1) {
-        AutoPtr<RelativeLayoutLayoutParams> anchorParams =
+        AutoPtr<LayoutParams> anchorParams =
                 GetRelatedViewParams(rules, IRelativeLayout::ALIGN_BASELINE);
         if (anchorParams != NULL) {
             Int32 offset = anchorParams->mTop + anchorBaseline;
@@ -829,7 +1230,7 @@ void RelativeLayout::AlignBaseline(
     else {
         AutoPtr<IRelativeLayoutLayoutParams> layoutParams;
         mBaselineView->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
-        RelativeLayoutLayoutParams* lp = (RelativeLayoutLayoutParams*)layoutParams.Get();
+        LayoutParams* lp = (LayoutParams*)layoutParams.Get();
         if (params->mTop < lp->mTop || (params->mTop == lp->mTop && params->mLeft < lp->mLeft)) {
             mBaselineView = child;
         }
@@ -838,7 +1239,7 @@ void RelativeLayout::AlignBaseline(
 
 void RelativeLayout::MeasureChild(
     /* [in] */ IView* child,
-    /* [in] */ RelativeLayoutLayoutParams* params,
+    /* [in] */ LayoutParams* params,
     /* [in] */ Int32 myWidth,
     /* [in] */ Int32 myHeight)
 {
@@ -857,7 +1258,7 @@ void RelativeLayout::MeasureChild(
 
 void RelativeLayout::MeasureChildHorizontal(
     /* [in] */ IView* child,
-    /* [in] */ RelativeLayoutLayoutParams* params,
+    /* [in] */ LayoutParams* params,
     /* [in] */ Int32 myWidth,
     /* [in] */ Int32 myHeight)
 {
@@ -991,7 +1392,7 @@ Int32 RelativeLayout::GetChildMeasureSpec(
 
 Boolean RelativeLayout::PositionChildHorizontal(
     /* [in] */ IView* child,
-    /* [in] */ RelativeLayoutLayoutParams* params,
+    /* [in] */ LayoutParams* params,
     /* [in] */ Int32 myWidth,
     /* [in] */ Boolean wrapContent)
 {
@@ -1045,7 +1446,7 @@ Boolean RelativeLayout::PositionChildHorizontal(
 
 Boolean RelativeLayout::PositionChildVertical(
     /* [in] */ IView* child,
-    /* [in] */ RelativeLayoutLayoutParams* params,
+    /* [in] */ LayoutParams* params,
     /* [in] */ Int32 myHeight,
     /* [in] */ Boolean wrapContent)
 {
@@ -1086,12 +1487,12 @@ Boolean RelativeLayout::PositionChildVertical(
 }
 
 void RelativeLayout::ApplyHorizontalSizeRules(
-    /* [in] */ RelativeLayoutLayoutParams* childParams,
+    /* [in] */ LayoutParams* childParams,
     /* [in] */ Int32 myWidth,
     /* [in] */ ArrayOf<Int32>* rules)
 {
     assert(childParams != NULL);
-    AutoPtr<RelativeLayoutLayoutParams> anchorParams;
+    AutoPtr<LayoutParams> anchorParams;
 
     // VALUE_NOT_SET indicates a "soft requirement" in that direction. For example:
     // left=10, right=VALUE_NOT_SET means the view must start at 10, but can go as far as it
@@ -1153,14 +1554,14 @@ void RelativeLayout::ApplyHorizontalSizeRules(
 }
 
 void RelativeLayout::ApplyVerticalSizeRules(
-    /* [in] */ RelativeLayoutLayoutParams* childParams,
+    /* [in] */ LayoutParams* childParams,
     /* [in] */ Int32 myHeight)
 {
     assert(childParams != NULL);
 
     AutoPtr<ArrayOf<Int32> > rules;
     childParams->GetRules((ArrayOf<Int32>**)&rules);
-    AutoPtr<RelativeLayoutLayoutParams> anchorParams;
+    AutoPtr<LayoutParams> anchorParams;
 
     childParams->mTop = VALUE_NOT_SET;
     childParams->mBottom = VALUE_NOT_SET;
@@ -1258,17 +1659,17 @@ AutoPtr<IView> RelativeLayout::GetRelatedView(
     return v;
 }
 
-AutoPtr<RelativeLayoutLayoutParams> RelativeLayout::GetRelatedViewParams(
+AutoPtr<RelativeLayout::LayoutParams> RelativeLayout::GetRelatedViewParams(
     /* [in] */ ArrayOf<Int32>* rules,
     /* [in] */ Int32 relation)
 {
-    AutoPtr<RelativeLayoutLayoutParams> lp;
+    AutoPtr<LayoutParams> lp;
     AutoPtr<IView> v = GetRelatedView(rules, relation);
     if (v != NULL) {
         AutoPtr<IViewGroupLayoutParams> params;
         v->GetLayoutParams((IViewGroupLayoutParams**)&params);
         if (params != NULL && params->Probe(EIID_IRelativeLayoutLayoutParams) != NULL) {
-             lp = (RelativeLayoutLayoutParams*)IRelativeLayoutLayoutParams::Probe(params);
+             lp = (LayoutParams*)IRelativeLayoutLayoutParams::Probe(params);
         }
     }
 
@@ -1292,7 +1693,7 @@ Int32 RelativeLayout::GetRelatedViewBaseline(
 
 void RelativeLayout::CenterHorizontal(
     /* [in] */ IView* child,
-    /* [in] */ RelativeLayoutLayoutParams* params,
+    /* [in] */ LayoutParams* params,
     /* [in] */ Int32 myWidth)
 {
     assert(child != NULL);
@@ -1307,7 +1708,7 @@ void RelativeLayout::CenterHorizontal(
 
 void RelativeLayout::CenterVertical(
     /* [in] */ IView* child,
-    /* [in] */ RelativeLayoutLayoutParams* params,
+    /* [in] */ LayoutParams* params,
     /* [in] */ Int32 myHeight)
 {
     assert(child != NULL);
@@ -1340,7 +1741,7 @@ ECode RelativeLayout::OnLayout(
         if (visibility != IView::GONE) {
             AutoPtr<IRelativeLayoutLayoutParams> params;
             child->GetLayoutParams((IViewGroupLayoutParams**)&params);
-            RelativeLayoutLayoutParams* st = (RelativeLayoutLayoutParams*)params.Get();
+            LayoutParams* st = (LayoutParams*)params.Get();
             child->Layout(st->mLeft, st->mTop, st->mRight, st->mBottom);
         }
     }

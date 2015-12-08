@@ -1,45 +1,26 @@
-#include "elastos/droid/ext/frameworkext.h"
+
 #include "elastos/droid/widget/ImageSwitcher.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const String ImageSwitcher::IMAGESWITCHER_NAME = String("ImageSwitcher");
-
-ImageSwitcher::ImageSwitcher(
-    /* [in] */ IContext* context)
-{
-    Init(context);
-}
-
-ImageSwitcher::ImageSwitcher(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    Init(context, attrs);
-}
-
-ImageSwitcher::ImageSwitcher()
-{
-
-}
-
-ECode ImageSwitcher::Init(
+const String ImageSwitcher::IMAGESWITCHER_NAME("ImageSwitcher");
+CAR_INTERFACE_IMPL(ImageSwitcher, ViewSwitcher, IImageSwitcher);
+ECode ImageSwitcher::constructor(
         /* [in] */ IContext* context)
 {
-    ViewSwitcher::Init(context);
-    return NOERROR;
+    return ViewSwitcher::constructor(context);
 }
 
-ECode ImageSwitcher::Init(
+ECode ImageSwitcher::constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs)
 {
-    ViewSwitcher::Init(context, attrs);
-    return NOERROR;
+    return ViewSwitcher::constructor(context, attrs);
 }
 
 ECode ImageSwitcher::SetImageResource(
@@ -80,8 +61,8 @@ ECode ImageSwitcher::OnInitializeAccessibilityEvent(
 {
     ViewSwitcher::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(IMAGESWITCHER_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
+    FAIL_RETURN(CString::New(IMAGESWITCHER_NAME, (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
@@ -90,7 +71,7 @@ ECode ImageSwitcher::OnInitializeAccessibilityNodeInfo(
 {
     ViewSwitcher::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(IMAGESWITCHER_NAME, (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(IMAGESWITCHER_NAME, (ICharSequence**)&seq));
     info->SetClassName(seq);
     return NOERROR;
 }

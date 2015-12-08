@@ -61,24 +61,6 @@ module {
         const Int32 QUERIES_PROJECTION_DISPLAY2_INDEX = 4;  // only when 2line active
 
         /**
-         * Although provider utility classes are typically static, this one must be constructed
-         * because it needs to be initialized using the same values that you provided in your
-         * {@link android.content.SearchRecentSuggestionsProvider}.
-         *
-         * @param authority This must match the authority that you've declared in your manifest.
-         * @param mode You can use mode flags here to determine certain functional aspects of your
-         * database.  Note, this value should not change from run to run, because when it does change,
-         * your suggestions database may be wiped.
-         *
-         * @see android.content.SearchRecentSuggestionsProvider
-         * @see android.content.SearchRecentSuggestionsProvider#setupSuggestions
-         */
-        SearchRecentSuggestions(
-            [in] IContext* context,
-            [in] String authority,
-            [out] Int32* mode);
-
-        /**
          * Add a query to the recent queries list.  Returns immediately, performing the save
          * in the background.
          *

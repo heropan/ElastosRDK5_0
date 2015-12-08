@@ -9,9 +9,9 @@
 using Elastos::Droid::Database::CDataSetObservable;
 using Elastos::Droid::Database::IObservable;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CAR_INTERFACE_IMPL_4(BaseAdapter, Object, IBaseAdapter, IListAdapter, ISpinnerAdapter, IAdapter);
 BaseAdapter::BaseAdapter()

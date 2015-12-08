@@ -21,11 +21,27 @@ ECode CInetAddressHelper::GetAllByName(
     return InetAddress::GetAllByName(host, interAddress);
 }
 
+ECode CInetAddressHelper::GetAllByNameOnNet(
+    /* [in] */ const String& host,
+    /* [in] */ Int32 netId,
+    /* [out, callee] */ ArrayOf<IInetAddress*>** addresses)
+{
+    return InetAddress::GetAllByNameOnNet(host, netId, addresses);
+}
+
 ECode CInetAddressHelper::GetByName(
     /* [in] */ const String& host,
     /* [out] */ IInetAddress** interAddr)
 {
     return InetAddress::GetByName(host, interAddr);
+}
+
+CARAPI CInetAddressHelper::GetByNameOnNet(
+    /* [in] */ const String& host,
+    /* [in] */ Int32 netId,
+    /* [out] */ IInetAddress** address)
+{
+    return InetAddress::GetByNameOnNet(host, netId, address);
 }
 
 ECode CInetAddressHelper::GetLocalHost(

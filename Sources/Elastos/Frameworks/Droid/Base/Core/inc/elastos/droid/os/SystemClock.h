@@ -7,7 +7,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-class SystemClock
+class ECO_PUBLIC SystemClock
 {
 public:
     /**
@@ -80,8 +80,8 @@ public:
     static CARAPI_(Int64) GetCurrentTimeMicro();
 
 private:
-    SystemClock();
-    SystemClock(const SystemClock&);
+    ECO_LOCAL SystemClock();
+    ECO_LOCAL SystemClock(const SystemClock&);
 };
 
 } // namespace Os

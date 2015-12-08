@@ -1,11 +1,14 @@
 
 #include "elastos/droid/speech/CSpeechRecognizerHelper.h"
-
 #include "elastos/droid/speech/CSpeechRecognizer.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Speech {
+
+CAR_SINGLETON_IMPL(CSpeechRecognizerHelper)
+
+CAR_INTERFACE_IMPL(CSpeechRecognizerHelper, Singleton, ISpeechRecognizerHelper)
 
 ECode CSpeechRecognizerHelper::IsRecognitionAvailable(
     /* [in] */ IContext * pContext,
@@ -39,7 +42,7 @@ ECode CSpeechRecognizerHelper::CreateSpeechRecognizer(
     return NOERROR;
 }
 
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 

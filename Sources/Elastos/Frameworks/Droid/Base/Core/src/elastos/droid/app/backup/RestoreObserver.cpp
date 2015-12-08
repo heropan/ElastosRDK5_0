@@ -1,9 +1,9 @@
 
 #include "elastos/droid/app/backup/RestoreObserver.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 namespace Backup {
 
 RestoreObserver::RestoreObserver()

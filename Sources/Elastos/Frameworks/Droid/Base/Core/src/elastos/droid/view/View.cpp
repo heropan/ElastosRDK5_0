@@ -2,9 +2,9 @@
 #include "elastos/droid/view/View.h"
 /*#include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/view/ViewRootImpl.h"
-#include "elastos/droid/view/CDispatcherState.h"
+#include "elastos/droid/view/CDispatcherState.h"*/
 #include "elastos/droid/view/ViewTreeObserver.h"
-#include "elastos/droid/view/CViewConfiguration.h"
+/*#include "elastos/droid/view/CViewConfiguration.h"
 #include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 #include "elastos/droid/view/CChoreographerHelper.h"
@@ -103,6 +103,7 @@ using Elastos::Droid::View::CChoreographerHelper;
 using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfo;
 using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::CAccessibilityManager;*/
+using Elastos::Droid::View::ViewTreeObserver;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::SystemProperties;
@@ -2003,7 +2004,7 @@ ECode View::HandleFocusGainInternal(
         }
 
         if (mAttachInfo) {
-                mAttachInfo->mTreeObserver->DispatchOnGlobalFocusChange(oldFocus, THIS_PROBE(IView));
+            ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnGlobalFocusChange(oldFocus, THIS_PROBE(IView));
         }
 
         OnFocusChanged(TRUE, direction, previouslyFocusedRect);
@@ -2195,8 +2196,8 @@ ECode View::NotifyGlobalFocusCleared(
     /* [in] */ IView* oldFocus)
 {
     if (oldFocus && mAttachInfo) {
-            mAttachInfo->mTreeObserver->DispatchOnGlobalFocusChange(oldFocus, NULL);
-        }
+        ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnGlobalFocusChange(oldFocus, NULL);
+    }
 
     return NOERROR;
 }
@@ -7584,7 +7585,7 @@ ECode View::GetMatrix(
     VALIDATE_NOT_NULL(res)
     EnsureTransformationInfo();
     AutoPtr<IMatrix> matrix = mTransformationInfo->mMatrix;
-    mRenderNode->GetMatrix((IMatrix**)&matrix);
+    mRenderNode->GetMatrix(matrix);
     *res = matrix;
     REFCOUNT_ADD(*res)
     return NOERROR;
@@ -7614,7 +7615,7 @@ ECode View::GetInverseMatrix(
         CMatrix::New((IMatrix**)&(mTransformationInfo->mInverseMatrix));
     }
     AutoPtr<IMatrix> matrix = mTransformationInfo->mInverseMatrix;
-    mRenderNode->GetInverseMatrix((IMatrix**)&matrix);
+    mRenderNode->GetInverseMatrix(matrix);
     *res = matrix;
     REFCOUNT_ADD(*res)
     return NOERROR;
@@ -11039,7 +11040,7 @@ ECode View::DispatchAttachedToWindow(
     // We will need to evaluate the drawable state at least once.
     mPrivateFlags |= PFLAG_DRAWABLE_STATE_DIRTY;
     if (mFloatingTreeObserver != NULL) {
-        info->mTreeObserver->Merge(mFloatingTreeObserver);
+        ((ViewTreeObserver*)info->mTreeObserver.Get())->Merge(mFloatingTreeObserver);
         mFloatingTreeObserver = NULL;
     }
     if ((mPrivateFlags & PFLAG_SCROLL_CONTAINER) != 0) {
@@ -13356,7 +13357,7 @@ AutoPtr<IRenderNode> View::GetDrawableRenderNode(
     drawable->IsProjected(&isProjected);
     renderNode->SetProjectBackwards(isProjected, &res);
     renderNode->SetProjectionReceiver(TRUE, &res);
-    renderNode->SetClipToBounds(FALSE);
+    renderNode->SetClipToBounds(FALSE, &res);
     return renderNode;
 }
 
@@ -14645,6 +14646,28 @@ ECode View::SetPaddingRelative(
             mUserPaddingLeftInitial = start;
             mUserPaddingRightInitial = end;
             InternalSetPadding(start, top, end, bottom);
+    }
+
+    return NOERROR;
+}
+
+ECode View::GetPadding(
+    /* [out] */ Int32* left,
+    /* [out] */ Int32* top,
+    /* [out] */ Int32* right,
+    /* [out] */ Int32* bottom)
+{
+    if (left != NULL) {
+        *left = mPaddingLeft;
+    }
+    if (top != NULL) {
+        *top = mPaddingTop;
+    }
+    if (right != NULL) {
+        *right = mPaddingRight;
+    }
+    if (bottom != NULL) {
+        *bottom = mPaddingBottom;
     }
 
     return NOERROR;
@@ -18477,6 +18500,38 @@ Boolean View::InLiveRegion()
     }
 
     return FALSE;
+}
+
+/////////////////////////////////////////////////////////
+//              View::BaseSavedState
+/////////////////////////////////////////////////////////
+
+CAR_INTERFACE_IMPL(View::BaseSavedState, AbsSavedState, IViewBaseSavedState)
+
+View::BaseSavedState::BaseSavedState()
+{}
+
+ECode View::BaseSavedState::constructor()
+{
+    return AbsSavedState::constructor();
+}
+
+ECode View::BaseSavedState::constructor(
+    /* [in] */ IParcelable* superState)
+{
+    return AbsSavedState::constructor(superState);
+}
+
+ECode View::BaseSavedState::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    AbsSavedState::WriteToParcel(dest);
+}
+
+ECode View::BaseSavedState::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    AbsSavedState::ReadFromParcel(source);
 }
 
 /////////////////////////////////////////////////////////

@@ -4,19 +4,23 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_View_InputMethod_CInputMethodSubtype.h"
+
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::ILocale;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+
+using Elastos::Core::Object;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::IList;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
-
 
 /**
  * This class is used to specify meta information of a subtype contained in an input method editor
@@ -30,42 +34,139 @@ namespace InputMethod {
  * Creating an Input Method</a>.</p>
  */
 CarClass(CInputMethodSubtype)
+    , public Object
+    , public IInputMethodSubtype
+    , public IParcelable
 {
 public:
+    /**
+     * InputMethodSubtypeBuilder is a builder class of InputMethodSubtype.
+     * This class is designed to be used with
+     * {@link android.view.inputmethod.InputMethodManager#setAdditionalInputMethodSubtypes}.
+     * The developer needs to be aware of what each parameter means.
+     */
+    class InputMethodSubtypeBuilder
+        : public Object
+        , public IInputMethodSubtypeBuilder
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        InputMethodSubtypeBuilder();
+
+        /**
+         * @param isAuxiliary should true when this subtype is auxiliary, false otherwise.
+         * An auxiliary subtype has the following differences with a regular subtype:
+         * - An auxiliary subtype cannot be chosen as the default IME in Settings.
+         * - The framework will never switch to this subtype through
+         *   {@link android.view.inputmethod.InputMethodManager#switchToLastInputMethod}.
+         * Note that the subtype will still be available in the IME switcher.
+         * The intent is to allow for IMEs to specify they are meant to be invoked temporarily
+         * in a one-shot way, and to return to the previous IME once finished (e.g. voice input).
+         */
+        CARAPI SetIsAuxiliary(
+            /* [in] */ Boolean isAuxiliary);
+
+        /**
+         * @param overridesImplicitlyEnabledSubtype should be true if this subtype should be
+         * enabled by default if no other subtypes in the IME are enabled explicitly. Note that a
+         * subtype with this parameter set will not be shown in the list of subtypes in each IME's
+         * subtype enabler. A canonical use of this would be for an IME to supply an "automatic"
+         * subtype that adapts to the current system language.
+         */
+        CARAPI SetOverridesImplicitlyEnabledSubtype(
+            /* [in] */ Boolean overridesImplicitlyEnabledSubtype);
+
+        /**
+         * @param isAsciiCapable should be true if this subtype is ASCII capable. If the subtype
+         * is ASCII capable, it should guarantee that the user can input ASCII characters with
+         * this subtype. This is important because many password fields only allow
+         * ASCII-characters.
+         */
+        CARAPI SetIsAsciiCapable(
+            /* [in] */ Boolean isAsciiCapable);
+
+        /**
+         * @param subtypeIconResId is a resource ID of the subtype icon drawable.
+         */
+        CARAPI SetSubtypeIconResId(
+            /* [in] */ Int32 subtypeIconResId);
+
+        /**
+         * @param subtypeNameResId is the resource ID of the subtype name string.
+         * The string resource may have exactly one %s in it. If present,
+         * the %s part will be replaced with the locale's display name by
+         * the formatter. Please refer to {@link #getDisplayName} for details.
+         */
+        CARAPI SetSubtypeNameResId(
+            /* [in] */ Int32 subtypeNameResId);
+
+        /**
+         * @param subtypeId is the unique ID for this subtype. The input method framework keeps
+         * track of enabled subtypes by ID. When the IME package gets upgraded, enabled IDs will
+         * stay enabled even if other attributes are different. If the ID is unspecified or 0,
+         * Arrays.hashCode(new Object[] {locale, mode, extraValue,
+         * isAuxiliary, overridesImplicitlyEnabledSubtype}) will be used instead.
+         */
+        CARAPI SetSubtypeId(
+            /* [in] */ Int32 subtypeId);
+
+        /**
+         * @param subtypeLocale is the locale supported by this subtype.
+         */
+        CARAPI SetSubtypeLocale(
+            /* [in] */ const String& subtypeLocale);
+
+        /**
+         * @param subtypeMode is the mode supported by this subtype.
+         */
+        CARAPI SetSubtypeMode(
+            /* [in] */ const String& subtypeMode);
+
+        /**
+         * @param subtypeExtraValue is the extra value of the subtype. This string is free-form,
+         * but the API supplies tools to deal with a key-value comma-separated list; see
+         * {@link #containsExtraValueKey} and {@link #getExtraValueOf}.
+         */
+        CARAPI SetSubtypeExtraValue(
+            /* [in] */ const String& subtypeExtraValue);
+
+        /**
+         * @return InputMethodSubtype using parameters in this InputMethodSubtypeBuilder.
+         */
+        CARAPI Build(
+            /* [out] */ IInputMethodSubtype** type);
+
+    public:
+        Boolean mIsAuxiliary;
+
+        Boolean mOverridesImplicitlyEnabledSubtype;
+
+        Boolean mIsAsciiCapable;
+
+        Int32 mSubtypeIconResId;
+
+        Int32 mSubtypeNameResId;
+
+        Int32 mSubtypeId;
+
+        String mSubtypeLocale;
+
+        String mSubtypeMode;
+
+        String mSubtypeExtraValue;
+     };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CInputMethodSubtype();
 
     ~CInputMethodSubtype();
 
     CARAPI constructor();
-
-    /**
-     * Constructor with no subtype ID specified, overridesImplicitlyEnabledSubtype not specified.
-     * @param nameId Resource ID of the subtype name string. The string resource may have exactly
-     * one %s in it. If there is, the %s part will be replaced with the locale's display name by
-     * the formatter. Please refer to {@link #getDisplayName} for details.
-     * @param iconId Resource ID of the subtype icon drawable.
-     * @param locale The locale supported by the subtype
-     * @param mode The mode supported by the subtype
-     * @param extraValue The extra value of the subtype. This string is free-form, but the API
-     * supplies tools to deal with a key-value comma-separated list; see
-     * {@link #containsExtraValueKey} and {@link #getExtraValueOf}.
-     * @param isAuxiliary true when this subtype is auxiliary, false otherwise. An auxiliary
-     * subtype will not be shown in the list of enabled IMEs for choosing the current IME in
-     * the Settings even when this subtype is enabled. Please note that this subtype will still
-     * be shown in the list of IMEs in the IME switcher to allow the user to tentatively switch
-     * to this subtype while an IME is shown. The framework will never switch the current IME to
-     * this subtype by {@link android.view.inputmethod.InputMethodManager#switchToLastInputMethod}.
-     * The intent of having this flag is to allow for IMEs that are invoked in a one-shot way as
-     * auxiliary input mode, and return to the previous IME once it is finished (e.g. voice input).
-     * @hide
-     */
-    CARAPI constructor(
-        /* [in] */ Int32 nameId,
-        /* [in] */ Int32 iconId,
-        /* [in] */ const String& locale,
-        /* [in] */ const String& mode,
-        /* [in] */ const String& extraValue,
-        /* [in] */ Boolean isAuxiliary);
 
     /**
      * Constructor with no subtype ID specified.
@@ -140,6 +241,13 @@ public:
         /* [in] */ Int32 id);
 
     /**
+     * Constructor.
+     * @param builder Builder for InputMethodSubtype
+     */
+    CARAPI constructor(
+        /* [in] */ IInputMethodSubtypeBuilder* builder);
+
+    /**
      * @return Resource ID of the subtype name string.
      */
     CARAPI GetNameResId(
@@ -191,6 +299,14 @@ public:
      */
     CARAPI OverridesImplicitlyEnabledSubtype(
         /* [out] */ Boolean* enabled);
+
+    /**
+     * @return true if this subtype is Ascii capable, false otherwise. If the subtype is ASCII
+     * capable, it should guarantee that the user can input ASCII characters with this subtype.
+     * This is important because many password fields only allow ASCII-characters.
+     */
+    CARAPI IsAsciiCapable(
+        /* [out] */ Boolean* result);
 
     /**
      * @param context Context will be used for getting Locale and PackageManager.
@@ -248,17 +364,22 @@ public:
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
-private:
-    CARAPI Init(
-        /* [in] */ Int32 nameId,
-        /* [in] */ Int32 iconId,
-        /* [in] */ const String& locale,
-        /* [in] */ const String& mode,
-        /* [in] */ const String& extraValue,
-        /* [in] */ Boolean isAuxiliary,
-        /* [in] */ Boolean overridesImplicitlyEnabledSubtype = FALSE,
-        /* [in] */ Int32 id = 0);
+    /**
+     * Sort the list of InputMethodSubtype
+     * @param context Context will be used for getting localized strings from IME
+     * @param flags Flags for the sort order
+     * @param imi InputMethodInfo of which subtypes are subject to be sorted
+     * @param subtypeList List of InputMethodSubtype which will be sorted
+     * @return Sorted list of subtypes
+     * @hide
+     */
+    static CARAPI_(AutoPtr<IList>) Sort(
+        /* [in] */ IContext* context,
+        /* [in] */ Int32 flags,
+        /* [in] */ IInputMethodInfo* imi,
+        /* [in] */ IList* subtypeList);
 
+private:
     AutoPtr< HashMap<String, String> > GetExtraValueHashMap();
 
     static CARAPI_(AutoPtr<ILocale>) ConstructLocaleFromString(
@@ -269,22 +390,19 @@ private:
         /* [in] */ const String& mode,
         /* [in] */ const String& extraValue,
         /* [in] */ Boolean isAuxiliary,
-        /* [in] */ Boolean overridesImplicitlyEnabledSubtype);
+        /* [in] */ Boolean overridesImplicitlyEnabledSubtype,
+        /* [in] */ Boolean isAsciiCapable);
 
-    /**
-     * Sort the list of InputMethodSubtype
-     * @param context Context will be used for getting localized strings from IME
-     * @param flags Flags for the sort order
-     * @param imi InputMethodInfo of which subtypes are subject to be sorted
-     * @param subtypeList List of InputMethodSubtype which will be sorted
-     * @return Sorted list of subtypes
-     * @hide
-     */
-    static CARAPI_(AutoPtr<IObjectContainer>) Sort(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 flags,
-        /* [in] */ IInputMethodInfo* imi,
-        /* [in] */ IObjectContainer* subtypeList);
+    static CARAPI_(AutoPtr<InputMethodSubtypeBuilder>) GetBuilder(
+        /* [in] */ Int32 nameId,
+        /* [in] */ Int32 iconId,
+        /* [in] */ const String& locale,
+        /* [in] */ const String& mode,
+        /* [in] */ const String& extraValue,
+        /* [in] */ Boolean isAuxiliary,
+        /* [in] */ Boolean overridesImplicitlyEnabledSubtype,
+        /* [in] */ Int32 id,
+        /* [in] */ Boolean isAsciiCapable);
 
 private:
     static String TAG;
@@ -295,6 +413,7 @@ private:
 
     Boolean mIsAuxiliary;
     Boolean mOverridesImplicitlyEnabledSubtype;
+    Boolean mIsAsciiCapable;
     Int32 mSubtypeHashCode;
     Int32 mSubtypeIconResId;
     Int32 mSubtypeNameResId;

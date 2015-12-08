@@ -7,6 +7,14 @@ module
     namespace App {
 
     /**
+     * @Involve
+     * interface Elastos.Droid.Content.IContextWrapper
+     */
+    interface IReceiverRestrictedContext {
+
+    }
+
+    /**
      * Common implementation of Context API, which provides the base
      * context object for Activity and other application components.
      */

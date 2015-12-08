@@ -29,7 +29,9 @@ public:
 
     WifiDisplay();
 
-    WifiDisplay(
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ const String& deviceAddress,
         /* [in] */ const String& deviceName,
         /* [in] */ const String& deviceAlias,

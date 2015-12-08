@@ -1433,22 +1433,22 @@ String KeyEvent::KeyCodeToString(
 }
 
 ECode KeyEvent::KeyCodeFromString(
-    /* [in] */ String symbolicName,
+    /* [in] */ const String& symbolicName,
     /* [out] */ Int32* keyCode)
 {
     VALIDATE_NOT_NULL(keyCode);
 
-    if (symbolicName.StartWith(LABEL_PREFIX)) {
-        String str = symbolicName.Substring(LABEL_PREFIX.GetLength());
-        symbolicName = str;
-        Int32 data = NativeKeyCodeFromString(symbolicName);
+    String name(symbolicName);
+    if (name.StartWith(LABEL_PREFIX)) {
+        name = symbolicName.Substring(LABEL_PREFIX.GetLength());
+        Int32 data = NativeKeyCodeFromString(name);
         if (data > 0) {
             *keyCode = data;
             return NOERROR;
         }
     }
 
-    *keyCode = StringUtils::ParseInt32(symbolicName, 10);
+    *keyCode = StringUtils::ParseInt32(name, 10);
 
     return NOERROR;
     // try {

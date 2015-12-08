@@ -36,21 +36,36 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-
 const Boolean TextToSpeechService::DBG = FALSE;
-const CString TextToSpeechService::TAG = "TextToSpeechService";
+const String TextToSpeechService::TAG("TextToSpeechService");
 
 const Int32 TextToSpeechService::MAX_SPEECH_ITEM_CHAR_LENGTH = 4000;
-const CString TextToSpeechService::SYNTH_THREAD_NAME = "SynthThread";
+const String TextToSpeechService::SYNTH_THREAD_NAME("SynthThread");
 
-/******************************TextToSpeechService::SynthThread*************************/
-CAR_INTERFACE_IMPL(TextToSpeechService::SynthThread, IIdleHandler)
+/******************
+ * TextToSpeechService::SynthThread
+ *******************************************************************************************************/
 
-TextToSpeechService::SynthThread::SynthThread(
-    /* [in] */ TextToSpeechService* ttss)//:HandlerThread(String(SYNTH_THREAD_NAME), Process::THREAD_PRIORITY_DEFAULT)
+CAR_INTERFACE_IMPL(TextToSpeechService::SynthThread, Object, IIdleHandler)
+
+TextToSpeechService::SynthThread::SynthThread()
+{}
+
+TextToSpeechService::SynthThread::~SynthThread()
+{}
+
+ECode TextToSpeechService::SynthThread::constructor()
+{
+    return NOERROR;
+}
+
+ECode TextToSpeechService::SynthThread::constructor(
+    /* [in] */ TextToSpeechService* ttss)
 {
     mFirstIdle = TRUE;
     mTtss = ttss;
+
+    return NOERROR;
 }
 
 void TextToSpeechService::SynthThread::OnLooperPrepared()
@@ -243,48 +258,24 @@ Int32 TextToSpeechService::SynthHandler::StopAll()
     return ITextToSpeech::TTS_SUCCESS;
 }
 
-/******************************TextToSpeechService::SpeechItem*************************/
-PInterface TextToSpeechService::SpeechItem::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(ITextToSpeechServiceUtteranceProgressDispatcher*)this;
-    }
-    else if (riid == EIID_ITextToSpeechServiceUtteranceProgressDispatcher) {
-        return (ITextToSpeechServiceUtteranceProgressDispatcher*)this;
-    }
-    return NULL;
-}
+/******************
+ * TextToSpeechService::SpeechItem
+ *******************************************************************************************************/
 
-UInt32 TextToSpeechService::SpeechItem::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+CAR_INTERFACE_IMPL(TextToSpeechService::SpeechItem, Object, ITextToSpeechServiceUtteranceProgressDispatcher)
 
-UInt32 TextToSpeechService::SpeechItem::Release()
-{
-    return ElRefBase::Release();
-}
+TextToSpeechService::SpeechItem::SpeechItem()
+{}
 
-ECode TextToSpeechService::SpeechItem::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+TextToSpeechService::SpeechItem::~SpeechItem()
+{}
 
-    if (Object == (IInterface*)(ITextToSpeechServiceUtteranceProgressDispatcher*)this) {
-        *iID = EIID_ITextToSpeechServiceUtteranceProgressDispatcher;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
+ECode TextToSpeechService::SpeechItem::constructor()
+{
     return NOERROR;
 }
 
-TextToSpeechService::SpeechItem::SpeechItem(
+ECode TextToSpeechService::SpeechItem::constructor(
     /* [in] */ IInterface* caller,
     /* [in] */ Int32 callerUid,
     /* [in] */ Int32 callerPid,
@@ -299,6 +290,8 @@ TextToSpeechService::SpeechItem::SpeechItem(
     mCallerUid = callerUid;
     mCallerPid = callerPid;
     mTtss = ttss;
+
+    return NOERROR;
 }
 
 AutoPtr<IInterface> TextToSpeechService::SpeechItem::GetCallerIdentity()
@@ -306,10 +299,9 @@ AutoPtr<IInterface> TextToSpeechService::SpeechItem::GetCallerIdentity()
     return mCallerIdentity;
 }
 
-Int32 TextToSpeechService::SpeechItem::Play()
+ECode TextToSpeechService::SpeechItem::Play()
 {
-    if(TRUE)
-    {
+    if (TRUE) {
         AutoLock lock(mLock);
         if (mStarted) {
             //throw new IllegalStateException("play() called twice");
@@ -318,13 +310,14 @@ Int32 TextToSpeechService::SpeechItem::Play()
         }
         mStarted = TRUE;
     }
-    return PlayImpl();
+    PlayImpl();
+
+    return NOERROR;
 }
 
-void TextToSpeechService::SpeechItem::Stop()
+ECode TextToSpeechService::SpeechItem::Stop()
 {
-    if(TRUE)
-    {
+    if (TRUE) {
         AutoLock lock(mLock);
         if (mStopped) {
             //throw new IllegalStateException("stop() called twice");
@@ -334,6 +327,8 @@ void TextToSpeechService::SpeechItem::Stop()
         mStopped = TRUE;
     }
     StopImpl();
+
+    return NOERROR;
 }
 
 ECode TextToSpeechService::SpeechItem::DispatchOnDone()
@@ -363,14 +358,18 @@ ECode TextToSpeechService::SpeechItem::DispatchOnError()
     return NOERROR;
 }
 
-Int32 TextToSpeechService::SpeechItem::GetCallerUid()
+ECode TextToSpeechService::SpeechItem::GetCallerUid(
+    /* [out] */ Int32* ret)
 {
-    return mCallerUid;
+    *ret = mCallerUid;
+    return NOERROR;
 }
 
-Int32 TextToSpeechService::SpeechItem::GetCallerPid()
+ECode TextToSpeechService::SpeechItem::GetCallerPid(
+    /* [out] */ Int32* ret)
 {
-    return mCallerPid;
+    *ret = mCallerPid;
+    return NOERROR;
 }
 
 Boolean TextToSpeechService::SpeechItem::IsStopped()
@@ -404,8 +403,7 @@ String TextToSpeechService::SpeechItem::GetStringParam(
     /* [in] */ const String& defaultValue)
 {
     //Java:    return mParams == null ? defaultValue : mParams.getString(key, defaultValue);
-    if(mParams == NULL)
-    {
+    if(mParams == NULL) {
         return defaultValue;
     } else {
         String strParam;
@@ -419,8 +417,7 @@ Int32 TextToSpeechService::SpeechItem::GetIntParam(
     /* [in] */ Int32 defaultValue)
 {
     //Java:    return mParams == null ? defaultValue : mParams.getInt(key, defaultValue);
-    if(mParams == NULL)
-    {
+    if(mParams == NULL) {
         return defaultValue;
     } else {
         Int32 nParam;
@@ -435,8 +432,7 @@ Float TextToSpeechService::SpeechItem::GetFloatParam(
     /* [in] */ Float defaultValue)
 {
     //Java:    return mParams == null ? defaultValue : mParams.getFloat(key, defaultValue);
-    if(mParams == NULL)
-    {
+    if(mParams == NULL) {
         return defaultValue;
     } else {
         Float fParam;
@@ -445,8 +441,303 @@ Float TextToSpeechService::SpeechItem::GetFloatParam(
     }
 }
 
-/******************************TextToSpeechService::SynthesisSpeechItem*************************/
-TextToSpeechService::SynthesisSpeechItem::SynthesisSpeechItem(
+
+/******************************TextToSpeechService::UtteranceSpeechItem*************************/
+UtteranceSpeechItem::UtteranceSpeechItem(
+    /* [in] */ IInterface* caller,
+    /* [in] */ Int32 callerUid,
+    /* [in] */ Int32 callerPid)
+{}
+
+void UtteranceSpeechItem::DispatchOnSuccess()
+{
+#if 0
+    final String utteranceId = getUtteranceId();
+    if (utteranceId != null) {
+        mCallbacks.dispatchOnSuccess(getCallerIdentity(), utteranceId);
+    }
+#endif
+}
+
+void UtteranceSpeechItem::DispatchOnStop()
+{
+#if 0
+    final String utteranceId = getUtteranceId();
+    if (utteranceId != null) {
+        mCallbacks.dispatchOnStop(getCallerIdentity(), utteranceId);
+    }
+#endif
+}
+
+void UtteranceSpeechItem::DispatchOnStart()
+{
+#if 0
+    final String utteranceId = getUtteranceId();
+    if (utteranceId != null) {
+        mCallbacks.dispatchOnStart(getCallerIdentity(), utteranceId);
+    }
+#endif
+}
+
+void UtteranceSpeechItem::DispatchOnError(
+    /* [in] */ Int32 errorCode)
+{
+#if 0
+    final String utteranceId = getUtteranceId();
+    if (utteranceId != null) {
+        mCallbacks.dispatchOnError(getCallerIdentity(), utteranceId, errorCode);
+    }
+#endif
+}
+
+//
+// abstract public
+//
+String UtteranceSpeechItem::GetUtteranceId()
+{}
+
+
+String UtteranceSpeechItem::GetStringParam(
+    /* [in] */ IBundle params,
+    /* [in] */ const String& key,
+    /* [in] */ const String& defaultValue)
+{
+    String value;
+
+    if (params == NULL)
+        return defaultValue;
+
+    params->GetString(key, defaultValue, &value);
+    return value;
+}
+
+
+Int32 UtteranceSpeechItem::GetIntParam(
+    /* [in] */ IBundle params,
+    /* [in] */ const String& key,
+    /* [in] */ Int32 defaultValue)
+{
+    Int32 value;
+
+    if (params == NULL)
+        return defaultValue;
+
+    params->GetInt32(key, defaultValue, &value);
+    return value;
+}
+
+
+Float UtteranceSpeechItem::GetFloatParam(
+    /* [in] */ IBundle params,
+    /* [in] */ const String& key,
+    /* [in] */ Float defaultValue)
+{
+    Float value;
+
+    if (params == NULL)
+        return defaultValue;
+
+    params->GetFloat(key, defaultValue, &value);
+    return value;
+}
+
+
+/******************************TextToSpeechService::AudioOutputParams*************************/
+TextToSpeechService::AudioOutputParams()
+{
+    mSessionId = AudioSystem.AUDIO_SESSION_ALLOCATE;
+    mVolume = Engine.DEFAULT_VOLUME;
+    mPan = Engine.DEFAULT_PAN;
+    mAudioAttributes = null;
+}
+
+TextToSpeechService::AudioOutputParams(
+    /* [in] */ Int32 sessionId,
+    /* [in] */ Float volume,
+    /* [in] */ Float pan,
+    /* [in] */ AudioAttributes audioAttributes)
+{
+    mSessionId = sessionId;
+    mVolume = volume;
+    mPan = pan;
+    mAudioAttributes = audioAttributes;
+}
+
+/** Create AudioOutputParams from A {@link SynthesisRequest#getParams()} bundle */
+TextToSpeechService::AudioOutputParams TextToSpeechService::createFromV1ParamsBundle(
+    /* [in] */ IBundle paramsBundle,
+    /* [in] */ Boolean isSpeech)
+{
+#if 0
+            if (paramsBundle == null) {
+                return new AudioOutputParams();
+            }
+
+            AudioAttributes audioAttributes =
+                    (AudioAttributes) paramsBundle.getParcelable(
+                            Engine.KEY_PARAM_AUDIO_ATTRIBUTES);
+            if (audioAttributes == null) {
+                int streamType = paramsBundle.getInt(
+                        Engine.KEY_PARAM_STREAM, Engine.DEFAULT_STREAM);
+                audioAttributes = (new AudioAttributes.Builder())
+                        .setLegacyStreamType(streamType)
+                        .setContentType((isSpeech ?
+                                AudioAttributes.CONTENT_TYPE_SPEECH :
+                                AudioAttributes.CONTENT_TYPE_SONIFICATION))
+                        .build();
+            }
+
+            return new AudioOutputParams(
+                    paramsBundle.getInt(
+                            Engine.KEY_PARAM_SESSION_ID,
+                            AudioSystem.AUDIO_SESSION_ALLOCATE),
+                    paramsBundle.getFloat(
+                            Engine.KEY_PARAM_VOLUME,
+                            Engine.DEFAULT_VOLUME),
+                    paramsBundle.getFloat(
+                            Engine.KEY_PARAM_PAN,
+                            Engine.DEFAULT_PAN),
+                    audioAttributes);
+#endif
+//    if (paramsBundle == NULL) {
+        return new AudioOutputParams();
+//    }
+}
+
+/******************************TextToSpeechService::SynthesisSpeechItemV1*************************/
+TextToSpeechService::SynthesisSpeechItemV1::SynthesisSpeechItemV1()
+{
+    SpeechItemV1::SpeechItemV1(callerIdentity, callerUid, callerPid, params, utteranceId);
+    mText = text;
+    mCallerUid = callerUid;
+    mSynthesisRequest = new SynthesisRequest(mText, mParams);
+    mDefaultLocale = getSettingsLocale();
+    setRequestParams(mSynthesisRequest);
+    mEventLogger = new EventLoggerV1(mSynthesisRequest, callerUid, callerPid,
+            mPackageName);
+}
+
+ICharSequence TextToSpeechService::SynthesisSpeechItemV1::getText()
+{
+    return mText;
+}
+
+Boolean TextToSpeechService::SynthesisSpeechItemV1::isValid()
+{
+    if (mText == null) {
+        Logger::E(TAG, "null synthesis text");
+        return FALSE;
+    }
+    if (mText.length() >= TextToSpeech.getMaxSpeechInputLength()) {
+        Logger::W(TAG, "Text too long: " + mText.length() + " chars");
+        return FALSE;
+    }
+    return TRUE;
+}
+
+ void playImpl()
+ {
+    AbstractSynthesisCallback synthesisCallback;
+    mEventLogger.onRequestProcessingStart();
+    synchronized(this) {
+        // stop() might have been called before we enter this
+        // synchronized block.
+        if (isStopped()) {
+            return;
+        }
+        mSynthesisCallback = createSynthesisCallback();
+        synthesisCallback = mSynthesisCallback;
+    }
+
+    TextToSpeechService.this.onSynthesizeText(mSynthesisRequest, synthesisCallback);
+
+    // Fix for case where client called .start() & .error(), but did not called .done()
+    if (synthesisCallback.hasStarted() && !synthesisCallback.hasFinished()) {
+        synthesisCallback.done();
+    }
+}
+
+
+/******************************TextToSpeechService::SynthesisToFileOutputStreamSpeechItemV1*************************/
+TextToSpeechService::SynthesisToFileOutputStreamSpeechItemV1::SynthesisToFileOutputStreamSpeechItemV1(
+    /* [in] */ IInterface callerIdentity,
+    /* [in] */ Int32 callerUid,
+    /* [in] */ Int32 callerPid,
+    /* [in] */ IBundle params,
+    /* [in] */ const String& utteranceId,
+    /* [in] */ ICharSequence text,
+    /* [in] */ IFileOutputStream fileOutputStream)
+{
+    //super(callerIdentity, callerUid, callerPid, params, utteranceId, text);
+    mFileOutputStream = fileOutputStream;
+}
+
+AbstractSynthesisCallback TextToSpeechService::SynthesisToFileOutputStreamSpeechItemV1::createSynthesisCallback()
+{
+#if 0
+     return new FileSynthesisCallback(mFileOutputStream.getChannel(),
+                    this, getCallerIdentity(), false);
+#endif
+}
+
+void TextToSpeechService::SynthesisToFileOutputStreamSpeechItemV1::playImpl()
+{
+#if 0
+    dispatchOnStart();
+    super.playImpl();
+    try {
+      mFileOutputStream.close();
+    } catch(IOException e) {
+      Log.w(TAG, "Failed to close output file", e);
+    }
+#endif
+    DispatchOnStart();
+    SynthesisSpeechItemV1::playImpl();
+}
+
+/******************************TextToSpeechService::AudioSpeechItemV1*************************/
+TextToSpeechService::AudioSpeechItemV1::AudioSpeechItemV1(
+            /* [in] */ IInterface callerIdentity,
+            /* [in] */ Int64 callerUid,
+            /* [in] */ Int64 callerPid,
+            /* [in] */ Bundle params,
+            /* [in] */ const String& utteranceId,
+            /* [in] */ Uri uri)
+{
+#if 0
+                super(callerIdentity, callerUid, callerPid, params, utteranceId);
+            mItem = new AudioPlaybackQueueItem(this, getCallerIdentity(),
+                    TextToSpeechService.this, uri, getAudioParams());
+#endif
+}
+
+Boolean TextToSpeechService::AudioSpeechItemV1::isValid()
+{
+    return true;
+}
+
+void TextToSpeechService::AudioSpeechItemV1::playImpl()
+{
+    mAudioPlaybackHandler.enqueue(mItem);
+}
+
+void TextToSpeechService::AudioSpeechItemV1::stopImpl() {
+    // Do nothing.
+}
+
+String TextToSpeechService::AudioSpeechItemV1::getUtteranceId()
+{
+    return getStringParam(mParams, Engine.KEY_PARAM_UTTERANCE_ID, NULL);
+}
+
+AudioOutputParams TextToSpeechService::AudioSpeechItemV1::getAudioParams()
+{
+    return AudioOutputParams.createFromV1ParamsBundle(mParams, FALSE);
+}
+
+
+/******************************TextToSpeechService::SynthesisSpeechItemV1*************************/
+TextToSpeechService::SynthesisSpeechItemV1::SynthesisSpeechItemV1(
     /* [in] */ IInterface* callerIdentity,
     /* [in] */ Int32 callerUid,
     /* [in] */ Int32 callerPid,
@@ -461,12 +752,12 @@ TextToSpeechService::SynthesisSpeechItem::SynthesisSpeechItem(
     mEventLogger = new EventLogger(mSynthesisRequest, callerUid, callerPid, ttss->mPackageName);
 }
 
-String TextToSpeechService::SynthesisSpeechItem::GetText()
+String TextToSpeechService::SynthesisSpeechItemV1::GetText()
 {
     return mText;
 }
 
-Boolean TextToSpeechService::SynthesisSpeechItem::IsValid()
+Boolean TextToSpeechService::SynthesisSpeechItemV1::IsValid()
 {
     if (mText.IsNull()) {
         //Java:    Log.e(TAG, "null synthesis text");
@@ -481,7 +772,7 @@ Boolean TextToSpeechService::SynthesisSpeechItem::IsValid()
     return TRUE;
 }
 
-Int32 TextToSpeechService::SynthesisSpeechItem::PlayImpl()
+Int32 TextToSpeechService::SynthesisSpeechItemV1::PlayImpl()
 {
     AutoPtr<AbstractSynthesisCallback> synthesisCallback;
     mEventLogger->OnRequestProcessingStart();
@@ -499,14 +790,14 @@ Int32 TextToSpeechService::SynthesisSpeechItem::PlayImpl()
     return synthesisCallback->IsDone() ? ITextToSpeech::TTS_SUCCESS : ITextToSpeech::TTS_ERROR;
 }
 
-AutoPtr<AbstractSynthesisCallback> TextToSpeechService::SynthesisSpeechItem::CreateSynthesisCallback()
+AutoPtr<AbstractSynthesisCallback> TextToSpeechService::SynthesisSpeechItemV1::CreateSynthesisCallback()
 {
     AutoPtr<AbstractSynthesisCallback> asCallback = new PlaybackSynthesisCallback(GetStreamType(), GetVolume(), GetPan(),
                     mTtss->mAudioPlaybackHandler, this, GetCallerIdentity(), mEventLogger);
     return asCallback;
 }
 
-void TextToSpeechService::SynthesisSpeechItem::SetRequestParams(
+void TextToSpeechService::SynthesisSpeechItemV1::SetRequestParams(
     /* [in] */ ISynthesisRequest* request)
 {
     ((CSynthesisRequest*)request)->SetLanguage(GetLanguage(), GetCountry(), GetVariant());
@@ -515,7 +806,7 @@ void TextToSpeechService::SynthesisSpeechItem::SetRequestParams(
     ((CSynthesisRequest*)request)->SetPitch(GetPitch());
 }
 
-void TextToSpeechService::SynthesisSpeechItem::StopImpl()
+void TextToSpeechService::SynthesisSpeechItemV1::StopImpl()
 {
     AutoPtr<AbstractSynthesisCallback> synthesisCallback;
     if(TRUE){
@@ -531,12 +822,12 @@ void TextToSpeechService::SynthesisSpeechItem::StopImpl()
     }
 }
 
-String TextToSpeechService::SynthesisSpeechItem::GetLanguage()
+String TextToSpeechService::SynthesisSpeechItemV1::GetLanguage()
 {
     return GetStringParam(ITextToSpeechEngine::KEY_PARAM_LANGUAGE, (*mDefaultLocale)[0]);
 }
 
-Boolean TextToSpeechService::SynthesisSpeechItem::HasLanguage()
+Boolean TextToSpeechService::SynthesisSpeechItemV1::HasLanguage()
 {
     String stringParam = GetStringParam(ITextToSpeechEngine::KEY_PARAM_LANGUAGE, String(NULL));
     AutoPtr<ICharSequence> cs;
@@ -544,7 +835,7 @@ Boolean TextToSpeechService::SynthesisSpeechItem::HasLanguage()
     return !TextUtils::IsEmpty(cs.Get());
 }
 
-String TextToSpeechService::SynthesisSpeechItem::GetCountry()
+String TextToSpeechService::SynthesisSpeechItemV1::GetCountry()
 {
     if (!HasLanguage()){
         return (*mDefaultLocale)[1];
@@ -552,7 +843,7 @@ String TextToSpeechService::SynthesisSpeechItem::GetCountry()
     return GetStringParam(ITextToSpeechEngine::KEY_PARAM_COUNTRY, String(""));
 }
 
-String TextToSpeechService::SynthesisSpeechItem::GetVariant()
+String TextToSpeechService::SynthesisSpeechItemV1::GetVariant()
 {
     if (!HasLanguage()){
         return (*mDefaultLocale)[2];
@@ -560,12 +851,13 @@ String TextToSpeechService::SynthesisSpeechItem::GetVariant()
     return GetStringParam(ITextToSpeechEngine::KEY_PARAM_VARIANT, String(""));
 }
 
-Int32 TextToSpeechService::SynthesisSpeechItem::GetSpeechRate()
+
+Int32 TextToSpeechService::SynthesisSpeechItemV1::GetSpeechRate()
 {
     return GetIntParam(ITextToSpeechEngine::KEY_PARAM_RATE, mTtss->GetDefaultSpeechRate());
 }
 
-Int32 TextToSpeechService::SynthesisSpeechItem::GetPitch()
+Int32 TextToSpeechService::SynthesisSpeechItemV1::GetPitch()
 {
     return GetIntParam(ITextToSpeechEngine::KEY_PARAM_PITCH, ITextToSpeechEngine::DEFAULT_PITCH);
 }
@@ -578,7 +870,7 @@ TextToSpeechService::SynthesisToFileSpeechItem::SynthesisToFileSpeechItem(
     /* [in] */ IBundle* params,
     /* [in] */ const String& text,
     /* [in] */ IFile* file,
-    /* [in] */ TextToSpeechService* ttss):SynthesisSpeechItem(callerIdentity, callerUid, callerPid, params, text, ttss)
+    /* [in] */ TextToSpeechService* ttss):SynthesisSpeechItemV1(callerIdentity, callerUid, callerPid, params, text, ttss)
 {
     mFile = file;
 }
@@ -591,7 +883,7 @@ AutoPtr<AbstractSynthesisCallback> TextToSpeechService::SynthesisToFileSpeechIte
 Int32 TextToSpeechService::SynthesisToFileSpeechItem::PlayImpl()
 {
     DispatchOnStart();
-    Int32 status = SynthesisSpeechItem::PlayImpl();
+    Int32 status = SynthesisSpeechItemV1::PlayImpl();
     if (status == ITextToSpeech::TTS_SUCCESS) {
         DispatchOnDone();
     } else {
@@ -658,48 +950,24 @@ void TextToSpeechService::SilenceSpeechItem::StopImpl()
     // Do nothing, handled by AudioPlaybackHandler#stopForApp
 }
 
-/******************************TextToSpeechService::TextToSpeechServiceStub*************************/
-PInterface TextToSpeechService::TextToSpeechServiceStub::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IITextToSpeechService*)this;
-    }
-    else if (riid == EIID_IITextToSpeechService) {
-        return (IITextToSpeechService*)this;
-    }
-    return NULL;
-}
+/******************
+ * TextToSpeechService::TextToSpeechServiceStub
+ *******************************************************************************************************/
 
-UInt32 TextToSpeechService::TextToSpeechServiceStub::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+CAR_INTERFACE_IMPL(TextToSpeechService::TextToSpeechServiceStub, Object, IITextToSpeechService)
 
-UInt32 TextToSpeechService::TextToSpeechServiceStub::Release()
-{
-    return ElRefBase::Release();
-}
+TextToSpeechService::TextToSpeechServiceStub::TextToSpeechServiceStub()
+{}
 
-ECode TextToSpeechService::TextToSpeechServiceStub::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+TextToSpeechService::TextToSpeechServiceStub::~TextToSpeechServiceStub()
+{}
 
-    if (Object == (IInterface*)(IITextToSpeechService*)this) {
-        *iID = EIID_IITextToSpeechService;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
+ECode TextToSpeechService::TextToSpeechServiceStub::constructor()
+{
     return NOERROR;
 }
 
-TextToSpeechService::TextToSpeechServiceStub::TextToSpeechServiceStub(
+ECode TextToSpeechService::TextToSpeechServiceStub::constructor(
     /* [in] */ TextToSpeechService* ttss)
 {
     mTtss = ttss;
@@ -724,7 +992,7 @@ ECode TextToSpeechService::TextToSpeechServiceStub::Speak(
         return NOERROR;
     }
 
-    AutoPtr<SpeechItem> item = new SynthesisSpeechItem(caller,
+    AutoPtr<SpeechItem> item = new SynthesisSpeechItemV1(caller,
                     CBinder::GetCallingUid(), CBinder::GetCallingPid(), params, text, mTtss.Get());
     *result = (mTtss->mSynthHandler)->EnqueueSpeechItem(queueMode, item.Get());
     return NOERROR;
@@ -1120,6 +1388,52 @@ AutoPtr</*IIBinder*/IBinder> TextToSpeechService::OnBind(
     }
     return NULL;
 }
+
+Int32 GetExpectedLanguageAvailableStatus(
+    /* [in] */ ILocale* locale)
+{
+#if 0
+        int expectedStatus = TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE;
+        if (locale.getVariant().isEmpty()) {
+            if (locale.getCountry().isEmpty()) {
+                expectedStatus = TextToSpeech.LANG_AVAILABLE;
+            } else {
+                expectedStatus = TextToSpeech.LANG_COUNTRY_AVAILABLE;
+            }
+        }
+        return expectedStatus;
+#endif
+}
+
+ECode OnGetVoices(
+    /* [out] */ IList** voices)
+{
+    return NOERROR;
+}
+
+ECode OnGetDefaultVoiceNameFor(
+    /* [in]  */ String lang,
+    /* [in]  */ String country,
+    /* [in]  */ String variant,
+    /* [out] */ String* name)
+{
+    return NOERROR;
+}
+
+ECode OnLoadVoice(
+    /* [in]  */ String voiceName,
+    /* [out] */ Int32* voice)
+{
+    return NOERROR;
+}
+
+ECode OnIsValidVoiceName(
+    /* [in]  */ String voiceName,
+    /* [out] */ Int32* ret)
+{
+    return NOERROR;
+}
+
 
 TextToSpeechService::TextToSpeechService()
 {

@@ -5,10 +5,10 @@
 #include "DigitalClock.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 CarClass(CDigitalClock2) , public DigitalClock
 {

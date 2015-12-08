@@ -1,26 +1,58 @@
 
+#include "elastos/droid/view/textservice/CTextServicesManager.h"
+#include "elastos/droid/view/textservice/CSpellCheckerSession.h"
+#include "elastos/droid/view/textservice/CSpellCheckerSubtype.h"
+#include "elastos/droid/os/CServiceManager.h"
+
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IServiceManager;
+using Elastos::Droid::Os::CServiceManager;
+using Elastos::Droid::View::Internal::TextService::IITextServicesSessionListener;
+using Elastos::Droid::View::Internal::TextService::IISpellCheckerSessionListener;
+
+using Elastos::Utility::Logging::Logger;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
+namespace TextService {
 
-const String CTextServicesManager::TAG;// = TextServicesManager.class.getSimpleName();
+//========================================================================================
+//              CTextServicesManager::
+//========================================================================================
+const String CTextServicesManager::TAG("CTextServicesManager");
 const Boolean CTextServicesManager::DBG = FALSE;
 
 AutoPtr<ITextServicesManager> CTextServicesManager::sInstance;
-AutoPtr<ITextServicesManager> CTextServicesManager::sService;
+AutoPtr<IITextServicesManager> CTextServicesManager::sService;
 
-Mutex CTextServicesManager::sLock;
+Object CTextServicesManager::sLock;
 
-/**
- * Retrieve the global TextServicesManager instance, creating it if it doesn't already exist.
- * @hide
- */
+CAR_INTERFACE_IMPL(CTextServicesManager, Object, ITextServicesManager)
+
+CAR_OBJECT_IMPL(CTextServicesManager)
+
+ECode CTextServicesManager::constructor()
+{
+    if (sService == NULL) {
+        AutoPtr<IServiceManager> sm;
+        CServiceManager::AcquireSingleton((IServiceManager**)&sm);
+        AutoPtr<IInterface> s;
+        sm->GetService(IContext::TEXT_SERVICES_MANAGER_SERVICE, (IInterface**)&s);
+        AutoPtr<IBinder> b = IBinder::Probe(s);
+        sService = IITextServicesManager::Probe(b);
+    }
+    return NOERROR;
+}
+
 AutoPtr<ITextServicesManager> CTextServicesManager::GetInstance()
 {
-    //synchronized(TextServicesManager.class)
     {
-        Object::AutoLock lock(sLock);
+        AutoLock lock(sLock);
         if (sInstance != NULL) {
             return sInstance;
         }
@@ -30,28 +62,18 @@ AutoPtr<ITextServicesManager> CTextServicesManager::GetInstance()
     return sInstance;
 }
 
-ECode CTextServicesManager::constructor()
+String CTextServicesManager::ParseLanguageFromLocaleString(
+    /* [in] */ String locale)
 {
-    if (sService == NULL) {
-//        IBinder b = ServiceManager.getService(Context.TEXT_SERVICES_MANAGER_SERVICE);
-//        sService = ITextServicesManager.Stub.asInterface(b);
+    Int32 idx = locale.IndexOf('_');
+    if (idx < 0) {
+        return locale;
+    }
+    else {
+        return locale.Substring(0, idx);
     }
 }
 
-/**
- * Get a spell checker session for the specified spell checker
- * @param locale the locale for the spell checker. If {@code locale} is null and
- * referToSpellCheckerLanguageSettings is true, the locale specified in Settings will be
- * returned. If {@code locale} is not null and referToSpellCheckerLanguageSettings is true,
- * the locale specified in Settings will be returned only when it is same as {@code locale}.
- * Exceptionally, when referToSpellCheckerLanguageSettings is true and {@code locale} is
- * only language (e.g. "en"), the specified locale in Settings (e.g. "en_US") will be
- * selected.
- * @param listener a spell checker session lister for getting results from a spell checker.
- * @param referToSpellCheckerLanguageSettings if true, the session for one of enabled
- * languages in settings will be returned.
- * @return the spell checker session of the spell checker
- */
 ECode CTextServicesManager::NewSpellCheckerSession(
     /* [in] */ IBundle* bundle,
     /* [in] */ ILocale* locale,
@@ -61,16 +83,13 @@ ECode CTextServicesManager::NewSpellCheckerSession(
 {
     VALIDATE_NOT_NULL(session);
 
-    //if (listener == null) {
-    //    throw new NullPointerException();
-    //}
-    assert(listener != NULL);
+    if (listener == NULL) {
+       return E_NULL_POINTER_EXCEPTION;
+    }
 
-    //if (!referToSpellCheckerLanguageSettings && locale == null) {
-    //    throw new IllegalArgumentException("Locale should not be null if you don't refer"
-    //            + " settings.");
-    //}
-    assert(!(!referToSpellCheckerLanguageSettings && locale == NULL));
+    if (!referToSpellCheckerLanguageSettings && locale == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     Boolean enabled = FALSE;
     if (referToSpellCheckerLanguageSettings && !(IsSpellCheckerEnabled(&enabled), enabled)) {
@@ -79,11 +98,7 @@ ECode CTextServicesManager::NewSpellCheckerSession(
     }
 
     AutoPtr<ISpellCheckerInfo> sci;
-    //try {
-        sService->GetCurrentSpellChecker(NULL, (ISpellCheckerInfo**)&sci);
-    //} catch (RemoteException e) {
-    //    return null;
-    //}
+    sService->GetCurrentSpellChecker(String(NULL), (ISpellCheckerInfo**)&sci);
 
     if (sci == NULL) {
         *session = NULL;
@@ -110,8 +125,8 @@ ECode CTextServicesManager::NewSpellCheckerSession(
                 return NOERROR;
             }
         }
-    } else {
-
+    }
+    else {
         String localeStr;
         locale->ToString(&localeStr);
 
@@ -128,8 +143,9 @@ ECode CTextServicesManager::NewSpellCheckerSession(
             if (tempSubtypeLocale.Equals(localeStr)) {
                 subtypeInUse = subtype;
                 break;
-            } else if (localeStr.GetLength() >= 2 && tempSubtypeLocale.GetLength() >= 2
-                    && localeStr.StartsWith(tempSubtypeLocale)) {
+            }
+            else if (localeStr.GetLength() >= 2 && tempSubtypeLocale.GetLength() >= 2
+                    && localeStr.StartWith(tempSubtypeLocale)) {
                 subtypeInUse = subtype;
             }
         }
@@ -144,158 +160,98 @@ ECode CTextServicesManager::NewSpellCheckerSession(
     CSpellCheckerSession::New(
             sci, sService, listener, subtypeInUse, (ISpellCheckerSession**)&_session);
 
-    //try {
-        String id, localeString;
-        AutoPtr<IITextServicesSessionListener> textListener;
-        AutoPtr<IISpellCheckerSessionListener> spellListener;
+    String id, localeString;
+    AutoPtr<IITextServicesSessionListener> textListener;
+    AutoPtr<IISpellCheckerSessionListener> spellListener;
 
-        sci->GetId(&id);
-        subtypeInUse->GetLocale(&localeString);
-        _session->GetTextServicesSessionListener((IITextServicesSessionListener**)&textListener);
-        _session->GetSpellCheckerSessionListener((IISpellCheckerSessionListener**)&spellListener);
+    sci->GetId(&id);
+    subtypeInUse->GetLocale(&localeString);
+    ((CSpellCheckerSession*)_session.Get())->GetTextServicesSessionListener((IITextServicesSessionListener**)&textListener);
+    ((CSpellCheckerSession*)_session.Get())->GetSpellCheckerSessionListener((IISpellCheckerSessionListener**)&spellListener);
 
-        sService->GetSpellCheckerService(id, localeString,
-                textListener, spellListener, bundle);
-    //} catch (RemoteException e) {
-    //    return null;
-    //}
+    sService->GetSpellCheckerService(id, localeString,
+            textListener, spellListener, bundle);
 
     *session = _session;
     REFCOUNT_ADD(*session);
     return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode CTextServicesManager::GetEnabledSpellCheckers(
     /* [out] */ ArrayOf<ISpellCheckerInfo*>** infoArray)
 {
     VALIDATE_NOT_NULL(infoArray);
 
-    //try {
-        return sService->GetEnabledSpellCheckers(infoArray);
-    //    if (DBG) {
-    //        Log.d(TAG, "getEnabledSpellCheckers: " + (retval != null ? retval.length : "null"));
-    //    }
-    //    return retval;
-    //} catch (RemoteException e) {
-    //    Log.e(TAG, "Error in getEnabledSpellCheckers: " + e);
-    //    return null;
-    //}
+    return sService->GetEnabledSpellCheckers(infoArray);
 }
 
-/**
- * @hide
- */
 ECode CTextServicesManager::GetCurrentSpellChecker(
     /* [out] */ ISpellCheckerInfo** info)
 {
     VALIDATE_NOT_NULL(info);
 
-    //try {
-        // Passing null as a locale for ICS
-        return sService->GetCurrentSpellChecker(NULL, info);
-    //} catch (RemoteException e) {
-    //    return null;
-    //}
+    return sService->GetCurrentSpellChecker(String(NULL), info);
 }
 
-/**
- * @hide
- */
 ECode CTextServicesManager::SetCurrentSpellChecker(
     /* [in] */ ISpellCheckerInfo* sci)
 {
-    //try {
-    //    if (sci == null) {
-    //        throw new NullPointerException("SpellCheckerInfo is null.");
-    //    }
-        assert(sci != NULL);
+   if (sci == NULL) {
+       // throw new NullPointerException("SpellCheckerInfo is null.");
+       return E_NULL_POINTER_EXCEPTION;
+   }
 
-        String id;
-        sci->GetId(&id);
+    String id;
+    sci->GetId(&id);
 
-        return sService->SetCurrentSpellChecker(NULL, id);
-    //} catch (RemoteException e) {
-    //    Log.e(TAG, "Error in setCurrentSpellChecker: " + e);
-    //}
+    return sService->SetCurrentSpellChecker(String(NULL), id);
 }
 
-/**
- * @hide
- */
 ECode CTextServicesManager::GetCurrentSpellCheckerSubtype(
     /* [in] */ Boolean allowImplicitlySelectedSubtype,
     /* [out] */ ISpellCheckerSubtype** subtype)
 {
     VALIDATE_NOT_NULL(subtype);
 
-    //try {
-        if (sService == NULL) {
-            // TODO: This is a workaround. Needs to investigate why sService could be null
-            // here.
-    //        Log.e(TAG, "sService is null.");
-            *subtype = NULL;
-            return NOERROR;
-        }
-        // Passing null as a locale until we support multiple enabled spell checker subtypes.
-        return sService->GetCurrentSpellCheckerSubtype(NULL, allowImplicitlySelectedSubtype, subtype);
-    //} catch (RemoteException e) {
-    //    Log.e(TAG, "Error in getCurrentSpellCheckerSubtype: " + e);
-    //    return null;
-    //}
+    if (sService == NULL) {
+        // TODO: This is a workaround. Needs to investigate why sService could be null
+        // here.
+        Logger::E(TAG, "sService is null.");
+        *subtype = NULL;
+        return NOERROR;
+    }
+    // Passing null as a locale until we support multiple enabled spell checker subtypes.
+    return sService->GetCurrentSpellCheckerSubtype(String(NULL), allowImplicitlySelectedSubtype, subtype);
 }
 
-/**
- * @hide
- */
 ECode CTextServicesManager::SetSpellCheckerSubtype(
     /* [in] */ ISpellCheckerSubtype* subtype)
 {
-    //try {
-        Int32 hashCode;
-        if (subtype == NULL) {
-            hashCode = 0;
-        } else {
-            subtype->GetHashCode(&hashCode);
-        }
-        return sService->SetCurrentSpellCheckerSubtype(NULL, hashCode);
-    //} catch (RemoteException e) {
-    //    Log.e(TAG, "Error in setSpellCheckerSubtype:" + e);
-    //}
+    Int32 hashCode;
+    if (subtype == NULL) {
+        hashCode = 0;
+    }
+    else {
+        ((CSpellCheckerSubtype*)subtype)->GetHashCode(&hashCode);
+    }
+    return sService->SetCurrentSpellCheckerSubtype(String(NULL), hashCode);
 }
 
-/**
- * @hide
- */
 ECode CTextServicesManager::SetSpellCheckerEnabled(
     /* [in] */ Boolean enabled)
 {
-    //try {
-        return sService->SetSpellCheckerEnabled(enabled);
-    //} catch (RemoteException e) {
-    //    Log.e(TAG, "Error in setSpellCheckerEnabled:" + e);
-    //}
+    return sService->SetSpellCheckerEnabled(enabled);
 }
 
-/**
- * @hide
- */
 ECode CTextServicesManager::IsSpellCheckerEnabled(
     /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
 
-    //try {
-        return sService->IsSpellCheckerEnabled(enabled);
-    //} catch (RemoteException e) {
-    //    Log.e(TAG, "Error in isSpellCheckerEnabled:" + e);
-    //    return false;
-    //}
+    return sService->IsSpellCheckerEnabled(enabled);
 }
 
-}   //namespace Textservice
+}   //namespace TextService
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos

@@ -1,34 +1,47 @@
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/ImageButton.h"
+#include "elastos/droid/R.h"
 
+using Elastos::Droid::R;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::Widget::ImageView;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-    const String ImageButton::IMAGEBUTTON_NAME = String("ImageButton");
-
-ImageButton::ImageButton()
-{}
-
-ImageButton::ImageButton(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+const String ImageButton::IMAGEBUTTON_NAME("ImageButton");
+CAR_INTERFACE_IMPL(ImageButton, ImageView, IImageButton);
+ECode ImageButton::constructor(
+    /* [in] */ IContext* context)
 {
-    Init(context, attrs, defStyle);
+    return constructor(context, NULL);
 }
 
-ECode ImageButton::Init(
+ECode ImageButton::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::imageButtonStyle);
+}
+
+ECode ImageButton::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    FAIL_RETURN(ImageView::Init(context, attrs, defStyle));
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode ImageButton::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    FAIL_RETURN(ImageView::constructor(context, attrs, defStyleAttr, defStyleRes));
     SetFocusable(TRUE);
     return NOERROR;
 }
@@ -39,24 +52,22 @@ Boolean ImageButton::OnSetAlpha(
     return FALSE;
 }
 
-//@Override
 ECode ImageButton::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     ImageView::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(IMAGEBUTTON_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
+    FAIL_RETURN(CString::New(IMAGEBUTTON_NAME, (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
-//@Override
 ECode ImageButton::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     ImageView::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(IMAGEBUTTON_NAME, (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(IMAGEBUTTON_NAME, (ICharSequence**)&seq));
     info->SetClassName(seq);
     return NOERROR;
 }

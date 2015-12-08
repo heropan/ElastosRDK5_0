@@ -1,4 +1,6 @@
 #include "elastos/droid/app/CNotificationBigPictureStyle.h"
+#include "elastos/droid/app/CNotification.h"
+#include "elastos/droid/app/CNotificationBuilder.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
@@ -7,6 +9,10 @@ using Elastos::Droid::View::IView;
 namespace Elastos {
 namespace Droid {
 namespace App {
+
+CAR_INTERFACE_IMPL(CNotificationBigPictureStyle, NotificationStyle, INotificationBigPictureStyle)
+
+CAR_OBJECT_IMPL(CNotificationBigPictureStyle)
 
 CNotificationBigPictureStyle::CNotificationBigPictureStyle()
     : mBigLargeIconSet(FALSE)
@@ -37,14 +43,14 @@ ECode CNotificationBigPictureStyle::SetBuilder(
 ECode CNotificationBigPictureStyle::SetBigContentTitle(
     /* [in] */ ICharSequence* title)
 {
-    InternalSetBigContentTitle(SafeCharSequence(title));
+    InternalSetBigContentTitle(CNotification::SafeCharSequence(title));
     return NOERROR;
 }
 
 ECode CNotificationBigPictureStyle::SetSummaryText(
     /* [in] */ ICharSequence* cs)
 {
-    InternalSetSummaryText(SafeCharSequence(cs));
+    InternalSetSummaryText(CNotification::SafeCharSequence(cs));
     return NOERROR;
 }
 
@@ -58,66 +64,62 @@ ECode CNotificationBigPictureStyle::BigPicture(
 ECode CNotificationBigPictureStyle::BigLargeIcon(
     /* [in] */ IBitmap* b)
 {
-    mBigLargeIconSet = true;
+    mBigLargeIconSet = TRUE;
     mBigLargeIcon = b;
     return NOERROR;
 }
 
 AutoPtr<IRemoteViews> CNotificationBigPictureStyle::MakeBigContentView()
 {
-    // AutoPtr<IRemoteViews> contentView = GetStandardView(R::layout::notification_template_big_picture);
-    // if (contentView) {
-    //     contentView->SetImageViewBitmap(R::id::big_picture, mPicture);
-    // }
-    // return contentView;
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    AutoPtr<IRemoteViews> contentView = GetStandardView(builder->GetBigPictureLayoutResource());
 
-    RemoteViews contentView = getStandardView(mBuilder.getBigPictureLayoutResource());
+    contentView->SetImageViewBitmap(R::id::big_picture, mPicture);
 
-    contentView.setImageViewBitmap(R.id.big_picture, mPicture);
+    ApplyTopPadding(contentView);
 
-    applyTopPadding(contentView);
-
-    boolean twoTextLines = mBuilder.mSubText != null && mBuilder.mContentText != null;
-    mBuilder.addProfileBadge(contentView,
-            twoTextLines ? R.id.profile_badge_line2 : R.id.profile_badge_line3);
+    Boolean twoTextLines = builder->mSubText != NULL && builder->mContentText != NULL;
+    builder->AddProfileBadge(contentView,
+        twoTextLines ? R::id::profile_badge_line2 : R::id::profile_badge_line3);
     return contentView;
 }
 
-/**
- * @hide
- */
-CARAPI AddExtras(
+ECode CNotificationBigPictureStyle::AddExtras(
     /* [in] */ IBundle* extras)
 {
-    super.addExtras(extras);
+    NotificationStyle::AddExtras(extras);
 
     if (mBigLargeIconSet) {
-        extras.putParcelable(EXTRA_LARGE_ICON_BIG, mBigLargeIcon);
+        extras->PutParcelable(INotification::EXTRA_LARGE_ICON_BIG, IParcelable::Probe(mBigLargeIcon));
     }
-    extras.putParcelable(EXTRA_PICTURE, mPicture);
+    extras->PutParcelable(INotification::EXTRA_PICTURE, IParcelable::Probe(mPicture));
+    return NOERROR;
 }
 
-/**
- * @hide
- */
-CARAPI RestoreFromExtras(
+
+ECode CNotificationBigPictureStyle::RestoreFromExtras(
     /* [in] */ IBundle* extras)
 {
-    super.restoreFromExtras(extras);
+    NotificationStyle::RestoreFromExtras(extras);
 
-    if (extras.containsKey(EXTRA_LARGE_ICON_BIG)) {
-        mBigLargeIcon = extras.getParcelable(EXTRA_LARGE_ICON_BIG);
+    AutoPtr<IParcelable> p;
+    Boolean bval;
+    if (extras->ContainsKey(INotification::EXTRA_LARGE_ICON_BIG, &bval)) {
+        extras->GetParcelable(INotification::EXTRA_LARGE_ICON_BIG, (IParcelable**)&p);
+        mBigLargeIcon = IBitmap::Probe(p);
     }
-    mPicture = extras.getParcelable(EXTRA_PICTURE);
+
+    p = NULL;
+    extras->GetParcelable(INotification::EXTRA_PICTURE, (IParcelable**)&p);
+    mPicture = IBitmap::Probe(p);
+    return NOERROR;
 }
 
-/**
- * @hide
- */
-CARAPI populateBigContentView(
+ECode CNotificationBigPictureStyle::PopulateBigContentView(
     /* [in] */ INotification* wip)
 {
-    mBuilder.setBuilderBigContentView(wip, makeBigContentView());
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    return builder->SetBuilderBigContentView(wip, MakeBigContentView());
 }
 
 } // namespace App

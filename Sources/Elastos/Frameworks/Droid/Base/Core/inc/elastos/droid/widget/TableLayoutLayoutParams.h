@@ -2,8 +2,6 @@
 #ifndef __ELASTOS_DROID_WIDGET_TABLELAYOUTLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_TABLELAYOUTLAYOUTPARAMS_H__
 
-#include "elastos/droid/widget/LinearLayoutLayoutParams.h"
-
 namespace Elastos {
 namespace Droid {
 namespace Widget {
@@ -13,7 +11,7 @@ namespace Widget {
  * {@link #MATCH_PARENT} and the height of each child to be
  * {@link #WRAP_CONTENT}, but only if the height is not specified.</p>
  */
-class TableLayoutLayoutParams : public LinearLayoutLayoutParams
+class TableLayoutLayoutParams : public LinearLayout::LayoutParams
 {
 public:
     /**
@@ -49,13 +47,13 @@ public:
      * {@inheritDoc}
      */
     TableLayoutLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* p);
+        /* [in] */ ViewGroup::LayoutParams* p);
 
     /**
      * {@inheritDoc}
      */
     TableLayoutLayoutParams(
-        /* [in] */ ViewGroupMarginLayoutParams* source);
+        /* [in] */ ViewGroup::MarginLayoutParams* source);
 
 protected:
     /**

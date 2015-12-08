@@ -45,7 +45,7 @@ CheckedTextView::CheckedTextView(
     , mNeedRequestlayout(0)
 {
     (*CHECKED_STATE_SET)[0] = R::attr::state_checked;
-    Init(context, attrs,  R::attr::checkedTextViewStyle);
+    Init(context, attrs, R::attr::checkedTextViewStyle);
 }
 
 CheckedTextView::CheckedTextView(

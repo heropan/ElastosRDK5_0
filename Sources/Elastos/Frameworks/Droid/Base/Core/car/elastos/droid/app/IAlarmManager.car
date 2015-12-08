@@ -2,7 +2,7 @@ module
 {
     interface Elastos.Droid.Os.IWorkSource;
     interface Elastos.Droid.App.IPendingIntent;
-    interface Elastos.Droid.App.IAlarmManagerAlarmClockInfo;
+    interface Elastos.Droid.App.IAlarmClockInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -22,7 +22,7 @@ module
             [in] Int64 interval,
             [in] IPendingIntent* operation,
             [in] IWorkSource* workSource,
-            [in] IAlarmManagerAlarmClockInfo* alarmClock);
+            [in] IAlarmClockInfo* alarmClock);
 
         SetTime(
             [in] Int64 millis,
@@ -36,7 +36,7 @@ module
 
         GetNextAlarmClock(
             [in] Int32 userId,
-            [out] IAlarmManagerAlarmClockInfo** info);
+            [out] IAlarmClockInfo** info);
     }
 
     } // namespace App

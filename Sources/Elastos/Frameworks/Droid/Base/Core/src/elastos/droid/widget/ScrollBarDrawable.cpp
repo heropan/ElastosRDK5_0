@@ -13,6 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(ScrollBarDrawable, Drawable, IScrollBarDrawable);
 ScrollBarDrawable::ScrollBarDrawable()
     : mRange(0)
     , mOffset(0)
@@ -40,14 +41,20 @@ ECode ScrollBarDrawable::SetAlwaysDrawVerticalTrack(
     return NOERROR;
 }
 
-Boolean ScrollBarDrawable::GetAlwaysDrawHorizontalTrack()
+ECode ScrollBarDrawable::GetAlwaysDrawHorizontalTrack(
+    /* [out] */ Boolean* alwaysDrawTrack)
 {
-    return mAlwaysDrawHorizontalTrack;
+    VALIDATE_NOT_NULL(alwaysDrawTrack);
+    *alwaysDrawTrack = mAlwaysDrawHorizontalTrack;
+    return NOERROR;
 }
 
-Boolean ScrollBarDrawable::GetAlwaysDrawVerticalTrack()
+ECode ScrollBarDrawable::GetAlwaysDrawVerticalTrack(
+    /* [out] */ Boolean* alwaysTrack)
 {
-    return mAlwaysDrawVerticalTrack;
+    VALIDATE_NOT_NULL(alwaysTrack);
+    *alwaysTrack = mAlwaysDrawVerticalTrack;
+    return NOERROR;
 }
 
 ECode ScrollBarDrawable::SetParameters(
@@ -85,7 +92,8 @@ ECode ScrollBarDrawable::Draw(
         drawThumb = FALSE;
     }
 
-    AutoPtr<IRect> rect = GetBounds();
+    AutoPtr<IRect> rect;
+    GetBounds((IRect**)&rect);
     Int32 l, t, r, b;
     rect->Get(&l, &t, &r, &b);
     Boolean notIntersected;
@@ -216,27 +224,32 @@ ECode ScrollBarDrawable::SetHorizontalTrackDrawable(
     return NOERROR;
 }
 
-Int32 ScrollBarDrawable::GetSize(
-    /* [in] */ Boolean vertical)
+ECode ScrollBarDrawable::GetSize(
+    /* [in] */ Boolean vertical,
+    /* [out] */ Int32* size)
 {
-    Int32 value = 0;
+    VALIDATE_NOT_NULL(size);
     if (vertical) {
         if (mVerticalTrack != NULL) {
-            mVerticalTrack->GetIntrinsicWidth(&value);
+            return mVerticalTrack->GetIntrinsicWidth(size);
         }
-        else if (mVerticalThumb != NULL) {
-            mVerticalThumb->GetIntrinsicWidth(&value);
+        else {
+            if (mVerticalThumb != NULL) {
+                return mVerticalThumb->GetIntrinsicWidth(size);
+            }
         }
     }
     else {
         if (mHorizontalTrack != NULL) {
-            mHorizontalTrack->GetIntrinsicHeight(&value);
+            return mHorizontalTrack->GetIntrinsicHeight(size);
         }
-        else if (mHorizontalThumb != NULL) {
-            mHorizontalThumb->GetIntrinsicHeight(&value);
+        else {
+            if (mHorizontalThumb != NULL) {
+                return mHorizontalThumb->GetIntrinsicHeight(size);
+            }
         }
     }
-    return value;
+    return NOERROR;
 }
 
 ECode ScrollBarDrawable::SetAlpha(
@@ -261,6 +274,14 @@ ECode ScrollBarDrawable::SetAlpha(
     return NOERROR;
 }
 
+ECode ScrollBarDrawable::GetAlpha(
+    /* [out] */ Int32* alpha)
+{
+    VALIDATE_NOT_NULL(alpha);
+    // All elements should have same alpha, just return one of them
+    return mVerticalThumb->GetAlpha(alpha);
+}
+
 ECode ScrollBarDrawable::SetColorFilter(
     /* [in] */ IColorFilter* cf)
 {
@@ -283,15 +304,19 @@ ECode ScrollBarDrawable::SetColorFilter(
     return NOERROR;
 }
 
-Int32 ScrollBarDrawable::GetOpacity()
+ECode ScrollBarDrawable::GetOpacity(
+    /* [out] */ Int32* opacity)
 {
-    return IPixelFormat::TRANSLUCENT;
+    VALIDATE_NOT_NULL(opacity);
+    *opacity = IPixelFormat::TRANSLUCENT;
+    return NOERROR;
 }
 
 ECode ScrollBarDrawable::InvalidateDrawable(
     /* [in] */ IDrawable* who)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->InvalidateDrawable(
                 (IDrawable*)this->Probe(EIID_IDrawable));
@@ -304,7 +329,8 @@ ECode ScrollBarDrawable::ScheduleDrawable(
     /* [in] */ IRunnable* what,
     /* [in] */ Int64 when)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->ScheduleDrawable(
                 (IDrawable*)this->Probe(EIID_IDrawable), what, when);
@@ -316,7 +342,8 @@ ECode ScrollBarDrawable::UnscheduleDrawable(
     /* [in] */ IDrawable* who,
     /* [in] */ IRunnable* what)
 {
-    AutoPtr<IDrawableCallback> callback = GetCallback();
+    AutoPtr<IDrawableCallback> callback;
+    GetCallback((IDrawableCallback**)&callback);
     if (callback != NULL) {
         callback->UnscheduleDrawable(
                 (IDrawable*)this->Probe(EIID_IDrawable), what);

@@ -11,11 +11,15 @@ using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
-static const String TAG = String("CUiModeManager");
+static const String TAG("CUiModeManager");
+
+CAR_INTERFACE_IMPL(CUiModeManager, Object, IUiModeManager)
+
+CAR_OBJECT_IMPL(CUiModeManager)
 
 CUiModeManager::CUiModeManager()
 {

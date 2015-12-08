@@ -3,19 +3,15 @@
 #define __ELASTOS_DROID_WIDGET_IMAGEBUTTON_H__
 
 #include "elastos/droid/widget/ImageView.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/R.h"
 
-using Elastos::Droid::R;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-
 
 /**
  * <p>
@@ -63,15 +59,30 @@ namespace Widget {
  * {@link android.R.styleable#View View Attributes}
  * </p>
  */
-class ImageButton : public Elastos::Droid::Widget::ImageView
+class ImageButton
+    : public Elastos::Droid::Widget::ImageView
+    , public IImageButton
 {
 public:
-    ImageButton();
+    CAR_INTERFACE_DECL();
 
-    ImageButton(
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::imageButtonStyle);
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
@@ -81,14 +92,10 @@ public:
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::imageButtonStyle);
-
     //@Override
     CARAPI_(Boolean) OnSetAlpha(
         /* [in] */ Int32 alpha);
+
 public:
     const static String IMAGEBUTTON_NAME;
 };
@@ -97,4 +104,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_WIDGET_IMAGEBUTTON_H__

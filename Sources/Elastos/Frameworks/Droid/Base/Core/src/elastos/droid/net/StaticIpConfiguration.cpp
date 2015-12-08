@@ -12,7 +12,6 @@ ECode StaticIpConfiguration::constructor()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         dnsServers = new ArrayList<InetAddress>();
-
 #endif
 }
 
@@ -22,14 +21,13 @@ ECode StaticIpConfiguration::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         this();
-        if (source != null) {
+        if (source != NULL) {
             // All of these except dnsServers are immutable, so no need to make copies.
             ipAddress = source.ipAddress;
             gateway = source.gateway;
             dnsServers.addAll(source.dnsServers);
             domains = source.domains;
         }
-
 #endif
 }
 
@@ -37,11 +35,10 @@ ECode StaticIpConfiguration::Clear()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        ipAddress = null;
-        gateway = null;
+        ipAddress = NULL;
+        gateway = NULL;
         dnsServers.clear();
-        domains = null;
-
+        domains = NULL;
 #endif
 }
 
@@ -52,14 +49,13 @@ ECode StaticIpConfiguration::GetRoutes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         List<RouteInfo> routes = new ArrayList<RouteInfo>(2);
-        if (ipAddress != null) {
-            routes.add(new RouteInfo(ipAddress, null, iface));
+        if (ipAddress != NULL) {
+            routes.add(new RouteInfo(ipAddress, NULL, iface));
         }
-        if (gateway != null) {
-            routes.add(new RouteInfo((LinkAddress) null, gateway, iface));
+        if (gateway != NULL) {
+            routes.add(new RouteInfo((LinkAddress) NULL, gateway, iface));
         }
         return routes;
-
 #endif
 }
 
@@ -71,7 +67,7 @@ ECode StaticIpConfiguration::ToLinkProperties(
 #if 0 // TODO: Translate codes below
         LinkProperties lp = new LinkProperties();
         lp.setInterfaceName(iface);
-        if (ipAddress != null) {
+        if (ipAddress != NULL) {
             lp.addLinkAddress(ipAddress);
         }
         for (RouteInfo route : getRoutes(iface)) {
@@ -81,7 +77,6 @@ ECode StaticIpConfiguration::ToLinkProperties(
             lp.addDnsServer(dns);
         }
         return lp;
-
 #endif
 }
 
@@ -92,32 +87,30 @@ ECode StaticIpConfiguration::ToString(
 #if 0 // TODO: Translate codes below
         StringBuffer str = new StringBuffer();
         str.append("IP address ");
-        if (ipAddress != null ) str.append(ipAddress).append(" ");
+        if (ipAddress != NULL ) str.append(ipAddress).append(" ");
         str.append("Gateway ");
-        if (gateway != null) str.append(gateway.getHostAddress()).append(" ");
+        if (gateway != NULL) str.append(gateway.getHostAddress()).append(" ");
         str.append(" DNS servers: [");
         for (InetAddress dnsServer : dnsServers) {
             str.append(" ").append(dnsServer.getHostAddress());
         }
         str.append(" ] Domains");
-        if (domains != null) str.append(domains);
+        if (domains != NULL) str.append(domains);
         return str.toString();
-
 #endif
 }
 
-ECode StaticIpConfiguration::HashCode(
+ECode StaticIpConfiguration::GetHashCode(
     /* [out] */ Int32* result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int result = 13;
-        result = 47 * result + (ipAddress == null ? 0 : ipAddress.hashCode());
-        result = 47 * result + (gateway == null ? 0 : gateway.hashCode());
-        result = 47 * result + (domains == null ? 0 : domains.hashCode());
+        Int32 result = 13;
+        result = 47 * result + (ipAddress == NULL ? 0 : ipAddress.hashCode());
+        result = 47 * result + (gateway == NULL ? 0 : gateway.hashCode());
+        result = 47 * result + (domains == NULL ? 0 : domains.hashCode());
         result = 47 * result + dnsServers.hashCode();
         return result;
-
 #endif
 }
 
@@ -127,15 +120,14 @@ ECode StaticIpConfiguration::Equals(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (this == obj) return true;
-        if (!(obj instanceof StaticIpConfiguration)) return false;
+        if (this == obj) return TRUE;
+        if (!(IStaticIpConfiguration::Probe(obj) != NULL)) return FALSE;
         StaticIpConfiguration other = (StaticIpConfiguration) obj;
-        return other != null &&
+        return other != NULL &&
                 Objects.equals(ipAddress, other.ipAddress) &&
                 Objects.equals(gateway, other.gateway) &&
                 dnsServers.equals(other.dnsServers) &&
                 Objects.equals(domains, other.domains);
-
 #endif
 }
 
@@ -149,10 +141,9 @@ ECode StaticIpConfiguration::ReadFromParcel(
                 readFromParcel(s, in);
                 return s;
             }
-            public StaticIpConfiguration[] newArray(int size) {
+            public StaticIpConfiguration[] newArray(Int32 size) {
                 return new StaticIpConfiguration[size];
             }
-
 #endif
 }
 
@@ -166,10 +157,9 @@ ECode StaticIpConfiguration::WriteToParcel(
                 readFromParcel(s, in);
                 return s;
             }
-            public StaticIpConfiguration[] newArray(int size) {
+            public StaticIpConfiguration[] newArray(Int32 size) {
                 return new StaticIpConfiguration[size];
             }
-
 #endif
 }
 
@@ -179,14 +169,13 @@ ECode StaticIpConfiguration::ReadFromParcel(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        s.ipAddress = in.readParcelable(null);
+        s.ipAddress = in.readParcelable(NULL);
         s.gateway = NetworkUtils.unparcelInetAddress(in);
         s.dnsServers.clear();
-        int size = in.readInt();
-        for (int i = 0; i < size; i++) {
+        Int32 size = in.readInt();
+        for (Int32 i = 0; i < size; i++) {
             s.dnsServers.add(NetworkUtils.unparcelInetAddress(in));
         }
-
 #endif
 }
 

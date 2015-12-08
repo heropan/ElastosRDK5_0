@@ -18,6 +18,8 @@ module
          */
         const Int32 ORIENTATION_UNKNOWN = -1;
 
+        RegisterListener(
+            [in] IOrientationListener* lis);
         /**
          * Enables the OrientationEventListener so it will monitor the sensor and call
          * {@link #onOrientationChanged} when the device orientation changes.

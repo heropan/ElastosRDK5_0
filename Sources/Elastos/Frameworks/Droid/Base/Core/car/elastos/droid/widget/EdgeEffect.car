@@ -3,13 +3,12 @@ module
 {
     interface Elastos.Droid.Graphics.ICanvas;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     [local]
     interface IEdgeEffect {
-
         /**
          * Set the size of this edge effect in pixels.
          *
@@ -19,17 +18,6 @@ module
         SetSize(
             [in] Int32 width,
             [in] Int32 height);
-
-        /**
-         * Set the position of this edge effect in pixels. This position is
-         * only used by {@link #getBounds(boolean)}.
-         *
-         * @param x The position of the edge effect on the X axis
-         * @param y The position of the edge effect on the Y axis
-         */
-        SetPosition(
-            [in] Int32 x,
-            [in] Int32 y);
 
         /**
          * Reports if this EdgeEffect's animation is finished. If this method returns false
@@ -52,6 +40,9 @@ module
          * This will update the state of the current visual effect and its associated animation.
          * The host view should always {@link android.view.View#invalidate()} after this
          * and draw the results accordingly.
+         *
+         * <p>Views using EdgeEffect should favor {@link #onPull(float, float)} when the displacement
+         * of the pull point is known.</p>
          *
          * @param deltaDistance Change in distance since the last call. Values may be 0 (no change) to
          *                      1.f (full length of the view) or negative values to express change

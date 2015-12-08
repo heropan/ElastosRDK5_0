@@ -1309,7 +1309,7 @@ private:
     Int32 mBackDisposition;
 
     AutoPtr<Insets> mTmpInsets;
-    Int32* mTmpLocation;
+    AutoPtr< ArrayOf<Int32> > mTmpLocation;
 
     AutoPtr<IOnComputeInternalInsetsListener> mInsetsComputer;
     AutoPtr<IViewOnClickListener> mActionClickListener;

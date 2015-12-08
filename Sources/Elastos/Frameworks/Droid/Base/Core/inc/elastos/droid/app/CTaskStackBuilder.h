@@ -14,9 +14,9 @@ using Elastos::Droid::Content::IComponentName;
 using Elastos::Utility::Etl::List;
 
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 /**
  * Utility class for constructing synthetic back stacks for cross-task navigation

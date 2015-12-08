@@ -9,12 +9,13 @@ module
     interface Elastos.Droid.Internal.View.Menu.IMenuBuilder;
     interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
     interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
+    interface Elastos.Droid.Internal.Widget.IDecorToolbar;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Content.IContext;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * Interface responsible for receiving menu item click events if the items themselves
@@ -610,6 +611,10 @@ module
      */
     GetContentInsetRight(
         [out] Int32* left);
+
+    /** @hide */
+    GetWrapper(
+        [out] IDecorToolbar** wrapper);
 
     /**
      * Force the toolbar to collapse to zero-height during measurement if

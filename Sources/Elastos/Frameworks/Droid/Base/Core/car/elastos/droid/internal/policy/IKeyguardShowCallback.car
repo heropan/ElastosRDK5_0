@@ -11,7 +11,7 @@ module
     [oneway]
     interface IIKeyguardShowCallback {
         OnShown(
-            [in] IBinder* success);
+            [in] IBinder* windowToken);
     }
 
     } // Policy

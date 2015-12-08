@@ -43,31 +43,32 @@ ECode IdleCache::CacheConnection(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mLock);
+    synchronized(mLock) {
 
-    Boolean ret = FALSE;
+        Boolean ret = FALSE;
 
-    if (HttpLog::LOGV) {
-        HttpLog::V(String("IdleCache size ") + StringUtils::Int32ToString(mCount) + String(" host ")/* + host*/);
-    }
+        if (HttpLog::LOGV) {
+            HttpLog::V(String("IdleCache size ") + StringUtils::Int32ToString(mCount) + String(" host ")/* + host*/);
+        }
 
-    if (mCount < IDLE_CACHE_MAX) {
-        Int64 time;
-        // time = SystemClock::uptimeMillis();
-        for (Int32 i = 0; i < IDLE_CACHE_MAX; i++) {
-            Entry* entry = (*mEntries)[i];
-            if (entry->mHost == NULL) {
-                entry->mHost = host;
-                // entry->mConnection = connection;
-                entry->mTimeout = time + TIMEOUT;
-                mCount++;
-                if (HttpLog::LOGV) mCached++;
-                ret = true;
-                if (mThread == NULL) {
-                    mThread = new IdleReaper(this);
-                    mThread->Start();
+        if (mCount < IDLE_CACHE_MAX) {
+            Int64 time;
+            // time = SystemClock::uptimeMillis();
+            for (Int32 i = 0; i < IDLE_CACHE_MAX; i++) {
+                Entry* entry = (*mEntries)[i];
+                if (entry->mHost == NULL) {
+                    entry->mHost = host;
+                    // entry->mConnection = connection;
+                    entry->mTimeout = time + TIMEOUT;
+                    mCount++;
+                    if (HttpLog::LOGV) mCached++;
+                    ret = TRUE;
+                    if (mThread == NULL) {
+                        mThread = new IdleReaper(this);
+                        mThread->Start();
+                    }
+                    break;
                 }
-                break;
             }
         }
     }
@@ -81,27 +82,28 @@ ECode IdleCache::GetConnection(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mLock);
+    synchronized(mLock) {
 
-    Connection* ret = NULL;
+        Connection* ret = NULL;
 
-    if (mCount > 0) {
-        for (Int32 i = 0; i < IDLE_CACHE_MAX; i++) {
-            Entry* entry = (*mEntries)[i];
-            AutoPtr<IHttpHost> eHost = entry->mHost;
-            // TODO:
-            if (eHost != NULL /*&& eHost->Equals(host)*/) {
-                ret = entry->mConnection;
-                entry->mHost = NULL;
-                entry->mConnection = NULL;
-                mCount--;
-                if (HttpLog::LOGV) mReused++;
-                break;
+        if (mCount > 0) {
+            for (Int32 i = 0; i < IDLE_CACHE_MAX; i++) {
+                Entry* entry = (*mEntries)[i];
+                AutoPtr<IHttpHost> eHost = entry->mHost;
+                // TODO:
+                if (eHost != NULL /*&& eHost->Equals(host)*/) {
+                    ret = entry->mConnection;
+                    entry->mHost = NULL;
+                    entry->mConnection = NULL;
+                    mCount--;
+                    if (HttpLog::LOGV) mReused++;
+                    break;
+                }
             }
         }
-    }
 
-    *conn = ret;
+        *conn = ret;
+    }
     return NOERROR;
 #endif
 }
@@ -110,18 +112,18 @@ ECode IdleCache::Clear()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mLock);
+    synchronized(mLock) {
 
-    for (Int32 i = 0; mCount > 0 && i < IDLE_CACHE_MAX; i++) {
-        Entry* entry = (*mEntries)[i];
-        if (entry->mHost != NULL) {
-            entry->mHost = NULL;
-            // entry->mConnection->CloseConnection();
-            // entry->mConnection = NULL;
-            mCount--;
+        for (Int32 i = 0; mCount > 0 && i < IDLE_CACHE_MAX; i++) {
+            Entry* entry = (*mEntries)[i];
+            if (entry->mHost != NULL) {
+                entry->mHost = NULL;
+                // entry->mConnection->CloseConnection();
+                // entry->mConnection = NULL;
+                mCount--;
+            }
         }
     }
-
     return NOERROR;
 #endif
 }
@@ -130,22 +132,22 @@ ECode IdleCache::ClearIdle()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mLock);
+    synchronized(mLock) {
 
-    if (mCount > 0) {
-        Int64 time;
-        // time = SystemClock::uptimeMillis();
-        for (Int32 i = 0; i < IDLE_CACHE_MAX; i++) {
-            Entry* entry = (*mEntries)[i];
-            if (entry->mHost != NULL && time > entry->mTimeout) {
-                entry->mHost = NULL;
-                // entry->mConnection->CloseConnection();
-                // entry->mConnection = NULL;
-                mCount--;
+        if (mCount > 0) {
+            Int64 time;
+            // time = SystemClock::uptimeMillis();
+            for (Int32 i = 0; i < IDLE_CACHE_MAX; i++) {
+                Entry* entry = (*mEntries)[i];
+                if (entry->mHost != NULL && time > entry->mTimeout) {
+                    entry->mHost = NULL;
+                    // entry->mConnection->CloseConnection();
+                    // entry->mConnection = NULL;
+                    mCount--;
+                }
             }
         }
     }
-
     return NOERROR;
 #endif
 }
@@ -166,19 +168,20 @@ ECode IdleCache::IdleReaper::Run()
     //         Elastos::os::Process::THREAD_PRIORITY_BACKGROUND);
 
     {
-        AutoLock lock(mParent->mLock);
+        synchronized(mParent->mLock) {
 
-        while (check < EMPTY_CHECK_MAX) {
-            Wait(CHECK_INTERVAL);
+            while (check < EMPTY_CHECK_MAX) {
+                Wait(CHECK_INTERVAL);
 
-            if (mParent->mCount == 0) {
-                check++;
-            } else {
-                check = 0;
-                mParent->ClearIdle();
+                if (mParent->mCount == 0) {
+                    check++;
+                } else {
+                    check = 0;
+                    mParent->ClearIdle();
+                }
             }
+            mParent->mThread = NULL;
         }
-        mParent->mThread = NULL;
     }
 
     if (HttpLog::LOGV) {

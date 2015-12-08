@@ -2,6 +2,8 @@
 #define __ELASTOS_DROID_SPEECH_SREC_Recognizer_H__
 
 #include <elastos/io/InputStream.h>
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::IO::IInputStream;
@@ -85,22 +87,35 @@ namespace Srec {
  * </pre>
  */
 class Recognizer
+    : public Object
+    , public IRecognizer
 {
 public:
     /**
      * Represents a grammar loaded into the Recognizer.
      */
-    class RecognizerGrammar : public ElRefBase
+    class RecognizerGrammar
+        : public Object
+        , public IRecognizerGrammar
     {
     public:
         friend class Recognizer;
+
+        CAR_INTERFACE_DECL();
+
+        RecognizerGrammar();
+
+        virtual ~RecognizerGrammar();
+
+        CARAPI constructor();
+
         /**
          * Create a <code>Grammar</code> instance.
          * @param g2gFileName pathname of g2g file.
          */
-        RecognizerGrammar(
+        CARAPI constructor(
             /* [in] */ const String& g2gFileName,
-            /* [in] */ Recognizer* r);// throws IOException
+            /* [in] */ IRecognizer* r);// throws IOException
 
         /**
          * Reset all slots.
@@ -160,17 +175,13 @@ public:
     friend class RecognizerGrammar;
 
 public:
-    /**
-     * Get the pathname of the SREC configuration directory corresponding to the
-     * language indicated by the Locale.
-     * This directory contains dictionaries, speech models,
-     * configuration files, and other data needed by the Recognizer.
-     * @param locale <code>Locale</code> corresponding to the desired language,
-     * or null for default, currently <code>Locale.US</code>.
-     * @return Pathname of the configuration directory.
-     */
-    static CARAPI_(String) GetConfigDir(
-        /* [in] */ ILocale* locale);
+    CAR_INTERFACE_DECL();
+
+    Recognizer();
+
+    virtual ~Recognizer();
+
+    CARAPI constructor();
 
     /**
      * Create an instance of a SREC speech recognizer.
@@ -184,11 +195,20 @@ public:
      * {@link #getConfigDir}.
      * @throws IOException
      */
-    Recognizer(
-        /* [in] */ const String& configFile);// throws IOException
-
-    void Init(
+    CARAPI constructor(
         /* [in] */ const String& configFile);
+
+    /**
+     * Get the pathname of the SREC configuration directory corresponding to the
+     * language indicated by the Locale.
+     * This directory contains dictionaries, speech models,
+     * configuration files, and other data needed by the Recognizer.
+     * @param locale <code>Locale</code> corresponding to the desired language,
+     * or null for default, currently <code>Locale.US</code>.
+     * @return Pathname of the configuration directory.
+     */
+    static CARAPI_(String) GetConfigDir(
+        /* [in] */ ILocale* locale);
 
 
     /**
@@ -310,6 +330,9 @@ public:
      */
     CARAPI Destroy();
 
+    CARAPI GetVocabulary(
+        /* [out] */ Int32* ret);
+
 public:
     /**
      * Produce a displayable string from an <code>advance</code> event.
@@ -403,92 +426,92 @@ private:
     //
     //native
     static CARAPI_(void) SR_RecognizerStart(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(void) SR_RecognizerStop(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Int32) SR_RecognizerCreate();
     //native
     static CARAPI_(void) SR_RecognizerDestroy(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(void) SR_RecognizerSetup(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(void) SR_RecognizerUnsetup(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Boolean) SR_RecognizerIsSetup(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(String) SR_RecognizerGetParameter(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ const String& key);
     //native
     static CARAPI_(Int32) SR_RecognizerGetSize_tParameter(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ const String& key);
     //native
     static CARAPI_(Boolean) SR_RecognizerGetBoolParameter(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ const String& key);
     //native
     static CARAPI_(void) SR_RecognizerSetParameter(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ const String& key,
         /* [in] */ const String& value);
     //native
     static CARAPI_(void) SR_RecognizerSetSize_tParameter(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ const String& key,
         /* [in] */ Int32 value);
     //native
     static CARAPI_(void) SR_RecognizerSetBoolParameter(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ const String& key,
         /* [in] */ Boolean value);
     //native
     static CARAPI_(void) SR_RecognizerSetupRule(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ Int32 grammar,
         /* [in] */ const String& ruleName);
     //native
     static CARAPI_(Boolean) SR_RecognizerHasSetupRules(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(void) SR_RecognizerActivateRule(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ Int32 grammar,
         /* [in] */ const String& ruleName,
         /* [in] */ Int32 weight);
     //native
     static CARAPI_(void) SR_RecognizerDeactivateRule(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ Int32 grammar,
         /* [in] */ const String& ruleName);
     //native
     static CARAPI_(void) SR_RecognizerDeactivateAllRules(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Boolean) SR_RecognizerIsActiveRule(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ Int32 grammar,
         /* [in] */ const String& ruleName);
     //native
     static CARAPI_(Boolean) SR_RecognizerCheckGrammarConsistency(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ Int32 grammar);
     //native
     static CARAPI_(Int32) SR_RecognizerPutAudio(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [in] */ Boolean isLast);
     //native
     static CARAPI_(Int32) SR_RecognizerAdvance(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     // private static native void SR_RecognizerLoadUtterance(int recognizer,
     //         const LCHAR* filename);
     // private static native void SR_RecognizerLoadWaveFile(int recognizer,
@@ -497,22 +520,22 @@ private:
     //         SR_RecognizerLockFunction function, void* data);
     //native
     static CARAPI_(Boolean) SR_RecognizerIsSignalClipping(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Boolean) SR_RecognizerIsSignalDCOffset(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Boolean) SR_RecognizerIsSignalNoisy(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Boolean) SR_RecognizerIsSignalTooQuiet(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Boolean) SR_RecognizerIsSignalTooFewSamples(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Boolean) SR_RecognizerIsSignalTooManySamples(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     // private static native void SR_Recognizer_Change_Sample_Rate (size_t new_sample_rate);
 
     //
@@ -520,14 +543,14 @@ private:
     //
     //native
     static CARAPI_(void) SR_AcousticStateReset(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(void) SR_AcousticStateSet(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ const String& state);
     //native
     static CARAPI_(String) SR_AcousticStateGet(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
 
     //
     // SR_Grammar native methods
@@ -556,7 +579,7 @@ private:
     //native
     static CARAPI_(void) SR_GrammarSetupRecognizer(
         /* [in] */ Int32 grammar,
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(void) SR_GrammarUnsetupRecognizer(
         /* [in] */ Int32 grammar);
@@ -618,42 +641,41 @@ private:
     //
     //native
     static CARAPI_(AutoPtr< ArrayOf<Byte> >) SR_RecognizerResultGetWaveform(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Int32) SR_RecognizerResultGetSize(
-        /* [in] */ Int32 recognizer);
+        /* [in] */ Int64 recognizer);
     //native
     static CARAPI_(Int32) SR_RecognizerResultGetKeyCount(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ Int32 nbest);
     //native
     static CARAPI_(AutoPtr< ArrayOf<String> >) SR_RecognizerResultGetKeyList(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ Int32 nbest);
     //native
     static CARAPI_(String) SR_RecognizerResultGetValue(
-        /* [in] */ Int32 recognizer,
+        /* [in] */ Int64 recognizer,
         /* [in] */ Int32 nbest,
         /* [in] */ const String& key);
     // private static native void SR_RecognizerResultGetLocale(int recognizer, ESR_Locale* locale);
 
 private:
-    static CString TAG;// = "Recognizer";
+    static String TAG;          // = "Recognizer";
 
     // handle to SR_Vocabulary object
-    Int32 mVocabulary;// = 0;
+    Int32 mVocabulary;
 
     // handle to SR_Recognizer object
-    Int32 mRecognizer;// = 0;
+    Int32 mRecognizer;
 
     // Grammar currently associated with Recognizer via SR_GrammarSetupRecognizer
-    AutoPtr<RecognizerGrammar> mActiveGrammar;// = NULL;
+    AutoPtr<RecognizerGrammar> mActiveGrammar;
 
     // audio buffer for putAudio(InputStream)
-    AutoPtr< ArrayOf<Byte> > mPutAudioBuffer;// = NULL;
+    AutoPtr<ArrayOf<Byte> > mPutAudioBuffer;
 
 };
-
 
 } // namespace Srec
 } // namespace Speech

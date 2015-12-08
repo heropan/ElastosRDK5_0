@@ -67,7 +67,7 @@ public:
         /* [in] */ const String& pathSegment,
         /* [out] */ IUri** result);
 
-    CARAPI GetEmpty(
+    CARAPI GetEMPTY(
             /* [out] */ IUri** result);
 };
 

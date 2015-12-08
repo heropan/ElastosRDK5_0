@@ -12,7 +12,6 @@ INCLUDES += $(PREBUILD_INC)/skia/effects
 #INCLUDES += $(PREBUILD_INC)/libcxx
 
 C_DEFINES += -DDROID_CORE
-CPP_FLAGS += -std=c++0x
 
 SOURCES = Drawable.cpp
 SOURCES += CDrawableHelper.cpp

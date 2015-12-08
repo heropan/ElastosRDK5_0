@@ -4,51 +4,15 @@
 #include "_Elastos_Droid_Widget_CEdgeEffect.h"
 #include "elastos/droid/widget/EdgeEffect.h"
 
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::Graphics::IRect;
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
-
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-
-
-CarClass(CEdgeEffect), public EdgeEffect
+CarClass(CEdgeEffect)
+    , public EdgeEffect
 {
 public:
-    CARAPI constructor(
-        /* [in] */ IContext* context);
-
-    CARAPI SetSize(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    CARAPI SetPosition(
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
-
-    CARAPI IsFinished(
-        /* [out] */ Boolean* isFinished);
-
-    CARAPI Finish();
-
-    CARAPI OnPull(
-        /* [in] */ Float deltaDistance);
-
-    CARAPI OnRelease();
-
-    CARAPI OnAbsorb(
-        /* [in] */ Int32 velocity);
-
-    CARAPI Draw(
-        /* [in] */ ICanvas* canvas,
-        /* [out] */ Boolean* res);
-
-    CARAPI GetBounds(
-        /* [in] */ Boolean reverse,
-        /* [out] */ IRect** rect);
-
+    CAR_OBJECT_DECL();
 };
 
 } // namespace Widget

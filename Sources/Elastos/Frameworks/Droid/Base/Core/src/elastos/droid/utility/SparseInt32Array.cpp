@@ -65,7 +65,7 @@ ECode SparseInt32Array::Clone(
 
 ECode SparseInt32Array::Get(
     /* [in] */ Int32 key,
-    /* [out] */Int32* value)
+    /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
     return Get(key, 0, value);
@@ -74,7 +74,7 @@ ECode SparseInt32Array::Get(
 ECode SparseInt32Array::Get(
     /* [in] */ Int32 key,
     /* [in] */ Int32 valueIfKeyNotFound,
-    /* [out] */Int32* value)
+    /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
     Int32 i = ContainerHelpers::BinarySearch(mKeys, mSize, key);
@@ -138,7 +138,7 @@ ECode SparseInt32Array::GetSize(
 
 ECode SparseInt32Array::KeyAt(
     /* [in] */ Int32 index,
-    /* [out] */Int32* key)
+    /* [out] */ Int32* key)
 {
     VALIDATE_NOT_NULL(key);
     *key = (*mKeys)[index];
@@ -147,7 +147,7 @@ ECode SparseInt32Array::KeyAt(
 
 ECode SparseInt32Array::ValueAt(
     /* [in] */ Int32 index,
-    /* [out] */Int32* value)
+    /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
     *value = (*mValues)[index];

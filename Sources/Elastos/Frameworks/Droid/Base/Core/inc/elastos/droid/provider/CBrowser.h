@@ -1,16 +1,28 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CBROWSER_H__
 #define __ELASTOS_DROID_PROVIDER_CBROWSER_H__
 
 #include "_Elastos_Droid_Provider_CBrowser.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Webkit::IWebIconDatabaseIconListener;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CBrowser)
+    , public Singleton
+    , public IBrowser
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetBOOKMARKSURI(
         /* [out] */ IUri** uri);
 
@@ -103,7 +115,7 @@ public:
      */
     CARAPI GetVisitedHistory(
         /* [in] */ IContentResolver* cr,
-        /* [out] */ ArrayOf<String>* urls);
+        /* [out] */ ArrayOf<String>** urls);
 
     /**
      * If there are more than MAX_HISTORY_COUNT non-bookmark history
@@ -197,60 +209,18 @@ public:
         /* [in] */ const String& where,
         /* [in] */ IWebIconDatabaseIconListener* listener);
 
-private:
-    CARAPI_(void) AddOrUrlEquals(
-        /* [in] */ StringBuffer* sb);
+    CARAPI GetHISTORY_PROJECTION(
+        /* [out, callee] */ ArrayOf<String>** projections);
 
-    CARAPI_(AutoPtr<ICursor>) GetVisitedLike(
-        /* [in] */ IContentResolver* cr,
-        /* [in] */ const String& url);
+    CARAPI GetTRUNCATE_HISTORY_PROJECTION(
+        /* [out, callee] */ ArrayOf<String>** projections);
 
-    /**
-     * Helper function to delete all history items and release the icons for them in the
-     * {@link WebIconDatabase}.
-     *
-     * Requires {@link android.Manifest.permission#READ_HISTORY_BOOKMARKS}
-     * Requires {@link android.Manifest.permission#WRITE_HISTORY_BOOKMARKS}
-     *
-     * @param cr   The ContentResolver used to access the database.
-     * @param whereClause   String to limit the items affected.
-     *                      null means all items.
-     */
-    CARAPI_(void) DeleteHistoryWhere(
-        /* [in] */ IContentResolver* cr,
-        /* [in] */ const String& whereClause);
-
-public:
-    /**
-     * A table containing both bookmarks and history items. The columns of the table are defined in
-     * {@link BookmarkColumns}. Reading this table requires the
-     * {@link android.Manifest.permission#READ_HISTORY_BOOKMARKS} permission and writing to it
-     * requires the {@link android.Manifest.permission#WRITE_HISTORY_BOOKMARKS} permission.
-     */
-    static const AutoPtr<IUri> BOOKMARKS_URI;
-
-    /**
-     * A table containing a log of browser searches. The columns of the table are defined in
-     * {@link SearchColumns}. Reading this table requires the
-     * {@link android.Manifest.permission#READ_HISTORY_BOOKMARKS} permission and writing to it
-     * requires the {@link android.Manifest.permission#WRITE_HISTORY_BOOKMARKS} permission.
-     */
-    static const AutoPtr<IUri> SEARCHES_URI;
-
-private:
-    static const CString LOGTAG;
-
-    /* Set a cap on the count of history items in the history/bookmark
-    table, to prevent db and layout operations from dragging to a
-    crawl.  Revisit this cap when/if db/layout performance
-    improvements are made.  Note: this does not affect bookmark
-    entries -- if the user wants more bookmarks than the cap, they
-    get them. */
-    static const Int32 MAX_HISTORY_COUNT = 250;
+    CARAPI GetSEARCHES_PROJECTION(
+        /* [out, callee] */ ArrayOf<String>** projections);
 };
 
-}
-}
-}
+} // namespace Provider
+} // namespace Droid
+} // namespace Elastos
 
 #endif //__ELASTOS_DROID_PROVIDER_CBROWSER_H__

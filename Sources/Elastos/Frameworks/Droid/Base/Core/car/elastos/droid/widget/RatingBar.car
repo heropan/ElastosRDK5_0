@@ -32,14 +32,13 @@ module
             [in] IRatingBar* ratingBar,
             [in] Float rating,
             [in] Boolean fromUser);
-
     }
 
     /**
      * @Involve
-     * extends Elastos.Droid.View.IView
-     * extends Elastos.Droid.Widget.IProgressBar
      * extends Elastos.Droid.Widget.IAbsSeekBar
+     * extends Elastos.Droid.Widget.IProgressBar
+     * extends Elastos.Droid.View.IView
      *
      * interface Elastos.Droid.View.IKeyEventCallback
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource

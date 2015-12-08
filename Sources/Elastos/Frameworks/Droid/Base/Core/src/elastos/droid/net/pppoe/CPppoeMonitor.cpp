@@ -20,14 +20,14 @@ const String CPppoeMonitor::TAG("CPppoeMonitor");
 const Int32 CPppoeMonitor::CONNECTED = 1;
 const Int32 CPppoeMonitor::DISCONNECTED = 2;
 const Int32 CPppoeMonitor::PHYUP = 3;
-const String CPppoeMonitor::connectedEvent =    String("CONNECTED");
-const String CPppoeMonitor::disconnectedEvent = String("DISCONNECTED");
+const String CPppoeMonitor::connectedEvent("CONNECTED");
+const String CPppoeMonitor::disconnectedEvent("DISCONNECTED");
 const Int32 CPppoeMonitor::ADD_ADDR = 20;
 const Int32 CPppoeMonitor::RM_ADDR = 21;
 const Int32 CPppoeMonitor::NEW_LINK = 16;
 const Int32 CPppoeMonitor::DEL_LINK = 17;
 const Boolean CPppoeMonitor::DEBUG = TRUE;
-const String CPppoeMonitor::pppoe_running_flag = String("net.pppoe.running");
+const String CPppoeMonitor::pppoe_running_flag("net.pppoe.running");
 
 CPppoeMonitor::MyMonitorThread::MyMonitorThread(
     /* [in] */ CPppoeMonitor* owner)

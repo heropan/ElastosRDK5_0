@@ -3,6 +3,7 @@ module
     merge("provider/AlarmClock.car");
     merge("provider/BaseColumns.car");
     merge("provider/Browser.car");
+    merge("provider/BrowserContract.car");
     merge("provider/CalendarContract.car");
     merge("provider/CallLog.car");
     merge("provider/Contacts.car");
@@ -13,6 +14,10 @@ module
     merge("provider/LiveFolders.car");
     merge("provider/MediaStore.car");
     merge("provider/OpenableColumns.car");
+    merge("provider/SearchIndexableData.car");
+    merge("provider/SearchIndexableResource.car");
+    merge("provider/SearchIndexablesContract.car");
+    merge("provider/SearchIndexablesProvider.car");
     merge("provider/SearchRecentSuggestions.car");
     merge("provider/Settings.car");
     merge("provider/SyncConstValue.car");
@@ -20,10 +25,137 @@ module
     merge("provider/UserDictionary.car");
     merge("provider/VoicemailContract.car");
 
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Net.IUri;
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Provider {
+    namespace Elastos {
+    namespace Droid {
+    namespace Provider {
+
+    singleton class CBrowser
+    {
+        interface IBrowser;
+    }
+
+    singleton class CBrowserContract
+    {
+        interface IBrowserContract;
+    }
+
+    singleton class CBrowserContractChromeSyncColumns
+    {
+        interface IBrowserContractChromeSyncColumns;
+    }
+
+    singleton class CBrowserContractBookmarks
+    {
+        interface IBrowserContractBookmarks;
+    }
+
+    singleton class CBrowserContractAccounts
+    {
+        interface IBrowserContractAccounts;
+    }
+
+    singleton class CBrowserContractHistory
+    {
+        interface IBrowserContractHistory;
+    }
+
+    singleton class CBrowserContractSearches
+    {
+        interface IBrowserContractSearches;
+    }
+
+    singleton class CBrowserContractImages
+    {
+        interface IBrowserContractImages;
+    }
+
+    singleton class CBrowserContractSyncState
+    {
+        interface IBrowserContractSyncState;
+    }
+
+
+    singleton class CBrowserContractImageMappings
+    {
+        interface IBrowserContractImageMappings;
+    }
+
+    singleton class CBrowserContractCombined
+    {
+        interface IBrowserContractCombined;
+    }
+
+    singleton class CBrowserContractSettings
+    {
+        interface IBrowserContractSettings;
+    }
+
+    singleton class CSearchIndexablesContract
+    {
+        interface ISearchIndexablesContract;
+    }
+
+    singleton class CSearchIndexablesContractXmlResource
+    {
+        interface ISearchIndexablesContractXmlResource;
+    }
+
+    singleton class CSearchIndexablesContractRawData
+    {
+        interface ISearchIndexablesContractRawData;
+    }
+
+    singleton class CSearchIndexablesContractNonIndexableKey
+    {
+        interface ISearchIndexablesContractNonIndexableKey;
+    }
+
+    /**
+     * Search Indexable Resource.
+     *
+     * This class wraps a set of reference information representing data that can be indexed from a
+     * resource which would typically be a {@link android.preference.PreferenceScreen}.
+     *
+     * xmlResId: the resource ID of a {@link android.preference.PreferenceScreen} XML file.
+     *
+     * @see SearchIndexableData
+     * @see android.preference.PreferenceScreen
+     *
+     * @hide
+     */
+    [deprecated]
+    class CSearchIndexableResource
+    {
+        /**
+         * Constructor.
+         *
+         * @param context the Context associated with the data.
+         */
+        constructor(
+            [in] IContext* context);
+
+        /**
+         * Constructor.
+         *
+         * @param rank the rank of the data.
+         * @param xmlResId the resource ID of a {@link android.preference.PreferenceScreen} XML file.
+         * @param className the class name associated with the data (generally a
+         *                  {@link android.app.Fragment}).
+         * @param iconResId the resource ID associated with the data.
+         */
+        constructor(
+            [in] Int32 rank,
+            [in] Int32 xmlResId,
+            [in] String className,
+            [in] Int32 iconResId);
+
+        interface ISearchIndexableResource;
+        interface ISearchIndexableData;
+    }
+
 
     // singleton class CSettings
     // {
@@ -42,7 +174,7 @@ module
 
     // singleton class CSettingsNameValueTable
     // {
-    //     interface ISettingsNameValueTable;
+    //    interface ISettingsNameValueTable;
     // }
 
     // singleton class CSettingsSecure
@@ -271,10 +403,10 @@ module
     //     interface IContactsExtensionsColumns;
     // }
 
-    // singleton class CSyncStateContractHelpers
-    // {
-    //     interface ISyncStateContractHelpers;
-    // }
+    singleton class CSyncStateContractHelpers
+    {
+        interface ISyncStateContractHelpers;
+    }
 
     // singleton class CContactsContract
     // {
@@ -666,7 +798,68 @@ module
     //     interface ICalendarContractSyncState;
     // }
 
-    // }//namespace Provider
-    // }//namespace Droid
-    // }//namespace Elastos
+    singleton class CDocumentsContract
+    {
+        interface IDocumentsContract;
+    }
+
+    singleton class CUserDictionary
+    {
+        interface IUserDictionary;
+    }
+
+    singleton class CUserDictionaryWords
+    {
+        interface IUserDictionaryWords;
+    }
+
+    singleton class CVoicemailContractVoicemails
+    {
+        interface IVoicemails;
+    }
+
+    singleton class CVoicemailContractStatus
+    {
+        interface IVoicemailContractStatus;
+    }
+
+    /**
+     * This is a utility class providing access to
+     * {@link android.content.SearchRecentSuggestionsProvider}.
+     *
+     * <p>Unlike some utility classes, this one must be instantiated and properly initialized, so that
+     * it can be configured to operate with the search suggestions provider that you have created.
+     *
+     * <p>Typically, you will do this in your searchable activity, each time you receive an incoming
+     * {@link android.content.Intent#ACTION_SEARCH ACTION_SEARCH} Intent.  The code to record each
+     * incoming query is as follows:
+     * <pre class="prettyprint">
+     *      SearchSuggestions suggestions = new SearchSuggestions(this,
+     *              MySuggestionsProvider.AUTHORITY, MySuggestionsProvider.MODE);
+     *      suggestions.saveRecentQuery(queryString, null);
+     * </pre>
+     *
+     * <p>For a working example, see SearchSuggestionSampleProvider and SearchQueryResults in
+     * samples/ApiDemos/app.
+     *
+     * <div class="special reference">
+     * <h3>Developer Guides</h3>
+     * <p>For information about using search suggestions in your application, read the
+     * <a href="{@docRoot}guide/topics/search/adding-recent-query-suggestions.html">Adding Recent Query
+     * Suggestions</a> developer guide.</p>
+     * </div>
+     */
+    class CSearchRecentSuggestions
+    {
+        constructor(
+            [in] IContext* context,
+            [in] String authority,
+            [in] Int32 mode);
+
+        interface ISearchRecentSuggestions;
+    }
+
+    } // namespace Provider
+    } // namespace Droid
+    } // namespace Elastos
 }

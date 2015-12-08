@@ -5,6 +5,7 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IClassLoader;
+using Elastos::Core::ICharSequence;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;
@@ -264,6 +265,17 @@ public:
     static CARAPI ReadTypedList(
         /* [in] */ IParcel* source,
         /* [in] */ IList* val);
+
+    static CARAPI WriteCharSequenceArray(
+        /* [in] */ IParcel* source,
+        /* [in] */ ArrayOf<ICharSequence*>* array);
+
+    /**
+     * Read and return a CharSequence[] object from the parcel.
+     * {@hide}
+     */
+    static AutoPtr<ArrayOf<ICharSequence*> > ReadCharSequenceArray(
+        /* [in] */ IParcel* source);
 
 private:
     CARAPI ReadValue(

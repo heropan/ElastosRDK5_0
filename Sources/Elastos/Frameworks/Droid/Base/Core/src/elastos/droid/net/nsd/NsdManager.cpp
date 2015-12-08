@@ -71,9 +71,9 @@ ECode NsdManager::PutListener(
         key = mListenerKey++;
     } while (key == INVALID_LISTENER_KEY);
 
-    mListenerMap->Put(key, IInterface::Probe(listener));
+    mListenerMap->Put(key, listener);
 
-    mServiceMap->Put(key, IInterface::Probe(s));
+    mServiceMap->Put(key, s);
     }
     *result = key;
     return NOERROR;
@@ -120,7 +120,7 @@ ECode NsdManager::RemoveListener(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    if (key == INVALID_LISTENER_KEY) return;
+    if (key == INVALID_LISTENER_KEY) return NOERROR;
 
     sychronized(mMapLock) {
         mListenerMap->Remove(key);
@@ -401,13 +401,13 @@ ECode NsdManager::ServiceHandler::HandleMessage(
     switch (what) {
         case AsyncChannel::CMD_CHANNEL_HALF_CONNECTED:
             mHost->mAsyncChannel->SendMessage(AsyncChannel::CMD_CHANNEL_FULL_CONNECTION);
-            return;
+            return NOERROR;
         case AsyncChannel::CMD_CHANNEL_FULLY_CONNECTED:
             mHost->mConnected->CountDown();
-            return;
+            return NOERROR;
         case AsyncChannel::CMD_CHANNEL_DISCONNECTED:
             Slogger::E("CNsdManager::ServiceHandler", "Channel lost");
-            return;
+            return NOERROR;
         default:
             break;
         }
@@ -415,7 +415,7 @@ ECode NsdManager::ServiceHandler::HandleMessage(
         mHost->GetListener(arg2, (IInterface**)&listener);
         if (NULL == listener) {
             Slogger::D(TAG, "Stale key " + message.arg2);
-            return;
+            return NOERROR;
         }
         AutoPtr<INsdServiceInfo> ns;
         GetNsdService(message->arg2, (INsdServiceInfo**)&ns);

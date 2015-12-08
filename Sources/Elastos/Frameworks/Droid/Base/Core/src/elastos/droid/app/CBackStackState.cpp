@@ -1,6 +1,7 @@
 
 #include "elastos/droid/app/CBackStackState.h"
 #include "elastos/droid/app/CBackStackRecordTransitionState.h"
+#include "elastos/droid/app/CBackStackRecord.h"
 #include "elastos/droid/app/FragmentManagerImpl.h"
 // #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/os/CParcel.h"
@@ -137,7 +138,9 @@ ECode CBackStackState::Instantiate(
     VALIDATE_NOT_NULL(record);
 
     AutoPtr<FragmentManagerImpl> fmObj = (FragmentManagerImpl*)fm;
-    AutoPtr<BackStackRecord> bse = new BackStackRecord(fm);
+    AutoPtr<IBackStackRecord> r;
+    CBackStackRecord::New(fm, (IBackStackRecord**)&r);
+    BackStackRecord* bse = (BackStackRecord*)r.Get();
     Int32 pos = 0;
     Int32 num = 0;
     while (pos < mOps->GetLength()) {
@@ -145,7 +148,8 @@ ECode CBackStackState::Instantiate(
         op->mCmd = (*mOps)[pos++];
         if (FragmentManagerImpl::DEBUG) {
             Logger::V(FragmentManagerImpl::TAG,
-                "Instantiate %p op #%d base fragment #%d", bse.Get(), num, (*mOps)[pos]);
+                "Instantiate %s op #%d base fragment #%d",
+                Object::ToString(bse).string(), num, (*mOps)[pos]);
         }
         Int32 findex = (*mOps)[pos++];
         if (findex >= 0) {
@@ -165,7 +169,8 @@ ECode CBackStackState::Instantiate(
             for (Int32 i = 0; i < N; i++) {
                 if (FragmentManagerImpl::DEBUG) {
                     Logger::V(FragmentManagerImpl::TAG,
-                        "Instantiate %p set remove fragment #%d", bse.Get(), (*mOps)[pos]);
+                        "Instantiate %s set remove fragment #%d",
+                        Object::ToString(bse).string(), (*mOps)[pos]);
                 }
                 AutoPtr<IFragment> r = fmObj->mActive[(*mOps)[pos++]];
                 op->mRemoved->Add(TO_IINTERFACE(r));
@@ -243,10 +248,8 @@ const Int32 BackStackRecord::OP_SHOW = 5;
 const Int32 BackStackRecord::OP_DETACH = 6;
 const Int32 BackStackRecord::OP_ATTACH = 7;
 
-BackStackRecord::BackStackRecord(
-    /* [in] */ IFragmentManagerImpl* manager)
-    : mManager((FragmentManagerImpl*)manager)
-    , mNumOp(0)
+BackStackRecord::BackStackRecord()
+    : mNumOp(0)
     , mEnterAnim(0)
     , mExitAnim(0)
     , mPopEnterAnim(0)
@@ -260,6 +263,16 @@ BackStackRecord::BackStackRecord(
     , mBreadCrumbTitleRes(0)
     , mBreadCrumbShortTitleRes(0)
 {}
+
+BackStackRecord::~BackStackRecord()
+{}
+
+ECode BackStackRecord::constructor(
+    /* [in] */ IFragmentManagerImpl* manager)
+{
+    mManager = (FragmentManagerImpl*)manager;
+    return NOERROR;
+}
 
 ECode BackStackRecord::ToString(
     /* [out] */ String* str)

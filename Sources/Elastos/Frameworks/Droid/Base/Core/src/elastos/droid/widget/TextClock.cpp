@@ -1,136 +1,198 @@
 
 #include "elastos/droid/widget/TextClock.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/SystemClock.h"
+// #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/format/DateFormat.h"
 
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::R;
+using Elastos::Droid::Text::Format::DateFormat;
+using Elastos::Core::CString;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;
+using Elastos::Utility::ITimeZone;
+using Elastos::Utility::ITimeZoneHelper;
+using Elastos::Utility::CTimeZoneHelper;
+using Libcore::ICU::CLocaleDataHelper;
+using Libcore::ICU::ILocaleDataHelper;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+
+TextClock::TextClockContentObserver::TextClockContentObserver(
+    /* [in] */ IHandler* handler,
+    /* [in] */ TextClock* host)
+    : mHost(host)
+{
+    ContentObserver::constructor(handler);
+}
+
+ECode TextClock::TextClockContentObserver::OnChange(
+    /* [in] */ Boolean selfChange)
+{
+    mHost->ChooseFormat();
+    mHost->OnTimeChanged();
+    return NOERROR;
+}
+
+ECode TextClock::TextClockContentObserver::OnChange(
+    /* [in] */ Boolean selfChange,
+    /* [in] */ IUri* uri)
+{
+    mHost->ChooseFormat();
+    mHost->OnTimeChanged();
+    return NOERROR;
+}
+
+TextClock::TextClockBroadcastReceiver::TextClockBroadcastReceiver(
+    /* [in] */ TextClock* host)
+    : mHost(host)
+{}
+
+ECode TextClock::TextClockBroadcastReceiver::OnReceive(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    String action;
+    if (mHost->mTimeZone.IsNull() && IIntent::ACTION_TIMEZONE_CHANGED.Equals((intent->GetAction(&action), action))) {
+        String timeZone;
+        intent->GetStringExtra(String("time-zone"), &timeZone);
+        mHost->CreateTime(timeZone);
+    }
+    mHost->OnTimeChanged();
+    return NOERROR;
+}
+
+TextClock::TextClockRunnable::TextClockRunnable(
+    /* [in] */ TextClock* host)
+    : mHost(host)
+{}
+
+ECode TextClock::TextClockRunnable::Run()
+{
+    mHost->OnTimeChanged();
+
+    Int64 now = SystemClock::GetUptimeMillis();
+    Int64 next = now + (1000 - now % 1000);
+
+    AutoPtr<IHandler> handler;
+    mHost->GetHandler((IHandler**)&handler);
+    Boolean result = FALSE;
+    handler->PostAtTime(mHost->mTicker, next, &result);
+    return NOERROR;
+}
 
 static AutoPtr<ICharSequence> InitDEFAULT_FORMAT_12_HOUR()
 {
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(String("h:mm aa"), (ICharSequence**)&csq);
+    CString::New(String("h:mm a"), (ICharSequence**)&csq);
     return csq;
 }
 
 static AutoPtr<ICharSequence> InitDEFAULT_FORMAT_24_HOUR()
 {
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(String("k:mm"), (ICharSequence**)&csq);
+    CString::New(String("H:mm"), (ICharSequence**)&csq);
     return csq;
 }
 
 AutoPtr<ICharSequence> TextClock::DEFAULT_FORMAT_12_HOUR = InitDEFAULT_FORMAT_12_HOUR();
 AutoPtr<ICharSequence> TextClock::DEFAULT_FORMAT_24_HOUR = InitDEFAULT_FORMAT_24_HOUR();
 
+CAR_INTERFACE_IMPL(TextClock, TextView, ITextClock);
 TextClock::TextClock()
     : mHasSeconds(FALSE)
     , mAttached(FALSE)
 {
-    mFormat12 = DEFAULT_FORMAT_12_HOUR;
-    mFormat24 = DEFAULT_FORMAT_24_HOUR;
+    AutoPtr<IHandler> handler;
+    CHandler::New((IHandler**)&handler);
+    mFormatChangeObserver = new TextClockContentObserver(handler, this);
+    mIntentReceiver = new TextClockBroadcastReceiver(this);
+    mTicker = new TextClockRunnable(this);
 }
 
-/**
- * Creates a new clock using the default patterns
- * {@link #DEFAULT_FORMAT_24_HOUR} and {@link #DEFAULT_FORMAT_12_HOUR}
- * respectively for the 24-hour and 12-hour modes.
- *
- * @param context The Context the view is running in, through which it can
- *        access the current theme, resources, etc.
- */
-TextClock::TextClock(
+ECode TextClock::constructor(
     /* [in] */ IContext* context)
-    : TextView(context)
-    , mHasSeconds(FALSE)
-    , mAttached(FALSE)
 {
-    mFormat12 = DEFAULT_FORMAT_12_HOUR;
-    mFormat24 = DEFAULT_FORMAT_24_HOUR;
-    PrivateInit();
+    TextView::constructor(context);
+    Init();
+    return NOERROR;
 }
 
-TextClock::TextClock(
+ECode TextClock::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : TextView(context, attrs)
-    , mHasSeconds(FALSE)
-    , mAttached(FALSE)
 {
-    mFormat12 = DEFAULT_FORMAT_12_HOUR;
-    mFormat24 = DEFAULT_FORMAT_24_HOUR;
-    InitFromAttributes(context, attrs, 0);
+    return constructor(context, attrs, 0);
 }
 
-TextClock::TextClock(
+ECode TextClock::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    mFormat12 = DEFAULT_FORMAT_12_HOUR;
-    mFormat24 = DEFAULT_FORMAT_24_HOUR;
-    InitFromAttributes(context, attrs, defStyle);
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
-ECode TextClock::InitFromAttributes(
+ECode TextClock::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
-    FAIL_RETURN(TextView::InitFromAttributes(context, attrs, defStyle));
+    TextView::constructor(context, attrs, defStyleAttr, defStyleRes);
 
+    AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextClock),
             ARRAY_SIZE(R::styleable::TextClock));
-
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
-//    try {
-    AutoPtr<ICharSequence> format;
-
-    a->GetText(R::styleable::TextClock_format12Hour, (ICharSequence**)&format);
-    mFormat12 = format == NULL ? DEFAULT_FORMAT_12_HOUR : format;
-
-    format = NULL;
-    a->GetText(R::styleable::TextClock_format24Hour, (ICharSequence**)&format);
-    mFormat24 = format == NULL ? DEFAULT_FORMAT_24_HOUR : format;
-
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+    a->GetText(R::styleable::TextClock_format12Hour, (ICharSequence**)&mFormat12);
+    a->GetText(R::styleable::TextClock_format24Hour, (ICharSequence**)&mFormat24);
     a->GetString(R::styleable::TextClock_timeZone, &mTimeZone);
-//    } finally {
     a->Recycle();
-//    }
 
-    PrivateInit();
+    Init();
     return NOERROR;
 }
 
-ECode TextClock::Init(
-    /* [in] */ IContext* context)
+void TextClock::Init()
 {
-    TextView::Init(context);
-    PrivateInit();
-    return NOERROR;
-}
+    if (mFormat12 == NULL || mFormat24 == NULL) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        AutoPtr<IResources> res;
+        context->GetResources((IResources**)&res);
+        AutoPtr<IConfiguration> config;
+        res->GetConfiguration((IConfiguration**)&config);
+        AutoPtr<ILocale> locale;
+        config->GetLocale((ILocale**)&locale);
+        AutoPtr<ILocaleDataHelper> helper;
+        CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+        AutoPtr<ILocaleData> ld;
+        helper->Get(locale, (ILocaleData**)&ld);
+        if (mFormat12 == NULL) {
+            String format;
+            ld->GetTimeFormat12(&format);
+            CString::New(format, (ICharSequence**)&mFormat12);
+        }
+        if (mFormat24 == NULL) {
+            String format;
+            ld->GetTimeFormat24(&format);
+            CString::New(format, (ICharSequence**)&mFormat24);
+        }
+    }
 
-ECode TextClock::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return InitFromAttributes(context, attrs, 0);
-}
-
-ECode TextClock::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    return InitFromAttributes(context, attrs, defStyle);
-}
-
-void TextClock::PrivateInit()
-{
     CreateTime(mTimeZone);
     // Wait until onAttachedToWindow() to handle the ticker
     ChooseFormat(FALSE);
@@ -139,24 +201,26 @@ void TextClock::PrivateInit()
 void TextClock::CreateTime(
     /* [in] */ const String& timeZone)
 {
-    mTime = NULL;
     AutoPtr<ICalendarHelper> helper;
     CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
-    if (!timeZone.IsNull()) {
+    if (timeZone != NULL) {
         AutoPtr<ITimeZoneHelper> timeZoneHelper;
         CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
-
-        AutoPtr<ITimeZone> tz;
-        timeZoneHelper->GetTimeZone(timeZone, (ITimeZone**)&tz);
-        helper->GetInstance(tz, (ICalendar**)&mTime);
+        AutoPtr<ITimeZone> zone;
+        timeZoneHelper->GetTimeZone(timeZone, (ITimeZone**)&zone);
+        helper->GetInstance(zone, (ICalendar**)&mTime);
     } else {
         helper->GetInstance((ICalendar**)&mTime);
     }
 }
 
-AutoPtr<ICharSequence> TextClock::GetFormat12Hour()
+ECode TextClock::GetFormat12Hour(
+    /* [out] */ ICharSequence** hour)
 {
-    return mFormat12;
+    VALIDATE_NOT_NULL(hour);
+    *hour = mFormat12;
+    REFCOUNT_ADD(*hour);
+    return NOERROR;
 }
 
 ECode TextClock::SetFormat12Hour(
@@ -166,11 +230,16 @@ ECode TextClock::SetFormat12Hour(
 
     ChooseFormat();
     OnTimeChanged();
+    return NOERROR;
 }
 
-AutoPtr<ICharSequence> TextClock::GetFormat24Hour()
+ECode TextClock::GetFormat24Hour(
+    /* [out] */ ICharSequence** seq)
 {
-    return mFormat24;
+    VALIDATE_NOT_NULL(seq);
+    *seq = mFormat24;
+    REFCOUNT_ADD(*seq);
+    return NOERROR;
 }
 
 ECode TextClock::SetFormat24Hour(
@@ -180,16 +249,25 @@ ECode TextClock::SetFormat24Hour(
 
     ChooseFormat();
     OnTimeChanged();
+    return NOERROR;
 }
 
-Boolean TextClock::Is24HourModeEnabled()
+ECode TextClock::Is24HourModeEnabled(
+    /* [out] */ Boolean* result)
 {
-    return DateFormat.Is24HourFormat(getContext());
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    *result = DateFormat::Is24HourFormat(context);
+    return NOERROR;
 }
 
-String TextClock::GetTimeZone()
+ECode TextClock::GetTimeZone(
+    /* [out] */ String* zone)
 {
-    return mTimeZone;
+    VALIDATE_NOT_NULL(zone);
+    *zone = mTimeZone;
+    return NOERROR;
 }
 
 ECode TextClock::SetTimeZone(
@@ -199,6 +277,7 @@ ECode TextClock::SetTimeZone(
 
     CreateTime(timeZone);
     OnTimeChanged();
+    return NOERROR;
 }
 
 void TextClock::ChooseFormat()
@@ -206,29 +285,64 @@ void TextClock::ChooseFormat()
     ChooseFormat(TRUE);
 }
 
+ECode TextClock::GetFormat(
+    /* [out] */ ICharSequence** format)
+{
+    VALIDATE_NOT_NULL(format);
+    *format = mFormat;
+    REFCOUNT_ADD(*format);
+    return NOERROR;
+}
+
 void TextClock::ChooseFormat(
     /* [in] */ Boolean handleTicker)
 {
-    Boolean format24Requested = Is24HourModeEnabled();
+    Boolean format24Requested = FALSE;
+    Is24HourModeEnabled(&format24Requested);
 
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<IConfiguration> config;
+    res->GetConfiguration((IConfiguration**)&config);
+    AutoPtr<ILocale> locale;
+    config->GetLocale((ILocale**)&locale);
+
+    AutoPtr<ILocaleDataHelper> helper;
+    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+    AutoPtr<ILocaleData> ld;
+    helper->Get(locale, (ILocaleData**)&ld);
+
+    AutoPtr<ICharSequence> format;
     if (format24Requested) {
-        mFormat = Abc(mFormat24, mFormat12, DEFAULT_FORMAT_24_HOUR);
-    } else {
-        mFormat = Abc(mFormat12, mFormat24, DEFAULT_FORMAT_12_HOUR);
+        String timeFormat24;
+        ld->GetTimeFormat24(&timeFormat24);
+        CString::New(timeFormat24, (ICharSequence**)&format);
+        mFormat = Abc(mFormat24, mFormat12, format);
+    }
+    else {
+        String timeFormat12;
+        ld->GetTimeFormat12(&timeFormat12);
+        CString::New(timeFormat12, (ICharSequence**)&format);
+        mFormat = Abc(mFormat12, mFormat24, format);
     }
 
     Boolean hadSeconds = mHasSeconds;
     mHasSeconds = DateFormat::HasSeconds(mFormat);
 
     if (handleTicker && mAttached && hadSeconds != mHasSeconds) {
-        if (hadSeconds) getHandler().removeCallbacks(mTicker);
-        else mTicker.run();
+        AutoPtr<IHandler> handler;
+        GetHandler((IHandler**)&handler);
+        if (hadSeconds) {
+            handler->RemoveCallbacks(mTicker);
+        }
+        else {
+            mTicker->Run();
+        }
     }
 }
 
-/**
- * Returns a if not null, else return b if not null, else return c.
- */
 AutoPtr<ICharSequence> TextClock::Abc(
     /* [in] */ ICharSequence* a,
     /* [in] */ ICharSequence* b,
@@ -239,7 +353,7 @@ AutoPtr<ICharSequence> TextClock::Abc(
 
 ECode TextClock::OnAttachedToWindow()
 {
-    super.onAttachedToWindow();
+    TextView::OnAttachedToWindow();
 
     if (!mAttached) {
         mAttached = TRUE;
@@ -250,8 +364,9 @@ ECode TextClock::OnAttachedToWindow()
         CreateTime(mTimeZone);
 
         if (mHasSeconds) {
-            mTicker.run();
-        } else {
+            mTicker->Run();
+        }
+        else {
             OnTimeChanged();
         }
     }
@@ -260,13 +375,15 @@ ECode TextClock::OnAttachedToWindow()
 
 ECode TextClock::OnDetachedFromWindow()
 {
-    super.onDetachedFromWindow();
+    TextView::OnDetachedFromWindow();
 
     if (mAttached) {
         UnregisterReceiver();
         UnregisterObserver();
 
-        getHandler().removeCallbacks(mTicker);
+        AutoPtr<IHandler> handler;
+        GetHandler((IHandler**)&handler);
+        handler->RemoveCallbacks(mTicker);
 
         mAttached = FALSE;
     }
@@ -275,42 +392,56 @@ ECode TextClock::OnDetachedFromWindow()
 
 void TextClock::RegisterReceiver()
 {
-    final IntentFilter filter = new IntentFilter();
+    AutoPtr<IIntentFilter> filter;
+    CIntentFilter::New((IIntentFilter**)&filter);
 
-    filter.addAction(Intent.ACTION_TIME_TICK);
-    filter.addAction(Intent.ACTION_TIME_CHANGED);
-    filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+    filter->AddAction(IIntent::ACTION_TIME_TICK);
+    filter->AddAction(IIntent::ACTION_TIME_CHANGED);
+    filter->AddAction(IIntent::ACTION_TIMEZONE_CHANGED);
 
-    getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IHandler> handler;
+    GetHandler((IHandler**)&handler);
+    AutoPtr<IIntent> intent;
+    context->RegisterReceiver(mIntentReceiver, filter, String(NULL), handler, (IIntent**)&intent);
 }
 
 void TextClock::RegisterObserver()
 {
-    final ContentResolver resolver = getContext().getContentResolver();
-    resolver.registerContentObserver(Settings.System.CONTENT_URI, TRUE, mFormatChangeObserver);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IContentResolver> resolver;
+    context->GetContentResolver((IContentResolver**)&resolver);
+    assert(0 && "TODO");
+    // resolver->RegisterContentObserver(Settings::System::CONTENT_URI, TRUE, mFormatChangeObserver);
 }
 
 void TextClock::UnregisterReceiver()
 {
-    getContext().unregisterReceiver(mIntentReceiver);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    context->UnregisterReceiver(mIntentReceiver);
 }
 
 void TextClock::UnregisterObserver()
 {
-    final ContentResolver resolver = getContext().getContentResolver();
-    resolver.unregisterContentObserver(mFormatChangeObserver);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IContentResolver> resolver;
+    context->GetContentResolver((IContentResolver**)&resolver);
+    resolver->UnregisterContentObserver(mFormatChangeObserver);
 }
 
 void TextClock::OnTimeChanged()
 {
+    Int64 currentTimeMillis;
     AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-    Int64 now;
-    system->GetCurrentTimeMillis(&now);
-    mTime->SetTimeInMillis(now);
-    SetText(DateFormat.format(mFormat, mTime));
+    CSystem::AcquireSingleton((ISystem**)&system);
+    system->GetCurrentTimeMillis(&currentTimeMillis);
+    mTime->SetTimeInMillis(currentTimeMillis);
+    SetText(DateFormat::Format(mFormat, mTime));
 }
-
 
 } // namespace Widget
 } // namespace Droid

@@ -1,5 +1,5 @@
-module {
-
+module
+{
     interface Elastos.Droid.Graphics.IPoint;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Content.Res.IAssetFileDescriptor;
@@ -187,13 +187,13 @@ module {
          */
         QueryChildDocuments(
             [in] String parentDocumentId,
-            [in] ArrayOf<String> projection,
+            [in] ArrayOf<String>* projection,
             [in] String sortOrder,
             [out] ICursor** cursor);
 
         QueryChildDocumentsForManage(
             [in] String parentDocumentId,
-            [in] ArrayOf<String> projection,
+            [in] ArrayOf<String>* projection,
             [in] String sortOrder,
             [out] ICursor** cursor);
 
@@ -269,7 +269,7 @@ module {
          * @see ParcelFileDescriptor#createReliableSocketPair()
          * @see ParcelFileDescriptor#parseMode(String)
          */
-        openDocument(
+        OpenDocument(
             [in] String documentId,
             [in] String mode,
             [in] ICancellationSignal* signal,

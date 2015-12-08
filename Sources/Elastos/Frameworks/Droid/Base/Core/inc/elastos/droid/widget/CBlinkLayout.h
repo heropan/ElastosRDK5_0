@@ -23,9 +23,9 @@ using Elastos::Droid::View::IOnPreDrawListener;
 using Elastos::Droid::Widget::FrameLayout;
 using Elastos::Droid::Widget::IFrameLayout;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class BlinkLayout : public FrameLayout {
 private:

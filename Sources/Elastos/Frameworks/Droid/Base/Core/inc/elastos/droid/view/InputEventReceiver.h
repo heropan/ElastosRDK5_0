@@ -73,7 +73,7 @@ public:
         /* [in] */ IInputChannel* inputChannel,
         /* [in] */ ILooper* looper);
 
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ IInputChannel* inputChannel,
         /* [in] */ ILooper* looper);
 

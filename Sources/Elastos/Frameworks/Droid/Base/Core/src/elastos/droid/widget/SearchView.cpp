@@ -44,17 +44,9 @@ using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::App::CPendingIntentHelper;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-
-// {50c74954-5585-4c65-826c-665878e53611}
-extern "C" const InterfaceID EIID_SearchView =
-        { 0x50c74954, 0x5585, 0x4c65, { 0x82, 0x6c, 0x66, 0x58, 0x78, 0xe5, 0x36, 0x11 } };
-
-// {7371bd5f-8785-422e-b7ba-ef1cd384e5c3}
-extern "C" const InterfaceID EIID_SearchAutoComplete =
-        { 0x7371bd5f, 0x8785, 0x422e, { 0xb7, 0xba, 0xef, 0x1c, 0xd3, 0x84, 0xe5, 0xc3 } };
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 const Boolean SearchView::DBG = FALSE;
 const String SearchView::IME_OPTION_NO_MICROPHONE("nm");
@@ -1385,7 +1377,7 @@ AutoPtr<IIntent> SearchView::CreateIntentFromSuggestion(
 
 void SearchView::ForceSuggestionQuery()
 {
-    _SearchAutoComplete* temp = reinterpret_cast<_SearchAutoComplete*>(mQueryTextView->Probe(EIID_SearchAutoComplete));
+    _SearchAutoComplete* temp = (_SearchAutoComplete*)mQueryTextView.Get();
     temp->DoBeforeTextChanged();
     temp->DoAfterTextChanged();
 }
@@ -1520,7 +1512,7 @@ Boolean SearchView::_SearchAutoComplete::OnKeyPreIme(
             event->IsCanceled(&canceled);
             if (tracking && !canceled) {
                 mSearchView->ClearFocus();
-                SearchView* svTemp = reinterpret_cast<SearchView*>(mSearchView->Probe(EIID_SearchView));
+                SearchView* svTemp = (SearchView*)mSearchView.Get();
                 svTemp->SetImeVisibility(FALSE);
                 return TRUE;
             }
@@ -1668,7 +1660,7 @@ ECode SearchView::SearchViewKeyListener::OnKey(
 
     Boolean modifiers = FALSE;
     event->HasNoModifiers(&modifiers);
-    _SearchAutoComplete* temp = reinterpret_cast<_SearchAutoComplete*>(mHost->mQueryTextView->Probe(EIID_SearchAutoComplete));
+    _SearchAutoComplete* temp = (_SearchAutoComplete*)mHost->mQueryTextView.Get();
     if (!temp->IsEmpty() && modifiers) {
         Int32 action = 0;
         event->GetAction(&action);

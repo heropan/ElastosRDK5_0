@@ -1,8 +1,9 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_AudioPlaybackHandler_H__
 #define __ELASTOS_DROID_SPEECH_TTS_AudioPlaybackHandler_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include "elastos/droid/speech/tts/PlaybackQueueItem.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 //#include <elastos/Queue.h>//#include <elastos/BlockingQueue.h>
 
@@ -17,7 +18,7 @@ namespace Speech {
 namespace Tts {
 
 class AudioPlaybackHandler
-    : public ElRefBase
+    : public Object
 {
 private:
     /*
@@ -25,26 +26,24 @@ private:
      * processes messages from a priority queue.
      */
     class AudioPlaybackHandlerMessageLoop
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        AudioPlaybackHandlerMessageLoop();
 
-        CARAPI_(UInt32) Release();
+        virtual ~AudioPlaybackHandlerMessageLoop();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ AudioPlaybackHandler* aph);
     public:
         //@Override
         CARAPI Run();
-    public:
-        AudioPlaybackHandlerMessageLoop(
-            /* [in] */ AudioPlaybackHandler* aph);
+
     private:
         AutoPtr<AudioPlaybackHandler> mAph;
     };
@@ -54,13 +53,13 @@ public:
 
     CARAPI_(void) Start();
 
+    CARAPI_(void) Stop();
+
     CARAPI_(void) Enqueue(
         /* [in] */ PlaybackQueueItem* item);
 
     CARAPI_(void) StopForApp(
         /* [in] */ IInterface* callerIdentity);
-
-    CARAPI_(void) Stop();
 
     /**
      * @return false iff the queue is empty and no queue item is currently
@@ -89,15 +88,15 @@ private:
         /* [in] */ IInterface* callerIdentity);
 
 private:
-    static const CString TAG;// = "TTS.AudioPlaybackHandler";
-    static const Boolean DBG;// = FALSE;
+    static const String TAG;        // = "TTS.AudioPlaybackHandler";
+    static const Boolean DBG;
 
     //private final LinkedBlockingQueue<PlaybackQueueItem> mQueue;
     //Queue< AutoPtr<PlaybackQueueItem> > mQueue;
     List< AutoPtr<PlaybackQueueItem> > mQueue;
     AutoPtr<IThread> mHandlerThread;
 
-    /*volatile*/ AutoPtr<PlaybackQueueItem> mCurrentWorkItem;// = NULL;
+    /*volatile*/ AutoPtr<PlaybackQueueItem> mCurrentWorkItem;
 
 };
 

@@ -3,9 +3,9 @@ module
 {
     interface Elastos.Droid.Widget.IListAdapter;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * List adapter that wraps another list adapter. The wrapped adapter can be retrieved
@@ -18,7 +18,7 @@ module
      * interface Elastos.Droid.Widget.IAdapter
      * interface Elastos.Droid.Widget.IListAdapter
      */
-     [local]
+    [local]
     interface IWrapperListAdapter {
         /**
          * Returns the adapter wrapped by this list adapter.
@@ -32,5 +32,4 @@ module
     }// namespace Widget
     }// namespace Droid
     }// namespace Elastos
-
 }

@@ -4,9 +4,9 @@
 
 #include "elastos/droid/widget/CompoundButton.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class CheckBox : public CompoundButton
 {

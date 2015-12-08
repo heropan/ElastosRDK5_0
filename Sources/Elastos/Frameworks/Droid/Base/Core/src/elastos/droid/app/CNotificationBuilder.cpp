@@ -1,24 +1,51 @@
-#include "CNotificationBuilder.h"
-#include "elastos/droid/R.h"
-#include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/app/CNotificationAction.h"
+#include "elastos/droid/app/CNotificationBuilder.h"
 #include "elastos/droid/app/CNotification.h"
-#include "elastos/droid/widget/CRemoteViews.h"
+#include "elastos/droid/app/CNotificationAction.h"
+#include "elastos/droid/app/NotificationStyle.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CCanvas.h"
+// #include "elastos/droid/widget/CRemoteViews.h"
+#include "elastos/droid/utility/MathUtils.h"
+#include "elastos/droid/internal/utility/NotificationColorUtil.h"
+#include <elastos/core/CoreUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::R;
-using Elastos::Text::INumberFormatHelper;
-using Elastos::Text::CNumberFormatHelper;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Widget::CRemoteViews;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::CUserHandle;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::CCanvas;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
+using Elastos::Droid::Graphics::PorterDuffMode_MULTIPLY;
+using Elastos::Droid::Graphics::PorterDuffMode_SRC_ATOP;
+// using Elastos::Droid::Widget::CRemoteViews;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::MathUtils;
+using Elastos::Droid::Internal::Utility::NotificationColorUtil;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Text::INumberFormatHelper;
+using Elastos::Text::CNumberFormatHelper;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
+static const String TAG("CNotificationBuilder");
 const Int32 CNotificationBuilder::MAX_ACTION_BUTTONS = 3;
 const Float CNotificationBuilder::LARGE_TEXT_SCALE = 1.3f;
 const Boolean CNotificationBuilder::DBG = FALSE;
@@ -26,6 +53,10 @@ const Boolean CNotificationBuilder::DBG = FALSE;
 const String CNotificationBuilder::EXTRA_REBUILD_CONTEXT_APPLICATION_INFO("android.rebuild.applicationInfo");
 
 const Boolean CNotificationBuilder::STRIP_AND_REBUILD = TRUE;
+
+CAR_INTERFACE_IMPL(CNotificationBuilder, Object, INotificationBuilder)
+
+CAR_OBJECT_IMPL(CNotificationBuilder)
 
 CNotificationBuilder::CNotificationBuilder()
     : mWhen(0)
@@ -44,8 +75,8 @@ CNotificationBuilder::CNotificationBuilder()
     , mPriority(0)
     , mUseChronometer(FALSE)
     , mShowWhen(TRUE)
-    , mVisibility(VISIBILITY_PRIVATE)
-    , mColor(COLOR_DEFAULT)
+    , mVisibility(INotification::VISIBILITY_PRIVATE)
+    , mColor(INotification::COLOR_DEFAULT)
     , mOriginatingUserId(0)
     , mHasThreeLines(FALSE)
 {
@@ -73,11 +104,16 @@ ECode CNotificationBuilder::constructor(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     system->GetCurrentTimeMillis(&mWhen);
     mAudioStreamType = INotification::STREAM_DEFAULT;
-    mAudioAttributes = AUDIO_ATTRIBUTES_DEFAULT;
+    mAudioAttributes = CNotification::AUDIO_ATTRIBUTES_DEFAULT;
     mPriority = INotification::PRIORITY_DEFAULT;
 
-    mColorUtil = context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.LOLLIPOP ?
-            NotificationColorUtil.getInstance(mContext) : null;
+    AutoPtr<IApplicationInfo> ai;
+    context->GetApplicationInfo((IApplicationInfo**)&ai);
+    Int32 version;
+    ai->GetTargetSdkVersion(&version);
+
+    mColorUtil = version < Build::VERSION_CODES::LOLLIPOP ?
+        NotificationColorUtil::GetInstance(mContext) : NULL;
     return NOERROR;
 }
 
@@ -87,29 +123,32 @@ ECode CNotificationBuilder::constructor(
 {
     FAIL_RETURN(constructor(context))
     mRebuildNotification = n;
-    restoreFromNotification(n);
+    RestoreFromNotification(n);
 
-    Style style = null;
-    Bundle extras = n.extras;
-    String templateClass = extras.getString(EXTRA_TEMPLATE);
-    if (!TextUtils.isEmpty(templateClass)) {
-        Class<? extends Style> styleClass = getNotificationStyleClass(templateClass);
-        if (styleClass == null) {
-            Log.d(TAG, "Unknown style class: " + styleClass);
-            return;
-        }
+    AutoPtr<INotificationStyle> style;
+    AutoPtr<IBundle> extras;
+    n->GetExtras((IBundle**)&extras);
+    String templateClass;
+    extras->GetString(INotification::EXTRA_TEMPLATE, &templateClass);
+    if (!TextUtils::IsEmpty(templateClass)) {
+        assert(0 && "TODO");
+        // Class<? extends Style> styleClass = getNotificationStyleClass(templateClass);
+        // if (styleClass == NULL) {
+        //     Log.d(TAG, "Unknown style class: " + styleClass);
+        //     return;
+        // }
 
-        try {
-            Constructor<? extends Style> constructor = styleClass.getConstructor();
-            style = constructor.newInstance();
-            style.restoreFromExtras(extras);
-        } catch (Throwable t) {
-            Log.e(TAG, "Could not create Style", t);
-            return;
-        }
+        // try {
+        //     Constructor<? extends Style> constructor = styleClass->GetConstructor();
+        //     style = constructor.newInstance();
+        //     style.restoreFromExtras(extras);
+        // } catch (Throwable t) {
+        //     Log.e(TAG, "Could not create Style", t);
+        //     return;
+        // }
     }
-    if (style != null) {
-        setStyle(style);
+    if (style != NULL) {
+        SetStyle(style);
     }
     return NOERROR;
 }
@@ -154,21 +193,21 @@ ECode CNotificationBuilder::SetSmallIcon(
 ECode CNotificationBuilder::SetContentTitle(
     /* [in] */ ICharSequence *title)
 {
-    mContentTitle = SafeCharSequence(title);
+    mContentTitle = CNotification::SafeCharSequence(title);
     return NOERROR;
 }
 
 ECode CNotificationBuilder::SetContentText(
     /* [in] */ ICharSequence *text)
 {
-    mContentText = SafeCharSequence(text);
+    mContentText = CNotification::SafeCharSequence(text);
     return NOERROR;
 }
 
 ECode CNotificationBuilder::SetSubText(
     /* [in] */ ICharSequence *text)
 {
-    mSubText = SafeCharSequence(text);
+    mSubText = CNotification::SafeCharSequence(text);
     return NOERROR;
 }
 
@@ -182,7 +221,7 @@ ECode CNotificationBuilder::SetNumber(
 ECode CNotificationBuilder::SetContentInfo(
     /* [in] */ ICharSequence *info)
 {
-    mContentInfo = SafeCharSequence(info);
+    mContentInfo = CNotification::SafeCharSequence(info);
     return NOERROR;
 }
 
@@ -230,7 +269,7 @@ ECode CNotificationBuilder::SetFullScreenIntent(
 ECode CNotificationBuilder::SetTicker(
     /* [in] */ ICharSequence *tickerText)
 {
-    mTickerText = SafeCharSequence(tickerText);
+    mTickerText = CNotification::SafeCharSequence(tickerText);
     return NOERROR;
 }
 
@@ -238,7 +277,7 @@ ECode CNotificationBuilder::SetTicker(
     /* [in] */ ICharSequence *tickerText,
     /* [in] */ IRemoteViews *views)
 {
-    mTickerText = SafeCharSequence(tickerText);
+    mTickerText = CNotification::SafeCharSequence(tickerText);
     mTickerView = views; // we'll save it for you anyway
     return NOERROR;
 }
@@ -254,7 +293,7 @@ ECode CNotificationBuilder::SetSound(
     /* [in] */ IUri *sound)
 {
     mSound = sound;
-    mAudioAttributes = AUDIO_ATTRIBUTES_DEFAULT;
+    mAudioAttributes = CNotification::AUDIO_ATTRIBUTES_DEFAULT;
     return NOERROR;
 }
 
@@ -318,7 +357,8 @@ ECode CNotificationBuilder::SetAutoCancel(
 ECode CNotificationBuilder::SetLocalOnly(
     /* [in] */ Boolean localOnly)
 {
-    return SetFlag(FLAG_LOCAL_ONLY, localOnly);;
+    SetFlag(INotification::FLAG_LOCAL_ONLY, localOnly);
+    return NOERROR;
 }
 
 ECode CNotificationBuilder::SetDefaults(
@@ -345,11 +385,12 @@ ECode CNotificationBuilder::SetGroup(
 ECode CNotificationBuilder::SetGroupSummary(
     /* [in] */ Boolean isGroupSummary)
 {
-    return SetFlag(FLAG_GROUP_SUMMARY, isGroupSummary);
+    SetFlag(INotification::FLAG_GROUP_SUMMARY, isGroupSummary);
+    return NOERROR;
 }
 
 ECode CNotificationBuilder::SetSortKey(
-    /* [in] */ const String& groupKey)
+    /* [in] */ const String& sortKey)
 {
     mSortKey = sortKey;
     return NOERROR;
@@ -372,11 +413,12 @@ ECode CNotificationBuilder::AddPerson(
 ECode CNotificationBuilder::AddExtras(
     /* [in] */ IBundle * extras)
 {
-    if (extras != null) {
-        if (mExtras == null) {
-            mExtras = new Bundle(extras);
-        } else {
-            mExtras.putAll(extras);
+    if (extras != NULL) {
+        if (mExtras == NULL) {
+            CBundle::New(extras, (IBundle**)&mExtras);
+        }
+        else {
+            mExtras->PutAll(extras);
         }
     }
     return NOERROR;
@@ -404,7 +446,7 @@ ECode CNotificationBuilder::AddAction(
     /* [in] */ IPendingIntent *intent)
 {
     AutoPtr<INotificationAction> action;
-    CNotificationAction::New(icon, SafeCharSequence(title), intent, (INotificationAction**)&action);
+    CNotificationAction::New(icon, CNotification::SafeCharSequence(title), intent, (INotificationAction**)&action);
     mActions.PushBack(action);
     return NOERROR;
 }
@@ -429,7 +471,7 @@ ECode CNotificationBuilder::SetStyle(
 }
 
 ECode CNotificationBuilder::SetVisibility(
-    /* [in] */ Int32 visibility);
+    /* [in] */ Int32 visibility)
 {
     mVisibility = visibility;
     return NOERROR;
@@ -443,14 +485,14 @@ ECode CNotificationBuilder::SetPublicVersion(
 }
 
 ECode CNotificationBuilder::Extend(
-    /* [in] */ IExtender* extender)
+    /* [in] */ INotificationExtender* extender)
 {
     extender->Extend(this);
     return NOERROR;
 }
 
 ECode CNotificationBuilder::SetColor(
-    /* [in] */ Int32 argb);
+    /* [in] */ Int32 argb)
 {
     mColor = argb;
     return NOERROR;
@@ -460,22 +502,32 @@ AutoPtr<IDrawable> CNotificationBuilder::GetProfileBadgeDrawable()
 {
     // Note: This assumes that the current user can read the profile badge of the
     // originating user.
-    return mContext.getPackageManager().getUserBadgeForDensity(
-            new UserHandle(mOriginatingUserId), 0);
+    AutoPtr<IPackageManager> mgr;
+    mContext->GetPackageManager((IPackageManager**)&mgr);
+    AutoPtr<IUserHandle> user;
+    CUserHandle::New(mOriginatingUserId, (IUserHandle**)&user);
+    AutoPtr<IDrawable> drawable;
+    mgr->GetUserBadgeForDensity(user, 0, (IDrawable**)&drawable);
+    return drawable;
 }
 
 AutoPtr<IBitmap> CNotificationBuilder::GetProfileBadge()
 {
-    Drawable badge = getProfileBadgeDrawable();
-    if (badge == null) {
-        return null;
+    AutoPtr<IDrawable> badge = GetProfileBadgeDrawable();
+    if (badge == NULL) {
+        return NULL;
     }
-    final int size = mContext.getResources().getDimensionPixelSize(
-            R.dimen.notification_badge_size);
-    Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-    Canvas canvas = new Canvas(bitmap);
-    badge.setBounds(0, 0, size, size);
-    badge.draw(canvas);
+    Int32 size;
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+    res->GetDimensionPixelSize(
+        R::dimen::notification_badge_size, &size);
+    AutoPtr<IBitmap> bitmap;
+    CBitmap::CreateBitmap(size, size, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+    AutoPtr<ICanvas> canvas;
+    CCanvas::New(bitmap, (ICanvas**)&canvas);
+    badge->SetBounds(0, 0, size, size);
+    badge->Draw(canvas);
     return bitmap;
 }
 
@@ -483,71 +535,80 @@ Boolean CNotificationBuilder::AddProfileBadge(
     /* [in] */ IRemoteViews* contentView,
     /* [in] */ Int32 resId)
 {
-    Bitmap profileBadge = getProfileBadge();
+    AutoPtr<IBitmap> profileBadge = GetProfileBadge();
 
-    contentView->SetViewVisibility(R::id::profile_badge_large_template, View.GONE);
-    contentView->SetViewVisibility(R::id::profile_badge_line2, View.GONE);
-    contentView->SetViewVisibility(R::id::profile_badge_line3, View.GONE);
+    contentView->SetViewVisibility(R::id::profile_badge_large_template, IView::GONE);
+    contentView->SetViewVisibility(R::id::profile_badge_line2, IView::GONE);
+    contentView->SetViewVisibility(R::id::profile_badge_line3, IView::GONE);
 
-    if (profileBadge != null) {
+    if (profileBadge != NULL) {
         contentView->SetImageViewBitmap(resId, profileBadge);
-        contentView->SetViewVisibility(resId, View.VISIBLE);
+        contentView->SetViewVisibility(resId, IView::VISIBLE);
 
         // Make sure Line 3 is visible. As badge will be here if there
         // is no text to display.
         if (resId == R::id::profile_badge_line3) {
-            contentView->SetViewVisibility(R::id::line3, View.VISIBLE);
+            contentView->SetViewVisibility(R::id::line3, IView::VISIBLE);
         }
-        return true;
+        return TRUE;
     }
-    return false;
+    return FALSE;
 }
 
 ECode CNotificationBuilder::ShrinkLine3Text(
     /* [in] */ IRemoteViews* contentView)
 {
-    float subTextSize = mContext.getResources().getDimensionPixelSize(
-            R.dimen.notification_subtext_size);
-    contentView->SetTextViewTextSize(R::id::text, TypedValue.COMPLEX_UNIT_PX, subTextSize);
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+    Int32 subTextSize;
+    res->GetDimensionPixelSize(
+        R::dimen::notification_subtext_size, &subTextSize);
+    return contentView->SetTextViewTextSize(
+        R::id::text, ITypedValue::COMPLEX_UNIT_PX, subTextSize);
 }
 
 ECode CNotificationBuilder::UnshrinkLine3Text(
     /* [in] */ IRemoteViews* contentView)
 {
-    float regularTextSize = mContext.getResources().getDimensionPixelSize(
-            com.android.internal.R.dimen.notification_text_size);
-    contentView->SetTextViewTextSize(R::id::text, TypedValue.COMPLEX_UNIT_PX, regularTextSize);
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+    Int32 regularTextSize;
+    res->GetDimensionPixelSize(
+        R::dimen::notification_text_size, &regularTextSize);
+    return contentView->SetTextViewTextSize(
+        R::id::text, ITypedValue::COMPLEX_UNIT_PX, regularTextSize);
 }
 
 ECode CNotificationBuilder::ResetStandardTemplate(
     /* [in] */ IRemoteViews* contentView)
 {
-    removeLargeIconBackground(contentView);
+    RemoveLargeIconBackground(contentView);
     contentView->SetViewPadding(R::id::icon, 0, 0, 0, 0);
     contentView->SetImageViewResource(R::id::icon, 0);
-    contentView->SetInt(R::id::icon, "setBackgroundResource", 0);
-    contentView->SetViewVisibility(R::id::right_icon, View.GONE);
-    contentView->SetInt(R::id::right_icon, "setBackgroundResource", 0);
+    contentView->SetInt32(R::id::icon, String("setBackgroundResource"), 0);
+    contentView->SetViewVisibility(R::id::right_icon, IView::GONE);
+    contentView->SetInt32(R::id::right_icon, String("setBackgroundResource"), 0);
     contentView->SetImageViewResource(R::id::right_icon, 0);
     contentView->SetImageViewResource(R::id::icon, 0);
-    contentView->SetTextViewText(R::id::title, null);
-    contentView->SetTextViewText(R::id::text, null);
-    unshrinkLine3Text(contentView);
-    contentView->SetTextViewText(R::id::text2, null);
-    contentView->SetViewVisibility(R::id::text2, View.GONE);
-    contentView->SetViewVisibility(R::id::info, View.GONE);
-    contentView->SetViewVisibility(R::id::time, View.GONE);
-    contentView->SetViewVisibility(R::id::line3, View.GONE);
-    contentView->SetViewVisibility(R::id::overflow_divider, View.GONE);
-    contentView->SetViewVisibility(R::id::progress, View.GONE);
-    contentView->SetViewVisibility(R::id::chronometer, View.GONE);
-    contentView->SetViewVisibility(R::id::time, View.GONE);
+    contentView->SetTextViewText(R::id::title, NULL);
+    contentView->SetTextViewText(R::id::text, NULL);
+    UnshrinkLine3Text(contentView);
+    contentView->SetTextViewText(R::id::text2, NULL);
+    contentView->SetViewVisibility(R::id::text2, IView::GONE);
+    contentView->SetViewVisibility(R::id::info, IView::GONE);
+    contentView->SetViewVisibility(R::id::time, IView::GONE);
+    contentView->SetViewVisibility(R::id::line3, IView::GONE);
+    contentView->SetViewVisibility(R::id::overflow_divider, IView::GONE);
+    contentView->SetViewVisibility(R::id::progress, IView::GONE);
+    contentView->SetViewVisibility(R::id::chronometer, IView::GONE);
+    contentView->SetViewVisibility(R::id::time, IView::GONE);
+    return NOERROR;
 }
 
 AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
     /* [in] */ Int32 resId)
 {
-    return ApplyStandardTemplate(resId, true /* hasProgress */);
+    return ApplyStandardTemplate(resId, TRUE /* hasProgress */);
 }
 
 ECode CNotificationBuilder::GetNotification(
@@ -561,46 +622,49 @@ ECode CNotificationBuilder::Build(
     /* [out] */ INotification **notification)
 {
     VALIDATE_NOT_NULL(notification);
+    *notification = NULL;
 
-    // if (mStyle != NULL) {
-    //     return mStyle->Build(notification);
-    // }
-    // else {
-    //     return BuildUnstyled(notification);
-    // }
+    mContext->GetUserId(&mOriginatingUserId);
+    mHasThreeLines = HasThreeLines();
 
-    mOriginatingUserId = mContext.getUserId();
-    mHasThreeLines = hasThreeLines();
+    AutoPtr<INotification> n;
+    BuildUnstyled((INotification**)&n);
 
-    Notification n = buildUnstyled();
-
-    if (mStyle != null) {
-        n = mStyle.buildStyled(n);
+    if (mStyle != NULL) {
+        mStyle->BuildStyled(n);
     }
 
-    if (mExtras != null) {
-        n.extras.putAll(mExtras);
+    AutoPtr<IBundle> extras;
+    n->GetExtras((IBundle**)&extras);
+    if (mExtras != NULL) {
+        extras->PutAll(mExtras);
     }
 
-    if (mRebuildBundle.size() > 0) {
-        n.extras.putAll(mRebuildBundle);
-        mRebuildBundle.clear();
+    Int32 size;
+    mRebuildBundle->GetSize(&size);
+    if (size > 0) {
+        extras->PutAll(mRebuildBundle);
+        mRebuildBundle->Clear();
     }
 
-    populateExtras(n.extras);
-    if (mStyle != null) {
-        mStyle.addExtras(n.extras);
+    PopulateExtras(extras);
+    if (mStyle != NULL) {
+        mStyle->AddExtras(extras);
     }
 
-    mHasThreeLines = false;
-    return n;
+    mHasThreeLines = FALSE;
+    *notification = n;
+    REFCOUNT_ADD(*notification)
+    return NOERROR;
 }
 
-AutoPtr<INotification> CNotificationBuilder::BuildInto(
+ECode CNotificationBuilder::BuildInto(
     /* [in] */ INotification* n)
 {
-    build().cloneInto(n, true);
-    return n;
+    AutoPtr<INotification> notification;
+    Build((INotification**)&notification);
+    notification->CloneInto(n, TRUE);
+    return NOERROR;
 }
 
 ECode CNotificationBuilder::GetSubText(
@@ -621,38 +685,39 @@ ECode CNotificationBuilder::GetContentText(
     return NOERROR;
 }
 
-Int32 CNotificationBuilder::GetBaseLayoutResource();
+Int32 CNotificationBuilder::GetBaseLayoutResource()
 {
-    return R_layout_notification_template_material_base;
+    return R::layout::notification_template_material_base;
 }
 
 Int32 CNotificationBuilder::GetBigBaseLayoutResource()
 {
-    return R_layout_notification_template_material_big_base;
+    return R::layout::notification_template_material_big_base;
 }
 
 Int32 CNotificationBuilder::GetBigPictureLayoutResource()
 {
-    return R_layout_notification_template_material_big_picture;
+    return R::layout::notification_template_material_big_picture;
 }
 
 Int32 CNotificationBuilder::GetBigTextLayoutResource()
 {
-    return R_layout_notification_template_material_big_text;
+    return R::layout::notification_template_material_big_text;
 }
 
 Int32 CNotificationBuilder::GetInboxLayoutResource()
  {
-    return R_layout_notification_template_material_inbox;
+    return R::layout::notification_template_material_inbox;
 }
 
 Int32 CNotificationBuilder::GetActionLayoutResource()
 {
-    return R_layout_notification_material_action;
+    return R::layout::notification_material_action;
 }
 
-Int32 CNotificationBuilder::GetActionTombstoneLayoutResource() {
-    return R_layout_notification_material_action_tombstone;
+Int32 CNotificationBuilder::GetActionTombstoneLayoutResource()
+{
+    return R::layout::notification_material_action_tombstone;
 }
 
 ECode CNotificationBuilder::ApplyStandardTemplateWithActions(
@@ -668,8 +733,8 @@ ECode CNotificationBuilder::ApplyStandardTemplateWithActions(
 
     Int32 N = mActions.GetSize();
     if (N > 0) {
-        rv->SetViewVisibility(R::id::actions, IView::VISIBLE);
-        rv->SetViewVisibility(R::id::action_divider, IView::VISIBLE);
+        big->SetViewVisibility(R::id::actions, IView::VISIBLE);
+        big->SetViewVisibility(R::id::action_divider, IView::VISIBLE);
         if (N > MAX_ACTION_BUTTONS) N = MAX_ACTION_BUTTONS;
 
         for (Int32 i = 0; i < N; i++) {
@@ -702,7 +767,8 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
     AutoPtr<IRemoteViews> contentView;
     AutoPtr<IApplicationInfo> ai;
     mContext->GetApplicationInfo((IApplicationInfo**)&ai);
-    CRemoteViews::New(ai, resId, (IRemoteViews**)&contentView);
+    assert(0 && "TODO");
+    // CRemoteViews::New(ai, resId, (IRemoteViews**)&contentView);
 
     Boolean showLine3 = FALSE;
     Boolean showLine2 = FALSE;
@@ -715,21 +781,13 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
         contentView->SetImageViewBitmap(R::id::icon, mLargeIcon);
         ProcessLargeLegacyIcon(mLargeIcon, contentView);
         contentView->SetImageViewResource(R::id::right_icon, mSmallIcon);
-        contentView->SetViewVisibility(R::id::right_icon, View.VISIBLE);
+        contentView->SetViewVisibility(R::id::right_icon, IView::VISIBLE);
         ProcessSmallRightIcon(mSmallIcon, contentView);
     }
     else { // small icon at left
         contentView->SetImageViewResource(R::id::icon, mSmallIcon);
-        contentView->SetViewVisibility(R::id::icon, View.VISIBLE);
+        contentView->SetViewVisibility(R::id::icon, IView::VISIBLE);
         ProcessSmallIconAsLarge(mSmallIcon, contentView);
-    }
-
-    if (mPriority < INotification::PRIORITY_LOW) {
-        String funcName("SetBackgroundResource");
-        contentView->SetInt32(R::id::icon,
-                funcName, R::drawable::notification_template_icon_low_bg);
-        contentView->SetInt32(R::id::status_bar_latest_event_content,
-                funcName, R::drawable::notification_bg_low);
     }
 
     if (mContentTitle != NULL) {
@@ -767,7 +825,7 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
 
             AutoPtr<ICharSequence> cs;
             String str;
-            f->FormatInt64(mNumber, &str);
+            f->Format((Int64)mNumber, &str);
             CString::New(str, (ICharSequence**)&cs);
             contentView->SetTextViewText(R::id::info, ProcessLegacyText(cs));
         }
@@ -816,7 +874,7 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
             Int64 millis;
             system->GetCurrentTimeMillis(&millis);
             contentView->SetInt64(R::id::chronometer, String("SetBase"),
-                    mWhen + (SystemClock::GetElapsedRealtime() - millis));
+                mWhen + (SystemClock::GetElapsedRealtime() - millis));
             contentView->SetBoolean(R::id::chronometer, String("SetStarted"), TRUE);
         }
         else {
@@ -826,16 +884,21 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
     }
 
     // Adjust padding depending on line count and font size.
-    contentView->SetViewPadding(R::id::line1, 0, CalculateTopPadding(mContext,
-            mHasThreeLines, mContext.getResources().getConfiguration().fontScale),
-            0, 0);
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+    AutoPtr<IConfiguration> config;
+    res->GetConfiguration((IConfiguration**)&config);
+    Float fontScale;
+    config->GetFontScale(&fontScale);
+    contentView->SetViewPadding(R::id::line1, 0,
+        CalculateTopPadding(mContext, mHasThreeLines, fontScale), 0, 0);
 
     // We want to add badge to first line of text.
-    Boolean addedBadge = addProfileBadge(contentView,
-            contentTextInLine2 ? R::id::profile_badge_line2 : R::id::profile_badge_line3);
+    Boolean addedBadge = AddProfileBadge(contentView,
+        contentTextInLine2 ? R::id::profile_badge_line2 : R::id::profile_badge_line3);
     // If we added the badge to line 3 then we should show line 3.
     if (addedBadge && !contentTextInLine2) {
-        showLine3 = true;
+        showLine3 = TRUE;
     }
 
     // Note getStandardView may hide line 3 again.
@@ -851,43 +914,48 @@ Boolean CNotificationBuilder::ShowsTimeOrChronometer()
 
 Boolean CNotificationBuilder::HasThreeLines()
 {
-    Boolean contentTextInLine2 = mSubText != null && mContentText != null;
-    Boolean hasProgress = mStyle == null || mStyle.hasProgress();
+    Boolean contentTextInLine2 = mSubText != NULL && mContentText != NULL;
+    Boolean hasProgress = mStyle == NULL || ((NotificationStyle*)mStyle.Get())->HasProgress();
     // If we have content text in line 2, badge goes into line 2, or line 3 otherwise
-    Boolean badgeInLine3 = getProfileBadgeDrawable() != null && !contentTextInLine2;
-    Boolean hasLine3 = mContentText != null || mContentInfo != null || mNumber > 0
+    Boolean badgeInLine3 = GetProfileBadgeDrawable() != NULL && !contentTextInLine2;
+    Boolean hasLine3 = mContentText != NULL || mContentInfo != NULL || mNumber > 0
             || badgeInLine3;
-    Boolean hasLine2 = (mSubText != null && mContentText != null) ||
-            (hasProgress && mSubText == null
+    Boolean hasLine2 = (mSubText != NULL && mContentText != NULL) ||
+            (hasProgress && mSubText == NULL
                     && (mProgressMax != 0 || mProgressIndeterminate));
     return hasLine2 && hasLine3;
 }
 
-static Int32 CNotificationBuilder::CalculateTopPadding(
+Int32 CNotificationBuilder::CalculateTopPadding(
     /* [in] */ IContext* ctx,
-    /* [in] */ Boolean* hasThreeLines,
+    /* [in] */ Boolean HasThreeLines,
     /* [in] */ Float fontScale)
 {
-    int padding = ctx.getResources().getDimensionPixelSize(hasThreeLines
-            ? R.dimen.notification_top_pad_narrow
-            : R.dimen.notification_top_pad);
-    int largePadding = ctx.getResources().getDimensionPixelSize(hasThreeLines
-            ? R.dimen.notification_top_pad_large_text_narrow
-            : R.dimen.notification_top_pad_large_text);
-    float largeFactor = (MathUtils.constrain(fontScale, 1.0f, LARGE_TEXT_SCALE) - 1f)
-            / (LARGE_TEXT_SCALE - 1f);
+    AutoPtr<IResources> res;
+    ctx->GetResources((IResources**)&res);
+
+    Int32 padding, largePadding;
+    res->GetDimensionPixelSize(HasThreeLines
+        ? R::dimen::notification_top_pad_narrow
+        : R::dimen::notification_top_pad, &padding);
+    res->GetDimensionPixelSize(HasThreeLines
+        ? R::dimen::notification_top_pad_large_text_narrow
+        : R::dimen::notification_top_pad_large_text, &largePadding);
+    Float largeFactor = (MathUtils::Constrain(fontScale, 1.0f, LARGE_TEXT_SCALE) - 1.0f)
+            / (LARGE_TEXT_SCALE - 1.0f);
 
     // Linearly interpolate the padding between large and normal with the font scale ranging
     // from 1f to LARGE_TEXT_SCALE
-    return Math.round((1 - largeFactor) * padding + largeFactor * largePadding);
+    return Elastos::Core::Math::Round((1 - largeFactor) * padding + largeFactor * largePadding);
 }
 
 ECode CNotificationBuilder::ResetStandardTemplateWithActions(
     /* [in] */ IRemoteViews* big)
 {
-    big.setViewVisibility(R.id.actions, View.GONE);
-    big.setViewVisibility(R.id.action_divider, View.GONE);
-    big.removeAllViews(R.id.actions);
+    big->SetViewVisibility(R::id::actions, IView::GONE);
+    big->SetViewVisibility(R::id::action_divider, IView::GONE);
+    big->RemoveAllViews(R::id::actions);
+    return NOERROR;
 }
 
 AutoPtr<IRemoteViews> CNotificationBuilder::MakeContentView()
@@ -936,9 +1004,10 @@ AutoPtr<IRemoteViews> CNotificationBuilder::GenerateActionButton(
     String name;
     mContext->GetPackageName(&name);
 
-    CRemoteViews::New(name,
-        tombstone ? GetActionTombstoneLayoutResource() : GetActionLayoutResource(),
-        (IRemoteViews**)&button);
+    assert(0 && "TODO");
+    // CRemoteViews::New(name,
+    //     tombstone ? GetActionTombstoneLayoutResource() : GetActionLayoutResource(),
+    //     (IRemoteViews**)&button);
 
     Int32 icon;
     action->GetIcon(&icon);
@@ -960,100 +1029,110 @@ Boolean CNotificationBuilder::IsLegacy()
 }
 
 ECode CNotificationBuilder::ProcessLegacyAction(
-    /* [in] */ INotificaitonAction* action,
+    /* [in] */ INotificationAction* action,
     /* [in] */ IRemoteViews* button)
 {
-    if (!isLegacy() || mColorUtil.isGrayscaleIcon(mContext, action.icon)) {
-        button.setTextViewCompoundDrawablesRelativeColorFilter(R.id.action0, 0,
-                mContext.getResources().getColor(R.color.notification_action_color_filter),
-                PorterDuff.Mode.MULTIPLY);
+    Int32 icon;
+    action->GetIcon(&icon);
+    Boolean bval;
+    if (!IsLegacy() || (mColorUtil->IsGrayscaleIcon(mContext, icon, &bval), bval)) {
+        AutoPtr<IResources> res;
+        mContext->GetResources((IResources**)&res);
+        Int32 color;
+        res->GetColor(R::color::notification_action_color_filter, &color);
+        button->SetTextViewCompoundDrawablesRelativeColorFilter(R::id::action0, 0,
+            color,
+            PorterDuffMode_MULTIPLY);
     }
+    return NOERROR;
 }
 
 AutoPtr<ICharSequence> CNotificationBuilder::ProcessLegacyText(
     /* [in] */ ICharSequence* charSequence)
 {
-    if (isLegacy()) {
-        return mColorUtil.invertCharSequenceColors(charSequence);
-    } else {
-        return charSequence;
+    if (IsLegacy()) {
+        AutoPtr<ICharSequence> seq;
+        mColorUtil->InvertCharSequenceColors(charSequence, (ICharSequence**)&seq);
+        return NOERROR;
     }
+
+    return charSequence;
 }
 
-ECode CNotificationBuilder::processSmallIconAsLarge(
+ECode CNotificationBuilder::ProcessSmallIconAsLarge(
     /* [in] */ Int32 largeIconId,
     /* [in] */ IRemoteViews* contentView)
 {
-    if (!isLegacy() || mColorUtil.isGrayscaleIcon(mContext, largeIconId)) {
-        applyLargeIconBackground(contentView);
+    Boolean bval;
+    if (!IsLegacy() || (mColorUtil->IsGrayscaleIcon(mContext, largeIconId, &bval), bval)) {
+        ApplyLargeIconBackground(contentView);
     }
+    return NOERROR;
 }
 
-ECode CNotificationBuilder::processLargeLegacyIcon(
+ECode CNotificationBuilder::ProcessLargeLegacyIcon(
     /* [in] */ IBitmap* largeIcon,
     /* [in] */ IRemoteViews* contentView)
 {
-    if (isLegacy() && mColorUtil.isGrayscaleIcon(largeIcon)) {
-        applyLargeIconBackground(contentView);
-    } else {
-        removeLargeIconBackground(contentView);
+    Boolean result;
+    if (IsLegacy() && (mColorUtil->IsGrayscaleIcon(largeIcon, &result), result)) {
+        ApplyLargeIconBackground(contentView);
     }
+    else {
+        RemoveLargeIconBackground(contentView);
+    }
+    return NOERROR;
 }
 
 ECode CNotificationBuilder::ApplyLargeIconBackground(
     /* [in] */ IRemoteViews* contentView)
 {
-    contentView.setInt(R.id.icon, "setBackgroundResource",
-            R.drawable.notification_icon_legacy_bg);
+    contentView->SetInt32(R::id::icon, String("setBackgroundResource"),
+        R::drawable::notification_icon_legacy_bg);
 
-    contentView.setDrawableParameters(
-            R.id.icon,
-            true,
-            -1,
-            resolveColor(),
-            PorterDuff.Mode.SRC_ATOP,
-            -1);
+    contentView->SetDrawableParameters(
+        R::id::icon, TRUE, -1, ResolveColor(),
+        PorterDuffMode_SRC_ATOP, -1);
 
-    int padding = mContext.getResources().getDimensionPixelSize(
-            R.dimen.notification_large_icon_circle_padding);
-    contentView.setViewPadding(R.id.icon, padding, padding, padding, padding);
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+    Int32 padding;
+    res->GetDimensionPixelSize(
+        R::dimen::notification_large_icon_circle_padding, &padding);
+    contentView->SetViewPadding(
+        R::id::icon, padding, padding, padding, padding);
+    return NOERROR;
 }
 
 ECode CNotificationBuilder::RemoveLargeIconBackground(
     /* [in] */ IRemoteViews* contentView)
 {
-    contentView.setInt(R.id.icon, "setBackgroundResource", 0);
+    return contentView->SetInt32(R::id::icon, String("setBackgroundResource"), 0);
 }
 
-/**
- * Recolor small icons when used in the R.id.right_icon slot.
- */
 ECode CNotificationBuilder::ProcessSmallRightIcon(
     /* [in] */ Int32 smallIconDrawableId,
     /* [in] */ IRemoteViews* contentView)
 {
-    if (!isLegacy() || mColorUtil.isGrayscaleIcon(mContext, smallIconDrawableId)) {
-        contentView.setDrawableParameters(R.id.right_icon, false, -1,
-                0xFFFFFFFF,
-                PorterDuff.Mode.SRC_ATOP, -1);
+    Boolean bval;
+    if (!IsLegacy() || (mColorUtil->IsGrayscaleIcon(mContext, smallIconDrawableId, &bval))) {
+        contentView->SetDrawableParameters(R::id::right_icon, FALSE, -1,
+            0xFFFFFFFF, PorterDuffMode_SRC_ATOP, -1);
 
-        contentView.setInt(R.id.right_icon,
-                "setBackgroundResource",
-                R.drawable.notification_icon_legacy_bg);
+        contentView->SetInt32(R::id::right_icon,
+            String("setBackgroundResource"),
+            R::drawable::notification_icon_legacy_bg);
 
-        contentView.setDrawableParameters(
-                R.id.right_icon,
-                true,
-                -1,
-                resolveColor(),
-                PorterDuff.Mode.SRC_ATOP,
-                -1);
+        contentView->SetDrawableParameters(
+            R::id::right_icon, TRUE, -1,
+            ResolveColor(), PorterDuffMode_SRC_ATOP, -1);
     }
+    return NOERROR;
 }
 
 Int32 CNotificationBuilder::SanitizeColor()
 {
-    if (mColor != COLOR_DEFAULT) {
+    if (mColor != INotification::COLOR_DEFAULT) {
         mColor |= 0xFF000000; // no alpha for custom colors
     }
     return mColor;
@@ -1061,12 +1140,15 @@ Int32 CNotificationBuilder::SanitizeColor()
 
 Int32 CNotificationBuilder::ResolveColor()
 {
-    if (mColor == COLOR_DEFAULT) {
-        return mContext.getResources().getColor(R.color.notification_icon_bg_color);
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+    if (mColor == INotification::COLOR_DEFAULT) {
+        Int32 color;
+        res->GetColor(R::color::notification_icon_bg_color, &color);
+        return color;
     }
     return mColor;
 }
-        //
 
 ECode CNotificationBuilder::BuildUnstyled(
     /* [out] */ INotification** notification)
@@ -1121,22 +1203,8 @@ ECode CNotificationBuilder::BuildUnstyled(
     n->SetFlags(flag);
 
     n->SetCategory(mCategory);
-    n->SetGroupKey(mGroupKey);
+    n->SetGroup(mGroupKey);
     n->SetSortKey(mSortKey);
-
-    AutoPtr<ArrayOf<String> > strs;
-    if (mKindList.IsEmpty() == FALSE) {
-        strs = ArrayOf<String>::Alloc(mKindList.GetSize());
-        //mKindList.ToArray(n->mKind);
-        List<String>::Iterator it = mKindList.Begin();
-        for(Int32 i = 0; i < mKindList.GetSize(); i++, it++) {
-            (*strs)[i] = *it;
-        }
-        n->SetKind(strs);
-    } else {
-        n->SetKind(NULL);
-    }
-
     n->SetPriority(mPriority);
 
     AutoPtr<ArrayOf<INotificationAction*> > actions;
@@ -1159,7 +1227,9 @@ ECode CNotificationBuilder::BuildUnstyled(
         AutoPtr<INotification> ntfc;
         CNotification::New((INotification**)&ntfc);
         n->SetPublicVersion(ntfc);
-        mPublicVersion->CloneInto(n.publicVersion, TRUE);
+        AutoPtr<INotification> pv;
+        n->GetPublicVersion((INotification**)&pv);
+        mPublicVersion->CloneInto(pv, TRUE);
     }
     // Note: If you're adding new fields, also update restoreFromNotitification().
 
@@ -1168,283 +1238,360 @@ ECode CNotificationBuilder::BuildUnstyled(
     return NOERROR;
 }
 
-/**
- * Capture, in the provided bundle, semantic information used in the construction of
- * this Notification object.
- * @hide
- */
-CARAPI PopulateExtras(
+ECode CNotificationBuilder::PopulateExtras(
     /* [in] */ IBundle* extras)
 {
     // Store original information used in the construction of this object
-    extras.putInt(EXTRA_ORIGINATING_USERID, mOriginatingUserId);
-    extras.putParcelable(EXTRA_REBUILD_CONTEXT_APPLICATION_INFO,
-            mContext.getApplicationInfo());
-    extras.putCharSequence(EXTRA_TITLE, mContentTitle);
-    extras.putCharSequence(EXTRA_TEXT, mContentText);
-    extras.putCharSequence(EXTRA_SUB_TEXT, mSubText);
-    extras.putCharSequence(EXTRA_INFO_TEXT, mContentInfo);
-    extras.putInt(EXTRA_SMALL_ICON, mSmallIcon);
-    extras.putInt(EXTRA_PROGRESS, mProgress);
-    extras.putInt(EXTRA_PROGRESS_MAX, mProgressMax);
-    extras.putBoolean(EXTRA_PROGRESS_INDETERMINATE, mProgressIndeterminate);
-    extras.putBoolean(EXTRA_SHOW_CHRONOMETER, mUseChronometer);
-    extras.putBoolean(EXTRA_SHOW_WHEN, mShowWhen);
-    if (mLargeIcon != null) {
-        extras.putParcelable(EXTRA_LARGE_ICON, mLargeIcon);
+    extras->PutInt32(INotification::EXTRA_ORIGINATING_USERID, mOriginatingUserId);
+    AutoPtr<IApplicationInfo> ai;
+    mContext->GetApplicationInfo((IApplicationInfo**)&ai);
+    extras->PutParcelable(EXTRA_REBUILD_CONTEXT_APPLICATION_INFO, IParcelable::Probe(ai));
+    extras->PutCharSequence(INotification::EXTRA_TITLE, mContentTitle);
+    extras->PutCharSequence(INotification::EXTRA_TEXT, mContentText);
+    extras->PutCharSequence(INotification::EXTRA_SUB_TEXT, mSubText);
+    extras->PutCharSequence(INotification::EXTRA_INFO_TEXT, mContentInfo);
+    extras->PutInt32(INotification::EXTRA_SMALL_ICON, mSmallIcon);
+    extras->PutInt32(INotification::EXTRA_PROGRESS, mProgress);
+    extras->PutInt32(INotification::EXTRA_PROGRESS_MAX, mProgressMax);
+    extras->PutBoolean(INotification::EXTRA_PROGRESS_INDETERMINATE, mProgressIndeterminate);
+    extras->PutBoolean(INotification::EXTRA_SHOW_CHRONOMETER, mUseChronometer);
+    extras->PutBoolean(INotification::EXTRA_SHOW_WHEN, mShowWhen);
+    if (mLargeIcon != NULL) {
+        extras->PutParcelable(INotification::EXTRA_LARGE_ICON, IParcelable::Probe(mLargeIcon));
     }
-    if (!mPeople.isEmpty()) {
-        extras.putStringArray(EXTRA_PEOPLE, mPeople.toArray(new String[mPeople.size()]));
+    if (!mPeople.IsEmpty()) {
+        AutoPtr<IArrayList> list;
+        CArrayList::New((IArrayList**)&list);
+        List<String>::Iterator it;
+        for (it = mPeople.Begin(); it != mPeople.End(); ++it) {
+            AutoPtr<ICharSequence> csq = CoreUtils::Convert(*it);
+            list->Add(csq);
+        }
+        extras->PutStringArrayList(INotification::EXTRA_PEOPLE, list);
     }
-    // NOTE: If you're adding new extras also update restoreFromNotification().
+    // NOTE: If you're adding new extras also update RestoreFromNotification().
+    return NOERROR;
 }
 
-
-/**
- * @hide
- */
-static CARAPI StripForDelivery(
+ECode CNotificationBuilder::StripForDelivery(
     /* [in] */ INotification* n)
 {
     if (!STRIP_AND_REBUILD) {
-        return;
+        return NOERROR;
     }
 
-    String templateClass = n.extras.getString(EXTRA_TEMPLATE);
+    AutoPtr<IBundle> extras;
+    n->GetExtras((IBundle**)&extras);
+    String templateClass;
+    extras->GetString(INotification::EXTRA_TEMPLATE, &templateClass);
     // Only strip views for known Styles because we won't know how to
     // re-create them otherwise.
-    boolean stripViews = TextUtils.isEmpty(templateClass) ||
-            getNotificationStyleClass(templateClass) != null;
+    AutoPtr<IClassInfo> classInfo = GetNotificationStyleClass(templateClass);
+    Boolean stripViews = TextUtils::IsEmpty(templateClass) || classInfo != NULL;
 
-    boolean isStripped = false;
+    Boolean isStripped = FALSE;
 
-    if (n.largeIcon != null && n.extras.containsKey(EXTRA_LARGE_ICON)) {
+    AutoPtr<IBitmap> largeIcon;
+    n->GetLargeIcon((IBitmap**)&largeIcon);
+    Boolean bval;
+    if (largeIcon != NULL && (extras->ContainsKey(INotification::EXTRA_LARGE_ICON, &bval), bval)) {
         // TODO: Would like to check for equality here, but if the notification
         // has been cloned, we can't.
-        n.largeIcon = null;
-        n.extras.putBoolean(EXTRA_REBUILD_LARGE_ICON, true);
-        isStripped = true;
+        n->SetLargeIcon(NULL);
+        extras->PutBoolean(INotificationBuilder::EXTRA_REBUILD_LARGE_ICON, TRUE);
+        isStripped = TRUE;
     }
     // Get rid of unmodified BuilderRemoteViews.
 
-    if (stripViews &&
-            n.contentView instanceof BuilderRemoteViews &&
-            n.extras.getInt(EXTRA_REBUILD_CONTENT_VIEW_ACTION_COUNT, -1) ==
-                    n.contentView.getSequenceNumber()) {
-        n.contentView = null;
-        n.extras.putBoolean(EXTRA_REBUILD_CONTENT_VIEW, true);
-        n.extras.remove(EXTRA_REBUILD_CONTENT_VIEW_ACTION_COUNT);
-        isStripped = true;
+    AutoPtr<IRemoteViews> contentView;
+    n->GetContentView((IRemoteViews**)&contentView);
+    Int32 vac, sn;
+    extras->GetInt32(INotificationBuilder::EXTRA_REBUILD_CONTENT_VIEW_ACTION_COUNT, -1, &vac);
+    contentView->GetSequenceNumber(&sn);
+    if (stripViews && IBuilderRemoteViews::Probe(contentView)
+        && vac == sn) {
+        n->SetContentView(NULL);
+        extras->PutBoolean(INotificationBuilder::EXTRA_REBUILD_CONTENT_VIEW, TRUE);
+        extras->Remove(INotificationBuilder::EXTRA_REBUILD_CONTENT_VIEW_ACTION_COUNT);
+        isStripped = TRUE;
     }
-    if (stripViews &&
-            n.bigContentView instanceof BuilderRemoteViews &&
-            n.extras.getInt(EXTRA_REBUILD_BIG_CONTENT_VIEW_ACTION_COUNT, -1) ==
-                    n.bigContentView.getSequenceNumber()) {
-        n.bigContentView = null;
-        n.extras.putBoolean(EXTRA_REBUILD_BIG_CONTENT_VIEW, true);
-        n.extras.remove(EXTRA_REBUILD_BIG_CONTENT_VIEW_ACTION_COUNT);
-        isStripped = true;
+
+    AutoPtr<IRemoteViews> bigContentView;
+    n->GetBigContentView((IRemoteViews**)&bigContentView);
+    extras->GetInt32(INotificationBuilder::EXTRA_REBUILD_BIG_CONTENT_VIEW_ACTION_COUNT, -1, &vac);
+    bigContentView->GetSequenceNumber(&sn);
+    if (stripViews && IBuilderRemoteViews::Probe(bigContentView)
+         && vac == sn) {
+        n->SetBigContentView(NULL);
+        extras->PutBoolean(INotificationBuilder::EXTRA_REBUILD_BIG_CONTENT_VIEW, TRUE);
+        extras->Remove(INotificationBuilder::EXTRA_REBUILD_BIG_CONTENT_VIEW_ACTION_COUNT);
+        isStripped = TRUE;
     }
-    if (stripViews &&
-            n.headsUpContentView instanceof BuilderRemoteViews &&
-            n.extras.getInt(EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW_ACTION_COUNT, -1) ==
-                    n.headsUpContentView.getSequenceNumber()) {
-        n.headsUpContentView = null;
-        n.extras.putBoolean(EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW, true);
-        n.extras.remove(EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW_ACTION_COUNT);
-        isStripped = true;
+
+
+    AutoPtr<IRemoteViews> headsUpContentView;
+    n->GetHeadsUpContentView((IRemoteViews**)&headsUpContentView);
+    extras->GetInt32(INotificationBuilder::EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW_ACTION_COUNT, -1, &vac);
+    headsUpContentView->GetSequenceNumber(&sn);
+    if (stripViews && IBuilderRemoteViews::Probe(headsUpContentView)
+        && vac == sn) {
+        n->SetHeadsUpContentView(NULL);
+        extras->PutBoolean(INotificationBuilder::EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW, TRUE);
+        extras->Remove(INotificationBuilder::EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW_ACTION_COUNT);
+        isStripped = TRUE;
     }
 
     if (isStripped) {
-        n.extras.putBoolean(EXTRA_NEEDS_REBUILD, true);
+        extras->PutBoolean(INotificationBuilder::EXTRA_NEEDS_REBUILD, TRUE);
     }
+    return NOERROR;
 }
 
-/**
- * @hide
- */
-AutoPtr<INotification> Rebuild(
+AutoPtr<INotification> CNotificationBuilder::Rebuild(
     /* [in] */ IContext* context,
     /* [in] */ INotification* n)
 {
-    Bundle extras = n.extras;
-    if (!extras.getBoolean(EXTRA_NEEDS_REBUILD)) return n;
-    extras.remove(EXTRA_NEEDS_REBUILD);
+    AutoPtr<IBundle> extras;
+    n->GetExtras((IBundle**)&extras);
+    Boolean bval;
+    extras->GetBoolean(INotificationBuilder::EXTRA_NEEDS_REBUILD, &bval);
+    if (!bval) return n;
+    extras->Remove(INotificationBuilder::EXTRA_NEEDS_REBUILD);
 
     // Re-create notification context so we can access app resources.
-    ApplicationInfo applicationInfo = extras.getParcelable(
-            EXTRA_REBUILD_CONTEXT_APPLICATION_INFO);
-    Context builderContext;
-    try {
-        builderContext = context.createApplicationContext(applicationInfo,
-                Context.CONTEXT_RESTRICTED);
-    } catch (NameNotFoundException e) {
-        Log.e(TAG, "ApplicationInfo " + applicationInfo + " not found");
+    AutoPtr<IParcelable> p;
+    extras->GetParcelable(
+        EXTRA_REBUILD_CONTEXT_APPLICATION_INFO, (IParcelable**)&p);
+    AutoPtr<IApplicationInfo> applicationInfo = IApplicationInfo::Probe(p);
+    AutoPtr<IContext> builderContext;
+    // try {
+    ECode ec = context->CreateApplicationContext(applicationInfo,
+        IContext::CONTEXT_RESTRICTED, (IContext**)&builderContext);
+    if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
+        Logger::E(TAG, "ApplicationInfo %s not found", Object::ToString(applicationInfo).string());
         builderContext = context;  // try with our context
     }
 
-    Builder b = new Builder(builderContext, n);
-    return b.rebuild();
+    AutoPtr<CNotificationBuilder> b;
+    CNotificationBuilder::NewByFriend(builderContext, n, (CNotificationBuilder**)&b);
+    AutoPtr<INotification> result;
+    b->Rebuild((INotification**)&result);
+    return result;
 }
 
-/**
- * Rebuilds the notification passed in to the rebuild-constructor
- * {@link #Builder(Context, Notification)}.
- *
- * <p>
- * Throws IllegalStateException when invoked on a Builder that isn't in rebuild mode.
- *
- * @hide
- */
-CARAPI Rebuild(
+ECode CNotificationBuilder::Rebuild(
     /* [out] */ INotification** result)
 {
-    if (mRebuildNotification == null) {
-        throw new IllegalStateException("rebuild() only valid when in 'rebuild' mode.");
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    if (mRebuildNotification == NULL) {
+        Logger::E(TAG, "rebuild() only valid when in 'rebuild' mode.");
+        return E_ILLEGAL_STATE_EXCEPTION;
+
     }
-    mHasThreeLines = hasThreeLines();
+    mHasThreeLines = HasThreeLines();
 
-    Bundle extras = mRebuildNotification.extras;
+    AutoPtr<IBundle> extras;
+    mRebuildNotification->GetExtras((IBundle**)&extras);
 
-    if (extras.getBoolean(EXTRA_REBUILD_LARGE_ICON)) {
-        mRebuildNotification.largeIcon = extras.getParcelable(EXTRA_LARGE_ICON);
+    Boolean bval;
+    extras->GetBoolean(INotificationBuilder::EXTRA_REBUILD_LARGE_ICON, &bval);
+    if (bval) {
+        AutoPtr<IParcelable> p;
+        extras->GetParcelable(INotification::EXTRA_LARGE_ICON, (IParcelable**)&p);
+        mRebuildNotification->SetLargeIcon(IBitmap::Probe(p));
     }
-    extras.remove(EXTRA_REBUILD_LARGE_ICON);
+    extras->Remove(INotificationBuilder::EXTRA_REBUILD_LARGE_ICON);
 
-    if (extras.getBoolean(EXTRA_REBUILD_CONTENT_VIEW)) {
-        setBuilderContentView(mRebuildNotification, makeContentView());
-        if (mStyle != null) {
-            mStyle.populateContentView(mRebuildNotification);
+    extras->GetBoolean(INotificationBuilder::EXTRA_REBUILD_CONTENT_VIEW, &bval);
+    if (bval) {
+        SetBuilderContentView(mRebuildNotification, MakeContentView());
+        if (mStyle != NULL) {
+            ((NotificationStyle*)mStyle.Get())->PopulateContentView(mRebuildNotification);
         }
     }
-    extras.remove(EXTRA_REBUILD_CONTENT_VIEW);
+    extras->Remove(INotificationBuilder::EXTRA_REBUILD_CONTENT_VIEW);
 
-    if (extras.getBoolean(EXTRA_REBUILD_BIG_CONTENT_VIEW)) {
-        setBuilderBigContentView(mRebuildNotification, makeBigContentView());
-        if (mStyle != null) {
-            mStyle.populateBigContentView(mRebuildNotification);
+    extras->GetBoolean(INotificationBuilder::EXTRA_REBUILD_BIG_CONTENT_VIEW, &bval);
+    if (bval) {
+        SetBuilderBigContentView(mRebuildNotification, MakeBigContentView());
+        if (mStyle != NULL) {
+            ((NotificationStyle*)mStyle.Get())->PopulateBigContentView(mRebuildNotification);
         }
     }
-    extras.remove(EXTRA_REBUILD_BIG_CONTENT_VIEW);
+    extras->Remove(INotificationBuilder::EXTRA_REBUILD_BIG_CONTENT_VIEW);
 
-    if (extras.getBoolean(EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW)) {
-        setBuilderHeadsUpContentView(mRebuildNotification, makeHeadsUpContentView());
-        if (mStyle != null) {
-            mStyle.populateHeadsUpContentView(mRebuildNotification);
+    extras->GetBoolean(INotificationBuilder::EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW, &bval);
+    if (bval) {
+        SetBuilderHeadsUpContentView(mRebuildNotification, MakeHeadsUpContentView());
+        if (mStyle != NULL) {
+            ((NotificationStyle*)mStyle.Get())->PopulateHeadsUpContentView(mRebuildNotification);
         }
     }
-    extras.remove(EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW);
+    extras->Remove(INotificationBuilder::EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW);
 
-    mHasThreeLines = false;
-    return mRebuildNotification;
+    mHasThreeLines = FALSE;
+    *result = mRebuildNotification;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-// private static Class<? extends Style> GetNotificationStyleClass(
-//     /* [in] */ const String& templateClass) {
+AutoPtr<IClassInfo> CNotificationBuilder::GetNotificationStyleClass(
+    /* [in] */ const String& templateClass)
+{
+
 //     Class<? extends Style>[] classes = new Class[]{
 //             BigTextStyle.class, BigPictureStyle.class, InboxStyle.class, MediaStyle.class};
 //     for (Class<? extends Style> innerClass : classes) {
-//         if (templateClass.equals(innerClass.getName())) {
+//         if (templateClass.equals(innerClass->GetName())) {
 //             return innerClass;
 //         }
 //     }
-//     return null;
-// }
+    return NULL;
+}
 
-CARAPI SetBuilderContentView(
+ECode CNotificationBuilder::SetBuilderContentView(
     /* [in] */ INotification* n,
     /* [in] */ IRemoteViews* contentView)
 {
-    n.contentView = contentView;
-    if (contentView instanceof BuilderRemoteViews) {
-        mRebuildBundle.putInt(Builder.EXTRA_REBUILD_CONTENT_VIEW_ACTION_COUNT,
-                contentView.getSequenceNumber());
+    n->SetContentView(contentView);
+    if (IBuilderRemoteViews::Probe(contentView) != NULL) {
+        Int32 ival;
+        contentView->GetSequenceNumber(&ival);
+        mRebuildBundle->PutInt32(
+            INotificationBuilder::EXTRA_REBUILD_CONTENT_VIEW_ACTION_COUNT, ival);
     }
+    return NOERROR;
 }
 
-CARAPI SetBuilderBigContentView(
+ECode CNotificationBuilder::SetBuilderBigContentView(
     /* [in] */ INotification* n,
     /* [in] */ IRemoteViews* bigContentView)
 {
-    n.bigContentView = bigContentView;
-    if (bigContentView instanceof BuilderRemoteViews) {
-        mRebuildBundle.putInt(Builder.EXTRA_REBUILD_BIG_CONTENT_VIEW_ACTION_COUNT,
-                bigContentView.getSequenceNumber());
+    n->SetBigContentView(bigContentView);
+    if (IBuilderRemoteViews::Probe(bigContentView) != NULL) {
+        Int32 ival;
+        bigContentView->GetSequenceNumber(&ival);
+        mRebuildBundle->PutInt32(
+            INotificationBuilder::EXTRA_REBUILD_BIG_CONTENT_VIEW_ACTION_COUNT, ival);
     }
+    return NOERROR;
 }
 
-CARAPI SetBuilderHeadsUpContentView(
+ECode CNotificationBuilder::SetBuilderHeadsUpContentView(
     /* [in] */ INotification* n,
     /* [in] */ IRemoteViews* headsUpContentView)
 {
-    n.headsUpContentView = headsUpContentView;
-    if (headsUpContentView instanceof BuilderRemoteViews) {
-        mRebuildBundle.putInt(Builder.EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW_ACTION_COUNT,
-                headsUpContentView.getSequenceNumber());
+    n->SetHeadsUpContentView(headsUpContentView);
+    if (IBuilderRemoteViews::Probe(headsUpContentView) != NULL) {
+        Int32 ival;
+        headsUpContentView->GetSequenceNumber(&ival);
+        mRebuildBundle->PutInt32(
+            INotificationBuilder::EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW_ACTION_COUNT, ival);
     }
+    return NOERROR;
 }
 
-CARAPI RestoreFromNotification(
+ECode CNotificationBuilder::RestoreFromNotification(
     /* [in] */ INotification* n)
 {
-
     // Notification fields.
-    mWhen = n.when;
-    mSmallIcon = n.icon;
-    mSmallIconLevel = n.iconLevel;
-    mNumber = n.number;
+    n->GetWhen(&mWhen);
+    n->GetIcon(&mSmallIcon);
+    n->GetIconLevel(&mSmallIconLevel);
+    n->GetNumber(&mNumber);
 
-    mColor = n.color;
+    n->GetColor(&mColor);
 
-    mContentView = n.contentView;
-    mDeleteIntent = n.deleteIntent;
-    mFullScreenIntent = n.fullScreenIntent;
-    mTickerText = n.tickerText;
-    mTickerView = n.tickerView;
-    mLargeIcon = n.largeIcon;
-    mSound = n.sound;
-    mAudioStreamType = n.audioStreamType;
-    mAudioAttributes = n.audioAttributes;
+    mContentView = NULL;
+    n->GetContentView((IRemoteViews**)&mContentView);
 
-    mVibrate = n.vibrate;
-    mLedArgb = n.ledARGB;
-    mLedOnMs = n.ledOnMS;
-    mLedOffMs = n.ledOffMS;
-    mDefaults = n.defaults;
-    mFlags = n.flags;
+    mDeleteIntent = NULL;
+    n->GetDeleteIntent((IPendingIntent**)&mDeleteIntent);
+    mFullScreenIntent = NULL;
+    n->GetFullScreenIntent((IPendingIntent**)&mFullScreenIntent);
 
-    mCategory = n.category;
-    mGroupKey = n.mGroupKey;
-    mSortKey = n.mSortKey;
-    mPriority = n.priority;
-    mActions.clear();
-    if (n.actions != null) {
-        Collections.addAll(mActions, n.actions);
+    mTickerText = NULL;
+    n->GetTickerText((ICharSequence**)&mTickerText);
+    mTickerView = NULL;
+    n->GetTickerView((IRemoteViews**)&mTickerView);
+    mLargeIcon = NULL;
+    n->GetLargeIcon((IBitmap**)&mLargeIcon);
+
+    mSound = NULL;
+    n->GetSound((IUri**)&mSound);
+    n->GetAudioStreamType(&mAudioStreamType);
+    mAudioAttributes = NULL;
+    n->GetAudioAttributes((IAudioAttributes**)&mAudioAttributes);
+    mVibrate = NULL;
+    n->GetVibrate((ArrayOf<Int64>**)&mVibrate);
+
+    n->GetLedARGB(&mLedArgb);
+    n->GetLedOnMS(&mLedOnMs);
+    n->GetLedOffMS(&mLedOffMs);
+    n->GetDefaults(&mDefaults);
+    n->GetFlags(&mFlags);
+
+    n->GetCategory(&mCategory);
+    n->GetGroup(&mGroupKey);
+    n->GetSortKey(&mSortKey);
+    n->GetPriority(&mPriority);
+    mActions.Clear();
+    AutoPtr<ArrayOf<INotificationAction*> > actions;
+    n->GetActions((ArrayOf<INotificationAction*>**)&actions);
+    if (actions != NULL) {
+        for (Int32 i = 0; i < actions->GetLength(); ++i) {
+            AutoPtr<INotificationAction> action = (*actions)[i];
+            mActions.PushBack(action);
+        }
     }
-    mVisibility = n.visibility;
+    n->GetVisibility(&mVisibility);
 
-    mPublicVersion = n.publicVersion;
+    mPublicVersion = NULL;
+    n->GetPublicVersion((INotification**)&mPublicVersion);
 
     // Extras.
-    Bundle extras = n.extras;
-    mOriginatingUserId = extras.getInt(EXTRA_ORIGINATING_USERID);
-    mContentTitle = extras.getCharSequence(EXTRA_TITLE);
-    mContentText = extras.getCharSequence(EXTRA_TEXT);
-    mSubText = extras.getCharSequence(EXTRA_SUB_TEXT);
-    mContentInfo = extras.getCharSequence(EXTRA_INFO_TEXT);
-    mSmallIcon = extras.getInt(EXTRA_SMALL_ICON);
-    mProgress = extras.getInt(EXTRA_PROGRESS);
-    mProgressMax = extras.getInt(EXTRA_PROGRESS_MAX);
-    mProgressIndeterminate = extras.getBoolean(EXTRA_PROGRESS_INDETERMINATE);
-    mUseChronometer = extras.getBoolean(EXTRA_SHOW_CHRONOMETER);
-    mShowWhen = extras.getBoolean(EXTRA_SHOW_WHEN);
-    if (extras.containsKey(EXTRA_LARGE_ICON)) {
-        mLargeIcon = extras.getParcelable(EXTRA_LARGE_ICON);
+    AutoPtr<IBundle> extras;
+    n->GetExtras((IBundle**)&extras);
+    extras->GetInt32(INotification::EXTRA_ORIGINATING_USERID, &mOriginatingUserId);
+    mContentTitle = NULL;
+    extras->GetCharSequence(INotification::EXTRA_TITLE, (ICharSequence**)&mContentTitle);
+    mContentText = NULL;
+    extras->GetCharSequence(INotification::EXTRA_TEXT, (ICharSequence**)&mContentText);
+    mSubText = NULL;
+    extras->GetCharSequence(INotification::EXTRA_SUB_TEXT, (ICharSequence**)&mSubText);
+    mContentInfo = NULL;
+    extras->GetCharSequence(INotification::EXTRA_INFO_TEXT, (ICharSequence**)&mContentInfo);
+
+    extras->GetInt32(INotification::EXTRA_SMALL_ICON, &mSmallIcon);
+    extras->GetInt32(INotification::EXTRA_PROGRESS, &mProgress);
+    extras->GetInt32(INotification::EXTRA_PROGRESS_MAX, &mProgressMax);
+    extras->GetBoolean(INotification::EXTRA_PROGRESS_INDETERMINATE, &mProgressIndeterminate);
+    extras->GetBoolean(INotification::EXTRA_SHOW_CHRONOMETER, &mUseChronometer);
+    extras->GetBoolean(INotification::EXTRA_SHOW_WHEN, &mShowWhen);
+    Boolean bval;
+    extras->ContainsKey(INotification::EXTRA_LARGE_ICON, &bval);
+    if (bval) {
+        AutoPtr<IParcelable> p;
+        extras->GetParcelable(INotification::EXTRA_LARGE_ICON, (IParcelable**)&p);
+        mLargeIcon = IBitmap::Probe(p);
     }
-    if (extras.containsKey(EXTRA_PEOPLE)) {
-        mPeople.clear();
-        Collections.addAll(mPeople, extras.getStringArray(EXTRA_PEOPLE));
+
+    extras->ContainsKey(INotification::EXTRA_PEOPLE, &bval);
+    if (bval) {
+        mPeople.Clear();
+
+        AutoPtr<IArrayList> list;
+        extras->GetStringArrayList(INotification::EXTRA_PEOPLE, (IArrayList**)&list);
+        Int32 size = 0;
+        list->GetSize(&size);
+        for (Int32 i = 0; i < size; ++i) {
+            AutoPtr<IInterface> obj;
+            list->Get(i, (IInterface**)&obj);
+            mPeople.PushBack(Object::ToString(obj));
+        }
     }
+    return NOERROR;
 }
 
 

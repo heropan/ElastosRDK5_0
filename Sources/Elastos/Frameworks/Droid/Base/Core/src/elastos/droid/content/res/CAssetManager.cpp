@@ -4,18 +4,22 @@
 #include "elastos/droid/content/res/XmlBlock.h"
 #include "elastos/droid/content/res/CAssetFileDescriptor.h"
 #include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/utility/CSparseArray.h"
 #include "elastos/droid/os/CParcelFileDescriptor.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <androidfw/AssetManager.h>
 #include <androidfw/ResourceTypes.h>
 
 using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::Os::ParcelFileDescriptor;
 using Elastos::Droid::Os::CParcelFileDescriptor;
 
+using Elastos::Core::CoreUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::ICloseable;
 using Elastos::IO::EIID_ICloseable;
@@ -759,6 +763,31 @@ ECode CAssetManager::AddAssetPaths(
 
     *cookies = arr;
     REFCOUNT_ADD(*cookies);
+    return NOERROR;
+}
+
+ECode CAssetManager::AddOverlayPath(
+    /* [in] */ const String& idmapPath,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    if(idmapPath.IsNull()) {
+        return NOERROR;
+    }
+
+    android::AssetManager* am = (android::AssetManager*)mObject;
+    if (am == NULL) {
+        return NOERROR;
+    }
+
+    android::String8 idmapPath8(idmapPath.string());
+    int32_t cookie;
+    bool res = am->addOverlayPath(idmapPath8, &cookie);
+    if (res) {
+        *result = cookie;
+    }
     return NOERROR;
 }
 
@@ -2148,8 +2177,38 @@ ECode CAssetManager::GetCookieName(
     return NOERROR;
 }
 
-AutoPtr<HashMap<Int32, String> > CAssetManager::GetAssignedPackageIdentifiers()
+ECode CAssetManager::GetAssignedPackageIdentifiers(
+    /* [out] */ ISparseArray** sparseArray)
 {
+    VALIDATE_NOT_NULL(sparseArray)
+    *sparseArray = NULL;
+
+    android::AssetManager* am = (android::AssetManager*)mObject;
+    if (am == NULL) {
+        return NOERROR;
+    }
+
+    const android::ResTable& res = am->getResources();
+
+    AutoPtr<ISparseArray> sa;
+    CSparseArray::New((ISparseArray**)&sa);
+    const size_t N = res.getBasePackageCount();
+    for (size_t i = 0; i < N; i++) {
+        const android::String16 name = res.getBasePackageName(i);
+        Int32 id = res.getBasePackageId(i);
+        Int32 size = name.size();
+        const char16_t* p = name.string();
+        AutoPtr<ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(size);
+        for (Int32 i = 0; i < size; ++i) {
+            buf->Set(i, (Char32)(*(p + i)));
+        }
+        String str(*buf);
+        AutoPtr<ICharSequence> csq = CoreUtils::Convert(str);
+        sa->Put(id, csq.Get());
+    }
+
+    *sparseArray = sa;
+    REFCOUNT_ADD(*sparseArray)
     return NOERROR;
 }
 
@@ -2565,7 +2624,7 @@ Int64 CAssetManager::Ni()
 }
 
 ECode CAssetManager::GetNativeAssetManager(
-    /* [out] */ Int32* assetMgr)
+    /* [out] */ Int64* assetMgr)
 {
     VALIDATE_NOT_NULL(assetMgr);
     *assetMgr = mObject;

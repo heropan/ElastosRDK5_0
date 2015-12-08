@@ -40,9 +40,9 @@ using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 const String ZoomButtonsController::TAG("ZoomButtonsController");
 const Int32 ZoomButtonsController::ZOOM_CONTROLS_TIMEOUT = (Int32)CViewConfiguration::GetZoomControlsTimeout();

@@ -51,6 +51,14 @@ ECode CLinearInterpolator::CreateNativeInterpolator(
     return NOERROR;
 }
 
+ECode CLinearInterpolator::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = TRUE;
+    return NOERROR;
+}
+
 }   //namespace Animation
 }   //namespace View
 }   //namespace Droid

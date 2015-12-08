@@ -16,16 +16,36 @@ namespace Droid {
 namespace Speech {
 namespace Srec {
 
-CString Recognizer::TAG = "Recognizer";
+String Recognizer::TAG("Recognizer");
 
-/******************************Recognizer::RecognizerGrammar*************************/
-Recognizer::RecognizerGrammar::RecognizerGrammar(
+/******************
+ * Recognizer::RecognizerGrammar
+ *******************************************************************************************************/
+
+CAR_INTERFACE_IMPL(Recognizer::RecognizerGrammar, Object, IRecognizerGrammar);
+
+Recognizer::RecognizerGrammar::RecognizerGrammar()
+{}
+
+Recognizer::RecognizerGrammar::~RecognizerGrammar()
+{}
+
+ECode Recognizer::RecognizerGrammar::constructor()
+{
+    return NOERROR;
+}
+
+Recognizer::RecognizerGrammar::constructor(
     /* [in] */ const String& g2gFileName,
-    /* [in] */ Recognizer* r)// throws IOException
+    /* [in] */ IRecognizer* r)
 {
     mR = r;
     mGrammar = mR->SR_GrammarLoad(g2gFileName);
-    mR -> SR_GrammarSetupVocabulary(mGrammar, r->mVocabulary);
+    Int32 i;
+    r->GetVocabulary(&i);
+    mR -> SR_GrammarSetupVocabulary(mGrammar, i);
+
+    return NOERROR;
 }
 
 void Recognizer::RecognizerGrammar::ResetAllSlots()
@@ -55,7 +75,7 @@ void Recognizer::RecognizerGrammar::SetupRecognizer()
 }
 
 void Recognizer::RecognizerGrammar::Save(
-    /* [in] */ const String& g2gFileName)// throws IOException
+    /* [in] */ const String& g2gFileName)
 {
     mR->SR_GrammarSave(mGrammar, g2gFileName);
 }
@@ -74,14 +94,35 @@ void Recognizer::RecognizerGrammar::Finalize()
     if (mGrammar != 0) {
         Destroy();
         //Java:    throw new IllegalStateException("someone forgot to destroy Grammar");
-        Logger::E(TAG, String("IllegalStateException:someone forgot to destroy Grammar\n"));
-        return;// E_ILLEGAL_STATE_EXCEPTION;
+        Logger::E(TAG, "IllegalStateException:someone forgot to destroy Grammar\n");
+        return;     // E_ILLEGAL_STATE_EXCEPTION;
     }
 }
 
-/******************************Recognizer*************************/
+/******************
+ * Recognizer
+ *******************************************************************************************************/
+
+CAR_INTERFACE_IMPL(Recognizer, Object, IRecognizer);
+
 Recognizer::Recognizer()
 {}
+
+Recognizer::~Recognizer()
+{}
+
+ECode Recognizer::constructor()
+{}
+
+void Recognizer::constructor(
+    /* [in] */ const String& configFile)
+{
+    PMemInit();
+    SR_SessionCreate(configFile);
+    mRecognizer = SR_RecognizerCreate();
+    SR_RecognizerSetup(mRecognizer);
+    mVocabulary = SR_VocabularyLoad();
+}
 
 String Recognizer::GetConfigDir(
     /* [in] */ ILocale* locale)
@@ -110,22 +151,6 @@ String Recognizer::GetConfigDir(
     return String(NULL);
 }
 
-Recognizer::Recognizer(
-    /* [in] */ const String& configFile)// throws IOException
-{
-    Init(configFile);
-}
-
-void Recognizer::Init(
-    /* [in] */ const String& configFile)// throws IOException
-{
-    PMemInit();
-    SR_SessionCreate(configFile);
-    mRecognizer = SR_RecognizerCreate();
-    SR_RecognizerSetup(mRecognizer);
-    mVocabulary = SR_VocabularyLoad();
-}
-
 ECode Recognizer::Start()
 {
     // TODO: shouldn't be here?
@@ -149,7 +174,7 @@ Int32 Recognizer::PutAudio(
 }
 
 void Recognizer::PutAudio(
-    /* [in] */ IInputStream* audio)// throws IOException
+    /* [in] */ IInputStream* audio)
 {
     // make sure the audio buffer is allocated
     if (mPutAudioBuffer == NULL){
@@ -165,7 +190,7 @@ void Recognizer::PutAudio(
     // put it into the Recognizer
     else if (nbytes != SR_RecognizerPutAudio(mRecognizer, mPutAudioBuffer, 0, nbytes, FALSE)) {
         //Java:    throw new IOException("SR_RecognizerPutAudio failed nbytes=" + nbytes);
-        Logger::E(TAG, String("IOException:SR_RecognizerPutAudio failed nbytes=") + StringUtils::Int32ToString(nbytes) + String("\n"));
+        Logger::E(TAG, "IOException:SR_RecognizerPutAudio failed nbytes=%d\n", nbytes);
     }
 }
 
@@ -215,18 +240,18 @@ String Recognizer::GetAcousticState()
 ECode Recognizer::Destroy()
 {
     //try {
-        if (mVocabulary != 0){
+        if (mVocabulary != 0) {
             SR_VocabularyDestroy(mVocabulary);
         }
     //} finally {
         mVocabulary = 0;
         //try {
-            if (mRecognizer != 0){
+            if (mRecognizer != 0) {
                 SR_RecognizerUnsetup(mRecognizer);
             }
         //} finally {
             //try {
-                if (mRecognizer != 0){
+                if (mRecognizer != 0) {
                     SR_RecognizerDestroy(mRecognizer);
                 }
             //} finally {
@@ -242,12 +267,19 @@ ECode Recognizer::Destroy()
     return NOERROR;
 }
 
+ECode Recognizer::GetVocabulary(
+    /* [out] */ Int32* ret)
+{
+    *ret = mVocabulary;
+    return NOERROR;
+}
+
 void Recognizer::Finalize()// throws Throwable
 {
     if (mVocabulary != 0 || mRecognizer != 0) {
         Destroy();
         //Java:    throw new IllegalStateException("someone forgot to destroy Recognizer");
-        Logger::E(TAG, String("IllegalStateException:someone forgot to destroy Recognizer\n"));
+        Logger::E(TAG, "IllegalStateException:someone forgot to destroy Recognizer\n");
     }
 }
 
@@ -299,151 +331,185 @@ String Recognizer::EventToString(
 }
 
 void Recognizer::SR_RecognizerStart(
-    /* [in] */ Int32 recognizer)
+    /* [in] */ Int64 recognizer)
 {}
 
 void Recognizer::SR_RecognizerStop(
-    /* [in] */ Int32 recognizer)
+    /* [in] */ Int64 recognizer)
 {}
 
 Int32 Recognizer::SR_RecognizerCreate()
-{ return 0;}
+{
+    return 0;
+}
 
 void Recognizer::SR_RecognizerDestroy(
-    /* [in] */ Int32 recognizer)
+    /* [in] */ Int64 recognizer)
 {}
 
 void Recognizer::SR_RecognizerSetup(
-    /* [in] */ Int32 recognizer)
+    /* [in] */ Int64 recognizer)
 {}
 
 void Recognizer::SR_RecognizerUnsetup(
-    /* [in] */ Int32 recognizer)
+    /* [in] */ Int64 recognizer)
 {}
 
 Boolean Recognizer::SR_RecognizerIsSetup(
-    /* [in] */ Int32 recognizer)
-{ return FALSE;}
+    /* [in] */ Int64 recognizer)
+{
+    return FALSE;
+}
 
 String Recognizer::SR_RecognizerGetParameter(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ const String& key)
-{ return String("");}
+{
+    return String("");
+}
 
 Int32 Recognizer::SR_RecognizerGetSize_tParameter(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ const String& key)
-{ return 0;}
+{
+    return 0;
+}
 
 Boolean Recognizer::SR_RecognizerGetBoolParameter(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ const String& key)
-{ return FALSE;}
+{
+    return FALSE;
+}
 
 void Recognizer::SR_RecognizerSetParameter(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ const String& key,
     /* [in] */ const String& value)
 {}
 
 void Recognizer::SR_RecognizerSetSize_tParameter(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ const String& key,
     /* [in] */ Int32 value)
 {}
 
 void Recognizer::SR_RecognizerSetBoolParameter(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ const String& key,
     /* [in] */ Boolean value)
 {}
 
 void Recognizer::SR_RecognizerSetupRule(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ Int32 grammar,
     /* [in] */ const String& ruleName)
 {}
 
 Boolean Recognizer::SR_RecognizerHasSetupRules(
-    /* [in] */ Int32 recognizer)
-{ return FALSE;}
+    /* [in] */ Int64 recognizer)
+{
+    return FALSE;
+}
 
 void Recognizer::SR_RecognizerActivateRule(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ Int32 grammar,
     /* [in] */ const String& ruleName,
     /* [in] */ Int32 weight)
 {}
 
 void Recognizer::SR_RecognizerDeactivateRule(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ Int32 grammar,
     /* [in] */ const String& ruleName)
 {}
 
 void Recognizer::SR_RecognizerDeactivateAllRules(
-    /* [in] */ Int32 recognizer)
+    /* [in] */ Int64 recognizer)
 {}
 
 Boolean Recognizer::SR_RecognizerIsActiveRule(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ Int32 grammar,
     /* [in] */ const String& ruleName)
-{ return FALSE;}
+{
+    return FALSE;
+}
 
 Boolean Recognizer::SR_RecognizerCheckGrammarConsistency(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ Int32 grammar)
-{ return FALSE;}
+{
+    return FALSE;
+}
 
 Int32 Recognizer::SR_RecognizerPutAudio(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [in] */ Boolean isLast)
-{ return 0;}
+{
+    return 0;
+}
 
 Int32 Recognizer::SR_RecognizerAdvance(
-    /* [in] */ Int32 recognizer)
-{ return 0;}
+    /* [in] */ Int64 recognizer)
+{
+    return 0;
+}
 
 Boolean Recognizer::SR_RecognizerIsSignalClipping(
-    /* [in] */ Int32 recognizer)
-{return FALSE;}
+    /* [in] */ Int64 recognizer)
+{
+    return FALSE;
+}
 
 Boolean Recognizer::SR_RecognizerIsSignalDCOffset(
-    /* [in] */ Int32 recognizer)
-{return FALSE;}
+    /* [in] */ Int64 recognizer)
+{
+    return FALSE;
+}
 
 Boolean Recognizer::SR_RecognizerIsSignalNoisy(
-    /* [in] */ Int32 recognizer)
-{return FALSE;}
+    /* [in] */ Int64 recognizer)
+{
+    return FALSE;
+}
 
 Boolean Recognizer::SR_RecognizerIsSignalTooQuiet(
-    /* [in] */ Int32 recognizer)
-{return FALSE;}
+    /* [in] */ Int64 recognizer)
+{
+    return FALSE;
+}
 
 Boolean Recognizer::SR_RecognizerIsSignalTooFewSamples(
-    /* [in] */ Int32 recognizer)
-{return FALSE;}
+    /* [in] */ Int64 recognizer)
+{
+    return FALSE;
+}
 
 Boolean Recognizer::SR_RecognizerIsSignalTooManySamples(
-    /* [in] */ Int32 recognizer)
-{return FALSE;}
+    /* [in] */ Int64 recognizer)
+{
+    return FALSE;
+}
 
 void Recognizer::SR_AcousticStateReset(
-    /* [in] */ Int32 recognizer)
+    /* [in] */ Int64 recognizer)
 {}
 
 void Recognizer::SR_AcousticStateSet(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ const String& state)
 {}
 
 String Recognizer::SR_AcousticStateGet(
-    /* [in] */ Int32 recognizer)
-{return String("");}
+    /* [in] */ Int64 recognizer)
+{
+    return String("");
+}
 
 void Recognizer::SR_GrammarCompile(
     /* [in] */ Int32 grammar)
@@ -469,7 +535,7 @@ void Recognizer::SR_GrammarSetupVocabulary(
 
 void Recognizer::SR_GrammarSetupRecognizer(
     /* [in] */ Int32 grammar,
-    /* [in] */ Int32 recognizer)
+    /* [in] */ Int64 recognizer)
 {}
 
 void Recognizer::SR_GrammarUnsetupRecognizer(
@@ -477,7 +543,9 @@ void Recognizer::SR_GrammarUnsetupRecognizer(
 {}
 
 Int32 Recognizer::SR_GrammarCreate()
-{return 0;}
+{
+    return 0;
+}
 
 void Recognizer::SR_GrammarDestroy(
     /* [in] */ Int32 grammar)
@@ -485,7 +553,9 @@ void Recognizer::SR_GrammarDestroy(
 
 Int32 Recognizer::SR_GrammarLoad(
     /* [in] */ const String& filename)
-{return 0;}
+{
+    return 0;
+}
 
 void Recognizer::SR_GrammarSave(
     /* [in] */ Int32 grammar,
@@ -502,7 +572,9 @@ void Recognizer::SR_GrammarAllowAll(
 {}
 
 Int32 Recognizer::SR_VocabularyLoad()
-{return 0;}
+{
+    return 0;
+}
 
 void Recognizer::SR_VocabularyDestroy(
     /* [in] */ Int32 vocabulary)
@@ -511,31 +583,43 @@ void Recognizer::SR_VocabularyDestroy(
 String Recognizer::SR_VocabularyGetPronunciation(
     /* [in] */ Int32 vocabulary,
     /* [in] */ const String& word)
-{return String("");}
+{
+    return String("");
+}
 
 AutoPtr< ArrayOf<Byte> > Recognizer::SR_RecognizerResultGetWaveform(
-    /* [in] */ Int32 recognizer)
-{return NULL;}
+    /* [in] */ Int64 recognizer)
+{
+    return NULL;
+}
 
 Int32 Recognizer::SR_RecognizerResultGetSize(
-    /* [in] */ Int32 recognizer)
-{return 0;}
+    /* [in] */ Int64 recognizer)
+{
+    return 0;
+}
 
 Int32 Recognizer::SR_RecognizerResultGetKeyCount(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ Int32 nbest)
-{return 0;}
+{
+    return 0;
+}
 
 AutoPtr< ArrayOf<String> > Recognizer::SR_RecognizerResultGetKeyList(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ Int32 nbest)
-{return NULL;}
+{
+    return NULL;
+}
 
 String Recognizer::SR_RecognizerResultGetValue(
-    /* [in] */ Int32 recognizer,
+    /* [in] */ Int64 recognizer,
     /* [in] */ Int32 nbest,
     /* [in] */ const String& key)
-{return String("");}
+{
+    return String("");
+}
 
 } // namespace Srec
 } // namespace Speech

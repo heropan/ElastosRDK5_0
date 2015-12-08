@@ -131,7 +131,7 @@ void CChangeBounds::CaptureValues(
         cVals->mValues->Put(pro_parent, p);
         if (mReparent) {
             AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
-            cVals->mView->GetLocationInWindow((ArrayOf<Int32>*)temp);
+            cVals->mView->GetLocationInWindow(temp);
             AutoPtr<IInteger32> pX, pY;
             CInteger32::New((*temp)[0], (IInteger32**)&pX);
             CInteger32::New((*temp)[1], (IInteger32**)&pY);
@@ -364,7 +364,7 @@ ECode CChangeBounds::CreateAnimator(
         IInteger32::Probe(eY)->GetValue(&endY);
         // TODO: also handle size changes: check bounds and animate size changes
         if (startX != endX || startY != endY) {
-            IView::Probe(sceneRoot)->GetLocationInWindow((ArrayOf<Int32>*)mTempLocation);
+            IView::Probe(sceneRoot)->GetLocationInWindow(mTempLocation);
             Int32 w = 0, h = 0;
             view->GetWidth(&w);
             view->GetHeight(&h);

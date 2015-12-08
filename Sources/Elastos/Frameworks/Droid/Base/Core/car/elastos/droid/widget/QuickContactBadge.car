@@ -16,11 +16,12 @@ module
      * extends Elastos.Droid.View.IView
      * extends Elastos.Droid.Widget.IImageView
      *
-     * inteface Elastos.Droid.View.IViewOnClickListener;
+     * interface Elastos.Droid.View.IViewOnClickListener;
      * interface Elastos.Droid.View.IKeyEventCallback
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
+    [deprecated]
     interface IQuickContactBadge {
         /**
          * Resets the contact photo to the default state.
@@ -117,7 +118,7 @@ module
          * profile icon.
          */
         SetExcludeMimes(
-            [in] ArrayOf<String> excludeMimes);
+            [in] ArrayOf<String>* excludeMimes);
     }
 
     } // namespace Widget

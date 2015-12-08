@@ -8,7 +8,7 @@
 #include <skia/core/SkPictureRecorder.h>
 #include <skia/core/SkStream.h>
 #include <skia/core/SkRect.h>
-#include <libcxx/vector>
+#include <vector>
 
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;
@@ -125,8 +125,8 @@ CAR_INTERFACE_IMPL(CPdfDocument::Page, Object, IPdfDocumentPage);
 CPdfDocument::Page::Page(
     /* [in] */ ICanvas* canvas,
     /* [in] */ PageInfo* pageInfo)
-    : mCanvas(canvas)
-    , mPageInfo(pageInfo)
+    : mPageInfo(pageInfo)
+    , mCanvas(canvas)
 {
 }
 

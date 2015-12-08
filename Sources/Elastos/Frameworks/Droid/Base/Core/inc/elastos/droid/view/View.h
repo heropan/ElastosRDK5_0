@@ -10,6 +10,8 @@
 #include "elastos/droid/utility/FloatProperty.h"
 #include "elastos/droid/utility/Pools.h"
 
+#include "elastos/droid/view/AbsSavedState.h"
+
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 
@@ -45,6 +47,7 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
 //using Elastos::Droid::View::CSurface;
+using Elastos::Droid::View::AbsSavedState;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
@@ -77,6 +80,7 @@ class TouchDelegate;
 class ViewPropertyAnimator;
 class CAccessibilityInteractionController;
 class COverlayViewGroup;
+class RenderNodeAnimator;
 
 #ifndef VIEW_PROBE
 #define VIEW_PROBE(host) ((View*)IView::Probe(host))
@@ -102,12 +106,16 @@ class View
     , public IAccessibilityEventSource
 
 {
+    friend class RenderNode;
+    friend class RenderNodeAnimator;
     friend class ViewRootImpl;
     friend class LayoutInflater;
     friend class ViewGroup;
     friend class ViewPropertyAnimator;
     friend class CAccessibilityInteractionController;
     friend class COverlayViewGroup;
+    friend class GhostView;
+
 //protected:
 public:
     /**
@@ -1229,6 +1237,7 @@ protected:
     {
         friend class View;
         friend class ViewPropertyAnimator;
+        friend class RenderNodeAnimator;
     public:
         TransformationInfo();
 
@@ -1329,6 +1338,27 @@ protected:
     };
 
 public:
+    class BaseSavedState
+        : public AbsSavedState
+        , public IViewBaseSavedState
+    {
+    public:
+        BaseSavedState();
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ IParcelable* superState);
+
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* dest);
+
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+    };
+
     class AlpahFloatProperty
         : public FloatProperty
     {
@@ -2928,6 +2958,11 @@ public:
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
+    CARAPI ComputeClickPointInScreenForAccessibility(
+        /* [in] */ IRegion* interactiveRegion,
+        /* [in] */ IPoint* outPoint,
+        /* [out] */ Boolean* res);
+
     /**
      * Returns the delegate for implementing accessibility support via
      * composition. For more details see {@link AccessibilityDelegate}.
@@ -4250,6 +4285,15 @@ public:
         /* [in] */ Int32 id,
         /* [out] */ IView** res);
 
+    /**
+     * Finds a view by its unuque and stable accessibility id.
+     *
+     * @param accessibilityId The searched accessibility id.
+     * @return The found view.
+     */
+    virtual CARAPI_(AutoPtr<IView>) FindViewByAccessibilityId(
+        /* [in] */ Int32 accessibilityId);
+
     CARAPI FindViewWithTag(
         /* [in] */ IInterface* tag,
         /* [out] */ IView** res);
@@ -4511,11 +4555,6 @@ public:
 
     CARAPI GetHotspotBounds(
         /* [in] */ IRect* outRect);
-
-    CARAPI ComputeClickPointInScreenForAccessibility(
-        /* [in] */ IRegion* interactiveRegion,
-        /* [in] */ IPoint* outPoint,
-        /* [out] */ Boolean* res);
 
     static CARAPI_(void) OffsetRects(
         /* [in] */ IArrayList* rects,
@@ -4794,6 +4833,12 @@ public:
      */
     virtual CARAPI IsAccessibilityFocused(
         /* [out] */ Boolean* res);
+
+    CARAPI GetPadding(
+        /* [out] */ Int32* left,
+        /* [out] */ Int32* top,
+        /* [out] */ Int32* right,
+        /* [out] */ Int32* bottom);
 
 protected:
     virtual CARAPI_(void) InitializeFadingEdge(
@@ -5480,15 +5525,6 @@ protected:
         /* [in] */ IPredicate* predicate,
         /* [in] */ IView* childToSkip);
 
-    /**
-     * Finds a view by its unuque and stable accessibility id.
-     *
-     * @param accessibilityId The searched accessibility id.
-     * @return The found view.
-     */
-    virtual CARAPI_(AutoPtr<IView>) FindViewByAccessibilityId(
-        /* [in] */ Int32 accessibilityId);
-
     virtual CARAPI_(Boolean) UpdateLocalSystemUiVisibility(
         /* [in] */ Int32 localValue,
         /* [in] */ Int32 localChanges);
@@ -5768,6 +5804,8 @@ public:
 
     static Boolean mDebugViewAttributes;// = false;
 
+    AutoPtr<AttachInfo> mAttachInfo;
+
     AutoPtr< ArrayOf<String> > mAttributes;
 
 protected:
@@ -5844,7 +5882,6 @@ protected:
     // Parent has child's reference
     IViewParent* mParent;
 
-    AutoPtr<AttachInfo> mAttachInfo;
     Int32 mPrivateFlags;
     Int32 mPrivateFlags2;
     Int32 mPrivateFlags3;
@@ -6055,7 +6092,7 @@ protected:
      * This field should be made private, so it is hidden from the SDK.
      * {@hide}
      */
-    AutoPtr<IContext> mContext;
+    IContext* mContext;
 
     AutoPtr<ScrollabilityCache> mScrollCache;
 

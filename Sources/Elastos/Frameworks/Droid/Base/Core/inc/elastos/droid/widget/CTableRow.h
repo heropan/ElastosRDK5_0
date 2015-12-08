@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_Widget_CTableRow.h"
 #include "elastos/droid/widget/TableRow.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CTableRow), public TableRow
 {

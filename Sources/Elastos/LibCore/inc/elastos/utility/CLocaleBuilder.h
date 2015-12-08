@@ -9,7 +9,7 @@
 namespace Elastos {
 namespace Utility {
 
-class CLocale;
+class Locale;
 
 CarClass(CLocaleBuilder)
     , public Object
@@ -256,7 +256,7 @@ public:
         /* [out] */ ILocale** locale);
 
 private:
-    friend class CLocale;
+    friend class Locale;
 
     static CARAPI NormalizeAndValidateLanguage(
         /* [in] */ const String& language,

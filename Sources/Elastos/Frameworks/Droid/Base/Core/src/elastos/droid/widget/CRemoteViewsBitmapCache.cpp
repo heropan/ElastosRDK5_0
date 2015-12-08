@@ -7,9 +7,9 @@
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Graphics::CBitmap;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ECode CRemoteViewsBitmapCache::constructor()
 {

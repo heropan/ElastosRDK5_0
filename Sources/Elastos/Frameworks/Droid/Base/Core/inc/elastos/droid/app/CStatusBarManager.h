@@ -2,18 +2,25 @@
 #define __ELASTOS_DROID_APP_CSTATUSBARMANAGER_H__
 
 #include "_Elastos_Droid_App_CStatusBarManager.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::StatusBar::IIStatusBarService;
+using Elastos::Droid::Internal::StatusBar::IIStatusBarService;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 CarClass(CStatusBarManager)
+    , public Object
+    , public IStatusBarManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CStatusBarManager();
 
     CARAPI constructor(

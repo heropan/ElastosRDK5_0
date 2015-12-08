@@ -1,41 +1,45 @@
 
 #include "elastos/droid/app/ListFragment.h"
 #include "elastos/droid/R.h"
-#ifdef DROID_CORE
-#include "elastos/droid/view/animation/CAnimationUtils.h"
-#endif
-
+#include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/os/CHandler.h"
 #include <elastos/utility/logging/Slogger.h>
+
 using Elastos::Utility::Logging::Slogger;
 
 using Elastos::Droid::R;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::EIID_IViewParent;
 using Elastos::Droid::View::Animation::IAnimation;
-using Elastos::Droid::View::Animation::IAnimationUtils;
-using Elastos::Droid::View::Animation::CAnimationUtils;
+using Elastos::Droid::View::Animation::AnimationUtils;
+using Elastos::Droid::Widget::IAdapter;
+using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-ECode ListFragment::_Runnable::Run()
+ECode ListFragment::MyRunnable::Run()
 {
-    ((IViewParent*)mHost->mList->Probe(EIID_IViewParent))->FocusableViewAvailable(mHost->mList);
+    IViewParent::Probe(mHost->mList)->FocusableViewAvailable(IView::Probe(mHost->mList));
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(ListFragment::_OnItemClickListener, IAdapterViewOnItemClickListener);
+CAR_INTERFACE_IMPL(ListFragment::MyOnItemClickListener, Object, IAdapterViewOnItemClickListener)
 
-ECode ListFragment::_OnItemClickListener::OnItemClick(
+ECode ListFragment::MyOnItemClickListener::OnItemClick(
     /* [in] */ IAdapterView* parent,
     /* [in] */ IView* view,
     /* [in] */ Int32 position,
     /* [in] */ Int64 id)
 {
-    return mHost->OnListItemClick((IListView*)parent, view, position, id);
+    return mHost->OnListItemClick(IListView::Probe(parent), view, position, id);
 }
+
+
+CAR_INTERFACE_IMPL(ListFragment, Fragment, IFragment)
 
 ListFragment::ListFragment()
     : mAdapter(NULL)
@@ -46,47 +50,18 @@ ListFragment::ListFragment()
     , mListContainer(NULL)
     , mEmptyText(NULL)
     , mListShown(FALSE)
-    , mRequestFocus(new _Runnable(this))
-    , mOnClickListener(new _OnItemClickListener(this))
+    , mRequestFocus(new MyRunnable(this))
+    , mOnClickListener(new MyOnItemClickListener(this))
 {
     CHandler::New((IHandler**)&mHandler);
 }
 
-PInterface ListFragment::Probe(
-    /* [in] */ REIID riid)
+ListFragment::~ListFragment()
+{}
+
+ECode ListFragment::constructor()
 {
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IListFragment*)this;
-    }
-    else if (riid == EIID_IListFragment) {
-        return (IListFragment*)this;
-    }
-
-    return Fragment::Probe(riid);
-}
-
-UInt32 ListFragment::AddRef()
-{
-    return Fragment::AddRef();
-}
-
-UInt32 ListFragment::Release()
-{
-    return Fragment::Release();
-}
-
-ECode ListFragment::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(IListFragment *)this) {
-        *pIID = EIID_IListFragment;
-        return NOERROR;
-    }
-
-    return Fragment::GetInterfaceID(pObject, pIID);
+    return Fragment::constructor();
 }
 
 ECode ListFragment::OnCreateView(
@@ -103,8 +78,8 @@ ECode ListFragment::OnViewCreated(
     /* [in] */ IView* view,
     /* [in] */ IBundle* savedInstanceState)
 {
-    Fragment::OnViewCreated(view, savedInstanceState);
-    EnsureList();
+    FAIL_RETURN(Fragment::OnViewCreated(view, savedInstanceState))
+    FAIL_RETURN(EnsureList())
     return NOERROR;
 }
 
@@ -134,7 +109,7 @@ ECode ListFragment::SetListAdapter(
     Boolean hadAdapter = mAdapter != NULL;
     mAdapter = adapter;
     if (mList != NULL) {
-        mList->SetAdapter(adapter);
+        IAdapterView::Probe(mList)->SetAdapter(IAdapter::Probe(adapter));
         if (!mListShown && !hadAdapter) {
             // The list was hidden, and previously didn't have an
             // adapter.  It is now time to show it.
@@ -142,7 +117,7 @@ ECode ListFragment::SetListAdapter(
             GetView((IView**)&view);
             AutoPtr<IBinder> token;
             view->GetWindowToken((IBinder**)&token);
-            SetListShown(TRUE, token != NULL);
+            FAIL_RETURN(SetListShown(TRUE, token != NULL))
         }
     }
     return NOERROR;
@@ -151,8 +126,8 @@ ECode ListFragment::SetListAdapter(
 ECode ListFragment::SetSelection(
     /* [in] */ Int32 position)
 {
-    EnsureList();
-    mList->SetSelection(position);
+    FAIL_RETURN(EnsureList())
+    IAdapterView::Probe(mList)->SetSelection(position);
     return NOERROR;
 }
 
@@ -161,8 +136,8 @@ ECode ListFragment::GetSelectedItemPosition(
 {
     VALIDATE_NOT_NULL(position);
 
-    EnsureList();
-    mList->GetSelectedItemPosition(position);
+    FAIL_RETURN(EnsureList())
+    IAdapterView::Probe(mList)->GetSelectedItemPosition(position);
     return NOERROR;
 }
 
@@ -171,8 +146,8 @@ ECode ListFragment::GetSelectedItemId(
 {
     VALIDATE_NOT_NULL(id);
 
-    EnsureList();
-    mList->GetSelectedItemId(id);
+    FAIL_RETURN(EnsureList())
+    IAdapterView::Probe(mList)->GetSelectedItemId(id);
     return NOERROR;
 }
 
@@ -181,7 +156,7 @@ ECode ListFragment::GetListView(
 {
     VALIDATE_NOT_NULL(listview);
 
-    EnsureList();
+    FAIL_RETURN(EnsureList())
     *listview = mList;
     REFCOUNT_ADD(*listview);
     return NOERROR;
@@ -190,7 +165,7 @@ ECode ListFragment::GetListView(
 ECode ListFragment::SetEmptyText(
     /* [in] */ ICharSequence* text)
 {
-    EnsureList();
+    FAIL_RETURN(EnsureList())
     if (mStandardEmptyView == NULL) {
         // throw new IllegalStateException("Can't be used with a custom content view");
         Slogger::E("ListFragment", "Can't be used with a custom content view");
@@ -198,7 +173,7 @@ ECode ListFragment::SetEmptyText(
     }
     mStandardEmptyView->SetText(text);
     if (mEmptyText == NULL) {
-        mList->SetEmptyView(mStandardEmptyView);
+        IAdapterView::Probe(mList)->SetEmptyView(IView::Probe(mStandardEmptyView));
     }
     mEmptyText = text;
     return NOERROR;
@@ -207,60 +182,61 @@ ECode ListFragment::SetEmptyText(
 ECode ListFragment::SetListShown(
     /* [in] */ Boolean shown)
 {
-    SetListShown(shown, TRUE);
-    return NOERROR;
+    return SetListShown(shown, TRUE);
 }
 
 ECode ListFragment::SetListShownNoAnimation(
     /* [in] */ Boolean shown)
 {
-    SetListShown(shown, FALSE);
-    return NOERROR;
+    return SetListShown(shown, FALSE);
 }
 
-void ListFragment::SetListShown(
+ECode ListFragment::SetListShown(
     /* [in] */ Boolean shown,
     /* [in] */ Boolean animate)
 {
-    EnsureList();
+    FAIL_RETURN(EnsureList())
     if (mProgressContainer == NULL) {
         // throw new IllegalStateException("Can't be used with a custom content view");
         Slogger::E("ListFragment", "Can't be used with a custom content view");
-        return;
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
     if (mListShown == shown) {
-        return;
+        return NOERROR;
     }
-    AutoPtr<IAnimationUtils> aUtils;
-    CAnimationUtils::AcquireSingleton((IAnimationUtils**)&aUtils);
+
     mListShown = shown;
     if (shown) {
         if (animate) {
             AutoPtr<IAnimation> aOut, aIn;
-            aUtils->LoadAnimation(mActivity, R::anim::fade_out, (IAnimation**)&aOut);
-            aUtils->LoadAnimation(mActivity, R::anim::fade_in, (IAnimation**)&aIn);
+            AnimationUtils::LoadAnimation(IContext::Probe(mActivity), R::anim::fade_out, (IAnimation**)&aOut);
+            AnimationUtils::LoadAnimation(IContext::Probe(mActivity), R::anim::fade_in, (IAnimation**)&aIn);
             mProgressContainer->StartAnimation(aOut);
             mListContainer->StartAnimation(aIn);
-        } else {
+        }
+        else {
             mProgressContainer->ClearAnimation();
             mListContainer->ClearAnimation();
         }
         mProgressContainer->SetVisibility(IView::GONE);
         mListContainer->SetVisibility(IView::VISIBLE);
-    } else {
+    }
+    else {
         if (animate) {
             AutoPtr<IAnimation> aOut, aIn;
-            aUtils->LoadAnimation(mActivity, R::anim::fade_out, (IAnimation**)&aOut);
-            aUtils->LoadAnimation(mActivity, R::anim::fade_in, (IAnimation**)&aIn);
+            AnimationUtils::LoadAnimation(IContext::Probe(mActivity), R::anim::fade_out, (IAnimation**)&aOut);
+            AnimationUtils::LoadAnimation(IContext::Probe(mActivity), R::anim::fade_in, (IAnimation**)&aIn);
             mProgressContainer->StartAnimation(aIn);
             mListContainer->StartAnimation(aOut);
-        } else {
+        }
+        else {
             mProgressContainer->ClearAnimation();
             mListContainer->ClearAnimation();
         }
         mProgressContainer->SetVisibility(IView::VISIBLE);
         mListContainer->SetVisibility(IView::GONE);
     }
+    return NOERROR;
 }
 
 ECode ListFragment::GetListAdapter(
@@ -273,61 +249,67 @@ ECode ListFragment::GetListAdapter(
     return NOERROR;
 }
 
-void ListFragment::EnsureList()
+ECode ListFragment::EnsureList()
 {
     if (mList != NULL) {
-        return;
+        return NOERROR;
     }
     AutoPtr<IView> root;
     GetView((IView**)&root);
     if (root == NULL) {
         // throw new IllegalStateException("Content view not yet created");
         Slogger::E("ListFragment", "Content view not yet created");
-        return;
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
-    if (root->Probe(EIID_IListView)) {
-        mList = (IListView*)root->Probe(EIID_IListView);
-    } else {
-        mStandardEmptyView = NULL;
-        root->FindViewById(
-                R::id::internalEmpty,
-                (IView**)(ITextView**)&mStandardEmptyView);
+
+    IListView* listView = IListView::Probe(root);
+    if (listView) {
+        mList = listView;
+    }
+    else {
+        AutoPtr<IView> view;
+        root->FindViewById(R::id::internalEmpty, (IView**)&view);
+        mStandardEmptyView = ITextView::Probe(view);
         if (mStandardEmptyView == NULL) {
             mEmptyView = NULL;
             root->FindViewById(R::id::empty, (IView**)&mEmptyView);
-        } else {
-            mStandardEmptyView->SetVisibility(IView::GONE);
         }
-        root->FindViewById(R::id::progressContainer,
-                (IView**)&mProgressContainer);
-        root->FindViewById(R::id::listContainer,
-                (IView**)&mListContainer);
+        else {
+            IView::Probe(mStandardEmptyView)->SetVisibility(IView::GONE);
+        }
+
+        mProgressContainer = NULL;
+        mListContainer = NULL;
+        root->FindViewById(R::id::progressContainer, (IView**)&mProgressContainer);
+        root->FindViewById(R::id::listContainer, (IView**)&mListContainer);
         AutoPtr<IView> rawListView;
         root->FindViewById(R::id::list, (IView**)&rawListView);
-        if (!(rawListView->Probe(EIID_IListView))) {
+        if (IListView::Probe(rawListView) == NULL) {
             // throw new RuntimeException(
             //         "Content has view with id attribute 'android.R.id.list' "
             //         + "that is not a ListView class");
             Slogger::E("ListFragment", "Content has view with id attribute 'android.R.id.list' that is not a ListView class");
-            return;
+            return E_ILLEGAL_STATE_EXCEPTION;
         }
-        mList = (IListView*)rawListView->Probe(EIID_IListView);
+
+        mList = IListView::Probe(rawListView);
         if (mList == NULL) {
             // throw new RuntimeException(
             //         "Your content must have a ListView whose id attribute is " +
             //         "'android.R.id.list'");
             Slogger::E("ListFragment", "Your content must have a ListView whose id attribute is 'android.R.id.list'");
-            return;
+            return E_ILLEGAL_STATE_EXCEPTION;
         }
         if (mEmptyView != NULL) {
-            mList->SetEmptyView(mEmptyView);
-        } else if (mEmptyText != NULL) {
+            IAdapterView::Probe(mList)->SetEmptyView(mEmptyView);
+        }
+        else if (mEmptyText != NULL) {
             mStandardEmptyView->SetText(mEmptyText);
-            mList->SetEmptyView(mStandardEmptyView);
+            IAdapterView::Probe(mList)->SetEmptyView(IView::Probe(mStandardEmptyView));
         }
     }
     mListShown = TRUE;
-    mList->SetOnItemClickListener(mOnClickListener);
+    IAdapterView::Probe(mList)->SetOnItemClickListener(mOnClickListener);
     if (mAdapter != NULL) {
         AutoPtr<IListAdapter> adapter = mAdapter;
         mAdapter = NULL;
@@ -336,11 +318,12 @@ void ListFragment::EnsureList()
         // We are starting without an adapter, so assume we won't
         // have our data right away and start with the progress indicator.
         if (mProgressContainer != NULL) {
-            SetListShown(FALSE, FALSE);
+            FAIL_RETURN(SetListShown(FALSE, FALSE))
         }
     }
     Boolean result;
     mHandler->Post(mRequestFocus.Get(), &result);
+    return NOERROR;
 }
 
 } //namespace App

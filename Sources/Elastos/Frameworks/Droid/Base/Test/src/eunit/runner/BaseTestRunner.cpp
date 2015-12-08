@@ -1,6 +1,8 @@
 
 #include "eunit/runner/BaseTestRunner.h"
+#include <elastos/core/AutoLock.h>
 
+using Elastos::Core::AutoLock;
 using Elastos::Utility::CProperties;
 using Eunit::Framework::EIID_ITestListener;
 
@@ -12,7 +14,7 @@ AutoPtr<IProperties> BaseTestRunner::sPreferences;
 Int32 BaseTestRunner::sMaxMessageLength = 500;
 Boolean BaseTestRunner::sFilterStack = TRUE;
 
-CAR_INTERFACE_IMPL_2(BaseTestRunner, ITestListener, IBaseTestRunner)
+CAR_INTERFACE_IMPL_2(BaseTestRunner, Object, ITestListener, IBaseTestRunner)
 
 ECode BaseTestRunner::StartTest(
     /* [in] */ ITest* test)

@@ -31,9 +31,9 @@ using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class ZoomButtonsController
 {

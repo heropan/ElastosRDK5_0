@@ -253,6 +253,14 @@ ECode CPathInterpolator::GetInterpolation(
     return NOERROR;
 }
 
+ECode CPathInterpolator::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
+
 }   //namespace Animation
 }   //namespace View
 }   //namespace Droid

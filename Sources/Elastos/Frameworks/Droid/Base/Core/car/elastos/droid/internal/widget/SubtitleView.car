@@ -6,10 +6,10 @@ module
     enum Elastos.Droid.Text.LayoutAlignment;
     interface Elastos.Droid.Graphics.ITypeface;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * A basic, embed-able keyboard designed for password entry. Allows entry of all Latin-1 characters.

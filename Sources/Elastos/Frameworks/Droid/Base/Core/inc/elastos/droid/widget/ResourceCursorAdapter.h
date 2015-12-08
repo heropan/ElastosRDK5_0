@@ -14,9 +14,13 @@ namespace Widget {
  * An easy adapter that creates views defined in an XML file. You can specify
  * the XML file that defines the appearance of the views.
  */
-class ResourceCursorAdapter : public CursorAdapter
+class ResourceCursorAdapter
+    : public CursorAdapter
+    , public IResourceCursorAdapter
 {
 public:
+    CAR_INTERFACE_DECL();
+
     ResourceCursorAdapter();
 
     /**
@@ -33,7 +37,7 @@ public:
      *            define both the item views and the drop down views.
      * @Deprecated
      */
-    ResourceCursorAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 layout,
         /* [in] */ ICursor* c);
@@ -54,7 +58,7 @@ public:
      *                    cursor whenever it changes so the most recent
      *                    data is always displayed.  Using true here is discouraged.
      */
-    ResourceCursorAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 layout,
         /* [in] */ ICursor* c,
@@ -71,7 +75,7 @@ public:
      * @param flags Flags used to determine the behavior of the adapter,
      * as per {@link CursorAdapter#CursorAdapter(Context, Cursor, int)}.
      */
-    ResourceCursorAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 layout,
         /* [in] */ ICursor* c,
@@ -83,15 +87,17 @@ public:
      * @see android.widget.CursorAdapter#newView(android.content.Context,
      *      android.database.Cursor, ViewGroup)
      */
-    virtual CARAPI_(AutoPtr<IView>) NewView(
+    virtual CARAPI NewView(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    virtual CARAPI_(AutoPtr<IView>) NewDropDownView(
+    virtual CARAPI NewDropDownView(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
     /**
      * <p>Sets the layout resource of the item views.</p>
      *
@@ -107,39 +113,20 @@ public:
      */
     CARAPI SetDropDownViewResource(
         /* [in] */ Int32 dropDownLayout);
+
 protected:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 layout,
-        /* [in] */ ICursor* c);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 layout,
-        /* [in] */ ICursor* c,
-        /* [in] */ Boolean autoRequery);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 layout,
-        /* [in] */ ICursor* c,
-        /* [in] */ Int32 flags);
-
     CARAPI InitImpl(
         /* [in] */ IContext* context,
         /* [in] */ Int32 layout);
+
 private:
     Int32 mLayout;
-
     Int32 mDropDownLayout;
-
     AutoPtr<ILayoutInflater> mInflater;
 };
 
-
-}// namespace Elastos
-}// namespace Droid
-}// namespace Widget
+} // namespace Elastos
+} // namespace Droid
+} // namespace Widget
 
 #endif //__ELASTOS_DROID_WIDGET_RESOURCECURSORADAPTER_H__
-

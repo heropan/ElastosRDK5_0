@@ -62,15 +62,15 @@ private:
     AutoPtr< ArrayOf<Byte> > Take();// throws InterruptedException
 
 private:
-    static const CString TAG;// = "TTS.SynthQueueItem";
-    static const Boolean DBG;// = FALSE;
+    static const String TAG;        // = "TTS.SynthQueueItem";
+    static const Boolean DBG;       // = FALSE;
 
     /**
      * Maximum length of audio we leave unconsumed by the audio track.
      * Calls to {@link #put(byte[])} will block until we have less than
      * this amount of audio left to play back.
      */
-    static const Int64 MAX_UNCONSUMED_AUDIO_MS;// = 500;
+    static const Int64 MAX_UNCONSUMED_AUDIO_MS;     // = 500;
 
     /**
      * Guards accesses to mDataBufferList and mUnconsumedBytes.
@@ -90,9 +90,9 @@ private:
      * only from the synthesis thread. All three variables are read from the
      * audio playback thread.
      */
-    volatile Boolean mStopped;// = FALSE;
-    volatile Boolean mDone;// = FALSE;
-    volatile Boolean mIsError;// = FALSE;
+    volatile Boolean mStopped;          // = FALSE;
+    volatile Boolean mDone;             // = FALSE;
+    volatile Boolean mIsError;          // = FALSE;
 
     AutoPtr<BlockingAudioTrack> mAudioTrack;
     AutoPtr<EventLogger> mLogger;

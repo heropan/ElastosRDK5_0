@@ -7,9 +7,9 @@
 
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CMediaController), public MediaController
 {

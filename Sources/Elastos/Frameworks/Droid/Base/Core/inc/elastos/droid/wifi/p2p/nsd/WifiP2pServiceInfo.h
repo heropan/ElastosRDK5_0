@@ -10,32 +10,34 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-extern "C" const InterfaceID EIID_WifiP2pServiceInfo;
-
 class WifiP2pServiceInfo
+    : public Object
+    , public IWifiP2pServiceInfo
+    , public IParcelable
 {
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
-    virtual CARAPI GetSupplicantQueryList(
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ ArrayOf<String>* queryList);
+
+    CARAPI GetSupplicantQueryList(
         /* [out, callee] */ ArrayOf<String>** list);
 
-    virtual CARAPI Equals(
+    CARAPI Equals(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* isEqual);
 
-    virtual CARAPI GetHashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 
-    virtual CARAPI ReadFromParcel(
+    CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
-    virtual CARAPI WriteToParcel(
+    CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
-
-    virtual CARAPI Init(
-        /* [in] */ ArrayOf<String>* queryList);
 
 public:
     /**
@@ -84,9 +86,10 @@ public:
     AutoPtr<ArrayOf<String> > mQueryList;
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
+
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICEINFOBASE_H__

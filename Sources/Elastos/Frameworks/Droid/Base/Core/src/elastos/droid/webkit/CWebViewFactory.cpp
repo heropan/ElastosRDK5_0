@@ -22,27 +22,25 @@ ECode CWebViewFactory::GetLoadedPackageInfo(
     /* [out] */ IPackageInfo** packageInfo)
 {
     VALIDATE_NOT_NULL(packageInfo);
-    *packageInfo = WebViewFactory::GetLoadedPackageInfo();
+    AutoPtr<IPackageInfo> _packageInfo = WebViewFactory::GetLoadedPackageInfo();
+    *packageInfo = _packageInfo;
     REFCOUNT_ADD(*packageInfo);
     return NOERROR;
 }
 
 ECode CWebViewFactory::PrepareWebViewInZygote()
 {
-    WebViewFactory::PrepareWebViewInZygote();
-    return NOERROR;
+    return WebViewFactory::PrepareWebViewInZygote();
 }
 
 ECode CWebViewFactory::PrepareWebViewInSystemServer()
 {
-    WebViewFactory::PrepareWebViewInSystemServer();
-    return NOERROR;
+    return WebViewFactory::PrepareWebViewInSystemServer();
 }
 
 ECode CWebViewFactory::OnWebViewUpdateInstalled()
 {
-    WebViewFactory::OnWebViewUpdateInstalled();
-    return NOERROR;
+    return WebViewFactory::OnWebViewUpdateInstalled();
 }
 
 } // namespace Webkit

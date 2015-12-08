@@ -8,6 +8,7 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
+ELASTOS_LIBS += app/app.lib
 ELASTOS_LIBS += content/content.lib
 ELASTOS_LIBS += database/database.lib
 ELASTOS_LIBS += http/http.lib

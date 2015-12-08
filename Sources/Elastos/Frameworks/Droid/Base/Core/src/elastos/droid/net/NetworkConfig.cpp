@@ -1,5 +1,9 @@
 
 #include "elastos/droid/net/NetworkConfig.h"
+#include "elastos/droid/net/Network.h"
+#include <elastos/core/StringUtils.h>
+
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -10,29 +14,24 @@ CAR_INTERFACE_IMPL(NetworkConfig, Object, INetworkConfig)
 ECode NetworkConfig::constructor(
     /* [in] */ const String& init)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     AutoPtr<ArrayOf<String> > fragments;
     StringUtils::Split(init, String(","), (ArrayOf<String>**)&fragments);
-    mName = (*fragments)[0].Trim().ToLowerCase(ILocale::ROOT);
+    mName = (*fragments)[0].Trim().ToLowerCase();
     mType = StringUtils::ParseInt32((*fragments)[1]);
     mRadio = StringUtils::ParseInt32((*fragments)[2]);
     mPriority = StringUtils::ParseInt32((*fragments)[3]);
     mRestoreTime = StringUtils::ParseInt32((*fragments)[4]);
     mDependencyMet = (*fragments)[5].EqualsIgnoreCase("TRUE");
     return NOERROR;
-#endif
 }
 
 ECode NetworkConfig::IsDefault(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
+
     *result = (mType == mRadio);
     return NOERROR;
-#endif
 }
 
 ECode NetworkConfig::GetName(

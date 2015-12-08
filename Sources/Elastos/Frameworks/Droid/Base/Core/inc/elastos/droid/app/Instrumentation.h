@@ -39,12 +39,12 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class Instrumentation
+class ECO_PUBLIC Instrumentation
     : public Object
     , public IInstrumentation
 {
 private:
-    class ActivityWaiter
+    class ECO_LOCAL ActivityWaiter
         : public Object
     {
     public:
@@ -58,7 +58,7 @@ private:
         AutoPtr<IActivity> mActivity;
     };
 
-    class MenuRunnable
+    class ECO_LOCAL MenuRunnable
         : public Runnable
     {
     public:
@@ -78,7 +78,7 @@ private:
         friend class Instrumentation;
     };
 
-    class ContextMenuRunnable
+    class ECO_LOCAL ContextMenuRunnable
         : public Runnable
     {
     public:
@@ -98,7 +98,7 @@ private:
         friend class Instrumentation;
     };
 
-    class InstrumentationThread
+    class ECO_LOCAL InstrumentationThread
         : public Thread
     {
     public:
@@ -112,14 +112,14 @@ private:
         Instrumentation* mHost;
     };
 
-    class EmptyRunnable
+    class ECO_LOCAL EmptyRunnable
         : public Runnable
     {
     public:
         CARAPI Run();
     };
 
-    class SyncRunnable
+    class ECO_LOCAL SyncRunnable
         : public Runnable
     {
     public:
@@ -135,7 +135,7 @@ private:
         Boolean mComplete;
     };
 
-    class ActivityGoing
+    class ECO_LOCAL ActivityGoing
         : public Object
         , public IIdleHandler
     {
@@ -154,7 +154,7 @@ private:
         Instrumentation* mHost;
     };
 
-    class Idler
+    class ECO_LOCAL Idler
         : public Object
         , public IIdleHandler
     {
@@ -174,7 +174,7 @@ private:
         Boolean mIdle;
     };
 
-    class BlockPhoneCallRunnable
+    class ECO_LOCAL BlockPhoneCallRunnable
         : public Runnable
     {
     public:
@@ -1051,18 +1051,16 @@ public:
     CARAPI GetUiAutomation(
         /* [out] */ IUiAutomation** ua);
 
-
-
 private:
-    CARAPI_(void) AddValue(
+    ECO_LOCAL CARAPI_(void) AddValue(
         /* [in] */ const String& key,
         /* [in] */ Int32 value,
         /* [in] */ IBundle* results);
 
-    CARAPI ValidateNotAppThread();
+    ECO_LOCAL CARAPI ValidateNotAppThread();
 
 private:
-    const static String TAG;
+    ECO_LOCAL const static String TAG;
 
     Object mSync;
     IActivityThread* mThread;

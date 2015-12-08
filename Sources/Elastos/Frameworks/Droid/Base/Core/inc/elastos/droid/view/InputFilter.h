@@ -2,9 +2,10 @@
 #define __ELASTOS_DROID_VIEW_INPUTEVENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::View::IInputFilterHost;
 
 namespace Elastos {
@@ -12,9 +13,14 @@ namespace Droid {
 namespace View {
 
 class InputFilter
+    : public Object
+    , public IInputFilter
+    , public IIInputFilter
+    , public IBinder
 {
 private:
-    class H : public HandlerBase
+    class H
+        : public Handler
     {
     public:
         H(
@@ -31,19 +37,17 @@ private:
 public:
     InputFilter();
 
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates the input filter.
      *
      * @param looper The looper to run callbacks on.
      */
-    InputFilter(
+    CARAPI constructor(
         /* [in] */ ILooper* loop);
 
-    virtual ~InputFilter()
-    {}
-
-    CARAPI Init(
-        /* [in] */ ILooper* loop);
+    virtual ~InputFilter();
 
     /**
      * Called when the input filter is installed.

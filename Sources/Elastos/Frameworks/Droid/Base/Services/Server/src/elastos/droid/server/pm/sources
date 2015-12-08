@@ -1,0 +1,26 @@
+TARGET_NAME= pm
+TARGET_TYPE= lib
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../inc
+INCLUDES += $(MAKEDIR)/../../../../Core/inc
+
+C_DEFINES += -DDROID_SERVER
+
+SOURCES = BasePermission.cpp
+SOURCES += CPackageManagerService.cpp
+SOURCES += CResourcesChangedReceiver.cpp
+SOURCES += CUserManagerService.cpp
+SOURCES += CUserStopUserCallback.cpp
+SOURCES += DumpState.cpp
+SOURCES += GrantedPermissions.cpp
+SOURCES += Installer.cpp
+SOURCES += PackageSetting.cpp
+SOURCES += PackageSettingBase.cpp
+SOURCES += PackageSignatures.cpp
+SOURCES += PreferredActivity.cpp
+SOURCES += Settings.cpp
+SOURCES += SharedUserSetting.cpp
+SOURCES += PackageVerificationState.cpp
+SOURCES += PackageVerificationResponse.cpp
+SOURCES += BackgroundDexOptService.cpp

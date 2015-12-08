@@ -4,6 +4,7 @@
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Core::AutoLock;
+using Elastos::Core::EIID_ICloneable;
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +12,7 @@ namespace Webkit {
 
 Object CookieManager::sLock;
 
-CAR_INTERFACE_IMPL(CookieManager, Object, ICookieManager);
+CAR_INTERFACE_IMPL_2(CookieManager, Object, ICookieManager, ICloneable);
 
 /**
  * @hide Only for use by WebViewProvider implementations
@@ -91,6 +92,14 @@ ECode CookieManager::AcceptThirdPartyCookies(
 ECode CookieManager::SetCookie(
     /* [in] */ const String& url,
     /* [in] */ const String& value)
+{
+    return E_MUST_OVERRIDE_EXCEPTION;
+}
+
+ECode CookieManager::SetCookie(
+    /* [in] */ String url,
+    /* [in] */ String value,
+    /* [in] */ IValueCallback* callBack)
 {
     return E_MUST_OVERRIDE_EXCEPTION;
 }
@@ -254,10 +263,10 @@ void CookieManager::SetAcceptFileSchemeCookiesImpl(
 }
 
 //@Override
-IInterface* CookieManager::Clone()
+ECode CookieManager::Clone(
+    /*[out]*/ IInterface** object)
 {
-    assert(0);
-    return NULL;
+    return E_CLONE_NOT_SUPPORTED_EXCEPTION;
 }
 
 /**

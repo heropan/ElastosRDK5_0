@@ -1,10 +1,34 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CRssiPacketCountInfo.h"
+#include "elastos/droid/wifi/CRssiPacketCountInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
+
+CAR_INTERFACE_IMPL(CRssiPacketCountInfo, Object, IRssiPacketCountInfo)
+
+CAR_OBJECT_IMPL(CRssiPacketCountInfo)
+
+ECode CRssiPacketCountInfo::constructor()
+{
+    mRssi = mTxgood = mTxbad = mRxgood = 0;
+
+    return NOERROR;
+}
+
+ECode CRssiPacketCountInfo::constructor(
+    /* [in] */ IParcel* parcel)
+{
+    VALIDATE_NOT_NULL(parcel);
+
+    FAIL_RETURN(parcel->ReadInt32(&mRssi));
+    FAIL_RETURN(parcel->ReadInt32(&mTxgood));
+    FAIL_RETURN(parcel->ReadInt32(&mTxbad));
+    FAIL_RETURN(parcel->ReadInt32(&mRxgood));
+
+    return NOERROR;
+}
 
 ECode CRssiPacketCountInfo::GetRssi(
     /* [out] */ Int32* rssi)
@@ -63,28 +87,24 @@ ECode CRssiPacketCountInfo::WriteToParcel(
     dest->WriteInt32(mRssi);
     dest->WriteInt32(mTxgood);
     dest->WriteInt32(mTxbad);
+    dest->WriteInt32(mRxgood);
     return NOERROR;
 }
 
-ECode CRssiPacketCountInfo::constructor()
+ECode CRssiPacketCountInfo::GetRxgood(
+    /* [out] */ Int32* result)
 {
-    mRssi = mTxgood = mTxbad = 0;
-
-    return NOERROR;
+    VALIDATE_NOT_NULL(result);
+    *result = mRxgood;
 }
 
-ECode CRssiPacketCountInfo::constructor(
-    /* [in] */ IParcel* parcel)
+ECode CRssiPacketCountInfo::SetRxgood(
+    /* [in] */ Int32 rxgood)
 {
-    VALIDATE_NOT_NULL(parcel);
-
-    FAIL_RETURN(parcel->ReadInt32(&mRssi));
-    FAIL_RETURN(parcel->ReadInt32(&mTxgood));
-    FAIL_RETURN(parcel->ReadInt32(&mTxbad));
-
+    mRxgood = rxgood;
     return NOERROR;
 }
 
-}
-}
-}
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

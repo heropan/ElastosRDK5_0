@@ -1,0 +1,84 @@
+
+#include "elastos/droid/widget/CLinearLayout.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/widget/CFrameLayout.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/widget/CRelativeLayout.h"
+#include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
+#include "elastos/droid/widget/CArrayAdapter.h"
+#include "elastos/droid/widget/CSimpleAdapter.h"
+#include "elastos/droid/widget/CSimpleCursorAdapter.h"
+#include "elastos/droid/widget/CSimpleExpandableListAdapter.h"
+#include "elastos/droid/widget/CSimpleMonthAdapter.h"
+#include "elastos/droid/widget/CAbsoluteLayoutLayoutParams.h"
+#include "elastos/droid/widget/CAbsoluteLayout.h"
+#include "elastos/droid/widget/CCursorFilter.h"
+#include "elastos/droid/widget/CImageView.h"
+#include "elastos/droid/widget/CImageButton.h"
+#include "elastos/droid/widget/CProgressBar.h"
+#include "elastos/droid/widget/CGallery.h"
+#include "elastos/droid/widget/CGalleryLayoutParams.h"
+#include "elastos/droid/widget/CScroller.h"
+#include "elastos/droid/widget/CViewAnimator.h"
+#include "elastos/droid/widget/CViewSwitcher.h"
+#include "elastos/droid/widget/CImageSwitcher.h"
+#include "elastos/droid/widget/CAdapterViewAnimator.h"
+#include "elastos/droid/widget/CAdapterViewFlipper.h"
+#include "elastos/droid/widget/CTextView.h"
+#include "elastos/droid/widget/CEditText.h"
+#include "elastos/droid/widget/CButton.h"
+#include "elastos/droid/widget/CSwitch.h"
+#include "elastos/droid/widget/CGridView.h"
+#include "elastos/droid/widget/CHorizontalScrollView.h"
+#include "elastos/droid/widget/CHorizontalScrollViewSavedState.h"
+#include "elastos/droid/widget/CScrollBarDrawable.h"
+#include "elastos/droid/widget/CQuickContactBadge.h"
+#include "elastos/droid/widget/CTextClock.h"
+#include "elastos/droid/widget/CToggleButton.h"
+#include "elastos/droid/widget/CTwoLineListItem.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+
+CAR_OBJECT_IMPL(CLinearLayout);
+CAR_OBJECT_IMPL(CLinearLayoutLayoutParams);
+CAR_OBJECT_IMPL(CFrameLayout);
+CAR_OBJECT_IMPL(CFrameLayoutLayoutParams);
+CAR_OBJECT_IMPL(CRelativeLayout);
+CAR_OBJECT_IMPL(CRelativeLayoutLayoutParams);
+CAR_OBJECT_IMPL(CArrayAdapter);
+CAR_OBJECT_IMPL(CSimpleAdapter);
+CAR_OBJECT_IMPL(CSimpleCursorAdapter);
+CAR_OBJECT_IMPL(CSimpleExpandableListAdapter);
+CAR_OBJECT_IMPL(CSimpleMonthAdapter);
+CAR_OBJECT_IMPL(CAbsoluteLayoutLayoutParams);
+CAR_OBJECT_IMPL(CAbsoluteLayout);
+CAR_OBJECT_IMPL(CCursorFilter);
+CAR_OBJECT_IMPL(CImageView);
+CAR_OBJECT_IMPL(CImageButton);
+CAR_OBJECT_IMPL(CProgressBar);
+CAR_OBJECT_IMPL(CGallery);
+CAR_OBJECT_IMPL(CGalleryLayoutParams);
+CAR_OBJECT_IMPL(CScroller);
+CAR_OBJECT_IMPL(CViewAnimator);
+CAR_OBJECT_IMPL(CViewSwitcher);
+CAR_OBJECT_IMPL(CImageSwitcher);
+CAR_OBJECT_IMPL(CAdapterViewAnimator);
+CAR_OBJECT_IMPL(CAdapterViewFlipper);
+CAR_OBJECT_IMPL(CTextView);
+CAR_OBJECT_IMPL(CEditText);
+CAR_OBJECT_IMPL(CButton);
+CAR_OBJECT_IMPL(CSwitch);
+CAR_OBJECT_IMPL(CGridView);
+CAR_OBJECT_IMPL(CHorizontalScrollView);
+CAR_OBJECT_IMPL(CHorizontalScrollViewSavedState);
+CAR_OBJECT_IMPL(CScrollBarDrawable);
+CAR_OBJECT_IMPL(CQuickContactBadge);
+CAR_OBJECT_IMPL(CTextClock);
+CAR_OBJECT_IMPL(CToggleButton);
+CAR_OBJECT_IMPL(CTwoLineListItem);
+
+} // namespace Widget
+} // namespace Droid
+} // namespace Elastos

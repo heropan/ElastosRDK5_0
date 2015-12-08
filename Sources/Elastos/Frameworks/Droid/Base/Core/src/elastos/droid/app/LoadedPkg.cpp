@@ -2,14 +2,15 @@
 #include "elastos/droid/app/LoadedPkg.h"
 #include "elastos/droid/app/CInnerReceiver.h"
 #include "elastos/droid/app/CInnerConnection.h"
-//#include "elastos/droid/app/CContextImpl.h"
-//#include "elastos/droid/app/CActivityThread.h"
-//#include "elastos/droid/app/CInstrumentationHelper.h"
+#include "elastos/droid/app/CContextImpl.h"
+#include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/app/CInstrumentationHelper.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/os/CUserHandle.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/content/res/CResources.h"
+#include "elastos/droid/content/res/CAssetManager.h"
 #include "elastos/droid/content/pm/PackageManager.h"
 #include "elastos/droid/content/pm/CApplicationInfo.h"
 #include "elastos/droid/view/DisplayAdjustments.h"
@@ -23,6 +24,8 @@ using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Content::EIID_IPendingResult;
 using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Content::Res::IAssetManager;
+using Elastos::Droid::Content::Res::CAssetManager;
 using Elastos::Droid::Content::Pm::PackageManager;
 using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Pm::CApplicationInfo;
@@ -35,9 +38,9 @@ using Elastos::IO::CFile;
 using Elastos::Utility::Etl::Pair;
 using Elastos::Utility::Logging::Slogger;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 const String LoadedPkg::TAG("LoadedPkg");
 
@@ -45,6 +48,8 @@ const String LoadedPkg::TAG("LoadedPkg");
 //==============================================================================
 // LoadedPkg::ReceiverDispatcher::Args
 //==============================================================================
+CAR_INTERFACE_IMPL(LoadedPkg::ReceiverDispatcher::Args, BroadcastReceiver::PendingResult, IRunnable)
+
 LoadedPkg::ReceiverDispatcher::Args::Args()
     : mOrdered(FALSE)
 {}
@@ -73,84 +78,84 @@ ECode LoadedPkg::ReceiverDispatcher::Args::constructor(
 
 ECode LoadedPkg::ReceiverDispatcher::Args::Run()
 {
-//     AutoPtr<IBroadcastReceiver> receiver = mHost->mReceiver;
-//     Boolean ordered = mOrdered;
-//     if (CActivityThread::DEBUG_BROADCAST) {
-//         Int32 seq = -1;
-//         mCurIntent->GetInt32Extra(String("seq"), -1, &seq);
-//         String action;
-//         mCurIntent->GetAction(&action);
-//         Slogger::I(CActivityThread::TAG, "Dispatching broadcast %s seq=%d to %p"
-//                 , action.string(), seq, mHost->mReceiver.Get());
-//         Slogger::I(CActivityThread::TAG, "  mRegistered=%d mOrderedHint=%d", mHost->mRegistered, ordered);
-//     }
+    AutoPtr<IBroadcastReceiver> receiver = mHost->mReceiver;
+    Boolean ordered = mOrdered;
+    if (CActivityThread::DEBUG_BROADCAST) {
+        Int32 seq = -1;
+        mCurIntent->GetInt32Extra(String("seq"), -1, &seq);
+        String action;
+        mCurIntent->GetAction(&action);
+        Slogger::I(CActivityThread::TAG, "Dispatching broadcast %s seq=%d to %p"
+                , action.string(), seq, mHost->mReceiver.Get());
+        Slogger::I(CActivityThread::TAG, "  mRegistered=%d mOrderedHint=%d", mHost->mRegistered, ordered);
+    }
 
-//     AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
-//     AutoPtr<IIntent> intent = mCurIntent;
-//     mCurIntent = NULL;
+    AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
+    AutoPtr<IIntent> intent = mCurIntent;
+    mCurIntent = NULL;
 
-//     if (receiver == NULL || mHost->mForgotten) {
-//         if (mHost->mRegistered && ordered) {
-//             if (CActivityThread::DEBUG_BROADCAST) {
-//                 Slogger::I(CActivityThread::TAG, "Finishing NULL broadcast to %d", mHost->mReceiver.Get());
-//             }
-//             SendFinished(mgr);
-//         }
-//         mHost = NULL;
-//         return NOERROR;
-//     }
-//     // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "broadcastReceiveReg");
-//     // try {
-// //TODO: Need ClassLoader
-//     // ClassLoader cl =  mReceiver.getClass().getClassLoader();
-//     // intent.setExtrasClassLoader(cl);
-//     // setExtrasClassLoader(cl);
-//     receiver->SetPendingResult((IPendingResult*)this);
-//     ECode ec = receiver->OnReceive(mHost->mContext, intent);
-//     if (FAILED(ec)) {
-//         if (mHost->mRegistered && ordered) {
-//             if (CActivityThread::DEBUG_BROADCAST) {
-//                 Slogger::I(CActivityThread::TAG, "Finishing failed broadcast to %p", mHost->mReceiver.Get());
-//             }
+    if (receiver == NULL || mHost->mForgotten) {
+        if (mHost->mRegistered && ordered) {
+            if (CActivityThread::DEBUG_BROADCAST) {
+                Slogger::I(CActivityThread::TAG, "Finishing NULL broadcast to %d", mHost->mReceiver.Get());
+            }
+            SendFinished(mgr);
+        }
+        mHost = NULL;
+        return NOERROR;
+    }
+    // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "broadcastReceiveReg");
+    // try {
+//TODO: Need ClassLoader
+    // ClassLoader cl =  mReceiver.getClass().getClassLoader();
+    // intent.setExtrasClassLoader(cl);
+    // setExtrasClassLoader(cl);
+    receiver->SetPendingResult((IPendingResult*)this);
+    ECode ec = receiver->OnReceive(mHost->mContext, intent);
+    if (FAILED(ec)) {
+        if (mHost->mRegistered && ordered) {
+            if (CActivityThread::DEBUG_BROADCAST) {
+                Slogger::I(CActivityThread::TAG, "Finishing failed broadcast to %p", mHost->mReceiver.Get());
+            }
 
-//             SendFinished(mgr);
-//         }
-//         Boolean result;
-//         if (mHost->mInstrumentation == NULL ||
-//                 (mHost->mInstrumentation->OnException(mHost->mReceiver, ec, &result), !result)) {
-//             // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
-//             Slogger::E(CActivityThread::TAG, "Error receiving broadcast %p in %p ec: 0x%08x", intent.Get(), mHost->mReceiver.Get(), ec);
-//             mHost = NULL;
-//             return E_RUNTIME_EXCEPTION;
-//             // throw new RuntimeException(
-//             //     "Error receiving broadcast " + intent
-//             //     + " in " + mReceiver, e);
-//         }
-//     }
-//     // } catch (Exception e) {
-//     //     if (mRegistered && ordered) {
-//     //         // if (ActivityThread.DEBUG_BROADCAST) Slog.i(ActivityThread.TAG,
-//     //         //         "Finishing failed broadcast to " + mReceiver);
-//     //         SendFinished(mgr);
-//     //     }
-//     //     if (mInstrumentation == NULL ||
-//     //             !mInstrumentation->OnException(mReceiver, e)) {
-//     //         // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
-//     //         // throw new RuntimeException(
-//     //         //     "Error receiving broadcast " + intent
-//     //         //     + " in " + mReceiver, e);
-//     //         return E_RUNTIME_EXCEPTION;
-//     //     }
-//     // }
+            SendFinished(mgr);
+        }
+        Boolean result;
+        if (mHost->mInstrumentation == NULL ||
+                (mHost->mInstrumentation->OnException(mHost->mReceiver, ec, &result), !result)) {
+            // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+            Slogger::E(CActivityThread::TAG, "Error receiving broadcast %p in %p ec: 0x%08x", intent.Get(), mHost->mReceiver.Get(), ec);
+            mHost = NULL;
+            return E_RUNTIME_EXCEPTION;
+            // throw new RuntimeException(
+            //     "Error receiving broadcast " + intent
+            //     + " in " + mReceiver, e);
+        }
+    }
+    // } catch (Exception e) {
+    //     if (mRegistered && ordered) {
+    //         // if (ActivityThread.DEBUG_BROADCAST) Slog.i(ActivityThread.TAG,
+    //         //         "Finishing failed broadcast to " + mReceiver);
+    //         SendFinished(mgr);
+    //     }
+    //     if (mInstrumentation == NULL ||
+    //             !mInstrumentation->OnException(mReceiver, e)) {
+    //         // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+    //         // throw new RuntimeException(
+    //         //     "Error receiving broadcast " + intent
+    //         //     + " in " + mReceiver, e);
+    //         return E_RUNTIME_EXCEPTION;
+    //     }
+    // }
 
-//     AutoPtr<IPendingResult> result;
-//     receiver->GetPendingResult((IPendingResult**)&result);
-//     if (result != NULL) {
-//         Finish();
-//     }
+    AutoPtr<IPendingResult> result;
+    receiver->GetPendingResult((IPendingResult**)&result);
+    if (result != NULL) {
+        Finish();
+    }
 
-//     // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
-//     mHost = NULL;
+    // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+    mHost = NULL;
     return NOERROR;
 }
 
@@ -234,28 +239,28 @@ void LoadedPkg::ReceiverDispatcher::PerformReceive(
     /* [in] */ Boolean sticky,
     /* [in] */ Int32 sendingUser)
 {
-    // if (CActivityThread::DEBUG_BROADCAST) {
-    //     Int32 seq = -1;
-    //     intent->GetInt32Extra(String("seq"), -1, &seq);
-    //     String action;
-    //     intent->GetAction(&action);
-    //     Slogger::I(CActivityThread::TAG, "Enqueueing broadcast %s seq=%d to %p"
-    //             , action.string(),  seq, mReceiver.Get());
-    // }
+    if (CActivityThread::DEBUG_BROADCAST) {
+        Int32 seq = -1;
+        intent->GetInt32Extra(String("seq"), -1, &seq);
+        String action;
+        intent->GetAction(&action);
+        Slogger::I(CActivityThread::TAG, "Enqueueing broadcast %s seq=%d to %p"
+                , action.string(),  seq, mReceiver.Get());
+    }
 
-    // AutoPtr<Args> args = new Args(intent, resultCode, data, extras, ordered,
-    //         sticky, sendingUser, this);
-    // Boolean result;
-    // mActivityThread->Post(args, &result);
-    // if (!result) {
-    //     if (mRegistered && ordered) {
-    //         AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
-    //         if (CActivityThread::DEBUG_BROADCAST) {
-    //             Slogger::I(CActivityThread::TAG, "Finishing sync broadcast to %p", mReceiver.Get());
-    //         }
-    //         args->SendFinished(mgr);
-    //     }
-    // }
+    AutoPtr<Args> args = new Args();
+    args->constructor(intent, resultCode, data, extras, ordered, sticky, sendingUser, this);
+    Boolean result;
+    mActivityThread->Post(args, &result);
+    if (!result) {
+        if (mRegistered && ordered) {
+            AutoPtr<IIActivityManager> mgr = ActivityManagerNative::GetDefault();
+            if (CActivityThread::DEBUG_BROADCAST) {
+                Slogger::I(CActivityThread::TAG, "Finishing sync broadcast to %p", mReceiver.Get());
+            }
+            args->SendFinished(mgr);
+        }
+    }
 }
 
 //==============================================================================
@@ -603,7 +608,7 @@ ECode LoadedPkg::constructor(
     return NOERROR;
 }
 
-void LoadedPkg::InstallSystemApplicationInfo(
+ECode LoadedPkg::InstallSystemApplicationInfo(
     /* [in] */ IApplicationInfo* info,
     /* [in] */ IClassLoader* classLoader)
 {
@@ -612,6 +617,7 @@ void LoadedPkg::InstallSystemApplicationInfo(
     assert(pkgName.Equals("android"));
     mApplicationInfo = info;
     mClassLoader = classLoader;
+    return NOERROR;
 }
 
 AutoPtr<IApplicationInfo> LoadedPkg::AdjustNativeLibraryPaths(
@@ -940,12 +946,12 @@ ECode LoadedPkg::GetResources(
     *res = NULL;
     VALIDATE_NOT_NULL(mainThread);
 
-    // if (mResources == NULL) {
-    //     CApplicationInfo* cai = (CApplicationInfo*)mApplicationInfo.Get();
-    //     ((CActivityThread*)mainThread)->GetTopLevelResources(
-    //         mResDir, mSplitResDirs, mOverlayDirs, cai->mSharedLibraryFiles,
-    //         IDisplay::DEFAULT_DISPLAY, NULL, this, (IResources**)&mResources);
-    // }
+    if (mResources == NULL) {
+        CApplicationInfo* cai = (CApplicationInfo*)mApplicationInfo.Get();
+        ((CActivityThread*)mainThread)->GetTopLevelResources(
+            mResDir, mSplitResDirs, mOverlayDirs, cai->mSharedLibraryFiles,
+            IDisplay::DEFAULT_DISPLAY, NULL, this, (IResources**)&mResources);
+    }
     *res = mResources.Get();
     REFCOUNT_ADD(*res);
     return NOERROR;
@@ -957,6 +963,7 @@ ECode LoadedPkg::MakeApplication(
     /* [out] */ IApplication** result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
 
     if (mApplication != NULL) {
         *result = mApplication;
@@ -964,6 +971,7 @@ ECode LoadedPkg::MakeApplication(
         return NOERROR;
     }
 
+    CActivityThread* activityThread = (CActivityThread*)mActivityThread;
     AutoPtr<IApplication> app;
     String appClass;
     FAIL_RETURN(mApplicationInfo->GetClassName(&appClass));
@@ -977,22 +985,22 @@ ECode LoadedPkg::MakeApplication(
             InitializeJavaContextClassLoader();
         }
 
-        assert(0 && "TODO");
-        // AutoPtr<CContextImpl> appContext = ContextImpl::CreateAppContext(mActivityThread, this);
-        // ECode ec = mActivityThread->mInstrumentation->NewApplication(
-        //         cl, appClass, appContext.Get(), (IApplication**)&app);
-        // if (FAILED(ec)) {
-        //     Slogger::E(TAG, "Unable to instantiate application %s, ec: 0x%08x", appClass.string(), ec);
-        //     *result = NULL;
-        //     return E_RUNTIME_EXCEPTION;
-        // }
-        // } catch (Exception e) {
-        // if (!mActivityThread.mInstrumentation.onException(app, e)) {
-        //     throw new RuntimeException(
-        //         "Unable to instantiate application " + appClass
-        //         + ": " + e.toString(), e);
-        // }
-        // appContext->SetOuterContext(app);
+        AutoPtr<IContextImpl> appContext;
+        CContextImpl::CreateAppContext(mActivityThread, this, (IContextImpl**)&appContext);
+        IContext* ctx = IContext::Probe(appContext);
+        ECode ec = activityThread->mInstrumentation->NewApplication(
+                cl, appClass, ctx, (IApplication**)&app);
+        if (FAILED(ec)) {
+            Boolean bval;
+            activityThread->mInstrumentation->OnException(app, ec, &bval);
+            if (!bval) {
+                Slogger::E(TAG, "Unable to instantiate application %s, ec: 0x%08x", appClass.string(), ec);
+                *result = NULL;
+                return E_RUNTIME_EXCEPTION;
+            }
+        }
+
+        ((CContextImpl*)appContext.Get())->SetOuterContext(IContext::Probe(app));
     }
     else {
         //    try {
@@ -1026,29 +1034,26 @@ ECode LoadedPkg::MakeApplication(
             return E_RUNTIME_EXCEPTION;
         }
 
-        assert(0 && "TODO");
-    //     AutoPtr<CContextImpl> appContext;
-    //     CContextImpl::NewByFriend((CContextImpl**)&appContext);
-    //     // appContext->Init(this, NULL, (CActivityThread*)mActivityThread);
-    //     AutoPtr<IInstrumentationHelper> helper;
-    //     // CInstrumentationHelper::AcquireSingleton((IInstrumentationHelper**)&helper);
-    //     ECode ec = helper->NewApplication(classInfo, appContext, (IApplication**)&app);
-    //     if (FAILED(ec)) {
-    //         Slogger::E(TAG, "Unable to instantiate application %s, ec: 0x%08x", appClass.string(), ec);
-    //         *result = NULL;
-    //         return E_RUNTIME_EXCEPTION;
-    //     }
-    // //    } catch (Exception e) {
-    // //        if (!mActivityThread.mInstrumentation.onException(app, e)) {
-    // //            throw new RuntimeException(
-    // //                "Unable to instantiate application " + appClass
-    // //                + ": " + e.toString(), e);
-    // //        }
-    // //    }
-    //     appContext->SetOuterContext(app);
+        AutoPtr<IContextImpl> appContext;
+        CContextImpl::CreateAppContext(mActivityThread, this, (IContextImpl**)&appContext);
+        IContext* ctx = IContext::Probe(appContext);
+        AutoPtr<IInstrumentationHelper> helper;
+        CInstrumentationHelper::AcquireSingleton((IInstrumentationHelper**)&helper);
+        ECode ec = helper->NewApplication(classInfo, ctx, (IApplication**)&app);
+        if (FAILED(ec)) {
+            Boolean bval;
+            activityThread->mInstrumentation->OnException(app, ec, &bval);
+            if (!bval) {
+                Slogger::E(TAG, "Unable to instantiate application %s, ec: 0x%08x", appClass.string(), ec);
+                *result = NULL;
+                return E_RUNTIME_EXCEPTION;
+            }
+        }
+
+        ((CContextImpl*)appContext.Get())->SetOuterContext(IContext::Probe(app));
     }
 
-    // ((CActivityThread*)mActivityThread)->mAllApplications.PushBack(app);
+    activityThread->mAllApplications.PushBack(app);
     mApplication = app;
 
     if (instrumentation != NULL) {
@@ -1070,57 +1075,69 @@ ECode LoadedPkg::MakeApplication(
 //        }
     }
 
-    assert(0 && "TODO");
     // Rewrite the R 'constants' for all library apks.
-    // SparseArray<String> packageIdentifiers = getAssets(mActivityThread)
-    //         .getAssignedPackageIdentifiers();
-    // final int N = packageIdentifiers.size();
-    // for (int i = 0; i < N; i++) {
-    //     final int id = packageIdentifiers.keyAt(i);
-    //     if (id == 0x01 || id == 0x7f) {
-    //         continue;
-    //     }
-
-    //     rewriteRValues(getClassLoader(), packageIdentifiers.valueAt(i), id);
-    // }
+    AutoPtr<ISparseArray> packageIdentifiers;
+    AutoPtr<IAssetManager> assetMgr;
+    GetAssets(mActivityThread, (IAssetManager**)&assetMgr);
+    ((CAssetManager*)assetMgr.Get())->GetAssignedPackageIdentifiers((ISparseArray**)&packageIdentifiers);
+    Int32 N;
+    packageIdentifiers->GetSize(&N);
+    AutoPtr<IClassLoader> cl;
+    GetClassLoader((IClassLoader**)&cl);
+    for (Int32 i = 0; i < N; i++) {
+        Int32 id;
+        packageIdentifiers->KeyAt(i, &id);
+        if (id == 0x01 || id == 0x7f) {
+            continue;
+        }
+        AutoPtr<IInterface> valueObj;
+        packageIdentifiers->ValueAt(i, (IInterface**)&valueObj);
+        RewriteRValues(cl, Object::ToString(valueObj), id);
+    }
 
     *result = app;
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-// private void rewriteRValues(ClassLoader cl, String packageName, int id) {
-//     final Class<?> rClazz;
-//     try {
-//         rClazz = cl.loadClass(packageName + ".R");
-//     } catch (ClassNotFoundException e) {
-//         // This is not necessarily an error, as some packages do not ship with resources
-//         // (or they do not need rewriting).
-//         Log.i(TAG, "No resource references to update in package " + packageName);
-//         return;
-//     }
+ECode LoadedPkg::RewriteRValues(
+    /* [in] */ IClassLoader* cl,
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 id)
+{
+    assert(0 && "TODO");
+    // final Class<?> rClazz;
+    // try {
+    //     rClazz = cl.loadClass(packageName + ".R");
+    // } catch (ClassNotFoundException e) {
+    //     // This is not necessarily an error, as some packages do not ship with resources
+    //     // (or they do not need rewriting).
+    //     Log.i(TAG, "No resource references to update in package " + packageName);
+    //     return;
+    // }
 
-//     final Method callback;
-//     try {
-//         callback = rClazz.getMethod("onResourcesLoaded", int.class);
-//     } catch (NoSuchMethodException e) {
-//         // No rewriting to be done.
-//         return;
-//     }
+    // final Method callback;
+    // try {
+    //     callback = rClazz.getMethod("onResourcesLoaded", int.class);
+    // } catch (NoSuchMethodException e) {
+    //     // No rewriting to be done.
+    //     return;
+    // }
 
-//     Throwable cause;
-//     try {
-//         callback.invoke(null, id);
-//         return;
-//     } catch (IllegalAccessException e) {
-//         cause = e;
-//     } catch (InvocationTargetException e) {
-//         cause = e.getCause();
-//     }
+    // Throwable cause;
+    // try {
+    //     callback.invoke(null, id);
+    //     return;
+    // } catch (IllegalAccessException e) {
+    //     cause = e;
+    // } catch (InvocationTargetException e) {
+    //     cause = e.getCause();
+    // }
 
-//     throw new RuntimeException("Failed to rewrite resource references for " + packageName,
-//             cause);
-// }
+    // throw new RuntimeException("Failed to rewrite resource references for " + packageName,
+    //         cause);
+    return E_RUNTIME_EXCEPTION;
+}
 
 ECode LoadedPkg::RemoveContextRegistrations(
     /* [in] */ IContext* context,

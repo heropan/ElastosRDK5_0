@@ -3,9 +3,10 @@
 #define __ELASTOS_DROID_WIDGET_COMPOUNDBUTTON_H__
 
 #include "elastos/droid/widget/Button.h"
-#include "elastos/droid/view/ViewBaseSavedState.h"
+#include "elastos/droid/view/View.h"
 
-using Elastos::Droid::View::ViewBaseSavedState;
+using Elastos::Droid::Content::Res::IColorStateList;
+using Elastos::Droid::View::View;
 
 namespace Elastos {
 namespace Droid {
@@ -26,46 +27,43 @@ namespace Widget {
  * </p>
  */
 
-class CompoundButton : public Button
+class CompoundButton
+    : public Button
+    , public ICompoundButton
+    , public ICheckable
 {
 protected:
-    class CompoundButtonSavedState : public ViewBaseSavedState
+    class CompoundButtonSavedState
+        : public View::BaseSavedState
     {
     public:
         CompoundButtonSavedState();
 
-        ~CompoundButtonSavedState();
-    protected:
-        CompoundButtonSavedState(
+        CARAPI constructor();
+
+        CARAPI constructor(
             /* [in] */ IParcelable* superState);
 
-    public:
         CARAPI WriteToParcel(
             /* [in] */ IParcel* dest);
 
         CARAPI ReadFromParcel(
             /* [in] */ IParcel* source);
 
-    protected:
-        CARAPI Init(
-            /* [in] */ IParcelable* superState);
-
-        CARAPI Init();
-
-    protected:
+    public:
         Boolean mChecked;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CompoundButton();
 
-    CompoundButton(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
-
-    virtual CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid) = 0;
+        /* [in] */ Int32 defStyleAttr = 0,
+        /* [in] */ Int32 defStyleRes = 0);
 
     virtual CARAPI Toggle();
 
@@ -73,6 +71,9 @@ public:
     CARAPI_(Boolean) PerformClick();
 
     virtual CARAPI_(Boolean) IsChecked();
+
+    CARAPI IsChecked(
+        /* [out] */ Boolean* isChecked);
 
     /**
      * <p>Changes the checked state of this button.</p>
@@ -138,7 +139,21 @@ public:
 
     virtual CARAPI_(Int32) GetHorizontalOffsetForDrawables();
 
-    virtual CARAPI_(AutoPtr<IDrawable>) GetButtonDrawable();
+    CARAPI SetButtonTintList(
+        /* [in] */ IColorStateList* tint);
+
+    CARAPI GetButtonTintList(
+        /* [out] */ IColorStateList** tint);
+
+    CARAPI SetButtonTintMode(
+        /* [in] */ Elastos::Droid::Graphics::PorterDuffMode tintMode);
+
+    CARAPI GetButtonTintMode(
+        /* [out] */ Elastos::Droid::Graphics::PorterDuffMode* tintMode);
+
+    CARAPI DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
 
 protected:
     //@Override
@@ -157,22 +172,25 @@ protected:
     virtual CARAPI_(Boolean) VerifyDrawable(
         /* [in] */ IDrawable* who);
 
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
-
 private:
     CARAPI InitFromAttributes(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ IAttributeSet* attrs = NULL,
+        /* [in] */ Int32 defStyleAttr = 0,
+        /* [in] */ Int32 defStyleRes = 0);
+
+    CARAPI ApplyButtonTint();
 
 private:
     Boolean mChecked;
     Int32 mButtonResource;
     Boolean mBroadcasting;
     AutoPtr<IDrawable> mButtonDrawable;
+    AutoPtr<IColorStateList> mButtonTintList;
+    Elastos::Droid::Graphics::PorterDuffMode mButtonTintMode;
+    Boolean mHasButtonTint;
+    Boolean mHasButtonTintMode;
+
     AutoPtr<ICompoundButtonOnCheckedChangeListener> mOnCheckedChangeListener;
     AutoPtr<ICompoundButtonOnCheckedChangeListener> mOnCheckedChangeWidgetListener;
 

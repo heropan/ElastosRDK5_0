@@ -2,46 +2,17 @@
 #define __ELASTOS_DROID_WIDGET_CABSOLUTELAYOUTLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_Widget_CAbsoluteLayoutLayoutParams.h"
-#include "elastos/droid/widget/AbsoluteLayoutLayoutParams.h"
+#include "elastos/droid/widget/AbsoluteLayout.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
-CarClass(CAbsoluteLayoutLayoutParams), public AbsoluteLayoutLayoutParams
+CarClass(CAbsoluteLayoutLayoutParams), public  AbsoluteLayout::LayoutParams
 {
 public:
-    CAbsoluteLayoutLayoutParams() {}
-
-    ~CAbsoluteLayoutLayoutParams() {}
-
-    CARAPI constructor(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ IViewGroupLayoutParams* source);
-
-    CARAPI SetX(
-        /* [in] */ Int32 x);
-
-    CARAPI SetY(
-        /* [in] */ Int32 y);
-
-    CARAPI GetX(
-        /* [out] */ Int32* x);
-
-    CARAPI GetY(
-        /* [out] */ Int32* y);
-
-    IVIEWGROUPLP_METHODS_DECL();
+    CAR_OBJECT_DECL()
 };
 
 }// namespace Widget

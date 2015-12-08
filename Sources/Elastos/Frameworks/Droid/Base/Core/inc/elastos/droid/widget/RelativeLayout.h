@@ -4,12 +4,13 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ViewGroup.h"
-#include "elastos/droid/widget/RelativeLayoutLayoutParams.h"
 #include "elastos/droid/utility/Pools.h"
 #include <elastos/utility/etl/Set.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Utility::Pools;
 using Elastos::Droid::View::ViewGroup;
@@ -164,6 +165,108 @@ class RelativeLayout
     , public IRelativeLayout
 {
 public:
+    class LayoutParams
+        : public ViewGroup::MarginLayoutParams
+        , public IRelativeLayoutLayoutParams
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        LayoutParams();
+
+        CARAPI AddRule(
+            /* [in] */ Int32 verb);
+
+        CARAPI AddRule(
+            /* [in] */ Int32 verb,
+            /* [in] */ Int32 anchor);
+
+        CARAPI RemoveRule(
+            /* [in] */ Int32 verb);
+
+        CARAPI GetRules(
+            /* [out, callee] */ ArrayOf<Int32>** rules);
+
+        CARAPI GetRules(
+            /* [in] */ Int32 layoutDirection,
+            /* [out, callee] */ ArrayOf<Int32>** rules);
+
+        CARAPI SetAlignWithParent(
+            /* [in] */ Boolean align);
+
+        CARAPI GetAlignWithParent(
+            /* [out] */ Boolean* align);
+
+        virtual CARAPI ResolveLayoutDirection(
+            /* [in] */ Int32 layoutDirection);
+
+        CARAPI constructor(
+            /* [in] */ IContext* c,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height);
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupLayoutParams* source);
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupMarginLayoutParams* source);
+
+        /**
+         * Copy constructor. Clones the width, height, margin values, and rules
+         * of the source.
+         *
+         * @param source The layout params to copy from.
+         */
+        CARAPI constructor(
+            /* [in] */ IRelativeLayoutLayoutParams* source);
+
+    private:
+        CARAPI InitFromAttributes(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs);
+
+        // The way we are resolving rules depends on the layout direction and if we are pre JB MR1
+        // or not.
+        //
+        // If we are pre JB MR1 (said as "RTL compatibility mode"), "left"/"right" rules are having
+        // predominance over any "start/end" rules that could have been defined. A special case:
+        // if no "left"/"right" rule has been defined and "start"/"end" rules are defined then we
+        // resolve those "start"/"end" rules to "left"/"right" respectively.
+        //
+        // If we are JB MR1+, then "start"/"end" rules are having predominance over "left"/"right"
+        // rules. If no "start"/"end" rule is defined then we use "left"/"right" rules.
+        //
+        // In all cases, the result of the resolution should clear the "start"/"end" rules to leave
+        // only the "left"/"right" rules at the end.
+        CARAPI_(void) ResolveRules(
+            /* [in] */ Int32 layoutDirection);
+
+        CARAPI_(Boolean) HasRelativeRules();
+
+    public:
+        AutoPtr<ArrayOf<Int32> > mRules;
+        AutoPtr<ArrayOf<Int32> > mInitialRules;
+
+        Int32 mLeft;
+        Int32 mTop;
+        Int32 mRight;
+        Int32 mBottom;
+
+        Boolean mRulesChanged;
+        Boolean mIsRtlCompatibilityMode;
+
+        /**
+         * When true, uses the parent as the anchor if the anchor doesn't exist or if
+         * the anchor's visibility is GONE.
+         */
+        Boolean mAlignWithParent;
+    };
+
+
+public:
     CAR_INTERFACE_DECL();
 
     RelativeLayout();
@@ -258,7 +361,7 @@ private:
 
     CARAPI_(void) AlignBaseline(
         /* [in] */ IView* child,
-        /* [in] */ RelativeLayoutLayoutParams* params);
+        /* [in] */ LayoutParams* params);
 
     /**
      * Measure a child. The child should have left, top, right and bottom information
@@ -272,13 +375,13 @@ private:
      */
     CARAPI_(void) MeasureChild(
         /* [in] */ IView* child,
-        /* [in] */ RelativeLayoutLayoutParams* params,
+        /* [in] */ LayoutParams* params,
         /* [in] */ Int32 myWidth,
         /* [in] */ Int32 myHeight);
 
     CARAPI_(void) MeasureChildHorizontal(
         /* [in] */ IView* child,
-        /* [in] */ RelativeLayoutLayoutParams* params,
+        /* [in] */ LayoutParams* params,
         /* [in] */ Int32 myWidth,
         /* [in] */ Int32 myHeight);
 
@@ -310,30 +413,30 @@ private:
 
     CARAPI_(Boolean) PositionChildHorizontal(
         /* [in] */ IView* child,
-        /* [in] */ RelativeLayoutLayoutParams* params,
+        /* [in] */ LayoutParams* params,
         /* [in] */ Int32 myWidth,
         /* [in] */ Boolean wrapContent);
 
     CARAPI_(Boolean) PositionChildVertical(
         /* [in] */ IView* child,
-        /* [in] */ RelativeLayoutLayoutParams* params,
+        /* [in] */ LayoutParams* params,
         /* [in] */ Int32 myHeight,
         /* [in] */ Boolean wrapContent);
 
     CARAPI_(void) ApplyHorizontalSizeRules(
-        /* [in] */ RelativeLayoutLayoutParams* childParams,
+        /* [in] */ LayoutParams* childParams,
         /* [in] */ Int32 myWidth,
         /* [in] */ ArrayOf<Int32>* rules);
 
     CARAPI_(void) ApplyVerticalSizeRules(
-        /* [in] */ RelativeLayoutLayoutParams* childParams,
+        /* [in] */ LayoutParams* childParams,
         /* [in] */ Int32 myHeight);
 
     CARAPI_(AutoPtr<IView>) GetRelatedView(
         /* [in] */ ArrayOf<Int32>* rules,
         /* [in] */ Int32 relation);
 
-    CARAPI_(AutoPtr<RelativeLayoutLayoutParams>) GetRelatedViewParams(
+    CARAPI_(AutoPtr<LayoutParams>) GetRelatedViewParams(
         /* [in] */ ArrayOf<Int32>* rules,
         /* [in] */ Int32 relation);
 
@@ -343,12 +446,12 @@ private:
 
     static CARAPI_(void) CenterHorizontal(
         /* [in] */ IView* child,
-        /* [in] */ RelativeLayoutLayoutParams* params,
+        /* [in] */ LayoutParams* params,
         /* [in] */ Int32 myWidth);
 
     static CARAPI_(void) CenterVertical(
         /* [in] */ IView* child,
-        /* [in] */ RelativeLayoutLayoutParams* params,
+        /* [in] */ LayoutParams* params,
         /* [in] */ Int32 myHeight);
 
     CARAPI InitFromAttributes(
@@ -361,7 +464,7 @@ private:
         /* [in] */ IContext* context);
 
 private:
-    friend class RelativeLayoutLayoutParams;
+    friend class LayoutParams;
 
     static const AutoPtr<ArrayOf<Int32> > RULES_VERTICAL;
     static const AutoPtr<ArrayOf<Int32> > RULES_HORIZONTAL;

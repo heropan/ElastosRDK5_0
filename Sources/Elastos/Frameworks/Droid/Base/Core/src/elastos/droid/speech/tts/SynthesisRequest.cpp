@@ -8,61 +8,126 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
+
+/******************
+ * SynthesisRequest
+ *******************************************************************************************************/
+
+CAR_INTERFACE_IMPL(SynthesisRequest, Object, ISynthesisRequest)
+
 SynthesisRequest::SynthesisRequest()
 {}
 
-SynthesisRequest::SynthesisRequest(
+SynthesisRequest::~SynthesisRequest()
+{}
+
+ECode SynthesisRequest::constructor()
+{
+    return NOERROR;
+}
+
+ECode SynthesisRequest::constructor(
     /* [in] */ const String& text,
     /* [in] */ IBundle* params)
 {
-    Init(text, params);
+    CString::New(text, (ICharSequence**)&mText);
+
+    // Makes a copy of params.
+    return CBundle::New(params, (IBundle**)&mParams);
 }
 
-void SynthesisRequest::Init(
-    /* [in] */ const String& text,
+ECode SynthesisRequest::constructor(
+    /* [in] */ ICharSequence* text,
     /* [in] */ IBundle* params)
 {
     mText = text;
+
     // Makes a copy of params.
-    CBundle::New(params, (IBundle**)&mParams);
+    return CBundle::New(params, (IBundle**)&mParams);
 }
 
-String SynthesisRequest::GetText()
+ECode CSynthesisRequest::GetText(
+    /* [out] */ String* ret)
 {
-    return mText;
+    VALIDATE_NOT_NULL(ret);
+    *ret = mText;
+    return NOERROR;
 }
 
-String SynthesisRequest::GetLanguage()
+ECode CSynthesisRequest::GetCharSequenceText(
+    /* [out] */ ICharSequence** ret)
 {
-    return mLanguage;
+    VALIDATE_NOT_NULL(ret);
+    *ret = mText;
+    return NOERROR;
 }
 
-String SynthesisRequest::GetCountry()
+ECode CSynthesisRequest::GetVoiceName(
+    /* [out] */ String* ret)
 {
-    return mCountry;
+    VALIDATE_NOT_NULL(ret);
+    *ret = mVoiceName;
+    return NOERROR;
 }
 
-String SynthesisRequest::GetVariant()
+ECode CSynthesisRequest::GetLanguage(
+    /* [out] */ String* ret)
 {
-    return mVariant;
+    VALIDATE_NOT_NULL(ret);
+    *ret = mLanguage;
+    return NOERROR;
 }
 
-Int32 SynthesisRequest::GetSpeechRate()
+ECode CSynthesisRequest::GetCountry(
+    /* [out] */ String* ret)
 {
-    return mSpeechRate;
+    VALIDATE_NOT_NULL(ret);
+    *ret = mCountry;
+    return NOERROR;
 }
 
-Int32 SynthesisRequest::GetPitch()
+ECode CSynthesisRequest::GetVariant(
+    /* [out] */ String* ret)
 {
-    return mPitch;
+    VALIDATE_NOT_NULL(ret);
+    *ret = mVariant;
+    return NOERROR;
 }
 
-AutoPtr<IBundle> SynthesisRequest::GetParams()
+ECode CSynthesisRequest::GetSpeechRate(
+    /* [out] */ Int32* ret)
 {
-    return mParams;
+    VALIDATE_NOT_NULL(ret);
+    *ret = mSpeechRate;
+    return NOERROR;
 }
 
-void SynthesisRequest::SetLanguage(
+ECode CSynthesisRequest::GetPitch(
+    /* [out] */ Int32* ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = mPitch;
+    return NOERROR;
+}
+
+ECode CSynthesisRequest::GetParams(
+    /* [out] */ IBundle** ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = mParams;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
+}
+
+ECode CSynthesisRequest::GetCallerUid(
+    /* [out] */ Int32* ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = mCallerUid;
+    return NOERROR;
+}
+
+ECode SynthesisRequest::SetLanguage(
     /* [in] */ const String& language,
     /* [in] */ const String& country,
     /* [in] */ const String& variant)
@@ -72,16 +137,27 @@ void SynthesisRequest::SetLanguage(
     mVariant = variant;
 }
 
-void SynthesisRequest::SetSpeechRate(
+ECode SynthesisRequest::SetVoiceName(
+    /* [in] */ const String& voiceName)
+{
+    mVoiceName = voiceName;
+}
+ECode SynthesisRequest::SetSpeechRate(
     /* [in] */ Int32 speechRate)
 {
     mSpeechRate = speechRate;
 }
 
-void SynthesisRequest::SetPitch(
+ECode SynthesisRequest::SetPitch(
     /* [in] */ Int32 pitch)
 {
     mPitch = pitch;
+}
+
+ECode SynthesisRequest::SetCallerUid(
+    /* [in] */ Int32 uid)
+{
+    mCallerUid = uid;
 }
 
 } // namespace Tts

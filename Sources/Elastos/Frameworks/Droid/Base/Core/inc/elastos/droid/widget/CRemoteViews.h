@@ -4,9 +4,9 @@
 #include "_Elastos_Droid_Widget_CRemoteViews.h"
 #include "elastos/droid/widget/RemoteViews.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CRemoteViews), public RemoteViews
 {

@@ -86,7 +86,7 @@ public:
      */
     // @Override
     CARAPI Equals(
-        /* [in] */ IObject* obj,
+        /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
     /**
@@ -95,7 +95,7 @@ public:
      * @return the appropriate hashcode value.
      */
     // @Override
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     /**
@@ -144,6 +144,7 @@ public:
 private:
     CARAPI CheckAndMaskAddressAndPrefixLength();
 
+private:
     AutoPtr<ArrayOf<Byte> > mAddress;
 
     // network byte order

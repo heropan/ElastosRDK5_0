@@ -3,38 +3,32 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"
-#include <elastos/utility/etl/HashMap.h>
-#include <elastos/utility/etl/HashSet.h>
-#include <elastos/utility/etl/List.h>
-#include <elastos/Map.h>
-#include <elastos/core/Object.h>
 
-using Elastos::IO::IFile;
-using Elastos::IO::IFileOutputStream;
-using Elastos::Utility::ISet;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::HashSet;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Map;
-using Elastos::Utility::IObjectMap;
-using Elastos::Utility::Concurrent::ICountDownLatch;
 using Elastos::Droid::Content::ISharedPreferences;
 using Elastos::Droid::Content::ISharedPreferencesEditor;
 using Elastos::Droid::Content::ISharedPreferencesOnSharedPreferenceChangeListener;
 using Elastos::Droid::Os::Runnable;
 
+using Elastos::IO::IFile;
+using Elastos::IO::IFileOutputStream;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IWeakHashMap;
+using Elastos::Utility::Concurrent::ICountDownLatch;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 class SharedPreferencesImpl
-    : public ElRefBase
-    , public Object
+    : public Object
     , public ISharedPreferences
 {
 private:
-    class MemoryCommitResult: public ElRefBase
+    class MemoryCommitResult
+        : public Object
     {
     public:
         MemoryCommitResult();
@@ -44,17 +38,16 @@ private:
 
     public:
         Boolean mChangesMade;  // any keys different?
-        List<String> mKeysModified;  // may be null
-        HashSet<AutoPtr<ISharedPreferencesOnSharedPreferenceChangeListener> > mListeners;  // may be null
-        AutoPtr<HashMap<String, AutoPtr<IInterface> > > mMapToWriteToDisk;
+        AutoPtr<IList> mKeysModified;  // may be null
+        AutoPtr<ISet> mListeners; //Set<OnSharedPreferenceChangeListener> // may be null
+        AutoPtr<IMap> mMapToWriteToDisk;
         AutoPtr<ICountDownLatch> mWrittenToDiskLatch;
         volatile Boolean mWriteToDiskResult;
     };
 
 public:
     class EditorImpl
-        : public ElRefBase
-        , public Object
+        : public Object
         , public ISharedPreferencesEditor
     {
     private:
@@ -100,10 +93,10 @@ public:
         };
 
     public:
+        CAR_INTERFACE_DECL();
+
         EditorImpl(
             /* [in] */ SharedPreferencesImpl* host);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI PutString(
             /* [in] */ const String& key,
@@ -147,7 +140,7 @@ public:
             /* [in] */ MemoryCommitResult* mcr);
 
     private:
-        HashMap<String, AutoPtr<IInterface> > mModified;
+        AutoPtr<IMap> mModified;//new Map<String, Object>
         Boolean mClear;
         SharedPreferencesImpl* mHost;
     };
@@ -184,11 +177,15 @@ private:
     };
 
 public:
-    SharedPreferencesImpl(
+    CAR_INTERFACE_DECL();
+
+    SharedPreferencesImpl();
+
+    virtual ~SharedPreferencesImpl();
+
+    CARAPI constructor(
         /* [in] */ IFile* file,
         /* [in] */ Int32 mode);
-
-    CAR_INTERFACE_DECL();
 
     CARAPI RegisterOnSharedPreferenceChangeListener(
         /* [in] */ ISharedPreferencesOnSharedPreferenceChangeListener* listener);
@@ -197,7 +194,7 @@ public:
         /* [in] */ ISharedPreferencesOnSharedPreferenceChangeListener* listener);
 
     CARAPI GetAll(
-        /* [out] */ IObjectMap** result);
+        /* [out] */ IMap** result);
 
     CARAPI GetString(
         /* [in] */ const String& key,
@@ -283,6 +280,7 @@ private:
 private:
     static const String TAG;
     static const Boolean DEBUG;
+
     // Lock ordering rules:
     //  - acquire SharedPreferencesImpl.this before EditorImpl.this
     //  - acquire mWritingToDiskLock before EditorImpl.this
@@ -291,7 +289,7 @@ private:
     AutoPtr<IFile> mBackupFile;
     Int32 mMode;
 
-    AutoPtr<HashMap<String, AutoPtr<IInterface> > > mMap;     // guarded by 'this'
+    AutoPtr<IHashMap> mMap;//Map<String, Object> ;     // guarded by 'this'
     Int32 mDiskWritesInFlight;  // guarded by 'this'
     Boolean mLoaded;      // guarded by 'this'
     Int64 mStatTimestamp;          // guarded by 'this'
@@ -299,7 +297,7 @@ private:
 
     Object mWritingToDiskLock;
     static AutoPtr<IInterface> mContent;
-    HashMap<AutoPtr<ISharedPreferencesOnSharedPreferenceChangeListener>, AutoPtr<IInterface> > mListeners;
+    AutoPtr<IWeakHashMap> mListeners;//new WeakHashMap<OnSharedPreferenceChangeListener, Object>();
 
     friend class CContextImpl;
 };
@@ -307,5 +305,7 @@ private:
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::App::SharedPreferencesImpl::EditorImpl, IInterface)
 
 #endif // __ELASTOS_DROID_APP_SHAREDPREFERENCES_H__

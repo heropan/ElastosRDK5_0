@@ -31,42 +31,22 @@ using Elastos::Droid::Widget::IListAdapter;
  * @attr ref android.R.styleable#ListView_headerDividersEnabled
  * @attr ref android.R.styleable#ListView_footerDividersEnabled
  */
-class ListView : public AbsListView
+// @RemoteView
+class ListView
+    : public AbsListView
+    , public IListView
 {
-
-protected:
-    /**
-    * Used to indicate a no preference for a position type.
-    */
-    static const Int32 NO_POSITION = -1;
-
-private:
-    /**
-     * When arrow scrolling, ListView will never scroll more than this factor
-     * times the height of the list.
-     */
-    static const float MAX_SCROLL_FACTOR = 0.33f;
-
-    /**
-     * When arrow scrolling, need a certain amount of pixels to preview next
-     * items.  This is usually the fading edge, but if that is small enough,
-     * we want to make sure we preview at least this many pixels.
-     */
-    static const Int32 MIN_SCROLL_PREVIEW_PIXELS = 2;
-
-    static const String LISTVIEW_NAME;
-
 public:
     /**
      * A class that represents a fixed view in a list, for example a header at the top
      * or a footer at the bottom.
      */
     class FixedViewInfo
-        : public ElRefBase
+        : public Object
         , public IFixedViewInfo
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         FixedViewInfo();
 
@@ -99,11 +79,8 @@ public:
 
 private:
     class FocusSelector
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
-    public:
-        CAR_INTERFACE_DECL()
     public:
         FocusSelector(
             /* [in] */ ListView* host);
@@ -115,19 +92,21 @@ private:
         CARAPI Run();
 
     private:
+        ListView* mHost;
         Int32 mPosition;
         Int32 mPositionTop;
-        ListView* mHost;
     };
 
     /**
      * Holds results of focus aware arrow scrolling.
      */
     class ArrowScrollFocusResult
-        : public ElRefBase
+        : public Object
     {
         friend class ListView;
     public:
+        ArrowScrollFocusResult();
+
         CARAPI_(Int32) GetSelectedPosition();
 
         CARAPI_(Int32) GetAmountToScroll();
@@ -143,146 +122,167 @@ private:
     };
 
 public:
-    ListView();
+    CAR_INTERFACE_DECL();
 
-    ListView(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::listViewStyle);
+    ListView();
 
     ~ListView();
 
-    virtual CARAPI_(Int32) GetMaxScrollAmount();
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
-    virtual CARAPI AddHeaderView(
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    CARAPI GetMaxScrollAmount(
+        /* [out] */ Int32* amount);
+
+    /**
+     * Add a fixed view to appear at the top of the list. If this method is
+     * called more than once, the views will appear in the order they were
+     * added. Views added using this call can take focus if they want.
+     * <p>
+     * Note: When first introduced, this method could only be called before
+     * setting the adapter with {@link #setAdapter(ListAdapter)}. Starting with
+     * {@link android.os.Build.VERSION_CODES#KITKAT}, this method may be
+     * called at any time. If the ListView's adapter does not extend
+     * {@link HeaderViewListAdapter}, it will be wrapped with a supporting
+     * instance of {@link WrapperListAdapter}.
+     *
+     * @param v The view to add.
+     * @param data Data to associate with this view
+     * @param isSelectable whether the item is selectable
+     */
+    CARAPI AddHeaderView(
         /* [in] */ IView* v,
         /* [in] */ IInterface* data,
         /* [in] */ Boolean isSelectable);
 
-    virtual CARAPI AddHeaderView(
+    /**
+     * Add a fixed view to appear at the top of the list. If addHeaderView is
+     * called more than once, the views will appear in the order they were
+     * added. Views added using this call can take focus if they want.
+     * <p>
+     * Note: When first introduced, this method could only be called before
+     * setting the adapter with {@link #setAdapter(ListAdapter)}. Starting with
+     * {@link android.os.Build.VERSION_CODES#KITKAT}, this method may be
+     * called at any time. If the ListView's adapter does not extend
+     * {@link HeaderViewListAdapter}, it will be wrapped with a supporting
+     * instance of {@link WrapperListAdapter}.
+     *
+     * @param v The view to add.
+     */
+    CARAPI AddHeaderView(
         /* [in] */ IView* v);
 
     //@Override
     virtual CARAPI_(Int32) GetHeaderViewsCount();
 
-    virtual CARAPI_(Boolean) RemoveHeaderView(
-        /* [in] */ IView* v);
+    /**
+     * Removes a previously-added header view.
+     *
+     * @param v The view to remove
+     * @return TRUE if the view was removed, FALSE if the view was not a header
+     *         view
+     */
+    CARAPI RemoveHeaderView(
+        /* [in] */ IView* v,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI AddFooterView(
+    /**
+     * Add a fixed view to appear at the bottom of the list. If addFooterView is
+     * called more than once, the views will appear in the order they were
+     * added. Views added using this call can take focus if they want.
+     * <p>
+     * Note: When first introduced, this method could only be called before
+     * setting the adapter with {@link #setAdapter(ListAdapter)}. Starting with
+     * {@link android.os.Build.VERSION_CODES#KITKAT}, this method may be
+     * called at any time. If the ListView's adapter does not extend
+     * {@link HeaderViewListAdapter}, it will be wrapped with a supporting
+     * instance of {@link WrapperListAdapter}.
+     *
+     * @param v The view to add.
+     * @param data Data to associate with this view
+     * @param isSelectable true if the footer view can be selected
+     */
+    CARAPI AddFooterView(
         /* [in] */ IView* v,
         /* [in] */ IInterface* data,
         /* [in] */ Boolean isSelectable);
 
-    virtual CARAPI AddFooterView(
+    /**
+     * Add a fixed view to appear at the bottom of the list. If addFooterView is
+     * called more than once, the views will appear in the order they were
+     * added. Views added using this call can take focus if they want.
+     * <p>
+     * Note: When first introduced, this method could only be called before
+     * setting the adapter with {@link #setAdapter(ListAdapter)}. Starting with
+     * {@link android.os.Build.VERSION_CODES#KITKAT}, this method may be
+     * called at any time. If the ListView's adapter does not extend
+     * {@link HeaderViewListAdapter}, it will be wrapped with a supporting
+     * instance of {@link WrapperListAdapter}.
+     *
+     * @param v The view to add.
+     */
+    CARAPI AddFooterView(
         /* [in] */ IView* v);
 
     //@Override
     virtual CARAPI_(Int32) GetFooterViewsCount();
 
-    virtual CARAPI_(Boolean) RemoveFooterView(
-        /* [in] */ IView* v);
-
-    //@Override
-    virtual CARAPI_(AutoPtr<IAdapter>) GetAdapter();
-
-    //@Override
-    virtual CARAPI SetAdapter(
-        /* [in] */ IAdapter* adapter);
-
-    //@Override
-    virtual CARAPI_(Boolean) RequestChildRectangleOnScreen(
-        /* [in] */ IView* childView,
-        /* [in] */ IRect* r,
-        /* [in] */ Boolean immediate);
-
-    //@Override
-    virtual CARAPI SetSelection(
-        /* [in] */ Int32 position);
-
-    virtual CARAPI SetSelectionFromTop(
-        /* [in] */ Int32 position,
-        /* [in] */ Int32 y);
-
-    virtual CARAPI SetSelectionAfterHeaderView();
-
-    //@Override
-    virtual CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
-
-    //@Override
-    virtual CARAPI_(Boolean) OnKeyDown(
-        /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
-
-    //@Override
-    virtual CARAPI_(Boolean) OnKeyMultiple(
-        /* [in] */ Int32 keyCode,
-        /* [in] */ Int32 repeatCount,
-        /* [in] */ IKeyEvent* event);
-
-    //@Override
-    virtual CARAPI_(Boolean) OnKeyUp(
-        /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
-
-    virtual CARAPI SetItemsCanFocus(
-        /* [in] */ Boolean itemsCanFocus);
-
-    virtual CARAPI_(Boolean) GetItemsCanFocus();
-
-    //@Override
-    virtual CARAPI_(Boolean) IsOpaque();
-
-    //@Override
-    CARAPI SetCacheColorHint(
-        /* [in] */ Int32 color);
-
-    virtual CARAPI_(AutoPtr<IDrawable>) GetDivider();
-
-    virtual CARAPI SetDivider(
-        /* [in] */ IDrawable* divider);
-
     /**
-     * @return Returns the height of the divider that will be drawn between each item in the list.
+     * Removes a previously-added footer view.
+     *
+     * @param v The view to remove
+     * @return
+     * TRUE if the view was removed, FALSE if the view was not a footer view
      */
-    CARAPI_(Int32) GetDividerHeight();
+    CARAPI RemoveFooterView(
+        /* [in] */ IView* v,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI SetDividerHeight(
-        /* [in] */ Int32 height);
-
-    virtual CARAPI SetHeaderDividersEnabled(
-        /* [in] */ Boolean headerDividersEnabled);
-
-    virtual CARAPI SetFooterDividersEnabled(
-        /* [in] */ Boolean footerDividersEnabled);
-
-    virtual CARAPI SetOverscrollHeader(
-        /* [in] */ IDrawable* header);
-
-    virtual CARAPI_(AutoPtr<IDrawable>) GetOverscrollHeader();
-
-    virtual CARAPI SetOverscrollFooter(
-        /* [in] */ IDrawable* footer);
-
-    virtual CARAPI_(AutoPtr<IDrawable>) GetOverscrollFooter();
+    //@Override
+    CARAPI GetAdapter(
+        /* [out] */ IAdapter** adapter);
 
      /**
      * Sets up this AbsListView to use a remote views adapter which connects to a RemoteViewsService
      * through the specified intent.
      * @param intent the intent used to identify the RemoteViewsService for the adapter to connect to.
      */
-    virtual CARAPI SetRemoteViewsAdapter(
+    CARAPI SetRemoteViewsAdapter(
         /* [in] */ IIntent* intent);
+
+    //@Override
+    CARAPI SetAdapter(
+        /* [in] */ IAdapter* adapter);
+
+    //@Override
+    CARAPI RequestChildRectangleOnScreen(
+        /* [in] */ IView* childView,
+        /* [in] */ IRect* r,
+        /* [in] */ Boolean immediate,
+        /* [out] */ Boolean* res);
 
     /**
      * Smoothly scroll to the specified adapter position. The view will
      * scroll such that the indicated position is displayed.
      * @param position Scroll to this adapter position.
      */
-    virtual CARAPI SmoothScrollToPosition(
+    CARAPI SmoothScrollToPosition(
         /* [in] */ Int32 position);
-
-    using AbsListView::SmoothScrollToPosition;
 
     /**
      * Smoothly scroll to the specified adapter position offset. The view will
@@ -292,12 +292,103 @@ public:
     virtual CARAPI SmoothScrollByOffset(
         /* [in] */ Int32 offset);
 
+    //@Override
+    CARAPI SetSelection(
+        /* [in] */ Int32 position);
+
+    CARAPI SetSelectionAfterHeaderView();
+
+    //@Override
+    CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
+
+    //@Override
+    CARAPI OnKeyDown(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
+
+    //@Override
+    CARAPI OnKeyMultiple(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ Int32 repeatCount,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
+
+    //@Override
+    CARAPI OnKeyUp(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
+
+    CARAPI SetItemsCanFocus(
+        /* [in] */ Boolean itemsCanFocus);
+
+    CARAPI GetItemsCanFocus(
+        /* [out] */ Boolean* canFocus);
+
+    //@Override
+    CARAPI IsOpaque(
+        /* [out] */ Boolean* res);
+
+    //@Override
+    CARAPI SetCacheColorHint(
+        /* [in] */ Int32 color);
+
+    CARAPI GetDivider(
+        /* [out] */ IDrawable** divider);
+
+    CARAPI SetDivider(
+        /* [in] */ IDrawable* divider);
+
+    /**
+     * @return Returns the height of the divider that will be drawn between each item in the list.
+     */
+    CARAPI GetDividerHeight(
+        /* [out] */ Int32* height);
+
+    CARAPI SetDividerHeight(
+        /* [in] */ Int32 height);
+
+    CARAPI SetHeaderDividersEnabled(
+        /* [in] */ Boolean headerDividersEnabled);
+
+    CARAPI AreHeaderDividersEnabled(
+        /* [out] */ Boolean* enabled);
+
+    CARAPI SetFooterDividersEnabled(
+        /* [in] */ Boolean footerDividersEnabled);
+
+    CARAPI AreFooterDividersEnabled(
+        /* [out] */ Boolean* enabled);
+
+    CARAPI SetOverscrollHeader(
+        /* [in] */ IDrawable* header);
+
+    CARAPI GetOverscrollHeader(
+        /* [out] */ IDrawable** overScrollHeader);
+
+    CARAPI SetOverscrollFooter(
+        /* [in] */ IDrawable* footer);
+
+    CARAPI GetOverscrollFooter(
+        /* [out] */ IDrawable** overScrollFooter);
+
     CARAPI_(AutoPtr<ArrayOf<Int64> >) GetCheckItemIds();
 
-    virtual CARAPI OnInitializeAccessibilityEvent(
+    // @Override
+    CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
-    virtual CARAPI OnInitializeAccessibilityNodeInfo(
+    // @Override
+    CARAPI OnInitializeAccessibilityNodeInfo(
+        /* [in] */ IAccessibilityNodeInfo* info);
+
+    // @Override
+    CARAPI OnInitializeAccessibilityNodeInfoForItem(
+        /* [in] */ IView* view,
+        /* [in] */ Int32 position,
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
@@ -334,7 +425,7 @@ protected:
         /* [in] */ Int32 y);
 
     //@Override
-    virtual CARAPI_(void) LayoutChildren();
+    virtual CARAPI LayoutChildren();
 
     //@Override
     virtual CARAPI_(Boolean) CanAnimate();
@@ -343,8 +434,33 @@ protected:
     virtual CARAPI SetSelectionInt(
         /* [in] */ Int32 position);
 
+    /**
+     * Find a position that can be selected (i.e., is not a separator).
+     *
+     * @param position The starting position to look at.
+     * @param lookDown Whether to look down for other positions.
+     * @return The next selectable position starting at position and then searching either up or
+     *         down. Returns {@link #INVALID_POSITION} if nothing can be found.
+     */
     //@Override
     virtual CARAPI_(Int32) LookForSelectablePosition(
+        /* [in] */ Int32 position,
+        /* [in] */ Boolean lookDown);
+
+    /**
+     * Find a position that can be selected (i.e., is not a separator). If there
+     * are no selectable positions in the specified direction from the starting
+     * position, searches in the opposite direction from the starting position
+     * to the current position.
+     *
+     * @param current the current position
+     * @param position the starting position
+     * @param lookDown whether to look down for other positions
+     * @return the next selectable position, or {@link #INVALID_POSITION} if
+     *         nothing can be found
+     */
+    virtual CARAPI_(Int32) LookForSelectablePositionAfter(
+        /* [in] */ Int32 current,
         /* [in] */ Int32 position,
         /* [in] */ Boolean lookDown);
 
@@ -390,7 +506,7 @@ protected:
         /* [in] */ Int32 id);
 
     virtual CARAPI_(AutoPtr<IView>) FindViewInHeadersOrFooters(
-        /* [in] */ Vector<AutoPtr<FixedViewInfo> >& where,
+        /* [in] */ IArrayList* where,
         /* [in] */ Int32 id);
 
     //@Override
@@ -398,7 +514,7 @@ protected:
         /* [in] */ IInterface* tag);
 
     virtual CARAPI_(AutoPtr<IView>) FindViewWithTagInHeadersOrFooters(
-        /* [in] */ Vector<AutoPtr<FixedViewInfo> >& where,
+        /* [in] */ IArrayList* where,
         /* [in] */ IInterface* tag);
 
     virtual CARAPI_(Boolean) DrawChild(
@@ -406,29 +522,28 @@ protected:
         /* [in] */ IView* child,
         /* [in] */ Int64 drawingTime);
 
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::listViewStyle);
-
     virtual CARAPI_(AutoPtr<IView>) FindViewByPredicateTraversal(
         /* [in] */ IPredicate* predicate,
         /* [in] */ IView* childToSkip);
 
-    CARAPI_(AutoPtr<IView>) FindViewByPredicateInHeadersOrFooters(
-        /* [in] */ Vector<AutoPtr<FixedViewInfo> >& where,
+    virtual CARAPI_(AutoPtr<IView>) FindViewByPredicateInHeadersOrFooters(
+        /* [in] */ IArrayList* where,
         /* [in] */ IPredicate* predicate,
         /* [in] */ IView* childToSkip);
+
+    // @Override
+    virtual CARAPI_(Int32) GetHeightForPosition(
+        /* [in] */ Int32 position);
 
 private:
     CARAPI_(void) AdjustViewsUpOrDown();
 
     CARAPI_(void) RemoveFixedViewInfo(
         /* [in] */ IView* v,
-        /* [in] */ Vector<AutoPtr<FixedViewInfo> >& where);
+        /* [in] */ IArrayList* where);
 
     CARAPI_(void) ClearRecycledState(
-        /* [in] */ Vector<AutoPtr<FixedViewInfo> >& infos);
+        /* [in] */ IArrayList* infos);
 
     CARAPI_(Boolean) ShowingTopFadingEdge();
 
@@ -518,6 +633,21 @@ private:
         /* [in] */ Int32 direction,
         /* [out] */ Boolean* rst);
 
+    /**
+     * Used by {@link #arrowScrollImpl(int)} to help determine the next selected position
+     * to move to. This return a position in the direction given if the selected item
+     * is fully visible.
+     *
+     * @param selectedView Current selected view to move from
+     * @param selectedPos Current selected position to move from
+     * @param direction Direction to move in
+     * @return Desired selected position after moving in the given direction
+     */
+    CARAPI_(Int32) NextSelectedPositionForDirection(
+        /* [in] */ IView* selectedView,
+        /* [in] */ Int32 selectedPos,
+        /* [in] */ Int32 direction);
+
     CARAPI_(Boolean) ArrowScrollImpl(
         /* [in] */ Int32 direction);
 
@@ -550,8 +680,9 @@ private:
     CARAPI_(AutoPtr<ArrowScrollFocusResult>) ArrowScrollFocused(
         /* [in] */ Int32 direction);
 
-    CARAPI_(Int32) PositionOfNewFocus(
-        /* [in] */ IView* newFocus);
+    CARAPI PositionOfNewFocus(
+        /* [in] */ IView* newFocus,
+        /* [out] */ Int32* focus);
 
     CARAPI_(Boolean) IsViewAncestorOf(
         /* [in] */ IView* child,
@@ -576,10 +707,17 @@ private:
         /* [in] */ IView* theView,
         /* [in] */ Int32 position);
 
-    CARAPI_(AutoPtr<IView>) FindAccessibilityFocusedChild(
-        /* [in] */ IView* focusedView);
+    CARAPI_(Int32) GetMaxScrollAmount();
+
+    CARAPI_(Boolean) ShouldAdjustHeightForDivider(
+        /* [in] */ Int32 itemIndex);
 
 protected:
+    /**
+    * Used to indicate a no preference for a position type.
+    */
+    static const Int32 NO_POSITION;
+
     AutoPtr<IDrawable> mDivider;
     Int32 mDividerHeight;
 
@@ -587,12 +725,26 @@ protected:
     AutoPtr<IDrawable> mOverScrollFooter;
 
 private:
-    Vector<AutoPtr<FixedViewInfo> > mHeaderViewInfos;
-    Vector<AutoPtr<FixedViewInfo> > mFooterViewInfos;
+    /**
+     * When arrow scrolling, ListView will never scroll more than this factor
+     * times the height of the list.
+     */
+    static const Float MAX_SCROLL_FACTOR;
+
+    /**
+     * When arrow scrolling, need a certain amount of pixels to preview next
+     * items.  This is usually the fading edge, but if that is small enough,
+     * we want to make sure we preview at least this many pixels.
+     */
+    static const Int32 MIN_SCROLL_PREVIEW_PIXELS;
+
+    static const String LISTVIEW_NAME;
+
+    AutoPtr<IArrayList> mHeaderViewInfos;
+    AutoPtr<IArrayList> mFooterViewInfos;
 
     Boolean mIsCacheColorOpaque;
     Boolean mDividerIsOpaque;
-
 
     Boolean mHeaderDividersEnabled;
     Boolean mFooterDividersEnabled;

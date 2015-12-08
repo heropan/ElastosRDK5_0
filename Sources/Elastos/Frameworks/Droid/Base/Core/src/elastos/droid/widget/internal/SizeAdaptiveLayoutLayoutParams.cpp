@@ -18,7 +18,7 @@ namespace Internal {
 SizeAdaptiveLayoutLayoutParams::SizeAdaptiveLayoutLayoutParams(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
-    : ViewGroupLayoutParams(c, attrs)
+    : LayoutParams(c, attrs)
 {
     InitImpl(c, attrs);
 }
@@ -28,7 +28,7 @@ SizeAdaptiveLayoutLayoutParams::SizeAdaptiveLayoutLayoutParams(
     /* [in] */ Int32 height,
     /* [in] */ Int32 minHeight,
     /* [in] */ Int32 maxHeight)
-    : ViewGroupLayoutParams(width, height)
+    : LayoutParams(width, height)
 {
     InitImpl(width, height, minHeight, maxHeight);
 }
@@ -36,13 +36,13 @@ SizeAdaptiveLayoutLayoutParams::SizeAdaptiveLayoutLayoutParams(
 SizeAdaptiveLayoutLayoutParams::SizeAdaptiveLayoutLayoutParams(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
-    : ViewGroupLayoutParams(width, height)
+    : LayoutParams(width, height)
 {
     InitImpl(width, height);
 }
 
 SizeAdaptiveLayoutLayoutParams::SizeAdaptiveLayoutLayoutParams()
-    : ViewGroupLayoutParams(
+    : LayoutParams(
         View::View::MeasureSpec::UNSPECIFIED,
         View::View::MeasureSpec::UNSPECIFIED)
 {
@@ -51,7 +51,7 @@ SizeAdaptiveLayoutLayoutParams::SizeAdaptiveLayoutLayoutParams()
 
 SizeAdaptiveLayoutLayoutParams::SizeAdaptiveLayoutLayoutParams(
     /* [in] */ IViewGroupLayoutParams* p)
-    : ViewGroupLayoutParams((ViewGroupLayoutParams*)p)
+    : LayoutParams((LayoutParams*)p)
 {
     InitImpl(p);
 }
@@ -60,7 +60,7 @@ ECode SizeAdaptiveLayoutLayoutParams::Init(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
-    ViewGroupLayoutParams::Init(c, attrs);
+    LayoutParams::Init(c, attrs);
     return InitImpl(c, attrs);
 }
 
@@ -70,7 +70,7 @@ ECode SizeAdaptiveLayoutLayoutParams::Init(
     /* [in] */ Int32 minHeight,
     /* [in] */ Int32 maxHeight)
 {
-    ViewGroupLayoutParams::Init(width, height);
+    LayoutParams::Init(width, height);
     return InitImpl(width, height, minHeight, maxHeight);
 }
 
@@ -78,13 +78,13 @@ ECode SizeAdaptiveLayoutLayoutParams::Init(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    ViewGroupLayoutParams::Init(width, height);
+    LayoutParams::Init(width, height);
     return InitImpl(width, height);
 }
 
 ECode SizeAdaptiveLayoutLayoutParams::Init()
 {
-    ViewGroupLayoutParams::Init(
+    LayoutParams::Init(
         View::View::MeasureSpec::UNSPECIFIED,
         View::View::MeasureSpec::UNSPECIFIED);
     return InitImpl();
@@ -93,7 +93,7 @@ ECode SizeAdaptiveLayoutLayoutParams::Init()
 ECode SizeAdaptiveLayoutLayoutParams::Init(
     /* [in] */ IViewGroupLayoutParams* p)
 {
-    ViewGroupLayoutParams::Init(p);
+    LayoutParams::Init(p);
     return InitImpl(p);
 }
 

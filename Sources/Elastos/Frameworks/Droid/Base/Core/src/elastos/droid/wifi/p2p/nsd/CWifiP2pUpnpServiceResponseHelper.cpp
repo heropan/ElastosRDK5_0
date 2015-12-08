@@ -1,6 +1,6 @@
 
-#include "CWifiP2pUpnpServiceResponseHelper.h"
-#include "CWifiP2pUpnpServiceResponse.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pUpnpServiceResponseHelper.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pUpnpServiceResponse.h"
 
 namespace Elastos {
 namespace Droid {
@@ -19,8 +19,8 @@ ECode CWifiP2pUpnpServiceResponseHelper::NewInstance(
         status, transId, dev, data, instance);
 }
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

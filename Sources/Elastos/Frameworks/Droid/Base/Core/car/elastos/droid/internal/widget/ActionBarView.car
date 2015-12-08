@@ -13,10 +13,10 @@ module
     interface Elastos.Droid.Widget.ISpinnerAdapter;
     interface Elastos.Droid.Widget.IAdapterViewOnItemSelectedListener;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * @Involve

@@ -1,7 +1,7 @@
 
-#include "WifiP2pServiceResponse.h"
+#include "elastos/droid/wifi/p2p/nsd/WifiP2pServiceResponse.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pDevice.h"
 #include <Elastos.CoreLibrary.h>
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
@@ -17,16 +17,13 @@ using Elastos::IO::IDataInputStream;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IDataInput;
 
-
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-// 1a866fae-23e8-48c7-bd2c-37b396873151
-extern "C" const InterfaceID EIID_WifiP2pServiceResponse =
-    { 0x1a866fae, 0x23e8, 0x48c7, { 0xbd, 0x2c, 0x37, 0xb3, 0x96, 0x87, 0x31, 0x51 } };
+CAR_INTERFACE_IMPL_2(WifiP2pServiceResponse, Object, IWifiP2pServiceResponse, IParcelable)
 
 WifiP2pServiceResponse::WifiP2pServiceResponse()
     : mServiceType(0)
@@ -35,7 +32,12 @@ WifiP2pServiceResponse::WifiP2pServiceResponse()
 {
 }
 
-ECode WifiP2pServiceResponse::Init(
+ECode WifiP2pServiceResponse::constructor()
+{
+    return NOERROR;
+}
+
+ECode WifiP2pServiceResponse::constructor(
     /* [in] */ Int32 serviceType,
     /* [in] */ Int32 status,
     /* [in] */ Int32 transId,
@@ -145,7 +147,7 @@ ECode WifiP2pServiceResponse::HexStr2Bin(
     ECode ec = NOERROR;
     for (Int32 i = 0; i < sz; i++) {
         subStr = hex.Substring(i * 2, i * 2 + 2);
-        ec = StringUtils::ParseInt32(subStr, 16, &value);
+        ec = StringUtils::Parse(subStr, 16, &value);
         if (FAILED(ec)) {
             Slogger::E("WifiP2pServiceResponse", "HexStr2Bin: failed to ParseInt32 %s", hex.string());
             return ec;
@@ -189,7 +191,7 @@ ECode WifiP2pServiceResponse::Equals(
     VALIDATE_NOT_NULL(isEqual);
     *isEqual = FALSE;
 
-    if (this->Probe(EIID_IInterface) == obj) {
+    if (THIS_PROBE(IInterface) == obj) {
         *isEqual = TRUE;
         return NOERROR;
     }
@@ -199,18 +201,20 @@ ECode WifiP2pServiceResponse::Equals(
         return NOERROR;
     }
 
-    WifiP2pServiceResponse* req = reinterpret_cast<WifiP2pServiceResponse*>(
-        obj->Probe(EIID_WifiP2pServiceResponse));
+    WifiP2pServiceResponse* req;// TODO = reinterpret_cast<WifiP2pServiceResponse*>(
+        // TODO obj->Probe(EIID_WifiP2pServiceResponse));
     assert(req != NULL);
 
     String temp1, temp2;
     FAIL_RETURN(req->mDevice->GetDeviceAddress(&temp1));
     FAIL_RETURN(mDevice->GetDeviceAddress(&temp2));
 
-    *isEqual = (req->mServiceType == mServiceType) &&
-        (req->mStatus == mStatus) &&
-        Equals(temp1, temp2) &&
-        req->mData->Equals(mData);
+    assert(0);
+    // TODO
+    // *isEqual = (req->mServiceType == mServiceType) &&
+    //     (req->mStatus == mStatus) &&
+    //     Equals(temp1, temp2) &&
+    //     req->mData->Equals(mData);
 
     return NOERROR;
 }
@@ -300,9 +304,8 @@ ECode WifiP2pServiceResponse::WriteToParcel(
     return NOERROR;
 }
 
-
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

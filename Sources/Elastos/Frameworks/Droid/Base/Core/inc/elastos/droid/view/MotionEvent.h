@@ -682,8 +682,7 @@ private:
     static CARAPI_(void) EnsureSharedTempPointerCapacity(
         /* [in] */ Int32 desiredCapacity);
 
-    static CARAPI Obtain(
-        /* [out] */ IMotionEvent** event);
+    static CARAPI_(AutoPtr<MotionEvent>) Obtain();
 
     static CARAPI_(Float) Clamp(
         /* [in] */ Float value,
@@ -1701,7 +1700,7 @@ public:
     CARAPI_(Int64) GetNativePtr();
 
 private:
-    static CARAPI_(Int64) NativeInitialize(
+    static CARAPI NativeInitialize(
         /* [in] */ Int64 nativePtr,
         /* [in] */ Int32 deviceId,
         /* [in] */ Int32 source,
@@ -1718,17 +1717,18 @@ private:
         /* [in] */ Int64 eventTimeNanos,
         /* [in] */ Int32 pointerCount,
         /* [in] */ ArrayOf<IPointerProperties*>* pointerIds,
-        /* [in] */ ArrayOf<IPointerCoords*>* pointerCoords);
+        /* [in] */ ArrayOf<IPointerCoords*>* pointerCoords,
+        /* [out] */ Int64* resultPtr);
 
     static CARAPI_(Int64) NativeCopy(
         /* [in] */ Int64 destNativePtr,
         /* [in] */ Int64 sourceNativePtr,
         /* [in] */ Boolean keepHistory);
 
-    static CARAPI_(void) NativeDisPose(
+    static CARAPI_(void) NativeDispose(
         /* [in] */ Int64 destNativePtr);
 
-    static CARAPI_(void) NativeAddBatch(
+    static CARAPI NativeAddBatch(
         /* [in] */ Int64 nativePtr,
         /* [in] */ Int64 eventTimeNanos,
         /* [in] */ ArrayOf<IPointerCoords*>* pointerCoords,
@@ -1801,13 +1801,15 @@ private:
     static CARAPI_(Int32) NativeGetPointerCount(
         /* [in] */ Int64 nativePtr);
 
-    static CARAPI_(Int32) NativeGetPointerId(
+    static CARAPI NativeGetPointerId(
         /* [in] */ Int64 nativePtr,
-        /* [in] */ Int32 pointerIndex);
+        /* [in] */ Int32 pointerIndex,
+        /* [in] */ Int32* id);
 
-    static CARAPI_(Int32) NativeGetToolType(
+    static CARAPI NativeGetToolType(
         /* [in] */ Int64 nativePtr,
-        /* [in] */ Int32 pointerIndex);
+        /* [in] */ Int32 pointerIndex,
+        /* [in] */ Int32* id);
 
     static CARAPI_(Int32) NativeFindPointerIndex(
         /* [in] */ Int64 nativePtr,
@@ -1816,29 +1818,32 @@ private:
     static CARAPI_(Int32) NativeGetHistorySize(
         /* [in] */ Int64 nativePtr);
 
-    static CARAPI_(Int64) NativeGetEventTimeNanos(
+    static CARAPI NativeGetEventTimeNanos(
         /* [in] */ Int64 nativePtr,
-        /* [in] */ Int32 historyPos);
+        /* [in] */ Int32 historyPos,
+        /* [out] */ Int64* id);
 
-    static CARAPI_(Float) NativeGetRawAxisValue(
-        /* [in] */ Int64 nativePtr,
-        /* [in] */ Int32 axis,
-        /* [in] */ Int32 pointerIndex,
-        /* [in] */ Int32 historyPos);
-
-    static CARAPI_(Float) NativeGetAxisValue(
+    static CARAPI NativeGetRawAxisValue(
         /* [in] */ Int64 nativePtr,
         /* [in] */ Int32 axis,
         /* [in] */ Int32 pointerIndex,
-        /* [in] */ Int32 historyPos);
+        /* [in] */ Int32 historyPos,
+        /* [out] */ Float* id);
 
-    static CARAPI_(void) NativeGetPointerCoords(
+    static CARAPI NativeGetAxisValue(
+        /* [in] */ Int64 nativePtr,
+        /* [in] */ Int32 axis,
+        /* [in] */ Int32 pointerIndex,
+        /* [in] */ Int32 historyPos,
+        /* [out] */ Float* id);
+
+    static CARAPI NativeGetPointerCoords(
         /* [in] */ Int64 nativePtr,
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 historyPos,
         /* [in, out] */ IPointerCoords* outPointerCoords);
 
-    static CARAPI_(void) NativeGetPointerProperties(
+    static CARAPI NativeGetPointerProperties(
         /* [in] */ Int64 nativePtr,
         /* [in] */ Int32 pointerIndex,
         /* [in, out] */ IPointerProperties* outPointerProperties);
@@ -1851,11 +1856,12 @@ private:
         /* [in] */ Int64 nativePtr,
         /* [in] */ IMatrix* matrix);
 
-    static CARAPI_(Int64) NativeReadFromParcel(
+    static CARAPI NativeReadFromParcel(
         /* [in] */ Int64 nativePtr,
-        /* [in] */ IParcel* parcel);
+        /* [in] */ IParcel* parcel,
+        /* [out] */ Int64* result);
 
-    static CARAPI_(void) NativeWriteToParcel(
+    static CARAPI NativeWriteToParcel(
         /* [in] */ Int64 nativePtr,
         /* [in] */ IParcel* parcel);
 
@@ -1885,21 +1891,21 @@ private:
 
     static const Int32 MAX_RECYCLED;
 
-    static Object gRecyclerLock;
-    static Int32 gRecyclerUsed;
-    static AutoPtr<IMotionEvent> gRecyclerTop;
+    static Object sRecyclerLock;
+    static Int32 sRecyclerUsed;
+    static AutoPtr<MotionEvent> sRecyclerTop;
 
     // Shared temporary objects used when translating coordinates supplied by
     // the caller into single element PointerCoords and pointer id arrays.
-    static Object gSharedTempLock;
-    static AutoPtr<ArrayOf<IPointerCoords*> > gSharedTempPointerCoords;
-    static AutoPtr<ArrayOf<IPointerProperties*> > gSharedTempPointerProperties;
-    static AutoPtr<ArrayOf<Int32> > gSharedTempPointerIndexMap;
+    static Object sSharedTempLock;
+    static AutoPtr<ArrayOf<IPointerCoords*> > sSharedTempPointerCoords;
+    static AutoPtr<ArrayOf<IPointerProperties*> > sSharedTempPointerProperties;
+    static AutoPtr<ArrayOf<Int32> > sSharedTempPointerIndexMap;
 
 private:
     Int64 mNativePtr;
 
-    AutoPtr<IMotionEvent> mNext;
+    AutoPtr<MotionEvent> mNext;
 };
 
 }   //namespace View

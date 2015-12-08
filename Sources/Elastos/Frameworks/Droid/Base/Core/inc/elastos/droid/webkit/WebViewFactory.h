@@ -67,7 +67,7 @@ public:
      * Perform any WebView loading preparations that must happen in the zygote.
      * Currently, this means allocating address space to load the real JNI library later.
      */
-    static CARAPI_(void) PrepareWebViewInZygote();
+    static CARAPI PrepareWebViewInZygote();
 
     /**
      * Perform any WebView loading preparations that must happen at boot from the system server,
@@ -75,14 +75,14 @@ public:
      * This must be called in the system server.
      * Currently, this means spawning the child processes which will create the relro files.
      */
-    static CARAPI_(void) PrepareWebViewInSystemServer();
+    static CARAPI PrepareWebViewInSystemServer();
 
-    static CARAPI_(void) OnWebViewUpdateInstalled();
+    static CARAPI OnWebViewUpdateInstalled();
 
 private:
     // TODO static Class<WebViewFactoryProvider> getFactoryClass();
 
-    static CARAPI_(void) PrepareWebViewInSystemServer(
+    static CARAPI PrepareWebViewInSystemServer(
         /* [in] */ ArrayOf<String>* nativeLibraryPaths);
 
     static CARAPI_(AutoPtr< ArrayOf<String> >) GetWebViewNativeLibraryPaths();

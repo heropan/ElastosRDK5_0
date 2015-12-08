@@ -5,13 +5,13 @@
 #include "elastos/droid/animation/PropertyValuesHolder.h"
 #include "elastos/droid/animation/CObjectAnimator.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
-// #include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
-// #include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
 #include <elastos/utility/logging/Slogger.h>
 
-// using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
+using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::Animation::IAccelerateDecelerateInterpolator;
-// using Elastos::Droid::View::Animation::CDecelerateInterpolator;
+using Elastos::Droid::View::Animation::CDecelerateInterpolator;
 using Elastos::Droid::View::Animation::IDecelerateInterpolator;
 using Elastos::Droid::View::IOnPreDrawListener;
 using Elastos::Droid::View::IViewTreeObserver;
@@ -47,14 +47,13 @@ Boolean CLayoutTransition::sInit = CLayoutTransition::InitStatics();
 
 Boolean CLayoutTransition::InitStatics()
 {
-    assert(0 && "TODO");
-    // AutoPtr<CAccelerateDecelerateInterpolator> cdi;
-    // CAccelerateDecelerateInterpolator::NewByFriend((CAccelerateDecelerateInterpolator**)&cdi);
-    // ACCEL_DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IAccelerateDecelerateInterpolator*)cdi.Get());
+    AutoPtr<CAccelerateDecelerateInterpolator> cdi;
+    CAccelerateDecelerateInterpolator::NewByFriend((CAccelerateDecelerateInterpolator**)&cdi);
+    ACCEL_DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IAccelerateDecelerateInterpolator*)cdi.Get());
 
-    // AutoPtr<CDecelerateInterpolator> di;
-    // CDecelerateInterpolator::NewByFriend((CDecelerateInterpolator**)&di);
-    // DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IDecelerateInterpolator*)di.Get());
+    AutoPtr<CDecelerateInterpolator> di;
+    CDecelerateInterpolator::NewByFriend((CDecelerateInterpolator**)&di);
+    DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IDecelerateInterpolator*)di.Get());
     sAppearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
     sDisappearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
     sChangingAppearingInterpolator = DECEL_INTERPOLATOR;
@@ -897,7 +896,9 @@ void CLayoutTransition::SetupChangeAnimation(
 
     // Make a copy of the appropriate animation
     AutoPtr<IAnimator> anim;
-    ICloneable::Probe(baseAnimator)->Clone((IInterface**)&anim);
+    AutoPtr<IInterface> tmp;
+    ICloneable::Probe(baseAnimator)->Clone((IInterface**)&tmp);
+    anim = IAnimator::Probe(tmp);
 
     // Set the target object for the animation
     anim->SetTarget(child);
@@ -1128,8 +1129,10 @@ void CLayoutTransition::RunAppearingTransition(
         return;
     }
 
+    AutoPtr<IInterface> tmp;
     AutoPtr<IAnimator> anim;
-    ICloneable::Probe(mAppearingAnim)->Clone((IInterface**)&anim);
+    ICloneable::Probe(mAppearingAnim)->Clone((IInterface**)&tmp);
+    anim = IAnimator::Probe(tmp);
     anim->SetTarget(child);
     anim->SetStartDelay(mAppearingDelay);
     anim->SetDuration(mAppearingDuration);
@@ -1171,7 +1174,9 @@ void CLayoutTransition::RunDisappearingTransition(
     }
 
     AutoPtr<IAnimator> anim;
-    ICloneable::Probe(mDisappearingAnim)->Clone((IInterface**)&anim);
+    AutoPtr<IInterface> tmp;
+    ICloneable::Probe(mDisappearingAnim)->Clone((IInterface**)&tmp);
+    anim = IAnimator::Probe(tmp);
     anim->SetStartDelay(mDisappearingDelay);
     anim->SetDuration(mDisappearingDuration);
     if (mDisappearingInterpolator != sDisappearingInterpolator) {

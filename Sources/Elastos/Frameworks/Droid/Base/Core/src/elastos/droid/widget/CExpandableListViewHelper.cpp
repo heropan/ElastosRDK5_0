@@ -1,9 +1,13 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/CExpandableListViewHelper.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+
+CAR_INTERFACE_IMPL(CExpandableListViewHelper, Singleton, IExpandableListViewHelper);
+
+CAR_SINGLETON_IMPL(CExpandableListViewHelper);
 
 ECode CExpandableListViewHelper::GetPackedPositionType(
     /* [in] */ Int64 packedPosition,

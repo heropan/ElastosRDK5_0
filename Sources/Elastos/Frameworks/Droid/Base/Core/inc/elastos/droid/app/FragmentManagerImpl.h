@@ -23,6 +23,7 @@ using Elastos::Droid::Animation::AnimatorListenerAdapter;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Utility::ISparseArray;
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::IRunnable;
@@ -471,7 +472,7 @@ public:
 
     // Temporary vars for state save and restore.
     AutoPtr<IBundle> mStateBundle;
-    AutoPtr<IHashMap> mStateArray;
+    AutoPtr<ISparseArray> mStateArray;
     AutoPtr<ExecCommitRunnable> mExecCommit;
 };
 

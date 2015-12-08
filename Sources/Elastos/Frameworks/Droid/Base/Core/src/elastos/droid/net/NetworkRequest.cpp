@@ -1,6 +1,11 @@
 
 #include "elastos/droid/net/CNetworkCapabilities.h"
 #include "elastos/droid/net/NetworkRequest.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/net/CNetworkCapabilities.h"
+#include "elastos/droid/net/CNetworkRequest.h"
+
+using Elastos::Droid::Net::IConnectivityManager;
 
 namespace Elastos {
 namespace Droid {
@@ -13,105 +18,77 @@ ECode NetworkRequest::constructor(
     /* [in] */ Int32 legacyType,
     /* [in] */ Int32 rId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (nc == null) {
-            throw new NullPointerException();
-        }
-        requestId = rId;
-        networkCapabilities = nc;
-        this.legacyType = legacyType;
-
-#endif
+    if (nc == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    mRequestId = rId;
+    mNetworkCapabilities = nc;
+    mLegacyType = legacyType;
+    return NOERROR;
 }
 
 ECode NetworkRequest::constructor(
     /* [in] */ INetworkRequest* that)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        networkCapabilities = new NetworkCapabilities(that.networkCapabilities);
-        requestId = that.requestId;
-        this.legacyType = that.legacyType;
-
-#endif
+    CNetworkCapabilities::New(((NetworkRequest*)that)->mNetworkCapabilities, (INetworkCapabilities**)&mNetworkCapabilities);
+    mRequestId = ((NetworkRequest*)that)->mRequestId;
+    mLegacyType = ((NetworkRequest*)that)->mLegacyType;
+    return NOERROR;
 }
 
 ECode NetworkRequest::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public NetworkRequest createFromParcel(Parcel in) {
-                NetworkCapabilities nc = (NetworkCapabilities)in.readParcelable(null);
-                int legacyType = in.readInt();
-                int requestId = in.readInt();
-                NetworkRequest result = new NetworkRequest(nc, legacyType, requestId);
-                return result;
-            }
-            public NetworkRequest[] newArray(int size) {
-                return new NetworkRequest[size];
-            }
-
-#endif
+    AutoPtr<IInterface> obj;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mNetworkCapabilities = INetworkCapabilities::Probe(obj);
+    parcel->ReadInt32(&mRequestId);
+    parcel->ReadInt32(&mLegacyType);
+    return NOERROR;
 }
 
 ECode NetworkRequest::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public NetworkRequest createFromParcel(Parcel in) {
-                NetworkCapabilities nc = (NetworkCapabilities)in.readParcelable(null);
-                int legacyType = in.readInt();
-                int requestId = in.readInt();
-                NetworkRequest result = new NetworkRequest(nc, legacyType, requestId);
-                return result;
-            }
-            public NetworkRequest[] newArray(int size) {
-                return new NetworkRequest[size];
-            }
-
-#endif
+    dest->WriteInterfacePtr(mNetworkCapabilities);
+    dest->WriteInt32(mRequestId);
+    dest->WriteInt32(mLegacyType);
+    return NOERROR;
 }
 
 ECode NetworkRequest::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return "NetworkRequest [ id=" + requestId + ", legacyType=" + legacyType +
-                ", " + networkCapabilities.toString() + " ]";
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = String("NetworkRequest [ id=");
+    String s;
+    IObject::Probe(mNetworkCapabilities)->ToString(&s);
+    result->AppendFormat("%d, legacyType=%d, %s ]", mRequestId, mLegacyType, s.string());
+    return NOERROR;
 }
 
 ECode NetworkRequest::Equals(
-    /* [in] */ IObject* obj,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (obj instanceof NetworkRequest == false) return false;
-        NetworkRequest that = (NetworkRequest)obj;
-        return (that.legacyType == this.legacyType &&
-                that.requestId == this.requestId &&
-                ((that.networkCapabilities == null && this.networkCapabilities == null) ||
-                 (that.networkCapabilities != null &&
-                  that.networkCapabilities.equals(this.networkCapabilities))));
-
-#endif
+    if (TO_IINTERFACE(this) != IInterface::Probe(obj)) FUNC_RETURN(FALSE);
+    if (INetworkRequest::Probe(obj) == NULL) FUNC_RETURN(FALSE);
+    NetworkRequest* that = (NetworkRequest*)(INetworkRequest::Probe(obj));
+    Boolean bEquals;
+    IObject::Probe(that->mNetworkCapabilities)->Equals(mNetworkCapabilities, &bEquals);
+    FUNC_RETURN(that->mLegacyType == mLegacyType &&
+            that->mRequestId == mRequestId &&
+            ((that->mNetworkCapabilities == NULL && mNetworkCapabilities == NULL) ||
+            (that->mNetworkCapabilities != NULL && bEquals)));
 }
 
 ECode NetworkRequest::GetHashCode(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return requestId + (legacyType * 1013) +
-                (networkCapabilities.hashCode() * 1051);
-
-#endif
+    Int32 hashCode;
+    IObject::Probe(mNetworkCapabilities)->GetHashCode(&hashCode);
+    FUNC_RETURN(mRequestId + (mLegacyType * 1013) + hashCode * 1051);
 }
 
 ECode NetworkRequest::GetNetworkCapabilities(
@@ -120,6 +97,7 @@ ECode NetworkRequest::GetNetworkCapabilities(
     VALIDATE_NOT_NULL(*result)
 
     *result = mNetworkCapabilities;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -153,104 +131,67 @@ NetworkRequestBuilder::NetworkRequestBuilder()
 
 ECode NetworkRequestBuilder::constructor()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    return NOERROR;
 }
 
 ECode NetworkRequestBuilder::Build(
     /* [out] */ INetworkRequest** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            return new NetworkRequest(mNetworkCapabilities, ConnectivityManager.TYPE_NONE,
-                    ConnectivityManager.REQUEST_ID_UNSET);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<INetworkRequest> rev;
+    CNetworkRequest::New(mNetworkCapabilities, IConnectivityManager::TYPE_NONE,
+            IConnectivityManager::REQUEST_ID_UNSET, (INetworkRequest**)&rev);
+    FUNC_RETURN(rev);
 }
 
 ECode NetworkRequestBuilder::AddCapability(
-    /* [in] */ Int32 capability,
-    /* [out] */ INetworkRequestBuilder** result)
+    /* [in] */ Int32 capability)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            mNetworkCapabilities.addCapability(capability);
-            return this;
-
-#endif
+    mNetworkCapabilities->AddCapability(capability);
+    return NOERROR;
 }
 
 ECode NetworkRequestBuilder::RemoveCapability(
-    /* [in] */ Int32 capability,
-    /* [out] */ INetworkRequestBuilder** result)
+    /* [in] */ Int32 capability)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            mNetworkCapabilities.removeCapability(capability);
-            return this;
-
-#endif
+    mNetworkCapabilities->RemoveCapability(capability);
+    return NOERROR;
 }
 
 ECode NetworkRequestBuilder::AddTransportType(
-    /* [in] */ Int32 transportType,
-    /* [out] */ INetworkRequestBuilder** result)
+    /* [in] */ Int32 transportType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            mNetworkCapabilities.addTransportType(transportType);
-            return this;
-
-#endif
+    mNetworkCapabilities->AddTransportType(transportType);
+    return NOERROR;
 }
 
 ECode NetworkRequestBuilder::RemoveTransportType(
-    /* [in] */ Int32 transportType,
-    /* [out] */ INetworkRequestBuilder** result)
+    /* [in] */ Int32 transportType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            mNetworkCapabilities.removeTransportType(transportType);
-            return this;
-
-#endif
+    mNetworkCapabilities->RemoveTransportType(transportType);
+    return NOERROR;
 }
 
 ECode NetworkRequestBuilder::SetLinkUpstreamBandwidthKbps(
-    /* [in] */ Int32 upKbps,
-    /* [out] */ INetworkRequestBuilder** result)
+    /* [in] */ Int32 upKbps)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            mNetworkCapabilities.setLinkUpstreamBandwidthKbps(upKbps);
-            return this;
-
-#endif
+    mNetworkCapabilities->SetLinkUpstreamBandwidthKbps(upKbps);
+    return NOERROR;
 }
 
 ECode NetworkRequestBuilder::SetLinkDownstreamBandwidthKbps(
-    /* [in] */ Int32 downKbps,
-    /* [out] */ INetworkRequestBuilder** result)
+    /* [in] */ Int32 downKbps)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            mNetworkCapabilities.setLinkDownstreamBandwidthKbps(downKbps);
-            return this;
-
-#endif
+    mNetworkCapabilities->SetLinkDownstreamBandwidthKbps(downKbps);
+    return NOERROR;
 }
 
 ECode NetworkRequestBuilder::SetNetworkSpecifier(
-    /* [in] */ const String& networkSpecifier,
-    /* [out] */ INetworkRequestBuilder** result)
+    /* [in] */ const String& networkSpecifier)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            mNetworkCapabilities.setNetworkSpecifier(networkSpecifier);
-            return this;
-
-#endif
+    mNetworkCapabilities->SetNetworkSpecifier(networkSpecifier);
+    return NOERROR;
 }
 
 AutoPtr<INetworkCapabilities> NetworkRequestBuilder::CreateNetworkCapabilities()

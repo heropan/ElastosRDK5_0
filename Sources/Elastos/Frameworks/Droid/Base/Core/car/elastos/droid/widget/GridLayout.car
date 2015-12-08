@@ -3,10 +3,11 @@ module
 {
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Widget.IGridLayoutAlignment;
+    interface Elastos.Droid.Widget.IGridLayoutSpec;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * Layout information associated with each of the children of a GridLayout.
@@ -95,6 +96,18 @@ module
          */
         SetGravity(
             [in] Int32 gravity);
+
+        SetRowSpec(
+            [in] IGridLayoutSpec* r);
+
+        SetColumnSpec(
+            [in] IGridLayoutSpec* c);
+
+        GetRowSpec(
+            [out] IGridLayoutSpec** r);
+
+        GetColumnSpec(
+            [out] IGridLayoutSpec** c);
     }
 
     /**
@@ -150,10 +163,6 @@ module
      *
      */
     interface IGridLayoutSpec {
-        Equals(
-            [in] IGridLayoutSpec* that,
-            [out] Boolean* res);
-
         CopyWriteSpan(
             [in] IInterval* span,
             [out] IGridLayoutSpec** spec);

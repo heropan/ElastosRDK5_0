@@ -2,15 +2,22 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONPAIRWISECIPHER_H__
 #define __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONPAIRWISECIPHER_H__
 
-#include "_Elastos_Droid_Net_Wifi_CWifiConfigurationPairwiseCipher.h"
+#include "_Elastos_Droid_Wifi_CWifiConfigurationPairwiseCipher.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 
 CarClass(CWifiConfigurationPairwiseCipher)
+    , public Singleton
+    , public IWifiConfigurationPairwiseCipher
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetStrings(
         /* [out, callee] */ ArrayOf<String>** strings);
 

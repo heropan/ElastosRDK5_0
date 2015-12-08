@@ -19,6 +19,8 @@ using Elastos::Core::IRunnable;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CHashMap;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::IList;
@@ -225,7 +227,11 @@ public:
 public:
     CAR_INTERFACE_DECL()
 
-    BackStackRecord(
+    BackStackRecord();
+
+    virtual ~BackStackRecord();
+
+    CARAPI constructor(
         /* [in] */ IFragmentManagerImpl* manager);
 
     CARAPI ToString(
@@ -639,6 +645,8 @@ private:
         /* [in] */ Boolean isEnd);
 
 public:
+    friend class FragmentManagerImpl;
+
     static const String TAG;
 
     AutoPtr<FragmentManagerImpl> mManager;

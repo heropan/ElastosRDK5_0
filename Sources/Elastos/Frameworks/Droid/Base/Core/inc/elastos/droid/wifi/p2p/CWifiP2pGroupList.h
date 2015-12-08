@@ -2,11 +2,13 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUPLIST_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUPLIST_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pGroupList.h"
-#include "elastos/droid/utility/LruCache.h"
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pGroupList.h"
+// TODO #include "elastos/droid/utility/LruCache.h"
+#include <elastos/core/Object.h>
 
+// TODO using Elastos::Droid::Utility::LruCache;
 using Elastos::Core::IInteger32;
-using Elastos::Droid::Utility::LruCache;
+using Elastos::Utility::ICollection;
 
 namespace Elastos {
 namespace Droid {
@@ -14,10 +16,12 @@ namespace Wifi {
 namespace P2p {
 
 CarClass(CWifiP2pGroupList)
+    , public Object
+    , public IWifiP2pGroupList
 {
 private:
     class GroupLruCache
-        : public LruCache< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >
+        // TODO: public LruCache< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >
     {
     public:
         GroupLruCache(
@@ -34,6 +38,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWifiP2pGroupList();
 
     ~CWifiP2pGroupList();
@@ -42,7 +50,10 @@ public:
 
     CARAPI constructor(
         /* [in] */ IWifiP2pGroupList* source,
-        /* [in] */ IGroupDeleteListener* listener);
+        /* [in] */ IWifiP2pGroupListGroupDeleteListener* listener);
+
+    CARAPI GetGroupList(
+        /* [out] */ ICollection** result);
 
     CARAPI GetGroupList(
         /* [out, callee] */ ArrayOf<IWifiP2pGroup*>** list);
@@ -89,14 +100,14 @@ private:
     static const Int32 CREDENTIAL_MAX_NUM;
     GroupLruCache* mGroups;
 
-    AutoPtr<IGroupDeleteListener> mListener;
+    AutoPtr<IWifiP2pGroupListGroupDeleteListener> mListener;
 
     Boolean mIsClearCalled;
 };
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUPLIST_H__

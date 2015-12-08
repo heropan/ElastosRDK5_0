@@ -5,11 +5,12 @@
 #include "_Elastos_Droid_Widget_CRelativeLayout.h"
 #include "elastos/droid/widget/RelativeLayout.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
-CarClass(CRelativeLayout), public RelativeLayout
+CarClass(CRelativeLayout)
+    , public RelativeLayout
 {
 public:
     CAR_OBJECT_DECL();

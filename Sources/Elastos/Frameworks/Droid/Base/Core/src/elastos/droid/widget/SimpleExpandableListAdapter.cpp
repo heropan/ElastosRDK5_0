@@ -1,12 +1,14 @@
 
 #include "elastos/droid/widget/SimpleExpandableListAdapter.h"
 
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(SimpleExpandableListAdapter, BaseExpandableListAdapter, ISimpleExpandableListAdapter);
 SimpleExpandableListAdapter::SimpleExpandableListAdapter()
     : mExpandedGroupLayout(0)
     , mCollapsedGroupLayout(0)
@@ -14,95 +16,46 @@ SimpleExpandableListAdapter::SimpleExpandableListAdapter()
     , mLastChildLayout(0)
 {}
 
-SimpleExpandableListAdapter::SimpleExpandableListAdapter(
+ECode SimpleExpandableListAdapter::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IObjectContainer* groupData,
+    /* [in] */ IList* groupData,
     /* [in] */ Int32 groupLayout,
     /* [in] */ ArrayOf<String>* groupFrom,
     /* [in] */ ArrayOf<Int32>* groupTo,
-    /* [in] */ IObjectContainer* childData,
+    /* [in] */ IList* childData,
     /* [in] */ Int32 childLayout,
     /* [in] */ ArrayOf<String>* childFrom,
     /* [in] */ ArrayOf<Int32>* childTo)
 {
-    ASSERT_SUCCEEDED(Init(context, groupData, groupLayout, groupFrom, groupTo,
-        childData, childLayout, childFrom, childTo));
-}
-
-SimpleExpandableListAdapter::SimpleExpandableListAdapter(
-    /* [in] */ IContext* context,
-    /* [in] */ IObjectContainer* groupData,
-    /* [in] */ Int32 expandedGroupLayout,
-    /* [in] */ Int32 collapsedGroupLayout,
-    /* [in] */ ArrayOf<String>* groupFrom,
-    /* [in] */ ArrayOf<Int32>* groupTo,
-    /* [in] */ IObjectContainer* childData,
-    /* [in] */ Int32 childLayout,
-    /* [in] */ ArrayOf<String>* childFrom,
-    /* [in] */ ArrayOf<Int32>* childTo)
-{
-    ASSERT_SUCCEEDED(Init(context, groupData, expandedGroupLayout, collapsedGroupLayout, groupFrom, groupTo,
-        childData, childLayout, childFrom, childTo));
-}
-
-SimpleExpandableListAdapter::SimpleExpandableListAdapter(
-    /* [in] */ IContext* context,
-    /* [in] */ IObjectContainer* groupData,
-    /* [in] */ Int32 expandedGroupLayout,
-    /* [in] */ Int32 collapsedGroupLayout,
-    /* [in] */ ArrayOf<String>* groupFrom,
-    /* [in] */ ArrayOf<Int32>* groupTo,
-    /* [in] */ IObjectContainer* childData,
-    /* [in] */ Int32 childLayout,
-    /* [in] */ Int32 lastChildLayout,
-    /* [in] */ ArrayOf<String>* childFrom,
-    /* [in] */ ArrayOf<Int32>* childTo)
-{
-    ASSERT_SUCCEEDED(Init(context, groupData, expandedGroupLayout, collapsedGroupLayout, groupFrom, groupTo,
-        childData, childLayout, lastChildLayout, childFrom, childTo));
-}
-
-ECode SimpleExpandableListAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IObjectContainer* groupData,
-    /* [in] */ Int32 groupLayout,
-    /* [in] */ ArrayOf<String>* groupFrom,
-    /* [in] */ ArrayOf<Int32>* groupTo,
-    /* [in] */ IObjectContainer* childData,
-    /* [in] */ Int32 childLayout,
-    /* [in] */ ArrayOf<String>* childFrom,
-    /* [in] */ ArrayOf<Int32>* childTo)
-{
-    return Init(context, groupData, groupLayout, groupLayout, groupFrom, groupTo, childData,
+    return constructor(context, groupData, groupLayout, groupLayout, groupFrom, groupTo, childData,
                 childLayout, childLayout, childFrom, childTo);
 }
 
-ECode SimpleExpandableListAdapter::Init(
+ECode SimpleExpandableListAdapter::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IObjectContainer* groupData,
+    /* [in] */ IList* groupData,
     /* [in] */ Int32 expandedGroupLayout,
     /* [in] */ Int32 collapsedGroupLayout,
     /* [in] */ ArrayOf<String>* groupFrom,
     /* [in] */ ArrayOf<Int32>* groupTo,
-    /* [in] */ IObjectContainer* childData,
+    /* [in] */ IList* childData,
     /* [in] */ Int32 childLayout,
     /* [in] */ ArrayOf<String>* childFrom,
     /* [in] */ ArrayOf<Int32>* childTo)
 {
-    return Init(context, groupData, expandedGroupLayout, collapsedGroupLayout,
+    return constructor(context, groupData, expandedGroupLayout, collapsedGroupLayout,
                 groupFrom, groupTo, childData, childLayout, childLayout,
                 childFrom, childTo);
 }
 
-
-ECode SimpleExpandableListAdapter::Init(
+ECode SimpleExpandableListAdapter::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IObjectContainer* groupData,
+    /* [in] */ IList* groupData,
     /* [in] */ Int32 expandedGroupLayout,
     /* [in] */ Int32 collapsedGroupLayout,
     /* [in] */ ArrayOf<String>* groupFrom,
     /* [in] */ ArrayOf<Int32>* groupTo,
-    /* [in] */ IObjectContainer* childData,
+    /* [in] */ IList* childData,
     /* [in] */ Int32 childLayout,
     /* [in] */ Int32 lastChildLayout,
     /* [in] */ ArrayOf<String>* childFrom,
@@ -126,133 +79,147 @@ ECode SimpleExpandableListAdapter::Init(
     return NOERROR;
 }
 
-AutoPtr<IInterface> SimpleExpandableListAdapter::GetChild(
+ECode SimpleExpandableListAdapter::GetChild(
     /* [in] */ Int32 groupPosition,
-    /* [in] */ Int32 childPosition)
+    /* [in] */ Int32 childPosition,
+    /* [out] */ IInterface** child)
 {
-    AutoPtr<IInterface> temp = GetItemFromContainer(mChildData, groupPosition);
-    AutoPtr<IObjectContainer> container = IObjectContainer::Probe(temp);
-    if(container == NULL)
-        return NULL;
-    temp = GetItemFromContainer(container, childPosition);
-    return temp;
+    VALIDATE_NOT_NULL(child);
+    AutoPtr<IList> group;
+    mChildData->Get(groupPosition, (IInterface**)&group);
+    return group->Get(childPosition, child);
 }
 
-Int64 SimpleExpandableListAdapter::GetChildId(
+ECode SimpleExpandableListAdapter::GetChildId(
     /* [in] */ Int32 groupPosition,
-    /* [in] */ Int32 childPosition)
+    /* [in] */ Int32 childPosition,
+    /* [out] */ Int64* id)
 {
-    return childPosition;
+    VALIDATE_NOT_NULL(id);
+    *id = childPosition;
+    return NOERROR;
 }
 
-AutoPtr<IView> SimpleExpandableListAdapter::GetChildView(
+ECode SimpleExpandableListAdapter::GetChildView(
     /* [in] */ Int32 groupPosition,
     /* [in] */ Int32 childPosition,
     /* [in] */ Boolean isLastChild,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
+    VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v;
     if (convertView == NULL) {
-        v = NewChildView(isLastChild, parent);
-    }
-    else {
-        v = convertView;
-    }
-    AutoPtr<IInterface> temp = GetItemFromContainer(mChildData, groupPosition);
-    AutoPtr<IObjectContainer> container = IObjectContainer::Probe(temp);
-    if(container == NULL)
-        return v;
-    temp = GetItemFromContainer(container, childPosition);
-    AutoPtr<IObjectStringMap> map = IObjectStringMap::Probe(temp);
-    if (map != NULL)
-        BindView(v, map, mChildFrom, mChildTo);
-    return v;
-}
-
-AutoPtr<IView> SimpleExpandableListAdapter::NewChildView(
-    /* [in] */ Boolean isLastChild,
-    /* [in] */ IViewGroup* parent)
-{
-    AutoPtr<IView> v;
-    mInflater->Inflate((isLastChild) ? mLastChildLayout : mChildLayout, parent, FALSE, (IView**)&v);
-    return v;
-}
-
-Int32 SimpleExpandableListAdapter::GetChildrenCount(
-    /* [in] */ Int32 groupPosition)
-{
-    AutoPtr<IInterface> temp = GetItemFromContainer(mChildData, groupPosition);
-    AutoPtr<IObjectContainer> container = IObjectContainer::Probe(temp);
-    if(container == NULL) return 0;
-    Int32 count;
-    container->GetObjectCount(&count);
-    return count;
-}
-
-AutoPtr<IInterface> SimpleExpandableListAdapter::GetGroup(
-    /* [in] */ Int32 groupPosition)
-{
-    return GetItemFromContainer(mGroupData, groupPosition);
-}
-
-Int32 SimpleExpandableListAdapter::GetGroupCount()
-{
-    Int32 count;
-    mGroupData->GetObjectCount(&count);
-    return count;
-}
-
-Int64 SimpleExpandableListAdapter::GetGroupId(
-    /* [in] */ Int32 groupPosition)
-{
-    return groupPosition;
-}
-
-AutoPtr<IView> SimpleExpandableListAdapter::GetGroupView(
-    /* [in] */ Int32 groupPosition,
-    /* [in] */ Boolean isExpanded,
-    /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
-{
-    AutoPtr<IView> v;
-    if (convertView == NULL) {
-        v = NewGroupView(isExpanded, parent);
+        NewChildView(isLastChild, parent, (IView**)&v);
     } else {
         v = convertView;
     }
-    AutoPtr<IInterface> temp = GetItemFromContainer(mGroupData, groupPosition);
-    AutoPtr<IObjectStringMap> map = IObjectStringMap::Probe(temp);
-    if (map != NULL)
-        BindView(v, map, mGroupFrom, mGroupTo);
-    return v;
+    AutoPtr<IList> group;
+    mChildData->Get(groupPosition, (IInterface**)&group);
+    AutoPtr<IMap> children;
+    group->Get(childPosition, (IInterface**)&children);
+    BindView(v, children, mChildFrom, mChildTo);
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
-AutoPtr<IView> SimpleExpandableListAdapter::NewGroupView(
-    /* [in] */ Boolean isExpanded,
-    /* [in] */ IViewGroup* parent)
+ECode SimpleExpandableListAdapter::NewChildView(
+    /* [in] */ Boolean isLastChild,
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    AutoPtr<IView> v;
-    mInflater->Inflate((isExpanded) ? mExpandedGroupLayout : mCollapsedGroupLayout,
-        parent, FALSE, (IView**)&v);
-    return v;
+    VALIDATE_NOT_NULL(view);
+    return mInflater->Inflate((isLastChild) ? mLastChildLayout : mChildLayout, parent, FALSE, view);
 }
 
-Boolean SimpleExpandableListAdapter::IsChildSelectable(
+ECode SimpleExpandableListAdapter::GetChildrenCount(
     /* [in] */ Int32 groupPosition,
-    /* [in] */ Int32 childPosition)
+    /* [out] */ Int32* count)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(count);
+    AutoPtr<IList> group;
+    mChildData->Get(groupPosition, (IInterface**)&group);
+    return group->GetSize(count);
 }
 
-Boolean SimpleExpandableListAdapter::HasStableIds()
+ECode SimpleExpandableListAdapter::GetGroup(
+    /* [in] */ Int32 groupPosition,
+    /* [out] */ IInterface** child)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(child);
+    return mGroupData->Get(groupPosition, child);
+}
+
+ECode SimpleExpandableListAdapter::GetGroupCount(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count);
+    return mGroupData->GetSize(count);
+}
+
+ECode SimpleExpandableListAdapter::GetGroupId(
+    /* [in] */ Int32 groupPosition,
+    /* [out] */ Int64* id)
+{
+    VALIDATE_NOT_NULL(id);
+    *id = groupPosition;
+    return NOERROR;
+}
+
+ECode SimpleExpandableListAdapter::GetGroupView(
+    /* [in] */ Int32 groupPosition,
+    /* [in] */ Boolean isExpanded,
+    /* [in] */ IView* convertView,
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
+{
+    VALIDATE_NOT_NULL(view);
+    AutoPtr<IView> v;
+    if (convertView == NULL) {
+        NewGroupView(isExpanded, parent, (IView**)&v);
+    } else {
+        v = convertView;
+    }
+    AutoPtr<IMap> group;
+    mGroupData->Get(groupPosition, (IInterface**)&group);
+    BindView(v, group, mGroupFrom, mGroupTo);
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
+}
+
+ECode SimpleExpandableListAdapter::NewGroupView(
+    /* [in] */ Boolean isExpanded,
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
+{
+    VALIDATE_NOT_NULL(view);
+    return mInflater->Inflate((isExpanded) ? mExpandedGroupLayout : mCollapsedGroupLayout, parent, FALSE, view);
+}
+
+ECode SimpleExpandableListAdapter::IsChildSelectable(
+    /* [in] */ Int32 groupPosition,
+    /* [in] */ Int32 childPosition,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = TRUE;
+    return NOERROR;
+}
+
+ECode SimpleExpandableListAdapter::HasStableIds(
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has);
+    *has = TRUE;
+    return NOERROR;
 }
 
 ECode SimpleExpandableListAdapter::BindView(
     /* [in] */ IView* view,
-    /* [in] */ IObjectStringMap* data,
+    /* [in] */ IMap* data,
     /* [in] */ ArrayOf<String>* from,
     /* [in] */ ArrayOf<Int32>* to)
 {
@@ -264,36 +231,18 @@ ECode SimpleExpandableListAdapter::BindView(
         AutoPtr<ITextView> tv = ITextView::Probe(v);
         if (tv != NULL) {
             AutoPtr<IInterface> temp;
-            data->Get((*from)[i], (IInterface**)&temp);
+            AutoPtr<ICharSequence> key;
+            CString::New((*from)[i], (ICharSequence**)&key);
+            data->Get(key, (IInterface**)&temp);
             AutoPtr<ICharSequence> cs = ICharSequence::Probe(temp);
-            if (cs != NULL)
+            if (cs != NULL) {
                 tv->SetText(cs);
+            }
         }
     }
     return NOERROR;
 }
 
-AutoPtr<IInterface> SimpleExpandableListAdapter::GetItemFromContainer(
-        /* [in] */ IObjectContainer* container,
-        /* [in] */ Int32 position)
-{
-    Int32 count;
-    container->GetObjectCount(&count);
-    if (count < position)
-        return NULL;
-    AutoPtr<IObjectEnumerator> enumerator;
-    container->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    Boolean hasNext = FALSE;
-    Int32 i = 0;
-    while(enumerator->MoveNext(&hasNext), hasNext && (i++ < position - 1)) {
-    }
-    if (!hasNext) return NULL;
-    AutoPtr<IInterface> temp;
-    enumerator->Current((IInterface**)&temp);
-    return temp;
-}
-
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-

@@ -2,19 +2,16 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_LOCALEPICKER_H__
 #define __ELASTOS_DROID_INTERNAL_APP_LOCALEPICKER_H__
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/app/ListFragment.h"
-
 #include "elastos/droid/widget/ArrayAdapter.h"
 
-using Elastos::Utility::ILocale;
-using Elastos::Core::IComparable;
-//using Elastos::Text::ICollator;
 using Elastos::Droid::App::ListFragment;
 using Elastos::Droid::Internal::App::ILocaleSelectionListener;
 using Elastos::Droid::Widget::ArrayAdapter;
 using Elastos::Droid::Widget::IArrayAdapter;
-using Elastos::Droid::Widget::EIID_IArrayAdapter;
+using Elastos::Core::IComparable;
+using Elastos::Text::ICollator;
+using Elastos::Utility::ILocale;
 
 
 namespace Elastos {
@@ -22,64 +19,14 @@ namespace Droid {
 namespace Internal {
 namespace App {
 
-class _LocalArrayAdapter
-    : public ArrayAdapter
-{
-public:
-    _LocalArrayAdapter(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 resource,
-        /* [in] */ Int32 textViewResourceId,
-        /* [in] */ IObjectContainer* objects,
-        /* [in] */ ILayoutInflater* inflater)
-        : ArrayAdapter(context, resource, textViewResourceId, objects)
-        , mInflater(inflater)
-        , mLayoutId(resource)
-        , mFieldId(textViewResourceId)
-    {}
-
-    CARAPI_(AutoPtr<IView>) GetView(
-        /* [in] */ Int32 position,
-        /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
-
-private:
-    AutoPtr<ILayoutInflater> mInflater;
-    Int32 mLayoutId;
-    Int32 mFieldId;
-};
-
-class LocalArrayAdapter
-    : public ElRefBase
-    , public _LocalArrayAdapter
-    , public IArrayAdapter
-{
-public:
-    CAR_INTERFACE_DECL();
-
-    LocalArrayAdapter(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 resource,
-        /* [in] */ Int32 textViewResourceId,
-        /* [in] */ IObjectContainer* objects,
-        /* [in] */ ILayoutInflater* inflater)
-        : _LocalArrayAdapter(context, resource, textViewResourceId, objects, inflater)
-    {}
-
-    IARRAYADAPTER_METHODS_DECL();
-    IBASEADAPTER_METHODS_DECL();
-    ILISTADAPTER_METHODS_DECL();
-    IADAPTER_METHODS_DECL();
-    ISPINNERADAPTER_METHODS_DECL();
-};
-
-
 class LocalePicker
     : public ListFragment
+    , public ILocalePicker
 {
 public:
     class LocaleInfo
-        : public ElRefBase
+        : public Object
+        , public ILocaleInfo
         , public IComparable
     {
     public:
@@ -103,18 +50,43 @@ public:
             /* [out] */ Int32* result);
 
     public:
-//        static AutoPtr<ICollator> sCollator;
+        static const AutoPtr<ICollator> sCollator;
 
         String mLabel;
         AutoPtr<ILocale> mLocale;
     };
 
-public:
-    LocalePicker()
-        : mListener(NULL)
-    {}
+private:
+    class LocalArrayAdapter
+        : public ArrayAdapter
+    {
+    public:
+        CARAPI constructor(
+            /* [in] */ IContext* context,
+            /* [in] */ Int32 resource,
+            /* [in] */ Int32 textViewResourceId,
+            /* [in] */ IList* objects,
+            /* [in] */ ILayoutInflater* inflater);
 
-    static CARAPI Init();
+        CARAPI GetView(
+            /* [in] */ Int32 position,
+            /* [in] */ IView* convertView,
+            /* [in] */ IViewGroup* parent,
+            /* [in] */ IView** view);
+
+    private:
+        AutoPtr<ILayoutInflater> mInflater;
+        Int32 mLayoutId;
+        Int32 mFieldId;
+    };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    static CARAPI GetAllAssetLocales(
+        /* [in] */ IContext* context,
+        /* [in] */ Boolean isInDeveloperMode,
+        /* [out] */ IList** list);
 
     static CARAPI ConstructAdapter(
         /* [in] */ IContext* context,

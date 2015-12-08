@@ -2,20 +2,39 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERSUBTYPE_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERSUBTYPE_H__
 
+#include "_Elastos_Droid_View_TextService_CSpellCheckerSubtype.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+
+using Elastos::Core::Object;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::IList;
+using Elastos::Utility::IHashMap;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
+namespace TextService {
 
 /**
  * This class is used to specify meta information of a subtype contained in a spell checker.
  * Subtype can describe locale (e.g. en_US, fr_FR...) used for settings.
  */
 CarClass(CSpellCheckerSubtype)
+    , public Object
+    , public ISpellCheckerSubtype
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CSpellCheckerSubtype();
-    ~CSpellCheckerSubtype();
+
+    CARAPI constructor();
 
     /**
      * Constructor
@@ -27,8 +46,6 @@ public:
         /* [in] */ Int32 nameId,
         /* [in] */ const String& locale,
         /* [in] */ const String& extraValue);
-
-//    SpellCheckerSubtype(Parcel source);
 
     /**
      * @return the name of the subtype
@@ -48,15 +65,18 @@ public:
     CARAPI GetExtraValue(
         /* [out] */ String* value);
 
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hc);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* result);
+
     /**
-     * The string of ExtraValue in subtype should be defined as follows:
-     * example: key0,key1=value1,key2,key3,key4=value4
-     * @param key the key of extra value
-     * @return the subtype contains specified the extra value
+     * @hide
      */
-    CARAPI ContainsExtraValueKey(
-        /* [in] */ const String& key,
-        /* [out] */ Boolean* bFlag);
+    static CARAPI_(AutoPtr<ILocale>) ConstructLocaleFromString(
+        /* [in] */ const String& localeStr);
 
     /**
      * The string of ExtraValue in subtype should be defined as follows:
@@ -69,10 +89,14 @@ public:
         /* [out] */ String* str);
 
     /**
-     * @hide
+     * The string of ExtraValue in subtype should be defined as follows:
+     * example: key0,key1=value1,key2,key3,key4=value4
+     * @param key the key of extra value
+     * @return the subtype contains specified the extra value
      */
-    static CARAPI_(AutoPtr<ILocale>) ConstructLocaleFromString(
-        /* [in] */ const String& localeStr);
+    CARAPI ContainsExtraValueKey(
+        /* [in] */ const String& key,
+        /* [out] */ Boolean* bFlag);
 
     /**
      * @param context Context will be used for getting Locale and PackageManager.
@@ -88,7 +112,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ const String& packageName,
         /* [in] */ IApplicationInfo* appInfo,
-        /* [out] */ ICharSequence* name);
+        /* [out] */ ICharSequence** name);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
@@ -106,33 +130,32 @@ public:
      * @return Sorted list of subtypes
      * @hide
      */
-    static CARAPI_(AutoPtr<List<SpellCheckerSubtype> >) Sort(
+    static CARAPI_(AutoPtr<IList>) Sort(
         /* [in] */ IContext* context,
         /* [in] */ Int32 flags,
-        /* [in] */ SpellCheckerInfo sci,
-        /* [in] */ List<SpellCheckerSubtype>* subtypeList);
+        /* [in] */ ISpellCheckerInfo* sci,
+        /* [in] */ IList* subtypeList);
 
 private:
-
-    CARAPI_(AutoPtr<HashMap<String, String> >) GetExtraValueHashMap();
+    CARAPI_(AutoPtr<IHashMap>) GetExtraValueHashMap();
 
     static CARAPI_(Int32) HashCodeInternal(
         /* [in] */ const String& locale,
         /* [in] */ const String& extraValue);
 
 private:
-    static const String TAG;// = SpellCheckerSubtype.class.getSimpleName();
-    static const String EXTRA_VALUE_PAIR_SEPARATOR;// = ",";
-    static const String EXTRA_VALUE_KEY_VALUE_SEPARATOR;// = "=";
+    static const String TAG;
+    static const String EXTRA_VALUE_PAIR_SEPARATOR;
+    static const String EXTRA_VALUE_KEY_VALUE_SEPARATOR;
 
     Int32 mSubtypeHashCode;
     Int32 mSubtypeNameResId;
     String mSubtypeLocale;
     String mSubtypeExtraValue;
-    HashMap<String, String> mExtraValueHashMapCache;
+    AutoPtr<IHashMap> mExtraValueHashMapCache;
 };
 
-}   //namespace Textservice
+}   //namespace TextService
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos

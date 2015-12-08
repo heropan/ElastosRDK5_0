@@ -1,15 +1,25 @@
 #include "elastos/droid/app/CNotificationInboxStyle.h"
+#include "elastos/droid/app/CNotificationBuilder.h"
+#include "elastos/droid/app/CNotification.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CNotificationInboxStyle, NotificationStyle, INotificationInboxStyle)
+
+CAR_OBJECT_IMPL(CNotificationInboxStyle)
+
 CNotificationInboxStyle::CNotificationInboxStyle()
 {
+    CArrayList::New(5, (IArrayList**)&mTexts);
 }
 
 CNotificationInboxStyle::~CNotificationInboxStyle()
@@ -27,182 +37,133 @@ ECode CNotificationInboxStyle::constructor(
     return NotificationStyle::SetBuilder(builder);
 }
 
-ECode CNotificationInboxStyle::SetBuilder(
-    /* [in] */ INotificationBuilder* builder)
-{
-    return NotificationStyle::SetBuilder(builder);
-}
-
-ECode CNotificationInboxStyle::Build(
-    /* [out] */ INotification** notification)
-{
-    VALIDATE_NOT_NULL(notification);
-    *notification = NULL;
-
-    FAIL_RETURN(CheckBuilder())
-
-    AutoPtr<INotification> wip;
-    FAIL_RETURN(mBuilder->BuildUnstyled((INotification**)&wip));
-    AutoPtr<IRemoteViews> rv = MakeBigContentView();
-    wip->SetBigContentView(rv);
-
-    *notification = wip;
-    REFCOUNT_ADD(*notification);
-    return NOERROR;
-}
-
 ECode CNotificationInboxStyle::SetBigContentTitle(
     /* [in] */ ICharSequence* title)
 {
-    InternalSetBigContentTitle(SafeCharSequence(title));
+    InternalSetBigContentTitle(CNotification::SafeCharSequence(title));
     return NOERROR;
 }
 
 ECode CNotificationInboxStyle::SetSummaryText(
     /* [in] */ ICharSequence* cs)
 {
-    InternalSetSummaryText(SafeCharSequence(cs));
+    InternalSetSummaryText(CNotification::SafeCharSequence(cs));
     return NOERROR;
 }
 
 ECode CNotificationInboxStyle::AddLine(
     /* [in] */ ICharSequence* cs)
 {
-    AutoPtr<ICharSequence> obj = SafeCharSequence(cs));
-    mTexts.PushBack(obj);
+    AutoPtr<ICharSequence> obj = CNotification::SafeCharSequence(cs);
+    mTexts->Add(obj);
     return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode CNotificationInboxStyle::AddExtras(
     /* [in] */ IBundle* extras)
 {
-    super.addExtras(extras);
+    NotificationStyle::AddExtras(extras);
 
-    CharSequence[] a = new CharSequence[mTexts.size()];
-    extras.putCharSequenceArray(EXTRA_TEXT_LINES, mTexts.toArray(a));
+    extras->PutCharSequenceArrayList(INotification::EXTRA_TEXT_LINES, mTexts);
+    return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode CNotificationInboxStyle::RestoreFromExtras(
     /* [in] */ IBundle* extras)
 {
-    super.restoreFromExtras(extras);
+    NotificationStyle::RestoreFromExtras(extras);
 
-    mTexts.clear();
-    if (extras.containsKey(EXTRA_TEXT_LINES)) {
-        Collections.addAll(mTexts, extras.getCharSequenceArray(EXTRA_TEXT_LINES));
+    mTexts->Clear();
+    Boolean contains;
+    extras->ContainsKey(INotification::EXTRA_TEXT_LINES, &contains);
+    if (contains) {
+        AutoPtr<IArrayList> list;
+        extras->GetCharSequenceArrayList(INotification::EXTRA_TEXT_LINES, (IArrayList**)&list);
+        mTexts = list;
     }
+    return NOERROR;
 }
 
 AutoPtr<IRemoteViews> CNotificationInboxStyle::MakeBigContentView()
 {
     // Remove the content text so line3 disappears unless you have a summary
 
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
     // Nasty
-    CharSequence oldBuilderContentText = mBuilder.mContentText;
-    mBuilder.mContentText = null;
+    AutoPtr<ICharSequence> oldBuilderContentText = builder->mContentText;
+    builder->mContentText = NULL;
 
-    RemoteViews contentView = getStandardView(mBuilder.getInboxLayoutResource());
+    AutoPtr<IRemoteViews> contentView = GetStandardView(builder->GetInboxLayoutResource());
 
-    mBuilder.mContentText = oldBuilderContentText;
+    builder->mContentText = oldBuilderContentText;
 
-    contentView.setViewVisibility(R.id.text2, View.GONE);
+    contentView->SetViewVisibility(R::id::text2, IView::GONE);
 
-    int[] rowIds = {R.id.inbox_text0, R.id.inbox_text1, R.id.inbox_text2, R.id.inbox_text3,
-            R.id.inbox_text4, R.id.inbox_text5, R.id.inbox_text6};
+    const Int32 rowIdsLength = 7;
+    Int32 rowIds[rowIdsLength] = {
+        R::id::inbox_text0,
+        R::id::inbox_text1,
+        R::id::inbox_text2,
+        R::id::inbox_text3,
+        R::id::inbox_text4,
+        R::id::inbox_text5,
+        R::id::inbox_text6
+    };
 
     // Make sure all rows are gone in case we reuse a view.
-    for (int rowId : rowIds) {
-        contentView.setViewVisibility(rowId, View.GONE);
+    for (Int32 i = 0; i < rowIdsLength; ++i) {
+        contentView->SetViewVisibility(rowIds[i], IView::GONE);
     }
 
-    final boolean largeText =
-            mBuilder.mContext.getResources().getConfiguration().fontScale > 1f;
-    final float subTextSize = mBuilder.mContext.getResources().getDimensionPixelSize(
-            R.dimen.notification_subtext_size);
-    int i=0;
-    while (i < mTexts.size() && i < rowIds.length) {
-        CharSequence str = mTexts.get(i);
-        if (str != null && !str.equals("")) {
-            contentView.setViewVisibility(rowIds[i], View.VISIBLE);
-            contentView.setTextViewText(rowIds[i], mBuilder.processLegacyText(str));
+    AutoPtr<IResources> res;
+    builder->mContext->GetResources((IResources**)&res);
+    AutoPtr<IConfiguration> config;
+    res->GetConfiguration((IConfiguration**)&config);
+    Float fontScale;
+    config->GetFontScale(&fontScale);
+    Boolean largeText = fontScale > 1.0f;
+    Int32 subTextSize;
+    res->GetDimensionPixelSize(R::dimen::notification_subtext_size, &subTextSize);
+    Int32 i = 0;
+    Int32 size;
+    mTexts->GetSize(&size);
+    while (i < size && i < rowIdsLength) {
+        AutoPtr<IInterface> obj;
+        mTexts->Get(i, (IInterface**)&obj);
+        String str = Object::ToString(obj);
+        if (str != NULL && !str.Equals("")) {
+            contentView->SetViewVisibility(rowIds[i], IView::VISIBLE);
+            contentView->SetTextViewText(rowIds[i],
+                builder->ProcessLegacyText(ICharSequence::Probe(obj)));
             if (largeText) {
-                contentView.setTextViewTextSize(rowIds[i], TypedValue.COMPLEX_UNIT_PX,
-                        subTextSize);
+                contentView->SetTextViewTextSize(rowIds[i],
+                    ITypedValue::COMPLEX_UNIT_PX, subTextSize);
             }
         }
         i++;
     }
 
-    contentView.setViewVisibility(R.id.inbox_end_pad,
-            mTexts.size() > 0 ? View.VISIBLE : View.GONE);
+    contentView->SetViewVisibility(R::id::inbox_end_pad,
+        size > 0 ? IView::VISIBLE : IView::GONE);
 
-    contentView.setViewVisibility(R.id.inbox_more,
-            mTexts.size() > rowIds.length ? View.VISIBLE : View.GONE);
+    contentView->SetViewVisibility(R::id::inbox_more,
+        size > rowIdsLength ? IView::VISIBLE : IView::GONE);
 
-    applyTopPadding(contentView);
+    ApplyTopPadding(contentView);
 
-    mBuilder.shrinkLine3Text(contentView);
+    builder->ShrinkLine3Text(contentView);
 
-    mBuilder.addProfileBadge(contentView, R.id.profile_badge_large_template);
+    builder->AddProfileBadge(contentView, R::id::profile_badge_large_template);
 
     return contentView;
-
-    // assert(mBuilder != NULL);
-
-    // // Remove the content text so line3 disappears unless you have a summary
-    // mBuilder->SetContentText(NULL);
-    // AutoPtr<IRemoteViews> contentView = GetStandardView(R::layout::notification_template_inbox);
-    // if (contentView == NULL) return NULL;
-
-    // contentView->SetViewVisibility(R::id::text2, IView::GONE);
-
-    // const Int32 idsSize = 7;
-    // Int32 rowIds[7] = {
-    //     R::id::inbox_text0, R::id::inbox_text1, R::id::inbox_text2,
-    //     R::id::inbox_text3, R::id::inbox_text4, R::id::inbox_text5,
-    //     R::id::inbox_text6};
-
-    // // Make sure all rows are gone in case we reuse a view.
-    // for (Int32 i = 0; i < 7; ++i) {
-    //     contentView->SetViewVisibility(rowIds[i], IView::GONE);
-    // }
-
-    // Int32 textSize = mTexts.GetSize();
-    // Int32 i = 0;
-    // AutoPtr<ICharSequence> str;
-    // String seqStr;
-    // List<AutoPtr<ICharSequence> >::Iterator it = mTexts.Begin();
-    // for (; it != mTexts.End() && i < idsSize; ++i, ++it) {
-    //     str = *it;
-    //     if (str != NULL) {
-    //         str->ToString(&seqStr);
-    //         if (!seqStr.IsNullOrEmpty()) {
-    //             contentView->SetViewVisibility(rowIds[i], IView::VISIBLE);
-    //             contentView->SetTextViewText(rowIds[i], str);
-    //         }
-    //     }
-    // }
-
-    // contentView->SetViewVisibility(R::id::inbox_end_pad,
-    //     textSize > 0 ? IView::VISIBLE : IView::GONE);
-
-    // contentView->SetViewVisibility(R::id::inbox_more,
-    //     textSize > idsSize ? IView::VISIBLE : IView::GONE);
-
-    // return contentView;
 }
-
 
 ECode CNotificationInboxStyle::PopulateBigContentView(
     /* [in] */ INotification* wip)
 {
-    mBuilder.setBuilderBigContentView(wip, makeBigContentView());
+    CNotificationBuilder* builder = (CNotificationBuilder*)mBuilder.Get();
+    builder->SetBuilderBigContentView(wip, MakeBigContentView());
+    return NOERROR;
 }
 
 } // namespace App

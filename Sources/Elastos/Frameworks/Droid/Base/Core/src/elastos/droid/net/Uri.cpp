@@ -1645,7 +1645,6 @@ ECode UriBuilder::HasSchemeOrAuthority(
 #if 0 // TODO: Translate codes below
     return !mScheme.IsNull()
             || (mAuthority != NULL && mAuthority != Uri::Part::sNULL);
-
 #endif
 }
 
@@ -2056,8 +2055,8 @@ const String Uri::NOT_CACHED("NOT CACHED");
 const Char32 Uri::HEX_DIGITS[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 const Int32 Uri::NOT_FOUND = -1;
 const Int32 Uri::NOT_CALCULATED = -2;
-const String Uri::NOT_HIERARCHICAL = String("This isn't a hierarchical URI.");
-const String Uri::DEFAULT_ENCODING = String("UTF-8");
+const String Uri::NOT_HIERARCHICAL("This isn't a hierarchical URI.");
+const String Uri::DEFAULT_ENCODING("UTF-8");
 const Int32 Uri::NULL_TYPE_ID = 0;
 
 AutoPtr<IUri> Uri::CreateEmpty()
@@ -2088,7 +2087,7 @@ AutoPtr<IUri> Uri::CreateEmpty()
 }
 const AutoPtr<IUri> Uri::EMPTY = CreateEmpty();
 
-ECode Uri::GetEmpty(
+ECode Uri::GetEMPTY(
     /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(*result)
@@ -2127,8 +2126,8 @@ ECode Uri::Equals(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (!(o instanceof Uri)) {
-            return false;
+        if (!(IUri::Probe(o) != NULL)) {
+            return FALSE;
         }
         Uri other = (Uri) o;
         return toString().equals(other.toString());
@@ -2141,7 +2140,6 @@ ECode Uri::GetHashCode(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return toString().hashCode();
-
 #endif
 }
 
@@ -2152,7 +2150,6 @@ ECode Uri::CompareTo(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return toString().compareTo(other.toString());
-
 #endif
 }
 
@@ -2163,15 +2160,15 @@ ECode Uri::ToSafeString(
 #if 0 // TODO: Translate codes below
         String scheme = getScheme();
         String ssp = getSchemeSpecificPart();
-        if (scheme != null) {
+        if (scheme != NULL) {
             if (scheme.equalsIgnoreCase("tel") || scheme.equalsIgnoreCase("sip")
                     || scheme.equalsIgnoreCase("sms") || scheme.equalsIgnoreCase("smsto")
                     || scheme.equalsIgnoreCase("mailto")) {
                 StringBuilder builder = new StringBuilder(64);
                 builder.append(scheme);
                 builder.append(':');
-                if (ssp != null) {
-                    for (int i=0; i<ssp.length(); i++) {
+                if (ssp != NULL) {
+                    for (Int32 i=0; i<ssp.length(); i++) {
                         char c = ssp.charAt(i);
                         if (c == '-' || c == '@' || c == '.') {
                             builder.append(c);
@@ -2187,15 +2184,14 @@ ECode Uri::ToSafeString(
         // the data we include -- only the ssp, not the query params or
         // fragment, because those can often have sensitive info.
         StringBuilder builder = new StringBuilder(64);
-        if (scheme != null) {
+        if (scheme != NULL) {
             builder.append(scheme);
             builder.append(':');
         }
-        if (ssp != null) {
+        if (ssp != NULL) {
             builder.append(ssp);
         }
         return builder.toString();
-
 #endif
 }
 
@@ -2206,7 +2202,6 @@ ECode Uri::Parse(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return new StringUri(uriString);
-
 #endif
 }
 
@@ -2216,13 +2211,12 @@ ECode Uri::FromFile(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (file == null) {
+        if (file == NULL) {
             throw new NullPointerException("file");
         }
         PathPart path = PathPart.fromDecoded(file.getAbsolutePath());
         return new HierarchicalUri(
                 "file", Part.EMPTY, path, Part.NULL, Part.NULL);
-
 #endif
 }
 
@@ -2234,15 +2228,14 @@ ECode Uri::FromParts(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (scheme == null) {
+        if (scheme == NULL) {
             throw new NullPointerException("scheme");
         }
-        if (ssp == null) {
+        if (ssp == NULL) {
             throw new NullPointerException("ssp");
         }
         return new OpaqueUri(scheme, Part.fromDecoded(ssp),
                 Part.fromDecoded(fragment));
-
 #endif
 }
 
@@ -2255,15 +2248,15 @@ ECode Uri::GetQueryParameterNames(
             throw new UnsupportedOperationException(NOT_HIERARCHICAL);
         }
         String query = getEncodedQuery();
-        if (query == null) {
+        if (query == NULL) {
             return Collections.emptySet();
         }
         Set<String> names = new LinkedHashSet<String>();
-        int start = 0;
+        Int32 start = 0;
         do {
-            int next = query.indexOf('&', start);
-            int end = (next == -1) ? query.length() : next;
-            int separator = query.indexOf('=', start);
+            Int32 next = query.indexOf('&', start);
+            Int32 end = (next == -1) ? query.length() : next;
+            Int32 separator = query.indexOf('=', start);
             if (separator > end || separator == -1) {
                 separator = end;
             }
@@ -2273,7 +2266,6 @@ ECode Uri::GetQueryParameterNames(
             start = end + 1;
         } while (start < query.length());
         return Collections.unmodifiableSet(names);
-
 #endif
 }
 
@@ -2286,11 +2278,11 @@ ECode Uri::GetQueryParameters(
         if (isOpaque()) {
             throw new UnsupportedOperationException(NOT_HIERARCHICAL);
         }
-        if (key == null) {
+        if (key == NULL) {
           throw new NullPointerException("key");
         }
         String query = getEncodedQuery();
-        if (query == null) {
+        if (query == NULL) {
             return Collections.emptyList();
         }
         String encodedKey;
@@ -2300,11 +2292,11 @@ ECode Uri::GetQueryParameters(
             throw new AssertionError(e);
         }
         ArrayList<String> values = new ArrayList<String>();
-        int start = 0;
+        Int32 start = 0;
         do {
-            int nextAmpersand = query.indexOf('&', start);
-            int end = nextAmpersand != -1 ? nextAmpersand : query.length();
-            int separator = query.indexOf('=', start);
+            Int32 nextAmpersand = query.indexOf('&', start);
+            Int32 end = nextAmpersand != -1 ? nextAmpersand : query.length();
+            Int32 separator = query.indexOf('=', start);
             if (separator > end || separator == -1) {
                 separator = end;
             }
@@ -2322,9 +2314,8 @@ ECode Uri::GetQueryParameters(
             } else {
                 break;
             }
-        } while (true);
+        } while (TRUE);
         return Collections.unmodifiableList(values);
-
 #endif
 }
 
@@ -2337,20 +2328,20 @@ ECode Uri::GetQueryParameter(
         if (isOpaque()) {
             throw new UnsupportedOperationException(NOT_HIERARCHICAL);
         }
-        if (key == null) {
+        if (key == NULL) {
             throw new NullPointerException("key");
         }
         final String query = getEncodedQuery();
-        if (query == null) {
-            return null;
+        if (query == NULL) {
+            return NULL;
         }
-        final String encodedKey = encode(key, null);
-        final int length = query.length();
-        int start = 0;
+        final String encodedKey = encode(key, NULL);
+        final Int32 length = query.length();
+        Int32 start = 0;
         do {
-            int nextAmpersand = query.indexOf('&', start);
-            int end = nextAmpersand != -1 ? nextAmpersand : length;
-            int separator = query.indexOf('=', start);
+            Int32 nextAmpersand = query.indexOf('&', start);
+            Int32 end = nextAmpersand != -1 ? nextAmpersand : length;
+            Int32 separator = query.indexOf('=', start);
             if (separator > end || separator == -1) {
                 separator = end;
             }
@@ -2360,7 +2351,7 @@ ECode Uri::GetQueryParameter(
                     return "";
                 } else {
                     String encodedValue = query.substring(separator + 1, end);
-                    return UriCodec.decode(encodedValue, true, StandardCharsets.UTF_8, false);
+                    return UriCodec.decode(encodedValue, TRUE, StandardCharsets.UTF_8, FALSE);
                 }
             }
             // Move start to end of name.
@@ -2369,9 +2360,8 @@ ECode Uri::GetQueryParameter(
             } else {
                 break;
             }
-        } while (true);
-        return null;
-
+        } while (TRUE);
+        return NULL;
 #endif
 }
 
@@ -2383,12 +2373,11 @@ ECode Uri::GetBooleanQueryParameter(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         String flag = getQueryParameter(key);
-        if (flag == null) {
+        if (flag == NULL) {
             return defaultValue;
         }
         flag = flag.toLowerCase(Locale.ROOT);
         return (!"false".equals(flag) && !"0".equals(flag));
-
 #endif
 }
 
@@ -2398,11 +2387,10 @@ ECode Uri::NormalizeScheme(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         String scheme = getScheme();
-        if (scheme == null) return this;  // give up
+        if (scheme == NULL) return this;  // give up
         String lowerScheme = scheme.toLowerCase(Locale.ROOT);
         if (scheme.equals(lowerScheme)) return this;  // no change
         return buildUpon().scheme(lowerScheme).build();
-
 #endif
 }
 
@@ -2411,12 +2399,11 @@ ECode Uri::WriteToParcel(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (uri == null) {
+        if (uri == NULL) {
             out.writeInt(NULL_TYPE_ID);
         } else {
             uri.writeToParcel(out, 0);
         }
-
 #endif
 }
 
@@ -2442,8 +2429,7 @@ ECode Uri::Encode(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return encode(s, null);
-
+        return encode(s, NULL);
 #endif
 }
 
@@ -2454,20 +2440,20 @@ ECode Uri::Encode(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (s == null) {
-            return null;
+        if (s == NULL) {
+            return NULL;
         }
         // Lazily-initialized buffers.
-        StringBuilder encoded = null;
-        int oldLength = s.length();
+        StringBuilder encoded = NULL;
+        Int32 oldLength = s.length();
         // This loop alternates between copying over allowed characters and
         // encoding in chunks. This results in fewer method calls and
         // allocations than encoding one character at a time.
-        int current = 0;
+        Int32 current = 0;
         while (current < oldLength) {
             // Start in "copying" mode where we copy over allowed chars.
             // Find the next character which needs to be encoded.
-            int nextToEncode = current;
+            Int32 nextToEncode = current;
             while (nextToEncode < oldLength
                     && isAllowed(s.charAt(nextToEncode), allow)) {
                 nextToEncode++;
@@ -2483,7 +2469,7 @@ ECode Uri::Encode(
                     return encoded.toString();
                 }
             }
-            if (encoded == null) {
+            if (encoded == NULL) {
                 encoded = new StringBuilder();
             }
             if (nextToEncode > current) {
@@ -2495,7 +2481,7 @@ ECode Uri::Encode(
             // Switch to "encoding" mode.
             // Find the next allowed character.
             current = nextToEncode;
-            int nextAllowed = current + 1;
+            Int32 nextAllowed = current + 1;
             while (nextAllowed < oldLength
                     && !isAllowed(s.charAt(nextAllowed), allow)) {
                 nextAllowed++;
@@ -2505,8 +2491,8 @@ ECode Uri::Encode(
             String toEncode = s.substring(current, nextAllowed);
             try {
                 byte[] bytes = toEncode.getBytes(DEFAULT_ENCODING);
-                int bytesLength = bytes.length;
-                for (int i = 0; i < bytesLength; i++) {
+                Int32 bytesLength = bytes.length;
+                for (Int32 i = 0; i < bytesLength; i++) {
                     encoded.append('%');
                     encoded.append(HEX_DIGITS[(bytes[i] & 0xf0) >> 4]);
                     encoded.append(HEX_DIGITS[bytes[i] & 0xf]);
@@ -2517,8 +2503,7 @@ ECode Uri::Encode(
             current = nextAllowed;
         }
         // Encoded could still be null at this point if s is empty.
-        return encoded == null ? s : encoded.toString();
-
+        return encoded == NULL ? s : encoded.toString();
 #endif
 }
 
@@ -2533,8 +2518,7 @@ ECode Uri::IsAllowed(
                 || (c >= 'a' && c <= 'z')
                 || (c >= '0' && c <= '9')
                 || "_-!.~'()*".indexOf(c) != NOT_FOUND
-                || (allow != null && allow.indexOf(c) != NOT_FOUND);
-
+                || (allow != NULL && allow.indexOf(c) != NOT_FOUND);
 #endif
 }
 
@@ -2544,11 +2528,10 @@ ECode Uri::Decode(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (s == null) {
-            return null;
+        if (s == NULL) {
+            return NULL;
         }
-        return UriCodec.decode(s, false, StandardCharsets.UTF_8, false);
-
+        return UriCodec.decode(s, FALSE, StandardCharsets.UTF_8, FALSE);
 #endif
 }
 
@@ -2562,7 +2545,6 @@ ECode Uri::WithAppendedPath(
         Builder builder = baseUri.buildUpon();
         builder = builder.appendEncodedPath(pathSegment);
         return builder.build();
-
 #endif
 }
 
@@ -2582,7 +2564,7 @@ ECode Uri::GetCanonicalUri(
                 final String legacyPath = Environment.getLegacyExternalStorageDirectory()
                         .toString();
                 // Splice in user-specific path when legacy path is found
-                if (canonicalPath.startsWith(legacyPath)) {
+                if (canonicalPath.StartWith(legacyPath)) {
                     return Uri.fromFile(new File(
                             Environment.getExternalStorageDirectory().toString(),
                             canonicalPath.substring(legacyPath.length() + 1)));
@@ -2592,7 +2574,6 @@ ECode Uri::GetCanonicalUri(
         } else {
             return this;
         }
-
 #endif
 }
 
@@ -2604,7 +2585,6 @@ ECode Uri::CheckFileUriExposed(
         if ("file".equals(getScheme())) {
             StrictMode.onFileUriExposed(location);
         }
-
 #endif
 }
 
@@ -2614,19 +2594,18 @@ ECode Uri::IsPathPrefixMatch(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (!Objects.equals(getScheme(), prefix.getScheme())) return false;
-        if (!Objects.equals(getAuthority(), prefix.getAuthority())) return false;
+        if (!Objects.equals(getScheme(), prefix.getScheme())) return FALSE;
+        if (!Objects.equals(getAuthority(), prefix.getAuthority())) return FALSE;
         List<String> seg = getPathSegments();
         List<String> prefixSeg = prefix.getPathSegments();
-        final int prefixSize = prefixSeg.size();
-        if (seg.size() < prefixSize) return false;
-        for (int i = 0; i < prefixSize; i++) {
+        final Int32 prefixSize = prefixSeg.size();
+        if (seg.size() < prefixSize) return FALSE;
+        for (Int32 i = 0; i < prefixSize; i++) {
             if (!Objects.equals(seg.get(i), prefixSeg.get(i))) {
-                return false;
+                return FALSE;
             }
         }
-        return true;
-
+        return TRUE;
 #endif
 }
 

@@ -10,6 +10,7 @@
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::ISparseArray;
 using Elastos::IO::ICloseable;
 using Elastos::IO::InputStream;
 using Elastos::Utility::Etl::HashMap;
@@ -379,6 +380,18 @@ public:
         /* [in] */ ArrayOf<String>* paths,
         /* [out, callee] */ ArrayOf<Int32>** cookies);
 
+     /**
+     * Add a set of assets to overlay an already added set of assets.
+     *
+     * This is only intended for application resources. System wide resources
+     * are handled before any Java code is executed.
+     *
+     * {@hide}
+     */
+    CARAPI AddOverlayPath(
+        /* [in] */ const String& idmapPath,
+        /* [out] */ Int32* cookie);
+
     /**
      * Determine whether the state in this asset manager is up-to-date with
      * the files on the filesystem.  If false is returned, you need to
@@ -496,11 +509,11 @@ public:
     /**
      * {@hide}
      */
-    AutoPtr<HashMap<Int32, String> > GetAssignedPackageIdentifiers();
-
+    GetAssignedPackageIdentifiers(
+        /* [out] */ ISparseArray** array);
 
     CARAPI GetNativeAssetManager(
-        /* [out] */ Int32* assetMgr);
+        /* [out] */ Int64* assetMgr);
 
     /**
      * {@hide}

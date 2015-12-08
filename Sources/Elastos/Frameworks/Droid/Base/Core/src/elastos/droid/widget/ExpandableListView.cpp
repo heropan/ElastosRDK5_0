@@ -1,94 +1,286 @@
 
 #include "elastos/droid/widget/ExpandableListView.h"
-#include "elastos/droid/widget/ExpandableListPosition.h"
-#include "elastos/droid/widget/CExpandableListPosition.h"
+#include "elastos/droid/widget/CExpandableListContextMenuInfo.h"
+#include "elastos/droid/widget/CExpandableListViewSavedState.h"
 #include "elastos/droid/widget/CExpandableListConnector.h"
-#include "elastos/droid/widget/PositionMetadata.h"
+#include "elastos/droid/widget/ExpandableListPosition.h"
 #include "elastos/droid/widget/GroupMetadata.h"
-/*#include "elastos/droid/widget/ExpandableListViewSavedState.h"
-#include "elastos/droid/widget/CExpandableListViewSavedState.h"*/
+#include "elastos/droid/widget/PositionMetadata.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
-//#include <elastos/utility/logging/Logger.h>
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/CoreUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-//using Elastos::Utility::Logging::Logger;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::SoundEffectConstants;
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::R;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const Int32 ExpandableListView::PACKED_POSITION_TYPE_GROUP;
-const Int32 ExpandableListView::PACKED_POSITION_TYPE_CHILD;
-const Int32 ExpandableListView::PACKED_POSITION_TYPE_NULL;
-const Int64 ExpandableListView::PACKED_POSITION_VALUE_NULL;
-const Int32 ExpandableListView::CHILD_INDICATOR_INHERIT;
+const Int64 ExpandableListView::PACKED_POSITION_MASK_CHILD = 0x00000000FFFFFFFFL;
+const Int64 ExpandableListView::PACKED_POSITION_MASK_GROUP = 0x7FFFFFFF00000000L;
+const Int64 ExpandableListView::PACKED_POSITION_MASK_TYPE = 0x8000000000000000L;
+const Int64 ExpandableListView::PACKED_POSITION_SHIFT_GROUP = 32;
+const Int64 ExpandableListView::PACKED_POSITION_SHIFT_TYPE = 63;
+const Int64 ExpandableListView::PACKED_POSITION_INT_MASK_CHILD = 0xFFFFFFFF;
+const Int64 ExpandableListView::PACKED_POSITION_INT_MASK_GROUP = 0x7FFFFFFF;
 
-const Int64 ExpandableListView::PACKED_POSITION_MASK_CHILD;
-const Int64 ExpandableListView::PACKED_POSITION_MASK_GROUP;
-const Int64 ExpandableListView::PACKED_POSITION_MASK_TYPE;
-const Int64 ExpandableListView::PACKED_POSITION_SHIFT_GROUP;
-const Int64 ExpandableListView::PACKED_POSITION_SHIFT_TYPE;
-const Int64 ExpandableListView::PACKED_POSITION_INT_MASK_CHILD;
-const Int64 ExpandableListView::PACKED_POSITION_INT_MASK_GROUP;
+const Int32 ExpandableListView::INDICATOR_UNDEFINED = -2;
 
-
-Int32 ExpandableListView::EMPTY_STATE_SET[] = {};
-
-Int32 ExpandableListView::GROUP_EXPANDED_STATE_SET[] =
-        {R::attr::state_expanded};
-
-Int32 ExpandableListView::GROUP_EMPTY_STATE_SET[] =
-        {R::attr::state_empty};
-
-Int32 ExpandableListView::GROUP_EXPANDED_EMPTY_STATE_SET[] =
-        {R::attr::state_expanded, R::attr::state_empty};
-
-Int32* ExpandableListView::GROUP_STATE_SETS[]= {
-     EMPTY_STATE_SET, // 00
-     GROUP_EXPANDED_STATE_SET, // 01
-     GROUP_EMPTY_STATE_SET, // 10
-     GROUP_EXPANDED_EMPTY_STATE_SET // 11
-};
-
-Int32 ExpandableListView::CHILD_LAST_STATE_SET[] =
-        {R::attr::state_last};
-
-
-CAR_INTERFACE_IMPL(ExpandableListView::ExpandableListContextMenuInfo, IContextMenuInfo)
-
-ExpandableListView::ExpandableListView() :
-    mIndicatorLeft(0),
-    mIndicatorRight(0),
-    mChildIndicatorLeft(0),
-    mChildIndicatorRight(0)
+static AutoPtr< ArrayOf<Int32> > InitEMPTY_STATE_SET()
 {
+    AutoPtr< ArrayOf<Int32> > arg = ArrayOf<Int32>::Alloc(0);
+    return arg;
 }
 
-ExpandableListView::ExpandableListView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle) :
-    ListView(context, attrs, defStyle),
-    mIndicatorLeft(0),
-    mIndicatorRight(0),
-    mChildIndicatorLeft(0),
-    mChildIndicatorRight(0)
+const AutoPtr< ArrayOf<Int32> > ExpandableListView::EMPTY_STATE_SET = InitEMPTY_STATE_SET();
+
+static AutoPtr< ArrayOf<Int32> > InitGROUP_EXPANDED_STATE_SET()
 {
-    Init(context, attrs, defStyle);
+    AutoPtr< ArrayOf<Int32> > arg = ArrayOf<Int32>::Alloc(1);
+    (*arg)[0] = R::attr::state_expanded;
+    return arg;
 }
 
-ECode ExpandableListView::Init(
+const AutoPtr< ArrayOf<Int32> > ExpandableListView::GROUP_EXPANDED_STATE_SET = InitGROUP_EXPANDED_STATE_SET();
+
+static AutoPtr< ArrayOf<Int32> > InitGROUP_EMPTY_STATE_SET()
+{
+    AutoPtr< ArrayOf<Int32> > arg = ArrayOf<Int32>::Alloc(1);
+    (*arg)[0] = R::attr::state_empty;
+    return arg;
+}
+
+const AutoPtr< ArrayOf<Int32> > ExpandableListView::GROUP_EMPTY_STATE_SET = InitGROUP_EMPTY_STATE_SET();
+
+static AutoPtr< ArrayOf<Int32> > InitGROUP_EXPANDED_EMPTY_STATE_SET()
+{
+    AutoPtr< ArrayOf<Int32> > arg = ArrayOf<Int32>::Alloc(2);
+    (*arg)[0] = R::attr::state_expanded;
+    (*arg)[1] = R::attr::state_empty;
+    return arg;
+}
+
+const AutoPtr< ArrayOf<Int32> > ExpandableListView::GROUP_EXPANDED_EMPTY_STATE_SET = InitGROUP_EXPANDED_EMPTY_STATE_SET();
+
+AutoPtr< ArrayOf< ArrayOf<Int32>* > > ExpandableListView::InitGROUP_STATE_SETS()
+{
+    AutoPtr< ArrayOf< ArrayOf<Int32>* > > arg = ArrayOf< ArrayOf<Int32>* >::Alloc(4);
+    (*arg)[0] = EMPTY_STATE_SET; //00
+    (*arg)[1] = GROUP_EXPANDED_STATE_SET; //01
+    (*arg)[2] = GROUP_EMPTY_STATE_SET; //10
+    (*arg)[3] = GROUP_EXPANDED_EMPTY_STATE_SET; //11
+    return arg;
+}
+
+const AutoPtr< ArrayOf< ArrayOf<Int32>* > > ExpandableListView::GROUP_STATE_SETS = InitGROUP_STATE_SETS();
+
+static AutoPtr< ArrayOf<Int32> > InitCHILD_LAST_STATE_SET()
+{
+    AutoPtr< ArrayOf<Int32> > arg = ArrayOf<Int32>::Alloc(1);
+    (*arg)[0] = R::attr::state_last;
+    return arg;
+}
+
+const AutoPtr< ArrayOf<Int32> > ExpandableListView::CHILD_LAST_STATE_SET = InitCHILD_LAST_STATE_SET();
+
+//==============================================================================
+//          ExpandableListView::ExpandableListContextMenuInfo
+//==============================================================================
+
+CAR_INTERFACE_IMPL(ExpandableListView::ExpandableListContextMenuInfo, Object, IExpandableListContextMenuInfo)
+
+ExpandableListView::ExpandableListContextMenuInfo::ExpandableListContextMenuInfo()
+    : mPackedPosition(0)
+    , mId(0)
+{}
+
+ExpandableListView::ExpandableListContextMenuInfo::~ExpandableListContextMenuInfo()
+{}
+
+ECode ExpandableListView::ExpandableListContextMenuInfo::constructor(
+    /* [in] */ IView* targetView,
+    /* [in] */ Int64 packedPosition,
+    /* [in] */ Int64 id)
+{
+    mTargetView = targetView;
+    mPackedPosition = packedPosition;
+    mId = id;
+    return NOERROR;
+}
+
+ECode ExpandableListView::ExpandableListContextMenuInfo::SetTargetView(
+    /* [in] */ IView* targetView)
+{
+    mTargetView = targetView;
+    return NOERROR;
+}
+
+ECode ExpandableListView::ExpandableListContextMenuInfo::GetTargetView(
+    /* [out] */ IView** targetView)
+{
+    VALIDATE_NOT_NULL(targetView);
+    *targetView = mTargetView;
+    REFCOUNT_ADD(*targetView);
+    return NOERROR;
+}
+
+ECode ExpandableListView::ExpandableListContextMenuInfo::SetPackedPosition(
+    /* [in] */ Int64 packedPosition)
+{
+    mPackedPosition = packedPosition;
+    return NOERROR;
+}
+
+ECode ExpandableListView::ExpandableListContextMenuInfo::GetPackedPosition(
+    /* [out] */ Int64* packedPosition)
+{
+    VALIDATE_NOT_NULL(packedPosition);
+    *packedPosition = mPackedPosition;
+    return NOERROR;
+}
+
+ECode ExpandableListView::ExpandableListContextMenuInfo::SetId(
+    /* [in] */ Int64 id)
+{
+    mId = id;
+    return NOERROR;
+}
+
+ECode ExpandableListView::ExpandableListContextMenuInfo::GetId(
+    /* [out] */ Int64* id)
+{
+    VALIDATE_NOT_NULL(id);
+    *id = mId;
+    return NOERROR;
+}
+
+//==============================================================================
+//          ExpandableListView::SavedState
+//==============================================================================
+
+CAR_INTERFACE_IMPL(ExpandableListView::SavedState, View::BaseSavedState, IExpandableListViewSavedState);
+
+ExpandableListView::SavedState::SavedState()
+{}
+
+ExpandableListView::SavedState::~SavedState()
+{}
+
+ECode ExpandableListView::SavedState::constructor()
+{
+    return View::BaseSavedState::constructor();
+}
+
+ECode ExpandableListView::SavedState::constructor(
+    /* [in] */ IParcelable* superState,
+    /* [in] */ IArrayList* expandedGroupMetadataList)
+{
+    View::BaseSavedState::constructor(superState);
+    mExpandedGroupMetadataList = expandedGroupMetadataList;
+    return NOERROR;
+}
+
+ECode ExpandableListView::SavedState::WriteToParcel(
+    /* [in] */ IParcel* out)
+{
+    FAIL_RETURN(View::BaseSavedState::WriteToParcel(out));
+
+    Int32 size = mExpandedGroupMetadataList != NULL ? (mExpandedGroupMetadataList->GetSize(&size), size) : 0;
+    out->WriteInt32(size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> value;
+        mExpandedGroupMetadataList->Get(i, (IInterface**)&value);
+        out->WriteInterfacePtr(IGroupMetadata::Probe(value));
+    }
+
+    return NOERROR;
+}
+
+ECode ExpandableListView::SavedState::ReadFromParcel(
+    /* [in] */ IParcel* in)
+{
+    FAIL_RETURN(View::BaseSavedState::ReadFromParcel(in));
+
+    Int32 size;
+    in->ReadInt32(&size);
+    if (size > 0) {
+        if (!mExpandedGroupMetadataList) {
+            CArrayList::New((IArrayList**)&mExpandedGroupMetadataList);
+        }
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> value;
+            in->ReadInterfacePtr((Handle32*)(IGroupMetadata**)&value);
+            mExpandedGroupMetadataList->Add(value);
+        }
+    }
+
+    return NOERROR;
+}
+
+//==============================================================================
+//          ExpandableListView
+//==============================================================================
+
+CAR_INTERFACE_IMPL(ExpandableListView, ListView, IExpandableListView);
+
+ExpandableListView::ExpandableListView()
+    : mIndicatorLeft(0)
+    , mIndicatorRight(0)
+    , mIndicatorStart(0)
+    , mIndicatorEnd(0)
+    , mChildIndicatorLeft(0)
+    , mChildIndicatorRight(0)
+    , mChildIndicatorStart(0)
+    , mChildIndicatorEnd(0)
+{}
+
+ExpandableListView::~ExpandableListView()
+{}
+
+ECode ExpandableListView::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
+
+ECode ExpandableListView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::expandableListViewStyle);
+}
+
+ECode ExpandableListView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode ExpandableListView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    ListView::constructor(context, attrs, defStyleAttr, defStyleRes);
+
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ExpandableListView),
             ARRAY_SIZE(R::styleable::ExpandableListView));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     a->GetDrawable(R::styleable::ExpandableListView_groupIndicator, (IDrawable**)&mGroupIndicator);
     a->GetDrawable(R::styleable::ExpandableListView_childIndicator, (IDrawable**)&mChildIndicator);
@@ -105,8 +297,101 @@ ECode ExpandableListView::Init(
             R::styleable::ExpandableListView_childIndicatorRight, CHILD_INDICATOR_INHERIT, &mChildIndicatorRight);
     a->GetDrawable(R::styleable::ExpandableListView_childDivider, (IDrawable**)&mChildDivider);
 
+    if (!IsRtlCompatibilityMode()) {
+        a->GetDimensionPixelSize(
+                R::styleable::ExpandableListView_indicatorStart,
+                INDICATOR_UNDEFINED, &mIndicatorStart);
+        a->GetDimensionPixelSize(
+                R::styleable::ExpandableListView_indicatorEnd,
+                INDICATOR_UNDEFINED, &mIndicatorEnd);
+
+        a->GetDimensionPixelSize(
+                R::styleable::ExpandableListView_childIndicatorStart,
+                CHILD_INDICATOR_INHERIT, &mChildIndicatorStart);
+        a->GetDimensionPixelSize(
+                R::styleable::ExpandableListView_childIndicatorEnd,
+                CHILD_INDICATOR_INHERIT, &mChildIndicatorEnd);
+    }
+
     a->Recycle();
     return NOERROR;
+}
+
+Boolean ExpandableListView::IsRtlCompatibilityMode()
+{
+    AutoPtr<IApplicationInfo> info;
+    mContext->GetApplicationInfo((IApplicationInfo**)&info);
+
+    Int32 targetSdkVersion;
+    info->GetTargetSdkVersion(&targetSdkVersion);
+    return targetSdkVersion < Build::VERSION_CODES::JELLY_BEAN_MR1 || !HasRtlSupport();
+}
+
+Boolean ExpandableListView::HasRtlSupport()
+{
+    AutoPtr<IApplicationInfo> info;
+    mContext->GetApplicationInfo((IApplicationInfo**)&info);
+
+    Boolean res;
+    info->HasRtlSupport(&res);
+    return res;
+}
+
+ECode ExpandableListView::OnRtlPropertiesChanged(
+    /* [in] */ Int32 layoutDirection)
+{
+    ResolveIndicator();
+    ResolveChildIndicator();
+    return NOERROR;
+}
+
+void ExpandableListView::ResolveIndicator()
+{
+    Boolean isLayoutRtl;
+    IsLayoutRtl(&isLayoutRtl);
+    if (isLayoutRtl) {
+        if (mIndicatorStart >= 0) {
+            mIndicatorRight = mIndicatorStart;
+        }
+        if (mIndicatorEnd >= 0) {
+            mIndicatorLeft = mIndicatorEnd;
+        }
+    }
+    else {
+        if (mIndicatorStart >= 0) {
+            mIndicatorLeft = mIndicatorStart;
+        }
+        if (mIndicatorEnd >= 0) {
+            mIndicatorRight = mIndicatorEnd;
+        }
+    }
+    if (mIndicatorRight == 0 && mGroupIndicator != NULL) {
+        Int32 width;
+        mGroupIndicator->GetIntrinsicWidth(&width);
+        mIndicatorRight = mIndicatorLeft + width;
+    }
+}
+
+void ExpandableListView::ResolveChildIndicator()
+{
+    Boolean isLayoutRtl;
+    IsLayoutRtl(&isLayoutRtl);
+    if (isLayoutRtl) {
+        if (mChildIndicatorStart >= CHILD_INDICATOR_INHERIT) {
+            mChildIndicatorRight = mChildIndicatorStart;
+        }
+        if (mChildIndicatorEnd >= CHILD_INDICATOR_INHERIT) {
+            mChildIndicatorLeft = mChildIndicatorEnd;
+        }
+    }
+    else {
+        if (mChildIndicatorStart >= CHILD_INDICATOR_INHERIT) {
+            mChildIndicatorLeft = mChildIndicatorStart;
+        }
+        if (mChildIndicatorEnd >= CHILD_INDICATOR_INHERIT) {
+            mChildIndicatorRight = mChildIndicatorEnd;
+        }
+    }
 }
 
 void ExpandableListView::DispatchDraw(
@@ -134,7 +419,6 @@ void ExpandableListView::DispatchDraw(
     Int32 lastChildFlPos = mItemCount - GetFooterViewsCount() - headerViewsCount - 1;
     Int32 myB = mBottom;
 
-
     AutoPtr<IView> item;
     AutoPtr<IDrawable> indicator;
     Int32 t = 0;
@@ -143,17 +427,20 @@ void ExpandableListView::DispatchDraw(
     Int32 lastItemType = ~(ExpandableListPosition::CHILD | ExpandableListPosition::GROUP);
     AutoPtr<IRect> indicatorRect = mIndicatorRect;
 
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     for (Int32 i = 0, childFlPos = mFirstPosition - headerViewsCount; i < childCount;
-         i++, childFlPos++) {
+            i++, childFlPos++) {
 
         if (childFlPos < 0) {
             continue;
-        } else if (childFlPos > lastChildFlPos) {
+        }
+        else if (childFlPos > lastChildFlPos) {
             break;
         }
 
-        item = GetChildAt(i);
+        item =NULL;
+        GetChildAt(i, (IView**)&item);
         item->GetTop(&t);
         item->GetBottom(&b);
 
@@ -161,31 +448,50 @@ void ExpandableListView::DispatchDraw(
 
         AutoPtr<IPositionMetadata> pos;
         mConnector->GetUnflattenedPos(childFlPos, (IPositionMetadata**)&pos);
-        CExpandableListPosition* elpos = (CExpandableListPosition*)(((PositionMetadata*)pos.Get())->mPosition.Get());
-        if (elpos->type != lastItemType) {
-            if (elpos->type == ExpandableListPosition::CHILD) {
+
+        Boolean isLayoutRtl;
+        IsLayoutRtl(&isLayoutRtl);
+        Int32 width;
+        GetWidth(&width);
+
+        AutoPtr<ExpandableListPosition> elpos = (ExpandableListPosition*)(((PositionMetadata*)pos.Get())->mPosition.Get());
+        AutoPtr<CRect> rect = (CRect*)indicatorRect.Get();
+        if (elpos->mType != lastItemType) {
+            if (elpos->mType == ExpandableListPosition::CHILD) {
                 indicatorRect->SetLeft((mChildIndicatorLeft == CHILD_INDICATOR_INHERIT) ?
                         mIndicatorLeft : mChildIndicatorLeft);
                 indicatorRect->SetRight((mChildIndicatorRight == CHILD_INDICATOR_INHERIT) ?
                         mIndicatorRight : mChildIndicatorRight);
-            } else {
+            }
+            else {
                 indicatorRect->SetLeft(mIndicatorLeft);
                 indicatorRect->SetRight(mIndicatorRight);
             }
 
-            ((CRect*)indicatorRect.Get())->mLeft += mPaddingLeft;
-            ((CRect*)indicatorRect.Get())->mRight += mPaddingLeft;
+            if (isLayoutRtl) {
+                const Int32 temp = rect->mLeft;
+                rect->mLeft = width - rect->mRight;
+                rect->mRight = width - temp;
 
-            lastItemType = elpos->type;
+                rect->mLeft -= mPaddingRight;
+                rect->mRight -= mPaddingRight;
+            }
+            else {
+                rect->mLeft += mPaddingLeft;
+                rect->mRight += mPaddingLeft;
+            }
+
+            lastItemType = elpos->mType;
         }
 
-        if (((CRect*)indicatorRect.Get())->mLeft != ((CRect*)indicatorRect.Get())->mRight) {
+        if (rect->mLeft != rect->mRight) {
             if (mStackFromBottom) {
-                ((CRect*)indicatorRect.Get())->mTop = t;
-                ((CRect*)indicatorRect.Get())->mBottom = b;
-            } else {
-                ((CRect*)indicatorRect.Get())->mTop = t;
-                ((CRect*)indicatorRect.Get())->mBottom = b;
+                rect->mTop = t;
+                rect->mBottom = b;
+            }
+            else {
+                rect->mTop = t;
+                rect->mBottom = b;
             }
 
             indicator = GetIndicator(pos);
@@ -207,8 +513,8 @@ AutoPtr<IDrawable> ExpandableListView::GetIndicator(
     /* [in] */ IPositionMetadata* pos)
 {
     AutoPtr<IDrawable> indicator = NULL;
-    CExpandableListPosition* elpos = (CExpandableListPosition*)(((PositionMetadata*)pos)->mPosition.Get());
-    if (elpos->type == ExpandableListPosition::GROUP) {
+    AutoPtr<ExpandableListPosition> elpos = (ExpandableListPosition*)(((PositionMetadata*)pos)->mPosition.Get());
+    if (elpos->mType == ExpandableListPosition::GROUP) {
         indicator = mGroupIndicator;
 
         Boolean stateful = FALSE;
@@ -226,20 +532,26 @@ AutoPtr<IDrawable> ExpandableListView::GetIndicator(
                 (isEmpty ? 2 : 0); // Empty?
 
             Boolean res;
-            //indicator->SetState(ArrayOf<Int32>(GROUP_STATE_SETS[stateSetIndex]), &res);
+            indicator->SetState((*GROUP_STATE_SETS)[stateSetIndex], &res);
         }
-    } else {
+    }
+    else {
         indicator = mChildIndicator;
 
         Boolean stateful = FALSE;
         if (indicator != NULL && (indicator->IsStateful(&stateful), stateful)) {
             // No need for a state sets array for the child since it only has two states
-            Int32* stateSet = elpos->flatListPos == ((GroupMetadata*)(((PositionMetadata*)pos)->mGroupMetadata.Get()))->mLastChildFlPos
-                    ? CHILD_LAST_STATE_SET
-                    : EMPTY_STATE_SET;
+            AutoPtr<GroupMetadata> gmData = (GroupMetadata*)(((PositionMetadata*)pos)->mGroupMetadata.Get());
+            AutoPtr< ArrayOf<Int32> > stateSet;
+            if (elpos->mFlatListPos == gmData->mLastChildFlPos) {
+                stateSet = CHILD_LAST_STATE_SET;
+            }
+            else {
+                stateSet = EMPTY_STATE_SET;
+            }
 
             Boolean res;
-            //indicator->SetState(ArrayOf<Int32>(stateSet, ), &res);
+            indicator->SetState(stateSet, &res);
         }
     }
 
@@ -271,8 +583,8 @@ void ExpandableListView::DrawDivider(
 
         Boolean expanded;
         pos->IsExpanded(&expanded);
-        CExpandableListPosition* elpos = (CExpandableListPosition*)(((PositionMetadata*)pos.Get())->mPosition.Get());
-        if ((elpos->type == ExpandableListPosition::CHILD) || (expanded &&
+        AutoPtr<ExpandableListPosition> elpos = (ExpandableListPosition*)(((PositionMetadata*)pos.Get())->mPosition.Get());
+        if ((elpos->mType == ExpandableListPosition::CHILD) || (expanded &&
                 ((GroupMetadata*)((PositionMetadata*)pos.Get())->mGroupMetadata.Get())->mLastChildFlPos != ((GroupMetadata*)((PositionMetadata*)pos.Get())->mGroupMetadata.Get())->mFlPos)) {
             // These are the cases where we draw the child divider
             AutoPtr<IDrawable> divider = mChildDivider;
@@ -291,22 +603,21 @@ void ExpandableListView::DrawDivider(
 ECode ExpandableListView::SetAdapter(
     /* [in] */ IAdapter* adapter)
 {
-    /*throw new RuntimeException(
-            "For ExpandableListView, use setAdapter(ExpandableListAdapter) instead of " +
-            "setAdapter(ListAdapter)");*/
+    Logger::E("ExpandableListView", "For ExpandableListView, use setAdapter(ExpandableListAdapter) instead of setAdapter(ListAdapter)");
     return E_RUNTIME_EXCEPTION;
 }
 
-AutoPtr<IAdapter> ExpandableListView::GetAdapter()
+ECode ExpandableListView::GetAdapter(
+    /* [out] */ IAdapter** adapter)
 {
-    return ListView::GetAdapter();
+    VALIDATE_NOT_NULL(adapter);
+    return ListView::GetAdapter(adapter);
 }
 
 ECode ExpandableListView::SetOnItemClickListener(
     /* [in] */ IAdapterViewOnItemClickListener* l)
 {
-    ListView::SetOnItemClickListener(l);
-    return NOERROR;
+    return ListView::SetOnItemClickListener(l);
 }
 
 ECode ExpandableListView::SetAdapter(
@@ -315,16 +626,18 @@ ECode ExpandableListView::SetAdapter(
     mAdapter = adapter;
     mConnector = NULL;
     if (adapter != NULL) {
-        CExpandableListConnector::New((IExpandableListConnector**)&mConnector);
+        CExpandableListConnector::New(adapter, (IExpandableListConnector**)&mConnector);
     }
 
-    ListView::SetAdapter((IListAdapter*)mConnector->Probe(EIID_IListAdapter));
-    return NOERROR;
+    return ListView::SetAdapter(IAdapter::Probe(mConnector));
 }
 
-AutoPtr<IExpandableListAdapter> ExpandableListView::GetExpandableListAdapter()
+ECode ExpandableListView::GetExpandableListAdapter(
+    /* [out] */ IExpandableListAdapter** adapter)
 {
-    return mAdapter;
+    VALIDATE_NOT_NULL(adapter);
+    *adapter = mAdapter;
+    return NOERROR;
 }
 
 Boolean ExpandableListView::IsHeaderOrFooterPosition(
@@ -346,17 +659,20 @@ Int32 ExpandableListView::GetAbsoluteFlatPosition(
     return flatListPosition + GetHeaderViewsCount();
 }
 
-Boolean ExpandableListView::PerformItemClick(
+ECode ExpandableListView::PerformItemClick(
     /* [in] */ IView* v,
     /* [in] */ Int32 position,
-    /* [in] */ Int64 id)
+    /* [in] */ Int64 id,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (IsHeaderOrFooterPosition(position)) {
-        return ListView::PerformItemClick(v, position, id);
+        return ListView::PerformItemClick(v, position, id, result);
     }
 
     Int32 adjustedPosition = GetFlatPositionForConnector(position);
-    return HandleItemClick(v, adjustedPosition, id);
+    *result = HandleItemClick(v, adjustedPosition, id);
+    return NOERROR;
 }
 
 Boolean ExpandableListView::HandleItemClick(
@@ -370,12 +686,14 @@ Boolean ExpandableListView::HandleItemClick(
     id = GetChildOrGroupId(((PositionMetadata*)posMetadata.Get())->mPosition);
 
     Boolean returnValue = FALSE;
-    if (((CExpandableListPosition*)((PositionMetadata*)posMetadata.Get())->mPosition.Get())->type == ExpandableListPosition::GROUP) {
+    AutoPtr<ExpandableListPosition> listPosition = (ExpandableListPosition*)((PositionMetadata*)posMetadata.Get())->mPosition.Get();
+
+    if (listPosition->mType == ExpandableListPosition::GROUP) {
 
         if (mOnGroupClickListener.Get() != NULL) {
             Boolean res = FALSE;
-            mOnGroupClickListener->OnGroupClick((IExpandableListView*)this->Probe(EIID_IExpandableListView), v,
-                ((CExpandableListPosition*)((PositionMetadata*)posMetadata.Get())->mPosition.Get())->groupPos, id, &res);
+            mOnGroupClickListener->OnGroupClick(THIS_PROBE(IExpandableListView), v,
+                listPosition->mGroupPos, id, &res);
             if (res) {
                 posMetadata->Recycle();
                 return TRUE;
@@ -386,41 +704,41 @@ Boolean ExpandableListView::HandleItemClick(
         posMetadata->IsExpanded(&expanded);
         if (expanded) {
             Boolean res = FALSE;
-            ((CExpandableListConnector*)mConnector.Get())->CollapseGroup(posMetadata, &res);
+            mConnector->CollapseGroup(posMetadata, &res);
 
             PlaySoundEffect(SoundEffectConstants::CLICK);
 
             if (mOnGroupCollapseListener.Get() != NULL) {
-                mOnGroupCollapseListener->OnGroupCollapse(((CExpandableListPosition*)((PositionMetadata*)posMetadata.Get())->mPosition.Get())->groupPos);
+                mOnGroupCollapseListener->OnGroupCollapse(listPosition->mGroupPos);
             }
-        } else {
+        }
+        else {
             Boolean rush = FALSE;
-            ((CExpandableListConnector*)mConnector.Get())->CollapseGroup(posMetadata, &rush);
+            mConnector->CollapseGroup(posMetadata, &rush);
 
             PlaySoundEffect(SoundEffectConstants::CLICK);
 
             if (mOnGroupExpandListener.Get() != NULL) {
-                mOnGroupExpandListener->OnGroupExpand(((CExpandableListPosition*)((PositionMetadata*)posMetadata.Get())->mPosition.Get())->groupPos);
+                mOnGroupExpandListener->OnGroupExpand(listPosition->mGroupPos);
             }
 
-            Int32 groupPos = ((CExpandableListPosition*)((PositionMetadata*)posMetadata.Get())->mPosition.Get())->groupPos;
-            Int32 groupFlatPos = ((CExpandableListPosition*)((PositionMetadata*)posMetadata.Get())->mPosition.Get())->flatListPos;
+            Int32 groupPos = listPosition->mGroupPos;
+            Int32 groupFlatPos = listPosition->mFlatListPos;
 
             Int32 shiftedGroupPosition = groupFlatPos + GetHeaderViewsCount();
 
             Int32 count;
             mAdapter->GetChildrenCount(groupPos, &count);
-            SmoothScrollToPosition(shiftedGroupPosition + count,
-                    shiftedGroupPosition);
+            AbsListView::SmoothScrollToPosition(shiftedGroupPosition + count, shiftedGroupPosition);
         }
 
         returnValue = TRUE;
-    } else {
+    }
+    else {
         if (mOnChildClickListener.Get() != NULL) {
             PlaySoundEffect(SoundEffectConstants::CLICK);
-            mOnChildClickListener->OnChildClick((IExpandableListView*)(this->Probe(EIID_IExpandableListView)), v,
-                ((CExpandableListPosition*)((PositionMetadata*)posMetadata.Get())->mPosition.Get())->groupPos,
-                    ((CExpandableListPosition*)((PositionMetadata*)posMetadata.Get())->mPosition.Get())->childPos, id, &returnValue);
+            mOnChildClickListener->OnChildClick(THIS_PROBE(IExpandableListView), v,
+                    listPosition->mGroupPos, listPosition->mChildPos, id, &returnValue);
             return returnValue;
         }
 
@@ -432,18 +750,22 @@ Boolean ExpandableListView::HandleItemClick(
     return returnValue;
 }
 
-Boolean ExpandableListView::ExpandGroup(
-    /* [in] */ Int32 groupPos)
+ECode ExpandableListView::ExpandGroup(
+    /* [in] */ Int32 groupPos,
+    /* [out] */ Boolean* expanded)
 {
-    return ExpandGroup(groupPos, FALSE);
+    VALIDATE_NOT_NULL(expanded);
+    return ExpandGroup(groupPos, FALSE, expanded);
 }
 
-Boolean ExpandableListView::ExpandGroup(
+ECode ExpandableListView::ExpandGroup(
     /* [in] */ Int32 groupPos,
-    /* [in] */ Boolean animate)
+    /* [in] */ Boolean animate,
+    /* [out] */ Boolean* expanded)
 {
+    VALIDATE_NOT_NULL(expanded);
     AutoPtr<IExpandableListPosition> elGroupPos = ExpandableListPosition::Obtain(
-        ExpandableListPosition::GROUP, groupPos, -1, -1);
+            ExpandableListPosition::GROUP, groupPos, -1, -1);
     AutoPtr<IPositionMetadata> pm;
     mConnector->GetFlattenedPos(elGroupPos, (IPositionMetadata**)&pm);
     elGroupPos->Recycle();
@@ -456,20 +778,24 @@ Boolean ExpandableListView::ExpandGroup(
     }
 
     if(animate) {
-        Int32 groupFlatPos = ((CExpandableListPosition*)((PositionMetadata*)pm.Get())->mPosition.Get())->flatListPos;
+        Int32 groupFlatPos = ((ExpandableListPosition*)((PositionMetadata*)pm.Get())->mPosition.Get())->mFlatListPos;
         Int32 shiftedGroupPosition = groupFlatPos + GetHeaderViewsCount();
         Int32 childCount = 0;
         mAdapter->GetChildrenCount(groupPos, &childCount);
-        SmoothScrollToPosition(shiftedGroupPosition + childCount, shiftedGroupPosition);
+        AbsListView::SmoothScrollToPosition(shiftedGroupPosition + childCount, shiftedGroupPosition);
     }
 
     pm->Recycle();
+    *expanded = retValue;
     return NOERROR;
 }
 
-Boolean ExpandableListView::CollapseGroup(
-    /* [in] */ Int32 groupPos)
+ECode ExpandableListView::CollapseGroup(
+    /* [in] */ Int32 groupPos,
+    /* [out] */ Boolean* collapse)
 {
+    VALIDATE_NOT_NULL(collapse);
+
     Boolean retValue = FALSE;
     Boolean res = FALSE;
     retValue = ((CExpandableListConnector*)mConnector.Get())->CollapseGroup(groupPos, &res);
@@ -478,90 +804,115 @@ Boolean ExpandableListView::CollapseGroup(
         mOnGroupCollapseListener->OnGroupCollapse(groupPos);
     }
 
-    return retValue;
+    *collapse = retValue;
+    return NOERROR;
 }
 
 ECode ExpandableListView::SetOnGroupCollapseListener(
-    /* [in] */ IOnGroupCollapseListener* onGroupCollapseListener)
+    /* [in] */ IExpandableListViewOnGroupCollapseListener* onGroupCollapseListener)
 {
     mOnGroupCollapseListener = onGroupCollapseListener;
     return NOERROR;
 }
 
 ECode ExpandableListView::SetOnGroupExpandListener(
-    /* [in] */ IOnGroupExpandListener* onGroupExpandListener)
+    /* [in] */ IExpandableListViewOnGroupExpandListener* onGroupExpandListener)
 {
     mOnGroupExpandListener = onGroupExpandListener;
     return NOERROR;
 }
 
 ECode ExpandableListView::SetOnGroupClickListener(
-    /* [in] */ IOnGroupClickListener* onGroupClickListener)
+    /* [in] */ IExpandableListViewOnGroupClickListener* onGroupClickListener)
 {
     mOnGroupClickListener = onGroupClickListener;
     return NOERROR;
 }
 
 ECode ExpandableListView::SetOnChildClickListener(
-    /* [in] */ IOnChildClickListener* onChildClickListener)
+    /* [in] */ IExpandableListViewOnChildClickListener* onChildClickListener)
 {
     mOnChildClickListener = onChildClickListener;
     return NOERROR;
 }
 
-Int64 ExpandableListView::GetExpandableListPosition(
-    /* [in] */ Int32 flatListPosition)
+ECode ExpandableListView::GetExpandableListPosition(
+    /* [in] */ Int32 flatListPosition,
+    /* [out] */ Int64* position)
 {
+    VALIDATE_NOT_NULL(position);
+
     if (IsHeaderOrFooterPosition(flatListPosition)) {
-        return PACKED_POSITION_VALUE_NULL;
+        *position = PACKED_POSITION_VALUE_NULL;
+        return NOERROR;
     }
 
     Int32 adjustedPosition = GetFlatPositionForConnector(flatListPosition);
     AutoPtr<IPositionMetadata> pm;
     mConnector->GetUnflattenedPos(adjustedPosition, (IPositionMetadata**)&pm);
     Int64 packedPos = 0;
-    ((CExpandableListPosition*)((PositionMetadata*)pm.Get())->mPosition.Get())->GetPackedPosition(&packedPos);
+    ((ExpandableListPosition*)((PositionMetadata*)pm.Get())->mPosition.Get())->GetPackedPosition(&packedPos);
     pm->Recycle();
-    return packedPos;
+    *position = packedPos;
+    return NOERROR;
 }
 
-Int32 ExpandableListView::GetFlatListPosition(
-    /* [in] */ Int64 packedPosition)
+ECode ExpandableListView::GetFlatListPosition(
+    /* [in] */ Int64 packedPosition,
+    /* [out] */ Int32* position)
 {
+    VALIDATE_NOT_NULL(position);
+
     AutoPtr<IExpandableListPosition> elPackedPos =
-        ExpandableListPosition::ObtainPosition(packedPosition);
+            ExpandableListPosition::ObtainPosition(packedPosition);
     AutoPtr<IPositionMetadata> pm;
     mConnector->GetFlattenedPos(elPackedPos, (IPositionMetadata**)&pm);
     elPackedPos->Recycle();
 
-    Int32 flatListPosition = ((CExpandableListPosition*)((PositionMetadata*)pm.Get())->mPosition.Get())->flatListPos;
+    Int32 flatListPosition = ((ExpandableListPosition*)((PositionMetadata*)pm.Get())->mPosition.Get())->mFlatListPos;
     pm->Recycle();
-    return GetAbsoluteFlatPosition(flatListPosition);
+    *position = GetAbsoluteFlatPosition(flatListPosition);
+    return NOERROR;
 }
 
-Int64 ExpandableListView::GetSelectedPosition()
+ECode ExpandableListView::GetSelectedPosition(
+    /* [out] */ Int64* position)
 {
-    Int32 selectedPos = GetSelectedItemPosition();
+    VALIDATE_NOT_NULL(position);
 
-    return GetExpandableListPosition(selectedPos);
+    Int32 selectedPos;
+    GetSelectedItemPosition(&selectedPos);
+
+    return GetExpandableListPosition(selectedPos, position);
 }
 
-Int64 ExpandableListView::GetSelectedId()
+ECode ExpandableListView::GetSelectedId(
+    /* [out] */ Int64* id)
 {
-    Int64 packedPos = GetSelectedPosition();
-    if (packedPos == PACKED_POSITION_VALUE_NULL) return -1;
+    VALIDATE_NOT_NULL(id);
+
+    Int64 packedPos;
+    GetSelectedPosition(&packedPos);
+
+    if (packedPos == PACKED_POSITION_VALUE_NULL) {
+        *id = -1;
+        return NOERROR;
+    }
 
     Int32 groupPos = GetPackedPositionGroup(packedPos);
 
-    Int64 id = 0;
+    Int64 _id = 0;
     if (GetPackedPositionType(packedPos) == PACKED_POSITION_TYPE_GROUP) {
         // It's a group
-        mAdapter->GetGroupId(groupPos, &id);
-        return id;
-    } else {
+        mAdapter->GetGroupId(groupPos, &_id);
+        *id = _id;
+        return NOERROR;
+    }
+    else {
         // It's a child
-        mAdapter->GetChildId(groupPos, GetPackedPositionChild(packedPos), &id);
-        return id;
+        mAdapter->GetChildId(groupPos, GetPackedPositionChild(packedPos), &_id);
+        *id = _id;
+        return NOERROR;
     }
 }
 
@@ -569,30 +920,37 @@ ECode ExpandableListView::SetSelectedGroup(
     /* [in] */ Int32 groupPosition)
 {
     AutoPtr<IExpandableListPosition> elGroupPos =
-        ExpandableListPosition::ObtainGroupPosition(groupPosition);
+            ExpandableListPosition::ObtainGroupPosition(groupPosition);
     AutoPtr<IPositionMetadata> pm = NULL;
-    //pm = mConnector->GetFlattenedPos(elGroupPos);
+    mConnector->GetFlattenedPos(elGroupPos, (IPositionMetadata**)&pm);
     elGroupPos->Recycle();
-    Int32 absoluteFlatPosition = GetAbsoluteFlatPosition(((CExpandableListPosition*)((PositionMetadata*)pm.Get())->mPosition.Get())->flatListPos);
+    Int32 absoluteFlatPosition = GetAbsoluteFlatPosition(((ExpandableListPosition*)((PositionMetadata*)pm.Get())->mPosition.Get())->mFlatListPos);
     ListView::SetSelection(absoluteFlatPosition);
     pm->Recycle();
     return NOERROR;
 }
 
-Boolean ExpandableListView::SetSelectedChild(
+ECode ExpandableListView::SetSelectedChild(
     /* [in] */ Int32 groupPosition,
     /* [in] */ Int32 childPosition,
-    /* [in] */ Boolean shouldExpandGroup)
+    /* [in] */ Boolean shouldExpandGroup,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
+
     AutoPtr<IExpandableListPosition> elChildPos = ExpandableListPosition::ObtainChildPosition(
             groupPosition, childPosition);
     AutoPtr<IPositionMetadata> flatChildPos;
     mConnector->GetFlattenedPos(elChildPos, (IPositionMetadata**)&flatChildPos);
 
     if (flatChildPos.Get() == NULL) {
-        if (!shouldExpandGroup) return FALSE;
+        if (!shouldExpandGroup) {
+            *res = FALSE;
+            return NOERROR;
+        }
 
-        ExpandGroup(groupPosition);
+        Boolean result;
+        ExpandGroup(groupPosition, &result);
 
         mConnector->GetFlattenedPos(elChildPos, (IPositionMetadata**)&flatChildPos);
 
@@ -601,21 +959,23 @@ Boolean ExpandableListView::SetSelectedChild(
         }
     }
 
-    Int32 absoluteFlatPosition = GetAbsoluteFlatPosition(((CExpandableListPosition*)((PositionMetadata*)flatChildPos.Get())->mPosition.Get())->flatListPos);
+    Int32 absoluteFlatPosition = GetAbsoluteFlatPosition(((ExpandableListPosition*)((PositionMetadata*)flatChildPos.Get())->mPosition.Get())->mFlatListPos);
     ListView::SetSelection(absoluteFlatPosition);
 
     elChildPos->Recycle();
     flatChildPos->Recycle();
 
-    return TRUE;
+    *res = TRUE;
+    return NOERROR;
 }
 
-Boolean ExpandableListView::IsGroupExpanded(
-    /* [in] */ Int32 groupPosition)
+ECode ExpandableListView::IsGroupExpanded(
+    /* [in] */ Int32 groupPosition,
+    /* [out] */ Boolean* expanded)
 {
-    Boolean expanded;
-    mConnector->IsGroupExpanded(groupPosition, &expanded);
-    return expanded;
+    VALIDATE_NOT_NULL(expanded);
+
+    return mConnector->IsGroupExpanded(groupPosition, expanded);
 }
 
 Int32 ExpandableListView::GetPackedPositionType(
@@ -662,7 +1022,7 @@ Int64 ExpandableListView::GetPackedPositionForGroup(
     /* [in] */ Int32 groupPosition)
 {
     return ((((Int64)groupPosition) & PACKED_POSITION_INT_MASK_GROUP)
-                    << PACKED_POSITION_SHIFT_GROUP);
+            << PACKED_POSITION_SHIFT_GROUP);
 }
 
 AutoPtr<IContextMenuInfo> ExpandableListView::CreateContextMenuInfo(
@@ -684,18 +1044,21 @@ AutoPtr<IContextMenuInfo> ExpandableListView::CreateContextMenuInfo(
     pos->GetPackedPosition(&packedPosition);
     pm->Recycle();
 
-    return new ExpandableListContextMenuInfo(view, packedPosition, id);
+    AutoPtr<IContextMenuInfo> info;
+    CExpandableListContextMenuInfo::New(view, packedPosition, id, (IContextMenuInfo**)&info);
+    return info;
 }
 
 Int64 ExpandableListView::GetChildOrGroupId(
     /* [in] */ IExpandableListPosition* position)
 {
     Int64 id = 0;
-    if (((CExpandableListPosition*)position)->type == ExpandableListPosition::CHILD) {
-        mAdapter->GetChildId(((CExpandableListPosition*)position)->groupPos, ((CExpandableListPosition*)position)->childPos, &id);
+    if (((ExpandableListPosition*)position)->mType == ExpandableListPosition::CHILD) {
+        mAdapter->GetChildId(((ExpandableListPosition*)position)->mGroupPos, ((ExpandableListPosition*)position)->mChildPos, &id);
         return id;
-    } else {
-        mAdapter->GetGroupId(((CExpandableListPosition*)position)->groupPos, &id);
+    }
+    else {
+        mAdapter->GetGroupId(((ExpandableListPosition*)position)->mGroupPos, &id);
         return id;
     }
 }
@@ -713,6 +1076,17 @@ ECode ExpandableListView::SetChildIndicatorBounds(
 {
     mChildIndicatorLeft = left;
     mChildIndicatorRight = right;
+    ResolveChildIndicator();
+    return NOERROR;
+}
+
+ECode ExpandableListView::SetChildIndicatorBoundsRelative(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
+{
+    mChildIndicatorStart = start;
+    mChildIndicatorEnd = end;
+    ResolveChildIndicator();
     return NOERROR;
 }
 
@@ -735,59 +1109,56 @@ ECode ExpandableListView::SetIndicatorBounds(
 {
     mIndicatorLeft = left;
     mIndicatorRight = right;
+    ResolveIndicator();
     return NOERROR;
 }
 
-ExpandableListView::ExpandableListContextMenuInfo::ExpandableListContextMenuInfo(
-    /* [in] */ IView* targetView,
-    /* [in] */ Int64 packedPosition,
-    /* [in] */ Int64 id)
+ECode ExpandableListView::SetIndicatorBoundsRelative(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
 {
-    mTargetView = targetView;
-    mPackedPosition = packedPosition;
-    mId = id;
+    mIndicatorStart = start;
+    mIndicatorEnd = end;
+    ResolveIndicator();
+    return NOERROR;
 }
-
 
 AutoPtr<IParcelable> ExpandableListView::OnSaveInstanceState()
 {
-    /*AutoPtr<IParcelable> superState = ListView::OnSaveInstanceState();
+    AutoPtr<IParcelable> superState = ListView::OnSaveInstanceState();
 
-    AutoPtr<ArrayOf<IGroupMetadata*> > expandedGroupMetadataList;
+    AutoPtr<IList> expandedGroupMetadataList;
     if (mConnector.Get() != NULL) {
-        expandedGroupMetadataList = ((CExpandableListConnector*)mConnector.Get())->GetExpandedGroupMetadataList();
+        ((ExpandableListConnector*)mConnector.Get())->GetExpandedGroupMetadataList((IList**)&expandedGroupMetadataList);
     }
 
     AutoPtr<IExpandableListViewSavedState> ss = NULL;
-    CExpandableListViewSavedState::New(superState, *expandedGroupMetadataList, (IExpandableListViewSavedState**)&ss);
+    CExpandableListViewSavedState::New(superState, IArrayList::Probe(expandedGroupMetadataList), (IExpandableListViewSavedState**)&ss);
 
-    return (IParcelable*)ss->Probe(EIID_IParcelable);*/
-    return NULL;
+    return IParcelable::Probe(ss);
 }
 
 void ExpandableListView::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
-    /*if (!(state->Probe(EIID_IExpandableListViewSavedState))) {
+    if (!(IExpandableListViewSavedState::Probe(state))) {
         ListView::OnRestoreInstanceState(state);
     }
 
-    ExpandableListViewSavedState* ss = (ExpandableListViewSavedState*) state;
+    AutoPtr<IExpandableListView> view = IExpandableListView::Probe(state);
+    AutoPtr<SavedState> ss = (SavedState*)view.Get();
     ListView::OnRestoreInstanceState(ss->GetSuperState());
 
-    if (mConnector.Get() != NULL && ss->expandedGroupMetadataList != NULL) {
-        ((CExpandableListConnector*)mConnector.Get())->SetExpandedGroupMetadataList(ss->expandedGroupMetadataList);
-    }*/
+    if (mConnector.Get() != NULL && ss->mExpandedGroupMetadataList != NULL) {
+        ((ExpandableListConnector*)mConnector.Get())->SetExpandedGroupMetadataList(IList::Probe(ss->mExpandedGroupMetadataList));
+    }
 }
-
 
 ECode ExpandableListView::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     ListView::OnInitializeAccessibilityEvent(event);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CExpandableListView"), (ICharSequence**)&seq);
-    event->SetClassName(seq);
+    IAccessibilityRecord::Probe(event)->SetClassName(CoreUtils::Convert("CExpandableListView"));
     return NOERROR;
 }
 
@@ -795,9 +1166,8 @@ ECode ExpandableListView::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     ListView::OnInitializeAccessibilityNodeInfo(info);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CExpandableListView"), (ICharSequence**)&seq);
-    info->SetClassName(seq);
+
+    info->SetClassName(CoreUtils::Convert("CExpandableListView"));
     return NOERROR;
 }
 

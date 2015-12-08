@@ -16,9 +16,9 @@ using Elastos::Droid::Text::Format::DateFormat;
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 const String DigitalClock::m12 = String("h:mm:ss aa");
 const String DigitalClock::m24 =  String("k:mm:ss");

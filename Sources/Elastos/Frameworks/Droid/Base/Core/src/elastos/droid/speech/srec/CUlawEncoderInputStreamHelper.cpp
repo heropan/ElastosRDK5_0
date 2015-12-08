@@ -1,12 +1,16 @@
 
 #include "elastos/droid/speech/srec/CUlawEncoderInputStreamHelper.h"
-#include "elastos/droid/speech/srec/CUlawEncoderInputStream.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/speech/srec/UlawEncoderInputStream.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Speech {
 namespace Srec {
+
+CAR_SINGLETON_IMPL(CUlawEncoderInputStreamHelper)
+
+CAR_INTERFACE_IMPL(CUlawEncoderInputStreamHelper, Singleton, IUlawEncoderInputStreamHelper)
 
 ECode CUlawEncoderInputStreamHelper::Encode(
     /* [in] */ ArrayOf<Byte>* pcmBuf,
@@ -16,8 +20,7 @@ ECode CUlawEncoderInputStreamHelper::Encode(
     /* [in] */ Int32 length,
     /* [in] */ Int32 max)
 {
-    CUlawEncoderInputStream::Encode(pcmBuf, pcmOffset, ulawBuf, ulawOffset, length, max);
-    return NOERROR;
+    return UlawEncoderInputStream::Encode(pcmBuf, pcmOffset, ulawBuf, ulawOffset, length, max);
 }
 
 ECode CUlawEncoderInputStreamHelper::MaxAbsPcm(
@@ -26,13 +29,11 @@ ECode CUlawEncoderInputStreamHelper::MaxAbsPcm(
     /* [in] */ Int32 length,
     /* [out] */ Int32* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = CUlawEncoderInputStream::MaxAbsPcm(pcmBuf, offset, length);
-    return NOERROR;
+    return UlawEncoderInputStream::MaxAbsPcm(pcmBuf, offset, length, ret);
 }
 
-}//namespace Srec
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Srec
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 

@@ -14,8 +14,8 @@ using Elastos::Droid::Os::CBinderHelper;
 using Elastos::Droid::Media::CRingtone;
 using Elastos::Droid::Media::EIID_IIRingtonePlayer;
 
-namespace Elastos{
-namespace Droid{
+namespace Elastos {
+namespace Droid {
 namespace SystemUI{
 namespace Media{
 

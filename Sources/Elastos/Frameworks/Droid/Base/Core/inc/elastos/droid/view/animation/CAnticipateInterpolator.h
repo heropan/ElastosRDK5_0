@@ -56,6 +56,10 @@ public:
     CARAPI CreateNativeInterpolator(
         /* [out] */ Int64* interpolator);
 
+    // @Override
+    CARAPI HasNativeInterpolator(
+        /* [out] */ Boolean* res);
+
 private:
     Float mTension;
 };

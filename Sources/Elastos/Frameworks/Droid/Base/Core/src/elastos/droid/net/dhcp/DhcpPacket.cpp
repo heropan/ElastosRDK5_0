@@ -21,7 +21,7 @@ const Byte DhcpPacket::IP_VERSION_HEADER_LEN = 0x45;
 const Int16 DhcpPacket::IP_FLAGS_OFFSET = 0x4000;
 const Byte DhcpPacket::IP_TOS_LOWDELAY = 0x10;
 const Byte DhcpPacket::IP_TTL = 0x40;
-const String DhcpPacket::TAG = String("DhcpPacket");
+const String DhcpPacket::TAG("DhcpPacket");
 const Int32 DhcpPacket::MAX_LENGTH = 1500;
 const Byte DhcpPacket::DHCP_SUBNET_MASK = 1;
 const Byte DhcpPacket::DHCP_ROUTER = 3;
@@ -81,7 +81,6 @@ ECode DhcpPacket::constructor(
         mRelayIp = relayIp;
         mClientMac = clientMac;
         mBroadcast = broadcast;
-
 #endif
 }
 
@@ -91,7 +90,6 @@ ECode DhcpPacket::GetTransactionId(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mTransId;
-
 #endif
 }
 
@@ -109,12 +107,12 @@ ECode DhcpPacket::FillInPacket(
 #if 0 // TODO: Translate codes below
         byte[] destIpArray = destIp.getAddress();
         byte[] srcIpArray = srcIp.getAddress();
-        int ipLengthOffset = 0;
-        int ipChecksumOffset = 0;
-        int endIpHeader = 0;
-        int udpHeaderOffset = 0;
-        int udpLengthOffset = 0;
-        int udpChecksumOffset = 0;
+        Int32 ipLengthOffset = 0;
+        Int32 ipChecksumOffset = 0;
+        Int32 endIpHeader = 0;
+        Int32 udpHeaderOffset = 0;
+        Int32 udpLengthOffset = 0;
+        Int32 udpChecksumOffset = 0;
         buf.clear();
         buf.order(ByteOrder.BIG_ENDIAN);
         // if a full IP packet needs to be generated, put the IP & UDP
@@ -179,7 +177,7 @@ ECode DhcpPacket::FillInPacket(
             buf.putShort(udpLengthOffset, udpLen);
             // fix UDP header: checksum
             // checksum for UDP at udpChecksumOffset
-            int udpSeed = 0;
+            Int32 udpSeed = 0;
             // apply IPv4 pseudo-header.  Read IP address src and destination
             // values from the IP header and accumulate checksum.
             udpSeed += intAbs(buf.getShort(ipChecksumOffset + 2));
@@ -199,7 +197,6 @@ ECode DhcpPacket::FillInPacket(
             buf.putShort(ipChecksumOffset,
                          (short) checksum(buf, 0, 0, endIpHeader));
         }
-
 #endif
 }
 
@@ -210,12 +207,11 @@ ECode DhcpPacket::IntAbs(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         if (v < 0) {
-            int r = v + 65536;
+            Int32 r = v + 65536;
             return r;
         } else {
             return(v);
         }
-
 #endif
 }
 
@@ -228,8 +224,8 @@ ECode DhcpPacket::Checksum(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int sum = seed;
-        int bufPosition = buf.position();
+        Int32 sum = seed;
+        Int32 bufPosition = buf.position();
         // set position of original ByteBuffer, so that the ShortBuffer
         // will be correctly initialized
         buf.position(start);
@@ -253,9 +249,8 @@ ECode DhcpPacket::Checksum(
         }
         sum = ((sum >> 16) & 0xFFFF) + (sum & 0xFFFF);
         sum = ((sum + ((sum >> 16) & 0xFFFF)) & 0xFFFF);
-        int negated = ~sum;
+        Int32 negated = ~sum;
         return intAbs((short) negated);
-
 #endif
 }
 
@@ -269,7 +264,6 @@ ECode DhcpPacket::AddTlv(
         buf.put(type);
         buf.put((byte) 1);
         buf.put(value);
-
 #endif
 }
 
@@ -280,12 +274,11 @@ ECode DhcpPacket::AddTlv(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (payload != null) {
+        if (payload != NULL) {
             buf.put(type);
             buf.put((byte) payload.length);
             buf.put(payload);
         }
-
 #endif
 }
 
@@ -296,10 +289,9 @@ ECode DhcpPacket::AddTlv(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (addr != null) {
+        if (addr != NULL) {
             addTlv(buf, type, addr.getAddress());
         }
-
 #endif
 }
 
@@ -310,14 +302,13 @@ ECode DhcpPacket::AddTlv(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (addrs != null && addrs.size() > 0) {
+        if (addrs != NULL && addrs.size() > 0) {
             buf.put(type);
             buf.put((byte)(4 * addrs.size()));
             for (InetAddress addr : addrs) {
                 buf.put(addr.getAddress());
             }
         }
-
 #endif
 }
 
@@ -328,12 +319,11 @@ ECode DhcpPacket::AddTlv(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (value != null) {
+        if (value != NULL) {
             buf.put(type);
             buf.put((byte) 4);
             buf.putInt(value.intValue());
         }
-
 #endif
 }
 
@@ -344,14 +334,13 @@ ECode DhcpPacket::AddTlv(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (str != null) {
+        if (str != NULL) {
             buf.put(type);
             buf.put((byte) str.length());
-            for (int i = 0; i < str.length(); i++) {
+            for (Int32 i = 0; i < str.length(); i++) {
                 buf.put((byte) str.charAt(i));
             }
         }
-
 #endif
 }
 
@@ -361,7 +350,6 @@ ECode DhcpPacket::AddTlvEnd(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         buf.put((byte) 0xFF);
-
 #endif
 }
 
@@ -372,7 +360,7 @@ ECode DhcpPacket::MacToString(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         String macAddr = "";
-        for (int i = 0; i < mac.length; i++) {
+        for (Int32 i = 0; i < mac.length; i++) {
             String hexString = "0" + Integer.toHexString(mac[i]);
             // substring operation grabs the last 2 digits: this
             // allows signed bytes to be converted correctly.
@@ -382,7 +370,6 @@ ECode DhcpPacket::MacToString(
             }
         }
         return macAddr;
-
 #endif
 }
 
@@ -393,7 +380,6 @@ ECode DhcpPacket::ToString(
 #if 0 // TODO: Translate codes below
         String macAddr = macToString(mClientMac);
         return macAddr;
-
 #endif
 }
 
@@ -403,7 +389,7 @@ ECode DhcpPacket::ReadIpAddress(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        InetAddress result = null;
+        InetAddress result = NULL;
         byte[] ipAddr = new byte[4];
         packet.get(ipAddr);
         try {
@@ -411,10 +397,9 @@ ECode DhcpPacket::ReadIpAddress(
         } catch (UnknownHostException ex) {
             // ipAddr is numeric, so this should not be
             // triggered.  However, if it is, just nullify
-            result = null;
+            result = NULL;
         }
         return result;
-
 #endif
 }
 
@@ -428,7 +413,6 @@ ECode DhcpPacket::ReadAsciiString(
         byte[] bytes = new byte[byteCount];
         buf.get(bytes);
         return new String(bytes, 0, bytes.length, StandardCharsets.US_ASCII);
-
 #endif
 }
 
@@ -440,26 +424,26 @@ ECode DhcpPacket::DecodeFullPacket(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         // bootp parameters
-        int transactionId;
+        Int32 transactionId;
         InetAddress clientIp;
         InetAddress yourIp;
         InetAddress nextIp;
         InetAddress relayIp;
         byte[] clientMac;
         List<InetAddress> dnsServers = new ArrayList<InetAddress>();
-        InetAddress gateway = null; // aka router
-        Integer leaseTime = null;
-        InetAddress serverIdentifier = null;
-        InetAddress netMask = null;
-        String message = null;
-        String vendorId = null;
-        byte[] expectedParams = null;
-        String hostName = null;
-        String domainName = null;
-        InetAddress ipSrc = null;
-        InetAddress ipDst = null;
-        InetAddress bcAddr = null;
-        InetAddress requestedIp = null;
+        InetAddress gateway = NULL; // aka router
+        Integer leaseTime = NULL;
+        InetAddress serverIdentifier = NULL;
+        InetAddress netMask = NULL;
+        String message = NULL;
+        String vendorId = NULL;
+        byte[] expectedParams = NULL;
+        String hostName = NULL;
+        String domainName = NULL;
+        InetAddress ipSrc = NULL;
+        InetAddress ipDst = NULL;
+        InetAddress bcAddr = NULL;
+        InetAddress requestedIp = NULL;
         // dhcp options
         byte dhcpType = (byte) 0xFF;
         packet.order(ByteOrder.BIG_ENDIAN);
@@ -472,7 +456,7 @@ ECode DhcpPacket::DecodeFullPacket(
             packet.get(l2src);
             short l2type = packet.getShort();
             if (l2type != 0x0800)
-                return null;
+                return NULL;
         }
         if ((pktType == ENCAP_L2) || (pktType == ENCAP_L3)) {
             // assume l2type is 0x0800, i.e. IP
@@ -489,14 +473,14 @@ ECode DhcpPacket::DecodeFullPacket(
             ipSrc = readIpAddress(packet);
             ipDst = readIpAddress(packet);
             if (ipProto != IP_TYPE_UDP) // UDP
-                return null;
+                return NULL;
             // assume UDP
             short udpSrcPort = packet.getShort();
             short udpDstPort = packet.getShort();
             short udpLen = packet.getShort();
             short udpChkSum = packet.getShort();
             if ((udpSrcPort != DHCP_SERVER) && (udpSrcPort != DHCP_CLIENT))
-                return null;
+                return NULL;
         }
         // assume bootp
         byte type = packet.get();
@@ -518,7 +502,7 @@ ECode DhcpPacket::DecodeFullPacket(
             packet.get(ipv4addr);
             relayIp = InetAddress.getByAddress(ipv4addr);
         } catch (UnknownHostException ex) {
-            return null;
+            return NULL;
         }
         clientMac = new byte[addrLen];
         packet.get(clientMac);
@@ -526,18 +510,18 @@ ECode DhcpPacket::DecodeFullPacket(
         packet.position(packet.position() + (16 - addrLen)
                         + 64    // skip server host name (64 chars)
                         + 128); // skip boot file name (128 chars)
-        int dhcpMagicCookie = packet.getInt();
+        Int32 dhcpMagicCookie = packet.getInt();
         if (dhcpMagicCookie !=  0x63825363)
-            return null;
+            return NULL;
         // parse options
-        boolean notFinishedOptions = true;
+        boolean notFinishedOptions = TRUE;
         while ((packet.position() < packet.limit()) && notFinishedOptions) {
             byte optionType = packet.get();
             if (optionType == (byte) 0xFF) {
-                notFinishedOptions = false;
+                notFinishedOptions = FALSE;
             } else {
                 byte optionLen = packet.get();
-                int expectedLen = 0;
+                Int32 expectedLen = 0;
                 switch(optionType) {
                     case DHCP_SUBNET_MASK:
                         netMask = readIpAddress(packet);
@@ -602,19 +586,19 @@ ECode DhcpPacket::DecodeFullPacket(
                     } break;
                     default:
                         // ignore any other parameters
-                        for (int i = 0; i < optionLen; i++) {
+                        for (Int32 i = 0; i < optionLen; i++) {
                             expectedLen++;
                             byte throwaway = packet.get();
                         }
                 }
                 if (expectedLen != optionLen) {
-                    return null;
+                    return NULL;
                 }
             }
         }
         DhcpPacket newPacket;
         switch(dhcpType) {
-            case -1: return null;
+            case -1: return NULL;
             case DHCP_MESSAGE_TYPE_DISCOVER:
                 newPacket = new DhcpDiscoverPacket(
                     transactionId, clientMac, broadcast);
@@ -648,7 +632,7 @@ ECode DhcpPacket::DecodeFullPacket(
                 break;
             default:
                 System.out.println("Unimplemented type: " + dhcpType);
-                return null;
+                return NULL;
         }
         newPacket.mBroadcastAddress = bcAddr;
         newPacket.mDnsServers = dnsServers;
@@ -662,7 +646,6 @@ ECode DhcpPacket::DecodeFullPacket(
         newPacket.mServerIdentifier = serverIdentifier;
         newPacket.mSubnetMask = netMask;
         return newPacket;
-
 #endif
 }
 
@@ -675,7 +658,6 @@ ECode DhcpPacket::DecodeFullPacket(
 #if 0 // TODO: Translate codes below
         ByteBuffer buffer = ByteBuffer.wrap(packet).order(ByteOrder.BIG_ENDIAN);
         return decodeFullPacket(buffer, pktType);
-
 #endif
 }
 
@@ -693,7 +675,6 @@ ECode DhcpPacket::BuildDiscoverPacket(
             transactionId, clientMac, broadcast);
         pkt.mRequestedParams = expectedParams;
         return pkt.buildPacket(encap, DHCP_SERVER, DHCP_CLIENT);
-
 #endif
 }
 
@@ -725,7 +706,6 @@ ECode DhcpPacket::BuildOfferPacket(
         pkt.mSubnetMask = netMask;
         pkt.mBroadcastAddress = bcAddr;
         return pkt.buildPacket(encap, DHCP_CLIENT, DHCP_SERVER);
-
 #endif
 }
 
@@ -757,7 +737,6 @@ ECode DhcpPacket::BuildAckPacket(
         pkt.mServerIdentifier = dhcpServerIdentifier;
         pkt.mBroadcastAddress = bcAddr;
         return pkt.buildPacket(encap, DHCP_CLIENT, DHCP_SERVER);
-
 #endif
 }
 
@@ -776,7 +755,6 @@ ECode DhcpPacket::BuildNakPacket(
         pkt.mMessage = "requested address not available";
         pkt.mRequestedIp = clientIpAddr;
         return pkt.buildPacket(encap, DHCP_CLIENT, DHCP_SERVER);
-
 #endif
 }
 
@@ -802,7 +780,6 @@ ECode DhcpPacket::BuildRequestPacket(
         pkt.mRequestedParams = requestedParams;
         ByteBuffer result = pkt.buildPacket(encap, DHCP_SERVER, DHCP_CLIENT);
         return result;
-
 #endif
 }
 

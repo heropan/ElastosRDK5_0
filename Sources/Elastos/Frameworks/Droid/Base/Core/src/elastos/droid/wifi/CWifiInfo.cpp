@@ -1,7 +1,9 @@
 
-#include "elastos/droid/net/wifi/CWifiInfo.h"
-#include "elastos/droid/net/wifi/CWifiSsidHelper.h"
-#include "elastos/droid/net/wifi/CWifiSsid.h"
+#include "elastos/droid/wifi/CWifiInfo.h"
+#include "elastos/droid/wifi/CScanResultHelper.h"
+#include "elastos/droid/wifi/CWifiSsidHelper.h"
+#include "elastos/droid/wifi/CWifiSsid.h"
+#include "elastos/droid/net/CNetworkUtils.h"
 #include "elastos/droid/net/NetworkUtils.h"
 #include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Logger.h>
@@ -9,6 +11,10 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuffer.h>
 
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Net::CNetworkUtils;
+using Elastos::Droid::Net::NetworkInfoDetailedState;
+using Elastos::Droid::Net::NetworkUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::ICharSequence;
@@ -18,8 +24,6 @@ using Elastos::Net::IInetAddressHelper;
 using Elastos::Net::CInetAddressHelper;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Net::NetworkUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -30,6 +34,10 @@ HashMap<SupplicantState, NetworkInfoDetailedState> CWifiInfo::mStateMap;
 String CWifiInfo::LINK_SPEED_UNITS = String("Mbps");
 
 Int32 CWifiInfo::mInitFlag = InternalInit();
+
+CAR_INTERFACE_IMPL_2(CWifiInfo, Object, IWifiInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiInfo)
 
 CWifiInfo::CWifiInfo()
     : mNetworkId(0)
@@ -45,9 +53,10 @@ ECode CWifiInfo::constructor()
     mBSSID = NULL;
     mNetworkId = -1;
     mSupplicantState = SupplicantState_UNINITIALIZED;
-    mRssi = -9999;
+    mRssi = INVALID_RSSI;
     mLinkSpeed = -1;
     mHiddenSSID = FALSE;
+    mFrequency = -1;
     return NOERROR;
 }
 
@@ -72,22 +81,354 @@ ECode CWifiInfo::constructor(
     /* [in] */ IWifiInfo* source)
 {
     if (source != NULL) {
-        source->GetSupplicantState(&mSupplicantState);
+        assert(0);
+        // TODO
+        // source->GetSupplicantState(&mSupplicantState);
         source->GetBSSID(&mBSSID);
         source->GetWifiSsid((IWifiSsid**)&mWifiSsid);
         source->GetNetworkId(&mNetworkId);
-        source->GetHiddenSSID(&mHiddenSSID);
         source->GetRssi(&mRssi);
         source->GetLinkSpeed(&mLinkSpeed);
+        source->GetFrequency(&mFrequency);
         Int32 ipAddres;
         source->GetIpAddress(&ipAddres);
         if (ipAddres != 0) {
-            NetworkUtils::Int32ToInetAddress(ipAddres, (IInetAddress**)&mIpAddress);
+            assert(0);
+            // TODO
+            // NetworkUtils::Int32ToInetAddress(ipAddres, (IInetAddress**)&mIpAddress);
         }
         source->GetMacAddress(&mMacAddress);
         source->GetMeteredHint(&mMeteredHint);
+        source->GetTxBad(&mTxBad);
+        source->GetTxRetries(&mTxRetries);
+        source->GetTxSuccess(&mTxSuccess);
+        source->GetRxSuccess(&mRxSuccess);
+        source->GetTxBadRate(&mTxBadRate);
+        source->GetTxRetriesRate(&mTxRetriesRate);
+        source->GetTxSuccessRate(&mTxSuccessRate);
+        source->GetRxSuccessRate(&mRxSuccessRate);
+        source->GetScore(&mScore);
+        source->GetBadRssiCount(&mBadRssiCount);
+        source->GetLowRssiCount(&mLowRssiCount);
+        source->GetLinkStuckCount(&mLinkStuckCount);
     }
     return NOERROR;
+}
+
+ECode CWifiInfo::GetTxBad(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mTxBad;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetTxBad(
+    /* [in] */ Int64 txBad)
+{
+    mTxBad = txBad;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetTxRetries(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mTxRetries;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetTxRetries(
+    /* [in] */ Int64 txRetries)
+{
+    mTxRetries = txRetries;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetTxSuccess(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mTxSuccess;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetTxSuccess(
+    /* [in] */ Int64 txSuccess)
+{
+    mTxSuccess = txSuccess;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetRxSuccess(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mRxSuccess;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetRxSuccess(
+    /* [in] */ Int64 rxSuccess)
+{
+    mRxSuccess = rxSuccess;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetTxBadRate(
+    /* [out] */ Double* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mTxBadRate;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetTxBadRate(
+    /* [in] */ Double txBadRate)
+{
+    mTxBadRate = txBadRate;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetTxRetriesRate(
+    /* [out] */ Double* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mTxRetriesRate;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetTxRetriesRate(
+    /* [in] */ Double txRetriesRate)
+{
+    mTxRetriesRate = txRetriesRate;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetTxSuccessRate(
+    /* [out] */ Double* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mTxSuccessRate;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetTxSuccessRate(
+    /* [in] */ Double txSuccessRate)
+{
+    mTxSuccessRate = txSuccessRate;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetRxSuccessRate(
+    /* [out] */ Double* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mRxSuccessRate;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetRxSuccessRate(
+    /* [in] */ Double rxSuccessRate)
+{
+    mRxSuccessRate = rxSuccessRate;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetBadRssiCount(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mBadRssiCount;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetBadRssiCount(
+    /* [in] */ Int32 badRssiCount)
+{
+    mBadRssiCount = badRssiCount;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetLinkStuckCount(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mLinkStuckCount;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetLinkStuckCount(
+    /* [in] */ Int32 linkStuckCount)
+{
+    mLinkStuckCount = linkStuckCount;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetLowRssiCount(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mLowRssiCount;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetLowRssiCount(
+    /* [in] */ Int32 lowRssiCount)
+{
+    mLowRssiCount = lowRssiCount;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetScore(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mScore;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetScore(
+    /* [in] */ Int32 score)
+{
+    mScore = score;
+    return NOERROR;
+}
+
+ECode CWifiInfo::UpdatePacketRates(
+    /* [in] */ IWifiLinkLayerStats* stats)
+{
+    if (stats != NULL) {
+        Int64 txmpdu_be, txmpdu_bk, txmpdu_vi, txmpdu_vo;
+        stats->GetTxmpdu_be(&txmpdu_be);
+        stats->GetTxmpdu_bk(&txmpdu_bk);
+        stats->GetTxmpdu_vi(&txmpdu_vi);
+        stats->GetTxmpdu_vo(&txmpdu_vo);
+        Int64 txgood = txmpdu_be + txmpdu_bk + txmpdu_vi + txmpdu_vo;
+
+        Int64 retries_be, retries_bk, retries_vi, retries_vo;
+        stats->GetRetries_be(&retries_be);
+        stats->GetRetries_bk(&retries_bk);
+        stats->GetRetries_vi(&retries_vi);
+        stats->GetRetries_vo(&retries_vo);
+        Int64 txretries = retries_be + retries_bk + retries_vi + retries_vo;
+
+        Int64 rxmpdu_be, rxmpdu_bk, rxmpdu_vi, rxmpdu_vo;
+        stats->GetRxmpdu_be(&rxmpdu_be);
+        stats->GetRxmpdu_bk(&rxmpdu_bk);
+        stats->GetRxmpdu_vi(&rxmpdu_vi);
+        stats->GetRxmpdu_vo(&rxmpdu_vo);
+        Int64 rxgood = rxmpdu_be + rxmpdu_bk + rxmpdu_vi + rxmpdu_vo;
+
+        Int64 lostmpdu_be, lostmpdu_bk, lostmpdu_vi, lostmpdu_vo;
+        stats->GetLostmpdu_be(&lostmpdu_be);
+        stats->GetLostmpdu_bk(&lostmpdu_bk);
+        stats->GetLostmpdu_vi(&lostmpdu_vi);
+        stats->GetLostmpdu_vo(&lostmpdu_vo);
+        Int64 txbad = lostmpdu_be + lostmpdu_bk + lostmpdu_vi + lostmpdu_vo;
+
+        mTxBadRate = (mTxBadRate * 0.5)
+            + ((Double) (txbad - mTxBad) * 0.5);
+        mTxSuccessRate = (mTxSuccessRate * 0.5)
+            + ((Double) (txgood - mTxSuccess) * 0.5);
+        mRxSuccessRate = (mRxSuccessRate * 0.5)
+            + ((Double) (rxgood - mRxSuccess) * 0.5);
+        mTxRetriesRate = (mTxRetriesRate * 0.5)
+            + ((Double) (txretries - mTxRetries) * 0.5);
+
+        mTxBad = txbad;
+        mTxSuccess = txgood;
+        mRxSuccess = rxgood;
+        mTxRetries = txretries;
+    }
+    else {
+        mTxBad = 0;
+        mTxSuccess = 0;
+        mRxSuccess = 0;
+        mTxRetries = 0;
+        mTxBadRate = 0;
+        mTxSuccessRate = 0;
+        mRxSuccessRate = 0;
+        mTxRetriesRate = 0;
+    }
+
+    return NOERROR;
+}
+
+ECode CWifiInfo::UpdatePacketRates(
+    /* [in] */ Int64 txPackets,
+    /* [in] */ Int64 rxPackets)
+{
+    //paranoia
+    mTxBad = 0;
+    mTxRetries = 0;
+    mTxBadRate = 0;
+    mTxRetriesRate = 0;
+
+    mTxSuccessRate = (mTxSuccessRate * 0.5)
+            + ((Double) (txPackets - mTxSuccess) * 0.5);
+    mRxSuccessRate = (mRxSuccessRate * 0.5)
+            + ((Double) (rxPackets - mRxSuccess) * 0.5);
+    mTxSuccess = txPackets;
+    mRxSuccess = rxPackets;
+
+    return NOERROR;
+}
+
+ECode CWifiInfo::Reset()
+{
+    SetInetAddress(NULL);
+    SetBSSID(String(NULL));
+    SetSSID(NULL);
+    SetNetworkId(-1);
+    SetRssi(INVALID_RSSI);
+    SetLinkSpeed(-1);
+    SetFrequency(-1);
+    SetMeteredHint(FALSE);
+    mTxBad = 0;
+    mTxSuccess = 0;
+    mRxSuccess = 0;
+    mTxRetries = 0;
+    mTxBadRate = 0;
+    mTxSuccessRate = 0;
+    mRxSuccessRate = 0;
+    mTxRetriesRate = 0;
+    mLowRssiCount = 0;
+    mBadRssiCount = 0;
+    mLinkStuckCount = 0;
+    mScore = 0;
+    return NOERROR;
+}
+
+ECode CWifiInfo::GetFrequency(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mFrequency;
+    return NOERROR;
+}
+
+ECode CWifiInfo::SetFrequency(
+    /* [in] */ Int32 frequency)
+{
+    mFrequency = frequency;
+    return NOERROR;
+}
+
+ECode CWifiInfo::Is24GHz(
+    /* [out] */ Boolean* result)
+{
+    AutoPtr<IScanResultHelper> helpler;
+    CScanResultHelper::AcquireSingleton((IScanResultHelper**)&helpler);
+    return helpler->Is24GHz(mFrequency, result);
+}
+
+ECode CWifiInfo::Is5GHz(
+    /* [out] */ Boolean* result)
+{
+    AutoPtr<IScanResultHelper> helpler;
+    CScanResultHelper::AcquireSingleton((IScanResultHelper**)&helpler);
+    return helpler->Is5GHz(mFrequency, result);
 }
 
 ECode CWifiInfo::SetSSID(
@@ -106,7 +447,9 @@ ECode CWifiInfo::GetSSID(
 
     if (mWifiSsid != NULL) {
         String unicode;
-        mWifiSsid->ToString(&unicode);
+        assert(0);
+        // TODO
+        // mWifiSsid->ToString(&unicode);
 
         AutoPtr<ICharSequence> tmp;
         CString::New(unicode, (ICharSequence**)&tmp);
@@ -157,6 +500,10 @@ ECode CWifiInfo::GetRssi(
 ECode CWifiInfo::SetRssi(
     /* [in] */ Int32 rssi)
 {
+    if (rssi < INVALID_RSSI)
+        rssi = INVALID_RSSI;
+    if (rssi > MAX_RSSI)
+        rssi = MAX_RSSI;
     mRssi = rssi;
     return NOERROR;
 }
@@ -222,18 +569,22 @@ ECode CWifiInfo::GetNetworkId(
 }
 
 ECode CWifiInfo::GetSupplicantState(
-    /* [out] */ SupplicantState* state)
+    /* [out] */ ISupplicantState** state)
 {
     VALIDATE_NOT_NULL(state);
-    *state = mSupplicantState;
-    return NOERROR;
+    assert(0);
+    // TODO
+    // *state = mSupplicantState;
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiInfo::SetSupplicantState(
-    /* [in] */ SupplicantState state)
+    /* [in] */ ISupplicantState* state)
 {
-    mSupplicantState = state;
-    return NOERROR;
+    assert(0);
+    // TODO
+    // mSupplicantState = state;
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiInfo::SetInetAddress(
@@ -248,27 +599,26 @@ ECode CWifiInfo::GetIpAddress(
 {
     VALIDATE_NOT_NULL(address);
 
-    if (mIpAddress == NULL || IInet6Address::Probe(mIpAddress) != NULL) {
-        *address = 0;
-        return NOERROR;
+    *address = 0;
+    if (IInet4Address::Probe(mIpAddress)) {
+        AutoPtr<INetworkUtils> utils;
+        CNetworkUtils::AcquireSingleton((INetworkUtils**)&utils);
+        utils->InetAddressToInt(IInet4Address::Probe(mIpAddress), address);
     }
 
-    return NetworkUtils::InetAddressToInt32(mIpAddress, address);
+    return NOERROR;
 }
 
 ECode CWifiInfo::GetHiddenSSID(
     /* [out] */ Boolean* ssid)
 {
     VALIDATE_NOT_NULL(ssid);
-    *ssid = mHiddenSSID;
-    return NOERROR;
-}
+    if (mWifiSsid == NULL) {
+        *ssid = FALSE;
+        return NOERROR;
+    }
 
-ECode CWifiInfo::SetHiddenSSID(
-    /* [in] */ Boolean hiddenSSID)
-{
-    mHiddenSSID = hiddenSSID;
-    return NOERROR;
+    return mWifiSsid->IsHidden(ssid);
 }
 
 NetworkInfoDetailedState CWifiInfo::GetDetailedStateOf(
@@ -286,11 +636,12 @@ void CWifiInfo::SetSupplicantState(
 SupplicantState CWifiInfo::ValueOf(
     /* [in] */ const String& stateName)
 {
-    if (String("4WAY_HANDSHAKE").EqualsIgnoreCase(stateName) == 0)
+    if (String("4WAY_HANDSHAKE").EqualsIgnoreCase(stateName) == 0) {
         return SupplicantState_FOUR_WAY_HANDSHAKE;
+    }
     else {
         // try {
-        /* SupplicantState.valueOf(stateName.ToUpperCase())*/
+        /* SupplicantState.valueOf(stateName.ToUpperCase(Locale.ROOT))*/
         String tmp = stateName.ToUpperCase();
         return StringUtils::ParseInt32(tmp);
         // } catch (IllegalArgumentException e) {
@@ -325,7 +676,9 @@ ECode CWifiInfo::ToString(
 
     sb.Append("SSID: ");
     String sidStr;
-    mWifiSsid->ToString(&sidStr);
+    assert(0);
+    // TODO
+    // mWifiSsid->ToString(&sidStr);
     sb.Append(mWifiSsid == NULL ? IWifiSsid::NONE : sidStr);
     sb.Append(", BSSID: ");
     sb.Append(mBSSID.IsNull() ? none : mBSSID);
@@ -338,13 +691,18 @@ ECode CWifiInfo::ToString(
     sb.Append(mRssi);
     sb.Append(", Link speed: ");
     sb.Append(mLinkSpeed);
+    sb.Append(LINK_SPEED_UNITS);
+    sb.Append(", Frequency: ");
+    sb.Append(mFrequency);
+    sb.Append(FREQUENCY_UNITS);
     sb.Append(", Net ID: ");
     sb.Append(mNetworkId);
     sb.Append(", Metered hint: ");
-    sb.AppendBoolean(mMeteredHint);
+    sb.Append(mMeteredHint);
+    sb.Append(", score: ");
+    sb.Append(mScore);
 
-    *str = sb.ToString();
-    return NOERROR;
+    return sb.ToString(str);
 }
 
 /** Implement the Parcelable interface {@hide} */
@@ -354,6 +712,7 @@ ECode CWifiInfo::WriteToParcel(
     dest->WriteInt32(mNetworkId);
     dest->WriteInt32(mRssi);
     dest->WriteInt32(mLinkSpeed);
+    dest->WriteInt32(mFrequency);
     if (mIpAddress != NULL) {
         dest->WriteByte((byte)1);
         AutoPtr<ArrayOf<Byte> > address;
@@ -374,8 +733,18 @@ ECode CWifiInfo::WriteToParcel(
 
     dest->WriteString(mBSSID);
     dest->WriteString(mMacAddress);
-    dest->WriteBoolean(mMeteredHint);
-    dest->WriteInt32(mSupplicantState);
+    dest->WriteInt32(mMeteredHint ? 1 : 0);
+    dest->WriteInt32(mScore);
+    dest->WriteDouble(mTxSuccessRate);
+    dest->WriteDouble(mTxRetriesRate);
+    dest->WriteDouble(mTxBadRate);
+    dest->WriteDouble(mRxSuccessRate);
+    dest->WriteInt32(mBadRssiCount);
+    dest->WriteInt32(mLowRssiCount);
+    assert(0);
+    // TODO
+    // mSupplicantState->WriteToParcel(dest, flags);
+
     return NOERROR;
 }
 
@@ -412,20 +781,23 @@ ECode CWifiInfo::ReadFromParcel(
 
 Int32 CWifiInfo::InternalInit()
 {
-    mStateMap[SupplicantState_DISCONNECTED] = NetworkInfoDetailedState_DISCONNECTED;
-    mStateMap[SupplicantState_INTERFACE_DISABLED] = NetworkInfoDetailedState_DISCONNECTED;
-    mStateMap[SupplicantState_INACTIVE] = NetworkInfoDetailedState_IDLE;
-    mStateMap[SupplicantState_SCANNING] = NetworkInfoDetailedState_SCANNING;
-    mStateMap[SupplicantState_AUTHENTICATING] = NetworkInfoDetailedState_CONNECTING;
-    mStateMap[SupplicantState_ASSOCIATING] = NetworkInfoDetailedState_CONNECTING;
-    mStateMap[SupplicantState_ASSOCIATED] = NetworkInfoDetailedState_CONNECTING;
-    mStateMap[SupplicantState_FOUR_WAY_HANDSHAKE] = NetworkInfoDetailedState_AUTHENTICATING;
-    mStateMap[SupplicantState_GROUP_HANDSHAKE] = NetworkInfoDetailedState_AUTHENTICATING;
-    mStateMap[SupplicantState_COMPLETED] = NetworkInfoDetailedState_OBTAINING_IPADDR;
-    mStateMap[SupplicantState_DORMANT] = NetworkInfoDetailedState_DISCONNECTED;
-    mStateMap[SupplicantState_UNINITIALIZED] = NetworkInfoDetailedState_IDLE;
-    mStateMap[SupplicantState_INVALID] = NetworkInfoDetailedState_FAILED;
-    return 0;
+    assert(0);
+    // TODO
+    // mStateMap[SupplicantState_DISCONNECTED] = NetworkInfoDetailedState_DISCONNECTED;
+    // mStateMap[SupplicantState_INTERFACE_DISABLED] = NetworkInfoDetailedState_DISCONNECTED;
+    // mStateMap[SupplicantState_INACTIVE] = NetworkInfoDetailedState_IDLE;
+    // mStateMap[SupplicantState_SCANNING] = NetworkInfoDetailedState_SCANNING;
+    // mStateMap[SupplicantState_AUTHENTICATING] = NetworkInfoDetailedState_CONNECTING;
+    // mStateMap[SupplicantState_ASSOCIATING] = NetworkInfoDetailedState_CONNECTING;
+    // mStateMap[SupplicantState_ASSOCIATED] = NetworkInfoDetailedState_CONNECTING;
+    // mStateMap[SupplicantState_FOUR_WAY_HANDSHAKE] = NetworkInfoDetailedState_AUTHENTICATING;
+    // mStateMap[SupplicantState_GROUP_HANDSHAKE] = NetworkInfoDetailedState_AUTHENTICATING;
+    // mStateMap[SupplicantState_COMPLETED] = NetworkInfoDetailedState_OBTAINING_IPADDR;
+    // mStateMap[SupplicantState_DORMANT] = NetworkInfoDetailedState_DISCONNECTED;
+    // mStateMap[SupplicantState_UNINITIALIZED] = NetworkInfoDetailedState_IDLE;
+    // mStateMap[SupplicantState_INVALID] = NetworkInfoDetailedState_FAILED;
+    // return 0;
+    return -1;
 }
 
 } // namespace Wifi

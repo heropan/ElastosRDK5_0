@@ -2,15 +2,31 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWPSRESULT_H__
 #define __ELASTOS_DROID_NET_WIFI_CWPSRESULT_H__
 
-#include "_Elastos_Droid_Net_Wifi_CWpsResult.h"
+#include "_Elastos_Droid_Wifi_CWpsResult.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 
 CarClass(CWpsResult)
+    , public Object
+    , public IWpsResult
 {
+    friend class WifiConfigStore;
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ WpsResultStatus status);
+
+    CARAPI constructor(
+        /* [in] */ IWpsResult* source);
+
     CARAPI GetStatus(
         /* [out] */ WpsResultStatus* status);
 
@@ -32,23 +48,13 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ WpsResultStatus status);
-
-    CARAPI constructor(
-        /* [in] */ IWpsResult* source);
-
 private:
     WpsResultStatus mStatus;
     String mPin;
-
-friend class WifiConfigStore;
 };
 
-}
-}
-}
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_CWPSRESULT_H__

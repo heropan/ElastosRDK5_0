@@ -536,11 +536,11 @@ AutoPtr<IInterface> MenuInflater::GetRealOwner()
 AutoPtr<IInterface> MenuInflater::FindRealOwner(
     /* [in] */ IInterface* owner)
 {
-    if (IActivity::Probe(owner)) {
+    if (NULL != IActivity::Probe(owner)) {
         return owner;
     }
 
-    if (IContextWrapper::Probe(owner)) {
+    if (NULL != IContextWrapper::Probe(owner)) {
         AutoPtr<IContextWrapper> wrapper = IContextWrapper::Probe(owner);
         AutoPtr<IContext> ctx;
         wrapper->GetBaseContext((IContext**)&ctx);

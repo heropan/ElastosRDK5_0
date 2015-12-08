@@ -67,7 +67,7 @@ public:
      */
     CARAPI Get(
         /* [in] */ Int32 key,
-        /* [out] */Int32* value);
+        /* [out] */ Int32* value);
 
     /**
      * Gets the Int32 mapped from the specified key, or the specified value
@@ -76,7 +76,7 @@ public:
     CARAPI Get(
         /* [in] */ Int32 key,
         /* [in] */ Int32 valueIfKeyNotFound,
-        /* [out] */Int32* value);
+        /* [out] */ Int32* value);
 
     /**
      * Removes the mapping from the specified key, if there was any.
@@ -104,7 +104,7 @@ public:
      * currently stores.
      */
     CARAPI GetSize(
-        /* [out] */Int32* size);
+        /* [out] */ Int32* size);
 
     /**
      * Given an index in the range <code>0...size()-1</code>, returns
@@ -118,7 +118,7 @@ public:
      */
     CARAPI KeyAt(
         /* [in] */ Int32 index,
-        /* [out] */Int32* key);
+        /* [out] */ Int32* key);
 
     /**
      * Given an index in the range <code>0...size()-1</code>, returns
@@ -133,7 +133,7 @@ public:
      */
     CARAPI ValueAt(
         /* [in] */ Int32 index,
-        /* [out] */Int32* value);
+        /* [out] */ Int32* value);
 
     /**
      * Returns the index for which {@link #keyAt} would return the

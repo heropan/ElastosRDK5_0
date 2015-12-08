@@ -3,16 +3,18 @@
 #include "elastos/droid/os/Looper.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::MessageQueue;
 using Elastos::Droid::Os::NativeMessageQueue;
+using Elastos::Core::CCloseGuardHelper;
+using Elastos::Core::ICloseGuardHelper;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-const char* DisplayEventReceiver::TAG = "DisplayEventReceiver";
+const String DisplayEventReceiver::TAG("DisplayEventReceiver");
 
 CAR_INTERFACE_IMPL(DisplayEventReceiver, Object, IDisplayEventReceiver)
 
@@ -24,10 +26,13 @@ DisplayEventReceiver::DisplayEventReceiver(
         assert(0);
     }
 
+    AutoPtr<ICloseGuardHelper> helper;
+    CCloseGuardHelper::AcquireSingleton((ICloseGuardHelper**)&helper);
+    helper->Get((ICloseGuard**)&mCloseGuard);
     mMessageQueue = ((Looper*)looper)->GetQueue();
     NativeInit();
 
-    //mCloseGuard.open("dispose");
+    mCloseGuard->Open(String("dispose"));
 }
 
 DisplayEventReceiver::~DisplayEventReceiver()
@@ -62,12 +67,12 @@ ECode DisplayEventReceiver::Dispose()
 void DisplayEventReceiver::Dispose(
     /* [in] */ Boolean finalized)
 {
-    // if (mCloseGuard != NULL) {
-    //     if (finalized) {
-    //         mCloseGuard.warnIfOpen();
-    //     }
-    //     mCloseGuard.close();
-    // }
+    if (mCloseGuard != NULL) {
+        if (finalized) {
+            mCloseGuard->WarnIfOpen();
+        }
+        mCloseGuard->Close();
+    }
 
     if (mNativeReceiver != NULL) {
         mNativeReceiver->dispose();

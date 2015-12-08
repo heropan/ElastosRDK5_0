@@ -71,8 +71,11 @@ module
         ComputeFrameLw(
             [in] IRect* parentFrame,
             [in] IRect* displayFrame,
+            [in] IRect* overlayFrame,
             [in] IRect* contentFrame,
-            [in] IRect* visibleFrame);
+            [in] IRect* visibleFrame,
+            [in] IRect* decorFrame,
+            [in] IRect* stableFrame);
 
         /**
          * Retrieve the current frame of the window that has been assigned by

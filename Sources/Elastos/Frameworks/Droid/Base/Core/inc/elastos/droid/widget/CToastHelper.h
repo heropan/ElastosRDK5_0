@@ -6,9 +6,9 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CToastHelper)
 {

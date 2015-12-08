@@ -134,20 +134,20 @@ public:
     CARAPI SetOnTimeChangedListener(
         /* [in] */ IOnTimeChangedListener* onTimeChangedListener);
 
-    CARAPI_(AutoPtr<IInteger32>) GetCurrentHour();
+    CARAPI_(Int32) GetCurrentHour();
 
     CARAPI SetCurrentHour(
-        /* [in] */ IInteger32* currentHour);
+        /* [in] */ Int32 currentHour);
 
     CARAPI SetIs24HourView(
         /* [in] */ Boolean is24HourView);
 
     CARAPI_(Boolean) Is24HourView();
 
-    CARAPI_(AutoPtr<IInteger32>) GetCurrentMinute();
+    CARAPI_(Int32) GetCurrentMinute();
 
     CARAPI SetCurrentMinute(
-        /* [in] */ IInteger32* currentMinute);
+        /* [in] */ Int32 currentMinute);
 
     CARAPI GetBaseline(
         /* [out] */ Int32* baseline);

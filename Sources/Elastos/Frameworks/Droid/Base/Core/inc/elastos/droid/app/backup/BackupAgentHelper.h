@@ -4,10 +4,10 @@
 
 #include "elastos/droid/app/backup/BackupAgent.h"
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 /**
  * A convenient {@link BackupAgent} wrapper class that automatically manages
  * heterogeneous data sets within the backup data, each identified by a unique

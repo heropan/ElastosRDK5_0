@@ -1,6 +1,6 @@
 
 #include "elastos/droid/animation/AnimatorInflater.h"
-// #include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
 #include "elastos/droid/animation/CAnimatorSet.h"
 #include "elastos/droid/animation/CValueAnimator.h"
 #include "elastos/droid/animation/CArgbEvaluator.h"
@@ -19,7 +19,7 @@ using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::ITypedArray;
-// using Elastos::Droid::View::Animation::AnimationUtils;
+using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::Animation::IInterpolator;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::PathParser;
@@ -740,8 +740,7 @@ ECode AnimatorInflater::LoadAnimator(
     FAIL_GOTO(ec, error);
     if (resID > 0) {
         AutoPtr<IInterpolator> timeInterpolator;
-        assert(0 && "TODO");
-        // AnimationUtils::LoadInterpolator(res, theme, resID, (IInterpolator**)&timeInterpolator);
+        AnimationUtils::LoadInterpolator(res, theme, resID, (IInterpolator**)&timeInterpolator);
         ec = IAnimator::Probe(anim)->SetInterpolator(ITimeInterpolator::Probe(timeInterpolator));
         FAIL_GOTO(ec, error);
     }

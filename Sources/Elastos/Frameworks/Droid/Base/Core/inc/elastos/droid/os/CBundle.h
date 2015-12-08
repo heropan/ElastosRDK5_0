@@ -4,14 +4,14 @@
 #include "_Elastos_Droid_Os_CBundle.h"
 #include "elastos/droid/os/BaseBundle.h"
 
+using Elastos::Droid::Utility::ISize;
+using Elastos::Droid::Utility::ISizeF;
+using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::ICloneable;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;
-using Elastos::Droid::Utility::ISize;
-using Elastos::Droid::Utility::ISizeF;
-using Elastos::Droid::Utility::ISparseArray;
 
 namespace Elastos {
 namespace Droid {

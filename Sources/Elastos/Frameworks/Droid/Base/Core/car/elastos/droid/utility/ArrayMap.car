@@ -126,6 +126,9 @@ module
             [in] Int32 index,
             [out] IInterface** outface);
 
+        RemoveAt(
+            [in] Int32 index);
+
         /**
          * Determine if the array map contains all of the keys in the given collection.
          * @param collection The collection whose contents are to be checked against.

@@ -11,7 +11,6 @@ module
     namespace Droid {
     namespace App {
 
-
     /**
      * An item in the list
      */
@@ -29,10 +28,10 @@ module
         SetLabel(
             [in] ICharSequence* label);
 
-        GetDrawable(
+        GetIcon(
             [out] IDrawable** icon);
 
-        SetDrawable(
+        SetIcon(
             [in] IDrawable* icon);
 
         GetPackageName(

@@ -6,55 +6,34 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-/******************************UtteranceProgressListener::UtteranceProgressListenerStand*************************/
-PInterface UtteranceProgressListener::UtteranceProgressListenerStand::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IUtteranceProgressListener*)this;
-    }
-    else if (riid == EIID_IUtteranceProgressListener) {
-        return (IUtteranceProgressListener*)this;
-    }
-    return NULL;
-}
+/******************
+ * UtteranceProgressListener::UtteranceProgressListenerStand
+ *******************************************************************************************************/
 
-UInt32 UtteranceProgressListener::UtteranceProgressListenerStand::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+CAR_OBJECT_IMPL(UtteranceProgressListener::UtteranceProgressListenerStand);
 
-UInt32 UtteranceProgressListener::UtteranceProgressListenerStand::Release()
-{
-    return ElRefBase::Release();
-}
+UtteranceProgressListener::UtteranceProgressListenerStand::UtteranceProgressListenerStand()
+{}
 
-ECode UtteranceProgressListener::UtteranceProgressListenerStand::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+UtteranceProgressListener::UtteranceProgressListenerStand::~UtteranceProgressListenerStand()
+{}
 
-    if (Object == (IInterface*)(IUtteranceProgressListener*)this) {
-        *iID = EIID_IUtteranceProgressListener;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
+ECode UtteranceProgressListener::UtteranceProgressListenerStand::constructor()
+{
     return NOERROR;
 }
 
-UtteranceProgressListener::UtteranceProgressListenerStand::UtteranceProgressListenerStand(
+
+ECode UtteranceProgressListener::UtteranceProgressListenerStand::constructor(
     /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener)
 {
     mListener = listener;
+
+    return NOERROR;
 }
 
 ECode UtteranceProgressListener::UtteranceProgressListenerStand::OnDone(
-    /* [in] */ const String & utteranceId)
+    /* [in] */ const String& utteranceId)
 {
     AutoLock lock(mMutex);
     mListener->OnUtteranceCompleted(utteranceId);
@@ -62,43 +41,38 @@ ECode UtteranceProgressListener::UtteranceProgressListenerStand::OnDone(
 }
 
 ECode UtteranceProgressListener::UtteranceProgressListenerStand::OnError(
-    /* [in] */ const String & utteranceId)
+    /* [in] */ const String& utteranceId)
 {
     mListener->OnUtteranceCompleted(utteranceId);
     return NOERROR;
 }
 
+ECode UtteranceProgressListener::UtteranceProgressListenerStand::OnError(
+    /* [in] */ const String& utteranceId,
+    /* [in] */ Int32 errorCode)
+{
+    OnError(utteranceId);
+    return NOERROR;
+}
+
 ECode UtteranceProgressListener::UtteranceProgressListenerStand::OnStart(
-    /* [in] */ const String & utteranceId)
+    /* [in] */ const String& utteranceId)
 {
     // Left unimplemented, has no equivalent in the old
     // API.
     return NOERROR;
 }
 
-/******************************UtteranceProgressListener*************************/
+/******************
+ * UtteranceProgressListener
+ *******************************************************************************************************/
+
 AutoPtr<IUtteranceProgressListener> UtteranceProgressListener::From(
     /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener)
 {
     AutoPtr<IUtteranceProgressListener> ret = new UtteranceProgressListenerStand(listener);
     return ret;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 } // namespace Tts
 } // namespace Speech

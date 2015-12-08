@@ -1,28 +1,141 @@
 
 #include "elastos/droid/view/inputmethod/CInputMethodSubtype.h"
 #include "elastos/droid/text/TextUtils.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/etl/List.h>
+#include <elastos/utility/Arrays.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CStringWrapper;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::CLocale;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Text::TextUtils;
+
+using Elastos::Core::CString;
+using Elastos::Core::IBoolean;
+using Elastos::Core::CBoolean;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::CLocale;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
 
+//========================================================================================
+//              CInputMethodSubtype::InputMethodSubtypeBuilder::
+//========================================================================================
+CAR_INTERFACE_IMPL(CInputMethodSubtype::InputMethodSubtypeBuilder, Object, IInputMethodSubtypeBuilder)
+
+CInputMethodSubtype::InputMethodSubtypeBuilder::InputMethodSubtypeBuilder()
+    : mIsAuxiliary(FALSE)
+    , mOverridesImplicitlyEnabledSubtype(FALSE)
+    , mIsAsciiCapable(FALSE)
+    , mSubtypeIconResId(0)
+    , mSubtypeNameResId(0)
+    , mSubtypeId(0)
+    , mSubtypeLocale("")
+    , mSubtypeMode("")
+    , mSubtypeExtraValue("")
+{
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::SetIsAuxiliary(
+    /* [in] */ Boolean isAuxiliary)
+{
+    mIsAuxiliary = isAuxiliary;
+    return NOERROR;
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::SetOverridesImplicitlyEnabledSubtype(
+    /* [in] */ Boolean overridesImplicitlyEnabledSubtype)
+{
+    mOverridesImplicitlyEnabledSubtype = overridesImplicitlyEnabledSubtype;
+    return NOERROR;
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::SetIsAsciiCapable(
+    /* [in] */ Boolean isAsciiCapable)
+{
+    mIsAsciiCapable = isAsciiCapable;
+    return NOERROR;
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::SetSubtypeIconResId(
+    /* [in] */ Int32 subtypeIconResId)
+{
+    mSubtypeIconResId = subtypeIconResId;
+    return NOERROR;
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::SetSubtypeNameResId(
+    /* [in] */ Int32 subtypeNameResId)
+{
+    mSubtypeNameResId = subtypeNameResId;
+    return NOERROR;
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::SetSubtypeId(
+    /* [in] */ Int32 subtypeId)
+{
+    mSubtypeId = subtypeId;
+    return NOERROR;
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::SetSubtypeLocale(
+    /* [in] */ const String& subtypeLocale)
+{
+    mSubtypeLocale = subtypeLocale == NULL ? "" : subtypeLocale;
+    return NOERROR;
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::SetSubtypeMode(
+    /* [in] */ const String& subtypeMode)
+{
+    mSubtypeMode = subtypeMode == NULL ? "" : subtypeMode;
+    return NOERROR;
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::SetSubtypeExtraValue(
+    /* [in] */ const String& subtypeExtraValue)
+{
+    mSubtypeExtraValue = subtypeExtraValue == NULL ? "" : subtypeExtraValue;
+    return NOERROR;
+}
+
+ECode CInputMethodSubtype::InputMethodSubtypeBuilder::Build(
+    /* [out] */ IInputMethodSubtype** type)
+{
+    VALIDATE_NOT_NULL(type)
+    AutoPtr<IInputMethodSubtype> res;
+    CInputMethodSubtype::New(this, (IInputMethodSubtype**)&res);
+    *type = res;
+    REFCOUNT_ADD(*type)
+    return NOERROR;
+}
+
+//========================================================================================
+//              CInputMethodSubtype::
+//========================================================================================
 String CInputMethodSubtype::TAG("CInputMethodSubtype");
 String CInputMethodSubtype::EXTRA_VALUE_PAIR_SEPARATOR(",");
 String CInputMethodSubtype::EXTRA_VALUE_KEY_VALUE_SEPARATOR("=");
 String CInputMethodSubtype::EXTRA_KEY_UNTRANSLATABLE_STRING_IN_SUBTYPE_NAME("UntranslatableReplacementStringInSubtypeName");
 
+CAR_INTERFACE_IMPL_2(CInputMethodSubtype, Object, IInputMethodSubtype, IParcelable)
+
+CAR_OBJECT_IMPL(CInputMethodSubtype)
 
 CInputMethodSubtype::CInputMethodSubtype()
     : mIsAuxiliary(FALSE)
     , mOverridesImplicitlyEnabledSubtype(FALSE)
+    , mIsAsciiCapable(FALSE)
     , mSubtypeHashCode(0)
     , mSubtypeIconResId(0)
     , mSubtypeNameResId(0)
@@ -35,19 +148,33 @@ CInputMethodSubtype::~CInputMethodSubtype()
     mExtraValueHashMapCache = NULL;
 }
 
-ECode CInputMethodSubtype::constructor() {
-    return NOERROR;
-}
-
-ECode CInputMethodSubtype::constructor(
+AutoPtr<CInputMethodSubtype::InputMethodSubtypeBuilder> CInputMethodSubtype::GetBuilder(
     /* [in] */ Int32 nameId,
     /* [in] */ Int32 iconId,
     /* [in] */ const String& locale,
     /* [in] */ const String& mode,
     /* [in] */ const String& extraValue,
-    /* [in] */ Boolean isAuxiliary)
+    /* [in] */ Boolean isAuxiliary,
+    /* [in] */ Boolean overridesImplicitlyEnabledSubtype,
+    /* [in] */ Int32 id,
+    /* [in] */ Boolean isAsciiCapable)
 {
-    return Init(nameId, iconId, locale, mode, extraValue, isAuxiliary);
+    AutoPtr<InputMethodSubtypeBuilder> builder = new InputMethodSubtypeBuilder();
+    builder->mSubtypeNameResId = nameId;
+    builder->mSubtypeIconResId = iconId;
+    builder->mSubtypeLocale = locale;
+    builder->mSubtypeMode = mode;
+    builder->mSubtypeExtraValue = extraValue;
+    builder->mIsAuxiliary = isAuxiliary;
+    builder->mOverridesImplicitlyEnabledSubtype = overridesImplicitlyEnabledSubtype;
+    builder->mSubtypeId = id;
+    builder->mIsAsciiCapable = isAsciiCapable;
+    return builder;
+ }
+
+ECode CInputMethodSubtype::constructor()
+{
+    return NOERROR;
 }
 
 ECode CInputMethodSubtype::constructor(
@@ -59,8 +186,8 @@ ECode CInputMethodSubtype::constructor(
     /* [in] */ Boolean isAuxiliary,
     /* [in] */ Boolean overridesImplicitlyEnabledSubtype)
 {
-    return Init(nameId, iconId, locale, mode, extraValue, isAuxiliary,
-            overridesImplicitlyEnabledSubtype);
+    return constructor(nameId, iconId, locale, mode, extraValue, isAuxiliary,
+                overridesImplicitlyEnabledSubtype, 0);
 }
 
 ECode CInputMethodSubtype::constructor(
@@ -73,31 +200,28 @@ ECode CInputMethodSubtype::constructor(
     /* [in] */ Boolean overridesImplicitlyEnabledSubtype,
     /* [in] */ Int32 id)
 {
-    return Init(nameId, iconId, locale, mode, extraValue, isAuxiliary, overridesImplicitlyEnabledSubtype, id);
+    return constructor(GetBuilder(nameId, iconId, locale, mode, extraValue, isAuxiliary,
+                overridesImplicitlyEnabledSubtype, id, FALSE));
 }
 
-ECode CInputMethodSubtype::Init(
-    /* [in] */ Int32 nameId,
-    /* [in] */ Int32 iconId,
-    /* [in] */ const String& locale,
-    /* [in] */ const String& mode,
-    /* [in] */ const String& extraValue,
-    /* [in] */ Boolean isAuxiliary,
-    /* [in] */ Boolean overridesImplicitlyEnabledSubtype,
-    /* [in] */ Int32 id)
+ECode CInputMethodSubtype::constructor(
+    /* [in] */ IInputMethodSubtypeBuilder* builder)
 {
-    mSubtypeNameResId = nameId;
-    mSubtypeIconResId = iconId;
-    mSubtypeLocale = !locale.IsNull() ? locale : "";
-    mSubtypeMode = !mode.IsNull() ? mode : "";
-    mSubtypeExtraValue = !extraValue.IsNull() ? extraValue : "";
-    mIsAuxiliary = isAuxiliary;
-    mOverridesImplicitlyEnabledSubtype = overridesImplicitlyEnabledSubtype;
+    InputMethodSubtypeBuilder* cb = (InputMethodSubtypeBuilder*)builder;
+    mSubtypeNameResId = cb->mSubtypeNameResId;
+    mSubtypeIconResId = cb->mSubtypeIconResId;
+    mSubtypeLocale = cb->mSubtypeLocale;
+    mSubtypeMode = cb->mSubtypeMode;
+    mSubtypeExtraValue = cb->mSubtypeExtraValue;
+    mIsAuxiliary = cb->mIsAuxiliary;
+    mOverridesImplicitlyEnabledSubtype = cb->mOverridesImplicitlyEnabledSubtype;
+    mSubtypeId = cb->mSubtypeId;
+    mIsAsciiCapable = cb->mIsAsciiCapable;
     // If hashCode() of this subtype is 0 and you want to specify it as an id of this subtype,
     // just specify 0 as this subtype's id. Then, this subtype's id is treated as 0.
-    mSubtypeHashCode = id != 0 ? id : HashCodeInternal(mSubtypeLocale, mSubtypeMode,
-            mSubtypeExtraValue, mIsAuxiliary, mOverridesImplicitlyEnabledSubtype);
-    mSubtypeId = id;
+    mSubtypeHashCode = mSubtypeId != 0 ? mSubtypeId : HashCodeInternal(mSubtypeLocale,
+            mSubtypeMode, mSubtypeExtraValue, mIsAuxiliary, mOverridesImplicitlyEnabledSubtype,
+            mIsAsciiCapable);
     return NOERROR;
 }
 
@@ -157,6 +281,14 @@ ECode CInputMethodSubtype::OverridesImplicitlyEnabledSubtype(
     return NOERROR;
 }
 
+ECode CInputMethodSubtype::IsAsciiCapable(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mIsAsciiCapable;
+    return NOERROR;
+}
+
 ECode CInputMethodSubtype::GetDisplayName(
     /* [in] */ IContext* context,
     /* [in] */ const String& packageName,
@@ -171,7 +303,7 @@ ECode CInputMethodSubtype::GetDisplayName(
         locale->GetDisplayName(&localeStr);
     }
     if (mSubtypeNameResId == 0) {
-        return CStringWrapper::New(localeStr, name);
+        return CString::New(localeStr, name);
     }
     AutoPtr<ICharSequence> subtypeName;
     AutoPtr<IPackageManager> pm;
@@ -193,35 +325,35 @@ ECode CInputMethodSubtype::GetDisplayName(
         //     return "";
         // }
     }
-    return CStringWrapper::New(localeStr, name);
+    return CString::New(localeStr, name);
 }
 
 AutoPtr< HashMap<String, String> > CInputMethodSubtype::GetExtraValueHashMap()
 {
     if (mExtraValueHashMapCache == NULL) {
-        AutoLock lock(mLock);
-
-        if (mExtraValueHashMapCache == NULL) {
-            mExtraValueHashMapCache = new HashMap<String, String>(10);
-            assert(0);
-            //TODO
-            // final String[] pairs = mSubtypeExtraValue.split(EXTRA_VALUE_PAIR_SEPARATOR);
-            AutoPtr< ArrayOf<String> > pairs;
-            const Int32 N = pairs->GetLength();
-            for (Int32 i = 0; i < N; ++i) {
+        synchronized(this) {
+            if (mExtraValueHashMapCache == NULL) {
+                mExtraValueHashMapCache = new HashMap<String, String>(10);
                 assert(0);
                 //TODO
-                //final String[] pair = pairs[i].split(EXTRA_VALUE_KEY_VALUE_SEPARATOR);
-                AutoPtr< ArrayOf<String> > pair;
-                Int32 len = pair->GetLength();
-                if (len == 1) {
-                    (*mExtraValueHashMapCache)[(*pair)[0]] = NULL;
-                }
-                else if (len > 1) {
-                    if (len > 2) {
-                        // Slog.w(TAG, "ExtraValue has two or more '='s");
+                // final String[] pairs = mSubtypeExtraValue.split(EXTRA_VALUE_PAIR_SEPARATOR);
+                AutoPtr< ArrayOf<String> > pairs;
+                const Int32 N = pairs->GetLength();
+                for (Int32 i = 0; i < N; ++i) {
+                    assert(0);
+                    //TODO
+                    //final String[] pair = pairs[i].split(EXTRA_VALUE_KEY_VALUE_SEPARATOR);
+                    AutoPtr< ArrayOf<String> > pair;
+                    Int32 len = pair->GetLength();
+                    if (len == 1) {
+                        (*mExtraValueHashMapCache)[(*pair)[0]] = NULL;
                     }
-                    (*mExtraValueHashMapCache)[(*pair)[0]] = (*pair)[1];
+                    else if (len > 1) {
+                        if (len > 2) {
+                            Slogger::W(TAG, "ExtraValue has two or more '='s");
+                        }
+                        (*mExtraValueHashMapCache)[(*pair)[0]] = (*pair)[1];
+                    }
                 }
             }
         }
@@ -267,19 +399,20 @@ ECode CInputMethodSubtype::Equals(
     /* [in] */ IInputMethodSubtype* o,
     /* [out] */ Boolean* equals)
 {
-    VALIDATE_NOT_NULL(equals);
+    VALIDATE_NOT_NULL(equals)
+
     CInputMethodSubtype* subtype = (CInputMethodSubtype*)o;
     if (subtype->mSubtypeId != 0 || mSubtypeId != 0) {
         *equals = subtype->mSubtypeHashCode == mSubtypeHashCode;
         return NOERROR;
     }
     *equals = (subtype->mSubtypeHashCode == mSubtypeHashCode)
-            && (subtype->mSubtypeNameResId == mSubtypeNameResId)
-            && (subtype->mSubtypeMode.Equals(mSubtypeMode))
-            && (subtype->mSubtypeIconResId == mSubtypeIconResId)
             && (subtype->mSubtypeLocale.Equals(mSubtypeLocale))
+            && (subtype->mSubtypeMode.Equals(mSubtypeMode))
             && (subtype->mSubtypeExtraValue.Equals(mSubtypeExtraValue))
-            && (subtype->mIsAuxiliary == mIsAuxiliary);
+            && (subtype->mIsAuxiliary == mIsAuxiliary)
+            && (subtype->mOverridesImplicitlyEnabledSubtype == mOverridesImplicitlyEnabledSubtype)
+            && (subtype->mIsAsciiCapable == mIsAsciiCapable);
     return NOERROR;
 }
 
@@ -306,6 +439,7 @@ ECode CInputMethodSubtype::WriteToParcel(
     dest->WriteBoolean(mOverridesImplicitlyEnabledSubtype);
     dest->WriteInt32(mSubtypeHashCode);
     dest->WriteInt32(mSubtypeId);
+    dest->WriteInt32(mIsAsciiCapable ? 1 : 0);
     return NOERROR;
 }
 
@@ -325,6 +459,9 @@ ECode CInputMethodSubtype::ReadFromParcel(
     source->ReadBoolean(&mOverridesImplicitlyEnabledSubtype);
     source->ReadInt32(&mSubtypeHashCode);
     source->ReadInt32(&mSubtypeId);
+    Int32 c = 0;
+    source->ReadInt32(&c);
+    mIsAsciiCapable = (c == 1);
     return NOERROR;
 }
 
@@ -362,60 +499,79 @@ Int32 CInputMethodSubtype::HashCodeInternal(
     /* [in] */ const String& mode,
     /* [in] */ const String& extraValue,
     /* [in] */ Boolean isAuxiliary,
-    /* [in] */ Boolean overridesImplicitlyEnabledSubtype)
+    /* [in] */ Boolean overridesImplicitlyEnabledSubtype,
+    /* [in] */ Boolean isAsciiCapable)
 {
-    //TODO
-    // return Arrays.hashCode(new Object[] {locale, mode, extraValue, isAuxiliary,
-    //         overridesImplicitlyEnabledSubtype});
-    return 0;
+    // CAVEAT: Must revisit how to compute needsToCalculateCompatibleHashCode when a new
+    // attribute is added in order to avoid enabled subtypes being unexpectedly disabled.
+    AutoPtr<ICharSequence> pLoc;
+    CString::New(locale, (ICharSequence**)&pLoc);
+    AutoPtr<ICharSequence> pMod;
+    CString::New(mode, (ICharSequence**)&pMod);
+    AutoPtr<ICharSequence> pExt;
+    CString::New(extraValue, (ICharSequence**)&pExt);
+    AutoPtr<IBoolean> pAux;
+    CBoolean::New(isAuxiliary, (IBoolean**)&pAux);
+    AutoPtr<IBoolean> pSub;
+    CBoolean::New(overridesImplicitlyEnabledSubtype, (IBoolean**)&pSub);
+    AutoPtr<IBoolean> pAsc;
+    CBoolean::New(isAsciiCapable, (IBoolean**)&pAsc);
+
+    Boolean needsToCalculateCompatibleHashCode = !isAsciiCapable;
+    if (needsToCalculateCompatibleHashCode) {
+        AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(5);
+        (*arr)[0] = pLoc;
+        (*arr)[1] = pMod;
+        (*arr)[2] = pExt;
+        (*arr)[3] = pAux;
+        (*arr)[4] = pSub;
+        return Arrays::GetHashCode(arr);
+    }
+
+    AutoPtr<ArrayOf<IInterface*> > arr_1 = ArrayOf<IInterface*>::Alloc(6);
+    (*arr_1)[0] = pLoc;
+    (*arr_1)[1] = pMod;
+    (*arr_1)[2] = pExt;
+    (*arr_1)[3] = pAux;
+    (*arr_1)[4] = pSub;
+    (*arr_1)[5] = pAsc;
+    return Arrays::GetHashCode(arr_1);
 }
 
-AutoPtr<IObjectContainer> CInputMethodSubtype::Sort(
+AutoPtr<IList> CInputMethodSubtype::Sort(
     /* [in] */ IContext* context,
     /* [in] */ Int32 flags,
     /* [in] */ IInputMethodInfo* imi,
-    /* [in] */ IObjectContainer* subtypeList)
+    /* [in] */ IList* subtypeList)
 {
-    assert(0);
-//    if (imi == NULL) return _subtypeList;
-//
-//    AutoPtr<ArrayOf<IInputMethodSubtype*> > subtypeList = _subtypeList->Clone();
-//
-//    List<AutoPtr<IInputMethodSubtype> > sortedList;
-//    Int32 N = 0;
-//    imi->GetSubtypeCount(&N);
-//    for (Int32 i = 0; i < N; ++i) {
-//        AutoPtr<IInputMethodSubtype> subtype;
-//        imi->GetSubtypeAt(i, (IInputMethodSubtype**)&subtype);
-//        assert(subtype != NULL);
-//
-//        for (Int32 j = 0; j < subtypeList->GetLength(); j++) {
-//            if ((*subtypeList)[j] != NULL && (*subtypeList)[j] == subtype) {
-//                subtypeList->Set(j, NULL);
-//                sortedList.PushBack(subtype);
-//                break;
-//            }
-//        }
-//    }
-//
-//    // If subtypes in subtypeList remain, that means these subtypes are not
-//    // contained in imi, so the remaining subtypes will be appended.
-//    for (Int32 i = 0; i < subtypeList->GetLength(); i++) {
-//        AutoPtr<IInputMethodSubtype> subtype = (*subtypeList)[i];
-//
-//        if (subtype != NULL) {
-//            sortedList.PushBack(subtype);
-//        }
-//    }
-//
-//    Int32 size = sortedList.GetSize();
-//    AutoPtr<ArrayOf<IInputMethodSubtype*> > retList = ArrayOf<IInputMethodSubtype*>::Alloc(size);
-//    for (Int32 i = 0; i < size; i++) {
-//        (*retList)[i] = sortedList[i];
-//    }
-//
-//    return retList;
-    return NULL;
+    if (imi == NULL) return subtypeList;
+
+    AutoPtr<IHashSet> inputSubtypesSet;
+    CHashSet::New(ICollection::Probe(subtypeList), (IHashSet**)&inputSubtypesSet);
+    AutoPtr<IArrayList> sortedList;
+    CArrayList::New((IArrayList**)&sortedList);
+    Int32 N = 0;
+    imi->GetSubtypeCount(&N);
+    for (Int32 i = 0; i < N; ++i) {
+        AutoPtr<IInputMethodSubtype> subtype;
+        imi->GetSubtypeAt(i, (IInputMethodSubtype**)&subtype);
+        Boolean bContains = FALSE;
+        if ((inputSubtypesSet->Contains(subtype, &bContains), bContains)) {
+            sortedList->Add(subtype);
+            inputSubtypesSet->Remove(subtype);
+        }
+    }
+    // If subtypes in inputSubtypesSet remain, that means these subtypes are not
+    // contained in imi, so the remaining subtypes will be appended.
+    AutoPtr<IIterator> it;
+    inputSubtypesSet->GetIterator((IIterator**)&it);
+    Boolean bHasNext = FALSE;
+    while ((it->HasNext(&bHasNext), bHasNext)) {
+        AutoPtr<IInterface> p;
+        it->GetNext((IInterface**)&p);
+        sortedList->Add(p);
+    }
+    return IList::Probe(sortedList);
 }
 
 } // namespace InputMethod

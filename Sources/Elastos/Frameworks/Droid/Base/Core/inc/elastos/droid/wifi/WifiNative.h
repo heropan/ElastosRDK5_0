@@ -21,7 +21,7 @@ namespace Wifi {
  *
  * {@hide}
  */
-class WifiNative : public ElRefBase
+class WifiNative : public Object
 {
 public:
     WifiNative(

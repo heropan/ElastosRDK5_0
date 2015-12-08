@@ -13,7 +13,7 @@ ECode CAnimatorSetBuilder::constructor(
     /* [in] */ IAnimatorSet* host,
     /* [in] */ IAnimator* anim)
 {
-    mHost = reinterpret_cast<AnimatorSet*>(host->Probe(EIID_AnimatorSet));
+    mHost = (AnimatorSet*)host;
     AutoPtr<IAnimator> key = anim;
     mCurrentNode = mHost->mNodeMap[key];
     if(mCurrentNode == NULL)

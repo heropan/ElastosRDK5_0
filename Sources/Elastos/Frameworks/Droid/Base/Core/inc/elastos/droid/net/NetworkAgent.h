@@ -131,12 +131,12 @@ public:
         /* [in] */ Int32 status);
 
     CARAPI Log(
-        /* [in] */ const String& s);
+        /* [in] */ const char* fmt, ...);
 
 private:
     CARAPI QueueOrSendMessage(
         /* [in] */ Int32 what,
-        /* [in] */ IObject* obj);
+        /* [in] */ IInterface* obj);
 
     // to initialize mPreConnectedQueue
     CARAPI_(AutoPtr<IArrayList>) CreatePreConnectQueue();
@@ -155,81 +155,6 @@ private:
     /* const */ AutoPtr<IContext> mContext;
 
     static const Int32 BASE;
-
-    /**
-     * Sent by ConnectivityService to the NetworkAgent to inform it of
-     * suspected connectivity problems on its network.  The NetworkAgent
-     * should take steps to verify and correct connectivity.
-     */
-    static const Int32 CMD_SUSPECT_BAD;
-
-    /**
-     * Sent by the NetworkAgent (note the EVENT vs CMD prefix) to
-     * ConnectivityService to pass the current NetworkInfo (connection state).
-     * Sent when the NetworkInfo changes, mainly due to change of state.
-     * obj = NetworkInfo
-     */
-    static const Int32 EVENT_NETWORK_INFO_CHANGED;
-
-    /**
-     * Sent by the NetworkAgent to ConnectivityService to pass the current
-     * NetworkCapabilties.
-     * obj = NetworkCapabilities
-     */
-    static const Int32 EVENT_NETWORK_CAPABILITIES_CHANGED;
-
-    /**
-     * Sent by the NetworkAgent to ConnectivityService to pass the current
-     * NetworkProperties.
-     * obj = NetworkProperties
-     */
-    static const Int32 EVENT_NETWORK_PROPERTIES_CHANGED;
-
-    /* centralize place where base network score, and network score scaling, will be
-     * stored, so as we can consistently compare apple and oranges, or wifi, ethernet and LTE
-     */
-    static const Int32 WIFI_BASE_SCORE;
-
-    /**
-     * Sent by the NetworkAgent to ConnectivityService to pass the current
-     * network score.
-     * obj = network score Integer
-     */
-    static const Int32 EVENT_NETWORK_SCORE_CHANGED;
-
-    /**
-     * Sent by the NetworkAgent to ConnectivityService to add new UID ranges
-     * to be forced into this Network.  For VPNs only.
-     * obj = UidRange[] to forward
-     */
-    static const Int32 EVENT_UID_RANGES_ADDED;
-
-    /**
-     * Sent by the NetworkAgent to ConnectivityService to remove UID ranges
-     * from being forced into this Network.  For VPNs only.
-     * obj = UidRange[] to stop forwarding
-     */
-    static const Int32 EVENT_UID_RANGES_REMOVED;
-
-    /**
-     * Sent by ConnectivitySerice to the NetworkAgent to inform the agent of the
-     * networks status - whether we could use the network or could not, due to
-     * either a bad network configuration (no internet link) or captive portal.
-     *
-     * arg1 = either {@code VALID_NETWORK} or {@code INVALID_NETWORK}
-     */
-    static const Int32 CMD_REPORT_NETWORK_STATUS;
-
-    static const Int32 VALID_NETWORK;
-
-    static const Int32 INVALID_NETWORK;
-
-    /**
-     * Sent by the NetworkAgent to ConnectivityService to indicate this network was
-     * explicitly selected.  This should be sent before the NetworkInfo is marked
-     * CONNECTED so it can be given special treatment at that time.
-     */
-    static const Int32 EVENT_SET_EXPLICITLY_SELECTED;
 };
 
 } // namespace Net

@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CWifiSsid.h"
+#include "elastos/droid/wifi/CWifiSsid.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/StringUtils.h>
 
@@ -27,6 +27,10 @@ namespace Wifi {
 
 static String TAG("WifiSsid");
 static Int32 HEX_RADIX = 16;
+
+CAR_INTERFACE_IMPL_2(CWifiSsid, Object, IWifiSsid, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiSsid)
 
 ECode CWifiSsid::constructor()
 {
@@ -73,7 +77,9 @@ ECode CWifiSsid::CreateFromHex(
         // } catch(NumberFormatException e) {
         //     val = 0;
         // }
-        a->mOctets->Write(val);
+        assert(0);
+        // TODO
+        // a->mOctets->Write(val);
     }
     *wifiSsid = (IWifiSsid*)a.Get();
     REFCOUNT_ADD(*wifiSsid)
@@ -95,27 +101,39 @@ void CWifiSsid::ConvertToBytes(
                 i++;
                 switch ((*charArray)[i]) {
                     case '\\':
-                        mOctets->Write('\\');
+                        assert(0);
+                        // TODO
+                        // mOctets->Write('\\');
                         i++;
                         break;
                     case '"':
-                        mOctets->Write('"');
+                        assert(0);
+                        // TODO
+                        // mOctets->Write('"');
                         i++;
                         break;
                     case 'n':
-                        mOctets->Write('\n');
+                        assert(0);
+                        // TODO
+                        // mOctets->Write('\n');
                         i++;
                         break;
                     case 'r':
-                        mOctets->Write('\r');
+                        assert(0);
+                        // TODO
+                        // mOctets->Write('\r');
                         i++;
                         break;
                     case 't':
-                        mOctets->Write('\t');
+                        assert(0);
+                        // TODO
+                        // mOctets->Write('\t');
                         i++;
                         break;
                     case 'e':
-                        mOctets->Write(27); //escape char
+                        assert(0);
+                        // TODO
+                        // mOctets->Write(27); //escape char
                         i++;
                         break;
                     case 'x':
@@ -128,11 +146,15 @@ void CWifiSsid::ConvertToBytes(
                         if (val < 0) {
                             val = Character::ToDigit((*charArray)[i], HEX_RADIX);
                             if (val < 0) break;
-                            mOctets->Write(val);
+                            assert(0);
+                            // TODO
+                            // mOctets->Write(val);
                             i++;
                         }
                         else {
-                            mOctets->Write(val);
+                            assert(0);
+                            // TODO
+                            // mOctets->Write(val);
                             i += 2;
                         }
                         break;
@@ -154,14 +176,18 @@ void CWifiSsid::ConvertToBytes(
                             val = val * 8 + (*charArray)[i] - '0';
                             i++;
                         }
-                        mOctets->Write(val);
+                        assert(0);
+                        // TODO
+                        // mOctets->Write(val);
                         break;
                     default:
                         break;
                 }
                 break;
             default:
-                mOctets->Write(c);
+                assert(0);
+                // TODO
+                // mOctets->Write(c);
                 i++;
                 break;
         }
@@ -195,12 +221,18 @@ ECode CWifiSsid::ToString(
     AutoPtr<ICodingErrorAction> ceAction;
     CCodingErrorAction::New((ICodingErrorAction**)&ceAction);
     AutoPtr<ICodingErrorAction> replace;
-    ceAction->GetREPLACE((ICodingErrorAction**)&replace);
+    assert(0);
+    // TODO
+    // ceAction->GetREPLACE((ICodingErrorAction**)&replace);
 
     AutoPtr<ICharsetDecoder> temp;
-    decoder->OnMalformedInput(replace, (ICharsetDecoder**)&temp);
+    assert(0);
+    // TODO
+    // decoder->OnMalformedInput(replace, (ICharsetDecoder**)&temp);
     temp = NULL;
-    decoder->OnUnmappableCharacter(replace, (ICharsetDecoder**)&temp);
+    assert(0);
+    // TODO
+    // decoder->OnUnmappableCharacter(replace, (ICharsetDecoder**)&temp);
     AutoPtr<ICharBufferHelper> bufferHelper;
     CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&bufferHelper);
     AutoPtr<ICharBuffer> out;
@@ -209,16 +241,22 @@ ECode CWifiSsid::ToString(
     AutoPtr<IByteBufferHelper> byteHelper;
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&byteHelper);
     AutoPtr<IByteBuffer> buffer;
-    byteHelper->WrapArray(ssidBytes, (IByteBuffer**)&buffer);
+    assert(0);
+    // TODO
+    // byteHelper->WrapArray(ssidBytes, (IByteBuffer**)&buffer);
     AutoPtr<ICoderResult> result;
     decoder->Decode(buffer, out, TRUE, (ICoderResult**)&result);
-    out->Flip();
+    assert(0);
+    // TODO
+    // out->Flip();
     Boolean error;
     if (result->IsError(&error), error) {
         *value = NONE;
         return NOERROR;
     }
-    out->ToString(value);
+    assert(0);
+    // TODO
+    // out->ToString(value);
     return NOERROR;
 }
 
@@ -231,6 +269,23 @@ Boolean CWifiSsid::IsArrayAllZeroes(
     return TRUE;
 }
 
+ECode CWifiSsid::GetOctets(
+    /* [out] */ IByteArrayOutputStream** result)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CWifiSsid::IsHidden(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr< ArrayOf<Byte> > array;
+    mOctets->ToByteArray((ArrayOf<Byte>**)&array);
+    *result = IsArrayAllZeroes(array);
+    return NOERROR;
+}
 
 ECode CWifiSsid::GetOctets(
     /* [out, callee] */ ArrayOf<Byte>** octets)
@@ -248,7 +303,9 @@ ECode CWifiSsid::GetHexString(
     AutoPtr<ArrayOf<Byte> > ssidbytes;
     FAIL_RETURN(GetOctets((ArrayOf<Byte>**)&ssidbytes));
     for (Int32 i = 0; i < ssidbytes->GetLength(); i++) {
-        out.AppendFormat("%02x", (*ssidbytes)[i]);
+        assert(0);
+        // TODO
+        // out.AppendFormat(Locale.US, "%02x", (*ssidbytes)[i]);
     }
     *hexString = out;
     return NOERROR;
@@ -259,7 +316,9 @@ ECode CWifiSsid::ReadFromParcel(
 {
     AutoPtr< ArrayOf<Byte> > b;
     source->ReadArrayOf((Handle32*)&b);
-    mOctets->WriteBytes(*b);
+    assert(0);
+    // TODO
+    // mOctets->WriteBytes(*b);
     return NOERROR;
 }
 

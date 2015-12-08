@@ -1,13 +1,15 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_SIMPLEEXPANDABLELISTADAPTER_H__
-#define __ELASTOS_DROID_WIDGET_SIMPLEEXPANDABLELISTADAPTER_H__
+#ifndef  __ELASTOS_DROID_WIDGET_SIMPLEEXPANDABLELISTADAPTER_H__
+#define  __ELASTOS_DROID_WIDGET_SIMPLEEXPANDABLELISTADAPTER_H__
 
 #include "elastos/droid/widget/BaseExpandableListAdapter.h"
 
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Utility::IList;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -25,9 +27,15 @@ namespace Widget {
  * corresponds to the position of the child within the group, and finally the
  * Map holds the data for that particular child.
  */
-class SimpleExpandableListAdapter : public BaseExpandableListAdapter
+class SimpleExpandableListAdapter
+    : public BaseExpandableListAdapter
+    , public ISimpleExpandableListAdapter
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    SimpleExpandableListAdapter();
+
     /**
      * Constructor
      *
@@ -64,13 +72,13 @@ public:
      *            views for a child. The layout file should include at least
      *            those named views defined in "childTo"
      */
-    SimpleExpandableListAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IObjectContainer* groupData,
+        /* [in] */ IList* groupData,
         /* [in] */ Int32 groupLayout,
         /* [in] */ ArrayOf<String>* groupFrom,
         /* [in] */ ArrayOf<Int32>* groupTo,
-        /* [in] */ IObjectContainer* childData,
+        /* [in] */ IList* childData,
         /* [in] */ Int32 childLayout,
         /* [in] */ ArrayOf<String>* childFrom,
         /* [in] */ ArrayOf<Int32>* childTo);
@@ -114,18 +122,17 @@ public:
      *            views for a child. The layout file should include at least
      *            those named views defined in "childTo"
      */
-    SimpleExpandableListAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IObjectContainer* groupData,
+        /* [in] */ IList* groupData,
         /* [in] */ Int32 expandedGroupLayout,
         /* [in] */ Int32 collapsedGroupLayout,
         /* [in] */ ArrayOf<String>* groupFrom,
         /* [in] */ ArrayOf<Int32>* groupTo,
-        /* [in] */ IObjectContainer* childData,
+        /* [in] */ IList* childData,
         /* [in] */ Int32 childLayout,
         /* [in] */ ArrayOf<String>* childFrom,
         /* [in] */ ArrayOf<Int32>* childTo);
-
 
     /**
      * Constructor
@@ -171,33 +178,36 @@ public:
      *            file should include at least those named views defined in
      *            "childTo"
      */
-    SimpleExpandableListAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IObjectContainer* groupData,
+        /* [in] */ IList* groupData,
         /* [in] */ Int32 expandedGroupLayout,
         /* [in] */ Int32 collapsedGroupLayout,
         /* [in] */ ArrayOf<String>* groupFrom,
         /* [in] */ ArrayOf<Int32>* groupTo,
-        /* [in] */ IObjectContainer* childData,
+        /* [in] */ IList* childData,
         /* [in] */ Int32 childLayout,
         /* [in] */ Int32 lastChildLayout,
         /* [in] */ ArrayOf<String>* childFrom,
         /* [in] */ ArrayOf<Int32>* childTo);
 
-    CARAPI_(AutoPtr<IInterface>) GetChild(
+    CARAPI GetChild(
         /* [in] */ Int32 groupPosition,
-        /* [in] */ Int32 childPosition);
+        /* [in] */ Int32 childPosition,
+        /* [out] */ IInterface** child);
 
-    CARAPI_(Int64) GetChildId(
+    CARAPI GetChildId(
         /* [in] */ Int32 groupPosition,
-        /* [in] */ Int32 childPosition);
+        /* [in] */ Int32 childPosition,
+        /* [out] */ Int64* id);
 
-    CARAPI_(AutoPtr<IView>) GetChildView(
+    CARAPI GetChildView(
         /* [in] */ Int32 groupPosition,
         /* [in] */ Int32 childPosition,
         /* [in] */ Boolean isLastChild,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
     /**
      * Instantiates a new View for a child.
@@ -205,26 +215,32 @@ public:
      * @param parent The eventual parent of this new View.
      * @return A new child View
      */
-    CARAPI_(AutoPtr<IView>) NewChildView(
+    CARAPI NewChildView(
         /* [in] */ Boolean isLastChild,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    CARAPI_(Int32) GetChildrenCount(
-        /* [in] */ Int32 groupPosition);
+    CARAPI GetChildrenCount(
+        /* [in] */ Int32 groupPosition,
+        /* [out] */ Int32* count);
 
-    CARAPI_(AutoPtr<IInterface>) GetGroup(
-        /* [in] */ Int32 groupPosition);
+    CARAPI GetGroup(
+        /* [in] */ Int32 groupPosition,
+        /* [out] */ IInterface** child);
 
-    CARAPI_(Int32) GetGroupCount();
+    CARAPI GetGroupCount(
+        /* [out] */ Int32* count);
 
-    CARAPI_(Int64) GetGroupId(
-        /* [in] */ Int32 groupPosition);
+    CARAPI GetGroupId(
+        /* [in] */ Int32 groupPosition,
+        /* [out] */ Int64* id);
 
-    CARAPI_(AutoPtr<IView>) GetGroupView(
+    CARAPI GetGroupView(
         /* [in] */ Int32 groupPosition,
         /* [in] */ Boolean isExpanded,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
     /**
      * Instantiates a new View for a group.
@@ -232,74 +248,34 @@ public:
      * @param parent The eventual parent of this new View.
      * @return A new group View
      */
-    CARAPI_(AutoPtr<IView>) NewGroupView(
+    CARAPI NewGroupView(
         /* [in] */ Boolean isExpanded,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    CARAPI_(Boolean) IsChildSelectable(
+    CARAPI IsChildSelectable(
         /* [in] */ Int32 groupPosition,
-        /* [in] */ Int32 childPosition);
+        /* [in] */ Int32 childPosition,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) HasStableIds();
-
-protected:
-    SimpleExpandableListAdapter();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IObjectContainer* groupData,
-        /* [in] */ Int32 groupLayout,
-        /* [in] */ ArrayOf<String>* groupFrom,
-        /* [in] */ ArrayOf<Int32>* groupTo,
-        /* [in] */ IObjectContainer* childData,
-        /* [in] */ Int32 childLayout,
-        /* [in] */ ArrayOf<String>* childFrom,
-        /* [in] */ ArrayOf<Int32>* childTo);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IObjectContainer* groupData,
-        /* [in] */ Int32 expandedGroupLayout,
-        /* [in] */ Int32 collapsedGroupLayout,
-        /* [in] */ ArrayOf<String>* groupFrom,
-        /* [in] */ ArrayOf<Int32>* groupTo,
-        /* [in] */ IObjectContainer* childData,
-        /* [in] */ Int32 childLayout,
-        /* [in] */ ArrayOf<String>* childFrom,
-        /* [in] */ ArrayOf<Int32>* childTo);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IObjectContainer* groupData,
-        /* [in] */ Int32 expandedGroupLayout,
-        /* [in] */ Int32 collapsedGroupLayout,
-        /* [in] */ ArrayOf<String>* groupFrom,
-        /* [in] */ ArrayOf<Int32>* groupTo,
-        /* [in] */ IObjectContainer* childData,
-        /* [in] */ Int32 childLayout,
-        /* [in] */ Int32 lastChildLayout,
-        /* [in] */ ArrayOf<String>* childFrom,
-        /* [in] */ ArrayOf<Int32>* childTo);
+    CARAPI HasStableIds(
+        /* [out] */ Boolean* has);
 
 private:
     CARAPI BindView(
         /* [in] */ IView* view,
-        /* [in] */ IObjectStringMap* data,
+        /* [in] */ IMap* data,
         /* [in] */ ArrayOf<String>* from,
         /* [in] */ ArrayOf<Int32>* to);
 
-    CARAPI_(AutoPtr<IInterface>) GetItemFromContainer(
-        /* [in] */ IObjectContainer* container,
-        /* [in] */ Int32 position);
-
 private:
-    AutoPtr<IObjectContainer> mGroupData;
+    AutoPtr<IList> mGroupData; // List<? extends Map<String, ?>>
     Int32 mExpandedGroupLayout;
     Int32 mCollapsedGroupLayout;
     AutoPtr<ArrayOf<String> > mGroupFrom;
     AutoPtr<ArrayOf<Int32> > mGroupTo;
 
-    AutoPtr<IObjectContainer> mChildData;
+    AutoPtr<IList> mChildData; // List<? extends List<? extends Map<String, ?>>>
     Int32 mChildLayout;
     Int32 mLastChildLayout;
     AutoPtr<ArrayOf<String> > mChildFrom;
@@ -311,4 +287,5 @@ private:
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-#endif
+
+#endif // __ELASTOS_DROID_WIDGET_SIMPLEEXPANDABLELISTADAPTER_H__

@@ -1,9 +1,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/CDoubleDigitManager.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 PInterface CDoubleDigitManager::Probe(
     /* [in] */ REIID riid)

@@ -9,6 +9,7 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -48,6 +49,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     SimpleAdapter();
 
     /**
@@ -65,9 +68,9 @@ public:
      *        TextViews. The first N views in this list are given the values of the first N columns
      *        in the from parameter.
      */
-    SimpleAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IObjectContainer* data, //List<? extends Map<String, ?>>
+        /* [in] */ IList* data,
         /* [in] */ Int32 resource,
         /* [in] */ ArrayOf<String>* from,
         /* [in] */ ArrayOf<Int32>* to);
@@ -119,13 +122,6 @@ public:
     virtual CARAPI GetFilter(
         /* [out] */ IFilter** filter);
 
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IList* data,
-        /* [in] */ Int32 resource,
-        /* [in] */ ArrayOf<String>* from,
-        /* [in] */ ArrayOf<Int32>* to);
-
 private:
     CARAPI_(AutoPtr<IView>) CreateViewFromResource(
         /* [in] */ Int32 position,
@@ -150,6 +146,7 @@ private:
 
     AutoPtr<SimpleFilter> mFilter;
     AutoPtr<IArrayList> mUnfilteredData; //ArrayList<Map<String, ?>>
+    friend class SimpleFilter;
 };
 
 } // namespace Widget

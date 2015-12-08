@@ -204,7 +204,7 @@ ECode PreferenceManager::GetNextId(
     /* [out] */ Int64* id)
 {
     VALIDATE_NOT_NULL(id)
-    synchronized (this){
+    synchronized(this){
         *id = mNextId++;
     }
     return NOERROR;
@@ -434,7 +434,7 @@ ECode PreferenceManager::GetContext(
 ECode PreferenceManager::RegisterOnActivityResultListener(
     /* [in] */ IPreferenceManagerOnActivityResultListener* listener)
 {
-    synchronized (this) {
+    synchronized(this) {
         if (mActivityResultListeners == NULL) {
             mActivityResultListeners = new List<AutoPtr<IPreferenceManagerOnActivityResultListener> >();
         }
@@ -452,7 +452,7 @@ ECode PreferenceManager::RegisterOnActivityResultListener(
 ECode PreferenceManager::UnregisterOnActivityResultListener(
     /* [in] */ IPreferenceManagerOnActivityResultListener* listener)
 {
-    synchronized (this) {
+    synchronized(this) {
         if (mActivityResultListeners != NULL) {
             mActivityResultListeners->Remove(listener);
         }
@@ -629,7 +629,7 @@ void PreferenceManager::DismissAllScreens()
      // Remove any of the previously shown preferences screens
     AutoPtr<List<AutoPtr<IDialogInterface> > > screensToDismiss;
 
-    synchronized (this) {
+    synchronized(this) {
         if (mPreferencesScreens == NULL) {
             return;
         }

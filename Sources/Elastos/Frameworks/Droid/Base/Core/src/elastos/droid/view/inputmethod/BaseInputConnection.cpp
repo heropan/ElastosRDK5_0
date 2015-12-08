@@ -1,7 +1,7 @@
 
 #include "elastos/droid/view/inputmethod/BaseInputConnection.h"
-//#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
-//#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
+#include "elastos/droid/view/CKeyEvent.h"
 #include "elastos/droid/view/ViewRootImpl.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/CEditableFactory.h"
@@ -28,7 +28,7 @@ using Elastos::Droid::Text::ISpanned;
 using Elastos::Droid::Text::ISpannableStringBuilder;
 using Elastos::Droid::Text::Method::MetaKeyKeyListener;
 using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
-//using Elastos::Droid::View::InputMethod::CInputMethodManager;
+using Elastos::Droid::View::InputMethod::CInputMethodManager;
 
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
@@ -552,22 +552,20 @@ ECode BaseInputConnection::PerformEditorAction(
     Int64 eventTime = SystemClock::GetUptimeMillis();
 
     AutoPtr<IKeyEvent> event;
-    assert(0 && "TODO");
-    // ASSERT_SUCCEEDED(CKeyEvent::New(eventTime, eventTime,
-    //         IKeyEvent::ACTION_DOWN, IKeyEvent::KEYCODE_ENTER, 0, 0,
-    //         /*KeyCharacterMap.*/IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-    //         IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE
-    //         | IKeyEvent::FLAG_EDITOR_ACTION, (IKeyEvent**)&event));
+    ASSERT_SUCCEEDED(CKeyEvent::New(eventTime, eventTime,
+            IKeyEvent::ACTION_DOWN, IKeyEvent::KEYCODE_ENTER, 0, 0,
+            /*KeyCharacterMap.*/IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+            IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE
+            | IKeyEvent::FLAG_EDITOR_ACTION, (IKeyEvent**)&event));
     Boolean bSKE = FALSE;
     SendKeyEvent(event, &bSKE);
 
     event = NULL;
-    assert(0 && "TODO");
-    // ASSERT_SUCCEEDED(CKeyEvent::New(SystemClock::GetUptimeMillis(), eventTime,
-    //         IKeyEvent::ACTION_UP, IKeyEvent::KEYCODE_ENTER, 0, 0,
-    //         /*KeyCharacterMap.*/IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-    //         IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE
-    //         | IKeyEvent::FLAG_EDITOR_ACTION, (IKeyEvent**)&event));
+    ASSERT_SUCCEEDED(CKeyEvent::New(SystemClock::GetUptimeMillis(), eventTime,
+            IKeyEvent::ACTION_UP, IKeyEvent::KEYCODE_ENTER, 0, 0,
+            /*KeyCharacterMap.*/IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+            IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE
+            | IKeyEvent::FLAG_EDITOR_ACTION, (IKeyEvent**)&event));
     SendKeyEvent(event, &bSKE);
     *result = TRUE;
     return NOERROR;
@@ -713,20 +711,19 @@ ECode BaseInputConnection::SendKeyEvent(
     VALIDATE_NOT_NULL(result)
 
     {
-        assert(0 && "TODO");
-        // AutoLock lock(((CInputMethodManager*)mIMM.Get())->mHLock);
+        AutoLock lock(((CInputMethodManager*)mIMM.Get())->mHLock);
 
-        AutoPtr<ViewRootImpl> viewRootImpl;
-        // if (mTargetView != NULL) {
-        //     viewRootImpl = VIEW_PROBE(mTargetView)->GetViewRootImpl();
-        // }
+        AutoPtr<IViewRootImpl> viewRootImpl;
+        if (mTargetView != NULL) {
+            VIEW_PROBE(mTargetView)->GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
+        }
 
-        // if (viewRootImpl == NULL) {
-        //     if (((CInputMethodManager*)mIMM.Get())->mServedView != NULL) {
-        //         View* v = VIEW_PROBE(((CInputMethodManager*)mIMM.Get())->mServedView);
-        //         viewRootImpl = v->GetViewRootImpl();
-        //     }
-        // }
+        if (viewRootImpl == NULL) {
+            if (((CInputMethodManager*)mIMM.Get())->mServedView != NULL) {
+                View* v = VIEW_PROBE(((CInputMethodManager*)mIMM.Get())->mServedView);
+                v->GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
+            }
+        }
 
         if (viewRootImpl != NULL) {
             viewRootImpl->DispatchKeyFromIme(event);
@@ -765,16 +762,14 @@ void BaseInputConnection::SendCurrentText()
         if (N == 1) {
             // If it's 1 character, we have a chance of being
             // able to generate normal key events...
-            assert(0 && "TODO");
-//             if (mKeyCharacterMap == NULL) {
-//                CKeyCharacterMap::Load(IKeyCharacterMap::VIRTUAL_KEYBOARD, (IKeyCharacterMap**)&mKeyCharacterMap);
-//             }
+            if (mKeyCharacterMap == NULL) {
+                CKeyCharacterMap::Load(IKeyCharacterMap::VIRTUAL_KEYBOARD, (IKeyCharacterMap**)&mKeyCharacterMap);
+            }
             AutoPtr<ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(1);
             assert(IGetChars::Probe(content) != NULL);
             IGetChars::Probe(content.Get())->GetChars(0, 1, (ArrayOf<Char32>*)chars.Get(), 0);
             AutoPtr<ArrayOf<IKeyEvent*> > events;
-            assert(0 && "TODO");
-//             mKeyCharacterMap->GetEvents((ArrayOf<Char32>*)chars.Get(), (ArrayOf<IKeyEvent*>**)&events);
+            mKeyCharacterMap->GetEvents((ArrayOf<Char32>*)chars.Get(), (ArrayOf<IKeyEvent*>**)&events);
             if (events != NULL) {
                 for (Int32 i = 0; i < events->GetLength(); ++i) {
                     if (DEBUG) Logger::V(TAG, "Sending: %p", (*events)[i]);
@@ -792,8 +787,8 @@ void BaseInputConnection::SendCurrentText()
         String contentStr;
         ICharSequence::Probe(content)->ToString(&contentStr);
         AutoPtr<IKeyEvent> event;
-        // CKeyEvent::New(SystemClock::GetUptimeMillis(), contentStr,
-        //     IKeyCharacterMap::VIRTUAL_KEYBOARD, 0, (IKeyEvent**)&event);
+        CKeyEvent::New(SystemClock::GetUptimeMillis(), contentStr,
+            IKeyCharacterMap::VIRTUAL_KEYBOARD, 0, (IKeyEvent**)&event);
         Boolean bSKE = FALSE;
         SendKeyEvent(event, &bSKE);
         content->Clear();
@@ -804,13 +799,12 @@ void BaseInputConnection::EnsureDefaultComposingSpans()
 {
     if (mDefaultComposingSpans == NULL) {
         AutoPtr<IContext> context;
-        assert(0 && "TODO");
-        // if (mTargetView != NULL) {
-        //     mTargetView->GetContext((IContext**)&context);
-        // }
-        // else if (((CInputMethodManager*)mIMM.Get())->mServedView != NULL) {
-        //     ((CInputMethodManager*)mIMM.Get())->mServedView->GetContext((IContext**)&context);
-        // }
+        if (mTargetView != NULL) {
+            mTargetView->GetContext((IContext**)&context);
+        }
+        else if (((CInputMethodManager*)mIMM.Get())->mServedView != NULL) {
+            ((CInputMethodManager*)mIMM.Get())->mServedView->GetContext((IContext**)&context);
+        }
 
         if (context != NULL) {
             AutoPtr<IResourcesTheme> theme;

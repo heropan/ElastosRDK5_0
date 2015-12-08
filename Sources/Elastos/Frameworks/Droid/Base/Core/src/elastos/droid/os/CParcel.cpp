@@ -545,6 +545,43 @@ ECode CParcel::ReadTypedList(
     return NOERROR;
 }
 
+ECode CParcel::WriteCharSequenceArray(
+    /* [in] */ IParcel* dest,
+    /* [in] */ ArrayOf<ICharSequence*>* val)
+{
+    if (val != NULL) {
+        Int32 N = val->GetLength();
+        dest->WriteInt32(N);
+        for (Int32 i = 0; i < N; i++) {
+            dest->WriteInterfacePtr((*val)[i]);
+        }
+    }
+    else {
+        dest->WriteInt32(-1);
+    }
+    return NOERROR;
+}
+
+AutoPtr<ArrayOf<ICharSequence*> > CParcel::ReadCharSequenceArray(
+    /* [in] */ IParcel* source)
+{
+    AutoPtr<ArrayOf<ICharSequence*> > array;
+
+    Int32 length;
+    source->ReadInt32(&length);
+    if (length >= 0) {
+        array = ArrayOf<ICharSequence*>::Alloc(length);
+
+        for (Int32 i = 0 ; i < length ; i++) {
+            AutoPtr<ICharSequence> csq;
+            source->ReadInterfacePtr((Handle32*)&csq);
+            array->Set(i, csq);
+        }
+    }
+
+    return array;
+}
+
 } // namespace Os
 } // namespace Droid
 } // namespace Elastos

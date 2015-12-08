@@ -132,9 +132,9 @@ module
             [out] Int32* ret);
     }
 
-    }//namespace Srec
-    }//namespace Speech
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Srec
+    } // namespace Speech
+    } // namespace Droid
+    } // namespace Elastos
 
 }

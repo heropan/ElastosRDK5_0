@@ -23,6 +23,8 @@ public:
 
     virtual ~CEmojiFactoryHelper();
 
+    CARAPI constructor();
+
     /**
      * Constructs an instance of EmojiFactory corresponding to the name.
      *

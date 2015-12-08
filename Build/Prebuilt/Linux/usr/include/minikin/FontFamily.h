@@ -17,8 +17,8 @@
 #ifndef MINIKIN_FONT_FAMILY_H
 #define MINIKIN_FONT_FAMILY_H
 
-#include <libcxx/vector>
-#include <libcxx/string>
+#include <vector>
+#include <string>
 
 #include <utils/TypeHelpers.h>
 

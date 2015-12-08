@@ -16,7 +16,7 @@ using Elastos::Core::EIID_IRunnable;
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-namespace Internal{
+namespace Internal {
 
 using Elastos::Droid::View::View;
 /**

@@ -1,7 +1,7 @@
 
-#include "CWifiP2pUpnpServiceResponse.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pUpnpServiceResponse.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "CWifiP2pServiceResponseStatus.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceResponseStatus.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -16,15 +16,7 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-
-PInterface CWifiP2pUpnpServiceResponse::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_WifiP2pServiceResponse) {
-        return reinterpret_cast<PInterface>((WifiP2pServiceResponse*)this);
-    }
-    return _CWifiP2pUpnpServiceResponse::Probe(riid);
-}
+CAR_OBJECT_IMPL(CWifiP2pUpnpServiceResponse)
 
 CWifiP2pUpnpServiceResponse::CWifiP2pUpnpServiceResponse()
     : mVersion(0)
@@ -41,7 +33,7 @@ ECode CWifiP2pUpnpServiceResponse::constructor(
     /* [in] */ IWifiP2pDevice* device,
     /* [in] */ ArrayOf<Byte>* data)
 {
-    FAIL_RETURN(WifiP2pServiceResponse::Init(
+    FAIL_RETURN(WifiP2pServiceResponse::constructor(
         IWifiP2pServiceInfo::SERVICE_TYPE_UPNP, status, transId, device, data));
 
     Boolean ret;
@@ -232,9 +224,8 @@ ECode CWifiP2pUpnpServiceResponse::NewInstance(
     return NOERROR;
 }
 
-
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

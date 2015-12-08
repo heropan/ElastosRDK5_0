@@ -1,9 +1,11 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_SynthesisRequest_H__
 #define __ELASTOS_DROID_SPEECH_TTS_SynthesisRequest_H__
 
-#include "Elastos.Droid.Core_server.h"
-//
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
+
 using Elastos::Droid::Os::IBundle;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -11,99 +13,148 @@ namespace Speech {
 namespace Tts {
 
 /**
- * Contains data required by engines to synthesize speech. This data is :
+ * Contains data required by engines to synthesize speech. This data is:
  * <ul>
  *   <li>The text to synthesize</li>
  *   <li>The synthesis locale, represented as a language, country and a variant.
  *   The language is an ISO 639-3 letter language code, and the country is an
  *   ISO 3166 alpha 3 code. The variant is not specified.</li>
+ *   <li>The name of the voice requested for this synthesis. May be empty if
+ *   the client uses {@link TextToSpeech#setLanguage} instead of
+ *   {@link TextToSpeech#setVoice}</li>
  *   <li>The synthesis speech rate, with 100 being the normal, and
  *   higher values representing higher speech rates.</li>
  *   <li>The voice pitch, with 100 being the default pitch.</li>
  * </ul>
  *
  * Any additional parameters sent to the text to speech service are passed in
- * uninterpreted, see the @code{params} argument in {@link TextToSpeech#speak}
+ * uninterpreted, see the {@code params} argument in {@link TextToSpeech#speak}
  * and {@link TextToSpeech#synthesizeToFile}.
  */
 //final
 class SynthesisRequest
+    : public Object
+    , public ISynthesisRequest
 {
 public:
-    SynthesisRequest(
+    CAR_INTERFACE_DECL();
+
+    SynthesisRequest();
+
+    virtual ~SynthesisRequest();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ const String& text,
         /* [in] */ IBundle* params);
 
-    CARAPI_(void) Init(
-        /* [in] */ const String& text,
+    CARAPI constructor(
+        /* [in] */ ICharSequence* text,
         /* [in] */ IBundle* params);
 
     /**
      * Gets the text which should be synthesized.
      */
-    CARAPI_(String) GetText();
+    CARAPI GetText(
+        /* [out] */ String* ret);
+
+    /**
+     * Gets the text which should be synthesized.
+     */
+    CARAPI GetCharSequenceText(
+        /* [out] */ ICharSequence** ret);
+
+    /**
+     * Gets the name of the voice to use.
+     */
+    CARAPI GetVoiceName(
+        /* [out] */ String* ret);
 
     /**
      * Gets the ISO 3-letter language code for the language to use.
      */
-    CARAPI_(String) GetLanguage();
+    CARAPI GetLanguage(
+        /* [out] */ String* ret);
 
     /**
      * Gets the ISO 3-letter country code for the language to use.
      */
-    CARAPI_(String) GetCountry();
+    CARAPI GetCountry(
+        /* [out] */ String* ret);
 
     /**
      * Gets the language variant to use.
      */
-    CARAPI_(String) GetVariant();
+    CARAPI GetVariant(
+        /* [out] */ String* ret);
 
     /**
      * Gets the speech rate to use. The normal rate is 100.
      */
-    CARAPI_(Int32) GetSpeechRate();
+    CARAPI GetSpeechRate(
+        /* [out] */ Int32* ret);
 
     /**
      * Gets the pitch to use. The normal pitch is 100.
      */
-    CARAPI_(Int32) GetPitch();
+    CARAPI GetPitch(
+        /* [out] */ Int32* ret);
 
     /**
      * Gets the additional params, if any.
      */
-    CARAPI_(AutoPtr<IBundle>) GetParams();
+    CARAPI GetParams(
+        /* [out] */ IBundle** ret);
+
+    /**
+     * Gets the request caller Uid.
+     */
+    CARAPI GetCallerUid(
+        /* [out] */ Int32* ret);
 
     /**
      * Sets the locale for the request.
      */
-    CARAPI_(void) SetLanguage(
+    CARAPI SetLanguage(
         /* [in] */ const String& language,
         /* [in] */ const String& country,
         /* [in] */ const String& variant);
+    /**
+     * Sets the voice name for the request.
+     */
+    CARAPI SetVoiceName(
+        /* [in] */ const String& voiceName);
 
     /**
      * Sets the speech rate.
      */
-    CARAPI_(void) SetSpeechRate(
+    CARAPI SetSpeechRate(
         /* [in] */ Int32 speechRate);
 
     /**
      * Sets the pitch.
      */
-    CARAPI_(void) SetPitch(
+    CARAPI SetPitch(
         /* [in] */ Int32 pitch);
 
-protected:
-    SynthesisRequest();
+    /**
+     * Sets Caller Uid
+     */
+    CARAPI SetCallerUid(
+        /* [in] */ Int32 uid);
 
 private:
-    String mText;
+    AutoPtr<ICharSequence> mText;
+    String mVoiceName;
+
     AutoPtr<IBundle> mParams;
     String mLanguage;
     String mCountry;
     String mVariant;
     Int32 mSpeechRate;
     Int32 mPitch;
+    Int32 mCallerUid;
 };
 
 } // namespace Tts

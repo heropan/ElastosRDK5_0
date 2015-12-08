@@ -3,9 +3,9 @@
 #define  __ELASTOS_DROID_NET_WIFI_WIFICONFIGSTORE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/net/DhcpInfoInternal.h"
-#include "elastos/droid/net/wifi/NetworkUpdateResult.h"
-#include "elastos/droid/net/wifi/WifiNative.h"
+//#include "elastos/droid/net/DhcpInfoInternal.h"
+#include "elastos/droid/wifi/NetworkUpdateResult.h"
+#include "elastos/droid/wifi/WifiNative.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IRunnable;
@@ -13,7 +13,7 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IBitSet;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
-using Elastos::Droid::Net::DhcpInfoInternal;
+//using Elastos::Droid::Net::DhcpInfoInternal;
 using Elastos::Droid::Net::ILinkProperties;
 using Elastos::Droid::Net::IProxyProperties;
 using Elastos::Droid::Os::IHandlerThread;
@@ -68,23 +68,19 @@ namespace Wifi {
  * - Maintain a list of configured networks for quick access
  *
  */
-class WifiConfigStore : public ElRefBase
+class WifiConfigStore : public Object
 {
 private:
     class DelayedDiskWrite
     {
     private:
-        class DiskWriteRunnable
-            : public ElRefBase
-            , public IRunnable
+        class DiskWriteRunnable : public Runnable
         {
         public:
             DiskWriteRunnable(
                 /* [in] */ ArrayOf<IWifiConfiguration*>* networks)
                 : mNetworks(networks)
             {}
-
-            CAR_INTERFACE_DECL();
 
             CARAPI Run();
 
@@ -279,15 +275,15 @@ public:
      *       to using LinkProperties
      * @return DhcpInfoInternal for the given network id
      */
-    CARAPI_(AutoPtr<DhcpInfoInternal>) GetIpConfiguration(
-        /* [in] */ Int32 netId);
+//    CARAPI_(AutoPtr<DhcpInfoInternal>) GetIpConfiguration(
+//        /* [in] */ Int32 netId);
 
     /**
      * set IP configuration for a given network id
      */
-    CARAPI_(void) SetIpConfiguration(
-        /* [in] */ Int32 netId,
-        /* [in] */ DhcpInfoInternal* dhcpInfo);
+//    CARAPI_(void) SetIpConfiguration(
+//        /* [in] */ Int32 netId,
+//        /* [in] */ DhcpInfoInternal* dhcpInfo);
 
     /**
      * clear IP configuration for a given network id

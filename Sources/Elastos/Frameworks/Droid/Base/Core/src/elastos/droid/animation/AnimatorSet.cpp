@@ -5,64 +5,16 @@
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::CArrayList;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
-// {df3afd4a-f894-4214-b149-fef6f804e5e0}
-extern "C" const InterfaceID EIID_AnimatorSet =
-        { 0xdf3afd4a, 0xf894, 0x4214, { 0xb1, 0x49, 0xfe, 0xf6, 0xf8, 0x04, 0xe5, 0xe0 } };
-
-// {fa05e37f-0d4d-4a83-99d5-f03d1c07087d}
-extern "C" const InterfaceID EIID_DependencyListener =
-        { 0xfa05e37f, 0x0d4d, 0x4a83, { 0x99, 0xd5, 0xf0, 0x3d, 0x1c, 0x07, 0x08, 0x7d } };
-
-// {841440c0-19b9-4a09-87df-a7f122d2911e}
-extern "C" const InterfaceID EIID_AnimatorSetListener =
-        { 0x841440c0, 0x19b9, 0x4a09, { 0x87, 0xdf, 0xa7, 0xf1, 0x22, 0xd2, 0x91, 0x1e } };
 
 //==============================================================================
 //                  AnimatorSet::DependencyListener
 //==============================================================================
-PInterface AnimatorSet::DependencyListener::Probe(
-    /* [in] */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)(IAnimatorListener *)this;
-    }
-    else if ( riid == EIID_IAnimatorListener ) {
-        return (IAnimatorListener *)this;
-    }
-    else if( riid == EIID_DependencyListener) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    return Object::Probe(riid);
-}
-
-UInt32 AnimatorSet::DependencyListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 AnimatorSet::DependencyListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode AnimatorSet::DependencyListener::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(IAnimatorListener *)this) {
-        *iid = EIID_IAnimatorListener ;
-    }
-    else {
-        return Object::GetInterfaceID(object, iid);
-    }
-    return NOERROR;
-}
-
+CAR_INTERFACE_IMPL_2(AnimatorSet::DependencyListener, Object, IDependencyListener, IAnimatorListener);
 AnimatorSet::DependencyListener::DependencyListener(
     /* [in] */ AnimatorSet* animatorset,
     /* [in] */ Node* node,
@@ -133,47 +85,10 @@ void AnimatorSet::DependencyListener::StartIfReady(
 //==============================================================================
 //                  AnimatorSet::AnimatorSetListener
 //==============================================================================
-PInterface AnimatorSet::AnimatorSetListener::Probe(
-    /* [in] */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)(IAnimatorListener *)this;
-    }
-    else if ( riid == EIID_IAnimatorListener ) {
-        return (IAnimatorListener *)this;
-    }
-    else if( riid == EIID_AnimatorSetListener) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    return Object::Probe(riid);
-}
-
-UInt32 AnimatorSet::AnimatorSetListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 AnimatorSet::AnimatorSetListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode AnimatorSet::AnimatorSetListener::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(IAnimatorListener *)this) {
-        *iid = EIID_IAnimatorListener ;
-    }
-    else {
-        return Object::GetInterfaceID(object, iid);
-    }
-    return NOERROR;
-}
-
+CAR_INTERFACE_IMPL_2(AnimatorSet::AnimatorSetListener, Object, IAnimatorSetListener, IAnimatorListener);
 AnimatorSet::AnimatorSetListener::AnimatorSetListener(
-    /* [in] */ AnimatorSet* animatorSet) : mAnimatorSet(animatorSet)
+    /* [in] */ AnimatorSet* animatorSet)
+    : mAnimatorSet(animatorSet)
 {}
 
 ECode AnimatorSet::AnimatorSetListener::OnAnimationCancel(
@@ -292,7 +207,9 @@ ECode AnimatorSet::Node::Clone(
 {
     VALIDATE_NOT_NULL(obj);
     AutoPtr<Node> newObject = new Node();
-    ICloneable::Probe(mAnimation)->Clone((IInterface**)(&(newObject->mAnimation)));
+    AutoPtr<IInterface> tmp;
+    ICloneable::Probe(mAnimation)->Clone((IInterface**)&tmp);
+    newObject->mAnimation = IAnimator::Probe(tmp);
     newObject->mDependencies.Assign(mDependencies.Begin(), mDependencies.End());
     newObject->mTmpDependencies.Assign(mTmpDependencies.Begin(), mTmpDependencies.End());
     newObject->mNodeDependencies.Assign(mNodeDependencies.Begin(), mNodeDependencies.End());
@@ -352,44 +269,7 @@ ECode AnimatorSet::AnimatorListenerAdapterIMPL::OnAnimationRepeat(
 //==============================================================================
 //                  AnimatorSet
 //==============================================================================
-UInt32 AnimatorSet::AddRef()
-{
-    return Animator::AddRef();
-}
-
-UInt32 AnimatorSet::Release()
-{
-    return Animator::Release();
-}
-
-ECode AnimatorSet::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == reinterpret_cast<PInterface>((AnimatorSet *)this)) {
-        *iid = EIID_AnimatorSet;
-    }
-    else if (object == (IInterface*)(IAnimatorSet *)this) {
-        *iid = EIID_IAnimatorSet;
-    }
-
-    return Animator::GetInterfaceID(object, iid);
-}
-
-PInterface AnimatorSet::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_AnimatorSet) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    else if (riid == EIID_IAnimatorSet) {
-        return (IInterface*)(IAnimatorSet*)this;
-    }
-
-    return Animator::Probe(riid);
-}
-
+CAR_INTERFACE_IMPL(AnimatorSet, Animator, IAnimatorSet);
 AnimatorSet::AnimatorSet()
     : mTerminated(FALSE)
     , mNeedsSort(TRUE)
@@ -432,8 +312,9 @@ ECode AnimatorSet::PlayTogether(
             items->GetIterator((IIterator**)&it);
             Boolean hasNext = FALSE;
             while (it->HasNext(&hasNext), hasNext) {
-                AutoPtr<IAnimator> anim;
-                it->GetNext((IInterface**)&anim);
+                AutoPtr<IInterface> obj;
+                it->GetNext((IInterface**)&obj);
+                AutoPtr<IAnimator> anim = IAnimator::Probe(obj);
                 if (builder == NULL) {
                     Play(anim, (IAnimatorSetBuilder**)&builder);
                 }
@@ -473,17 +354,20 @@ ECode AnimatorSet::PlaySequentially(
     if (items != NULL && (items->GetSize(&size), size) > 0) {
         mNeedsSort = TRUE;
         if (size == 1) {
-            AutoPtr<IAnimator> animator;
-            items->Get(0, (IInterface**)&animator);
+            AutoPtr<IInterface> obj;
+            items->Get(0, (IInterface**)&obj);
+            AutoPtr<IAnimator> animator = IAnimator::Probe(obj);
             AutoPtr<IAnimatorSetBuilder> as;
             Play(animator, (IAnimatorSetBuilder**)&as);
         } else {
             mReversible = FALSE;
             for (Int32 i = 0; i < size - 1; ++i) {
-                AutoPtr<IAnimator> animator;
-                items->Get(i, (IInterface**)&animator);
-                AutoPtr<IAnimator> animator2;
-                items->Get(i + 1, (IInterface**)&animator2);
+                AutoPtr<IInterface> obj;
+                items->Get(i, (IInterface**)&obj);
+                AutoPtr<IAnimator> animator = IAnimator::Probe(obj);
+                obj = NULL;
+                items->Get(i + 1, (IInterface**)&obj);
+                AutoPtr<IAnimator> animator2 = IAnimator::Probe(obj);
                 AutoPtr<IAnimatorSetBuilder> as;
                 Play(animator, (IAnimatorSetBuilder**)&as);
                 as->Before(animator2);
@@ -799,7 +683,7 @@ ECode AnimatorSet::Start()
 
             for (Int32 i = 0; i < clonedListeners->GetLength(); i++) {
                 AutoPtr<IAnimatorListener> listener = (*clonedListeners)[i];
-                if (listener->Probe(EIID_DependencyListener) || listener->Probe(EIID_AnimatorSetListener)) {
+                if (IDependencyListener::Probe(listener) || IAnimatorSetListener::Probe(listener)) {
                     node->mAnimation->RemoveListener(listener);
                 }
             }
@@ -914,14 +798,14 @@ ECode AnimatorSet::Clone(
 
         // clear out any listeners that were set up by the AnimatorSet; these will
         // be set up when the clone's nodes are sorted
-        Animator* animator = reinterpret_cast<Animator*>((Animator*)nodeClone->mAnimation.Get());
+        Animator* animator = (Animator*)(nodeClone->mAnimation.Get());
         List<AutoPtr<IAnimatorListener> > cloneListeners(animator->mListeners);
         if (cloneListeners.IsEmpty() == FALSE) {
             List<AutoPtr<IAnimatorListener> > listenersToRemove;
             List<AutoPtr<IAnimatorListener> >::Iterator cloneIt = cloneListeners.Begin();
             for (; cloneIt != cloneListeners.End(); cloneIt++) {
                 AutoPtr<IAnimatorListener> listener = *cloneIt;
-                if (listener->Probe(EIID_AnimatorSetListener)) {
+                if (IAnimatorSetListener::Probe(listener)) {
                     listenersToRemove.PushBack(listener);
                 }
             }
@@ -951,7 +835,7 @@ ECode AnimatorSet::Clone(
         }
     }
 
-    *object = (IInterface*)newObject->Probe(EIID_IInterface);
+    *object = newObject->Probe(EIID_IAnimatorSet);
     REFCOUNT_ADD(*object);
     return NOERROR;
 }

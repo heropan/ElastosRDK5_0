@@ -22,9 +22,9 @@ using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IWindowManager;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 namespace Backup {
 
 const String CWallpaperBackupHelper::TAG("CWallpaperBackupHelper");
@@ -215,7 +215,7 @@ String CWallpaperBackupHelper::GetSTAGE_FILE()
     return STAGE_FILE;
 }
 
-}
-}
-}
-}
+} // namespace Backup
+} // namespace App
+} // namespace Droid
+} // namespace Elastos

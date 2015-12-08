@@ -133,12 +133,12 @@
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid Elastos.Droid.Core.car
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid Elastos.CoreLibrary.eco
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid Elastos.Droid.System.eco
-#> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/os/storage
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/os/storage
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/os
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/nsd
-#  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/wifi/p2p/nsd
-#  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/wifi/p2p
-#> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/wifi
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/wifi/p2p/nsd
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/wifi/p2p
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/wifi
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ethernet
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/pppoe
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/dhcp
@@ -173,6 +173,7 @@
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app/trust
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app/usage
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/app
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/content
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/database
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/http/multipart
@@ -196,6 +197,7 @@
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/utils
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/inputmethod
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/textservice
  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/accessibility
  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/animation
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/menu
@@ -211,6 +213,7 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/widget/internal
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/widget
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/gesture
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/emoji
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/android_webview/permission
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/android_webview
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/base
@@ -241,7 +244,7 @@
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/privacy/surrogate
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/privacy
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/provider
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/provider
  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/accessibilityservice
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/inputmethodservice
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/database/sqlite
@@ -267,25 +270,26 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/swextend/gpio
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/sax
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid
-- Elastos/Frameworks/Droid/Base/Core
-#- Elastos/Frameworks/Droid/Base/Services/Server/src Elastos.Droid.Server.car
-#- Elastos/Frameworks/Droid/Base/Services/Server/src Elastos.Droid.System.eco
-#- Elastos/Frameworks/Droid/Base/Services/Server/src Org.Kxml2.IO.eco
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/am
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/connectivity
-#< Elastos/Frameworks/Droid/Base/Services/Server/src/display
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/dreams
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/input
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/location
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/net
-#< Elastos/Frameworks/Droid/Base/Services/Server/src/pm
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/usb
-#< Elastos/Frameworks/Droid/Base/Services/Server/src/wm
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/accessibility
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/accounts
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/power
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/search
-#> Elastos/Frameworks/Droid/Base/Services/Server/src
+> Elastos/Frameworks/Droid/Base/Core
+- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Elastos.Droid.Server.car
+#- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Elastos.Droid.System.eco
+#- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Org.Kxml2.IO.eco
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/am
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/connectivity
+> Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/display
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/dreams
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/input
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/location
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/net
+#< Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/pm
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/usb
+#< Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/wm
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/accessibility
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/accounts
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/power
+#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/search
+> Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server
+> Elastos/Frameworks/Droid/Base/Services/Server/
 #- Elastos/Frameworks/Droid/Lib Elastos.Droid.Core.eco
 #- Elastos/Frameworks/Droid/Lib
 > Elastos/Frameworks/Droid/App_process Elastos.Droid.Core.eco
@@ -326,22 +330,22 @@
 #> Elastos/Frameworks/Droid/Commands
 - Elastos/Frameworks/Droid/DCARServer
 - Elastos/Frameworks/Droid/DCARServiceManager
-#  Elastos/Frameworks/Droid/Base/Test/inc
-#> Elastos/Frameworks/Droid/Base/Test/src/eunit Eunit.car
-#  Elastos/Frameworks/Droid/Base/Test/src/eunit/framework
-#  Elastos/Frameworks/Droid/Base/Test/src/eunit/runner
-#  Elastos/Frameworks/Droid/Base/Test/src/eunit/textui
-#> Elastos/Frameworks/Droid/Base/Test/src/eunit
-#> Elastos/Frameworks/Droid/Base/Test/src/lib Eunit.eco
-#  Elastos/Frameworks/Droid/Base/Test/src/lib
-#> Elastos/Frameworks/Droid/Base/Test/src
-#  Elastos/Frameworks/Droid/Base/Test-runner/inc
-#> Elastos/Frameworks/Droid/Base/Test-runner/src Elastos.Droid.Test.car
-#- Elastos/Frameworks/Droid/Base/Test-runner/src/droid/test/suitebuilder
-#- Elastos/Frameworks/Droid/Base/Test-runner/src/droid/test
-#- Elastos/Frameworks/Droid/Base/Test-runner/src/droid
-#> Elastos/Frameworks/Droid/Base/Test-runner/src
+  Elastos/Frameworks/Droid/Base/Test/inc
+> Elastos/Frameworks/Droid/Base/Test/src/eunit Eunit.car
+  Elastos/Frameworks/Droid/Base/Test/src/eunit/framework
+  Elastos/Frameworks/Droid/Base/Test/src/eunit/runner
+  Elastos/Frameworks/Droid/Base/Test/src/eunit/textui
+> Elastos/Frameworks/Droid/Base/Test/src/eunit
+> Elastos/Frameworks/Droid/Base/Test/src/lib Eunit.eco
+  Elastos/Frameworks/Droid/Base/Test/src/lib
+> Elastos/Frameworks/Droid/Base/Test/src
+  Elastos/Frameworks/Droid/Base/Test-runner/inc
+> Elastos/Frameworks/Droid/Base/Test-runner/src/elastos Elastos.Droid.Test.car
+- Elastos/Frameworks/Droid/Base/Test-runner/src/elastos/droid/test/suitebuilder
+- Elastos/Frameworks/Droid/Base/Test-runner/src/elastos/droid/test
+- Elastos/Frameworks/Droid/Base/Test-runner/src/elastos/droid
+> Elastos/Frameworks/Droid/Base/Test-runner/src/elastos
 #> Elastos/Frameworks/Droid/Base/Test-runner/lib Elastos.Droid.Test.eco
 #> Elastos/Frameworks/Droid/Base/Test-runner/lib
-#> Elastos/Frameworks/Droid/Base/Test-runner
+> Elastos/Frameworks/Droid/Base/Test-runner
 > Elastos

@@ -32,6 +32,11 @@ Service::~Service()
 {
 }
 
+ECode Service::constructor()
+{
+    return NOERROR;
+}
+
 ECode Service::ToString(
     /* [out] */ String* info)
 {

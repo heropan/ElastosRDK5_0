@@ -1,44 +1,20 @@
-#include "CAbsListViewSavedState.h"
+#include "elastos/droid/widget/CAbsListViewSavedState.h"
+#include "elastos/droid/view/View.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
-ECode CAbsListViewSavedState::ReadFromParcel(
-        /* [in] */  IParcel* source)
-{
-    AbsListViewSavedState::ReadFromParcel(source);
-    return NOERROR;
-}
-
-ECode CAbsListViewSavedState::WriteToParcel(
-        /* [in] */  IParcel* dest)
-{
-    AbsListViewSavedState::WriteToParcel(dest);
-    return NOERROR;
-}
+CAR_OBJECT_IMPL(CAbsListViewSavedState);
 
 ECode CAbsListViewSavedState::GetSuperState(
-        /* [out] */  IParcelable** superState)
+    /* [out] */  IParcelable** superState)
 {
     VALIDATE_NOT_NULL(superState);
-    AutoPtr<IParcelable> temp = ViewBaseSavedState::GetSuperState();
+    AutoPtr<IParcelable> temp = View::BaseSavedState::GetSuperState();
     *superState = temp;
     REFCOUNT_ADD(*superState);
 
-    return NOERROR;
-}
-
-ECode CAbsListViewSavedState::constructor(
-        /* [in] */  IParcelable* superState)
-{
-    AbsListViewSavedState::Init(superState);
-    return NOERROR;
-}
-
-ECode CAbsListViewSavedState::constructor()
-{
-    AbsListViewSavedState::Init();
     return NOERROR;
 }
 

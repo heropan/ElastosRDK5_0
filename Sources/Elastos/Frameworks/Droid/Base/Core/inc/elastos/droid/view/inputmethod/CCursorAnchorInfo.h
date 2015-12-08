@@ -133,7 +133,7 @@ public:
         Float mInsertionMarkerBaseline;
         Float mInsertionMarkerBottom;
         Int32 mInsertionMarkerFlags;
-//        AutoPtr<ISparseRectFArrayBuilder> mCharacterBoundsArrayBuilder;
+        AutoPtr<ISparseRectFArrayBuilder> mCharacterBoundsArrayBuilder;
         AutoPtr<IMatrix> mMatrix;
         Boolean mMatrixInitialized;
     };
@@ -346,7 +346,7 @@ private:
      * Java chars, in the local coordinates that will be transformed with the transformation matrix
      * when rendered on the screen.
      */
-//    AutoPtr<ISparseRectFArray> mCharacterBoundsArray;
+    AutoPtr<ISparseRectFArray> mCharacterBoundsArray;
 
     /**
      * Transformation matrix that is applied to any positional information of this class to

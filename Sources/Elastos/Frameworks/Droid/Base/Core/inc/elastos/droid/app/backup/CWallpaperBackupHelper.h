@@ -67,9 +67,9 @@ private:
     Double mDesiredMinHeight;
 };
 
-}
-}
-}
-}
+} // namespace Backup
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_APP_BACKUP_CWALLPAPERBACKUPHELPER_H__

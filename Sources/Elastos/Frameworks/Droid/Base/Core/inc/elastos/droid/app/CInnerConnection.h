@@ -7,9 +7,9 @@
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IComponentName;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CarClass(CInnerConnection)
     , public Object

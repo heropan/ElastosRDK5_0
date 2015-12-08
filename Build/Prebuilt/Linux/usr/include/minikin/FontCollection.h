@@ -17,7 +17,7 @@
 #ifndef MINIKIN_FONT_COLLECTION_H
 #define MINIKIN_FONT_COLLECTION_H
 
-#include <libcxx/vector>
+#include <vector>
 
 #include <minikin/MinikinRefCounted.h>
 #include <minikin/MinikinFont.h>

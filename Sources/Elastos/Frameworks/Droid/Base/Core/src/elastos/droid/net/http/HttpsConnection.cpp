@@ -1,5 +1,6 @@
 
 #include "elastos/droid/net/http/HttpsConnection.h"
+#include "elastos/droid/net/ReturnOutValue.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::ILog;
@@ -41,7 +42,7 @@ HttpsConnection::HttpsConnection()
     , mAborted(FALSE)
 {
 #if 0 // TODO: Translated before. Need check.
-        private Object mSuspendLock = new Object();
+    CObject::New((IInterface**)&mSuspendLock);
 #endif
 }
 
@@ -81,8 +82,9 @@ ECode HttpsConnection::InitializeEngine(
 
     // {
     //     Object mLock;
-    //     AutoLock lock(mLock);
-    //     FAIL_RETURN(sslContext->EngineGetSocketFactory((ISSLSocketFactory**)&mSslSocketFactory));
+    //     synchronized(mLock) {
+        //     FAIL_RETURN(sslContext->EngineGetSocketFactory((ISSLSocketFactory**)&mSslSocketFactory));
+            }
     // }
 
     return NOERROR;
@@ -94,7 +96,9 @@ ECode HttpsConnection::GetSocketFactory(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
-        return mSslSocketFactory;
+    VALIDATE_NOT_NULL(result)
+
+    FUNC_RETURN(mSslSocketFactory);
 #endif
 }
 
@@ -106,8 +110,9 @@ ECode HttpsConnection::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
-        super(context, host, requestFeeder);
-        mProxyHost = proxy;
+    Connection::constructor(context, host, requestFeeder);
+    mProxyHost = proxy;
+    return NOERROR;
 #endif
 }
 
@@ -298,8 +303,9 @@ ECode HttpsConnection::OpenConnection(
         // then check if we're still suspended and only wait if we actually
         // need to.
         {
-            AutoLock lock(mSuspendLock);
-            mSuspended = true;
+            synchronized(mSuspendLock) {
+                mSuspended = TRUE;
+            }
         }
         // don't hold the lock while calling out to the event handler
         Boolean canHandle;
@@ -313,34 +319,35 @@ ECode HttpsConnection::OpenConnection(
         }
 
         {
-            AutoLock lock(mSuspendLock);
-            if (mSuspended) {
-                // Put a limit on how long we are waiting; if the timeout
-                // expires (which should never happen unless you choose
-                // to ignore the SSL error dialog for a very long time),
-                // we wake up the thread and abort the request. This is
-                // to prevent us from stalling the network if things go
-                // very bad.
-                // TODO:
-                // mSuspendLock.Wait(10 * 60 * 1000);
+            synchronized(mSuspendLock) {
                 if (mSuspended) {
-                    // mSuspended is true if we have not had a chance to
-                    // restart the connection yet (ie, the wait timeout
-                    // has expired)
-                    mSuspended = FALSE;
-                    mAborted = TRUE;
-                    if (HttpLog::LOGV) {
-                        HttpLog::V(String("HttpsConnection.openConnection(): SSL timeout expired and request was cancelled!!!"));
+                    // Put a limit on how long we are waiting; if the timeout
+                    // expires (which should never happen unless you choose
+                    // to ignore the SSL error dialog for a very long time),
+                    // we wake up the thread and abort the request. This is
+                    // to prevent us from stalling the network if things go
+                    // very bad.
+                    // TODO:
+                    // mSuspendLock.Wait(10 * 60 * 1000);
+                    if (mSuspended) {
+                        // mSuspended is true if we have not had a chance to
+                        // restart the connection yet (ie, the wait timeout
+                        // has expired)
+                        mSuspended = FALSE;
+                        mAborted = TRUE;
+                        if (HttpLog::LOGV) {
+                            HttpLog::V(String("HttpsConnection.openConnection(): SSL timeout expired and request was cancelled!!!"));
+                        }
                     }
                 }
-            }
-            if (mAborted) {
-                // The user decided not to use this unverified connection
-                // so close it immediately.
-                // sslSock->Close();
-                Logger::E("HttpsConnection", String("connection closed by the user"));
-                // return E_SSL_CONNECTION_CLOSE_BY_USER_EXCEPTION;
-                return E_RUNTIME_EXCEPTION;
+                if (mAborted) {
+                    // The user decided not to use this unverified connection
+                    // so close it immediately.
+                    // sslSock->Close();
+                    Logger::E("HttpsConnection", String("connection closed by the user"));
+                    // return E_SSL_CONNECTION_CLOSE_BY_USER_EXCEPTION;
+                    return E_RUNTIME_EXCEPTION;
+                }
             }
         }
     }
@@ -398,15 +405,15 @@ ECode HttpsConnection::RestartConnection(
         HttpLog::V(String("HttpsConnection.restartConnection(): proceed: ") + StringUtils::BooleanToString(proceed));
     }
 
-    AutoLock lock(mSuspendLock);
+    synchronized(mSuspendLock) {
 
-    if (mSuspended) {
-        mSuspended = FALSE;
-        mAborted = !proceed;
-        // TODO:
-        // mSuspendLock->Notify();
+        if (mSuspended) {
+            mSuspended = FALSE;
+            mAborted = !proceed;
+            // TODO:
+            // mSuspendLock->Notify();
+        }
     }
-
     return NOERROR;
 #endif
 }
@@ -417,6 +424,7 @@ ECode HttpsConnection::GetScheme(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(scheme);
+
     *scheme = String("https");
     return NOERROR;
 #endif

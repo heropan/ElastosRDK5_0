@@ -5,7 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
-const String NetworkUtils::TAG = String("NetworkUtils");
+const String NetworkUtils::TAG("NetworkUtils");
+
+NetworkUtils::NetworkUtils()
+{}
 
 ECode NetworkUtils::ResetConnections(
     /* [in] */ const String& interfaceName,
@@ -123,7 +126,6 @@ ECode NetworkUtils::IntToInetAddress(
         } catch (UnknownHostException e) {
            throw new AssertionError();
         }
-
 #endif
 }
 
@@ -136,7 +138,6 @@ ECode NetworkUtils::InetAddressToInt(
         byte [] addr = inetAddr.getAddress();
         return ((addr[3] & 0xff) << 24) | ((addr[2] & 0xff) << 16) |
                 ((addr[1] & 0xff) << 8) | (addr[0] & 0xff);
-
 #endif
 }
 
@@ -149,9 +150,8 @@ ECode NetworkUtils::PrefixLengthToNetmaskInt(
         if (prefixLength < 0 || prefixLength > 32) {
             throw new IllegalArgumentException("Invalid prefix length (0 <= prefix <= 32)");
         }
-        int value = 0xffffffff << (32 - prefixLength);
+        Int32 value = 0xffffffff << (32 - prefixLength);
         return Integer.reverseBytes(value);
-
 #endif
 }
 
@@ -162,7 +162,6 @@ ECode NetworkUtils::NetmaskIntToPrefixLength(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return Integer.bitCount(netmask);
-
 #endif
 }
 
@@ -173,7 +172,6 @@ ECode NetworkUtils::NumericToInetAddress(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return InetAddress.parseNumericAddress(addrString);
-
 #endif
 }
 
@@ -184,9 +182,8 @@ ECode NetworkUtils::ParcelInetAddress(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        byte[] addressArray = (address != null) ? address.getAddress() : null;
+        byte[] addressArray = (address != NULL) ? address.getAddress() : NULL;
         parcel.writeByteArray(addressArray);
-
 #endif
 }
 
@@ -197,15 +194,14 @@ ECode NetworkUtils::UnparcelInetAddress(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         byte[] addressArray = in.createByteArray();
-        if (addressArray == null) {
-            return null;
+        if (addressArray == NULL) {
+            return NULL;
         }
         try {
             return InetAddress.getByAddress(addressArray);
         } catch (UnknownHostException e) {
-            return null;
+            return NULL;
         }
-
 #endif
 }
 
@@ -219,15 +215,14 @@ ECode NetworkUtils::MaskRawAddress(
             throw new RuntimeException("IP address with " + array.length +
                     " bytes has invalid prefix length " + prefixLength);
         }
-        int offset = prefixLength / 8;
-        int remainder = prefixLength % 8;
+        Int32 offset = prefixLength / 8;
+        Int32 remainder = prefixLength % 8;
         byte mask = (byte)(0xFF << (8 - remainder));
         if (offset < array.length) array[offset] = (byte)(array[offset] & mask);
         offset++;
         for (; offset < array.length; offset++) {
             array[offset] = 0;
         }
-
 #endif
 }
 
@@ -240,14 +235,13 @@ ECode NetworkUtils::GetNetworkPart(
 #if 0 // TODO: Translate codes below
         byte[] array = address.getAddress();
         maskRawAddress(array, prefixLength);
-        InetAddress netPart = null;
+        InetAddress netPart = NULL;
         try {
             netPart = InetAddress.getByAddress(array);
         } catch (UnknownHostException e) {
             throw new RuntimeException("getNetworkPart error - " + e.toString());
         }
         return netPart;
-
 #endif
 }
 
@@ -257,22 +251,21 @@ ECode NetworkUtils::ParseIpAndMask(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        InetAddress address = null;
-        int prefixLength = -1;
+        InetAddress address = NULL;
+        Int32 prefixLength = -1;
         try {
             String[] pieces = ipAndMaskString.split("/", 2);
-            prefixLength = Integer.parseInt(pieces[1]);
+            prefixLength = StringUtils::ParseInt32(pieces[1]);
             address = InetAddress.parseNumericAddress(pieces[0]);
         } catch (NullPointerException e) {            // Null string.
         } catch (ArrayIndexOutOfBoundsException e) {  // No prefix length.
         } catch (NumberFormatException e) {           // Non-numeric prefix.
         } catch (IllegalArgumentException e) {        // Invalid IP address.
         }
-        if (address == null || prefixLength == -1) {
+        if (address == NULL || prefixLength == -1) {
             throw new IllegalArgumentException("Invalid IP address and mask " + ipAndMaskString);
         }
         return new Pair<InetAddress, Integer>(address, prefixLength);
-
 #endif
 }
 
@@ -283,9 +276,8 @@ ECode NetworkUtils::AddressTypeMatches(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return (((left instanceof Inet4Address) && (right instanceof Inet4Address)) ||
-                ((left instanceof Inet6Address) && (right instanceof Inet6Address)));
-
+        return (((IInet4Address::Probe(left) != NULL) && (IInet4Address::Probe(right) != NULL)) ||
+                ((IInet6Address::Probe(left) != NULL) && (IInet6Address::Probe(right) != NULL)));
 #endif
 }
 
@@ -302,10 +294,9 @@ ECode NetworkUtils::HexToInet6Address(
                     addrHexString.substring(16,20), addrHexString.substring(20,24),
                     addrHexString.substring(24,28), addrHexString.substring(28,32)));
         } catch (Exception e) {
-            Log.e("NetworkUtils", "error in hexToInet6Address(" + addrHexString + "): " + e);
+            Logger::E("NetworkUtils", "error in hexToInet6Address(" + addrHexString + "): " + e);
             throw new IllegalArgumentException(e);
         }
-
 #endif
 }
 
@@ -316,12 +307,11 @@ ECode NetworkUtils::MakeStrings(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         String[] result = new String[addrs.size()];
-        int i = 0;
+        Int32 i = 0;
         for (InetAddress addr : addrs) {
             result[i++] = addr.getHostAddress();
         }
         return result;
-
 #endif
 }
 
@@ -331,15 +321,15 @@ ECode NetworkUtils::TrimV4AddrZeros(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (addr == null) return null;
+        if (addr == NULL) return NULL;
         String[] octets = addr.split("\\.");
         if (octets.length != 4) return addr;
         StringBuilder builder = new StringBuilder(16);
-        String result = null;
-        for (int i = 0; i < 4; i++) {
+        String result = NULL;
+        for (Int32 i = 0; i < 4; i++) {
             try {
                 if (octets[i].length() > 3) return addr;
-                builder.append(Integer.parseInt(octets[i]));
+                builder.append(StringUtils::ParseInt32(octets[i]));
             } catch (NumberFormatException e) {
                 return addr;
             }
@@ -347,7 +337,6 @@ ECode NetworkUtils::TrimV4AddrZeros(
         }
         result = builder.toString();
         return result;
-
 #endif
 }
 

@@ -9,10 +9,10 @@ module
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * Implemented by the top-level decor layout for a window. DecorContentParent offers

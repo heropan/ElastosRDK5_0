@@ -3,11 +3,12 @@
 #define __ELASTOS_DROID_WIDGET_BASEEXPANDABLELISTADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/database/CDataSetObservable.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Database::IDataSetObserver;
 using Elastos::Droid::Database::IDataSetObservable;
-using Elastos::Droid::Database::CDataSetObservable;
+using Elastos::Core::Object;
+
 namespace Elastos {
 namespace Droid {
 namespace Widget {
@@ -24,8 +25,14 @@ namespace Widget {
  * @see SimpleCursorTreeAdapter
  */
 class BaseExpandableListAdapter
+    : public Object
+    , public IBaseExpandableListAdapter
+    , public IExpandableListAdapter
+    , public IHeterogeneousExpandableList
 {
 public:
+    CAR_INTERFACE_DECL();
+
     BaseExpandableListAdapter();
 
     virtual CARAPI RegisterDataSetObserver(
@@ -44,7 +51,8 @@ public:
      */
     virtual CARAPI NotifyDataSetChanged();
 
-    virtual CARAPI_(Boolean) AreAllItemsEnabled();
+    virtual CARAPI AreAllItemsEnabled(
+        /* [out] */ Boolean* enabled);
 
     virtual CARAPI OnGroupCollapsed(
         /* [in] */ Int32 groupPosition);
@@ -63,9 +71,10 @@ public:
      * <p>
      * {@inheritDoc}
      */
-    virtual CARAPI_(Int64) GetCombinedChildId(
+    virtual CARAPI GetCombinedChildId(
         /* [in] */ Int64 groupId,
-        /* [in] */ Int64 childId);
+        /* [in] */ Int64 childId,
+        /* [out] */ Int64* id);
 
     /**
      * Override this method if you foresee a clash in IDs based on this scheme:
@@ -78,43 +87,49 @@ public:
      * <p>
      * {@inheritDoc}
      */
-    virtual CARAPI_(Int64) GetCombinedGroupId(
-        /* [in] */ Int64 groupId);
+    virtual CARAPI GetCombinedGroupId(
+        /* [in] */ Int64 groupId,
+        /* [out] */ Int64* id);
 
     /**
      * {@inheritDoc}
      */
-    virtual CARAPI_(Boolean) IsEmpty();
-
+    virtual CARAPI IsEmpty(
+        /* [out] */ Boolean* empty);
 
     /**
      * {@inheritDoc}
      * @return 0 for any group or child position, since only one child type count is declared.
      */
-    virtual CARAPI_(Int32) GetChildType(
+    virtual CARAPI GetChildType(
         /* [in] */ Int32 groupPosition,
-        /* [in] */ Int32 childPosition);
+        /* [in] */ Int32 childPosition,
+        /* [out] */ Int32* type);
 
     /**
      * {@inheritDoc}
      * @return 1 as a default value in BaseExpandableListAdapter.
      */
-    virtual CARAPI_(Int32) GetChildTypeCount();
+    virtual CARAPI GetChildTypeCount(
+        /* [out] */ Int32* count);
 
     /**
      * {@inheritDoc}
      * @return 0 for any groupPosition, since only one group type count is declared.
      */
-    virtual CARAPI_(Int32) GetGroupType(
-        /* [in] */ Int32 groupPosition);
+    virtual CARAPI GetGroupType(
+        /* [in] */ Int32 groupPosition,
+        /* [out] */ Int32* type);
 
     /**
      * {@inheritDoc}
      * @return 1 as a default value in BaseExpandableListAdapter.
      */
-    virtual CARAPI_(Int32) GetGroupTypeCount();
+    virtual CARAPI GetGroupTypeCount(
+        /* [out] */ Int32* count);
 
-    virtual CARAPI_(Int32) GetGroupCount() = 0;
+    virtual CARAPI GetGroupCount(
+        /* [out] */ Int32* count) = 0;
 
 private:
     AutoPtr<IDataSetObservable> mDataSetObservable ;

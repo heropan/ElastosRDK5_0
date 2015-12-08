@@ -43,6 +43,7 @@ module
         const Int32 BASE_DATA_CONNECTION_TRACKER                            = 0x00042000;
         const Int32 BASE_DNS_PINGER                                         = 0x00050000;
         const Int32 BASE_NSD_MANAGER                                        = 0x00060000;
+        const Int32 BASE_NETWORK_AGENT                                      = 0x00081000;
 
         const Int32 BASE_NETWORK_FACTORY                                    = 0x00083000;
         //TODO: define all used protocols

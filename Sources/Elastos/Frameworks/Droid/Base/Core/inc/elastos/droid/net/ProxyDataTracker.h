@@ -33,9 +33,12 @@ private:
         : public BroadcastReceiver
     {
     public:
+        InnerSub_BroadcastReceiver(ProxyDataTracker*);
         CARAPI OnReceive(
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
+    private:
+        ProxyDataTracker* mHost;
     };
 
 public:
@@ -97,6 +100,7 @@ private:
         /* [in] */ const String& reason,
         /* [in] */ const String& extraInfo);
 
+private:
     AutoPtr<IAtomicBoolean> mReconnectRequested;
 
     AutoPtr<IAtomicBoolean> mIsProxyAvailable;

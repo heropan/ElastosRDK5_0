@@ -1,11 +1,15 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CWifiManagerHelper.h"
-#include "elastos/droid/net/wifi/CWifiManager.h"
+#include "elastos/droid/wifi/CWifiManagerHelper.h"
+#include "elastos/droid/wifi/CWifiManager.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
+
+CAR_INTERFACE_IMPL(CWifiManagerHelper, Singleton, IWifiManagerHelper)
+
+CAR_SINGLETON_IMPL(CWifiManagerHelper)
 
 ECode CWifiManagerHelper::CalculateSignalLevel(
     /* [in] */ Int32 rssi,

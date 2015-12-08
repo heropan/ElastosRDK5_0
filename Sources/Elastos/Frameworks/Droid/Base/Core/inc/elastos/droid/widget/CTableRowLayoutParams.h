@@ -7,9 +7,9 @@
 #include "elastos/droid/widget/TableRowLayoutParams.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CTableRowLayoutParams), public TableRowLayoutParams
 {

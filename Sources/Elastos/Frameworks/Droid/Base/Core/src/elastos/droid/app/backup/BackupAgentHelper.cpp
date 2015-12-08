@@ -8,10 +8,10 @@
 using Elastos::Droid::App::Backup::CBackupHelperDispatcher;
 using Elastos::Utility::Logging::Logger;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 extern "C" const InterfaceID EIID_BackupAgentHelper;
 

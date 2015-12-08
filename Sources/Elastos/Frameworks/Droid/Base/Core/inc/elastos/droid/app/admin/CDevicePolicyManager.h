@@ -3,12 +3,20 @@
 #define __ELASTOS_DROID_APP_ADMIN_CDEVICEPOLICYMANAGER_H__
 
 #include "_Elastos_Droid_App_Admin_CDevicePolicyManager.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::IRemoteCallback;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IRemoteCallback;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Net::IProxyInfo;
+using Elastos::Security::IPrivateKey;
+using Elastos::Security::ICertificate;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -16,8 +24,14 @@ namespace App {
 namespace Admin {
 
 CarClass(CDevicePolicyManager)
+    , public Object
+    , public IDevicePolicyManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IHandler* handler);
@@ -843,7 +857,7 @@ public:
     CARAPI InstallCaCert(
         /* [in] */ IComponentName* admin,
         /* [in] */ ArrayOf<Byte>* certBuffer,
-        /* [out] */ Booelan* result);
+        /* [out] */ Boolean* result);
 
     /**
      * Uninstalls the given certificate from trusted user CAs, if present.
@@ -951,6 +965,10 @@ public:
     CARAPI SetScreenCaptureDisabled(
         /* [in] */ IComponentName* admin,
         /* [in] */ Boolean disabled);
+
+    CARAPI SetScreenCaptureDisabled(
+        /* [in] */ IComponentName* admin,
+        /* [out] */ Boolean* disabled);
 
     /**
      * Determine whether or not screen capture has been disabled by the current
@@ -1079,13 +1097,231 @@ public:
     CARAPI ReportSuccessfulPasswordAttempt(
         /* [in] */ Int32 userHandle);
 
+    CARAPI SetDeviceOwner(
+        /* [in] */ const String& packageName,
+        /* [out] */ Boolean* result);
+
+    CARAPI SetDeviceOwner(
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& ownerName,
+        /* [out] */ Boolean* result);
+
+    CARAPI IsDeviceOwnerApp(
+        /* [in] */ const String& packageName,
+        /* [out] */ Boolean* result);
+
+    CARAPI IsDeviceOwner(
+        /* [in] */ const String& packageName,
+        /* [out] */ Boolean* result);
+
+    CARAPI ClearDeviceOwnerApp(
+        /* [in] */ const String& packageName);
+
+    CARAPI SetProfileOwner(
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& ownerName,
+        /* [in] */ Int32 userHandle,
+        /* [out] */ Boolean* result);
+
+    CARAPI SetProfileOwner(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& ownerName,
+        /* [in] */ Int32 userHandle,
+        /* [out] */ Boolean* result);
+
+    CARAPI SetProfileEnabled(
+        /* [in] */ IComponentName* admin);
+
+    CARAPI SetProfileName(
+        /* [in] */ IComponentName* who,
+        /* [in] */ const String& profileName);
+
+    CARAPI IsProfileOwnerApp(
+        /* [in] */ const String& packageName,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetProfileOwner(
+        /* [out]*/ IComponentName** name);
+
+    CARAPI AddPersistentPreferredActivity(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IIntentFilter* filter,
+        /* [in] */ IComponentName* activity);
+
+    CARAPI ClearPackagePersistentPreferredActivities(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName);
+
+    CARAPI SetApplicationRestrictions(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName,
+        /* [in] */ IBundle* settings);
+
+    CARAPI SetTrustAgentFeaturesEnabled(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IComponentName* agent,
+        /* [in] */ IList* features);
+
+    CARAPI GetTrustAgentFeaturesEnabled(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IComponentName* agent);
+
+    CARAPI SetCrossProfileCallerIdDisabled(
+        /* [in] */ IComponentName* who,
+        /* [in] */ Boolean disabled);
+
+    CARAPI GetCrossProfileCallerIdDisabled(
+        /* [in] */ IComponentName* who,
+        /* [out] */ Boolean* result);
+
+    CARAPI AddCrossProfileIntentFilter(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IIntentFilter* filter,
+        /* [in] */ Int32 flags);
+
+    CARAPI ClearCrossProfileIntentFilters(
+        /* [in] */ IComponentName* admin);
+
+    CARAPI SetPermittedAccessibilityServices(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IList* packageNames,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetPermittedAccessibilityServices(
+        /* [out] */ IComponentName** admin);
+
+    CARAPI SetPermittedInputMethods(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IList* packageNames,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetPermittedInputMethods(
+        /* [in] */ IComponentName* admin,
+        /* [out] */ IList** list);
+
+    CARAPI CreateUser(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& name,
+        /* [out] */ IUserHandle** handle);
+
+    CARAPI CreateAndInitializeUser(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& name,
+        /* [in] */ const String& ownerName,
+        /* [in] */ IComponentName* profileOwnerComponent,
+        /* [in] */ IBundle* adminExtras);
+
+    CARAPI RemoveUser(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IUserHandle* userHandle);
+
+    CARAPI SwitchUser(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IUserHandle* userHandle,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetApplicationRestrictions(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName,
+        /* [out] */ IBundle** bundle);
+
+    CARAPI AddUserRestriction(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& key);
+
+    CARAPI ClearUserRestriction(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& key);
+
+    CARAPI SetApplicationHidden(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName,
+        /* [in] */ Boolean hide,
+        /* [out] */ Boolean* result);
+
+    CARAPI IsApplicationHidden(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName,
+        /* [out] */ Boolean* result);
+
+    CARAPI EnableSystemApp(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName);
+
+    CARAPI EnableSystemApp(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IIntent* intent,
+        /* [out] */ Int32* result);
+
+    CARAPI SetAccountManagementDisabled(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& accountType,
+        /* [in] */ Boolean disabled);
+
+    CARAPI GetAccountTypesWithManagementDisabled(
+        /* [out, callee] */ ArrayOf<String>** result);
+
+    CARAPI SetLockTaskPackages(
+        /* [in] */ IComponentName* admin,
+        /* [out, callee] */ ArrayOf<String>** packages);
+
+    CARAPI IsLockTaskPermitted(
+        /* [in] */ const String& pkg,
+        /* [out] */ Boolean* result);
+
+    CARAPI SetGlobalSetting(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& setting,
+        /* [in] */ const String& value);
+
+    CARAPI SetSecureSetting(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& setting,
+        /* [in] */ const String& value);
+
+    CARAPI SetRestrictionsProvider(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IComponentName* provider);
+
+    CARAPI SetMasterVolumeMuted(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ Boolean on);
+
+    CARAPI IsMasterVolumeMuted(
+        /* [in] */ IComponentName* admin,
+        /* [out] */ Boolean* result);
+
+    CARAPI SetUninstallBlocked(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName,
+        /* [in] */ Boolean uninstallBlocked);
+
+    CARAPI IsUninstallBlocked(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName,
+        /* [out] */ Boolean* result);
+
+    CARAPI AddCrossProfileWidgetProvider(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName,
+        /* [out] */ Boolean* result);
+
+    CARAPI RemoveCrossProfileWidgetProvider(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ const String& packageName,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetCrossProfileWidgetProviders(
+        /* [in] */ IComponentName* admin,
+        /* [out] */ IList** result);
+
 private:
     /**
      * Returns the alias of a given CA certificate in the certificate store, or null if it
      * doesn't exist.
      */
     static CARAPI GetCaCertAlias(
-        /* [in] */ Arrayof<Byte>* certBuffer,
+        /* [in] */ ArrayOf<Byte>* certBuffer,
         /* [out] */ String* alias);
 
 private:

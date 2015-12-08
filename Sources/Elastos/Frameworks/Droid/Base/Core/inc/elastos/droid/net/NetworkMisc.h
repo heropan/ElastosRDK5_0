@@ -21,6 +21,8 @@ class NetworkMisc
 public:
     CAR_INTERFACE_DECL()
 
+    NetworkMisc();
+
     CARAPI constructor();
 
     CARAPI constructor(

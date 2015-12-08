@@ -1,39 +1,64 @@
 #include "elastos/droid/widget/PopupWindow.h"
-#include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/R.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/Gravity.h"
 #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CStringWrapper;
-using Elastos::Droid::R;
-using Elastos::Droid::Os::Build;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::IStateListDrawable;
-using Elastos::Droid::View::EIID_View;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::EIID_IView;
-using Elastos::Droid::View::EIID_IViewGroup;
-using Elastos::Droid::View::EIID_ViewGroup;
-using Elastos::Droid::View::EIID_IViewParent;
-using Elastos::Droid::View::EIID_IViewManager;
-using Elastos::Droid::View::EIID_IKeyEventCallback;
+using Elastos::Droid::View::IDispatcherState;
 using Elastos::Droid::View::EIID_IOnScrollChangedListener;
 using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
+using Elastos::Droid::View::Gravity;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
+using Elastos::Droid::R;
+using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+const Int32 PopupWindow::DEFAULT_ANCHORED_GRAVITY = IGravity::TOP | IGravity::START;
+
+static AutoPtr<ArrayOf<Int32> > InitABOVE_ANCHOR_STATE_SET()
+{
+    AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(1);
+    (*array)[0] = R::attr::state_above_anchor;
+    return array;
+}
+
+AutoPtr<ArrayOf<Int32> > PopupWindow::ABOVE_ANCHOR_STATE_SET = InitABOVE_ANCHOR_STATE_SET();
+
+const String PopupWindow::PopupViewContainer::TAG("PopupWindow.PopupViewContainer");
+
 //==============================================================================
-//          PopupWindow::_PopupViewContainer
+//          PopupWindow::PopupViewContainer
 //==============================================================================
 
-ECode PopupWindow::_PopupViewContainer::OnCreateDrawableState(
+PopupWindow::PopupViewContainer::PopupViewContainer(
+    /* [in] */ IContext* context,
+    /* [in] */ PopupWindow* host)
+    : mHost(host)
+{
+    FrameLayout::constructor(context);
+}
+
+ECode PopupWindow::PopupViewContainer::OnCreateDrawableState(
     /* [in] */ Int32 extraSpace,
     /* [out] */ ArrayOf<Int32>** drawableState)
 {
@@ -41,7 +66,7 @@ ECode PopupWindow::_PopupViewContainer::OnCreateDrawableState(
     *drawableState = NULL;
 
     AutoPtr<ArrayOf<Int32> > ds;
-    if (mOwner->mAboveAnchor) {
+    if (mHost->mAboveAnchor) {
         // 1 more needed for the above anchor state
         FAIL_RETURN(FrameLayout::OnCreateDrawableState(extraSpace + 1, (ArrayOf<Int32>**)&ds));
         View::MergeDrawableStates(ds, ABOVE_ANCHOR_STATE_SET);
@@ -57,16 +82,19 @@ ECode PopupWindow::_PopupViewContainer::OnCreateDrawableState(
     }
 }
 
-Boolean PopupWindow::_PopupViewContainer::DispatchKeyEvent(
-    /* [in] */ IKeyEvent* event)
+ECode PopupWindow::PopupViewContainer::DispatchKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
+
     Int32 keyCode;
     event->GetKeyCode(&keyCode);
     if (keyCode == IKeyEvent::KEYCODE_BACK) {
         AutoPtr<IDispatcherState> dispatcherState;
         GetKeyDispatcherState((IDispatcherState**)&dispatcherState);
         if (!dispatcherState) {
-            return FrameLayout::DispatchKeyEvent(event);
+            return FrameLayout::DispatchKeyEvent(event, res);
         }
 
         Int32 action, count;
@@ -78,7 +106,8 @@ Boolean PopupWindow::_PopupViewContainer::DispatchKeyEvent(
             if (state != NULL) {
                 state->StartTracking(event, this->Probe(EIID_IInterface));
             }
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
         else if (action == IKeyEvent::ACTION_UP) {
                 AutoPtr<IDispatcherState> state;
@@ -88,33 +117,42 @@ Boolean PopupWindow::_PopupViewContainer::DispatchKeyEvent(
                     state->IsTracking(event, &tracking);
                     event->IsCanceled(&canceled);
                     if (tracking && !canceled) {
-                        mOwner->Dismiss();
-                        return TRUE;
+                        mHost->Dismiss();
+                        *res = TRUE;
+                        return NOERROR;
                     }
                 }
             }
-        return FrameLayout::DispatchKeyEvent(event);
+        return FrameLayout::DispatchKeyEvent(event, res);
     }
     else {
-        return FrameLayout::DispatchKeyEvent(event);
+        return FrameLayout::DispatchKeyEvent(event, res);
     }
 }
 
-Boolean PopupWindow::_PopupViewContainer::DispatchTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode PopupWindow::PopupViewContainer::DispatchTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
-    if (mOwner->mTouchInterceptor != NULL) {
+    VALIDATE_NOT_NULL(res);
+
+    if (mHost->mTouchInterceptor != NULL) {
         Boolean result;
-        mOwner->mTouchInterceptor->OnTouch(THIS_PROBE(IView), event, &result);
-        if (result)
-            return TRUE;
+        mHost->mTouchInterceptor->OnTouch(THIS_PROBE(IView), event, &result);
+        if (result) {
+            *res = TRUE;
+            return NOERROR;
+        }
     }
-    return FrameLayout::DispatchTouchEvent(event);
+    return FrameLayout::DispatchTouchEvent(event, res);
 }
 
-Boolean PopupWindow::_PopupViewContainer::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode PopupWindow::PopupViewContainer::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
+
     assert(event != NULL);
 
     Float _x, _y;
@@ -125,26 +163,31 @@ Boolean PopupWindow::_PopupViewContainer::OnTouchEvent(
 
     Int32 action;
     event->GetAction(&action);
+    Int32 width, height;
+    mHost->GetWidth(&width);
+    mHost->GetHeight(&height);
     if ((action == IMotionEvent::ACTION_DOWN)
-            && ((x < 0) || (x >= mOwner->GetWidth()) || (y < 0) || (y >= mOwner->GetHeight()))) {
-        mOwner->Dismiss();
-        return TRUE;
+            && ((x < 0) || (x >= width) || (y < 0) || (y >= height))) {
+        mHost->Dismiss();
+        *res = TRUE;
+        return NOERROR;
     }
     else if (action == IMotionEvent::ACTION_OUTSIDE) {
-        mOwner->Dismiss();
-        return TRUE;
+        mHost->Dismiss();
+        *res = TRUE;
+        return NOERROR;
     }
     else {
-        return FrameLayout::OnTouchEvent(event);
+        return FrameLayout::OnTouchEvent(event, res);
     }
 }
 
-ECode PopupWindow::_PopupViewContainer::SendAccessibilityEvent(
+ECode PopupWindow::PopupViewContainer::SendAccessibilityEvent(
     /* [in] */ Int32 eventType)
 {
     // clinets are interested in the content not the container, make it event source
-    if (mOwner->mContentView != NULL) {
-        return IAccessibilityEventSource::Probe(mOwner->mContentView)->SendAccessibilityEvent(eventType);
+    if (mHost->mContentView != NULL) {
+        return IAccessibilityEventSource::Probe(mHost->mContentView)->SendAccessibilityEvent(eventType);
     }
     else {
         return FrameLayout::SendAccessibilityEvent(eventType);
@@ -153,179 +196,46 @@ ECode PopupWindow::_PopupViewContainer::SendAccessibilityEvent(
 }
 
 //==============================================================================
-//          PopupWindow::PopupViewContainer
-//==============================================================================
-
-IVIEW_METHODS_IMPL(PopupWindow::PopupViewContainer, PopupWindow::_PopupViewContainer)
-IVIEWGROUP_METHODS_IMPL(PopupWindow::PopupViewContainer, PopupWindow::_PopupViewContainer)
-IVIEWPARENT_METHODS_IMPL(PopupWindow::PopupViewContainer, PopupWindow::_PopupViewContainer)
-IVIEWMANAGER_METHODS_IMPL(PopupWindow::PopupViewContainer, PopupWindow::_PopupViewContainer)
-IDRAWABLECALLBACK_METHODS_IMPL(PopupWindow::PopupViewContainer, PopupWindow::_PopupViewContainer)
-IKEYEVENTCALLBACK_METHODS_IMPL(PopupWindow::PopupViewContainer, PopupWindow::_PopupViewContainer)
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(PopupWindow::PopupViewContainer, PopupWindow::_PopupViewContainer)
-
-PInterface PopupWindow::PopupViewContainer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_View) {
-        return reinterpret_cast<PInterface>((View*)this);
-    } else if (riid == EIID_ViewGroup) {
-        return reinterpret_cast<PInterface>((ViewGroup*)this);
-    }
-    else if (EIID_IInterface == riid) {
-        return (IInterface *)(IFrameLayout *)this;
-    }
-    else if (EIID_IView == riid) {
-        return (IView *)(IFrameLayout *)this;
-    }
-    else if (EIID_IViewGroup == riid) {
-        return (IViewGroup *)(IFrameLayout *)this;
-    }
-    else if (EIID_IFrameLayout == riid) {
-        return (IFrameLayout *)this;
-    }
-    else if (EIID_IViewParent == riid) {
-        return (IViewParent *)this;
-    }
-    else if (EIID_IViewManager == riid) {
-        return (IViewManager *)this;
-    }
-    else if (EIID_IDrawableCallback == riid) {
-        return (IDrawableCallback *)this;
-    }
-    else if (EIID_IKeyEventCallback == riid) {
-        return (IKeyEventCallback *)this;
-    }
-    else if (EIID_IAccessibilityEventSource == riid) {
-        return (IAccessibilityEventSource *)this;
-    }
-    else if (EIID_IWeakReferenceSource == riid) {
-        return (IWeakReferenceSource *)this;
-    }
-
-    return NULL;
-}
-
-UInt32 PopupWindow::PopupViewContainer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 PopupWindow::PopupViewContainer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode PopupWindow::PopupViewContainer::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode PopupWindow::PopupViewContainer::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
-
-ECode PopupWindow::PopupViewContainer::SetForegroundGravity(
-    /* [in] */ Int32 foregroundGravity)
-{
-    return FrameLayout::SetForegroundGravity(foregroundGravity);
-}
-
-ECode PopupWindow::PopupViewContainer::GetForegroundGravity(
-    /* [out] */ Int32* foregroundGravity)
-{
-    VALIDATE_NOT_NULL(foregroundGravity);
-    *foregroundGravity = FrameLayout::GetForegroundGravity();
-    return NOERROR;
-}
-
-ECode PopupWindow::PopupViewContainer::SetForeground(
-    /* [in] */ IDrawable* drawable)
-{
-    return FrameLayout::SetForeground(drawable);
-}
-
-ECode PopupWindow::PopupViewContainer::GetForeground(
-    /* [out] */ IDrawable** foreground)
-{
-    VALIDATE_NOT_NULL(foreground);
-    AutoPtr<IDrawable> d = FrameLayout::GetForeground();
-    *foreground = d.Get();
-    REFCOUNT_ADD(*foreground);
-
-    return NOERROR;
-}
-
-ECode PopupWindow::PopupViewContainer::SetMeasureAllChildren(
-    /* [in] */ Boolean measureAll)
-{
-    return FrameLayout::SetMeasureAllChildren(measureAll);
-}
-
-ECode PopupWindow::PopupViewContainer::GetMeasureAllChildren(
-    /* [out] */ Boolean* measureAll)
-{
-    VALIDATE_NOT_NULL(measureAll);
-    *measureAll = FrameLayout::GetMeasureAllChildren();
-    return NOERROR;
-}
-
-ECode PopupWindow::PopupViewContainer::GetConsiderGoneChildrenWhenMeasuring(
-    /* [out] */ Boolean* measureAll)
-{
-    VALIDATE_NOT_NULL(measureAll);
-    *measureAll = FrameLayout::GetConsiderGoneChildrenWhenMeasuring();
-    return NOERROR;
-}
-
-//==============================================================================
 //          PopupWindow::PopupWindowScrollChangedListener
 //==============================================================================
 
-CAR_INTERFACE_IMPL(PopupWindow::PopupWindowScrollChangedListener, IOnScrollChangedListener);
+CAR_INTERFACE_IMPL(PopupWindow::PopupWindowScrollChangedListener, Object, IOnScrollChangedListener);
+
+PopupWindow::PopupWindowScrollChangedListener::PopupWindowScrollChangedListener(
+    /* [in] */ PopupWindow* host)
+    : mHost(host)
+{}
 
 ECode PopupWindow::PopupWindowScrollChangedListener::OnScrollChanged()
 {
     AutoPtr<IView> anchor;
-    if (mOwner->mAnchor != NULL) {
-        mOwner->mAnchor->Resolve(EIID_IView, (IInterface**)&anchor);
+    if (mHost->mAnchor != NULL) {
+        AutoPtr<IInterface> objectReference;
+        mHost->mAnchor->Resolve(EIID_IView, (IInterface**)&objectReference);
+        anchor = IView::Probe(objectReference);
     }
 
-    if (anchor != NULL && mOwner->mPopupView != NULL) {
-        AutoPtr<IViewGroupLayoutParams> p;
-        mOwner->mPopupView->GetLayoutParams((IViewGroupLayoutParams**)&p);
-        IWindowManagerLayoutParams* lp = IWindowManagerLayoutParams::Probe(p);
-        assert(lp != NULL && "IWindowManagerLayoutParams cannot be null.");
+    if (anchor != NULL && mHost->mPopupView != NULL) {
+        AutoPtr<IViewGroupLayoutParams> params;
+        mHost->mPopupView->GetLayoutParams((IViewGroupLayoutParams**)&params);
+        AutoPtr<IWindowManagerLayoutParams> p = IWindowManagerLayoutParams::Probe(params);
+        assert(p != NULL && "IWindowManagerLayoutParams cannot be null.");
         Int32 x, y;
-        lp->GetX(&x);
-        lp->GetY(&y);
-        mOwner->UpdateAboveAnchor(mOwner->FindDropDownPosition(
-                anchor, lp, mOwner->mAnchorXoff, mOwner->mAnchorYoff));
-        mOwner->Update(x, y, -1, -1, TRUE);
+        p->GetX(&x);
+        p->GetY(&y);
+        mHost->UpdateAboveAnchor(mHost->FindDropDownPosition(
+                anchor, p, mHost->mAnchorXoff, mHost->mAnchorYoff, mHost->mAnchoredGravity));
+        mHost->Update(x, y, -1, -1, TRUE);
     }
 
     return NOERROR;
 }
 
-
 //==============================================================================
 //          PopupWindow
 //==============================================================================
-static AutoPtr<ArrayOf<Int32> > InitABOVE_ANCHOR_STATE_SET()
-{
-    AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(1);
-    (*array)[0] = R::attr::state_above_anchor;
-    return array;
-}
 
-AutoPtr<ArrayOf<Int32> > PopupWindow::ABOVE_ANCHOR_STATE_SET = InitABOVE_ANCHOR_STATE_SET();
+CAR_INTERFACE_IMPL(PopupWindow, Object, IPopupWindow);
 
 PopupWindow::PopupWindow()
     : mIsShowing(FALSE)
@@ -350,6 +260,9 @@ PopupWindow::PopupWindow()
     , mLastHeight(0)
     , mPopupWidth(0)
     , mPopupHeight(0)
+    , mElevation(0.f)
+    , mAnchorRelativeX(0)
+    , mAnchorRelativeY(0)
     , mAboveAnchor(FALSE)
     , mWindowLayoutType(IWindowManagerLayoutParams::TYPE_APPLICATION_PANEL)
     , mIgnoreCheekPress(FALSE)
@@ -357,147 +270,46 @@ PopupWindow::PopupWindow()
     , mAnchor(NULL)
     , mAnchorXoff(0)
     , mAnchorYoff(0)
+    , mAnchoredGravity(0)
+    , mOverlapAnchor(FALSE)
     , mPopupViewInitialLayoutDirectionInherited(FALSE)
 {
     mDrawingLocation = ArrayOf<Int32>::Alloc(2);
     mScreenLocation = ArrayOf<Int32>::Alloc(2);
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTempRect));
-
-    ASSERT_SUCCEEDED(Init());
+    mOnScrollChangedListener = new PopupWindowScrollChangedListener(this);
 }
 
-PopupWindow::PopupWindow(
+PopupWindow::~PopupWindow()
+{}
+
+ECode PopupWindow::constructor()
+{
+    return constructor(NULL, 0, 0);
+}
+
+ECode PopupWindow::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
+
+ECode PopupWindow::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::popupWindowStyle);
+}
+
+ECode PopupWindow::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : mIsShowing(FALSE)
-    , mIsDropdown(FALSE)
-    , mFocusable(FALSE)
-    , mInputMethodMode(0/*INPUT_METHOD_FROM_FOCUSABLE*/)
-    , mSoftInputMode(0)
-    , mTouchable(TRUE)
-    , mOutsideTouchable(FALSE)
-    , mClippingEnabled(TRUE)
-    , mSplitTouchEnabled(-1)
-    , mLayoutInScreen(FALSE)
-    , mClipToScreen(FALSE)
-    , mAllowScrollingAnchorParent(TRUE)
-    , mLayoutInsetDecor(FALSE)
-    , mNotTouchModal(FALSE)
-    , mWidthMode(0)
-    , mWidth(0)
-    , mLastWidth(0)
-    , mHeightMode(0)
-    , mHeight(0)
-    , mLastHeight(0)
-    , mPopupWidth(0)
-    , mPopupHeight(0)
-    , mAboveAnchor(FALSE)
-    , mWindowLayoutType(IWindowManagerLayoutParams::TYPE_APPLICATION_PANEL)
-    , mIgnoreCheekPress(FALSE)
-    , mAnimationStyle(-1)
-    , mAnchorXoff(0)
-    , mAnchorYoff(0)
-    , mPopupViewInitialLayoutDirectionInherited(FALSE)
+    /* [in] */ Int32 defStyleAttr)
 {
-    mDrawingLocation = ArrayOf<Int32>::Alloc(2);
-    mScreenLocation = ArrayOf<Int32>::Alloc(2);
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTempRect));
-
-    ASSERT_SUCCEEDED(Init(context, attrs, defStyle, 0));
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
-
-/**
- * <p>Create a new, empty, non focusable popup window of dimension (0,0).</p>
- *
- * <p>The popup does not provide a background.</p>
- */
-PopupWindow::PopupWindow(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-    : mIsShowing(FALSE)
-    , mIsDropdown(FALSE)
-    , mFocusable(FALSE)
-    , mInputMethodMode(0/*INPUT_METHOD_FROM_FOCUSABLE*/)
-    , mSoftInputMode(0)
-    , mTouchable(TRUE)
-    , mOutsideTouchable(FALSE)
-    , mClippingEnabled(TRUE)
-    , mSplitTouchEnabled(-1)
-    , mLayoutInScreen(FALSE)
-    , mClipToScreen(FALSE)
-    , mAllowScrollingAnchorParent(TRUE)
-    , mLayoutInsetDecor(FALSE)
-    , mNotTouchModal(FALSE)
-    , mWidthMode(0)
-    , mWidth(0)
-    , mLastWidth(0)
-    , mHeightMode(0)
-    , mHeight(0)
-    , mLastHeight(0)
-    , mPopupWidth(0)
-    , mPopupHeight(0)
-    , mAboveAnchor(FALSE)
-    , mWindowLayoutType(IWindowManagerLayoutParams::TYPE_APPLICATION_PANEL)
-    , mIgnoreCheekPress(FALSE)
-    , mAnimationStyle(-1)
-    , mAnchorXoff(0)
-    , mAnchorYoff(0)
-    , mPopupViewInitialLayoutDirectionInherited(FALSE)
-{
-    mDrawingLocation = ArrayOf<Int32>::Alloc(2);
-    mScreenLocation = ArrayOf<Int32>::Alloc(2);
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTempRect));
-
-    ASSERT_SUCCEEDED(Init(context, attrs, defStyleAttr, defStyleRes));
-}
-
-PopupWindow::PopupWindow(
-    /* [in] */ IView* contentView,
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height,
-    /* [in] */ Boolean focusable)
-    : mIsShowing(FALSE)
-    , mIsDropdown(FALSE)
-    , mFocusable(FALSE)
-    , mInputMethodMode(0/*INPUT_METHOD_FROM_FOCUSABLE*/)
-    , mSoftInputMode(0)
-    , mTouchable(TRUE)
-    , mOutsideTouchable(FALSE)
-    , mClippingEnabled(TRUE)
-    , mSplitTouchEnabled(-1)
-    , mLayoutInScreen(FALSE)
-    , mClipToScreen(FALSE)
-    , mAllowScrollingAnchorParent(TRUE)
-    , mLayoutInsetDecor(FALSE)
-    , mNotTouchModal(FALSE)
-    , mWidthMode(0)
-    , mWidth(0)
-    , mLastWidth(0)
-    , mHeightMode(0)
-    , mHeight(0)
-    , mLastHeight(0)
-    , mPopupWidth(0)
-    , mPopupHeight(0)
-    , mAboveAnchor(FALSE)
-    , mWindowLayoutType(IWindowManagerLayoutParams::TYPE_APPLICATION_PANEL)
-    , mIgnoreCheekPress(FALSE)
-    , mAnimationStyle(-1)
-    , mAnchorXoff(0)
-    , mAnchorYoff(0)
-    , mPopupViewInitialLayoutDirectionInherited(FALSE)
-{
-    mDrawingLocation = ArrayOf<Int32>::Alloc(2);
-    mScreenLocation = ArrayOf<Int32>::Alloc(2);
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTempRect));
-
-    ASSERT_SUCCEEDED(Init(contentView, width, height, focusable));
-}
-
-ECode PopupWindow::Init(
+ECode PopupWindow::constructor(
     /* [in] */ IContext* ctx,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -517,10 +329,12 @@ ECode PopupWindow::Init(
 
     a->GetDrawable(R::styleable::PopupWindow_popupBackground, (IDrawable**)&mBackground);
 
+    a->GetDimension(R::styleable::PopupWindow_popupElevation, 0, &mElevation);
+    a->GetBoolean(R::styleable::PopupWindow_overlapAnchor, FALSE, &mOverlapAnchor);
+
     Int32 animStyle;
     a->GetResourceId(R::styleable::PopupWindow_popupAnimationStyle, -1, &animStyle);
-    mAnimationStyle = animStyle == R::style::Animation_PopupWindow ? -1 :
-            animStyle;
+    mAnimationStyle = animStyle == R::style::Animation_PopupWindow ? -1 : animStyle;
 
     // If this is a StateListDrawable, try to find and store the drawable to be
     // used when the drop-down is placed above its anchor view, and the one to be
@@ -536,7 +350,7 @@ ECode PopupWindow::Init(
 
         // Find the above-anchor view - this one's easy, it should be labeled as such.
         Int32 aboveAnchorStateIndex;
-        background->GetStateDrawableIndex(*ABOVE_ANCHOR_STATE_SET, &aboveAnchorStateIndex);
+        background->GetStateDrawableIndex(ABOVE_ANCHOR_STATE_SET, &aboveAnchorStateIndex);
 
         // Now, for the below-anchor view, look for any other drawable specified in the
         // StateListDrawable which is not for the above-anchor state and use that.
@@ -569,7 +383,28 @@ ECode PopupWindow::Init(
     return NOERROR;
 }
 
-ECode PopupWindow::Init(
+ECode PopupWindow::constructor(
+    /* [in] */ IView* contentView)
+{
+    return constructor(contentView, 0, 0);
+}
+
+ECode PopupWindow::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    return constructor(NULL, width, height);
+}
+
+ECode PopupWindow::constructor(
+    /* [in] */ IView* contentView,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    return constructor(contentView, width, height, FALSE);
+}
+
+ECode PopupWindow::constructor(
     /* [in] */ IView* contentView,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
@@ -577,7 +412,9 @@ ECode PopupWindow::Init(
 {
     if (contentView != NULL) {
         contentView->GetContext((IContext**)&mContext);
-        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&mWindowManager);
+        AutoPtr<IInterface> obj;
+        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&obj);
+        mWindowManager = IWindowManager::Probe(obj);
     }
     SetContentView(contentView);
     SetWidth(width);
@@ -587,9 +424,13 @@ ECode PopupWindow::Init(
     return NOERROR;
 }
 
-AutoPtr<IDrawable> PopupWindow::GetBackground()
+ECode PopupWindow::GetBackground(
+    /* [out] */ IDrawable** background)
 {
-    return mBackground;
+    VALIDATE_NOT_NULL(background);
+    *background = mBackground;
+    REFCOUNT_ADD(*background);
+    return NOERROR;
 }
 
 ECode PopupWindow::SetBackgroundDrawable(
@@ -600,9 +441,27 @@ ECode PopupWindow::SetBackgroundDrawable(
     return NOERROR;
 }
 
-Int32 PopupWindow::GetAnimationStyle()
+ECode PopupWindow::GetElevation(
+    /* [out] */ Float* elevation)
 {
-    return mAnimationStyle;
+    VALIDATE_NOT_NULL(elevation);
+    *elevation = mElevation;
+    return NOERROR;
+}
+
+ECode PopupWindow::SetElevation(
+    /* [in] */ Float elevation)
+{
+    mElevation = elevation;
+    return NOERROR;
+}
+
+ECode PopupWindow::GetAnimationStyle(
+    /* [out] */ Int32* style)
+{
+    VALIDATE_NOT_NULL(style);
+    *style = mAnimationStyle;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetIgnoreCheekPress()
@@ -620,15 +479,20 @@ ECode PopupWindow::SetAnimationStyle(
     return NOERROR;
 }
 
-AutoPtr<IView> PopupWindow::GetContentView()
+ECode PopupWindow::GetContentView(
+    /* [out] */ IView** contentView)
 {
-    return mContentView;
+    VALIDATE_NOT_NULL(contentView);
+    *contentView = mContentView;
+    REFCOUNT_ADD(*contentView);
+    return NOERROR;
 }
 
 ECode PopupWindow::SetContentView(
     /* [in] */ IView* contentView)
 {
-    if (IsShowing()) {
+    Boolean res;
+    if (IsShowing(&res), res) {
         return NOERROR;
     }
 
@@ -638,7 +502,9 @@ ECode PopupWindow::SetContentView(
     }
 
     if (mWindowManager == NULL && mContentView != NULL) {
-        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&mWindowManager);
+        AutoPtr<IInterface> obj;
+        mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&obj);
+        mWindowManager = IWindowManager::Probe(obj);
     }
 
     return NOERROR;
@@ -652,22 +518,28 @@ ECode PopupWindow::SetTouchInterceptor(
     return NOERROR;
 }
 
-Boolean PopupWindow::IsFocusable()
+ECode PopupWindow::IsFocusable(
+    /* [out] */ Boolean* isFocusable)
 {
-    return mFocusable;
+    VALIDATE_NOT_NULL(isFocusable);
+    *isFocusable = mFocusable;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetFocusable(
-     /* [in] */ Boolean focusable)
+    /* [in] */ Boolean focusable)
 {
     mFocusable = focusable;
 
     return NOERROR;
 }
 
-Int32 PopupWindow::GetInputMethodMode()
+ECode PopupWindow::GetInputMethodMode(
+    /* [out] */ Int32* inputMethodMode)
 {
-    return mInputMethodMode;
+    VALIDATE_NOT_NULL(inputMethodMode);
+    *inputMethodMode = mInputMethodMode;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetInputMethodMode(
@@ -686,14 +558,20 @@ ECode PopupWindow::SetSoftInputMode(
     return NOERROR;
 }
 
-Int32 PopupWindow::GetSoftInputMode()
+ECode PopupWindow::GetSoftInputMode(
+    /* [out] */ Int32* softInputMode)
 {
-    return mSoftInputMode;
+    VALIDATE_NOT_NULL(softInputMode);
+    *softInputMode = mSoftInputMode;
+    return NOERROR;
 }
 
-Boolean PopupWindow::IsTouchable()
+ECode PopupWindow::IsTouchable(
+    /* [out] */ Boolean* touchable)
 {
-    return mTouchable;
+    VALIDATE_NOT_NULL(touchable);
+    *touchable = mTouchable;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetTouchable(
@@ -704,9 +582,12 @@ ECode PopupWindow::SetTouchable(
     return NOERROR;
 }
 
-Boolean PopupWindow::IsOutsideTouchable()
+ECode PopupWindow::IsOutsideTouchable(
+    /* [out] */ Boolean* touchable)
 {
-    return mOutsideTouchable;
+    VALIDATE_NOT_NULL(touchable);
+    *touchable = mOutsideTouchable;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetOutsideTouchable(
@@ -717,9 +598,12 @@ ECode PopupWindow::SetOutsideTouchable(
     return NOERROR;
 }
 
-Boolean PopupWindow::IsClippingEnabled()
+ECode PopupWindow::IsClippingEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return mClippingEnabled;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = mClippingEnabled;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetClippingEnabled(
@@ -745,16 +629,21 @@ ECode PopupWindow::SetAllowScrollingAnchorParent(
     return NOERROR;
 }
 
-Boolean PopupWindow::IsSplitTouchEnabled()
+ECode PopupWindow::IsSplitTouchEnabled(
+    /* [out] */ Boolean* enabled)
 {
+    VALIDATE_NOT_NULL(enabled);
+
     if (mSplitTouchEnabled < 0 && mContext != NULL) {
         AutoPtr<IApplicationInfo> info;
         mContext->GetApplicationInfo((IApplicationInfo**)&info);
         Int32 targetSdkVersion;
         info->GetTargetSdkVersion(&targetSdkVersion);
-        return targetSdkVersion >= Build::VERSION_CODES::HONEYCOMB;
+        *enabled = targetSdkVersion >= Build::VERSION_CODES::HONEYCOMB;
+        return NOERROR;
     }
-    return mSplitTouchEnabled == 1;
+    *enabled = mSplitTouchEnabled == 1;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetSplitTouchEnabled(
@@ -765,9 +654,12 @@ ECode PopupWindow::SetSplitTouchEnabled(
     return NOERROR;
 }
 
-Boolean PopupWindow::IsLayoutInScreenEnabled()
+ECode PopupWindow::IsLayoutInScreenEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return mLayoutInScreen;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = mLayoutInScreen;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetLayoutInScreenEnabled(
@@ -793,9 +685,12 @@ ECode PopupWindow::SetWindowLayoutType(
     return NOERROR;
 }
 
-Int32 PopupWindow::GetWindowLayoutType()
+ECode PopupWindow::GetWindowLayoutType(
+    /* [out] */ Int32* layoutType)
 {
-    return mWindowLayoutType;
+    VALIDATE_NOT_NULL(layoutType);
+    *layoutType = mWindowLayoutType;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetTouchModal(
@@ -815,9 +710,12 @@ ECode PopupWindow::SetWindowLayoutMode(
     return NOERROR;
 }
 
-Int32 PopupWindow::GetHeight()
+ECode PopupWindow::GetHeight(
+    /* [out] */ Int32* height)
 {
-    return mHeight;
+    VALIDATE_NOT_NULL(height);
+    *height = mHeight;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetHeight(
@@ -828,9 +726,12 @@ ECode PopupWindow::SetHeight(
     return NOERROR;
 }
 
-Int32 PopupWindow::GetWidth()
+ECode PopupWindow::GetWidth(
+    /* [out] */ Int32* width)
 {
-    return mWidth;
+    VALIDATE_NOT_NULL(width);
+    *width = mWidth;
+    return NOERROR;
 }
 
 ECode PopupWindow::SetWidth(
@@ -841,9 +742,12 @@ ECode PopupWindow::SetWidth(
     return NOERROR;
 }
 
-Boolean PopupWindow::IsShowing()
+ECode PopupWindow::IsShowing(
+    /* [out] */ Boolean* isShowing)
 {
-    return mIsShowing;
+    VALIDATE_NOT_NULL(isShowing);
+    *isShowing = mIsShowing;
+    return NOERROR;
 }
 
 ECode PopupWindow::ShowAtLocation(
@@ -863,7 +767,8 @@ ECode PopupWindow::ShowAtLocation(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    if (IsShowing() || mContentView == NULL) {
+    Boolean res;
+    if ((IsShowing(&res), res) || mContentView == NULL) {
         return NOERROR;
     }
 
@@ -900,11 +805,21 @@ ECode PopupWindow::ShowAsDropDown(
     /* [in] */ Int32 xoff,
     /* [in] */ Int32 yoff)
 {
-    if (IsShowing() || mContentView == NULL) {
+    return ShowAsDropDown(anchor, xoff, yoff, DEFAULT_ANCHORED_GRAVITY);
+}
+
+ECode PopupWindow::ShowAsDropDown(
+    /* [in] */ IView* anchor,
+    /* [in] */ Int32 xoff,
+    /* [in] */ Int32 yoff,
+    /* [in] */ Int32 gravity)
+{
+    Boolean res;
+    if ((IsShowing(&res), res) || mContentView == NULL) {
         return NOERROR;
     }
 
-    RegisterForScrollChanged(anchor, xoff, yoff);
+    RegisterForScrollChanged(anchor, xoff, yoff, gravity);
 
     mIsShowing = TRUE;
     mIsDropdown = TRUE;
@@ -914,7 +829,7 @@ ECode PopupWindow::ShowAsDropDown(
     AutoPtr<IWindowManagerLayoutParams> p = CreatePopupLayout(token);
     FAIL_RETURN(PreparePopup(p));
 
-    UpdateAboveAnchor(FindDropDownPosition(anchor, p, xoff, yoff));
+    UpdateAboveAnchor(FindDropDownPosition(anchor, p, xoff, yoff, gravity));
 
     if (mHeightMode < 0) {
         ((CWindowManagerLayoutParams*)p.Get())->mHeight = mLastHeight = mHeightMode;
@@ -942,10 +857,10 @@ void PopupWindow::UpdateAboveAnchor(
             // do the job.
             if (mAboveAnchorBackgroundDrawable != NULL) {
                 if (mAboveAnchor) {
-                    mPopupView->SetBackgroundDrawable(mAboveAnchorBackgroundDrawable);
+                    mPopupView->SetBackground(mAboveAnchorBackgroundDrawable);
                 }
                 else {
-                    mPopupView->SetBackgroundDrawable(mBelowAnchorBackgroundDrawable);
+                    mPopupView->SetBackground(mBelowAnchorBackgroundDrawable);
                 }
             }
             else {
@@ -955,17 +870,20 @@ void PopupWindow::UpdateAboveAnchor(
     }
 }
 
-Boolean PopupWindow::IsAboveAnchor()
+ECode PopupWindow::IsAboveAnchor(
+    /* [out] */ Boolean* isAboveAnchor)
 {
-    return mAboveAnchor;
+    VALIDATE_NOT_NULL(isAboveAnchor);
+    *isAboveAnchor = mAboveAnchor;
+    return NOERROR;
 }
 
 ECode PopupWindow::PreparePopup(
     /* [in] */ IWindowManagerLayoutParams* p)
 {
     if (mContentView == NULL || mContext == NULL || mWindowManager == NULL) {
-//        throw new IllegalStateException("You must specify a valid content view by "
-//                + "calling setContentView() before attempting to show the popup.");
+        Logger::E("PopupWindow", "You must specify a valid content view by" \
+                "calling setContentView() before attempting to show the popup.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
@@ -985,15 +903,16 @@ ECode PopupWindow::PreparePopup(
         AutoPtr<IFrameLayoutLayoutParams> listParams;
         CFrameLayoutLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, height,
                 (IFrameLayoutLayoutParams**)&listParams);
-        popupViewContainer->SetBackgroundDrawable(mBackground);
-        popupViewContainer->AddView(mContentView, (IViewGroupLayoutParams*)listParams);
+        popupViewContainer->SetBackground(mBackground);
+        IViewGroup::Probe(popupViewContainer)->AddView(mContentView, IViewGroupLayoutParams::Probe(listParams));
 
-        mPopupView = (IView*)(popupViewContainer->Probe(EIID_IView));
+        mPopupView = IView::Probe(popupViewContainer);
     }
     else {
         mPopupView = mContentView;
     }
 
+    mPopupView->SetElevation(mElevation);
     Int32 dir;
     mPopupView->GetRawLayoutDirection(&dir);
     mPopupViewInitialLayoutDirectionInherited = (dir == IView::LAYOUT_DIRECTION_INHERIT);
@@ -1015,7 +934,7 @@ void PopupWindow::InvokePopup(
     mPopupView->SetFitsSystemWindows(mLayoutInsetDecor);
     SetLayoutDirectionFromAnchor();
 
-    mWindowManager->AddView(mPopupView, p);
+    IViewManager::Probe(mWindowManager)->AddView(mPopupView, IViewGroupLayoutParams::Probe(p));
 }
 
 void PopupWindow::SetLayoutDirectionFromAnchor()
@@ -1056,7 +975,9 @@ AutoPtr<IWindowManagerLayoutParams> PopupWindow::CreatePopupLayout(
     p->mToken = token;
     p->mSoftInputMode = mSoftInputMode;
     AutoPtr<ICharSequence> title;
-    CStringWrapper::New(String("PopupWindow:")/* + Integer.toHexString(hashCode())*/, (ICharSequence**)&title);
+    Int32 hashCode;
+    GetHashCode(&hashCode);
+    CString::New(String("PopupWindow:") + StringUtils::ToHexString(hashCode), (ICharSequence**)&title);
     p->SetTitle(title);
 
     return p;
@@ -1094,7 +1015,8 @@ Int32 PopupWindow::ComputeFlags(
     if (!mClippingEnabled) {
         curFlags |= IWindowManagerLayoutParams::FLAG_LAYOUT_NO_LIMITS;
     }
-    if (IsSplitTouchEnabled()) {
+    Boolean res;
+    if (IsSplitTouchEnabled(&res), res) {
         curFlags |= IWindowManagerLayoutParams::FLAG_SPLIT_TOUCH;
     }
     if (mLayoutInScreen) {
@@ -1128,35 +1050,47 @@ Boolean PopupWindow::FindDropDownPosition(
     /* [in] */ IView* anchor,
     /* [in] */ IWindowManagerLayoutParams* _p,
     /* [in] */ Int32 xoff,
-    /* [in] */ Int32 yoff)
+    /* [in] */ Int32 yoff,
+    /* [in] */ Int32 gravity)
 {
     assert(anchor != NULL);
     Int32 anchorHeight;
     anchor->GetHeight(&anchorHeight);
+    Int32 anchorWidth;
+    anchor->GetWidth(&anchorWidth);
+    if (mOverlapAnchor) {
+        yoff -= anchorHeight;
+    }
 
     CWindowManagerLayoutParams* p = (CWindowManagerLayoutParams*)_p;
 
-    Int32 x, y;
-    anchor->GetLocationInWindow(&x, &y);
-    (*mDrawingLocation)[0] = x;
-    (*mDrawingLocation)[1] = y;
+    anchor->GetLocationInWindow(mDrawingLocation);
 
-    ((CWindowManagerLayoutParams*)p)->mX = (*mDrawingLocation)[0] + xoff;
-    ((CWindowManagerLayoutParams*)p)->mY = (*mDrawingLocation)[1] + anchorHeight + yoff;
+    p->mX = (*mDrawingLocation)[0] + xoff;
+    p->mY = (*mDrawingLocation)[1] + anchorHeight + yoff;
+
+    Int32 direction;
+    anchor->GetLayoutDirection(&direction);
+    Int32 data;
+    Gravity::GetAbsoluteGravity(gravity, direction, &data);
+    Int32 hgrav = data & IGravity::HORIZONTAL_GRAVITY_MASK;
+    if (hgrav == IGravity::RIGHT) {
+        // Flip the location to align the right sides of the popup and
+        // anchor instead of left.
+        p->mX -= mPopupWidth - anchorWidth;
+    }
 
     Boolean onTop = FALSE;
 
-    p->mGravity = IGravity::START | IGravity::TOP;
+    p->mGravity = IGravity::LEFT | IGravity::TOP;
 
-    anchor->GetLocationOnScreen(&x, &y);
-    (*mScreenLocation)[0] = x;
-    (*mScreenLocation)[1] = y;
+    anchor->GetLocationOnScreen(mScreenLocation);
 
     AutoPtr<CRect> displayFrame;
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&displayFrame));
     anchor->GetWindowVisibleDisplayFrame((IRect*)displayFrame.Get());
 
-    Int32 screenY = (*mScreenLocation)[1] + anchorHeight + yoff;
+    const Int32 screenY = (*mScreenLocation)[1] + anchorHeight + yoff;
 
     AutoPtr<IView> root;
     anchor->GetRootView((IView**)&root);
@@ -1181,22 +1115,23 @@ Boolean PopupWindow::FindDropDownPosition(
 
         // now we re-evaluate the space available, and decide from that
         // whether the pop-up will go above or below the anchor.
-        anchor->GetHeight(&anchorHeight);
-        anchor->GetLocationInWindow(&x, &y);
-        (*mDrawingLocation)[0] = x;
-        (*mDrawingLocation)[1] = y;
+        anchor->GetLocationInWindow(mDrawingLocation);
+
         p->mX = (*mDrawingLocation)[0] + xoff;
         p->mY = (*mDrawingLocation)[1] + anchorHeight + yoff;
 
+        // Preserve the gravity adjustment.
+        if (hgrav == IGravity::RIGHT) {
+            p->mX -= mPopupWidth - anchorWidth;
+        }
+
         // determine whether there is more space above or below the anchor
-        anchor->GetHeight(&anchorHeight);
-        anchor->GetLocationOnScreen(&x, &y);
-        (*mScreenLocation)[0] = x;
-        (*mScreenLocation)[1] = y;
+        anchor->GetLocationOnScreen(mScreenLocation);
+
         onTop = (displayFrame->mBottom - (*mScreenLocation)[1] - anchorHeight - yoff) <
                 ((*mScreenLocation)[1] - yoff - displayFrame->mTop);
         if (onTop) {
-            p->mGravity = IGravity::START | IGravity::BOTTOM;
+            p->mGravity = IGravity::LEFT | IGravity::BOTTOM;
             Int32 rootH;
             root->GetHeight(&rootH);
             p->mY = rootH - (*mDrawingLocation)[1] + yoff;
@@ -1209,7 +1144,7 @@ Boolean PopupWindow::FindDropDownPosition(
     if (mClipToScreen) {
         Int32 displayFrameWidth = displayFrame->mRight - displayFrame->mLeft;
 
-        int right = p->mX + p->mWidth;
+        const Int32 right = p->mX + p->mWidth;
         if (right > displayFrameWidth) {
             p->mX -= right - displayFrameWidth;
         }
@@ -1219,48 +1154,60 @@ Boolean PopupWindow::FindDropDownPosition(
         }
 
         if (onTop) {
-            Int32 popupTop = (*mScreenLocation)[1] + yoff - mPopupHeight;
+            const Int32 popupTop = (*mScreenLocation)[1] + yoff - mPopupHeight;
             if (popupTop < 0) {
                 p->mY += popupTop;
             }
-        } else {
+        }
+        else {
             p->mY = Elastos::Core::Math::Max(p->mY, displayFrame->mTop);
         }
     }
 
     p->mGravity |= IGravity::DISPLAY_CLIP_VERTICAL;
 
+    // Compute the position of the anchor relative to the popup.
+    mAnchorRelativeX = (*mDrawingLocation)[0] - p->mX + anchorHeight / 2;
+    mAnchorRelativeY = (*mDrawingLocation)[1] - p->mY + anchorWidth / 2;
+
     return onTop;
 }
 
-Int32 PopupWindow::GetMaxAvailableHeight(
-    /* [in] */ IView* anchor)
-{
-    return GetMaxAvailableHeight(anchor, 0);
-}
-
-Int32 PopupWindow::GetMaxAvailableHeight(
+ECode PopupWindow::GetMaxAvailableHeight(
     /* [in] */ IView* anchor,
-    /* [in] */ Int32 yOffset)
+    /* [out] */ Int32* maxAvailableHeight)
 {
-    return GetMaxAvailableHeight(anchor, yOffset, FALSE);
+    VALIDATE_NOT_NULL(maxAvailableHeight);
+
+    return GetMaxAvailableHeight(anchor, 0, maxAvailableHeight);
 }
 
-Int32 PopupWindow::GetMaxAvailableHeight(
+ECode PopupWindow::GetMaxAvailableHeight(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 yOffset,
-    /* [in] */ Boolean ignoreBottomDecorations)
+    /* [out] */ Int32* maxAvailableHeight)
 {
+    VALIDATE_NOT_NULL(maxAvailableHeight);
+
+    return GetMaxAvailableHeight(anchor, yOffset, FALSE, maxAvailableHeight);
+}
+
+ECode PopupWindow::GetMaxAvailableHeight(
+    /* [in] */ IView* anchor,
+    /* [in] */ Int32 yOffset,
+    /* [in] */ Boolean ignoreBottomDecorations,
+    /* [out] */ Int32* maxAvailableHeight)
+{
+    VALIDATE_NOT_NULL(maxAvailableHeight);
+
     assert(anchor != NULL);
 
     AutoPtr<CRect> displayFrame;
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&displayFrame));
     anchor->GetWindowVisibleDisplayFrame((IRect*)displayFrame.Get());
 
-    Int32 x, y;
-    anchor->GetLocationOnScreen(&x, &y);
-    (*mDrawingLocation)[0] = x;
-    (*mDrawingLocation)[1] = y;
+    anchor->GetLocationOnScreen(mDrawingLocation);
+
     AutoPtr<ArrayOf<Int32> > anchorPos = mDrawingLocation;
 
     Int32 bottomEdge = displayFrame->mBottom;
@@ -1289,12 +1236,14 @@ Int32 PopupWindow::GetMaxAvailableHeight(
         returnedHeight -= top + bottom;
     }
 
-    return returnedHeight;
+    *maxAvailableHeight = returnedHeight;
+    return NOERROR;
 }
 
 ECode PopupWindow::Dismiss()
 {
-    if (IsShowing() && mPopupView != NULL) {
+    Boolean res;
+    if ((IsShowing(&res), res) && mPopupView != NULL) {
         mIsShowing = FALSE;
         UnregisterForScrollChanged();
 
@@ -1324,7 +1273,8 @@ ECode PopupWindow::SetOnDismissListener(
 
 ECode PopupWindow::Update()
 {
-    if (!IsShowing() || mContentView == NULL) {
+    Boolean res;
+    if ((IsShowing(&res), !res) || mContentView == NULL) {
         return NOERROR;
     }
 
@@ -1349,7 +1299,7 @@ ECode PopupWindow::Update()
 
     if (update) {
         SetLayoutDirectionFromAnchor();
-        mWindowManager->UpdateViewLayout(mPopupView, (IWindowManagerLayoutParams*)lp);
+        IViewManager::Probe(mWindowManager)->UpdateViewLayout(mPopupView, p);
     }
 
     return NOERROR;
@@ -1393,7 +1343,8 @@ ECode PopupWindow::Update(
         SetHeight(height);
     }
 
-    if (!IsShowing() || mContentView == NULL) {
+    Boolean res;
+    if ((IsShowing(&res), !res) || mContentView == NULL) {
         return NOERROR;
     }
 
@@ -1440,7 +1391,7 @@ ECode PopupWindow::Update(
 
     if (update) {
         SetLayoutDirectionFromAnchor();
-        mWindowManager->UpdateViewLayout(mPopupView, (IWindowManagerLayoutParams*)lp);
+        IViewManager::Probe(mWindowManager)->UpdateViewLayout(mPopupView, p);
     }
 
     return NOERROR;
@@ -1451,7 +1402,8 @@ ECode PopupWindow::Update(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    return Update(anchor, FALSE, 0, 0, TRUE, width, height);
+    Update(anchor, FALSE, 0, 0, TRUE, width, height, mAnchoredGravity);
+    return NOERROR;
 }
 
 ECode PopupWindow::Update(
@@ -1461,20 +1413,23 @@ ECode PopupWindow::Update(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    return Update(anchor, TRUE, xoff, yoff, TRUE, width, height);
+    Update(anchor, TRUE, xoff, yoff, TRUE, width, height, mAnchoredGravity);
+    return NOERROR;
 }
 
-ECode PopupWindow::Update(
+void PopupWindow::Update(
     /* [in] */ IView* anchor,
     /* [in] */ Boolean updateLocation,
     /* [in] */ Int32 xoff,
     /* [in] */ Int32 yoff,
     /* [in] */ Boolean updateDimension,
     /* [in] */ Int32 width,
-    /* [in] */ Int32 height)
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 gravity)
 {
-    if (!IsShowing() || mContentView == NULL) {
-        return NOERROR;
+    Boolean res;
+    if ((IsShowing(&res), !res) || mContentView == NULL) {
+        return;
     }
 
     AutoPtr<IWeakReference> oldAnchor = mAnchor;
@@ -1485,12 +1440,13 @@ ECode PopupWindow::Update(
 
     Boolean needsUpdate = updateLocation && (mAnchorXoff != xoff || mAnchorYoff != yoff);
     if (oldAnchor == NULL || oldView.Get() != anchor || (needsUpdate && !mIsDropdown)) {
-        RegisterForScrollChanged(anchor, xoff, yoff);
+        RegisterForScrollChanged(anchor, xoff, yoff, gravity);
     }
     else if (needsUpdate) {
         // No need to register again if this is a DropDown, showAsDropDown already did.
         mAnchorXoff = xoff;
         mAnchorYoff = yoff;
+        mAnchoredGravity = gravity;
     }
 
     AutoPtr<IViewGroupLayoutParams> p;
@@ -1518,14 +1474,14 @@ ECode PopupWindow::Update(
 
     if (updateLocation) {
         UpdateAboveAnchor(FindDropDownPosition(anchor,
-                (IWindowManagerLayoutParams*)lp, xoff, yoff));
+                (IWindowManagerLayoutParams*)lp, xoff, yoff, gravity));
     }
     else {
         UpdateAboveAnchor(FindDropDownPosition(anchor,
-                (IWindowManagerLayoutParams*)lp, mAnchorXoff, mAnchorYoff));
+                (IWindowManagerLayoutParams*)lp, mAnchorXoff, mAnchorYoff, mAnchoredGravity));
     }
 
-    return Update(lp->mX, lp->mY, width, height, x != lp->mX || y != lp->mY);
+    Update(lp->mX, lp->mY, width, height, x != lp->mX || y != lp->mY);
 }
 
 void PopupWindow::UnregisterForScrollChanged()
@@ -1546,7 +1502,8 @@ void PopupWindow::UnregisterForScrollChanged()
 void PopupWindow::RegisterForScrollChanged(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 xoff,
-    /* [in] */ Int32 yoff)
+    /* [in] */ Int32 yoff,
+    /* [in] */ Int32 gravity)
 {
     assert(anchor != NULL);
 
@@ -1564,8 +1521,8 @@ void PopupWindow::RegisterForScrollChanged(
 
     mAnchorXoff = xoff;
     mAnchorYoff = yoff;
+    mAnchoredGravity = gravity;
 }
-
 
 }// namespace Widget
 }// namespace Droid

@@ -11,18 +11,16 @@ RevealAnimator::RevealAnimator(
     /* [in] */ Int32 y,
     /* [in] */ Float startRadius,
     /* [in] */ Float endRadius)
-    // : RenderNodeAnimator(x, y, startRadius, endRadius)
-    // , mClipView(clipView)
+    : mClipView(clipView)
 {
-    assert(0 && "TODO");
-    // SetTarget(mClipView);
+    RenderNodeAnimator::constructor(x, y, startRadius, endRadius);
+    SetTarget(mClipView);
 }
 
 void RevealAnimator::OnFinished()
 {
     mClipView->SetRevealClip(FALSE, 0, 0, 0);
-    assert(0 && "TODO");
-    // RenderNodeAnimator::OnFinished();
+    RenderNodeAnimator::OnFinished();
 }
 
 }   //namespace Animation

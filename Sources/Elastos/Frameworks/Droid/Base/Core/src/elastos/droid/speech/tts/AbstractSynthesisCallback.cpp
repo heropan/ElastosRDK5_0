@@ -1,92 +1,41 @@
 #include "elastos/droid/speech/tts/AbstractSynthesisCallback.h"
-#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Speech {
 namespace Tts {
 
-PInterface AbstractSynthesisCallback::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(ISynthesisCallback*)this;
-    }
-    else if (riid == EIID_ISynthesisCallback) {
-        return (ISynthesisCallback*)this;
-    }
-    return NULL;
-}
+/******************
+ * AbstractSynthesisCallback
+ *******************************************************************************************************/
 
-UInt32 AbstractSynthesisCallback::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+CAR_OBJECT_IMPL(AbstractSynthesisCallback, Object, ISynthesisCallback);
 
-UInt32 AbstractSynthesisCallback::Release()
-{
-    return ElRefBase::Release();
-}
+AbstractSynthesisCallback::AbstractSynthesisCallback()
+{}
 
-ECode AbstractSynthesisCallback::GetInterfaceID(
-    /* [in] */ IInterface* Object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+AbstractSynthesisCallback::~AbstractSynthesisCallback()
+{}
 
-    if (Object == (IInterface*)(ISynthesisCallback*)this) {
-        *iID = EIID_ISynthesisCallback;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
+ECode AbstractSynthesisCallback::constructor()
+{
     return NOERROR;
 }
 
-ECode AbstractSynthesisCallback::GetMaxBufferSize(
-    /* [out] */ Int32* ret)
+ECode AbstractSynthesisCallback::constructor(
+    /* [in] */ Boolean clientIsUsingV2)
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = SynthesisCallback::GetMaxBufferSize();
+    mClientIsUsingV2 = clientIsUsingV2;
+
     return NOERROR;
 }
 
-ECode AbstractSynthesisCallback::Start(
-    /* [in] */ Int32 sampleRateInHz,
-    /* [in] */ Int32 audioFormat,
-    /* [in] */ Int32 channelCount,
-    /* [out] */ Int32* ret)
+ECode AbstractSynthesisCallback::ErrorCodeOnStop(
+    /* [out] */ Int32* ret);
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = SynthesisCallback::Start(sampleRateInHz, audioFormat, channelCount);
-    return NOERROR;
-}
+    *ret = mClientIsUsingV2 ? TextToSpeech.STOPPED : TextToSpeech.ERROR;
 
-ECode AbstractSynthesisCallback::AudioAvailable(
-    /* [in] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length,
-    /* [out] */ Int32* ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret = SynthesisCallback::AudioAvailable(buffer, offset, length);
     return NOERROR;
-}
-
-ECode AbstractSynthesisCallback::Done(
-    /* [out] */ Int32* ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret = SynthesisCallback::Done();
-    return NOERROR;
-}
-
-ECode AbstractSynthesisCallback::Error()
-{
-    return SynthesisCallback::Error();
 }
 
 } // namespace Tts

@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBALHELPER_H__
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBALHELPER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_View_CWindowManagerGlobalHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Os::ILooper;
@@ -17,7 +17,6 @@ CarClass(CWindowManagerGlobalHelper)
     , public IWindowManagerGlobalHelper
 {
 public:
-
     CAR_SINGLETON_DECL()
 
     CAR_INTERFACE_DECL()
@@ -29,7 +28,6 @@ public:
         /* [out] */ IIWindowManager** windowManager);
 
     CARAPI GetWindowSession(
-        /* [in] */ ILooper* mainLooper,
         /* [out] */ IWindowSession** windowSession);
 
     CARAPI PeekWindowSession(

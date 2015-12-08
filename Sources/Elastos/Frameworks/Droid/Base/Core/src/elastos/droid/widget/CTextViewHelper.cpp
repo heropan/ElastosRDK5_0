@@ -2,9 +2,9 @@
 #include "elastos/droid/widget/CTextViewHelper.h"
 #include "elastos/droid/widget/TextView.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ECode CTextViewHelper::GetTextColors(
     /* [in] */ IContext* context,

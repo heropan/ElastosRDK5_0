@@ -2,20 +2,19 @@
 #include "elastos/droid/app/CDownloadManagerRequest.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/net/CUriHelper.h"
-#include "elastos/droid/os/CEnvironment.h"
-#include <elastos/utility/logging/Slogger.h>
+#include "elastos/droid/os/Environment.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CBoolean;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CString;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::IDownloadManagerRequest;
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
-using Elastos::Droid::Os::IEnvironment;
-using Elastos::Droid::Os::CEnvironment;
+using Elastos::Droid::Os::Environment;
 using Elastos::Droid::Provider::IDownloadsImpl;
 using Elastos::Droid::Provider::IDownloadsImplRequestHeaders;
 
@@ -25,6 +24,10 @@ namespace App {
 
 const Int32 CDownloadManagerRequest::SCANNABLE_VALUE_YES;
 const Int32 CDownloadManagerRequest::SCANNABLE_VALUE_NO;
+
+CAR_INTERFACE_IMPL(CDownloadManagerRequest, Object, IDownloadManagerRequest)
+
+CAR_OBJECT_IMPL(CDownloadManagerRequest)
 
 CDownloadManagerRequest::CDownloadManagerRequest()
     : mAllowedNetworkTypes(~0)
@@ -50,7 +53,7 @@ ECode CDownloadManagerRequest::constructor(
     uri->GetScheme(&scheme);
     if (scheme.IsNull() || (!scheme.Equals("http") && !scheme.Equals("https"))) {
         // throw new IllegalArgumentException("Can only download HTTP/HTTPS URIs: " + uri);
-        Slogger::E("CDownloadManagerRequest", "Can only download HTTP/HTTPS URIs: %p", uri);
+        Logger::E("CDownloadManagerRequest", "Can only download HTTP/HTTPS URIs: %p", uri);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mUri = uri;
@@ -84,25 +87,36 @@ ECode CDownloadManagerRequest::SetDestinationInExternalFilesDir(
     /* [in] */ const String& dirType,
     /* [in] */ const String& subPath)
 {
-    // AutoPtr<IFile> dir;
-    // context->GetExternalFilesDir(dirType, (IFile**)&dir);
-    // SetDestinationFromBase(dir, subPath);
-    final File file = context.getExternalFilesDir(dirType);
-    if (file == null) {
-        throw new IllegalStateException("Failed to get external storage files directory");
-    } else if (file.exists()) {
-        if (!file.isDirectory()) {
-            throw new IllegalStateException(file.getAbsolutePath() +
-                    " already exists and is not a directory");
-        }
-    } else {
-        if (!file.mkdirs()) {
-            throw new IllegalStateException("Unable to create directory: "+
-                    file.getAbsolutePath());
+    AutoPtr<IFile> file;
+    context->GetExternalFilesDir(dirType, (IFile**)&file);
+
+    Boolean exists;
+    if (file == NULL) {
+        Logger::E("CDownloadManagerRequest", "Failed to get external storage files directory");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    else if (file->Exists(&exists), exists) {
+        Boolean isDir;
+        file->IsDirectory(&isDir);
+        if (!isDir) {
+            String path;
+            file->GetAbsolutePath(&path);
+            Logger::E("CDownloadManagerRequest", "%s already exists and is not a directory", path.string());
+            return E_ILLEGAL_STATE_EXCEPTION;
         }
     }
-    setDestinationFromBase(file, subPath);
-    return this;
+    else {
+        Boolean bval;
+        file->Mkdirs(&bval);
+        if (!bval) {
+            String path;
+            file->GetAbsolutePath(&path);
+            Logger::E("CDownloadManagerRequest", "Unable to create directory: %s", path.string());
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+    }
+
+    SetDestinationFromBase(file, subPath);
     return NOERROR;
 }
 
@@ -110,51 +124,36 @@ ECode CDownloadManagerRequest::SetDestinationInExternalPublicDir(
     /* [in] */ const String& dirType,
     /* [in] */ const String& subPath)
 {
-    File file = Environment.getExternalStoragePublicDirectory(dirType);
-    if (file == null) {
-        throw new IllegalStateException("Failed to get external storage public directory");
-    } else if (file.exists()) {
-        if (!file.isDirectory()) {
-            throw new IllegalStateException(file.getAbsolutePath() +
-                    " already exists and is not a directory");
-        }
-    } else {
-        if (!file.mkdirs()) {
-            throw new IllegalStateException("Unable to create directory: "+
-                    file.getAbsolutePath());
+    AutoPtr<IFile> file = Environment::GetExternalStoragePublicDirectory(dirType);
+
+    Boolean exists;
+    if (file == NULL) {
+        Logger::E("CDownloadManagerRequest", "Failed to get external storage public directory");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    else if (file->Exists(&exists), exists) {
+        Boolean isDir;
+        file->IsDirectory(&isDir);
+        if (!isDir) {
+            String path;
+            file->GetAbsolutePath(&path);
+            Logger::E("CDownloadManagerRequest", "%s already exists and is not a directory", path.string());
+            return E_ILLEGAL_STATE_EXCEPTION;
         }
     }
-    setDestinationFromBase(file, subPath);
-    return this;
+    else {
+        Boolean bval;
+        file->Mkdirs(&bval);
+        if (!bval) {
+            String path;
+            file->GetAbsolutePath(&path);
+            Logger::E("CDownloadManagerRequest", "Unable to create directory: %s", path.string());
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+    }
 
-    // AutoPtr<IEnvironment> env;
-    // CEnvironment::AcquireSingleton((IEnvironment**)&env);
-    // AutoPtr<IFile> file;
-    // env->GetExternalStoragePublicDirectory(dirType, (IFile**)&file);
-    // Boolean exists;
-    // if (file->Exists(&exists), exists) {
-    //     Boolean isDir;
-    //     if (file->IsDirectory(&isDir), !isDir) {
-    //         // throw new IllegalStateException(file.getAbsolutePath() +
-    //         //         " already exists and is not a directory");
-    //         String path;
-    //         file->GetAbsolutePath(&path);
-    //         Slogger::E("CDownloadManagerRequest", "%s already exists and is not a directory", path.string());
-    //         return E_ILLEGAL_STATE_EXCEPTION;
-    //     }
-    // } else {
-    //     Boolean mkdir;
-    //     if (file->Mkdir(&mkdir), !mkdir) {
-    //         // throw new IllegalStateException("Unable to create directory: "+
-    //         //         file.getAbsolutePath());
-    //         String path;
-    //         file->GetAbsolutePath(&path);
-    //         Slogger::E("CDownloadManagerRequest", "Unable to create directory: %s", path.string());
-    //         return E_ILLEGAL_STATE_EXCEPTION;
-    //     }
-    // }
-    // SetDestinationFromBase(file, subPath);
-    // return NOERROR;
+    SetDestinationFromBase(file, subPath);
+    return NOERROR;
 }
 
 ECode CDownloadManagerRequest::SetDestinationFromBase(
@@ -163,7 +162,7 @@ ECode CDownloadManagerRequest::SetDestinationFromBase(
 {
     if (subPath.IsNull()) {
         // throw new NullPointerException("subPath cannot be null");
-        Slogger::E("CDownloadManagerRequest", "subPath cannot be null");
+        Logger::E("CDownloadManagerRequest", "subPath cannot be null");
         return E_NULL_POINTER_EXCEPTION;
     }
     AutoPtr<IUriHelper> helper;
@@ -187,12 +186,12 @@ ECode CDownloadManagerRequest::AddRequestHeader(
 {
     if (header.IsNull()) {
         // throw new NullPointerException("header cannot be null");
-        Slogger::E("CDownloadManagerRequest", "header cannot be null");
+        Logger::E("CDownloadManagerRequest", "header cannot be null");
         return E_NULL_POINTER_EXCEPTION;
     }
     if (header.Contains(":")) {
         // throw new IllegalArgumentException("header may not contain ':'");
-        Slogger::E("CDownloadManagerRequest", "header may not contain ':'");
+        Logger::E("CDownloadManagerRequest", "header may not contain ':'");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (value.IsNull()) {
@@ -222,6 +221,13 @@ ECode CDownloadManagerRequest::SetMimeType(
 {
     mMimeType = mimeType;
     return NOERROR;
+}
+
+ECode CDownloadManagerRequest::SetShowRunningNotification(
+    /* [in] */ Boolean show)
+{
+    return (show) ? SetNotificationVisibility(IDownloadManagerRequest::VISIBILITY_VISIBLE) :
+        SetNotificationVisibility(IDownloadManagerRequest::VISIBILITY_HIDDEN);
 }
 
 ECode CDownloadManagerRequest::SetNotificationVisibility(
@@ -268,39 +274,37 @@ AutoPtr<IContentValues> CDownloadManagerRequest::ToContentValues(
     AutoPtr<IContentValues> values;
     CContentValues::New((IContentValues**)&values);
     assert(mUri != NULL);
-    String uriStr;
-    mUri->ToString(&uriStr);
+    String uriStr = Object::ToString(mUri);
     AutoPtr<ICharSequence> cs;
     CString::New(uriStr, (ICharSequence**)&cs);
-    values->PutString(IDownloadsImpl::COLUMN_URI, cs);
+    values->Put(IDownloadsImpl::COLUMN_URI, cs);
     AutoPtr<IBoolean> bvalue;
     CBoolean::New(TRUE, (IBoolean**)&bvalue);
-    values->PutBoolean(IDownloadsImpl::COLUMN_IS_PUBLIC_API, bvalue);
+    values->Put(IDownloadsImpl::COLUMN_IS_PUBLIC_API, bvalue);
     AutoPtr<ICharSequence> pkgcs;
     CString::New(packageName, (ICharSequence**)&pkgcs);
-    values->PutString(IDownloadsImpl::COLUMN_NOTIFICATION_PACKAGE, pkgcs);
+    values->Put(IDownloadsImpl::COLUMN_NOTIFICATION_PACKAGE, pkgcs);
 
     if (mDestinationUri != NULL) {
         AutoPtr<IInteger32> furi;
         CInteger32::New(IDownloadsImpl::DESTINATION_FILE_URI, (IInteger32**)&furi);
-        values->PutInt32(IDownloadsImpl::COLUMN_DESTINATION, furi);
-        String desStr;
-        mDestinationUri->ToString(&desStr);
+        values->Put(IDownloadsImpl::COLUMN_DESTINATION, furi);
+        String desStr = Object::ToString(mDestinationUri);
         AutoPtr<ICharSequence> descs;
         CString::New(desStr, (ICharSequence**)&descs);
-        values->PutString(IDownloadsImpl::COLUMN_FILE_NAME_HINT, descs);
+        values->Put(IDownloadsImpl::COLUMN_FILE_NAME_HINT, descs);
     } else {
         AutoPtr<IInteger32> partition, purgeable;
         CInteger32::New(IDownloadsImpl::DESTINATION_SYSTEMCACHE_PARTITION, (IInteger32**)&partition);
         CInteger32::New(IDownloadsImpl::DESTINATION_CACHE_PARTITION_PURGEABLE, (IInteger32**)&purgeable);
-        values->PutInt32(IDownloadsImpl::COLUMN_DESTINATION,
+        values->Put(IDownloadsImpl::COLUMN_DESTINATION,
                 mUseSystemCache ? partition : purgeable);
     }
     // is the file supposed to be media-scannable?
     AutoPtr<IInteger32> yes, no;
     CInteger32::New(SCANNABLE_VALUE_YES, (IInteger32**)&yes);
     CInteger32::New(SCANNABLE_VALUE_NO, (IInteger32**)&no);
-    values->PutInt32(IDownloadsImpl::COLUMN_MEDIA_SCANNED, mScannable ? yes : no);
+    values->Put(IDownloadsImpl::COLUMN_MEDIA_SCANNED, mScannable ? yes : no);
 
     if (!mRequestHeaders.IsEmpty()) {
         EncodeHttpHeaders(values);
@@ -315,17 +319,17 @@ AutoPtr<IContentValues> CDownloadManagerRequest::ToContentValues(
     AutoPtr<IInteger32> visibility, types;
     CInteger32::New(mNotificationVisibility, (IInteger32**)&visibility);
     CInteger32::New(mAllowedNetworkTypes, (IInteger32**)&types);
-    values->PutInt32(IDownloadsImpl::COLUMN_VISIBILITY, visibility);
-    values->PutInt32(IDownloadsImpl::COLUMN_ALLOWED_NETWORK_TYPES, types);
+    values->Put(IDownloadsImpl::COLUMN_VISIBILITY, visibility);
+    values->Put(IDownloadsImpl::COLUMN_ALLOWED_NETWORK_TYPES, types);
     AutoPtr<IBoolean> value;
     CBoolean::New(mRoamingAllowed, (IBoolean**)&value);
-    values->PutBoolean(IDownloadsImpl::COLUMN_ALLOW_ROAMING, value);
+    values->Put(IDownloadsImpl::COLUMN_ALLOW_ROAMING, value);
     value = NULL;
     CBoolean::New(mMeteredAllowed, (IBoolean**)&value);
-    values->PutBoolean(IDownloadsImpl::COLUMN_ALLOW_METERED, value);
+    values->Put(IDownloadsImpl::COLUMN_ALLOW_METERED, value);
     value = NULL;
     CBoolean::New(mIsVisibleInDownloadsUi, (IBoolean**)&value);
-    values->PutBoolean(IDownloadsImpl::COLUMN_IS_VISIBLE_IN_DOWNLOADS_UI, value);
+    values->Put(IDownloadsImpl::COLUMN_IS_VISIBLE_IN_DOWNLOADS_UI, value);
 
     return values;
 }
@@ -342,7 +346,7 @@ void CDownloadManagerRequest::EncodeHttpHeaders(
         CString::New(headerString, (ICharSequence**)&headercs);
         String key(IDownloadsImplRequestHeaders::INSERT_KEY_PREFIX);
         key += index;
-        values->PutString(key, headercs);
+        values->Put(key, headercs);
         index++;
     }
 }
@@ -353,7 +357,7 @@ void CDownloadManagerRequest::PutIfNonNull(
     /* [in] */ IInterface* value)
 {
     if (value != NULL) {
-        contentValues->PutString(key, ICharSequence::Probe(value));
+        contentValues->Put(key, ICharSequence::Probe(value));
     }
 }
 

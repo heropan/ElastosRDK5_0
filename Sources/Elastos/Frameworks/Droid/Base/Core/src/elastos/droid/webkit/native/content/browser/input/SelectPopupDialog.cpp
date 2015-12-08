@@ -226,7 +226,7 @@ AutoPtr< ArrayOf<Int32> > SelectPopupDialog::GetSelectedIndices(
     sparseArray->GetSize(&size);
     for (Int32 i = 0; i < size; ++i) {
         Boolean bFlag;
-        sparseArray->ValueAt(&i, &bFlag);
+        sparseArray->ValueAt(i, &bFlag);
         if (bFlag) {
             selectedCount++;
         }
@@ -236,7 +236,7 @@ AutoPtr< ArrayOf<Int32> > SelectPopupDialog::GetSelectedIndices(
     sparseArray->GetSize(&size);
     for (Int32 i = 0, j = 0; i < size; ++i) {
         Boolean bFlag;
-        sparseArray->ValueAt(&i, &bFlag);
+        sparseArray->ValueAt(i, &bFlag);
         if (bFlag) {
             Int32 value;
             sparseArray->KeyAt(i, &value);

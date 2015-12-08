@@ -24,9 +24,9 @@ using Elastos::Droid::View::IViewOnTouchListener;
 using Elastos::Droid::View::IViewOnLayoutChangeListener;
 using Elastos::Droid::Widget::ISeekBar;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 
 class MediaController : public FrameLayout

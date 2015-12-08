@@ -33,7 +33,6 @@ ECode WifiLinkQualityInfo::CreateFromParcelBody(
         li.mTxBad =  in.readLong();
         li.mBssid =  in.readString();
         return li;
-
 #endif
 }
 
@@ -43,7 +42,6 @@ ECode WifiLinkQualityInfo::GetType(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mType;
-
 #endif
 }
 
@@ -53,7 +51,6 @@ ECode WifiLinkQualityInfo::SetType(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mType = type;
-
 #endif
 }
 
@@ -63,7 +60,6 @@ ECode WifiLinkQualityInfo::GetBssid(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mBssid;
-
 #endif
 }
 
@@ -73,7 +69,6 @@ ECode WifiLinkQualityInfo::SetBssid(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mBssid = bssid;
-
 #endif
 }
 
@@ -83,7 +78,6 @@ ECode WifiLinkQualityInfo::GetRssi(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mRssi;
-
 #endif
 }
 
@@ -93,7 +87,6 @@ ECode WifiLinkQualityInfo::SetRssi(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mRssi = rssi;
-
 #endif
 }
 
@@ -103,7 +96,6 @@ ECode WifiLinkQualityInfo::GetTxGood(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mTxGood;
-
 #endif
 }
 
@@ -113,7 +105,6 @@ ECode WifiLinkQualityInfo::SetTxGood(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mTxGood = txGood;
-
 #endif
 }
 
@@ -123,7 +114,6 @@ ECode WifiLinkQualityInfo::GetTxBad(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mTxBad;
-
 #endif
 }
 
@@ -133,7 +123,6 @@ ECode WifiLinkQualityInfo::SetTxBad(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mTxBad = txBad;
-
 #endif
 }
 

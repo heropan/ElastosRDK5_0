@@ -5,10 +5,19 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-ReceiverRestrictedContext::ReceiverRestrictedContext(
-    /* [in] */ IContext* base)
-    : ContextWrapper(base)
+CAR_INTERFACE_IMPL(ReceiverRestrictedContext, ContextWrapper, IReceiverRestrictedContext)
+
+ReceiverRestrictedContext::ReceiverRestrictedContext()
 {}
+
+ReceiverRestrictedContext::~ReceiverRestrictedContext()
+{}
+
+ECode ReceiverRestrictedContext::constructor(
+    /* [in] */ IContext* context)
+{
+    return ContextWrapper::constructor(context);
+}
 
 ECode ReceiverRestrictedContext::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
@@ -66,16 +75,6 @@ ECode ReceiverRestrictedContext::BindService(
 //    throw new ReceiverCallNotAllowedException(
 //            "BroadcastReceiver components are not allowed to bind to services");
     return E_RECEIVER_CALL_NOT_ALLOWED_EXCEPTION;
-}
-
-ReceiverRestrictedContext::ReceiverRestrictedContext()
-{
-}
-
-ECode ReceiverRestrictedContext::Init(
-    /* [in] */ IContext* context)
-{
-    return ContextWrapper::Init(context);
 }
 
 } // namespace App

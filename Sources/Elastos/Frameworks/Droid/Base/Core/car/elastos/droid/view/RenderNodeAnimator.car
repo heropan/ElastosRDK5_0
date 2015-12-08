@@ -48,6 +48,9 @@ module
 
         SetStartValue(
             [in] Float startValue);
+
+        GetNativeAnimator(
+            [out] Int64* ptr);
     }
 
     } // namespace View

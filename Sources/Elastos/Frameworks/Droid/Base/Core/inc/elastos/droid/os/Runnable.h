@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-class Runnable
+class ECO_PUBLIC Runnable
     : public Object
     , public IRunnable
 {

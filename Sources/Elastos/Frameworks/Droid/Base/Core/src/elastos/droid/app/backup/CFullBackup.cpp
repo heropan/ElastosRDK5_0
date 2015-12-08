@@ -20,6 +20,10 @@ namespace Backup {
 
 const String CFullBackup::TAG("CFullBackup");
 
+CAR_INTERFACE_IMPL(CFullBackup, Singleton, IFullBackup)
+
+CAR_SINGLETON_IMPL(CFullBackup)
+
 ECode CFullBackup::BackupToTar(
     /* [in] */ const String& packageName,
     /* [in] */ const String& domainName,

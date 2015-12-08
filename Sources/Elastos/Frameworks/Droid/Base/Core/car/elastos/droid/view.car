@@ -50,6 +50,7 @@ module
     merge("view/MenuInflater.car");
     merge("view/MenuItem.car");
     merge("view/MotionEvent.car");
+    merge("view/OrientationListener.car");
     merge("view/OrientationEventListener.car");
     merge("view/PointerIcon.car");
     merge("view/RenderNode.car");
@@ -86,6 +87,8 @@ module
     merge("view/WindowManagerInternal.car");
     merge("view/WindowManagerPolicy.car");
     merge("view/GraphicBuffer.car");
+    merge("view/SoundEffectConstants.car");
+    merge("view/ViewAnimationUtils.car");
 
     // merge("view/CompatibilityInfoHolder.car");
     merge("view/DisplayList.car");
@@ -146,6 +149,7 @@ module
     merge("view/inputmethod/EditorInfo.car");
     merge("view/inputmethod/ExtractedText.car");
     merge("view/inputmethod/ExtractedTextRequest.car");
+    merge("view/inputmethod/IInputMethodSubtypeArray.car");
     merge("view/inputmethod/InputBinding.car");
     merge("view/inputmethod/InputConnection.car");
     merge("view/inputmethod/InputMethod.car");
@@ -153,6 +157,7 @@ module
     merge("view/inputmethod/InputMethodSession.car");
     merge("view/inputmethod/InputMethodManager.car");
     merge("view/inputmethod/InputMethodSubtype.car");
+    merge("view/inputmethod/SparseRectFArray.car");
 
     merge("view/textservice/SentenceSuggestionsInfo.car");
     merge("view/textservice/SpellCheckerInfo.car");
@@ -161,13 +166,20 @@ module
     merge("view/textservice/SuggestionsInfo.car");
     merge("view/textservice/TextInfo.car");
     merge("view/textservice/TextServicesManager.car");
+    merge("view/textservice/SpellCheckerSessionListenerImpl.car");
+    merge("view/textservice/InternalListener.car");
+    merge("internal/view/BaseIWindow.car");
+    merge("internal/view/IInputContext.car");
+    merge("internal/view/IInputMethodClient.car");
 
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Utility.IMap;
+    using interface Elastos.Utility.IList;
 
     interface Elastos.Droid.Animation.ITimeInterpolator;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IContextWrapper;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Res.IResourcesTheme;
@@ -177,14 +189,15 @@ module
     interface Elastos.Droid.Internal.View.Animation.INativeInterpolatorFactory;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     // interface Elastos.Droid.Internal.View.IInputBindResult;
-    // interface Elastos.Droid.Internal.View.IIInputMethodManager;
-    // interface Elastos.Droid.Internal.View.IInputContext;
+    interface Elastos.Droid.Internal.View.IIInputMethodManager;
+    interface Elastos.Droid.Internal.View.IInputContext;
     // interface Elastos.Droid.Internal.View.IInputContextCallback;
-    // interface Elastos.Droid.Internal.View.IInputMethodClient;
+    interface Elastos.Droid.Internal.View.IInputMethodClient;
     // interface Elastos.Droid.Internal.View.IIInputMethodSession;
+    interface Elastos.Droid.Internal.View.IBaseIWindow;
     interface Elastos.Droid.Os.IBinder;
-    // interface Elastos.Droid.Os.ILooper;
-     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Os.IHandler;
     // interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IKeyEventCallback;
     // interface Elastos.Droid.View.IInputMethodCallback;
@@ -219,6 +232,11 @@ module
     interface Elastos.Droid.Hardware.Display.IDisplayManagerGlobal;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.ISurfaceTexture;
+    interface Elastos.Droid.Graphics.ICanvasProperty;
+    interface Elastos.Droid.Animation.IAnimator;
+    interface Elastos.Droid.View.Internal.TextService.IISpellCheckerSessionListener;
+    interface Elastos.Droid.View.Internal.TextService.IITextServicesSessionListener;
+    interface Elastos.Droid.View.Internal.TextService.IITextServicesManager;
 
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
@@ -267,6 +285,54 @@ module
         interface IDrawableCallback;
         interface IKeyEventCallback;
         interface IAccessibilityEventSource;
+    }
+
+    class CMenuInflater
+    {
+        constructor (
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IInterface* realOwner);
+
+        interface IMenuInflater;
+    }
+
+    class CContextThemeWrapper
+    {
+        constructor ();
+
+        constructor(
+            [in] IContext* base,
+            [in] Int32 themeres);
+
+        interface IContext;
+        interface IContextWrapper;
+        interface IContextThemeWrapper;
+    }
+
+    class CAbsSavedState
+    {
+        constructor();
+
+        constructor(
+            [in] IParcelable* superState);
+
+        interface IAbsSavedState;
+        interface IParcelable;
+    }
+
+    class CViewBaseSavedState
+    {
+        constructor();
+
+        constructor(
+            [in] IParcelable* state);
+
+        interface IViewBaseSavedState;
+        interface IAbsSavedState;
+        interface IParcelable;
     }
 
     class CWindowManagerGlobalSessionCallback {
@@ -709,19 +775,20 @@ module
         interface IPointerPropertiesHelper;
     }
 
-    //     class CPointerIcon {
-    //         constructor();
+    class CPointerIcon {
+       constructor();
 
-    //         constructor(
-    //             [in] Int32 style);
+       constructor(
+           [in] Int32 style);
 
-    //         interface IPointerIcon;
-    //         interface IParcelable;
-    //     }
+       interface IPointerIcon;
+       interface IParcelable;
+    }
 
-    //     singleton class CPointerIconHelper {
-    //         interface IPointerIconHelper;
-    //     }
+    singleton class CPointerIconHelper {
+       interface IPointerIconHelper;
+    }
+
 
     class CDragEvent {
         constructor();
@@ -806,13 +873,30 @@ module
             interface IViewGroupLayoutParams;
         }
 
-    //     [local]
-    //     class CViewPropertyAnimator {
-    //         constructor(
-    //             [in] IView* view);
+    //     class CViewGroupMarginLayoutParams {
+    //         constructor();
 
-    //         interface IViewPropertyAnimator;
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         constructor(
+    //             [in] Int32 width,
+    //             [in] Int32 height);
+
+    //         constructor(
+    //             [in] IViewGroupMarginLayoutParams* source);
+
+    //         interface IViewGroupMarginLayoutParams;
     //     }
+
+    [local]
+    class CViewPropertyAnimator {
+        constructor(
+            [in] IView* view);
+
+        interface IViewPropertyAnimator;
+    }
 
     //     class CAccessibilityInteractionConnection {
     //         constructor(
@@ -821,61 +905,101 @@ module
     //         interface IIAccessibilityInteractionConnection;
     //     }
 
-    //     class CAccessibilityInteractionController {
-    //         constructor(
-    //             [in] Handle32 viewRootImpl);
+    [local]
+    class CAccessibilityInteractionController {
+        constructor(
+            [in] IViewRootImpl* viewRootImpl);
 
-    //         interface IAccessibilityInteractionController;
-    //     }
+        interface IAccessibilityInteractionController;
+    }
+
+    singleton class CRenderNodeHelper {
+        constructor();
+
+        interface IRenderNodeHelper;
+    }
+
+    class CRenderNodeAnimator {
+        constructor(
+            [in] Int32 property,
+            [in] Float finalValue);
+
+        constructor(
+            [in] ICanvasProperty* canvasProperty,
+            [in] Float finalValue);
+
+        /**
+         * Creates a new render node animator for a field on a Paint property.
+         *
+         * @param property The paint property to target
+         * @param paintField Paint field to animate, one of {@link #PAINT_ALPHA} or
+         *            {@link #PAINT_STROKE_WIDTH}
+         * @param finalValue The target value for the property
+         */
+        constructor(
+            [in] ICanvasProperty* property,
+            [in] Int32 paintField,
+            [in] Float finalValue);
+
+        constructor(
+            [in] Int32 x,
+            [in] Int32 y,
+            [in] Float startRadius,
+            [in] Float endRadius);
+
+        interface IAnimator;
+        interface ICloneable;
+        interface IRenderNodeAnimator;
+    }
 
     class CSurface {
         /**
-         * Create an empty surface, which will later be filled in by readFromParcel().
-         * @hide
-         */
+        * Create an empty surface, which will later be filled in by readFromParcel().
+        * @hide
+        */
         constructor();
 
         /**
-         * Create a surface with a name.
-         *
-         * The surface creation flags specify what kind of surface to create and
-         * certain options such as whether the surface can be assumed to be opaque
-         * and whether it should be initially hidden.  Surfaces should always be
-         * created with the {@link #HIDDEN} flag set to ensure that they are not
-         * made visible prematurely before all of the surface's properties have been
-         * configured.
-         *
-         * Good practice is to first create the surface with the {@link #HIDDEN} flag
-         * specified, open a transaction, set the surface layer, layer stack, alpha,
-         * and position, call {@link #show} if appropriate, and close the transaction.
-         *
-         * @param session The surface session, must not be null.
-         * @param name The surface name, must not be null.
-         * @param w The surface initial width.
-         * @param h The surface initial height.
-         * @param flags The surface creation flags.  Should always include {@link #HIDDEN}
-         * in the creation flags.
-         * @hide
-         */
+        * Create a surface with a name.
+        *
+        * The surface creation flags specify what kind of surface to create and
+        * certain options such as whether the surface can be assumed to be opaque
+        * and whether it should be initially hidden.  Surfaces should always be
+        * created with the {@link #HIDDEN} flag set to ensure that they are not
+        * made visible prematurely before all of the surface's properties have been
+        * configured.
+        *
+        * Good practice is to first create the surface with the {@link #HIDDEN} flag
+        * specified, open a transaction, set the surface layer, layer stack, alpha,
+        * and position, call {@link #show} if appropriate, and close the transaction.
+        *
+        * @param session The surface session, must not be null.
+        * @param name The surface name, must not be null.
+        * @param w The surface initial width.
+        * @param h The surface initial height.
+        * @param flags The surface creation flags.  Should always include {@link #HIDDEN}
+        * in the creation flags.
+        * @hide
+        */
         constructor(
-            [in] Int64 nativeObject);
+         [in] Int64 nativeObject);
 
         /**
-         * Create Surface from a {@link SurfaceTexture}.
-         *
-         * Images drawn to the Surface will be made available to the {@link
-         * SurfaceTexture}, which can attach them to an OpenGL ES texture via {@link
-         * SurfaceTexture#updateTexImage}.
-         *
-         * @param surfaceTexture The {@link SurfaceTexture} that is updated by this
-         * Surface.
-         */
+        * Create Surface from a {@link SurfaceTexture}.
+        *
+        * Images drawn to the Surface will be made available to the {@link
+        * SurfaceTexture}, which can attach them to an OpenGL ES texture via {@link
+        * SurfaceTexture#updateTexImage}.
+        *
+        * @param surfaceTexture The {@link SurfaceTexture} that is updated by this
+        * Surface.
+        */
         constructor(
-            [in] ISurfaceTexture* surfaceTexture);
+         [in] ISurfaceTexture* surfaceTexture);
 
         interface ISurface;
         interface IParcelable;
-     }
+    }
 
     singleton class CSurfaceControlHelper {
         interface ISurfaceControlHelper;
@@ -908,32 +1032,32 @@ module
         interface IPhysicalDisplayInfo;
     }
 
-    //     [local]
-    //     class CSurfaceView {
-    //         constructor(
-    //                 [in] IContext* ctx);
+    [local]
+    class CSurfaceView {
+        constructor(
+             [in] IContext* ctx);
 
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] IAttributeSet* attrs);
+        constructor(
+             [in] IContext* ctx,
+             [in] IAttributeSet* attrs);
 
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] IAttributeSet* attrs,
-    //             [in] Int32 defStyle);
+        constructor(
+             [in] IContext* ctx,
+             [in] IAttributeSet* attrs,
+             [in] Int32 defStyle);
 
-    //         interface ISurfaceView;
-    //         interface IKeyEventCallback;
-    //     }
-
-    //     singleton class CSurfaceViewHelper {
-    //         interface ISurfaceViewHelper;
-    //     }
+        interface IView;
+        interface ISurfaceView;
+        interface IKeyEventCallback;
+        interface IDrawableCallback;
+        interface IAccessibilityEventSource;
+    }
 
     class CSurfaceViewWindow {
         constructor(
             [in] ISurfaceView* surfaceView);
 
+        interface IBaseIWindow;
         interface IIWindow;
         interface IBinder;
     }
@@ -993,19 +1117,6 @@ module
 
     //     singleton class CAbsSavedStateHelper {
     //         interface IAbsSavedStateHelper;
-    //     }
-
-    //     class CViewBaseSavedState {
-    //         constructor(
-    //             [in] IParcelable* superState);
-
-    //         constructor(
-    //             [in] IParcel* source);
-
-    //         constructor();
-
-    //         interface IViewBaseSavedState;
-    //         interface IParcelable;
     //     }
 
     singleton class CWindowManagerLayoutParamsHelper {
@@ -1265,6 +1376,20 @@ module
 
         interface IMagnificationSpec;
         interface IParcelable;
+    }
+
+    class CViewTreeObserver {
+        constructor();
+
+        interface IViewTreeObserver;
+    }
+
+    singleton class CSoundEffectConstantsHelper {
+        interface ISoundEffectConstantsHelper;
+    }
+
+    singleton class CViewAnimationUtilsHelper {
+        interface IViewAnimationUtilsHelper;
     }
 
     } // namespace View
@@ -1877,33 +2002,33 @@ module
         interface IParcelable;
     }
 
-    // class CInputMethodManager {
-    //     constructor(
-    //         [in] IIInputMethodManager* service,
-    //         [in] ILooper* looper);
+    class CInputMethodManager {
+        constructor(
+            [in] IIInputMethodManager* service,
+            [in] ILooper* looper);
 
-    //     interface IInputMethodManager;
-    // }
+        interface IInputMethodManager;
+    }
 
-    // [local]
-    // class CControlledInputConnectionWrapper {
-    //     constructor(
-    //         [in] ILooper* mainLooper,
-    //         [in] IInputConnection* conn,
-    //         [in] IInputMethodManager* inputMethodManager);
+    [local]
+    class CControlledInputConnectionWrapper {
+        constructor(
+            [in] ILooper* mainLooper,
+            [in] IInputConnection* conn,
+            [in] IInputMethodManager* inputMethodManager);
 
-    //     interface IInputContext;
-    //     interface IBinder;
-    // }
+        interface IInputContext;
+        interface IBinder;
+    }
 
-    // [local]
-    // class CIInputMethodClient {
-    //     constructor(
-    //         [in] IInputMethodManager* agmer);
+    [local]
+    class CIInputMethodClient {
+        constructor(
+            [in] IInputMethodManager* agmer);
 
-    //     interface IInputMethodClient;
-    //     interface IBinder;
-    // }
+        interface IInputMethodClient;
+        interface IBinder;
+    }
 
     [local]
     class CBaseInputConnection {
@@ -1945,36 +2070,27 @@ module
     }
 
     // [local]
-    // class CInputMethodInfo {
-    //     constructor();
+    class CInputMethodInfo {
+        constructor();
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IResolveInfo* service);
+        constructor(
+            [in] IContext* ctx,
+            [in] IResolveInfo* service);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IResolveInfo* service,
-    //         [in] IMap* additionalSubtypesMap);
+        constructor(
+            [in] IContext* ctx,
+            [in] IResolveInfo* service,
+            [in] IMap* additionalSubtypesMap);
 
-    //     constructor(
-    //         [in] String capsuelName,
-    //         [in] String className,
-    //         [in] ICharSequence* label,
-    //         [in] String settingsActivity);
+        constructor(
+            [in] String capsuelName,
+            [in] String className,
+            [in] ICharSequence* label,
+            [in] String settingsActivity);
 
-    //     interface IInputMethodInfo;
-    //     interface IParcelable;
-    // }
-
-    // [local]
-    // class CInputMethodManagerInputMethodCallback {
-    //     constructor(
-    //         [in] IInputMethodManager* imm);
-
-    //     interface IInputMethodCallback;
-    //     interface IBinder;
-    // }
+        interface IInputMethodInfo;
+        interface IParcelable;
+    }
 
     class CCorrectionInfo {
         constructor();
@@ -1989,47 +2105,179 @@ module
     }
 
     // [local]
-    // singleton class CInputMethodSubtypeHelper {
-    //     interface IInputMethodSubtypeHelper;
-    // }
+    singleton class CInputMethodSubtypeHelper {
+        interface IInputMethodSubtypeHelper;
+    }
 
-    // class CInputMethodSubtype {
-    //     constructor();
+    class CInputMethodSubtype {
+        constructor();
 
-    //     constructor(
-    //         [in] Int32 nameId,
-    //         [in] Int32 iconId,
-    //         [in] String locale,
-    //         [in] String mode,
-    //         [in] String extraValue,
-    //         [in] Boolean isAuxiliary);
+        constructor(
+            [in] Int32 nameId,
+            [in] Int32 iconId,
+            [in] String locale,
+            [in] String mode,
+            [in] String extraValue,
+            [in] Boolean isAuxiliary,
+            [in] Boolean overridesImplicitlyEnabledSubtype);
 
-    //     constructor(
-    //         [in] Int32 nameId,
-    //         [in] Int32 iconId,
-    //         [in] String locale,
-    //         [in] String mode,
-    //         [in] String extraValue,
-    //         [in] Boolean isAuxiliary,
-    //         [in] Boolean overridesImplicitlyEnabledSubtype);
+        constructor(
+            [in] Int32 nameId,
+            [in] Int32 iconId,
+            [in] String locale,
+            [in] String mode,
+            [in] String extraValue,
+            [in] Boolean isAuxiliary,
+            [in] Boolean overridesImplicitlyEnabledSubtype,
+            [in] Int32 id);
 
-    //     constructor(
-    //         [in] Int32 nameId,
-    //         [in] Int32 iconId,
-    //         [in] String locale,
-    //         [in] String mode,
-    //         [in] String extraValue,
-    //         [in] Boolean isAuxiliary,
-    //         [in] Boolean overridesImplicitlyEnabledSubtype,
-    //         [in] Int32 id);
+        constructor(
+            [in] IInputMethodSubtypeBuilder* builder);
 
-    //     interface IInputMethodSubtype;
-    //     interface IParcelable;
-    // }
+        interface IInputMethodSubtype;
+        interface IParcelable;
+    }
+
+    class CInputMethodSubtypeArray {
+        constructor();
+
+        constructor(
+            [in] IList* subtypes);
+
+        interface IInputMethodSubtypeArray;
+        interface IParcelable;
+    }
+
+    class CSparseRectFArray {
+        constructor();
+
+        interface ISparseRectFArray;
+        interface IParcelable;
+    }
 
     } // InputMethod
     } // namespace View
     } // namepsace Droid
     } // namespace Elastos
 
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace TextService {
+
+    [deprecated]
+    class CSentenceSuggestionsInfo {
+        constructor();
+
+        constructor(
+            [in] ArrayOf<ISuggestionsInfo*>* suggestionsInfos,
+            [in] ArrayOf<Int32>* offsets,
+            [in] ArrayOf<Int32>* lengths);
+
+        interface ISentenceSuggestionsInfo;
+        interface IParcelable;
+    }
+
+    class CSpellCheckerInfo {
+        constructor();
+
+        constructor(
+            [in] IContext* context,
+            [in] IResolveInfo* service);
+
+        interface ISpellCheckerInfo;
+        interface IParcelable;
+    }
+
+    class CSpellCheckerSubtype {
+        constructor();
+
+        constructor(
+            [in] Int32 nameId,
+            [in] String locale,
+            [in] String extraValue);
+
+        interface ISpellCheckerSubtype;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CSuggestionsInfo {
+        constructor();
+
+        constructor(
+            [in] Int32 suggestionsAttributes,
+            [in] ArrayOf<String>* suggestions);
+
+        constructor(
+            [in] Int32 suggestionsAttributes,
+            [in] ArrayOf<String>* suggestions,
+            [in] Int32 cookie,
+            [in] Int32 sequence);
+
+        interface ISuggestionsInfo;
+        interface IParcelable;
+    }
+
+    class CTextInfo {
+        constructor();
+
+        constructor(
+            [in] String text);
+
+        constructor(
+            [in] String text,
+            [in] Int32 cookie,
+            [in] Int32 sequence);
+
+        constructor(
+            [in] ICharSequence* charSequence,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] Int32 cookie,
+            [in] Int32 sequenceNumber);
+
+        interface ITextInfo;
+        interface IParcelable;
+    }
+
+    class CTextServicesManager {
+        constructor();
+
+        interface ITextServicesManager;
+    }
+
+    class CSpellCheckerSessionListenerImpl {
+
+        constructor(
+            [in] IHandler* handler);
+
+        interface ISpellCheckerSessionListenerImpl;
+        interface IISpellCheckerSessionListener;
+    }
+
+    class CInternalListener {
+
+        constructor(
+            [in] ISpellCheckerSessionListenerImpl* spellCheckerSessionListenerImpl);
+
+        interface IInternalListener;
+        interface IITextServicesSessionListener;
+    }
+
+    class CSpellCheckerSession {
+
+        constructor(
+            [in] ISpellCheckerInfo* info,
+            [in] IITextServicesManager* tsm,
+            [in] ISpellCheckerSessionListener* listener,
+            [in] ISpellCheckerSubtype* subtype);
+
+        interface ISpellCheckerSession;
+    }
+
+    } // namespace TextService
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
 }

@@ -271,6 +271,9 @@ public:
         /* [out] */ String* result);
 
 private:
+    NetworkUtils();
+
+private:
     static const String TAG;
 };
 

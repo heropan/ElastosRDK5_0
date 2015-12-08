@@ -1,15 +1,14 @@
 
 #include "elastos/droid/widget/Gallery.h"
-#include <elastos/core/Math.h>
-#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/ViewConfiguration.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 #include "elastos/droid/view/CGestureDetector.h"
-#include "elastos/droid/widget/GalleryLayoutParams.h"
 #include "elastos/droid/widget/CGalleryLayoutParams.h"
 #include "elastos/droid/widget/CScroller.h"
-
+#include <elastos/core/Math.h>
 
 using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::SoundEffectConstants;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IMotionEvent;
@@ -17,33 +16,57 @@ using Elastos::Droid::View::IHapticFeedbackConstants;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::EIID_IKeyEventCallback;
-using Elastos::Droid::View::CViewConfiguration;
+using Elastos::Droid::View::ViewConfiguration;
 using Elastos::Droid::View::CGestureDetector;
-using Elastos::Droid::View::IGestureDetectorOnGestureListener;
-using Elastos::Droid::View::EIID_IOnGestureListener;
+using Elastos::Droid::View::EIID_IGestureDetectorOnGestureListener;
 using Elastos::Droid::Widget::CGalleryLayoutParams;
 using Elastos::Droid::Widget::CScroller;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
+//==============================================================================
+//              Gallery::LayoutParams
+//==============================================================================
+CAR_INTERFACE_IMPL(Gallery::LayoutParams, ViewGroup::LayoutParams, IGalleryLayoutParams);
+ECode Gallery::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return ViewGroup::LayoutParams::constructor(c, attrs);
+}
+
+ECode Gallery::LayoutParams::constructor(
+    /* [in] */ Int32 w,
+    /* [in] */ Int32 h)
+{
+    return ViewGroup::LayoutParams::constructor(w, h);
+}
+
+ECode Gallery::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* source)
+{
+    return ViewGroup::LayoutParams::constructor(source);
+}
 
 //==============================================================================
 //              Gallery::FlingRunnable
 //==============================================================================
-
 Gallery::FlingRunnable::FlingRunnable(
     /* [in] */ Gallery* host)
     : mHost(host)
     , mLastFlingX(0)
 {
-    CScroller::New(mHost->GetContext(), (IScroller**)&mScroller);
+    AutoPtr<IContext> ctx;
+    mHost->GetContext((IContext**)&ctx);
+    CScroller::New(ctx, (IScroller**)&mScroller);
 }
 
 void Gallery::FlingRunnable::StartCommon()
 {
-    mHost->RemoveCallbacks((IRunnable*)this);
+    Boolean result = FALSE;
+    mHost->RemoveCallbacks(this, &result);
 }
 
 void Gallery::FlingRunnable::StartUsingVelocity(
@@ -58,7 +81,8 @@ void Gallery::FlingRunnable::StartUsingVelocity(
     mScroller->Fling(initialX, 0, initialVelocity, 0,
         0, Elastos::Core::Math::INT32_MAX_VALUE, 0, Elastos::Core::Math::INT32_MAX_VALUE);
     AutoPtr<IRunnable> r = (IRunnable*)this;
-    mHost->Post(r);
+    Boolean result = FALSE;
+    mHost->Post(r, &result);
 }
 
 void Gallery::FlingRunnable::StartUsingDistance(
@@ -71,13 +95,15 @@ void Gallery::FlingRunnable::StartUsingDistance(
     mLastFlingX = 0;
     mScroller->StartScroll(0, 0, -distance, 0, mHost->mAnimationDuration);
     AutoPtr<IRunnable> r = (IRunnable*)this;
-    mHost->Post(r);
+    Boolean result = FALSE;
+    mHost->Post(r, &result);
 }
 
 void Gallery::FlingRunnable::Stop(
     /* [in] */ Boolean scrollIntoSlots)
 {
-    mHost->RemoveCallbacks((IRunnable*)this);
+    Boolean result = FALSE;
+    mHost->RemoveCallbacks(this, &result);
     EndFling(scrollIntoSlots);
 }
 
@@ -107,16 +133,24 @@ ECode Gallery::FlingRunnable::Run()
     Int32 delta = mLastFlingX - x;
 
     if (delta > 0) {
-        mHost->mDownTouchPosition = mHost->mIsRtl ? (mHost->mFirstPosition + mHost->GetChildCount() - 1) :
+        Int32 count = 0;
+        mHost->GetChildCount(&count);
+        mHost->mDownTouchPosition = mHost->mIsRtl ? (mHost->mFirstPosition + count - 1) :
             mHost->mFirstPosition;
 
-    delta = Elastos::Core::Math::Min(mHost->GetWidth() - mHost->mPaddingLeft - mHost->mPaddingRight - 1, delta);
+        Int32 width = 0;
+        mHost->GetWidth(&width);
+        delta = Elastos::Core::Math::Min(width - mHost->mPaddingLeft - mHost->mPaddingRight - 1, delta);
     } else {
-        Int32 offsetToLast = mHost->GetChildCount() - 1;
+        Int32 count = 0;
+        mHost->GetChildCount(&count);
+        Int32 offsetToLast = count - 1;
         mHost->mDownTouchPosition = mHost->mIsRtl ? mHost->mFirstPosition :
-            (mHost->mFirstPosition + mHost->GetChildCount() - 1);
+            (mHost->mFirstPosition + count - 1);
 
-        delta = Elastos::Core::Math::Max(-(mHost->GetWidth() - mHost->mPaddingRight - mHost->mPaddingLeft - 1), delta);
+        Int32 width = 0;
+        mHost->GetWidth(&width);
+        delta = Elastos::Core::Math::Max(-(width - mHost->mPaddingRight - mHost->mPaddingLeft - 1), delta);
     }
 
     mHost->TrackMotionScroll(delta);
@@ -124,7 +158,8 @@ ECode Gallery::FlingRunnable::Run()
     if (more && !mHost->mShouldStopFling) {
         mLastFlingX = x;
         AutoPtr<IRunnable> r = (IRunnable*)this;
-        mHost->Post(r);
+        Boolean result = FALSE;
+        mHost->Post(r, &result);
     }
     else {
        EndFling(TRUE);
@@ -135,7 +170,6 @@ ECode Gallery::FlingRunnable::Run()
 //==============================================================================
 //              Gallery::DisableSuppressSelectionChangedRunnable
 //==============================================================================
-
 Gallery::DisableSuppressSelectionChangedRunnable::DisableSuppressSelectionChangedRunnable(
     /* [in] */ Gallery* host)
     : mHost(host)
@@ -152,12 +186,10 @@ ECode Gallery::DisableSuppressSelectionChangedRunnable::Run()
 //==============================================================================
 //              Gallery::KeyUpRunnable
 //==============================================================================
-
 Gallery::KeyUpRunnable::KeyUpRunnable(
     /* [in] */ Gallery* host)
     : mHost(host)
 {}
-
 
 ECode Gallery::KeyUpRunnable::Run()
 {
@@ -167,12 +199,72 @@ ECode Gallery::KeyUpRunnable::Run()
 }
 
 //==============================================================================
+//              Gallery::DetectorOnGestureListener
+//==============================================================================
+CAR_INTERFACE_IMPL(Gallery::DetectorOnGestureListener, Object, IGestureDetectorOnGestureListener);
+Gallery::DetectorOnGestureListener::DetectorOnGestureListener(
+    /* [in] */ Gallery* host)
+    : mHost(host)
+{}
+
+ECode Gallery::DetectorOnGestureListener::OnDown(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    return mHost->OnDown(e, res);
+}
+
+ECode Gallery::DetectorOnGestureListener::OnShowPress(
+    /* [in] */ IMotionEvent* e)
+{
+    return mHost->OnShowPress(e);
+}
+
+ECode Gallery::DetectorOnGestureListener::OnSingleTapUp(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    return mHost->OnSingleTapUp(e, res);
+}
+
+ECode Gallery::DetectorOnGestureListener::OnScroll(
+    /* [in] */ IMotionEvent* e1,
+    /* [in] */ IMotionEvent* e2,
+    /* [in] */ Float distanceX,
+    /* [in] */ Float distanceY,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    return mHost->OnScroll(e1, e2, distanceX, distanceY, res);
+}
+
+ECode Gallery::DetectorOnGestureListener::OnLongPress(
+    /* [in] */ IMotionEvent* e)
+{
+    return mHost->OnLongPress(e);
+}
+
+ECode Gallery::DetectorOnGestureListener::OnFling(
+    /* [in] */ IMotionEvent* e1,
+    /* [in] */ IMotionEvent* e2,
+    /* [in] */ Float velocityX,
+    /* [in] */ Float velocityY,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    return mHost->OnFling(e1, e2, velocityX, velocityY, res);
+}
+
+//==============================================================================
 //              Gallery
 //==============================================================================
-const Boolean Gallery::localLOGV;
-const Int32 Gallery::SCROLL_TO_FLING_UNCERTAINTY_TIMEOUT;
-const String Gallery::GALLERY_NAME = String("Gallery");
+const Boolean Gallery::localLOGV = FALSE;
+const Int32 Gallery::SCROLL_TO_FLING_UNCERTAINTY_TIMEOUT = 250;
+const String Gallery::GALLERY_NAME("Gallery");
 
+CAR_INTERFACE_IMPL_2(Gallery, View, IGallery, IGestureDetectorOnGestureListener);
 Gallery::Gallery()
     : mSpacing(0)
     , mAnimationDuration(400)
@@ -196,18 +288,42 @@ Gallery::~Gallery()
 {
 }
 
-ECode Gallery::Init(
+ECode Gallery::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
+
+ECode Gallery::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::galleryStyle);
+}
+
+ECode Gallery::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    ASSERT_SUCCEEDED(AbsSpinner::Init(context, attrs, defStyle));
+    return constructor(context, attrs, defStyleAttr, 0);
+}
 
-    FAIL_RETURN(CGestureDetector::New(context, (IGestureDetectorOnGestureListener*)this->Probe(EIID_IOnGestureListener),
+ECode Gallery::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    ASSERT_SUCCEEDED(AbsSpinner::constructor(context, attrs, defStyleAttr, defStyleRes));
+
+    AutoPtr<DetectorOnGestureListener> listener = new DetectorOnGestureListener(this);
+    FAIL_RETURN(CGestureDetector::New(context,
+        (IGestureDetectorOnGestureListener*)listener->Probe(EIID_IGestureDetectorOnGestureListener),
         (IGestureDetector**)&mGestureDetector));
     mGestureDetector->SetIsLongpressEnabled(TRUE);
 
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyleAttr, defStyleRes));
     mFlingRunnable = new FlingRunnable(this);
     mDisableSuppressSelectionChangedRunnable =
             new DisableSuppressSelectionChangedRunnable(this);
@@ -222,14 +338,15 @@ ECode Gallery::Init(
 ECode Gallery::InitFromAttributes(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Gallery),
             ARRAY_SIZE(R::styleable::Gallery));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(
-        attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+        attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
     Int32 index = 0;
     a->GetInt32(R::styleable::Gallery_gravity, -1, &index);
@@ -332,7 +449,7 @@ AutoPtr<IViewGroupLayoutParams> Gallery::GenerateLayoutParams(
 {
     AutoPtr<IGalleryLayoutParams> lp;
     CGalleryLayoutParams::New(p, (IGalleryLayoutParams**)&lp);
-    return lp;
+    return IViewGroupLayoutParams::Probe(lp);
 }
 
 ECode Gallery::GenerateLayoutParams(
@@ -341,7 +458,9 @@ ECode Gallery::GenerateLayoutParams(
 {
     VALIDATE_NOT_NULL(params);
     AutoPtr<IGalleryLayoutParams> lp;
-    FAIL_RETURN(CGalleryLayoutParams::New(GetContext(), attrs, (IGalleryLayoutParams**)&lp));
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    FAIL_RETURN(CGalleryLayoutParams::New(context, attrs, (IGalleryLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
     REFCOUNT_ADD(*params);
     return NOERROR;
@@ -352,10 +471,10 @@ AutoPtr<IViewGroupLayoutParams> Gallery::GenerateDefaultLayoutParams()
     AutoPtr<IGalleryLayoutParams> lp;
     CGalleryLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
             IViewGroupLayoutParams::WRAP_CONTENT, (IGalleryLayoutParams**)&lp);
-    return lp;
+    return IViewGroupLayoutParams::Probe(lp);
 }
 
-void Gallery::OnLayout(
+ECode Gallery::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
@@ -367,8 +486,8 @@ void Gallery::OnLayout(
     mInLayout = TRUE;
     Layout(0, FALSE);
     mInLayout = FALSE;
+    return NOERROR;
 }
-
 
 Int32 Gallery::GetChildHeight(
     /* [in] */ IView* child)
@@ -382,7 +501,8 @@ Int32 Gallery::GetChildHeight(
 void Gallery::TrackMotionScroll(
     /* [in] */ Int32 deltaX)
 {
-    if (GetChildCount() == 0) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) == 0) {
         return;
     }
 
@@ -432,7 +552,8 @@ Int32 Gallery::GetLimitedMotionScrollAmount(
     /* [in] */ Int32 deltaX)
 {
     Int32 extremeItemPosition = motionToLeft != mIsRtl ? mItemCount - 1 : 0;
-    AutoPtr<IView> extremeChild = GetChildAt(extremeItemPosition - mFirstPosition);
+    AutoPtr<IView> extremeChild;
+    GetChildAt(extremeItemPosition - mFirstPosition, (IView**)&extremeChild);
 
     if (extremeChild == NULL) {
         return deltaX;
@@ -462,14 +583,20 @@ Int32 Gallery::GetLimitedMotionScrollAmount(
 void Gallery::OffsetChildrenLeftAndRight(
     /* [in] */ Int32 offset)
 {
-    for (Int32 i = GetChildCount() - 1; i >= 0; i--) {
-        GetChildAt(i)->OffsetLeftAndRight(offset);
+    Int32 count = 0;
+    GetChildCount(&count);
+    for (Int32 i = count - 1; i >= 0; i--) {
+        AutoPtr<IView> view;
+        GetChildAt(i, (IView**)&view);
+        view->OffsetLeftAndRight(offset);
     }
 }
 
 Int32 Gallery::GetCenterOfGallery()
 {
-    return (GetWidth() - mPaddingLeft - mPaddingRight) / 2 + mPaddingLeft;
+    Int32 width = 0;
+    GetWidth(&width);
+    return (width - mPaddingLeft - mPaddingRight) / 2 + mPaddingLeft;
 }
 
 Int32 Gallery::GetCenterOfView(
@@ -485,7 +612,8 @@ Int32 Gallery::GetCenterOfView(
 void Gallery::DetachOffScreenChildren(
     /* [in] */ Boolean toLeft)
 {
-    Int32 numChildren = GetChildCount();
+    Int32 numChildren = 0;
+    GetChildCount(&numChildren);
     Int32 firstPosition = mFirstPosition;
     Int32 start = 0;
     Int32 count = 0;
@@ -495,7 +623,8 @@ void Gallery::DetachOffScreenChildren(
         for (Int32 i = 0; i < numChildren; i++) {
             int n = mIsRtl ? (numChildren - 1 - i) : i;
 
-            AutoPtr<IView> child = GetChildAt(n);
+            AutoPtr<IView> child;
+            GetChildAt(n, (IView**)&child);
             Int32 right;
             child->GetRight(&right);
             if (right >= galleryLeft) {
@@ -512,10 +641,13 @@ void Gallery::DetachOffScreenChildren(
         }
     }
     else {
-        Int32 galleryRight = GetWidth() - mPaddingRight;
+        Int32 w = 0;
+        GetWidth(&w);
+        Int32 galleryRight = w - mPaddingRight;
         for (Int32 i = numChildren - 1; i >= 0; i--) {
             int n = mIsRtl ? numChildren - 1 - i : i;
-            AutoPtr<IView> child = GetChildAt(n);
+            AutoPtr<IView> child;
+            GetChildAt(n, (IView**)&child);
             Int32 left;
             child->GetLeft(&left);
             if (left <= galleryRight) {
@@ -541,7 +673,8 @@ void Gallery::DetachOffScreenChildren(
 
 void Gallery::ScrollIntoSlots()
 {
-    if (GetChildCount() == 0 || mSelectedChild == NULL) return;
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) == 0 || mSelectedChild == NULL) return;
 
     Int32 selectedCenter = GetCenterOfView(mSelectedChild);
     Int32 targetCenter = GetCenterOfGallery();
@@ -590,9 +723,12 @@ void Gallery::SetSelectionToCenterChild()
 
     Int32 closestEdgeDistance = Elastos::Core::Math::INT32_MAX_VALUE;
     Int32 newSelectedChildIndex = 0;
-    for (Int32 i = GetChildCount() - 1; i >= 0; i--) {
+    Int32 count = 0;
+    GetChildCount(&count);
+    for (Int32 i = count - 1; i >= 0; i--) {
 
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
 
         child->GetLeft(&left);
         child->GetRight(&right);
@@ -622,7 +758,7 @@ void Gallery::Layout(
     /* [in] */ Int32 delta,
     /* [in] */ Boolean animate)
 {
-    mIsRtl = IsLayoutRtl();
+    IsLayoutRtl(&mIsRtl);
 
     Int32 childrenLeft = mSpinnerPadding->mLeft;
     Int32 childrenWidth = mRight - mLeft - mSpinnerPadding->mLeft - mSpinnerPadding->mRight;
@@ -685,9 +821,11 @@ void Gallery::FillToGalleryLeftRtl()
 {
     Int32 itemSpacing = mSpacing;
     Int32 galleryLeft = mPaddingLeft;
-    Int32 numChildren = GetChildCount();
+    Int32 numChildren = 0;
+    GetChildCount(&numChildren);
 
-    AutoPtr<IView> prevIterationView = GetChildAt(numChildren - 1);
+    AutoPtr<IView> prevIterationView;
+    GetChildAt(numChildren - 1, (IView**)&prevIterationView);
     Int32 curPosition = 0;
     Int32 curRightEdge = 0;
 
@@ -718,7 +856,8 @@ void Gallery::FillToGalleryLeftLtr()
     Int32 itemSpacing = mSpacing;
     Int32 galleryLeft = mPaddingLeft;
 
-    AutoPtr<IView> prevIterationView = GetChildAt(0);
+    AutoPtr<IView> prevIterationView;
+    GetChildAt(0, (IView**)&prevIterationView);
     Int32 curPosition = 0;
     Int32 curRightEdge = 0;
 
@@ -761,7 +900,8 @@ void Gallery::FillToGalleryRightRtl()
     Int32 itemSpacing = mSpacing;
     Int32 galleryRight = mRight - mLeft - mPaddingRight;
 
-    AutoPtr<IView> prevIterationView = GetChildAt(0);
+    AutoPtr<IView> prevIterationView;
+    GetChildAt(0, (IView**)&prevIterationView);
     Int32 curPosition = 0;
     Int32 curLeftEdge = 0;
 
@@ -792,10 +932,12 @@ void Gallery::FillToGalleryRightLtr()
 {
     Int32 itemSpacing = mSpacing;
     Int32 galleryRight = mRight - mLeft - mPaddingRight;
-    Int32 numChildren = GetChildCount();
+    Int32 numChildren = 0;
+    GetChildCount(&numChildren);
     Int32 numItems = mItemCount;
 
-    AutoPtr<IView> prevIterationView = GetChildAt(numChildren - 1);
+    AutoPtr<IView> prevIterationView;
+    GetChildAt(numChildren - 1, (IView**)&prevIterationView);
     Int32 curPosition = 0;
     Int32 curLeftEdge = 0;
 
@@ -846,7 +988,7 @@ AutoPtr<IView> Gallery::MakeAndAddView(
         }
     }
     child = NULL;
-    mAdapter->GetView(position, NULL, (IViewGroup*)this->Probe(EIID_IViewGroup), (IView**)&child);
+    IAdapter::Probe(mAdapter)->GetView(position, NULL, THIS_PROBE(IViewGroup), (IView**)&child);
 
     SetUpChild(child, offset, x, fromLeft);
 
@@ -907,7 +1049,13 @@ Int32 Gallery::CalculateTop(
     /* [in] */ IView* child,
     /* [in] */ Boolean duringLayout)
 {
-    Int32 myHeight = duringLayout ? GetMeasuredHeight() : GetHeight();
+    Int32 myHeight = 0;
+    if (duringLayout) {
+        GetMeasuredHeight(&myHeight);
+    }
+    else {
+        GetHeight(&myHeight);
+    }
 
     Int32 measuredHeight = 0;
     Int32 height = 0;
@@ -934,9 +1082,11 @@ Int32 Gallery::CalculateTop(
     return childTop;
 }
 
-Boolean Gallery::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode Gallery::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     Boolean retValue = FALSE;
     mGestureDetector->OnTouchEvent(event, &retValue);
 
@@ -949,56 +1099,70 @@ Boolean Gallery::OnTouchEvent(
         OnCancel();
     }
 
-    return retValue;
+    *result = retValue;
+    return NOERROR;
 }
 
-Boolean Gallery::OnSingleTapUp(
-    /* [in] */ IMotionEvent* e)
+ECode Gallery::OnSingleTapUp(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
     if (mDownTouchPosition >= 0) {
-
         ScrollToChild(mDownTouchPosition - mFirstPosition);
         if (mShouldCallbackOnUnselectedItemClick || mDownTouchPosition == mSelectedPosition) {
             Int64 id = 0;
-            mAdapter->GetItemId(mDownTouchPosition, &id);
-            PerformItemClick(mDownTouchView, mDownTouchPosition, id);
+            IAdapter::Probe(mAdapter)->GetItemId(mDownTouchPosition, &id);
+            Boolean tmp = FALSE;
+            PerformItemClick(mDownTouchView, mDownTouchPosition, id, &tmp);
         }
 
-        return TRUE;
+        *res = TRUE;
+        return NOERROR;
     }
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
-Boolean Gallery::OnFling(
+ECode Gallery::OnFling(
     /* [in] */ IMotionEvent* e1,
     /* [in] */ IMotionEvent* e2,
     /* [in] */ Float velocityX,
-    /* [in] */ Float velocityY)
+    /* [in] */ Float velocityY,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
     if (!mShouldCallbackDuringFling) {
+        Boolean result = FALSE;
+        RemoveCallbacks(mDisableSuppressSelectionChangedRunnable, &result);
 
-        RemoveCallbacks(mDisableSuppressSelectionChangedRunnable);
-
-        if (!mSuppressSelectionChanged) mSuppressSelectionChanged = TRUE;
+        if (!mSuppressSelectionChanged) {
+            mSuppressSelectionChanged = TRUE;
+        }
     }
 
     mFlingRunnable->StartUsingVelocity((Int32)-velocityX);
-
-    return TRUE;
+    *res = TRUE;
+    return NOERROR;
 }
 
-Boolean Gallery::OnScroll(
+ECode Gallery::OnScroll(
     /* [in] */ IMotionEvent* e1,
     /* [in] */ IMotionEvent* e2,
     /* [in] */ Float distanceX,
-    /* [in] */ Float distanceY)
+    /* [in] */ Float distanceY,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
     mParent->RequestDisallowInterceptTouchEvent(TRUE);
 
     if (!mShouldCallbackDuringFling) {
         if (mIsFirstScroll) {
-            if (!mSuppressSelectionChanged) mSuppressSelectionChanged = TRUE;
-            PostDelayed(mDisableSuppressSelectionChangedRunnable, SCROLL_TO_FLING_UNCERTAINTY_TIMEOUT);
+            if (!mSuppressSelectionChanged) {
+                mSuppressSelectionChanged = TRUE;
+            }
+            Boolean result = FALSE;
+            PostDelayed(mDisableSuppressSelectionChangedRunnable, SCROLL_TO_FLING_UNCERTAINTY_TIMEOUT, &result);
         }
     }
     else {
@@ -1008,27 +1172,31 @@ Boolean Gallery::OnScroll(
     TrackMotionScroll(-1 * (Int32) distanceX);
 
     mIsFirstScroll = FALSE;
-    return TRUE;
+    *res = TRUE;
+    return NOERROR;
 }
 
-Boolean Gallery::OnDown(
-    /* [in] */ IMotionEvent* e)
+ECode Gallery::OnDown(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
     mFlingRunnable->Stop(FALSE);
 
     Float X = 0;
     Float Y = 0;
     e->GetX(&X);
     e->GetY(&Y);
-    mDownTouchPosition = PointToPosition((Int32)X, (Int32)Y);
+    PointToPosition((Int32)X, (Int32)Y, &mDownTouchPosition);
 
     if (mDownTouchPosition >= 0) {
-        mDownTouchView = GetChildAt(mDownTouchPosition - mFirstPosition);
+        GetChildAt(mDownTouchPosition - mFirstPosition, (IView**)&mDownTouchView);
         mDownTouchView->SetPressed(TRUE);
     }
     mIsFirstScroll = TRUE;
 
-    return TRUE;
+    *res = TRUE;
+    return NOERROR;
 }
 
 ECode Gallery::OnUp()
@@ -1055,8 +1223,10 @@ ECode Gallery::OnLongPress(
         return NOERROR;
     }
 
-    PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS);
-    Int64 id = GetItemIdAtPosition(mDownTouchPosition);
+    Boolean tmp = FALSE;
+    PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS, &tmp);
+    Int64 id = 0;
+    GetItemIdAtPosition(mDownTouchPosition, &id);
     DispatchLongPress(mDownTouchView, mDownTouchPosition, id);
     return NOERROR;
 }
@@ -1079,16 +1249,21 @@ void Gallery::DispatchPress(
 
 void Gallery::DispatchUnpress()
 {
-    for (Int32 i = GetChildCount() - 1; i >= 0; i--) {
-        GetChildAt(i)->SetPressed(FALSE);
+    Int32 count = 0;
+    GetChildCount(&count);
+    for (Int32 i = count - 1; i >= 0; i--) {
+        AutoPtr<IView> view;
+        GetChildAt(i, (IView**)&view);
+        view->SetPressed(FALSE);
     }
 
     SetPressed(FALSE);
 }
 
-void Gallery::DispatchSetSelected(
+ECode Gallery::DispatchSetSelected(
     /* [in] */ Boolean selected)
 {
+    return NOERROR;
 }
 
 void Gallery::DispatchSetPressed(
@@ -1104,28 +1279,38 @@ AutoPtr<IContextMenuInfo> Gallery::GetContextMenuInfo()
     return (IContextMenuInfo*)mContextMenuInfo.Get();
 }
 
-Boolean Gallery::ShowContextMenuForChild(
-    /* [in] */ IView* originalView)
+ECode Gallery::ShowContextMenuForChild(
+    /* [in] */ IView* originalView,
+    /* [out] */ Boolean* res)
 {
-    Int32 longPressPosition = GetPositionForView(originalView);
+    VALIDATE_NOT_NULL(res);
+    Int32 longPressPosition = 0;
+    GetPositionForView(originalView, &longPressPosition);
     if (longPressPosition < 0) {
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
     }
 
     Int64 longPressId = 0;
-    mAdapter->GetItemId(longPressPosition, &longPressId);
-    return DispatchLongPress(originalView, longPressPosition, longPressId);
+    IAdapter::Probe(mAdapter)->GetItemId(longPressPosition, &longPressId);
+    *res = DispatchLongPress(originalView, longPressPosition, longPressId);
+    return NOERROR;
 }
 
-Boolean Gallery::ShowContextMenu()
+ECode Gallery::ShowContextMenu(
+    /* [out] */ Boolean* res)
 {
-    if (IsPressed() && mSelectedPosition >= 0) {
+    VALIDATE_NOT_NULL(res);
+    if ((IsPressed(res), *res) && mSelectedPosition >= 0) {
         Int32 index = mSelectedPosition - mFirstPosition;
-        AutoPtr<IView> v = GetChildAt(index);
-        return DispatchLongPress(v, mSelectedPosition, mSelectedRowId);
+        AutoPtr<IView> v;
+        GetChildAt(index, (IView**)&v);
+        *res = DispatchLongPress(v, mSelectedPosition, mSelectedRowId);
+        return NOERROR;
     }
 
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
 Boolean Gallery::DispatchLongPress(
@@ -1142,84 +1327,92 @@ Boolean Gallery::DispatchLongPress(
 
     if (!handled) {
         mContextMenuInfo = new AdapterContextMenuInfo(view, position, id);
-        handled = AbsSpinner::ShowContextMenuForChild(THIS_PROBE(IView));
+        AbsSpinner::ShowContextMenuForChild(THIS_PROBE(IView), &handled);
     }
 
     if (handled) {
-        PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS);
+        Boolean tmp = FALSE;
+        PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS, &tmp);
     }
 
     return handled;
 }
 
-Boolean Gallery::DispatchKeyEvent(
-    /* [in] */ IKeyEvent* event)
+ECode Gallery::DispatchKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
 {
-    Boolean result = FALSE;
-    event->Dispatch(THIS_PROBE(IKeyEventCallback), NULL, NULL, &result);
-
-    return result;
+    VALIDATE_NOT_NULL(res);
+    return event->Dispatch(THIS_PROBE(IKeyEventCallback), NULL, NULL, res);
 }
 
-Boolean Gallery::OnKeyDown(
+ECode Gallery::OnKeyDown(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
 {
     switch (keyCode) {
+        case IKeyEvent::KEYCODE_DPAD_LEFT:
+            if (MovePrevious()) {
+                PlaySoundEffect(SoundEffectConstants::NAVIGATION_LEFT);
+                *res = TRUE;
+                return NOERROR;
+            }
+            break;
 
-    case IKeyEvent::KEYCODE_DPAD_LEFT:
-        if (MovePrevious()) {
-            PlaySoundEffect(SoundEffectConstants::NAVIGATION_LEFT);
-            return TRUE;
-        }
-        break;
+        case IKeyEvent::KEYCODE_DPAD_RIGHT:
+            if (MoveNext()) {
+                PlaySoundEffect(SoundEffectConstants::NAVIGATION_RIGHT);
+                *res = TRUE;
+                return NOERROR;
+            }
+            break;
 
-    case IKeyEvent::KEYCODE_DPAD_RIGHT:
-        if (MoveNext()) {
-            PlaySoundEffect(SoundEffectConstants::NAVIGATION_RIGHT);
-            return TRUE;
-        }
-        break;
-
-    case IKeyEvent::KEYCODE_DPAD_CENTER:
-    case IKeyEvent::KEYCODE_ENTER:
-        mReceivedInvokeKeyDown = TRUE;
+        case IKeyEvent::KEYCODE_DPAD_CENTER:
+        case IKeyEvent::KEYCODE_ENTER:
+            mReceivedInvokeKeyDown = TRUE;
     }
 
-    return AbsSpinner::OnKeyDown(keyCode, event);
+    return AbsSpinner::OnKeyDown(keyCode, event, res);
 }
 
-Boolean Gallery::OnKeyUp(
+ECode Gallery::OnKeyUp(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
     switch (keyCode) {
         case IKeyEvent::KEYCODE_DPAD_CENTER:
         case IKeyEvent::KEYCODE_ENTER: {
-
             if (mReceivedInvokeKeyDown) {
                 if (mItemCount > 0) {
                     if (mKeyUpRunnable = NULL) {
                         mKeyUpRunnable = new KeyUpRunnable(this);
                     }
                     DispatchPress(mSelectedChild);
-                    PostDelayed(mKeyUpRunnable, CViewConfiguration::GetPressedStateDuration());
+                    Boolean result = FALSE;
+                    PostDelayed(mKeyUpRunnable, ViewConfiguration::GetPressedStateDuration(), &result);
 
                     Int32 selectedIndex = mSelectedPosition - mFirstPosition;
 
                     Int64 id = 0;
-                    mAdapter->GetItemId(mSelectedPosition, &id);
-                    PerformItemClick(GetChildAt(selectedIndex), mSelectedPosition, id);
+                    IAdapter::Probe(mAdapter)->GetItemId(mSelectedPosition, &id);
+                    AutoPtr<IView> view;
+                    GetChildAt(selectedIndex, (IView**)&view);
+                    Boolean tmp = FALSE;
+                    PerformItemClick(view, mSelectedPosition, id, &tmp);
                 }
             }
 
             mReceivedInvokeKeyDown = FALSE;
 
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
     }
 
-    return AbsSpinner::OnKeyUp(keyCode, event);
+    return AbsSpinner::OnKeyUp(keyCode, event, res);
 }
 
 Boolean Gallery::MovePrevious()
@@ -1247,7 +1440,8 @@ Boolean Gallery::MoveNext()
 Boolean Gallery::ScrollToChild(
     /* [in] */ Int32 childPosition)
 {
-    AutoPtr<IView> child = GetChildAt(childPosition);
+    AutoPtr<IView> child;
+    GetChildAt(childPosition, (IView**)&child);
 
     if (child != NULL) {
         Int32 distance = GetCenterOfGallery() - GetCenterOfView(child);
@@ -1270,7 +1464,9 @@ void Gallery::UpdateSelectedItemMetadata()
 {
     AutoPtr<IView> oldSelectedChild = mSelectedChild;
 
-    AutoPtr<IView> child = mSelectedChild = GetChildAt(mSelectedPosition - mFirstPosition);
+    AutoPtr<IView> view;
+    GetChildAt(mSelectedPosition - mFirstPosition, (IView**)&view);
+    AutoPtr<IView> child = mSelectedChild = view;
     if (child == NULL) {
         return;
     }
@@ -1278,7 +1474,8 @@ void Gallery::UpdateSelectedItemMetadata()
     child->SetSelected(TRUE);
     child->SetFocusable(TRUE);
 
-    if (HasFocus()) {
+    Boolean hasFocus = FALSE;
+    if (HasFocus(&hasFocus), hasFocus) {
         Boolean result = FALSE;
         child->RequestFocus(&result);
     }
@@ -1338,8 +1535,8 @@ ECode Gallery::OnInitializeAccessibilityEvent(
 {
     AbsSpinner::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(GALLERY_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
+    FAIL_RETURN(CString::New(GALLERY_NAME, (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
@@ -1348,42 +1545,53 @@ ECode Gallery::OnInitializeAccessibilityNodeInfo(
 {
     AbsSpinner::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(GALLERY_NAME, (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(GALLERY_NAME, (ICharSequence**)&seq));
     info->SetClassName(seq);
     info->SetScrollable(mItemCount > 1);
-    if(IsEnabled()) {
+    Boolean enabled = FALSE;
+    if(IsEnabled(&enabled), enabled) {
         if(mItemCount > 0 && mSelectedPosition < mItemCount - 1){
             info->AddAction(IAccessibilityNodeInfo::ACTION_SCROLL_FORWARD);
         }
-        if(IsEnabled() && mItemCount > 0 && mSelectedPosition > 0){
+        if((IsEnabled(&enabled), enabled) && mItemCount > 0 && mSelectedPosition > 0){
             info->AddAction(IAccessibilityNodeInfo::ACTION_SCROLL_BACKWARD);
         }
     }
     return NOERROR;
 }
 
-Boolean Gallery::PerformAccessibilityAction(
+ECode Gallery::PerformAccessibilityAction(
     /* [in] */ Int32 action,
-    /* [in] */ IBundle* arguments)
+    /* [in] */ IBundle* arguments,
+    /* [out] */ Boolean* res)
 {
-    if (AbsSpinner::PerformAccessibilityAction(action, arguments)) {
-        return TRUE;
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    if (AbsSpinner::PerformAccessibilityAction(action, arguments, res)) {
+        *res = TRUE;
+        return NOERROR;
     }
     switch (action) {
         case IAccessibilityNodeInfo::ACTION_SCROLL_FORWARD: {
-            if (IsEnabled() && mItemCount > 0 && mSelectedPosition < mItemCount - 1) {
+            Boolean enabled = FALSE;
+            if ((IsEnabled(&enabled), enabled) && mItemCount > 0 && mSelectedPosition < mItemCount - 1) {
                 Int32 currentChildIndex = mSelectedPosition - mFirstPosition;
-                return ScrollToChild(currentChildIndex + 1);
+                *res = ScrollToChild(currentChildIndex + 1);
+                return NOERROR;
             }
-        } return FALSE;
+            return NOERROR;
+        }
         case IAccessibilityNodeInfo::ACTION_SCROLL_BACKWARD: {
-            if (IsEnabled() && mItemCount > 0 && mSelectedPosition > 0) {
+            Boolean enabled = FALSE;
+            if ((IsEnabled(&enabled), enabled) && mItemCount > 0 && mSelectedPosition > 0) {
                 Int32 currentChildIndex = mSelectedPosition - mFirstPosition;
-                return ScrollToChild(currentChildIndex - 1);
+                *res = ScrollToChild(currentChildIndex - 1);
+                return NOERROR;
             }
-        } return FALSE;
+            return NOERROR;
+        }
     }
-    return FALSE;
+    return NOERROR;
 }
 
 } // namespace Widget

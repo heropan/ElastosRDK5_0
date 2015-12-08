@@ -379,18 +379,18 @@ ECode Assert::FailNotSame(
 {
     StringBuilder formatted("");
     if (!message.IsNull()) {
-        formatted.AppendString(message);
-        formatted.AppendCStr(" ");
+        formatted.Append(message);
+        formatted.Append(" ");
     }
     assert(IObject::Probe(expected) != NULL && IObject::Probe(actual) != NULL);
     String expStr, actStr;
     IObject::Probe(expected)->ToString(&expStr);
     IObject::Probe(actual)->ToString(&actStr);
-    formatted.AppendCStr("expected same:<");
-    formatted.AppendString(expStr);
-    formatted.AppendCStr("> was not:<");
-    formatted.AppendString(actStr);
-    formatted.AppendCStr(">");
+    formatted.Append("expected same:<");
+    formatted.Append(expStr);
+    formatted.Append("> was not:<");
+    formatted.Append(actStr);
+    formatted.Append(">");
     return Fail(formatted.ToString());
 }
 
@@ -409,18 +409,18 @@ String Assert::Format(
 {
     StringBuilder formatted("");
     if (!message.IsNullOrEmpty()) {
-        formatted.AppendString(message);
-        formatted.AppendCStr(" ");
+        formatted.Append(message);
+        formatted.Append(" ");
     }
     assert(IObject::Probe(expected) != NULL && IObject::Probe(actual) != NULL);
     String expStr, actStr;
     IObject::Probe(expected)->ToString(&expStr);
     IObject::Probe(actual)->ToString(&actStr);
-    formatted.AppendCStr("expected:<");
-    formatted.AppendString(expStr);
-    formatted.AppendCStr("> but was:<");
-    formatted.AppendString(actStr);
-    formatted.AppendCStr(">");
+    formatted.Append("expected:<");
+    formatted.Append(expStr);
+    formatted.Append("> but was:<");
+    formatted.Append(actStr);
+    formatted.Append(">");
     return formatted.ToString();
 }
 

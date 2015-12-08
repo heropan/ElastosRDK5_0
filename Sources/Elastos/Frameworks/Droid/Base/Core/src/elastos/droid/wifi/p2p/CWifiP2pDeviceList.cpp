@@ -1,15 +1,21 @@
 
-#include "CWifiP2pDeviceList.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pDeviceList.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 namespace P2p {
+
+CAR_INTERFACE_IMPL_2(CWifiP2pDeviceList, Object, IWifiP2pDeviceList, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiP2pDeviceList)
 
 ECode CWifiP2pDeviceList::constructor()
 {
@@ -21,13 +27,17 @@ ECode CWifiP2pDeviceList::constructor(
 {
     if (source != NULL) {
         AutoPtr<ArrayOf<IWifiP2pDevice*> > array;
-        FAIL_RETURN(source->GetDeviceList((ArrayOf<IWifiP2pDevice*>**)&array));
+        assert(0);
+        // TODO
+        // FAIL_RETURN(source->GetDeviceList((ArrayOf<IWifiP2pDevice*>**)&array));
 
         if (array != NULL) {
             String temp;
             for (Int32 i = 0; i < array->GetLength(); ++i) {
                 FAIL_RETURN((*array)[i]->GetDeviceAddress(&temp));
-                mDevices[temp] = (*array)[i];
+                AutoPtr<IWifiP2pDevice> d;
+                CWifiP2pDevice::New((*array)[i], (IWifiP2pDevice**)&d);
+                mDevices[temp] = d;
             }
         }
     }
@@ -43,7 +53,9 @@ ECode CWifiP2pDeviceList::constructor(
         for (Int32 i = 0; i < devices->GetLength(); ++i) {
             FAIL_RETURN((*devices)[i]->GetDeviceAddress(&temp));
             if (!temp.IsNull()) {
-                mDevices[temp] = (*devices)[i];
+                AutoPtr<IWifiP2pDevice> d;
+                CWifiP2pDevice::New((*devices)[i], (IWifiP2pDevice**)&d);
+                mDevices[temp] = d;
             }
         }
     }
@@ -69,17 +81,26 @@ ECode CWifiP2pDeviceList::Clear(
 ECode CWifiP2pDeviceList::Update(
     /* [in] */ IWifiP2pDevice* device)
 {
-    if (device == NULL) return NOERROR;
+    UpdateSupplicantDetails(device);
+    String deviceAddress;
+    device->GetDeviceAddress(&deviceAddress);
+    AutoPtr<IWifiP2pDevice> d = mDevices[deviceAddress];
+    Int32 status;
+    device->GetStatus(&status);
+    return d->SetStatus(status);
+}
 
-Slogger::D("CWifiP2pDeviceList", "========================Update Start==========================");
-    String address, temp;
-    FAIL_RETURN(device->GetDeviceAddress(&address));
-    if (address.IsNull()) return NOERROR;
+ECode CWifiP2pDeviceList::UpdateSupplicantDetails(
+    /* [in] */ IWifiP2pDevice* device)
+{
+    ValidateDevice(device);
 
+    String address;
+    device->GetDeviceAddress(&address);
     HashMap<String, AutoPtr<IWifiP2pDevice> >::Iterator it = mDevices.Find(address);
     if (it != mDevices.End()) {
         AutoPtr<IWifiP2pDevice> d = it->mSecond;
-
+        String temp;
         FAIL_RETURN(device->GetDeviceName(&temp));
         FAIL_RETURN(d->SetDeviceName(temp));
 
@@ -114,7 +135,7 @@ ECode CWifiP2pDeviceList::UpdateGroupCapability(
     /* [in] */ const String& deviceAddress,
     /* [in] */ Int32 groupCapab)
 {
-    if (deviceAddress.IsNullOrEmpty()) return NOERROR;
+    ValidateDeviceAddress(deviceAddress);
 
     HashMap<String, AutoPtr<IWifiP2pDevice> >::Iterator it = mDevices.Find(deviceAddress);
     if (it != mDevices.End()) {
@@ -129,7 +150,7 @@ ECode CWifiP2pDeviceList::UpdateStatus(
     /* [in] */ const String& deviceAddress,
     /* [in] */ Int32 status)
 {
-    if (deviceAddress.IsNullOrEmpty()) return NOERROR;
+    ValidateDeviceAddress(deviceAddress);
 
     HashMap<String, AutoPtr<IWifiP2pDevice> >::Iterator it = mDevices.Find(deviceAddress);
     if (it != mDevices.End()) {
@@ -147,9 +168,7 @@ ECode CWifiP2pDeviceList::Get(
     VALIDATE_NOT_NULL(device);
     *device = NULL;
 
-    if (deviceAddress.IsNull()) {
-        return NOERROR;
-    }
+    ValidateDeviceAddress(deviceAddress);
 
     HashMap<String, AutoPtr<IWifiP2pDevice> >::Iterator it = mDevices.Find(deviceAddress);
     if (it != mDevices.End()) {
@@ -167,16 +186,9 @@ ECode CWifiP2pDeviceList::Remove(
     VALIDATE_NOT_NULL(ret);
     *ret = FALSE;
 
-    if (device == NULL) {
-        return NOERROR;
-    }
-
+    ValidateDevice(device);
     String temp;
-    FAIL_RETURN(device->GetDeviceAddress(&temp));
-    if (temp.IsNull()) {
-        return NOERROR;
-    }
-
+    device->GetDeviceAddress(&temp);
     HashMap<String, AutoPtr<IWifiP2pDevice> >::Iterator it = mDevices.Find(temp);
     if (it != mDevices.End()) {
         mDevices.Erase(it);
@@ -187,6 +199,18 @@ ECode CWifiP2pDeviceList::Remove(
 }
 
 ECode CWifiP2pDeviceList::Remove(
+    /* [in] */ const String& deviceAddress,
+    /* [out] */ IWifiP2pDevice** result)
+{
+    VALIDATE_NOT_NULL(result);
+    ValidateDeviceAddress(deviceAddress);
+    assert(0);
+    // TODO
+    // return mDevices.Remove(deviceAddress, result);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CWifiP2pDeviceList::Remove(
     /* [in] */ IWifiP2pDeviceList* list,
     /* [out] */ Boolean* ret)
 {
@@ -194,7 +218,9 @@ ECode CWifiP2pDeviceList::Remove(
     *ret = FALSE;
 
     AutoPtr<ArrayOf<IWifiP2pDevice*> > array;
-    FAIL_RETURN(list->GetDeviceList((ArrayOf<IWifiP2pDevice*>**)&array));
+    assert(0);
+    // TODO
+    // FAIL_RETURN(list->GetDeviceList((ArrayOf<IWifiP2pDevice*>**)&array));
 
     if (array != NULL) {
         Boolean temp;
@@ -205,6 +231,14 @@ ECode CWifiP2pDeviceList::Remove(
     }
 
     return NOERROR;
+}
+
+ECode CWifiP2pDeviceList::GetDeviceList(
+    /* [out] */ ICollection** result)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiP2pDeviceList::GetDeviceList(
@@ -232,17 +266,19 @@ ECode CWifiP2pDeviceList::IsGroupOwner(
     /* [out] */ Boolean* isGroupOwner)
 {
     VALIDATE_NOT_NULL(isGroupOwner);
-    *isGroupOwner = FALSE;
-
-    if (!deviceAddress.IsNull()) {
-        HashMap<String, AutoPtr<IWifiP2pDevice> >::Iterator it = mDevices.Find(deviceAddress);
-        if (it != mDevices.End()) {
-            AutoPtr<IWifiP2pDevice> device = it->mSecond;
-            return device->IsGroupOwner(isGroupOwner);
-        }
+    ValidateDeviceAddress(deviceAddress);
+    AutoPtr<IWifiP2pDevice> device;
+    HashMap<String, AutoPtr<IWifiP2pDevice> >::Iterator it = mDevices.Find(deviceAddress);
+    if (it != mDevices.End()) {
+        device = it->mSecond;
     }
 
-    return NOERROR;
+    if (device == NULL) {
+        // throw new IllegalArgumentException("Device not found " + deviceAddress);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    return device->IsGroupOwner(isGroupOwner);
 }
 
 ECode CWifiP2pDeviceList::ToString(
@@ -258,7 +294,9 @@ ECode CWifiP2pDeviceList::ToString(
     if (array != NULL) {
         String temp;
         for (Int32 i = 0; i < array->GetLength(); ++i) {
-            FAIL_RETURN((*array)[i]->ToString(&temp));
+            assert(0);
+            // TODO
+            // FAIL_RETURN((*array)[i]->ToString(&temp));
             sb += "\n ";
             sb += temp;
         }
@@ -299,8 +337,36 @@ ECode CWifiP2pDeviceList::WriteToParcel(
     return NOERROR;
 }
 
+ECode CWifiP2pDeviceList::ValidateDevice(
+    /* [in] */ IWifiP2pDevice* device)
+{
+    if (device == NULL) {
+        // throw new IllegalArgumentException("Null device");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
+    String deviceAddress;
+    device->GetDeviceAddress(&deviceAddress);
+    if (TextUtils::IsEmpty(deviceAddress)) {
+        // throw new IllegalArgumentException("Empty deviceAddress");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    return NOERROR;
 }
+
+ECode CWifiP2pDeviceList::ValidateDeviceAddress(
+    /* [in] */ const String& deviceAddress)
+{
+    if (TextUtils::IsEmpty(deviceAddress)) {
+        // throw new IllegalArgumentException("Empty deviceAddress");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    return NOERROR;
 }
-}
-}
+
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

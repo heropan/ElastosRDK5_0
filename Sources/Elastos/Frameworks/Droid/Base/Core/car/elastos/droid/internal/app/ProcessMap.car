@@ -17,8 +17,7 @@ module
         Put(
             [in] String name,
             [in] Int32 uid,
-            [in] IInterface* value,
-            [out] IInterface** oldValue);
+            [in] IInterface* value);
 
         Remove(
             [in] String name,

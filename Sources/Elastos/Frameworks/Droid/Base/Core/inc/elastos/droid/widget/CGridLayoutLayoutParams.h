@@ -2,48 +2,18 @@
 #define __ELASTOS_DROID_WIDGET_CGRIDLAYOUTLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_Widget_CGridLayoutLayoutParams.h"
-#include "elastos/droid/widget/GridLayoutLayoutParams.h"
+#include "elastos/droid/widget/GridLayout.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
-CarClass(CGridLayoutLayoutParams), public GridLayoutLayoutParams
+CarClass(CGridLayoutLayoutParams)
+    , public GridLayout::LayoutParams
 {
 public:
-
-    IVIEWGROUPLP_METHODS_DECL()
-    IVIEWGROUPMARGINLP_METHODS_DECL()
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ ISpec* rowSpec,
-        /* [in] */ ISpec* columnSpec);
-
-    CARAPI constructor(
-        /* [in] */ IViewGroupLayoutParams* params);
-
-    CARAPI constructor(
-        /* [in] */ IViewGroupMarginLayoutParams* params);
-
-    CARAPI constructor(
-        /* [in] */ IGridLayoutLayoutParams* that);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI SetGravity(
-        /* [in] */ Int32 gravity);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* layout,
-        /* [out] */ Boolean* result);
+    CAR_OBJECT_DECL()
 };
 
 }// namespace Widget

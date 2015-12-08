@@ -1,9 +1,9 @@
 
-#include "elastos/droid/net/wifi/WifiStateTracker.h"
+#include "elastos/droid/wifi/WifiStateTracker.h"
 #ifdef DROID_CORE
-#include "elastos/droid/net/CNetworkInfo.h"
-#include "elastos/droid/net/CLinkCapabilities.h"
-#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/CNetworkInfo.h"
+#include "elastos/droid/CLinkCapabilities.h"
+#include "elastos/droid/CLinkProperties.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/os/CMessage.h"
 #endif

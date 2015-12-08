@@ -1,3 +1,4 @@
+
 #include "elastos/droid/view/CWindowManagerGlobalHelper.h"
 #include "elastos/droid/view/CWindowManagerGlobal.h"
 
@@ -6,15 +7,14 @@ namespace Droid {
 namespace View {
 
 CAR_SINGLETON_IMPL(CWindowManagerGlobalHelper)
-
 CAR_INTERFACE_IMPL(CWindowManagerGlobalHelper, Singleton, IWindowManagerGlobalHelper)
-
 ECode CWindowManagerGlobalHelper::GetInstance(
     /* [out] */ IWindowManagerGlobal** wmg)
 {
     VALIDATE_NOT_NULL(wmg);
-    *wmg = CWindowManagerGlobal::GetInstance();
-    REFCOUNT_ADD(*wmg)
+    AutoPtr<IWindowManagerGlobal> v = CWindowManagerGlobal::GetInstance();
+    *wmg = v;
+    REFCOUNT_ADD(*wmg);
     return NOERROR;
 }
 
@@ -22,18 +22,19 @@ ECode CWindowManagerGlobalHelper::GetWindowManagerService(
     /* [out] */ IIWindowManager** windowManager)
 {
     VALIDATE_NOT_NULL(windowManager);
-    *windowManager = CWindowManagerGlobal::GetWindowManagerService();
-    REFCOUNT_ADD(*windowManager)
+    AutoPtr<IIWindowManager> v = CWindowManagerGlobal::GetWindowManagerService();
+    *windowManager = v;
+    REFCOUNT_ADD(*windowManager);
     return NOERROR;
 }
 
 ECode CWindowManagerGlobalHelper::GetWindowSession(
-    /* [in] */ ILooper* mainLooper,
     /* [out] */ IWindowSession** windowSession)
 {
     VALIDATE_NOT_NULL(windowSession);
-    *windowSession = CWindowManagerGlobal::GetWindowSession(mainLooper);
-    REFCOUNT_ADD(*windowSession)
+    AutoPtr<IWindowSession> v = CWindowManagerGlobal::GetWindowSession();
+    *windowSession = v;
+    REFCOUNT_ADD(*windowSession);
     return NOERROR;
 }
 
@@ -41,8 +42,9 @@ ECode CWindowManagerGlobalHelper::PeekWindowSession(
     /* [out] */ IWindowSession** windowSession)
 {
     VALIDATE_NOT_NULL(windowSession);
-    *windowSession = CWindowManagerGlobal::PeekWindowSession();
-    REFCOUNT_ADD(*windowSession)
+    AutoPtr<IWindowSession> v = CWindowManagerGlobal::PeekWindowSession();
+    *windowSession = v;
+    REFCOUNT_ADD(*windowSession);
     return NOERROR;
 }
 

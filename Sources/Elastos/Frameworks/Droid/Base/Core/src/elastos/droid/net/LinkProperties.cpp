@@ -1,5 +1,37 @@
 
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CLinkPropertiesCompareResult.h"
+#include "elastos/droid/net/CProxyInfo.h"
+#include "elastos/droid/net/CRouteInfo.h"
 #include "elastos/droid/net/LinkProperties.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/text/TextUtils.h"
+#include <elastos/core/Singleton.h>
+#include <elastos/utility/Objects.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Net::CLinkProperties;
+using Elastos::Droid::Text::TextUtils;
+
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Net::IInet4Address;
+using Elastos::Net::IInet6Address;
+using Elastos::Net::IInetAddress;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::CHashTable;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::IHashTable;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Objects;
 
 namespace Elastos {
 namespace Droid {
@@ -10,19 +42,16 @@ namespace Net {
 //====================================================================================
 CAR_INTERFACE_IMPL_2(LinkProperties, Object, ILinkProperties, IParcelable)
 
-const Int32 LinkProperties::sMIN_MTU = 68;
-const Int32 LinkProperties::sMIN_MTU_V6 = 1280;
-const Int32 LinkProperties::sMAX_MTU = 10000;
+const Int32 LinkProperties::MIN_MTU = 68;
+const Int32 LinkProperties::MIN_MTU_V6 = 1280;
+const Int32 LinkProperties::MAX_MTU = 10000;
 
 LinkProperties::LinkProperties()
 {
-#if 0 // TODO: Translate codes below
-    private ArrayList<LinkAddress> mLinkAddresses = new ArrayList<LinkAddress>();
-    private ArrayList<InetAddress> mDnses = new ArrayList<InetAddress>();
-    private ArrayList<RouteInfo> mRoutes = new ArrayList<RouteInfo>();
-    private Hashtable<String, LinkProperties> mStackedLinks =
-        new Hashtable<String, LinkProperties>();
-#endif
+    CArrayList::New((IArrayList**)&mLinkAddresses);
+    CArrayList::New((IArrayList**)&mDnses);
+    CArrayList::New((IArrayList**)&mRoutes);
+    CHashTable::New((IHashTable**)&mStackedLinks);
 }
 
 ECode LinkProperties::constructor()
@@ -33,943 +62,976 @@ ECode LinkProperties::constructor()
 ECode LinkProperties::constructor(
     /* [in] */ ILinkProperties* source)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (source != null) {
-            mIfaceName = source.getInterfaceName();
-            for (LinkAddress l : source.getLinkAddresses()) mLinkAddresses.add(l);
-            for (InetAddress i : source.getDnsServers()) mDnses.add(i);
-            mDomains = source.getDomains();
-            for (RouteInfo r : source.getRoutes()) mRoutes.add(r);
-            mHttpProxy = (source.getHttpProxy() == null)  ?
-                    null : new ProxyInfo(source.getHttpProxy());
-            for (LinkProperties l: source.mStackedLinks.values()) {
-                addStackedLink(l);
-            }
-            setMtu(source.getMtu());
-            mTcpBufferSizes = source.mTcpBufferSizes;
+    if (source != NULL) {
+        source->GetInterfaceName(&mIfaceName);
+        AutoPtr<IArrayList> linkAddresses = IArrayList::Probe(RETN_OUT_VAL(source, GetLinkAddresses));
+        AutoPtr<IIterator> iter;
+        linkAddresses->GetIterator((IIterator**)&iter);
+        AutoPtr<IInterface> l;
+        while (RETN_OUT_VAL(iter, HasNext)) {
+            iter->GetNext((IInterface**)&l);
+            mLinkAddresses->Add(l);
+            l = NULL;
+        }
+        AutoPtr<IArrayList> dnses = IArrayList::Probe(RETN_OUT_VAL(source, GetDnsServers));
+        iter = NULL;
+        dnses->GetIterator((IIterator**)&iter);
+        AutoPtr<IInterface> i;
+        while (RETN_OUT_VAL(iter, HasNext)) {
+            iter->GetNext((IInterface**)&i);
+            mDnses->Add(i);
+            i = NULL;
+        }
+        source->GetDomains(&mDomains);
+        AutoPtr<IArrayList> routes = IArrayList::Probe(RETN_OUT_VAL(source, GetRoutes));
+        iter = NULL;
+        routes->GetIterator((IIterator**)&iter);
+        AutoPtr<IInterface> r;
+        while (RETN_OUT_VAL(iter, HasNext)) {
+            iter->GetNext((IInterface**)&r);
+            mRoutes->Add(r);
+            r = NULL;
         }
 
-#endif
+        if (RETN_OUT_VAL(source, GetHttpProxy) == NULL) {
+            mHttpProxy =  NULL;
+        }
+        else {
+            CProxyInfo::New(RETN_OUT_VAL(source, GetHttpProxy), (IProxyInfo**)&mHttpProxy);
+        }
+        AutoPtr<ICollection> values;
+        ((LinkProperties*)source)->mStackedLinks->GetValues((ICollection**)&values);
+        iter = NULL;
+        values->GetIterator((IIterator**)&iter);
+        AutoPtr<IInterface> lp;
+        while (RETN_OUT_VAL(iter, HasNext)) {
+            iter->GetNext((IInterface**)&lp);
+            RETN_OUT_VAL(this, AddStackedLink, ILinkProperties::Probe(lp));
+        }
+        SetMtu(RETN_OUT_VAL(source, GetMtu));
+        mTcpBufferSizes = ((LinkProperties*)source)->mTcpBufferSizes;
+    }
+    return NOERROR;
 }
 
 ECode LinkProperties::SetInterfaceName(
     /* [in] */ const String& iface)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mIfaceName = iface;
-        ArrayList<RouteInfo> newRoutes = new ArrayList<RouteInfo>(mRoutes.size());
-        for (RouteInfo route : mRoutes) {
-            newRoutes.add(routeWithInterface(route));
-        }
-        mRoutes = newRoutes;
-
-#endif
+    mIfaceName = iface;
+    AutoPtr<IArrayList> newRoutes;
+    CArrayList::New(RETN_OUT_VAL(mRoutes, GetSize), (IArrayList**)&newRoutes);
+    AutoPtr<IIterator> iter;
+    mRoutes->GetIterator((IIterator**)&iter);
+    while (RETN_OUT_VAL(iter, HasNext)) {
+        newRoutes->Add(RouteWithInterface(IRouteInfo::Probe(RETN_OUT_VAL(iter, GetNext))));
+    }
+    mRoutes = newRoutes;
+    return NOERROR;
 }
 
 ECode LinkProperties::GetInterfaceName(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mIfaceName;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mIfaceName;
+    return NOERROR;
 }
 
 ECode LinkProperties::GetAllInterfaceNames(
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        List<String> interfaceNames = new ArrayList<String>(mStackedLinks.size() + 1);
-        if (mIfaceName != null) interfaceNames.add(new String(mIfaceName));
-        for (LinkProperties stacked: mStackedLinks.values()) {
-            interfaceNames.addAll(stacked.getAllInterfaceNames());
-        }
-        return interfaceNames;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<IList> interfaceNames;
+    CArrayList::New(RETN_OUT_VAL(mStackedLinks, GetSize) + 1, (IList**)&interfaceNames);
+    if (mIfaceName != String(NULL)) {
+        AutoPtr<ICharSequence> csq;
+        CString::New(mIfaceName, (ICharSequence**)&csq);
+        interfaceNames->Add(csq);
+    }
+    AutoPtr<IIterator> iter;
+    RETN_OUT_VAL(mStackedLinks, GetValues)->GetIterator((IIterator**)&iter);
+    while (RETN_OUT_VAL(iter, HasNext)) {
+        AutoPtr<IList> l;
+        ILinkProperties::Probe(RETN_OUT_VAL(iter, GetNext))->GetAllInterfaceNames((IList**)&l);
+        interfaceNames->AddAll(ICollection::Probe(l));
+    }
+    *result = interfaceNames;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode LinkProperties::GetAddresses(
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        List<InetAddress> addresses = new ArrayList<InetAddress>();
-        for (LinkAddress linkAddress : mLinkAddresses) {
-            addresses.add(linkAddress.getAddress());
-        }
-        return Collections.unmodifiableList(addresses);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<IList> addresses;
+    CArrayList::New((IList**)&addresses);
+    FOR_EACH(iter, mLinkAddresses) {
+        AutoPtr<ILinkAddress> linkAddress = ILinkAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+        addresses->Add(RETN_OUT_VAL(linkAddress, GetAddress));
+    }
+    AutoPtr<ICollections> helper;
+    CCollections::AcquireSingleton((ICollections**)&helper);
+    return helper->UnmodifiableList(addresses, result);
 }
 
 ECode LinkProperties::GetAllAddresses(
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        List<InetAddress> addresses = new ArrayList<InetAddress>();
-        for (LinkAddress linkAddress : mLinkAddresses) {
-            addresses.add(linkAddress.getAddress());
-        }
-        for (LinkProperties stacked: mStackedLinks.values()) {
-            addresses.addAll(stacked.getAllAddresses());
-        }
-        return addresses;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<IList> addresses;
+    CArrayList::New((IList**)&addresses);
+    FOR_EACH(iter, mLinkAddresses) {
+        AutoPtr<ILinkAddress> linkAddress = ILinkAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+        addresses->Add(RETN_OUT_VAL(linkAddress, GetAddress));
+    }
+    FOR_EACH(iter_stacked, RETN_OUT_VAL(mStackedLinks, GetValues)) {
+        AutoPtr<ILinkProperties> stacked = ILinkProperties::Probe(ReturnOutValue(iter_stacked, iter_stacked->GetNext));
+        addresses->AddAll(ICollection::Probe(RETN_OUT_VAL(stacked, GetAllAddresses)));
+    }
+    *result = addresses;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-ECode LinkProperties::FindLinkAddressIndex(
-    /* [in] */ ILinkAddress* address,
-    /* [out] */ Int32* result)
+Int32 LinkProperties::FindLinkAddressIndex(
+    /* [in] */ ILinkAddress* address)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        for (int i = 0; i < mLinkAddresses.size(); i++) {
-            if (mLinkAddresses.get(i).isSameAddressAs(address)) {
-                return i;
-            }
+    for (Int32 i = 0; i < RETN_OUT_VAL(mLinkAddresses, GetSize); i++) {
+        AutoPtr<ILinkAddress> linkAddress = ILinkAddress::Probe(RETN_OUT_VAL(mLinkAddresses, Get, i));
+        if (RETN_OUT_VAL(linkAddress, IsSameAddressAs, address)) {
+            return i;
         }
-        return -1;
-
-#endif
+    }
+    return -1;
 }
 
 ECode LinkProperties::AddLinkAddress(
     /* [in] */ ILinkAddress* address,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (address == null) {
-            return false;
-        }
-        int i = findLinkAddressIndex(address);
-        if (i < 0) {
-            // Address was not present. Add it.
-            mLinkAddresses.add(address);
-            return true;
-        } else if (mLinkAddresses.get(i).equals(address)) {
-            // Address was present and has same properties. Do nothing.
-            return false;
-        } else {
-            // Address was present and has different properties. Update it.
-            mLinkAddresses.set(i, address);
-            return true;
-        }
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (address == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    Int32 i = FindLinkAddressIndex(address);
+    if (i < 0) {
+        // Address was not present. Add it.
+        mLinkAddresses->Add(address);
+        *result = TRUE;
+        return NOERROR;
+    }
+    else {
+        AutoPtr<ILinkAddress> linkAddress = ILinkAddress::Probe(RETN_OUT_VAL(mLinkAddresses, Get, i));
+        Boolean isEquals;
+        IObject::Probe(linkAddress)->Equals(address, &isEquals);
+        if (isEquals) {
+            // Address was present and has same properties. Do nothing.
+            *result = FALSE;
+            return NOERROR;
+        }
+        else {
+            // Address was present and has different properties. Update it.
+            mLinkAddresses->Set(i, address);
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    return NOERROR;
 }
 
 ECode LinkProperties::RemoveLinkAddress(
     /* [in] */ ILinkAddress* toRemove,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        int i = findLinkAddressIndex(toRemove);
-        if (i >= 0) {
-            mLinkAddresses.remove(i);
-            return true;
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    Int32 i = FindLinkAddressIndex(toRemove);
+    if (i >= 0) {
+        mLinkAddresses->Remove(i);
+        *result = TRUE;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::GetLinkAddresses(
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return Collections.unmodifiableList(mLinkAddresses);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<ICollections> helper;
+    CCollections::AcquireSingleton((ICollections**)&helper);
+    return helper->UnmodifiableList(IList::Probe(mLinkAddresses), result);
 }
 
 ECode LinkProperties::GetAllLinkAddresses(
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        List<LinkAddress> addresses = new ArrayList<LinkAddress>();
-        addresses.addAll(mLinkAddresses);
-        for (LinkProperties stacked: mStackedLinks.values()) {
-            addresses.addAll(stacked.getAllLinkAddresses());
-        }
-        return addresses;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<IList> addresses;
+    CArrayList::New((IList**)&addresses);
+    addresses->AddAll(ICollection::Probe(mLinkAddresses));
+    FOR_EACH(iter, RETN_OUT_VAL(mStackedLinks, GetValues)) {
+        AutoPtr<ILinkProperties> stacked = ILinkProperties::Probe(RETN_OUT_VAL(iter, GetNext));
+        addresses->AddAll(ICollection::Probe(RETN_OUT_VAL(stacked, GetAllLinkAddresses)));
+    }
+    *result = addresses;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode LinkProperties::SetLinkAddresses(
     /* [in] */ ICollection* addresses)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mLinkAddresses.clear();
-        for (LinkAddress address: addresses) {
-            addLinkAddress(address);
-        }
-
-#endif
+    mLinkAddresses->Clear();
+    FOR_EACH(iter, addresses) {
+        AutoPtr<ILinkAddress> address = ILinkAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+        RETN_OUT_VAL(this, AddLinkAddress, address);
+    }
+    return NOERROR;
 }
 
 ECode LinkProperties::AddDnsServer(
     /* [in] */ IInetAddress* dnsServer,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (dnsServer != null && !mDnses.contains(dnsServer)) {
-            mDnses.add(dnsServer);
-            return true;
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (dnsServer != NULL && !RETN_OUT_VAL(mDnses, Contains, IInterface::Probe(dnsServer))) {
+        mDnses->Add(dnsServer);
+        *result = TRUE;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::SetDnsServers(
     /* [in] */ ICollection* dnsServers)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mDnses.clear();
-        for (InetAddress dnsServer: dnsServers) {
-            addDnsServer(dnsServer);
-        }
-
-#endif
+    mDnses->Clear();
+    FOR_EACH(iter, dnsServers) {
+        AutoPtr<IInetAddress> dnsServer = IInetAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+        RETN_OUT_VAL(this, AddDnsServer, dnsServer);
+    }
+    return NOERROR;
 }
 
 ECode LinkProperties::GetDnsServers(
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return Collections.unmodifiableList(mDnses);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<ICollections> helper;
+    CCollections::AcquireSingleton((ICollections**)&helper);
+    return helper->UnmodifiableList(IList::Probe(mDnses), result);
 }
 
 ECode LinkProperties::SetDomains(
     /* [in] */ const String& domains)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mDomains = domains;
-
-#endif
+    mDomains = domains;
+    return NOERROR;
 }
 
 ECode LinkProperties::GetDomains(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mDomains;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mDomains;
+    return NOERROR;
 }
 
 ECode LinkProperties::SetMtu(
     /* [in] */ Int32 mtu)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mMtu = mtu;
-
-#endif
+    mMtu = mtu;
+    return NOERROR;
 }
 
 ECode LinkProperties::GetMtu(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mMtu;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mMtu;
+    return NOERROR;
 }
 
 ECode LinkProperties::SetTcpBufferSizes(
     /* [in] */ const String& tcpBufferSizes)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mTcpBufferSizes = tcpBufferSizes;
-
-#endif
+    mTcpBufferSizes = tcpBufferSizes;
+    return NOERROR;
 }
 
 ECode LinkProperties::GetTcpBufferSizes(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mTcpBufferSizes;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mTcpBufferSizes;
+    return NOERROR;
 }
 
-ECode LinkProperties::RouteWithInterface(
-    /* [in] */ IRouteInfo* route,
-    /* [out] */ IRouteInfo** result)
+AutoPtr<IRouteInfo> LinkProperties::RouteWithInterface(
+    /* [in] */ IRouteInfo* route)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return new RouteInfo(
-            route.getDestination(),
-            route.getGateway(),
-            mIfaceName,
-            route.getType());
-
-#endif
+    AutoPtr<IRouteInfo> rev;
+    CRouteInfo::New(
+        RETN_OUT_VAL(route, GetDestination),
+        RETN_OUT_VAL(route, GetGateway),
+        mIfaceName,
+        RETN_OUT_VAL(route, GetType),
+        (IRouteInfo**)&rev);
+    return rev;
 }
 
 ECode LinkProperties::AddRoute(
     /* [in] */ IRouteInfo* route,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (route != null) {
-            String routeIface = route.getInterface();
-            if (routeIface != null && !routeIface.equals(mIfaceName)) {
-                throw new IllegalArgumentException(
-                   "Route added with non-matching interface: " + routeIface +
-                   " vs. " + mIfaceName);
-            }
-            route = routeWithInterface(route);
-            if (!mRoutes.contains(route)) {
-                mRoutes.add(route);
-                return true;
-            }
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (route != NULL) {
+        String routeIface;
+        route->GetInterface(&routeIface);
+        if (routeIface != NULL && !routeIface.Equals(mIfaceName)) {
+            Logger::E("LinkProperties", "Route added with non-matching interface: %s vs. %s"
+                , routeIface.string(), mIfaceName.string());
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        route = RouteWithInterface(route);
+        if (!RETN_OUT_VAL(mRoutes, Contains, IInterface::Probe(route))) {
+            mRoutes->Add(route);
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::RemoveRoute(
     /* [in] */ IRouteInfo* route,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return route != null &&
-                Objects.equals(mIfaceName, route.getInterface()) &&
-                mRoutes.remove(route);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = route != NULL &&
+            mIfaceName.Equals(RETN_OUT_VAL(route, GetInterface)) &&
+            RETN_OUT_VAL(mRoutes, Remove, IInterface::Probe(route));
+    return NOERROR;
 }
 
 ECode LinkProperties::GetRoutes(
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return Collections.unmodifiableList(mRoutes);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<ICollections> helper;
+    CCollections::AcquireSingleton((ICollections**)&helper);
+    return helper->UnmodifiableList(IList::Probe(mRoutes), result);
 }
 
 ECode LinkProperties::GetAllRoutes(
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        List<RouteInfo> routes = new ArrayList();
-        routes.addAll(mRoutes);
-        for (LinkProperties stacked: mStackedLinks.values()) {
-            routes.addAll(stacked.getAllRoutes());
-        }
-        return routes;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<IList> routes;
+    CArrayList::New((IList**)&routes);
+    routes->AddAll(ICollection::Probe(mRoutes));
+    FOR_EACH(iter, RETN_OUT_VAL(mStackedLinks, GetValues)) {
+        AutoPtr<ILinkProperties> stacked = ILinkProperties::Probe(RETN_OUT_VAL(iter, GetNext));
+        routes->AddAll(ICollection::Probe(RETN_OUT_VAL(stacked, GetAllRoutes)));
+    }
+    *result = routes;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode LinkProperties::SetHttpProxy(
     /* [in] */ IProxyInfo* proxy)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mHttpProxy = proxy;
-
-#endif
+    mHttpProxy = proxy;
+    return NOERROR;
 }
 
 ECode LinkProperties::GetHttpProxy(
     /* [out] */ IProxyInfo** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mHttpProxy;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mHttpProxy;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode LinkProperties::AddStackedLink(
     /* [in] */ ILinkProperties* link,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (link != null && link.getInterfaceName() != null) {
-            mStackedLinks.put(link.getInterfaceName(), link);
-            return true;
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (link != NULL && RETN_OUT_VAL(link, GetInterfaceName) != NULL) {
+        AutoPtr<ICharSequence> csq;
+        CString::New(RETN_OUT_VAL(link, GetInterfaceName), (ICharSequence**)&csq);
+        mStackedLinks->Put(csq, link);
+        *result = TRUE;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::RemoveStackedLink(
     /* [in] */ ILinkProperties* link,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (link != null && link.getInterfaceName() != null) {
-            LinkProperties removed = mStackedLinks.remove(link.getInterfaceName());
-            return removed != null;
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (link != NULL && RETN_OUT_VAL(link, GetInterfaceName) != NULL) {
+        AutoPtr<ICharSequence> csq;
+        CString::New(RETN_OUT_VAL(link, GetInterfaceName), (ICharSequence**)&csq);
+        AutoPtr<IInterface> removed;
+        mStackedLinks->Remove(csq, (IInterface**)&removed);
+        *result = removed != NULL;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::GetStackedLinks(
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (mStackedLinks.isEmpty()) {
-            return Collections.EMPTY_LIST;
-        }
-        List<LinkProperties> stacked = new ArrayList<LinkProperties>();
-        for (LinkProperties link : mStackedLinks.values()) {
-            stacked.add(new LinkProperties(link));
-        }
-        return Collections.unmodifiableList(stacked);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<ICollections> helper;
+    CCollections::AcquireSingleton((ICollections**)&helper);
+    if (RETN_OUT_VAL(mStackedLinks, IsEmpty)) {
+        helper->GetEmptyList(result);
+    }
+    AutoPtr<IList> stacked;
+    CArrayList::New((IList**)&stacked);
+    FOR_EACH(iter, RETN_OUT_VAL(mStackedLinks, GetValues)) {
+        AutoPtr<ILinkProperties> link = ILinkProperties::Probe(RETN_OUT_VAL(iter, GetNext));
+        AutoPtr<ILinkProperties> new_link;
+        CLinkProperties::New(link, (ILinkProperties**)&new_link);
+        stacked->Add(ReturnOutValue<ILinkProperties, ILinkProperties>(CLinkProperties::New, link));
+    }
+    return helper->UnmodifiableList(IList::Probe(stacked), result);
 }
 
 ECode LinkProperties::Clear()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mIfaceName = null;
-        mLinkAddresses.clear();
-        mDnses.clear();
-        mDomains = null;
-        mRoutes.clear();
-        mHttpProxy = null;
-        mStackedLinks.clear();
-        mMtu = 0;
-        mTcpBufferSizes = null;
-
-#endif
+    mIfaceName = NULL;
+    mLinkAddresses->Clear();
+    mDnses->Clear();
+    mDomains = NULL;
+    mRoutes->Clear();
+    mHttpProxy = NULL;
+    mStackedLinks->Clear();
+    mMtu = 0;
+    mTcpBufferSizes = NULL;
+    return NOERROR;
 }
 
 ECode LinkProperties::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String ifaceName = (mIfaceName == null ? "" : "InterfaceName: " + mIfaceName + " ");
-        String linkAddresses = "LinkAddresses: [";
-        for (LinkAddress addr : mLinkAddresses) linkAddresses += addr.toString() + ",";
-        linkAddresses += "] ";
-        String dns = "DnsAddresses: [";
-        for (InetAddress addr : mDnses) dns += addr.getHostAddress() + ",";
-        dns += "] ";
-        String domainName = "Domains: " + mDomains;
-        String mtu = " MTU: " + mMtu;
-        String tcpBuffSizes = "";
-        if (mTcpBufferSizes != null) {
-            tcpBuffSizes = " TcpBufferSizes: " + mTcpBufferSizes;
-        }
-        String routes = " Routes: [";
-        for (RouteInfo route : mRoutes) routes += route.toString() + ",";
-        routes += "] ";
-        String proxy = (mHttpProxy == null ? "" : " HttpProxy: " + mHttpProxy.toString() + " ");
-        String stacked = "";
-        if (mStackedLinks.values().size() > 0) {
-            stacked += " Stacked: [";
-            for (LinkProperties link: mStackedLinks.values()) {
-                stacked += " [" + link.toString() + " ],";
-            }
-            stacked += "] ";
-        }
-        return "{" + ifaceName + linkAddresses + routes + dns + domainName + mtu
-            + tcpBuffSizes + proxy + stacked + "}";
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    String ifaceName = (mIfaceName == NULL ? String("") : String("InterfaceName: ") + mIfaceName + " ");
+    String linkAddresses("LinkAddresses: [");
+    FOR_EACH(iter, mLinkAddresses) {
+        AutoPtr<ILinkAddress> addr = ILinkAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+        String s;
+        IObject::Probe(addr)->ToString(&s);
+        linkAddresses += s + ",";
+    }
+    linkAddresses += "] ";
+    String dns("DnsAddresses: [");
+    FOR_EACH(iter_dns, mDnses) {
+        AutoPtr<IInetAddress> addr = IInetAddress::Probe(ReturnOutValue(iter_dns, iter_dns->GetNext));
+        dns += RETN_OUT_VAL(addr, GetHostAddress) + ",";
+    }
+    dns += "] ";
+    String domainName = String("Domains: ") + mDomains;
+    String mtu;
+    mtu.AppendFormat(" MTU: %d", mMtu);
+    String tcpBuffSizes("");
+    if (mTcpBufferSizes != NULL) {
+        tcpBuffSizes = " TcpBufferSizes: ";
+        tcpBuffSizes += mTcpBufferSizes;
+    }
+    String routes(" Routes: [");
+    FOR_EACH(iter_route, mRoutes) {
+        AutoPtr<IRouteInfo> route = IRouteInfo::Probe(ReturnOutValue(iter_route, iter_route->GetNext));
+        String s;
+        IObject::Probe(route)->ToString(&s);
+        routes += s + ",";
+    }
+    routes += "] ";
+    String s;
+    IObject::Probe(mHttpProxy)->ToString(&s);
+    String proxy = (mHttpProxy == NULL ? String("") : String(" HttpProxy: ") + s + " ");
+    String stacked("");
+    AutoPtr<ICollection> values;
+    mStackedLinks->GetValues((ICollection**)&values);
+    if (RETN_OUT_VAL(values, GetSize) > 0) {
+        stacked += " Stacked: [";
+        FOR_EACH(iter, values) {
+            AutoPtr<ILinkProperties> link = ILinkProperties::Probe(RETN_OUT_VAL(iter, GetNext));
+            String s;
+            IObject::Probe(link)->ToString(&s);
+            stacked += String(" [") + s + " ],";
+        }
+        stacked += "] ";
+    }
+    *result = String("{") + ifaceName + linkAddresses + routes + dns + domainName + mtu
+        + tcpBuffSizes + proxy + stacked + "}";
+    return NOERROR;
 }
 
 ECode LinkProperties::HasIPv4Address(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        for (LinkAddress address : mLinkAddresses) {
-          if (address.getAddress() instanceof Inet4Address) {
-            return true;
-          }
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FOR_EACH(iter, mLinkAddresses) {
+        AutoPtr<ILinkAddress> address = ILinkAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+        if (IInet4Address::Probe(RETN_OUT_VAL(address, GetAddress)) != NULL) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::HasGlobalIPv6Address(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        for (LinkAddress address : mLinkAddresses) {
-          if (address.getAddress() instanceof Inet6Address && address.isGlobalPreferred()) {
-            return true;
-          }
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FOR_EACH(iter, mLinkAddresses) {
+        AutoPtr<ILinkAddress> address = ILinkAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+        if (IInet6Address::Probe(RETN_OUT_VAL(address, GetAddress)) != NULL  && RETN_OUT_VAL(address, IsGlobalPreferred)) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::HasIPv4DefaultRoute(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        for (RouteInfo r : mRoutes) {
-          if (r.isIPv4Default()) {
-            return true;
-          }
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FOR_EACH(iter, mRoutes) {
+        AutoPtr<IRouteInfo> r = IRouteInfo::Probe(RETN_OUT_VAL(iter, GetNext));
+        if (RETN_OUT_VAL(r, IsIPv4Default)) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::HasIPv6DefaultRoute(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        for (RouteInfo r : mRoutes) {
-          if (r.isIPv6Default()) {
-            return true;
-          }
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FOR_EACH(iter, mRoutes) {
+        AutoPtr<IRouteInfo> r = IRouteInfo::Probe(RETN_OUT_VAL(iter, GetNext));
+        if (RETN_OUT_VAL(r, IsIPv6Default)) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::HasIPv4DnsServer(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        for (InetAddress ia : mDnses) {
-          if (ia instanceof Inet4Address) {
-            return true;
-          }
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FOR_EACH(iter, mDnses) {
+        AutoPtr<IInetAddress> ia = IInetAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+        if (IInet4Address::Probe(ia) != NULL) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::HasIPv6DnsServer(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        for (InetAddress ia : mDnses) {
-          if (ia instanceof Inet6Address) {
-            return true;
-          }
-        }
-        return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    FOR_EACH(iter, mDnses) {
+        AutoPtr<IInetAddress> ia = IInetAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+        if (IInet6Address::Probe(ia) != NULL) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::IsProvisioned(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (hasIPv4Address() ||
-                (hasGlobalIPv6Address() && hasIPv6DefaultRoute() && hasIPv6DnsServer()));
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = (RETN_OUT_VAL(this, HasIPv4Address) ||
+            (RETN_OUT_VAL(this, HasGlobalIPv6Address) && RETN_OUT_VAL(this, HasIPv6DefaultRoute) && RETN_OUT_VAL(this, HasIPv6DnsServer)));
+    return NOERROR;
 }
 
 ECode LinkProperties::IsIdenticalInterfaceName(
     /* [in] */ ILinkProperties* target,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return TextUtils.equals(getInterfaceName(), target.getInterfaceName());
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = TextUtils::Equals(RETN_OUT_VAL(this, GetInterfaceName), RETN_OUT_VAL(target, GetInterfaceName));
+    return NOERROR;
 }
 
 ECode LinkProperties::IsIdenticalAddresses(
     /* [in] */ ILinkProperties* target,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Collection<InetAddress> targetAddresses = target.getAddresses();
-        Collection<InetAddress> sourceAddresses = getAddresses();
-        return (sourceAddresses.size() == targetAddresses.size()) ?
-                    sourceAddresses.containsAll(targetAddresses) : false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<IList> targetAddresses;
+    target->GetAddresses((IList**)&targetAddresses);
+    AutoPtr<IList> sourceAddresses;
+    GetAddresses((IList**)&sourceAddresses);
+    *result = (RETN_OUT_VAL(sourceAddresses, GetSize) == RETN_OUT_VAL(targetAddresses, GetSize)) ?
+                RETN_OUT_VAL(sourceAddresses, ContainsAll, ICollection::Probe(targetAddresses)) : FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::IsIdenticalDnses(
     /* [in] */ ILinkProperties* target,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Collection<InetAddress> targetDnses = target.getDnsServers();
-        String targetDomains = target.getDomains();
-        if (mDomains == null) {
-            if (targetDomains != null) return false;
-        } else {
-            if (mDomains.equals(targetDomains) == false) return false;
-        }
-        return (mDnses.size() == targetDnses.size()) ?
-                    mDnses.containsAll(targetDnses) : false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<IList> targetDnses;
+    target->GetDnsServers((IList**)&targetDnses);
+    String targetDomains;
+    target->GetDomains(&targetDomains);
+    if (mDomains == NULL) {
+        if (targetDomains != NULL) {
+            *result = FALSE;
+            return NOERROR;
+        }
+    }
+    else {
+        if (mDomains.Equals(targetDomains) == FALSE) {
+            *result = FALSE;
+            return NOERROR;
+        }
+    }
+    *result = (RETN_OUT_VAL(mDnses, GetSize) == RETN_OUT_VAL(targetDnses, GetSize)) ?
+                RETN_OUT_VAL(mDnses, ContainsAll, ICollection::Probe(targetDnses)) : FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::IsIdenticalRoutes(
     /* [in] */ ILinkProperties* target,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Collection<RouteInfo> targetRoutes = target.getRoutes();
-        return (mRoutes.size() == targetRoutes.size()) ?
-                    mRoutes.containsAll(targetRoutes) : false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<IList> targetRoutes;
+    target->GetRoutes((IList**)&targetRoutes);
+    *result = (RETN_OUT_VAL(mRoutes, GetSize) == RETN_OUT_VAL(targetRoutes, GetSize)) ?
+                RETN_OUT_VAL(mRoutes, ContainsAll, ICollection::Probe(targetRoutes)) : FALSE;
+    return NOERROR;
 }
 
 ECode LinkProperties::IsIdenticalHttpProxy(
     /* [in] */ ILinkProperties* target,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return getHttpProxy() == null ? target.getHttpProxy() == null :
-                    getHttpProxy().equals(target.getHttpProxy());
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<IInterface> obj = IInterface::Probe(RETN_OUT_VAL(target, GetHttpProxy));
+    *result = RETN_OUT_VAL(this, GetHttpProxy) == NULL ? RETN_OUT_VAL(target, GetHttpProxy) == NULL :
+            RETN_OUT_VAL(IObject::Probe(RETN_OUT_VAL(this, GetHttpProxy)), Equals, obj);
+    return NOERROR;
 }
 
 ECode LinkProperties::IsIdenticalStackedLinks(
     /* [in] */ ILinkProperties* target,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (!mStackedLinks.keySet().equals(target.mStackedLinks.keySet())) {
-            return false;
-        }
-        for (LinkProperties stacked : mStackedLinks.values()) {
-            // Hashtable values can never be null.
-            String iface = stacked.getInterfaceName();
-            if (!stacked.equals(target.mStackedLinks.get(iface))) {
-                return false;
-            }
-        }
-        return true;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    AutoPtr<ISet> keySet;
+    ((LinkProperties*)target)->mStackedLinks->GetKeySet((ISet**)&keySet);
+    if (!RETN_OUT_VAL(IObject::Probe(RETN_OUT_VAL(mStackedLinks, GetKeySet)), Equals, IInterface::Probe(keySet))) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    FOR_EACH(iter, RETN_OUT_VAL(mStackedLinks, GetValues)) {
+        AutoPtr<ILinkProperties> stacked = ILinkProperties::Probe(RETN_OUT_VAL(iter, GetNext));
+        // Hashtable values can never be null.
+        String iface;
+        stacked->GetInterfaceName(&iface);
+        AutoPtr<ICharSequence> csq;
+        CString::New(iface, (ICharSequence**)&csq);
+        AutoPtr<IInterface> value;
+        ((LinkProperties*)target)->mStackedLinks->Get(csq, (IInterface**)&value);
+        if (!RETN_OUT_VAL(IObject::Probe(stacked), Equals, value)) {
+            *result = FALSE;
+            return NOERROR;
+        }
+    }
+    *result = TRUE;
+    return NOERROR;
 }
 
 ECode LinkProperties::IsIdenticalMtu(
     /* [in] */ ILinkProperties* target,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return getMtu() == target.getMtu();
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = RETN_OUT_VAL(this, GetMtu) == RETN_OUT_VAL(target, GetMtu);
+    return NOERROR;
 }
 
 ECode LinkProperties::IsIdenticalTcpBufferSizes(
     /* [in] */ ILinkProperties* target,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return Objects.equals(mTcpBufferSizes, target.mTcpBufferSizes);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mTcpBufferSizes.Equals(((LinkProperties*)target)->mTcpBufferSizes);
+    return NOERROR;
 }
 
 ECode LinkProperties::Equals(
-    /* [in] */ IObject* obj,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (this == obj) return true;
-        if (!(obj instanceof LinkProperties)) return false;
-        LinkProperties target = (LinkProperties) obj;
-        /**
-         * This method does not check that stacked interfaces are equal, because
-         * stacked interfaces are not so much a property of the link as a
-         * description of connections between links.
-         */
-        return isIdenticalInterfaceName(target) &&
-                isIdenticalAddresses(target) &&
-                isIdenticalDnses(target) &&
-                isIdenticalRoutes(target) &&
-                isIdenticalHttpProxy(target) &&
-                isIdenticalStackedLinks(target) &&
-                isIdenticalMtu(target) &&
-                isIdenticalTcpBufferSizes(target);
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (TO_IINTERFACE(this) == IInterface::Probe(obj)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    if (ILinkProperties::Probe(obj) == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    AutoPtr<ILinkProperties> target = ILinkProperties::Probe(obj);
+    /**
+     * This method does not check that stacked interfaces are equal, because
+     * stacked interfaces are not so much a property of the link as a
+     * description of connections between links.
+     */
+    *result = RETN_OUT_VAL(this, IsIdenticalInterfaceName, target) &&
+            RETN_OUT_VAL(this, IsIdenticalAddresses, target) &&
+            RETN_OUT_VAL(this, IsIdenticalDnses, target) &&
+            RETN_OUT_VAL(this, IsIdenticalRoutes, target) &&
+            RETN_OUT_VAL(this, IsIdenticalHttpProxy, target) &&
+            RETN_OUT_VAL(this, IsIdenticalStackedLinks, target) &&
+            RETN_OUT_VAL(this, IsIdenticalMtu, target) &&
+            RETN_OUT_VAL(this, IsIdenticalTcpBufferSizes, target);
+    return NOERROR;
 }
 
 ECode LinkProperties::CompareAddresses(
     /* [in] */ ILinkProperties* target,
     /* [out] */ ILinkPropertiesCompareResult** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        /*
-         * Duplicate the LinkAddresses into removed, we will be removing
-         * address which are common between mLinkAddresses and target
-         * leaving the addresses that are different. And address which
-         * are in target but not in mLinkAddresses are placed in the
-         * addedAddresses.
-         */
-        CompareResult<LinkAddress> result = new CompareResult<LinkAddress>();
-        result.removed = new ArrayList<LinkAddress>(mLinkAddresses);
-        result.added.clear();
-        if (target != null) {
-            for (LinkAddress newAddress : target.getLinkAddresses()) {
-                if (! result.removed.remove(newAddress)) {
-                    result.added.add(newAddress);
-                }
+    VALIDATE_NOT_NULL(result)
+
+    /*
+     * Duplicate the LinkAddresses into removed, we will be removing
+     * address which are common between mLinkAddresses and target
+     * leaving the addresses that are different. And address which
+     * are in target but not in mLinkAddresses are placed in the
+     * addedAddresses.
+     */
+    CLinkPropertiesCompareResult::New(result);
+    (*result)->SetRemoved(IList::Probe(ReturnOutValue<IArrayList, ICollection>(CArrayList::New, ICollection::Probe(mLinkAddresses))));
+    RETN_OUT_VAL((*result), GetAdded)->Clear();
+    if (target != NULL) {
+        FOR_EACH(iter, RETN_OUT_VAL(target, GetLinkAddresses)) {
+            AutoPtr<ILinkAddress> newAddress = ILinkAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+            if (!RETN_OUT_VAL(RETN_OUT_VAL((*result), GetRemoved), Remove, IInterface::Probe(newAddress))) {
+                RETN_OUT_VAL((*result), GetAdded)->Add(newAddress);
             }
         }
-        return result;
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode LinkProperties::CompareDnses(
     /* [in] */ ILinkProperties* target,
     /* [out] */ ILinkPropertiesCompareResult** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        /*
-         * Duplicate the InetAddresses into removed, we will be removing
-         * dns address which are common between mDnses and target
-         * leaving the addresses that are different. And dns address which
-         * are in target but not in mDnses are placed in the
-         * addedAddresses.
-         */
-        CompareResult<InetAddress> result = new CompareResult<InetAddress>();
-        result.removed = new ArrayList<InetAddress>(mDnses);
-        result.added.clear();
-        if (target != null) {
-            for (InetAddress newAddress : target.getDnsServers()) {
-                if (! result.removed.remove(newAddress)) {
-                    result.added.add(newAddress);
-                }
+    VALIDATE_NOT_NULL(result)
+
+    /*
+     * Duplicate the InetAddresses into removed, we will be removing
+     * dns address which are common between mDnses and target
+     * leaving the addresses that are different. And dns address which
+     * are in target but not in mDnses are placed in the
+     * addedAddresses.
+     */
+    CLinkPropertiesCompareResult::New(result);
+    (*result)->SetRemoved(ReturnOutValue<IList, ICollection>(CArrayList::New, ICollection::Probe(mDnses)));
+    RETN_OUT_VAL((*result), GetAdded)->Clear();
+    if (target != NULL) {
+        FOR_EACH(iter, RETN_OUT_VAL(target, GetDnsServers)) {
+            AutoPtr<IInetAddress> newAddress = IInetAddress::Probe(RETN_OUT_VAL(iter, GetNext));
+            if (!RETN_OUT_VAL(RETN_OUT_VAL((*result), GetRemoved), Remove, IInterface::Probe(newAddress))) {
+                RETN_OUT_VAL((*result), GetAdded)->Add(newAddress);
             }
         }
-        return result;
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode LinkProperties::CompareAllRoutes(
     /* [in] */ ILinkProperties* target,
     /* [out] */ ILinkPropertiesCompareResult** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        /*
-         * Duplicate the RouteInfos into removed, we will be removing
-         * routes which are common between mRoutes and target
-         * leaving the routes that are different. And route address which
-         * are in target but not in mRoutes are placed in added.
-         */
-        CompareResult<RouteInfo> result = new CompareResult<RouteInfo>();
-        result.removed = getAllRoutes();
-        result.added.clear();
-        if (target != null) {
-            for (RouteInfo r : target.getAllRoutes()) {
-                if (! result.removed.remove(r)) {
-                    result.added.add(r);
-                }
+    VALIDATE_NOT_NULL(result)
+
+    /*
+     * Duplicate the RouteInfos into removed, we will be removing
+     * routes which are common between mRoutes and target
+     * leaving the routes that are different. And route address which
+     * are in target but not in mRoutes are placed in added.
+     */
+    CLinkPropertiesCompareResult::New(result);
+    (*result)->SetRemoved(RETN_OUT_VAL(this, GetAllRoutes));
+    RETN_OUT_VAL((*result), GetAdded)->Clear();
+    if (target != NULL) {
+        FOR_EACH(iter, RETN_OUT_VAL(target, GetAllRoutes)) {
+            AutoPtr<IRouteInfo> r = IRouteInfo::Probe(RETN_OUT_VAL(iter, GetNext));
+            if (!RETN_OUT_VAL(RETN_OUT_VAL((*result), GetRemoved), Remove, IInterface::Probe(r))) {
+                RETN_OUT_VAL((*result), GetAdded)->Add(r);
             }
         }
-        return result;
-
-#endif
+    }
+    return NOERROR;
 }
 
 ECode LinkProperties::CompareAllInterfaceNames(
     /* [in] */ ILinkProperties* target,
     /* [out] */ ILinkPropertiesCompareResult** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        /*
-         * Duplicate the interface names into removed, we will be removing
-         * interface names which are common between this and target
-         * leaving the interface names that are different. And interface names which
-         * are in target but not in this are placed in added.
-         */
-        CompareResult<String> result = new CompareResult<String>();
-        result.removed = getAllInterfaceNames();
-        result.added.clear();
-        if (target != null) {
-            for (String r : target.getAllInterfaceNames()) {
-                if (! result.removed.remove(r)) {
-                    result.added.add(r);
-                }
+    VALIDATE_NOT_NULL(result)
+
+    /*
+     * Duplicate the interface names into removed, we will be removing
+     * interface names which are common between this and target
+     * leaving the interface names that are different. And interface names which
+     * are in target but not in this are placed in added.
+     */
+    CLinkPropertiesCompareResult::New(result);
+    (*result)->SetRemoved(RETN_OUT_VAL(this, GetAllInterfaceNames));
+    RETN_OUT_VAL((*result), GetAdded)->Clear();
+    if (target != NULL) {
+        FOR_EACH(iter, RETN_OUT_VAL(target, GetAllInterfaceNames)) {
+            AutoPtr<ICharSequence> r = ICharSequence::Probe(RETN_OUT_VAL(iter, GetNext));
+            if (!RETN_OUT_VAL(RETN_OUT_VAL((*result), GetRemoved), Remove, IInterface::Probe(r))) {
+                RETN_OUT_VAL((*result), GetAdded)->Add(r);
             }
         }
-        return result;
-
-#endif
+    }
+    return NOERROR;
 }
 
-ECode LinkProperties::HashCode(
+ECode LinkProperties::GetHashCode(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return ((null == mIfaceName) ? 0 : mIfaceName.hashCode()
-                + mLinkAddresses.size() * 31
-                + mDnses.size() * 37
-                + ((null == mDomains) ? 0 : mDomains.hashCode())
-                + mRoutes.size() * 41
-                + ((null == mHttpProxy) ? 0 : mHttpProxy.hashCode())
-                + mStackedLinks.hashCode() * 47)
-                + mMtu * 51
-                + ((null == mTcpBufferSizes) ? 0 : mTcpBufferSizes.hashCode());
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = ((String(NULL) == mIfaceName) ? 0 : mIfaceName.GetHashCode())
+            + RETN_OUT_VAL(mLinkAddresses, GetSize) * 31
+            + RETN_OUT_VAL(mDnses, GetSize) * 37
+            + (((String(NULL) == mDomains) ? 0 : mDomains.GetHashCode()))
+            + RETN_OUT_VAL(mRoutes, GetSize) * 41
+            + ((NULL == mHttpProxy) ? 0 : RETN_OUT_VAL(IObject::Probe(mHttpProxy), GetHashCode))
+            + RETN_OUT_VAL(mStackedLinks, GetHashCode) * 47
+            + mMtu * 51
+            + ((String(NULL) == mTcpBufferSizes) ? 0 : mTcpBufferSizes.GetHashCode());
+    return NOERROR;
 }
 
 ECode LinkProperties::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public LinkProperties createFromParcel(Parcel in) {
-                LinkProperties netProp = new LinkProperties();
-                String iface = in.readString();
-                if (iface != null) {
-                    netProp.setInterfaceName(iface);
-                }
-                int addressCount = in.readInt();
-                for (int i=0; i<addressCount; i++) {
-                    netProp.addLinkAddress((LinkAddress)in.readParcelable(null));
-                }
-                addressCount = in.readInt();
-                for (int i=0; i<addressCount; i++) {
-                    try {
-                        netProp.addDnsServer(InetAddress.getByAddress(in.createByteArray()));
-                    } catch (UnknownHostException e) { }
-                }
-                netProp.setDomains(in.readString());
-                netProp.setMtu(in.readInt());
-                netProp.setTcpBufferSizes(in.readString());
-                addressCount = in.readInt();
-                for (int i=0; i<addressCount; i++) {
-                    netProp.addRoute((RouteInfo)in.readParcelable(null));
-                }
-                if (in.readByte() == 1) {
-                    netProp.setHttpProxy((ProxyInfo)in.readParcelable(null));
-                }
-                ArrayList<LinkProperties> stackedLinks = new ArrayList<LinkProperties>();
-                in.readList(stackedLinks, LinkProperties.class.getClassLoader());
-                for (LinkProperties stackedLink: stackedLinks) {
-                    netProp.addStackedLink(stackedLink);
-                }
-                return netProp;
-            }
-            public LinkProperties[] newArray(int size) {
-                return new LinkProperties[size];
-            }
-
-#endif
+    parcel->ReadString(&mIfaceName);
+    AutoPtr<IInterface> obj;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mLinkAddresses = IArrayList::Probe(obj);
+    obj = NULL;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mDnses = IArrayList::Probe(obj);
+    obj = NULL;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mRoutes = IArrayList::Probe(obj);
+    String mDomains;
+    obj = NULL;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mHttpProxy = IProxyInfo::Probe(obj);
+    parcel->ReadInt32(&mMtu);
+    parcel->ReadString(&mTcpBufferSizes);
+    obj = NULL;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mStackedLinks = IHashTable::Probe(obj);
+    return NOERROR;
 }
 
 ECode LinkProperties::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public LinkProperties createFromParcel(Parcel in) {
-                LinkProperties netProp = new LinkProperties();
-                String iface = in.readString();
-                if (iface != null) {
-                    netProp.setInterfaceName(iface);
-                }
-                int addressCount = in.readInt();
-                for (int i=0; i<addressCount; i++) {
-                    netProp.addLinkAddress((LinkAddress)in.readParcelable(null));
-                }
-                addressCount = in.readInt();
-                for (int i=0; i<addressCount; i++) {
-                    try {
-                        netProp.addDnsServer(InetAddress.getByAddress(in.createByteArray()));
-                    } catch (UnknownHostException e) { }
-                }
-                netProp.setDomains(in.readString());
-                netProp.setMtu(in.readInt());
-                netProp.setTcpBufferSizes(in.readString());
-                addressCount = in.readInt();
-                for (int i=0; i<addressCount; i++) {
-                    netProp.addRoute((RouteInfo)in.readParcelable(null));
-                }
-                if (in.readByte() == 1) {
-                    netProp.setHttpProxy((ProxyInfo)in.readParcelable(null));
-                }
-                ArrayList<LinkProperties> stackedLinks = new ArrayList<LinkProperties>();
-                in.readList(stackedLinks, LinkProperties.class.getClassLoader());
-                for (LinkProperties stackedLink: stackedLinks) {
-                    netProp.addStackedLink(stackedLink);
-                }
-                return netProp;
-            }
-            public LinkProperties[] newArray(int size) {
-                return new LinkProperties[size];
-            }
-
-#endif
+    dest->WriteString(mIfaceName);
+    dest->WriteInterfacePtr(mLinkAddresses.Get());
+    dest->WriteInterfacePtr(mDnses.Get());
+    dest->WriteInterfacePtr(mRoutes.Get());
+    dest->WriteString(mDomains);
+    dest->WriteInterfacePtr(mHttpProxy.Get());
+    dest->WriteInt32(mMtu);
+    dest->WriteString(mTcpBufferSizes);
+    dest->WriteInterfacePtr(mStackedLinks.Get());
+    return NOERROR;
 }
 
 
@@ -978,16 +1040,22 @@ ECode LinkProperties::IsValidMtu(
     /* [in] */ Boolean ipv6,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            if (ipv6) {
-                if ((mtu >= MIN_MTU_V6 && mtu <= MAX_MTU)) return true;
-            } else {
-                if ((mtu >= MIN_MTU && mtu <= MAX_MTU)) return true;
-            }
-            return false;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (ipv6) {
+        if ((mtu >= MIN_MTU_V6 && mtu <= MAX_MTU)) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    else {
+        if ((mtu >= MIN_MTU && mtu <= MAX_MTU)) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 //====================================================================================
@@ -998,16 +1066,21 @@ CAR_INTERFACE_IMPL(LinkPropertiesCompareResult, Object, ILinkPropertiesCompareRe
 ECode LinkPropertiesCompareResult::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            String retVal = "removed=[";
-            for (T addr : removed) retVal += addr.toString() + ",";
-            retVal += "] added=[";
-            for (T addr : added) retVal += addr.toString() + ",";
-            retVal += "]";
-            return retVal;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    String retVal("removed=[");
+    FOR_EACH(iter, mRemoved) {
+        AutoPtr<IObject> addr = IObject::Probe(RETN_OUT_VAL(iter, GetNext));
+        retVal += RETN_OUT_VAL(addr, ToString) + ",";
+    }
+    retVal += "] added=[";
+    FOR_EACH (iter_added, mAdded) {
+        AutoPtr<IObject> addr = IObject::Probe(RETN_OUT_VAL(iter_added, GetNext));
+        retVal += RETN_OUT_VAL(addr, ToString) + ",";
+    }
+    retVal += "]";
+    *result = retVal;
+    return NOERROR;
 }
 
 ECode LinkPropertiesCompareResult::GetRemoved(

@@ -1,14 +1,77 @@
 
 #include "elastos/droid/app/ProgressDialog.h"
+#include "elastos/droid/app/CProgressDialog.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/CSpannableString.h"
+#include "elastos/droid/text/style/CStyleSpan.h"
 #include "elastos/droid/view/LayoutInflater.h"
+#include <elastos/core/CoreUtils.h>
 
+using Elastos::Droid::R;
+using Elastos::Droid::Text::ISpanned;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::ISpannableString;
+using Elastos::Droid::Text::CSpannableString;
+using Elastos::Droid::Text::Style::IStyleSpan;
+using Elastos::Droid::Text::Style::CStyleSpan;
+using Elastos::Droid::Graphics::ITypeface;
 using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::Widget::EIID_IProgressBar;
 using Elastos::Droid::Widget::EIID_ITextView;
+using Elastos::Text::INumberFormatHelper;
+using Elastos::Text::CNumberFormatHelper;
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
+
+ProgressDialog::ViewUpdateHandler::ViewUpdateHandler(
+    /* [in] */ ProgressDialog* host)
+    : Handler(FALSE)
+    , mHost(host)
+{}
+
+ECode ProgressDialog::ViewUpdateHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    Handler::HandleMessage(msg);
+
+    /* Update the number and percent */
+    Int32 progress;
+    mHost->mProgress->GetProgress(&progress);
+    Int32 max;
+    mHost->mProgress->GetMax(&max);
+    if (mHost->mProgressNumberFormat != NULL) {
+        String format = mHost->mProgressNumberFormat;
+        String text;
+        text.AppendFormat(format, progress, max);
+        mHost->mProgressNumber->SetText(CoreUtils::Convert(text));
+    }
+    else {
+        mHost->mProgressNumber->SetText(CoreUtils::Convert(""));
+    }
+
+    if (mHost->mProgressPercentFormat != NULL) {
+        Double percent = (Double) progress / (Double) max;
+        String str;
+        mHost->mProgressPercentFormat->Format(percent, &str);
+        AutoPtr<ISpannableString> tmp;
+        CSpannableString::New(CoreUtils::Convert(str), (ISpannableString**)&tmp);
+        Int32 length;
+        ICharSequence::Probe(tmp)->GetLength(&length);
+        AutoPtr<IStyleSpan> styleSpan;
+        CStyleSpan::New(ITypeface::BOLD, (IStyleSpan**)&styleSpan);
+        ISpannable::Probe(tmp)->SetSpan(styleSpan.Get(), 0, length, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+        mHost->mProgressPercent->SetText(ICharSequence::Probe(tmp));
+    }
+    else {
+        mHost->mProgressPercent->SetText(CoreUtils::Convert(""));
+    }
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(ProgressDialog, AlertDialog, IProgressDialog)
 
 ProgressDialog::ProgressDialog()
     : mProgressStyle(IProgressDialog::STYLE_SPINNER)
@@ -23,36 +86,22 @@ ProgressDialog::ProgressDialog()
     InitFormats();
 }
 
-ProgressDialog::ProgressDialog(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 theme)
-    : mProgressStyle(IProgressDialog::STYLE_SPINNER)
-    , mMax(0)
-    , mProgressVal(0)
-    , mSecondaryProgressVal(0)
-    , mIncrementBy(0)
-    , mIncrementSecondaryBy(0)
-    , mIndeterminate(FALSE)
-    , mHasStarted(FALSE)
+ProgressDialog::~ProgressDialog()
+{}
+
+ECode ProgressDialog::constructor(
+    /* [in] */ IContext* context)
 {
-    AlertDialog::Init(context, theme);
+    AlertDialog::constructor(context);
     InitFormats();
+    return NOERROR;
 }
 
-ECode ProgressDialog::Init(
+ECode ProgressDialog::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 theme)
 {
-    mProgressStyle = IProgressDialog::STYLE_SPINNER;
-    mMax = 0;
-    mProgressVal = 0;
-    mSecondaryProgressVal = 0;
-    mIncrementBy = 0;
-    mIncrementSecondaryBy = 0;
-    mIndeterminate = FALSE;
-    mHasStarted = FALSE;
-
-    AlertDialog::Init(context, theme);
+    AlertDialog::constructor(context, theme);
     InitFormats();
     return NOERROR;
 }
@@ -60,12 +109,59 @@ ECode ProgressDialog::Init(
 void ProgressDialog::InitFormats()
 {
     mProgressNumberFormat = "%1d/%2d";
-//    NumberFormat::GetPercentInstance(&mProgressPercentFormat);
-//    mProgressPercentFormat->SetMaximumFractionDigits(0);
+    AutoPtr<INumberFormatHelper> helper;
+    CNumberFormatHelper::AcquireSingleton((INumberFormatHelper**)&helper);
+    helper->GetPercentInstance((INumberFormat**)&mProgressPercentFormat);
+    mProgressPercentFormat->SetMaximumFractionDigits(0);
 }
 
-// @Override
-void ProgressDialog::OnCreate(
+AutoPtr<IProgressDialog> ProgressDialog::Show(
+    /* [in] */ IContext* context,
+    /* [in] */ ICharSequence* title,
+    /* [in] */ ICharSequence* message)
+{
+    return Show(context, title, message, FALSE);
+}
+
+AutoPtr<IProgressDialog> ProgressDialog::Show(
+    /* [in] */ IContext* context,
+    /* [in] */ ICharSequence* title,
+    /* [in] */ ICharSequence* message,
+    /* [in] */ Boolean indeterminate)
+{
+    return Show(context, title, message, indeterminate, FALSE, NULL);
+}
+
+AutoPtr<IProgressDialog> ProgressDialog::Show(
+    /* [in] */ IContext* context,
+    /* [in] */ ICharSequence* title,
+    /* [in] */ ICharSequence* message,
+    /* [in] */ Boolean indeterminate,
+    /* [in] */ Boolean cancelable)
+{
+    return Show(context, title, message, indeterminate, cancelable, NULL);
+}
+
+AutoPtr<IProgressDialog> ProgressDialog::Show(
+    /* [in] */ IContext* context,
+    /* [in] */ ICharSequence* title,
+    /* [in] */ ICharSequence* message,
+    /* [in] */ Boolean indeterminate,
+    /* [in] */ Boolean cancelable,
+    /* [in] */ IDialogInterfaceOnCancelListener* cancelListener)
+{
+    AutoPtr<CProgressDialog> dialog;
+    CProgressDialog::NewByFriend(context, (CProgressDialog**)&dialog);
+    dialog->SetTitle(title);
+    dialog->SetMessage(message);
+    dialog->SetIndeterminate(indeterminate);
+    dialog->SetCancelable(cancelable);
+    dialog->SetOnCancelListener(cancelListener);
+    IDialog::Probe(dialog)->Show();
+    return dialog;
+}
+
+ECode ProgressDialog::OnCreate(
     /* [in] */ IBundle* savedInstanceState)
 {
     AutoPtr<ILayoutInflater> inflater;
@@ -79,50 +175,38 @@ void ProgressDialog::OnCreate(
             attrIds, R::attr::alertDialogStyle, 0, (ITypedArray**)&a);
 
     if (mProgressStyle == IProgressDialog::STYLE_HORIZONTAL) {
-#if 0
         /* Use a separate handler to update the text views as they
          * must be updated on the same thread that created them.
          */
-        mViewUpdateHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
+        mViewUpdateHandler = new ViewUpdateHandler(this);
 
-                /* Update the number and percent */
-                int progress = mProgress.getProgress();
-                int max = mProgress.getMax();
-                if (mProgressNumberFormat != null) {
-                    String format = mProgressNumberFormat;
-                    mProgressNumber.setText(String.format(format, progress, max));
-                } else {
-                    mProgressNumber.setText("");
-                }
-                if (mProgressPercentFormat != null) {
-                    double percent = (double) progress / (double) max;
-                    SpannableString tmp = new SpannableString(mProgressPercentFormat.format(percent));
-                    tmp.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-                            0, tmp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    mProgressPercent.setText(tmp);
-                } else {
-                    mProgressPercent.setText("");
-                }
-            }
-        };
-        View view = inflater.inflate(a.getResourceId(
-                com.android.internal.R.styleable.AlertDialog_horizontalProgressLayout,
-                R.layout.alert_dialog_progress), null);
-        mProgress = (ProgressBar) view.findViewById(R.id.progress);
-        mProgressNumber = (TextView) view.findViewById(R.id.progress_number);
-        mProgressPercent = (TextView) view.findViewById(R.id.progress_percent);
-        setView(view);
-#endif
-        // TODO: ALEX need Handler
-    } else {
+        Int32 resourceId = 0;
+        a->GetResourceId(
+            R::styleable::AlertDialog_horizontalProgressLayout,
+            R::layout::alert_dialog_progress, &resourceId);
+        AutoPtr<IView> view;
+        inflater->Inflate(resourceId, NULL, (IView**)&view);
+
+        AutoPtr<IView> tmp;
+        view->FindViewById(R::id::progress, (IView**)&tmp);
+        mProgress = IProgressBar::Probe(tmp);
+
+        tmp = NULL;
+        view->FindViewById(R::id::progress, (IView**)&tmp);
+        mProgressNumber = ITextView::Probe(tmp);
+
+        tmp = NULL;
+        view->FindViewById(R::id::progress, (IView**)&tmp);
+        mProgressPercent = ITextView::Probe(tmp);
+
+        SetView(view);
+    }
+    else {
         AutoPtr<IView> view;
         Int32 resourceId = 0;
         a->GetResourceId(
-                R::styleable::AlertDialog_progressLayout,
-                R::layout::progress_dialog, &resourceId);
+            R::styleable::AlertDialog_progressLayout,
+            R::layout::progress_dialog, &resourceId);
         inflater->Inflate(resourceId, NULL, (IView**)&view);
 
         AutoPtr<IView> temp1;
@@ -164,21 +248,21 @@ void ProgressDialog::OnCreate(
     SetIndeterminate(mIndeterminate);
     OnProgressChanged();
     AlertDialog::OnCreate(savedInstanceState);
-
+    return NOERROR;
 }
 
-// @Override
-void ProgressDialog::OnStart()
+ECode ProgressDialog::OnStart()
 {
     AlertDialog::OnStart();
     mHasStarted = TRUE;
+    return NOERROR;
 }
 
-// @Override
-void ProgressDialog::OnStop()
+ECode ProgressDialog::OnStop()
 {
     AlertDialog::OnStop();
     mHasStarted = FALSE;
+    return NOERROR;
 }
 
 ECode ProgressDialog::SetProgress(
@@ -381,11 +465,12 @@ ECode ProgressDialog::SetProgressPercentFormat(
 
 void ProgressDialog::OnProgressChanged()
 {
-    if (mProgressStyle == IProgressDialog::STYLE_HORIZONTAL) {
-        // TODO: ALEX need IHandler::SendEmptyMessage
-        // if (mViewUpdateHandler != null && !mViewUpdateHandler.hasMessages(0)) {
-        //     mViewUpdateHandler.sendEmptyMessage(0);
-        // }
+    if (mProgressStyle == IProgressDialog::STYLE_HORIZONTAL && mViewUpdateHandler != NULL) {
+        Boolean has;
+        mViewUpdateHandler->HasMessages(0, &has);
+        if (!has) {
+            mViewUpdateHandler->SendEmptyMessage(0, &has);
+        }
     }
 }
 

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CIPCONFIGURATION_H__
 
 #include "_Elastos_Droid_Net_CIpConfiguration.h"
-#include "IpConfiguration.h"
+#include "elastos/droid/net/IpConfiguration.h"
 
 namespace Elastos {
 namespace Droid {

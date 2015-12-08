@@ -1,502 +1,481 @@
 
 #include "elastos/droid/widget/FastScroller.h"
-#include <elastos/core/Math.h>
+
+#include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/animation/ObjectAnimator.h"
+#include "elastos/droid/animation/PropertyValuesHolder.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/CView.h"
 #include "elastos/droid/view/CViewConfiguration.h"
-#include "elastos/droid/widget/AbsListView.h"
-#include "elastos/droid/widget/CExpandableListConnector.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/utility/MathUtils.h"
+#include "elastos/droid/widget/CImageView.h"
+#include "elastos/droid/R.h"
 
-using Elastos::Core::EIID_ICharSequence;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+#include <elastos/core/Math.h>
+#include <elastos/core/CoreUtils.h>
+
 using Elastos::Droid::R;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::CHandler;
-using Elastos::Droid::Os::Build;
+using Elastos::Droid::Animation::CAnimatorSet;
+using Elastos::Droid::Animation::ObjectAnimator;
+using Elastos::Droid::Animation::IAnimatorSetBuilder;
+using Elastos::Droid::Animation::IPropertyValuesHolder;
+using Elastos::Droid::Animation::PropertyValuesHolder;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Content::Res::IColorStateList;
 using Elastos::Droid::Graphics::Drawable::INinePatchDrawable;
-using Elastos::Droid::View::CMotionEvent;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Text::TextUtilsTruncateAt_MIDDLE;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::View::CView;
 using Elastos::Droid::View::CViewConfiguration;
+using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::CMotionEvent;
+using Elastos::Droid::View::MotionEvent;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IViewOverlay;
+using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::ViewConfiguration;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::MathUtils;
+using Elastos::Core::EIID_ICharSequence;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
 //==============================================================================
-//              FastScroller::DeferStartDragRunnable
+//              FastScroller::MyRunnable
 //==============================================================================
 
-FastScroller::DeferStartDragRunnable::DeferStartDragRunnable(
+FastScroller::MyRunnable::MyRunnable(
     /* [in] */ FastScroller* host)
     : mHost(host)
 {
 }
 
-ECode FastScroller::DeferStartDragRunnable::Run()
+ECode FastScroller::MyRunnable::Run()
 {
-    if (mHost->mList->mIsAttached) {
-        mHost->BeginDrag();
-
-        Int32 viewHeight = mHost->mList->GetHeight();
-        // Jitter
-        Int32 newThumbY = (Int32) mHost->mInitialTouchY - mHost->mThumbH + 10;
-        if (newThumbY < 0) {
-            newThumbY = 0;
-        } else if (newThumbY + mHost->mThumbH > viewHeight) {
-            newThumbY = viewHeight - mHost->mThumbH;
-        }
-        mHost->mThumbY = newThumbY;
-        mHost->ScrollTo((Float) mHost->mThumbY / (viewHeight - mHost->mThumbH));
-    }
-
-    mHost->mPendingDrag = FALSE;
+    mHost->SetState(FastScroller::STATE_NONE);
     return NOERROR;
 }
 
 //==============================================================================
-//              FastScroller::ScrollFade
+//              FastScroller::MyRunnable
 //==============================================================================
 
-const Int32 FastScroller::ScrollFade::ALPHA_MAX;
-const Int64 FastScroller::ScrollFade::FADE_DURATION;
-
-FastScroller::ScrollFade::ScrollFade(
+FastScroller::MyAnimatorListenerAdapter::MyAnimatorListenerAdapter(
     /* [in] */ FastScroller* host)
     : mHost(host)
 {}
 
-void FastScroller::ScrollFade::StartFade()
+ECode FastScroller::MyAnimatorListenerAdapter::OnAnimationEnd()
 {
-    mFadeDuration = FADE_DURATION;
-    mStartTime = SystemClock::GetUptimeMillis();
-    mHost->SetState(STATE_EXIT);
-}
-
-Int32 FastScroller::ScrollFade::GetAlpha()
-{
-    if (mHost->GetState() != mHost->STATE_EXIT) {
-        return ALPHA_MAX;
-    }
-    Int32 alpha;
-    Int64 now = SystemClock::GetUptimeMillis();
-    if (now > mStartTime + mFadeDuration) {
-        alpha = 0;
-    }
-    else {
-        alpha = (Int32)(ALPHA_MAX - ((now - mStartTime) * ALPHA_MAX) / mFadeDuration);
-    }
-
-    return alpha;
-}
-
-ECode FastScroller::ScrollFade::Run()
-{
-    if (mHost->GetState() != mHost->STATE_EXIT) {
-        StartFade();
-        return NOERROR;
-    }
-
-    if (GetAlpha() > 0) {
-        mHost->mList->Invalidate();
-    }
-    else {
-        mHost->SetState(mHost->STATE_NONE);
-    }
-
+    mHost->mShowingPrimary = !mHost->mShowingPrimary;
     return NOERROR;
 }
+
+//==============================================================================
+//              FastScroller::Leftroperty
+//==============================================================================
+
+FastScroller::Leftroperty::Leftroperty(
+    /* [in] */ const String& name)
+    : Int32Property(name)
+{}
+
+ECode FastScroller::Leftroperty::Get(
+    /* [in] */ IInterface* obj,
+    /* [out] */ IInterface** rst)
+{
+    AutoPtr<IView> v = IView::Probe(obj);
+    if (v == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 left;
+    v->GetLeft(&left);
+    AutoPtr<IInteger32> wrapper;
+    CInteger32::New(left, (IInteger32**)&wrapper);
+    *rst = wrapper;
+    REFCOUNT_ADD(*rst)
+    return NOERROR;
+}
+
+ECode FastScroller::Leftroperty::SetValue(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 value)
+{
+    AutoPtr<IView> view = IView::Probe(obj);
+    view->SetLeft(value);
+    return NOERROR;
+}
+
+//==============================================================================
+//              FastScroller::RightProperty
+//==============================================================================
+
+FastScroller::RightProperty::RightProperty(
+    /* [in] */ const String& name)
+    : Int32Property(name)
+{}
+
+ECode FastScroller::RightProperty::Get(
+    /* [in] */ IInterface* obj,
+    /* [out] */ IInterface** rst)
+{
+    AutoPtr<IView> v = IView::Probe(obj);
+    if (v == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 right;
+    v->GetRight(&right);
+    AutoPtr<IInteger32> wrapper;
+    CInteger32::New(right, (IInteger32**)&wrapper);
+    *rst = wrapper;
+    REFCOUNT_ADD(*rst)
+    return NOERROR;
+}
+
+ECode FastScroller::RightProperty::SetValue(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 value)
+{
+    AutoPtr<IView> view = IView::Probe(obj);
+    view->SetRight(value);
+    return NOERROR;
+}
+//==============================================================================
+//              FastScroller::TopProperty
+//==============================================================================
+
+FastScroller::TopProperty::TopProperty(
+    /* [in] */ const String& name)
+    : Int32Property(name)
+{}
+
+ECode FastScroller::TopProperty::Get(
+    /* [in] */ IInterface* obj,
+    /* [out] */ IInterface** rst)
+{
+    AutoPtr<IView> v = IView::Probe(obj);
+    if (v == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 top;
+    v->GetTop(&top);
+    AutoPtr<IInteger32> wrapper;
+    CInteger32::New(top, (IInteger32**)&wrapper);
+    *rst = wrapper;
+    REFCOUNT_ADD(*rst)
+    return NOERROR;
+}
+
+ECode FastScroller::TopProperty::SetValue(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 value)
+{
+    AutoPtr<IView> view = IView::Probe(obj);
+    view->SetTop(value);
+    return NOERROR;
+}
+//==============================================================================
+//              FastScroller::ScrollFade
+//==============================================================================
+
+FastScroller::BottomProperty::BottomProperty(
+    /* [in] */ const String& name)
+    : Int32Property(name)
+{}
+
+ECode FastScroller::BottomProperty::Get(
+    /* [in] */ IInterface* obj,
+    /* [out] */ IInterface** rst)
+{
+    AutoPtr<IView> v = IView::Probe(obj);
+    if (v == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 bottom;
+    v->GetBottom(&bottom);
+    AutoPtr<IInteger32> wrapper;
+    CInteger32::New(bottom, (IInteger32**)&wrapper);
+    *rst = wrapper;
+    REFCOUNT_ADD(*rst)
+    return NOERROR;
+}
+
+ECode FastScroller::BottomProperty::SetValue(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 value)
+{
+    AutoPtr<IView> view = IView::Probe(obj);
+    view->SetBottom(value);
+    return NOERROR;
+}
+
+
 
 //==============================================================================
 //              FastScroller
 //==============================================================================
 
-static AutoPtr<ArrayOf<Int32> > InitPRESSED_STATES()
-{
-    AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(1);
-    (*array)[0] = R::attr::state_pressed;
-    return array;
-}
-
-static AutoPtr<ArrayOf<Int32> > InitATTRS()
-{
-    AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(6);
-    (*array)[0] = R::attr::fastScrollTextColor;
-    (*array)[1] = R::attr::fastScrollThumbDrawable;
-    (*array)[2] = R::attr::fastScrollTrackDrawable;
-    (*array)[3] = R::attr::fastScrollPreviewBackgroundLeft;
-    (*array)[4] = R::attr::fastScrollPreviewBackgroundRight;
-    (*array)[5] = R::attr::fastScrollOverlayPosition;
-    return array;
-}
-
-const Int32 FastScroller::MIN_PAGES;
-const Int32 FastScroller::STATE_NONE;
-const Int32 FastScroller::STATE_ENTER;
-const Int32 FastScroller::STATE_VISIBLE;
-const Int32 FastScroller::STATE_DRAGGING;
-const Int32 FastScroller::STATE_EXIT;
-
-AutoPtr<ArrayOf<Int32> > FastScroller::PRESSED_STATES = InitPRESSED_STATES();
-AutoPtr<ArrayOf<Int32> > FastScroller::DEFAULT_STATES = ArrayOf<Int32>::Alloc(0);
-AutoPtr<ArrayOf<Int32> > FastScroller::ATTRS = InitATTRS();
-
-const Int32 FastScroller::TEXT_COLOR;
-const Int32 FastScroller::THUMB_DRAWABLE;
-const Int32 FastScroller::TRACK_DRAWABLE;
-const Int32 FastScroller::PREVIEW_BACKGROUND_LEFT;
-const Int32 FastScroller::PREVIEW_BACKGROUND_RIGHT;
-const Int32 FastScroller::OVERLAY_POSITION;
-const Int32 FastScroller::OVERLAY_FLOATING;
-const Int32 FastScroller::OVERLAY_AT_THUMB;
-const Int32 FastScroller::FADE_TIMEOUT;
-const Int32 FastScroller::PENDING_DRAG_DELAY;
+const Int64 FastScroller::TAP_TIMEOUT = ViewConfiguration::GetTapTimeout();
+AutoPtr<IProperty> FastScroller::LEFT = new FastScroller::Leftroperty(String("left"));
+AutoPtr<IProperty> FastScroller::TOP = new FastScroller::TopProperty(String("top"));
+AutoPtr<IProperty> FastScroller::RIGHT = new FastScroller::RightProperty(String("right"));
+AutoPtr<IProperty> FastScroller::BOTTOM = new FastScroller::BottomProperty(String("bottom"));
 
 FastScroller::FastScroller(
-    /* [in] */ IContext* context,
-    /* [in] */ AbsListView* listView)
-    : mList(listView)
-    , mThumbH(0)
-    , mThumbW(0)
-    , mThumbY(0)
-    , mOverlaySize(0)
-    , mScrollCompleted(FALSE)
-    , mVisibleItem(0)
-    , mListOffset(0)
-    , mItemCount(-1)
-    , mLongList(FALSE)
-    , mDrawOverlay(FALSE)
-    , mState(0)
-    , mChangedBounds(FALSE)
-    , mPosition(0)
-    , mAlwaysShow(FALSE)
-    , mOverlayPosition(0)
-    , mMatchDragPosition(FALSE)
-    , mInitialTouchY(0)
-    , mPendingDrag(FALSE)
-    , mScaledTouchSlop(0)
+    /* [in] */ IAbsListView* listView,
+    /* [in] */ Int32 styleResId)
 {
-    Init(context);
+    mList = listView;
+    IAdapterView::Probe(listView)->GetCount(&mOldItemCount);
+    IViewGroup::Probe(listView)->GetChildCount(&mOldChildCount);
+
+    AutoPtr<IContext> context;
+    IView::Probe(listView)->GetContext((IContext**)&context);
+    ViewConfiguration::Get(context)->GetScaledTouchSlop(&mScaledTouchSlop);
+    IView::Probe(listView)->GetScrollBarStyle(&mScrollBarStyle);
+
+    mScrollCompleted = TRUE;
+    mState = STATE_VISIBLE;
+    AutoPtr<IApplicationInfo> info;
+    context->GetApplicationInfo((IApplicationInfo**)&info);
+    Int32 version;
+    info->GetTargetSdkVersion(&version);
+    mMatchDragPosition = version >= Build::VERSION_CODES::HONEYCOMB;
+
+    CImageView::New(context, (IImageView**)&mTrackImage);
+    mTrackImage->SetScaleType(ImageViewScaleType_FIT_XY);
+    CImageView::New(context, (IImageView**)&mThumbImage);
+    mThumbImage->SetScaleType(ImageViewScaleType_FIT_XY);
+    CView::New(context, (IView**)&mPreviewImage);
+    mPreviewImage->SetAlpha(0.f);
+
+    mPrimaryText = CreatePreviewTextView(context);
+    mSecondaryText = CreatePreviewTextView(context);
+
+    SetStyle(styleResId);
+
+    AutoPtr<IViewGroupOverlay> overlay;
+    AutoPtr<IViewOverlay> tmp;
+    IView::Probe(listView)->GetOverlay((IViewOverlay**)&tmp);
+    overlay = IViewGroupOverlay::Probe(tmp);
+    mOverlay = overlay;
+    overlay->Add(IView::Probe(mTrackImage));
+    overlay->Add(IView::Probe(mThumbImage));
+    overlay->Add(IView::Probe(mPreviewImage));
+    overlay->Add(IView::Probe(mPrimaryText));
+    overlay->Add(IView::Probe(mSecondaryText));
+
+    GetSectionsFromIndexer();
+    UpdateLongList(mOldChildCount, mOldItemCount);
+    Int32 position;
+    IView::Probe(listView)->GetVerticalScrollbarPosition(&position);
+    SetScrollbarPosition(position);
+    PostAutoHide();
 }
 
-void FastScroller::SetAlwaysShow(
-    /* [in] */ Boolean alwaysShow)
+void FastScroller::SetStyle(
+    /* [in] */ Int32 resId)
 {
-    mAlwaysShow = alwaysShow;
-    if (alwaysShow) {
-        RemoveCallbacks();
-        SetState(STATE_VISIBLE);
-    } else if (mState == STATE_VISIBLE) {
-        PostDelayed(FADE_TIMEOUT);
+    AutoPtr<IContext> context;
+    IView::Probe(mList)->GetContext((IContext**)&context);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::FastScroll),
+            ARRAY_SIZE(R::styleable::FastScroll));
+    AutoPtr<ITypedArray> ta;
+
+    context->ObtainStyledAttributes(
+            NULL, attrIds, R::attr::fastScrollStyle, 0, (ITypedArray**)&ta);
+
+    Int32 N;
+    ta->GetIndexCount(&N);
+    for (int i = 0; i < N; i++) {
+        Int32 index;
+        ta->GetIndex(i, &index);
+        switch (index) {
+            case R::styleable::FastScroll_position:
+                ta->GetInt32(index, OVERLAY_FLOATING, &mOverlayPosition);
+                break;
+            case R::styleable::FastScroll_backgroundLeft:
+                Int32 backgroundLeft;
+                ta->GetResourceId(index, 0, &backgroundLeft);
+                (*mPreviewResId)[PREVIEW_LEFT] = backgroundLeft;
+                break;
+            case R::styleable::FastScroll_backgroundRight:
+                Int32 backgroundRight;
+                ta->GetResourceId(index, 0, &backgroundRight);
+                (*mPreviewResId)[PREVIEW_RIGHT] = backgroundRight;
+                break;
+            case R::styleable::FastScroll_thumbDrawable:
+                ta->GetDrawable(index, (IDrawable**)&mThumbDrawable);
+                break;
+            case R::styleable::FastScroll_trackDrawable:
+                ta->GetDrawable(index, (IDrawable**)&mTrackDrawable);
+                break;
+            case R::styleable::FastScroll_textAppearance:
+                ta->GetResourceId(index, 0, &mTextAppearance);
+                break;
+            case R::styleable::FastScroll_textColor:
+                ta->GetColorStateList(index, (IColorStateList**)&mTextColor);
+                break;
+            case R::styleable::FastScroll_textSize:
+                Int32 sizeTmp;
+                ta->GetDimensionPixelSize(index, 0, &sizeTmp);
+                mTextSize = sizeTmp;
+                break;
+            case R::styleable::FastScroll_minWidth:
+                ta->GetDimensionPixelSize(index, 0, &mPreviewMinWidth);
+                break;
+            case R::styleable::FastScroll_minHeight:
+                ta->GetDimensionPixelSize(index, 0, &mPreviewMinHeight);
+                break;
+            case R::styleable::FastScroll_thumbMinWidth:
+                ta->GetDimensionPixelSize(index, 0, &mThumbMinWidth);
+                break;
+            case R::styleable::FastScroll_thumbMinHeight:
+                ta->GetDimensionPixelSize(index, 0, &mThumbMinHeight);
+                break;
+            case R::styleable::FastScroll_padding:
+                ta->GetDimensionPixelSize(index, 0, &mPreviewPadding);
+                break;
+        }
     }
 }
 
+/**
+ * Removes this FastScroller overlay from the host view.
+ */
+void FastScroller::Remove()
+{
+    mOverlay->Remove(IView::Probe(mTrackImage));
+    mOverlay->Remove(IView::Probe(mThumbImage));
+    mOverlay->Remove(mPreviewImage);
+    mOverlay->Remove(IView::Probe(mPrimaryText));
+    mOverlay->Remove(IView::Probe(mSecondaryText));
+}
+
+/**
+ * @param enabled Whether the fast scroll thumb is enabled.
+ */
+void FastScroller::SetEnabled(
+    /* [in] */ Boolean enabled)
+{
+    if (mEnabled != enabled) {
+        mEnabled = enabled;
+
+        OnStateDependencyChanged(TRUE);
+    }
+}
+
+/**
+ * @return Whether the fast scroll thumb is enabled.
+ */
+Boolean FastScroller::IsEnabled()
+{
+    return mEnabled && (mLongList || mAlwaysShow);
+}
+
+/**
+ * @param alwaysShow Whether the fast scroll thumb should always be shown
+ */
+void FastScroller::SetAlwaysShow(
+    /* [in] */ Boolean alwaysShow)
+{
+    if (mAlwaysShow != alwaysShow) {
+        mAlwaysShow = alwaysShow;
+
+        OnStateDependencyChanged(FALSE);
+    }
+}
+
+/**
+ * @return Whether the fast scroll thumb will always be shown
+ * @see #setAlwaysShow(boolean)
+ */
 Boolean FastScroller::IsAlwaysShowEnabled()
 {
     return mAlwaysShow;
 }
 
-void FastScroller::RefreshDrawableState()
+void FastScroller::SetScrollBarStyle(
+    /* [in] */ Int32 style)
 {
-    AutoPtr<ArrayOf<Int32> > state = mState == STATE_DRAGGING ? PRESSED_STATES : DEFAULT_STATES;
+    if (mScrollBarStyle != style) {
+        mScrollBarStyle = style;
 
-    Boolean isStateFul;
-    if (mThumbDrawable != NULL && (mThumbDrawable->IsStateful(&isStateFul), isStateFul)) {
-        mThumbDrawable->SetState(state, &isStateFul);
+        UpdateLayout();
     }
-    if (mTrackDrawable != NULL && (mTrackDrawable->IsStateful(&isStateFul), isStateFul)) {
-        mTrackDrawable->SetState(state, &isStateFul);
-    }
+}
+
+/**
+ * Immediately transitions the fast scroller decorations to a hidden state.
+ */
+void FastScroller::Stop()
+{
+    SetState(STATE_NONE);
 }
 
 void FastScroller::SetScrollbarPosition(
     /* [in] */ Int32 position)
 {
     if (position == IView::SCROLLBAR_POSITION_DEFAULT) {
-        Boolean isLayoutRtl = mList->IsLayoutRtl();
+        Boolean isLayoutRtl;
+        IView::Probe(mList)->IsLayoutRtl(&isLayoutRtl);
         position = isLayoutRtl ?
-            IView::SCROLLBAR_POSITION_LEFT : IView::SCROLLBAR_POSITION_RIGHT;
+                IView::SCROLLBAR_POSITION_LEFT : IView::SCROLLBAR_POSITION_RIGHT;
     }
-    mPosition = position;
-    switch (position) {
-        default:
-        case IView::SCROLLBAR_POSITION_RIGHT:
-            mOverlayDrawable = mOverlayDrawableRight;
-            break;
-        case IView::SCROLLBAR_POSITION_LEFT:
-            mOverlayDrawable = mOverlayDrawableLeft;
-            break;
+
+    if (mScrollbarPosition != position) {
+        mScrollbarPosition = position;
+        mLayoutFromRight = position != IView::SCROLLBAR_POSITION_LEFT;
+
+        Int32 previewResId = (*mPreviewResId)[mLayoutFromRight ? PREVIEW_RIGHT : PREVIEW_LEFT];
+        mPreviewImage->SetBackgroundResource(previewResId);
+
+        // Add extra padding for text.
+        AutoPtr<IDrawable> background;
+        mPreviewImage->GetBackground((IDrawable**)&background);
+        if (background != NULL) {
+            AutoPtr<IRect> padding = mTempBounds;
+            Boolean rst;
+            background->GetPadding(padding, &rst);
+            padding->Offset(mPreviewPadding, mPreviewPadding);
+            Int32 left, top, right, bottom;
+            padding->GetLeft(&left);
+            padding->GetRight(&right);
+            padding->GetTop(&top);
+            padding->GetBottom(&bottom);
+            mPreviewImage->SetPadding(left, top, right, bottom);
+        }
+
+        // Requires re-layout.
+        UpdateLayout();
     }
 }
 
 Int32 FastScroller::GetWidth()
 {
-    return mThumbW;
-}
-
-void FastScroller::SetState(
-    /* [in] */ Int32 state)
-{
-    switch (state) {
-    case STATE_NONE:
-        RemoveCallbacks();
-        mList->Invalidate();
-        break;
-    case STATE_VISIBLE:
-        if (mState != STATE_VISIBLE) { // Optimization
-            ResetThumbPos();
-        }
-        // Fall through
-    case STATE_DRAGGING:
-        RemoveCallbacks();
-        break;
-    case STATE_EXIT:
-        {
-            Int32 viewWidth = mList->GetWidth();
-            mList->Invalidate(
-                viewWidth - mThumbW, mThumbY, viewWidth, mThumbY + mThumbH);
-        }
-        break;
-    default:
-        break;
-    }
-    mState = state;
-
-    RefreshDrawableState();
-}
-
-Int32 FastScroller::GetState()
-{
-    return mState;
-}
-
-void FastScroller::ResetThumbPos()
-{
-    Int32 viewWidth = mList->GetWidth();
-    // Bounds are always top right. Y coordinate get's translated during draw
-    switch (mPosition) {
-            case IView::SCROLLBAR_POSITION_RIGHT:
-                mThumbDrawable->SetBounds(viewWidth - mThumbW, 0, viewWidth, mThumbH);
-                break;
-            case IView::SCROLLBAR_POSITION_LEFT:
-                mThumbDrawable->SetBounds(0, 0, mThumbW, mThumbH);
-                break;
-    }
-
-    mThumbDrawable->SetAlpha(ScrollFade::ALPHA_MAX);
-}
-
-void FastScroller::UseThumbDrawable(
-    /* [in] */ IContext* context,
-    /* [in] */ IDrawable* drawable)
-{
-    mThumbDrawable = drawable;
-    if (INinePatchDrawable::Probe(drawable)) {
-        AutoPtr<IResources> resources;
-        context->GetResources((IResources**)&resources);
-        resources->GetDimensionPixelSize(
-            R::dimen::fastscroll_thumb_width, &mThumbW);
-        resources->GetDimensionPixelSize(
-            R::dimen::fastscroll_thumb_height, &mThumbH);
-    }
-    else
-    {
-        drawable->GetIntrinsicWidth(&mThumbW);
-        drawable->GetIntrinsicHeight(&mThumbH);
-    }
-    mChangedBounds = TRUE;
-}
-
-void FastScroller::Init(
-    /* [in] */ IContext* context)
-{
-    CHandler::New((IHandler**)&mHandler);
-
-    // Get both the scrollbar states drawables
-    AutoPtr<IResourcesTheme> theme;
-    context->GetTheme((IResourcesTheme**)&theme);
-    AutoPtr<ITypedArray> ta;
-    theme->ObtainStyledAttributes(ATTRS, (ITypedArray**)&ta);
-    AutoPtr<IDrawable> thumb;
-    ta->GetDrawable(THUMB_DRAWABLE, (IDrawable**)&thumb);
-    UseThumbDrawable(context, thumb);
-    ta->GetDrawable(TRACK_DRAWABLE, (IDrawable**)&mTrackDrawable);
-
-    ta->GetDrawable(PREVIEW_BACKGROUND_LEFT, (IDrawable**)&mOverlayDrawableLeft);
-    ta->GetDrawable(PREVIEW_BACKGROUND_RIGHT, (IDrawable**)&mOverlayDrawableRight);
-    ta->GetInt32(OVERLAY_POSITION, OVERLAY_FLOATING, &mOverlayPosition);
-
-    mScrollCompleted = TRUE;
-
-    GetSectionsFromIndexer();
-
-    AutoPtr<IResources> res;
-    context->GetResources((IResources**)&res);
-    res->GetDimensionPixelSize(R::dimen::fastscroll_overlay_size, &mOverlaySize);
-
-    ASSERT_SUCCEEDED(CRectF::New((IRectF**)&mOverlayPos));
-    mScrollFade = new ScrollFade(this);
-    mDeferStartDrag = new DeferStartDragRunnable(this);
-    ASSERT_SUCCEEDED(CPaint::New((IPaint**)&mPaint));
-    mPaint->SetAntiAlias(TRUE);
-    mPaint->SetTextAlign(PaintAlign_CENTER);
-    mPaint->SetTextSize(mOverlaySize / 2);
-
-    AutoPtr<IColorStateList> textColor;
-    ta->GetColorStateList(TEXT_COLOR, (IColorStateList**)&textColor);
-
-    Int32 textColorNormal;
-    textColor->GetDefaultColor(&textColorNormal);
-    mPaint->SetColor(textColorNormal);
-    mPaint->SetStyle(PaintStyle_FILL_AND_STROKE);
-
-    // to show mOverlayDrawable properly
-    if (mList->GetWidth() > 0 && mList->GetHeight() > 0) {
-        OnSizeChanged(mList->GetWidth(), mList->GetHeight(), 0, 0);
-    }
-
-    mState = STATE_NONE;
-    RefreshDrawableState();
-
-    ta->Recycle();
-
-    AutoPtr<CViewConfiguration> vc = CViewConfiguration::Get(context);
-    vc->GetScaledTouchSlop(&mScaledTouchSlop);
-
-    AutoPtr<IApplicationInfo> appInfo;
-    context->GetApplicationInfo((IApplicationInfo**)&appInfo);
-    Int32 version;
-    appInfo->GetTargetSdkVersion(&version);
-    mMatchDragPosition = version >= Build::VERSION_CODES::HONEYCOMB;
-
-    SetScrollbarPosition(mList->GetVerticalScrollbarPosition());
-}
-
-void FastScroller::Stop()
-{
-    SetState(STATE_NONE);
-}
-
-Boolean FastScroller::IsVisible()
-{
-    return !(mState == STATE_NONE);
-}
-
-void FastScroller::Draw(
-    /* [in] */ ICanvas* canvas)
-{
-    if (mState == STATE_NONE) {
-        // No need to draw anything
-        return;
-    }
-
-    Int32 y = mThumbY;
-    Int32 viewWidth = mList->GetWidth();
-    Boolean temp;
-    Int32 alpha = -1;
-    if (mState == STATE_EXIT) {
-        alpha = mScrollFade->GetAlpha();
-        if (alpha < ScrollFade::ALPHA_MAX / 2) {
-            mThumbDrawable->SetAlpha(alpha * 2);
-        }
-
-        Int32 left = 0;
-        switch (mPosition) {
-            case IView::SCROLLBAR_POSITION_RIGHT:
-                left = viewWidth - (mThumbW * alpha) / ScrollFade::ALPHA_MAX;
-                break;
-            case IView::SCROLLBAR_POSITION_LEFT:
-                left = -mThumbW + (mThumbW * alpha) / ScrollFade::ALPHA_MAX;
-                break;
-        }
-        mThumbDrawable->SetBounds(left, 0, left + mThumbW, mThumbH);
-
-        mChangedBounds = TRUE;
-    }
-
-    if (mTrackDrawable != NULL) {
-        AutoPtr<IRect> thumbBounds;
-        mThumbDrawable->GetBounds((IRect**)&thumbBounds);
-        Int32 l, t, r, b;
-        thumbBounds->Get(&l, &t, &r, &b);
-        Int32 left = l;
-        Int32 halfThumbHeight = (b - t) / 2;
-        Int32 trackWidth;
-        mTrackDrawable->GetIntrinsicWidth(&trackWidth);
-        Int32 trackLeft = (left + mThumbW / 2) - trackWidth / 2;
-        mTrackDrawable->SetBounds(trackLeft, halfThumbHeight,
-            trackLeft + trackWidth, mList->GetHeight() - halfThumbHeight);
-        mTrackDrawable->Draw(canvas);
-    }
-
-    canvas->Translate(0, y);
-    mThumbDrawable->Draw(canvas);
-    canvas->Translate(0, -y);
-
-    // If user is dragging the scroll bar, draw the alphabet overlay
-    if (mState == STATE_DRAGGING && mDrawOverlay) {
-        if (mOverlayPosition == OVERLAY_AT_THUMB) {
-            AutoPtr<IRect> thumbBounds;
-            mThumbDrawable->GetBounds((IRect**)&thumbBounds);
-            Int32 l, t, r, b;
-            thumbBounds->Get(&l, &t, &r, &b);
-
-            Int32 left = 0;
-            switch (mPosition) {
-                default:
-                case IView::SCROLLBAR_POSITION_RIGHT:
-                    left = Elastos::Core::Math::Max(0, l - mThumbW - mOverlaySize);
-                    break;
-                case IView::SCROLLBAR_POSITION_LEFT:
-                    left = Elastos::Core::Math::Min(r + mThumbW, mList->GetWidth() - mOverlaySize);
-                    break;
-            }
-
-            Int32 top = Elastos::Core::Math::Max(0,
-                Elastos::Core::Math::Min(y + (mThumbH - mOverlaySize) / 2, mList->GetHeight() - mOverlaySize));
-
-            CRectF* pos = (CRectF*)mOverlayPos.Get();
-            pos->mLeft = left;
-            pos->mRight = left + mOverlaySize;
-            pos->mTop = top;
-            pos->mBottom = top + mOverlaySize;
-            if (mOverlayDrawable != NULL) {
-                mOverlayDrawable->SetBounds(left, top, left + mOverlaySize, top + mOverlaySize);
-            }
-        }
-
-        mOverlayDrawable->Draw(canvas);
-        AutoPtr<IPaint> paint = mPaint;
-        Float descent;
-        paint->Descent(&descent);
-
-        Float lf, tf, rf, bf;
-        mOverlayPos->Get(&lf, &tf, &rf, &bf);
-
-        mOverlayDrawable->GetPadding(mTmpRect, &temp);
-        Int32 l, t, r, b;
-        mTmpRect->Get(&l, &t, &r, &b);
-
-        Int32 hOff = (r - l) / 2;
-        Int32 vOff = (b - t) / 2;
-        canvas->DrawText(mSectionText, (Int32) (lf + rf) / 2 - hOff,
-            (Int32) (bf + tf) / 2 + mOverlaySize / 4 - descent - vOff, paint);
-    } else if (mState == STATE_EXIT) {
-        if (alpha == 0) { // Done with exit
-            SetState(STATE_NONE);
-        } else if (mTrackDrawable != NULL) {
-            mList->Invalidate(viewWidth - mThumbW, 0, viewWidth, mList->GetHeight());
-        } else {
-            mList->Invalidate(viewWidth - mThumbW, y, viewWidth, y + mThumbH);
-        }
-    }
+    return mWidth;
 }
 
 void FastScroller::OnSizeChanged(
@@ -505,138 +484,101 @@ void FastScroller::OnSizeChanged(
     /* [in] */ Int32 oldw,
     /* [in] */ Int32 oldh)
 {
-    if (mThumbDrawable != NULL) {
-        switch (mPosition) {
-            default:
-            case IView::SCROLLBAR_POSITION_RIGHT:
-                mThumbDrawable->SetBounds(w - mThumbW, 0, w, mThumbH);
-                break;
-            case IView::SCROLLBAR_POSITION_LEFT:
-                mThumbDrawable->SetBounds(0, 0, mThumbW, mThumbH);
-                break;
-        }
-    }
-
-    if (mOverlayPosition == OVERLAY_FLOATING) {
-        Float left = (w - mOverlaySize) / 2;
-        Float top = h / 10; // 10% from top
-        CRectF* pos = (CRectF*)mOverlayPos.Get();
-        pos->mLeft = left;
-        pos->mRight = left + mOverlaySize;
-        pos->mTop = top;
-        pos->mBottom = top + mOverlaySize;
-        if (mOverlayDrawable != NULL) {
-            mOverlayDrawable->SetBounds(left, top, left + mOverlaySize, top + mOverlaySize);
-        }
-    }
+    UpdateLayout();
 }
 
 void FastScroller::OnItemCountChanged(
-    /* [in] */ Int32 oldCount,
-    /* [in] */ Int32 newCount)
+    /* [in] */ Int32 childCount,
+    /* [in] */ Int32 itemCount)
 {
-    if (mAlwaysShow) {
-        mLongList = TRUE;
+    if (mOldItemCount != itemCount || mOldChildCount != childCount) {
+        mOldItemCount = itemCount;
+        mOldChildCount = childCount;
+
+        Boolean hasMoreItems = itemCount - childCount > 0;
+        if (hasMoreItems && mState != STATE_DRAGGING) {
+            Int32 firstVisibleItem;
+            IAdapterView::Probe(mList)->GetFirstVisiblePosition(&firstVisibleItem);
+            SetThumbPos(GetPosFromItemCount(firstVisibleItem, childCount, itemCount));
+        }
+
+        UpdateLongList(childCount, itemCount);
     }
 }
 
+/**
+ * Measures and layouts the scrollbar and decorations.
+ */
+void FastScroller::UpdateLayout()
+{
+    // Prevent re-entry when RTL properties change as a side-effect of
+    // resolving padding.
+    if (mUpdatingLayout) {
+        return;
+    }
+
+    mUpdatingLayout = TRUE;
+
+    UpdateContainerRect();
+
+    LayoutThumb();
+    LayoutTrack();
+
+    AutoPtr<IRect> bounds = mTempBounds;
+    MeasurePreview(IView::Probe(mPrimaryText), bounds);
+    ApplyLayout(IView::Probe(mPrimaryText), bounds);
+    MeasurePreview(IView::Probe(mSecondaryText), bounds);
+    ApplyLayout(IView::Probe(mSecondaryText), bounds);
+
+    if (mPreviewImage != NULL) {
+        // Apply preview image padding.
+        Int32 left, top, right, bottom;
+        bounds->GetLeft(&left);
+        bounds->GetRight(&right);
+        bounds->GetTop(&top);
+        bounds->GetBottom(&bottom);
+
+        Int32 pLeft, pTop, pRight, pBottom;
+        mPreviewImage->GetPaddingLeft(&pLeft);
+        mPreviewImage->GetPaddingTop(&pTop);
+        mPreviewImage->GetPaddingRight(&pRight);
+        mPreviewImage->GetPaddingBottom(&pBottom);
+
+        bounds->SetLeft(left - pLeft);
+        bounds->SetRight(right + pRight);
+        bounds->SetTop(top - pTop);
+        bounds->SetBottom(bottom + pBottom);
+
+        ApplyLayout(mPreviewImage, bounds);
+    }
+
+    mUpdatingLayout = FALSE;
+}
+
 void FastScroller::OnScroll(
-    /* [in] */ IAbsListView* view,
     /* [in] */ Int32 firstVisibleItem,
     /* [in] */ Int32 visibleItemCount,
     /* [in] */ Int32 totalItemCount)
 {
-    // Are there enough pages to require fast scroll? Recompute only if total count changes
-    if (mItemCount != totalItemCount && visibleItemCount > 0) {
-        mItemCount = totalItemCount;
-        mLongList = mItemCount / visibleItemCount >= MIN_PAGES;
-    }
-
-    if (mAlwaysShow) {
-        mLongList = TRUE;
-    }
-
-    if (!mLongList) {
-        if (mState != STATE_NONE) {
-            SetState(STATE_NONE);
-        }
+    if (!IsEnabled()) {
+        SetState(STATE_NONE);
         return;
     }
 
-    if (totalItemCount - visibleItemCount > 0 && mState != STATE_DRAGGING ) {
-        mThumbY = GetThumbPositionForListPosition(firstVisibleItem, visibleItemCount,
-            totalItemCount);
-
-        if (mChangedBounds) {
-            ResetThumbPos();
-            mChangedBounds = FALSE;
-        }
+    Boolean hasMoreItems = totalItemCount - visibleItemCount > 0;
+    if (hasMoreItems && mState != STATE_DRAGGING) {
+        SetThumbPos(GetPosFromItemCount(firstVisibleItem, visibleItemCount, totalItemCount));
     }
+
     mScrollCompleted = TRUE;
-    if (firstVisibleItem == mVisibleItem) {
-        return;
-    }
-    mVisibleItem = firstVisibleItem;
-    if (mState != STATE_DRAGGING) {
-        SetState(STATE_VISIBLE);
 
-        if (!mAlwaysShow) {
-            PostDelayed(FADE_TIMEOUT);
-        }
-    }
-}
+    if (mFirstVisibleItem != firstVisibleItem) {
+        mFirstVisibleItem = firstVisibleItem;
 
-AutoPtr<ISectionIndexer> FastScroller::GetSectionIndexer()
-{
-    return mSectionIndexer;
-}
-
-AutoPtr<ArrayOf<IInterface*> > FastScroller::GetSections()
-{
-    if (mListAdapter == NULL && mList != NULL) {
-        GetSectionsFromIndexer();
-    }
-
-    return mSections;
-}
-
-void FastScroller::GetSectionsFromIndexer()
-{
-    AutoPtr<IAdapter> adapter;
-    ((IAdapterView*)(mList->Probe(EIID_IAdapterView)))->GetAdapter((IAdapter**)&adapter);
-    mSectionIndexer = NULL;
-    IHeaderViewListAdapter* headerAdapter = IHeaderViewListAdapter::Probe(adapter);
-    if (headerAdapter) {
-        headerAdapter->GetHeadersCount(&mListOffset);
-        adapter = NULL;
-        IWrapperListAdapter::Probe(headerAdapter)->GetWrappedAdapter((IListAdapter**)&adapter);
-    }
-
-    IExpandableListConnector* connector = IExpandableListConnector::Probe(adapter);
-    if (connector) {
-        AutoPtr<IExpandableListAdapter> expAdapter = ((CExpandableListConnector*)connector)->GetAdapter();
-        if (ISectionIndexer::Probe(expAdapter)) {
-            mSectionIndexer = ISectionIndexer::Probe(expAdapter);
-            mListAdapter = (IBaseAdapter*)adapter->Probe(EIID_IBaseAdapter);
-            mSections = NULL;
-            mSectionIndexer->GetSections((ArrayOf<IInterface*>**)&mSections);
-        }
-    }
-    else {
-        mListAdapter = IBaseAdapter::Probe(adapter);
-        mSections = NULL;
-
-        ISectionIndexer* sectionIndexer = ISectionIndexer::Probe(adapter);
-        if (sectionIndexer) {
-            mSectionIndexer = sectionIndexer;
-            mSectionIndexer->GetSections((ArrayOf<IInterface*>**)&mSections);
-        }
-
-        if (mSections == NULL) {
-            mSections = ArrayOf<IInterface*>::Alloc(1);
-            AutoPtr<ICharSequence> seq;
-            CStringWrapper::New(String(" "), (ICharSequence**)&seq);
-            mSections->Set(0, seq);
+        // Show the thumb, if necessary, and set up auto-fade.
+        if (mState != STATE_DRAGGING) {
+            SetState(STATE_VISIBLE);
+            PostAutoHide();
         }
     }
 }
@@ -646,24 +588,769 @@ void FastScroller::OnSectionsChanged()
     mListAdapter = NULL;
 }
 
+Boolean FastScroller::OnInterceptTouchEvent(
+    /* [in] */ IMotionEvent* ev)
+{
+    if (!IsEnabled()) {
+        return FALSE;
+    }
+
+    Int32 mask;
+    ev->GetActionMasked(&mask);
+    Float x, y;
+    switch (mask) {
+        case IMotionEvent::ACTION_DOWN:
+            ev->GetX(&x);
+            ev->GetY(&y);
+            if (IsPointInside(x, y)) {
+                // If the parent has requested that its children delay
+                // pressed state (e.g. is a scrolling container) then we
+                // need to allow the parent time to decide whether it wants
+                // to intercept events. If it does, we will receive a CANCEL
+                // event.
+                Boolean isInScrollingContainer;
+                IView::Probe(mList)->IsInScrollingContainer(&isInScrollingContainer);
+
+                if (!isInScrollingContainer) {
+                    BeginDrag();
+                    return TRUE;
+                }
+
+                ev->GetY(&mInitialTouchY);
+                StartPendingDrag();
+            }
+            break;
+        case IMotionEvent::ACTION_MOVE:
+            ev->GetX(&x);
+            ev->GetY(&y);
+            if (!IsPointInside(x, y)) {
+                CancelPendingDrag();
+            } else if (mPendingDrag >= 0 && mPendingDrag <= SystemClock::GetUptimeMillis()) {
+                BeginDrag();
+
+                Float pos = GetPosFromMotionEvent(mInitialTouchY);
+                ScrollTo(pos);
+
+                return OnTouchEvent(ev);
+            }
+            break;
+        case IMotionEvent::ACTION_UP:
+        case IMotionEvent::ACTION_CANCEL:
+            CancelPendingDrag();
+            break;
+    }
+
+    return FALSE;
+}
+
+Boolean FastScroller::OnInterceptHoverEvent(
+    /* [in] */ IMotionEvent* ev)
+{
+    if (!IsEnabled()) {
+        return false;
+    }
+
+    Int32 actionMasked;
+    ev->GetActionMasked(&actionMasked);
+    Float x, y;
+    ev->GetX(&x);
+    ev->GetY(&y);
+    if ((actionMasked == IMotionEvent::ACTION_HOVER_ENTER
+            || actionMasked == IMotionEvent::ACTION_HOVER_MOVE) && mState == STATE_NONE
+            && IsPointInside(x, y)) {
+        SetState(STATE_VISIBLE);
+        PostAutoHide();
+    }
+
+    return FALSE;
+}
+
+Boolean FastScroller::OnTouchEvent(
+    /* [in] */ IMotionEvent* me)
+{
+    if (!IsEnabled()) {
+        return FALSE;
+    }
+
+    Int32 mask;
+    Float y;
+    me->GetActionMasked(&mask);
+    switch (mask) {
+        case IMotionEvent::ACTION_UP: {
+            if (mPendingDrag >= 0) {
+                // Allow a tap to scroll.
+                BeginDrag();
+                me->GetY(&y);
+
+                Float pos = GetPosFromMotionEvent(y);
+                SetThumbPos(pos);
+                ScrollTo(pos);
+
+                // Will hit the STATE_DRAGGING check below
+            }
+
+            if (mState == STATE_DRAGGING) {
+                if (mList != NULL) {
+                    // ViewGroup does the right thing already, but there might
+                    // be other classes that don't properly reset on touch-up,
+                    // so do this explicitly just in case.
+                    IViewParent::Probe(mList)->RequestDisallowInterceptTouchEvent(FALSE);
+                    // mList->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
+                    // zhangjingcheng
+                }
+
+                SetState(STATE_VISIBLE);
+                PostAutoHide();
+
+                return TRUE;
+            }
+        } break;
+
+        case IMotionEvent::ACTION_MOVE: {
+            me->GetY(&y);
+            if (mPendingDrag >= 0 && Elastos::Core::Math::Abs(y - mInitialTouchY) > mScaledTouchSlop) {
+                BeginDrag();
+
+                // Will hit the STATE_DRAGGING check below
+            }
+
+            if (mState == STATE_DRAGGING) {
+                // TODO: Ignore jitter.
+                Float pos = GetPosFromMotionEvent(y);
+                SetThumbPos(pos);
+
+                // If the previous scrollTo is still pending
+                if (mScrollCompleted) {
+                    ScrollTo(pos);
+                }
+
+                return TRUE;
+            }
+        } break;
+
+        case IMotionEvent::ACTION_CANCEL: {
+            CancelPendingDrag();
+        } break;
+    }
+
+    return FALSE;
+}
+
+void FastScroller::UpdateAppearance()
+{
+    AutoPtr<IContext> context;
+    IView::Probe(mList)->GetContext((IContext**)&context);
+    Int32 width = 0;
+
+    // Add track to overlay if it has an image.
+    mTrackImage->SetImageDrawable(mTrackDrawable);
+    if (mTrackDrawable != NULL) {
+        Int32 intrinsicWidth;
+        mTrackDrawable->GetIntrinsicWidth(&intrinsicWidth);
+        width = Elastos::Core::Math::Max(width, intrinsicWidth);
+    }
+
+    // Add thumb to overlay if it has an image.
+    mThumbImage->SetImageDrawable(mThumbDrawable);
+    IView::Probe(mThumbImage)->SetMinimumWidth(mThumbMinWidth);
+    IView::Probe(mThumbImage)->SetMinimumHeight(mThumbMinHeight);
+    if (mThumbDrawable != NULL) {
+        Int32 intrinsicWidth;
+        mTrackDrawable->GetIntrinsicWidth(&intrinsicWidth);
+        width = Elastos::Core::Math::Max(width, intrinsicWidth);
+    }
+
+    // Account for minimum thumb width.
+    mWidth = Elastos::Core::Math::Max(width, mThumbMinWidth);
+
+    mPreviewImage->SetMinimumWidth(mPreviewMinWidth);
+    mPreviewImage->SetMinimumHeight(mPreviewMinHeight);
+
+    if (mTextAppearance != 0) {
+        mPrimaryText->SetTextAppearance(context, mTextAppearance);
+        mSecondaryText->SetTextAppearance(context, mTextAppearance);
+    }
+
+    if (mTextColor != NULL) {
+        mPrimaryText->SetTextColor(mTextColor);
+        mSecondaryText->SetTextColor(mTextColor);
+    }
+
+    if (mTextSize > 0) {
+        mPrimaryText->SetTextSize(ITypedValue::COMPLEX_UNIT_PX, mTextSize);
+        mSecondaryText->SetTextSize(ITypedValue::COMPLEX_UNIT_PX, mTextSize);
+    }
+
+    Int32 textMinSize = Elastos::Core::Math::Max(0, mPreviewMinHeight);
+    IView::Probe(mPrimaryText)->SetMinimumWidth(textMinSize);
+    IView::Probe(mPrimaryText)->SetMinimumHeight(textMinSize);
+    mPrimaryText->SetIncludeFontPadding(FALSE);
+    IView::Probe(mSecondaryText)->SetMinimumWidth(textMinSize);
+    IView::Probe(mSecondaryText)->SetMinimumHeight(textMinSize);
+    mSecondaryText->SetIncludeFontPadding(FALSE);
+
+    RefreshDrawablePressedState();
+}
+
+/**
+ * Called when one of the variables affecting enabled state changes.
+ *
+ * @param peekIfEnabled whether the thumb should peek, if enabled
+ */
+void FastScroller::OnStateDependencyChanged(
+    /* [in] */ Boolean peekIfEnabled)
+{
+    if (IsEnabled()) {
+        if (IsAlwaysShowEnabled()) {
+            SetState(STATE_VISIBLE);
+        } else if (mState == STATE_VISIBLE) {
+            PostAutoHide();
+        } else if (peekIfEnabled) {
+            SetState(STATE_VISIBLE);
+            PostAutoHide();
+        }
+    } else {
+        Stop();
+    }
+
+    IView::Probe(mList)->ResolvePadding();
+}
+
+void FastScroller::UpdateLongList(
+    /* [in] */ Int32 childCount,
+    /* [in] */ Int32 itemCount)
+{
+    Boolean longList = childCount > 0 && itemCount / childCount >= MIN_PAGES;
+    if (mLongList != longList) {
+        mLongList = longList;
+
+        OnStateDependencyChanged(FALSE);
+    }
+}
+
+/**
+ * Creates a view into which preview text can be placed.
+ */
+AutoPtr<ITextView> FastScroller::CreatePreviewTextView(
+    /* [in] */ IContext* context)
+{
+    AutoPtr<IViewGroupLayoutParams> params;
+    CViewGroupLayoutParams::New(
+            IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&params);
+    AutoPtr<ITextView> textView;
+    // CTextView::New(context, (ITextView**)&textView); zhangjingcheng
+    IView::Probe(textView)->SetLayoutParams(params);
+    textView->SetSingleLine(true);
+    textView->SetEllipsize(TextUtilsTruncateAt_MIDDLE);
+    textView->SetGravity(IGravity::CENTER);
+    IView::Probe(textView)->SetAlpha(0.f);
+
+    // Manually propagate inherited layout direction.
+    Int32 layoutDirection;
+    IView::Probe(mList)->GetLayoutDirection(&layoutDirection);
+    IView::Probe(textView)->SetLayoutDirection(layoutDirection);
+
+    return textView;
+}
+
+/**
+ * Layouts a view within the specified bounds and pins the pivot point to
+ * the appropriate edge.
+ *
+ * @param view The view to layout.
+ * @param bounds Bounds at which to layout the view.
+ */
+void FastScroller::ApplyLayout(
+    /* [in] */ IView* view,
+    /* [in] */ IRect* bounds)
+{
+    Int32 left, top, right, bottom;
+    bounds->GetLeft(&left);
+    bounds->GetRight(&right);
+    bounds->GetTop(&top);
+    bounds->GetBottom(&bottom);
+    view->Layout(left, top, right, bottom);
+    view->SetPivotX(mLayoutFromRight ? right - left : 0);
+}
+
+/**
+ * Measures the preview text bounds, taking preview image padding into
+ * account. This method should only be called after {@link #layoutThumb()}
+ * and {@link #layoutTrack()} have both been called at least once.
+ *
+ * @param v The preview text view to measure.
+ * @param out Rectangle into which measured bounds are placed.
+ */
+void FastScroller::MeasurePreview(
+    /* [in] */ IView* v,
+    /* [in] */ IRect* out)
+{
+    // Apply the preview image's padding as layout margins.
+    AutoPtr<IRect> margins = mTempMargins;
+
+    Int32 pLeft, pTop, pRight, pBottom;
+    mPreviewImage->GetPaddingLeft(&pLeft);
+    mPreviewImage->GetPaddingTop(&pTop);
+    mPreviewImage->GetPaddingRight(&pRight);
+    mPreviewImage->GetPaddingBottom(&pBottom);
+
+    margins->SetLeft(pLeft);
+    margins->SetRight(pTop);
+    margins->SetTop(pRight);
+    margins->SetBottom(pBottom);
+
+    if (mOverlayPosition == OVERLAY_FLOATING) {
+        MeasureFloating(v, margins, out);
+    } else {
+        MeasureViewToSide(v, IView::Probe(mThumbImage), margins, out);
+    }
+}
+
+/**
+ * Measures the bounds for a view that should be laid out against the edge
+ * of an adjacent view. If no adjacent view is provided, lays out against
+ * the list edge.
+ *
+ * @param view The view to measure for layout.
+ * @param adjacent (Optional) The adjacent view, may be null to align to the
+ *            list edge.
+ * @param margins Layout margins to apply to the view.
+ * @param out Rectangle into which measured bounds are placed.
+ */
+void FastScroller::MeasureViewToSide(
+    /* [in] */ IView* view,
+    /* [in] */ IView* adjacent,
+    /* [in] */ IRect* margins,
+    /* [in] */ IRect* out)
+{
+    Int32 marginLeft;
+    Int32 marginTop;
+    Int32 marginRight;
+    if (margins == NULL) {
+        marginLeft = 0;
+        marginTop = 0;
+        marginRight = 0;
+    } else {
+        margins->GetLeft(&marginLeft);
+        margins->GetTop(&marginTop);
+        margins->GetRight(&marginRight);
+    }
+
+    AutoPtr<IRect> container = mContainerRect;
+    Int32 containerWidth;
+    container->GetWidth(&containerWidth);
+    Int32 maxWidth;
+    if (adjacent == NULL) {
+        maxWidth = containerWidth;
+    } else if (mLayoutFromRight) {
+        adjacent->GetLeft(&maxWidth);
+    } else {
+        Int32 r;
+        adjacent->GetRight(&r);
+        maxWidth = containerWidth - r;
+    }
+
+    Int32 adjMaxWidth = maxWidth - marginLeft - marginRight;
+    Int32 widthMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(adjMaxWidth, Elastos::Droid::View::View::MeasureSpec::AT_MOST);
+    Int32 heightMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(0, Elastos::Droid::View::View::MeasureSpec::UNSPECIFIED);
+    view->Measure(widthMeasureSpec, heightMeasureSpec);
+
+    // Align to the left or right.
+    Int32 measuredWidth;
+    view->GetMeasuredWidth(&measuredWidth);
+    Int32 width = Elastos::Core::Math::Min(adjMaxWidth, measuredWidth);
+    Int32 left;
+    Int32 right;
+    if (mLayoutFromRight) {
+        container->GetRight(&right);
+        if (adjacent != NULL) {
+            adjacent->GetLeft(&left);
+        }
+        right = (adjacent == NULL ? right : left) - marginRight;
+        left = right - width;
+    } else {
+        container->GetLeft(&left);
+        if (adjacent != NULL) {
+            adjacent->GetRight(&right);
+        }
+        left = (adjacent == NULL ? left : right) + marginLeft;
+        right = left + width;
+    }
+
+    // Don't adjust the vertical position.
+    Int32 top = marginTop;
+    Int32 measuredHeight;
+    view->GetMeasuredHeight(&measuredHeight);
+    Int32 bottom = top + measuredHeight;
+    out->Set(left, top, right, bottom);
+}
+
+void FastScroller::MeasureFloating(
+    /* [in] */ IView* preview,
+    /* [in] */ IRect* margins,
+    /* [in] */ IRect* out)
+{
+    Int32 marginLeft;
+    Int32 marginTop;
+    Int32 marginRight;
+    if (margins == NULL) {
+        marginLeft = 0;
+        marginTop = 0;
+        marginRight = 0;
+    } else {
+        margins->GetLeft(&marginLeft);
+        margins->GetTop(&marginTop);
+        margins->GetRight(&marginRight);
+    }
+
+    AutoPtr<IRect> container = mContainerRect;
+    Int32 containerWidth;
+    container->GetWidth(&containerWidth);
+    Int32 adjMaxWidth = containerWidth - marginLeft - marginRight;
+    Int32 widthMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(adjMaxWidth, Elastos::Droid::View::View::MeasureSpec::AT_MOST);
+    Int32 heightMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(0, Elastos::Droid::View::View::MeasureSpec::UNSPECIFIED);
+    preview->Measure(widthMeasureSpec, heightMeasureSpec);
+
+    // Align at the vertical center, 10% from the top.
+    Int32 containerHeight;
+    container->GetHeight(&containerHeight);
+    Int32 width;
+    preview->GetMeasuredWidth(&width);
+    Int32 containerTop;
+    container->GetTop(&containerTop);
+    Int32 top = containerHeight / 10 + marginTop + containerTop;
+    Int32 measuredHeight;
+    preview->GetMeasuredHeight(&measuredHeight);
+    Int32 bottom = top + measuredHeight;
+    Int32 containerLeft;
+    container->GetTop(&containerLeft);
+    Int32 left = (containerWidth - width) / 2 + containerLeft;
+    Int32 right = left + width;
+    out->Set(left, top, right, bottom);
+}
+
+/**
+ * Updates the container rectangle used for layout.
+ */
+void FastScroller::UpdateContainerRect()
+{
+    AutoPtr<IAbsListView> list = mList;
+    IView::Probe(list)->ResolvePadding();
+
+    AutoPtr<IRect> container = mContainerRect;
+    container->SetLeft(0);
+    container->SetTop(0);
+    Int32 w, h;
+    IView::Probe(list)->GetWidth(&w);
+    IView::Probe(list)->GetHeight(&h);
+    container->SetRight(w);
+    container->SetBottom(h);
+
+    Int32 scrollbarStyle = mScrollBarStyle;
+    if (scrollbarStyle == IView::SCROLLBARS_INSIDE_INSET
+            || scrollbarStyle == IView::SCROLLBARS_INSIDE_OVERLAY) {
+        Int32 pLeft, pTop, pRight, pBottom;
+        IView::Probe(list)->GetPaddingLeft(&pLeft);
+        IView::Probe(list)->GetPaddingTop(&pTop);
+        IView::Probe(list)->GetPaddingRight(&pRight);
+        IView::Probe(list)->GetPaddingBottom(&pBottom);
+
+        Int32 left, top, right, bottom;
+        container->GetLeft(&left);
+        container->GetRight(&right);
+        container->GetTop(&top);
+        container->GetBottom(&bottom);
+
+
+        container->SetLeft(left + pLeft);
+        container->SetRight(right - pRight);
+        container->SetTop(top + pTop);
+        container->SetBottom(bottom - pBottom);
+
+        // In inset mode, we need to adjust for padded scrollbar width.
+        if (scrollbarStyle == IView::SCROLLBARS_INSIDE_INSET) {
+            Int32 width = GetWidth();
+            if (mScrollbarPosition == IView::SCROLLBAR_POSITION_RIGHT) {
+                container->GetRight(&right);
+                container->SetRight(right + width);
+            } else {
+                container->GetRight(&left);
+                container->SetLeft(left - width);
+            }
+        }
+    }
+}
+
+/**
+ * Lays out the thumb according to the current scrollbar position.
+ */
+void FastScroller::LayoutThumb()
+{
+    AutoPtr<IRect> bounds = mTempBounds;
+    MeasureViewToSide(IView::Probe(mThumbImage), NULL, NULL, bounds);
+    ApplyLayout(IView::Probe(mThumbImage), bounds);
+}
+
+/**
+ * Lays out the track centered on the thumb. Must be called after
+ * {@link #layoutThumb}.
+ */
+void FastScroller::LayoutTrack()
+{
+    AutoPtr<IView> track = IView::Probe(mTrackImage);
+    AutoPtr<IView> thumb = IView::Probe(mThumbImage);
+    AutoPtr<IRect> container = mContainerRect;
+    Int32 containerWidth;
+    container->GetWidth(&containerWidth);
+    Int32 widthMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(containerWidth, Elastos::Droid::View::View::MeasureSpec::AT_MOST);
+    Int32 heightMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(0, Elastos::Droid::View::View::MeasureSpec::UNSPECIFIED);
+    track->Measure(widthMeasureSpec, heightMeasureSpec);
+
+    Int32 trackWidth;
+    track->GetMeasuredWidth(&trackWidth);
+    Int32 thumbHalfHeight;
+    if (thumb == NULL) {
+        thumbHalfHeight = 0;
+    } else {
+        thumb->GetHeight(&thumbHalfHeight);
+        thumbHalfHeight = thumbHalfHeight / 2;
+    }
+    Int32 left;
+    if (thumb == NULL) {
+        left = 0;
+    } else {
+        Int32 tLeft, tWidth;
+        thumb->GetLeft(&tLeft);
+        thumb->GetWidth(&tWidth);
+        left = tLeft + (tWidth - trackWidth) / 2;
+    }
+    Int32 right = left + trackWidth;
+    Int32 tTop, tBottom;
+    container->GetTop(&tTop);
+    container->GetBottom(&tBottom);
+    Int32 top = tTop + thumbHalfHeight;
+    Int32 bottom = tBottom - thumbHalfHeight;
+    track->Layout(left, top, right, bottom);
+}
+
+void FastScroller::SetState(
+    /* [in] */ Int32 state)
+{
+    Boolean rst;
+    IView::Probe(mList)->RemoveCallbacks(mDeferHide, &rst);
+
+    if (mAlwaysShow && state == STATE_NONE) {
+        state = STATE_VISIBLE;
+    }
+
+    if (state == mState) {
+        return;
+    }
+
+    switch (state) {
+        case STATE_NONE:
+            TransitionToHidden();
+            break;
+        case STATE_VISIBLE:
+            TransitionToVisible();
+            break;
+        case STATE_DRAGGING:
+            if (TransitionPreviewLayout(mCurrentSection)) {
+                TransitionToDragging();
+            } else {
+                TransitionToVisible();
+            }
+            break;
+    }
+
+    mState = state;
+
+    RefreshDrawablePressedState();
+}
+
+void FastScroller::RefreshDrawablePressedState()
+{
+    Boolean isPressed = mState == STATE_DRAGGING;
+    IView::Probe(mThumbImage)->SetPressed(isPressed);
+    IView::Probe(mTrackImage)->SetPressed(isPressed);
+}
+
+/**
+ * Shows nothing.
+ */
+void FastScroller::TransitionToHidden()
+{
+    if (mDecorAnimation != NULL) {
+        IAnimator::Probe(mDecorAnimation)->Cancel();
+    }
+
+    AutoPtr<ArrayOf<IView*> > params1 = ArrayOf<IView*>::Alloc(5);
+    params1->Set(0, IView::Probe(mThumbImage));
+    params1->Set(1, IView::Probe(mTrackImage));
+    params1->Set(2, mPreviewImage);
+    params1->Set(3, IView::Probe(mPrimaryText));
+    params1->Set(4, IView::Probe(mSecondaryText));
+    AutoPtr<IAnimator> fadeOut = GroupAnimatorOfFloat(Elastos::Droid::View::View::ALPHA, 0.f, params1);
+    fadeOut->SetDuration(DURATION_FADE_OUT);
+
+    // Push the thumb and track outside the list bounds.
+    Float offset;
+    Int32 rstTmp;
+    IView::Probe(mThumbImage)->GetWidth(&rstTmp);
+    offset = rstTmp;
+    if (mLayoutFromRight) {
+        offset = -offset;
+    }
+
+    AutoPtr<ArrayOf<IView*> > params2 = ArrayOf<IView*>::Alloc(2);
+    params2->Set(0, IView::Probe(mThumbImage));
+    params2->Set(1, IView::Probe(mTrackImage));
+    AutoPtr<IAnimator> slideOut = GroupAnimatorOfFloat(
+            Elastos::Droid::View::View::TRANSLATION_X, offset, params2);
+
+    CAnimatorSet::New((IAnimatorSet**)&mDecorAnimation);
+    AutoPtr<ArrayOf<IAnimator*> > params3 = ArrayOf<IAnimator*>::Alloc(2);
+    params3->Set(0, fadeOut);
+    params3->Set(1, slideOut);
+    mDecorAnimation->PlayTogether(params3);
+    IAnimator::Probe(mDecorAnimation)->Start();
+
+    mShowingPreview = FALSE;
+}
+
+/**
+ * Shows the thumb and track.
+ */
+void FastScroller::TransitionToVisible()
+{
+    if (mDecorAnimation != NULL) {
+        IAnimator::Probe(mDecorAnimation)->Cancel();
+    }
+
+    AutoPtr<ArrayOf<IView*> > params1 = ArrayOf<IView*>::Alloc(2);
+    params1->Set(0, IView::Probe(mThumbImage));
+    params1->Set(1, IView::Probe(mTrackImage));
+    AutoPtr<IAnimator> fadeIn = GroupAnimatorOfFloat(Elastos::Droid::View::View::ALPHA, 1.f, params1);
+    fadeIn->SetDuration(DURATION_FADE_IN);
+
+    AutoPtr<ArrayOf<IView*> > params2 = ArrayOf<IView*>::Alloc(3);
+    params2->Set(0, IView::Probe(mPreviewImage));
+    params2->Set(1, IView::Probe(mPrimaryText));
+    params2->Set(1, IView::Probe(mSecondaryText));
+    AutoPtr<IAnimator> fadeOut = GroupAnimatorOfFloat(
+            Elastos::Droid::View::View::ALPHA, 0.f, params2);
+    fadeOut->SetDuration(DURATION_FADE_OUT);
+
+    AutoPtr<IAnimator> slideIn = GroupAnimatorOfFloat(
+            Elastos::Droid::View::View::TRANSLATION_X, 0.f, params1);
+    slideIn->SetDuration(DURATION_FADE_IN);
+
+    CAnimatorSet::New((IAnimatorSet**)&mDecorAnimation);
+    AutoPtr<ArrayOf<IAnimator*> > params3 = ArrayOf<IAnimator*>::Alloc(3);
+    params3->Set(0, fadeIn);
+    params3->Set(1, fadeOut);
+    params3->Set(2, slideIn);
+    mDecorAnimation->PlayTogether(params3);
+    IAnimator::Probe(mDecorAnimation)->Start();
+
+    mShowingPreview = FALSE;
+}
+
+/**
+ * Shows the thumb, preview, and track.
+ */
+void FastScroller::TransitionToDragging()
+{
+    if (mDecorAnimation != NULL) {
+        IAnimator::Probe(mDecorAnimation)->Cancel();
+    }
+
+    AutoPtr<ArrayOf<IView*> > params1 = ArrayOf<IView*>::Alloc(3);
+    params1->Set(0, IView::Probe(mThumbImage));
+    params1->Set(1, IView::Probe(mTrackImage));
+    params1->Set(2, IView::Probe(mPreviewImage));
+    AutoPtr<IAnimator> fadeIn = GroupAnimatorOfFloat(Elastos::Droid::View::View::ALPHA, 1.f, params1);
+    fadeIn->SetDuration(DURATION_FADE_IN);
+
+    AutoPtr<ArrayOf<IView*> > params2 = ArrayOf<IView*>::Alloc(2);
+    params2->Set(0, IView::Probe(mThumbImage));
+    params2->Set(1, IView::Probe(mTrackImage));
+
+    AutoPtr<IAnimator> slideIn = GroupAnimatorOfFloat(
+            Elastos::Droid::View::View::TRANSLATION_X, 0.f, params2);
+    slideIn->SetDuration(DURATION_FADE_IN);
+
+    CAnimatorSet::New((IAnimatorSet**)&mDecorAnimation);
+    AutoPtr<ArrayOf<IAnimator*> > params3 = ArrayOf<IAnimator*>::Alloc(2);
+    params3->Set(0, fadeIn);
+    params3->Set(1, slideIn);
+    mDecorAnimation->PlayTogether(params3);
+    IAnimator::Probe(mDecorAnimation)->Start();
+
+    mShowingPreview = TRUE;
+}
+
+void FastScroller::PostAutoHide()
+{
+    Boolean rst;
+    IView::Probe(mList)->RemoveCallbacks(mDeferHide, &rst);
+    IView::Probe(mList)->PostDelayed(mDeferHide, FADE_TIMEOUT, &rst);
+}
+
+void FastScroller::GetSectionsFromIndexer()
+{
+    mSectionIndexer = NULL;
+
+    AutoPtr<IAdapter> adapter;
+    IAdapterView::Probe(mList)->GetAdapter((IAdapter**)&adapter);
+    if (IHeaderViewListAdapter::Probe(adapter) != NULL) {
+        IHeaderViewListAdapter::Probe(adapter)->GetHeadersCount(&mHeaderCount);
+        // adapter = ((HeaderViewListAdapter) adapter).getWrappedAdapter();
+        //zhangjingcheng
+    }
+
+    if (IExpandableListConnector::Probe(adapter) != NULL) {
+        AutoPtr<IExpandableListConnector> expConnector = IExpandableListConnector::Probe(adapter);
+        AutoPtr<IExpandableListAdapter> expAdapter;
+        // expConnector->GetAdapter((IExpandableListAdapter**)&expAdapter);
+        // zhangjingcheng
+
+        if (ISectionIndexer::Probe(expAdapter) != NULL) {
+            mSectionIndexer = ISectionIndexer::Probe(expAdapter);
+            mListAdapter = adapter;
+            mSectionIndexer->GetSections((ArrayOf<IInterface*>**)&mSections);
+        }
+    } else if (ISectionIndexer::Probe(adapter) != NULL) {
+        mListAdapter = adapter;
+        mSectionIndexer = ISectionIndexer::Probe(adapter);
+        mSectionIndexer->GetSections((ArrayOf<IInterface*>**)&mSections);
+    } else {
+        mListAdapter = adapter;
+        mSections = NULL;
+    }
+}
+
+/**
+ * Scrolls to a specific position within the section
+ * @param position
+ */
 void FastScroller::ScrollTo(
     /* [in] */ Float position)
 {
-    Int32 count = mList->GetCount();
     mScrollCompleted = FALSE;
-    Float fThreshold = (1.0f / count) / 8;
-    Int32 sectionIndex;
-    if (mSections->GetLength() > 1) {
-        Int32 nSections = mSections->GetLength();
-        Int32 section = (Int32)(position * nSections);
-        if (section >= nSections) {
-            section = nSections - 1;
-        }
 
-        Int32 exactSection = section;
-        sectionIndex = section;
-        Int32 index;
-        mSectionIndexer->GetPositionForSection(section, &index);
+    Int32 count;
+    IAdapterView::Probe(mList)->GetCount(&count);
+    AutoPtr<ArrayOf<IInterface*> > sections = mSections;
+    Int32 sectionCount = sections == NULL ? 0 : sections->GetLength();
+    Int32 sectionIndex;
+    if (sections != NULL && sectionCount > 1) {
+        Int32 exactSection = MathUtils::Constrain(
+                (Int32) (position * sectionCount), 0, sectionCount - 1);
+        Int32 targetSection = exactSection;
+        Int32 targetIndex;
+        mSectionIndexer->GetPositionForSection(targetSection, &targetIndex);
+        sectionIndex = targetSection;
 
         // Given the expected section and index, the following code will
         // try to account for missing sections (no names starting with..)
@@ -671,28 +1358,27 @@ void FastScroller::ScrollTo(
         // and interpolate the currently visible letter's range across the
         // available space, so that there is always some list movement while
         // the user moves the thumb.
-        //
         Int32 nextIndex = count;
-        Int32 prevIndex = index;
-        Int32 prevSection = section;
-        Int32 nextSection = section + 1;
+        Int32 prevIndex = targetIndex;
+        Int32 prevSection = targetSection;
+        Int32 nextSection = targetSection + 1;
+
         // Assume the next section is unique
-        if (section < nSections - 1) {
-            mSectionIndexer->GetPositionForSection(section + 1, &nextIndex);
+        if (targetSection < sectionCount - 1) {
+            mSectionIndexer->GetPositionForSection(targetSection + 1, &nextIndex);
         }
 
         // Find the previous index if we're slicing the previous section
-        if (nextIndex == index) {
+        if (nextIndex == targetIndex) {
             // Non-existent letter
-            while (section > 0) {
-                section--;
-                mSectionIndexer->GetPositionForSection(section, &prevIndex);
-                if (prevIndex != index) {
-                    prevSection = section;
-                    sectionIndex = section;
+            while (targetSection > 0) {
+                targetSection--;
+                mSectionIndexer->GetPositionForSection(targetSection, &prevIndex);
+                if (prevIndex != targetIndex) {
+                    prevSection = targetSection;
+                    sectionIndex = targetSection;
                     break;
-                }
-                else if (section == 0) {
+                } else if (targetSection == 0) {
                     // When section reaches 0 here, sectionIndex must follow it.
                     // Assuming mSectionIndexer.getPositionForSection(0) == 0.
                     sectionIndex = 0;
@@ -707,83 +1393,262 @@ void FastScroller::ScrollTo(
         // sure that there is really a Q at Q's position. If not, move
         // further down...
         Int32 nextNextSection = nextSection + 1;
-        Int32 nextNextPosition;
-        mSectionIndexer->GetPositionForSection(nextNextSection, &nextNextPosition);
-        while (nextNextSection < nSections &&
-               nextNextPosition == nextIndex) {
+        Int32 whileIndex;
+        while (nextNextSection < sectionCount &&
+                (mSectionIndexer->GetPositionForSection(nextNextSection, &whileIndex), whileIndex) == nextIndex) {
             nextNextSection++;
             nextSection++;
-            mSectionIndexer->GetPositionForSection(nextNextSection, &nextNextPosition);
         }
+
         // Compute the beginning and ending scroll range percentage of the
-        // currently visible letter. This could be equal to or greater than
-        // (1 / nSections).
-        Float fPrev = (Float)prevSection / nSections;
-        Float fNext = (Float)nextSection / nSections;
-        if (prevSection == exactSection && position - fPrev < fThreshold) {
-            index = prevIndex;
-        }
-        else {
-            index = prevIndex + (Int32)((nextIndex - prevIndex) * (position - fPrev)
-                / (fNext - fPrev));
-        }
-        // Don't overflow
-        if (index > count - 1) {
-            index = count - 1;
+        // currently visible section. This could be equal to or greater than
+        // (1 / nSections). If the target position is near the previous
+        // position, snap to the previous position.
+        Float prevPosition = (Float) prevSection / sectionCount;
+        Float nextPosition = (Float) nextSection / sectionCount;
+        Float snapThreshold = (count == 0) ? Elastos::Core::Math::FLOAT_MAX_VALUE : .125f / count;
+        if (prevSection == exactSection && position - prevPosition < snapThreshold) {
+            targetIndex = prevIndex;
+        } else {
+            targetIndex = prevIndex + (Int32) ((nextIndex - prevIndex) * (position - prevPosition)
+                / (nextPosition - prevPosition));
         }
 
-        if (mList->Probe(EIID_IExpandableListView)) {
-            IExpandableListView* expList = (IExpandableListView*)(mList->Probe(EIID_IExpandableListView));
-            Int32 pos = ExpandableListView::GetPackedPositionForGroup(index + mListOffset);
-            Int32 flastListPos;
-            expList->GetFlatListPosition(pos, &flastListPos);
-            expList->SetSelectionFromTop(flastListPos, 0);
-        }
-        else if (mList->Probe(EIID_IListView)) {
-            IListView* list = (IListView*)mList->Probe(EIID_IListView);
-            list->SetSelectionFromTop(index + mListOffset, 0);
-        }
-        else {
-            mList->SetSelection(index + mListOffset);
-        }
-    }
-    else {
-        Int32 index = (Int32)(position * count);
-        // Don't overflow
-        if (index > count - 1) index = count - 1;
+        // Clamp to valid positions.
+        targetIndex = MathUtils::Constrain(targetIndex, 0, count - 1);
 
-        if (mList->Probe(EIID_IExpandableListView)) {
-            IExpandableListView* expList = (IExpandableListView*)(mList->Probe(EIID_IExpandableListView));
-            Int32 pos = ExpandableListView::GetPackedPositionForGroup(index + mListOffset);
-            Int32 flastListPos;
-            expList->GetFlatListPosition(pos, &flastListPos);
-            expList->SetSelectionFromTop(flastListPos, 0);
+        if (IExpandableListView::Probe(mList) != NULL) {
+            AutoPtr<IExpandableListView> expList = IExpandableListView::Probe(mList);
+            // expList->SetSelectionFromTop(expList.getFlatListPosition(
+            //         ExpandableListView.getPackedPositionForGroup(targetIndex + mHeaderCount)),
+            //         0);
+            //zhangjingcheng
+        } else if (IListView::Probe(mList) != NULL) {
+            AutoPtr<IListView> list = IListView::Probe(mList);
+            // ((ListView) mList).setSelectionFromTop(targetIndex + mHeaderCount, 0);
+            // zhangjingcheng
+        } else {
+            IAdapterView::Probe(mList)->SetSelection(targetIndex + mHeaderCount);
         }
-        else if (mList->Probe(EIID_IListView)) {
-            IListView* list = (IListView*)mList->Probe(EIID_IListView);
-            list->SetSelectionFromTop(index + mListOffset, 0);
-        }
-        else {
-            mList->SetSelection(index + mListOffset);
+    } else {
+        Int32 index = MathUtils::Constrain((Int32) (position * count), 0, count - 1);
+
+        if (IExpandableListView::Probe(mList) != NULL) {
+            AutoPtr<IExpandableListView> expList = IExpandableListView::Probe(mList);
+            // expList.setSelectionFromTop(expList.getFlatListPosition(
+            //         ExpandableListView.getPackedPositionForGroup(index + mHeaderCount)), 0);
+            // zhangjingcheng
+        } else if (IListView::Probe(mList) != NULL) {
+            // ((ListView)mList).setSelectionFromTop(index + mHeaderCount, 0);
+            // zhangjingcheng
+        } else {
+            IAdapterView::Probe(mList)->SetSelection(index + mHeaderCount);
         }
 
         sectionIndex = -1;
     }
 
-    if (sectionIndex >= 0) {
-        AutoPtr<ICharSequence> seq = (ICharSequence*)(*mSections)[sectionIndex]->Probe(EIID_ICharSequence);
-        assert(seq != NULL);
-        seq->ToString(&mSectionText);
-        String text = mSectionText ;
-        mDrawOverlay = (text.GetLength() != 1 || text.GetChar(0) != ' ') &&
-                sectionIndex < mSections->GetLength();
-    }
-    else {
-        mDrawOverlay = FALSE;
+    if (mCurrentSection != sectionIndex) {
+        mCurrentSection = sectionIndex;
+
+        Boolean hasPreview = TransitionPreviewLayout(sectionIndex);
+        if (!mShowingPreview && hasPreview) {
+            TransitionToDragging();
+        } else if (mShowingPreview && !hasPreview) {
+            TransitionToVisible();
+        }
     }
 }
 
-Int32 FastScroller::GetThumbPositionForListPosition(
+
+/**
+ * Transitions the preview text to a new section. Handles animation,
+ * measurement, and layout. If the new preview text is empty, returns false.
+ *
+ * @param sectionIndex The section index to which the preview should
+ *            transition.
+ * @return False if the new preview text is empty.
+ */
+Boolean FastScroller::TransitionPreviewLayout(
+    /* [in] */ Int32 sectionIndex)
+{
+    AutoPtr<ArrayOf<IInterface*> > sections = mSections;
+    String text;
+    if (sections != NULL && sectionIndex >= 0 && sectionIndex < sections->GetLength()) {
+        IInterface* section = (*sections)[sectionIndex];
+        if (section != NULL) {
+            IObject::Probe(section)->ToString(&text);
+        }
+    }
+
+    AutoPtr<IRect> bounds = mTempBounds;
+    AutoPtr<IView> preview = mPreviewImage;
+    AutoPtr<ITextView> showing;
+    AutoPtr<ITextView> target;
+    if (mShowingPrimary) {
+        showing = mPrimaryText;
+        target = mSecondaryText;
+    } else {
+        showing = mSecondaryText;
+        target = mPrimaryText;
+    }
+
+    // Set and layout target immediately.
+    target->SetText(CoreUtils::Convert(text));
+    MeasurePreview(IView::Probe(target), bounds);
+    ApplyLayout(IView::Probe(target), bounds);
+
+    if (mPreviewAnimation != NULL) {
+        IAnimator::Probe(mPreviewAnimation)->Cancel();
+    }
+
+    // Cross-fade preview text.
+    AutoPtr<IAnimator> showTarget = AnimateAlpha(IView::Probe(target), 1.f);
+    showTarget->SetDuration(DURATION_CROSS_FADE);
+    AutoPtr<IAnimator> hideShowing = AnimateAlpha(IView::Probe(showing), 0.f);
+    hideShowing->SetDuration(DURATION_CROSS_FADE);
+    hideShowing->AddListener(mSwitchPrimaryListener);
+
+    // Apply preview image padding and animate bounds, if necessary.
+
+    Int32 pLeft, pTop, pRight, pBottom;
+    preview->GetPaddingLeft(&pLeft);
+    preview->GetPaddingTop(&pTop);
+    preview->GetPaddingRight(&pRight);
+    preview->GetPaddingBottom(&pBottom);
+
+    Int32 left, top, right, bottom;
+    bounds->GetLeft(&left);
+    bounds->GetRight(&right);
+    bounds->GetTop(&top);
+    bounds->GetBottom(&bottom);
+
+
+    bounds->SetLeft(left - pLeft);
+    bounds->SetRight(right + pRight);
+    bounds->SetTop(top - pTop);
+    bounds->SetBottom(bottom + pBottom);
+
+    AutoPtr<IAnimator> resizePreview = AnimateBounds(preview, bounds);
+    resizePreview->SetDuration(DURATION_RESIZE);
+
+    CAnimatorSet::New((IAnimatorSet**)&mPreviewAnimation);
+    AutoPtr<IAnimatorSetBuilder> builder;
+    mPreviewAnimation->Play(hideShowing, (IAnimatorSetBuilder**)&builder);
+    builder->With(showTarget);
+    builder->With(resizePreview);
+
+    // The current preview size is unaffected by hidden or showing. It's
+    // used to set starting scales for things that need to be scaled down.
+    Int32 pWidth;
+    preview->GetWidth(&pWidth);
+    preview->GetPaddingLeft(&pLeft);
+    preview->GetPaddingRight(&pRight);
+    Int32 previewWidth = pWidth - pLeft - pRight;
+
+    // If target is too large, shrink it immediately to fit and expand to
+    // target size. Otherwise, start at target size.
+    Int32 targetWidth;
+    IView::Probe(target)->GetWidth(&targetWidth);
+    if (targetWidth > previewWidth) {
+        IView::Probe(target)->SetScaleX((Float) previewWidth / targetWidth);
+        AutoPtr<IAnimator> scaleAnim = AnimateScaleX(IView::Probe(target), 1.f);
+        scaleAnim->SetDuration(DURATION_RESIZE);
+        builder->With(scaleAnim);
+    } else {
+        IView::Probe(target)->SetScaleX(1.f);
+    }
+
+    // If showing is larger than target, shrink to target size.
+    Int32 showingWidth;
+    IView::Probe(showing)->GetWidth(&showingWidth);
+    if (showingWidth > targetWidth) {
+        Float scale = (Float) targetWidth / showingWidth;
+        AutoPtr<IAnimator> scaleAnim = AnimateScaleX(IView::Probe(showing), scale);
+        scaleAnim->SetDuration(DURATION_RESIZE);
+        builder->With(scaleAnim);
+    }
+
+    IAnimator::Probe(mPreviewAnimation)->Start();
+
+    return !TextUtils::IsEmpty(text);
+}
+
+/**
+ * Positions the thumb and preview widgets.
+ *
+ * @param position The position, between 0 and 1, along the track at which
+ *            to place the thumb.
+ */
+void FastScroller::SetThumbPos(
+    /* [in] */ Float position)
+{
+    AutoPtr<IRect> container = mContainerRect;
+    Int32 top, bottom;
+    container->GetTop(&top);
+    container->GetBottom(&bottom);
+
+    AutoPtr<IView> trackImage = IView::Probe(mTrackImage);
+    AutoPtr<IView> thumbImage = IView::Probe(mThumbImage);
+    Int32 min, max;
+    trackImage->GetTop(&min);
+    trackImage->GetBottom(&max);
+    Float offset = min;
+    Float range = max - min;
+    Float thumbMiddle = position * range + offset;
+    Int32 tHeight;
+    thumbImage->GetHeight(&tHeight);
+    thumbImage->SetTranslationY(thumbMiddle - tHeight / 2);
+
+    AutoPtr<IView> previewImage = mPreviewImage;
+    Int32 pHeight;
+    previewImage->GetHeight(&pHeight);
+    Float previewHalfHeight = pHeight / 2.f;
+    Float previewPos;
+    switch (mOverlayPosition) {
+        case OVERLAY_AT_THUMB:
+            previewPos = thumbMiddle;
+            break;
+        case OVERLAY_ABOVE_THUMB:
+            previewPos = thumbMiddle - previewHalfHeight;
+            break;
+        case OVERLAY_FLOATING:
+        default:
+            previewPos = 0;
+            break;
+    }
+
+    // Center the preview on the thumb, constrained to the list bounds.
+    Float minP = top + previewHalfHeight;
+    Float maxP = bottom - previewHalfHeight;
+    Float previewMiddle = MathUtils::Constrain(previewPos, minP, maxP);
+    Float previewTop = previewMiddle - previewHalfHeight;
+    previewImage->SetTranslationY(previewTop);
+
+    IView::Probe(mPrimaryText)->SetTranslationY(previewTop);
+    IView::Probe(mSecondaryText)->SetTranslationY(previewTop);
+}
+
+Float FastScroller::GetPosFromMotionEvent(
+    /* [in] */ Float y)
+{
+    AutoPtr<IView> trackImage = IView::Probe(mTrackImage);
+    Int32 min, max;
+    trackImage->GetTop(&min);
+    trackImage->GetBottom(&max);
+    Float offset = min;
+    Float range = max - min;
+
+    // If the list is the same height as the thumbnail or shorter,
+    // effectively disable scrolling.
+    if (range <= 0) {
+        return 0.f;
+    }
+
+    return MathUtils::Constrain((y - offset) / range, 0.f, 1.f);
+}
+
+Float FastScroller::GetPosFromItemCount(
     /* [in] */ Int32 firstVisibleItem,
     /* [in] */ Int32 visibleItemCount,
     /* [in] */ Int32 totalItemCount)
@@ -791,253 +1656,276 @@ Int32 FastScroller::GetThumbPositionForListPosition(
     if (mSectionIndexer == NULL || mListAdapter == NULL) {
         GetSectionsFromIndexer();
     }
-    if (mSectionIndexer == NULL || !mMatchDragPosition) {
-        return ((mList->GetHeight() - mThumbH) * firstVisibleItem)
-            / (totalItemCount - visibleItemCount);
-    }
 
-    firstVisibleItem -= mListOffset;
+    Boolean hasSections = mSectionIndexer != NULL && mSections != NULL
+            && mSections->GetLength() > 0;
+    if (!hasSections || !mMatchDragPosition) {
+        return (Float) firstVisibleItem / (totalItemCount - visibleItemCount);
+    }
+    // Ignore headers.
+    firstVisibleItem -= mHeaderCount;
     if (firstVisibleItem < 0) {
         return 0;
     }
-    totalItemCount -= mListOffset;
+    totalItemCount -= mHeaderCount;
 
-    Int32 trackHeight = mList->GetHeight() - mThumbH;
+    // Hidden portion of the first visible row.
+    AutoPtr<IView> child;
+    IViewGroup::Probe(mList)->GetChildAt(0, (IView**)&child);
+    Float incrementalPos;
+    Int32 cHeight;
+    child->GetHeight(&cHeight);
+    if (child == NULL || cHeight == 0) {
+        incrementalPos = 0;
+    } else {
+        Int32 lpTop, cTop, cHeight;
+        IView::Probe(mList)->GetPaddingTop(&lpTop);
+        child->GetTop(&cTop);
+        child->GetHeight(&cHeight);
+        incrementalPos = (Float) (lpTop - cTop) / cHeight;
+    }
 
-    Int32 section, sectionPos, nextSectionPos;
+    // Number of rows in this section.
+    Int32 section;
     mSectionIndexer->GetSectionForPosition(firstVisibleItem, &section);
+    Int32 sectionPos;
     mSectionIndexer->GetPositionForSection(section, &sectionPos);
-    mSectionIndexer->GetPositionForSection(section + 1, &nextSectionPos);
     Int32 sectionCount = mSections->GetLength();
-    Int32 positionsInSection = nextSectionPos - sectionPos;
+    Int32 positionsInSection;
+    if (section < sectionCount - 1) {
+        Int32 nextSectionPos;
+        if (section + 1 < sectionCount) {
+            mSectionIndexer->GetPositionForSection(section + 1, &nextSectionPos);
+        } else {
+            nextSectionPos = totalItemCount - 1;
+        }
+        positionsInSection = nextSectionPos - sectionPos;
+    } else {
+        positionsInSection = totalItemCount - sectionPos;
+    }
 
-    AutoPtr<IView> child = mList->GetChildAt(0);
-    Int32 top, height;
-    child->GetTop(&top);
-    child->GetHeight(&height);
-    Float incrementalPos = child == NULL ? 0 : firstVisibleItem +
-        (Float) (mList->GetPaddingTop() - top) / height;
-    Float posWithinSection = (incrementalPos - sectionPos) / positionsInSection;
-    Int32 result = (Int32) ((section + posWithinSection) / sectionCount * trackHeight);
+    // Position within this section.
+    Float posWithinSection;
+    if (positionsInSection == 0) {
+        posWithinSection = 0;
+    } else {
+        posWithinSection = (firstVisibleItem + incrementalPos - sectionPos)
+                / positionsInSection;
+    }
 
-    // Fake out the scrollbar for the last item. Since the section indexer won't
-    // ever actually move the list in this end space, make scrolling across the last item
-    // account for whatever space is remaining.
+    Float result = (section + posWithinSection) / sectionCount;
+
+    // Fake out the scroll bar for the last item. Since the section indexer
+    // won't ever actually move the list in this end space, make scrolling
+    // across the last item account for whatever space is remaining.
     if (firstVisibleItem > 0 && firstVisibleItem + visibleItemCount == totalItemCount) {
-        AutoPtr<IView> lastChild = mList->GetChildAt(visibleItemCount - 1);
-        lastChild->GetTop(&top);
-        lastChild->GetHeight(&height);
-        Float lastItemVisible = (Float) (mList->GetHeight() - mList->GetPaddingBottom()
-            - top) / height;
-        result += (trackHeight - result) * lastItemVisible;
+        AutoPtr<IView> lastChild;
+        IViewGroup::Probe(mList)->GetChildAt(visibleItemCount - 1, (IView**)&lastChild);
+        Int32 bottomPadding;
+        IView::Probe(mList)->GetPaddingBottom(&bottomPadding);
+        Int32 maxSize;
+        Int32 currentVisibleSize;
+        Boolean clipToPadding;
+        IViewGroup::Probe(mList)->GetClipToPadding(&clipToPadding);
+        if (clipToPadding) {
+            lastChild->GetHeight(&maxSize);
+            Int32 lHeight, lastTop;
+            IView::Probe(mList)->GetHeight(&lHeight);
+            lastChild->GetTop(&lastTop);
+            currentVisibleSize = lHeight - bottomPadding - lastTop;
+        } else {
+            lastChild->GetHeight(&maxSize);
+            maxSize += bottomPadding;
+            Int32 lHeight, lastTop;
+            IView::Probe(mList)->GetHeight(&lHeight);
+            lastChild->GetTop(&lastTop);
+            currentVisibleSize = lHeight - lastTop;
+        }
+        if (currentVisibleSize > 0 && maxSize > 0) {
+            result += (1 - result) * ((Float) currentVisibleSize / maxSize );
+        }
     }
 
     return result;
 }
 
+/**
+ * Cancels an ongoing fling event by injecting a
+ * {@link MotionEvent#ACTION_CANCEL} into the host view.
+ */
 void FastScroller::CancelFling()
 {
-    // Cancel the list fling
-    AutoPtr<CMotionEvent> cancelFling;
-    CMotionEvent::Obtain(
-        0, 0, IMotionEvent::ACTION_CANCEL, 0, 0, 0,
-        (CMotionEvent**)&cancelFling);
-    mList->OnTouchEvent(cancelFling);
-    cancelFling->Recycle();
+    AutoPtr<IMotionEvent> cancelFling;
+    MotionEvent::Obtain(
+            0, 0, IMotionEvent::ACTION_CANCEL, 0, 0, 0, (IMotionEvent**)&cancelFling);
+    Boolean rst;
+    IView::Probe(mList)->OnTouchEvent(cancelFling, &rst);
+    IInputEvent::Probe(cancelFling)->Recycle();
 }
 
+/**
+ * Cancels a pending drag.
+ *
+ * @see #startPendingDrag()
+ */
 void FastScroller::CancelPendingDrag()
 {
-    mList->RemoveCallbacks(mDeferStartDrag);
-    mPendingDrag = FALSE;
+    mPendingDrag = -1;
 }
 
+/**
+ * Delays dragging until after the framework has determined that the user is
+ * scrolling, rather than tapping.
+ */
 void FastScroller::StartPendingDrag()
 {
-    mPendingDrag = TRUE;
-    mList->PostDelayed(mDeferStartDrag, PENDING_DRAG_DELAY);
+    mPendingDrag = SystemClock::GetUptimeMillis() + TAP_TIMEOUT;
 }
 
 void FastScroller::BeginDrag()
 {
+    mPendingDrag = -1;
+
     SetState(STATE_DRAGGING);
+
     if (mListAdapter == NULL && mList != NULL) {
         GetSectionsFromIndexer();
     }
+
     if (mList != NULL) {
-        mList->RequestDisallowInterceptTouchEvent(TRUE);
-        mList->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_TOUCH_SCROLL);
+       IViewParent::Probe(mList)->RequestDisallowInterceptTouchEvent(TRUE);
+        // mList->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_TOUCH_SCROLL);
+       // zhangjingcheng
     }
 
     CancelFling();
 }
 
-Boolean FastScroller::OnInterceptTouchEvent(
-    /* [in] */ IMotionEvent* ev)
-{
-    Int32 mask;
-    ev->GetActionMasked(&mask);
-    Float x, y;
-    ev->GetX(&x);
-    ev->GetY(&y);
-    switch (mask) {
-        case IMotionEvent::ACTION_DOWN:
-            if (mState > STATE_NONE && IsPointInside(x, y)) {
-                if (!mList->IsInScrollingContainer()) {
-                    BeginDrag();
-                    return TRUE;
-                }
-                mInitialTouchY = y;
-                StartPendingDrag();
-            }
-            break;
-        case IMotionEvent::ACTION_UP:
-        case IMotionEvent::ACTION_CANCEL:
-            CancelPendingDrag();
-            break;
-    }
-    return FALSE;
-}
-
-Boolean FastScroller::OnTouchEvent(
-    /* [in] */ IMotionEvent* me)
-{
-    if (mState == STATE_NONE) {
-        return FALSE;
-    }
-
-    Int32 action;
-    me->GetAction(&action);
-    Float fx, fy;
-    me->GetX(&fx);
-    me->GetY(&fy);
-
-    if (action == IMotionEvent::ACTION_DOWN) {
-        if (IsPointInside(fx, fy)) {
-            SetState(STATE_DRAGGING);
-            if (!mList->IsInScrollingContainer()) {
-                BeginDrag();
-                return TRUE;
-            }
-            mInitialTouchY = fy;
-            StartPendingDrag();
-        }
-    }
-    else if (action == IMotionEvent::ACTION_UP) { // don't add ACTION_CANCEL here
-        if (mPendingDrag) {
-            // Allow a tap to scroll.
-            BeginDrag();
-
-            Int32 viewHeight = mList->GetHeight();
-            // Jitter
-            Int32 newThumbY = (Int32) fy - mThumbH + 10;
-            if (newThumbY < 0) {
-                newThumbY = 0;
-            } else if (newThumbY + mThumbH > viewHeight) {
-                newThumbY = viewHeight - mThumbH;
-            }
-            mThumbY = newThumbY;
-            ScrollTo((Float) mThumbY / (viewHeight - mThumbH));
-
-            CancelPendingDrag();
-            // Will hit the STATE_DRAGGING check below
-        }
-        if (mState == STATE_DRAGGING) {
-            if (mList != NULL) {
-                // ViewGroup does the right thing already, but there might
-                // be other classes that don't properly reset on touch-up,
-                // so do this explicitly just in case.
-                mList->RequestDisallowInterceptTouchEvent(FALSE);
-                mList->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
-            }
-
-            SetState(STATE_VISIBLE);
-
-            RemoveCallbacks();
-            if (!mAlwaysShow) {
-                PostDelayed(1000);
-            }
-            return TRUE;
-        }
-    }
-    else if (action == IMotionEvent::ACTION_MOVE) {
-        if (mPendingDrag) {
-            if (Elastos::Core::Math::Abs(fy - mInitialTouchY) > mScaledTouchSlop) {
-                SetState(STATE_DRAGGING);
-                if (mListAdapter == NULL && mList != NULL) {
-                    GetSectionsFromIndexer();
-                }
-                if (mList != NULL) {
-                    mList->RequestDisallowInterceptTouchEvent(TRUE);
-                    mList->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_TOUCH_SCROLL);
-                }
-
-                CancelFling();
-                CancelPendingDrag();
-                // Will hit the STATE_DRAGGING check below
-            }
-        }
-        if (mState == STATE_DRAGGING) {
-            Int32 viewHeight = mList->GetHeight();
-            // Jitter
-            Int32 newThumbY = (Int32)fy - mThumbH + 10;
-            if (newThumbY < 0) {
-                newThumbY = 0;
-            }
-            else if (newThumbY + mThumbH > viewHeight) {
-                newThumbY = viewHeight - mThumbH;
-            }
-
-            if (Elastos::Core::Math::Abs(mThumbY - newThumbY) < 2) {
-                return TRUE;
-            }
-            mThumbY = newThumbY;
-            // If the previous scrollTo is still pending
-            if (mScrollCompleted) {
-                ScrollTo((Float)mThumbY / (viewHeight - mThumbH));
-            }
-            return TRUE;
-        }
-    }
-    else if (action == IMotionEvent::ACTION_CANCEL) {
-        CancelPendingDrag();
-    }
-    return FALSE;
-}
-
+/**
+ * Returns whether a coordinate is inside the scroller's activation area. If
+ * there is a track image, touching anywhere within the thumb-width of the
+ * track activates scrolling. Otherwise, the user has to touch inside thumb
+ * itself.
+ *
+ * @param x The x-coordinate.
+ * @param y The y-coordinate.
+ * @return Whether the coordinate is inside the scroller's activation area.
+ */
 Boolean FastScroller::IsPointInside(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    Boolean inTrack = FALSE;
-    switch (mPosition) {
-        default:
-        case IView::SCROLLBAR_POSITION_RIGHT:
-            inTrack = x > mList->GetWidth() - mThumbW;
-            break;
-        case IView::SCROLLBAR_POSITION_LEFT:
-            inTrack = x < mThumbW;
-            break;
-    }
 
-    // Allow taps in the track to start moving.
-    return inTrack && ((mTrackDrawable != NULL) || (y >= mThumbY && y <= mThumbY + mThumbH));
+    return IsPointInsideX(x) && (mTrackDrawable != NULL || IsPointInsideY(y));
 }
 
-ECode FastScroller::RemoveCallbacks()
+Boolean FastScroller::IsPointInsideX(
+    /* [in] */ Float x)
 {
-    return mHandler->RemoveCallbacks(mScrollFade);
+    if (mLayoutFromRight) {
+        Int32 tLeft;
+        IView::Probe(mThumbImage)->GetLeft(&tLeft);
+        return x >= tLeft;
+    } else {
+        Int32 tRight;
+        IView::Probe(mThumbImage)->GetRight(&tRight);
+        return x <= tRight;
+    }
 }
 
-Boolean FastScroller::PostDelayed(
-    /* [in] */ Int64 delayMillis)
+Boolean FastScroller::IsPointInsideY(
+    /* [in] */ Float y)
 {
-    if (delayMillis < 0 ) {
-        delayMillis = 0;
+    Float offset;
+    IView::Probe(mThumbImage)->GetTranslationY(&offset);
+    Int32 tTop, tBottom;
+    IView::Probe(mThumbImage)->GetTop(&tTop);
+    Float top = tTop + offset;
+    IView::Probe(mThumbImage)->GetBottom(&tBottom);
+    Float bottom = tBottom + offset;
+    return y >= top && y <= bottom;
+}
+
+AutoPtr<IAnimator> FastScroller::GroupAnimatorOfFloat(
+    /* [in] */ IProperty* property,
+    /* [in] */ Float value,
+    /* [in] */ ArrayOf<IView*>* views)
+{
+    AutoPtr<IAnimatorSet> animSet;
+    CAnimatorSet::New((IAnimatorSet**)&animSet);
+    AutoPtr<IAnimatorSetBuilder> builder;
+
+    for (Int32 i = views->GetLength() - 1; i >= 0; i--) {
+        AutoPtr<ArrayOf<Float> > param = ArrayOf<Float>::Alloc(1);
+        param->Set(0, value);
+        AutoPtr<IAnimator> anim = IAnimator::Probe(ObjectAnimator::OfFloat((*views)[i], property, param));
+        if (builder == NULL) {
+            animSet->Play(anim, (IAnimatorSetBuilder**)&builder);
+        } else {
+            builder->With(anim);
+        }
     }
 
-    Boolean result;
-    return mHandler->PostDelayed(mScrollFade, delayMillis, &result);
+    AutoPtr<IAnimator> result = IAnimator::Probe(animSet);
+    return result;
+}
+
+/**
+ * Returns an animator for the view's scaleX value.
+ */
+AutoPtr<IAnimator> FastScroller::AnimateScaleX(
+    /* [in] */ IView* v,
+    /* [in] */ Float target)
+{
+    AutoPtr<ArrayOf<Float> > param = ArrayOf<Float>::Alloc(1);
+    param->Set(0, target);
+    return IAnimator::Probe(ObjectAnimator::OfFloat(v, Elastos::Droid::View::View::SCALE_X, param));
+}
+
+/**
+ * Returns an animator for the view's alpha value.
+ */
+AutoPtr<IAnimator> FastScroller::AnimateAlpha(
+    /* [in] */ IView* v,
+    /* [in] */ Float alpha)
+{
+    AutoPtr<ArrayOf<Float> > param = ArrayOf<Float>::Alloc(1);
+    param->Set(0, alpha);
+    return IAnimator::Probe(ObjectAnimator::OfFloat(v, Elastos::Droid::View::View::ALPHA, param));
+}
+
+AutoPtr<IAnimator> FastScroller::AnimateBounds(
+    /* [in] */ IView* v,
+    /* [in] */ IRect* bounds)
+{
+    Int32 l, t, r, b;
+    bounds->GetLeft(&l);
+    bounds->GetTop(&t);
+    bounds->GetRight(&r);
+    bounds->GetBottom(&b);
+
+    AutoPtr<ArrayOf<Int32> > param1 = ArrayOf<Int32>::Alloc(1);
+    param1->Set(0, l);
+    AutoPtr<IPropertyValuesHolder> left = PropertyValuesHolder::OfInt32(LEFT, param1);
+
+    AutoPtr<ArrayOf<Int32> > param2 = ArrayOf<Int32>::Alloc(1);
+    param2->Set(0, t);
+    AutoPtr<IPropertyValuesHolder> top = PropertyValuesHolder::OfInt32(TOP, param2);
+
+    AutoPtr<ArrayOf<Int32> > param3 = ArrayOf<Int32>::Alloc(1);
+    param3->Set(0, r);
+    AutoPtr<IPropertyValuesHolder> right = PropertyValuesHolder::OfInt32(RIGHT, param3);
+
+    AutoPtr<ArrayOf<Int32> > param4 = ArrayOf<Int32>::Alloc(1);
+    param4->Set(0, b);
+    AutoPtr<IPropertyValuesHolder> bottom = PropertyValuesHolder::OfInt32(BOTTOM, param4);
+
+    AutoPtr<ArrayOf<IPropertyValuesHolder*> > param = ArrayOf<IPropertyValuesHolder*>::Alloc(4);
+    param->Set(0, left);
+    param->Set(1, top);
+    param->Set(2, right);
+    param->Set(3, bottom);
+    return IAnimator::Probe(ObjectAnimator::OfPropertyValuesHolder(v, param));
 }
 
 }// namespace Widget

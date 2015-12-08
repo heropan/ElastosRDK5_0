@@ -5,10 +5,10 @@
 #include "elastos/droid/ext/frameworkext.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 class RestoreSession:
     public ElRefBase

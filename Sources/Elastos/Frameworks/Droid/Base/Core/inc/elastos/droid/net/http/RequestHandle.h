@@ -153,62 +153,55 @@ private:
     /**
      * @return Digest-scheme authentication response.
      */
-    CARAPI ComputeDigestAuthResponse(
+    CARAPI_(String) ComputeDigestAuthResponse(
         /* [in] */ const String& username,
         /* [in] */ const String& password,
         /* [in] */ const String& realm,
         /* [in] */ const String& nonce,
         /* [in] */ const String& QOP,
         /* [in] */ const String& algorithm,
-        /* [in] */ const String& opaque,
-        /* [out] */ String* result);
+        /* [in] */ const String& opaque);
 
     /**
      * @return Double-quoted MD5 digest.
      */
-    CARAPI ComputeDigest(
+    CARAPI_(String) ComputeDigest(
         /* [in] */ const String& A1,
         /* [in] */ const String& A2,
         /* [in] */ const String& nonce,
         /* [in] */ const String& QOP,
         /* [in] */ const String& nc,
-        /* [in] */ const String& cnonce,
-        /* [out] */ String* result);
+        /* [in] */ const String& cnonce);
 
     /**
      * @return MD5 hash of concat(secret, ":", data).
      */
-    CARAPI KD(
+    CARAPI_(String) KD(
         /* [in] */ const String& secret,
-        /* [in] */ const String& data,
-        /* [out] */ String* result);
+        /* [in] */ const String& data);
 
     /**
      * @return MD5 hash of param.
      */
-    CARAPI H(
-        /* [in] */ const String& param,
-        /* [out] */ String* result);
+    CARAPI_(String) H(
+        /* [in] */ const String& param);
 
     /**
      * @return HEX buffer representation.
      */
-    CARAPI BufferToHex(
-        /* [in] */ ArrayOf<Byte>* buffer,
-        /* [out] */ String* result);
+    CARAPI_(String) BufferToHex(
+        /* [in] */ ArrayOf<Byte>* buffer);
 
     /**
      * Computes a random cnonce value based on the current time.
      */
-    CARAPI ComputeCnonce(
-        /* [out] */ String* result);
+    CARAPI_(String) ComputeCnonce();
 
     /**
      * "Double-quotes" the argument.
      */
-    CARAPI DoubleQuote(
-        /* [in] */ const String& param,
-        /* [out] */ String* result);
+    CARAPI_(String) DoubleQuote(
+        /* [in] */ const String& param);
 
     /**
      * Creates and queues new request.

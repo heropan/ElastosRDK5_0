@@ -47,8 +47,7 @@ public:
      * @hide
      */
     CARAPI AddCapability(
-        /* [in] */ Int32 capability,
-        /* [out] */ INetworkCapabilities** result);
+        /* [in] */ Int32 capability);
 
     /**
      * Removes (if found) the given capability from this {@code NetworkCapability} instance.
@@ -58,8 +57,7 @@ public:
      * @hide
      */
     CARAPI RemoveCapability(
-        /* [in] */ Int32 capability,
-        /* [out] */ INetworkCapabilities** result);
+        /* [in] */ Int32 capability);
 
     /**
      * Gets all the capabilities set on this {@code NetworkCapability} instance.
@@ -95,8 +93,7 @@ public:
      * @hide
      */
     CARAPI AddTransportType(
-        /* [in] */ Int32 transportType,
-        /* [out] */ INetworkCapabilities** result);
+        /* [in] */ Int32 transportType);
 
     /**
      * Removes (if found) the given transport from this {@code NetworkCapability} instance.
@@ -106,8 +103,7 @@ public:
      * @hide
      */
     CARAPI RemoveTransportType(
-        /* [in] */ Int32 transportType,
-        /* [out] */ INetworkCapabilities** result);
+        /* [in] */ Int32 transportType);
 
     /**
      * Gets all the transports set on this {@code NetworkCapability} instance.
@@ -233,7 +229,7 @@ public:
         /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     CARAPI ReadFromParcel(
@@ -246,54 +242,46 @@ public:
         /* [out] */ String* result);
 
 private:
-    CARAPI EnumerateBits(
-        /* [in] */ Int64 val,
-        /* [out, callee] */ ArrayOf<Int32>** result);
+    CARAPI_(AutoPtr<ArrayOf<Int32> >) EnumerateBits(
+        /* [in] */ Int64 val);
 
     CARAPI CombineNetCapabilities(
         /* [in] */ INetworkCapabilities* nc);
 
-    CARAPI SatisfiedByNetCapabilities(
-        /* [in] */ INetworkCapabilities* nc,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) SatisfiedByNetCapabilities(
+        /* [in] */ INetworkCapabilities* nc);
 
-    CARAPI EqualsNetCapabilities(
-        /* [in] */ INetworkCapabilities* nc,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) EqualsNetCapabilities(
+        /* [in] */ INetworkCapabilities* nc);
 
     CARAPI CombineTransportTypes(
         /* [in] */ INetworkCapabilities* nc);
 
-    CARAPI SatisfiedByTransportTypes(
-        /* [in] */ INetworkCapabilities* nc,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) SatisfiedByTransportTypes(
+        /* [in] */ INetworkCapabilities* nc);
 
-    CARAPI EqualsTransportTypes(
-        /* [in] */ INetworkCapabilities* nc,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) EqualsTransportTypes(
+        /* [in] */ INetworkCapabilities* nc);
 
     CARAPI CombineLinkBandwidths(
         /* [in] */ INetworkCapabilities* nc);
 
-    CARAPI SatisfiedByLinkBandwidths(
-        /* [in] */ INetworkCapabilities* nc,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) SatisfiedByLinkBandwidths(
+        /* [in] */ INetworkCapabilities* nc);
 
-    CARAPI EqualsLinkBandwidths(
-        /* [in] */ INetworkCapabilities* nc,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) EqualsLinkBandwidths(
+        /* [in] */ INetworkCapabilities* nc);
 
     CARAPI CombineSpecifiers(
         /* [in] */ INetworkCapabilities* nc);
 
-    CARAPI SatisfiedBySpecifier(
-        /* [in] */ INetworkCapabilities* nc,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) SatisfiedBySpecifier(
+        /* [in] */ INetworkCapabilities* nc);
 
-    CARAPI EqualsSpecifier(
-        /* [in] */ INetworkCapabilities* nc,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) EqualsSpecifier(
+        /* [in] */ INetworkCapabilities* nc);
 
+private:
     static const String TAG;
 
     static const Boolean DBG;

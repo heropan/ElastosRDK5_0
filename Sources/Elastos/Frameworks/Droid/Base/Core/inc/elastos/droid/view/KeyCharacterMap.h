@@ -373,7 +373,7 @@ public:
         /* [in] */ Handle64 native);
 
     CARAPI GetMap(
-        /* [in] */ Int32* map);
+        /* [in] */ Int64* map);
 
 public:
     /**

@@ -129,13 +129,6 @@ module
                 [out] Boolean* size);
         }
 
-        interface ISurfaceViewHelper {
-
-            AdjustSurfaceViewMotion(
-                [in] IMotionEvent* evt);
-
-        }
-
     } // namespace View
     } // namepsace Droid
     } // namespace Elastos

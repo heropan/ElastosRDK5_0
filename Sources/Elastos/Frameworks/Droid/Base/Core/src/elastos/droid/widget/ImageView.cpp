@@ -1,36 +1,43 @@
-#include "elastos/droid/ext/frameworkext.h"
+
 #include "elastos/droid/widget/ImageView.h"
-#include <stdio.h>
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/core/StringBuffer.h>
-#include <elastos/core/Math.h>
-#include "elastos/droid/R.h"
-#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CMatrix.h"
 #include "elastos/droid/graphics/CCanvas.h"
 #include "elastos/droid/graphics/CPorterDuffColorFilter.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
+#include "elastos/droid/graphics/drawable/CDrawableHelper.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::StringBuffer;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContentResolverOpenResourceIdResult;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::CPorterDuffColorFilter;
+using Elastos::Droid::Graphics::IPixelFormat;
+using Elastos::Droid::Graphics::IPorterDuffColorFilter;
 using Elastos::Droid::Graphics::Drawable::CBitmapDrawable;
-using Elastos::Droid::Graphics::Drawable::IDrawableHelper;
-//TODO using Elastos::Droid::Graphics::Drawable::CDrawableHelper;
-using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
+using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
+using Elastos::Droid::Graphics::Drawable::IDrawableHelper;
+using Elastos::Droid::Graphics::Drawable::CDrawableHelper;
+using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::Drawable;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::IView;
+using Elastos::Core::StringBuffer;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-
 
 const ImageViewScaleType ImageView::sScaleTypeArray[] = {
     ImageViewScaleType_MATRIX,
@@ -43,89 +50,21 @@ const ImageViewScaleType ImageView::sScaleTypeArray[] = {
     ImageViewScaleType_CENTER_INSIDE
 };
 
-ImageView::ImageView() :
-    mResource(0),
-    mScaleType(ImageViewScaleType_FIT_CENTER),
-    mHaveFrame(FALSE),
-    mAdjustViewBounds(FALSE),
-    mMaxWidth(Elastos::Core::Math::INT32_MAX_VALUE),
-    mMaxHeight(Elastos::Core::Math::INT32_MAX_VALUE),
-    mAlpha(255),
-    mViewAlphaScale(256),
-    mColorMod(FALSE),
-    mMergeState(FALSE),
-    mLevel(0),
-    mDrawableWidth(0),
-    mDrawableHeight(0),
-    mCropToPadding(FALSE),
-    mBaseline(-1),
-    mBaselineAlignBottom(FALSE)
-{
-    ASSERT_SUCCEEDED(CRectF::NewByFriend((CRectF**)&mTempSrc));
-    ASSERT_SUCCEEDED(CRectF::NewByFriend((CRectF**)&mTempDst));
-}
-
-ImageView::ImageView(
-    /* [in] */ IContext* context) :
-    mResource(0),
-    mHaveFrame(FALSE),
-    mAdjustViewBounds(FALSE),
-    mMaxWidth(Elastos::Core::Math::INT32_MAX_VALUE),
-    mMaxHeight(Elastos::Core::Math::INT32_MAX_VALUE),
-    mAlpha(255),
-    mViewAlphaScale(256),
-    mColorMod(FALSE),
-    mMergeState(FALSE),
-    mLevel(0),
-    mDrawableWidth(0),
-    mDrawableHeight(0),
-    mCropToPadding(FALSE),
-    mBaseline(-1),
-    mBaselineAlignBottom(FALSE)
-{
-    ASSERT_SUCCEEDED(CRectF::NewByFriend((CRectF**)&mTempSrc));
-    ASSERT_SUCCEEDED(CRectF::NewByFriend((CRectF**)&mTempDst));
-
-    Init(context);
-}
-
-ImageView::ImageView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs) :
-    mResource(0),
-    mHaveFrame(FALSE),
-    mAdjustViewBounds(FALSE),
-    mMaxWidth(Elastos::Core::Math::INT32_MAX_VALUE),
-    mMaxHeight(Elastos::Core::Math::INT32_MAX_VALUE),
-    mAlpha(255),
-    mViewAlphaScale(256),
-    mColorMod(FALSE),
-    mMergeState(FALSE),
-    mLevel(0),
-    mDrawableWidth(0),
-    mDrawableHeight(0),
-    mCropToPadding(FALSE),
-    mBaseline(-1),
-    mBaselineAlignBottom(FALSE)
-{
-    ASSERT_SUCCEEDED(CRectF::NewByFriend((CRectF**)&mTempSrc));
-    ASSERT_SUCCEEDED(CRectF::NewByFriend((CRectF**)&mTempDst));
-
-    Init(context, attrs);
-}
-
-ImageView::ImageView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+CAR_INTERFACE_IMPL(ImageView, View, IImageView);
+ImageView::ImageView()
     : mResource(0)
+    , mScaleType(ImageViewScaleType_FIT_CENTER)
     , mHaveFrame(FALSE)
     , mAdjustViewBounds(FALSE)
     , mMaxWidth(Elastos::Core::Math::INT32_MAX_VALUE)
     , mMaxHeight(Elastos::Core::Math::INT32_MAX_VALUE)
+    , mHasColorFilter(FALSE)
     , mAlpha(255)
     , mViewAlphaScale(256)
     , mColorMod(FALSE)
+    , mDrawableTintMode(-1)
+    , mHasDrawableTint(FALSE)
+    , mHasDrawableTintMode(FALSE)
     , mMergeState(FALSE)
     , mLevel(0)
     , mDrawableWidth(0)
@@ -133,36 +72,44 @@ ImageView::ImageView(
     , mCropToPadding(FALSE)
     , mBaseline(-1)
     , mBaselineAlignBottom(FALSE)
+    , mAdjustViewBoundsCompat(FALSE)
 {
     ASSERT_SUCCEEDED(CRectF::NewByFriend((CRectF**)&mTempSrc));
     ASSERT_SUCCEEDED(CRectF::NewByFriend((CRectF**)&mTempDst));
-
-    Init(context, attrs, defStyle);
 }
 
-ECode ImageView::Init(
+ECode ImageView::constructor(
     /* [in] */ IContext* context)
 {
-    View::Init(context);
+    View::constructor(context);
     InitImageView();
     return NOERROR;
 }
 
-ECode ImageView::Init(
+ECode ImageView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return Init(context, attrs, 0);
+    return constructor(context, attrs, 0);
 }
 
-ECode ImageView::Init(
+ECode ImageView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    View::Init(context, attrs, defStyle);
+    return constructor(context, attrs, defStyleAttr, 0);;
+}
+
+ECode ImageView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    View::constructor(context, attrs, defStyleAttr, defStyleRes);
     InitImageView();
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyleAttr, defStyleRes));
 
     return NOERROR;
 }
@@ -170,13 +117,14 @@ ECode ImageView::Init(
 ECode ImageView::InitFromAttributes(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ImageView),
             ARRAY_SIZE(R::styleable::ImageView));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
     AutoPtr<IDrawable> d;
     FAIL_RETURN(a->GetDrawable(R::styleable::ImageView_src, (IDrawable**)&d));
@@ -209,11 +157,24 @@ ECode ImageView::InitFromAttributes(
         SetScaleType(sScaleTypeArray[index]);
     }
 
-    Int32 tint;
-    a->GetInt32(R::styleable::ImageView_tint, 0, &tint);
-    if (tint != 0) {
-        SetColorFilter(tint);
+    Boolean has = FALSE;
+    if (a->HasValue(R::styleable::ImageView_tint, &has), has) {
+        a->GetColorStateList(R::styleable::ImageView_tint, (IColorStateList**)&mDrawableTintList);
+        mHasDrawableTint = TRUE;
+
+        // Prior to L, this attribute would always set a color filter with
+        // blending mode SRC_ATOP. Preserve that default behavior.
+        mDrawableTintMode = Elastos::Droid::Graphics::PorterDuffMode_SRC_ATOP;
+        mHasDrawableTintMode = TRUE;
     }
+
+    if (a->HasValue(R::styleable::ImageView_tintMode, &has), has) {
+        a->GetInt32(R::styleable::ImageView_tintMode, -1, &iv);
+        Drawable::ParseTintMode(iv, mDrawableTintMode, &mDrawableTintMode);
+        mHasDrawableTintMode = TRUE;
+    }
+
+    ApplyImageTint();
 
     Int32 alpha;
     a->GetInt32(R::styleable::ImageView_drawableAlpha, 255, &alpha);
@@ -233,6 +194,11 @@ void ImageView::InitImageView()
 {
     ASSERT_SUCCEEDED(CMatrix::New((IMatrix**)&mMatrix));
     mScaleType = ImageViewScaleType_FIT_CENTER;
+    AutoPtr<IApplicationInfo> info;
+    mContext->GetApplicationInfo((IApplicationInfo**)&info);
+    Int32 value = 0;
+    info->GetTargetSdkVersion(&value);
+    mAdjustViewBoundsCompat = value <= Build::VERSION_CODES::JELLY_BEAN_MR1;
 }
 
 Boolean ImageView::VerifyDrawable(
@@ -267,9 +233,16 @@ ECode ImageView::InvalidateDrawable(
     }
 }
 
-Boolean ImageView::HasOverlappingRendering()
+ECode ImageView::HasOverlappingRendering(
+    /* [out] */ Boolean* has)
 {
-    return (GetBackground() !=  NULL);
+    VALIDATE_NOT_NULL(has);
+    AutoPtr<IDrawable> bk;
+    GetBackground((IDrawable**)&bk);
+    AutoPtr<IDrawable> current;
+    bk->GetCurrent((IDrawable**)&current);
+    *has = (bk.Get() !=  NULL && current.Get() != NULL);
+    return NOERROR;
 }
 
 ECode ImageView::OnPopulateAccessibilityEvent(
@@ -277,20 +250,24 @@ ECode ImageView::OnPopulateAccessibilityEvent(
 {
     if (event != NULL) {
         Elastos::Droid::View::View::OnPopulateAccessibilityEvent(event);
-        AutoPtr<ICharSequence> contentDescription = GetContentDescription();
+        AutoPtr<ICharSequence> contentDescription;
+        GetContentDescription((ICharSequence**)&contentDescription);
         if (!TextUtils::IsEmpty(contentDescription)) {
-            AutoPtr<IObjectContainer> texts;
-            event->GetText((IObjectContainer**)&texts);
-            texts->Add((IInterface*)(contentDescription.Get()));
+            AutoPtr<IList> texts;
+            IAccessibilityRecord::Probe(event)->GetText((IList**)&texts);
+            texts->Add(contentDescription);
         }
     }
 
     return NOERROR;
 }
 
-Boolean ImageView::GetAdjustViewBounds()
+ECode ImageView::GetAdjustViewBounds(
+    /* [out] */ Boolean* result)
 {
-    return mAdjustViewBounds;
+    VALIDATE_NOT_NULL(result);
+    *result = mAdjustViewBounds;
+    return NOERROR;
 }
 
 ECode ImageView::SetAdjustViewBounds(
@@ -303,9 +280,12 @@ ECode ImageView::SetAdjustViewBounds(
     return NOERROR;
 }
 
-Int32 ImageView::GetMaxWidth()
+ECode ImageView::GetMaxWidth(
+    /* [out] */ Int32* width)
 {
-    return mMaxWidth;
+    VALIDATE_NOT_NULL(width);
+    *width = mMaxWidth;
+    return NOERROR;
 }
 
 ECode ImageView::SetMaxWidth(
@@ -315,9 +295,12 @@ ECode ImageView::SetMaxWidth(
     return NOERROR;
 }
 
-Int32 ImageView::GetMaxHeight()
+ECode ImageView::GetMaxHeight(
+    /* [out] */ Int32* height)
 {
-    return mMaxHeight;
+    VALIDATE_NOT_NULL(height);
+    *height = mMaxHeight;
+    return NOERROR;
 }
 
 ECode ImageView::SetMaxHeight(
@@ -327,21 +310,25 @@ ECode ImageView::SetMaxHeight(
     return NOERROR;
 }
 
-AutoPtr<IDrawable> ImageView::GetDrawable()
+ECode ImageView::GetDrawable(
+    /* [out] */ IDrawable** drawable)
 {
-    return mDrawable;
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = mDrawable;
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
 }
 
 ECode ImageView::SetImageResource(
     /* [in] */ Int32 resId)
 {
     if (mUri != NULL || mResource != resId) {
+        const Int32 oldWidth = mDrawableWidth;
+        const Int32 oldHeight = mDrawableHeight;
+
         UpdateDrawable(NULL);
         mResource = resId;
         mUri = NULL;
-
-        const Int32 oldWidth = mDrawableWidth;
-        const Int32 oldHeight = mDrawableHeight;
 
         ResolveUri();
 
@@ -359,7 +346,7 @@ ECode ImageView::SetImageURI(
     Boolean isEqual;
     if (mResource != 0 || (mUri.Get() != uri &&
             (uri == NULL || mUri == NULL ||
-            (uri->Equals(mUri, &isEqual), !isEqual)))) {
+            (IObject::Probe(uri)->Equals(mUri, &isEqual), !isEqual)))) {
         UpdateDrawable(NULL);
         mResource = 0;
         mUri = uri;
@@ -397,6 +384,58 @@ ECode ImageView::SetImageDrawable(
     return NOERROR;
 }
 
+ECode ImageView::SetImageTintList(
+    /* [in] */ /*@Nullable*/ IColorStateList* tint)
+{
+    mDrawableTintList = tint;
+    mHasDrawableTint = TRUE;
+
+    ApplyImageTint();
+    return NOERROR;
+}
+
+ECode ImageView::GetImageTintList(
+    /* [out] */ IColorStateList** list)
+{
+    VALIDATE_NOT_NULL(list);
+    *list = mDrawableTintList;
+    REFCOUNT_ADD(*list);
+    return NOERROR;
+}
+
+ECode ImageView::SetImageTintMode(
+    /* [in] */ /*@Nullable*/ PorterDuffMode tintMode)
+{
+    mDrawableTintMode = tintMode;
+    mHasDrawableTintMode = TRUE;
+
+    ApplyImageTint();
+    return NOERROR;
+}
+
+ECode ImageView::GetImageTintMode(
+    /* [out] */ PorterDuffMode* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    *mode = mDrawableTintMode;
+    return NOERROR;
+}
+
+void ImageView::ApplyImageTint()
+{
+    if (mDrawable != NULL && (mHasDrawableTint || mHasDrawableTintMode)) {
+        mDrawable->Mutate((IDrawable**)&mDrawable);
+
+        if (mHasDrawableTint) {
+            mDrawable->SetTintList(mDrawableTintList);
+        }
+
+        if (mHasDrawableTintMode) {
+            mDrawable->SetTintMode(mDrawableTintMode);
+        }
+    }
+}
+
 ECode ImageView::SetImageBitmap(
     /* [in] */ IBitmap* bm)
 {
@@ -411,7 +450,7 @@ ECode ImageView::SetImageBitmap(
 }
 
 ECode ImageView::SetImageState(
-    /* [in] */ const ArrayOf<Int32>* state,
+    /* [in] */ ArrayOf<Int32>* state,
     /* [in] */ Boolean merge)
 {
     VALIDATE_NOT_NULL(state);
@@ -459,14 +498,24 @@ ECode ImageView::SetScaleType(
     return NOERROR;
 }
 
-ImageViewScaleType ImageView::GetScaleType()
+ECode ImageView::GetScaleType(
+    /* [out] */ ImageViewScaleType* type)
 {
-    return mScaleType;
+    VALIDATE_NOT_NULL(type);
+    *type = mScaleType;
+    return NOERROR;
 }
 
-AutoPtr<IMatrix> ImageView::GetImageMatrix()
+ECode ImageView::GetImageMatrix(
+    /* [out] */ IMatrix** matrix)
 {
-    return mMatrix;
+    VALIDATE_NOT_NULL(matrix);
+    if (mDrawMatrix == NULL) {
+        return CMatrix::New(CMatrix::IDENTITY_MATRIX, matrix);
+    }
+    *matrix = mDrawMatrix;
+    REFCOUNT_ADD(*matrix);
+    return NOERROR;
 }
 
 ECode ImageView::SetImageMatrix(
@@ -484,7 +533,7 @@ ECode ImageView::SetImageMatrix(
     }
 
     mMatrix->IsIdentity(&isIdentity);
-    mMatrix->Equals(matrix, &isEqual);
+    IObject::Probe(mMatrix)->Equals(matrix, &isEqual);
     // don't invalidate unless we're actually changing our matrix
     if ((matrix == NULL && !isIdentity) ||
             (matrix != NULL && !isEqual)) {
@@ -495,9 +544,12 @@ ECode ImageView::SetImageMatrix(
     return NOERROR;
 }
 
-Boolean ImageView::GetCropToPadding()
+ECode ImageView::GetCropToPadding(
+    /* [out] */ Boolean* result)
 {
-    return mCropToPadding;
+    VALIDATE_NOT_NULL(result);
+    *result = mCropToPadding;
+    return NOERROR;
 }
 
 ECode ImageView::SetCropToPadding(
@@ -517,7 +569,8 @@ void ImageView::ResolveUri()
         return;
     }
 
-    AutoPtr<IResources> rsrc = GetResources();
+    AutoPtr<IResources> rsrc;
+    GetResources((IResources**)&rsrc);
     if (rsrc == NULL) {
         return;
     }
@@ -525,7 +578,7 @@ void ImageView::ResolveUri()
     AutoPtr<IDrawable> d;
 
     if (mResource != 0) {
-        if (FAILED(rsrc->GetDrawable(mResource, (IDrawable**)&d))) {
+        if (FAILED(mContext->GetDrawable(mResource, (IDrawable**)&d))) {
             Logger::W("ImageView", "Unable to find resource: %d", mResource);
             //Don't try again.
             mUri = NULL;
@@ -545,38 +598,47 @@ void ImageView::ResolveUri()
                 r->GetResources((IResources**)&res);
                 Int32 resId;
                 r->GetResourceId(&resId);
-                res->GetDrawable(resId, (IDrawable**)&d);
+                AutoPtr<IResourcesTheme> theme;
+                mContext->GetTheme((IResourcesTheme**)&theme);
+                res->GetDrawable(resId, theme, (IDrawable**)&d);
 //            } catch (Exception e) {
 //                Log.w("ImageView", "Unable to open content: " + mUri, e);
 //            }
         }
         else if (IContentResolver::SCHEME_CONTENT.Equals(scheme)
                 || IContentResolver::SCHEME_FILE.Equals(scheme)) {
-//            try {
-                AutoPtr<IContentResolver> resolver;
-                mContext->GetContentResolver((IContentResolver**)&resolver);
-                AutoPtr<IInputStream> istream;
-                resolver->OpenInputStream(mUri.Get(), (IInputStream**)&istream);
-                String nullStr;
+//          try {
+            AutoPtr<IContentResolver> resolver;
+            mContext->GetContentResolver((IContentResolver**)&resolver);
+            AutoPtr<IInputStream> stream;
+            resolver->OpenInputStream(mUri.Get(), (IInputStream**)&stream);
+            String nullStr;
 
-                // AutoPtr<IDrawableHelper> helper;
-                //TODO CDrawableHelper::AcquireSingleton((IDrawableHelper**)&helper);
-                Elastos::Droid::Graphics::Drawable::Drawable::CreateFromStream(istream.Get(), nullStr, (IDrawable**)&d);
+            AutoPtr<IDrawableHelper> helper;
+            CDrawableHelper::AcquireSingleton((IDrawableHelper**)&helper);
+            Elastos::Droid::Graphics::Drawable::Drawable::CreateFromStream(stream.Get(), nullStr, (IDrawable**)&d);
 //            } catch (Exception e) {
 //                Log.w("ImageView", "Unable to open content: " + mUri, e);
 //            }
+            if (stream != NULL) {
+                // try {
+                stream->Close();
+                // } catch (IOException e) {
+                //     Log.w("ImageView", "Unable to close content: " + mUri, e);
+                // }
+            }
         }
         else {
             String uriDes;
-            mUri->ToString(&uriDes);
+            IObject::Probe(mUri)->ToString(&uriDes);
             AutoPtr<IDrawableHelper> helper;
-            //TODO CDrawableHelper::AcquireSingleton((IDrawableHelper**)&helper);
+            CDrawableHelper::AcquireSingleton((IDrawableHelper**)&helper);
             Elastos::Droid::Graphics::Drawable::Drawable::CreateFromPath(uriDes, (IDrawable**)&d);
         }
 
         if (d == NULL) {
             String uriDes;
-            mUri->ToString(&uriDes);
+            IObject::Probe(mUri)->ToString(&uriDes);
             Logger::W("ImageView",
                     "resolveUri failed on bad bitmap uri: %s", uriDes.string());
             // Don't try again.
@@ -629,17 +691,25 @@ void ImageView::UpdateDrawable(
     mDrawable = d;
     if (d != NULL) {
         d->SetCallback(THIS_PROBE(IDrawableCallback));
+        Int32 value = 0;
+        GetLayoutDirection(&value);
+        d->SetLayoutDirection(value);
         Boolean stateful;
         d->IsStateful(&stateful);
         if (stateful) {
-            AutoPtr<ArrayOf<Int32> > drawableState = GetDrawableState();
+            AutoPtr<ArrayOf<Int32> > drawableState;
+            GetDrawableState((ArrayOf<Int32>**)&drawableState);
             d->SetState(drawableState, &stateful);
         }
+
+        GetVisibility(&value);
+        Boolean isDifferent = FALSE;
+        d->SetVisible(value == IView::VISIBLE, TRUE, &isDifferent);
         Boolean changed;
         d->SetLevel(mLevel, &changed);
-        d->SetLayoutDirection(GetLayoutDirection());
         d->GetIntrinsicWidth(&mDrawableWidth);
         d->GetIntrinsicHeight(&mDrawableHeight);
+        ApplyImageTint();
         ApplyColorMod();
         ConfigureBounds();
     }
@@ -666,11 +736,22 @@ void ImageView::ResizeFromDrawable()
     }
 }
 
+ECode ImageView::OnRtlPropertiesChanged(
+    /* [in] */ Int32 layoutDirection)
+{
+    View::OnRtlPropertiesChanged(layoutDirection);
+
+    if (mDrawable != NULL) {
+        mDrawable->SetLayoutDirection(layoutDirection);
+    }
+    return NOERROR;
+}
+
 const MatrixScaleToFit ImageView::sS2FArray[4] = {
-    MatrixScaleToFit_FILL,
-    MatrixScaleToFit_START,
-    MatrixScaleToFit_CENTER,
-    MatrixScaleToFit_END
+    Elastos::Droid::Graphics::MatrixScaleToFit_FILL,
+    Elastos::Droid::Graphics::MatrixScaleToFit_START,
+    Elastos::Droid::Graphics::MatrixScaleToFit_CENTER,
+    Elastos::Droid::Graphics::MatrixScaleToFit_END
 };
 
 MatrixScaleToFit ImageView::ScaleTypeToScaleToFit(
@@ -758,6 +839,11 @@ void ImageView::OnMeasure(
                     Int32 newWidth = (Int32)(desiredAspect *
                                         (heightSize - ptop - pbottom))
                                         + pleft + pright;
+
+                    // Allow the width to outgrow its original estimate if height is fixed.
+                    if (!resizeHeight && !mAdjustViewBoundsCompat) {
+                        widthSize = ResolveAdjustedSize(newWidth, mMaxWidth, widthMeasureSpec);
+                    }
                     if (newWidth <= widthSize) {
                         widthSize = newWidth;
                         done = TRUE;
@@ -768,6 +854,12 @@ void ImageView::OnMeasure(
                 if (!done && resizeHeight) {
                     Int32 newHeight = (Int32)((widthSize - pleft - pright)
                                         / desiredAspect) + ptop + pbottom;
+
+                    // Allow the height to outgrow its original estimate if width is fixed.
+                    if (!resizeWidth && !mAdjustViewBoundsCompat) {
+                        heightSize = ResolveAdjustedSize(newHeight, mMaxHeight,
+                                heightMeasureSpec);
+                    }
                     if (newHeight <= heightSize) {
                         heightSize = newHeight;
                     }
@@ -843,8 +935,9 @@ void ImageView::ConfigureBounds()
     Int32 dwidth = mDrawableWidth;
     Int32 dheight = mDrawableHeight;
 
-    Int32 vwidth = GetWidth() - mPaddingLeft - mPaddingRight;
-    Int32 vheight = GetHeight() - mPaddingTop - mPaddingBottom;
+    Int32 tmp = 0;
+    Int32 vwidth = (GetWidth(&tmp), tmp) - mPaddingLeft - mPaddingRight;
+    Int32 vheight = (GetHeight(&tmp), tmp) - mPaddingTop - mPaddingBottom;
 
     Boolean fits = (dwidth < 0 || vwidth == dwidth) &&
                    (dheight < 0 || vheight == dheight);
@@ -934,6 +1027,37 @@ void ImageView::ConfigureBounds()
     }
 }
 
+ECode ImageView::DrawableHotspotChanged(
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    View::DrawableHotspotChanged(x, y);
+
+    if (mDrawable != NULL) {
+        mDrawable->SetHotspot(x, y);
+    }
+    return NOERROR;
+}
+
+ECode ImageView::AnimateTransform(
+    /* [in] */ IMatrix* matrix)
+{
+    if (matrix == NULL) {
+        Int32 w = 0, h = 0;
+        GetWidth(&w);
+        GetHeight(&h);
+        mDrawable->SetBounds(0, 0, w, h);
+    } else {
+        mDrawable->SetBounds(0, 0, mDrawableWidth, mDrawableHeight);
+        if (mDrawMatrix == NULL) {
+            CMatrix::New((IMatrix**)&mDrawMatrix);
+        }
+        mDrawMatrix->Set(matrix);
+    }
+    Invalidate();
+    return NOERROR;
+}
+
 ECode ImageView::DrawableStateChanged()
 {
     FAIL_RETURN(View::DrawableStateChanged());
@@ -942,7 +1066,8 @@ ECode ImageView::DrawableStateChanged()
         Boolean stateful;
         d->IsStateful(&stateful);
         if (stateful) {
-            AutoPtr<ArrayOf<Int32> > drawableState = GetDrawableState();
+            AutoPtr<ArrayOf<Int32> > drawableState;
+            GetDrawableState((ArrayOf<Int32>**)&drawableState);
             d->SetState(drawableState, &stateful);
         }
     }
@@ -994,7 +1119,9 @@ ECode ImageView::GetBaseline(
     /* [out] */ Int32* baseLine)
 {
     VALIDATE_NOT_NULL(baseLine);
-    *baseLine = mBaselineAlignBottom ? GetMeasuredHeight() : -1;
+    Int32 height = 0;
+    GetMeasuredHeight(&height);
+    *baseLine = mBaselineAlignBottom ? height : -1;
     return NOERROR;
 }
 
@@ -1018,9 +1145,12 @@ ECode ImageView::SetBaselineAlignBottom(
     return NOERROR;
 }
 
-Boolean ImageView::GetBaselineAlignBottom()
+ECode ImageView::GetBaselineAlignBottom(
+    /* [out] */ Boolean* result)
 {
-    return mBaselineAlignBottom;
+    VALIDATE_NOT_NULL(result);
+    *result = mBaselineAlignBottom;
+    return NOERROR;
 }
 
 ECode ImageView::SetColorFilter(
@@ -1035,24 +1165,14 @@ ECode ImageView::SetColorFilter(
 ECode ImageView::SetColorFilter(
     /* [in] */ Int32 color)
 {
-    return SetColorFilter(color, PorterDuffMode_SRC_ATOP);
+    return SetColorFilter(color, Elastos::Droid::Graphics::PorterDuffMode_SRC_ATOP);
 }
 
-ECode ImageView::ClearColorFilter()
+ECode ImageView::SetXfermode(
+    /* [in] */ IXfermode* mode)
 {
-    return SetColorFilter(NULL);
-}
-
-AutoPtr<IColorFilter> ImageView::GetColorFilter()
-{
-    return mColorFilter;
-}
-
-ECode ImageView::SetColorFilter(
-    /* [in] */ IColorFilter* cf)
-{
-    if (mColorFilter.Get() != cf) {
-        mColorFilter = cf;
+    if (mXfermode.Get() != mode) {
+        mXfermode = mode;
         mColorMod = TRUE;
         ApplyColorMod();
         Invalidate();
@@ -1060,9 +1180,39 @@ ECode ImageView::SetColorFilter(
     return NOERROR;
 }
 
-Int32 ImageView::GetImageAlpha()
+ECode ImageView::ClearColorFilter()
 {
-    return mAlpha;
+    return SetColorFilter((IColorFilter*)NULL);
+}
+
+ECode ImageView::GetColorFilter(
+    /* [out] */ IColorFilter** filter)
+{
+    VALIDATE_NOT_NULL(filter);
+    *filter = mColorFilter;
+    REFCOUNT_ADD(*filter);
+    return NOERROR;
+}
+
+ECode ImageView::SetColorFilter(
+    /* [in] */ IColorFilter* cf)
+{
+    if (mColorFilter.Get() != cf) {
+        mColorFilter = cf;
+        mHasColorFilter = TRUE;
+        mColorMod = TRUE;
+        ApplyColorMod();
+        Invalidate();
+    }
+    return NOERROR;
+}
+
+ECode ImageView::GetImageAlpha(
+    /* [out] */ Int32* alpha)
+{
+    VALIDATE_NOT_NULL(alpha);
+    *alpha = mAlpha;
+    return NOERROR;
 }
 
 ECode ImageView::SetImageAlpha(
@@ -1093,8 +1243,59 @@ void ImageView::ApplyColorMod()
         AutoPtr<IDrawable> drawable;
         mDrawable->Mutate((IDrawable**)&drawable);
         mDrawable = drawable;
-        mDrawable->SetColorFilter(mColorFilter);
+        if (mHasColorFilter) {
+            mDrawable->SetColorFilter(mColorFilter);
+        }
+        ((Drawable*)mDrawable.Get())->SetXfermode(mXfermode);
         mDrawable->SetAlpha(mAlpha * mViewAlphaScale >> 8);
+    }
+}
+
+ECode ImageView::IsOpaque(
+    /* [out] */ Boolean* opaque)
+{
+    VALIDATE_NOT_NULL(opaque);
+    View::IsOpaque(opaque);
+    Int32 opacity = 0;
+    mDrawable->GetOpacity(&opacity);
+    *opaque = (*opaque) || (mDrawable != NULL && mXfermode == NULL
+                && opacity == IPixelFormat::OPAQUE
+                && mAlpha * mViewAlphaScale >> 8 == 255
+                && IsFilledByImage());
+    return NOERROR;
+}
+
+Boolean ImageView::IsFilledByImage()
+{
+    if (mDrawable == NULL) {
+        return FALSE;
+    }
+
+    AutoPtr<IRect> bounds;
+    mDrawable->GetBounds((IRect**)&bounds);
+    AutoPtr<IMatrix> matrix = mDrawMatrix;
+    Boolean state = FALSE;
+    if (matrix == NULL) {
+        Int32 left = 0, top = 0, right = 0, bottom = 0, w = 0, h = 0;
+        bounds->Get(&left, &top, &right, &bottom);
+        GetWidth(&w);
+        GetHeight(&h);
+        return left <= 0 && top <= 0 && right >= w && bottom >= h;
+    } else if (matrix->RectStaysRect(&state), state) {
+        AutoPtr<IRectF> boundsSrc = mTempSrc;
+        AutoPtr<IRectF> boundsDst = mTempDst;
+        boundsSrc->Set(bounds);
+        matrix->MapRect(boundsDst, boundsSrc, &state);
+
+        Float left = 0, top = 0, right = 0, bottom = 0;
+        Int32 w = 0, h = 0;
+        boundsDst->Get(&left, &top, &right, &bottom);
+        GetWidth(&w);
+        GetHeight(&h);
+        return left <= 0 && top <= 0 && right >= w && bottom >= h;
+    } else {
+        // If the matrix doesn't map to a rectangle, assume the worst.
+        return FALSE;
     }
 }
 
@@ -1113,8 +1314,10 @@ ECode ImageView::OnAttachedToWindow()
 {
     Elastos::Droid::View::View::OnAttachedToWindow();
     if (mDrawable != NULL) {
-        Boolean isDiff;
-        mDrawable->SetVisible(GetVisibility() == IView::VISIBLE, FALSE, &isDiff);
+        Boolean isDiff = FALSE;
+        Int32 v = 0;
+        GetVisibility(&v);
+        mDrawable->SetVisible(v == IView::VISIBLE, FALSE, &isDiff);
     }
     return NOERROR;
 }
@@ -1146,7 +1349,6 @@ ECode ImageView::OnInitializeAccessibilityNodeInfo(
     //info->SetClassName(ImageView.class.getName());
     return NOERROR;
 }
-
 
 } // namespace Widget
 } // namespace Droid

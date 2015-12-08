@@ -4,11 +4,12 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/app/Service.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandlerThread;
-using Elastos::Droid::Os::IIBinder;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
 
@@ -66,13 +67,17 @@ private:
 public:
     CAR_INTERFACE_DECL()
 
+    IntentService();
+
+    virtual ~IntentService();
+
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
     CARAPI constructor(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     /**
      * Sets intent redelivery preferences.  Usually called from the constructor
@@ -140,12 +145,12 @@ protected:
      * @param intent The value passed to {@link
      *               android.content.Context#startService(Intent)}.
      */
-    CARPAI OnHandleIntent(
-        /* [in] */ IIntent* intent);
+    virtual CARAPI OnHandleIntent(
+        /* [in] */ IIntent* intent) = 0;
 
 private:
     AutoPtr<ILooper> mServiceLooper;
-    AutoPtr<IServiceHandler> mServiceHandler;
+    AutoPtr<ServiceHandler> mServiceHandler;
     String mName;
     Boolean mRedelivery;
 

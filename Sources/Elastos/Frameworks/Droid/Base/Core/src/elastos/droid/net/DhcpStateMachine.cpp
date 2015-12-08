@@ -64,7 +64,6 @@ ECode DhcpStateMachine::DefaultState::ProcessMessage(
 {
     VALIDATE_NOT_NULL(result)
 
-    // if (DBG) Log.d(TAG, getName() + message.toString() + "\n");
     String s;
     IObject::Probe(msg)->ToString(&s);
     if (DBG) Logger::D(TAG, "DefaultState::ProcessMessage %s\n", s.string());
@@ -96,7 +95,6 @@ String DhcpStateMachine::DefaultState::GetName()
 //==============================================================
 ECode DhcpStateMachine::StoppedState::Enter()
 {
-    // if (DBG) Log.d(TAG, getName() + "\n");
     if (DBG) Logger::D(TAG, "StoppedState::Enter\n");
     return NOERROR;
 }
@@ -143,7 +141,6 @@ String DhcpStateMachine::StoppedState::GetName()
 //==============================================================
 ECode DhcpStateMachine::WaitBeforeStartState::Enter()
 {
-    // if (DBG) Log.d(TAG, getName() + "\n");
     if (DBG) Logger::D(TAG, "WaitBeforeStartState::Enter\n");
     return NOERROR;
 }
@@ -153,7 +150,6 @@ ECode DhcpStateMachine::WaitBeforeStartState::ProcessMessage(
     /* [out] */ Boolean* result)
 {
     Boolean retValue = HANDLED;
-    // if (DBG) Log.d(TAG, getName() + message.toString() + "\n");
     String s;
     IObject::Probe(msg)->ToString(&s);
     if (DBG) Logger::D(TAG, "WaitBeforeStartState::ProcessMessage %s\n", s.string());
@@ -192,7 +188,6 @@ String DhcpStateMachine::WaitBeforeStartState::GetName()
 //==============================================================
 ECode DhcpStateMachine::RunningState::Enter()
 {
-    // if (DBG) Log.d(TAG, getName() + "\n");
     if (DBG) Logger::D(TAG, "RunningState::Enter\n");
     return NOERROR;
 }
@@ -202,7 +197,6 @@ ECode DhcpStateMachine::RunningState::ProcessMessage(
     /* [out] */ Boolean* result)
 {
     Boolean retValue = HANDLED;
-    // if (DBG) Log.d(TAG, getName() + message.toString() + "\n");
     String s;
     IObject::Probe(msg)->ToString(&s);
     if (DBG) Logger::D(TAG, "RunningState::ProcessMessage %s\n", s.string());
@@ -252,7 +246,6 @@ String DhcpStateMachine::RunningState::GetName()
 //==============================================================
 ECode DhcpStateMachine::WaitBeforeRenewalState::Enter()
 {
-    // if (DBG) Log.d(TAG, getName() + "\n");
     if (DBG) Logger::D(TAG, "WaitBeforeRenewalState::Enter\n");
     return NOERROR;
 }
@@ -262,7 +255,6 @@ ECode DhcpStateMachine::WaitBeforeRenewalState::ProcessMessage(
     /* [out] */ Boolean* result)
 {
     Boolean retValue = HANDLED;
-    // if (DBG) Log.d(TAG, getName() + message.toString() + "\n");
     String s;
     IObject::Probe(msg)->ToString(&s);
     if (DBG) Logger::D(TAG, "WaitBeforeRenewalState::ProcessMessage %s\n", s.string());
@@ -323,7 +315,6 @@ ECode DhcpStateMachine::MyBroadcastReceiver::OnReceive(
    /* [in] */ IIntent* intent)
 {
    //DHCP renew
-//    if (DBG) Log.d(TAG, "Sending a DHCP renewal " + this);
     String s;
     ToString(&s);
     if (DBG) Logger::D(TAG, "Sending a DHCP renewal %s", s.string());

@@ -4,6 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
+using Elastos::Droid::Internal::Location::IProviderProperties;
+
 namespace Elastos {
 namespace Droid {
 namespace Location {

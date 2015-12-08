@@ -3,9 +3,9 @@ module
 {
     using interface Elastos.Utility.ICalendar;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * Controller class to communicate among the various components of the date picker dialog.
@@ -13,7 +13,6 @@ module
      * @hide
      */
     interface IDatePickerController {
-
         OnYearSelected(
             [in] Int32 year);
 
@@ -70,9 +69,7 @@ module
         TryVibrate();
     }
 
-
     }// namespace Widget
     }// namespace Droid
     }// namespace Elastos
-
 }

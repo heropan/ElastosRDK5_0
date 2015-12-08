@@ -20,6 +20,13 @@ module
     interface INotificationExtender;
     interface INotificationAction;
 
+     /**
+      * @Involve
+      * interface IRemoteViews
+      */
+    interface IBuilderRemoteViews {
+    }
+
     /**
      * A class that represents how a persistent notification is to be presented to the user using the NotificationManager.
      *
@@ -696,12 +703,18 @@ module
         SetCategory(
             [in] String category);
 
+        SetGroup(
+            [in] String groupKey);
+
         /**
          * Get the key used to group this notification into a cluster or stack
          * with other notifications on devices which support such rendering.
          */
         GetGroup(
             [out] String* group);
+
+        SetSortKey(
+            [in] String sortKey);
 
         /**
          * Get a sort key that orders this notification among other notifications from the
@@ -716,7 +729,7 @@ module
          * @see String#compareTo(String)
          */
         GetSortKey(
-            [out] String* group);
+            [out] String* softKey);
 
         GetExtras(
             [out] IBundle** extras);
@@ -740,6 +753,22 @@ module
 
         SetPublicVersion(
             [in] INotification* n);
+
+        /**
+         * Copy all (or if heavy is false, all except Bitmaps and RemoteViews) members
+         * of this into that.
+         * @hide
+         */
+        CloneInto(
+            [in] INotification* that,
+            [in] Boolean heavy);
+
+        /**
+         * Removes heavyweight parts of the Notification object for archival or for sending to
+         * listeners when the full contents are not necessary.
+         * @hide
+         */
+        LightenPayload();
 
         /**
          * Sets the #contentView field to be a view with the standard "Latest Event"
@@ -776,13 +805,23 @@ module
             [in] ICharSequence* contentText,
             [in] IPendingIntent* contentIntent);
 
+        /**
+         * @hide
+         */
+        IsValid(
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         */
+        IsGroupSummary(
+            [out] Boolean* result);
+
         Clone(
             [out] IInterface** result);
     }
 
     interface INotificationAction {
-        Clone(
-            [out] INotificationAction** action);
 
         GetIcon(
             [out] Int32* icon);
@@ -822,6 +861,45 @@ module
      */
     [deprecated]
     interface INotificationBuilder {
+        /**
+         * @hide
+         */
+        const String EXTRA_NEEDS_REBUILD = "android.rebuild";
+
+        /**
+         * @hide
+         */
+        const String EXTRA_REBUILD_LARGE_ICON = "android.rebuild.largeIcon";
+        /**
+         * @hide
+         */
+        const String EXTRA_REBUILD_CONTENT_VIEW = "android.rebuild.contentView";
+        /**
+         * @hide
+         */
+        const String EXTRA_REBUILD_CONTENT_VIEW_ACTION_COUNT =
+                "android.rebuild.contentViewActionCount";
+        /**
+         * @hide
+         */
+        const String EXTRA_REBUILD_BIG_CONTENT_VIEW
+                = "android.rebuild.bigView";
+        /**
+         * @hide
+         */
+        const String EXTRA_REBUILD_BIG_CONTENT_VIEW_ACTION_COUNT
+                = "android.rebuild.bigViewActionCount";
+        /**
+         * @hide
+         */
+        const String EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW
+                = "android.rebuild.hudView";
+        /**
+         * @hide
+         */
+        const String EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW_ACTION_COUNT
+                = "android.rebuild.hudViewActionCount";
+
         /**
          * Add a timestamp pertaining to the notification (usually the time the event occurred).
          * It will be shown in the notification content view by default; use
@@ -1377,6 +1455,18 @@ module
 
         Build(
             [out] INotification** notification);
+
+        /**
+         * @hide
+         */
+        AddExtras(
+            [in] IBundle* extras);
+
+        /**
+         * @hide
+         */
+        BuildStyled(
+            [in] INotification* wip);
     }
 
     /**

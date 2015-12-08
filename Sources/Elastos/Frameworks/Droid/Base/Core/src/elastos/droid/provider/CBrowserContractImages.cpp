@@ -1,14 +1,23 @@
-
+#include "elastos/droid/provider/BrowserContract.h"
 #include "elastos/droid/provider/CBrowserContractImages.h"
 
+namespace Elastos {
+namespace Droid {
+namespace Provider {
 
-ECode CBrowserContractImages::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CBrowserContractImages)
+
+CAR_INTERFACE_IMPL(CBrowserContractImages, Singleton, IBrowserContractImages)
 
 ECode CBrowserContractImages::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
-//    *uri = Uri.withAppendedPath(AUTHORITY_URI, "images");
+    VALIDATE_NOT_NULL(uri);
+    *uri = BrowserContract::Images::CONTENT_URI;
+    REFCOUNT_ADD(*uri);
+    return NOERROR;
 }
+
+} // namespace Provider
+} // namespace Droid
+} // namespace Elastos

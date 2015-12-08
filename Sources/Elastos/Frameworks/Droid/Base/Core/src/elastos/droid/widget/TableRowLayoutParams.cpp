@@ -21,7 +21,7 @@ const Int32 TableRowLayoutParams::LOCATION_NEXT;
 TableRowLayoutParams::TableRowLayoutParams(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
-    : LinearLayoutLayoutParams(c, attrs)
+    : LinearLayout::LayoutParams(c, attrs)
     , mColumn(0)
     , mSpan(0)
 {
@@ -61,7 +61,7 @@ ECode TableRowLayoutParams::InitFromAttributes(
 TableRowLayoutParams::TableRowLayoutParams(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
-    : LinearLayoutLayoutParams(w, h)
+    : LinearLayout::LayoutParams(w, h)
     , mColumn(-1)
     , mSpan(1)
 {
@@ -78,7 +78,7 @@ TableRowLayoutParams::TableRowLayoutParams(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
     /* [in] */ Float initWeight)
-    : LinearLayoutLayoutParams(w, h, initWeight)
+    : LinearLayout::LayoutParams(w, h, initWeight)
     , mColumn(-1)
     , mSpan(1)
 {
@@ -90,7 +90,7 @@ TableRowLayoutParams::TableRowLayoutParams(
  * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.</p>
  */
 TableRowLayoutParams::TableRowLayoutParams()
-    : LinearLayoutLayoutParams(
+    : LinearLayout::LayoutParams(
             IViewGroupLayoutParams::MATCH_PARENT,
             IViewGroupLayoutParams::WRAP_CONTENT)
     , mColumn(-1)
@@ -109,7 +109,7 @@ TableRowLayoutParams::TableRowLayoutParams()
  */
 TableRowLayoutParams::TableRowLayoutParams(
     /* [in] */ Int32 column)
-    : LinearLayoutLayoutParams(
+    : LinearLayout::LayoutParams(
         IViewGroupLayoutParams::MATCH_PARENT,
         IViewGroupLayoutParams::WRAP_CONTENT)
     , mColumn(column)
@@ -121,8 +121,8 @@ TableRowLayoutParams::TableRowLayoutParams(
  * {@inheritDoc}
  */
 TableRowLayoutParams::TableRowLayoutParams(
-    /* [in] */ ViewGroupLayoutParams* p)
-    : LinearLayoutLayoutParams(p)
+    /* [in] */ LayoutParams* p)
+    : LinearLayout::LayoutParams(p)
     , mColumn(-1)
     , mSpan(1)
 {
@@ -132,8 +132,8 @@ TableRowLayoutParams::TableRowLayoutParams(
  * {@inheritDoc}
  */
 TableRowLayoutParams::TableRowLayoutParams(
-    /* [in] */ ViewGroupMarginLayoutParams* source)
-    : LinearLayoutLayoutParams(source)
+    /* [in] */ ViewGroup::MarginLayoutParams* source)
+    : LinearLayout::LayoutParams(source)
     , mColumn(-1)
     , mSpan(1)
 {
@@ -194,7 +194,7 @@ ECode TableRowLayoutParams::Init(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(LinearLayoutLayoutParams::Init(c, attrs));
+    FAIL_RETURN(LinearLayout::LayoutParams::Init(c, attrs));
     return InitFromAttributes(c, attrs);
 }
 
@@ -202,7 +202,7 @@ ECode TableRowLayoutParams::Init(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
 {
-    FAIL_RETURN(LinearLayoutLayoutParams::Init(w, h));
+    FAIL_RETURN(LinearLayout::LayoutParams::Init(w, h));
     mColumn = -1;
     mSpan = 1;
     return NOERROR;
@@ -213,7 +213,7 @@ ECode TableRowLayoutParams::Init(
     /* [in] */ Int32 h,
     /* [in] */ Float initWeight)
 {
-    FAIL_RETURN(LinearLayoutLayoutParams::Init(w, h, initWeight));
+    FAIL_RETURN(LinearLayout::LayoutParams::Init(w, h, initWeight));
     mColumn = -1;
     mSpan = 1;
     return NOERROR;
@@ -221,7 +221,7 @@ ECode TableRowLayoutParams::Init(
 
 ECode TableRowLayoutParams::Init()
 {
-    FAIL_RETURN(LinearLayoutLayoutParams::Init(
+    FAIL_RETURN(LinearLayout::LayoutParams::Init(
             IViewGroupLayoutParams::MATCH_PARENT,
             IViewGroupLayoutParams::WRAP_CONTENT));
     mColumn = -1;
@@ -232,7 +232,7 @@ ECode TableRowLayoutParams::Init()
 ECode TableRowLayoutParams::Init(
     /* [in] */ Int32 column)
 {
-    FAIL_RETURN(LinearLayoutLayoutParams::Init(
+    FAIL_RETURN(LinearLayout::LayoutParams::Init(
             IViewGroupLayoutParams::MATCH_PARENT,
             IViewGroupLayoutParams::WRAP_CONTENT));
     mColumn = column;
@@ -243,7 +243,7 @@ ECode TableRowLayoutParams::Init(
 ECode TableRowLayoutParams::Init(
     /* [in] */ IViewGroupLayoutParams* p)
 {
-    FAIL_RETURN(LinearLayoutLayoutParams::Init(p));
+    FAIL_RETURN(LinearLayout::LayoutParams::Init(p));
     mColumn = -1;
     mSpan = 1;
     return NOERROR;
@@ -252,7 +252,7 @@ ECode TableRowLayoutParams::Init(
 ECode TableRowLayoutParams::Init(
     /* [in] */ IViewGroupMarginLayoutParams* source)
 {
-    FAIL_RETURN(LinearLayoutLayoutParams::Init(source));
+    FAIL_RETURN(LinearLayout::LayoutParams::Init(source));
     mColumn = -1;
     mSpan = 1;
     return NOERROR;

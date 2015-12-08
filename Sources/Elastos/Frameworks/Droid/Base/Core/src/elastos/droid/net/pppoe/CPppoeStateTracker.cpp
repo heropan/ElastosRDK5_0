@@ -197,20 +197,20 @@ ECode CPppoeStateTracker::StartMonitoring(
         CHandler::New()
         mTrackerTarget = new Handler(target.getLooper(), mTrackerHandlerCallback);
         if (mEM == NULL) {
-            Slog.i(TAG,"failed to start startMonitoring");
-            return;
+            Slogger::I(TAG,"failed to start startMonitoring");
+            return NOERROR;
         }
 
-        int state = mEM.getPppoeState();
+        Int32 state = mEM.getPppoeState();
         if (state != mEM.PPPOE_STATE_DISABLED) {
             if (state == mEM.PPPOE_STATE_UNKNOWN){
                 // maybe this is the first time we run, so set it to enabled
-                mEM.setPppoeEnabled(true);
+                mEM.setPppoeEnabled(TRUE);
             } else {
                 try {
                     resetInterface();
                 } catch (UnknownHostException e) {
-                    Slog.e(TAG, "Wrong pppoe configuration");
+                    Slogger::E(TAG, "Wrong pppoe configuration");
                 }
             }
         }
@@ -408,8 +408,8 @@ ECode CPppoeStateTracker::ConfigureInterface(
 {
     // wait for INetworkManagementService.Stub.asInterface
     /*
-    IBinder b = ServiceManager.getService(Context.NETWORKMANAGEMENT_SERVICE);
-    INetworkManagementService netd = INetworkManagementService.Stub.asInterface(b);
+    IBinder b = ServiceManager::GetService(Context.NETWORKMANAGEMENT_SERVICE);
+    INetworkManagementService netd = INetworkManagementService::Probe(b);
     InterfaceConfiguration ifcg = new InterfaceConfiguration();
     ifcg.setLinkAddress(dhcpInfoInternal.makeLinkAddress());
     Log.v(TAG, "configureInterfaceStatic: ifname:" + ifname);
@@ -418,13 +418,13 @@ ECode CPppoeStateTracker::ConfigureInterface(
         mLinkProperties = dhcpInfoInternal.makeLinkProperties();
         mLinkProperties.setInterfaceName(ifname);
         Log.v(TAG, "IP configuration succeeded");
-        return true;
+        return TRUE;
     } catch (RemoteException re) {
         Log.v(TAG, "IP configuration failed: " + re);
-        return false;
+        return FALSE;
     } catch (IllegalStateException e) {
         Log.v(TAG, "IP configuration failed: " + e);
-        return false;
+        return FALSE;
     }
     */
     return E_NOT_IMPLEMENTED;

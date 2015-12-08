@@ -1,17 +1,23 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CSYNCSTATECONTRACTHELPERS_H__
 #define __ELASTOS_DROID_PROVIDER_CSYNCSTATECONTRACTHELPERS_H__
 
 #include "_Elastos_Droid_Provider_CSyncStateContractHelpers.h"
-#include "SyncStateContractHelpers.h"
+#include "elastos/droid/provider/SyncStateContractHelpers.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CSyncStateContractHelpers)
+    , public Singleton
+    , public ISyncStateContractHelpers
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Get the sync state that is associated with the account or null.
      * @param provider the {@link ContentProviderClient} that is to be used to communicate
@@ -42,25 +48,25 @@ public:
         /* [in] */ IContentProviderClient* provider,
         /* [in] */ IUri* uri,
         /* [in] */ IAccount* account,
-        /* [in] */ const ArrayOf<Byte>& data);
+        /* [in] */ ArrayOf<Byte>* data);
 
     CARAPI Insert(
         /* [in] */ IContentProviderClient* provider,
         /* [in] */ IUri* uri,
         /* [in] */ IAccount* account,
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [out] */ IUri** retUri);
 
     CARAPI Update(
         /* [in] */ IContentProviderClient* provider,
         /* [in] */ IUri* uri,
-        /* [in] */ const ArrayOf<Byte>& data);
+        /* [in] */ ArrayOf<Byte>* data);
 
-    //GetWithUri(
-    //    /* [in] */ IContentProviderClient* provider,
-    //    /* [in] */ IUri* uri,
-    //    /* [in] */ IAccount* account,
-    //    /* [out] */ Pair<IUri*, ArrayOf<Byte> >* value);
+    CARAPI GetWithUri(
+       /* [in] */ IContentProviderClient* provider,
+       /* [in] */ IUri* uri,
+       /* [in] */ IAccount* account,
+       /* [out] */ IPair** value);
 
     /**
      * Creates and returns a ContentProviderOperation that assigns the data array as the
@@ -74,7 +80,7 @@ public:
     CARAPI NewSetOperation(
         /* [in] */ IUri* uri,
         /* [in] */ IAccount* account,
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [out] */ IContentProviderOperation** operation);
 
     /**
@@ -87,7 +93,7 @@ public:
      */
     CARAPI NewUpdateOperation(
         /* [in] */ IUri* uri,
-        /* [in] */ const ArrayOf<Byte>& data,
+        /* [in] */ ArrayOf<Byte>* data,
         /* [out] */ IContentProviderOperation** operation);
 };
 

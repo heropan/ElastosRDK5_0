@@ -1,9 +1,8 @@
 
-#include "CWifiP2pDnsSdServiceRequest.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include "CWifiP2pServiceRequest.h"
-#include "CWifiP2pDnsSdServiceInfoHelper.h"
-#include "CWifiP2pDnsSdServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pDnsSdServiceRequest.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceRequest.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pDnsSdServiceInfoHelper.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pDnsSdServiceInfo.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -14,19 +13,11 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-
-PInterface CWifiP2pDnsSdServiceRequest::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_WifiP2pServiceInfo) {
-        return reinterpret_cast<PInterface>((WifiP2pServiceRequest*)this);
-    }
-    return _CWifiP2pDnsSdServiceRequest::Probe(riid);
-}
+CAR_OBJECT_IMPL(CWifiP2pDnsSdServiceRequest)
 
 ECode CWifiP2pDnsSdServiceRequest::constructor()
 {
-    return WifiP2pServiceRequest::Init(
+    return WifiP2pServiceRequest::constructor(
         IWifiP2pServiceInfo::SERVICE_TYPE_BONJOUR, String(NULL));
 }
 
@@ -34,7 +25,7 @@ ECode CWifiP2pDnsSdServiceRequest::constructor()
 ECode CWifiP2pDnsSdServiceRequest::constructor(
     /* [in] */ const String& query)
 {
-    return WifiP2pServiceRequest::Init(
+    return WifiP2pServiceRequest::constructor(
         IWifiP2pServiceInfo::SERVICE_TYPE_BONJOUR, query);
 }
 
@@ -48,10 +39,12 @@ ECode CWifiP2pDnsSdServiceRequest::constructor(
         (IWifiP2pDnsSdServiceInfoHelper**)&helper));
 
     String temp;
-    FAIL_RETURN(helper->CreateRequest(
-        dnsQuery, dnsType, versionNumber, &temp));
+    assert(0);
+    // TODO
+    // FAIL_RETURN(helper->CreateRequest(
+    //     dnsQuery, dnsType, versionNumber, &temp));
 
-    return WifiP2pServiceRequest::Init(
+    return WifiP2pServiceRequest::constructor(
         IWifiP2pServiceInfo::SERVICE_TYPE_BONJOUR, temp);
 }
 
@@ -161,9 +154,8 @@ ECode CWifiP2pDnsSdServiceRequest::WriteToParcel(
     return WifiP2pServiceRequest::WriteToParcel(dest);
 }
 
-
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

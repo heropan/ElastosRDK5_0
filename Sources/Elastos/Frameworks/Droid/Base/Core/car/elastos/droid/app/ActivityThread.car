@@ -165,10 +165,23 @@ module
         HandleInstallProvider(
             [in] IProviderInfo* info);
 
+        PerformPauseActivity(
+            [in] IBinder* token,
+            [in] Boolean finished,
+            [in] Boolean saveState,
+            [out] IBundle** state);
+
         PerformResumeActivity(
             [in] IBinder* token,
             [in] Boolean clearHide,
             [out] IActivityClientRecord** record);
+
+        PerformStopActivity(
+            [in] IBinder* token,
+            [in] Boolean saveState);
+
+        PerformRestartActivity(
+            [in] IBinder* token);
 
         PerformDestroyActivity(
             [in] IBinder* token,

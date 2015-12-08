@@ -33,7 +33,7 @@ ECode CConnectivityManagerHelper::IsNetworkTypeMobile(
 }
 
 ECode CConnectivityManagerHelper::IsNetworkTypeWifi(
-        /* [in] */ int networkType,
+        /* [in] */ Int32 networkType,
         /* [out] */ Boolean* result)
 {
     return CConnectivityManager::IsNetworkTypeWifi(networkType, result);

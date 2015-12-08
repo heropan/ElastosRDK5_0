@@ -3,18 +3,24 @@
 #define  __ELASTOS_DROID_APP_BACKUP_CBACKUPDATAOUTPUT_H__
 
 #include "_Elastos_Droid_App_Backup_CBackupDataOutput.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IFileDescriptor;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 CarClass(CBackupDataOutput)
+    , public Object
+    , public IBackupDataOutput
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CBackupDataOutput();
 
     ~CBackupDataOutput();

@@ -134,7 +134,7 @@ ECode CBundle::PutAll(
 
     CBundle* bundle = (CBundle*)b;
     bundle->Unparcel();
-    IMap::Probe(mMap)->PutAll(IMap::Probe(bundle->mMap));
+    mMap->PutAll(IMap::Probe(bundle->mMap));
 
     // fd state is now known if and only if both bundles already knew
     mHasFds |= bundle->mHasFds;
@@ -233,7 +233,7 @@ ECode CBundle::PutParcelable(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    mMap->Put(keyObj.Get(), value);
     mFdsKnown = FALSE;
     return NOERROR;
 }
@@ -244,7 +244,7 @@ ECode CBundle::PutSize(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    mMap->Put(keyObj.Get(), value);
     return NOERROR;
 }
 
@@ -254,7 +254,7 @@ ECode CBundle::PutSizeF(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    mMap->Put(keyObj.Get(), value);
     return NOERROR;
 }
 
@@ -265,7 +265,7 @@ ECode CBundle::PutParcelableArray(
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IArrayOf> valueObj = CoreUtils::Convert(value);
-    IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());
+    mMap->Put(keyObj.Get(), valueObj.Get());
     mFdsKnown = FALSE;
     return NOERROR;
 }
@@ -276,7 +276,7 @@ ECode CBundle::PutParcelableArrayList(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    mMap->Put(keyObj.Get(), value);
     mFdsKnown = FALSE;
     return NOERROR;
 }
@@ -287,7 +287,7 @@ ECode CBundle::PutParcelableList(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    mMap->Put(keyObj.Get(), value);
     mFdsKnown = FALSE;
     return NOERROR;
 }
@@ -298,7 +298,7 @@ ECode CBundle::PutSparseParcelableArray(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    mMap->Put(keyObj.Get(), value);
     mFdsKnown = FALSE;
     return NOERROR;
 }
@@ -309,7 +309,7 @@ ECode CBundle::PutBundle(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    mMap->Put(keyObj.Get(), value);
     return NOERROR;
 }
 
@@ -319,7 +319,7 @@ ECode CBundle::PutBinder(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    mMap->Put(keyObj.Get(), value);
     return NOERROR;
 }
 
@@ -329,7 +329,7 @@ ECode CBundle::PutIBinder(
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    IMap::Probe(mMap)->Put(keyObj.Get(), value);
+    mMap->Put(keyObj.Get(), value);
     return NOERROR;
 }
 

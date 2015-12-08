@@ -109,7 +109,7 @@ module
      * @Involve
      * interface IParcelable
      */
-     [deprecated]
+    [deprecated]
     interface IInputDevice {
 
         /**

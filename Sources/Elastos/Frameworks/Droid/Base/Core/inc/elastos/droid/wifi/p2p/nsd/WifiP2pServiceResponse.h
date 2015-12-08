@@ -12,8 +12,6 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-extern "C" const InterfaceID EIID_WifiP2pServiceResponse;
-
 #define MAX_BUF_SIZE (1024)
 
 /**
@@ -22,52 +20,56 @@ extern "C" const InterfaceID EIID_WifiP2pServiceResponse;
  * @hide
  */
 class WifiP2pServiceResponse
+    : public Object
+    , public IWifiP2pServiceResponse
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     WifiP2pServiceResponse();
 
-    CARAPI Init(
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ Int32 serviceType,
         /* [in] */ Int32 status,
         /* [in] */ Int32 transId,
         /* [in] */ IWifiP2pDevice* device,
         /* [in] */ ArrayOf<Byte>* data);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
-    virtual CARAPI GetServiceType(
+    CARAPI GetServiceType(
         /* [out] */ Int32* serviceType);
 
-    virtual CARAPI GetStatus(
+    CARAPI GetStatus(
         /* [out] */ Int32* status);
 
-    virtual CARAPI GetTransactionId(
+    CARAPI GetTransactionId(
         /* [out] */ Int32 * pTransactionId);
 
-    virtual CARAPI GetRawData(
+    CARAPI GetRawData(
         /* [out, callee] */ ArrayOf<Byte>** rawData);
 
-    virtual CARAPI GetSrcDevice(
+    CARAPI GetSrcDevice(
         /* [out] */ IWifiP2pDevice** srcDevice);
 
-    virtual CARAPI SetSrcDevice(
+    CARAPI SetSrcDevice(
         /* [in] */ IWifiP2pDevice* dev);
 
-    virtual CARAPI ToString(
+    CARAPI ToString(
         /* [out] */ String* string);
 
-    virtual CARAPI Equals(
+    CARAPI Equals(
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* isEqual);
 
-    virtual CARAPI GetHashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 
-    virtual CARAPI ReadFromParcel(
+    CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
-    virtual CARAPI WriteToParcel(
+    CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
     static CARAPI_(String) StatusToString(
@@ -119,10 +121,10 @@ protected:
     AutoPtr<ArrayOf<Byte> > mData;
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICERESPONSEBASE_H__

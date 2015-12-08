@@ -2,44 +2,11 @@ module
 {
     interface Elastos.Droid.Os.IWorkSource;
     interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.App.IAlarmClockInfo;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
-
-    /**
-     * An immutable description of an alarm clock.
-     *
-     * @see AlarmManager#setAlarmClock
-     * @see AlarmManager#getNextAlarmClock
-     */
-    /**
-     * @Involve
-     * interface IParcelable
-     */
-    interface IAlarmManagerAlarmClockInfo {
-        /**
-         * Returns the time at which the alarm is going to trigger.
-         *
-         * This value is UTC wall clock time in milliseconds, as returned by
-         * {@link System#currentTimeMillis()} for example.
-         */
-        GetTriggerTime(
-            [out] Int64* time);
-
-        /**
-         * Returns an intent intent that can be used to show or edit details of the alarm clock in
-         * the application that scheduled it.
-         *
-         * <p class="note">Beware that any application can retrieve and send this intent,
-         * potentially with additional fields filled in. See
-         * {@link PendingIntent#send(android.content.Context, int, android.content.Intent)
-         * PendingIntent.send()} and {@link android.content.Intent#fillIn Intent.fillIn()}
-         * for details.
-         */
-        GetShowIntent(
-            [out] IPendingIntent** intent);
-    }
 
     /**
      * This class provides access to the system alarm services. These allow you to
@@ -385,7 +352,7 @@ module
          * @see android.content.Intent#filterEquals
          */
         SetAlarmClock(
-            [in] IAlarmManagerAlarmClockInfo* info,
+            [in] IAlarmClockInfo* info,
             [in] IPendingIntent* operation);
 
         /** @hide */
@@ -504,7 +471,7 @@ module
          * @see AlarmClockInfo
          */
         GetNextAlarmClock(
-            [out] IAlarmManagerAlarmClockInfo** info);
+            [out] IAlarmClockInfo** info);
 
         /**
          * Gets information about the next alarm clock currently scheduled.
@@ -519,7 +486,7 @@ module
          */
         GetNextAlarmClock(
             [in] Int32 userId,
-            [out] IAlarmManagerAlarmClockInfo** info);
+            [out] IAlarmClockInfo** info);
     }
 
     } // namespace App

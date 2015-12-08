@@ -558,6 +558,35 @@ module
             interface IVirtualDisplayCallback;
         }
 
+        class CWifiDisplay {
+            constructor();
+
+            constructor(
+                [in] String deviceAddress,
+                [in] String deviceName,
+                [in] String deviceAlias,
+                [in] Boolean available,
+                [in] Boolean canConnect,
+                [in] Boolean remembered);
+
+            interface IWifiDisplay;
+            interface IParcelable;
+        }
+
+        class CWifiDisplaySessionInfo {
+            constructor();
+
+            constructor(
+                [in] Boolean client,
+                [in] Int32 session,
+                [in] String group,
+                [in] String pp,
+                [in] String ip);
+
+            interface IWifiDisplaySessionInfo;
+            interface IParcelable;
+        }
+
         singleton class CDisplayManagerGlobalHelper {
             interface IDisplayManagerGlobalHelper;
         }

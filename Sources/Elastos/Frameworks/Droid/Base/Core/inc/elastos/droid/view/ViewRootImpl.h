@@ -7,39 +7,6 @@
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashSet.h>
-/*#include "elastos/droid/view/CWindowManagerLayoutParams.h"
-
-#include "elastos/droid/view/CSurface.h"
-#include "elastos/droid/view/BaseSurfaceHolder.h"
-#include "elastos/droid/view/CInputQueue.h"
-#include "elastos/droid/view/InputEventReceiver.h"
-#include "elastos/droid/view/HardwareRenderer.h"
-#include "elastos/droid/view/CViewConfiguration.h"
-#include "elastos/droid/graphics/CRect.h"
-#include "elastos/droid/graphics/CRegion.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include "elastos/droid/widget/CScroller.h"
-#include <elastos/utility/etl/List.h>
-*/
-
-/*using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::IThread;
-
-using Elastos::Droid::Content::IClipDescription;
-using Elastos::Droid::Animation::ILayoutTransition;
-using Elastos::Droid::View::InputMethod::IInputMethodManagerFinishedEventCallback;
-<<<<<<< HEAD
-using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::View::Accessibility::IAccessibilityManagerAccessibilityStateChangeListener;
-=======
-using Elastos::Droid::View::Accessibility::IAccessibilityStateChangeListener;
->>>>>>> ViewGroup and ViewRootImpl
-using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnection;
-using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnectionCallback;
-using Elastos::Droid::Utility::ITypedValue;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Widget::CScroller;
-using Elastos::Droid::Media::IAudioManager;*/
 
 using Elastos::Droid::Animation::ILayoutTransition;
 using Elastos::Droid::Content::IComponentCallbacks;
@@ -212,7 +179,7 @@ private:
 
     private:
         CARAPI_(Boolean) FlagToString(
-            /* [in] */ String name,
+            /* [in] */ const String& name,
             /* [in] */ Int32 flag,
             /* [in] */ Boolean hasPrevious,
             /* [in] */ IStringBuilder* sb);
@@ -499,7 +466,7 @@ private:
             /* [in] */ QueuedInputEvent* q);
 
         CARAPI Dump(
-            /* [in] */ String prefix,
+            /* [in] */ const String& prefix,
             /* [in] */ IPrintWriter* writer);
 
     protected:
@@ -540,10 +507,10 @@ private:
         AsyncInputStage(
             /* [in] */ ViewRootImpl* host,
             /* [in] */ InputStage* next,
-            /* [in] */ String traceCounter);
+            /* [in] */ const String& traceCounter);
 
         CARAPI Dump(
-            /* [in] */ String prefix,
+            /* [in] */ const String& prefix,
             /* [in] */ IPrintWriter* writer);
 
     protected:
@@ -584,7 +551,7 @@ private:
         NativePreImeInputStage(
             /* [in] */ ViewRootImpl* host,
             /* [in] */ InputStage* next,
-            /* [in] */ String traceCounter);
+            /* [in] */ const String& traceCounter);
 
         CAR_INTERFACE_DECL()
 
@@ -622,7 +589,7 @@ private:
         ImeInputStage(
             /* [in] */ ViewRootImpl* host,
             /* [in] */ InputStage* next,
-            /* [in] */ String traceCounter);
+            /* [in] */ const String& traceCounter);
 
         CAR_INTERFACE_DECL()
 
@@ -663,7 +630,7 @@ private:
         NativePostImeInputStage(
             /* [in] */ ViewRootImpl* host,
             /* [in] */ InputStage* next,
-            /* [in] */ String traceCounter);
+            /* [in] */ const String& traceCounter);
 
         CAR_INTERFACE_DECL()
 
@@ -1531,7 +1498,7 @@ public:
         /* [in] */ Boolean value);
 
     CARAPI Dump(
-        /* [in] */ String prefix,
+        /* [in] */ const String& prefix,
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IPrintWriter* writer,
         /* [in] */ ArrayOf<String> * args);
@@ -1784,7 +1751,7 @@ private:
         /* [in] */ Boolean secondLayoutRequests);
 
     CARAPI_(void) DumpViewHierarchy(
-        /* [in] */ String prefix,
+        /* [in] */ const String& prefix,
         /* [in] */ IPrintWriter* writer,
         /* [in] */ IView* view);
 
@@ -1955,10 +1922,11 @@ public:
     Int32 mResizeAlpha;
     AutoPtr<IPaint> mResizePaint;
 
+    AutoPtr<ViewRootHandler> mHandler;
+
     AutoPtr<TraversalRunnable> mTraversalRunnable;
 
     AutoPtr<WindowInputEventReceiver> mInputEventReceiver;
-
 
     AutoPtr<ConsumeBatchedInputRunnable> mConsumedBatchedInputRunnable;
     Boolean mConsumeBatchedInputScheduled;
@@ -2012,7 +1980,6 @@ private:
     // FIXME for perf testing only
     Boolean mProfile;
 
-    AutoPtr<ViewRootHandler> mHandler;
     Object mSyncLock;
 
     AutoPtr<RootDisplayListener> mDisplayListener;

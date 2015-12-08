@@ -1,6 +1,6 @@
 #include "CArrayAdapter.h"
 
-namespace Elastos {
+namespace Elastos {x
 namespace Droid {
 namespace Widget {
 

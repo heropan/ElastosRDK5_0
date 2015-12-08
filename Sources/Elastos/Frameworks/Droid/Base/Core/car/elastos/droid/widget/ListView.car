@@ -4,11 +4,9 @@ module
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
-
     namespace Elastos {
     namespace Droid {
     namespace Widget {
-
 
     [local]
     interface IFixedViewInfo {
@@ -67,13 +65,16 @@ module
             [out] Int32* amount);
 
         /**
-         * Add a fixed view to appear at the top of the list. If addHeaderView is
+         * Add a fixed view to appear at the top of the list. If this method is
          * called more than once, the views will appear in the order they were
          * added. Views added using this call can take focus if they want.
          * <p>
-         * NOTE: Call this before calling setAdapter. This is so ListView can wrap
-         * the supplied cursor with one that will also account for header and footer
-         * views.
+         * Note: When first introduced, this method could only be called before
+         * setting the adapter with {@link #setAdapter(ListAdapter)}. Starting with
+         * {@link android.os.Build.VERSION_CODES#KITKAT}, this method may be
+         * called at any time. If the ListView's adapter does not extend
+         * {@link HeaderViewListAdapter}, it will be wrapped with a supporting
+         * instance of {@link WrapperListAdapter}.
          *
          * @param v The view to add.
          * @param data Data to associate with this view
@@ -89,9 +90,12 @@ module
          * called more than once, the views will appear in the order they were
          * added. Views added using this call can take focus if they want.
          * <p>
-         * NOTE: Call this before calling setAdapter. This is so ListView can wrap
-         * the supplied cursor with one that will also account for header and footer
-         * views.
+         * Note: When first introduced, this method could only be called before
+         * setting the adapter with {@link #setAdapter(ListAdapter)}. Starting with
+         * {@link android.os.Build.VERSION_CODES#KITKAT}, this method may be
+         * called at any time. If the ListView's adapter does not extend
+         * {@link HeaderViewListAdapter}, it will be wrapped with a supporting
+         * instance of {@link WrapperListAdapter}.
          *
          * @param v The view to add.
          */
@@ -114,13 +118,16 @@ module
          * called more than once, the views will appear in the order they were
          * added. Views added using this call can take focus if they want.
          * <p>
-         * NOTE: Call this before calling setAdapter. This is so ListView can wrap
-         * the supplied cursor with one that will also account for header and footer
-         * views.
+         * Note: When first introduced, this method could only be called before
+         * setting the adapter with {@link #setAdapter(ListAdapter)}. Starting with
+         * {@link android.os.Build.VERSION_CODES#KITKAT}, this method may be
+         * called at any time. If the ListView's adapter does not extend
+         * {@link HeaderViewListAdapter}, it will be wrapped with a supporting
+         * instance of {@link WrapperListAdapter}.
          *
          * @param v The view to add.
          * @param data Data to associate with this view
-         * @param isSelectable TRUE if the footer view can be selected
+         * @param isSelectable true if the footer view can be selected
          */
         AddFooterView(
             [in] IView* v,
@@ -128,12 +135,16 @@ module
             [in] Boolean isSelectable);
 
         /**
-         * Add a fixed view to appear at the bottom of the list. If addFooterView is called more
-         * than once, the views will appear in the order they were added. Views added using
-         * this call can take focus if they want.
-         * <p>NOTE: Call this before calling setAdapter. This is so ListView can wrap the supplied
-         * cursor with one that will also account for header and footer views.
-         *
+         * Add a fixed view to appear at the bottom of the list. If addFooterView is
+         * called more than once, the views will appear in the order they were
+         * added. Views added using this call can take focus if they want.
+         * <p>
+         * Note: When first introduced, this method could only be called before
+         * setting the adapter with {@link #setAdapter(ListAdapter)}. Starting with
+         * {@link android.os.Build.VERSION_CODES#KITKAT}, this method may be
+         * called at any time. If the ListView's adapter does not extend
+         * {@link HeaderViewListAdapter}, it will be wrapped with a supporting
+         * instance of {@link WrapperListAdapter}.
          *
          * @param v The view to add.
          */
@@ -150,14 +161,6 @@ module
         RemoveFooterView(
             [in] IView* v,
             [out] Boolean* result);
-
-        /**
-         * Smoothly scroll to the specified adapter position offset. The view will
-         * scroll such that the indicated position is displayed.
-         * @param offset The amount to offset from the adapter position to scroll to.
-         */
-        SmoothScrollByOffset(
-            [in] Int32 position);
 
         /**
          * setSelectionAfterHeaderView set the selection to be the first list item
@@ -219,6 +222,7 @@ module
          * @param headerDividersEnabled True to draw the headers, FALSE otherwise.
          *
          * @see #setFooterDividersEnabled(Boolean)
+         * @see #areHeaderDividersEnabled()
          * @see #addHeaderView(android.view.View)
          */
         SetHeaderDividersEnabled(
@@ -246,6 +250,7 @@ module
          * @param footerDividersEnabled True to draw the footers, FALSE otherwise.
          *
          * @see #setHeaderDividersEnabled(Boolean)
+         * @see #areFooterDividersEnabled()
          * @see #addFooterView(android.view.View)
          */
         SetFooterDividersEnabled(

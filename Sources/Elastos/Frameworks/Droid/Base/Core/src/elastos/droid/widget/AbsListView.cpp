@@ -1,79 +1,417 @@
 
 #include "elastos/droid/widget/AbsListView.h"
-#include <elastos/core/Math.h>
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/core/StringBuffer.h>
-#include <elastos/core/StringUtils.h>
-#include "elastos/droid/R.h"
-#include "elastos/droid/utility/StateSet.h"
-#include "elastos/droid/os/CStrictMode.h"
-#include "elastos/droid/view/CKeyEvent.h"
-#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 #include "elastos/droid/widget/CAbsListViewLayoutParams.h"
 #include "elastos/droid/widget/CAbsListViewSavedState.h"
-#include "elastos/droid/widget/OverScroller.h"
-#include "elastos/droid/widget/CEdgeEffect.h"
+// #include "elastos/droid/widget/CEdgeEffect.h"
+// #include "elastos/droid/widget/CPopupWindow.h"
+// #include "elastos/droid/widget/CRemoteViewsAdapter.h"
 #include "elastos/droid/widget/FastScroller.h"
-#include "elastos/droid/widget/CPopupWindow.h"
+#include "elastos/droid/widget/COverScroller.h"
+#include "elastos/droid/content/CIntentFilterComparison.h"
+// #include "elastos/droid/os/CStrictMode.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/utility/CSparseBooleanArray.h"
+#include "elastos/droid/utility/CInt64SparseArray.h"
+#include "elastos/droid/utility/CSparseArray.h"
+#include "elastos/droid/utility/StateSet.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/animation/CLinearInterpolator.h"
+#include "elastos/droid/view/inputmethod/CBaseInputConnection.h"
+#include "elastos/droid/view/KeyEvent.h"
+#include "elastos/droid/view/MotionEvent.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/view/ViewConfiguration.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/CoreUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/logging/Logger.h>
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-
-using Elastos::Utility::Logging::Logger;
-using Elastos::Core::IBoolean;
-using Elastos::Core::CBoolean;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::CStringWrapper;
-using Elastos::Core::StringUtils;
-using Elastos::Utility::CObjectInt32Map;
-using Elastos::Droid::R;
-using Elastos::Droid::Os::IStrictMode;
-using Elastos::Droid::Os::CStrictMode;
-using Elastos::Droid::Utility::IDisplayMetrics;
-using Elastos::Droid::Utility::StateSet;
-using Elastos::Droid::Text::IInputType;
+using Elastos::Droid::Content::CIntentFilterComparison;
+using Elastos::Droid::Content::IIntentFilterComparison;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::Content::IIntentFilterComparison;
-using Elastos::Droid::Content::CIntentFilterComparison;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::Drawable::ITransitionDrawable;
 using Elastos::Droid::Graphics::Drawable::EIID_ITransitionDrawable;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
-using Elastos::Droid::View::IViewConfigurationHelper;
+using Elastos::Droid::Os::IStrictMode;
+// using Elastos::Droid::Os::CStrictMode;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Text::EIID_ITextWatcher;
+using Elastos::Droid::Text::EIID_IEditable;
+using Elastos::Droid::Text::IInputType;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Utility::StateSet;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Utility::CInt64SparseArray;
+using Elastos::Droid::Utility::CSparseBooleanArray;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Accessibility::CAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoCollectionInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::Animation::CLinearInterpolator;
+using Elastos::Droid::View::InputMethod::EIID_IInputConnection;
+using Elastos::Droid::View::InputMethod::IInputMethodManager;
+using Elastos::Droid::View::InputMethod::CBaseInputConnection;
+using Elastos::Droid::View::IActionModeCallback;
 using Elastos::Droid::View::IViewConfiguration;
-using Elastos::Droid::View::CViewConfigurationHelper;
+using Elastos::Droid::View::ViewConfiguration;
 using Elastos::Droid::View::IHapticFeedbackConstants;
 using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IDispatcherState;
-using Elastos::Droid::View::IKeyEventHelper;
-using Elastos::Droid::View::CKeyEventHelper;
-using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::KeyEvent;
+using Elastos::Droid::View::MotionEvent;
+using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_IViewGroup;
-using Elastos::Droid::View::IAccessibilityDelegate;
-using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::View::EIID_IOnTouchModeChangeListener;
 using Elastos::Droid::View::EIID_IOnGlobalLayoutListener;
-using Elastos::Droid::View::IKeyEventCallback;
-using Elastos::Droid::View::EIID_IKeyEventCallback;
-using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::View::Accessibility::CAccessibilityManager;
-using Elastos::Droid::Widget::IAbsListView;
-using Elastos::Droid::Widget::EIID_IAbsListView;
-using Elastos::Droid::Widget::IFilterListener;
-using Elastos::Droid::Widget::EIID_IFilterListener;
-using Elastos::Droid::Widget::IRecyclerListener;
 using Elastos::Droid::View::EIID_IViewGroupLayoutParams;
+using Elastos::Droid::View::IAccessibilityDelegate;
+using Elastos::Droid::View::IKeyEventCallback;
+using Elastos::Droid::View::IViewTreeObserver;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::Widget::EIID_IAbsListView;
+using Elastos::Droid::Widget::EIID_IFilterListener;
+using Elastos::Droid::Widget::ICheckable;
+using Elastos::Droid::Widget::IFilterListener;
+using Elastos::Droid::Widget::IRecyclerListener;
+// using Elastos::Droid::Widget::CRemoteViewsAdapter;
+using Elastos::Droid::R;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::Thread;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::Logging::Logger;
 
-CAR_INTERFACE_IMPL(AbsListView::MultiChoiceModeWrapper, IMultiChoiceModeListener)
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
+const Int32 AbsListView::TOUCH_MODE_REST;
+const Int32 AbsListView::TOUCH_MODE_DOWN;
+const Int32 AbsListView::TOUCH_MODE_TAP;
+const Int32 AbsListView::TOUCH_MODE_DONE_WAITING;
+const Int32 AbsListView::TOUCH_MODE_SCROLL;
+const Int32 AbsListView::TOUCH_MODE_FLING;
+const Int32 AbsListView::TOUCH_MODE_OVERSCROLL;
+const Int32 AbsListView::TOUCH_MODE_OVERFLING;
+const Int32 AbsListView::LAYOUT_NORMAL;
+const Int32 AbsListView::LAYOUT_FORCE_TOP;
+const Int32 AbsListView::LAYOUT_SET_SELECTION;
+const Int32 AbsListView::LAYOUT_FORCE_BOTTOM;
+const Int32 AbsListView::LAYOUT_SPECIFIC;
+const Int32 AbsListView::LAYOUT_SYNC;
+const Int32 AbsListView::LAYOUT_MOVE_SELECTION;
+const Int32 AbsListView::OVERSCROLL_LIMIT_DIVISOR;
+const Int32 AbsListView::CHECK_POSITION_SEARCH_DISTANCE;
+const Int32 AbsListView::TOUCH_MODE_UNKNOWN = -1;
+const Int32 AbsListView::TOUCH_MODE_ON = 0;
+const Int32 AbsListView::TOUCH_MODE_OFF = 1;
+const Boolean AbsListView::PROFILE_SCROLLING = FALSE;
+const Boolean AbsListView::PROFILE_FLINGING = FALSE;
+const Int32 AbsListView::INVALID_POINTER = 1;
+
+const Int32 AbsListView::PositionScroller::SCROLL_DURATION = 200;
+const Int32 AbsListView::PositionScroller::MOVE_DOWN_POS = 1;
+const Int32 AbsListView::PositionScroller::MOVE_UP_POS = 2;
+const Int32 AbsListView::PositionScroller::MOVE_DOWN_BOUND = 3;
+const Int32 AbsListView::PositionScroller::MOVE_UP_BOUND = 4;
+const Int32 AbsListView::PositionScroller::MOVE_OFFSET = 5;
+
+static AutoPtr<IInterpolator> InitInterpolator()
+{
+    AutoPtr<CLinearInterpolator> ator;
+    CLinearInterpolator::NewByFriend((CLinearInterpolator**)&ator);
+    return (IInterpolator*)ator.Get();
+}
+
+AutoPtr<IInterpolator> AbsListView::sLinearInterpolator = InitInterpolator();
+
+//==============================================================================
+//          AbsListView::LayoutParams
+//==============================================================================
+
+CAR_INTERFACE_IMPL(AbsListView::LayoutParams, ViewGroup::LayoutParams, IAbsListViewLayoutParams);
+
+AbsListView::LayoutParams::LayoutParams()
+    : mViewType(0)
+    , mRecycledHeaderFooter(FALSE)
+    , mForceAdd(FALSE)
+    , mScrappedFromPosition(0)
+    , mItemId(-1)
+{}
+
+AbsListView::LayoutParams::~LayoutParams()
+{}
+
+ECode AbsListView::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return ViewGroup::LayoutParams::constructor(c, attrs);
+}
+
+ECode AbsListView::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    return ViewGroup::LayoutParams::constructor(width, height);
+}
+
+ECode AbsListView::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 viewType)
+{
+    ViewGroup::LayoutParams::constructor(width, height);
+    mViewType = viewType;
+
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* source)
+{
+    return ViewGroup::LayoutParams::constructor(source);
+}
+
+ECode AbsListView::LayoutParams::SetItemId(
+    /* [in] */ Int64 itemId)
+{
+    mItemId = itemId;
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::SetScrappedFromPosition(
+    /* [in] */ Int32 scrappedFromPosition)
+{
+    mScrappedFromPosition = scrappedFromPosition;
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::SetForceAdd(
+    /* [in] */ Boolean force)
+{
+    mForceAdd = force;
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::SetRecycledHeaderFooter(
+    /* [in] */ Boolean footer)
+{
+    mRecycledHeaderFooter = footer;
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::SetViewType(
+    /* [in] */ Int32 type)
+{
+    mViewType = type;
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::GetItemId(
+    /* [out] */ Int64* itemId)
+{
+    *itemId = mItemId;
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::GetScrappedFromPosition(
+    /* [out] */ Int32* scrappedFromPosition)
+{
+    *scrappedFromPosition = mScrappedFromPosition;
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::GetForceAdd(
+    /* [out] */ Boolean* force)
+{
+    *force = mForceAdd;
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::GetRecycledHeaderFooter(
+    /* [out] */ Boolean* footer)
+{
+    *footer = mRecycledHeaderFooter;
+    return NOERROR;
+}
+
+ECode AbsListView::LayoutParams::GetViewType(
+    /* [in] */ Int32* type)
+{
+    *type = mViewType;
+    return NOERROR;
+}
+
+//==============================================================================
+//          AbsListView::SavedState
+//==============================================================================
+
+CAR_INTERFACE_IMPL(AbsListView::SavedState, View::BaseSavedState, IAbsListViewSavedState);
+
+AbsListView::SavedState::SavedState()
+    : mSelectedId(-1)
+    , mFirstId(-1)
+    , mViewTop(0)
+    , mPosition(0)
+    , mHeight(0)
+    , mInActionMode(FALSE)
+    , mCheckedItemCount(0)
+{
+}
+
+AbsListView::SavedState::~SavedState()
+{
+    mCheckState = NULL;
+    mCheckIdState = NULL;
+}
+
+ECode AbsListView::SavedState::constructor()
+{
+    return View::BaseSavedState::constructor();
+}
+
+ECode AbsListView::SavedState::constructor(
+    /* [in] */ IParcelable* superState)
+{
+    return View::BaseSavedState::constructor(superState);
+}
+
+ECode AbsListView::SavedState::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    FAIL_RETURN(View::BaseSavedState::WriteToParcel(dest));
+
+    dest->WriteInt64(mSelectedId);
+    dest->WriteInt64(mFirstId);
+    dest->WriteInt32(mViewTop);
+    dest->WriteInt32(mPosition);
+    dest->WriteInt32(mHeight);
+    dest->WriteString(mFilter);
+
+    dest->WriteBoolean(mInActionMode);
+    dest->WriteInt32(mCheckedItemCount);
+
+    Int32 size;
+    Int32 M = mCheckState != NULL ? (mCheckState->GetSize(&size), size) : 0;
+    dest->WriteInt32(M);
+    for (Int32 i = 0; i < M; i++) {
+        Int32 key;
+        mCheckState->KeyAt(i, &key);
+        dest->WriteInt32(key);
+
+        Boolean value;
+        mCheckState->ValueAt(i, &value);
+        dest->WriteBoolean(value);
+    }
+
+    Int32 N = mCheckIdState != NULL ? (mCheckIdState->GetSize(&size), size) : 0;
+    dest->WriteInt32(N);
+    for (Int32 i = 0; i < N; i++) {
+        Int64 key;
+        mCheckIdState->KeyAt(i, &key);
+        dest->WriteInt64(key);
+
+        AutoPtr<IInterface> value;
+        mCheckIdState->ValueAt(i, (IInterface**)&value);
+        dest->WriteInterfacePtr(IInteger32::Probe(value));
+    }
+
+    return NOERROR;
+}
+
+ECode AbsListView::SavedState::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    FAIL_RETURN(View::BaseSavedState::ReadFromParcel(source));
+    source->ReadInt64(&mSelectedId);
+    source->ReadInt64(&mFirstId);
+    source->ReadInt32(&mViewTop);
+    source->ReadInt32(&mPosition);
+    source->ReadInt32(&mHeight);
+    source->ReadString(&mFilter);
+    source->ReadBoolean(&mInActionMode);
+    source->ReadInt32(&mCheckedItemCount);
+
+    Int32 M;
+    source->ReadInt32(&M);
+    if (M > 0) {
+        if (!mCheckState) {
+            CSparseBooleanArray::New((ISparseBooleanArray**)&mCheckState);
+        }
+        for (Int32 i = 0; i < M; i++) {
+            Int32 key;
+            source->ReadInt32(&key);
+            Boolean value;
+            source->ReadBoolean(&value);
+            mCheckState->Put(key, value);
+        }
+    }
+
+    Int32 N;
+    source->ReadInt32(&N);
+    if (N > 0) {
+        if (!mCheckIdState) {
+            CInt64SparseArray::New((IInt64SparseArray**)&mCheckIdState);
+        }
+        for (Int32 i = 0; i < N; i++) {
+            Int64 key;
+            source->ReadInt64(&key);
+            AutoPtr<IInterface> value;
+            source->ReadInterfacePtr((Handle32*)(IInteger32**)&value);
+            mCheckIdState->Put(key, value);
+        }
+    }
+    return NOERROR;
+}
+
+ECode AbsListView::SavedState::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    StringBuilder buider;
+    buider += "AbsListView.SavedState{";
+
+    AutoPtr<ISystem> sys;
+    CSystem::AcquireSingleton((ISystem**)&sys);
+    Int32 value;
+    sys->IdentityHashCode((IAbsListView*)this, &value);
+    buider += StringUtils::ToHexString(value);
+    buider += " selectedId=";
+    buider += mSelectedId;
+    buider += " firstId=";
+    buider += mFirstId;
+    buider += " viewTop=";
+    buider += mViewTop;
+    buider += " position=";
+    buider += mPosition;
+    buider += " height=";
+    buider += mHeight;
+    buider += " filter=";
+    buider += mFilter;
+    buider += " checkState=";
+    buider += mCheckState;
+    buider += "}";
+
+    *str = buider.ToString();
+    return NOERROR;
+}
 
 //==============================================================================
 //          AbsListView::ListItemAccessibilityDelegate
@@ -81,52 +419,41 @@ CAR_INTERFACE_IMPL(AbsListView::MultiChoiceModeWrapper, IMultiChoiceModeListener
 
 AbsListView::ListItemAccessibilityDelegate::ListItemAccessibilityDelegate(
     /* [in] */ AbsListView* host)
+    : mHost(host)
 {
-    mHost = host;
 }
 
-//@Override
+ECode AbsListView::ListItemAccessibilityDelegate::CreateAccessibilityNodeInfo(
+    /* [in] */ IView* host,
+    /* [out] */ IAccessibilityNodeInfo** info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = NULL;
+
+    // If the data changed the children are invalid since the data model changed.
+    // Hence, we pretend they do not exist. After a layout the children will sync
+    // with the model at which point we notify that the accessibility state changed,
+    // so a service will be able to re-fetch the views.
+    if (mHost->mDataChanged) {
+        return NOERROR;
+    }
+    return View::AccessibilityDelegate::CreateAccessibilityNodeInfo(host, info);
+}
+
 ECode AbsListView::ListItemAccessibilityDelegate::OnInitializeAccessibilityNodeInfo(
      /* [in] */ IView* host,
      /* [in] */ IAccessibilityNodeInfo* info)
 {
     AccessibilityDelegate::OnInitializeAccessibilityNodeInfo(host, info);
 
-    Int32 position = mHost->GetPositionForView(host);
-    AutoPtr<IAdapter> adapterTemp;
-    ((IAdapterView*)(mHost->Probe(EIID_IAdapterView)))->GetAdapter((IAdapter**)&adapterTemp);
-    AutoPtr<IListAdapter> adapter = (IListAdapter*)adapterTemp->Probe(EIID_IListAdapter);
+    Int32 position;
+    mHost->GetPositionForView(host, &position);
 
-    if ((position == IAdapterView::INVALID_POSITION) || (adapter == NULL)) {
-        return NOERROR;
-    }
+    mHost->OnInitializeAccessibilityNodeInfoForItem(host, position, info);
 
-    Boolean adapterEnabled;
-    adapter->IsEnabled(position, &adapterEnabled);
-    if (!mHost->IsEnabled() || !adapterEnabled) {
-        return NOERROR;
-    }
-
-    if (position == mHost->GetSelectedItemPosition()) {
-        info->SetSelected(TRUE);
-        info->AddAction(IAccessibilityNodeInfo::ACTION_CLEAR_SELECTION);
-    } else {
-        info->AddAction(IAccessibilityNodeInfo::ACTION_SELECT);
-    }
-
-    if (mHost->IsClickable()) {
-        info->AddAction(IAccessibilityNodeInfo::ACTION_CLICK);
-        info->SetClickable(TRUE);
-    }
-
-    if (mHost->IsLongClickable()) {
-        info->AddAction(IAccessibilityNodeInfo::ACTION_LONG_CLICK);
-        info->SetLongClickable(TRUE);
-    }
     return NOERROR;
 }
 
-//@Override
 ECode AbsListView::ListItemAccessibilityDelegate::PerformAccessibilityAction(
     /* [in] */ IView* host,
     /* [in] */ Int32 action,
@@ -144,7 +471,8 @@ ECode AbsListView::ListItemAccessibilityDelegate::PerformAccessibilityAction(
 
     *result = FALSE;
 
-    Int32 position = mHost->GetPositionForView(host);
+    Int32 position;
+    mHost->GetPositionForView(host, &position);
     AutoPtr<IAdapter> adapterTemp;
     ((IAdapterView*)(mHost->Probe(EIID_IAdapterView)))->GetAdapter((IAdapter**)&adapterTemp);
     AutoPtr<IListAdapter> adapter = (IListAdapter*)adapterTemp->Probe(EIID_IListAdapter);
@@ -156,40 +484,39 @@ ECode AbsListView::ListItemAccessibilityDelegate::PerformAccessibilityAction(
 
     Boolean adapterEnabled;
     adapter->IsEnabled(position, &adapterEnabled);
-    if (!mHost->IsEnabled() || !adapterEnabled) {
+    Boolean res;
+    if ((mHost->IsEnabled(&res), !res) || !adapterEnabled) {
         // Cannot perform actions on disabled items.
         return NOERROR;
     }
 
-    Int64 id = mHost->GetItemIdAtPosition(position);
+    Int64 id;
+    mHost->GetItemIdAtPosition(position, &id);
+
+    Int32 pos;
 
     switch (action) {
-        case IAccessibilityNodeInfo::ACTION_CLEAR_SELECTION:
-        {
-            if (mHost->GetSelectedItemPosition() == position) {
+        case IAccessibilityNodeInfo::ACTION_CLEAR_SELECTION: {
+            if ((mHost->GetSelectedItemPosition(&pos), pos) == position) {
                 mHost->SetSelection(IAdapterView::INVALID_POSITION);
                 *result = TRUE;
             }
             return NOERROR;
         }
-        case IAccessibilityNodeInfo::ACTION_SELECT:
-        {
-            if (mHost->GetSelectedItemPosition() != position) {
+        case IAccessibilityNodeInfo::ACTION_SELECT: {
+            if ((mHost->GetSelectedItemPosition(&pos), pos) != position) {
                 mHost->SetSelection(position);
                 *result = TRUE;
             }
             return NOERROR;
         }
-        case IAccessibilityNodeInfo::ACTION_CLICK:
-        {
-            if (mHost->IsClickable()) {
-                *result = mHost->PerformItemClick(host, position, id);
+        case IAccessibilityNodeInfo::ACTION_CLICK: {
+            if (mHost->IsClickable(&res), res) {
+                return mHost->PerformItemClick(host, position, id, result);
             }
-            return NOERROR;
         }
-        case IAccessibilityNodeInfo::ACTION_LONG_CLICK:
-        {
-            if (mHost->IsLongClickable()) {
+        case IAccessibilityNodeInfo::ACTION_LONG_CLICK: {
+            if (mHost->IsLongClickable(&res), res) {
                 *result = mHost->PerformLongPress(host, position, id);
             }
             return NOERROR;
@@ -200,542 +527,715 @@ ECode AbsListView::ListItemAccessibilityDelegate::PerformAccessibilityAction(
 }
 
 //==============================================================================
-//          AbsListView::WindowRunnnable
+//          AbsListView::AdapterDataSetObserver
 //==============================================================================
 
-AbsListView::WindowRunnnable::WindowRunnnable(
+AbsListView::AdapterDataSetObserver::AdapterDataSetObserver(
+    /* [in] */ AbsListView* host)
+    : AdapterView::AdapterDataSetObserver(host)
+    , mHost(host)
+{
+}
+
+ECode AbsListView::AdapterDataSetObserver::OnChanged()
+{
+    FAIL_RETURN(AdapterView::AdapterDataSetObserver::OnChanged());
+    if (mHost->mFastScroll != NULL) {
+        mHost->mFastScroll->OnSectionsChanged();
+    }
+    return NOERROR;
+}
+
+ECode AbsListView::AdapterDataSetObserver::OnInvalidated()
+{
+    FAIL_RETURN(AdapterView::AdapterDataSetObserver::OnInvalidated());
+    if (mHost->mFastScroll != NULL) {
+        mHost->mFastScroll->OnSectionsChanged();
+    }
+    return NOERROR;
+}
+
+//==============================================================================
+//          AbsListView::MultiChoiceModeWrapper
+//==============================================================================
+
+CAR_INTERFACE_IMPL(AbsListView::MultiChoiceModeWrapper, Object, IMultiChoiceModeListener);
+
+AbsListView::MultiChoiceModeWrapper::MultiChoiceModeWrapper(
     /* [in] */ AbsListView* host)
     : mHost(host)
-    , mOriginalAttachCount(0)
 {}
 
-void AbsListView::WindowRunnnable::RememberWindowAttachCount()
+ECode AbsListView::MultiChoiceModeWrapper::SetWrapped(
+    /* [in] */ IMultiChoiceModeListener* wrapped)
 {
-    mOriginalAttachCount = mHost->GetWindowAttachCount();
+    mWrapped = wrapped;
+    return NOERROR;
 }
 
-Boolean AbsListView::WindowRunnnable::SameWindow()
+ECode AbsListView::MultiChoiceModeWrapper::HasWrappedCallback(
+    /* [out] */ Boolean* result)
 {
-    return mHost->HasWindowFocus() &&
-        mHost->GetWindowAttachCount() == mOriginalAttachCount;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mWrapped != NULL;
+    return NOERROR;
 }
 
-//==============================================================================
-//          AbsListView::AbsListViewPerformClick
-//==============================================================================
-
-AbsListView::AbsListViewPerformClick::AbsListViewPerformClick (
-    /* [in] */ AbsListView* host)
-    : WindowRunnnable(host)
-{}
-
-ECode AbsListView::AbsListViewPerformClick::Run()
+ECode AbsListView::MultiChoiceModeWrapper::OnCreateActionMode(
+    /* [in] */ IActionMode* mode,
+    /* [in] */ IMenu* menu,
+    /* [out] */ Boolean* result)
 {
-    // The data has changed since we posted this action in the event queue,
-    // bail out before bad things happen
-    if (mHost->mDataChanged) {
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+
+    Boolean superResult;
+    IActionModeCallback::Probe(mWrapped)->OnCreateActionMode(mode, menu, &superResult);
+    if (superResult) {
+        // Initialize checked graphic state?
+        mHost->SetLongClickable(FALSE);
+        *result = TRUE;
         return NOERROR;
     }
+    return NOERROR;
+}
 
-    AutoPtr<IListAdapter> adapter = mHost->mAdapter;
-    Int32 motionPosition = mClickMotionPosition;
-    if (adapter != NULL && mHost->mItemCount > 0
-        && motionPosition != IAdapterView::INVALID_POSITION) {
+ECode AbsListView::MultiChoiceModeWrapper::OnPrepareActionMode(
+    /* [in] */ IActionMode* mode,
+    /* [in] */ IMenu* menu,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return IActionModeCallback::Probe(mWrapped)->OnPrepareActionMode(mode, menu, result);
+}
+
+ECode AbsListView::MultiChoiceModeWrapper::OnActionItemClicked(
+    /* [in] */ IActionMode* mode,
+    /* [in] */ IMenuItem* item,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return IActionModeCallback::Probe(mWrapped)->OnActionItemClicked(mode, item, result);
+}
+
+ECode AbsListView::MultiChoiceModeWrapper::OnDestroyActionMode(
+    /* [in] */ IActionMode* mode)
+{
+    IActionModeCallback::Probe(mWrapped)->OnDestroyActionMode(mode);
+    mHost->mChoiceActionMode = NULL;
+
+    // Ending selection mode means deselecting everything.
+    mHost->ClearChoices();
+
+    mHost->mDataChanged = TRUE;
+    mHost->RememberSyncState();
+    mHost->RequestLayout();
+
+    mHost->SetLongClickable(TRUE);
+    return NOERROR;
+}
+
+ECode AbsListView::MultiChoiceModeWrapper::OnItemCheckedStateChanged(
+    /* [in] */ IActionMode* mode,
+    /* [in] */ Int32 position,
+    /* [in] */ Int64 id,
+    /* [in] */ Boolean checked)
+{
+    mWrapped->OnItemCheckedStateChanged(mode, position, id, checked);
+
+    // If there are no items selected we no longer need the selection mode.
+    Int32 count;
+    mHost->GetCheckedItemCount(&count);
+    if (count == 0) {
+        mode->Finish();
+    }
+    return NOERROR;
+}
+
+//==============================================================================
+//          AbsListView::RecycleBin
+//==============================================================================
+
+AbsListView::RecycleBin::RecycleBin(
+    /* [in] */ AbsListView* host)
+    : mFirstActivePosition(0)
+    , mViewTypeCount(0)
+    , mHost(host)
+{
+    mActiveViews = ArrayOf<IView*>::Alloc(0);
+}
+
+AbsListView::RecycleBin::~RecycleBin()
+{
+    mScrapViews = NULL;
+    mCurrentScrap = NULL;
+    mSkippedScrap = NULL;
+
+    mTransientStateViews = NULL;
+}
+
+ECode AbsListView::RecycleBin::SetViewTypeCount(
+    /* [in] */ Int32 viewTypeCount)
+{
+    if (viewTypeCount < 1) {
+        Logger::E("AbsListView::RecycleBin", "Can't have a viewTypeCount < 1");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    //noinspection unchecked
+    AutoPtr< ArrayOf<IArrayList*> > scrapViews = ArrayOf<IArrayList*>::Alloc(viewTypeCount);
+    for (Int32 i = 0; i < viewTypeCount; i++) {
+        AutoPtr<IArrayList> listView;
+        CArrayList::New((IArrayList**)&listView);
+        scrapViews->Set(i, listView);
+    }
+
+    mViewTypeCount = viewTypeCount;
+    mCurrentScrap = (*scrapViews)[0];
+    mScrapViews = scrapViews;
+
+    return NOERROR;
+}
+
+void AbsListView::RecycleBin::MarkChildrenDirty()
+{
+    if (mViewTypeCount == 1) {
+        AutoPtr<IArrayList> scrap = mCurrentScrap;
+        Int32 scrapCount;
+        scrap->GetSize(&scrapCount);
+        for (Int32 i = 0; i < scrapCount; i++) {
+            AutoPtr<IInterface> obj;
+            scrap->Get(i, (IInterface**)&obj);
+            IVIEW_PROBE(obj)->ForceLayout();
+        }
+    }
+    else {
+        Int32 typeCount = mViewTypeCount;
+        for (Int32 i = 0; i < typeCount; i++) {
+            AutoPtr<IArrayList> scrap = (*mScrapViews)[i];
+            Int32 scrapCount;
+            scrap->GetSize(&scrapCount);
+            for (Int32 j = 0; j < scrapCount; j++) {
+                AutoPtr<IInterface> obj;
+                scrap->Get(i, (IInterface**)&obj);
+                IVIEW_PROBE(obj)->ForceLayout();
+            }
+        }
+    }
+    if (mTransientStateViews != NULL) {
         Int32 count;
-        adapter->GetCount(&count);
-        if (motionPosition < count && SameWindow()) {
-            AutoPtr<IView> view = mHost->GetChildAt(motionPosition - mHost->mFirstPosition);
-            // If there is no view, something bad happened (the view scrolled off the
-            // screen, etc.) and we should cancel the click
-            if (view != NULL) {
+        mTransientStateViews->GetSize(&count);
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> obj;
+            mTransientStateViews->ValueAt(i, (IInterface**)&obj);
+            IVIEW_PROBE(obj)->ForceLayout();
+        }
+    }
+
+    if (mTransientStateViewsById != NULL) {
+        Int32 count;
+        mTransientStateViewsById->GetSize(&count);
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> obj;
+            mTransientStateViewsById->ValueAt(i, (IInterface**)&obj);
+            IVIEW_PROBE(obj)->ForceLayout();
+        }
+    }
+}
+
+Boolean AbsListView::RecycleBin::ShouldRecycleViewType(
+    /* [in] */ Int32 viewType)
+{
+    return viewType >= 0;
+}
+
+void AbsListView::RecycleBin::Clear()
+{
+    if (mViewTypeCount == 1) {
+        AutoPtr<IArrayList> scrap = mCurrentScrap;
+        ClearScrap(scrap);
+    }
+    else {
+        Int32 typeCount = mViewTypeCount;;
+        for (Int32 i = 0; i < typeCount; i++) {
+            AutoPtr<IArrayList> scrap = (*mScrapViews)[i];
+            ClearScrap(scrap);
+        }
+    }
+    ClearTransientStateViews();
+}
+
+void AbsListView::RecycleBin::FillActiveViews(
+    /* [in] */ Int32 childCount,
+    /* [in] */ Int32 firstActivePosition)
+{
+    if (mActiveViews->GetLength() < childCount) {
+        mActiveViews = ArrayOf<IView*>::Alloc(childCount);
+    }
+
+    mFirstActivePosition = firstActivePosition;
+
+    //noinspection MismatchedReadAndWriteOfArray
+    AutoPtr< ArrayOf<IView*> > activeViews = mActiveViews;
+    for (Int32 i = 0; i < childCount; i++) {
+        AutoPtr<IView> child;
+        mHost->GetChildAt(i, (IView**)&child);
+        AutoPtr<IAbsListViewLayoutParams> lp;
+        child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+        // Don't put header or footer views into the scrap heap
+
+        if(lp != NULL) {
+            Int32 viewType;
+            lp->GetViewType(&viewType);
+            if(viewType != IAdapterView::ITEM_VIEW_TYPE_HEADER_OR_FOOTER) {
+                // Note:  We do place AdapterView.ITEM_VIEW_TYPE_IGNORE in active views.
+                //        However, we will NOT place them into scrap views.
+                activeViews->Set(i, child);
+            }
+        }
+    }
+}
+
+AutoPtr<IView> AbsListView::RecycleBin::GetActiveView(
+    /* [in] */ Int32 position)
+{
+    Int32 index = position - mFirstActivePosition;
+    AutoPtr< ArrayOf<IView*> > activeViews = mActiveViews;
+    if (index >= 0 && index < activeViews->GetLength()) {
+        AutoPtr<IView> match = (*activeViews)[index];
+        activeViews->Set(index, NULL);
+        return match;
+    }
+
+    return NULL;
+}
+
+AutoPtr<IView> AbsListView::RecycleBin::GetTransientStateView(
+    /* [in] */ Int32 position)
+{
+    if (mHost->mAdapter != NULL
+            && mHost->mAdapterHasStableIds
+            && mTransientStateViewsById) {
+        Int64 id;
+        IAdapter::Probe(mHost->mAdapter)->GetItemId(position, &id);
+        AutoPtr<IInterface> obj;
+        mTransientStateViewsById->Get(id, (IInterface**)&obj);
+        AutoPtr<IView> result = IVIEW_PROBE(obj);
+        mTransientStateViewsById->Remove(id);
+        return result;
+    }
+    if (mTransientStateViews != NULL) {
+        Int32 index;
+        mTransientStateViews->IndexOfKey(position, &index);
+        if (index >= 0) {
+            AutoPtr<IInterface> obj;
+            mTransientStateViews->ValueAt(index, (IInterface**)&obj);
+            AutoPtr<IView> result = IVIEW_PROBE(obj);
+            mTransientStateViews->RemoveAt(index);
+            return result;
+        }
+    }
+
+    return NULL;
+}
+
+void AbsListView::RecycleBin::ClearTransientStateViews()
+{
+    AutoPtr<ISparseArray> viewsByPos = mTransientStateViews;
+    if (viewsByPos != NULL) {
+        Int32 N;
+        viewsByPos->GetSize(&N);
+        for (Int32 i = 0; i < N; i++) {
+            AutoPtr<IInterface> obj;
+            viewsByPos->ValueAt(i, (IInterface**)&obj);
+            RemoveDetachedView(IVIEW_PROBE(obj), FALSE);
+        }
+        viewsByPos->Clear();
+    }
+
+    AutoPtr<IInt64SparseArray> viewsById = mTransientStateViewsById;
+    if (viewsById != NULL) {
+        Int32 N;
+        viewsById->GetSize(&N);
+        for (Int32 i = 0; i < N; i++) {
+            AutoPtr<IInterface> obj;
+            viewsById->ValueAt(i, (IInterface**)&obj);
+            RemoveDetachedView(IVIEW_PROBE(obj), FALSE);
+        }
+        viewsById->Clear();
+    }
+}
+
+AutoPtr<IView> AbsListView::RecycleBin::GetScrapView(
+    /* [in] */ Int32 position)
+{
+    if (mViewTypeCount == 1) {
+        return RetrieveFromScrap(mCurrentScrap, position);
+    }
+    else {
+        Int32 whichScrap;
+        IAdapter::Probe(mHost->mAdapter)->GetItemViewType(position, &whichScrap);
+        if (whichScrap >= 0 && whichScrap < mScrapViews->GetLength()) {
+            return RetrieveFromScrap((*mScrapViews)[whichScrap], position);
+        }
+    }
+    return NULL;
+}
+
+void AbsListView::RecycleBin::AddScrapView(
+    /* [in ]*/ IView* scrap,
+    /* [in] */ Int32 position)
+{
+    AutoPtr<IAbsListViewLayoutParams> lp;
+    scrap->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+    if (lp == NULL) {
+        return;
+    }
+
+    lp->SetScrappedFromPosition(position);
+    // Remove but don't scrap header or footer views, or views that
+    // should otherwise not be recycled.
+
+    Int32 viewType = 0;
+    lp->GetViewType(&viewType);
+    if (!ShouldRecycleViewType(viewType)) {
+        return;
+    }
+
+    scrap->DispatchStartTemporaryDetach();
+
+    // The the accessibility state of the view may change while temporary
+    // detached and we do not allow detached views to fire accessibility
+    // events. So we are announcing that the subtree changed giving a chance
+    // to clients holding on to a view in this subtree to refresh it.
+    mHost->NotifyViewAccessibilityStateChangedIfNeeded(IAccessibilityEvent::CONTENT_CHANGE_TYPE_SUBTREE);
+
+    // Don't scrap views that have transient state.
+    Boolean scrapHasTransientState;
+    scrap->HasTransientState(&scrapHasTransientState);
+    if (scrapHasTransientState) {
+        if (mHost->mAdapter != NULL && mHost->mAdapterHasStableIds) {
+            // If the adapter has stable IDs, we can reuse the view for
+            // the same data.
+            if (mTransientStateViewsById == NULL) {
+                CInt64SparseArray::New((IInt64SparseArray**)&mTransientStateViewsById);
+            }
+            Int64 id;
+            lp->GetItemId(&id);
+            mTransientStateViewsById->Put(id, scrap);
+        }
+        else if (!mHost->mDataChanged) {
+            // If the data hasn't changed, we can reuse the views at
+            // their old positions.
+            if (mTransientStateViews == NULL) {
+                CSparseArray::New((ISparseArray**)&mTransientStateViews);
+            }
+            mTransientStateViews->Put(position, scrap);
+        }
+        else {
+            // Otherwise, we'll have to remove the view and start over.
+            if (mSkippedScrap == NULL) {
+                CArrayList::New((IArrayList**)&mSkippedScrap);
+            }
+            mSkippedScrap->Add(scrap);
+        }
+    }
+    else {
+        if (mViewTypeCount == 1) {
+            mCurrentScrap->Add(scrap);
+        }
+        else {
+            (*mScrapViews)[viewType]->Add(scrap);
+        }
+
+        if (mRecyclerListener != NULL) {
+            mRecyclerListener->OnMovedToScrapHeap(scrap);
+        }
+    }
+}
+
+void AbsListView::RecycleBin::RemoveSkippedScrap()
+{
+    if (mSkippedScrap == NULL) {
+        return;
+    }
+
+    Int32 count;
+    mSkippedScrap->GetSize(&count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        mSkippedScrap->Get(i, (IInterface**)&obj);
+        RemoveDetachedView(IVIEW_PROBE(obj), FALSE);
+    }
+    mSkippedScrap->Clear();
+}
+
+void AbsListView::RecycleBin::ScrapActiveViews()
+{
+    AutoPtr< ArrayOf<IView*> > activeViews = mActiveViews;
+    Boolean hasListener = mRecyclerListener != NULL;
+    Boolean multipleScraps = mViewTypeCount > 1;
+
+    AutoPtr<IArrayList> scrapViews = mCurrentScrap;
+    Int32 count = activeViews->GetLength();
+    for (Int32 i = count - 1; i >= 0; i--) {
+        AutoPtr<IView> victim = (*activeViews)[i];
+        if (victim != NULL) {
+            AutoPtr<IViewGroupLayoutParams> params;
+            victim->GetLayoutParams((IViewGroupLayoutParams**)&params);
+            AutoPtr<IAbsListViewLayoutParams> lp = IAbsListViewLayoutParams::Probe(params);
+            Int32 whichScrap = 0;
+            lp->GetViewType(&whichScrap);
+
+            activeViews->Set(i, NULL);
+
+            Boolean res;
+            if (victim->HasTransientState(&res), res) {
+                // Store views with transient state for later use.
+                victim->DispatchStartTemporaryDetach();
+
+                if (mHost->mAdapter != NULL && mHost->mAdapterHasStableIds) {
+                    if (mTransientStateViewsById == NULL) {
+                        CInt64SparseArray::New((IInt64SparseArray**)&mTransientStateViewsById);
+                    }
+                    Int64 id;
+                    IAdapter::Probe(mHost->mAdapter)->GetItemId(mFirstActivePosition + i, &id);
+                    mTransientStateViewsById->Put(id, victim);
+                }
+                else if (!mHost->mDataChanged) {
+                    if (mTransientStateViews == NULL) {
+                        CSparseArray::New((ISparseArray**)&mTransientStateViews);
+                    }
+                    mTransientStateViews->Put(mFirstActivePosition + i, victim);
+                }
+                else if (whichScrap != IAdapterView::ITEM_VIEW_TYPE_HEADER_OR_FOOTER) {
+                    // The data has changed, we can't keep this view.
+                    RemoveDetachedView(victim, FALSE);
+                }
+            }
+            else if (!ShouldRecycleViewType(whichScrap)) {
+                // Discard non-recyclable views except headers/footers.
+                if (whichScrap != IAdapterView::ITEM_VIEW_TYPE_HEADER_OR_FOOTER) {
+                    RemoveDetachedView(victim, FALSE);
+                }
+            }
+            else {
+                // Store everything else on the appropriate scrap heap.
+                if (multipleScraps) {
+                    scrapViews = (*mScrapViews)[whichScrap];
+                }
+                victim->DispatchStartTemporaryDetach();
+                lp->SetScrappedFromPosition(mFirstActivePosition + i);
+                scrapViews->Add(victim);
+
+                if (hasListener) {
+                    mRecyclerListener->OnMovedToScrapHeap(victim);
+                }
+            }
+        }
+    }
+    PruneScrapViews();
+}
+
+void AbsListView::RecycleBin::PruneScrapViews()
+{
+    Int32 maxViews = mActiveViews->GetLength();
+    Int32 viewTypeCount = mViewTypeCount;
+    AutoPtr< ArrayOf<IArrayList*> > scrapViews = mScrapViews;
+    for (Int32 i = 0; i < viewTypeCount; ++i) {
+        AutoPtr<IArrayList> scrapPile = (*scrapViews)[i];
+        Int32 size;
+        scrapPile->GetSize(&size);
+        Int32 extras = size - maxViews;
+        size--;
+        for (Int32 j = 0; j < extras; j++) {
+            AutoPtr<IInterface> obj;
+            scrapPile->Remove(size--, (IInterface**)&obj);
+            RemoveDetachedView(IVIEW_PROBE(obj), FALSE);
+        }
+    }
+
+    AutoPtr<ISparseArray> transViewsByPos = mTransientStateViews;
+    if (transViewsByPos != NULL) {
+        Int32 size;
+        transViewsByPos->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            transViewsByPos->ValueAt(i, (IInterface**)&obj);
+            AutoPtr<IView> v = IVIEW_PROBE(obj);
+            Boolean res;
+            if (v->HasTransientState(&res), !res) {
+                RemoveDetachedView(v, FALSE);
+                transViewsByPos->RemoveAt(i);
+                i--;
+            }
+        }
+    }
+
+    AutoPtr<IInt64SparseArray> transViewsById = mTransientStateViewsById;
+    if (transViewsById != NULL) {
+        Int32 size;
+        transViewsById->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            transViewsById->ValueAt(i, (IInterface**)&obj);
+            AutoPtr<IView> v = IVIEW_PROBE(obj);
+            Boolean res;
+            if (v->HasTransientState(&res), !res) {
+                RemoveDetachedView(v, FALSE);
+                transViewsById->RemoveAt(i);
+                i--;
+            }
+        }
+    }
+}
+
+void AbsListView::RecycleBin::ReclaimScrapViews(
+    /* [in] */ IList* views)
+{
+    if (mViewTypeCount == 1) {
+        views->AddAll(ICollection::Probe(mCurrentScrap));
+    }
+    else {
+        Int32 viewTypeCount = mViewTypeCount;
+        AutoPtr<ArrayOf<IArrayList*> > scrapViews = mScrapViews;
+        for (Int32 i = 0; i < viewTypeCount; ++i) {
+            AutoPtr<IArrayList> scrapPile = (*scrapViews)[i];
+            views->AddAll(ICollection::Probe(scrapPile));
+        }
+    }
+}
+
+void AbsListView::RecycleBin::SetCacheColorHint(
+    /* [in] */ Int32 color)
+{
+    if (mViewTypeCount == 1) {
+        assert(mCurrentScrap != NULL);
+        AutoPtr<IArrayList> scrap = mCurrentScrap;
+        Int32 scrapCount = scrap->GetSize(&scrapCount);
+        for (Int32 i = 0; i < scrapCount; i++) {
+            AutoPtr<IInterface> obj;
+            scrap->Get(i, (IInterface**)&obj);
+            IVIEW_PROBE(obj)->SetDrawingCacheBackgroundColor(color);
+        }
+    }
+    else {
+        Int32 typeCount = mViewTypeCount;
+        for (Int32 i = 0; i < typeCount; i++) {
+            AutoPtr<IArrayList> scrap = (*mScrapViews)[i];
+            Int32 scrapCount = scrap->GetSize(&scrapCount);
+            for (Int32 j = 0; j < scrapCount; j++) {
+                AutoPtr<IInterface> obj;
+                scrap->Get(j, (IInterface**)&obj);
+                IVIEW_PROBE(obj)->SetDrawingCacheBackgroundColor(color);
+            }
+        }
+    }
+
+    // Just in case this is called during a layout pass
+    assert(mActiveViews != NULL);
+    AutoPtr< ArrayOf<IView*> > activeViews = mActiveViews;
+    for (Int32 i = 0; i < activeViews->GetLength(); ++i) {
+        AutoPtr<IView> victim = (*activeViews)[i];
+        if (victim != NULL) {
+            victim->SetDrawingCacheBackgroundColor(color);
+        }
+    }
+}
+
+AutoPtr<IView> AbsListView::RecycleBin::RetrieveFromScrap(
+    /* [in] */ IArrayList* scrapViews,
+    /* [in] */ Int32 position)
+{
+    Int32 size;
+    scrapViews->GetSize(&size);
+    if (size > 0) {
+        // See if we still have a view for this position or ID.
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            scrapViews->Get(i, (IInterface**)&obj);
+            AutoPtr<IView> view = IVIEW_PROBE(obj);
+            AutoPtr<IViewGroupLayoutParams> lp;
+            view->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            AutoPtr<IAbsListViewLayoutParams> params = IAbsListViewLayoutParams::Probe(lp);
+
+            Int64 itemId;
+            params->GetItemId(&itemId);
+            Int32 pos;
+            params->GetScrappedFromPosition(&pos);
+            if (mHost->mAdapterHasStableIds) {
                 Int64 id;
-                adapter->GetItemId(motionPosition,&id);
-                mHost->PerformItemClick(view, motionPosition, id);
-            }
-        }
-    }
-    return NOERROR;
-}
-
-//==============================================================================
-//          AbsListView::CheckForLongPress
-//==============================================================================
-
-AbsListView::CheckForLongPress::CheckForLongPress (
-    /* [in] */ AbsListView* host)
-    : WindowRunnnable(host)
-{}
-
-ECode AbsListView::CheckForLongPress::Run()
-{
-    Int32 motionPosition = mHost->mMotionPosition;
-    AutoPtr<IView> child = mHost->GetChildAt(motionPosition - mHost->mFirstPosition);
-    if (child != NULL) {
-        Int32 longPressPosition = mHost->mMotionPosition;
-        Int64 longPressId;
-        mHost->mAdapter->GetItemId(mHost->mMotionPosition, &longPressId);
-
-        Boolean handled = FALSE;
-        if (SameWindow() && !mHost->mDataChanged) {
-            handled = mHost->PerformLongPress(child, longPressPosition, longPressId);
-        }
-        if (handled) {
-            mHost->mTouchMode = AbsListView::TOUCH_MODE_REST;
-            mHost->SetPressed(FALSE);
-            child->SetPressed(FALSE);
-        }
-        else {
-            mHost->mTouchMode = AbsListView::TOUCH_MODE_DONE_WAITING;
-        }
-    }
-    return NOERROR;
-}
-
-//==============================================================================
-//          AbsListView::CheckForKeyLongPress
-//==============================================================================
-
-AbsListView::CheckForKeyLongPress::CheckForKeyLongPress (
-    /* [in] */ AbsListView* host)
-    : WindowRunnnable(host)
-{}
-
-ECode AbsListView::CheckForKeyLongPress::Run()
-{
-    if(mHost->IsPressed() && mHost->mSelectedPosition >= 0){
-        AutoPtr<IView> child = mHost->GetChildAt(
-                mHost->mSelectedPosition - mHost->mFirstPosition);
-        if(!mHost->mDataChanged)
-        {
-            Boolean handled = FALSE;
-            if (SameWindow()) {
-                 handled = mHost->PerformLongPress(
-                     child, mHost->mSelectedPosition, mHost->mSelectedRowId);
-            }
-            if (handled) {
-                mHost->SetPressed(FALSE);
-                child->SetPressed(FALSE);
-            }
-        }else{
-            mHost->SetPressed(FALSE);
-            if(child != NULL)
-                child->SetPressed(FALSE);
-        }
-    }
-
-    return NOERROR;
-}
-
-//==============================================================================
-//          AbsListView::CheckForTap
-//==============================================================================
-
-AbsListView::CheckForTap::CheckForTap(
-    /* [in] */ AbsListView* host)
-    : mHost(host)
-{}
-
-ECode AbsListView::CheckForTap::Run()
-{
-    if (mHost->mTouchMode == mHost->TOUCH_MODE_DOWN) {
-        mHost->mTouchMode = mHost->TOUCH_MODE_TAP;
-        AutoPtr<IView> child = mHost->GetChildAt(
-            mHost->mMotionPosition - mHost->mFirstPosition);
-
-        if (child != NULL) {
-            Boolean hasFocusable;
-            child->HasFocusable(&hasFocusable);
-            if (!hasFocusable) {
-                mHost->mLayoutMode = mHost->LAYOUT_NORMAL;
-                if (!mHost->mDataChanged) {
-                    child->SetPressed(TRUE);
-                    mHost->SetPressed(TRUE);
-                    mHost->LayoutChildren();
-                    mHost->PositionSelector(mHost->mMotionPosition, child);
-                    mHost->RefreshDrawableState();
-
-                    AutoPtr<IViewConfigurationHelper> configHelper;
-                    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&configHelper);
-                    Int32 longPressTimeout;
-                    configHelper->GetLongPressTimeout(&longPressTimeout);
-                    Boolean longClickable = mHost->IsLongClickable();
-                    if (mHost->mSelector != NULL) {
-                        AutoPtr<IDrawable> d;
-                        mHost->mSelector->GetCurrent((IDrawable**)&d);
-                        AutoPtr<ITransitionDrawable> td ;
-                        if(d != NULL)
-                            td = ITransitionDrawable::Probe(d);
-
-                        if (td != NULL) {
-                            if (longClickable) {
-                                td->StartTransition(longPressTimeout);
-                            } else {
-                                td->ResetTransition();
-                            }
-                        }
-                    }
-
-                    if (longClickable) {
-                        if (mHost->mPendingCheckForLongPress == NULL) {
-                            mHost->mPendingCheckForLongPress =
-                                new AbsListView::CheckForLongPress(mHost);
-                        }
-
-                        mHost->mPendingCheckForLongPress->RememberWindowAttachCount();
-                        mHost->PostDelayed(mHost->mPendingCheckForLongPress, longPressTimeout);
-                    }
-                    else {
-                        mHost->mTouchMode = mHost->TOUCH_MODE_DONE_WAITING;
-                    }
-                }
-                else {
-                    mHost->mTouchMode = mHost->TOUCH_MODE_DONE_WAITING;
+                IAdapter::Probe(mHost->mAdapter)->GetItemId(position, &id);
+                if (id == itemId) {
+                    AutoPtr<IInterface> obj;
+                    scrapViews->Remove(i, (IInterface**)&obj);
+                    return IVIEW_PROBE(obj);
                 }
             }
+            else if (pos == position) {
+                AutoPtr<IInterface> obj;
+                scrapViews->Remove(i, (IInterface**)&obj);
+                AutoPtr<IView> scrap = IVIEW_PROBE(obj);
+                ClearAccessibilityFromScrap(scrap);
+                return scrap;
+            }
         }
-    }
 
-    return NOERROR;
-}
-
-//==============================================================================
-//          AbsListView::FlingRunnableInner
-//==============================================================================
-
-AbsListView::FlingRunnableInner::FlingRunnableInner(
-    /* [in] */ FlingRunnable* host,
-    /* [in] */ AbsListView* mainHost)
-    : mHost(host)
-    , mMainHost(mainHost)
-{
-}
-
-ECode AbsListView::FlingRunnableInner::Run()
-{
-    Int32 activeId = mMainHost->mActivePointerId;
-
-    if (mMainHost->mVelocityTracker == NULL || activeId == AbsListView::INVALID_POINTER) {
-        return NOERROR;
-    }
-
-    mMainHost->mVelocityTracker->ComputeCurrentVelocity(1000, mMainHost->mMaximumVelocity);
-    Float y;
-    mMainHost->mVelocityTracker->GetYVelocity(activeId, &y);
-    Float yvel = -y;
-
-    if (Elastos::Core::Math::Abs(yvel) >= mMainHost->mMinimumVelocity
-            && mHost->mScroller->IsScrollingInDirection(0, yvel)) {
-        // Keep the fling alive a little longer
-        mMainHost->PostDelayed(this, FlingRunnable::FLYWHEEL_TIMEOUT);
-    } else {
-        mHost->EndFling();
-        mMainHost->mTouchMode = AbsListView::TOUCH_MODE_SCROLL;
-        mMainHost->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_TOUCH_SCROLL);
-    }
-    return NOERROR;
-}
-
-
-//==============================================================================
-//          AbsListView::FlingRunnableInner
-//==============================================================================
-
-AbsListView::FlingRunnable::FlingRunnable(
-    /* [in] */ AbsListView* host)
-    : mHost(host)
-{
-    mScroller = new OverScroller(mHost->GetContext());
-    mCheckFlywheel = new FlingRunnableInner(this, mHost);
-}
-
-void AbsListView::FlingRunnable::Start(
-    /* [in] */ Int32 initialVelocity)
-{
-    Int32 initialY = initialVelocity < 0 ? Elastos::Core::Math::INT32_MAX_VALUE : 0;
-    mLastFlingY = initialY;
-    mScroller->SetInterpolator(NULL);
-    mScroller->Fling(0, initialY, 0, initialVelocity,
-        0, Elastos::Core::Math::INT32_MAX_VALUE, 0, Elastos::Core::Math::INT32_MAX_VALUE);
-    mHost->mTouchMode = AbsListView::TOUCH_MODE_FLING;
-
-    mHost->PostOnAnimation(this);
-
-    if (AbsListView::PROFILE_FLINGING) {
-        if (!mHost->mFlingProfilingStarted) {
-            //Debug.startMethodTracing("AbsListViewFling");
-            mHost->mFlingProfilingStarted = TRUE;
-        }
-    }
-
-    if (mHost->mFlingStrictSpan == NULL) {
-//        assert(0 && "TODO"); //StrictMode is not exsit
-//        mFlingStrictSpan = StrictMode.enterCriticalSpan("AbsListView-fling");
-    }
-}
-
-void AbsListView::FlingRunnable::StartSpringback()
-{
-    if (mScroller->SpringBack(0, mHost->mScrollY, 0, 0, 0, 0)) {
-        mHost->mTouchMode = AbsListView::TOUCH_MODE_OVERFLING;
-        mHost->Invalidate();
-        mHost->PostOnAnimation(this);
+        AutoPtr<IInterface> object;
+        scrapViews->Remove(size - 1, (IInterface**)&object);
+        AutoPtr<IView> scrap = IVIEW_PROBE(object);
+        ClearAccessibilityFromScrap(scrap);
+        return scrap;
     }
     else {
-        mHost->mTouchMode = AbsListView::TOUCH_MODE_REST;
-        mHost->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
+        return NULL;
     }
 }
 
-void AbsListView::FlingRunnable::StartOverfling(
-    /* [in] */ Int32 initialVelocity)
+void AbsListView::RecycleBin::ClearScrap(
+    /* [in] */ IArrayList* scrap)
 {
-    mScroller->SetInterpolator(NULL);
-    mScroller->Fling(0, mHost->mScrollY, 0, initialVelocity, 0, 0,
-            Elastos::Core::Math::INT32_MIN_VALUE, Elastos::Core::Math::INT32_MAX_VALUE, 0, mHost->GetHeight());
-    mHost->mTouchMode = AbsListView::TOUCH_MODE_OVERFLING;
-    mHost->Invalidate();
-    mHost->PostOnAnimation(this);
-}
-
-void AbsListView::FlingRunnable::EdgeReached(
-    /* [in] */ Int32 delta)
-{
-    mScroller->NotifyVerticalEdgeReached(
-        mHost->mScrollY, 0, mHost->mOverflingDistance);
-    Int32 overscrollMode = mHost->GetOverScrollMode();
-    if (overscrollMode == IView::OVER_SCROLL_ALWAYS ||
-        (overscrollMode == IView::OVER_SCROLL_IF_CONTENT_SCROLLS
-        && !mHost->ContentFits())) {
-        mHost->mTouchMode = AbsListView::TOUCH_MODE_OVERFLING;
-        Int32 vel = (Int32)mScroller->GetCurrVelocity();
-        if (delta > 0) {
-            mHost->mEdgeGlowTop->OnAbsorb(vel);
-        }
-        else {
-            mHost->mEdgeGlowBottom->OnAbsorb(vel);
-        }
-    }
-    else {
-        mHost->mTouchMode = AbsListView::TOUCH_MODE_REST;
-        if (mHost->mPositionScroller != NULL) {
-            mHost->mPositionScroller->Stop();
-        }
-    }
-
-    mHost->Invalidate();
-    mHost->PostOnAnimation(this);
-}
-
-void AbsListView::FlingRunnable::StartScroll(
-    /* [in] */ Int32 distance,
-    /* [in] */ Int32 duration,
-    /* [in] */ Boolean linear)
-{
-    Int32 initialY = distance < 0 ? Elastos::Core::Math::INT32_MAX_VALUE : 0;
-    mLastFlingY = initialY;
-    mScroller->SetInterpolator(linear ? AbsListView::sLinearInterpolator : NULL);
-    mScroller->StartScroll(0, initialY, 0, distance, duration);
-    mHost->mTouchMode = AbsListView::TOUCH_MODE_FLING;
-    mHost->PostOnAnimation(this);
-}
-
-void AbsListView::FlingRunnable::EndFling()
-{
-    mHost->mTouchMode = AbsListView::TOUCH_MODE_REST;
-
-    mHost->RemoveCallbacks(this);
-    mHost->RemoveCallbacks(mCheckFlywheel);
-
-    mHost->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
-    mHost->ClearScrollingCache();
-
-    mScroller->AbortAnimation();
-
-    if (mHost->mFlingStrictSpan != NULL) {
-        assert(0 && "TODO");
-//        mHost->mFlingStrictSpan->Finish();
-        mHost->mFlingStrictSpan = NULL;
+    Int32 scrapCount;
+    scrap->GetSize(&scrapCount);
+    for (Int32 j = 0; j < scrapCount; j++) {
+        AutoPtr<IInterface> obj;
+        scrap->Remove(scrapCount - 1 - j, (IInterface**)&obj);
+        RemoveDetachedView(IVIEW_PROBE(obj), FALSE);
     }
 }
 
-
-void AbsListView::FlingRunnable::FlywheelTouch()
+void AbsListView::RecycleBin::ClearAccessibilityFromScrap(
+    /* [in] */ IView* view)
 {
-    mHost->PostDelayed(mCheckFlywheel, FLYWHEEL_TIMEOUT);
+    Boolean res;
+    if (view->IsAccessibilityFocused(&res), res) {
+        view->ClearAccessibilityFocus();
+    }
+    view->SetAccessibilityDelegate(NULL);
 }
 
-ECode AbsListView::FlingRunnable::Run()
+void AbsListView::RecycleBin::RemoveDetachedView(
+    /* [in] */ IView* child,
+    /* [in] */ Boolean animate)
 {
-    switch(mHost->mTouchMode)
-    {
-        default:
-            EndFling();
-            return NOERROR;
-        case AbsListView::TOUCH_MODE_SCROLL:
-            if(mScroller->IsFinished())
-            {
-                return NOERROR;
-            }
-        case AbsListView::TOUCH_MODE_FLING:
-        {
-            if(mHost->mDataChanged)
-            {
-                mHost->LayoutChildren();
-            }
-
-            if(mHost->mItemCount == 0 || mHost->GetChildCount() == 0)
-            {
-                EndFling();
-                return NOERROR;
-            }
-
-            Boolean more = mScroller->ComputeScrollOffset();
-            Int32 y = mScroller->GetCurrY();
-            // Flip sign to convert finger direction to list items direction
-            // (e.g. finger moving down means list is moving towards the top)
-            Int32 delta = mLastFlingY - y;
-
-            // Pretend that each frame of a fling scroll is a touch scroll
-            if (delta > 0) {
-                // List is moving towards the top. Use first view as mMotionPosition
-                mHost->mMotionPosition = mHost->mFirstPosition;
-                AutoPtr<IView> firstView = mHost->GetChildAt(0);
-                firstView->GetTop(&(mHost->mMotionViewOriginalTop));
-
-                // Don't fling more than 1 screen
-                delta = Elastos::Core::Math::Min(mHost->GetHeight() - mHost->mPaddingBottom - mHost->mPaddingTop - 1, delta);
-            } else {
-                // List is moving towards the bottom. Use last view as mMotionPosition
-                Int32 offsetToLast = mHost->GetChildCount() - 1;
-                mHost->mMotionPosition = mHost->mFirstPosition + offsetToLast;
-
-                AutoPtr<IView> lastView = mHost->GetChildAt(offsetToLast);
-                lastView->GetTop(&(mHost->mMotionViewOriginalTop));
-
-                // Don't fling more than 1 screen
-                delta = Elastos::Core::Math::Max(-(mHost->GetHeight() - mHost->mPaddingBottom - mHost->mPaddingTop - 1), delta);
-            }
-
-            // Check to see if we have bumped into the scroll limit
-            AutoPtr<IView> motionView = mHost->GetChildAt(mHost->mMotionPosition - mHost->mFirstPosition);
-            Int32 oldTop = 0;
-            if (motionView != NULL) {
-                motionView->GetTop(&oldTop);
-            }
-
-            // Don't stop just because delta is zero (it could have been rounded)
-            Boolean atEdge = mHost->TrackMotionScroll(delta, delta);
-            Boolean atEnd = atEdge && (delta != 0);
-            if (atEnd) {
-                if (motionView != NULL) {
-                    // Tweak the scroll for how far we overshot
-                    Int32 top;
-                    motionView->GetTop(&top);
-                    Int32 overshoot = -(delta - (top - oldTop));
-                    mHost->OverScrollBy(0, overshoot, 0, mHost->mScrollY, 0, 0,
-                            0, mHost->mOverflingDistance, FALSE);
-                }
-                if (more) {
-                    EdgeReached(delta);
-                }
-                break;
-            }
-
-            if (more && !atEnd) {
-                if (atEdge) mHost->Invalidate();
-                mLastFlingY = y;
-                mHost->PostOnAnimation(this);
-            } else {
-                EndFling();
-
-                if (AbsListView::PROFILE_FLINGING) {
-                    if (mHost->mFlingProfilingStarted) {
-    //                    Debug.stopMethodTracing();
-                        mHost->mFlingProfilingStarted = FALSE;
-                    }
-
-                    if (mHost->mFlingStrictSpan != NULL) {
-                        assert(0 && "TODO");
-//                        mHost->mFlingStrictSpan->Finish();
-                        mHost->mFlingStrictSpan = NULL;
-                    }
-                }
-            }
-            break;
-        }
-
-        case TOUCH_MODE_OVERFLING:
-        {
-            if (mScroller->ComputeScrollOffset()) {
-                Int32 scrollY = mHost->mScrollY;
-                Int32 currY = mScroller->GetCurrY();
-                Int32 deltaY = currY - scrollY;
-                if (mHost->OverScrollBy(0, deltaY, 0, scrollY, 0, 0,
-                        0, mHost->mOverflingDistance, FALSE)) {
-                    Boolean crossDown = scrollY <= 0 && currY > 0;
-                    Boolean crossUp = scrollY >= 0 && currY < 0;
-                    if (crossDown || crossUp) {
-                        Int32 velocity = (Int32) mScroller->GetCurrVelocity();
-                        if (crossUp)
-                            velocity = -velocity;
-
-                        // Don't flywheel from this; we're just continuing things.
-                        mScroller->AbortAnimation();
-                        Start(velocity);
-                    } else {
-                        StartSpringback();
-                    }
-                } else {
-                    mHost->Invalidate();
-                    mHost->PostOnAnimation(this);
-                }
-            } else {
-                EndFling();
-            }
-            break;
-        }
-    }
-
-    return NOERROR;
+    child->SetAccessibilityDelegate(NULL);
+    mHost->RemoveDetachedView(child, animate);
 }
 
 //==============================================================================
-//          AbsListView::PositionScrollerStartRunnable
+//          AbsListView::AbsPositionScroller
 //==============================================================================
-AbsListView::PositionScrollerStartRunnable::PositionScrollerStartRunnable(
-    /* [in] */ Int32 paramsCount,
-    /* [in] */ Int32 param1,
-    /* [in] */ Int32 param2,
-    /* [in] */ Int32 param3,
-    /* [in] */ PositionScroller* host)
-    : mParamsCount(paramsCount)
-    , mParam1(param1), mParam2(param1)
-    , mParam3(param1), mHost(host)
-{
-}
 
-ECode AbsListView::PositionScrollerStartRunnable::Run()
+AbsListView::AbsPositionScroller::~AbsPositionScroller()
 {
-    switch(mParamsCount)
-    {
-    case 1:
-        mHost->Start(mParam1);
-        break;
-    case 2:
-        mHost->Start(mParam1, mParam2);
-        break;
-    case 3:
-        mHost->StartWithOffset(mParam1, mParam2, mParam3);
-        break;
-    default:
-        break;
-    }
-    return NOERROR;
+    Logger::I("AbsListView", "AbsPositionScroller::~AbsPositionScroller()");
 }
 
 //==============================================================================
 //          AbsListView::PositionScroller
 //==============================================================================
+
+CAR_INTERFACE_IMPL(AbsListView::PositionScroller, AbsPositionScroller, IRunnable);
 
 AbsListView::PositionScroller::PositionScroller(
     /* [in] */ AbsListView* host)
@@ -747,13 +1247,14 @@ AbsListView::PositionScroller::PositionScroller(
     , mScrollDuration(0)
     , mOffsetFromTop(0)
 {
-    AutoPtr<IViewConfigurationHelper> configHelper;
-    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&configHelper);
-
-    AutoPtr<IViewConfiguration> configuration;
-    configHelper->Get(mHost->mContext, (IViewConfiguration**)&configuration);
+    AutoPtr<IViewConfiguration> configuration = ViewConfiguration::Get(mHost->mContext);
 
     configuration->GetScaledFadingEdgeLength(&mExtraScroll);
+}
+
+AbsListView::PositionScroller::~PositionScroller()
+{
+    Logger::I("AbsListView", "PositionScroller::~PositionScroller()");
 }
 
 void AbsListView::PositionScroller::Start(
@@ -768,7 +1269,8 @@ void AbsListView::PositionScroller::Start(
         return;
     }
 
-    Int32 childCount = mHost->GetChildCount();
+    Int32 childCount;
+    mHost->GetChildCount(&childCount);
     if (childCount == 0) {
         // Can't scroll without children.
         return;
@@ -779,7 +1281,9 @@ void AbsListView::PositionScroller::Start(
 
     Int32 viewTravelCount;
 
-    int clampedPosition = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(mHost->GetCount() - 1, position));
+    Int32 count;
+    mHost->GetCount(&count);
+    Int32 clampedPosition = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(count - 1, position));
 
     if (clampedPosition < firstPos) {
         viewTravelCount = firstPos - clampedPosition + 1;
@@ -790,7 +1294,7 @@ void AbsListView::PositionScroller::Start(
         mMode = MOVE_DOWN_POS;
     }
     else {
-        ScrollToVisible(clampedPosition, IAbsListView::INVALID_POSITION, SCROLL_DURATION);
+        ScrollToVisible(clampedPosition, IAdapterView::INVALID_POSITION, SCROLL_DURATION);
         return;
     }
 
@@ -825,7 +1329,8 @@ void AbsListView::PositionScroller::Start(
         return;
     }
 
-    Int32 childCount = mHost->GetChildCount();
+    Int32 childCount;
+    mHost->GetChildCount(&childCount);
     if (childCount == 0) {
         // Can't scroll without children.
         return;
@@ -835,7 +1340,9 @@ void AbsListView::PositionScroller::Start(
     Int32 lastPos = firstPos + childCount - 1;
 
     Int32 viewTravelCount = 0;
-    Int32 clampedPosition = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(mHost->GetCount() - 1, position));
+    Int32 count;
+    mHost->GetCount(&count);
+    Int32 clampedPosition = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(count - 1, position));
 
     if (clampedPosition < firstPos) {
         Int32 boundPosFromLast = lastPos - boundPosition;
@@ -912,18 +1419,23 @@ void AbsListView::PositionScroller::StartWithOffset(
         return;
     }
 
-    Int32 childCount = mHost->GetChildCount();
+    Int32 childCount;
+    mHost->GetChildCount(&childCount);
     if (childCount == 0) {
         // Can't scroll without children.
         return;
     }
 
-    offset += mHost->GetPaddingTop();
+    Int32 top;
+    mHost->GetPaddingTop(&top);
+    offset += top;
 
-    mTargetPos = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(mHost->GetCount() - 1, position));
+    Int32 count;
+    mHost->GetCount(&count);
+    mTargetPos = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(count - 1, position));
     mOffsetFromTop = offset;
-    mBoundPos = IAbsListView::INVALID_POSITION;
-    mLastSeenPos = IAbsListView::INVALID_POSITION;
+    mBoundPos = IAdapterView::INVALID_POSITION;
+    mLastSeenPos = IAdapterView::INVALID_POSITION;
     mMode = MOVE_OFFSET;
 
     Int32 firstPos = mHost->mFirstPosition;
@@ -932,13 +1444,17 @@ void AbsListView::PositionScroller::StartWithOffset(
     Int32 viewTravelCount;
     if (mTargetPos < firstPos) {
         viewTravelCount = firstPos - mTargetPos;
-    } else if (mTargetPos > lastPos) {
+    }
+    else if (mTargetPos > lastPos) {
         viewTravelCount = mTargetPos - lastPos;
-    } else {
+    }
+    else {
         // On-screen, just scroll.
+        AutoPtr<IView> view;
+        mHost->GetChildAt(mTargetPos - firstPos, (IView**)&view);
         Int32 targetTop ;
-        mHost->GetChildAt(mTargetPos - firstPos)->GetTop(&targetTop);
-        mHost->SmoothScrollBy(targetTop - offset, duration, true);
+        view->GetTop(&targetTop);
+        mHost->SmoothScrollBy(targetTop - offset, duration, TRUE);
         return;
     }
 
@@ -946,7 +1462,7 @@ void AbsListView::PositionScroller::StartWithOffset(
     Float screenTravelCount = (Float) viewTravelCount / childCount;
     mScrollDuration = screenTravelCount < 1 ?
             duration : (Int32) (duration / screenTravelCount);
-    mLastSeenPos = IAbsListView::INVALID_POSITION;
+    mLastSeenPos = IAdapterView::INVALID_POSITION;
 
     mHost->PostOnAnimation(this);
 }
@@ -961,10 +1477,13 @@ void AbsListView::PositionScroller::ScrollToVisible(
     /* [in] */ Int32 duration)
 {
     Int32 firstPos = mHost->mFirstPosition;
-    Int32 childCount = mHost->GetChildCount();
+    Int32 childCount;
+    mHost->GetChildCount(&childCount);
     Int32 lastPos = firstPos + childCount - 1;
     Int32 paddedTop = mHost->mListPadding->mTop;
-    Int32 paddedBottom = mHost->GetHeight() - mHost->mListPadding->mBottom;
+    Int32 height;
+    mHost->GetHeight(&height);
+    Int32 paddedBottom = height - mHost->mListPadding->mBottom;
 
     if (targetPos < firstPos || targetPos > lastPos) {
         Logger::W("AbsListView", "scrollToVisible called with targetPos %d  not visible [%d, %d].",
@@ -972,10 +1491,11 @@ void AbsListView::PositionScroller::ScrollToVisible(
     }
     if (boundPos < firstPos || boundPos > lastPos) {
         // boundPos doesn't matter, it's already offscreen.
-        boundPos = IAbsListView::INVALID_POSITION;
+        boundPos = IAdapterView::INVALID_POSITION;
     }
 
-    AutoPtr<IView> targetChild = mHost->GetChildAt(targetPos - firstPos);
+    AutoPtr<IView> targetChild;
+    mHost->GetChildAt(targetPos - firstPos, (IView**)&targetChild);
     Int32 targetTop;
     targetChild->GetTop(&targetTop);
     Int32 targetBottom;
@@ -994,7 +1514,8 @@ void AbsListView::PositionScroller::ScrollToVisible(
     }
 
     if (boundPos >= 0) {
-        AutoPtr<IView> boundChild = mHost->GetChildAt(boundPos - firstPos);
+        AutoPtr<IView> boundChild;
+        mHost->GetChildAt(boundPos - firstPos, (IView**)&boundChild);
         Int32 boundTop;
         boundChild->GetTop(&boundTop);
         Int32 boundBottom ;
@@ -1004,7 +1525,8 @@ void AbsListView::PositionScroller::ScrollToVisible(
         if (scrollBy < 0 && boundBottom + absScroll > paddedBottom) {
             // Don't scroll the bound view off the bottom of the screen.
             scrollBy = Elastos::Core::Math::Max(0, boundBottom - paddedBottom);
-        } else if (scrollBy > 0 && boundTop - absScroll < paddedTop) {
+        }
+        else if (scrollBy > 0 && boundTop - absScroll < paddedTop) {
             // Don't scroll the bound view off the top of the screen.
             scrollBy = Elastos::Core::Math::Min(0, boundTop - paddedTop);
         }
@@ -1015,746 +1537,1079 @@ void AbsListView::PositionScroller::ScrollToVisible(
 
 void AbsListView::PositionScroller::Stop()
 {
-    mHost->RemoveCallbacks(this);
+    Boolean res;
+    mHost->RemoveCallbacks(this, &res);
 }
 
 ECode AbsListView::PositionScroller::Run()
 {
-    Int32 listHeight = mHost->GetHeight();
+    Int32 listHeight;
+    mHost->GetHeight(&listHeight);
     Int32 firstPos = mHost->mFirstPosition;
 
     switch (mMode) {
-    case MOVE_DOWN_POS:
-        {
-            Int32 lastViewIndex = mHost->GetChildCount() - 1;
-            Int32 lastPos = firstPos + lastViewIndex;
+        case MOVE_DOWN_POS: {
+                Int32 count;
+                mHost->GetChildCount(&count);
+                Int32 lastViewIndex = count - 1;
+                Int32 lastPos = firstPos + lastViewIndex;
 
-            if (lastViewIndex < 0) {
-                return NOERROR;
-            }
+                if (lastViewIndex < 0) {
+                    return NOERROR;
+                }
 
-            if (lastPos == mLastSeenPos) {
-                // No new views, let things keep going.
-                mHost->PostOnAnimation(this);
-                return NOERROR;
-            }
+                if (lastPos == mLastSeenPos) {
+                    // No new views, let things keep going.
+                    mHost->PostOnAnimation(this);
+                    return NOERROR;
+                }
 
-            AutoPtr<IView> lastView = mHost->GetChildAt(lastViewIndex);
-            Int32 lastViewHeight;
-            lastView->GetHeight(&lastViewHeight);
-            Int32 lastViewTop;
-            lastView->GetTop(&lastViewTop);
-            Int32 lastViewPixelsShowing = listHeight - lastViewTop;
-            Int32 extraScroll = lastPos < mHost->mItemCount - 1
-                ? Elastos::Core::Math::Max(mHost->mListPadding->mBottom, mExtraScroll) : mHost->mListPadding->mBottom;
+                AutoPtr<IView> lastView;
+                mHost->GetChildAt(lastViewIndex, (IView**)&lastView);
+                Int32 lastViewHeight;
+                lastView->GetHeight(&lastViewHeight);
+                Int32 lastViewTop;
+                lastView->GetTop(&lastViewTop);
+                Int32 lastViewPixelsShowing = listHeight - lastViewTop;
+                Int32 extraScroll = lastPos < mHost->mItemCount - 1
+                    ? Elastos::Core::Math::Max(mHost->mListPadding->mBottom, mExtraScroll) : mHost->mListPadding->mBottom;
 
-            mHost->SmoothScrollBy(
-                lastViewHeight - lastViewPixelsShowing + extraScroll,
-                mScrollDuration);
-            Int32 scrollBy = lastViewHeight - lastViewPixelsShowing + extraScroll;
-            mHost->SmoothScrollBy(scrollBy, mScrollDuration, true);
-
-            mLastSeenPos = lastPos;
-            if (lastPos < mTargetPos) {
-                mHost->PostOnAnimation(this);
-            }
-        }
-        break;
-    case MOVE_DOWN_BOUND:
-        {
-            Int32 nextViewIndex = 1;
-            Int32 childCount = mHost->GetChildCount();
-
-            if (firstPos == mBoundPos || childCount <= nextViewIndex
-                || firstPos + childCount >= mHost->mItemCount) {
-                return NOERROR;
-            }
-
-            Int32 nextPos = firstPos + nextViewIndex;
-            if (nextPos == mLastSeenPos) {
-                // No new views, let things keep going.
-                mHost->PostOnAnimation(this);
-                return NOERROR;
-            }
-
-            AutoPtr<IView> nextView = mHost->GetChildAt(nextViewIndex);
-            Int32 nextViewHeight;
-            nextView->GetHeight(&nextViewHeight);
-            Int32 nextViewTop;
-            nextView->GetTop(&nextViewTop);
-            Int32 extraScroll = Elastos::Core::Math::Max(mHost->mListPadding->mBottom, mExtraScroll);
-            if (nextPos < mBoundPos) {
                 mHost->SmoothScrollBy(
-                    Elastos::Core::Math::Max(0, nextViewHeight + nextViewTop - extraScroll),
-                    mScrollDuration, TRUE);
-                mLastSeenPos = nextPos;
-                mHost->PostOnAnimation(this);
-            }
-            else  {
-                if (nextViewTop > extraScroll) {
-                    mHost->SmoothScrollBy(nextViewTop - extraScroll, mScrollDuration, TRUE);
+                        lastViewHeight - lastViewPixelsShowing + extraScroll, mScrollDuration);
+                Int32 scrollBy = lastViewHeight - lastViewPixelsShowing + extraScroll;
+                mHost->SmoothScrollBy(scrollBy, mScrollDuration, true);
+
+                mLastSeenPos = lastPos;
+                if (lastPos < mTargetPos) {
+                    mHost->PostOnAnimation(this);
                 }
             }
-        }
-        break;
-    case MOVE_UP_POS:
-        {
-            if (firstPos == mLastSeenPos) {
+            break;
+        case MOVE_DOWN_BOUND: {
+                Int32 nextViewIndex = 1;
+                Int32 childCount;
+                mHost->GetChildCount(&childCount);
+
+                if (firstPos == mBoundPos || childCount <= nextViewIndex
+                        || firstPos + childCount >= mHost->mItemCount) {
+                    return NOERROR;
+                }
+
+                Int32 nextPos = firstPos + nextViewIndex;
+                if (nextPos == mLastSeenPos) {
+                    // No new views, let things keep going.
+                    mHost->PostOnAnimation(this);
+                    return NOERROR;
+                }
+
+                AutoPtr<IView> nextView;
+                mHost->GetChildAt(nextViewIndex, (IView**)&nextView);
+                Int32 nextViewHeight;
+                nextView->GetHeight(&nextViewHeight);
+                Int32 nextViewTop;
+                nextView->GetTop(&nextViewTop);
+                Int32 extraScroll = Elastos::Core::Math::Max(mHost->mListPadding->mBottom, mExtraScroll);
+                if (nextPos < mBoundPos) {
+                    mHost->SmoothScrollBy(
+                            Elastos::Core::Math::Max(0, nextViewHeight + nextViewTop - extraScroll),
+                            mScrollDuration, TRUE);
+                    mLastSeenPos = nextPos;
+                    mHost->PostOnAnimation(this);
+                }
+                else {
+                    if (nextViewTop > extraScroll) {
+                        mHost->SmoothScrollBy(nextViewTop - extraScroll, mScrollDuration, TRUE);
+                    }
+                }
+            }
+            break;
+        case MOVE_UP_POS: {
+                if (firstPos == mLastSeenPos) {
+                    // No new views, let things keep going.
+                    mHost->PostOnAnimation(this);
+                    return NOERROR;
+                }
+
+                AutoPtr<IView> firstView;
+                mHost->GetChildAt(0, (IView**)&firstView);
+                if (firstView == NULL) {
+                    return NOERROR;
+                }
+                Int32 firstViewTop;
+                firstView->GetTop(&firstViewTop);
+                Int32 extraScroll = firstPos > 0
+                        ? Elastos::Core::Math::Max(mExtraScroll, mHost->mListPadding->mTop) : mHost->mListPadding->mTop;
+
+                mHost->SmoothScrollBy(
+                        firstViewTop - extraScroll, mScrollDuration, TRUE);
+
+                mLastSeenPos = firstPos;
+
+                if (firstPos > mTargetPos) {
+                    mHost->PostOnAnimation(this);
+                }
+            }
+            break;
+        case MOVE_UP_BOUND: {
+                Int32 count;
+                mHost->GetChildCount(&count);
+                Int32 lastViewIndex = count - 2;
+                if (lastViewIndex < 0) {
+                    return NOERROR;
+                }
+
+                Int32 lastPos = firstPos + lastViewIndex;
+                if (lastPos == mLastSeenPos) {
+                    // No new views, let things keep going.
+                    mHost->PostOnAnimation(this);
+                    return NOERROR;
+                }
+
+                AutoPtr<IView> lastView;
+                mHost->GetChildAt(lastViewIndex, (IView**)&lastView);
+                Int32 lastViewHeight;
+                lastView->GetHeight(&lastViewHeight);
+                Int32 lastViewTop;
+                lastView->GetTop(&lastViewTop);
+                Int32 lastViewPixelsShowing = listHeight - lastViewTop;
+                Int32 extraScroll = Elastos::Core::Math::Max(mHost->mListPadding->mTop, mExtraScroll);
+                mLastSeenPos = lastPos;
+                if (lastPos > mBoundPos) {
+                    mHost->SmoothScrollBy(
+                            -(lastViewPixelsShowing - extraScroll), mScrollDuration, TRUE);
+                    mHost->PostOnAnimation(this);
+                }
+                else {
+                    Int32 bottom = listHeight - mExtraScroll;
+                    Int32 lastViewBottom = lastViewTop + lastViewHeight;
+                    if (bottom > lastViewBottom) {
+                        mHost->SmoothScrollBy(
+                                -(bottom - lastViewBottom), mScrollDuration, TRUE);
+                    }
+                }
+            }
+            break;
+
+        case MOVE_OFFSET: {
+            if (mLastSeenPos == firstPos) {
                 // No new views, let things keep going.
                 mHost->PostOnAnimation(this);
                 return NOERROR;
             }
-
-            AutoPtr<IView> firstView = mHost->GetChildAt(0);
-            if (firstView == NULL) {
-                return NOERROR;
-            }
-            Int32 firstViewTop;
-            firstView->GetTop(&firstViewTop);
-            Int32 extraScroll = firstPos > 0
-                ? Elastos::Core::Math::Max(mExtraScroll, mHost->mListPadding->mTop) : mHost->mListPadding->mTop;
-
-            mHost->SmoothScrollBy(
-                firstViewTop - extraScroll, mScrollDuration, TRUE);
 
             mLastSeenPos = firstPos;
 
-            if (firstPos > mTargetPos) {
-                mHost->PostOnAnimation(this);
+            Int32 childCount;
+            mHost->GetChildCount(&childCount);
+            Int32 position = mTargetPos;
+            Int32 lastPos = firstPos + childCount - 1;
+
+            Int32 viewTravelCount = 0;
+            if (position < firstPos) {
+                viewTravelCount = firstPos - position + 1;
             }
-        }
-        break;
-    case MOVE_UP_BOUND:
-        {
-            Int32 lastViewIndex = mHost->GetChildCount() - 2;
-            if (lastViewIndex < 0) {
-                return NOERROR;
+            else if (position > lastPos) {
+                viewTravelCount = position - lastPos;
             }
 
-            Int32 lastPos = firstPos + lastViewIndex;
-            if (lastPos == mLastSeenPos) {
-                // No new views, let things keep going.
-                mHost->PostOnAnimation(this);
-                return NOERROR;
-            }
+            // Estimate how many screens we should travel
+            Float screenTravelCount = (Float) viewTravelCount / childCount;
 
-            AutoPtr<IView> lastView = mHost->GetChildAt(lastViewIndex);
-            Int32 lastViewHeight;
-            lastView->GetHeight(&lastViewHeight);
-            Int32 lastViewTop;
-            lastView->GetTop(&lastViewTop);
-            Int32 lastViewPixelsShowing = listHeight - lastViewTop;
-            Int32 extraScroll = Elastos::Core::Math::Max(mHost->mListPadding->mTop, mExtraScroll);
-            mLastSeenPos = lastPos;
-            if (lastPos > mBoundPos) {
-                mHost->SmoothScrollBy(
-                    -(lastViewPixelsShowing - extraScroll),
-                    mScrollDuration, TRUE);
+            Float modifier = Elastos::Core::Math::Min(Elastos::Core::Math::Abs(screenTravelCount), 1.0f);
+            Int32 height;
+            mHost->GetHeight(&height);
+            if (position < firstPos) {
+                Int32 distance = (Int32) (-height * modifier);
+                Int32 duration = (Int32) (mScrollDuration * modifier);
+                mHost->SmoothScrollBy(distance, duration, TRUE);
+                mHost->PostOnAnimation(this);
+            }
+            else if (position > lastPos) {
+                Int32 distance = (Int32) (height * modifier);
+                Int32 duration = (Int32) (mScrollDuration * modifier);
+                mHost->SmoothScrollBy(distance, duration, TRUE);
                 mHost->PostOnAnimation(this);
             }
             else {
-                Int32 bottom = listHeight - mExtraScroll;
-                Int32 lastViewBottom = lastViewTop + lastViewHeight;
-                if (bottom > lastViewBottom) {
-                    mHost->SmoothScrollBy(
-                        -(bottom - lastViewBottom), mScrollDuration, TRUE);
-                }
+                // On-screen, just scroll.
+                AutoPtr<IView> view;
+                mHost->GetChildAt(position - firstPos, (IView**)&view);
+                Int32 targetTop;
+                view->GetTop(&targetTop);
+                Int32 distance = targetTop - mOffsetFromTop;
+                Int32 duration = (Int32) (mScrollDuration *
+                        ((Float) Elastos::Core::Math::Abs(distance) / height));
+                mHost->SmoothScrollBy(distance, duration, TRUE);
             }
-        }
-        break;
-
-    case MOVE_OFFSET:
-    {
-        if (mLastSeenPos == firstPos) {
-            // No new views, let things keep going.
-            mHost->PostOnAnimation(this);
-            return NOERROR;
+            break;
         }
 
-        mLastSeenPos = firstPos;
-
-        Int32 childCount = mHost->GetChildCount();
-        Int32 position = mTargetPos;
-        Int32 lastPos = firstPos + childCount - 1;
-
-        Int32 viewTravelCount = 0;
-        if (position < firstPos) {
-            viewTravelCount = firstPos - position + 1;
-        } else if (position > lastPos) {
-            viewTravelCount = position - lastPos;
-        }
-
-        // Estimate how many screens we should travel
-        Float screenTravelCount = (Float) viewTravelCount / childCount;
-
-        Float modifier = Elastos::Core::Math::Min(Elastos::Core::Math::Abs(screenTravelCount), 1.0f);
-        if (position < firstPos) {
-            Int32 distance = (Int32) (-mHost->GetHeight() * modifier);
-            Int32 duration = (Int32) (mScrollDuration * modifier);
-            mHost->SmoothScrollBy(distance, duration, TRUE);
-            mHost->PostOnAnimation(this);
-        } else if (position > lastPos) {
-            Int32 distance = (Int32) (mHost->GetHeight() * modifier);
-            Int32 duration = (Int32) (mScrollDuration * modifier);
-            mHost->SmoothScrollBy(distance, duration, TRUE);
-            mHost->PostOnAnimation(this);
-        } else {
-            // On-screen, just scroll.
-            Int32 targetTop;
-            mHost->GetChildAt(position - firstPos)->GetTop(&targetTop);
-            Int32 distance = targetTop - mOffsetFromTop;
-            Int32 duration = (Int32) (mScrollDuration *
-                ((Float) Elastos::Core::Math::Abs(distance) / mHost->GetHeight()));
-            mHost->SmoothScrollBy(distance, duration, TRUE);
-        }
-        break;
-    }
-
-    default:
-        break;
+        default:
+            break;
     }
 
     return NOERROR;
 }
 
 //==============================================================================
-//          AbsListView::AdapterDataSetObserver
+//          AbsListView::WindowRunnnable
 //==============================================================================
 
-AbsListView::AdapterDataSetObserver::AdapterDataSetObserver(
+AbsListView::WindowRunnnable::WindowRunnnable(
     /* [in] */ AbsListView* host)
-    : AdapterView::AdapterDataSetObserver(host)
-    , mOwner(host)
-{
-}
-
-ECode AbsListView::AdapterDataSetObserver::OnChanged()
-{
-    FAIL_RETURN(AdapterView::AdapterDataSetObserver::OnChanged());
-    if (mOwner->mFastScroller != NULL) {
-        mOwner->mFastScroller->OnSectionsChanged();
-    }
-    return NOERROR;
-}
-
-ECode AbsListView::AdapterDataSetObserver::OnInvalidated()
-{
-    FAIL_RETURN(AdapterView::AdapterDataSetObserver::OnInvalidated());
-    if (mOwner->mFastScroller != NULL) {
-        mOwner->mFastScroller->OnSectionsChanged();
-    }
-    return NOERROR;
-}
-
-//==============================================================================
-//          AbsListView::MultiChoiceModeWrapper
-//==============================================================================
-AbsListView::MultiChoiceModeWrapper::MultiChoiceModeWrapper(
-    /* [in] */ AbsListView* host) : mHost(host)
+    : mHost(host)
+    , mOriginalAttachCount(0)
 {}
 
-
-ECode AbsListView::MultiChoiceModeWrapper::SetWrapped(
-    /* [in] */ IMultiChoiceModeListener* wrapped)
+void AbsListView::WindowRunnnable::RememberWindowAttachCount()
 {
-    mWrapped = wrapped;
+    mOriginalAttachCount = mHost->GetWindowAttachCount();
+}
+
+Boolean AbsListView::WindowRunnnable::SameWindow()
+{
+    return mHost->GetWindowAttachCount() == mOriginalAttachCount;
+}
+
+//==============================================================================
+//          AbsListView::PerformClick
+//==============================================================================
+
+AbsListView::PerformClick::PerformClick (
+    /* [in] */ AbsListView* host)
+    : WindowRunnnable(host)
+    , mClickMotionPosition(0)
+{}
+
+ECode AbsListView::PerformClick::Run()
+{
+    // The data has changed since we posted this action in the event queue,
+    // bail out before bad things happen
+    if (mHost->mDataChanged) {
+        return NOERROR;
+    }
+
+    AutoPtr<IListAdapter> adapter = mHost->mAdapter;
+    Int32 motionPosition = mClickMotionPosition;
+    if (adapter != NULL && mHost->mItemCount > 0
+        && motionPosition != IAdapterView::INVALID_POSITION) {
+        Int32 count;
+        IAdapter::Probe(adapter)->GetCount(&count);
+        if (motionPosition < count && SameWindow()) {
+            AutoPtr<IView> view;
+            mHost->GetChildAt(motionPosition - mHost->mFirstPosition, (IView**)&view);
+            // If there is no view, something bad happened (the view scrolled off the
+            // screen, etc.) and we should cancel the click
+            if (view != NULL) {
+                Int64 id;
+                IAdapter::Probe(adapter)->GetItemId(motionPosition, &id);
+                Boolean res;
+                mHost->PerformItemClick(view, motionPosition, id, &res);
+            }
+        }
+    }
     return NOERROR;
 }
 
-ECode AbsListView::MultiChoiceModeWrapper::HasWrappedCallback(
-    /* [out] */ Boolean* result)
+//==============================================================================
+//          AbsListView::CheckForLongPress
+//==============================================================================
+
+AbsListView::CheckForLongPress::CheckForLongPress (
+    /* [in] */ AbsListView* host)
+    : WindowRunnnable(host)
+{}
+
+ECode AbsListView::CheckForLongPress::Run()
 {
-    *result = mWrapped != NULL;
+    Int32 motionPosition = mHost->mMotionPosition;
+    AutoPtr<IView> child;
+    mHost->GetChildAt(motionPosition - mHost->mFirstPosition, (IView**)&child);
+    if (child != NULL) {
+        Int32 longPressPosition = mHost->mMotionPosition;
+        Int64 longPressId;
+        IAdapter::Probe(mHost->mAdapter)->GetItemId(mHost->mMotionPosition, &longPressId);
+
+        Boolean handled = FALSE;
+        if (SameWindow() && !mHost->mDataChanged) {
+            handled = mHost->PerformLongPress(child, longPressPosition, longPressId);
+        }
+        if (handled) {
+            mHost->mTouchMode = AbsListView::TOUCH_MODE_REST;
+            mHost->SetPressed(FALSE);
+            child->SetPressed(FALSE);
+        }
+        else {
+            mHost->mTouchMode = AbsListView::TOUCH_MODE_DONE_WAITING;
+        }
+    }
     return NOERROR;
 }
 
-ECode AbsListView::MultiChoiceModeWrapper::OnCreateActionMode(
-    /* [in] */ IActionMode* mode,
-    /* [in] */ IMenu* menu,
+//==============================================================================
+//          AbsListView::CheckForKeyLongPress
+//==============================================================================
+
+AbsListView::CheckForKeyLongPress::CheckForKeyLongPress (
+    /* [in] */ AbsListView* host)
+    : WindowRunnnable(host)
+{}
+
+ECode AbsListView::CheckForKeyLongPress::Run()
+{
+    Boolean res;
+    if ((mHost->IsPressed(&res), res) && mHost->mSelectedPosition >= 0) {
+        Int32 index = mHost->mSelectedPosition - mHost->mFirstPosition;
+        AutoPtr<IView> child;
+        mHost->GetChildAt(index, (IView**)&child);
+        if (!mHost->mDataChanged) {
+            Boolean handled = FALSE;
+            if (SameWindow()) {
+                handled = mHost->PerformLongPress(
+                        child, mHost->mSelectedPosition, mHost->mSelectedRowId);
+            }
+            if (handled) {
+                mHost->SetPressed(FALSE);
+                child->SetPressed(FALSE);
+            }
+        }
+        else {
+            mHost->SetPressed(FALSE);
+            if (child != NULL) {
+                child->SetPressed(FALSE);
+            }
+        }
+    }
+
+    return NOERROR;
+}
+
+//==============================================================================
+//          AbsListView::CheckForTap
+//==============================================================================
+
+AbsListView::CheckForTap::CheckForTap(
+    /* [in] */ AbsListView* host)
+    : mX(0.f)
+    , mY(0.f)
+    , mHost(host)
+{}
+
+ECode AbsListView::CheckForTap::Run()
+{
+    if (mHost->mTouchMode == mHost->TOUCH_MODE_DOWN) {
+        mHost->mTouchMode = mHost->TOUCH_MODE_TAP;
+        AutoPtr<IView> child;
+        mHost->GetChildAt(mHost->mMotionPosition - mHost->mFirstPosition, (IView**)&child);
+
+        Boolean hasFocusable;
+        if (child != NULL && (child->HasFocusable(&hasFocusable), !hasFocusable)) {
+            mHost->mLayoutMode = mHost->LAYOUT_NORMAL;
+            if (!mHost->mDataChanged) {
+                child->SetPressed(TRUE);
+                mHost->SetPressed(TRUE);
+                mHost->LayoutChildren();
+                mHost->PositionSelector(mHost->mMotionPosition, child);
+                mHost->RefreshDrawableState();
+
+                Int32 longPressTimeout = ViewConfiguration::GetLongPressTimeout();
+                Boolean longClickable;
+                mHost->IsLongClickable(&longClickable);
+                if (mHost->mSelector != NULL) {
+                    AutoPtr<IDrawable> d;
+                    mHost->mSelector->GetCurrent((IDrawable**)&d);
+                    if (d != NULL && ITransitionDrawable::Probe(d) != NULL) {
+                        AutoPtr<ITransitionDrawable> td = ITransitionDrawable::Probe(d);
+                        if (longClickable) {
+                            td->StartTransition(longPressTimeout);
+                        }
+                        else {
+                            td->ResetTransition();
+                        }
+                    }
+                    mHost->mSelector->SetHotspot(mX, mY);
+                }
+
+                if (longClickable) {
+                    if (mHost->mPendingCheckForLongPress == NULL) {
+                        mHost->mPendingCheckForLongPress =
+                            new AbsListView::CheckForLongPress(mHost);
+                    }
+
+                    mHost->mPendingCheckForLongPress->RememberWindowAttachCount();
+                    Boolean res;
+                    mHost->PostDelayed(mHost->mPendingCheckForLongPress, longPressTimeout, &res);
+                }
+                else {
+                    mHost->mTouchMode = mHost->TOUCH_MODE_DONE_WAITING;
+                }
+            }
+            else {
+                mHost->mTouchMode = mHost->TOUCH_MODE_DONE_WAITING;
+            }
+        }
+    }
+
+    return NOERROR;
+}
+
+//==============================================================================
+//          AbsListView::FlingRunnableInner
+//==============================================================================
+
+AbsListView::FlingRunnableInner::FlingRunnableInner(
+    /* [in] */ FlingRunnable* host,
+    /* [in] */ AbsListView* mainHost)
+    : mHost(host)
+    , mMainHost(mainHost)
+{
+}
+
+ECode AbsListView::FlingRunnableInner::Run()
+{
+    Int32 activeId = mMainHost->mActivePointerId;
+
+    AutoPtr<VelocityTracker> vt = mMainHost->mVelocityTracker;
+    AutoPtr<IOverScroller> scroller = mHost->mScroller;
+
+    if (vt == NULL || activeId == AbsListView::INVALID_POINTER) {
+        return NOERROR;
+    }
+
+    vt->ComputeCurrentVelocity(1000, mMainHost->mMaximumVelocity);
+    Float y;
+    vt->GetYVelocity(activeId, &y);
+    Float yvel = -y;
+
+    Boolean res;
+    if (Elastos::Core::Math::Abs(yvel) >= mMainHost->mMinimumVelocity
+            && (scroller->IsScrollingInDirection(0, yvel, &res), res)) {
+        // Keep the fling alive a little longer
+        mMainHost->PostDelayed(this, FlingRunnable::FLYWHEEL_TIMEOUT, &res);
+    }
+    else {
+        mHost->EndFling();
+        mMainHost->mTouchMode = AbsListView::TOUCH_MODE_SCROLL;
+        mMainHost->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_TOUCH_SCROLL);
+    }
+    return NOERROR;
+}
+
+//==============================================================================
+//          AbsListView::FlingRunnableInner
+//==============================================================================
+
+AbsListView::FlingRunnable::FlingRunnable(
+    /* [in] */ AbsListView* host)
+    : mHost(host)
+    , mLastFlingY(0)
+{
+    AutoPtr<IContext> context;
+    mHost->GetContext((IContext**)&context);
+    COverScroller::New(context, (IOverScroller**)&mScroller);
+    mCheckFlywheel = new FlingRunnableInner(this, mHost);
+}
+
+void AbsListView::FlingRunnable::Start(
+    /* [in] */ Int32 initialVelocity)
+{
+    Int32 initialY = initialVelocity < 0 ? Elastos::Core::Math::INT32_MAX_VALUE : 0;
+    mLastFlingY = initialY;
+    AutoPtr<OverScroller> over = (OverScroller*)mScroller.Get();
+    over->SetInterpolator(NULL);
+    mScroller->Fling(0, initialY, 0, initialVelocity,
+            0, Elastos::Core::Math::INT32_MAX_VALUE, 0, Elastos::Core::Math::INT32_MAX_VALUE);
+    mHost->mTouchMode = AbsListView::TOUCH_MODE_FLING;
+
+    mHost->PostOnAnimation(this);
+
+    if (AbsListView::PROFILE_FLINGING) {
+        if (!mHost->mFlingProfilingStarted) {
+            //Debug.startMethodTracing("AbsListViewFling");
+            mHost->mFlingProfilingStarted = TRUE;
+        }
+    }
+
+    if (mHost->mFlingStrictSpan == NULL) {
+        assert(0 && "TODO");
+        // CStrictMode::EnterCriticalSpan(String("AbsListView-fling"),
+        //         (IStrictModeSpan**)&mHost->mFlingStrictSpan);
+    }
+}
+
+void AbsListView::FlingRunnable::StartSpringback()
+{
+    Boolean res;
+    if (mScroller->SpringBack(0, mHost->mScrollY, 0, 0, 0, 0, &res), res) {
+        mHost->mTouchMode = AbsListView::TOUCH_MODE_OVERFLING;
+        mHost->Invalidate();
+        mHost->PostOnAnimation(this);
+    }
+    else {
+        mHost->mTouchMode = AbsListView::TOUCH_MODE_REST;
+        mHost->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
+    }
+}
+
+void AbsListView::FlingRunnable::StartOverfling(
+    /* [in] */ Int32 initialVelocity)
+{
+    AutoPtr<OverScroller> over = (OverScroller*)mScroller.Get();
+    over->SetInterpolator(NULL);
+    Int32 height;
+    mHost->GetHeight(&height);
+    mScroller->Fling(0, mHost->mScrollY, 0, initialVelocity, 0, 0,
+            Elastos::Core::Math::INT32_MIN_VALUE, Elastos::Core::Math::INT32_MAX_VALUE, 0, height);
+    mHost->mTouchMode = AbsListView::TOUCH_MODE_OVERFLING;
+    mHost->Invalidate();
+    mHost->PostOnAnimation(this);
+}
+
+void AbsListView::FlingRunnable::EdgeReached(
+    /* [in] */ Int32 delta)
+{
+    mScroller->NotifyVerticalEdgeReached(
+            mHost->mScrollY, 0, mHost->mOverflingDistance);
+    Int32 overscrollMode;
+    mHost->GetOverScrollMode(&overscrollMode);
+    if (overscrollMode == IView::OVER_SCROLL_ALWAYS ||
+            (overscrollMode == IView::OVER_SCROLL_IF_CONTENT_SCROLLS
+            && !mHost->ContentFits())) {
+        mHost->mTouchMode = AbsListView::TOUCH_MODE_OVERFLING;
+        Float velocity;
+        mScroller->GetCurrVelocity(&velocity);
+        Int32 vel = (Int32)velocity;
+        if (delta > 0) {
+            mHost->mEdgeGlowTop->OnAbsorb(vel);
+        }
+        else {
+            mHost->mEdgeGlowBottom->OnAbsorb(vel);
+        }
+    }
+    else {
+        mHost->mTouchMode = AbsListView::TOUCH_MODE_REST;
+        if (mHost->mPositionScroller != NULL) {
+            mHost->mPositionScroller->Stop();
+        }
+    }
+
+    mHost->Invalidate();
+    mHost->PostOnAnimation(this);
+}
+
+void AbsListView::FlingRunnable::StartScroll(
+    /* [in] */ Int32 distance,
+    /* [in] */ Int32 duration,
+    /* [in] */ Boolean linear)
+{
+    Int32 initialY = distance < 0 ? Elastos::Core::Math::INT32_MAX_VALUE : 0;
+    mLastFlingY = initialY;
+    AutoPtr<OverScroller> over = (OverScroller*)mScroller.Get();
+    over->SetInterpolator(linear ? AbsListView::sLinearInterpolator : NULL);
+    mScroller->StartScroll(0, initialY, 0, distance, duration);
+    mHost->mTouchMode = AbsListView::TOUCH_MODE_FLING;
+    mHost->PostOnAnimation(this);
+}
+
+void AbsListView::FlingRunnable::EndFling()
+{
+    mHost->mTouchMode = AbsListView::TOUCH_MODE_REST;
+
+    Boolean res;
+    mHost->RemoveCallbacks(this, &res);
+    mHost->RemoveCallbacks(mCheckFlywheel, &res);
+
+    mHost->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
+    mHost->ClearScrollingCache();
+
+    mScroller->AbortAnimation();
+
+    if (mHost->mFlingStrictSpan != NULL) {
+        mHost->mFlingStrictSpan->Finish();
+        mHost->mFlingStrictSpan = NULL;
+    }
+}
+
+void AbsListView::FlingRunnable::FlywheelTouch()
+{
+    Boolean res;
+    mHost->PostDelayed(mCheckFlywheel, FLYWHEEL_TIMEOUT, &res);
+}
+
+ECode AbsListView::FlingRunnable::Run()
+{
+    switch(mHost->mTouchMode) {
+        default:
+            EndFling();
+            return NOERROR;
+        case AbsListView::TOUCH_MODE_SCROLL: {
+            Boolean res;
+            if (mScroller->IsFinished(&res), res) {
+                return NOERROR;
+            }
+        }
+        case AbsListView::TOUCH_MODE_FLING: {
+            if (mHost->mDataChanged) {
+                mHost->LayoutChildren();
+            }
+
+            Int32 count;
+            mHost->GetChildCount(&count);
+            if (mHost->mItemCount == 0 || count == 0) {
+                EndFling();
+                return NOERROR;
+            }
+
+            Boolean more;
+            mScroller->ComputeScrollOffset(&more);
+            Int32 y;
+            mScroller->GetCurrY(&y);
+            // Flip sign to convert finger direction to list items direction
+            // (e.g. finger moving down means list is moving towards the top)
+            Int32 delta = mLastFlingY - y;
+
+            // Pretend that each frame of a fling scroll is a touch scroll
+            if (delta > 0) {
+                // List is moving towards the top. Use first view as mMotionPosition
+                mHost->mMotionPosition = mHost->mFirstPosition;
+                AutoPtr<IView> firstView;
+                mHost->GetChildAt(0, (IView**)&firstView);
+                firstView->GetTop(&(mHost->mMotionViewOriginalTop));
+
+                // Don't fling more than 1 screen
+                Int32 h;
+                mHost->GetHeight(&h);
+                delta = Elastos::Core::Math::Min(h - mHost->mPaddingBottom - mHost->mPaddingTop - 1, delta);
+            }
+            else {
+                // List is moving towards the bottom. Use last view as mMotionPosition
+                Int32 offsetToLast = count - 1;
+                mHost->mMotionPosition = mHost->mFirstPosition + offsetToLast;
+
+                AutoPtr<IView> lastView;
+                mHost->GetChildAt(offsetToLast, (IView**)&lastView);
+                lastView->GetTop(&(mHost->mMotionViewOriginalTop));
+
+                // Don't fling more than 1 screen
+                Int32 h;
+                mHost->GetHeight(&h);
+                delta = Elastos::Core::Math::Max(-(h - mHost->mPaddingBottom - mHost->mPaddingTop - 1), delta);
+            }
+
+            // Check to see if we have bumped into the scroll limit
+            AutoPtr<IView> motionView;
+            mHost->GetChildAt(mHost->mMotionPosition - mHost->mFirstPosition, (IView**)&motionView);
+            Int32 oldTop = 0;
+            if (motionView != NULL) {
+                motionView->GetTop(&oldTop);
+            }
+
+            // Don't stop just because delta is zero (it could have been rounded)
+            Boolean atEdge = mHost->TrackMotionScroll(delta, delta);
+            Boolean atEnd = atEdge && (delta != 0);
+            if (atEnd) {
+                if (motionView != NULL) {
+                    // Tweak the scroll for how far we overshot
+                    Int32 top;
+                    motionView->GetTop(&top);
+                    Int32 overshoot = -(delta - (top - oldTop));
+                    mHost->OverScrollBy(0, overshoot, 0, mHost->mScrollY, 0, 0,
+                            0, mHost->mOverflingDistance, FALSE);
+                }
+                if (more) {
+                    EdgeReached(delta);
+                }
+                break;
+            }
+
+            if (more && !atEnd) {
+                if (atEdge) mHost->Invalidate();
+                mLastFlingY = y;
+                mHost->PostOnAnimation(this);
+            }
+            else {
+                EndFling();
+
+                if (AbsListView::PROFILE_FLINGING) {
+                    if (mHost->mFlingProfilingStarted) {
+                        // Debug.stopMethodTracing();
+                        mHost->mFlingProfilingStarted = FALSE;
+                    }
+
+                    if (mHost->mFlingStrictSpan != NULL) {
+                        mHost->mFlingStrictSpan->Finish();
+                        mHost->mFlingStrictSpan = NULL;
+                    }
+                }
+            }
+            break;
+        }
+
+        case TOUCH_MODE_OVERFLING: {
+            Boolean res;
+            if (mScroller->ComputeScrollOffset(&res), res) {
+                Int32 scrollY = mHost->mScrollY;
+                Int32 currY;
+                mScroller->GetCurrY(&currY);
+                Int32 deltaY = currY - scrollY;
+                if (mHost->OverScrollBy(0, deltaY, 0, scrollY, 0, 0,
+                        0, mHost->mOverflingDistance, FALSE)) {
+                    Boolean crossDown = scrollY <= 0 && currY > 0;
+                    Boolean crossUp = scrollY >= 0 && currY < 0;
+                    if (crossDown || crossUp) {
+                        Float _velocity;
+                        mScroller->GetCurrVelocity(&_velocity);
+                        Int32 velocity = (Int32)_velocity;
+                        if (crossUp) {
+                            velocity = -velocity;
+                        }
+
+                        // Don't flywheel from this; we're just continuing things.
+                        mScroller->AbortAnimation();
+                        Start(velocity);
+                    }
+                    else {
+                        StartSpringback();
+                    }
+                }
+                else {
+                    mHost->Invalidate();
+                    mHost->PostOnAnimation(this);
+                }
+            }
+            else {
+                EndFling();
+            }
+            break;
+        }
+    }
+
+    return NOERROR;
+}
+
+//==============================================================================
+//          AbsListView::InputConnectionWrapper
+//==============================================================================
+
+CAR_INTERFACE_IMPL(AbsListView::InputConnectionWrapper, Object, IInputConnection);
+
+AbsListView::InputConnectionWrapper::InputConnectionWrapper(
+    /* [in] */ AbsListView* host,
+    /* [in] */ IEditorInfo* outAttrs)
+    : mHost(host)
+    , mOutAttrs(outAttrs)
+{}
+
+AbsListView::InputConnectionWrapper::~InputConnectionWrapper()
+{}
+
+AutoPtr<IInputConnection> AbsListView::InputConnectionWrapper::GetTarget()
+{
+    if (mTarget == NULL) {
+        AutoPtr<IEditText> text = mHost->GetTextFilterInput();
+        IVIEW_PROBE(text)->OnCreateInputConnection(mOutAttrs, (IInputConnection**)&mTarget);
+    }
+    return mTarget;
+}
+
+ECode AbsListView::InputConnectionWrapper::ReportFullscreenMode(
+    /* [in] */ Boolean enabled,
     /* [out] */ Boolean* result)
 {
-    Boolean superResult;
-    mWrapped->OnCreateActionMode(mode, menu, &superResult);
-    if (superResult)
-    {
-        // Initialize checked graphic state?
-        mHost->SetLongClickable(FALSE);
+    VALIDATE_NOT_NULL(result);
+
+    // Use our own input connection, since it is
+    // the "real" one the IME is talking with.
+    return mHost->mDefInputConnection->ReportFullscreenMode(enabled, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::PerformEditorAction(
+    /* [in] */ Int32 editorAction,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+
+    // The editor is off in its own window; we need to be
+    // the one that does this.
+    if (editorAction == IEditorInfo::IME_ACTION_DONE) {
+        AutoPtr<IContext> context;
+        mHost->GetContext((IContext**)&context);
+        AutoPtr<IInputMethodManager> imm;
+        context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&imm);
+        if (imm != NULL) {
+            AutoPtr<IBinder> token;
+            mHost->GetWindowToken((IBinder**)&token);
+            Boolean res;
+            imm->HideSoftInputFromWindow(token, 0, &res);
+        }
         *result = TRUE;
         return NOERROR;
     }
-    *result = FALSE;
     return NOERROR;
 }
 
-ECode AbsListView::MultiChoiceModeWrapper::OnPrepareActionMode(
-    /* [in] */ IActionMode* mode,
-    /* [in] */ IMenu* menu,
+ECode AbsListView::InputConnectionWrapper::SendKeyEvent(
+    /* [in] */ IKeyEvent* event,
     /* [out] */ Boolean* result)
 {
-    return mWrapped->OnPrepareActionMode(mode, menu, result);
+    VALIDATE_NOT_NULL(result);
+
+    // Use our own input connection, since the filter
+    // text view may not be shown in a window so has
+    // no ViewAncestor to dispatch events with.
+    return mHost->mDefInputConnection->SendKeyEvent(event, result);
 }
 
-ECode AbsListView::MultiChoiceModeWrapper::OnActionItemClicked(
-    /* [in] */ IActionMode* mode,
-    /* [in] */ IMenuItem* item,
-    /* [out] */ Boolean* result)
+ECode AbsListView::InputConnectionWrapper::GetTextBeforeCursor(
+    /* [in] */ Int32 length,
+    /* [in] */ Int32 flags,
+    /* [out] */ ICharSequence** seq)
 {
-    return mWrapped->OnActionItemClicked(mode, item, result);
-}
+    VALIDATE_NOT_NULL(seq);
 
-ECode AbsListView::MultiChoiceModeWrapper::OnDestroyActionMode(
-    /* [in] */ IActionMode* mode)
-{
-    mWrapped->OnDestroyActionMode(mode);
-    mHost->mChoiceActionMode = NULL;
-
-    // Ending selection mode means deselecting everything.
-    mHost->ClearChoices();
-
-    mHost->mDataChanged = TRUE;
-    mHost->RememberSyncState();
-    mHost->RequestLayout();
-
-    mHost->SetLongClickable(TRUE);
-    return NOERROR;
-}
-
-ECode AbsListView::MultiChoiceModeWrapper::OnItemCheckedStateChanged(
-    /* [in] */ IActionMode* mode,
-    /* [in] */ Int32 position,
-    /* [in] */ Int64 id,
-    /* [in] */ Boolean checked)
-{
-    mWrapped->OnItemCheckedStateChanged(mode, position, id, checked);
-
-    // If there are no items selected we no longer need the selection mode.
-    if (mHost->GetCheckedItemCount() == 0) {
-        mode->Finish();
+    if (mTarget == NULL) {
+        AutoPtr<ICharSequence> cs = CoreUtils::Convert("");
+        *seq = cs;
+        REFCOUNT_ADD(*seq);
+        return NOERROR;
     }
+
+    return mTarget->GetTextBeforeCursor(length, flags, seq);
+}
+
+ECode AbsListView::InputConnectionWrapper::GetTextAfterCursor(
+    /* [in] */ Int32 length,
+    /* [in] */ Int32 flags,
+    /* [out] */ ICharSequence** seq)
+{
+    VALIDATE_NOT_NULL(seq);
+
+    if (mTarget == NULL) {
+        AutoPtr<ICharSequence> cs = CoreUtils::Convert("");
+        *seq = cs;
+        REFCOUNT_ADD(*seq);
+        return NOERROR;
+    }
+
+    return mTarget->GetTextAfterCursor(length, flags, seq);
+}
+
+ECode AbsListView::InputConnectionWrapper::GetSelectedText(
+    /* [in] */ Int32 flags,
+    /* [out] */ ICharSequence** seq)
+{
+    VALIDATE_NOT_NULL(seq);
+
+    if (mTarget == NULL) {
+        AutoPtr<ICharSequence> cs = CoreUtils::Convert("");
+        *seq = cs;
+        REFCOUNT_ADD(*seq);
+        return NOERROR;
+    }
+
+    return mTarget->GetSelectedText(flags, seq);
+}
+
+ECode AbsListView::InputConnectionWrapper::GetCursorCapsMode(
+    /* [in] */ Int32 reqModes,
+    /* [out] */ Int32* afterLength)
+{
+    VALIDATE_NOT_NULL(afterLength);
+
+    if (mTarget == NULL) {
+        *afterLength = IInputType::TYPE_TEXT_FLAG_CAP_SENTENCES;
+    }
+    return mTarget->GetCursorCapsMode(reqModes, afterLength);
+}
+
+ECode AbsListView::InputConnectionWrapper::GetExtractedText(
+    /* [in] */ IExtractedTextRequest* request,
+    /* [in] */ Int32 flags,
+    /* [out] */ IExtractedText** text)
+{
+    VALIDATE_NOT_NULL(text);
+    return GetTarget()->GetExtractedText(request, flags, text);
+}
+
+ECode AbsListView::InputConnectionWrapper::DeleteSurroundingText(
+    /* [in] */ Int32 beforeLength,
+    /* [in] */ Int32 afterLength,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->DeleteSurroundingText(beforeLength, afterLength, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::SetComposingText(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ Int32 newCursorPosition,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->SetComposingText(text, newCursorPosition, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::SetComposingRegion(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->SetComposingRegion(start, end, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::FinishComposingText(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    Boolean res;
+    *result = mTarget == NULL || (mTarget->FinishComposingText(&res), res);
     return NOERROR;
 }
 
-//==============================================================================
-//          AbsListView::RecycleBin
-//==============================================================================
+ECode AbsListView::InputConnectionWrapper::CommitText(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ Int32 newCursorPosition,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->CommitText(text, newCursorPosition, result);
+}
 
-AbsListView::RecycleBin::RecycleBin(
-    /* [in] */ AbsListView* host)
-    : mFirstActivePosition(0)
-    , mViewTypeCount(0)
+ECode AbsListView::InputConnectionWrapper::CommitCompletion(
+    /* [in] */ ICompletionInfo* text,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->CommitCompletion(text, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::CommitCorrection(
+    /* [in] */ ICorrectionInfo* correctionInfo,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->CommitCorrection(correctionInfo, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::SetSelection(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->SetSelection(start, end, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::PerformContextMenuAction(
+    /* [in] */ Int32 id,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->PerformContextMenuAction(id, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::BeginBatchEdit(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->BeginBatchEdit(result);
+}
+
+ECode AbsListView::InputConnectionWrapper::EndBatchEdit(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->EndBatchEdit(result);
+}
+
+ECode AbsListView::InputConnectionWrapper::ClearMetaKeyStates(
+    /* [in] */ Int32 states,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->ClearMetaKeyStates(states, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::PerformPrivateCommand(
+    /* [in] */ const String& action,
+    /* [in] */ IBundle* data,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->PerformPrivateCommand(action, data, result);
+}
+
+ECode AbsListView::InputConnectionWrapper::RequestCursorUpdates(
+    /* [in] */ Int32 cursorUpdateMode,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return GetTarget()->RequestCursorUpdates(cursorUpdateMode, result);
+}
+
+//==============================================================================
+//          AbsListView::PositionScrollerStartRunnable
+//==============================================================================
+AbsListView::PositionScrollerStartRunnable::PositionScrollerStartRunnable(
+    /* [in] */ Int32 paramsCount,
+    /* [in] */ Int32 param1,
+    /* [in] */ Int32 param2,
+    /* [in] */ Int32 param3,
+    /* [in] */ PositionScroller* host)
+    : mParamsCount(paramsCount)
+    , mParam1(param1)
+    , mParam2(param1)
+    , mParam3(param1)
     , mHost(host)
 {
-    mActiveViews = ArrayOf<IView*>::Alloc(0);
 }
 
-AbsListView::RecycleBin::~RecycleBin()
+ECode AbsListView::PositionScrollerStartRunnable::Run()
 {
-    mScrapViews = NULL;
-    mCurrentScrap = NULL;
-    mSkippedScrap = NULL;
-
-    mTransientStateViews = NULL;
-}
-
-ECode AbsListView::RecycleBin::SetViewTypeCount(
-    /* [in] */ Int32 viewTypeCount)
-{
-    if (viewTypeCount < 1) {
-        Logger::E("AbsListView::RecycleBin", "Can't have a viewTypeCount < 1");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    switch(mParamsCount) {
+        case 1:
+            mHost->Start(mParam1);
+            break;
+        case 2:
+            mHost->Start(mParam1, mParam2);
+            break;
+        case 3:
+            mHost->StartWithOffset(mParam1, mParam2, mParam3);
+            break;
+        default:
+            break;
     }
-    //noinspection unchecked
-    AutoPtr<ArrayOf<ViewList* > > scrapViews = ArrayOf<ViewList* >::Alloc(viewTypeCount);
-    for (Int32 i = 0; i < viewTypeCount; i++) {
-        AutoPtr<ViewList> list = new ViewList();
-        scrapViews->Set(i, list);
-    }
-
-    mScrapViews = scrapViews;
-    mViewTypeCount = viewTypeCount;
-    mCurrentScrap = (*mScrapViews)[0];
-
     return NOERROR;
 }
 
-void AbsListView::RecycleBin::MarkChildrenDirty()
+//==============================================================================
+//          AbsListView::SetFastScrollRunnable
+//==============================================================================
+AbsListView::SetFastScrollRunnable::SetFastScrollRunnable(
+    /* [in] */ AbsListView* host,
+    /* [in] */ Boolean res,
+    /* [in] */ Int32 id)
+    : mHost(host)
+    , mRes(res)
+    , mId(id)
+{}
+
+ECode AbsListView::SetFastScrollRunnable::Run()
 {
-    if (mViewTypeCount == 1) {
-        ViewListIterator iter = mCurrentScrap->Begin();
-        for (; iter != mCurrentScrap->End(); ++iter) {
-            (*iter)->ForceLayout();
-        }
+    switch (mId) {
+        case 0:
+            mHost->SetFastScrollerEnabledUiThread(mRes);
+            break;
+        case 1:
+            mHost->SetFastScrollerAlwaysVisibleUiThread(mRes);
+        default:
+            break;
     }
-    else {
-        for (Int32 i = 0; i < mViewTypeCount; i++) {
-            AutoPtr<ViewList> scrap = (*mScrapViews)[i];
-            ViewListIterator iter = scrap->Begin();
-            for (; iter != scrap->End(); ++iter) {
-                (*iter)->ForceLayout();
-            }
-        }
-    }
-    if (mTransientStateViews != NULL) {
-        ViewMapIterator it = mTransientStateViews->Begin();
-        for (; it != mTransientStateViews->End(); it++) {
-            it->mSecond->ForceLayout();
-        }
-    }
+
+    return NOERROR;
 }
-
-Boolean AbsListView::RecycleBin::ShouldRecycleViewType(
-    /* [in] */ Int32 viewType)
-{
-    return viewType >= 0;
-}
-
-/**
- * Clears the scrap heap.
- */
-void AbsListView::RecycleBin::Clear()
-{
-    if (mViewTypeCount == 1) {
-        ViewListReverseIterator rit = mCurrentScrap->RBegin();
-        for (; rit != mCurrentScrap->REnd(); ++rit) {
-            mHost->RemoveDetachedView((*rit), FALSE);
-        }
-        mCurrentScrap->Clear();
-    }
-    else {
-        for (Int32 i = 0; i < mViewTypeCount; i++) {
-            AutoPtr<ViewList> scrap = (*mScrapViews)[i];
-            ViewListReverseIterator rit = scrap->RBegin();
-            for (; rit != scrap->REnd(); ++rit) {
-                mHost->RemoveDetachedView((*rit), FALSE);
-            }
-            scrap->Clear();
-        }
-    }
-    if (mTransientStateViews != NULL) {
-        mTransientStateViews->Clear();
-    }
-}
-
-/**
- * Fill ActiveViews with all of the children of the AbsListView.
- *
- * @param childCount The minimum number of views mActiveViews should hold
- * @param firstActivePosition The position of the first view that will be stored in
- *        mActiveViews
- */
-void AbsListView::RecycleBin::FillActiveViews(
-    /* [in] */ Int32 childCount,
-    /* [in] */ Int32 firstActivePosition)
-{
-    if (mActiveViews->GetLength() < childCount) {
-        mActiveViews = ArrayOf<IView*>::Alloc(childCount);
-    }
-
-    mFirstActivePosition = firstActivePosition;
-
-    for (Int32 i = 0; i < childCount; i++) {
-        AutoPtr<IView> child = mHost->GetChildAt(i);
-        AutoPtr<IAbsListViewLayoutParams> lp;
-        child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-        // Don't put header or footer views into the scrap heap
-
-        if(lp != NULL)
-        {
-            Int32 viewType;
-            lp->GetViewType(&viewType);
-            if(viewType != IAdapterView::ITEM_VIEW_TYPE_HEADER_OR_FOOTER) {
-                // Note:  We do place AdapterView.ITEM_VIEW_TYPE_IGNORE in active views.
-                //        However, we will NOT place them into scrap views.
-                mActiveViews->Set(i, child);
-            }
-        }
-    }
-}
-
-/**
- * Get the view corresponding to the specified position. The view will be removed from
- * mActiveViews if it is found.
- *
- * @param position The position to look up in mActiveViews
- * @return The view if it is found, NULL otherwise
- */
-AutoPtr<IView> AbsListView::RecycleBin::GetActiveView(
-    /* [in] */ Int32 position)
-{
-    Int32 index = position - mFirstActivePosition;
-    if (index >=0 && index < mActiveViews->GetLength()) {
-        AutoPtr<IView> match = (*mActiveViews)[index];
-        mActiveViews->Set(index, NULL);
-        return match;
-    }
-
-    return NULL;
-}
-
-AutoPtr<IView> AbsListView::RecycleBin::GetTransientStateView(
-    /* [in] */ Int32 position)
-{
-    if (mTransientStateViews == NULL) {
-        return NULL;
-    }
-    ViewMapIterator it = mTransientStateViews->Find(position);
-    AutoPtr<IView> result;
-    if (it != mTransientStateViews->End()) {
-        result = it->mSecond;
-        mTransientStateViews->Erase(it);
-    }
-
-    return result;
-}
-
-/**
- * Dump any currently saved views with transient state.
- */
-void AbsListView::RecycleBin::ClearTransientStateViews()
-{
-    if (mTransientStateViews != NULL) {
-        mTransientStateViews->Clear();
-    }
-}
-
-/**
- * @return A view from the ScrapViews collection. These are unordered.
- */
-AutoPtr<IView> AbsListView::RecycleBin::GetScrapView(
-    /* [in] */ Int32 position)
-{
-    if (mViewTypeCount == 1) {
-        return AbsListView::RetrieveFromScrap(mCurrentScrap, position);
-    }
-    else {
-        Int32 whichScrap;
-        mHost->mAdapter->GetItemViewType(position, &whichScrap);
-        if (whichScrap >= 0 && whichScrap < mScrapViews->GetLength()) {
-            return AbsListView::RetrieveFromScrap((*mScrapViews)[whichScrap], position);
-        }
-    }
-    return NULL;
-}
-
-/**
- * Put a view into the ScapViews list. These views are unordered.
- *
- * @param scrap The view to add
- */
-void AbsListView::RecycleBin::AddScrapView(
-    /* [in ]*/ IView* scrap,
-    /* [in] */ Int32 position)
-{
-    AutoPtr<IAbsListViewLayoutParams> lp;
-    scrap->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-    if (lp == NULL) {
-        return;
-    }
-    lp->SetScrappedFromPosition(position);
-    // Don't put header or footer views or views that should be ignored
-    // into the scrap heap
-
-    Int32 viewType = 0;
-    lp->GetViewType(&viewType);
-    Boolean scrapHasTransientState;
-    scrap->HasTransientState(&scrapHasTransientState);
-
-    if (!ShouldRecycleViewType(viewType) || scrapHasTransientState) {
-        if (viewType != IAbsListView::ITEM_VIEW_TYPE_HEADER_OR_FOOTER || scrapHasTransientState) {
-            if (mSkippedScrap == NULL) {
-                mSkippedScrap = new ViewList();
-            }
-            mSkippedScrap->PushBack(scrap);
-        }
-        if (scrapHasTransientState) {
-            if (mTransientStateViews == NULL) {
-                mTransientStateViews = new ViewMap();
-            }
-            scrap->DispatchStartTemporaryDetach();
-            (*mTransientStateViews)[position] = scrap;
-        }
-        return;
-    }
-
-    scrap->DispatchStartTemporaryDetach();
-    if (mViewTypeCount == 1) {
-        mCurrentScrap->PushBack(scrap);
-    }
-    else {
-        (*mScrapViews)[viewType]->PushBack(scrap);
-    }
-
-    scrap->SetAccessibilityDelegate(NULL);
-
-    if (mRecyclerListener != NULL) {
-        mRecyclerListener->OnMovedToScrapHeap(scrap);
-    }
-}
-
-/**
- * Finish the removal of any views that skipped the scrap heap.
- */
-void AbsListView::RecycleBin::RemoveSkippedScrap()
-{
-    if (mSkippedScrap == NULL) {
-        return;
-    }
-
-    ViewListIterator it = mSkippedScrap->Begin();
-    for (; it != mSkippedScrap->End(); ++it) {
-        mHost->RemoveDetachedView(*it, FALSE);
-    }
-    mSkippedScrap->Clear();
-}
-
-/**
- * Move all views remaining in mActiveViews to mScrapViews.
- */
-void AbsListView::RecycleBin::ScrapActiveViews()
-{
-    Boolean hasListener = mRecyclerListener != NULL;
-    Boolean multipleScraps = mViewTypeCount > 1;
-
-    Int32 count = mActiveViews->GetLength();
-    for (Int32 i = count - 1; i >= 0; i--) {
-        AutoPtr<IView> victim = (*mActiveViews)[i];
-        if (victim != NULL) {
-            AutoPtr<IAbsListViewLayoutParams> lp;
-            victim->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-            Int32 whichScrap = 0;
-            lp->GetViewType(&whichScrap);
-
-            mActiveViews->Set(i, NULL);
-
-            Boolean scrapHasTransientState;
-            victim->HasTransientState(&scrapHasTransientState);
-            if (!ShouldRecycleViewType(whichScrap) || scrapHasTransientState) {
-                // Do not move views that should be ignored
-                if (whichScrap != IAbsListView::ITEM_VIEW_TYPE_HEADER_OR_FOOTER
-                    || scrapHasTransientState)
-                {
-                    mHost->RemoveDetachedView(victim, FALSE);
-                }
-
-                if (scrapHasTransientState) {
-                    if (mTransientStateViews == NULL) {
-                        mTransientStateViews = new ViewMap();
-                    }
-                    (*mTransientStateViews)[mFirstActivePosition + i] = victim;
-                }
-                continue;
-            }
-
-            if (multipleScraps) {
-                mCurrentScrap = (*mScrapViews)[whichScrap];
-            }
-            victim->DispatchStartTemporaryDetach();
-            lp->SetScrappedFromPosition(mFirstActivePosition + i);
-            mCurrentScrap->PushBack(victim);
-
-            victim->SetAccessibilityDelegate(NULL);
-
-            if (hasListener) {
-                mRecyclerListener->OnMovedToScrapHeap(victim);
-            }
-        }
-    }
-    PruneScrapViews();
-}
-
-/**
- * Makes sure that the size of mScrapViews does not exceed the size of mActiveViews.
- * (This can happen if an adapter does not recycle its views).
- */
-void AbsListView::RecycleBin::PruneScrapViews()
-{
-    Int32 maxViews = mActiveViews->GetLength();
-    Int32 viewTypeCount = mViewTypeCount;
-    for (Int32 i = 0; i < viewTypeCount; ++i) {
-        AutoPtr<ViewList> scrapPile = (*mScrapViews)[i];
-        Int32 extras = scrapPile->GetSize() - maxViews;
-        ViewListReverseIterator rit = scrapPile->RBegin();
-        AutoPtr<IView> view;
-        for (Int32 j = 0; j < extras && rit != scrapPile->REnd(); ++j) {
-            view = *rit;
-            mHost->RemoveDetachedView(view, FALSE);
-            rit = ViewListReverseIterator(scrapPile->Erase(--(rit.GetBase())));
-        }
-    }
-
-    if (mTransientStateViews != NULL) {
-        AutoPtr<IView> view;
-        Boolean hasTransientState;
-        ViewMapIterator it = mTransientStateViews->Begin();
-        for (; it != mTransientStateViews->End();) {
-            view = it->mSecond;
-            view->HasTransientState(&hasTransientState);
-            if (!hasTransientState) {
-                mTransientStateViews->Erase(it++);
-            }
-            else {
-                ++it;
-            }
-        }
-    }
-}
-
-/**
- * Puts all views in the scrap heap into the supplied list.
- */
-void AbsListView::RecycleBin::ReclaimScrapViews(
-    /* [in] */ IObjectContainer* views)
-{
-    if (mViewTypeCount == 1) {
-        ViewListIterator iter = mCurrentScrap->Begin();
-        for (; iter != mCurrentScrap->End(); ++iter) {
-            views->Add((*iter));
-        }
-    }
-    else {
-        for (Int32 i = 0; i < mViewTypeCount; i++) {
-            ViewListIterator iter = (*mScrapViews)[i]->Begin();
-            for (; iter != (*mScrapViews)[i]->End(); ++iter) {
-                views->Add(*iter);
-            }
-        }
-    }
-}
-
-/**
- * Updates the cache color hint of all known views.
- *
- * @param color The new cache color hint.
- */
-void AbsListView::RecycleBin::SetCacheColorHint(
-    /* [in] */ Int32 color)
-{
-    if (mViewTypeCount == 1) {
-        assert(mCurrentScrap != NULL);
-        ViewListIterator iter = mCurrentScrap->Begin();
-        for (; iter != mCurrentScrap->End(); ++iter) {
-            (*iter)->SetDrawingCacheBackgroundColor(color);
-        }
-    }
-    else {
-        for (Int32 i = 0; i < mViewTypeCount; i++) {
-            ViewListIterator iter = (*mScrapViews)[i]->Begin();
-            for (; iter != (*mScrapViews)[i]->End(); ++iter) {
-                (*iter)->SetDrawingCacheBackgroundColor(color);
-            }
-        }
-    }
-
-    assert(mActiveViews != NULL);
-    // Just in case this is called during a layout pass
-    for (Int32 i = 0; i < mActiveViews->GetLength(); ++i) {
-        AutoPtr<IView> victim = (*mActiveViews)[i];
-        if (victim != NULL) {
-            victim->SetDrawingCacheBackgroundColor(color);
-        }
-    }
-}
-
 
 //==============================================================================
 //          AbsListView::ClearScrollingCacheRunnable
@@ -1775,7 +2630,8 @@ ECode AbsListView::ClearScrollingCacheRunnable::Run()
                 mHost->SetChildrenDrawingCacheEnabled(FALSE);
         }
 
-        if (!mHost->IsAlwaysDrawnWithCacheEnabled()) {
+        Boolean res;
+        if (mHost->IsAlwaysDrawnWithCacheEnabled(&res), !res) {
             mHost->Invalidate();
         }
     }
@@ -1799,10 +2655,12 @@ AbsListView::TouchModeResetRunnable::TouchModeResetRunnable(
 
 ECode AbsListView::TouchModeResetRunnable::Run()
 {
+    mHost->mTouchModeReset = NULL;
     mHost->mTouchMode = AbsListView::TOUCH_MODE_REST;
     mView->SetPressed(FALSE);
     mHost->SetPressed(FALSE);
-    if(!mHost->mDataChanged) {
+    Boolean res;
+    if(!mHost->mDataChanged && !mHost->mIsDetaching && (mHost->IsAttachedToWindow(&res), res)) {
         mRunnable->Run();
     }
     return NOERROR;
@@ -1812,42 +2670,8 @@ ECode AbsListView::TouchModeResetRunnable::Run()
 //                  AbsListView
 //==============================================================================
 
-static AutoPtr<IInterpolator> InitInterpolator()
-{
-    //assert(0 && "TODO"); //can't complement without CLinearInterpolator;
-    return NULL;
-}
-
-const Int32 AbsListView::TOUCH_MODE_REST;
-const Int32 AbsListView::TOUCH_MODE_DOWN;
-const Int32 AbsListView::TOUCH_MODE_TAP;
-const Int32 AbsListView::TOUCH_MODE_DONE_WAITING;
-const Int32 AbsListView::TOUCH_MODE_SCROLL;
-const Int32 AbsListView::TOUCH_MODE_FLING;
-const Int32 AbsListView::TOUCH_MODE_OVERSCROLL;
-const Int32 AbsListView::TOUCH_MODE_OVERFLING;
-const Int32 AbsListView::LAYOUT_NORMAL;
-const Int32 AbsListView::LAYOUT_FORCE_TOP;
-const Int32 AbsListView::LAYOUT_SET_SELECTION;
-const Int32 AbsListView::LAYOUT_FORCE_BOTTOM;
-const Int32 AbsListView::LAYOUT_SPECIFIC;
-const Int32 AbsListView::LAYOUT_SYNC;
-const Int32 AbsListView::LAYOUT_MOVE_SELECTION;
-const Int32 AbsListView::OVERSCROLL_LIMIT_DIVISOR;
-
-const Int32 AbsListView::TOUCH_MODE_UNKNOWN;
-const Int32 AbsListView::TOUCH_MODE_ON;
-const Int32 AbsListView::TOUCH_MODE_OFF;
-const Boolean AbsListView::PROFILE_SCROLLING;
-const Boolean AbsListView::PROFILE_FLINGING;
-const Int32 AbsListView::INVALID_POINTER;
-
-const Int32 AbsListView::PositionScroller::SCROLL_DURATION;
-const Int32 AbsListView::PositionScroller::MOVE_DOWN_POS;
-const Int32 AbsListView::PositionScroller::MOVE_UP_POS;
-const Int32 AbsListView::PositionScroller::MOVE_DOWN_BOUND;
-const Int32 AbsListView::PositionScroller::MOVE_UP_BOUND;
-AutoPtr<IInterpolator> AbsListView::sLinearInterpolator = InitInterpolator();
+CAR_INTERFACE_IMPL_6(AbsListView, AdapterView, IAbsListView, ITextWatcher, IOnGlobalLayoutListener,
+        IFilterListener, IOnTouchModeChangeListener, IRemoteAdapterConnectionCallback);
 
 AbsListView::AbsListView()
     : mChoiceMode(IAbsListView::CHOICE_MODE_NONE)
@@ -1875,11 +2699,11 @@ AbsListView::AbsListView()
     , mStackFromBottom(FALSE)
     , mScrollingCacheEnabled(FALSE)
     , mFastScrollEnabled(FALSE)
+    , mFastScrollAlwaysVisible(FALSE)
     , mResurrectToPosition(IAdapterView::INVALID_POSITION)
     , mOverscrollMax(FALSE)
     , mOverscrollDistance(0)
     , mOverflingDistance(0)
-    , mIsAttached(FALSE)
     , mDeferNotifyDataSetChanged(FALSE)
     , mSmoothScrollbarEnabled(TRUE)
     , mTextFilterEnabled(FALSE)
@@ -1891,12 +2715,14 @@ AbsListView::AbsListView()
     , mCacheColorHint(0)
     , mIsChildViewEnabled(FALSE)
     , mLastScrollState(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE)
+    , mFastScrollStyle(0)
     , mGlobalLayoutListenerAddedFilter(FALSE)
     , mTouchSlop(0)
     , mDensityScale(0)
     , mMinimumVelocity(0)
     , mMaximumVelocity(0)
     , mVelocityScale(1.0f)
+    , mNestedYOffset(0)
     , mPopupHidden(FALSE)
     , mActivePointerId(INVALID_POINTER)
     , mFirstPositionDistanceGuess(0)
@@ -1908,155 +2734,130 @@ AbsListView::AbsListView()
     , mLastAccessibilityScrollEventFromIndex(0)
     , mLastAccessibilityScrollEventToIndex(0)
     , mLastHandledItemCount(0)
+    , mIsDetaching(FALSE)
 {
     CRect::NewByFriend((CRect**)&mSelectorRect);
     CRect::NewByFriend((CRect**)&mListPadding);
     mRecycler = new RecycleBin(this);
     mIsScrap = ArrayOf<Boolean>::Alloc(1);
-}
-
-AbsListView::AbsListView(
-    /* [in] */ IContext* context)
-    : mChoiceMode(IAbsListView::CHOICE_MODE_NONE)
-    , mCheckedItemCount(0)
-    , mLayoutMode(LAYOUT_NORMAL)
-    , mAdapterHasStableIds(FALSE)
-    , mDrawSelectorOnTop(FALSE)
-    , mSelectorPosition(IAdapterView::INVALID_POSITION)
-    , mSelectionLeftPadding(0)
-    , mSelectionTopPadding(0)
-    , mSelectionRightPadding(0)
-    , mSelectionBottomPadding(0)
-    , mWidthMeasureSpec(0)
-    , mCachingStarted(FALSE)
-    , mCachingActive(FALSE)
-    , mMotionPosition(0)
-    , mMotionViewOriginalTop(0)
-    , mMotionViewNewTop(0)
-    , mMotionX(0)
-    , mMotionY(0)
-    , mTouchMode(TOUCH_MODE_REST)
-    , mLastY(0)
-    , mMotionCorrection(0)
-    , mSelectedTop(0)
-    , mStackFromBottom(FALSE)
-    , mScrollingCacheEnabled(FALSE)
-    , mFastScrollEnabled(FALSE)
-    , mResurrectToPosition(IAdapterView::INVALID_POSITION)
-    , mOverscrollMax(FALSE)
-    , mOverscrollDistance(0)
-    , mOverflingDistance(0)
-    , mIsAttached(FALSE)
-    , mDeferNotifyDataSetChanged(FALSE)
-    , mSmoothScrollbarEnabled(TRUE)
-    , mTextFilterEnabled(FALSE)
-    , mFiltered(FALSE)
-    , mLastTouchMode(TOUCH_MODE_UNKNOWN)
-    , mScrollProfilingStarted(FALSE)
-    , mFlingProfilingStarted(FALSE)
-    , mTranscriptMode(0)
-    , mCacheColorHint(0)
-    , mIsChildViewEnabled(FALSE)
-    , mLastScrollState(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE)
-    , mGlobalLayoutListenerAddedFilter(FALSE)
-    , mTouchSlop(0)
-    , mDensityScale(0)
-    , mMinimumVelocity(0)
-    , mMaximumVelocity(0)
-    , mVelocityScale(1.0f)
-    , mPopupHidden(FALSE)
-    , mActivePointerId(INVALID_POINTER)
-    , mFirstPositionDistanceGuess(0)
-    , mLastPositionDistanceGuess(0)
-    , mDirection(0)
-    , mForceTranscriptScroll(0)
-    , mGlowPaddingLeft(0)
-    , mGlowPaddingRight(0)
-    , mLastAccessibilityScrollEventFromIndex(0)
-    , mLastAccessibilityScrollEventToIndex(0)
-    , mLastHandledItemCount(0)
-{
-    CRect::NewByFriend((CRect**)&mSelectorRect);
-    CRect::NewByFriend((CRect**)&mListPadding);
-    mRecycler = new RecycleBin(this);
-    mIsScrap = ArrayOf<Boolean>::Alloc(1);
-    Init(context);
-}
-
-AbsListView::AbsListView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : mChoiceMode(IAbsListView::CHOICE_MODE_NONE)
-    , mCheckedItemCount(0)
-    , mLayoutMode(LAYOUT_NORMAL)
-    , mAdapterHasStableIds(FALSE)
-    , mDrawSelectorOnTop(FALSE)
-    , mSelectorPosition(IAdapterView::INVALID_POSITION)
-    , mSelectionLeftPadding(0)
-    , mSelectionTopPadding(0)
-    , mSelectionRightPadding(0)
-    , mSelectionBottomPadding(0)
-    , mWidthMeasureSpec(0)
-    , mCachingStarted(FALSE)
-    , mCachingActive(FALSE)
-    , mMotionPosition(0)
-    , mMotionViewOriginalTop(0)
-    , mMotionViewNewTop(0)
-    , mMotionX(0)
-    , mMotionY(0)
-    , mTouchMode(TOUCH_MODE_REST)
-    , mLastY(0)
-    , mMotionCorrection(0)
-    , mSelectedTop(0)
-    , mStackFromBottom(FALSE)
-    , mScrollingCacheEnabled(FALSE)
-    , mFastScrollEnabled(FALSE)
-    , mResurrectToPosition(IAdapterView::INVALID_POSITION)
-    , mOverscrollMax(FALSE)
-    , mOverscrollDistance(0)
-    , mOverflingDistance(0)
-    , mIsAttached(FALSE)
-    , mDeferNotifyDataSetChanged(FALSE)
-    , mSmoothScrollbarEnabled(TRUE)
-    , mTextFilterEnabled(FALSE)
-    , mFiltered(FALSE)
-    , mLastTouchMode(TOUCH_MODE_UNKNOWN)
-    , mScrollProfilingStarted(FALSE)
-    , mFlingProfilingStarted(FALSE)
-    , mTranscriptMode(0)
-    , mCacheColorHint(0)
-    , mIsChildViewEnabled(FALSE)
-    , mLastScrollState(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE)
-    , mGlobalLayoutListenerAddedFilter(FALSE)
-    , mTouchSlop(0)
-    , mDensityScale(0)
-    , mMinimumVelocity(0)
-    , mMaximumVelocity(0)
-    , mVelocityScale(1.0f)
-    , mPopupHidden(FALSE)
-    , mActivePointerId(INVALID_POINTER)
-    , mFirstPositionDistanceGuess(0)
-    , mLastPositionDistanceGuess(0)
-    , mDirection(0)
-    , mForceTranscriptScroll(0)
-    , mGlowPaddingLeft(0)
-    , mGlowPaddingRight(0)
-    , mLastAccessibilityScrollEventFromIndex(0)
-    , mLastAccessibilityScrollEventToIndex(0)
-    , mLastHandledItemCount(0)
-{
-    CRect::NewByFriend((CRect**)&mSelectorRect);
-    CRect::NewByFriend((CRect**)&mListPadding);
-    mRecycler = new RecycleBin(this);
-    mIsScrap = ArrayOf<Boolean>::Alloc(1);
-    Init(context, attrs, defStyle);
+    mScrollOffset = ArrayOf<Int32>::Alloc(2);
+    mScrollConsumed = ArrayOf<Int32>::Alloc(2);
 }
 
 AbsListView::~AbsListView()
 {
     mCheckStates = NULL;
     mCheckedIdStates = NULL;
+}
+
+ECode AbsListView::constructor(
+    /* [in] */ IContext* context)
+{
+    FAIL_RETURN(AdapterView::constructor(context));
+    InitAbsListView();
+
+    mOwnerThread = Thread::GetCurrentThread();
+
+    SetVerticalScrollBarEnabled(TRUE);
+    Int32 size = ARRAY_SIZE(R::styleable::View);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::View, size);
+
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(layout, (ITypedArray**)&a);
+    InitializeScrollbarsInternal(a);
+
+    a->Recycle();
+
+    return NOERROR;
+}
+
+ECode AbsListView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::absListViewStyle);
+}
+
+ECode AbsListView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode AbsListView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    FAIL_RETURN(AdapterView::constructor(context, attrs, defStyleAttr, defStyleRes));
+    InitAbsListView();
+
+    mOwnerThread = Thread::GetCurrentThread();
+
+    Int32 size = ARRAY_SIZE(R::styleable::AbsListView);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::AbsListView, size);
+
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(
+            attrs, layout, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+
+    AutoPtr<IDrawable> d;
+    a->GetDrawable(R::styleable::AbsListView_listSelector, (IDrawable**)&d);
+    if (d != NULL) {
+        SetSelector(d);
+    }
+
+    a->GetBoolean(R::styleable::AbsListView_drawSelectorOnTop, FALSE, &mDrawSelectorOnTop);
+
+    Boolean stackFromBottom;
+    a->GetBoolean(R::styleable::AbsListView_stackFromBottom, FALSE, &stackFromBottom);
+    SetStackFromBottom(stackFromBottom);
+
+    Boolean scrollingCacheEnabled;
+    a->GetBoolean(R::styleable::AbsListView_scrollingCache, TRUE, &scrollingCacheEnabled);
+    SetScrollingCacheEnabled(scrollingCacheEnabled);
+
+    Boolean useTextFilter;
+    a->GetBoolean(R::styleable::AbsListView_textFilterEnabled, FALSE, &useTextFilter);
+    SetTextFilterEnabled(useTextFilter);
+
+    Int32 transcriptMode;
+    a->GetInt32(R::styleable::AbsListView_transcriptMode,
+        IAbsListView::AbsListView_TRANSCRIPT_MODE_DISABLED, &transcriptMode);
+    SetTranscriptMode(transcriptMode);
+
+    Int32 color;
+    a->GetColor(R::styleable::AbsListView_cacheColorHint, 0, &color);
+    SetCacheColorHint(color);
+
+    Boolean enableFastScroll;
+    a->GetBoolean(R::styleable::AbsListView_fastScrollEnabled, FALSE, &enableFastScroll);
+    SetFastScrollEnabled(enableFastScroll);
+
+    Int32 fastScrollStyle;
+    a->GetResourceId(R::styleable::AbsListView_fastScrollStyle, 0, &fastScrollStyle);
+    SetFastScrollStyle(fastScrollStyle);
+
+    Boolean smoothScrollbar;
+    a->GetBoolean(R::styleable::AbsListView_smoothScrollbar, TRUE, &smoothScrollbar);
+    SetSmoothScrollbarEnabled(smoothScrollbar);
+
+    Int32 choiceMode;
+    a->GetInt32(R::styleable::AbsListView_choiceMode, IAbsListView::CHOICE_MODE_NONE, &choiceMode);
+    SetChoiceMode(choiceMode);
+
+    Boolean fastScrollAlwaysVisible;
+    a->GetBoolean(R::styleable::AbsListView_fastScrollAlwaysVisible, FALSE, &fastScrollAlwaysVisible);
+    SetFastScrollAlwaysVisible(fastScrollAlwaysVisible);
+
+    a->Recycle();
+
+    return NOERROR;
 }
 
 ECode AbsListView::InitAbsListView()
@@ -2067,11 +2868,8 @@ ECode AbsListView::InitAbsListView()
     SetWillNotDraw(FALSE);
     SetAlwaysDrawnWithCacheEnabled(FALSE);
     SetScrollingCacheEnabled(TRUE);
-    AutoPtr<IViewConfigurationHelper> configHelper;
-    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&configHelper);
 
-    AutoPtr<IViewConfiguration> configuration;
-    configHelper->Get(mContext, (IViewConfiguration**)&configuration);
+    AutoPtr<IViewConfiguration> configuration = ViewConfiguration::Get(mContext);
 
     configuration->GetScaledTouchSlop(&mTouchSlop);
     configuration->GetScaledMinimumFlingVelocity(&mMinimumVelocity);
@@ -2089,15 +2887,16 @@ ECode AbsListView::InitAbsListView()
     return NOERROR;
 }
 
-//@Override
 ECode AbsListView::SetOverScrollMode(
     /* [in] */ Int32 mode)
 {
     if (mode != IView::OVER_SCROLL_NEVER) {
         if (mEdgeGlowTop == NULL) {
-            AutoPtr<IContext> context = GetContext();
-            CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowTop);
-            CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowBottom);
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            assert(0 && "TODO");
+            // CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowTop);
+            // CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowBottom);
         }
     }
     else {
@@ -2108,18 +2907,14 @@ ECode AbsListView::SetOverScrollMode(
     return AdapterView::SetOverScrollMode(mode);
 }
 
-/**
- * {@inheritDoc}
- */
-//@Override
 ECode AbsListView::SetAdapter(
     /* [in] */ IAdapter* adapter)
 {
     if (adapter != NULL) {
-        mAdapter->HasStableIds(&mAdapterHasStableIds);
+        IAdapter::Probe(mAdapter)->HasStableIds(&mAdapterHasStableIds);
         if ((mChoiceMode != IAbsListView::CHOICE_MODE_NONE) && mAdapterHasStableIds &&
                 mCheckedIdStates == NULL) {
-            mCheckedIdStates = new HashMap<Int64, Int32>();
+            CInt64SparseArray::New((IInt64SparseArray**)&mCheckedIdStates);
         }
     }
 
@@ -2133,114 +2928,58 @@ ECode AbsListView::SetAdapter(
     return NOERROR;
 }
 
-/**
- * Returns the number of items currently selected. This will only be valid
- * if the choice mode is not {@link #CHOICE_MODE_NONE} (default).
- *
- * <p>To determine the specific items that are currently selected, use one of
- * the <code>getChecked*</code> methods.
- *
- * @return The number of items currently selected
- *
- * @see #getCheckedItemPosition()
- * @see #getCheckedItemPositions()
- * @see #getCheckedItemIds()
- */
-Int32 AbsListView::GetCheckedItemCount()
+ECode AbsListView::GetCheckedItemCount(
+    /* [out] */ Int32* count)
 {
-    return mCheckedItemCount;
+    VALIDATE_NOT_NULL(count);
+    *count = mCheckedItemCount;
+    return NOERROR;
 }
 
-/**
- * Returns the checked state of the specified position. The result is only
- * valid if the choice mode has been set to {@link #CHOICE_MODE_SINGLE}
- * or {@link #CHOICE_MODE_MULTIPLE}.
- *
- * @param position The item whose checked state to return
- * @return The item's checked state or <code>FALSE</code> if choice mode
- *         is invalid
- *
- * @see #setChoiceMode(Int32)
- */
 ECode AbsListView::IsItemChecked(
     /* [in] */ Int32 position,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+
     if (mChoiceMode != IAbsListView::CHOICE_MODE_NONE && mCheckStates != NULL) {
-        *result = (*mCheckStates)[position];
-        return NOERROR;
+        return mCheckStates->Get(position, result);
     }
+
     *result = FALSE;
     return NOERROR;
 }
 
-/**
- * Returns the currently checked item. The result is only valid if the choice
- * mode has been set to {@link #CHOICE_MODE_SINGLE}.
- *
- * @return The position of the currently checked item or
- *         {@link #INVALID_POSITION} if nothing is selected
- *
- * @see #setChoiceMode(Int32)
- */
 ECode AbsListView::GetCheckedItemPosition(
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result);
+
+    Int32 size;
     if (mChoiceMode == IAbsListView::CHOICE_MODE_SINGLE
-        && mCheckStates != NULL && mCheckStates->GetSize() == 1)
-    {
-        HashMap<Int32, Boolean>::Iterator it = mCheckStates->Begin();
-        assert(it != mCheckStates->End());
-        *result = it->mFirst;
-        return NOERROR;
+        && mCheckStates != NULL && (mCheckStates->GetSize(&size), size) == 1) {
+        return mCheckStates->KeyAt(0, result);
     }
 
     *result = IAdapterView::INVALID_POSITION;
     return NOERROR;
 }
 
-/**
- * Returns the set of checked items in the list. The result is only valid if
- * the choice mode has not been set to {@link #CHOICE_MODE_NONE}.
- *
- * @return  A SparseBooleanArray which will return TRUE for each call to
- *          get(Int32 position) where position is a position in the list,
- *          or <code>NULL</code> if the choice mode is set to
- *          {@link #CHOICE_MODE_NONE}.
- */
-//AutoPtr<HashMap<Int32, Boolean> > AbsListView::GetCheckedItemPositions()
-//{
-//    if (mChoiceMode != IAbsListView::CHOICE_MODE_NONE) {
-//        return mCheckStates;
-//    }
-//    return NULL;
-//}
-
-AutoPtr<IObjectInt32Map> AbsListView::GetCheckedItemPositions()
+ECode AbsListView::GetCheckedItemPositions(
+    /* [out] */ ISparseBooleanArray** arr)
 {
-    AutoPtr<IObjectInt32Map> map;
-    if (mChoiceMode != IAbsListView::CHOICE_MODE_NONE) {
-        CObjectInt32Map::New((IObjectInt32Map**)&map);
+    VALIDATE_NOT_NULL(arr);
+    *arr = NULL;
 
-        HashMap<Int32, Boolean>::Iterator it = mCheckStates->Begin();
-        for(; it != mCheckStates->End(); ++it) {
-            AutoPtr<IBoolean> ib;
-            CBoolean::New(it->mSecond, (IBoolean**)&ib);
-            map->Put(it->mFirst, (IInterface*)ib);
-        }
+    if (mChoiceMode != IAbsListView::CHOICE_MODE_NONE) {
+        *arr = mCheckStates;
+        REFCOUNT_ADD(*arr);
+        return NOERROR;
     }
 
-    return map;
+    return NOERROR;
 }
 
-/**
- * Returns the set of checked items ids. The result is only valid if the
- * choice mode has not been set to {@link #CHOICE_MODE_NONE} and the adapter
- * has stable IDs. ({@link ListAdapter#hasStableIds()} == {@code TRUE})
- *
- * @return A new array which contains the id of each checked item in the
- *         list.
- */
 ECode AbsListView::GetCheckedItemIds(
     /* [out] */ ArrayOf<Int64>** result)
 {
@@ -2251,22 +2990,20 @@ ECode AbsListView::GetCheckedItemIds(
         return NOERROR;
     }
 
-    Int32 count = mCheckedIdStates->GetSize();
-    AutoPtr<ArrayOf<Int64> > tmp = ArrayOf<Int64>::Alloc(count);
+    AutoPtr<IInt64SparseArray> idStates = mCheckedIdStates;
+    Int32 count;
+    idStates->GetSize(&count);
+    AutoPtr<ArrayOf<Int64> > ids = ArrayOf<Int64>::Alloc(count);
 
-    HashMap<Int64, Int32>::Iterator it = mCheckedIdStates->Begin();
-    for (Int32 i = 0; it != mCheckedIdStates->End(); it++, i++) {
-        (*tmp)[i] = it->mFirst;
+    for (Int32 i = 0; i < count; i++) {
+        idStates->KeyAt(i, &(*ids)[i]);
     }
 
-    *result = tmp;
+    *result = ids;
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-/**
- * Clear any choices previously set
- */
 ECode AbsListView::ClearChoices()
 {
     if (mCheckStates != NULL) {
@@ -2280,18 +3017,12 @@ ECode AbsListView::ClearChoices()
     return NOERROR;
 }
 
-/**
- * Sets the checked state of the specified position. The is only valid if
- * the choice mode has been set to {@link #CHOICE_MODE_SINGLE} or
- * {@link #CHOICE_MODE_MULTIPLE}.
- *
- * @param position The item whose checked state is to be checked
- * @param value The new checked state for the item
- */
 ECode AbsListView::SetItemChecked(
     /* [in] */ Int32 position,
-    /* [in] */Boolean value)
+    /* [in] */ Boolean value)
 {
+    Boolean res;
+    Int32 size;
     if (mChoiceMode == IAbsListView::CHOICE_MODE_NONE) {
         return NOERROR;
     }
@@ -2299,49 +3030,52 @@ ECode AbsListView::SetItemChecked(
     // Start selection mode if needed. We don't need to if we're unchecking something.
     if (value && mChoiceMode == IAbsListView::CHOICE_MODE_MULTIPLE_MODAL && mChoiceActionMode == NULL) {
         Boolean hasWrappedCb;
-        mMultiChoiceModeCallback->HasWrappedCallback(&hasWrappedCb);
-        if (mMultiChoiceModeCallback == NULL || !hasWrappedCb)
-        {
-            return  E_ILLEGAL_STATE_EXCEPTION;
+        if (mMultiChoiceModeCallback == NULL
+                || (mMultiChoiceModeCallback->HasWrappedCallback(&hasWrappedCb), !hasWrappedCb)) {
+            Logger::E("AbsListView",
+                    "AbsListView: attempted to start selection mode for CHOICE_MODE_MULTIPLE_MODAL " \
+                    "but no choice mode callback wassupplied. Call setMultiChoiceModeListener to set a callback");
+            return E_ILLEGAL_STATE_EXCEPTION;
         }
-        mChoiceActionMode = StartActionMode(mMultiChoiceModeCallback);
+        StartActionMode(IActionModeCallback::Probe(mMultiChoiceModeCallback), (IActionMode**)&mChoiceActionMode);
     }
 
     if (mChoiceMode == IAbsListView::CHOICE_MODE_MULTIPLE || mChoiceMode == IAbsListView::CHOICE_MODE_MULTIPLE_MODAL) {
         Boolean oldValue;
-        oldValue = (*mCheckStates)[position];
-        (*mCheckStates)[position] = value;
+        mCheckStates->Get(position, &oldValue);
+        mCheckStates->Put(position, value);
         Boolean hasId;
-        mAdapter->HasStableIds(&hasId);
+        IAdapter::Probe(mAdapter)->HasStableIds(&hasId);
         if (mCheckedIdStates != NULL && hasId) {
-
             Int64 key;
-            mAdapter->GetItemId(position, &key);
+            IAdapter::Probe(mAdapter)->GetItemId(position, &key);
 
             if (value) {
-                (*mCheckedIdStates)[key] = position;
-            } else {
-                mCheckedIdStates->Erase(key);
+                mCheckedIdStates->Put(key, CoreUtils::Convert(position));
+            }
+            else {
+                mCheckedIdStates->Delete(key);
             }
 
         }
         if (oldValue != value) {
             if (value) {
                 mCheckedItemCount++;
-            } else {
+            }
+            else {
                 mCheckedItemCount--;
             }
         }
         if (mChoiceActionMode != NULL) {
-
             Int64 id;
-            mAdapter->GetItemId(position, &id);
+            IAdapter::Probe(mAdapter)->GetItemId(position, &id);
             mMultiChoiceModeCallback->OnItemCheckedStateChanged(mChoiceActionMode,
                     position, id, value);
         }
-    } else {
+    }
+    else {
         Boolean hasId;
-        mAdapter->HasStableIds(&hasId);
+        IAdapter::Probe(mAdapter)->HasStableIds(&hasId);
         Boolean updateIds = mCheckedIdStates != NULL && hasId;
         // Clear all values if we're checking something, or unchecking the currently
         // selected item
@@ -2356,14 +3090,15 @@ ECode AbsListView::SetItemChecked(
         // this may end up selecting the value we just cleared but this way
         // we ensure length of mCheckStates is 1, a fact getCheckedItemPosition relies on
         if (value) {
-            (*mCheckStates)[position] = TRUE;
+            mCheckStates->Put(position, TRUE);
             if (updateIds) {
                 Int64 id;
-                mAdapter->GetItemId(position, &id);
-                (*mCheckedIdStates)[id] = position;
+                IAdapter::Probe(mAdapter)->GetItemId(position, &id);
+                mCheckedIdStates->Put(id, CoreUtils::Convert(position));
             }
             mCheckedItemCount = 1;
-        } else if (mCheckStates->IsEmpty() || !(*mCheckStates)[0]) {
+        }
+        else if ((mCheckStates->GetSize(&size), size) == 0 || (mCheckStates->ValueAt(0, &res), !res)) {
             mCheckedItemCount = 0;
         }
     }
@@ -2378,45 +3113,48 @@ ECode AbsListView::SetItemChecked(
     return NOERROR;
 }
 
-Boolean AbsListView::PerformItemClick(
+ECode AbsListView::PerformItemClick(
     /* [in] */ IView* view,
     /* [in] */ Int32 position,
-    /* [in] */ Int64 id)
+    /* [in] */ Int64 id,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     Boolean handled = FALSE;
     Boolean dispatchItemClick = TRUE;
 
+    AutoPtr<IAdapter> adapter = IAdapter::Probe(mAdapter);
+
+    Int32 size;
+    Boolean res;
     if (mChoiceMode != IAbsListView::CHOICE_MODE_NONE) {
         handled = TRUE;
         Boolean checkedStateChanged = FALSE;
 
         if (mChoiceMode == IAbsListView::CHOICE_MODE_MULTIPLE ||
                 (mChoiceMode == IAbsListView::CHOICE_MODE_MULTIPLE_MODAL && mChoiceActionMode != NULL)) {
-            Boolean checked;
-            HashMap<Int32, Boolean>::Iterator it = mCheckStates->Find(position);
-            if(it != mCheckStates->End())
-            {
-                checked = it->mSecond;
-            }else{
-                checked = FALSE;
-            }
-            (*mCheckStates)[position] = checked;
+            mCheckStates->Get(position, FALSE, &res);
+            Boolean checked = !res;
+            mCheckStates->Put(position, checked);
+
             Boolean hasId;
-            mAdapter->HasStableIds(&hasId);
+            adapter->HasStableIds(&hasId);
             if (mCheckedIdStates != NULL && hasId) {
                 if (checked) {
                     Int64 id;
-                    mAdapter->GetItemId(position, &id);
-                    (*mCheckedIdStates)[id] = position;
-                } else {
+                    adapter->GetItemId(position, &id);
+                    mCheckedIdStates->Put(id, CoreUtils::Convert(position));
+                }
+                else {
                     Int64 id;
-                    mAdapter->GetItemId(position, &id);
-                    mCheckedIdStates->Erase(id);
+                    adapter->GetItemId(position, &id);
+                    mCheckedIdStates->Delete(id);
                 }
             }
             if (checked) {
                 mCheckedItemCount++;
-            } else {
+            }
+            else {
                 mCheckedItemCount--;
             }
             if (mChoiceActionMode != NULL) {
@@ -2427,29 +3165,24 @@ Boolean AbsListView::PerformItemClick(
             checkedStateChanged = TRUE;
         }
         else if (mChoiceMode == IAbsListView::CHOICE_MODE_SINGLE) {
-            HashMap<Int32, Boolean>::Iterator it = mCheckStates->Find(position);
-            Boolean checked;
-            if (it != mCheckStates->End()) {
-                checked = it->mSecond;
-            }
-            else{
-                checked = FALSE;
-            }
+            mCheckStates->Get(position, FALSE, &res);
+            Boolean checked = !res;
 
             if (checked) {
                 mCheckStates->Clear();
-                (*mCheckStates)[position] = TRUE;
+                mCheckStates->Put(position, TRUE);
                 Boolean hasId;
-                mAdapter->HasStableIds(&hasId);
+                adapter->HasStableIds(&hasId);
                 if (mCheckedIdStates != NULL && hasId) {
                     mCheckedIdStates->Clear();
                     Int64 itemId;
-                    mAdapter->GetItemId(position, &itemId);
-                    (*mCheckedIdStates)[itemId] = position;
+                    adapter->GetItemId(position, &itemId);
+                    mCheckedIdStates->Put(itemId, CoreUtils::Convert(position));
                 }
                 mCheckedItemCount = 1;
             }
-            else if (mCheckStates->IsEmpty() || !(*mCheckStates)[0]) {
+            else if ((mCheckStates->GetSize(&size), size) = 0
+                    || (mCheckStates->ValueAt(0, &res), !res)) {
                 mCheckedItemCount = 0;
             }
             checkedStateChanged = TRUE;
@@ -2461,67 +3194,57 @@ Boolean AbsListView::PerformItemClick(
     }
 
     if (dispatchItemClick) {
-        handled |= AdapterView::PerformItemClick(view, position, id);
+        Boolean re;
+        AdapterView::PerformItemClick(view, position, id, &re);
+        handled |= re;
     }
 
-    return handled;
+    *result = handled;
+    return NOERROR;
 }
 
-/**
- * Perform a quick, in-place update of the checked or activated state
- * on all visible item views. This should only be called when a valid
- * choice mode is active.
- */
-
-void AbsListView::UpdateOnScreenCheckedViews() {
+void AbsListView::UpdateOnScreenCheckedViews()
+{
     Int32 firstPos = mFirstPosition;
-    Int32 count = GetChildCount();
-    AutoPtr<IContext> context = GetContext();
-    AutoPtr<IApplicationInfo> info;
+    Int32 count;
+    GetChildCount(&count);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
 
+    AutoPtr<IApplicationInfo> info;
     context->GetApplicationInfo((IApplicationInfo**)&info);
 
     Int32 sdkVersion;
     info->GetTargetSdkVersion(&sdkVersion);
-    Boolean useActivated = sdkVersion >= 11;
+    Boolean useActivated = sdkVersion >= Build::VERSION_CODES::HONEYCOMB;
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         Int32 position = firstPos + i;
-        AutoPtr<ICheckable> checkable = (ICheckable*)child->Probe(EIID_ICheckable);
 
+        AutoPtr<ICheckable> checkable = ICheckable::Probe(child);
+        Boolean res;
+        mCheckStates->Get(position, &res);
         if (checkable != NULL) {
-            checkable ->SetChecked((*mCheckStates)[position]);
-        } else if (useActivated) {
-            child->SetActivated((*mCheckStates)[position]);
+            checkable ->SetChecked(res);
+        }
+        else if (useActivated) {
+            child->SetActivated(res);
         }
     }
 
 }
 
-/**
- * @see #setChoiceMode(Int32)
- *
- * @return The current choice mode
- */
 ECode AbsListView::GetChoiceMode(
-        /* [out] */ Int32* result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
     *result = mChoiceMode;
     return NOERROR;
 }
 
-/**
- * Defines the choice behavior for the List. By default, Lists do not have any choice behavior
- * ({@link #CHOICE_MODE_NONE}). By setting the choiceMode to {@link #CHOICE_MODE_SINGLE}, the
- * List allows up to one item to  be in a chosen state. By setting the choiceMode to
- * {@link #CHOICE_MODE_MULTIPLE}, the list allows any number of items to be chosen.
- *
- * @param choiceMode One of {@link #CHOICE_MODE_NONE}, {@link #CHOICE_MODE_SINGLE}, or
- * {@link #CHOICE_MODE_MULTIPLE}
- */
 ECode AbsListView::SetChoiceMode(
-        /* [in] */ Int32 choiceMode)
+    /* [in] */ Int32 choiceMode)
 {
     mChoiceMode = choiceMode;
     if (mChoiceActionMode != NULL) {
@@ -2530,12 +3253,12 @@ ECode AbsListView::SetChoiceMode(
     }
     if (mChoiceMode != IAbsListView::CHOICE_MODE_NONE) {
         if (mCheckStates == NULL) {
-            mCheckStates = new HashMap<Int32, Boolean>();
+            CSparseBooleanArray::New(0, (ISparseBooleanArray**)&mCheckStates);
         }
-        if (mCheckedIdStates == NULL && mAdapter != NULL) {
-            Boolean stableIds;
-            mAdapter->HasStableIds(&stableIds);
-            if(stableIds) mCheckedIdStates = new HashMap<Int64, Int32>();
+        Boolean stableIds;
+        if (mCheckedIdStates == NULL && mAdapter != NULL &&
+            (IAdapter::Probe(mAdapter)->HasStableIds(&stableIds), stableIds)) {
+            CInt64SparseArray::New(0, (IInt64SparseArray**)&mCheckedIdStates);
         }
         // Modal multi-choice mode only has choices when the mode is active. Clear them.
         if (mChoiceMode == IAbsListView::CHOICE_MODE_MULTIPLE_MODAL) {
@@ -2546,17 +3269,8 @@ ECode AbsListView::SetChoiceMode(
     return NOERROR;
 }
 
-/**
- * Set a {@link MultiChoiceModeListener} that will manage the lifecycle of the
- * selection {@link ActionMode}. Only used when the choice mode is set to
- * {@link #CHOICE_MODE_MULTIPLE_MODAL}.
- *
- * @param listener Listener that will manage the selection mode
- *
- * @see #setChoiceMode(Int32)
- */
 ECode AbsListView::SetMultiChoiceModeListener(
-        /* [in] */ IMultiChoiceModeListener* listener)
+    /* [in] */ IMultiChoiceModeListener* listener)
 {
     if (mMultiChoiceModeCallback == NULL) {
         mMultiChoiceModeCallback = new MultiChoiceModeWrapper(this);
@@ -2565,157 +3279,187 @@ ECode AbsListView::SetMultiChoiceModeListener(
     return NOERROR;
 }
 
-/**
- * @return TRUE if all list content currently fits within the view boundaries
- */
 Boolean AbsListView::ContentFits()
 {
-    Int32 childCount = GetChildCount();
-    if(childCount == 0)
-    {
+    Int32 childCount;
+    GetChildCount(&childCount);
+    if (childCount == 0) {
         return TRUE;
     }
-    if(childCount != mItemCount)
-    {
+    if (childCount != mItemCount) {
         return FALSE;
     }
 
+    AutoPtr<IView> child;
+    GetChildAt(0, (IView**)&child);
     Int32 childTop;
+    child->GetTop(&childTop);
+    child = NULL;
+    GetChildAt(childCount - 1, (IView**)&child);
     Int32 childBottom;
-    GetChildAt(0)->GetTop(&childTop);
-    GetChildAt(childCount - 1)->GetBottom(&childBottom);
+    child->GetBottom(&childBottom);
 
-    return (childTop >= mListPadding->mTop && childBottom <= GetHeight() - mListPadding->mBottom);
+    Int32 height;
+    GetHeight(&height);
+
+    return (childTop >= mListPadding->mTop && childBottom <= height - mListPadding->mBottom);
 }
 
-/**
- * Enables fast scrolling by letting the user quickly scroll through lists by
- * dragging the fast scroll thumb. The adapter attached to the list may want
- * to implement {@link SectionIndexer} if it wishes to display alphabet preview and
- * jump between sections of the list.
- * @see SectionIndexer
- * @see #isFastScrollEnabled()
- * @param enabled whether or not to enable fast scrolling
- */
 ECode AbsListView::SetFastScrollEnabled(
     /* [in] */ Boolean enabled)
 {
-    mFastScrollEnabled = enabled;
-    if (enabled) {
-        if (mFastScroller == NULL) {
-            AutoPtr<IContext> context = GetContext();
-            mFastScroller = new FastScroller(context, this);
+    if (mFastScrollEnabled != enabled) {
+        mFastScrollEnabled = enabled;
+
+        if (IsOwnerThread()) {
+            SetFastScrollerEnabledUiThread(enabled);
         }
+        else {
+            AutoPtr<SetFastScrollRunnable> runnable = new SetFastScrollRunnable(this, enabled, 0);
+            Boolean res;
+            Post(runnable, &res);
+        }
+    }
+
+    return NOERROR;
+}
+
+void AbsListView::SetFastScrollerEnabledUiThread(
+    /* [in] */ Boolean enabled)
+{
+    if (mFastScroll != NULL) {
+        mFastScroll->SetEnabled(enabled);
+    }
+    else if (enabled) {
+        mFastScroll = new FastScroller((IAbsListView*)this, mFastScrollStyle);
+        mFastScroll->SetEnabled(TRUE);
+    }
+
+    ResolvePadding();
+
+    if (mFastScroll != NULL) {
+        mFastScroll->UpdateLayout();
+    }
+}
+
+ECode AbsListView::SetFastScrollStyle(
+    /* [in] */ Int32 styleResId)
+{
+    if (mFastScroll == NULL) {
+        mFastScrollStyle = styleResId;
     }
     else {
-        if (mFastScroller != NULL) {
-            mFastScroller->Stop();
-            mFastScroller = NULL;
+        mFastScroll->SetStyle(styleResId);
+    }
+    return NOERROR;
+}
+
+ECode AbsListView::SetFastScrollAlwaysVisible(
+    /* [in] */ Boolean alwaysShow)
+{
+     if (mFastScrollAlwaysVisible != alwaysShow) {
+        if (alwaysShow && !mFastScrollEnabled) {
+            SetFastScrollEnabled(TRUE);
+        }
+
+        mFastScrollAlwaysVisible = alwaysShow;
+
+        if (IsOwnerThread()) {
+            SetFastScrollerAlwaysVisibleUiThread(alwaysShow);
+        }
+        else {
+            AutoPtr<SetFastScrollRunnable> runnable = new SetFastScrollRunnable(this, alwaysShow, 1);
+            Boolean res;
+            Post(runnable, &res);
         }
     }
+
     return NOERROR;
 }
 
-/**
- * Set whether or not the fast scroller should always be shown in place of the
- * standard scrollbars. Fast scrollers shown in this way will not fade out and will
- * be a permanent fixture within the list. Best combined with an inset scroll bar style
- * that will ensure enough padding. This will enable fast scrolling if it is not
- * already enabled.
- *
- * @param alwaysShow TRUE if the fast scroller should always be displayed.
- * @see #setScrollBarStyle(Int32)
- * @see #setFastScrollEnabled(Boolean)
- */
-ECode AbsListView::SetFastScrollAlwaysVisible(
-        /* [in] */ Boolean alwaysShow)
+void AbsListView::SetFastScrollerAlwaysVisibleUiThread(
+    /* [in] */ Boolean alwaysShow)
 {
-    if (alwaysShow && !mFastScrollEnabled) {
-        SetFastScrollEnabled(TRUE);
+    if (mFastScroll != NULL) {
+        mFastScroll->SetAlwaysShow(alwaysShow);
     }
+}
 
-    if (mFastScroller != NULL) {
-        mFastScroller->SetAlwaysShow(alwaysShow);
+Boolean AbsListView::IsOwnerThread()
+{
+    return mOwnerThread == Thread::GetCurrentThread();
+}
+
+ECode AbsListView::IsFastScrollAlwaysVisible(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    if (mFastScroll == NULL) {
+        *result = mFastScrollEnabled && mFastScrollAlwaysVisible;
+        return NOERROR;
     }
-
-    ComputeOpaqueFlags();
-    RecomputePadding();
-    return NOERROR;
-}
-
-/**
- * Returns TRUE if the fast scroller is set to always show on this view rather than
- * fade out when not in use.
- *
- * @return TRUE if the fast scroller will always show.
- * @see #setFastScrollAlwaysVisible(Boolean)
- */
-Boolean AbsListView::IsFastScrollAlwaysVisible()
-{
-    return mFastScrollEnabled
-        && mFastScroller != NULL
-        && mFastScroller->IsAlwaysShowEnabled();
-}
-
-//@Override
-Int32 AbsListView::GetVerticalScrollbarWidth()
-{
-    using Elastos::Core::Math;
-    if (IsFastScrollAlwaysVisible()) {
-        return Math::Max(View::GetVerticalScrollbarWidth(), mFastScroller->GetWidth());
+    else {
+        *result = mFastScroll->IsEnabled() && mFastScroll->IsAlwaysShowEnabled();
+        return NOERROR;
     }
-    return View::GetVerticalScrollbarWidth();
 }
 
-/**
- * Returns the current state of the fast scroll feature.
- * @see #setFastScrollEnabled(Boolean)
- * @return TRUE if fast scroll is enabled, FALSE otherwise
- */
-Boolean AbsListView::IsFastScrollEnabled()
+ECode AbsListView::GetVerticalScrollbarWidth(
+    /* [out] */ Int32* width)
 {
-    return mFastScrollEnabled;
+    VALIDATE_NOT_NULL(width);
+
+    if (mFastScroll != NULL && mFastScroll->IsEnabled()) {
+        Int32 w;
+        View::GetVerticalScrollbarWidth(&w);
+        *width = Elastos::Core::Math::Max(w, mFastScroll->GetWidth());
+        return NOERROR;
+    }
+    return View::GetVerticalScrollbarWidth(width);
 }
 
-//@Override
+ECode AbsListView::IsFastScrollEnabled(
+    /* [out] */ Boolean* isEnabled)
+{
+    VALIDATE_NOT_NULL(isEnabled);
+
+    if (mFastScroll == NULL) {
+        *isEnabled = mFastScrollEnabled;
+        return NOERROR;
+    }
+    else {
+        *isEnabled = mFastScroll->IsEnabled();
+        return NOERROR;
+    }
+}
+
 ECode AbsListView::SetVerticalScrollbarPosition(
     /* [in] */ Int32 position)
 {
     View::SetVerticalScrollbarPosition(position);
-    if (mFastScroller != NULL) {
-        mFastScroller->SetScrollbarPosition(position);
+    if (mFastScroll != NULL) {
+        mFastScroll->SetScrollbarPosition(position);
     }
     return NOERROR;
 }
 
-/**
- * If fast scroll is visible, then don't draw the vertical scrollbar.
- * @hide
- */
-//@Override
-Boolean AbsListView::IsVerticalScrollBarHidden()
+ECode AbsListView::SetScrollBarStyle(
+    /* [in] */ Int32 style)
 {
-    return mFastScroller != NULL && mFastScroller->IsVisible();
+    View::SetScrollBarStyle(style);
+    if (mFastScroll != NULL) {
+        mFastScroll->SetScrollBarStyle(style);
+    }
+    return NOERROR;
 }
 
-/**
- * When smooth scrollbar is enabled, the position and size of the scrollbar thumb
- * is computed based on the number of visible pixels in the visible items. This
- * however assumes that all list items have the same height. If you use a list in
- * which items have different heights, the scrollbar will change appearance as the
- * user scrolls through the list. To avoid this issue, you need to disable this
- * property.
- *
- * When smooth scrollbar is disabled, the position and size of the scrollbar thumb
- * is based solely on the number of items in the adapter and the position of the
- * visible items inside the adapter. This provides a stable scrollbar as the user
- * navigates through a list of items with varying heights.
- *
- * @param enabled Whether or not to enable smooth scrollbar.
- *
- * @see #setSmoothScrollbarEnabled(Boolean)
- * @attr ref android.R.styleable#AbsListView_smoothScrollbar
- */
+Boolean AbsListView::IsVerticalScrollBarHidden()
+{
+    Boolean res;
+    IsFastScrollEnabled(&res);
+    return res;
+}
+
 ECode AbsListView::SetSmoothScrollbarEnabled(
     /* [in] */ Boolean enabled)
 {
@@ -2724,24 +3468,14 @@ ECode AbsListView::SetSmoothScrollbarEnabled(
     return NOERROR;
 }
 
-/**
- * Returns the current state of the fast scroll feature.
- *
- * @return True if smooth scrollbar is enabled is enabled, FALSE otherwise.
- *
- * @see #setSmoothScrollbarEnabled(Boolean)
- */
-//@ViewDebug.ExportedProperty
-Boolean AbsListView::IsSmoothScrollbarEnabled()
+ECode AbsListView::IsSmoothScrollbarEnabled(
+    /* [out] */ Boolean* isEnabled)
 {
-    return mSmoothScrollbarEnabled;
+    VALIDATE_NOT_NULL(isEnabled);
+    *isEnabled = mSmoothScrollbarEnabled;
+    return NOERROR;
 }
 
-/**
- * Set the listener that will receive notifications every time the list scrolls.
- *
- * @param l the scroll listener
- */
 ECode AbsListView::SetOnScrollListener(
     /* [in] */ IAbsListViewOnScrollListener* l)
 {
@@ -2751,19 +3485,17 @@ ECode AbsListView::SetOnScrollListener(
     return NOERROR;
 }
 
-/**
- * Notify our scroll listener (if there is one) of a change in scroll state
- */
 ECode AbsListView::InvokeOnItemScrollListener()
 {
-    if (mFastScroller != NULL) {
-        mFastScroller->OnScroll(THIS_PROBE(IAbsListView),
-                mFirstPosition, GetChildCount(), mItemCount);
+    Int32 count;
+    GetChildCount(&count);
+    if (mFastScroll != NULL) {
+        mFastScroll->OnScroll(mFirstPosition, count, mItemCount);
     }
 
     if (mOnScrollListener != NULL) {
         mOnScrollListener->OnScroll(THIS_PROBE(IAbsListView),
-            mFirstPosition, GetChildCount(), mItemCount);
+                mFirstPosition, count, mItemCount);
     }
 
     OnScrollChanged(0, 0, 0, 0); // dummy values, View's implementation does not use these.
@@ -2771,20 +3503,22 @@ ECode AbsListView::InvokeOnItemScrollListener()
     return NOERROR;
 }
 
-//@Override
 ECode AbsListView::SendAccessibilityEvent(
-        /* [in] */ Int32 eventType)
+    /* [in] */ Int32 eventType)
 {
     // Since this class calls onScrollChanged even if the mFirstPosition and the
     // child count have not changed we will avoid sending duplicate accessibility
     // events.
     if (eventType == IAccessibilityEvent::TYPE_VIEW_SCROLLED) {
-        Int32 firstVisiblePosition = GetFirstVisiblePosition();
-        Int32 lastVisiblePosition = GetLastVisiblePosition();
+        Int32 firstVisiblePosition;
+        GetFirstVisiblePosition(&firstVisiblePosition);
+        Int32 lastVisiblePosition;
+        GetLastVisiblePosition(&lastVisiblePosition);
         if (mLastAccessibilityScrollEventFromIndex == firstVisiblePosition
-            && mLastAccessibilityScrollEventToIndex == lastVisiblePosition) {
-                return NOERROR;
-        } else {
+                && mLastAccessibilityScrollEventToIndex == lastVisiblePosition) {
+            return NOERROR;
+        }
+        else {
             mLastAccessibilityScrollEventFromIndex = firstVisiblePosition;
             mLastAccessibilityScrollEventToIndex = lastVisiblePosition;
         }
@@ -2792,100 +3526,130 @@ ECode AbsListView::SendAccessibilityEvent(
     return View::SendAccessibilityEvent(eventType);
 }
 
-//@Override
 ECode AbsListView::OnInitializeAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event)
+    /* [in] */ IAccessibilityEvent* event)
 {
     FAIL_RETURN(View::OnInitializeAccessibilityEvent(event));
-    String classNameStr("AbsListView");
-    AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
-    event->SetClassName(className);
+    IAccessibilityRecord::Probe(event)->SetClassName(CoreUtils::Convert("AbsListView"));
+
     return NOERROR;
 }
 
-//@Override
 ECode AbsListView::OnInitializeAccessibilityNodeInfo(
-        /* [in] */ IAccessibilityNodeInfo* info)
+    /* [in] */ IAccessibilityNodeInfo* info)
 {
     View::OnInitializeAccessibilityNodeInfo(info);
-    String classNameStr("AbsListView");
-    AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
-    info->SetClassName(className);
-    if (IsEnabled()) {
-        if (GetFirstVisiblePosition() > 0) {
+    info->SetClassName(CoreUtils::Convert("AbsListView"));
+    Boolean res;
+    if (IsEnabled(&res), res) {
+        if (CanScrollUp()) {
             info->AddAction(IAccessibilityNodeInfo::ACTION_SCROLL_BACKWARD);
+            info->SetScrollable(TRUE);
         }
-        if (GetLastVisiblePosition() < GetCount() - 1) {
+        if (CanScrollDown()) {
             info->AddAction(IAccessibilityNodeInfo::ACTION_SCROLL_FORWARD);
+            info->SetScrollable(TRUE);
         }
     }
     return NOERROR;
 }
 
-//@Override
-Boolean AbsListView::PerformAccessibilityAction(
+Int32 AbsListView::GetSelectionModeForAccessibility() {
+    Int32 choiceMode;
+    GetChoiceMode(&choiceMode);
+    switch (choiceMode) {
+        case IAbsListView::CHOICE_MODE_NONE:
+            return IAccessibilityNodeInfoCollectionInfo::SELECTION_MODE_NONE;
+        case IAbsListView::CHOICE_MODE_SINGLE:
+            return IAccessibilityNodeInfoCollectionInfo::SELECTION_MODE_SINGLE;
+        case IAbsListView::CHOICE_MODE_MULTIPLE:
+        case IAbsListView::CHOICE_MODE_MULTIPLE_MODAL:
+            return IAccessibilityNodeInfoCollectionInfo::SELECTION_MODE_MULTIPLE;
+        default:
+            return IAccessibilityNodeInfoCollectionInfo::SELECTION_MODE_NONE;
+    }
+}
+
+ECode AbsListView::PerformAccessibilityAction(
     /* [in] */ Int32 action,
-    /* [in] */ IBundle* arguments)
+    /* [in] */ IBundle* arguments,
+    /* [out] */ Boolean* res)
 {
-    if (View::PerformAccessibilityAction(action, arguments)) {
-        return TRUE;
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+
+    Boolean result;
+    if (View::PerformAccessibilityAction(action, arguments, &result), result) {
+        *res = TRUE;
+        return NOERROR;
     }
-    switch(action)
-    {
-        case IAccessibilityNodeInfo::ACTION_SCROLL_FORWARD:
-        {
-            if (IsEnabled() && (GetLastVisiblePosition() < GetCount() - 1))
-            {
-                Int32 viewportHeight = GetHeight() - mListPadding->mTop - mListPadding->mBottom;
+
+    switch(action) {
+        case IAccessibilityNodeInfo::ACTION_SCROLL_FORWARD: {
+            Int32 count;
+            GetCount(&count);
+            Int32 pos;
+            GetLastVisiblePosition(&pos);
+            if ((IsEnabled(&result), result) && (pos < count - 1)) {
+                Int32 h;
+                GetHeight(&h);
+                Int32 viewportHeight = h - mListPadding->mTop - mListPadding->mBottom;
                 SmoothScrollBy(viewportHeight, PositionScroller::SCROLL_DURATION);
-                return TRUE;
+                *res = TRUE;
+                return NOERROR;
             }
         }
-        return FALSE;
+        return NOERROR;
 
-        case IAccessibilityNodeInfo::ACTION_SCROLL_BACKWARD:
-        {
-            if (IsEnabled() && mFirstPosition > 0) {
-                Int32 viewportHeight = GetHeight() - mListPadding->mTop - mListPadding->mBottom;
+        case IAccessibilityNodeInfo::ACTION_SCROLL_BACKWARD: {
+            if ((IsEnabled(&result), result) && mFirstPosition > 0) {
+                Int32 h;
+                GetHeight(&h);
+                Int32 viewportHeight = h - mListPadding->mTop - mListPadding->mBottom;
                 SmoothScrollBy(-viewportHeight, PositionScroller::SCROLL_DURATION);
-                return TRUE;
+                *res = TRUE;
+                return NOERROR;
             }
         }
-        return FALSE;
+        return NOERROR;
     }
-    return FALSE;//
+
+    return NOERROR;
 }
 
-/**
- * Indicates whether the children's drawing cache is used during a scroll.
- * By default, the drawing cache is enabled but this will consume more memory.
- *
- * @return TRUE if the scrolling cache is enabled, FALSE otherwise
- *
- * @see #setScrollingCacheEnabled(Boolean)
- * @see View#setDrawingCacheEnabled(Boolean)
- */
-//@ViewDebug.ExportedProperty
-Boolean AbsListView::IsScrollingCacheEnabled()
+ECode AbsListView::FindViewByAccessibilityIdTraversal(
+    /* [in] */ Int32 accessibilityId,
+    /* [out] */ IView** view)
 {
-    return mScrollingCacheEnabled;
+    VALIDATE_NOT_NULL(view);
+
+    Int32 id;
+    if (accessibilityId == (GetAccessibilityViewId(&id), id)) {
+        *view = THIS_PROBE(IView);
+        REFCOUNT_ADD(*view);
+        return NOERROR;
+    }
+    // If the data changed the children are invalid since the data model changed.
+    // Hence, we pretend they do not exist. After a layout the children will sync
+    // with the model at which point we notify that the accessibility state changed,
+    // so a service will be able to re-fetch the views.
+    if (mDataChanged) {
+        *view = NULL;
+        return NOERROR;
+    }
+
+    return ViewGroup::FindViewByAccessibilityIdTraversal(accessibilityId, view);
 }
 
-/**
- * Enables or disables the children's drawing cache during a scroll.
- * By default, the drawing cache is enabled but this will use more memory.
- *
- * When the scrolling cache is enabled, the caches are kept after the
- * first scrolling. You can manually clear the cache by calling
- * {@link android.view.ViewGroup#setChildrenDrawingCacheEnabled(Boolean)}.
- *
- * @param enabled TRUE to enable the scroll cache, FALSE otherwise
- *
- * @see #isScrollingCacheEnabled()
- * @see View#setDrawingCacheEnabled(Boolean)
- */
+ECode AbsListView::IsScrollingCacheEnabled(
+    /* [out] */ Boolean* isEnabled)
+{
+    VALIDATE_NOT_NULL(isEnabled);
+    *isEnabled = mScrollingCacheEnabled;
+
+    return NOERROR;
+}
+
 ECode AbsListView::SetScrollingCacheEnabled(
     /* [in] */ Boolean enabled)
 {
@@ -2897,16 +3661,6 @@ ECode AbsListView::SetScrollingCacheEnabled(
     return NOERROR;
 }
 
-/**
- * Enables or disables the type filter window. If enabled, typing when
- * this view has focus will filter the children to match the users input.
- * Note that the {@link Adapter} used by this view must implement the
- * {@link Filterable} interface.
- *
- * @param textFilterEnabled TRUE to enable type filtering, FALSE otherwise
- *
- * @see Filterable
- */
 ECode AbsListView::SetTextFilterEnabled(
     /* [in] */ Boolean textFilterEnabled)
 {
@@ -2915,30 +3669,24 @@ ECode AbsListView::SetTextFilterEnabled(
     return NOERROR;
 }
 
-/**
- * Indicates whether type filtering is enabled for this view
- *
- * @return TRUE if type filtering is enabled, FALSE otherwise
- *
- * @see #setTextFilterEnabled(Boolean)
- * @see Filterable
- */
-//@ViewDebug.ExportedProperty
-Boolean AbsListView::IsTextFilterEnabled()
+ECode AbsListView::IsTextFilterEnabled(
+    /* [out] */ Boolean* isEnabled)
 {
-    return mTextFilterEnabled;
+    VALIDATE_NOT_NULL(isEnabled);
+    *isEnabled = mTextFilterEnabled;
+
+    return NOERROR;
 }
 
-//@Override
 ECode AbsListView::GetFocusedRect(
     /* [in] */ IRect* r)
 {
-
-    AutoPtr<IView> view = GetSelectedView();
+    AutoPtr<IView> view;
+    GetSelectedView((IView**)&view);
     if (view != NULL) {
         AutoPtr<IViewParent> vp;
         view->GetParent((IViewParent**)&vp);
-        if (IView::Probe(vp) == THIS_PROBE(IView)) {
+        if (IVIEW_PROBE(vp) == THIS_PROBE(IView)) {
             // the focused rectangle of the selected view offset into the
             // coordinate space of this view.
             view->GetFocusedRect(r);
@@ -2956,32 +3704,24 @@ ECode AbsListView::GetFocusedRect(
 ECode AbsListView::UseDefaultSelector()
 {
     AutoPtr<IDrawable> drawable;
-    GetResources()->GetDrawable(
-        R::drawable::list_selector_background,
-        (IDrawable**)&drawable);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    context->GetDrawable(
+            R::drawable::list_selector_background, (IDrawable**)&drawable);
     SetSelector(drawable);
+
     return NOERROR;
 }
 
-/**
- * Indicates whether the content of this view is pinned to, or stacked from,
- * the bottom edge.
- *
- * @return TRUE if the content is stacked from the bottom edge, FALSE otherwise
- */
-//@ViewDebug.ExportedProperty
-Boolean AbsListView::IsStackFromBottom()
+ECode AbsListView::IsStackFromBottom(
+    /* [out] */ Boolean* isStackFromBottom)
 {
-    return mStackFromBottom;
+    VALIDATE_NOT_NULL(isStackFromBottom);
+    *isStackFromBottom = mStackFromBottom;
+
+    return NOERROR;
 }
 
-/**
- * When stack from bottom is set to TRUE, the list fills its content starting from
- * the bottom of the view.
- *
- * @param stackFromBottom TRUE to pin the view's content to the bottom edge,
- *        FALSE to pin the view's content to the top edge
- */
 ECode AbsListView::SetStackFromBottom(
     /* [in] */ Boolean stackFromBottom)
 {
@@ -2995,7 +3735,9 @@ ECode AbsListView::SetStackFromBottom(
 
 ECode AbsListView::RequestLayoutIfNecessary()
 {
-    if (GetChildCount() > 0) {
+    Int32 count;
+    GetChildCount(&count);
+    if (count > 0) {
         ResetList();
         RequestLayout();
         Invalidate();
@@ -3004,7 +3746,6 @@ ECode AbsListView::RequestLayoutIfNecessary()
     return NOERROR;
 }
 
-//@Override
 AutoPtr<IParcelable> AbsListView::OnSaveInstanceState()
 {
     /*
@@ -3019,7 +3760,7 @@ AutoPtr<IParcelable> AbsListView::OnSaveInstanceState()
 
     AutoPtr<CAbsListViewSavedState> ss;
     ASSERT_SUCCEEDED(CAbsListViewSavedState::NewByFriend(
-        superState, (CAbsListViewSavedState**)&ss));
+            superState, (CAbsListViewSavedState**)&ss));
 
     if (mPendingSync != NULL) {
         // Just keep what we last restored.
@@ -3036,15 +3777,18 @@ AutoPtr<IParcelable> AbsListView::OnSaveInstanceState()
         return (IParcelable*)ss->Probe(EIID_IParcelable);
     }
 
-    Boolean haveChildren = GetChildCount() > 0 && mItemCount > 0;
-    Int64 selectedId = GetSelectedItemId();
+    Int32 count;
+    GetChildCount(&count);
+    Boolean haveChildren = count > 0 && mItemCount > 0;
+    Int64 selectedId;
+    GetSelectedItemId(&selectedId);
     ss->mSelectedId = selectedId;
-    ss->mHeight = GetHeight();
+    GetHeight(&ss->mHeight);
 
     if (selectedId >= 0) {
         // Remember the selection
         ss->mViewTop = this->mSelectedTop;
-        ss->mPosition = GetSelectedItemPosition();
+        GetSelectedItemPosition(&ss->mPosition);
         ss->mFirstId = IAdapterView::INVALID_POSITION;
     }
     else {
@@ -3058,14 +3802,15 @@ AutoPtr<IParcelable> AbsListView::OnSaveInstanceState()
             // (2) Being "at the top" seems like a special case, anyway,
             // and the user wouldn't expect to end up somewhere else when
             // they revisit the list even if its content has changed.
-            AutoPtr<IView> v = GetChildAt(0);
+            AutoPtr<IView> v;
+            GetChildAt(0, (IView**)&v);
             v->GetTop(&ss->mViewTop);
             Int32 firstPos = mFirstPosition;
             if (firstPos >= mItemCount) {
                 firstPos = mItemCount - 1;
             }
             ss->mPosition = firstPos;
-            mAdapter->GetItemId(firstPos, &ss->mFirstId);
+            IAdapter::Probe(mAdapter)->GetItemId(firstPos, &ss->mFirstId);
         }
         else {
             ss->mViewTop = 0;
@@ -3078,7 +3823,7 @@ AutoPtr<IParcelable> AbsListView::OnSaveInstanceState()
         AutoPtr<IEditText> textFilter = mTextFilter;
         if (textFilter != NULL) {
             AutoPtr<ICharSequence> filterText;
-            textFilter->GetText((ICharSequence**)&filterText);
+            ITextView::Probe(textFilter)->GetText((ICharSequence**)&filterText);
             if (filterText->Probe(EIID_IEditable) != NULL) {
                 filterText->ToString(&(ss->mFilter));
             }
@@ -3088,11 +3833,24 @@ AutoPtr<IParcelable> AbsListView::OnSaveInstanceState()
     ss->mInActionMode = (mChoiceMode == IAbsListView::CHOICE_MODE_MULTIPLE_MODAL) && (mChoiceActionMode != NULL);
 
     if (mCheckStates != NULL) {
-        ss->mCheckState = new HashMap<Int32, Boolean>(*(mCheckStates.Get()));
+        AutoPtr<IInterface> obj;
+        ICloneable::Probe(mCheckStates)->Clone((IInterface**)&obj);
+        ss->mCheckState = ISparseBooleanArray::Probe(obj);
     }
 
     if (mCheckedIdStates != NULL) {
-        ss->mCheckIdState = new HashMap<Int64, Int32>(*(mCheckedIdStates.Get()));
+        AutoPtr<IInt64SparseArray> idState;
+        CInt64SparseArray::New((IInt64SparseArray**)&idState);
+        Int32 count;
+        mCheckedIdStates->GetSize(&count);
+        for (Int32 i = 0; i < count; i++) {
+            Int64 key;
+            mCheckedIdStates->KeyAt(i, &key);
+            AutoPtr<IInterface> obj;
+            mCheckedIdStates->ValueAt(i, (IInterface**)&obj);
+            idState->Put(key, obj);
+        }
+        ss->mCheckIdState = idState;
     }
     ss->mCheckedItemCount = mCheckedItemCount;
 
@@ -3103,14 +3861,12 @@ AutoPtr<IParcelable> AbsListView::OnSaveInstanceState()
     return (IParcelable*)ss->Probe(EIID_IParcelable);
 }
 
-//@Override
 void AbsListView::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
     AutoPtr<CAbsListViewSavedState> ss =
-        (CAbsListViewSavedState*)IAbsListViewSavedState::Probe(state);
-    if(!ss)
-        return;
+            (CAbsListViewSavedState*)IAbsListViewSavedState::Probe(state);
+    if (!ss) return;
 
     AutoPtr<IParcelable> superState;
     ss->GetSuperState((IParcelable**)&superState);
@@ -3156,36 +3912,31 @@ void AbsListView::OnRestoreInstanceState(
 
     if (ss->mInActionMode && mChoiceMode == IAbsListView::CHOICE_MODE_MULTIPLE_MODAL &&
         mMultiChoiceModeCallback != NULL) {
-            mChoiceActionMode = StartActionMode(mMultiChoiceModeCallback);
+                StartActionMode(IActionModeCallback::Probe(mMultiChoiceModeCallback),
+                        (IActionMode**)&mChoiceActionMode);
     }
 
     RequestLayout();
-
 }
 
 Boolean AbsListView::AcceptFilter()
 {
     AutoPtr<IAdapter> adapter;
-    ((IAdapterView*)(this->Probe(EIID_IAdapterView)))->GetAdapter((IAdapter**)&adapter);
-    AutoPtr<IFilterable> temp = (IFilterable*)adapter->Probe(EIID_IFilterable);
-    if(temp == NULL || !mTextFilterEnabled)
-    {
+    THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
+    AutoPtr<IFilterable> temp = IFilterable::Probe(adapter);
+    if (temp == NULL || !mTextFilterEnabled) {
         return FALSE;
-    }else{
+    }
+    else {
         AutoPtr<IFilter> filter;
         temp->GetFilter((IFilter**)&filter);
-        if(filter != NULL)
+        if (filter != NULL){
             return TRUE;
+        }
     }
-    return FALSE;//
+    return FALSE;
 }
 
-/**
- * Sets the initial value for the text filter.
- * @param filterText The text to use for the filter.
- *
- * @see #setTextFilterEnabled
- */
 ECode AbsListView::SetFilterText(
     /* [in] */ const String& filterText)
 {
@@ -3194,18 +3945,16 @@ ECode AbsListView::SetFilterText(
         CreateTextFilter(FALSE);
         // This is going to call our listener onTextChanged, but we might not
         // be ready to bring up a window yet
-        AutoPtr<ICharSequence> cFilterText;
-        FAIL_RETURN(CStringWrapper::New(filterText, (ICharSequence**)&cFilterText));
-        mTextFilter->SetText(cFilterText);
+        ITextView::Probe(mTextFilter)->SetText(CoreUtils::Convert(filterText));
         mTextFilter->SetSelection(filterText.GetLength());
 
-        AutoPtr<IFilterable> filterable = (IFilterable*)mAdapter->Probe(EIID_IFilterable);
+        AutoPtr<IFilterable> filterable = IFilterable::Probe(mAdapter);
         if (filterable) {
             // if mPopup is non-NULL, then onTextChanged will do the filtering
             if (mPopup == NULL) {
                 AutoPtr<IFilter> f;
                 filterable->GetFilter((IFilter**)&f);
-                f->DoFilter(cFilterText);
+                f->DoFilter(CoreUtils::Convert(filterText));
             }
             // Set filtered to TRUE so we will display the filter window when our main
             // window is ready
@@ -3216,40 +3965,43 @@ ECode AbsListView::SetFilterText(
     return NOERROR;
 }
 
-/**
- * Returns the list's text filter, if available.
- * @return the list's text filter or NULL if filtering isn't enabled
- */
-AutoPtr<ICharSequence> AbsListView::GetTextFilter()
+ECode AbsListView::GetTextFilter(
+    /* [out] */ ICharSequence** textFilter)
 {
+    VALIDATE_NOT_NULL(textFilter);
+    *textFilter = NULL;
+
     if (mTextFilterEnabled && mTextFilter != NULL) {
         AutoPtr<ICharSequence> result;
-        mTextFilter->GetText((ICharSequence**)&result);
-        return result;
+        ITextView::Probe(mTextFilter)->GetText((ICharSequence**)&result);
+        *textFilter = result;
+        REFCOUNT_ADD(*textFilter);
+
+        return NOERROR;
     }
-    return NULL;
+    return NOERROR;
 }
 
-//@Override
 void AbsListView::OnFocusChanged(
     /* [in] */ Boolean gainFocus,
     /* [in] */ Int32 direction,
     /* [in] */ IRect* previouslyFocusedRect)
 {
     AdapterView::OnFocusChanged(gainFocus, direction, previouslyFocusedRect);
-    if (gainFocus && mSelectedPosition < 0 && !IsInTouchMode()) {
-        if (!mIsAttached && mAdapter != NULL) {
+    Boolean res;
+    if (gainFocus && mSelectedPosition < 0 && (IsInTouchMode(&res), !res)) {
+        Boolean res;
+        if ((IsAttachedToWindow(&res), !res) && mAdapter != NULL) {
             // Data may have changed while we were detached and it's valid
             // to change focus while detached. Refresh so we don't die.
             mDataChanged = TRUE;
             mOldItemCount = mItemCount;
-            mAdapter->GetCount(&mItemCount);
+            IAdapter::Probe(mAdapter)->GetCount(&mItemCount);
         }
         ResurrectSelection();
     }
 }
 
-//@Override
 ECode AbsListView::RequestLayout()
 {
     if (!mBlockLayoutRequests && !mInLayout) {
@@ -3259,9 +4011,6 @@ ECode AbsListView::RequestLayout()
     return NOERROR;
 }
 
-/**
- * The list is empty. Clear everything out.
- */
 void AbsListView::ResetList()
 {
     RemoveAllViewsInLayout();
@@ -3280,15 +4029,16 @@ void AbsListView::ResetList()
     Invalidate();
 }
 
-//@Override
 Int32 AbsListView::ComputeVerticalScrollExtent()
 {
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     if (count > 0) {
         if (mSmoothScrollbarEnabled) {
             Int32 extent = count * 100;
 
-            AutoPtr<IView> view = GetChildAt(0);
+            AutoPtr<IView> view;
+            GetChildAt(0, (IView**)&view);
             Int32 top, height;
             view->GetTop(&top);
             view->GetHeight(&height);
@@ -3297,14 +4047,17 @@ Int32 AbsListView::ComputeVerticalScrollExtent()
                 extent += (top * 100) / height;
             }
 
-            view = GetChildAt(count - 1);
+            view = NULL;
+            GetChildAt(count - 1, (IView**)&view);
 
             Int32 bottom;
             view->GetBottom(&bottom);
             view->GetHeight(&height);
 
             if (height > 0) {
-                extent -= ((bottom - GetHeight()) * 100) / height;
+                Int32 h;
+                GetHeight(&h);
+                extent -= ((bottom - h) * 100) / height;
             }
 
             return extent;
@@ -3316,20 +4069,23 @@ Int32 AbsListView::ComputeVerticalScrollExtent()
     return 0;
 }
 
-//@Override
 Int32 AbsListView::ComputeVerticalScrollOffset()
 {
     Int32 firstPosition = mFirstPosition;
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     if (firstPosition >= 0 && childCount > 0) {
         if (mSmoothScrollbarEnabled) {
-            AutoPtr<IView> view = GetChildAt(0);
+            AutoPtr<IView> view;
+            GetChildAt(0, (IView**)&view);
             Int32 top, height;
             view->GetTop(&top);
             view->GetHeight(&height);
             if (height > 0) {
+                Int32 h;
+                GetHeight(&h);
                 return Elastos::Core::Math::Max(firstPosition * 100 - (top * 100) / height +
-                    (Int32)((Float)mScrollY / GetHeight() * mItemCount * 100), 0);
+                        (Int32)((Float)mScrollY / h * mItemCount * 100), 0);
             }
         }
         else {
@@ -3350,7 +4106,6 @@ Int32 AbsListView::ComputeVerticalScrollOffset()
     return 0;
 }
 
-//@Override
 Int32 AbsListView::ComputeVerticalScrollRange()
 {
     Int32 result;
@@ -3358,7 +4113,9 @@ Int32 AbsListView::ComputeVerticalScrollRange()
         result = Elastos::Core::Math::Max(mItemCount * 100, 0);
         if (mScrollY != 0) {
             // Compensate for overscroll
-            result += Elastos::Core::Math::Abs((Int32)((Float) mScrollY / GetHeight() * mItemCount * 100));
+            Int32 h;
+            GetHeight(&h);
+            result += Elastos::Core::Math::Abs((Int32)((Float) mScrollY / h * mItemCount * 100));
         }
     }
     else {
@@ -3368,10 +4125,10 @@ Int32 AbsListView::ComputeVerticalScrollRange()
     return result;
 }
 
-//@Override
 Float AbsListView::GetTopFadingEdgeStrength()
 {
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     Float fadeEdge = AdapterView::GetTopFadingEdgeStrength();
     if (count == 0) {
         return fadeEdge;
@@ -3381,17 +4138,21 @@ Float AbsListView::GetTopFadingEdgeStrength()
             return 1.0f;
         }
 
+        AutoPtr<IView> view;
+        GetChildAt(0, (IView**)&view);
         Int32 top;
-        GetChildAt(0)->GetTop(&top);
-        Float fadeLength = (Float)GetVerticalFadingEdgeLength();
-        return top < mPaddingTop ? (Float)-(top - mPaddingTop) / fadeLength : fadeEdge;
+        view->GetTop(&top);
+        Int32 length;
+        GetVerticalFadingEdgeLength(&length);
+        Float fadeLength = (Float)length;
+        return top < mPaddingTop ? -(top - mPaddingTop) / fadeLength : fadeEdge;
     }
 }
 
-//@Override
 Float AbsListView::GetBottomFadingEdgeStrength()
 {
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     Float fadeEdge = AdapterView::GetBottomFadingEdgeStrength();
     if (count == 0) {
         return fadeEdge;
@@ -3401,17 +4162,21 @@ Float AbsListView::GetBottomFadingEdgeStrength()
             return 1.0f;
         }
 
+        AutoPtr<IView> view;
+        GetChildAt(count - 1, (IView**)&view);
         Int32 bottom;
-        GetChildAt(count - 1)->GetBottom(&bottom);
+        view->GetBottom(&bottom);
 
-        Int32 height = GetHeight();
-        Float fadeLength = (Float)GetVerticalFadingEdgeLength();
+        Int32 height;
+        GetHeight(&height);
+        Int32 length;
+        GetVerticalFadingEdgeLength(&length);
+        Float fadeLength = length;
         return bottom > height - mPaddingBottom ?
-            (Float)(bottom - height + mPaddingBottom) / fadeLength : fadeEdge;
+                (bottom - height + mPaddingBottom) / fadeLength : fadeEdge;
     }
 }
 
-//@Override
 void AbsListView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
@@ -3421,20 +4186,25 @@ void AbsListView::OnMeasure(
     }
 
     mListPadding->Set(mSelectionLeftPadding + mPaddingLeft
-                    , mSelectionTopPadding + mPaddingTop
-                    , mSelectionRightPadding + mPaddingRight
-                    , mSelectionBottomPadding + mPaddingBottom);
+            , mSelectionTopPadding + mPaddingTop
+            , mSelectionRightPadding + mPaddingRight
+            , mSelectionBottomPadding + mPaddingBottom);
 
     // Check if our previous measured size was at a point where we should scroll later.
     if (mTranscriptMode == IAbsListView::AbsListView_TRANSCRIPT_MODE_NORMAL) {
-        Int32 childCount = GetChildCount();
-        Int32 listBottom = GetHeight() - GetPaddingBottom();
-        AutoPtr<IView> lastChild = GetChildAt(childCount - 1);
+        Int32 childCount;
+        GetChildCount(&childCount);
+        Int32 height, bottom;
+        GetHeight(&height);
+        GetPaddingBottom(&bottom);
+        Int32 listBottom = height - bottom;
+        AutoPtr<IView> lastChild;
+        GetChildAt(childCount - 1, (IView**)&lastChild);
         Int32 lastChildBottom;
-        if(lastChild != NULL)
-        {
+        if (lastChild != NULL) {
             lastChild->GetBottom(&lastChildBottom);
-        }else{
+        }
+        else {
             lastChildBottom = listBottom;
         }
 
@@ -3443,12 +4213,7 @@ void AbsListView::OnMeasure(
     }
 }
 
-/**
- * Subclasses should NOT override this method but
- *  {@link #layoutChildren()} instead.
- */
-//@Override
-void AbsListView::OnLayout(
+ECode AbsListView::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
@@ -3456,27 +4221,32 @@ void AbsListView::OnLayout(
     /* [in] */ Int32 b)
 {
     AdapterView::OnLayout(changed, l, t, r, b);
+
     mInLayout = TRUE;
+
+    Int32 childCount;
+    GetChildCount(&childCount);
     if (changed) {
-        Int32 childCount = GetChildCount();
         for (Int32 i = 0; i < childCount; i++) {
-            GetChildAt(i)->ForceLayout();
+            AutoPtr<IView> view;
+            GetChildAt(i, (IView**)&view);
+            view->ForceLayout();
         }
         mRecycler->MarkChildrenDirty();
-    }
-    if (mFastScroller != NULL && mItemCount != mOldItemCount) {
-        mFastScroller->OnItemCountChanged(mOldItemCount, mItemCount);
     }
     LayoutChildren();
     mInLayout = FALSE;
 
     mOverscrollMax = (b - t) / AbsListView::OVERSCROLL_LIMIT_DIVISOR;
+
+    // TODO: Move somewhere sane. This doesn't belong in onLayout().
+    GetChildCount(&childCount);
+    if (mFastScroll != NULL) {
+        mFastScroll->OnItemCountChanged(childCount, mItemCount);
+    }
+    return NOERROR;
 }
 
-/**
- * @hide
- */
-//@Override
 Boolean AbsListView::SetFrame(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
@@ -3489,10 +4259,13 @@ Boolean AbsListView::SetFrame(
         // Reposition the popup when the frame has changed. This includes
         // translating the widget, not just changing its dimension. The
         // filter popup needs to follow the widget.
-        Boolean visible = GetWindowVisibility() == IView::VISIBLE;
+        Int32 visibility;
+        GetWindowVisibility(&visibility);
+        Boolean visible = visibility == IView::VISIBLE;
         Boolean showing = FALSE;
-        if(mPopup)
+        if (mPopup) {
             mPopup->IsShowing(&showing);
+        }
         if (mFiltered && visible && showing) {
             PositionPopup();
         }
@@ -3501,200 +4274,197 @@ Boolean AbsListView::SetFrame(
     return changed;
 }
 
-void AbsListView::LayoutChildren()
+ECode AbsListView::LayoutChildren()
 {
+    return NOERROR;
+}
+
+AutoPtr<IView> AbsListView::GetAccessibilityFocusedChild(
+    /* [in] */ IView* focusedView)
+{
+    AutoPtr<IViewParent> viewParent;
+    focusedView->GetParent((IViewParent**)&viewParent);
+    while (IVIEW_PROBE(viewParent) && IVIEW_PROBE(viewParent) != THIS_PROBE(IView)) {
+        focusedView = IVIEW_PROBE(viewParent);
+        AutoPtr<IViewParent> tmp;
+        viewParent->GetParent((IViewParent**)&tmp);
+        viewParent = tmp;
+    }
+
+    if (IVIEW_PROBE(viewParent) == NULL) {
+        return NULL;
+    }
+    return focusedView;
 }
 
 void AbsListView::UpdateScrollIndicators()
 {
     if (mScrollUp != NULL) {
-        Boolean canScrollUp;
-        // 0th element is not visible
-        canScrollUp = mFirstPosition > 0;
-
-        // ... Or top of 0th element is not visible
-        if (!canScrollUp) {
-            if (GetChildCount() > 0) {
-                Int32 top;
-                GetChildAt(0)->GetTop(&top);
-                canScrollUp = top < mListPadding->mTop;
-            }
-        }
-
-        mScrollUp->SetVisibility(canScrollUp ? IView::VISIBLE : IView::INVISIBLE);
+        mScrollUp->SetVisibility(CanScrollUp() ? IView::VISIBLE : IView::INVISIBLE);
     }
 
     if (mScrollDown != NULL) {
-        Boolean canScrollDown;
-        Int32 count = GetChildCount();
-
-        // Last item is not visible
-        canScrollDown = (mFirstPosition + count) < mItemCount;
-
-        // ... Or bottom of the last element is not visible
-        if (!canScrollDown && count > 0) {
-            Int32 bottom;
-            GetChildAt(count - 1)->GetBottom(&bottom);
-            canScrollDown = bottom > mBottom - mListPadding->mBottom;
-        }
-
-        mScrollDown->SetVisibility(canScrollDown ? IView::VISIBLE : IView::INVISIBLE);
+        mScrollDown->SetVisibility(CanScrollDown() ? IView::VISIBLE : IView::INVISIBLE);
     }
 }
 
-//@Override
-//@ViewDebug.ExportedProperty
-AutoPtr<IView> AbsListView::GetSelectedView()
+Boolean AbsListView::CanScrollUp()
 {
+    Boolean canScrollUp;
+    // 0th element is not visible
+    canScrollUp = mFirstPosition > 0;
+
+    // ... Or top of 0th element is not visible
+    if (!canScrollUp) {
+        Int32 count;
+        GetChildCount(&count);
+        if (count > 0) {
+            AutoPtr<IView> view;
+            GetChildAt(0, (IView**)&view);
+            Int32 top;
+            view->GetTop(&top);
+            canScrollUp = top < mListPadding->mTop;
+        }
+    }
+
+    return canScrollUp;
+}
+
+Boolean AbsListView::CanScrollDown()
+{
+    Boolean canScrollDown;
+    Int32 count;
+    GetChildCount(&count);
+
+    // Last item is not visible
+    canScrollDown = (mFirstPosition + count) < mItemCount;
+
+    // ... Or bottom of the last element is not visible
+    if (!canScrollDown && count > 0) {
+        AutoPtr<IView> view;
+        GetChildAt(count - 1, (IView**)&view);
+        Int32 bottom;
+        view->GetBottom(&bottom);
+        canScrollDown = bottom > mBottom - mListPadding->mBottom;
+    }
+
+    return canScrollDown;
+
+}
+
+ECode AbsListView::GetSelectedView(
+    /* [out] */ IView** view)
+{
+    VALIDATE_NOT_NULL(view);
+    *view = NULL;
+
     if (mItemCount > 0 && mSelectedPosition >= 0) {
-        return GetChildAt(mSelectedPosition - mFirstPosition);
+        return GetChildAt(mSelectedPosition - mFirstPosition, view);
     }
     else {
-        return NULL;
+        return NOERROR;
     }
-    return NULL;////
 }
 
-/**
- * List padding is the maximum of the normal view's padding and the padding of the selector.
- *
- * @see android.view.View#getPaddingTop()
- * @see #getSelector()
- *
- * @return The top list padding.
- */
-Int32 AbsListView::GetListPaddingTop()
+ECode AbsListView::GetListPaddingTop(
+    /* [out] */ Int32* top)
 {
-    return mListPadding->mTop;
+    VALIDATE_NOT_NULL(top);
+    *top = mListPadding->mTop;
+
+    return NOERROR;
 }
 
-/**
- * List padding is the maximum of the normal view's padding and the padding of the selector.
- *
- * @see android.view.View#getPaddingBottom()
- * @see #getSelector()
- *
- * @return The bottom list padding.
- */
-Int32 AbsListView::GetListPaddingBottom()
+ECode AbsListView::GetListPaddingBottom(
+    /* [out] */ Int32* bottom)
 {
-    return mListPadding->mBottom;
+    VALIDATE_NOT_NULL(bottom);
+    *bottom = mListPadding->mBottom;
+
+    return NOERROR;
 }
 
-/**
- * List padding is the maximum of the normal view's padding and the padding of the selector.
- *
- * @see android.view.View#getPaddingLeft()
- * @see #getSelector()
- *
- * @return The left list padding.
- */
-Int32 AbsListView::GetListPaddingLeft()
+ECode AbsListView::GetListPaddingLeft(
+    /* [out] */ Int32* left)
 {
-    return mListPadding->mLeft;
+    VALIDATE_NOT_NULL(left);
+    *left = mListPadding->mLeft;
+
+    return NOERROR;
 }
 
-/**
- * List padding is the maximum of the normal view's padding and the padding of the selector.
- *
- * @see android.view.View#getPaddingRight()
- * @see #getSelector()
- *
- * @return The right list padding.
- */
-Int32 AbsListView::GetListPaddingRight()
+ECode AbsListView::GetListPaddingRight(
+    /* [out] */ Int32* right)
 {
-    return mListPadding->mRight;
+    VALIDATE_NOT_NULL(right);
+    *right = mListPadding->mRight;
+
+    return NOERROR;
 }
 
-/**
- * Get a view and have it show the data associated with the specified
- * position. This is called when we have already discovered that the view is
- * not available for reuse in the recycle bin. The only choices left are
- * converting an old view or making a new one.
- *
- * @param position The position to display
- * @param isScrap Array of at least 1 Boolean, the first entry will become TRUE if
- *                the returned view was taken from the scrap heap, FALSE if otherwise.
- *
- * @return A view displaying the data associated with the specified position
- */
 AutoPtr<IView> AbsListView::ObtainView(
     /* [in] */ Int32 position,
     /* [in] */ ArrayOf<Boolean>* isScrap)
 {
+    // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "obtainView");
+
     (*isScrap)[0] = FALSE;
-    AutoPtr<IView> scrapView = mRecycler->GetTransientStateView(position);
-    if (scrapView != NULL) {
-        return scrapView;
+    AutoPtr<IAdapter> adapter = IAdapter::Probe(mAdapter);
+
+    // Check whether we have a transient state view. Attempt to re-bind the
+    // data and discard the view if we fail.
+    AutoPtr<IView> transientView = mRecycler->GetTransientStateView(position);
+    if (transientView != NULL) {
+        AutoPtr<IViewGroupLayoutParams> layoutParams;
+        transientView->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
+        AutoPtr<IAbsListViewLayoutParams> params = IAbsListViewLayoutParams::Probe(layoutParams);
+
+        // If the view type hasn't changed, attempt to re-bind the data.
+        Int32 viewType1, viewType2;
+        adapter->GetItemViewType(position, &viewType1);
+        params->GetViewType(&viewType2);
+        if (viewType2 == viewType1) {
+            AutoPtr<IView> updatedView;
+            adapter->GetView(position, transientView, THIS_PROBE(IViewGroup), (IView**)&updatedView);
+
+            // If we failed to re-bind the data, scrap the obtained view.
+            if (updatedView != transientView) {
+                SetItemViewLayoutParams(updatedView, position);
+                mRecycler->AddScrapView(updatedView, position);
+            }
+        }
+
+        // Scrap view implies temporary detachment.
+        (*isScrap)[0] = TRUE;
+        return transientView;
     }
-    scrapView = mRecycler->GetScrapView(position);
+
+    const AutoPtr<IView> scrapView = mRecycler->GetScrapView(position);
     AutoPtr<IView> child;
+    adapter->GetView(position, scrapView, THIS_PROBE(IViewGroup), (IView**)&child);
     if (scrapView != NULL) {
-        mAdapter->GetView(position, scrapView, THIS_PROBE(IViewGroup), (IView**)&child);
-        if (child != NULL) {
-            Int32 importantForAccessibility;
-            child->GetImportantForAccessibility(&importantForAccessibility);
-            if (importantForAccessibility == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-                child->SetImportantForAccessibility(IView::IMPORTANT_FOR_ACCESSIBILITY_YES);
-            }
-
-            if (child != scrapView) {
-                mRecycler->AddScrapView(scrapView, position);
-                if (mCacheColorHint != 0) {
-                    child->SetDrawingCacheBackgroundColor(mCacheColorHint);
-                }
-            }
-            else {
-                (*isScrap)[0] = TRUE;
-                child->DispatchFinishTemporaryDetach();
-            }
+        if (child != scrapView) {
+            // Failed to re-bind the data, return scrap to the heap.
+            mRecycler->AddScrapView(scrapView, position);
         }
         else {
-            Logger::E("AbsListView", "Failed to get child view at position %d", position);
-            return NULL;
-        }
-    }
-    else {
-        mAdapter->GetView(position, NULL, THIS_PROBE(IViewGroup), (IView**)&child);
-        if (child != NULL) {
-            Int32 importantForAccessibility;
-            child->GetImportantForAccessibility(&importantForAccessibility);
-            if (importantForAccessibility == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-                child->SetImportantForAccessibility(IView::IMPORTANT_FOR_ACCESSIBILITY_YES);
-            }
+            (*isScrap)[0] = TRUE;
 
-            if (mCacheColorHint != 0) {
-                child->SetDrawingCacheBackgroundColor(mCacheColorHint);
-            }
-        }
-        else {
-            Logger::E("AbsListView", "Failed to get child view at position %d", position);
-            return NULL;
+            child->DispatchFinishTemporaryDetach();
         }
     }
 
-    if (mAdapterHasStableIds) {
-        AutoPtr<IViewGroupLayoutParams> vlp;
-        child->GetLayoutParams((IViewGroupLayoutParams**)&vlp);
-        AutoPtr<IAbsListViewLayoutParams> lp;
-        AutoPtr<IViewGroupLayoutParams> lpTemp;
-        if (vlp == NULL) {
-            GenerateDefaultLayoutParams((IViewGroupLayoutParams**)&lpTemp);
-            lp = IAbsListViewLayoutParams::Probe(lpTemp);
-        }
-        else if (!CheckLayoutParams(vlp)) {
-            AutoPtr<IViewGroupLayoutParams> vglp = GenerateLayoutParams(vlp);
-            lp = IAbsListViewLayoutParams::Probe(vglp);
-        }
-        else {
-            lp = IAbsListViewLayoutParams::Probe(vlp);
-        }
-        Int64 itemId;
-        mAdapter->GetItemId(position, &itemId);
-        lp->SetItemId(itemId);
-        child->SetLayoutParams(lp.Get());
+    if (mCacheColorHint != 0) {
+        child->SetDrawingCacheBackgroundColor(mCacheColorHint);
     }
+
+    Int32 importantForAccessibility;
+    child->GetImportantForAccessibility(&importantForAccessibility);
+    if (importantForAccessibility == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+        child->SetImportantForAccessibility(IView::IMPORTANT_FOR_ACCESSIBILITY_YES);
+    }
+
+    SetItemViewLayoutParams(child, position);
 
     AutoPtr<IAccessibilityManager> manager;
     CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&manager);
@@ -3710,7 +4480,123 @@ AutoPtr<IView> AbsListView::ObtainView(
             child->SetAccessibilityDelegate(mAccessibilityDelegate);
         }
     }
+
+    // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
     return child;
+}
+
+void AbsListView::SetItemViewLayoutParams(
+    /* [in] */ IView* child,
+    /* [in] */ Int32 position)
+{
+    AutoPtr<IViewGroupLayoutParams> vlp;
+    child->GetLayoutParams((IViewGroupLayoutParams**)&vlp);
+    AutoPtr<IAbsListViewLayoutParams> lp;
+    AutoPtr<IViewGroupLayoutParams> lpTemp;
+    if (vlp == NULL) {
+        GenerateDefaultLayoutParams((IViewGroupLayoutParams**)&lpTemp);
+        lp = IAbsListViewLayoutParams::Probe(lpTemp);
+    }
+    else if (!CheckLayoutParams(vlp)) {
+        AutoPtr<IViewGroupLayoutParams> vglp = GenerateLayoutParams(vlp);
+        lp = IAbsListViewLayoutParams::Probe(vglp);
+    }
+    else {
+        lp = IAbsListViewLayoutParams::Probe(vlp);
+    }
+
+    if (mAdapterHasStableIds) {
+        Int64 itemId;
+        IAdapter::Probe(mAdapter)->GetItemId(position, &itemId);
+        lp->SetItemId(itemId);
+    }
+    Int32 viewType;
+    IAdapter::Probe(mAdapter)->GetItemViewType(position, &viewType);
+    lp->SetViewType(viewType);
+    child->SetLayoutParams(IViewGroupLayoutParams::Probe(lp));
+}
+
+ECode AbsListView::OnInitializeAccessibilityNodeInfoForItem(
+    /* [in] */ IView* view,
+    /* [in] */ Int32 position,
+    /* [in] */ IAccessibilityNodeInfo* info)
+{
+    AutoPtr<IAdapter> _adapter;
+    GetAdapter((IAdapter**)&_adapter);
+    AutoPtr<IListAdapter> adapter = IListAdapter::Probe(_adapter);
+
+    if (position == IAdapterView::INVALID_POSITION || adapter == NULL) {
+        // The item doesn't exist, so there's not much we can do here.
+        return NOERROR;
+    }
+
+    Boolean res, res1;
+    if ((IsEnabled(&res), !res) || (adapter->IsEnabled(position, &res1), !res1)) {
+        info->SetEnabled(FALSE);
+        return NOERROR;
+    }
+
+    Int32 pos;
+    if (position == (GetSelectedItemPosition(&pos), pos)) {
+        info->SetSelected(TRUE);
+        info->AddAction(IAccessibilityNodeInfo::ACTION_CLEAR_SELECTION);
+    }
+    else {
+        info->AddAction(IAccessibilityNodeInfo::ACTION_SELECT);
+    }
+
+    if (IsClickable(&res), res) {
+        info->AddAction(IAccessibilityNodeInfo::ACTION_CLICK);
+        info->SetClickable(TRUE);
+    }
+
+    if (IsLongClickable(&res), res) {
+        info->AddAction(IAccessibilityNodeInfo::ACTION_LONG_CLICK);
+        info->SetLongClickable(TRUE);
+    }
+    return NOERROR;
+}
+
+void AbsListView::PositionSelectorLikeTouch(
+    /* [in] */ Int32 position,
+    /* [in] */ IView* sel,
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    PositionSelectorLikeFocus(position, sel);
+
+    if (mSelector != NULL && position != IAdapterView::INVALID_POSITION) {
+        mSelector->SetHotspot(x, y);
+    }
+}
+
+void AbsListView::PositionSelectorLikeFocus(
+    /* [in] */ Int32 position,
+    /* [in] */ IView* sel)
+{
+    // If we're changing position, update the visibility since the selector
+    // is technically being detached from the previous selection.
+    AutoPtr<IDrawable> selector = mSelector;
+    Boolean manageState = selector != NULL && mSelectorPosition != position
+            && position != IAdapterView::INVALID_POSITION;
+    Boolean res;
+    if (manageState) {
+        selector->SetVisible(FALSE, FALSE, &res);
+    }
+
+    PositionSelector(position, sel);
+
+    if (manageState) {
+        AutoPtr<IRect> bounds = mSelectorRect;
+        Float x;
+        bounds->GetExactCenterX(&x);
+        Float y;
+        bounds->GetExactCenterY(&y);
+        Int32 visibility;
+        GetVisibility(&visibility);
+        selector->SetVisible(visibility == IView::VISIBLE, FALSE, &res);
+        selector->SetHotspot(x, y);
+    }
 }
 
 void AbsListView::PositionSelector(
@@ -3722,42 +4608,43 @@ void AbsListView::PositionSelector(
     }
 
     assert(sel);
+    AutoPtr<IRect> selectorRect = mSelectorRect;
     Int32 left, top, right, bottom;
     sel->GetLeft(&left);
     sel->GetTop(&top);
     sel->GetRight(&right);
     sel->GetBottom(&bottom);
-    mSelectorRect->Set(left, top, right, bottom);
+    selectorRect->Set(left, top, right, bottom);
 
     AutoPtr<ISelectionBoundsAdjuster> adjuster = ISelectionBoundsAdjuster::Probe(sel);
     if (adjuster != NULL) {
-        adjuster->AdjustListItemSelectionBounds(mSelectorRect);
+        adjuster->AdjustListItemSelectionBounds(selectorRect);
     }
 
-    PositionSelector(left, top, right, bottom);
+    // Adjust for selection padding.
+    selectorRect->Set(left - mSelectionLeftPadding,
+            top - mSelectionTopPadding,
+            right - mSelectionRightPadding,
+            bottom - mSelectionBottomPadding);
+
+    // Update the selector drawable.
+    AutoPtr<IDrawable> selector = mSelector;
+    if (selector != NULL) {
+        selector->SetBounds(selectorRect);
+    }
 
     Boolean viewEnabled;
     sel->IsEnabled(&viewEnabled);
     if (viewEnabled != mIsChildViewEnabled) {
         mIsChildViewEnabled = !mIsChildViewEnabled;
-        if (GetSelectedItemPosition() != IAdapterView::INVALID_POSITION) {
+        Int32 pos;
+        GetSelectedItemPosition(&pos);
+        if (pos != IAdapterView::INVALID_POSITION) {
             RefreshDrawableState();
         }
     }
 }
 
-void AbsListView::PositionSelector(
-    /* [in] */ Int32 l,
-    /* [in] */ Int32 t,
-    /* [in] */ Int32 r,
-    /* [in] */ Int32 b)
-{
-    mSelectorRect->Set(
-        l - mSelectionLeftPadding, t - mSelectionTopPadding,
-        r + mSelectionRightPadding, b + mSelectionBottomPadding);
-}
-
-//@Override
 void AbsListView::DispatchDraw(
     /* [in] */ ICanvas* canvas)
 {
@@ -3768,10 +4655,10 @@ void AbsListView::DispatchDraw(
 
         Boolean result;
         canvas->ClipRect(
-            mScrollX + mPaddingLeft, mScrollY + mPaddingTop,
-            mScrollX + mRight - mLeft - mPaddingRight,
-            mScrollY + mBottom - mTop - mPaddingBottom,
-            &result);
+                mScrollX + mPaddingLeft, mScrollY + mPaddingTop,
+                mScrollX + mRight - mLeft - mPaddingRight,
+                mScrollY + mBottom - mTop - mPaddingBottom,
+                &result);
         mGroupFlags &= ~ViewGroup::CLIP_TO_PADDING_MASK;
     }
 
@@ -3791,7 +4678,6 @@ void AbsListView::DispatchDraw(
     }
 }
 
-//@Override
 Boolean AbsListView::IsPaddingOffsetRequired()
 {
     return (mGroupFlags & ViewGroup::CLIP_TO_PADDING_MASK) != ViewGroup::CLIP_TO_PADDING_MASK;
@@ -3802,7 +4688,6 @@ Int32 AbsListView::GetLeftPaddingOffset()
     return (mGroupFlags & ViewGroup::CLIP_TO_PADDING_MASK) == ViewGroup::CLIP_TO_PADDING_MASK ? 0 : -mPaddingLeft;
 }
 
-//@Override
 Int32 AbsListView::GetTopPaddingOffset()
 {
     return (mGroupFlags & ViewGroup::CLIP_TO_PADDING_MASK) == ViewGroup::CLIP_TO_PADDING_MASK ? 0 : -mPaddingTop;
@@ -3813,55 +4698,45 @@ Int32 AbsListView::GetRightPaddingOffset()
     return (mGroupFlags & ViewGroup::CLIP_TO_PADDING_MASK) == ViewGroup::CLIP_TO_PADDING_MASK ? 0 : mPaddingRight;
 }
 
-//@Override
 Int32 AbsListView::GetBottomPaddingOffset()
 {
     return (mGroupFlags & ViewGroup::CLIP_TO_PADDING_MASK) == ViewGroup::CLIP_TO_PADDING_MASK ? 0 : mPaddingBottom;
 }
 
-//@Override
 void AbsListView::OnSizeChanged(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
     /* [in] */ Int32 oldw,
     /* [in] */ Int32 oldh)
 {
-    if (GetChildCount() > 0) {
+    Int32 count;
+    GetChildCount(&count);
+    if (count > 0) {
         mDataChanged = TRUE;
         RememberSyncState();
     }
 
-    if (mFastScroller != NULL) {
-        mFastScroller->OnSizeChanged(w, h, oldw, oldh);
+    if (mFastScroll != NULL) {
+        mFastScroll->OnSizeChanged(w, h, oldw, oldh);
     }
 }
 
-/**
- * @return True if the current touch mode requires that we draw the selector in the pressed
- *         state.
- */
 Boolean AbsListView::TouchModeDrawsInPressedState()
 {
     // FIXME use isPressed for this
     switch (mTouchMode) {
-    case TOUCH_MODE_TAP:
-    case TOUCH_MODE_DONE_WAITING:
-        return TRUE;
-    default:
-        return FALSE;
+        case TOUCH_MODE_TAP:
+        case TOUCH_MODE_DONE_WAITING:
+            return TRUE;
+        default:
+            return FALSE;
     }
 }
 
-/**
- * Indicates whether this view is in a state where the selector should be drawn. This will
- * happen if we have focus but are not in touch mode, or we are in the middle of displaying
- * the pressed state for an item.
- *
- * @return True if the selector should be shown
- */
 Boolean AbsListView::ShouldShowSelector()
 {
-    return (HasFocus() && !IsInTouchMode()) || TouchModeDrawsInPressedState();
+    Boolean res, res1;
+    return (IsInTouchMode(&res), !res) || (TouchModeDrawsInPressedState() && (IsPressed(&res1), res1));
 }
 
 void AbsListView::DrawSelector(
@@ -3869,22 +4744,12 @@ void AbsListView::DrawSelector(
 {
     Boolean empty;
     mSelectorRect->IsEmpty(&empty);
-    if (!empty)
-    {
-         mSelector->SetBounds(mSelectorRect);
-         mSelector->Draw(canvas);
+    if (!empty) {
+        mSelector->SetBounds(mSelectorRect);
+        mSelector->Draw(canvas);
     }
 }
 
-/**
- * Controls whether the selection highlight drawable should be drawn on top of the item or
- * behind it.
- *
- * @param onTop If TRUE, the selector will be drawn on the item it is highlighting. The default
- *        is FALSE.
- *
- * @attr ref android.R.styleable#AbsListView_drawSelectorOnTop
- */
 ECode AbsListView::SetDrawSelectorOnTop(
     /* [in] */ Boolean onTop)
 {
@@ -3893,18 +4758,13 @@ ECode AbsListView::SetDrawSelectorOnTop(
     return NOERROR;
 }
 
-/**
- * Set a Drawable that should be used to highlight the currently selected item.
- *
- * @param resID A Drawable resource to use as the selection highlight.
- *
- * @attr ref android.R.styleable#AbsListView_listSelector
- */
 ECode AbsListView::SetSelector(
     /* [in] */ Int32 resID)
 {
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     AutoPtr<IDrawable> drawable;
-    GetResources()->GetDrawable(resID, (IDrawable**)&drawable);
+    context->GetDrawable(resID, (IDrawable**)&drawable);
 
     return SetSelector(drawable);
 }
@@ -3919,7 +4779,7 @@ ECode AbsListView::SetSelector(
 
     mSelector = sel;
     AutoPtr<IRect> padding;
-    FAIL_RETURN(CRect::New((IRect**)&padding));
+    CRect::New((IRect**)&padding);
     if (sel == NULL) {
         return NOERROR;
     }
@@ -3937,24 +4797,20 @@ ECode AbsListView::SetSelector(
     return NOERROR;
 }
 
-/**
- * Returns the selector {@link android.graphics.drawable.Drawable} that is used to draw the
- * selection in the list.
- *
- * @return the drawable used to display the selector
- */
-AutoPtr<IDrawable> AbsListView::GetSelector()
+ECode AbsListView::GetSelector(
+    /* [out] */ IDrawable** selector)
 {
-    return mSelector;
+    VALIDATE_NOT_NULL(selector);
+    *selector = mSelector;
+    REFCOUNT_ADD(*selector);
+
+    return NOERROR;
 }
 
-/**
- * Sets the selector state to "pressed" and posts a CheckForKeyLongPress to see if
- * this is a Int64 press.
- */
 void AbsListView::KeyPressed()
 {
-    if (!IsEnabled() || !IsClickable()) {
+    Boolean res, res1;
+    if ((IsEnabled(&res), !res) || (IsClickable(&res1), !res1)) {
         return;
     }
 
@@ -3962,9 +4818,10 @@ void AbsListView::KeyPressed()
     AutoPtr<IRect> selectorRect = mSelectorRect;
     Boolean rectEmpty;
     selectorRect->IsEmpty(&rectEmpty);
-    if (selector != NULL && (IsFocused() || TouchModeDrawsInPressedState())
-        && !rectEmpty) {
-        AutoPtr<IView> v = GetChildAt(mSelectedPosition - mFirstPosition);
+    if (selector != NULL && ((IsFocused(&res), res) || TouchModeDrawsInPressedState())
+            && !rectEmpty) {
+        AutoPtr<IView> v;
+        GetChildAt(mSelectedPosition - mFirstPosition, (IView**)&v);
         if (v != NULL) {
             Boolean hasfoucsable;
             v->HasFocusable(&hasfoucsable);
@@ -3977,19 +4834,18 @@ void AbsListView::KeyPressed()
 
         SetPressed(TRUE);
 
-        Boolean longClickable = IsLongClickable();
+        Boolean longClickable;
+        IsLongClickable(&longClickable);
         AutoPtr<IDrawable> d;
         selector->GetCurrent((IDrawable**)&d);
         AutoPtr<ITransitionDrawable> td = ITransitionDrawable::Probe(d);
-        AutoPtr<IViewConfigurationHelper> viewConfiguration;
-        CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&viewConfiguration);
-        Int32 timeout;
-        viewConfiguration->GetLongPressTimeout(&timeout);
+        Int32 timeout = ViewConfiguration::GetLongPressTimeout();
 
         if (td != NULL) {
             if (longClickable) {
                 td->StartTransition(timeout);
-            } else {
+            }
+            else {
                 td->ResetTransition();
             }
         }
@@ -4000,7 +4856,7 @@ void AbsListView::KeyPressed()
             }
 
             mPendingCheckForKeyLongPress->RememberWindowAttachCount();
-            PostDelayed(mPendingCheckForKeyLongPress,timeout);
+            PostDelayed(mPendingCheckForKeyLongPress,timeout, &res);
         }
     }
 }
@@ -4020,15 +4876,16 @@ void AbsListView::UpdateSelectorState()
     if (mSelector != NULL) {
         Boolean result;
         if (ShouldShowSelector()) {
-            AutoPtr<ArrayOf<Int32> > drawableState = GetDrawableState();
+            AutoPtr<ArrayOf<Int32> > drawableState;
+            GetDrawableState((ArrayOf<Int32>**)&drawableState);
             mSelector->SetState(drawableState, &result);
-        } else {
+        }
+        else {
             mSelector->SetState(StateSet::NOTHING, &result);
         }
     }
 }
 
-//@Override
 ECode AbsListView::DrawableStateChanged()
 {
     FAIL_RETURN(AdapterView::DrawableStateChanged());
@@ -4037,7 +4894,6 @@ ECode AbsListView::DrawableStateChanged()
     return NOERROR;
 }
 
-//@Override
 ECode AbsListView::OnCreateDrawableState(
     /* [in] */ Int32 extraSpace,
     /* [out] */ ArrayOf<Int32>** drawableState)
@@ -4089,7 +4945,6 @@ ECode AbsListView::OnCreateDrawableState(
     return NOERROR;
 }
 
-//@Override
 Boolean AbsListView::VerifyDrawable(
     /* [in] */ IDrawable* dr)
 {
@@ -4099,17 +4954,19 @@ Boolean AbsListView::VerifyDrawable(
 ECode AbsListView::JumpDrawablesToCurrentState()
 {
     FAIL_RETURN(AdapterView::JumpDrawablesToCurrentState());
-    if (mSelector != NULL)
+    if (mSelector != NULL) {
         mSelector->JumpToCurrentState();
+    }
+
     return NOERROR;
 }
 
-//@Override
 ECode AbsListView::OnAttachedToWindow()
 {
     AdapterView::OnAttachedToWindow();
 
-    AutoPtr<IViewTreeObserver> treeObserver = GetViewTreeObserver();
+    AutoPtr<IViewTreeObserver> treeObserver;
+    GetViewTreeObserver((IViewTreeObserver**)&treeObserver);
     treeObserver->AddOnTouchModeChangeListener(THIS_PROBE(IOnTouchModeChangeListener));
     if (mTextFilterEnabled && mPopup != NULL && !mGlobalLayoutListenerAddedFilter) {
         treeObserver->AddOnGlobalLayoutListener(THIS_PROBE(IOnGlobalLayoutListener));
@@ -4117,21 +4974,21 @@ ECode AbsListView::OnAttachedToWindow()
 
     if (mAdapter != NULL && mDataSetObserver == NULL) {
         mDataSetObserver = new AdapterDataSetObserver(this);
-        mAdapter->RegisterDataSetObserver(mDataSetObserver);
+        IAdapter::Probe(mAdapter)->RegisterDataSetObserver(mDataSetObserver);
 
         // Data may have changed while we were detached. Refresh.
         mDataChanged = TRUE;
         mOldItemCount = mItemCount;
-        mAdapter->GetCount(&mItemCount);
+        IAdapter::Probe(mAdapter)->GetCount(&mItemCount);
     }
-    mIsAttached = TRUE;
     return NOERROR;
 }
 
-//@Override
 ECode AbsListView::OnDetachedFromWindow()
 {
     AdapterView::OnDetachedFromWindow();
+
+    mIsDetaching = TRUE;
 
     // Dismiss the popup in case onSaveInstanceState() was not invoked
     DismissPopup();
@@ -4139,15 +4996,16 @@ ECode AbsListView::OnDetachedFromWindow()
     // Detach any view left in the scrap heap
     mRecycler->Clear();
 
-    AutoPtr<IViewTreeObserver> treeObserver = GetViewTreeObserver();
+    AutoPtr<IViewTreeObserver> treeObserver;
+    GetViewTreeObserver((IViewTreeObserver**)&treeObserver);
     treeObserver->RemoveOnTouchModeChangeListener(THIS_PROBE(IOnTouchModeChangeListener));
     if (mTextFilterEnabled && mPopup != NULL) {
         treeObserver->RemoveGlobalOnLayoutListener(THIS_PROBE(IOnGlobalLayoutListener));
         mGlobalLayoutListenerAddedFilter = FALSE;
     }
 
-    if (mAdapter != NULL) {
-        mAdapter->UnregisterDataSetObserver(mDataSetObserver);
+    if (mAdapter != NULL && mDataSetObserver != NULL) {
+        IAdapter::Probe(mAdapter)->UnregisterDataSetObserver(mDataSetObserver);
         mDataSetObserver = NULL;
     }
 
@@ -4161,8 +5019,9 @@ ECode AbsListView::OnDetachedFromWindow()
         mFlingStrictSpan = NULL;
     }
 
+    Boolean res;
     if (mFlingRunnable != NULL) {
-        RemoveCallbacks(mFlingRunnable);
+        RemoveCallbacks(mFlingRunnable, &res);
     }
 
     if (mPositionScroller != NULL) {
@@ -4170,33 +5029,34 @@ ECode AbsListView::OnDetachedFromWindow()
     }
 
     if (mClearScrollingCache != NULL) {
-        RemoveCallbacks(mClearScrollingCache);
+        RemoveCallbacks(mClearScrollingCache, &res);
     }
 
     if (mPerformClick != NULL) {
-        RemoveCallbacks(mPerformClick);
+        RemoveCallbacks(mPerformClick, &res);
     }
 
     if (mTouchModeReset != NULL) {
-        RemoveCallbacks(mTouchModeReset);
-        mTouchModeReset = NULL;
+        RemoveCallbacks(mTouchModeReset, &res);
+        mTouchModeReset->Run();
     }
-    mIsAttached = FALSE;
+
+    mIsDetaching = FALSE;
     return NOERROR;
 }
 
-//@Override
 ECode AbsListView::OnWindowFocusChanged(
     /* [in] */ Boolean hasWindowFocus)
 {
     FAIL_RETURN(AdapterView::OnWindowFocusChanged(hasWindowFocus));
 
-    Int32 touchMode = IsInTouchMode() ? TOUCH_MODE_ON : TOUCH_MODE_OFF;
+    Boolean res;
+    Int32 touchMode = (IsInTouchMode(&res), res) ? TOUCH_MODE_ON : TOUCH_MODE_OFF;
 
     if (!hasWindowFocus) {
         SetChildrenDrawingCacheEnabled(FALSE);
         if (mFlingRunnable != NULL) {
-            RemoveCallbacks(mFlingRunnable);
+            RemoveCallbacks(mFlingRunnable, &res);
             // let the fling runnable report it's new state which
             // should be idle
             mFlingRunnable->EndFling();
@@ -4250,17 +5110,18 @@ ECode AbsListView::OnWindowFocusChanged(
     return NOERROR;
 }
 
-/**
- * Creates the ContextMenuInfo returned from {@link #getContextMenuInfo()}. This
- * methods knows the view, position and ID of the item that received the
- * Int64 press.
- *
- * @param view The view that received the Int64 press.
- * @param position The position of the item that received the Int64 press.
- * @param id The ID of the item that received the Int64 press.
- * @return The extra information that should be returned by
- *         {@link #getContextMenuInfo()}.
- */
+ECode AbsListView::OnRtlPropertiesChanged(
+    /* [in] */ Int32 layoutDirection)
+{
+    FAIL_RETURN(AbsListView::OnRtlPropertiesChanged(layoutDirection));
+    if (mFastScroll != NULL) {
+        Int32 position;
+        GetVerticalScrollbarPosition(&position);
+       mFastScroll->SetScrollbarPosition(position);
+    }
+    return NOERROR;
+}
+
 AutoPtr<IContextMenuInfo> AbsListView::CreateContextMenuInfo(
     /* [in] */ IView* view,
     /* [in] */ Int32 position,
@@ -4269,146 +5130,178 @@ AutoPtr<IContextMenuInfo> AbsListView::CreateContextMenuInfo(
     return new AdapterView::AdapterContextMenuInfo(view, position, id);
 }
 
+ECode AbsListView::OnCancelPendingInputEvents()
+{
+    FAIL_RETURN(AdapterView::OnCancelPendingInputEvents());
+    Boolean res;
+    if (mPerformClick != NULL) {
+        RemoveCallbacks(mPerformClick, &res);
+    }
+    if (mPendingCheckForTap != NULL) {
+        RemoveCallbacks(mPendingCheckForTap, &res);
+    }
+    if (mPendingCheckForLongPress != NULL) {
+        RemoveCallbacks(mPendingCheckForLongPress, &res);
+    }
+    if (mPendingCheckForKeyLongPress != NULL) {
+        RemoveCallbacks(mPendingCheckForKeyLongPress, &res);
+    }
+    return NOERROR;
+}
+
 Boolean AbsListView::PerformLongPress(
     /* [in] */ IView* child,
     /* [in] */ Int32 longPressPosition,
     /* [in] */ Int64 longPressId)
 {
     // CHOICE_MODE_MULTIPLE_MODAL takes over long press.
+    Boolean res;
     if (mChoiceMode == IAbsListView::CHOICE_MODE_MULTIPLE_MODAL) {
         if (mChoiceActionMode == NULL &&
-            (mChoiceActionMode = StartActionMode(mMultiChoiceModeCallback)) != NULL) {
-                SetItemChecked(longPressPosition, TRUE);
-                PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS);
+                (StartActionMode(IActionModeCallback::Probe(mMultiChoiceModeCallback),
+                (IActionMode**)&mChoiceActionMode), mChoiceActionMode) != NULL) {
+            SetItemChecked(longPressPosition, TRUE);
+            PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS, &res);
         }
         return TRUE;
     }
 
     Boolean handled = FALSE;
     if (mOnItemLongClickListener != NULL) {
-        mOnItemLongClickListener->OnItemLongClick(
-            (IAdapterView*)this->Probe(EIID_IAdapterView),
-            child, longPressPosition, longPressId, &handled);
+        mOnItemLongClickListener->OnItemLongClick(THIS_PROBE(IAdapterView),
+                child, longPressPosition, longPressId, &handled);
     }
     if (!handled) {
         mContextMenuInfo = CreateContextMenuInfo(child, longPressPosition, longPressId);
-        handled = AdapterView::ShowContextMenuForChild(THIS_PROBE(IView));
+        AdapterView::ShowContextMenuForChild(THIS_PROBE(IView), &handled);
     }
 
     if (handled) {
-        PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS);
+        PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS, &res);
     }
 
     return handled;
 }
 
-//@Override
 AutoPtr<IContextMenuInfo> AbsListView::GetContextMenuInfo()
 {
     return mContextMenuInfo;
 }
 
-Boolean AbsListView::ShowContextMenu()
+ECode AbsListView::ShowContextMenu(
+    /* [out] */ Boolean* res)
 {
-    return View::ShowContextMenu();
+    VALIDATE_NOT_NULL(res);
+
+    return View::ShowContextMenu(res);
 }
-/** @hide */
-//@Override
-Boolean AbsListView::ShowContextMenu(
+
+ECode AbsListView::ShowContextMenu(
     /* [in] */ Float x,
     /* [in] */ Float y,
-    /* [in] */ Int32 metaState)
+    /* [in] */ Int32 metaState,
+    /* [out] */ Boolean* res)
 {
-    Int32 position = PointToPosition((Int32)x, (Int32)y);
+    VALIDATE_NOT_NULL(res);
+
+    Int32 position;
+    PointToPosition((Int32)x, (Int32)y, &position);
     if (position != IAdapterView::INVALID_POSITION) {
         Int64 id;
-        mAdapter->GetItemId(position, &id);
-        AutoPtr<IView> child = GetChildAt(position - mFirstPosition);
+        IAdapter::Probe(mAdapter)->GetItemId(position, &id);
+        AutoPtr<IView> child;
+        GetChildAt(position - mFirstPosition, (IView**)&child);
         if (child != NULL) {
             mContextMenuInfo = CreateContextMenuInfo(child, position, id);
-            return AdapterView::ShowContextMenuForChild(THIS_PROBE(IView));
+            return AdapterView::ShowContextMenuForChild(THIS_PROBE(IView), res);
         }
     }
-    return AdapterView::ShowContextMenu(x, y, metaState);
 
+    return AdapterView::ShowContextMenu(x, y, metaState, res);
 }
 
-//@Override
-Boolean AbsListView::ShowContextMenuForChild(
-    /* [in] */ IView* originalView)
+ECode AbsListView::ShowContextMenuForChild(
+    /* [in] */ IView* originalView,
+    /* [out] */ Boolean* res)
 {
-    Int32 longPressPosition = GetPositionForView(originalView);
+    VALIDATE_NOT_NULL(res);
+
+    Int32 longPressPosition;
+    GetPositionForView(originalView, &longPressPosition);
     if (longPressPosition >= 0) {
         Int64 longPressId;
-        mAdapter->GetItemId(longPressPosition, &longPressId);
+        IAdapter::Probe(mAdapter)->GetItemId(longPressPosition, &longPressId);
 
         Boolean handled = FALSE;
         if (mOnItemLongClickListener != NULL) {
-            mOnItemLongClickListener->OnItemLongClick(
-                (IAdapterView*)this->Probe(EIID_IAdapterView),
-                originalView, longPressPosition, longPressId, &handled);
+            mOnItemLongClickListener->OnItemLongClick(THIS_PROBE(IAdapterView),
+                    originalView, longPressPosition, longPressId, &handled);
         }
 
         if (!handled) {
-            AutoPtr<IView> child = GetChildAt(
-                longPressPosition - mFirstPosition);
+            AutoPtr<IView> child;
+            GetChildAt(longPressPosition - mFirstPosition, (IView**)&child);
 
             mContextMenuInfo = CreateContextMenuInfo(
-                child, longPressPosition, longPressId);
+                    child, longPressPosition, longPressId);
 
-            handled = AdapterView::ShowContextMenuForChild(originalView);
+            AdapterView::ShowContextMenuForChild(originalView, &handled);
+        }
+        *res = handled;
+        return NOERROR;
+    }
+    *res = FALSE;
+    return NOERROR;
+}
+
+ECode AbsListView::OnKeyDown(
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
+
+ECode AbsListView::OnKeyUp(
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+
+    Boolean suc, suc1;
+    if (KeyEvent::IsConfirmKey(keyCode)) {
+        if (IsEnabled(&suc), !suc) {
+            *res = TRUE;
+            return NOERROR;
         }
 
-        return handled;
-    }
-    return FALSE;
-}
-
-//@Override
-Boolean AbsListView::OnKeyDown(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
-{
-    return FALSE;
-}
-
-//@Override
-Boolean AbsListView::OnKeyUp(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
-{
-    switch (keyCode) {
-        case IKeyEvent::KEYCODE_DPAD_CENTER:
-        case IKeyEvent::KEYCODE_ENTER: {
-            if (!IsEnabled()) {
-                return TRUE;
-            }
-
-            Int32 count = -1;
-            if (mAdapter != NULL) {
-                mAdapter->GetCount(&count);
-            }
-
-            if (IsClickable() && IsPressed() &&
-                mSelectedPosition >= 0 && mSelectedPosition < count) {
-                    AutoPtr<IView> view =
-                        GetChildAt(mSelectedPosition - mFirstPosition);
-                    if (view != NULL) {
-                        PerformItemClick(
-                            view, mSelectedPosition, mSelectedRowId);
-                        view->SetPressed(FALSE);
-                    }
-                    SetPressed(FALSE);
-                    return TRUE;
-            }
+        Int32 count = -1;
+        if (mAdapter != NULL) {
+            IAdapter::Probe(mAdapter)->GetCount(&count);
         }
-        break;
-    }
 
-    return AdapterView::OnKeyUp(keyCode, event);
+        if ((IsClickable(&suc), suc)
+                && (IsPressed(&suc1), suc1)
+                && mSelectedPosition >= 0
+                && mSelectedPosition < count) {
+            AutoPtr<IView> view;
+            GetChildAt(mSelectedPosition - mFirstPosition, (IView**)&view);
+            if (view != NULL) {
+                PerformItemClick(
+                        view, mSelectedPosition, mSelectedRowId, &suc);
+                view->SetPressed(FALSE);
+            }
+            SetPressed(FALSE);
+            *res = TRUE;
+            return NOERROR;
+        }
+    }
+    return AdapterView::OnKeyUp(keyCode, event, res);
 }
 
-//@Override
 void AbsListView::DispatchSetPressed(
     /* [in] */ Boolean pressed)
 {
@@ -4416,18 +5309,13 @@ void AbsListView::DispatchSetPressed(
     // get the selector in the right state, but we don't want to press each child.
 }
 
-/**
- * Maps a point to a position in the list.
- *
- * @param x X in local coordinate
- * @param y Y in local coordinate
- * @return The position of the item which contains the specified point, or
- *         {@link #IAdapterView::INVALID_POSITION} if the point does not intersect an item.
- */
-Int32 AbsListView::PointToPosition(
+ECode AbsListView::PointToPosition(
     /* [in] */ Int32 x,
-    /* [in] */ Int32 y)
+    /* [in] */ Int32 y,
+    /* [out] */ Int32* position)
 {
+    VALIDATE_NOT_NULL(position);
+
     AutoPtr<IRect> frame = mTouchFrame;
     if (frame == NULL) {
         mTouchFrame = NULL;
@@ -4435,9 +5323,11 @@ Int32 AbsListView::PointToPosition(
         frame = mTouchFrame;
     }
 
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     for (Int32 i = count - 1; i >= 0; i--) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         Int32 visibility;
         child->GetVisibility(&visibility);
         if (visibility == IView::VISIBLE) {
@@ -4445,38 +5335,39 @@ Int32 AbsListView::PointToPosition(
             Boolean isContains;
             frame->Contains(x, y, &isContains);
             if (isContains) {
-                return mFirstPosition + i;
+                *position = mFirstPosition + i;
+                return NOERROR;
             }
         }
     }
 
-    return IAdapterView::INVALID_POSITION;
+    *position = IAdapterView::INVALID_POSITION;
+    return NOERROR;
 }
 
-/**
- * Maps a point to a the rowId of the item which intersects that point.
- *
- * @param x X in local coordinate
- * @param y Y in local coordinate
- * @return The rowId of the item which contains the specified point, or {@link #IAdapterView::INVALID_ROW_ID}
- *         if the point does not intersect an item.
- */
-Int64 AbsListView::PointToRowId(
+ECode AbsListView::PointToRowId(
     /* [in] */ Int32 x,
-    /* [in] */ Int32 y)
+    /* [in] */ Int32 y,
+    /* [out] */ Int64* rowId)
 {
-    Int32 position = PointToPosition(x, y);
+    VALIDATE_NOT_NULL(rowId);
+
+    Int32 position;
+    PointToPosition(x, y, &position);
     Int64 itemId = IAdapterView::INVALID_ROW_ID;
 
     if (position >= 0) {
-        mAdapter->GetItemId(position, &itemId);
+        IAdapter::Probe(mAdapter)->GetItemId(position, &itemId);
     }
 
-    return itemId;
+    *rowId = itemId;
+    return NOERROR;
 }
 
 Boolean AbsListView::StartScrollIfNeeded(
-    /* [in] */ Int32 y)
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y,
+    /* [in] */ IMotionEvent* vtev)
 {
     // Check if we have moved far enough that it looks more like a
     // scroll than a tap
@@ -4484,7 +5375,10 @@ Boolean AbsListView::StartScrollIfNeeded(
     Int32 distance = Elastos::Core::Math::Abs(deltaY);
     Boolean overscroll = mScrollY != 0;
 
-    if (overscroll || distance > mTouchSlop) {
+    Int32 axes;
+    THIS_PROBE(IViewGroup)->GetNestedScrollAxes(&axes);
+    if ((overscroll || distance > mTouchSlop) &&
+            (axes & SCROLL_AXIS_VERTICAL) == 0) {
         CreateScrollingCache();
         if (overscroll) {
             mTouchMode = TOUCH_MODE_OVERSCROLL;
@@ -4495,16 +5389,12 @@ Boolean AbsListView::StartScrollIfNeeded(
             mMotionCorrection = deltaY > 0 ? mTouchSlop : -mTouchSlop;
         }
 
-        AutoPtr<IHandler> handler = GetHandler();
-        // Handler should not be NULL unless the AbsListView is not attached to a
-        // window, which would make it very hard to scroll it... but the monkeys
-        // say it's possible.
-        if (handler != NULL && mPendingCheckForLongPress!= NULL) {
-            handler->RemoveCallbacks(mPendingCheckForLongPress);
-        }
+        Boolean res;
+        RemoveCallbacks(mPendingCheckForLongPress, &res);
 
         SetPressed(FALSE);
-        AutoPtr<IView> motionView = GetChildAt(mMotionPosition - mFirstPosition);
+        AutoPtr<IView> motionView;
+        GetChildAt(mMotionPosition - mFirstPosition, (IView**)&motionView);
         if (motionView != NULL) {
             motionView->SetPressed(FALSE);
         }
@@ -4513,11 +5403,12 @@ Boolean AbsListView::StartScrollIfNeeded(
         // Time to start stealing events! Once we've stolen them, don't let anyone
         // steal from us
 
-        AutoPtr<IViewParent> parent = GetParent();
+        AutoPtr<IViewParent> parent;
+        GetParent((IViewParent**)&parent);
         if (parent != NULL) {
             parent->RequestDisallowInterceptTouchEvent(TRUE);
         }
-        ScrollIfNeeded(y);
+        ScrollIfNeeded(x, y, vtev);
 
         return TRUE;
     }
@@ -4526,12 +5417,35 @@ Boolean AbsListView::StartScrollIfNeeded(
 }
 
 void AbsListView::ScrollIfNeeded(
-    /* [in] */ Int32 y)
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y,
+    /* [in] */ IMotionEvent* vtev)
 {
     using Elastos::Core::Math;
     Int32 rawDeltaY = y - mMotionY;
-    Int32 deltaY = rawDeltaY - mMotionCorrection;
-    Int32 incrementalDeltaY = mLastY != Math::INT32_MIN_VALUE ? y - mLastY : deltaY;
+    Int32 scrollOffsetCorrection = 0;
+    Int32 scrollConsumedCorrection = 0;
+    if (mLastY == Math::INT32_MIN_VALUE) {
+        rawDeltaY -= mMotionCorrection;
+    }
+
+    Boolean res;
+    DispatchNestedPreScroll(0, mLastY != Math::INT32_MIN_VALUE ? mLastY - y : -rawDeltaY,
+            mScrollConsumed, mScrollOffset, &res);
+    if (res) {
+        rawDeltaY += (*mScrollConsumed)[1];
+        scrollOffsetCorrection = -(*mScrollOffset)[1];
+        scrollConsumedCorrection = (*mScrollConsumed)[1];
+        if (vtev != NULL) {
+            vtev->OffsetLocation(0, (*mScrollOffset)[1]);
+            mNestedYOffset += (*mScrollOffset)[1];
+        }
+    }
+    const Int32 deltaY = rawDeltaY;
+    Int32 incrementalDeltaY =
+            mLastY != Math::INT32_MIN_VALUE ? y - mLastY + scrollConsumedCorrection : deltaY;
+    Int32 lastYCorrection = 0;
+
     Boolean temp;
     if (mTouchMode == TOUCH_MODE_SCROLL) {
         if (PROFILE_SCROLLING) {
@@ -4543,10 +5457,11 @@ void AbsListView::ScrollIfNeeded(
 
         if (mScrollStrictSpan == NULL) {
             // If it's non-null, we're already in a scroll.
-            AutoPtr<IStrictMode> helper;
-            CStrictMode::AcquireSingleton((IStrictMode**)&helper);
-            helper->EnterCriticalSpan(String("AbsListView-scroll"),
-                (IStrictModeSpan**)&mScrollStrictSpan);
+            assert(0 && "TODO");
+            // AutoPtr<IStrictMode> helper;
+            // CStrictMode::AcquireSingleton((IStrictMode**)&helper);
+            // helper->EnterCriticalSpan(String("AbsListView-scroll"),
+            //         (IStrictModeSpan**)&mScrollStrictSpan);
         }
 
         if (y != mLastY) {
@@ -4555,7 +5470,8 @@ void AbsListView::ScrollIfNeeded(
             // Make sure that we do so in case we're in a parent that can intercept.
             if ((mGroupFlags & FLAG_DISALLOW_INTERCEPT) == 0
                 && Math::Abs(rawDeltaY) > mTouchSlop) {
-                AutoPtr<IViewParent> parent = GetParent();
+                AutoPtr<IViewParent> parent;
+                GetParent((IViewParent**)&parent);
                 if (parent != NULL) {
                     parent->RequestDisallowInterceptTouchEvent(TRUE);
                 }
@@ -4567,13 +5483,16 @@ void AbsListView::ScrollIfNeeded(
             } else {
                 // If we don't have a motion position that we can reliably track,
                 // pick something in the middle to make a best guess at things below.
-                motionIndex = GetChildCount() / 2;
+                Int32 count;
+                GetChildCount(&count);
+                motionIndex = count / 2;
             }
 
+            AutoPtr<IView> motionView;
+            THIS_PROBE(IViewGroup)->GetChildAt(motionIndex, (IView**)&motionView);
             Int32 motionViewPrevTop = 0;
-            AutoPtr<IView> motionView = this->GetChildAt(motionIndex);
             if (motionView != NULL) {
-                 motionView->GetTop(&  motionViewPrevTop);
+                motionView->GetTop(&motionViewPrevTop);
             }
 
             // No need to do all this work if we're not going to move anyway
@@ -4583,7 +5502,8 @@ void AbsListView::ScrollIfNeeded(
             }
 
             // Check to see if we have bumped into the scroll limit
-            motionView = this->GetChildAt(motionIndex);
+            motionView = NULL;
+            THIS_PROBE(IViewGroup)->GetChildAt(motionIndex, (IView**)&motionView);
             if (motionView != NULL) {
                 // Check if the top of the motion view is where it is
                 // supposed to be
@@ -4593,47 +5513,69 @@ void AbsListView::ScrollIfNeeded(
                     // Apply overscroll
 
                     Int32 overscroll = -incrementalDeltaY -
-                        (motionViewRealTop - motionViewPrevTop);
-                    OverScrollBy(0, overscroll, 0, mScrollY, 0, 0,
-                        0, mOverscrollDistance, TRUE);
-                    if (Math::Abs(mOverscrollDistance) == Math::Abs(mScrollY)) {
-                        // Don't allow overfling if we're at the edge.
-                        if (mVelocityTracker != NULL) {
-                            mVelocityTracker->Clear();
+                            (motionViewRealTop - motionViewPrevTop);
+                    Boolean res;
+                    if (DispatchNestedScroll(0, overscroll - incrementalDeltaY, 0, overscroll,
+                            mScrollOffset, &res), res) {
+                        lastYCorrection -= (*mScrollOffset)[1];
+                        if (vtev != NULL) {
+                            vtev->OffsetLocation(0, (*mScrollOffset)[1]);
+                            mNestedYOffset += (*mScrollOffset)[1];
                         }
                     }
+                    else {
+                        Boolean atOverscrollEdge = OverScrollBy(0, overscroll,
+                                0, mScrollY, 0, 0, 0, mOverscrollDistance, TRUE);
 
-                    Int32 overscrollMode = GetOverScrollMode();
-                    if (overscrollMode == IView::OVER_SCROLL_ALWAYS ||
-                        (overscrollMode == IView::OVER_SCROLL_IF_CONTENT_SCROLLS
-                            && !ContentFits())) {
-                        mDirection = 0; // Reset when entering overscroll.
-                        mTouchMode = TOUCH_MODE_OVERSCROLL;
-                        if (rawDeltaY > 0) {
-                            mEdgeGlowTop->OnPull((Float) overscroll / GetHeight());
-                            mEdgeGlowBottom->IsFinished(&temp);
-                            if (!temp) {
-                                mEdgeGlowBottom->OnRelease();
-                            }
-                            AutoPtr<IRect> rect;
-                            mEdgeGlowTop->GetBounds(FALSE, (IRect**)&rect);
-                            Invalidate(rect);
+                        if (atOverscrollEdge && mVelocityTracker != NULL) {
+                            // Don't allow overfling if we're at the edge
+                            mVelocityTracker->Clear();
                         }
-                        else if (rawDeltaY < 0) {
-                            mEdgeGlowBottom->OnPull((Float) overscroll / GetHeight());
-                            mEdgeGlowTop->IsFinished(&temp);
-                            if (!temp) {
-                                mEdgeGlowTop->OnRelease();
+
+                        Int32 overscrollMode;
+                        GetOverScrollMode(&overscrollMode);
+                        Int32 height, width;
+                        GetHeight(&height);
+                        GetWidth(&width);
+                        if (overscrollMode == IView::OVER_SCROLL_ALWAYS ||
+                            (overscrollMode == IView::OVER_SCROLL_IF_CONTENT_SCROLLS
+                                && !ContentFits())) {
+                            if (!atOverscrollEdge) {
+                                mDirection = 0; // Reset when entering overscroll.
+                                mTouchMode = TOUCH_MODE_OVERSCROLL;
                             }
-                            AutoPtr<IRect> rect;
-                            mEdgeGlowBottom->GetBounds(TRUE, (IRect**)&rect);
-                            Invalidate(rect);
+                            if (incrementalDeltaY > 0) {
+                                mEdgeGlowTop->OnPull((Float) -overscroll / height,
+                                    (Float) x / width);
+                                mEdgeGlowBottom->IsFinished(&temp);
+                                if (!temp) {
+                                    mEdgeGlowBottom->OnRelease();
+                                }
+                                Int32 top;
+                                GetPaddingTop(&top);
+                                Int32 maxH;
+                                mEdgeGlowTop->GetMaxHeight(&maxH);
+                                Invalidate(0, 0, width, maxH + top);
+                            }
+                            else if (incrementalDeltaY < 0) {
+                                mEdgeGlowBottom->OnPull((Float) overscroll / height,
+                                        1.f - (Float) x / width);
+                                mEdgeGlowTop->IsFinished(&temp);
+                                if (!temp) {
+                                    mEdgeGlowTop->OnRelease();
+                                }
+                                Int32 bottom;
+                                GetPaddingBottom(&bottom);
+                                Int32 maxH;
+                                mEdgeGlowBottom->GetMaxHeight(&maxH);
+                                Invalidate(0, height - bottom - maxH, width, height);
+                            }
                         }
                     }
                 }
-                mMotionY = y;
+                mMotionY = y + lastYCorrection + scrollOffsetCorrection;
             }
-            mLastY = y;
+            mLastY = y + lastYCorrection + scrollOffsetCorrection;
         }
     }
     else if (mTouchMode == TOUCH_MODE_OVERSCROLL) {
@@ -4650,35 +5592,47 @@ void AbsListView::ScrollIfNeeded(
             if ((newScroll < 0 && oldScroll >= 0) || (newScroll > 0 && oldScroll <= 0)) {
                 overScrollDistance = -oldScroll;
                 incrementalDeltaY += overScrollDistance;
-            } else {
+            }
+            else {
                 incrementalDeltaY = 0;
             }
 
             if (overScrollDistance != 0) {
                 OverScrollBy(0, overScrollDistance, 0, mScrollY, 0, 0,
                     0, mOverscrollDistance, TRUE);
-                Int32 overscrollMode = GetOverScrollMode();
+                Int32 overscrollMode;
+                GetOverScrollMode(&overscrollMode);
+                Int32 height, width;
+                GetHeight(&height);
+                GetWidth(&width);
                 if (overscrollMode == IView::OVER_SCROLL_ALWAYS ||
                     (overscrollMode == IView::OVER_SCROLL_IF_CONTENT_SCROLLS &&
                     !ContentFits())) {
                         if (rawDeltaY > 0) {
-                            mEdgeGlowTop->OnPull((Float) overScrollDistance / GetHeight());
+                            mEdgeGlowTop->OnPull((Float) overScrollDistance / height,
+                                    (Float) x / width);
                             mEdgeGlowBottom->IsFinished(&temp);
                             if (!temp) {
                                 mEdgeGlowBottom->OnRelease();
                             }
-                            AutoPtr<IRect> rect;
-                            mEdgeGlowTop->GetBounds(TRUE, (IRect**)&rect);
-                            Invalidate(rect);
-                        } else if (rawDeltaY < 0) {
-                            mEdgeGlowBottom->OnPull((Float) overScrollDistance / GetHeight());
+                            Int32 top;
+                            GetPaddingTop(&top);
+                            Int32 maxH;
+                            mEdgeGlowTop->GetMaxHeight(&maxH);
+                            Invalidate(0, 0, width, maxH + top);
+                        }
+                        else if (rawDeltaY < 0) {
+                            mEdgeGlowBottom->OnPull((Float) overScrollDistance / height,
+                                    1.f - (Float) x / width);
                             mEdgeGlowTop->IsFinished(&temp);
                             if (!temp) {
                                 mEdgeGlowTop->OnRelease();
                             }
-                            AutoPtr<IRect> rect;
-                            mEdgeGlowBottom->GetBounds(TRUE, (IRect**)&rect);
-                            Invalidate(rect);
+                            Int32 bottom;
+                            GetPaddingBottom(&bottom);
+                            Int32 maxH;
+                            mEdgeGlowBottom->GetMaxHeight(&maxH);
+                            Invalidate(0, height - bottom - maxH, width, height);
                         }
                 }
             }
@@ -4699,14 +5653,15 @@ void AbsListView::ScrollIfNeeded(
                 Int32 motionPosition = FindClosestMotionRow(y);
 
                 mMotionCorrection = 0;
-                AutoPtr<IView> motionView = GetChildAt(motionPosition - mFirstPosition);
+                AutoPtr<IView> motionView;
+                GetChildAt(motionPosition - mFirstPosition, (IView**)&motionView);
                 Int32 viewTop;
                 motionView->GetTop(&viewTop);
                 mMotionViewOriginalTop = motionView != NULL ? viewTop : 0;
-                mMotionY = y;
+                mMotionY = y + scrollOffsetCorrection;
                 mMotionPosition = motionPosition;
             }
-            mLastY = y;
+            mLastY = y + lastYCorrection + scrollOffsetCorrection;
             mDirection = newDirection;
         }
     }
@@ -4721,7 +5676,11 @@ ECode AbsListView::OnTouchModeChanged(
         // Layout, but only if we already have done so previously.
         // (Otherwise may clobber a LAYOUT_SYNC layout that was requested to restore
         // state.)
-        if (GetHeight() > 0 && GetChildCount() > 0) {
+        Int32 height;
+        GetHeight(&height);
+        Int32 count;
+        GetChildCount(&count);
+        if (height > 0 && count > 0) {
             // We do not lose focus initiating a touch (since AbsListView is focusable in
             // touch mode). Force an initial layout to get rid of the selection.
             LayoutChildren();
@@ -4750,401 +5709,86 @@ ECode AbsListView::OnTouchModeChanged(
     return NOERROR;
 }
 
-//@Override
-Boolean AbsListView::OnTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode AbsListView::OnTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* res)
 {
-    if (!IsEnabled()) {
+    VALIDATE_NOT_NULL(res);
+
+    Boolean suc;
+    if (IsEnabled(&suc), !suc) {
         // A disabled view that is clickable still consumes the touch
         // events, it just doesn't respond to them.
-        return IsClickable() || IsLongClickable();
+        Boolean res1, res2;
+        *res = (IsClickable(&res1), res1) || (IsLongClickable(&res2), res2);
+        return NOERROR;
     }
 
     if (mPositionScroller != NULL) {
         mPositionScroller->Stop();
     }
 
-    if (!mIsAttached) {
+    if (mIsDetaching || (IsAttachedToWindow(&suc), !suc)) {
         // Something isn't right.
         // Since we rely on being attached to get data set change notifications,
         // don't risk doing anything where we might try to resync and find things
         // in a bogus state.
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
     }
 
-    if (mFastScroller != NULL) {
-        Boolean intercepted = mFastScroller->OnTouchEvent(ev);
+    StartNestedScroll(IView::SCROLL_AXIS_VERTICAL, &suc);
+
+    if (mFastScroll != NULL) {
+        Boolean intercepted = mFastScroll->OnTouchEvent(ev);
         if (intercepted) {
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
     }
 
-    Int32 action;
-    ev->GetAction(&action);
-
-    Float fx, fy;
-    ev->GetX(&fx);
-    ev->GetY(&fy);
-
     InitVelocityTrackerIfNotExists();
-    mVelocityTracker->AddMovement(ev);
+    AutoPtr<IMotionEvent> vtev;
+    MotionEvent::Obtain(ev, (IMotionEvent**)&vtev);
 
-    switch (action & IMotionEvent::ACTION_MASK) {
+    Int32 actionMasked;
+    ev->GetActionMasked(&actionMasked);
+    if (actionMasked == IMotionEvent::ACTION_DOWN) {
+        mNestedYOffset = 0;
+    }
+    vtev->OffsetLocation(0, mNestedYOffset);
+    switch (actionMasked) {
         case IMotionEvent::ACTION_DOWN: {
-            switch (mTouchMode) {
-                case TOUCH_MODE_OVERFLING: {
-                    mFlingRunnable->EndFling();
-                    if (mPositionScroller != NULL) {
-                        mPositionScroller->Stop();
-                    }
-                    mTouchMode = TOUCH_MODE_OVERSCROLL;
-                    mMotionX = (Int32) fx;
-                    mMotionY = mLastY = (Int32)fy;
-                    mMotionCorrection = 0;
-                    ev->GetPointerId(0, &mActivePointerId);
-                    mDirection = 0;
-                    break;
-                }
-
-                default: {
-                    ev->GetPointerId(0, &mActivePointerId);
-                    Int32 x = (Int32)fx;
-                    Int32 y = (Int32)fy;
-                    Int32 motionPosition = PointToPosition(x, y);
-
-                    if (!mDataChanged) {
-                        Boolean isEnabled = (mTouchMode != TOUCH_MODE_FLING) && (motionPosition >= 0);
-                        if (isEnabled) {
-                            IAdapterView* av = THIS_PROBE(IAdapterView);
-                            AutoPtr<IAdapter> adapter;
-                            av->GetAdapter((IAdapter**)&adapter);
-                            IListAdapter::Probe(adapter)->IsEnabled(motionPosition, &isEnabled);
-                        }
-
-                        if (isEnabled) {
-                            // User clicked on an actual view (and was not
-                            // stopping a fling). It might be a click or a scroll.
-                            // Assume it is a click until proven otherwise
-                            //
-                            mTouchMode = TOUCH_MODE_DOWN;
-                            // FIXME Debounce
-                            if (mPendingCheckForTap == NULL) {
-                                mPendingCheckForTap = new CheckForTap(this);
-                            }
-                            AutoPtr<IViewConfigurationHelper> viewConfiguration;
-                            CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&viewConfiguration);
-                            Int32 timeout;
-                            viewConfiguration->GetTapTimeout(&timeout);
-                            PostDelayed(mPendingCheckForTap, timeout);
-                        }
-                        else {
-                            if (mTouchMode == TOUCH_MODE_FLING) {
-                                // Stopped a fling. It is a scroll.
-                                CreateScrollingCache();
-                                mTouchMode = TOUCH_MODE_SCROLL;
-                                mMotionCorrection = 0;
-                                motionPosition = FindMotionRow(y);
-                                mFlingRunnable->FlywheelTouch();
-                            }
-                        }
-                    }
-
-                    if (motionPosition >= 0) {
-                        // Remember where the motion event started
-                        AutoPtr<IView> v = GetChildAt(motionPosition - mFirstPosition);
-                        v->GetTop(&mMotionViewOriginalTop);
-                    }
-                    mMotionX = x;
-                    mMotionY = y;
-                    mMotionPosition = motionPosition;
-                    mLastY = Elastos::Core::Math::INT32_MIN_VALUE;
-                    break;
-                }
-            } // End Switch (mTouchMode)
-
-            if (PerformButtonActionOnTouchDown(ev)) {
-                if (mTouchMode == TOUCH_MODE_DOWN) {
-                    RemoveCallbacks(mPendingCheckForTap);
-                }
-            }
+            OnTouchDown(ev);
             break;
         }
 
         case IMotionEvent::ACTION_MOVE: {
-            Int32 pointerIndex;
-            ev->FindPointerIndex(mActivePointerId, &pointerIndex);
-            if (pointerIndex == -1) {
-                pointerIndex = 0;
-                ev->GetPointerId(pointerIndex,&mActivePointerId);
-            }
-            Float pify;
-            ev->GetY(pointerIndex, &pify);
-            Int32 y = (Int32)pify;
-
-            if (mDataChanged) {
-                // Re-sync everything if data has been changed
-                // since the scroll operation can query the adapter.
-                LayoutChildren();
-            }
-
-            switch (mTouchMode) {
-                case TOUCH_MODE_DOWN:
-                case TOUCH_MODE_TAP:
-                case TOUCH_MODE_DONE_WAITING:
-                    // Check if we have moved far enough that it looks more like a
-                    // scroll than a tap
-                    StartScrollIfNeeded(y);
-                    break;
-
-                case TOUCH_MODE_SCROLL:
-                case TOUCH_MODE_OVERSCROLL:
-                    ScrollIfNeeded(y);
-                    break;
-            }
+            OnTouchMove(ev, vtev);
             break;
         }
 
         case IMotionEvent::ACTION_UP: {
-            switch (mTouchMode) {
-                case TOUCH_MODE_DOWN:
-                case TOUCH_MODE_TAP:
-                case TOUCH_MODE_DONE_WAITING: {
-                    Int32 motionPosition = mMotionPosition;
-                    AutoPtr<IView> child = GetChildAt(motionPosition - mFirstPosition);
-                    Boolean inList = fx > mListPadding->mLeft && fx < GetWidth() - mListPadding->mRight;
-                    Boolean hasFocusable;
-                    if (child != NULL && (child->HasFocusable(&hasFocusable), !hasFocusable) && inList) {
-                        if (mTouchMode != TOUCH_MODE_DOWN) {
-                            child->SetPressed(FALSE);
-                        }
-
-                        if (mPerformClick == NULL) {
-                            mPerformClick = new AbsListViewPerformClick(this);
-                        }
-
-                        AutoPtr<AbsListViewPerformClick> performClick = mPerformClick;
-
-                        performClick->mClickMotionPosition = motionPosition;
-                        performClick->RememberWindowAttachCount();
-
-                        mResurrectToPosition = motionPosition;
-
-                        Boolean isEnabled;
-                        mAdapter->IsEnabled(motionPosition, &isEnabled);
-                        if (mTouchMode == TOUCH_MODE_DOWN || mTouchMode == TOUCH_MODE_TAP) {
-                            AutoPtr<IHandler> handler = GetHandler();
-                            if (handler != NULL && mPendingCheckForLongPress != NULL) {
-                                AutoPtr<IRunnable> target = (mTouchMode == TOUCH_MODE_DOWN ?
-                                        mPendingCheckForTap.Get() : mPendingCheckForLongPress.Get());
-                                handler->RemoveCallbacks(target);
-                            }
-
-                            mLayoutMode = LAYOUT_NORMAL;
-                            if (!mDataChanged && isEnabled) {
-                                mTouchMode = TOUCH_MODE_TAP;
-                                SetSelectedPositionInt(mMotionPosition);
-                                LayoutChildren();
-                                child->SetPressed(TRUE);
-                                PositionSelector(mMotionPosition, child);
-                                SetPressed(TRUE);
-                                if (mSelector != NULL) {
-                                    AutoPtr<IDrawable> d;
-                                    mSelector->GetCurrent((IDrawable**)&d);
-                                    AutoPtr<ITransitionDrawable> td = ITransitionDrawable::Probe(d);
-                                    if (td != NULL) {
-                                        td->ResetTransition();
-                                    }
-                                }
-                                if (mTouchModeReset != NULL) {
-                                    RemoveCallbacks(mTouchModeReset);
-                                }
-                                mTouchModeReset = new TouchModeResetRunnable(performClick, this, child);
-                                AutoPtr<IViewConfigurationHelper> viewConfiguration;
-                                CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&viewConfiguration);
-                                Int32 timeout;
-                                viewConfiguration->GetPressedStateDuration(&timeout);
-                                PostDelayed(mTouchModeReset, timeout);
-                            }
-                            else {
-                                mTouchMode = TOUCH_MODE_REST;
-                                UpdateSelectorState();
-                            }
-                            return TRUE;
-                        }
-                        else if (!mDataChanged && isEnabled) {
-                            performClick->Run();
-                        }
-                    }
-                    mTouchMode = TOUCH_MODE_REST;
-                    UpdateSelectorState();
-                    break;
-                }
-
-                case TOUCH_MODE_SCROLL: {
-                    Int32 childCount = GetChildCount();
-                    if (childCount > 0) {
-                        Int32 firstChildTop;
-                        GetChildAt(0)->GetTop(&firstChildTop);
-                        Int32 lastChildBottom;
-                        GetChildAt(childCount - 1)->GetBottom(&lastChildBottom);
-
-                        Int32 contentTop = mListPadding->mTop;
-                        Int32 contentBottom = GetHeight() - mListPadding->mBottom;
-                        if (mFirstPosition == 0 && firstChildTop >= contentTop &&
-                            mFirstPosition + childCount < mItemCount &&
-                            lastChildBottom <= GetHeight() - contentBottom) {
-                                mTouchMode = TOUCH_MODE_REST;
-                                ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
-                        }
-                        else {
-                            mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
-                            Float y;
-                            mVelocityTracker->GetYVelocity(mActivePointerId, &y);
-                            Int32 initialVelocity = (Int32)(y * mVelocityScale);
-
-                            // Fling if we have enough velocity and we aren't at a boundary.
-                            // Since we can potentially overfling more than we can overscroll, don't
-                            // allow the weird behavior where you can scroll to a boundary then
-                            // fling further.
-                            if (Elastos::Core::Math::Abs(initialVelocity) > mMinimumVelocity &&
-                                !((mFirstPosition == 0 &&
-                                firstChildTop == contentTop - mOverscrollDistance) ||
-                                (mFirstPosition + childCount == mItemCount &&
-                                lastChildBottom == contentBottom + mOverscrollDistance))) {
-                                    if (mFlingRunnable == NULL) {
-                                        mFlingRunnable = new FlingRunnable(this);
-                                    }
-                                    ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_FLING);
-
-                                    mFlingRunnable->Start(-initialVelocity);
-                            }
-                            else {
-                                mTouchMode = TOUCH_MODE_REST;
-                                ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
-
-                                if (mFlingRunnable != NULL) {
-                                    mFlingRunnable->EndFling();
-                                }
-                                if (mPositionScroller != NULL) {
-                                    mPositionScroller->Stop();
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        mTouchMode = TOUCH_MODE_REST;
-                        ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
-                    }
-                    break;
-                }
-
-                case TOUCH_MODE_OVERSCROLL: {
-                    if (mFlingRunnable == NULL) {
-                        mFlingRunnable = new FlingRunnable(this);
-                    }
-
-                    mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
-                    Float y;
-                    mVelocityTracker->GetYVelocity(mActivePointerId, &y);
-                    Int32 initialVelocity = (Int32)y;
-
-                    ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_FLING);
-                    if (Elastos::Core::Math::Abs(initialVelocity) > mMinimumVelocity) {
-                        mFlingRunnable->StartOverfling(-initialVelocity);
-                    }
-                    else {
-                        mFlingRunnable->StartSpringback();
-                    }
-
-                    break;
-                }
-                default:
-                    break;
-            }
-
-            SetPressed(FALSE);
-
-            if (mEdgeGlowTop != NULL) {
-                mEdgeGlowTop->OnRelease();
-                mEdgeGlowBottom->OnRelease();
-            }
-
-            // Need to redraw since we probably aren't drawing the selector anymore
-            Invalidate();
-
-            AutoPtr<IHandler> handler = GetHandler();
-            if (handler != NULL && mPendingCheckForLongPress != NULL) {
-                handler->RemoveCallbacks(mPendingCheckForLongPress);
-            }
-
-            RecycleVelocityTracker();
-
-            mActivePointerId = INVALID_POINTER;
-
-            if (PROFILE_SCROLLING) {
-                if (mScrollProfilingStarted) {
-                    //Debug.stopMethodTracing();
-                    mScrollProfilingStarted = FALSE;
-                }
-            }
-
-            if (mScrollStrictSpan != NULL) {
-                mScrollStrictSpan->Finish();
-                mScrollStrictSpan = NULL;
-            }
+            OnTouchUp(ev);
             break;
         }
 
         case IMotionEvent::ACTION_CANCEL: {
-            switch (mTouchMode) {
-                case TOUCH_MODE_OVERSCROLL:
-                    if (mFlingRunnable == NULL) {
-                        mFlingRunnable = new FlingRunnable(this);
-                    }
-                    mFlingRunnable->StartSpringback();
-                    break;
-
-                case TOUCH_MODE_OVERFLING:
-                    // Do nothing - let it play out.
-                    break;
-
-                default:
-                    mTouchMode = TOUCH_MODE_REST;
-                    SetPressed(FALSE);
-                    AutoPtr<IView> motionView = GetChildAt(
-                        mMotionPosition - mFirstPosition);
-                    if (motionView != NULL) {
-                        motionView->SetPressed(FALSE);
-                    }
-                    ClearScrollingCache();
-
-                    AutoPtr<IHandler> handler = GetHandler();
-                    if (handler != NULL && mPendingCheckForLongPress != NULL) {
-                        AutoPtr<IRunnable> runTemp = mPendingCheckForLongPress.Get();
-                        handler->RemoveCallbacks(runTemp);
-                    }
-
-                    RecycleVelocityTracker();
-                    break;
-                }
-
-                if (mEdgeGlowTop != NULL) {
-                    mEdgeGlowTop->OnRelease();
-                    mEdgeGlowBottom->OnRelease();
-                }
-                mActivePointerId = INVALID_POINTER;
-                break;
-            }
+            OnTouchCancel();
+            break;
+        }
 
         case IMotionEvent::ACTION_POINTER_UP: {
             OnSecondaryPointerUp(ev);
             Int32 x = mMotionX;
             Int32 y = mMotionY;
-            Int32 motionPosition = PointToPosition(x, y);
+            Int32 motionPosition;
+            PointToPosition(x, y, &motionPosition);
             if (motionPosition >= 0) {
                 // Remember where the motion event started
-                AutoPtr<IView> v = GetChildAt(motionPosition - mFirstPosition);
-                v->GetTop(&mMotionViewOriginalTop);
+                AutoPtr<IView> child;
+                GetChildAt(motionPosition - mFirstPosition, (IView**)&child);
+                child->GetTop(&mMotionViewOriginalTop);
                 mMotionPosition = motionPosition;
             }
             mLastY = y;
@@ -5157,31 +5801,427 @@ Boolean AbsListView::OnTouchEvent(
             ev->GetActionIndex(&index);
             Int32 id;
             ev->GetPointerId(index, &id);
+
+            Float fx, fy;
+            ev->GetX(index, &fx);
+            ev->GetY(index, &fy);
             Int32 x = (Int32)fx;
             Int32 y = (Int32)fy;
             mMotionCorrection = 0;
             mActivePointerId = id;
             mMotionX = x;
             mMotionY = y;
-            Int32 motionPosition = PointToPosition(x, y);
+            Int32 motionPosition;
+            PointToPosition(x, y, &motionPosition);
             if (motionPosition >= 0) {
                 // Remember where the motion event started
-                AutoPtr<IView> v = GetChildAt(motionPosition - mFirstPosition);
-                v->GetTop(&mMotionViewOriginalTop);
+                AutoPtr<IView> child;
+                GetChildAt(motionPosition - mFirstPosition, (IView**)&child);
+                child->GetTop(&mMotionViewOriginalTop);
                 mMotionPosition = motionPosition;
             }
             mLastY = y;
             break;
         }
-
         default:
             break;
     }
 
+    if (mVelocityTracker != NULL) {
+        mVelocityTracker->AddMovement(vtev);
+    }
+    IInputEvent::Probe(vtev)->Recycle();
     return TRUE;
 }
 
-//@Override
+void AbsListView::OnTouchDown(
+    /* [in] */ IMotionEvent* ev)
+{
+    ev->GetPointerId(0, &mActivePointerId);
+    Float fx, fy;
+    ev->GetX(&fx);
+    ev->GetY(&fy);
+
+    Boolean res;
+
+    if (mTouchMode == TOUCH_MODE_OVERFLING) {
+        // Stopped the fling. It is a scroll.
+        mFlingRunnable->EndFling();
+        if (mPositionScroller != NULL) {
+            mPositionScroller->Stop();
+        }
+        mTouchMode = TOUCH_MODE_OVERSCROLL;
+        mMotionX = (Int32)fx;
+        mMotionY = (Int32)fy;
+        mLastY = mMotionY;
+        mMotionCorrection = 0;
+        mDirection = 0;
+    }
+    else {
+        Int32 x = (Int32)fx;
+        Int32 y = (Int32)fy;
+        Int32 motionPosition;
+        PointToPosition(x, y, &motionPosition);
+        if (!mDataChanged) {
+            AutoPtr<IAdapter> adapter;
+            THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
+            Boolean isEnabled;
+            IListAdapter::Probe(adapter)->IsEnabled(motionPosition, &isEnabled);
+            if (mTouchMode == TOUCH_MODE_FLING) {
+                // Stopped a fling. It is a scroll.
+                CreateScrollingCache();
+                mTouchMode = TOUCH_MODE_SCROLL;
+                mMotionCorrection = 0;
+                motionPosition = FindMotionRow(y);
+                mFlingRunnable->FlywheelTouch();
+            }
+            else if ((motionPosition >= 0) && isEnabled) {
+                // User clicked on an actual view (and was not stopping a
+                // fling). It might be a click or a scroll. Assume it is a
+                // click until proven otherwise.
+                mTouchMode = TOUCH_MODE_DOWN;
+
+                // FIXME Debounce
+                if (mPendingCheckForTap == NULL) {
+                    mPendingCheckForTap = new CheckForTap(this);
+                }
+
+                mPendingCheckForTap->mX = fx;
+                mPendingCheckForTap->mY = fy;
+                PostDelayed(mPendingCheckForTap, ViewConfiguration::GetTapTimeout(), &res);
+            }
+        }
+        if (motionPosition >= 0) {
+            // Remember where the motion event started
+            AutoPtr<IView> v;
+            GetChildAt(motionPosition - mFirstPosition, (IView**)&v);
+            v->GetTop(&mMotionViewOriginalTop);
+        }
+        mMotionX = x;
+        mMotionY = y;
+        mMotionPosition = motionPosition;
+        mLastY = Elastos::Core::Math::INT32_MIN_VALUE;
+    }
+
+    if (mTouchMode == TOUCH_MODE_DOWN && mMotionPosition != IAdapterView::INVALID_POSITION
+            && PerformButtonActionOnTouchDown(ev)) {
+        RemoveCallbacks(mPendingCheckForTap, &res);
+    }
+}
+
+void AbsListView::OnTouchMove(
+    /* [in] */ IMotionEvent* ev,
+    /* [in] */ IMotionEvent* vtev)
+{
+    Int32 pointerIndex;
+    ev->FindPointerIndex(mActivePointerId, &pointerIndex);
+    if (pointerIndex == -1) {
+        pointerIndex = 0;
+        ev->GetPointerId(pointerIndex, &mActivePointerId);
+    }
+
+    if (mDataChanged) {
+        // Re-sync everything if data has been changed
+        // since the scroll operation can query the adapter.
+        LayoutChildren();
+    }
+
+    Float pify;
+    ev->GetY(pointerIndex, &pify);
+    Int32 y = (Int32)pify;
+    Float pifx;
+    ev->GetX(pointerIndex, &pifx);
+    Int32 x = (Int32)pifx;
+
+    switch (mTouchMode) {
+        case TOUCH_MODE_DOWN:
+        case TOUCH_MODE_TAP:
+        case TOUCH_MODE_DONE_WAITING: {
+            // Check if we have moved far enough that it looks more like a
+            // scroll than a tap. If so, we'll enter scrolling mode.
+            if (StartScrollIfNeeded(x, y, vtev)) {
+                break;
+            }
+            // Otherwise, check containment within list bounds. If we're
+            // outside bounds, cancel any active presses.
+            Boolean res;
+            if (PointInView(pifx, y, mTouchSlop, &res), !res) {
+                SetPressed(FALSE);
+                AutoPtr<IView> motionView;
+                GetChildAt(mMotionPosition - mFirstPosition, (IView**)&motionView);
+                if (motionView != NULL) {
+                    motionView->SetPressed(FALSE);
+                }
+                Boolean res;
+                RemoveCallbacks(mTouchMode == TOUCH_MODE_DOWN ?
+                        (IRunnable*)mPendingCheckForTap.Get() : (IRunnable*)mPendingCheckForLongPress.Get(), &res);
+                mTouchMode = TOUCH_MODE_DONE_WAITING;
+                UpdateSelectorState();
+            }
+            break;
+        }
+
+        case TOUCH_MODE_SCROLL:
+        case TOUCH_MODE_OVERSCROLL:
+            ScrollIfNeeded(x, y, vtev);
+            break;
+    }
+}
+
+void AbsListView::OnTouchUp(
+    /* [in] */ IMotionEvent* ev)
+{
+    switch (mTouchMode) {
+        case TOUCH_MODE_DOWN:
+        case TOUCH_MODE_TAP:
+        case TOUCH_MODE_DONE_WAITING: {
+            Int32 motionPosition = mMotionPosition;
+            AutoPtr<IView> child;
+            GetChildAt(motionPosition - mFirstPosition, (IView**)&child);
+            if (child != NULL) {
+                if (mTouchMode != TOUCH_MODE_DOWN) {
+                    child->SetPressed(FALSE);
+                }
+                Float x, y;
+                ev->GetX(&x);
+                ev->GetY(&y);
+                Int32 width;
+                GetWidth(&width);
+                Boolean inList = x > mListPadding->mLeft && x < width - mListPadding->mRight;
+                Boolean hasFocusable;
+                if (inList && (child->HasFocusable(&hasFocusable), !hasFocusable)) {
+                    if (mPerformClick == NULL) {
+                        mPerformClick = new PerformClick(this);
+                    }
+
+                    AutoPtr<PerformClick> performClick = mPerformClick;
+
+                    performClick->mClickMotionPosition = motionPosition;
+                    performClick->RememberWindowAttachCount();
+
+                    mResurrectToPosition = motionPosition;
+
+                    Boolean isEnabled;
+                    mAdapter->IsEnabled(motionPosition, &isEnabled);
+                    if (mTouchMode == TOUCH_MODE_DOWN || mTouchMode == TOUCH_MODE_TAP) {
+                        AutoPtr<IRunnable> target = mTouchMode == TOUCH_MODE_DOWN ?
+                                (IRunnable*)mPendingCheckForTap.Get() : (IRunnable*)mPendingCheckForLongPress.Get();
+                        Boolean res;
+                        RemoveCallbacks(target, &res);
+
+                        mLayoutMode = LAYOUT_NORMAL;
+                        if (!mDataChanged && isEnabled) {
+                            mTouchMode = TOUCH_MODE_TAP;
+                            SetSelectedPositionInt(mMotionPosition);
+                            LayoutChildren();
+                            child->SetPressed(TRUE);
+                            PositionSelector(mMotionPosition, child);
+                            SetPressed(TRUE);
+                            if (mSelector != NULL) {
+                                AutoPtr<IDrawable> d;
+                                mSelector->GetCurrent((IDrawable**)&d);
+                                AutoPtr<ITransitionDrawable> td = ITransitionDrawable::Probe(d);
+                                if (td != NULL) {
+                                    td->ResetTransition();
+                                }
+                                mSelector->SetHotspot(x, y);
+                            }
+                            if (mTouchModeReset != NULL) {
+                                RemoveCallbacks(mTouchModeReset, &res);
+                            }
+                            mTouchModeReset = new TouchModeResetRunnable(performClick, this, child);
+                            Int32 timeout = ViewConfiguration::GetPressedStateDuration();
+                            Boolean res;
+                            PostDelayed(mTouchModeReset, timeout, &res);
+                        }
+                        else {
+                            mTouchMode = TOUCH_MODE_REST;
+                            UpdateSelectorState();
+                        }
+                        return;
+                    }
+                    else if (!mDataChanged && isEnabled) {
+                        performClick->Run();
+                    }
+                }
+            }
+            mTouchMode = TOUCH_MODE_REST;
+            UpdateSelectorState();
+            break;
+        }
+
+        case TOUCH_MODE_SCROLL: {
+            Int32 childCount;
+            GetChildCount(&childCount);
+            if (childCount > 0) {
+                AutoPtr<IView> view;
+                GetChildAt(0, (IView**)&view);
+                Int32 firstChildTop;
+                view->GetTop(&firstChildTop);
+                view = NULL;
+                GetChildAt(childCount - 1, (IView**)&view);
+                Int32 lastChildBottom;
+                view->GetBottom(&lastChildBottom);
+
+                Int32 contentTop = mListPadding->mTop;
+                Int32 height;
+                GetHeight(&height);
+                Int32 contentBottom = height - mListPadding->mBottom;
+                if (mFirstPosition == 0 && firstChildTop >= contentTop &&
+                        mFirstPosition + childCount < mItemCount &&
+                        lastChildBottom <= height - contentBottom) {
+                    mTouchMode = TOUCH_MODE_REST;
+                    ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
+                }
+                else {
+                    mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
+                    Float y;
+                    mVelocityTracker->GetYVelocity(mActivePointerId, &y);
+                    Int32 initialVelocity = (Int32)(y * mVelocityScale);
+
+                    // Fling if we have enough velocity and we aren't at a boundary.
+                    // Since we can potentially overfling more than we can overscroll, don't
+                    // allow the weird behavior where you can scroll to a boundary then
+                    // fling further.
+                    Boolean flingVelocity = Elastos::Core::Math::Abs(initialVelocity) > mMinimumVelocity;
+                    if (flingVelocity &&
+                            !((mFirstPosition == 0 &&
+                            firstChildTop == contentTop - mOverscrollDistance) ||
+                            (mFirstPosition + childCount == mItemCount &&
+                            lastChildBottom == contentBottom + mOverscrollDistance))) {
+                        Boolean res;
+                        if ((DispatchNestedPreFling(0, -initialVelocity, &res), !res)) {
+                            if (mFlingRunnable == NULL) {
+                                mFlingRunnable = new FlingRunnable(this);
+                            }
+                            ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_FLING);
+
+                            mFlingRunnable->Start(-initialVelocity);
+                            Boolean res;
+                            DispatchNestedFling(0, -initialVelocity, TRUE, &res);
+                        }
+                        else {
+                            mTouchMode = TOUCH_MODE_REST;
+                            ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
+                        }
+                    }
+                    else {
+                        mTouchMode = TOUCH_MODE_REST;
+                        ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
+
+                        if (mFlingRunnable != NULL) {
+                            mFlingRunnable->EndFling();
+                        }
+                        if (mPositionScroller != NULL) {
+                            mPositionScroller->Stop();
+                        }
+                        Boolean res;
+                        if (flingVelocity && (DispatchNestedPreFling(0, -initialVelocity, &res), !res)) {
+                            Boolean res;
+                            DispatchNestedFling(0, -initialVelocity, FALSE, &res);
+                        }
+                    }
+                }
+            }
+            else {
+                mTouchMode = TOUCH_MODE_REST;
+                ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
+            }
+            break;
+        }
+
+        case TOUCH_MODE_OVERSCROLL: {
+            if (mFlingRunnable == NULL) {
+                mFlingRunnable = new FlingRunnable(this);
+            }
+
+            mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
+            Float y;
+            mVelocityTracker->GetYVelocity(mActivePointerId, &y);
+            Int32 initialVelocity = (Int32)y;
+
+            ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_FLING);
+            if (Elastos::Core::Math::Abs(initialVelocity) > mMinimumVelocity) {
+                mFlingRunnable->StartOverfling(-initialVelocity);
+            }
+            else {
+                mFlingRunnable->StartSpringback();
+            }
+
+            break;
+        }
+        default:
+            break;
+    }
+
+    SetPressed(FALSE);
+
+    if (mEdgeGlowTop != NULL) {
+        mEdgeGlowTop->OnRelease();
+        mEdgeGlowBottom->OnRelease();
+    }
+
+    // Need to redraw since we probably aren't drawing the selector anymore
+    Invalidate();
+
+    Boolean res;
+    RemoveCallbacks(mPendingCheckForLongPress, &res);
+
+    RecycleVelocityTracker();
+
+    mActivePointerId = INVALID_POINTER;
+
+    if (PROFILE_SCROLLING) {
+        if (mScrollProfilingStarted) {
+            //Debug.stopMethodTracing();
+            mScrollProfilingStarted = FALSE;
+        }
+    }
+
+    if (mScrollStrictSpan != NULL) {
+        mScrollStrictSpan->Finish();
+        mScrollStrictSpan = NULL;
+    }
+}
+
+void AbsListView::OnTouchCancel()
+{
+    switch (mTouchMode) {
+        case TOUCH_MODE_OVERSCROLL:
+            if (mFlingRunnable == NULL) {
+                mFlingRunnable = new FlingRunnable(this);
+            }
+            mFlingRunnable->StartSpringback();
+            break;
+
+        case TOUCH_MODE_OVERFLING:
+            // Do nothing - let it play out.
+            break;
+
+        default:
+            mTouchMode = TOUCH_MODE_REST;
+            SetPressed(FALSE);
+            AutoPtr<IView> motionView;
+            GetChildAt(mMotionPosition - mFirstPosition, (IView**)&motionView);
+            if (motionView != NULL) {
+                motionView->SetPressed(FALSE);
+            }
+            ClearScrollingCache();
+
+            Boolean res;
+            RemoveCallbacks(mPendingCheckForLongPress, &res);
+
+            RecycleVelocityTracker();
+            break;
+    }
+
+    if (mEdgeGlowTop != NULL) {
+        mEdgeGlowTop->OnRelease();
+        mEdgeGlowBottom->OnRelease();
+    }
+    mActivePointerId = INVALID_POINTER;
+}
+
 void AbsListView::OnOverScrolled(
     /* [in] */ Int32 scrollX,
     /* [in] */ Int32 scrollY,
@@ -5197,11 +6237,14 @@ void AbsListView::OnOverScrolled(
     }
 }
 
-Boolean AbsListView::OnGenericMotionEvent(
-    /* [in] */ IMotionEvent* event)
+ECode AbsListView::OnGenericMotionEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
+
     Int32 source;
-    event->GetSource(&source);
+    IInputEvent::Probe(event)->GetSource(&source);
     if ((source & IInputDevice::SOURCE_CLASS_POINTER) != 0) {
         Int32 action;
         event->GetAction(&action);
@@ -5213,17 +6256,104 @@ Boolean AbsListView::OnGenericMotionEvent(
                     if (vscroll != 0) {
                         Int32 delta = (Int32) (vscroll * GetVerticalScrollFactor());
                         if (!TrackMotionScroll(delta, delta)) {
-                            return TRUE;
+                            *res = TRUE;
+                            return NOERROR;
                         }
                     }
                 }
             }
         }
     }
-    return AdapterView::OnGenericMotionEvent(event);
+    return AdapterView::OnGenericMotionEvent(event, res);
 }
 
-//@Override
+ECode AbsListView::Fling(
+    /* [in] */ Int32 velocityY)
+{
+    if (mFlingRunnable == NULL) {
+        mFlingRunnable = new FlingRunnable(this);
+    }
+    ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_FLING);
+    mFlingRunnable->Start(velocityY);
+    return NOERROR;
+}
+
+ECode AbsListView::OnStartNestedScroll(
+    /* [in] */ IView* child,
+    /* [in] */ IView* target,
+    /* [in] */ Int32 nestedScrollAxes,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = (nestedScrollAxes & IView::SCROLL_AXIS_VERTICAL) != 0;
+    return NOERROR;
+}
+
+ECode AbsListView::OnNestedScrollAccepted(
+    /* [in] */ IView* child,
+    /* [in] */ IView* target,
+    /* [in] */ Int32 axes)
+{
+    AdapterView::OnNestedScrollAccepted(child, target, axes);
+    Boolean res;
+    StartNestedScroll(IView::SCROLL_AXIS_VERTICAL, &res);
+    return NOERROR;
+}
+
+ECode AbsListView::OnNestedScroll(
+    /* [in] */ IView* target,
+    /* [in] */ Int32 dxConsumed,
+    /* [in] */ Int32 dyConsumed,
+    /* [in] */ Int32 dxUnconsumed,
+    /* [in] */ Int32 dyUnconsumed)
+{
+    Int32 count;
+    GetChildCount(&count);
+    Int32 motionIndex = count / 2;
+    AutoPtr<IView> motionView;
+    GetChildAt(motionIndex, (IView**)&motionView);
+    Int32 top;
+    motionView->GetTop(&top);
+    const Int32 oldTop = motionView != NULL ? top : 0;
+    if (motionView == NULL || TrackMotionScroll(-dyUnconsumed, -dyUnconsumed)) {
+        Int32 myUnconsumed = dyUnconsumed;
+        Int32 myConsumed = 0;
+        if (motionView != NULL) {
+            myConsumed = top - oldTop;
+            myUnconsumed -= myConsumed;
+        }
+        Boolean res;
+        DispatchNestedScroll(0, myConsumed, 0, myUnconsumed, NULL, &res);
+    }
+    return NOERROR;
+}
+
+ECode AbsListView::OnNestedFling(
+    /* [in] */ IView* target,
+    /* [in] */ Float velocityX,
+    /* [in] */ Float velocityY,
+    /* [in] */ Boolean consumed,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    Int32 childCount;
+    GetChildCount(&childCount);
+    Boolean result;
+    if (!consumed && childCount > 0 && (CanScrollList((Int32) velocityY, &result), result) &&
+            Elastos::Core::Math::Abs(velocityY) > mMinimumVelocity) {
+        ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_FLING);
+        if (mFlingRunnable == NULL) {
+            mFlingRunnable = new FlingRunnable(this);
+        }
+        if ((DispatchNestedPreFling(0, velocityY, &result), !result)) {
+            mFlingRunnable->Start((Int32) velocityY);
+        }
+        *res = TRUE;
+        return NOERROR;
+    }
+    return DispatchNestedFling(velocityX, velocityY, consumed, res);
+}
+
 ECode AbsListView::Draw(
     /* [in] */ ICanvas* canvas)
 {
@@ -5237,18 +6367,23 @@ ECode AbsListView::Draw(
             Int32 restoreCount;
             canvas->Save(&restoreCount);
 
-            Int32 leftPadding = mListPadding->mLeft + mGlowPaddingLeft;
-            Int32 rightPadding = mListPadding->mRight + mGlowPaddingRight;
-            Int32 width = GetWidth() - leftPadding - rightPadding;
+            Int32 width;
+            GetWidth(&width);
 
             Int32 edgeY = Elastos::Core::Math::Min(0, scrollY + mFirstPositionDistanceGuess);
-            canvas->Translate(leftPadding, edgeY);
-            mEdgeGlowTop->SetSize(width, GetHeight());
+            canvas->Translate(0, edgeY);
+            Int32 height;
+            GetHeight(&height);
+            mEdgeGlowTop->SetSize(width, height);
             mEdgeGlowTop->Draw(canvas, &temp);
             if (temp) {
-                mEdgeGlowTop->SetPosition(leftPadding, edgeY);
-                mEdgeGlowTop->GetBounds(FALSE, (IRect**)&rect);
-                Invalidate(rect);
+                Int32 w;
+                GetWidth(&w);
+                Int32 top;
+                GetPaddingTop(&top);
+                Int32 maxH;
+                mEdgeGlowTop->GetMaxHeight(&maxH);
+                Invalidate(0, 0, w, maxH + top);
             }
             canvas->RestoreToCount(restoreCount);
         }
@@ -5258,50 +6393,33 @@ ECode AbsListView::Draw(
             Int32 restoreCount;
             canvas->Save(&restoreCount);
 
-            Int32 leftPadding = mListPadding->mLeft + mGlowPaddingLeft;
-            Int32 rightPadding = mListPadding->mRight + mGlowPaddingRight;
-            Int32 width = GetWidth() - leftPadding - rightPadding;
-            Int32 height = GetHeight();
+            Int32 width;
+            GetWidth(&width);
+            Int32 height;
+            GetHeight(&height);
 
-            Int32 edgeX = -width + leftPadding;
+            Int32 edgeX = -width;
             Int32 edgeY = Elastos::Core::Math::Max(height, scrollY + mLastPositionDistanceGuess);
             canvas->Translate(edgeX, edgeY);
             canvas->Rotate(180, width, 0);
             mEdgeGlowBottom->SetSize(width, height);
             mEdgeGlowBottom->Draw(canvas, &temp);
             if (temp) {
-                // Account for the rotation
-                mEdgeGlowBottom->SetPosition(edgeX + width, edgeY);
-                rect = NULL;
-                mEdgeGlowBottom->GetBounds(TRUE, (IRect**)&rect);
-                Invalidate(rect);
+                Int32 w;
+                GetWidth(&w);
+                Int32 bottom;
+                GetPaddingBottom(&bottom);
+                Int32 maxH;
+                mEdgeGlowBottom->GetMaxHeight(&maxH);
+                Invalidate(0, height - bottom - maxH, w, height);
             }
             canvas->RestoreToCount(restoreCount);
-        }
-    }
-
-    if (mFastScroller != NULL) {
-        Int32 scrollY = mScrollY;
-        if (scrollY != 0) {
-            // Pin to the top/bottom during overscroll
-            Int32 restoreCount;
-            canvas->Save(&restoreCount);
-            canvas->Translate(0, (Float)scrollY);
-
-            mFastScroller->Draw(canvas);
-            canvas->RestoreToCount(restoreCount);
-        }
-        else {
-            mFastScroller->Draw(canvas);
         }
     }
 
     return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode AbsListView::SetOverScrollEffectPadding(
     /* [in] */ Int32 leftPadding,
     /* [in] */ Int32 rightPadding)
@@ -5315,7 +6433,8 @@ void AbsListView::InitOrResetVelocityTracker()
 {
     if (mVelocityTracker == NULL) {
         mVelocityTracker = VelocityTracker::Obtain();
-    } else {
+    }
+    else {
         mVelocityTracker->Clear();
     }
 }
@@ -5344,38 +6463,55 @@ ECode AbsListView::RequestDisallowInterceptTouchEvent(
     return AdapterView::RequestDisallowInterceptTouchEvent(disallowIntercept);
 }
 
-//@Override
-Boolean AbsListView::OnInterceptTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode AbsListView::OnInterceptHoverEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
-    Int32 action;
-    ev->GetAction(&action);
+    VALIDATE_NOT_NULL(res);
+
+    if (mFastScroll != NULL && mFastScroll->OnInterceptHoverEvent(event)) {
+        *res = TRUE;
+        return NOERROR;
+    }
+
+    return AbsListView::OnInterceptHoverEvent(event, res);
+}
+
+ECode AbsListView::OnInterceptTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+
+    Int32 actionMasked;
+    ev->GetActionMasked(&actionMasked);
 
     if (mPositionScroller != NULL) {
         mPositionScroller->Stop();
     }
 
-    if (!mIsAttached) {
+    Boolean suc;
+    if (mIsDetaching || (IsAttachedToWindow(&suc), !suc)) {
         // Something isn't right.
         // Since we rely on being attached to get data set change notifications,
         // don't risk doing anything where we might try to resync and find things
         // in a bogus state.
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
     }
 
-    if (mFastScroller != NULL) {
-        Boolean intercepted = mFastScroller->OnInterceptTouchEvent(ev);
-        if (intercepted) {
-            return TRUE;
-        }
+    if (mFastScroll != NULL && mFastScroll->OnInterceptTouchEvent(ev)) {
+        *res = TRUE;
+        return NOERROR;
     }
 
-    switch (action & IMotionEvent::ACTION_MASK) {
+    switch (actionMasked) {
         case IMotionEvent::ACTION_DOWN: {
             Int32 touchMode = mTouchMode;
             if (touchMode == TOUCH_MODE_OVERFLING || touchMode == TOUCH_MODE_OVERSCROLL) {
                 mMotionCorrection = 0;
-                return TRUE;
+                *res = TRUE;
+                return NOERROR;
             }
 
             Float fx, fy;
@@ -5391,7 +6527,8 @@ Boolean AbsListView::OnInterceptTouchEvent(
                 // User clicked on an actual view (and was not stopping a fling).
                 // Remember where the motion event started
                 //
-                AutoPtr<IView>  v = GetChildAt(motionPosition - mFirstPosition);
+                AutoPtr<IView> v;
+                GetChildAt(motionPosition - mFirstPosition, (IView**)&v);
                 v->GetTop(&mMotionViewOriginalTop);
                 mMotionX = x;
                 mMotionY = y;
@@ -5403,8 +6540,11 @@ Boolean AbsListView::OnInterceptTouchEvent(
             mLastY = Elastos::Core::Math::INT32_MIN_VALUE;
             InitOrResetVelocityTracker();
             mVelocityTracker->AddMovement(ev);
+            mNestedYOffset = 0;
+            StartNestedScroll(IView::SCROLL_AXIS_VERTICAL, &suc);
             if (touchMode == TOUCH_MODE_FLING) {
-                return TRUE;
+                *res = TRUE;
+                return NOERROR;
             }
             break;
         }
@@ -5418,18 +6558,20 @@ Boolean AbsListView::OnInterceptTouchEvent(
                         pointerIndex = 0;
                         ev->GetPointerId(pointerIndex, &mActivePointerId);
                     }
-                    Float fy;
+                    Float fx, fy;
+                    ev->GetX(pointerIndex, &fx);
                     ev->GetY(pointerIndex, &fy);
+                    Int32 x = (Int32)fx;
                     Int32 y = (Int32)fy;
                     InitVelocityTrackerIfNotExists();
                     mVelocityTracker->AddMovement(ev);
-                    if (StartScrollIfNeeded(y)) {
-                        return TRUE;
+                    if (StartScrollIfNeeded(x, y, NULL)) {
+                        *res = TRUE;
+                        return NOERROR;
                     }
                     break;
                 }
             }
-
             break;
         }
 
@@ -5439,6 +6581,7 @@ Boolean AbsListView::OnInterceptTouchEvent(
             mActivePointerId = INVALID_POINTER;
             RecycleVelocityTracker();
             ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
+            StopNestedScroll();
             break;
         }
 
@@ -5451,7 +6594,8 @@ Boolean AbsListView::OnInterceptTouchEvent(
             break;
     }
 
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
 void AbsListView::OnSecondaryPointerUp(
@@ -5475,18 +6619,14 @@ void AbsListView::OnSecondaryPointerUp(
         mMotionY = (Int32)fy;
         mMotionCorrection = 0;
         ev->GetPointerId(newPointerIndex, &mActivePointerId);
-
     }
 }
 
-/**
- * {@inheritDoc}
- */
-//@Override
 ECode AbsListView::AddTouchables(
-    /* [in] */ IObjectContainer* views)
+    /* [in] */ IArrayList* views)
 {
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     Int32 firstPosition = mFirstPosition;
     AutoPtr<IListAdapter> adapter = mAdapter;
 
@@ -5495,7 +6635,8 @@ ECode AbsListView::AddTouchables(
     }
 
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         Boolean isEnabled;
         adapter->IsEnabled(firstPosition + i, &isEnabled);
         if (isEnabled) {
@@ -5507,33 +6648,17 @@ ECode AbsListView::AddTouchables(
     return NOERROR;
 }
 
-/**
- * Fires an "on scroll state changed" event to the registered
- * {@link android.widget.AbsListView.OnScrollListener}, if any. The state change
- * is fired only if the specified state is different from the previously known state.
- *
- * @param newState The new scroll state.
- */
 void AbsListView::ReportScrollStateChange(
     /* [in] */ Int32 newState)
 {
     if (newState != mLastScrollState) {
         if (mOnScrollListener != NULL) {
-
             mLastScrollState = newState;
-
             mOnScrollListener->OnScrollStateChanged(THIS_PROBE(IAbsListView), newState);
         }
     }
 }
 
-/**
- * The amount of friction applied to flings. The default value
- * is {@link ViewConfiguration#getScrollFriction}.
- *
- * @return A scalar dimensionless value representing the coefficient of
- *         friction.
- */
 ECode AbsListView::SetFriction(
     /* [in] */ Float friction)
 {
@@ -5541,16 +6666,10 @@ ECode AbsListView::SetFriction(
         mFlingRunnable = new FlingRunnable(this);
     }
     mFlingRunnable->mScroller->SetFriction(friction);
-    return NOERROR;
 
+    return NOERROR;
 }
 
-/**
- * Sets a scale factor for the fling velocity. The initial scale
- * factor is 1.0.
- *
- * @param scale The scale factor to multiply the velocity by.
- */
 ECode AbsListView::SetVelocityScale(
     /* [in] */ Float scale)
 {
@@ -5558,94 +6677,58 @@ ECode AbsListView::SetVelocityScale(
     return NOERROR;
 }
 
-/**
- * Smoothly scroll to the specified adapter position. The view will
- * scroll such that the indicated position is displayed.
- * @param position Scroll to this adapter position.
- */
+AutoPtr<AbsListView::AbsPositionScroller> AbsListView::CreatePositionScroller()
+{
+    AutoPtr<AbsListView::AbsPositionScroller> scroller = new AbsListView::PositionScroller(this);
+    return scroller;
+}
+
 ECode AbsListView::SmoothScrollToPosition(
     /* [in] */ Int32 position)
 {
     if (mPositionScroller == NULL) {
-        mPositionScroller = new PositionScroller(this);
+        mPositionScroller = CreatePositionScroller();
     }
     mPositionScroller->Start(position);
 
     return NOERROR;
 }
 
-/**
- * Smoothly scroll to the specified adapter position. The view will scroll
- * such that the indicated position is displayed <code>offset</code> pixels from
- * the top edge of the view. If this is impossible, (e.g. the offset would scroll
- * the first or last item beyond the boundaries of the list) it will get as close
- * as possible. The scroll will take <code>duration</code> milliseconds to complete.
- *
- * @param position Position to scroll to
- * @param offset Desired distance in pixels of <code>position</code> from the top
- *               of the view when scrolling is finished
- * @param duration Number of milliseconds to use for the scroll
- */
 ECode AbsListView::SmoothScrollToPositionFromTop(
     /* [in] */ Int32 position,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 duration)
 {
     if (mPositionScroller == NULL) {
-        mPositionScroller = new PositionScroller(this);
+        mPositionScroller = CreatePositionScroller();
     }
     mPositionScroller->StartWithOffset(position, offset, duration);
     return NOERROR;
 }
 
-/**
- * Smoothly scroll to the specified adapter position. The view will scroll
- * such that the indicated position is displayed <code>offset</code> pixels from
- * the top edge of the view. If this is impossible, (e.g. the offset would scroll
- * the first or last item beyond the boundaries of the list) it will get as close
- * as possible.
- *
- * @param position Position to scroll to
- * @param offset Desired distance in pixels of <code>position</code> from the top
- *               of the view when scrolling is finished
- */
 ECode AbsListView::SmoothScrollToPositionFromTop(
     /* [in] */ Int32 position,
     /* [in] */ Int32 offset)
 {
     if (mPositionScroller == NULL) {
-        mPositionScroller = new PositionScroller(this);
+        mPositionScroller = CreatePositionScroller();
     }
-    mPositionScroller->StartWithOffset(position, offset);
+    mPositionScroller->StartWithOffset(position, offset, offset);
     return NOERROR;
 }
 
-/**
- * Smoothly scroll to the specified adapter position. The view will
- * scroll such that the indicated position is displayed, but it will
- * stop early if scrolling further would scroll boundPosition out of
- * view.
- * @param position Scroll to this adapter position.
- * @param boundPosition Do not scroll if it would move this adapter
- *          position out of view.
- */
 ECode AbsListView::SmoothScrollToPosition(
     /* [in] */ Int32 position,
     /* [in] */ Int32 boundPosition)
 {
     if (mPositionScroller == NULL) {
-        mPositionScroller = new PositionScroller(this);
+        mPositionScroller = CreatePositionScroller();
     }
     mPositionScroller->Start(position, boundPosition);
 
     return NOERROR;
 }
 
-/**
- * Smoothly scroll by distance pixels over duration milliseconds.
- * @param distance Distance to scroll in pixels.
- * @param duration Duration of the scroll animation in milliseconds.
- */
 ECode AbsListView::SmoothScrollBy(
     /* [in] */ Int32 distance,
     /* [in] */ Int32 duration)
@@ -5666,15 +6749,24 @@ void AbsListView::SmoothScrollBy(
 
     // No sense starting to scroll if we're not going anywhere
     Int32 firstPos = mFirstPosition;
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     Int32 lastPos = firstPos + childCount;
-    Int32 topLimit = GetPaddingTop();
-    Int32 bottomLimit = GetHeight() - GetPaddingBottom();
+    Int32 topLimit;
+    GetPaddingTop(&topLimit);
+    Int32 height, bottom;
+    GetHeight(&height);
+    GetPaddingBottom(&bottom);
+    Int32 bottomLimit = height - bottom;
 
+    AutoPtr<IView> view;
+    GetChildAt(0, (IView**)&view);
     Int32 topTemp;
-    GetChildAt(0)->GetTop(&topTemp);
+    view->GetTop(&topTemp);
+    view = NULL;
+    GetChildAt(childCount - 1, (IView**)&view);
     Int32 bottomTemp;
-    GetChildAt(childCount - 1)->GetBottom(&bottomTemp);
+    view->GetBottom(&bottomTemp);
     if (distance == 0 || mItemCount == 0 || childCount == 0 ||
             (firstPos == 0 && topTemp == topLimit && distance < 0) ||
             (lastPos == mItemCount && bottomTemp== bottomLimit && distance > 0)) {
@@ -5682,27 +6774,29 @@ void AbsListView::SmoothScrollBy(
         if (mPositionScroller != NULL) {
             mPositionScroller->Stop();
         }
-    } else {
+    }
+    else {
         ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_FLING);
         mFlingRunnable->StartScroll(distance, duration, linear);
     }
 }
 
-/**
- * Allows RemoteViews to scroll relatively to a position.
- */
 ECode AbsListView::SmoothScrollByOffset(
     /* [in] */ Int32 position)
 {
     Int32 index = -1;
     if (position < 0) {
-        index = GetFirstVisiblePosition();
-    } else if (position > 0) {
-        index = GetLastVisiblePosition();
+        GetFirstVisiblePosition(&index);
+    }
+    else if (position > 0) {
+        GetLastVisiblePosition(&index);
     }
 
     if (index > -1) {
-        AutoPtr<IView> child = GetChildAt(index - GetFirstVisiblePosition());
+        Int32 pos;
+        GetFirstVisiblePosition(&pos);
+        AutoPtr<IView> child;
+        GetChildAt(index - pos, (IView**)&child);
         if (child != NULL) {
             AutoPtr<IRect> visibleRect;
             CRect::New((IRect**)&visibleRect);
@@ -5725,21 +6819,26 @@ ECode AbsListView::SmoothScrollByOffset(
                     // the top index is not perceivably visible so offset
                     // to account for showing that top index as well
                     ++index;
-                } else if ((position > 0) && (visibleArea < visibleThreshold)) {
+                }
+                else if ((position > 0) && (visibleArea < visibleThreshold)) {
                     // the bottom index is not perceivably visible so offset
                     // to account for showing that bottom index as well
                     --index;
                 }
             }
-            SmoothScrollToPosition(Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(GetCount(), index + position)));
+            Int32 count;
+            GetCount(&count);
+            SmoothScrollToPosition(Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(count, index + position)));
         }
     }
+
     return NOERROR;
 }
 
 void AbsListView::CreateScrollingCache()
 {
-    if (mScrollingCacheEnabled && !mCachingStarted && !IsHardwareAccelerated()) {
+    Boolean res;
+    if (mScrollingCacheEnabled && !mCachingStarted && (IsHardwareAccelerated(&res), res)) {
         SetChildrenDrawnWithCacheEnabled(TRUE);
         SetChildrenDrawingCacheEnabled(TRUE);
         mCachingStarted = mCachingActive = TRUE;
@@ -5748,7 +6847,8 @@ void AbsListView::CreateScrollingCache()
 
 void AbsListView::ClearScrollingCache()
 {
-    if (!IsHardwareAccelerated()) {
+    Boolean res;
+    if (IsHardwareAccelerated(&res), res) {
         if (mClearScrollingCache == NULL) {
             AutoPtr<ClearScrollingCacheRunnable> temp
                 = new ClearScrollingCacheRunnable(this);
@@ -5756,30 +6856,70 @@ void AbsListView::ClearScrollingCache()
         }
     }
 
-    Post(mClearScrollingCache);
+    Post(mClearScrollingCache, &res);
 }
 
-/**
- * Track a motion scroll
- *
- * @param deltaY Amount to offset mMotionView. This is the accumulated delta since the motion
- *        began. Positive numbers mean the user's finger is moving down the screen.
- * @param incrementalDeltaY Change in deltaY from the previous event.
- * @return TRUE if we're already at the beginning/end of the list and have nothing to do.
- */
+ECode AbsListView::ScrollListBy(
+    /* [in] */ Int32 y)
+{
+    TrackMotionScroll(-y, -y);
+    return NOERROR;
+}
+
+ECode AbsListView::CanScrollList(
+    /* [in] */ Int32 direction,
+    /* [out] */ Boolean* canScrollList)
+{
+    VALIDATE_NOT_NULL(canScrollList);
+    *canScrollList = FALSE;
+
+    Int32 childCount;
+    GetChildCount(&childCount);
+    if (childCount == 0) {
+        return NOERROR;
+    }
+
+    const Int32 firstPosition = mFirstPosition;
+    const AutoPtr<CRect> listPadding = mListPadding;
+    if (direction > 0) {
+        AutoPtr<IView> view;
+        GetChildAt(childCount - 1, (IView**)&view);
+        Int32 lastBottom;
+        view->GetBottom(&lastBottom);
+        const Int32 lastPosition = firstPosition + childCount;
+        Int32 height;
+        GetHeight(&height);
+        *canScrollList = lastPosition < mItemCount || lastBottom > height - listPadding->mBottom;
+        return NOERROR;
+    }
+    else {
+        AutoPtr<IView> view;
+        GetChildAt(0, (IView**)&view);
+        Int32 firstTop;
+        view->GetTop(&firstTop);
+        *canScrollList = firstPosition > 0 || firstTop < listPadding->mTop;
+        return NOERROR;
+    }
+}
+
 Boolean AbsListView::TrackMotionScroll(
     /* [in] */ Int32 deltaY,
     /* [in] */ Int32 incrementalDeltaY)
 {
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     if (childCount == 0) {
         return TRUE;
     }
 
+    AutoPtr<IView> view;
+    GetChildAt(0, (IView**)&view);
     Int32 firstTop;
-    GetChildAt(0)->GetTop(&firstTop);
+    view->GetTop(&firstTop);
+    view = NULL;
+    GetChildAt(childCount - 1, (IView**)&view);
     Int32 lastBottom;
-    GetChildAt(childCount - 1)->GetBottom(&lastBottom);
+    view->GetBottom(&lastBottom);
 
     // "effective padding" In this case is the amount of padding that affects
     // how much space should not be filled by items. If we don't clip to padding
@@ -5792,11 +6932,13 @@ Boolean AbsListView::TrackMotionScroll(
     }
 
      // FIXME account for grid vertical spacing too?
+    Int32 h;
+    GetHeight(&h);
     Int32 spaceAbove = effectivePaddingTop - firstTop;
-    Int32 end = GetHeight() - effectivePaddingBottom;
+    Int32 end = h - effectivePaddingBottom;
     Int32 spaceBelow = lastBottom - end;
 
-    Int32 height = GetHeight() - mPaddingBottom - mPaddingTop;
+    Int32 height = h - mPaddingBottom - mPaddingTop;
     if (deltaY < 0) {
         deltaY = Elastos::Core::Math::Max(-(height - 1), deltaY);
     }
@@ -5829,16 +6971,17 @@ Boolean AbsListView::TrackMotionScroll(
     }
 
     Boolean cannotScrollDown = (firstPosition == 0 &&
-        firstTop >= mListPadding->mTop && incrementalDeltaY >= 0);
+            firstTop >= mListPadding->mTop && incrementalDeltaY >= 0);
     Boolean cannotScrollUp = (firstPosition + childCount == mItemCount &&
-        lastBottom <= GetHeight() - mListPadding->mBottom && incrementalDeltaY <= 0);
+            lastBottom <= h - mListPadding->mBottom && incrementalDeltaY <= 0);
 
     if (cannotScrollDown || cannotScrollUp) {
         return incrementalDeltaY != 0;
     }
 
     Boolean down = incrementalDeltaY < 0;
-    Boolean inTouchMode = IsInTouchMode();
+    Boolean inTouchMode;
+    IsInTouchMode(&inTouchMode);
     if (inTouchMode) {
         HideSelector();
     }
@@ -5855,7 +6998,8 @@ Boolean AbsListView::TrackMotionScroll(
             top += mListPadding->mTop;
         }
         for (Int32 i = 0; i < childCount; i++) {
-            AutoPtr<IView> child = GetChildAt(i);
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
             Int32 childBottom;
             child->GetBottom(&childBottom);
             if (childBottom >= top) {
@@ -5865,18 +7009,27 @@ Boolean AbsListView::TrackMotionScroll(
                 count++;
                 Int32 position = firstPosition + i;
                 if (position >= headerViewsCount && position < footerViewsStart) {
+                    // The view will be rebound to new data, clear any
+                    // system-managed transient state.
+                    Boolean res;
+                    if (child->IsAccessibilityFocused(&res), res) {
+                        child->ClearAccessibilityFocus();
+                    }
                     mRecycler->AddScrapView(child, position);
                 }
             }
         }
     }
     else {
-        Int32 bottom = GetHeight() - incrementalDeltaY;
+        Int32 height;
+        GetHeight(&height);
+        Int32 bottom = height - incrementalDeltaY;
         if ((mGroupFlags & ViewGroup::CLIP_TO_PADDING_MASK) == ViewGroup::CLIP_TO_PADDING_MASK) {
             bottom -= mListPadding->mBottom;
         }
         for (Int32 i = childCount - 1; i >= 0; i--) {
-            AutoPtr<IView> child = GetChildAt(i);
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
             Int32 childTop;
             child->GetTop(&childTop);
             if (childTop <= bottom) {
@@ -5887,6 +7040,12 @@ Boolean AbsListView::TrackMotionScroll(
                 count++;
                 Int32 position = firstPosition + i;
                 if (position >= headerViewsCount && position < footerViewsStart) {
+                    // The view will be rebound to new data, clear any
+                    // system-managed transient state.
+                    Boolean res;
+                    if (child->IsAccessibilityFocused(&res), res) {
+                        child->ClearAccessibilityFocus();
+                    }
                     mRecycler->AddScrapView(child, position);
                 }
             }
@@ -5915,7 +7074,6 @@ Boolean AbsListView::TrackMotionScroll(
         mFirstPosition += count;
     }
 
-
     Int32 absIncrementalDeltaY = Elastos::Core::Math::Abs(incrementalDeltaY);
     if (spaceAbove < absIncrementalDeltaY
         || spaceBelow < absIncrementalDeltaY) {
@@ -5924,16 +7082,25 @@ Boolean AbsListView::TrackMotionScroll(
 
     if (!inTouchMode && mSelectedPosition != IAdapterView::INVALID_POSITION) {
         Int32 childIndex = mSelectedPosition - mFirstPosition;
-        if (childIndex >= 0 && childIndex < GetChildCount()) {
-            PositionSelector(mSelectedPosition, GetChildAt(childIndex));
+        Int32 count;
+        GetChildCount(&count);
+        if (childIndex >= 0 && childIndex < count) {
+            AutoPtr<IView> view;
+            GetChildAt(childIndex, (IView**)&view);
+            PositionSelector(mSelectedPosition, view);
         }
     }
     else if (mSelectorPosition != IAdapterView::INVALID_POSITION) {
         Int32 childIndex = mSelectorPosition - mFirstPosition;
-        if (childIndex >= 0 && childIndex < GetChildCount()) {
-            PositionSelector(IAdapterView::INVALID_POSITION, GetChildAt(childIndex));
+        Int32 count;
+        GetChildCount(&count);
+        if (childIndex >= 0 && childIndex < count) {
+            AutoPtr<IView> view;
+            GetChildAt(childIndex, (IView**)&view);
+            PositionSelector(IAdapterView::INVALID_POSITION, view);
         }
-    } else {
+    }
+    else {
         mSelectorRect->SetEmpty();
     }
 
@@ -5943,23 +7110,11 @@ Boolean AbsListView::TrackMotionScroll(
     return FALSE;
 }
 
-/**
- * Returns the number of header views in the list. Header views are special views
- * at the top of the list that should not be recycled during a layout.
- *
- * @return The number of header views, 0 in the default implementation.
- */
 Int32 AbsListView::GetHeaderViewsCount()
 {
     return 0;
 }
 
-/**
- * Returns the number of footer views in the list. Footer views are special views
- * at the bottom of the list that should not be recycled during a layout.
- *
- * @return The number of footer views, 0 in the default implementation.
- */
 Int32 AbsListView::GetFooterViewsCount()
 {
     return 0;
@@ -5982,11 +7137,6 @@ void AbsListView::HideSelector()
     }
 }
 
-/**
- * @return A position to select. First we try mSelectedPosition. If that has been clobbered by
- * entering touch mode, we then try mResurrectToPosition. Values are pinned to the range
- * of items available in the adapter
- */
 Int32 AbsListView::ReconcileSelectedPosition()
 {
     Int32 position = mSelectedPosition;
@@ -5998,28 +7148,20 @@ Int32 AbsListView::ReconcileSelectedPosition()
     return position;
 }
 
-/**
- * Find the row closest to y. This row will be used as the motion row when scrolling.
- *
- * @param y Where the user touched
- * @return The position of the first (or only) item in the row closest to y
- */
 Int32 AbsListView::FindClosestMotionRow(
     /* [in] */ Int32 y)
 {
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     if (childCount == 0) {
         return IAdapterView::INVALID_POSITION;
     }
 
     Int32 motionRow = FindMotionRow(y);
     return motionRow != IAdapterView::INVALID_POSITION
-        ? motionRow : mFirstPosition + childCount - 1;
+            ? motionRow : mFirstPosition + childCount - 1;
 }
 
-/**
- * Causes all the views to be rebuilt and redrawn.
- */
 ECode AbsListView::InvalidateViews()
 {
     mDataChanged = TRUE;
@@ -6030,10 +7172,6 @@ ECode AbsListView::InvalidateViews()
     return NOERROR;
 }
 
-/**
- * If there is a selection returns FALSE.
- * Otherwise resurrects the selection and returns TRUE if resurrected.
- */
 Boolean AbsListView::ResurrectSelectionIfNeeded()
 {
     if (mSelectedPosition < 0 && ResurrectSelection()) {
@@ -6044,15 +7182,10 @@ Boolean AbsListView::ResurrectSelectionIfNeeded()
     return FALSE;
 }
 
-
-/**
- * Attempt to bring the selection back if the user is switching from touch
- * to trackball mode
- * @return Whether selection was set to something.
- */
 Boolean AbsListView::ResurrectSelection()
 {
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
 
     if (childCount <= 0) {
         return FALSE;
@@ -6070,20 +7203,23 @@ Boolean AbsListView::ResurrectSelection()
         && toPosition < firstPosition + childCount) {
 
         selectedPos = toPosition;
-        AutoPtr<IView> selected = GetChildAt(selectedPos - mFirstPosition);
+        AutoPtr<IView> selected;
+        GetChildAt(selectedPos - mFirstPosition, (IView**)&selected);
         selected->GetTop(&selectedTop);
         Int32 selectedBottom;
         selected->GetBottom(&selectedBottom);
 
         // We are scrolled, don't get in the fade
+        Int32 len;
+        GetVerticalFadingEdgeLength(&len);
         if (selectedTop < childrenTop) {
-            selectedTop = childrenTop + GetVerticalFadingEdgeLength();
+            selectedTop = childrenTop + len;
         }
         else if (selectedBottom > childrenBottom) {
             Int32 measureHeight;
             selected->GetMeasuredHeight(&measureHeight);
             selectedTop =
-                childrenBottom - measureHeight - GetVerticalFadingEdgeLength();
+                    childrenBottom - measureHeight - len;
         }
     }
     else {
@@ -6091,8 +7227,10 @@ Boolean AbsListView::ResurrectSelection()
             // Default to selecting whatever is first
             selectedPos = firstPosition;
             for (Int32 i = 0; i < childCount; i++) {
+                AutoPtr<IView> view;
+                GetChildAt(i, (IView**)&view);
                 Int32 top;
-                GetChildAt(i)->GetTop(&top);
+                view->GetTop(&top);
 
                 if (i == 0) {
                     // Remember the position of the first item
@@ -6101,7 +7239,9 @@ Boolean AbsListView::ResurrectSelection()
                     if (firstPosition > 0 || top < childrenTop) {
                         // If we are scrolled, don't select anything that is
                         // in the fade region
-                        childrenTop += GetVerticalFadingEdgeLength();
+                        Int32 len;
+                        GetVerticalFadingEdgeLength(&len);
+                        childrenTop += len;
                     }
                 }
 
@@ -6119,7 +7259,8 @@ Boolean AbsListView::ResurrectSelection()
             selectedPos = firstPosition + childCount - 1;
 
             for (Int32 i = childCount - 1; i >= 0; i--) {
-                AutoPtr<IView> v = GetChildAt(i);
+                AutoPtr<IView> v;
+                GetChildAt(i, (IView**)&v);
                 Int32 top, bottom;
                 v->GetTop(&top);
                 v->GetBottom(&bottom);
@@ -6128,7 +7269,9 @@ Boolean AbsListView::ResurrectSelection()
                     selectedTop = top;
                     if (firstPosition + childCount < itemCount
                         || bottom > childrenBottom) {
-                        childrenBottom -= GetVerticalFadingEdgeLength();
+                        Int32 len;
+                        GetVerticalFadingEdgeLength(&len);
+                        childrenBottom -= len;
                     }
                 }
 
@@ -6142,7 +7285,8 @@ Boolean AbsListView::ResurrectSelection()
     }
 
     mResurrectToPosition = IAdapterView::INVALID_POSITION;
-    RemoveCallbacks(mFlingRunnable);
+    Boolean res;
+    RemoveCallbacks(mFlingRunnable, &res);
     if (mPositionScroller != NULL) {
         mPositionScroller->Stop();
     }
@@ -6150,8 +7294,9 @@ Boolean AbsListView::ResurrectSelection()
     ClearScrollingCache();
     mSpecificTop = selectedTop;
     selectedPos = LookForSelectablePosition(selectedPos, down);
+    Int32 pos;
     if (selectedPos >= firstPosition
-        && selectedPos <= GetLastVisiblePosition()) {
+        && selectedPos <= (GetLastVisiblePosition(&pos), pos)) {
         mLayoutMode = LAYOUT_SPECIFIC;
         UpdateSelectorState();
         SetSelectionInt(selectedPos);
@@ -6177,28 +7322,32 @@ void AbsListView::ConfirmCheckedPositionsById()
     Int32 lastPos, start, end;
     Boolean found = FALSE;
     Boolean checkedCountChanged = FALSE;
-    HashMap<Int64, Int32>::Iterator it = mCheckedIdStates->Begin();
-    for (; it != mCheckedIdStates->End();) {
-        id = it->mFirst;
-        lastPos = it->mSecond;
-        mAdapter->GetItemId(lastPos, &lastPosId);
+    Int32 size;
+    mCheckedIdStates->GetSize(&size);
+    for (Int32 checkedIndex = 0; checkedIndex < size; checkedIndex++) {
+        mCheckedIdStates->KeyAt(checkedIndex, &id);
+        AutoPtr<IInterface> obj;
+        mCheckedIdStates->ValueAt(checkedIndex, (IInterface**)&obj);
+        IInteger32::Probe(obj)->GetValue(&lastPos);
+        IAdapter::Probe(mAdapter)->GetItemId(lastPos, &lastPosId);
         if (id != lastPosId) {
             // Look around to see if the ID is nearby. If not, uncheck it.
             start = Math::Max(0, lastPos - CHECK_POSITION_SEARCH_DISTANCE);
             end = Math::Min(lastPos + CHECK_POSITION_SEARCH_DISTANCE, mItemCount);
 
             for (Int32 searchPos = start; searchPos < end; searchPos++) {
-                mAdapter->GetItemId(searchPos, &searchId);
+                IAdapter::Probe(mAdapter)->GetItemId(searchPos, &searchId);
                 if (id == searchId) {
                     found = TRUE;
-                    (*mCheckStates)[searchPos] = TRUE;
-                    (*mCheckedIdStates)[id] = searchPos;
+                    mCheckStates->Put(searchPos, TRUE);
+                    mCheckedIdStates->Put(id, CoreUtils::Convert(searchPos));
                     break;
                 }
             }
 
             if (!found) {
-                mCheckedIdStates->Erase(it++);
+                mCheckedIdStates->Delete(id);
+                checkedIndex--;
                 mCheckedItemCount--;
                 checkedCountChanged = TRUE;
                 if (mChoiceActionMode != NULL && mMultiChoiceModeCallback != NULL) {
@@ -6206,13 +7355,9 @@ void AbsListView::ConfirmCheckedPositionsById()
                         lastPos, id, FALSE);
                 }
             }
-            else {
-                ++it;
-            }
         }
         else {
-            (*mCheckStates)[lastPos] = TRUE;
-            ++it;
+            mCheckStates->Put(lastPos, TRUE);
         }
     }
 
@@ -6221,7 +7366,6 @@ void AbsListView::ConfirmCheckedPositionsById()
     }
 }
 
-//@Override
 void AbsListView::HandleDataChanged()
 {
     Int32 count = mItemCount;
@@ -6230,13 +7374,15 @@ void AbsListView::HandleDataChanged()
     mLastHandledItemCount = mItemCount;
 
     Boolean hasStableIds;
-    mAdapter->HasStableIds(&hasStableIds);
+    IAdapter::Probe(mAdapter)->HasStableIds(&hasStableIds);
     if (mChoiceMode != IAbsListView::CHOICE_MODE_NONE && mAdapter != NULL && hasStableIds) {
         ConfirmCheckedPositionsById();
     }
 
     // TODO: In the future we can recycle these views based on stable ID instead.
     mRecycler->ClearTransientStateViews();
+
+    Boolean res;
 
     if (count > 0) {
         Int32 newPos;
@@ -6251,15 +7397,21 @@ void AbsListView::HandleDataChanged()
             if (mTranscriptMode == IAbsListView::AbsListView_TRANSCRIPT_MODE_ALWAYS_SCROLL) {
                 mLayoutMode = LAYOUT_FORCE_BOTTOM;
                 return;
-            } else if (mTranscriptMode == IAbsListView::AbsListView_TRANSCRIPT_MODE_NORMAL) {
+            }
+            else if (mTranscriptMode == IAbsListView::AbsListView_TRANSCRIPT_MODE_NORMAL) {
                 if (mForceTranscriptScroll) {
                     mForceTranscriptScroll = FALSE;
                     mLayoutMode = LAYOUT_FORCE_BOTTOM;
                     return;
                 }
-                Int32 childCount = GetChildCount();
-                Int32 listBottom = GetHeight() - GetPaddingBottom();
-                AutoPtr<IView> lastChild = GetChildAt(childCount - 1);
+                Int32 childCount;
+                GetChildCount(&childCount);
+                Int32 height, bottom;
+                GetHeight(&height);
+                GetPaddingBottom(&bottom);
+                Int32 listBottom = height - bottom;
+                AutoPtr<IView> lastChild;
+                GetChildAt(childCount - 1, (IView**)&lastChild);
                 Int32 lastChildBottom;
                 lastChild->GetBottom(&lastChildBottom);
                 Int32 lastBottom = lastChild != NULL ? lastChildBottom : listBottom;
@@ -6274,61 +7426,62 @@ void AbsListView::HandleDataChanged()
             }
 
             switch (mSyncMode) {
-            case SYNC_SELECTED_POSITION:
-                if (IsInTouchMode())
-                {
-                    // We saved our state when not in touch mode. (We know this because
-                    // mSyncMode is SYNC_SELECTED_POSITION.) Now we are trying to
-                    // restore in touch mode. Just leave mSyncPosition as it is (possibly
-                    // adjusting if the available range changed) and return.
+                case SYNC_SELECTED_POSITION:
+                    if (IsInTouchMode(&res), res) {
+                        // We saved our state when not in touch mode. (We know this because
+                        // mSyncMode is SYNC_SELECTED_POSITION.) Now we are trying to
+                        // restore in touch mode. Just leave mSyncPosition as it is (possibly
+                        // adjusting if the available range changed) and return.
+                        mLayoutMode = LAYOUT_SYNC;
+                        mSyncPosition = Elastos::Core::Math::Min(Elastos::Core::Math::Max(0, mSyncPosition), count - 1);
+
+                        return;
+                    }
+                    else {
+                        // See if we can find a position in the new data with the same
+                        // id as the old selection. This will change mSyncPosition.
+                        newPos = FindSyncPosition();
+                        if (newPos >= 0) {
+                            // Found it. Now verify that new selection is still selectable
+                            selectablePos = LookForSelectablePosition(newPos, TRUE);
+                            if (selectablePos == newPos) {
+                                // Same row id is selected
+                                mSyncPosition = newPos;
+
+                                Int32 height;
+                                GetHeight(&height);
+                                if (mSyncHeight == height) {
+                                    // If we are at the same height as when we saved state, try
+                                    // to restore the scroll position too.
+                                    mLayoutMode = LAYOUT_SYNC;
+                                }
+                                else {
+                                    // We are not the same height as when the selection was saved, so
+                                    // don't try to restore the exact position
+                                    mLayoutMode = LAYOUT_SET_SELECTION;
+                                }
+
+                                // Restore selection
+                                SetNextSelectedPositionInt(newPos);
+                                return;
+                            }
+                        }
+                    }
+                    break;
+                case SYNC_FIRST_POSITION:
+                    // Leave mSyncPosition as it is -- just pin to available range
                     mLayoutMode = LAYOUT_SYNC;
                     mSyncPosition = Elastos::Core::Math::Min(Elastos::Core::Math::Max(0, mSyncPosition), count - 1);
 
                     return;
-                }
-                else {
-                    // See if we can find a position in the new data with the same
-                    // id as the old selection. This will change mSyncPosition.
-                    newPos = FindSyncPosition();
-                    if (newPos >= 0) {
-                        // Found it. Now verify that new selection is still selectable
-                        selectablePos = LookForSelectablePosition(newPos, TRUE);
-                        if (selectablePos == newPos) {
-                            // Same row id is selected
-                            mSyncPosition = newPos;
-
-                            if (mSyncHeight == GetHeight()) {
-                                // If we are at the same height as when we saved state, try
-                                // to restore the scroll position too.
-                                mLayoutMode = LAYOUT_SYNC;
-                            }
-                            else {
-                                // We are not the same height as when the selection was saved, so
-                                // don't try to restore the exact position
-                                mLayoutMode = LAYOUT_SET_SELECTION;
-                            }
-
-                            // Restore selection
-                            SetNextSelectedPositionInt(newPos);
-                            return;
-                        }
-                    }
-                }
-                break;
-            case SYNC_FIRST_POSITION:
-                // Leave mSyncPosition as it is -- just pin to available range
-                mLayoutMode = LAYOUT_SYNC;
-                mSyncPosition = Elastos::Core::Math::Min(Elastos::Core::Math::Max(0, mSyncPosition), count - 1);
-
-                return;
-            default:
-                break;
+                default:
+                    break;
             }
         }
 
-        if (!IsInTouchMode()) {
+        if (IsInTouchMode(&res), !res) {
             // We couldn't find matching data -- try to use the same position
-            newPos = GetSelectedItemPosition();
+            GetSelectedItemPosition(&newPos);
 
             // Pin position to the available range
             if (newPos >= count) {
@@ -6373,39 +7526,33 @@ void AbsListView::HandleDataChanged()
     mPendingSync = NULL;
     mSelectorPosition = IAdapterView::INVALID_POSITION;
     CheckSelectionChanged();
-
 }
 
-//@Override
 void AbsListView::OnDisplayHint(
     /* [in] */ Int32 hint)
 {
     AdapterView::OnDisplayHint(hint);
     switch (hint) {
-    case IView::INVISIBLE:
-        if (mPopup != NULL) {
-            Boolean showing;
-            mPopup->IsShowing(&showing);
-            if(showing)
-            DismissPopup();
-        }
-        break;
-    case IView::VISIBLE:
-        if (mFiltered && mPopup != NULL)
-        {
-            Boolean showing;
-            mPopup->IsShowing(&showing);
-            if(showing)
-            ShowPopup();
-        }
-        break;
+        case IView::INVISIBLE:
+            if (mPopup != NULL) {
+                Boolean showing;
+                mPopup->IsShowing(&showing);
+                if(showing)
+                DismissPopup();
+            }
+            break;
+        case IView::VISIBLE:
+            if (mFiltered && mPopup != NULL) {
+                Boolean showing;
+                mPopup->IsShowing(&showing);
+                if(showing)
+                ShowPopup();
+            }
+            break;
     }
     mPopupHidden = hint == IView::INVISIBLE;
 }
 
-/**
- * Removes the filter window
- */
 void AbsListView::DismissPopup()
 {
     if (mPopup != NULL) {
@@ -6413,13 +7560,12 @@ void AbsListView::DismissPopup()
     }
 }
 
-/**
- * Shows the filter window
- */
 void AbsListView::ShowPopup()
 {
     // Make sure we have a window before showing the popup
-    if (GetWindowVisibility() == IView::VISIBLE) {
+    Int32 visibility;
+    GetWindowVisibility(&visibility);
+    if (visibility == IView::VISIBLE) {
         CreateTextFilter(TRUE);
         PositionPopup();
         // Make sure we get focus if we are showing the popup
@@ -6429,43 +7575,40 @@ void AbsListView::ShowPopup()
 
 void AbsListView::PositionPopup()
 {
+    AutoPtr<IResources> resources;
+    GetResources((IResources**)&resources);
     AutoPtr<IDisplayMetrics> dm;
-    GetResources()->GetDisplayMetrics((IDisplayMetrics**)&dm);
+    resources->GetDisplayMetrics((IDisplayMetrics**)&dm);
     Int32 screenHeight;
     dm->GetHeightPixels(&screenHeight);
-    Int32 x, y;
-    GetLocationOnScreen(&x, &y);
+    AutoPtr< ArrayOf<Int32> > xy = ArrayOf<Int32>::Alloc(2);
+    GetLocationOnScreen((ArrayOf<Int32>**)&xy);
     // TODO: The 20 below should come from the theme
     // TODO: And the gravity should be defined in the theme as well
-    //
-    Int32 bottomGap = screenHeight - y - GetHeight() + (Int32)(mDensityScale * 20);
+    Int32 height;
+    GetHeight(&height);
+    Int32 bottomGap = screenHeight - (*xy)[1] - height + (Int32)(mDensityScale * 20);
 
     Boolean showing;
     if (mPopup->IsShowing(&showing), !showing) {
-        mPopup->ShowAtLocation(THIS_PROBE(IAbsListView),
-                IGravity::BOTTOM | IGravity::CENTER_HORIZONTAL, x, bottomGap);
+        mPopup->ShowAtLocation(THIS_PROBE(IView),
+                IGravity::BOTTOM | IGravity::CENTER_HORIZONTAL, (*xy)[0], bottomGap);
     }
     else {
-        mPopup->Update(x, bottomGap, -1, -1);
+        mPopup->Update((*xy)[0], bottomGap, -1, -1);
     }
 }
 
-/**
- * What is the distance between the source and destination rectangles given the direction of
- * focus navigation between them? The direction basically helps figure out more quickly what is
- * self evident by the relationship between the rects...
- *
- * @param source the source rectangle
- * @param dest the destination rectangle
- * @param direction the direction
- * @return the distance between the rectangles
- */
-Int32 AbsListView::GetDistance(
+ECode AbsListView::GetDistance(
     /* [in] */ IRect* sourceRect,
     /* [in] */ IRect* destRect,
-    /* [in] */ Int32 direction)
+    /* [in] */ Int32 direction,
+    /* [out] */ Int32* result)
 {
-    assert(sourceRect && destRect);
+    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(sourceRect);
+    VALIDATE_NOT_NULL(destRect);
+
     CRect* source = (CRect*)sourceRect;
     CRect* dest = (CRect*)destRect;
 
@@ -6479,71 +7622,62 @@ Int32 AbsListView::GetDistance(
     dest->GetWidth(&dWidth);
 
     switch (direction) {
-    case IView::FOCUS_RIGHT:
-        {
-            sX = source->mRight;
+        case IView::FOCUS_RIGHT: {
+                sX = source->mRight;
+                sY = source->mTop + sHeight / 2;
+                dX = dest->mLeft;
+                dY = dest->mTop + dHeight / 2;
+            }
+            break;
+        case IView::FOCUS_DOWN: {
+                sX = source->mLeft + sWidth / 2;
+                sY = source->mBottom;
+                dX = dest->mLeft + dWidth / 2;
+                dY = dest->mTop;
+            }
+            break;
+        case IView::FOCUS_LEFT: {
+                sX = source->mLeft;
+                sY = source->mTop + sHeight / 2;
+                dX = dest->mRight;
+                dY = dest->mTop + dHeight / 2;
+            }
+            break;
+        case IView::FOCUS_UP: {
+                sX = source->mLeft + sWidth / 2;
+                sY = source->mTop;
+                dX = dest->mLeft + dWidth / 2;
+                dY = dest->mBottom;
+            }
+            break;
+        case IView::FOCUS_FORWARD:
+        case IView::FOCUS_BACKWARD:
+            sX = source->mRight + sWidth / 2;
             sY = source->mTop + sHeight / 2;
-            dX = dest->mLeft;
-            dY = dest->mTop + dHeight / 2;
-        }
-        break;
-    case IView::FOCUS_DOWN:
-        {
-            sX = source->mLeft + sWidth / 2;
-            sY = source->mBottom;
             dX = dest->mLeft + dWidth / 2;
-            dY = dest->mTop;
-        }
-        break;
-    case IView::FOCUS_LEFT:
-        {
-            sX = source->mLeft;
-            sY = source->mTop + sHeight / 2;
-            dX = dest->mRight;
             dY = dest->mTop + dHeight / 2;
-        }
-        break;
-    case IView::FOCUS_UP:
-        {
-            sX = source->mLeft + sWidth / 2;
-            sY = source->mTop;
-            dX = dest->mLeft + dWidth / 2;
-            dY = dest->mBottom;
-        }
-        break;
-    case IView::FOCUS_FORWARD:
-    case IView::FOCUS_BACKWARD:
-        sX = source->mRight + sWidth / 2;
-        sY = source->mTop + sHeight / 2;
-        dX = dest->mLeft + dWidth / 2;
-        dY = dest->mTop + dHeight / 2;
-        break;
-    default:
-        Logger::E("AbsListView",
-                "direction must be one of {FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");
-        assert(0);
+            break;
+        default:
+            Logger::E("AbsListView",
+                    "direction must be one of {FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT, FOCUS_FORWARD, FOCUS_BACKWARD}.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Int32 deltaX = dX - sX;
     Int32 deltaY = dY - sY;
 
-    return deltaY * deltaY + deltaX * deltaX;
+    *result = deltaY * deltaY + deltaX * deltaX;
+    return NOERROR;
 }
 
-//@Override
-Boolean AbsListView::IsInFilterMode()
+ECode AbsListView::IsInFilterMode(
+    /* [out] */ Boolean* result)
 {
-    return mFiltered;
+    VALIDATE_NOT_NULL(result);
+    *result = mFiltered;
+    return NOERROR;
 }
 
-/**
- * Sends a key to the text filter window
- *
- * @param keyCode The keycode for the event
- * @param event The actual key event
- *
- * @return True if the text filter handled the event, FALSE otherwise.
- */
 Boolean AbsListView::SendToTextFilter(
     /* [in] */ Int32 keyCode,
     /* [in] */ Int32 count,
@@ -6556,48 +7690,44 @@ Boolean AbsListView::SendToTextFilter(
     Boolean handled = FALSE;
     Boolean okToSend = TRUE;
     switch (keyCode) {
-    case IKeyEvent::KEYCODE_DPAD_UP:
-    case IKeyEvent::KEYCODE_DPAD_DOWN:
-    case IKeyEvent::KEYCODE_DPAD_LEFT:
-    case IKeyEvent::KEYCODE_DPAD_RIGHT:
-    case IKeyEvent::KEYCODE_DPAD_CENTER:
-    case IKeyEvent::KEYCODE_ENTER:
-        okToSend = FALSE;
-        break;
-    case IKeyEvent::KEYCODE_BACK:
-        if (mFiltered && mPopup != NULL)
-        {
-            Boolean showing;
-            mPopup->IsShowing(&showing);
-            if(showing)
-            {
-                Int32 action, repeatCount;
-                Boolean tracking, canceled;
-                event->GetAction(&action);
-                event->GetRepeatCount(&repeatCount);
-                event->IsTracking(&tracking);
-                event->IsCanceled(&canceled);
-                if (action == IKeyEvent::ACTION_DOWN && repeatCount == 0) {
-                    AutoPtr<IDispatcherState> state;
-                    GetKeyDispatcherState((IDispatcherState**)&state);
-                    state->StartTracking(event, this->Probe(EIID_IAbsListView));
-                    handled = TRUE;
-                } else if (action == IKeyEvent::ACTION_UP && tracking && !canceled) {
-                    handled = TRUE;
-                    String t("");
-                    AutoPtr<ICharSequence> text;
-                    FAIL_RETURN(CStringWrapper::New(t, (ICharSequence**)&text));
-                    mTextFilter->SetText(text);
+        case IKeyEvent::KEYCODE_DPAD_UP:
+        case IKeyEvent::KEYCODE_DPAD_DOWN:
+        case IKeyEvent::KEYCODE_DPAD_LEFT:
+        case IKeyEvent::KEYCODE_DPAD_RIGHT:
+        case IKeyEvent::KEYCODE_DPAD_CENTER:
+        case IKeyEvent::KEYCODE_ENTER:
+            okToSend = FALSE;
+            break;
+        case IKeyEvent::KEYCODE_BACK:
+            if (mFiltered && mPopup != NULL) {
+                Boolean showing;
+                mPopup->IsShowing(&showing);
+                if(showing) {
+                    Int32 action, repeatCount;
+                    Boolean tracking, canceled;
+                    event->GetAction(&action);
+                    event->GetRepeatCount(&repeatCount);
+                    event->IsTracking(&tracking);
+                    event->IsCanceled(&canceled);
+                    if (action == IKeyEvent::ACTION_DOWN && repeatCount == 0) {
+                        AutoPtr<IDispatcherState> state;
+                        GetKeyDispatcherState((IDispatcherState**)&state);
+                        state->StartTracking(event, (IAbsListView*)this);
+                        handled = TRUE;
+                    }
+                    else if (action == IKeyEvent::ACTION_UP && tracking && !canceled) {
+                        handled = TRUE;
+                        ITextView::Probe(mTextFilter)->SetText(CoreUtils::Convert(""));
+                    }
                 }
             }
-        }
-        okToSend = FALSE;
-        break;
+            okToSend = FALSE;
+            break;
 
-    case IKeyEvent::KEYCODE_SPACE:
-        // Only send spaces once we are filtered
-        okToSend = mFiltered;
-        break;
+        case IKeyEvent::KEYCODE_SPACE:
+            // Only send spaces once we are filtered
+            okToSend = mFiltered;
+            break;
     }
 
     if (okToSend) {
@@ -6608,20 +7738,16 @@ Boolean AbsListView::SendToTextFilter(
         forwardEvent->GetRepeatCount(&repeatCount);
         if (repeatCount > 0) {
             Int64 eventTime;
-            event->GetEventTime(&eventTime);
-            AutoPtr<IKeyEventHelper> helper;
-            CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
+            IInputEvent::Probe(event)->GetEventTime(&eventTime);
             forwardEvent = NULL;
-            helper->ChangeTimeRepeat(
-                event, eventTime, 0, (IKeyEvent**)&forwardEvent);
+            KeyEvent::ChangeTimeRepeat(
+                    event, eventTime, 0, (IKeyEvent**)&forwardEvent);
         }
 
         Int32 action;
         event->GetAction(&action);
-        AutoPtr<IKeyEventCallback> keyCallback =
-                (IKeyEventCallback*)mTextFilter->Probe(EIID_IKeyEventCallback);
-        switch (action)
-        {
+        AutoPtr<IKeyEventCallback> keyCallback = IKeyEventCallback::Probe(mTextFilter);
+        switch (action) {
             case IKeyEvent::ACTION_DOWN:
                 keyCallback->OnKeyDown(keyCode, forwardEvent, &handled);
                 break;
@@ -6636,175 +7762,133 @@ Boolean AbsListView::SendToTextFilter(
     return handled;
 }
 
-/**
- * Return an InputConnection for editing of the filter text.
- */
 AutoPtr<IInputConnection> AbsListView::OnCreateInputConnection(
     /* [in] */ IEditorInfo* outAttrs)
 {
-    Logger::W("AbsListView", " >> TODO: AbsListView::OnCreateInputConnection.");
-//    if (IsTextFilterEnabled()) {
-//        // XXX we need to have the text filter created, so we can get an
-//        // InputConnection to proxy to.  Unfortunately this means we pretty
-//        // much need to make it as soon as a list view gets focus.
-//        CreateTextFilter(FALSE);
-//        if (mPublicInputConnection == NULL) {
-//            mDefInputConnection = new BaseInputConnection(this, FALSE);
-//            mPublicInputConnection = new InputConnectionWrapper(
-//                    mTextFilter.onCreateInputConnection(outAttrs), TRUE) {
-//                @Override
-//                public Boolean reportFullscreenMode(Boolean enabled) {
-//                    // Use our own input connection, since it is
-//                    // the "real" one the IME is talking with.
-//                    return mDefInputConnection.reportFullscreenMode(enabled);
-//                }
-//
-//                @Override
-//                public Boolean performEditorAction(Int32 editorAction) {
-//                    // The editor is off in its own window; we need to be
-//                    // the one that does this.
-//                    if (editorAction == EditorInfo.IME_ACTION_DONE) {
-//                        InputMethodManager imm = (InputMethodManager)
-//                                getContext().getSystemService(
-//                                        Context.INPUT_METHOD_SERVICE);
-//                        if (imm != NULL) {
-//                            imm.hideSoftInputFromWindow(getWindowToken(), 0);
-//                        }
-//                        return TRUE;
-//                    }
-//                    return FALSE;
-//                }
-//
-//                @Override
-//                public Boolean sendKeyEvent(KeyEvent event) {
-//                    // Use our own input connection, since the filter
-//                    // text view may not be shown in a window so has
-//                    // no ViewRootImpl to dispatch events with.
-//                    return mDefInputConnection.sendKeyEvent(event);
-//                }
-//            };
-//        }
-//        outAttrs.inputType = EditorInfo.TYPE_CLASS_TEXT
-//                | EditorInfo.TYPE_TEXT_VARIATION_FILTER;
-//        outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE;
-//        return mPublicInputConnection;
-//    }
+    Boolean res;
+    if (IsTextFilterEnabled(&res), res) {
+        if (mPublicInputConnection == NULL) {
+            CBaseInputConnection::New(THIS_PROBE(IView), FALSE, (IInputConnection**)&mDefInputConnection);
+            mPublicInputConnection = new InputConnectionWrapper(this, outAttrs);
+        }
+        outAttrs->SetInputType(IInputType::TYPE_CLASS_TEXT | IInputType::TYPE_TEXT_VARIATION_FILTER);
+        outAttrs->SetImeOptions(IEditorInfo::IME_ACTION_DONE);
+        return mPublicInputConnection;
+    }
     return NULL;
 }
 
-/**
- * For filtering we proxy an input connection to an internal text editor,
- * and this allows the proxying to happen.
- */
-//@Override
-Boolean AbsListView::CheckInputConnectionProxy(
-    /* [in] */ IView* view)
+ECode AbsListView::CheckInputConnectionProxy(
+    /* [in] */ IView* view,
+    /* [out] */ Boolean* res)
 {
-    return view == IView::Probe(mTextFilter);
+    VALIDATE_NOT_NULL(res);
+    *res = view == IVIEW_PROBE(mTextFilter);
+    return NOERROR;
 }
 
-/**
- * Creates the window for the text filter and populates it with an EditText field;
- *
- * @param animateEntrance TRUE if the window should appear with an animation
- */
 void AbsListView::CreateTextFilter(
     /* [in] */ Boolean animateEntrance)
 {
     if (mPopup == NULL) {
-        AutoPtr<IContext> c = GetContext();;
+        AutoPtr<IContext> c;
+        GetContext((IContext**)&c);
         AutoPtr<IPopupWindow> p;
-        CPopupWindow::New(c, (IPopupWindow**)&p);
+        assert(0 && "TODO");
+        // CPopupWindow::New(c, (IPopupWindow**)&p);
+
+        p->SetFocusable(FALSE);
+        p->SetTouchable(FALSE);
+
+        p->SetInputMethodMode(IPopupWindow::INPUT_METHOD_NOT_NEEDED);
+        p->SetContentView(IVIEW_PROBE(GetTextFilterInput()));
+        p->SetWidth(IViewGroupLayoutParams::WRAP_CONTENT);
+        p->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
+        p->SetBackgroundDrawable(NULL);
+        mPopup = p;
+        AutoPtr<IViewTreeObserver> treeObserver;
+        GetViewTreeObserver((IViewTreeObserver**)&treeObserver);
+        treeObserver->AddOnGlobalLayoutListener((IOnGlobalLayoutListener*)this->Probe(EIID_IOnGlobalLayoutListener));
+        mGlobalLayoutListenerAddedFilter = TRUE;
+    }
+    if (animateEntrance) {
+        mPopup->SetAnimationStyle(R::style::Animation_TypingFilter);
+    }
+    else {
+        mPopup->SetAnimationStyle(R::style::Animation_TypingFilterRestore);
+    }
+}
+
+AutoPtr<IEditText> AbsListView::GetTextFilterInput()
+{
+    if (mTextFilter == NULL) {
+        AutoPtr<IContext> c;
+        GetContext((IContext**)&c);
         AutoPtr<ILayoutInflater> layoutInflater;
-        c->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&layoutInflater);
+        LayoutInflater::From(c, (ILayoutInflater**)&layoutInflater);
         mTextFilter = NULL;
         layoutInflater->Inflate(R::layout::typing_filter, NULL, (IView**)&mTextFilter);
         // For some reason setting this as the "real" input type changes
         // the text view in some way that it doesn't work, and I don't
         // want to figure out why this is.
-        mTextFilter->SetRawInputType(IInputType::TYPE_CLASS_TEXT
+        AutoPtr<ITextView> textview = ITextView::Probe(mTextFilter);
+        textview->SetRawInputType(IInputType::TYPE_CLASS_TEXT
                 | IInputType::TYPE_TEXT_VARIATION_FILTER);
-        mTextFilter->SetImeOptions(IEditorInfo::IME_FLAG_NO_EXTRACT_UI);
-        mTextFilter->AddTextChangedListener((ITextWatcher*)this->Probe(EIID_ITextWatcher));
-        p->SetFocusable(FALSE);
-        p->SetTouchable(FALSE);
-
-        p->SetInputMethodMode(IPopupWindow::INPUT_METHOD_NOT_NEEDED);
-        p->SetContentView(mTextFilter);
-        p->SetWidth(IAbsListViewLayoutParams::WRAP_CONTENT);
-        p->SetHeight(IAbsListViewLayoutParams::WRAP_CONTENT);
-        p->SetBackgroundDrawable(NULL);
-        mPopup = p;
-        GetViewTreeObserver()->AddOnGlobalLayoutListener((IOnGlobalLayoutListener*)this->Probe(EIID_IOnGlobalLayoutListener));
-        mGlobalLayoutListenerAddedFilter = TRUE;
+        textview->SetImeOptions(IEditorInfo::IME_FLAG_NO_EXTRACT_UI);
+        textview->AddTextChangedListener(THIS_PROBE(ITextWatcher));
     }
-    if (animateEntrance) {
-        mPopup->SetAnimationStyle(R::style::Animation_TypingFilter);
-    } else {
-        mPopup->SetAnimationStyle(R::style::Animation_TypingFilterRestore);
-    }
+    return mTextFilter;
 }
 
-/**
- * Clear the text filter.
- */
 ECode AbsListView::ClearTextFilter()
 {
     if (mFiltered) {
-        String t("");
-        AutoPtr<ICharSequence> text;
-        FAIL_RETURN(CStringWrapper::New(t, (ICharSequence**)&text));
-        mTextFilter->SetText(text);
+        AutoPtr<IEditText> text = GetTextFilterInput();
+        ITextView::Probe(text)->SetText(CoreUtils::Convert(""));
         mFiltered = FALSE;
-        if (mPopup != NULL)
-        {
-            Boolean showing;
-            mPopup->IsShowing(&showing);
-            if(showing)
-                DismissPopup();
+        Boolean showing;
+        if (mPopup != NULL && (mPopup->IsShowing(&showing), showing)) {
+            DismissPopup();
         }
     }
     return NOERROR;
 }
 
-/**
- * Returns if the ListView currently has a text filter.
- */
-Boolean AbsListView::HasTextFilter()
+ECode AbsListView::HasTextFilter(
+    /* [out] */ Boolean* hasTextFilter)
 {
-    return mFiltered;
+    VALIDATE_NOT_NULL(hasTextFilter);
+    *hasTextFilter = mFiltered;
+    return NOERROR;
 }
 
 ECode AbsListView::OnGlobalLayout()
 {
-    if (IsShown()) {
+    Boolean res;
+    if (IsShown(&res), res) {
         // Show the popup if we are filtered
-        if (mFiltered && mPopup != NULL)
-        {
+        if (mFiltered && mPopup != NULL) {
             Boolean showing;
             mPopup->IsShowing(&showing);
-            if(!showing && !mPopupHidden)
+            if(!showing && !mPopupHidden) {
                 ShowPopup();
+            }
         }
     }
     else {
         // Hide the popup when we are no longer visible
-        if (mPopup != NULL)
-        {
+        if (mPopup != NULL) {
             Boolean showing;
             mPopup->IsShowing(&showing);
-            if(showing)
+            if(showing) {
                 DismissPopup();
+            }
         }
     }
 
     return NOERROR;
 }
 
-/**
- * For our text watcher that is associated with the text filter.  Does
- * nothing.
- */
 ECode AbsListView::BeforeTextChanged(
     /* [in] */ ICharSequence* s,
     /* [in] */ Int32 start,
@@ -6814,18 +7898,15 @@ ECode AbsListView::BeforeTextChanged(
     return NOERROR;
 }
 
-/**
- * For our text watcher that is associated with the text filter. Performs
- * the actual filtering as the text changes, and takes care of hiding and
- * showing the popup displaying the currently entered filter text.
- */
 ECode AbsListView::OnTextChanged(
     /* [in] */ ICharSequence* s,
     /* [in] */ Int32 start,
     /* [in] */ Int32 before,
     /* [in] */ Int32 count)
 {
-    if (mPopup != NULL && IsTextFilterEnabled()) {
+    Boolean res;
+    if (IsTextFilterEnabled(&res), res) {
+        CreateTextFilter(TRUE);
         Int32 length;
         s->GetLength(&length);
         Boolean showing;
@@ -6834,7 +7915,8 @@ ECode AbsListView::OnTextChanged(
             // Show the filter popup if necessary
             ShowPopup();
             mFiltered = TRUE;
-        } else if (showing && length == 0) {
+        }
+        else if (showing && length == 0) {
             // Remove the filter popup if the user has cleared all text
             DismissPopup();
             mFiltered = FALSE;
@@ -6846,7 +7928,9 @@ ECode AbsListView::OnTextChanged(
             // Filter should not be NULL when we reach this part
             if (f != NULL) {
                 f->DoFilter(s, (IFilterListener*)this->Probe(EIID_IFilterListener));
-            } else {
+            }
+            else {
+                Logger::E("AbsListView", "You cannot call onTextChanged with a non filterable adapter.");
                 return E_ILLEGAL_STATE_EXCEPTION;
             }
         }
@@ -6854,10 +7938,6 @@ ECode AbsListView::OnTextChanged(
     return NOERROR;
 }
 
-/**
- * For our text watcher that is associated with the text filter.  Does
- * nothing.
- */
 ECode AbsListView::AfterTextChanged(
     /* [in] */ IEditable* s)
 {
@@ -6877,53 +7957,46 @@ ECode AbsListView::OnFilterComplete(
 ECode AbsListView::GenerateDefaultLayoutParams(
     /* [out] */ IViewGroupLayoutParams** result)
 {
+    VALIDATE_NOT_NULL(result);
+
     AutoPtr<IAbsListViewLayoutParams> temp;
-    CAbsListViewLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT, (IAbsListViewLayoutParams**)&temp);
-    *result = temp.Get();
+    CAbsListViewLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
+            IViewGroupLayoutParams::WRAP_CONTENT, (IAbsListViewLayoutParams**)&temp);
+    *result = IViewGroupLayoutParams::Probe(temp);
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
-
-//@Override
 
 AutoPtr<IViewGroupLayoutParams> AbsListView::GenerateLayoutParams(
     /* [in] */ IViewGroupLayoutParams* p)
 {
     AutoPtr<IAbsListViewLayoutParams> temp;
     CAbsListViewLayoutParams::New(p, (IAbsListViewLayoutParams**)&temp);
-    return temp.Get();
+    AutoPtr<IViewGroupLayoutParams> params = IViewGroupLayoutParams::Probe(temp);
+    return params;
 }
 
-//@Override
 ECode AbsListView::GenerateLayoutParams(
     /* [in] */ IAttributeSet* attrs,
     /* [out] */ IViewGroupLayoutParams** params)
 {
     VALIDATE_NOT_NULL(params);
+
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     AutoPtr<IAbsListViewLayoutParams> lp;
-    FAIL_RETURN(CAbsListViewLayoutParams::New(GetContext(), attrs, (IAbsListViewLayoutParams**)&lp));
+    FAIL_RETURN(CAbsListViewLayoutParams::New(context, attrs, (IAbsListViewLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
     REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
-//@Override
 Boolean AbsListView::CheckLayoutParams(
     /* [in] */ IViewGroupLayoutParams* p)
 {
-    return (p != NULL) && (p->Probe(EIID_IAbsListViewLayoutParams) != NULL);
+    return (p != NULL) && (IAbsListViewLayoutParams::Probe(p) != NULL);
 }
 
-/**
- * Puts the list or grid into transcript mode. In this mode the list or grid will always scroll
- * to the bottom to show new items.
- *
- * @param mode the transcript mode to set
- *
- * @see #AbsListView_TRANSCRIPT_MODE_DISABLED
- * @see #AbsListView_TRANSCRIPT_MODE_NORMAL
- * @see #AbsListView_TRANSCRIPT_MODE_ALWAYS_SCROLL
- */
 ECode AbsListView::SetTranscriptMode(
     /* [in] */ Int32 mode)
 {
@@ -6932,41 +8005,32 @@ ECode AbsListView::SetTranscriptMode(
     return NOERROR;
 }
 
-/**
- * Returns the current transcript mode.
- *
- * @return {@link #AbsListView_TRANSCRIPT_MODE_DISABLED}, {@link #AbsListView_TRANSCRIPT_MODE_NORMAL} or
- *         {@link #AbsListView_TRANSCRIPT_MODE_ALWAYS_SCROLL}
- */
-Int32 AbsListView::GetTranscriptMode()
+ECode AbsListView::GetTranscriptMode(
+    /* [out] */ Int32* mode)
 {
-    return mTranscriptMode;
+    VALIDATE_NOT_NULL(mode);
+    *mode = mTranscriptMode;
+    return NOERROR;
 }
 
-//@Override
-Int32 AbsListView::GetSolidColor()
+ECode AbsListView::GetSolidColor(
+    /* [out] */ Int32* color)
 {
-    return mCacheColorHint;
+    VALIDATE_NOT_NULL(color);
+    *color = mCacheColorHint;
+    return NOERROR;
 }
 
-/**
- * When set to a non-zero value, the cache color hint indicates that this list is always drawn
- * on top of a solid, single-color, opaque background.
- *
- * Zero means that what's behind this object is translucent (non solid) or is not made of a
- * single color. This hint will not affect any existing background drawable set on this view (
- * typically set via {@link #setBackgroundDrawable(Drawable)}).
- *
- * @param color The background color
- */
 ECode AbsListView::SetCacheColorHint(
     /* [in] */ Int32 color)
 {
     if (color != mCacheColorHint) {
         mCacheColorHint = color;
-        Int32 count = GetChildCount();
+        Int32 count;
+        GetChildCount(&count);
         for (Int32 i = 0; i < count; i++) {
-            AutoPtr<IView> child = GetChildAt(i);
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
             child->SetDrawingCacheBackgroundColor(color);
         }
         mRecycler->SetCacheColorHint(color);
@@ -6975,40 +8039,31 @@ ECode AbsListView::SetCacheColorHint(
     return NOERROR;
 }
 
-/**
- * When set to a non-zero value, the cache color hint indicates that this list is always drawn
- * on top of a solid, single-color, opaque background
- *
- * @return The cache color hint
- */
-Int32 AbsListView::GetCacheColorHint()
+ECode AbsListView::GetCacheColorHint(
+    /* [out] */ Int32* colorHint)
 {
-    return mCacheColorHint;
+    VALIDATE_NOT_NULL(colorHint);
+    *colorHint = mCacheColorHint;
+    return NOERROR;
 }
 
-/**
- * Move all views (excluding headers and footers) held by this AbsListView into the supplied
- * List. This includes views displayed on the screen as well as views stored in AbsListView's
- * internal view recycler.
- *
- * @param views A list into which to put the reclaimed views
- */
 ECode AbsListView::ReclaimViews(
-    /* [in] */ IObjectContainer* views)
+    /* [in] */ IList* views)
 {
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     AutoPtr<IRecyclerListener> listener = mRecycler->mRecyclerListener;
 
     // Reclaim views on screen
     for (Int32 i = 0; i < childCount; i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         AutoPtr<IAbsListViewLayoutParams> lp;
         child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
         // Don't reclaim header or footer views, or views that should be ignored
 
         if (lp != NULL && mRecycler->ShouldRecycleViewType(
-                ((CAbsListViewLayoutParams*)lp.Get())->mViewType))
-        {
+                ((CAbsListViewLayoutParams*)lp.Get())->mViewType)) {
             views->Add(child);
             child->SetAccessibilityDelegate(NULL);
             if (listener != NULL) {
@@ -7031,11 +8086,6 @@ void AbsListView::FinishGlows()
     }
 }
 
-/**
- * Sets up this AbsListView to use a remote views adapter which connects to a RemoteViewsService
- * through the specified intent.
- * @param intent the intent used to identify the RemoteViewsService for the adapter to connect to.
- */
 ECode AbsListView::SetRemoteViewsAdapter(
     /* [in] */ IIntent* intent)
 {
@@ -7055,22 +8105,17 @@ ECode AbsListView::SetRemoteViewsAdapter(
     }
     mDeferNotifyDataSetChanged = FALSE;
     // Otherwise, create a new RemoteViewsAdapter for binding
-    assert(0 && "TODO"); //RemoteViewsAdapter is not exsit
-//    mRemoteAdapter = new RemoteViewsAdapter(getContext(), intent, this);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    assert(0 && "TODO");
+    // CRemoteViewsAdapter::New(context, intent, (IRemoteAdapterConnectionCallback*)this, (IRemoteViewsAdapter**)&mRemoteAdapter);
     Boolean ready;
     if (mRemoteAdapter->IsDataReady(&ready), ready) {
-        SetAdapter((IListAdapter*)mRemoteAdapter->Probe(EIID_IListAdapter));
+        SetAdapter(IAdapter::Probe(mRemoteAdapter));
     }
     return NOERROR;
 }
 
-/**
- * Sets up the onClickHandler to be used by the RemoteViewsAdapter when inflating RemoteViews
- *
- * @param handler The OnClickHandler to use when inflating RemoteViews.
- *
- * @hide
- */
 ECode AbsListView::SetRemoteViewsOnClickHandler(
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
@@ -7082,41 +8127,35 @@ ECode AbsListView::SetRemoteViewsOnClickHandler(
     return NOERROR;
 }
 
-/**
- * This defers a notifyDataSetChanged on the pending RemoteViewsAdapter if it has not
- * connected yet.
- */
 ECode AbsListView::DeferNotifyDataSetChanged()
 {
     mDeferNotifyDataSetChanged = TRUE;
     return NOERROR;
-
 }
 
-/**
- * Called back when the adapter connects to the RemoteViewsService.
- */
-Boolean AbsListView::OnRemoteAdapterConnected()
+ECode AbsListView::OnRemoteAdapterConnected(
+    /* [out] */ Boolean* result)
 {
-    AutoPtr<IRemoteViewsAdapter> temp = (IRemoteViewsAdapter*)mAdapter->Probe(EIID_IRemoteViewsAdapter);
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+
+    AutoPtr<IRemoteViewsAdapter> temp = IRemoteViewsAdapter::Probe(mAdapter);
     if (temp != NULL && mRemoteAdapter != temp) {
-        SetAdapter((IListAdapter*)mRemoteAdapter->Probe(EIID_IListAdapter));
+        SetAdapter(IAdapter::Probe(mRemoteAdapter));
         if (mDeferNotifyDataSetChanged) {
-            mRemoteAdapter->NotifyDataSetChanged();
+            IBaseAdapter::Probe(mRemoteAdapter)->NotifyDataSetChanged();
             mDeferNotifyDataSetChanged = FALSE;
         }
-        return FALSE;
+        return NOERROR;
     }
     else if (mRemoteAdapter != NULL) {
         mRemoteAdapter->SuperNotifyDataSetChanged();
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
-    return FALSE;
+    return NOERROR;
 }
 
-/**
- * Called back when the adapter disconnects from the RemoteViewsService.
- */
 ECode AbsListView::OnRemoteAdapterDisconnected()
 {
     // If the remote adapter disconnects, we keep it around
@@ -7127,10 +8166,6 @@ ECode AbsListView::OnRemoteAdapterDisconnected()
     return NOERROR;
 }
 
-/**
- * Hints the RemoteViewsAdapter, if it exists, about which views are currently
- * being displayed by the AbsListView.
- */
 void AbsListView::SetVisibleRangeHint(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -7140,17 +8175,6 @@ void AbsListView::SetVisibleRangeHint(
     }
 }
 
-/**
- * Sets the recycler listener to be notified whenever a View is set aside in
- * the recycler for later reuse. This listener can be used to free resources
- * associated to the View::
- *
- * @param listener The recycler listener to be notified of views set aside
- *        in the recycler.
- *
- * @see android.widget.AbsListView.RecycleBin
- * @see android.widget.AbsListView.RecyclerListener
- */
 ECode AbsListView::SetRecyclerListener(
     /* [in] */ IRecyclerListener* listener)
 {
@@ -7159,131 +8183,67 @@ ECode AbsListView::SetRecyclerListener(
     return NOERROR;
 }
 
-ECode AbsListView::Init(
-    /* [in] */ IContext* context)
-{
-    FAIL_RETURN(AdapterView::Init(context));
-
-    InitAbsListView();
-
-    Int32 size = ARRAY_SIZE(R::styleable::View);
-    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    layout->Copy(R::styleable::View, size);
-
-    SetVerticalScrollBarEnabled(TRUE);
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(layout, (ITypedArray**)&a);
-    InitializeScrollbars(a);
-    a->Recycle();
-
-    return NOERROR;
-}
-
-ECode AbsListView:: Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return Init(context, attrs, R::attr::absListViewStyle);
-}
-
-ECode AbsListView::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    FAIL_RETURN(AdapterView::Init(context, attrs, defStyle));
-
-    InitAbsListView();
-
-    Int32 size = ARRAY_SIZE(R::styleable::AbsListView);
-    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    layout->Copy(R::styleable::AbsListView, size);
-
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(
-        attrs, layout, defStyle, 0, (ITypedArray**)&a);
-
-    AutoPtr<IDrawable> d;
-    a->GetDrawable(R::styleable::AbsListView_listSelector, (IDrawable**)&d);
-    if (d != NULL) {
-        SetSelector(d);
-    }
-
-    a->GetBoolean(R::styleable::AbsListView_drawSelectorOnTop, FALSE, &mDrawSelectorOnTop);
-
-    Boolean stackFromBottom;
-    a->GetBoolean(R::styleable::AbsListView_stackFromBottom, FALSE, &stackFromBottom);
-    SetStackFromBottom(stackFromBottom);
-
-    Boolean scrollingCacheEnabled;
-    a->GetBoolean(R::styleable::AbsListView_scrollingCache, TRUE, &scrollingCacheEnabled);
-    SetScrollingCacheEnabled(scrollingCacheEnabled);
-
-    Boolean useTextFilter;
-    a->GetBoolean(R::styleable::AbsListView_textFilterEnabled, FALSE, &useTextFilter);
-    SetTextFilterEnabled(useTextFilter);
-
-    Int32 transcriptMode;
-    a->GetInt32(R::styleable::AbsListView_transcriptMode,
-        IAbsListView::AbsListView_TRANSCRIPT_MODE_DISABLED, &transcriptMode);
-    SetTranscriptMode(transcriptMode);
-
-    Int32 color;
-    a->GetColor(R::styleable::AbsListView_cacheColorHint, 0, &color);
-    SetCacheColorHint(color);
-
-    Boolean enableFastScroll;
-    a->GetBoolean(R::styleable::AbsListView_fastScrollEnabled, FALSE, &enableFastScroll);
-    SetFastScrollEnabled(enableFastScroll);
-
-    Boolean smoothScrollbar;
-    a->GetBoolean(R::styleable::AbsListView_smoothScrollbar, TRUE, &smoothScrollbar);
-    SetSmoothScrollbarEnabled(smoothScrollbar);
-
-    Int32 choiceMode;
-    a->GetInt32(R::styleable::AbsListView_choiceMode, IAbsListView::CHOICE_MODE_NONE, &choiceMode);
-
-    Boolean fastScrollAlwaysVisible;
-    a->GetBoolean(R::styleable::AbsListView_fastScrollAlwaysVisible, FALSE, &fastScrollAlwaysVisible);
-
-    SetChoiceMode(choiceMode);
-    SetFastScrollAlwaysVisible(fastScrollAlwaysVisible);
-
-    a->Recycle();
-
-    return NOERROR;
-}
-
-AutoPtr<IView> AbsListView::RetrieveFromScrap(
-    /* [in] */ List<AutoPtr<IView> >* scrapViews,
+Int32 AbsListView::GetHeightForPosition(
     /* [in] */ Int32 position)
 {
-    assert(scrapViews != NULL);
+    Int32 firstVisiblePosition;
+    GetFirstVisiblePosition(&firstVisiblePosition);
+    Int32 childCount;
+    GetChildCount(&childCount);
+    const Int32 index = position - firstVisiblePosition;
+    if (index >= 0 && index < childCount) {
+        // Position is on-screen, use existing view.
+        AutoPtr<IView> view;
+        GetChildAt(index, (IView**)&view);
+        Int32 height;
+        view->GetHeight(&height);
+        return height;
+    }
+    else {
+        // Position is off-screen, obtain & recycle view.
+        AutoPtr<IView> view = ObtainView(position, mIsScrap);
+        view->Measure(mWidthMeasureSpec, MeasureSpec::UNSPECIFIED);
+        Int32 height;
+        view->GetMeasuredHeight(&height);
+        mRecycler->AddScrapView(view, position);
+        return height;
+    }
+}
 
-    if (scrapViews->IsEmpty()) {
-        return NULL;
+ECode AbsListView::SetSelectionFromTop(
+    /* [in] */ Int32 position,
+    /* [in] */ Int32 y)
+{
+    if (mAdapter == NULL) {
+        return NOERROR;
     }
 
-    // See if we still have a view for this position.
-    AutoPtr<IView> view;
-    ViewListIterator it = scrapViews->Begin();
-    for (; it != scrapViews->End(); ++it) {
-        view = *it;
-        AutoPtr<IAbsListViewLayoutParams> layoutParams;
-        view->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
-        Int32 scrappedFromPosition = 0;
-        layoutParams->GetScrappedFromPosition(&scrappedFromPosition);
-        if (scrappedFromPosition == position) {
-            scrapViews->Erase(it);
-            return view;
+    Boolean res;
+    if (IsInTouchMode(&res), !res) {
+        position = AbsListView::LookForSelectablePosition(position, TRUE);
+        if (position >= 0) {
+            SetNextSelectedPositionInt(position);
         }
     }
+    else {
+        mResurrectToPosition = position;
+    }
 
-    // return last item.
-    it = scrapViews->End();
-    view = *(--it);
-    scrapViews->Erase(it);
-    return view;
+    if (position >= 0) {
+        mLayoutMode = LAYOUT_SPECIFIC;
+        mSpecificTop = mListPadding->mTop + y;
+
+        if (mNeedSync) {
+            mSyncPosition = position;
+            IAdapter::Probe(mAdapter)->GetItemId(position, &mSyncRowId);
+        }
+
+        if (mPositionScroller != NULL) {
+            mPositionScroller->Stop();
+        }
+        RequestLayout();
+    }
+    return NOERROR;
 }
 
 }// namespace Widget

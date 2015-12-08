@@ -1,11 +1,5 @@
 module
 {
-    merge("app/AlertActivity.car");
-    merge("app/AlertController.car");
-    merge("app/ChooserActivity.car");
-    merge("app/DisableCarModeActivity.car");
-    merge("app/ExternalMediaFormatActivity.car");
-    merge("app/HeavyWeightSwitcherActivity.car");
     merge("app/IAppOpsCallback.car");
     merge("app/IAppOpsService.car");
     merge("app/IBatteryStats.car");
@@ -14,18 +8,4 @@ module
     merge("app/IVoiceInteractor.car");
     merge("app/IVoiceInteractorCallback.car");
     merge("app/IVoiceInteractorRequest.car");
-    merge("app/IntentForwarderActivity.car");
-    merge("app/LocalePicker.car");
-    merge("app/MediaRouteChooserDialog.car");
-    merge("app/MediaRouteChooserDialogFragment.car");
-    merge("app/MediaRouteControllerDialog.car");
-    merge("app/MediaRouteControllerDialogFragment.car");
-    merge("app/NetInitiatedActivity.car");
-    merge("app/PlatLogoActivity.car");
-    merge("app/ProcessMap.car");
-    merge("app/ProcessStats.car");
-    merge("app/ResolverActivity.car");
-    merge("app/RestrictionsPinActivity.car");
-    merge("app/ToolbarActionBar.car");
-    merge("app/WindowDecorActionBar.car");
 }

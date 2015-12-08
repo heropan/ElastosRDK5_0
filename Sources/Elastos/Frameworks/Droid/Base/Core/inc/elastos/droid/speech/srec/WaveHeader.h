@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_SPEECH_SREC_WaveHeader_H__
 #define __ELASTOS_DROID_SPEECH_SREC_WaveHeader_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include <elastos/io/InputStream.h>
 #include <elastos/io/OutputStream.h>
 
@@ -27,12 +29,20 @@ namespace Srec {
  * @hide
  */
 class WaveHeader
+    : public Object
+    , public IWaveHeader
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Construct a WaveHeader, with all fields defaulting to zero.
      */
     WaveHeader();
+
+    virtual ~WaveHeader();
+
+    CARAPI constructor();
 
     /**
      * Construct a WaveHeader, with fields initialized.
@@ -43,14 +53,7 @@ public:
      * @param bitsPerSample usually 16 for PCM, 8 for ULAW or 8 for ALAW.
      * @param numBytes size of audio data after this header, in bytes.
      */
-    WaveHeader(
-        /* [in] */ Int16 format,
-        /* [in] */ Int16 numChannels,
-        /* [in] */ Int32 sampleRate,
-        /* [in] */ Int16 bitsPerSample,
-        /* [in] */ Int32 numBytes);
-
-    void Init(
+    CARAPI constructor(
         /* [in] */ Int16 format,
         /* [in] */ Int16 numChannels,
         /* [in] */ Int32 sampleRate,
@@ -62,7 +65,8 @@ public:
      * @return format field,
      * one of {@link #FORMAT_PCM}, {@link #FORMAT_ULAW}, or {@link #FORMAT_ALAW}.
      */
-    CARAPI_(Int16) GetFormat();
+    CARAPI GetFormat(
+        /* [out] */ Int16* ret);
 
     /**
      * Set the format field.
@@ -77,7 +81,8 @@ public:
      * Get the number of channels.
      * @return number of channels, 1 for mono, 2 for stereo.
      */
-    CARAPI_(Int16) GetNumChannels();
+    CARAPI GetNumChannels(
+        /* [out] */ Int16* ret);
 
     /**
      * Set the number of channels.
@@ -91,7 +96,8 @@ public:
      * Get the sample rate.
      * @return sample rate, typically 8000, 11025, 16000, 22050, or 44100 hz.
      */
-    CARAPI_(Int32) GetSampleRate();
+    CARAPI GetSampleRate(
+        /* [out] */ Int32* ret);
 
     /**
      * Set the sample rate.
@@ -106,7 +112,8 @@ public:
      * @return number of bits per sample,
      * usually 16 for PCM, 8 for ULAW or 8 for ALAW.
      */
-    CARAPI_(Int16) GetBitsPerSample();
+    CARAPI GetBitsPerSample(
+        /* [out] */ Int16* ret);
 
     /**
      * Set the number of bits per sample.
@@ -121,7 +128,8 @@ public:
      * Get the size of audio data after this header, in bytes.
      * @return size of audio data after this header, in bytes.
      */
-    CARAPI_(Int32) GetNumBytes();
+    CARAPI GetNumBytes(
+        /* [out] */ Int32* ret);
 
     /**
      * Set the size of audio data after this header, in bytes.
@@ -137,8 +145,9 @@ public:
      * @return number of bytes consumed.
      * @throws IOException
      */
-    CARAPI_(Int32) Read(
-        /* [in] */ IInputStream* in);// throws IOException
+    CARAPI Read(
+        /* [in] */ IInputStream* in,
+        /* [out] */ Int32* ret);
 
     /**
      * Write a WAVE file header.
@@ -146,46 +155,50 @@ public:
      * @return number of bytes written.
      * @throws IOException
      */
-    CARAPI_(Int32) Write(
-        /* [in] */ IOutputStream* out);// throws IOException
+    CARAPI Write(
+        /* [in] */ IOutputStream* out,
+        /* [out] */ Int32* ret);
 
     //@Override
-    CARAPI_(String) ToString();
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
-    static CARAPI_(void) ReadId(
+    static CARAPI ReadId(
         /* [in] */ IInputStream* in,
-        /* [in] */ const String& id);// throws IOException
+        /* [in] */ const String& id);
 
-    static CARAPI_(Int32) ReadInt(
-        /* [in] */ IInputStream* in);// throws IOException
+    static CARAPI ReadInt(
+        /* [in] */ IInputStream* in,
+        /* [out] */ Int32* ret);
 
-    static CARAPI_(Int16) ReadShort(
-        /* [in] */ IInputStream* in);// throws IOException
+    static CARAPI ReadShort(
+        /* [in] */ IInputStream* in,
+        /* [out] */ Int16* ret);
 
-    static CARAPI_(void) WriteId(
+    static CARAPI WriteId(
         /* [in] */ IOutputStream* out,
-        /* [in] */ const String& id);// throws IOException
+        /* [in] */ const String& id);
 
-    static CARAPI_(void) WriteInt(
+    static CARAPI WriteInt(
         /* [in] */ IOutputStream* out,
-        /* [in] */ Int32 val);// throws IOException
+        /* [in] */ Int32 val);
 
-    static CARAPI_(void) WriteShort(
+    static CARAPI WriteShort(
         /* [in] */ IOutputStream* out,
-        /* [in] */ Int16 val);// throws IOException
+        /* [in] */ Int16 val);
 
 private:
-    static const CString TAG;// = "WaveHeader";
+    static const String TAG;            // = "WaveHeader";
 
-    static const Int32 HEADER_LENGTH;// = 44;
+    static const Int32 HEADER_LENGTH;   // = 44;
 
 private:
-    Int16 mFormat;// = 0;
-    Int16 mNumChannels;// = 0;
-    Int32 mSampleRate;// = 0;
-    Int16 mBitsPerSample;// = 0;
-    Int32 mNumBytes;// = 0;
+    Int16 mFormat;
+    Int16 mNumChannels;
+    Int32 mSampleRate;
+    Int16 mBitsPerSample;
+    Int32 mNumBytes;
 
 };
 

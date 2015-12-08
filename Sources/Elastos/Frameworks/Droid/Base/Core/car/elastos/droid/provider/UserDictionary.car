@@ -95,6 +95,9 @@ module {
          */
         const String DEFAULT_SORT_ORDER = /*FREQUENCY + */"frequency DESC";
 
+        GetCONTENT_URI(
+            [out] IUri** uri);
+
         /** Adds a word to the dictionary, with the given frequency and the specified
          *  specified locale type.
          *
@@ -131,8 +134,6 @@ module {
             [in] String shortcut,
             [in] ILocale* locale);
     }
-
-
 
     } // namespace Provider
     } // namespace Droid

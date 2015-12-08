@@ -5,9 +5,9 @@
 #include "elastos/droid/widget/StackViewLayoutParams.h"
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CStackViewLayoutParams), public StackViewLayoutParams
 {

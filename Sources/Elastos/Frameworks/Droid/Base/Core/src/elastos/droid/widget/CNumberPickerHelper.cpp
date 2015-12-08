@@ -1,9 +1,14 @@
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/widget/CNumberPickerHelper.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+#include "elastos/droid/widget/CNumberPickerHelper.h"
+#include "elastos/droid/widget/NumberPicker.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+
+CAR_INTERFACE_IMPL(CNumberPickerHelper, Singleton, INumberPickerHelper);
+
+CAR_SINGLETON_IMPL(CNumberPickerHelper);
 
 ECode CNumberPickerHelper::GetTwoDigitFormatter(
     /* [out] */ INumberPickerFormatter** format)

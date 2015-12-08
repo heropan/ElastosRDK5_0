@@ -1,14 +1,18 @@
+#ifndef __ELASTOS_DROID_APP_CREMOTEINPUT_H__
+#define __ELASTOS_DROID_APP_CREMOTEINPUT_H__
 
+#include "_Elastos_Droid_App_CRemoteInput.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Content::IClipData;
+using Elastos::Droid::Content::IClipDescription;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Core::ICharSequence;
 
-package android.app;
-
-using Elastos::Droid::content.ClipData;
-using Elastos::Droid::content.ClipDescription;
-using Elastos::Droid::content.Intent;
-using Elastos::Droid::os.Bundle;
-using Elastos::Droid::os.Parcel;
-using Elastos::Droid::os.Parcelable;
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 /**
  * A {@code RemoteInput} object specifies input to be collected from a user to be passed along with
@@ -40,140 +44,66 @@ using Elastos::Droid::os.Parcelable;
  * <pre class="prettyprint">
  * public static final String KEY_QUICK_REPLY_TEXT = "quick_reply";
  * Bundle results = RemoteInput.getResultsFromIntent(intent);
- * if (results != null) {
+ * if (results != NULL) {
  *     CharSequence quickReplyResult = results.getCharSequence(KEY_QUICK_REPLY_TEXT);
  * }</pre>
  */
-public final class RemoteInput implements Parcelable {
-    /** Label used to denote the clip data type used for remote input transport */
-    public static final String RESULTS_CLIP_LABEL = "android.remoteinput.results";
-
-    /** Extra added to a clip data intent object to hold the results bundle. */
-    public static final String EXTRA_RESULTS_DATA = "android.remoteinput.resultsData";
-
-    // Flags bitwise-ored to mFlags
-    private static final int FLAG_ALLOW_FREE_FORM_INPUT = 0x1;
-
-    // Default value for flags integer
-    private static final int DEFAULT_FLAGS = FLAG_ALLOW_FREE_FORM_INPUT;
-
-    private final String mResultKey;
-    private final CharSequence mLabel;
-    private final CharSequence[] mChoices;
-    private final int mFlags;
-    private final Bundle mExtras;
-
-    private RemoteInput(String resultKey, CharSequence label, CharSequence[] choices,
-            int flags, Bundle extras) {
-        this.mResultKey = resultKey;
-        this.mLabel = label;
-        this.mChoices = choices;
-        this.mFlags = flags;
-        this.mExtras = extras;
-    }
-
-    /**
-     * Get the key that the result of this input will be set in from the Bundle returned by
-     * {@link #getResultsFromIntent} when the {@link android.app.PendingIntent} is sent.
-     */
-    public String getResultKey() {
-        return mResultKey;
-    }
-
-    /**
-     * Get the label to display to users when collecting this input.
-     */
-    public CharSequence getLabel() {
-        return mLabel;
-    }
-
-    /**
-     * Get possible input choices. This can be {@code null} if there are no choices to present.
-     */
-    public CharSequence[] getChoices() {
-        return mChoices;
-    }
-
-    /**
-     * Get whether or not users can provide an arbitrary value for
-     * input. If you set this to {@code false}, users must select one of the
-     * choices in {@link #getChoices}. An {@link IllegalArgumentException} is thrown
-     * if you set this to false and {@link #getChoices} returns {@code null} or empty.
-     */
-    public boolean getAllowFreeFormInput() {
-        return (mFlags & FLAG_ALLOW_FREE_FORM_INPUT) != 0;
-    }
-
-    /**
-     * Get additional metadata carried around with this remote input.
-     */
-    public Bundle getExtras() {
-        return mExtras;
-    }
-
+CarClass(CRemoteInput)
+    , public Object
+    , public IRemoteInput
+    , public IParcelable
+{
+public:
     /**
      * Builder class for {@link RemoteInput} objects.
      */
-    public static final class Builder {
-        private final String mResultKey;
-        private CharSequence mLabel;
-        private CharSequence[] mChoices;
-        private int mFlags = DEFAULT_FLAGS;
-        private Bundle mExtras = new Bundle();
+    class Builder
+        : public Object
+        , public IRemoteInputBuilder
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        Builder();
+
+        virtual ~Builder();
 
         /**
          * Create a builder object for {@link RemoteInput} objects.
          * @param resultKey the Bundle key that refers to this input when collected from the user
          */
-        public Builder(String resultKey) {
-            if (resultKey == null) {
-                throw new IllegalArgumentException("Result key can't be null");
-            }
-            mResultKey = resultKey;
-        }
+        CARAPI constructor(
+            /* [in] */ const String& resultKey);
 
         /**
          * Set a label to be displayed to the user when collecting this input.
          * @param label The label to show to users when they input a response.
          * @return this object for method chaining
          */
-        public Builder setLabel(CharSequence label) {
-            mLabel = Notification.safeCharSequence(label);
-            return this;
-        }
+        CARAPI SetLabel(
+            /* [in] */ ICharSequence* label);
 
         /**
          * Specifies choices available to the user to satisfy this input.
          * @param choices an array of pre-defined choices for users input.
-         *        You must provide a non-null and non-empty array if
+         *        You must provide a non-NULL and non-empty array if
          *        you disabled free form input using {@link #setAllowFreeFormInput}.
          * @return this object for method chaining
          */
-        public Builder setChoices(CharSequence[] choices) {
-            if (choices == null) {
-                mChoices = null;
-            } else {
-                mChoices = new CharSequence[choices.length];
-                for (int i = 0; i < choices.length; i++) {
-                    mChoices[i] = Notification.safeCharSequence(choices[i]);
-                }
-            }
-            return this;
-        }
+        CARAPI SetChoices(
+            /* [in] */ ArrayOf<ICharSequence*>* choices);
 
         /**
          * Specifies whether the user can provide arbitrary values.
          *
          * @param allowFreeFormInput The default is {@code true}.
-         *         If you specify {@code false}, you must provide a non-null
+         *         If you specify {@code false}, you must provide a non-NULL
          *         and non-empty array to {@link #setChoices} or an
          *         {@link IllegalArgumentException} is thrown.
          * @return this object for method chaining
          */
-        public Builder setAllowFreeFormInput(boolean allowFreeFormInput) {
-            setFlag(mFlags, allowFreeFormInput);
-            return this;
-        }
+        CARAPI SetAllowFreeFormInput(
+            /* [in] */ Boolean allowFreeFormInput);
 
         /**
          * Merge additional metadata into this builder.
@@ -182,46 +112,90 @@ public final class RemoteInput implements Parcelable {
          *
          * @see RemoteInput#getExtras
          */
-        public Builder addExtras(Bundle extras) {
-            if (extras != null) {
-                mExtras.putAll(extras);
-            }
-            return this;
-        }
+        CARAPI AddExtras(
+            /* [in] */ IBundle* extras);
 
         /**
          * Get the metadata Bundle used by this Builder.
          *
          * <p>The returned Bundle is shared with this Builder.
          */
-        public Bundle getExtras() {
-            return mExtras;
-        }
-
-        private void setFlag(int mask, boolean value) {
-            if (value) {
-                mFlags |= mask;
-            } else {
-                mFlags &= ~mask;
-            }
-        }
+        CARAPI GetExtras(
+            /* [out] */ IBundle** result);
 
         /**
          * Combine all of the options that have been set and return a new {@link RemoteInput}
          * object.
          */
-        public RemoteInput build() {
-            return new RemoteInput(mResultKey, mLabel, mChoices, mFlags, mExtras);
-        }
-    }
+        CARAPI Build(
+            /* [out] */ IRemoteInput** ri);
 
-    private RemoteInput(Parcel in) {
-        mResultKey = in.readString();
-        mLabel = in.readCharSequence();
-        mChoices = in.readCharSequenceArray();
-        mFlags = in.readInt();
-        mExtras = in.readBundle();
-    }
+    private:
+        CARAPI SetFlag(
+            /* [in] */ Int32 mask,
+            /* [in] */ Boolean value);
+    private:
+        String mResultKey;
+        AutoPtr<ICharSequence> mLabel;
+        AutoPtr<ArrayOf<ICharSequence*> > mChoices;
+        Int32 mFlags;// = DEFAULT_FLAGS;
+        AutoPtr<IBundle> mExtras;// = new Bundle();
+    };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    CRemoteInput();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& resultKey,
+        /* [in] */ ICharSequence* label,
+        /* [in] */ ArrayOf<ICharSequence*>* choices,
+        /* [in] */ Int32 flags,
+        /* [in] */ IBundle* extras);
+
+    /**
+     * Get the key that the result of this input will be set in from the Bundle returned by
+     * {@link #getResultsFromIntent} when the {@link android.app.PendingIntent} is sent.
+     */
+    CARAPI GetResultKey(
+        /* [out] */ String* str);
+
+    /**
+     * Get the label to display to users when collecting this input.
+     */
+    CARAPI GetLabel(
+        /* [out] */ ICharSequence** seq);
+
+    /**
+     * Get possible input choices. This can be {@code NULL} if there are no choices to present.
+     */
+    CARAPI GetChoices(
+        /* [out, callee] */ ArrayOf<ICharSequence*>** choices);
+
+    /**
+     * Get whether or not users can provide an arbitrary value for
+     * input. If you set this to {@code false}, users must select one of the
+     * choices in {@link #getChoices}. An {@link IllegalArgumentException} is thrown
+     * if you set this to false and {@link #getChoices} returns {@code NULL} or empty.
+     */
+    CARAPI GetAllowFreeFormInput(
+        /* [out] */ Boolean* result);
+
+    /**
+     * Get additional metadata carried around with this remote input.
+     */
+    CARAPI GetExtras(
+        /* [out] */ IBundle** result);
+
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* in);
+
+    //@Override
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* out);
 
     /**
      * Get the remote input results bundle from an intent. The returned Bundle will
@@ -230,20 +204,8 @@ public final class RemoteInput implements Parcelable {
      * @param intent The intent object that fired in response to an action or content intent
      *               which also had one or more remote input requested.
      */
-    public static Bundle getResultsFromIntent(Intent intent) {
-        ClipData clipData = intent.getClipData();
-        if (clipData == null) {
-            return null;
-        }
-        ClipDescription clipDescription = clipData.getDescription();
-        if (!clipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT)) {
-            return null;
-        }
-        if (clipDescription.getLabel().equals(RESULTS_CLIP_LABEL)) {
-            return clipData.getItemAt(0).getIntent().getExtras().getParcelable(EXTRA_RESULTS_DATA);
-        }
-        return null;
-    }
+    static AutoPtr<IBundle> GetResultsFromIntent(
+        /* [in] */ IIntent* intent);
 
     /**
      * Populate an intent object with the results gathered from remote input. This method
@@ -256,43 +218,29 @@ public final class RemoteInput implements Parcelable {
      *                be populated with keys matching the result keys specified in
      *                {@code remoteInputs} with values being the result per key.
      */
-    public static void addResultsToIntent(RemoteInput[] remoteInputs, Intent intent,
-            Bundle results) {
-        Bundle resultsBundle = new Bundle();
-        for (RemoteInput remoteInput : remoteInputs) {
-            Object result = results.get(remoteInput.getResultKey());
-            if (result instanceof CharSequence) {
-                resultsBundle.putCharSequence(remoteInput.getResultKey(), (CharSequence) result);
-            }
-        }
-        Intent clipIntent = new Intent();
-        clipIntent.putExtra(EXTRA_RESULTS_DATA, resultsBundle);
-        intent.setClipData(ClipData.newIntent(RESULTS_CLIP_LABEL, clipIntent));
-    }
+    static CARAPI AddResultsToIntent(
+        /* [in] */ ArrayOf<IRemoteInput*>* remoteInputs,
+        /* [in] */ IIntent* intent,
+        /* [in] */ IBundle* results);
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+private:
+    // Flags bitwise-ored to mFlags
+    static const Int32 FLAG_ALLOW_FREE_FORM_INPUT;// = 0x1;
 
-    @Override
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeString(mResultKey);
-        out.writeCharSequence(mLabel);
-        out.writeCharSequenceArray(mChoices);
-        out.writeInt(mFlags);
-        out.writeBundle(mExtras);
-    }
+    // Default value for flags integer
+    static const Int32 DEFAULT_FLAGS;// = FLAG_ALLOW_FREE_FORM_INPUT;
 
-    public static final Creator<RemoteInput> CREATOR = new Creator<RemoteInput>() {
-        @Override
-        public RemoteInput createFromParcel(Parcel in) {
-            return new RemoteInput(in);
-        }
+    String mResultKey;
+    AutoPtr<ICharSequence> mLabel;
+    AutoPtr<ArrayOf<ICharSequence*> > mChoices;
+    Int32 mFlags;
+    AutoPtr<IBundle> mExtras;
+};
 
-        @Override
-        public RemoteInput[] newArray(int size) {
-            return new RemoteInput[size];
-        }
-    };
-}
+
+
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
+
+#endif // __ELASTOS_DROID_APP_CREMOTEINPUT_H__

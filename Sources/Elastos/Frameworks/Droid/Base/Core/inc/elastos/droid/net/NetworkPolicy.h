@@ -25,6 +25,8 @@ class NetworkPolicy
 public:
     CAR_INTERFACE_DECL()
 
+    NetworkPolicy();
+
     // @Deprecated
     CARAPI constructor(
         /* [in] */ INetworkTemplate* networkTemplate,
@@ -80,12 +82,12 @@ public:
         /* [out] */ Int32* result);
 
     // @Override
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     // @Override
     CARAPI Equals(
-        /* [in] */ IObject* obj,
+        /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
     // @Override

@@ -315,7 +315,7 @@ ECode _SuggestionsAdapter::OnClick(
     v->GetTag((IInterface**)&tag);
     if(ICharSequence::Probe(tag))
     {
-        SearchView* sv = reinterpret_cast<SearchView*>(mSearchView->Probe(EIID_SearchView));
+        SearchView* sv = (SearchView*)mSearchView.Get();
         sv->OnQueryRefine(ICharSequence::Probe(tag));
     }
     return NOERROR;

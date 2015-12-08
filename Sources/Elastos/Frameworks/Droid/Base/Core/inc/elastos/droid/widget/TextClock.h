@@ -1,24 +1,33 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_TEXTCLOCK_H__
-#define __ELASTOS_DROID_WIDGET_TEXTCLOCK_H__
+#ifndef  __ELASTOS_DROID_WIDGET_TEXTCLOCK_H__
+#define  __ELASTOS_DROID_WIDGET_TEXTCLOCK_H__
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+#include "elastos/droid/widget/TextView.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
 
+using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Net::IUri;
+using Elastos::Utility::ICalendar;
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 /**
  * <p><code>TextClock</code> can display the current date and/or time as
  * a formatted string.</p>
- * 
+ *
  * <p>This view honors the 24-hour format system setting. As such, it is
  * possible and recommended to provide two different formatting patterns:
  * one to display the date/time in 24-hour mode and one to display the
  * date/time in 12-hour mode.</p>
- * 
+ *
  * <p>It is possible to determine whether the system is currently in
  * 24-hour mode by calling {@link #is24HourModeEnabled()}.</p>
- * 
+ *
  * <p>The rules used by this widget to decide how to format the date and
  * time are the following:</p>
  * <ul>
@@ -37,30 +46,83 @@ namespace Widget{
  *         </ul>
  *     </li>
  * </ul>
- * 
+ *
  * <p>The {@link CharSequence} instances used as formatting patterns when calling either
  * {@link #setFormat24Hour(CharSequence)} or {@link #setFormat12Hour(CharSequence)} can
  * contain styling information. To do so, use a {@link android.text.Spanned} object.</p>
- * 
+ *
  * @attr ref android.R.styleable#TextClock_format12Hour
  * @attr ref android.R.styleable#TextClock_format24Hour
  * @attr ref android.R.styleable#TextClock_timeZone
  */
-
-public class TextClock : public TextView
+class TextClock
+    : public TextView
+    , public ITextClock
 {
+private:
+    class TextClockContentObserver
+        : public ContentObserver
+    {
+    public:
+        TextClockContentObserver(
+            /* [in] */ IHandler* handler,
+            /* [in] */ TextClock* host);
+
+        // @Override
+        CARAPI OnChange(
+            /* [in] */ Boolean selfChange);
+
+        // @Override
+        CARAPI OnChange(
+            /* [in] */ Boolean selfChange,
+            /* [in] */ IUri* uri);
+
+    private:
+        TextClock* mHost;
+    };
+
+    class TextClockBroadcastReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        TextClockBroadcastReceiver(
+            /* [in] */ TextClock* host);
+
+        // @Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+
+    private:
+        TextClock* mHost;
+    };
+
+    class TextClockRunnable
+        : public Runnable
+    {
+    public:
+        TextClockRunnable(
+            /* [in] */ TextClock* host);
+
+        CARAPI Run();
+
+    private:
+        TextClock* mHost;
+    };
+
 public:
+    CAR_INTERFACE_DECL();
+
     TextClock();
 
     /**
-     * Creates a new clock using the default patterns
-     * {@link #DEFAULT_FORMAT_24_HOUR} and {@link #DEFAULT_FORMAT_12_HOUR}
-     * respectively for the 24-hour and 12-hour modes.
+     * Creates a new clock using the default patterns for the current locale.
      *
      * @param context The Context the view is running in, through which it can
      *        access the current theme, resources, etc.
      */
-    TextClock(
+    // @SuppressWarnings("UnusedDeclaration")
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -74,7 +136,8 @@ public:
      *        access the current theme, resources, etc.
      * @param attrs The attributes of the XML tag that is inflating the view
      */
-    TextClock(
+    // @SuppressWarnings("UnusedDeclaration")
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -85,35 +148,21 @@ public:
      * @param context The Context the view is running in, through which it can
      *        access the current theme, resources, etc.
      * @param attrs The attributes of the XML tag that is inflating the view
-     * @param defStyle The default style to apply to this view. If 0, no style
-     *        will be applied (beyond what is included in the theme). This may
-     *        either be an attribute resource, whose value will be retrieved
-     *        from the current theme, or an explicit style resource
+     * @param defStyleAttr An attribute in the current theme that contains a
+     *        reference to a style resource that supplies default values for
+     *        the view. Can be 0 to not look for defaults.
      */
-    TextClock(
-        /* [in] */ IContext context,
-        /* [in] */ IAttributeSet* attrs
-        /* [in] */ Int32 defStyle);
-
-protected:
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
 
-    virtual CARAPI InitFromAttributes(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
-public:
     /**
      * Returns the formatting pattern used to display the date and/or time
      * in 12-hour mode. The formatting pattern syntax is described in
@@ -124,30 +173,37 @@ public:
      * @see #setFormat12Hour(CharSequence)
      * @see #is24HourModeEnabled()
      */
-    //@ExportedProperty
-    AutoPtr<ICharSequence> GetFormat12Hour();
+    // @ExportedProperty
+    CARAPI GetFormat12Hour(
+        /* [out] */ ICharSequence** hour);
 
     /**
-     * Specifies the formatting pattern used to display the date and/or time
+     * <p>Specifies the formatting pattern used to display the date and/or time
      * in 12-hour mode. The formatting pattern syntax is described in
-     * {@link DateFormat}.
+     * {@link DateFormat}.</p>
      *
-     * If this pattern is set to null, {@link #getFormat24Hour()} will be used
+     * <p>If this pattern is set to null, {@link #getFormat24Hour()} will be used
      * even in 12-hour mode. If both 24-hour and 12-hour formatting patterns
-     * are set to null, {@link #DEFAULT_FORMAT_24_HOUR} and
-     * {@link #DEFAULT_FORMAT_12_HOUR} will be used instead.
+     * are set to null, the default pattern for the current locale will be used
+     * instead.</p>
+     *
+     * <p><strong>Note:</strong> if styling is not needed, it is highly recommended
+     * you supply a format string generated by
+     * {@link DateFormat#getBestDateTimePattern(java.util.Locale, String)}. This method
+     * takes care of generating a format string adapted to the desired locale.</p>
+     *
      *
      * @param format A date/time formatting pattern as described in {@link DateFormat}
      *
      * @see #getFormat12Hour()
      * @see #is24HourModeEnabled()
-     * @see #DEFAULT_FORMAT_12_HOUR
+     * @see DateFormat#getBestDateTimePattern(java.util.Locale, String)
      * @see DateFormat
      *
      * @attr ref android.R.styleable#TextClock_format12Hour
      */
-    //@RemotableViewMethod
-    virtual CARAPI SetFormat12Hour(
+    // @RemotableViewMethod
+    CARAPI SetFormat12Hour(
         /* [in] */ ICharSequence* format);
 
     /**
@@ -160,30 +216,36 @@ public:
      * @see #setFormat24Hour(CharSequence)
      * @see #is24HourModeEnabled()
      */
-    //@ExportedProperty
-    AutoPtr<ICharSequence> GetFormat24Hour();
+    // @ExportedProperty
+    CARAPI GetFormat24Hour(
+        /* [out] */ ICharSequence** seq);
 
     /**
-     * Specifies the formatting pattern used to display the date and/or time
+     * <p>Specifies the formatting pattern used to display the date and/or time
      * in 24-hour mode. The formatting pattern syntax is described in
-     * {@link DateFormat}.
+     * {@link DateFormat}.</p>
      *
-     * If this pattern is set to null, {@link #getFormat12Hour()} will be used
-     * even in 24-hour mode. If both 24-hour and 12-hour formatting patterns
-     * are set to null, {@link #DEFAULT_FORMAT_24_HOUR} and
-     * {@link #DEFAULT_FORMAT_12_HOUR} will be used instead.
+     * <p>If this pattern is set to null, {@link #getFormat24Hour()} will be used
+     * even in 12-hour mode. If both 24-hour and 12-hour formatting patterns
+     * are set to null, the default pattern for the current locale will be used
+     * instead.</p>
+     *
+     * <p><strong>Note:</strong> if styling is not needed, it is highly recommended
+     * you supply a format string generated by
+     * {@link DateFormat#getBestDateTimePattern(java.util.Locale, String)}. This method
+     * takes care of generating a format string adapted to the desired locale.</p>
      *
      * @param format A date/time formatting pattern as described in {@link DateFormat}
      *
      * @see #getFormat24Hour()
      * @see #is24HourModeEnabled()
-     * @see #DEFAULT_FORMAT_24_HOUR
+     * @see DateFormat#getBestDateTimePattern(java.util.Locale, String)
      * @see DateFormat
      *
      * @attr ref android.R.styleable#TextClock_format24Hour
      */
-    //@RemotableViewMethod
-    virtual CARAPI SetFormat24Hour(
+    // @RemotableViewMethod
+    CARAPI SetFormat24Hour(
         /* [in] */ ICharSequence* format);
 
     /**
@@ -194,8 +256,7 @@ public:
      * returned by {@link #getFormat12Hour()} is used instead.
      *
      * If either one of the formats is null, the other format is used. If
-     * both formats are null, the default values {@link #DEFAULT_FORMAT_12_HOUR}
-     * and {@link #DEFAULT_FORMAT_24_HOUR} are used instead.
+     * both formats are null, the default formats for the current locale are used.
      *
      * @return true if time should be displayed in 24-hour format, false if it
      *         should be displayed in 12-hour format.
@@ -205,7 +266,8 @@ public:
      * @see #setFormat24Hour(CharSequence)
      * @see #getFormat24Hour()
      */
-    Boolean Is24HourModeEnabled();
+    CARAPI Is24HourModeEnabled(
+        /* [out] */ Boolean* result);
 
     /**
      * Indicates which time zone is currently used by this view.
@@ -217,7 +279,8 @@ public:
      * @see java.util.TimeZone#getAvailableIDs()
      * @see #setTimeZone(String)
      */
-    String GetTimeZone();
+    CARAPI GetTimeZone(
+        /* [out] */ String* zone);
 
     /**
      * Sets the specified time zone to use in this clock. When the time zone
@@ -234,21 +297,8 @@ public:
      *
      * @attr ref android.R.styleable#TextClock_timeZone
      */
-    //@RemotableViewMethod
-    virtual CARAPI SetTimeZone(
-        /* [in] */ const String& timeZone);
-
-protected:
-    //@Override
-    virtual CARAPI OnAttachedToWindow();
-
-    //@Override
-    virtual CARAPI OnDetachedFromWindow();
-
-private:
-    CARAPI_(void) PrivateInit();
-
-    CARAPI_(void) CreateTime(
+    // @RemotableViewMethod
+    CARAPI SetTimeZone(
         /* [in] */ const String& timeZone);
 
     /**
@@ -258,6 +308,28 @@ private:
      * Calling this method does not schedule or unschedule the time ticker.
      */
     CARAPI_(void) ChooseFormat();
+
+    /**
+     * Returns the current format string. Always valid after constructor has
+     * finished, and will never be {@code null}.
+     *
+     * @hide
+     */
+    CARAPI GetFormat(
+        /* [out] */ ICharSequence** format);
+
+protected:
+    // @Override
+    CARAPI OnAttachedToWindow();
+
+    // @Override
+    CARAPI OnDetachedFromWindow();
+
+private:
+    CARAPI_(void) Init();
+
+    CARAPI_(void) CreateTime(
+        /* [in] */ const String& timeZone);
 
     /**
      * Selects either one of {@link #getFormat12Hour()} or {@link #getFormat24Hour()}
@@ -272,7 +344,7 @@ private:
     /**
      * Returns a if not null, else return b if not null, else return c.
      */
-    static AutoPtr<ICharSequence> Abc(
+    static CARAPI_(AutoPtr<ICharSequence>) Abc(
         /* [in] */ ICharSequence* a,
         /* [in] */ ICharSequence* b,
         /* [in] */ ICharSequence* c);
@@ -287,9 +359,9 @@ private:
 
     CARAPI_(void) OnTimeChanged();
 
-private:
+public:
     /**
-     * The default formatting pattern in 12-hour mode. This pattenr is used
+     * The default formatting pattern in 12-hour mode. This pattern is used
      * if {@link #setFormat12Hour(CharSequence)} is called with a null pattern
      * or if no pattern was specified when creating an instance of this class.
      *
@@ -298,11 +370,13 @@ private:
      *
      * @see #setFormat12Hour(CharSequence)
      * @see #getFormat12Hour()
+     *
+     * @deprecated Let the system use locale-appropriate defaults instead.
      */
-    static AutoPtr<ICharSequence> DEFAULT_FORMAT_12_HOUR; // = "h:mm aa"
+    static AutoPtr<ICharSequence> DEFAULT_FORMAT_12_HOUR;
 
     /**
-     * The default formatting pattern in 24-hour mode. This pattenr is used
+     * The default formatting pattern in 24-hour mode. This pattern is used
      * if {@link #setFormat24Hour(CharSequence)} is called with a null pattern
      * or if no pattern was specified when creating an instance of this class.
      *
@@ -310,24 +384,34 @@ private:
      *
      * @see #setFormat24Hour(CharSequence)
      * @see #getFormat24Hour()
+     *
+     * @deprecated Let the system use locale-appropriate defaults instead.
      */
-    static AutoPtr<ICharSequence> DEFAULT_FORMAT_24_HOUR; // = "k:mm"
+    static AutoPtr<ICharSequence> DEFAULT_FORMAT_24_HOUR;
 
-    AutoPtr<ICharSequence> mFormat12; //DEFAULT_FORMAT_12_HOUR
-    AutoPtr<ICharSequence> mFormat24; //DEFAULT_FORMAT_24_HOUR
+private:
+    AutoPtr<ICharSequence> mFormat12;
+    AutoPtr<ICharSequence> mFormat24;
 
-    //@ExportedProperty
+    // @ExportedProperty
     AutoPtr<ICharSequence> mFormat;
-    AutoPtr<ICharSequence> mHasSeconds;
+    // @ExportedProperty
+    Boolean mHasSeconds;
 
     Boolean mAttached;
 
     AutoPtr<ICalendar> mTime;
     String mTimeZone;
+
+    AutoPtr<TextClockContentObserver> mFormatChangeObserver;
+
+    AutoPtr<TextClockBroadcastReceiver> mIntentReceiver;
+
+    AutoPtr<TextClockRunnable> mTicker;
 };
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_WIDGET_TEXTCLOCK_H__

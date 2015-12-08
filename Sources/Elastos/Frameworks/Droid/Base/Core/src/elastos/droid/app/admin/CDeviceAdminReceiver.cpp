@@ -9,7 +9,7 @@ namespace Droid {
 namespace App {
 namespace Admin {
 
-const String TAG = String("DevicePolicy");
+const String TAG("DevicePolicy");
 
 Boolean CDeviceAdminReceiver::sLocalLOGV = FALSE;
 

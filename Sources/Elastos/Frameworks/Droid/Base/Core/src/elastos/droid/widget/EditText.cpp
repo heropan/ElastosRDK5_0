@@ -5,7 +5,8 @@
 
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::Method::CArrowKeyMovementMethod;
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -13,15 +14,19 @@ namespace Widget {
 
 const String EditText::EDITTEXT_NAME = String("EditText");
 
+CAR_INTERFACE_IMPL(EditText, TextView, IEditText)
+
 EditText::EditText()
 {}
 
-EditText::EditText(
+
+ECode EditText::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyle,
+    /* [in] */ Int32 defStyleRes)
 {
-    Init(context, attrs, defStyle);
+    return TextView::constructor(context, attrs, defStyle, defStyleRes);
 }
 
 Boolean EditText::GetDefaultEditable()
@@ -31,12 +36,16 @@ Boolean EditText::GetDefaultEditable()
 
 AutoPtr<IMovementMethod> EditText::GetDefaultMovementMethod()
 {
-    return CArrowKeyMovementMethod::GetInstance();
+    AutoPtr<IMovementMethod> result;
+    CArrowKeyMovementMethod::GetInstance((IMovementMethod**)&result);
+    return result;
 }
 
-AutoPtr<ICharSequence> EditText::GetText()
+ECode EditText::GetText(
+    /* [out] */ ICharSequence** text)
 {
-    return TextView::GetText();
+    VALIDATE_NOT_NULL(text);
+    return TextView::GetText(text);
 }
 
 ECode EditText::SetText(
@@ -53,7 +62,9 @@ ECode EditText::SetSelection(
     /* [in] */ Int32 start,
     /* [in] */ Int32 stop)
 {
-    Selection::SetSelection(ISpannable::Probe(GetText().Get()), start, stop);
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
+    Selection::SetSelection(ISpannable::Probe(seq), start, stop);
     return NOERROR;
 }
 
@@ -63,7 +74,9 @@ ECode EditText::SetSelection(
 ECode EditText::SetSelection(
     /* [in] */ Int32 index)
 {
-    Selection::SetSelection(ISpannable::Probe(GetText().Get()), index);
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
+    Selection::SetSelection(ISpannable::Probe(seq), index);
     return NOERROR;
 }
 
@@ -72,7 +85,9 @@ ECode EditText::SetSelection(
  */
 ECode EditText::SelectAll()
 {
-    Selection::SelectAll(ISpannable::Probe(GetText().Get()));
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
+    Selection::SelectAll(ISpannable::Probe(seq));
     return NOERROR;
 }
 
@@ -82,7 +97,9 @@ ECode EditText::SelectAll()
 ECode EditText::ExtendSelection(
     /* [in] */ Int32 index)
 {
-    Selection::ExtendSelection(ISpannable::Probe(GetText().Get()), index);
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
+    Selection::ExtendSelection(ISpannable::Probe(seq), index);
     return NOERROR;
 }
 
@@ -103,8 +120,8 @@ ECode EditText::OnInitializeAccessibilityEvent(
 {
     TextView::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(EDITTEXT_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
+    FAIL_RETURN(CString::New(EDITTEXT_NAME, (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
@@ -113,18 +130,37 @@ ECode EditText::OnInitializeAccessibilityNodeInfo(
 {
     TextView::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(EDITTEXT_NAME, (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(EDITTEXT_NAME, (ICharSequence**)&seq));
     info->SetClassName(seq);
     return NOERROR;
 }
 
-ECode EditText::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+ECode EditText::PerformAccessibilityAction(
+    /* [in] */ Int32 action,
+    /* [in] */ IBundle* arguments,
+    /* [out] */ Boolean* res)
 {
-    return TextView::Init(context, attrs, defStyle);
+    switch (action) {
+        case IAccessibilityNodeInfo::ACTION_SET_TEXT:
+        {
+            AutoPtr<ICharSequence> text;
+            if (arguments != NULL) {
+                arguments->GetCharSequence(IAccessibilityNodeInfo::ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                    (ICharSequence**)&text);
+            }
+            SetText(text);
+            Int32 len;
+            if (text != NULL && (text->GetLength(&len), len) > 0) {
+                SetSelection(len);
+            }
+            return TRUE;
+        }
+        default: {
+            return TextView::PerformAccessibilityAction(action, arguments);
+        }
+    }
 }
+
 
 } // namespace Widget
 } // namespace Droid

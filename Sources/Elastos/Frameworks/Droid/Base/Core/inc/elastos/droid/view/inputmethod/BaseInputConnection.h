@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_BASEINPUTCONNECTION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-//#include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
@@ -264,7 +264,6 @@ public:
         /* [in] */ Boolean enabled,
         /* [out] */ Boolean* result);
 
-protected:
     /**
      * Called when this InputConnection is no longer used by the InputMethodManager.
      *
@@ -297,7 +296,7 @@ private:
     AutoPtr<ArrayOf<IInterface*> > mDefaultComposingSpans;
 
     AutoPtr<IEditable> mEditable;
-//    AutoPtr<CKeyCharacterMap> mKeyCharacterMap;
+    AutoPtr<CKeyCharacterMap> mKeyCharacterMap;
 };
 
 } // namespace InputMethod

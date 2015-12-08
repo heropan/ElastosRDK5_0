@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CIPPREFIX_H__
 
 #include "_Elastos_Droid_Net_CIpPrefix.h"
-#include "IpPrefix.h"
+#include "elastos/droid/net/IpPrefix.h"
 
 namespace Elastos {
 namespace Droid {

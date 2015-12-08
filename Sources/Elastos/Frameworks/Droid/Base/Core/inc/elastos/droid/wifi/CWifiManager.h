@@ -2,26 +2,34 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFIMANAGER_H__
 #define  __ELASTOS_DROID_NET_WIFI_CWIFIMANAGER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "_Elastos_Droid_Net_Wifi_CWifiManager.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include "elastos/droid/utility/AsyncChannel.h"
+#include "_Elastos_Droid_Wifi_CWifiManager.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/internal/utility/AsyncChannel.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Concurrent::ICountDownLatch;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IWorkSource;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IMessenger;
 using Elastos::Droid::Internal::Utility::AsyncChannel;
+using Elastos::Droid::Internal::Utility::IAsyncChannel;
+using Elastos::Droid::Net::IDhcpInfo;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Net::IInetAddress;
+using Elastos::Utility::Concurrent::ICountDownLatch;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 
 CarClass(CWifiManager)
+    , public Object
+    , public IWifiManager
 {
 public:
     /**
@@ -45,18 +53,18 @@ public:
      * permission in an {@code &lt;uses-permission&gt;} element of the application's manifest.
      */
     class WifiLock
-        : public ElRefBase
-        , public IWifiLock
+        : public Object
+        , public IWifiManagerWifiLock
     {
     public:
+        CAR_INTERFACE_DECL()
+
         WifiLock(
             /* [in] */ Int32 lockType,
             /* [in] */ const String& tag,
             /* [in] */ CWifiManager* owner);
 
         ~WifiLock();
-
-        CAR_INTERFACE_DECL();
 
         /**
          * Locks the Wi-Fi radio on until {@link #release} is called.
@@ -112,7 +120,7 @@ public:
 
         // public String toString() {
         //     String s1, s2, s3;
-        //     synchronized(mBinder) {
+        //     synchronized (mBinder) {
         //         s1 = Integer.toHexString(System.identityHashCode(this));
         //         s2 = mHeld ? "held; " : "";
         //         if (mRefCounted) {
@@ -145,17 +153,17 @@ public:
      * battery drain and should be disabled when not needed.
      */
     class MulticastLock
-        : public ElRefBase
-        , public IMulticastLock
+        : public Object
+        , public IWifiManagerMulticastLock
     {
     public:
+        CAR_INTERFACE_DECL()
+
         MulticastLock(
             /* [in] */ const String& tag,
             /* [in] */ CWifiManager* owner);
 
         ~MulticastLock();
-
-        CAR_INTERFACE_DECL();
 
         /**
          * Locks Wifi Multicast on until {@link #release} is called.
@@ -233,7 +241,7 @@ public:
 
         // public String toString() {
         //     String s1, s2, s3;
-        //     synchronized(mBinder) {
+        //     synchronized (mBinder) {
         //         s1 = Integer.toHexString(System.identityHashCode(this));
         //         s2 = mHeld ? "held; " : "";
         //         if (mRefCounted) {
@@ -257,25 +265,24 @@ public:
 
 private:
     class ServiceHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         ServiceHandler(
-            /* [in] */ ILooper* looper,
-            /* [in] */ CWifiManager* owner)
-            : HandlerBase(looper)
-            , mOwner(owner)
+            /* [in] */ ILooper* looper)
+            : Handler(looper)
         {}
 
         // @Override
         CARAPI HandleMessage(
             /* [in] */ IMessage* message);
-
-    private:
-        CWifiManager* mOwner;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWifiManager();
 
     ~CWifiManager();
@@ -285,7 +292,7 @@ public:
         /* [in] */ IIWifiManager* service);
 
     CARAPI GetConfiguredNetworks(
-        /* [out] */ IObjectContainer** networks);
+        /* [out] */ IList** networks);
 
     CARAPI AddNetwork(
         /* [in] */ IWifiConfiguration* config,
@@ -323,14 +330,11 @@ public:
     CARAPI StartScan(
         /* [out] */ Boolean* succeeded);
 
-    CARAPI StartScanActive(
-        /* [out] */ Boolean* succeeded);
-
     CARAPI GetConnectionInfo(
         /* [out] */ IWifiInfo** info);
 
     CARAPI GetScanResults(
-        /* [out] */ IObjectContainer** results);
+        /* [out] */ IList** results);
 
     CARAPI SaveConfiguration(
         /* [out] */ Boolean* succeeded);
@@ -381,7 +385,7 @@ public:
      * @hide for CTS test only
      */
     CARAPI GetTxPacketCount(
-        /* [in] */ ITxPacketCountListener* listener);
+        /* [in] */ IWifiManagerTxPacketCountListener* listener);
 
     /**
      * Calculates the level of the signal. This should be used any time a signal
@@ -531,10 +535,10 @@ public:
 
     CARAPI StartWps(
         /* [in] */ IWpsInfo* config,
-        /* [in] */ IWpsListener* listener);
+        /* [in] */ IWifiManagerWpsCallback* listener);
 
     CARAPI CancelWps(
-        /* [in] */ IWifiManagerActionListener* listener);
+        /* [in] */ IWifiManagerWpsCallback* listener);
 
     /**
      * Get a reference to WifiService handler. This is used by a client to establish
@@ -546,29 +550,21 @@ public:
     CARAPI GetWifiServiceMessenger(
         /* [out] */ IMessenger** msg);
 
-    /**
-     * Get a reference to WifiStateMachine handler.
-     * @return Messenger pointing to the WifiService handler
-     * @hide
-     */
-    CARAPI GetWifiStateMachineMessenger(
-        /* [out] */ IMessenger** msg);
-
     CARAPI GetConfigFile(
         /* [out] */ String* cfgFile);
 
     CARAPI CreateWifiLock(
         /* [in] */ Int32 lockType,
         /* [in] */ const String& tag,
-        /* [out] */ IWifiLock** lock);
+        /* [out] */ IWifiManagerWifiLock** lock);
 
     CARAPI CreateWifiLock(
         /* [in] */ const String& tag,
-        /* [out] */ IWifiLock** lock);
+        /* [out] */ IWifiManagerWifiLock** lock);
 
     CARAPI CreateMulticastLock(
         /* [in] */ const String& tag,
-        /* [out] */ IMulticastLock** lock);
+        /* [out] */ IWifiManagerMulticastLock** lock);
 
     CARAPI IsMulticastEnabled(
         /* [out] */ Boolean* enabled);
@@ -576,7 +572,123 @@ public:
     CARAPI InitializeMulticastFiltering(
         /* [out] */ Boolean* succeeded);
 
-    CARAPI CaptivePortalCheckComplete();
+    CARAPI GetPrivilegedConfiguredNetworks(
+        /* [out] */ IList** result);
+
+    CARAPI GetConnectionStatistics(
+        /* [out] */ IWifiConnectionStatistics** result);
+
+    CARAPI GetChannelList(
+        /* [out] */ IList** result);
+
+    CARAPI Is5GHzBandSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsPasspointSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsP2pSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsPortableHotspotSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsWifiScannerSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsNanSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsDeviceToDeviceRttSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsDeviceToApRttSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsPreferredNetworkOffloadSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsAdditionalStaSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsTdlsSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsOffChannelTdlsSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsEnhancedPowerReportingSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetControllerActivityEnergyInfo(
+        /* [in] */ Int32 updateType,
+        /* [out] */ IWifiActivityEnergyInfo** result);
+
+    CARAPI StartScan(
+        /* [in] */ IWorkSource* workSource,
+        /* [out] */ Boolean* result);
+
+    CARAPI StartCustomizedScan(
+        /* [in] */ IScanSettings* requested,
+        /* [out] */ Boolean* result);
+
+    CARAPI StartCustomizedScan(
+        /* [in] */ IScanSettings* requested,
+        /* [in] */ IWorkSource* workSource,
+        /* [out] */ Boolean* result);
+
+    CARAPI RequestBatchedScan(
+        /* [in] */ IBatchedScanSettings* requested,
+        /* [out] */ Boolean* result);
+
+    CARAPI RequestBatchedScan(
+        /* [in] */ IBatchedScanSettings* requested,
+        /* [in] */ IWorkSource* workSource,
+        /* [out] */ Boolean* result);
+
+    CARAPI IsBatchedScanSupported(
+        /* [out] */ Boolean* result);
+
+    CARAPI StopBatchedScan(
+        /* [in] */ IBatchedScanSettings* requested);
+
+    CARAPI GetBatchedScanResults(
+        /* [out] */ IList** result);
+
+    CARAPI PollBatchedScan();
+
+    CARAPI GetWpsNfcConfigurationToken(
+        /* [in] */ Int32 netId,
+        /* [out] */ String* result);
+
+    CARAPI IsScanAlwaysAvailable(
+        /* [out] */ Boolean* result);
+
+    CARAPI SetTdlsEnabled(
+        /* [in] */ IInetAddress* remoteIPAddress,
+        /* [in] */ Boolean bEnable);
+
+    CARAPI SetTdlsEnabledWithMacAddress(
+        /* [in] */ const String& remoteMacAddress,
+        /* [in] */ Boolean bEnable);
+
+    CARAPI EnableVerboseLogging(
+        /* [in] */ Int32 verbose);
+
+    CARAPI GetVerboseLoggingLevel(
+        /* [out] */ Int32* result);
+
+    CARAPI EnableAggressiveHandover(
+        /* [in] */ Int32 enabled);
+
+    CARAPI GetAggressiveHandover(
+        /* [out] */ Int32* result);
+
+    CARAPI SetAllowScansWithTraffic(
+        /* [in] */ Int32 enabled);
+
+    CARAPI GetAllowScansWithTraffic(
+        /* [out] */ Int32* result);
 
 private:
     /**
@@ -590,15 +702,20 @@ private:
     CARAPI_(Int32) AddOrUpdateNetwork(
         /* [in] */ IWifiConfiguration* config);
 
-    CARAPI_(Int32) PutListener(
+    static CARAPI_(Int32) PutListener(
         /* [in] */ IInterface* listener);
 
-    CARAPI_(AutoPtr<IInterface>) RemoveListener(
+    static CARAPI_(AutoPtr<IInterface>) RemoveListener(
         /* [in] */ Int32 key);
 
     CARAPI_(void) Init();
 
     CARAPI ValidateChannel();
+
+    CARAPI_(Int32) GetSupportedFeatures();
+
+    CARAPI_(Boolean) IsFeatureSupported(
+        /* [in] */ Int32 feature);
 
 private:
     static const String TAG;
@@ -622,14 +739,12 @@ private:
     AutoPtr<IIWifiManager> mService;
 
     static const Int32 INVALID_KEY;
-    Int32 mListenerKey;
-    HashMap<Int32, AutoPtr<IInterface> > mListenerMap;
-    Object mListenerMapLock;
+    static Int32 sListenerKey;
+    static AutoPtr<ISparseArray> sListenerMap;
+    static Object sListenerMapLock;
 
-    AutoPtr<AsyncChannel> mAsyncChannel;
-    AutoPtr<ServiceHandler> mHandler;
-    AutoPtr<IMessenger> mWifiServiceMessenger;
-    AutoPtr<ICountDownLatch> mConnected;
+    static AutoPtr<IAsyncChannel> sAsyncChannel;
+    static AutoPtr<ICountDownLatch> sConnected;
 
     static Object sThreadRefLock;
     static Int32 sThreadRefCount;

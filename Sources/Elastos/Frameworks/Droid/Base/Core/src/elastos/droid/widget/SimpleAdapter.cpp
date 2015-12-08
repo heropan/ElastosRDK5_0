@@ -14,6 +14,7 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::CArrayList;
+using Elastos::Utility::ICollection;
 using Elastos::Utility::IMap;
 using Elastos::Utility::Logging::Slogger;
 
@@ -37,58 +38,58 @@ ECode SimpleAdapter::SimpleFilter::PerformFiltering(
     AutoPtr<FilterResults> results = new FilterResults();
 
     if (mHost->mUnfilteredData == NULL) {
-        CArrayList::New(mData, (IArrayList**)&mHost->mUnfilteredData);
+        CArrayList::New(ICollection::Probe(mHost->mData), (IArrayList**)&mHost->mUnfilteredData);
     }
 
     Int32 length = 0;
-    if (prefix) {
-        prefix->GetLength(&length);
-    }
-    if (length == 0) {
-        results->mValues = (IInterface*)new ElDataInterface<
-            List<AutoPtr<IMap> > >(*mHost->mUnfilteredData);
-        results->mCount = mHost->mUnfilteredData->GetSize();
+    if (prefix == NULL || (prefix->GetLength(&length), length) == 0) {
+        results->mValues = mHost->mUnfilteredData;
+        mHost->mUnfilteredData->GetSize(&results->mCount);
     }
     else {
         String prefixString;
         prefix->ToString(&prefixString);
+        prefixString = prefixString.ToLowerCase();
 
-        List<AutoPtr<IMap> > newValues;
-        List<AutoPtr<IMap> >::Iterator iter =
-                mHost->mUnfilteredData->Begin();
-        for (; iter != mHost->mUnfilteredData->End(); ++iter) {
-            AutoPtr<IMap> h = (*iter).Get();
+        AutoPtr<IArrayList> unfilteredValues = mHost->mUnfilteredData;
+        Int32 count = 0;
+        unfilteredValues->GetSize(&count);
+
+        AutoPtr<IArrayList> newValues;
+        CArrayList::New(count, (IArrayList**)&newValues);
+
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IMap> h;
+            unfilteredValues->Get(i, (IInterface**)&h);
             if (h != NULL) {
                 Int32 len = mHost->mTo->GetLength();
-                for (Int32 i = 0; i < len; i++) {
-                    //String str =  (String)h.get(mFrom[j]);
+
+                for (Int32 j = 0; j < len; j++) {
                     AutoPtr<ICharSequence> cs;
-                    h->Get((*mHost->mFrom)[i], (IInterface**)&cs);
+                    AutoPtr<ICharSequence> key;
+                    CString::New((*mHost->mFrom)[j], (ICharSequence**)&key);
+                    h->Get(key, (IInterface**)&cs);
                     String str;
                     cs->ToString(&str);
 
-                    Int32 start = 0;
-                    Int32 index = str.IndexOf(' ');
-                    String subStr = str;
-                    while (index > 0 || subStr.GetLength() > 0) {
-                        if (index < 0) {
-                            index = subStr.GetLength();
-                        }
-                        String word = subStr.Substring(start, index - start);
-                        subStr = subStr.Substring(index + 1);
-                        start = index + 1;
-                        if (word.StartWithIgnoreCase(prefixString)) {
-                            newValues.PushBack(h);
+                    AutoPtr<ArrayOf<String> > words;
+                    StringUtils::Split(str, " ", (ArrayOf<String>**)&words);
+                    Int32 wordCount = words->GetLength();
+
+                    for (Int32 k = 0; k < wordCount; k++) {
+                        String word = (*words)[k];
+
+                        if (word.ToLowerCase().StartWith(prefixString)) {
+                            newValues->Add(h);
                             break;
                         }
-                        index = subStr.IndexOf(' ');
                     }
                 }
             }
         }
 
-        results->mValues = new ElDataInterface<List<AutoPtr<IMap> > >(newValues);
-        results->mCount = newValues.GetSize();
+        results->mValues = newValues;
+        newValues->GetSize(&results->mCount);
     }
 
     *filterResults = (IFilterResults*)results.Get();
@@ -102,8 +103,8 @@ ECode SimpleAdapter::SimpleFilter::PublishResults(
     /* [in] */ IFilterResults* results)
 {
     //noinspection unchecked
-    mData = IList::Probe(((FilterResults*)results)->mValues);
-    if (filterResults->mCount > 0) {
+    mHost->mData = IList::Probe(((FilterResults*)results)->mValues);
+    if (((FilterResults*)results)->mCount > 0) {
         mHost->NotifyDataSetChanged();
     } else {
         mHost->NotifyDataSetInvalidated();
@@ -120,16 +121,6 @@ SimpleAdapter::SimpleAdapter()
     : mResource(0)
     , mDropDownResource(0)
 {}
-
-SimpleAdapter::SimpleAdapter(
-    /* [in] */ IContext* context,
-    /* [in] */ IObjectContainer* data,
-    /* [in] */ Int32 resource,
-    /* [in] */ ArrayOf<String>* from,
-    /* [in] */ ArrayOf<Int32>* to)
-{
-    constructor(context, data, resource, from, to);
-}
 
 ECode SimpleAdapter::constructor(
     /* [in] */ IContext* context,
@@ -169,7 +160,7 @@ ECode SimpleAdapter::GetItemId(
     return NOERROR;
 }
 
-AutoPtr<IView> SimpleAdapter::GetView(
+ECode SimpleAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
     /* [in] */ IViewGroup* parent,
@@ -240,7 +231,9 @@ ECode SimpleAdapter::BindView(
         view->FindViewById((*mTo)[i], (IView**)&v);
         if (v != NULL) {
             AutoPtr<IInterface> data;
-            dataSet->Get((*mFrom)[i], (IInterface**)&data);
+            AutoPtr<ICharSequence> key;
+            CString::New((*mFrom)[i], (ICharSequence**)&key);
+            dataSet->Get(key, (IInterface**)&data);
 
             String text;
             if (data != NULL) {
@@ -325,7 +318,6 @@ ECode SimpleAdapter::SetViewBinder(
     /* [in] */ ISimpleAdapterViewBinder* viewBinder)
 {
     mViewBinder = viewBinder;
-
     return NOERROR;
 }
 

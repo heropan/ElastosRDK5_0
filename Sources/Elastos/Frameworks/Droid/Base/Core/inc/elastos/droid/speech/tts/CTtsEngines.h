@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_SPEECH_TTS_CTTSENGINES_H__
-#define __ELASTOS_DROID_SPEECH_TTS_CTTSENGINES_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_CTtsEngines_h__
+#define __ELASTOS_DROID_SPEECH_TTS_CTtsEngines_h__
 
 #include "_Elastos_Droid_Speech_Tts_CTtsEngines.h"
 
@@ -15,44 +15,16 @@ CarClass(CTtsEngines)
     , public TtsEngines
 {
 public:
-    CARAPI GetDefaultEngine(
-        /* [out] */ String * pRet);
+    CAR_OBJECT_DECL();
 
-    CARAPI GetHighestRankedEngineName(
-        /* [out] */ String * pRet);
+    CTtsEngines();
 
-    CARAPI GetEngineInfo(
-        /* [in] */ const String& packageName,
-        /* [out] */ ITextToSpeechEngineInfo ** ppRet);
-
-    CARAPI GetEngines(
-        /* [out] */ IObjectContainer ** ppRet);
-
-    CARAPI IsEngineInstalled(
-        /* [in] */ const String& engine,
-        /* [out] */ Boolean * pRet);
-
-    CARAPI GetSettingsIntent(
-        /* [in] */ const String& engine,
-        /* [out] */ IIntent ** ppRet);
-
-    CARAPI GetLocalePrefForEngine(
-        /* [in] */ const String& engineName,
-        /* [out] */ String * pRet);
-
-    CARAPI UpdateLocalePrefForEngine(
-        /* [in] */ const String& name,
-        /* [in] */ const String& newLocale);
-
-    CARAPI constructor(
-        /* [in] */ IContext * pCtx);
-
-private:
+    virtual ~CTtsEngines();
 };
 
-}//namespace Tts
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Tts
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 
-#endif // __ELASTOS_DROID_SPEECH_TTS_CTTSENGINES_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_CTtsEngines_h__

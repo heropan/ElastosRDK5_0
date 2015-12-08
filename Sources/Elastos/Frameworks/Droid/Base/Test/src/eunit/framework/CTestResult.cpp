@@ -1,21 +1,26 @@
 
 #include "eunit/framework/CTestResult.h"
+#include <elastos/core/AutoLock.h>
 
+using Elastos::Core::AutoLock;
 using Elastos::Utility::CVector;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IIterator;
+using Elastos::Utility::ICollection;
 
 namespace Eunit {
 namespace Framework {
 
-CAR_INTERFACE_IMPL_LIGHT(CTestResult::_Protectable, IProtectable)
+CAR_INTERFACE_IMPL(CTestResult::_Protectable, Object, IProtectable)
 
 ECode CTestResult::_Protectable::Protect()
 {
     return mTest->RunBare();
 }
 
+
+CAR_INTERFACE_IMPL(CTestResult, Object, ITestResult)
 
 CTestResult::CTestResult()
     : mRunTests(0)
@@ -66,7 +71,7 @@ ECode CTestResult::AddFailure(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> each;
-        it->Next((IInterface**)&each);
+        it->GetNext((IInterface**)&each);
         ITestListener* listener = ITestListener::Probe(each);
         for (Int32 i = 0; i < failures->GetLength(); ++i) {
             listener->AddFailure(test, (*failures)[i]);
@@ -81,7 +86,7 @@ ECode CTestResult::AddFailure(
 ECode CTestResult::AddListener(
     /* [in] */ ITestListener* listener)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     Boolean result;
     return mListeners->Add(listener, &result);
 }
@@ -92,18 +97,18 @@ ECode CTestResult::AddListener(
 ECode CTestResult::RemoveListener(
     /* [in] */ ITestListener* listener)
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     Boolean result;
     return mListeners->Remove(listener, &result);
 }
 
 AutoPtr<IList> CTestResult::CloneListeners()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     AutoPtr<IArrayList> result;
     CArrayList::New((IArrayList**)&result);
     Boolean succeeded;
-    result->AddAll(mListeners, &succeeded);
+    result->AddAll(ICollection::Probe(mListeners), &succeeded);
     return IList::Probe(result);
 }
 
@@ -119,7 +124,7 @@ ECode CTestResult::EndTest(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> each;
-        it->Next((IInterface**)&each);
+        it->GetNext((IInterface**)&each);
         ITestListener::Probe(each)->EndTest(test);
     }
     return NOERROR;
@@ -189,7 +194,7 @@ ECode CTestResult::RunCount(
 {
     VALIDATE_NOT_NULL(number);
 
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *number = mRunTests;
     return NOERROR;
 }
@@ -221,7 +226,7 @@ ECode CTestResult::ShouldStop(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     *result = mStop;
     return NOERROR;
 }
@@ -235,7 +240,7 @@ ECode CTestResult::StartTest(
     Int32 count;
     test->CountTestCases(&count);
     {
-        AutoLock lock(_m_syncLock);
+        AutoLock lock(this);
         mRunTests += count;
     }
     AutoPtr<IList> listeners = CloneListeners();
@@ -244,7 +249,7 @@ ECode CTestResult::StartTest(
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> each;
-        it->Next((IInterface**)&each);
+        it->GetNext((IInterface**)&each);
         ITestListener::Probe(each)->StartTest(test);
     }
     return NOERROR;
@@ -255,7 +260,7 @@ ECode CTestResult::StartTest(
  */
 ECode CTestResult::Stop()
 {
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     mStop = TRUE;
     return NOERROR;
 }
@@ -267,7 +272,7 @@ ECode CTestResult::WasSuccessful(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
     Int32 fCount, eCount;
     FailureCount(&fCount);
     ErrorCount(&eCount);

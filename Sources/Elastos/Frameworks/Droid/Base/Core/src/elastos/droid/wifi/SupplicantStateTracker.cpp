@@ -1,13 +1,13 @@
 
-#include "elastos/droid/net/wifi/SupplicantStateTracker.h"
-#include "elastos/droid/net/wifi/SupplicantStateHelper.h"
-#include "elastos/droid/net/wifi/WifiMonitor.h"
-#include "elastos/droid/net/wifi/WifiStateMachine.h"
+#include "elastos/droid/wifi/SupplicantStateTracker.h"
+#include "elastos/droid/wifi/SupplicantStateHelper.h"
+#include "elastos/droid/wifi/WifiMonitor.h"
+#include "elastos/droid/wifi/WifiStateMachine.h"
 #ifdef DROID_CORE
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/os/CUserHandleHelper.h"
-#include "elastos/droid/net/wifi/CStateChangeResult.h"
-#include "elastos/droid/net/wifi/CSupplicantState.h"
+#include "elastos/droid/wifi/CStateChangeResult.h"
+#include "elastos/droid/wifi/CSupplicantState.h"
 #endif
 #include <elastos/utility/logging/Logger.h>
 

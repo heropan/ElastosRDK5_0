@@ -92,33 +92,32 @@ ECode WebResourceResponse::SetStatusCodeAndReasonPhrase(
     /* [in] */ const String& reasonPhrase)
 {
     if (statusCode < 100) {
-        assert(0);
-        //throw new IllegalArgumentException("statusCode can't be less than 100.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     if (statusCode > 599) {
-        assert(0);
-        //throw new IllegalArgumentException("statusCode can't be greater than 599.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     if (statusCode > 299 && statusCode < 400) {
-        assert(0);
-        //throw new IllegalArgumentException("statusCode can't be in the [300, 399] range.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     if (reasonPhrase == NULL) {
-        assert(0);
-        //throw new IllegalArgumentException("reasonPhrase can't be null.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     if (reasonPhrase.Trim().IsEmpty()) {
-        assert(0);
-        //throw new IllegalArgumentException("reasonPhrase can't be empty.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Int32 length = reasonPhrase.GetLength();
     for (Int32 i = 0; i < length; i++) {
         Int32 c = reasonPhrase.GetChar(i);
         if (c > 0x7F) {
-            assert(0);
             // throw new IllegalArgumentException(
             //         "reasonPhrase can't contain non-ASCII characters.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
     }
 
@@ -166,6 +165,7 @@ ECode WebResourceResponse::GetResponseHeaders(
 {
     VALIDATE_NOT_NULL(headers);
     *headers = mResponseHeaders;
+    REFCOUNT_ADD(*headers);
     return NOERROR;
 }
 

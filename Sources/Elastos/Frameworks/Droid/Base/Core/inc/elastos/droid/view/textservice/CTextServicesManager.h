@@ -2,10 +2,18 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CTEXTSERVICESMANAGER_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_CTEXTSERVICESMANAGER_H__
 
+#include "_Elastos_Droid_View_TextService_CTextServicesManager.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::View::Internal::TextService::IITextServicesManager;
+
+using Elastos::Core::Object;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
-namespace Textservice {
+namespace TextService {
 
 /**
  * System API to the overall text services, which arbitrates interaction between applications
@@ -41,8 +49,14 @@ namespace Textservice {
  *
  */
 CarClass(CTextServicesManager)
+    , public Object
+    , public ITextServicesManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Retrieve the global TextServicesManager instance, creating it if it doesn't already exist.
      * @hide
@@ -113,14 +127,18 @@ public:
     CARAPI IsSpellCheckerEnabled(
         /* [out] */ Boolean* enabled);
 
-//private:
-//    TextServicesManager();
     CARAPI constructor();
 
 private:
+    /**
+     * Returns the language component of a given locale string.
+     */
+    static CARAPI_(String) ParseLanguageFromLocaleString(
+        /* [in] */ String locale);
 
-    static const String TAG;// = TextServicesManager.class.getSimpleName();
-    static const Boolean DBG = FALSE;
+private:
+    static const String TAG;
+    static const Boolean DBG;
 
     static AutoPtr<ITextServicesManager> sInstance;
     static AutoPtr<IITextServicesManager> sService;
@@ -128,7 +146,7 @@ private:
     static Object sLock;
 };
 
-}   //namespace Textservice
+}   //namespace TextService
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos

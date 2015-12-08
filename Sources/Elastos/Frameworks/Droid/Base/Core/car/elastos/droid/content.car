@@ -1535,6 +1535,14 @@ module
             [in] IDisplayMetrics* metrics,
             [in] IConfiguration* config);
 
+        /** hide */
+        constructor(
+            [in] IAssetManager* assets,
+            [in] IDisplayMetrics* metrics,
+            [in] IConfiguration* config,
+            [in] ICompatibilityInfo* compInfo,
+            [in] IBinder* token);
+
         interface IResources;
     }
 

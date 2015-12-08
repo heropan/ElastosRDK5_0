@@ -7,7 +7,7 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(SSLSessionCache, Object, ISSLSessionCache)
 
-const String SSLSessionCache::TAG = String("SSLSessionCache");
+const String SSLSessionCache::TAG("SSLSessionCache");
 
 ECode SSLSessionCache::GetSessionCache(
     /* [out] */ ISSLClientSessionCache** result)
@@ -26,13 +26,12 @@ ECode SSLSessionCache::Install(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         SSLSessionContext clientContext = context.getClientSessionContext();
-        if (clientContext instanceof ClientSessionContext) {
+        if (IClientSessionContext::Probe(clientContext) != NULL) {
             ((ClientSessionContext) clientContext).setPersistentCache(
-                    cache == null ? null : cache.mSessionCache);
+                    cache == NULL ? NULL : cache.mSessionCache);
         } else {
             throw new IllegalArgumentException("Incompatible SSLContext: " + context);
         }
-
 #endif
 }
 
@@ -42,7 +41,6 @@ ECode SSLSessionCache::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mSessionCache = (SSLClientSessionCache) cache;
-
 #endif
 }
 
@@ -52,7 +50,6 @@ ECode SSLSessionCache::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mSessionCache = FileClientSessionCache.usingDirectory(dir);
-
 #endif
 }
 
@@ -62,17 +59,15 @@ ECode SSLSessionCache::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         File dir = context.getDir("sslcache", Context.MODE_PRIVATE);
-        SSLClientSessionCache cache = null;
+        SSLClientSessionCache cache = NULL;
         try {
             cache = FileClientSessionCache.usingDirectory(dir);
         } catch (IOException e) {
             Log.w(TAG, "Unable to create SSL session cache in " + dir, e);
         }
         mSessionCache = cache;
-
 #endif
 }
-
 
 } // namespace Net
 } // namespace Droid

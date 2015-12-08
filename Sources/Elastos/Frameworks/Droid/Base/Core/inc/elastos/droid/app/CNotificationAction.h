@@ -4,7 +4,10 @@
 #include "_Elastos_Droid_App_CNotificationAction.h"
 #include "elastos/droid/ext/frameworkext.h"
 
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::App::IRemoteInput;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Droid {
@@ -23,8 +26,13 @@ CarClass(CNotificationAction)
     , public Object
     , public INotificationAction
     , public IParcelable
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     friend class CNotificationBuilder;
 
     CNotificationAction();
@@ -59,7 +67,10 @@ public:
         /* [out, callee] */ ArrayOf<IRemoteInput*>** inputs);
 
     CARAPI Clone(
-        /* [out] */ INotificationAction** action);
+        /* [out] */ IInterface** obj);
+
+    CARAPI Clone(
+        /* [out] */ INotificationAction** obj) { return NOERROR;}
 
     CARAPI GetIcon(
         /* [out] */ Int32* icon);

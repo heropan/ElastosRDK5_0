@@ -3,289 +3,123 @@
 #define __ELASTOS_NET_CURI_H__
 
 #include "_Elastos_Net_CURI.h"
-#include "elastos/core/Object.h"
-#include "elastos/core/Character.h"
-#include "libcore/net/UriCodec.h"
-
-using Elastos::Core::Character;
-using Elastos::Core::IComparable;
-using Elastos::IO::ISerializable;
-using Libcore::Net::UriCodec;
+#include "elastos/net/URI.h"
 
 namespace Elastos {
 namespace Net {
 
+/**
+ * A Uniform Resource Identifier that identifies an abstract or physical
+ * resource, as specified by <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC
+ * 2396</a>.
+ *
+ * <h3>Parts of a URI</h3>
+ * A URI is composed of many parts. This class can both parse URI strings into
+ * parts and compose URI strings from parts. For example, consider the parts of
+ * this URI:
+ * {@code http://username:password@host:8080/directory/file?query#fragment}
+ * <table>
+ * <tr><th>Component                                            </th><th>Example value                                                      </th><th>Also known as</th></tr>
+ * <tr><td>{@link #getScheme() Scheme}                          </td><td>{@code http}                                                       </td><td>protocol</td></tr>
+ * <tr><td>{@link #getSchemeSpecificPart() Scheme-specific part}</td><td>{@code //username:password@host:8080/directory/file?query#fragment}</td><td></td></tr>
+ * <tr><td>{@link #getAuthority() Authority}                    </td><td>{@code username:password@host:8080}                                </td><td></td></tr>
+ * <tr><td>{@link #getUserInfo() User Info}                     </td><td>{@code username:password}                                          </td><td></td></tr>
+ * <tr><td>{@link #getHost() Host}                              </td><td>{@code host}                                                       </td><td></td></tr>
+ * <tr><td>{@link #getPort() Port}                              </td><td>{@code 8080}                                                       </td><td></td></tr>
+ * <tr><td>{@link #getPath() Path}                              </td><td>{@code /directory/file}                                            </td><td></td></tr>
+ * <tr><td>{@link #getQuery() Query}                            </td><td>{@code query}                                                      </td><td></td></tr>
+ * <tr><td>{@link #getFragment() Fragment}                      </td><td>{@code fragment}                                                   </td><td>ref</td></tr>
+ * </table>
+ *
+ * <h3>Absolute vs. Relative URIs</h3>
+ * URIs are either {@link #isAbsolute() absolute or relative}.
+ * <ul>
+ *     <li><strong>Absolute:</strong> {@code http://android.com/robots.txt}
+ *     <li><strong>Relative:</strong> {@code robots.txt}
+ * </ul>
+ *
+ * <p>Absolute URIs always have a scheme. If its scheme is supported by {@link
+ * URL}, you can use {@link #toURL} to convert an absolute URI to a URL.
+ *
+ * <p>Relative URIs do not have a scheme and cannot be converted to URLs. If you
+ * have the absolute URI that a relative URI is relative to, you can use {@link
+ * #resolve} to compute the referenced absolute URI. Symmetrically, you can use
+ * {@link #relativize} to compute the relative URI from one URI to another.
+ * <pre>   {@code
+ *   URI absolute = new URI("http://android.com/");
+ *   URI relative = new URI("robots.txt");
+ *   URI resolved = new URI("http://android.com/robots.txt");
+ *
+ *   // print "http://android.com/robots.txt"
+ *   System.out.println(absolute.resolve(relative));
+ *
+ *   // print "robots.txt"
+ *   System.out.println(absolute.relativize(resolved));
+ * }</pre>
+ *
+ * <h3>Opaque vs. Hierarchical URIs</h3>
+ * Absolute URIs are either {@link #isOpaque() opaque or hierarchical}. Relative
+ * URIs are always hierarchical.
+ * <ul>
+ *     <li><strong>Hierarchical:</strong> {@code http://android.com/robots.txt}
+ *     <li><strong>Opaque:</strong> {@code mailto:robots@example.com}
+ * </ul>
+ *
+ * <p>Opaque URIs have both a scheme and a scheme-specific part that does not
+ * begin with the slash character: {@code /}. The contents of the
+ * scheme-specific part of an opaque URI is not parsed so an opaque URI never
+ * has an authority, user info, host, port, path or query. An opaque URIs may
+ * have a fragment, however. A typical opaque URI is
+ * {@code mailto:robots@example.com}.
+ * <table>
+ * <tr><th>Component           </th><th>Example value             </th></tr>
+ * <tr><td>Scheme              </td><td>{@code mailto}            </td></tr>
+ * <tr><td>Scheme-specific part</td><td>{@code robots@example.com}</td></tr>
+ * <tr><td>Fragment            </td><td>                          </td></tr>
+ * </table>
+ * <p>Hierarchical URIs may have values for any URL component. They always
+ * have a non-null path, though that path may be the empty string.
+ *
+ * <h3>Encoding and Decoding URI Components</h3>
+ * Each component of a URI permits a limited set of legal characters. Other
+ * characters must first be <i>encoded</i> before they can be embedded in a URI.
+ * To recover the original characters from a URI, they may be <i>decoded</i>.
+ * <strong>Contrary to what you might expect,</strong> this class uses the
+ * term <i>raw</i> to refer to encoded strings. The non-<i>raw</i> accessors
+ * return decoded strings. For example, consider how this URI is decoded:
+ * {@code http://user:pa55w%3Frd@host:80/doc%7Csearch?q=green%20robots#over%206%22}
+ * <table>
+ * <tr><th>Component           </th><th>Legal Characters                                                    </th><th>Other Constraints                                  </th><th>Raw Value                                                      </th><th>Value</th></tr>
+ * <tr><td>Scheme              </td><td>{@code 0-9}, {@code a-z}, {@code A-Z}, {@code +-.}                  </td><td>First character must be in {@code a-z}, {@code A-Z}</td><td>                                                               </td><td>{@code http}</td></tr>
+ * <tr><td>Scheme-specific part</td><td>{@code 0-9}, {@code a-z}, {@code A-Z}, {@code _-!.~'()*,;:$&+=?/[]@}</td><td>Non-ASCII characters okay                          </td><td>{@code //user:pa55w%3Frd@host:80/doc%7Csearch?q=green%20robots}</td><td>{@code //user:pa55w?rd@host:80/doc|search?q=green robots}</td></tr>
+ * <tr><td>Authority           </td><td>{@code 0-9}, {@code a-z}, {@code A-Z}, {@code _-!.~'()*,;:$&+=@[]}  </td><td>Non-ASCII characters okay                          </td><td>{@code user:pa55w%3Frd@host:80}                                </td><td>{@code user:pa55w?rd@host:80}</td></tr>
+ * <tr><td>User Info           </td><td>{@code 0-9}, {@code a-z}, {@code A-Z}, {@code _-!.~'()*,;:$&+=}     </td><td>Non-ASCII characters okay                          </td><td>{@code user:pa55w%3Frd}                                        </td><td>{@code user:pa55w?rd}</td></tr>
+ * <tr><td>Host                </td><td>{@code 0-9}, {@code a-z}, {@code A-Z}, {@code -.[]}                 </td><td>Domain name, IPv4 address or [IPv6 address]        </td><td>                                                               </td><td>host</td></tr>
+ * <tr><td>Port                </td><td>{@code 0-9}                                                         </td><td>                                                   </td><td>                                                               </td><td>{@code 80}</td></tr>
+ * <tr><td>Path                </td><td>{@code 0-9}, {@code a-z}, {@code A-Z}, {@code _-!.~'()*,;:$&+=/@}   </td><td>Non-ASCII characters okay                          </td><td>{@code /doc%7Csearch}                                          </td><td>{@code /doc|search}</td></tr>
+ * <tr><td>Query               </td><td>{@code 0-9}, {@code a-z}, {@code A-Z}, {@code _-!.~'()*,;:$&+=?/[]@}</td><td>Non-ASCII characters okay                          </td><td>{@code q=green%20robots}                                       </td><td>{@code q=green robots}</td></tr>
+ * <tr><td>Fragment            </td><td>{@code 0-9}, {@code a-z}, {@code A-Z}, {@code _-!.~'()*,;:$&+=?/[]@}</td><td>Non-ASCII characters okay                          </td><td>{@code over%206%22}                                            </td><td>{@code over 6"}</td></tr>
+ * </table>
+ * A URI's host, port and scheme are not eligible for encoding and must not
+ * contain illegal characters.
+ *
+ * <p>To encode a URI, invoke any of the multiple-parameter constructors of this
+ * class. These constructors accept your original strings and encode them into
+ * their raw form.
+ *
+ * <p>To decode a URI, invoke the single-string constructor, and then use the
+ * appropriate accessor methods to get the decoded components.
+ *
+ * <p>The {@link URL} class can be used to retrieve resources by their URI.
+ */
 CarClass(CURI)
-    , public Object
-    , public IURI
-    , public ISerializable
-    , public IComparable
+    , public URI
 {
 public:
-    CAR_INTERFACE_DECL()
-
     CAR_OBJECT_DECL()
-
-    CURI();
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ const String& uri);
-
-    CARAPI constructor(
-        /* [in] */ const String& scheme,
-        /* [in] */ const String& ssp,
-        /* [in] */ const String& frag);
-
-    CARAPI constructor(
-        /* [in] */ const String& scheme,
-        /* [in] */ const String& userInfo,
-        /* [in] */ const String& host,
-        /* [in] */ Int32 port,
-        /* [in] */ const String& path,
-        /* [in] */ const String& query,
-        /* [in] */ const String& fragment);
-
-    CARAPI constructor(
-        /* [in] */ const String& scheme,
-        /* [in] */ const String& host,
-        /* [in] */ const String& path,
-        /* [in] */ const String& fragment);
-
-    CARAPI constructor(
-        /* [in] */ const String& scheme,
-        /* [in] */ const String& authority,
-        /* [in] */ const String& path,
-        /* [in] */ const String& query,
-        /* [in] */ const String& fragment);
-
-    CARAPI CompareTo(
-        /* [in] */ IInterface* uri,
-        /* [out] */ Int32* result);
-
-    static CARAPI Create(
-        /* [in] */ const String& uri,
-        /* [out] */ IURI** obj);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* o,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetScheme(
-        /* [out] */ String* scheme);
-
-    CARAPI GetSchemeSpecificPart(
-        /* [out] */ String* schemeSpecific);
-
-    CARAPI GetRawSchemeSpecificPart(
-        /* [out] */ String* schemeSpecific);
-
-    CARAPI GetAuthority(
-        /* [out] */ String* authority);
-
-    CARAPI GetRawAuthority(
-        /* [out] */ String* authority);
-
-    CARAPI GetUserInfo(
-        /* [out] */ String* userInfo);
-
-    CARAPI GetRawUserInfo(
-        /* [out] */ String* userInfo);
-
-    CARAPI GetHost(
-        /* [out] */ String* host);
-
-    CARAPI GetPort(
-        /* [out] */ Int32* port);
-
-    /** @hide */
-    CARAPI GetEffectivePort(
-        /* [out] */ Int32* port);
-
-    static CARAPI_(Int32) GetEffectivePort(
-        /* [in] */ const String& scheme,
-        /* [in] */ Int32 specifiedPort);
-
-    CARAPI GetPath(
-        /* [out] */ String* path);
-
-    CARAPI GetRawPath(
-        /* [out] */ String* path);
-
-
-    CARAPI GetQuery(
-        /* [out] */ String* query);
-
-    CARAPI GetRawQuery(
-        /* [out] */ String* query);
-
-    CARAPI GetFragment(
-        /* [out] */ String* fragment);
-
-    CARAPI GetRawFragment(
-        /* [out] */ String* fragment);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
-    CARAPI IsAbsolute(
-        /* [out] */ Boolean* isAbsolute);
-
-    CARAPI IsOpaque(
-        /* [out] */ Boolean* isOpaque);
-
-    CARAPI Normalize(
-        /* [out] */ IURI** uri);
-
-    CARAPI ParseServerAuthority(
-        /* [out] */ IURI** uri);
-
-    CARAPI Relativize(
-        /* [in] */ IURI* relative,
-        /* [out] */ IURI** uri);
-
-    CARAPI Resolve(
-        /* [in] */ IURI* relative,
-        /* [out] */ IURI** uri);
-
-    CARAPI Resolve(
-        /* [in] */ const String& relative,
-        /* [out] */ IURI** uri);
-
-    CARAPI ToASCIIString(
-        /* [out] */ String* str);
-
-    CARAPI ToString(
-        /* [out] */ String* s);
-
-    CARAPI ToURL(
-        /* [out] */ IURL** url);
-
-private:
-    /**
-     * Breaks uri into its component parts. This first splits URI into scheme,
-     * scheme-specific part and fragment:
-     *   [scheme:][scheme-specific part][#fragment]
-     *
-     * Then it breaks the scheme-specific part into authority, path and query:
-     *   [//authority][path][?query]
-     *
-     * Finally it delegates to parseAuthority to break the authority into user
-     * info, host and port:
-     *   [user-info@][host][:port]
-     */
-    CARAPI ParseURI(
-        /* [in] */ const String& uri,
-        /* [in] */ Boolean forceServer);
-
-    CARAPI ValidateScheme(
-        /* [in] */ const String& uri,
-        /* [in] */ Int32 end,
-        /* [out] */ String* result);
-
-    CARAPI ParseAuthority(
-        /* [in] */ Boolean forceServer);
-
-    CARAPI ValidateUserInfo(
-        /* [in] */ const String& uri,
-        /* [in] */ const String& userInfo,
-        /* [in] */ Int32 index);
-
-    CARAPI IsValidHost(
-        /* [in] */ Boolean forceServer,
-        /* [in] */ const String& host,
-        /* [out] */ Boolean* isValid);
-
-    CARAPI_(Boolean) IsValidDomainName(
-        /* [in] */ const String& host);
-
-    CARAPI_(AutoPtr<IURI>) Duplicate();
-
-    CARAPI_(String) ConvertHexToLowerCase(
-        /* [in] */ const String& s);
-
-    CARAPI_(Boolean) EscapedEquals(
-        /* [in] */ const String& first,
-        /* [in] */ const String& second);
-
-    CARAPI_(String) Normalize(
-        /* [in] */ const String& path,
-        /* [in] */ Boolean discardRelativePrefix);
-
-    CARAPI_(void) SetSchemeSpecificPart();
-
-    CARAPI Decode(
-        /* [in] */ const String& s,
-        /* [out] */ String* decodeS);
-
-    CARAPI_(String) GetHashString();
-
-//    void readObject(ObjectInputStream in);
-//    void writeObject(ObjectOutputStream out);
-
-private:
-    class PartEncoder : public UriCodec
-    {
-    private:
-        String mExtraLegalCharacters;
-
-    public:
-        PartEncoder(
-            /* [in] */ const String& extraLegalCharacters)
-        {
-            mExtraLegalCharacters = extraLegalCharacters;
-        }
-    protected:
-        Boolean IsRetained(
-            /* [in] */ Char32 c)
-        {
-            return CURI::UNRESERVED.IndexOf(c) != -1
-                    || PUNCTUATION.IndexOf(c) != -1
-                    || mExtraLegalCharacters.IndexOf(c) != -1
-                    || (c > 127 && !Character::IsSpaceChar(c) && !Character::IsISOControl(c));
-        }
-    };
-
-    class ASCIIEncoder : public UriCodec
-    {
-    protected:
-        Boolean IsRetained(
-            /* [in] */ Char32 c)
-        {
-            return c < 127;
-        }
-    };
-
-public:
-    static const String UNRESERVED;
-    static const String PUNCTUATION;
-    static const AutoPtr<UriCodec> USER_INFO_ENCODER;
-    static const AutoPtr<UriCodec> PATH_ENCODER;
-    static const AutoPtr<UriCodec> AUTHORITY_ENCODER;
-    static const AutoPtr<UriCodec> FILE_AND_QUERY_ENCODER;
-    static const AutoPtr<UriCodec> ALL_LEGAL_ENCODER;
-    static const AutoPtr<UriCodec> ASCII_ONLY;
-
-private:
-    String mString;
-    String mScheme;
-    String mSchemeSpecificPart;
-    String mAuthority;
-    String mUserInfo;
-    String mHost;
-    Int32 mPort;
-    String mPath;
-    String mQuery;
-    String mFragment;
-    Boolean mOpaque;
-    Boolean mAbsolute;
-    Boolean mServerAuthority;
-    Int32 mHash;
-
 };
 
 } // namespace Net
 } // namespace Elastos
 
-#endif //__ELASTOS_NET_CURI_H__
+#endif // __ELASTOS_NET_CURI_H__

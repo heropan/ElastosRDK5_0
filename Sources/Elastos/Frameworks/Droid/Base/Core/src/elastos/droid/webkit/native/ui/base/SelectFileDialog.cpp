@@ -103,7 +103,7 @@ ECode SelectFileDialog::GetDisplayNameTask::OnPostExecute(
     //     nativeOnFileSelected(mNativeSelectFileDialog, mFilePaths[0], result[0]);
     // }
 
-    assert(NULL == mOwner);
+    assert(NULL != mOwner);
     if (!mIsMultiple) {
         IList* list = IList::Probe(result);
         AutoPtr<IInterface> interfaceTmp;

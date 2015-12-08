@@ -23,9 +23,9 @@ ElastosHttpClient::~ElastosHttpClient()
 {
 #if 0 // TODO: Translate codes below
         super.finalize();
-        if (mLeakedException != null) {
-            Log.e(TAG, "Leak found", mLeakedException);
-            mLeakedException = null;
+        if (mLeakedException != NULL) {
+            Logger::E(TAG, "Leak found", mLeakedException);
+            mLeakedException = NULL;
         }
 #endif
 }
@@ -37,7 +37,7 @@ AutoPtr<IHttpRequestInterceptor> ElastosHttpClient::InitThreadCheckInterceptor()
     new HttpRequestInterceptor() {
         public void process(HttpRequest request, HttpContext context) {
             // Prevent the HttpRequest from being sent on the main thread
-            if (Looper.myLooper() != null && Looper.myLooper() == Looper.getMainLooper() ) {
+            if (Looper.myLooper() != NULL && Looper.myLooper() == Looper.getMainLooper() ) {
                 throw new RuntimeException("This thread forbids HTTP requests");
             }
         }
@@ -82,15 +82,15 @@ ECode ElastosHttpClient::NewInstance(
         HttpParams params = new BasicHttpParams();
         // Turn off stale checking.  Our connections break all the time anyway,
         // and it's not worth it to pay the penalty of checking every time.
-        HttpConnectionParams.setStaleCheckingEnabled(params, false);
+        HttpConnectionParams.setStaleCheckingEnabled(params, FALSE);
         HttpConnectionParams.setConnectionTimeout(params, SOCKET_OPERATION_TIMEOUT);
         HttpConnectionParams.setSoTimeout(params, SOCKET_OPERATION_TIMEOUT);
         HttpConnectionParams.setSocketBufferSize(params, 8192);
         // Don't handle redirects -- return them to the caller.  Our code
         // often wants to re-POST after a redirect, which we must do ourselves.
-        HttpClientParams.setRedirecting(params, false);
+        HttpClientParams.setRedirecting(params, FALSE);
         // Use a session cache for SSL sockets
-        SSLSessionCache sessionCache = context == null ? null : new SSLSessionCache(context);
+        SSLSessionCache sessionCache = context == NULL ? NULL : new SSLSessionCache(context);
         // Set the specified user agent and register standard protocols.
         HttpProtocolParams.setUserAgent(params, userAgent);
         SchemeRegistry schemeRegistry = new SchemeRegistry();
@@ -104,7 +104,6 @@ ECode ElastosHttpClient::NewInstance(
         // We use a factory method to modify superclass initialization
         // parameters without the funny call-a-static-method dance.
         return new ElastosHttpClient(manager, params);
-
 #endif
 }
 
@@ -114,8 +113,7 @@ ECode ElastosHttpClient::NewInstance(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return newInstance(userAgent, null /* session cache */);
-
+        return newInstance(userAgent, NULL /* session cache */);
 #endif
 }
 
@@ -150,7 +148,6 @@ ElastosHttpClient::ElastosHttpClient(
                 return context;
             }
         };
-
 #endif
 }
 
@@ -160,7 +157,6 @@ ECode ElastosHttpClient::ModifyRequestToAcceptGzipResponse(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         request.addHeader("Accept-Encoding", "gzip");
-
 #endif
 }
 
@@ -171,15 +167,14 @@ ECode ElastosHttpClient::GetUngzippedContent(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         InputStream responseStream = entity.getContent();
-        if (responseStream == null) return responseStream;
+        if (responseStream == NULL) return responseStream;
         Header header = entity.getContentEncoding();
-        if (header == null) return responseStream;
+        if (header == NULL) return responseStream;
         String contentEncoding = header.getValue();
-        if (contentEncoding == null) return responseStream;
+        if (contentEncoding == NULL) return responseStream;
         if (contentEncoding.contains("gzip")) responseStream
                 = new GZIPInputStream(responseStream);
         return responseStream;
-
 #endif
 }
 
@@ -187,11 +182,10 @@ ECode ElastosHttpClient::Close()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (mLeakedException != null) {
+        if (mLeakedException != NULL) {
             getConnectionManager().shutdown();
-            mLeakedException = null;
+            mLeakedException = NULL;
         }
-
 #endif
 }
 
@@ -201,7 +195,6 @@ ECode ElastosHttpClient::GetParams(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.getParams();
-
 #endif
 }
 
@@ -211,7 +204,6 @@ ECode ElastosHttpClient::GetConnectionManager(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.getConnectionManager();
-
 #endif
 }
 
@@ -222,7 +214,6 @@ ECode ElastosHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.execute(request);
-
 #endif
 }
 
@@ -234,7 +225,6 @@ ECode ElastosHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.execute(request, context);
-
 #endif
 }
 
@@ -246,7 +236,6 @@ ECode ElastosHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.execute(target, request);
-
 #endif
 }
 
@@ -259,7 +248,6 @@ ECode ElastosHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.execute(target, request, context);
-
 #endif
 }
 
@@ -271,7 +259,6 @@ ECode ElastosHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.execute(request, responseHandler);
-
 #endif
 }
 
@@ -284,7 +271,6 @@ ECode ElastosHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.execute(request, responseHandler, context);
-
 #endif
 }
 
@@ -297,7 +283,6 @@ ECode ElastosHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.execute(target, request, responseHandler);
-
 #endif
 }
 
@@ -311,7 +296,6 @@ ECode ElastosHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.execute(target, request, responseHandler, context);
-
 #endif
 }
 
@@ -334,7 +318,6 @@ ECode ElastosHttpClient::GetCompressedEntity(
             entity.setContentEncoding("gzip");
         }
         return entity;
-
 #endif
 }
 
@@ -345,7 +328,6 @@ ECode ElastosHttpClient::GetMinGzipSize(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return DEFAULT_SYNC_MIN_GZIP_BYTES;  // For now, this is just a constant.
-
 #endif
 }
 
@@ -416,20 +398,20 @@ ECode ElastosHttpClient::ToCurl(
         // If this is a wrapped request, use the URI from the original
         // request instead. getURI() on the wrapper seems to return a
         // relative URI. We want an absolute URI.
-        if (request instanceof RequestWrapper) {
+        if (IRequestWrapper::Probe(request) != NULL) {
             HttpRequest original = ((RequestWrapper) request).getOriginal();
-            if (original instanceof HttpUriRequest) {
+            if (IHttpUriRequest::Probe(original) != NULL) {
                 uri = ((HttpUriRequest) original).getURI();
             }
         }
         builder.append("\"");
         builder.append(uri);
         builder.append("\"");
-        if (request instanceof HttpEntityEnclosingRequest) {
+        if (IHttpEntityEnclosingRequest::Probe(request) != NULL) {
             HttpEntityEnclosingRequest entityRequest =
                     (HttpEntityEnclosingRequest) request;
             HttpEntity entity = entityRequest.getEntity();
-            if (entity != null && entity.isRepeatable()) {
+            if (entity != NULL && entity.isRepeatable()) {
                 if (entity.getContentLength() < 1024) {
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     entity.writeTo(stream);
@@ -449,7 +431,6 @@ ECode ElastosHttpClient::ToCurl(
             }
         }
         return builder.toString();
-
 #endif
 }
 
@@ -461,25 +442,24 @@ ECode ElastosHttpClient::IsBinaryContent(
 #if 0 // TODO: Translate codes below
         Header[] headers;
         headers = request.getHeaders(Headers.CONTENT_ENCODING);
-        if (headers != null) {
+        if (headers != NULL) {
             for (Header header : headers) {
                 if ("gzip".equalsIgnoreCase(header.getValue())) {
-                    return true;
+                    return TRUE;
                 }
             }
         }
         headers = request.getHeaders(Headers.CONTENT_TYPE);
-        if (headers != null) {
+        if (headers != NULL) {
             for (Header header : headers) {
                 for (String contentType : textContentTypes) {
-                    if (header.getValue().startsWith(contentType)) {
-                        return false;
+                    if (header.getValue().StartWith(contentType)) {
+                        return FALSE;
                     }
                 }
             }
         }
-        return true;
-
+        return TRUE;
 #endif
 }
 
@@ -490,7 +470,6 @@ ECode ElastosHttpClient::ParseDate(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return HttpDateTime.parse(dateString);
-
 #endif
 }
 

@@ -94,27 +94,6 @@ module
             [in] Int32 keyCode,
             [in] IKeyEvent* event,
             [out] Boolean* result);
-
-        GetDialogInterface(
-            [out] IDialogInterface** dialog);
-
-        GetSingleChoiceItemLayout(
-            [out] Int32* layout);
-
-        GetMultiChoiceItemLayout(
-            [out] Int32* layout);
-
-        GetListLayout(
-            [out] Int32* layout);
-
-        GetListItemLayout(
-            [out] Int32* layout);
-
-        SetAdapter(
-            [in] IListAdapter* adapter);
-
-        SetCheckedItem(
-            [in] Int32 checkedItem);
     }
 
     /**
@@ -139,9 +118,6 @@ module
      */
     [local]
     interface IRecycleListView {
-        GetRecycleOnMeasure(
-            [out] Boolean* recycleOnMeasure);
-
         SetRecycleOnMeasure(
             [in] Boolean recycleOnMeasure);
     }

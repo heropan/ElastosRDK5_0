@@ -4,14 +4,14 @@ module
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     interface IExpandableListView;
 
     /** Used for being notified when a group is collapsed */
-    interface IOnGroupCollapseListener {
+    interface IExpandableListViewOnGroupCollapseListener {
         /**
          * Callback method to be invoked when a group in this expandable list has
          * been collapsed.
@@ -23,7 +23,7 @@ module
     }
 
     /** Used for being notified when a group is expanded */
-    interface IOnGroupExpandListener {
+    interface IExpandableListViewOnGroupExpandListener {
         /**
          * Callback method to be invoked when a group in this expandable list has
          * been expanded.
@@ -39,7 +39,7 @@ module
      * expandable list has been clicked.
      */
     [local]
-    interface IOnGroupClickListener {
+    interface IExpandableListViewOnGroupClickListener {
         /**
          * Callback method to be invoked when a group in this expandable list has
          * been clicked.
@@ -63,7 +63,7 @@ module
      * expandable list has been clicked.
      */
     [local]
-    interface IOnChildClickListener {
+    interface IExpandableListViewOnChildClickListener {
         /**
          * Callback method to be invoked when a child in this expandable list has
          * been clicked.IExpandableListContextMenuInfo
@@ -85,12 +85,36 @@ module
             [out] Boolean* handle);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IContextMenuInfo
+     */
+    [local]
     interface IExpandableListContextMenuInfo {
+        SetTargetView(
+            [in] IView* targetView);
+
+        GetTargetView(
+            [out] IView** targetView);
+
+        SetPackedPosition(
+            [in] Int64 packedPosition);
+
+        GetPackedPosition(
+            [out] Int64* packedPosition);
+
+        SetId(
+            [in] Int64 id);
+
+        GetId(
+            [out] Int64* id);
     }
 
     /**
      * @Involve
      * interface Elastos.Droid.View.IViewBaseSavedState
+     * interface Elastos.Droid.View.IAbsSavedState
+     * interface IParcelable
      */
     interface IExpandableListViewSavedState {
     }
@@ -100,6 +124,7 @@ module
      * extends Elastos.Droid.View.IView
      * extends Elastos.Droid.View.IViewGroup
      * extends Elastos.Droid.Widget.IAdapterView
+     * extends Elastos.Droid.Widget.IAbsListView
      * extends Elastos.Droid.Widget.IListView
      *
      * interface Elastos.Droid.View.IViewParent
@@ -117,6 +142,33 @@ module
 
     [local]
     interface IExpandableListView {
+        /**
+         * The packed position represents a group.
+         */
+        const Int32 PACKED_POSITION_TYPE_GROUP = 0;
+
+        /**
+         * The packed position represents a child.
+         */
+        const Int32 PACKED_POSITION_TYPE_CHILD = 1;
+
+        /**
+         * The packed position represents a neither/null/no preference.
+         */
+        const Int32 PACKED_POSITION_TYPE_NULL = 2;
+
+        /**
+         * The value for a packed position that represents neither/null/no
+         * preference. This value is not otherwise possible since a group type
+         * (first bit 0) should not have a child position filled.
+         */
+        const Int64 PACKED_POSITION_VALUE_NULL = 0x00000000FFFFFFFF;
+
+        /**
+         * Denotes when a child indicator should inherit this bound from the generic
+         * indicator bounds
+         */
+        const Int32 CHILD_INDICATOR_INHERIT = -1;
 
         OnRtlPropertiesChanged(
             [in] Int32 layoutDirection);
@@ -166,16 +218,16 @@ module
             [out] Boolean* collapse);
 
         SetOnGroupCollapseListener(
-            [in] IOnGroupCollapseListener* onGroupCollapseListener);
+            [in] IExpandableListViewOnGroupCollapseListener* onGroupCollapseListener);
 
         SetOnGroupExpandListener(
-            [in] IOnGroupExpandListener* onGroupExpandListener);
+            [in] IExpandableListViewOnGroupExpandListener* onGroupExpandListener);
 
         SetOnGroupClickListener(
-            [in] IOnGroupClickListener* onGroupClickListener);
+            [in] IExpandableListViewOnGroupClickListener* onGroupClickListener);
 
         SetOnChildClickListener(
-            [in] IOnChildClickListener* onChildClickListener);
+            [in] IExpandableListViewOnChildClickListener* onChildClickListener);
 
         /**
          * Converts a flat list position (the raw position of an item (child or group)

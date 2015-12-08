@@ -2,7 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PCONFIG_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PCONFIG_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pConfig.h"
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pConfig.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Wifi::IWpsInfo;
 using Elastos::Droid::Wifi::P2p::IWifiP2pConfig;
@@ -13,11 +14,25 @@ namespace Wifi {
 namespace P2p {
 
 CarClass(CWifiP2pConfig)
+    , public Object
+    , public IWifiP2pConfig
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWifiP2pConfig();
 
-public:
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& supplicantEvent);
+
+    CARAPI constructor(
+        /* [in] */ IWifiP2pConfig* source);
+
     CARAPI GetDeviceAddress(
         /* [out] */ String* deviceAddress);
 
@@ -51,13 +66,7 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ const String& supplicantEvent);
-
-    CARAPI constructor(
-        /* [in] */ IWifiP2pConfig* source);
+    CARAPI Invalidate();
 
 private:
     /**
@@ -83,9 +92,9 @@ private:
     Int32 mNetId;
 };
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PCONFIG_H__

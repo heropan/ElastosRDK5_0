@@ -19,8 +19,7 @@ ECode DhcpDeclinePacket::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        super(transId, clientIp, yourIp, nextIp, relayIp, clientMac, false);
-
+        super(transId, clientIp, yourIp, nextIp, relayIp, clientMac, FALSE);
 #endif
 }
 
@@ -31,7 +30,6 @@ ECode DhcpDeclinePacket::ToString(
 #if 0 // TODO: Translate codes below
         String s = super.toString();
         return s + " DECLINE";
-
 #endif
 }
 
@@ -45,10 +43,9 @@ ECode DhcpDeclinePacket::BuildPacket(
 #if 0 // TODO: Translate codes below
         ByteBuffer result = ByteBuffer.allocate(MAX_LENGTH);
         fillInPacket(encap, mClientIp, mYourIp, destUdp, srcUdp, result,
-            DHCP_BOOTREQUEST, false);
+            DHCP_BOOTREQUEST, FALSE);
         result.flip();
         return result;
-
 #endif
 }
 
@@ -58,7 +55,6 @@ ECode DhcpDeclinePacket::FinishPacket(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         // None needed
-
 #endif
 }
 
@@ -68,7 +64,6 @@ ECode DhcpDeclinePacket::DoNextOp(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         machine.onDeclineReceived(mClientMac, mRequestedIp);
-
 #endif
 }
 

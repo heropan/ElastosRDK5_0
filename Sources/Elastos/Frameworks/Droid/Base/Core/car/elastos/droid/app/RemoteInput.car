@@ -1,6 +1,6 @@
 module
 {
-    using Elastos.Core.ICharSequence;
+    using interface Elastos.Core.ICharSequence;
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.IIntent;
@@ -13,6 +13,10 @@ module
      * System private API for talking with the alarm manager service.
      *
      * {@hide}
+     */
+    /**
+     * @Involve
+     * interface IParcelable
      */
     [local]
     interface IRemoteInput {
@@ -54,9 +58,10 @@ module
          * Get additional metadata carried around with this remote input.
          */
         GetExtras(
-            [out] IBundle* result);
+            [out] IBundle** result);
     }
 
+    [deprecated, local]
     interface IRemoteInputHelper {
         /**
          * Get the remote input results bundle from an intent. The returned Bundle will
@@ -81,7 +86,7 @@ module
          *                {@code remoteInputs} with values being the result per key.
          */
         AddResultsToIntent(
-            [in] ArrayOf<IRemoteInput*> remoteInputs,
+            [in] ArrayOf<IRemoteInput*>* remoteInputs,
             [in] IIntent* intent,
             [in] IBundle* results);
     }
@@ -89,6 +94,7 @@ module
     /**
      * Builder class for {@link RemoteInput} objects.
      */
+    [deprecated, local]
     interface IRemoteInputBuilder {
 
         /**
@@ -137,7 +143,7 @@ module
          * <p>The returned Bundle is shared with this Builder.
          */
         GetExtras(
-            [out] IBundle* result);
+            [out] IBundle** result);
 
         /**
          * Combine all of the options that have been set and return a new {@link RemoteInput}

@@ -38,10 +38,11 @@ ECode ConnectionThread::RequestStop()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
-    AutoLock lock(this);
+    synchronized(this) {
 
-    mRunning = FALSE;
-    // return mRequestFeeder->Notify();
+        mRunning = FALSE;
+        // return mRequestFeeder->Notify();
+    }
     return NOERROR;
 #endif
 }
@@ -76,16 +77,17 @@ ECode ConnectionThread::Run()
 
     //     /* wait for work */
     //     if (request == NULL) {
-    //         AutoLock lock(mLock);
+    //         synchronized(mLock) {
 
-    //         // if (HttpLog.LOGV) HttpLog.v("ConnectionThread: Waiting for work");
-    //         mWaiting = TRUE;
-    //         mRequestFeeder->Wait();
-    //         mWaiting = false;
+        //         // if (HttpLog.LOGV) HttpLog.v("ConnectionThread: Waiting for work");
+        //         mWaiting = TRUE;
+        //         mRequestFeeder->Wait();
+        //         mWaiting = false;
 
-    //         if (mCurrentThreadTime != 0) {
-    //             mCurrentThreadTime = SystemClock::CurrentThreadTimeMillis();
-    //         }
+        //         if (mCurrentThreadTime != 0) {
+        //             mCurrentThreadTime = SystemClock::CurrentThreadTimeMillis();
+        //         }
+                }
     //     } else {
     //         // if (HttpLog.LOGV) HttpLog.v("ConnectionThread: new request " +
     //         //                             request.mHost + " " + request );

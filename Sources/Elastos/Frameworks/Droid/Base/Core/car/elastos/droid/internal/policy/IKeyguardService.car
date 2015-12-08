@@ -13,19 +13,19 @@ module
 
     interface IIKeyguardService {
         IsShowing(
-            [out] Boolean* result);
+            [out] Boolean* showing);
 
         IsSecure(
-            [out] Boolean* result);
+            [out] Boolean* secure);
 
         IsShowingAndNotOccluded(
-            [out] Boolean* result);
+            [out] Boolean* showingAndNotOcclude);
 
         IsInputRestricted(
-            [out] Boolean* result);
+            [out] Boolean* intpuRestricted);
 
         IsDismissable(
-            [out] Boolean* result);
+            [out] Boolean* dismissable);
 
         [oneway] VerifyUnlock(
             [in] IIKeyguardExitCallback* cb);
@@ -95,8 +95,7 @@ module
          * Notifies the Keyguard that the activity that was starting has now been drawn and it's safe
          * to start the keyguard dismiss sequence.
          */
-         [oneway] OnActivityDrawn();
-
+        [oneway] OnActivityDrawn();
     }
 
     } // Policy

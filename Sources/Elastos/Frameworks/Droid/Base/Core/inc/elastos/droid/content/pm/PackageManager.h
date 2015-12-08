@@ -32,6 +32,22 @@ class PackageManager
 public:
     CAR_INTERFACE_DECL()
 
+    PackageManager();
+
+    virtual ~PackageManager();
+
+    /**
+     * Returns an {@link Intent} suitable for passing to {@code startActivityForResult}
+     * which prompts the user to grant {@code permissions} to this application.
+     * @hide
+     *
+     * @throws NullPointerException if {@code permissions} is {@code null}.
+     * @throws IllegalArgumentException if {@code permissions} contains {@code null}.
+     */
+    CARAPI BuildPermissionRequestIntent(
+        /* [in] */ ArrayOf<String>* permissions,
+        /* [out] */ IIntent** intent);
+
     /**
      * Retrieve overall information about an application package defined
      * in a package archive file
@@ -243,7 +259,7 @@ public:
         {
             if (mLegacy == NULL) return NOERROR;
             // try {
-                mLegacy->PackageInstalled(basePackageName, returnCode);
+                return mLegacy->PackageInstalled(basePackageName, returnCode);
             // } catch (RemoteException ignored) {
             // }
         }
@@ -268,7 +284,7 @@ public:
         {
             if (mLegacy == NULL) return NOERROR;
             // try {
-                mLegacy->PackageDeleted(basePackageName, returnCode);
+                return mLegacy->PackageDeleted(basePackageName, returnCode);
             // } catch (RemoteException ignored) {
             // }
         }

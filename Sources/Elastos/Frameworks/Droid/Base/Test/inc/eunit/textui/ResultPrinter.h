@@ -2,15 +2,15 @@
 #ifndef __EUNIT_TEXTUI_RESULTPRINTER_H__
 #define __EUNIT_TEXTUI_RESULTPRINTER_H__
 
-#include <cmdef.h>
+#include <elastos/coredef.h>
 #ifdef EUNIT
 #include "Eunit_server.h"
 #else
 #include <Eunit.h>
 #endif
-#include <Elastos.CoreLibrary.h>
+#include <elastos/core/Object.h>
 
-using namespace Elastos;
+using Elastos::Core::Object;
 using Elastos::IO::IPrintStream;
 using Elastos::Utility::IEnumeration;
 using Eunit::Framework::ITestListener;
@@ -22,7 +22,7 @@ namespace Eunit {
 namespace Textui {
 
 class ResultPrinter
-    : public ElRefBase
+    : public Object
     , public ITestListener
     , public IResultPrinter
 {

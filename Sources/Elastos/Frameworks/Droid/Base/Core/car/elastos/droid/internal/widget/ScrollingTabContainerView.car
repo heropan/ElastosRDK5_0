@@ -3,10 +3,10 @@ module
 {
     interface Elastos.Droid.App.IActionBarTab;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * This widget implements the dynamic action bar tab behavior that can change

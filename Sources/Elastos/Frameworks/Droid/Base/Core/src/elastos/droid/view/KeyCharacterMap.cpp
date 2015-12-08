@@ -712,12 +712,12 @@ ECode KeyCharacterMap::SetNative(
 }
 
 ECode KeyCharacterMap::GetMap(
-    /* [in] */ Int32* map)
+    /* [in] */ Int64* map)
 {
     VALIDATE_NOT_NULL(map);
 
     NativeKeyCharacterMap* nMap = reinterpret_cast<NativeKeyCharacterMap*>(mPtr);
-    *map = reinterpret_cast<Int32>(
+    *map = reinterpret_cast<Int64>(
             new NativeKeyCharacterMap(nMap->getDeviceId(), nMap->getMap()));
     return NOERROR;
 }
@@ -816,9 +816,7 @@ Char32 KeyCharacterMap::NativeGetMatch(
         (*array)[i] = (char16_t)chars[i];
     }
 
-    assert(0);
-    // return map->getMap()->getMatch(keyCode, array->GetPayload(), size_t(numChars), metaState);
-    return 0;
+    return map->getMap()->getMatch(keyCode, array->GetPayload(), size_t(numChars), metaState);
 }
 
 Char32 KeyCharacterMap::NativeGetDisplayLabel(
@@ -849,18 +847,17 @@ AutoPtr<ArrayOf<IKeyEvent*> > KeyCharacterMap::NativeGetEvents(
 
     android::Vector<android::KeyEvent> events;
     AutoPtr<ArrayOf<IKeyEvent*> > result;
-    assert(0);
-    // if (map->getMap()->getEvents(map->getDeviceId(), array->GetPayload(), size_t(numChars), events)) {
-        // result = ArrayOf<IKeyEvent*>::Alloc(events.size());
-        // if (result != NULL) {
-            // for (size_t i = 0; i < events.size(); i++) {
-                // AutoPtr<IKeyEvent> keyEvent = CreateKeyEventFromNative(&events.itemAt(i));
-                // if (keyEvent == NULL)
-                    // break; // threw OOM exception
-                // result->Set(i, keyEvent);
-            // }
-        // }
-    // }
+    if (map->getMap()->getEvents(map->getDeviceId(), array->GetPayload(), size_t(numChars), events)) {
+        result = ArrayOf<IKeyEvent*>::Alloc(events.size());
+        if (result != NULL) {
+            for (size_t i = 0; i < events.size(); i++) {
+                AutoPtr<IKeyEvent> keyEvent = CreateKeyEventFromNative(&events.itemAt(i));
+                if (keyEvent == NULL)
+                    break; // threw OOM exception
+                result->Set(i, keyEvent);
+            }
+        }
+    }
 
     return result;
 }

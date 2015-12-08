@@ -3,14 +3,21 @@
 
 #include "_Elastos_Droid_Widget_CExpandableListViewHelper.h"
 #include "elastos/droid/widget/ExpandableListView.h"
+#include <elastos/core/Singleton.h>
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CExpandableListViewHelper)
+    , public Singleton
+    , public IExpandableListViewHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
     CARAPI GetPackedPositionType(
         /* [in] */ Int64 packedPosition,
         /* [out] */ Int32* type);
@@ -31,7 +38,6 @@ public:
     CARAPI GetPackedPositionForGroup(
         /* [in] */ Int32 groupPosition,
         /* [out] */ Int64* position);
-
 };
 
 } // namespace Widget

@@ -1,11 +1,7 @@
 
 #include "elastos/droid/widget/ProgressBar.h"
-#include "elastos/droid/view/animation/AnimationUtils.h"
-#include "elastos/droid/view/animation/CLinearInterpolator.h"
-#include "elastos/droid/view/animation/CTransformation.h"
-#include "elastos/droid/view/animation/CAlphaAnimation.h"
-#include "elastos/droid/widget/CProgressBarSavedState.h"
-#include "elastos/droid/widget/CProgressBar.h"
+// #include "elastos/droid/widget/CProgressBarSavedState.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/graphics/drawable/CLayerDrawable.h"
 #include "elastos/droid/graphics/drawable/CStateListDrawable.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
@@ -13,16 +9,21 @@
 #include "elastos/droid/graphics/drawable/CClipDrawable.h"
 #include "elastos/droid/graphics/drawable/CAnimationDrawable.h"
 #include "elastos/droid/graphics/drawable/shapes/CRoundRectShape.h"
-#include "CProgressBarSavedState.h"
 #include "elastos/droid/graphics/CBitmapShader.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/view/animation/CLinearInterpolator.h"
+#include "elastos/droid/view/animation/CTransformation.h"
+#include "elastos/droid/view/animation/CAlphaAnimation.h"
 #include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Thread.h>
 
 using Elastos::Droid::R;
-using Elastos::Core::Thread;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::Graphics::CBitmapShader;
+using Elastos::Droid::Graphics::IBitmapShader;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::ShaderTileMode;
+using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Graphics::Drawable::ILayerDrawable;
 using Elastos::Droid::Graphics::Drawable::CLayerDrawable;
 using Elastos::Droid::Graphics::Drawable::EIID_ILayerDrawable;
@@ -46,6 +47,10 @@ using Elastos::Droid::Graphics::Drawable::Shapes::CRoundRectShape;
 using Elastos::Droid::Graphics::Drawable::Shapes::EIID_IRoundRectShape;
 using Elastos::Droid::Graphics::Drawable::IClipDrawable;
 using Elastos::Droid::Graphics::Drawable::IAnimatable;
+using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
+using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IAbsSavedState;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::IAlphaAnimation;
 using Elastos::Droid::View::Animation::CAlphaAnimation;
@@ -54,29 +59,25 @@ using Elastos::Droid::View::Animation::CLinearInterpolator;
 using Elastos::Droid::View::Animation::CTransformation;
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Animation::AnimationUtils;
-using Elastos::Droid::View::IGravity;
-using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
-using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
-using Elastos::Droid::Graphics::IBitmapShader;
-using Elastos::Droid::Graphics::CBitmapShader;
-using Elastos::Droid::Graphics::ShaderTileMode;
-using Elastos::Droid::Graphics::IPaint;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Droid::Utility::EIID_IPoolable;
 using Elastos::Droid::View::Accessibility::CAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-AutoPtr<IPool> ProgressBar::RefreshData::sPool = Pools::AcquireSynchronizedPool(
-        Pools::AcquireFinitePool(new RefreshDataPoolableManager(), POOL_MAX));
-
-CAR_INTERFACE_IMPL(ProgressBar::RefreshData, IPoolable)
+const Int32 ProgressBar::RefreshData::POOL_MAX = 24;
+AutoPtr<Pools::SynchronizedPool<ProgressBar::RefreshData> > ProgressBar::RefreshData::sPool =
+        new Pools::SynchronizedPool<ProgressBar::RefreshData>(POOL_MAX);
 
 ProgressBar::RefreshProgressRunnable::RefreshProgressRunnable(
-    /* [in] */ IWeakReference* host) : mWeakHost(host)
+    /* [in] */ IWeakReference* host)
+    : mWeakHost(host)
 {
 }
 
@@ -87,12 +88,12 @@ ECode ProgressBar::RefreshProgressRunnable::Run()
     IProgressBar* pb = IProgressBar::Probe(obj);
 
     if (pb != NULL) {
-        CProgressBar* host = (CProgressBar*)pb;
-        AutoLock lock(host->mLock);
+        ProgressBar* host = (ProgressBar*)pb;
+        AutoLock lock(host);
         Int32 count = host->mRefreshData.GetSize();
         for (Int32 i = 0; i < count; i++) {
             AutoPtr<RefreshData> rd = host->mRefreshData[i];
-            host->DoRefreshProgress(rd->mId, rd->mProgress, rd->mFromUser, TRUE);
+            host->DoRefreshProgress(rd->mId, rd->mProgress, rd->mFromUser, TRUE, rd->mAnimate);
             rd->Recycle();
         }
         host->mRefreshData.Clear();
@@ -114,150 +115,118 @@ ECode ProgressBar::AccessibilityEventSender::Run()
     IProgressBar* pb = IProgressBar::Probe(obj);
 
     if (pb != NULL) {
-        CProgressBar* host = (CProgressBar*)pb;
+        ProgressBar* host = (ProgressBar*)pb;
         host->SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_SELECTED);
     }
     return NOERROR;
 }
 
 ProgressBar::RefreshData::RefreshData()
-    : mId(0), mProgress(0)
-    , mFromUser(FALSE), mIsPooled(FALSE)
+    : mId(0)
+    , mProgress(0)
+    , mFromUser(FALSE)
+    , mAnimate(FALSE)
 {
 }
 
 ECode ProgressBar::RefreshData::Recycle()
 {
-    sPool->ReleaseElement(this);
+    sPool->ReleaseItem(this);
     return NOERROR;
 }
 
-ECode ProgressBar::RefreshData::SetNextPoolable(
-    /* [in] */ IPoolable* element)
-{
-    mNext = (RefreshData*)element;
-
-    return NOERROR;
-}
-
-/**
- * @hide
- */
-ECode ProgressBar::RefreshData::GetNextPoolable(
-    /* [out] */ IPoolable** element)
-{
-    VALIDATE_NOT_NULL(element);
-
-    *element = mNext;
-    REFCOUNT_ADD(*element);
-
-     return NOERROR;
-}
-
-ECode ProgressBar::RefreshData::IsPooled(
-    /* [out] */ Boolean* isPooled)
-{
-    VALIDATE_NOT_NULL(isPooled);
-
-    *isPooled = mIsPooled;
-
-    return NOERROR;
-}
-
-ECode ProgressBar::RefreshData::SetPooled(
-    /* [in] */ Boolean isPooled)
-{
-    mIsPooled = isPooled;
-    return NOERROR;
-}
 AutoPtr<ProgressBar::RefreshData> ProgressBar::RefreshData::Obtain(
     /* [in] */ Int32 id,
-    /* [in] */ Int32 progress,
-    /* [in] */ Boolean fromUser)
+    /* [in] */ Float progress,
+    /* [in] */ Boolean fromUser,
+    /* [in] */ Boolean animate)
 {
-    AutoPtr<RefreshData> rd;
-    sPool->Acquire((IPoolable**)&rd);
+    AutoPtr<RefreshData> rd = sPool->AcquireItem();
+    if (rd == NULL) {
+        rd = new RefreshData();
+    }
     rd->mId = id;
     rd->mProgress = progress;
     rd->mFromUser = fromUser;
+    rd->mAnimate = animate;
     return rd;
 }
 
-CAR_INTERFACE_IMPL(ProgressBar::RefreshData::RefreshDataPoolableManager, IPoolableManager)
+ProgressBar::ProgressTintInfo::ProgressTintInfo()
+    : mIndeterminateTintMode(-1)
+    , mHasIndeterminateTint(FALSE)
+    , mHasIndeterminateTintMode(FALSE)
+    , mProgressTintMode(-1)
+    , mHasProgressTint(FALSE)
+    , mHasProgressTintMode(FALSE)
+    , mProgressBackgroundTintMode(-1)
+    , mHasProgressBackgroundTint(FALSE)
+    , mHasProgressBackgroundTintMode(FALSE)
+    , mSecondaryProgressTintMode(-1)
+    , mHasSecondaryProgressTint(FALSE)
+    , mHasSecondaryProgressTintMode(FALSE)
+{}
 
-ECode ProgressBar::RefreshData::RefreshDataPoolableManager::NewInstance(
-    /* [out] */ IPoolable** element)
-{
-    VALIDATE_NOT_NULL(element);
-    *element = new RefreshData();
-    if (*element == NULL) {
-        return E_OUT_OF_MEMORY_ERROR;
-    }
-    REFCOUNT_ADD(*element);
-
-    return NOERROR;
-}
-
-ECode ProgressBar::RefreshData::RefreshDataPoolableManager::OnAcquired(
-    /* [in] */ IPoolable* element)
-{
-    return NOERROR;
-}
-
-ECode ProgressBar::RefreshData::RefreshDataPoolableManager::OnReleased(
-    /* [in] */ IPoolable* element)
-{
-    return NOERROR;
-}
-
+CAR_INTERFACE_IMPL(ProgressBar, View, IProgressBar);
 ProgressBar::ProgressBar()
-    : mMinWidth(0), mMaxWidth(0)
-    , mMinHeight(0), mMaxHeight(0)
-    , mProgress(0), mSecondaryProgress(0)
-    , mMax(0), mBehavior(0)
-    , mDuration(0), mIndeterminate(FALSE)
-    , mOnlyIndeterminate(FALSE), mHasAnimation(FALSE)
-    , mNoInvalidate(FALSE), mUiThreadId(0)
+    : mMinWidth(0)
+    , mMaxWidth(0)
+    , mMinHeight(0)
+    , mMaxHeight(0)
+    , mMirrorForRtl(FALSE)
+    , mProgress(0)
+    , mSecondaryProgress(0)
+    , mMax(0)
+    , mBehavior(0)
+    , mDuration(0)
+    , mIndeterminate(FALSE)
+    , mOnlyIndeterminate(FALSE)
+    , mHasAnimation(FALSE)
+    , mNoInvalidate(FALSE)
+    , mUiThreadId(0)
     , mShouldStartAnimationDrawable(FALSE)
-    , mInDrawing(FALSE), mAttached(FALSE)
+    , mAnimationPosition(0)
+    , mInDrawing(FALSE)
+    , mAttached(FALSE)
     , mRefreshIsPosted(FALSE)
 {}
 
-ProgressBar::ProgressBar(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Int32 styleRes)
-    : View(context, attrs, defStyle)
-    , mMinWidth(0), mMaxWidth(0)
-    , mMinHeight(0), mMaxHeight(0)
-    , mProgress(0), mSecondaryProgress(0)
-    , mMax(0), mBehavior(0)
-    , mDuration(0), mIndeterminate(FALSE)
-    , mOnlyIndeterminate(FALSE), mHasAnimation(FALSE)
-    , mNoInvalidate(FALSE), mUiThreadId(0)
-    , mShouldStartAnimationDrawable(FALSE)
-    , mInDrawing(FALSE), mAttached(FALSE)
-    , mRefreshIsPosted(FALSE)
+ECode ProgressBar::constructor(
+    /* [in] */ IContext* context)
 {
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle, styleRes));
+    return constructor(context, NULL);
 }
 
-ECode ProgressBar::Init(
+ECode ProgressBar::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::progressBarStyle);
+}
+
+ECode ProgressBar::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Int32 styleRes)
+    /* [in] */ Int32 defStyleAttr)
 {
-    FAIL_RETURN(View::Init(context, attrs, defStyle));
-    return InitFromAttributes(context, attrs, defStyle, styleRes);
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode ProgressBar::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    FAIL_RETURN(View::constructor(context, attrs, defStyleAttr, defStyleRes));
+    return InitFromAttributes(context, attrs, defStyleAttr, defStyleRes);
 }
 
 ECode ProgressBar::InitFromAttributes(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Int32 styleRes)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     Thread::GetCurrentThread()->GetId(&mUiThreadId);
     InitProgressBar();
@@ -267,16 +236,15 @@ ECode ProgressBar::InitFromAttributes(
             ARRAY_SIZE(R::styleable::ProgressBar));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
-        attrs, attrIds, defStyle, styleRes, (ITypedArray**)&a);
+        attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     mNoInvalidate = TRUE;
-    AutoPtr<IDrawable> drawable;
-    a->GetDrawable(R::styleable::ProgressBar_progressDrawable, (IDrawable**)&drawable);
-    if (drawable != NULL) {
-        drawable = Tileify(drawable, FALSE);
+    AutoPtr<IDrawable> progressDrawable;
+    a->GetDrawable(R::styleable::ProgressBar_progressDrawable, (IDrawable**)&progressDrawable);
+    if (progressDrawable != NULL) {
         // Calling this method can set mMaxHeight, make sure the corresponding
         // XML attribute for mMaxHeight is read after calling this method
-        SetProgressDrawable(drawable);
+        SetProgressDrawableTiled(progressDrawable);
     }
 
     a->GetInt32(R::styleable::ProgressBar_indeterminateDuration, mDuration, &mDuration);
@@ -302,11 +270,10 @@ ECode ProgressBar::InitFromAttributes(
     SetProgress(result);
     a->GetInt32(R::styleable::ProgressBar_secondaryProgress, mSecondaryProgress, &result);
     SetSecondaryProgress(result);
-    drawable = NULL;
-    a->GetDrawable(R::styleable::ProgressBar_indeterminateDrawable, (IDrawable**)&drawable);
-    if (drawable != NULL) {
-        drawable = TileifyIndeterminate(drawable);
-        SetIndeterminateDrawable(drawable);
+    AutoPtr<IDrawable> indeterminateDrawable;
+    a->GetDrawable(R::styleable::ProgressBar_indeterminateDrawable, (IDrawable**)&indeterminateDrawable);
+    if (indeterminateDrawable != NULL) {
+        SetIndeterminateDrawableTiled(indeterminateDrawable);
     }
 
     a->GetBoolean(
@@ -316,14 +283,99 @@ ECode ProgressBar::InitFromAttributes(
     Boolean b;
     a->GetBoolean(R::styleable::ProgressBar_indeterminate, mIndeterminate, &b);
     SetIndeterminate(mOnlyIndeterminate || b);
+
+    a->GetBoolean(R::styleable::ProgressBar_mirrorForRtl, mMirrorForRtl, &mMirrorForRtl);
+
+    Boolean has = FALSE;
+    if (a->HasValue(R::styleable::ProgressBar_progressTintMode, &has), has) {
+        if (mProgressTintInfo == NULL) {
+            mProgressTintInfo = new ProgressTintInfo();
+        }
+        Int32 iv = 0;
+        a->GetInt32(R::styleable::ProgressBar_progressBackgroundTintMode, -1, &iv);
+        Drawable::ParseTintMode(iv, -1, &mProgressTintInfo->mProgressTintMode);
+        mProgressTintInfo->mHasProgressTintMode = TRUE;
+    }
+
+    if (a->HasValue(R::styleable::ProgressBar_progressTint, &has), has) {
+        if (mProgressTintInfo == NULL) {
+            mProgressTintInfo = new ProgressTintInfo();
+        }
+
+        a->GetColorStateList(R::styleable::ProgressBar_progressTint, (IColorStateList**)&mProgressTintInfo->mProgressTintList);
+        mProgressTintInfo->mHasProgressTint = TRUE;
+    }
+
+    if (a->HasValue(R::styleable::ProgressBar_progressBackgroundTintMode, &has), has) {
+        if (mProgressTintInfo == NULL) {
+            mProgressTintInfo = new ProgressTintInfo();
+        }
+        Int32 iv = 0;
+        a->GetInt32(R::styleable::ProgressBar_progressTintMode, -1, &iv);
+        Drawable::ParseTintMode(iv, -1, &mProgressTintInfo->mProgressBackgroundTintMode);
+        mProgressTintInfo->mHasProgressBackgroundTintMode = TRUE;
+    }
+
+    if (a->HasValue(R::styleable::ProgressBar_progressBackgroundTint, &has), has) {
+        if (mProgressTintInfo == NULL) {
+            mProgressTintInfo = new ProgressTintInfo();
+        }
+        a->GetColorStateList(R::styleable::ProgressBar_progressBackgroundTint,
+                (IColorStateList**)&mProgressTintInfo->mProgressBackgroundTintList);
+        mProgressTintInfo->mHasProgressBackgroundTint = TRUE;
+    }
+
+    if (a->HasValue(R::styleable::ProgressBar_secondaryProgressTintMode, &has), has) {
+        if (mProgressTintInfo == NULL) {
+            mProgressTintInfo = new ProgressTintInfo();
+        }
+        Int32 iv = 0;
+        a->GetInt32(R::styleable::ProgressBar_secondaryProgressTintMode, -1, &iv);
+        Drawable::ParseTintMode(iv, -1, &mProgressTintInfo->mSecondaryProgressTintMode);
+        mProgressTintInfo->mHasSecondaryProgressTintMode = TRUE;
+    }
+
+    if (a->HasValue(R::styleable::ProgressBar_secondaryProgressTint, &has), has) {
+        if (mProgressTintInfo == NULL) {
+            mProgressTintInfo = new ProgressTintInfo();
+        }
+        a->GetColorStateList(R::styleable::ProgressBar_secondaryProgressTint,
+            (IColorStateList**)&mProgressTintInfo->mSecondaryProgressTintList);
+        mProgressTintInfo->mHasSecondaryProgressTint = TRUE;
+    }
+
+    if (a->HasValue(R::styleable::ProgressBar_indeterminateTint, &has), has) {
+        if (mProgressTintInfo == NULL) {
+            mProgressTintInfo = new ProgressTintInfo();
+        }
+        Int32 iv = 0;
+        a->GetInt32(R::styleable::ProgressBar_indeterminateTintMode, -1, &iv);
+        Drawable::ParseTintMode(iv, -1, &mProgressTintInfo->mIndeterminateTintMode);
+        mProgressTintInfo->mHasIndeterminateTintMode = TRUE;
+    }
+
+    if (a->HasValue(R::styleable::ProgressBar_indeterminateTint, &has), has) {
+        if (mProgressTintInfo == NULL) {
+            mProgressTintInfo = new ProgressTintInfo();
+        }
+        a->GetColorStateList(R::styleable::ProgressBar_indeterminateTint,
+            (IColorStateList**)&mProgressTintInfo->mIndeterminateTintList);
+        mProgressTintInfo->mHasIndeterminateTint = TRUE;
+    }
+
     a->Recycle();
+
+    ApplyProgressTints();
+    ApplyIndeterminateTint();
+
+    // If not explicitly specified this view is important for accessibility.
+    Int32 mode = 0;
+    if ((GetImportantForAccessibility(&mode), mode) == IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+        SetImportantForAccessibility(IView::IMPORTANT_FOR_ACCESSIBILITY_YES);
+    }
     return NOERROR;
 }
 
-/**
- * Converts a drawable to a tiled version of itself. It will recursively
- * traverse layer and state list drawables.
- */
 AutoPtr<IDrawable> ProgressBar::Tileify(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Boolean clip)
@@ -352,7 +404,7 @@ AutoPtr<IDrawable> ProgressBar::Tileify(
             newBg->SetId(i, id);
         }
 
-        return newBg;
+        return IDrawable::Probe(newBg);
 
     } else if (drawable->Probe(EIID_IStateListDrawable)) {
         AutoPtr<IStateListDrawable> in =
@@ -367,15 +419,14 @@ AutoPtr<IDrawable> ProgressBar::Tileify(
             in->GetStateSet(i, (ArrayOf<Int32>**)&stateSet);
             in->GetStateDrawable(i, (IDrawable**)&stateDrawable);
             AutoPtr<IDrawable> tileify = Tileify(stateDrawable, clip);
-            out->AddState(*stateSet, tileify);
+            out->AddState(stateSet, tileify);
         }
-        return out;
+        return IDrawable::Probe(out);
 
     } else if (drawable->Probe(EIID_IBitmapDrawable)) {
-        AutoPtr<IBitmapDrawable> bitmapDrawable;
-        bitmapDrawable = (IBitmapDrawable*)drawable->Probe(EIID_IBitmapDrawable);
+        AutoPtr<IBitmapDrawable> bitmap = IBitmapDrawable::Probe(drawable);
         AutoPtr<IBitmap> tileBitmap;
-        bitmapDrawable->GetBitmap((IBitmap**)&tileBitmap);
+        bitmap->GetBitmap((IBitmap**)&tileBitmap);
         if (mSampleTile == NULL) {
             mSampleTile = tileBitmap;
         }
@@ -384,19 +435,31 @@ AutoPtr<IDrawable> ProgressBar::Tileify(
         CShapeDrawable::New(GetDrawableShape(), (IShapeDrawable**)&shapeDrawable);
         AutoPtr<IBitmapShader> bitmapShader;
         CBitmapShader::New(tileBitmap,
-                ShaderTileMode_REPEAT, ShaderTileMode_CLAMP, (IBitmapShader**)&bitmapShader);
+                Elastos::Droid::Graphics::ShaderTileMode_REPEAT,
+                Elastos::Droid::Graphics::ShaderTileMode_CLAMP, (IBitmapShader**)&bitmapShader);
         AutoPtr<IPaint> paint;
         shapeDrawable->GetPaint((IPaint**)&paint);
-        paint->SetShader(bitmapShader);
+        paint->SetShader(IShader::Probe(bitmapShader));
 
-        AutoPtr<IClipDrawable> clipDrawable;
-        CClipDrawable::New(shapeDrawable, IGravity::LEFT,
-                IClipDrawable::HORIZONTAL, (IClipDrawable**)&clipDrawable);
-        if(clip)
-        {
+        // Ensure the tint and filter are propagated in the correct order.
+        AutoPtr<IColorStateList> list;
+        bitmap->GetTint((IColorStateList**)&list);
+        IDrawable::Probe(shapeDrawable)->SetTintList(list);
+        PorterDuffMode mode = -1;
+        bitmap->GetTintMode(&mode);
+        IDrawable::Probe(shapeDrawable)->SetTintMode(mode);
+        AutoPtr<IColorFilter> cf;
+        IDrawable::Probe(bitmap)->GetColorFilter((IColorFilter**)&cf);
+        IDrawable::Probe(shapeDrawable)->SetColorFilter(cf);
+
+        if(clip) {
+            AutoPtr<IDrawable> clipDrawable;
+            CClipDrawable::New(IDrawable::Probe(shapeDrawable), IGravity::LEFT,
+                    IClipDrawable::HORIZONTAL, (IDrawable**)&clipDrawable);
             return clipDrawable;
-        }else{
-            return shapeDrawable;
+        }
+        else{
+            return IDrawable::Probe(shapeDrawable);
         }
     }
 
@@ -410,16 +473,11 @@ AutoPtr<IShape> ProgressBar::GetDrawableShape()
     {
         (*roundedCorners)[i] = 5.0f;
     }
-    AutoPtr<IRoundRectShape> result;
-    CRoundRectShape::New(roundedCorners, NULL, NULL, (IRoundRectShape**)&result);
+    AutoPtr<IShape> result;
+    CRoundRectShape::New(roundedCorners, NULL, NULL, (IShape**)&result);
     return result;
 }
 
-/**
- * Convert a AnimationDrawable for use as a barberpole animation.
- * Each frame of the animation is wrapped in a ClipDrawable and
- * given a tiling BitmapShader.
- */
 AutoPtr<IDrawable> ProgressBar::TileifyIndeterminate(
     /* [in] */ IDrawable* inDrawable)
 {
@@ -445,24 +503,12 @@ AutoPtr<IDrawable> ProgressBar::TileifyIndeterminate(
             background->GetDuration(i, &duration);
             newBg->AddFrame(frame, duration);
         }
-        newBg->SetLevel(10000, &rst);
-        drawable = newBg;
+        IDrawable::Probe(newBg)->SetLevel(10000, &rst);
+        drawable = IDrawable::Probe(newBg);
     }
     return drawable;
 }
 
-/**
- * <p>
- * Initialize the progress bar's default values:
- * </p>
- * <ul>
- * <li>progress = 0</li>
- * <li>max = 100</li>
- * <li>animation duration = 4000 ms</li>
- * <li>indeterminate = FALSE</li>
- * <li>behavior = repeat</li>
- * </ul>
- */
 void ProgressBar::InitProgressBar()
 {
     mMax = 100;
@@ -478,36 +524,19 @@ void ProgressBar::InitProgressBar()
     mMaxHeight = 48;
 }
 
-/**
- * <p>Indicate whether this progress bar is in indeterminate mode.</p>
- *
- * @return TRUE if the progress bar is in indeterminate mode
- */
-//synchronized
-//
-Boolean ProgressBar::IsIndeterminate()
+ECode ProgressBar::IsIndeterminate(
+    /* [out] */ Boolean* result)
 {
-    AutoLock lock(*GetSelfLock());
-
-    return mIndeterminate;
+    VALIDATE_NOT_NULL(result);
+    AutoLock lock(this);
+    *result = mIndeterminate;
+    return NOERROR;
 }
 
-/**
- * <p>Change the indeterminate mode for this progress bar. In indeterminate
- * mode, the progress is ignored and the progress bar shows an infinite
- * animation instead.</p>
- *
- * If this progress bar's style only supports indeterminate mode (such as the circular
- * progress bars), then this will be ignored.
- *
- * @param indeterminate TRUE to enable the indeterminate mode
- */
-//synchronized
-//
 ECode ProgressBar::SetIndeterminate(
     /* [in] */ Boolean indeterminate)
 {
-    AutoLock lock(*GetSelfLock());
+    AutoLock lock(this);
 
     if ((!mOnlyIndeterminate || !mIndeterminate) && indeterminate != mIndeterminate) {
         mIndeterminate = indeterminate;
@@ -526,103 +555,177 @@ ECode ProgressBar::SetIndeterminate(
     return NOERROR;
 }
 
-/**
- * <p>Get the drawable used to draw the progress bar in
- * indeterminate mode.</p>
- *
- * @return a {@link android.graphics.drawable.Drawable} instance
- *
- * @see #setIndeterminateDrawable(android.graphics.drawable.Drawable)
- * @see #setIndeterminate(Boolean)
- */
-AutoPtr<IDrawable> ProgressBar::GetIndeterminateDrawable()
+ECode ProgressBar::GetIndeterminateDrawable(
+    /* [out] */ IDrawable** drawable)
 {
-    return mIndeterminateDrawable;
-}
-
-/**
- * <p>Define the drawable used to draw the progress bar in
- * indeterminate mode.</p>
- *
- * @param d the new drawable
- *
- * @see #getIndeterminateDrawable()
- * @see #setIndeterminate(Boolean)
- */
-ECode ProgressBar::SetIndeterminateDrawable(
-    /* [in] */ IDrawable* d)
-{
-    if (d != NULL) {
-        d->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
-    }
-    mIndeterminateDrawable = d;
-    if (mIndeterminateDrawable && CanResolveLayoutDirection()) {
-        mIndeterminateDrawable->SetLayoutDirection(GetLayoutDirection());
-    }
-    if (mIndeterminate) {
-        mCurrentDrawable = d;
-        PostInvalidate();
-    }
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = mIndeterminateDrawable;
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
-/**
- * <p>Get the drawable used to draw the progress bar in
- * progress mode.</p>
- *
- * @return a {@link android.graphics.drawable.Drawable} instance
- *
- * @see #setProgressDrawable(android.graphics.drawable.Drawable)
- * @see #setIndeterminate(Boolean)
- */
-AutoPtr<IDrawable> ProgressBar::GetProgressDrawable()
+ECode ProgressBar::SetIndeterminateDrawable(
+    /* [in] */ IDrawable* d)
 {
-    return mProgressDrawable;
+    if (mIndeterminateDrawable.Get() != d) {
+        if (mIndeterminateDrawable != NULL) {
+            mIndeterminateDrawable->SetCallback(NULL);
+            UnscheduleDrawable(mIndeterminateDrawable);
+        }
+
+        mIndeterminateDrawable = d;
+
+        if (d != NULL) {
+            d->SetCallback(THIS_PROBE(IDrawableCallback));
+            Int32 dir = 0;
+            GetLayoutDirection(&dir);
+            d->SetLayoutDirection(dir);
+            Boolean is = FALSE;
+            if (d->IsStateful(&is), is) {
+                AutoPtr<ArrayOf<Int32> > states;
+                GetDrawableState((ArrayOf<Int32>**)& states);
+                Boolean isStateful = FALSE;
+                d->SetState(states, &isStateful);
+            }
+            ApplyIndeterminateTint();
+        }
+
+        if (mIndeterminate) {
+            mCurrentDrawable = d;
+            PostInvalidate();
+        }
+    }
+
+    return NOERROR;
 }
 
-/**
- * <p>Define the drawable used to draw the progress bar in
- * progress mode.</p>
- *
- * @param d the new drawable
- *
- * @see #getProgressDrawable()
- * @see #setIndeterminate(Boolean)
- */
+ECode ProgressBar::SetIndeterminateTintList(
+    /* [in] */ /*@Nullable*/ IColorStateList* tint)
+{
+    if (mProgressTintInfo == NULL) {
+        mProgressTintInfo = new ProgressTintInfo();
+    }
+    mProgressTintInfo->mIndeterminateTintList = tint;
+    mProgressTintInfo->mHasIndeterminateTint = TRUE;
+
+    ApplyIndeterminateTint();
+    return NOERROR;
+}
+
+ECode ProgressBar::GetIndeterminateTintList(
+    /* [out] */ IColorStateList** list)
+{
+    VALIDATE_NOT_NULL(list);
+    *list = mProgressTintInfo != NULL ? mProgressTintInfo->mIndeterminateTintList.Get() : NULL;
+    REFCOUNT_ADD(*list);
+    return NOERROR;
+}
+
+ECode ProgressBar::SetIndeterminateTintMode(
+    /* [in] */ /*@Nullable*/ PorterDuffMode tintMode)
+{
+    if (mProgressTintInfo == NULL) {
+        mProgressTintInfo = new ProgressTintInfo();
+    }
+    mProgressTintInfo->mIndeterminateTintMode = tintMode;
+    mProgressTintInfo->mHasIndeterminateTintMode = TRUE;
+
+    ApplyIndeterminateTint();
+    return NOERROR;
+}
+
+ECode ProgressBar::GetIndeterminateTintMode(
+    /* [out] */ PorterDuffMode* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    *mode = mProgressTintInfo != NULL ? mProgressTintInfo->mIndeterminateTintMode : -1;
+    return NOERROR;
+}
+
+void ProgressBar::ApplyIndeterminateTint()
+{
+    if (mIndeterminateDrawable != NULL && mProgressTintInfo != NULL) {
+        AutoPtr<ProgressTintInfo> tintInfo = mProgressTintInfo;
+        if (tintInfo->mHasIndeterminateTint || tintInfo->mHasIndeterminateTintMode) {
+            mIndeterminateDrawable->Mutate((IDrawable**)&mIndeterminateDrawable);
+
+            if (tintInfo->mHasIndeterminateTint) {
+                mIndeterminateDrawable->SetTintList(tintInfo->mIndeterminateTintList);
+            }
+
+            if (tintInfo->mHasIndeterminateTintMode) {
+                mIndeterminateDrawable->SetTintMode(tintInfo->mIndeterminateTintMode);
+            }
+        }
+    }
+}
+
+ECode ProgressBar::SetIndeterminateDrawableTiled(
+    /* [in] */ IDrawable* d)
+{
+    if (d != NULL) {
+        d = TileifyIndeterminate(d);
+    }
+
+    SetIndeterminateDrawable(d);
+    return NOERROR;
+}
+
+ECode ProgressBar::GetProgressDrawable(
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable);
+    *drawable = mProgressDrawable;
+    REFCOUNT_ADD(*drawable);
+    return NOERROR;
+}
+
 ECode ProgressBar::SetProgressDrawable(
     /* [in] */ IDrawable* d)
 {
-    Boolean needUpdate;
-    if (mProgressDrawable != NULL && d != mProgressDrawable) {
-        mProgressDrawable->SetCallback(NULL);
-        needUpdate = TRUE;
-    } else {
-        needUpdate = FALSE;
-    }
-    if (d != NULL) {
-        d->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
-
-        if (CanResolveLayoutDirection()) {
-            d->SetLayoutDirection(GetLayoutDirection());
+    if (mProgressDrawable.Get() != d) {
+        if (mProgressDrawable != NULL) {
+            mProgressDrawable->SetCallback(NULL);
+            UnscheduleDrawable(mProgressDrawable);
         }
 
-        // Make sure the ProgressBar is always tall enough
-        Int32 drawableHeight;
-        d->GetMinimumHeight(&drawableHeight);
-        if (mMaxHeight < drawableHeight) {
-            mMaxHeight = drawableHeight;
-            RequestLayout();
-        }
-    }
-    mProgressDrawable = d;
-    if (!mIndeterminate) {
-        mCurrentDrawable = d;
-        PostInvalidate();
-    }
+        mProgressDrawable = d;
 
-    if (needUpdate) {
-        UpdateDrawableBounds(GetWidth(), GetHeight());
+        if (d != NULL) {
+            d->SetCallback(THIS_PROBE(IDrawableCallback));
+            Int32 dir = 0;
+            GetLayoutDirection(&dir);
+            d->SetLayoutDirection(dir);
+            Boolean is = FALSE;
+            if (d->IsStateful(&is), is) {
+                AutoPtr<ArrayOf<Int32> > state;
+                GetDrawableState((ArrayOf<Int32>**)&state);
+                Boolean isStateful = FALSE;
+                d->SetState(state, &isStateful);
+            }
+
+            // Make sure the ProgressBar is always tall enough
+            Int32 drawableHeight = 0;
+            d->GetMinimumHeight(&drawableHeight);
+            if (mMaxHeight < drawableHeight) {
+                mMaxHeight = drawableHeight;
+                RequestLayout();
+            }
+
+            ApplyProgressTints();
+        }
+
+        if (!mIndeterminate) {
+            mCurrentDrawable = d;
+            PostInvalidate();
+        }
+
+        Int32 width = 0, height = 0;
+        GetWidth(&width);
+        GetHeight(&height);
+        UpdateDrawableBounds(width, height);
         UpdateDrawableState();
+
         DoRefreshProgress(R::id::progress, mProgress, FALSE, FALSE);
         DoRefreshProgress(R::id::secondaryProgress, mSecondaryProgress, FALSE, FALSE);
     }
@@ -630,9 +733,238 @@ ECode ProgressBar::SetProgressDrawable(
     return NOERROR;
 }
 
-/**
- * @return The drawable currently used to draw the progress bar
- */
+void ProgressBar::ApplyProgressTints()
+{
+    if (mProgressDrawable != NULL && mProgressTintInfo != NULL) {
+        ApplyPrimaryProgressTint();
+        ApplyProgressBackgroundTint();
+        ApplySecondaryProgressTint();
+    }
+}
+
+void ProgressBar::ApplyPrimaryProgressTint()
+{
+    if (mProgressTintInfo->mHasProgressTint
+            || mProgressTintInfo->mHasProgressTintMode) {
+        AutoPtr<IDrawable> target = GetTintTarget(R::id::progress, TRUE);
+        if (target != NULL) {
+            if (mProgressTintInfo->mHasProgressTint) {
+                target->SetTintList(mProgressTintInfo->mProgressTintList);
+            }
+            if (mProgressTintInfo->mHasProgressTintMode) {
+                target->SetTintMode(mProgressTintInfo->mProgressTintMode);
+            }
+        }
+    }
+}
+
+void ProgressBar::ApplyProgressBackgroundTint()
+{
+    if (mProgressTintInfo->mHasProgressBackgroundTint
+            || mProgressTintInfo->mHasProgressBackgroundTintMode) {
+        AutoPtr<IDrawable> target = GetTintTarget(R::id::background, FALSE);
+        if (target != NULL) {
+            if (mProgressTintInfo->mHasProgressBackgroundTint) {
+                target->SetTintList(mProgressTintInfo->mProgressBackgroundTintList);
+            }
+            if (mProgressTintInfo->mHasProgressBackgroundTintMode) {
+                target->SetTintMode(mProgressTintInfo->mProgressBackgroundTintMode);
+            }
+        }
+    }
+}
+
+void ProgressBar::ApplySecondaryProgressTint()
+{
+    if (mProgressTintInfo->mHasSecondaryProgressTint
+            || mProgressTintInfo->mHasSecondaryProgressTintMode) {
+        AutoPtr<IDrawable> target = GetTintTarget(R::id::secondaryProgress, FALSE);
+        if (target != NULL) {
+            if (mProgressTintInfo->mHasSecondaryProgressTint) {
+                target->SetTintList(mProgressTintInfo->mSecondaryProgressTintList);
+            }
+            if (mProgressTintInfo->mHasSecondaryProgressTintMode) {
+                target->SetTintMode(mProgressTintInfo->mSecondaryProgressTintMode);
+            }
+        }
+    }
+}
+
+ECode ProgressBar::SetProgressTintList(
+    /* [in] */ /*@Nullable*/ IColorStateList* tint)
+{
+    if (mProgressTintInfo == NULL) {
+        mProgressTintInfo = new ProgressTintInfo();
+    }
+    mProgressTintInfo->mProgressTintList = tint;
+    mProgressTintInfo->mHasProgressTint = TRUE;
+
+    if (mProgressDrawable != NULL) {
+        ApplyPrimaryProgressTint();
+    }
+    return NOERROR;
+}
+
+ECode ProgressBar::GetProgressTintList(
+    /* [out] */ IColorStateList** list)
+{
+    VALIDATE_NOT_NULL(list);
+    *list = mProgressTintInfo != NULL ? mProgressTintInfo->mProgressTintList.Get() : NULL;
+    REFCOUNT_ADD(*list);
+    return NOERROR;
+}
+
+ECode ProgressBar::SetProgressTintMode(
+    /* [in] */ /*@Nullable*/ PorterDuffMode tintMode)
+{
+    if (mProgressTintInfo == NULL) {
+        mProgressTintInfo = new ProgressTintInfo();
+    }
+    mProgressTintInfo->mProgressTintMode = tintMode;
+    mProgressTintInfo->mHasProgressTintMode = TRUE;
+
+    if (mProgressDrawable != NULL) {
+        ApplyPrimaryProgressTint();
+    }
+    return NOERROR;
+}
+
+ECode ProgressBar::GetProgressTintMode(
+    /* [out] */ PorterDuffMode* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    *mode = mProgressTintInfo != NULL ? mProgressTintInfo->mProgressTintMode : -1;
+    return NOERROR;
+}
+
+ECode ProgressBar::SetProgressBackgroundTintList(
+    /* [in] */ /*@Nullable*/ IColorStateList* tint)
+{
+    if (mProgressTintInfo == NULL) {
+        mProgressTintInfo = new ProgressTintInfo();
+    }
+    mProgressTintInfo->mProgressBackgroundTintList = tint;
+    mProgressTintInfo->mHasProgressBackgroundTint = TRUE;
+
+    if (mProgressDrawable != NULL) {
+        ApplyProgressBackgroundTint();
+    }
+    return NOERROR;
+}
+
+ECode ProgressBar::GetProgressBackgroundTintList(
+    /* [out] */ IColorStateList** list)
+{
+    VALIDATE_NOT_NULL(list);
+    *list = mProgressTintInfo != NULL ? mProgressTintInfo->mProgressBackgroundTintList : NULL;
+    REFCOUNT_ADD(*list);
+    return NOERROR;
+}
+
+ECode ProgressBar::SetProgressBackgroundTintMode(
+    /* [in] */ /*@Nullable*/ PorterDuffMode tintMode)
+{
+    if (mProgressTintInfo == NULL) {
+        mProgressTintInfo = new ProgressTintInfo();
+    }
+    mProgressTintInfo->mProgressBackgroundTintMode = tintMode;
+    mProgressTintInfo->mHasProgressBackgroundTintMode = TRUE;
+
+    if (mProgressDrawable != NULL) {
+        ApplyProgressBackgroundTint();
+    }
+    return NOERROR;
+}
+
+ECode ProgressBar::GetProgressBackgroundTintMode(
+    /* [out] */ PorterDuffMode* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    *mode = mProgressTintInfo != NULL ? mProgressTintInfo->mProgressBackgroundTintMode : -1;
+    return NOERROR;
+}
+
+ECode ProgressBar::SetSecondaryProgressTintList(
+    /* [in] */ /*@Nullable*/ IColorStateList* tint)
+{
+    if (mProgressTintInfo == NULL) {
+        mProgressTintInfo = new ProgressTintInfo();
+    }
+    mProgressTintInfo->mSecondaryProgressTintList = tint;
+    mProgressTintInfo->mHasSecondaryProgressTint = TRUE;
+
+    if (mProgressDrawable != NULL) {
+        ApplySecondaryProgressTint();
+    }
+    return NOERROR;
+}
+
+ECode ProgressBar::GetSecondaryProgressTintList(
+    /* [out] */ IColorStateList** list)
+{
+    VALIDATE_NOT_NULL(list);
+    *list = mProgressTintInfo != NULL ? mProgressTintInfo->mSecondaryProgressTintList.Get() : NULL;
+    REFCOUNT_ADD(*list);
+    return NOERROR;
+}
+
+ECode ProgressBar::SetSecondaryProgressTintMode(
+    /* [in] */ /*@Nullable*/ PorterDuffMode tintMode)
+{
+    if (mProgressTintInfo == NULL) {
+        mProgressTintInfo = new ProgressTintInfo();
+    }
+    mProgressTintInfo->mSecondaryProgressTintMode = tintMode;
+    mProgressTintInfo->mHasSecondaryProgressTintMode = TRUE;
+
+    if (mProgressDrawable != NULL) {
+        ApplySecondaryProgressTint();
+    }
+    return NOERROR;
+}
+
+ECode ProgressBar::GetSecondaryProgressTintMode(
+    /* [out] */ PorterDuffMode* mode)
+{
+    VALIDATE_NOT_NULL(mode);
+    *mode = mProgressTintInfo != NULL ? mProgressTintInfo->mSecondaryProgressTintMode : -1;
+    return NOERROR;
+}
+
+AutoPtr<IDrawable> ProgressBar::GetTintTarget(
+    /* [in] */ Int32 layerId,
+    /* [in] */ Boolean shouldFallback)
+{
+    AutoPtr<IDrawable> layer;
+
+    AutoPtr<IDrawable> d = mProgressDrawable;
+    if (d != NULL) {
+        d->Mutate((IDrawable**)&mProgressDrawable);
+
+        if (ILayerDrawable::Probe(d)) {
+            ILayerDrawable::Probe(d)->FindDrawableByLayerId(layerId, (IDrawable**)&layer);
+        }
+
+        if (shouldFallback && layer == NULL) {
+            layer = d;
+        }
+    }
+
+    return layer;
+}
+
+ECode ProgressBar::SetProgressDrawableTiled(
+    /* [in] */ IDrawable* d)
+{
+    AutoPtr<IDrawable> drawable = d;
+    if (drawable != NULL) {
+        drawable = Tileify(drawable, FALSE);
+    }
+
+    SetProgressDrawable(drawable);
+    return NOERROR;
+}
+
 AutoPtr<IDrawable> ProgressBar::GetCurrentDrawable()
 {
     return mCurrentDrawable;
@@ -653,9 +985,6 @@ ECode ProgressBar::JumpDrawablesToCurrentState()
     return NOERROR;
 }
 
-/**
- * @hide
- */
 ECode ProgressBar::OnResolveDrawables(
     /* [in] */ Int32 layoutDirection)
 {
@@ -681,41 +1010,109 @@ ECode ProgressBar::PostInvalidate()
     return NOERROR;
 }
 
-//synchronized
-//
+void ProgressBar::SetDrawableTint(
+    /* [in] */ Int32 id,
+    /* [in] */ IColorStateList* tint,
+    /* [in] */ PorterDuffMode tintMode,
+    /* [in] */ Boolean fallback)
+{
+    AutoPtr<IDrawable> layer;
+
+    // We expect a layer drawable, so try to find the target ID.
+    AutoPtr<IDrawable> d = mCurrentDrawable;
+    if (ILayerDrawable::Probe(d)) {
+        ILayerDrawable::Probe(d)->FindDrawableByLayerId(id, (IDrawable**)&layer);
+    }
+
+    if (fallback && layer == NULL) {
+        layer = d;
+    }
+
+    AutoPtr<IDrawable> tmp;
+    layer->Mutate((IDrawable**)&tmp);
+    layer->SetTintList(tint);
+    layer->SetTintMode(tintMode);
+}
+
+Float ProgressBar::GetScale(
+    /* [in] */ Float progress)
+{
+    return mMax > 0 ? progress / (Float) mMax : 0;
+}
+
 void ProgressBar::DoRefreshProgress(
     /* [in] */ Int32 id,
-    /* [in] */ Int32 progress,
+    /* [in] */ Float progress,
     /* [in] */ Boolean fromUser,
     /* [in] */ Boolean callBackToApp)
 {
-    AutoLock lock(*GetSelfLock());
+    AutoLock lock(this);
+    DoRefreshProgress(id, progress, fromUser, callBackToApp, FALSE);
+}
 
-    Float scale = mMax > 0 ? (Float)progress / (Float)mMax : 0;
+void ProgressBar::DoRefreshProgress(
+    /* [in] */ Int32 id,
+    /* [in] */ Float progress,
+    /* [in] */ Boolean fromUser,
+    /* [in] */ Boolean callBackToApp,
+    /* [in] */ Boolean animate)
+{
+    AutoLock lock(this);
+    Float scale = GetScale(progress);
+
     AutoPtr<IDrawable> d = mCurrentDrawable;
     if (d != NULL) {
         AutoPtr<IDrawable> progressDrawable;
-        AutoPtr<ILayerDrawable> layerDrawable = ILayerDrawable::Probe(d);
-        if (layerDrawable) {
-            layerDrawable->FindDrawableByLayerId(id, (IDrawable**)&progressDrawable);
-            if (progressDrawable != NULL && CanResolveLayoutDirection()) {
-                progressDrawable->SetLayoutDirection(GetLayoutDirection());
+
+        if (ILayerDrawable::Probe(d)) {
+            ILayerDrawable::Probe(d)->FindDrawableByLayerId(id, (IDrawable**)&progressDrawable);
+            Boolean can = FALSE;
+            if (progressDrawable != NULL && (CanResolveLayoutDirection(&can), can)) {
+                Int32 dir = 0;
+                GetLayoutDirection(&dir);
+                progressDrawable->SetLayoutDirection(dir);
             }
         }
-        Int32 level = (Int32)(scale * MAX_LEVEL);
-        Boolean tmp;
-        if (progressDrawable) {
-            progressDrawable->SetLevel(level, &tmp);
-        } else {
-            d->SetLevel(level, &tmp);
-        }
-    }
-    else {
+
+        const Int32 level = (Int32) (scale * MAX_LEVEL);
+        Boolean changed = FALSE;
+        (progressDrawable != NULL ? progressDrawable : d)->SetLevel(level, &changed);
+    } else {
         Invalidate();
     }
-    if (callBackToApp && id == R::id::progress) {
-        OnProgressRefresh(scale, fromUser);
+
+    if (id == R::id::progress) {
+        if (animate) {
+            OnAnimatePosition(scale, fromUser);
+        } else if (callBackToApp) {
+            OnProgressRefresh(scale, fromUser);
+        }
     }
+}
+
+void ProgressBar::OnAnimatePosition(
+    /* [in] */ Float scale,
+    /* [in] */ Boolean fromUser)
+{
+}
+
+void ProgressBar::SetProgressValueOnly(
+    /* [in] */ Int32 progress)
+{
+    mProgress = progress;
+    OnProgressRefresh(GetScale(progress), TRUE);
+}
+
+void ProgressBar::SetAnimationPosition(
+    /* [in] */ Float position)
+{
+    mAnimationPosition = position;
+    RefreshProgress(R::id::progress, position, TRUE, TRUE);
+}
+
+Float ProgressBar::GetAnimationPosition()
+{
+    return mAnimationPosition;
 }
 
 void ProgressBar::OnProgressRefresh(
@@ -736,57 +1133,54 @@ void ProgressBar::OnProgressRefresh(
 
 void ProgressBar::RefreshProgress(
     /* [in] */ Int32 id,
-    /* [in] */ Int32 progress,
+    /* [in] */ Float progress,
     /* [in] */ Boolean fromUser)
 {
-    AutoLock lock(*GetSelfLock());
+    AutoLock lock(this);
+    RefreshProgress(id, progress, fromUser, FALSE);
+}
 
-    Int64 cId;
-    Thread::GetCurrentThread()->GetId(&cId);
-    if (mUiThreadId == cId) {
-        DoRefreshProgress(id, progress, fromUser, true);
+void ProgressBar::RefreshProgress(
+    /* [in] */ Int32 id,
+    /* [in] */ Float progress,
+    /* [in] */ Boolean fromUser,
+    /* [in] */ Boolean animate)
+{
+    AutoLock lock(this);
+    Int64 currentId = 0;
+    Thread::GetCurrentThread()->GetId(&currentId);
+    if (mUiThreadId == currentId) {
+        DoRefreshProgress(id, progress, fromUser, TRUE, animate);
     }
     else {
         if (mRefreshProgressRunnable == NULL) {
-            AutoPtr<IWeakReferenceSource> wrs = THIS_PROBE(IWeakReferenceSource);
-            assert(wrs);
             AutoPtr<IWeakReference> wr;
-            wrs->GetWeakReference((IWeakReference**)&wr);
+            GetWeakReference((IWeakReference**)&wr);
             mRefreshProgressRunnable = new RefreshProgressRunnable(wr);
         }
-        AutoPtr<RefreshData> rd = RefreshData::Obtain(id, progress, fromUser);
+
+        AutoPtr<RefreshData> rd = RefreshData::Obtain(id, progress, fromUser, animate);
         mRefreshData.PushBack(rd);
         if (mAttached && !mRefreshIsPosted) {
-            Post(mRefreshProgressRunnable);
+            Boolean result = FALSE;
+            Post(mRefreshProgressRunnable, &result);
             mRefreshIsPosted = TRUE;
         }
     }
 }
 
-/**
- * <p>Set the current progress to the specified value. Does not do anything
- * if the progress bar is in indeterminate mode.</p>
- *
- * @param progress the new progress, between 0 and {@link #getMax()}
- *
- * @see #setIndeterminate(Boolean)
- * @see #isIndeterminate()
- * @see #getProgress()
- * @see #incrementProgressBy(Int32)
- */
 ECode ProgressBar::SetProgress(
     /* [in] */ Int32 progress)
 {
+    AutoLock lock(this);
     return SetProgress(progress, FALSE);
 }
 
-//synchronized
-//
 ECode ProgressBar::SetProgress(
     /* [in] */ Int32 progress,
     /* [in] */ Boolean fromUser)
 {
-    AutoLock lock(*GetSelfLock());
+    AutoLock lock(this);
 
     if (mIndeterminate) {
         return NOERROR;
@@ -807,23 +1201,10 @@ ECode ProgressBar::SetProgress(
     return NOERROR;
 }
 
-/**
- * <p>
- * Set the current secondary progress to the specified value. Does not do
- * anything if the progress bar is in indeterminate mode.
- * </p>
- *
- * @param secondaryProgress the new secondary progress, between 0 and {@link #getMax()}
- * @see #setIndeterminate(Boolean)
- * @see #isIndeterminate()
- * @see #getSecondaryProgress()
- * @see #incrementSecondaryProgressBy(Int32)
- */
-//synchronized
 ECode ProgressBar::SetSecondaryProgress(
     /* [in] */ Int32 secondaryProgress)
 {
-    AutoLock lock(*GetSelfLock());
+    AutoLock lock(this);
 
     if (mIndeterminate) {
         return NOERROR;
@@ -844,83 +1225,37 @@ ECode ProgressBar::SetSecondaryProgress(
     return NOERROR;
 }
 
-
-/**
- * <p>Get the progress bar's current level of progress. Return 0 when the
- * progress bar is in indeterminate mode.</p>
- *
- * @return the current progress, between 0 and {@link #getMax()}
- *
- * @see #setIndeterminate(Boolean)
- * @see #isIndeterminate()
- * @see #setProgress(Int32)
- * @see #setMax(Int32)
- * @see #getMax()
- */
-//synchronized
-//
-Int32 ProgressBar::GetProgress()
+ECode ProgressBar::GetProgress(
+    /* [out] */ Int32* progress)
 {
-    AutoLock lock(*GetSelfLock());
-
-    return mIndeterminate ? 0 : mProgress;
+    VALIDATE_NOT_NULL(progress);
+    AutoLock lock(this);
+    *progress = mIndeterminate ? 0 : mProgress;
+    return NOERROR;
 }
 
-/**
- * <p>Get the progress bar's current level of secondary progress. Return 0 when the
- * progress bar is in indeterminate mode.</p>
- *
- * @return the current secondary progress, between 0 and {@link #getMax()}
- *
- * @see #setIndeterminate(Boolean)
- * @see #isIndeterminate()
- * @see #setSecondaryProgress(Int32)
- * @see #setMax(Int32)
- * @see #getMax()
- */
-//synchronized
-//
-Int32 ProgressBar::GetSecondaryProgress()
+ECode ProgressBar::GetSecondaryProgress(
+    /* [out] */ Int32* progress)
 {
-    AutoLock lock(*GetSelfLock());
-
-    return mIndeterminate ? 0 : mSecondaryProgress;
+    VALIDATE_NOT_NULL(progress);
+    AutoLock lock(this);
+    *progress = mIndeterminate ? 0 : mSecondaryProgress;
+    return NOERROR;
 }
 
-/**
- * <p>Return the upper limit of this progress bar's range.</p>
- *
- * @return a positive integer
- *
- * @see #setMax(Int32)
- * @see #getProgress()
- * @see #getSecondaryProgress()
- */
-//synchronized
-//
-Int32 ProgressBar::GetMax()
+ECode ProgressBar::GetMax(
+    /* [out] */ Int32* max)
 {
-    AutoLock lock(*GetSelfLock());
-
-    return mMax;
+    VALIDATE_NOT_NULL(max);
+    AutoLock lock(this);
+    *max = mMax;
+    return NOERROR;
 }
 
-/**
- * <p>Set the range of the progress bar to 0...<tt>max</tt>.</p>
- *
- * @param max the upper range of this progress bar
- *
- * @see #getMax()
- * @see #setProgress(Int32)
- * @see #setSecondaryProgress(Int32)
- */
-//synchronized
-//
 ECode ProgressBar::SetMax(
     /* [in] */ Int32 max)
 {
-    AutoLock lock(*GetSelfLock());
-
+    AutoLock lock(this);
     if (max < 0) {
         max = 0;
     }
@@ -939,42 +1274,24 @@ ECode ProgressBar::SetMax(
     return NOERROR;
 }
 
-/**
- * <p>Increase the progress bar's progress by the specified amount.</p>
- *
- * @param diff the amount by which the progress must be increased
- *
- * @see #setProgress(Int32)
- */
-//synchronized
-//
 ECode ProgressBar::IncrementProgressBy(
     /* [in] */ Int32 diff)
 {
+    AutoLock lock(this);
     return SetProgress(mProgress + diff, FALSE);
 }
 
-/**
- * <p>Increase the progress bar's secondary progress by the specified amount.</p>
- *
- * @param diff the amount by which the secondary progress must be increased
- *
- * @see #setSecondaryProgress(Int32)
- */
-//synchronized
-//
 ECode ProgressBar::IncrementSecondaryProgressBy(
     /* [in] */ Int32 diff)
 {
+    AutoLock lock(this);
     return SetSecondaryProgress(mSecondaryProgress + diff);
 }
 
-/**
- * <p>Start the indeterminate progress animation.</p>
- */
 void ProgressBar::StartAnimation()
 {
-    if (GetVisibility() != IView::VISIBLE) {
+    Int32 visibility = 0;
+    if ((GetVisibility(&visibility), visibility) != IView::VISIBLE) {
         return;
     }
 
@@ -1011,9 +1328,6 @@ void ProgressBar::StartAnimation()
     PostInvalidate();
 }
 
-/**
- * <p>Stop the indeterminate progress animation.</p>
- */
 void ProgressBar::StopAnimation()
 {
     mHasAnimation = FALSE;
@@ -1025,13 +1339,6 @@ void ProgressBar::StopAnimation()
     PostInvalidate();
 }
 
-/**
- * Sets the acceleration curve for the indeterminate animation.
- * The interpolator is loaded as a resource from the specified context.
- *
- * @param context The application environment
- * @param resID The resource identifier of the interpolator to load
- */
 ECode ProgressBar::SetInterpolator(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resID)
@@ -1043,12 +1350,6 @@ ECode ProgressBar::SetInterpolator(
     return NOERROR;
 }
 
-/**
- * Sets the acceleration curve for the indeterminate animation.
- * Defaults to a linear interpolation.
- *
- * @param interpolator The interpolator which defines the acceleration curve
- */
 ECode ProgressBar::SetInterpolator(
     /* [in] */ IInterpolator* interpolator)
 {
@@ -1057,20 +1358,20 @@ ECode ProgressBar::SetInterpolator(
     return NOERROR;
 }
 
-/**
- * Gets the acceleration curve type for the indeterminate animation.
- *
- * @return the {@link Interpolator} associated to this animation
- */
-AutoPtr<IInterpolator> ProgressBar::GetInterpolator()
+ECode ProgressBar::GetInterpolator(
+    /* [out] */ IInterpolator** interpolator)
 {
-    return mInterpolator;
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = mInterpolator;
+    REFCOUNT_ADD(*interpolator);
+    return NOERROR;
 }
 
 ECode ProgressBar::SetVisibility(
     /* [in] */ Int32 v)
 {
-    if (GetVisibility() != v) {
+    Int32 visibility = 0;
+    if ((GetVisibility(&visibility), visibility) != v) {
         View::SetVisibility(v);
 
         if (mIndeterminate) {
@@ -1087,7 +1388,7 @@ ECode ProgressBar::SetVisibility(
     return NOERROR;
 }
 
-void ProgressBar::OnVisibilityChanged(
+ECode ProgressBar::OnVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
@@ -1102,6 +1403,7 @@ void ProgressBar::OnVisibilityChanged(
             StartAnimation();
         }
     }
+    return NOERROR;
 }
 
 ECode ProgressBar::InvalidateDrawable(
@@ -1174,7 +1476,9 @@ void ProgressBar::UpdateDrawableBounds(
                 }
             }
         }
-        if (IsLayoutRtl()) {
+
+        Boolean rtl = FALSE;
+        if ((IsLayoutRtl(&rtl), rtl) && mMirrorForRtl) {
             Int32 tempLeft = left;
             left = w - right;
             right = w - tempLeft;
@@ -1187,56 +1491,65 @@ void ProgressBar::UpdateDrawableBounds(
     }
 }
 
-//synchronized
-//
 void ProgressBar::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    AutoLock lock(*GetSelfLock());
-
+    AutoLock lock(this);
     View::OnDraw(canvas);
+    DrawTrack(canvas);
+}
 
+void ProgressBar::DrawTrack(
+    /* [in] */ ICanvas* canvas)
+{
     AutoPtr<IDrawable> d = mCurrentDrawable;
-    if (d.Get() != NULL) {
+    if (d != NULL) {
         // Translate canvas so a indeterminate circular progress bar with padding
         // rotates properly in its animation
+        Int32 saveCount = 0;
+        canvas->Save(&saveCount);
 
-        Int32 s;
-        canvas->Save(&s);
-        if(IsLayoutRtl()) {
-            canvas->Translate(GetWidth() - mPaddingRight, mPaddingTop);
+        Boolean rtl = FALSE;
+        if((IsLayoutRtl(&rtl), rtl) && mMirrorForRtl) {
+            Int32 width = 0;
+            GetWidth(&width);
+            canvas->Translate(width - mPaddingRight, mPaddingTop);
             canvas->Scale(-1.0f, 1.0f);
         } else {
             canvas->Translate(mPaddingLeft, mPaddingTop);
         }
-        Int64 time = GetDrawingTime();
+
+        Int64 time = 0;
+        GetDrawingTime(&time);
         if (mHasAnimation) {
-            Boolean res;
-            mAnimation->GetTransformation(time, mTransformation, &res);
-            Float scale;
+            Boolean result = FALSE;
+            mAnimation->GetTransformation(time, mTransformation, &result);
+            Float scale = 0;
             mTransformation->GetAlpha(&scale);
+            // try {
             mInDrawing = TRUE;
-            d->SetLevel((Int32)(scale * MAX_LEVEL), &res);
+            d->SetLevel((Int32) (scale * MAX_LEVEL), &result);
+            // } finally {
             mInDrawing = FALSE;
+            // }
             PostInvalidateOnAnimation();
         }
+
         d->Draw(canvas);
-        canvas->Restore();
+        canvas->RestoreToCount(saveCount);
+
         if (mShouldStartAnimationDrawable && IAnimatable::Probe(d)) {
-            ((IAnimatable*)(IAnimatable::Probe(d)))->Start();
+            IAnimatable::Probe(d)->Start();
             mShouldStartAnimationDrawable = FALSE;
         }
     }
 }
 
-//synchronized
-//
 void ProgressBar::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    AutoLock lock(*GetSelfLock());
-
+    AutoLock lock(this);
     AutoPtr<IDrawable> d = mCurrentDrawable;
 
     Int32 dw = 0;
@@ -1265,7 +1578,8 @@ ECode ProgressBar::DrawableStateChanged()
 
 void ProgressBar::UpdateDrawableState()
 {
-    AutoPtr<ArrayOf<Int32> > state = GetDrawableState();
+    AutoPtr<ArrayOf<Int32> > state;
+    GetDrawableState((ArrayOf<Int32>**)&state);
 
     Boolean stateful;
     if (mProgressDrawable != NULL && (mProgressDrawable->IsStateful(&stateful), stateful)) {
@@ -1277,17 +1591,35 @@ void ProgressBar::UpdateDrawableState()
     }
 }
 
+ECode ProgressBar::DrawableHotspotChanged(
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    View::DrawableHotspotChanged(x, y);
+
+    if (mProgressDrawable != NULL) {
+        mProgressDrawable->SetHotspot(x, y);
+    }
+
+    if (mIndeterminateDrawable != NULL) {
+        mIndeterminateDrawable->SetHotspot(x, y);
+    }
+    return NOERROR;
+}
+
 AutoPtr<IParcelable> ProgressBar::OnSaveInstanceState()
 {
     // Force our ancestor class to save its state
     AutoPtr<IParcelable> superState = View::OnSaveInstanceState();
-    AutoPtr<CProgressBarSavedState> ss;
-    CProgressBarSavedState::NewByFriend(superState, (CProgressBarSavedState**)&ss);
+    assert(0 && "TODO");
+    // AutoPtr<CProgressBarSavedState> ss;
+    // CProgressBarSavedState::NewByFriend(superState, (CProgressBarSavedState**)&ss);
 
-    ss->mProgress = mProgress;
-    ss->mSecondaryProgress = mSecondaryProgress;
+    // ss->mProgress = mProgress;
+    // ss->mSecondaryProgress = mSecondaryProgress;
 
-    return (IParcelable*)ss->Probe(EIID_IParcelable);
+    // return (IParcelable*)ss->Probe(EIID_IParcelable);
+    return NULL;
 }
 
 void ProgressBar::OnRestoreInstanceState(
@@ -1296,11 +1628,12 @@ void ProgressBar::OnRestoreInstanceState(
     AutoPtr<IProgressBarSavedState> ss = IProgressBarSavedState::Probe(state);
 
     AutoPtr<IParcelable> p;
-    ss->GetSuperState((IParcelable**)&p);
+    IAbsSavedState::Probe(ss)->GetSuperState((IParcelable**)&p);
     View::OnRestoreInstanceState(p);
 
-    SetProgress(((CProgressBarSavedState*)(ss.Get()))->mProgress);
-    SetSecondaryProgress(((CProgressBarSavedState*)ss.Get())->mSecondaryProgress);
+    assert(0 && "TODO");
+    // SetProgress(((CProgressBarSavedState*)(ss.Get()))->mProgress);
+    // SetSecondaryProgress(((CProgressBarSavedState*)ss.Get())->mSecondaryProgress);
 }
 
 ECode ProgressBar::OnAttachedToWindow()
@@ -1310,11 +1643,11 @@ ECode ProgressBar::OnAttachedToWindow()
         StartAnimation();
     }
     {
-        AutoLock lock(*GetSelfLock());
-        Int32 count = mRefreshData.GetSize();
-        for (Int32 i = 0; i < count; i++) {
-            AutoPtr<RefreshData> rd = mRefreshData[i];
-            DoRefreshProgress(rd->mId, rd->mProgress, rd->mFromUser, TRUE);
+        AutoLock lock(this);
+        List<AutoPtr<RefreshData> >::Iterator ator = mRefreshData.Begin();
+        for (; ator != mRefreshData.End(); ++ator) {
+            AutoPtr<RefreshData> rd = *ator;
+            DoRefreshProgress(rd->mId, rd->mProgress, rd->mFromUser, rd->mAnimate);
             rd->Recycle();
         }
         mRefreshData.Clear();
@@ -1329,14 +1662,15 @@ ECode ProgressBar::OnDetachedFromWindow()
     if (mIndeterminate) {
         StopAnimation();
     }
+    Boolean result = FALSE;
     if (mRefreshProgressRunnable != NULL) {
-        RemoveCallbacks(mRefreshProgressRunnable);
+        RemoveCallbacks(mRefreshProgressRunnable, &result);
     }
     if (mRefreshProgressRunnable != NULL && mRefreshIsPosted) {
-        RemoveCallbacks(mRefreshProgressRunnable);
+        RemoveCallbacks(mRefreshProgressRunnable, &result);
     }
     if (mAccessibilityEventSender != NULL) {
-        RemoveCallbacks(mAccessibilityEventSender);
+        RemoveCallbacks(mAccessibilityEventSender, &result);
     }
     // This should come after stopAnimation(), otherwise an invalidate message remains in the
     // queue, which can prevent the entire view hierarchy from being GC'ed during a rotation
@@ -1345,37 +1679,28 @@ ECode ProgressBar::OnDetachedFromWindow()
     return NOERROR;
 }
 
-//@Override
 ECode ProgressBar::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     View::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(String("CProgressBar"), (ICharSequence**)&className));
-    event->SetClassName(className);
-    event->SetItemCount(mMax);
-    event->SetCurrentItemIndex(mProgress);
+    FAIL_RETURN(CString::New(String("CProgressBar"), (ICharSequence**)&className));
+    IAccessibilityRecord::Probe(event)->SetClassName(className);
+    IAccessibilityRecord::Probe(event)->SetItemCount(mMax);
+    IAccessibilityRecord::Probe(event)->SetCurrentItemIndex(mProgress);
     return NOERROR;
 }
 
-//@Override
 ECode ProgressBar::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     View::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(String("CProgressBar"), (ICharSequence**)&className));
+    FAIL_RETURN(CString::New(String("CProgressBar"), (ICharSequence**)&className));
     info->SetClassName(className);
     return NOERROR;
 }
 
-/**
- * Schedule a command for sending an accessibility event.
- * </br>
- * Note: A command is used to ensure that accessibility events
- *       are sent at most one in a given time frame to save
- *       system resources while the progress changes quickly.
- */
 void ProgressBar::ScheduleAccessibilityEventSender()
 {
     if (mAccessibilityEventSender == NULL) {
@@ -1386,12 +1711,13 @@ void ProgressBar::ScheduleAccessibilityEventSender()
         mAccessibilityEventSender = new AccessibilityEventSender(wr);
     }
     else {
-        RemoveCallbacks(mAccessibilityEventSender);
+        Boolean result = FALSE;
+        RemoveCallbacks(mAccessibilityEventSender, &result);
     }
-    PostDelayed(mAccessibilityEventSender, TIMEOUT_SEND_ACCESSIBILITY_EVENT);
+    Boolean result = FALSE;
+    PostDelayed(mAccessibilityEventSender, TIMEOUT_SEND_ACCESSIBILITY_EVENT, &result);
 }
 
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
-

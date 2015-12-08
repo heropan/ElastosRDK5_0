@@ -27,9 +27,15 @@ namespace App {
  *
  * @see Notification#bigContentView
  */
-CarClass(CNotificationBigPictureStyle), public NotificationStyle
+CarClass(CNotificationBigPictureStyle)
+    , public NotificationStyle
+    , public INotificationBigPictureStyle
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CNotificationBigPictureStyle();
 
     virtual ~CNotificationBigPictureStyle();
@@ -38,9 +44,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ INotificationBuilder* builder);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI SetBuilder(
         /* [in] */ INotificationBuilder* builder);
@@ -85,7 +88,7 @@ public:
     /**
      * @hide
      */
-    CARAPI populateBigContentView(
+    CARAPI PopulateBigContentView(
         /* [in] */ INotification* wip);
 
 private:

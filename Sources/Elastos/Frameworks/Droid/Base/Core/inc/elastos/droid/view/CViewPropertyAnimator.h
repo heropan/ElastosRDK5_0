@@ -4,16 +4,19 @@
 #include "_Elastos_Droid_View_CViewPropertyAnimator.h"
 #include "ViewPropertyAnimator.h"
 
-using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Animation::IAnimatorListener;
+using Elastos::Droid::Animation::ITimeInterpolator;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CarClass(CViewPropertyAnimator) , public ViewPropertyAnimator
+CarClass(CViewPropertyAnimator)
+    , public ViewPropertyAnimator
 {
 public:
+    CAR_OBJECT_DECL()
+
     CViewPropertyAnimator();
 
     CARAPI constructor(

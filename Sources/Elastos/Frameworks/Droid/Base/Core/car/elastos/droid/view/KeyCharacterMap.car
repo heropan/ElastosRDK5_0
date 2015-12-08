@@ -394,7 +394,7 @@ module
             [out] Int32* behavior);
 
         GetMap(
-            [out] Int32* map);
+            [out] Int64* map);
 
         // add for JNI
         GetNative(

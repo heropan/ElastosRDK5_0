@@ -1,5 +1,5 @@
-#include "CWifiP2pProvDiscEvent.h"
-#include "CWifiP2pDevice.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pProvDiscEvent.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pDevice.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
@@ -15,6 +15,10 @@ namespace Wifi {
 namespace P2p {
 
 const String TAG("WifiP2pProvDiscEvent");
+
+CAR_INTERFACE_IMPL(CWifiP2pProvDiscEvent, Object, IWifiP2pProvDiscEvent)
+
+CAR_OBJECT_IMPL(CWifiP2pProvDiscEvent)
 
 CWifiP2pProvDiscEvent::CWifiP2pProvDiscEvent()
     : mEvent(0)
@@ -119,7 +123,7 @@ ECode CWifiP2pProvDiscEvent::ToString(
     return NOERROR;
 }
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

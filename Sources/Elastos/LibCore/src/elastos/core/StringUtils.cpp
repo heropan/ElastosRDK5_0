@@ -113,6 +113,12 @@ Double StringUtils::ParseDouble(
     return value;
 }
 
+Boolean StringUtils::ParseBoolean(
+    /* [in] */ const String& input)
+{
+    return input.EqualsIgnoreCase("true");
+}
+
 ECode StringUtils::Parse(
     /* [in] */ const String& input,
     /* [out] */ Int16* result)
@@ -613,16 +619,14 @@ ECode StringUtils::ParsePositiveInt64(
 }
 
 String StringUtils::Format(
-    /* [in] */ const String& input,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
 {
-    return Format(CLocale::GetDefault(), input, format, args);
+    return Format(CLocale::GetDefault(), format, args);
 }
 
 String StringUtils::Format(
     /* [in] */ ILocale* locale,
-    /* [in] */ const String& input,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
 {

@@ -1,44 +1,35 @@
-#include "ViewSwitcher.h"
-#ifdef DROID_CORE
-#include "CFrameLayoutLayoutParams.h"
-#endif
 
-using Elastos::Core::CStringWrapper;
+#include "elastos/droid/widget/ViewSwitcher.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-ViewSwitcher::ViewSwitcher()
-{}
+CAR_INTERFACE_IMPL(ViewSwitcher, ViewAnimator, IViewSwitcher);
+ECode ViewSwitcher::constructor(
+    /* [in] */ IContext* context)
+{
+    return ViewAnimator::constructor(context);
+}
 
-ViewSwitcher::ViewSwitcher(
-    /* [in] */ IContext* context) : ViewAnimator(context)
-{}
-
-/**
- * Creates a new empty ViewSwitcher for the given context and with the
- * specified set attributes.
- *
- * @param context the application environment
- * @param attrs a collection of attributes
- */
-ViewSwitcher::ViewSwitcher(
+ECode ViewSwitcher::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs) : ViewAnimator(context, attrs)
-{}
+    /* [in] */ IAttributeSet* attrs)
+{
+    return ViewAnimator::constructor(context, attrs);
+}
 
-/**
- * {@inheritDoc}
- *
- * @throws IllegalStateException if this switcher already contains two children
- */
 ECode ViewSwitcher::AddView(
     /* [in] */ IView* child,
     /* [in] */ Int32 index,
     /* [in] */ IViewGroupLayoutParams* params)
 {
-    if (GetChildCount() >= 2) {
+    Int32 count = 0;
+    if ((GetChildCount(&count), count) >= 2) {
 //        throw new IllegalStateException("Can't add more than 2 views to a ViewSwitcher");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -50,8 +41,8 @@ ECode ViewSwitcher::OnInitializeAccessibilityEvent(
 {
     ViewAnimator::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("CViewSwitcher"), (ICharSequence**)&cs);
-    event->SetClassName(cs);
+    CString::New(String("CViewSwitcher"), (ICharSequence**)&cs);
+    IAccessibilityRecord::Probe(event)->SetClassName(cs);
     return NOERROR;
 }
 
@@ -60,36 +51,19 @@ ECode ViewSwitcher::OnInitializeAccessibilityNodeInfo(
 {
     ViewAnimator::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("CViewSwitcher"), (ICharSequence**)&cs);
+    CString::New(String("CViewSwitcher"), (ICharSequence**)&cs);
     info->SetClassName(cs);
     return NOERROR;
 }
 
-/**
- * Returns the next view to be displayed.
- *
- * @return the view that will be displayed after the next views flip.
- */
 ECode ViewSwitcher::GetNextView(
     /* [out] */ IView** v)
 {
+    VALIDATE_NOT_NULL(v);
     Int32 which = mWhichChild == 0 ? 1 : 0;
-    AutoPtr<IView> temp = GetChildAt(which);
-    *v = temp;
-    REFCOUNT_ADD(*v);
-    return NOERROR;
+    return GetChildAt(which, v);
 }
 
-
-
-/**
- * Sets the factory used to create the two views between which the
- * ViewSwitcher will flip. Instead of using a factory, you can call
- * {@link #addView(android.view.View, int, android.view.ViewGroup.LayoutParams)}
- * twice.
- *
- * @param factory the view factory used to generate the switcher's content
- */
 ECode ViewSwitcher::SetFactory(
     /* [in] */ IViewFactory* factory)
 {
@@ -101,18 +75,16 @@ ECode ViewSwitcher::SetFactory(
     return NOERROR;
 }
 
-/**
- * Reset the ViewSwitcher to hide all of the existing views and to make it
- * think that the first time animation has not yet played.
- */
 ECode ViewSwitcher::Reset()
 {
     mFirstTime = TRUE;
-    AutoPtr<IView> v = GetChildAt(0);
+    AutoPtr<IView> v;
+    GetChildAt(0, (IView**)&v);
     if (v != NULL) {
         v->SetVisibility(IView::GONE);
     }
-    v = GetChildAt(1);
+    v = NULL;
+    GetChildAt(1, ((IView**)&v));
     if (v != NULL) {
         v->SetVisibility(IView::GONE);
     }
@@ -134,23 +106,10 @@ ECode ViewSwitcher::ObtainView(
         CFrameLayoutLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
                 IViewGroupLayoutParams::WRAP_CONTENT, (IFrameLayoutLayoutParams**)&lp);
     }
-    AddView(child, lp);
+    AddView(child, IViewGroupLayoutParams::Probe(lp));
     *v = child;
     REFCOUNT_ADD(*v);
     return NOERROR;
-}
-
-ECode ViewSwitcher::Init(
-    /* [in] */ IContext* context)
-{
-    return ViewAnimator::Init(context);
-}
-
-ECode ViewSwitcher::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return ViewAnimator::Init(context, attrs);
 }
 
 }// namespace Elastos

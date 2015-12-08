@@ -24,7 +24,7 @@ module
          *
          *  @see #onOrientationChanged
          */
-        public static final int ORIENTATION_UNKNOWN = -1;
+        const Int32 ORIENTATION_UNKNOWN = -1;
             //OrientationEventListener.ORIENTATION_UNKNOWN;
 
         /**
@@ -53,7 +53,8 @@ module
          *
          *  @see #ORIENTATION_UNKNOWN
          */
-        OnOrientationChanged(int orientation);
+        OnOrientationChanged(
+            [in] Int32 orientation);
 
     }
 

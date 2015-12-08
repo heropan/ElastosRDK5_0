@@ -3,8 +3,9 @@
 #define __ELASTOS_DROID_NET_NETWORKINFO_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::IEnumMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -23,6 +24,7 @@ class NetworkInfo
 public:
     CAR_INTERFACE_DECL()
 
+    NetworkInfo();
     /**
      * @hide
      */
@@ -241,14 +243,16 @@ public:
 private:
 
     // for initialize STATE_MAP
-    static CARAPI_(AutoPtr<IEnumMap>) CreateStateMap();
+    static CARAPI_(Int32) InternalInit();
 
     /**
      * This is the map described in the Javadoc comment above. The positions
      * of the elements of the array must correspond to the ordinal values
      * of <code>DetailedState</code>.
      */
-    static const AutoPtr<IEnumMap> STATE_MAP;
+    static /* const */ HashMap<NetworkInfoDetailedState, NetworkInfoState> mStateMap;
+
+    static const Int32 mInitFlag;
 
     Int32 mNetworkType;
 

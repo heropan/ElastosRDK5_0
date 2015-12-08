@@ -1,5 +1,7 @@
 module
 {
+    interface Elastos.Droid.Widget.ITabWidget;
+    interface Elastos.Droid.Widget.ITabHost;
 
     namespace Elastos {
     namespace Droid {
@@ -18,7 +20,7 @@ module
          * @param tag the name of the default tab
          */
         SetDefaultTab(
-            [in] String tag)
+            [in] String tag);
 
         /**
          * Sets the default tab that is the first tab highlighted.

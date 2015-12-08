@@ -4,9 +4,9 @@
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::Widget::EIID_TextView;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 IVIEW_METHODS_IMPL(CMultiAutoCompleteTextView, MultiAutoCompleteTextView)
 IDRAWABLECALLBACK_METHODS_IMPL(CMultiAutoCompleteTextView, MultiAutoCompleteTextView)

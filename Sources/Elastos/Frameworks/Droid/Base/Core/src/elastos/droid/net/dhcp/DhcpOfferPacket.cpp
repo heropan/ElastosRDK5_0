@@ -21,7 +21,6 @@ ECode DhcpOfferPacket::constructor(
         super(transId, Inet4Address.ANY, clientIp, Inet4Address.ANY,
             Inet4Address.ANY, clientMac, broadcast);
         mSrcIp = serverAddress;
-
 #endif
 }
 
@@ -32,7 +31,7 @@ ECode DhcpOfferPacket::ToString(
 #if 0 // TODO: Translate codes below
         String s = super.toString();
         String dnsServers = ", DNS servers: ";
-        if (mDnsServers != null) {
+        if (mDnsServers != NULL) {
             for (InetAddress dnsServer: mDnsServers) {
                 dnsServers += dnsServer + " ";
             }
@@ -40,7 +39,6 @@ ECode DhcpOfferPacket::ToString(
         return s + " OFFER, ip " + mYourIp + ", mask " + mSubnetMask +
                 dnsServers + ", gateway " + mGateway +
                 " lease time " + mLeaseTime + ", domain " + mDomainName;
-
 #endif
 }
 
@@ -59,7 +57,6 @@ ECode DhcpOfferPacket::BuildPacket(
             DHCP_BOOTREPLY, mBroadcast);
         result.flip();
         return result;
-
 #endif
 }
 
@@ -72,7 +69,7 @@ ECode DhcpOfferPacket::FinishPacket(
         addTlv(buffer, DHCP_SERVER_IDENTIFIER, mServerIdentifier);
         addTlv(buffer, DHCP_LEASE_TIME, mLeaseTime);
         // the client should renew at 1/2 the lease-expiry interval
-        if (mLeaseTime != null) {
+        if (mLeaseTime != NULL) {
             addTlv(buffer, DHCP_RENEWAL_TIME,
                 Integer.valueOf(mLeaseTime.intValue() / 2));
         }
@@ -82,7 +79,6 @@ ECode DhcpOfferPacket::FinishPacket(
         addTlv(buffer, DHCP_BROADCAST_ADDRESS, mBroadcastAddress);
         addTlv(buffer, DHCP_DNS_SERVER, mDnsServers);
         addTlvEnd(buffer);
-
 #endif
 }
 
@@ -93,7 +89,6 @@ ECode DhcpOfferPacket::DoNextOp(
 #if 0 // TODO: Translate codes below
         machine.onOfferReceived(mBroadcast, mTransId, mClientMac, mYourIp,
             mServerIdentifier);
-
 #endif
 }
 

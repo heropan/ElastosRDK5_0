@@ -1,12 +1,10 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/app/AlertDialog.h"
-#ifdef DROID_CORE
-#include "elastos/droid/app/CAlertController.h"
-#endif
-#include <elastos/utility/logging/Slogger.h>
+#include "elastos/droid/internal/app/CAlertController.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::R;
 using Elastos::Droid::Internal::App::CAlertController;
 using Elastos::Droid::Content::IDialogInterface;
@@ -16,84 +14,59 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(AlertDialog, Dialog, IAlertDialog)
 
 AlertDialog::AlertDialog()
 {
-    Slogger::V("AlertDialog", " >> create AlertDialog() %p", this);
+    Logger::V("AlertDialog", " >> create AlertDialog() %p", this);
 }
 
 AlertDialog::~AlertDialog()
 {
-    Slogger::V("AlertDialog", " >> destory ~AlertDialog() %p", this);
+    Logger::V("AlertDialog", " >> destory ~AlertDialog() %p", this);
 }
 
-AlertDialog::AlertDialog(
+ECode AlertDialog::constructor(
     /* [in] */ IContext* context)
 {
-    Init(context);
+    return constructor(context, ResolveDialogTheme(context, 0), TRUE);
 }
 
-AlertDialog::AlertDialog(
+ECode AlertDialog::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 theme)
 {
-    Init(context, theme);
+    return constructor(context, theme, TRUE);
 }
 
-AlertDialog::AlertDialog(
+ECode AlertDialog::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 theme,
     /* [in] */ Boolean createThemeContextWrapper)
 {
-    Init(context, theme, createThemeContextWrapper);
-}
-
-AlertDialog::AlertDialog(
-    /* [in] */ IContext* context,
-    /* [in] */ Boolean cancelable,
-    /* [in] */ IDialogInterfaceOnCancelListener* cancelListener)
-{
-    Init(context, cancelable, cancelListener);
-}
-
-ECode AlertDialog::Init(
-    /* [in] */ IContext* context)
-{
-    return Init(context, ResolveDialogTheme(context, 0), TRUE);
-}
-
-ECode AlertDialog::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 theme)
-{
-    return Init(context, theme, TRUE);
-}
-
-ECode AlertDialog::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 theme,
-    /* [in] */ Boolean createThemeContextWrapper)
-{
-    FAIL_RETURN(Dialog::Init(context, ResolveDialogTheme(context, theme), createThemeContextWrapper));
+    FAIL_RETURN(Dialog::constructor(context, ResolveDialogTheme(context, theme), createThemeContextWrapper));
 
     mWindow->AlwaysReadCloseOnTouchAttr();
-    AutoPtr<IContext> ctx = GetContext();
-    AutoPtr<IWindow> window = GetWindow();
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
     return CAlertController::New(ctx, THIS_PROBE(IDialogInterface), window,
             (IAlertController**)&mAlert);
 }
 
-ECode AlertDialog::Init(
+ECode AlertDialog::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Boolean cancelable,
     /* [in] */ IDialogInterfaceOnCancelListener* cancelListener)
 {
-    FAIL_RETURN(Dialog::Init(context, ResolveDialogTheme(context, 0)));
+    FAIL_RETURN(Dialog::constructor(context, ResolveDialogTheme(context, 0)));
 
     mWindow->AlwaysReadCloseOnTouchAttr();
     SetCancelable(cancelable);
     SetOnCancelListener(cancelListener);
-    AutoPtr<IWindow> window = GetWindow();
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
     return CAlertController::New(context, THIS_PROBE(IDialogInterface), window,
             (IAlertController**)&mAlert);
 }
@@ -119,37 +92,19 @@ Int32 AlertDialog::ResolveDialogTheme(
     }
 }
 
-/**
- * Gets one of the buttons used in the dialog.
- * <p>
- * If a button does not exist in the dialog, NULL will be returned.
- *
- * @param whichButton The identifier of the button that should be returned.
- *            For example, this can be
- *            {@link DialogInterface#BUTTON_POSITIVE}.
- * @return The button from the dialog, or NULL if a button does not exist.
- */
-AutoPtr<IButton> AlertDialog::GetButton(
-    /* [in] */ Int32 whichButton)
+ECode AlertDialog::GetButton(
+    /* [in] */ Int32 whichButton,
+    /* [out] */ IButton** button)
 {
-    AutoPtr<IButton> button;
-    mAlert->GetButton(whichButton, (IButton**)&button);
-    return button;
+    return mAlert->GetButton(whichButton, button);
 }
 
-/**
- * Gets the list view used in the dialog.
- *
- * @return The {@link ListView} from the dialog.
- */
-AutoPtr<IListView> AlertDialog::GetListView()
+ECode AlertDialog::GetListView(
+    /* [out] */ IListView** listView)
 {
-    AutoPtr<IListView> listview;
-    mAlert->GetListView((IListView**)&listview);
-    return listview;
+    return mAlert->GetListView(listView);
 }
 
-//@Override
 ECode AlertDialog::SetTitle(
     /* [in] */ ICharSequence* title)
 {
@@ -157,9 +112,6 @@ ECode AlertDialog::SetTitle(
     return mAlert->SetTitle(title);
 }
 
-/**
- * @see Builder#setCustomTitle(View)
- */
 ECode AlertDialog::SetCustomTitle(
     /* [in] */ IView* customTitleView)
 {
@@ -172,25 +124,12 @@ ECode AlertDialog::SetMessage(
     return mAlert->SetMessage(message);
 }
 
-/**
- * Set the view to display in that dialog.
- */
 ECode AlertDialog::SetView(
     /* [in] */ IView* view)
 {
     return mAlert->SetView(view);
 }
 
-/**
- * Set the view to display in that dialog, specifying the spacing to appear around that
- * view.
- *
- * @param view The view to show in the content area of the dialog
- * @param viewSpacingLeft Extra space to appear to the left of {@code view}
- * @param viewSpacingTop Extra space to appear above {@code view}
- * @param viewSpacingRight Extra space to appear to the right of {@code view}
- * @param viewSpacingBottom Extra space to appear below {@code view}
- */
 ECode AlertDialog::SetView(
     /* [in] */ IView* view,
     /* [in] */ Int32 viewSpacingLeft,
@@ -204,21 +143,11 @@ ECode AlertDialog::SetView(
 }
 
 ECode AlertDialog::SetButtonPanelLayoutHint(
-    /* [in] */ Int32 layoutHint);
+    /* [in] */ Int32 layoutHint)
 {
     return mAlert->SetButtonPanelLayoutHint(layoutHint);
 }
 
-/**
- * Set a message to be sent when a button is pressed.
- *
- * @param whichButton Which button to set the message for, can be one of
- *            {@link DialogInterface#BUTTON_POSITIVE},
- *            {@link DialogInterface#BUTTON_NEGATIVE}, or
- *            {@link DialogInterface#BUTTON_NEUTRAL}
- * @param text The text to display in positive button.
- * @param msg The {@link Message} to be sent when clicked.
- */
 ECode AlertDialog::SetButton(
     /* [in] */ Int32 whichButton,
     /* [in] */ ICharSequence* text,
@@ -227,16 +156,6 @@ ECode AlertDialog::SetButton(
     return mAlert->SetButton(whichButton, text, NULL, msg);
 }
 
-/**
- * Set a listener to be invoked when the positive button of the dialog is pressed.
- *
- * @param whichButton Which button to set the listener on, can be one of
- *            {@link DialogInterface#BUTTON_POSITIVE},
- *            {@link DialogInterface#BUTTON_NEGATIVE}, or
- *            {@link DialogInterface#BUTTON_NEUTRAL}
- * @param text The text to display in positive button.
- * @param listener The {@link DialogInterface.OnClickListener} to use.
- */
 ECode AlertDialog::SetButton(
     /* [in] */ Int32 whichButton,
     /* [in] */ ICharSequence* text,
@@ -245,11 +164,6 @@ ECode AlertDialog::SetButton(
     return mAlert->SetButton(whichButton, text, listener, NULL);
 }
 
-/**
- * Set resId to 0 if you don't want an icon.
- * @param resId the resourceId of the drawable to use as the icon or 0
- * if you don't want an icon.
- */
 ECode AlertDialog::SetIcon(
     /* [in] */ Int32 resId)
 {
@@ -275,40 +189,47 @@ ECode AlertDialog::SetInverseBackgroundForced(
     return mAlert->SetInverseBackgroundForced(forceInverseBackground);
 }
 
-//@Override
-void AlertDialog::OnCreate(
+
+ECode AlertDialog::OnCreate(
     /* [in] */ IBundle* savedInstanceState)
 {
     Dialog::OnCreate(savedInstanceState);
     mAlert->InstallContent();
+    return NOERROR;
+}
+
+ECode AlertDialog::OnKeyDown(
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    Boolean bval;
+    mAlert->OnKeyDown(keyCode, event, &bval);
+    if (bval) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    return Dialog::OnKeyDown(keyCode, event, result);
 }
 
 //@Override
-Boolean AlertDialog::OnKeyDown(
+ECode AlertDialog::OnKeyUp(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    Boolean result;
-    mAlert->OnKeyDown(keyCode, event, &result);
-    if (result) {
-        return TRUE;
+    VALIDATE_NOT_NULL(result)
+    Boolean bval;
+    mAlert->OnKeyUp(keyCode, event, &bval);
+    if (bval) {
+        *result = TRUE;
+        return NOERROR;
     }
 
-    return Dialog::OnKeyDown(keyCode, event);
-}
-
-//@Override
-Boolean AlertDialog::OnKeyUp(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
-{
-    Boolean result;
-    mAlert->OnKeyUp(keyCode, event, &result);
-    if (result) {
-        return TRUE;
-    }
-
-    return Dialog::OnKeyUp(keyCode, event);
+    return Dialog::OnKeyUp(keyCode, event, result);
 }
 
 } // namespace App

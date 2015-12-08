@@ -7,6 +7,7 @@
 
 using Elastos::Droid::Os::IMessageQueue;
 using Elastos::Droid::Os::ILooper;
+using Elastos::Core::ICloseGuard;
 
 namespace Elastos {
 namespace Droid {
@@ -21,7 +22,7 @@ namespace View {
  *
  * @hide
  */
-class DisplayEventReceiver
+class ECO_PUBLIC DisplayEventReceiver
     : public Object
     , public IDisplayEventReceiver
 {
@@ -82,35 +83,35 @@ public:
     virtual CARAPI ScheduleVsync();
 
 private:
-    CARAPI_(void) NativeInit();
+    ECO_LOCAL CARAPI_(void) NativeInit();
 
-    CARAPI_(void) Dispose(
+    ECO_LOCAL CARAPI_(void) Dispose(
         /* [in] */ Boolean finalized);
 
     // Called from native code.
     //@SuppressWarnings("unused")
-    CARAPI_(void) DispatchVsync(
+    ECO_LOCAL CARAPI_(void) DispatchVsync(
         /* [in] */ Int64 timestampNanos,
         /* [in] */ Int32 builtInDisplayId,
         /* [in] */ Int32 frame);
 
     // Called from native code.
     //@SuppressWarnings("unused")
-    CARAPI_(void) DispatchHotplug(
+    ECO_LOCAL CARAPI_(void) DispatchHotplug(
         /* [in] */ Int64 timestampNanos,
         /* [in] */ Int32 builtInDisplayId,
         /* [in] */ Boolean connected);
 
 private:
-    static const char* TAG;
+    ECO_LOCAL static const String TAG;
 
-    //final CloseGuard mCloseGuard = CloseGuard.get();
+    ECO_LOCAL AutoPtr<ICloseGuard> mCloseGuard;// = CloseGuard.get();
 
-    android::sp<NativeDisplayEventReceiver> mNativeReceiver;
+    ECO_LOCAL android::sp<NativeDisplayEventReceiver> mNativeReceiver;
 
     // We keep a reference message queue object here so that it is not
     // GC'd while the native peer of the receiver is using them.
-    AutoPtr<IMessageQueue> mMessageQueue;
+    ECO_LOCAL AutoPtr<IMessageQueue> mMessageQueue;
 };
 
 }   //namespace View

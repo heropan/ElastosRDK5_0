@@ -288,6 +288,9 @@ module
          * Clean up resources.
          */
         Destroy();
+
+        GetVocabulary(
+            [out] Int32* ret);
     }
 
     interface IRecognizerHelper {
@@ -319,7 +322,7 @@ module
     /**
      * Represents a grammar loaded into the Recognizer.
      */
-    interface  IRecognizerGrammar {
+    interface IRecognizerGrammar {
         /**
          * Reset all slots.
          */
@@ -366,9 +369,9 @@ module
         Destroy();
     }
 
-    }//namespace Srec
-    }//namespace Speech
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Srec
+    } // namespace Speech
+    } // namespace Droid
+    } // namespace Elastos
 
 }

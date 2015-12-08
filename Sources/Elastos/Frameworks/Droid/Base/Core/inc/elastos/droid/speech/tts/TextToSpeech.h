@@ -1,6 +1,9 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_TextToSpeech_H__
 #define __ELASTOS_DROID_SPEECH_TTS_TextToSpeech_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
+
 #include "elastos/droid/speech/tts/UtteranceProgressListener.h"
 #include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
@@ -37,6 +40,8 @@ namespace Tts {
  *
  */
 class TextToSpeech
+    : public Object
+    , public ITextToSpeech
 {
 public:
     /**
@@ -46,66 +51,64 @@ public:
      */
     //static
     class TextToSpeechEngineInfo
-        : public ElRefBase
+        : public Object
         , public ITextToSpeechEngineInfo
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        TextToSpeechEngineInfo();
 
-        CARAPI_(UInt32) Release();
+        virtual ~TextToSpeechEngineInfo();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
+        CARAPI constructor();
 
     public:
         CARAPI ToString(
             /* [out] */ String* ret);
 
     public:
-        //@Override
-        CARAPI_(String) ToString();
-
-    public:
         /**
          * Engine package name..
          */
-        String name;// = NULL;
+        String name;
         /**
          * Localized label for the engine.
          */
-        String label;// = NULL;
+        String label;
         /**
          * Icon for the engine.
          */
-        Int32 icon;// = 0;
+        Int32 icon;
         /**
          * Whether this engine is a part of the system
          * image.
          *
          * @hide
          */
-        Boolean system;// = FALSE;
+        Boolean system;
         /**
          * The priority the engine declares for the the intent filter
          * {@code android.intent.action.TTS_SERVICE}
          *
          * @hide
          */
-        Int32 priority;// = 0;
+        Int32 priority;
     };
 
 private:
-    //interface Action<R>
+    /**
+     * Java:
+     * private interface Action<R> {
+     *    R run(ITextToSpeechService service) throws RemoteException;
+     * }
+     */
     class TextToSpeechActionR
-        : public ElRefBase
+        : public Object
     {
     public:
         virtual CARAPI_(Handle32) Run(
-            /* [in] */ IITextToSpeechService* service) = 0;// throws RemoteException;
+            /* [in] */ IITextToSpeechService* service) = 0;
     };
 
     class TextToSpeechActionRShutdown
@@ -283,26 +286,22 @@ private:
 
 private:
     class TextToSpeechConnection
-        : public ElRefBase
+        : public Object
         , public IServiceConnection
     {
     private:
         class TextToSpeechConnectionCallback
-            : public ElRefBase
+            : public Object
             , public IITextToSpeechCallback
         {
         public:
-            CARAPI_(PInterface) Probe(
-                /* [in] */ REIID riid);
+            CAR_INTERFACE_DECL();
 
-            CARAPI_(UInt32) AddRef();
+            TextToSpeechConnectionCallback();
 
-            CARAPI_(UInt32) Release();
+            virtual ~TextToSpeechConnectionCallback();
 
-            CARAPI GetInterfaceID(
-                /* [in] */ IInterface* Object,
-                /* [out] */ InterfaceID* iID);
-
+            CARAPI constructor();
         public:
             //@Override
             CARAPI OnDone(
@@ -325,16 +324,13 @@ private:
 
         };
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        TextToSpeechConnection();
 
-        CARAPI_(UInt32) Release();
+        virtual ~TextToSpeechConnection();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
+        CARAPI constructor();
     public:
         //@Override
         CARAPI OnServiceConnected(
@@ -345,11 +341,20 @@ private:
         //public
         CARAPI_(AutoPtr</*IIBinder*/IInterface>) GetCallerIdentity();
 
+        /**
+         * Clear connection related fields and cancel mOnServiceConnectedAsyncTask if set.
+         *
+         * @return true if we cancel mOnSetupConnectionAsyncTask in progress.
+         */
+        CARAPI_(Boolean) ClearServiceConnection();
+
         //@Override
         CARAPI OnServiceDisconnected(
             /* [in] */ IComponentName* name);
 
         CARAPI_(void) Disconnect();
+
+        CARAPI_(Boolean) IsEstablished();
 
         //<R>
         CARAPI_(Handle32) RunAction(
@@ -364,12 +369,20 @@ private:
         TextToSpeech* mTts;
         AutoPtr<IITextToSpeechService> mService;
         //private final ITextToSpeechCallback.Stub mCallback = new ITextToSpeechCallback.Stub() {...}
-        AutoPtr<IITextToSpeechCallback> mCallback;// = new TextToSpeechConnectionCallback(mTts);
+        AutoPtr<IITextToSpeechCallback> mCallback;      // = new TextToSpeechConnectionCallback(mTts);
     };
 
     friend class TextToSpeechConnection;
 
 public:
+    CAR_INTERFACE_DECL();
+
+    TextToSpeech();
+
+    virtual ~TextToSpeech();
+
+    CARAPI constructor();
+
     /**
      * The constructor for the TextToSpeech class, using the default TTS engine.
      * This will also initialize the associated TextToSpeech engine if it isn't already running.
@@ -380,7 +393,7 @@ public:
      *            The {@link TextToSpeech.OnInitListener} that will be called when the
      *            TextToSpeech engine has initialized.
      */
-    TextToSpeech(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ITextToSpeechOnInitListener* listener);
 
@@ -395,7 +408,7 @@ public:
      *            TextToSpeech engine has initialized.
      * @param engine Package name of the TTS engine to use.
      */
-    TextToSpeech(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ITextToSpeechOnInitListener* listener,
         /* [in] */ const String& engine);
@@ -406,29 +419,12 @@ public:
      *
      * @hide
      */
-    TextToSpeech(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ITextToSpeechOnInitListener* listener,
         /* [in] */ const String& engine,
         /* [in] */ const String& packageName,
         /* [in] */ Boolean useFallback);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ITextToSpeechOnInitListener* listener);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ITextToSpeechOnInitListener* listener,
-        /* [in] */ const String& engine);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ITextToSpeechOnInitListener* listener,
-        /* [in] */ const String& engine,
-        /* [in] */ const String& packageName,
-        /* [in] */ Boolean useFallback);
-
 public:
     /**
      * Releases the resources used by the TextToSpeech engine.
@@ -801,15 +797,13 @@ public:
      */
     CARAPI_(AutoPtr<List< AutoPtr<ITextToSpeechEngineInfo> > >) GetEngines();
 
-protected:
-    TextToSpeech();
-
 private:
     //private <R>
     CARAPI_(Handle32) RunActionNoReconnect(
         /* [in] */ TextToSpeechActionR* action,
         /* [in] */ Handle32 errorResult,
-        /* [in] */ const String& method);
+        /* [in] */ const String& method,
+        /* [in] */ Boolean onlyEstablishedConnection);
 
     //private <R>
     CARAPI_(Handle32) RunAction(
@@ -822,7 +816,8 @@ private:
         /* [in] */ TextToSpeechActionR* action,
         /* [in] */ Handle32 errorResult,
         /* [in] */ const String& method,
-        /* [in] */ Boolean reconnect);
+        /* [in] */ Boolean reconnect,
+        /* [in] */ Boolean onlyEstablishedConnection);
 
     CARAPI_(Int32) InitTts();
 
@@ -833,6 +828,14 @@ private:
         /* [in] */ Int32 result);
 
     CARAPI_(AutoPtr</*IIBinder*/IInterface>) GetCallerIdentity();
+
+    /**
+     * Limit of length of input string passed to speak and synthesizeToFile.
+     *
+     * @see #speak
+     * @see #synthesizeToFile
+     */
+    CARAPI_(Int32) GetMaxSpeechInputLength();
 
 private:
     CARAPI_(AutoPtr<IUri>) MakeResourceUri(
@@ -858,9 +861,9 @@ private:
         /* [in] */ IObjectStringMap* params,
         /* [in] */ const String& key);
 public:
-    static const Int32 QUEUE_DESTROY;// = 2;
+    static const Int32 QUEUE_DESTROY;       // = 2;
 private:
-    static const CString TAG;// = "TextToSpeech";
+    static const String TAG;                // = "TextToSpeech";
 
 private:
     AutoPtr<IContext> mContext;
@@ -872,18 +875,18 @@ private:
     //private final Object mStartLock = new Object();
     Object mStartLock;
 
-    String mRequestedEngine;// = NULL;
+    String mRequestedEngine;
     // Whether to initialize this TTS object with the default engine,
     // if the requested engine is not available. Valid only if mRequestedEngine
     // is not null. Used only for testing, though potentially useful API wise
     // too.
-    Boolean mUseFallback;// = FALSE;
+    Boolean mUseFallback;
     Map<String, AutoPtr<IUri> > mEarcons;
     Map<String, AutoPtr<IUri> > mUtterances;
-    AutoPtr<IBundle> mParams;// = new Bundle();
+    AutoPtr<IBundle> mParams;
     AutoPtr<ITtsEngines> mEnginesHelper;
-    String mPackageName;// = NULL;
-    /*volatile*/ String mCurrentEngine;// = NULL;
+    String mPackageName;
+    /*volatile*/ String mCurrentEngine;
 
 };
 

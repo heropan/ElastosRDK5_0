@@ -136,6 +136,7 @@ module
      * interface IExpandableListViewOnGroupCollapseListener
      * interface IExpandableListViewOnGroupExpandListener;
      */
+    [local]
     interface IExpandableListActivity {
 
         /**

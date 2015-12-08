@@ -1,16 +1,16 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PMANAGERCHANNEL_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PMANAGERCHANNEL_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pManagerChannel.h"
-#include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/utility/AsyncChannel.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include <elastos/Pair.h>
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pManagerChannel.h"
+#include "elastos/droid/internal/utility/AsyncChannel.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
+#include <elastos/utility/etl/Pair.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::Pair;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Internal::Utility::AsyncChannel;
 using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pServiceResponse;
@@ -23,17 +23,19 @@ namespace Wifi {
 namespace P2p {
 
 CarClass(CWifiP2pManagerChannel)
+    , public Object
+    , public IWifiP2pManagerChannel
 {
 private:
     class P2pHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         P2pHandler(
             /* [in] */ ILooper* looper,
             /* [in] */ CWifiP2pManagerChannel* context);
 
-        virtual CARAPI HandleMessage(
+        CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
     private:
         CWifiP2pManagerChannel* mHost;
@@ -41,6 +43,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWifiP2pManagerChannel();
 
     ~CWifiP2pManagerChannel();
@@ -109,9 +115,6 @@ public:
         /* [in] */ Int32 key,
         /* [out] */ IInterface** obj);
 
-    CARAPI SetDialogListener(
-        /* [in] */ IWifiP2pManagerDialogListener* listener);
-
 public:
     static const Int32 INVALID_LISTENER_KEY;
     AutoPtr<IWifiP2pManagerChannelListener> mChannelListener;
@@ -122,16 +125,15 @@ public:
     HashMap<Int32, AutoPtr<IInterface> > mListenerMap;
     Object mListenerMapLock;
     Int32 mListenerKey;
-    AutoPtr<IWifiP2pManagerDialogListener> mDialogListener;
 
     AutoPtr<AsyncChannel> mAsyncChannel;
     AutoPtr<IHandler> mHandler;
     AutoPtr<IContext> mContext;
 };
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PMANAGERCHANNEL_H__

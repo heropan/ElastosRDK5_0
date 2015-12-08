@@ -1,12 +1,11 @@
-#include "ResourceCursorTreeAdapter.h"
-/**
- * A fairly simple ExpandableListAdapter that creates views defined in an XML
- * file. You can specify the XML file that defines the appearance of the views.
- */
+
+#include "elastos/droid/widget/ResourceCursorTreeAdapter.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(ResourceCursorTreeAdapter, CursorTreeAdapter, IResourceCursorTreeAdapter);
 ResourceCursorTreeAdapter::ResourceCursorTreeAdapter()
     : mCollapsedGroupLayout(0)
     , mExpandedGroupLayout(0)
@@ -14,54 +13,7 @@ ResourceCursorTreeAdapter::ResourceCursorTreeAdapter()
     , mLastChildLayout(0)
 {}
 
-ResourceCursorTreeAdapter::ResourceCursorTreeAdapter(
-    /* [in] */ IContext* context,
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 collapsedGroupLayout,
-    /* [in] */ Int32 expandedGroupLayout,
-    /* [in] */ Int32 childLayout,
-    /* [in] */ Int32 lastChildLayout)
-    : CursorTreeAdapter(cursor, context)
-    , mCollapsedGroupLayout(0)
-    , mExpandedGroupLayout(0)
-    , mChildLayout(0)
-    , mLastChildLayout(0)
-{
-    ASSERT_SUCCEEDED(InitSelf(context, cursor, collapsedGroupLayout,
-     expandedGroupLayout, childLayout, lastChildLayout));
-}
-
-ResourceCursorTreeAdapter::ResourceCursorTreeAdapter(
-    /* [in] */ IContext* context,
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 collapsedGroupLayout,
-    /* [in] */ Int32 expandedGroupLayout,
-    /* [in] */ Int32 childLayout)
-    : CursorTreeAdapter(cursor, context)
-    , mCollapsedGroupLayout(0)
-    , mExpandedGroupLayout(0)
-    , mChildLayout(0)
-    , mLastChildLayout(0)
-{
-    ASSERT_SUCCEEDED(InitSelf(context, cursor, collapsedGroupLayout,
-     expandedGroupLayout, childLayout, childLayout));
-}
-
-ResourceCursorTreeAdapter::ResourceCursorTreeAdapter(
-    /* [in] */ IContext* context,
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 groupLayout,
-    /* [in] */ Int32 childLayout)
-    : CursorTreeAdapter(cursor, context)
-    , mCollapsedGroupLayout(0)
-    , mExpandedGroupLayout(0)
-    , mChildLayout(0)
-    , mLastChildLayout(0)
-{
-    ASSERT_SUCCEEDED(InitSelf(context, cursor, groupLayout, groupLayout, childLayout, childLayout));
-}
-
-ECode ResourceCursorTreeAdapter::Init(
+ECode ResourceCursorTreeAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* cursor,
     /* [in] */ Int32 collapsedGroupLayout,
@@ -69,39 +21,7 @@ ECode ResourceCursorTreeAdapter::Init(
     /* [in] */ Int32 childLayout,
     /* [in] */ Int32 lastChildLayout)
 {
-    CursorTreeAdapter::Init(cursor, context);
-    InitSelf(context, cursor, collapsedGroupLayout, expandedGroupLayout, childLayout, lastChildLayout);
-    return NOERROR;
-}
-
-ECode ResourceCursorTreeAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 collapsedGroupLayout,
-    /* [in] */ Int32 expandedGroupLayout,
-    /* [in] */ Int32 childLayout)
-{
-    return Init(context, cursor, collapsedGroupLayout,
-     expandedGroupLayout, childLayout, childLayout);
-}
-
-ECode ResourceCursorTreeAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 groupLayout,
-    /* [in] */ Int32 childLayout)
-{
-    return Init(context, cursor, groupLayout, groupLayout, childLayout, childLayout);
-}
-
-ECode ResourceCursorTreeAdapter::InitSelf(
-    /* [in] */ IContext* context,
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 collapsedGroupLayout,
-    /* [in] */ Int32 expandedGroupLayout,
-    /* [in] */ Int32 childLayout,
-    /* [in] */ Int32 lastChildLayout)
-{
+    CursorTreeAdapter::constructor(cursor, context);
     mCollapsedGroupLayout = collapsedGroupLayout;
     mExpandedGroupLayout = expandedGroupLayout;
     mChildLayout = childLayout;
@@ -113,26 +33,45 @@ ECode ResourceCursorTreeAdapter::InitSelf(
     return NOERROR;
 }
 
-AutoPtr<IView> ResourceCursorTreeAdapter::NewChildView(
+ECode ResourceCursorTreeAdapter::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ ICursor* cursor,
+    /* [in] */ Int32 collapsedGroupLayout,
+    /* [in] */ Int32 expandedGroupLayout,
+    /* [in] */ Int32 childLayout)
+{
+    return constructor(context, cursor, collapsedGroupLayout, expandedGroupLayout, childLayout, childLayout);
+}
+
+ECode ResourceCursorTreeAdapter::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ ICursor* cursor,
+    /* [in] */ Int32 groupLayout,
+    /* [in] */ Int32 childLayout)
+{
+    return constructor(context, cursor, groupLayout, groupLayout, childLayout, childLayout);
+}
+
+ECode ResourceCursorTreeAdapter::NewChildView(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* cursor,
     /* [in] */ Boolean isLastChild,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    AutoPtr<IView> v;
-    mInflater->Inflate((isLastChild) ? mLastChildLayout : mChildLayout, parent, FALSE, (IView**)&v);
-    return v;
+    VALIDATE_NOT_NULL(view);
+    return mInflater->Inflate((isLastChild) ? mLastChildLayout : mChildLayout, parent, FALSE, view);
 }
 
-AutoPtr<IView> ResourceCursorTreeAdapter::NewGroupView(
+ECode ResourceCursorTreeAdapter::NewGroupView(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* cursor,
     /* [in] */ Boolean isExpanded,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    AutoPtr<IView> v;
-    mInflater->Inflate((isExpanded) ? mExpandedGroupLayout : mCollapsedGroupLayout, parent, FALSE, (IView**)&v);
-    return v;
+    VALIDATE_NOT_NULL(view);
+    return mInflater->Inflate((isExpanded) ? mExpandedGroupLayout : mCollapsedGroupLayout, parent, FALSE, view);
 }
 
 } // namespace Widget

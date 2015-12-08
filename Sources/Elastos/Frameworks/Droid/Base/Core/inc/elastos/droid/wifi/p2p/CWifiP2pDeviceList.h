@@ -2,12 +2,14 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PDEVICELIST_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PDEVICELIST_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pDeviceList.h"
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pDeviceList.h"
 #include "CWifiP2pDevice.h"
+#include <elastos/core/Object.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::ICollection;
 
 namespace Elastos {
 namespace Droid {
@@ -21,8 +23,15 @@ namespace P2p {
  * {@see WifiP2pManager}
  */
 CarClass(CWifiP2pDeviceList)
+    , public Object
+    , public IWifiP2pDeviceList
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -35,6 +44,9 @@ public:
         /* [out] */ Boolean* ret);
 
     CARAPI Update(
+        /* [in] */ IWifiP2pDevice* device);
+
+    CARAPI UpdateSupplicantDetails(
         /* [in] */ IWifiP2pDevice* device);
 
     CARAPI UpdateGroupCapability(
@@ -54,8 +66,15 @@ public:
         /* [out] */ Boolean* ret);
 
     CARAPI Remove(
+        /* [in] */ const String& deviceAddress,
+        /* [out] */ IWifiP2pDevice** result);
+
+    CARAPI Remove(
         /* [in] */ IWifiP2pDeviceList* list,
         /* [out] */ Boolean* ret);
+
+    CARAPI GetDeviceList(
+        /* [out] */ ICollection** result);
 
     CARAPI GetDeviceList(
         /* [out, callee] */ ArrayOf<IWifiP2pDevice*>** list);
@@ -74,12 +93,19 @@ public:
         /* [in] */ IParcel* dest);
 
 private:
+    CARAPI ValidateDevice(
+        /* [in] */ IWifiP2pDevice* device);
+
+    CARAPI ValidateDeviceAddress(
+        /* [in] */ const String& deviceAddress);
+
+private:
     HashMap<String, AutoPtr<IWifiP2pDevice> > mDevices;
 };
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PDEVICELIST_H__

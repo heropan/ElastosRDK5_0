@@ -1,5 +1,23 @@
 
 #include "elastos/droid/net/PacProxySelector.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Net::IIProxyService;
+using Elastos::Droid::Os::ServiceManager;
+
+using Elastos::Core::StringUtils;
+using Elastos::Net::CProxy;
+using Elastos::Net::CInetSocketAddress;
+using Elastos::Net::CInetSocketAddressHelper;
+using Elastos::Net::IInetSocketAddress;
+using Elastos::Net::IInetSocketAddressHelper;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -13,83 +31,110 @@ const String PacProxySelector::PROXY("PROXY ");
 
 ECode PacProxySelector::constructor()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mProxyService = IProxyService.Stub.asInterface(
-                ServiceManager.getService(PROXY_SERVICE));
-        if (mProxyService == null) {
-            // Added because of b10267814 where mako is restarting.
-            Log.e(TAG, "PacManager: no proxy service");
-        }
-        mDefaultList = Lists.newArrayList(java.net.Proxy.NO_PROXY);
-
-#endif
+    mProxyService = IIProxyService::Probe(
+            ServiceManager::GetService(PROXY_SERVICE));
+    if (mProxyService == NULL) {
+        // Added because of b10267814 where mako is restarting.
+        Logger::E(TAG, "PacManager: no proxy service");
+    }
+    AutoPtr<Elastos::Net::IProxyHelper> helper;
+    Elastos::Net::CProxyHelper::AcquireSingleton((Elastos::Net::IProxyHelper**)&helper);
+    AutoPtr<Elastos::Net::IProxy> noProxy;
+    helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
+    CArrayList::New((IArrayList**)&mDefaultList);
+    mDefaultList->Add(noProxy);
+    return NOERROR;
 }
 
 ECode PacProxySelector::Select(
     /* [in] */ IURI* uri,
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (mProxyService == null) {
-            mProxyService = IProxyService.Stub.asInterface(
-                    ServiceManager.getService(PROXY_SERVICE));
-        }
-        if (mProxyService == null) {
-            Log.e(TAG, "select: no proxy service return NO_PROXY");
-            return Lists.newArrayList(java.net.Proxy.NO_PROXY);
-        }
-        String response = null;
-        String urlString;
-        try {
-            urlString = uri.toURL().toString();
-        } catch (MalformedURLException e) {
-            urlString = uri.getHost();
-        }
-        try {
-            response = mProxyService.resolvePacFile(uri.getHost(), urlString);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        if (response == null) {
-            return mDefaultList;
-        }
-        return parseResponse(response);
+    VALIDATE_NOT_NULL(result)
 
-#endif
-}
-
-ECode PacProxySelector::ParseResponse(
-    /* [in] */ const String& response,
-    /* [out] */ IList** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String[] split = response.split(";");
-        List<Proxy> ret = Lists.newArrayList();
-        for (String s : split) {
-            String trimmed = s.trim();
-            if (trimmed.equals("DIRECT")) {
-                ret.add(java.net.Proxy.NO_PROXY);
-            } else if (trimmed.startsWith(PROXY)) {
-                Proxy proxy = proxyFromHostPort(Type.HTTP, trimmed.substring(PROXY.length()));
-                if (proxy != null) {
-                    ret.add(proxy);
-                }
-            } else if (trimmed.startsWith(SOCKS)) {
-                Proxy proxy = proxyFromHostPort(Type.SOCKS, trimmed.substring(SOCKS.length()));
-                if (proxy != null) {
-                    ret.add(proxy);
-                }
+    if (mProxyService == NULL) {
+        mProxyService = IIProxyService::Probe(
+                ServiceManager::GetService(PROXY_SERVICE));
+    }
+    if (mProxyService == NULL) {
+        Logger::E(TAG, "select: no proxy service return NO_PROXY");
+        AutoPtr<Elastos::Net::IProxyHelper> helper;
+        Elastos::Net::CProxyHelper::AcquireSingleton((Elastos::Net::IProxyHelper**)&helper);
+        AutoPtr<Elastos::Net::IProxy> noProxy;
+        helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
+        CArrayList::New(result);
+        (*result)->Add(noProxy);
+        return NOERROR;
+    }
+    String response(NULL);
+    String urlString;
+    // try {
+        ECode ec = Ptr(uri)->Func(uri->ToURL)->ToString(&urlString);
+    // } catch (MalformedURLException e) {
+        if (ec == E_MALFORMED_URL_EXCEPTION) {
+            uri->GetHost(&urlString);
+        }
+        else if (FAILED(ec)) return ec;
+    // }
+    // try {
+        // TODO: Waiting for IIProxyService
+        assert(0);
+        // mProxyService->ResolvePacFile(Ptr(uri)->Func(uri->GetHost), urlString, &response);
+    // } catch (RemoteException e) {
+        if (FAILED(ec)) {
+            if (ec == E_REMOTE_EXCEPTION) {
+                // e.printStackTrace();
+            }
+            else {
+                return ec;
             }
         }
-        if (ret.size() == 0) {
-            ret.add(java.net.Proxy.NO_PROXY);
-        }
-        return ret;
+    // }
+    if (response == NULL) {
+        FUNC_RETURN(mDefaultList);
+    }
+    *result = ParseResponse(response);
+    return NOERROR;
+}
 
-#endif
+AutoPtr<IList> PacProxySelector::ParseResponse(
+    /* [in] */ const String& response)
+{
+    AutoPtr<ArrayOf<String> > split;
+    StringUtils::Split(response, String(";"), (ArrayOf<String>**)&split);
+    AutoPtr<IList> ret;
+    CArrayList::New((IList**)&ret);
+    for (Int32 i = 0; i < split->GetLength(); ++i) {
+        String s = (*split)[i];
+        String trimmed = s.Trim();
+        if (trimmed.Equals("DIRECT")) {
+            AutoPtr<Elastos::Net::IProxyHelper> helper;
+            Elastos::Net::CProxyHelper::AcquireSingleton((Elastos::Net::IProxyHelper**)&helper);
+            AutoPtr<Elastos::Net::IProxy> noProxy;
+            helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
+            ret->Add(noProxy);
+        } else if (trimmed.StartWith(PROXY)) {
+            AutoPtr<Elastos::Net::IProxy> proxy;
+            ProxyFromHostPort(Elastos::Net::ProxyType_HTTP, trimmed.Substring(PROXY.GetLength()), (Elastos::Net::IProxy**)&proxy);
+            if (proxy != NULL) {
+                ret->Add(proxy);
+            }
+        } else if (trimmed.StartWith(SOCKS)) {
+            AutoPtr<Elastos::Net::IProxy> proxy;
+            ProxyFromHostPort(Elastos::Net::ProxyType_SOCKS, trimmed.Substring(SOCKS.GetLength()), (Elastos::Net::IProxy**)&proxy);
+            if (proxy != NULL) {
+                ret->Add(proxy);
+            }
+        }
+    }
+    if (Ptr(ret)->Func(ret->GetSize) == 0) {
+        AutoPtr<Elastos::Net::IProxyHelper> helper;
+        Elastos::Net::CProxyHelper::AcquireSingleton((Elastos::Net::IProxyHelper**)&helper);
+        AutoPtr<Elastos::Net::IProxy> noProxy;
+        helper->GetNO_PROXY((Elastos::Net::IProxy**)&noProxy);
+        ret->Add(noProxy);
+    }
+    return ret;
 }
 
 ECode PacProxySelector::ProxyFromHostPort(
@@ -97,19 +142,39 @@ ECode PacProxySelector::ProxyFromHostPort(
     /* [in] */ const String& hostPortString,
     /* [out] */ Elastos::Net::IProxy** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            String[] hostPort = hostPortString.split(":");
-            String host = hostPort[0];
-            int port = Integer.parseInt(hostPort[1]);
-            return new Proxy(type, InetSocketAddress.createUnresolved(host, port));
-        } catch (NumberFormatException|ArrayIndexOutOfBoundsException e) {
-            Log.d(TAG, "Unable to parse proxy " + hostPortString + " " + e);
-            return null;
-        }
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
-#endif
+        // try {
+    AutoPtr<ArrayOf<String> > hostPort;
+    StringUtils::Split(hostPortString, String(":"), (ArrayOf<String>**)&hostPort);
+    String host = (*hostPort)[0];
+    Int32 port = StringUtils::ParseInt32((*hostPort)[1]);
+    AutoPtr<IInetSocketAddressHelper> helper;
+    CInetSocketAddressHelper::AcquireSingleton((IInetSocketAddressHelper**)&helper);
+    AutoPtr<IInetSocketAddress> address;
+    ECode ec = helper->CreateUnresolved(host, port, (IInetSocketAddress**)&address);
+    if (FAILED(ec)) {
+        if (ec == E_NUMBER_FORMAT_EXCEPTION|| ec == E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION) {
+            Logger::D(TAG, "Unable to parse proxy %s %d", hostPortString.string(), ec);
+            *result = NULL;
+            return NOERROR;
+        }
+        return ec;
+    }
+    AutoPtr<Elastos::Net::IProxy> rev;
+    ec = CProxy::New(type, ISocketAddress::Probe(address), (Elastos::Net::IProxy**)&rev);
+    if (FAILED(ec)) {
+        if (ec == E_NUMBER_FORMAT_EXCEPTION|| ec == E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION) {
+            Logger::D(TAG, "Unable to parse proxy %s %d", hostPortString.string(), ec);
+            *result = NULL;
+            return NOERROR;
+        }
+        return ec;
+    }
+    FUNC_RETURN(rev);
+        // } catch (NumberFormatException|ArrayIndexOutOfBoundsException e) {
+        // }
 }
 
 ECode PacProxySelector::ConnectFailed(
@@ -117,12 +182,8 @@ ECode PacProxySelector::ConnectFailed(
     /* [in] */ ISocketAddress* address,
     /* [in] */ ECode failure)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-
-#endif
+    return NOERROR;
 }
-
 
 } // namespace Net
 } // namespace Droid

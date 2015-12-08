@@ -6,8 +6,8 @@ module
     interface Elastos.Droid.NFC.Cardemulation.IAidGroup;
     interface Elastos.Utility.IList;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace NFC{
 
     /*

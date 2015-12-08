@@ -7,11 +7,11 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class SoundEffectConstants {
+class SoundEffectConstants
+    : public Object
+{
 public:
-
     static const Int32 CLICK = 0;
-
     static const Int32 NAVIGATION_LEFT = 1;
     static const Int32 NAVIGATION_UP = 2;
     static const Int32 NAVIGATION_RIGHT = 3;
@@ -33,9 +33,9 @@ private:
     SoundEffectConstants(const SoundEffectConstants&);
 };
 
-
 } // namespace View
 } // namespace Droid
 } // namespace Elastos
 
 #endif //__ELASTOS_DROID_VIEW_SOUNDEFFECTCONSTANT_H__
+

@@ -509,7 +509,7 @@ public:
      * @return {@code true} if both objects are equal, {@code false} otherwise.
      */
     CARAPI Equals(
-        /* [in] */ IObject* obj,
+        /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
     /**
@@ -565,7 +565,7 @@ public:
      * Equal objects must produce the same hash code, while unequal objects
      * may have the same hash codes.
      */
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     /**
@@ -587,28 +587,27 @@ public:
         /* [out] */ Boolean* result);
 
 private:
-    CARAPI FindLinkAddressIndex(
-        /* [in] */ ILinkAddress* address,
-        /* [out] */ Int32* result);
+    CARAPI_(Int32) FindLinkAddressIndex(
+        /* [in] */ ILinkAddress* address);
 
-    CARAPI RouteWithInterface(
-        /* [in] */ IRouteInfo* route,
-        /* [out] */ IRouteInfo** result);
+    CARAPI_(AutoPtr<IRouteInfo>) RouteWithInterface(
+        /* [in] */ IRouteInfo* route);
 
+private:
     // The interface described by the network link.
     String mIfaceName;
     AutoPtr<IArrayList> mLinkAddresses;
-    AutoPtr<IInetAddress> mDnses;
-    AutoPtr<IRouteInfo> mRoutes;
+    AutoPtr<IArrayList> mDnses;
+    AutoPtr<IArrayList> mRoutes;
     String mDomains;
     AutoPtr<IProxyInfo> mHttpProxy;
     Int32 mMtu;
     // in the format "rmem_min,rmem_def,rmem_max,wmem_min,wmem_def,wmem_max"
     String mTcpBufferSizes;
 
-    static const Int32 sMIN_MTU;
-    static const Int32 sMIN_MTU_V6;
-    static const Int32 sMAX_MTU;
+    static const Int32 MIN_MTU;
+    static const Int32 MIN_MTU_V6;
+    static const Int32 MAX_MTU;
 
     // Stores the properties of links that are "stacked" above this link.
     // Indexed by interface name to allow modification and to prevent duplicates being added.

@@ -2,7 +2,7 @@
 #include "elastos/droid/media/CAudioTrack.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
-#include <unistd.h> //for Method: unsigned sleep(unsigned)
+#include <unistd.h>     //for Method: unsigned sleep(unsigned)
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
@@ -15,7 +15,7 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-const CString BlockingAudioTrack::TAG = "TTS.BlockingAudioTrack";
+const String BlockingAudioTrack::TAG("TTS.BlockingAudioTrack");
 const Boolean DBG = FALSE;
 
 const Int64 BlockingAudioTrack::MIN_SLEEP_TIME_MS = 20;
@@ -26,32 +26,45 @@ const Int64 BlockingAudioTrack::MAX_PROGRESS_WAIT_MS = MAX_SLEEP_TIME_MS;
 
 const Int32 BlockingAudioTrack::MIN_AUDIO_BUFFER_SIZE = 8192;
 
+CAR_INTERFACE_IMPL(BlockingAudioTrack, Object, IBlockingAudioTrack);
 
-BlockingAudioTrack::BlockingAudioTrack(
-    /* [in] */ Int32 streamType,
+BlockingAudioTrack::BlockingAudioTrack()
+{}
+
+BlockingAudioTrack::~BlockingAudioTrack()
+{}
+
+ECode BlockingAudioTrack::constructor()
+{
+    return NOERROR;
+}
+
+ECode BlockingAudioTrack::constructor(
+    /* [in] */ AudioOutputParams* audioParams,
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 audioFormat,
-    /* [in] */ Int32 channelCount,
-    /* [in] */ Float volume,
-    /* [in] */ Float pan)
+    /* [in] */ Int32 channelCount)
 {
-    mStreamType = streamType;
+    mAudioParams = audioParams;
     mSampleRateInHz = sampleRate;
     mAudioFormat = audioFormat;
     mChannelCount = channelCount;
-    mVolume = volume;
-    mPan = pan;
 
-    mBytesPerFrame = GetBytesPerFrame(mAudioFormat) * mChannelCount;
+    Int32 fmt;
+    AudioFormat->GetBytesPerSample(mAudioFormat, &fmt)
+    mBytesPerFrame = fmt * mChannelCount;
     mIsShortUtterance = FALSE;
     mAudioBufferSize = 0;
     mBytesWritten = 0;
 
     mAudioTrack = NULL;
     mStopped = FALSE;
+
+    return NOERROR;
 }
 
-Boolean BlockingAudioTrack::Init()
+ECode BlockingAudioTrack::Init(
+    /* [out] */ Boolean* ret)
 {
     AutoPtr<IAudioTrack> track = CreateStreamingAudioTrack();
     {
@@ -60,23 +73,28 @@ Boolean BlockingAudioTrack::Init()
     }
 
     if (track == NULL) {
-        return FALSE;
+        *ret = FALSE;
     } else {
-        return TRUE;
+        *ret = TRUE;
     }
+
+    return NOERROR;
 }
 
-void BlockingAudioTrack::Stop()
+ECode BlockingAudioTrack::Stop()
 {
     AutoLock lock(mAudioTrackLock);
     if (mAudioTrack != NULL) {
         mAudioTrack->Stop();
     }
     mStopped = TRUE;
+
+    return NOERROR;
 }
 
-Int32 BlockingAudioTrack::Write(
-    /* [in] */ ArrayOf<Byte>* data)
+ECode BlockingAudioTrack::Write(
+    /* [in] */ ArrayOf<Byte>* data);
+    /* [out] */ Int32* ret)
 {
     AutoPtr<IAudioTrack> track = NULL;
     {
@@ -85,15 +103,17 @@ Int32 BlockingAudioTrack::Write(
     }
 
     if (track == NULL || mStopped) {
-        return -1;
+        *ret = -1;
     }
     const Int32 bytesWritten = WriteToAudioTrack(track, data);
 
     mBytesWritten += bytesWritten;
-    return bytesWritten;
+    *ret = bytesWritten;
+
+    return NOERROR;
 }
 
-void BlockingAudioTrack::WaitAndRelease()
+ECode BlockingAudioTrack::WaitAndRelease()
 {
     AutoPtr<IAudioTrack> track = NULL;
     {
@@ -103,8 +123,8 @@ void BlockingAudioTrack::WaitAndRelease()
     if (track == NULL) {
         if (DBG){
             //Java:    Log.d(TAG, "Audio track null [duplicate call to waitAndRelease ?]");
-            Logger::D(TAG, String("Audio track null [duplicate call to waitAndRelease ?]\n"));
-            return;
+            Logger::D(TAG, "Audio track null [duplicate call to waitAndRelease ?]\n");
+            return NOERROR;
         }
 
     }
@@ -117,10 +137,9 @@ void BlockingAudioTrack::WaitAndRelease()
     // much point not doing that again.
     if (mBytesWritten < mAudioBufferSize && !mStopped) {
         if (DBG) {
-            //Java:    Log.d(TAG, "Stopping audio track to flush audio, state was : " + track.getPlayState() + ",stopped= " + mStopped);
             Int32 playState;
-            String strOut = String("Stopping audio track to flush audio, state was : ") + StringUtils::Int32ToString((track->GetPlayState(&playState), playState)) + String(",stopped= ") + StringUtils::BooleanToString(mStopped) + String("\n");
-            Logger::D(TAG, strOut);
+            track->GetPlayState(&playState);
+            Logger::D(TAG, "Stopping audio track to flush audio, state was: %d ,stopped = %d\n", playState, mStopped);
         }
 
         mIsShortUtterance = TRUE;
@@ -129,10 +148,10 @@ void BlockingAudioTrack::WaitAndRelease()
 
     // Block until the audio track is done only if we haven't stopped yet.
     if (!mStopped) {
-        if (DBG){
-            //Java:    Log.d(TAG, "Waiting for audio track to complete : " + mAudioTrack.hashCode());
-            String strOut = String("Waiting for audio track to complete : ") + String("\n");
-            Logger::D(TAG, strOut);
+        if (DBG) {
+            Int32 code;
+            mAudioTrack->HashCode(&code);
+            Logger::D(TAG, "Waiting for audio track to complete: %d\n", code);
         }
         BlockUntilDone(mAudioTrack);
     }
@@ -140,10 +159,10 @@ void BlockingAudioTrack::WaitAndRelease()
     // The last call to AudioTrack.write( ) will return only after
     // all data from the audioTrack has been sent to the mixer, so
     // it's safe to release at this point.
-    if (DBG){
-        //Java:    Log.d(TAG, "Releasing audio track [" + track.hashCode() + "]");
-        String strOut = String("Releasing audio track [") + String("]\n");
-        Logger::D(TAG, strOut);
+    if (DBG) {
+        Int32 code;
+        track->HashCode(&code);
+        Logger::D(TAG, "Releasing audio track [%d]\n", code);
     }
     {
         AutoLock lock(mAudioTrackLock);
@@ -182,10 +201,10 @@ Int32 BlockingAudioTrack::WriteToAudioTrack(
 {
     Int32 playState;
     if ((audioTrack->GetPlayState(&playState), playState) != IAudioTrack::PLAYSTATE_PLAYING) {
-        if (DBG){
-            //Java:    Log.d(TAG, "AudioTrack not playing, restarting : " + audioTrack.hashCode());
-            String strOut = String("AudioTrack not playing, restarting : ") + String("\n");
-            Logger::D(TAG, strOut);
+        if (DBG) {
+            Int32 code;
+            audioTrack->HashCode(&code);
+            Logger::D(TAG, "AudioTrack not playing, restarting: %d\n", code);
         }
         audioTrack->Play();
     }
@@ -212,34 +231,29 @@ AutoPtr<IAudioTrack> BlockingAudioTrack::CreateStreamingAudioTrack()
     CAudioTrack::GetMinBufferSize(mSampleRateInHz, channelConfig, mAudioFormat, &minBufferSizeInBytes);
     Int32 bufferSizeInBytes = Elastos::Core::Math::Max(MIN_AUDIO_BUFFER_SIZE, minBufferSizeInBytes);
 
+    /*
+    AudioFormat audioFormat = (new AudioFormat.Builder())
+            .setChannelMask(channelConfig)
+            .setEncoding(mAudioFormat)
+            .setSampleRate(mSampleRateInHz).build();
+    */
     AutoPtr<IAudioTrack> audioTrack;
-    CAudioTrack::New(mStreamType, mSampleRateInHz, channelConfig, mAudioFormat, bufferSizeInBytes, IAudioTrack::MODE_STREAM, (IAudioTrack**)&audioTrack);
+    CAudioTrack::New(mAudioParams->mAudioAttributes,
+            audioFormat, bufferSizeInBytes, AudioTrack::MODE_STREAM,
+            mAudioParams->mSessionId, (IAudioTrack**)&audioTrack);
+
     Int32 atState;
     if ((audioTrack->GetState(&atState), atState) != IAudioTrack::STATE_INITIALIZED) {
-        //Java:    Log.w(TAG, "Unable to create audio track.");
-        Logger::W(TAG, String("Unable to create audio track.\n"));
+        Logger::W(TAG, "Unable to create audio track.\n");
         audioTrack->Release();
         return NULL;
     }
 
     mAudioBufferSize = bufferSizeInBytes;
 
-    SetupVolume(audioTrack, mVolume, mPan);
+    SetupVolume(audioTrack, mAudioParams->mVolume, mAudioParams->mPan);
     return audioTrack;
 }
-
-Int32 BlockingAudioTrack::GetBytesPerFrame(
-    /* [in] */ Int32 audioFormat)
-{
-    if (audioFormat == IAudioFormat::ENCODING_PCM_8BIT) {
-        return 1;
-    } else if (audioFormat == IAudioFormat::ENCODING_PCM_16BIT) {
-        return 2;
-    }
-
-    return -1;
-}
-
 
 void BlockingAudioTrack::BlockUntilDone(
     /* [in] */ IAudioTrack* audioTrack)
@@ -272,9 +286,7 @@ void BlockingAudioTrack::BlockUntilEstimatedCompletion()
     const Int64 estimatedTimeMs = (lengthInFrames * 1000 / mSampleRateInHz);
 
     if (DBG) {
-        //Java:    Log.d(TAG, "About to sleep for: " + estimatedTimeMs + "ms for a short utterance");
-        String strOut = String("About to sleep for: ") + StringUtils::Int64ToString(estimatedTimeMs) + String("ms for a short utterance\n");
-        Logger::D(TAG, strOut);
+        Logger::D(TAG, "About to sleep for: %ld ms for a short utterance", estimatedTimeMs);
     }
 
     //try {
@@ -286,8 +298,7 @@ void BlockingAudioTrack::BlockUntilEstimatedCompletion()
 }
 
 void BlockingAudioTrack::BlockUntilCompletion(
-    /* [in] */ IAudioTrack* audioTrack
-    )
+    /* [in] */ IAudioTrack* audioTrack)
 {
     const Int32 lengthInFrames = mBytesWritten / mBytesPerFrame;
 
@@ -313,9 +324,7 @@ void BlockingAudioTrack::BlockUntilCompletion(
             blockedTimeMs += sleepTimeMs;
             // If we've taken too long to make progress, bail.
             if (blockedTimeMs > MAX_PROGRESS_WAIT_MS) {
-                //Java:    Log.w(TAG, "Waited unsuccessfully for " + MAX_PROGRESS_WAIT_MS + "ms " + "for AudioTrack to make progress, Aborting");
-                String strOut = String("Waited unsuccessfully for ") + StringUtils::Int64ToString(MAX_PROGRESS_WAIT_MS) + String("ms for AudioTrack to make progress, Aborting\n");
-                Logger::D(TAG, strOut);
+                Logger::D(TAG, "Waited unsuccessfully for %ld ms for AudioTrack to make progress, Aborting\n", MAX_PROGRESS_WAIT_MS);
                 break;
             }
         }
@@ -325,9 +334,7 @@ void BlockingAudioTrack::BlockUntilCompletion(
         previousPosition = currentPosition;
 
         if (DBG) {
-            //Java:    Log.d(TAG, "About to sleep for : " + sleepTimeMs + " ms," + " Playback position : " + currentPosition + ", Length in frames : " + lengthInFrames);
-            String strOut = String("About to sleep for : ") + StringUtils::Int64ToString(sleepTimeMs) + String("ms, Playback position : ") + StringUtils::Int32ToString(currentPosition) + String(", Length in frames : ") + StringUtils::Int32ToString(lengthInFrames) + String("\n");
-            Logger::D(TAG, strOut);
+            Logger::D(TAG, "About to sleep for: %ld ms, Playback position: %d, Length in frames: %d\n", sleepTimeMs, currentPosition, lengthInFrames);
         }
         //try {
             sleep(sleepTimeMs);
@@ -353,15 +360,12 @@ void BlockingAudioTrack::SetupVolume(
     else if (panning < 0.0f) {
         volRight *= (1.0f + panning);
     }
-    if (DBG){
-        //Java:    Log.d(TAG, "volLeft=" + volLeft + ",volRight=" + volRight);
-        String strOut = String("volLeft=") + StringUtils::DoubleToString(volLeft) + String(",volRight=") + StringUtils::DoubleToString(volRight) + String("\n");
-        Logger::D(TAG, strOut);
+    if (DBG) {
+        Logger::D(TAG, "volLeft= %f, volRight= %f\n", volLeft, volRight);
     }
     Int32 ssvState;
     if ((audioTrack->SetStereoVolume(volLeft, volRight, &ssvState), ssvState) != IAudioTrack::/*SUCCESS*/IAudioTrack::SUCCESS) {
-        //Java:    Log.e(TAG, "Failed to set volume");
-        Logger::E(TAG, String("Failed to set volume\n"));
+        Logger::E(TAG, "Failed to set volume\n");
     }
 }
 
@@ -370,15 +374,7 @@ Int64 BlockingAudioTrack::Clip(
     /* [in] */ Int64 min,
     /* [in] */ Int64 max)
 {
-    if (value < min) {
-        return min;
-    }
-
-    if (value > max) {
-        return max;
-    }
-
-    return value;
+    return value < min ? min : (value < max ? value : max);
 }
 
 Float BlockingAudioTrack::Clip(
@@ -386,7 +382,7 @@ Float BlockingAudioTrack::Clip(
     /* [in] */ Float min,
     /* [in] */ Float max)
 {
-    return value > max ? max : (value < min ? min : value);
+    return value < min ? min : (value < max ? value : max);
 }
 
 } // namespace Tts

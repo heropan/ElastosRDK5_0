@@ -2,16 +2,22 @@
 #define __ELASTOS_DROID_APP_BACKUP_CRESTORESET_H__
 
 #include "_Elastos_Droid_App_Backup_CRestoreSet.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 namespace Backup {
 
 CarClass(CRestoreSet)
+    , public Object
+    , public IRestoreSet
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CRestoreSet();
 
     ~CRestoreSet();

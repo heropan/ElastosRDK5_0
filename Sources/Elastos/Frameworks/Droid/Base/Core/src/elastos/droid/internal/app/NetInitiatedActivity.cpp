@@ -1,47 +1,59 @@
 
-#include "elastos/droid/app/NetInitiatedActivity.h"
+#include "elastos/droid/internal/app/NetInitiatedActivity.h"
 #include "elastos/droid/content/CIntentFilter.h"
-#include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/location/LocationManager.h"
-#include <elastos/utility/logging/Slogger.h>
+// #include "elastos/droid/widget/Toast.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/CoreUtils.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CString;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::CIntentFilter;
-using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Droid::Content::EIID_IBroadcastReceiver;
+using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
+using Elastos::Droid::Internal::Location::IGpsNetInitiatedHandler;
 using Elastos::Droid::Location::LocationManager;
 using Elastos::Droid::Location::ILocationManager;
-using Elastos::Droid::Location::IGpsNetInitiatedHandler;
+using Elastos::Droid::Widget::IToast;
+// using Elastos::Droid::Widget::Toast;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace App {
 
-ECode NetInitiatedReceiver::OnReceive(
+const String NetInitiatedActivity::TAG("NetInitiatedActivity");
+const Boolean NetInitiatedActivity::DEBUG = TRUE;
+const Boolean NetInitiatedActivity::VERBOSE = FALSE;
+const Int32 NetInitiatedActivity::POSITIVE_BUTTON = IDialogInterface::BUTTON_POSITIVE;
+const Int32 NetInitiatedActivity::NEGATIVE_BUTTON = IDialogInterface::BUTTON_NEGATIVE;
+const Int32 NetInitiatedActivity::GPS_NO_RESPONSE_TIME_OUT = 1;
+
+ECode NetInitiatedActivity::NetInitiatedReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
     String action;
     intent->GetAction(&action);
-    if (NetInitiatedActivity::DEBUG) Slogger::D(NetInitiatedActivity::TAG,
-        "NetInitiatedReceiver onReceive: %s", action.string());
+    if (DEBUG)
+        Logger::D(TAG, "NetInitiatedReceiver onReceive: %s", action.string());
     if (action == IGpsNetInitiatedHandler::ACTION_NI_VERIFY) {
         mHost->HandleNIVerify(intent);
     }
     return NOERROR;
 }
 
-
-const String NetInitiatedActivity::TAG("NetInitiatedActivity");
-const Boolean NetInitiatedActivity::DEBUG;
-const Boolean NetInitiatedActivity::VERBOSE;
-const Int32 NetInitiatedActivity::POSITIVE_BUTTON;
-const Int32 NetInitiatedActivity::NEGATIVE_BUTTON;
-const Int32 NetInitiatedActivity::GPS_NO_RESPONSE_TIME_OUT;
-
+ECode NetInitiatedActivity::NetInitiatedReceiver::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = String("NetInitiatedActivity::NetInitiatedReceiver: ");
+    (*info).AppendFormat("%p", this);
+    return NOERROR;
+}
 
 ECode NetInitiatedActivity::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
@@ -58,7 +70,22 @@ ECode NetInitiatedActivity::MyHandler::HandleMessage(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(NetInitiatedActivity, IDialogInterfaceOnClickListener);
+CAR_INTERFACE_IMPL(NetInitiatedActivity::OnClickListener, Object, IDialogInterfaceOnClickListener)
+
+NetInitiatedActivity::OnClickListener::OnClickListener(
+    /* [in] */ NetInitiatedActivity* host)
+    : mHost(host)
+{
+}
+
+ECode NetInitiatedActivity::OnClickListener::OnClick(
+    /* [in] */ IDialogInterface* dialog,
+    /* [in] */ Int32 which)
+{
+    return mHost->OnClick(dialog, which);
+}
+
+CAR_INTERFACE_IMPL_2(NetInitiatedActivity, AlertActivity, INetInitiatedActivity, IDialogInterfaceOnClickListener);
 
 NetInitiatedActivity::NetInitiatedActivity()
     : mNotificationId(-1)
@@ -87,33 +114,32 @@ ECode NetInitiatedActivity::OnCreate(
     // Set up the "dialog"
     AutoPtr<IIntent> intent;
     GetIntent((IIntent**)&intent);
-    AutoPtr<CAlertControllerAlertParams> p = mAlertParams;
+    AutoPtr<IAlertControllerAlertParams> p = mAlertParams;
     AutoPtr<IContext> context;
     GetApplicationContext((IContext**)&context);
-    p->SetIconId(0/*com.android.internal.R.drawable.ic_dialog_usb*/);
     String title;
     intent->GetStringExtra(IGpsNetInitiatedHandler::NI_INTENT_KEY_TITLE, &title);
-    AutoPtr<ICharSequence> titleSequence;
-    CString::New(title, (ICharSequence**)&titleSequence);
-    p->SetTitle(titleSequence);
+    p->SetTitle(CoreUtils::Convert(title));
     String message;
     intent->GetStringExtra(IGpsNetInitiatedHandler::NI_INTENT_KEY_MESSAGE, &message);
-    AutoPtr<ICharSequence> mSequence;
-    CString::New(message, (ICharSequence**)&mSequence);
-    p->SetMessage(mSequence);
-//    p->mPositiveButtonText = String.format(context.getString(R.string.gpsVerifYes));
+    p->SetMessage(CoreUtils::Convert(message));
+
+    String format;
+    context->GetString(R::string::gpsVerifYes, &format);
+    p->SetPositiveButtonText(CoreUtils::Convert(StringUtils::Format(format, NULL)));
     p->SetPositiveButtonListener(this);
-//    p->mNegativeButtonText = String.format(context.getString(R.string.gpsVerifNo));
+    context->GetString(R::string::gpsVerifNo, &format);
+    p->SetNegativeButtonText(CoreUtils::Convert(StringUtils::Format(format, NULL)));
     p->SetNegativeButtonListener(this);
 
     intent->GetInt32Extra(IGpsNetInitiatedHandler::NI_INTENT_KEY_NOTIF_ID, -1, &mNotificationId);
     intent->GetInt32Extra(IGpsNetInitiatedHandler::NI_INTENT_KEY_TIMEOUT,
-            mDefault_response_timeout,
-            &mTimeout);
+            mDefault_response_timeout, &mTimeout);
     intent->GetInt32Extra(IGpsNetInitiatedHandler::NI_INTENT_KEY_DEFAULT_RESPONSE,
-            IGpsNetInitiatedHandler::GPS_NI_RESPONSE_ACCEPT,
-            &mDefault_response);
-    if (DEBUG) Slogger::D(TAG, "onCreate() : notificationId: %d timeout: %d default_response:%d", mNotificationId, mTimeout, mDefault_response);
+            IGpsNetInitiatedHandler::GPS_NI_RESPONSE_ACCEPT, &mDefault_response);
+    if (DEBUG)
+        Logger::D(TAG, "onCreate() : notificationId: %d timeout: %d default_response:%d",
+            mNotificationId, mTimeout, mDefault_response);
 
     Boolean result;
     mHandler->SendEmptyMessageDelayed(GPS_NO_RESPONSE_TIME_OUT, (mTimeout * 1000), &result);
@@ -124,7 +150,7 @@ ECode NetInitiatedActivity::OnCreate(
 ECode NetInitiatedActivity::OnResume()
 {
     AlertActivity::OnResume();
-    if (DEBUG) Slogger::D(TAG, "onResume");
+    if (DEBUG) Logger::D(TAG, "onResume");
     AutoPtr<IIntentFilter> intentFilter;
     CIntentFilter::New(IGpsNetInitiatedHandler::ACTION_NI_VERIFY, (IIntentFilter**)&intentFilter);
     AutoPtr<IIntent> intent;
@@ -135,7 +161,7 @@ ECode NetInitiatedActivity::OnResume()
 ECode NetInitiatedActivity::OnPause()
 {
     AlertActivity::OnPause();
-    if (DEBUG) Slogger::D(TAG, "onPause");
+    if (DEBUG) Logger::D(TAG, "onPause");
     UnregisterReceiver(mNetInitiatedReceiver);
     return NOERROR;
 }
@@ -160,7 +186,7 @@ ECode NetInitiatedActivity::OnClick(
 void NetInitiatedActivity::SendUserResponse(
     /* [in] */ Int32 response)
 {
-    if (DEBUG) Slogger::D(TAG, "sendUserResponse, response: %d", response);
+    if (DEBUG) Logger::D(TAG, "sendUserResponse, response: %d", response);
     AutoPtr<ILocationManager> locationManager;
     this->GetSystemService(IContext::LOCATION_SERVICE,
             (IInterface**)(ILocationManager**)&locationManager);
@@ -177,13 +203,16 @@ void NetInitiatedActivity::HandleNIVerify(
 
     String action;
     intent->GetAction(&action);
-    if (DEBUG) Slogger::D(TAG, "handleNIVerify action: %s", action.string());
+    if (DEBUG) Logger::D(TAG, "handleNIVerify action: %s", action.string());
 }
 
 void NetInitiatedActivity::ShowNIError()
 {
-//    Toast.makeText(this, "NI error" /* com.android.internal.R.string.usb_storage_error_message */,
-//            Toast.LENGTH_LONG).show();
+    assert(0);
+    AutoPtr<IToast> toast;
+    // Toast::MakeText(this, CoreUtils::Convert(String("NI error"/* com.android.internal.R.string.usb_storage_error_message */))
+    //    , IToast::LENGTH_LONG, (IToast**)&toast);
+    toast->Show();
 }
 
 } //namespace App

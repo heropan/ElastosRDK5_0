@@ -4,6 +4,9 @@ TARGET_TYPE = eco
 
 IMPORTS = Elastos.CoreLibrary.eco
 
+CAR_FLAGS += -n -u
+LUBE_FLAGS += -n -u
+
 INCLUDES += $(MAKEDIR)/../../inc/
 INCLUDES += $(MAKEDIR)/../../inc/eunit
 INCLUDES += $(MAKEDIR)/../../inc/eunit/framework

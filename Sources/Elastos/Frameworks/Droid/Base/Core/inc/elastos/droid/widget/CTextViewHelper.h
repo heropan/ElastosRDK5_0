@@ -12,9 +12,9 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IColorStateList;
 using Elastos::Droid::Content::Res::ITypedArray;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CTextViewHelper)
 {

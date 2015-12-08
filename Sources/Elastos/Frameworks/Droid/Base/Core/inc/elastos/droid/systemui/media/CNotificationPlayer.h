@@ -14,8 +14,8 @@ using Elastos::Droid::Media::IMediaPlayer;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Content::IContext;
 
-namespace Elastos{
-namespace Droid{
+namespace Elastos {
+namespace Droid {
 namespace SystemUI{
 namespace Media{
 

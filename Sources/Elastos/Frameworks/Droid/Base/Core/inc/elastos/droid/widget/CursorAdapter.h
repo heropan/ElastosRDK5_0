@@ -1,21 +1,18 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
-#define __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
+#ifndef  __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
+#define  __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/BaseAdapter.h"
 #include "elastos/droid/database/ContentObserver.h"
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Database::IDataSetObserver;
-using Elastos::Droid::Database::EIID_IDataSetObserver;
 using Elastos::Droid::Database::ContentObserver;
-using Elastos::Droid::Database::IContentObserver;
-using Elastos::Droid::Database::EIID_IContentObserver;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -26,9 +23,15 @@ namespace Widget {
  * {@link android.widget.ListView ListView} widget. The Cursor must include
  * a column named "_id" or this class will not work.
  */
-class CursorAdapter : public BaseAdapter
+class CursorAdapter
+    : public BaseAdapter
+    , public ICursorAdapter
+    , public IFilterable
+    , public ICursorFilterClient
 {
 public:
+    CAR_INTERFACE_DECL();
+
     CursorAdapter();
 
     /**
@@ -38,7 +41,7 @@ public:
      * @param c The cursor from which to get the data.
      * @param context The context
      */
-    CursorAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* c);
 
@@ -50,56 +53,56 @@ public:
      *                    cursor whenever it changes so the most recent
      *                    data is always displayed.
      */
-    CursorAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* c,
         /* [in] */ Boolean autoRequery);
 
-    CursorAdapter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* c,
         /* [in] */ Int32 flags);
 
-    /**
-     * Returns the cursor.
-     * @return the cursor.
-     */
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
-    virtual CARAPI_(AutoPtr<ICursor>) GetCursor();
+    virtual CARAPI GetCursor(
+        /* [out] */ ICursor** cursor);
 
     /**
      * @see android.widget.ListAdapter#getCount()
      */
-    virtual CARAPI_(Int32) GetCount();
+    virtual CARAPI GetCount(
+        /* [out] */ Int32* count);
 
     /**
      * @see android.widget.ListAdapter#getItem(Int32)
      */
-    virtual CARAPI_(AutoPtr<IInterface>) GetItem(
-        /* [in] */ Int32 position);
+    virtual CARAPI GetItem(
+        /* [in] */ Int32 position,
+        /* [out] */ IInterface** item);
 
     /**
      * @see android.widget.ListAdapter#getItemId(Int32)
      */
-    virtual CARAPI_(Int64) GetItemId(
-        /* [in] */ Int32 position);
+    virtual CARAPI GetItemId(
+        /* [in] */ Int32 position,
+        /* [out] */ Int64* id);
 
-    virtual CARAPI_(Boolean) HasStableIds();
+    virtual CARAPI HasStableIds(
+        /* [out] */ Boolean* hasStableIds);
 
     /**
      * @see android.widget.ListAdapter#getView(Int32, View, ViewGroup)
      */
-    virtual CARAPI_(AutoPtr<IView>) GetView(
+    virtual CARAPI GetView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    virtual CARAPI_(AutoPtr<IView>) GetDropDownView(
+    virtual CARAPI GetDropDownView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
     /**
      * Makes a new view to hold the data pointed to by cursor.
@@ -109,10 +112,11 @@ public:
      * @param parent The parent to which the new view is attached to
      * @return the newly created view.
      */
-    virtual CARAPI_(AutoPtr<IView>) NewView(
+    virtual CARAPI NewView(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
-        /* [in] */ IViewGroup* parent) = 0;
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view) = 0;
 
     /**
      * Makes a new drop down view to hold the data pointed to by cursor.
@@ -122,10 +126,11 @@ public:
      * @param parent The parent to which the new view is attached to
      * @return the newly created view.
      */
-    virtual CARAPI_(AutoPtr<IView>) NewDropDownView(
+    virtual CARAPI NewDropDownView(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* cursor,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
     /**
      * Bind an existing view to the data pointed to by cursor
@@ -157,8 +162,9 @@ public:
      * @param cursor the cursor to convert to a CharSequence
      * @return a CharSequence representing the value
      */
-    virtual CARAPI_(AutoPtr<ICharSequence>) ConvertToString(
-        /* [in] */ ICursor* cursor);
+    virtual CARAPI ConvertToString(
+        /* [in] */ ICursor* cursor,
+        /* [out] */ ICharSequence** charSequence);
 
     /**
      * Runs a query with the specified constraint. This query is requested
@@ -185,10 +191,12 @@ public:
      * @see #getFilterQueryProvider()
      * @see #setFilterQueryProvider(android.widget.FilterQueryProvider)
      */
-    virtual CARAPI_(AutoPtr<ICursor>) RunQueryOnBackgroundThread(
-        /* [in] */ ICharSequence* constraint);
+    virtual CARAPI RunQueryOnBackgroundThread(
+        /* [in] */ ICharSequence* constraint,
+        /* [out] */ ICursor** cursor);
 
-    virtual CARAPI_(AutoPtr<IFilter>) GetFilter();
+    virtual CARAPI GetFilter(
+        /* [out] */ IFilter** filter);
 
     /**
      * Returns the query filter provider used for filtering. When the
@@ -199,7 +207,8 @@ public:
      * @see #setFilterQueryProvider(android.widget.FilterQueryProvider)
      * @see #runQueryOnBackgroundThread(CharSequence)
      */
-    virtual CARAPI_(AutoPtr<IFilterQueryProvider>) GetFilterQueryProvider();
+    virtual CARAPI GetFilterQueryProvider(
+        /* [out] */ IFilterQueryProvider** filterQueryProvider);
 
     /**
      * Sets the query filter provider used to filter the current Cursor.
@@ -226,16 +235,17 @@ public:
      * If the given new Cursor is the same instance is the previously set
      * Cursor, null is also returned.
      */
-    AutoPtr<ICursor> SwapCursor(
-        /* [in] */ ICursor* newCursor);
+    virtual CARAPI SwapCursor(
+        /* [in] */ ICursor* newCursor,
+        /* [out] */ ICursor** cursor);
 
 protected:
-    virtual CARAPI_(void) Init(
+    virtual CARAPI Init(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* c,
         /* [in] */ Boolean autoRequery);
 
-    virtual CARAPI_(void) Init(
+    virtual CARAPI Init(
         /* [in] */ IContext* context,
         /* [in] */ ICursor* c,
         /* [in] */ Int32 flags = ICursorAdapter::FLAG_AUTO_REQUERY);
@@ -261,32 +271,26 @@ private:
         virtual CARAPI OnChange(
             /* [in] */ Boolean selfChange);
 
-    private:
-
-        virtual CARAPI_(AutoPtr<IHandler>) InitSuperHandler();
-
     protected:
         CursorAdapter* mHost;
     };
 
     class MyDataSetObserver
-        : public IDataSetObserver
-        , public ElRefBase
+        : public Object
+        , public IDataSetObserver
     {
     public:
+        CAR_INTERFACE_DECL();
 
         MyDataSetObserver(
             /* [in] */ CursorAdapter* host);
 
-        CAR_INTERFACE_DECL()
-
         virtual CARAPI OnChanged();
 
         virtual CARAPI OnInvalidated();
+
     protected:
-
         CursorAdapter* mHost;
-
     };
 
 protected:
@@ -310,8 +314,8 @@ protected:
      * {@hide}
      */
     // context usually holds adapter, we use weak-reference here.
-    AutoPtr<IWeakReference> mWeakContext;
-    // AutoPtr<IContext> mContext;
+    // AutoPtr<IWeakReference> mWeakContext;
+    AutoPtr<IContext> mContext;
     /**
      * This field should be made private, so it is hidden from the SDK.
      * {@hide}
@@ -337,10 +341,10 @@ protected:
      * {@hide}
      */
     AutoPtr<IFilterQueryProvider> mFilterQueryProvider;
-
 };
 
 }// namespace Elastos
 }// namespace Droid
 }// namespace Widget
-#endif
+
+#endif // __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__

@@ -23,6 +23,7 @@ using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::View::EIID_IMenu;
 using Elastos::Droid::View::IActionProvider;
 using Elastos::Core::CoreUtils;
+using Elastos::Utility::IHashMap;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::Concurrent::CCopyOnWriteArrayList;

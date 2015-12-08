@@ -117,9 +117,7 @@ ECode UniverseBackground::InitImpl(
     /* [in] */ IContext* context)
 {
     SetBackgroundColor(0xff000000);
-    AutoPtr<ILooper> looper;
-    context->GetMainLooper((ILooper**)&looper);
-    mSession = CWindowManagerGlobal::GetWindowSession(looper);
+    mSession = CWindowManagerGlobal::GetWindowSession();
     View::Inflate(context, SystemUIR::layout::universe, NULL, (IView**)&mContent);
     AddView(mContent);
     // mContent.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {

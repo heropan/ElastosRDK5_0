@@ -3,8 +3,10 @@
 #define __ELASTOS_DROID_WIDGET_OVERSCROLLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -17,15 +19,20 @@ class SplineOverScroller;
  * of a scrolling operation. This class is a drop-in replacement for
  * {@link android.widget.Scroller} in most cases.
  */
-class OverScroller : public ElRefBase
+class OverScroller
+    : public Object
+    , public IOverScroller
 {
 public:
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates an OverScroller with a viscous fluid scroll interpolator and flywheel.
      * @param context
      */
-    OverScroller(
+    OverScroller();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -34,7 +41,7 @@ public:
      * @param interpolator The scroll interpolator. If null, a default (viscous) interpolator will
      * be used.
      */
-    OverScroller(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Elastos::Droid::View::Animation::IInterpolator* interpolator);
 
@@ -46,7 +53,7 @@ public:
      * @param flywheel If TRUE, successive Fling motions will keep on increasing scroll speed.
      * @hide
      */
-    OverScroller(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Elastos::Droid::View::Animation::IInterpolator* interpolator,
         /* [in] */ Boolean flywheel);
@@ -63,7 +70,7 @@ public:
      * behavior is no longer supported and this coefficient has no effect.
      * !deprecated Use {!link #OverScroller(Context, Interpolator, Boolean)} instead.
      */
-    OverScroller(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Elastos::Droid::View::Animation::IInterpolator* interpolator,
         /* [in] */ Float bounceCoefficientX,
@@ -82,14 +89,14 @@ public:
      * @param flywheel If TRUE, successive Fling motions will keep on increasing scroll speed.
      * !deprecated Use {!link OverScroller(Context, Interpolator, Boolean)} instead.
      */
-    OverScroller(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Elastos::Droid::View::Animation::IInterpolator* interpolator,
         /* [in] */ Float bounceCoefficientX,
         /* [in] */ Float bounceCoefficientY,
         /* [in] */ Boolean flywheel);
 
-    CARAPI_(void) SetInterpolator(
+    CARAPI SetInterpolator(
         /* [in] */ Elastos::Droid::View::Animation::IInterpolator* interpolator);
 
     /**
@@ -99,7 +106,7 @@ public:
      * @param friction A scalar dimension-less value representing the coefficient of
      *         friction.
      */
-    CARAPI_(void) SetFriction(
+    CARAPI SetFriction(
         /* [in] */ Float friction);
 
     /**
@@ -108,7 +115,8 @@ public:
      *
      * @return True if the scroller has finished scrolling, false otherwise.
      */
-    CARAPI_(Boolean) IsFinished();
+    CARAPI IsFinished(
+        /* [out] */ Boolean* finished);
 
     /**
      * Force the finished field to a particular value. Contrary to
@@ -118,7 +126,7 @@ public:
      *
      * @param finished The new finished value.
      */
-    CARAPI_(void) ForceFinished(
+    CARAPI ForceFinished(
         /* [in] */ Boolean finished);
 
     /**
@@ -126,49 +134,56 @@ public:
      *
      * @return The new X offset as an absolute distance from the origin.
      */
-    CARAPI_(Int32) GetCurrX();
+    CARAPI GetCurrX(
+        /* [out] */ Int32* currX);
 
     /**
      * Returns the current Y offset in the scroll.
      *
      * @return The new Y offset as an absolute distance from the origin.
      */
-    CARAPI_(Int32) GetCurrY();
+    CARAPI GetCurrY(
+        /* [out] */ Int32* currY);
 
     /**
      * Returns the absolute value of the current velocity.
      *
      * @return The original velocity less the deceleration, norm of the X and Y velocity vector.
      */
-    CARAPI_(Float) GetCurrVelocity();
+    CARAPI GetCurrVelocity(
+        /* [out] */ Float* currVelocity);
 
     /**
      * Returns the start X offset in the scroll.
      *
      * @return The start X offset as an absolute distance from the origin.
      */
-    CARAPI_(Int32) GetStartX();
+    CARAPI GetStartX(
+        /* [out] */ Int32* startX);
 
     /**
      * Returns the start Y offset in the scroll.
      *
      * @return The start Y offset as an absolute distance from the origin.
      */
-    CARAPI_(Int32) GetStartY();
+    CARAPI GetStartY(
+        /* [out] */ Int32* startY);
 
     /**
      * Returns where the scroll will end. Valid only for "fling" scrolls.
      *
      * @return The final X offset as an absolute distance from the origin.
      */
-    CARAPI_(Int32) GetFinalX();
+    CARAPI GetFinalX(
+        /* [out] */ Int32* finalX);
 
     /**
      * Returns where the scroll will end. Valid only for "fling" scrolls.
      *
      * @return The final Y offset as an absolute distance from the origin.
      */
-    CARAPI_(Int32) GetFinalY();
+    CARAPI GetFinalY(
+        /* [out] */ Int32* finalY);
 
     /**
      * Returns how long the scroll event will take, in milliseconds.
@@ -179,7 +194,8 @@ public:
      * @deprecated OverScrollers don't necessarily have a fixed duration.
      *             This function will lie to the best of its ability.
      */
-    CARAPI_(Int32) GetDuration();
+    CARAPI GetDuration(
+        /* [out] */ Int32* duration);
 
     /**
      * Extend the scroll animation. This allows a running animation to scroll
@@ -195,8 +211,12 @@ public:
      *             the duration of an existing scroll, use startScroll
      *             to begin a new animation.
      */
-    CARAPI_(void) ExtendDuration(
+    CARAPI ExtendDuration(
         /* [in] */ Int32 extend);
+
+    CARAPI ExtendDuration(
+        /* [in] */ Int32 extend,
+        /* [out */ Int32* result);
 
     /**
      * Sets the final position (X) for this scroller.
@@ -211,7 +231,7 @@ public:
      *             the duration of an existing scroll, use startScroll
      *             to begin a new animation.
      */
-    CARAPI_(void) SetFinalX(
+    CARAPI SetFinalX(
         /* [in] */ Int32 newX);
 
     /**
@@ -227,14 +247,15 @@ public:
      *             the duration of an existing scroll, use startScroll
      *             to begin a new animation.
      */
-    CARAPI_(void) SetFinalY(
+    CARAPI SetFinalY(
         /* [in] */ Int32 newY);
 
     /**
      * Call this when you want to know the new location. If it returns true, the
      * animation is not yet finished.
      */
-    CARAPI_(Boolean) ComputeScrollOffset();
+    CARAPI ComputeScrollOffset(
+        /* [out] */ Boolean* scrollOffset);
 
     /**
      * Start scrolling by providing a starting point and the distance to travel.
@@ -250,7 +271,7 @@ public:
      * @param dy Vertical distance to travel. Positive numbers will scroll the
      *        content up.
      */
-    CARAPI_(void) StartScroll(
+    CARAPI StartScroll(
         /* [in] */ Int32 startX,
         /* [in] */ Int32 startY,
         /* [in] */ Int32 dx,
@@ -269,7 +290,7 @@ public:
      *        content up.
      * @param duration Duration of the scroll in milliseconds.
      */
-    CARAPI_(void) StartScroll(
+    CARAPI StartScroll(
         /* [in] */ Int32 startX,
         /* [in] */ Int32 startY,
         /* [in] */ Int32 dx,
@@ -288,13 +309,14 @@ public:
      * @return true if a springback was initiated, false if startX and startY were
      *          already within the valid range.
      */
-    CARAPI_(Boolean) SpringBack(
+    CARAPI SpringBack(
         /* [in] */ Int32 startX,
         /* [in] */ Int32 startY,
         /* [in] */ Int32 minX,
         /* [in] */ Int32 maxX,
         /* [in] */ Int32 minY,
-        /* [in] */ Int32 maxY);
+        /* [in] */ Int32 maxY,
+        /* [in] */ Boolean* result);
 
     /**
      * Start scrolling based on a fling gesture. The distance traveled will
@@ -323,7 +345,18 @@ public:
      * @param overY Overfling range. If > 0, vertical overfling in either
      *            direction will be possible.
      */
-    CARAPI_(void) Fling(
+
+    CARAPI Fling(
+        /* [in] */ Int32 startX,
+        /* [in] */ Int32 startY,
+        /* [in] */ Int32 velocityX,
+        /* [in] */ Int32 velocityY,
+        /* [in] */ Int32 minX,
+        /* [in] */ Int32 maxX,
+        /* [in] */ Int32 minY,
+        /* [in] */ Int32 maxY);
+
+    CARAPI Fling(
         /* [in] */ Int32 startX,
         /* [in] */ Int32 startY,
         /* [in] */ Int32 velocityX,
@@ -332,8 +365,8 @@ public:
         /* [in] */ Int32 maxX,
         /* [in] */ Int32 minY,
         /* [in] */ Int32 maxY,
-        /* [in] */ Int32 overX = 0,
-        /* [in] */ Int32 overY = 0);
+        /* [in] */ Int32 overX,
+        /* [in] */ Int32 overY);
 
     /**
      * Notify the scroller that we've reached a horizontal boundary.
@@ -348,7 +381,7 @@ public:
      * @param overX Magnitude of overscroll allowed. This should be the maximum
      *              desired distance from finalX. Absolute value - must be positive.
      */
-    CARAPI_(void) NotifyHorizontalEdgeReached(
+    CARAPI NotifyHorizontalEdgeReached(
         /* [in] */ Int32 startX,
         /* [in] */ Int32 finalX,
         /* [in] */ Int32 overX);
@@ -366,7 +399,7 @@ public:
      * @param overY Magnitude of overscroll allowed. This should be the maximum
      *              desired distance from finalY. Absolute value - must be positive.
      */
-    CARAPI_(void) NotifyVerticalEdgeReached(
+    CARAPI NotifyVerticalEdgeReached(
         /* [in] */ Int32 startY,
         /* [in] */ Int32 finalY,
         /* [in] */ Int32 overY);
@@ -384,7 +417,8 @@ public:
      * @return true when the current position is overscrolled and in the process of
      *         interpolating back to a valid value.
      */
-    CARAPI_(Boolean) IsOverScrolled();
+    CARAPI IsOverScrolled(
+        /* [in] */ Boolean* isOverScrolled);
 
     /**
      * Stops the animation. Contrary to {@link #forceFinished(boolean)},
@@ -393,7 +427,7 @@ public:
      *
      * @see #forceFinished(boolean)
      */
-    CARAPI_(void) AbortAnimation();
+    CARAPI AbortAnimation();
 
     /**
      * Returns the time elapsed since the beginning of the scrolling.
@@ -402,22 +436,18 @@ public:
      *
      * @hide
      */
-    CARAPI_(Int32) TimePassed();
+    CARAPI TimePassed(
+        /* [out] */ Int32* timePassed);
 
     /**
      * @hide
      */
-    CARAPI_(Boolean) IsScrollingInDirection(
+    CARAPI IsScrollingInDirection(
         /* [in] */ Float xvel,
-        /* [in] */ Float yvel);
+        /* [in] */ Float yvel,
+        /* [out] */ Boolean* isScrollingInDirection);
 
 private:
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Elastos::Droid::View::Animation::IInterpolator* interpolator,
-        /* [in] */ Boolean flywheel);
-
-public:
     static const Int32 DEFAULT_DURATION = 250;
     static const Int32 SCROLL_MODE = 0;
     static const Int32 FLING_MODE = 1;

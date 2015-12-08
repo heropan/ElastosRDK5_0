@@ -1,10 +1,13 @@
 #include "elastos/droid/ext/frameworkdef.h"
-#include "CWifiP2pManagerChannel.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pManagerChannel.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IBundle;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceInfo;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::IMap;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -19,7 +22,7 @@ const Int32 CWifiP2pManagerChannel::INVALID_LISTENER_KEY = 0;
 CWifiP2pManagerChannel::P2pHandler::P2pHandler(
     /* [in] */ ILooper* looper,
     /* [in] */ CWifiP2pManagerChannel* host)
-    : HandlerBase(looper)
+    : Handler(looper)
     , mHost(host)
 {
 }
@@ -61,7 +64,11 @@ ECode CWifiP2pManagerChannel::P2pHandler::HandleMessage(
         case IWifiP2pManager::SET_DEVICE_NAME_FAILED:
         case IWifiP2pManager::DELETE_PERSISTENT_GROUP_FAILED:
         case IWifiP2pManager::SET_WFD_INFO_FAILED:
-        case IWifiP2pManager::SET_GO_PSK_FAILED:
+        case IWifiP2pManager::START_WPS_FAILED:
+        case IWifiP2pManager::START_LISTEN_FAILED:
+        case IWifiP2pManager::STOP_LISTEN_FAILED:
+        case IWifiP2pManager::SET_CHANNEL_FAILED:
+        case IWifiP2pManager::REPORT_NFC_HANDOVER_FAILED:
             if (listener != NULL) {
                 AutoPtr<IWifiP2pManagerActionListener> al;
                 al = IWifiP2pManagerActionListener::Probe(listener);
@@ -85,7 +92,11 @@ ECode CWifiP2pManagerChannel::P2pHandler::HandleMessage(
         case IWifiP2pManager::SET_DEVICE_NAME_SUCCEEDED:
         case IWifiP2pManager::DELETE_PERSISTENT_GROUP_SUCCEEDED:
         case IWifiP2pManager::SET_WFD_INFO_SUCCEEDED:
-        case IWifiP2pManager::SET_GO_PSK_SUCCEEDED:
+        case IWifiP2pManager::START_WPS_SUCCEEDED:
+        case IWifiP2pManager::START_LISTEN_SUCCEEDED:
+        case IWifiP2pManager::STOP_LISTEN_SUCCEEDED:
+        case IWifiP2pManager::SET_CHANNEL_SUCCEEDED:
+        case IWifiP2pManager::REPORT_NFC_HANDOVER_SUCCEEDED:
             if (listener != NULL) {
                 AutoPtr<IWifiP2pManagerActionListener> al;
                 al = IWifiP2pManagerActionListener::Probe(listener);
@@ -128,41 +139,6 @@ ECode CWifiP2pManagerChannel::P2pHandler::HandleMessage(
                 mHost->HandleServiceResponse(resp);
             }
             break;
-        case IWifiP2pManager::CONNECTION_REQUESTED:
-            if (mHost->mDialogListener != NULL) {
-                AutoPtr<IBundle> bundle;
-                msg->GetData((IBundle**)&bundle);
-                AutoPtr<IParcelable> parcel;
-                bundle->GetParcelable(IWifiP2pManager::P2P_DEV_BUNDLE_KEY, (IParcelable**)&parcel);
-                AutoPtr<IWifiP2pDevice> device = IWifiP2pDevice::Probe(parcel);
-                assert(device != NULL);
-                parcel = NULL;
-                bundle->GetParcelable(IWifiP2pManager::P2P_CONFIG_BUNDLE_KEY, (IParcelable**)&parcel);
-                AutoPtr<IWifiP2pConfig> config = IWifiP2pConfig::Probe(parcel);
-                assert(config != NULL);
-                mHost->mDialogListener->OnConnectionRequested(device, config);
-            }
-            break;
-        case IWifiP2pManager::SHOW_PIN_REQUESTED:
-            if (mHost->mDialogListener != NULL) {
-                AutoPtr<IBundle> bundle;
-                msg->GetData((IBundle**)&bundle);
-                String pin;
-                bundle->GetString(IWifiP2pManager::WPS_PIN_BUNDLE_KEY, &pin);
-                mHost->mDialogListener->OnShowPinRequested(pin);
-            }
-            break;
-        case IWifiP2pManager::DIALOG_LISTENER_ATTACHED:
-            if (mHost->mDialogListener != NULL) {
-                mHost->mDialogListener->OnAttached();
-            }
-            break;
-        case IWifiP2pManager::DIALOG_LISTENER_DETACHED:
-            if (mHost->mDialogListener != NULL) {
-                mHost->mDialogListener->OnDetached(arg1);
-                mHost->mDialogListener = NULL;
-            }
-            break;
         case IWifiP2pManager::RESPONSE_PERSISTENT_GROUP_INFO: {
                 AutoPtr<IWifiP2pGroupList> groups = IWifiP2pGroupList::Probe(obj);
                 if (listener != NULL) {
@@ -184,6 +160,10 @@ ECode CWifiP2pManagerChannel::P2pHandler::HandleMessage(
 //=========================================================================
 // CWifiP2pManagerChannel
 //=========================================================================
+
+CAR_INTERFACE_IMPL(CWifiP2pManagerChannel, Object, IWifiP2pManagerChannel)
+
+CAR_OBJECT_IMPL(CWifiP2pManagerChannel)
 
 CWifiP2pManagerChannel::CWifiP2pManagerChannel()
     : mListenerKey(0)
@@ -348,9 +328,11 @@ ECode CWifiP2pManagerChannel::HandleUpnpServiceResponse(
 {
     AutoPtr<ArrayOf<String> > names;
     AutoPtr<IWifiP2pDevice> device;
-    resp->GetUniqueServiceNames((ArrayOf<String>**)&names);
-    resp->GetSrcDevice((IWifiP2pDevice**)&device);
-    mUpnpServRspListener->OnUpnpServiceAvailable(names, device);
+    assert(0);
+    // TODO
+    // resp->GetUniqueServiceNames((ArrayOf<String>**)&names);
+    // resp->GetSrcDevice((IWifiP2pDevice**)&device);
+    // mUpnpServRspListener->OnUpnpServiceAvailable(names, device);
     return NOERROR;
 }
 
@@ -363,11 +345,13 @@ ECode CWifiP2pManagerChannel::HandleDnsSdServiceResponse(
     resp->GetDnsType(&type);
     String instanceName, queryName;
     AutoPtr<IWifiP2pDevice> device;
-    AutoPtr<IObjectStringMap> map;
+    AutoPtr<IMap> map;
     resp->GetInstanceName(&instanceName);
     resp->GetDnsQueryName(&queryName);
-    resp->GetSrcDevice((IWifiP2pDevice**)&device);
-    resp->GetTxtRecord((IObjectStringMap**)&map);
+    assert(0);
+    // TODO
+    // resp->GetSrcDevice((IWifiP2pDevice**)&device);
+    resp->GetTxtRecord((IMap**)&map);
 
     if (type == IWifiP2pDnsSdServiceInfo::DNS_TYPE_PTR) {
         if (mDnsSdServRspListener != NULL) {
@@ -382,7 +366,9 @@ ECode CWifiP2pManagerChannel::HandleDnsSdServiceResponse(
     }
     else {
         String info;
-        resp->ToString(&info);
+        assert(0);
+        // TODO
+        // resp->ToString(&info);
         Slogger::E("CWifiP2pManagerChannel", "Unhandled resp %s", info.string());
     }
     return NOERROR;
@@ -430,14 +416,7 @@ ECode CWifiP2pManagerChannel::GetListener(
     return NOERROR;
 }
 
-ECode CWifiP2pManagerChannel::SetDialogListener(
-    /* [in] */ IWifiP2pManagerDialogListener* listener)
-{
-    mDialogListener = listener;
-    return NOERROR;
-}
-
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

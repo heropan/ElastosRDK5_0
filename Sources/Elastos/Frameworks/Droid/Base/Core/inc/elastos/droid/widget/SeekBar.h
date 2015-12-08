@@ -7,13 +7,34 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class SeekBar : public AbsSeekBar
+class SeekBar
+    : public AbsSeekBar
+    , public ISeekBar
 {
 public:
-    SeekBar(
-        /* [in] */ IContext* ctx,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::seekBarStyle);
+    CAR_INTERFACE_DECL();
+
+    SeekBar();
+
+    ~SeekBar();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     /**
      * Sets a listener to receive notifications of changes to the SeekBar's progress level. Also
@@ -33,26 +54,18 @@ public:
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
-    SeekBar();
-
-    Init(
-        /* [in] */ IContext* ctx,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::seekBarStyle);
+    virtual CARAPI_(void) OnProgressRefresh(
+        /* [in] */ Float scale,
+        /* [in] */ Boolean fromUser);
 
     //java package access permission
     virtual CARAPI_(void) OnStartTrackingTouch();
 
     virtual CARAPI_(void) OnStopTrackingTouch();
 
-    virtual CARAPI_(void) OnProgressRefresh(
-        /* [in] */ Float scale,
-        /* [in] */ Boolean fromUser);
-
 private:
     AutoPtr<ISeekBarOnSeekBarChangeListener> mOnSeekBarChangeListener;
 };
-
 
 }// namespace Widget
 }// namespace Droid

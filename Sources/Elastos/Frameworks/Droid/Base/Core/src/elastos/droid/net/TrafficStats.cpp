@@ -20,12 +20,11 @@ ECode TrafficStats::GetStatsService(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (sStatsService == null) {
-            sStatsService = INetworkStatsService.Stub.asInterface(
-                    ServiceManager.getService(Context.NETWORK_STATS_SERVICE));
+        if (sStatsService == NULL) {
+            sStatsService = INetworkStatsService::Probe(
+                    ServiceManager::GetService(Context.NETWORK_STATS_SERVICE));
         }
         return sStatsService;
-
 #endif
 }
 
@@ -35,7 +34,6 @@ ECode TrafficStats::SetThreadStatsTag(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         NetworkManagementSocketTagger.setThreadSocketStatsTag(tag);
-
 #endif
 }
 
@@ -44,7 +42,6 @@ ECode TrafficStats::SetThreadStatsTagBackup()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         setThreadStatsTag(TAG_SYSTEM_BACKUP);
-
 #endif
 }
 
@@ -54,7 +51,6 @@ ECode TrafficStats::GetThreadStatsTag(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return NetworkManagementSocketTagger.getThreadSocketStatsTag();
-
 #endif
 }
 
@@ -63,7 +59,6 @@ ECode TrafficStats::ClearThreadStatsTag()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         NetworkManagementSocketTagger.setThreadSocketStatsTag(-1);
-
 #endif
 }
 
@@ -73,7 +68,6 @@ ECode TrafficStats::SetThreadStatsUid(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         NetworkManagementSocketTagger.setThreadSocketStatsUid(uid);
-
 #endif
 }
 
@@ -82,7 +76,6 @@ ECode TrafficStats::ClearThreadStatsUid()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         NetworkManagementSocketTagger.setThreadSocketStatsUid(-1);
-
 #endif
 }
 
@@ -92,7 +85,6 @@ ECode TrafficStats::TagSocket(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         SocketTagger.get().tag(socket);
-
 #endif
 }
 
@@ -102,7 +94,6 @@ ECode TrafficStats::UntagSocket(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         SocketTagger.get().untag(socket);
-
 #endif
 }
 
@@ -112,13 +103,12 @@ ECode TrafficStats::StartDataProfiling(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(sProfilingLock) {
-            if (sActiveProfilingStart != null) {
+            if (sActiveProfilingStart != NULL) {
                 throw new IllegalStateException("already profiling data");
             }
             // take snapshot in time; we calculate delta later
             sActiveProfilingStart = getDataLayerSnapshotForUid(context);
         }
-
 #endif
 }
 
@@ -129,17 +119,16 @@ ECode TrafficStats::StopDataProfiling(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         synchronized(sProfilingLock) {
-            if (sActiveProfilingStart == null) {
+            if (sActiveProfilingStart == NULL) {
                 throw new IllegalStateException("not profiling data");
             }
             // subtract starting values and return delta
             final NetworkStats profilingStop = getDataLayerSnapshotForUid(context);
             final NetworkStats profilingDelta = NetworkStats.subtract(
-                    profilingStop, sActiveProfilingStart, null, null);
-            sActiveProfilingStart = null;
+                    profilingStop, sActiveProfilingStart, NULL, NULL);
+            sActiveProfilingStart = NULL;
             return profilingDelta;
         }
-
 #endif
 }
 
@@ -148,9 +137,8 @@ ECode TrafficStats::IncrementOperationCount(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        final int tag = getThreadStatsTag();
+        final Int32 tag = getThreadStatsTag();
         incrementOperationCount(tag, operationCount);
-
 #endif
 }
 
@@ -160,13 +148,12 @@ ECode TrafficStats::IncrementOperationCount(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        final int uid = android.os.Process.myUid();
+        final Int32 uid = android.os.Process.myUid();
         try {
             getStatsService().incrementOperationCount(uid, tag, operationCount);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-
 #endif
 }
 
@@ -176,7 +163,7 @@ ECode TrafficStats::CloseQuietly(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         // TODO: move to NetworkStatsService once it exists
-        if (session != null) {
+        if (session != NULL) {
             try {
                 session.close();
             } catch (RuntimeException rethrown) {
@@ -184,7 +171,6 @@ ECode TrafficStats::CloseQuietly(
             } catch (Exception ignored) {
             }
         }
-
 #endif
 }
 
@@ -198,7 +184,6 @@ ECode TrafficStats::GetMobileTxPackets(
             total += getTxPackets(iface);
         }
         return total;
-
 #endif
 }
 
@@ -212,7 +197,6 @@ ECode TrafficStats::GetMobileRxPackets(
             total += getRxPackets(iface);
         }
         return total;
-
 #endif
 }
 
@@ -226,7 +210,6 @@ ECode TrafficStats::GetMobileTxBytes(
             total += getTxBytes(iface);
         }
         return total;
-
 #endif
 }
 
@@ -240,7 +223,6 @@ ECode TrafficStats::GetMobileRxBytes(
             total += getRxBytes(iface);
         }
         return total;
-
 #endif
 }
 
@@ -257,7 +239,6 @@ ECode TrafficStats::GetMobileTcpRxPackets(
             }
         }
         return total;
-
 #endif
 }
 
@@ -274,7 +255,6 @@ ECode TrafficStats::GetMobileTcpTxPackets(
             }
         }
         return total;
-
 #endif
 }
 
@@ -285,7 +265,6 @@ ECode TrafficStats::GetTxPackets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetIfaceStat(iface, TYPE_TX_PACKETS);
-
 #endif
 }
 
@@ -296,7 +275,6 @@ ECode TrafficStats::GetRxPackets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetIfaceStat(iface, TYPE_RX_PACKETS);
-
 #endif
 }
 
@@ -307,7 +285,6 @@ ECode TrafficStats::GetTxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetIfaceStat(iface, TYPE_TX_BYTES);
-
 #endif
 }
 
@@ -318,7 +295,6 @@ ECode TrafficStats::GetRxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetIfaceStat(iface, TYPE_RX_BYTES);
-
 #endif
 }
 
@@ -328,7 +304,6 @@ ECode TrafficStats::GetTotalTxPackets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetTotalStat(TYPE_TX_PACKETS);
-
 #endif
 }
 
@@ -338,7 +313,6 @@ ECode TrafficStats::GetTotalRxPackets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetTotalStat(TYPE_RX_PACKETS);
-
 #endif
 }
 
@@ -348,7 +322,6 @@ ECode TrafficStats::GetTotalTxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetTotalStat(TYPE_TX_BYTES);
-
 #endif
 }
 
@@ -358,7 +331,6 @@ ECode TrafficStats::GetTotalRxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetTotalStat(TYPE_RX_BYTES);
-
 #endif
 }
 
@@ -369,7 +341,6 @@ ECode TrafficStats::GetUidTxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetUidStat(uid, TYPE_TX_BYTES);
-
 #endif
 }
 
@@ -380,7 +351,6 @@ ECode TrafficStats::GetUidRxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetUidStat(uid, TYPE_RX_BYTES);
-
 #endif
 }
 
@@ -391,7 +361,6 @@ ECode TrafficStats::GetUidTxPackets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetUidStat(uid, TYPE_TX_PACKETS);
-
 #endif
 }
 
@@ -402,7 +371,6 @@ ECode TrafficStats::GetUidRxPackets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return nativeGetUidStat(uid, TYPE_RX_PACKETS);
-
 #endif
 }
 
@@ -413,7 +381,6 @@ ECode TrafficStats::GetUidTcpTxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return UNSUPPORTED;
-
 #endif
 }
 
@@ -424,7 +391,6 @@ ECode TrafficStats::GetUidTcpRxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return UNSUPPORTED;
-
 #endif
 }
 
@@ -435,7 +401,6 @@ ECode TrafficStats::GetUidUdpTxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return UNSUPPORTED;
-
 #endif
 }
 
@@ -446,7 +411,6 @@ ECode TrafficStats::GetUidUdpRxBytes(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return UNSUPPORTED;
-
 #endif
 }
 
@@ -457,7 +421,6 @@ ECode TrafficStats::GetUidTcpTxSegments(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return UNSUPPORTED;
-
 #endif
 }
 
@@ -468,7 +431,6 @@ ECode TrafficStats::GetUidTcpRxSegments(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return UNSUPPORTED;
-
 #endif
 }
 
@@ -479,7 +441,6 @@ ECode TrafficStats::GetUidUdpTxPackets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return UNSUPPORTED;
-
 #endif
 }
 
@@ -490,7 +451,6 @@ ECode TrafficStats::GetUidUdpRxPackets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return UNSUPPORTED;
-
 #endif
 }
 
@@ -501,13 +461,12 @@ ECode TrafficStats::GetDataLayerSnapshotForUid(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         // TODO: take snapshot locally, since proc file is now visible
-        final int uid = android.os.Process.myUid();
+        final Int32 uid = android.os.Process.myUid();
         try {
             return getStatsService().getDataLayerSnapshotForUid(uid);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-
 #endif
 }
 
@@ -521,7 +480,6 @@ ECode TrafficStats::GetMobileIfaces(
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-
 #endif
 }
 
@@ -645,12 +603,13 @@ ECode CTrafficStats::GetUidRxBytes(
 
 INetworkStatsService* CTrafficStats::GetStatsService()
 {
-    AutoLock lock(sProfilingLock);
+    synchronized(sProfilingLock) {
 
-    if (sStatsService!=NULL)
-        return sStatsService;
+        if (sStatsService!=NULL)
+            return sStatsService;
 
-    sStatsService =(INetworkStatsService*)ServiceManager::GetService(IContext::NETWORK_STATS_SERVICE).Get();
+        sStatsService =(INetworkStatsService*)ServiceManager::GetService(IContext::NETWORK_STATS_SERVICE).Get();
+    }
     return sStatsService;
 }
 
@@ -718,15 +677,17 @@ ECode CTrafficStats::UntagSocket(
 ECode CTrafficStats::StartDataProfiling(
     /* [in] */ IContext* context)
 {
-    AutoLock lock(sProfilingLock);
+    synchronized(sProfilingLock) {
 
-    if (sActiveProfilingStart != NULL) {
-        Slogger::E(TAG, "already profiling data");
-        return E_RUNTIME_EXCEPTION;
+        if (sActiveProfilingStart != NULL) {
+            Slogger::E(TAG, "already profiling data");
+            return E_RUNTIME_EXCEPTION;
+        }
+
+        // take snapshot in time; we calculate delta later
+        sActiveProfilingStart = GetDataLayerSnapshotForUid(context);
     }
-
-    // take snapshot in time; we calculate delta later
-    sActiveProfilingStart = GetDataLayerSnapshotForUid(context);
+    return NOERROR;
 }
 
 ECode CTrafficStats::StopDataProfiling(
@@ -734,21 +695,22 @@ ECode CTrafficStats::StopDataProfiling(
     /* [out] */ INetworkStats** retvalue)
 {
     VALIDATE_NOT_NULL(retvalue);
-    AutoLock lock(sProfilingLock);
+    synchronized(sProfilingLock) {
 
-    if (sActiveProfilingStart == NULL) {
-        Slogger::E(TAG, "not profiling data");
-        return E_RUNTIME_EXCEPTION;
+        if (sActiveProfilingStart == NULL) {
+            Slogger::E(TAG, "not profiling data");
+            return E_RUNTIME_EXCEPTION;
+        }
+
+        // subtract starting values and return delta
+        AutoPtr<INetworkStats> profilingStop = GetDataLayerSnapshotForUid(context);
+        AutoPtr<INetworkStats> profilingDelta;
+        CNetworkStats::Subtract(profilingStop, sActiveProfilingStart, NULL, NULL, (INetworkStats**)&profilingDelta);
+
+        sActiveProfilingStart = NULL;
+        *retvalue = profilingDelta;
+        REFCOUNT_ADD(*retvalue);
     }
-
-    // subtract starting values and return delta
-    AutoPtr<INetworkStats> profilingStop = GetDataLayerSnapshotForUid(context);
-    AutoPtr<INetworkStats> profilingDelta;
-    CNetworkStats::Subtract(profilingStop, sActiveProfilingStart, NULL, NULL, (INetworkStats**)&profilingDelta);
-
-    sActiveProfilingStart = NULL;
-    *retvalue = profilingDelta;
-    REFCOUNT_ADD(*retvalue);
     return NOERROR;
 }
 

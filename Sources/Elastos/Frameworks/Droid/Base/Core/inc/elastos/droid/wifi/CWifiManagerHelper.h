@@ -2,15 +2,22 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFIMANAGERHELPER_H__
 #define __ELASTOS_DROID_NET_WIFI_CWIFIMANAGERHELPER_H__
 
-#include "_Elastos_Droid_Net_Wifi_CWifiManagerHelper.h"
+#include "_Elastos_Droid_Wifi_CWifiManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 
 CarClass(CWifiManagerHelper)
+    , public Singleton
+    , public IWifiManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI CalculateSignalLevel(
         /* [in] */ Int32 rssi,
         /* [in] */ Int32 numLevels,

@@ -1,11 +1,11 @@
 
-#include "elastos/droid/net/wifi/WifiNative.h"
+#include "elastos/droid/wifi/WifiNative.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
-#include <wifi.h>
+//#include <wifi.h>
 #include <stdlib.h>
 
 using Elastos::Core::StringBuilder;

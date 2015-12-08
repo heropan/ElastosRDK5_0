@@ -4,6 +4,18 @@
 #include "_Elastos_Droid_App_CSearchManager.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Content::IDialogInterfaceOnDismissListener;
+using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Utility::IList;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
@@ -83,7 +95,7 @@ public:
     CARAPI StartSearch(
         /* [in] */ const String& initialQuery,
         /* [in] */ Boolean selectInitialQuery,
-        /* [in] */ IComponentName launchActivity,
+        /* [in] */ IComponentName* launchActivity,
         /* [in] */ IBundle* appSearchData,
         /* [in] */ Boolean globalSearch,
         /* [in] */ IRect* sourceBounds);
@@ -95,7 +107,7 @@ public:
      * @hide
      */
     CARAPI GetGlobalSearchActivities(
-        /* [out] */ IObjectContainer** apps);
+        /* [out] */ IList** apps);
 
     /**
      * Gets the name of the global search activity.
@@ -175,6 +187,20 @@ public:
         /* [in] */ ISearchManagerOnCancelListener* listener);
 
     /**
+     * @deprecated This method is an obsolete internal implementation detail. Do not use.
+     */
+    //@Deprecated
+    CARAPI OnCancel(
+        /* [in] */ IDialogInterface* dialog);
+
+    /**
+     * @deprecated This method is an obsolete internal implementation detail. Do not use.
+     */
+    //@Deprecated
+    CARAPI OnDismiss(
+        /* [in] */ IDialogInterface* dialog);
+
+    /**
      * Gets information about a searchable activity.
      *
      * @param componentName The activity to get searchable information for.
@@ -224,7 +250,7 @@ public:
      *         in their searchable meta-data.
      */
     CARAPI GetSearchablesInGlobalSearch(
-        /* [out] */ IObjectContainer** info);
+        /* [out] */ IList** info);
 
     /**
      * Gets an intent for launching installed assistant activity, or null if not available.
@@ -259,7 +285,7 @@ public:
     /**
      * Reference to the shared system search service.
      */
-    static AutoPtr<ISearchManager> mService;
+    static AutoPtr<IISearchManager> mService;
 
     AutoPtr<IContext> mContext;
 

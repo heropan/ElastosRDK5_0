@@ -1,9 +1,11 @@
 
-#include <cmdef.h>
+#include <elastos/coredef.h>
 #include "eunit/framework/CTestFailure.h"
 
 namespace Eunit {
 namespace Framework {
+
+CAR_INTERFACE_IMPL(CTestFailure, Object, ITestFailure)
 
 ECode CTestFailure::constructor(
     /* [in] */ ITest* failedTest,

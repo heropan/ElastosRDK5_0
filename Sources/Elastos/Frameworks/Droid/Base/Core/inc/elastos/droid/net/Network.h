@@ -5,6 +5,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastosx/net/SocketFactory.h>
 
+using Com::Squareup::Okhttp::IConnectionPool;
+using Com::Squareup::Okhttp::IHostResolver;
 using Elastos::Net::ISocket;
 using Elastos::Net::ISocketAddress;
 using Elastos::Net::IURL;
@@ -39,7 +41,8 @@ private:
     {
     public:
         NetworkBoundSocketFactory(
-            /* [in] */ Int32 netId);
+            /* [in] */ Int32 netId,
+            /* [in] */ Network* host);
 
         // @Override
         CARAPI CreateSocket(
@@ -82,6 +85,8 @@ private:
 
     private:
         const Int32 mNetId;
+
+        Network* const mHost;
     };
 
 public:
@@ -162,11 +167,11 @@ public:
 
     // @Override
     CARAPI Equals(
-        /* [in] */ IObject* obj,
+        /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     // @Override
@@ -212,13 +217,14 @@ private:
     // to initialize HTTP_KEEP_ALIVE_DURATION_MS only
     static Int32 GetHTTP_KEEP_ALIVE_DURATION_MS();
 
+private:
     // Default connection pool values. These are evaluated at startup, just
     // like the OkHttp code. Also like the OkHttp code, we will throw parse
     // exceptions at class loading time if the properties are set but are not
     // valid integers.
-    static const Boolean HTTP_KEEP_ALIVE; // = Boolean.parseBoolean(System.getProperty("http.keepAlive", "true"));
-    static const Int32 HTTP_MAX_CONNECTIONS; // = httpKeepAlive ? Integer.parseInt(System.getProperty("http.maxConnections", "5")) : 0;
-    static const Int64 HTTP_KEEP_ALIVE_DURATION_MS; // = Long.parseLong(System.getProperty("http.keepAliveDuration", "300000"));  // 5 minutes.
+    static const Boolean HTTP_KEEP_ALIVE;
+    static const Int32 HTTP_MAX_CONNECTIONS;
+    static const Int64 HTTP_KEEP_ALIVE_DURATION_MS; // 5 minutes.
 
     /**
      * @hide
@@ -232,16 +238,17 @@ private:
     // and openConnection, and a lock to protect access to them.
     /* volatile */ AutoPtr<NetworkBoundSocketFactory> mNetworkBoundSocketFactory;
 
-#if 0 // TODO: Waiting for ConnectionPool, HostResolver
     // mLock should be used to control write access to mConnectionPool and mHostResolver.
     // maybeInitHttpClient() must be called prior to reading either variable.
     /* volatile */ AutoPtr<IConnectionPool> mConnectionPool;
 
     /* volatile */ AutoPtr<IHostResolver> mHostResolver;
-#endif
 };
 
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Net::Network::NetworkBoundSocketFactory, IInterface)
+
 #endif // __ELASTOS_DROID_NET_NETWORK_H__

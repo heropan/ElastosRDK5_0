@@ -5,8 +5,9 @@
 #include "_Elastos_Droid_App_CAlarmManager.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Droid::App::IIAlarmManager;
-using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Os::IWorkSource;
+using Elastos::Droid::Content::IContext;
+
 
 namespace Elastos {
 namespace Droid {
@@ -408,7 +409,7 @@ public:
      * @hide
      */
     CARAPI GetNextAlarmClock(
-        /* [in] */ Int32 userId
+        /* [in] */ Int32 userId,
         /* [out] */ IAlarmClockInfo** info);
 
 private:

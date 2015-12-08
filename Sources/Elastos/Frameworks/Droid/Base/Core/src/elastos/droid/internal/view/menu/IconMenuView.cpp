@@ -40,12 +40,7 @@ ECode IconMenuView::OnClickListener::OnClick(
     return NOERROR;
 }
 
-#if 0
-CAR_INTERFACE_IMPL(IconMenuView::SavedState, ViewBaseSavedState, IIconMenuViewSavedState)
-#else
-CAR_INTERFACE_IMPL(IconMenuView::SavedState, Object, IIconMenuViewSavedState)
-#endif
-
+CAR_INTERFACE_IMPL(IconMenuView::SavedState, View::BaseSavedState, IIconMenuViewSavedState)
 IconMenuView::SavedState::SavedState()
     : mFocusedPosition(0)
 {}
@@ -97,7 +92,7 @@ ECode IconMenuView::SavedState::WriteToParcel(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(IconMenuView::LayoutParams, ViewGroupMarginLayoutParams, IIconMenuViewLayoutParams)
+CAR_INTERFACE_IMPL(IconMenuView::LayoutParams, MarginLayoutParams, IIconMenuViewLayoutParams)
 
 IconMenuView::LayoutParams::LayoutParams()
     : mLeft(0)
@@ -112,14 +107,14 @@ ECode IconMenuView::LayoutParams::constructor(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
-    return ViewGroupMarginLayoutParams::constructor(c, attrs);
+    return MarginLayoutParams::constructor(c, attrs);
 }
 
 ECode IconMenuView::LayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    return ViewGroupMarginLayoutParams::constructor(width, height);
+    return MarginLayoutParams::constructor(width, height);
 }
 
 ECode IconMenuView::LayoutParams::SetLeft(

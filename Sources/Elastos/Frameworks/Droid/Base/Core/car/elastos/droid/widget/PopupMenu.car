@@ -4,6 +4,7 @@ module
     interface Elastos.Droid.View.IMenuItem;
     interface Elastos.Droid.View.IMenuInflater;
     interface Elastos.Droid.View.IMenu;
+    interface Elastos.Droid.View.IViewOnTouchListener;
 
     namespace Elastos {
     namespace Droid {
@@ -49,6 +50,25 @@ module
      */
     [local]
     interface IPopupMenu {
+        /**
+         * Returns an {@link OnTouchListener} that can be added to the anchor view
+         * to implement drag-to-open behavior.
+         * <p>
+         * When the listener is set on a view, touching that view and dragging
+         * outside of its bounds will open the popup window. Lifting will select the
+         * currently touched list item.
+         * <p>
+         * Example usage:
+         * <pre>
+         * PopupMenu myPopup = new PopupMenu(context, myAnchor);
+         * myAnchor.setOnTouchListener(myPopup.getDragToOpenListener());
+         * </pre>
+         *
+         * @return a touch listener that controls drag-to-open behavior
+         */
+        GetDragToOpenListener(
+            [out] IViewOnTouchListener** listener);
+
         /**
          * @return the {@link Menu} associated with this popup. Populate the returned Menu with
          * items before calling {@link #show()}.

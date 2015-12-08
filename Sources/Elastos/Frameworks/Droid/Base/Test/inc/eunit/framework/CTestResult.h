@@ -2,10 +2,11 @@
 #ifndef __CTESTRESULT_H__
 #define __CTESTRESULT_H__
 
-#include <cmdef.h>
-#include "_CTestResult.h"
-#include <Elastos.CoreLibrary.h>
+#include "_Eunit_Framework_CTestResult.h"
+#include <elastos/coredef.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::IList;
 using Elastos::Utility::IVector;
@@ -14,10 +15,12 @@ namespace Eunit {
 namespace Framework {
 
 CarClass(CTestResult)
+    , public Object
+    , public ITestResult
 {
 private:
     class _Protectable
-        : public ElLightRefBase
+        : public Object
         , public IProtectable
     {
     public:
@@ -36,6 +39,8 @@ private:
 
 public:
     CTestResult();
+
+    CAR_INTERFACE_DECL()
 
     CARAPI constructor();
 

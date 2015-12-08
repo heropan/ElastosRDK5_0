@@ -732,6 +732,7 @@ module
          */
         GetAssistIntent(
             [in] IContext* ctx,
+            [in] Boolean inclContext,
             [out] IIntent** intent);
 
         /**
@@ -742,6 +743,7 @@ module
          */
         GetAssistIntent(
             [in] IContext* ctx,
+            [in] Boolean inclContext,
             [in] Int32 userHandle,
             [out] IIntent** intent);
 
@@ -752,7 +754,8 @@ module
         LaunchAssistAction(
             [in] Int32 requestType,
             [in] String hint,
-            [in] Int32 userHandle);
+            [in] Int32 userHandle,
+            [out] Boolean* result);
     }
 
     /**

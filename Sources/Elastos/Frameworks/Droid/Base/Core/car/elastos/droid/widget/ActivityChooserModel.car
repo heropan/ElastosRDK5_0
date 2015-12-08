@@ -8,9 +8,9 @@ module
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Content.IContext;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * Client that utilizes an {@link ActivityChooserModel}.

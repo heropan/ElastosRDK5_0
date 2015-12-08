@@ -42,6 +42,14 @@ Boolean ResourcesKey::HasOverrideConfiguration()
     return !Object::Equals(CConfiguration::EMPTY, mOverrideConfiguration);
 }
 
+ECode ResourcesKey::HasOverrideConfiguration(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = HasOverrideConfiguration();
+    return NOERROR;
+}
+
 ECode ResourcesKey::GetHashCode(
     /* [out] */ Int32* hash)
 {
@@ -94,6 +102,37 @@ ECode ResourcesKey::ToString(
 {
     VALIDATE_NOT_NULL(str)
     *str = StringUtils::ToString(mHash);
+    return NOERROR;
+}
+
+ECode ResourcesKey::GetDisplayId(
+    /* [out] */ Int32* displayId)
+{
+    VALIDATE_NOT_NULL(displayId)
+    *displayId = mDisplayId;
+    return NOERROR;
+}
+
+ECode ResourcesKey::SetDisplayId(
+    /* [in] */ Int32 displayId)
+{
+    mDisplayId = displayId;
+    return NOERROR;
+}
+
+ECode ResourcesKey::GetOverrideConfiguration(
+    /* [out] */ IConfiguration** config)
+{
+    VALIDATE_NOT_NULL(config)
+    *config = mOverrideConfiguration;
+    REFCOUNT_ADD(*config)
+    return NOERROR;
+}
+
+ECode ResourcesKey::SetOverrideConfiguration(
+    /* [in] */ IConfiguration* config)
+{
+    mOverrideConfiguration = config;
     return NOERROR;
 }
 

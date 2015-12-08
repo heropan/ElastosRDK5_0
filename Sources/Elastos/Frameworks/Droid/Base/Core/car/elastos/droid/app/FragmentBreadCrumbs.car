@@ -50,6 +50,7 @@ module
      * interface IViewParent;
      * interface IViewManager;
      */
+    [local]
     interface IFragmentBreadCrumbs {
 
         /**
@@ -57,7 +58,7 @@ module
          * when creating the bread crumbs.
          */
         SetActivity(
-            [in] IActivity* a);
+            [in] IActivity* activity);
 
         /**
          * The maximum number of breadcrumbs to show. Older fragment headers will be hidden from view.
@@ -90,7 +91,6 @@ module
          */
         SetOnBreadCrumbClickListener(
             [in] IOnBreadCrumbClickListener* listener);
-
     }
 
     } // namespace App

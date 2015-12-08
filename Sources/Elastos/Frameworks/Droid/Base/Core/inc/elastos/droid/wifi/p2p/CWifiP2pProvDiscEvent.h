@@ -1,7 +1,8 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PPROVDISCEVENT_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PPROVDISCEVENT_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pProvDiscEvent.h"
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pProvDiscEvent.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -9,8 +10,14 @@ namespace Wifi {
 namespace P2p {
 
 CarClass(CWifiP2pProvDiscEvent)
+    , public Object
+    , public IWifiP2pProvDiscEvent
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWifiP2pProvDiscEvent();
 
     ~CWifiP2pProvDiscEvent();
@@ -53,9 +60,9 @@ public:
     String mPin;
 };
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PPROVDISCEVENT_H__

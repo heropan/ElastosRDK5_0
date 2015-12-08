@@ -1,9 +1,9 @@
 #include "elastos/droid/widget/internal/CLockPatternViewSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 ECode CLockPatternViewSavedState::constructor(
     /* [in] */ IParcel* in)

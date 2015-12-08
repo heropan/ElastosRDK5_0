@@ -2,13 +2,13 @@
 #ifndef __ELASTOS_DROID_WIDGET_RADIOGROUPLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_RADIOGROUPLAYOUTPARAMS_H__
 
-#include "elastos/droid/widget/LinearLayoutLayoutParams.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class RadioGroupLayoutParams : public LinearLayoutLayoutParams
+class RadioGroupLayoutParams : public LinearLayout::LayoutParams
 {
 public:
     RadioGroupLayoutParams();
@@ -27,10 +27,10 @@ public:
         /* [in] */ Float weight);
 
     RadioGroupLayoutParams(
-        /* [in] */ ViewGroupLayoutParams* p);
+        /* [in] */ ViewGroup::LayoutParams* p);
 
     RadioGroupLayoutParams(
-        /* [in] */ ViewGroupMarginLayoutParams* source);
+        /* [in] */ ViewGroup::MarginLayoutParams* source);
 
 protected:
     virtual CARAPI SetBaseAttributes(

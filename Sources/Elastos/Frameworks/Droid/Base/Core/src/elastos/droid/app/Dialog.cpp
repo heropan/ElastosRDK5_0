@@ -1,17 +1,15 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/Dialog.h"
-#include "elastos/droid/app/CActionBarImpl.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CMessageHelper.h"
 #include "elastos/droid/R.h"
-#include "elastos/droid/impl/CPolicyManager.h"
-#include "elastos/droid/impl/CPolicyManager.h"
+// #include "elastos/droid/impl/CPolicyManager.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
-#include "elastos/droid/view/CContextThemeWrapper.h"
+// #include "elastos/droid/view/CContextThemeWrapper.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include <elastos/utility/logging/Slogger.h>
 
@@ -25,26 +23,25 @@ using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Droid::Content::IContextWrapper;
-using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::EIID_IDialogInterface;
 using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Internal::Policy::IPolicyManager;
-using Elastos::Droid::Internal::Policy::CPolicyManager;
-using Elastos::Droid::Internal::App::CActionBarImpl;
+// using Elastos::Droid::Internal::Policy::CPolicyManager;
 using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::View::IGravity;
-using Elastos::Droid::View::IWindowCallback;
-using Elastos::Droid::View::EIID_IWindowCallback;
 using Elastos::Droid::View::IDispatcherState;
-using Elastos::Droid::View::IKeyEventCallback;
-using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::View::IContextThemeWrapper;
-using Elastos::Droid::View::CContextThemeWrapper;
+// using Elastos::Droid::View::CContextThemeWrapper;
+using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
-using Elastos::Droid::View::IWindowManagerLayoutParams;
-using Elastos::Droid::View::IViewOnCreateContextMenuListener;
+using Elastos::Droid::View::EIID_IWindowCallback;
+using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
+using Elastos::Droid::View::EIID_IOnWindowDismissedCallback;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 
 namespace Elastos {
 namespace Droid {
@@ -59,7 +56,7 @@ const String Dialog::DIALOG_SHOWING_TAG("android:dialogShowing");
 const String Dialog::DIALOG_HIERARCHY_TAG("android:dialogHierarchy");
 
 //==============================================================================
-//            Dialog::ListenersHandler
+// Dialog::ListenersHandler
 //==============================================================================
 Dialog::ListenersHandler::ListenersHandler(
     /* [in] */ IDialog* dialog)
@@ -110,7 +107,7 @@ ECode Dialog::ListenersHandler::HandleMessage(
 
 
 //==============================================================================
-//            Dialog::DismissAction
+// Dialog::DismissAction
 //==============================================================================
 
 Dialog::DismissAction::DismissAction(
@@ -127,8 +124,12 @@ ECode Dialog::DismissAction::Run()
 
 
 //==============================================================================
-//            Dialog
+// Dialog
 //==============================================================================
+
+CAR_INTERFACE_IMPL_6(Dialog, Object, IDialog, IDialogInterface, \
+    IWindowCallback, IKeyEventCallback, \
+    IViewOnCreateContextMenuListener, IOnWindowDismissedCallback)
 
 Dialog::Dialog()
     : mCancelable(TRUE)
@@ -138,70 +139,26 @@ Dialog::Dialog()
     , mDismissAction(new DismissAction(this))
 {}
 
-Dialog::Dialog(
-    /* [in] */ IContext* context)
-    : mCancelable(TRUE)
-    , mCreated(FALSE)
-    , mShowing(FALSE)
-    , mCanceled(FALSE)
-    , mDismissAction(new DismissAction(this))
-{
-    Init(context);
-}
-
-Dialog::Dialog(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 theme)
-    : mCancelable(TRUE)
-    , mCreated(FALSE)
-    , mShowing(FALSE)
-    , mCanceled(FALSE)
-    , mDismissAction(new DismissAction(this))
-{
-    Init(context, theme);
-}
-
-Dialog::Dialog(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 theme,
-    /* [in] */ Boolean createContextThemeWrapper)
-    : mCancelable(TRUE)
-    , mCreated(FALSE)
-    , mShowing(FALSE)
-    , mCanceled(FALSE)
-    , mDismissAction(new DismissAction(this))
-{
-    Init(context, theme, createContextThemeWrapper);
-}
-
-Dialog::Dialog(
-    /* [in] */ IContext* context,
-    /* [in] */ Boolean cancelable,
-    /* [in] */ IDialogInterfaceOnCancelListener* cancelListener)
-    : mCancelable(TRUE)
-    , mCreated(FALSE)
-    , mShowing(FALSE)
-    , mCanceled(FALSE)
-    , mDismissAction(new DismissAction(this))
-{
-    Slogger::V(TAG, " >> create Dialog(): %p", this);
-    Init(context, cancelable, cancelListener);
-}
-
 Dialog::~Dialog()
 {
     mWindow->SetCallback(NULL);
     Slogger::V(TAG, ">> destory ~Dialog(): %p", this);
 }
 
-ECode Dialog::Init(
+ECode Dialog::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, 0, TRUE);
+}
+
+ECode Dialog::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 theme)
 {
-    return Init(context, theme, TRUE);
+    return constructor(context, theme, TRUE);
 }
 
-ECode Dialog::Init(
+ECode Dialog::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 theme,
     /* [in] */ Boolean createContextThemeWrapper)
@@ -212,16 +169,19 @@ ECode Dialog::Init(
         if (theme == 0) {
             theme = GetResourceId(context, R::attr::dialogTheme);
         }
-        CContextThemeWrapper::New(
-                context, theme, (IContextThemeWrapper**)&mContext);
-    } else {
+        mContext = NULL;
+        // CContextThemeWrapper::New(context, theme, (IContextThemeWrapper**)&mContext);
+    }
+    else {
         mContext = context;
     }
 
-    context->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&mWindowManager);
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&obj);
+    mWindowManager = IWindowManager::Probe(obj);
 
     AutoPtr<IPolicyManager> pm;
-    CPolicyManager::AcquireSingleton((IPolicyManager**)&pm);
+    // CPolicyManager::AcquireSingleton((IPolicyManager**)&pm);
     pm->MakeNewWindow(mContext, (IWindow**)&mWindow);
 
     mWindow->SetCallback(THIS_PROBE(IWindowCallback));
@@ -236,12 +196,12 @@ ECode Dialog::Init(
     return NOERROR;
 }
 
-ECode Dialog::Init(
+ECode Dialog::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Boolean cancelable,
     /* [in] */ IDialogInterfaceOnCancelListener* cancelListener)
 {
-    FAIL_RETURN(Init(context));
+    FAIL_RETURN(constructor(context));
     mCancelable = cancelable;
     SetOnCancelListener(cancelListener);
 
@@ -263,32 +223,24 @@ Int32 Dialog::GetResourceId(
     return resourceId;
 }
 
-/**
- * Retrieve the Context this Dialog is running in.
- *
- * @return Context The Context that was supplied to the constructor.
- */
-AutoPtr<IContext> Dialog::GetContext()
+ECode Dialog::GetContext(
+    /* [out] */ IContext** context)
 {
-    return mContext;
+    VALIDATE_NOT_NULL(context)
+    *context = mContext;
+    REFCOUNT_ADD(*context)
+    return NOERROR;
 }
 
-/**
- * Retrieve the {@link ActionBar} attached to this dialog, if present.
- *
- * @return The ActionBar attached to the dialog or NULL if no ActionBar is present.
- */
-AutoPtr<IActionBar> Dialog::GetActionBar()
+ECode Dialog::GetActionBar(
+    /* [out] */ IActionBar** actionBar)
 {
-    return mActionBar;
+    VALIDATE_NOT_NULL(actionBar)
+    *actionBar = mActionBar;
+    REFCOUNT_ADD(*actionBar);
+    return NOERROR;
 }
 
-/**
- * Sets the Activity that owns this dialog. An example use: This Dialog will
- * use the suggested volume control stream of the Activity.
- *
- * @param activity The Activity that owns this dialog.
- */
 ECode Dialog::SetOwnerActivity(
     /* [in] */ IActivity* activity)
 {
@@ -300,40 +252,32 @@ ECode Dialog::SetOwnerActivity(
 
     Int32 streamType;
     activity->GetVolumeControlStream(&streamType);
-    return GetWindow()->SetVolumeControlStream(streamType);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->SetVolumeControlStream(streamType);
 }
 
-/**
- * Returns the Activity that owns this Dialog. For example, if
- * {@link Activity#showDialog(Int32)} is used to show this Dialog, that
- * Activity will be the owner (by default). Depending on how this dialog was
- * created, this may return NULL.
- *
- * @return The Activity that owns this Dialog.
- */
-AutoPtr<IActivity> Dialog::GetOwnerActivity()
+ECode Dialog::GetOwnerActivity(
+    /* [out] */ IActivity** result)
 {
+    VALIDATE_NOT_NULL(result)
     AutoPtr<IActivity> activity;
     if (mWeakOwnerActivity) {
         mWeakOwnerActivity->Resolve(EIID_IActivity, (IInterface**)&activity);
     }
-    return activity;
+    *result = activity;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-/**
- * @return Whether the dialog is currently showing.
- */
-Boolean Dialog::IsShowing()
+ECode Dialog::IsShowing(
+    /* [out] */ Boolean* showing)
 {
-    return mShowing;
+    VALIDATE_NOT_NULL(showing)
+    *showing = mShowing;
+    return NOERROR;
 }
 
-/**
- * Forces immediate creation of the dialog.
- * <p>
- * Note that you should not override this method to perform dialog creation.
- * Rather, override {@link #onCreate(Bundle)}.
- */
 ECode Dialog::Create()
 {
     if (!mCreated) {
@@ -342,12 +286,6 @@ ECode Dialog::Create()
     return NOERROR;
 }
 
-/**
- * Start the dialog and display it on screen.  The window is placed in the
- * application layer and opaque.  Note that you should not override this
- * method to do initialization when the dialog is shown, instead implement
- * that in {@link #OnStart}.
- */
 ECode Dialog::Show()
 {
     if (mShowing) {
@@ -372,13 +310,21 @@ ECode Dialog::Show()
     mDecor = NULL;
     mWindow->GetDecorView((IView**)&mDecor);
 
-    Boolean hasFeature;
-    mWindow->HasFeature(IWindow::FEATURE_ACTION_BAR, &hasFeature);
+    Boolean hasFeature = (mActionBar == NULL);
+    if (hasFeature) {
+        mWindow->HasFeature(IWindow::FEATURE_ACTION_BAR, &hasFeature);
+    }
+
+    if (hasFeature) {
         AutoPtr<IApplicationInfo> info;
         mContext->GetApplicationInfo((IApplicationInfo**)&info);
-        mWindow.setDefaultIcon(info.icon);
-        mWindow.setDefaultLogo(info.logo);
-        mActionBar = new WindowDecorActionBar(this);
+        Int32 icon, logo;
+        IPackageItemInfo::Probe(info)->GetIcon(&icon);
+        IPackageItemInfo::Probe(info)->GetLogo(&logo);
+        mWindow->SetDefaultIcon(icon);
+        mWindow->SetDefaultLogo(logo);
+        assert(0 && "TODO");
+        // mActionBar = new WindowDecorActionBar(this);
     }
 
     AutoPtr<IWindowManagerLayoutParams> l;
@@ -396,7 +342,7 @@ ECode Dialog::Show()
         l = nl;
     }
 
-    mWindowManager->AddView(mDecor, l);
+    IViewManager::Probe(mWindowManager)->AddView(mDecor, IViewGroupLayoutParams::Probe(l));
     mShowing = TRUE;
 
     SendShowMessage();
@@ -404,9 +350,6 @@ ECode Dialog::Show()
     return NOERROR;
 }
 
-/**
- * Hide the dialog, but do not dismiss it.
- */
 ECode Dialog::Hide()
 {
     if (mDecor != NULL) {
@@ -416,12 +359,6 @@ ECode Dialog::Hide()
     return NOERROR;
 }
 
-/**
- * Dismiss this dialog, removing it from the screen. This method can be
- * invoked safely from any thread.  Note that you should not override this
- * method to do cleanup when the dialog is dismissed, instead implement
- * that in {@link #OnStop}.
- */
 ECode Dialog::Dismiss()
 {
     AutoPtr<ILooper> looper = Looper::GetMyLooper();
@@ -500,45 +437,29 @@ ECode Dialog::DispatchOnCreate(
     return NOERROR;
 }
 
-/**
- * Similar to {@link Activity#onCreate}, you should initialize your dialog
- * in this method, including calling {@link #setContentView}.
- * @param savedInstanceState If this dialog is being reinitalized after a
- *     the hosting activity was previously shut down, holds the result from
- *     the most recent call to {@link #onSaveInstanceState}, or NULL if this
- *     is the first time.
- */
-void Dialog::OnCreate(
+ECode Dialog::OnCreate(
     /* [in] */ IBundle* savedInstanceState)
 {
+    return NOERROR;
 }
 
-/**
- * Called when the dialog is starting.
- */
-void Dialog::OnStart()
+ECode Dialog::OnStart()
 {
     if (mActionBar != NULL) mActionBar->SetShowHideAnimationEnabled(TRUE);
+    return NOERROR;
 }
 
-/**
- * Called to tell you that you're stopping.
- */
-void Dialog::OnStop()
+ECode Dialog::OnStop()
 {
     if (mActionBar != NULL) mActionBar->SetShowHideAnimationEnabled(FALSE);
+    return NOERROR;
 }
 
-/**
- * Saves the state of the dialog into a bundle.
- *
- * The default implementation saves the state of its view hierarchy, so you'll
- * likely want to call through to super if you override this to save additional
- * state.
- * @return A bundle with the state of the dialog.
- */
-AutoPtr<IBundle> Dialog::OnSaveInstanceState()
+ECode Dialog::OnSaveInstanceState(
+    /* [out] */ IBundle** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     AutoPtr<IBundle> bundle;
     CBundle::New((IBundle**)&bundle);
     bundle->PutBoolean(DIALOG_SHOWING_TAG, mShowing);
@@ -547,19 +468,11 @@ AutoPtr<IBundle> Dialog::OnSaveInstanceState()
         mWindow->SaveHierarchyState((IBundle**)&wBundle);
         bundle->PutBundle(DIALOG_HIERARCHY_TAG, wBundle);
     }
-    return bundle;
+    *result = bundle;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-/**
- * Restore the state of the dialog from a previously saved bundle.
- *
- * The default implementation restores the state of the dialog's view
- * hierarchy that was saved in the default implementation of {@link #onSaveInstanceState()},
- * so be sure to call through to super when overriding unless you want to
- * do all restoring of state yourself.
- * @param savedInstanceState The state of the dialog previously saved by
- *     {@link #onSaveInstanceState()}.
- */
 ECode Dialog::OnRestoreInstanceState(
     /* [in] */ IBundle* savedInstanceState)
 {
@@ -583,87 +496,49 @@ ECode Dialog::OnRestoreInstanceState(
     return NOERROR;
 }
 
-/**
- * Retrieve the current Window for the activity.  This can be used to
- * directly access parts of the Window API that are not available
- * through Activity/Screen.
- *
- * @return Window The current window, or NULL if the activity is not
- *         visual.
- */
-AutoPtr<IWindow> Dialog::GetWindow()
+ECode Dialog::GetWindow(
+    /* [out] */ IWindow** window)
 {
-    return mWindow;
+    VALIDATE_NOT_NULL(window)
+    *window = mWindow;
+    REFCOUNT_ADD(*window)
+    return NOERROR;
 }
 
-/**
- * Call {@link android.view.Window#getCurrentFocus} on the
- * Window if this Activity to return the currently focused view.
- *
- * @return View The current View with focus or NULL.
- *
- * @see #GetWindow
- * @see android.view.Window#getCurrentFocus
- */
-AutoPtr<IView> Dialog::GetCurrentFocus()
+ECode Dialog::GetCurrentFocus(
+    /* [out] */ IView** view)
 {
+    VALIDATE_NOT_NULL(view)
     AutoPtr<IView> focus;
     if (mWindow != NULL) {
         mWindow->GetCurrentFocus((IView**)&focus);
     }
 
-    return focus;
+    *view = focus;
+    REFCOUNT_ADD(*view)
+    return NOERROR;
 }
 
-/**
- * Finds a view that was identified by the id attribute from the XML that
- * was processed in {@link #OnStart}.
- *
- * @param id the identifier of the view to find
- * @return The view if found or NULL otherwise.
- */
-AutoPtr<IView> Dialog::FindViewById(
-    /* [in] */ Int32 id)
+ECode Dialog::FindViewById(
+    /* [in] */ Int32 id,
+    /* [out] */ IView** view)
 {
-    AutoPtr<IView> view;
-    mWindow->FindViewById(id, (IView**)&view);
-
-    return view;
+    VALIDATE_NOT_NULL(view)
+    return mWindow->FindViewById(id, view);
 }
 
-/**
- * Set the screen content from a layout resource.  The resource will be
- * inflated, adding all top-level views to the screen.
- *
- * @param layoutResID Resource ID to be inflated.
- */
 ECode Dialog::SetContentView(
     /* [in] */ Int32 layoutResID)
 {
     return mWindow->SetContentView(layoutResID);
 }
 
-/**
- * Set the screen content to an explicit view.  This view is placed
- * directly into the screen's view hierarchy.  It can itself be a complex
- * view hierarhcy.
- *
- * @param view The desired content to display.
- */
 ECode Dialog::SetContentView(
     /* [in] */ IView* view)
 {
     return mWindow->SetContentView(view);
 }
 
-/**
- * Set the screen content to an explicit view.  This view is placed
- * directly into the screen's view hierarchy.  It can itself be a complex
- * view hierarhcy.
- *
- * @param view The desired content to display.
- * @param params Layout parameters for the view.
- */
 ECode Dialog::SetContentView(
     /* [in] */ IView* view,
     /* [in] */ IViewGroupLayoutParams* params)
@@ -671,13 +546,6 @@ ECode Dialog::SetContentView(
     return mWindow->SetContentView(view, params);
 }
 
-/**
- * Add an additional content view to the screen.  Added after any existing
- * ones in the screen -- existing views are NOT removed.
- *
- * @param view The desired content to display.
- * @param params Layout parameters for the view.
- */
 ECode Dialog::AddContentView(
     /* [in] */ IView* view,
     /* [in] */ IViewGroupLayoutParams* params)
@@ -685,11 +553,6 @@ ECode Dialog::AddContentView(
     return mWindow->AddContentView(view, params);
 }
 
-/**
- * Set the title text for this dialog's window.
- *
- * @param title The new text to display in the title.
- */
 ECode Dialog::SetTitle(
     /* [in] */ ICharSequence* title)
 {
@@ -701,12 +564,6 @@ ECode Dialog::SetTitle(
     return NOERROR;
 }
 
-/**
- * Set the title text for this dialog's window. The text is retrieved
- * from the resources with the supplied identifier.
- *
- * @param titleId the title's text resource identifier
- */
 ECode Dialog::SetTitle(
     /* [in] */ Int32 titleId)
 {
@@ -716,83 +573,63 @@ ECode Dialog::SetTitle(
     return SetTitle(title);
 }
 
-/**
- * A key was pressed down.
- *
- * <p>If the focused view didn't want this event, this method is called.
- *
- * <p>The default implementation consumed the KEYCODE_BACK to later
- * handle it in {@link #onKeyUp}.
- *
- * @see #onKeyUp
- * @see android.view.KeyEvent
- */
-Boolean Dialog::OnKeyDown(
+ECode Dialog::OnKeyDown(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     if (keyCode == IKeyEvent::KEYCODE_BACK) {
         event->StartTracking();
-        return TRUE;
+        *result = TRUE;
     }
 
-    return FALSE;
+    return NOERROR;
 }
 
-/**
- * Default implementation of {@link KeyEvent.Callback#onKeyLongPress(Int32, KeyEvent)
- * KeyEvent.Callback.onKeyLongPress()}: always returns FALSE (doesn't handle
- * the event).
- */
-Boolean Dialog::OnKeyLongPress(
+ECode Dialog::OnKeyLongPress(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    return NOERROR;
 }
 
-/**
- * A key was released.
- *
- * <p>The default implementation handles KEYCODE_BACK to close the
- * dialog.
- *
- * @see #onKeyDown
- * @see KeyEvent
- */
-Boolean Dialog::OnKeyUp(
+ECode Dialog::OnKeyUp(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     Boolean isTracking;
     Boolean isCanceled;
     if (keyCode == IKeyEvent::KEYCODE_BACK
         && (event->IsTracking(&isTracking), isTracking)
         && !(event->IsCanceled(&isCanceled), isCanceled)) {
         OnBackPressed();
-        return TRUE;
+        *result = TRUE;
     }
-    return FALSE;
+    return NOERROR;
 }
 
-/**
- * Default implementation of {@link KeyEvent.Callback#onKeyMultiple(Int32, Int32, KeyEvent)
- * KeyEvent.Callback.onKeyMultiple()}: always returns FALSE (doesn't handle
- * the event).
- */
-Boolean Dialog::OnKeyMultiple(
+ECode Dialog::OnKeyMultiple(
     /* [in] */ Int32 keyCode,
     /* [in] */ Int32 repeatCount,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
-/**
- * Called when the dialog has detected the user's press of the back
- * key.  The default implementation simply cancels the dialog (only if
- * it is cancelable), but you can override this to do whatever you want.
- */
 ECode Dialog::OnBackPressed()
 {
     if (mCancelable) {
@@ -802,103 +639,58 @@ ECode Dialog::OnBackPressed()
     return NOERROR;
 }
 
-/**
- * Called when a key shortcut event is not handled by any of the views in the Dialog.
- * Override this method to implement global key shortcuts for the Dialog.
- * Key shortcuts can also be implemented by setting the
- * {@link MenuItem#setShortcut(char, char) shortcut} property of menu items.
- *
- * @param keyCode The value in event.getKeyCode().
- * @param event Description of the key event.
- * @return True if the key shortcut was handled.
- */
-Boolean Dialog::OnKeyShortcut(
+ECode Dialog::OnKeyShortcut(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
-/**
- * Called when a touch screen event was not handled by any of the views
- * under it. This is most useful to process touch events that happen outside
- * of your window bounds, where there is no view to receive it.
- *
- * @param event The touch screen event being processed.
- * @return Return TRUE if you have consumed the event, FALSE if you haven't.
- *         The default implementation will cancel the dialog when a touch
- *         happens outside of the window bounds.
- */
-Boolean Dialog::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode Dialog::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     // Int32 action;
-    Boolean result;
-    mWindow->ShouldCloseOnTouch(mContext, event, &result);
-    if (mCancelable && mShowing && result) {
+    Boolean bval;
+    mWindow->ShouldCloseOnTouch(mContext, event, &bval);
+    if (mCancelable && mShowing && bval) {
         Cancel();
-        return TRUE;
+        *result = TRUE;
     }
 
-    return FALSE;
+    return NOERROR;
 }
 
-/**
- * Called when the trackball was moved and not handled by any of the
- * views inside of the activity.  So, for example, if the trackball moves
- * while focus is on a button, you will receive a call here because
- * buttons do not normally do anything with trackball events.  The call
- * here happens <em>before</em> trackball movements are converted to
- * DPAD key events, which then get sent back to the view hierarchy, and
- * will be processed at the point for things like focus navigation.
- *
- * @param event The trackball event being processed.
- *
- * @return Return TRUE if you have consumed the event, FALSE if you haven't.
- * The default implementation always returns FALSE.
- */
-Boolean Dialog::OnTrackballEvent(
-    /* [in] */ IMotionEvent* event)
+ECode Dialog::OnTrackballEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
-/**
- * Called when a generic motion event was not handled by any of the
- * views inside of the dialog.
- * <p>
- * Generic motion events describe joystick movements, mouse hovers, track pad
- * touches, scroll wheel movements and other input events.  The
- * {@link MotionEvent#getSource() source} of the motion event specifies
- * the class of input that was received.  Implementations of this method
- * must examine the bits in the source before processing the event.
- * The following code example shows how this is done.
- * </p><p>
- * Generic motion events with source class
- * {@link android.view.InputDevice#SOURCE_CLASS_POINTER}
- * are delivered to the view under the pointer.  All other generic motion events are
- * delivered to the focused view.
- * </p><p>
- * See {@link View#onGenericMotionEvent(MotionEvent)} for an example of how to
- * handle this event.
- * </p>
- *
- * @param event The generic motion event being processed.
- *
- * @return Return true if you have consumed the event, false if you haven't.
- * The default implementation always returns false.
- */
-Boolean Dialog::OnGenericMotionEvent(
-    /* [in] */ IMotionEvent* event)
+ECode Dialog::OnGenericMotionEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode Dialog::OnWindowAttributesChanged(
     /* [in] */ IWindowManagerLayoutParams* params)
 {
     if (mDecor != NULL) {
-        mWindowManager->UpdateViewLayout(mDecor, params);
+        IViewManager::Probe(mWindowManager)->UpdateViewLayout(mDecor,
+            IViewGroupLayoutParams::Probe(params));
     }
 
     return NOERROR;
@@ -930,31 +722,28 @@ ECode Dialog::OnWindowDismissed()
     return Dismiss();
 }
 
-/**
- * Called to process key events.  You can override this to intercept all
- * key events before they are dispatched to the window.  Be sure to call
- * this implementation for key events that should be handled normally.
- *
- * @param event The key event.
- *
- * @return Boolean Return TRUE if this event was consumed.
- */
-Boolean Dialog::DispatchKeyEvent(
-    /* [in] */ IKeyEvent* event)
+ECode Dialog::DispatchKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     Int32 keyCode;
     event->GetKeyCode(&keyCode);
     Boolean consumed;
     if ((mOnKeyListener != NULL) &&
         (mOnKeyListener->OnKey(THIS_PROBE(IDialogInterface),
             keyCode, event, &consumed), consumed)) {
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
     Boolean res;
     mWindow->SuperDispatchKeyEvent(event, &res);
     if (res) {
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
     AutoPtr<IDispatcherState> state;
@@ -963,102 +752,89 @@ Boolean Dialog::DispatchKeyEvent(
     }
 
     event->Dispatch(THIS_PROBE(IKeyEventCallback),
-        state, this->Probe(EIID_IInterface), &res);
+        state, TO_IINTERFACE(this), &res);
 
-    return res;
+    *result = res;
+    return NOERROR;
 }
 
-/**
- * Called to process a key shortcut event.
- * You can override this to intercept all key shortcut events before they are
- * dispatched to the window.  Be sure to call this implementation for key shortcut
- * events that should be handled normally.
- *
- * @param event The key shortcut event.
- * @return True if this event was consumed.
- */
-Boolean Dialog::DispatchKeyShortcutEvent(
-    /* [in] */ IKeyEvent* event)
+ECode Dialog::DispatchKeyShortcutEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    Boolean result;
-    mWindow->SuperDispatchKeyShortcutEvent(event, &result);
-    if (result) {
-        return TRUE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    Boolean bval;
+    mWindow->SuperDispatchKeyShortcutEvent(event, &bval);
+    if (bval) {
+        *result = TRUE;
+        return NOERROR;
     }
+
     Int32 keycode;
     event->GetKeyCode(&keycode);
-    return OnKeyShortcut(keycode, event);
+    return OnKeyShortcut(keycode, event, result);
 }
 
-/**
- * Called to process touch screen events.  You can override this to
- * intercept all touch screen events before they are dispatched to the
- * window.  Be sure to call this implementation for touch screen events
- * that should be handled normally.
- *
- * @param ev The touch screen event.
- *
- * @return Boolean Return TRUE if this event was consumed.
- */
-Boolean Dialog::DispatchTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode Dialog::DispatchTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     Boolean res;
     mWindow->SuperDispatchTouchEvent(ev, &res);
     if (res) {
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
-    return OnTouchEvent(ev);
+    return OnTouchEvent(ev, result);
 }
 
-/**
- * Called to process trackball events.  You can override this to
- * intercept all trackball events before they are dispatched to the
- * window.  Be sure to call this implementation for trackball events
- * that should be handled normally.
- *
- * @param ev The trackball event.
- *
- * @return Boolean Return TRUE if this event was consumed.
- */
-Boolean Dialog::DispatchTrackballEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode Dialog::DispatchTrackballEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     Boolean res;
     mWindow->SuperDispatchTrackballEvent(ev, &res);
     if (res) {
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
-    return OnTrackballEvent(ev);
+    return OnTrackballEvent(ev, result);
 }
 
-/**
- * Called to process generic motion events.  You can override this to
- * intercept all generic motion events before they are dispatched to the
- * window.  Be sure to call this implementation for generic motion events
- * that should be handled normally.
- *
- * @param ev The generic motion event.
- *
- * @return boolean Return true if this event was consumed.
- */
-Boolean Dialog::DispatchGenericMotionEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode Dialog::DispatchGenericMotionEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* result)
 {
-    Boolean result;
-    mWindow->SuperDispatchGenericMotionEvent(ev, &result);
-    if (result) {
-        return TRUE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    Boolean res;
+    mWindow->SuperDispatchGenericMotionEvent(ev, &res);
+    if (res) {
+        *result = TRUE;
+        return NOERROR;
     }
 
-    return OnGenericMotionEvent(ev);
+    return OnGenericMotionEvent(ev, result);
 }
 
-Boolean Dialog::DispatchPopulateAccessibilityEvent(
-    /* [in] */ IAccessibilityEvent* event)
+ECode Dialog::DispatchPopulateAccessibilityEvent(
+    /* [in] */ IAccessibilityEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     String packageName;
     mContext->GetPackageName(&packageName);
     AutoPtr<ICharSequence> pnCsq;
@@ -1069,81 +845,80 @@ Boolean Dialog::DispatchPopulateAccessibilityEvent(
     AutoPtr<IWindowManagerLayoutParams> params;
     mWindow->GetAttributes((IWindowManagerLayoutParams**)&params);
     Int32 width, height;
-    params->GetWidth(&width);
-    params->GetHeight(&height);
+    IViewGroupLayoutParams::Probe(params)->GetWidth(&width);
+    IViewGroupLayoutParams::Probe(params)->GetHeight(&height);
     Boolean isFullScreen = (width == IViewGroupLayoutParams::MATCH_PARENT) &&
         (height == IViewGroupLayoutParams::MATCH_PARENT);
-    event->SetFullScreen(isFullScreen);
+    IAccessibilityRecord::Probe(event)->SetFullScreen(isFullScreen);
 
-    return FALSE;
+    return NOERROR;
 }
 
-/**
- * @see Activity#onCreatePanelView(Int32)
- */
-AutoPtr<IView> Dialog::OnCreatePanelView(
-    /* [in] */ Int32 featureId)
-{
-    return NULL;
-}
-
-/**
- * @see Activity#onCreatePanelMenu(Int32, Menu)
- */
-Boolean Dialog::OnCreatePanelMenu(
+ECode Dialog::OnCreatePanelView(
     /* [in] */ Int32 featureId,
-    /* [in] */ IMenu* menu)
+    /* [out] */ IView** view)
 {
+    VALIDATE_NOT_NULL(view)
+    *view = NULL;
+    return NOERROR;
+}
+
+ECode Dialog::OnCreatePanelMenu(
+    /* [in] */ Int32 featureId,
+    /* [in] */ IMenu* menu,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     if (featureId == IWindow::FEATURE_OPTIONS_PANEL) {
-        return OnCreateOptionsMenu(menu);
+        return OnCreateOptionsMenu(menu, result);
     }
 
-    return FALSE;
+    return NOERROR;
 }
 
-/**
- * @see Activity#onPreparePanel(Int32, View, Menu)
- */
-Boolean Dialog::OnPreparePanel(
+ECode Dialog::OnPreparePanel(
     /* [in] */ Int32 featureId,
     /* [in] */ IView* view,
-    /* [in] */ IMenu* menu)
+    /* [in] */ IMenu* menu,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = TRUE;
+
     if (featureId == IWindow::FEATURE_OPTIONS_PANEL && menu != NULL) {
-        Boolean goforit = OnPrepareOptionsMenu(menu);
-        Boolean hasVisibleItems;
-        return goforit && (menu->HasVisibleItems(&hasVisibleItems),
-            hasVisibleItems);
+        Boolean goforit, hasVisibleItems;
+        OnPrepareOptionsMenu(menu, &goforit);
+        *result = goforit && (menu->HasVisibleItems(&hasVisibleItems), hasVisibleItems);
     }
-    return TRUE;
+    return NOERROR;
 }
 
-/**
- * @see Activity#onMenuOpened(Int32, Menu)
- */
-Boolean Dialog::OnMenuOpened(
+ECode Dialog::OnMenuOpened(
     /* [in] */ Int32 featureId,
-    /* [in] */ IMenu* menu)
+    /* [in] */ IMenu* menu,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = TRUE;
+
     if (featureId == IWindow::FEATURE_ACTION_BAR) {
         mActionBar->DispatchMenuVisibilityChanged(TRUE);
     }
-    return TRUE;
+    return NOERROR;
 }
 
-/**
- * @see Activity#onMenuItemSelected(Int32, MenuItem)
- */
-Boolean Dialog::OnMenuItemSelected(
+ECode Dialog::OnMenuItemSelected(
     /* [in] */ Int32 featureId,
-    /* [in] */ IMenuItem* item)
+    /* [in] */ IMenuItem* item,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
-/**
- * @see Activity#onPanelClosed(Int32, Menu)
- */
 ECode Dialog::OnPanelClosed(
     /* [in] */ Int32 featureId,
     /* [in] */ IMenu* menu)
@@ -1154,79 +929,54 @@ ECode Dialog::OnPanelClosed(
     return NOERROR;
 }
 
-/**
- * It is usually safe to proxy this call to the owner activity's
- * {@link Activity#onCreateOptionsMenu(Menu)} if the client desires the same
- * menu for this Dialog.
- *
- * @see Activity#onCreateOptionsMenu(Menu)
- * @see #getOwnerActivity()
- */
-Boolean Dialog::OnCreateOptionsMenu(
-    /* [in] */ IMenu* menu)
+ECode Dialog::OnCreateOptionsMenu(
+    /* [in] */ IMenu* menu,
+    /* [out] */ Boolean* result)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(result)
+    *result = TRUE;
+    return NOERROR;
 }
 
-/**
- * It is usually safe to proxy this call to the owner activity's
- * {@link Activity#onPrepareOptionsMenu(Menu)} if the client desires the
- * same menu for this Dialog.
- *
- * @see Activity#onPrepareOptionsMenu(Menu)
- * @see #getOwnerActivity()
- */
-Boolean Dialog::OnPrepareOptionsMenu(
-    /* [in] */ IMenu* menu)
+ECode Dialog::OnPrepareOptionsMenu(
+    /* [in] */ IMenu* menu,
+    /* [out] */ Boolean* result)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(result)
+    *result = TRUE;
+    return NOERROR;
 }
 
-/**
- * @see Activity#onOptionsItemSelected(MenuItem)
- */
-Boolean Dialog::OnOptionsItemSelected(
-    /* [in] */ IMenuItem* item)
+ECode Dialog::OnOptionsItemSelected(
+    /* [in] */ IMenuItem* item,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
-/**
- * @see Activity#onOptionsMenuClosed(Menu)
- */
 ECode Dialog::OnOptionsMenuClosed(
     /* [in] */ IMenu* menu)
 {
     return NOERROR;
 }
 
-/**
- * @see Activity#openOptionsMenu()
- */
 ECode Dialog::OpenOptionsMenu()
 {
     return mWindow->OpenPanel(IWindow::FEATURE_OPTIONS_PANEL, NULL);
 }
 
-/**
- * @see Activity#closeOptionsMenu()
- */
 ECode Dialog::CloseOptionsMenu()
 {
     return mWindow->ClosePanel(IWindow::FEATURE_OPTIONS_PANEL);
 }
 
-/**
- * @see Activity#invalidateOptionsMenu()
- */
 ECode Dialog::InvalidateOptionsMenu()
 {
     return mWindow->InvalidatePanelMenu(IWindow::FEATURE_OPTIONS_PANEL);
 }
 
-/**
- * @see Activity#onCreateContextMenu(ContextMenu, View, ContextMenuInfo)
- */
 ECode Dialog::OnCreateContextMenu(
     /* [in] */ IContextMenu* menu,
     /* [in] */ IView* v,
@@ -1235,29 +985,18 @@ ECode Dialog::OnCreateContextMenu(
     return NOERROR;
 }
 
-/**
- * @see Activity#registerForContextMenu(View)
- */
 ECode Dialog::RegisterForContextMenu(
     /* [in] */ IView* view)
 {
-    return view->SetOnCreateContextMenuListener(
-        (IViewOnCreateContextMenuListener*)this->Probe(
-        EIID_IViewOnCreateContextMenuListener));
+    return view->SetOnCreateContextMenuListener(THIS_PROBE(IViewOnCreateContextMenuListener));
 }
 
-/**
- * @see Activity#unregisterForContextMenu(View)
- */
 ECode Dialog::UnregisterForContextMenu(
     /* [in] */ IView* view)
 {
     return view->SetOnCreateContextMenuListener(NULL);
 }
 
-/**
- * @see Activity#openContextMenu(View)
- */
 ECode Dialog::OpenContextMenu(
     /* [in] */ IView* view)
 {
@@ -1265,29 +1004,27 @@ ECode Dialog::OpenContextMenu(
     return view->ShowContextMenu(&res);
 }
 
-/**
- * @see Activity#onContextItemSelected(MenuItem)
- */
-Boolean Dialog::OnContextItemSelected(
-    /* [in] */ IMenuItem* item)
+ECode Dialog::OnContextItemSelected(
+    /* [in] */ IMenuItem* item,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    return NOERROR;
 }
 
-/**
- * @see Activity#onContextMenuClosed(Menu)
- */
 ECode Dialog::OnContextMenuClosed(
     /* [in] */ IMenu* menu)
 {
     return NOERROR;
 }
 
-/**
- * This hook is called when the user signals the desire to start a search.
- */
-Boolean Dialog::OnSearchRequested()
+ECode Dialog::Dialog::OnSearchRequested(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     assert(0 && "TODO");
 //    final SearchManager searchManager = (SearchManager) mContext
 //            .getSystemService(Context_SEARCH_SERVICE);
@@ -1301,26 +1038,25 @@ Boolean Dialog::OnSearchRequested()
 //    } else {
 //        return FALSE;
 //    }
-    return FALSE;
+    return NOERROR;
 }
 
-AutoPtr<IActionMode> Dialog::OnWindowStartingActionMode(
-    /* [in] */ IActionModeCallback* callback)
+ECode Dialog::OnWindowStartingActionMode(
+    /* [in] */ IActionModeCallback* callback,
+    /* [out] */ IActionMode** mode)
 {
+    VALIDATE_NOT_NULL(mode)
+    *mode = NULL;
+
     if (mActionBar != NULL) {
         AutoPtr<IActionMode> tmp;
         mActionBar->StartActionMode(callback, (IActionMode**)&tmp);
-        return tmp.Get();
+        *mode =  tmp;
+        REFCOUNT_ADD(*mode)
     }
-    return NULL;
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- *
- * Note that if you override this method you should always call through
- * to the superclass implementation by calling super.onActionModeStarted(mode).
- */
 ECode Dialog::OnActionModeStarted(
     /* [in] */ IActionMode* mode)
 {
@@ -1328,12 +1064,6 @@ ECode Dialog::OnActionModeStarted(
     return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- *
- * Note that if you override this method you should always call through
- * to the superclass implementation by calling super.onActionModeFinished(mode).
- */
 ECode Dialog::OnActionModeFinished(
     /* [in] */ IActionMode* mode)
 {
@@ -1343,22 +1073,22 @@ ECode Dialog::OnActionModeFinished(
     return NOERROR;
 }
 
-/**
- * @return The activity associated with this dialog, or NULL if there is no assocaited activity.
- */
 AutoPtr<IComponentName> Dialog::GetAssociatedActivity()
 {
-    AutoPtr<IActivity> activity = GetOwnerActivity();
-    AutoPtr<IContext> context = GetContext();
+    AutoPtr<IActivity> activity;
+    GetOwnerActivity((IActivity**)&activity);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    IContextWrapper* wrapper;
     while (activity == NULL && context != NULL) {
         if (IActivity::Probe(context)) {
             activity = IActivity::Probe(context);  // found it!
         }
         else {
-            if (IContextWrapper::Probe(context)) {// unwrap one level
+            wrapper = IContextWrapper::Probe(context);
+            if (wrapper) {// unwrap one level
                 AutoPtr<IContext> tempCtx;
-                IContextWrapper::Probe(context)->GetBaseContext(
-                    (IContext**)&tempCtx);
+                wrapper->GetBaseContext((IContext**)&tempCtx);
                 context = tempCtx;
             }
             else {// done
@@ -1373,96 +1103,67 @@ AutoPtr<IComponentName> Dialog::GetAssociatedActivity()
     return name;
 }
 
-/**
- * Request that key events come to this dialog. Use this if your
- * dialog has no views with focus, but the dialog still wants
- * a chance to process key events.
- *
- * @param get TRUE if the dialog should receive key events, FALSE otherwise
- * @see android.view.Window#takeKeyEvents
- */
 ECode Dialog::TakeKeyEvents(
     /* [in] */ Boolean get)
 {
     return mWindow->TakeKeyEvents(get);
 }
 
-/**
- * Enable extended window features.  This is a convenience for calling
- * {@link android.view.Window#requestFeature GetWindow().requestFeature()}.
- *
- * @param featureId The desired feature as defined in
- *                  {@link android.view.Window}.
- * @return Returns TRUE if the requested feature is supported and now
- *         enabled.
- *
- * @see android.view.Window#requestFeature
- */
-Boolean Dialog::RequestWindowFeature(
-    /* [in] */ Int32 featureId)
+ECode Dialog::RequestWindowFeature(
+    /* [in] */ Int32 featureId,
+    /* [out] */ Boolean* result)
 {
-    Boolean res;
-    GetWindow()->RequestFeature(featureId, &res);
+    VALIDATE_NOT_NULL(result)
 
-    return res;
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->RequestFeature(featureId, result);
 }
 
-/**
- * Convenience for calling
- * {@link android.view.Window#setFeatureDrawableResource}.
- */
 ECode Dialog::SetFeatureDrawableResource(
     /* [in] */ Int32 featureId,
     /* [in] */ Int32 resId)
 {
-    return GetWindow()->SetFeatureDrawableResource(featureId, resId);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->SetFeatureDrawableResource(featureId, resId);
 }
 
-/**
- * Convenience for calling
- * {@link android.view.Window#setFeatureDrawableUri}.
- */
 ECode Dialog::SetFeatureDrawableUri(
     /* [in] */ Int32 featureId,
     /* [in] */ IUri* uri)
 {
-    return GetWindow()->SetFeatureDrawableUri(featureId, uri);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->SetFeatureDrawableUri(featureId, uri);
 }
 
-/**
- * Convenience for calling
- * {@link android.view.Window#setFeatureDrawable(Int32, Drawable)}.
- */
 ECode Dialog::SetFeatureDrawable(
     /* [in] */ Int32 featureId,
     /* [in] */ IDrawable* drawable)
 {
-    return GetWindow()->SetFeatureDrawable(featureId, drawable);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->SetFeatureDrawable(featureId, drawable);
 }
 
-/**
- * Convenience for calling
- * {@link android.view.Window#setFeatureDrawableAlpha}.
- */
 ECode Dialog::SetFeatureDrawableAlpha(
     /* [in] */ Int32 featureId,
     /* [in] */ Int32 alpha)
 {
-    return GetWindow()->SetFeatureDrawableAlpha(featureId, alpha);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->SetFeatureDrawableAlpha(featureId, alpha);
 }
 
-AutoPtr<ILayoutInflater> Dialog::GetLayoutInflater()
+ECode Dialog::GetLayoutInflater(
+    /* [out] */ ILayoutInflater** inflater)
 {
-    AutoPtr<ILayoutInflater> layout;
-    GetWindow()->GetLayoutInflater((ILayoutInflater**)&layout);
-
-    return layout;
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->GetLayoutInflater(inflater);
 }
 
-/**
- * Sets whether this dialog is cancelable with the
- * {@link KeyEvent#KEYCODE_BACK BACK} key.
- */
 ECode Dialog::SetCancelable(
     /* [in] */ Boolean flag)
 {
@@ -1471,14 +1172,6 @@ ECode Dialog::SetCancelable(
     return NOERROR;
 }
 
-/**
- * Sets whether this dialog is canceled when touched outside the window's
- * bounds. If setting to TRUE, the dialog is set to be cancelable if not
- * already set.
- *
- * @param cancel Whether the dialog should be canceled when touched outside
- *            the window.
- */
 ECode Dialog::SetCanceledOnTouchOutside(
     /* [in] */ Boolean cancel)
 {
@@ -1491,10 +1184,6 @@ ECode Dialog::SetCanceledOnTouchOutside(
     return NOERROR;
 }
 
-/**
- * Cancel the dialog.  This is essentially the same as calling {@link #dismiss()}, but it will
- * also call your {@link DialogInterface.OnCancelListener} (if registered).
- */
 ECode Dialog::Cancel()
 {
     if (!mCanceled && mCancelMessage != NULL) {
@@ -1514,17 +1203,6 @@ ECode Dialog::Cancel()
     return NOERROR;
 }
 
-/**
- * Set a listener to be invoked when the dialog is canceled.
- *
- * <p>This will only be invoked when the dialog is canceled.
- * Cancel events alone will not capture all ways that
- * the dialog might be dismissed. If the creator needs
- * to know when a dialog is dismissed in general, use
- * {@link #setOnDismissListener}.</p>
- *
- * @param listener The {@link DialogInterface.OnCancelListener} to use.
- */
 ECode Dialog::SetOnCancelListener(
     /* [in] */ IDialogInterfaceOnCancelListener* listener)
 {
@@ -1542,11 +1220,6 @@ ECode Dialog::SetOnCancelListener(
     return NOERROR;
 }
 
-/**
- * Set a message to be sent when the dialog is canceled.
- * @param msg The msg to send when the dialog is canceled.
- * @see #SetOnCancelListener(android.content.DialogInterface.OnCancelListener)
- */
 ECode Dialog::SetCancelMessage(
     /* [in] */ IMessage* msg)
 {
@@ -1554,10 +1227,6 @@ ECode Dialog::SetCancelMessage(
    return NOERROR;
 }
 
-/**
- * Set a listener to be invoked when the dialog is dismissed.
- * @param listener The {@link DialogInterface.OnDismissListener} to use.
- */
 ECode Dialog::SetOnDismissListener(
     /* [in] */ IDialogInterfaceOnDismissListener* listener)
 {
@@ -1575,10 +1244,6 @@ ECode Dialog::SetOnDismissListener(
     return NOERROR;
 }
 
-/**
- * Sets a listener to be invoked when the dialog is shown.
- * @param listener The {@link DialogInterface.OnShowListener} to use.
- */
 ECode Dialog::SetOnShowListener(
     /* [in] */ IDialogInterfaceOnShowListener* listener)
 {
@@ -1590,10 +1255,6 @@ ECode Dialog::SetOnShowListener(
     return NOERROR;
 }
 
-/**
- * Set a message to be sent when the dialog is dismissed.
- * @param msg The msg to send when the dialog is dismissed.
- */
 ECode Dialog::SetDismissMessage(
     /* [in] */ IMessage* msg)
 {
@@ -1602,51 +1263,47 @@ ECode Dialog::SetDismissMessage(
 }
 
  /** @hide */
-Boolean Dialog::TakeCancelAndDismissListeners(
+ECode Dialog::TakeCancelAndDismissListeners(
     /* [in] */ const String& msg,
     /* [in] */ IDialogInterfaceOnCancelListener* cancel,
-    /* [in] */ IDialogInterfaceOnDismissListener* dismiss)
+    /* [in] */ IDialogInterfaceOnDismissListener* dismiss,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     if (mCancelAndDismissTaken != NULL) {
         mCancelAndDismissTaken = NULL;
     }
     else if (mCancelMessage != NULL || mDismissMessage != NULL) {
-        return FALSE;
+        return NOERROR;
     }
 
     SetOnCancelListener(cancel);
     SetOnDismissListener(dismiss);
     mCancelAndDismissTaken = msg;
 
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
-/**
- * By default, this will use the owner Activity's suggested stream type.
- *
- * @see Activity#setVolumeControlStream(Int32)
- * @see #setOwnerActivity(Activity)
- */
 ECode Dialog::SetVolumeControlStream(
     /* [in] */ Int32 streamType)
 {
-    return GetWindow()->SetVolumeControlStream(streamType);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->SetVolumeControlStream(streamType);
 }
 
-/**
- * @see Activity#getVolumeControlStream()
- */
-Int32 Dialog::GetVolumeControlStream()
+ECode Dialog::GetVolumeControlStream(
+    /* [out] */ Int32* volume)
 {
-    Int32 volume;
-    GetWindow()->GetVolumeControlStream(&volume);
-
-    return volume;
+    VALIDATE_NOT_NULL(volume)
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->GetVolumeControlStream(volume);
 }
 
-/**
- * Sets the callback that will be called if a key is dispatched to the dialog.
- */
 ECode Dialog::SetOnKeyListener(
     /* [in] */ IDialogInterfaceOnKeyListener* onKeyListener)
 {

@@ -17,10 +17,10 @@ module
      * just ahead of the leading edge of the {@link ProgressBar} position.
      */
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * @Involve

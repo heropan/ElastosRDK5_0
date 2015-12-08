@@ -76,8 +76,7 @@ ECode SSLCertificateSocketFactory::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        this(handshakeTimeoutMillis, null, true);
-
+        this(handshakeTimeoutMillis, NULL, TRUE);
 #endif
 }
 
@@ -95,9 +94,8 @@ SSLCertificateSocketFactory::SSLCertificateSocketFactory(
 {
 #if 0 // TODO: Translate codes below
         mHandshakeTimeoutMillis = handshakeTimeoutMillis;
-        mSessionCache = cache == null ? null : cache.mSessionCache;
+        mSessionCache = cache == NULL ? NULL : cache.mSessionCache;
         mSecure = secure;
-
 #endif
 }
 
@@ -107,8 +105,7 @@ ECode SSLCertificateSocketFactory::GetDefault(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return new SSLCertificateSocketFactory(handshakeTimeoutMillis, null, true);
-
+        return new SSLCertificateSocketFactory(handshakeTimeoutMillis, NULL, TRUE);
 #endif
 }
 
@@ -119,8 +116,7 @@ ECode SSLCertificateSocketFactory::GetDefault(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return new SSLCertificateSocketFactory(handshakeTimeoutMillis, cache, true);
-
+        return new SSLCertificateSocketFactory(handshakeTimeoutMillis, cache, TRUE);
 #endif
 }
 
@@ -131,8 +127,7 @@ ECode SSLCertificateSocketFactory::GetInsecure(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return new SSLCertificateSocketFactory(handshakeTimeoutMillis, cache, false);
-
+        return new SSLCertificateSocketFactory(handshakeTimeoutMillis, cache, FALSE);
 #endif
 }
 
@@ -144,8 +139,7 @@ ECode SSLCertificateSocketFactory::GetHttpSocketFactory(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return new org.apache.http.conn.ssl.SSLSocketFactory(
-                new SSLCertificateSocketFactory(handshakeTimeoutMillis, cache, true));
-
+                new SSLCertificateSocketFactory(handshakeTimeoutMillis, cache, TRUE));
 #endif
 }
 
@@ -155,7 +149,7 @@ ECode SSLCertificateSocketFactory::VerifyHostname(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (!(socket instanceof SSLSocket)) {
+        if (!(ISSLSocket::Probe(socket) != NULL)) {
             throw new IllegalArgumentException("Attempt to verify non-SSL socket");
         }
         if (!isSslCheckRelaxed()) {
@@ -164,14 +158,13 @@ ECode SSLCertificateSocketFactory::VerifyHostname(
             SSLSocket ssl = (SSLSocket) socket;
             ssl.startHandshake();
             SSLSession session = ssl.getSession();
-            if (session == null) {
+            if (session == NULL) {
                 throw new SSLException("Cannot verify SSL socket without session");
             }
             if (!HttpsURLConnection.getDefaultHostnameVerifier().verify(hostname, session)) {
                 throw new SSLPeerUnverifiedException("Cannot verify hostname: " + hostname);
             }
         }
-
 #endif
 }
 
@@ -184,14 +177,13 @@ ECode SSLCertificateSocketFactory::MakeSocketFactory(
 #if 0 // TODO: Translate codes below
         try {
             OpenSSLContextImpl sslContext = new OpenSSLContextImpl();
-            sslContext.engineInit(keyManagers, trustManagers, null);
+            sslContext.engineInit(keyManagers, trustManagers, NULL);
             sslContext.engineGetClientSessionContext().setPersistentCache(mSessionCache);
             return sslContext.engineGetSocketFactory();
         } catch (KeyManagementException e) {
             Log.wtf(TAG, e);
             return (SSLSocketFactory) SSLSocketFactory.getDefault();  // Fallback
         }
-
 #endif
 }
 
@@ -202,7 +194,6 @@ ECode SSLCertificateSocketFactory::IsSslCheckRelaxed(
 #if 0 // TODO: Translate codes below
         return "1".equals(SystemProperties.get("ro.debuggable")) &&
             "yes".equals(SystemProperties.get("socket.relaxsslcheck"));
-
 #endif
 }
 
@@ -213,7 +204,7 @@ ECode SSLCertificateSocketFactory::GetDelegate(
 #if 0 // TODO: Translate codes below
         // Relax the SSL check if instructed (for this factory, or systemwide)
         if (!mSecure || isSslCheckRelaxed()) {
-            if (mInsecureFactory == null) {
+            if (mInsecureFactory == NULL) {
                 if (mSecure) {
                     Log.w(TAG, "*** BYPASSING SSL SECURITY CHECKS (socket.relaxsslcheck=yes) ***");
                 } else {
@@ -223,12 +214,11 @@ ECode SSLCertificateSocketFactory::GetDelegate(
             }
             return mInsecureFactory;
         } else {
-            if (mSecureFactory == null) {
+            if (mSecureFactory == NULL) {
                 mSecureFactory = makeSocketFactory(mKeyManagers, mTrustManagers);
             }
             return mSecureFactory;
         }
-
 #endif
 }
 
@@ -239,10 +229,9 @@ ECode SSLCertificateSocketFactory::SetTrustManagers(
 #if 0 // TODO: Translate codes below
         mTrustManagers = trustManager;
         // Clear out all cached secure factories since configurations have changed.
-        mSecureFactory = null;
+        mSecureFactory = NULL;
         // Note - insecure factories only ever use the INSECURE_TRUST_MANAGER so they need not
         // be cleared out here.
-
 #endif
 }
 
@@ -252,7 +241,6 @@ ECode SSLCertificateSocketFactory::SetNpnProtocols(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         this.mNpnProtocols = toLengthPrefixedList(npnProtocols);
-
 #endif
 }
 
@@ -262,7 +250,6 @@ ECode SSLCertificateSocketFactory::SetAlpnProtocols(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         this.mAlpnProtocols = toLengthPrefixedList(protocols);
-
 #endif
 }
 
@@ -275,7 +262,7 @@ ECode SSLCertificateSocketFactory::ToLengthPrefixedList(
         if (items.length == 0) {
             throw new IllegalArgumentException("items.length == 0");
         }
-        int totalLength = 0;
+        Int32 totalLength = 0;
         for (byte[] s : items) {
             if (s.length == 0 || s.length > 255) {
                 throw new IllegalArgumentException("s.length == 0 || s.length > 255: " + s.length);
@@ -283,7 +270,7 @@ ECode SSLCertificateSocketFactory::ToLengthPrefixedList(
             totalLength += 1 + s.length;
         }
         byte[] result = new byte[totalLength];
-        int pos = 0;
+        Int32 pos = 0;
         for (byte[] s : items) {
             result[pos++] = (byte) s.length;
             for (byte b : s) {
@@ -291,7 +278,6 @@ ECode SSLCertificateSocketFactory::ToLengthPrefixedList(
             }
         }
         return result;
-
 #endif
 }
 
@@ -302,7 +288,6 @@ ECode SSLCertificateSocketFactory::GetNpnSelectedProtocol(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return castToOpenSSLSocket(socket).getNpnSelectedProtocol();
-
 #endif
 }
 
@@ -313,7 +298,6 @@ ECode SSLCertificateSocketFactory::GetAlpnSelectedProtocol(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return castToOpenSSLSocket(socket).getAlpnSelectedProtocol();
-
 #endif
 }
 
@@ -324,9 +308,8 @@ ECode SSLCertificateSocketFactory::SetKeyManagers(
 #if 0 // TODO: Translate codes below
         mKeyManagers = keyManagers;
         // Clear out any existing cached factories since configurations have changed.
-        mSecureFactory = null;
-        mInsecureFactory = null;
-
+        mSecureFactory = NULL;
+        mInsecureFactory = NULL;
 #endif
 }
 
@@ -336,7 +319,6 @@ ECode SSLCertificateSocketFactory::SetChannelIdPrivateKey(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mChannelIdPrivateKey = privateKey;
-
 #endif
 }
 
@@ -347,7 +329,6 @@ ECode SSLCertificateSocketFactory::SetUseSessionTickets(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         castToOpenSSLSocket(socket).setUseSessionTickets(useSessionTickets);
-
 #endif
 }
 
@@ -358,7 +339,6 @@ ECode SSLCertificateSocketFactory::SetHostname(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         castToOpenSSLSocket(socket).setHostname(hostName);
-
 #endif
 }
 
@@ -369,7 +349,6 @@ ECode SSLCertificateSocketFactory::SetSoWriteTimeout(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         castToOpenSSLSocket(socket).setSoWriteTimeout(writeTimeoutMilliseconds);
-
 #endif
 }
 
@@ -379,12 +358,11 @@ ECode SSLCertificateSocketFactory::CastToOpenSSLSocket(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (!(socket instanceof OpenSSLSocketImpl)) {
+        if (!(IOpenSSLSocketImpl::Probe(socket) != NULL)) {
             throw new IllegalArgumentException("Socket not created by this factory: "
                     + socket);
         }
         return (OpenSSLSocketImpl) socket;
-
 #endif
 }
 
@@ -406,7 +384,6 @@ ECode SSLCertificateSocketFactory::CreateSocket(
             verifyHostname(s, host);
         }
         return s;
-
 #endif
 }
 
@@ -421,7 +398,6 @@ ECode SSLCertificateSocketFactory::CreateSocket(
         s.setHandshakeTimeout(mHandshakeTimeoutMillis);
         s.setChannelIdPrivateKey(mChannelIdPrivateKey);
         return s;
-
 #endif
 }
 
@@ -441,7 +417,6 @@ ECode SSLCertificateSocketFactory::CreateSocket(
         s.setHandshakeTimeout(mHandshakeTimeoutMillis);
         s.setChannelIdPrivateKey(mChannelIdPrivateKey);
         return s;
-
 #endif
 }
 
@@ -458,7 +433,6 @@ ECode SSLCertificateSocketFactory::CreateSocket(
         s.setHandshakeTimeout(mHandshakeTimeoutMillis);
         s.setChannelIdPrivateKey(mChannelIdPrivateKey);
         return s;
-
 #endif
 }
 
@@ -481,7 +455,6 @@ ECode SSLCertificateSocketFactory::CreateSocket(
             verifyHostname(s, host);
         }
         return s;
-
 #endif
 }
 
@@ -501,7 +474,6 @@ ECode SSLCertificateSocketFactory::CreateSocket(
             verifyHostname(s, host);
         }
         return s;
-
 #endif
 }
 
@@ -511,7 +483,6 @@ ECode SSLCertificateSocketFactory::GetDefaultCipherSuites(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return getDelegate().getDefaultCipherSuites();
-
 #endif
 }
 
@@ -521,7 +492,6 @@ ECode SSLCertificateSocketFactory::GetSupportedCipherSuites(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return getDelegate().getSupportedCipherSuites();
-
 #endif
 }
 
@@ -694,23 +664,24 @@ Boolean CSSLCertificateSocketFactory::IsSslCheckRelaxed()
 /*synchronized*/
 AutoPtr<ISSLSocketFactory> CSSLCertificateSocketFactory::GetDelegate()
 {
-    AutoLock lock(mLock);
-    // Relax the SSL check if instructed (for this factory, or systemwide)
-    if (!mSecure || IsSslCheckRelaxed()) {
-        if (mInsecureFactory == NULL) {
-            if (mSecure) {
-                //Log.w(TAG, "*** BYPASSING SSL SECURITY CHECKS (socket.relaxsslcheck=yes) ***");
-            } else {
-                //Log.w(TAG, "Bypassing SSL security checks at caller's request");
+    synchronized(mLock) {
+        // Relax the SSL check if instructed (for this factory, or systemwide)
+        if (!mSecure || IsSslCheckRelaxed()) {
+            if (mInsecureFactory == NULL) {
+                if (mSecure) {
+                    //Log.w(TAG, "*** BYPASSING SSL SECURITY CHECKS (socket.relaxsslcheck=yes) ***");
+                } else {
+                    //Log.w(TAG, "Bypassing SSL security checks at caller's request");
+                }
+                mInsecureFactory = MakeSocketFactory(mKeyManagers, CSSLCertificateSocketFactory::INSECURE_TRUST_MANAGER);
             }
-            mInsecureFactory = MakeSocketFactory(mKeyManagers, CSSLCertificateSocketFactory::INSECURE_TRUST_MANAGER);
+            return mInsecureFactory;
+        } else {
+            if (mSecureFactory == NULL) {
+                mSecureFactory = MakeSocketFactory(mKeyManagers, mTrustManagers);
+            }
+            return mSecureFactory;
         }
-        return mInsecureFactory;
-    } else {
-        if (mSecureFactory == NULL) {
-            mSecureFactory = MakeSocketFactory(mKeyManagers, mTrustManagers);
-        }
-        return mSecureFactory;
     }
 }
 

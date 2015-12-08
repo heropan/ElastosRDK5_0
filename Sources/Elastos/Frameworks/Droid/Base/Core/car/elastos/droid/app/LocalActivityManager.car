@@ -10,6 +10,10 @@ module
     namespace Droid {
     namespace App {
 
+    interface ILocalActivityRecord {
+
+    }
+
     /**
      * <p>Helper class for managing multiple running embedded activities in the same
      * process. This class is not normally used directly, but rather created for

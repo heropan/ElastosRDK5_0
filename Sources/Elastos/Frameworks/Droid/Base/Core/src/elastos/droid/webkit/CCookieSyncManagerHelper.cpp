@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/CCookieSyncManagerHelper.h"
+#include "elastos/droid/webkit/CCookieSyncManager.h"
 #include "elastos/droid/webkit/CookieSyncManager.h"
 #include <elastos/core/AutoLock.h>
 
@@ -20,7 +21,7 @@ ECode CCookieSyncManagerHelper::GetInstance(
     VALIDATE_NOT_NULL(instance);
     FAIL_RETURN(CookieSyncManager::CheckInstanceIsAllowed());
     if (CookieSyncManager::sRef == NULL) {
-        CookieSyncManager::sRef = new CookieSyncManager();
+        FAIL_RETURN(CCookieSyncManager::New((ICookieSyncManager**)&CookieSyncManager::sRef));
     }
     *instance = CookieSyncManager::sRef;
     REFCOUNT_ADD(*instance);
@@ -32,7 +33,9 @@ ECode CCookieSyncManagerHelper::CreateInstance(
     /* [out] */ ICookieSyncManager** instance)
 {
     AutoLock lock(this);
-    VALIDATE_NOT_NULL(context);
+    if (context == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     VALIDATE_NOT_NULL(instance);
     FAIL_RETURN(CookieSyncManager::SetGetInstanceIsAllowed());
     return GetInstance(instance);

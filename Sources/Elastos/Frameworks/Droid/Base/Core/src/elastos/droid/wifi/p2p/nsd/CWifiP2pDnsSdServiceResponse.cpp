@@ -1,5 +1,5 @@
 
-#include "CWifiP2pDnsSdServiceResponse.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pDnsSdServiceResponse.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -19,6 +19,8 @@ namespace Nsd {
 
 static CWifiP2pDnsSdServiceResponse::CStatic sStatic;
 
+CAR_OBJECT_IMPL(CWifiP2pDnsSdServiceResponse)
+
 ECode CWifiP2pDnsSdServiceResponse::constructor()
 {
     return NOERROR;
@@ -30,7 +32,7 @@ ECode CWifiP2pDnsSdServiceResponse::constructor(
     /* [in] */ IWifiP2pDevice* device,
     /* [in] */ ArrayOf<Byte>* data)
 {
-    FAIL_RETURN(WifiP2pServiceResponse::Init(
+    FAIL_RETURN(WifiP2pServiceResponse::constructor(
         IWifiP2pServiceInfo::SERVICE_TYPE_BONJOUR, status, transId, device, data));
 
     Boolean ret;
@@ -41,15 +43,6 @@ ECode CWifiP2pDnsSdServiceResponse::constructor(
     }
 
     return NOERROR;
-}
-
-PInterface CWifiP2pDnsSdServiceResponse::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_WifiP2pServiceResponse) {
-        return reinterpret_cast<PInterface>((WifiP2pServiceResponse*)this);
-    }
-    return _CWifiP2pDnsSdServiceResponse::Probe(riid);
 }
 
 ECode CWifiP2pDnsSdServiceResponse::GetServiceType(
@@ -113,14 +106,18 @@ ECode CWifiP2pDnsSdServiceResponse::ToString(
     sb += " TxtRecord:";
 
     AutoPtr<ArrayOf<String> > keys;
-    mTxtRecord->GetKeys((ArrayOf<String>**)&keys);
+    assert(0);
+    // TODO
+    // mTxtRecord->GetKeys((ArrayOf<String>**)&keys);
     if (keys != NULL) {
         String key, value;
         AutoPtr<ICharSequence> obj;
         for (Int32 i = 0; i < keys->GetLength(); ++i) {
             key = (*keys)[i];
             obj = NULL;
-            mTxtRecord->Get(key, (IInterface**)&obj);
+            assert(0);
+            // TODO
+            // mTxtRecord->Get(key, (IInterface**)&obj);
             obj->ToString(&value);
             sb += " key:";
             sb += key;
@@ -192,7 +189,7 @@ ECode CWifiP2pDnsSdServiceResponse::GetInstanceName(
 }
 
 ECode CWifiP2pDnsSdServiceResponse::GetTxtRecord(
-    /* [out] */ IObjectStringMap** txtRecord)
+    /* [out] */ IMap** txtRecord)
 {
     VALIDATE_NOT_NULL(txtRecord);
 
@@ -238,7 +235,9 @@ ECode CWifiP2pDnsSdServiceResponse::Parse(
     AutoPtr<IByteArrayInputStream> ins;
     FAIL_RETURN(CByteArrayInputStream::New(mData, (IByteArrayInputStream**)&ins));
     AutoPtr<IDataInputStream> dis;
-    FAIL_RETURN(CDataInputStream::New(ins, (IDataInputStream**)&dis));
+    assert(0);
+    // TODO
+    // FAIL_RETURN(CDataInputStream::New(ins, (IDataInputStream**)&dis));
     AutoPtr<IDataInput> idi = IDataInput::Probe(ins);
     if (idi == NULL) return E_NO_INTERFACE;
 
@@ -363,7 +362,9 @@ ECode CWifiP2pDnsSdServiceResponse::ReadTxtData(
         }
         AutoPtr<ICharSequence> seq;
         CString::New((*keyVal)[1], (ICharSequence**)&seq);
-        mTxtRecord->Put((*keyVal)[0], seq->Probe(EIID_IInterface));
+        assert(0);
+        // TODO
+        // mTxtRecord->Put((*keyVal)[0], seq->Probe(EIID_IInterface));
     }
 
     *isValid = TRUE;
@@ -389,7 +390,9 @@ ECode CWifiP2pDnsSdServiceResponse::NewInstance(
         CWifiP2pDnsSdServiceResponse::NewByFriend(status,
             transId, dev, NULL, (CWifiP2pDnsSdServiceResponse**)&resp);
 
-        *instance = resp;
+        assert(0);
+        // TODO
+        // *instance = resp;
         REFCOUNT_ADD(*instance);
         return NOERROR;
     }
@@ -397,13 +400,15 @@ ECode CWifiP2pDnsSdServiceResponse::NewInstance(
     AutoPtr<CWifiP2pDnsSdServiceResponse> resp;
     FAIL_RETURN(CWifiP2pDnsSdServiceResponse::NewByFriend(status,
         transId, dev, data, (CWifiP2pDnsSdServiceResponse**)&resp));
-    *instance = resp;
+    assert(0);
+    // TODO
+    // *instance = resp;
     REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

@@ -36,6 +36,18 @@ ECode InputEvent::GetDevice(
     return InputDevice::GetDevice(deviceId, device);
 }
 
+ECode InputEvent::IsFromSource(
+        /* [in] */ Int32 source,
+        /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    Int32 rSource;
+    GetSource(&rSource);
+    *result = (rSource & source) == source;
+    return NOERROR;
+}
+
 ECode InputEvent::Recycle()
 {
     // if (TRACK_RECYCLED_LOCATION) {
@@ -74,25 +86,6 @@ ECode InputEvent::GetSequenceNumber(
     VALIDATE_NOT_NULL(seq)
     *seq = mSeq;
 
-    return NOERROR;
-}
-
-ECode InputEvent::IsFromSource(
-    /* [in] */ Int32 source,
-    /* [out] */ Boolean* result)
-{
-    return NOERROR;
-}
-
-ECode InputEvent::ReadFromParcel(
-    /* [in] */ IParcel* source)
-{
-    return NOERROR;
-}
-
-ECode InputEvent::WriteToParcel(
-    /* [in] */ IParcel* dest)
-{
     return NOERROR;
 }
 

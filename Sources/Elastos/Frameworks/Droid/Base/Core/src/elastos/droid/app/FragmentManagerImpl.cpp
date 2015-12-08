@@ -2,16 +2,20 @@
 #include "elastos/droid/app/FragmentManagerImpl.h"
 #include "elastos/droid/app/CFragmentSavedState.h"
 #include "elastos/droid/app/CFragmentManagerState.h"
+#include "elastos/droid/app/CBackStackRecord.h"
 #include "elastos/droid/app/Fragment.h"
-// #include "elastos/droid/app/Activity.h"
+#include "elastos/droid/app/CFragmentState.h"
+#include "elastos/droid/app/Activity.h"
 #include "elastos/droid/app/CBackStackState.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/animation/AnimatorInflater.h"
+#include "elastos/droid/utility/CSparseArray.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/etl/Algorithm.h>
 
@@ -19,7 +23,6 @@ using Elastos::Droid::R;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::App::CFragmentSavedState;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
@@ -28,11 +31,14 @@ using Elastos::Droid::View::EIID_ILayoutInflaterFactory;
 using Elastos::Droid::View::EIID_ILayoutInflaterFactory2;
 using Elastos::Droid::Animation::AnimatorInflater;
 using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Utility::CSparseArray;
 
 using Elastos::Core::CInteger32;
+using Elastos::Core::CoreUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::CHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -53,11 +59,9 @@ ECode ExecCommitRunnable::Run()
 //=======================================================================
 ECode PopBackStackRunnable1::Run()
 {
-    // Boolean hasPopped;
-    // AutoPtr<Activity> activity = (Activity*)mHost->mActivity;
-    // return mHost->PopBackStackState(activity->mHandler, String(NULL), -1, 0, &hasPopped);
-    assert(0 && "TODO");
-    return NOERROR;
+    Boolean hasPopped;
+    AutoPtr<Activity> activity = (Activity*)mHost->mActivity;
+    return mHost->PopBackStackState(activity->mHandler, String(NULL), -1, 0, &hasPopped);
 }
 
 //=======================================================================
@@ -65,11 +69,9 @@ ECode PopBackStackRunnable1::Run()
 //=======================================================================
 ECode PopBackStackRunnable2::Run()
 {
-    // Boolean hasPopped;
-    // AutoPtr<Activity> activity = (Activity*)mHost->mActivity;
-    // return mHost->PopBackStackState(activity->mHandler, mName, -1, mFlags, &hasPopped);
-    assert(0 && "TODO");
-    return NOERROR;
+    Boolean hasPopped;
+    AutoPtr<Activity> activity = (Activity*)mHost->mActivity;
+    return mHost->PopBackStackState(activity->mHandler, mName, -1, mFlags, &hasPopped);
 }
 
 //=======================================================================
@@ -77,11 +79,9 @@ ECode PopBackStackRunnable2::Run()
 //=======================================================================
 ECode PopBackStackRunnable3::Run()
 {
-    // Boolean hasPopped;
-    // AutoPtr<Activity> activity = (Activity*)mHost->mActivity;
-    // return mHost->PopBackStackState(activity->mHandler, String(NULL), mId, mFlags, &hasPopped);
-    assert(0 && "TODO");
-    return NOERROR;
+    Boolean hasPopped;
+    AutoPtr<Activity> activity = (Activity*)mHost->mActivity;
+    return mHost->PopBackStackState(activity->mHandler, String(NULL), mId, mFlags, &hasPopped);
 }
 
 //=======================================================================
@@ -172,11 +172,7 @@ FragmentManagerImpl::~FragmentManagerImpl()
 ECode FragmentManagerImpl::BeginTransaction(
     /* [out] */ IFragmentTransaction** transaction)
 {
-    VALIDATE_NOT_NULL(transaction);
-
-    *transaction = new BackStackRecord(THIS_PROBE(IFragmentManagerImpl));
-    REFCOUNT_ADD(*transaction);
-    return NOERROR;
+    return CBackStackRecord::New((IFragmentManagerImpl*)this, transaction);
 }
 
 ECode FragmentManagerImpl::ExecutePendingTransactions(
@@ -200,10 +196,8 @@ ECode FragmentManagerImpl::PopBackStackImmediate(
    FAIL_RETURN(CheckStateLoss());
    Boolean executed;
    ExecutePendingTransactions(&executed);
-   // AutoPtr<Activity> activity = (Activity*)mActivity;
-   // return PopBackStackState(activity->mHandler, String(NULL), -1, 0, hasPopped);
-    assert(0 && "TODO");
-    return NOERROR;
+   AutoPtr<Activity> activity = (Activity*)mActivity;
+   return PopBackStackState(activity->mHandler, String(NULL), -1, 0, hasPopped);
 }
 
 ECode FragmentManagerImpl::PopBackStack(
@@ -225,10 +219,8 @@ ECode FragmentManagerImpl::PopBackStackImmediate(
     FAIL_RETURN(CheckStateLoss());
     Boolean executed;
     ExecutePendingTransactions(&executed);
-    // AutoPtr<Activity> activity = (Activity*)mActivity;
-    // return PopBackStackState(activity->mHandler, name, -1, flags, hasPopped);
-    assert(0 && "TODO");
-    return NOERROR;
+    AutoPtr<Activity> activity = (Activity*)mActivity;
+    return PopBackStackState(activity->mHandler, name, -1, flags, hasPopped);
 }
 
 ECode FragmentManagerImpl::PopBackStack(
@@ -259,10 +251,8 @@ ECode FragmentManagerImpl::PopBackStackImmediate(
 //         throw new IllegalArgumentException("Bad id: " + id);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    // AutoPtr<Activity> activity = (Activity*)mActivity;
-    // return PopBackStackState(activity->mHandler, String(NULL), id, flags, hasPopped);
-    assert(0 && "TODO");
-    return NOERROR;
+    AutoPtr<Activity> activity = (Activity*)mActivity;
+    return PopBackStackState(activity->mHandler, String(NULL), id, flags, hasPopped);
 }
 
 ECode FragmentManagerImpl::GetBackStackEntryCount(
@@ -489,7 +479,7 @@ ECode FragmentManagerImpl::Dump(
 //                 writer->Println("Back Stack Indices:");
 //                 List<IBackStackRecord* >::Iterator it;
 //                 for (it = mBackStackIndices->Begin(); it != mBackStackIndices->End(); ++it) {
-// //                 for (int i=0; i<N; i++) {
+// //                 for (Int32 i=0; i<N; i++) {
 //                     AutoPtr<IBackStackRecord> bs = *it;
 //                     writer->Print(prefix);
 //                     writer->Print("  #");
@@ -664,8 +654,8 @@ ECode FragmentManagerImpl::MoveToState(
     f->GetState(&state);
     Boolean removing;
     f->IsRemoving(&removing);
-    if (DEBUG && FALSE) Logger::V(TAG, "moveToState: %p oldState=%d newState=%d mRemoving=%d", f
-        , state, newState, removing /*" Callers=" + *Debug.getCallers(5)*/);
+    if (DEBUG && FALSE) Logger::V(TAG, "MoveToState: %p oldState=%d newState=%d mRemoving=%d", f
+        , state, newState, removing /*" Callers=" + *Debug->GetCallers(5)*/);
 
     // Fragments that are not currently added will sit in the onCreate() state.
     Boolean added;
@@ -716,14 +706,13 @@ ECode FragmentManagerImpl::MoveToState(
             {
                 if (DEBUG) Logger::V(TAG, "moveto CREATED: %p", f);
                 if (savedFragmentState != NULL) {
-                    assert(0 && "TODO");
-                   // AutoPtr<IInterface> parcelableMap;
-                   // savedFragmentState->GetParcelableMap(
-                   //          IFragmentManagerImpl::VIEW_STATE_TAG, (IInterface**)&parcelableMap);
-                   //  f->SetSavedViewState(IObjectInt32Map::Probe(parcelableMap));
+                   AutoPtr<ISparseArray> parcelableMap;
+                   savedFragmentState->GetSparseParcelableArray(
+                        IFragmentManagerImpl::VIEW_STATE_TAG, (ISparseArray**)&parcelableMap);
+                    f->SetSavedViewState(parcelableMap);
                     AutoPtr<IFragment> fragment;
                     GetFragment(savedFragmentState,
-                            IFragmentManagerImpl::TARGET_STATE_TAG, (IFragment**)&fragment);
+                        IFragmentManagerImpl::TARGET_STATE_TAG, (IFragment**)&fragment);
                     f->SetTarget(fragment);
                     if (fragment != NULL) {
                         Int32 value;
@@ -749,9 +738,8 @@ ECode FragmentManagerImpl::MoveToState(
                     f->SetFragmentManager(fragment->mChildFragmentManager);
                 }
                 else {
-                    // AutoPtr<Activity> activity = (Activity*)mActivity;
-                    // f->SetFragmentManager(activity->mFragments);
-                    assert(0 && "TODO");
+                    AutoPtr<Activity> activity = (Activity*)mActivity;
+                    f->SetFragmentManager(activity->mFragments);
                 }
                 f->SetCalled(FALSE);
                 f->OnAttach(mActivity);
@@ -810,7 +798,7 @@ ECode FragmentManagerImpl::MoveToState(
 //                                 throwException(new IllegalArgumentException(
 //                                         "No view found for id 0x"
 //                                         + Integer.toHexString(f.mContainerId) + " ("
-//                                         + f.getResources().getResourceName(f.mContainerId)
+//                                         + f->GetResources()->GetResourceName(f.mContainerId)
 //                                         + ") for fragment " + f));
                                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
                             }
@@ -889,8 +877,8 @@ ECode FragmentManagerImpl::MoveToState(
                         // done already.
                         Boolean finishing;
                         mActivity->IsFinishing(&finishing);
-                        AutoPtr<IHashMap> savedViewState;
-                        f->GetSavedViewState((IHashMap**)&savedViewState);
+                        AutoPtr<ISparseArray> savedViewState;
+                        f->GetSavedViewState((ISparseArray**)&savedViewState);
                         if (!finishing && savedViewState == NULL) {
                             SaveFragmentViewState(f);
                         }
@@ -1091,16 +1079,15 @@ ECode FragmentManagerImpl::MakeInactive(
     mAvailIndices.PushBack(index);
     String who;
     f->GetWho(&who);
-    assert(0 && "TODO");
-    // AutoPtr<Activity> activity = (Activity*)mActivity;
-    // activity->InvalidateFragment(who);
+    AutoPtr<Activity> activity = (Activity*)mActivity;
+    activity->InvalidateFragment(who);
     f->InitState();
     return NOERROR;
 }
 
 ECode FragmentManagerImpl::AddFragment(
     /* [in] */ IFragment* fragment,
-    /* [in] */ Boolean moveToStateNow)
+    /* [in] */ Boolean MoveToStateNow)
 {
     if (DEBUG) Logger::V(TAG, "add: %p", fragment);
     MakeActive(fragment);
@@ -1125,7 +1112,7 @@ ECode FragmentManagerImpl::AddFragment(
         if (hasMenu && menuVisible) {
             mNeedMenuInvalidate = TRUE;
         }
-        if (moveToStateNow) {
+        if (MoveToStateNow) {
             MoveToState(fragment);
         }
     }
@@ -1449,11 +1436,10 @@ ECode FragmentManagerImpl::EnqueueAction(
 
         mPendingActions.PushBack(action);
         if (mPendingActions.GetSize() == 1) {
-            assert(0 && "TODO");
-            // AutoPtr<Activity> activity = (Activity*)mActivity;
-            // activity->mHandler->RemoveCallbacks(IRunnable::Probe(mExecCommit));
-            // Boolean result;
-            // FAIL_RETURN(activity->mHandler->Post(IRunnable::Probe(mExecCommit), &result) );
+            AutoPtr<Activity> activity = (Activity*)mActivity;
+            activity->mHandler->RemoveCallbacks(IRunnable::Probe(mExecCommit));
+            Boolean result;
+            FAIL_RETURN(activity->mHandler->Post(IRunnable::Probe(mExecCommit), &result) );
         }
     }
     return NOERROR;
@@ -1529,71 +1515,70 @@ ECode FragmentManagerImpl::ExecPendingActions(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<Activity> activity = (Activity*)mActivity;
-    // AutoPtr<ILooper> myLooper = Looper::GetMyLooper();
-    // AutoPtr<ILooper> aLooper;
-    // activity->mHandler->GetLooper((ILooper**)&aLooper);
-    // if (myLooper.Get() != aLooper.Get()) {
-    //     return E_ILLEGAL_STATE_EXCEPTION;
-    //     // throw new IllegalStateException("Must be called from main thread of process");
-    // }
+    AutoPtr<Activity> activity = (Activity*)mActivity;
+    AutoPtr<ILooper> myLooper = Looper::GetMyLooper();
+    AutoPtr<ILooper> aLooper;
+    activity->mHandler->GetLooper((ILooper**)&aLooper);
+    if (myLooper.Get() != aLooper.Get()) {
+        return E_ILLEGAL_STATE_EXCEPTION;
+        // throw new IllegalStateException("Must be called from main thread of process");
+    }
 
-    // Boolean didSomething = FALSE;
-    // Int32 numActions, index;
-    // List<AutoPtr<IRunnable> >::Iterator it;
-    // while (TRUE) {
-    //     {
-    //         AutoLock lock(this);
-    //         numActions = mPendingActions.GetSize();
-    //         if (numActions == 0) {
-    //             break;
-    //         }
+    Boolean didSomething = FALSE;
+    Int32 numActions, index;
+    List<AutoPtr<IRunnable> >::Iterator it;
+    while (TRUE) {
+        {
+            AutoLock lock(this);
+            numActions = mPendingActions.GetSize();
+            if (numActions == 0) {
+                break;
+            }
 
-    //         if (mTmpActions == NULL || mTmpActions->GetLength() < numActions) {
-    //             mTmpActions = NULL;
-    //             mTmpActions = ArrayOf<IRunnable*>::Alloc(numActions);
-    //         }
+            if (mTmpActions == NULL || mTmpActions->GetLength() < numActions) {
+                mTmpActions = NULL;
+                mTmpActions = ArrayOf<IRunnable*>::Alloc(numActions);
+            }
 
-    //         index = 0;
-    //         for (it = mPendingActions.Begin(); it != mPendingActions.End(); ++it, ++index) {
-    //             mTmpActions->Set(index, *it);
-    //         }
-    //         if (mTmpActions->GetLength() > numActions) {
-    //             mTmpActions->Set(numActions, NULL);
-    //         }
-    //         mPendingActions.Clear();
-    //         activity->mHandler->RemoveCallbacks(mExecCommit);
-    //     }
+            index = 0;
+            for (it = mPendingActions.Begin(); it != mPendingActions.End(); ++it, ++index) {
+                mTmpActions->Set(index, *it);
+            }
+            if (mTmpActions->GetLength() > numActions) {
+                mTmpActions->Set(numActions, NULL);
+            }
+            mPendingActions.Clear();
+            activity->mHandler->RemoveCallbacks(mExecCommit);
+        }
 
-    //     mExecutingActions = TRUE;
-    //     for (Int32 i = 0; i < numActions; i++) {
-    //         (*mTmpActions)[i]->Run();
-    //         mTmpActions->Set(i, NULL);
-    //     }
-    //     mExecutingActions = FALSE;
-    //     didSomething = TRUE;
-    // }
+        mExecutingActions = TRUE;
+        for (Int32 i = 0; i < numActions; i++) {
+            (*mTmpActions)[i]->Run();
+            mTmpActions->Set(i, NULL);
+        }
+        mExecutingActions = FALSE;
+        didSomething = TRUE;
+    }
 
-    // if (mHavePendingDeferredStart) {
-    //     Boolean loadersRunning = FALSE;
-    //     List<AutoPtr<IFragment> >::Iterator it;
-    //     for (it = mActive.Begin(); it != mActive.End(); ++it) {
-    //         AutoPtr<IFragment> f = *it;
-    //         AutoPtr<ILoaderManagerImpl> loaderManager;
-    //         f->GetLoaderManagerValue((ILoaderManagerImpl**)&loaderManager);
-    //         if (f != NULL && loaderManager != NULL) {
-    //             Boolean hasRLoaders;
-    //             loaderManager->HasRunningLoaders(&hasRLoaders);
-    //             loadersRunning |= hasRLoaders;
-    //         }
-    //     }
-    //     if (!loadersRunning) {
-    //         mHavePendingDeferredStart = FALSE;
-    //         StartPendingDeferredFragments();
-    //     }
-    // }
-    // *result = didSomething;
+    if (mHavePendingDeferredStart) {
+        Boolean loadersRunning = FALSE;
+        List<AutoPtr<IFragment> >::Iterator it;
+        for (it = mActive.Begin(); it != mActive.End(); ++it) {
+            AutoPtr<IFragment> f = *it;
+            AutoPtr<ILoaderManagerImpl> loaderManager;
+            f->GetLoaderManagerValue((ILoaderManagerImpl**)&loaderManager);
+            if (f != NULL && loaderManager != NULL) {
+                Boolean hasRLoaders;
+                loaderManager->HasRunningLoaders(&hasRLoaders);
+                loadersRunning |= hasRLoaders;
+            }
+        }
+        if (!loadersRunning) {
+            mHavePendingDeferredStart = FALSE;
+            StartPendingDeferredFragments();
+        }
+    }
+    *result = didSomething;
     return NOERROR;
 }
 
@@ -1623,97 +1608,101 @@ ECode FragmentManagerImpl::PopBackStackState(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = FALSE;
 
-    assert(0 && "TODO");
-    // if (name.IsNull() && id < 0 && (flags & POP_BACK_STACK_INCLUSIVE) == 0) {
-    //     if (mBackStack.IsEmpty()) {
-    //         *result = FALSE;
-    //         return NOERROR;
-    //     }
-    //     List<AutoPtr<IBackStackRecord> >::Iterator bss = mBackStack.Erase(--mBackStack.End());
+    if (name.IsNull() && id < 0 && (flags & POP_BACK_STACK_INCLUSIVE) == 0) {
+        if (mBackStack.IsEmpty()) {
+            *result = FALSE;
+            return NOERROR;
+        }
+        List<AutoPtr<IBackStackRecord> >::Iterator it = mBackStack.Erase(--mBackStack.End());
+        IBackStackRecord* record = *it;
+        BackStackRecord* bss = (BackStackRecord*)record;
+        AutoPtr<IHashMap> firstOutFragments, lastInFragments;
+        CHashMap::New((IHashMap**)&firstOutFragments);
+        CHashMap::New((IHashMap**)&lastInFragments);
+        bss->CalculateBackFragments(firstOutFragments, lastInFragments);
+        AutoPtr<IBackStackRecordTransitionState> tmp;
+        bss->PopFromBackStack(TRUE, NULL, firstOutFragments, lastInFragments, (IBackStackRecordTransitionState**)&tmp);
+        ReportBackStackChanged();
+    }
+    else {
+        List<AutoPtr<IBackStackRecord> >::ReverseIterator index;
+        if (!name.IsNull() || id >= 0) {
+            // If a name or ID is specified, look for that place in
+            // the stack.
+            index = mBackStack.RBegin();
+            while (*index != NULL && index != mBackStack.REnd()) {
+                AutoPtr<IBackStackRecord> bss = *index;
+                String bssName;
+                bss->GetName(&bssName);
+                if (!name.IsNull() && name.Equals(bssName)) {
+                    break;
+                }
+                Int32 bssIndex;
+                bss->GetId(&bssIndex);
+                if (id >= 0 && id == bssIndex) {
+                    break;
+                }
+                ++index;
+            }
+            if (*index == NULL) {
+                *result = FALSE;
+                return NOERROR;
+            }
+            if ((flags&POP_BACK_STACK_INCLUSIVE) != 0) {
+                index++;
+                // Consume all following entries that match.
+                while (index != mBackStack.REnd()) {
+                    AutoPtr<IBackStackRecord> bss = *index;
+                    String bssName;
+                    Int32 bssIndex;
+                    bss->GetName(&bssName);
+                    bss->GetId(&bssIndex);
+                    if ((!name.IsNull() && name.Equals(bssName))
+                            || (id >= 0 && id == bssIndex)) {
+                        index++;
+                        continue;
+                    }
+                    break;
+                }
+            }
+        }
+        if (index == mBackStack.RBegin()) {
+            *result = FALSE;
+            return NOERROR;
+        }
+        List<AutoPtr<IBackStackRecord> > states;
+        List<AutoPtr<IBackStackRecord> >::ReverseIterator rIt;
+        for (rIt = mBackStack.RBegin(); rIt != mBackStack.REnd();) {
+            states.PushBack(*rIt);
+            rIt = List<AutoPtr<IBackStackRecord> >::ReverseIterator(mBackStack.Erase(--(rIt.GetBase())));
+        }
 
-    //     AutoPtr<IHashMap> firstOutFragments, lastInFragments;
-    //     CHashMap::New((IHashMap**)&firstOutFragments);
-    //     CHashMap::New((IHashMap**)&lastInFragments);
-    //     bss->CalculateBackFragments(firstOutFragments, lastInFragments);
-    //     bss->PopFromBackStack(true, null, firstOutFragments, lastInFragments);
-    //     ReportBackStackChanged();
-    // }
-    // else {
-    //     List<AutoPtr<IBackStackRecord> >::ReverseIterator index;
-    //     if (!name.IsNull() || id >= 0) {
-    //         // If a name or ID is specified, look for that place in
-    //         // the stack.
-    //         index = mBackStack.RBegin();
-    //         while (*index != NULL && index != mBackStack.REnd()) {
-    //             AutoPtr<IBackStackRecord> bss = *index;
-    //             String bssName;
-    //             bss->GetName(&bssName);
-    //             if (!name.IsNull() && name.Equals(bssName)) {
-    //                 break;
-    //             }
-    //             Int32 bssIndex;
-    //             bss->GetId(&bssIndex);
-    //             if (id >= 0 && id == bssIndex) {
-    //                 break;
-    //             }
-    //             ++index;
-    //         }
-    //         if (*index == NULL) {
-    //             *result = FALSE;
-    //             return NOERROR;
-    //         }
-    //         if ((flags&POP_BACK_STACK_INCLUSIVE) != 0) {
-    //             index++;
-    //             // Consume all following entries that match.
-    //             while (index != mBackStack.REnd()) {
-    //                 AutoPtr<IBackStackRecord> bss = *index;
-    //                 String bssName;
-    //                 Int32 bssIndex;
-    //                 bss->GetName(&bssName);
-    //                 bss->GetId(&bssIndex);
-    //                 if ((!name.IsNull() && name.Equals(bssName))
-    //                         || (id >= 0 && id == bssIndex)) {
-    //                     index++;
-    //                     continue;
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //     }
-    //     if (index == mBackStack.RBegin()) {
-    //         *result = FALSE;
-    //         return NOERROR;
-    //     }
-    //     List<AutoPtr<IBackStackRecord> > states;
-    //     List<AutoPtr<IBackStackRecord> >::ReverseIterator rIt;
-    //     for (rIt = mBackStack.RBegin(); rIt != mBackStack.REnd();) {
-    //         states.PushBack(*rIt);
-    //         rIt = List<AutoPtr<IBackStackRecord> >::ReverseIterator(mBackStack.Erase(--(rIt.GetBase())));
-    //     }
-    //     Int32 LAST = states.GetSize()-1;
-    //     // for (Int32 i = 0; i <= LAST; i++) {
-    //     //     if (DEBUG) Logger::V(TAG, "Popping back stack state: %p", states[i].Get());
-    //     //     states[i]->PopFromBackStack(i == LAST);
-    //     // }
+        AutoPtr<IHashMap> firstOutFragments, lastInFragments;
+        CHashMap::New((IHashMap**)&firstOutFragments);
+        CHashMap::New((IHashMap**)&lastInFragments);
+        IBackStackRecord* bsr;
+        List<AutoPtr<IBackStackRecord> >::Iterator it;
+        for (it = states.Begin(); it != states.End(); ++it) {
+            bsr = *it;
+            ((BackStackRecord*)bsr)->CalculateBackFragments(firstOutFragments, lastInFragments);
+        }
 
-    //     AutoPtr<IHashMap> firstOutFragments, lastInFragments;
-    //     CHashMap::New((IHashMap**)&firstOutFragments);
-    //     CHashMap::New((IHashMap**)&lastInFragments);
-    //     for (Int32 i = 0; i <= LAST; i++) {
-    //         IBackStackRecord* bsr = states.get(i);
-    //         bsr->CalculateBackFragments(firstOutFragments, lastInFragments);
-    //     }
+        Int32 size = states.GetSize();
+        Int32 i = 0;
+        AutoPtr<IBackStackRecordTransitionState> state, tmp;
+        for (it = states.Begin(); it != states.End(); ++it, i++) {
+            bsr = *it;
+            if (DEBUG) Logger::V(TAG, "Popping back stack state: %s", Object::ToString(bsr).string());
+            tmp = state;
+            state = NULL;
+            bsr->PopFromBackStack(i == size - 1, tmp, firstOutFragments, lastInFragments,
+                (IBackStackRecordTransitionState**)&state);
+        }
 
-    //     IBackStackRecordTransitionState* state = NULL, resultState = NULL;
-    //     for (Int32 i = 0; i <= LAST; i++) {
-    //         if (DEBUG) Logger::V(TAG, "Popping back stack state: " + states.get(i));
-    //         state = states.get(i);
-    //         resultState = state->PopFromBackStack(i == LAST, state, firstOutFragments, lastInFragments);
-    //     }
-
-    //     ReportBackStackChanged();
-    // }
+        ReportBackStackChanged();
+    }
     *result = TRUE;
     return NOERROR;
 }
@@ -1722,61 +1711,61 @@ ECode FragmentManagerImpl::RetainNonConfig(
     /* [out] */ IArrayList** retains)
 {
     VALIDATE_NOT_NULL(retains);
-    assert(0 && "TODO");
-    // List<AutoPtr<IFragment> > fragments;
-    // if (!mActive.IsEmpty()) {
-    //     List<AutoPtr<IFragment> >::Iterator it;
-    //     for (it = mActive.Begin(); it != mActive.End(); ++it) {
-    //         AutoPtr<IFragment> f = *it;
-    //         Boolean retainInstance;
-    //         f->GetRetainInstance(&retainInstance);
-    //         if (f != NULL && retainInstance) {
-    //             fragments.PushBack(f);
-    //             f->SetRetaining(TRUE);
-    //             AutoPtr<IFragment> target;
-    //             f->GetTarget((IFragment**)&target);
-    //             Int32 index;
-    //             target->GetIndex(&index);
-    //             if (target != NULL) f->SetTargetIndex(index);
-    //             else f->SetTargetIndex(-1);
-    //             if (DEBUG) Logger::V(TAG, "retainNonConfig: keeping retained %p", f.Get());
-    //         }
-    //     }
-    // }
-    // List<AutoPtr<IFragment> >::Iterator fit;
-    // Int32 i = 0;
-    // AutoPtr<IObjectContainer> tempRetains = NULL;
-    // for (fit = fragments.Begin(); fit != fragments.End(); ++fit, ++i) {
-    //     tempRetains->Add((*fit)->Probe(EIID_IInterface));
-    // }
-    // *retains = tempRetains;
-    // REFCOUNT_ADD(*retains);
+    *retains = NULL;
+
+    List<AutoPtr<IFragment> > fragments;
+    if (!mActive.IsEmpty()) {
+        List<AutoPtr<IFragment> >::Iterator it;
+        for (it = mActive.Begin(); it != mActive.End(); ++it) {
+            AutoPtr<IFragment> f = *it;
+            Boolean retainInstance;
+            f->GetRetainInstance(&retainInstance);
+            if (f != NULL && retainInstance) {
+                fragments.PushBack(f);
+                f->SetRetaining(TRUE);
+                AutoPtr<IFragment> target;
+                f->GetTarget((IFragment**)&target);
+                Int32 index;
+                target->GetIndex(&index);
+                if (target != NULL) f->SetTargetIndex(index);
+                else f->SetTargetIndex(-1);
+                if (DEBUG) Logger::V(TAG, "retainNonConfig: keeping retained %p", f.Get());
+            }
+        }
+    }
+    List<AutoPtr<IFragment> >::Iterator fit;
+    AutoPtr<IArrayList> tempRetains;
+    CArrayList::New((IArrayList**)&tempRetains);
+    for (fit = fragments.Begin(); fit != fragments.End(); ++fit) {
+        tempRetains->Add((*fit).Get());
+    }
+    *retains = tempRetains;
+    REFCOUNT_ADD(*retains);
     return NOERROR;
 }
 
 ECode FragmentManagerImpl::SaveFragmentViewState(
     /* [in] */ IFragment* f)
 {
-    assert(0 && "TODO");
-    // AutoPtr<IView> view;
-    // f->GetView((IView**)&view);
-    // if (view == NULL) {
-    //     return NOERROR;
-    // }
-    // if (mStateArray == NULL) {
-    //     CObjectInt32Map::New((IObjectInt32Map**)&mStateArray);
-    // }
-    // else {
-    //     mStateArray = NULL;
-    // }
+    AutoPtr<IView> view;
+    f->GetView((IView**)&view);
+    if (view == NULL) {
+        return NOERROR;
+    }
+    if (mStateArray == NULL) {
+        CSparseArray::New((ISparseArray**)&mStateArray);
+    }
+    else {
+        mStateArray = NULL;
+    }
 
-    // view->SaveHierarchyState(mStateArray);
-    // Int32 size;
-    // mStateArray->GetSize(&size);
-    // if (size > 0) {
-    //     f->SetSavedViewState(mStateArray);
-    //     mStateArray = NULL;
-    // }
+    view->SaveHierarchyState(mStateArray);
+    Int32 size;
+    mStateArray->GetSize(&size);
+    if (size > 0) {
+        f->SetSavedViewState(mStateArray);
+        mStateArray = NULL;
+    }
     return NOERROR;
 }
 
@@ -1803,16 +1792,16 @@ ECode FragmentManagerImpl::SaveFragmentBasicState(
     if (view != NULL) {
         SaveFragmentViewState(f);
     }
-    assert(0 && "TODO");
-    // AutoPtr<IObjectInt32Map> savedViewState;
-    // f->GetSavedViewState((IObjectInt32Map**)&savedViewState);
-    // if (savedViewState != NULL) {
-    //     if (result == NULL) {
-    //         CBundle::New((IBundle**)&result);
-    //     }
-    //     result->PutParcelableMap(
-    //             IFragmentManagerImpl::VIEW_STATE_TAG, savedViewState->Probe(EIID_IInterface));
-    // }
+
+    AutoPtr<ISparseArray> savedViewState;
+    f->GetSavedViewState((ISparseArray**)&savedViewState);
+    if (savedViewState != NULL) {
+        if (result == NULL) {
+            CBundle::New((IBundle**)&result);
+        }
+        result->PutSparseParcelableArray(
+            IFragmentManagerImpl::VIEW_STATE_TAG, savedViewState);
+    }
     Boolean userVisibleHint;
     f->GetUserVisibleHint(&userVisibleHint);
     if (!userVisibleHint) {
@@ -1832,125 +1821,127 @@ ECode FragmentManagerImpl::SaveAllState(
     /* [out] */ IParcelable** state)
 {
     VALIDATE_NOT_NULL(state);
-    assert(0 && "TODO");
-    // // Make sure all pending operations have now been executed to get
-    // // our state update-to-date.
-    // Boolean executed;
-    // ExecPendingActions(&executed);
+    *state = NULL;
 
-    // mStateSaved = TRUE;
+    // Make sure all pending operations have now been executed to get
+    // our state update-to-date.
+    Boolean executed;
+    ExecPendingActions(&executed);
 
-    // if (mActive.IsEmpty()) {
-    //     *state = NULL;
-    //     return NOERROR;
-    // }
+    mStateSaved = TRUE;
 
-    // // First collect all active fragments.
-    // Int32 N = mActive.GetSize();
-    // AutoPtr<ArrayOf<FragmentState*> > active = ArrayOf<FragmentState*>::Alloc(N);
-    // Boolean haveFragments = FALSE;
-    // List<AutoPtr<IFragment> >::Iterator it = mActive.Begin();
-    // for (Int32 i = 0; i < N && it != mActive.End(); ++it, i++) {
-    //     AutoPtr<IFragment> f = *it;
-    //     if (f != NULL) {
-    //         Int32 index;
-    //         f->GetIndex(&index);
-    //         if (index < 0) {
-    //             Logger::V(TAG, "Failure saving state: active %p has cleared index: %d", f.Get(), index);
-    //             return E_ILLEGAL_STATE_EXCEPTION;
-    //         }
+    if (mActive.IsEmpty()) {
+        *state = NULL;
+        return NOERROR;
+    }
 
-    //         haveFragments = TRUE;
+    // First collect all active fragments.
+    Int32 N = mActive.GetSize();
+    AutoPtr<ArrayOf<IFragmentState*> > active = ArrayOf<IFragmentState*>::Alloc(N);
+    Boolean haveFragments = FALSE;
+    List<AutoPtr<IFragment> >::Iterator it = mActive.Begin();
+    for (Int32 i = 0; i < N && it != mActive.End(); ++it, i++) {
+        AutoPtr<IFragment> f = *it;
+        if (f != NULL) {
+            Int32 index;
+            f->GetIndex(&index);
+            if (index < 0) {
+                Logger::V(TAG, "Failure saving state: active %p has cleared index: %d", f.Get(), index);
+                return E_ILLEGAL_STATE_EXCEPTION;
+            }
 
-    //         AutoPtr<FragmentState> fs = new FragmentState(f);
-    //         active->Set(i, fs);
+            haveFragments = TRUE;
 
-    //         Int32 fstate;
-    //         f->GetState(&fstate);
-    //         if (fstate > IFragment::INITIALIZING && fs->mSavedFragmentState == NULL) {
-    //             SaveFragmentBasicState(f, (IBundle**)&fs->mSavedFragmentState);
+            AutoPtr<FragmentState> fs;
+            CFragmentState::New((IFragmentState**)&f);
+            active->Set(i, fs);
 
-    //             AutoPtr<IFragment> t;
-    //             f->GetTarget((IFragment**)&t);
-    //             if (t != NULL) {
-    //                 Int32 tIndex = 0;
-    //                 t->GetIndex(&tIndex);
-    //                 if (tIndex < 0) {
-    //                     Logger::V(TAG, "Failure saving state: %p has target not in fragment manager: %p", f.Get(), t.Get());
-    //                     return E_ILLEGAL_STATE_EXCEPTION;
-    //                 }
-    //                 if (fs->mSavedFragmentState == NULL) {
-    //                     CBundle::New((IBundle**)&fs->mSavedFragmentState);
-    //                 }
+            Int32 fstate;
+            f->GetState(&fstate);
+            if (fstate > IFragment::INITIALIZING && fs->mSavedFragmentState == NULL) {
+                SaveFragmentBasicState(f, (IBundle**)&fs->mSavedFragmentState);
 
-    //                 PutFragment(fs->mSavedFragmentState,
-    //                         IFragmentManagerImpl::TARGET_STATE_TAG, t);
+                AutoPtr<IFragment> t;
+                f->GetTarget((IFragment**)&t);
+                if (t != NULL) {
+                    Int32 tIndex = 0;
+                    t->GetIndex(&tIndex);
+                    if (tIndex < 0) {
+                        Logger::V(TAG, "Failure saving state: %p has target not in fragment manager: %p", f.Get(), t.Get());
+                        return E_ILLEGAL_STATE_EXCEPTION;
+                    }
+                    if (fs->mSavedFragmentState == NULL) {
+                        CBundle::New((IBundle**)&fs->mSavedFragmentState);
+                    }
 
-    //                 Int32 code = 0;
-    //                 f->GetTargetRequestCode(&code);
-    //                 if (code != 0) {
-    //                     fs->mSavedFragmentState->PutInt32(
-    //                             IFragmentManagerImpl::TARGET_REQUEST_CODE_STATE_TAG, code);
-    //                 }
-    //             }
+                    PutFragment(fs->mSavedFragmentState,
+                            IFragmentManagerImpl::TARGET_STATE_TAG, t);
 
-    //         } else {
-    //             fs->mSavedFragmentState = NULL;
-    //             f->GetSavedFragmentState((IBundle**)&fs->mSavedFragmentState);
-    //         }
+                    Int32 code = 0;
+                    f->GetTargetRequestCode(&code);
+                    if (code != 0) {
+                        fs->mSavedFragmentState->PutInt32(
+                                IFragmentManagerImpl::TARGET_REQUEST_CODE_STATE_TAG, code);
+                    }
+                }
 
-    //         if (DEBUG) Logger::V(TAG, "Saved state of %p:", f.Get(), fs->mSavedFragmentState.Get());
-    //     }
-    // }
+            } else {
+                fs->mSavedFragmentState = NULL;
+                f->GetSavedFragmentState((IBundle**)&fs->mSavedFragmentState);
+            }
 
-    // if (!haveFragments) {
-    //     if (DEBUG) Logger::V(TAG, "saveAllState: no fragments!");
-    //     *state = NULL;
-    //     return NOERROR;
-    // }
+            if (DEBUG) Logger::V(TAG, "Saved state of %p:", f.Get(), fs->mSavedFragmentState.Get());
+        }
+    }
 
-    // AutoPtr<ArrayOf<Int32> > added;
-    // AutoPtr<ArrayOf<IBackStackState*> > backStack;
+    if (!haveFragments) {
+        if (DEBUG) Logger::V(TAG, "saveAllState: no fragments!");
+        *state = NULL;
+        return NOERROR;
+    }
 
-    // // Build list of currently added fragments.
-    // if (!mAdded.IsEmpty()) {
-    //     N = mAdded.GetSize();
-    //     if (N > 0) {
-    //         added = ArrayOf<Int32>::Alloc(N);
-    //         List<AutoPtr<IFragment> >::Iterator ator = mAdded.Begin();
-    //         Int32 index = 0;
-    //         for (Int32 i = 0; i < N && ator != mAdded.End(); i++, ++ator) {
-    //             (*ator)->GetIndex(&index);
-    //             (*added)[i] = index;
-    //             if ((*added)[i] < 0) {
-    //                 Logger::V(TAG, "Failure saving state: active %p has cleared index: %d", (*ator).Get(), index);
-    //                 return E_ILLEGAL_STATE_EXCEPTION;
-    //             }
-    //             if (DEBUG) Logger::V(TAG, "saveAllState: adding fragment #%d: %p", i, (*ator).Get());
-    //         }
-    //     }
-    // }
+    AutoPtr<ArrayOf<Int32> > added;
+    AutoPtr<ArrayOf<IBackStackState*> > backStack;
 
-    // // Now save back stack.
-    // N = mBackStack.GetSize();
-    // if (N > 0) {
-    //     backStack = ArrayOf<IBackStackState*>::Alloc(N);
-    //     List<AutoPtr<IBackStackRecord> >::Iterator ator = mBackStack.Begin();
-    //     for (Int32 i = 0; i < N && ator != mBackStack.End(); i++, ++ator) {
-    //         AutoPtr<IBackStackState> value;
-    //         CBackStackState::New(this, *ator, (IBackStackState**)&value);
-    //         backStack->Set(i, value);
-    //         if (DEBUG) Logger::V(TAG, "saveAllState: adding back stack #%d: %p", i, (*ator).Get());
-    //     }
-    // }
+    // Build list of currently added fragments.
+    if (!mAdded.IsEmpty()) {
+        N = mAdded.GetSize();
+        if (N > 0) {
+            added = ArrayOf<Int32>::Alloc(N);
+            List<AutoPtr<IFragment> >::Iterator ator = mAdded.Begin();
+            Int32 index = 0;
+            for (Int32 i = 0; i < N && ator != mAdded.End(); i++, ++ator) {
+                (*ator)->GetIndex(&index);
+                (*added)[i] = index;
+                if ((*added)[i] < 0) {
+                    Logger::V(TAG, "Failure saving state: active %p has cleared index: %d", (*ator).Get(), index);
+                    return E_ILLEGAL_STATE_EXCEPTION;
+                }
+                if (DEBUG) Logger::V(TAG, "saveAllState: adding fragment #%d: %p", i, (*ator).Get());
+            }
+        }
+    }
 
-    // AutoPtr<CFragmentManagerState> fms;
-    // CFragmentManagerState::NewByFriend((CFragmentManagerState**)&fms);
-    // fms->mActive = active;
-    // fms->mAdded = added;
-    // fms->mBackStack = backStack;
-    // *state = (IParcelable*)fms->Probe(EIID_IParcelable);
-    // REFCOUNT_ADD(*state);
+    // Now save back stack.
+    N = mBackStack.GetSize();
+    if (N > 0) {
+        backStack = ArrayOf<IBackStackState*>::Alloc(N);
+        List<AutoPtr<IBackStackRecord> >::Iterator ator = mBackStack.Begin();
+        for (Int32 i = 0; i < N && ator != mBackStack.End(); i++, ++ator) {
+            AutoPtr<IBackStackState> value;
+            CBackStackState::New(this, *ator, (IBackStackState**)&value);
+            backStack->Set(i, value);
+            if (DEBUG) Logger::V(TAG, "saveAllState: adding back stack #%d: %p", i, (*ator).Get());
+        }
+    }
+
+    AutoPtr<CFragmentManagerState> fms;
+    CFragmentManagerState::NewByFriend((CFragmentManagerState**)&fms);
+    fms->mActive = active;
+    fms->mAdded = added;
+    fms->mBackStack = backStack;
+    *state = (IParcelable*)fms->Probe(EIID_IParcelable);
+    REFCOUNT_ADD(*state);
     return NOERROR;
 }
 
@@ -1958,143 +1949,146 @@ ECode FragmentManagerImpl::RestoreAllState(
     /* [in] */ IParcelable* state,
     /* [in] */ IArrayList* nonConfig)
 {
-    assert(0 && "TODO");
-    // // If there is no saved state at all, then there can not be
-    // // any nonConfig fragments either, so that is that.
-    // if (state == NULL) return NOERROR;
-    // CFragmentManagerState* fms = (CFragmentManagerState*)state;
-    // if (fms->mActive == NULL) return NOERROR;
+    // If there is no saved state at all, then there can not be
+    // any nonConfig fragments either, so that is that.
+    if (state == NULL) return NOERROR;
+    CFragmentManagerState* fms = (CFragmentManagerState*)state;
+    if (fms->mActive == NULL) return NOERROR;
 
-    // // First re-attach any non-config instances we are retaining back
-    // // to their saved state, so we don't try to instantiate them again.
-    // if (nonConfig != NULL) {
-    //     AutoPtr<IObjectEnumerator> ator;
-    //     nonConfig->GetObjectEnumerator((IObjectEnumerator**)&ator);
-    //     Boolean hasNext = FALSE;
-    //     while(ator->MoveNext(&hasNext), hasNext) {
-    //         AutoPtr<IInterface> data;
-    //         ator->Current((IInterface**)&data);
-    //         AutoPtr<IFragment> f = IFragment::Probe(data);
-    //         assert(f != NULL);
-    //         if (DEBUG) Logger::V(TAG, "restoreAllState: re-attaching retained %p", f.Get());
-    //         Int32 index = 0;
-    //         f->GetIndex(&index);
-    //         AutoPtr<FragmentState> fs = (*fms->mActive)[index];
-    //         fs->mInstance = f;
-    //         f->SetSavedViewState(NULL);
-    //         f->SetBackStackNesting(0);
-    //         f->SetInLayout(FALSE);
-    //         f->SetAdded(FALSE);
-    //         f->SetTarget(NULL);
-    //         if (fs->mSavedFragmentState != NULL) {
-    //             AutoPtr<IClassLoader> classLoader;
-    //             mActivity->GetClassLoader((IClassLoader**)&classLoader);
-    //             fs->mSavedFragmentState->SetClassLoader(classLoader);
+    // First re-attach any non-config instances we are retaining back
+    // to their saved state, so we don't try to instantiate them again.
+    if (nonConfig != NULL) {
+        Int32 size;
+        nonConfig->GetSize(&size);
+        IFragment* f;
+        for (Int32 i = 0; i < size; ++i) {
+            AutoPtr<IInterface> data;
+            nonConfig->Get(i, (IInterface**)&data);
+            f = IFragment::Probe(data);
+            assert(f != NULL);
+            if (DEBUG) Logger::V(TAG, "restoreAllState: re-attaching retained %s", Object::ToString(f).string());
+            Int32 index = 0;
+            f->GetIndex(&index);
+            FragmentState* fs = (FragmentState*)(*fms->mActive)[index];
+            fs->mInstance = f;
+            f->SetSavedViewState(NULL);
+            f->SetBackStackNesting(0);
+            f->SetInLayout(FALSE);
+            f->SetAdded(FALSE);
+            f->SetTarget(NULL);
+            if (fs->mSavedFragmentState != NULL) {
+                AutoPtr<IClassLoader> classLoader;
+                assert(0 && "TODO");
+                // mActivity->GetClassLoader((IClassLoader**)&classLoader);
+                fs->mSavedFragmentState->SetClassLoader(classLoader);
 
-    //             AutoPtr<IObjectInt32Map> map;
-    //             fs->mSavedFragmentState->GetSparseParcelableArray(
-    //                     IFragmentManagerImpl::VIEW_STATE_TAG, (IObjectInt32Map**)&map);
-    //             f->SetSavedViewState(map);
+                AutoPtr<ISparseArray> map;
+                fs->mSavedFragmentState->GetSparseParcelableArray(
+                    IFragmentManagerImpl::VIEW_STATE_TAG, (ISparseArray**)&map);
+                f->SetSavedViewState(map);
+                f->SetSavedFragmentState(fs->mSavedFragmentState);
+            }
+        }
+    }
 
-    //             f.mSavedFragmentState = fs.mSavedFragmentState;
-    //         }
-    //     }
-    // }
+    // Build the full list of active fragments, instantiating them from
+    // their saved state.
+    mActive.Clear();
+    if (!mAvailIndices.IsEmpty()) {
+        mAvailIndices.Clear();
+    }
+    for (Int32 i = 0; i < fms->mActive->GetLength(); i++) {
+        FragmentState* fs = (FragmentState*)(*fms->mActive)[i];
+        if (fs != NULL) {
+            AutoPtr<IFragment> f;
+            fs->Instantiate(mActivity, mParent, (IFragment**)&f);
+            if (DEBUG)
+                Logger::V(TAG, "restoreAllState: active #%d: %s",
+                    i , Object::ToString(f).string());
+            mActive.PushBack(f);
+            // Now that the fragment is instantiated (or came from being
+            // retained above), clear mInstance in case we end up re-restoring
+            // from this FragmentState again.
+            fs->mInstance = NULL;
+        } else {
+            mActive.PushBack(NULL);
+            if (DEBUG) Logger::V(TAG, "restoreAllState: avail #%d", i);
+            mAvailIndices.PushBack(i);
+        }
+    }
 
-    // // Build the full list of active fragments, instantiating them from
-    // // their saved state.
-    // mActive.Clear();
-    // if (!mAvailIndices.IsEmpty()) {
-    //     mAvailIndices.Clear();
-    // }
-    // for (Int32 i = 0; i < fms->mActive->GetLength(); i++) {
-    //     AutoPtr<FragmentState> fs = (*fms->mActive)[i];
-    //     if (fs != NULL) {
-    //         AutoPtr<IFragment> f;
-    //         fs->Instantiate(mActivity, mParent, (IFragment**)&f);
-    //         if (DEBUG) Logger::V(TAG, "restoreAllState: active #%d: %p", i , f.Get());
-    //         mActive.PushBack(f);
-    //         // Now that the fragment is instantiated (or came from being
-    //         // retained above), clear mInstance in case we end up re-restoring
-    //         // from this FragmentState again.
-    //         fs->mInstance = NULL;
-    //     } else {
-    //         mActive.PushBack(NULL);
-    //         if (DEBUG) Logger::V(TAG, "restoreAllState: avail #%d", i);
-    //         mAvailIndices.PushBack(i);
-    //     }
-    // }
+    // Update the target of all retained fragments.
+    if (nonConfig != NULL) {
+        Int32 size;
+        nonConfig->GetSize(&size);
+        IFragment* f;
+        for (Int32 i = 0; i < size; ++i) {
+            AutoPtr<IInterface> data;
+            nonConfig->Get(i, (IInterface**)&data);
+            f = IFragment::Probe(data);
 
-    // // Update the target of all retained fragments.
-    // if (nonConfig != NULL) {
-    //     AutoPtr<IObjectEnumerator> ator;
-    //     nonConfig->GetObjectEnumerator((IObjectEnumerator**)&ator);
-    //     Boolean hasNext = FALSE;
-    //     while(ator->MoveNext(&hasNext), hasNext) {
-    //         AutoPtr<IInterface> data;
-    //         ator->Current((IInterface**)&data);
-    //         AutoPtr<IFragment> f = IFragment::Probe(data);
-    //         Int32 targetIndex = 0;
-    //         f->GetTargetIndex(&targetIndex);
-    //         if (targetIndex >= 0) {
-    //             if (targetIndex < (Int32)mActive.GetSize()) {
-    //                 f->SetTarget(mActive[targetIndex]);
-    //             } else {
-    //                 Logger::W(TAG, "Re-attaching retained fragment %p target no longer exists: %d", f.Get(), targetIndex);
-    //                 f->SetTarget(NULL);
-    //             }
-    //         }
-    //     }
-    // }
+            Int32 targetIndex = 0;
+            f->GetTargetIndex(&targetIndex);
+            if (targetIndex >= 0) {
+                if (targetIndex < (Int32)mActive.GetSize()) {
+                    f->SetTarget(mActive[targetIndex]);
+                } else {
+                    Logger::W(TAG, "Re-attaching retained fragment %s target no longer exists: %d",
+                        Object::ToString(f).string(), targetIndex);
+                    f->SetTarget(NULL);
+                }
+            }
+        }
+    }
 
-    // // Build the list of currently added fragments.
-    // if (fms->mAdded != NULL) {
-    //     mAdded.Clear();
-    //     for (Int32 i = 0; i < fms->mAdded->GetLength(); i++) {
-    //         AutoPtr<IFragment> f = mActive[(*fms->mAdded)[i]];
-    //         if (f == NULL) {
-    //             Logger::W(TAG, "No instantiated fragment for index #%d", (*fms->mAdded)[i]);
-    //             return E_ILLEGAL_STATE_EXCEPTION;
-    //         }
-    //         f->SetAdded(TRUE);
-    //         if (DEBUG) Logger::V(TAG, "restoreAllState: added #%d: %p", i, f.Get());
+    // Build the list of currently added fragments.
+    if (fms->mAdded != NULL) {
+        mAdded.Clear();
+        for (Int32 i = 0; i < fms->mAdded->GetLength(); i++) {
+            AutoPtr<IFragment> f = mActive[(*fms->mAdded)[i]];
+            if (f == NULL) {
+                Logger::W(TAG, "No instantiated fragment for index #%d", (*fms->mAdded)[i]);
+                return E_ILLEGAL_STATE_EXCEPTION;
+            }
+            f->SetAdded(TRUE);
+            if (DEBUG) Logger::V(TAG, "restoreAllState: added #%d: %p", i, f.Get());
 
-    //         List<AutoPtr<IFragment> >::Iterator ator = mAdded.Begin();
-    //         for (; ator != mAdded.End(); ++ator) {
-    //             if (*ator == f) {
-    //                 Logger::W(TAG, "Already added!");
-    //                 return E_ILLEGAL_STATE_EXCEPTION;
-    //             }
-    //         }
-    //         mAdded.PushBack(f);
-    //     }
-    // } else {
-    //     mAdded.Clear();
-    // }
+            List<AutoPtr<IFragment> >::Iterator ator = mAdded.Begin();
+            for (; ator != mAdded.End(); ++ator) {
+                if (*ator == f) {
+                    Logger::W(TAG, "Already added!");
+                    return E_ILLEGAL_STATE_EXCEPTION;
+                }
+            }
+            mAdded.PushBack(f);
+        }
+    } else {
+        mAdded.Clear();
+    }
 
-    // // Build the back stack.
-    // if (fms->mBackStack != NULL) {
-    //     mBackStack.Clear();
-    //     for (Int32 i = 0; i < fms->mBackStack->GetLength(); i++) {
-    //         AutoPtr<IBackStackRecord> bse;
-    //         (*fms->mBackStack)[i]->Instantiate(this, (IBackStackRecord**)&bse);
-    //         if (DEBUG) {
-    //             Logger::V(TAG, "restoreAllState: back stack #%d (index %d): %p",
-    //                 i, ((BackStackRecord*)bse.Get())->mIndex, bse.Get());
-    //             // TODO
-    //             // LogWriter logw = new LogWriter(Log.VERBOSE, TAG);
-    //             // PrintWriter pw = new FastPrintWriter(logw, false, 1024);
-    //             // bse.dump("  ", pw, false);
-    //             // pw.flush();
-    //         }
-    //         mBackStack.PushBack(bse);
-    //         if (((BackStackRecord*)bse.Get())->mIndex >= 0) {
-    //             SetBackStackIndex(((BackStackRecord*)bse.Get())->mIndex, bse);
-    //         }
-    //     }
-    // } else {
-    //     mBackStack.Clear();
-    // }
+    // Build the back stack.
+    if (fms->mBackStack != NULL) {
+        mBackStack.Clear();
+        for (Int32 i = 0; i < fms->mBackStack->GetLength(); i++) {
+            AutoPtr<IBackStackRecord> bse;
+            (*fms->mBackStack)[i]->Instantiate(this, (IBackStackRecord**)&bse);
+            if (DEBUG) {
+                Logger::V(TAG, "restoreAllState: back stack #%d (index %d): %p",
+                    i, ((BackStackRecord*)bse.Get())->mIndex, bse.Get());
+                // TODO
+                // LogWriter logw = new LogWriter(Log.VERBOSE, TAG);
+                // PrintWriter pw = new FastPrintWriter(logw, false, 1024);
+                // bse.dump("  ", pw, false);
+                // pw.flush();
+            }
+            mBackStack.PushBack(bse);
+            if (((BackStackRecord*)bse.Get())->mIndex >= 0) {
+                SetBackStackIndex(((BackStackRecord*)bse.Get())->mIndex, bse);
+            }
+        }
+    } else {
+        mBackStack.Clear();
+    }
 
     return NOERROR;
 }
@@ -2328,12 +2322,11 @@ ECode FragmentManagerImpl::DispatchOptionsMenuClosed(
     /* [in] */ IMenu* menu)
 {
     if (!mAdded.IsEmpty()) {
-        Boolean result;
         List<AutoPtr<IFragment> >::Iterator it;
         for (it = mAdded.Begin(); it != mAdded.End(); ++it) {
             AutoPtr<IFragment> f = *it;
             if (f != NULL) {
-                f->PerformOptionsMenuClosed(menu, &result);
+                f->PerformOptionsMenuClosed(menu);
             }
         }
     }
@@ -2408,90 +2401,121 @@ ECode FragmentManagerImpl::OnCreateView(
     /* [in] */ IAttributeSet* attrs,
     /* [out] */ IView** result)
 {
-    assert(0 && "TODO");
-    // if (!"fragment".equals(name)) {
-    //     return null;
-    // }
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
-    // String fname = attrs.getAttributeValue(null, "class");
-    // TypedArray a =
-    //         context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.Fragment);
-    // if (fname == null) {
-    //     fname = a.getString(com.android.internal.R.styleable.Fragment_name);
-    // }
-    // int id = a.getResourceId(com.android.internal.R.styleable.Fragment_id, View.NO_ID);
-    // String tag = a.getString(com.android.internal.R.styleable.Fragment_tag);
-    // a.recycle();
+    if (!name.Equals("fragment")) {
+        return NOERROR;
+    }
 
-    // int containerId = parent != null ? parent.getId() : 0;
-    // if (containerId == View.NO_ID && id == View.NO_ID && tag == null) {
-    //     throw new IllegalArgumentException(attrs.getPositionDescription()
-    //             + ": Must specify unique android:id, android:tag, or have a parent with"
-    //             + " an id for " + fname);
-    // }
+    String fname;
+    attrs->GetAttributeValue(String(NULL), String("class"), &fname);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32 *>(R::styleable::Fragment),
+        ARRAY_SIZE(R::styleable::Fragment));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrIds, (ITypedArray**)&a);
 
-    // // If we restored from a previous state, we may already have
-    // // instantiated this fragment from the state and should use
-    // // that instance instead of making a new one.
-    // Fragment fragment = id != View.NO_ID ? findFragmentById(id) : null;
-    // if (fragment == null && tag != null) {
-    //     fragment = findFragmentByTag(tag);
-    // }
-    // if (fragment == null && containerId != View.NO_ID) {
-    //     fragment = findFragmentById(containerId);
-    // }
+    if (fname.IsNull()) {
+        a->GetString(R::styleable::Fragment_name, &fname);
+    }
+    Int32 id;
+    a->GetResourceId(R::styleable::Fragment_id, IView::NO_ID, &id);
+    String tag;
+    a->GetString(R::styleable::Fragment_tag, &tag);
+    a->Recycle();
 
-    // if (FragmentManagerImpl.DEBUG) Log.v(TAG, "onCreateView: id=0x"
-    //         + Integer.toHexString(id) + " fname=" + fname
-    //         + " existing=" + fragment);
-    // if (fragment == null) {
-    //     fragment = Fragment.instantiate(context, fname);
-    //     fragment.mFromLayout = true;
-    //     fragment.mFragmentId = id != 0 ? id : containerId;
-    //     fragment.mContainerId = containerId;
-    //     fragment.mTag = tag;
-    //     fragment.mInLayout = true;
-    //     fragment.mFragmentManager = this;
-    //     fragment.onInflate(mActivity, attrs, fragment.mSavedFragmentState);
-    //     addFragment(fragment, true);
-    // } else if (fragment.mInLayout) {
-    //     // A fragment already exists and it is not one we restored from
-    //     // previous state.
-    //     throw new IllegalArgumentException(attrs.getPositionDescription()
-    //             + ": Duplicate id 0x" + Integer.toHexString(id)
-    //             + ", tag " + tag + ", or parent id 0x" + Integer.toHexString(containerId)
-    //             + " with another fragment for " + fname);
-    // } else {
-    //     // This fragment was retained from a previous instance; get it
-    //     // going now.
-    //     fragment.mInLayout = true;
-    //     // If this fragment is newly instantiated (either right now, or
-    //     // from last saved state), then give it the attributes to
-    //     // initialize itself.
-    //     if (!fragment.mRetaining) {
-    //         fragment.onInflate(mActivity, attrs, fragment.mSavedFragmentState);
-    //     }
-    // }
+    Int32 containerId = 0;
+    if (parent != NULL)
+        parent->GetId(&containerId);
+    if (containerId == IView::NO_ID && id == IView::NO_ID && tag == NULL) {
+        String str;
+        attrs->GetPositionDescription(&str);
+        Logger::E(TAG,
+            "IllegalArgumentException: %s : Must specify unique android:id, "
+            "android:tag, or have a parent with an id for %s",
+            str.string(), fname.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // // If we haven't finished entering the CREATED state ourselves yet,
-    // // push the inflated child fragment along.
-    // if (mCurState < Fragment.CREATED && fragment.mFromLayout) {
-    //     moveToState(fragment, Fragment.CREATED, 0, 0, false);
-    // } else {
-    //     moveToState(fragment);
-    // }
+    // If we restored from a previous state, we may already have
+    // instantiated this fragment from the state and should use
+    // that instance instead of making a new one.
+    AutoPtr<IFragment> fragment;
+    if (id != IView::NO_ID)
+        FindFragmentById(id, (IFragment**)&fragment);
 
-    // if (fragment.mView == null) {
-    //     throw new IllegalStateException("Fragment " + fname
-    //             + " did not create a view.");
-    // }
-    // if (id != 0) {
-    //     fragment.mView.setId(id);
-    // }
-    // if (fragment.mView.getTag() == null) {
-    //     fragment.mView.setTag(tag);
-    // }
-    // return fragment.mView;
+    if (fragment == NULL && tag != NULL) {
+        FindFragmentByTag(tag, (IFragment**)&fragment);
+    }
+    if (fragment == NULL && containerId != IView::NO_ID) {
+        FindFragmentById(containerId, (IFragment**)&fragment);
+    }
+
+    Fragment* f = (Fragment*)fragment.Get();
+    if (FragmentManagerImpl::DEBUG)
+        Logger::V(TAG, "onCreateView: id=0x%08x fname=%s existing=%s",
+            id, fname.string(), Object::ToString(fragment).string());
+    if (fragment == NULL) {
+        Fragment::Instantiate(context, fname, (IFragment**)&fragment);
+        Fragment* f = (Fragment*)fragment.Get();
+        f->mFromLayout = true;
+        f->mFragmentId = id != 0 ? id : containerId;
+        f->mContainerId = containerId;
+        f->mTag = tag;
+        f->mInLayout = true;
+        f->mFragmentManager = this;
+        f->OnInflate(mActivity, attrs, f->mSavedFragmentState);
+        AddFragment(fragment, true);
+    }
+    else if (f->mInLayout) {
+        // A fragment already exists and it is not one we restored from
+        // previous state.
+        String str;
+        attrs->GetPositionDescription(&str);
+        Logger::E(TAG, "IllegalArgumentException %s : Duplicate id 0x%08x"
+            " with another fragment for ",
+            str.string(), id, tag.string(), containerId, fname.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    else {
+        // This fragment was retained from a previous instance; get it
+        // going now.
+        f->mInLayout = TRUE;
+        // If this fragment is newly instantiated (either right now, or
+        // from last saved state), then give it the attributes to
+        // initialize itself.
+        if (!f->mRetaining) {
+            f->OnInflate(mActivity, attrs, f->mSavedFragmentState);
+        }
+    }
+
+    // If we haven't finished entering the CREATED state ourselves yet,
+    // push the inflated child fragment along.
+    if (mCurState < IFragment::CREATED && f->mFromLayout) {
+        MoveToState(fragment, IFragment::CREATED, 0, 0, false);
+    }
+    else {
+        MoveToState(fragment);
+    }
+
+    if (f->mView == NULL) {
+        Logger::E(TAG, "IllegalStateException: Fragment %s did not create a view.",
+            fname.string());
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    if (id != 0) {
+        f->mView->SetId(id);
+    }
+
+    AutoPtr<IInterface> tagObj;
+    f->mView->GetTag((IInterface**)&tagObj);
+    if (tagObj == NULL) {
+        tagObj = CoreUtils::Convert(tag).Get();
+        f->mView->SetTag(tagObj);
+    }
+    *result = f->mView;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

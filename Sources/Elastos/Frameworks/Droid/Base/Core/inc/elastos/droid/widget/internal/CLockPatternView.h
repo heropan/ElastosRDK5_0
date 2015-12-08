@@ -5,10 +5,10 @@
 
 #include "elastos/droid/widget/internal/LockPatternView.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 CarClass(CLockPatternView), public LockPatternView
 {

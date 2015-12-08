@@ -10,45 +10,47 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-extern "C" const InterfaceID EIID_WifiP2pServiceRequest;
-
 class WifiP2pServiceRequest
+    : public Object
+    , public IWifiP2pServiceRequest
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     WifiP2pServiceRequest();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI constructor();
 
-    virtual CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 protocolType,
         /* [in] */ const String& query);
 
-    virtual CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 serviceType,
         /* [in] */ Int32 length,
         /* [in] */ Int32 transId,
         /* [in] */ const String& query);
 
-    virtual CARAPI GetTransactionId(
+    CARAPI GetTransactionId(
         /* [out] */ Int32* transactionId);
 
-    virtual CARAPI SetTransactionId(
+    CARAPI SetTransactionId(
         /* [in] */ Int32 id);
 
-    virtual CARAPI GetSupplicantQuery(
+    CARAPI GetSupplicantQuery(
         /* [out] */ String* supplicantQuery);
 
-    virtual CARAPI GetHashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 
-    virtual CARAPI ReadFromParcel(
+    CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
-    virtual CARAPI WriteToParcel(
+    CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    virtual CARAPI Equals(
+    CARAPI Equals(
         /* [in] */ IInterface* other,
         /* [out] */ Boolean* result);
 
@@ -84,10 +86,10 @@ public:
     String mQuery;
 };
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICEREQUESTBASE_H__

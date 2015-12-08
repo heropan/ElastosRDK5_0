@@ -2,8 +2,8 @@
 #ifndef __CTESTSUITE_H__
 #define __CTESTSUITE_H__
 
-#include <cmdef.h>
-#include "_CTestSuite.h"
+#include <elastos/coredef.h>
+#include "_Eunit_Framework_CTestSuite.h"
 #include "eunit/framework/TestCase.h"
 #include <elastos/utility/etl/List.h>
 
@@ -15,8 +15,7 @@ namespace Eunit {
 namespace Framework {
 
 CarClass(CTestSuite)
-    , public ElRefBase
-    , public IObject
+    , public Object
     , public ITest
     , public ITestSuite
 {

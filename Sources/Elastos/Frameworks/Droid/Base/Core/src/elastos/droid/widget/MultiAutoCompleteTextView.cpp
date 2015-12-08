@@ -10,9 +10,9 @@ using Elastos::Droid::Text::CSpannableString;
 using Elastos::Droid::Text::ISpannableString;
 using Elastos::Droid::Text::Method::QwertyKeyListener;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 const String MultiAutoCompleteTextView::MULTIAUTOCOMPLETETEXTVIEW_NAME = String("MultiAutoCompleteTextView");
 

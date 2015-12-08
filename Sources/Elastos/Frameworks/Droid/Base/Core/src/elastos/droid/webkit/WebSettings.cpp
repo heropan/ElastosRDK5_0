@@ -776,7 +776,7 @@ ECode WebSettings::SetMinimumFontSize(
  * @return a non-negative integer between 1 and 72
  * @see #setMinimumFontSize
  */
-CARAPI GetMinimumFontSize(
+ECode WebSettings::GetMinimumFontSize(
     /* [out] */ Int32* size)
 {
     return E_MUST_OVERRIDE_EXCEPTION;

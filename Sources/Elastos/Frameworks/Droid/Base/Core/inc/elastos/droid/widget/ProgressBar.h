@@ -3,19 +3,15 @@
 #define __ELASTOS_DROID_WIDGET_PROGRESSBAR_H__
 
 #include "elastos/droid/R.h"
+#include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/utility/Pools.h"
-#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::R;
-using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::Utility::IPool;
-using Elastos::Droid::Utility::Pools;
-using Elastos::Droid::Utility::IPoolable;
-using Elastos::Droid::Utility::IPoolableManager;
-using Elastos::Droid::Utility::EIID_IPoolableManager;
-using Elastos::Droid::View::IView;
 using Elastos::Droid::Graphics::Drawable::Shapes::IShape;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Utility::Pools;
+using Elastos::Droid::View::IView;
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +20,9 @@ namespace Widget {
 using Elastos::Droid::View::View;
 using Elastos::Droid::View::Animation::IInterpolator;
 
-class ProgressBar : public View
+class ProgressBar
+    : public View
+    , public IProgressBar
 {
 private:
     class RefreshProgressRunnable
@@ -40,6 +38,10 @@ private:
         AutoPtr<IWeakReference> mWeakHost;
     };// RefreshProgressRunnable
 
+
+    /**
+     * Command for sending an accessibility event.
+     */
     class AccessibilityEventSender
         : public Runnable
     {
@@ -54,77 +56,84 @@ private:
     };// AccessibilityEventSender
 
     class RefreshData
-        : public IPoolable
-        , public ElRefBase
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         CARAPI Recycle();
 
-        CARAPI SetNextPoolable(
-            /* [in] */ IPoolable* element);
-
-        CARAPI GetNextPoolable(
-            /* [out] */ IPoolable** element);
-
-        CARAPI IsPooled(
-            /* [out] */ Boolean* isPooled);
-
-        CARAPI SetPooled(
-            /* [in] */ Boolean isPooled);
-
         static CARAPI_(AutoPtr<RefreshData>) Obtain(
-                /* [in] */ Int32 id,
-                /* [in] */ Int32 progress,
-                /* [in] */ Boolean fromUser);
+            /* [in] */ Int32 id,
+            /* [in] */ Float progress,
+            /* [in] */ Boolean fromUser,
+            /* [in] */ Boolean animate);
 
     private:
         RefreshData();
 
-    private:
-        class RefreshDataPoolableManager
-            : public ElRefBase
-            , public IPoolableManager
-        {
-        public:
-            CAR_INTERFACE_DECL()
-
-            CARAPI NewInstance(
-                /* [out] */ IPoolable** element);
-
-            CARAPI OnAcquired(
-                /* [in] */ IPoolable* element);
-
-            CARAPI OnReleased(
-                /* [in] */ IPoolable* element);
-        };// RefreshDataPoolableManager
-
     public:
         Int32 mId;
-        Int32 mProgress;
+        Float mProgress;
         Boolean mFromUser;
+        Boolean mAnimate;
+
     private:
-        AutoPtr<RefreshData> mNext;
-        Boolean mIsPooled;
-        static AutoPtr<IPool> sPool;
-        static const Int32 POOL_MAX = 24;
+        static const Int32 POOL_MAX;
+        static AutoPtr<Pools::SynchronizedPool<RefreshData> > sPool;
     };// RefreshData
 
-    /**
-     * Command for sending an accessibility event.
-     */
+    class ProgressTintInfo : public Object
+    {
+    public:
+        ProgressTintInfo();
+
+    public:
+        AutoPtr<IColorStateList> mIndeterminateTintList;
+        PorterDuffMode mIndeterminateTintMode;
+        Boolean mHasIndeterminateTint;
+        Boolean mHasIndeterminateTintMode;
+
+        AutoPtr<IColorStateList> mProgressTintList;
+        PorterDuffMode mProgressTintMode;
+        Boolean mHasProgressTint;
+        Boolean mHasProgressTintMode;
+
+        AutoPtr<IColorStateList> mProgressBackgroundTintList;
+        PorterDuffMode mProgressBackgroundTintMode;
+        Boolean mHasProgressBackgroundTint;
+        Boolean mHasProgressBackgroundTintMode;
+
+        AutoPtr<IColorStateList> mSecondaryProgressTintList;
+        PorterDuffMode mSecondaryProgressTintMode;
+        Boolean mHasSecondaryProgressTint;
+        Boolean mHasSecondaryProgressTintMode;
+    };
 
 public:
+    CAR_INTERFACE_DECL();
+
+    ProgressBar();
+
     /**
      * Create a new progress bar with range 0...100 and initial progress of 0.
      * @param context the application environment
      */
-    ProgressBar(
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::progressBarStyle,
-        /* [in] */ Int32 styleRes = 0);
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual CARAPI_(AutoPtr<IShape>) GetDrawableShape();
 
@@ -134,7 +143,8 @@ public:
      * @return TRUE if the progress bar is in indeterminate mode
      */
     //synchronized
-    virtual CARAPI_(Boolean) IsIndeterminate();
+    virtual CARAPI IsIndeterminate(
+        /* [out] */ Boolean* result);
 
     /**
      * <p>Change the indeterminate mode for this progress bar. In indeterminate
@@ -159,7 +169,8 @@ public:
      * @see #setIndeterminateDrawable(android.graphics.drawable.Drawable)
      * @see #setIndeterminate(Boolean)
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetIndeterminateDrawable();
+    virtual CARAPI GetIndeterminateDrawable(
+        /* [out] */ IDrawable** drawable);
 
     /**
      * <p>Define the drawable used to draw the progress bar in
@@ -174,6 +185,74 @@ public:
         /* [in] */ IDrawable* d);
 
     /**
+     * Applies a tint to the indeterminate drawable. Does not modify the
+     * current tint mode, which is {@link PorterDuff.Mode#SRC_IN} by default.
+     * <p>
+     * Subsequent calls to {@link #setIndeterminateDrawable(Drawable)} will
+     * automatically mutate the drawable and apply the specified tint and
+     * tint mode using
+     * {@link Drawable#setTintList(ColorStateList)}.
+     *
+     * @param tint the tint to apply, may be {@code null} to clear tint
+     *
+     * @attr ref android.R.styleable#ProgressBar_indeterminateTint
+     * @see #getIndeterminateTintList()
+     * @see Drawable#setTintList(ColorStateList)
+     */
+    CARAPI SetIndeterminateTintList(
+        /* [in] */ /*@Nullable*/ IColorStateList* tint);
+
+    /**
+     * @return the tint applied to the indeterminate drawable
+     * @attr ref android.R.styleable#ProgressBar_indeterminateTint
+     * @see #setIndeterminateTintList(ColorStateList)
+     */
+    // @Nullable
+    CARAPI GetIndeterminateTintList(
+        /* [out] */ IColorStateList** list);
+
+    /**
+     * Specifies the blending mode used to apply the tint specified by
+     * {@link #setIndeterminateTintList(ColorStateList)} to the indeterminate
+     * drawable. The default mode is {@link PorterDuff.Mode#SRC_IN}.
+     *
+     * @param tintMode the blending mode used to apply the tint, may be
+     *                 {@code null} to clear tint
+     * @attr ref android.R.styleable#ProgressBar_indeterminateTintMode
+     * @see #setIndeterminateTintList(ColorStateList)
+     * @see Drawable#setTintMode(PorterDuff.Mode)
+     */
+    CARAPI SetIndeterminateTintMode(
+        /* [in] */ /*@Nullable*/ PorterDuffMode tintMode);
+
+    /**
+     * Returns the blending mode used to apply the tint to the indeterminate
+     * drawable, if specified.
+     *
+     * @return the blending mode used to apply the tint to the indeterminate
+     *         drawable
+     * @attr ref android.R.styleable#ProgressBar_indeterminateTintMode
+     * @see #setIndeterminateTintMode(PorterDuff.Mode)
+     */
+    // @Nullable
+    CARAPI GetIndeterminateTintMode(
+        /* [out] */ PorterDuffMode* mode);
+
+    /**
+     * Define the tileable drawable used to draw the progress bar in
+     * indeterminate mode.
+     * <p>
+     * If the drawable is a BitmapDrawable or contains BitmapDrawables, a
+     * tiled copy will be generated for display as a progress bar.
+     *
+     * @param d the new drawable
+     * @see #getIndeterminateDrawable()
+     * @see #setIndeterminate(boolean)
+     */
+    CARAPI SetIndeterminateDrawableTiled(
+        /* [in] */ IDrawable* d);
+
+    /**
      * <p>Get the drawable used to draw the progress bar in
      * progress mode.</p>
      *
@@ -182,7 +261,8 @@ public:
      * @see #setProgressDrawable(android.graphics.drawable.Drawable)
      * @see #setIndeterminate(Boolean)
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetProgressDrawable();
+    virtual CARAPI GetProgressDrawable(
+        /* [out] */ IDrawable** drawable);
 
     /**
      * <p>Define the drawable used to draw the progress bar in
@@ -194,6 +274,202 @@ public:
      * @see #setIndeterminate(Boolean)
      */
     virtual CARAPI SetProgressDrawable(
+        /* [in] */ IDrawable* d);
+
+    /**
+     * Applies a tint to the progress indicator, if one exists, or to the
+     * entire progress drawable otherwise. Does not modify the current tint
+     * mode, which is {@link PorterDuff.Mode#SRC_IN} by default.
+     * <p>
+     * The progress indicator should be specified as a layer with
+     * id {@link android.R.id#progress} in a {@link LayerDrawable}
+     * used as the progress drawable.
+     * <p>
+     * Subsequent calls to {@link #setProgressDrawable(Drawable)} will
+     * automatically mutate the drawable and apply the specified tint and
+     * tint mode using
+     * {@link Drawable#setTintList(ColorStateList)}.
+     *
+     * @param tint the tint to apply, may be {@code null} to clear tint
+     *
+     * @attr ref android.R.styleable#ProgressBar_progressTint
+     * @see #getProgressTintList()
+     * @see Drawable#setTintList(ColorStateList)
+     */
+    CARAPI SetProgressTintList(
+        /* [in] */ /*@Nullable*/ IColorStateList* tint);
+
+    /**
+     * Returns the tint applied to the progress drawable, if specified.
+     *
+     * @return the tint applied to the progress drawable
+     * @attr ref android.R.styleable#ProgressBar_progressTint
+     * @see #setProgressTintList(ColorStateList)
+     */
+    // @Nullable
+    CARAPI GetProgressTintList(
+        /* [out] */ IColorStateList** list);
+
+    /**
+     * Specifies the blending mode used to apply the tint specified by
+     * {@link #setProgressTintList(ColorStateList)}} to the progress
+     * indicator. The default mode is {@link PorterDuff.Mode#SRC_IN}.
+     *
+     * @param tintMode the blending mode used to apply the tint, may be
+     *                 {@code null} to clear tint
+     * @attr ref android.R.styleable#ProgressBar_progressTintMode
+     * @see #getProgressTintMode()
+     * @see Drawable#setTintMode(PorterDuff.Mode)
+     */
+    CARAPI SetProgressTintMode(
+        /* [in] */ /*@Nullable*/ PorterDuffMode tintMode);
+
+    /**
+     * Returns the blending mode used to apply the tint to the progress
+     * drawable, if specified.
+     *
+     * @return the blending mode used to apply the tint to the progress
+     *         drawable
+     * @attr ref android.R.styleable#ProgressBar_progressTintMode
+     * @see #setProgressTintMode(PorterDuff.Mode)
+     */
+    // @Nullable
+    CARAPI GetProgressTintMode(
+        /* [out] */ PorterDuffMode* mode);
+
+    /**
+     * Applies a tint to the progress background, if one exists. Does not
+     * modify the current tint mode, which is
+     * {@link PorterDuff.Mode#SRC_ATOP} by default.
+     * <p>
+     * The progress background must be specified as a layer with
+     * id {@link android.R.id#background} in a {@link LayerDrawable}
+     * used as the progress drawable.
+     * <p>
+     * Subsequent calls to {@link #setProgressDrawable(Drawable)} where the
+     * drawable contains a progress background will automatically mutate the
+     * drawable and apply the specified tint and tint mode using
+     * {@link Drawable#setTintList(ColorStateList)}.
+     *
+     * @param tint the tint to apply, may be {@code null} to clear tint
+     *
+     * @attr ref android.R.styleable#ProgressBar_progressBackgroundTint
+     * @see #getProgressBackgroundTintList()
+     * @see Drawable#setTintList(ColorStateList)
+     */
+    CARAPI SetProgressBackgroundTintList(
+        /* [in] */ /*@Nullable*/ IColorStateList* tint);
+
+    /**
+     * Returns the tint applied to the progress background, if specified.
+     *
+     * @return the tint applied to the progress background
+     * @attr ref android.R.styleable#ProgressBar_progressBackgroundTint
+     * @see #setProgressBackgroundTintList(ColorStateList)
+     */
+    // @Nullable
+    CARAPI GetProgressBackgroundTintList(
+        /* [out] */ IColorStateList** list);
+
+    /**
+     * Specifies the blending mode used to apply the tint specified by
+     * {@link #setProgressBackgroundTintList(ColorStateList)}} to the progress
+     * background. The default mode is {@link PorterDuff.Mode#SRC_IN}.
+     *
+     * @param tintMode the blending mode used to apply the tint, may be
+     *                 {@code null} to clear tint
+     * @attr ref android.R.styleable#ProgressBar_progressBackgroundTintMode
+     * @see #setProgressBackgroundTintList(ColorStateList)
+     * @see Drawable#setTintMode(PorterDuff.Mode)
+     */
+    CARAPI SetProgressBackgroundTintMode(
+        /* [in] */ /*@Nullable*/ PorterDuffMode tintMode);
+
+    /**
+     * @return the blending mode used to apply the tint to the progress
+     *         background
+     * @attr ref android.R.styleable#ProgressBar_progressBackgroundTintMode
+     * @see #setProgressBackgroundTintMode(PorterDuff.Mode)
+     */
+    // @Nullable
+    CARAPI GetProgressBackgroundTintMode(
+        /* [out] */ PorterDuffMode* mode);
+
+    /**
+     * Applies a tint to the secondary progress indicator, if one exists.
+     * Does not modify the current tint mode, which is
+     * {@link PorterDuff.Mode#SRC_ATOP} by default.
+     * <p>
+     * The secondary progress indicator must be specified as a layer with
+     * id {@link android.R.id#secondaryProgress} in a {@link LayerDrawable}
+     * used as the progress drawable.
+     * <p>
+     * Subsequent calls to {@link #setProgressDrawable(Drawable)} where the
+     * drawable contains a secondary progress indicator will automatically
+     * mutate the drawable and apply the specified tint and tint mode using
+     * {@link Drawable#setTintList(ColorStateList)}.
+     *
+     * @param tint the tint to apply, may be {@code null} to clear tint
+     *
+     * @attr ref android.R.styleable#ProgressBar_secondaryProgressTint
+     * @see #getSecondaryProgressTintList()
+     * @see Drawable#setTintList(ColorStateList)
+     */
+    CARAPI SetSecondaryProgressTintList(
+        /* [in] */ /*@Nullable*/ IColorStateList* tint);
+
+    /**
+     * Returns the tint applied to the secondary progress drawable, if
+     * specified.
+     *
+     * @return the tint applied to the secondary progress drawable
+     * @attr ref android.R.styleable#ProgressBar_secondaryProgressTint
+     * @see #setSecondaryProgressTintList(ColorStateList)
+     */
+    // @Nullable
+    CARAPI GetSecondaryProgressTintList(
+        /* [out] */ IColorStateList** list);
+
+    /**
+     * Specifies the blending mode used to apply the tint specified by
+     * {@link #setSecondaryProgressTintList(ColorStateList)}} to the secondary
+     * progress indicator. The default mode is
+     * {@link PorterDuff.Mode#SRC_ATOP}.
+     *
+     * @param tintMode the blending mode used to apply the tint, may be
+     *                 {@code null} to clear tint
+     * @attr ref android.R.styleable#ProgressBar_secondaryProgressTintMode
+     * @see #setSecondaryProgressTintList(ColorStateList)
+     * @see Drawable#setTintMode(PorterDuff.Mode)
+     */
+    CARAPI SetSecondaryProgressTintMode(
+        /* [in] */ /*@Nullable*/ PorterDuffMode tintMode);
+
+    /**
+     * Returns the blending mode used to apply the tint to the secondary
+     * progress drawable, if specified.
+     *
+     * @return the blending mode used to apply the tint to the secondary
+     *         progress drawable
+     * @attr ref android.R.styleable#ProgressBar_secondaryProgressTintMode
+     * @see #setSecondaryProgressTintMode(PorterDuff.Mode)
+     */
+    // @Nullable
+    CARAPI GetSecondaryProgressTintMode(
+        /* [out] */ PorterDuffMode* mode);
+
+    /**
+     * Define the tileable drawable used to draw the progress bar in
+     * progress mode.
+     * <p>
+     * If the drawable is a BitmapDrawable or contains BitmapDrawables, a
+     * tiled copy will be generated for display as a progress bar.
+     *
+     * @param d the new drawable
+     * @see #getProgressDrawable()
+     * @see #setIndeterminate(boolean)
+     */
+    CARAPI SetProgressDrawableTiled(
         /* [in] */ IDrawable* d);
 
     /**
@@ -259,7 +535,8 @@ public:
      * @see #getMax()
      */
     //synchronized
-    virtual CARAPI_(Int32) GetProgress();
+    virtual CARAPI GetProgress(
+        /* [out] */ Int32* progress);
 
     /**
      * <p>Get the progress bar's current level of secondary progress. Return 0 when the
@@ -274,7 +551,8 @@ public:
      * @see #getMax()
      */
     //synchronized
-    virtual CARAPI_(Int32) GetSecondaryProgress();
+    virtual CARAPI GetSecondaryProgress(
+        /* [out] */ Int32* progress);
 
     /**
      * <p>Return the upper limit of this progress bar's range.</p>
@@ -286,7 +564,8 @@ public:
      * @see #getSecondaryProgress()
      */
     //synchronized
-    virtual CARAPI_(Int32) GetMax();
+    virtual CARAPI GetMax(
+        /* [out] */ Int32* max);
 
     /**
      * <p>Set the range of the progress bar to 0...<tt>max</tt>.</p>
@@ -360,7 +639,8 @@ public:
      *
      * @return the {@link Interpolator} associated to this animation
      */
-    virtual CARAPI_(AutoPtr<IInterpolator>) GetInterpolator();
+    virtual CARAPI GetInterpolator(
+        /* [out] */ IInterpolator** interpolator);
 
     virtual CARAPI SetVisibility(
         /* [in] */ Int32 v);
@@ -387,21 +667,18 @@ public:
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
+    // @Override
+    CARAPI DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
 protected:
-    ProgressBar();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::progressBarStyle,
-        /* [in] */ Int32 styleRes = 0);
-
     //@Override
     virtual CARAPI_(Boolean) VerifyDrawable(
             /* [in] */ IDrawable* who);
 
     //@Override
-    virtual CARAPI_(void) OnVisibilityChanged(
+    virtual CARAPI OnVisibilityChanged(
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 
@@ -415,6 +692,12 @@ protected:
     //@Override
     //synchronized
     virtual CARAPI_(void) OnDraw(
+        /* [in] */ ICanvas* canvas);
+
+    /**
+     * Draws the progress bar track.
+     */
+    virtual CARAPI_(void) DrawTrack(
         /* [in] */ ICanvas* canvas);
 
     //@Override
@@ -432,15 +715,36 @@ protected:
     //@Override
     virtual CARAPI OnDetachedFromWindow();
 
-    virtual CARAPI_(Object*) GetSelfLock() = 0;
+    /**
+     * Called when a ProgressBar is animating its position.
+     *
+     * @param scale Current position/progress between 0 and 1.
+     * @param fromUser True if the progress change was initiated by the user.
+     */
+    virtual CARAPI_(void) OnAnimatePosition(
+        /* [in] */ Float scale,
+        /* [in] */ Boolean fromUser);
 
+    /**
+     * Sets the progress value without going through the entire refresh process.
+     *
+     * @see #setProgress(int, boolean)
+     * @param progress The new progress, between 0 and {@link #getMax()}
+     */
+    virtual CARAPI_(void) SetProgressValueOnly(
+        /* [in] */ Int32 progress);
+
+    virtual CARAPI_(void) SetAnimationPosition(
+        /* [in] */ Float position);
+
+    virtual CARAPI_(Float) GetAnimationPosition();
 
 private:
     CARAPI InitFromAttributes(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle,
-        /* [in] */ Int32 styleRes);
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     /**
      * Converts a drawable to a tiled version of itself. It will recursively
@@ -473,17 +777,17 @@ private:
     CARAPI_(void) InitProgressBar();
 
     //synchronized
-    CARAPI_(void) DoRefreshProgress(
+    CARAPI_(void) RefreshProgress(
         /* [in] */ Int32 id,
-        /* [in] */ Int32 progress,
-        /* [in] */ Boolean fromUser,
-        /* [in] */ Boolean callBackToApp);
+        /* [in] */ Float progress,
+        /* [in] */ Boolean fromUser);
 
     //synchronized
     CARAPI_(void) RefreshProgress(
         /* [in] */ Int32 id,
-        /* [in] */ Int32 progress,
-        /* [in] */ Boolean fromUser);
+        /* [in] */ Float progress,
+        /* [in] */ Boolean fromUser,
+        /* [in] */ Boolean animate);
 
     CARAPI_(void) UpdateDrawableBounds(
         /* [in] */ Int32 w,
@@ -492,6 +796,68 @@ private:
     CARAPI_(void) UpdateDrawableState();
 
     CARAPI_(void) ScheduleAccessibilityEventSender();
+
+    CARAPI_(void) ApplyIndeterminateTint();
+
+    /**
+     * Applies the progress tints in order of increasing specificity.
+     */
+    CARAPI_(void) ApplyProgressTints();
+
+    /**
+     * Should only be called if we've already verified that mProgressDrawable
+     * and mProgressTintInfo are non-null.
+     */
+    CARAPI_(void) ApplyPrimaryProgressTint();
+
+    /**
+     * Should only be called if we've already verified that mProgressDrawable
+     * and mProgressTintInfo are non-null.
+     */
+    CARAPI_(void) ApplyProgressBackgroundTint();
+
+    /**
+     * Should only be called if we've already verified that mProgressDrawable
+     * and mProgressTintInfo are non-null.
+     */
+    CARAPI_(void) ApplySecondaryProgressTint();
+
+    /**
+     * Returns the drawable to which a tint or tint mode should be applied.
+     *
+     * @param layerId id of the layer to modify
+     * @param shouldFallback whether the base drawable should be returned
+     *                       if the id does not exist
+     * @return the drawable to modify
+     */
+    // @Nullable
+    CARAPI_(AutoPtr<IDrawable>) GetTintTarget(
+        /* [in] */ Int32 layerId,
+        /* [in] */ Boolean shouldFallback);
+
+    CARAPI_(void) SetDrawableTint(
+        /* [in] */ Int32 id,
+        /* [in] */ IColorStateList* tint,
+        /* [in] */ PorterDuffMode tintMode,
+        /* [in] */ Boolean fallback);
+
+    CARAPI_(Float) GetScale(
+        /* [in] */ Float progress);
+
+    //synchronized
+    CARAPI_(void) DoRefreshProgress(
+        /* [in] */ Int32 id,
+        /* [in] */ Float progress,
+        /* [in] */ Boolean fromUser,
+        /* [in] */ Boolean callBackToApp);
+
+    //synchronized
+    CARAPI_(void) DoRefreshProgress(
+        /* [in] */ Int32 id,
+        /* [in] */ Float progress,
+        /* [in] */ Boolean fromUser,
+        /* [in] */ Boolean callBackToApp,
+        /* [in] */ Boolean animate);
 
 private:
     static const Int32 MAX_LEVEL = 10000;
@@ -503,6 +869,7 @@ protected:
     Int32 mMinHeight;
     Int32 mMaxHeight;
     AutoPtr<IBitmap> mSampleTile;
+    Boolean mMirrorForRtl;
 
 private:
     Int32 mProgress;
@@ -519,12 +886,14 @@ private:
     AutoPtr<IDrawable> mIndeterminateDrawable;
     AutoPtr<IDrawable> mProgressDrawable;
     AutoPtr<IDrawable> mCurrentDrawable;
+    AutoPtr<ProgressTintInfo> mProgressTintInfo;
 
     Boolean mNoInvalidate;
     AutoPtr<IInterpolator> mInterpolator;
     AutoPtr<RefreshProgressRunnable> mRefreshProgressRunnable;
     Int64 mUiThreadId;
     Boolean mShouldStartAnimationDrawable;
+    Float mAnimationPosition;
 
     Boolean mInDrawing;
 
@@ -541,5 +910,7 @@ protected:
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Widget::ProgressBar::RefreshData, IInterface)
 
 #endif //__ELASTOS_DROID_WIDGET_PROGRESSBAR_H__

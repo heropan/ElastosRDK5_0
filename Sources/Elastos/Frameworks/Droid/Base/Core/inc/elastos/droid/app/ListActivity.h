@@ -1,6 +1,6 @@
 
 #ifndef __ELASTOS_DROID_APP_LISTACTIVITY_H__
-#define  __ELASTOS_DROID_APP_LISTACTIVITY_H__
+#define __ELASTOS_DROID_APP_LISTACTIVITY_H__
 
 #include "elastos/droid/app/Activity.h"
 #include "elastos/droid/os/Runnable.h"
@@ -16,19 +16,19 @@ namespace Droid {
 namespace App {
 
 class ListActivity
-    : public IListActivity
-    , public Activity
+    : public Activity
+    , public IListActivity
 {
 private:
     class MyListener
-        : public IAdapterViewOnItemClickListener
-        , public ElRefBase
+        : public Object
+        , public IAdapterViewOnItemClickListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         MyListener(
             /* [in] */ ListActivity* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI OnItemClick(
             /* [in] */ IAdapterView* parent,
@@ -40,7 +40,8 @@ private:
         ListActivity* mHost;
     };
 
-    class RequestRunnable : public Runnable
+    class RequestRunnable
+        : public Runnable
     {
     public:
         RequestRunnable(
@@ -53,17 +54,13 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     ListActivity();
 
     virtual ~ListActivity();
 
-    CAR_INTERFACE_DECL()
-
-    CARAPI GetBaseContext(
-        /* [out] */ IContext** ctx);
-
-    CARAPI ApplyOverrideConfiguration(
-        /* [in] */ IConfiguration* overrideConfiguration);
+    CARAPI constructor();
 
     /**
      * Updates the screen state (current list and other views) when the
@@ -76,7 +73,7 @@ public:
     /**
      * Provide the cursor for the list view.
      */
-    virtual CARAPI SetListAdapter(
+    CARAPI SetListAdapter(
         /* [in] */ IListAdapter* adapter);
 
     /**
@@ -85,31 +82,31 @@ public:
      *
      * @param position
      */
-    virtual CARAPI SetSelection(
+    CARAPI SetSelection(
         /* [in] */ Int32 position);
 
     /**
      * Get the position of the currently selected list item.
      */
-    virtual CARAPI GetSelectedItemPosition(
+    CARAPI GetSelectedItemPosition(
         /* [out] */ Int32* pos);
 
     /**
      * Get the cursor row ID of the currently selected list item.
      */
-    virtual CARAPI GetSelectedItemId(
+    CARAPI GetSelectedItemId(
         /* [out] */ Int64* id);
 
     /**
      * Get the activity's list view widget.
      */
-    virtual CARAPI GetListView(
+    CARAPI GetListView(
         /* [out] */ IListView** listView);
 
     /**
      * Get the ListAdapter associated with this activity's ListView.
      */
-    virtual CARAPI GetListAdapter(
+    CARAPI GetListAdapter(
         /* [out] */ IListAdapter** listAdapter);
 
 protected:
@@ -136,16 +133,16 @@ protected:
      *
      *@see Activity#onRestoreInstanceState(Bundle)
      */
-    virtual CARAPI OnRestoreInstanceState(
+    CARAPI OnRestoreInstanceState(
         /* [in] */ IBundle* state);
 
     /**
      * @see Activity#onDestroy()
      */
-    virtual CARAPI OnDestroy();
+    CARAPI OnDestroy();
 
 private:
-    CARAPI_(void) EnsureList();
+    CARAPI EnsureList();
 
 protected:
     /**

@@ -1,44 +1,6 @@
-
-
-/*#include "elastos/droid/view/CViewRootImplW.h"
-#include "elastos/droid/view/CInputDevice.h"
-#include "elastos/droid/view/CInputChannel.h"
-#include "elastos/droid/view/FocusFinder.h"
-#include "elastos/droid/view/CKeyEvent.h"
-#include "elastos/droid/view/CWindowManagerGlobal.h"
-#include "elastos/droid/view/CCompatibilityInfoHolder.h"
-#include "elastos/droid/view/CAccessibilityInteractionConnection.h"
-#include "elastos/droid/view/CAccessibilityInteractionController.h"
-#include "elastos/droid/view/ViewTreeObserver.h"
-#include "elastos/droid/view/CKeyCharacterMap.h"
-#include "elastos/droid/view/SurfaceView.h"
-#include "elastos/droid/view/SoundEffectConstants.h"
-#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
-#include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
-#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
-#include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
-#include "elastos/droid/impl/CPolicyManager.h"
-#include "elastos/droid/graphics/CPixelFormat.h"
-#include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CPoint.h"
-#include "elastos/droid/content/res/CCompatibilityInfo.h"
-#include "elastos/droid/content/res/CConfiguration.h"
-//#include "elastos/droid/widget/Scroller.h"
-#include "elastos/droid/os/Build.h"
-#include "elastos/droid/os/SystemClock.h"
-
-#include "elastos/droid/os/CSystemProperties.h"
-#include "elastos/droid/os/Binder.h"
-#include "elastos/droid/utility/CTypedValue.h"
-#include <elastos/core/Thread.h>
-#include <elastos/core/Math.h>
-
-#include "elastos/droid/R.h"
-#include <stdio.h>
-#include "opengl/CGLES20.h"*/
-
 #include "elastos/droid/view/ViewRootImpl.h"
 #include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/ViewTreeObserver.h"
 #include "elastos/droid/view/Choreographer.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Binder.h"
@@ -87,6 +49,7 @@ using Elastos::Droid::View::Animation::IAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerAccessibilityStateChangeListener;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerHighTextContrastChangeListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::ViewTreeObserver;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Logging::Logger;
@@ -99,41 +62,6 @@ using Elastos::Utility::Etl::Vector;
 #ifndef TRACE_IN_TERMINAL
 #define TRACE_IN_TERMINAL          0
 #endif
-
-/*using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Droid::Opengl::CGLES20;
-using Elastos::Core::CString;
-using Elastos::Core::Thread;
-using Elastos::Droid::Media::IAudioManager;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::IResourcesTheme;
-using Elastos::Droid::Content::Res::CCompatibilityInfo;
-using Elastos::Droid::Content::Res::CConfiguration;
-using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
-using Elastos::Droid::View::Accessibility::CAccessibilityManager;
-using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfo;
-using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
-using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerAccessibilityStateChangeListener;
-using Elastos::Droid::View::Accessibility::EIID_IAccessibilityInteractionConnection;
-using Elastos::Droid::View::InputMethod::IInputMethodManager;
-using Elastos::Droid::View::InputMethod::CInputMethodManager;
-using Elastos::Droid::View::InputMethod::EIID_IInputMethodManagerFinishedEventCallback;
-using Elastos::Droid::Os::Binder;
-using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::SystemProperties;
-using Elastos::Droid::Os::ISystemProperties;
-using Elastos::Droid::Os::CSystemProperties;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::Process;
-using Elastos::Droid::Internal::Policy::IPolicyManager;
-using Elastos::Droid::Internal::Policy::CPolicyManager;
-using Elastos::Droid::Utility::CTypedValue;
-using Elastos::Utility::Etl::HashSet;
-using Elastos::Utility::Etl::Vector;
-using Elastos::Droid::View::Animation::IAccelerateDecelerateInterpolator;*/
 
 namespace Elastos {
 namespace Droid {
@@ -2740,7 +2668,7 @@ void ViewRootImpl::PerformTraversals()
         framewHeight < desiredWindowHeight && framewHeight != mHeight));*/
 
     Boolean computesInternalInsetsTemp;
-    mAttachInfo->mTreeObserver->HasComputeInternalInsetsListeners(&computesInternalInsetsTemp);
+    ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->HasComputeInternalInsetsListeners(&computesInternalInsetsTemp);
     Boolean computesInternalInsets = computesInternalInsetsTemp || mAttachInfo->mHasNonEmptyGivenInternalInsets;
 
     Boolean insetsPending = FALSE;
@@ -3844,7 +3772,7 @@ void ViewRootImpl::Draw(
 
     if (mAttachInfo->mViewScrollChanged) {
         mAttachInfo->mViewScrollChanged = FALSE;
-        mAttachInfo->mTreeObserver->DispatchOnScrollChanged();
+        ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnScrollChanged();
     }
 
     Boolean tempAnimating;
@@ -4683,7 +4611,7 @@ Boolean ViewRootImpl::EnsureTouchModeLocally(
     }
 
     mAttachInfo->mInTouchMode = inTouchMode;
-    mAttachInfo->mTreeObserver->DispatchOnTouchModeChanged(inTouchMode);
+    ((ViewTreeObserver*)mAttachInfo->mTreeObserver.Get())->DispatchOnTouchModeChanged(inTouchMode);
 
     return (inTouchMode) ? EnterTouchMode() : LeaveTouchMode();
 }
@@ -5291,7 +5219,7 @@ ECode ViewRootImpl::FocusSearch(
 }
 
 ECode ViewRootImpl::Dump(
-    /* [in] */ String prefix,
+    /* [in] */ const String& prefix,
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* writer,
     /* [in] */ ArrayOf<String> * args)
@@ -5337,7 +5265,7 @@ ECode ViewRootImpl::Dump(
 }
 
 void ViewRootImpl::DumpViewHierarchy(
-    /* [in] */ String prefix,
+    /* [in] */ const String& prefix,
     /* [in] */ IPrintWriter* writer,
     /* [in] */ IView* view)
 {
@@ -5359,11 +5287,12 @@ void ViewRootImpl::DumpViewHierarchy(
     if (N <= 0) {
         return;
     }
-    prefix = prefix + String("  ");
+    String newPrefix(prefix);
+    newPrefix += "  ";
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IView> temp;
         grp->GetChildAt(i, (IView**)&temp);
-        DumpViewHierarchy(prefix, writer, temp);
+        DumpViewHierarchy(newPrefix, writer, temp);
     }
 }
 
@@ -6869,7 +6798,7 @@ Boolean ViewRootImpl::InputStage::ShouldDropInputEvent(
 }
 
 ECode ViewRootImpl::InputStage::Dump(
-    /* [in] */ String prefix,
+    /* [in] */ const String& prefix,
     /* [in] */ IPrintWriter* writer)
 {
     if (mNext != NULL) {
@@ -6884,13 +6813,13 @@ ECode ViewRootImpl::InputStage::Dump(
 ViewRootImpl::AsyncInputStage::AsyncInputStage(
     /* [in] */ ViewRootImpl* host,
     /* [in] */ InputStage* next,
-    /* [in] */ String traceCounter)
+    /* [in] */ const String& traceCounter)
     : InputStage(host, next)
     , mTraceCounter(traceCounter)
 {}
 
 ECode ViewRootImpl::AsyncInputStage::Dump(
-    /* [in] */ String prefix,
+    /* [in] */ const String& prefix,
     /* [in] */ IPrintWriter* writer)
 {
     writer->Print(prefix);
@@ -7031,7 +6960,7 @@ CAR_INTERFACE_IMPL(ViewRootImpl::NativePreImeInputStage, AsyncInputStage, IInput
 ViewRootImpl::NativePreImeInputStage::NativePreImeInputStage(
     /* [in] */ ViewRootImpl* host,
     /* [in] */ InputStage* next,
-    /* [in] */ String traceCounter)
+    /* [in] */ const String& traceCounter)
     : AsyncInputStage(host, next, traceCounter)
 {}
 
@@ -7096,7 +7025,7 @@ CAR_INTERFACE_IMPL(ViewRootImpl::ImeInputStage, AsyncInputStage, IInputMethodMan
 ViewRootImpl::ImeInputStage::ImeInputStage(
     /* [in] */ ViewRootImpl* host,
     /* [in] */ InputStage* next,
-    /* [in] */ String traceCounter)
+    /* [in] */ const String& traceCounter)
     : AsyncInputStage(host, next, traceCounter)
 {}
 
@@ -7217,7 +7146,7 @@ Int32 ViewRootImpl::EarlyPostImeInputStage::ProcessPointerEvent(
 ViewRootImpl::NativePostImeInputStage::NativePostImeInputStage(
     /* [in] */ ViewRootImpl* host,
     /* [in] */ InputStage* next,
-    /* [in] */ String traceCounter)
+    /* [in] */ const String& traceCounter)
     : AsyncInputStage(host, next, traceCounter)
 {}
 
@@ -8430,7 +8359,7 @@ String ViewRootImpl::QueuedInputEvent::ToString()
 }
 
 Boolean ViewRootImpl::QueuedInputEvent::FlagToString(
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 flag,
     /* [in] */ Boolean hasPrevious,
     /* [in] */ IStringBuilder* sb)

@@ -3,6 +3,9 @@
 #include "elastos/droid/view/inputmethod/CControlledInputConnectionWrapper.h"
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Internal::View::EIID_IInputContext;
+using Elastos::Droid::Os::EIID_IBinder;
+
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -10,26 +13,25 @@ namespace Droid {
 namespace View {
 namespace InputMethod {
 
+//========================================================================================
+//              CControlledInputConnectionWrapper::
+//========================================================================================
+CAR_INTERFACE_IMPL_2(CControlledInputConnectionWrapper, Object, IInputContext, IBinder)
+
+CAR_OBJECT_IMPL(CControlledInputConnectionWrapper)
+
 CControlledInputConnectionWrapper::CControlledInputConnectionWrapper()
     : mActive(FALSE)
 {
 }
-
-// PInterface CControlledInputConnectionWrapper::Probe(
-//     /* [in] */ REIID riid)
-// {
-//     if (riid == EIID_IInputConnectionWrapper) {
-//         return reinterpret_cast<PInterface>((IInputConnectionWrapper*)this);
-//     }
-//     return _CControlledInputConnectionWrapper::Probe(riid);
-// }
 
 ECode CControlledInputConnectionWrapper::constructor(
     /* [in] */ ILooper* mainLooper,
     /* [in] */ IInputConnection* conn,
     /* [in] */ IInputMethodManager* agmer)
 {
-    IInputConnectionWrapper::Init(mainLooper, conn);
+    assert(0 && "TODO");
+//    IInputConnectionWrapper::Init(mainLooper, conn);
     mParentInputMethodManager = (CInputMethodManager*)agmer;
     mActive = TRUE;
     return NOERROR;
@@ -41,7 +43,9 @@ ECode CControlledInputConnectionWrapper::GetTextAfterCursor(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return IInputConnectionWrapper::GetTextAfterCursor(length, flags, seq, callback);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::GetTextAfterCursor(length, flags, seq, callback);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::GetTextBeforeCursor(
@@ -50,7 +54,9 @@ ECode CControlledInputConnectionWrapper::GetTextBeforeCursor(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return IInputConnectionWrapper::GetTextBeforeCursor(length, flags, seq, callback);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::GetTextBeforeCursor(length, flags, seq, callback);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::GetSelectedText(
@@ -58,7 +64,9 @@ ECode CControlledInputConnectionWrapper::GetSelectedText(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return IInputConnectionWrapper::GetSelectedText(flags, seq, callback);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::GetSelectedText(flags, seq, callback);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::GetCursorCapsMode(
@@ -66,7 +74,9 @@ ECode CControlledInputConnectionWrapper::GetCursorCapsMode(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return IInputConnectionWrapper::GetCursorCapsMode(reqModes, seq, callback);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::GetCursorCapsMode(reqModes, seq, callback);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::GetExtractedText(
@@ -75,112 +85,157 @@ ECode CControlledInputConnectionWrapper::GetExtractedText(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return IInputConnectionWrapper::GetExtractedText(request, flags, seq, callback);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::GetExtractedText(request, flags, seq, callback);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::CommitText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 newCursorPosition)
 {
-    return IInputConnectionWrapper::CommitText(text, newCursorPosition);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::CommitText(text, newCursorPosition);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::CommitCompletion(
     /* [in] */ ICompletionInfo* text)
 {
-    return IInputConnectionWrapper::CommitCompletion(text);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::CommitCompletion(text);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::CommitCorrection(
     /* [in] */ ICorrectionInfo* info)
 {
-    return IInputConnectionWrapper::CommitCorrection(info);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::CommitCorrection(info);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::SetSelection(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return IInputConnectionWrapper::SetSelection(start, end);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::SetSelection(start, end);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::PerformEditorAction(
     /* [in] */ Int32 id)
 {
-    return IInputConnectionWrapper::PerformEditorAction(id);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::PerformEditorAction(id);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::PerformContextMenuAction(
     /* [in] */ Int32 id)
 {
-    return IInputConnectionWrapper::PerformContextMenuAction(id);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::PerformContextMenuAction(id);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::SetComposingRegion(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return IInputConnectionWrapper::SetComposingRegion(start, end);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::SetComposingRegion(start, end);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::SetComposingText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 newCursorPosition)
 {
-    return IInputConnectionWrapper::SetComposingText(text, newCursorPosition);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::SetComposingText(text, newCursorPosition);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::FinishComposingText()
 {
-    return IInputConnectionWrapper::FinishComposingText();
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::FinishComposingText();
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::SendKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
-    return IInputConnectionWrapper::SendKeyEvent(event);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::SendKeyEvent(event);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::ClearMetaKeyStates(
     /* [in] */ Int32 states)
 {
-    return IInputConnectionWrapper::ClearMetaKeyStates(states);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::ClearMetaKeyStates(states);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::DeleteSurroundingText(
     /* [in] */ Int32 leftLength,
     /* [in] */ Int32 rightLength)
 {
-    return IInputConnectionWrapper::DeleteSurroundingText(leftLength, rightLength);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::DeleteSurroundingText(leftLength, rightLength);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::BeginBatchEdit()
 {
-    return IInputConnectionWrapper::BeginBatchEdit();
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::BeginBatchEdit();
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::EndBatchEdit()
 {
-    return IInputConnectionWrapper::EndBatchEdit();
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::EndBatchEdit();
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::ReportFullscreenMode(
     /* [in] */ Boolean enabled)
 {
-    return IInputConnectionWrapper::ReportFullscreenMode(enabled);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::ReportFullscreenMode(enabled);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::PerformPrivateCommand(
     /* [in] */ const String& action,
     /* [in] */ IBundle* data)
 {
-    return IInputConnectionWrapper::PerformPrivateCommand(action, data);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::PerformPrivateCommand(action, data);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CControlledInputConnectionWrapper::GetDescription(
     /* [out] */ String* str)
 {
-    return IInputConnectionWrapper::GetDescription(str);
+    assert(0 && "TODO");
+//    return IInputConnectionWrapper::GetDescription(str);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CControlledInputConnectionWrapper::RequestUpdateCursorAnchorInfo(
+    /* [in] */ Int32 cursorUpdateMode,
+    /* [in] */ Int32 seq,
+    /* [in] */ IInputContextCallback* cb)
+{
+    assert(0 && "TODO");
+    return E_NOT_IMPLEMENTED;
 }
 
 Boolean CControlledInputConnectionWrapper::IsActive()

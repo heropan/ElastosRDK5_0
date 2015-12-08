@@ -28,7 +28,11 @@ namespace Droid {
 namespace App {
 namespace Admin {
 
-const String TAG = String("CDeviceAdminInfo");
+const String TAG("CDeviceAdminInfo");
+
+CAR_INTERFACE_IMPL_2(CDeviceAdminInfo, Object, IDeviceAdminInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CDeviceAdminInfo)
 
 AutoPtr<IDeviceAdminInfoPolicyInfo> CreatePolicyInfo(
     /* [in] */ Int32 identIn,
@@ -106,6 +110,12 @@ CDeviceAdminInfo::CDeviceAdminInfo()
     : mVisible(FALSE)
     , mUsesPolicies(0)
 {
+}
+
+ECode CDeviceAdminInfo::constructor(
+    /* [in] */ IParcel* source)
+{
+    return NOERROR;
 }
 
 ECode CDeviceAdminInfo::constructor(
@@ -244,11 +254,6 @@ EXIT:
         parser->Close();
     }
     return ec;
-}
-
-ECode CDeviceAdminInfo::constructor()
-{
-    return NOERROR;
 }
 
 ECode CDeviceAdminInfo::GetPackageName(

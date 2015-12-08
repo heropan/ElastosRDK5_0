@@ -331,7 +331,7 @@ ECode CNetworkStatsFactory::ReadNetworkStatsDetail(
                     0L, 0L, (INetworkStatsEntry**)&adjust);
             AutoPtr<INetworkStatsEntry> entry;
             Int32 statsSize;
-            (*stats)->Size(&statsSize);
+            (*stats)->GetSize(&statsSize);
             for (Int32 j = 0; j < statsSize; j++) {
                 AutoPtr<INetworkStatsEntry> outEntry;
                 (*stats)->GetValues(j, entry, (INetworkStatsEntry**)&outEntry);
@@ -357,7 +357,7 @@ ECode CNetworkStatsFactory::ReadNetworkStatsDetail(
     // account for the dropped IPv6 header size post-unwrap.
     AutoPtr<INetworkStatsEntry> entry;
     Int32 size;
-    (*stats)->Size(&size);
+    (*stats)->GetSize(&size);
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<INetworkStatsEntry> outEntry;
         (*stats)->GetValues(i, entry, (INetworkStatsEntry**)&outEntry);
@@ -529,8 +529,8 @@ ECode CNetworkStatsFactory::AssertEquals(
     /* [in] */ INetworkStats* actual)
 {
     Int32 expectedSize, actualSize;
-    expected->Size(&expectedSize);
-    actual->Size(&actualSize);
+    expected->GetSize(&expectedSize);
+    actual->GetSize(&actualSize);
     if (expectedSize != actualSize) {
         Logger::E(TAG, "Expected size %d, actual size %d", expectedSize, actualSize);
         return E_ASSERTION_ERROR;

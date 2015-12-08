@@ -46,8 +46,7 @@ ECode CWebViewHelper::GetPluginList(
 ECode CWebViewHelper::ClearClientCertPreferences(
     /* [in] */ IRunnable* onCleared)
 {
-    WebView::ClearClientCertPreferences(onCleared);
-    return NOERROR;
+    return WebView::ClearClientCertPreferences(onCleared);
 }
 
 ECode CWebViewHelper::EnableSlowWholeDocumentDraw()

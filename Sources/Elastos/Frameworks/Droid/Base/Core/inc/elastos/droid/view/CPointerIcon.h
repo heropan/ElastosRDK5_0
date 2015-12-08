@@ -3,16 +3,20 @@
 #define __ELASTOS_DROID_VIEW_CPOINTERICON_H__
 
 #include "_Elastos_Droid_View_CPointerIcon.h"
+#include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::View::IPointerIcon;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CPointerIcon)
+    , public Object
+    , public IPointerIcon
 {
 public:
     /**
@@ -97,16 +101,11 @@ public:
         /* [in] */ Int32 resourceId,
         /* [out] */ IPointerIcon** pointerIcon);
 
-private:
-    static CARAPI ValidateHotSpot(
-        /* [in] */ IBitmap* bitmap,
-        /* [in] */ Float hotSpotX,
-        /* [in] */ Float hotSpotY);
-
-    static Int32 GetSystemIconStyleIndex(
-        /* [in] */ Int32 style);
-
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CPointerIcon();
 
     CARAPI constructor();
@@ -192,17 +191,34 @@ public:
         /* [out] */ Float* hotSpotY);
 
     CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest);
+        /* [in] */ IParcel* parcel,
+        /* [in] */ Int32 flags);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
+
+    CARAPI DescribeContents(
+        /* [out] */ Int32* result);
+
+private:
+    static CARAPI ValidateHotSpot(
+        /* [in] */ IBitmap* bitmap,
+        /* [in] */ Float hotSpotX,
+        /* [in] */ Float hotSpotY);
+
+    static Int32 GetSystemIconStyleIndex(
+        /* [in] */ Int32 style);
+
+    static AutoPtr<IPointerIcon> CreateNullIcon();
 
 private:
     CARAPI ThrowIfIconIsNotLoaded();
 
     CARAPI LoadResource(
+        /* [in] */ IContext* context,
         /* [in] */ IResources* resources,
         /* [in] */ Int32 resourceId);
+
 private:
     static const char* TAG;
 
@@ -211,7 +227,7 @@ private:
     static const Int32 STYLE_OEM_FIRST = 10000;
 
     // The default pointer icon.
-    static const Int32 STYLE_DEFAULT = STYLE_ARROW;
+    static const Int32 STYLE_DEFAULT = IPointerIcon::STYLE_ARROW;
 
     static AutoPtr<IPointerIcon> gNullIcon;
 
@@ -228,3 +244,4 @@ private:
 } // namespace Elastos
 
 #endif //__ELASTOS_DROID_VIEW_CPOINTERICON_H__
+

@@ -1,6 +1,23 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_ABSSPANNER_H__
-#define __ELASTOS_DROID_WIDGET_ABSSPANNER_H__
+#ifndef  __ELASTOS_DROID_WIDGET_ABSSPANNER_H__
+#define  __ELASTOS_DROID_WIDGET_ABSSPANNER_H__
+
+#include "elastos/droid/widget/AdapterView.h"
+#include <elastos/utility/etl/HashMap.h>
+#include "elastos/droid/R.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::R;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::EIID_IViewGroup;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Core::CString;
+using Elastos::Utility::Etl::HashMap;
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 /**
  * An abstract base class for spinner widgets. SDK users will probably not
@@ -8,28 +25,12 @@
  *
  * @attr ref android.R.styleable#AbsSpinner_entries
  */
-
-#include "elastos/droid/widget/AdapterView.h"
-#include <elastos/utility/etl/HashMap.h>
-#include "elastos/droid/R.h"
-
-using Elastos::Droid::View::IView;
-using Elastos::Core::CString;
-using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::View::EIID_IViewGroup;
-using Elastos::Droid::R;
-
-namespace Elastos {
-namespace Droid {
-namespace Widget {
-
-
-class AbsSpinner : public AdapterView
+class AbsSpinner
+    : public AdapterView
+    , public IAbsSpinner
 {
 public:
-    class RecycleBin : public ElRefBase
+    class RecycleBin : public Object
     {
     public:
         RecycleBin(
@@ -50,13 +51,27 @@ public:
     };
 
 public:
-    AbsSpinner(
+    CAR_INTERFACE_DECL();
+
+    AbsSpinner();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    AbsSpinner(
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = 0);
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual ~AbsSpinner();
 
@@ -110,7 +125,8 @@ public:
         /* [in] */ Boolean animate) = 0;
 
     //@Override
-    CARAPI_(AutoPtr<IView>) GetSelectedView();
+    CARAPI GetSelectedView(
+        /* [out] */ IView** view);
 
     /**
      * Override to prevent spamming ourselves with layout requests
@@ -122,10 +138,12 @@ public:
     CARAPI RequestLayout();
 
     //@Override
-    CARAPI_(AutoPtr<IAdapter>) GetAdapter();
+    CARAPI GetAdapter(
+        /* [out] */ IAdapter** adapter);
 
     //@Override
-    CARAPI_(Int32) GetCount();
+    CARAPI GetCount(
+        /* [out] */ Int32* count);
 
     /**
      * Maps a point to a position in the list.
@@ -135,9 +153,10 @@ public:
      * @return The position of the item which contains the specified point, or
      *         {@link #INVALID_POSITION} if the point does not intersect an item.
      */
-    virtual CARAPI_(Int32) PointToPosition(
+    virtual CARAPI PointToPosition(
         /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
+        /* [in] */ Int32 y,
+        /* [out] */ Int32* position);
 
     //@Override
     CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
@@ -153,8 +172,6 @@ public:
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
-    AbsSpinner();
-
     /**
      * @see android.view.View#measure(int, int)
      *
@@ -172,14 +189,6 @@ protected:
     CARAPI GenerateDefaultLayoutParams(
         /* [out] */ IViewGroupLayoutParams** params);
 
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = 0);
-
 private:
     /**
      * Common code for different constructor flavors
@@ -189,7 +198,8 @@ private:
     CARAPI InitFromAttributes(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyle,
+        /* [in] */ Int32 defStyleRes);
 
 public:
     AutoPtr<ISpinnerAdapter> mAdapter;
@@ -210,12 +220,10 @@ private:
 
     /** Temporary frame to hold a child View's frame rectangle */
     AutoPtr<IRect> mTouchFrame;
-
 };
 
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_ABSSPANNER_H__
-
+#endif // __ELASTOS_DROID_WIDGET_ABSSPANNER_H__

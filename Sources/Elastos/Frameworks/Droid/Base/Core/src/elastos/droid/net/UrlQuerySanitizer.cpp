@@ -87,7 +87,6 @@ ECode UrlQuerySanitizer::GetUnregisteredParameterValueSanitizer(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mUnregisteredParameterValueSanitizer;
-
 #endif
 }
 
@@ -97,7 +96,6 @@ ECode UrlQuerySanitizer::SetUnregisteredParameterValueSanitizer(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mUnregisteredParameterValueSanitizer = sanitizer;
-
 #endif
 }
 
@@ -107,7 +105,6 @@ ECode UrlQuerySanitizer::GetAllIllegal(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return sAllIllegal;
-
 #endif
 }
 
@@ -117,7 +114,6 @@ ECode UrlQuerySanitizer::GetAllButNulLegal(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return sAllButNulLegal;
-
 #endif
 }
 
@@ -127,7 +123,6 @@ ECode UrlQuerySanitizer::GetAllButWhitespaceLegal(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return sAllButWhitespaceLegal;
-
 #endif
 }
 
@@ -137,7 +132,6 @@ ECode UrlQuerySanitizer::GetUrlLegal(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return sURLLegal;
-
 #endif
 }
 
@@ -147,7 +141,6 @@ ECode UrlQuerySanitizer::GetUrlAndSpaceLegal(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return sUrlAndSpaceLegal;
-
 #endif
 }
 
@@ -157,7 +150,6 @@ ECode UrlQuerySanitizer::GetAmpLegal(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return sAmpLegal;
-
 #endif
 }
 
@@ -167,7 +159,6 @@ ECode UrlQuerySanitizer::GetAmpAndSpaceLegal(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return sAmpAndSpaceLegal;
-
 #endif
 }
 
@@ -177,7 +168,6 @@ ECode UrlQuerySanitizer::GetSpaceLegal(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return sSpaceLegal;
-
 #endif
 }
 
@@ -187,7 +177,6 @@ ECode UrlQuerySanitizer::GetAllButNulAndAngleBracketsLegal(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return sAllButNulAndAngleBracketsLegal;
-
 #endif
 }
 
@@ -195,7 +184,6 @@ ECode UrlQuerySanitizer::constructor()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-
 #endif
 }
 
@@ -204,9 +192,8 @@ ECode UrlQuerySanitizer::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        setAllowUnregisteredParamaters(true);
+        setAllowUnregisteredParamaters(TRUE);
         parseUrl(url);
-
 #endif
 }
 
@@ -215,7 +202,7 @@ ECode UrlQuerySanitizer::ParseUrl(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int queryIndex = url.indexOf('?');
+        Int32 queryIndex = url.indexOf('?');
         String query;
         if (queryIndex >= 0) {
             query = url.substring(queryIndex + 1);
@@ -224,7 +211,6 @@ ECode UrlQuerySanitizer::ParseUrl(
             query = "";
         }
         parseQuery(query);
-
 #endif
 }
 
@@ -239,7 +225,7 @@ ECode UrlQuerySanitizer::ParseQuery(
         while(tokenizer.hasMoreElements()) {
             String attributeValuePair = tokenizer.nextToken();
             if (attributeValuePair.length() > 0) {
-                int assignmentIndex = attributeValuePair.indexOf('=');
+                Int32 assignmentIndex = attributeValuePair.indexOf('=');
                 if (assignmentIndex < 0) {
                     // No assignment found, treat as if empty value
                     parseEntry(attributeValuePair, "");
@@ -250,7 +236,6 @@ ECode UrlQuerySanitizer::ParseQuery(
                 }
             }
         }
-
 #endif
 }
 
@@ -260,7 +245,6 @@ ECode UrlQuerySanitizer::GetParameterSet(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mEntries.keySet();
-
 #endif
 }
 
@@ -270,7 +254,6 @@ ECode UrlQuerySanitizer::GetParameterList(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mEntriesList;
-
 #endif
 }
 
@@ -281,7 +264,6 @@ ECode UrlQuerySanitizer::HasParameter(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mEntries.containsKey(parameter);
-
 #endif
 }
 
@@ -292,7 +274,6 @@ ECode UrlQuerySanitizer::GetValue(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mEntries.get(parameter);
-
 #endif
 }
 
@@ -302,11 +283,10 @@ ECode UrlQuerySanitizer::RegisterParameter(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (valueSanitizer == null) {
+        if (valueSanitizer == NULL) {
             mSanitizers.remove(parameter);
         }
         mSanitizers.put(parameter, valueSanitizer);
-
 #endif
 }
 
@@ -316,11 +296,10 @@ ECode UrlQuerySanitizer::RegisterParameters(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int length = parameters.length;
-        for(int i = 0; i < length; i++) {
+        Int32 length = parameters.length;
+        for(Int32 i = 0; i < length; i++) {
             mSanitizers.put(parameters[i], valueSanitizer);
         }
-
 #endif
 }
 
@@ -330,7 +309,6 @@ ECode UrlQuerySanitizer::SetAllowUnregisteredParamaters(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mAllowUnregisteredParamaters = allowUnregisteredParamaters;
-
 #endif
 }
 
@@ -340,7 +318,6 @@ ECode UrlQuerySanitizer::GetAllowUnregisteredParamaters(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mAllowUnregisteredParamaters;
-
 #endif
 }
 
@@ -350,7 +327,6 @@ ECode UrlQuerySanitizer::SetPreferFirstRepeatedParameter(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         mPreferFirstRepeatedParameter = preferFirstRepeatedParameter;
-
 #endif
 }
 
@@ -360,7 +336,6 @@ ECode UrlQuerySanitizer::GetPreferFirstRepeatedParameter(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mPreferFirstRepeatedParameter;
-
 #endif
 }
 
@@ -373,13 +348,12 @@ ECode UrlQuerySanitizer::ParseEntry(
         String unescapedParameter = unescape(parameter);
          ValueSanitizer valueSanitizer =
             getEffectiveValueSanitizer(unescapedParameter);
-        if (valueSanitizer == null) {
-            return;
+        if (valueSanitizer == NULL) {
+            return NOERROR;
         }
         String unescapedValue = unescape(value);
         String sanitizedValue = valueSanitizer.sanitize(unescapedValue);
         addSanitizedEntry(unescapedParameter, sanitizedValue);
-
 #endif
 }
 
@@ -393,11 +367,10 @@ ECode UrlQuerySanitizer::AddSanitizedEntry(
                 new ParameterValuePair(parameter, value));
         if (mPreferFirstRepeatedParameter) {
             if (mEntries.containsKey(parameter)) {
-                return;
+                return NOERROR;
             }
         }
         mEntries.put(parameter, value);
-
 #endif
 }
 
@@ -408,7 +381,6 @@ ECode UrlQuerySanitizer::GetValueSanitizer(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mSanitizers.get(parameter);
-
 #endif
 }
 
@@ -419,11 +391,10 @@ ECode UrlQuerySanitizer::GetEffectiveValueSanitizer(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         ValueSanitizer sanitizer = getValueSanitizer(parameter);
-        if (sanitizer == null && mAllowUnregisteredParamaters) {
+        if (sanitizer == NULL && mAllowUnregisteredParamaters) {
             sanitizer = getUnregisteredParameterValueSanitizer();
         }
         return sanitizer;
-
 #endif
 }
 
@@ -434,17 +405,17 @@ ECode UrlQuerySanitizer::Unescape(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         // Early exit if no escaped characters.
-        int firstEscape = string.indexOf('%');
+        Int32 firstEscape = string.indexOf('%');
         if ( firstEscape < 0) {
             firstEscape = string.indexOf('+');
             if (firstEscape < 0) {
                 return string;
             }
         }
-        int length = string.length();
+        Int32 length = string.length();
         StringBuilder stringBuilder = new StringBuilder(length);
         stringBuilder.append(string.substring(0, firstEscape));
-        for (int i = firstEscape; i < length; i++) {
+        for (Int32 i = firstEscape; i < length; i++) {
             char c = string.charAt(i);
             if (c == '+') {
                 c = ' ';
@@ -460,7 +431,6 @@ ECode UrlQuerySanitizer::Unescape(
             stringBuilder.append(c);
         }
         return stringBuilder.toString();
-
 #endif
 }
 
@@ -471,7 +441,6 @@ ECode UrlQuerySanitizer::IsHexDigit(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return decodeHexDigit(c) >= 0;
-
 #endif
 }
 
@@ -493,7 +462,6 @@ ECode UrlQuerySanitizer::DecodeHexDigit(
         else {
             return -1;
         }
-
 #endif
 }
 
@@ -503,7 +471,6 @@ ECode UrlQuerySanitizer::Clear()
 #if 0 // TODO: Translate codes below
         mEntries.clear();
         mEntriesList.clear();
-
 #endif
 }
 
@@ -520,7 +487,6 @@ ECode UrlQuerySanitizerParameterValuePair::constructor(
 #if 0 // TODO: Translate codes below
                 mParameter = parameter;
                 mValue = value;
-
 #endif
 }
 
@@ -562,8 +528,8 @@ ECode UrlQuerySanitizerParameterValuePair::SetValue(
 
 CAR_INTERFACE_IMPL_2(UrlQuerySanitizerIllegalCharacterValueSanitizer, Object, IUrlQuerySanitizerValueSanitizer, IUrlQuerySanitizerIllegalCharacterValueSanitizer)
 
-const String UrlQuerySanitizerIllegalCharacterValueSanitizer::JAVASCRIPT_PREFIX = String("javascript:");
-const String UrlQuerySanitizerIllegalCharacterValueSanitizer::VBSCRIPT_PREFIX = String("vbscript:");
+const String UrlQuerySanitizerIllegalCharacterValueSanitizer::JAVASCRIPT_PREFIX("javascript:");
+const String UrlQuerySanitizerIllegalCharacterValueSanitizer::VBSCRIPT_PREFIX("vbscript:");
 const Int32 UrlQuerySanitizerIllegalCharacterValueSanitizer::MIN_SCRIPT_PREFIX_LENGTH = Elastos::Core::Math::Min(JAVASCRIPT_PREFIX.GetLength(), VBSCRIPT_PREFIX.GetLength());
 
 ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::constructor(
@@ -572,7 +538,6 @@ ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::constructor(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
                 mFlags = flags;
-
 #endif
 }
 
@@ -582,15 +547,15 @@ ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::Sanitize(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                if (value == null) {
-                    return null;
+                if (value == NULL) {
+                    return NULL;
                 }
-                int length = value.length();
+                Int32 length = value.length();
                 if ((mFlags & SCRIPT_URL_OK) != 0) {
                     if (length >= MIN_SCRIPT_PREFIX_LENGTH) {
                         String asLower = value.toLowerCase(Locale.ROOT);
-                        if (asLower.startsWith(JAVASCRIPT_PREFIX)  ||
-                            asLower.startsWith(VBSCRIPT_PREFIX)) {
+                        if (asLower.StartWith(JAVASCRIPT_PREFIX)  ||
+                            asLower.StartWith(VBSCRIPT_PREFIX)) {
                             return "";
                         }
                     }
@@ -604,7 +569,7 @@ ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::Sanitize(
                     length = value.length();
                 }
                 StringBuilder stringBuilder = new StringBuilder(length);
-                for(int i = 0; i < length; i++) {
+                for(Int32 i = 0; i < length; i++) {
                     char c = value.charAt(i);
                     if (!characterIsLegal(c)) {
                         if ((mFlags & SPACE_OK) != 0) {
@@ -617,7 +582,6 @@ ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::Sanitize(
                     stringBuilder.append(c);
                 }
                 return stringBuilder.toString();
-
 #endif
 }
 
@@ -627,9 +591,9 @@ ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::TrimWhitespace(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                int start = 0;
-                int last = value.length() - 1;
-                int end = last;
+                Int32 start = 0;
+                Int32 last = value.length() - 1;
+                Int32 end = last;
                 while (start <= end && isWhitespace(value.charAt(start))) {
                     start++;
                 }
@@ -640,7 +604,6 @@ ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::TrimWhitespace(
                     return value;
                 }
                 return value.substring(start, end + 1);
-
 #endif
 }
 
@@ -657,11 +620,10 @@ ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::IsWhitespace(
                 case '\n':
                 case '\r':
                 case 11: /* VT */
-                    return true;
+                    return TRUE;
                 default:
-                    return false;
+                    return FALSE;
                 }
-
 #endif
 }
 
@@ -685,7 +647,6 @@ ECode UrlQuerySanitizerIllegalCharacterValueSanitizer::CharacterIsLegal(
                 default  : return (c >= 32 && c < 127) ||
                     ((c >= 128) && ((mFlags & NON_7_BIT_ASCII_OK) != 0));
                 }
-
 #endif
 }
 
@@ -954,7 +915,7 @@ Ecode CUrlQuerySanitizer::RegisterParameter(
     /* [in] */ const String& parameter,
     /* [in] */ IValueSanitizer* valueSanitizer)
 {
-    if (valueSanitizer == null) {
+    if (valueSanitizer == NULL) {
         mSanitizers.Erase(parameter);
     }
     mSanitizers.Insert(parameter, valueSanitizer);
@@ -1178,7 +1139,7 @@ Ecode CIllegalCharacterValueSanitizer::Sanitize(
     }
 
     AutoPtr<StringBuilder> stringBuilder = new StringBuilder(length);
-    for(int i = 0; i < length; i++) {
+    for(Int32 i = 0; i < length; i++) {
         char c = value.GetChar(i);
         if (!CharacterIsLegal(c)) {
             if ((mFlags & SPACE_OK) != 0) {

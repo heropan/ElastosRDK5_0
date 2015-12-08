@@ -40,6 +40,9 @@ public:
         /* [in] */ const String& input,
         /* [in] */ Double defValue = 0.0);
 
+    static CARAPI_(Boolean) ParseBoolean(
+        /* [in] */ const String& input);
+
     // From string with error code
     //
     static CARAPI Parse(
@@ -223,7 +226,6 @@ public:
      * @since 1.5
      */
     static CARAPI_(String) Format(
-        /* [in] */ const String& input,
         /* [in] */ const String& format,
         /* [in] */ ArrayOf<IInterface*>* args);
 
@@ -247,7 +249,6 @@ public:
      */
     static CARAPI_(String) Format(
         /* [in] */ ILocale* locale,
-        /* [in] */ const String& input,
         /* [in] */ const String& format,
         /* [in] */ ArrayOf<IInterface*>* args);
 

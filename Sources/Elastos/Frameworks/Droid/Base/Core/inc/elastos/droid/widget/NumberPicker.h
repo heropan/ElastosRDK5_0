@@ -1,28 +1,24 @@
 #ifndef __ELASTOS_DROID_WIDGET_NUMBERPICKER_H__
 #define __ELASTOS_DROID_WIDGET_NUMBERPICKER_H__
 
-#include <elastos/core/Math.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/view/accessibility/AccessibilityNodeProvider.h"
 #include "elastos/droid/text/method/NumberKeyListener.h"
 #include "elastos/droid/widget/EditText.h"
 #include "elastos/droid/widget/LinearLayout.h"
+#include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::Math;
-using Elastos::Core::IStringBuilder;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Text::Format::IFormatter;
-using Elastos::Droid::Text::Method::INumberKeyListener;
-using Elastos::Droid::Text::Method::NumberKeyListener;
 using Elastos::Droid::Text::ISpanned;
+using Elastos::Droid::Text::Method::NumberKeyListener;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
 using Elastos::Droid::View::Accessibility::AccessibilityNodeProvider;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
@@ -33,37 +29,55 @@ using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::VelocityTracker;
-using Elastos::Droid::Widget::IEditText;
 using Elastos::Droid::Widget::EditText;
+using Elastos::Droid::Widget::IEditText;
+using Elastos::Droid::Widget::IImageButton;
 using Elastos::Droid::Widget::INumberPickerFormatter;
 using Elastos::Droid::Widget::INumberPickerOnValueChangeListener;
 using Elastos::Droid::Widget::INumberPickerOnScrollListener;
-using Elastos::Droid::Widget::INumberPickerFormatter;
 using Elastos::Droid::Widget::IScroller;
-using Elastos::Droid::Widget::IImageButton;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::IFormatter;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-extern "C" const InterfaceID EIID_AccessibilityNodeProviderImpl;
-
-class NumberPicker : public LinearLayout
+class NumberPicker
+    : public LinearLayout
+    , public INumberPicker
 {
 public:
+    class CustomEditText
+        : public EditText
+        , public INumberPickerCustomEditText
+    {
+    public:
+        CustomEditText();
+
+        ~CustomEditText();
+
+        CAR_INTERFACE_DECL();
+
+        CARAPI constructor(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI OnEditorAction(
+            /* [in] */ Int32 actionCode);
+    };
+
+protected:
     class InputTextFilter
-        : public ElRefBase
-        , public INumberKeyListener
-        , public NumberKeyListener
-        , public IInputFilter
+        : public NumberKeyListener
     {
     public:
         InputTextFilter(
             /* [in] */ NumberPicker* host);
 
-        CAR_INTERFACE_DECL()
-
-        CARAPI_(Int32) GetInputType();
+        CARAPI GetInputType(
+            /* [out] */ Int32* type);
 
         CARAPI Filter(
             /* [in] */ ICharSequence* source,
@@ -74,24 +88,20 @@ public:
             /* [in] */ Int32 dend,
             /* [out] */ ICharSequence** sou);
 
+        // @override
         CARAPI ClearMetaKeyState(
-            /* [in] */ Int64 state,
-            /* [in] */ Int32 which,
-            /* [out] */ Int64* ret);
+            /* [in] */ IView* view,
+            /* [in] */ IEditable* content,
+            /* [in] */ Int32 states);
 
-        CARAPI Backspace(
+        // @override
+        CARAPI OnKeyUp(
             /* [in] */ IView* view,
             /* [in] */ IEditable* content,
             /* [in] */ Int32 keyCode,
             /* [in] */ IKeyEvent* event,
             /* [out] */ Boolean* ret);
 
-        CARAPI ForwardDelete(
-            /* [in] */ IView* view,
-            /* [in] */ IEditable* content,
-            /* [in] */ Int32 keyCode,
-            /* [in] */ IKeyEvent* event,
-            /* [out] */ Boolean* ret);
     protected:
         CARAPI_(AutoPtr<ArrayOf<Char32> >) GetAcceptedChars();
 
@@ -179,42 +189,25 @@ public:
         NumberPicker* mHost;
     };
 
-    class CustomEditText
-        : public ElRefBase
-        , public IEditText
-        , public EditText
-    {
-    public:
-        CustomEditText(
-            /* [in] */ IContext* context,
-            /* [in] */ IAttributeSet* attrs);
-
-        CAR_INTERFACE_DECL()
-
-        CARAPI OnEditorAction(
-            /* [in] */ Int32 actionCode);
-    };
-
     class AccessibilityNodeProviderImpl
-        : public ElRefBase
-        , public IAccessibilityNodeProvider
-        , public AccessibilityNodeProvider
+        : public AccessibilityNodeProvider
     {
     public:
         AccessibilityNodeProviderImpl(
             /* [in] */ NumberPicker* host);
 
-        CAR_INTERFACE_DECL()
-
+        //@Override
         CARAPI CreateAccessibilityNodeInfo(
             /* [in] */ Int32 virtualViewId,
             /* [out] */ IAccessibilityNodeInfo** info);
 
+        //@Override
         CARAPI FindAccessibilityNodeInfosByText(
-        /* [in] */ const String& searched,
-        /* [in] */ Int32 virtualViewId,
-        /* [out] */ IObjectContainer** object);
+            /* [in] */ const String& searched,
+            /* [in] */ Int32 virtualViewId,
+            /* [out] */ IList** list);
 
+        //@Override
         CARAPI PerformAction(
             /* [in] */ Int32 virtualViewId,
             /* [in] */ Int32 action,
@@ -237,9 +230,13 @@ public:
         CARAPI_(void) FindAccessibilityNodeInfosByTextInChild(
             /* [in] */ const String& searchedLowerCase,
             /* [in] */ Int32 virtualViewId,
-            /* [in] */ IObjectContainer* outResult);
+            /* [in] */ IList* outResult);
 
-        CARAPI_(AutoPtr<IAccessibilityNodeInfo>) CreateAccessibiltyNodeInfoForInputText();
+        CARAPI_(AutoPtr<IAccessibilityNodeInfo>) CreateAccessibiltyNodeInfoForInputText(
+            /* [in] */ Int32 left,
+            /* [in] */ Int32 top,
+            /* [in] */ Int32 right,
+            /* [in] */ Int32 bottom);
 
         CARAPI_(AutoPtr<IAccessibilityNodeInfo>) CreateAccessibilityNodeInfoForVirtualButton(
             /* [in] */ Int32 virtualViewId,
@@ -282,64 +279,15 @@ public:
     friend class NumberPicker;
     };
 
-    class NumberPickerOnCliskListener
-        : public ElRefBase
-        , public IViewOnClickListener
-    {
-    public:
-        NumberPickerOnCliskListener(
-            /* [in] */ NumberPicker* host);
-
-        CAR_INTERFACE_DECL()
-
-        OnClick(
-            /* [in] */ IView* v);
-    private:
-        NumberPicker* mHost;
-    };
-
-    class NumberPickerOnLongCliskListener
-        : public ElRefBase
-        , public IViewOnLongClickListener
-    {
-    public:
-        NumberPickerOnLongCliskListener(
-            /* [in] */ NumberPicker* host);
-
-        CAR_INTERFACE_DECL()
-
-        OnLongClick(
-            /* [in] */ IView* v,
-            /* [out] */ Boolean* result);
-    private:
-        NumberPicker* mHost;
-    };
-
-    class NumberPickerOnFocusChangeListener
-        : public ElRefBase
-        , public IViewOnFocusChangeListener
-    {
-    public:
-        NumberPickerOnFocusChangeListener(
-            /* [in] */ NumberPicker* host);
-
-        CAR_INTERFACE_DECL()
-
-        OnFocusChange(
-            /* [in] */ IView* v,
-            /* [in] */ Boolean hasFocus);
-    private:
-        NumberPicker* mHost;
-    };
-
+private:
     class TwoDigitFormatter
-        : public ElRefBase
+        : public Object
         , public INumberPickerFormatter
     {
     public:
         TwoDigitFormatter();
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         CARAPI Format(
             /* [in] */ Int32 value,
@@ -352,45 +300,149 @@ public:
         static CARAPI_(Char32) GetZeroDigit(
             /* [in] */ ILocale* locale);
 
-        static CARAPI_(AutoPtr<IFormatter>) CreateFormatter(
+        CARAPI_(AutoPtr<IFormatter>) CreateFormatter(
             /* [in] */ ILocale* locale);
 
     private:
-        StringBuilder mBuilder;
+        AutoPtr<StringBuilder> mBuilder;
         Char32 mZeroDigit;
+        AutoPtr<IFormatter> mFmt;
         AutoPtr< ArrayOf<IInterface*> > mArgs;
     };
 
+    class NumberPickerOnClickListener
+        : public Object
+        , public IViewOnClickListener
+    {
+    public:
+        NumberPickerOnClickListener(
+            /* [in] */ NumberPicker* host);
+
+        CAR_INTERFACE_DECL();
+
+        OnClick(
+            /* [in] */ IView* v);
+    private:
+        NumberPicker* mHost;
+    };
+
+    class NumberPickerOnLongCliskListener
+        : public Object
+        , public IViewOnLongClickListener
+    {
+    public:
+        NumberPickerOnLongCliskListener(
+            /* [in] */ NumberPicker* host);
+
+        CAR_INTERFACE_DECL();
+
+        OnLongClick(
+            /* [in] */ IView* v,
+            /* [out] */ Boolean* result);
+    private:
+        NumberPicker* mHost;
+    };
+
+    class NumberPickerOnFocusChangeListener
+        : public Object
+        , public IViewOnFocusChangeListener
+    {
+    public:
+        NumberPickerOnFocusChangeListener(
+            /* [in] */ NumberPicker* host);
+
+        CAR_INTERFACE_DECL();
+
+        OnFocusChange(
+            /* [in] */ IView* v,
+            /* [in] */ Boolean hasFocus);
+    private:
+        NumberPicker* mHost;
+    };
+
 public:
+    CAR_INTERFACE_DECL();
+
+    NumberPicker();
+
+    ~NumberPicker();
+
+    /**
+     * Create a new number picker.
+     *
+     * @param context The application environment.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    /**
+     * Create a new number picker.
+     *
+     * @param context The application environment.
+     * @param attrs A collection of attributes.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    /**
+     * Create a new number picker
+     *
+     * @param context the application environment.
+     * @param attrs a collection of attributes.
+     * @param defStyleAttr An attribute in the current theme that contains a
+     *        reference to a style resource that supplies default values for
+     *        the view. Can be 0 to not look for defaults.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    /**
+     * Create a new number picker
+     *
+     * @param context the application environment.
+     * @param attrs a collection of attributes.
+     * @param defStyleAttr An attribute in the current theme that contains a
+     *        reference to a style resource that supplies default values for
+     *        the view. Can be 0 to not look for defaults.
+     * @param defStyleRes A resource identifier of a style resource that
+     *        supplies default values for the view, used only if
+     *        defStyleAttr is 0 or can not be found in the theme. Can be 0
+     *        to not look for defaults.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
     static CARAPI_(AutoPtr<INumberPickerFormatter>) GetTwoDigitFormatter();
 
-    NumberPicker(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyleAttr = R::attr::numberPickerStyle);
+    // @Override
+    CARAPI OnInterceptTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyleAttr = R::attr::numberPickerStyle);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    CARAPI_(Boolean) OnInterceptTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    // @Override
+    CARAPI DispatchTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    // @Override
+    CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    CARAPI_(Boolean) DispatchTouchEvent(
-        /* [in] */ IMotionEvent* event);
-
-    CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
-
-    CARAPI_(Boolean) DispatchTrackballEvent(
-        /* [in] */ IMotionEvent* event);
-
-    CARAPI_(Boolean) DispatchHoverEvent(
-        /* [in] */ IMotionEvent* event);
+    // @Override
+    CARAPI DispatchTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
     CARAPI ComputeScroll();
 
@@ -403,52 +455,65 @@ public:
 
     CARAPI_(Int32) GetSolidColor();
 
-    virtual CARAPI SetOnValueChangedListener(
+    CARAPI SetOnValueChangedListener(
         /* [in] */ INumberPickerOnValueChangeListener* onValueChangedListener);
 
-    virtual CARAPI SetOnScrollListener(
+    CARAPI SetOnScrollListener(
         /* [in] */ INumberPickerOnScrollListener* onScrollListener);
 
-    virtual CARAPI SetFormatter(
+    CARAPI SetFormatter(
         /* [in] */ INumberPickerFormatter* formatter);
 
-    virtual CARAPI SetValue(
+    CARAPI SetValue(
         /* [in] */ Int32 value);
 
-    virtual CARAPI_(Boolean) GetWrapSelectorWheel();
+    // @Override
+    CARAPI PerformClick(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI SetWrapSelectorWheel(
+    // @Override
+    CARAPI PerformLongClick(
+        /* [out] */ Boolean* res);
+
+    CARAPI GetWrapSelectorWheel(
+        /* [out] */ Boolean* res);
+
+    CARAPI SetWrapSelectorWheel(
         /* [in] */ Boolean wrapSelectorWheel);
 
-    virtual CARAPI SetOnLongPressUpdateInterval(
+    CARAPI SetOnLongPressUpdateInterval(
         /* [in] */ Int64 intervalMillis);
 
-    virtual CARAPI_(Int32) GetValue();
+    CARAPI GetValue(
+        /* [out] */ Int32* value);
 
-    virtual CARAPI_(Int32) GetMinValue();
+    CARAPI GetMinValue(
+        /* [out] */ Int32* minValue);
 
-    virtual CARAPI SetMinValue(
+    CARAPI SetMinValue(
         /* [in] */ Int32 minValue);
 
-    virtual CARAPI_(Int32) GetMaxValue();
+    CARAPI GetMaxValue(
+        /* [out] */ Int32* maxValue);
 
-    virtual CARAPI SetMaxValue(
+    CARAPI SetMaxValue(
         /* [in] */ Int32 maxValue);
 
-    virtual CARAPI_(AutoPtr<ArrayOf<String> >) GetDisplayedValues();
+    CARAPI GetDisplayedValues(
+        /* [out, callee] */ ArrayOf<String>** displayedValues);
 
-    virtual CARAPI SetDisplayedValues(
+    CARAPI SetDisplayedValues(
         /* [in] */ ArrayOf<String>* displayedValues);
 
     CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
-    CARAPI_(AutoPtr<IAccessibilityNodeProvider>) GetAccessibilityNodeProvider();
+    // Override
+    CARAPI GetAccessibilityNodeProvider(
+        /* [out] */ IAccessibilityNodeProvider** provider);
 
 protected:
-    NumberPicker();
-
-    CARAPI_(void) OnLayout(
+    CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 letf,
         /* [in] */ Int32 top,
@@ -468,7 +533,18 @@ protected:
     CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
+    // @Override
+    virtual CARAPI_(Boolean) DispatchHoverEvent(
+        /* [in] */ IMotionEvent* event);
 
+    // @Override
+    virtual CARAPI_(Int32) ComputeVerticalScrollRange();
+
+    // @Override
+    virtual CARAPI_(Int32) ComputeVerticalScrollOffset();
+
+    // @Override
+    virtual CARAPI_(Int32) ComputeVerticalScrollExtent();
 
 private:
     CARAPI_(Boolean) MoveToFinalScrollerPosition(
@@ -559,29 +635,29 @@ private:
 private:
     friend class InputTextFilter;
 
-    const static String NUMBERPICkER_NAME;
+    const static String NUMBERPICKER_NAME;
 
-    const static Int32 SELECTOR_WHEEL_ITEM_COUNT = 3;
+    const static Int32 SELECTOR_WHEEL_ITEM_COUNT;
 
-    const static Int64 DEFAULT_LONG_PRESS_UPDATE_INTERVAL = 300;
+    const static Int64 DEFAULT_LONG_PRESS_UPDATE_INTERVAL;
 
-    const static Int32 SELECTOR_MIDDLE_ITEM_INDEX = SELECTOR_WHEEL_ITEM_COUNT / 2;
+    const static Int32 SELECTOR_MIDDLE_ITEM_INDEX;
 
-    const static Int32 SELECTOR_MAX_FLING_VELOCITY_ADJUSTMENT = 8;
+    const static Int32 SELECTOR_MAX_FLING_VELOCITY_ADJUSTMENT;
 
-    const static Int32 SELECTOR_ADJUSTMENT_DURATION_MILLIS = 800;
+    const static Int32 SELECTOR_ADJUSTMENT_DURATION_MILLIS;
 
-    const static Int32 SNAP_SCROLL_DURATION = 300;
+    const static Int32 SNAP_SCROLL_DURATION;
 
-    const static Float TOP_AND_BOTTOM_FADING_EDGE_STRENGTH = 0.9f;
+    const static Float TOP_AND_BOTTOM_FADING_EDGE_STRENGTH;
 
-    const static Int32 UNSCALED_DEFAULT_SELECTION_DIVIDER_HEIGHT = 2;
+    const static Int32 UNSCALED_DEFAULT_SELECTION_DIVIDER_HEIGHT;
 
-    const static Int32 UNSCALED_DEFAULT_SELECTION_DIVIDERS_DISTANCE = 48;
+    const static Int32 UNSCALED_DEFAULT_SELECTION_DIVIDERS_DISTANCE;
 
-    const static Int32 DEFAULT_LAYOUT_RESOURCE_ID = R::layout::number_picker;
+    const static Int32 DEFAULT_LAYOUT_RESOURCE_ID;
 
-    const static Int32 SIZE_UNSPECIFIED = -1;
+    const static Int32 SIZE_UNSPECIFIED;
 
     static AutoPtr<INumberPickerFormatter> sTwoDigitFormatter;
 
@@ -625,7 +701,7 @@ private:
 
     Int64 mLongPressUpdateInterval;
 
-    HashMap<Int32, String> mSelectorIndexToStringCache;
+    AutoPtr<ISparseArray> mSelectorIndexToStringCache;
 
     AutoPtr<ArrayOf<Int32> > mSelectorIndices;
 
@@ -677,9 +753,9 @@ private:
 
     Int32 mScrollState;
 
-    Boolean mIngonreMoveEvents;
+    Boolean mIgnoreMoveEvents;
 
-    Boolean mShowSoftInputOnTap;
+    Boolean mPerformClickOnTap;
 
     Int32 mTopSelectionDividerTop;
 
@@ -695,9 +771,15 @@ private:
 
     AutoPtr<PressedStateHelper> mPressedStateHelper;
 
-    AutoPtr<IViewOnClickListener> mNumberPickerOnCliskListener;
+    /**
+     * The keycode of the last handled DPAD down event.
+     */
+    Int32 mLastHandledDownDpadKeyCode;
 
-    AutoPtr<IViewOnLongClickListener> mNumberPickerOnLongCliskListener;
+    /**
+     * If true then the selector wheel is hidden until the picker has focus.
+     */
+    Boolean mHideWheelUntilFocused;
 };
 
 } // namespace Widget
@@ -705,4 +787,3 @@ private:
 } // namespace Elastos
 
 #endif //__ELASTOS_DROID_WIDGET_NUMBERPICKER_H__
-

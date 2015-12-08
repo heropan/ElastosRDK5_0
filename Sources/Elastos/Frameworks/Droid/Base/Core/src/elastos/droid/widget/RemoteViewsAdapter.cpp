@@ -42,9 +42,9 @@ using Elastos::Droid::Content::CIntentFilterComparison;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
 using Elastos::Droid::Widget::Internal::IIRemoteViewsFactory;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 // daa3894c-5246-483a-a18a-75cb3e153764
 extern "C" const InterfaceID EIID_RemoteViewsFrameLayout =

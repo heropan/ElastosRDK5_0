@@ -27,7 +27,7 @@ CARAPI StackViewLayoutParams::Init(
     /* [in] */ IStackView* sv,
     /* [in] */ IView* view)
 {
-    ViewGroupLayoutParams::Init(0, 0);
+    LayoutParams::Init(0, 0);
     mWidth = 0;
     mHeight = 0;
     mHorizontalOffset = 0;
@@ -42,7 +42,7 @@ CARAPI StackViewLayoutParams::Init(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    ViewGroupLayoutParams::Init(context, attrs);
+    LayoutParams::Init(context, attrs);
     mHorizontalOffset = 0;
     mVerticalOffset = 0;
     mWidth = 0;
@@ -54,7 +54,7 @@ CARAPI StackViewLayoutParams::Init(
 StackViewLayoutParams::StackViewLayoutParams(
     /* [in] */ IStackView* sv,
     /* [in] */ IView* view)
-    : ViewGroupLayoutParams(0, 0)
+    : LayoutParams(0, 0)
     , mHorizontalOffset(0)
     , mVerticalOffset(0)
     , mView(view)
@@ -72,7 +72,7 @@ StackViewLayoutParams::StackViewLayoutParams(
     /* [in] */ IStackView* sv,
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : ViewGroupLayoutParams(context, attrs)
+    : LayoutParams(context, attrs)
     , mHorizontalOffset(0)
     , mVerticalOffset(0)
     , mStackView(sv)

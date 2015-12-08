@@ -4,9 +4,9 @@
 using Elastos::Droid::Widget::IPositionMetadata;
 using Elastos::Droid::Widget::IGroupMetadata;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ECode CPositionMetadataHelper::Obtain(
     /* [in] */ Int32 flatListPos,

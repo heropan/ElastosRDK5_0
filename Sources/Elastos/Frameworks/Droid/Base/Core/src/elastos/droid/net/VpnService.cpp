@@ -19,9 +19,9 @@ ECode VpnService::Callback::OnTransact(
 #if 0 // TODO: Translate codes below
             if (code == IBinder.LAST_CALL_TRANSACTION) {
                 onRevoke();
-                return true;
+                return TRUE;
             }
-            return false;
+            return FALSE;
 #endif
 }
 
@@ -44,8 +44,8 @@ ECode VpnService::GetService(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        return IConnectivityManager.Stub.asInterface(
-                ServiceManager.getService(Context.CONNECTIVITY_SERVICE));
+        return IConnectivityManager::Probe(
+                ServiceManager::GetService(Context.CONNECTIVITY_SERVICE));
 #endif
 }
 
@@ -56,8 +56,8 @@ ECode VpnService::Prepare(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         try {
-            if (getService().prepareVpn(context.getPackageName(), null)) {
-                return null;
+            if (getService().prepareVpn(context.getPackageName(), NULL)) {
+                return NULL;
             }
         } catch (RemoteException e) {
             // ignore
@@ -134,10 +134,10 @@ ECode VpnService::OnBind(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (intent != null && SERVICE_INTERFACE.equals(intent.getAction())) {
+        if (intent != NULL && SERVICE_INTERFACE.equals(intent.getAction())) {
             return new Callback();
         }
-        return null;
+        return NULL;
 #endif
 }
 
@@ -158,11 +158,11 @@ ECode VpnService::Check(
         if (address.isLoopbackAddress()) {
             throw new IllegalArgumentException("Bad address");
         }
-        if (address instanceof Inet4Address) {
+        if (IInet4Address::Probe(address) != NULL) {
             if (prefixLength < 0 || prefixLength > 32) {
                 throw new IllegalArgumentException("Bad prefixLength");
             }
-        } else if (address instanceof Inet6Address) {
+        } else if (IInet6Address::Probe(address) != NULL) {
             if (prefixLength < 0 || prefixLength > 128) {
                 throw new IllegalArgumentException("Bad prefixLength");
             }
@@ -288,7 +288,7 @@ ECode VpnServiceBuilder::AddRoute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
                 check(address, prefixLength);
-                int offset = prefixLength / 8;
+                Int32 offset = prefixLength / 8;
                 byte[] bytes = address.getAddress();
                 if (offset < bytes.length) {
                     for (bytes[offset] <<= prefixLength % 8; offset < bytes.length; ++offset) {
@@ -297,7 +297,7 @@ ECode VpnServiceBuilder::AddRoute(
                         }
                     }
                 }
-                mRoutes.add(new RouteInfo(new LinkAddress(address, prefixLength), null));
+                mRoutes.add(new RouteInfo(new LinkAddress(address, prefixLength), NULL));
                 mConfig.updateAllowedFamilies(address);
                 return this;
 #endif
@@ -323,7 +323,7 @@ ECode VpnServiceBuilder::AddDnsServer(
                 if (address.isLoopbackAddress() || address.isAnyLocalAddress()) {
                     throw new IllegalArgumentException("Bad address");
                 }
-                if (mConfig.dnsServers == null) {
+                if (mConfig.dnsServers == NULL) {
                     mConfig.dnsServers = new ArrayList<String>();
                 }
                 mConfig.dnsServers.add(address.getHostAddress());
@@ -347,7 +347,7 @@ ECode VpnServiceBuilder::AddSearchDomain(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                if (mConfig.searchDomains == null) {
+                if (mConfig.searchDomains == NULL) {
                     mConfig.searchDomains = new ArrayList<String>();
                 }
                 mConfig.searchDomains.add(domain);
@@ -362,9 +362,9 @@ ECode VpnServiceBuilder::AllowFamily(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
                 if (family == AF_INET) {
-                    mConfig.allowIPv4 = true;
+                    mConfig.allowIPv4 = TRUE;
                 } else if (family == AF_INET6) {
-                    mConfig.allowIPv6 = true;
+                    mConfig.allowIPv6 = TRUE;
                 } else {
                     throw new IllegalArgumentException(family + " is neither " + AF_INET + " nor " +
                             AF_INET6);
@@ -378,8 +378,8 @@ ECode VpnServiceBuilder::VerifyApp(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                IPackageManager pm = IPackageManager.Stub.asInterface(
-                        ServiceManager.getService("package"));
+                IPackageManager pm = IPackageManager::Probe(
+                        ServiceManager::GetService("package"));
                 try {
                     pm.getApplicationInfo(packageName, 0, UserHandle.getCallingUserId());
                 } catch (RemoteException e) {
@@ -394,11 +394,11 @@ ECode VpnServiceBuilder::AddAllowedApplication(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                if (mConfig.disallowedApplications != null) {
+                if (mConfig.disallowedApplications != NULL) {
                     throw new UnsupportedOperationException("addDisallowedApplication already called");
                 }
                 verifyApp(packageName);
-                if (mConfig.allowedApplications == null) {
+                if (mConfig.allowedApplications == NULL) {
                     mConfig.allowedApplications = new ArrayList<String>();
                 }
                 mConfig.allowedApplications.add(packageName);
@@ -412,11 +412,11 @@ ECode VpnServiceBuilder::AddDisallowedApplication(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                if (mConfig.allowedApplications != null) {
+                if (mConfig.allowedApplications != NULL) {
                     throw new UnsupportedOperationException("addAllowedApplication already called");
                 }
                 verifyApp(packageName);
-                if (mConfig.disallowedApplications == null) {
+                if (mConfig.disallowedApplications == NULL) {
                     mConfig.disallowedApplications = new ArrayList<String>();
                 }
                 mConfig.disallowedApplications.add(packageName);
@@ -429,7 +429,7 @@ ECode VpnServiceBuilder::AllowBypass(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-                mConfig.allowBypass = true;
+                mConfig.allowBypass = TRUE;
                 return this;
 #endif
 }

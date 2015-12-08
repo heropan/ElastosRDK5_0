@@ -7,7 +7,7 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(SntpClient, Object, ISntpClient)
 
-const String SntpClient::TAG = String("SntpClient");
+const String SntpClient::TAG("SntpClient");
 const Int32 SntpClient::REFERENCE_TIME_OFFSET = 16;
 const Int32 SntpClient::ORIGINATE_TIME_OFFSET = 24;
 const Int32 SntpClient::RECEIVE_TIME_OFFSET = 32;
@@ -30,7 +30,7 @@ ECode SntpClient::RequestTime(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        DatagramSocket socket = null;
+        DatagramSocket socket = NULL;
         try {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
@@ -73,15 +73,14 @@ ECode SntpClient::RequestTime(
             mNtpTimeReference = responseTicks;
             mRoundTripTime = roundTripTime;
         } catch (Exception e) {
-            if (false) Log.d(TAG, "request time failed: " + e);
-            return false;
+            if (FALSE) Logger::D(TAG, "request time failed: " + e);
+            return FALSE;
         } finally {
-            if (socket != null) {
+            if (socket != NULL) {
                 socket.close();
             }
         }
-        return true;
-
+        return TRUE;
 #endif
 }
 
@@ -91,7 +90,6 @@ ECode SntpClient::GetNtpTime(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mNtpTime;
-
 #endif
 }
 
@@ -101,7 +99,6 @@ ECode SntpClient::GetNtpTimeReference(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mNtpTimeReference;
-
 #endif
 }
 
@@ -111,7 +108,6 @@ ECode SntpClient::GetRoundTripTime(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mRoundTripTime;
-
 #endif
 }
 
@@ -127,12 +123,11 @@ ECode SntpClient::Read32(
         byte b2 = buffer[offset+2];
         byte b3 = buffer[offset+3];
         // convert signed bytes to unsigned values
-        int i0 = ((b0 & 0x80) == 0x80 ? (b0 & 0x7F) + 0x80 : b0);
-        int i1 = ((b1 & 0x80) == 0x80 ? (b1 & 0x7F) + 0x80 : b1);
-        int i2 = ((b2 & 0x80) == 0x80 ? (b2 & 0x7F) + 0x80 : b2);
-        int i3 = ((b3 & 0x80) == 0x80 ? (b3 & 0x7F) + 0x80 : b3);
+        Int32 i0 = ((b0 & 0x80) == 0x80 ? (b0 & 0x7F) + 0x80 : b0);
+        Int32 i1 = ((b1 & 0x80) == 0x80 ? (b1 & 0x7F) + 0x80 : b1);
+        Int32 i2 = ((b2 & 0x80) == 0x80 ? (b2 & 0x7F) + 0x80 : b2);
+        Int32 i3 = ((b3 & 0x80) == 0x80 ? (b3 & 0x7F) + 0x80 : b3);
         return ((long)i0 << 24) + ((long)i1 << 16) + ((long)i2 << 8) + (long)i3;
-
 #endif
 }
 
@@ -146,7 +141,6 @@ ECode SntpClient::ReadTimeStamp(
         long seconds = read32(buffer, offset);
         long fraction = read32(buffer, offset + 4);
         return ((seconds - OFFSET_1900_TO_1970) * 1000) + ((fraction * 1000L) / 0x100000000L);
-
 #endif
 }
 
@@ -172,7 +166,6 @@ ECode SntpClient::WriteTimeStamp(
         buffer[offset++] = (byte)(fraction >> 8);
         // low order bits should be random data
         buffer[offset++] = (byte)(Math.random() * 255.0);
-
 #endif
 }
 

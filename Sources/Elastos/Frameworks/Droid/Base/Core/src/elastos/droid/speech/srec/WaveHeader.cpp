@@ -8,25 +8,23 @@ namespace Droid {
 namespace Speech {
 namespace Srec {
 
-const CString WaveHeader::TAG = "WaveHeader";
+const String WaveHeader::TAG("WaveHeader");
 const Int32 WaveHeader::HEADER_LENGTH = 44;
 
 WaveHeader::WaveHeader()
 {
-    Init(0, 0, 0, 0, 0);
+    constructor(0, 0, 0, 0, 0);
 }
 
-WaveHeader::WaveHeader(
-    /* [in] */ Int16 format,
-    /* [in] */ Int16 numChannels,
-    /* [in] */ Int32 sampleRate,
-    /* [in] */ Int16 bitsPerSample,
-    /* [in] */ Int32 numBytes)
+WaveHeader::~WaveHeader()
+{}
+
+ECode WaveHeader::constructor()
 {
-    Init(format, numChannels, sampleRate, bitsPerSample, numBytes);
+    return NOERROR;
 }
 
-void WaveHeader::Init(
+ECode WaveHeader::constructor(
     /* [in] */ Int16 format,
     /* [in] */ Int16 numChannels,
     /* [in] */ Int32 sampleRate,
@@ -38,11 +36,15 @@ void WaveHeader::Init(
     mNumChannels = numChannels;
     mBitsPerSample = bitsPerSample;
     mNumBytes = numBytes;
+
+    return NOERROR;
 }
 
-Int16 WaveHeader::GetFormat()
+Int16 WaveHeader::GetFormat(
+    /* [out] */ Int16* ret)
 {
-    return mFormat;
+    *ret = mFormat;
+    return NOERROR;
 }
 
 ECode WaveHeader::SetFormat(
@@ -52,9 +54,11 @@ ECode WaveHeader::SetFormat(
     return NOERROR;
 }
 
-Int16 WaveHeader::GetNumChannels()
+ECode WaveHeader::GetNumChannels(
+    /* [out] */ Int16* ret)
 {
-    return mNumChannels;
+    *ret  = mNumChannels;
+    return NOERROR;
 }
 
 ECode WaveHeader::SetNumChannels(
@@ -64,9 +68,11 @@ ECode WaveHeader::SetNumChannels(
     return NOERROR;
 }
 
-Int32 WaveHeader::GetSampleRate()
+ECode WaveHeader::GetSampleRate(
+    /* [out] */ Int32* ret)
 {
-    return mSampleRate;
+    *ret = mSampleRate;
+    return NOERROR;
 }
 
 ECode WaveHeader::SetSampleRate(
@@ -76,9 +82,11 @@ ECode WaveHeader::SetSampleRate(
     return NOERROR;
 }
 
-Int16 WaveHeader::GetBitsPerSample()
+ECode WaveHeader::GetBitsPerSample(
+    /* [out] */ Int16* ret)
 {
-    return mBitsPerSample;
+    *ret = mBitsPerSample;
+    return NOERROR;
 }
 
 ECode WaveHeader::SetBitsPerSample(
@@ -88,9 +96,11 @@ ECode WaveHeader::SetBitsPerSample(
     return NOERROR;
 }
 
-Int32 WaveHeader::GetNumBytes()
+ECode WaveHeader::GetNumBytes(
+   /* [out] */ Int32* ret);
 {
-    return mNumBytes;
+    *ret = mNumBytes;
+    return NOERROR;
 }
 
 ECode WaveHeader::SetNumBytes(
@@ -100,9 +110,12 @@ ECode WaveHeader::SetNumBytes(
     return NOERROR;
 }
 
-Int32 WaveHeader::Read(
-    /* [in] */ IInputStream* in)// throws IOException
+ECode WaveHeader::Read(
+    /* [in] */ IInputStream* in,
+    /* [out] */ Int32* ret)
 {
+    *ret = 0;
+
     /* RIFF header */
     ReadId(in, String("RIFF"));
     Int32 numBytes = ReadInt(in) - 36;
@@ -112,8 +125,8 @@ Int32 WaveHeader::Read(
     ReadId(in, String("fmt "));
     if (16 != ReadInt(in)){
         //Java:    throw new IOException("fmt chunk length not 16");
-        Logger::E(TAG, String("IOException:fmt chunk length not 16\n"));
-        return 0;// E_IO_EXCEPTION;
+        Logger::E(TAG, "IOException:fmt chunk length not 16\n");
+        return E_IO_EXCEPTION;
     }
     mFormat = ReadShort(in);
     mNumChannels = ReadShort(in);
@@ -123,25 +136,26 @@ Int32 WaveHeader::Read(
     mBitsPerSample = ReadShort(in);
     if (byteRate != mNumChannels * mSampleRate * mBitsPerSample / 8) {
         //Java:    throw new IOException("fmt.ByteRate field inconsistent");
-        Logger::E(TAG, String("IOException:fmt.ByteRate field inconsistent\n"));
-        return 0;// E_IO_EXCEPTION;
+        Logger::E(TAG, "IOException:fmt.ByteRate field inconsistent\n");
+        return E_IO_EXCEPTION;
     }
     if (blockAlign != mNumChannels * mBitsPerSample / 8) {
         //Java:    throw new IOException("fmt.BlockAlign field inconsistent");
-        Logger::E(TAG, String("IOException:fmt.BlockAlign field inconsistent\n"));
-        return 0;// E_IO_EXCEPTION;
+        Logger::E(TAG, "IOException:fmt.BlockAlign field inconsistent\n");
+        return E_IO_EXCEPTION;
     }
 
     /* data chunk */
     ReadId(in, String("data"));
     mNumBytes = ReadInt(in);
 
-    return HEADER_LENGTH;
+    *ret = HEADER_LENGTH;
+    return NOERROR;
 }
 
-void WaveHeader::ReadId(
+ECode WaveHeader::ReadId(
     /* [in] */ IInputStream* in,
-    /* [in] */ const String& id)// throws IOException
+    /* [in] */ const String& id)
 {
     AutoPtr<ArrayOf<Char32> > chars = id.GetChars();
     Int32 inR;
@@ -149,29 +163,38 @@ void WaveHeader::ReadId(
         if ((*chars)[i] != (Char32)(in->Read(&inR), inR)){
             //Java:    throw new IOException( id + " tag not present");
             Logger::E(TAG, String("IOException:") + id + String(" tag not present\n"));
-            return;// E_IO_EXCEPTION;
+            return E_IO_EXCEPTION;
         }
     }
+
+    return NOERROR;
 }
 
-Int32 WaveHeader::ReadInt(
-    /* [in] */ IInputStream* in)// throws IOException
+ECode WaveHeader::ReadInt(
+    /* [in] */ IInputStream* in,
+    /* [out] */ Int32* ret);
 {
     Int32 val;
     in->Read(&val);
-    return val | (val << 8) | (val << 16) | (val << 24);
+    *ret = val | (val << 8) | (val << 16) | (val << 24);
+
+    return NOERROR;
 }
 
-Int16 WaveHeader::ReadShort(
-    /* [in] */ IInputStream* in)// throws IOException
+ECode WaveHeader::ReadShort(
+    /* [in] */ IInputStream* in,
+    /* [out] */ Int16* ret);
 {
     Int32 val;
     in->Read(&val);
-    return (Int16)(val | (val << 8));
+    *ret = (Int16)(val | (val << 8));
+
+    return NOERROR;
 }
 
-Int32 WaveHeader::Write(
-    /* [in] */ IOutputStream* out)// throws IOException
+ECode WaveHeader::Write(
+    /* [in] */ IOutputStream* out,
+    /* [out] */ Int32* ret)
 {
     /* RIFF header */
     WriteId(out, String("RIFF"));
@@ -192,38 +215,46 @@ Int32 WaveHeader::Write(
     WriteId(out, String("data"));
     WriteInt(out, mNumBytes);
 
-    return HEADER_LENGTH;
+    *ret = HEADER_LENGTH;
+    return NOERROR;
 }
 
-void WaveHeader::WriteId(
+ECode WaveHeader::WriteId(
     /* [in] */ IOutputStream* out,
-    /* [in] */ const String& id)// throws IOException
+    /* [in] */ const String& id)
 {
     AutoPtr<ArrayOf<Char32> > chars = id.GetChars();
     for (Int32 i = 0; i < chars->GetLength(); i++){
         out->Write((*chars)[i]);
     }
+
+    return NOERROR;
 }
 
-void WaveHeader::WriteInt(
+ECode WaveHeader::WriteInt(
     /* [in] */ IOutputStream* out,
-    /* [in] */ Int32 val)// throws IOException
+    /* [in] */ Int32 val)
 {
     out->Write(val >> 0);
     out->Write(val >> 8);
     out->Write(val >> 16);
     out->Write(val >> 24);
+
+    return NOERROR;
 }
 
-void WaveHeader::WriteShort(
+ECode WaveHeader::WriteShort(
     /* [in] */ IOutputStream* out,
-    /* [in] */ Int16 val)// throws IOException
+    /* [in] */ Int16 val)
 {
     out->Write(val >> 0);
     out->Write(val >> 8);
+
+    return NOERROR;
 }
 
-String WaveHeader::ToString()
+ECode WaveHeader::ToString(
+    /* [out] */ String* str)
 {
     String strOut;
     /*
@@ -231,9 +262,9 @@ String WaveHeader::ToString()
             "WaveHeader format=%d numChannels=%d sampleRate=%d bitsPerSample=%d numBytes=%d",
             mFormat, mNumChannels, mSampleRate, mBitsPerSample, mNumBytes);
             */
-    return strOut;
+    *ret = strOut;
+    return NOERROR;
 }
-
 
 } // namespace Srec
 } // namespace Speech

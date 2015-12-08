@@ -8,12 +8,6 @@ namespace Droid {
 namespace View {
 
 CAR_OBJECT_IMPL(CViewGroupMarginLayoutParams);
-ECode CViewGroupMarginLayoutParams::ToString(
-    /* [out] */ String* description)
-{
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
-}
 
 } // namespace View
 } // namespace Droid

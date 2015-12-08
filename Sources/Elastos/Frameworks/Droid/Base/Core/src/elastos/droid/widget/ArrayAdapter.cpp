@@ -1,16 +1,24 @@
 
 #include "elastos/droid/widget/ArrayAdapter.h"
+#include "elastos/droid/widget/CArrayAdapter.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Core::AutoLock;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::ICollections;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Content::EIID_IContext;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 ArrayAdapter::ArrayFilter::ArrayFilter(
     /* [in] */ ArrayAdapter* host)
@@ -27,8 +35,7 @@ ECode ArrayAdapter::ArrayFilter::PerformFiltering(
 
     if (!mHost->mOriginalValues) {
         AutoLock lock(mHost->mLock);
-        mHost->mOriginalValues = new List<AutoPtr<IInterface> >(
-            mHost->mObjects.Begin(), mHost->mObjects.End());
+        CArrayList::New(ICollection::Probe(mHost->mObjects), (IArrayList**)&mHost->mOriginalValues);
     }
 
     Int32 length = -1;
@@ -37,64 +44,61 @@ ECode ArrayAdapter::ArrayFilter::PerformFiltering(
     }
 
     if (prefix == NULL || length == 0) {
-        AutoLock lock(mHost->mLock);
-
-        AutoPtr<IObjectContainer> container;
-        CObjectContainer::New((IObjectContainer**)&container);
-
-        Int32 size = mHost->mOriginalValues->GetSize();
-        for(Int32 i = 0; i < size; i++) {
-            container->Add((*(mHost->mOriginalValues))[i]);
+        AutoPtr<IArrayList> list;
+        {
+            AutoLock lock(mHost->mLock);
+            CArrayList::New(ICollection::Probe(mHost->mOriginalValues), (IArrayList**)&list);
         }
 
-//        ((FilterResults*)results.Get())->mValues = container;
-        results->SetValues(container);
+        Int32 size = 0;
+        mHost->mOriginalValues->GetSize(&size);
+        results->SetValues(list);
         results->SetCount(size);
     }
     else {
         String prefixString;
         prefix->ToString(&prefixString);
 
-        AutoPtr< List<AutoPtr<IInterface> > > values;
+        AutoPtr<IArrayList> values;
         {
             AutoLock lock(mHost->mLock);
-            values = new List<AutoPtr<IInterface> >(*mHost->mOriginalValues);
+            CArrayList::New(ICollection::Probe(mHost->mOriginalValues), (IArrayList**)&values);
         }
-        AutoPtr<IObjectContainer> newValues;
-        CObjectContainer::New((IObjectContainer**)&newValues);
 
-        List<AutoPtr<IInterface> >::Iterator iter = values->Begin();
-        for (; iter != values->End(); ++iter) {
-            AutoPtr<IInterface> value = *iter;
-            String valueText("");
-            if (ICharSequence::Probe(value))
-            {
+        Int32 count = 0;
+        values->GetSize(&count);
+        AutoPtr<IArrayList> newValues;
+        CArrayList::New((IArrayList**)&newValues);
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> value;
+            values->Get(i, (IInterface**)&value);
+            String valueText;
+            if (ICharSequence::Probe(value)) {
                 ICharSequence::Probe(value)->ToString(&valueText);
             }
+            valueText = valueText.ToLowerCase();
 
             // First match against the whole, non-splitted value
-            if (valueText.StartWithIgnoreCase(prefixString)) {
+            if (valueText.StartWith(prefixString)) {
                 newValues->Add(value);
-            }
-            else {
+            } else {
                 AutoPtr<ArrayOf<String> > words;
                 StringUtils::Split(valueText, String(" "), (ArrayOf<String>**)&words);
-                if (words != NULL) {
-                    // Start at index 0, in case valueText starts with space(s)
-                    for (Int32 k = 0; k < words->GetLength(); ++k) {
-                        if ((*words)[k].StartWithIgnoreCase(prefixString)) {
-                            newValues->Add(value);
-                            break;
-                        }
+                const Int32 wordCount = words->GetLength();
+
+                // Start at index 0, in case valueText starts with space(s)
+                for (Int32 k = 0; k < wordCount; k++) {
+                    if ((*words)[k].StartWith(prefixString)) {
+                        newValues->Add(value);
+                        break;
                     }
                 }
             }
         }
 
         results->SetValues(newValues);
-        Int32 newCount;
-        newValues->GetObjectCount(&newCount);
-        results->SetCount(newCount);
+        newValues->GetSize(&count);
+        results->SetCount(count);
     }
 
     *filterResults = results;
@@ -106,33 +110,15 @@ ECode ArrayAdapter::ArrayFilter::PublishResults(
     /* [in] */ ICharSequence* constraint,
     /* [in] */ IFilterResults* results)
 {
-    assert(results);
-    FilterResults* filterResults = (FilterResults*)results;
-    AutoPtr<IObjectContainer> container;
-    AutoPtr<IInterface> temp = filterResults->mValues;
-    if(temp->Probe(EIID_IObjectContainer))
-    {
-        container = (IObjectContainer*)temp->Probe(EIID_IObjectContainer);
-    }else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
+    AutoPtr<IInterface> values;
+    results->GetValues((IInterface**)&values);
     //noinspection unchecked
-    if(mHost->mObjects.GetSize())
-    {
-        mHost->mObjects.Clear();
-    }
-    AutoPtr<IObjectEnumerator> objEnumerator;
-    FAIL_RETURN(container->GetObjectEnumerator((IObjectEnumerator**)&objEnumerator));
-    Boolean hasNext = FALSE;
-    while ((objEnumerator->MoveNext(&hasNext), hasNext)) {
-        temp = NULL;
-        objEnumerator->Current((IInterface**)&temp);
-        mHost->mObjects.PushBack(temp);
-    }
-    if (filterResults->mCount > 0) {
+    mHost->mObjects = IList::Probe(values);
+    Int32 count = 0;
+    results->GetCount(&count);
+    if (count > 0) {
         mHost->NotifyDataSetChanged();
-    }
-    else {
+    } else {
         mHost->NotifyDataSetInvalidated();
     }
 
@@ -150,9 +136,11 @@ ArrayAdapter::ArrayAdapter()
 
 ECode ArrayAdapter::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ Int32 textViewResourceId)
+    /* [in] */ Int32 resource)
 {
-    init(context, resource, 0, new ArrayList<T>());
+    AutoPtr<IArrayList> list;
+    CArrayList::New((IArrayList**)&list);
+    return Init(context, resource, 0, IList::Probe(list));
 }
 
 ECode ArrayAdapter::constructor(
@@ -160,32 +148,38 @@ ECode ArrayAdapter::constructor(
     /* [in] */ Int32 resource,
     /* [in] */ Int32 textViewResourceId)
 {
-    init(context, resource, textViewResourceId, new ArrayList<T>());
+    AutoPtr<IArrayList> list;
+    CArrayList::New((IArrayList**)&list);
+    return Init(context, resource, textViewResourceId, IList::Probe(list));
 }
 
 ECode ArrayAdapter::constructor(
     /* [in] */ IContext* context,
+    /* [in] */ Int32 resource,
+    /* [in] */ ArrayOf<IInterface*>* objects)
+{
+    AutoPtr<IList> list;
+    Arrays::AsList(objects, (IList**)&list);
+    return Init(context, resource, 0, list);
+}
+
+ECode ArrayAdapter::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 resource,
     /* [in] */ Int32 textViewResourceId,
     /* [in] */ ArrayOf<IInterface*>* objects)
 {
-    init(context, resource, 0, Arrays.asList(objects));
+    AutoPtr<IList> list;
+    Arrays::AsList(objects, (IList**)&list);
+    return Init(context, resource, textViewResourceId, list);
 }
 
 ECode ArrayAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resource,
-    /* [in] */ Int32 textViewResourceId,
-    /* [in] */ ArrayOf<IInterface*>* objects)
-{
-    init(context, resource, textViewResourceId, Arrays.asList(objects));
-}
-
-ECode ArrayAdapter::constructor(
-    /* [in] */ IContext* ctx,
-    /* [in] */ Int32 resource,
     /* [in] */ IList* objects)
 {
-    init(context, resource, 0, objects);
+    return Init(context, resource, 0, objects);
 }
 
 ECode ArrayAdapter::constructor(
@@ -194,7 +188,7 @@ ECode ArrayAdapter::constructor(
     /* [in] */ Int32 textViewResourceId,
     /* [in] */ IList* objects)
 {
-    init(context, resource, textViewResourceId, objects);
+    return Init(context, resource, textViewResourceId, objects);
 }
 
 ArrayAdapter::~ArrayAdapter()
@@ -205,12 +199,11 @@ ArrayAdapter::~ArrayAdapter()
 ECode ArrayAdapter::Add(
     /* [in] */ IInterface* object)
 {
-    {
-        AutoLock lock(mLock);
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
-            mOriginalValues->PushBack(object);
+            mOriginalValues->Add(object);
         } else {
-            mObjects.PushBack(object);
+            mObjects->Add(object);
         }
     }
 
@@ -222,31 +215,13 @@ ECode ArrayAdapter::Add(
 ECode ArrayAdapter::AddAll(
     /* [in] */ ICollection* collection)
 {
-    assert(collection != NULL);
-    {
-        AutoLock lock(mLock);
-        AutoPtr<IObjectEnumerator> ator;
-        collection->GetObjectEnumerator((IObjectEnumerator**)&ator);
-        Boolean hasNext = FALSE;
-
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
-            while (ator->MoveNext(&hasNext), hasNext)
-            {
-                AutoPtr<IInterface> obj;
-                ator->Current((IInterface**)&obj);
-                mOriginalValues->PushBack(obj);
-            }
-        }
-        else {
-            while (ator->MoveNext(&hasNext), hasNext)
-            {
-                AutoPtr<IInterface> obj;
-                ator->Current((IInterface**)&obj);
-                mObjects.PushBack(obj);
-            }
+            mOriginalValues->AddAll(collection);
+        } else {
+            mObjects->AddAll(collection);
         }
     }
-
     if (mNotifyOnChange) NotifyDataSetChanged();
 
     return NOERROR;
@@ -255,23 +230,13 @@ ECode ArrayAdapter::AddAll(
 ECode ArrayAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface* >* items)
 {
-    {
-        AutoLock lock(mLock);
+    synchronized(mLock) {
+        AutoPtr<ICollections> cs;
+        CCollections::AcquireSingleton((ICollections**)&cs);
         if (mOriginalValues != NULL) {
-            assert(items != NULL);
-            if (items->GetLength() > 0) {
-                for (Int32 i = 0; i < items->GetLength(); i++) {
-                    mOriginalValues->PushBack((*items)[i]);
-                }
-            }
-        }
-        else {
-            assert(items != NULL);
-            if (items->GetLength() > 0) {
-                for (Int32 i = 0; i < items->GetLength(); i++) {
-                    mObjects.PushBack((*items)[i]);
-                }
-            }
+            cs->AddAll(ICollection::Probe(mOriginalValues), items);
+        } else {
+            cs->AddAll(ICollection::Probe(mObjects), items);
         }
     }
 
@@ -284,12 +249,11 @@ ECode ArrayAdapter::Insert(
     /* [in] */ IInterface* object,
     /* [in] */ Int32 index)
 {
-    {
-        AutoLock lock(mLock);
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
-            mOriginalValues->Insert(index, object);
+            mOriginalValues->Add(index, object);
         } else {
-            mObjects.Insert(index, object);
+            mObjects->Add(index, object);
         }
     }
     if (mNotifyOnChange) NotifyDataSetChanged();
@@ -300,12 +264,11 @@ ECode ArrayAdapter::Insert(
 ECode ArrayAdapter::Remove(
     /* [in] */ IInterface* object)
 {
-    {
-        AutoLock lock(mLock);
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
             mOriginalValues->Remove(object);
         } else {
-            mObjects.Remove(object);
+            mObjects->Remove(object);
         }
     }
     if (mNotifyOnChange) NotifyDataSetChanged();
@@ -315,12 +278,11 @@ ECode ArrayAdapter::Remove(
 
 ECode ArrayAdapter::Clear()
 {
-    {
-        AutoLock lock(mLock);
+    synchronized(mLock) {
         if (mOriginalValues != NULL) {
             mOriginalValues->Clear();
         } else {
-            mObjects.Clear();
+            mObjects->Clear();
         }
     }
     if (mNotifyOnChange) NotifyDataSetChanged();
@@ -331,40 +293,17 @@ ECode ArrayAdapter::Clear()
 ECode ArrayAdapter::Sort(
     /* [in] */ IComparator* comparator)
 {
-    {
-        AutoLock lock(mLock);
+    synchronized(mLock) {
+        AutoPtr<ICollections> cs;
+        CCollections::AcquireSingleton((ICollections**)&cs);
         if (mOriginalValues != NULL) {
-            assert(0);
-            Sort(mOriginalValues, comparator);
+            cs->Sort(IList::Probe(mOriginalValues), comparator);
         } else {
-           Sort(&mObjects, comparator);
+            cs->Sort(mObjects, comparator);
         }
     }
-
     if (mNotifyOnChange) NotifyDataSetChanged();
 
-    return NOERROR;
-}
-
-ECode ArrayAdapter::Sort(
-    /* [in] */ List<AutoPtr<IInterface> >* list,
-    /* [in] */ IComparator* comparator)
-{
-    Int32 size = list->GetSize() - 1;
-    for(Int32 i = 0; i < size; i++)
-    {
-        for(Int32 j = 0; j < size -i; j++)
-        {
-            Int32 compare;
-            comparator->Compare((*list)[j], (*list)[j+1], &compare);
-            if(compare > 0)
-            {
-                AutoPtr<IInterface> temp = (*list)[j];
-                (*list)[j] = (*list)[j+1];
-                (*list)[j+1] = temp;
-            }
-        }
-    }
     return NOERROR;
 }
 
@@ -380,7 +319,6 @@ ECode ArrayAdapter::SetNotifyOnChange(
     /* [in] */ Boolean notifyOnChange)
 {
     mNotifyOnChange = notifyOnChange;
-
     return NOERROR;
 }
 
@@ -388,33 +326,13 @@ ECode ArrayAdapter::Init(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resource,
     /* [in] */ Int32 textViewResourceId,
-    /* [in] */ IList* objects/* = NULL*/)
+    /* [in] */ IList* objects)
 {
-    assert(context);
-    // AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(context);
-    // assert(wrs != NULL && "Error: Invalid context, IWeakReferenceSource not implemented!");
-    // wrs->GetWeakReference((IWeakReference**)&mWeakContext);
     mContext = context;
-
-    context->GetSystemService(
-        IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
+    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
     mResource = mDropDownResource = resource;
+    mObjects = objects;
     mFieldId = textViewResourceId;
-
-    if(mObjects.GetSize())
-    {
-        mObjects.Clear();
-    }
-    if (objects) {
-        AutoPtr<IObjectEnumerator> it;
-        objects->GetObjectEnumerator((IObjectEnumerator**)&it);
-        Boolean hasNext;
-        while (it->MoveNext(&hasNext), hasNext) {
-            AutoPtr<IInterface> obj;
-            it->Current((IInterface**)&obj);
-            mObjects.PushBack(obj);
-        }
-    }
     return NOERROR;
 }
 
@@ -422,7 +340,6 @@ ECode ArrayAdapter::GetContext(
     /* [out] */ IContext** context)
 {
     VALIDATE_NOT_NULL(context);
-    // return mWeakContext->Resolve(EIID_IContext, (IInterface**)&context);
     *context = mContext;
     REFCOUNT_ADD(*context);
     return NOERROR;
@@ -432,8 +349,7 @@ ECode ArrayAdapter::GetCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    *count = mObjects.GetSize();
-    return NOERROR;
+    return mObjects->GetSize(count);
 }
 
 ECode ArrayAdapter::GetItem(
@@ -441,9 +357,7 @@ ECode ArrayAdapter::GetItem(
     /* [out] */ IInterface** item)
 {
     VALIDATE_NOT_NULL(item);
-    *item = mObjects[position];
-    REFCOUNT_ADD(*item);
-    return NOERROR;
+    return mObjects->Get(position, item);
 }
 
 ECode ArrayAdapter::GetPosition(
@@ -451,16 +365,7 @@ ECode ArrayAdapter::GetPosition(
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
-    List<AutoPtr<IInterface> >::Iterator iter = mObjects.Begin();
-    for (Int32 i = 0; iter != mObjects.End(); ++iter, ++i) {
-        if ((*iter).Get() == item) {
-            *position = i;
-            return NOERROR;
-        }
-    }
-
-    *position = -1;
-    return NOERROR;
+    return mObjects->IndexOf(item, position);
 }
 
 ECode ArrayAdapter::GetItemId(
@@ -507,54 +412,44 @@ AutoPtr<IView> ArrayAdapter::CreateViewFromResource(
     }
 
     //try {
-        if (mFieldId == 0) {
-            //  If no custom field is assigned, assume the whole resource is a TextView
-            text = ITextView::Probe(view);
-        }
-        else {
-            //  Otherwise, find the TextView field within the layout
-            AutoPtr<IView> temp;
-            view->FindViewById(mFieldId, (IView**)&temp);
-            text = ITextView::Probe(temp);
-        }
+    if (mFieldId == 0) {
+        //  If no custom field is assigned, assume the whole resource is a TextView
+        text = ITextView::Probe(view);
+    }
+    else {
+        //  Otherwise, find the TextView field within the layout
+        AutoPtr<IView> temp;
+        view->FindViewById(mFieldId, (IView**)&temp);
+        text = ITextView::Probe(temp);
+    }
 
-        if (text == NULL) {
-            Logger::E("ArrayAdapter", "Failed to create view from resource: position=%d, resource=%08x, fieldId=%08x",
-                position, resource, mFieldId);
-            return NULL;
-        }
+    if (text == NULL) {
+        Logger::E("ArrayAdapter", "Failed to create view from resource: position=%d, resource=%08x, fieldId=%08x",
+            position, resource, mFieldId);
+        return NULL;
+    }
     //} catch (ClassCastException e) {
     //    Log.e("ArrayAdapter", "You must supply a resource ID for a TextView");
     //    throw new IllegalStateException(
     //            "ArrayAdapter requires the resource ID to be a TextView", e);
     //}
 
-    AutoPtr<IInterface> item = GetItem(position);
-    AutoPtr<ICharSequence> cs = ICharSequence::Probe(item);
-    if (cs) {
-        text->SetText(cs);
+    AutoPtr<IInterface> item;
+    GetItem(position, (IInterface**)&item);
+    if (ICharSequence::Probe(item)) {
+        text->SetText(ICharSequence::Probe(item));
     }
     else {
         IObject* obj = IObject::Probe(item);
         if (obj != NULL) {
             String value;
             obj->ToString(&value);
-            CStringWrapper::New(value, (ICharSequence**)&cs);
+            AutoPtr<ICharSequence> cs;
+            CString::New(value, (ICharSequence**)&cs);
             text->SetText(cs);
         }
     }
 
-// #if defined(_DEBUG) || defined(_ELASTOS_DEBUG)
-//     Int32 viewId = 0;
-//     if (view) {
-//         view->GetId(&viewId);
-//     }
-//     String info("");
-//     if (cs) cs->ToString(&info);
-//     Logger::D("ArrayAdapter", "Created View: %p, id: %08x, resource: %08x, position: %d, text: [%s]",
-//         view.Get(), viewId, resource, position, info.string());
-// #endif
-    assert(view != NULL);
     return view;
 }
 
@@ -562,7 +457,6 @@ ECode ArrayAdapter::SetDropDownViewResource(
     /* [in] */ Int32 resource)
 {
     mDropDownResource = resource;
-
     return NOERROR;
 }
 
@@ -579,6 +473,20 @@ ECode ArrayAdapter::GetDropDownView(
     return NOERROR;
 }
 
+AutoPtr<IArrayAdapter> ArrayAdapter::CreateFromResource(
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 textArrayResId,
+    /* [in] */ Int32 textViewResId)
+{
+    AutoPtr<ArrayOf<IInterface*> > strings;
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    res->GetTextArray(textArrayResId, (ArrayOf<ICharSequence*>**)&strings);
+    AutoPtr<IArrayAdapter> adapter;
+    CArrayAdapter::New(context, textViewResId, (ArrayOf<IInterface*>*)strings, (IArrayAdapter**)&adapter);
+    return adapter;
+}
+
 ECode ArrayAdapter::GetFilter(
     /* [out] */ IFilter** filter)
 {
@@ -592,6 +500,6 @@ ECode ArrayAdapter::GetFilter(
     return NOERROR;
 }
 
-}// namespace Widget
-}// namespace Droid
-}// namespace Elastos
+} // namespace Widget
+} // namespace Droid
+} // namespace Elastos

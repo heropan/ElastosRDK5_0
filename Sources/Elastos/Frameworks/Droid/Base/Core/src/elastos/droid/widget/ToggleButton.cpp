@@ -1,40 +1,56 @@
 
 #include "elastos/droid/widget/ToggleButton.h"
 
-using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Graphics::Drawable::ILayerDrawable;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const Int32 ToggleButton::NO_ALPHA;
+const Int32 ToggleButton::NO_ALPHA = 0xFF;
 
+CAR_INTERFACE_IMPL(ToggleButton, CompoundButton, IToggleButton);
 ToggleButton::ToggleButton()
     : mDisabledAlpha(0)
 {}
 
-ToggleButton::ToggleButton(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : CompoundButton(context, attrs, defStyle)
-    , mDisabledAlpha(0)
+ECode ToggleButton::constructor(
+    /* [in] */ IContext* context)
 {
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+    return constructor(context, NULL);
 }
 
-ECode ToggleButton::InitFromAttributes(
+ECode ToggleButton::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::buttonStyleToggle);
+}
+
+ECode ToggleButton::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode ToggleButton::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    CompoundButton::constructor(context, attrs, defStyleAttr, defStyleRes);
+
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::ToggleButton),
         ARRAY_SIZE(R::styleable::ToggleButton));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
     a->GetText(R::styleable::ToggleButton_textOn, (ICharSequence**)&mTextOn);
     a->GetText(R::styleable::ToggleButton_textOff, (ICharSequence**)&mTextOff);
@@ -44,20 +60,10 @@ ECode ToggleButton::InitFromAttributes(
     return NOERROR;
 }
 
-ECode ToggleButton::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    FAIL_RETURN(CompoundButton::Init(context, attrs, defStyle));
-    return InitFromAttributes(context, attrs, defStyle);
-}
-
 ECode ToggleButton::SetChecked(
     /* [in] */ Boolean checked)
 {
     CompoundButton::SetChecked(checked);
-
     SyncTextState();
 
     return NOERROR;
@@ -74,21 +80,15 @@ void ToggleButton::SyncTextState()
     }
 }
 
-/**
- * Returns the text for when the button is in the checked state.
- *
- * @return The text.
- */
-AutoPtr<ICharSequence> ToggleButton::GetTextOn()
+ECode ToggleButton::GetTextOn(
+    /* [out] */ ICharSequence** on)
 {
-    return mTextOn;
+    VALIDATE_NOT_NULL(on);
+    *on = mTextOn;
+    REFCOUNT_ADD(*on);
+    return NOERROR;
 }
 
-/**
- * Sets the text for when the button is in the checked state.
- *
- * @param textOn The text.
- */
 ECode ToggleButton::SetTextOn(
     /* [in] */ ICharSequence* textOn)
 {
@@ -97,21 +97,15 @@ ECode ToggleButton::SetTextOn(
     return NOERROR;
 }
 
-/**
- * Returns the text for when the button is not in the checked state.
- *
- * @return The text.
- */
-AutoPtr<ICharSequence> ToggleButton::GetTextOff()
+ECode ToggleButton::GetTextOff(
+    /* [out] */ ICharSequence** off)
 {
-    return mTextOff;
+    VALIDATE_NOT_NULL(off);
+    *off = mTextOff;
+    REFCOUNT_ADD(*off);
+    return NOERROR;
 }
 
-/**
- * Sets the text for when the button is not in the checked state.
- *
- * @param textOff The text.
- */
 ECode ToggleButton::SetTextOff(
     /* [in] */ ICharSequence* textOff)
 {
@@ -124,7 +118,9 @@ ECode ToggleButton::OnFinishInflate()
 {
     CompoundButton::OnFinishInflate();
 
-    UpdateReferenceToIndicatorDrawable(GetBackground());
+    AutoPtr<IDrawable> drawable;
+    GetBackground((IDrawable**)&drawable);
+    UpdateReferenceToIndicatorDrawable(drawable);
 
     return NOERROR;
 }
@@ -157,7 +153,9 @@ ECode ToggleButton::DrawableStateChanged()
     CompoundButton::DrawableStateChanged();
 
     if (mIndicatorDrawable != NULL) {
-        mIndicatorDrawable->SetAlpha(IsEnabled() ? NO_ALPHA : (Int32)(NO_ALPHA * mDisabledAlpha));
+        Boolean enabled = FALSE;
+        IsEnabled(&enabled);
+        mIndicatorDrawable->SetAlpha(enabled ? NO_ALPHA : (Int32)(NO_ALPHA * mDisabledAlpha));
     }
 
     return NOERROR;
@@ -168,8 +166,8 @@ ECode ToggleButton::OnInitializeAccessibilityEvent(
 {
     CompoundButton::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> s;
-    CStringWrapper::New(String("CToggleButton"), (ICharSequence**)&s);
-    event->SetClassName(s);
+    CString::New(String("CToggleButton"), (ICharSequence**)&s);
+    IAccessibilityRecord::Probe(event)->SetClassName(s);
     return NOERROR;
 }
 
@@ -178,7 +176,7 @@ ECode ToggleButton::OnInitializeAccessibilityNodeInfo(
 {
     CompoundButton::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> s;
-    CStringWrapper::New(String("CToggleButton"), (ICharSequence**)&s);
+    CString::New(String("CToggleButton"), (ICharSequence**)&s);
     info->SetClassName(s);
     return NOERROR;
 }

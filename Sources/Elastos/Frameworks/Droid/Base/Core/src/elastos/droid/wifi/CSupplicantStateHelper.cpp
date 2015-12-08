@@ -1,9 +1,13 @@
 
-#include "elastos/droid/net/wifi/CSupplicantStateHelper.h"
+#include "elastos/droid/wifi/CSupplicantStateHelper.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
+
+CAR_INTERFACE_IMPL(CSupplicantStateHelper, Singleton, ISupplicantStateHelper)
+
+CAR_SINGLETON_IMPL(CSupplicantStateHelper)
 
 ECode CSupplicantStateHelper::IsValidState(
     /* [in] */ Elastos::Droid::Wifi::SupplicantState state,
@@ -124,6 +128,6 @@ ECode CSupplicantStateHelper::IsDriverActive(
     }
 }
 
-}
-}
-}
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

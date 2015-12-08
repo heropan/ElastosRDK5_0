@@ -11,9 +11,9 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Core::Object;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 /**
  * Common base class of common implementation for an {@link Adapter} that can be

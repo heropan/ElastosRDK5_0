@@ -5,13 +5,14 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Os::EIID_IBinder;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
+
 CAR_OBJECT_IMPL(CSurfaceViewWindow)
 
 CSurfaceViewWindow::CSurfaceViewWindow()
@@ -26,11 +27,13 @@ ECode CSurfaceViewWindow::constructor(
 }
 
 ECode CSurfaceViewWindow::Resized(
-    /* [in] */ IRect* frame,
-    /* [in] */ IRect* contentInsets,
-    /* [in] */ IRect* visibleInsets,
-    /* [in] */ Boolean reportDraw,
-    /* [in] */ IConfiguration* newConfig)
+        /* [in] */ IRect* frame,
+        /* [in] */ IRect* overscanInsets,
+        /* [in] */ IRect* coveredInsets,
+        /* [in] */ IRect* visibleInsets,
+        /* [in] */ IRect* stableInsets,
+        /* [in] */ Boolean reportDraw,
+        /* [in] */ IConfiguration* newConfig)
 {
     // AutoPtr<IInterface> obj;
     // receiverObj->Resolve(EIID_IInterface, (IInterface**)&obj);

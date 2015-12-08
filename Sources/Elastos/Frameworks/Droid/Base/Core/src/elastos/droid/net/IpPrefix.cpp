@@ -1,5 +1,15 @@
 
 #include "elastos/droid/net/IpPrefix.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include <elastos/utility/Arrays.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Core::IInteger32;
+using Elastos::Net::CInetAddressHelper;
+using Elastos::Net::IInetAddress;
+using Elastos::Net::IInetAddressHelper;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -9,170 +19,167 @@ CAR_INTERFACE_IMPL_2(IpPrefix, Object, IIpPrefix, IParcelable)
 
 ECode IpPrefix::CheckAndMaskAddressAndPrefixLength()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (address.length != 4 && address.length != 16) {
-            throw new IllegalArgumentException(
-                    "IpPrefix has " + address.length + " bytes which is neither 4 nor 16");
-        }
-        NetworkUtils.maskRawAddress(address, prefixLength);
-
-#endif
+    if (mAddress->GetLength() != 4 && mAddress->GetLength() != 16) {
+        Logger::E("IpPrefix", "IpPrefix has %d bytes which is neither 4 nor 16", mAddress->GetLength());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    return NetworkUtils::MaskRawAddress(mAddress, mPrefixLength);
 }
 
 ECode IpPrefix::constructor(
     /* [in] */ ArrayOf<Byte>* address,
     /* [in] */ Int32 prefixLength)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.address = address.clone();
-        this.prefixLength = prefixLength;
-        checkAndMaskAddressAndPrefixLength();
-
-#endif
+    mAddress = address->Clone();
+    mPrefixLength = prefixLength;
+    return CheckAndMaskAddressAndPrefixLength();
 }
 
 ECode IpPrefix::constructor(
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 prefixLength)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        // We don't reuse the (byte[], int) constructor because it calls clone() on the byte array,
-        // which is unnecessary because getAddress() already returns a clone.
-        this.address = address.getAddress();
-        this.prefixLength = prefixLength;
-        checkAndMaskAddressAndPrefixLength();
-
-#endif
+    // We don't reuse the (byte[], int) constructor because it calls clone() on the byte array,
+    // which is unnecessary because getAddress() already returns a clone.
+    address->GetAddress((ArrayOf<Byte>**)&mAddress);
+    mPrefixLength = prefixLength;
+    return CheckAndMaskAddressAndPrefixLength();
 }
 
 ECode IpPrefix::constructor(
     /* [in] */ const String& prefix)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        // We don't reuse the (InetAddress, int) constructor because "error: call to this must be
-        // first statement in constructor". We could factor out setting the member variables to an
-        // init() method, but if we did, then we'd have to make the members non-final, or "error:
-        // cannot assign a value to final variable address". So we just duplicate the code here.
-        Pair<InetAddress, Integer> ipAndMask = NetworkUtils.parseIpAndMask(prefix);
-        this.address = ipAndMask.first.getAddress();
-        this.prefixLength = ipAndMask.second;
-        checkAndMaskAddressAndPrefixLength();
-
-#endif
+    // We don't reuse the (InetAddress, int) constructor because "error: call to this must be
+    // first statement in constructor". We could factor out setting the member variables to an
+    // init() method, but if we did, then we'd have to make the members non-final, or "error:
+    // cannot assign a value to final variable address". So we just duplicate the code here.
+    AutoPtr<IPair> ipAndMask;
+    NetworkUtils::ParseIpAndMask(prefix, (IPair**)&ipAndMask);
+    AutoPtr<IInterface> obj;
+    ipAndMask->GetFirst((IInterface**)&obj);
+    IInetAddress::Probe(obj)->GetAddress((ArrayOf<Byte>**)&mAddress);
+    obj = NULL;
+    ipAndMask->GetSecond((IInterface**)&obj);
+    IInteger32::Probe(obj)->GetValue(&mPrefixLength);
+    return CheckAndMaskAddressAndPrefixLength();
 }
 
 ECode IpPrefix::Equals(
-    /* [in] */ IObject* obj,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (!(obj instanceof IpPrefix)) {
-            return false;
-        }
-        IpPrefix that = (IpPrefix) obj;
-        return Arrays.equals(this.address, that.address) && this.prefixLength == that.prefixLength;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    if (TO_IINTERFACE(this) != IInterface::Probe(obj)) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    if (IIpPrefix::Probe(obj) == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    AutoPtr<IIpPrefix> iThat = IIpPrefix::Probe(obj);
+    AutoPtr<IpPrefix> that = (IpPrefix*) iThat.Get();
+    *result = Arrays::Equals(mAddress, that->mAddress) && mPrefixLength == that->mPrefixLength;
+    return NOERROR;
 }
 
-ECode IpPrefix::HashCode(
+ECode IpPrefix::GetHashCode(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return Arrays.hashCode(address) + 11 * prefixLength;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = Arrays::GetHashCode(mAddress);
+    *result += 11 * mPrefixLength;
+    return NOERROR;
 }
 
 ECode IpPrefix::GetAddress(
     /* [out] */ IInetAddress** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            return InetAddress.getByAddress(address);
-        } catch (UnknownHostException e) {
-            // Cannot happen. InetAddress.getByAddress can only throw an exception if the byte
-            // array is the wrong length, but we check that in the constructor.
-            return null;
-        }
+    VALIDATE_NOT_NULL(result)
 
-#endif
+        // try {
+    AutoPtr<IInetAddressHelper> helper;
+    CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&helper);
+    ECode ec = helper->GetByAddress(mAddress, result);
+        // } catch (UnknownHostException e) {
+    if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+        // Cannot happen. InetAddress.getByAddress can only throw an exception if the byte
+        // array is the wrong length, but we check that in the constructor.
+        *result = NULL;
+        return NOERROR;
+    }
+        // }
+    return NOERROR;
 }
 
 ECode IpPrefix::GetRawAddress(
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return address.clone();
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mAddress->Clone();
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode IpPrefix::GetPrefixLength(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return prefixLength;
+    VALIDATE_NOT_NULL(result)
 
-#endif
+    *result = mPrefixLength;
+    return NOERROR;
 }
 
 ECode IpPrefix::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            return InetAddress.getByAddress(address).getHostAddress() + "/" + prefixLength;
-        } catch(UnknownHostException e) {
-            // Cosmic rays?
-            throw new IllegalStateException("IpPrefix with invalid address! Shouldn't happen.", e);
-        }
+    VALIDATE_NOT_NULL(result)
+    *result = String(NULL);
 
-#endif
+        // try {
+    AutoPtr<IInetAddressHelper> helper;
+    CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&helper);
+    AutoPtr<IInetAddress> inetAddress;
+    ECode ec = helper->GetByAddress(mAddress, (IInetAddress**)&inetAddress);
+        // } catch(UnknownHostException e) {
+    if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+        // Cosmic rays?
+        // throw new IllegalStateException("IpPrefix with invalid address! Shouldn't happen.", e);
+        Logger::E("IpPrefix", "IpPrefix with invalid address! Shouldn't happen.");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+        // }
+    ec = inetAddress->GetHostAddress(result);
+    if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+        // Cosmic rays?
+        // throw new IllegalStateException("IpPrefix with invalid address! Shouldn't happen.", e);
+        Logger::E("IpPrefix", "IpPrefix with invalid address! Shouldn't happen.");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    *result += "/";
+    *result += mPrefixLength;
+    return NOERROR;
 }
 
 ECode IpPrefix::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                public IpPrefix createFromParcel(Parcel in) {
-                    byte[] address = in.createByteArray();
-                    int prefixLength = in.readInt();
-                    return new IpPrefix(address, prefixLength);
-                }
-                public IpPrefix[] newArray(int size) {
-                    return new IpPrefix[size];
-                }
-
-#endif
+    parcel->ReadArrayOf((Handle32*)&mAddress);
+    parcel->ReadInt32(&mPrefixLength);
+    return NOERROR;
 }
 
 ECode IpPrefix::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                public IpPrefix createFromParcel(Parcel in) {
-                    byte[] address = in.createByteArray();
-                    int prefixLength = in.readInt();
-                    return new IpPrefix(address, prefixLength);
-                }
-                public IpPrefix[] newArray(int size) {
-                    return new IpPrefix[size];
-                }
-
-#endif
+    dest->WriteArrayOf((Handle32)mAddress.Get());
+    dest->WriteArrayOf(mPrefixLength);
+    return NOERROR;
 }
 
 } // namespace Net

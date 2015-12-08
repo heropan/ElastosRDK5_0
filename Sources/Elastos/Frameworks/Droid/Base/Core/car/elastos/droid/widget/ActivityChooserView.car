@@ -5,9 +5,9 @@ module
     interface Elastos.Droid.View.IActionProvider;
     interface Elastos.Droid.Widget.IPopupWindowOnDismissListener;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * @Involve

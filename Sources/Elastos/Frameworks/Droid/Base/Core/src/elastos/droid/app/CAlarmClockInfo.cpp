@@ -1,82 +1,81 @@
 
+#include "elastos/droid/app/CAlarmClockInfo.h"
+#include "elastos/droid/app/CPendingIntent.h"
 
-/**
- * An immutable description of an alarm clock.
- *
- * @see AlarmManager#setAlarmClock
- * @see AlarmManager#getNextAlarmClock
- */
-public static final class AlarmClockInfo implements Parcelable {
+namespace Elastos {
+namespace Droid {
+namespace App {
 
-    private final long mTriggerTime;
-    private final PendingIntent mShowIntent;
+CAR_INTERFACE_IMPL_2(CAlarmClockInfo, Object, IAlarmClockInfo, IParcelable)
 
-    /**
-     * Creates a new alarm clock description.
-     *
-     * @param triggerTime time at which the underlying alarm is triggered in wall time
-     *                    milliseconds since the epoch
-     * @param showIntent an intent that can be used to show or edit details of
-     *                        the alarm clock.
-     */
-    public AlarmClockInfo(long triggerTime, PendingIntent showIntent) {
-        mTriggerTime = triggerTime;
-        mShowIntent = showIntent;
-    }
+CAR_OBJECT_IMPL(CAlarmClockInfo)
 
-    /**
-     * Use the {@link #CREATOR}
-     * @hide
-     */
-    AlarmClockInfo(Parcel in) {
-        mTriggerTime = in.readLong();
-        mShowIntent = in.readParcelable(PendingIntent.class.getClassLoader());
-    }
+CAlarmClockInfo::CAlarmClockInfo()
+    : mTriggerTime(0)
+{}
 
-    /**
-     * Returns the time at which the alarm is going to trigger.
-     *
-     * This value is UTC wall clock time in milliseconds, as returned by
-     * {@link System#currentTimeMillis()} for example.
-     */
-    public long getTriggerTime() {
-        return mTriggerTime;
-    }
+ECode CAlarmClockInfo::constructor()
+{
+    return NOERROR;
+}
 
-    /**
-     * Returns an intent intent that can be used to show or edit details of the alarm clock in
-     * the application that scheduled it.
-     *
-     * <p class="note">Beware that any application can retrieve and send this intent,
-     * potentially with additional fields filled in. See
-     * {@link PendingIntent#send(android.content.Context, int, android.content.Intent)
-     * PendingIntent.send()} and {@link android.content.Intent#fillIn Intent.fillIn()}
-     * for details.
-     */
-    public PendingIntent getShowIntent() {
-        return mShowIntent;
-    }
+ECode CAlarmClockInfo::constructor(
+    /* [in] */ Int64 triggerTime,
+    /* [in] */ IPendingIntent* showIntent)
+{
+    mTriggerTime = triggerTime;
+    mShowIntent = showIntent;
+    return NOERROR;
+}
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+ECode CAlarmClockInfo::GetTriggerTime(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mTriggerTime;
+    return NOERROR;
+}
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(mTriggerTime);
-        dest.writeParcelable(mShowIntent, flags);
-    }
+ECode CAlarmClockInfo::SetTriggerTime(
+    /* [in] */ Int64 value)
+{
+    mTriggerTime = value;
+    return NOERROR;
+}
 
-    public static final Creator<AlarmClockInfo> CREATOR = new Creator<AlarmClockInfo>() {
-        @Override
-        public AlarmClockInfo createFromParcel(Parcel in) {
-            return new AlarmClockInfo(in);
-        }
+ECode CAlarmClockInfo::GetShowIntent(
+    /* [out] */ IPendingIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    *intent = mShowIntent;
+    REFCOUNT_ADD(*intent)
+    return NOERROR;
+}
 
-        @Override
-        public AlarmClockInfo[] newArray(int size) {
-            return new AlarmClockInfo[size];
-        }
-    };
-};
+ECode CAlarmClockInfo::SetShowIntent(
+    /* [in] */ IPendingIntent* intent)
+{
+    mShowIntent = intent;
+    return NOERROR;
+}
+
+ECode CAlarmClockInfo::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    dest->WriteInt64(mTriggerTime);
+    IParcelable::Probe(mShowIntent)->WriteToParcel(dest);
+    return NOERROR;
+}
+
+ECode CAlarmClockInfo::ReadFromParcel(
+    /* [in] */ IParcel* in)
+{
+    in->ReadInt64(&mTriggerTime);
+    CPendingIntent::New((IPendingIntent**)&mShowIntent);
+    IParcelable::Probe(mShowIntent)->ReadFromParcel(in);
+    return NOERROR;
+}
+
+} // namespace App
+} // namespace Droid
+} // namespace Elastos

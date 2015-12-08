@@ -1,5 +1,5 @@
 
-#include "CWifiP2pServiceResponseStatus.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceResponseStatus.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -7,6 +7,15 @@ namespace Droid {
 namespace Wifi {
 namespace P2p {
 namespace Nsd {
+
+CAR_INTERFACE_IMPL(CWifiP2pServiceResponseStatus, Object, IWifiP2pServiceResponseStatus)
+
+CAR_OBJECT_IMPL(CWifiP2pServiceResponseStatus)
+
+ECode CWifiP2pServiceResponseStatus::constructor()
+{
+    return NOERROR;
+}
 
 ECode CWifiP2pServiceResponseStatus::ToString(
     /* [in] */ Int32 status,
@@ -34,8 +43,8 @@ ECode CWifiP2pServiceResponseStatus::ToString(
     return NOERROR;
 }
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

@@ -217,6 +217,10 @@ protected:
             /* [in] */ Float input,
             /* [out] */ Float* result);
 
+        // @Override
+        CARAPI HasNativeInterpolator(
+            /* [out] */ Boolean* res);
+
     private:
         AutoPtr<ArrayOf<Int32> > mFrameTimes;
         Int32 mFrames;

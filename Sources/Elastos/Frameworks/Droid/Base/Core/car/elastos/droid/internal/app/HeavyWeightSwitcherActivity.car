@@ -46,22 +46,6 @@ module
 
         /** Package of newly requested heavy-weight app. */
         const String KEY_NEW_APP = "new_app";
-
-        SetText(
-            [in] Int32 id,
-            [in] ICharSequence* text);
-
-        SetDrawable(
-            [in] Int32 id,
-            [in] IDrawable* dr);
-
-        SetIconAndText(
-            [in] Int32 iconId,
-            [in] Int32 actionId,
-            [in] Int32 descriptionId,
-            [in] String packageName,
-            [in] Int32 actionStr,
-            [in] Int32 descriptionStr);
     }
 
     }//namespace App

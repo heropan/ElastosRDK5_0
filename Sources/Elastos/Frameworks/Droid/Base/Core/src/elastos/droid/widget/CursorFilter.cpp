@@ -8,27 +8,27 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-CursorFilter::CursorFilter()
-{
-}
-
-CursorFilter::CursorFilter(
+CAR_INTERFACE_IMPL(CursorFilter, Filter, ICursorFilter);
+ECode CursorFilter::constructor(
     /* [in] */ ICursorFilterClient* client)
 {
     mClient = client;
+    return NOERROR;
 }
 
 ECode CursorFilter::ConvertResultToString(
     /* [in] */ IInterface* resultValue,
     /* [out] */ ICharSequence** cs)
 {
-    return mClient->ConvertToString((ICursor*)(resultValue->Probe(EIID_ICursor)), cs);
+    VALIDATE_NOT_NULL(cs);
+    return mClient->ConvertToString(ICursor::Probe(resultValue), cs);
 }
 
 ECode CursorFilter::PerformFiltering(
     /* [in] */ ICharSequence* constraint,
     /* [out] */ IFilterResults** filterResults)
 {
+    VALIDATE_NOT_NULL(filterResults);
     AutoPtr<ICursor> cursor;
     mClient->RunQueryOnBackgroundThread(constraint, (ICursor**)&cursor);
 
@@ -62,6 +62,6 @@ ECode CursorFilter::PublishResults(
     return NOERROR;
 }
 
-}// namespace Widget
-}// namespace Droid
-}// namespace Elastos
+} // namespace Widget
+} // namespace Droid
+} // namespace Elastos

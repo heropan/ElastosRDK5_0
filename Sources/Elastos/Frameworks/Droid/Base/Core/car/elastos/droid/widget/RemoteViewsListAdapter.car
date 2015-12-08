@@ -3,9 +3,9 @@ module
     using interface Elastos.Utility.IArrayList;
 
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * @Involve

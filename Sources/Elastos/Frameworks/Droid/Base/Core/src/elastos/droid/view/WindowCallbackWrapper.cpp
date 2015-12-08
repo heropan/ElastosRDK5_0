@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+CAR_INTERFACE_IMPL(WindowCallbackWrapper, Object, IWindowCallback)
+
 WindowCallbackWrapper::WindowCallbackWrapper()
 {
 }

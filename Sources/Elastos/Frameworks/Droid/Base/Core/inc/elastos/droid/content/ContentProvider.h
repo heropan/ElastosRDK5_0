@@ -1113,14 +1113,13 @@ public:
     static CARAPI_(Int32) GetUserIdFromUri(
         /* [in] */ IUri* uri);
 
-protected:
-
-    /** {@hide} */
-    CARAPI EnforceReadPermissionInner(
-        /* [in] */ IUri* uri);
-
     /** {@hide} */
     CARAPI EnforceWritePermissionInner(
+        /* [in] */ IUri* uri);
+
+protected:
+    /** {@hide} */
+    CARAPI EnforceReadPermissionInner(
         /* [in] */ IUri* uri);
 
     /**

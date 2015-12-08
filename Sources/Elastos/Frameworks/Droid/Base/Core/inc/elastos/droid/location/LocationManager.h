@@ -8,6 +8,7 @@
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Internal::Location::IProviderProperties;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;

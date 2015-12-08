@@ -1,91 +1,122 @@
 
-#include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationKeyMgmt.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationProtocol.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationPairwiseCipher.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationAuthAlgorithm.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationGroupCipher.h"
-#include "elastos/droid/net/wifi/CWifiConfiguration.h"
-#include "elastos/droid/net/wifi/CEnterpriseField.h"
-#include "elastos/droid/net/wifi/CWifiSsid.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/wifi/CWifiConfigurationKeyMgmt.h"
+#include "elastos/droid/wifi/CWifiConfigurationProtocol.h"
+#include "elastos/droid/wifi/CWifiConfigurationPairwiseCipher.h"
+#include "elastos/droid/wifi/CWifiConfigurationAuthAlgorithm.h"
+#include "elastos/droid/wifi/CWifiConfigurationGroupCipher.h"
+#include "elastos/droid/wifi/CWifiConfiguration.h"
+#include "elastos/droid/wifi/CWifiConfigurationVisibility.h"
+#include "elastos/droid/wifi/CWifiEnterpriseConfig.h"
+#include "elastos/droid/wifi/CWifiSsid.h"
 #include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CIpConfiguration.h"
 #include <elastos/core/StringBuilder.h>
 
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Net::CLinkProperties;
+using Elastos::Droid::Net::CIpConfiguration;
+using Elastos::Core::CString;
+using Elastos::Core::CSystem;
+using Elastos::Core::EIID_IComparator;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::ICloneable;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IString;
+using Elastos::Core::ISystem;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::CBitSet;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
 
 //================================================================
-// CWifiConfiguration::EnterpriseField
+//               CWifiConfiguration::InnerComparator
 //================================================================
-CAR_INTERFACE_IMPL(CWifiConfiguration::EnterpriseField, IWifiConfigurationEnterpriseField)
 
-ECode CWifiConfiguration::EnterpriseField::SetValue(
-    /* [in] */ const String& value)
+CAR_INTERFACE_IMPL(CWifiConfiguration::InnerComparator, Object, IComparator)
+
+CWifiConfiguration::InnerComparator::InnerComparator(
+    /* [in] */ CWifiConfiguration* owner)
+    : mOnwer(owner)
 {
-    mValue = value;
+}
+
+ECode CWifiConfiguration::InnerComparator::Compare(
+    /* [in] */ IInterface* lhs,
+    /* [in] */ IInterface* rhs,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    AutoPtr<IScanResult> a = IScanResult::Probe(lhs);
+    AutoPtr<IScanResult> b = IScanResult::Probe(rhs);
+    Int32 aNumIpConfigFailures, bNumIpConfigFailures;
+    a->GetNumIpConfigFailures(&aNumIpConfigFailures);
+    b->GetNumIpConfigFailures(&bNumIpConfigFailures);
+    if (aNumIpConfigFailures > bNumIpConfigFailures) {
+        *result = 1;
+        return NOERROR;
+    }
+
+    if (aNumIpConfigFailures < bNumIpConfigFailures) {
+        *result = -1;
+        return NOERROR;
+    }
+
+    Int64 aSeen, bSeen;
+    a->GetSeen(&aSeen);
+    b->GetSeen(&bSeen);
+    if (aSeen > bSeen) {
+        *result = -1;
+        return NOERROR;
+    }
+
+    if (aSeen < bSeen) {
+        *result = 1;
+        return NOERROR;
+    }
+
+    Int32 aLevel, bLevel;
+    a->GetLevel(&aLevel);
+    b->GetLevel(&bLevel);
+    if (aLevel > bLevel) {
+        *result = -1;
+        return NOERROR;
+    }
+
+    if (aLevel < bLevel) {
+        *result = 1;
+        return NOERROR;
+    }
+
+    String aBSSID, bBSSID;
+    a->GetBSSID(&aBSSID);
+    b->GetBSSID(&bBSSID);
+    *result = aBSSID.Compare(bBSSID);
+
     return NOERROR;
 }
 
-ECode CWifiConfiguration::EnterpriseField::GetVarName(
-    /* [out] */ String* varName)
-{
-    VALIDATE_NOT_NULL(varName);
-    *varName = mVarName;
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::EnterpriseField::GetValue(
-    /* [out] */ String* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = mValue;
-    return NOERROR;
-}
-
 //================================================================
-// CWifiConfiguration
+//                      CWifiConfiguration
 //================================================================
-CWifiConfiguration::CWifiConfiguration()
-    : mNetworkId(0)
-    , mStatus(0)
-    , mDisableReason(0)
-    , mWepTxKeyIndex(0)
-    , mPriority(0)
-    , mHiddenSSID(FALSE)
-{
-    mEap = new EnterpriseField(String("eap"));
-    mPhase2 = new EnterpriseField(String("phase2"));
-    mIdentity = new EnterpriseField(String("identity"));
-    mAnonymousIdentity = new EnterpriseField(String("anonymous_identity"));
-    mPassword = new EnterpriseField(String("password"));
-    mClientCert = new EnterpriseField(String("client_cert"));
-    mEngine = new EnterpriseField(String("engine"));
-    mEngineId = new EnterpriseField(String("engine_id"));
-    mKeyId = new EnterpriseField(String("key_id"));
-    mCaCert = new EnterpriseField(String("ca_cert"));
 
-    mEnterpriseFields = ArrayOf<IWifiConfigurationEnterpriseField*>::Alloc(10);
-    mEnterpriseFields->Set(0, mEap);
-    mEnterpriseFields->Set(1, mPhase2);
-    mEnterpriseFields->Set(2, mIdentity);
-    mEnterpriseFields->Set(3, mAnonymousIdentity);
-    mEnterpriseFields->Set(4, mPassword);
-    mEnterpriseFields->Set(5, mClientCert);
-    mEnterpriseFields->Set(6, mEngine);
-    mEnterpriseFields->Set(7, mEngineId);
-    mEnterpriseFields->Set(8, mKeyId);
-    mEnterpriseFields->Set(9, mCaCert);
-}
+CAR_INTERFACE_IMPL_2(CWifiConfiguration, Object, IWifiConfiguration, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiConfiguration)
 
 ECode CWifiConfiguration::constructor()
 {
     mNetworkId = IWifiConfiguration::INVALID_NETWORK_ID;
-    mSSID = NULL;
-    mBSSID = NULL;
     mPriority = 0;
     mHiddenSSID = FALSE;
     mDisableReason = IWifiConfiguration::DISABLED_UNKNOWN_REASON;
@@ -98,13 +129,51 @@ ECode CWifiConfiguration::constructor()
     for (Int32 i = 0; i < mWepKeys->GetLength(); i++) {
         (*mWepKeys)[i] = NULL;
     }
-    for (Int32 j = 0; j < mEnterpriseFields->GetLength(); ++j) {
-        (*mEnterpriseFields)[j]->SetValue(String(NULL));
-    }
+    assert(0);
+    // TODO
+    // for (Int32 j = 0; j < mEnterpriseFields->GetLength(); ++j) {
+    //     (*mEnterpriseFields)[j]->SetValue(String(NULL));
+    // }
 
-    mIpAssignment = IpAssignment_UNASSIGNED;
-    mProxySettings = ProxySettings_UNASSIGNED;
-    return CLinkProperties::New((ILinkProperties**)&mLinkProperties);
+    // mIpAssignment = IpAssignment_UNASSIGNED;
+    // mProxySettings = ProxySettings_UNASSIGNED;
+    CLinkProperties::New((ILinkProperties**)&mLinkProperties);
+    CWifiEnterpriseConfig::New((IWifiEnterpriseConfig**)&mEnterpriseConfig);
+    mAutoJoinStatus = AUTO_JOIN_ENABLED;
+    mSelfAdded = FALSE;
+    mDidSelfAdd = FALSE;
+    mEphemeral = FALSE;
+    mNoInternetAccess = FALSE;
+
+    mStatus = 0;
+    mDirty = FALSE;
+    mWepTxKeyIndex = 0;
+    mRequirePMF = FALSE;
+    mCreatorUid = 0;
+    mLastConnectUid = 0;
+    mLastUpdateUid = 0;
+
+    mNumConnectionFailures = 0;
+    mNumIpConfigFailures = 0;
+    mNumAuthFailures = 0;
+    mBlackListTimestamp = 0;
+    mLastConnected = 0;
+    mLastConnectionFailure = 0;
+    mLastDisconnected = 0;
+    mAutoJoinBailedDueToLowRssi = FALSE;
+    mAutoJoinUseAggressiveJoinAttemptThreshold = 0;
+    mNumScorerOverride = 0;
+    mNumScorerOverrideAndSwitchedNetwork = 0;
+    mNumAssociation = 0;
+    mNumUserTriggeredWifiDisableLowRSSI = 0;
+    mNumUserTriggeredWifiDisableBadRSSI = 0;
+    mNumUserTriggeredWifiDisableNotHighRSSI = 0;
+    mNumTicksAtLowRSSI = 0;
+    mNumTicksAtBadRSSI = 0;
+    mNumTicksAtNotHighRSSI = 0;
+    mNumUserTriggeredJoinAttempts = 0;
+
+    return CIpConfiguration::New((IIpConfiguration**)&mIpConfiguration);
 }
 
 ECode CWifiConfiguration::constructor(
@@ -116,161 +185,494 @@ ECode CWifiConfiguration::constructor(
         source->GetDisableReason(&mDisableReason);
         source->GetSSID(&mSSID);
         source->GetBSSID(&mBSSID);
+        source->GetFQDN(&mFQDN);
+        source->GetNaiRealm(&mNaiRealm);
         source->GetPreSharedKey(&mPreSharedKey);
 
-        AutoPtr<ArrayOf<String> > wepKeys;
+        mWepKeys = ArrayOf<String>::Alloc(4);
+        AutoPtr< ArrayOf<String> > wepKeys;
         source->GetWepKeys((ArrayOf<String>**)&wepKeys);
-        mWepKeys = wepKeys->Clone();
+        for (Int32 i = 0; i < wepKeys->GetLength(); i++) {
+            (*mWepKeys)[i] = (*wepKeys)[i];
+        }
 
         source->GetWepTxKeyIndex(&mWepTxKeyIndex);
         source->GetPriority(&mPriority);
         source->GetHiddenSSID(&mHiddenSSID);
+        AutoPtr<IBitSet> allowedKeyManagement;
+        AutoPtr<IBitSet> allowedProtocols;
+        AutoPtr<IBitSet> allowedAuthAlgorithms;
+        AutoPtr<IBitSet> allowedPairwiseCiphers;
+        AutoPtr<IBitSet> allowedGroupCiphers;
 
-        source->GetAllowedKeyManagement((IBitSet**)&mAllowedKeyManagement);
-        source->GetAllowedProtocols((IBitSet**)&mAllowedProtocols);
-        source->GetAllowedAuthAlgorithms((IBitSet**)&mAllowedAuthAlgorithms);
-        source->GetAllowedPairwiseCiphers((IBitSet**)&mAllowedPairwiseCiphers);
-        source->GetAllowedGroupCiphers((IBitSet**)&mAllowedGroupCiphers);
+        source->GetAllowedKeyManagement((IBitSet**)&allowedKeyManagement);
+        ICloneable::Probe(allowedKeyManagement)->Clone((IInterface**)&mAllowedKeyManagement);
+        source->GetAllowedKeyManagement((IBitSet**)&allowedProtocols);
+        ICloneable::Probe(allowedProtocols)->Clone((IInterface**)&mAllowedProtocols);
+        source->GetAllowedKeyManagement((IBitSet**)&allowedAuthAlgorithms);
+        ICloneable::Probe(allowedAuthAlgorithms)->Clone((IInterface**)&mAllowedAuthAlgorithms);
+        source->GetAllowedKeyManagement((IBitSet**)&allowedPairwiseCiphers);
+        ICloneable::Probe(allowedPairwiseCiphers)->Clone((IInterface**)&mAllowedPairwiseCiphers);
+        source->GetAllowedKeyManagement((IBitSet**)&allowedGroupCiphers);
+        ICloneable::Probe(allowedGroupCiphers)->Clone((IInterface**)&mAllowedGroupCiphers);
 
-        AutoPtr<ArrayOf<IWifiConfigurationEnterpriseField*> > fields;
-        source->GetEnterpriseFields((ArrayOf<IWifiConfigurationEnterpriseField*>**)&fields);
-        for (Int32 i = 0; i < fields->GetLength(); i++) {
-            String value;
-            ((*fields)[i])->GetValue(&value);
-            ((*mEnterpriseFields)[i])->SetValue(value);
+        AutoPtr<IWifiEnterpriseConfig> enterpriseConfig;
+        source->GetEnterpriseConfig((IWifiEnterpriseConfig**)&enterpriseConfig);
+        CWifiEnterpriseConfig::New(enterpriseConfig, (IWifiEnterpriseConfig**)&mEnterpriseConfig);
+
+        source->GetDefaultGwMacAddress(&mDefaultGwMacAddress);
+
+        AutoPtr<IIpConfiguration> ipConfiguration;
+        source->GetIpConfiguration((IIpConfiguration**)&ipConfiguration);
+        CIpConfiguration::New(ipConfiguration, (IIpConfiguration**)&mIpConfiguration);
+
+        AutoPtr<IHashMap> scanResultCache;
+        source->GetScanResultCache((IHashMap**)&scanResultCache);
+        Int32 size;
+        if ((scanResultCache != NULL) && (scanResultCache->GetSize(&size), size > 0)) {
+            CHashMap::New((IHashMap**)&mScanResultCache);
+            mScanResultCache->PutAll(IMap::Probe(scanResultCache));
         }
 
-        source->GetIpAssignment(&mIpAssignment);
-        source->GetProxySettings(&mProxySettings);
+        AutoPtr<IHashMap> connectChoices;
+        source->GetConnectChoices((IHashMap**)&connectChoices);
+        if (connectChoices != NULL && (connectChoices->GetSize(&size), size > 0)) {
+            CHashMap::New((IHashMap**)&mConnectChoices);
+            mConnectChoices->PutAll(IMap::Probe(connectChoices));
+        }
 
-        AutoPtr<ILinkProperties> linkProperties;
-        source->GetLinkProperties((ILinkProperties**)&linkProperties);
+        AutoPtr<IHashMap>  linkedConfigurations;
+        source->GetLinkedConfigurations((IHashMap**)&linkedConfigurations);
+        if ((linkedConfigurations != NULL)
+                && (linkedConfigurations->GetSize(&size), size > 0)) {
+            CHashMap::New((IHashMap**)&mLinkedConfigurations);
+            mLinkedConfigurations->PutAll(IMap::Probe(linkedConfigurations));
+        }
+        mCachedConfigKey = NULL; //force null configKey
+        source->GetAutoJoinStatus(&mAutoJoinStatus);
+        source->GetSelfAdded(&mSelfAdded);
+        source->GetNoInternetAccess(&mNoInternetAccess);
+        AutoPtr<IWifiConfigurationVisibility> visibility;
+        source->GetVisibility((IWifiConfigurationVisibility**)&visibility);
+        if (visibility != NULL) {
+            CWifiConfigurationVisibility::New(visibility, (IWifiConfigurationVisibility**)&mVisibility);
+        }
 
-        CLinkProperties::New(linkProperties, (ILinkProperties**)&mLinkProperties);
+        source->GetLastFailure(&mLastFailure);
+        source->GetDidSelfAdd(&mDidSelfAdd);
+        source->GetLastConnectUid(&mLastConnectUid);
+        source->GetLastUpdateUid(&mLastUpdateUid);
+        source->GetCreatorUid(&mCreatorUid);
+        source->GetPeerWifiConfiguration(&mPeerWifiConfiguration);
+        source->GetBlackListTimestamp(&mBlackListTimestamp);
+        source->GetLastConnected(&mLastConnected);
+        source->GetLastDisconnected(&mLastDisconnected);
+        source->GetLastConnectionFailure(&mLastConnectionFailure);
+        source->GetNumConnectionFailures(&mNumConnectionFailures);
+        source->GetNumIpConfigFailures(&mNumIpConfigFailures);
+        source->GetNumAuthFailures(&mNumAuthFailures);
+        source->GetNumScorerOverride(&mNumScorerOverride);
+        source->GetNumScorerOverrideAndSwitchedNetwork(&mNumScorerOverrideAndSwitchedNetwork);
+        source->GetNumAssociation(&mNumAssociation);
+        source->GetNumUserTriggeredWifiDisableLowRSSI(&mNumUserTriggeredWifiDisableLowRSSI);
+        source->GetNumUserTriggeredWifiDisableBadRSSI(&mNumUserTriggeredWifiDisableBadRSSI);
+        source->GetNumUserTriggeredWifiDisableNotHighRSSI(&mNumUserTriggeredWifiDisableNotHighRSSI);
+        source->GetNumTicksAtLowRSSI(&mNumTicksAtLowRSSI);
+        source->GetNumTicksAtBadRSSI(&mNumTicksAtBadRSSI);
+        source->GetNumTicksAtNotHighRSSI(&mNumTicksAtNotHighRSSI);
+        source->GetNumUserTriggeredJoinAttempts(&mNumUserTriggeredJoinAttempts);
+        source->GetAutoJoinBSSID(&mAutoJoinBSSID);
+        source->GetAutoJoinUseAggressiveJoinAttemptThreshold(&mAutoJoinUseAggressiveJoinAttemptThreshold);
+        source->GetAutoJoinBailedDueToLowRssi(&mAutoJoinBailedDueToLowRssi);
+        source->GetDirty(&mDirty);
     }
 
     return NOERROR;
 }
 
 ECode CWifiConfiguration::ToString(
-    /* [out] */ String* pValue)
+    /* [out] */ String* value)
 {
+    VALIDATE_NOT_NULL(value);
+
     StringBuilder sbuf;
     if (mStatus == IWifiConfigurationStatus::CURRENT) {
-        sbuf.AppendCStr("* ");
-    } else if (mStatus == IWifiConfigurationStatus::DISABLED) {
-        sbuf.AppendCStr("- DSBLE: ");
-        sbuf.AppendInt32(mDisableReason);
-        sbuf.AppendCStr(" ");
+        sbuf.Append("* ");
     }
-    sbuf.AppendCStr("ID: ");
-    sbuf.AppendInt32(mNetworkId);
-    sbuf.AppendCStr(" SSID: ");
-    sbuf.AppendString(mSSID);
-    sbuf.AppendCStr(" BSSID: ");
-    sbuf.AppendString(mBSSID);
-    sbuf.AppendCStr(" PRIO: ");
-    sbuf.AppendInt32(mPriority);
-    sbuf.AppendCStr("\n");
-    sbuf.AppendCStr(" KeyMgmt:");
+    else if (mStatus == IWifiConfigurationStatus::DISABLED) {
+        sbuf.Append("- DSBLE ");
+    }
+
+    sbuf.Append("ID: ");
+    sbuf.Append(mNetworkId);
+    sbuf.Append(" SSID: ");
+    sbuf.Append(mSSID);
+    sbuf.Append(" BSSID: ");
+    sbuf.Append(mBSSID);
+    sbuf.Append(" FQDN: ");
+    sbuf.Append(mFQDN);
+    sbuf.Append(" REALM: ");
+    sbuf.Append(mNaiRealm);
+    sbuf.Append(" PRIO: ");
+    sbuf.Append(mPriority);
+    sbuf.Append('\n');
+
+    if (mNumConnectionFailures > 0) {
+        sbuf.Append(" numConnectFailures ");
+        sbuf.Append(mNumConnectionFailures);
+        sbuf.Append("\n");
+    }
+
+    if (mNumIpConfigFailures > 0) {
+        sbuf.Append(" numIpConfigFailures ");
+        sbuf.Append(mNumIpConfigFailures);
+        sbuf.Append("\n");
+    }
+
+    if (mNumAuthFailures > 0) {
+        sbuf.Append(" numAuthFailures ");
+        sbuf.Append(mNumAuthFailures);
+        sbuf.Append("\n");
+    }
+
+    if (mAutoJoinStatus > 0) {
+        sbuf.Append(" autoJoinStatus ");
+        sbuf.Append(mAutoJoinStatus);
+        sbuf.Append("\n");
+    }
+
+    if (mDisableReason > 0) {
+        sbuf.Append(" disableReason ");
+        sbuf.Append(mDisableReason);
+        sbuf.Append("\n");
+    }
+
+    if (mNumAssociation > 0) {
+        sbuf.Append(" numAssociation ");
+        sbuf.Append(mNumAssociation);
+        sbuf.Append("\n");
+    }
+
+    if (mDidSelfAdd) sbuf.Append(" didSelfAdd");
+    if (mSelfAdded) sbuf.Append(" selfAdded");
+    if (mNoInternetAccess) sbuf.Append(" noInternetAccess");
+    if (mDidSelfAdd || mSelfAdded || mNoInternetAccess) {
+        sbuf.Append("\n");
+    }
+    sbuf.Append(" KeyMgmt:");
     Int32 size;
     mAllowedKeyManagement->GetSize(&size);
-    for (Int32 k = 0; k < size; k++) {
-        Boolean value;
-        if (mAllowedKeyManagement->Get(k, &value), value) {
-            sbuf.AppendCStr(" ");
-            if (k < CWifiConfigurationKeyMgmt::sStrings->GetLength()) {
-                sbuf.AppendString((*CWifiConfigurationKeyMgmt::sStrings)[k]);
-            } else {
-                sbuf.AppendCStr("??");
+    for (Int32 k = 0; size; k++) {
+        Boolean bFlag;
+        mAllowedKeyManagement->Get(k, &bFlag);
+        if (bFlag) {
+            sbuf.Append(" ");
+            AutoPtr<IWifiConfigurationKeyMgmt> keyMgmt;
+            CWifiConfigurationKeyMgmt::AcquireSingleton((IWifiConfigurationKeyMgmt**)&keyMgmt);
+            AutoPtr< ArrayOf<String> > strings;
+            keyMgmt->GetStrings((ArrayOf<String>**)&strings);
+            if (k < strings->GetLength()) {
+                sbuf.Append((*strings)[k]);
+            }
+            else {
+                sbuf.Append("??");
             }
         }
     }
-    sbuf.AppendCStr(" Protocols:");
+
+    sbuf.Append(" Protocols:");
     mAllowedProtocols->GetSize(&size);
     for (Int32 p = 0; p < size; p++) {
-        Boolean value;
-        if (mAllowedProtocols->Get(p, &value), value) {
-            sbuf.AppendCStr(" ");
-            if (p < CWifiConfigurationProtocol::sStrings->GetLength()) {
-                sbuf.AppendString((*CWifiConfigurationProtocol::sStrings)[p]);
-            } else {
-                sbuf.AppendCStr("??");
+        Boolean bFlag;
+        mAllowedProtocols->Get(p, &bFlag);
+        if (bFlag) {
+            sbuf.Append(" ");
+            AutoPtr<IWifiConfigurationProtocol> protocol;
+            CWifiConfigurationProtocol::AcquireSingleton((IWifiConfigurationProtocol**)&protocol);
+            AutoPtr< ArrayOf<String> > strings;
+            protocol->GetStrings((ArrayOf<String>**)&strings);
+            if (p < strings->GetLength()) {
+                sbuf.Append((*strings)[p]);
+            }
+            else {
+                sbuf.Append("??");
             }
         }
     }
-    sbuf.AppendCStr("\n");
-    sbuf.AppendCStr(" AuthAlgorithms:");
+
+    sbuf.Append('\n');
+    sbuf.Append(" AuthAlgorithms:");
+
     mAllowedAuthAlgorithms->GetSize(&size);
     for (Int32 a = 0; a < size; a++) {
-        Boolean value;
-        if (mAllowedAuthAlgorithms->Get(a, &value), value) {
-            sbuf.AppendCStr(" ");
-            if (a < CWifiConfigurationAuthAlgorithm::sStrings->GetLength()) {
-                sbuf.AppendString((*CWifiConfigurationAuthAlgorithm::sStrings)[a]);
-            } else {
-                sbuf.AppendCStr("??");
+        Boolean bFlag;
+        mAllowedAuthAlgorithms->Get(a, &bFlag);
+        if (bFlag) {
+            sbuf.Append(" ");
+            AutoPtr<IWifiConfigurationAuthAlgorithm> algorithm;
+            CWifiConfigurationAuthAlgorithm::AcquireSingleton((IWifiConfigurationAuthAlgorithm**)&algorithm);
+            AutoPtr< ArrayOf<String> > strings;
+            algorithm->GetStrings((ArrayOf<String>**)&strings);
+            if (a < strings->GetLength()) {
+                sbuf.Append((*strings)[a]);
+            }
+            else {
+                sbuf.Append("??");
             }
         }
     }
-    sbuf.AppendCStr("\n");
-    sbuf.AppendCStr(" PairwiseCiphers:");
+
+    sbuf.Append('\n');
+    sbuf.Append(" PairwiseCiphers:");
+
     mAllowedPairwiseCiphers->GetSize(&size);
     for (Int32 pc = 0; pc < size; pc++) {
-        Boolean value;
-        if (mAllowedPairwiseCiphers->Get(pc, &value), value) {
-            sbuf.AppendCStr(" ");
-            if (pc < CWifiConfigurationPairwiseCipher::sStrings->GetLength()) {
-                sbuf.AppendString((*CWifiConfigurationPairwiseCipher::sStrings)[pc]);
-            } else {
-                sbuf.AppendCStr("??");
+        Boolean bFlag;
+        mAllowedPairwiseCiphers->Get(pc, &bFlag);
+        if (bFlag) {
+            sbuf.Append(" ");
+            AutoPtr<IWifiConfigurationPairwiseCipher> clipher;
+            CWifiConfigurationPairwiseCipher::AcquireSingleton((IWifiConfigurationPairwiseCipher**)&clipher);
+            AutoPtr< ArrayOf<String> > strings;
+            clipher->GetStrings((ArrayOf<String>**)&strings);
+            if (pc < strings->GetLength()) {
+                sbuf.Append((*strings)[pc]);
+            }
+            else {
+                sbuf.Append("??");
             }
         }
     }
-    sbuf.AppendCStr("\n");
-    sbuf.AppendCStr(" GroupCiphers:");
+
+    sbuf.Append('\n');
+    sbuf.Append(" GroupCiphers:");
+
     mAllowedGroupCiphers->GetSize(&size);
     for (Int32 gc = 0; gc < size; gc++) {
-        Boolean value;
-        if (mAllowedGroupCiphers->Get(gc, &value), value) {
-            sbuf.AppendCStr(" ");
-            if (gc < CWifiConfigurationGroupCipher::sStrings->GetLength()) {
-                sbuf.AppendString((*CWifiConfigurationGroupCipher::sStrings)[gc]);
-            } else {
-                sbuf.AppendCStr("??");
+        Boolean bFlag;
+        mAllowedGroupCiphers->Get(gc, &bFlag);
+        if (bFlag) {
+            sbuf.Append(" ");
+            AutoPtr<IWifiConfigurationGroupCipher> cipher;
+            CWifiConfigurationGroupCipher::AcquireSingleton((IWifiConfigurationGroupCipher**)&cipher);
+            AutoPtr< ArrayOf<String> > strings;
+            cipher->GetStrings((ArrayOf<String>**)&strings);
+            if (gc < strings->GetLength()) {
+                sbuf.Append((*strings)[gc]);
+            }
+            else {
+                sbuf.Append("??");
             }
         }
     }
-    sbuf.AppendCStr("\n");
-    sbuf.AppendCStr(" PSK: ");
+
+    sbuf.Append('\n');
+    sbuf.Append(" PSK: ");
     if (mPreSharedKey != NULL) {
-        sbuf.AppendCStr("*");
+        sbuf.Append('*');
     }
 
-    for (Int32 f = 0; f < mEnterpriseFields->GetLength(); f++) {
-        AutoPtr<IWifiConfigurationEnterpriseField> field = (*mEnterpriseFields)[f];
-        sbuf.AppendCStr("\n");
-        String name;
-        field->GetVarName(&name);
-        sbuf.AppendString(String(" ") + name + ": ");
-        String value;
-        field->GetValue(&value);
-        if (value != String(NULL)) sbuf.AppendString(value);
-    }
-    sbuf.AppendCStr("\n");
-    sbuf.AppendCStr("IP assignment: ");
-    sbuf.AppendInt32(mIpAssignment);
-    sbuf.AppendCStr("\n");
-    sbuf.AppendCStr("Proxy settings: ");
-    sbuf.AppendInt32(mProxySettings);
-    sbuf.AppendCStr("\n");
-    String s;
-    mLinkProperties->ToString(&s);
-    sbuf.AppendString(s);
-    sbuf.AppendCStr("\n");
+    sbuf.Append("\nEnterprise config:\n");
+    sbuf.Append(mEnterpriseConfig);
 
-    *pValue = sbuf.ToString();
-    return NOERROR;
+    sbuf.Append("IP config:\n");
+    String ipConfigurationStr;
+    assert(0);
+    // TODO
+    // mIpConfiguration->ToString(&ipConfigurationStr);
+    sbuf.Append(ipConfigurationStr);
+
+    if (mCreatorUid != 0)  {
+        sbuf.Append(" uid=");
+        sbuf.Append(mCreatorUid);
+    }
+
+    if (mAutoJoinBSSID != NULL) {
+        sbuf.Append(" autoJoinBSSID=");
+        sbuf.Append(mAutoJoinBSSID);
+    }
+
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Int64 now_ms;
+    system->GetCurrentTimeMillis(&now_ms);
+    if (mBlackListTimestamp != 0) {
+        sbuf.Append('\n');
+        Int64 diff = now_ms - mBlackListTimestamp;
+        if (diff <= 0) {
+            sbuf.Append(" blackListed since <incorrect>");
+        }
+        else {
+            sbuf.Append(" blackListed: ");
+            sbuf.Append(diff/1000);
+            sbuf.Append( "sec");
+        }
+    }
+
+    if (mLastConnected != 0) {
+        sbuf.Append('\n');
+        Int64 diff = now_ms - mLastConnected;
+        if (diff <= 0) {
+            sbuf.Append("lastConnected since <incorrect>");
+        }
+        else {
+            sbuf.Append("lastConnected: ");
+            sbuf.Append(diff/1000);
+            sbuf.Append( "sec");
+        }
+    }
+
+    if (mLastConnectionFailure != 0) {
+        sbuf.Append('\n');
+        Int64 diff = now_ms - mLastConnectionFailure;
+        if (diff <= 0) {
+            sbuf.Append("lastConnectionFailure since <incorrect>");
+        }
+        else {
+            sbuf.Append("lastConnectionFailure: ");
+            sbuf.Append(diff/1000);
+            sbuf.Append( "sec");
+        }
+    }
+
+    sbuf.Append('\n');
+    if (mLinkedConfigurations != NULL) {
+        AutoPtr<ISet> keySet;
+        mLinkedConfigurations->GetKeySet((ISet**)&keySet);
+        AutoPtr<IIterator> iter;
+        keySet->GetIterator((IIterator**)&iter);
+        Boolean bNext;
+        iter->HasNext(&bNext);
+        for (; bNext; iter->HasNext(&bNext)) {
+            AutoPtr<ICharSequence> iKey;
+            iter->GetNext((IInterface**)&iKey);
+            String key;
+            iKey->ToString(&key);
+            sbuf.Append(" linked: ");
+            sbuf.Append(key);
+            sbuf.Append('\n');
+        }
+    }
+
+    if (mConnectChoices != NULL) {
+        AutoPtr<ISet> keySet;
+        mConnectChoices->GetKeySet((ISet**)&keySet);
+        AutoPtr<IIterator> iter;
+        keySet->GetIterator((IIterator**)&iter);
+        Boolean bNext;
+        iter->HasNext(&bNext);
+        for (; bNext; iter->HasNext(&bNext)) {
+            AutoPtr<ICharSequence> iKey;
+            iter->GetNext((IInterface**)&iKey);
+            AutoPtr<IInteger32> choice;
+            mConnectChoices->Get(iKey, (IInterface**)&choice);
+            if (choice != NULL) {
+                sbuf.Append(" choice: ");
+                String key;
+                iKey->ToString(&key);
+                sbuf.Append(key);
+                sbuf.Append(" = ");
+                Int32 value;
+                choice->GetValue(&value);
+                sbuf.Append(value);
+                sbuf.Append('\n');
+            }
+        }
+    }
+
+    if (mScanResultCache != NULL) {
+        sbuf.Append("Scan Cache:  ");
+        sbuf.Append('\n');
+        AutoPtr<IArrayList> list = SortScanResults();
+        Int32 listSize;
+        list->GetSize(&listSize);
+        if (listSize > 0) {
+            AutoPtr<IIterable> iterable = IIterable::Probe(list);
+            AutoPtr<IIterator> iter;
+            iterable->GetIterator((IIterator**)&iter);
+            Boolean bNext;
+            iter->HasNext(&bNext);
+            for (; bNext; iter->HasNext(&bNext)) {
+                AutoPtr<IScanResult> result;
+                iter->GetNext((IInterface**)&result);
+                Int64 seen;
+                result->GetSeen(&seen);
+                Int64 milli = now_ms - seen;
+                Int64 ageSec = 0;
+                Int64 ageMin = 0;
+                Int64 ageHour = 0;
+                Int64 ageMilli = 0;
+                Int64 ageDay = 0;
+                if (now_ms > seen && seen > 0) {
+                    ageMilli = milli % 1000;
+                    ageSec   = (milli / 1000) % 60;
+                    ageMin   = (milli / (60*1000)) % 60;
+                    ageHour  = (milli / (60*60*1000)) % 24;
+                    ageDay   = (milli / (24*60*60*1000));
+                }
+
+                sbuf.Append("{");
+                String BSSID;
+                result->GetBSSID(&BSSID);
+                sbuf.Append(BSSID);
+                sbuf.Append(",");
+                Int32 frequency;
+                result->GetFrequency(&frequency);
+                sbuf.Append(frequency);
+                sbuf.Append(",");
+                Int32 level;
+                result->GetLevel(&level);
+                sbuf.Append(String().AppendFormat("%3d", level));
+                Int32 autoJoinStatus;
+                result->GetAutoJoinStatus(&autoJoinStatus);
+                if (autoJoinStatus > 0) {
+                    sbuf.Append(",st=");
+                    sbuf.Append(autoJoinStatus);
+                }
+
+                if (ageSec > 0 || ageMilli > 0) {
+                    sbuf.Append(String().AppendFormat(",%4d.%02d.%02d.%02d.%03dms", ageDay,
+                            ageHour, ageMin, ageSec, ageMilli));
+                }
+
+                Int32 numIpConfigFailures;
+                result->GetNumIpConfigFailures(&numIpConfigFailures);
+                if (numIpConfigFailures > 0) {
+                    sbuf.Append(",ipfail=");
+                    sbuf.Append(numIpConfigFailures);
+                }
+
+                sbuf.Append("} ");
+            }
+
+            sbuf.Append('\n');
+        }
+    }
+    sbuf.Append("triggeredLow: ");
+    sbuf.Append(mNumUserTriggeredWifiDisableLowRSSI);
+    sbuf.Append(" triggeredBad: ");
+    sbuf.Append(mNumUserTriggeredWifiDisableBadRSSI);
+    sbuf.Append(" triggeredNotHigh: ");
+    sbuf.Append(mNumUserTriggeredWifiDisableNotHighRSSI);
+    sbuf.Append('\n');
+    sbuf.Append("ticksLow: ");
+    sbuf.Append(mNumTicksAtLowRSSI);
+    sbuf.Append(" ticksBad: ");
+    sbuf.Append(mNumTicksAtBadRSSI);
+    sbuf.Append(" ticksNotHigh: ");
+    sbuf.Append(mNumTicksAtNotHighRSSI);
+    sbuf.Append('\n');
+    sbuf.Append("triggeredJoin: ");
+    sbuf.Append(mNumUserTriggeredJoinAttempts);
+    sbuf.Append('\n');
+    sbuf.Append("autoJoinBailedDueToLowRssi: ");
+    sbuf.Append(mAutoJoinBailedDueToLowRssi);
+    sbuf.Append('\n');
+    sbuf.Append("autoJoinUseAggressiveJoinAttemptThreshold: ");
+    sbuf.Append(mAutoJoinUseAggressiveJoinAttemptThreshold);
+    sbuf.Append('\n');
+
+    return sbuf.ToString(value);
 }
 
 ECode CWifiConfiguration::GetPrintableSsid(
@@ -299,7 +701,10 @@ ECode CWifiConfiguration::GetPrintableSsid(
         AutoPtr<IWifiSsid> wifiSsid;
         CWifiSsid::CreateFromAsciiEncoded(mSSID.Substring(2, length - 1),
             (IWifiSsid**)&wifiSsid);
-        return wifiSsid->ToString(ssid);
+        assert(0);
+        // TODO
+        // return wifiSsid->ToString(ssid);
+        return E_NOT_IMPLEMENTED;
     }
     *ssid = mSSID;
     return NOERROR;
@@ -337,12 +742,45 @@ void CWifiConfiguration::WriteBitSet(
     }
 }
 
+AutoPtr<IArrayList> CWifiConfiguration::SortScanResults()
+{
+    AutoPtr<ICollection> values;
+    mScanResultCache->GetValues((ICollection**)&values);
+    AutoPtr<IArrayList> list;
+    CArrayList::New(values, (IArrayList**)&list);
+    Int32 size;
+    list->GetSize(&size);
+    if (size != 0) {
+        AutoPtr<ICollections> collections;
+        CCollections::AcquireSingleton((ICollections**)&collections);
+        AutoPtr<IComparator> compare = new InnerComparator(this);
+        collections->Sort(IList::Probe(list), compare);
+    }
+    return list;
+}
+
+String CWifiConfiguration::TrimStringForKeyId(
+    /* [in] */ const String& string)
+{
+    // Remove quotes and spaces
+    assert(0);
+    // TODO
+    // return string.Replace("\"", "").Replace(" ", "");
+    return String(NULL);
+}
+
 ECode CWifiConfiguration::GetAuthType(
     /* [out] */ Int32* authType)
 {
     VALIDATE_NOT_NULL(authType);
     *authType = IWifiConfigurationKeyMgmt::NONE;
 
+    Boolean bIsValid;
+    IsValid(&bIsValid);
+    if (bIsValid == FALSE) {
+        //throw new IllegalStateException("Invalid configuration");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
     Boolean temp;
     if (mAllowedKeyManagement->Get(IWifiConfigurationKeyMgmt::WPA_PSK, &temp), temp) {
         *authType = IWifiConfigurationKeyMgmt::WPA_PSK;
@@ -384,11 +822,13 @@ ECode CWifiConfiguration::ReadFromParcel(
     mAllowedPairwiseCiphers = ReadBitSet(source);
     mAllowedGroupCiphers = ReadBitSet(source);
 
-    for (Int32 i = 0; i < mEnterpriseFields->GetLength(); ++i) {
-        String value;
-        source->ReadString(&value);
-        ((*mEnterpriseFields)[i])->SetValue(value);
-    }
+    assert(0);
+    // TODO
+    // for (Int32 i = 0; i < mEnterpriseFields->GetLength(); ++i) {
+    //     String value;
+    //     source->ReadString(&value);
+    //     ((*mEnterpriseFields)[i])->SetValue(value);
+    // }
 
     source->ReadInt32(&mIpAssignment);
     source->ReadInt32(&mProxySettings);
@@ -404,13 +844,18 @@ ECode CWifiConfiguration::WriteToParcel(
     dest->WriteInt32(mDisableReason);
     dest->WriteString(mSSID);
     dest->WriteString(mBSSID);
+    dest->WriteString(mAutoJoinBSSID);
+    dest->WriteString(mFQDN);
+    dest->WriteString(mNaiRealm);
     dest->WriteString(mPreSharedKey);
     for (Int32 i = 0; i < mWepKeys->GetLength(); ++i) {
         dest->WriteString((*mWepKeys)[i]);
     }
     dest->WriteInt32(mWepTxKeyIndex);
     dest->WriteInt32(mPriority);
-    dest->WriteBoolean(mHiddenSSID);
+    dest->WriteInt32(mHiddenSSID ? 1 : 0);
+    dest->WriteInt32(mRequirePMF ? 1 : 0);
+    dest->WriteString(mUpdateIdentifier);
 
     WriteBitSet(dest, mAllowedKeyManagement);
     WriteBitSet(dest, mAllowedProtocols);
@@ -418,15 +863,73 @@ ECode CWifiConfiguration::WriteToParcel(
     WriteBitSet(dest, mAllowedPairwiseCiphers);
     WriteBitSet(dest, mAllowedGroupCiphers);
 
-    for (Int32 i = 0; i < mEnterpriseFields->GetLength(); i++) {
-        String value;
-        (*mEnterpriseFields)[i]->GetValue(&value);
-        dest->WriteString(value);
+    assert(0);
+    // TODO
+    // dest->WriteParcelable(enterpriseConfig, flags);
+
+    // dest->WriteParcelable(mIpConfiguration, flags);
+    dest->WriteString(mDhcpServer);
+    dest->WriteString(mDefaultGwMacAddress);
+    dest->WriteInt32(mAutoJoinStatus);
+    dest->WriteInt32(mSelfAdded ? 1 : 0);
+    dest->WriteInt32(mDidSelfAdd ? 1 : 0);
+    dest->WriteInt32(mNoInternetAccess ? 1 : 0);
+    dest->WriteInt32(mCreatorUid);
+    dest->WriteInt32(mLastConnectUid);
+    dest->WriteInt32(mLastUpdateUid);
+    dest->WriteInt64(mBlackListTimestamp);
+    dest->WriteInt64(mLastConnectionFailure);
+    dest->WriteInt32(mNumConnectionFailures);
+    dest->WriteInt32(mNumIpConfigFailures);
+    dest->WriteInt32(mNumAuthFailures);
+    dest->WriteInt32(mNumScorerOverride);
+    dest->WriteInt32(mNumScorerOverrideAndSwitchedNetwork);
+    dest->WriteInt32(mNumAssociation);
+    dest->WriteInt32(mNumUserTriggeredWifiDisableLowRSSI);
+    dest->WriteInt32(mNumUserTriggeredWifiDisableBadRSSI);
+    dest->WriteInt32(mNumUserTriggeredWifiDisableNotHighRSSI);
+    dest->WriteInt32(mNumTicksAtLowRSSI);
+    dest->WriteInt32(mNumTicksAtBadRSSI);
+    dest->WriteInt32(mNumTicksAtNotHighRSSI);
+    dest->WriteInt32(mNumUserTriggeredJoinAttempts);
+    dest->WriteInt32(mAutoJoinUseAggressiveJoinAttemptThreshold);
+    return dest->WriteInt32(mAutoJoinBailedDueToLowRssi ? 1 : 0);
+}
+
+String CWifiConfiguration::ConfigKey(
+    /* [in] */ IScanResult* result)
+{
+    String key("\"");
+    String SSID;
+    result->GetSSID(&SSID);
+    key += SSID;
+    key += "\"";
+
+    String capabilities;
+    result->GetCapabilities(&capabilities);
+    if (capabilities.Contains("WEP")) {
+        key += "-WEP";
     }
 
-    dest->WriteInt32(mIpAssignment);
-    dest->WriteInt32(mProxySettings);
-    return dest->WriteInterfacePtr(mLinkProperties);
+    if (capabilities.Contains("PSK")) {
+        key += "-";
+        AutoPtr<IWifiConfigurationKeyMgmt> keyMgmt;
+        CWifiConfigurationKeyMgmt::AcquireSingleton((IWifiConfigurationKeyMgmt**)&keyMgmt);
+        AutoPtr< ArrayOf<String> > strings;
+        keyMgmt->GetStrings((ArrayOf<String>**)&strings);
+        key += (*strings)[IWifiConfigurationKeyMgmt::WPA_PSK];
+    }
+
+    if (capabilities.Contains("EAP")) {
+        key += "-";
+        AutoPtr<IWifiConfigurationKeyMgmt> keyMgmt;
+        CWifiConfigurationKeyMgmt::AcquireSingleton((IWifiConfigurationKeyMgmt**)&keyMgmt);
+        AutoPtr< ArrayOf<String> > strings;
+        keyMgmt->GetStrings((ArrayOf<String>**)&strings);
+        key += (*strings)[IWifiConfigurationKeyMgmt::WPA_EAP];
+    }
+
+    return key;
 }
 
 ECode CWifiConfiguration::GetWepKeyVarName(
@@ -439,105 +942,6 @@ ECode CWifiConfiguration::GetWepKeyVarName(
     else if (index == 1) *wepKeyVarName = "wep_key1";
     else if (index == 2) *wepKeyVarName = "wep_key2";
     else if (index == 3) *wepKeyVarName = "wep_key3";
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetEap(
-    /* [out] */ IWifiConfigurationEnterpriseField** eap)
-{
-    VALIDATE_NOT_NULL(eap);
-    *eap = mEap;
-    REFCOUNT_ADD(*eap);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetPhase2(
-    /* [out] */ IWifiConfigurationEnterpriseField** phase2)
-{
-    VALIDATE_NOT_NULL(phase2);
-    *phase2 = mPhase2;
-    REFCOUNT_ADD(*phase2);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetIdentity(
-    /* [out] */ IWifiConfigurationEnterpriseField** identity)
-{
-    VALIDATE_NOT_NULL(identity);
-    *identity = mIdentity;
-    REFCOUNT_ADD(*identity);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetAnonymousIdentity(
-    /* [out] */ IWifiConfigurationEnterpriseField** anonymousIdentity)
-{
-    VALIDATE_NOT_NULL(anonymousIdentity);
-    *anonymousIdentity = mAnonymousIdentity;
-    REFCOUNT_ADD(*anonymousIdentity);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetPassword(
-    /* [out] */ IWifiConfigurationEnterpriseField** password)
-{
-    VALIDATE_NOT_NULL(password);
-    *password = mPassword;
-    REFCOUNT_ADD(*password);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetClientCert(
-    /* [out] */ IWifiConfigurationEnterpriseField** clientCert)
-{
-    VALIDATE_NOT_NULL(clientCert);
-    *clientCert = mClientCert;
-    REFCOUNT_ADD(*clientCert);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetEngine(
-    /* [out] */ IWifiConfigurationEnterpriseField** engine)
-{
-    VALIDATE_NOT_NULL(engine);
-    *engine = mEngine;
-    REFCOUNT_ADD(*engine);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetEngineId(
-    /* [out] */ IWifiConfigurationEnterpriseField** engineId)
-{
-    VALIDATE_NOT_NULL(engineId);
-    *engineId = mEngineId;
-    REFCOUNT_ADD(*engineId);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetKeyId(
-    /* [out] */ IWifiConfigurationEnterpriseField** keyId)
-{
-    VALIDATE_NOT_NULL(keyId);
-    *keyId = mKeyId;
-    REFCOUNT_ADD(*keyId);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetCaCert(
-    /* [out] */ IWifiConfigurationEnterpriseField** caCert)
-{
-    VALIDATE_NOT_NULL(caCert);
-    *caCert = mCaCert;
-    REFCOUNT_ADD(*caCert);
-    return NOERROR;
-}
-
-ECode CWifiConfiguration::GetEnterpriseFields(
-    /* [out, callee] */ ArrayOf<IWifiConfigurationEnterpriseField*>** fields)
-{
-    VALIDATE_NOT_NULL(fields);
-    *fields = mEnterpriseFields;
-    REFCOUNT_ADD(*fields);
     return NOERROR;
 }
 
@@ -568,6 +972,21 @@ ECode CWifiConfiguration::SetStatus(
     /* [in] */ Int32 status)
 {
     mStatus = status;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetDirty(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mDirty;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetDirty(
+    /* [in] */ Boolean dirty)
+{
+    mDirty = dirty;
     return NOERROR;
 }
 
@@ -613,6 +1032,36 @@ ECode CWifiConfiguration::SetBSSID(
     /* [in] */ const String& BSSID)
 {
     mBSSID = BSSID;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetFQDN(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mFQDN;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetFQDN(
+    /* [in] */ const String& FQDN)
+{
+    mFQDN = FQDN;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNaiRealm(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNaiRealm;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNaiRealm(
+    /* [in] */ const String& naiRealm)
+{
+    mNaiRealm = naiRealm;
     return NOERROR;
 }
 
@@ -689,6 +1138,36 @@ ECode CWifiConfiguration::SetHiddenSSID(
     /* [in] */ Boolean hiddenSSID)
 {
     mHiddenSSID = hiddenSSID;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetRequirePMF(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mRequirePMF;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetRequirePMF(
+    /* [in] */ Boolean requirePMF)
+{
+    mRequirePMF = requirePMF;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetUpdateIdentifier(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mUpdateIdentifier;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetUpdateIdentifier(
+    /* [in] */ const String& updateIdentifier)
+{
+    mUpdateIdentifier = updateIdentifier;
     return NOERROR;
 }
 
@@ -772,34 +1251,985 @@ ECode CWifiConfiguration::SetAllowedGroupCiphers(
     return NOERROR;
 }
 
+ECode CWifiConfiguration::GetEnterpriseConfig(
+    /* [out] */ IWifiEnterpriseConfig** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mEnterpriseConfig;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetEnterpriseConfig(
+    /* [in] */ IWifiEnterpriseConfig* enterpriseConfig)
+{
+    mEnterpriseConfig = enterpriseConfig;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetDhcpServer(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mDhcpServer;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetDhcpServer(
+    /* [in] */ const String& dhcpServer)
+{
+    mDhcpServer = dhcpServer;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetDefaultGwMacAddress(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mDefaultGwMacAddress;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetDefaultGwMacAddress(
+    /* [in] */ const String& defaultGwMacAddress)
+{
+    mDefaultGwMacAddress = defaultGwMacAddress;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetLastFailure(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mLastFailure;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetLastFailure(
+    /* [in] */ const String& lastFailure)
+{
+    mLastFailure = lastFailure;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNoInternetAccess(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNoInternetAccess;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNoInternetAccess(
+    /* [in] */ Boolean noInternetAccess)
+{
+    mNoInternetAccess = noInternetAccess;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetCreatorUid(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mCreatorUid;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetCreatorUid(
+    /* [in] */ Int32 creatorUid)
+{
+    mCreatorUid = creatorUid;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetLastConnectUid(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mLastConnectUid;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetLastConnectUid(
+    /* [in] */ Int32 lastConnectUid)
+{
+    mLastConnectUid = lastConnectUid;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetLastUpdateUid(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mLastUpdateUid;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetLastUpdateUid(
+    /* [in] */ Int32 lastUpdateUid)
+{
+    mLastUpdateUid = lastUpdateUid;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetAutoJoinBSSID(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mAutoJoinBSSID;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetAutoJoinBSSID(
+    /* [in] */ const String& autoJoinBSSID)
+{
+    mAutoJoinBSSID = autoJoinBSSID;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetScanResultCache(
+    /* [out] */ IHashMap** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mScanResultCache;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetScanResultCache(
+    /* [in] */ IHashMap* scanResultCache)
+{
+    mScanResultCache = scanResultCache;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetVisibility(
+    /* [out] */ IWifiConfigurationVisibility** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mVisibility;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetVisibility(
+    /* [in] */ IWifiConfigurationVisibility* visibility)
+{
+    mVisibility = visibility;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetAutoJoinStatus(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mAutoJoinStatus;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumConnectionFailures(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumConnectionFailures;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumConnectionFailures(
+    /* [in] */ Int32 numConnectionFailures)
+{
+    mNumConnectionFailures = numConnectionFailures;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumIpConfigFailures(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumIpConfigFailures;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumIpConfigFailures(
+    /* [in] */ Int32 numIpConfigFailures)
+{
+    mNumIpConfigFailures = numIpConfigFailures;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumAuthFailures(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumAuthFailures;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumAuthFailures(
+    /* [in] */ Int32 numAuthFailures)
+{
+    mNumAuthFailures = numAuthFailures;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetBlackListTimestamp(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mBlackListTimestamp;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetBlackListTimestamp(
+    /* [in] */ Int64 blackListTimestamp)
+{
+    mBlackListTimestamp = blackListTimestamp;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetLastConnected(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mLastConnected;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetLastConnected(
+    /* [in] */ Int64 lastConnected)
+{
+    mLastConnected = lastConnected;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetLastConnectionFailure(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mLastConnectionFailure;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetLastConnectionFailure(
+    /* [in] */ Int64 lastConnectionFailure)
+{
+    mLastConnectionFailure = lastConnectionFailure;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetLastDisconnected(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mLastDisconnected;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetLastDisconnected(
+    /* [in] */ Int64 lastDisconnected)
+{
+    mLastDisconnected = lastDisconnected;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetSelfAdded(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mSelfAdded;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetSelfAdded(
+    /* [in] */ Boolean selfAdded)
+{
+    mSelfAdded = selfAdded;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetDidSelfAdd(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mDidSelfAdd;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetDidSelfAdd(
+    /* [in] */ Boolean didSelfAdd)
+{
+    mDidSelfAdd = didSelfAdd;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetPeerWifiConfiguration(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mPeerWifiConfiguration;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetPeerWifiConfiguration(
+    /* [in] */ const String& peerWifiConfiguration)
+{
+    mPeerWifiConfiguration = peerWifiConfiguration;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetEphemeral(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mEphemeral;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetEphemeral(
+    /* [in] */ Boolean ephemeral)
+{
+    mEphemeral = ephemeral;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetAutoJoinBailedDueToLowRssi(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mAutoJoinBailedDueToLowRssi;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetAutoJoinBailedDueToLowRssi(
+    /* [in] */ Boolean autoJoinBailedDueToLowRssi)
+{
+    mAutoJoinBailedDueToLowRssi = autoJoinBailedDueToLowRssi;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetAutoJoinUseAggressiveJoinAttemptThreshold(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mAutoJoinUseAggressiveJoinAttemptThreshold;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetAutoJoinUseAggressiveJoinAttemptThreshold(
+    /* [in] */ Int32 autoJoinUseAggressiveJoinAttemptThreshold)
+{
+    mAutoJoinUseAggressiveJoinAttemptThreshold = autoJoinUseAggressiveJoinAttemptThreshold;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumScorerOverride(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumScorerOverride;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumScorerOverride(
+    /* [in] */ Int32 numScorerOverride)
+{
+    mNumScorerOverride = numScorerOverride;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumScorerOverrideAndSwitchedNetwork(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumScorerOverrideAndSwitchedNetwork;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumScorerOverrideAndSwitchedNetwork(
+    /* [in] */ Int32 numScorerOverrideAndSwitchedNetwork)
+{
+    mNumScorerOverrideAndSwitchedNetwork = numScorerOverrideAndSwitchedNetwork;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumAssociation(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumAssociation;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumAssociation(
+    /* [in] */ Int32 numAssociation)
+{
+    mNumAssociation = numAssociation;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumUserTriggeredWifiDisableLowRSSI(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumUserTriggeredWifiDisableLowRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumUserTriggeredWifiDisableLowRSSI(
+    /* [in] */ Int32 numUserTriggeredWifiDisableLowRSSI)
+{
+    mNumUserTriggeredWifiDisableLowRSSI = numUserTriggeredWifiDisableLowRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumUserTriggeredWifiDisableBadRSSI(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumUserTriggeredWifiDisableBadRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumUserTriggeredWifiDisableBadRSSI(
+    /* [in] */ Int32 numUserTriggeredWifiDisableBadRSSI)
+{
+    mNumUserTriggeredWifiDisableBadRSSI = numUserTriggeredWifiDisableBadRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumUserTriggeredWifiDisableNotHighRSSI(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumUserTriggeredWifiDisableNotHighRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumUserTriggeredWifiDisableNotHighRSSI(
+    /* [in] */ Int32 numUserTriggeredWifiDisableNotHighRSSI)
+{
+    mNumUserTriggeredWifiDisableNotHighRSSI = numUserTriggeredWifiDisableNotHighRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumTicksAtLowRSSI(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumTicksAtLowRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumTicksAtLowRSSI(
+    /* [in] */ Int32 numTicksAtLowRSSI)
+{
+    mNumTicksAtLowRSSI = numTicksAtLowRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumTicksAtBadRSSI(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumTicksAtBadRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumTicksAtBadRSSI(
+    /* [in] */ Int32 numTicksAtBadRSSI)
+{
+    mNumTicksAtBadRSSI = numTicksAtBadRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumTicksAtNotHighRSSI(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumTicksAtNotHighRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumTicksAtNotHighRSSI(
+    /* [in] */ Int32 numTicksAtNotHighRSSI)
+{
+    mNumTicksAtNotHighRSSI = numTicksAtNotHighRSSI;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetNumUserTriggeredJoinAttempts(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNumUserTriggeredJoinAttempts;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetNumUserTriggeredJoinAttempts(
+    /* [in] */ Int32 numUserTriggeredJoinAttempts)
+{
+    mNumUserTriggeredJoinAttempts = numUserTriggeredJoinAttempts;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetConnectChoices(
+    /* [out] */ IHashMap** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mConnectChoices;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetConnectChoices(
+    /* [in] */ IHashMap* connectChoices)
+{
+    mConnectChoices = connectChoices;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetLinkedConfigurations(
+    /* [out] */ IHashMap** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mLinkedConfigurations;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetLinkedConfigurations(
+    /* [in] */ IHashMap* linkedConfigurations)
+{
+    mLinkedConfigurations = linkedConfigurations;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetWepKeyVarNames(
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    assert(0);
+    // TODO
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetVisibility(
+    /* [in] */ Int64 age,
+    /* [out] */ IWifiConfigurationVisibility** resultOut)
+{
+    VALIDATE_NOT_NULL(resultOut);
+
+    if (mScanResultCache == NULL) {
+        mVisibility = NULL;
+        *resultOut = NULL;
+        return NOERROR;
+    }
+
+    AutoPtr<IWifiConfigurationVisibility> status;
+    CWifiConfigurationVisibility::New((IWifiConfigurationVisibility**)&status);
+
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Int64 now_ms;
+    system->GetCurrentTimeMillis(&now_ms);
+    AutoPtr<ICollection> values;
+    mScanResultCache->GetValues((ICollection**)&values);
+    AutoPtr<IIterator> iter;
+    values->GetIterator((IIterator**)&iter);
+    Boolean bNext;
+    iter->HasNext(&bNext);
+    for (; bNext; iter->HasNext(&bNext)) {
+        AutoPtr<IScanResult> result;
+        iter->GetNext((IInterface**)&result);
+        Int64 seen;
+        result->GetSeen(&seen);
+        if (seen == 0)
+            continue;
+
+        Boolean bIs5GHz, bIs24GHz;
+        result->Is5GHz(&bIs5GHz);
+        if (bIs5GHz) {
+            //strictly speaking: [4915, 5825]
+            //number of known BSSID on 5GHz band
+            Int32 num5;
+            status->GetNum5(&num5);
+            status->SetNum5(num5 + 1);
+        }
+        else if (result->Is24GHz(&bIs24GHz), bIs24GHz) {
+            //strictly speaking: [2412, 2482]
+            //number of known BSSID on 2.4Ghz band
+            Int32 num24;
+            status->GetNum24(&num24);
+            status->SetNum24(num24 + 1);
+        }
+
+        if ((now_ms - seen) > age) continue;
+
+        if (bIs5GHz) {
+            Int32 level, rssi5;
+            result->GetLevel(&level);
+            status->GetRssi5(&rssi5);
+            if (level > rssi5) {
+                status->SetRssi5(level);
+                status->SetAge5(seen);
+                String BSSID;
+                result->GetBSSID(&BSSID);
+                status->SetBSSID5(BSSID);
+            }
+        } else if (result->Is24GHz(&bIs24GHz), bIs24GHz) {
+            Int32 level, rssi24;
+            result->GetLevel(&level);
+            status->GetRssi24(&rssi24);
+            if (level > rssi24) {
+                status->SetRssi24(level);
+                status->SetAge24(seen);
+                String BSSID;
+                result->GetBSSID(&BSSID);
+                status->SetBSSID24(BSSID);
+            }
+        }
+    }
+
+    mVisibility = status;
+    *resultOut = status;
+
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::IsValid(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    if (mAllowedKeyManagement == NULL) {
+        *result = FALSE;
+    }
+
+    Int32 cardinality;
+    mAllowedKeyManagement->Cardinality(&cardinality);
+    if (cardinality > 1) {
+        if (cardinality != 2) {
+            *result = FALSE;
+            return NOERROR;
+        }
+
+        Boolean bFlag1;
+        mAllowedKeyManagement->Get(IWifiConfigurationKeyMgmt::WPA_EAP, &bFlag1);
+        if (bFlag1 == FALSE) {
+            return false;
+        }
+
+        Boolean bFlag2, bFlag3;
+        mAllowedKeyManagement->Get(IWifiConfigurationKeyMgmt::IEEE8021X, &bFlag2);
+        if (bFlag1 == FALSE
+                && (mAllowedKeyManagement->Get(IWifiConfigurationKeyMgmt::WPA_PSK, &bFlag3), bFlag3 == FALSE)) {
+            *result = FALSE;
+        }
+    }
+
+    // TODO: Add more checks
+    *result = TRUE;
+
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::IsLinked(
+    /* [in] */ IWifiConfiguration* config,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    AutoPtr<IHashMap> linkedConfigurations;
+    config->GetLinkedConfigurations((IHashMap**)&linkedConfigurations);
+    if (linkedConfigurations != NULL && mLinkedConfigurations != NULL) {
+        String key1, key2;
+        ConfigKey(&key1);
+        AutoPtr<IString> iKey1, iKey2;
+        CString::New(key1, (IString**)&iKey1);
+        AutoPtr<IInterface> value1, value2;
+        linkedConfigurations->Get(iKey1, (IInterface**)&value1);
+        if (value1 != NULL
+                && (config->ConfigKey(&key2),
+                    CString::New(key2, (IString**)&iKey2),
+                    mLinkedConfigurations->Get(iKey2, (IInterface**)&value2),
+                    value2 != NULL)) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+
+    *result = FALSE;
+
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::LastSeen(
+    /* [out] */ IScanResult** resultOut)
+{
+    VALIDATE_NOT_NULL(resultOut);
+
+    AutoPtr<IScanResult> mostRecent;
+
+    if (mScanResultCache == NULL) {
+        *resultOut = NULL;
+        return NOERROR;
+    }
+
+    AutoPtr<ICollection> values;
+    mScanResultCache->GetValues((ICollection**)&values);
+    AutoPtr<IIterator> iter;
+    values->GetIterator((IIterator**)&iter);
+    Boolean bNext;
+    iter->HasNext(&bNext);
+    for (; bNext; iter->HasNext(&bNext)) {
+        AutoPtr<IScanResult> result;
+        iter->GetNext((IInterface**)&result);
+        if (mostRecent == NULL) {
+            Int64 seen;
+            result->GetSeen(&seen);
+            if (seen != 0)
+               mostRecent = result;
+        }
+        else {
+            Int64 resultSeen, mostRecentSeen;
+            result->GetSeen(&resultSeen);
+            mostRecent->GetSeen(&mostRecentSeen);
+            if (resultSeen > mostRecentSeen) {
+               mostRecent = result;
+            }
+        }
+    }
+
+    *resultOut = mostRecent;
+
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetAutoJoinStatus(
+    /* [in] */ Int32 status)
+{
+    if (status < 0) status = 0;
+
+    if (status == 0) {
+        mBlackListTimestamp = 0;
+    }
+    else if (status > mAutoJoinStatus) {
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
+        system->GetCurrentTimeMillis(&mBlackListTimestamp);
+    }
+
+    if (status != mAutoJoinStatus) {
+        mAutoJoinStatus = status;
+        mDirty = TRUE;
+    }
+
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetKeyIdForCredentials(
+    /* [in] */ IWifiConfiguration* current,
+    /* [out] */ String* result)
+{
+    String keyMgmt;
+
+    // try {
+        // Get current config details for fields that are not initialized
+        if (TextUtils::IsEmpty(mSSID)) {
+            current->GetSSID(&mSSID);
+        }
+
+        Int32 cardinality;
+        assert(0);
+        // TODO
+        // mAllowedKeyManagement->Getcardinality(&cardinality);
+        if (cardinality == 0) {
+            current->GetAllowedKeyManagement((IBitSet**)&mAllowedKeyManagement);
+        }
+
+        Boolean bFlag;
+        mAllowedKeyManagement->Get(IWifiConfigurationKeyMgmt::WPA_EAP, &bFlag);
+        if (bFlag) {
+            AutoPtr<IWifiConfigurationKeyMgmt> iKeyMgmt;
+            CWifiConfigurationKeyMgmt::AcquireSingleton((IWifiConfigurationKeyMgmt**)&keyMgmt);
+            AutoPtr< ArrayOf<String> > strings;
+            iKeyMgmt->GetStrings((ArrayOf<String>**)&strings);
+            keyMgmt = (*strings)[IWifiConfigurationKeyMgmt::WPA_EAP];
+        }
+
+        mAllowedKeyManagement->Get(IWifiConfigurationKeyMgmt::IEEE8021X, &bFlag);
+        if (bFlag) {
+            AutoPtr<IWifiConfigurationKeyMgmt> iKeyMgmt;
+            CWifiConfigurationKeyMgmt::AcquireSingleton((IWifiConfigurationKeyMgmt**)&keyMgmt);
+            AutoPtr< ArrayOf<String> > strings;
+            iKeyMgmt->GetStrings((ArrayOf<String>**)&strings);
+            keyMgmt += (*strings)[IWifiConfigurationKeyMgmt::IEEE8021X];
+        }
+
+        if (TextUtils::IsEmpty(keyMgmt)) {
+            //throw new IllegalStateException("Not an EAP network");
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+
+        AutoPtr<IWifiEnterpriseConfig> enterpriseConfig;
+        if (current != NULL) {
+            current->GetEnterpriseConfig((IWifiEnterpriseConfig**)&enterpriseConfig);
+        }
+        String keyId;
+        assert(0);
+        // TODO
+        // mEnterpriseConfig->GetKeyId(enterpriseConfig, &keyId);
+        *result = TrimStringForKeyId(mSSID);
+        *result += "_";
+        *result += keyMgmt;
+        *result += "_";
+        *result += TrimStringForKeyId(keyId);
+
+        return NOERROR;
+    // } catch (NullPointerException e) {
+    //     throw new IllegalStateException("Invalid config details");
+    // }
+}
+
+ECode CWifiConfiguration::ConfigKey(
+    /* [in] */ Boolean allowCached,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    String key;
+    if (allowCached && mCachedConfigKey != NULL) {
+        key = mCachedConfigKey;
+    }
+    else {
+        AutoPtr<IWifiConfigurationKeyMgmt> keyMgmt;
+        CWifiConfigurationKeyMgmt::AcquireSingleton((IWifiConfigurationKeyMgmt**)&keyMgmt);
+        AutoPtr< ArrayOf<String> > strings;
+        keyMgmt->GetStrings((ArrayOf<String>**)&strings);
+        Boolean bFlag1, bFlag2, bFlag3;
+        mAllowedKeyManagement->Get(IWifiConfigurationKeyMgmt::WPA_PSK, &bFlag1);
+        if (bFlag1) {
+            key = mSSID;
+            key += (*strings)[IWifiConfigurationKeyMgmt::WPA_PSK];
+        }
+        else if ((mAllowedKeyManagement->Get(IWifiConfigurationKeyMgmt::WPA_EAP, &bFlag2), bFlag2) ||
+                (mAllowedKeyManagement->Get(IWifiConfigurationKeyMgmt::IEEE8021X, &bFlag3), bFlag3)) {
+            key = mSSID;
+            key += (*strings)[IWifiConfigurationKeyMgmt::WPA_EAP];
+        }
+        else if ((*mWepKeys)[0] != NULL) {
+            key = mSSID;
+            key += "WEP";
+        }
+        else {
+            key = mSSID;
+            key += (*strings)[IWifiConfigurationKeyMgmt::NONE];
+        }
+        mCachedConfigKey = key;
+    }
+
+    *result = key;
+
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::ConfigKey(
+    /* [out] */ String* result)
+{
+    return ConfigKey(FALSE, result);
+}
+
+ECode CWifiConfiguration::GetIpConfiguration(
+    /* [out] */ IIpConfiguration** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mIpConfiguration;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetIpConfiguration(
+    /* [in] */ IIpConfiguration* ipConfiguration)
+{
+    mIpConfiguration = ipConfiguration;
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::GetStaticIpConfiguration(
+    /* [out] */ IStaticIpConfiguration** result)
+{
+    return mIpConfiguration->GetStaticIpConfiguration(result);
+}
+
+ECode CWifiConfiguration::SetStaticIpConfiguration(
+    /* [in] */ IStaticIpConfiguration* staticIpConfiguration)
+{
+    return mIpConfiguration->SetStaticIpConfiguration(staticIpConfiguration);
+}
+
+ECode CWifiConfiguration::GetHttpProxy(
+    /* [out] */ IProxyInfo** result)
+{
+    return mIpConfiguration->GetHttpProxy(result);
+}
+
+ECode CWifiConfiguration::SetHttpProxy(
+    /* [in] */ IProxyInfo* httpProxy)
+{
+    mIpConfiguration->SetHttpProxy(httpProxy);
+    return NOERROR;
+}
+
+ECode CWifiConfiguration::SetProxy(
+    /* [in] */ IpConfigurationProxySettings* settings,
+    /* [in] */ IProxyInfo* proxy)
+{
+    assert(0);
+    // TODO
+    // mIpConfiguration->SetProxySettings(settings);
+    mIpConfiguration->SetHttpProxy(proxy);
+    return NOERROR;
+}
+
 ECode CWifiConfiguration::GetIpAssignment(
-    /* [out] */ IpAssignment* ipAssignment)
+    /* [out] */ IpConfigurationIpAssignment** ipAssignment)
 {
     VALIDATE_NOT_NULL(ipAssignment);
-    *ipAssignment = mIpAssignment;
-    return NOERROR;
+    assert(0);
+    // TODO
+    // *ipAssignment = mIpAssignment;
+    // return NOERROR;
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiConfiguration::SetIpAssignment(
-    /* [in] */ IpAssignment ipAssignment)
+    /* [in] */ IpConfigurationIpAssignment* ipAssignment)
 {
-    mIpAssignment = ipAssignment;
-    return NOERROR;
+    assert(0);
+    // TODO
+    // mIpAssignment = ipAssignment;
+    // return NOERROR;
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiConfiguration::GetProxySettings(
-    /* [out] */ ProxySettings* proxySettings)
+    /* [out] */ IpConfigurationProxySettings** proxySettings)
 {
     VALIDATE_NOT_NULL(proxySettings);
-    *proxySettings = mProxySettings;
-    return NOERROR;
+    assert(0);
+    // TODO
+    // *proxySettings = mProxySettings;
+    // return NOERROR;
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiConfiguration::SetProxySettings(
-    /* [in] */ ProxySettings proxySettings)
+    /* [in] */ IpConfigurationProxySettings* proxySettings)
 {
-    mProxySettings = proxySettings;
-    return NOERROR;
+    assert(0);
+    // TODO
+    // mProxySettings = proxySettings;
+    // return NOERROR;
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiConfiguration::GetLinkProperties(

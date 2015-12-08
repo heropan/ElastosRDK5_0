@@ -4,10 +4,10 @@
 
 #include "elastos/droid/view/ViewBaseSavedState.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
-namespace Internal{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
+namespace Internal {
 
 class LockPatternViewSavedState : public Elastos::Droid::View::ViewBaseSavedState
 {

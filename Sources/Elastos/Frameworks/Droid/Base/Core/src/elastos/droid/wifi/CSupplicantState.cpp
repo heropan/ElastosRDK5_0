@@ -1,11 +1,14 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CSupplicantState.h"
-
+#include "elastos/droid/wifi/CSupplicantState.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Wifi {
+
+CAR_INTERFACE_IMPL_2(CSupplicantState, Object, ISupplicantState, IParcelable)
+
+CAR_OBJECT_IMPL(CSupplicantState)
 
 ECode CSupplicantState::constructor()
 {
@@ -53,7 +56,6 @@ ECode CSupplicantState::WriteToParcel(
 
     return dest->WriteInt32((Int32)mState);
 }
-
 
 } // namespace Wifi
 } // namespace Droid

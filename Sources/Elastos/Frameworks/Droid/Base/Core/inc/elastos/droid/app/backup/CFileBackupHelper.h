@@ -7,10 +7,10 @@
 
 using Elastos::Droid::Content::IContext;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 CarClass(CFileBackupHelper), public FileBackupHelperBase
 {
@@ -45,4 +45,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif
+#endif//__ELASTOS_DROID_APP_BACKUP_CFILEBACKUPHELPER_H__

@@ -4,22 +4,19 @@
 
 #include "elastos/droid/widget/BaseAdapter.h"
 #include "elastos/droid/widget/Filter.h"
-#include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::Widget::BaseAdapter;
 using Elastos::Droid::Widget::Filter;
-using Elastos::Droid::Widget::IFilterResults;
-using Elastos::Droid::Widget::IFilter;
 using Elastos::Core::IComparator;
+using Elastos::Utility::IArrayList;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;
-using Elastos::Utility::Etl::List;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class ArrayAdapter
     : public BaseAdapter
@@ -169,6 +166,21 @@ public:
         /* [in] */ IViewGroup* parent,
         /* [out] */ IView** view);
 
+    /**
+     * Creates a new ArrayAdapter from external resources. The content of the array is
+     * obtained through {@link android.content.res.Resources#getTextArray(int)}.
+     *
+     * @param context The application's environment.
+     * @param textArrayResId The identifier of the array to use as the data source.
+     * @param textViewResId The identifier of the layout used to create views.
+     *
+     * @return An ArrayAdapter<CharSequence>.
+     */
+    static CARAPI_(AutoPtr<IArrayAdapter>) CreateFromResource(
+        /* [in] */ IContext* context,
+        /* [in] */ Int32 textArrayResId,
+        /* [in] */ Int32 textViewResId);
+
     virtual CARAPI GetFilter(
         /* [out] */ IFilter** filter);
 
@@ -186,16 +198,12 @@ private:
         /* [in] */ IViewGroup* parent,
         /* [in] */ Int32 resource);
 
-    CARAPI Sort(
-        /* [in] */ List<AutoPtr<IInterface> >* list,
-        /* [in] */ IComparator* comparator);
-
 private:
     /**
      * Contains the list of objects that represent the data of this ArrayAdapter.
      * The content of this list is referred to as "the array" in the documentation.
      */
-    List<AutoPtr<IInterface> > mObjects;
+    AutoPtr<IList> mObjects;
 
     /**
      * Lock used to modify the content of {@link #mObjects}. Any write operation
@@ -236,7 +244,7 @@ private:
 
     // A copy of the original mObjects array, initialized from and then used instead as soon as
     // the mFilter ArrayFilter is used. mObjects will then only contain the filtered values.
-    AutoPtr< List<AutoPtr<IInterface> > > mOriginalValues;
+    AutoPtr<IArrayList> mOriginalValues;
 
     AutoPtr<ArrayFilter> mFilter;
 

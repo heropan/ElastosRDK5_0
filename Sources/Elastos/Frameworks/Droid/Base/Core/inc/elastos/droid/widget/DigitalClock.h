@@ -10,9 +10,9 @@ using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Database::ContentObserver;
 using Elastos::Utility::ICalendar;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 class DigitalClock : public TextView
 {

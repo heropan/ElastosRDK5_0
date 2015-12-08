@@ -3,19 +3,21 @@
 #define  __ELASTOS_DROID_APP_BACKUP_CBACKUPDATAINPUT_H__
 
 #include "_Elastos_Droid_App_Backup_CBackupDataInput.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IFileDescriptor;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 CarClass(CBackupDataInput)
+    , public Object
+    , public IBackupDataInput
 {
 private:
-    class EntityHeader : public ElLightRefBase
+    class EntityHeader : public Object
     {
     public:
         EntityHeader();
@@ -26,6 +28,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CBackupDataInput();
 
     ~CBackupDataInput();

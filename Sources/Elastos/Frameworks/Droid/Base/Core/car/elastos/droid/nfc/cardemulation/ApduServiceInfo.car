@@ -8,8 +8,8 @@ module
     interface Elastos.IO.IFileDescriptor;
     interface Elastos.IO.IPrintWriter;
 
-    namespace Elastos{
-    namespace Droid{
+    namespace Elastos {
+    namespace Droid {
     namespace NFC{
     namespace Cardemulation{
 

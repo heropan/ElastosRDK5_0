@@ -27,8 +27,8 @@ ECode ColorChooserElastos::InnerOnColorChangedListener::OnColorChanged(
     // mDialog.dismiss();
     // nativeOnColorChosen(mNativeColorChooserAndroid, color);
 
-    assert(NULL == mOwner);
-    assert(NULL == mOwner->mDialog);
+    assert(NULL != mOwner);
+    assert(NULL != mOwner->mDialog);
     //mOwner->mDialog->Dismiss();
     mOwner->NativeOnColorChosen(mOwner->mNativeColorChooserElastos, color);
     return NOERROR;

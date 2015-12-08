@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_TextToSpeechService_H__
 #define __ELASTOS_DROID_SPEECH_TTS_TextToSpeechService_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 
 #include "elastos/droid/app/Service.h"
 #include "elastos/droid/speech/tts/AudioPlaybackHandler.h"
@@ -30,6 +32,7 @@ using Elastos::Droid::App::Service;
 //using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Set;
+
 namespace Elastos {
 namespace Droid {
 namespace Speech {
@@ -37,16 +40,14 @@ namespace Tts {
 
 /**
  * Abstract base class for TTS engine implementations. The following methods
- * need to be implemented.
- *
+ * need to be implemented:
  * <ul>
- *   <li>{@link #onIsLanguageAvailable}</li>
- *   <li>{@link #onLoadLanguage}</li>
- *   <li>{@link #onGetLanguage}</li>
- *   <li>{@link #onSynthesizeText}</li>
- *   <li>{@link #onStop}</li>
+ * <li>{@link #onIsLanguageAvailable}</li>
+ * <li>{@link #onLoadLanguage}</li>
+ * <li>{@link #onGetLanguage}</li>
+ * <li>{@link #onSynthesizeText}</li>
+ * <li>{@link #onStop}</li>
  * </ul>
- *
  * The first three deal primarily with language management, and are used to
  * query the engine for it's support for a given language and indicate to it
  * that requests in a given language are imminent.
@@ -54,19 +55,47 @@ namespace Tts {
  * {@link #onSynthesizeText} is central to the engine implementation. The
  * implementation should synthesize text as per the request parameters and
  * return synthesized data via the supplied callback. This class and its helpers
- * will then consume that data, which might mean queueing it for playback or writing
- * it to a file or similar. All calls to this method will be on a single
- * thread, which will be different from the main thread of the service. Synthesis
- * must be synchronous which means the engine must NOT hold on the callback or call
- * any methods on it after the method returns
+ * will then consume that data, which might mean queuing it for playback or writing
+ * it to a file or similar. All calls to this method will be on a single thread,
+ * which will be different from the main thread of the service. Synthesis must be
+ * synchronous which means the engine must NOT hold on to the callback or call any
+ * methods on it after the method returns.
  *
- * {@link #onStop} tells the engine that it should stop all ongoing synthesis, if
- * any. Any pending data from the current synthesis will be discarded.
+ * {@link #onStop} tells the engine that it should stop
+ * all ongoing synthesis, if any. Any pending data from the current synthesis
+ * will be discarded.
  *
+ * {@link #onGetLanguage} is not required as of JELLYBEAN_MR2 (API 18) and later, it is only
+ * called on earlier versions of Android.
+ *
+ * API Level 20 adds support for Voice objects. Voices are an abstraction that allow the TTS
+ * service to expose multiple backends for a single locale. Each one of them can have a different
+ * features set. In order to fully take advantage of voices, an engine should implement
+ * the following methods:
+ * <ul>
+ * <li>{@link #onGetVoices()}</li>
+ * <li>{@link #onIsValidVoiceName(String)}</li>
+ * <li>{@link #onLoadVoice(String)}</li>
+ * <li>{@link #onGetDefaultVoiceNameFor(String, String, String)}</li>
+ * </ul>
+ * The first three methods are siblings of the {@link #onGetLanguage},
+ * {@link #onIsLanguageAvailable} and {@link #onLoadLanguage} methods. The last one,
+ * {@link #onGetDefaultVoiceNameFor(String, String, String)} is a link between locale and voice
+ * based methods. Since API level 21 {@link TextToSpeech#setLanguage} is implemented by
+ * calling {@link TextToSpeech#setVoice} with the voice returned by
+ * {@link #onGetDefaultVoiceNameFor(String, String, String)}.
+ *
+ * If the client uses a voice instead of a locale, {@link SynthesisRequest} will contain the
+ * requested voice name.
+ *
+ * The default implementations of Voice-related methods implement them using the
+ * pre-existing locale-based implementation.
  */
 //public abstract class
 class TextToSpeechService
-    : public Elastos::Droid::App::Service
+    : public Object
+    , public Elastos::Droid::App::Service
+    , public ITextToSpeechService
 {
 private:
     /**
@@ -74,36 +103,27 @@ private:
      */
     //private class
     class SynthThread
-        : public ElRefBase
+        : public Object
 //        , public HandlerThread
         , public IIdleHandler
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        SynthThread();
 
-        CARAPI_(UInt32) Release();
+        virtual ~SynthThread();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
+        CARAPI constructor();
     public:
-        //public
         SynthThread(
             /* [in] */ TextToSpeechService* ttss);
-    public:
-        //@Override
-        //public boolean
+
         CARAPI QueueIdle(
             /* [out] */ Boolean* result);
-    protected:
-        //@Override
-        //protected
+
         CARAPI_(void) OnLooperPrepared();
-    private:
-        //private
+
         CARAPI_(void) BroadcastTtsQueueProcessingCompleted();
 
     private:
@@ -117,38 +137,28 @@ private:
      */
     //private abstract class
     class SpeechItem
-        : public ElRefBase
+        : public Object
         , public ITextToSpeechServiceUtteranceProgressDispatcher
+        , public ITextToSpeechSpeechItem
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        SpeechItem();
 
-        CARAPI_(UInt32) Release();
+        virtual ~SpeechItem();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
-    public:
-        //public
-        SpeechItem(
+        CARAPI constructor();
+
+        CARAPI constructor(
             /* [in] */ IInterface* caller,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
             /* [in] */ IBundle* params,
             /* [in] */ TextToSpeechService* ttss);
 
-        //public
-        CARAPI_(AutoPtr<IInterface>) GetCallerIdentity();
-
-        /**
-         * Checker whether the item is valid. If this method returns false, the item should not
-         * be played.
-         */
-        //public abstract
-        virtual CARAPI_(Boolean) IsValid() = 0;
+        CARAPI GetCallerIdentity(
+            /* [out] */ IInterface *ret);
 
         /**
          * Plays the speech item. Blocks until playback is finished.
@@ -159,7 +169,7 @@ private:
          * @return {@link TextToSpeech#SUCCESS} or {@link TextToSpeech#ERROR}.
          */
         //public
-        CARAPI_(Int32) Play();
+        CARAPI Play();
 
         /**
          * Stops the speech item.
@@ -168,7 +178,7 @@ private:
          * Can be called on multiple threads,  but not on the synthesis thread.
          */
         //public
-        CARAPI_(void) Stop();
+        CARAPI Stop();
 
         //@Override
         //public
@@ -182,11 +192,11 @@ private:
         //public
         CARAPI DispatchOnError();
 
-        //public
-        CARAPI_(Int32) GetCallerUid();
+        CARAPI GetCallerUid(
+            /* [out] */ Int32* ret);
 
-        //public
-        CARAPI_(Int32) GetCallerPid();
+        CARAPI GetCallerPid(
+            /* [out] */ Int32* ret);
 
     public:
         //public
@@ -200,6 +210,13 @@ private:
 
         //public
         CARAPI_(String) GetUtteranceId();
+
+        /**
+         * Checker whether the item is valid. If this method returns false, the item should not
+         * be played.
+         */
+        //public abstract
+        virtual CARAPI_(Boolean) IsValid() = 0;
 
     protected:
         //protected synchronized
@@ -247,174 +264,296 @@ private:
     };
 
 public:
-    //class
-    class SynthesisSpeechItem
+    /**
+     * An item in the synth thread queue that process utterance (and call back to client about
+     * progress).
+     */
+    class UtteranceSpeechItem
         : public SpeechItem
+        , public IUtteranceProgressDispatcher
     {
     public:
-        //public
-        SynthesisSpeechItem(
-            /* [in] */ IInterface* callerIdentity,
+        UtteranceSpeechItem(
+            /* [in] */ IInterface* caller,
+            /* [in] */ Int32 callerUid,
+            /* [in] */ Int32 callerPid);
+
+        void DispatchOnSuccess();
+
+        void DispatchOnStop();
+
+        void DispatchOnStart();
+
+        void DispatchOnError(
+            /* [in] */ Int32 errorCode);
+
+        String GetUtteranceId();
+
+        String GetStringParam(
+            /* [in] */ IBundle params,
+            /* [in] */ const String& key,
+            /* [in] */ const String& defaultValue);
+
+        Int32 GetIntParam(
+            /* [in] */ IBundle params,
+            /* [in] */ const String& key,
+            /* [in] */ Int32 defaultValue);
+
+        Float GetFloatParam(
+            /* [in] */ IBundle params,
+            /* [in] */ const String& key,
+            /* [in] */ Float defaultValue);
+    };
+
+public:
+    /**
+     * UtteranceSpeechItem for V1 API speech items. V1 API speech items keep
+     * synthesis parameters in a single Bundle passed as parameter. This class
+     * allow subclasses to access them conveniently.
+     */
+    class SpeechItemV1
+        : public UtteranceSpeechItem
+    {
+        SpeechItemV1(
+            /* [in] */ IInterface callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ IBundle* params,
-            /* [in] */ const String& text,
-            /* [in] */ TextToSpeechService* ttss);
+            /* [in] */ Bundle params,
+            /* [in] */ const String& utteranceId);
 
-        //public
-        String GetText();
-
-        //@Override
-        //public
-        Boolean IsValid();
-
-    public:
-        //public
-        String GetLanguage();
-
-    protected:
-        //@Override
-        //protected
-        Int32 PlayImpl();
-
-        //protected
-        AutoPtr<AbstractSynthesisCallback> CreateSynthesisCallback();
-
-    protected:
-        //@Override
-        //protected
-        void StopImpl();
-
-    private:
-        //private
-        void SetRequestParams(
-            /* [in] */ ISynthesisRequest* request);
-
-    private:
-        //private
         Boolean HasLanguage();
 
-        //private
-        String GetCountry();
-
-        //private
-        String GetVariant();
-
-        //private
         Int32 GetSpeechRate();
 
-        //private
         Int32 GetPitch();
 
+        String GetUtteranceId();
+
+        AudioOutputParams getAudioParams();
+
+    protected:
+        IBundle mParams;
+        String mUtteranceId;
+
+    };
+
+public:
+
+    class SynthesisSpeechItemV1
+        : SpeechItemV1
+    {
     private:
         // Never null.
-        //private final
-        String mText;
-        //private final
-        AutoPtr<ISynthesisRequest> mSynthesisRequest;
-        //private final
-        AutoPtr< ArrayOf<String> > mDefaultLocale;
+        ICharSequence mText;
+        SynthesisRequest mSynthesisRequest;
+        ArrayOf<String> mDefaultLocale;
         // Non null after synthesis has started, and all accesses
         // guarded by 'this'.
-        //private
-        AutoPtr<AbstractSynthesisCallback> mSynthesisCallback;
-        //private final
-        AutoPtr<EventLogger> mEventLogger;
+        AbstractSynthesisCallback mSynthesisCallback;
+        EventLoggerV1 mEventLogger;
+        Int32 mCallerUid;
+
+    public:
+        SynthesisSpeechItemV1(
+            /* [in] */ IInterface callerIdentity,
+            /* [in] */ Int32 callerUid,
+            /* [in] */ Int32 callerPid,
+            /* [in] */ IBundle params,
+            /* [in] */ const String& utteranceId,
+            /* [in] */ ICharSequence text);
+
+        ICharSequence getText();
+
+        boolean isValid();
+
+        void playImpl();
+
+        AbstractSynthesisCallback createSynthesisCallback();
+
+        void setRequestParams(
+            /* [in] */ SynthesisRequest request);
+
+        void stopImpl();
+
+        String getCountry();
+
+        String getVariant();
+
+        String getLanguage();
+
+        String getVoiceName();
     };
 
 private:
-    //private class
-    class SynthesisToFileSpeechItem
-        : public SynthesisSpeechItem
+
+    class SynthesisToFileOutputStreamSpeechItemV1
+        : SynthesisSpeechItemV1
     {
+    private:
+        IFileOutputStream mFileOutputStream;
+
     public:
-        //public
-        SynthesisToFileSpeechItem(
-            /* [in] */ IInterface* callerIdentity,
+        SynthesisToFileOutputStreamSpeechItemV1(
+            /* [in] */ IInterface callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ IBundle* params,
-            /* [in] */ const String& text,
-            /* [in] */ IFile* file,
-            /* [in] */ TextToSpeechService* ttss);
+            /* [in] */ IBundle params,
+            /* [in] */ const String& utteranceId,
+            /* [in] */ ICharSequence text,
+            /* [in] */ IFileOutputStream fileOutputStream);
 
-    protected:
-        //@Override
-        //protected
-        AutoPtr<AbstractSynthesisCallback> CreateSynthesisCallback();
+        AbstractSynthesisCallback createSynthesisCallback();
 
-        //@Override
-        //protected
-        Int32 PlayImpl();
-
-    private:
-        //private final
-        AutoPtr<IFile> mFile;
+        void playImpl();
     };
 
-    //private class
-    class AudioSpeechItem
-        : public SpeechItem
+public:
+    /** Set of parameters affecting audio output. */
+    class AudioOutputParams {
+        /**
+         * Audio session identifier. May be used to associate audio playback with one of the
+         * {@link android.media.audiofx.AudioEffect} objects. If not specified by client,
+         * it should be equal to {@link AudioSystem#AUDIO_SESSION_ALLOCATE}.
+         */
+        Int32 mSessionId;
+
+        /**
+         * Volume, in the range [0.0f, 1.0f]. The default value is
+         * {@link TextToSpeech.Engine#DEFAULT_VOLUME} (1.0f).
+         */
+        Float mVolume;
+
+        /**
+         * Left/right position of the audio, in the range [-1.0f, 1.0f].
+         * The default value is {@link TextToSpeech.Engine#DEFAULT_PAN} (0.0f).
+         */
+        Float mPan;
+
+        /**
+         * Audio attributes, set by {@link TextToSpeech#setAudioAttributes}
+         * or created from the value of {@link TextToSpeech.Engine#KEY_PARAM_STREAM}.
+         */
+        AutoPtr<IAudioAttributes> mAudioAttributes;
+
+        /** Create AudioOutputParams with default values */
+        AudioOutputParams();
+
+        AudioOutputParams(
+            /* [in] */ Int32 sessionId,
+            /* [in] */ Float volume,
+            /* [in] */ Float pan,
+            /* [in] */ AudioAttributes audioAttributes);
+
+        /** Create AudioOutputParams from A {@link SynthesisRequest#getParams()} bundle */
+        static AudioOutputParams createFromV1ParamsBundle(
+            /* [in] */ IBundle paramsBundle,
+            /* [in] */ Boolean isSpeech);
+    };
+
+private:
+    class AudioSpeechItemV1
+        : public SpeechItemV1
     {
-    public:
-        //public
-        AudioSpeechItem(
-            /* [in] */ IInterface* callerIdentity,
-            /* [in] */ Int32 callerUid,
-            /* [in] */ Int32 callerPid,
-            /* [in] */ IBundle* params,
-            /* [in] */ IUri* uri,
-            /* [in] */ TextToSpeechService* ttss);
-
-        //@Override
-        //public
-        Boolean IsValid();
-
-    protected:
-        //@Override
-        //protected
-        Int32 PlayImpl();
-
-        //@Override
-        //protected
-        void StopImpl();
-
     private:
-        //private final
-        AutoPtr<AudioPlaybackQueueItem> mItem;
+        AudioPlaybackQueueItem mItem;
+
+    public:
+        AudioSpeechItemV1(
+            /* [in] */ IInterface callerIdentity,
+            /* [in] */ Int64 callerUid,
+            /* [in] */ Int64 callerPid,
+            /* [in] */ Bundle params,
+            /* [in] */ const String& utteranceId,
+            /* [in] */ Uri uri);
+
+        Boolean isValid();
+
+        void playImpl();
+
+        void stopImpl();
+
+        String getUtteranceId();
+
+        AudioOutputParams getAudioParams();
     };
 
-    //private class
+private:
     class SilenceSpeechItem
-        : public SpeechItem
+        : public UtteranceSpeechItem
     {
+    private:
+        Int64 mDuration;
+        String mUtteranceId;
+
     public:
-        //public
         SilenceSpeechItem(
-            /* [in] */ IInterface* callerIdentity,
+            /* [in] */ IInterface callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ IBundle* params,
-            /* [in] */ Int64 duration,
-            /* [in] */ TextToSpeechService* ttss);
+            /* [in] */ const String& utteranceId,
+            /* [in] */ Int64 duration);
 
-        //@Override
-        //public
-        Boolean IsValid();
+        Boolean isValid();
 
-    protected:
-        //@Override
-        //protected
-        Int32 PlayImpl();
+        void playImpl();
 
-        //@Override
-        //protected
-        void StopImpl();
+        void stopImpl();
 
-    private:
-        //private final
-        Int64 mDuration;
+        String getUtteranceId();
     };
+
+private:
+
+    /**
+     * Call {@link TextToSpeechService#onLoadLanguage} on synth thread.
+     */
+     class LoadLanguageItem
+        : public SpeechItem
+    {
+    private:
+        String mLanguage;
+        String mCountry;
+        String mVariant;
+
+    public:
+        LoadLanguageItem(
+            /* [in] */ IInterface callerIdentity,
+            /* [in] */ Int32 callerUid,
+            /* [in] */ Int32 callerPid,
+            /* [in] */ const String& language,
+            /* [in] */ const String& country,
+            /* [in] */ const String& variant);
+
+        Boolean isValid();
+
+        void playImpl();
+
+        void stopImpl();
+    };
+
+private:
+    /**
+     * Call {@link TextToSpeechService#onLoadLanguage} on synth thread.
+     */
+    class LoadVoiceItem
+        : public SpeechItem
+    {
+    private:
+        String mVoiceName;
+
+    public:
+        LoadVoiceItem(
+            /* [in] */ IInterface callerIdentity,
+            /* [in] */ Int32 callerUid,
+            /* [in] */ Int32 callerPid,
+            /* [in] */ const String& voiceName) {
+
+        Boolean isValid();
+
+        void playImpl();
+
+        void stopImpl();
+    }
 
 private:
     //private class
@@ -497,20 +636,18 @@ private:
 
 private:
     class TextToSpeechServiceStub
-        : public ElRefBase
+        : public Object
         , public IITextToSpeechService
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        TextToSpeechServiceStub();
 
-        CARAPI_(UInt32) Release();
+        virtual ~TextToSpeechServiceStub();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
+        CARAPI constructor();
+
     public:
         //@Override
         //public int
@@ -621,7 +758,7 @@ private:
 private:
     //private class
     class CallbackMap
-        : public ElRefBase
+        : public Object
 //        , public IRemoteCallbackList
 //        , public RemoteCallbackList
     {
@@ -690,9 +827,84 @@ public:
 
 protected:
     /**
+     * Queries the service for a set of supported voices.
+     *
+     * Can be called on multiple threads.
+     *
+     * The default implementation tries to enumerate all available locales, pass them to
+     * {@link #onIsLanguageAvailable(String, String, String)} and create Voice instances (using
+     * the locale's BCP-47 language tag as the voice name) for the ones that are supported.
+     * Note, that this implementation is suitable only for engines that don't have multiple voices
+     * for a single locale. Also, this implementation won't work with Locales not listed in the
+     * set returned by the {@link Locale#getAvailableLocales()} method.
+     *
+     * @return A list of voices supported.
+     */
+    CARAPI OnGetVoices(
+        /* [out] */ IList** voices);
+
+    /**
+     * Return a name of the default voice for a given locale.
+     *
+     * This method provides a mapping between locales and available voices. This method is
+     * used in {@link TextToSpeech#setLanguage}, which calls this method and then calls
+     * {@link TextToSpeech#setVoice} with the voice returned by this method.
+     *
+     * Also, it's used by {@link TextToSpeech#getDefaultVoice()} to find a default voice for
+     * the default locale.
+     *
+     * @param lang ISO-3 language code.
+     * @param country ISO-3 country code. May be empty or null.
+     * @param variant Language variant. May be empty or null.
+
+     * @return A name of the default voice for a given locale.
+     */
+    CARAPI OnGetDefaultVoiceNameFor(
+        /* [in]  */ String lang,
+        /* [in]  */ String country,
+        /* [in]  */ String variant,
+        /* [out] */ String* name);
+
+    /**
+     * Notifies the engine that it should load a speech synthesis voice. There is no guarantee
+     * that this method is always called before the voice is used for synthesis. It is merely
+     * a hint to the engine that it will probably get some synthesis requests for this voice
+     * at some point in the future.
+     *
+     * Will be called only on synthesis thread.
+     *
+     * The default implementation creates a Locale from the voice name (by interpreting the name as
+     * a BCP-47 tag for the locale), and passes it to
+     * {@link #onLoadLanguage(String, String, String)}.
+     *
+     * @param voiceName Name of the voice.
+     * @return {@link TextToSpeech#ERROR} or {@link TextToSpeech#SUCCESS}.
+     */
+    CARAPI OnLoadVoice(
+        /* [in]  */ String voiceName,
+        /* [out] */ Int32* voice);
+
+    /**
+     * Checks whether the engine supports a voice with a given name.
+     *
+     * Can be called on multiple threads.
+     *
+     * The default implementation treats the voice name as a language tag, creating a Locale from
+     * the voice name, and passes it to {@link #onIsLanguageAvailable(String, String, String)}.
+     *
+     * @param voiceName Name of the voice.
+     * @return {@link TextToSpeech#ERROR} or {@link TextToSpeech#SUCCESS}.
+     */
+    CARAPI OnIsValidVoiceName(
+        /* [in]  */ String voiceName,
+        /* [out] */ Int32* ret);
+
+    /**
      * Checks whether the engine supports a given language.
      *
      * Can be called on multiple threads.
+     *
+     * Its return values HAVE to be consistent with onLoadLanguage.
      *
      * @param lang ISO-3 language code.
      * @param country ISO-3 country code. May be empty or null.
@@ -712,6 +924,9 @@ protected:
 
     /**
      * Returns the language, country and variant currently being used by the TTS engine.
+     *
+     * This method will be called only on Android 4.2 and before (API <= 17). In later versions
+     * this method is not called by the Android TTS framework.
      *
      * Can be called on multiple threads.
      *
@@ -733,6 +948,8 @@ protected:
      * at some point in the future.
      *
      * Can be called on multiple threads.
+     * In <= Android 4.2 (<= API 17) can be called on main and service binder threads.
+     * In > Android 4.2 (> API 17) can be called on main and synthesis threads.
      *
      * @param lang ISO-3 language code.
      * @param country ISO-3 country code. May be empty or null.
@@ -760,14 +977,14 @@ protected:
     virtual CARAPI_(void) OnStop() = 0;
 
     /**
-     * Tells the service to synthesize speech from the given text. This method should
-     * block until the synthesis is finished.
-     *
-     * Called on the synthesis thread.
+     * Tells the service to synthesize speech from the given text. This method
+     * should block until the synthesis is finished. Used for requests from V1
+     * clients ({@link android.speech.tts.TextToSpeech}). Called on the synthesis
+     * thread.
      *
      * @param request The synthesis request.
-     * @param callback The callback the the engine must use to make data available for
-     *         playback or for writing to a file.
+     * @param callback The callback that the engine must use to make data
+     *            available for playback or for writing to a file.
      */
     //protected abstract
     virtual CARAPI_(void) OnSynthesizeText(
@@ -776,6 +993,8 @@ protected:
 
     /**
      * Queries the service for a set of features supported for a given language.
+     *
+     * Can be called on multiple threads.
      *
      * @param lang ISO-3 language code.
      * @param country ISO-3 country code. May be empty or null.
@@ -790,6 +1009,10 @@ protected:
 
 private:
     //private
+    CARAPI_(Int32) GetExpectedLanguageAvailableStatus(
+        /* [in] */ ILocale* locale);
+
+    //private
     CARAPI_(Int32) GetDefaultSpeechRate();
 
     //private
@@ -802,14 +1025,14 @@ private:
 
 private:
     //private
-    static const Boolean DBG;// = FALSE;
+    static const Boolean DBG;           // = FALSE;
     //private
-    static const CString TAG;// = "TextToSpeechService";
+    static const String TAG;            // = "TextToSpeechService";
 
     //private
-    static const Int32 MAX_SPEECH_ITEM_CHAR_LENGTH;// = 4000;
+    static const Int32 MAX_SPEECH_ITEM_CHAR_LENGTH;     // = 4000;
     //private
-    static const CString SYNTH_THREAD_NAME;// = "SynthThread";
+    static const CString SYNTH_THREAD_NAME;             // = "SynthThread";
 
     //private
     AutoPtr<SynthHandler> mSynthHandler;
@@ -834,11 +1057,9 @@ private:
     // NOTE: All calls that are passed in a calling app are interned so that
     // they can be used as message objects (which are tested for equality using ==).
     //private final
-    AutoPtr<IITextToSpeechService> mBinder;// = (IITextToSpeechService*)(new TextToSpeechServiceStub());
+    AutoPtr<IITextToSpeechService> mBinder;             // = (IITextToSpeechService*)(new TextToSpeechServiceStub());
 
 };
-
-
 
 } // namespace Tts
 } // namespace Speech

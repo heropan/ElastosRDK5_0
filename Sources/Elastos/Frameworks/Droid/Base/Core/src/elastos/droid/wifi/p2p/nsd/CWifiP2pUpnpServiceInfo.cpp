@@ -1,15 +1,15 @@
 
-#include "CWifiP2pUpnpServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pUpnpServiceInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "CWifiP2pServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceInfo.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Utility::IUUID;
 using Elastos::Utility::IUUIDHelper;
 using Elastos::Utility::CUUIDHelper;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -17,14 +17,7 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-PInterface CWifiP2pUpnpServiceInfo::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_WifiP2pServiceInfo) {
-        return reinterpret_cast<PInterface>((WifiP2pServiceInfo*)this);
-    }
-    return _CWifiP2pUpnpServiceInfo::Probe(riid);
-}
+CAR_OBJECT_IMPL(CWifiP2pUpnpServiceInfo)
 
 ECode CWifiP2pUpnpServiceInfo::constructor()
 {
@@ -34,7 +27,7 @@ ECode CWifiP2pUpnpServiceInfo::constructor()
 ECode CWifiP2pUpnpServiceInfo::constructor(
     /* [in] */ ArrayOf<String>* queryList)
 {
-    return WifiP2pServiceInfo::Init(queryList);
+    return WifiP2pServiceInfo::constructor(queryList);
 }
 
 ECode CWifiP2pUpnpServiceInfo::GetSupplicantQueryList(
@@ -110,7 +103,9 @@ ECode CWifiP2pUpnpServiceInfo::NewInstance(
 
     AutoPtr<CWifiP2pUpnpServiceInfo> wpusi;
     CWifiP2pUpnpServiceInfo::NewByFriend(info, (CWifiP2pUpnpServiceInfo**)&wpusi);
-    *instance = (CWifiP2pUpnpServiceInfo*)wpusi.Get();
+    assert(0);
+    // TODO
+    // *instance = (CWifiP2pUpnpServiceInfo*)wpusi.Get();
     REFCOUNT_ADD(*instance);
     return NOERROR;
 }
@@ -125,7 +120,11 @@ ECode CWifiP2pUpnpServiceInfo::CreateSupplicantQuery(
     StringBuilder sb;
     sb += "upnp ";
     String temp;
-    temp.AppendFormat("%02x ", IWifiP2pUpnpServiceInfo::VERSION_1_0);
+    assert(0);
+    // TODO
+    // String usStr;
+    // Locale::US->ToString(&usStr)
+    // temp.AppendFormat(usStr, "%02x ", IWifiP2pUpnpServiceInfo::VERSION_1_0);
     sb += temp;
     sb += "uuid:";
     sb += uuid;
@@ -139,9 +138,8 @@ ECode CWifiP2pUpnpServiceInfo::CreateSupplicantQuery(
     return NOERROR;
 }
 
-
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

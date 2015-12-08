@@ -2,16 +2,21 @@
 #define __ELASTOS_DROID_APP_CUIMODEMANAGER_H__
 
 #include "_Elastos_Droid_App_CUiModeManager.h"
-#include <elstring.h>
-#include <elquintet.h>
+#include <elastos/core/Object.h>
 
-namespace Elastos{
-namespace Droid{
-namespace App{
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 CarClass(CUiModeManager)
+    , public Object
+    , public IUiModeManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CUiModeManager();
 
     ~CUiModeManager();

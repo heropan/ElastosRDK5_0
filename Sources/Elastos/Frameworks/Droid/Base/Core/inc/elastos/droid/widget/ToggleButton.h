@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_RADIOBUTTON_H__
-#define __ELASTOS_DROID_WIDGET_RADIOBUTTON_H__
+#ifndef  __ELASTOS_DROID_WIDGET_TOGGLEBUTTON_H__
+#define  __ELASTOS_DROID_WIDGET_TOGGLEBUTTON_H__
 
 #include "elastos/droid/widget/CompoundButton.h"
 
@@ -12,25 +12,45 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
-class ToggleButton : public CompoundButton
+class ToggleButton
+    : public CompoundButton
+    , public IToggleButton
 {
 public:
-    ToggleButton(
+    CAR_INTERFACE_DECL();
+
+    ToggleButton();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::buttonStyleToggle);
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     //@Override
     virtual CARAPI SetChecked(
         /* [in] */ Boolean checked);
 
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetTextOn();
+    virtual CARAPI GetTextOn(
+        /* [out] */ ICharSequence** on);
 
     virtual CARAPI SetTextOn(
         /* [in] */ ICharSequence* textOn);
 
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetTextOff();
+    virtual CARAPI GetTextOff(
+        /* [out] */ ICharSequence** off);
 
     virtual CARAPI SetTextOff(
         /* [in] */ ICharSequence* textOff);
@@ -46,18 +66,11 @@ public:
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
-    ToggleButton();
-
     //@Override
     virtual CARAPI OnFinishInflate();
 
     //@Override
     virtual CARAPI DrawableStateChanged();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0x0101004b/*com.android.internal.R.attr.buttonStyleToggle*/);
 
 private:
     CARAPI_(void) UpdateReferenceToIndicatorDrawable(
@@ -65,24 +78,18 @@ private:
 
     CARAPI_(void) SyncTextState();
 
-    CARAPI InitFromAttributes(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
 private:
     AutoPtr<ICharSequence> mTextOn;
     AutoPtr<ICharSequence> mTextOff;
 
     AutoPtr<IDrawable> mIndicatorDrawable;
 
-    static const Int32 NO_ALPHA = 0xFF;
+    static const Int32 NO_ALPHA;
     Float mDisabledAlpha;
 };
-
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__BUTTON_H__
+#endif // __ELASTOS_DROID_WIDGET_TOGGLEBUTTON_H__

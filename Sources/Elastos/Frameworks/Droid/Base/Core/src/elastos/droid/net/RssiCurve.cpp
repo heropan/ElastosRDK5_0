@@ -19,11 +19,10 @@ ECode RssiCurve::constructor(
 #if 0 // TODO: Translate codes below
         this.start = start;
         this.bucketWidth = bucketWidth;
-        if (rssiBuckets == null || rssiBuckets.length == 0) {
+        if (rssiBuckets == NULL || rssiBuckets.length == 0) {
             throw new IllegalArgumentException("rssiBuckets must be at least one element large.");
         }
         this.rssiBuckets = rssiBuckets;
-
 #endif
 }
 
@@ -33,10 +32,9 @@ RssiCurve::RssiCurve(
 #if 0 // TODO: Translate codes below
         start = in.readInt();
         bucketWidth = in.readInt();
-        int bucketCount = in.readInt();
+        Int32 bucketCount = in.readInt();
         rssiBuckets = new byte[bucketCount];
         in.readByteArray(rssiBuckets);
-
 #endif
 }
 
@@ -46,7 +44,7 @@ ECode RssiCurve::LookupScore(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        int index = (rssi - start) / bucketWidth;
+        Int32 index = (rssi - start) / bucketWidth;
         // Snap the index to the closest bucket if it falls outside the curve.
         if (index < 0) {
             index = 0;
@@ -54,7 +52,6 @@ ECode RssiCurve::LookupScore(
             index = rssiBuckets.length - 1;
         }
         return rssiBuckets[index];
-
 #endif
 }
 
@@ -64,13 +61,12 @@ ECode RssiCurve::Equals(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return TRUE;
+        if (o == NULL || getClass() != o.getClass()) return FALSE;
         RssiCurve rssiCurve = (RssiCurve) o;
         return start == rssiCurve.start &&
                 bucketWidth == rssiCurve.bucketWidth &&
                 Arrays.equals(rssiBuckets, rssiCurve.rssiBuckets);
-
 #endif
 }
 
@@ -80,7 +76,6 @@ ECode RssiCurve::GetHashCode(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return Objects.hash(start, bucketWidth, rssiBuckets);
-
 #endif
 }
 
@@ -95,7 +90,7 @@ ECode RssiCurve::ToString(
                 .append(",bucketWidth=")
                 .append(bucketWidth);
         sb.append(",buckets=");
-        for (int i = 0; i < rssiBuckets.length; i++) {
+        for (Int32 i = 0; i < rssiBuckets.length; i++) {
             sb.append(rssiBuckets[i]);
             if (i < rssiBuckets.length - 1) {
                 sb.append(",");
@@ -103,7 +98,6 @@ ECode RssiCurve::ToString(
         }
         sb.append("]");
         return sb.toString();
-
 #endif
 }
 
@@ -117,10 +111,9 @@ ECode RssiCurve::ReadFromParcel(
                     return new RssiCurve(in);
                 }
                 @Override
-                public RssiCurve[] newArray(int size) {
+                public RssiCurve[] newArray(Int32 size) {
                     return new RssiCurve[size];
                 }
-
 #endif
 }
 
@@ -134,10 +127,9 @@ ECode RssiCurve::WriteToParcel(
                     return new RssiCurve(in);
                 }
                 @Override
-                public RssiCurve[] newArray(int size) {
+                public RssiCurve[] newArray(Int32 size) {
                     return new RssiCurve[size];
                 }
-
 #endif
 }
 

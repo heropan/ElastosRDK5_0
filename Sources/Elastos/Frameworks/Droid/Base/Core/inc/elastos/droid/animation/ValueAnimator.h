@@ -13,7 +13,6 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-extern "C" const InterfaceID EIID_ValueAnimator;
 class ObjectAnimator;
 
 class ValueAnimator

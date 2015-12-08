@@ -39,10 +39,6 @@ namespace Animation {
 
 using Elastos::Core::Math;
 
-// {13386499-5ce9-419f-84cb-52f8bb9442cc}
-extern "C" const InterfaceID EIID_PropertyValuesHolder =
-    { 0x13386499, 0x5ce9, 0x419f, { 0x84, 0xcb, 0x52, 0xf8, 0xbb, 0x94, 0x42, 0xcc } };
-
 CAR_INTERFACE_IMPL(PropertyValuesHolder::PointFToFloatArray, TypeConverter, IPropertyValuesHolder);
 PropertyValuesHolder::PointFToFloatArray::PointFToFloatArray()
 {
@@ -171,6 +167,7 @@ String GetSignature(
     return String(NULL);
 }
 
+CAR_INTERFACE_IMPL(PropertyValuesHolder, Object, IPropertyValuesHolder);
 PropertyValuesHolder::PropertyValuesHolder(
     /* [in] */ const String& propertyName)
     : mPropertyName(propertyName)
@@ -186,49 +183,6 @@ PropertyValuesHolder::PropertyValuesHolder(
     if (property != NULL) {
         property->GetName(&mPropertyName);
     }
-}
-
-UInt32 PropertyValuesHolder::AddRef()
-{
-    return Object::AddRef();
-}
-
-UInt32 PropertyValuesHolder::Release()
-{
-    return Object::Release();
-}
-
-ECode PropertyValuesHolder::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == reinterpret_cast<PInterface>((PropertyValuesHolder*)this)) {
-        *iid = EIID_PropertyValuesHolder;
-        return NOERROR;
-    }
-    else if (object == reinterpret_cast<PInterface>((IPropertyValuesHolder*)this)) {
-        *iid = EIID_IPropertyValuesHolder;
-        return NOERROR;
-    }
-
-    return Object::GetInterfaceID(object, iid);
-}
-
-PInterface PropertyValuesHolder::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_PropertyValuesHolder) {
-        return reinterpret_cast<PInterface>((PropertyValuesHolder*)this);
-    }
-    else if (riid == EIID_IInterface) {
-        return (IInterface*)(IPropertyValuesHolder*)this;
-    }
-    else if (riid == EIID_IPropertyValuesHolder) {
-        return (IInterface*)(IPropertyValuesHolder*)this;
-    }
-
-    return Object::Probe(riid);
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfInt32(

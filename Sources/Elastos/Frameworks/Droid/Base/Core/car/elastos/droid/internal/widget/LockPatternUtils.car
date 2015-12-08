@@ -6,12 +6,12 @@ module
 
     interface Elastos.Droid.Widget.IButton;
     interface Elastos.Droid.App.Admin.IDevicePolicyManager;
-    interface Elastos.Droid.App.IAlarmManagerAlarmClockInfo;
+    interface Elastos.Droid.App.IAlarmClockInfo;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Internal{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
 
     /**
      * Utilities for the lock pattern and its settings.
@@ -457,7 +457,7 @@ module
          *   or null if there is no next alarm.
          */
         GetNextAlarm(
-            [out] IAlarmManagerAlarmClockInfo** alarm);
+            [out] IAlarmClockInfo** alarm);
 
         GetAppWidgets(
             [out, callee] ArrayOf<Int32>* widgets);

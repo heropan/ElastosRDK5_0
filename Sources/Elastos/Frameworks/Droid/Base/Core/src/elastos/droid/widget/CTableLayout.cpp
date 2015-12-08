@@ -4,9 +4,9 @@
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 IVIEW_METHODS_IMPL(CTableLayout, TableLayout)
 IVIEWGROUP_METHODS_IMPL(CTableLayout, TableLayout)

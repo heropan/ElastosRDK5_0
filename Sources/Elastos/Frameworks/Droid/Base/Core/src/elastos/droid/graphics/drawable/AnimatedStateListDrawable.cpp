@@ -271,6 +271,14 @@ ECode AnimatedStateListDrawable::FrameInterpolator::GetInterpolation(
     return i / (Float) N + frameElapsed;
 }
 
+ECode AnimatedStateListDrawable::FrameInterpolator::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = FALSE;
+    return NOERROR;
+}
+
 const String AnimatedStateListDrawable::LOGTAG = String("AnimatedStateListDrawable")/*AnimatedStateListDrawable.class.getSimpleName()*/;
 const String AnimatedStateListDrawable::ELEMENT_TRANSITION = String("transition");
 const String AnimatedStateListDrawable::ELEMENT_ITEM = String("item");

@@ -2,9 +2,10 @@
 #define __ELASTOS_DROID_WIDGET_STACKVIEWLAYOUTPARAMS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::View::IView;
+using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IRectF;
 
@@ -12,7 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class StackViewLayoutParams : public Elastos::Droid::View::ViewGroupLayoutParams
+class StackViewLayoutParams : public ViewGroup::LayoutParams
 {
 public:
     StackViewLayoutParams(

@@ -2,21 +2,27 @@
 #define __ELASTOS_DROID_APP_BACKUP_FILEBACKUPHELPERBASE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 class FileBackupHelperBase
+    : public Object
+    , public IFileBackupHelperBase
 {
 public:
+    CAR_INTERFACE_DECL()
+
     FileBackupHelperBase();
+
     virtual ~FileBackupHelperBase();
 
     CARAPI Init(

@@ -158,13 +158,13 @@ public:
 
     // @Override
     CARAPI Equals(
-        /* [in] */ IObject* o,
+        /* [in] */ IInterface* o,
         /* [out] */ Boolean* result);
 
     /*
      * generate hashcode based on significant fields
      */
-    CARAPI HashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* result);
 
     CARAPI ReadFromParcel(
@@ -174,7 +174,7 @@ public:
         /* [in] */ IParcel* dest);
 
 private:
-    ProxyInfo(
+    CARAPI constructor(
         /* [in] */ const String& host,
         /* [in] */ Int32 port,
         /* [in] */ const String& exclList,
@@ -184,13 +184,14 @@ private:
     CARAPI SetExclusionList(
         /* [in] */ const String& exclusionList);
 
+private:
     String mHost;
 
     Int32 mPort;
 
     String mExclusionList;
 
-    ArrayOf<String>* mParsedExclusionList;
+    AutoPtr<ArrayOf<String> > mParsedExclusionList;
 
     AutoPtr<IUri> mPacFileUrl;
 };

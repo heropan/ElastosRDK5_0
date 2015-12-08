@@ -20,9 +20,9 @@ using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 const Int32 MediaController::sDefaultTimeout;
 const Int32 MediaController::FADE_OUT;

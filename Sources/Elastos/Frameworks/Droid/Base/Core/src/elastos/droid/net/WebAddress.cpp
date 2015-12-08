@@ -37,7 +37,7 @@ ECode WebAddress::constructor(
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-        if (address == null) {
+        if (address == NULL) {
             throw new NullPointerException();
         }
         // android.util.Log.d(LOGTAG, "WebAddress: " + address);
@@ -50,22 +50,22 @@ ECode WebAddress::constructor(
         String t;
         if (m.matches()) {
             t = m.group(MATCH_GROUP_SCHEME);
-            if (t != null) mScheme = t.toLowerCase(Locale.ROOT);
+            if (t != NULL) mScheme = t.toLowerCase(Locale.ROOT);
             t = m.group(MATCH_GROUP_AUTHORITY);
-            if (t != null) mAuthInfo = t;
+            if (t != NULL) mAuthInfo = t;
             t = m.group(MATCH_GROUP_HOST);
-            if (t != null) mHost = t;
+            if (t != NULL) mHost = t;
             t = m.group(MATCH_GROUP_PORT);
-            if (t != null && t.length() > 0) {
+            if (t != NULL && t.length() > 0) {
                 // The ':' character is not returned by the regex.
                 try {
-                    mPort = Integer.parseInt(t);
+                    mPort = StringUtils::ParseInt32(t);
                 } catch (NumberFormatException ex) {
                     throw new ParseException("Bad port");
                 }
             }
             t = m.group(MATCH_GROUP_PATH);
-            if (t != null && t.length() > 0) {
+            if (t != NULL && t.length() > 0) {
                 /* handle busted myspace frontpage redirect with
                    missing initial "/" */
                 if (t.charAt(0) == '/') {
@@ -89,7 +89,6 @@ ECode WebAddress::constructor(
                 mPort = 80; // default
         }
         if (mScheme.equals("")) mScheme = "http";
-
 #endif
 }
 
@@ -108,7 +107,6 @@ ECode WebAddress::ToString(
             authInfo = mAuthInfo + "@";
         }
         return mScheme + "://" + authInfo + mHost + port + mPath;
-
 #endif
 }
 
@@ -118,7 +116,6 @@ ECode WebAddress::SetScheme(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       mScheme = scheme;
-
 #endif
 }
 
@@ -128,7 +125,6 @@ ECode WebAddress::GetScheme(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       return mScheme;
-
 #endif
 }
 
@@ -138,7 +134,6 @@ ECode WebAddress::SetHost(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       mHost = host;
-
 #endif
 }
 
@@ -148,7 +143,6 @@ ECode WebAddress::GetHost(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       return mHost;
-
 #endif
 }
 
@@ -158,7 +152,6 @@ ECode WebAddress::SetPort(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       mPort = port;
-
 #endif
 }
 
@@ -168,7 +161,6 @@ ECode WebAddress::GetPort(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       return mPort;
-
 #endif
 }
 
@@ -178,7 +170,6 @@ ECode WebAddress::SetPath(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       mPath = path;
-
 #endif
 }
 
@@ -188,7 +179,6 @@ ECode WebAddress::GetPath(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       return mPath;
-
 #endif
 }
 
@@ -198,7 +188,6 @@ ECode WebAddress::SetAuthInfo(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       mAuthInfo = authInfo;
-
 #endif
 }
 
@@ -208,7 +197,6 @@ ECode WebAddress::GetAuthInfo(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
       return mAuthInfo;
-
 #endif
 }
 

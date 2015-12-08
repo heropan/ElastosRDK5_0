@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/wifi/CWifiConfigurationPairwiseCipher.h"
+#include "elastos/droid/wifi/CWifiConfigurationPairwiseCipher.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +16,10 @@ static AutoPtr< ArrayOf<String> > InitStrings()
 }
 
 const AutoPtr< ArrayOf<String> > CWifiConfigurationPairwiseCipher::sStrings = InitStrings();
+
+CAR_INTERFACE_IMPL(CWifiConfigurationPairwiseCipher, Singleton, IWifiConfigurationPairwiseCipher)
+
+CAR_SINGLETON_IMPL(CWifiConfigurationPairwiseCipher)
 
 ECode CWifiConfigurationPairwiseCipher::GetStrings(
     /* [out, callee] */ ArrayOf<String>** strings)

@@ -1,8 +1,11 @@
 
 #include "elastos/droid/app/CKeyguardManager.h"
+#include "elastos/droid/app/CKeyguardManagerKeyguardLock.h"
 #include "elastos/droid/app/COnKeyguardExitResult.h"
+#include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/view/CWindowManagerGlobal.h"
 
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::View::IOnKeyguardExitResult;
 using Elastos::Droid::View::CWindowManagerGlobal;
 
@@ -10,7 +13,25 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-CAR_INTERFACE_IMPL(CKeyguardManager::KeyguardLock, IKeyguardManagerKeyguardLock)
+//====================================================================
+// CKeyguardManager::KeyguardLock
+//====================================================================
+CAR_INTERFACE_IMPL(CKeyguardManager::KeyguardLock, Object, IKeyguardManagerKeyguardLock)
+
+CKeyguardManager::KeyguardLock::KeyguardLock()
+{}
+
+CKeyguardManager::KeyguardLock::~KeyguardLock()
+{}
+
+ECode CKeyguardManager::KeyguardLock::constructor(
+    /* [in] */ const String& tag,
+    /* [in] */ IKeyguardManager* owner)
+{
+    mTag = tag;
+    mOwner = (CKeyguardManager*)owner;
+    return NOERROR;
+}
 
 ECode CKeyguardManager::KeyguardLock::DisableKeyguard()
 {
@@ -31,10 +52,36 @@ ECode CKeyguardManager::KeyguardLock::ReenableKeyguard()
     // }
 }
 
+//====================================================================
+// CKeyguardManager
+//====================================================================
+CAR_INTERFACE_IMPL(CKeyguardManager, Object, IKeyguardManager)
 
 ECode CKeyguardManager::constructor()
 {
     mWM = CWindowManagerGlobal::GetWindowManagerService();
+    return NOERROR;
+}
+
+ECode CKeyguardManager::CreateConfirmDeviceCredentialIntent(
+    /* [in] */ ICharSequence* title,
+    /* [in] */ ICharSequence* description,
+    /* [out] */ IIntent** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    Boolean bval;
+    IsKeyguardSecure(&bval);
+    if (!bval) return NOERROR;
+
+    AutoPtr<IIntent> intent;
+    CIntent::New(IKeyguardManager::ACTION_CONFIRM_DEVICE_CREDENTIAL, (IIntent**)&intent);
+    intent->PutExtra(IKeyguardManager::EXTRA_TITLE, title);
+    intent->PutExtra(IKeyguardManager::EXTRA_DESCRIPTION, description);
+    // For security reasons, only allow this to come from system settings.
+    intent->SetPackage(String("com.android.settings"));
+    *result = intent;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -43,9 +90,7 @@ ECode CKeyguardManager::NewKeyguardLock(
     /* [out] */ IKeyguardManagerKeyguardLock** keyguardLock)
 {
     VALIDATE_NOT_NULL(keyguardLock);
-    *keyguardLock = new KeyguardLock(tag, this);
-    REFCOUNT_ADD(*keyguardLock);
-    return NOERROR;
+    return CKeyguardManagerKeyguardLock::New(tag, this, keyguardLock);
 }
 
 ECode CKeyguardManager::IsKeyguardLocked(

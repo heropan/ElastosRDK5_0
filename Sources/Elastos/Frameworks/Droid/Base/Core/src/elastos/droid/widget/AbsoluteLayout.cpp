@@ -1,39 +1,107 @@
 
 #include "elastos/droid/widget/AbsoluteLayout.h"
-#include <elastos/core/Math.h>
 #include "elastos/droid/widget/CAbsoluteLayoutLayoutParams.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
+
+CAR_INTERFACE_IMPL(AbsoluteLayout::LayoutParams, ViewGroup::LayoutParams, IAbsoluteLayoutLayoutParams)
+
+AbsoluteLayout::LayoutParams::LayoutParams()
+    : mX(0)
+    , mY(0)
+{}
+
+ECode AbsoluteLayout::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y)
+{
+    ViewGroup::LayoutParams::constructor(width, height);
+    mX = x;
+    mY = y;
+    return NOERROR;
+}
+
+ECode AbsoluteLayout::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    ViewGroup::LayoutParams::constructor(c, attrs);
+    return InitFromAttributes(c, attrs);
+}
+
+ECode AbsoluteLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* source)
+{
+    return ViewGroup::LayoutParams::constructor(source);
+}
+
+ECode AbsoluteLayout::LayoutParams::InitFromAttributes(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    VALIDATE_NOT_NULL(c);
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::AbsoluteLayout_Layout),
+            ARRAY_SIZE(R::styleable::AbsoluteLayout_Layout));
+    AutoPtr<ITypedArray> a;
+    FAIL_RETURN(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
+    FAIL_RETURN(a->GetDimensionPixelOffset(
+            R::styleable::AbsoluteLayout_Layout_layout_x, 0, &mX));
+    FAIL_RETURN(a->GetDimensionPixelOffset(
+            R::styleable::AbsoluteLayout_Layout_layout_y, 0, &mY));
+    return a->Recycle();
+}
+
+ECode AbsoluteLayout::LayoutParams::SetX(
+    /* [in] */ Int32 x)
+{
+    mX = x;
+    return NOERROR;
+}
+
+ECode AbsoluteLayout::LayoutParams::SetY(
+    /* [in] */ Int32 y)
+{
+    mY = y;
+    return NOERROR;
+}
+
+ECode AbsoluteLayout::LayoutParams::GetX(
+    /* [out] */ Int32* x)
+{
+    VALIDATE_NOT_NULL(x)
+    *x = mX;
+    return NOERROR;
+}
+
+ECode AbsoluteLayout::LayoutParams::GetY(
+    /* [out] */ Int32* y)
+{
+    VALIDATE_NOT_NULL(y)
+    *y = mY;
+    return NOERROR;
+}
+
+
+CAR_INTERFACE_IMPL(AbsoluteLayout, ViewGroup, IAbsoluteLayout)
 
 AbsoluteLayout::AbsoluteLayout()
-{}
-
-AbsoluteLayout::AbsoluteLayout(
-    /* [in] */ IContext* context)
-    : ViewGroup(context)
-{}
-
-AbsoluteLayout::AbsoluteLayout(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : ViewGroup(context, attrs)
-{}
-
-AbsoluteLayout::AbsoluteLayout(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : ViewGroup(context, attrs, defStyle)
 {}
 
 void AbsoluteLayout::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
 
     Int32 maxHeight = 0;
     Int32 maxWidth = 0;
@@ -44,7 +112,8 @@ void AbsoluteLayout::OnMeasure(
     // Find rightmost and bottom-most child
     for (Int32 i = 0; i < count; i++)
     {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
 
         Int32 visible;
         child->GetVisibility(&visible);
@@ -102,17 +171,19 @@ Boolean AbsoluteLayout::ShouldDelayChildPressedState()
     return FALSE;
 }
 
-void AbsoluteLayout::OnLayout(
+ECode AbsoluteLayout::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
     /* [in] */ Int32 r,
     /* [in] */ Int32 b)
 {
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
 
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
 
         Int32 v;
         child->GetVisibility(&v);
@@ -133,6 +204,7 @@ void AbsoluteLayout::OnLayout(
             child->Layout(childLeft, childTop, childLeft + w, childTop + h);
         }
     }
+    return NOERROR;
 }
 
 ECode AbsoluteLayout::GenerateLayoutParams(
@@ -141,7 +213,9 @@ ECode AbsoluteLayout::GenerateLayoutParams(
 {
     VALIDATE_NOT_NULL(params);
     AutoPtr<IAbsoluteLayoutLayoutParams> lp;
-    FAIL_RETURN(CAbsoluteLayoutLayoutParams::New(GetContext(), attrs, (IAbsoluteLayoutLayoutParams**)&lp));
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    FAIL_RETURN(CAbsoluteLayoutLayoutParams::New(context, attrs, (IAbsoluteLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
     REFCOUNT_ADD(*params);
     return NOERROR;
@@ -162,25 +236,34 @@ AutoPtr<IViewGroupLayoutParams> AbsoluteLayout::GenerateLayoutParams(
     return lp;
 }
 
-ECode AbsoluteLayout::Init(
+ECode AbsoluteLayout::constructor(
     /* [in] */ IContext* context)
 {
-    return ViewGroup::Init(context);
+    return AbsoluteLayout::constructor(context, NULL);
 }
 
-ECode AbsoluteLayout::Init(
+ECode AbsoluteLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return ViewGroup::Init(context, attrs);
+    return AbsoluteLayout::constructor(context, attrs, 0);
 }
 
-ECode AbsoluteLayout::Init(
+ECode AbsoluteLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    return ViewGroup::Init(context, attrs, defStyle);
+    return ViewGroup::constructor(context, attrs, defStyle);
+}
+
+ECode AbsoluteLayout::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyle,
+    /* [in] */ Int32 defStyleRes)
+{
+    return ViewGroup::constructor(context, attrs, defStyle, defStyleRes);
 }
 
 }// namespace Widget

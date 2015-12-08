@@ -12,7 +12,7 @@ module
      * @hide
      */
     [oneway]
-    interface IWallpaperManagerCallback {
+    interface IIWallpaperManagerCallback {
         /**
          * Called when the wallpaper has changed
          */

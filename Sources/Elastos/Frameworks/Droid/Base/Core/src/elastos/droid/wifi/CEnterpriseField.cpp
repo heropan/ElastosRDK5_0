@@ -1,5 +1,5 @@
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/net/wifi/CEnterpriseField.h"
+#include "elastos/droid/wifi/CEnterpriseField.h"
 
 namespace Elastos {
 namespace Droid {
@@ -35,7 +35,6 @@ ECode CEnterpriseField::GetValue(
     return NOERROR;
 }
 
-
-}
-}
-}
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

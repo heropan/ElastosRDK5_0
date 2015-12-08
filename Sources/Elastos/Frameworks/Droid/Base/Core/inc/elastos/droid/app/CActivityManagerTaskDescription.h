@@ -46,11 +46,6 @@ public:
         /* [in] */ Int32 colorPrimary,
         /* [in] */ const String& iconFilename);
 
-    CARAPI constructor(
-        /* [in] */ const String& label,
-        /* [in] */ IBitmap* icon,
-        /* [in] */ const String& iconFilename) { return NOERROR; }
-
     /**
      * Creates the TaskDescription to the specified values.
      *

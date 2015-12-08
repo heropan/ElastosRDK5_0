@@ -1,7 +1,22 @@
 
 #include "elastos/droid/net/MailTo.h"
+#include "elastos/droid/net/CMailTo.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/net/Uri.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -9,32 +24,45 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(MailTo, Object, IMailTo)
 
-const String MailTo::TO = String("to");
-const String MailTo::BODY = String("body");
-const String MailTo::CC = String("cc");
-const String MailTo::SUBJECT = String("subject");
+const String MailTo::TO("to");
+const String MailTo::BODY("body");
+const String MailTo::CC("cc");
+const String MailTo::SUBJECT("subject");
+
+ECode MailTo::GetField(
+    /* [in] */ const String& name,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = String(NULL);
+
+    AutoPtr<ICharSequence> csq_name;
+    CString::New(name, (ICharSequence**)&csq_name);
+    AutoPtr<IInterface> csq_result;
+    mHeaders->Get(csq_name, (IInterface**)&csq_result);
+    if (ICharSequence::Probe(csq_result) != NULL)
+        ICharSequence::Probe(csq_result)->ToString(result);
+    return NOERROR;
+}
 
 ECode MailTo::IsMailTo(
     /* [in] */ const String& url,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    if (url != null && url.startsWith(MAILTO_SCHEME)) {
-        result = TRUE;
+    VALIDATE_NOT_NULL(result)
+
+    if (url != NULL && url.StartWith(IMailTo::MAILTO_SCHEME)) {
+        *result = TRUE;
         return NOERROR;
     }
-    result = FALSE;
+    *result = FALSE;
     return NOERROR;
-#endif
 }
 
 ECode MailTo::Parse(
     /* [in] */ const String& url,
     /* [out] */ IMailTo** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
@@ -44,15 +72,16 @@ ECode MailTo::Parse(
     Boolean bval;
     IsMailTo(url, &bval);
     if (!bval) {
-        Logger::E(TAG, "Not a mailto scheme");
+        Logger::E("MailTo", "Not a mailto scheme");
         return E_RUNTIME_EXCEPTION;
     }
 
     // Strip the scheme as the Uri parser can't cope with it.
-    String noScheme = url.Substring(MAILTO_SCHEME.GetLength());
+    String noScheme = url.Substring(IMailTo::MAILTO_SCHEME.GetLength());
     AutoPtr<IUri> email;
     Uri::Parse(noScheme, (IUri**)&email);
-    AutoPtr<IMailTo> m = new MailTo();
+    AutoPtr<MailTo> m = new CMailTo();
+    m->constructor();
 
     String query;
     email->GetQuery(&query);
@@ -60,7 +89,7 @@ ECode MailTo::Parse(
 
     if (query != NULL ) {
         AutoPtr<ArrayOf<String> > queries;
-        ec = StringUtils::Split(query,String("&"), (ArrayOf<String>**)&queries);
+        StringUtils::Split(query,String("&"), (ArrayOf<String>**)&queries);
 
         Int32 tempsize = queries->GetLength();
         Int32 i;
@@ -69,7 +98,7 @@ ECode MailTo::Parse(
         {
             q=(*queries)[i];
             AutoPtr<ArrayOf<String> > nameval;
-            ec = StringUtils::Split(q,String("="), (ArrayOf<String>**)&nameval);
+            StringUtils::Split(q,String("="), (ArrayOf<String>**)&nameval);
              if (nameval->GetLength() == 0) {
                 continue;
             }
@@ -77,16 +106,20 @@ ECode MailTo::Parse(
             // insert the headers with the name in lowercase so that
             // we can easily find common headers
             String s1;
-            Uri::Decode(nameval[0],&s1);
+            Uri::Decode((*nameval)[0],&s1);
+            AutoPtr<ICharSequence> csq1;
+            CString::New(s1.ToLowerCase(/*Locale::ROOT*/), (ICharSequence**)&csq1);
             if (nameval->GetLength() > 1)
             {
                 String s2;
-                Uri::Decode(nameval[1], &s2);
-                m->mHeaders.Insert(s1.toLowerCase(ILocale::ROOT), s2);
+                Uri::Decode((*nameval)[1], &s2);
+                AutoPtr<ICharSequence> csq2;
+                CString::New(s2, (ICharSequence**)&csq2);
+                m->mHeaders->Put(csq1, csq2);
             }
             else
             {
-                m->mHeaders.Insert(s1.toLowerCase(ILocale::ROOT), NULL);
+                m->mHeaders->Put(csq1, NULL);
             }
         }
     }
@@ -100,130 +133,95 @@ ECode MailTo::Parse(
         String addr;
         m->GetTo(&addr);
 
-        if (addr != null) {
-            address += ", " + addr;
+        if (addr != NULL) {
+            address += ", ";
+            address += addr;
         }
-        m->mHeaders.Insert(TO, address);
+        AutoPtr<ICharSequence> csq1, csq2;
+        CString::New(TO, (ICharSequence**)&csq1);
+        CString::New(address, (ICharSequence**)&csq2);
+        m->mHeaders->Put(csq1, csq2);
     }
 
-    *result = m;
+    *result = IMailTo::Probe(m);
     REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 
 ECode MailTo::GetTo(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    HashMap<String, String>::Iterator iter = mHeaders.Find(TO);
-    if (iter != mHeaders.End())
-        result = iter->mSecond;
-
-    return NOERROR;
-#endif
+    return GetField(TO, result);
 }
 
 ECode MailTo::GetCc(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    HashMap<String, String>::Iterator iter = mHeaders.Find(CC);
-    if (iter != mHeaders.End())
-        result = iter->mSecond;
-
-    return NOERROR;
-#endif
+    return GetField(CC, result);
 }
 
 ECode MailTo::GetSubject(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    HashMap<String, String>::Iterator iter = mHeaders.Find(SUBJECT);
-    if (iter != mHeaders.End())
-        result = iter->mSecond;
-
-    return NOERROR;
-#endif
+    return GetField(SUBJECT, result);
 }
 
 ECode MailTo::GetBody(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    HashMap<String, String>::Iterator iter = mHeaders.Find(BODY);
-    if (iter != mHeaders.End())
-        result = iter->mSecond;
-
-    return NOERROR;
-#endif
+    return GetField(BODY, result);
 }
 
 ECode MailTo::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    StringBuilder sb(MAILTO_SCHEME);
+    VALIDATE_NOT_NULL(result)
+
+    StringBuilder sb(IMailTo::MAILTO_SCHEME);
     sb.AppendChar('?');
 
-    HashMap<String,String>:: Iterator it = mHeaders.Begin();
-
-
     //for (Map.Entry<String,String> header : mHeaders.entrySet()) {
-    for (;it!=mHeaders.End();++it)
+    AutoPtr<ISet> entrySet;
+    mHeaders->GetEntrySet((ISet**)&entrySet);
+    FOR_EACH(it, entrySet)
     {
+        AutoPtr<IInterface> header;
+        it->GetNext((IInterface**)&header);
+        AutoPtr<IInterface> key, value;
+        IMapEntry::Probe(header)->GetKey((IInterface**)&key);
+        IMapEntry::Probe(header)->GetValue((IInterface**)&value);
+        String sKey, sValue;
+        ICharSequence::Probe(key)->ToString(&sKey);
+        ICharSequence::Probe(value)->ToString(&sValue);
         String temp1, temp2;
-        Uri::encode(it->mFirst, &temp1);
+        Uri::Encode(sKey, &temp1);
         sb.Append(temp1);
         sb.AppendChar('=');
 
-        Uri::encode(it->mSecond, &temp2);
+        Uri::Encode(sValue, &temp2);
         sb.Append(temp2);
         sb.AppendChar('&');
     }
 
     *result = sb.ToString();
     return NOERROR;
-#endif
 }
 
 ECode MailTo::GetHeaders(
     /* [out] */ IMap** rethashmap)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(rethashmap);
-    CObjectStringMap::New(rethashmap);
+    VALIDATE_NOT_NULL(rethashmap)
 
-    String tempkey, tempvalue;
-    HashMap<String,String>:: Iterator it = mHeaders.Begin();
-    for (; it != mHeaders.End(); ++it)
-    {
-        tempkey = it->mFirst;
-        tempvalue = it->mSecond;
-
-        AutoPtr<ICharSequence> tempcharsequence;
-        CString::New(tempvalue, (ICharSequence**)&tempcharsequence);
-        rethashmap->Put(tempkey,tempcharsequence);
-    }
+    *rethashmap = IMap::Probe(mHeaders);
+    REFCOUNT_ADD(*rethashmap)
     return NOERROR;
-#endif
 }
 
-MailTo::MailTo()
+ECode MailTo::constructor()
 {
-#if 0 // TODO: Translated before. Need check.
-    return NOERROR;
-#endif
+    return CHashMap::New((IHashMap**)&mHeaders);
 }
-
 
 } // namespace Net
 } // namepsace Droid

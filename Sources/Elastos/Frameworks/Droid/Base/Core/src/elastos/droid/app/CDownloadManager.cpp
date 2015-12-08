@@ -6,20 +6,13 @@
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/net/Uri.h"
-#include "elastos/droid/provider/CDownloadsImpl.h"
-#include "elastos/droid/provider/CSettingsGlobal.h"
+//#include "elastos/droid/provider/CDownloadsImpl.h"
+//#include "elastos/droid/provider/CSettingsGlobal.h"
 #include "elastos/droid/text/TextUtils.h"
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::IO::CFile;
-using Elastos::Core::CInteger32;
-using Elastos::Core::CString;
-using Elastos::Core::IInteger32;
-using Elastos::Core::StringUtils;
-using Elastos::Core::StringBuilder;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::CContentUris;
 using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::CContentValues;
@@ -27,65 +20,70 @@ using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Database::EIID_ICursor;
 using Elastos::Droid::Database::EIID_ICursorWrapper;
 using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Provider::CDownloadsImpl;
+// using Elastos::Droid::Provider::CDownloadsImpl;
 using Elastos::Droid::Provider::IBaseColumns;
 using Elastos::Droid::Provider::IDownloadsImpl;
-using Elastos::Droid::Provider::CSettingsGlobal;
+// using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
+using Elastos::Core::IInteger32;
+using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Logger;
+using Elastos::IO::CFile;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-const String CDownloadManager::NON_DOWNLOADMANAGER_DOWNLOAD =
-        String("non-dwnldmngr-download-dont-retry2download");
-
-const AutoPtr<ArrayOf<String> > CDownloadManager::UNDERLYING_COLUMNS = CDownloadManager::InitUNDERLYINGCOLUMNS();
-
-PInterface CDownloadManager::CursorTranslator::Probe(
-    /* [in] */ REIID riid)
+static AutoPtr<ArrayOf<String> > InitUNDERLYINGCOLUMNS()
 {
-    if (riid == EIID_ICursorWrapper) {
-        return (PInterface)(ICursorWrapper*)this;
-    }
-    return NULL;
+    AutoPtr<ArrayOf<String> > columns = ArrayOf<String>::Alloc(15);
+
+    columns->Set(0, IBaseColumns::ID);
+    columns->Set(1, IDownloadsImpl::_DATA + " AS " + IDownloadManager::COLUMN_LOCAL_FILENAME);
+    columns->Set(2, IDownloadsImpl::COLUMN_MEDIAPROVIDER_URI);
+    columns->Set(3, IDownloadsImpl::COLUMN_DESTINATION);
+    columns->Set(4, IDownloadsImpl::COLUMN_TITLE);
+    columns->Set(5, IDownloadsImpl::COLUMN_DESCRIPTION);
+    columns->Set(6, IDownloadsImpl::COLUMN_URI);
+    columns->Set(7, IDownloadsImpl::COLUMN_STATUS);
+    columns->Set(8, IDownloadsImpl::COLUMN_FILE_NAME_HINT);
+    columns->Set(9, IDownloadsImpl::COLUMN_MIME_TYPE + " AS " + IDownloadManager::COLUMN_MEDIA_TYPE);
+    columns->Set(10, IDownloadsImpl::COLUMN_TOTAL_BYTES + " AS " + IDownloadManager::COLUMN_TOTAL_SIZE_BYTES);
+    columns->Set(11, IDownloadsImpl::COLUMN_LAST_MODIFICATION + " AS " + IDownloadManager::COLUMN_LAST_MODIFIED_TIMESTAMP);
+    columns->Set(12, IDownloadsImpl::COLUMN_CURRENT_BYTES + " AS " + IDownloadManager::COLUMN_BYTES_DOWNLOADED_SO_FAR);
+    columns->Set(13, IDownloadsImpl::COLUMN_ALLOW_WRITE);
+
+    /* add the following 'computed' columns to the cursor.
+     * they are not 'returned' by the database, but their inclusion
+     * eliminates need to have lot of methods in CursorTranslator
+     */
+    columns->Set(14, String("'placeholder' AS ") + IDownloadManager::COLUMN_LOCAL_URI);
+    columns->Set(15, String("'placeholder' AS ") + IDownloadManager::COLUMN_REASON);
+    return columns;
 }
 
-UInt32 CDownloadManager::CursorTranslator::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+const String CDownloadManager::NON_DOWNLOADMANAGER_DOWNLOAD("non-dwnldmngr-download-dont-retry2download");
 
-UInt32 CDownloadManager::CursorTranslator::Release()
-{
-    return ElRefBase::Release();
-}
+const AutoPtr<ArrayOf<String> > CDownloadManager::UNDERLYING_COLUMNS = InitUNDERLYINGCOLUMNS();
 
-ECode CDownloadManager::CursorTranslator::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
+//==============================================================================================
+// CDownloadManager
+//==============================================================================================
+CDownloadManager::CursorTranslator::CursorTranslator()
+{}
 
-    if (pObject == (IInterface *)(ICursorWrapper *)this) {
-        *pIID = EIID_ICursorWrapper;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(ICursor *)this) {
-        *pIID = EIID_ICursor;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
-}
-
-CDownloadManager::CursorTranslator::CursorTranslator(
+ECode CDownloadManager::CursorTranslator::constructor(
     /* [in] */ ICursor* cursor,
     /* [in] */ IUri* baseUri)
-    : mBaseUri(baseUri)
 {
-    CursorWrapper::Init(cursor);
+    CursorWrapper::constructor(cursor);
+    mBaseUri = baseUri;
+    return NOERROR;
 }
 
 //  @Override
@@ -117,16 +115,17 @@ ECode CDownloadManager::CursorTranslator::GetInt64(
         CursorWrapper::GetInt32(index, &indexValue);
         *value = GetReason(indexValue);
         return NOERROR;
-    } else if (name.Equals(COLUMN_STATUS)) {
+    }
+    else if (name.Equals(COLUMN_STATUS)) {
         Int32 index;
         GetColumnIndex(IDownloadsImpl::COLUMN_STATUS, &index);
         Int32 indexValue;
         CursorWrapper::GetInt32(index, &indexValue);
         *value = TranslateStatus(indexValue);
         return NOERROR;
-    } else {
-        return CursorWrapper::GetInt64(columnIndex, value);
     }
+
+    return CursorWrapper::GetInt64(columnIndex, value);
 }
 
 //  @Override
@@ -164,9 +163,7 @@ String CDownloadManager::CursorTranslator::GetLocalUri()
         CFile::New(localPath, (IFile**)&file);
         AutoPtr<IUri> uri;
         Uri::FromFile(file, (IUri**)&uri);
-        String uStr;
-        uri->ToString(&uStr);
-        return uStr;
+        return Object::ToString(uri);
     }
 
     // return content URI for cache download
@@ -178,9 +175,7 @@ String CDownloadManager::CursorTranslator::GetLocalUri()
     CContentUris::AcquireSingleton((IContentUris**)&cUris);
     AutoPtr<IUri> uri;
     cUris->WithAppendedId(mBaseUri, downloadId, (IUri**)&uri);
-    String uriStr;
-    uri->ToString(&uriStr);
-    return uriStr;
+    return Object::ToString(uri);
 }
 
 Int64 CDownloadManager::CursorTranslator::GetReason(
@@ -277,7 +272,8 @@ Int32 CDownloadManager::CursorTranslator::TranslateStatus(
         default:
         {
             AutoPtr<IDownloadsImpl> impl;
-            CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
+            assert(0 && "TODO");
+            // CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
             Boolean res;
             impl->IsStatusError(status, &res);
             assert(res != FALSE);
@@ -286,271 +282,13 @@ Int32 CDownloadManager::CursorTranslator::TranslateStatus(
     }
 }
 
-ECode CDownloadManager::CursorTranslator::GetWrappedCursor(
-    /* [out] */ ICursor** cursor)
-{
-    return CursorWrapper::GetWrappedCursor(cursor);
-}
+//==============================================================================================
+// CDownloadManager
+//==============================================================================================
+CAR_INTERFACE_IMPL(CDownloadManager, Object, IDownloadManager)
 
-ECode CDownloadManager::CursorTranslator::Close()
-{
-    return CursorWrapper::Close();
-}
+CAR_OBJECT_IMPL(CDownloadManager)
 
-ECode CDownloadManager::CursorTranslator::IsClosed(
-    /* [out] */ Boolean* isClosed)
-{
-    return CursorWrapper::IsClosed(isClosed);
-}
-
-ECode CDownloadManager::CursorTranslator::GetCount(
-    /* [out] */ Int32* count)
-{
-    return CursorWrapper::GetCount(count);
-}
-
-ECode CDownloadManager::CursorTranslator::Deactivate()
-{
-    return CursorWrapper::Deactivate();
-}
-
-ECode CDownloadManager::CursorTranslator::MoveToFirst(
-    /* [out] */ Boolean* succeeded)
-{
-    return CursorWrapper::MoveToFirst(succeeded);
-}
-
-ECode CDownloadManager::CursorTranslator::GetColumnCount(
-    /* [out] */ Int32* count)
-{
-    return CursorWrapper::GetColumnCount(count);
-}
-
-ECode CDownloadManager::CursorTranslator::GetColumnIndex(
-    /* [in] */ const String& columnName,
-    /* [out] */ Int32* index)
-{
-    return CursorWrapper::GetColumnIndex(columnName, index);
-}
-
-ECode CDownloadManager::CursorTranslator::GetColumnIndexOrThrow(
-    /* [in] */  const String& columnName,
-    /* [out] */ Int32* columnIndex)
-{
-    return CursorWrapper::GetColumnIndexOrThrow(columnName, columnIndex);
-}
-
-ECode CDownloadManager::CursorTranslator::GetColumnName(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ String* name)
-{
-    return CursorWrapper::GetColumnName(columnIndex, name);
-}
-
-ECode CDownloadManager::CursorTranslator::GetColumnNames(
-    /* [out, callee] */ ArrayOf<String>** columnNames)
-{
-    return CursorWrapper::GetColumnNames(columnNames);
-}
-
-ECode CDownloadManager::CursorTranslator::GetDouble(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Double* value)
-{
-    return CursorWrapper::GetDouble(columnIndex, value);
-}
-
-ECode CDownloadManager::CursorTranslator::GetExtras(
-    /* [out] */ IBundle** extras)
-{
-    return CursorWrapper::GetExtras(extras);
-}
-
-ECode CDownloadManager::CursorTranslator::GetFloat(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Float* value)
-{
-    return CursorWrapper::GetFloat(columnIndex, value);
-}
-
-ECode CDownloadManager::CursorTranslator::GetInt16(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Int16* value)
-{
-    return CursorWrapper::GetInt16(columnIndex, value);
-}
-
-ECode CDownloadManager::CursorTranslator::CopyStringToBuffer(
-    /* [in] */ Int32 columnIndex,
-    /* [in] */ ICharArrayBuffer* buffer)
-{
-    return CursorWrapper::CopyStringToBuffer(columnIndex, buffer);
-}
-
-ECode CDownloadManager::CursorTranslator::GetBlob(
-    /* [in] */  Int32 columnIndex,
-    /* [out,callee] */ ArrayOf<Byte>** blob)
-{
-    return CursorWrapper::GetBlob(columnIndex, blob);
-}
-
-ECode CDownloadManager::CursorTranslator::GetWantsAllOnMoveCalls(
-    /* [out] */ Boolean* value)
-{
-    return CursorWrapper::GetWantsAllOnMoveCalls(value);
-}
-
-ECode CDownloadManager::CursorTranslator::IsAfterLast(
-    /* [out] */ Boolean* result)
-{
-    return CursorWrapper::IsAfterLast(result);
-}
-
-ECode CDownloadManager::CursorTranslator::IsBeforeFirst(
-    /* [out] */ Boolean* result)
-{
-    return CursorWrapper::IsBeforeFirst(result);
-}
-
-ECode CDownloadManager::CursorTranslator::IsFirst(
-    /* [out] */ Boolean* result)
-{
-    return CursorWrapper::IsFirst(result);
-}
-
-ECode CDownloadManager::CursorTranslator::IsLast(
-    /* [out] */ Boolean* result)
-{
-    return CursorWrapper::IsLast(result);
-}
-
-ECode CDownloadManager::CursorTranslator::GetType(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Int32* type)
-{
-    return CursorWrapper::GetType(columnIndex, type);
-}
-
-ECode CDownloadManager::CursorTranslator::IsNull(
-    /* [in] */ Int32 columnIndex,
-    /* [out] */ Boolean* result)
-{
-    return CursorWrapper::IsNull(columnIndex, result);
-}
-
-ECode CDownloadManager::CursorTranslator::MoveToLast(
-    /* [out] */ Boolean* succeeded)
-{
-    return CursorWrapper::MoveToLast(succeeded);
-}
-
-ECode CDownloadManager::CursorTranslator::Move(
-    /* [in] */ Int32 offset,
-    /* [out] */ Boolean* succeeded)
-{
-    return CursorWrapper::Move(offset, succeeded);
-}
-
-ECode CDownloadManager::CursorTranslator::MoveToPosition(
-    /* [in] */ Int32 position,
-    /* [out] */ Boolean* succeeded)
-{
-    return CursorWrapper::MoveToPosition(position, succeeded);
-}
-
-ECode CDownloadManager::CursorTranslator::MoveToNext(
-    /* [out] */ Boolean* succeeded)
-{
-    return CursorWrapper::MoveToNext(succeeded);
-}
-
-ECode CDownloadManager::CursorTranslator::GetPosition(
-    /* [out] */ Int32* position)
-{
-    return CursorWrapper::GetPosition(position);
-}
-
-ECode CDownloadManager::CursorTranslator::MoveToPrevious(
-    /* [out] */ Boolean* succeeded)
-{
-    return CursorWrapper::MoveToPrevious(succeeded);
-}
-
-ECode CDownloadManager::CursorTranslator::RegisterContentObserver(
-    /* [in] */ IContentObserver* observer)
-{
-    return CursorWrapper::RegisterContentObserver(observer);
-}
-
-ECode CDownloadManager::CursorTranslator::RegisterDataSetObserver(
-    /* [in] */IDataSetObserver* observer)
-{
-    return CursorWrapper::RegisterDataSetObserver(observer);
-}
-
-ECode CDownloadManager::CursorTranslator::Requery(
-    /* [out] */ Boolean* succeeded)
-{
-    return CursorWrapper::Requery(succeeded);
-}
-
-ECode CDownloadManager::CursorTranslator::Respond(
-    /* [in] */ IBundle* extras,
-    /* [out] */ IBundle** bundle)
-{
-    return CursorWrapper::Respond(extras, bundle);
-}
-
-ECode CDownloadManager::CursorTranslator::SetNotificationUri(
-    /* [in] */ IContentResolver* cr,
-    /* [in] */ IUri* uri)
-{
-    return CursorWrapper::SetNotificationUri(cr, uri);
-}
-
-ECode CDownloadManager::CursorTranslator::UnregisterContentObserver(
-    /* [in] */ IContentObserver* observer)
-{
-    return CursorWrapper::UnregisterContentObserver(observer);
-}
-
-ECode CDownloadManager::CursorTranslator::UnregisterDataSetObserver(
-    /* [in] */ IDataSetObserver* observer)
-{
-    return CursorWrapper::UnregisterDataSetObserver(observer);
-}
-
-AutoPtr<ArrayOf<String> > CDownloadManager::InitUNDERLYINGCOLUMNS()
-{
-    AutoPtr<ArrayOf<String> > columns = ArrayOf<String>::Alloc(15);
-
-    columns->Set(0, IBaseColumns::ID);
-    columns->Set(1, IDownloadsImpl::DATA + " AS " + IDownloadManager::COLUMN_LOCAL_FILENAME);
-    columns->Set(2, IDownloadsImpl::COLUMN_MEDIAPROVIDER_URI);
-    columns->Set(3, IDownloadsImpl::COLUMN_DESTINATION);
-    columns->Set(4, IDownloadsImpl::COLUMN_TITLE);
-    columns->Set(5, IDownloadsImpl::COLUMN_DESCRIPTION);
-    columns->Set(6, IDownloadsImpl::COLUMN_URI);
-    columns->Set(7, IDownloadsImpl::COLUMN_STATUS);
-    columns->Set(8, IDownloadsImpl::COLUMN_FILE_NAME_HINT);
-    columns->Set(9, IDownloadsImpl::COLUMN_MIME_TYPE + " AS " + IDownloadManager::COLUMN_MEDIA_TYPE);
-    columns->Set(10, IDownloadsImpl::COLUMN_TOTAL_BYTES + " AS " + IDownloadManager::COLUMN_TOTAL_SIZE_BYTES);
-    columns->Set(11, IDownloadsImpl::COLUMN_LAST_MODIFICATION + " AS " + IDownloadManager::COLUMN_LAST_MODIFIED_TIMESTAMP);
-    columns->Set(12, IDownloadsImpl::COLUMN_CURRENT_BYTES + " AS " + IDownloadManager::COLUMN_BYTES_DOWNLOADED_SO_FAR);
-    columns->Set(13, IDownloads.Impl::COLUMN_ALLOW_WRITE);
-
-    /* add the following 'computed' columns to the cursor.
-     * they are not 'returned' by the database, but their inclusion
-     * eliminates need to have lot of methods in CursorTranslator
-     */
-    columns->Set(14, String("'placeholder' AS ") + IDownloadManager::COLUMN_LOCAL_URI);
-    columns->Set(15, String("'placeholder' AS ") + IDownloadManager::COLUMN_REASON);
-    return columns;
-}
-
-/**
- * @hide
- */
 ECode CDownloadManager::constructor(
     /* [in] */ IContentResolver* resolver,
     /* [in] */ const String& packageName)
@@ -558,7 +296,8 @@ ECode CDownloadManager::constructor(
     mResolver = resolver;
     mPackageName = packageName;
     AutoPtr<IDownloadsImpl> impl;
-    CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
+    assert(0 && "TODO");
+    // CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
     impl->GetCONTENT_URI((IUri**)&mBaseUri);
     return NOERROR;
 }
@@ -566,10 +305,11 @@ ECode CDownloadManager::constructor(
 ECode CDownloadManager::SetAccessAllDownloads(
     /* [in] */ Boolean accessAllDownloads)
 {
+    assert(0 && "TODO");
     AutoPtr<IDownloadsImpl> dImpl;
-    CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&dImpl);
+    // CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&dImpl);
     if (accessAllDownloads) {
-        dImpl->GetALLDOWNLOADSCONTENTURI((IUri**)&mBaseUri);
+        dImpl->GetALL_DOWNLOADS_CONTENT_URI((IUri**)&mBaseUri);
     } else {
         dImpl->GetCONTENT_URI((IUri**)&mBaseUri);
     }
@@ -581,9 +321,12 @@ ECode CDownloadManager::Enqueue(
     /* [out] */ Int64* id)
 {
     VALIDATE_NOT_NULL(id);
+    *id = 0;
+
     AutoPtr<IContentValues> values = ((CDownloadManagerRequest*)request)->ToContentValues(mPackageName);
     AutoPtr<IDownloadsImpl> dImpl;
-    CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&dImpl);
+    assert(0 && "TODO");
+    // CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&dImpl);
     AutoPtr<IUri> uri;
     dImpl->GetCONTENT_URI((IUri**)&uri);
     AutoPtr<IUri> downloadUri;
@@ -599,18 +342,19 @@ ECode CDownloadManager::MarkRowDeleted(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = 0;
 
     if (ids == NULL || ids->GetLength() == 0) {
         // called with nothing to remove!
         // throw new IllegalArgumentException("input param 'ids' can't be null");
-        Slogger::E("CDownloadManager", "input param 'ids' can't be null");
+        Logger::E("CDownloadManager", "input param 'ids' can't be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IContentValues> values;
     CContentValues::New((IContentValues**)&values);
     AutoPtr<IInteger32> column;
     CInteger32::New(1, (IInteger32**)&column);
-    values->PutInt32(IDownloadsImpl::COLUMN_DELETED, column);
+    values->Put(IDownloadsImpl::COLUMN_DELETED, column);
     // if only one id is passed in, then include it in the uri itself.
     // this will eliminate a full database scan in the download service.
     if (ids->GetLength() == 1) {
@@ -645,7 +389,9 @@ ECode CDownloadManager::Query(
         *cursor = NULL;
         return NOERROR;
     }
-    *cursor = new CursorTranslator(underlyingCursor, mBaseUri);
+    AutoPtr<CursorTranslator> ct = new CursorTranslator();
+    ct->constructor(underlyingCursor, mBaseUri);
+    *cursor = (ICursor*)ct.Get();
     REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
@@ -701,12 +447,12 @@ ECode CDownloadManager::GetUriForDownloadedFile(
                 AutoPtr<IContentUris> cUris;
                 CContentUris::AcquireSingleton((IContentUris**)&cUris);
                 AutoPtr<IDownloadsImpl> impl;
-                CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
+                // CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
                 AutoPtr<IUri> contentUri;
                 impl->GetCONTENT_URI((IUri**)&contentUri);
                 cUris->WithAppendedId(contentUri, id, uri);
                 if (cursor != NULL) {
-                    cursor->Close();
+                    ICloseable::Probe(cursor)->Close();
                 }
                 return NOERROR;
             } else {
@@ -719,7 +465,7 @@ ECode CDownloadManager::GetUriForDownloadedFile(
                 CFile::New(path, (IFile**)&file);
                 Uri::FromFile(file, uri);
                 if (cursor != NULL) {
-                    cursor->Close();
+                    ICloseable::Probe(cursor)->Close();
                 }
                 return NOERROR;
             }
@@ -727,7 +473,7 @@ ECode CDownloadManager::GetUriForDownloadedFile(
     }
     // } finally {
     if (cursor != NULL) {
-        cursor->Close();
+        ICloseable::Probe(cursor)->Close();
     }
     // }
     // downloaded file not found or its status is not 'successfully completed'
@@ -758,13 +504,13 @@ ECode CDownloadManager::GetMimeTypeForDownloadedFile(
         cursor->GetColumnIndexOrThrow(COLUMN_MEDIA_TYPE, &index);
         cursor->GetString(index, uri);
         if (cursor != NULL) {
-            cursor->Close();
+            ICloseable::Probe(cursor)->Close();
         }
         return NOERROR;
     }
     // } finally {
     if (cursor != NULL) {
-        cursor->Close();
+        ICloseable::Probe(cursor)->Close();
     }
     // }
     // downloaded file not found or its status is not 'successfully completed'
@@ -783,10 +529,12 @@ ECode CDownloadManager::RestartDownload(
     // try {
     Boolean toFirst = FALSE;
     cursor->MoveToFirst(&toFirst);
-    Boolean afterLast = FALSE;
-    Boolean hasNext = FALSE;
+
     if (toFirst) {
-        for (; (cursor->IsAfterLast(&afterLast), !afterLast); cursor->MoveToNext(&hasNext), hasNext) {
+        Boolean afterLast = FALSE;
+        Boolean hasNext = FALSE;
+        cursor->IsAfterLast(&afterLast);
+        for (; !afterLast && hasNext;) {
             Int32 index;
             cursor->GetColumnIndex(COLUMN_STATUS, &index);
             Int32 status;
@@ -798,46 +546,51 @@ ECode CDownloadManager::RestartDownload(
                 cursor->GetColumnIndex(COLUMN_ID, &idIndex);
                 Int64 idValue;
                 cursor->GetInt64(idIndex, &idValue);
-                Slogger::E("CDownloadManager", "Cannot restart incomplete download: %d", idValue);
-                cursor->Close();
+                Logger::E("CDownloadManager", "Cannot restart incomplete download: %d", idValue);
+                ICloseable::Probe(cursor)->Close();
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
+
+            cursor->MoveToNext(&hasNext);
+            cursor->IsAfterLast(&afterLast);
         }
     }
 
     // } finally {
-    cursor->Close();
+    ICloseable::Probe(cursor)->Close();
     // }
 
     AutoPtr<IContentValues> values;
     CContentValues::New((IContentValues**)&values);
     AutoPtr<IInteger32> value;
     CInteger32::New(0, (IInteger32**)&value);
-    values->PutInt32(IDownloadsImpl::COLUMN_CURRENT_BYTES, value);
+    values->Put(IDownloadsImpl::COLUMN_CURRENT_BYTES, value);
     value = NULL;
     CInteger32::New(-1, (IInteger32**)&value);
-    values->PutInt32(IDownloadsImpl::COLUMN_TOTAL_BYTES, value);
-    values->PutNull(IDownloadsImpl::DATA);
+    values->Put(IDownloadsImpl::COLUMN_TOTAL_BYTES, value);
+    values->PutNull(IDownloadsImpl::_DATA);
     value = NULL;
     CInteger32::New(IDownloadsImpl::STATUS_PENDING, (IInteger32**)&value);
-    values->PutInt32(IDownloadsImpl::COLUMN_STATUS, value);
+    values->Put(IDownloadsImpl::COLUMN_STATUS, value);
     AutoPtr<ArrayOf<String> > args = GetWhereArgsForIds(ids);
     Int32 res;
     mResolver->Update(mBaseUri, values, GetWhereClauseForIds(ids), args, &res);
     return NOERROR;
 }
 
-
 ECode CDownloadManager::GetMaxBytesOverMobile(
     /* [in] */ IContext* context,
     /* [out] */ Int64* size)
 {
     VALIDATE_NOT_NULL(size);
+    *size = 0;
+
     // try {
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsGlobal> global;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
+    assert(0 && "TODO");
+    // CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
     return global->GetInt64(resolver,
             ISettingsGlobal::DOWNLOAD_MAX_BYTES_OVER_MOBILE, size);
 //     } catch (SettingNotFoundException exc) {
@@ -845,17 +598,19 @@ ECode CDownloadManager::GetMaxBytesOverMobile(
 //     }
 }
 
-
 ECode CDownloadManager::GetRecommendedMaxBytesOverMobile(
     /* [in] */ IContext* context,
     /* [out] */ Int64* size)
 {
     VALIDATE_NOT_NULL(size);
+    *size = 0;
+
     // try {
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsGlobal> global;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
+    assert(0 && "TODO");
+    // CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
     return global->GetInt64(resolver,
             ISettingsGlobal::DOWNLOAD_RECOMMENDED_MAX_BYTES_OVER_MOBILE, size);
     // } catch (SettingNotFoundException exc) {
@@ -893,8 +648,8 @@ ECode CDownloadManager::AddCompletedDownload(
     /* [in] */ Boolean showNotification,
     /* [out] */ Int64* id)
 {
-    return addCompletedDownload(title, description, isMediaScannerScannable, mimeType, path,
-            length, showNotification, false);
+    return AddCompletedDownload(title, description, isMediaScannerScannable, mimeType, path,
+            length, showNotification, FALSE, id);
 }
 
 ECode CDownloadManager::AddCompletedDownload(
@@ -909,6 +664,7 @@ ECode CDownloadManager::AddCompletedDownload(
     /* [out] */ Int64* id)
 {
     VALIDATE_NOT_NULL(id);
+    *id = 0;
 
     // make sure the input args are non-null/non-zero
     ValidateArgumentIsNonEmpty(String("title"), title);
@@ -917,7 +673,7 @@ ECode CDownloadManager::AddCompletedDownload(
     ValidateArgumentIsNonEmpty(String("mimeType"), mimeType);
     if (length < 0) {
         // throw new IllegalArgumentException(" invalid value for param: totalBytes");
-        Slogger::E("CDownloadManager", " invalid value for param: totalBytes");
+        Logger::E("CDownloadManager", " invalid value for param: totalBytes");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -934,29 +690,29 @@ ECode CDownloadManager::AddCompletedDownload(
     AutoPtr<IContentValues> values = ((CDownloadManagerRequest*)request.Get())->ToContentValues(String(NULL));
     AutoPtr<IInteger32> value;
     CInteger32::New(IDownloadsImpl::DESTINATION_NON_DOWNLOADMANAGER_DOWNLOAD, (IInteger32**)&value);
-    values->PutInt32(IDownloadsImpl::COLUMN_DESTINATION, value);
+    values->Put(IDownloadsImpl::COLUMN_DESTINATION, value);
     cs = NULL;
     CString::New(path, (ICharSequence**)&cs);
-    values->PutString(IDownloadsImpl::DATA, cs);
+    values->Put(IDownloadsImpl::_DATA, cs);
     value = NULL;
     CInteger32::New(IDownloadsImpl::STATUS_SUCCESS, (IInteger32**)&value);
-    values->PutInt32(IDownloadsImpl::COLUMN_STATUS, value);
+    values->Put(IDownloadsImpl::COLUMN_STATUS, value);
     value = NULL;
     CInteger32::New(length, (IInteger32**)&value);
-    values->PutInt32(IDownloadsImpl::COLUMN_TOTAL_BYTES, value);
+    values->Put(IDownloadsImpl::COLUMN_TOTAL_BYTES, value);
     AutoPtr<IInteger32> yes, no;
     CInteger32::New(CDownloadManagerRequest::SCANNABLE_VALUE_YES, (IInteger32**)&yes);
     CInteger32::New(CDownloadManagerRequest::SCANNABLE_VALUE_NO, (IInteger32**)&no);
-    values->PutInt32(IDownloadsImpl::COLUMN_MEDIA_SCANNED,
+    values->Put(IDownloadsImpl::COLUMN_MEDIA_SCANNED,
             (isMediaScannerScannable) ? yes : no);
     AutoPtr<IInteger32> completion, hidden;
     CInteger32::New(IDownloadManagerRequest::VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION, (IInteger32**)&completion);
     CInteger32::New(IDownloadManagerRequest::VISIBILITY_HIDDEN, (IInteger32**)&hidden);
-    values->PutInt32(IDownloadsImpl::COLUMN_VISIBILITY, (showNotification) ?
+    values->Put(IDownloadsImpl::COLUMN_VISIBILITY, (showNotification) ?
             completion : hidden);
-    values->PutInt32(IDownloadsImpl::COLUMN_ALLOW_WRITE, allowWrite ? 1 : 0);
+    values->Put(IDownloadsImpl::COLUMN_ALLOW_WRITE, allowWrite ? 1 : 0);
     AutoPtr<IDownloadsImpl> impl;
-    CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
+    // CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
     AutoPtr<IUri> contentUri;
     impl->GetCONTENT_URI((IUri**)&contentUri);
     AutoPtr<IUri> downloadUri;
@@ -977,7 +733,7 @@ ECode CDownloadManager::ValidateArgumentIsNonEmpty(
 {
     if (TextUtils::IsEmpty(val)) {
         // throw new IllegalArgumentException(paramName + " can't be null");
-        Slogger::E("CDownloadManager", "%s can't be null", paramName.string());
+        Logger::E("CDownloadManager", "%s can't be null", paramName.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
@@ -995,8 +751,9 @@ AutoPtr<IUri> CDownloadManager::GetDownloadUri(
 
 ECode CDownloadManager::GetDownloadUri(
     /* [in] */ Int64 id,
-    /* [out] */ IUri** uri)
+    /* [out] */ IUri** result)
 {
+    VALIDATE_NOT_NULL(result)
     AutoPtr<IUri> uri = GetDownloadUri(id);
     *result = uri;
     REFCOUNT_ADD(*result)
@@ -1010,15 +767,15 @@ String CDownloadManager::GetWhereClauseForIds(
     /* [in] */ ArrayOf<Int64>* ids)
 {
     StringBuilder whereClause;
-    whereClause.AppendCStr("(");
+    whereClause += "(";
     for (Int32 i = 0; i < ids->GetLength(); i++) {
         if (i > 0) {
-            whereClause.AppendCStr("OR ");
+            whereClause += "OR ";
         }
-        whereClause.AppendString(IBaseColumns::ID);
-        whereClause.AppendCStr(" = ? ");
+        whereClause += IBaseColumns::ID;
+        whereClause += " = ? ";
     }
-    whereClause.AppendCStr(")");
+    whereClause += ")";
     return whereClause.ToString();
 }
 
@@ -1031,7 +788,7 @@ AutoPtr< ArrayOf<String> > CDownloadManager::GetWhereArgsForIds(
     Int32 length = ids->GetLength();
     AutoPtr<ArrayOf<String> > whereArgs = ArrayOf<String>::Alloc(length);
     for (Int32 i = 0; i < length; i++) {
-        whereArgs->Set(i, StringUtils::Int64ToString((*ids)[i]));
+        whereArgs->Set(i, StringUtils::ToString((*ids)[i]));
     }
     return whereArgs;
 }

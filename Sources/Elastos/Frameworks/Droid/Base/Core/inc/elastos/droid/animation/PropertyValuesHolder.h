@@ -19,8 +19,6 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-extern "C" const InterfaceID EIID_PropertyValuesHolder;
-
 class PropertyValuesHolder
     : public Object
     , public IPropertyValuesHolder
@@ -70,16 +68,7 @@ public:
     typedef HashMap< String, AutoPtr<IMethodInfo> > MethodMap;
     typedef HashMap< AutoPtr<IClassInfo>, AutoPtr<PropertyValuesHolder::MethodMap > > ClassMethodMap;
 
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid);
+    CAR_INTERFACE_DECL();
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property name and

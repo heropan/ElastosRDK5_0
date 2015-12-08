@@ -42,7 +42,7 @@ namespace Droid {
 namespace Graphics {
 
 ////////////////////////////////////////////////////////////////////////////////
-static const String TAG = String("BitmapFactory");
+static const String TAG("BitmapFactory");
 const Int32 BitmapFactory::DECODE_BUFFER_SIZE = 300 * 1024;
 ECode BitmapFactory::DecodeFile(
     /* [in] */ const String& pathName,

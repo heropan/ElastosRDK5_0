@@ -5,32 +5,32 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ViewGroup.h"
 #include <elastos/core/Math.h>
-#include <R.h>
+#include <elastos/droid/R.h>
 #include <elastos/utility/etl/List.h>
-#include <elastos/Pair.h>
+#include <elastos/utility/etl/Pair.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::Pair;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::ViewGroup;
-using Elastos::Droid::Widget::ILinearLayout;
-using Elastos::Droid::Widget::ISpec;
 using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 using Elastos::Utility::Logging::Slogger;
-
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-extern "C" const InterfaceID EIID_GridLayout;
-
-class GridLayout : public ViewGroup
+class GridLayout
+    : public ViewGroup
+    , public IGridLayout
 {
 public:
     class Arc;
@@ -41,9 +41,117 @@ public:
     class Bounds;
 
 public:
+    class LayoutParams
+        : public ViewGroup::MarginLayoutParams
+        , public IGridLayoutLayoutParams
+    {
+    private:
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height,
+            /* [in] */ Int32 left,
+            /* [in] */ Int32 top,
+            /* [in] */ Int32 right,
+            /* [in] */ Int32 bottom,
+            /* [in] */ IGridLayoutSpec* rowSpec,
+            /* [in] */ IGridLayoutSpec* columnSpec);
+
+        CARAPI_(void) ReInitSuper(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI_(void) Init(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs);
+
+    public:
+        CAR_INTERFACE_DECL()
+
+        LayoutParams();
+
+        CARAPI constructor(
+            /* [in] */ IGridLayoutSpec* rowSpec,
+            /* [in] */ IGridLayoutSpec* columnSpec);
+
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupLayoutParams* params);
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupMarginLayoutParams* params);
+
+        CARAPI constructor(
+            /* [in] */ IGridLayoutLayoutParams* that);
+
+        CARAPI constructor(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI SetGravity(
+            /* [in] */ Int32 gravity);
+
+        CARAPI SetRowSpec(
+            /* [in] */ IGridLayoutSpec* r);
+
+        CARAPI SetColumnSpec(
+            /* [in] */ IGridLayoutSpec* c);
+
+        CARAPI GetRowSpec(
+            /* [out] */ IGridLayoutSpec** r);
+
+        CARAPI GetColumnSpec(
+            /* [out] */ IGridLayoutSpec** c);
+
+        CARAPI_(void) SetRowSpecSpan(
+            /* [in] */ GridLayout::Interval* span);
+
+        CARAPI_(void) SetColumnSpecSpan(
+            /* [in] */ GridLayout::Interval* span);
+
+        virtual CARAPI Equals(
+            /* [in] */ IInterface* o,
+            /* [out] */ Boolean* result);
+
+        virtual CARAPI GetHashCode(
+            /* [in] */ Int32* hash);
+
+    protected:
+        virtual CARAPI SetBaseAttributes(
+            /* [in] */ ITypedArray* attributes,
+            /* [in] */ Int32 widthAttr,
+            /* [in] */ Int32 heightAttr);
+
+    private:
+        static const Int32 DEFAULT_WIDTH = IViewGroupLayoutParams::WRAP_CONTENT;
+        static const Int32 DEFAULT_HEIGHT = IViewGroupLayoutParams::WRAP_CONTENT;
+        static const Int32 DEFAULT_MARGIN;// = Elastos::Core::Math::INT32_MIN_VALUE;
+        static const Int32 DEFAULT_ROW ;// Elastos::Core::Math::INT32_MIN_VALUE;
+        static const Int32 DEFAULT_COLUMN;// = Elastos::Core::Math::INT32_MIN_VALUE;
+        static const AutoPtr<GridLayout::Interval> DEFAULT_SPAN;
+        static const Int32 DEFAULT_SPAN_SIZE;
+
+        static const Int32 MARGIN = R::styleable::ViewGroup_MarginLayout_layout_margin;
+        static const Int32 LEFT_MARGIN = R::styleable::ViewGroup_MarginLayout_layout_marginLeft;
+        static const Int32 TOP_MARGIN = R::styleable::ViewGroup_MarginLayout_layout_marginTop;
+        static const Int32 RIGHT_MARGIN = R::styleable::ViewGroup_MarginLayout_layout_marginRight;
+        static const Int32 BOTTOM_MARGIN = R::styleable::ViewGroup_MarginLayout_layout_marginBottom;
+        static const Int32 COLUMN = R::styleable::GridLayout_Layout_layout_column;
+        static const Int32 COLUMN_SPAN = R::styleable::GridLayout_Layout_layout_columnSpan;
+        static const Int32 COLUMN_WEIGHT = R::styleable::GridLayout_Layout_layout_columnWeight;
+        static const Int32 ROW = R::styleable::GridLayout_Layout_layout_row;
+        static const Int32 ROW_SPAN = R::styleable::GridLayout_Layout_layout_rowSpan;
+        static const Int32 ROW_WEIGHT = R::styleable::GridLayout_Layout_layout_rowWeight;
+        static const Int32 GRAVITY = R::styleable::GridLayout_Layout_layout_gravity;
+
+    public:
+        AutoPtr<IGridLayoutSpec> mRowSpec;
+        AutoPtr<IGridLayoutSpec> mColumnSpec;
+    };
+
     template<typename K, typename V>
     class PackedMap
-        : public ElRefBase
+        : public Object
     {
     public:
         AutoPtr< ArrayOf<Int32> > mIndex;
@@ -103,7 +211,7 @@ public:
     };
 
     class Axis
-        : public ElRefBase
+        : public Object
     {
         friend class GridLayout;
         friend class TopoSort;
@@ -116,20 +224,20 @@ public:
 
         CARAPI_(Int32) GetMaxIndex();
 
-        AutoPtr< PackedMap<ISpec*, Bounds*> > CreateGroupBounds();
+        AutoPtr< PackedMap<IGridLayoutSpec*, IBounds*> > CreateGroupBounds();
 
         CARAPI_(void) ComputeGroupBounds();
 
-        AutoPtr< PackedMap<Interval*, MutableInt*> > CreateLinks(
+        AutoPtr< PackedMap<IInterval*, MutableInt*> > CreateLinks(
             /* [in] */ Boolean min);
 
         CARAPI_(void) ComputeLinks(
-            /* [in] */ PackedMap<Interval*, MutableInt*>* links,
+            /* [in] */ PackedMap<IInterval*, MutableInt*>* links,
             /* [in] */ Boolean min);
 
-        AutoPtr< PackedMap<Interval*, MutableInt*> > GetForwardLinks();
+        AutoPtr< PackedMap<IInterval*, MutableInt*> > GetForwardLinks();
 
-        AutoPtr< PackedMap<Interval*, MutableInt*> > GetBackwardLinks();
+        AutoPtr< PackedMap<IInterval*, MutableInt*> > GetBackwardLinks();
 
         CARAPI_(void) Include(
             /* [in] */ List< AutoPtr<Arc> >& arcs,
@@ -153,7 +261,7 @@ public:
 
         CARAPI_(void) AddComponentSizes(
             /* [in] */ List< AutoPtr<Arc> >& result,
-            /* [in] */ PackedMap<Interval*, MutableInt*>* links);
+            /* [in] */ PackedMap<IInterval*, MutableInt*>* links);
 
         CARAPI_(AutoPtr< ArrayOf<Arc*> >) CreateArcs();
 
@@ -181,6 +289,21 @@ public:
         CARAPI_(void) ComputeMargins(
             /* [in] */ Boolean leading);
 
+        CARAPI_(void) Solve(
+            /* [in] */ ArrayOf<Int32>* a);
+
+        CARAPI_(Boolean) ComputeHasWeights();
+
+        CARAPI_(Boolean) HasWeights();
+
+        CARAPI_(void) RecordOriginalMeasurement(
+            /* [in] */ Int32 i);
+
+        CARAPI_(void) ShareOutDelta();
+
+        CARAPI_(void) SolveAndDistributeSpace(
+            /* [in] */ ArrayOf<Int32>* a);
+
         CARAPI_(void) ComputeLocations(
             /* [in] */ ArrayOf<Int32>* a);
 
@@ -206,7 +329,7 @@ public:
         CARAPI_(void) SetOrderPreserved(
             /* [in] */ Boolean orderPreserved);
 
-        AutoPtr< PackedMap<ISpec*, Bounds*> > GetGroupBounds();
+        AutoPtr< PackedMap<IGridLayoutSpec*, IBounds*> > GetGroupBounds();
 
         CARAPI_(AutoPtr< ArrayOf<Arc*> >) GetArcs();
 
@@ -226,6 +349,10 @@ public:
 
         CARAPI_(void) InvalidateValues();
 
+        CARAPI_(AutoPtr<ArrayOf<Int32> >) GetOriginalMeasurements();
+
+        CARAPI_(AutoPtr<ArrayOf<Int32> >) GetDeltas();
+
     private:
         static const Int32 NEW = 0;
         static const Int32 PENDING = 1;
@@ -240,10 +367,10 @@ public:
         Boolean mHorizontal;
         Int32 mDefinedCount; //= UNDEFINED
         Boolean mGroupBoundsValid; //=FALSE
-        AutoPtr< PackedMap<ISpec*, Bounds*> > mGroupBounds;
-        AutoPtr< PackedMap<Interval*, MutableInt*> > mForwardLinks;
+        AutoPtr< PackedMap<IGridLayoutSpec*, IBounds*> > mGroupBounds;
+        AutoPtr< PackedMap<IInterval*, MutableInt*> > mForwardLinks;
         Boolean mForwardLinksValid; // = FALSE;
-        AutoPtr< PackedMap<Interval*, MutableInt*> > mBackwardLinks;
+        AutoPtr< PackedMap<IInterval*, MutableInt*> > mBackwardLinks;
         Boolean mBackwardLinksValid;// = false;
         AutoPtr< ArrayOf<Int32> > mLeadingMargins;
         Boolean mLeadingMarginsValid;// = false;
@@ -253,13 +380,16 @@ public:
         Boolean mArcsValid;// = false;
         AutoPtr< ArrayOf<Int32> > mLocations;
         Boolean mLocationsValid;// = false;
-
+        Boolean mHasWeights;
+        Boolean mHasWeightsValid;// = false;
+        AutoPtr< ArrayOf<Int32> > mOriginalMeasurements;
+        AutoPtr< ArrayOf<Int32> > mDeltas;
         Boolean mOrderPreserved;// = DEFAULT_ORDER_PRESERVED;
 
     }; //end of Axis
 
     class Arc
-        : public ElRefBase
+        : public Object
     {
     public:
         AutoPtr<Interval> mSpan;
@@ -308,11 +438,12 @@ public:
         }
 
         CARAPI Put(K key, V value) {
-            PushBack(Pair<K, V>(key, value));
+            List<Pair<K, V> >::PushBack(Pair<K, V>(key, value));
             return NOERROR;
         }
 
         AutoPtr< PackedMap<K, V> > Pack() {
+
             Int32 N = List<Pair <K, V> >::GetSize();
             AutoPtr< ArrayOf<K> > keys = ArrayOf<K>::Alloc(N);
             AutoPtr< ArrayOf<V> > values = ArrayOf<V>::Alloc(N);
@@ -328,7 +459,8 @@ public:
     };
 
     class Bounds
-        : public ElRefBase
+        : public Object
+        , public IBounds
     {
         friend class Alignment;
         friend class Axis;
@@ -346,10 +478,13 @@ public:
             /* [in] */ IGridLayout* gl,
             /* [in] */ IView* c,
             /* [in] */ Spec* spec,
-            /* [in] */ Axis* axis);
+            /* [in] */ Axis* axis,
+            /* [in] */ Int32 size);
 
     public:
-         Bounds();
+        CAR_INTERFACE_DECL()
+
+        Bounds();
 
         CARAPI_(String) ToString();
 
@@ -365,58 +500,103 @@ public:
             /* [in] */ Int32 size,
             /* [in] */ Boolean horizontal);
 
+        CARAPI GetBefore(
+            /* [out] */ Int32* before);
+
+        CARAPI GetAfter(
+            /* [out] */ Int32* after);
+
+        CARAPI GetFlexibility(
+            /* [out] */ Int32* flexibility);
+
+        CARAPI SetBefore(
+            /* [in] */ Int32 before);
+
+        CARAPI SetAfter(
+            /* [in] */ Int32 after);
+
+        CARAPI SetFlexibility(
+            /* [in] */ Int32 flexibility);
+
     };
 
     class Interval
-        : public ElRefBase
+        : public Object
+        , public IInterval
     {
     public:
-        Int32 mMin;
-        Int32 mMax;
+        CAR_INTERFACE_DECL()
 
-    public:
         Interval(
             /* [in] */ Int32 min,
             /* [in] */ Int32 max);
+        /**
+         * The minimum value.
+         */
+        CARAPI GetMin(
+            /* [out] */ Int32* min);
+
+        /**
+         * The maximum value.
+         */
+        CARAPI GetMax(
+            /* [out] */ Int32* max);
+
+        CARAPI Size(
+            /* [out] */ Int32* size);
+
+        CARAPI Inverse(
+            /* [out] */ IInterval** interval);
+
 
         CARAPI_(Int32) Size();
 
         CARAPI_(AutoPtr<Interval>) Inverse();
 
-        CARAPI_(Boolean) Equals(
-            /* [in] */ Interval* that);
+        CARAPI Equals(
+            /* [in] */ IInterface* that,
+            /* [out] */ Boolean* result);
 
-        CARAPI_(Int32) GetHashCode();
+        CARAPI GetHashCode(
+            /* [out] */ Int32* hashCode);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+    public:
+        Int32 mMin;
+        Int32 mMax;
     };
 
     class Spec
-        : public ISpec
-        , public ElRefBase
+        : public IGridLayoutSpec
+        , public Object
     {
         friend class GridLayout;
 
     public:
         CAR_INTERFACE_DECL()
 
-        const static AutoPtr<ISpec> UNDEFINED;
-
+        const static AutoPtr<IGridLayoutSpec> UNDEFINED;
+        const static Float DEFAULT_WEIGHT = 0;
         Boolean mStartDefined;
         AutoPtr<Interval> mSpan;
         AutoPtr<Alignment> mAlignment;
+        Float mWeight;
 
     private:
         Spec(
             /* [in] */ Boolean startDefined,
             /* [in] */ Interval* span,
-            /* [in] */ Alignment* alignment);
+            /* [in] */ Alignment* alignment,
+            /* [in] */ Float weight);
 
         Spec(
             /* [in] */ Boolean startDefined,
             /* [in] */ Int32 start,
             /* [in] */ Int32 size,
-            /* [in] */ Alignment* alignment);
+            /* [in] */ Alignment* alignment,
+            /* [in] */ Float weight);
 
     public:
         CARAPI_(AutoPtr<Spec>) CopyWriteSpan(
@@ -427,9 +607,16 @@ public:
 
         CARAPI_(Int32) GetFlexibility();
 
-        CARAPI Equals(
-            /* [in] */ ISpec* that,
-            /* [out] */ Boolean* res);
+        CARAPI CopyWriteSpan(
+            /* [in] */ IInterval* span,
+            /* [out] */ IGridLayoutSpec** spec);
+
+        CARAPI CopyWriteAlignment(
+            /* [in] */ IGridLayoutAlignment* alignment,
+            /* [out] */ IGridLayoutSpec** spec);
+
+        CARAPI GetFlexibility(
+            /* [out] */ Int32* rst);
 
         CARAPI Equals(
             /* [in] */ IInterface* that,
@@ -441,7 +628,7 @@ public:
 
     class Alignment
         : public IGridLayoutAlignment
-        , public ElRefBase
+        , public Object
     {
 
     public:
@@ -456,6 +643,9 @@ public:
             /* [out] */ Int32* size);
 
         virtual CARAPI_(AutoPtr<Bounds>) GetBounds();
+
+        virtual CARAPI GetBounds(
+            /* [out] */ IBounds** bounds);
     };
 
     class UndefinedAlignment
@@ -614,7 +804,7 @@ public:
     };
 
     class TopoSort
-        : public ElRefBase
+        : public Object
     {
     private:
         AutoPtr< ArrayOf<Arc*> > mResult;
@@ -635,42 +825,68 @@ public:
     };
 
 public:
-    GridLayout(
+    GridLayout();
+
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
+        /* [in] */ Int32 defStyle = 0,
+        /* [in] */ Int32 defStyleRes = 0);
 
     CARAPI_(Int32) GetOrientation();
+
+    CARAPI GetOrientation(
+        /* [out] */ Int32* result);
 
     CARAPI SetOrientation(
         /* [in] */ Int32 orientation);
 
     CARAPI_(Int32) GetRowCount();
 
+    CARAPI GetRowCount(
+        /* [out] */ Int32* result);
+
     CARAPI SetRowCount(
         /* [in] */ Int32 rowCount);
 
     CARAPI_(Int32) GetColumnCount();
+
+    CARAPI GetColumnCount(
+        /* [out] */ Int32* result);
 
     CARAPI SetColumnCount(
         /* [in] */ Int32 columnCount);
 
     CARAPI_(Boolean) GetUseDefaultMargins();
 
+    CARAPI GetUseDefaultMargins(
+        /* [out] */ Boolean* result);
+
     CARAPI SetUseDefaultMargins(
         /* [in] */ Boolean useDefaultMargins);
 
     CARAPI_(Int32) GetAlignmentMode();
+
+    CARAPI GetAlignmentMode(
+        /* [out] */ Int32* result);
 
     CARAPI SetAlignmentMode(
         /* [in] */ Int32 alignmentMode);
 
     CARAPI_(Boolean) IsRowOrderPreserved();
 
+    CARAPI IsRowOrderPreserved(
+        /* [out] */ Boolean* result);
+
     CARAPI SetRowOrderPreserved(
         /* [in] */ Boolean rowOrderPreserved);
 
     CARAPI_(Boolean) IsColumnOrderPreserved();
+
+    CARAPI IsColumnOrderPreserved(
+        /* [out] */ Boolean* result);
 
     CARAPI SetColumnOrderPreserved(
         /* [in] */ Boolean columnOrderPreserved);
@@ -707,7 +923,7 @@ public:
 
     using View::GetLayoutParams;
 
-    CARAPI_(AutoPtr<IViewGroupLayoutParams>) GetLayoutParams(
+    CARAPI_(AutoPtr<IGridLayoutLayoutParams>) GetLayoutParams(
         /* [in] */ IView* c);
 
     CARAPI GenerateLayoutParams(
@@ -717,6 +933,12 @@ public:
     CARAPI_(Int32) GetMeasurementIncludingMargin(
         /* [in] */ IView* c,
         /* [in] */ Boolean horizontal);
+
+
+    CARAPI GetMeasurementIncludingMargin(
+        /* [in] */ IView* c,
+        /* [in] */ Boolean horizontal,
+        /* [out] */ Int32* result);
 
     CARAPI RequestLayout();
 
@@ -730,34 +952,47 @@ public:
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-    static CARAPI_(AutoPtr<ISpec>) NewInstance(
+    static CARAPI_(AutoPtr<IGridLayoutSpec>) GetSpec(
         /* [in] */ Int32 start,
         /* [in] */ Int32 size,
         /* [in] */ Alignment* alignment);
 
-    static CARAPI_(AutoPtr<ISpec>) NewInstance(
+    static CARAPI_(AutoPtr<IGridLayoutSpec>) GetSpec(
         /* [in] */ Int32 start,
         /* [in] */ Alignment* alignment);
 
-    static CARAPI_(AutoPtr<ISpec>) NewInstance(
+    static CARAPI_(AutoPtr<IGridLayoutSpec>) GetSpec(
         /* [in] */ Int32 start,
         /* [in] */ Int32 size);
 
-    static CARAPI_(AutoPtr<ISpec>) NewInstance(
+    static CARAPI_(AutoPtr<IGridLayoutSpec>) GetSpec(
         /* [in] */ Int32 start);
+
+    static CARAPI_(AutoPtr<IGridLayoutSpec>) GetSpec(
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 size,
+        /* [in] */ Alignment* alignment,
+        /* [in] */ Float weight);
+
+    static CARAPI_(AutoPtr<IGridLayoutSpec>) GetSpec(
+        /* [in] */ Int32 start,
+        /* [in] */ Alignment* alignment,
+        /* [in] */ Float weight);
+
+    static CARAPI_(AutoPtr<IGridLayoutSpec>) GetSpec(
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 size,
+        /* [in] */ Float weight);
+
+    static CARAPI_(AutoPtr<IGridLayoutSpec>) GetSpec(
+        /* [in] */ Int32 start,
+        /* [in] */ Float weight);
 
     static CARAPI_(AutoPtr<Alignment>) CreateSwitchingAlignment(
         /* [in] */ Alignment* ltr,
         /* [in] */ Alignment* rtl);
 
 protected:
-    GridLayout();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
-
     CARAPI_(void) OnSetLayoutParams(
         /* [in] */ IView* child,
         /* [in] */ IViewGroupLayoutParams* layoutParams);
@@ -771,7 +1006,8 @@ protected:
         /* [in] */ IViewGroupLayoutParams* p);
 
     CARAPI_(void) OnDebugDrawMargins(
-        /* [in] */ ICanvas* canvas);
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ IPaint* paint);
 
     CARAPI_(void) OnDebugDraw(
         /* [in] */ ICanvas* canvas);
@@ -791,12 +1027,16 @@ protected:
         /* [in] */ Int32 widthSpec,
         /* [in] */ Int32 heightSpec);
 
-    CARAPI_(void) OnLayout(
+    CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
+
+    CARAPI_(Int32) Adjust(
+        /* [in] */ Int32 measureSpec,
+        /* [in] */ Int32 delta);
 
 private:
     CARAPI_(Int32) GetDefaultMargin(
@@ -859,7 +1099,7 @@ private:
         /* [in] */ const String& msg);
 
     CARAPI_(void) CheckLayoutParams(
-        /* [in] */ IViewGroupLayoutParams* lp,
+        /* [in] */ IGridLayoutLayoutParams* lp,
         /* [in] */ Boolean horizontal);
 
     CARAPI_(void) DrawLine(
@@ -950,9 +1190,10 @@ private:
     static const Int32 CAN_STRETCH = 2;
 };
 
-
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Widget::GridLayout::Arc, IInterface)
 
 #endif //__ELASTOS_DROID_WIDGET_GRIDLAYOUT_H__

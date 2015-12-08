@@ -19,9 +19,9 @@ public:
 private:
 };
 
-}//namespace Tts
-}//namespace Speech
-}//namespace Droid
-}//namespace Elastos
+} // namespace Tts
+} // namespace Speech
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_SPEECH_TTS_CTTSENGINESHELPER_H__

@@ -1096,6 +1096,9 @@ public:
     static CARAPI Main(
         /* [in] */ const ArrayOf<String>& args);
 
+    CARAPI AppNotRespondingViaProvider(
+        /* [in] */ IBinder* provider);
+
 private:
 
     CARAPI GetPackageInfo(
@@ -1311,9 +1314,6 @@ private:
         /* [in] */ ProviderRefCount* prc,
         /* [in] */ Boolean stable);
 
-    CARAPI AppNotRespondingViaProvider(
-        /* [in] */ IBinder* provider);
-
     CARAPI_(AutoPtr<ProviderClientRecord>) InstallProviderAuthoritiesLocked(
         /* [in] */ IIContentProvider* provider,
         /* [in] */ IContentProvider* localProvider,
@@ -1430,6 +1430,13 @@ public:
 
     AutoPtr<IBundle> mCoreSettings;
 
+    static const Boolean DEBUG_RESULTS;
+    static const Boolean DEBUG_BACKUP;
+    static const Boolean DEBUG_CONFIGURATION;
+    static const Boolean DEBUG_SERVICE;
+    static const Boolean DEBUG_MEMORY_TRIM;
+    static const Boolean DEBUG_PROVIDER;
+
 private:
     friend class LoadedPkg;
     friend class CApplicationThread;
@@ -1437,13 +1444,6 @@ private:
     friend class ConfigurationChangedCallbacks;
 
     static const Int32 THUMBNAIL_FORMAT = Elastos::Droid::Graphics::BitmapConfig_RGB_565;
-
-    static const Boolean DEBUG_RESULTS;
-    static const Boolean DEBUG_BACKUP;
-    static const Boolean DEBUG_CONFIGURATION;
-    static const Boolean DEBUG_SERVICE;
-    static const Boolean DEBUG_MEMORY_TRIM;
-    static const Boolean DEBUG_PROVIDER;
 
     static const Int64 MIN_TIME_BETWEEN_GCS = 5*1000;
     static AutoPtr<IPattern> PATTERN_SEMICOLON;//Pattern.compile(";");

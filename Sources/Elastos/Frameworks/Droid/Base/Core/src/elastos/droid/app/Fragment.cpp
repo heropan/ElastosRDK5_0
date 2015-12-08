@@ -345,7 +345,7 @@ Fragment::Fragment()
 Fragment::~Fragment()
 {}
 
-ECode Fragment::Initialize()
+ECode Fragment::constructor()
 {
     return NOERROR;
 }
@@ -414,7 +414,7 @@ ECode Fragment::SetSavedFragmentState(
 }
 
 ECode Fragment::GetSavedViewState(
-    /* [out] */ IHashMap** viewState)
+    /* [out] */ ISparseArray** viewState)
 {
     VALIDATE_NOT_NULL(viewState);
     *viewState = mSavedViewState;
@@ -423,7 +423,7 @@ ECode Fragment::GetSavedViewState(
 }
 
 ECode Fragment::SetSavedViewState(
-    /* [in] */ IHashMap* viewState)
+    /* [in] */ ISparseArray* viewState)
 {
     mSavedViewState = viewState;
     return NOERROR;
@@ -868,7 +868,7 @@ ECode Fragment::RestoreViewState(
     /* [in] */ IBundle* savedInstanceState)
 {
     if (mSavedViewState != NULL) {
-        mView->RestoreHierarchyState(ISparseArray::Probe(mSavedViewState));
+        mView->RestoreHierarchyState(mSavedViewState);
         mSavedViewState = NULL;
     }
     mCalled = FALSE;

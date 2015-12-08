@@ -17,24 +17,23 @@ namespace Tts {
 
 class AudioPlaybackQueueItem
     : public PlaybackQueueItem
-    , public IRunnable
 {
 private:
     class MediaPlayerOnErrorListener
-        : public ElRefBase
+        : public Object
 //        , public IMediaPlayerOnErrorListener
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        MediaPlayerOnErrorListener();
 
-        CARAPI_(UInt32) Release();
+        virtual ~MediaPlayerOnErrorListener();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ AudioPlaybackQueueItem* apqi);
     public:
         //@Override
         CARAPI OnError(
@@ -42,9 +41,6 @@ private:
             /* [in] */ Int32 what,
             /* [in] */ Int32 extra,
             /* [out] */ Boolean* ret);
-    public:
-        MediaPlayerOnErrorListener(
-            /* [in] */ AudioPlaybackQueueItem* apqi);
     private:
         AutoPtr<AudioPlaybackQueueItem> mApqi;
     };
@@ -53,29 +49,26 @@ private:
 
 private:
     class MediaPlayerOnCompletionListener
-        : public ElRefBase
+        : public Object
 //        , public IMediaPlayerOnCompletionListener
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        MediaPlayerOnCompletionListener();
 
-        CARAPI_(UInt32) Release();
+        virtual ~MediaPlayerOnCompletionListener();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* Object,
-            /* [out] */ InterfaceID* iID);
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ AudioPlaybackQueueItem* apqi);
     public:
         //@Override
         CARAPI OnCompletion(
 //            /* [in] */ IMediaPlayer* mp
             );
 
-    public:
-        MediaPlayerOnCompletionListener(
-            /* [in] */ AudioPlaybackQueueItem* apqi);
     private:
         AutoPtr<AudioPlaybackQueueItem> mApqi;
     };
@@ -83,24 +76,20 @@ private:
     friend class MediaPlayerOnCompletionListener;
 
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_INTERFACE_DECL();
 
-    CARAPI_(UInt32) AddRef();
+    AudioPlaybackQueueItem();
 
-    CARAPI_(UInt32) Release();
+    virtual ~AudioPlaybackQueueItem();
 
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* Object,
-        /* [out] */ InterfaceID* iID);
+    CARAPI constructor();
 
-public:
-    AudioPlaybackQueueItem(
+    CARAPI constructor(
         /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
         /* [in] */ IInterface* callerIdentity,
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
-        /* [in] */ Int32 streamType);
+        /* [in] */ AudioOutputParams audioParams);
 
     //@Override
     CARAPI Run();
@@ -108,16 +97,27 @@ public:
 private:
     CARAPI_(void) Finish();
 
+    CARAPI_(void) SetupVolume(
+        /* [in] */ IMediaPlayer *player,
+        /* [in] */ Float volume,
+        /* [in] */ Float pan);
+
+    CARAPI_(Float) Clip(
+            /* [in] */ Float value,
+            /* [in] */ Float min,
+            /* [in] */ Float max);
+
     //@Override
     CARAPI Stop(
         /* [in] */ Boolean isError);
 
 private:
-    static const CString TAG;// = "TTS.AudioQueueItem";
+    static const String TAG;        // = "TTS.AudioQueueItem";
 
     AutoPtr<IContext> mContext;
     AutoPtr<IUri> mUri;
     Int32 mStreamType;
+    AudioOutputParams *mAudioParams;
 
 //    AutoPtr<IConditionVariable> mDone;
 //    AutoPtr<IMediaPlayer> mPlayer;

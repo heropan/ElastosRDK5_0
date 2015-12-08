@@ -117,7 +117,7 @@ public:
      * @return The display manager instance, may be NULL early in system startup
      * before the display manager has been fully initialized.
      */
-    static CARAPI_(AutoPtr<DisplayManagerGlobal>) GetInstance();
+    static CARAPI_(AutoPtr<IDisplayManagerGlobal>) GetInstance();
 
     /**
      * Get information about a particular logical display.
@@ -260,7 +260,7 @@ private:
     // orientation change before the display info cache has actually been invalidated.
     static const Boolean USE_CACHE = FALSE;
 
-    static AutoPtr<DisplayManagerGlobal> sInstance;
+    static AutoPtr<IDisplayManagerGlobal> sInstance;
     static Object sInstanceLock;
 
     Object mLock;

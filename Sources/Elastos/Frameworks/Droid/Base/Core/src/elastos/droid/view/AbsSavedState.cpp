@@ -6,6 +6,8 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+CAR_INTERFACE_IMPL_2(AbsSavedState, Object, IAbsSavedState, IParcelable)
+
 static AutoPtr<IAbsSavedState> InitEmptySs()
 {
     // AutoPtr<CEmptyAbsSavedState> rst;
@@ -23,42 +25,22 @@ AbsSavedState::AbsSavedState()
 {
 }
 
-
 AbsSavedState::~AbsSavedState()
 {
-}
-/**
- * Constructor called by derived classes when creating their SavedState objects
- *
- * @param superState The state of the superclass of this view
- */
-AbsSavedState::AbsSavedState(
-    /* [in] */ IParcelable* superState)
-{
-    if (superState == NULL) {
-        assert(0);
-    //    throw new IllegalArgumentException("superState must not be null");
-    }
-    mSuperState = superState != IParcelable::Probe(EMPTY_STATE.Get()) ? superState : NULL;
-}
-
-/**
- * Constructor used when reading from a parcel. Reads the state of the superclass.
- *
- * @param source
- */
-AbsSavedState::AbsSavedState(
-    /* [in] */ IParcel* source)
-{
-    // FIXME need class loader
-    //Parcelable superState = source->ReadParcelable(null);
-    //
-    //mSuperState = superState != null ? superState : EMPTY_STATE;
 }
 
 AutoPtr<IParcelable> AbsSavedState::GetSuperState()
 {
     return mSuperState;
+}
+
+ECode AbsSavedState::GetSuperState(
+    /* [out] */ IParcelable** p)
+{
+    VALIDATE_NOT_NULL(p)
+    *p = mSuperState;
+    REFCOUNT_ADD(*p)
+    return NOERROR;
 }
 
 ECode AbsSavedState::WriteToParcel(
@@ -84,12 +66,7 @@ ECode AbsSavedState::ReadFromParcel(
     return NOERROR;
 }
 
-ECode AbsSavedState::Init()
-{
-    return NOERROR;
-}
-
-ECode AbsSavedState::Init(
+ECode AbsSavedState::constructor(
     /* [in] */ IParcelable* superState)
 {
     if (superState == NULL) {
@@ -101,17 +78,8 @@ ECode AbsSavedState::Init(
     return NOERROR;
 }
 
-ECode AbsSavedState::Init(
-    /* [in] */ IParcel* source)
-{
-    // FIXME need class loader
-    //Parcelable superState = source->ReadParcelable(null);
-    //
-    //mSuperState = superState != null ? superState : EMPTY_STATE;
-    // You need call Init() and then invoke ReadFromParcel() to instead of;
-
-    return E_NOT_IMPLEMENTED;
-}
+ECode AbsSavedState::constructor()
+{}
 
 } // namespace View
 } // namespace Droid

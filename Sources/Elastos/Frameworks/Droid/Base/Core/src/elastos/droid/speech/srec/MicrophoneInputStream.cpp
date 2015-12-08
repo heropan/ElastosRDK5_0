@@ -10,45 +10,46 @@ namespace Droid {
 namespace Speech {
 namespace Srec {
 
-const CString MicrophoneInputStream::TAG = "MicrophoneInputStream";
+const String MicrophoneInputStream::TAG("MicrophoneInputStream");
 
 MicrophoneInputStream::MicrophoneInputStream()
 {}
 
-MicrophoneInputStream::MicrophoneInputStream(
-    /* [in] */ Int32 sampleRate,
-    /* [in] */ Int32 fifoDepth) //Java:    throws IOException
+MicrophoneInputStream::~MicrophoneInputStream()
+{}
+
+ECode MicrophoneInputStream::constructor()
 {
-    Init(sampleRate, fifoDepth);
+    return NOERROR;
 }
 
-ECode MicrophoneInputStream::Init(
+ECode MicrophoneInputStream::constructor(
     /* [in] */ Int32 sampleRate,
-    /* [in] */ Int32 fifoDepth) //Java:    throws IOException
+    /* [in] */ Int32 fifoDepth)
 {
     mOneByte = ArrayOf<Byte>::Alloc(1);
     mAudioRecord = AudioRecordNew(sampleRate, fifoDepth);
     if (mAudioRecord == 0){
         //Java:    throw new IOException("AudioRecord constructor failed - busy?");
-        Logger::E(TAG, String("IOException:AudioRecord constructor failed - busy?\n"));
+        Logger::E(TAG, "IOException:AudioRecord constructor failed - busy?\n");
         return E_IO_EXCEPTION;
     }
     Int32 status = AudioRecordStart(mAudioRecord);
     if (status != 0) {
         Close();
         //Java:    throw new IOException("AudioRecord start failed: " + status);
-        Logger::E(TAG, String("IOException:AudioRecord start failed: ") + StringUtils::Int32ToString(status) + String("\n") );
+        Logger::E(TAG, "IOException:AudioRecord start failed: \n", status);
         return E_IO_EXCEPTION;
     }
     return NOERROR;
 }
 
 ECode MicrophoneInputStream::Read(
-    /* [out] */ Int32* value) //Java:    throws IOException
+    /* [out] */ Int32* value)
 {
     if (mAudioRecord == 0){
         //Java:    throw new IllegalStateException("not open");
-        Logger::E(TAG, String("IllegalStateException:not open\n"));
+        Logger::E(TAG, "IllegalStateException:not open\n");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Int32 rtn = AudioRecordRead(mAudioRecord, mOneByte, 0, 1);
@@ -58,11 +59,11 @@ ECode MicrophoneInputStream::Read(
 
 ECode MicrophoneInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* b,
-    /* [out] */ Int32* number) //Java:    throws IOException
+    /* [out] */ Int32* number)
 {
     if (mAudioRecord == 0){
         //Java:    throw new IllegalStateException("not open");
-        Logger::E(TAG, String("IllegalStateException:not open\n"));
+        Logger::E(TAG, "IllegalStateException:not open\n");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     *number = AudioRecordRead(mAudioRecord, b, 0, b->GetLength());
@@ -73,11 +74,11 @@ ECode MicrophoneInputStream::ReadBytes(
         /* [out] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
-        /* [out] */ Int32* number) //Java:    throws IOException
+        /* [out] */ Int32* number)
 {
     if (mAudioRecord == 0){
         //Java:    throw new IllegalStateException("not open");
-        Logger::E(TAG, String("IllegalStateException:not open\n"));
+        Logger::E(TAG, "IllegalStateException:not open\n");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     // TODO: should we force all reads to be a multiple of the sample size?
@@ -101,38 +102,44 @@ ECode MicrophoneInputStream::Close()
     return NOERROR;
 }
 
-void MicrophoneInputStream::Finalize()// throws Throwable
+void MicrophoneInputStream::Finalize()
 {
     if (mAudioRecord != 0) {
         Close();
         //throw new IOException("someone forgot to close MicrophoneInputStream");
-        Logger::E(TAG, String("someone forgot to close MicrophoneInputStream\n") );
-        return;//E_IO_EXCEPTION
+        Logger::E(TAG, "someone forgot to close MicrophoneInputStream\n");
+        return;     //E_IO_EXCEPTION
     }
 }
 
 Int32 MicrophoneInputStream::AudioRecordNew(
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 fifoDepth)
-{return 0;}
+{
+    return 0;
+}
 
 Int32 MicrophoneInputStream::AudioRecordStart(
     /* [in] */ Int32 audioRecord)
-{return 0;}
+{
+    return 0;
+}
 
 Int32 MicrophoneInputStream::AudioRecordRead(
     /* [in] */ Int32 audioRecord,
     /* [in] */ ArrayOf<Byte>* b,
     /* [in] */ Int32 offset,
-    /* [in] */ Int32 length)// throws IOException
-{return 0;}
+    /* [in] */ Int32 length)
+{
+    return 0;
+}
 
 void MicrophoneInputStream::AudioRecordStop(
-    /* [in] */ Int32 audioRecord)// throws IOException
+    /* [in] */ Int32 audioRecord)
 {}
 
 void MicrophoneInputStream::AudioRecordDelete(
-    /* [in] */ Int32 audioRecord)// throws IOException
+    /* [in] */ Int32 audioRecord)
 {}
 
 } // namespace Srec

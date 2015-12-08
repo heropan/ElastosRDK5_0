@@ -1,29 +1,65 @@
 #include "elastos/droid/widget/SeekBar.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(SeekBar, AbsSeekBar, ISeekBar);
+
 SeekBar::SeekBar()
 {
 }
 
-SeekBar::SeekBar(
-    /* [in] */ IContext* ctx,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : AbsSeekBar(ctx, attrs, defStyle)
+SeekBar::~SeekBar()
 {
 }
 
-ECode SeekBar::Init(
-    /* [in] */ IContext* ctx,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+ECode SeekBar::constructor(
+    /* [in] */ IContext* context)
 {
-    return AbsSeekBar::Init(ctx, attrs, defStyle);
+    return constructor(context, NULL);
+}
+
+ECode SeekBar::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::seekBarStyle);
+}
+
+ECode SeekBar::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode SeekBar::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    return AbsSeekBar::constructor(context, attrs, defStyleAttr, defStyleRes);
+}
+
+void SeekBar::OnProgressRefresh(
+    /* [in] */ Float scale,
+    /* [in] */ Boolean fromUser)
+{
+    AbsSeekBar::OnProgressRefresh(scale, fromUser);
+
+    Int32 progress;
+    AbsSeekBar::GetProgress(&progress);
+
+    if (mOnSeekBarChangeListener != NULL) {
+        mOnSeekBarChangeListener->OnProgressChanged(
+                (ISeekBar*)this, progress, fromUser);
+    }
 }
 
 ECode SeekBar::SetOnSeekBarChangeListener(
@@ -34,24 +70,12 @@ ECode SeekBar::SetOnSeekBarChangeListener(
     return NOERROR;
 }
 
-void SeekBar::OnProgressRefresh(
-    /* [in] */ Float scale,
-    /* [in] */ Boolean fromUser)
-{
-    AbsSeekBar::OnProgressRefresh(scale, fromUser);
-
-    if (mOnSeekBarChangeListener != NULL) {
-        mOnSeekBarChangeListener->OnProgressChanged(
-                THIS_PROBE(ISeekBar), AbsSeekBar::GetProgress(), fromUser);
-    }
-}
-
 void SeekBar::OnStartTrackingTouch()
 {
     AbsSeekBar::OnStartTrackingTouch();
 
     if (mOnSeekBarChangeListener != NULL) {
-        mOnSeekBarChangeListener->OnStartTrackingTouch(THIS_PROBE(ISeekBar));
+        mOnSeekBarChangeListener->OnStartTrackingTouch((ISeekBar*)this);
     }
 }
 
@@ -60,7 +84,7 @@ void SeekBar::OnStopTrackingTouch()
     AbsSeekBar::OnStopTrackingTouch();
 
     if (mOnSeekBarChangeListener != NULL) {
-        mOnSeekBarChangeListener->OnStopTrackingTouch(THIS_PROBE(ISeekBar));
+        mOnSeekBarChangeListener->OnStopTrackingTouch((ISeekBar*)this);
     }
 }
 
@@ -69,8 +93,8 @@ ECode SeekBar::OnInitializeAccessibilityEvent(
 {
     AbsSeekBar::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> clsName;
-    CStringWrapper::New(String("CSeekBar"), (ICharSequence**)&clsName);
-    event->SetClassName(clsName);
+    CString::New(String("CSeekBar"), (ICharSequence**)&clsName);
+    IAccessibilityRecord::Probe(event)->SetClassName(clsName);
     return NOERROR;
 }
 
@@ -79,11 +103,10 @@ ECode SeekBar::OnInitializeAccessibilityNodeInfo(
 {
     AbsSeekBar::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> clsName;
-    CStringWrapper::New(String("CSeekBar"), (ICharSequence**)&clsName);
+    CString::New(String("CSeekBar"), (ICharSequence**)&clsName);
     info->SetClassName(clsName);
     return NOERROR;
 }
-
 
 }// namespace Widget
 }// namespace Droid

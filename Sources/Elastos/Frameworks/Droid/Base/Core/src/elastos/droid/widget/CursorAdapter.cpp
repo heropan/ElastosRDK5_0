@@ -1,17 +1,21 @@
 
 #include "elastos/droid/widget/CursorAdapter.h"
-#include "elastos/droid/widget/CCursorFilter.h"
+// #include "elastos/droid/widget/CCursorFilter.h"
 #include "elastos/droid/os/CHandler.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Content::EIID_IContext;
+using Elastos::Droid::Database::EIID_IDataSetObserver;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Core::CString;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL_3(CursorAdapter, BaseAdapter, ICursorAdapter, IFilterable, ICursorFilterClient);
 CursorAdapter::CursorAdapter()
     : mDataValid(FALSE)
     , mAutoRequery(FALSE)
@@ -19,57 +23,38 @@ CursorAdapter::CursorAdapter()
 {
 }
 
-CursorAdapter::CursorAdapter(
+ECode CursorAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* c)
-    : mDataValid(FALSE)
-    , mAutoRequery(FALSE)
-    , mRowIDColumn(0)
 {
-    Init(context, c, ICursorAdapter::FLAG_AUTO_REQUERY);
+    return Init(context, c, ICursorAdapter::FLAG_AUTO_REQUERY);
 }
 
-CursorAdapter::CursorAdapter(
+ECode CursorAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* c,
     /* [in] */ Boolean autoRequery)
-    : mDataValid(FALSE)
-    , mAutoRequery(FALSE)
-    , mRowIDColumn(0)
 {
-    Init(context, c, autoRequery ? ICursorAdapter::FLAG_AUTO_REQUERY : ICursorAdapter::FLAG_REGISTER_CONTENT_OBSERVER);
+    return Init(context, c, autoRequery ? ICursorAdapter::FLAG_AUTO_REQUERY : ICursorAdapter::FLAG_REGISTER_CONTENT_OBSERVER);
 }
 
-/**
- * Recommended constructor.
- *
- * @param c The cursor from which to get the data.
- * @param context The context
- * @param flags Flags used to determine the behavior of the adapter; may
- * be any combination of {@link #ICursorAdapter::FLAG_AUTO_REQUERY} and
- * {@link #ICursorAdapter::FLAG_REGISTER_CONTENT_OBSERVER}.
- */
-CursorAdapter::CursorAdapter(
+ECode CursorAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* c,
     /* [in] */ Int32 flags)
 {
-    Init(context, c, flags);
+    return Init(context, c, flags);
 }
 
-/**
- * @deprecated Don't use this, use the normal constructor.  This will
- * be removed in the future.
- */
-void CursorAdapter::Init(
+ECode CursorAdapter::Init(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* c,
     /* [in] */ Boolean autoRequery)
 {
-    Init(context, c, autoRequery ? ICursorAdapter::FLAG_AUTO_REQUERY : ICursorAdapter::FLAG_REGISTER_CONTENT_OBSERVER);
+    return Init(context, c, autoRequery ? ICursorAdapter::FLAG_AUTO_REQUERY : ICursorAdapter::FLAG_REGISTER_CONTENT_OBSERVER);
 }
 
-void CursorAdapter::Init(
+ECode CursorAdapter::Init(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* c,
     /* [in] */ Int32 flags)
@@ -86,9 +71,10 @@ void CursorAdapter::Init(
     mDataValid = cursorPresent;
 
     assert(context);
-    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(context);
-    assert(wrs != NULL && "Error: Invalid context, IWeakReferenceSource not implemented!");
-    wrs->GetWeakReference((IWeakReference**)&mWeakContext);
+    mContext = context;
+    // AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(context);
+    // assert(wrs != NULL && "Error: Invalid context, IWeakReferenceSource not implemented!");
+    // wrs->GetWeakReference((IWeakReference**)&mWeakContext);
 
     Int32 index;
     c->GetColumnIndexOrThrow(String("_id"), &index);
@@ -106,114 +92,124 @@ void CursorAdapter::Init(
         if (mChangeObserver != NULL) c->RegisterContentObserver(mChangeObserver);
         if (mDataSetObserver != NULL) c->RegisterDataSetObserver(mDataSetObserver);
     }
+    return NOERROR;
 }
 
-AutoPtr<ICursor> CursorAdapter::GetCursor()
+ECode CursorAdapter::GetCursor(
+    /* [out] */ ICursor** cursor)
 {
-    return mCursor;
+    VALIDATE_NOT_NULL(cursor);
+    *cursor = mCursor;
+    REFCOUNT_ADD(*cursor);
+    return NOERROR;
 }
 
-Int32 CursorAdapter::GetCount()
+ECode CursorAdapter::GetCount(
+    /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count);
     if (mDataValid && mCursor != NULL) {
-        Int32 count;
-        mCursor->GetCount(&count);
-        return count;
+        return mCursor->GetCount(count);
     }
-    else {
-        return 0;
-    }
+
+    *count = 0;
+    return NOERROR;
 }
 
-AutoPtr<IInterface> CursorAdapter::GetItem(
-    /* [in] */ Int32 position)
+ECode CursorAdapter::GetItem(
+    /* [in] */ Int32 position,
+    /* [out] */ IInterface** item)
 {
+    VALIDATE_NOT_NULL(item);
     if (mDataValid && mCursor != NULL) {
-        Boolean res;
+        Boolean res = FALSE;
         mCursor->MoveToPosition(position, &res);
-        return mCursor;
-    } else {
-        return NULL;
+        *item = mCursor;
+        REFCOUNT_ADD(*item);
+        return NOERROR;
     }
+
+    *item = NULL;
+    return NOERROR;
 }
 
-Int64 CursorAdapter::GetItemId(
-    /* [in] */ Int32 position)
+ECode CursorAdapter::GetItemId(
+    /* [in] */ Int32 position,
+    /* [out] */ Int64* id)
 {
+    VALIDATE_NOT_NULL(id);
+    *id = 0;
     if (mDataValid && mCursor != NULL) {
         Boolean r;
         if (mCursor->MoveToPosition(position, &r)) {
-            Int64 res;
-            mCursor->GetInt64(mRowIDColumn, &res);
-            return res;
+            return mCursor->GetInt64(mRowIDColumn, id);
         } else {
-            return 0;
+            return NOERROR;
         }
-    } else {
-        return 0;
     }
+    return NOERROR;
 }
 
-Boolean CursorAdapter::HasStableIds()
+ECode CursorAdapter::HasStableIds(
+    /* [out] */ Boolean* hasStableIds)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(hasStableIds);
+    *hasStableIds = TRUE;
+    return NOERROR;
 }
 
-AutoPtr<IView> CursorAdapter::GetView(
+ECode CursorAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    AutoPtr<IView> v;
+    VALIDATE_NOT_NULL(view);
+    *view = NULL;
     if (!mDataValid) {
         Slogger::E("CursorAdapter::GetView", "this should only be called when the cursor is valid");
-        return v;
+        return E_ILLEGAL_STATE_EXCEPTION;
         //throw new IllegalStateException("this should only be called when the cursor is valid");
     }
-    Boolean r;
+    Boolean r = FALSE;
     if (!(mCursor->MoveToPosition(position, &r), r)) {
         Slogger::E("CursorAdapter::GetView", "couldn't move cursor to position  %d", position);
-        return v;
+        return E_ILLEGAL_STATE_EXCEPTION;
         //throw new IllegalStateException("couldn't move cursor to position " + position);
     }
 
-    AutoPtr<IContext> context;
-    mWeakContext->Resolve(EIID_IContext, (IInterface**)&context);
+    AutoPtr<IContext> context = mContext;
+    // mWeakContext->Resolve(EIID_IContext, (IInterface**)&context);
 
-    if (context == NULL) {
-        Slogger::E("CursorAdapter::GetView", "context has been destoried!");
-        return v;
-    }
-
+    AutoPtr<IView> v;
     if (convertView == NULL) {
-        v = NewView(context, mCursor, parent);
+        NewView(context, mCursor, parent, (IView**)&v);
     }
     else {
         v = convertView;
     }
     BindView(v, context, mCursor);
-    return v;
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
-AutoPtr<IView> CursorAdapter::GetDropDownView(
+ECode CursorAdapter::GetDropDownView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
+    VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v;
     if (mDataValid) {
-        Boolean res;
+        Boolean res = FALSE;
         mCursor->MoveToPosition(position, &res);
 
-        AutoPtr<IContext> context;
-        mWeakContext->Resolve(EIID_IContext, (IInterface**)&context);
-        if (context == NULL) {
-            Slogger::E("CursorAdapter::GetDropDownView", "context has been destoried!");
-            return v;
-        }
-
+        AutoPtr<IContext> context = mContext;
+        // mWeakContext->Resolve(EIID_IContext, (IInterface**)&context);
         if (convertView == NULL) {
-            v = NewDropDownView(context, mCursor, parent);
+            NewDropDownView(context, mCursor, parent, (IView**)&v);
         }
         else {
             v = convertView;
@@ -221,42 +217,40 @@ AutoPtr<IView> CursorAdapter::GetDropDownView(
         BindView(v, context, mCursor);
     }
 
-    return v;
+    *view = v;
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
-AutoPtr<IView> CursorAdapter::NewDropDownView(
+ECode CursorAdapter::NewDropDownView(
     /* [in] */ IContext* context,
     /* [in] */ ICursor* cursor,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    return NewView(context, cursor, parent);
+    VALIDATE_NOT_NULL(view);
+    return NewView(context, cursor, parent, view);
 }
 
 ECode CursorAdapter::ChangeCursor(
     /* [in] */ ICursor* cursor)
 {
-    AutoPtr<ICursor> old = SwapCursor(cursor);
+    AutoPtr<ICursor> old;
+    SwapCursor(cursor, (ICursor**)&old);
     if (old != NULL) {
-        old->Close();
+        ICloseable::Probe(old)->Close();
     }
     return NOERROR;
 }
 
-/**
- * Swap in a new Cursor, returning the old Cursor.  Unlike
- * {@link #changeCursor(Cursor)}, the returned old Cursor is <em>not</em>
- * closed.
- *
- * @param newCursor The new cursor to be used.
- * @return Returns the previously set Cursor, or NULL if there wasa not one.
- * If the given new Cursor is the same instance is the previously set
- * Cursor, NULL is also returned.
- */
-AutoPtr<ICursor> CursorAdapter::SwapCursor(
-    /* [in] */ ICursor* newCursor)
+ECode CursorAdapter::SwapCursor(
+    /* [in] */ ICursor* newCursor,
+    /* [out] */ ICursor** cursor)
 {
+    VALIDATE_NOT_NULL(cursor);
     if (newCursor == mCursor) {
-        return NULL;
+        *cursor = NULL;
+        return NOERROR;
     }
     AutoPtr<ICursor> oldCursor = mCursor;
     if (oldCursor != NULL) {
@@ -277,48 +271,65 @@ AutoPtr<ICursor> CursorAdapter::SwapCursor(
         // notify the observers about the lack of a data set
         NotifyDataSetInvalidated();
     }
-    return oldCursor;
+    *cursor = oldCursor;
+    REFCOUNT_ADD(*cursor);
+    return NOERROR;
 }
 
-AutoPtr<ICharSequence> CursorAdapter::ConvertToString(
-    /* [in] */ ICursor* cursor)
+ECode CursorAdapter::ConvertToString(
+    /* [in] */ ICursor* cursor,
+    /* [out] */ ICharSequence** charSequence)
 {
-//    return cursor == NULL ? "" : cursor->ToString();
-    return NULL;
+    VALIDATE_NOT_NULL(charSequence);
+    String str("");
+    if (cursor != NULL) {
+        IObject::Probe(cursor)->ToString(&str);
+    }
+    return CString::New(str, charSequence);
 }
 
-AutoPtr<ICursor> CursorAdapter::RunQueryOnBackgroundThread(
-    /* [in] */ ICharSequence* constraint)
+ECode CursorAdapter::RunQueryOnBackgroundThread(
+    /* [in] */ ICharSequence* constraint,
+    /* [out] */ ICursor** cursor)
 {
+    VALIDATE_NOT_NULL(cursor);
     if (mFilterQueryProvider != NULL) {
-        AutoPtr<ICursor> c;
-        mFilterQueryProvider->RunQuery(constraint, (ICursor**)&c);
-        return c;
+        return mFilterQueryProvider->RunQuery(constraint, cursor);
     }
 
-    return mCursor;
+    *cursor = mCursor;
+    REFCOUNT_ADD(*cursor);
+    return NOERROR;
 }
 
-AutoPtr<IFilter> CursorAdapter::GetFilter()
+ECode CursorAdapter::GetFilter(
+    /* [out] */ IFilter** filter)
 {
+    VALIDATE_NOT_NULL(filter);
     if(mCursorFilter == NULL) {
-        CCursorFilter::New(
-                (ICursorFilterClient*)this->Probe(EIID_ICursorFilterClient),
-                (ICursorFilter**)&mCursorFilter);
+        assert(0 && "TODO");
+        // CCursorFilter::New(
+        //         (ICursorFilterClient*)this->Probe(EIID_ICursorFilterClient),
+        //         (ICursorFilter**)&mCursorFilter);
     }
-    return mCursorFilter;
+    *filter = IFilter::Probe(mCursorFilter);
+    REFCOUNT_ADD(*filter);
+    return NOERROR;
 }
 
-AutoPtr<IFilterQueryProvider> CursorAdapter::GetFilterQueryProvider()
+ECode CursorAdapter::GetFilterQueryProvider(
+    /* [out] */ IFilterQueryProvider** filterQueryProvider)
 {
-    return mFilterQueryProvider;
+    VALIDATE_NOT_NULL(filterQueryProvider);
+    *filterQueryProvider = mFilterQueryProvider;
+    REFCOUNT_ADD(*filterQueryProvider);
+    return NOERROR;
 }
 
 ECode CursorAdapter::SetFilterQueryProvider(
     /* [in] */ IFilterQueryProvider* filterQueryProvider)
 {
     mFilterQueryProvider = filterQueryProvider;
-
     return NOERROR;
 }
 
@@ -333,9 +344,12 @@ void CursorAdapter::OnContentChanged()
 
 CursorAdapter::ChangeObserver::ChangeObserver(
     /* [in] */ CursorAdapter* host)
-    : ContentObserver(InitSuperHandler())
-    , mHost(host)
-{}
+    : mHost(host)
+{
+    AutoPtr<IHandler> handler;
+    CHandler::New((IHandler**)&handler);
+    ContentObserver::constructor(handler);
+}
 
 ECode CursorAdapter::ChangeObserver::DeliverSelfNotifications(
     /* [out] */ Boolean* result)
@@ -353,15 +367,7 @@ ECode CursorAdapter::ChangeObserver::OnChange(
     return NOERROR;
 }
 
-AutoPtr<IHandler> CursorAdapter::ChangeObserver::InitSuperHandler()
-{
-    AutoPtr<IHandler> handler;
-    CHandler::New((IHandler**)&handler);
-    return handler;
-}
-
-CAR_INTERFACE_IMPL(CursorAdapter::MyDataSetObserver, IDataSetObserver)
-
+CAR_INTERFACE_IMPL(CursorAdapter::MyDataSetObserver, Object, IDataSetObserver)
 CursorAdapter::MyDataSetObserver::MyDataSetObserver(
     /* [in] */ CursorAdapter* host)
     : mHost(host)

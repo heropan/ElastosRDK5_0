@@ -51,7 +51,7 @@ ECode Connection::constructor(
         mHost = host;
         mRequestFeeder = requestFeeder;
         mCanPersist = false;
-        mHttpContext = new BasicHttpContext(null);
+        mHttpContext = new BasicHttpContext(NULL);
 #endif
 }
 

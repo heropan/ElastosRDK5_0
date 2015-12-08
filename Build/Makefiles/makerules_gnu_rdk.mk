@@ -171,7 +171,7 @@ ifeq "$(TARGET_TYPE)" "eco"
 	fromdos __$*.rc
 	perl $(XDK_TOOLS)/version.pl "__Elastos_CAR" "`pwd`" "$(XDK_TARGETS)" "$<" "$(XDK_RUNTIME_PLATFORM)"
 	perl $(XDK_TOOLS)/cls_trans.pl __$*.rc 'NA'
-	perl $(XDK_TOOLS)/res_trans.pl __$*.rc "rc" "$(SOURCES)"
+	perl $(XDK_TOOLS)/res_trans.pl __$*.rc "rc"
 	if [ -e "__section.cpp" ]; then \
 		$(CXX) $(CPP_FLAGS) $(C_FLAGS) -o __section.o __section.cpp; \
 		$(MV) __section.cpp __section0.cpp; \
@@ -242,18 +242,18 @@ else
 	-mv __section.cpp __section0.cpp;
 	@echo $(LD) $(ECX_CRT_BEGIN) $(ECX_FLAGS) $(LINK_FLAGS) \
 		$(SEARCH_LIB) -o $(XDK_TARGETS)/$(TARGET_NAME) $(PASS2LD)--strip-all \
-		$(PASS2LD)--start-group $(OBJECTS) $(RESSECTION) $(LIBRARIES) $(ELASTOS_LIBS) $(PASS2LD)--end-group $(ECX_CRT_END) $(BLACKHOLE)
+		$(PASS2LD)--start-group $(OBJECTS) $(RESSECTION) $(PASS2LD)--whole-archive $(ELASTOS_LIBS) $(PASS2LD)--no-whole-archive $(LIBRARIES) $(PASS2LD)--end-group $(ECX_CRT_END) $(BLACKHOLE)
 	$(LD) $(ECX_CRT_BEGIN) $(ECX_FLAGS) $(LINK_FLAGS) \
 		$(SEARCH_LIB) -o $(XDK_TARGETS)/$(TARGET_NAME) $(PASS2LD)--strip-all \
-		$(PASS2LD)--start-group $(OBJECTS) $(RESSECTION) $(LIBRARIES) $(ELASTOS_LIBS) $(PASS2LD)--end-group $(ECX_CRT_END)
+		$(PASS2LD)--start-group $(OBJECTS) $(RESSECTION) $(PASS2LD)--whole-archive $(ELASTOS_LIBS) $(PASS2LD)--no-whole-archive $(LIBRARIES) $(PASS2LD)--end-group $(ECX_CRT_END)
 
 ifeq "$(DEBUG_INFO)" "1"
 	@echo $(LD) $(ECX_CRT_BEGIN) $(ECX_FLAGS) $(LINK_FLAGS) \
 		$(SEARCH_LIB) -o $(TARGET_DBG_INFO_PATH)/$(TARGET_NAME) \
-		$(PASS2LD)--start-group $(OBJECTS) $(LIBRARIES) $(RESSECTION) $(ELASTOS_LIBS) $(PASS2LD)--end-group $(ECX_CRT_END) $(BLACKHOLE)
+		$(PASS2LD)--start-group $(OBJECTS) $(PASS2LD)--whole-archive $(ELASTOS_LIBS) $(PASS2LD)--no-whole-archive $(LIBRARIES) $(RESSECTION)$(PASS2LD)--end-group $(ECX_CRT_END) $(BLACKHOLE)
 	$(LD) $(ECX_CRT_BEGIN) $(ECX_FLAGS) $(LINK_FLAGS) \
 		$(SEARCH_LIB) -o $(TARGET_DBG_INFO_PATH)/$(TARGET_NAME) \
-		$(PASS2LD)--start-group $(OBJECTS) $(LIBRARIES) $(RESSECTION) $(ELASTOS_LIBS) $(PASS2LD)--end-group $(ECX_CRT_END)
+		$(PASS2LD)--start-group $(OBJECTS) $(PASS2LD)--whole-archive $(ELASTOS_LIBS) $(PASS2LD)--no-whole-archive $(LIBRARIES) $(RESSECTION) $(PASS2LD)--end-group $(ECX_CRT_END)
 
 endif
 endif
@@ -282,18 +282,18 @@ else
 	-mv __section.cpp __section0.cpp;
 	@echo $(LD) $(EXE_CRT_BEGIN) $(EXE_FLAGS) $(LINK_FLAGS) \
 		$(SEARCH_LIB) -o $(XDK_TARGETS)/$(TARGET_NAME) $(PASS2LD)--strip-all \
-		$(PASS2LD)--start-group $(OBJECTS) $(RESSECTION) $(LIBRARIES) $(ELASTOS_LIBS) $(PASS2LD)--end-group $(EXE_CRT_END) $(BLACKHOLE)
+		$(PASS2LD)--start-group $(OBJECTS) $(RESSECTION) $(PASS2LD)--whole-archive $(ELASTOS_LIBS) $(PASS2LD)--no-whole-archive $(LIBRARIES) $(PASS2LD)--end-group $(EXE_CRT_END) $(BLACKHOLE)
 	$(LD) $(EXE_CRT_BEGIN) $(EXE_FLAGS) $(LINK_FLAGS) \
 		$(SEARCH_LIB) -o $(XDK_TARGETS)/$(TARGET_NAME) $(PASS2LD)--strip-all \
-		$(PASS2LD)--start-group $(OBJECTS) $(RESSECTION) $(LIBRARIES) $(ELASTOS_LIBS) $(PASS2LD)--end-group $(EXE_CRT_END)
+		$(PASS2LD)--start-group $(OBJECTS) $(RESSECTION) $(PASS2LD)--whole-archive $(ELASTOS_LIBS) $(PASS2LD)--no-whole-archive $(LIBRARIES) $(PASS2LD)--end-group $(EXE_CRT_END)
 
 ifeq "$(DEBUG_INFO)" "1"
 	@echo $(LD) $(EXE_CRT_BEGIN) $(EXE_FLAGS) $(LINK_FLAGS) \
 		$(SEARCH_LIB) -o $(TARGET_DBG_INFO_PATH)/$(TARGET_NAME) \
-		$(PASS2LD)--start-group $(OBJECTS) $(LIBRARIES) $(RESSECTION) $(ELASTOS_LIBS) $(PASS2LD)--end-group $(EXE_CRT_END) $(BLACKHOLE)
+		$(PASS2LD)--start-group $(OBJECTS) $(PASS2LD)--whole-archive $(ELASTOS_LIBS) $(PASS2LD)--no-whole-archive $(LIBRARIES) $(RESSECTION) $(PASS2LD)--end-group $(EXE_CRT_END) $(BLACKHOLE)
 	$(LD) $(EXE_CRT_BEGIN) $(EXE_FLAGS) $(LINK_FLAGS) \
 		$(SEARCH_LIB) -o $(TARGET_DBG_INFO_PATH)/$(TARGET_NAME) \
-		$(PASS2LD)--start-group $(OBJECTS) $(LIBRARIES) $(RESSECTION) $(ELASTOS_LIBS) $(PASS2LD)--end-group $(EXE_CRT_END)
+		$(PASS2LD)--start-group $(OBJECTS) $(PASS2LD)--whole-archive $(ELASTOS_LIBS) $(PASS2LD)--no-whole-archive $(LIBRARIES) $(RESSECTION) $(PASS2LD)--end-group $(EXE_CRT_END)
 
 endif
 endif
@@ -301,10 +301,10 @@ endif
 # endif (ELF PE)
 	touch $@
 
-$(TARGET_NAME).so: $(OBJECTS) $(filter-out -l%,$(LIBRARIES))
+$(TARGET_NAME).so: $(OBJECTS) $(filter-out -l%,$(LIBRARIES)) $(ELASTOS_LIBS) $(MAKEDIR)/sources
 	@echo Linking $@ ...
 	$(LD) $(LINK_FLAGS) -m32 -shared -fpic -o  $(XDK_TARGETS)/$@ \
-		$(PASS2LD)--start-group $(OBJECTS) $(LIBRARIES) $(PASS2LD)--end-group
+		$(PASS2LD)--start-group $(OBJECTS) $(PASS2LD)--whole-archive $(ELASTOS_LIBS) $(PASS2LD)--no-whole-archive $(LIBRARIES) $(PASS2LD)--end-group
 ifeq "$(DEBUG_INFO)" "1"
 	$(CP) $(XDK_TARGETS)/$@ $(TARGET_DBG_INFO_PATH)
 endif

@@ -1,10 +1,10 @@
 
-#include "elastos/droid/net/wifi/WifiApConfigStore.h"
-#include "elastos/droid/net/wifi/WifiStateMachine.h"
+#include "elastos/droid/wifi/WifiApConfigStore.h"
+#include "elastos/droid/wifi/WifiStateMachine.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 #ifdef DROID_CORE
-#include "elastos/droid/net/wifi/CWifiConfiguration.h"
+#include "elastos/droid/wifi/CWifiConfiguration.h"
 #include "elastos/droid/os/CMessenger.h"
 #include "elastos/droid/os/CEnvironment.h"
 #endif

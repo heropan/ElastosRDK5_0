@@ -33,8 +33,8 @@ ECode CIWallpaperManagerCallbackNative::OnWallpaperChanged()
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
 
-    jclass c = env->FindClass("android/app/IWallpaperManagerCallback");
-    Util::CheckErrorAndLog(env, TAG, "FindClass: IWallpaperManagerCallback %d", __LINE__);
+    jclass c = env->FindClass("android/app/IIWallpaperManagerCallback");
+    Util::CheckErrorAndLog(env, TAG, "FindClass: IIWallpaperManagerCallback %d", __LINE__);
 
     jmethodID m = env->GetMethodID(c, "onWallpaperChanged", "()V");
     Util::CheckErrorAndLog(env, TAG, "GetMethodID: onWallpaperChanged %d", __LINE__);

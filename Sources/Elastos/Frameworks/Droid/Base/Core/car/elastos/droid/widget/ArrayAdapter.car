@@ -7,9 +7,9 @@ module
 
     interface Elastos.Droid.Content.IContext;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     /**
      * Common base class of common implementation for an {@link Adapter} that can be

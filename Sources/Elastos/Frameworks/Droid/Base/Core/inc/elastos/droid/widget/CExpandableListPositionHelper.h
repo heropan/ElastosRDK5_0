@@ -1,16 +1,26 @@
+
 #ifndef __ELASTOS_DROID_WIDGET_CEXPANDABLELISTPOSITIONHELPER_H__
 #define __ELASTOS_DROID_WIDGET_CEXPANDABLELISTPOSITIONHELPER_H__
 
 #include "_Elastos_Droid_Widget_CExpandableListPositionHelper.h"
-#include "elastos/droid/widget/ExpandableListPosition.h"
+#include "elastos/core/Singleton.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+using Elastos::Droid::Widget::IExpandableListPosition;
+using Elastos::Droid::Widget::IExpandableListPositionHelper;
+using Elastos::Core::Singleton;
+
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CExpandableListPositionHelper)
+    , public Singleton
+    , public IExpandableListPositionHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI ObtainGroupPosition(
         /* [in] */ Int32 groupPosition,
@@ -33,9 +43,9 @@ public:
         /* [out] */ IExpandableListPosition** position);
 };
 
-
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
 
 #endif //__ELASTOS_DROID_WIDGET_CEXPANDABLELISTPOSITIONHELPER_H__
+

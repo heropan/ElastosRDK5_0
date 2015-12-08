@@ -1,9 +1,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/CTableRowLayoutParams.h"
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 IVIEWGROUPLP_METHODS_IMPL(CTableRowLayoutParams, TableRowLayoutParams)
 IVIEWGROUPMARGINLP_METHODS_IMPL(CTableRowLayoutParams, TableRowLayoutParams)

@@ -71,7 +71,7 @@ public:
         /* [out] */ IWifiKey** result);
 
 private:
-    NetworkKey(
+    CARAPI constructor(
         /* [in] */ IParcel* in);
 
     /**

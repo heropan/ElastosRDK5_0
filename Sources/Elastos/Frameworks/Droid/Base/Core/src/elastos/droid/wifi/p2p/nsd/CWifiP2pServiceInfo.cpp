@@ -1,5 +1,5 @@
 
-#include "CWifiP2pServiceInfo.h"
+#include "elastos/droid/wifi/p2p/nsd/CWifiP2pServiceInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -8,25 +8,7 @@ namespace Wifi {
 namespace P2p {
 namespace Nsd {
 
-ECode CWifiP2pServiceInfo::constructor()
-{
-    return NOERROR;
-}
-
-ECode CWifiP2pServiceInfo::constructor(
-    /* [in] */ ArrayOf<String>* queryList)
-{
-    return WifiP2pServiceInfo::Init(queryList);
-}
-
-PInterface CWifiP2pServiceInfo::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_WifiP2pServiceInfo) {
-        return reinterpret_cast<PInterface>((WifiP2pServiceInfo*)this);
-    }
-    return _CWifiP2pServiceInfo::Probe(riid);
-}
+CAR_OBJECT_IMPL(CWifiP2pServiceInfo)
 
 ECode CWifiP2pServiceInfo::GetSupplicantQueryList(
     /* [out, callee] */ ArrayOf<String>** list)
@@ -59,8 +41,8 @@ ECode CWifiP2pServiceInfo::WriteToParcel(
     return WifiP2pServiceInfo::WriteToParcel(dest);
 }
 
-}
-}
-}
-}
-}
+} // namespace Nsd
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

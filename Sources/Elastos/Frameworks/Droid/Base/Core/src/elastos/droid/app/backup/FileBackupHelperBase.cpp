@@ -6,12 +6,14 @@
 
 using Elastos::Utility::Logging::Logger;
 
-namespace Elastos{
-namespace Droid{
-namespace App{
-namespace Backup{
+namespace Elastos {
+namespace Droid {
+namespace App {
+namespace Backup {
 
 const String FileBackupHelperBase::TAG("FileBackupHelperBase");
+
+CAR_INTERFACE_IMPL(FileBackupHelperBase, Object, IFileBackupHelperBase)
 
 FileBackupHelperBase::FileBackupHelperBase()
 {

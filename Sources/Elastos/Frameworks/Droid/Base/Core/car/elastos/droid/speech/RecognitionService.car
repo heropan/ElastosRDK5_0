@@ -112,8 +112,8 @@ module
             [in] Float rmsdB);
     }
 
-    }//namespace Speech
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Speech
+    } // namespace Droid
+    } // namespace Elastos
 
 }

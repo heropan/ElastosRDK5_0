@@ -18,3 +18,5 @@ SOURCES += CVirtualDisplayCallback.cpp
 SOURCES += CDisplayPowerRequest.cpp
 SOURCES += DisplayViewport.cpp
 SOURCES += WifiDisplaySessionInfo.cpp
+
+SOURCES += display.cpp

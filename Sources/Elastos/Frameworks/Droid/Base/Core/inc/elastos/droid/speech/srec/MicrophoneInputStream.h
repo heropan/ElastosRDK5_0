@@ -15,20 +15,26 @@ namespace Srec {
  * PCM input stream from the microphone, 16 bits per sample.
  */
 class MicrophoneInputStream
-    : public InputStream
+    : public Object
+    , public InputStream
+    , public IMicrophoneInputStream
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    MicrophoneInputStream();
+
+    virtual ~MicrophoneInputStream();
+
+    CARAPI constructor();
+
     /**
      * MicrophoneInputStream constructor.
      * @param sampleRate sample rate of the microphone, typically 11025 or 8000.
      * @param fifoDepth depth of the real time fifo, measured in sampleRate clock ticks.
      * This determines how long an application may delay before losing data.
      */
-    MicrophoneInputStream(
-        /* [in] */ Int32 sampleRate,
-        /* [in] */ Int32 fifoDepth);
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 sampleRate,
         /* [in] */ Int32 fifoDepth);
 
@@ -91,9 +97,9 @@ private:
         /* [in] */ Int32 audioRecord);
 
 private:
-    static const CString TAG;// = "MicrophoneInputStream";
+    static const String TAG;                // = "MicrophoneInputStream";
     Int32 mAudioRecord;
-    AutoPtr< ArrayOf<Byte> > mOneByte;// = ArrayOf<Byte>::Alloc(1);
+    AutoPtr<ArrayOf<Byte> > mOneByte;
 };
 
 } // namespace Srec

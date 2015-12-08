@@ -1,37 +1,24 @@
 
 #include "elastos/droid/widget/Scroller.h"
-#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/view/ViewConfiguration.h"
 #include "elastos/droid/view/animation/AnimationUtils.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Build.h"
 #include <elastos/core/Math.h>
 
-using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::View::IViewConfigurationHelper;
-using Elastos::Droid::View::CViewConfigurationHelper;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::View::ViewConfiguration;
 using Elastos::Droid::View::Animation::AnimationUtils;
+using Elastos::Droid::View::Animation::EIID_IInterpolator;
+using Elastos::Droid::Utility::IDisplayMetrics;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-
-static Float ViscousFluidImpl(Float x, Float scale, Float normalize)
-{
-    x *= scale;
-    if (x < 1.0f) {
-        x -= (1.0f - (Float)Elastos::Core::Math::Exp(-x));
-    } else {
-        Float start = 0.36787944117f;   // 1/e == exp(-1)
-        x = 1.0f - (Float)Elastos::Core::Math::Exp(1.0f - x);
-        x = start + x * (1.0f - start);
-    }
-    x *= normalize;
-    return x;
-}
 
 static Float InitDECELERATION_RATE()
 {
@@ -95,28 +82,62 @@ static AutoPtr<ArrayOf<Float> > InitSPLINE_TIME()
     return times;
 }
 
-// This controls the viscous fluid effect (how much of it)
-Float Scroller::sViscousFluidScale = 8.0f;
-Float Scroller::sViscousFluidNormalize = 1.0f / ViscousFluidImpl(1.0f, 8.0f, 1.0f);
+const Float Scroller::ViscousFluidInterpolator::VISCOUS_FLUID_SCALE = 8.0f;
+// must be set to 1.0 (used in viscousFluid())
+const Float Scroller::ViscousFluidInterpolator::VISCOUS_FLUID_NORMALIZE
+        = 1.0f / Scroller::ViscousFluidInterpolator::ViscousFluid(1.0f);
+// account for very small floating-point error
+const Float Scroller::ViscousFluidInterpolator::VISCOUS_FLUID_OFFSET
+        = 1.0f - VISCOUS_FLUID_NORMALIZE * Scroller::ViscousFluidInterpolator::ViscousFluid(1.0f);
 
-const Int32 Scroller::DEFAULT_DURATION;
-const Int32 Scroller::SCROLL_MODE;
-const Int32 Scroller::FLING_MODE;
+CAR_INTERFACE_IMPL(Scroller::ViscousFluidInterpolator, Object, IInterpolator);
+Float Scroller::ViscousFluidInterpolator::ViscousFluid(
+    /* [in] */ Float x)
+{
+    x *= VISCOUS_FLUID_SCALE;
+    if (x < 1.0f) {
+        x -= (1.0f - (Float)Elastos::Core::Math::Exp(-x));
+    } else {
+        Float start = 0.36787944117f;   // 1/e == exp(-1)
+        x = 1.0f - (Float)Elastos::Core::Math::Exp(1.0f - x);
+        x = start + x * (1.0f - start);
+    }
+    return x;
+}
+
+ECode Scroller::ViscousFluidInterpolator::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* interpolation)
+{
+    VALIDATE_NOT_NULL(interpolation);
+    Float interpolated = VISCOUS_FLUID_NORMALIZE * ViscousFluid(input);
+    if (interpolated > 0) {
+        *interpolation = interpolated + VISCOUS_FLUID_OFFSET;
+        return NOERROR;
+    }
+    *interpolation = interpolated;
+    return NOERROR;
+}
+
+const Int32 Scroller::DEFAULT_DURATION  = 250;
+const Int32 Scroller::SCROLL_MODE = 0;
+const Int32 Scroller::FLING_MODE = 1;
 
 Float Scroller::DECELERATION_RATE = InitDECELERATION_RATE();
-const Float Scroller::INFLEXION;
-const Float Scroller::START_TENSION;
-const Float Scroller::END_TENSION;
+const Float Scroller::INFLEXION = 0.35f;
+const Float Scroller::START_TENSION = 0.5f;
+const Float Scroller::END_TENSION = 1.0f;
 const Float Scroller::P1 = 0.5f * 0.35f; //START_TENSION * INFLEXION;
 const Float Scroller::P2 = 1.0f - 1.0f * (1.0f - 0.35f); //1.0f - END_TENSION * (1.0f - INFLEXION);
 
-const Int32 Scroller::NB_SAMPLES;
+const Int32 Scroller::NB_SAMPLES = 100;
 
 AutoPtr<ArrayOf<Float> > Scroller::SPLINE_POSITION = InitSPLINE_POSITION();
 AutoPtr<ArrayOf<Float> > Scroller::SPLINE_TIME = InitSPLINE_TIME();
 
 const Float GRAVITY_EARTH = 9.80665f;   // g (m/s^2) SensorManager.GRAVITY_EARTH
 
+CAR_INTERFACE_IMPL(Scroller, Object, IScroller);
 Scroller::Scroller()
     : mMode(0)
     , mStartX(0)
@@ -142,125 +163,38 @@ Scroller::Scroller()
     , mPpi(0)
     , mPhysicalCoeff(0)
 {
-
 }
 
-Scroller::Scroller(
+ECode Scroller::constructor(
     /* [in] */ IContext* context)
-    : mMode(0)
-    , mStartX(0)
-    , mStartY(0)
-    , mFinalX(0)
-    , mFinalY(0)
-    , mMinX(0)
-    , mMaxX(0)
-    , mMinY(0)
-    , mMaxY(0)
-    , mCurrX(0)
-    , mCurrY(0)
-    , mStartTime(0)
-    , mDuration(0)
-    , mDurationReciprocal(0)
-    , mDeltaX(0)
-    , mDeltaY(0)
-    , mFinished(FALSE)
-    , mFlywheel(FALSE)
-    , mVelocity(0)
-    , mCurrVelocity(0)
-    , mDistance(0)
-    , mPpi(0)
-    , mPhysicalCoeff(0)
 {
-    assert(context != NULL);
-
-    AutoPtr<IApplicationInfo> appInfo;
-    context->GetApplicationInfo((IApplicationInfo**)&appInfo);
-    Int32 version;
-    appInfo->GetTargetSdkVersion(&version);
-    Boolean flywheel = version >= Build::VERSION_CODES::HONEYCOMB;
-
-    Init(context, NULL, flywheel);
+    return constructor(context, NULL);
 }
 
-Scroller::Scroller(
+ECode Scroller::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IInterpolator* interpolator)
-    : mMode(0)
-    , mStartX(0)
-    , mStartY(0)
-    , mFinalX(0)
-    , mFinalY(0)
-    , mMinX(0)
-    , mMaxX(0)
-    , mMinY(0)
-    , mMaxY(0)
-    , mCurrX(0)
-    , mCurrY(0)
-    , mStartTime(0)
-    , mDuration(0)
-    , mDurationReciprocal(0)
-    , mDeltaX(0)
-    , mDeltaY(0)
-    , mFinished(FALSE)
-    , mFlywheel(FALSE)
-    , mVelocity(0)
-    , mCurrVelocity(0)
-    , mDistance(0)
-    , mPpi(0)
-    , mPhysicalCoeff(0)
 {
-    AutoPtr<IApplicationInfo> appInfo;
-    context->GetApplicationInfo((IApplicationInfo**)&appInfo);
-    Int32 version;
-    appInfo->GetTargetSdkVersion(&version);
-    Boolean flywheel = version >= Build::VERSION_CODES::HONEYCOMB;
-
-    Init(context, interpolator, flywheel);
+    AutoPtr<IApplicationInfo> info;
+    context->GetApplicationInfo((IApplicationInfo**)&info);
+    Int32 targetSdkVersion = 0;
+    info->GetTargetSdkVersion(&targetSdkVersion);
+    return constructor(context, interpolator, targetSdkVersion >= Build::VERSION_CODES::HONEYCOMB);
 }
 
-Scroller::Scroller(
-    /* [in] */ IContext* context,
-    /* [in] */ IInterpolator* interpolator,
-    /* [in] */ Boolean flywheel)
-    : mMode(0)
-    , mStartX(0)
-    , mStartY(0)
-    , mFinalX(0)
-    , mFinalY(0)
-    , mMinX(0)
-    , mMaxX(0)
-    , mMinY(0)
-    , mMaxY(0)
-    , mCurrX(0)
-    , mCurrY(0)
-    , mStartTime(0)
-    , mDuration(0)
-    , mDurationReciprocal(0)
-    , mDeltaX(0)
-    , mDeltaY(0)
-    , mFinished(FALSE)
-    , mFlywheel(FALSE)
-    , mVelocity(0)
-    , mCurrVelocity(0)
-    , mDistance(0)
-    , mPpi(0)
-    , mPhysicalCoeff(0)
-{
-    Init(context, interpolator, flywheel);
-}
-
-ECode Scroller::Init(
+ECode Scroller::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IInterpolator* interpolator,
     /* [in] */ Boolean flywheel)
 {
-    //TODO
-    AutoPtr<IViewConfigurationHelper> helper;
-    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
-    helper->GetScrollFriction(&mFlingFriction);
+    mFlingFriction = ViewConfiguration::GetScrollFriction();
 
     mFinished = TRUE;
-    mInterpolator = interpolator;
+    if (interpolator == NULL) {
+        mInterpolator = new ViscousFluidInterpolator();
+    } else {
+        mInterpolator = interpolator;
+    }
 
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
@@ -278,17 +212,12 @@ ECode Scroller::Init(
     return NOERROR;
 }
 
-Float Scroller::ViscousFluid(
-    /* [in] */ Float x)
-{
-    return ViscousFluidImpl(x, sViscousFluidScale, sViscousFluidNormalize);
-}
-
-void Scroller::SetFriction(
+ECode Scroller::SetFriction(
     /* [in] */ Float friction)
 {
     mDeceleration = ComputeDeceleration(friction);
     mFlingFriction = friction;
+    return NOERROR;
 }
 
 Float Scroller::ComputeDeceleration(
@@ -300,62 +229,95 @@ Float Scroller::ComputeDeceleration(
                   * friction;
 }
 
-Boolean Scroller::IsFinished()
+ECode Scroller::IsFinished(
+    /* [out] */ Boolean* finished)
 {
-    return mFinished;
+    VALIDATE_NOT_NULL(finished);
+    *finished = mFinished;
+    return NOERROR;
 }
 
-void Scroller::ForceFinished(
+ECode Scroller::ForceFinished(
     /* [in] */ Boolean finished)
 {
     mFinished = finished;
+    return NOERROR;
 }
 
-Int32 Scroller::GetDuration()
+ECode Scroller::GetDuration(
+    /* [out] */ Int32* duration)
 {
-    return mDuration;
+    VALIDATE_NOT_NULL(duration);
+    *duration = mDuration;
+    return NOERROR;
 }
 
-Int32 Scroller::GetCurrX()
+ECode Scroller::GetCurrX(
+    /* [out] */ Int32* result)
 {
-    return mCurrX;
+    VALIDATE_NOT_NULL(result);
+    *result = mCurrX;
+    return NOERROR;
 }
 
-Int32 Scroller::GetCurrY()
+ECode Scroller::GetCurrY(
+    /* [out] */ Int32* result)
 {
-    return mCurrY;
+    VALIDATE_NOT_NULL(result);
+    *result = mCurrY;
+    return NOERROR;
 }
 
-Float Scroller::GetCurrVelocity()
+ECode Scroller::GetCurrVelocity(
+    /* [out] */ Float* result)
 {
-    return mMode == FLING_MODE ?
-            mCurrVelocity : mVelocity - mDeceleration * TimePassed() / 2000.0f;
+    VALIDATE_NOT_NULL(result);
+    Int32 passed = 0;
+    TimePassed(&passed);
+    *result = mMode == FLING_MODE ?
+            mCurrVelocity : mVelocity - mDeceleration * passed / 2000.0f;
+    return NOERROR;
 }
 
-Int32 Scroller::GetStartX()
+ECode Scroller::GetStartX(
+    /* [out] */ Int32* result)
 {
-    return mStartX;
+    VALIDATE_NOT_NULL(result);
+    *result = mStartX;
+    return NOERROR;
 }
 
-Int32 Scroller::GetStartY()
+ECode Scroller::GetStartY(
+    /* [out] */ Int32* result)
 {
-    return mStartY;
+    VALIDATE_NOT_NULL(result);
+    *result = mStartY;
+    return NOERROR;
 }
 
-Int32 Scroller::GetFinalX()
+ECode Scroller::GetFinalX(
+    /* [out] */ Int32* result)
 {
-    return mFinalX;
+    VALIDATE_NOT_NULL(result);
+    *result = mFinalX;
+    return NOERROR;
 }
 
-Int32 Scroller::GetFinalY()
+ECode Scroller::GetFinalY(
+    /* [out] */ Int32* result)
 {
-    return mFinalY;
+    VALIDATE_NOT_NULL(result);
+    *result = mFinalY;
+    return NOERROR;
 }
 
-Boolean Scroller::ComputeScrollOffset()
+ECode Scroller::ComputeScrollOffset(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
     if (mFinished) {
-        return FALSE;
+        return NOERROR;
     }
 
     Int32 timePassed = (Int32)(SystemClock::GetUptimeMillis() - mStartTime);
@@ -364,17 +326,8 @@ Boolean Scroller::ComputeScrollOffset()
         switch (mMode) {
         case SCROLL_MODE:
             {
-                Float x = (Float)timePassed * mDurationReciprocal;
-
-                if (mInterpolator == NULL) {
-                    x = ViscousFluid(x);
-                }
-                else {
-                    Float xTemp;
-                    mInterpolator->GetInterpolation(x, &xTemp);
-                    x = xTemp;
-                }
-
+                Float x = 0;
+                ITimeInterpolator::Probe(mInterpolator)->GetInterpolation(timePassed * mDurationReciprocal, &x);
                 mCurrX = mStartX + Elastos::Core::Math::Round(x * mDeltaX );
                 mCurrY = mStartY + Elastos::Core::Math::Round(x * mDeltaY);
             }
@@ -421,19 +374,20 @@ Boolean Scroller::ComputeScrollOffset()
         mFinished = TRUE;
     }
 
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
-void Scroller::StartScroll(
+ECode Scroller::StartScroll(
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 dx,
     /* [in] */ Int32 dy)
 {
-    StartScroll(startX, startY, dx, dy, DEFAULT_DURATION);
+    return StartScroll(startX, startY, dx, dy, DEFAULT_DURATION);
 }
 
-void Scroller::StartScroll(
+ECode Scroller::StartScroll(
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 dx,
@@ -443,7 +397,7 @@ void Scroller::StartScroll(
     mMode = SCROLL_MODE;
     mFinished = FALSE;
     mDuration = duration;
-    mStartTime = AnimationUtils::CurrentAnimationTimeMillis();
+    AnimationUtils::CurrentAnimationTimeMillis(&mStartTime);
     mStartX = startX;
     mStartY = startY;
     mFinalX = startX + dx;
@@ -451,9 +405,10 @@ void Scroller::StartScroll(
     mDeltaX = dx;
     mDeltaY = dy;
     mDurationReciprocal = 1.0f / (Float) mDuration;
+    return NOERROR;
 }
 
-void Scroller::Fling(
+ECode Scroller::Fling(
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 velocityX,
@@ -465,7 +420,8 @@ void Scroller::Fling(
 {
     // Continue a scroll or fling in progress
     if (mFlywheel && !mFinished) {
-        Float oldVel = GetCurrVelocity();
+        Float oldVel = 0;
+        GetCurrVelocity(&oldVel);
 
         Float dx = (Float) (mFinalX - mStartX);
         Float dy = (Float) (mFinalY - mStartY);
@@ -490,7 +446,7 @@ void Scroller::Fling(
 
     mVelocity = velocity;
     mDuration = GetSplineFlingDuration(velocity);
-    mStartTime = AnimationUtils::CurrentAnimationTimeMillis();
+    AnimationUtils::CurrentAnimationTimeMillis(&mStartTime);
     mStartX = startX;
     mStartY = startY;
 
@@ -514,6 +470,7 @@ void Scroller::Fling(
     // Pin to mMinY <= mFinalY <= mMaxY
     mFinalY = Elastos::Core::Math::Min(mFinalY, mMaxY);
     mFinalY = Elastos::Core::Math::Max(mFinalY, mMinY);
+    return NOERROR;
 }
 
 Double Scroller::GetSplineDeceleration(
@@ -538,49 +495,62 @@ Double Scroller::GetSplineFlingDistance(
     return mFlingFriction * mPhysicalCoeff * Elastos::Core::Math::Exp(DECELERATION_RATE / decelMinusOne * l);
 }
 
-void Scroller::AbortAnimation()
+ECode Scroller::AbortAnimation()
 {
     mCurrX = mFinalX;
     mCurrY = mFinalY;
     mFinished = TRUE;
+    return NOERROR;
 }
 
-void Scroller::ExtendDuration(
+ECode Scroller::ExtendDuration(
     /* [in] */ Int32 extend)
 {
-    Int32 passed = TimePassed();
+    Int32 passed = 0;
+    TimePassed(&passed);
     mDuration = passed + extend;
     mDurationReciprocal = 1.0f / (Float)mDuration;
     mFinished = FALSE;
+    return NOERROR;
 }
 
-Int32 Scroller::TimePassed()
+ECode Scroller::TimePassed(
+    /* [out] */ Int32* passed)
 {
-    return (Int32)(AnimationUtils::CurrentAnimationTimeMillis() - mStartTime);
+    VALIDATE_NOT_NULL(passed);
+    Int64 time = 0;
+    AnimationUtils::CurrentAnimationTimeMillis(&time);
+    *passed = (Int32)(time - mStartTime);
+    return NOERROR;
 }
 
-void Scroller::SetFinalX(
+ECode Scroller::SetFinalX(
     /* [in] */ Int32 newX)
 {
     mFinalX = newX;
     mDeltaX = mFinalX - mStartX;
     mFinished = FALSE;
+    return NOERROR;
 }
 
-void Scroller::SetFinalY(
+ECode Scroller::SetFinalY(
     /* [in] */ Int32 newY)
 {
     mFinalY = newY;
     mDeltaY = mFinalY - mStartY;
     mFinished = FALSE;
+    return NOERROR;
 }
 
-Boolean Scroller::IsScrollingInDirection(
+ECode Scroller::IsScrollingInDirection(
     /* [in] */ Float xvel,
-    /* [in] */ Float yvel)
+    /* [in] */ Float yvel,
+    /* [out] */ Boolean* scrolling)
 {
-    return !mFinished && Elastos::Core::Math::Signum(xvel) == Elastos::Core::Math::Signum(mFinalX - mStartX) &&
+    VALIDATE_NOT_NULL(scrolling);
+    *scrolling = !mFinished && Elastos::Core::Math::Signum(xvel) == Elastos::Core::Math::Signum(mFinalX - mStartX) &&
             Elastos::Core::Math::Signum(yvel) == Elastos::Core::Math::Signum(mFinalY - mStartY);
+    return NOERROR;
 }
 
 }// namespace Widget

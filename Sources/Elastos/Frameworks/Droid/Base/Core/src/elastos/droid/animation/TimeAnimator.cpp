@@ -63,7 +63,7 @@ ECode TimeAnimator::Clone(
     TimeAnimator* temp = newObject;
     temp->mListener = mListener;
     temp->mPreviousTime = mPreviousTime;
-    *object = (IInterface*)newObject->Probe(EIID_IInterface);
+    *object = newObject->Probe(EIID_ITimeAnimator);
     REFCOUNT_ADD(*object);
     return NOERROR;
 }

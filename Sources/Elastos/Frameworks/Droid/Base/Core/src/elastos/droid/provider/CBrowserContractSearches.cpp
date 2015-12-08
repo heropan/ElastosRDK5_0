@@ -1,11 +1,13 @@
-
+#include "elastos/droid/provider/BrowserContract.h"
 #include "elastos/droid/provider/CBrowserContractSearches.h"
 
+namespace Elastos {
+namespace Droid {
+namespace Provider {
 
-ECode CBrowserContractSearches::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CBrowserContractSearches)
+
+CAR_INTERFACE_IMPL(CBrowserContractSearches, Singleton, IBrowserContractSearches)
 
 /**
  * The content:// style URI for this table
@@ -13,5 +15,12 @@ ECode CBrowserContractSearches::constructor()
 ECode CBrowserContractSearches::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
-//    *uri = Uri.withAppendedPath(AUTHORITY_URI, "searches");
+    VALIDATE_NOT_NULL(uri);
+    *uri = BrowserContract::Searches::CONTENT_URI;
+    REFCOUNT_ADD(*uri);
+    return NOERROR;
 }
+
+} // namespace Provider
+} // namespace Droid
+} // namespace Elastos

@@ -4,9 +4,9 @@ module
     using interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Database.ICursor;
 
-    namespace Elastos{
-    namespace Droid{
-    namespace Widget{
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
 
     interface IFilterQueryProvider {
         /**

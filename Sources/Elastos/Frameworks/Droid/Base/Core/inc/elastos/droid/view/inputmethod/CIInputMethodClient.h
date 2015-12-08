@@ -4,18 +4,23 @@
 
 #include "_Elastos_Droid_View_InputMethod_CIInputMethodClient.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
-
-
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
 
-
 CarClass(CIInputMethodClient)
+    , public Object
+    , public IInputMethodClient
+    , public IBinder
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IInputMethodManager* host);
 
@@ -33,6 +38,9 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* str);
+
+    CARAPI SetUserActionNotificationSequenceNumber(
+        /* [in] */ Int32 sequenceNumber);
 
 private:
     AutoPtr<CInputMethodManager> mHost;

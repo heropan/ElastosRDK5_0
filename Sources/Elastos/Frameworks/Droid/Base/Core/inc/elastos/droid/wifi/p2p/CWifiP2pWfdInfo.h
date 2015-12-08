@@ -2,7 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PWFDINFO_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PWFDINFO_H__
 
-#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pWfdInfo.h"
+#include "_Elastos_Droid_Wifi_P2p_CWifiP2pWfdInfo.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +11,15 @@ namespace Wifi {
 namespace P2p {
 
 CarClass(CWifiP2pWfdInfo)
+    , public Object
+    , public IWifiP2pWfdInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWifiP2pWfdInfo();
 
     CARAPI constructor();
@@ -86,12 +94,12 @@ private:
     /** One of {@link #WFD_SOURCE}, {@link #PRIMARY_SINK}, {@link #SECONDARY_SINK}
      * or {@link #SOURCE_OR_PRIMARY_SINK}
      */
-    static const Int32 DEVICE_TYPE                            ;//= 0x3;
-    static const Int32 COUPLED_SINK_SUPPORT_AT_SOURCE         ;//= 0x4;
-    static const Int32 COUPLED_SINK_SUPPORT_AT_SINK           ;//= 0x8;
-    static const Int32 SESSION_AVAILABLE                      ;//= 0x30;
-    static const Int32 SESSION_AVAILABLE_BIT1                 ;//= 0x10;
-    static const Int32 SESSION_AVAILABLE_BIT2                 ;//= 0x20;
+    static const Int32 DEVICE_TYPE                            = 0x3;
+    static const Int32 COUPLED_SINK_SUPPORT_AT_SOURCE         = 0x4;
+    static const Int32 COUPLED_SINK_SUPPORT_AT_SINK           = 0x8;
+    static const Int32 SESSION_AVAILABLE                      = 0x30;
+    static const Int32 SESSION_AVAILABLE_BIT1                 = 0x10;
+    static const Int32 SESSION_AVAILABLE_BIT2                 = 0x20;
 
     Int32 mDeviceInfo;
     Int32 mCtrlPort;
@@ -99,9 +107,9 @@ private:
     Boolean mWfdEnabled;
 };
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PWFDINFO_H__

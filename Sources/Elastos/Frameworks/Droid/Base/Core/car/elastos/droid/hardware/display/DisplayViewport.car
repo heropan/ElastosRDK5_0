@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Graphics.IRect;
+
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
@@ -18,6 +20,42 @@ module
      */
     interface IDisplayViewport
     {
+        IsValid(
+            [out] Boolean* valid);
+
+        SetValid(
+            [in] Boolean valid);
+
+        SetOrientation(
+            [in] Int32 orientation);
+
+        GetOrientation(
+            [out] Int32* orientation);
+
+        SetLogicalFrame(
+            [in] IRect* rect);
+
+        GetLogicalFrame(
+            [out] IRect** rect);
+
+        SetPhysicalFrame(
+            [in] IRect* rect);
+
+        GetPhysicalFrame(
+            [out] IRect** rect);
+
+        SetDeviceWidth(
+            [in] Int32 width);
+
+        GetDeviceWidth(
+            [out] Int32* width);
+
+        SetDeviceHeight(
+            [in] Int32 height);
+
+        GetDeviceHeight(
+            [out] Int32* height);
+
         CopyFrom(
             [in] IDisplayViewport* viewport);
     }

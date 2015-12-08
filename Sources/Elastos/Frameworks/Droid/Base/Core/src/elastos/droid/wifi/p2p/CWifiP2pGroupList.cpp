@@ -1,5 +1,5 @@
 
-#include "CWifiP2pGroupList.h"
+#include "elastos/droid/wifi/p2p/CWifiP2pGroupList.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -12,13 +12,15 @@ namespace Droid {
 namespace Wifi {
 namespace P2p {
 
-const Int32 CWifiP2pGroupList::CREDENTIAL_MAX_NUM = 32;
+//===============================================================
+//                CWifiP2pGroupList::GroupLruCache
+//===============================================================
 
 CWifiP2pGroupList::GroupLruCache::GroupLruCache(
     /* [in] */ Int32 size,
     /* [in] */ CWifiP2pGroupList* host)
-    : LruCache(size)
-    , mHost(host)
+    // TODO : LruCache(size)
+    : mHost(host)
 {
 }
 
@@ -34,6 +36,16 @@ void CWifiP2pGroupList::GroupLruCache::EntryRemoved(
         mHost->mListener->OnDeleteGroup(networkId);
     }
 }
+
+//===============================================================
+//                    CWifiP2pGroupList
+//===============================================================
+
+const Int32 CWifiP2pGroupList::CREDENTIAL_MAX_NUM = 32;
+
+CAR_INTERFACE_IMPL_2(CWifiP2pGroupList, Object, IWifiP2pGroupList, IParcelable)
+
+CAR_OBJECT_IMPL(CWifiP2pGroupList)
 
 CWifiP2pGroupList::CWifiP2pGroupList()
     : mGroups(NULL)
@@ -52,22 +64,34 @@ ECode CWifiP2pGroupList::constructor()
 
 ECode CWifiP2pGroupList::constructor(
     /* [in] */ IWifiP2pGroupList* source,
-    /* [in] */ IGroupDeleteListener* listener)
+    /* [in] */ IWifiP2pGroupListGroupDeleteListener* listener)
 {
-    mListener = listener;
-    mGroups = new GroupLruCache(CREDENTIAL_MAX_NUM, this);
+    // assert(0);
+    // TODO
+    // mListener = listener;
+    // mGroups = new GroupLruCache(CREDENTIAL_MAX_NUM, this);
 
-    if (source != NULL) {
-        CWifiP2pGroupList* wgl = (CWifiP2pGroupList*)source;
-        AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = wgl->mGroups->Snapshot();
+    // if (source != NULL) {
+    //     CWifiP2pGroupList* wgl = (CWifiP2pGroupList*)source;
+    //     AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = wgl->mGroups->Snapshot();
 
-        HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
-        for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
-            mGroups->Put(it->mFirst, it->mSecond);
-        }
-    }
+    //     HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
+    //     for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
+    //         mGroups->Put(it->mFirst, it->mSecond);
+    //     }
+    // }
 
-    return NOERROR;
+    // return NOERROR;
+
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CWifiP2pGroupList::GetGroupList(
+    /* [out] */ ICollection** result)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiP2pGroupList::GetGroupList(
@@ -75,19 +99,23 @@ ECode CWifiP2pGroupList::GetGroupList(
 {
     VALIDATE_NOT_NULL(list);
 
-    AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
-    AutoPtr<ArrayOf<IWifiP2pGroup*> > array = ArrayOf<IWifiP2pGroup*>::Alloc(snapshot->GetSize());
+    assert(0);
+    // TODO
+    // AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
+    // AutoPtr<ArrayOf<IWifiP2pGroup*> > array = ArrayOf<IWifiP2pGroup*>::Alloc(snapshot->GetSize());
 
-    Int32 i = 0;
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
-    for (it = snapshot->Begin(); it != snapshot->End(); ++it, ++i) {
-        array->Set(i, it->mSecond);
-    }
+    // Int32 i = 0;
+    // HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
+    // for (it = snapshot->Begin(); it != snapshot->End(); ++it, ++i) {
+    //     array->Set(i, it->mSecond);
+    // }
 
-    *list = array;
-    REFCOUNT_ADD(*list);
+    // *list = array;
+    // REFCOUNT_ADD(*list);
 
-    return NOERROR;
+    // return NOERROR;
+
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiP2pGroupList::Add(
@@ -98,7 +126,9 @@ ECode CWifiP2pGroupList::Add(
     group->GetNetworkId(&networkId);
     AutoPtr<IInteger32> key;
     CInteger32::New(networkId, (IInteger32**)&key);
-    mGroups->Put(key, group);
+    assert(0);
+    // TODO
+    // mGroups->Put(key, group);
     return NOERROR;
 }
 
@@ -107,7 +137,9 @@ ECode CWifiP2pGroupList::Remove(
 {
     AutoPtr<IInteger32> key;
     CInteger32::New(netId, (IInteger32**)&key);
-    mGroups->Remove(key);
+    assert(0);
+    // TODO
+    // mGroups->Remove(key);
     return NOERROR;
 }
 
@@ -125,11 +157,15 @@ ECode CWifiP2pGroupList::Clear(
     VALIDATE_NOT_NULL(ret);
     *ret = FALSE;
 
-    if (mGroups->Size() == 0) {
-        return NOERROR;
-    }
+    assert(0);
+    // TODO
+    // if (mGroups->Size() == 0) {
+    //     return NOERROR;
+    // }
     mIsClearCalled = TRUE;
-    mGroups->EvictAll();
+    assert(0);
+    // TODO
+    // mGroups->EvictAll();
     mIsClearCalled = FALSE;
     *ret = TRUE;
     return NOERROR;
@@ -150,24 +186,26 @@ ECode CWifiP2pGroupList::GetNetworkId(
     String address;
     Int32 netId;
 
-    AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
-    for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
-        group = it->mSecond;
-        AutoPtr<IWifiP2pDevice> owner;
-        group->GetOwner((IWifiP2pDevice**)&owner);
-        owner->GetDeviceAddress(&address);
+    assert(0);
+    // TODO
+    // AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
+    // HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
+    // for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
+    //     group = it->mSecond;
+    //     AutoPtr<IWifiP2pDevice> owner;
+    //     group->GetOwner((IWifiP2pDevice**)&owner);
+    //     owner->GetDeviceAddress(&address);
 
-        if (deviceAddress.Equals(address)) {
-            group->GetNetworkId(&netId);
-            // update cache ordered.
-            AutoPtr<IInteger32> key;
-            CInteger32::New(netId, (IInteger32**)&key);
-            mGroups->Get(key);
-            *networkId = netId;
-            break;
-        }
-    }
+    //     if (deviceAddress.Equals(address)) {
+    //         group->GetNetworkId(&netId);
+    //         // update cache ordered.
+    //         AutoPtr<IInteger32> key;
+    //         CInteger32::New(netId, (IInteger32**)&key);
+    //         mGroups->Get(key);
+    //         *networkId = netId;
+    //         break;
+    //     }
+    // }
 
     return NOERROR;
 }
@@ -188,27 +226,29 @@ ECode CWifiP2pGroupList::GetNetworkId(
     String address, networkName;
     Int32 netId;
 
-    AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
-    for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
-        group = it->mSecond;
-        group->GetNetworkName(&networkName);
-        if (ssid.Equals(networkName)) {
-            AutoPtr<IWifiP2pDevice> owner;
-            group->GetOwner((IWifiP2pDevice**)&owner);
-            owner->GetDeviceAddress(&address);
+    assert(0);
+    // TODO
+    // AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
+    // HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
+    // for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
+    //     group = it->mSecond;
+    //     group->GetNetworkName(&networkName);
+    //     if (ssid.Equals(networkName)) {
+    //         AutoPtr<IWifiP2pDevice> owner;
+    //         group->GetOwner((IWifiP2pDevice**)&owner);
+    //         owner->GetDeviceAddress(&address);
 
-            if (deviceAddress.Equals(address)) {
-                group->GetNetworkId(&netId);
-                // update cache ordered.
-                AutoPtr<IInteger32> key;
-                CInteger32::New(netId, (IInteger32**)&key);
-                mGroups->Get(key);
-                *networkId = netId;
-                break;
-            }
-        }
-    }
+    //         if (deviceAddress.Equals(address)) {
+    //             group->GetNetworkId(&netId);
+    //             // update cache ordered.
+    //             AutoPtr<IInteger32> key;
+    //             CInteger32::New(netId, (IInteger32**)&key);
+    //             mGroups->Get(key);
+    //             *networkId = netId;
+    //             break;
+    //         }
+    //     }
+    // }
 
     return NOERROR;
 }
@@ -222,7 +262,7 @@ ECode CWifiP2pGroupList::GetOwnerAddr(
 
     AutoPtr<IInteger32> key;
     CInteger32::New(netId, (IInteger32**)&key);
-    AutoPtr<IWifiP2pGroup> group = mGroups->Get(key);
+    AutoPtr<IWifiP2pGroup> group;// TODO = mGroups->Get(key);
     if (group != NULL) {
         AutoPtr<IWifiP2pDevice> owner;
         group->GetOwner((IWifiP2pDevice**)&owner);
@@ -239,22 +279,26 @@ ECode CWifiP2pGroupList::Contains(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    AutoPtr< HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
+    assert(0);
+    // TODO
+    // AutoPtr< HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
+    // HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
 
-    Int32 netId;
-    AutoPtr<IWifiP2pGroup> group;
-    for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
-        group = it->mSecond;
-        group->GetNetworkId(&netId);
-        if (netId == networkId) {
-            *result = TRUE;
-            break;
-        }
+    // Int32 netId;
+    // AutoPtr<IWifiP2pGroup> group;
+    // for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
+    //     group = it->mSecond;
+    //     group->GetNetworkId(&netId);
+    //     if (netId == networkId) {
+    //         *result = TRUE;
+    //         break;
+    //     }
 
-    }
+    // }
 
-    return NOERROR;
+    // return NOERROR;
+
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode CWifiP2pGroupList::ToString(
@@ -266,14 +310,18 @@ ECode CWifiP2pGroupList::ToString(
     String info;
     AutoPtr<IWifiP2pGroup> group;
 
-    AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
-    for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
-        group = it->mSecond;
-        group->ToString(&info);
-        sb += info;
-        sb += "\n";
-    }
+    assert(0);
+    // TODO
+    // AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
+    // HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
+    // for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
+    //     group = it->mSecond;
+    //     assert(0);
+    //     // TODO
+    //     // group->ToString(&info);
+    //     sb += info;
+    //     sb += "\n";
+    // }
 
     *str = sb.ToString();
     return NOERROR;
@@ -299,20 +347,24 @@ ECode CWifiP2pGroupList::WriteToParcel(
 {
     VALIDATE_NOT_NULL(dest);
 
-    AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
-    dest->WriteInt32(snapshot->GetSize());
+    assert(0);
+    // TODO
+    // AutoPtr<HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> > > snapshot = mGroups->Snapshot();
+    // dest->WriteInt32(snapshot->GetSize());
 
-    AutoPtr<IWifiP2pGroup> group;
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
-    for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
-        group = it->mSecond;
-        dest->WriteInterfacePtr(group.Get());
-    }
+    // AutoPtr<IWifiP2pGroup> group;
+    // HashMap< AutoPtr<IInteger32>, AutoPtr<IWifiP2pGroup> >::Iterator it;
+    // for (it = snapshot->Begin(); it != snapshot->End(); ++it) {
+    //     group = it->mSecond;
+    //     dest->WriteInterfacePtr(group.Get());
+    // }
 
-    return NOERROR;
+    // return NOERROR;
+
+    return E_NOT_IMPLEMENTED;
 }
 
-}
-}
-}
-}
+} // namespace P2p
+} // namespace Wifi
+} // namespace Droid
+} // namespace Elastos

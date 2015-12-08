@@ -1,18 +1,31 @@
 
-#include "elastos/droid/widget/GridView.h"
-#include <elastos/core/Math.h>
-#include "elastos/droid/widget/CAbsListViewLayoutParams.h"
+#include "elastos/droid/utility/MathUtils.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoCollectionInfo.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoCollectionItemInfo.h"
+#include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
 #include "elastos/droid/view/animation/GridLayoutAnimationController.h"
+#include "elastos/droid/widget/GridView.h"
+#include "elastos/droid/widget/CAbsListViewLayoutParams.h"
+#include <elastos/core/Math.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::Utility::MathUtils;
 using Elastos::Droid::View::SoundEffectConstants;
 using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::IViewRootImpl;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfo;
+using Elastos::Droid::View::Accessibility::AccessibilityNodeInfoCollectionInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoCollectionInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoCollectionItemInfo;
+using Elastos::Droid::View::Accessibility::AccessibilityNodeInfoCollectionItemInfo;
 using Elastos::Droid::View::Animation::GridLayoutAnimationController;
 using Elastos::Droid::View::Animation::IGridLayoutAnimationParameters;
 using Elastos::Droid::Widget::CAbsListViewLayoutParams;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -24,6 +37,8 @@ const Int32 GridView::STRETCH_SPACING;
 const Int32 GridView::STRETCH_COLUMN_WIDTH;
 const Int32 GridView::STRETCH_SPACING_UNIFORM;
 const Int32 GridView::AUTO_FIT;
+
+CAR_INTERFACE_IMPL(GridView, AbsListView, IGridView)
 
 GridView::GridView()
     : mNumColumns(AUTO_FIT)
@@ -39,20 +54,21 @@ GridView::GridView()
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTempRect));
 }
 
-ECode GridView::Init(
+ECode GridView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     assert(context != NULL);
-    AbsListView::Init(context, attrs, defStyle);
+    AbsListView::constructor(context, attrs, defStyleAttr, defStyleRes);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::GridView),
             ARRAY_SIZE(R::styleable::GridView));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     Int32 hSpacing;
     a->GetDimensionPixelOffset(
@@ -97,14 +113,14 @@ ECode GridView::SetRemoteViewsAdapter(
 
 AutoPtr<IAdapter> GridView::GetAdapter()
 {
-    return mAdapter;
+    return IAdapter::Probe(mAdapter);
 }
 
 ECode GridView::SetAdapter(
     /* [in] */ IAdapter* adapter)
 {
     if (mAdapter != NULL && mDataSetObserver != NULL) {
-        mAdapter->UnregisterDataSetObserver(mDataSetObserver);
+        IAdapter::Probe(mAdapter)->UnregisterDataSetObserver(mDataSetObserver);
     }
 
     ResetList();
@@ -114,17 +130,19 @@ ECode GridView::SetAdapter(
     mOldSelectedPosition = IAdapterView::INVALID_POSITION;
     mOldSelectedRowId = IAdapterView::INVALID_ROW_ID;
 
+    AbsListView::SetAdapter(adapter);
+
     if (mAdapter != NULL) {
         mOldItemCount = mItemCount;
-        mAdapter->GetCount(&mItemCount);
+        IAdapter::Probe(mAdapter)->GetCount(&mItemCount);
         mDataChanged = TRUE;
         CheckFocus();
 
         mDataSetObserver = new AdapterDataSetObserver(this);
-        mAdapter->RegisterDataSetObserver(mDataSetObserver);
+        IAdapter::Probe(mAdapter)->RegisterDataSetObserver(mDataSetObserver);
 
         Int32 count;
-        mAdapter->GetViewTypeCount(&count);
+        IAdapter::Probe(mAdapter)->GetViewTypeCount(&count);
         mRecycler->SetViewTypeCount(count);
 
         Int32 position;
@@ -151,7 +169,8 @@ Int32 GridView::LookForSelectablePosition(
     /* [in] */ Boolean lookDown)
 {
     AutoPtr<IListAdapter> adapter = mAdapter;
-    if (adapter == NULL || IsInTouchMode()) {
+    Boolean isInTouchMode;
+    if (adapter == NULL || (IsInTouchMode(&isInTouchMode), isInTouchMode)) {
         return IAdapterView::INVALID_POSITION;
     }
 
@@ -167,25 +186,48 @@ ECode GridView::FillGap(
     Int32 numColumns = mNumColumns;
     Int32 verticalSpacing = mVerticalSpacing;
 
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
 
     if (down) {
+        Int32 paddingTop = 0;
+
+        if ((mGroupFlags & CLIP_TO_PADDING_MASK) == CLIP_TO_PADDING_MASK) {
+            GetListPaddingTop(&paddingTop);
+        }
+
+        AutoPtr<IView> child;
+        GetChildAt(count - 1, (IView**)&child);
         Int32 bottom;
-        GetChildAt(count - 1)->GetBottom(&bottom);
+        child->GetBottom(&bottom);
         Int32 startOffset = count > 0 ?
-                bottom + verticalSpacing : GetListPaddingTop();
+                bottom + verticalSpacing : paddingTop;
         Int32 position = mFirstPosition + count;
         if (mStackFromBottom) {
             position += numColumns - 1;
         }
         FillDown(position, startOffset);
-        CorrectTooHigh(numColumns, verticalSpacing, GetChildCount());
+        Int32 childCount;
+        GetChildCount(&childCount);
+        CorrectTooHigh(numColumns, verticalSpacing, childCount);
     } else {
-        Int32 top;
-        GetChildAt(0)->GetTop(&top);
+        Int32 paddingBottom = 0;
+        if ((mGroupFlags & CLIP_TO_PADDING_MASK) == CLIP_TO_PADDING_MASK) {
+            GetListPaddingBottom(&paddingBottom);
+        }
 
-        Int32 startOffset = count > 0 ?
-                top - verticalSpacing : GetHeight() - GetListPaddingBottom();
+        AutoPtr<IView> child;
+        GetChildAt(0, (IView**)&child);
+        Int32 top;
+        child->GetTop(&top);
+        Int32 startOffset;
+        if (count > 0) {
+            startOffset = top - verticalSpacing;
+        } else {
+            Int32 height;
+            GetHeight(&height);
+            startOffset = height - paddingBottom;
+        }
         Int32 position = mFirstPosition;
         if (!mStackFromBottom) {
             position -= numColumns;
@@ -193,7 +235,9 @@ ECode GridView::FillGap(
             position--;
         }
         FillUp(position, startOffset);
-        CorrectTooLow(numColumns, verticalSpacing, GetChildCount());
+        Int32 lastCount;
+        GetChildCount(&lastCount);
+        CorrectTooLow(numColumns, verticalSpacing, lastCount);
     }
     return NOERROR;
 }
@@ -204,7 +248,10 @@ AutoPtr<IView> GridView::FillDown(
 {
     AutoPtr<IView> selectedView;
 
-    Int32 end = (mBottom - mTop) - mListPadding->mBottom;
+    Int32 end = (mBottom - mTop);
+    if ((mGroupFlags & CLIP_TO_PADDING_MASK) == CLIP_TO_PADDING_MASK) {
+        end -= mListPadding->mBottom;
+    }
 
     while (nextTop < end && pos < mItemCount) {
         AutoPtr<IView> temp = MakeRow(pos, nextTop, TRUE);
@@ -217,7 +264,9 @@ AutoPtr<IView> GridView::FillDown(
 
         pos += mNumColumns;
     }
-
+    Int32 childCount;
+    GetChildCount(&childCount);
+    SetVisibleRangeHint(mFirstPosition, mFirstPosition + childCount - 1);
     return selectedView;
 }
 
@@ -229,9 +278,21 @@ AutoPtr<IView> GridView::MakeRow(
     Int32 columnWidth = mColumnWidth;
     Int32 horizontalSpacing = mHorizontalSpacing;
 
+    Boolean isLayoutRtl;
+    IsLayoutRtl(&isLayoutRtl);
+
     Int32 last;
-    Int32 nextLeft = mListPadding->mLeft +
-            ((mStretchMode == STRETCH_SPACING_UNIFORM) ? horizontalSpacing : 0);
+    Int32 nextLeft;
+
+    if (isLayoutRtl) {
+        Int32 width;
+        GetWidth(&width);
+        nextLeft = width - mListPadding->mRight - columnWidth -
+                ((mStretchMode == STRETCH_SPACING_UNIFORM) ? horizontalSpacing : 0);
+    } else {
+        nextLeft = mListPadding->mLeft +
+                ((mStretchMode == STRETCH_SPACING_UNIFORM) ? horizontalSpacing : 0);
+    }
 
     if (!mStackFromBottom) {
         last = Elastos::Core::Math::Min(startPos + mNumColumns, mItemCount);
@@ -240,26 +301,28 @@ AutoPtr<IView> GridView::MakeRow(
         startPos = Elastos::Core::Math::Max(0, startPos - mNumColumns + 1);
 
         if (last - startPos < mNumColumns) {
-            nextLeft += (mNumColumns - (last - startPos)) * (columnWidth + horizontalSpacing);
+            Int32 deltaLeft = (mNumColumns - (last - startPos)) * (columnWidth + horizontalSpacing);
+            nextLeft += (isLayoutRtl ? -1 : +1) * deltaLeft;
         }
     }
 
-    AutoPtr<IView> selectedView = NULL;
+    AutoPtr<IView> selectedView;
 
     Boolean hasFocus = ShouldShowSelector();
     Boolean inClick = TouchModeDrawsInPressedState();
     Int32 selectedPosition = mSelectedPosition;
 
-    AutoPtr<IView> child = NULL;
+    AutoPtr<IView> child;
+    Int32 nextChildDir = isLayoutRtl ? -1 : +1;
     for (Int32 pos = startPos; pos < last; pos++) {
         Boolean selected = pos == selectedPosition;
 
         Int32 where = flow ? -1 : pos - startPos;
         child = MakeAndAddView(pos, y, flow, nextLeft, selected, where);
 
-        nextLeft += columnWidth;
+        nextLeft += nextChildDir * columnWidth;
         if (pos < last - 1) {
-            nextLeft += horizontalSpacing;
+            nextLeft += nextChildDir * horizontalSpacing;
         }
 
         if (selected && (hasFocus || inClick)) {
@@ -280,9 +343,12 @@ AutoPtr<IView> GridView::FillUp(
     /* [in] */ Int32 pos,
     /* [in] */ Int32 nextBottom)
 {
-    AutoPtr<IView> selectedView = NULL;
+    AutoPtr<IView> selectedView;
 
-    Int32 end = mListPadding->mTop;
+    Int32 end = 0;
+    if ((mGroupFlags & CLIP_TO_PADDING_MASK) == CLIP_TO_PADDING_MASK) {
+        end = mListPadding->mTop;
+    }
 
     while (nextBottom > end && pos >= 0) {
 
@@ -303,6 +369,9 @@ AutoPtr<IView> GridView::FillUp(
         mFirstPosition = Elastos::Core::Math::Max(0, pos + 1);
     }
 
+    Int32 childCount;
+    GetChildCount(&childCount);
+    SetVisibleRangeHint(mFirstPosition, mFirstPosition + childCount - 1);
     return selectedView;
 }
 
@@ -351,7 +420,8 @@ AutoPtr<IView> GridView::FillSelection(
         rowStart = Elastos::Core::Math::Max(0, rowEnd - numColumns + 1);
     }
 
-    Int32 fadingEdgeLength = GetVerticalFadingEdgeLength();
+    Int32 fadingEdgeLength;
+    GetVerticalFadingEdgeLength(&fadingEdgeLength);
     Int32 topSelectionPixel = GetTopSelectionPixel(childrenTop, fadingEdgeLength, rowStart);
 
     AutoPtr<IView> sel = MakeRow(mStackFromBottom ? rowEnd : rowStart, topSelectionPixel, TRUE);
@@ -389,8 +459,10 @@ void GridView::PinToTop(
     /* [in] */ Int32 childrenTop)
 {
     if (mFirstPosition == 0) {
+        AutoPtr<IView> child;
+        GetChildAt(0, (IView**)&child);
         Int32 top;
-        GetChildAt(0)->GetTop(&top);
+        child->GetTop(&top);
         Int32 offset = childrenTop - top;
         if (offset < 0) {
             OffsetChildrenTopAndBottom(offset);
@@ -401,10 +473,13 @@ void GridView::PinToTop(
 void GridView::PinToBottom(
     /* [in] */ Int32 childrenBottom)
 {
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     if (mFirstPosition + count == mItemCount) {
+        AutoPtr<IView> child;
+        GetChildAt(count - 1, (IView**)&child);
         Int32 bottom;
-        GetChildAt(count - 1)->GetBottom(&bottom);
+        child->GetBottom(&bottom);
         Int32 offset = childrenBottom - bottom;
         if (offset > 0) {
             OffsetChildrenTopAndBottom(offset);
@@ -415,22 +490,27 @@ void GridView::PinToBottom(
 Int32 GridView::FindMotionRow(
     /* [in] */ Int32 y)
 {
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     if (childCount > 0) {
 
         Int32 numColumns = mNumColumns;
         if (!mStackFromBottom) {
             for (Int32 i = 0; i < childCount; i += numColumns) {
+                AutoPtr<IView> child;
+                GetChildAt(i, (IView**)&child);
                 Int32 bottom;
-                GetChildAt(i)->GetBottom(&bottom);
+                child->GetBottom(&bottom);
                 if (y <= bottom) {
                     return mFirstPosition + i;
                 }
             }
         } else {
             for (Int32 i = childCount - 1; i >= 0; i -= numColumns) {
+                AutoPtr<IView> child;
+                GetChildAt(i, (IView**)&child);
                 Int32 top;
-                GetChildAt(i)->GetTop(&top);
+                child->GetTop(&top);
                 if (y >= top) {
                     return mFirstPosition + i;
                 }
@@ -457,9 +537,25 @@ Int32 GridView::GetGravity()
     return mGravity;
 }
 
+ECode GridView::GetGravity(
+    /* [out] */ Int32* gravity)
+{
+    VALIDATE_NOT_NULL(gravity)
+    *gravity = GetGravity();
+    return NOERROR;
+}
+
 Int32 GridView::GetHorizontalSpacing()
 {
     return mHorizontalSpacing;
+}
+
+ECode GridView::GetHorizontalSpacing(
+    /* [out] */ Int32* spacing)
+{
+    VALIDATE_NOT_NULL(spacing)
+    *spacing = GetHorizontalSpacing();
+    return NOERROR;
 }
 
 Int32 GridView::GetRequestedHorizontalSpacing()
@@ -467,9 +563,25 @@ Int32 GridView::GetRequestedHorizontalSpacing()
     return mRequestedHorizontalSpacing;
 }
 
+ECode GridView::GetRequestedHorizontalSpacing(
+    /* [out] */ Int32* spacing)
+{
+    VALIDATE_NOT_NULL(spacing)
+    *spacing = GetRequestedHorizontalSpacing();
+    return NOERROR;
+}
+
 Int32 GridView::GetVerticalSpacing()
 {
     return mVerticalSpacing;
+}
+
+ECode GridView::GetVerticalSpacing(
+    /* [out] */ Int32* spacing)
+{
+    VALIDATE_NOT_NULL(spacing)
+    *spacing = GetVerticalSpacing();
+    return NOERROR;
 }
 
 Int32 GridView::GetColumnWidth()
@@ -477,9 +589,25 @@ Int32 GridView::GetColumnWidth()
     return mColumnWidth;
 }
 
+ECode GridView::GetColumnWidth(
+    /* [out] */ Int32* width)
+{
+    VALIDATE_NOT_NULL(width)
+    *width = GetColumnWidth();
+    return NOERROR;
+}
+
 Int32 GridView::GetRequestedColumnWidth()
 {
     return mRequestedColumnWidth;
+}
+
+ECode GridView::GetRequestedColumnWidth(
+    /* [out] */ Int32* width)
+{
+    VALIDATE_NOT_NULL(width)
+    *width = GetRequestedColumnWidth();
+    return NOERROR;
 }
 
 Int32 GridView::GetNumColumns()
@@ -487,13 +615,21 @@ Int32 GridView::GetNumColumns()
     return mNumColumns;
 }
 
+CARAPI GridView::GetNumColumns(
+    /* [out] */ Int32* columns)
+{
+    VALIDATE_NOT_NULL(columns)
+    *columns = GetNumColumns();
+    return NOERROR;
+}
+
 CARAPI GridView::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     AbsListView::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(GRIDVIEW_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
+    FAIL_RETURN(CString::New(GRIDVIEW_NAME, (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
@@ -502,8 +638,18 @@ CARAPI GridView::OnInitializeAccessibilityNodeInfo(
 {
     AbsListView::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(GRIDVIEW_NAME, (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(GRIDVIEW_NAME, (ICharSequence**)&seq));
     info->SetClassName(seq);
+
+    Int32 columnsCount = GetNumColumns();
+    Int32 count;
+    GetCount(&count);
+    Int32 rowsCount = count / columnsCount;
+    Int32 selectionMode = GetSelectionModeForAccessibility();
+    AutoPtr<IAccessibilityNodeInfoCollectionInfo> collectionInfo;
+    AccessibilityNodeInfoCollectionInfo::Obtain(
+            rowsCount, columnsCount, FALSE, (IAccessibilityNodeInfoCollectionInfo**)&selectionMode);
+    info->SetCollectionInfo(collectionInfo);
     return NOERROR;
 }
 
@@ -548,7 +694,8 @@ AutoPtr<IView> GridView::FillSpecific(
         above = FillUp(motionRowStart - numColumns, t - verticalSpacing);
         AdjustViewsUpOrDown();
         below = FillDown(motionRowStart + numColumns, bottom + verticalSpacing);
-        Int32 childCount = GetChildCount();
+        Int32 childCount;
+        GetChildCount(&childCount);
         if (childCount > 0) {
             CorrectTooHigh(numColumns, verticalSpacing, childCount);
         }
@@ -559,7 +706,8 @@ AutoPtr<IView> GridView::FillSpecific(
         below = FillDown(motionRowEnd + numColumns, bottom + verticalSpacing);
         AdjustViewsUpOrDown();
         above = FillUp(motionRowStart - 1, t - verticalSpacing);
-        Int32 childCount = GetChildCount();
+        Int32 childCount;
+        GetChildCount(&childCount);
         if (childCount > 0) {
             CorrectTooLow(numColumns, verticalSpacing, childCount);
         }
@@ -581,7 +729,8 @@ void GridView::CorrectTooHigh(
 {
     Int32 lastPosition = mFirstPosition + childCount - 1;
     if (lastPosition == mItemCount - 1 && childCount > 0) {
-        AutoPtr<IView> lastChild = GetChildAt(childCount - 1);
+        AutoPtr<IView> lastChild;
+        GetChildAt(childCount - 1, (IView**)&lastChild);
 
         Int32 lastBottom;
         lastChild->GetBottom(&lastBottom);
@@ -589,7 +738,8 @@ void GridView::CorrectTooHigh(
 
         Int32 bottomOffset = end - lastBottom;
 
-        AutoPtr<IView> firstChild = GetChildAt(0);
+        AutoPtr<IView> firstChild;
+        GetChildAt(0, (IView**)&firstChild);
         Int32 firstTop;
         firstChild->GetTop(&firstTop);
 
@@ -616,7 +766,8 @@ void GridView::CorrectTooLow(
     /* [in] */ Int32 childCount)
 {
     if (mFirstPosition == 0 && childCount > 0) {
-        AutoPtr<IView> firstChild = GetChildAt(0);
+        AutoPtr<IView> firstChild;
+        GetChildAt(0, (IView**)&firstChild);
 
         Int32 firstTop;
         firstChild->GetTop(&firstTop);
@@ -626,7 +777,8 @@ void GridView::CorrectTooLow(
         Int32 end = (mBottom - mTop) - mListPadding->mBottom;
 
         Int32 topOffset = firstTop - start;
-        AutoPtr<IView> lastChild = GetChildAt(childCount - 1);
+        AutoPtr<IView> lastChild;
+        GetChildAt(childCount - 1, (IView**)&lastChild);
         Int32 lastBottom;
         lastChild->GetBottom(&lastBottom);
         Int32 lastPosition = mFirstPosition + childCount - 1;
@@ -653,7 +805,8 @@ AutoPtr<IView> GridView::FillFromSelection(
     /* [in] */ Int32 childrenTop,
     /* [in] */ Int32 childrenBottom)
 {
-    Int32 fadingEdgeLength = GetVerticalFadingEdgeLength();
+    Int32 fadingEdgeLength;
+    GetVerticalFadingEdgeLength(&fadingEdgeLength);
     Int32 selectedPosition = mSelectedPosition;
     Int32 numColumns = mNumColumns;
     Int32 verticalSpacing = mVerticalSpacing;
@@ -697,8 +850,6 @@ AutoPtr<IView> GridView::FillFromSelection(
         AdjustViewsUpOrDown();
         FillUp(rowStart - 1, top - verticalSpacing);
     }
-
-
     return sel;
 }
 
@@ -769,7 +920,8 @@ AutoPtr<IView> GridView::MoveSelection(
     /* [in] */ Int32 childrenTop,
     /* [in] */ Int32 childrenBottom)
 {
-    Int32 fadingEdgeLength = GetVerticalFadingEdgeLength();
+    Int32 fadingEdgeLength;
+    GetVerticalFadingEdgeLength(&fadingEdgeLength);
     Int32 selectedPosition = mSelectedPosition;
     Int32 numColumns = mNumColumns;
     Int32 verticalSpacing = mVerticalSpacing;
@@ -805,9 +957,6 @@ AutoPtr<IView> GridView::MoveSelection(
     AutoPtr<IView> referenceView;
 
     if (rowDelta > 0) {
-        /*
-         * Case 1: Scrolling down.
-         */
         Int32 oldBottom = 0;
         if (mReferenceViewInSelectedRow != NULL) {
             mReferenceViewInSelectedRow->GetBottom(&oldBottom);
@@ -818,9 +967,6 @@ AutoPtr<IView> GridView::MoveSelection(
 
         AdjustForBottomFadingEdge(referenceView, topSelectionPixel, bottomSelectionPixel);
     } else if (rowDelta < 0) {
-        /*
-         * Case 2: Scrolling up.
-         */
         Int32 oldTop = 0;
         if (mReferenceViewInSelectedRow != NULL) {
             mReferenceViewInSelectedRow->GetTop(&oldTop);
@@ -831,9 +977,6 @@ AutoPtr<IView> GridView::MoveSelection(
 
         AdjustForTopFadingEdge(referenceView, topSelectionPixel, bottomSelectionPixel);
     } else {
-        /*
-         * Keep selection where it was
-         */
         Int32 oldTop = 0;
         if (mReferenceViewInSelectedRow != NULL) {
             mReferenceViewInSelectedRow->GetTop(&oldTop);
@@ -946,7 +1089,9 @@ void GridView::OnMeasure(
         } else {
             widthSize = mListPadding->mLeft + mListPadding->mRight;
         }
-        widthSize += GetVerticalScrollbarWidth();
+        Int32 verticalScrollbarWidth;
+        GetVerticalScrollbarWidth(&verticalScrollbarWidth);
+        widthSize += verticalScrollbarWidth;
     }
 
     Int32 childWidth = widthSize - mListPadding->mLeft - mListPadding->mRight;
@@ -955,7 +1100,7 @@ void GridView::OnMeasure(
     Int32 childHeight = 0;
     mItemCount = 0;
     if (mAdapter != NULL) {
-        mAdapter->GetCount(&mItemCount);
+        IAdapter::Probe(mAdapter)->GetCount(&mItemCount);
     }
 
     Int32 count = mItemCount;
@@ -967,9 +1112,9 @@ void GridView::OnMeasure(
         if (p == NULL) {
             CAbsListViewLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
                     IViewGroupLayoutParams::WRAP_CONTENT, 0, (IAbsListViewLayoutParams**)&p);
-            child->SetLayoutParams(p);
+            child->SetLayoutParams(IViewGroupLayoutParams::Probe(p));
         }
-        mAdapter->GetItemViewType(0, &((CAbsListViewLayoutParams*)p.Get())->mViewType);
+        IAdapter::Probe(mAdapter)->GetItemViewType(0, &((CAbsListViewLayoutParams*)p.Get())->mViewType);
         ((CAbsListViewLayoutParams*)p.Get())->mForceAdd = TRUE;
 
         Int32 childHeightSpec = GetChildMeasureSpec(
@@ -986,8 +1131,10 @@ void GridView::OnMeasure(
     }
 
     if (heightMode == MeasureSpec::UNSPECIFIED) {
+        Int32 verticalFadingEdgeLength;
+        GetVerticalFadingEdgeLength(&verticalFadingEdgeLength);
         heightSize = mListPadding->mTop + mListPadding->mBottom + childHeight +
-                GetVerticalFadingEdgeLength() * 2;
+                verticalFadingEdgeLength * 2;
     }
 
     if (heightMode == MeasureSpec::AT_MOST) {
@@ -1026,8 +1173,8 @@ ECode GridView::AttachLayoutAnimationParameters(
         params->SetLayoutAnimationParameters(IAnimationParameters::Probe(animationParams));
     }
 
-    animationParams->SetCount(count);
-    animationParams->SetIndex(index);
+    IAnimationParameters::Probe(animationParams)->SetCount(count);
+    IAnimationParameters::Probe(animationParams)->SetIndex(index);
     animationParams->SetColumnsCount(mNumColumns);
     animationParams->SetRowsCount(count / mNumColumns);
 
@@ -1046,7 +1193,7 @@ ECode GridView::AttachLayoutAnimationParameters(
     return NOERROR;
 }
 
-void GridView::LayoutChildren()
+ECode GridView::LayoutChildren()
 {
     Boolean blockLayoutRequests = mBlockLayoutRequests;
     if (!blockLayoutRequests) {
@@ -1064,13 +1211,14 @@ void GridView::LayoutChildren()
         if (!blockLayoutRequests) {
             mBlockLayoutRequests = FALSE;
         }
-        return;
+        return NOERROR;
     }
 
     Int32 childrenTop = mListPadding->mTop;
     Int32 childrenBottom = mBottom - mTop - mListPadding->mBottom;
 
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     Int32 index;
     Int32 delta = 0;
 
@@ -1083,7 +1231,7 @@ void GridView::LayoutChildren()
     case LAYOUT_SET_SELECTION:
         index = mNextSelectedPosition - mFirstPosition;
         if (index >= 0 && index < childCount) {
-            newSel = GetChildAt(index);
+            GetChildAt(index, (IView**)&newSel);
         }
         break;
     case LAYOUT_FORCE_TOP:
@@ -1099,10 +1247,10 @@ void GridView::LayoutChildren()
     default:
         index = mSelectedPosition - mFirstPosition;
         if (index >= 0 && index < childCount) {
-            oldSel = GetChildAt(index);
+            GetChildAt(index, (IView**)&oldSel);
         }
 
-        oldFirst = GetChildAt(0);
+        GetChildAt(0, (IView**)&oldFirst);
     }
 
     Boolean dataChanged = mDataChanged;
@@ -1116,17 +1264,52 @@ void GridView::LayoutChildren()
         if (!blockLayoutRequests) {
             mBlockLayoutRequests = FALSE;
         }
-        return;
+        return NOERROR;
     }
 
     SetSelectedPositionInt(mNextSelectedPosition);
+
+    AutoPtr<IAccessibilityNodeInfo> accessibilityFocusLayoutRestoreNode;
+    AutoPtr<IView> accessibilityFocusLayoutRestoreView;
+    Int32 accessibilityFocusPosition = INVALID_POSITION;
+
+    // Remember which child, if any, had accessibility focus. This must
+    // occur before recycling any views, since that will clear
+    // accessibility focus.
+    AutoPtr<IViewRootImpl> viewRootImpl;
+    GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
+
+    if (viewRootImpl != NULL) {
+        AutoPtr<IView> focusHost;
+        viewRootImpl->GetAccessibilityFocusedHost((IView**)&focusHost);
+        if (focusHost != NULL) {
+            AutoPtr<IView> focusChild = GetAccessibilityFocusedChild(focusHost);
+            if (focusChild != NULL) {
+                Boolean hasTransientState;
+                if (!dataChanged || (focusChild->HasTransientState(&hasTransientState)), hasTransientState
+                        || mAdapterHasStableIds) {
+                    // The views won't be changing, so try to maintain
+                    // focus on the current host and virtual view.
+                    accessibilityFocusLayoutRestoreView = focusHost;
+                    viewRootImpl->GetAccessibilityFocusedVirtualView(
+                        (IAccessibilityNodeInfo**)&accessibilityFocusLayoutRestoreNode);
+                }
+
+                // Try to maintain focus at the same position.
+                GetPositionForView(focusChild, &accessibilityFocusPosition);
+            }
+        }
+    }
 
     Int32 firstPosition = mFirstPosition;
     RecycleBin* recycleBin = mRecycler;
 
     if (dataChanged) {
+        AutoPtr<IView> tempChild;
         for (Int32 i = 0; i < childCount; i++) {
-            recycleBin->AddScrapView(GetChildAt(i), firstPosition + 1);
+            tempChild = NULL;
+            GetChildAt(i, (IView**)&tempChild);
+            recycleBin->AddScrapView(tempChild, firstPosition + 1);
         }
     } else {
         recycleBin->FillActiveViews(childCount, firstPosition);
@@ -1165,13 +1348,14 @@ void GridView::LayoutChildren()
         break;
     default:
         if (childCount == 0) {
+            Boolean isInTouchMode;
             if (!mStackFromBottom) {
-                SetSelectedPositionInt(mAdapter == NULL || IsInTouchMode() ?
+                SetSelectedPositionInt(mAdapter == NULL || (IsInTouchMode(&isInTouchMode), isInTouchMode) ?
                         IAdapterView::INVALID_POSITION : 0);
                 sel = FillFromTop(childrenTop);
             } else {
                 Int32 last = mItemCount - 1;
-                SetSelectedPositionInt(mAdapter == NULL || IsInTouchMode() ?
+                SetSelectedPositionInt(mAdapter == NULL || (IsInTouchMode(&isInTouchMode), isInTouchMode) ?
                         IAdapterView::INVALID_POSITION : last);
                 sel = FillFromBottom(last, childrenBottom);
             }
@@ -1192,14 +1376,70 @@ void GridView::LayoutChildren()
     recycleBin->ScrapActiveViews();
 
     if (sel != NULL) {
-       PositionSelector(IAdapterView::INVALID_POSITION, sel);
+       PositionSelector(INVALID_POSITION, sel);
        sel->GetTop(&mSelectedTop);
-    } else if (mTouchMode > TOUCH_MODE_DOWN && mTouchMode < TOUCH_MODE_SCROLL) {
-        AutoPtr<IView> child = GetChildAt(mMotionPosition - mFirstPosition);
-        if (child != NULL) PositionSelector(mMotionPosition, child);
     } else {
-        mSelectedTop = 0;
-        mSelectorRect->SetEmpty();
+        Boolean inTouchMode = mTouchMode > TOUCH_MODE_DOWN
+                && mTouchMode < TOUCH_MODE_SCROLL;
+        if (inTouchMode) {
+            // If the user's finger is down, select the motion position.
+            AutoPtr<IView> child;
+            GetChildAt(mMotionPosition - mFirstPosition, (IView**)&child);
+            if (child != NULL) {
+                PositionSelector(mMotionPosition, child);
+            }
+        } else if (mSelectedPosition != INVALID_POSITION) {
+            // If we had previously positioned the selector somewhere,
+            // put it back there. It might not match up with the data,
+            // but it's transitioning out so it's not a big deal.
+            AutoPtr<IView> child;
+            GetChildAt(mSelectorPosition - mFirstPosition, (IView**)&child);
+            if (child != NULL) {
+                PositionSelector(mSelectorPosition, child);
+            }
+        } else {
+            // Otherwise, clear selection.
+            mSelectedTop = 0;
+            mSelectorRect->SetEmpty();
+        }
+    }
+
+    // Attempt to restore accessibility focus, if necessary.
+    if (viewRootImpl != NULL) {
+        AutoPtr<IView> newAccessibilityFocusedView;
+        viewRootImpl->GetAccessibilityFocusedHost((IView**)&newAccessibilityFocusedView);
+        if (newAccessibilityFocusedView == NULL) {
+            Boolean isAttachedToWindow;
+            if (accessibilityFocusLayoutRestoreView != NULL &&
+                (accessibilityFocusLayoutRestoreView->IsAttachedToWindow(&isAttachedToWindow), isAttachedToWindow)) {
+                AutoPtr<IAccessibilityNodeProvider> provider;
+                accessibilityFocusLayoutRestoreView->GetAccessibilityNodeProvider(
+                    (IAccessibilityNodeProvider**)&provider);
+                if (accessibilityFocusLayoutRestoreNode != NULL && provider != NULL) {
+                    Int64 sourceId;
+                    accessibilityFocusLayoutRestoreNode->GetSourceNodeId(&sourceId);
+                    Int32 virtualViewId = CAccessibilityNodeInfo::GetVirtualDescendantId(sourceId);
+                    Boolean isFormAction;
+                    provider->PerformAction(virtualViewId,
+                            IAccessibilityNodeInfo::ACTION_ACCESSIBILITY_FOCUS, NULL, &isFormAction);
+                } else {
+                    Boolean isFocus;
+                    accessibilityFocusLayoutRestoreView->RequestAccessibilityFocus(&isFocus);
+                }
+            } else if (accessibilityFocusPosition != INVALID_POSITION) {
+                // Bound the position within the visible children.
+                Int32 childCount;
+                GetChildCount(&childCount);
+                Int32 position = MathUtils::Constrain(
+                        accessibilityFocusPosition - mFirstPosition, 0, childCount - 1);
+                AutoPtr<IView> restoreView;
+                GetChildAt(position, (IView**)&restoreView);
+                if (restoreView != NULL) {
+                    Boolean isFocus;
+                    restoreView->RequestAccessibilityFocus(&isFocus);
+                }
+            }
+        }
     }
 
     mLayoutMode = LAYOUT_NORMAL;
@@ -1219,6 +1459,8 @@ void GridView::LayoutChildren()
         mBlockLayoutRequests = FALSE;
     }
 //}
+
+    return NOERROR;
 }
 
 AutoPtr<IView> GridView::MakeAndAddView(
@@ -1282,19 +1524,20 @@ void GridView::SetupChild(
         CAbsListViewLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
                 IViewGroupLayoutParams::WRAP_CONTENT, 0, (IAbsListViewLayoutParams**)&p);
     }
-    mAdapter->GetItemViewType(position, &((CAbsListViewLayoutParams*)p.Get())->mViewType);
+    IAdapter::Probe(mAdapter)->GetItemViewType(position, &((CAbsListViewLayoutParams*)p.Get())->mViewType);
 
     if (recycled && !((CAbsListViewLayoutParams*)p.Get())->mForceAdd) {
-        AttachViewToParent(child, where, p);
+        AttachViewToParent(child, where, IViewGroupLayoutParams::Probe(p));
     } else {
         ((CAbsListViewLayoutParams*)p.Get())->mForceAdd = FALSE;
-        AddViewInLayout(child, where, p, TRUE);
+        AddViewInLayout(child, where, IViewGroupLayoutParams::Probe(p), TRUE);
     }
 
     if (updateChildSelected) {
         child->SetSelected(isSelected);
         if (isSelected) {
-            View::RequestFocus();
+            Boolean isRequestFocus;
+            View::RequestFocus(&isRequestFocus);
         }
     }
 
@@ -1362,7 +1605,8 @@ Boolean GridView::SequenceScroll(
 ECode GridView::SetSelection(
     /* [in] */ Int32 position)
 {
-    if (!IsInTouchMode()) {
+    Boolean isInTouchMode;
+    if (IsInTouchMode(&isInTouchMode), !isInTouchMode) {
         SetNextSelectedPositionInt(position);
     } else {
         mResurrectToPosition = position;
@@ -1481,9 +1725,9 @@ Boolean GridView::CommonKey(
 
             case IKeyEvent::KEYCODE_DPAD_CENTER:
             case IKeyEvent::KEYCODE_ENTER: {
-                Int32 count;
+                Int32 count, childCount;
                 event->GetRepeatCount(&count);
-                if (GetChildCount() > 0 && count == 0) {
+                if ((GetChildCount(&childCount), childCount) > 0 && count == 0) {
                     KeyPressed();
                 }
 
@@ -1513,11 +1757,23 @@ Boolean GridView::CommonKey(
     } else {
         switch (action) {
             case IKeyEvent::ACTION_DOWN:
-                return AbsListView::OnKeyDown(keyCode, event);
+            {
+                Boolean result;
+                AbsListView::OnKeyDown(keyCode, event, &result);
+                return result;
+            }
             case IKeyEvent::ACTION_UP:
-                return AbsListView::OnKeyUp(keyCode, event);
+            {
+                Boolean result;
+                AbsListView::OnKeyUp(keyCode, event, &result);
+                return result;
+            }
             case IKeyEvent::ACTION_MULTIPLE:
-                return AbsListView::OnKeyMultiple(keyCode, count, event);
+            {
+                Boolean result;
+                AbsListView::OnKeyMultiple(keyCode, count, event, &result);
+                return result;
+            }
             default:
                 return FALSE;
         }
@@ -1530,10 +1786,12 @@ Boolean GridView::PageScroll(
 {
     Int32 nextPage = -1;
 
+    Int32 childCount;
+    GetChildCount(&childCount);
     if (direction == IView::FOCUS_UP) {
-        nextPage = Elastos::Core::Math::Max(0, mSelectedPosition - GetChildCount() - 1);
+        nextPage = Elastos::Core::Math::Max(0, mSelectedPosition - childCount - 1);
     } else if (direction == IView::FOCUS_DOWN) {
-        nextPage = Elastos::Core::Math::Min(mItemCount - 1, mSelectedPosition + GetChildCount() - 1);
+        nextPage = Elastos::Core::Math::Min(mItemCount - 1, mSelectedPosition + childCount - 1);
     }
 
     if (nextPage >= 0) {
@@ -1647,17 +1905,20 @@ void GridView::OnFocusChanged(
         // focused rect
         AutoPtr<CRect> otherRect = mTempRect;
         Int32 minDistance = Elastos::Core::Math::INT32_MAX_VALUE;
-        Int32 childCount = GetChildCount();
+        Int32 childCount;
+        GetChildCount(&childCount);
         for (Int32 i = 0; i < childCount; i++) {
             // only consider view's on appropriate edge of grid
             if (!IsCandidateSelection(i, direction)) {
                 continue;
             }
 
-            AutoPtr<IView> other = GetChildAt(i);
+            AutoPtr<IView> other;
+            GetChildAt(i, (IView**)&other);
             other->GetDrawingRect(otherRect);
             OffsetDescendantRectToMyCoords(other, otherRect);
-            Int32 distance = GetDistance(previouslyFocusedRect, otherRect, direction);
+            Int32 distance;
+            GetDistance(previouslyFocusedRect, otherRect, direction, &distance);
 
             if (distance < minDistance) {
                 minDistance = distance;
@@ -1677,7 +1938,8 @@ Boolean GridView::IsCandidateSelection(
     /* [in] */ Int32 childIndex,
     /* [in] */ Int32 direction)
 {
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     Int32 invertedIndex = count - 1 - childIndex;
 
     Int32 rowStart;
@@ -1702,8 +1964,8 @@ Boolean GridView::IsCandidateSelection(
             return rowEnd == count - 1;
         default:
             break;
-            /*throw new IllegalArgumentException("direction must be one of "
-                    + "{FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");*/
+            //throw new IllegalArgumentException("direction must be one of "
+            //        + "{FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");
     }
     return FALSE;
 }
@@ -1757,6 +2019,14 @@ Int32 GridView::GetStretchMode()
     return mStretchMode;
 }
 
+ECode GridView::GetStretchMode(
+    /* [out] */ Int32* mode)
+{
+    VALIDATE_NOT_NULL(mode)
+    *mode = GetStretchMode();
+    return NOERROR;
+}
+
 
 ECode GridView::SetColumnWidth(
     /* [in] */ Int32 columnWidth)
@@ -1781,7 +2051,8 @@ ECode GridView::SetNumColumns(Int32 numColumns)
 
 ECode GridView::AdjustViewsUpOrDown()
 {
-    Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
 
     if (childCount > 0) {
         Int32 delta;
@@ -1790,7 +2061,7 @@ ECode GridView::AdjustViewsUpOrDown()
         if (!mStackFromBottom) {
             // Uh-oh -- we came up short. Slide all views up to make them
             // align with the top
-            child = GetChildAt(0);
+            GetChildAt(0, (IView**)&child);
             Int32 top = 0;
             child->GetTop(&top);
             delta = top - mListPadding->mTop;
@@ -1805,10 +2076,11 @@ ECode GridView::AdjustViewsUpOrDown()
             }
         } else {
             // we are too high, slide all views down to align with bottom
-            child = GetChildAt(childCount - 1);
-            Int32 bottom = 0;
+            GetChildAt(childCount - 1, (IView**)&child);
+            Int32 bottom, height;
             child->GetBottom(&bottom);
-            delta = bottom - (GetHeight() - mListPadding->mBottom);
+            GetHeight(&height);
+            delta = bottom - (height - mListPadding->mBottom);
 
             if (mFirstPosition + childCount < mItemCount) {
                 // It's OK to have some space below the last item if it is
@@ -1832,14 +2104,16 @@ ECode GridView::AdjustViewsUpOrDown()
 
 Int32 GridView::ComputeVerticalScrollExtent()
 {
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     if (count > 0) {
         Int32 numColumns = mNumColumns;
         Int32 rowCount = (count + numColumns - 1) / numColumns;
 
         Int32 extent = rowCount * 100;
 
-        AutoPtr<IView> view = GetChildAt(0);
+        AutoPtr<IView> view;
+        GetChildAt(0, (IView**)&view);
         Int32 top;
         view->GetTop(&top);
         Int32 height;
@@ -1847,13 +2121,15 @@ Int32 GridView::ComputeVerticalScrollExtent()
         if (height > 0) {
             extent += (top * 100) / height;
         }
-
-        view = GetChildAt(count - 1);
+        view = NULL;
+        GetChildAt(count - 1, (IView**)&view);
         Int32 bottom;
         view->GetBottom(&bottom);
         view->GetHeight(&height);
         if (height > 0) {
-            extent -= ((bottom - GetHeight()) * 100) / height;
+            Int32 thisHeight;
+            GetHeight(&thisHeight);
+            extent -= ((bottom - thisHeight) * 100) / height;
         }
 
         return extent;
@@ -1863,8 +2139,10 @@ Int32 GridView::ComputeVerticalScrollExtent()
 
 Int32 GridView::ComputeVerticalScrollOffset()
 {
-    if (mFirstPosition >= 0 && GetChildCount() > 0) {
-        AutoPtr<IView> view = GetChildAt(0);
+    Int32 childCount;
+    if (mFirstPosition >= 0 && (GetChildCount(&childCount), childCount) > 0) {
+        AutoPtr<IView> view;
+        GetChildAt(0, (IView**)&view);
         Int32 top;
         view->GetTop(&top);
         Int32 height;
@@ -1873,8 +2151,10 @@ Int32 GridView::ComputeVerticalScrollOffset()
             Int32 numColumns = mNumColumns;
             Int32 whichRow = mFirstPosition / numColumns;
             Int32 rowCount = (mItemCount + numColumns - 1) / numColumns;
+            Int32 thisHeight;
+            GetHeight(&thisHeight);
             return Elastos::Core::Math::Max(whichRow * 100 - (top * 100) / height +
-                    (Int32) ((Float) mScrollY / GetHeight() * rowCount * 100), 0);
+                    (Int32) ((Float) mScrollY / thisHeight * rowCount * 100), 0);
         }
     }
     return 0;
@@ -1888,9 +2168,50 @@ Int32 GridView::ComputeVerticalScrollRange()
     Int32 result = Elastos::Core::Math::Max(rowCount * 100, 0);
     if (mScrollY != 0) {
         // Compensate for overscroll
-        result += Elastos::Core::Math::Abs((Int32) ((Float) mScrollY / GetHeight() * rowCount * 100));
+        Int32 height;
+        GetHeight(&height);
+        result += Elastos::Core::Math::Abs((Int32) ((Float) mScrollY / height * rowCount * 100));
     }
     return result;
+}
+
+//@Override
+ECode GridView::OnInitializeAccessibilityNodeInfoForItem(
+    /* [in] */ IView* view,
+    /* [in] */ Int32 position,
+    /* [in] */ IAccessibilityNodeInfo* info)
+{
+    AbsListView::OnInitializeAccessibilityNodeInfoForItem(view, position, info);
+
+    Int32 count;
+    GetCount(&count);
+    Int32 columnsCount = GetNumColumns();
+    Int32 rowsCount = count / columnsCount;
+
+    Int32 row;
+    Int32 column;
+    if (!mStackFromBottom) {
+        column = position % columnsCount;
+        row = position / columnsCount;
+    } else {
+        Int32 invertedIndex = count - 1 - position;
+
+        column = columnsCount - 1 - (invertedIndex % columnsCount);
+        row = rowsCount - 1 - invertedIndex / columnsCount;
+    }
+
+    AutoPtr<IViewGroupLayoutParams> lp;
+    view->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+    AbsListView::LayoutParams* temp = (AbsListView::LayoutParams*)IAbsListViewLayoutParams::Probe(lp);
+    Boolean isHeading = lp != NULL && temp->mViewType != ITEM_VIEW_TYPE_HEADER_OR_FOOTER;
+    Boolean isSelected;
+    IsItemChecked(position, &isSelected);
+
+    AutoPtr<IAccessibilityNodeInfoCollectionItemInfo> itemInfo;
+    AccessibilityNodeInfoCollectionItemInfo::Obtain(row, 1, column, 1, isHeading, isSelected,
+        (IAccessibilityNodeInfoCollectionItemInfo**)&itemInfo);
+    info->SetCollectionItemInfo(itemInfo);
+    return NOERROR;
 }
 
 } // namespace Widget

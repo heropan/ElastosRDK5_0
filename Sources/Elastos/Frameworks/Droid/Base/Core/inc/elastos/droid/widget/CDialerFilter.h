@@ -13,9 +13,9 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 
 
-namespace Elastos{
-namespace Droid{
-namespace Widget{
+namespace Elastos {
+namespace Droid {
+namespace Widget {
 
 CarClass(CDialerFilter), public DialerFilter
 {

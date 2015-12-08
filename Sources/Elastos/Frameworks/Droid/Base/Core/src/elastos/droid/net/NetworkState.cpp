@@ -1,5 +1,8 @@
 
 #include "elastos/droid/net/NetworkState.h"
+#include "elastos/droid/net/LinkProperties.h"
+#include "elastos/droid/net/Network.h"
+#include "elastos/droid/net/NetworkInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -12,11 +15,7 @@ ECode NetworkState::constructor(
     /* [in] */ ILinkProperties* linkProperties,
     /* [in] */ INetworkCapabilities* networkCapabilities)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this(networkInfo, linkProperties, networkCapabilities, null, null);
-
-#endif
+    return constructor(networkInfo, linkProperties, networkCapabilities, String(NULL), String(NULL));
 }
 
 ECode NetworkState::constructor(
@@ -26,83 +25,66 @@ ECode NetworkState::constructor(
     /* [in] */ const String& subscriberId,
     /* [in] */ const String& networkId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.networkInfo = networkInfo;
-        this.linkProperties = linkProperties;
-        this.networkCapabilities = networkCapabilities;
-        this.subscriberId = subscriberId;
-        this.networkId = networkId;
-
-#endif
+    mNetworkInfo = networkInfo;
+    mLinkProperties = linkProperties;
+    mNetworkCapabilities = networkCapabilities;
+    mSubscriberId = subscriberId;
+    mNetworkId = networkId;
+    return NOERROR;
 }
 
 ECode NetworkState::constructor(
     /* [in] */ IParcel* in)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        networkInfo = in.readParcelable(null);
-        linkProperties = in.readParcelable(null);
-        networkCapabilities = in.readParcelable(null);
-        subscriberId = in.readString();
-        networkId = in.readString();
-
-#endif
+    return ReadFromParcel(in);
 }
 
 ECode NetworkState::ReadFromParcel(
-    /* [in] */ IParcel* parcel)
+    /* [in] */ IParcel* source)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(source);
-    source->ReadInterfacePtr((Handle32*)&mNetworkInfo);
+    AutoPtr<IInterface> obj;
+    source->ReadInterfacePtr((Handle32*)&obj);
+    mNetworkInfo = INetworkInfo::Probe(obj);
+    obj = NULL;
     source->ReadInterfacePtr((Handle32*)&mLinkProperties);
-    source->ReadInterfacePtr((Handle32*)&mLinkCapabilities);
+    mLinkProperties = ILinkProperties::Probe(obj);
+    obj = NULL;
+    source->ReadInterfacePtr((Handle32*)&mNetworkCapabilities);
+    mNetworkCapabilities = INetworkCapabilities::Probe(obj);
     source->ReadString(&mSubscriberId);
     source->ReadString(&mNetworkId);
     return NOERROR;
-#endif
 }
 
 ECode NetworkState::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(dest);
     dest->WriteInterfacePtr(mNetworkInfo);
     dest->WriteInterfacePtr(mLinkProperties);
-    dest->WriteInterfacePtr(mLinkCapabilities);
+    dest->WriteInterfacePtr(mNetworkCapabilities);
     dest->WriteString(mSubscriberId);
     dest->WriteString(mNetworkId);
     return NOERROR;
-#endif
 }
 
 ECode NetworkState::GetNetworkInfo(
-    /* [out] */ INetworkInfo** result)
+    /* [out] */ INetworkInfo** networkInfo)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(networkInfo);
+
     *networkInfo = mNetworkInfo;
     REFCOUNT_ADD(*networkInfo);
     return NOERROR;
-#endif
 }
 
 ECode NetworkState::GetLinkProperties(
-    /* [out] */ ILinkProperties** result)
+    /* [out] */ ILinkProperties** linkProperties)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(linkProperties);
+
     *linkProperties = mLinkProperties;
     REFCOUNT_ADD(*linkProperties);
     return NOERROR;
-#endif
 }
 
 ECode NetworkState::GetNetworkCapabilities(
@@ -111,63 +93,28 @@ ECode NetworkState::GetNetworkCapabilities(
     VALIDATE_NOT_NULL(*result)
 
     *result = mNetworkCapabilities;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode NetworkState::GetSubscriberId(
-    /* [out] */ String* result)
+    /* [out] */ String* subscriberId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(subscriberId);
+
     *subscriberId = mSubscriberId;
     return NOERROR;
-#endif
 }
 
 ECode NetworkState::GetNetworkId(
-    /* [out] */ String* result)
+    /* [out] */ String* networkId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(networkId);
+
     *networkId = mNetworkId;
     return NOERROR;
-#endif
 }
 
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
-
-#if 0 // old CNetworkState.cpp
-ECode CNetworkState::constructor()
-{
-    return NOERROR;
-}
-
-ECode CNetworkState::constructor(
-    /* [in] */ INetworkInfo* networkInfo,
-    /* [in] */ ILinkProperties* linkProperties,
-    /* [in] */ ILinkCapabilities* linkCapabilities)
-{
-    String str;
-    constructor(networkInfo, linkProperties, linkCapabilities, str, str);
-    return NOERROR;
-}
-
-ECode CNetworkState::constructor(
-    /* [in] */ INetworkInfo* networkInfo,
-    /* [in] */ ILinkProperties* linkProperties,
-    /* [in] */ ILinkCapabilities* linkCapabilities,
-    /* [in] */ const String& subscriberId,
-    /* [in] */ const String& networkId)
-{
-    mNetworkInfo = networkInfo;
-    mLinkProperties = linkProperties;
-    mLinkCapabilities = linkCapabilities;
-    mSubscriberId = subscriberId;
-    mNetworkId = networkId;
-    return NOERROR;
-}
-#endif

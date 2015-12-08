@@ -14,7 +14,7 @@ namespace Preference {
 // PreferenceFrameLayout::LayoutParams
 //====================================================
 
-//CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, FrameLayoutLayoutParams, IFrameLayoutLayoutParams)
+//CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, FrameLayout::LayoutParams, IFrameLayoutLayoutParams)
 CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, Object, IFrameLayoutLayoutParams)
 
 PreferenceFrameLayout::LayoutParams::LayoutParams()
@@ -27,7 +27,7 @@ ECode PreferenceFrameLayout::LayoutParams::constructor(
     /* [in] */ IAttributeSet* attrs)
 {
     assert(0);
-    // FrameLayoutLayoutParams::constructor(c, attrs);
+    // FrameLayout::LayoutParams::constructor(c, attrs);
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceFrameLayout_Layout),
@@ -44,7 +44,7 @@ ECode PreferenceFrameLayout::LayoutParams::constructor(
     /* [in] */ Int32 height)
 {
     assert(0);
-    // FrameLayoutLayoutParams::constructor(width, height);
+    // FrameLayout::LayoutParams::constructor(width, height);
     return NOERROR;
 }
 
@@ -53,7 +53,7 @@ ECode PreferenceFrameLayout::LayoutParams::GetGravity(
 {
     VALIDATE_NOT_NULL(gravity)
     assert(0);
-    // *gravity = FrameLayoutLayoutParams::GetGravity();
+    // *gravity = FrameLayout::LayoutParams::GetGravity();
     return NOERROR;
 }
 
@@ -61,7 +61,7 @@ ECode PreferenceFrameLayout::LayoutParams::SetGravity(
     /* [in] */ Int32 gravity)
 {
     assert(0);
-    // return FrameLayoutLayoutParams::SetGravity(gravity);
+    // return FrameLayout::LayoutParams::SetGravity(gravity);
     return NOERROR;
 }
 

@@ -4,8 +4,12 @@
 #include "elastos/droid/content/pm/CApplicationInfo.h"
 #include "elastos/droid/view/inputmethod/CInputMethodInfo.h"
 #include "elastos/droid/view/inputmethod/CInputMethodSubtype.h"
+#include "elastos/droid/view/inputmethod/CInputMethodSubtypeArray.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/R.h"
+
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::CComponentName;
@@ -14,15 +18,28 @@ using Elastos::Droid::Content::Pm::CApplicationInfo;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::View::InputMethod::CInputMethodSubtype;
+using Elastos::Droid::View::InputMethod::CInputMethodSubtypeArray;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::Xml;
+
+using Elastos::Core::CString;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
-
+//========================================================================================
+//              CInputMethodInfo::
+//========================================================================================
 const String CInputMethodInfo::TAG("InputMethodInfo");
+
+CAR_INTERFACE_IMPL_2(CInputMethodInfo, Object, IInputMethodInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CInputMethodInfo)
 
 CInputMethodInfo::CInputMethodInfo()
     : mIsDefaultResId(0)
@@ -44,7 +61,7 @@ ECode CInputMethodInfo::constructor(
 ECode CInputMethodInfo::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IResolveInfo* service,
-    /* [in] */ IObjectStringMap* additionalSubtypesMap)
+    /* [in] */ IMap* additionalSubtypesMap)
 {
     return Init(context, service, additionalSubtypesMap);
 }
@@ -55,30 +72,71 @@ ECode CInputMethodInfo::constructor(
     /* [in] */ ICharSequence* label,
     /* [in] */ const String& settingsActivity)
 {
-    AutoPtr<CResolveInfo> ri;
-    CResolveInfo::NewByFriend((CResolveInfo**)&ri);
-    AutoPtr<CServiceInfo> si;
-    CServiceInfo::NewByFriend((CServiceInfo**)&si);
-    AutoPtr<CApplicationInfo> ai;
-    CApplicationInfo::NewByFriend((CApplicationInfo**)&ai);
-    ai->mPackageName = packageName;
-    ai->mEnabled = TRUE;
-    si->mApplicationInfo = ai.Get();
-    si->mEnabled = TRUE;
-    si->mPackageName = packageName;
-    si->mName = className;
-    si->mExported = TRUE;
-    si->mNonLocalizedLabel = label;
-    ri->mServiceInfo = si.Get();
-    mService = ri;
-    AutoPtr<CComponentName> componentName;
-    CComponentName::NewByFriend(si->mPackageName,
-            si->mName, (CComponentName**)&componentName);
-    componentName->FlattenToShortString(&mId);
+    return constructor(BuildDummyResolveInfo(packageName, className, label), FALSE, settingsActivity, NULL,
+                0, FALSE /* forceDefault */, TRUE /* supportsSwitchingToNextInputMethod */);
+}
+
+ECode CInputMethodInfo::constructor(
+    /* [in] */ IResolveInfo* ri,
+    /* [in] */ Boolean isAuxIme,
+    /* [in] */ const String& settingsActivity,
+    /* [in] */ IList* subtypes,
+    /* [in] */ Int32 isDefaultResId,
+    /* [in] */ Boolean forceDefault)
+{
+    return constructor(ri, isAuxIme, settingsActivity, subtypes, isDefaultResId,
+            forceDefault, TRUE /* supportsSwitchingToNextInputMethod */);
+}
+
+ECode CInputMethodInfo::constructor(
+    /* [in] */ IResolveInfo* ri,
+    /* [in] */ Boolean isAuxIme,
+    /* [in] */ const String& settingsActivity,
+    /* [in] */ IList* subtypes,
+    /* [in] */ Int32 isDefaultResId,
+    /* [in] */ Boolean forceDefault,
+    /* [in] */ Boolean supportsSwitchingToNextInputMethod)
+{
+    AutoPtr<CResolveInfo> _ri = (CResolveInfo*) ri;
+    AutoPtr<IServiceInfo> si = _ri->mServiceInfo;
+    AutoPtr<CServiceInfo> _si = (CServiceInfo*) si.Get();
+    mService = (CResolveInfo*)ri;
+    AutoPtr<IComponentName> cn;
+    CComponentName::New(_si->mPackageName, _si->mName, (IComponentName**)&cn);
+    cn->FlattenToShortString(&mId);
     mSettingsActivityName = settingsActivity;
-    mIsDefaultResId = 0;
-    mIsAuxIme = FALSE;
+    mIsDefaultResId = isDefaultResId;
+    mIsAuxIme = isAuxIme;
+    CInputMethodSubtypeArray::New(subtypes, (IInputMethodSubtypeArray**)&mSubtypes);
+    mForceDefault = forceDefault;
+    mSupportsSwitchingToNextInputMethod = supportsSwitchingToNextInputMethod;
     return NOERROR;
+}
+
+AutoPtr<IResolveInfo> CInputMethodInfo::BuildDummyResolveInfo(
+    /* [in] */ const String& packageName,
+    /* [in] */ const String& className,
+    /* [in] */ ICharSequence* label)
+{
+    AutoPtr<IResolveInfo> ri;
+    CResolveInfo::New((IResolveInfo**)&ri);
+    AutoPtr<CResolveInfo> _ri = (CResolveInfo*) ri.Get();
+    AutoPtr<IServiceInfo> si;
+    CServiceInfo::New((IServiceInfo**)&si);
+    AutoPtr<CServiceInfo> _si = (CServiceInfo*) si.Get();
+    AutoPtr<IApplicationInfo> ai;
+    CApplicationInfo::New((IApplicationInfo**)&ai);
+    AutoPtr<CApplicationInfo> _ai = (CApplicationInfo*) ai.Get();
+    _ai->mPackageName = packageName;
+    _ai->mEnabled = TRUE;
+    _si->mApplicationInfo = ai;
+    _si->mEnabled = TRUE;
+    _si->mPackageName = packageName;
+    _si->mName = className;
+    _si->mExported = TRUE;
+    _si->mNonLocalizedLabel = label;
+    _ri->mServiceInfo = si;
+    return ri;
 }
 
 ECode CInputMethodInfo::ReadFromParcel(
@@ -88,15 +146,14 @@ ECode CInputMethodInfo::ReadFromParcel(
     source->ReadString(&mSettingsActivityName);
     source->ReadInt32(&mIsDefaultResId);
     source->ReadBoolean(&mIsAuxIme);
+    Int32 i = 0;
+    source->ReadInt32(&i);
+    mSupportsSwitchingToNextInputMethod = i == 1;
     source->ReadInterfacePtr((Handle32*)&mService);
 
-    Int32 size = 0;
-    source->ReadInt32(&size);
-    for (Int32 i = 0; i < size; i++) {
-        AutoPtr<IInputMethodSubtype> subtype;
-        source->ReadInterfacePtr((Handle32*)&subtype);
-        mSubtypes.PushBack(subtype);
-    }
+    CInputMethodSubtypeArray::New((IInputMethodSubtypeArray**)&mSubtypes);
+    IParcelable::Probe(mSubtypes)->ReadFromParcel(source);
+    mForceDefault = FALSE;
 
     return NOERROR;
 }
@@ -108,14 +165,10 @@ ECode CInputMethodInfo::WriteToParcel(
     dest->WriteString(mSettingsActivityName);
     dest->WriteInt32(mIsDefaultResId);
     dest->WriteBoolean(mIsAuxIme);
+    dest->WriteInt32(mSupportsSwitchingToNextInputMethod ? 1 : 0);
     dest->WriteInterfacePtr((IInterface*)(IResolveInfo*)mService.Get());
 
-    Int32 size = mSubtypes.GetSize();
-    dest->WriteInt32(size);
-    List<AutoPtr<IInputMethodSubtype> >::Iterator iter = mSubtypes.Begin();
-    for (; iter != mSubtypes.End(); ++iter) {
-        dest->WriteInterfacePtr((*iter).Get());
-    }
+    IParcelable::Probe(mSubtypes)->WriteToParcel(dest);
 
     return NOERROR;
 }
@@ -190,8 +243,7 @@ ECode CInputMethodInfo::GetSubtypeCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    *count = mSubtypes.GetSize();
-    return NOERROR;
+    return mSubtypes->GetCount(count);
 }
 
 ECode CInputMethodInfo::GetSubtypeAt(
@@ -199,9 +251,7 @@ ECode CInputMethodInfo::GetSubtypeAt(
     /* [out] */ IInputMethodSubtype** subtype)
 {
     VALIDATE_NOT_NULL(subtype);
-    *subtype = mSubtypes[index];
-    REFCOUNT_ADD(*subtype);
-    return NOERROR;
+    return mSubtypes->Get(index, subtype);
 }
 
 ECode CInputMethodInfo::GetIsDefaultResourceId(
@@ -212,11 +262,50 @@ ECode CInputMethodInfo::GetIsDefaultResourceId(
     return NOERROR;
 }
 
+ECode CInputMethodInfo::IsDefault(
+    /* [in] */ IContext* context,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    if (mForceDefault) {
+        *result = TRUE;
+        return NOERROR;
+    }
+//    try {
+    *result = FALSE;
+    Int32 id = 0;
+    FAIL_RETURN(GetIsDefaultResourceId(&id));
+    if (id == 0) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    String name;
+    FAIL_RETURN(GetPackageName(&name));
+    AutoPtr<IContext> cxt;
+    FAIL_RETURN(context->CreatePackageContext(name, 0, (IContext**)&cxt));
+    AutoPtr<IResources> res;
+    FAIL_RETURN(cxt->GetResources((IResources**)&res));
+    return res->GetBoolean(id, result);
+//    } catch (NameNotFoundException | NotFoundException e) {
+//     return false;
+//    }
+}
+
 ECode CInputMethodInfo::IsAuxiliaryIme(
     /* [in] */ Boolean* auxIme)
 {
     assert(auxIme != NULL);
     *auxIme = mIsAuxIme;
+    return NOERROR;
+}
+
+ECode CInputMethodInfo::SupportsSwitchingToNextInputMethod(
+    /* [out] */ Boolean* supports)
+{
+    VALIDATE_NOT_NULL(supports)
+
+    *supports = mSupportsSwitchingToNextInputMethod;
     return NOERROR;
 }
 
@@ -264,14 +353,16 @@ ECode CInputMethodInfo::Equals(
 ECode CInputMethodInfo::Init(
     /* [in] */ IContext* context,
     /* [in] */ IResolveInfo* service,
-    /* [in] */ IObjectStringMap* additionalSubtypesMap)
+    /* [in] */ IMap* additionalSubtypesMap)
 {
     mService = (CResolveInfo*)service;
     CServiceInfo* si = (CServiceInfo*)mService->mServiceInfo.Get();
     AutoPtr<CComponentName> componentName;
     CComponentName::NewByFriend(si->mPackageName, si->mName, (CComponentName**)&componentName);
     componentName->FlattenToShortString(&mId);
-    mIsAuxIme = TRUE;
+    Boolean isAuxIme = TRUE;
+    Boolean supportsSwitchingToNextInputMethod = FALSE; // false as default
+    mForceDefault = FALSE;
 
     AutoPtr<IPackageManager> pm;
     context->GetPackageManager((IPackageManager**)&pm);
@@ -279,28 +370,28 @@ ECode CInputMethodInfo::Init(
     Int32 isDefaultResId = 0;
 
     AutoPtr<IXmlResourceParser> parser;
+    AutoPtr<IArrayList> subtypes;
+    CArrayList::New((IArrayList**)&subtypes);
     //try {
     si->LoadXmlMetaData(pm, IInputMethod::SERVICE_META_DATA, (IXmlResourceParser**)&parser);
     if (parser == NULL) {
-        // throw new XmlPullParserException("No "
-        //         + InputMethod.SERVICE_META_DATA + " meta-data");
+        Logger::E(TAG, "No %s meta-data", (const char*)IInputMethod::SERVICE_META_DATA);
         return E_XML_PULL_PARSER_EXCEPTION;
     }
 
     AutoPtr<IResources> res;
     pm->GetResourcesForApplication(si->mApplicationInfo, (IResources**)&res);
 
-    AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(parser);
+    AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(IXmlPullParser::Probe(parser));
 
     Int32 type = 0;
-    while ((parser->Next(&type), type) != IXmlPullParser::END_DOCUMENT
+    while ((IXmlPullParser::Probe(parser)->Next(&type), type) != IXmlPullParser::END_DOCUMENT
             && type != IXmlPullParser::START_TAG) {
     }
     String nodeName;
-    parser->GetName(&nodeName);
+    IXmlPullParser::Probe(parser)->GetName(&nodeName);
     if (!nodeName.Equals("input-method")) {
-        // throw new XmlPullParserException(
-        //         "Meta-data does not start with input-method tag");
+        Logger::E(TAG, "Meta-data does not start with input-method tag");
         return E_XML_PULL_PARSER_EXCEPTION;
     }
 
@@ -312,19 +403,20 @@ ECode CInputMethodInfo::Init(
     res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa);
     sa->GetString(R::styleable::InputMethod_settingsActivity, &settingsActivityComponent);
     sa->GetResourceId(R::styleable::InputMethod_isDefault, 0, &isDefaultResId);
+    sa->GetBoolean(R::styleable::InputMethod_supportsSwitchingToNextInputMethod,
+                    FALSE, &supportsSwitchingToNextInputMethod);
     sa->Recycle();
 
     Int32 depth = 0, tmpDepth = 0;
-    parser->GetDepth(&depth);
+    IXmlPullParser::Probe(parser)->GetDepth(&depth);
     // Parse all subtypes
-    while (((parser->Next(&type), type) != IXmlPullParser::END_TAG || (parser->GetDepth(&tmpDepth), tmpDepth) > depth)
+    while (((IXmlPullParser::Probe(parser)->Next(&type), type) != IXmlPullParser::END_TAG || (IXmlPullParser::Probe(parser)->GetDepth(&tmpDepth), tmpDepth) > depth)
             && type != IXmlPullParser::END_DOCUMENT) {
         if (type == IXmlPullParser::START_TAG) {
-            parser->GetName(&nodeName);
+            IXmlPullParser::Probe(parser)->GetName(&nodeName);
             if (!nodeName.Equals("subtype")) {
                 parser->Close();
-                // throw new XmlPullParserException(
-                //         "Meta-data in input-method does not start with subtype tag");
+                Logger::E(TAG, "Meta-data in input-method does not start with subtype tag");
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
             size = ARRAY_SIZE(R::styleable::InputMethod_Subtype);
@@ -333,31 +425,52 @@ ECode CInputMethodInfo::Init(
 
             AutoPtr<ITypedArray> a;
             res->ObtainAttributes(attrs, layout, (ITypedArray**)&a);
+
+            AutoPtr<IInputMethodSubtypeBuilder> builder = new CInputMethodSubtype::InputMethodSubtypeBuilder();
             Int32 label = 0;
             a->GetResourceId(R::styleable::InputMethod_Subtype_label, 0, &label);
+            builder->SetSubtypeNameResId(label);
+
             Int32 icon = 0;
             a->GetResourceId(R::styleable::InputMethod_Subtype_icon, 0, &icon);
+            builder->SetSubtypeIconResId(icon);
+
             String imeSubtypeLocale;
             a->GetString(R::styleable::InputMethod_Subtype_imeSubtypeLocale, &imeSubtypeLocale);
+            builder->SetSubtypeLocale(imeSubtypeLocale);
+
             String imeSubtypeMode;
             a->GetString(R::styleable::InputMethod_Subtype_imeSubtypeMode, &imeSubtypeMode);
+            builder->SetSubtypeMode(imeSubtypeMode);
+
             String imeSubtypeExtraValue;
             a->GetString(R::styleable::InputMethod_Subtype_imeSubtypeExtraValue, &imeSubtypeExtraValue);
+            builder->SetSubtypeExtraValue(imeSubtypeExtraValue);
+
             Boolean isAuxiliary = FALSE;
             a->GetBoolean(R::styleable::InputMethod_Subtype_isAuxiliary, FALSE, &isAuxiliary);
+            builder->SetIsAuxiliary(isAuxiliary);
+
             Boolean overridesImplicitlyEnabledSubtype = FALSE;
             a->GetBoolean(R::styleable::InputMethod_Subtype_overridesImplicitlyEnabledSubtype, FALSE, &overridesImplicitlyEnabledSubtype);
+            builder->SetOverridesImplicitlyEnabledSubtype(overridesImplicitlyEnabledSubtype);
+
             Int32 subtypeId = 0;
             a->GetInt32(R::styleable::InputMethod_Subtype_subtypeId, 0 /* use Arrays.hashCode */, &subtypeId);
+            builder->SetSubtypeId(subtypeId);
+
+            Boolean isAsciiCapable = FALSE;
+            a->GetBoolean(R::styleable::InputMethod_Subtype_isAsciiCapable, FALSE, &isAsciiCapable);
+            builder->SetIsAsciiCapable(isAsciiCapable);
+
             AutoPtr<IInputMethodSubtype> subtype;
-            CInputMethodSubtype::New(label, icon, imeSubtypeLocale, imeSubtypeMode, imeSubtypeExtraValue,
-                isAuxiliary, overridesImplicitlyEnabledSubtype, subtypeId,
-                (IInputMethodSubtype**)&subtype);
+            builder->Build((IInputMethodSubtype**)&subtype);
+
             Boolean auxiliary = FALSE;
             if (!(subtype->IsAuxiliary(&auxiliary), auxiliary)) {
-                mIsAuxIme = FALSE;
+                isAuxIme = FALSE;
             }
-            mSubtypes.PushBack(subtype);
+            subtypes->Add(subtype);
         }
     }
     // } catch (NameNotFoundException e) {
@@ -370,30 +483,39 @@ ECode CInputMethodInfo::Init(
         parser->Close();
     }
 
-    if (mSubtypes.IsEmpty()) {
-        mIsAuxIme = FALSE;
+    Boolean bIsEmp = FALSE;
+    if ((subtypes->IsEmpty(&bIsEmp), bIsEmp)) {
+        isAuxIme = FALSE;
     }
-    Boolean contains;
-    if (additionalSubtypesMap != NULL && (additionalSubtypesMap->ContainsKey(mId, &contains), contains)) {
-        AutoPtr<IObjectContainer> additionalSubtypes;
-        additionalSubtypesMap->Get(mId, (IInterface**)&additionalSubtypes);
-        AutoPtr<IObjectEnumerator> subtypeEnum;
-        additionalSubtypes->GetObjectEnumerator((IObjectEnumerator**)&subtypeEnum);
-        Boolean hasNext = FALSE;
-        while(subtypeEnum->MoveNext(&hasNext), hasNext) {
-            AutoPtr<IInputMethodSubtype> subtype;
-            subtypeEnum->Current((IInterface**)&subtype);
-            if (Find(mSubtypes.Begin(), mSubtypes.End(), subtype) == mSubtypes.End()) {
-                mSubtypes.PushBack(subtype);
+    AutoPtr<ICharSequence> cs;
+    CString::New(mId, (ICharSequence**)&cs);
+    Boolean contains = FALSE;
+    if (additionalSubtypesMap != NULL && (additionalSubtypesMap->ContainsKey(cs, &contains), contains)) {
+        AutoPtr<IList> additionalSubtypes;
+        additionalSubtypesMap->Get(cs, (IInterface**)&additionalSubtypes);
+        Int32 N = 0;
+        additionalSubtypes->GetSize(&N);
+        for (Int32 i = 0; i < N; ++i) {
+            AutoPtr<IInterface> node;
+            additionalSubtypes->Get(i, (IInterface**)&node);
+            AutoPtr<IInputMethodSubtype> subtype = IInputMethodSubtype::Probe(node);
+            if (!(subtypes->Contains(subtype, &contains), contains)) {
+                subtypes->Add(subtype);
             }
             else {
-                // Slog.w(TAG, "Duplicated subtype definition found: "
-                //         + subtype.getLocale() + ", " + subtype.getMode());
+                String loc, mod;
+                subtype->GetLocale(&loc);
+                subtype->GetMode(&mod);
+                Slogger::W(TAG, "Duplicated subtype definition found: %s, %s", (const char*)loc, (const char*)mod);
             }
         }
     }
+
+    CInputMethodSubtypeArray::New(IList::Probe(subtypes), (IInputMethodSubtypeArray**)&mSubtypes);
     mSettingsActivityName = settingsActivityComponent;
     mIsDefaultResId = isDefaultResId;
+    mIsAuxIme = isAuxIme;
+    mSupportsSwitchingToNextInputMethod = supportsSwitchingToNextInputMethod;
     return NOERROR;
 }
 

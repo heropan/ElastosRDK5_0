@@ -3,30 +3,17 @@
 #define __ELASTOS_DROID_VIEW_CVIEWGROUPLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_View_CViewGroupLayoutParams.h"
-#include "elastos/droid/view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CViewGroupLayoutParams)
-    , public ViewGroupLayoutParams
+    , public ViewGroup::LayoutParams
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IContext* c,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    CARAPI constructor(
-        /* [in] */ IViewGroupLayoutParams* source);
 };
 
 } // namespace View
