@@ -16,12 +16,23 @@ namespace Display {
 
 const AutoPtr<ArrayOf<IWifiDisplay*> > WifiDisplay::EMPTY_ARRAY = ArrayOf<IWifiDisplay*>::Alloc(0);
 
-CAR_INTERFACE_IMPL_2(WifiDisplay, Object, IWifiDisplay, IParcelable)
+CAR_INTERFACE_IMPL_2(WifiDisplay, Object, IWifiDisplay, IParcelable);
 
 WifiDisplay::WifiDisplay()
+    : mDeviceAddress(NULL)
+    , mDeviceName(NULL)
+    , mDeviceAlias(NULL)
+    , mIsAvailable(FALSE)
+    , mCanConnect(FALSE)
+    , mIsRemembered(FALSE)
 {}
 
-WifiDisplay::WifiDisplay(
+ECode WifiDisplay::constructor()
+{
+    return NOERROR;
+}
+
+ECode WifiDisplay::constructor(
     /* [in] */ const String& deviceAddress,
     /* [in] */ const String& deviceName,
     /* [in] */ const String& deviceAlias,
@@ -42,6 +53,7 @@ WifiDisplay::WifiDisplay(
     mIsAvailable = available;
     mCanConnect = canConnect;
     mIsRemembered = remembered;
+    return NOERROR;
 }
 
 /**

@@ -14,22 +14,13 @@ namespace Display {
 CAR_INTERFACE_IMPL_2(WifiDisplaySessionInfo, Object, IWifiDisplaySessionInfo, IParcelable)
 
 WifiDisplaySessionInfo::WifiDisplaySessionInfo()
+    : mClient(FALSE)
+    , mSessionId(0)
+    , mGroupId(NULL)
+    , mPassphrase(NULL)
+    , mIP(NULL)
 {
-    constructor(TRUE, 0, String(""), String(""), String(""));
 }
-
-WifiDisplaySessionInfo::WifiDisplaySessionInfo(
-    /* [in] */ Boolean client,
-    /* [in] */ Int32 session,
-    /* [in] */ const String& group,
-    /* [in] */ const String& pp,
-    /* [in] */ const String& ip)
-    : mClient(client)
-    , mSessionId(session)
-    , mGroupId(group)
-    , mPassphrase(pp)
-    , mIP(ip)
-{}
 
 ECode WifiDisplaySessionInfo::constructor()
 {

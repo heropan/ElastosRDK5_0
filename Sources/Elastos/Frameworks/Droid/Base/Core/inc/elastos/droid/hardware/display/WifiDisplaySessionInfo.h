@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Object.h>
 
-
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
@@ -31,12 +30,7 @@ public:
 
     WifiDisplaySessionInfo();
 
-    WifiDisplaySessionInfo(
-        /* [in] */ Boolean client,
-        /* [in] */ Int32 session,
-        /* [in] */ const String& group,
-        /* [in] */ const String& pp,
-        /* [in] */ const String& ip);
+    virtual ~WifiDisplaySessionInfo() {}
 
     CARAPI constructor();
 
