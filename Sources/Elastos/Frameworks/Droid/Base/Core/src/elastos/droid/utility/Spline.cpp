@@ -1,6 +1,8 @@
 
 #include "elastos/droid/utility/Spline.h"
 #include "elastos/droid/utility/FloatMath.h"
+#include "elastos/droid/utility/CLinearSpline.h"
+#include "elastos/droid/utility/CMonotoneCubicSpline.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -10,11 +12,18 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
+Spline::Spline()
+{}
+
+Spline::~Spline()
+{}
+
+CAR_INTERFACE_IMPL(Spline, Object, ISpline)
 
 ECode Spline::CreateSpline(
     /* [in] */ ArrayOf<Float>* x,
     /* [in] */ ArrayOf<Float>* y,
-    /* [out] */ Spline** spline)
+    /* [out] */ ISpline** spline)
 {
     VALIDATE_NOT_NULL(spline)
     *spline = NULL;
@@ -32,42 +41,47 @@ ECode Spline::CreateSpline(
     }
 
     if (IsMonotonic(y)) {
-        *spline = CreateMonotoneCubicSpline(x, y);
+        return CreateMonotoneCubicSpline(x, y, spline);
     }
     else {
-        *spline = CreateLinearSpline(x, y);
+        return CreateLinearSpline(x, y, spline);
     }
 
-    REFCOUNT_ADD(*spline)
     return NOERROR;
 }
 
-AutoPtr<Spline> Spline::CreateMonotoneCubicSpline(
+ECode Spline::CreateMonotoneCubicSpline(
     /* [in] */ ArrayOf<Float>* x,
-    /* [in] */ ArrayOf<Float>* y)
+    /* [in] */ ArrayOf<Float>* y,
+    /* [out] */ ISpline** spline)
 {
+    VALIDATE_NOT_NULL(spline)
+    *spline = NULL;
+
     if (x == NULL || y == NULL || x->GetLength() != y->GetLength() || x->GetLength() < 2) {
         // throw new IllegalArgumentException("There must be at least two control "
         //         + "points and the arrays must be of equal length.");
-        return NULL;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<Spline> spline = new MonotoneCubicSpline(x, y);
-    return spline;
+    return CMonotoneCubicSpline::New(x, y, spline);
 }
 
-AutoPtr<Spline> Spline::CreateLinearSpline(
+ECode Spline::CreateLinearSpline(
     /* [in] */ ArrayOf<Float>* x,
-    /* [in] */ ArrayOf<Float>* y)
+    /* [in] */ ArrayOf<Float>* y,
+    /* [out] */ ISpline** spline)
 {
+    VALIDATE_NOT_NULL(spline)
+    *spline = NULL;
+
     if (x == NULL || y == NULL || x->GetLength() != y->GetLength() || x->GetLength() < 2) {
         // throw new IllegalArgumentException("There must be at least two control "
         //         + "points and the arrays must be of equal length.");
-        return NULL;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<Spline> spline = new LinearSpline(x, y);
-    return spline;
+    return CLinearSpline::New(x, y, spline);
 }
 
 Boolean Spline::IsStrictlyIncreasing(
@@ -111,8 +125,12 @@ Boolean Spline::IsMonotonic(
 //================================================================
 // MonotoneCubicSpline
 //================================================================
+CAR_INTERFACE_IMPL(MonotoneCubicSpline, Spline, IMonotoneCubicSpline)
 
-MonotoneCubicSpline::MonotoneCubicSpline(
+MonotoneCubicSpline::MonotoneCubicSpline()
+{}
+
+ECode MonotoneCubicSpline::constructor(
     /* [in] */ ArrayOf<Float>* x,
     /* [in] */ ArrayOf<Float>* y)
 {
@@ -127,6 +145,7 @@ MonotoneCubicSpline::MonotoneCubicSpline(
             // throw new IllegalArgumentException("The control points must all "
             //         + "have strictly increasing X values.");
             assert(0 && "The control points must all have strictly increasing X values.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         (*d)[i] = ((*y)[i + 1] - (*y)[i]) / h;
     }
@@ -151,6 +170,7 @@ MonotoneCubicSpline::MonotoneCubicSpline(
                 // throw new IllegalArgumentException("The control points must have "
                 //         + "monotonic Y values.");
                 assert(0 && "The control points must have monotonic Y values.");
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             Float h = FloatMath::Hypot(a, b);
             if (h > 9.0f) {
@@ -164,21 +184,29 @@ MonotoneCubicSpline::MonotoneCubicSpline(
     mX = x;
     mY = y;
     mM = m;
+    return NOERROR;
 }
 
-Float MonotoneCubicSpline::Interpolate(
-    /* [in] */ Float x)
+ECode MonotoneCubicSpline::Interpolate(
+    /* [in] */ Float x,
+    /* [out] */ Float* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     // Handle the boundary cases.
     Int32 n = mX->GetLength();
     if (Elastos::Core::Math::IsNaN(x)) {
-        return x;
+        *result = x;
+        return NOERROR;
     }
     if (x <= (*mX)[0]) {
-        return (*mY)[0];
+        *result = (*mY)[0];
+        return NOERROR;
     }
     if (x >= (*mX)[n - 1]) {
-        return (*mY)[n - 1];
+        *result = (*mY)[n - 1];
+        return NOERROR;
     }
 
     // Find the index 'i' of the last point with smaller X.
@@ -187,15 +215,17 @@ Float MonotoneCubicSpline::Interpolate(
     while (x >= (*mX)[i + 1]) {
         i += 1;
         if (x == (*mX)[i]) {
-            return (*mY)[i];
+            *result = (*mY)[i];
+            return NOERROR;
         }
     }
 
     // Perform cubic Hermite spline interpolation.
     Float h = (*mX)[i + 1] - (*mX)[i];
     Float t = (x - (*mX)[i]) / h;
-    return ((*mY)[i] * (1 + 2 * t) + h * (*mM)[i] * t) * (1 - t) * (1 - t)
+    *result = ((*mY)[i] * (1 + 2 * t) + h * (*mM)[i] * t) * (1 - t) * (1 - t)
             + ((*mY)[i + 1] * (3 - 2 * t) + h * (*mM)[i + 1] * (t - 1)) * t * t;
+    return NOERROR;
 }
 
 ECode MonotoneCubicSpline::ToString(
@@ -226,7 +256,12 @@ ECode MonotoneCubicSpline::ToString(
 //================================================================
 // LinearSpline
 //================================================================
-LinearSpline::LinearSpline(
+CAR_INTERFACE_IMPL(LinearSpline, Spline, ILinearSpline)
+
+LinearSpline::LinearSpline()
+{}
+
+ECode LinearSpline::constructor(
     /* [in] */ ArrayOf<Float>* x,
     /* [in] */ ArrayOf<Float>* y)
 {
@@ -237,21 +272,29 @@ LinearSpline::LinearSpline(
     }
     mX = x;
     mY = y;
+    return NOERROR;
 }
 
-Float LinearSpline::Interpolate(
-    /* [in] */ Float x)
+ECode LinearSpline::Interpolate(
+    /* [in] */ Float x,
+    /* [out] */ Float* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     // Handle the boundary cases.
     Int32 n = mX->GetLength();
     if (Elastos::Core::Math::IsNaN(x)) {
-        return x;
+        *result = x;
+        return NOERROR;
     }
     if (x <= (*mX)[0]) {
-        return (*mY)[0];
+        *result = (*mY)[0];
+        return NOERROR;
     }
     if (x >= (*mX)[n - 1]) {
-        return (*mY)[n - 1];
+        *result = (*mY)[n - 1];
+        return NOERROR;
     }
 
     // Find the index 'i' of the last point with smaller X.
@@ -260,10 +303,12 @@ Float LinearSpline::Interpolate(
     while (x >= (*mX)[i + 1]) {
         i += 1;
         if (x == (*mX)[i]) {
-            return (*mY)[i];
+            *result = (*mY)[i];
+            return NOERROR;
         }
     }
-    return (*mY)[i] + (*mM)[i] * (x - (*mX)[i]);
+    *result = (*mY)[i] + (*mM)[i] * (x - (*mX)[i]);
+    return NOERROR;
 }
 
 ECode LinearSpline::ToString(

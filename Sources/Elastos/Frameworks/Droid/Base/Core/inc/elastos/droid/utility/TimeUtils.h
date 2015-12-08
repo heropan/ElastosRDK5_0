@@ -15,7 +15,7 @@ namespace Utility {
 /**
  * A class containing utility methods related to time zones.
  */
-class TimeUtils
+class ECO_PUBLIC TimeUtils
 {
 public:
     /**
@@ -107,13 +107,13 @@ public:
         /* [in] */ Int64 millis);
 
 private:
-    static CARAPI_(Int32) AccumField(
+    ECO_LOCAL static CARAPI_(Int32) AccumField(
         /* [in] */ Int32 amt,
         /* [in] */ Int32 suffix,
         /* [in] */ Boolean always,
         /* [in] */ Int32 zeropad);
 
-    static CARAPI_(Int32) PrintField(
+    ECO_LOCAL static CARAPI_(Int32) PrintField(
         /* [in] */ ArrayOf<Char32>* formatStr,
         /* [in] */ Int32 amt,
         /* [in] */ Char32 suffix,
@@ -121,13 +121,13 @@ private:
         /* [in] */ Boolean always,
         /* [in] */ Int32 zeropad);
 
-    static CARAPI_(Int32) FormatDurationLocked(
+    ECO_LOCAL static CARAPI_(Int32) FormatDurationLocked(
         /* [in] */ Int64 duration,
         /* [in] */ Int32 fieldLen);
 
 private:
-    TimeUtils();
-    TimeUtils(const TimeUtils& other);
+    ECO_LOCAL TimeUtils();
+    ECO_LOCAL TimeUtils(const TimeUtils& other);
 
 public:
     /** @hide Field length that can hold 999 days of time */
@@ -146,18 +146,18 @@ public:
     static const Int64 NANOS_PER_MS;// = 1000000;
 
 private:
-    static const Boolean DBG;// = false;
-    static const String TAG;// = "TimeUtils";
+    ECO_LOCAL static const Boolean DBG;// = false;
+    ECO_LOCAL static const String TAG;// = "TimeUtils";
 
     /** Cached results of getTineZones */
-    static Object sLastLockObj;
-    static AutoPtr<ArrayOf<ITimeZone *> > sLastZones;
-    static String sLastCountry;
+    ECO_LOCAL static Object sLastLockObj;
+    ECO_LOCAL static AutoPtr<ArrayOf<ITimeZone *> > sLastZones;
+    ECO_LOCAL static String sLastCountry;
 
     /** Cached results of getTimeZonesWithUniqueOffsets */
-    static Object sLastUniqueLockObj;
-    static AutoPtr<ArrayOf<ITimeZone *> > sLastUniqueZoneOffsets;
-    static String sLastUniqueCountry;
+    ECO_LOCAL static Object sLastUniqueLockObj;
+    ECO_LOCAL static AutoPtr<ArrayOf<ITimeZone *> > sLastUniqueZoneOffsets;
+    ECO_LOCAL static String sLastUniqueCountry;
 
 };
 

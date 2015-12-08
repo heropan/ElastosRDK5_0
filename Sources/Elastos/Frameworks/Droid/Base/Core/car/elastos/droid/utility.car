@@ -38,6 +38,7 @@ module
     merge("utility/SparseBooleanArray.car");
     merge("utility/SparseInt32Array.car");
     merge("utility/SparseInt64Array.car");
+    merge("utility/Spline.car");
     merge("utility/StateSet.car");
     merge("utility/TimingLogger.car");
 
@@ -244,6 +245,26 @@ module
 
         interface ISparseInt32Array;
         interface ICloneable;
+    }
+
+    [deprecated]
+    class CMonotoneCubicSpline {
+        constructor(
+            [in] ArrayOf<Float>* x,
+            [in] ArrayOf<Float>* y);
+
+        interface IMonotoneCubicSpline;
+        interface ISpline;
+    }
+
+    [deprecated]
+    class CLinearSpline {
+        constructor(
+            [in] ArrayOf<Float>* x,
+            [in] ArrayOf<Float>* y);
+
+        interface ILinearSpline;
+        interface ISpline;
     }
 
     class CTypedValue {

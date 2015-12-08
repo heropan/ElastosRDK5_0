@@ -5,12 +5,12 @@
 #include "Elastos.Droid.Server_server.h"
 #include "elastos/droid/server/display/DisplayDeviceInfo.h"
 #include "elastos/droid/server/display/DisplayAdapter.h"
-#include "elastos/droid/server/display/DisplayViewport.h"
 
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::View::ISurface;
+using Elastos::Droid::Hardware::Display::IDisplayViewport;
 
 namespace Elastos {
 namespace Droid {
@@ -126,7 +126,7 @@ public:
      * physical and logical rects based on the display's current projection.
      */
     CARAPI_(void) PopulateViewportLocked(
-        /* [in] */ DisplayViewport* viewport);
+        /* [in] */ IDisplayViewport* viewport);
 
     /**
      * Dumps the local state of the display device.

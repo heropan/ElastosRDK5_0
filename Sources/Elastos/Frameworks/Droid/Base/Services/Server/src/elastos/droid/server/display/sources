@@ -7,16 +7,15 @@ INCLUDES += $(MAKEDIR)/../../../../../../../Core/inc/
 
 C_DEFINES += -DDROID_SERVER
 
-#SOURCES = CDisplayManagerService.cpp
+#SOURCES = AutomaticBrightnessController.cpp
+#SOURCES += CDisplayManagerService.cpp
 SOURCES += DisplayAdapter.cpp
 SOURCES += DisplayDevice.cpp
 SOURCES += DisplayDeviceInfo.cpp
-SOURCES += DisplayViewport.cpp
-SOURCES += HeadlessDisplayAdapter.cpp
 #SOURCES += LocalDisplayAdapter.cpp
 SOURCES += LogicalDisplay.cpp
 SOURCES += OverlayDisplayAdapter.cpp
 SOURCES += OverlayDisplayWindow.cpp
 SOURCES += PersistentDataStore.cpp
-#SOURCES += WifiDisplayAdapter.cpp
+SOURCES += WifiDisplayAdapter.cpp
 #SOURCES += WifiDisplayController.cpp

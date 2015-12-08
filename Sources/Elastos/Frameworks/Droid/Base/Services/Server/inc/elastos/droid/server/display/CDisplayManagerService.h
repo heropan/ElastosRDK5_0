@@ -6,7 +6,6 @@
 #include "_Elastos_Droid_Server_Display_CDisplayManagerService.h"
 #include "elastos/droid/server/display/DisplayAdapter.h"
 #include "elastos/droid/server/display/DisplayDevice.h"
-#include "elastos/droid/server/display/DisplayViewport.h"
 #include "elastos/droid/server/display/WifiDisplayAdapter.h"
 #include "elastos/droid/server/display/LogicalDisplay.h"
 #include "elastos/droid/server/display/PersistentDataStore.h"
@@ -357,7 +356,7 @@ private:
         /* [in] */ DisplayDevice* device);
 
     static CARAPI_(void) SetViewportLocked(
-        /* [in] */ DisplayViewport* viewport,
+        /* [in] */ IDisplayViewport* viewport,
         /* [in] */ LogicalDisplay* display,
         /* [in] */ DisplayDevice* device);
 
@@ -461,8 +460,8 @@ private:
 
     // Viewports of the default display and the display that should receive touch
     // input from an external source.  Used by the input system.
-    AutoPtr<DisplayViewport> mDefaultViewport;
-    AutoPtr<DisplayViewport> mExternalTouchViewport;
+    AutoPtr<IDisplayViewport> mDefaultViewport;
+    AutoPtr<IDisplayViewport> mExternalTouchViewport;
 
     // Persistent data store for all internal settings maintained by the display manager service.
     AutoPtr<PersistentDataStore> mPersistentDataStore;
@@ -476,8 +475,8 @@ private:
 
     // Temporary viewports, used when sending new viewport information to the
     // input system.  May be used outside of the lock but only on the handler thread.
-    AutoPtr<DisplayViewport> mTempDefaultViewport;
-    AutoPtr<DisplayViewport> mTempExternalTouchViewport;
+    AutoPtr<IDisplayViewport> mTempDefaultViewport;
+    AutoPtr<IDisplayViewport> mTempExternalTouchViewport;
 };
 
 } // namespace Display

@@ -229,7 +229,7 @@ _Exit_:
         Slogger::W(TAG, "Failed to load display manager persistent store data.");
         ClearState();
     }
-    if (ICloseable::Probe(is)) {
+    if (is) {
         ICloseable::Probe(is)->Close();
     }
 }
@@ -314,29 +314,30 @@ ECode PersistentDataStore::LoadRememberedWifiDisplaysFromXml(
 ECode PersistentDataStore::SaveToXml(
     /* [in] */ IXmlSerializer* serializer)
 {
-    FAIL_RETURN(serializer->StartDocument(String(NULL), TRUE));
+    String nullStr;
+    FAIL_RETURN(serializer->StartDocument(nullStr, TRUE));
     FAIL_RETURN(serializer->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE));
-    FAIL_RETURN(serializer->WriteStartTag(String(NULL), String("display-manager-state")));
-    FAIL_RETURN(serializer->WriteStartTag(String(NULL), String("remembered-wifi-displays")));
+    FAIL_RETURN(serializer->WriteStartTag(nullStr, String("display-manager-state")));
+    FAIL_RETURN(serializer->WriteStartTag(nullStr, String("remembered-wifi-displays")));
     List<AutoPtr<IWifiDisplay> >::Iterator iter = mRememberedWifiDisplays.Begin();
     for (; iter != mRememberedWifiDisplays.End(); ++iter) {
         AutoPtr<IWifiDisplay> display = *iter;
-        FAIL_RETURN(serializer->WriteStartTag(String(NULL), String("wifi-display")));
+        FAIL_RETURN(serializer->WriteStartTag(nullStr, String("wifi-display")));
         String deviceAddress;
         display->GetDeviceAddress(&deviceAddress);
-        FAIL_RETURN(serializer->WriteAttribute(String(NULL), String("deviceAddress"), deviceAddress));
+        FAIL_RETURN(serializer->WriteAttribute(nullStr, String("deviceAddress"), deviceAddress));
         String deviceName;
         display->GetDeviceName(&deviceName);
-        FAIL_RETURN(serializer->WriteAttribute(String(NULL), String("deviceName"), deviceName));
+        FAIL_RETURN(serializer->WriteAttribute(nullStr, String("deviceName"), deviceName));
         String deviceAlias;
         display->GetDeviceAlias(&deviceAlias);
         if (!deviceAlias.IsNull()) {
-            FAIL_RETURN(serializer->WriteAttribute(String(NULL), String("deviceAlias"), deviceAlias));
+            FAIL_RETURN(serializer->WriteAttribute(nullStr, String("deviceAlias"), deviceAlias));
         }
-        FAIL_RETURN(serializer->WriteEndTag(String(NULL), String("wifi-display")));
+        FAIL_RETURN(serializer->WriteEndTag(nullStr, String("wifi-display")));
     }
-    FAIL_RETURN(serializer->WriteEndTag(String(NULL), String("remembered-wifi-displays")));
-    FAIL_RETURN(serializer->WriteEndTag(String(NULL), String("display-manager-state")));
+    FAIL_RETURN(serializer->WriteEndTag(nullStr, String("remembered-wifi-displays")));
+    FAIL_RETURN(serializer->WriteEndTag(nullStr, String("display-manager-state")));
     FAIL_RETURN(serializer->EndDocument());
     return NOERROR;
 }

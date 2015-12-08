@@ -1,6 +1,7 @@
 module
 {
     using interface Elastos.Droid.Hardware.Display.IWifiDisplay;
+    using interface Elastos.Droid.Hardware.Display.IWifiDisplaySessionInfo;
     using interface Elastos.Droid.View.ISurface;
 
     namespace Elastos {
@@ -18,8 +19,10 @@ module
 
         OnScanStarted();
 
-        OnScanFinished(
+        OnScanResults(
             [in] ArrayOf<IWifiDisplay*>* availableDisplays);
+
+        OnScanFinished();
 
         OnDisplayConnecting(
             [in] IWifiDisplay* display);
@@ -35,6 +38,9 @@ module
             [in] Int32 width,
             [in] Int32 height,
             [in] Int32 flags);
+
+        OnDisplaySessionInfo(
+            [in] IWifiDisplaySessionInfo* sessionInfo);
 
         OnDisplayDisconnected();
     }

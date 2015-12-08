@@ -13,10 +13,16 @@ namespace Utility {
  * Performs spline interpolation given a set of control points.
  * @hide
  */
-class Spline :
-    public Object
+class Spline
+    : public Object
+    , public ISpline
 {
 public:
+    Spline();
+
+    virtual ~Spline();
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Interpolates the value of Y = f(X) for given X.
@@ -25,7 +31,9 @@ public:
      * @param x The X value.
      * @return The interpolated Y = f(X) value.
      */
-    virtual Float Interpolate(float x) = 0;
+    virtual CARAPI Interpolate(
+        /* [in] */ Float x,
+        /* [out] */ Float* result) = 0;
 
     /**
      * Creates an appropriate spline based on the properties of the control points.
@@ -36,7 +44,7 @@ public:
     static CARAPI CreateSpline(
         /* [in] */ ArrayOf<Float>* x,
         /* [in] */ ArrayOf<Float>* y,
-        /* [out] */ Spline** spline);
+        /* [out] */ ISpline** spline);
 
     /**
      * Creates a monotone cubic spline from a given set of control points.
@@ -56,9 +64,10 @@ public:
      * different lengths or have fewer than 2 values.
      * @throws IllegalArgumentException if the control points are not monotonic.
      */
-    static AutoPtr<Spline> CreateMonotoneCubicSpline(
+    static CARAPI CreateMonotoneCubicSpline(
         /* [in] */ ArrayOf<Float>* x,
-        /* [in] */ ArrayOf<Float>* y);
+        /* [in] */ ArrayOf<Float>* y,
+        /* [out] */ ISpline** spline);
 
     /**
      * Creates a linear spline from a given set of control points.
@@ -75,9 +84,10 @@ public:
      * @throws IllegalArgumentException if the X components of the control points are not strictly
      * increasing.
      */
-    static  AutoPtr<Spline> CreateLinearSpline(
+    static CARAPI CreateLinearSpline(
         /* [in] */ ArrayOf<Float>* x,
-        /* [in] */ ArrayOf<Float>* y);
+        /* [in] */ ArrayOf<Float>* y,
+        /* [out] */ ISpline** spline);
 
 private:
      static Boolean IsStrictlyIncreasing(
@@ -87,42 +97,59 @@ private:
         /* [in] */ ArrayOf<Float>* x);
 };
 
-class MonotoneCubicSpline : public Spline
+class MonotoneCubicSpline
+    : public Spline
+    , public IMonotoneCubicSpline
 {
 public:
-    AutoPtr<ArrayOf<Float> > mX;
-    AutoPtr<ArrayOf<Float> > mY;
-    AutoPtr<ArrayOf<Float> > mM;
+    CAR_INTERFACE_DECL()
 
-    MonotoneCubicSpline(
+    MonotoneCubicSpline();
+
+    CARAPI constructor(
         /* [in] */ ArrayOf<Float>* x,
         /* [in] */ ArrayOf<Float>* y);
 
-    Float Interpolate(
-        /* [in] */ Float x);
+    CARAPI Interpolate(
+        /* [in] */ Float x,
+        /* [out] */ Float* result);
 
     // For debugging.
     CARAPI ToString(
         /* [out] */ String* str);
+
+private:
+
+    AutoPtr<ArrayOf<Float> > mX;
+    AutoPtr<ArrayOf<Float> > mY;
+    AutoPtr<ArrayOf<Float> > mM;
 };
 
-class LinearSpline : public Spline
+class LinearSpline
+    : public Spline
+    , public ILinearSpline
 {
 public:
-    AutoPtr<ArrayOf<Float> > mX;
-    AutoPtr<ArrayOf<Float> > mY;
-    AutoPtr<ArrayOf<Float> > mM;
+    CAR_INTERFACE_DECL()
 
-    LinearSpline(
+    LinearSpline();
+
+    CARAPI constructor(
         /* [in] */ ArrayOf<Float>* x,
         /* [in] */ ArrayOf<Float>* y);
 
-    Float Interpolate(
-        /* [in] */ Float x);
+    CARAPI Interpolate(
+        /* [in] */ Float x,
+        /* [out] */ Float* result);
 
     // For debugging.
     CARAPI ToString(
         /* [out] */ String* str);
+
+private:
+    AutoPtr<ArrayOf<Float> > mX;
+    AutoPtr<ArrayOf<Float> > mY;
+    AutoPtr<ArrayOf<Float> > mM;
 };
 
 } // namespace Utility

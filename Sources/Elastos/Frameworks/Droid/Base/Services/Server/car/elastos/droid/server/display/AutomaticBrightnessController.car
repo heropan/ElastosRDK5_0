@@ -5,8 +5,9 @@ module
     namespace Server {
     namespace Display {
 
-    interface IDisplayTransactionListener {
-        OnDisplayTransaction();
+    /** Callbacks to request updates to the display's power state. */
+    interface IAutomaticBrightnessControllerCallbacks {
+        UpdateBrightness();
     }
 
     } // namespace Display

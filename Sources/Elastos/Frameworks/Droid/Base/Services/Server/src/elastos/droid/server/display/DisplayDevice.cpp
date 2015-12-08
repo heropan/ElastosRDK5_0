@@ -107,29 +107,33 @@ void DisplayDevice::SetSurfaceInTransactionLocked(
 }
 
 void DisplayDevice::PopulateViewportLocked(
-    /* [in] */ DisplayViewport* viewport)
+    /* [in] */ IDisplayViewport* viewport)
 {
-    viewport->mOrientation = mCurrentOrientation;
+    viewport->SetOrientation(mCurrentOrientation);
 
+    AutoPtr<IRect> logicalFrame;
+    viewport->GetLogicalFrame((IRect**)&logicalFrame);
     if (mCurrentLayerStackRect != NULL) {
-        viewport->mLogicalFrame->Set(mCurrentLayerStackRect);
+        logicalFrame->Set(mCurrentLayerStackRect);
     }
     else {
-        viewport->mLogicalFrame->SetEmpty();
+        logicalFrame->SetEmpty();
     }
 
+    AutoPtr<IRect> physicalFrame;
+    viewport->GetPhysicalFrame((IRect**)&physicalFrame);
     if (mCurrentDisplayRect != NULL) {
-        viewport->mPhysicalFrame->Set(mCurrentDisplayRect);
+        physicalFrame->Set(mCurrentDisplayRect);
     }
     else {
-        viewport->mPhysicalFrame->SetEmpty();
+        physicalFrame->SetEmpty();
     }
 
     Boolean isRotated = (mCurrentOrientation == ISurface::ROTATION_90
         || mCurrentOrientation == ISurface::ROTATION_270);
     AutoPtr<DisplayDeviceInfo> info = GetDisplayDeviceInfoLocked();
-    viewport->mDeviceWidth = isRotated ? info->mHeight : info->mWidth;
-    viewport->mDeviceHeight = isRotated ? info->mWidth : info->mHeight;
+    viewport->SetDeviceWidth(isRotated ? info->mHeight : info->mWidth);
+    viewport->SetDeviceHeight(isRotated ? info->mWidth : info->mHeight);
 }
 
 void DisplayDevice::DumpLocked(

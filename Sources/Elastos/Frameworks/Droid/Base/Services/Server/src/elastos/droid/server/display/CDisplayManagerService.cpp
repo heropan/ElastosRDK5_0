@@ -226,12 +226,12 @@ CDisplayManagerService::CDisplayManagerService()
     , mAllDisplayBlankStateFromPowerManager(0)
     , mPendingTraversal(FALSE)
 {
-    mDefaultViewport = new DisplayViewport();
-    mExternalTouchViewport = new DisplayViewport();
+    mDefaultViewport = new CDisplayViewport();
+    mExternalTouchViewport = new CDisplayViewport();
     mPersistentDataStore = new PersistentDataStore();
     CDisplayInfo::New((IDisplayInfo**)&mTempDisplayInfo);
-    mTempDefaultViewport = new DisplayViewport();
-    mTempExternalTouchViewport = new DisplayViewport();
+    mTempDefaultViewport = new CDisplayViewport();
+    mTempExternalTouchViewport = new CDisplayViewport();
 }
 
 ECode CDisplayManagerService::constructor(
@@ -1057,7 +1057,7 @@ void CDisplayManagerService::ConfigureDisplayInTransactionLocked(
 }
 
 void CDisplayManagerService::SetViewportLocked(
-    /* [in] */ DisplayViewport* viewport,
+    /* [in] */ IDisplayViewport* viewport,
     /* [in] */ LogicalDisplay* display,
     /* [in] */ DisplayDevice* device)
 {

@@ -37,6 +37,42 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
+    CARAPI IsValid(
+        /* [out] */ Boolean* valid);
+
+    CARAPI SetValid(
+        /* [in] */ Boolean valid);
+
+    CARAPI SetOrientation(
+        /* [in] */ Int32 orientation);
+
+    CARAPI GetOrientation(
+        /* [out] */ Int32* orientation);
+
+    CARAPI SetLogicalFrame(
+        /* [in] */ IRect* rect);
+
+    CARAPI GetLogicalFrame(
+        /* [out] */ IRect** rect);
+
+    CARAPI SetPhysicalFrame(
+        /* [in] */ IRect* rect);
+
+    CARAPI GetPhysicalFrame(
+        /* [out] */ IRect** rect);
+
+    CARAPI SetDeviceWidth(
+        /* [in] */ Int32 width);
+
+    CARAPI GetDeviceWidth(
+        /* [out] */ Int32* width);
+
+    CARAPI SetDeviceHeight(
+        /* [in] */ Int32 height);
+
+    CARAPI GetDeviceHeight(
+        /* [out] */ Int32* height);
+
 public:
     // True if this viewport is valid.
     Boolean mValid;

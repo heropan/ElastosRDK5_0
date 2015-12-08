@@ -26,6 +26,7 @@ using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Hardware::Display::IWifiDisplay;
+using Elastos::Droid::Hardware::Display::IWifiDisplaySessionInfo;
 using Elastos::Droid::Database::ContentObserver;
 using Elastos::Droid::View::ISurface;
 
@@ -79,7 +80,9 @@ private:
     {
     public:
         MyContentObserver(
-            /* [in] */ WifiDisplayController* host,
+            /* [in] */ WifiDisplayController* host);
+
+        CARAPI constructor(
             /* [in] */ IHandler* handler);
 
         CARAPI OnChange(
@@ -109,6 +112,25 @@ private:
         WifiDisplayController* mHost;
     };
 
+    class WFDInfoActionListener2
+        : public Object
+        , public IWifiP2pManagerActionListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        WFDInfoActionListener2(
+            /* [in] */ WifiDisplayController* host);
+
+        CARAPI OnSuccess();
+
+        CARAPI OnFailure(
+            /* [in] */ Int32 reason);
+
+    private:
+        WifiDisplayController* mHost;
+    };
+
     class DiscoverPeersActionListener
         : public Object
         , public IWifiP2pManagerActionListener
@@ -117,6 +139,25 @@ private:
         CAR_INTERFACE_DECL();
 
         DiscoverPeersActionListener(
+            /* [in] */ WifiDisplayController* host);
+
+        CARAPI OnSuccess();
+
+        CARAPI OnFailure(
+            /* [in] */ Int32 reason);
+
+    private:
+        WifiDisplayController* mHost;
+    };
+
+    class StopPeerDiscoveryActionListener
+        : public Object
+        , public IWifiP2pManagerActionListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        StopPeerDiscoveryActionListener(
             /* [in] */ WifiDisplayController* host);
 
         CARAPI OnSuccess();
@@ -320,21 +361,6 @@ private:
         WifiDisplayController* mHost;
     };
 
-    class DiscoverPeersRunnable
-        : public Runnable
-    {
-    public:
-        DiscoverPeersRunnable(
-            /* [in] */ Int32 reason,
-            /* [in] */ WifiDisplayController* host);
-
-        CARAPI Run();
-
-    private:
-        Int32 mReason;
-        WifiDisplayController* mHost;
-    };
-
     class ScanStartedRunnable
         : public Runnable
     {
@@ -348,11 +374,11 @@ private:
         WifiDisplayController* mHost;
     };
 
-    class ScanFinishedRunnable
+    class ScanResultsRunnable
         : public Runnable
     {
     public:
-        ScanFinishedRunnable(
+        ScanResultsRunnable(
             /* [in] */ ArrayOf<IWifiDisplay*>* displays,
             /* [in] */ WifiDisplayController* host);
 
@@ -360,6 +386,19 @@ private:
 
     private:
         AutoPtr<ArrayOf<IWifiDisplay*> > mDisplays;
+        WifiDisplayController* mHost;
+    };
+
+    class ScanFinishedRunnable
+        : public Runnable
+    {
+    public:
+        ScanFinishedRunnable(
+            /* [in] */ WifiDisplayController* host);
+
+        CARAPI Run();
+
+    private:
         WifiDisplayController* mHost;
     };
 
@@ -391,6 +430,19 @@ private:
         WifiDisplayController* mHost;
     };
 
+    class DiscoverPeersRunnable
+        : public Runnable
+    {
+    public:
+        DiscoverPeersRunnable(
+            /* [in] */ WifiDisplayController* host);
+
+        CARAPI Run();
+
+    private:
+        WifiDisplayController* mHost;
+    };
+
     class RtspTimeoutRunnable
         : public Runnable
     {
@@ -413,10 +465,16 @@ public:
     CARAPI_(void) Dump(
         /* [in] */ IPrintWriter* pw);
 
-    CARAPI_(void) RequestScan();
+    CARAPI_(void) RequestStartScan();
+
+    CARAPI_(void) RequestStopScan();
 
     CARAPI_(void) RequestConnect(
         /* [in] */ const String& address);
+
+    CARAPI_(void) RequestPause();
+
+    CARAPI_(void) RequestResume();
 
     CARAPI_(void) RequestDisconnect();
 
@@ -430,13 +488,17 @@ private:
 
     CARAPI_(Int32) ComputeFeatureState();
 
-    CARAPI_(void) DiscoverPeers();
+    CARAPI_(void) UpdateScanState();
 
     CARAPI_(void) TryDiscoverPeers();
+
+    CARAPI_(void) StopPeerDiscovery();
 
     CARAPI_(void) RequestPeers();
 
     CARAPI_(void) HandleScanStarted();
+
+    CARAPI_(void) HandleScanResults();
 
     CARAPI_(void) HandleScanFinished();
 
@@ -457,8 +519,9 @@ private:
      */
     CARAPI_(void) UpdateConnection();
 
-    CARAPI_(void) SetRemoteSubmixOn(
-        /* [in] */ Boolean on);
+    CARAPI_(AutoPtr<IWifiDisplaySessionInfo>) GetSessionInfo(
+        /* [in] */ IWifiP2pGroup* info,
+        /* [in] */ Int32 session);
 
     CARAPI_(void) HandleStateChanged(
         /* [in] */ Boolean enabled);
@@ -510,19 +573,22 @@ private:
 
     static const Int32 DEFAULT_CONTROL_PORT = 7236;
     static const Int32 MAX_THROUGHPUT = 50;
-    static const Int32 CONNECTION_TIMEOUT_SECONDS = 60;
-    static const Int32 RTSP_TIMEOUT_SECONDS = 15;
+    static const Int32 CONNECTION_TIMEOUT_SECONDS = 30;
+    static const Int32 RTSP_TIMEOUT_SECONDS = 30;
+    static const Int32 RTSP_TIMEOUT_SECONDS_CERT_MODE = 120;
 
-    static const Int32 DISCOVER_PEERS_MAX_RETRIES = 10;
-    static const Int32 DISCOVER_PEERS_RETRY_DELAY_MILLIS = 500;
+    // We repeatedly issue calls to discover peers every so often for a few reasons.
+    // 1. The initial request may fail and need to retried.
+    // 2. Discovery will self-abort after any group is initiated, which may not necessarily
+    //    be what we want to have happen.
+    // 3. Discovery will self-timeout after 2 minutes, whereas we want discovery to
+    //    be occur for as long as a client is requesting it be.
+    // 4. We don't seem to get updated results for displays we've already found until
+    //    we ask to discover again, particularly for the isSessionAvailable() property.
+    static const Int32 DISCOVER_PEERS_INTERVAL_MILLIS = 10000;
 
     static const Int32 CONNECT_MAX_RETRIES = 3;
     static const Int32 CONNECT_RETRY_DELAY_MILLIS = 500;
-
-    // A unique token to identify the remote submix that is managed by Wifi display.
-    // It must match what the media server uses when it starts recording the submix
-    // for transmission.  We use 0 although the actual value is currently ignored.
-    static const Int32 REMOTE_SUBMIX_ADDRESS = 0;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IHandler> mHandler;
@@ -530,8 +596,6 @@ private:
 
     AutoPtr<IWifiP2pManager> mWifiP2pManager;
     AutoPtr<IWifiP2pManagerChannel> mWifiP2pChannel;
-
-    AutoPtr<IAudioManager> mAudioManager;
 
     Boolean mWifiP2pEnabled;
     Boolean mWfdEnabled;
@@ -543,11 +607,11 @@ private:
     // True if Wifi display is enabled by the user.
     Boolean mWifiDisplayOnSetting;
 
+    // True if a scan was requested independent of whether one is actually in progress.
+    Boolean mScanRequested;
+
     // True if there is a call to discoverPeers in progress.
     Boolean mDiscoverPeersInProgress;
-
-    // Number of discover peers retries remaining.
-    Int32 mDiscoverPeersRetriesLeft;
 
     // The device to which we want to connect, or NULL if we want to be disconnected.
     AutoPtr<IWifiP2pDevice> mDesiredDevice;
@@ -581,9 +645,6 @@ private:
     // True if RTSP has connected.
     Boolean mRemoteDisplayConnected;
 
-    // True if the remote submix is enabled.
-    Boolean mRemoteSubmixOn;
-
     // The information we have most recently told WifiDisplayAdapter about.
     AutoPtr<IWifiDisplay> mAdvertisedDisplay;
     AutoPtr<ISurface> mAdvertisedDisplaySurface;
@@ -591,6 +652,13 @@ private:
     Int32 mAdvertisedDisplayHeight;
     Int32 mAdvertisedDisplayFlags;
 
+    // Certification
+    Boolean mWifiDisplayCertMode;
+    Int32 mWifiDisplayWpsConfig;// = WpsInfo.INVALID;
+
+    AutoPtr<IWifiP2pDevice> mThisDevice;
+
+    AutoPtr<IRunnable> mDiscoverPeers;
     AutoPtr<IRunnable> mConnectionTimeout;
     AutoPtr<IRunnable> mRtspTimeout;
     AutoPtr<IBroadcastReceiver> mWifiP2pReceiver;

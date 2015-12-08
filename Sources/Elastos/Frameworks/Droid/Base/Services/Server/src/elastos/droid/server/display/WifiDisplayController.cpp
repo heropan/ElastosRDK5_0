@@ -3,12 +3,6 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Utility::IEnumeration;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Net::INetworkInterfaceHelper;
-using Elastos::Net::CNetworkInterfaceHelper;
-using Elastos::Net::INetworkInterface;
 using Elastos::Droid::Wifi::IWpsInfo;
 using Elastos::Droid::Wifi::CWpsInfo;
 using Elastos::Droid::Wifi::P2p::CWifiP2pDevice;
@@ -20,16 +14,23 @@ using Elastos::Droid::Wifi::P2p::EIID_IWifiP2pManagerActionListener;
 using Elastos::Droid::Wifi::P2p::EIID_IWifiP2pManagerPeerListListener;
 using Elastos::Droid::Wifi::P2p::EIID_IWifiP2pManagerGroupInfoListener;
 using Elastos::Droid::Media::IRemoteDisplayHelper;
-using Elastos::Droid::Media::CRemoteDisplayHelper;
+// using Elastos::Droid::Media::CRemoteDisplayHelper;
 using Elastos::Droid::Media::EIID_IRemoteDisplayListener;
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Provider::ISettingsGlobal;
-using Elastos::Droid::Provider::CSettingsGlobal;
+// using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Hardware::Display::IWifiDisplayStatus;
-using Elastos::Droid::Hardware::Display::CWifiDisplay;
+// using Elastos::Droid::Hardware::Display::CWifiDisplay;
+// using Elastos::Droid::Hardware::Display::CWifiDisplaySessionInfo;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::IEnumeration;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Net::INetworkInterfaceHelper;
+using Elastos::Net::CNetworkInterfaceHelper;
+using Elastos::Net::INetworkInterface;
 
 namespace Elastos {
 namespace Droid {
@@ -38,26 +39,29 @@ namespace Display {
 
 const String WifiDisplayController::TAG("WifiDisplayController");
 const Boolean WifiDisplayController::DEBUG = FALSE;
+
 const Int32 WifiDisplayController::DEFAULT_CONTROL_PORT;
 const Int32 WifiDisplayController::MAX_THROUGHPUT;
 const Int32 WifiDisplayController::CONNECTION_TIMEOUT_SECONDS;
 const Int32 WifiDisplayController::RTSP_TIMEOUT_SECONDS;
-const Int32 WifiDisplayController::DISCOVER_PEERS_MAX_RETRIES;
-const Int32 WifiDisplayController::DISCOVER_PEERS_RETRY_DELAY_MILLIS;
+const Int32 WifiDisplayController::RTSP_TIMEOUT_SECONDS_CERT_MODE;
+const Int32 WifiDisplayController::DISCOVER_PEERS_INTERVAL_MILLIS;
 const Int32 WifiDisplayController::CONNECT_MAX_RETRIES;
 const Int32 WifiDisplayController::CONNECT_RETRY_DELAY_MILLIS;
-const Int32 WifiDisplayController::REMOTE_SUBMIX_ADDRESS;
-
 
 //==============================================================================
 // WifiDisplayController::MyContentObserver
 //==============================================================================
 WifiDisplayController::MyContentObserver::MyContentObserver(
-    /* [in] */ WifiDisplayController* owner,
-    /* [in] */ IHandler* handler)
-    : ContentObserver(handler)
-    , mHost(owner)
+    /* [in] */ WifiDisplayController* owner)
+    : mHost(owner)
 {}
+
+ECode WifiDisplayController::MyContentObserver::constructor(
+    /* [in] */ IHandler* handler)
+{
+    return ContentObserver::constructor(handler);
+}
 
 ECode WifiDisplayController::MyContentObserver::OnChange(
     /* [in] */ Boolean selfChange,
@@ -88,6 +92,7 @@ ECode WifiDisplayController::WFDInfoActionListener::OnSuccess()
         mHost->mWfdEnabling = FALSE;
         mHost->mWfdEnabled = TRUE;
         mHost->ReportFeatureState();
+        mHost->UpdateScanState();
     }
 
     return NOERROR;
@@ -101,6 +106,34 @@ ECode WifiDisplayController::WFDInfoActionListener::OnFailure(
     }
     mHost->mWfdEnabling = FALSE;
 
+    return NOERROR;
+}
+
+//==============================================================================
+// WifiDisplayController::WFDInfoActionListener2
+//==============================================================================
+CAR_INTERFACE_IMPL(WifiDisplayController::WFDInfoActionListener2, Object, IWifiP2pManagerActionListener);
+
+WifiDisplayController::WFDInfoActionListener2::WFDInfoActionListener2(
+    /* [in] */ WifiDisplayController* owner)
+    : mHost(owner)
+{}
+
+ECode WifiDisplayController::WFDInfoActionListener2::OnSuccess()
+{
+    if (WifiDisplayController::DEBUG) {
+        Slogger::D(WifiDisplayController::TAG, "Successfully set WFD info.");
+    }
+
+    return NOERROR;
+}
+
+ECode WifiDisplayController::WFDInfoActionListener2::OnFailure(
+    /* [in] */ Int32 reason)
+{
+    if (WifiDisplayController::DEBUG) {
+        Slogger::D(WifiDisplayController::TAG, "Failed to set WFD info with reason %d.", reason);
+    }
     return NOERROR;
 }
 
@@ -120,8 +153,9 @@ ECode WifiDisplayController::DiscoverPeersActionListener::OnSuccess()
         Slogger::D(WifiDisplayController::TAG, "Discover peers succeeded.  Requesting peers now.");
     }
 
-    mHost->mDiscoverPeersInProgress = FALSE;
-    mHost->RequestPeers();
+    if (mHost->mDiscoverPeersInProgress) {
+        mHost->RequestPeers();
+    }
 
     return NOERROR;
 }
@@ -133,17 +167,35 @@ ECode WifiDisplayController::DiscoverPeersActionListener::OnFailure(
         Slogger::D(WifiDisplayController::TAG, "Discover peers failed with reason %d", reason);
     }
 
-    if (mHost->mDiscoverPeersInProgress) {
-        if (reason == 0 && mHost->mDiscoverPeersRetriesLeft > 0
-            && mHost->mWfdEnabled) {
-            AutoPtr<IRunnable> runnable = new DiscoverPeersRunnable(reason, mHost);
-            Boolean result;
-            mHost->mHandler->PostDelayed(runnable, DISCOVER_PEERS_RETRY_DELAY_MILLIS, &result);
-        }
-        else {
-            mHost->HandleScanFinished();
-            mHost->mDiscoverPeersInProgress = FALSE;
-        }
+    // Ignore the error.
+    // We will retry automatically in a little bit.
+    return NOERROR;
+}
+
+//==============================================================================
+// WifiDisplayController::StopPeerDiscoveryActionListener
+//==============================================================================
+CAR_INTERFACE_IMPL(WifiDisplayController::StopPeerDiscoveryActionListener, Object, IWifiP2pManagerActionListener);
+
+WifiDisplayController::StopPeerDiscoveryActionListener::StopPeerDiscoveryActionListener(
+    /* [in] */ WifiDisplayController* owner)
+    : mHost(owner)
+{}
+
+ECode WifiDisplayController::StopPeerDiscoveryActionListener::OnSuccess()
+{
+    if (WifiDisplayController::DEBUG) {
+        Slogger::D(WifiDisplayController::TAG, "Stop peer discovery succeeded.");
+    }
+
+    return NOERROR;
+}
+
+ECode WifiDisplayController::StopPeerDiscoveryActionListener::OnFailure(
+    /* [in] */ Int32 reason)
+{
+    if (WifiDisplayController::DEBUG) {
+        Slogger::D(WifiDisplayController::TAG, "Stop peer discovery failed with reason %d", reason);
     }
 
     return NOERROR;
@@ -183,6 +235,10 @@ ECode WifiDisplayController::RequestPeersPeerListListener::OnPeersAvailable(
             if (mHost->IsWifiDisplay(device)) {
                 mHost->mAvailableWifiDisplayPeers.PushBack(device);
             }
+        }
+
+        if (mHost->mDiscoverPeersInProgress) {
+            mHost->HandleScanResults();
         }
     }
 
@@ -402,6 +458,11 @@ ECode WifiDisplayController::MyRemoteDisplayListener::OnDisplayConnected(
         mHost->mRemoteDisplayConnected = TRUE;
         mHost->mHandler->RemoveCallbacks(mHost->mRtspTimeout);
 
+        if (mHost->mWifiDisplayCertMode) {
+            mHost->mListener->OnDisplaySessionInfo(
+                mHost->GetSessionInfo(mConnectedDeviceGroupInfo, session));
+        }
+
         AutoPtr<IWifiDisplay> display = CreateWifiDisplay(mHost->mConnectedDevice);
         mHost->AdvertiseDisplay(display, surface, width, height, flags);
     }
@@ -471,6 +532,44 @@ ECode WifiDisplayController::ConnectionChangedGroupInfoListener::OnGroupInfoAvai
         return NOERROR;
     }
 
+    if (mWifiDisplayCertMode) {
+        AutoPtr<IWifiP2pDevice> owner;
+        info->GetOwner((IWifiP2pDevice**)&owner);
+
+        String address, thisAddress;
+        owner->GetDeviceAddress(&address);
+        mHost->mThisDevice->GetDeviceAddress(&thisAddress);
+        Boolean owner = address.Equals(thisAddress);
+        AutoPtr<ICollection> clients;
+        info->GetClientList((ICollection**)&clients);
+        Boolean empty;
+        clients->IsEmpty(&empty);
+        if (owner && empty) {
+            // this is the case when we started Autonomous GO,
+            // and no client has connected, save group info
+            // and updateConnection()
+            mHost->mConnectingDevice = mHost->mDesiredDevice = NULL;
+            mHost->mConnectedDeviceGroupInfo = info;
+            mHost->UpdateConnection();
+        }
+        else if (mHost->mConnectingDevice == NULL && mHost->mDesiredDevice == NULL) {
+            // this is the case when we received an incoming connection
+            // from the sink, update both mConnectingDevice and mDesiredDevice
+            // then proceed to updateConnection() below
+            AutoPtr<IWifiP2pDevice> result;
+            if (owner) {
+                AutoPtr<IIterator> it;
+                clients->GetIterator((IIterator**)&it);
+                AutoPtr<IInterface> obj;
+                it->GetNext((IInterface**)&obj);
+                result = IWifiP2pDevice::Probe(obj);
+            }
+            else {
+                result = owner;
+            }
+        }
+    }
+
     if (mHost->mConnectingDevice != NULL
         && mHost->mConnectingDevice == mHost->mDesiredDevice) {
         String deviceName;
@@ -504,35 +603,6 @@ ECode WifiDisplayController::ReportFeatureStateRunnable::Run()
 }
 
 //==============================================================================
-// WifiDisplayController::DiscoverPeersRunnable
-//==============================================================================
-WifiDisplayController::DiscoverPeersRunnable::DiscoverPeersRunnable(
-    /* [in] */ Int32 reason,
-    /* [in] */ WifiDisplayController* owner)
-    : mReason(reason)
-    , mHost(owner)
-{}
-
-ECode WifiDisplayController::DiscoverPeersRunnable::Run()
-{
-    if (mHost->mDiscoverPeersInProgress) {
-        if (mHost->mDiscoverPeersRetriesLeft > 0 && mHost->mWfdEnabled) {
-            mHost->mDiscoverPeersRetriesLeft -= 1;
-            if (WifiDisplayController::DEBUG) {
-                Slogger::D(WifiDisplayController::TAG, "Retrying discovery.  Retries left: %d",
-                    mHost->mDiscoverPeersRetriesLeft);
-            }
-            mHost->TryDiscoverPeers();
-        }
-        else {
-            mHost->HandleScanFinished();
-            mHost->mDiscoverPeersInProgress = FALSE;
-        }
-    }
-    return NOERROR;
-}
-
-//==============================================================================
 // WifiDisplayController::ScanStartedRunnable
 //==============================================================================
 WifiDisplayController::ScanStartedRunnable::ScanStartedRunnable(
@@ -551,16 +621,32 @@ ECode WifiDisplayController::ScanStartedRunnable::Run()
 // WifiDisplayController::ScanFinishedRunnable
 //==============================================================================
 WifiDisplayController::ScanFinishedRunnable::ScanFinishedRunnable(
+    /* [in] */ WifiDisplayController* owner)
+    : mHost(owner)
+{}
+
+ECode WifiDisplayController::ScanFinishedRunnable::Run()
+{
+    if (mHost->mListener) {
+        mHost->mListener->OnScanFinished();
+    }
+    return NOERROR;
+}
+
+//==============================================================================
+// WifiDisplayController::ScanResultsRunnable
+//==============================================================================
+WifiDisplayController::ScanResultsRunnable::ScanResultsRunnable(
     /* [in] */ ArrayOf<IWifiDisplay*>* displays,
     /* [in] */ WifiDisplayController* owner)
     : mDisplays(displays)
     , mHost(owner)
 {}
 
-ECode WifiDisplayController::ScanFinishedRunnable::Run()
+ECode WifiDisplayController::ScanResultsRunnable::Run()
 {
     if (mHost->mListener) {
-        mHost->mListener->OnScanFinished(mDisplays);
+        mHost->mListener->OnScanResults(mDisplays);
     }
     return NOERROR;
 }
@@ -605,6 +691,20 @@ ECode WifiDisplayController::ConnectionTimeoutRunnable::Run()
 
         mHost->HandleConnectionFailure(TRUE);
     }
+    return NOERROR;
+}
+
+//==============================================================================
+// WifiDisplayController::DiscoverPeersRunnable
+//==============================================================================
+WifiDisplayController::DiscoverPeersRunnable::DiscoverPeersRunnable(
+    /* [in] */ WifiDisplayController* owner)
+    : mHost(owner)
+{}
+
+ECode WifiDisplayController::DiscoverPeersRunnable::Run()
+{
+    mHost->TryDiscoverPeers();
     return NOERROR;
 }
 
@@ -674,15 +774,22 @@ ECode WifiDisplayController::WifiP2pReceiver::OnReceive(
         AutoPtr<INetworkInfo> networkInfo = INetworkInfo::Probe(parcelable.Get());
 
         if (DEBUG) {
-            String ni;
-            if (networkInfo) {
-                networkInfo->ToString(&ni);
-            }
             Slogger::D(TAG, "Received WIFI_P2P_CONNECTION_CHANGED_ACTION: networkInfo=%s",
-                ni.string());
+                Object::ToString(networkInfo).string());
         }
 
         mHost->HandleConnectionChanged(networkInfo);
+    }
+    else if (action.Equals(IWifiP2pManager::WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)) {
+        AutoPtr<IParcelable> parcelable;
+        intent->GetParcelableExtra(
+            IWifiP2pManager::EXTRA_WIFI_P2P_DEVICE,
+            (IParcelable**)&parcelable);
+        mThisDevice = IWifiP2pDevice::Probe(parcelable);
+        if (DEBUG) {
+            Slogger::D(TAG, "Received WIFI_P2P_THIS_DEVICE_CHANGED_ACTION: mThisDevice=%s"
+                , Object::ToString(mThisDevice).string());
+        }
     }
 
     return NOERROR;
@@ -700,14 +807,15 @@ WifiDisplayController::WifiDisplayController(
     , mWfdEnabled(FALSE)
     , mWfdEnabling(FALSE)
     , mWifiDisplayOnSetting(FALSE)
+    , mScanRequested(FALSE)
     , mDiscoverPeersInProgress(FALSE)
-    , mDiscoverPeersRetriesLeft(0)
     , mConnectionRetriesLeft(0)
     , mRemoteDisplayConnected(FALSE)
-    , mRemoteSubmixOn(FALSE)
     , mAdvertisedDisplayWidth(0)
     , mAdvertisedDisplayHeight(0)
     , mAdvertisedDisplayFlags(0)
+    , mWifiDisplayCertMode(FALSE)
+    , mWifiDisplayWpsConfig(IWpsInfo::INVALID)
 {
     mConnectionTimeout = new ConnectionTimeoutRunnable(this);
     mRtspTimeout = new RtspTimeoutRunnable(this);
@@ -730,10 +838,6 @@ WifiDisplayController::WifiDisplayController(
         Slogger::E(TAG, "WifiP2pManager not ready!");
     }
 
-    service = NULL;
-    context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&service);
-    mAudioManager = IAudioManager::Probe(service);
-
     String nullStr;
     AutoPtr<IIntent> stickyIntent;
     AutoPtr<IIntentFilter> intentFilter;
@@ -741,18 +845,31 @@ WifiDisplayController::WifiDisplayController(
     intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_STATE_CHANGED_ACTION);
     intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_PEERS_CHANGED_ACTION);
     intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_CONNECTION_CHANGED_ACTION);
+    intentFilter->AddAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
     context->RegisterReceiver(mWifiP2pReceiver, intentFilter, nullStr, mHandler,
         (IIntent**)&stickyIntent);
 
-    AutoPtr<IContentObserver> settingsObserver = new MyContentObserver(this, mHandler);
+    AutoPtr<MyContentObserver> observer = new MyContentObserver(this);
+    observer->constructor(mHandler);
+    IContentObserver* settingsObserver = (IContentObserver*)settingsObserver.Get();
 
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsGlobal> sg;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
+    assert(0 && "TODO");
+    // CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
     AutoPtr<IUri> uri;
     sg->GetUriFor(ISettingsGlobal::WIFI_DISPLAY_ON, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, settingsObserver);
+
+    uri = NULL;
+    sg->GetUriFor(ISettingsGlobal::WIFI_DISPLAY_CERTIFICATION_ON, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, settingsObserver);
+
+    uri = NULL;
+    sg->GetUriFor(ISettingsGlobal::WIFI_DISPLAY_WPS_CONFIG, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, settingsObserver);
+
     UpdateSettings();
 }
 
@@ -761,11 +878,20 @@ void WifiDisplayController::UpdateSettings()
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsGlobal> sg;
-    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
+    assert(0 && "TODO");
+    //CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
     Int32 value;
     sg->GetInt32(resolver, ISettingsGlobal::WIFI_DISPLAY_ON, 0, &value);
-    // TODO:
-    mWifiDisplayOnSetting = TRUE; //value != 0;
+    mWifiDisplayOnSetting = value != 0;
+
+    sg->GetInt32(resolver, ISettingsGlobal::WIFI_DISPLAY_CERTIFICATION_ON, 0, &value);
+    mWifiDisplayCertMode = value != 0;
+
+    mWifiDisplayWpsConfig = IWpsInfo::INVALID;
+    if (mWifiDisplayCertMode) {
+        sg->GetInt32(resolver, ISettingsGlobal::WIFI_DISPLAY_WPS_CONFIG,
+            IWpsInfo::INVALID, &mWifiDisplayWpsConfig);
+    }
 
     UpdateWfdEnableState();
 }
@@ -773,36 +899,48 @@ void WifiDisplayController::UpdateSettings()
 void WifiDisplayController::Dump(
     /* [in] */ IPrintWriter* pw)
 {
-    // pw->PrintStringln(String("mWifiDisplayOnSetting=") + mWifiDisplayOnSetting);
-    // pw->PrintStringln(String("mWifiP2pEnabled=") + mWifiP2pEnabled);
-    // pw->PrintStringln(String("mWfdEnabled=") + mWfdEnabled);
-    // pw->PrintStringln(String("mWfdEnabling=") + mWfdEnabling);
-    // pw->PrintStringln(String("mNetworkInfo=") + mNetworkInfo);
-    // pw->PrintStringln(String("mDiscoverPeersInProgress=") + mDiscoverPeersInProgress);
-    // pw->PrintStringln(String("mDiscoverPeersRetriesLeft=") + mDiscoverPeersRetriesLeft);
-    // pw->PrintStringln(String("mDesiredDevice=") + DescribeWifiP2pDevice(mDesiredDevice));
-    // pw->PrintStringln(String("mConnectingDisplay=") + DescribeWifiP2pDevice(mConnectingDevice));
-    // pw->PrintStringln(String("mConnectedDevice=") + DescribeWifiP2pDevice(mConnectedDevice));
-    // pw->PrintStringln(String("mConnectionRetriesLeft=") + mConnectionRetriesLeft);
-    // pw->PrintStringln(String("mRemoteDisplay=") + mRemoteDisplay);
-    // pw->PrintStringln(String("mRemoteDisplayInterface=") + mRemoteDisplayInterface);
-    // pw->PrintStringln(String("mRemoteDisplayConnected=") + mRemoteDisplayConnected);
-    // pw->PrintStringln(String("mRemoteSubmixOn=") + mRemoteSubmixOn);
-    // pw->PrintStringln(String("mAdvertisedDisplay=") + mAdvertisedDisplay);
-    // pw->PrintStringln(String("mAdvertisedDisplaySurface=") + mAdvertisedDisplaySurface);
-    // pw->PrintStringln(String("mAdvertisedDisplayWidth=") + mAdvertisedDisplayWidth);
-    // pw->PrintStringln(String("mAdvertisedDisplayHeight=") + mAdvertisedDisplayHeight);
-    // pw->PrintStringln(String("mAdvertisedDisplayFlags=") + mAdvertisedDisplayFlags);
+    // pw.println("mWifiDisplayOnSetting=" + mWifiDisplayOnSetting);
+    // pw.println("mWifiP2pEnabled=" + mWifiP2pEnabled);
+    // pw.println("mWfdEnabled=" + mWfdEnabled);
+    // pw.println("mWfdEnabling=" + mWfdEnabling);
+    // pw.println("mNetworkInfo=" + mNetworkInfo);
+    // pw.println("mScanRequested=" + mScanRequested);
+    // pw.println("mDiscoverPeersInProgress=" + mDiscoverPeersInProgress);
+    // pw.println("mDesiredDevice=" + describeWifiP2pDevice(mDesiredDevice));
+    // pw.println("mConnectingDisplay=" + describeWifiP2pDevice(mConnectingDevice));
+    // pw.println("mDisconnectingDisplay=" + describeWifiP2pDevice(mDisconnectingDevice));
+    // pw.println("mCancelingDisplay=" + describeWifiP2pDevice(mCancelingDevice));
+    // pw.println("mConnectedDevice=" + describeWifiP2pDevice(mConnectedDevice));
+    // pw.println("mConnectionRetriesLeft=" + mConnectionRetriesLeft);
+    // pw.println("mRemoteDisplay=" + mRemoteDisplay);
+    // pw.println("mRemoteDisplayInterface=" + mRemoteDisplayInterface);
+    // pw.println("mRemoteDisplayConnected=" + mRemoteDisplayConnected);
+    // pw.println("mAdvertisedDisplay=" + mAdvertisedDisplay);
+    // pw.println("mAdvertisedDisplaySurface=" + mAdvertisedDisplaySurface);
+    // pw.println("mAdvertisedDisplayWidth=" + mAdvertisedDisplayWidth);
+    // pw.println("mAdvertisedDisplayHeight=" + mAdvertisedDisplayHeight);
+    // pw.println("mAdvertisedDisplayFlags=" + mAdvertisedDisplayFlags);
 
-    // pw->PrintStringln(String("mAvailableWifiDisplayPeers: size=") + mAvailableWifiDisplayPeers.size());
+    // pw.println("mAvailableWifiDisplayPeers: size=" + mAvailableWifiDisplayPeers.size());
     // for (WifiP2pDevice device : mAvailableWifiDisplayPeers) {
-    //     pw->PrintStringln(String("  ") + DescribeWifiP2pDevice(device));
+    //     pw.println("  " + describeWifiP2pDevice(device));
     // }
 }
 
-void WifiDisplayController::RequestScan()
+void WifiDisplayController::RequestStartScan()
 {
-    DiscoverPeers();
+    if (!mScanRequested) {
+        mScanRequested = TRUE;
+        UpdateScanState();
+    }
+}
+
+void WifiDisplayController::RequestStopScan()
+{
+    if (mScanRequested) {
+        mScanRequested = FALSE;
+        UpdateScanState();
+    }
 }
 
 void WifiDisplayController::RequestConnect(
@@ -815,6 +953,20 @@ void WifiDisplayController::RequestConnect(
         if (deviceAddress.Equals(address)) {
             Connect(iter->Get());
         }
+    }
+}
+
+void WifiDisplayController::RequestStartScan()
+{
+    if (mRemoteDisplay != NULL) {
+        mRemoteDisplay->Pause();
+    }
+}
+
+void WifiDisplayController::RequestStopScan()
+{
+    if (mRemoteDisplay != NULL) {
+        mRemoteDisplay->Resume();
     }
 }
 
@@ -845,17 +997,26 @@ void WifiDisplayController::UpdateWfdEnableState()
                 wfdInfo->SetMaxThroughput(MAX_THROUGHPUT);
             }
 
-            AutoPtr<IWifiP2pManagerActionListener> l = new WFDInfoActionListener(this);
             if (mWifiP2pManager) {
+                AutoPtr<IWifiP2pManagerActionListener> l = new WFDInfoActionListener(this);
                 mWifiP2pManager->SetWFDInfo(mWifiP2pChannel, wfdInfo, l);
             }
         }
     }
     else {
         // WFD should be disabled.
+        if (mWfdEnabled || mWfdEnabling) {
+            AutoPtr<IWifiP2pWfdInfo> wfdInfo;
+            CWifiP2pWfdInfo::New((IWifiP2pWfdInfo**)&wfdInfo);
+            wfdInfo->SetWfdEnabled(FALSE);
+            AutoPtr<IWifiP2pManagerActionListener> l = new WFDInfoActionListener2(this);
+            mWifiP2pManager->SetWFDInfo(mWifiP2pChannel, wfdInfo, l);
+        }
+
         mWfdEnabling = FALSE;
         mWfdEnabled = FALSE;
         ReportFeatureState();
+        UpdateScanState();
         Disconnect();
     }
 }
@@ -878,21 +1039,51 @@ Int32 WifiDisplayController::ComputeFeatureState()
         IWifiDisplayStatus::FEATURE_STATE_OFF;
 }
 
-void WifiDisplayController::DiscoverPeers()
+void WifiDisplayController::UpdateScanState()
 {
-    if (!mDiscoverPeersInProgress) {
-        mDiscoverPeersInProgress = TRUE;
-        mDiscoverPeersRetriesLeft = DISCOVER_PEERS_MAX_RETRIES;
-        HandleScanStarted();
-        TryDiscoverPeers();
+    if (mScanRequested && mWfdEnabled && mDesiredDevice == NULL) {
+        if (!mDiscoverPeersInProgress) {
+            Slogger::I(TAG, "Starting Wifi display scan.");
+            mDiscoverPeersInProgress = true;
+            HandleScanStarted();
+            TryDiscoverPeers();
+        }
+    }
+    else {
+        if (mDiscoverPeersInProgress) {
+            // Cancel automatic retry right away.
+            mHandler->RemoveCallbacks(mDiscoverPeers);
+
+            // Defer actually stopping discovery if we have a connection attempt in progress.
+            // The wifi display connection attempt often fails if we are not in discovery
+            // mode.  So we allow discovery to continue until we give up trying to connect.
+            if (mDesiredDevice == NULL || mDesiredDevice == mConnectedDevice) {
+                Slogger::I(TAG, "Stopping Wifi display scan.");
+                mDiscoverPeersInProgress = FALSE;
+                StopPeerDiscovery();
+                HandleScanFinished();
+            }
+        }
     }
 }
 
 void WifiDisplayController::TryDiscoverPeers()
 {
     if (mWifiP2pManager) {
-        AutoPtr<DiscoverPeersActionListener> l = new DiscoverPeersActionListener(this);
-        mWifiP2pManager->DiscoverPeers(mWifiP2pChannel, l.Get());
+        AutoPtr<IWifiP2pManagerActionListener> l = new DiscoverPeersActionListener(this);
+        mWifiP2pManager->DiscoverPeers(mWifiP2pChannel, l);
+
+        // Retry discover peers periodically until stopped.
+        Boolean result;
+        mHandler->PostDelayed(mDiscoverPeers, DISCOVER_PEERS_INTERVAL_MILLIS, &result);
+    }
+}
+
+void WifiDisplayController::StopPeerDiscovery()
+{
+    if (mWifiP2pManager) {
+        AutoPtr<IWifiP2pManagerActionListener> l = new StopPeerDiscoveryActionListener(this);
+        mWifiP2pManager->StopPeerDiscovery(mWifiP2pChannel, l);
     }
 }
 
@@ -900,7 +1091,7 @@ void WifiDisplayController::RequestPeers()
 {
     if (mWifiP2pManager) {
         AutoPtr<IWifiP2pManagerPeerListListener> l = new RequestPeersPeerListListener(this);
-        mWifiP2pManager->RequestPeers(mWifiP2pChannel, l.Get());
+        mWifiP2pManager->RequestPeers(mWifiP2pChannel, l);
     }
 }
 
@@ -911,20 +1102,24 @@ void WifiDisplayController::HandleScanStarted()
     mHandler->Post(runnable, &result);
 }
 
-void WifiDisplayController::HandleScanFinished()
+void WifiDisplayController::HandleScanResults()
 {
     Int32 count = mAvailableWifiDisplayPeers.GetSize();
     AutoPtr<ArrayOf<IWifiDisplay*> > displays = ArrayOf<IWifiDisplay*>::Alloc(count);
-
-    List<AutoPtr<IWifiP2pDevice> >::Iterator iter = mAvailableWifiDisplayPeers.Begin();
-    for (Int32 i = 0; iter != mAvailableWifiDisplayPeers.End(); ++iter, ++i) {
-        AutoPtr<IWifiP2pDevice> device = *iter;
-        AutoPtr<IWifiDisplay> display = CreateWifiDisplay(device);
-        displays->Set(i, display);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IWifiP2pDevice> device = mAvailableWifiDisplayPeers[i];
+        displays->Set(i, CreateWifiDisplay(device));
         UpdateDesiredDevice(device);
     }
 
-    AutoPtr<IRunnable> runnable = new ScanFinishedRunnable(displays, this);
+    AutoPtr<IRunnable> runnable = new ScanResultsRunnable(displays, this);
+    Boolean result;
+    mHandler->Post(runnable, &result);
+}
+
+void WifiDisplayController::HandleScanFinished()
+{
+    AutoPtr<IRunnable> runnable = new ScanFinishedRunnable(this);
     Boolean result;
     mHandler->Post(runnable, &result);
 }
@@ -985,6 +1180,14 @@ void WifiDisplayController::Connect(
         return;
     }
 
+    if (!mWfdEnabled) {
+        String name;
+        device->GetDeviceName(&name);
+        Slogger::I(TAG, "Ignoring request to connect to Wifi display because the "
+            " feature is currently disabled: %s", name.string());
+        return;
+    }
+
     mDesiredDevice = device;
     mConnectionRetriesLeft = CONNECT_MAX_RETRIES;
     UpdateConnection();
@@ -1009,6 +1212,10 @@ void WifiDisplayController::RetryConnection()
 
 void WifiDisplayController::UpdateConnection()
 {
+    // Step 0. Stop scans if necessary to prevent interference while connected.
+    // Resume scans later when no longer attempting to connect.
+    UpdateScanState();
+
     // Step 1. Before we try to connect to a new device, tell the system we
     // have disconnected from the old one.
     if (mRemoteDisplay != NULL && mConnectedDevice != mDesiredDevice) {
@@ -1023,7 +1230,7 @@ void WifiDisplayController::UpdateConnection()
         mRemoteDisplayConnected = FALSE;
         mHandler->RemoveCallbacks(mRtspTimeout);
 
-        SetRemoteSubmixOn(FALSE);
+        mWifiP2pManager->SetMiracastMode(IWifiP2pManager::MIRACAST_DISABLED);
         UnadvertiseDisplay();
 
         // continue to next step
@@ -1041,6 +1248,7 @@ void WifiDisplayController::UpdateConnection()
 
         mDisconnectingDevice = mConnectedDevice;
         mConnectedDevice = NULL;
+        mConnectedDeviceGroupInfo = NULL;
 
         UnadvertiseDisplay();
 
@@ -1074,8 +1282,12 @@ void WifiDisplayController::UpdateConnection()
         return; // wait for asynchronous callback
     }
 
-    // Step 4. If we wanted to disconnect, then mission accomplished.
+    // Step 4. If we wanted to disconnect, or we're updating after starting an
+    // autonomous GO, then mission accomplished.
     if (mDesiredDevice == NULL) {
+        if (mWifiDisplayCertMode) {
+            mListener->OnDisplaySessionInfo(getSessionInfo(mConnectedDeviceGroupInfo, 0));
+        }
         UnadvertiseDisplay();
         return; // done
     }
@@ -1093,7 +1305,10 @@ void WifiDisplayController::UpdateConnection()
         AutoPtr<IWpsInfo> wps;
         CWpsInfo::New((IWpsInfo**)&wps);
         Boolean bval;
-        if (mConnectingDevice->WpsPbcSupported(&bval), bval) {
+        if (mWifiDisplayWpsConfig != IWpsInfo::INVALID) {
+                wps->SetSetup(mWifiDisplayWpsConfig);
+        }
+        else if (mConnectingDevice->WpsPbcSupported(&bval), bval) {
             wps->SetSetup(IWpsInfo::PBC);
         }
         else if (mConnectingDevice->WpsDisplaySupported(&bval), bval) {
@@ -1121,7 +1336,7 @@ void WifiDisplayController::UpdateConnection()
         return; // wait for asynchronous callback
     }
 
-    // Step 6. Listen for incoming connections.
+    // Step 6. Listen for incoming RTSP connection.
     if (mConnectedDevice != NULL && mRemoteDisplay == NULL) {
         String deviceName;
         mConnectedDevice->GetDeviceName(&deviceName);
@@ -1133,7 +1348,7 @@ void WifiDisplayController::UpdateConnection()
             return; // done
         }
 
-        SetRemoteSubmixOn(TRUE);
+        mWifiP2pManager->SetMiracastMode(IWifiP2pManager::MIRACAST_SOURCE);
 
         AutoPtr<IWifiP2pDevice> oldDevice = mConnectedDevice;
         Int32 port = GetPortNumber(mConnectedDevice);
@@ -1147,23 +1362,49 @@ void WifiDisplayController::UpdateConnection()
             " from Wifi display: %s", iface.string(), deviceName.string());
 
         AutoPtr<IRemoteDisplayHelper> remoteDisplayHelper;
-        CRemoteDisplayHelper::AcquireSingleton((IRemoteDisplayHelper**)&remoteDisplayHelper);
+        assert(0 && "TODO");
+        // CRemoteDisplayHelper::AcquireSingleton((IRemoteDisplayHelper**)&remoteDisplayHelper);
         AutoPtr<IRemoteDisplayListener> myRD = new MyRemoteDisplayListener(this, oldDevice);
         mRemoteDisplay = NULL;
         remoteDisplayHelper->Listen(iface, myRD, mHandler, (IRemoteDisplay**)&mRemoteDisplay);
 
+        // Use extended timeout value for certification, as some tests require user inputs
+        Int32 rtspTimeout = mWifiDisplayCertMode ?
+            RTSP_TIMEOUT_SECONDS_CERT_MODE : RTSP_TIMEOUT_SECONDS;
+
         Boolean result;
-        mHandler->PostDelayed(mRtspTimeout, RTSP_TIMEOUT_SECONDS * 1000, &result);
+        mHandler->PostDelayed(mRtspTimeout, rtspTimeout * 1000, &result);
     }
 }
 
-void WifiDisplayController::SetRemoteSubmixOn(
-    /* [in] */ Boolean on)
+AutoPtr<IWifiDisplaySessionInfo> WifiDisplayController::GetSessionInfo(
+    /* [in] */ IWifiP2pGroup* info,
+    /* [in] */ Int32 session)
 {
-    if (mRemoteSubmixOn != on) {
-        mRemoteSubmixOn = on;
-        mAudioManager->SetRemoteSubmixOn(on, REMOTE_SUBMIX_ADDRESS);
+    if (info == NULL) {
+        return NULL;
     }
+    AutoPtr<IInet4Address> addr = GetInterfaceAddress(info);
+    AutoPtr<IWifiP2pDevice> owner;
+    info->GetOwner((IWifiP2pDevice**)&owner);
+    String address, thisAddress, name, passphrase;
+    owner->GetDeviceAddress(&address);
+    mThisDevice->GetDeviceAddress(&thisAddress);
+    info->GetNetworkName(&name);
+    info->GetPassphrase(&passphrase);
+    String hostAddress("");
+    if (addr != NULL) {
+        addr->GetHostAddress(&addr);
+    }
+    AutoPtr<IWifiDisplaySessionInfo> sessionInfo;
+    assert(0 && "TODO");
+    // CWifiDisplaySessionInfo::New(
+    //     !address.Equals(thisAddress), session, address + " " + name,
+    //     passphrase, addr, (IWifiDisplaySessionInfo**)&sessionInfo);
+    if (DEBUG) {
+        Slogger::D(TAG, Object::ToString(sessionInfo).string());
+    }
+    return sessionInfo;
 }
 
 void WifiDisplayController::HandleStateChanged(
@@ -1190,7 +1431,7 @@ void WifiDisplayController::HandleConnectionChanged(
             Slogger::D(TAG, "HandleConnectionChanged: connected!");
         }
 
-        if (mDesiredDevice != NULL) {
+        if (mDesiredDevice != NULL || mWifiDisplayCertMode) {
             AutoPtr<ConnectionChangedGroupInfoListener> l = new ConnectionChangedGroupInfoListener(this);
             if (mWifiP2pManager) {
                 mWifiP2pManager->RequestGroupInfo(mWifiP2pChannel, l);
@@ -1202,7 +1443,12 @@ void WifiDisplayController::HandleConnectionChanged(
             Slogger::D(TAG, "HandleConnectionChanged: Wfd not enabled or not connected!");
         }
 
-        Disconnect();
+        mConnectedDeviceGroupInfo = NULL;
+
+        // Disconnect if we lost the network while connecting or connected to a display.
+        if (mConnectingDevice != NULL || mConnectedDevice != NULL) {
+            Disconnect();
+        }
 
         // After disconnection for a group, for some reason we have a tendency
         // to get a peer change notification with an empty list of peers.
@@ -1399,8 +1645,14 @@ AutoPtr<IWifiDisplay> WifiDisplayController::CreateWifiDisplay(
     device->GetDeviceAddress(&deviceAddress);
     String deviceName, nullStr;
     device->GetDeviceName(&deviceName);
+    AutoPtr<IWifiP2pWfdInfo> wfdInfo;
+    device->GetWfdInfo((IWifiP2pWfdInfo**)&wfdInfo);
+    Boolean available;
+    wfdInfo->IsSessionAvailable(&available);
     AutoPtr<IWifiDisplay> wifiDisplay;
-    CWifiDisplay::New(deviceAddress, deviceName, nullStr, (IWifiDisplay**)&wifiDisplay);
+    assert(0 && "TODO");
+    // CWifiDisplay::New(deviceAddress, deviceName, nullStr,
+    //     TRUE, available, FALSE, (IWifiDisplay**)&wifiDisplay);
 
     return wifiDisplay;
 }

@@ -4,11 +4,10 @@
 #include "elastos/droid/server/display/PersistentDataStore.h"
 #include "elastos/droid/server/display/WifiDisplayController.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -16,15 +15,24 @@ using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Hardware::Display::CWifiDisplay;
-using Elastos::Droid::Hardware::Display::CWifiDisplayStatus;
+// using Elastos::Droid::Hardware::Display::CWifiDisplay;
+// using Elastos::Droid::Hardware::Display::CWifiDisplayStatus;
 using Elastos::Droid::Hardware::Display::IDisplayManager;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IUserHandleHelper;
+using Elastos::Droid::Os::CUserHandleHelper;
 using Elastos::Droid::View::IDisplay;
-using Elastos::Droid::View::ISurfaceHelper;
-using Elastos::Droid::View::CSurfaceHelper;
+using Elastos::Droid::View::ISurfaceControlHelper;
+using Elastos::Droid::View::CSurfaceControlHelper;
 using Elastos::Droid::Media::IRemoteDisplay;
 using Elastos::Droid::Provider::ISettings;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::IList;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -34,7 +42,6 @@ namespace Display {
 const String WifiDisplayAdapter::TAG("WifiDisplayAdapter");
 const Boolean WifiDisplayAdapter::DEBUG = FALSE;
 const Int32 WifiDisplayAdapter::MSG_SEND_STATUS_CHANGE_BROADCAST;
-const Int32 WifiDisplayAdapter::MSG_UPDATE_NOTIFICATION;
 const String WifiDisplayAdapter::ACTION_DISCONNECT("android.server.display.wfd.DISCONNECT");
 
 //==============================================================================
@@ -57,7 +64,8 @@ ECode WifiDisplayAdapter::MyBroadcastReceiver::OnReceive(
             Slogger::D(WifiDisplayAdapter::TAG, "OnReceive: %s", action.string());
         }
 
-        AutoLock lock(mHost->GetSyncRoot());
+        Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
         mHost->RequestDisconnectLocked();
     }
 
@@ -77,7 +85,8 @@ WifiDisplayAdapter::MyWifiDisplayControllerListener::MyWifiDisplayControllerList
 ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnFeatureStateChanged(
     /* [in] */ Int32 featureState)
 {
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
     if (mHost->mFeatureState != featureState) {
         mHost->mFeatureState = featureState;
         mHost->ScheduleStatusChangedBroadcastLocked();
@@ -91,7 +100,8 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnScanStarted()
         Slogger::D(WifiDisplayAdapter::TAG, "OnScanStarted");
     }
 
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
     if (mHost->mScanState != IWifiDisplayStatus::SCAN_STATE_SCANNING) {
         mHost->mScanState = IWifiDisplayStatus::SCAN_STATE_SCANNING;
         mHost->ScheduleStatusChangedBroadcastLocked();
@@ -122,25 +132,47 @@ Boolean WifiDisplayAdapter::MyWifiDisplayControllerListener::Equals(
     return TRUE;
 }
 
-ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnScanFinished(
+ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnScanResults(
     /* [in] */ ArrayOf<IWifiDisplay*>* availableDisplays)
 {
     if (WifiDisplayAdapter::DEBUG) {
-        Slogger::D(WifiDisplayAdapter::TAG, "OnScanFinished");
+        Slogger::D(WifiDisplayAdapter::TAG, "OnScanResults");
     }
 
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
     AutoPtr<ArrayOf<IWifiDisplay*> > displays =
        mHost->mPersistentDataStore->ApplyWifiDisplayAliases(availableDisplays);
 
-    if (mHost->mScanState != IWifiDisplayStatus::SCAN_STATE_NOT_SCANNING
-        || !Equals(mHost->mAvailableDisplays, displays)) {
-        mHost->mScanState = IWifiDisplayStatus::SCAN_STATE_NOT_SCANNING;
-        mHost->mAvailableDisplays = displays;
+    Boolean changed = !Arrays::Equals(mHost->mAvailableDisplays, availableDisplays);
+
+    // Check whether any of the available displays changed canConnect status.
+    for (Int32 i = 0; !changed && i < availableDisplays->GetLength(); i++) {
+        Boolean l, r;
+        (*availableDisplays)[i]->CanConnect(&l);
+        (*mHost->mAvailableDisplays)[i]->CanConnect(&r);
+        changed = l != r;
+    }
+
+    if (changed) {
+        mHost->mAvailableDisplays = availableDisplays;
         mHost->FixRememberedDisplayNamesFromAvailableDisplaysLocked();
+        mHost->UpdateDisplaysLocked();
         mHost->ScheduleStatusChangedBroadcastLocked();
     }
-   return NOERROR;
+    return NOERROR;
+}
+
+ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnScanFinished()
+{
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
+
+    if (mHost->mScanState != IWifiDisplayStatus::SCAN_STATE_NOT_SCANNING) {
+        mHost->mScanState = IWifiDisplayStatus::SCAN_STATE_NOT_SCANNING;
+        mHost->ScheduleStatusChangedBroadcastLocked();
+    }
+    return NOERROR;
 }
 
 ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayConnecting(
@@ -152,7 +184,8 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayConnecting(
         Slogger::D(WifiDisplayAdapter::TAG, "OnDisplayConnecting: %s", info.string());
     }
 
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
     AutoPtr<IWifiDisplay> newDisplay =
        mHost->mPersistentDataStore->ApplyWifiDisplayAlias(display);
 
@@ -173,7 +206,8 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayConnectionFa
         Slogger::D(WifiDisplayAdapter::TAG, "OnDisplayConnectionFailed");
     }
 
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
     if (mHost->mActiveDisplayState != IWifiDisplayStatus::DISPLAY_STATE_NOT_CONNECTED
         || mHost->mActiveDisplay != NULL) {
         mHost->mActiveDisplayState = IWifiDisplayStatus::DISPLAY_STATE_NOT_CONNECTED;
@@ -197,7 +231,8 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayConnected(
             info.string(), width, height);
     }
 
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
     AutoPtr<IWifiDisplay> newDisplay =
         mHost->mPersistentDataStore->ApplyWifiDisplayAlias(display);
     mHost->AddDisplayDeviceLocked(newDisplay, surface, width, height, flags);
@@ -213,6 +248,23 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayConnected(
     return NOERROR;
 }
 
+ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplaySessionInfo(
+    /* [in] */ IWifiDisplaySessionInfo* sessionInfo)
+{
+    if (WifiDisplayAdapter::DEBUG) {
+        String info;
+        sessionInfo->ToString(&info);
+        Slogger::D(WifiDisplayAdapter::TAG, "OnDisplaySessionInfo: %s", info.string());
+    }
+
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
+
+    mHost->mSessionInfo = sessionInfo;
+    mHost->ScheduleStatusChangedBroadcastLocked();
+    return NOERROR;
+}
+
 ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayChanged(
     /* [in] */ IWifiDisplay* display)
 {
@@ -222,7 +274,8 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayChanged(
         Slogger::D(WifiDisplayAdapter::TAG, "OnDisplayChanged: %s", info.string());
     }
 
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
     AutoPtr<IWifiDisplay> newDisplay =
         mHost->mPersistentDataStore->ApplyWifiDisplayAlias(display);
     Boolean hasSameAddr, equal;
@@ -246,7 +299,8 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayDisconnected
     }
 
     // Stop listening.
-    AutoLock lock(mHost->GetSyncRoot());
+    Object* obj = mHost->GetSyncRoot();
+    AutoLock lock(obj);
     mHost->RemoveDisplayDeviceLocked();
 
     if (mHost->mActiveDisplayState != IWifiDisplayStatus::DISPLAY_STATE_NOT_CONNECTED
@@ -282,10 +336,16 @@ WifiDisplayAdapter::WifiDisplayDevice::WifiDisplayDevice(
     , mHost(owner)
 {}
 
-void WifiDisplayAdapter::WifiDisplayDevice::ClearSurfaceLocked()
+void WifiDisplayAdapter::WifiDisplayDevice::DestroyLocked()
 {
-    mSurface = NULL;
-    mHost->SendTraversalRequestLocked();
+    if (mSurface != NULL) {
+        mSurface->ReleaseSurface();
+        mSurface = NULL;
+    }
+
+    AutoPtr<ISurfaceControlHelper> helper;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&helper);
+    helper->DestroyDisplay(GetDisplayTokenLocked());
 }
 
 void WifiDisplayAdapter::WifiDisplayDevice::SetNameLocked(
@@ -297,7 +357,9 @@ void WifiDisplayAdapter::WifiDisplayDevice::SetNameLocked(
 
 void WifiDisplayAdapter::WifiDisplayDevice::PerformTraversalInTransactionLocked()
 {
-    SetSurfaceInTransactionLocked(mSurface);
+    if (mSurface != NULL) {
+        SetSurfaceInTransactionLocked(mSurface);
+    }
 }
 
 AutoPtr<DisplayDeviceInfo> WifiDisplayAdapter::WifiDisplayDevice::GetDisplayDeviceInfoLocked()
@@ -308,6 +370,7 @@ AutoPtr<DisplayDeviceInfo> WifiDisplayAdapter::WifiDisplayDevice::GetDisplayDevi
         mInfo->mWidth = mWidth;
         mInfo->mHeight = mHeight;
         mInfo->mRefreshRate = mRefreshRate;
+        mInfo->mPresentationDeadlineNanos = 1000000000L / (Int32) mRefreshRate; // 1 frame
         mInfo->mFlags = mFlags;
         mInfo->mType = IDisplay::TYPE_WIFI;
         mInfo->mAddress = mAddress;
@@ -343,13 +406,6 @@ ECode WifiDisplayAdapter::WifiDisplayHandler::HandleMessage(
         }
         mHost->HandleSendStatusChangeBroadcast();
         break;
-
-    case MSG_UPDATE_NOTIFICATION:
-        if (WifiDisplayAdapter::DEBUG) {
-            Slogger::D(WifiDisplayAdapter::TAG, "HandleMessage: MSG_UPDATE_NOTIFICATION");
-        }
-        mHost->HandleUpdateNotification();
-        break;
     }
     return NOERROR;
 }
@@ -384,18 +440,35 @@ ECode WifiDisplayAdapter::RegisterRunnable::Run()
 }
 
 //==============================================================================
-//                  WifiDisplayAdapter::RequestScanRunnable
+//                  WifiDisplayAdapter::RequestStartScanRunnable
 //==============================================================================
-WifiDisplayAdapter::RequestScanRunnable::RequestScanRunnable(
+WifiDisplayAdapter::RequestStartScanRunnable::RequestStartScanRunnable(
     /* [in] */ WifiDisplayAdapter* host)
     : mHost(host)
 {
 }
 
-ECode WifiDisplayAdapter::RequestScanRunnable::Run()
+ECode WifiDisplayAdapter::RequestStartScanRunnable::Run()
 {
     if (mHost->mDisplayController != NULL) {
-        mHost->mDisplayController->RequestScan();
+        mHost->mDisplayController->RequestStartScan();
+    }
+    return NOERROR;
+}
+
+//==============================================================================
+//                  WifiDisplayAdapter::RequestStopScanRunnable
+//==============================================================================
+WifiDisplayAdapter::RequestStopScanRunnable::RequestStopScanRunnable(
+    /* [in] */ WifiDisplayAdapter* host)
+    : mHost(host)
+{
+}
+
+ECode WifiDisplayAdapter::RequestStopScanRunnable::Run()
+{
+    if (mHost->mDisplayController != NULL) {
+        mHost->mDisplayController->RequestStopScan();
     }
     return NOERROR;
 }
@@ -415,6 +488,40 @@ ECode WifiDisplayAdapter::RequestConnectRunnable::Run()
 {
     if (mHost->mDisplayController != NULL) {
         mHost->mDisplayController->RequestConnect(mAddress);
+    }
+    return NOERROR;
+}
+
+//==============================================================================
+//                  WifiDisplayAdapter::RequestPauseRunnable
+//==============================================================================
+WifiDisplayAdapter::RequestPauseRunnable::RequestPauseRunnable(
+    /* [in] */ WifiDisplayAdapter* host)
+    : mHost(host)
+{
+}
+
+ECode WifiDisplayAdapter::RequestPauseRunnable::Run()
+{
+    if (mHost->mDisplayController != NULL) {
+        mHost->mDisplayController->RequestPause();
+    }
+    return NOERROR;
+}
+
+//==============================================================================
+//                  WifiDisplayAdapter::RequestResumeRunnable
+//==============================================================================
+WifiDisplayAdapter::RequestResumeRunnable::RequestResumeRunnable(
+    /* [in] */ WifiDisplayAdapter* host)
+    : mHost(host)
+{
+}
+
+ECode WifiDisplayAdapter::RequestResumeRunnable::Run()
+{
+    if (mHost->mDisplayController != NULL) {
+        mHost->mDisplayController->RequestResume();
     }
     return NOERROR;
 }
@@ -452,8 +559,8 @@ WifiDisplayAdapter::WifiDisplayAdapter(
     , mScanState(0)
     , mActiveDisplayState(0)
     , mPendingStatusChangeBroadcast(FALSE)
-    , mPendingNotificationUpdate(FALSE)
 {
+    mDisplays = ArrayOf<IWifiDisplay*>::Alloc(0);//WifiDisplay::EMPTY_ARRAY
     mAvailableDisplays = ArrayOf<IWifiDisplay*>::Alloc(0);//WifiDisplay::EMPTY_ARRAY
     mRememberedDisplays = ArrayOf<IWifiDisplay*>::Alloc(0);//WifiDisplay::EMPTY_ARRAY
 
@@ -470,9 +577,6 @@ WifiDisplayAdapter::WifiDisplayAdapter(
     assert(resources != NULL);
     resources->GetBoolean(
         R::bool_::config_wifiDisplaySupportsProtectedBuffers, &mSupportsProtectedBuffers);
-    AutoPtr<IInterface> service;
-    context->GetSystemService(IContext::NOTIFICATION_SERVICE, (IInterface**)&service);
-    mNotificationManager = INotificationManager::Probe(service);
 }
 
 void WifiDisplayAdapter::DumpLocked(
@@ -485,10 +589,10 @@ void WifiDisplayAdapter::DumpLocked(
     // pw->PrintStringln(String("mScanState=") + mScanState);
     // pw->PrintStringln(String("mActiveDisplayState=") + mActiveDisplayState);
     // pw->PrintStringln(String("mActiveDisplay=") + mActiveDisplay);
+    // pw->PrintStringln(String("mDisplays=") + Arrays.toString(mDisplays));
     // pw->PrintStringln(String("mAvailableDisplays=") + Arrays.toString(mAvailableDisplays));
     // pw->PrintStringln(String("mRememberedDisplays=") + Arrays.toString(mRememberedDisplays));
     // pw->PrintStringln(String("mPendingStatusChangeBroadcast=") + mPendingStatusChangeBroadcast);
-    // pw->PrintStringln(String("mPendingNotificationUpdate=") + mPendingNotificationUpdate);
     // pw->PrintStringln(String("mSupportsProtectedBuffers=") + mSupportsProtectedBuffers);
 
     // // Try to dump the controller state.
@@ -518,33 +622,33 @@ void WifiDisplayAdapter::RegisterLocked()
     GetHandler()->Post(runnable, &result);
 }
 
-void WifiDisplayAdapter::RequestScanLocked()
+void WifiDisplayAdapter::RequestStartScanLocked()
 {
     if (DEBUG) {
-        Slogger::D(TAG, "requestScanLocked");
+        Slogger::D(TAG, "RequestStartScanLocked");
     }
 
-    AutoPtr<IRunnable> runnable = new RequestScanRunnable(this);
+    AutoPtr<IRunnable> runnable = new RequestStartScanRunnable(this);
+    Boolean result;
+    GetHandler()->Post(runnable, &result);
+}
+
+void WifiDisplayAdapter::RequestStopScanLocked()
+{
+    if (DEBUG) {
+        Slogger::D(TAG, "RequestStopScanLocked");
+    }
+
+    AutoPtr<IRunnable> runnable = new RequestStopScanRunnable(this);
     Boolean result;
     GetHandler()->Post(runnable, &result);
 }
 
 void WifiDisplayAdapter::RequestConnectLocked(
-    /* [in] */ const String& address,
-    /* [in] */ Boolean trusted)
+    /* [in] */ const String& address)
 {
     if (DEBUG) {
-       Slogger::D(TAG, "requestConnectLocked: address=%s, trusted=%d", address.string(), trusted);
-    }
-
-    if (!trusted) {
-        AutoLock lock(GetSyncRoot());
-
-        if (!IsRememberedDisplayLocked(address)) {
-           Slogger::W(TAG, "Ignoring request by an untrusted client "
-               "to connect to an unknown wifi display: %s", address.string());
-            return;
-        }
+       Slogger::D(TAG, "requestConnectLocked: address=%s", address.string());
     }
 
     AutoPtr<IRunnable> runnable = new RequestConnectRunnable(address, this);
@@ -552,18 +656,26 @@ void WifiDisplayAdapter::RequestConnectLocked(
     GetHandler()->Post(runnable, &result);
 }
 
-Boolean WifiDisplayAdapter::IsRememberedDisplayLocked(
-    /* [in] */ const String& address)
+void WifiDisplayAdapter::RequestPauseLocked()
 {
-    String address2;
-    Int32 length = mRememberedDisplays->GetLength();
-    for (Int32 i = 0; i < length; i++) {
-        (*mRememberedDisplays)[i]->GetDeviceAddress(&address2);
-        if (address2.Equals(address)) {
-            return TRUE;
-        }
+    if (DEBUG) {
+        Slogger::D(TAG, "RequestPauseLocked");
     }
-    return FALSE;
+
+    AutoPtr<IRunnable> runnable = new RequestPauseRunnable(this);
+    Boolean result;
+    GetHandler()->Post(runnable, &result);
+}
+
+void WifiDisplayAdapter::RequestResumeLocked()
+{
+    if (DEBUG) {
+        Slogger::D(TAG, "RequestResumeLocked");
+    }
+
+    AutoPtr<IRunnable> runnable = new RequestResumeRunnable(this);
+    Boolean result;
+    GetHandler()->Post(runnable, &result);
 }
 
 void WifiDisplayAdapter::RequestDisconnectLocked()
@@ -602,7 +714,9 @@ void WifiDisplayAdapter::RequestRenameLocked(
             String deviceName;
             display->GetDeviceName(&deviceName);
             display = NULL;
-            CWifiDisplay::New(address, deviceName, alias, (IWifiDisplay**)&display);
+            assert(0 && "TODO");
+            // CWifiDisplay::New(address, deviceName, alias,
+            //     FALSE, FALSE, FALSE, (IWifiDisplay**)&display);
             if (mPersistentDataStore->RememberWifiDisplay(display)) {
                 mPersistentDataStore->SaveIfNeeded();
                 UpdateRememberedDisplaysLocked();
@@ -643,10 +757,11 @@ void WifiDisplayAdapter::RequestForgetLocked(
 AutoPtr<IWifiDisplayStatus> WifiDisplayAdapter::GetWifiDisplayStatusLocked()
 {
     if (mCurrentStatus == NULL) {
-        CWifiDisplayStatus::New(
-            mFeatureState, mScanState, mActiveDisplayState,
-            mActiveDisplay, mAvailableDisplays, mRememberedDisplays,
-            (IWifiDisplayStatus**)&mCurrentStatus);
+        assert(0 && "TODO");
+        // CWifiDisplayStatus::New(
+        //     mFeatureState, mScanState, mActiveDisplayState,
+        //     mActiveDisplay, mDisplays, mSessionInfo,
+        //     (IWifiDisplayStatus**)&mCurrentStatus);
     }
 
     if (DEBUG) {
@@ -657,11 +772,60 @@ AutoPtr<IWifiDisplayStatus> WifiDisplayAdapter::GetWifiDisplayStatusLocked()
     return mCurrentStatus;
 }
 
+void WifiDisplayAdapter::UpdateDisplaysLocked()
+{
+    Int32 length = mAvailableDisplays->GetLength() + mRememberedDisplays->GetLength();
+    AutoPtr<IList> displays;
+    CArrayList::New(length, (IList**)&displays);
+
+    AutoPtr<ArrayOf<Boolean> > remembered = ArrayOf<Boolean>::Alloc(mAvailableDisplays->GetLength());
+    IWifiDisplay* d;
+    String address, name, alias;
+    for (Int32 i = 0; i < mRememberedDisplays->GetLength(); ++i) {
+        d = (*mRememberedDisplays)[i];
+        Boolean available = FALSE;
+        for (Int32 j = 0; j < mAvailableDisplays->GetLength(); ++j) {
+            if (Object::Equals(d, (*mAvailableDisplays)[j])) {
+                available = TRUE;
+                remembered->Set(i, available);
+                break;
+            }
+        }
+
+        if (!available) {
+            d->GetDeviceAddress(&address);
+            d->GetDeviceName(&name);
+            d->GetDeviceAlias(&alias);
+            AutoPtr<IWifiDisplay> wd;
+            assert(0 && "TODO");
+            // CWifiDisplay::New(address, name, alias, FALSE, FALSE, TRUE, (IWifiDisplay**)&wd);
+            displays->Add(wd.Get());
+        }
+    }
+
+    Boolean canConnect;
+    for (Int32 i = 0; i < mAvailableDisplays->GetLength(); i++) {
+        d = (*mAvailableDisplays)[i];
+        d->GetDeviceAddress(&address);
+        d->GetDeviceName(&name);
+        d->GetDeviceAlias(&alias);
+        d->CanConnect(&canConnect);
+        AutoPtr<IWifiDisplay> wd;
+        assert(0 && "TODO");
+        // CWifiDisplay(address, name, alias, TRUE, canConnect, (*remembered)[i], (IWifiDisplay**)&wd);
+        displays->Add(wd.Get());
+    }
+
+    mDisplays = NULL;
+    Arrays::FromList(displays, (ArrayOf<IWifiDisplay*>**)&mDisplays);
+}
+
 void WifiDisplayAdapter::UpdateRememberedDisplaysLocked()
 {
     mRememberedDisplays = mPersistentDataStore->GetRememberedWifiDisplays();
     mActiveDisplay = mPersistentDataStore->ApplyWifiDisplayAlias(mActiveDisplay);
     mAvailableDisplays = mPersistentDataStore->ApplyWifiDisplayAliases(mAvailableDisplays);
+    UpdateDisplaysLocked();
 }
 
 void WifiDisplayAdapter::FixRememberedDisplayNamesFromAvailableDisplaysLocked()
@@ -725,7 +889,7 @@ void WifiDisplayAdapter::AddDisplayDeviceLocked(
     }
 
     Boolean secure = (flags & IRemoteDisplay::DISPLAY_FLAG_SECURE) != 0;
-    Int32 deviceFlags = 0;
+    Int32 deviceFlags = DisplayDeviceInfo::FLAG_PRESENTATION;;
     if (secure) {
         deviceFlags |= DisplayDeviceInfo::FLAG_SECURE;
         if (mSupportsProtectedBuffers) {
@@ -739,25 +903,22 @@ void WifiDisplayAdapter::AddDisplayDeviceLocked(
     display->GetFriendlyDisplayName(&name);
     display->GetDeviceAddress(&address);
 
-    AutoPtr<ISurfaceHelper> helper;
-    CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&helper);
+    AutoPtr<ISurfaceControlHelper> helper;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&helper);
     AutoPtr<IBinder> displayToken;
     helper->CreateDisplay(name, secure, (IBinder**)&displayToken);
     mDisplayDevice = new WifiDisplayDevice(this, displayToken, name, width, height,
         refreshRate, deviceFlags, address, surface);
 
     SendDisplayDeviceEventLocked(mDisplayDevice, DISPLAY_DEVICE_EVENT_ADDED);
-    ScheduleUpdateNotificationLocked();
 }
 
 void WifiDisplayAdapter::RemoveDisplayDeviceLocked()
 {
     if (mDisplayDevice != NULL) {
-        mDisplayDevice->ClearSurfaceLocked();
+        mDisplayDevice->DestroyLocked();
         SendDisplayDeviceEventLocked(mDisplayDevice, DISPLAY_DEVICE_EVENT_REMOVED);
         mDisplayDevice = NULL;
-
-        ScheduleUpdateNotificationLocked();
     }
 }
 
@@ -780,15 +941,6 @@ void WifiDisplayAdapter::ScheduleStatusChangedBroadcastLocked()
         mPendingStatusChangeBroadcast = TRUE;
         Boolean result;
         mHandler->SendEmptyMessage(MSG_SEND_STATUS_CHANGE_BROADCAST, &result);
-    }
-}
-
-void WifiDisplayAdapter::ScheduleUpdateNotificationLocked()
-{
-    if (!mPendingNotificationUpdate) {
-        mPendingNotificationUpdate = TRUE;
-        Boolean result;
-        mHandler->SendEmptyMessage(MSG_UPDATE_NOTIFICATION, &result);
     }
 }
 
@@ -819,91 +971,6 @@ void WifiDisplayAdapter::HandleSendStatusChangeBroadcast()
 
     // Send protected broadcast about wifi display status to registered receivers.
     GetContext()->SendBroadcastAsUser(intent, all);
-}
-
-// Runs on the handler.
-void WifiDisplayAdapter::HandleUpdateNotification()
-{
-    Boolean isConnected;
-    {
-        AutoLock lock(GetSyncRoot());
-
-        if (!mPendingNotificationUpdate) {
-            return;
-        }
-
-        mPendingNotificationUpdate = FALSE;
-        isConnected = (mDisplayDevice != NULL);
-    }
-
-    AutoPtr<IUserHandle> all;
-    AutoPtr<IUserHandleHelper> helper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-    helper->GetALL((IUserHandle**)&all);
-
-    // Cancel the old notification if there is one.
-    String nullStr;
-    mNotificationManager->CancelAsUser(nullStr,
-        R::string::wifi_display_notification_title, all);
-
-    if (isConnected) {
-        AutoPtr<IContext> context = GetContext();
-
-        AutoPtr<IPendingIntentHelper> piHelper;
-        CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&piHelper);
-
-        AutoPtr<IUserHandle> current;
-        helper->GetCURRENT((IUserHandle**)&current);
-
-        // Initialize pending intents for the notification outside of the lock because
-        // creating a pending intent requires a call into the activity manager.
-        if (mSettingsPendingIntent == NULL) {
-            AutoPtr<IIntent> settingsIntent;
-            CIntent::New(ISettings::ACTION_WIFI_DISPLAY_SETTINGS, (IIntent**)&settingsIntent);
-            settingsIntent->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK
-               | IIntent::FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-               | IIntent::FLAG_ACTIVITY_CLEAR_TOP);
-            piHelper->GetActivityAsUser(
-               context, 0, settingsIntent, 0, NULL, current,
-               (IPendingIntent**)&mSettingsPendingIntent);
-        }
-
-        if (mDisconnectPendingIntent == NULL) {
-            AutoPtr<IIntent> disconnectIntent;
-            CIntent::New(ACTION_DISCONNECT, (IIntent**)&disconnectIntent);
-            piHelper->GetBroadcastAsUser(
-                context, 0, disconnectIntent, 0, current,
-                (IPendingIntent**)&mDisconnectPendingIntent);
-        }
-
-        // Post the notification.
-        AutoPtr<IResources> r;
-        context->GetResources((IResources**)&r);
-        AutoPtr<INotification> notification;
-        AutoPtr<INotificationBuilder> builder;
-        CNotificationBuilder::New(context, (INotificationBuilder**)&builder);
-        String str;
-        r->GetString(R::string::wifi_display_notification_title, &str);
-        AutoPtr<ICharSequence> seq;
-        CString::New(str, (ICharSequence**)&seq);
-        builder->SetContentTitle(seq);
-        r->GetString(R::string::wifi_display_notification_message, &str);
-        seq = NULL;
-        CString::New(str, (ICharSequence**)&seq);
-        builder->SetContentText(seq);
-        builder->SetContentIntent(mSettingsPendingIntent);
-        builder->SetSmallIcon(R::drawable::ic_notify_wifidisplay);
-        builder->SetOngoing(TRUE);
-        r->GetString(R::string::wifi_display_notification_disconnect, &str);
-        seq = NULL;
-        CString::New(str, (ICharSequence**)&seq);
-        builder->AddAction(R::drawable::ic_menu_close_clear_cancel,
-            seq, mDisconnectPendingIntent);
-        builder->Build((INotification**)&notification);
-        mNotificationManager->NotifyAsUser(nullStr,
-            R::string::wifi_display_notification_title,
-            notification, all);
-    }
 }
 
 

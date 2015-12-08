@@ -14,6 +14,7 @@ using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::App::INotificationManager;
 using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Hardware::Display::IWifiDisplaySessionInfo;
 using Elastos::Droid::Hardware::Display::IWifiDisplayStatus;
 using Elastos::Droid::Hardware::Display::IWifiDisplay;
 using Elastos::Droid::View::ISurface;
@@ -86,8 +87,11 @@ private:
         CARAPI OnScanStarted();
 
         //@Override
-        CARAPI OnScanFinished(
+        CARAPI OnScanResults(
            /* [in] */ ArrayOf<IWifiDisplay*>* availableDisplays);
+
+        //@Override
+        CARAPI OnScanFinished();
 
         //@Override
         CARAPI OnDisplayConnecting(
@@ -103,6 +107,10 @@ private:
            /* [in] */ Int32 width,
            /* [in] */ Int32 height,
            /* [in] */ Int32 flags);
+
+        //@Override
+        CARAPI OnDisplaySessionInfo(
+            /* [in] */ IWifiDisplaySessionInfo* sessionInfo);
 
         //@Override
         CARAPI OnDisplayChanged(
@@ -135,7 +143,7 @@ private:
             /* [in] */ const String& address,
             /* [in] */ ISurface* surface);
 
-        CARAPI_(void) ClearSurfaceLocked();
+        CARAPI_(void) DestroyLocked();
 
         CARAPI_(void) SetNameLocked(
             /* [in] */ const String& name);
@@ -187,11 +195,24 @@ private:
         WifiDisplayAdapter* mHost;
     };
 
-    class RequestScanRunnable
+    class RequestStartScanRunnable
         : public Runnable
     {
     public:
-        RequestScanRunnable(
+        RequestStartScanRunnable(
+            /* [in] */ WifiDisplayAdapter* host);
+
+        CARAPI Run();
+
+    private:
+        WifiDisplayAdapter* mHost;
+    };
+
+    class RequestStopScanRunnable
+        : public Runnable
+    {
+    public:
+        RequestStopScanRunnable(
             /* [in] */ WifiDisplayAdapter* host);
 
         CARAPI Run();
@@ -212,6 +233,32 @@ private:
 
     private:
         String mAddress;
+        WifiDisplayAdapter* mHost;
+    };
+
+    class RequestPauseRunnable
+        : public Runnable
+    {
+    public:
+        RequestPauseRunnable(
+            /* [in] */ WifiDisplayAdapter* host);
+
+        CARAPI Run();
+
+    private:
+        WifiDisplayAdapter* mHost;
+    };
+
+    class RequestResumeRunnable
+        : public Runnable
+    {
+    public:
+        RequestResumeRunnable(
+            /* [in] */ WifiDisplayAdapter* host);
+
+        CARAPI Run();
+
+    private:
         WifiDisplayAdapter* mHost;
     };
 
@@ -244,11 +291,16 @@ public:
     //@Override
     CARAPI_(void) RegisterLocked();
 
-    CARAPI_(void) RequestScanLocked();
+    CARAPI_(void) RequestStartScanLocked();
+
+    CARAPI_(void) RequestStopScanLocked();
 
     CARAPI_(void) RequestConnectLocked(
-        /* [in] */ const String& address,
-        /* [in] */ Boolean trusted);
+        /* [in] */ const String& address);
+
+    CARAPI_(void) RequestPauseLocked();
+
+    CARAPI_(void) RequestResumeLocked();
 
     CARAPI_(void) RequestDisconnectLocked();
 
@@ -262,8 +314,7 @@ public:
     CARAPI_(AutoPtr<IWifiDisplayStatus>) GetWifiDisplayStatusLocked();
 
 private:
-    CARAPI_(Boolean) IsRememberedDisplayLocked(
-        /* [in] */ const String& address);
+    CARAPI_(void) UpdateDisplaysLocked();
 
     CARAPI_(void) UpdateRememberedDisplaysLocked();
 
@@ -286,13 +337,8 @@ private:
 
     CARAPI_(void) ScheduleStatusChangedBroadcastLocked();
 
-    CARAPI_(void) ScheduleUpdateNotificationLocked();
-
     // Runs on the handler.
     CARAPI_(void) HandleSendStatusChangeBroadcast();
-
-    // Runs on the handler.
-    CARAPI_(void) HandleUpdateNotification();
 
     CARAPI_(void) HandleRegister();
 
@@ -309,17 +355,12 @@ private:
     static const Boolean DEBUG;// = FALSE;
 
     static const Int32 MSG_SEND_STATUS_CHANGE_BROADCAST = 1;
-    static const Int32 MSG_UPDATE_NOTIFICATION = 2;
 
     static const String ACTION_DISCONNECT;
 
     AutoPtr<WifiDisplayHandler> mHandler;
     AutoPtr<PersistentDataStore> mPersistentDataStore;
     Boolean mSupportsProtectedBuffers;
-    AutoPtr<INotificationManager> mNotificationManager;
-
-    AutoPtr<IPendingIntent> mSettingsPendingIntent;
-    AutoPtr<IPendingIntent> mDisconnectPendingIntent;
 
     AutoPtr<WifiDisplayController> mDisplayController;
     AutoPtr<WifiDisplayDevice> mDisplayDevice;
@@ -329,11 +370,12 @@ private:
     Int32 mScanState;
     Int32 mActiveDisplayState;
     AutoPtr<IWifiDisplay> mActiveDisplay;
+    AutoPtr< ArrayOf<IWifiDisplay*> > mDisplays;
     AutoPtr< ArrayOf<IWifiDisplay*> > mAvailableDisplays;
     AutoPtr< ArrayOf<IWifiDisplay*> > mRememberedDisplays;
+    AutoPtr<IWifiDisplaySessionInfo> mSessionInfo;
 
     Boolean mPendingStatusChangeBroadcast;
-    Boolean mPendingNotificationUpdate;
 
     AutoPtr<IBroadcastReceiver> mBroadcastReceiver;
     AutoPtr<IWifiDisplayControllerListener> mWifiDisplayListener;
