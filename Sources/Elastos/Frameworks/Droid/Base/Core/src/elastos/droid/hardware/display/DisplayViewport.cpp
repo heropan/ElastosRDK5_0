@@ -18,7 +18,7 @@ CAR_INTERFACE_IMPL(DisplayViewport, Object, IDisplayViewport)
 DisplayViewport::DisplayViewport()
 {
     CRect::New((IRect**)&mLogicalFrame);
-    CRect::New((IRect**)&mPysicalFrame);
+    CRect::New((IRect**)&mPhysicalFrame);
 }
 
 ECode DisplayViewport::CopyFrom(
