@@ -93,6 +93,7 @@ ECode EdgeEffect::constructor(
     CPorterDuffXfermode::New(Elastos::Droid::Graphics::PorterDuffMode_SRC_ATOP, (IXfermode**)&mode);
     mPaint->SetXfermode(mode);
 
+    using Elastos::Droid::View::Animation::IInterpolator;
     ASSERT_SUCCEEDED(CDecelerateInterpolator::New((IInterpolator**)&mInterpolator));
 
     return NOERROR;

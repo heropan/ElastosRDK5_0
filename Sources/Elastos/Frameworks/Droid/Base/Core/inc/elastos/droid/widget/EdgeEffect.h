@@ -9,7 +9,6 @@ using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::View::Animation::IInterpolator;
 
 namespace Elastos {
 namespace Droid {
@@ -28,7 +27,7 @@ public:
 
     EdgeEffect();
 
-    ~EdgeEffect();
+    virtual ~EdgeEffect();
 
     /**
      * Construct a new EdgeEffect with a theme appropriate for the provided context.
@@ -207,7 +206,7 @@ private:
     Int64 mStartTime;
     Float mDuration;
 
-    AutoPtr<IInterpolator> mInterpolator;
+    AutoPtr<Elastos::Droid::View::Animation::IInterpolator> mInterpolator;
 
     Int32 mState;
 
