@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CSecurity.h"
 #include "cert/CertificateFactory.h"
 #include "utility/logging/Logger.h"

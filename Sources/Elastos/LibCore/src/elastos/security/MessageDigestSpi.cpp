@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "MessageDigestSpi.h"
 #include <elastos/utility/logging/Logger.h>
 

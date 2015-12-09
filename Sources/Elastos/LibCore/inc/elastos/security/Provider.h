@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_SECURITY_PROVIDER_H__
 #define __ELASTOS_SECURITY_PROVIDER_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "elastos/utility/Properties.h"
 
 using Elastos::IO::IObjectInputStream;

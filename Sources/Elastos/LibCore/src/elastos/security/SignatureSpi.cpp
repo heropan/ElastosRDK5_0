@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "coredef.h"
 #include "SignatureSpi.h"
 #include "utility/logging/Logger.h"

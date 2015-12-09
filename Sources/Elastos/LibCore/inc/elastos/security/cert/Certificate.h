@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CERTIFICATE_H__
 #define __ELASTOS_SECURITY_CERT_CERTIFICATE_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "core/Object.h"
 
 using Elastos::IO::IInputStream;

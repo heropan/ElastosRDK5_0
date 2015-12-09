@@ -2,10 +2,11 @@
 #ifndef __ELASTOS_SECURITY_PERMISSIONCOLLECTION_H__
 #define __ELASTOS_SECURITY_PERMISSIONCOLLECTION_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "Object.h"
 
-using Elastos::Utility::IEnumeration;
 using Elastos::IO::ISerializable;
+using Elastos::Utility::IEnumeration;
 
 namespace Elastos {
 namespace Security {

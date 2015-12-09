@@ -3,7 +3,6 @@
 #define __ELASTOS_SECURITY_MESSAGEDIGESTSPI_H__
 
 #include <coredef.h>
-#include "Elastos.CoreLibrary_server.h"
 #include "core/Object.h"
 
 using Elastos::Core::Object;

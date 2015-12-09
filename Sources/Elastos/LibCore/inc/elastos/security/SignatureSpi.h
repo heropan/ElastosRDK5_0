@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SIGNATURESPI_H__
 #define __ELASTOS_SECURITY_SIGNATURESPI_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "core/Object.h"
 
 using Elastos::IO::IByteBuffer;
