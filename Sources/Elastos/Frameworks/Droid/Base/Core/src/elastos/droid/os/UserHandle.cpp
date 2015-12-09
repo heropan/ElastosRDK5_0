@@ -1,5 +1,5 @@
 #include "elastos/droid/os/UserHandle.h"
-//#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/Binder.h"
 #ifdef DROID_CORE
 #include "elastos/droid/os/CUserHandle.h"
@@ -223,10 +223,63 @@ Int32 UserHandle::GetSharedAppGid(
             - IProcess::FIRST_APPLICATION_UID;
 }
 
+ECode UserHandle::FormatUid(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ Int32 uid)
+{
+    if (uid < IProcess::FIRST_APPLICATION_UID) {
+        sb->Append(uid);
+    }
+    else {
+        sb->AppendChar('u');
+        sb->Append(GetUserId(uid));
+        Int32 appId = GetAppId(uid);
+        if (appId >= IProcess::FIRST_ISOLATED_UID && appId <= IProcess::LAST_ISOLATED_UID) {
+            sb->AppendChar('i');
+            sb->Append(appId - IProcess::FIRST_ISOLATED_UID);
+        }
+        else if (appId >= IProcess::FIRST_APPLICATION_UID) {
+            sb->AppendChar('a');
+            sb->Append(appId - IProcess::FIRST_APPLICATION_UID);
+        }
+        else {
+            sb->AppendChar('s');
+            sb->Append(appId);
+        }
+    }
+    return NOERROR;
+}
+
+ECode UserHandle::FormatUid(
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ Int32 uid)
+{
+    if (uid < IProcess::FIRST_APPLICATION_UID) {
+        pw->Print(uid);
+    }
+    else {
+        pw->PrintChar('u');
+        pw->Print(GetUserId(uid));
+        Int32 appId = GetAppId(uid);
+        if (appId >= IProcess::FIRST_ISOLATED_UID && appId <= IProcess::LAST_ISOLATED_UID) {
+            pw->PrintChar('i');
+            pw->Print(appId - IProcess::FIRST_ISOLATED_UID);
+        }
+        else if (appId >= IProcess::FIRST_APPLICATION_UID) {
+            pw->PrintChar('a');
+            pw->Print(appId - IProcess::FIRST_APPLICATION_UID);
+        }
+        else {
+            pw->PrintChar('s');
+            pw->Print(appId);
+        }
+    }
+    return NOERROR;
+}
+
 Int32 UserHandle::GetMyUserId()
 {
-    assert(0 && "TODO: upgrade");
-    Int32 uid ;//= Process::MyUid();
+    Int32 uid = Process::MyUid();
     return GetUserId(uid);
 }
 

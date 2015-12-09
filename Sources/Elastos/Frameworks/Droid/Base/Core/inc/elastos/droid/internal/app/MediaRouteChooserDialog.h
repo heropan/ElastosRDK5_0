@@ -7,16 +7,18 @@
 
 using Elastos::Droid::App::Dialog;
 using Elastos::Droid::Media::IMediaRouter;
+using Elastos::Droid::Media::IMediaRouterCallback;
 using Elastos::Droid::Media::IMediaRouterRouteInfo;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::Widget::ArrayAdapter;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IButton;
 using Elastos::Droid::Widget::IListView;
-using Elastos::Droid::Widget::IListViewOnItemClickListener;
-using Elastos::Utility::IComparator;
+using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
+using Elastos::Core::IComparator;
 
 namespace Elastos {
 namespace Droid {
@@ -30,12 +32,14 @@ class MediaRouteChooserDialog
 private:
     class RouteAdapter
         : public ArrayAdapter
-        , public IListViewOnItemClickListener
+        , public IAdapterViewOnItemClickListener
     {
     public:
         RouteAdapter(
             /* [in] */ IContext* context,
             /* [in] */ MediaRouteChooserDialog* host);
+
+        CAR_INTERFACE_DECL()
 
         CARAPI Update();
 
@@ -53,7 +57,7 @@ private:
             /* [in] */ Int32 position,
             /* [in] */ IView* convertView,
             /* [in] */ IViewGroup* parent,
-            /* [out] */ IView* retView);
+            /* [out] */ IView** retView);
 
         // @Override
         CARAPI OnItemClick(
@@ -187,7 +191,7 @@ private:
 
     Int32 mRouteTypes;
     AutoPtr<IViewOnClickListener> mExtendedSettingsClickListener;
-    AutoPtr<IRouteAdapter> mAdapter;
+    AutoPtr<RouteAdapter> mAdapter;
     AutoPtr<IListView> mListView;
     AutoPtr<IButton> mExtendedSettingsButton;
     Boolean mAttachedToWindow;
