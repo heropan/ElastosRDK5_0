@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Net.h"
 #include "ServiceLoader.h"
 #include "io/CInputStreamReader.h"
 #include "io/CBufferedReader.h"

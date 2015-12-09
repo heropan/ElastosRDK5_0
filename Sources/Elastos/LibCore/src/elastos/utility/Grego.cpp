@@ -1,6 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Grego.h"
-#include "Elastos.CoreLibrary_server.h"
 
 namespace Elastos {
 namespace Utility {

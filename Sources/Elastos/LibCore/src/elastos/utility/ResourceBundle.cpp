@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "ResourceBundle.h"
 #include "CArrayList.h"
 #include "CString.h"

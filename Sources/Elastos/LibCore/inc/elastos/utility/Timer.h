@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_UTILITY_TIMER_H__
 #define __ELASTOS_UTILITY_TIMER_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Thread.h"
 
 using Elastos::Core::Thread;

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "CHashSet.h"
 #include "CHashMap.h"
 

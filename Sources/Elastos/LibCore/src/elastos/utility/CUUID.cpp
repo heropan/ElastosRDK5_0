@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Security.h"
 #include "CUUID.h"
 #include "StringUtils.h"
 #include "StringBuilder.h"

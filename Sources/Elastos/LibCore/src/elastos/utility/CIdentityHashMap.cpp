@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "CIdentityHashMap.h"
 #include "CSystem.h"
 

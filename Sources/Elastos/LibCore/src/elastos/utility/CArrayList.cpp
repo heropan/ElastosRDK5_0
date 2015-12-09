@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "CArrayList.h"
 
 using Elastos::Core::EIID_ICloneable;
