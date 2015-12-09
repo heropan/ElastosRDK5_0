@@ -2,6 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_CONN_PARAMS_CConnRouteParamBean_H_
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CConnRouteParamBean_H_
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.CoreLibrary.Net.h"
 #include "_Org_Apache_Http_Conn_Params_CConnRouteParamBean.h"
 #include "org/apache/http/params/HttpAbstractParamBean.h"
 #include "elastos/core/Object.h"

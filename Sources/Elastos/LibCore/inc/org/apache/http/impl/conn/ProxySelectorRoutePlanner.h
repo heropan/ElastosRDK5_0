@@ -2,6 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_PROXYSELECTORROUTEPLANNER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_PROXYSELECTORROUTEPLANNER_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Net::IInetSocketAddress;

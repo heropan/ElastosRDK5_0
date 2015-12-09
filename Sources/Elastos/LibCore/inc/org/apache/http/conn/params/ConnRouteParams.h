@@ -2,6 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_CONN_PARAMS_CONNROUTEPARAMS_H__
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CONNROUTEPARAMS_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Net::IInetAddress;

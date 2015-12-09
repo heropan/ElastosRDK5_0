@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/protocol/CBasicHttpContext.h"
 
 namespace Org {

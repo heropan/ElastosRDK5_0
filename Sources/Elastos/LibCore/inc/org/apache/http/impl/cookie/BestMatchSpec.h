@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_BestMatchSpec_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_BestMatchSpec_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/cookie/RFC2965Spec.h"
 #include "org/apache/http/impl/cookie/BrowserCompatSpec.h"
 #include "org/apache/http/impl/cookie/NetScapeDraftSpec.h"

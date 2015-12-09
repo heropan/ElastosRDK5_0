@@ -2,11 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_AUTH_PARAMS_AUTHPARAMS_H__
 #define __ORG_APACHE_HTTP_AUTH_PARAMS_AUTHPARAMS_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "Elastos.CoreLibrary.Apache.h"
 #include <elastos/coredef.h>
 
 using Org::Apache::Http::Params::IHttpParams;

@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_CURIPATTERNMATCHER_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_CURIPATTERNMATCHER_H_
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Protocol_CUriPatternMatcher.h"
 #include "org/apache/http/protocol/UriPatternMatcher.h"
 

@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_PROTOCOL_CRESPONSEPROCESSCOOKIES_H_
 #define __ORG_APACHE_HTTP_CLIENT_PROTOCOL_CRESPONSEPROCESSCOOKIES_H_
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Client_Protocol_CResponseProcessCookies.h"
 #include "elastos/core/Object.h"
 

@@ -2,6 +2,8 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_UTILS_CJARUTILS_H__
 #define __ORG_APACHE_HARMONY_SECURITY_UTILS_CJARUTILS_H__
 
+#include "Elastos.CoreLibrary.Security.h"
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "_Org_Apache_Harmony_Security_Utils_CJarUtils.h"
 #include "core/Singleton.h"
 #include "WrappedX509Certificate.h"

@@ -2,11 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CONN_UTIL_INETADDRESSUTILS_H__
 #define __ORG_APACHE_HTTP_CONN_UTIL_INETADDRESSUTILS_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
 #include "Elastos.CoreLibrary.h"
-#endif
 #include <elastos/coredef.h>
 
 using Elastos::Utility::Regex::IPattern;

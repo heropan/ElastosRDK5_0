@@ -2,6 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_AUTH_BASICSCHEME_H__
 #define __ORG_APACHE_HTTP_IMPL_AUTH_BASICSCHEME_H__
 
+#include "Elastos.CoreLibrary.Security.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/auth/RFC2617Scheme.h"
 
 using Elastos::Utility::IMap;

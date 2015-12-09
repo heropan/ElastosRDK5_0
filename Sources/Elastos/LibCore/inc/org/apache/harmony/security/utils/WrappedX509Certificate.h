@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_UTILS_WRAPPEDX509CERTIFICATE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_UTILS_WRAPPEDX509CERTIFICATE_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "security/cert/X509Certificate.h"
 
 using Elastos::Security::IPublicKey;

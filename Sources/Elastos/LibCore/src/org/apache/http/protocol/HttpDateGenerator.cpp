@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "org/apache/http/protocol/HttpDateGenerator.h"
 #include "elastos/core/CSystem.h"
 #include "elastos/core/AutoLock.h"

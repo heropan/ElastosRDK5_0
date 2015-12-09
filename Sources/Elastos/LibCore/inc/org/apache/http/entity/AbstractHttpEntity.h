@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_ENTITY_ABSTRACTHTTPENTITY_H__
 #define __ORG_APACHE_HTTP_ENTITY_ABSTRACTHTTPENTITY_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHeader;
@@ -129,7 +130,7 @@ public:
      * {@link HttpEntity#isStreaming isStreaming}
      * returns <code>false</code>, and throws an exception
      * if it returns <code>true</code>.
-     * This removes the burden of implementing
+     * This removes the buAbstractHttpEntity.hrden of implementing
      * an empty method for non-streaming entities.
      *
      * @throws IOException      in case of an I/O problem
@@ -144,22 +145,21 @@ protected:
      * Returned by {@link #getContentType getContentType},
      * unless that method is overridden.
      */
-    ECO_PUBLIC AutoPtr<IHeader> mContentType;
+    AutoPtr<IHeader> mContentType;
 
     /**
      * The Content-Encoding header.
      * Returned by {@link #getContentEncoding getContentEncoding},
      * unless that method is overridden.
      */
-    ECO_PUBLIC AutoPtr<IHeader> mContentEncoding;
+    AutoPtr<IHeader> mContentEncoding;
 
     /**
      * The 'chunked' flag.
      * Returned by {@link #isChunked isChunked},
      * unless that method is overridden.
      */
-    ECO_PUBLIC Boolean mChunked;
-
+    Boolean mChunked;
 };
 
 } // namespace Entity

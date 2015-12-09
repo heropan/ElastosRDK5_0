@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CDEROUTPUTSTREAM_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CDEROUTPUTSTREAM_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Harmony_Security_Asn1_CDerOutputStream.h"
 #include "BerOutputStream.h"
 

@@ -2,6 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTSESSIONOUTPUTBUFFER_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTSESSIONOUTPUTBUFFER_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "org/apache/http/impl/io/HttpTransportMetricsImpl.h"
 
 using Elastos::IO::IOutputStream;

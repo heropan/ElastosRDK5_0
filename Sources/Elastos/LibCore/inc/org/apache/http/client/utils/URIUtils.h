@@ -2,11 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_UTILS_URIUTILS_H__
 #define __ORG_APACHE_HTTP_CLIENT_UTILS_URIUTILS_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "Elastos.CoreLibrary.Apache.h"
 
 using Elastos::Net::IURI;
 using Org::Apache::Http::IHttpHost;

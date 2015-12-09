@@ -2,6 +2,8 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_BERINPUTSTREAM_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_BERINPUTSTREAM_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "coredef.h"
 #include "core/Object.h"
 

@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_SOCKETOUTPUTBUFFER_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_SOCKETOUTPUTBUFFER_H__
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/impl/io/AbstractSessionOutputBuffer.h"
 
 using Elastos::Net::ISocket;

@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPE_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "core/Object.h"
 
 using Elastos::Core::Object;

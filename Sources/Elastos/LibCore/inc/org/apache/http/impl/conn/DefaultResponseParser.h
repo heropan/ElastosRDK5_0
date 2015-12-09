@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_DefaultResponseParser_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_DefaultResponseParser_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "org/apache/http/impl/io/AbstractMessageParser.h"
 
 using Org::Apache::Http::IHttpResponseFactory;

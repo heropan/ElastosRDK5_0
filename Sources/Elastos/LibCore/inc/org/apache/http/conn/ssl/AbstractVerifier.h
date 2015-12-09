@@ -2,6 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_CONN_SSL_ABSTRACTVERIFIER_H__
 #define __ORG_APACHE_HTTP_CONN_SSL_ABSTRACTVERIFIER_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.CoreLibrary.Security.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Core::ICharSequence;

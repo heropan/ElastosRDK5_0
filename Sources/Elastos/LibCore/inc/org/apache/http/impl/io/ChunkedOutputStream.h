@@ -2,6 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_ChunkedOutputStream_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_ChunkedOutputStream_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/io/OutputStream.h"
 
 using Elastos::IO::OutputStream;

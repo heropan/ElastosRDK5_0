@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BUFFEREDHEADER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BUFFEREDHEADER_H_
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Core::ICloneable;

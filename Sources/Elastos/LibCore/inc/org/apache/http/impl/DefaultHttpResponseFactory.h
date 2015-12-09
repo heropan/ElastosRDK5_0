@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPRESPONSEFACTORY_H__
 #define __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPRESPONSEFACTORY_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Utility::ILocale;

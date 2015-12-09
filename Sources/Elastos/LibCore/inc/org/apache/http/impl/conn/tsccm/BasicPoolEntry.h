@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_BASICPOOLENTRY_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_BASICPOOLENTRY_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "org/apache/http/impl/conn/AbstractPoolEntry.h"
 
 using Elastos::Utility::IQueue;

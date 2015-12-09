@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CONN_PARAMS_CCONNPERROUTEBEANS_H_
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CCONNPERROUTEBEANS_H_
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Conn_Params_CConnPerRouteBean.h"
 #include "elastos/core/Object.h"
 #include "elastos/utility/etl/HashMap.h"

@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_SOCKETHTTPSERVERCONNECTION_H__
 #define __ORG_APACHE_HTTP_IMPL_SOCKETHTTPSERVERCONNECTION_H__
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/impl/AbstractHttpServerConnection.h"
 
 using Elastos::Net::IInetAddress;

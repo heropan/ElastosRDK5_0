@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CONN_ROUTING_CBASICROUTEDIRECTOR_H_
 #define __ORG_APACHE_HTTP_CONN_ROUTING_CBASICROUTEDIRECTOR_H_
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "_Org_Apache_Http_Conn_Routing_CBasicRouteDirector.h"
 #include "elastos/core/Object.h"
 

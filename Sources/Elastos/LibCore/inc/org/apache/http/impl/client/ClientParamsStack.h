@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_CLIENTPARAMSSTACK_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_CLIENTPARAMSSTACK_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "org/apache/http/params/AbstractHttpParams.h"
 
 using Org::Apache::Http::Params::AbstractHttpParams;

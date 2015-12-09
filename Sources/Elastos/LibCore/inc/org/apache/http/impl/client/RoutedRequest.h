@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_ROUTEDREQUEST_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_ROUTEDREQUEST_H__
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/impl/client/RequestWrapper.h"
 
 using Org::Apache::Http::Conn::Routing::IHttpRoute;

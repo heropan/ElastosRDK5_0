@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CONN_CBASICEOFSENSORWATCHER_H_
 #define __ORG_APACHE_HTTP_CONN_CBASICEOFSENSORWATCHER_H_
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "_Org_Apache_Http_Conn_CBasicEofSensorWatcher.h"
 #include "elastos/core/Object.h"
 

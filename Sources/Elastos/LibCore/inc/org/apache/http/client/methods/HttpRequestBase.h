@@ -2,6 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_METHODS_HTTPREQUESTBASE_H__
 #define __ORG_APACHE_HTTP_CLIENT_METHODS_HTTPREQUESTBASE_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/message/AbstractHttpMessage.h"
 
 using Elastos::Core::ICloneable;

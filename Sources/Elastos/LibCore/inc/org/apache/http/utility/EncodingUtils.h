@@ -2,11 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_UTILITY_ENCODINGUTILS_H_
 #define __ORG_APACHE_HTTP_UTILITY_ENCODINGUTILS_H_
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
 #include "Elastos.CoreLibrary.h"
-#endif
 #include "elastos/coredef.h"
 
 namespace Org {

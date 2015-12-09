@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_RFC2965DISCARDATTRIBUTEHANDLER_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_RFC2965DISCARDATTRIBUTEHANDLER_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "elastos/core/Object.h"
 
 using Org::Apache::Http::Cookie::ICookie;

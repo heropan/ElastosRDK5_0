@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_ENTITY_CBASICHTTPENTITY_H_
 #define __ORG_APACHE_HTTP_ENTITY_CBASICHTTPENTITY_H_
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "_Org_Apache_Http_Entity_CBasicHttpEntity.h"
 #include "org/apache/http/entity/AbstractHttpEntity.h"
 

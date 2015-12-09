@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_NETSCAPEDRAFTHEADERPARSER_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_NETSCAPEDRAFTHEADERPARSER_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "org/apache/http/message/BasicHeaderValueParser.h"
 
 using Elastos::Core::Object;

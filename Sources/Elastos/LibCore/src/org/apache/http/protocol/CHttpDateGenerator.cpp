@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Text.h"
 #include "org/apache/http/protocol/CHttpDateGenerator.h"
 
 namespace Org {
