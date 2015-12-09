@@ -2,6 +2,7 @@
 #ifndef __ORG_XMLPULL_V1_XMLPULLPARSERFACTORY_H__
 #define __ORG_XMLPULL_V1_XMLPULLPARSERFACTORY_H__
 
+#include "Elastos.CoreLibrary.External.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 

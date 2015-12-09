@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CParserAdapter.h"
 #include "CInputSource.h"
 #include "CParserFactory.h"

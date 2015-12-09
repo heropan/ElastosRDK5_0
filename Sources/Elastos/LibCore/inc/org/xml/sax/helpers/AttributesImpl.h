@@ -2,6 +2,7 @@
 #ifndef __ORG_XML_SAX_HELPERS_ATTRIBUTESIMPL_H__
 #define __ORG_XML_SAX_HELPERS_ATTRIBUTESIMPL_H__
 
+#include "Elastos.CoreLibrary.External.h"
 #include "Object.h"
 
 using Org::Xml::Sax::IAttributes;

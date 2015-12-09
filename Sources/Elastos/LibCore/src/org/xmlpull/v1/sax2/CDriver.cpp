@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "sax2/CDriver.h"
 #include <elastos/core/StringBuilder.h>
 #include "XmlPullParserFactory.h"
