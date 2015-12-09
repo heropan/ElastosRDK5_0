@@ -1,8 +1,6 @@
 
 #include "CertPathBuilder.h"
-#ifdef ELASTOS_CORELIBRARY
 #include "CSecurity.h"
-#endif
 
 using Elastos::Security::ISecurity;
 using Elastos::Security::CSecurity;

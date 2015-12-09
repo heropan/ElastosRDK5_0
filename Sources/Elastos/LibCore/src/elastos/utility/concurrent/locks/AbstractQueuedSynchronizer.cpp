@@ -2,16 +2,13 @@
 #include "Elastos.CoreLibrary.Utility.h"
 #include "AbstractQueuedSynchronizer.h"
 #include "LockSupport.h"
+#include "CSystem.h"
 #include <Thread.h>
 #include <cutils/atomic.h>
 #include <StringUtils.h>
 
-#ifdef ELASTOS_CORELIBRARY
-#include "CSystem.h"
-#endif
-
 using Elastos::Core::Thread;
-using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
 using Elastos::Core::StringUtils;
 using Elastos::IO::EIID_ISerializable;
 
@@ -141,14 +138,8 @@ ECode AbstractQueuedSynchronizer::ConditionObject::AwaitNanos(
         return E_INTERRUPTED_EXCEPTION;
     }
 
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
-    AutoPtr<Elastos::Core::CSystem> cs;
-    Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+    AutoPtr<CSystem> system;
+    CSystem::AcquireSingletonByFriend((CSystem**)&system);
 
     AutoPtr<Node> node = AddConditionWaiter();
     Int32 savedState = mHost->FullyRelease(node);
@@ -199,14 +190,8 @@ ECode AbstractQueuedSynchronizer::ConditionObject::AwaitUntil(
         return E_INTERRUPTED_EXCEPTION;
     }
 
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
-    AutoPtr<Elastos::Core::CSystem> cs;
-    Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+    AutoPtr<CSystem> system;
+    CSystem::AcquireSingletonByFriend((CSystem**)&system);
 
     AutoPtr<Node> node = AddConditionWaiter();
     Int32 savedState = mHost->FullyRelease(node);
@@ -251,14 +236,8 @@ ECode AbstractQueuedSynchronizer::ConditionObject::Await(
         return E_INTERRUPTED_EXCEPTION;
     }
 
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
-    AutoPtr<Elastos::Core::CSystem> cs;
-    Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+    AutoPtr<CSystem> system;
+    CSystem::AcquireSingletonByFriend((CSystem**)&system);
 
     AutoPtr<Node> node = AddConditionWaiter();
     Int32 savedState = mHost->FullyRelease(node);
@@ -952,14 +931,8 @@ Boolean AbstractQueuedSynchronizer::DoAcquireNanos(
     /* [in] */ Int64 arg,
     /* [in] */ Int64 nanosTimeout)
 {
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
-    AutoPtr<Elastos::Core::CSystem> cs;
-    Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+    AutoPtr<CSystem> system;
+    CSystem::AcquireSingletonByFriend((CSystem**)&system);
 
     Int64 lastTime;
     system->GetNanoTime(&lastTime);
@@ -1419,14 +1392,8 @@ Boolean AbstractQueuedSynchronizer::DoAcquireSharedNanos(
     /* [in] */ Int32 arg,
     /* [in] */ Int64 nanosTimeout)
 {
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
-    AutoPtr<Elastos::Core::CSystem> cs;
-    Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+    AutoPtr<CSystem> system;
+    CSystem::AcquireSingletonByFriend((CSystem**)&system);
 
     Int64 lastTime;
     system->GetNanoTime(&lastTime);

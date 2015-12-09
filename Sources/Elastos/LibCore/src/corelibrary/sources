@@ -2,6 +2,8 @@
 TARGET_NAME = Elastos.CoreLibrary
 TARGET_TYPE = eco
 
+C_DEFINES += -DELASTOS_CORELIBRARY
+
 include $(MAKEDIR)/../sources.inc
 
 INCLUDES += $(MAKEDIR)/../../inc
@@ -108,9 +110,7 @@ INCLUDES += $(MAKEDIR)/../../inc/org/kxml2/io
 VPATH := $(MAKEDIR)/../elastos/core
 
 SOURCES = Elastos.CoreLibrary.car
-#SOURCES += Elastos.CoreLibrary.def
 SOURCES += AsynchronousCloseMonitor.cpp
-#SOURCES += StrictMath.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 ELASTOS_LIBS += ../elastos/core/elastos.core.lib

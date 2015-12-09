@@ -19,7 +19,6 @@
 #include "unicode/locid.h"
 #include "CLocale.h"
 
-using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::ICharSequence;
@@ -86,14 +85,8 @@ TimeZoneNames::ZoneStringsCache::~ZoneStringsCache()
 AutoPtr<IInterface> TimeZoneNames::ZoneStringsCache::Create(
     /* [in] */ IInterface* key)
 {
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
-    AutoPtr<Elastos::Core::CSystem> cs;
-    Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+    AutoPtr<CSystem> system;
+    CSystem::AcquireSingletonByFriend((CSystem**)&system);
 
     Int64 start = 0, nativeStart = 0;
     system->GetCurrentTimeMillis(&start);

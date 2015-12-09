@@ -1,9 +1,6 @@
 
 #include "CertStore.h"
-
-#ifdef ELASTOS_CORELIBRARY
 #include "CSecurity.h"
-#endif
 
 using Elastos::Security::CSecurity;
 using Elastos::Security::ISecurity;

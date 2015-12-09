@@ -1,4 +1,5 @@
 #include "CoreUtils.h"
+#include "CArrayOf.h"
 #include "CBoolean.h"
 #include "CByte.h"
 #include "CChar32.h"
