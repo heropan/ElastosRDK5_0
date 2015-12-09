@@ -25,6 +25,11 @@ module
      *
      * @hide
      */
+    /**
+     * @Involved
+     * interface ICollection;
+     * interface ISet;
+     */
     interface IArraySet {
         /**
          * Ensure the array map can hold at least <var>minimumCapacity</var>
