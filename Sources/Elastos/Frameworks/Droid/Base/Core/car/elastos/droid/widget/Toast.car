@@ -135,15 +135,6 @@ module
          */
         SetText(
             [in] ICharSequence* s);
-
-        OnHide();
-
-    /**
-     * check whether the toast is showing or not.
-     * @hide
-     */
-        IsShowing(
-            [out] Boolean* showing);
     }
 
     [local]

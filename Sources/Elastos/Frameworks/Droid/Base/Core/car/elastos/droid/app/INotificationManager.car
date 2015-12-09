@@ -1,7 +1,7 @@
 module
 {
     interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.App.ITransientNotification;
+    interface Elastos.Droid.App.IITransientNotification;
     interface Elastos.Droid.App.INotification;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Content.IComponentName;
@@ -26,12 +26,12 @@ module
 
         EnqueueToast(
             [in] String pkg,
-            [in] ITransientNotification* cb,
+            [in] IITransientNotification* cb,
             [in] Int32 duration);
 
         CancelToast(
             [in] String pkg,
-            [in] ITransientNotification* cb);
+            [in] IITransientNotification* cb);
 
         EnqueueNotificationWithTag(
             [in] String pkg,

@@ -320,7 +320,7 @@ private:
 
         CAR_INTERFACE_DECL();
 
-        OnClick(
+        CARAPI OnClick(
             /* [in] */ IView* v);
     private:
         NumberPicker* mHost;
@@ -336,7 +336,7 @@ private:
 
         CAR_INTERFACE_DECL();
 
-        OnLongClick(
+        CARAPI OnLongClick(
             /* [in] */ IView* v,
             /* [out] */ Boolean* result);
     private:
@@ -353,7 +353,7 @@ private:
 
         CAR_INTERFACE_DECL();
 
-        OnFocusChange(
+        CARAPI OnFocusChange(
             /* [in] */ IView* v,
             /* [in] */ Boolean hasFocus);
     private:
@@ -425,6 +425,7 @@ public:
         /* [in] */ IMotionEvent* event,
         /* [out] */ Boolean* res);
 
+    // @Override
     CARAPI OnTouchEvent(
         /* [in] */ IMotionEvent* event,
         /* [out] */ Boolean* res);
@@ -444,16 +445,21 @@ public:
         /* [in] */ IMotionEvent* event,
         /* [out] */ Boolean* res);
 
+    // @Override
     CARAPI ComputeScroll();
 
+    // @Override
     CARAPI SetEnabled(
         /* [in] */ Boolean enabled);
 
+    // @Override
     CARAPI ScrollBy(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 
-    CARAPI_(Int32) GetSolidColor();
+    // @Override
+    CARAPI GetSolidColor(
+        /* [out] */ Int32* color);
 
     CARAPI SetOnValueChangedListener(
         /* [in] */ INumberPickerOnValueChangeListener* onValueChangedListener);
@@ -505,6 +511,7 @@ public:
     CARAPI SetDisplayedValues(
         /* [in] */ ArrayOf<String>* displayedValues);
 
+    // @Override
     CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
@@ -513,24 +520,30 @@ public:
         /* [out] */ IAccessibilityNodeProvider** provider);
 
 protected:
-    CARAPI OnLayout(
+    // @Override
+    virtual CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 letf,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
 
-    CARAPI_(void) OnMeasure(
+    // @Override
+    virtual CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
-    CARAPI_(Float) GetTopFadingEdgeStrength();
+    // @Override
+    virtual CARAPI_(Float) GetTopFadingEdgeStrength();
 
-    CARAPI_(Float) GetBottomFadingEdgeStrength();
+    // @Override
+    virtual CARAPI_(Float) GetBottomFadingEdgeStrength();
 
+    // @Override
     virtual CARAPI OnDetachedFromWindow();
 
-    CARAPI_(void) OnDraw(
+    // @Override
+    virtual CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
     // @Override

@@ -26,52 +26,75 @@ namespace Widget {
  * android.R.styleable#View View Attributes}
  * </p>
  */
-
 class CompoundButton
     : public Button
     , public ICompoundButton
     , public ICheckable
 {
-protected:
-    class CompoundButtonSavedState
+public:
+    class SavedState
         : public View::BaseSavedState
+        , public ICompoundButtonSavedState
     {
+        friend class CompoundButton;
     public:
-        CompoundButtonSavedState();
+        CAR_INTERFACE_DECL();
 
-        CARAPI constructor();
+        SavedState();
+
+        ~SavedState();
 
         CARAPI constructor(
             /* [in] */ IParcelable* superState);
 
+        CARAPI constructor();
+
+        // @Override
         CARAPI WriteToParcel(
-            /* [in] */ IParcel* dest);
+            /* [in] */ IParcel* out);
 
+        // @Override
         CARAPI ReadFromParcel(
-            /* [in] */ IParcel* source);
+            /* [in] */ IParcel* in);
 
-    public:
-        Boolean mChecked;
+        // @Override
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+    protected:
+        Boolean mSavedStateChecked;
     };
 
 public:
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     CompoundButton();
 
     CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyleAttr = 0,
-        /* [in] */ Int32 defStyleRes = 0);
+        /* [in] */ IContext* context);
 
-    virtual CARAPI Toggle();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    CARAPI Toggle();
 
     //@Override
-    CARAPI_(Boolean) PerformClick();
+    CARAPI PerformClick(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) IsChecked();
-
+    //@ViewDebug.ExportedProperty
     CARAPI IsChecked(
         /* [out] */ Boolean* isChecked);
 
@@ -80,7 +103,7 @@ public:
      *
      * @param checked TRUE to check the button, FALSE to uncheck it
      */
-    virtual CARAPI SetChecked(
+    CARAPI SetChecked(
         /* [in] */ Boolean checked);
 
     /**
@@ -89,7 +112,7 @@ public:
      *
      * @param listener the callback to call on checked state change
      */
-    virtual CARAPI SetOnCheckedChangeListener(
+    CARAPI SetOnCheckedChangeListener(
         /* [in] */ ICompoundButtonOnCheckedChangeListener* listener);
 
     /**
@@ -99,61 +122,111 @@ public:
      * @param listener the callback to call on checked state change
      * @hide
      */
-    virtual CARAPI SetOnCheckedChangeWidgetListener(
+    CARAPI SetOnCheckedChangeWidgetListener(
         /* [in] */ ICompoundButtonOnCheckedChangeListener* listener);
 
     /**
-     * Set the background to a given Drawable, identified by its resource id.
+     * Set the button graphic to a given Drawable, identified by its resource
+     * id.
      *
-     * @param resid the resource id of the drawable to use as the background
+     * @param resid the resource id of the drawable to use as the button
+     *        graphic
      */
-    virtual CARAPI SetButtonDrawable(
+    CARAPI SetButtonDrawable(
         /* [in] */ Int32 resid);
 
     /**
-     * Set the background to a given Drawable
+     * Set the button graphic to a given Drawable
      *
-     * @param d The Drawable to use as the background
+     * @param d The Drawable to use as the button graphic
      */
-    virtual CARAPI SetButtonDrawable(
+    CARAPI SetButtonDrawable(
         /* [in] */ IDrawable* d);
 
-    //@Override
-    virtual CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
-
-    //@Override
-    virtual CARAPI_(void) OnRestoreInstanceState(
-        /* [in] */ IParcelable* state);
-
-    virtual CARAPI OnInitializeAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event);
-
-    virtual CARAPI OnInitializeAccessibilityNodeInfo(
-        /* [in] */ IAccessibilityNodeInfo* info);
-
-    virtual CARAPI_(Int32) GetCompoundPaddingLeft();
-
-    virtual CARAPI_(Int32) GetCompoundPaddingRight();
-
-    virtual CARAPI JumpDrawablesToCurrentState();
-
-    virtual CARAPI_(Int32) GetHorizontalOffsetForDrawables();
-
+    /**
+     * Applies a tint to the button drawable. Does not modify the current tint
+     * mode, which is {@link PorterDuff.Mode#SRC_IN} by default.
+     * <p>
+     * Subsequent calls to {@link #setButtonDrawable(Drawable)} will
+     * automatically mutate the drawable and apply the specified tint and tint
+     * mode using
+     * {@link Drawable#setTintList(ColorStateList)}.
+     *
+     * @param tint the tint to apply, may be {@code null} to clear tint
+     *
+     * @attr ref android.R.styleable#CompoundButton_buttonTint
+     * @see #setButtonTintList(ColorStateList)
+     * @see Drawable#setTintList(ColorStateList)
+     */
     CARAPI SetButtonTintList(
         /* [in] */ IColorStateList* tint);
 
+    /**
+     * @return the tint applied to the button drawable
+     * @attr ref android.R.styleable#CompoundButton_buttonTint
+     * @see #setButtonTintList(ColorStateList)
+     */
+    //@Nullable
     CARAPI GetButtonTintList(
         /* [out] */ IColorStateList** tint);
 
+    /**
+     * Specifies the blending mode used to apply the tint specified by
+     * {@link #setButtonTintList(ColorStateList)}} to the button drawable. The
+     * default mode is {@link PorterDuff.Mode#SRC_IN}.
+     *
+     * @param tintMode the blending mode used to apply the tint, may be
+     *                 {@code null} to clear tint
+     * @attr ref android.R.styleable#CompoundButton_buttonTintMode
+     * @see #getButtonTintMode()
+     * @see Drawable#setTintMode(PorterDuff.Mode)
+     */
     CARAPI SetButtonTintMode(
         /* [in] */ Elastos::Droid::Graphics::PorterDuffMode tintMode);
 
+    /**
+     * @return the blending mode used to apply the tint to the button drawable
+     * @attr ref android.R.styleable#CompoundButton_buttonTintMode
+     * @see #setButtonTintMode(PorterDuff.Mode)
+     */
+    //@Nullable
     CARAPI GetButtonTintMode(
         /* [out] */ Elastos::Droid::Graphics::PorterDuffMode* tintMode);
 
+    // @Override
+    CARAPI OnInitializeAccessibilityEvent(
+        /* [in] */ IAccessibilityEvent* event);
+
+    // @Override
+    CARAPI OnInitializeAccessibilityNodeInfo(
+        /* [in] */ IAccessibilityNodeInfo* info);
+
+    // @Override
+    CARAPI GetCompoundPaddingLeft(
+        /* [out] */ Int32* left);
+
+    // @Override
+    CARAPI GetCompoundPaddingRight(
+        /* [out] */ Int32* right);
+
+    // @Override
+    CARAPI GetHorizontalOffsetForDrawables(
+        /* [out] */ Int32* offset);
+
+    // @Override
     CARAPI DrawableHotspotChanged(
         /* [in] */ Float x,
         /* [in] */ Float y);
+
+    // @Override
+    CARAPI JumpDrawablesToCurrentState();
+
+    //@Override
+    CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
+
+    //@Override
+    CARAPI_(void) OnRestoreInstanceState(
+        /* [in] */ IParcelable* state);
 
 protected:
     //@Override
@@ -173,13 +246,7 @@ protected:
         /* [in] */ IDrawable* who);
 
 private:
-    CARAPI InitFromAttributes(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyleAttr = 0,
-        /* [in] */ Int32 defStyleRes = 0);
-
-    CARAPI ApplyButtonTint();
+    CARAPI_(void) ApplyButtonTint();
 
 private:
     Boolean mChecked;

@@ -138,8 +138,6 @@ public:
      *
      * @attr ref android.R.styleable#Switch_switchPadding
      */
-    CARAPI_(Int32) GetSwitchPadding();
-
     CARAPI GetSwitchPadding(
         /* [out] */ Int32* padding);
 
@@ -162,8 +160,6 @@ public:
      *
      * @attr ref android.R.styleable#Switch_switchMinWidth
      */
-    CARAPI_(Int32) GetSwitchMinWidth();
-
     CARAPI GetSwitchMinWidth(
         /* [out] */ Int32* width);
 
@@ -184,8 +180,6 @@ public:
      *
      * @attr ref android.R.styleable#Switch_thumbTextPadding
      */
-    CARAPI_(Int32) GetThumbTextPadding();
-
     CARAPI GetThumbTextPadding(
         /* [out] */ Int32* padding);
 
@@ -216,8 +210,6 @@ public:
      *
      * @attr ref android.R.styleable#Switch_track
      */
-    CARAPI_(AutoPtr<IDrawable>) GetTrackDrawable();
-
     CARAPI GetTrackDrawable(
         /* [out] */ IDrawable** drawable);
 
@@ -251,8 +243,6 @@ public:
       *
       * @attr ref android.R.styleable#Switch_thumb
       */
-    CARAPI_(AutoPtr<IDrawable>) GetThumbDrawable();
-
     CARAPI GetThumbDrawable(
         /* [out] */ IDrawable** drawable);
 
@@ -261,8 +251,6 @@ public:
      *
      * @attr ref android.R.styleable#Switch_textOn
      */
-    CARAPI_(AutoPtr<ICharSequence>) GetTextOn();
-
     CARAPI GetTextOn(
         /* [out] */ ICharSequence** c);
 
@@ -279,8 +267,6 @@ public:
      *
      * @attr ref android.R.styleable#Switch_textOff
      */
-    CARAPI_(AutoPtr<ICharSequence>) GetTextOff();
-
     CARAPI GetTextOff(
         /* [out] */ ICharSequence** off);
 
@@ -300,37 +286,21 @@ public:
     CARAPI OnPopulateAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* res);
 
     CARAPI SetChecked(
         /* [in] */ Boolean checked);
 
-    CARAPI OnLayout(
-        /* [in] */ Boolean changed,
-        /* [in] */ Int32 left,
-        /* [in] */ Int32 top,
-        /* [in] */ Int32 right,
-        /* [in] */ Int32 bottom);
-
     CARAPI Draw(
         /* [in] */ ICanvas* canvas);
 
-    CARAPI_(void) OnDraw(
-        /* [in] */ ICanvas* canvas);
+    CARAPI GetCompoundPaddingLeft(
+        /* [out] */ Int32* left);
 
-    CARAPI_(Int32) GetCompoundPaddingLeft();
-
-    CARAPI_(Int32) GetCompoundPaddingRight();
-
-    CARAPI OnCreateDrawableState(
-        /* [in] */ Int32 extraSpace,
-        /* [out, callee] */ ArrayOf<Int32>** drawableState);
-
-    CARAPI DrawableStateChanged();
-
-    CARAPI_(Boolean) VerifyDrawable(
-        /* [in] */ IDrawable* who);
+    CARAPI GetCompoundPaddingRight(
+        /* [out] */ Int32* right);
 
     CARAPI JumpDrawablesToCurrentState();
 
@@ -357,6 +327,31 @@ public:
     CARAPI DrawableHotspotChanged(
         /* [in] */ Float x,
         /* [in] */ Float y);
+
+protected:
+    // @Override
+    virtual CARAPI OnLayout(
+        /* [in] */ Boolean changed,
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
+
+    // @Override
+    virtual CARAPI_(void) OnDraw(
+        /* [in] */ ICanvas* canvas);
+
+    // @Override
+    virtual CARAPI OnCreateDrawableState(
+        /* [in] */ Int32 extraSpace,
+        /* [out, callee] */ ArrayOf<Int32>** drawableState);
+
+    // @Override
+    virtual CARAPI DrawableStateChanged();
+
+    // @Override
+    virtual CARAPI_(Boolean) VerifyDrawable(
+        /* [in] */ IDrawable* who);
 
 private:
     CARAPI_(void) SetSwitchTypefaceByIndex(
@@ -399,7 +394,6 @@ private:
     CARAPI_(void) CancelPositionAnimator();
 
 private:
-
     static const Int32 THUMB_ANIMATION_DURATION = 250;
     static const Int32 TOUCH_MODE_IDLE = 0;
     static const Int32 TOUCH_MODE_DOWN = 1;

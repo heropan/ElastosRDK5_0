@@ -17,15 +17,17 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Widget.ILinearLayoutLayoutParams
+     * interface Elastos.Droid.Widget.IViewGroupMarginLayoutParams
+     * interface Elastos.Droid.Widget.IViewGroupLayoutParams
      */
     interface IRadioGroupLayoutParams {
     }
 
     /**
      * @Involve
-     * extends Elastos.Droid.View.IView
-     * extends Elastos.Droid.View.IViewGroup
      * extends Elastos.Droid.Widget.ILinearLayout
+     * extends Elastos.Droid.View.IViewGroup
+     * extends Elastos.Droid.View.IView
      *
      * interface Elastos.Droid.View.IViewParent
      * interface Elastos.Droid.View.IViewManager

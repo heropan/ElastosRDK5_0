@@ -10,12 +10,77 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
-class RadioGroup : public LinearLayout
+class RadioGroup
+    : public LinearLayout
+    , public IRadioGroup
 {
+public:
+    class LayoutParams
+        : public LinearLayout::LayoutParams
+        , public IRadioGroupLayoutParams
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        LayoutParams();
+
+        ~LayoutParams();
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs);
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height);
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height,
+            /* [in] */ Float weight);
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ IViewGroupLayoutParams* source);
+
+        /**
+         * {@inheritDoc}
+         */
+        CARAPI constructor(
+            /* [in] */ IViewGroupMarginLayoutParams* source);
+
+    protected:
+        /**
+         * <p>Fixes the child's width to
+         * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} and the child's
+         * height to  {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}
+         * when not specified in the XML file.</p>
+         *
+         * @param a the styled attributes set
+         * @param widthAttr the width attribute to fetch
+         * @param heightAttr the height attribute to fetch
+         */
+        // @Override
+        virtual CARAPI SetBaseAttributes(
+            /* [in] */ ITypedArray* a,
+            /* [in] */ Int32 widthAttr,
+            /* [in] */ Int32 heightAttr);
+    };
+
 private:
     class CheckedStateTracker
-        : public ElRefBase
+        : public Object
         , public ICompoundButtonOnCheckedChangeListener
     {
     public:
@@ -38,7 +103,7 @@ private:
      * hierarchy change listener without preventing the user to setup his.</p>
      */
     class PassThroughHierarchyChangeListener
-        : public ElRefBase
+        : public Object
         , public IViewGroupOnHierarchyChangeListener
     {
         friend class RadioGroup;
@@ -48,10 +113,16 @@ private:
         PassThroughHierarchyChangeListener(
             /* [in] */ RadioGroup* host);
 
+        /**
+         * {@inheritDoc}
+         */
         CARAPI OnChildViewAdded(
             /* [in] */ IView* parent,
             /* [in] */ IView* child);
 
+        /**
+         * {@inheritDoc}
+         */
         CARAPI OnChildViewRemoved(
             /* [in] */ IView* parent,
             /* [in] */ IView* child);
@@ -62,63 +133,118 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     RadioGroup();
 
-    RadioGroup(
+    ~RadioGroup();
+
+    /**
+     * {@inheritDoc}
+     */
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    RadioGroup(
+    /**
+     * {@inheritDoc}
+     */
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
+    /**
+     * {@inheritDoc}
+     */
+    //@Override
     CARAPI SetOnHierarchyChangeListener(
         /* [in] */ IViewGroupOnHierarchyChangeListener* listener);
 
-    using LinearLayout::AddView;
-
+    //@Override
     CARAPI AddView(
         /* [in] */ IView* child,
         /* [in] */ Int32 index,
         /* [in] */ IViewGroupLayoutParams* params);
 
-    virtual CARAPI Check(
+    /**
+     * <p>Sets the selection to the radio button whose identifier is passed in
+     * parameter. Using -1 as the selection identifier clears the selection;
+     * such an operation is equivalent to invoking {@link #clearCheck()}.</p>
+     *
+     * @param id the unique id of the radio button to select in this group
+     *
+     * @see #getCheckedRadioButtonId()
+     * @see #clearCheck()
+     */
+    CARAPI Check(
         /* [in] */ Int32 id);
 
-    virtual CARAPI_(Int32) GetCheckedRadioButtonId();
+    /**
+     * <p>Returns the identifier of the selected radio button in this group.
+     * Upon empty selection, the returned value is -1.</p>
+     *
+     * @return the unique id of the selected radio button in this group
+     *
+     * @see #check(Int32)
+     * @see #clearCheck()
+     */
+    CARAPI GetCheckedRadioButtonId(
+        /* [out] */ Int32* id);
 
-    virtual CARAPI ClearCheck();
+    /**
+     * <p>Clears the selection. When the selection is cleared, no radio button
+     * in this group is selected and {@link #getCheckedRadioButtonId()} returns
+     * null.</p>
+     *
+     * @see #check(Int32)
+     * @see #getCheckedRadioButtonId()
+     */
+    CARAPI ClearCheck();
 
-    virtual CARAPI SetOnCheckedChangeListener(
+    /**
+     * <p>Register a callback to be invoked when the checked radio button
+     * changes in this group.</p>
+     *
+     * @param listener the callback to call on checked state change
+     */
+    CARAPI SetOnCheckedChangeListener(
         /* [in] */ IRadioGroupOnCheckedChangeListener* listener);
 
+    /**
+     * {@inheritDoc}
+     */
+    //@Override
     CARAPI GenerateLayoutParams(
         /* [in] */ IAttributeSet* attrs,
         /* [out] */ IViewGroupLayoutParams** params);
 
-    virtual CARAPI OnInitializeAccessibilityEvent(
+    //@Override
+    CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
-    virtual CARAPI OnInitializeAccessibilityNodeInfo(
+    //@Override
+    CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
+    /**
+     * {@inheritDoc}
+     */
+    //@Override
     CARAPI OnFinishInflate();
 
+    /**
+     * {@inheritDoc}
+     */
+    //@Override
     CARAPI_(Boolean) CheckLayoutParams(
         /* [in] */ IViewGroupLayoutParams* p);
 
+    //@Override
     CARAPI GenerateDefaultLayoutParams(
         /* [out] */ ILinearLayoutLayoutParams** params);
 
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
 private:
-    CARAPI_(void) InitInternal();
+    CARAPI_(void) Init();
 
     CARAPI_(void) SetCheckedId(
         /* [in] */ Int32 id);

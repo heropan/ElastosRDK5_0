@@ -2,40 +2,17 @@
 #define __ELASTOS_DROID_WIDGET_CRADIOGROUPLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_Widget_CRadioGroupLayoutParams.h"
-
-#include "elastos/droid/widget/RadioGroupLayoutParams.h"
-
+#include "elastos/droid/widget/RadioGroup.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-CarClass(CRadioGroupLayoutParams), public RadioGroupLayoutParams
+CarClass(CRadioGroupLayoutParams)
+    , public RadioGroup::LayoutParams
 {
 public:
-
-    IVIEWGROUPLP_METHODS_DECL()
-    IVIEWGROUPMARGINLP_METHODS_DECL()
-    ILINEARLAYOUTLP_METHODS_DECL()
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    CARAPI constructor(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Float weight);
-
-    CARAPI constructor(
-        /* [in] */ IViewGroupLayoutParams* source);
-
-    CARAPI constructor(
-        /* [in] */ IViewGroupMarginLayoutParams* source);
+    CAR_OBJECT_DECL();
 };
 
 }// namespace Widget

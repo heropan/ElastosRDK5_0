@@ -29,8 +29,19 @@ module
 
     /**
      * @Involve
-     * extends Elastos.Droid.View.IView
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     * interface Elastos.Droid.View.IAbsSavedState
+     * interface IParcelable
+     */
+    interface ICompoundButtonSavedState {
+
+    }
+
+    /**
+     * @Involve
+     * extends Elastos.Droid.Widget.IButton
      * extends Elastos.Droid.Widget.ITextView
+     * extends Elastos.Droid.View.IView
      *
      * interface Elastos.Droid.View.OnPreDrawListener
      * interface Elastos.Droid.View.IKeyEventCallback
@@ -41,37 +52,39 @@ module
 
     interface ICompoundButton {
         /**
-             * Register a callback to be invoked when the checked state of this button
-             * changes.
-             *
-             * @param listener the callback to call on checked state change
-             */
+         * Register a callback to be invoked when the checked state of this button
+         * changes.
+         *
+         * @param listener the callback to call on checked state change
+         */
         SetOnCheckedChangeListener(
             [in] ICompoundButtonOnCheckedChangeListener* listener);
 
         /**
-             * Register a callback to be invoked when the checked state of this button
-             * changes. This callback is used for internal purpose only.
-             *
-             * @param listener the callback to call on checked state change
-             * @hide
-             */
+         * Register a callback to be invoked when the checked state of this button
+         * changes. This callback is used for internal purpose only.
+         *
+         * @param listener the callback to call on checked state change
+         * @hide
+         */
         SetOnCheckedChangeWidgetListener(
             [in] ICompoundButtonOnCheckedChangeListener* listener);
 
         /**
-             * Set the background to a given Drawable, identified by its resource id.
-             *
-             * @param resid the resource id of the drawable to use as the background
-             */
+         * Set the button graphic to a given Drawable, identified by its resource
+         * id.
+         *
+         * @param resid the resource id of the drawable to use as the button
+         *        graphic
+         */
         SetButtonDrawable(
             [in] Int32 resid);
 
         /**
-             * Set the background to a given Drawable
-             *
-             * @param d The Drawable to use as the background
-             */
+         * Set the button graphic to a given Drawable
+         *
+         * @param d The Drawable to use as the button graphic
+         */
         SetButtonDrawable(
             [in] IDrawable* d);
 
@@ -101,7 +114,6 @@ module
          */
         GetButtonTintList(
             [out] IColorStateList** tint);
-
 
         /**
          * Specifies the blending mode used to apply the tint specified by

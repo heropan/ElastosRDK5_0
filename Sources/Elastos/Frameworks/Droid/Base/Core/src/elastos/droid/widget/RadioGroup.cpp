@@ -1,12 +1,13 @@
 
 #include "elastos/droid/widget/RadioGroup.h"
-#include "elastos/droid/R.h"
 #include "elastos/droid/widget/CRadioGroupLayoutParams.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/CoreUtils.h>
 
-using Elastos::Core::CStringWrapper;
-using Elastos::Droid::R;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::EIID_IViewGroupOnHierarchyChangeListener;
-using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::R;
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +17,78 @@ namespace Widget {
 //              RadioGroup::CheckedStateTracker
 //==============================================================================
 
-CAR_INTERFACE_IMPL(RadioGroup::CheckedStateTracker, ICompoundButtonOnCheckedChangeListener);
+CAR_INTERFACE_IMPL(RadioGroup::LayoutParams, LinearLayout::LayoutParams, IRadioGroupLayoutParams);
+
+RadioGroup::LayoutParams::LayoutParams()
+{}
+
+RadioGroup::LayoutParams::~LayoutParams()
+{}
+
+ECode RadioGroup::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return LinearLayout::LayoutParams::constructor(c, attrs);
+}
+
+ECode RadioGroup::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    return LinearLayout::LayoutParams::constructor(width, height);
+}
+
+ECode RadioGroup::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Float weight)
+{
+    return LinearLayout::LayoutParams::constructor(width, height, weight);
+}
+
+ECode RadioGroup::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* p)
+{
+    return LinearLayout::LayoutParams::constructor(p);
+}
+
+ECode RadioGroup::LayoutParams::constructor(
+    /* [in] */ IViewGroupMarginLayoutParams* source)
+{
+    return LinearLayout::LayoutParams::constructor(source);
+}
+
+ECode RadioGroup::LayoutParams::SetBaseAttributes(
+    /* [in] */ ITypedArray* a,
+    /* [in] */ Int32 widthAttr,
+    /* [in] */ Int32 heightAttr)
+{
+    Boolean res;
+    a->HasValue(widthAttr, &res);
+    if (res) {
+        FAIL_RETURN(a->GetLayoutDimension(widthAttr, String("layout_width"), &mWidth));
+    }
+    else {
+        mWidth = IViewGroupLayoutParams::WRAP_CONTENT;
+    }
+
+    a->HasValue(heightAttr, &res);
+    if (res) {
+        FAIL_RETURN(a->GetLayoutDimension(heightAttr, String("layout_height"), &mHeight));
+    }
+    else {
+        mHeight = IViewGroupLayoutParams::WRAP_CONTENT;
+    }
+
+    return NOERROR;
+}
+
+//==============================================================================
+//              RadioGroup::CheckedStateTracker
+//==============================================================================
+
+CAR_INTERFACE_IMPL(RadioGroup::CheckedStateTracker, Object, ICompoundButtonOnCheckedChangeListener);
 
 RadioGroup::CheckedStateTracker::CheckedStateTracker(
     /* [in] */ RadioGroup* host)
@@ -39,7 +111,7 @@ ECode RadioGroup::CheckedStateTracker::OnCheckedChanged(
     mHost->mProtectFromCheckedChange = FALSE;
 
     Int32 id;
-    buttonView->GetId(&id);
+    IVIEW_PROBE(buttonView)->GetId(&id);
     mHost->SetCheckedId(id);
 
     return NOERROR;
@@ -49,22 +121,19 @@ ECode RadioGroup::CheckedStateTracker::OnCheckedChanged(
 //              RadioGroup::PassThroughHierarchyChangeListener
 //==============================================================================
 
-CAR_INTERFACE_IMPL(RadioGroup::PassThroughHierarchyChangeListener, IViewGroupOnHierarchyChangeListener);
+CAR_INTERFACE_IMPL(RadioGroup::PassThroughHierarchyChangeListener, Object, IViewGroupOnHierarchyChangeListener);
 
 RadioGroup::PassThroughHierarchyChangeListener::PassThroughHierarchyChangeListener(
     /* [in] */ RadioGroup* host)
     : mHost(host)
 {}
 
-/**
- * {@inheritDoc}
- */
 ECode RadioGroup::PassThroughHierarchyChangeListener::OnChildViewAdded(
     /* [in] */ IView* parent,
     /* [in] */ IView* child)
 {
     IRadioButton* rb = IRadioButton::Probe(child);
-    IView* hostView = (IView*)mHost->Probe(EIID_IView);
+    IView* hostView = IVIEW_PROBE(mHost);
     if (parent == hostView && NULL != rb) {
         Int32 id;
         child->GetId(&id);
@@ -73,7 +142,7 @@ ECode RadioGroup::PassThroughHierarchyChangeListener::OnChildViewAdded(
             id = View::GenerateViewId();
             child->SetId(id);
         }
-        rb->SetOnCheckedChangeWidgetListener(mHost->mChildOnCheckedChangeListener);
+        ICompoundButton::Probe(rb)->SetOnCheckedChangeWidgetListener(mHost->mChildOnCheckedChangeListener);
     }
 
     if (mOnHierarchyChangeListener != NULL) {
@@ -83,17 +152,14 @@ ECode RadioGroup::PassThroughHierarchyChangeListener::OnChildViewAdded(
     return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
 ECode RadioGroup::PassThroughHierarchyChangeListener::OnChildViewRemoved(
     /* [in] */ IView* parent,
     /* [in] */ IView* child)
 {
     IRadioButton* rb = IRadioButton::Probe(child);
-    IView* hostView = (IView*)mHost->Probe(EIID_IView);
+    IView* hostView = IVIEW_PROBE(mHost);
     if (parent == hostView && NULL != rb) {
-        rb->SetOnCheckedChangeWidgetListener(NULL);
+        ICompoundButton::Probe(rb)->SetOnCheckedChangeWidgetListener(NULL);
     }
 
     if (mOnHierarchyChangeListener != NULL) {
@@ -107,51 +173,30 @@ ECode RadioGroup::PassThroughHierarchyChangeListener::OnChildViewRemoved(
 //              RadioGroup
 //==============================================================================
 
+CAR_INTERFACE_IMPL(RadioGroup, LinearLayout, IRadioGroup);
+
 RadioGroup::RadioGroup()
     : mCheckedId(-1)
     , mProtectFromCheckedChange(FALSE)
 {}
 
-/**
- * {@inheritDoc}
- */
-RadioGroup::RadioGroup(
-    /* [in] */ IContext* context)
-    : LinearLayout(context)
-    , mCheckedId(-1)
-    , mProtectFromCheckedChange(FALSE)
-{
-    SetOrientation(ILinearLayout::VERTICAL);
-    InitInternal();
-}
+RadioGroup::~RadioGroup()
+{}
 
-/**
- * {@inheritDoc}
- */
-RadioGroup::RadioGroup(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : mCheckedId(-1)
-    , mProtectFromCheckedChange(FALSE)
-{
-    Init(context, attrs);
-}
-
-ECode RadioGroup::Init(
+ECode RadioGroup::constructor(
     /* [in] */ IContext* context)
 {
-    FAIL_RETURN(LinearLayout::Init(context));
+    LinearLayout::constructor(context);
     SetOrientation(ILinearLayout::VERTICAL);
-    InitInternal();
-
+    Init();
     return NOERROR;
 }
 
-ECode RadioGroup::Init(
+RadioGroup::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(LinearLayout::Init(context, attrs));
+    FAIL_RETURN(LinearLayout::constructor(context, attrs));
 
     // retrieve selected radio button as requested by the user in the
     // XML layout file
@@ -174,22 +219,18 @@ ECode RadioGroup::Init(
     SetOrientation(index);
 
     attributes->Recycle();
-    InitInternal();
+    Init();
 
     return NOERROR;
 }
 
-void RadioGroup::InitInternal()
+void RadioGroup::Init()
 {
     mChildOnCheckedChangeListener = new CheckedStateTracker(this);
     mPassThroughListener = new PassThroughHierarchyChangeListener(this);
     LinearLayout::SetOnHierarchyChangeListener(mPassThroughListener.Get());
 }
 
-/**
- * {@inheritDoc}
- */
-//@Override
 ECode RadioGroup::SetOnHierarchyChangeListener(
     /* [in] */ IViewGroupOnHierarchyChangeListener* listener)
 {
@@ -198,10 +239,6 @@ ECode RadioGroup::SetOnHierarchyChangeListener(
     return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-//@Override
 ECode RadioGroup::OnFinishInflate()
 {
     LinearLayout::OnFinishInflate();
@@ -217,7 +254,6 @@ ECode RadioGroup::OnFinishInflate()
     return NOERROR;
 }
 
-//@Override
 ECode RadioGroup::AddView(
     /* [in] */ IView* child,
     /* [in] */ Int32 index,
@@ -233,7 +269,7 @@ ECode RadioGroup::AddView(
             }
             mProtectFromCheckedChange = FALSE;
             Int32 id;
-            IRadioButton::Probe(child)->GetId(&id);
+            IVIEW_PROBE(child)->GetId(&id);
             SetCheckedId(id);
         }
     }
@@ -241,16 +277,6 @@ ECode RadioGroup::AddView(
     return LinearLayout::AddView(child, index, params);
 }
 
-/**
- * <p>Sets the selection to the radio button whose identifier is passed in
- * parameter. Using -1 as the selection identifier clears the selection;
- * such an operation is equivalent to invoking {@link #clearCheck()}.</p>
- *
- * @param id the unique id of the radio button to select in this group
- *
- * @see #getCheckedRadioButtonId()
- * @see #clearCheck()
- */
 ECode RadioGroup::Check(
     /* [in] */ Int32 id)
 {
@@ -285,45 +311,26 @@ void RadioGroup::SetCheckedStateForView(
     /* [in] */ Int32 viewId,
     /* [in] */ Boolean checked)
 {
-    AutoPtr<IView> checkedView = FindViewById(viewId);
+    AutoPtr<IView> checkedView;
+    FindViewById(viewId, (IView**)&checkedView);
     if (IRadioButton::Probe(checkedView) && ICheckable::Probe(checkedView)) {
         ICheckable::Probe(checkedView)->SetChecked(checked);
     }
 }
 
-/**
- * <p>Returns the identifier of the selected radio button in this group.
- * Upon empty selection, the returned value is -1.</p>
- *
- * @return the unique id of the selected radio button in this group
- *
- * @see #check(Int32)
- * @see #clearCheck()
- */
-Int32 RadioGroup::GetCheckedRadioButtonId()
+ECode RadioGroup::GetCheckedRadioButtonId(
+    /* [out] */ Int32* id)
 {
-    return mCheckedId;
+    VALIDATE_NOT_NULL(id);
+    *id = mCheckedId;
+    return NOERROR;
 }
 
-/**
- * <p>Clears the selection. When the selection is cleared, no radio button
- * in this group is selected and {@link #getCheckedRadioButtonId()} returns
- * null.</p>
- *
- * @see #check(Int32)
- * @see #getCheckedRadioButtonId()
- */
 ECode RadioGroup::ClearCheck()
 {
     return Check(-1);
 }
 
-/**
- * <p>Register a callback to be invoked when the checked radio button
- * changes in this group.</p>
- *
- * @param listener the callback to call on checked state change
- */
 ECode RadioGroup::SetOnCheckedChangeListener(
     /* [in] */ IRadioGroupOnCheckedChangeListener* listener)
 {
@@ -332,54 +339,44 @@ ECode RadioGroup::SetOnCheckedChangeListener(
     return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-//@Override
 ECode RadioGroup::GenerateLayoutParams(
     /* [in] */ IAttributeSet* attrs,
     /* [out] */ IViewGroupLayoutParams** params)
 {
     VALIDATE_NOT_NULL(params);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     AutoPtr<IRadioGroupLayoutParams> lp;
-    FAIL_RETURN(CRadioGroupLayoutParams::New(GetContext(), attrs, (IRadioGroupLayoutParams**)&lp));
+    FAIL_RETURN(CRadioGroupLayoutParams::New(context, attrs, (IRadioGroupLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
     REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-//@Override
 Boolean RadioGroup::CheckLayoutParams(
     /* [in] */ IViewGroupLayoutParams* p)
 {
     return p != NULL && IRadioGroupLayoutParams::Probe(p) != NULL;
 }
 
-//@Override
 ECode RadioGroup::GenerateDefaultLayoutParams(
     /* [out] */ ILinearLayoutLayoutParams** params)
 {
     AutoPtr<IRadioGroupLayoutParams> p;
     CRadioGroupLayoutParams::New(
-        IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT,
-        (IRadioGroupLayoutParams**)&p);
+            IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT,
+            (IRadioGroupLayoutParams**)&p);
 
-    *params = ILinearLayoutLayoutParams::Probe(p.Get());
-    REFCOUNT_ADD(*params)
+    *params = ILinearLayoutLayoutParams::Probe(p);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
-//@Override
 ECode RadioGroup::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     LinearLayout::OnInitializeAccessibilityEvent(event);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CRadioGroup"), (ICharSequence**)&seq);
-    event->SetClassName(seq);
+    IAccessibilityRecord::Probe(event)->SetClassName(CoreUtils::Convert("CRadioGroup"));
     return NOERROR;
 }
 
@@ -387,12 +384,9 @@ ECode RadioGroup::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     LinearLayout::OnInitializeAccessibilityNodeInfo(info);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CRadioGroup"), (ICharSequence**)&seq);
-    info->SetClassName(seq);
+    info->SetClassName(CoreUtils::Convert("CRadioGroup"));
     return NOERROR;
 }
-
 
 } // namespace Widget
 } // namespace Droid

@@ -121,43 +121,52 @@ public:
     CARAPI GetStepSize(
         /* [out] */ Float* stepSize);
 
-    virtual CARAPI SetMax(
+    // @Override
+    CARAPI SetMax(
         /* [in] */ Int32 max);
 
-    virtual CARAPI OnInitializeAccessibilityEvent(
+    // @Override
+    CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
-    virtual CARAPI OnInitializeAccessibilityNodeInfo(
+    // @Override
+    CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-private:
-    CARAPI_(Float) GetProgressPerStar();
-
-    CARAPI UpdateSecondaryProgress(
-        /* [in] */ Int32 progress);
-
 protected:
+    // @Override
     CARAPI_(AutoPtr<IShape>) GetDrawableShape();
 
+    // @Override
     CARAPI_(void) OnProgressRefresh(
         /* [in] */ Float scale,
         /* [in] */ Boolean fromUser);
 
+    // @Override
     CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
+    // @Override
     CARAPI_(void) OnStartTrackingTouch();
 
+    // @Override
     CARAPI_(void) OnStopTrackingTouch();
 
+    // @Override
     CARAPI_(void) OnKeyChange();
 
     virtual CARAPI_(void) AnimateSetProgress(
         /* [in] */ Int32 progress);
 
-    CARAPI DispatchRatingChange(
+    virtual CARAPI_(void) DispatchRatingChange(
         /* [in] */ Boolean fromUser);
+
+private:
+    CARAPI_(Float) GetProgressPerStar();
+
+    CARAPI_(void) UpdateSecondaryProgress(
+        /* [in] */ Int32 progress);
 
 private:
     static const String RATINGBAR_NAME;

@@ -71,7 +71,8 @@ ECode ToggleButton::SetChecked(
 
 void ToggleButton::SyncTextState()
 {
-    Boolean checked = IsChecked();
+    Boolean checked;
+    IsChecked(&checked);
     if (checked && mTextOn != NULL) {
         SetText(mTextOn);
     }

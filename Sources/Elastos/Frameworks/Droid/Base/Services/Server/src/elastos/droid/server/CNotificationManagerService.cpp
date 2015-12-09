@@ -99,7 +99,7 @@ CAR_INTERFACE_IMPL(CNotificationManagerService::ToastRecord, IInterface)
 CNotificationManagerService::ToastRecord::ToastRecord(
     /* [in] */ Int32 pid,
     /* [in] */ const String& pkg,
-    /* [in] */ ITransientNotification* callback,
+    /* [in] */ IITransientNotification* callback,
     /* [in] */ Int32 duration)
     : mPid(pid)
     , mPkg(pkg)
@@ -794,7 +794,7 @@ _EXIT_:
 // ============================================================================
 ECode CNotificationManagerService::EnqueueToast(
     /* [in] */ const String& pkg,
-    /* [in] */ ITransientNotification* callback,
+    /* [in] */ IITransientNotification* callback,
     /* [in] */ Int32 duration)
 {
     if (DBG) {
@@ -887,7 +887,7 @@ ECode CNotificationManagerService::EnqueueToast(
 
 ECode CNotificationManagerService::CancelToast(
     /* [in] */ const String& pkg,
-    /* [in] */ ITransientNotification* callback)
+    /* [in] */ IITransientNotification* callback)
 {
     Slogger::I(TAG, "cancelToast pkg=%s, callback=%p", pkg.string(), callback);
 
@@ -1129,7 +1129,7 @@ void CNotificationManagerService::HandleTimeout(
 
 Int32 CNotificationManagerService::IndexOfToastLocked(
     /* [in] */ const String& pkg,
-    /* [in] */ ITransientNotification* callback)
+    /* [in] */ IITransientNotification* callback)
 {
     AutoPtr<IBinder> cbak = IBinder::Probe(callback);
 

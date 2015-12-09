@@ -102,7 +102,7 @@ public:
      * @see #getThumbTintMode()
      * @see Drawable#setTintMode(PorterDuff.Mode)
      */
-    SetThumbTintMode(
+    CARAPI SetThumbTintMode(
         /* [in] */ PorterDuffMode tintMode);
 
     /**
@@ -114,7 +114,7 @@ public:
      * @see #setThumbTintMode(PorterDuff.Mode)
      */
     // @Nullable
-    GetThumbTintMode(
+    CARAPI GetThumbTintMode(
         /* [out] */ PorterDuffMode* tintMode);
 
     /**

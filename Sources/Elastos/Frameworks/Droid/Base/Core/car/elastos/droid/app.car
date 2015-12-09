@@ -47,7 +47,6 @@ module
     merge("app/ISearchManagerCallback.car");
     merge("app/IServiceConnection.car");
     merge("app/IStopUserCallback.car");
-    merge("app/ITransientNotification.car");
     merge("app/IUiAutomationConnection.car");
     merge("app/IUiModeManager.car");
     merge("app/IUserSwitchObserver.car");
