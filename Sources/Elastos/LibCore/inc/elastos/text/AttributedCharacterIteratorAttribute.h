@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_TEXT_ATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
 #define __ELASTOS_TEXT_ATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Text.h"
 #include "elastos/core/Object.h"
 
 using Elastos::IO::ISerializable;

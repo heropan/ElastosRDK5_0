@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_CURRENCY_H__
 #define __ELASTOS_UTILITY_CURRENCY_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
 

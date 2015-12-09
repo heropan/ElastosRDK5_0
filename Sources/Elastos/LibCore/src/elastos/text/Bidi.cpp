@@ -376,6 +376,7 @@ ECode Bidi::CreateLineBidi(
     AutoPtr<IBidi> temp;
     Int64 line;
     Ubidi_setLine(parent, lineStart, lineLimit, &line);
+    //TODO: is CBidi::New(line, (IBidi**)&temp) correct?
     ASSERT_SUCCEEDED(CBidi::New(line, (IBidi**)&temp));
     *lineBidi = temp;
     REFCOUNT_ADD(*lineBidi);

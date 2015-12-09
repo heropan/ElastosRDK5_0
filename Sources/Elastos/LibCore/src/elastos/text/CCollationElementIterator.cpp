@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "CCollationElementIterator.h"
 
 namespace Elastos {

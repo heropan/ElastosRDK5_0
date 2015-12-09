@@ -1,8 +1,7 @@
 #ifndef __ELASTOS_TEXT_TEXTNORMALIZER_H__
 #define __ELASTOS_TEXT_TEXTNORMALIZER_H__
 
-#include "Elastos.CoreLibrary_server.h"
-#include <elastos.h>
+#include "Elastos.CoreLibrary.h"
 
 using Elastos::Core::ICharSequence;
 
