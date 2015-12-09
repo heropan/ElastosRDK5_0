@@ -4,7 +4,6 @@
 #include "StringBuilder.h"
 #include "StringToIntegral.h"
 #include "StringUtils.h"
-#include "Elastos.CoreLibrary_server.h"
 #include "CPatternHelper.h"
 
 using Elastos::Core::Math;

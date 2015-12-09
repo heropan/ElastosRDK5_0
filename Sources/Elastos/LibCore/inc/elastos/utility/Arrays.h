@@ -2,6 +2,7 @@
 #define __ELASTOS_UTILITY_ARRAYS_H__
 
 //#include "AbstractList.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>

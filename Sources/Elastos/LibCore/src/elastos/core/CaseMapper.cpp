@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CaseMapper.h"
 #include "ICUUtil.h"
 #include "Character.h"
