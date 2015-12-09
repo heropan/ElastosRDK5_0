@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_FORKJOINTASK_H__
 #define __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_FORKJOINTASK_H__
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IThrowable;

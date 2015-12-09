@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_CONCURRENT_TIMEUNIT_H__
 #define __ELASTOS_UTILITY_CONCURRENT_TIMEUNIT_H__
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "Object.h"
 #include "Math.h"
 

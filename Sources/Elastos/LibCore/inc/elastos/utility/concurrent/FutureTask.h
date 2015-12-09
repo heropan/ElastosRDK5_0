@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_CONCURRENT_FUTURETASK_H__
 #define __ELASTOS_UTILITY_CONCURRENT_FUTURETASK_H__
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include <elastos/core/Thread.h>
 
 using Elastos::Core::IRunnable;

@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CReentrantReadWriteLock.h"
 #include "StringUtils.h"
 
