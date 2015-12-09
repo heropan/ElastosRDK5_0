@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CMulticastSocket.h"
 #include "InetAddress.h"
 #include "CInet6Address.h"

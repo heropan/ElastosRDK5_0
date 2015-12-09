@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.Zip.h"
 #include "JarURLConnection.h"
 #include "UriCodec.h"
 #include "CURL.h"

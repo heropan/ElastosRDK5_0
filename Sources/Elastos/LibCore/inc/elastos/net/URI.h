@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_NET_URI_H__
 #define __ELASTOS_NET_URI_H__
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/core/Object.h"
 #include "elastos/core/Character.h"
 #include "libcore/net/UriCodec.h"

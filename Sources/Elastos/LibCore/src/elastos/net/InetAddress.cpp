@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "InetAddress.h"
 #include "CInet4Address.h"
 #include "CInet6Address.h"

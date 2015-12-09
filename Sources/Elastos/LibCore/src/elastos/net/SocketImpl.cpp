@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "SocketImpl.h"
 #include "StringUtils.h"
 

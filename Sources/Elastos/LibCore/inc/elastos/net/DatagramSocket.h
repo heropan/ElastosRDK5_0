@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_NET_DATAGRAMSOCKET_H__
 #define __ELASTOS_NET_DATAGRAMSOCKET_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "Elastos.CoreLibrary.Net.h"
 #include "Object.h"
 

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_NET_COOKIESTOREIMPL_H__
 #define __ELASTOS_NET_COOKIESTOREIMPL_H__
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "Object.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>

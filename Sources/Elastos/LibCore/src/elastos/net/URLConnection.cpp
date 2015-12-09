@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "URLConnection.h"
 #include "DefaultFileNameMap.h"
 #include "CDateHelper.h"

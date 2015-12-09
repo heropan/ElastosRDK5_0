@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_NET_NETWORKINTERFACE_H__
 #define __ELASTOS_NET_NETWORKINTERFACE_H__
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "Object.h"
 
 using Elastos::IO::IFile;
