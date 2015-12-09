@@ -2,7 +2,7 @@
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
 
-#include "Org.Conscrypt_server.h"
+#include "Org.Conscrypt.h"
 
 namespace Org {
 namespace Conscrypt {

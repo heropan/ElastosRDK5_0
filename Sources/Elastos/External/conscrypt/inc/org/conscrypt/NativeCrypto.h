@@ -2,7 +2,7 @@
 #ifndef __NATIVECRYPTO_H__
 #define __NATIVECRYPTO_H__
 
-#include "Org.Conscrypt_server.h"
+#include "Org.Conscrypt.h"
 
 using Elastos::Core::IArrayOf;
 using Elastos::IO::IFileDescriptor;

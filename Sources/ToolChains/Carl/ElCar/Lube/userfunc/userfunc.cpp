@@ -2806,8 +2806,9 @@ void OutputClass(ClassDirEntry* pClsDir, CLSModule* pModule)
         strcat(pPath, "h");
     }
     else {
-        pPath = (char*)malloc(strlen(pModule->mFileDirs[pClsDir->mFileIndex]->mPath) + 1);
+        pPath = (char*)malloc(strlen(pModule->mFileDirs[pClsDir->mFileIndex]->mPath) + 3);
         strcpy(pPath, pModule->mFileDirs[pClsDir->mFileIndex]->mPath);
+        strcat(pPath, ".h");
     }
 
     char buffer[1024];

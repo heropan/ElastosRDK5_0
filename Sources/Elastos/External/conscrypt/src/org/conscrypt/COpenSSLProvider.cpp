@@ -1,7 +1,7 @@
 
 #include "COpenSSLProvider.h"
 #include "Platform.h"
-#include "Elastos.CoreLibrary.h"
+#include "Elastos.CoreLibrary.Core.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;

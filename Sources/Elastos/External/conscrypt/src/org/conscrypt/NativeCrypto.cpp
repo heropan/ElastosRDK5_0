@@ -1,4 +1,9 @@
 
+#include "_Org.Conscrypt.h"
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Security.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/coredef.h"
 #include "NativeCrypto.h"
 #include "CryptoUpcalls.h"
