@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CBigInteger.h"
 #include "Conversion.h"
 #include "BitLevel.h"
