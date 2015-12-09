@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include <CStructAddrinfo.h>
 
 using Elastos::Net::EIID_IInet4Address;

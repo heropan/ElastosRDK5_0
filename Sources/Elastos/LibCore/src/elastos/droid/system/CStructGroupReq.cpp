@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "CStructGroupReq.h"
 #include "core/StringUtils.h"
 

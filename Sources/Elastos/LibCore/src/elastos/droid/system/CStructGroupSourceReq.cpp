@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Net.h"
 #include "CStructGroupSourceReq.h"
 
 namespace Elastos {
