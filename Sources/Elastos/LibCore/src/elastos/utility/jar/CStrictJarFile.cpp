@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "CStrictJarFile.h"
 #include "CCloseGuardHelper.h"
 #include "CRandomAccessFile.h"

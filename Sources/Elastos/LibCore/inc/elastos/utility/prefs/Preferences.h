@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_UTILITY_PREFS_PREFERENCES_H__
 #define __ELASTOS_UTILITY_PREFS_PREFERENCES_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Object.h"
 
 using Elastos::IO::IOutputStream;

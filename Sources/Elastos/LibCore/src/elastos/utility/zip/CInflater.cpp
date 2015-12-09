@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "CInflater.h"
 #include "Math.h"
 #include "Arrays.h"

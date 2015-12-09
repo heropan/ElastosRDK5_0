@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_UTILITY_PREFS_FILEPREFERENCESFACTORYIMPL_H__
 #define __ELASTOS_UTILITY_PREFS_FILEPREFERENCESFACTORYIMPL_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Object.h"
 
 namespace Elastos {

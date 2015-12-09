@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_INFLATERINPUTSTREAM_H__
 #define __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_INFLATERINPUTSTREAM_H__
 
+#include "Elastos.CoreLibrary.Utility.Zip.h"
 #include "FilterInputStream.h"
 
 using Elastos::IO::IInputStream;

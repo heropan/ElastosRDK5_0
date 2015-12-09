@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CSTRICT_JAR_FILE_H__
 #define __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CSTRICT_JAR_FILE_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Elastos_Utility_Jar_CStrictJarFile.h"
 #include "Object.h"
 #include "JarVerifier.h"

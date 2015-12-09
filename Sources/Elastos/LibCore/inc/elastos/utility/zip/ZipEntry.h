@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_ZIPENTRY_H__
 #define __ELASTOS_UTILITY_ZIPENTRY_H__
 
+#include "Elastos.CoreLibrary.Utility.Zip.h"
 #include "Object.h"
 
 using Elastos::Core::ICloneable;

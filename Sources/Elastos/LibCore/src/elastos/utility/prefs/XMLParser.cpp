@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "XMLParser.h"
 #include "AutoLock.h"
 #include "COutputStreamWriter.h"

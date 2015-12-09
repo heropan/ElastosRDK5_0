@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_FILTEROUTPUTSTREAM_H__
 #define __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_FILTEROUTPUTSTREAM_H__
 
+#include "Elastos.CoreLibrary.Utility.Zip.h"
 #include "FilterOutputStream.h"
 
 using Elastos::IO::IOutputStream;

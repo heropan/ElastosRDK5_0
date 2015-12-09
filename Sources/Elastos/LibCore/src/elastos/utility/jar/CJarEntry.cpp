@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "CJarEntry.h"
 #include "JarVerifier.h"
 #include "CJarFile.h"
