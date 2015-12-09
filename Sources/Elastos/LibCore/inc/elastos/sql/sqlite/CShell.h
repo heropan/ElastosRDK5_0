@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_SQL_SQLITE_CSHELL_H__
 #define __ELASTOS_SQL_SQLITE_CSHELL_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "_Elastos_Sql_SQLite_CShell.h"
 #include "CDatabase.h"
 

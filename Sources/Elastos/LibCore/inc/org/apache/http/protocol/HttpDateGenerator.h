@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_HTTPDATEGENERATOR_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_HTTPDATEGENERATOR_H_
 
+#include "Elastos.CoreLibrary.Text.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Utility::ITimeZone;

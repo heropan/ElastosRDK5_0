@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_UTILS_CLONEUTILS_H__
 #define __ORG_APACHE_HTTP_CLIENT_UTILS_CLONEUTILS_H__
 
-#include "Elastos.CoreLibrary.Core.h"
+#include "Elastos.CoreLibrary.h"
 #include <elastos/coredef.h>
 
 namespace Org {

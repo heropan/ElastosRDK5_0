@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_COOKIE_CCOOKIESPECREGISTRY_H_
 #define __ORG_APACHE_HTTP_COOKIE_CCOOKIESPECREGISTRY_H_
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Cookie_CCookieSpecRegistry.h"
 #include "elastos/core/Object.h"
 

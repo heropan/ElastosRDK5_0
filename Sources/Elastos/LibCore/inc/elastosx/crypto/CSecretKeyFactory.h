@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_CRYPTO_CSECRETKEYFACTORY_H__
 #define __ELASTOSX_CRYPTO_CSECRETKEYFACTORY_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "_Elastosx_Crypto_CSecretKeyFactory.h"
 #include <elastos/core/Object.h>
 

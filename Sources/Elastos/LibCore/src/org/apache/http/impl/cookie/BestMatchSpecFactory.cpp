@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/cookie/BestMatchSpecFactory.h"
 #include "org/apache/http/impl/cookie/BestMatchSpec.h"
 

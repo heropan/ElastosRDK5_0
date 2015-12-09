@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_BASICEXPIRESHANDLER_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_BASICEXPIRESHANDLER_H__
 
-#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/cookie/AbstractCookieAttributeHandler.h"
 
 using Org::Apache::Http::Cookie::ISetCookie;

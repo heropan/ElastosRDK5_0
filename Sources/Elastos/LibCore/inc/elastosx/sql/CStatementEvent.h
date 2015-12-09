@@ -1,6 +1,7 @@
 #ifndef __ELASTOSX_SQL_CSTATEMENTEVENT_H__
 #define __ELASTOSX_SQL_CSTATEMENTEVENT_H__
 
+#include "Elastos.CoreLibrary.Sql.h"
 #include "_Elastosx_Sql_CStatementEvent.h"
 #include "utility/EventObject.h"
 

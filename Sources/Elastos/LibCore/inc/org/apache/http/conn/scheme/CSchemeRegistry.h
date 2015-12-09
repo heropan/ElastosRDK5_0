@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CONN_SCHEME_CSCHEMEREGISTRY_H_
 #define __ORG_APACHE_HTTP_CONN_SCHEME_CSCHEMEREGISTRY_H_
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Conn_Scheme_CSchemeRegistry.h"
 #include "elastos/core/Object.h"
 

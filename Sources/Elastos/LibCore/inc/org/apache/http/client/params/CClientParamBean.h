@@ -3,7 +3,6 @@
 #define __ORG_APACHE_HTTP_CLIENT_PARAMS_CCLIENTPARAMBEAN_H_
 
 #include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Client_Params_CClientParamBean.h"
 #include "org/apache/http/params/HttpAbstractParamBean.h"
 #include "elastos/core/Object.h"

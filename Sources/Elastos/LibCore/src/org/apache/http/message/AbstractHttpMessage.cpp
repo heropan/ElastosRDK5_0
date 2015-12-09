@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/message/AbstractHttpMessage.h"
 #include "org/apache/http/message/CHeaderGroup.h"
 #include "org/apache/http/message/CBasicHeader.h"

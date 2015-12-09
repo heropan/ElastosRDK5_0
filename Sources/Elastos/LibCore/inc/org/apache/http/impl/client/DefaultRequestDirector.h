@@ -3,12 +3,10 @@
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTREQUESTDIRECTOR_H__
 
 #include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/client/RequestWrapper.h"
 #include "org/apache/http/impl/client/RoutedRequest.h"
 #include "elastos/core/Object.h"
 
-using Elastos::Net::IURI;
 using Elastos::Utility::IMap;
 using Org::Apache::Http::IHttpResponse;
 using Org::Apache::Http::IHttpHost;

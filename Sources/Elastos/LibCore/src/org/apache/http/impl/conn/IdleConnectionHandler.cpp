@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "org/apache/http/impl/conn/IdleConnectionHandler.h"
 #include "elastos/core/CSystem.h"
 #include "elastos/core/Math.h"

@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_COOKIE_PARAMS_CCOOKIESPECPARAMBEAN_H_
 #define __ORG_APACHE_HTTP_COOKIE_PARAMS_CCOOKIESPECPARAMBEAN_H_
 
-#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Cookie_Params_CCookieSpecParamBean.h"
 #include "org/apache/http/params/HttpAbstractParamBean.h"
 

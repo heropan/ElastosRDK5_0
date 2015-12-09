@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/io/AbstractMessageWriter.h"
 #include "org/apache/http/message/BasicLineFormatter.h"
 #include "org/apache/http/utility/CCharArrayBuffer.h"

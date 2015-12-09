@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/client/DefaultRequestDirector.h"
 #include "org/apache/http/impl/client/EntityEnclosingRequestWrapper.h"
 #include "org/apache/http/CHttpHost.h"

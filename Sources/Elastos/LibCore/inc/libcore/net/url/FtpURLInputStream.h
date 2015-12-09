@@ -3,6 +3,7 @@
 #define __LIBCORE_NET_URL_LIBCORE_NET_URI_FTPURLINPUTSTREAM_H__
 
 #include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Net.h"
 #include "InputStream.h"
 
 using Elastos::IO::InputStream;

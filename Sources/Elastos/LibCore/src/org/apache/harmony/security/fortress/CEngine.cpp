@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "CEngine.h"
 #include "CServices.h"
 #include "core/CString.h"

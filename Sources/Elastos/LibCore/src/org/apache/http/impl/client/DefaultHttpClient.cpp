@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/client/DefaultHttpClient.h"
 #include "org/apache/http/impl/client/DefaultConnectionKeepAliveStrategy.h"
 #include "org/apache/http/impl/client/DefaultHttpRequestRetryHandler.h"

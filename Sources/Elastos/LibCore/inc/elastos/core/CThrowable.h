@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_CORE_CTHROWABLE_H__
 #define __ELASTOS_CORE_CTHROWABLE_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Elastos_Core_CThrowable.h"
 #include "Object.h"
 

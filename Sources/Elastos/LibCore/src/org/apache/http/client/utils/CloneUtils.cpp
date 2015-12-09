@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Core.h"
 #include "org/apache/http/client/utils/CloneUtils.h"
 #include "elastos/utility/logging/Logger.h"
 

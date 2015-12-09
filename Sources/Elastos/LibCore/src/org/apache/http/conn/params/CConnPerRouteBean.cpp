@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/conn/params/CConnPerRouteBean.h"
 #include "elastos/core/CInteger32.h"
 #include "elastos/utility/logging/Logger.h"

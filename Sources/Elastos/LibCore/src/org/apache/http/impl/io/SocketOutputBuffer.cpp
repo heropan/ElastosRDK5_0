@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/impl/io/SocketOutputBuffer.h"
 #include "elastos/utility/logging/Logger.h"
 

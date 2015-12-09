@@ -3,6 +3,7 @@
 #define __ELASTOSX_NET_SSL_TRUSTMANAGERFACTORY_H__
 
 #include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.CoreLibrary.Security.h"
 #include "Object.h"
 
 using Elastos::Core::Object;

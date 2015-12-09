@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/cookie/BasicExpiresHandler.h"
 #include "org/apache/http/impl/cookie/DateUtils.h"
 #include "elastos/utility/logging/Logger.h"

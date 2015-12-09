@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_ENTITY_CINPUTSTREAMENTITY_H_
 #define __ORG_APACHE_HTTP_ENTITY_CINPUTSTREAMENTITY_H_
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "_Org_Apache_Http_Entity_CInputStreamEntity.h"
 #include "org/apache/http/entity/AbstractHttpEntity.h"
 

@@ -2,6 +2,7 @@
 #ifndef __ORG_XML_SAX_CINPUTSOURCE_H__
 #define __ORG_XML_SAX_CINPUTSOURCE_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "_Org_Xml_Sax_CInputSource.h"
 #include "Object.h"
 

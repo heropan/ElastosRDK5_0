@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CJARENTRY_H__
 #define __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CJARENTRY_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "_Elastos_Utility_Jar_CJarEntry.h"
 #include "ZipEntry.h"
 #include <elastos/utility/etl/List.h>

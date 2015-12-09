@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_METHODS_CHTTPGET_H_
 #define __ORG_APACHE_HTTP_CLIENT_METHODS_CHTTPGET_H_
 
-#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "_Org_Apache_Http_Client_Methods_CHttpGet.h"
 #include "org/apache/http/client/methods/HttpRequestBase.h"
 

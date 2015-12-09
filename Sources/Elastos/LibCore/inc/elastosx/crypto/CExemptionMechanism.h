@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_CRYPTO_CEXEMPTIONMECHANISM_H__
 #define __ELASTOSX_CRYPTO_CEXEMPTIONMECHANISM_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "_Elastosx_Crypto_CExemptionMechanism.h"
 #include <elastos/core/Object.h>
 

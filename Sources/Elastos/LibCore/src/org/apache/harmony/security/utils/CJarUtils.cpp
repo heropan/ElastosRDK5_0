@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "CJarUtils.h"
 #include "io/CByteArrayInputStream.h"
 #include "security/MessageDigest.h"

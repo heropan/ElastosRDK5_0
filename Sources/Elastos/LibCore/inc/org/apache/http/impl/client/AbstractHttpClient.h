@@ -3,7 +3,6 @@
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_ABSTRACTHTTPCLIENT_H__
 
 #include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Utility::IMap;

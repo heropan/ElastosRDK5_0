@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CDerOutputStream.h"
 
 using Elastos::Utility::ICollection;

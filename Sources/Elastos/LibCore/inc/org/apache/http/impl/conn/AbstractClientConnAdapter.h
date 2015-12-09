@@ -3,8 +3,6 @@
 #define __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTCLIENTCONNADAPTER_H__
 
 #include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.Extensions.h"
-#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Core::IThread;

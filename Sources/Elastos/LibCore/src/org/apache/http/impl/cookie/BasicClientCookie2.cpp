@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/cookie/BasicClientCookie2.h"
 
 using Org::Apache::Http::Cookie::EIID_ISetCookie2;

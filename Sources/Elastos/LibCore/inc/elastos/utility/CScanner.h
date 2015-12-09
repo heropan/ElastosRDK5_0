@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_CSCANNER_H__
 #define __ELASTOS_UTILITY_CSCANNER_H__
 
+#include "Elastos.CoreLibrary.Text.h"
 #include "_Elastos_Utility_CScanner.h"
 #include "elastos/core/StringBuilder.h"
 #include "elastos/core/Object.h"

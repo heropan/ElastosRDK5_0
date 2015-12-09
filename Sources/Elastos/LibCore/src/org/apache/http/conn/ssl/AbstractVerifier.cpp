@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "org/apache/http/conn/ssl/AbstractVerifier.h"
 #include "org/apache/http/conn/util/InetAddressUtils.h"
 #include "elastos/core/CString.h"

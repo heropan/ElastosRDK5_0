@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/impl/client/RoutedRequest.h"
 
 namespace Org {

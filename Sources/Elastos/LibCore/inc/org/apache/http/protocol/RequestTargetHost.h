@@ -3,7 +3,6 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_REQUESTTARGETHOST_H_
 
 #include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpRequestInterceptor;

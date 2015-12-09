@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/impl/conn/AbstractPoolEntry.h"
 #include "org/apache/http/conn/routing/CRouteTracker.h"
 #include "elastos/utility/logging/Logger.h"

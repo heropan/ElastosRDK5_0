@@ -4,7 +4,6 @@
 
 #include "Elastos.CoreLibrary.Apache.h"
 #include "Elastos.CoreLibrary.Extensions.h"
-#include "Elastos.CoreLibrary.Security.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Core::ICharSequence;

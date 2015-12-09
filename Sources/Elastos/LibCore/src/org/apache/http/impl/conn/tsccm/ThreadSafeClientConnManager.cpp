@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/impl/conn/tsccm/ThreadSafeClientConnManager.h"
 #include "org/apache/http/impl/conn/tsccm/ConnPoolByRoute.h"
 #include "org/apache/http/impl/conn/tsccm/BasicPooledConnAdapter.h"

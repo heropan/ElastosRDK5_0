@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEM_CSTRUCTGROUPSOURCEREQ_H__
 #define __ELASTOS_DROID_SYSTEM_CSTRUCTGROUPSOURCEREQ_H__
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructGroupSourceReq.h"
 

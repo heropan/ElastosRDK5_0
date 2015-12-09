@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CONN_ROUTING_CROUTETRACKER_H_
 #define __ORG_APACHE_HTTP_CONN_ROUTING_CROUTETRACKER_H_
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "_Org_Apache_Http_Conn_Routing_CRouteTracker.h"
 #include "elastos/core/Object.h"
 

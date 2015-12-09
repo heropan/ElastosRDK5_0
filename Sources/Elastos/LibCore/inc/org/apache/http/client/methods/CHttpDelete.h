@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_METHODS_CHTTPDELETE_H_
 #define __ORG_APACHE_HTTP_CLIENT_METHODS_CHTTPDELETE_H_
 
-#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "_Org_Apache_Http_Client_Methods_CHttpDelete.h"
 #include "org/apache/http/client/methods/HttpRequestBase.h"
 

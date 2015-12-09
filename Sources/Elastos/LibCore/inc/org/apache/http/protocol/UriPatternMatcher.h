@@ -3,6 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_URIPATTERNMATCHER_H_
 
 #include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Utility::IMap;

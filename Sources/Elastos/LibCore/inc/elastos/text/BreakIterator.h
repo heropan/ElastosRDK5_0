@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_TEXT_BREAKITERATOR_H__
 #define __ELASTOS_TEXT_BREAKITERATOR_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "Elastos.CoreLibrary.Text.h"
 #include "Object.h"
 

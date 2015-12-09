@@ -2,6 +2,7 @@
 #ifndef  __ELASTOSX_XML_TRANSFORM_DOM_CDOMRESULT_H__
 #define  __ELASTOSX_XML_TRANSFORM_DOM_CDOMRESULT_H__
 
+#include "Elastos.CoreLibrary.External.h"
 #include "_Elastosx_Xml_Transform_Dom_CDOMResult.h"
 #include "Object.h"
 

@@ -3,7 +3,6 @@
 #define __ORG_APACHE_HTTP_IMPL_ENTITY_EntitySERIALIZER_H__
 
 #include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/core/Object.h"
 
 using Elastos::IO::IOutputStream;

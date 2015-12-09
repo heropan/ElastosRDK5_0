@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CPROVIDERSERVICE_H__
 #define __ELASTOS_SECURITY_CPROVIDERSERVICE_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "coredef.h"
 #include "_Elastos_Security_CProviderService.h"
 #include "core/Mutex.h"

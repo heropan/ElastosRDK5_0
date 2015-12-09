@@ -2,6 +2,7 @@
 #ifndef  __ELASTOSX_XML_TRANSFORM_SAX_CSAXRESULT_H__
 #define  __ELASTOSX_XML_TRANSFORM_SAX_CSAXRESULT_H__
 
+#include "Elastos.CoreLibrary.External.h"
 #include "_Elastosx_Xml_Transform_Sax_CSAXResult.h"
 #include "Object.h"
 

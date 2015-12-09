@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/protocol/RequestTargetHost.h"
 #include "org/apache/http/CHttpVersion.h"
 #include "org/apache/http/CHttpHost.h"

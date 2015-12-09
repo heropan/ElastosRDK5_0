@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PARAMS_CBASICHTTPPARAMS_H_
 #define __ORG_APACHE_HTTP_PARAMS_CBASICHTTPPARAMS_H_
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Params_CBasicHttpParams.h"
 #include "org/apache/http/params/AbstractHttpParams.h"
 

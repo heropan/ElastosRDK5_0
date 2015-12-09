@@ -2,7 +2,6 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTPOOLENTRY_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTPOOLENTRY_H__
 
-#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpHost;

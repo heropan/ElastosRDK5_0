@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/impl/conn/SingleClientConnManager.h"
 #include "org/apache/http/impl/conn/DefaultClientConnectionOperator.h"
 #include "elastos/core/CSystem.h"

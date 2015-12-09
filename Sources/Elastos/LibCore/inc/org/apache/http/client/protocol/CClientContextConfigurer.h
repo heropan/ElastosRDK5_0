@@ -3,7 +3,6 @@
 #define __ORG_APACHE_HTTP_CLIENT_PROTOCOL_CCLIENTCONTEXTCONFIGURER_H_
 
 #include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Client_Protocol_CClientContextConfigurer.h"
 #include "elastos/core/Object.h"
 

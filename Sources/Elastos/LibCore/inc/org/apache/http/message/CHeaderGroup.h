@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_CHEADERGROUP_H_
 #define __ORG_APACHE_HTTP_MESSAGE_CHEADERGROUP_H_
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Message_CHeaderGroup.h"
 #include "org/apache/http/message/BasicLineFormatter.h"
 

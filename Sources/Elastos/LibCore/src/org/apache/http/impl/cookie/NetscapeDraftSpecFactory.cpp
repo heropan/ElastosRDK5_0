@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/cookie/NetscapeDraftSpecFactory.h"
 #include "org/apache/http/impl/cookie/NetScapeDraftSpec.h"
 

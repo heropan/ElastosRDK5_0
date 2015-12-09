@@ -3,7 +3,6 @@
 #define __ORG_APACHE_HTTP_MESSAGE_ABSTRACTHTTPMESSAGE_H_
 
 #include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Core::IArrayOf;

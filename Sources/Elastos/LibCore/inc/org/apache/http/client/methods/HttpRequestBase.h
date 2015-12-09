@@ -4,6 +4,7 @@
 
 #include "Elastos.CoreLibrary.Apache.h"
 #include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "org/apache/http/message/AbstractHttpMessage.h"
 
 using Elastos::Core::ICloneable;

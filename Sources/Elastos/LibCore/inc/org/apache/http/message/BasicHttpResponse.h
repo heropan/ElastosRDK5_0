@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHTTPRESPONSE_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHTTPRESPONSE_H_
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/message/AbstractHttpMessage.h"
 
 using Elastos::Utility::ILocale;

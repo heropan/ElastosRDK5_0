@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/conn/ProxySelectorRoutePlanner.h"
 #include "org/apache/http/conn/routing/CHttpRoute.h"
 #include "org/apache/http/conn/params/ConnRouteParams.h"

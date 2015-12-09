@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_TEXT_MESSAGEFORMAT_H__
 #define __ELASTOS_TEXT_MESSAGEFORMAT_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "FormatBase.h"
 #include "NumberFormat.h"
 #include "DateFormat.h"

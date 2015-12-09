@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/cookie/BestMatchSpec.h"
 #include "elastos/core/Math.h"
 #include "elastos/utility/logging/Logger.h"

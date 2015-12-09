@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_AUTH_CAUTHSCHEMEREGISTRY_H_
 #define __ORG_APACHE_HTTP_AUTH_CAUTHSCHEMEREGISTRY_H_
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Org_Apache_Http_Auth_CAuthSchemeRegistry.h"
 #include "elastos/core/Object.h"
 

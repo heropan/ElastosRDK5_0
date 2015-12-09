@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CONN_SSL_CSSLSOCKETFACTORY_H_
 #define __ORG_APACHE_HTTP_CONN_SSL_CSSLSOCKETFACTORY_H_
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "_Org_Apache_Http_Conn_SSL_CSSLSocketFactory.h"
 #include "elastos/core/Object.h"
 

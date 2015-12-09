@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/conn/params/CConnRouteParamBean.h"
 
 namespace Org {

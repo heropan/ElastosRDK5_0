@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "org/apache/http/conn/CBasicEofSensorWatcher.h"
 #include "elastos/utility/logging/Logger.h"
 

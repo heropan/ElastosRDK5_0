@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Security.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/auth/BasicScheme.h"
 #include "org/apache/http/utility/EncodingUtils.h"
 #include "org/apache/http/utility/CCharArrayBuffer.h"

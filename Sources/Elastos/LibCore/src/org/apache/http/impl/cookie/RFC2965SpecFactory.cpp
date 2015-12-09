@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/impl/cookie/RFC2965SpecFactory.h"
 #include "org/apache/http/impl/cookie/RFC2965Spec.h"
 

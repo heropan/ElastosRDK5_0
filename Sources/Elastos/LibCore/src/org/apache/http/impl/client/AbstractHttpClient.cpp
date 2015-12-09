@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "org/apache/http/impl/client/AbstractHttpClient.h"
 #include "org/apache/http/impl/client/DefaultRequestDirector.h"
 #include "org/apache/http/impl/client/ClientParamsStack.h"

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEM_CSTRUCTPOLLFD_H__
 #define __ELASTOS_DROID_SYSTEM_CSTRUCTPOLLFD_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructPollfd.h"
 

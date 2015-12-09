@@ -2,6 +2,7 @@
 #ifndef  __ELASTOSX_XML_TRANSFORM_STREAM_CSTREAMSOURCE_H__
 #define  __ELASTOSX_XML_TRANSFORM_STREAM_CSTREAMSOURCE_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "_Elastosx_Xml_Transform_Stream_CStreamSource.h"
 #include "Object.h"
 

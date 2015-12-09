@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_TEXT_CCOLLATIONELEMENTITERATOR_H__
 #define __ELASTOS_TEXT_CCOLLATIONELEMENTITERATOR_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "_Elastos_Text_CCollationElementIterator.h"
 #include "Object.h"
 

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/client/protocol/CRequestDefaultHeaders.h"
 #include "elastos/utility/logging/Logger.h"
 

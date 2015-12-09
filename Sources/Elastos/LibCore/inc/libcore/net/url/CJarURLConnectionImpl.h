@@ -2,6 +2,7 @@
 #ifndef __LIBCORE_NET_URL_LIBCORE_NET_URI_JARURLCONNECTIONIMPL_H__
 #define __LIBCORE_NET_URL_LIBCORE_NET_URI_JARURLCONNECTIONIMPL_H__
 
+#include "Elastos.CoreLibrary.Utility.Zip.h"
 #include "_Libcore_Net_Url_CJarURLConnectionImpl.h"
 #include "JarURLConnection.h"
 #include "FilterInputStream.h"

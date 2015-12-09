@@ -3,8 +3,6 @@
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DefaultUserTokenHandler_H__
 
 #include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.Extensions.h"
-#include "Elastos.CoreLibrary.Security.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Security::IPrincipal;

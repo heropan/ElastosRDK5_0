@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.CoreLibrary.Security.h"
 #include "org/apache/http/impl/client/DefaultUserTokenHandler.h"
 #include <elastos/utility/logging/Logger.h>
 
