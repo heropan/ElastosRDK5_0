@@ -1,5 +1,4 @@
 
-DIRS += widget
 DIRS += accessibilityservice
 DIRS += app
 DIRS += animation
@@ -26,7 +25,7 @@ DIRS += text
 DIRS += transition
 DIRS += utility
 DIRS += webkit
-#DIRS += widget
+DIRS += widget
 DIRS += wifi
 
 #DIRS += impl
