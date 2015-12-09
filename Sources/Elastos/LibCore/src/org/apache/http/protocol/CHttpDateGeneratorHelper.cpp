@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Text.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "org/apache/http/protocol/CHttpDateGeneratorHelper.h"
 #include "org/apache/http/protocol/HttpDateGenerator.h"
 

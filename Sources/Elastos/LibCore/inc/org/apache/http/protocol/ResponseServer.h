@@ -2,6 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_RESPONSESERVER_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_RESPONSESERVER_H_
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpResponseInterceptor;

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "org/apache/http/utility/VersionInfo.h"
 #include "elastos/core/CString.h"
 #include "elastos/core/StringBuilder.h"
