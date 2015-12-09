@@ -2,6 +2,8 @@
 #ifndef __ELASTOSX_NET_SSL_SSLCONTEXT_H__
 #define __ELASTOSX_NET_SSL_SSLCONTEXT_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.CoreLibrary.Security.h"
 #include "Object.h"
 
 using Elastos::Core::Object;

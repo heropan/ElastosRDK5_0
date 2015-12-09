@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "X509CertificateX.h"
 #include "CByteArrayInputStream.h"
 // #include "CSecurity.h"

@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Security.h"
 #include "CKeyGenerator.h"
 #include "AutoLock.h"
 

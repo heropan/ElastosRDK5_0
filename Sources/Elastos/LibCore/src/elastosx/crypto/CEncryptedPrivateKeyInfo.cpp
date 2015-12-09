@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Security.h"
 #include "CEncryptedPrivateKeyInfo.h"
 //TODO: Need CPKCS8EncodedKeySpec.h
 // #include "CPKCS8EncodedKeySpec.h"

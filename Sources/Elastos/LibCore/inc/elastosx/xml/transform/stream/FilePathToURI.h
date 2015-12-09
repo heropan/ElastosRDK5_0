@@ -2,11 +2,9 @@
 #ifndef  __ELASTOSX_XML_TRANSFORM_STREAM_FILEPATHTOURI_H__
 #define  __ELASTOSX_XML_TRANSFORM_STREAM_FILEPATHTOURI_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include <elastos.h>
+
+using namespace Elastos;
 
 namespace Elastosx {
 namespace Xml {

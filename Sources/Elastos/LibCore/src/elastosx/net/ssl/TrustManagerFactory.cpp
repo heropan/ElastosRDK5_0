@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "TrustManagerFactory.h"
 
 namespace Elastosx {

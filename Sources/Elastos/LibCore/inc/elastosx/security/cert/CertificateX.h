@@ -2,7 +2,7 @@
 #ifndef __ELASTOSX_SECURITY_CERT_CERTIFICATEX_H__
 #define __ELASTOSX_SECURITY_CERT_CERTIFICATEX_H__
 
-
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "Object.h"
 
 using Elastos::Security::IPublicKey;

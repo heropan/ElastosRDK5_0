@@ -2,6 +2,7 @@
 #ifndef  __ELASTOSX_XML_TRANSFORM_TRANSFORMERFACTORY_H__
 #define  __ELASTOSX_XML_TRANSFORM_TRANSFORMERFACTORY_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "Object.h"
 
 using Elastos::Core::Object;

@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.IO.h"
 #include "CipherSpi.h"
 
 using Elastos::IO::IBuffer;

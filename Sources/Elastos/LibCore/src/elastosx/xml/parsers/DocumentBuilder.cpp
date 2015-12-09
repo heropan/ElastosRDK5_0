@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.IO.h"
 #include "DocumentBuilder.h"
 #include "CInputSource.h"
 #include "elastosx/xml/parsers/FilePathToURI.h"

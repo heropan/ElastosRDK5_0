@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Sql.h"
 #include "CStatementEvent.h"
 
 namespace Elastosx {

@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Cipher.h"
 #include "CCipher.h"
 #include "AutoLock.h"

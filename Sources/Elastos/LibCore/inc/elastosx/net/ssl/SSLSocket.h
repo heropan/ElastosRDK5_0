@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_NET_SSL_SSLSOCKET_H__
 #define __ELASTOSX_NET_SSL_SSLSOCKET_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "Socket.h"
 
 using Elastos::Net::Socket;

@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Security.h"
 #include "CSealedObject.h"
 #include "IoUtils.h"
 #include "CByteArrayOutputStream.h"

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "CertPathTrustManagerParameters.h"
 
 using Elastos::Core::ICloneable;

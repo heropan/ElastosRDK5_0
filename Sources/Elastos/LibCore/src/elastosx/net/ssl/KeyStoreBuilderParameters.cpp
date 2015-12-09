@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "KeyStoreBuilderParameters.h"
 #include "Collections.h"
 

@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.IO.h"
 #include "MacSpi.h"
 
 namespace Elastosx {

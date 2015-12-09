@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.External.h"
 #include "CDOMSource.h"
 
 namespace Elastosx {

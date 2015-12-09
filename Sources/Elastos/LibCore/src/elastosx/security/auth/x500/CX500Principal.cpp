@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CX500Principal.h"
 #include "CString.h"
 #include "StringBuilder.h"

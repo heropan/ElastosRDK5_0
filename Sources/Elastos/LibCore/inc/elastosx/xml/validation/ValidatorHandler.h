@@ -1,6 +1,8 @@
 #ifndef __ELASTOSX_XML_VALIDATION_VALIDATORHANDLER_H__
 #define __ELASTOSX_XML_VALIDATION_VALIDATORHANDLER_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.CoreLibrary.External.h"
 #include "Object.h"
 
 using Elastos::Core::Object;

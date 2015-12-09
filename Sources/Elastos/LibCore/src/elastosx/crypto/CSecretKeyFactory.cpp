@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Security.h"
 #include "CSecretKeyFactory.h"
 
 using Elastos::Security::ISecurity;

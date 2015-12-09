@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.IO.h"
 #include "SAXParser.h"
 #include "CInputSource.h"
 #include "FilePathToURI.h"

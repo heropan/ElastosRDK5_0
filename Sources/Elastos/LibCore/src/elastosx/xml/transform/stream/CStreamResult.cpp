@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "CStreamResult.h"
 #include "FilePathToURI.h"
 

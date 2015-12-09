@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_NET_SSL_HTTPSURLCONNECTION_H__
 #define __ELASTOSX_NET_SSL_HTTPSURLCONNECTION_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "elastos/net/HttpURLConnection.h"
 #include "elastos/core/Object.h"
 

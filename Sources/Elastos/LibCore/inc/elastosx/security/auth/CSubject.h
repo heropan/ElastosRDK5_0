@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_SECURITY_AUTH_CSUBJECT_H__
 #define __ELASTOSX_SECURITY_AUTH_CSUBJECT_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "_Elastosx_Security_Auth_CSubject.h"
 #include "AbstractSet.h"
 #if 0 // TODO: Waiting for AccessControlContext

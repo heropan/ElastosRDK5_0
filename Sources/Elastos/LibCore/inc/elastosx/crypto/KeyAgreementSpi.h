@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_CRYPTO_KEYAGREEMENTSPI_H__
 #define __ELASTOSX_CRYPTO_KEYAGREEMENTSPI_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
@@ -136,7 +137,6 @@ public:
         /* [in] */ IKey* key,
         /* [in] */ IAlgorithmParameterSpec* params,
         /* [in] */ ISecureRandom* random) = 0;
-
 };
 
 }

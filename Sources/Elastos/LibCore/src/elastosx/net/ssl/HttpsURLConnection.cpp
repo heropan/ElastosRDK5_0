@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "HttpsURLConnection.h"
 #include "HttpURLConnection.h"
 #include "CDefaultHostnameVerifier.h"

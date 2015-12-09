@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Security.h"
 #include "CExemptionMechanism.h"
 #include "Arrays.h"
 

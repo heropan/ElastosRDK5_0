@@ -1,6 +1,7 @@
 #ifndef __ELASTOSX_XML_PARSERS_SAXPARSER_H__
 #define __ELASTOSX_XML_PARSERS_SAXPARSER_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "Object.h"
 
 using Elastos::Core::Object;

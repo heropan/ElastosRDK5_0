@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_CRYPTO_SECRETKEYFACTORYSPI_H__
 #define __ELASTOSX_CRYPTO_SECRETKEYFACTORYSPI_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Security::Spec::IKeySpec;

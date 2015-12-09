@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Net.h"
 #include "SchemaFactory.h"
 #include "stream/CStreamSource.h"
 #include "utility/logging/Slogger.h"

@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_CRYPTO_SPEC_PSOURCE_H__
 #define __ELASTOSX_CRYPTO_SPEC_PSOURCE_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include <elastos/core/Object.h>
 
 namespace Elastosx {

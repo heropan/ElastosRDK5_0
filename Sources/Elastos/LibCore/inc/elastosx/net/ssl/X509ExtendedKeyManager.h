@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_NET_SSL_X509EXTENDEDKEYMANAGER_H__
 #define __ELASTOSX_NET_SSL_X509EXTENDEDKEYMANAGER_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "Object.h"
 
 using Elastos::Core::Object;

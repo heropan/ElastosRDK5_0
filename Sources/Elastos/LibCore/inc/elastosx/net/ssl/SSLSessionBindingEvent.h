@@ -2,6 +2,7 @@
 #ifndef __ELASTOSX_NET_SSL_SSLSESSIONBINDINGEVENT_H__
 #define __ELASTOSX_NET_SSL_SSLSESSIONBINDINGEVENT_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "EventObject.h"
 
 using Elastos::Utility::EventObject;

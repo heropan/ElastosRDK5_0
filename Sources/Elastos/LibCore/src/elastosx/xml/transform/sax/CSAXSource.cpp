@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "CSAXSource.h"
 #include "CInputSource.h"
 

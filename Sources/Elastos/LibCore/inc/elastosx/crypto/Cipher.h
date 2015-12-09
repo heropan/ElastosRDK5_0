@@ -2,6 +2,8 @@
 #ifndef __ELASTOSX_CRYPTO_CIPHER_H__
 #define __ELASTOSX_CRYPTO_CIPHER_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.CoreLibrary.Security.h"
 #include <elastos/core/Object.h>
 
 using Elastos::IO::IByteBuffer;

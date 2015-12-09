@@ -1,12 +1,15 @@
 #ifndef __ELASTOSX_XML_XPATH_XPATHFACTORY_H__
 #define __ELASTOSX_XML_XPATH_XPATHFACTORY_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
 #include "Object.h"
 
 namespace Elastosx {
 namespace Xml {
 namespace XPath {
+
 EXTERN const _ELASTOS ClassID ECLSID_XPathFactory;
+
 class XPathFactory
     : public Object
     , public IXPathFactory
