@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "ByteBufferAsInt16Buffer.h"
 #include "DirectByteBuffer.h"
 #include "ByteArrayBuffer.h"

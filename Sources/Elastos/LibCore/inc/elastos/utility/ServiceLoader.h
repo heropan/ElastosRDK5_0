@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_UTILITY_PROPERTYPERMISSION_H__
 #define __ELASTOS_UTILITY_PROPERTYPERMISSION_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Singleton.h"
 
 using Elastos::Core::Singleton;

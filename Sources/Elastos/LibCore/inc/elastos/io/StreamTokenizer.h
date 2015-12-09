@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_IO_STREAMTOKENIZER_H__
 #define __ELASTOS_IO_STREAMTOKENIZER_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "Object.h"
 
 namespace Elastos {

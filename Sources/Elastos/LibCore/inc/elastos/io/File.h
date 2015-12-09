@@ -1,13 +1,14 @@
 #ifndef __ELASTOS_IO_FILE_H__
 #define __ELASTOS_IO_FILE_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Utility::IRandom;
 using Elastos::Core::IComparable;
 using Elastos::IO::ISerializable;
 using Elastos::Net::IURI;
 using Elastos::Net::IURL;
+using Elastos::Utility::IRandom;
 
 namespace Elastos {
 namespace IO {

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_IO_SEQUENCEINPUTSTREAM_H__
 #define __ELASTOS_IO_SEQUENCEINPUTSTREAM_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "InputStream.h"
 
 using Elastos::Utility::IEnumeration;

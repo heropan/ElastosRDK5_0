@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_IO_CHARSET_ELASTOS_IO_CHAARSET_CHAARSET_H__
 #define __ELASTOS_IO_CHARSET_ELASTOS_IO_CHAARSET_CHAARSET_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>

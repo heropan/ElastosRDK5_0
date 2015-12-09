@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "DirectByteBuffer.h"
 #include "CByteOrderHelper.h"
 #include "Math.h"

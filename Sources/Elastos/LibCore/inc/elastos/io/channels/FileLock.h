@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_CHANNELS_FILELOCK_H__
 #define __ELASTOS_IO_CHANNELS_FILELOCK_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "Object.h"
 
 using Elastos::Core::Object;

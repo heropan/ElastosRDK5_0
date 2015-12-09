@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "ByteArrayBuffer.h"
 #include "Memory.h"
 #include "ByteBufferAsCharBuffer.h"

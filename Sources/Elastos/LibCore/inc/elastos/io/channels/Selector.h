@@ -1,11 +1,12 @@
 #ifndef __ELASTOS_IO_CHANNELS_SELECTOR_H__
 #define __ELASTOS_IO_CHANNELS_SELECTOR_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "Object.h"
 
-using Elastos::Utility::ISet;
 using Elastos::IO::ICloseable;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
+using Elastos::Utility::ISet;
 
 namespace Elastos {
 namespace IO {

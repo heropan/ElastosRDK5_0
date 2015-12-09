@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_IO_READER_H__
 #define __ELASTOS_IO_READER_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {
