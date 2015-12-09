@@ -2,6 +2,7 @@
 #ifndef __LIBCORE_UTILITY_CCOLLECTIONUTILS_H__
 #define __LIBCORE_UTILITY_CCOLLECTIONUTILS_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Libcore_Utility_CCollectionUtils.h"
 #include "Singleton.h"
 

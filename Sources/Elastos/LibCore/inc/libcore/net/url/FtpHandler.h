@@ -2,6 +2,7 @@
 #ifndef __LIBCORE_NET_URL_LIBCORE_NET_URI_FTPHANDLER_H__
 #define __LIBCORE_NET_URL_LIBCORE_NET_URI_FTPHANDLER_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "URLStreamHandler.h"
 
 using Elastos::Net::URLStreamHandler;

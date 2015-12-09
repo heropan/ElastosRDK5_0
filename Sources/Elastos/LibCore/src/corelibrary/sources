@@ -2,8 +2,6 @@
 TARGET_NAME = Elastos.CoreLibrary
 TARGET_TYPE = eco
 
-C_DEFINES += -DELASTOS_CORELIBRARY
-
 include $(MAKEDIR)/../sources.inc
 
 INCLUDES += $(MAKEDIR)/../../inc

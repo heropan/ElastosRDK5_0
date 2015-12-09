@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_UTILITY_CCOLLECTIONS_H__
 #define __ELASTOS_UTILITY_CCOLLECTIONS_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "AbstractList.h"
 #include "AbstractSet.h"
 #include "AbstractMap.h"

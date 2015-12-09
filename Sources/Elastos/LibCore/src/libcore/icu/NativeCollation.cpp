@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "NativeCollation.h"
 #include "ElStringByteSink.h"
 #include <unicode/ucol.h>

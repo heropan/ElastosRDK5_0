@@ -2,11 +2,7 @@
 #ifndef __ELASTOS_CORE_OBJECT_H__
 #define __ELASTOS_CORE_OBJECT_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "Elastos.CoreLibrary.Core.h"
 #include <elastos/coredef.h>
 #include <elastos/core/NativeThread.h>
 #include <elastos/core/StringUtils.h>

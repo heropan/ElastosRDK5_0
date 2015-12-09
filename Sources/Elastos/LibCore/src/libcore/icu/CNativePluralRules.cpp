@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CNativePluralRules.h"
 #include <unicode/plurrule.h>
 

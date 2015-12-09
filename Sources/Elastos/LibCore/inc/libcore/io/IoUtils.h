@@ -2,14 +2,14 @@
 #ifndef __LIBCORE_IO_IOUTILS_H__
 #define __LIBCORE_IO_IOUTILS_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Elastos.CoreLibrary.h"
 
-using Elastos::Utility::IRandom;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::Charset::ICharset;
 using Elastos::Net::ISocket;
+using Elastos::Utility::IRandom;
 
 namespace Libcore {
 namespace IO {

@@ -2,6 +2,7 @@
 #ifndef __LIBCORE_ICU_ALPHABETICINDEX_H__
 #define __LIBCORE_ICU_ALPHABETICINDEX_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "Object.h"
 
 using Elastos::Utility::ILocale;

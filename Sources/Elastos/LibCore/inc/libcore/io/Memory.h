@@ -2,7 +2,7 @@
 #ifndef __LIBCORE_IO_MEMORY_H__
 #define __LIBCORE_IO_MEMORY_H__
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Elastos.CoreLibrary.h"
 #include "io/MappedByteBuffer.h"
 
 using Elastos::IO::ByteOrder;

@@ -2,8 +2,8 @@
 #ifndef __LIBCORE_ICU_TRANSLITERATOR__
 #define __LIBCORE_ICU_TRANSLITERATOR__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "Object.h"
-
 
 namespace Libcore {
 namespace ICU {

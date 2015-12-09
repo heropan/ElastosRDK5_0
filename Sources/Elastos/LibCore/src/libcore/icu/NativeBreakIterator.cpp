@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "NativeBreakIterator.h"
 #include "AutoLock.h"
 #include "CStringCharacterIterator.h"

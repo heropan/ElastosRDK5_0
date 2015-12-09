@@ -2,6 +2,7 @@
 #ifndef __LIBCORE_NET_EVENT_NETWORKEVENTLISTENER_H__
 #define __LIBCORE_NET_EVENT_NETWORKEVENTLISTENER_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "Object.h"
 
 namespace Libcore {

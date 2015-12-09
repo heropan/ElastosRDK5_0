@@ -520,9 +520,9 @@ public:
 
 public:
     // Lazily initialized key set.
-    ECO_PUBLIC AutoPtr<ISet> mKeySet;
+    AutoPtr<ISet> mKeySet;
 
-    ECO_PUBLIC AutoPtr<ICollection> mValuesCollection;
+    AutoPtr<ICollection> mValuesCollection;
 };
 
 } // namespace Utility

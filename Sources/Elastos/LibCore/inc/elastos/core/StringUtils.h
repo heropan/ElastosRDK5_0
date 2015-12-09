@@ -1,11 +1,7 @@
 #ifndef __ELASTOS_CORE_STRINGUTILS_H__
 #define __ELASTOS_CORE_STRINGUTILS_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
 #include "Elastos.CoreLibrary.h"
-#endif
 
 using Elastos::Utility::ILocale;
 

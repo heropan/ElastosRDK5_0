@@ -2,8 +2,7 @@
 #ifndef __LIBCORE_ICU_NATIVENORMALIZER_H__
 #define __LIBCORE_ICU_NATIVENORMALIZER_H__
 
-#include <elastos.h>
-#include "Elastos.CoreLibrary_server.h"
+#include "Elastos.CoreLibrary.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Text::NormalizerForm;

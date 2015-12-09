@@ -2,12 +2,8 @@
 #ifndef __LIBCORE_ICU_DATEINTERVALFORMAT_H__
 #define __LIBCORE_ICU_DATEINTERVALFORMAT_H__
 
-#include "Object.h"
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
 #include "Elastos.CoreLibrary.h"
-#endif
+#include "Object.h"
 #include "utility/BasicLruCache.h"
 
 using Libcore::Utility::BasicLruCache;

@@ -2,6 +2,7 @@
 #ifndef __LIBCORE_UTILITY_BASICLRUCACHE_H__
 #define __LIBCORE_UTILITY_BASICLRUCACHE_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "Object.h"
 
 using Elastos::Utility::IMap;

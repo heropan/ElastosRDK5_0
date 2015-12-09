@@ -1,6 +1,7 @@
 #ifndef __LIBCORE_UTILITY_ZONEINFO_H__
 #define __LIBCORE_UTILITY_ZONEINFO_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "TimeZone.h"
 
 using Elastos::Utility::IDate;

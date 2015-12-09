@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_UTILITY_ZIPFILE_H__
 #define __ELASTOS_UTILITY_ZIPFILE_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Object.h"
 #include "InflaterInputStream.h"
 #include "InputStream.h"

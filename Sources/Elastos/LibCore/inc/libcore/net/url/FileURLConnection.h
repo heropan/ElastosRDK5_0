@@ -2,6 +2,8 @@
 #ifndef __LIBCORE_NET_URL_LIBCORE_NET_URI_FILEURLCONNECTION_H__
 #define __LIBCORE_NET_URL_LIBCORE_NET_URI_FILEURLCONNECTION_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "URLConnection.h"
 
 using Elastos::Core::IComparator;

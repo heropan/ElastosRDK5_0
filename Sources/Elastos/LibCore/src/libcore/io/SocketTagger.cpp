@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Net.h"
 #include "SocketTagger.h"
 #include "AutoLock.h"
 

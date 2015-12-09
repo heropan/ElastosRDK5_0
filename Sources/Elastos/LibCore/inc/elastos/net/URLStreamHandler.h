@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_NET_URLSTREAMHANDLER_H__
 #define __ELASTOS_NET_URLSTREAMHANDLER_H__
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "Object.h"
 
 namespace Elastos {

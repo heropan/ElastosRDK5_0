@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "FtpURLConnection.h"
 #include "ProxySelector.h"
 #include "StringBuilder.h"

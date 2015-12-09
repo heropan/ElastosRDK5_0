@@ -752,19 +752,19 @@ public:
      * The hash table. If this hash map contains a mapping for null, it is
      * not represented this hash table.
      */
-    /* transient */ ECO_PUBLIC AutoPtr< ArrayOf<HashMapEntry*> > mTable;
+    /* transient */ AutoPtr< ArrayOf<HashMapEntry*> > mTable;
 
 protected:
     /**
      * Incremented by "structural modifications" to allow (best effort)
      * detection of concurrent modification.
      */
-    /* transient */ ECO_PUBLIC Int32 mModCount;
+    /* transient */ Int32 mModCount;
 
     /**
      * The entry representing the null key, or null if there's no such mapping.
      */
-    /* transient */ ECO_PUBLIC AutoPtr<HashMapEntry> mEntryForNullKey;
+    /* transient */ AutoPtr<HashMapEntry> mEntryForNullKey;
 
 private:
     ECO_LOCAL static const Int64 sSerialVersionUID = 362498820763181265L;

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "BlockGuardOs.h"
 #include "CLibcore.h"
 #include "BlockGuard.h"

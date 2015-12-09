@@ -1,6 +1,7 @@
 #ifndef __LIBCORE_IO_SOCKETTAGGER_H__
 #define __LIBCORE_IO_SOCKETTAGGER_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "core/Object.h"
 
 using Libcore::IO::ISocketTagger;

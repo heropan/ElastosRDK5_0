@@ -2,6 +2,7 @@
 #ifndef __LIBCORE_ICU_COLLATIONELEMENTITERATORICU_H__
 #define __LIBCORE_ICU_COLLATIONELEMENTITERATORICU_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "Object.h"
 
 using Elastos::Text::ICharacterIterator;

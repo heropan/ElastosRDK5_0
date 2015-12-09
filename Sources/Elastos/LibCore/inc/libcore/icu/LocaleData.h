@@ -1,6 +1,7 @@
 #ifndef __LIBCORE_ICU_IO_LOCALEDATA_H__
 #define __LIBCORE_ICU_IO_LOCALEDATA_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include <Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <Mutex.h>

@@ -1,10 +1,11 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "AlphabeticIndex.h"
-#include <unicode/alphaindex.h>
-#include <unicode/uniset.h>
 #include "ElStringByteSink.h"
 #include "AutoLock.h"
 #include "ImmutableIndex.h"
+#include <unicode/alphaindex.h>
+#include <unicode/uniset.h>
 
 namespace Libcore {
 namespace ICU {

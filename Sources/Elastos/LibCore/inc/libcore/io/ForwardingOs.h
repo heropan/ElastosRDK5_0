@@ -2,6 +2,7 @@
 #ifndef __LIBCORE_IO_FORWARDINGOS_H__
 #define __LIBCORE_IO_FORWARDINGOS_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "core/Object.h"
 
 using Libcore::IO::IOs;

@@ -6,11 +6,11 @@
 #include "coredef.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "Mutex.h"
-#include "Elastos.CoreLibrary_server.h"
+#include "Elastos.CoreLibrary.h"
 
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::Mutex;
 using Elastos::Utility::ILocale;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Libcore {
 namespace ICU {

@@ -17,8 +17,8 @@
  * limitations under the License.
  */
 
+#include "Elastos.CoreLibrary.h"
 #include <sys/socket.h>
-#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInet6Address;

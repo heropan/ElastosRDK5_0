@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_IO_BUFFER_H__
 #define __ELASTOS_IO_BUFFER_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "Object.h"
 
 using Elastos::Core::IArrayOf;

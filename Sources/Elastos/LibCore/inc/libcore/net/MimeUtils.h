@@ -1,7 +1,7 @@
 #ifndef __LIBCORE_NET_MIMEUTILS_H__
 #define __LIBCORE_NET_MIMEUTILS_H__
 
-#include <Elastos.CoreLibrary_server.h>
+#include "Elastos.CoreLibrary.h"
 #include "coredef.h"
 #include <elastos/utility/etl/HashMap.h>
 

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Text.h"
 #include "CollationElementIteratorICU.h"
 #include "NativeCollation.h"
 

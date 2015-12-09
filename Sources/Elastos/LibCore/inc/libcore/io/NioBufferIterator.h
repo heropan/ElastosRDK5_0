@@ -1,8 +1,8 @@
 #ifndef __LIBCORE_IO_NIOBUFFERITERATOR_H__
 #define __LIBCORE_IO_NIOBUFFERITERATOR_H__
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "Object.h"
-
 
 namespace Libcore {
 namespace IO {

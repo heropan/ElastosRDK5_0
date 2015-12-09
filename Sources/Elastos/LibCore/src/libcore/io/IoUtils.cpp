@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "IoUtils.h"
 #include "CFileDescriptor.h"
 #include "CFile.h"

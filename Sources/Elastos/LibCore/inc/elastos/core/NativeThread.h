@@ -2,11 +2,7 @@
 #ifndef __ELASTOS_CORE_NATIVETHREAD_H__
 #define __ELASTOS_CORE_NATIVETHREAD_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
 #include "Elastos.CoreLibrary.h"
-#endif
 #include <pthread.h>
 
 namespace Elastos {
