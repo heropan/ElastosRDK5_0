@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CTOASTHELPER_H__
 
 #include "_Elastos_Droid_Widget_CToastHelper.h"
+ #include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;
@@ -11,8 +12,14 @@ namespace Droid {
 namespace Widget {
 
 CarClass(CToastHelper)
+    , public Singleton
+    , public IToastHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
     /**
      * Make a standard toast that just contains a text view.
      *

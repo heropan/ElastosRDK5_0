@@ -12,6 +12,7 @@ module
     merge("app/MediaRouteChooserDialogFragment.car");
     merge("app/MediaRouteControllerDialog.car");
     merge("app/MediaRouteControllerDialogFragment.car");
+    merge("app/MediaRouteDialogPresenter.car");
     merge("app/NetInitiatedActivity.car");
     merge("app/PlatLogoActivity.car");
     merge("app/ProcessMap.car");
@@ -25,6 +26,7 @@ module
     interface Elastos.Droid.App.IActionBarOnNavigationListener;
     interface Elastos.Droid.App.IActivity;
     interface Elastos.Droid.App.IDialog;
+    interface Elastos.Droid.App.IDialogFragment;
     interface Elastos.Droid.App.IFragment;
     interface Elastos.Droid.App.IListFragment;
     interface Elastos.Droid.Content.IComponentCallbacks;
@@ -32,7 +34,9 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContextWrapper;
     interface Elastos.Droid.Content.IDialogInterface;
+    interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
+    interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Internal.Widget.IActionBarVisibilityCallback;
     interface Elastos.Droid.Text.ITextWatcher;
@@ -194,6 +198,70 @@ module
         interface IViewOnCreateContextMenuListener;
     }
 
+    [local]
+    class CMediaRouteChooserDialog {
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme);
+
+        interface IMediaRouteChooserDialog;
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
+
+    class CMediaRouteChooserDialogFragment {
+        constructor();
+
+        interface IMediaRouteChooserDialogFragment;
+        interface IDialogFragment;
+        interface IFragment;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IViewOnCreateContextMenuListener;
+        interface IDialogInterfaceOnCancelListener;
+        interface IDialogInterfaceOnDismissListener;
+    }
+
+    [local]
+    class CMediaRouteControllerDialog {
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 theme);
+
+        interface IMediaRouteControllerDialog;
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
+
+    class CMediaRouteControllerDialogFragment {
+        constructor();
+
+        interface IMediaRouteControllerDialogFragment;
+        interface IDialogFragment;
+        interface IFragment;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IViewOnCreateContextMenuListener;
+        interface IDialogInterfaceOnCancelListener;
+        interface IDialogInterfaceOnDismissListener;
+    }
+
+    singleton class CMediaRouteDialogPresenter {
+        interface IMediaRouteDialogPresenter;
+    }
+
+    singleton class CLocalePickerHelper {
+        interface ILocalePickerHelper;
+    }
+
     class CNavItemSelectedListener {
         constructor(
             [in] IActionBarOnNavigationListener* listener);
@@ -244,6 +312,46 @@ module
         constructor();
 
         interface IProcessMap;
+    }
+
+    class CProcessStats {
+        constructor();
+
+        constructor(
+            [in] Boolean running);
+
+        interface IProcessStats;
+        interface IParcelable;
+    }
+
+    class CProcessStateHolder {
+        constructor(
+            [in] Int32 appVersion);
+
+        interface IProcessStateHolder;
+    }
+
+    [deprecated]
+    class CProcessDataCollection {
+        constructor(
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates);
+
+        interface IProcessDataCollection;
+    }
+
+    [deprecated]
+    class CTotalMemoryUseCollection {
+        constructor(
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates);
+
+        interface ITotalMemoryUseCollection;
+    }
+
+    singleton class CProcessStatsHelper {
+        interface IProcessStatsHelper;
     }
 
     class CResolverActivity {

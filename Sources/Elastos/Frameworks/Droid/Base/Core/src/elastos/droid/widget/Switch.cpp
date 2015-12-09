@@ -163,9 +163,11 @@ ECode Switch::constructor(
     config->GetScaledMinimumFlingVelocity(&mMinFlingVelocity);
 
     RefreshDrawableState();
-    SetChecked(IsChecked());
-    return NOERROR;
+    Boolean result;
+    IsChecked(&result);
+    SetChecked(result);
 
+    return NOERROR;
 }
 
 ECode Switch::SetSwitchTextAppearance(
@@ -183,7 +185,8 @@ ECode Switch::SetSwitchTextAppearance(
 
     if (colors) {
         mTextColors = colors;
-    } else {
+    }
+    else {
         mTextColors = GetTextColors();
     }
 
@@ -214,7 +217,8 @@ ECode Switch::SetSwitchTextAppearance(
         CAllCapsTransformationMethod::New(ctx, (IAllCapsTransformationMethod**)&atm);
         mSwitchTransformationMethod = ITransformationMethod2::Probe(atm.Get());
         mSwitchTransformationMethod->SetLengthChangesAllowed(TRUE);
-    } else {
+    }
+    else {
         mSwitchTransformationMethod = NULL;
     }
 
@@ -252,7 +256,8 @@ ECode Switch::SetSwitchTypeface(
         if (!tf) {
             Typeface::DefaultFromStyle(style, (ITypeface**)&typeface);
             tf = typeface;
-        } else {
+        }
+        else {
             Typeface::Create(tf, style, (ITypeface**)&typeface);
             tf = typeface;
         }
@@ -264,7 +269,8 @@ ECode Switch::SetSwitchTypeface(
         Int32 need = style & ~typefaceStyle;
         IPaint::Probe(mTextPaint)->SetFakeBoldText((need & ITypeface::BOLD) != 0);
         IPaint::Probe(mTextPaint)->SetTextSkewX((need & ITypeface::BOLD) != 0 ? -0.25f : 0);
-    } else {
+    }
+    else {
         IPaint::Probe(mTextPaint)->SetFakeBoldText(FALSE);
         IPaint::Probe(mTextPaint)->SetTextSkewX(0);
         SetSwitchTypeface(tf);
@@ -294,16 +300,11 @@ ECode Switch::SetSwitchPadding(
     return NOERROR;
 }
 
-Int32 Switch::GetSwitchPadding()
-{
-    return mSwitchPadding;
-}
-
 ECode Switch::GetSwitchPadding(
     /* [out] */ Int32* padding)
 {
     VALIDATE_NOT_NULL(padding)
-    *padding = GetSwitchPadding();
+    *padding = mSwitchPadding;
     return NOERROR;
 }
 
@@ -315,16 +316,11 @@ ECode Switch::SetSwitchMinWidth(
     return NOERROR;
 }
 
-Int32 Switch::GetSwitchMinWidth()
-{
-    return mSwitchMinWidth;
-}
-
 ECode Switch::GetSwitchMinWidth(
     /* [out] */ Int32* width)
 {
     VALIDATE_NOT_NULL(width)
-    *width = GetSwitchMinWidth();
+    *width = mSwitchMinWidth;
     return NOERROR;
 }
 
@@ -336,16 +332,11 @@ ECode Switch::SetThumbTextPadding(
     return NOERROR;
 }
 
-Int32 Switch::GetThumbTextPadding()
-{
-    return mThumbTextPadding;
-}
-
 ECode Switch::GetThumbTextPadding(
     /* [out] */ Int32* padding)
 {
     VALIDATE_NOT_NULL(padding)
-    *padding = GetThumbTextPadding();
+    *padding = mThumbTextPadding;
     return NOERROR;
 }
 
@@ -374,16 +365,11 @@ ECode Switch::SetTrackResource(
     return NOERROR;
 }
 
-AutoPtr<IDrawable> Switch::GetTrackDrawable()
-{
-    return mTrackDrawable;
-}
-
 ECode Switch::GetTrackDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    AutoPtr<IDrawable> temp = GetTrackDrawable();
+    AutoPtr<IDrawable> temp = mTrackDrawable;
     *drawable = temp;
     REFCOUNT_ADD(*drawable)
     return NOERROR;
@@ -414,16 +400,11 @@ ECode Switch::SetThumbResource(
     return NOERROR;
 }
 
-AutoPtr<IDrawable> Switch::GetThumbDrawable()
-{
-    return mThumbDrawable;
-}
-
 ECode Switch::GetThumbDrawable(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable)
-    AutoPtr<IDrawable> temp = GetThumbDrawable();
+    AutoPtr<IDrawable> temp = mThumbDrawable;
     *drawable = temp;
     REFCOUNT_ADD(*drawable)
     return NOERROR;
@@ -459,16 +440,11 @@ ECode Switch::GetSplitTrack(
     return NOERROR;
 }
 
-AutoPtr<ICharSequence> Switch::GetTextOn()
-{
-    return mTextOn;
-}
-
 ECode Switch::GetTextOn(
     /* [out] */ ICharSequence** c)
 {
     VALIDATE_NOT_NULL(c)
-    AutoPtr<ICharSequence> temp = GetTextOn();
+    AutoPtr<ICharSequence> temp = mTextOn;
     *c = temp;
     REFCOUNT_ADD(*c)
     return NOERROR;
@@ -482,16 +458,11 @@ ECode Switch::SetTextOn(
     return NOERROR;
 }
 
-AutoPtr<ICharSequence> Switch::GetTextOff()
-{
-    return mTextOff;
-}
-
 ECode Switch::GetTextOff(
     /* [out] */ ICharSequence** off)
 {
     VALIDATE_NOT_NULL(off)
-    AutoPtr<ICharSequence> temp = GetTextOff();
+    AutoPtr<ICharSequence> temp = mTextOff;
     *off = temp;
     REFCOUNT_ADD(*off)
     return NOERROR;
@@ -575,7 +546,8 @@ void Switch::OnMeasure(
         Boolean isGetPadding;
         mTrackDrawable->GetPadding(padding, &isGetPadding);
         mTrackDrawable->GetIntrinsicHeight(&trackHeight);
-    } else {
+    }
+    else {
         padding->SetEmpty();
     }
 
@@ -612,7 +584,9 @@ ECode Switch::OnPopulateAccessibilityEvent(
 {
     CompoundButton::OnPopulateAccessibilityEvent(event);
 
-    AutoPtr<ICharSequence> text = IsChecked() ? mTextOn : mTextOff;
+    Boolean res;
+    IsChecked(&res);
+    AutoPtr<ICharSequence> text = res ? mTextOn : mTextOff;
     if (text != NULL) {
         AutoPtr<IList> list;
         IAccessibilityRecord::Probe(event)->GetText((IList**)&list);
@@ -628,7 +602,8 @@ AutoPtr<ILayout> Switch::MakeLayout(
     if (mSwitchTransformationMethod) {
         ITransformationMethod::Probe(mSwitchTransformationMethod)->GetTransformation
             (text, (IView*)this->Probe(EIID_IView), (ICharSequence**)&transformed);
-    } else {
+    }
+    else {
         transformed = text;
     }
 
@@ -660,16 +635,18 @@ Boolean Switch::HitThumb(
     return x > thumbLeft && x < thumbRight && y > thumbTop && y < thumbBottom;
 }
 
-Boolean Switch::OnTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode Switch::OnTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
+
     mVelocityTracker->AddMovement(ev);
     Int32 action = 0;
     ev->GetActionMasked(&action);
 
     switch (action) {
-        case IMotionEvent::ACTION_DOWN:
-        {
+        case IMotionEvent::ACTION_DOWN: {
             Float x = 0, y = 0;
             ev->GetX(&x);
             ev->GetY(&y);
@@ -682,16 +659,13 @@ Boolean Switch::OnTouchEvent(
             break;
         }
 
-        case IMotionEvent::ACTION_MOVE:
-        {
+        case IMotionEvent::ACTION_MOVE: {
             switch (mTouchMode) {
-                case TOUCH_MODE_IDLE:
-                {
+                case TOUCH_MODE_IDLE: {
                     break;
                 }
 
-                case TOUCH_MODE_DOWN:
-                {
+                case TOUCH_MODE_DOWN: {
                     Float x = 0, y = 0;
                     ev->GetX(&x);
                     ev->GetY(&y);
@@ -703,13 +677,13 @@ Boolean Switch::OnTouchEvent(
                         parent->RequestDisallowInterceptTouchEvent(TRUE);
                         mTouchX = x;
                         mTouchY = y;
-                        return TRUE;
+                        *res = TRUE;
+                        return NOERROR;
                     }
                     break;
                 }
 
-                case TOUCH_MODE_DRAGGING:
-                {
+                case TOUCH_MODE_DRAGGING: {
                     Float x;
                     ev->GetX(&x);
                     Int32 thumbScrollRange = GetThumbScrollRange();
@@ -717,7 +691,8 @@ Boolean Switch::OnTouchEvent(
                     Float dPos;
                     if (thumbScrollRange != 0) {
                         dPos = thumbScrollOffset / thumbScrollRange;
-                    } else {
+                    }
+                    else {
                         // If the thumb scroll range is empty, just use the
                         // movement direction to snap on or off.
                         dPos = thumbScrollOffset > 0 ? 1 : -1;
@@ -731,27 +706,31 @@ Boolean Switch::OnTouchEvent(
                         mTouchX = x;
                         SetThumbPosition(newPos);
                     }
-                    return TRUE;
+                    *res = TRUE;
+                    return NOERROR;
                 }
             }
             break;
         }
 
         case IMotionEvent::ACTION_UP:
-        case IMotionEvent::ACTION_CANCEL:
-        {
+        case IMotionEvent::ACTION_CANCEL: {
             if (mTouchMode == TOUCH_MODE_DRAGGING) {
                 StopDrag(ev);
-                CompoundButton::OnTouchEvent(ev);
-                return TRUE;
+                assert(0 && "TODO");
+                // Boolean res;
+                // CompoundButton::OnTouchEvent(ev, &res);
+                *res = TRUE;
+                return NOERROR;
             }
             mTouchMode = TOUCH_MODE_IDLE;
             mVelocityTracker->Clear();
             break;
         }
     }
-
-    return CompoundButton::OnTouchEvent(ev);
+    assert(0 && "TODO");
+    // return CompoundButton::OnTouchEvent(ev, res);
+    return NOERROR;
 }
 
 void Switch::CancelSuperTouch(
@@ -761,7 +740,9 @@ void Switch::CancelSuperTouch(
     AutoPtr<IMotionEvent> cancle;
     CMotionEvent::Obtain(cev, (IMotionEvent**)&cancle);
     cancle->SetAction(IMotionEvent::ACTION_CANCEL);
-    CompoundButton::OnTouchEvent(cancle);
+    assert(0 && "TODO");
+    // Boolean res;
+    // CompoundButton::OnTouchEvent(cancle, &res);
     IInputEvent::Probe(cancle)->Recycle();
 }
 
@@ -784,14 +765,19 @@ void Switch::StopDrag(
             Boolean isLayoutRtl;
             if (IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
                 newState = (xvel < 0);
-            } else {
+            }
+            else {
                 newState = (xvel > 0);
             }
-        } else {
+        }
+        else {
             newState = GetTargetCheckedState();
         }
-    } else {
-        newState = IsChecked();
+    }
+    else {
+        Boolean res;
+        IsChecked(&res);
+        newState = res;
     }
 
     SetChecked(newState);
@@ -837,7 +823,9 @@ void Switch::SetThumbPosition(
 
 ECode Switch::Toggle()
 {
-    SetChecked(!IsChecked());
+    Boolean res;
+    IsChecked(&res);
+    SetChecked(!res);
     return NOERROR;
 }
 
@@ -847,13 +835,14 @@ ECode Switch::SetChecked(
     CompoundButton::SetChecked(checked);
     // Calling the super method may result in setChecked() getting called
     // recursively with a different value, so load the REAL value...
-    checked = IsChecked();
+    IsChecked(&checked);
 
     Boolean isAttachedToWindow, isLaidOut;
     if ((IsAttachedToWindow(&isAttachedToWindow), isAttachedToWindow)
         && (IsLaidOut(&isLaidOut), isLaidOut)) {
         AnimateThumbToCheckedState(checked);
-    } else {
+    }
+    else {
         // Immediately move the thumb to the new position.
         CancelPositionAnimator();
         SetThumbPosition(checked ? 1 : 0);
@@ -878,7 +867,8 @@ ECode Switch::OnLayout(
         if (mTrackDrawable != NULL) {
             Boolean isGetPadding;
             mTrackDrawable->GetPadding(trackPadding, &isGetPadding);
-        } else {
+        }
+        else {
             trackPadding->SetEmpty();
         }
 
@@ -895,7 +885,8 @@ ECode Switch::OnLayout(
         GetPaddingLeft(&switchLeft);
         switchLeft += opticalInsetLeft;
         switchRight = switchLeft + mSwitchWidth - opticalInsetLeft - opticalInsetRight;
-    } else {
+    }
+    else {
         Int32 width, right;
         GetWidth(&width);
         GetPaddingRight(&right);
@@ -911,8 +902,7 @@ ECode Switch::OnLayout(
             switchBottom = switchTop + mSwitchHeight;
             break;
 
-        case IGravity::CENTER_VERTICAL:
-        {
+        case IGravity::CENTER_VERTICAL: {
             Int32 top, height, bottom;
             GetPaddingTop(&top);
             GetHeight(&height);
@@ -922,8 +912,7 @@ ECode Switch::OnLayout(
             break;
         }
 
-        case IGravity::BOTTOM:
-        {
+        case IGravity::BOTTOM: {
             Int32 height, bottom;
             GetHeight(&height);
             GetPaddingBottom(&bottom);
@@ -956,7 +945,8 @@ ECode Switch::Draw(
     AutoPtr<IInsets> thumbInsets;
     if (mThumbDrawable != NULL) {
         mThumbDrawable->GetOpticalInsets((IInsets**)&thumbInsets);
-    } else {
+    }
+    else {
         thumbInsets = Insets::NONE;
     }
 
@@ -1022,7 +1012,8 @@ void Switch::OnDraw(
     if (trackDrawable != NULL) {
         Boolean isGetPadding;
         trackDrawable->GetPadding(padding, &isGetPadding);
-    } else {
+    }
+    else {
         padding->SetEmpty();
     }
 
@@ -1047,7 +1038,8 @@ void Switch::OnDraw(
             canvas->ClipRect(padding, Elastos::Droid::Graphics::RegionOp_DIFFERENCE, &isNonEmpty);
             trackDrawable->Draw(canvas);
             canvas->RestoreToCount(saveCount);
-        } else {
+        }
+        else {
             trackDrawable->Draw(canvas);
         }
     }
@@ -1076,7 +1068,8 @@ void Switch::OnDraw(
             thumbDrawable->GetBounds((IRect**)&bounds);
             CRect* boundsTemp = (CRect*)bounds.Get();
             cX = boundsTemp->mLeft + boundsTemp->mRight;
-        } else {
+        }
+        else {
             GetWidth(&cX);
         }
 
@@ -1092,34 +1085,44 @@ void Switch::OnDraw(
     canvas->RestoreToCount(saveCount);
 }
 
-Int32 Switch::GetCompoundPaddingLeft()
+ECode Switch::GetCompoundPaddingLeft(
+    /* [out] */ Int32* left)
 {
+    VALIDATE_NOT_NULL(left);
+
     Boolean isLayoutRtl;
     if (IsLayoutRtl(&isLayoutRtl), !isLayoutRtl) {
-        return CompoundButton::GetCompoundPaddingLeft();
+        return CompoundButton::GetCompoundPaddingLeft(left);
     }
 
-    Int32 padding = CompoundButton::GetCompoundPaddingLeft() + mSwitchWidth;
+    Int32 _left;
+    CompoundButton::GetCompoundPaddingLeft(&_left);
+    Int32 padding = _left + mSwitchWidth;
     if (!TextUtils::IsEmpty(GetText())) {
         padding += mSwitchPadding;
     }
-
-    return padding;
+    *left = padding;
+    return NOERROR;
 }
 
-Int32 Switch::GetCompoundPaddingRight()
+ECode Switch::GetCompoundPaddingRight(
+    /* [out] */ Int32* right)
 {
+    VALIDATE_NOT_NULL(right);
     Boolean isLayoutRtl;
     if (IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
-        return CompoundButton::GetCompoundPaddingRight();
+        return CompoundButton::GetCompoundPaddingRight(right);
     }
 
-    Int32 padding = CompoundButton::GetCompoundPaddingRight() + mSwitchWidth;
+    Int32 _right;
+    CompoundButton::GetCompoundPaddingRight(&_right);
+    Int32 padding = _right + mSwitchWidth;
     if (!TextUtils::IsEmpty(GetText())) {
         padding += mSwitchPadding;
     }
 
-    return padding;
+    *right = padding;
+    return NOERROR;
 }
 
 /**
@@ -1134,7 +1137,8 @@ Int32 Switch::GetThumbOffset()
     Boolean isLayoutRtl;
     if (IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
         thumbPosition = 1.0f - mThumbPosition;
-    } else {
+    }
+    else {
         thumbPosition = mThumbPosition;
     }
     return (Int32) (thumbPosition * GetThumbScrollRange() + 0.5f);
@@ -1150,14 +1154,16 @@ Int32 Switch::GetThumbScrollRange()
         AutoPtr<IInsets> insets;
         if (mThumbDrawable != NULL) {
             mThumbDrawable->GetOpticalInsets((IInsets**)&insets);
-        } else {
+        }
+        else {
             insets = Insets::NONE;
         }
         Insets* in = (Insets*)insets.Get();
 
         return mSwitchWidth - mThumbWidth - padding->mLeft - padding->mRight
                 - in->mLeft - in->mRight;
-    } else {
+    }
+    else {
         return 0;
     }
 }
@@ -1168,7 +1174,9 @@ ECode Switch::OnCreateDrawableState(
 {
     VALIDATE_NOT_NULL(drawableState)
     CompoundButton::OnCreateDrawableState(extraSpace + 1, drawableState);
-    if (IsChecked()) {
+    Boolean res;
+    IsChecked(&res);
+    if (res) {
         MergeDrawableStates(*drawableState, (ArrayOf<Int32>*)CHECKED_STATE_SET);
     }
     return NOERROR;
@@ -1247,13 +1255,16 @@ ECode Switch::OnInitializeAccessibilityNodeInfo(
     CString::New(String("Switch"), (ICharSequence**)&seq);
     info->SetClassName(seq);
 
-    AutoPtr<ICharSequence> switchText = IsChecked() ? mTextOn : mTextOff;
+    Boolean res;
+    IsChecked(&res);
+    AutoPtr<ICharSequence> switchText = res ? mTextOn : mTextOff;
     if (!TextUtils::IsEmpty(switchText)) {
         AutoPtr<ICharSequence> oldText;
         info->GetText((ICharSequence**)&oldText);
         if (TextUtils::IsEmpty(oldText)) {
             info->SetText(switchText);
-        } else {
+        }
+        else {
             StringBuilder sb;
             sb.Append(oldText);
             sb.Append("");
@@ -1309,5 +1320,3 @@ ECode Switch::SwitchProperty::SetValue(
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-
-

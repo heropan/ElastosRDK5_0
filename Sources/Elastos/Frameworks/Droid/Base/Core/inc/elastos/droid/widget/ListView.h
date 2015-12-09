@@ -3,15 +3,12 @@
 #define __ELASTOS_DROID_WIDGET_LISTVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/Vector.h>
 #include "elastos/droid/widget/AbsListView.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-using Elastos::Utility::Etl::Vector;
-using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IView;
@@ -375,7 +372,8 @@ public:
     CARAPI GetOverscrollFooter(
         /* [out] */ IDrawable** overScrollFooter);
 
-    CARAPI_(AutoPtr<ArrayOf<Int64> >) GetCheckItemIds();
+    CARAPI GetCheckItemIds(
+        /* [out, callee] */ ArrayOf<Int64>** itemIds);
 
     // @Override
     CARAPI OnInitializeAccessibilityEvent(

@@ -186,7 +186,7 @@ public:
         : public View::BaseSavedState
         , public IAbsListViewSavedState
     {
-    friend class AbsListView;
+        friend class AbsListView;
     public:
         CAR_INTERFACE_DECL();
 
@@ -1691,8 +1691,9 @@ public:
      * Return an InputConnection for editing of the filter text.
      */
     //@Override
-    CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(
-        /* [in] */ IEditorInfo* outAttrs);
+    CARAPI OnCreateInputConnection(
+        /* [in] */ IEditorInfo* outAttrs,
+        /* [out] */ IInputConnection** connection);
 
     /**
      * For filtering we proxy an input connection to an internal text editor,

@@ -1,11 +1,14 @@
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/widget/CToastHelper.h"
 #include "elastos/droid/widget/Toast.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
+
+CAR_INTERFACE_IMPL(CToastHelper, Singleton, IToastHelper);
+
+CAR_SINGLETON_IMPL(CToastHelper);
 
 ECode CToastHelper::MakeText(
     /* [in] */ IContext* context,

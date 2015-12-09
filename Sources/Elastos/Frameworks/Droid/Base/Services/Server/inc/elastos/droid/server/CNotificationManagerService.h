@@ -24,7 +24,7 @@ using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::App::INotification;
-using Elastos::Droid::App::ITransientNotification;
+using Elastos::Droid::App::IITransientNotification;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::Media::IIAudioService;
 using Elastos::Droid::StatusBar::IIStatusBarService;
@@ -89,7 +89,7 @@ private:
         ToastRecord(
             /* [in] */ Int32 pid,
             /* [in] */ const String& pkg,
-            /* [in] */ ITransientNotification* callback,
+            /* [in] */ IITransientNotification* callback,
             /* [in] */ Int32 duration);
 
         CARAPI_(void) Update(
@@ -98,7 +98,7 @@ private:
     public:
         Int32 mPid;
         String mPkg;
-        AutoPtr<ITransientNotification> mCallback;
+        AutoPtr<IITransientNotification> mCallback;
         Int32 mDuration;
     };
 
@@ -204,12 +204,12 @@ public:
 
     CARAPI EnqueueToast(
         /* [in] */ const String& pkg,
-        /* [in] */ ITransientNotification* callback,
+        /* [in] */ IITransientNotification* callback,
         /* [in] */ Int32 duration);
 
     CARAPI CancelToast(
         /* [in] */ const String& pkg,
-        /* [in] */ ITransientNotification* callback);
+        /* [in] */ IITransientNotification* callback);
 
     CARAPI EnqueueNotificationWithTag(
         /* [in] */ const String& pkg,
@@ -280,7 +280,7 @@ private:
      */
     CARAPI_(Int32) IndexOfToastLocked(
         /* [in] */ const String& pkg,
-        /* [in] */ ITransientNotification* callback);
+        /* [in] */ IITransientNotification* callback);
 
     /*
      * lock on mToastQueue

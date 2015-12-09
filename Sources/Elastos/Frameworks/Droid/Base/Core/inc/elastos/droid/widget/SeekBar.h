@@ -47,20 +47,25 @@ public:
     CARAPI SetOnSeekBarChangeListener(
         /* [in] */ ISeekBarOnSeekBarChangeListener* l);
 
+    // @Override
     CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
+    // @Override
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
+    // @Override
     virtual CARAPI_(void) OnProgressRefresh(
         /* [in] */ Float scale,
         /* [in] */ Boolean fromUser);
 
     //java package access permission
+    // @Override
     virtual CARAPI_(void) OnStartTrackingTouch();
 
+    // @Override
     virtual CARAPI_(void) OnStopTrackingTouch();
 
 private:

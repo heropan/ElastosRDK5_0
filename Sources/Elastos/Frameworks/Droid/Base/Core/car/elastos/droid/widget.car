@@ -142,9 +142,9 @@ module
    //  interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
    //  interface Elastos.Droid.Animation.IAnimatorListener;
    //  interface Elastos.Droid.Animation.IAnimatorUpdateListener;
-   //  interface Elastos.Droid.App.ITransientNotification;
+    interface Elastos.Droid.App.IITransientNotification;
    //  interface Elastos.Droid.App.IDialog;
-   //  interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBinder;
    //  interface Elastos.Droid.Os.IHandler;
    //  interface Elastos.Droid.Os.IHandlerCallback;
     interface Elastos.Droid.Text.INoCopySpan;
@@ -908,27 +908,48 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CCompoundButton {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CCompoundButton {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface ICompoundButton;
-   //      interface ICheckable;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface ICompoundButton;
+        interface IButton;
+        interface ITextView;
+        interface IView;
+        interface ICheckable;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    class CCompoundButtonSavedState {
+        constructor(
+            [in] IParcelable* superState);
+
+        constructor();
+
+        interface ICompoundButtonSavedState;
+        interface IViewBaseSavedState;
+        interface IAbsSavedState;
+        interface IParcelable;
+    }
 
     [local]
     class CSwitch {
@@ -1025,69 +1046,84 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  [local]
-   //  class CRadioButton {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CRadioButton {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IRadioButton;
-   //      interface ICheckable;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
-   //  [local]
-   //  class CRadioGroupLayoutParams {
+        interface IRadioButton;
+        interface ICompoundButton;
+        interface IButton;
+        interface ITextView;
+        interface IView;
+        interface ICheckable;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+    [local]
+    class CRadioGroupLayoutParams {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height);
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height,
-   //          [in] Float initWeight);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Float initWeight);
 
-   //      constructor(
-   //          [in] IViewGroupLayoutParams* source);
+        constructor(
+            [in] IViewGroupLayoutParams* source);
 
-   //      constructor(
-   //          [in] IViewGroupMarginLayoutParams* marginSource);
+        constructor(
+            [in] IViewGroupMarginLayoutParams* marginSource);
 
-   //      interface IRadioGroupLayoutParams;
-   //  }
+        interface IRadioGroupLayoutParams;
+        interface ILinearLayoutLayoutParams;
+        interface IViewGroupMarginLayoutParams;
+        interface IViewGroupLayoutParams;
+    }
 
-   //  [local]
-   //  class CRadioGroup {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CRadioGroup {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      interface IRadioGroup;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface IRadioGroup;
+        interface ILinearLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  class CAbsSpinnerSavedState {
    //      constructor();
@@ -1774,27 +1810,26 @@ module
    //      interface IShareActionProvider;
    //  }
 
-   //  [local]
-   //  class CToastTransientNotification {
-   //      constructor(
-   //          [in] IToast* toast);
+    [local]
+    class CToastTransientNotification {
+        constructor();
 
-   //      interface ITransientNotification;
-   //      interface IBinder;
-   //  }
+        interface IITransientNotification;
+        interface IBinder;
+    }
 
-   //  [local]
-   //  class CToast {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CToast {
+        constructor(
+            [in] IContext* ctx);
 
-   //      interface IToast;
-   //  }
+        interface IToast;
+    }
 
-   //  [local]
-   //  singleton class CToastHelper {
-   //      interface IToastHelper;
-   //  }
+    [local]
+    singleton class CToastHelper {
+        interface IToastHelper;
+    }
 
    //  [local]
    //  class CTabWidget {

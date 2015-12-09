@@ -1636,17 +1636,27 @@ public:
 
     CARAPI PerformBootDexOpt();
 
-    CARAPI PerformDexOpt(
+    CARAPI PerformDexOptIfNeeded(
         /* [in] */ const String& packageName,
+        /* [in] */ const String& instructionSet,
         /* [out] */ Boolean* result);
 
-    CARAPI_(Int32) PerformDexOptLI(
-        /* [in] */ PackageParser::Package* pkg,
-        /* [in] */ Boolean forceDex,
-        /* [in] */ Boolean defer);
+    CARAPI_(Boolean) PerformDexOpt(
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& instructionSet,
+        /* [in] */ Boolean backgroundDexopt);
 
-    static CARAPI_(AutoPtr< ArrayOf<String> >) GetDexCodeInstructionSets(
-        /* [in] */ List<String>& instructionSets);
+    CARAPI_(AutoPtr< HashSet<String> >) GetPackagesThatNeedDexOpt();
+
+    CARAPI_(void) Shutdown();
+
+    /**
+     * Returns deduplicated list of supported instructions for dex code.
+     */
+    static CARAPI_(AutoPtr< ArrayOf<String> >) GetAllDexCodeInstructionSets();
+
+    CARAPI ForceDexOpt(
+        /* [in] */ const String& packageName);
 
     CARAPI_(AutoPtr<IFile>) GetDataPathForUser(
         /* [in] */ Int32 userId);
@@ -2031,30 +2041,80 @@ private:
         /* [in] */ IFile* srcFile,
         /* [in] */ Int32 parseFlags);
 
-    CARAPI_(AutoPtr<PackageParser::Package>) ScanPackageLI(
+    CARAPI ScanPackageLI(
         /* [in] */ IFile* scanFile,
         /* [in] */ Int32 parseFlags,
-        /* [in] */ Int32 scanMode,
+        /* [in] */ Int32 scanFlags,
         /* [in] */ Int64 currentTime,
         /* [in] */ IUserHandle* user,
-        /* [in] */ ArrayOf<Byte>* readBuffer);
-
-    static CARAPI_(void) SetApplicationInfoPaths(
-        /* [in] */ PackageParser::Package* pkg,
-        /* [in] */ const String& destCodePath,
-        /* [in] */ const String& destResPath);
+        /* [out] */ PackageParser::Packag** pkg);
 
     static CARAPI_(String) FixProcessName(
         /* [in] */ const String& defProcessName,
         /* [in] */ const String& processName,
         /* [in] */ Int32 uid);
 
-    CARAPI_(Boolean) VerifySignaturesLP(
+    CARAPI VerifySignaturesLP(
         /* [in] */ PackageSetting* pkgSetting,
         /* [in] */ PackageParser::Package* pkg);
 
     static CARAPI EnforceSystemOrRoot(
         /* [in] */ const String& message);
+
+    CARAPI_(void) FilterRecentlyUsedApps(
+        /* [in] */ HashSet<AutoPtr<PackageParser::Package> >* pkgs);
+
+    CARAPI_(HashSet<String>&) GetPackageNamesForIntent(
+        /* [in] */ IIntent* intent);
+
+    CARAPI_(void) PerformBootDexOpt(
+        /* [in] */ PackageParser::Package* pkg,
+        /* [in] */ Int32 curr,
+        /* [in] */ Int32 total);
+
+    static CARAPI_(String) GetPrimaryInstructionSet(
+        /* [in] */ IApplicationInfo* info);
+
+    CARAPI_(void) PerformDexOptLibsLI(
+        /* [in] */ List<String>* libs,
+        /* [in] */ ArrayOf<String>* instructionSets,
+        /* [in] */ Boolean forceDex,
+        /* [in] */ Boolean defer,
+        /* [in] */ HashSet<String>* done);
+
+    CARAPI_(Int32) PerformDexOptLI(
+        /* [in] */ PackageParser::Package* pkg,
+        /* [in] */ ArrayOf<String>* targetInstructionSets,
+        /* [in] */ Boolean forceDex,
+        /* [in] */ Boolean defer,
+        /* [in] */ HashSet<String>* done);
+
+    static CARAPI_(AutoPtr< ArrayOf<String> >) GetAppDexInstructionSets(
+        /* [in] */ IApplicationInfo* info);
+
+    static CARAPI_(AutoPtr< ArrayOf<String> >) GetAppDexInstructionSets(
+        /* [in] */ PackageSetting* ps);
+
+    static CARAPI_(String) GetPreferredInstructionSet();
+
+    static CARAPI_(List<String>&) GetAllInstructionSets();
+
+    /**
+     * Returns the instruction set that should be used to compile dex code. In the presence of
+     * a native bridge this might be different than the one shared libraries use.
+     */
+    static CARAPI_(String) GetDexCodeInstructionSet(
+        /* [in] */ const String& sharedLibraryIsa);
+
+    static CARAPI_(AutoPtr< ArrayOf<String> >) GetDexCodeInstructionSets(
+        /* [in] */ ArrayOf<String>* instructionSets);
+
+    CARAPI_(Int32) PerformDexOptLI(
+        /* [in] */ PackageParser::Package* pkg,
+        /* [in] */ ArrayOf<String>* instructionSets,
+        /* [in] */ Boolean forceDex,
+        /* [in] */ Boolean defer,
+        /* [in] */ Boolean inclDependencies);
 
     CARAPI_(Boolean) VerifyPackageUpdateLPr(
         /* [in] */ PackageSetting* oldPkg,
@@ -2066,27 +2126,111 @@ private:
 
     CARAPI_(Int32) CreateDataDirsLI(
         /* [in] */ const String& packageName,
-        /* [in] */ Int32 uid);
+        /* [in] */ Int32 uid,
+        /* [in] */ const String& seinfo);
 
     CARAPI_(Int32) RemoveDataDirsLI(
         /* [in] */ const String& packageName);
 
+    CARAPI_(Int32) DeleteCodeCacheDirsLI(
+        /* [in] */ const String& packageName);
+
+    CARAPI_(void) AddSharedLibraryLPw(
+        /* [in] */ List<String>* usesLibraryFiles,
+        /* [in] */ SharedLibraryEntry* file,
+        /* [in] */ PackageParser::Package* changingLib);
+
+    CARAPI UpdateSharedLibrariesLPw(
+        /* [in] */ PackageParser::Package* pkg,
+        /* [in] */ PackageParser::Package* changingLib);
+
+    static CARAPI_(Boolean) HasString(
+        /* [in] */ List<String>* list,
+        /* [in] */ List<String>* which);
+
+    CARAPI_(void) UpdateAllSharedLibrariesLPw();
+
+    CARAPI_(AutoPtr< List<AutoPtr<PackageParser::Package> > >) UpdateAllSharedLibrariesLPw(
+        /* [in] */ PackageParser::Package* changingPkg);
+
+    /**
+     * Derive the value of the {@code cpuAbiOverride} based on the provided
+     * value and an optional stored value from the package settings.
+     */
+    static CARAPI_(String) DeriveAbiOverride(
+        /* [in] */ const String& abiOverride,
+        /* [in] */ PackageSetting* settings);
+
     CARAPI_(AutoPtr<PackageParser::Package>) ScanPackageLI(
         /* [in] */ PackageParser::Package* pkg,
         /* [in] */ Int32 parseFlags,
-        /* [in] */ Int32 scanMode,
+        /* [in] */ Int32 scanFlags,
+        /* [in] */ Int64 currentTime,
+        /* [in] */ IUserHandle* user);
+
+    CARAPI ScanPackageDirtyLI(
+        /* [in] */ PackageParser::Package* pkg,
+        /* [in] */ Int32 parseFlags,
+        /* [in] */ Int32 scanFlags,
         /* [in] */ Int64 currentTime,
         /* [in] */ IUserHandle* user,
-        /* [in] */ ArrayOf<Byte>* readBuffer);
+        /* [out] */ PackageParser::Package* outPkg);
 
-    CARAPI_(void) SetInternalAppNativeLibraryPath(
+    /**
+     * Adjusts ABIs for a set of packages belonging to a shared user so that they all match.
+     * i.e, so that all packages can be run inside a single process if required.
+     *
+     * Optionally, callers can pass in a parsed package via {@code newPackage} in which case
+     * this function will either try and make the ABI for all packages in {@code packagesForUser}
+     * match {@code scannedPackage} or will update the ABI of {@code scannedPackage} to match
+     * the ABI selected for {@code packagesForUser}. This variant is used when installing or
+     * updating a package that belongs to a shared user.
+     *
+     * NOTE: We currently only match for the primary CPU abi string. Matching the secondary
+     * adds unnecessary complexity.
+     */
+    CARAPI_(void) AdjustCpuAbisForSharedUserLPw(
+        /* [in] */ HashSet<AutoPtr<PackageSetting> >& packagesForUser,
+        /* [in] */ PackageParser::Package* scannedPackage,
+        /* [in] */ Boolean forceDexOpt,
+        /* [in] */ Boolean deferDexOpt);
+
+    CARAPI_(void) SetUpCustomResolverActivity(
+        /* [in] */ PackageParser::Package* pkg);
+
+    static CARAPI_(String) CalculateBundledApkRoot(
+        /* [in] */ const String& codePathString);
+
+    /**
+     * Derive and set the location of native libraries for the given package,
+     * which varies depending on where and how the package was installed.
+     */
+    CARAPI_(void) SetNativeLibraryPaths(
+        /* [in] */ PackageParser::Package* pkg);
+
+    /**
+     * Calculate the abis and roots for a bundled app. These can uniquely
+     * be determined from the contents of the system partition, i.e whether
+     * it contains 64 or 32 bit shared libraries etc. We do not validate any
+     * of this information, and instead assume that the system was built
+     * sensibly.
+     */
+    CARAPI_(void) SetBundledAppAbisAndRoots(
         /* [in] */ PackageParser::Package* pkg,
         /* [in] */ PackageSetting* pkgSetting);
 
-    static CARAPI CopyNativeLibrariesForInternalApp(
-        /* [in] */ IFile* scanFile,
-        /* [in] */ IFile* nativeLibraryDir,
-        /* [out] */ Int32* result);
+    /**
+     * Deduces the ABI of a bundled app and sets the relevant fields on the
+     * parsed pkg object.
+     *
+     * @param apkRoot the root of the installed apk, something like {@code /system} or {@code /oem}
+     *        under which system libraries are installed.
+     * @param apkName the name of the installed package.
+     */
+    static CARAPI_(void) SetBundledAppAbi(
+        /* [in] */ PackageParser::Package* pkg,
+        /* [in] */ const String& apkRoot,
+        /* [in] */ const String& apkName);
 
     CARAPI_(void) KillApplication(
         /* [in] */ const String& pkgName,
@@ -2399,6 +2543,41 @@ public:/*package*/
 
     static const AutoPtr<IComponentName> DEFAULT_CONTAINER_COMPONENT;
 
+    static const Int32 SEND_PENDING_BROADCAST = 1;
+    static const Int32 MCS_BOUND = 3;
+    static const Int32 END_COPY = 4;
+    static const Int32 INIT_COPY = 5;
+    static const Int32 MCS_UNBIND = 6;
+    static const Int32 START_CLEANING_PACKAGE = 7;
+    static const Int32 FIND_INSTALL_LOC = 8;
+    static const Int32 POST_INSTALL = 9;
+    static const Int32 MCS_RECONNECT = 10;
+    static const Int32 MCS_GIVE_UP = 11;
+    static const Int32 UPDATED_MEDIA_STATUS = 12;
+    static const Int32 WRITE_SETTINGS = 13;
+    static const Int32 WRITE_PACKAGE_RESTRICTIONS = 14;
+    static const Int32 PACKAGE_VERIFIED = 15;
+    static const Int32 CHECK_PENDING_VERIFICATION = 16;
+
+    static const Int32 WRITE_SETTINGS_DELAY = 10 * 1000;  // 10 seconds
+
+    // Delay time in millisecs
+    static const Int32 BROADCAST_DELAY = 10 * 1000;
+
+    static AutoPtr<CUserManagerService> sUserManager;
+
+    static const Int32 DEX_OPT_SKIPPED = 0;
+    static const Int32 DEX_OPT_PERFORMED = 1;
+    static const Int32 DEX_OPT_DEFERRED = 2;
+    static const Int32 DEX_OPT_FAILED = -1;
+
+    static const Int32 UPDATE_PERMISSIONS_ALL = 1 << 0;
+    static const Int32 UPDATE_PERMISSIONS_REPLACE_PKG = 1 << 1;
+    static const Int32 UPDATE_PERMISSIONS_REPLACE_ALL = 1 << 2;
+
+    // ------- apps on sdcard specific code -------
+    static const Boolean DEBUG_SD_INSTALL;
+
     AutoPtr<ServiceThread> mHandlerThread;
     AutoPtr<IHandler> mHandler;//   final PackageHandler mHandler;
 
@@ -2518,43 +2697,8 @@ public:/*package*/
 
     AutoPtr<PendingPackageBroadcasts> mPendingBroadcasts;
 
-    static const Int32 SEND_PENDING_BROADCAST = 1;
-    static const Int32 MCS_BOUND = 3;
-    static const Int32 END_COPY = 4;
-    static const Int32 INIT_COPY = 5;
-    static const Int32 MCS_UNBIND = 6;
-    static const Int32 START_CLEANING_PACKAGE = 7;
-    static const Int32 FIND_INSTALL_LOC = 8;
-    static const Int32 POST_INSTALL = 9;
-    static const Int32 MCS_RECONNECT = 10;
-    static const Int32 MCS_GIVE_UP = 11;
-    static const Int32 UPDATED_MEDIA_STATUS = 12;
-    static const Int32 WRITE_SETTINGS = 13;
-    static const Int32 WRITE_PACKAGE_RESTRICTIONS = 14;
-    static const Int32 PACKAGE_VERIFIED = 15;
-    static const Int32 CHECK_PENDING_VERIFICATION = 16;
-
-    static const Int32 WRITE_SETTINGS_DELAY = 10 * 1000;  // 10 seconds
-
-    // Delay time in millisecs
-    static const Int32 BROADCAST_DELAY = 10 * 1000;
-
-    static AutoPtr<CUserManagerService> sUserManager;
-
     HashMap<Int32, AutoPtr<PostInstallData> > mRunningInstalls;
     Int32 mNextInstallToken; // nonzero; will be wrapped back to 1 when ++ overflows
-
-    static const Int32 DEX_OPT_SKIPPED = 0;
-    static const Int32 DEX_OPT_PERFORMED = 1;
-    static const Int32 DEX_OPT_DEFERRED = 2;
-    static const Int32 DEX_OPT_FAILED = -1;
-
-    static const Int32 UPDATE_PERMISSIONS_ALL = 1 << 0;
-    static const Int32 UPDATE_PERMISSIONS_REPLACE_PKG = 1 << 1;
-    static const Int32 UPDATE_PERMISSIONS_REPLACE_ALL = 1 << 2;
-
-    // ------- apps on sdcard specific code -------
-    static const Boolean DEBUG_SD_INSTALL;
 
 private:
     static const Boolean DEBUG_INSTALL = FALSE;

@@ -1,8 +1,8 @@
 
 #include "elastos/droid/widget/Toast.h"
 #include "elastos/droid/widget/CToast.h"
-#include "elastos/droid/R.h"
 #include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/app/NotificationManager.h"
 #include "elastos/droid/view/CGravity.h"
 #include "elastos/droid/view/Gravity.h"
@@ -10,91 +10,398 @@
 #include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 #include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
 #include "elastos/droid/widget/CToastTransientNotification.h"
+#include "elastos/droid/widget/Toast.h"
+#include "elastos/droid/R.h"
+#include <elastos/core/CoreUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CStringWrapper;
-using Elastos::Droid::R;
-using Elastos::Droid::Os::ServiceManager;
+using Elastos::Droid::App::EIID_IITransientNotification;
+using Elastos::Droid::App::NotificationManager;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Graphics::IPixelFormat;
-using Elastos::Droid::App::EIID_ITransientNotification;
-using Elastos::Droid::App::NotificationManager;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::ServiceManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Accessibility::CAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::Gravity;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
 using Elastos::Droid::View::ILayoutInflater;
-using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::View::Accessibility::CAccessibilityManager;
-using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
+using Elastos::Droid::R;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-// 08c79d3a-93bf-4866-bc68-e8feb57f167d
-extern "C" const InterfaceID EIID_Toast =
-        { 0x08c79d3a, 0x93bf, 0x4866, { 0xbc, 0x68, 0xe8, 0xfe, 0xb5, 0x7f, 0x16, 0x7d } };
+const String Toast::TAG("Toast");
+const Boolean Toast::localLOGV = FALSE;
 
 AutoPtr<IINotificationManager> Toast::sService;
+
+//==============================================================================
+//          Toast::TN
+//==============================================================================
+
+CAR_INTERFACE_IMPL_2(Toast::TN, Object, IITransientNotification, IBinder);
+
+Toast::TN::TN()
+    : mGravity(0)
+    , mX(0)
+    , mY(0)
+    , mHorizontalMargin(0.0f)
+    , mVerticalMargin(0.0f)
+{
+    CWindowManagerLayoutParams::New((IWindowManagerLayoutParams**)&mParams);
+    CHandler::New((IHandler**)&mHandler);
+}
+
+Toast::TN::~TN()
+{}
+
+ECode Toast::TN::constructor()
+{
+    // XXX This should be changed to use a Dialog, with a Theme.Toast
+    // defined that sets up the layout params appropriately.
+
+    mShow = new ShowAction(this);
+    mHide = new HideAction(this);
+
+    AutoPtr<IWindowManagerLayoutParams> params = mParams;
+
+    IViewGroupLayoutParams::Probe(params)->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
+    IViewGroupLayoutParams::Probe(params)->SetWidth(IViewGroupLayoutParams::WRAP_CONTENT);
+    params->SetFormat(IPixelFormat::TRANSLUCENT);
+    params->SetWindowAnimations(R::style::Animation_Toast);
+    params->SetType(IWindowManagerLayoutParams::TYPE_TOAST);
+    params->SetTitle(CoreUtils::Convert("Toast"));
+    params->SetFlags(IWindowManagerLayoutParams::FLAG_KEEP_SCREEN_ON
+        | IWindowManagerLayoutParams::FLAG_NOT_FOCUSABLE
+        | IWindowManagerLayoutParams::FLAG_NOT_TOUCHABLE);
+
+    return NOERROR;
+}
+
+ECode Toast::TN::Show()
+{
+    if (localLOGV) {
+        Logger::V(TAG, "SHOW: %p", this);
+    }
+    Boolean result;
+    return mHandler->Post(mShow, &result);
+}
+
+ECode Toast::TN::Hide()
+{
+    if (localLOGV) {
+        Logger::V(TAG, "HIDE: %p", this);
+    }
+    AddRef();
+    Boolean result;
+    return mHandler->Post(mHide, &result);
+}
+
+ECode Toast::TN::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    *str = String("ToastTransientNotification");
+    return NOERROR;
+}
+
+ECode Toast::TN::HandleShow()
+{
+    if (localLOGV) {
+        Logger::V(TAG, "HANDLE SHOW: %p, mView= %p, mNextView= %p", this, mView.Get(), mNextView.Get());
+    }
+    if (mView != mNextView) {
+        HandleHide();
+        mView = mNextView;
+
+        AutoPtr<IContext> context;
+        mView->GetContext((IContext**)&context);
+        String packageName;
+        context->GetOpPackageName(&packageName);
+        if (mWM == NULL) {
+            AutoPtr<IContext> appContext;
+            context->GetApplicationContext((IContext**)&appContext);
+            if (appContext == NULL)
+                appContext = context;
+
+            AutoPtr<IInterface> service;
+            appContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&service);
+            mWM = IWindowManager::Probe(service);
+        }
+
+        // We can resolve the Gravity here by using the Locale for getting
+        // the layout direction
+        AutoPtr<IConfiguration> config;
+        AutoPtr<IResources> resources;
+        context->GetResources((IResources**)&resources);
+        resources->GetConfiguration((IConfiguration**)&config);
+        Int32 layoutDirection;
+        config->GetLayoutDirection(&layoutDirection);
+
+        Int32 gravity = Gravity::GetAbsoluteGravity(mGravity, layoutDirection);
+        mParams->SetGravity(gravity);
+
+        if ((gravity & IGravity::HORIZONTAL_GRAVITY_MASK) == IGravity::FILL_HORIZONTAL) {
+            ((CWindowManagerLayoutParams*)mParams.Get())->mHorizontalWeight = 1.0f;
+        }
+        if ((gravity & IGravity::VERTICAL_GRAVITY_MASK) == IGravity::FILL_VERTICAL) {
+            ((CWindowManagerLayoutParams*)mParams.Get())->mVerticalWeight = 1.0f;
+        }
+        mParams->SetX(mX);
+        mParams->SetY(mY);
+        mParams->SetVerticalMargin(mVerticalMargin);
+        mParams->SetHorizontalMargin(mHorizontalMargin);
+        mParams->SetPackageName(packageName);
+
+        AutoPtr<IViewParent> parent;
+        mView->GetParent((IViewParent**)&parent);
+        if (parent != NULL) {
+            if (localLOGV) {
+                Logger::V(TAG, "REMOVE! mView: %p in this: %p", mView.Get(), this);
+            }
+            IViewManager::Probe(mWM)->RemoveView(mView);
+        }
+        if (localLOGV) {
+            Logger::V(TAG, "ADD! mView: %p in this: %p", mView.Get(), this);
+        }
+        IViewManager::Probe(mWM)->AddView(mView, IViewGroupLayoutParams::Probe(mParams));
+
+        TrySendAccessibilityEvent();
+    }
+    return NOERROR;
+}
+
+ECode Toast::TN::TrySendAccessibilityEvent()
+{
+    AutoPtr<IContext> context;
+    mView->GetContext((IContext**)&context);
+    AutoPtr<IAccessibilityManager> accessibilityManager;
+    CAccessibilityManager::GetInstance(context, (IAccessibilityManager**)&accessibilityManager);
+    Boolean enabled;
+    accessibilityManager->IsEnabled(&enabled);
+    if (!enabled) {
+        return NOERROR;
+    }
+    // treat toasts as notifications since they are used to
+    // announce a transient piece of information to the user
+    AutoPtr<IAccessibilityEvent> event;
+    CAccessibilityEvent::Obtain(
+            IAccessibilityEvent::TYPE_NOTIFICATION_STATE_CHANGED, (IAccessibilityEvent**)&event);
+
+    IAccessibilityRecord::Probe(event)->SetClassName(CoreUtils::Convert("Toast"));
+
+    String strPkgName;
+    context->GetPackageName(&strPkgName);
+    event->SetPackageName(CoreUtils::Convert(strPkgName));
+
+    Boolean result;
+    mView->DispatchPopulateAccessibilityEvent(event, &result);
+    accessibilityManager->SendAccessibilityEvent(event);
+    return NOERROR;
+}
+
+ECode Toast::TN::HandleHide()
+{
+    if (localLOGV) {
+        Logger::V(TAG, "HANDLE HIDE: this: %p, mView= %p", this, mView.Get());
+    }
+    if (mView != NULL) {
+        // note: checking parent() just to make sure the view has
+        // been added...  i have seen cases where we get here when
+        // the view isn't yet added, so let's try not to crash.
+        AutoPtr<IViewParent> parent;
+        mView->GetParent((IViewParent**)&parent);
+        if (parent != NULL) {
+            if (localLOGV) {
+                Logger::V(TAG, "REMOVE! mView: %p, in this: %p", mView.Get(), this);
+            }
+            if (mWM) {
+                IViewManager::Probe(mWM)->RemoveView(mView);
+            }
+        }
+
+        mView = NULL;
+    }
+
+    return NOERROR;
+}
+
+ECode Toast::TN::SetNextView(
+    /* [in] */ IView* nextView)
+{
+    mNextView = nextView;
+    return NOERROR;
+}
+
+ECode Toast::TN::SetGravity(
+    /* [in] */ Int32 gravity)
+{
+    mGravity = gravity;
+    return NOERROR;
+}
+
+ECode Toast::TN::GetGravity(
+    /* [out] */ Int32* gravity)
+{
+    VALIDATE_NOT_NULL(gravity);
+    *gravity = mGravity;
+    return NOERROR;
+}
+
+ECode Toast::TN::SetX(
+    /* [in] */ Int32 x)
+{
+    mX = x;
+    return NOERROR;
+}
+
+ECode Toast::TN::GetX(
+    /* [out] */ Int32* x)
+{
+    VALIDATE_NOT_NULL(x);
+    *x = mX;
+    return NOERROR;
+}
+
+ECode Toast::TN::SetY(
+    /* [in] */ Int32 y)
+{
+    mY = y;
+    return NOERROR;
+}
+
+ECode Toast::TN::GetY(
+    /* [out] */ Int32* y)
+{
+    VALIDATE_NOT_NULL(y);
+    *y = mY;
+    return NOERROR;
+}
+
+ECode Toast::TN::SetHorizontalMargin(
+    /* [in] */ Float horizontalMargin)
+{
+    mHorizontalMargin = horizontalMargin;
+    return NOERROR;
+}
+
+ECode Toast::TN::GetHorizontalMargin(
+    /* [out] */ Float* horizontalMargin)
+{
+    VALIDATE_NOT_NULL(horizontalMargin);
+    *horizontalMargin = mHorizontalMargin;
+    return NOERROR;
+}
+
+ECode Toast::TN::SetVerticalMargin(
+    /* [in] */ Float verticalMargin)
+{
+    mVerticalMargin = verticalMargin;
+    return NOERROR;
+}
+
+ECode Toast::TN::GetVerticalMargin(
+    /* [out] */ Float* verticalMargin)
+{
+    VALIDATE_NOT_NULL(verticalMargin);
+    *verticalMargin = mVerticalMargin;
+    return NOERROR;
+}
+
+//==============================================================================
+//          Toast::TN::ShowAction::ShowAction
+//==============================================================================
+Toast::TN::ShowAction::ShowAction(
+    /* [in] */ TN* host)
+    : mHost(host)
+{
+}
+
+ECode Toast::TN::ShowAction::Run()
+{
+    mHost->HandleShow();
+    return NOERROR;
+}
+
+//==============================================================================
+//          Toast::HideAction
+//==============================================================================
+Toast::TN::HideAction::HideAction(
+    /* [in] */ TN* host)
+    : mHost(host)
+{}
+
+ECode Toast::TN::HideAction::Run()
+{
+    mHost->HandleHide();
+    // Don't do this in handleHide() because it is also invoked by handleShow()
+    mHost->mNextView = NULL;
+    return NOERROR;
+}
+
+//==============================================================================
+//          Toast
+//==============================================================================
+
+CAR_INTERFACE_IMPL(Toast, Object, IToast);
 
 Toast::Toast()
     : mDuration(0)
 {}
 
-/**
- * Construct an empty Toast object.  You must call {@link #setView} before you
- * can call {@link #show}.
- *
- * @param context  The context to use.  Usually your {@link android.app.Application}
- *                 or {@link android.app.Activity} object.
- */
-Toast::Toast(
-    /* [in] */ IContext* context)
-    : mDuration(0)
-{
-     Init(context);
-}
+Toast::~Toast()
+{}
 
-ECode Toast::Init(
+ECode Toast::constructor(
     /* [in] */ IContext* context)
 {
-    mContext = context ;
-    CToastTransientNotification::New(THIS_PROBE(IToast), (ITransientNotification**)&mTN);
+    mContext = context;
+
+    mTN = new TN();
+
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
-
     Int32 y;
     res->GetDimensionPixelSize(R::dimen::toast_y_offset, &y);
-    ((CToastTransientNotification*)mTN.Get())->SetY(y);
+    mTN->SetY(y);
+
+    Int32 gravity;
+    res->GetInteger(R::integer::config_toastDefaultGravity, &gravity);
+    mTN->SetGravity(gravity);
+
     return NOERROR;
 }
 
-/**
- * Show the view for the specified duration.
- */
 ECode Toast::Show()
 {
     if (mNextView == NULL) {
+        Logger::E("Toast", "setView must have been called");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    ((CToastTransientNotification*)mTN.Get())->SetNextView(mNextView);
-
-    String pkgName;
-    mContext->GetPackageName(&pkgName);
-
     AutoPtr<IINotificationManager> service = GetService();
-    return service->EnqueueToast(pkgName, (ITransientNotification*)(mTN.Get()), mDuration);
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
+
+    AutoPtr<TN> tn = mTN;
+    tn->SetNextView(mNextView);
+
+    return service->EnqueueToast(pkgName, (IITransientNotification*)tn.Get(), mDuration);
 }
 
-/**
- * Close the view if it's showing, or don't show it if it isn't showing yet.
- * You do not normally have to call this.  Normally view will disappear on its own
- * after the appropriate duration.
- */
 ECode Toast::Cancel()
 {
     mTN->Hide();
@@ -102,13 +409,9 @@ ECode Toast::Cancel()
     String pkgName;
     mContext->GetPackageName(&pkgName);
     AutoPtr<IINotificationManager> service = GetService();
-    return service->CancelToast(pkgName, (ITransientNotification*)(mTN.Get()));
+    return service->CancelToast(pkgName, (IITransientNotification*)mTN.Get());
 }
 
-/**
- * Set the view to show.
- * @see #getView
- */
 ECode Toast::SetView(
     /* [in] */ IView* view)
 {
@@ -116,10 +419,6 @@ ECode Toast::SetView(
     return NOERROR;
 }
 
-/**
- * Return the view.
- * @see #setView
- */
 ECode Toast::GetView(
     /* [out] */ IView** view)
 {
@@ -129,11 +428,6 @@ ECode Toast::GetView(
     return NOERROR;
 }
 
-/**
- * Set how long to show the view for.
- * @see #LENGTH_SHORT
- * @see #LENGTH_LONG
- */
 ECode Toast::SetDuration(
     /* [in] */ Int32 duration)
 {
@@ -141,10 +435,6 @@ ECode Toast::SetDuration(
     return NOERROR;
 }
 
-/**
- * Return the duration.
- * @see #setDuration
- */
 ECode Toast::GetDuration(
     /* [out] */ Int32* duration)
 {
@@ -153,95 +443,64 @@ ECode Toast::GetDuration(
     return NOERROR;
 }
 
-/**
- * Set the margins of the view.
- *
- * @param horizontalMargin The horizontal margin, in percentage of the
- *        container width, between the container's edges and the
- *        notification
- * @param verticalMargin The vertical margin, in percentage of the
- *        container height, between the container's edges and the
- *        notification
- */
 ECode Toast::SetMargin(
     /* [in] */ Float horizontalMargin,
     /* [in] */ Float verticalMargin)
 {
-    ((CToastTransientNotification*)mTN.Get())->SetHorizontalMargin(horizontalMargin);
-    ((CToastTransientNotification*)mTN.Get())->SetVerticalMargin(verticalMargin);
+    mTN->SetHorizontalMargin(horizontalMargin);
+    mTN->SetVerticalMargin(verticalMargin);
     return NOERROR;
 }
 
-/**
- * Return the horizontal margin.
- */
 ECode Toast::GetHorizontalMargin(
     /* [out] */ Float* horizontalMargin)
 {
     VALIDATE_NOT_NULL(horizontalMargin);
-    ((CToastTransientNotification*)mTN.Get())->GetHorizontalMargin(horizontalMargin);
+    *horizontalMargin = mTN->mHorizontalMargin;
     return NOERROR;
 }
 
-/**
- * Return the vertical margin.
- */
 ECode Toast::GetVerticalMargin(
     /* [out] */ Float* verticalMargin)
 {
     VALIDATE_NOT_NULL(verticalMargin);
-    ((CToastTransientNotification*)mTN.Get())->GetVerticalMargin(verticalMargin);
+    *verticalMargin = mTN->mVerticalMargin;
     return NOERROR;
 }
 
-/**
- * Set the location at which the notification should appear on the screen.
- * @see android.view.Gravity
- * @see #getGravity
- */
 ECode Toast::SetGravity(
     /* [in] */ Int32 gravity,
     /* [in] */ Int32 xOffset,
     /* [in] */ Int32 yOffset)
 {
-    ((CToastTransientNotification*)mTN.Get())->SetGravity(gravity);
-    ((CToastTransientNotification*)mTN.Get())->SetX(xOffset);
-    ((CToastTransientNotification*)mTN.Get())->SetY(yOffset);
+    mTN->SetGravity(gravity);
+    mTN->SetX(xOffset);
+    mTN->SetY(yOffset);
     return NOERROR;
 }
 
-/**
- * Get the location at which the notification should appear on the screen.
- * @see android.view.Gravity
- * @see #getGravity
- */
 ECode Toast::GetGravity(
     /* [out] */ Int32* gravity)
 {
     VALIDATE_NOT_NULL(gravity);
-    ((CToastTransientNotification*)mTN.Get())->GetGravity(gravity);
+    *gravity = mTN->mGravity;
     return NOERROR;
 }
 
-/**
- * Return the X offset in pixels to apply to the gravity's location.
- */
 ECode Toast::GetXOffset(
     /* [out] */ Int32* xOffset)
 {
     VALIDATE_NOT_NULL(xOffset);
-    ((CToastTransientNotification*)mTN.Get())->GetX(xOffset);
+    *xOffset = mTN->mX;
     return NOERROR;
 }
 
-/**
- * Return the Y offset in pixels to apply to the gravity's location.
- */
 ECode Toast::GetYOffset(
     /* [out] */ Int32* yOffset)
 {
     VALIDATE_NOT_NULL(yOffset);
-    ((CToastTransientNotification*)mTN.Get())->GetY(yOffset);
+    *yOffset = mTN->mY;
+
     return NOERROR;
 }
 
@@ -253,7 +512,8 @@ ECode Toast::MakeText(
 {
     VALIDATE_NOT_NULL(toast);
 
-    CToast::New(context, (IToast**)toast);
+    AutoPtr<IToast> result;
+    CToast::New(context, (IToast**)&result);
 
     AutoPtr<ILayoutInflater> inflater;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
@@ -267,10 +527,10 @@ ECode Toast::MakeText(
     AutoPtr<ITextView> textView = ITextView::Probe(tv);
     textView->SetText(text);
 
-    (*toast)->SetDuration(duration);
-
-    Toast* t = reinterpret_cast<Toast*>((*toast)->Probe(EIID_Toast));
-    t->mNextView = v;
+    result->SetView(v);
+    result->SetDuration(duration);
+    *toast = result;
+    REFCOUNT_ADD(*toast);
 
     return NOERROR;
 }
@@ -290,10 +550,6 @@ ECode Toast::MakeText(
     return MakeText(context, text, duration, toast);
 }
 
-/**
- * Update the text in a Toast that was previously created using one of the makeText() methods.
- * @param resId The new text for the Toast.
- */
 ECode Toast::SetText(
     /* [in] */ Int32 resId)
 {
@@ -302,10 +558,6 @@ ECode Toast::SetText(
     return SetText(text);
 }
 
-/**
- * Update the text in a Toast that was previously created using one of the makeText() methods.
- * @param s The new text for the Toast.
- */
 ECode Toast::SetText(
     /* [in] */ ICharSequence* s)
 {
@@ -334,21 +586,6 @@ AutoPtr<IINotificationManager> Toast::GetService()
     return sService;
 }
 
-ECode Toast::OnHide()
-{
-    return NOERROR;
-}
-
-ECode Toast::IsShowing(
-        /* [out] */ Boolean* showing)
-{
-    VALIDATE_NOT_NULL(showing);
-    CToastTransientNotification* ctn = (CToastTransientNotification*)mTN.Get();
-    *showing = ctn->mView != NULL;
-    return NOERROR;
-}
-
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
-

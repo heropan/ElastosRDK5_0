@@ -13,9 +13,6 @@ CarClass(CAbsListViewSavedState)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI GetSuperState(
-        /* [out] */ IParcelable** superState);
 };
 
 }// namespace Elastos

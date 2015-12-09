@@ -7,9 +7,10 @@ module
 
     /**
      * @Involve
-     * extends Elastos.Droid.View.IView
-     * extends Elastos.Droid.Widget.ITextView
      * extends Elastos.Droid.Widget.ICompoundButton
+     * extends Elastos.Droid.Widget.IButton
+     * extends Elastos.Droid.Widget.ITextView
+     * extends Elastos.Droid.View.IView
      *
      * interface Elastos.Droid.View.OnPreDrawListener
      * interface Elastos.Droid.View.IKeyEventCallback

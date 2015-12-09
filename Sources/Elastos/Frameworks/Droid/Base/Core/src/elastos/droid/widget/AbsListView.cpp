@@ -7762,9 +7762,13 @@ Boolean AbsListView::SendToTextFilter(
     return handled;
 }
 
-AutoPtr<IInputConnection> AbsListView::OnCreateInputConnection(
-    /* [in] */ IEditorInfo* outAttrs)
+AbsListView::OnCreateInputConnection(
+    /* [in] */ IEditorInfo* outAttrs,
+    /* [out] */ IInputConnection** connection)
 {
+    VALIDATE_NOT_NULL(connection);
+    *connection = NULL;
+
     Boolean res;
     if (IsTextFilterEnabled(&res), res) {
         if (mPublicInputConnection == NULL) {
@@ -7773,9 +7777,10 @@ AutoPtr<IInputConnection> AbsListView::OnCreateInputConnection(
         }
         outAttrs->SetInputType(IInputType::TYPE_CLASS_TEXT | IInputType::TYPE_TEXT_VARIATION_FILTER);
         outAttrs->SetImeOptions(IEditorInfo::IME_ACTION_DONE);
-        return mPublicInputConnection;
+        *connection = mPublicInputConnection;
+        return NOERROR;
     }
-    return NULL;
+    return NOERROR;
 }
 
 ECode AbsListView::CheckInputConnectionProxy(

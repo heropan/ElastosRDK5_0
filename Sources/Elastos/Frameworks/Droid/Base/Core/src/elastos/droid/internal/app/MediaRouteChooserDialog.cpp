@@ -9,13 +9,17 @@ using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
 using Elastos::Core::CoreUtils;
-using Elastos::Utility::EIID_IComparator;
+using Elastos::Core::EIID_IComparator;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace App {
+
+CAR_INTERFACE_IMPL(MediaRouteChooserDialog::RouteAdapter, ArrayAdapter,
+    IAdapterViewOnItemClickListener)
 
 MediaRouteChooserDialog::RouteAdapter::RouteAdapter(
     /* [in] */ IContext* context,
@@ -34,7 +38,8 @@ ECode MediaRouteChooserDialog::RouteAdapter::Update()
     for (Int32 i = 0; i < count; i++) {
         AutoPtr<IMediaRouterRouteInfo> route;
         mHost->mRouter->GetRouteAt(i, (IMediaRouterRouteInfo**)&route);
-        if (OnFilterRoute(route)) {
+        Boolean res;
+        if (mHost->OnFilterRoute(route, &res), res) {
             Add(route);
         }
     }
@@ -58,14 +63,14 @@ ECode MediaRouteChooserDialog::RouteAdapter::IsEnabled(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IInterface> item;
     GetItem(position, (IInterface**)&item);
-    return IMediaRouterRouteInfo::Probe(item)->IsEnabled(&result);
+    return IMediaRouterRouteInfo::Probe(item)->IsEnabled(result);
 }
 
 ECode MediaRouteChooserDialog::RouteAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
     /* [in] */ IViewGroup* parent,
-    /* [out] */ IView* retView)
+    /* [out] */ IView** retView)
 {
     AutoPtr<IView> view = convertView;
     if (view == NULL) {
@@ -153,8 +158,8 @@ ECode MediaRouteChooserDialog::MediaRouterCallback::OnRouteSelected(
     return mHost->Dismiss();
 }
 
-const AutoPtr<MediaRouteChooserDialog::RouteComparator> sInstance
-    = new MediaRouteChooserDialog::RouteComparator();
+const AutoPtr<MediaRouteChooserDialog::RouteComparator> MediaRouteChooserDialog::RouteComparator::sInstance
+     = new MediaRouteChooserDialog::RouteComparator();
 
 CAR_INTERFACE_IMPL(MediaRouteChooserDialog::RouteComparator, Object, IComparator)
 
@@ -192,7 +197,8 @@ ECode MediaRouteChooserDialog::constructor(
     AutoPtr<IInterface> service;
     context->GetSystemService(IContext::MEDIA_ROUTER_SERVICE, (IInterface**)&service);
     mRouter = IMediaRouter::Probe(service);
-    mCallback = new MediaRouterCallback(this);
+    assert(0);
+    // mCallback = new MediaRouterCallback(this);
     return NOERROR;
 }
 
@@ -250,9 +256,10 @@ ECode MediaRouteChooserDialog::OnCreate(
 
     AutoPtr<IWindow> window;
     GetWindow((IWindow**)&window);
-    window->RequestFeature(IWindow::FEATURE_LEFT_ICON);
+    Boolean res;
+    window->RequestFeature(IWindow::FEATURE_LEFT_ICON, &res);
 
-    SetContentView(R::layout.media_route_chooser_dialog);
+    SetContentView(R::layout::media_route_chooser_dialog);
     SetTitle(mRouteTypes == IMediaRouter::ROUTE_TYPE_REMOTE_DISPLAY
             ? R::string::media_route_chooser_title_for_remote_display
             : R::string::media_route_chooser_title);
@@ -263,15 +270,16 @@ ECode MediaRouteChooserDialog::OnCreate(
 
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
-    mAdapter = new RouteAdapter(context);
+    mAdapter = new RouteAdapter(context, this);
     AutoPtr<IView> tempView;
     FindViewById(R::id::media_route_list, (IView**)&tempView);
     mListView = IListView::Probe(tempView);
-    mListView->SetAdapter(mAdapter);
-    mListView->SetOnItemClickListener(mAdapter);
+    IAdapterView* adapterView = IAdapterView::Probe(tempView);
+    adapterView->SetAdapter(mAdapter);
+    adapterView->SetOnItemClickListener(mAdapter);
     tempView = NULL;
     FindViewById(R::id::empty, (IView**)&tempView);
-    mListView->SetEmptyView(tempView);
+    adapterView->SetEmptyView(tempView);
 
     tempView = NULL;
     FindViewById(R::id::media_route_extended_settings_button, (IView**)&tempView);

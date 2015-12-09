@@ -188,6 +188,10 @@ module
             interface IKeyManagerFactoryHelper;
         }
 
+        singleton class CHttpsURLConnectionHelper {
+            interface IHttpsURLConnectionHelper;
+        }
+
         /**
          * The public API for secure socket protocol implementations. It acts as factory
          * for {@code SSLSocketFactory}'s and {@code SSLEngine}s.

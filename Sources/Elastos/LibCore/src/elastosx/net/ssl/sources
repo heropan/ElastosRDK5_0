@@ -30,6 +30,7 @@ SOURCES += DefaultSSLServerSocketFactory.cpp
 SOURCES += DefaultSSLSocketFactory.cpp
 SOURCES += HandshakeCompletedEvent.cpp
 SOURCES += HttpsURLConnection.cpp
+SOURCES += CHttpsURLConnectionHelper.cpp
 SOURCES += KeyManagerFactory.cpp
 SOURCES += KeyStoreBuilderParameters.cpp
 SOURCES += SSLContext.cpp

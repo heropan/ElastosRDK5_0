@@ -6,7 +6,7 @@ module
 
     /** @hide */
     [oneway]
-    interface ITransientNotification {
+    interface IITransientNotification {
         Show();
 
         Hide();

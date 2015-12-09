@@ -58,8 +58,8 @@ ECode RatingBar::constructor(
     AbsSeekBar::constructor(context, attrs, defStyleAttr, defStyleRes);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-        const_cast<Int32 *>(R::styleable::RatingBar),
-        ARRAY_SIZE(R::styleable::RatingBar));
+            const_cast<Int32 *>(R::styleable::RatingBar),
+            ARRAY_SIZE(R::styleable::RatingBar));
 
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
@@ -226,7 +226,7 @@ void RatingBar::OnProgressRefresh(
     }
 }
 
-ECode RatingBar::UpdateSecondaryProgress(
+void RatingBar::UpdateSecondaryProgress(
     /* [in] */ Int32 progress)
 {
     Float ratio = GetProgressPerStar();
@@ -235,7 +235,6 @@ ECode RatingBar::UpdateSecondaryProgress(
         Int32 secondaryProgress = (Int32)(Elastos::Core::Math::Ceil(progressInStars) * ratio);
         SetSecondaryProgress(secondaryProgress);
     }
-    return NOERROR;
 }
 
 void RatingBar::OnMeasure(
@@ -282,7 +281,7 @@ void RatingBar::AnimateSetProgress(
     /* [in] */ Int32 progress)
 {}
 
-ECode RatingBar::DispatchRatingChange(
+void RatingBar::DispatchRatingChange(
     /* [in] */ Boolean fromUser)
 {
     if (mOnRatingBarChangeListener != NULL) {
@@ -290,8 +289,6 @@ ECode RatingBar::DispatchRatingChange(
         GetRating(&rating);
         mOnRatingBarChangeListener->OnRatingChanged((IRatingBar*)this, rating, fromUser);
     }
-
-    return NOERROR;
 }
 
 ECode RatingBar::SetMax(

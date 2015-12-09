@@ -1883,9 +1883,12 @@ Int32 NumberPicker::ComputeVerticalScrollExtent()
     return height;
 }
 
-Int32 NumberPicker::GetSolidColor()
+ECode NumberPicker::GetSolidColor(
+    /* [out] */ Int32* color)
 {
-    return mSolidColor;
+    VALIDATE_NOT_NULL(color);
+    *color = mSolidColor;
+    return NOERROR;
 }
 
 ECode NumberPicker::SetOnValueChangedListener(

@@ -3789,14 +3789,20 @@ AutoPtr<IView> ListView::FindViewByPredicateInHeadersOrFooters(
    return NULL;
 }
 
-AutoPtr<ArrayOf<Int64> > ListView::GetCheckItemIds()
+ECode ListView::GetCheckItemIds(
+    /* [out, callee] */ ArrayOf<Int64>** itemIds)
 {
+    VALIDATE_NOT_NULL(itemIds);
+    itemIds = NULL;
+
     Boolean res = FALSE;
     AutoPtr<ArrayOf<Int64> > array;
     IAdapter::Probe(mAdapter)->HasStableIds(&res);
     if (mAdapter != NULL && res) {
         GetCheckedItemIds((ArrayOf<Int64>**)&array);
-        return array;
+        *itemIds = array;
+        REFCOUNT_ADD(*itemIds);
+        return NOERROR;
     }
 
     if (mChoiceMode != IAbsListView::CHOICE_MODE_NONE && mCheckStates != NULL && mAdapter != NULL) {
@@ -3818,15 +3824,19 @@ AutoPtr<ArrayOf<Int64> > ListView::GetCheckItemIds()
         }
 
         if (checkedCount == count) {
-            return ids;
+            *itemIds = ids;
+            REFCOUNT_ADD(*itemIds);
+            return NOERROR;
         }
         else {
             AutoPtr<ArrayOf<Int64> > result = ArrayOf<Int64>::Alloc(checkedCount);
             result->Copy(0, ids, 0, checkedCount);
-            return result;
+            *itemIds = result;
+            REFCOUNT_ADD(*itemIds);
+            return NOERROR;
         }
     }
-    return NULL;
+    return NOERROR;
 }
 
 Int32 ListView::GetHeightForPosition(
