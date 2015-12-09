@@ -12,7 +12,9 @@ module
     merge("display/AutomaticBrightnessController.car");
     merge("display/WifiDisplayController.car");
     merge("display/DisplayAdapter.car");
+    merge("display/DisplayBlanker.car");
     merge("display/OverlayDisplayWindow.car");
+    merge("display/RampAnimator.car");
     merge("display/DisplayManagerService.car");
     merge("Exceptions.car");
     merge("SystemServer.car");

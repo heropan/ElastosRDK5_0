@@ -21,7 +21,7 @@ public:
  * @return the error string for the input error code, or NULL if the input
  *         was not a valid GL or GLU error code.
  */
-    CARAPI GluErrorString(
+    CARAPI gluErrorString(
         /* [in] */ Int32 error,
         /* [out] */ String* str);
 
@@ -40,7 +40,7 @@ public:
  * @param upY up vector Y
  * @param upZ up vector Z
  */
-    CARAPI GluLookAt(
+    CARAPI gluLookAt(
         /* [in] */ IGL10* gl,
         /* [in] */ Float eyeX,
         /* [in] */ Float eyeY,
@@ -61,7 +61,7 @@ public:
  * @param bottom
  * @param top
  */
-    CARAPI GluOrtho2D(
+    CARAPI gluOrtho2D(
         /* [in] */ IGL10* gl,
         /* [in] */ Float left,
         /* [in] */ Float right,
@@ -82,7 +82,7 @@ public:
  * @param zFar specifies the distance from the viewer to the far clipping
  *        plane (always positive).
  */
-    CARAPI GluPerspective(
+    CARAPI gluPerspective(
         /* [in] */ IGL10* gl,
         /* [in] */ Float fovy,
         /* [in] */ Float aspect,
@@ -114,9 +114,9 @@ public:
  * @param winOffset the offset into the win array where the win vector data
  *        starts.
  * @return A return value of GL_TRUE indicates success, a return value of
- *         CARAPI GL_FALSE indicates failure.
+ *         CARAPI gl_FALSE indicates failure.
  */
-    CARAPI GluProject(
+    CARAPI gluProject(
         /* [in] */ Float objX,
         /* [in] */ Float objY,
         /* [in] */ Float objZ,
@@ -157,7 +157,7 @@ public:
  * @return A return value of GL10.GL_TRUE indicates success, a return value
  *         of GL10.GL_FALSE indicates failure.
  */
-    CARAPI GluUnProject(
+    CARAPI gluUnProject(
         /* [in] */ Float winX,
         /* [in] */ Float winY,
         /* [in] */ Float winZ,

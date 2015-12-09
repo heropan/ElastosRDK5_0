@@ -193,7 +193,7 @@ private:
     public:
         CAR_INTERFACE_DECL();
 
-        MyActionListener(
+        MyActionListenerEx2(
             /* [in] */ WifiDisplayController* host,
             /* [in] */ IWifiP2pDevice* oldDevice,
             /* [in] */ Boolean isDisconnecting);
@@ -296,7 +296,8 @@ private:
             /* [in] */ ISurface* surface,
             /* [in] */ Int32 width,
             /* [in] */ Int32 height,
-            /* [in] */ Int32 flags);
+            /* [in] */ Int32 flags,
+            /* [in] */ Int32 session);
 
         CARAPI OnDisplayDisconnected();
 

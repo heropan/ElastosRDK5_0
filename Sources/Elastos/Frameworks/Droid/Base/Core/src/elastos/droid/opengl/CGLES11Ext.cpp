@@ -23,7 +23,7 @@ namespace Opengl {
 
 AutoPtr<IBuffer> CGLES11Ext::sMatrixIndexPointerOES = NULL;
 
-ECode CGLES11Ext::GlBlendEquationSeparateOES(
+ECode CGLES11Ext::glBlendEquationSeparateOES(
     /* [in] */ Int32 modeRGB,
     /* [in] */ Int32 modeAlpha)
 {
@@ -34,7 +34,7 @@ ECode CGLES11Ext::GlBlendEquationSeparateOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlBlendFuncSeparateOES(
+ECode CGLES11Ext::glBlendFuncSeparateOES(
     /* [in] */ Int32 srcRGB,
     /* [in] */ Int32 dstRGB,
     /* [in] */ Int32 srcAlpha,
@@ -49,7 +49,7 @@ ECode CGLES11Ext::GlBlendFuncSeparateOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlBlendEquationOES(
+ECode CGLES11Ext::glBlendEquationOES(
     /* [in] */ Int32 mode)
 {
     glBlendEquationOES(
@@ -58,7 +58,7 @@ ECode CGLES11Ext::GlBlendEquationOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexsOES(
+ECode CGLES11Ext::glDrawTexsOES(
     /* [in] */ Int16 x,
     /* [in] */ Int16 y,
     /* [in] */ Int16 z,
@@ -75,7 +75,7 @@ ECode CGLES11Ext::GlDrawTexsOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexiOES(
+ECode CGLES11Ext::glDrawTexiOES(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z,
@@ -92,7 +92,7 @@ ECode CGLES11Ext::GlDrawTexiOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexxOES(
+ECode CGLES11Ext::glDrawTexxOES(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z,
@@ -109,7 +109,7 @@ ECode CGLES11Ext::GlDrawTexxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexsvOES(
+ECode CGLES11Ext::glDrawTexsvOES(
     /* [in] */ ArrayOf<Int16>* coords_ref,
     /* [in] */ Int32 offset)
 {
@@ -139,7 +139,7 @@ ECode CGLES11Ext::GlDrawTexsvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexsvOES(
+ECode CGLES11Ext::glDrawTexsvOES(
     /* [in] */ Elastos::IO::IInt16Buffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -164,7 +164,7 @@ ECode CGLES11Ext::GlDrawTexsvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexivOES(
+ECode CGLES11Ext::glDrawTexivOES(
     /* [in] */ ArrayOf<Int32>* coords_ref,
     /* [in] */ Int32 offset)
 {
@@ -194,7 +194,7 @@ ECode CGLES11Ext::GlDrawTexivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexivOES(
+ECode CGLES11Ext::glDrawTexivOES(
     /* [in] */ Elastos::IO::IInt32Buffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -219,7 +219,7 @@ ECode CGLES11Ext::GlDrawTexivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexxvOES(
+ECode CGLES11Ext::glDrawTexxvOES(
     /* [in] */ ArrayOf<Int32>* coords_ref,
     /* [in] */ Int32 offset)
 {
@@ -249,7 +249,7 @@ ECode CGLES11Ext::GlDrawTexxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexxvOES(
+ECode CGLES11Ext::glDrawTexxvOES(
     /* [in] */ Elastos::IO::IInt32Buffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -274,7 +274,7 @@ ECode CGLES11Ext::GlDrawTexxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexfOES(
+ECode CGLES11Ext::glDrawTexfOES(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z,
@@ -291,7 +291,7 @@ ECode CGLES11Ext::GlDrawTexfOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexfvOES(
+ECode CGLES11Ext::glDrawTexfvOES(
     /* [in] */ ArrayOf<Float>* coords_ref,
     /* [in] */ Int32 offset)
 {
@@ -321,7 +321,7 @@ ECode CGLES11Ext::GlDrawTexfvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDrawTexfvOES(
+ECode CGLES11Ext::glDrawTexfvOES(
     /* [in] */ Elastos::IO::IFloatBuffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -346,7 +346,7 @@ ECode CGLES11Ext::GlDrawTexfvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlEGLImageTargetTexture2DOES(
+ECode CGLES11Ext::glEGLImageTargetTexture2DOES(
     /* [in] */ Int32 target,
     /* [in] */ Elastos::IO::IBuffer* image_buf)
 {
@@ -369,7 +369,7 @@ ECode CGLES11Ext::GlEGLImageTargetTexture2DOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlEGLImageTargetRenderbufferStorageOES(
+ECode CGLES11Ext::glEGLImageTargetRenderbufferStorageOES(
     /* [in] */ Int32 target,
     /* [in] */ Elastos::IO::IBuffer* image_buf)
 {
@@ -392,7 +392,7 @@ ECode CGLES11Ext::GlEGLImageTargetRenderbufferStorageOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlAlphaFuncxOES(
+ECode CGLES11Ext::glAlphaFuncxOES(
     /* [in] */ Int32 func,
     /* [in] */ Int32 ref)
 {
@@ -403,7 +403,7 @@ ECode CGLES11Ext::GlAlphaFuncxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlClearColorxOES(
+ECode CGLES11Ext::glClearColorxOES(
     /* [in] */ Int32 red,
     /* [in] */ Int32 green,
     /* [in] */ Int32 blue,
@@ -418,7 +418,7 @@ ECode CGLES11Ext::GlClearColorxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlClearDepthxOES(
+ECode CGLES11Ext::glClearDepthxOES(
     /* [in] */ Int32 depth)
 {
     glClearDepthxOES(
@@ -427,7 +427,7 @@ ECode CGLES11Ext::GlClearDepthxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlClipPlanexOES(
+ECode CGLES11Ext::glClipPlanexOES(
     /* [in] */ Int32 plane,
     /* [in] */ ArrayOf<Int32>* equation_ref,
     /* [in] */ Int32 offset)
@@ -453,7 +453,7 @@ ECode CGLES11Ext::GlClipPlanexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlClipPlanexOES(
+ECode CGLES11Ext::glClipPlanexOES(
     /* [in] */ Int32 plane,
     /* [in] */ Elastos::IO::IInt32Buffer* equation_buf)
 {
@@ -476,7 +476,7 @@ ECode CGLES11Ext::GlClipPlanexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlColor4xOES(
+ECode CGLES11Ext::glColor4xOES(
     /* [in] */ Int32 red,
     /* [in] */ Int32 green,
     /* [in] */ Int32 blue,
@@ -491,7 +491,7 @@ ECode CGLES11Ext::GlColor4xOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDepthRangexOES(
+ECode CGLES11Ext::glDepthRangexOES(
     /* [in] */ Int32 zNear,
     /* [in] */ Int32 zFar)
 {
@@ -502,7 +502,7 @@ ECode CGLES11Ext::GlDepthRangexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlFogxOES(
+ECode CGLES11Ext::glFogxOES(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -513,7 +513,7 @@ ECode CGLES11Ext::GlFogxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlFogxvOES(
+ECode CGLES11Ext::glFogxvOES(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -539,7 +539,7 @@ ECode CGLES11Ext::GlFogxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlFogxvOES(
+ECode CGLES11Ext::glFogxvOES(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -562,7 +562,7 @@ ECode CGLES11Ext::GlFogxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlFrustumxOES(
+ECode CGLES11Ext::glFrustumxOES(
     /* [in] */ Int32 left,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
@@ -581,7 +581,7 @@ ECode CGLES11Ext::GlFrustumxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetClipPlanexOES(
+ECode CGLES11Ext::glGetClipPlanexOES(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* eqn_ref,
     /* [in] */ Int32 offset)
@@ -613,7 +613,7 @@ ECode CGLES11Ext::GlGetClipPlanexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetClipPlanexOES(
+ECode CGLES11Ext::glGetClipPlanexOES(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* eqn_buf)
 {
@@ -640,7 +640,7 @@ ECode CGLES11Ext::GlGetClipPlanexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetFixedvOES(
+ECode CGLES11Ext::glGetFixedvOES(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -666,7 +666,7 @@ ECode CGLES11Ext::GlGetFixedvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetFixedvOES(
+ECode CGLES11Ext::glGetFixedvOES(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -689,7 +689,7 @@ ECode CGLES11Ext::GlGetFixedvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetLightxvOES(
+ECode CGLES11Ext::glGetLightxvOES(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -717,7 +717,7 @@ ECode CGLES11Ext::GlGetLightxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetLightxvOES(
+ECode CGLES11Ext::glGetLightxvOES(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -742,7 +742,7 @@ ECode CGLES11Ext::GlGetLightxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetMaterialxvOES(
+ECode CGLES11Ext::glGetMaterialxvOES(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -771,7 +771,7 @@ ECode CGLES11Ext::GlGetMaterialxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetMaterialxvOES(
+ECode CGLES11Ext::glGetMaterialxvOES(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -796,7 +796,7 @@ ECode CGLES11Ext::GlGetMaterialxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexEnvxvOES(
+ECode CGLES11Ext::glGetTexEnvxvOES(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -824,7 +824,7 @@ ECode CGLES11Ext::GlGetTexEnvxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexEnvxvOES(
+ECode CGLES11Ext::glGetTexEnvxvOES(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -849,7 +849,7 @@ ECode CGLES11Ext::GlGetTexEnvxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexParameterxvOES(
+ECode CGLES11Ext::glGetTexParameterxvOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -877,7 +877,7 @@ ECode CGLES11Ext::GlGetTexParameterxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexParameterxvOES(
+ECode CGLES11Ext::glGetTexParameterxvOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -902,7 +902,7 @@ ECode CGLES11Ext::GlGetTexParameterxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLightModelxOES(
+ECode CGLES11Ext::glLightModelxOES(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -913,7 +913,7 @@ ECode CGLES11Ext::GlLightModelxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLightModelxvOES(
+ECode CGLES11Ext::glLightModelxvOES(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -939,7 +939,7 @@ ECode CGLES11Ext::GlLightModelxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLightModelxvOES(
+ECode CGLES11Ext::glLightModelxvOES(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -962,7 +962,7 @@ ECode CGLES11Ext::GlLightModelxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLightxOES(
+ECode CGLES11Ext::glLightxOES(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -975,7 +975,7 @@ ECode CGLES11Ext::GlLightxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLightxvOES(
+ECode CGLES11Ext::glLightxvOES(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -1003,7 +1003,7 @@ ECode CGLES11Ext::GlLightxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLightxvOES(
+ECode CGLES11Ext::glLightxvOES(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -1029,7 +1029,7 @@ ECode CGLES11Ext::GlLightxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLineWidthxOES(
+ECode CGLES11Ext::glLineWidthxOES(
     /* [in] */ Int32 width)
 {
     glLineWidthxOES(
@@ -1038,7 +1038,7 @@ ECode CGLES11Ext::GlLineWidthxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLoadMatrixxOES(
+ECode CGLES11Ext::glLoadMatrixxOES(
     /* [in] */ ArrayOf<Int32>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -1062,7 +1062,7 @@ ECode CGLES11Ext::GlLoadMatrixxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLoadMatrixxOES(
+ECode CGLES11Ext::glLoadMatrixxOES(
     /* [in] */ Elastos::IO::IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -1083,7 +1083,7 @@ ECode CGLES11Ext::GlLoadMatrixxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlMaterialxOES(
+ECode CGLES11Ext::glMaterialxOES(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -1096,7 +1096,7 @@ ECode CGLES11Ext::GlMaterialxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlMaterialxvOES(
+ECode CGLES11Ext::glMaterialxvOES(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -1124,7 +1124,7 @@ ECode CGLES11Ext::GlMaterialxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlMaterialxvOES(
+ECode CGLES11Ext::glMaterialxvOES(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -1149,7 +1149,7 @@ ECode CGLES11Ext::GlMaterialxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlMultMatrixxOES(
+ECode CGLES11Ext::glMultMatrixxOES(
     /* [in] */ ArrayOf<Int32>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -1173,7 +1173,7 @@ ECode CGLES11Ext::GlMultMatrixxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlMultMatrixxOES(
+ECode CGLES11Ext::glMultMatrixxOES(
     /* [in] */ Elastos::IO::IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -1194,7 +1194,7 @@ ECode CGLES11Ext::GlMultMatrixxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlMultiTexCoord4xOES(
+ECode CGLES11Ext::glMultiTexCoord4xOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 s,
     /* [in] */ Int32 t,
@@ -1211,7 +1211,7 @@ ECode CGLES11Ext::GlMultiTexCoord4xOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlNormal3xOES(
+ECode CGLES11Ext::glNormal3xOES(
     /* [in] */ Int32 nx,
     /* [in] */ Int32 ny,
     /* [in] */ Int32 nz)
@@ -1224,7 +1224,7 @@ ECode CGLES11Ext::GlNormal3xOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlOrthoxOES(
+ECode CGLES11Ext::glOrthoxOES(
     /* [in] */ Int32 left,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
@@ -1243,7 +1243,7 @@ ECode CGLES11Ext::GlOrthoxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlPointParameterxOES(
+ECode CGLES11Ext::glPointParameterxOES(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -1254,7 +1254,7 @@ ECode CGLES11Ext::GlPointParameterxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlPointParameterxvOES(
+ECode CGLES11Ext::glPointParameterxvOES(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -1280,7 +1280,7 @@ ECode CGLES11Ext::GlPointParameterxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlPointParameterxvOES(
+ECode CGLES11Ext::glPointParameterxvOES(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -1303,7 +1303,7 @@ ECode CGLES11Ext::GlPointParameterxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlPointSizexOES(
+ECode CGLES11Ext::glPointSizexOES(
     /* [in] */ Int32 size)
 {
     glPointSizexOES(
@@ -1312,7 +1312,7 @@ ECode CGLES11Ext::GlPointSizexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlPolygonOffsetxOES(
+ECode CGLES11Ext::glPolygonOffsetxOES(
     /* [in] */ Int32 factor,
     /* [in] */ Int32 units)
 {
@@ -1323,7 +1323,7 @@ ECode CGLES11Ext::GlPolygonOffsetxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlRotatexOES(
+ECode CGLES11Ext::glRotatexOES(
     /* [in] */ Int32 angle,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
@@ -1338,7 +1338,7 @@ ECode CGLES11Ext::GlRotatexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlSampleCoveragexOES(
+ECode CGLES11Ext::glSampleCoveragexOES(
     /* [in] */ Int32 value,
     /* [in] */ Boolean invert)
 {
@@ -1349,7 +1349,7 @@ ECode CGLES11Ext::GlSampleCoveragexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlScalexOES(
+ECode CGLES11Ext::glScalexOES(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z)
@@ -1362,7 +1362,7 @@ ECode CGLES11Ext::GlScalexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexEnvxOES(
+ECode CGLES11Ext::glTexEnvxOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -1375,7 +1375,7 @@ ECode CGLES11Ext::GlTexEnvxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexEnvxvOES(
+ECode CGLES11Ext::glTexEnvxvOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -1403,7 +1403,7 @@ ECode CGLES11Ext::GlTexEnvxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexEnvxvOES(
+ECode CGLES11Ext::glTexEnvxvOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -1428,7 +1428,7 @@ ECode CGLES11Ext::GlTexEnvxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexParameterxOES(
+ECode CGLES11Ext::glTexParameterxOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -1441,7 +1441,7 @@ ECode CGLES11Ext::GlTexParameterxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexParameterxvOES(
+ECode CGLES11Ext::glTexParameterxvOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -1469,7 +1469,7 @@ ECode CGLES11Ext::GlTexParameterxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexParameterxvOES(
+ECode CGLES11Ext::glTexParameterxvOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -1494,7 +1494,7 @@ ECode CGLES11Ext::GlTexParameterxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTranslatexOES(
+ECode CGLES11Ext::glTranslatexOES(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z)
@@ -1507,7 +1507,7 @@ ECode CGLES11Ext::GlTranslatexOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlIsRenderbufferOES(
+ECode CGLES11Ext::glIsRenderbufferOES(
     /* [in] */ Int32 renderbuffer,
     /* [out] */ Boolean* result)
 {
@@ -1519,7 +1519,7 @@ ECode CGLES11Ext::GlIsRenderbufferOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlBindRenderbufferOES(
+ECode CGLES11Ext::glBindRenderbufferOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 renderbuffer)
 {
@@ -1530,7 +1530,7 @@ ECode CGLES11Ext::GlBindRenderbufferOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDeleteRenderbuffersOES(
+ECode CGLES11Ext::glDeleteRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* renderbuffers_ref,
     /* [in] */ Int32 offset)
@@ -1562,7 +1562,7 @@ ECode CGLES11Ext::GlDeleteRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDeleteRenderbuffersOES(
+ECode CGLES11Ext::glDeleteRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* renderbuffers_buf)
 {
@@ -1589,7 +1589,7 @@ ECode CGLES11Ext::GlDeleteRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGenRenderbuffersOES(
+ECode CGLES11Ext::glGenRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* renderbuffers_ref,
     /* [in] */ Int32 offset)
@@ -1621,7 +1621,7 @@ ECode CGLES11Ext::GlGenRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGenRenderbuffersOES(
+ECode CGLES11Ext::glGenRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* renderbuffers_buf)
 {
@@ -1648,7 +1648,7 @@ ECode CGLES11Ext::GlGenRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlRenderbufferStorageOES(
+ECode CGLES11Ext::glRenderbufferStorageOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 internalformat,
     /* [in] */ Int32 width,
@@ -1663,7 +1663,7 @@ ECode CGLES11Ext::GlRenderbufferStorageOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetRenderbufferParameterivOES(
+ECode CGLES11Ext::glGetRenderbufferParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -1697,7 +1697,7 @@ ECode CGLES11Ext::GlGetRenderbufferParameterivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetRenderbufferParameterivOES(
+ECode CGLES11Ext::glGetRenderbufferParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -1726,7 +1726,7 @@ ECode CGLES11Ext::GlGetRenderbufferParameterivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlIsFramebufferOES(
+ECode CGLES11Ext::glIsFramebufferOES(
     /* [in] */ Int32 framebuffer,
     /* [out] */ Boolean* result)
 {
@@ -1738,7 +1738,7 @@ ECode CGLES11Ext::GlIsFramebufferOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlBindFramebufferOES(
+ECode CGLES11Ext::glBindFramebufferOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 framebuffer)
 {
@@ -1749,7 +1749,7 @@ ECode CGLES11Ext::GlBindFramebufferOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDeleteFramebuffersOES(
+ECode CGLES11Ext::glDeleteFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* framebuffers_ref,
     /* [in] */ Int32 offset)
@@ -1781,7 +1781,7 @@ ECode CGLES11Ext::GlDeleteFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlDeleteFramebuffersOES(
+ECode CGLES11Ext::glDeleteFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* framebuffers_buf)
 {
@@ -1809,7 +1809,7 @@ ECode CGLES11Ext::GlDeleteFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGenFramebuffersOES(
+ECode CGLES11Ext::glGenFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* framebuffers_ref,
     /* [in] */ Int32 offset)
@@ -1841,7 +1841,7 @@ ECode CGLES11Ext::GlGenFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGenFramebuffersOES(
+ECode CGLES11Ext::glGenFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* framebuffers_buf)
 {
@@ -1868,7 +1868,7 @@ ECode CGLES11Ext::GlGenFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlCheckFramebufferStatusOES(
+ECode CGLES11Ext::glCheckFramebufferStatusOES(
     /* [in] */ Int32 target,
     /* [out] */ Int32* status)
 {
@@ -1880,7 +1880,7 @@ ECode CGLES11Ext::GlCheckFramebufferStatusOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlFramebufferRenderbufferOES(
+ECode CGLES11Ext::glFramebufferRenderbufferOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 renderbuffertarget,
@@ -1895,7 +1895,7 @@ ECode CGLES11Ext::GlFramebufferRenderbufferOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlFramebufferTexture2DOES(
+ECode CGLES11Ext::glFramebufferTexture2DOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 textarget,
@@ -1912,7 +1912,7 @@ ECode CGLES11Ext::GlFramebufferTexture2DOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetFramebufferAttachmentParameterivOES(
+ECode CGLES11Ext::glGetFramebufferAttachmentParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 pname,
@@ -1948,7 +1948,7 @@ ECode CGLES11Ext::GlGetFramebufferAttachmentParameterivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetFramebufferAttachmentParameterivOES(
+ECode CGLES11Ext::glGetFramebufferAttachmentParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 pname,
@@ -1979,7 +1979,7 @@ ECode CGLES11Ext::GlGetFramebufferAttachmentParameterivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGenerateMipmapOES(
+ECode CGLES11Ext::glGenerateMipmapOES(
     /* [in] */ Int32 target)
 {
     glGenerateMipmapOES(
@@ -1988,7 +1988,7 @@ ECode CGLES11Ext::GlGenerateMipmapOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlCurrentPaletteMatrixOES(
+ECode CGLES11Ext::glCurrentPaletteMatrixOES(
     /* [in] */ Int32 matrixpaletteindex)
 {
     glCurrentPaletteMatrixOES(
@@ -1997,13 +1997,13 @@ ECode CGLES11Ext::GlCurrentPaletteMatrixOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlLoadPaletteFromModelViewMatrixOES()
+ECode CGLES11Ext::glLoadPaletteFromModelViewMatrixOES()
 {
     glLoadPaletteFromModelViewMatrixOES();
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlMatrixIndexPointerOES(
+ECode CGLES11Ext::glMatrixIndexPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -2031,7 +2031,7 @@ ECode CGLES11Ext::GlMatrixIndexPointerOES(
     return ec;
 }
 
-ECode CGLES11Ext::GlWeightPointerOES(
+ECode CGLES11Ext::glWeightPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -2048,7 +2048,7 @@ ECode CGLES11Ext::GlWeightPointerOES(
     );
 }
 
-ECode CGLES11Ext::GlDepthRangefOES(
+ECode CGLES11Ext::glDepthRangefOES(
     /* [in] */ Float zNear,
     /* [in] */ Float zFar)
 {
@@ -2059,7 +2059,7 @@ ECode CGLES11Ext::GlDepthRangefOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlFrustumfOES(
+ECode CGLES11Ext::glFrustumfOES(
     /* [in] */ Float left,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
@@ -2078,7 +2078,7 @@ ECode CGLES11Ext::GlFrustumfOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlOrthofOES(
+ECode CGLES11Ext::glOrthofOES(
     /* [in] */ Float left,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
@@ -2097,7 +2097,7 @@ ECode CGLES11Ext::GlOrthofOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlClipPlanefOES(
+ECode CGLES11Ext::glClipPlanefOES(
     /* [in] */ Int32 plane,
     /* [in] */ ArrayOf<Float>* equation_ref,
     /* [in] */ Int32 offset)
@@ -2123,7 +2123,7 @@ ECode CGLES11Ext::GlClipPlanefOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlClipPlanefOES(
+ECode CGLES11Ext::glClipPlanefOES(
     /* [in] */ Int32 plane,
     /* [in] */ Elastos::IO::IFloatBuffer* equation_buf)
 {
@@ -2146,7 +2146,7 @@ ECode CGLES11Ext::GlClipPlanefOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetClipPlanefOES(
+ECode CGLES11Ext::glGetClipPlanefOES(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* eqn_ref,
     /* [in] */ Int32 offset)
@@ -2178,7 +2178,7 @@ ECode CGLES11Ext::GlGetClipPlanefOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetClipPlanefOES(
+ECode CGLES11Ext::glGetClipPlanefOES(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* eqn_buf)
 {
@@ -2205,7 +2205,7 @@ ECode CGLES11Ext::GlGetClipPlanefOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlClearDepthfOES(
+ECode CGLES11Ext::glClearDepthfOES(
     /* [in] */ Float depth)
 {
     glClearDepthfOES(
@@ -2214,7 +2214,7 @@ ECode CGLES11Ext::GlClearDepthfOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexGenfOES(
+ECode CGLES11Ext::glTexGenfOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -2227,7 +2227,7 @@ ECode CGLES11Ext::GlTexGenfOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexGenfvOES(
+ECode CGLES11Ext::glTexGenfvOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -2255,7 +2255,7 @@ ECode CGLES11Ext::GlTexGenfvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexGenfvOES(
+ECode CGLES11Ext::glTexGenfvOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -2280,7 +2280,7 @@ ECode CGLES11Ext::GlTexGenfvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexGeniOES(
+ECode CGLES11Ext::glTexGeniOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -2293,7 +2293,7 @@ ECode CGLES11Ext::GlTexGeniOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexGenivOES(
+ECode CGLES11Ext::glTexGenivOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -2321,7 +2321,7 @@ ECode CGLES11Ext::GlTexGenivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexGenivOES(
+ECode CGLES11Ext::glTexGenivOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2346,7 +2346,7 @@ ECode CGLES11Ext::GlTexGenivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexGenxOES(
+ECode CGLES11Ext::glTexGenxOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -2359,7 +2359,7 @@ ECode CGLES11Ext::GlTexGenxOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexGenxvOES(
+ECode CGLES11Ext::glTexGenxvOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -2387,7 +2387,7 @@ ECode CGLES11Ext::GlTexGenxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlTexGenxvOES(
+ECode CGLES11Ext::glTexGenxvOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2413,7 +2413,7 @@ ECode CGLES11Ext::GlTexGenxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexGenfvOES(
+ECode CGLES11Ext::glGetTexGenfvOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -2441,7 +2441,7 @@ ECode CGLES11Ext::GlGetTexGenfvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexGenfvOES(
+ECode CGLES11Ext::glGetTexGenfvOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -2466,7 +2466,7 @@ ECode CGLES11Ext::GlGetTexGenfvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexGenivOES(
+ECode CGLES11Ext::glGetTexGenivOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -2494,7 +2494,7 @@ ECode CGLES11Ext::GlGetTexGenivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexGenivOES(
+ECode CGLES11Ext::glGetTexGenivOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2519,7 +2519,7 @@ ECode CGLES11Ext::GlGetTexGenivOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexGenxvOES(
+ECode CGLES11Ext::glGetTexGenxvOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -2547,7 +2547,7 @@ ECode CGLES11Ext::GlGetTexGenxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlGetTexGenxvOES(
+ECode CGLES11Ext::glGetTexGenxvOES(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2572,7 +2572,7 @@ ECode CGLES11Ext::GlGetTexGenxvOES(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlMatrixIndexPointerOESBounds(
+ECode CGLES11Ext::glMatrixIndexPointerOESBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -2599,7 +2599,7 @@ ECode CGLES11Ext::GlMatrixIndexPointerOESBounds(
     return NOERROR;
 }
 
-ECode CGLES11Ext::GlWeightPointerOESBounds(
+ECode CGLES11Ext::glWeightPointerOESBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,

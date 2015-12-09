@@ -15,7 +15,8 @@ module
             [in] ISurface* surface,
             [in] Int32 width,
             [in] Int32 height,
-            [in] Int32 flags);
+            [in] Int32 flags,
+            [in] Int32 session);
 
         OnDisplayDisconnected();
 

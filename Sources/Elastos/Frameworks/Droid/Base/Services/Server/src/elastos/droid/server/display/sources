@@ -9,6 +9,7 @@ C_DEFINES += -DDROID_SERVER
 
 #SOURCES = AutomaticBrightnessController.cpp
 #SOURCES += CDisplayManagerService.cpp
+#SOURCES += ColorFade.cpp
 SOURCES += DisplayAdapter.cpp
 SOURCES += DisplayDevice.cpp
 SOURCES += DisplayDeviceInfo.cpp
@@ -17,5 +18,6 @@ SOURCES += LogicalDisplay.cpp
 SOURCES += OverlayDisplayAdapter.cpp
 SOURCES += OverlayDisplayWindow.cpp
 SOURCES += PersistentDataStore.cpp
+SOURCES += RampAnimator.cpp
 SOURCES += WifiDisplayAdapter.cpp
-#SOURCES += WifiDisplayController.cpp
+SOURCES += WifiDisplayController.cpp

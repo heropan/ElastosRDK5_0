@@ -6,8 +6,8 @@
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::IO::IFlushable;
-using Elastosx::Microedition::Khronos::Egl::IEGL10Helper;
-using Elastos::Droid::Opengl::Gles::CEGL10Helper;
+using Elastosx::Microedition::Khronos::egl::IEGL10Helper;
+using Elastos::Droid::Opengl::gles::CEGL10Helper;
 
 namespace Elastos {
 namespace Droid {
@@ -28,10 +28,10 @@ PInterface EGLLogWrapper::Probe(
     /* [in] */ REIID riid)
 {
     if (EIID_IInterface == riid) {
-        return (IInterface *)(Elastosx::Microedition::Khronos::Egl::IEGL11*)this;
+        return (IInterface *)(Elastosx::Microedition::Khronos::egl::IEGL11*)this;
     }
-    if (Elastosx::Microedition::Khronos::Egl::EIID_IEGL11 == riid) {
-        return (Elastosx::Microedition::Khronos::Egl::IEGL11 *)this;
+    if (Elastosx::Microedition::Khronos::egl::EIID_IEGL11 == riid) {
+        return (Elastosx::Microedition::Khronos::egl::IEGL11 *)this;
     }
 
     return NULL;
@@ -53,15 +53,15 @@ ECode EGLLogWrapper::GetInterfaceID(
 {
     if (iid == NULL) return E_INVALID_ARGUMENT;
 
-    if (object == (IInterface*)(Elastosx::Microedition::Khronos::Egl::IEGL11*)this) {
-        *iid = Elastosx::Microedition::Khronos::Egl::EIID_IEGL11;
+    if (object == (IInterface*)(Elastosx::Microedition::Khronos::egl::IEGL11*)this) {
+        *iid = Elastosx::Microedition::Khronos::egl::EIID_IEGL11;
     } else {
         return E_INVALID_ARGUMENT;
     }
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglChooseConfig(
+ECode EGLLogWrapper::eglChooseConfig(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [in] */ ArrayOf<XIEGLConfig*>* configs,
@@ -89,7 +89,7 @@ ECode EGLLogWrapper::EglChooseConfig(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglCopyBuffers(
+ECode EGLLogWrapper::eglCopyBuffers(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [in] */ IInterface* native_pixmap,
@@ -108,7 +108,7 @@ ECode EGLLogWrapper::EglCopyBuffers(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglCreateContext(
+ECode EGLLogWrapper::eglCreateContext(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ XIEGLContext* share_context,
@@ -129,7 +129,7 @@ ECode EGLLogWrapper::EglCreateContext(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglCreatePbufferSurface(
+ECode EGLLogWrapper::eglCreatePbufferSurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ ArrayOf<Int32>* attrib_list,
@@ -148,7 +148,7 @@ ECode EGLLogWrapper::EglCreatePbufferSurface(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglCreatePixmapSurface(
+ECode EGLLogWrapper::eglCreatePixmapSurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ IInterface* native_pixmap,
@@ -169,7 +169,7 @@ ECode EGLLogWrapper::EglCreatePixmapSurface(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglCreateWindowSurface(
+ECode EGLLogWrapper::eglCreateWindowSurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ IInterface* native_window,
@@ -190,7 +190,7 @@ ECode EGLLogWrapper::EglCreateWindowSurface(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglDestroyContext(
+ECode EGLLogWrapper::eglDestroyContext(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLContext* context,
     /* [out] */ Boolean* result)
@@ -207,7 +207,7 @@ ECode EGLLogWrapper::EglDestroyContext(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglDestroySurface(
+ECode EGLLogWrapper::eglDestroySurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
@@ -224,7 +224,7 @@ ECode EGLLogWrapper::EglDestroySurface(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglGetConfigAttrib(
+ECode EGLLogWrapper::eglGetConfigAttrib(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ Int32 attribute,
@@ -245,7 +245,7 @@ ECode EGLLogWrapper::EglGetConfigAttrib(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglGetConfigs(
+ECode EGLLogWrapper::eglGetConfigs(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ ArrayOf<XIEGLConfig*>* configs,
     /* [in] */ Int32 config_size,
@@ -271,7 +271,7 @@ ECode EGLLogWrapper::EglGetConfigs(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglGetCurrentContext(
+ECode EGLLogWrapper::eglGetCurrentContext(
     /* [out] */ XIEGLContext** context)
 {
     VALIDATE_NOT_NULL(context);
@@ -284,7 +284,7 @@ ECode EGLLogWrapper::EglGetCurrentContext(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglGetCurrentDisplay(
+ECode EGLLogWrapper::eglGetCurrentDisplay(
     /* [out] */ XIEGLDisplay** display)
 {
     VALIDATE_NOT_NULL(display);
@@ -297,7 +297,7 @@ ECode EGLLogWrapper::EglGetCurrentDisplay(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglGetCurrentSurface(
+ECode EGLLogWrapper::eglGetCurrentSurface(
     /* [in] */ Int32 readdraw,
     /* [out] */ XIEGLSurface** surface)
 {
@@ -313,7 +313,7 @@ ECode EGLLogWrapper::EglGetCurrentSurface(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglGetDisplay(
+ECode EGLLogWrapper::eglGetDisplay(
     /* [in] */ IInterface* native_display,
     /* [out] */ XIEGLDisplay** display)
 {
@@ -328,7 +328,7 @@ ECode EGLLogWrapper::EglGetDisplay(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglGetError(
+ECode EGLLogWrapper::eglGetError(
     /* [out] */ Int32* error)
 {
     VALIDATE_NOT_NULL(error);
@@ -340,7 +340,7 @@ ECode EGLLogWrapper::EglGetError(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglInitialize(
+ECode EGLLogWrapper::eglInitialize(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ ArrayOf<Int32>* major_minor,
     /* [out] */ Boolean* result)
@@ -356,7 +356,7 @@ ECode EGLLogWrapper::EglInitialize(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglMakeCurrent(
+ECode EGLLogWrapper::eglMakeCurrent(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* draw,
     /* [in] */ XIEGLSurface* read,
@@ -376,7 +376,7 @@ ECode EGLLogWrapper::EglMakeCurrent(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglQueryContext(
+ECode EGLLogWrapper::eglQueryContext(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLContext* context,
     /* [in] */ Int32 attribute,
@@ -396,7 +396,7 @@ ECode EGLLogWrapper::EglQueryContext(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglQueryString(
+ECode EGLLogWrapper::eglQueryString(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ Int32 name,
     /* [out] */ String* str)
@@ -412,7 +412,7 @@ ECode EGLLogWrapper::EglQueryString(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglQuerySurface(
+ECode EGLLogWrapper::eglQuerySurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [in] */ Int32 attribute,
@@ -433,7 +433,7 @@ ECode EGLLogWrapper::EglQuerySurface(
 }
 
 /** @hide **/
-ECode EGLLogWrapper::EglReleaseThread(
+ECode EGLLogWrapper::eglReleaseThread(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -445,7 +445,7 @@ ECode EGLLogWrapper::EglReleaseThread(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglSwapBuffers(
+ECode EGLLogWrapper::eglSwapBuffers(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
@@ -461,7 +461,7 @@ ECode EGLLogWrapper::EglSwapBuffers(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglTerminate(
+ECode EGLLogWrapper::eglTerminate(
     /* [in] */ XIEGLDisplay* display,
     /* [out] */ Boolean* result)
 {
@@ -475,7 +475,7 @@ ECode EGLLogWrapper::EglTerminate(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglWaitGL(
+ECode EGLLogWrapper::eglWaitGL(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -487,7 +487,7 @@ ECode EGLLogWrapper::EglWaitGL(
     return NOERROR;
 }
 
-ECode EGLLogWrapper::EglWaitNative(
+ECode EGLLogWrapper::eglWaitNative(
     /* [in] */ Int32 engine,
     /* [in] */ IInterface* bindTarget,
     /* [out] */ Boolean* result)

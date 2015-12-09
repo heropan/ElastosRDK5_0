@@ -15,9 +15,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastosx::Microedition::Khronos::Egl::IEGL10;
-using Elastosx::Microedition::Khronos::Egl::IEGL11;
-using Elastosx::Microedition::Khronos::Egl::IEGL10Helper;
+using Elastosx::Microedition::Khronos::egl::IEGL10;
+using Elastosx::Microedition::Khronos::egl::IEGL11;
+using Elastosx::Microedition::Khronos::egl::IEGL10Helper;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::ISurfaceView;
@@ -31,19 +31,19 @@ namespace Gles {
 
 static const Int32 gNull_attrib_base[] = {EGL_NONE};
 
-static inline EGLDisplay getDisplay(Elastosx::Microedition::Khronos::Egl::IEGLDisplay* o) {
+static inline EGLDisplay getDisplay(Elastosx::Microedition::Khronos::egl::IEGLDisplay* o) {
     if (!o) return EGL_NO_DISPLAY;
     return (EGLDisplay)(((CEGLDisplayImpl*)o)->GetEGLDisplay());
 }
-static inline EGLSurface getSurface(Elastosx::Microedition::Khronos::Egl::IEGLSurface* o) {
+static inline EGLSurface getSurface(Elastosx::Microedition::Khronos::egl::IEGLSurface* o) {
     if (!o) return EGL_NO_SURFACE;
     return (EGLSurface)(((CEGLSurfaceImpl*)o)->GetEGLSurface());
 }
-static inline EGLContext getContext(Elastosx::Microedition::Khronos::Egl::IEGLContext* o) {
+static inline EGLContext getContext(Elastosx::Microedition::Khronos::egl::IEGLContext* o) {
     if (!o) return EGL_NO_CONTEXT;
     return (EGLContext)(((CEGLContextImpl*)o)->GetEGLContext());
 }
-static inline EGLConfig getConfig(Elastosx::Microedition::Khronos::Egl::IEGLConfig* o) {
+static inline EGLConfig getConfig(Elastosx::Microedition::Khronos::egl::IEGLConfig* o) {
     if (!o) return 0;
     return (EGLConfig)(((CEGLConfigImpl*)o)->GetEGLConfig());
 }
@@ -88,7 +88,7 @@ ECode CEGLImpl::constructor()
     return NOERROR;
 }
 
-ECode CEGLImpl::EglChooseConfig(
+ECode CEGLImpl::eglChooseConfig(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [in] */ ArrayOf<XIEGLConfig*>* configs,
@@ -130,7 +130,7 @@ ECode CEGLImpl::EglChooseConfig(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglCopyBuffers(
+ECode CEGLImpl::eglCopyBuffers(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [in] */ IInterface* native_pixmap,
@@ -145,7 +145,7 @@ ECode CEGLImpl::EglCopyBuffers(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglCreateContext(
+ECode CEGLImpl::eglCreateContext(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ XIEGLContext* share_context,
@@ -176,7 +176,7 @@ ECode CEGLImpl::EglCreateContext(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglCreatePbufferSurface(
+ECode CEGLImpl::eglCreatePbufferSurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ ArrayOf<Int32>* attrib_list,
@@ -205,7 +205,7 @@ ECode CEGLImpl::EglCreatePbufferSurface(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglCreatePixmapSurface(
+ECode CEGLImpl::eglCreatePixmapSurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ IInterface* native_pixmap,
@@ -272,7 +272,7 @@ ECode CEGLImpl::EglCreatePixmapSurface(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglCreateWindowSurface(
+ECode CEGLImpl::eglCreateWindowSurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ IInterface* native_window,
@@ -316,7 +316,7 @@ ECode CEGLImpl::EglCreateWindowSurface(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglDestroyContext(
+ECode CEGLImpl::eglDestroyContext(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLContext* context,
     /* [out] */ Boolean* result)
@@ -331,7 +331,7 @@ ECode CEGLImpl::EglDestroyContext(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglDestroySurface(
+ECode CEGLImpl::eglDestroySurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
@@ -354,7 +354,7 @@ ECode CEGLImpl::EglDestroySurface(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglGetConfigAttrib(
+ECode CEGLImpl::eglGetConfigAttrib(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ Int32 attribute,
@@ -378,7 +378,7 @@ ECode CEGLImpl::EglGetConfigAttrib(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglGetConfigs(
+ECode CEGLImpl::eglGetConfigs(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ ArrayOf<XIEGLConfig*>* configs,
     /* [in] */ Int32 config_size,
@@ -412,7 +412,7 @@ ECode CEGLImpl::EglGetConfigs(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglGetCurrentContext(
+ECode CEGLImpl::eglGetCurrentContext(
     /* [out] */ XIEGLContext** context)
 {
     Int32 value = (Int32)eglGetCurrentContext();
@@ -434,7 +434,7 @@ ECode CEGLImpl::EglGetCurrentContext(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglGetCurrentDisplay(
+ECode CEGLImpl::eglGetCurrentDisplay(
     /* [out] */ XIEGLDisplay** display)
 {
     Int32 value = (Int32)eglGetCurrentDisplay();
@@ -456,7 +456,7 @@ ECode CEGLImpl::EglGetCurrentDisplay(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglGetCurrentSurface(
+ECode CEGLImpl::eglGetCurrentSurface(
     /* [in] */ Int32 readdraw,
     /* [out] */ XIEGLSurface** surface)
 {
@@ -485,7 +485,7 @@ ECode CEGLImpl::EglGetCurrentSurface(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglGetDisplay(
+ECode CEGLImpl::eglGetDisplay(
     /* [in] */ IInterface* native_display,
     /* [out] */ XIEGLDisplay** display)
 {
@@ -508,7 +508,7 @@ ECode CEGLImpl::EglGetDisplay(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglGetError(
+ECode CEGLImpl::eglGetError(
     /* [out] */ Int32* eRst)
 {
     EGLint error = eglGetError();
@@ -516,7 +516,7 @@ ECode CEGLImpl::EglGetError(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglInitialize(
+ECode CEGLImpl::eglInitialize(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ ArrayOf<Int32>* major_minor,
     /* [out] */ Boolean* result)
@@ -542,7 +542,7 @@ ECode CEGLImpl::EglInitialize(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglMakeCurrent(
+ECode CEGLImpl::eglMakeCurrent(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* draw,
     /* [in] */ XIEGLSurface* read,
@@ -561,7 +561,7 @@ ECode CEGLImpl::EglMakeCurrent(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglQueryContext(
+ECode CEGLImpl::eglQueryContext(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLContext* context,
     /* [in] */ Int32 attribute,
@@ -585,7 +585,7 @@ ECode CEGLImpl::EglQueryContext(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglQueryString(
+ECode CEGLImpl::eglQueryString(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ Int32 name,
     /* [out] */ String* str)
@@ -600,7 +600,7 @@ ECode CEGLImpl::EglQueryString(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglQuerySurface(
+ECode CEGLImpl::eglQuerySurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [in] */ Int32 attribute,
@@ -626,14 +626,14 @@ ECode CEGLImpl::EglQuerySurface(
 }
 
 /** @hide **/
-ECode CEGLImpl::EglReleaseThread(
+ECode CEGLImpl::eglReleaseThread(
     /* [out] */ Boolean* result)
 {
     *result = eglReleaseThread();
     return NOERROR;
 }
 
-ECode CEGLImpl::EglSwapBuffers(
+ECode CEGLImpl::eglSwapBuffers(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
@@ -648,7 +648,7 @@ ECode CEGLImpl::EglSwapBuffers(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglTerminate(
+ECode CEGLImpl::eglTerminate(
     /* [in] */ XIEGLDisplay* display,
     /* [out] */ Boolean* result)
 {
@@ -661,14 +661,14 @@ ECode CEGLImpl::EglTerminate(
     return NOERROR;
 }
 
-ECode CEGLImpl::EglWaitGL(
+ECode CEGLImpl::eglWaitGL(
     /* [out] */ Boolean* result)
 {
     *result = eglWaitGL();
     return NOERROR;
 }
 
-ECode CEGLImpl::EglWaitNative(
+ECode CEGLImpl::eglWaitNative(
     /* [in] */ Int32 engine,
     /* [in] */ IInterface* bindTarget,
     /* [out] */ Boolean* result)

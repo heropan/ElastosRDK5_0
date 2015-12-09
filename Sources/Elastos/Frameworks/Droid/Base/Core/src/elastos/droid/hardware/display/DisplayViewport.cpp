@@ -21,6 +21,14 @@ DisplayViewport::DisplayViewport()
     CRect::New((IRect**)&mPhysicalFrame);
 }
 
+DisplayViewport::~DisplayViewport()
+{}
+
+ECode DisplayViewport::constructor()
+{
+    return NOERROR;
+}
+
 ECode DisplayViewport::CopyFrom(
     /* [in] */ IDisplayViewport* viewport)
 {

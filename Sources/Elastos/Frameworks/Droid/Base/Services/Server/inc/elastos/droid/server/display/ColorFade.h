@@ -122,9 +122,10 @@ public:
         /* [in] */ IPrintWriter* pw);
 
 private:
-    String ReadFile(
+    CARAPI ReadFile(
         /* [in] */ IContext* context,
-        /* [in] */ Int32 resourceId);
+        /* [in] */ Int32 resourceId,
+        /* [out] */ String* result);
 
     Int32 LoadShader(
         /* [in] */ IContext* context,

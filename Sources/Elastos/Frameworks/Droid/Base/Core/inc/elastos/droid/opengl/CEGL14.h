@@ -12,14 +12,14 @@ namespace Opengl {
 CarClass(CEGL14)
 {
 public:
-    CARAPI EglGetError(
+    CARAPI eglGetError(
         /* [out] */ Int32* error);
 
-    CARAPI EglGetDisplay(
+    CARAPI eglGetDisplay(
         /* [in] */ Int32 display_id,
         /* [out] */ Elastos::Droid::Opengl::IEGLDisplay** display);
 
-    CARAPI EglInitialize(
+    CARAPI eglInitialize(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ ArrayOf<Int32>* major,
         /* [in] */ Int32 majorOffset,
@@ -27,16 +27,16 @@ public:
         /* [in] */ Int32 minorOffset,
         /* [out] */ Boolean* result);
 
-    CARAPI EglTerminate(
+    CARAPI eglTerminate(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [out] */ Boolean* result);
 
-    CARAPI EglQueryString(
+    CARAPI eglQueryString(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Int32 name,
         /* [out] */ String* str);
 
-    CARAPI EglGetConfigs(
+    CARAPI eglGetConfigs(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ ArrayOf<Elastos::Droid::Opengl::IEGLConfig *>* configs,
         /* [in] */ Int32 configsOffset,
@@ -45,7 +45,7 @@ public:
         /* [in] */ Int32 num_configOffset,
         /* [out] */ Boolean* result);
 
-    CARAPI EglChooseConfig(
+    CARAPI eglChooseConfig(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ ArrayOf<Int32>* attrib_list,
         /* [in] */ Int32 attrib_listOffset,
@@ -56,7 +56,7 @@ public:
         /* [in] */ Int32 num_configOffset,
         /* [out] */ Boolean* result);
 
-    CARAPI EglGetConfigAttrib(
+    CARAPI eglGetConfigAttrib(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLConfig* config,
         /* [in] */ Int32 attribute,
@@ -64,7 +64,7 @@ public:
         /* [in] */ Int32 offset,
         /* [out] */ Boolean* result);
 
-    CARAPI EglCreateWindowSurface(
+    CARAPI eglCreateWindowSurface(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLConfig* config,
         /* [in] */ IInterface* win,
@@ -72,14 +72,14 @@ public:
         /* [in] */ Int32 offset,
         /* [out] */ Elastos::Droid::Opengl::IEGLSurface** surface);
 
-    CARAPI EglCreatePbufferSurface(
+    CARAPI eglCreatePbufferSurface(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLConfig* config,
         /* [in] */ ArrayOf<Int32>* attrib_list,
         /* [in] */ Int32 offset,
         /* [out] */ Elastos::Droid::Opengl::IEGLSurface** surface);
 
-    CARAPI EglCreatePixmapSurface(
+    CARAPI eglCreatePixmapSurface(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLConfig* config,
         /* [in] */ Int32 pixmap,
@@ -87,12 +87,12 @@ public:
         /* [in] */ Int32 offset,
         /* [out] */ Elastos::Droid::Opengl::IEGLSurface** surface);
 
-    CARAPI EglDestroySurface(
+    CARAPI eglDestroySurface(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLSurface* surface,
         /* [out] */ Boolean* result);
 
-    CARAPI EglQuerySurface(
+    CARAPI eglQuerySurface(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLSurface* surface,
         /* [in] */ Int32 attribute,
@@ -100,20 +100,20 @@ public:
         /* [in] */ Int32 offset,
         /* [out] */ Boolean* result);
 
-    CARAPI EglBindAPI(
+    CARAPI eglBindAPI(
         /* [in] */ Int32 api,
         /* [out] */ Boolean* result);
 
-    CARAPI EglQueryAPI(
+    CARAPI eglQueryAPI(
         /* [out] */ Int32* value);
 
-    CARAPI EglWaitClient(
+    CARAPI eglWaitClient(
         /* [out] */ Boolean* result);
 
-    CARAPI EglReleaseThread(
+    CARAPI eglReleaseThread(
         /* [out] */ Boolean* result);
 
-    CARAPI EglCreatePbufferFromClientBuffer(
+    CARAPI eglCreatePbufferFromClientBuffer(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Int32 buftype,
         /* [in] */ Int32 buffer,
@@ -122,31 +122,31 @@ public:
         /* [in] */ Int32 offset,
         /* [out] */ Elastos::Droid::Opengl::IEGLSurface** surface);
 
-    CARAPI EglSurfaceAttrib(
+    CARAPI eglSurfaceAttrib(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLSurface* surface,
         /* [in] */ Int32 attribute,
         /* [in] */ Int32 value,
         /* [out] */ Boolean* result);
 
-    CARAPI EglBindTexImage(
+    CARAPI eglBindTexImage(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLSurface* surface,
         /* [in] */ Int32 buffer,
         /* [out] */ Boolean* result);
 
-    CARAPI EglReleaseTexImage(
+    CARAPI eglReleaseTexImage(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLSurface* surface,
         /* [in] */ Int32 buffer,
         /* [out] */ Boolean* result);
 
-    CARAPI EglSwapInterval(
+    CARAPI eglSwapInterval(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Int32 interval,
         /* [out] */ Boolean* result);
 
-    CARAPI EglCreateContext(
+    CARAPI eglCreateContext(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLConfig* config,
         /* [in] */ Elastos::Droid::Opengl::IEGLContext* share_context,
@@ -154,29 +154,29 @@ public:
         /* [in] */ Int32 offset,
         /* [out] */ Elastos::Droid::Opengl::IEGLContext** context);
 
-    CARAPI EglDestroyContext(
+    CARAPI eglDestroyContext(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLContext* ctx,
         /* [out] */ Boolean* result);
 
-    CARAPI EglMakeCurrent(
+    CARAPI eglMakeCurrent(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLSurface* draw,
         /* [in] */ Elastos::Droid::Opengl::IEGLSurface* read,
         /* [in] */ Elastos::Droid::Opengl::IEGLContext* ctx,
         /* [out] */ Boolean* result);
 
-    CARAPI EglGetCurrentContext(
+    CARAPI eglGetCurrentContext(
         /* [out] */ Elastos::Droid::Opengl::IEGLContext** context);
 
-    CARAPI EglGetCurrentSurface(
+    CARAPI eglGetCurrentSurface(
         /* [in] */ Int32 readdraw,
         /* [out] */ Elastos::Droid::Opengl::IEGLSurface** surface);
 
-    CARAPI EglGetCurrentDisplay(
+    CARAPI eglGetCurrentDisplay(
         /* [out] */ Elastos::Droid::Opengl::IEGLDisplay** display);
 
-    CARAPI EglQueryContext(
+    CARAPI eglQueryContext(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLContext* ctx,
         /* [in] */ Int32 attribute,
@@ -184,19 +184,19 @@ public:
         /* [in] */ Int32 offset,
         /* [out] */ Boolean* result);
 
-    CARAPI EglWaitGL(
+    CARAPI eglWaitGL(
         /* [out] */ Boolean* result);
 
-    CARAPI EglWaitNative(
+    CARAPI eglWaitNative(
         /* [in] */ Int32 engine,
         /* [out] */ Boolean* result);
 
-    CARAPI EglSwapBuffers(
+    CARAPI eglSwapBuffers(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLSurface* surface,
         /* [out] */ Boolean* result);
 
-    CARAPI EglCopyBuffers(
+    CARAPI eglCopyBuffers(
         /* [in] */ Elastos::Droid::Opengl::IEGLDisplay* dpy,
         /* [in] */ Elastos::Droid::Opengl::IEGLSurface* surface,
         /* [in] */ Int32 target,

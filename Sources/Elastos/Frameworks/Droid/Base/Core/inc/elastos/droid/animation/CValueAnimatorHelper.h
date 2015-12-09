@@ -4,7 +4,6 @@
 #include "_Elastos_Droid_Animation_CValueAnimatorHelper.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Core::Singleton;
 namespace Elastos {
 namespace Droid {
 namespace Animation {
