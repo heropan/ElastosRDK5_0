@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_SQL_SQLITE_DATABASE_H__
 #define __ELASTOS_SQL_SQLITE_DATABASE_H__
 
+#include "Elastos.CoreLibrary.Sql.h"
 #include "sqlitejni.h"
 #include "Object.h"
 

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_SQL_SQLITE_TABLERESULT_H__
 #define __ELASTOS_SQL_SQLITE_TABLERESULT_H__
 
+#include "Elastos.CoreLibrary.Sql.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/Vector.h>
 

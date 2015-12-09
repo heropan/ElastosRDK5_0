@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "CJDBCPreparedStatement.h"
 #include "Database.h"
 #include "CJDBCConnection.h"

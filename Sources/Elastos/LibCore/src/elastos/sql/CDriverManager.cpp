@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "CDriverManager.h"
 #include "CSystem.h"
 #include "Pattern.h"

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "CDBDump.h"
 #include "CTableResult.h"
 #include "StringBuffer.h"

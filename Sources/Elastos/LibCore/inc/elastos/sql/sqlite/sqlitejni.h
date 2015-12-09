@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "Elastos.CoreLibrary_server.h"
+#include "Elastos.CoreLibrary.h"
 
 using Elastos::Sql::SQLite::ICallback;
 using Elastos::Sql::SQLite::IBusyHandler;
