@@ -284,19 +284,19 @@ public:
         /* [in] */ Int32 uid);
 
     CARAPI SetScanSourceDir(
-        /* [in] */ String value);
+        /* [in] */ const String& value);
 
     CARAPI SetScanPublicSourceDir(
-        /* [in] */ String value);
+        /* [in] */ const String& value);
 
     CARAPI SetSeinfo(
-        /* [in] */ String value);
+        /* [in] */ const String& value);
 
     CARAPI SetSecondaryNativeLibraryDir(
-        /* [in] */ String value);
+        /* [in] */ const String& value);
 
     CARAPI SetNativeLibraryRootDir(
-        /* [in] */ String value);
+        /* [in] */ const String& value);
 
     CARAPI SetNativeLibraryRootRequiresIsa(
         /* [in] */ Boolean value);

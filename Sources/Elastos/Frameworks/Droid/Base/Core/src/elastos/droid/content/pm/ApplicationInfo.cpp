@@ -838,35 +838,35 @@ ECode ApplicationInfo::SetVersionCode(
 }
 
 ECode ApplicationInfo::SetScanSourceDir(
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     mScanSourceDir = value;
     return NOERROR;
 }
 
 ECode ApplicationInfo::SetScanPublicSourceDir(
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     mScanPublicSourceDir = value;
     return NOERROR;
 }
 
 ECode ApplicationInfo::SetSeinfo(
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     mSeinfo = value;
     return NOERROR;
 }
 
 ECode ApplicationInfo::SetSecondaryNativeLibraryDir(
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     mSecondaryNativeLibraryDir = value;
     return NOERROR;
 }
 
 ECode ApplicationInfo::SetNativeLibraryRootDir(
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     mNativeLibraryRootDir = value;
     return NOERROR;
