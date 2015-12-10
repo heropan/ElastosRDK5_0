@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SCALEDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SCALEDRAWABLE_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/graphics/CRect.h"
 

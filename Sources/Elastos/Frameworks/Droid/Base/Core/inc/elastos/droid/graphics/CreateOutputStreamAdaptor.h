@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CREATEOUTPUTSTREAMADAPTOR_H__
 #define __ELASTOS_DROID_GRAPHICS_CREATEOUTPUTSTREAMADAPTOR_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
 #include <skia/core/SkStream.h>
 

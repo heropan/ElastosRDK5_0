@@ -1,4 +1,7 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/NativePaint.h"
 #include "elastos/droid/graphics/CanvasProperty.h"
 #include "elastos/droid/graphics/Paint.h"

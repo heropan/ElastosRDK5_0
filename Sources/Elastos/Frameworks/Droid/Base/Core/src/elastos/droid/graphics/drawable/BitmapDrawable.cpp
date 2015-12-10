@@ -1,4 +1,11 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/graphics/drawable/BitmapDrawable.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
 #include "elastos/droid/graphics/CPaint.h"

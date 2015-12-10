@@ -2,10 +2,9 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_HH_NINEPATC_H__
 #define __ELASTOS_DROID_GRAPHICS_HH_NINEPATC_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Object.h>
-
 
 namespace Elastos {
 namespace Droid {

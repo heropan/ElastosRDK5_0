@@ -1,4 +1,6 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/drawable/VectorDrawable.h"
 #include "elastos/droid/graphics/drawable/CVectorDrawable.h"
 #include "elastos/droid/graphics/CPaint.h"

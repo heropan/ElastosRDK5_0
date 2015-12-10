@@ -1,4 +1,7 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/Shader.h"
 #include "elastos/droid/graphics/CShader.h"
 #include "elastos/droid/graphics/CMatrix.h"

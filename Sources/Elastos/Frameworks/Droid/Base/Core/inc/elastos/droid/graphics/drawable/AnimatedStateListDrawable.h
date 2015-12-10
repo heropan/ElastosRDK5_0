@@ -2,6 +2,7 @@
 #ifndef  __ELASTOS_DROID_GRAPHICS_DRAWABLE_ANIMATESTATELISTDRAWABLE_H__
 #define  __ELASTOS_DROID_GRAPHICS_DRAWABLE_ANIMATESTATELISTDRAWABLE_H__
 
+#include "Elastos.Droid.Animation.h"
 #include "elastos/droid/graphics/drawable/StateListDrawable.h"
 #include "elastos/droid/graphics/drawable/AnimationDrawable.h"
 

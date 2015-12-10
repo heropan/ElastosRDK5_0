@@ -1,4 +1,6 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/FontFamily.h"
 #include "elastos/droid/graphics/MinikinSkia.h"
 #include "elastos/droid/graphics/Utils.h"

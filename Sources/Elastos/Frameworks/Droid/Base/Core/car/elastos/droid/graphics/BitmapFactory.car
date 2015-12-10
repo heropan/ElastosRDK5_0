@@ -38,7 +38,7 @@ module
             [in] IBitmap* bm);
 
         GetInMutable(
-            [out] Boolean* mutable);
+            [out] Boolean* isMutable);
 
         SetInMutable(
             [in] Boolean m);

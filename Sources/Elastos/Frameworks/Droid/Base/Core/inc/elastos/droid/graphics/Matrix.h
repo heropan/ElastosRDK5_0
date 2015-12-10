@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_MATRIX_H__
 #define __ELASTOS_DROID_GRAPHICS_MATRIX_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Graphics.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/Object.h>
 

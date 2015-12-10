@@ -1,4 +1,7 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/CPaintFlagsDrawFilter.h"
 #include <skia/effects/SkPaintFlagsDrawFilter.h>
 #include <skia/core/SkPaint.h>

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_MOVIE_H__
 #define __ELASTOS_DROID_GRAPHICS_MOVIE_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Graphics.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/Object.h>
 #include <skia/images/SkMovie.h>

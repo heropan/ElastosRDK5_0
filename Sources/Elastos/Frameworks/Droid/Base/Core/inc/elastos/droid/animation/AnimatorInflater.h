@@ -2,8 +2,8 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_ANIMATORINFLATER_H__
 #define  __ELASTOS_DROID_ANIMATION_ANIMATORINFLATER_H__
 
+#include "Elastos.Droid.Animation.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <Elastos.Droid.Core_server.h>
 #include "elastos/droid/utility/PathParser.h"
 
 using Org::Xmlpull::V1::IXmlPullParser;

@@ -1,4 +1,6 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/drawable/ShapeDrawable.h"
 #include "elastos/droid/graphics/drawable/CShapeDrawable.h"
 #include "elastos/droid/graphics/CPaint.h"

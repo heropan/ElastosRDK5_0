@@ -1,4 +1,7 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/COutline.h"
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CRect.h"

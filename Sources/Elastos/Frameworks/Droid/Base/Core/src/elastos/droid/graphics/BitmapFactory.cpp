@@ -1,4 +1,6 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/BitmapFactory.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"

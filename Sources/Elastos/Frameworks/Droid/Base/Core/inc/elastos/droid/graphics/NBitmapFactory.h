@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_NBITMAPFACTORY_H__
 #define __ELASTOS_DROID_GRAPHICS_NBITMAPFACTORY_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include <elastos.h>
 #include <skia/core/SkImageDecoder.h>
 
 namespace Elastos {

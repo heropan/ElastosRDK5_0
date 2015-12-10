@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/Typeface.h"
 #include "elastos/droid/graphics/CTypeface.h"
 #include "elastos/droid/graphics/FontFamily.h"

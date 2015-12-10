@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Core.h"
 #include "elastos/droid/graphics/drawable/shapes/Shape.h"
 
 using Elastos::Core::EIID_ICloneable;

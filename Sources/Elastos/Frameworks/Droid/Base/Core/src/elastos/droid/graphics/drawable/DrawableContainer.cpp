@@ -1,4 +1,8 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/DrawableContainer.h"
 #include "elastos/droid/graphics/CRect.h"

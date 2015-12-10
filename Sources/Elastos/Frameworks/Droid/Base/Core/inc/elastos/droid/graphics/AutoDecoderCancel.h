@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_AUTODECODERCANCEL_H__
 #define __ELASTOS_DROID_GRAPHICS_AUTODECODERCANCEL_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Graphics.h"
 #include <skia/core/SkImageDecoder.h>
 
 namespace Elastos {

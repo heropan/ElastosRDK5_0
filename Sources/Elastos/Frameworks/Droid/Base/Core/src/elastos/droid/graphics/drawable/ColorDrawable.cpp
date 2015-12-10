@@ -1,4 +1,9 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/ColorDrawable.h"
 #include "elastos/droid/graphics/drawable/CColorDrawable.h"

@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_UTILS_H__
 #define __ELASTOS_DROID_GRAPHICS_UTILS_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include <skia/core/SkStream.h>
 #include <androidfw/Asset.h>
 #include <unistd.h>

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
 
 using Elastos::IO::IFlushable;

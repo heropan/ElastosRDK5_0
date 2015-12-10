@@ -1,4 +1,6 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/drawable/RippleDrawable.h"
 #include "elastos/droid/graphics/drawable/CRippleDrawable.h"
 #include "elastos/droid/graphics/CPorterDuffXfermode.h"

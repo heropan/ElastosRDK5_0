@@ -7,11 +7,7 @@
 using namespace Elastos;
 #endif
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
 #include "Elastos.Droid.Core.h"
-#endif
 
 extern "C" const Elastos::ClassID ECLSID_CDummyObject;
 

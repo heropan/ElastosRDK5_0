@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_DRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_DRAWABLE_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::Res::IResourcesTheme;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_BITMAPREGIONDECODER_H__
 #define __ELASTOS_DROID_GRAPHICS_BITMAPREGIONDECODER_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Graphics.h"
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IFileDescriptor;

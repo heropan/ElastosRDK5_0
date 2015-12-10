@@ -1,4 +1,7 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/CEmbossMaskFilter.h"
 #include <skia/effects/SkBlurMaskFilter.h>
 #include <skia/effects/SkBlurMask.h>

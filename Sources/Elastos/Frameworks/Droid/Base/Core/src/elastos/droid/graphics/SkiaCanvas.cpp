@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/NativeCanvas.h"
 #include <SkCanvas.h>
 #include <SkClipStack.h>

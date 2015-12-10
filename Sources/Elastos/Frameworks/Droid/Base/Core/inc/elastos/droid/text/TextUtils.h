@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_TEXTUTILS_H__
 #define __ELASTOS_DROID_TEXT_TEXTUTILS_H__
 
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::ICharSequence;

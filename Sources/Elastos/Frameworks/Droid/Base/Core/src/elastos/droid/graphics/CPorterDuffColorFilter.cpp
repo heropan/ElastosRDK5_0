@@ -1,4 +1,7 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/CPorterDuffColorFilter.h"
 #include <skia/core/SkColorFilter.h>
 #include <skia/effects/SkPorterDuff.h>

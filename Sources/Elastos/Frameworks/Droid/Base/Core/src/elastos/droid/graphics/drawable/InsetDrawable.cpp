@@ -1,4 +1,6 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/InsetDrawable.h"
 #include "elastos/droid/graphics/drawable/CInsetDrawable.h"
