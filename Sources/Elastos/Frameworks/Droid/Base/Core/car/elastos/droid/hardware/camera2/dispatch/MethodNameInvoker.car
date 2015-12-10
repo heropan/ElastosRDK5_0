@@ -34,8 +34,7 @@ module
         // @SuppressWarnings("unchecked")
         Invoke(
             [in] String methodName,
-            [in] ArrayOf<IInterface*>* params,
-            [out] IInterface** outface);
+            [in] ArrayOf<IInterface*>* params);
     }
 
     } // namespace Dispatch

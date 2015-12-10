@@ -1,4 +1,9 @@
 
+
+#
+# 请保持字母顺序
+#
+
 DIRS += accessibilityservice
 DIRS += app
 DIRS += animation

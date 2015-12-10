@@ -1,3 +1,4 @@
 
+DIRS += dispatch
 DIRS += params
 DIRS += utils

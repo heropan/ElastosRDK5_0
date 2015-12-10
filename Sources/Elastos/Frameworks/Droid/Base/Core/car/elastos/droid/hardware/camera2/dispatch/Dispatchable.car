@@ -1,6 +1,8 @@
 
 module
 {
+    using interface IMethodInfo;
+
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
@@ -13,6 +15,7 @@ module
      * <p>This can be used to intercept method calls and do work around them, redirect work,
      * or block calls entirely.</p>
      */
+    [deprecated, local]
     interface IDispatchable {
         /**
          * Dispatch the method and arguments to this object.
@@ -21,10 +24,9 @@ module
          * @return the object returned when invoking {@code method}
          * @throws Throwable any exception that might have been raised while invoking the method
          */
-        // Dispatch(
-        //     [in] IMethod* method,
-        //     [in] ArrayOf<IInterface*>* args,
-        //     [out] IInterface** outface);
+        Dispatch(
+            [in] IMethodInfo* method,
+            [in] ArrayOf<IInterface*>* args);
     }
 
     } // namespace Dispatch
