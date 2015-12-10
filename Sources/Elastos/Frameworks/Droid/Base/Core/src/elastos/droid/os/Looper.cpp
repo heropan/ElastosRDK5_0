@@ -1,4 +1,7 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Binder.h"

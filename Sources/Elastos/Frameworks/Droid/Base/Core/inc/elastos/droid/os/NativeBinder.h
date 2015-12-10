@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_DROID_OS_NATIVEBINDER_H__
 #define __ELASTOS_DROID_OS_NATIVEBINDER_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include <binder/IBinder.h>
 
 namespace Elastos {

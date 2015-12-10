@@ -1,3 +1,6 @@
+
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/CUpdateLock.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/CBinder.h"

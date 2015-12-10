@@ -1,3 +1,6 @@
+
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/Broadcaster.h"
 #include "elastos/droid/os/CMessage.h"
 #include <elastos/core/AutoLock.h>

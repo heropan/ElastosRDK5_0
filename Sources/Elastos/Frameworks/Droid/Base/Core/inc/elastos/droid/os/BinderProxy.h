@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_BINDERPROXY_H__
 #define __ELASTOS_DROID_OS_BINDERPROXY_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Os.h"
 
 namespace Elastos {
 namespace Droid {

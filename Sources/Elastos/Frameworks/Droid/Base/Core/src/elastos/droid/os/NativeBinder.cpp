@@ -1,4 +1,6 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/NativeBinder.h"
 #include "elastos/droid/os/CBinder.h"
 #include "elastos/droid/os/BinderProxy.h"

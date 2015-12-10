@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/os/AsyncTask.h"
 #include "elastos/droid/os/CLooperHelper.h"
 #include "elastos/droid/os/Process.h"

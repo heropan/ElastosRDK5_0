@@ -1,12 +1,6 @@
 #ifndef __ELASTOS_DROID_OS_SELINUX_H__
 #define __ELASTOS_DROID_OS_SELINUX_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 

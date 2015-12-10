@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/os/CParcelUuid.h"
 
 using Elastos::Utility::CUUID;

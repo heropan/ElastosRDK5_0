@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_LOOPER_H__
 #define __ELASTOS_DROID_OS_LOOPER_H__
 
-#include "Elastos.Droid.Core.h"
+#include "Elastos.Droid.Os.h"
 #include <pthread.h>
 #include <elastos/core/Object.h>
 

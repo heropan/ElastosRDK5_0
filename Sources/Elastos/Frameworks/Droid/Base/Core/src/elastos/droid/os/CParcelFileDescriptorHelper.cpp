@@ -1,4 +1,6 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/CParcelFileDescriptorHelper.h"
 #include "elastos/droid/os/ParcelFileDescriptor.h"
 

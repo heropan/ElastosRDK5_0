@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/os/CEnvironment.h"
 #include "elastos/droid/os/Environment.h"

@@ -2,11 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_USERHANDLE_H__
 #define __ELASTOS_DROID_OS_USERHANDLE_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "Elastos.Droid.Os.h"
 
 #include <elastos/core/Object.h>
 

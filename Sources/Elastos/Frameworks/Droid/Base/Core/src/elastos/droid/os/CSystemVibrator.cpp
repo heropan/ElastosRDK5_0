@@ -1,4 +1,6 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/CSystemVibrator.h"
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/os/ServiceManager.h"

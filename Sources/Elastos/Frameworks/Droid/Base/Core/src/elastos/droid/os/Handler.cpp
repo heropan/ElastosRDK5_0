@@ -1,4 +1,7 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/SystemClock.h"
 #ifdef DROID_CORE
