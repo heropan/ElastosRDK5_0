@@ -283,6 +283,42 @@ public:
     CARAPI SetVersionCode(
         /* [in] */ Int32 uid);
 
+    CARAPI SetScanSourceDir(
+        /* [in] */ String value);
+
+    CARAPI SetScanPublicSourceDir(
+        /* [in] */ String value);
+
+    CARAPI SetSeinfo(
+        /* [in] */ String value);
+
+    CARAPI SetSecondaryNativeLibraryDir(
+        /* [in] */ String value);
+
+    CARAPI SetNativeLibraryRootDir(
+        /* [in] */ String value);
+
+    CARAPI SetNativeLibraryRootRequiresIsa(
+        /* [in] */ Boolean value);
+
+    CARAPI GetScanSourceDir(
+        /* [out */ String* value);
+
+    CARAPI GetScanPublicSourceDir(
+        /* [out */ String* value);
+
+    CARAPI GetSeinfo(
+        /* [out */ String* value);
+
+    CARAPI GetSecondaryNativeLibraryDir(
+        /* [out */ String* value);
+
+    CARAPI GetNativeLibraryRootDir(
+        /* [out */ String* value);
+
+    CARAPI GetNativeLibraryRootRequiresIsa(
+        /* [out */ Boolean* value);
+
 protected:
 
     // @override
