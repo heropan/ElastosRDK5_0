@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/content/SyncActivityTooManyDeletes.h"
 #include "elastos/droid/content/ContentResolver.h"
 #include "elastos/droid/os/CBundle.h"

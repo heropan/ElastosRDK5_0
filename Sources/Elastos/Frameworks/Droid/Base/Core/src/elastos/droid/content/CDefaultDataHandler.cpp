@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CDefaultDataHandler.h"
 #include "elastos/droid/content/CContentValues.h"
 //***#include "elastos/droid/net/StringUri.h"

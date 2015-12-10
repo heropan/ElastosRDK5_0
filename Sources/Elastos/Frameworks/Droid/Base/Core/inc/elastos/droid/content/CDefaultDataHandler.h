@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_CONTENT_CDEFAULTDATAHANDLER_H__
 #define __ELASTOS_DROID_CONTENT_CDEFAULTDATAHANDLER_H__
 
+#include "Elastos.Droid.Net.h"
+#define HASH_FOR_NET
+#include "elastos/droid/ext/frameworkhash.h"
 #include "_Elastos_Droid_Content_CDefaultDataHandler.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/Stack.h>
 

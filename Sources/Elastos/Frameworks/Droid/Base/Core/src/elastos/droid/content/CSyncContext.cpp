@@ -1,7 +1,8 @@
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/content/CSyncContext.h"
 #include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Os::SystemClock;
 

@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CUriMatcher.h"
 
 using Elastos::Utility::IList;

@@ -1,4 +1,9 @@
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/content/CRestrictionsManager.h"
 #include "elastos/droid/content/CRestrictionEntry.h"
 #include "elastos/droid/content/pm/CApplicationInfo.h"

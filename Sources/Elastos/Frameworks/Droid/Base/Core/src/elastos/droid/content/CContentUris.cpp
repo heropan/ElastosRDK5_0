@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CContentUris.h"
 #include <elastos/core/StringUtils.h>
 

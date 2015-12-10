@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Accounts.h"
 #include "elastos/droid/content/CPeriodicSync.h"
 #include "elastos/droid/os/CBundle.h"
 #include <elastos/core/StringBuilder.h>

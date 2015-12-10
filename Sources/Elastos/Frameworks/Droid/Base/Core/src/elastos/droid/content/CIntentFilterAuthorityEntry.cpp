@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CIntentFilterAuthorityEntry.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/logging/Logger.h>

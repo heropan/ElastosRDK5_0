@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_UNDOMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 

@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CCursorLoader.h"
 #include "elastos/droid/content/CLoaderForceLoadContentObserver.h"
 #include <elastos/core/AutoLock.h>

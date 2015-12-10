@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CEntity.h"
 #include "elastos/droid/content/CEntityNamedContentValues.h"
 #include <elastos/core/StringBuilder.h>

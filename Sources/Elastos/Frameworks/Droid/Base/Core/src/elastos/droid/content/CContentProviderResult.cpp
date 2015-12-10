@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CContentProviderResult.h"
 #include "elastos/droid/content/ContentProvider.h"
 //#include "elastos/droid/net/Uri.h"

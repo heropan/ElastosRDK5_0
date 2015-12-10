@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CINTENTSENDER_H__
 #define __ELASTOS_DROID_CONTENT_CINTENTSENDER_H__
 
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Content_CIntentSender.h"
 #include <elastos/core/Object.h>
 #include "elastos/droid/os/Runnable.h"

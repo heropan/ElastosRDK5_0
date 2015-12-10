@@ -1,5 +1,9 @@
 
-
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/ContentResolver.h"
 #include "elastos/droid/content/CContentResolverOpenResourceIdResult.h"
 #include "elastos/droid/content/CContentProviderClient.h"

@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/content/CContentQueryMap.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/os/CHandler.h"

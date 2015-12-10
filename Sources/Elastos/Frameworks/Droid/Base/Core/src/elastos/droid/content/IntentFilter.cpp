@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/content/IntentFilter.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/content/CIntentFilterAuthorityEntry.h"

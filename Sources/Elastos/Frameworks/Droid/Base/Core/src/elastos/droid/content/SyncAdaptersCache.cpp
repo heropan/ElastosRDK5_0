@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/content/SyncAdaptersCache.h"
 #include "elastos/droid/content/CSyncAdapterType.h"
 #include "elastos/droid/content/CSyncAdapterTypeHelper.h"

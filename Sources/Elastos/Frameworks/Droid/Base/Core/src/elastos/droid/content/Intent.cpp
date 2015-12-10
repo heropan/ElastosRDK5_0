@@ -1,4 +1,9 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/content/Intent.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CClipDataItem.h"

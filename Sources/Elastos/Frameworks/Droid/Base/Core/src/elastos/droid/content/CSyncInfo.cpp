@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Accounts.h"
 #include "elastos/droid/content/CSyncInfo.h"
 //#include "elastos/droid/accounts/CAccount.h"
 
