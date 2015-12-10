@@ -3632,7 +3632,8 @@ ECode PackageParser::ParseKeySets(
     else {
         Slogger::W(TAG, "Package AndroidManifext.xml does not define all 'upgrade-key-set's .",
             owner->mPackageName.string());
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
     *result = TRUE;

@@ -314,6 +314,86 @@ public:/* package */
         CPackageManagerService* mHost;
     };
 
+    class ActivityIntentResolver
+        : public IntentResolver<PackageParser::ActivityIntentInfo, IResolveInfo>
+    {
+    public:
+        typedef IntentResolver<PackageParser::ActivityIntentInfo, IResolveInfo>  Super;
+
+    public:
+        ActivityIntentResolver(
+            /* [in] */ CPackageManagerService* owner);
+
+        CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntent(
+            /* [in] */ IIntent* intent,
+            /* [in] */ const String& resolvedType,
+            /* [in] */ Boolean defaultOnly,
+            /* [in] */ Int32 userId);
+
+        CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntent(
+            /* [in] */ IIntent* intent,
+            /* [in] */ const String& resolvedType,
+            /* [in] */ Int32 flags,
+            /* [in] */ Int32 userId);
+
+        CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntentForPackage(
+            /* [in] */ IIntent* intent,
+            /* [in] */ const String& resolvedType,
+            /* [in] */ Int32 flags,
+            /* [in] */ List<AutoPtr<PackageParser::Activity> >* packageActivities,
+            /* [in] */ Int32 userId);
+
+        CARAPI_(void) AddActivity(
+            /* [in] */ PackageParser::Activity* activity,
+            /* [in] */ const String& type);
+
+        CARAPI_(void) RemoveActivity(
+            /* [in] */ PackageParser::Activity* activity,
+            /* [in] */ const String& type);
+
+    protected:
+        //@Override
+        CARAPI_(Boolean) AllowFilterResult(
+            /* [in] */ PackageParser::ActivityIntentInfo* filter,
+            /* [in] */ List<AutoPtr<IResolveInfo> > * dest);
+
+        //@Override
+        CARAPI_(AutoPtr<ArrayOf<PackageParser::ActivityIntentInfo*> >) NewArray(
+            /* [in] */ Int32 size);
+
+        //@Override
+        CARAPI_(Boolean) IsFilterStopped(
+            /* [in] */ PackageParser::ActivityIntentInfo* filter,
+            /* [in] */ Int32 userId);
+
+        //@Override
+        CARAPI_(Boolean) IsPackageForFilter(
+            /* [in] */ const String& packageName,
+            /* [in] */ PackageParser::ActivityIntentInfo* info);
+
+        //@Override
+        CARAPI_(AutoPtr<IResolveInfo>) NewResult(
+            /* [in] */ PackageParser::ActivityIntentInfo* info,
+            /* [in] */ Int32 match,
+            /* [in] */ Int32 userId);
+
+        //@Override
+        CARAPI_(void) SortResults(
+            /* [in] */ List<AutoPtr<IResolveInfo> >* results);
+
+        //@Override
+        CARAPI_(void) DumpFilter(
+            /* [in] */ IPrintWriter* out,
+            /* [in] */ const String& prefix,
+            /* [in] */ PackageParser::ActivityIntentInfo* filter);
+
+    public:
+        // Keys are String (activity class name), values are Activity.
+        HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Activity> > mActivities;
+        Int32 mFlags;
+        CPackageManagerService* mHost;
+    };
+
     class DeletePackageRunnable : public Runnable
     {
     public:
@@ -869,6 +949,188 @@ private:
         AutoPtr<IIntentSender> mPi;
     };
 
+    class ServiceIntentResolver
+        : public IntentResolver<PackageParser::ServiceIntentInfo, IResolveInfo>
+    {
+    public:
+        typedef IntentResolver<PackageParser::ServiceIntentInfo, IResolveInfo> Super;
+
+    public:
+        ServiceIntentResolver(
+            /* [in] */ CPackageManagerService* owner);
+
+        CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntent(
+            /* [in] */ IIntent* intent,
+            /* [in] */ const String& resolvedType,
+            /* [in] */ Boolean defaultOnly,
+            /* [in] */ Int32 userId);
+
+        CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntent(
+            /* [in] */ IIntent* intent,
+            /* [in] */ const String& resolvedType,
+            /* [in] */ Int32 flags,
+            /* [in] */ Int32 userId);
+
+        CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntentForPackage(
+            /* [in] */ IIntent* intent,
+            /* [in] */ const String& resolvedType,
+            /* [in] */ Int32 flags,
+            /* [in] */ List< AutoPtr<PackageParser::Service> >* packageServices,
+            /* [in] */ Int32 userId);
+
+        CARAPI_(void) AddService(
+            /* [in] */ PackageParser::Service* service);
+
+        CARAPI_(void) RemoveService(
+            /* [in] */ PackageParser::Service* service);
+
+    protected:
+        //@Override
+        CARAPI_(Boolean) AllowFilterResult(
+            /* [in] */ PackageParser::ServiceIntentInfo* filter,
+            /* [in] */ List<AutoPtr<IResolveInfo> >* dest);
+
+        //@Override
+        CARAPI_(AutoPtr< ArrayOf<PackageParser::ServiceIntentInfo*> >) NewArray(
+            /* [in] */ Int32 size);
+
+        //@Override
+        CARAPI_(Boolean) IsFilterStopped(
+            /* [in] */ PackageParser::ServiceIntentInfo* filter,
+            /* [in] */ Int32 userId);
+
+        //@Override
+        CARAPI_(Boolean) IsPackageForFilter(
+            /* [in] */ const String& packageName,
+            /* [in] */ PackageParser::ServiceIntentInfo* info);
+
+        //@Override
+        CARAPI_(AutoPtr<IResolveInfo>) NewResult(
+            /* [in] */ PackageParser::ServiceIntentInfo* info,
+            /* [in] */ Int32 match,
+            /* [in] */ Int32 userId);
+
+        //@Override
+        CARAPI_(void) SortResults(
+            /* [in] */ List<AutoPtr<IResolveInfo> >* results);
+
+        // @Override
+        CARAPI_(void) DumpFilter(
+            /* [in] */ IPrintWriter* out,
+            /* [in] */ const String& prefix,
+            /* [in] */ PackageParser::ServiceIntentInfo* filter);
+
+    public:
+        // Keys are String (activity class name), values are Activity.
+        HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Service> > mServices;
+        Int32 mFlags;
+        CPackageManagerService* mHost;
+    };
+
+    class ProviderIntentResolver
+        : public IntentResolver<PackageParser::ProviderIntentInfo, IResolveInfo>
+    {
+    public:
+        typedef IntentResolver<PackageParser::ProviderIntentInfo, IResolveInfo> Super;
+
+    public:
+        ProviderIntentResolver(
+            /* [in] */ CPackageManagerService* owner);
+
+        CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntent(
+            /* [in] */ IIntent* intent,
+            /* [in] */ const String& resolvedType,
+            /* [in] */ Boolean defaultOnly,
+            /* [in] */ Int32 userId);
+
+        CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntent(
+            /* [in] */ IIntent* intent,
+            /* [in] */ const String& resolvedType,
+            /* [in] */ Int32 flags,
+            /* [in] */ Int32 userId);
+
+        CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntentForPackage(
+            /* [in] */ IIntent* intent,
+            /* [in] */ const String& resolvedType,
+            /* [in] */ Int32 flags,
+            /* [in] */ List<AutoPtr<PackageParser::Service> >* packageServices,
+            /* [in] */ Int32 userId);
+
+        CARAPI_(void) AddProvider(
+            /* [in] */ PackageParser::Provider* p);
+
+        CARAPI_(void) Removeprovider(
+            /* [in] */ PackageParser::Provider* p);
+
+    protected:
+        //@Override
+        CARAPI_(Boolean) AllowFilterResult(
+            /* [in] */ PackageParser::ProviderIntentInfo* filter,
+            /* [in] */ List<AutoPtr<IResolveInfo> >* dest);
+
+        //@Override
+        CARAPI_(AutoPtr< ArrayOf<PackageParser::ProviderIntentInfo*> >) NewArray(
+            /* [in] */ Int32 size);
+
+        //@Override
+        CARAPI_(Boolean) IsFilterStopped(
+            /* [in] */ PackageParser::ProviderIntentInfo* filter,
+            /* [in] */ Int32 userId);
+
+        //@Override
+        CARAPI_(Boolean) IsPackageForFilter(
+            /* [in] */ const String& packageName,
+            /* [in] */ PackageParser::ProviderIntentInfo* info);
+
+        //@Override
+        CARAPI_(AutoPtr<IResolveInfo>) NewResult(
+            /* [in] */ PackageParser::ProviderIntentInfo* info,
+            /* [in] */ Int32 match,
+            /* [in] */ Int32 userId);
+
+        //@Override
+        CARAPI_(void) SortResults(
+            /* [in] */ List<AutoPtr<IResolveInfo> >* results);
+
+        // @Override
+        CARAPI_(void) DumpFilter(
+            /* [in] */ IPrintWriter* out,
+            /* [in] */ const String& prefix,
+            /* [in] */ PackageParser::ServiceIntentInfo* filter);
+
+    public:
+        // Keys are String (activity class name), values are Activity.
+        HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Service> > mServices;
+        Int32 mFlags;
+        CPackageManagerService* mHost;
+    };
+
+    class ResolvePrioritySorter
+        : public Object
+        , public IComparator
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI Compare(
+            /* [in] */ IInterface* lhs,
+            /* [in] */ IInterface* rhs,
+            /* [out] */ Int32* result);
+    }
+
+    class ProviderInitOrderSorter
+        : public Object
+        , public IComparator
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI Compare(
+            /* [in] */ IInterface* lhs,
+            /* [in] */ IInterface* rhs,
+            /* [out] */ Int32* result);
+    }
+
     class PackageComparator
         : public Object
         , public IComparator
@@ -991,166 +1253,6 @@ private:
         CPackageManagerService* mHost;
         AutoPtr<MoveParams> mMp;
         Int32 mCurrentStatus;
-    };
-
-    class ActivityIntentResolver
-        : public IntentResolver<PackageParser::ActivityIntentInfo, IResolveInfo>
-    {
-    public:
-        typedef IntentResolver<PackageParser::ActivityIntentInfo, IResolveInfo>  Super;
-
-    public:
-        ActivityIntentResolver(
-            /* [in] */ CPackageManagerService* owner);
-
-        ~ActivityIntentResolver();
-
-        CARAPI_(AutoPtr< List< AutoPtr<IResolveInfo> > >) QueryIntent(
-            /* [in] */ IIntent* intent,
-            /* [in] */ const String& resolvedType,
-            /* [in] */ Boolean defaultOnly,
-            /* [in] */ Int32 userId);
-
-        CARAPI_(AutoPtr< List< AutoPtr<IResolveInfo> > >) QueryIntent(
-            /* [in] */ IIntent* intent,
-            /* [in] */ const String& resolvedType,
-            /* [in] */ Int32 flags,
-            /* [in] */ Int32 userId);
-
-        CARAPI_(AutoPtr< List< AutoPtr<IResolveInfo> > >) QueryIntentForPackage(
-            /* [in] */ IIntent* intent,
-            /* [in] */ const String& resolvedType,
-            /* [in] */ Int32 flags,
-            /* [in] */ List< AutoPtr<PackageParser::Activity> >* packageActivities,
-            /* [in] */ Int32 userId);
-
-        CARAPI_(void) AddActivity(
-            /* [in] */ PackageParser::Activity* activity,
-            /* [in] */ const String& type);
-
-        CARAPI_(void) RemoveActivity(
-            /* [in] */ PackageParser::Activity* activity,
-            /* [in] */ const String& type);
-
-    protected:
-        //@Override
-        CARAPI_(Boolean) AllowFilterResult(
-            /* [in] */ PackageParser::ActivityIntentInfo* filter,
-            /* [in] */ List< AutoPtr<IResolveInfo> > * dest);
-
-        //@Override
-        CARAPI_(AutoPtr< ArrayOf<PackageParser::ActivityIntentInfo*> >) NewArray(
-            /* [in] */ Int32 size);
-
-        //@Override
-        CARAPI_(Boolean) IsFilterStopped(
-            /* [in] */ PackageParser::ActivityIntentInfo* filter,
-            /* [in] */ Int32 userId);
-
-        //@Override
-        CARAPI_(String) PackageForFilter(
-            /* [in] */ PackageParser::ActivityIntentInfo* info);
-
-        //@Override
-        CARAPI_(AutoPtr<IResolveInfo>) NewResult(
-            /* [in] */ PackageParser::ActivityIntentInfo* info,
-            /* [in] */ Int32 match,
-            /* [in] */ Int32 userId);
-
-        //@Override
-        CARAPI_(void) SortResults(
-            /* [in] */ List< AutoPtr<IResolveInfo> >* results);
-
-        //@Override
-        CARAPI_(void) DumpFilter(
-            /* [in] */ IPrintWriter* out,
-            /* [in] */ const String& prefix,
-            /* [in] */ PackageParser::ActivityIntentInfo* filter);
-
-    public:
-        // Keys are String (activity class name), values are Activity.
-        HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Activity> > mActivities;
-        Int32 mFlags;
-        CPackageManagerService* mHost;
-    };
-
-    class ServiceIntentResolver
-        : public IntentResolver<PackageParser::ServiceIntentInfo, IResolveInfo>
-    {
-    public:
-        typedef IntentResolver<PackageParser::ServiceIntentInfo, IResolveInfo> Super;
-
-    public:
-        ServiceIntentResolver(
-            /* [in] */ CPackageManagerService* owner);
-
-        ~ServiceIntentResolver();
-
-        CARAPI_(AutoPtr< List< AutoPtr<IResolveInfo> > >) QueryIntent(
-            /* [in] */ IIntent* intent,
-            /* [in] */ const String& resolvedType,
-            /* [in] */ Boolean defaultOnly,
-            /* [in] */ Int32 userId);
-
-        CARAPI_(AutoPtr< List< AutoPtr<IResolveInfo> > >) QueryIntent(
-            /* [in] */ IIntent* intent,
-            /* [in] */ const String& resolvedType,
-            /* [in] */ Int32 flags,
-            /* [in] */ Int32 userId);
-
-        CARAPI_(AutoPtr< List< AutoPtr<IResolveInfo> > >) QueryIntentForPackage(
-            /* [in] */ IIntent* intent,
-            /* [in] */ const String& resolvedType,
-            /* [in] */ Int32 flags,
-            /* [in] */ List< AutoPtr<PackageParser::Service> >* packageServices,
-            /* [in] */ Int32 userId);
-
-        CARAPI_(void) AddService(
-            /* [in] */ PackageParser::Service* service);
-
-        CARAPI_(void) RemoveService(
-            /* [in] */ PackageParser::Service* service);
-
-    protected:
-        //@Override
-        CARAPI_(Boolean) AllowFilterResult(
-            /* [in] */ PackageParser::ServiceIntentInfo* filter,
-            /* [in] */ List< AutoPtr<IResolveInfo> >* dest);
-
-        //@Override
-        CARAPI_(AutoPtr< ArrayOf<PackageParser::ServiceIntentInfo*> >) NewArray(
-            /* [in] */ Int32 size);
-
-        //@Override
-        CARAPI_(Boolean) IsFilterStopped(
-            /* [in] */ PackageParser::ServiceIntentInfo* filter,
-            /* [in] */ Int32 userId);
-
-        //@Override
-        CARAPI_(String) PackageForFilter(
-            /* [in] */ PackageParser::ServiceIntentInfo* info);
-
-        //@Override
-        CARAPI_(AutoPtr<IResolveInfo>) NewResult(
-            /* [in] */ PackageParser::ServiceIntentInfo* info,
-            /* [in] */ Int32 match,
-            /* [in] */ Int32 userId);
-
-        //@Override
-        CARAPI_(void) SortResults(
-            /* [in] */ List< AutoPtr<IResolveInfo> >* results);
-
-        // @Override
-        CARAPI_(void) DumpFilter(
-            /* [in] */ IPrintWriter* out,
-            /* [in] */ const String& prefix,
-            /* [in] */ PackageParser::ServiceIntentInfo* filter);
-
-    public:
-        // Keys are String (activity class name), values are Activity.
-        HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Service> > mServices;
-        Int32 mFlags;
-        CPackageManagerService* mHost;
     };
 
     class AppDirObserver : public FileObserver
@@ -2234,10 +2336,8 @@ private:
 
     CARAPI_(void) KillApplication(
         /* [in] */ const String& pkgName,
-        /* [in] */ Int32 appId);
-
-    static CARAPI_(Boolean) IsPackageFilename(
-        /* [in] */ const String& name);
+        /* [in] */ Int32 appId,
+        /* [in] */ const String& reason);
 
     static CARAPI_(Boolean) HasPermission(
         /* [in] */ PackageParser::Package* pkgInfo,
@@ -2250,7 +2350,18 @@ private:
 
     CARAPI_(void) GrantPermissionsLPw(
         /* [in] */ PackageParser::Package* pkg,
-        /* [in] */ Boolean replace);
+        /* [in] */ Boolean replace,
+        /* [in] */ const String& packageOfInterest);
+
+    CARAPI_(Boolean) IsNewPlatformPermissionForPackage(
+        /* [in] */ const String& perm,
+        /* [in] */ PackageParser::Package* pkg);
+
+    CARAPI_(Boolean) GrantSignaturePermission(
+        /* [in] */ const String& perm,
+        /* [in] */ PackageParser::Package* pkg,
+        /* [in] */ BasePermission* bp,
+        /* [in] */ HashSet<String>* origPermissions);
 
     CARAPI_(Boolean) IsExternalMediaAvailable();
 
@@ -2673,7 +2784,7 @@ public:/*package*/
     HashMap<Int32, AutoPtr<PackageVerificationState> > mPendingVerification;
 
     /** Set of packages associated with each app op permission. */
-    AutoPtr<IArrayMap> mAppOpPermissionPackages;/*ArrayMap<String, ArraySet<String>> mAppOpPermissionPackages = new ArrayMap<>();*/
+    HashMap<String, AutoPtr<HashSet<String> > > mAppOpPermissionPackages;
 
     AutoPtr<PackageInstallerService> mInstallerService;
 
@@ -2809,6 +2920,10 @@ private:
     String mRequiredVerifierPackage;
 
     AutoPtr<PackageUsage> mPackageUsage;
+
+    static AutoPtr<IComparator> mResolvePrioritySorter;
+
+    static AutoPtr<IComparator> mProviderInitOrderSorter;
 
     Boolean mMediaMounted;
 
