@@ -14,14 +14,18 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class MultiAutoCompleteTextView : public AutoCompleteTextView
+class MultiAutoCompleteTextView
+    : public AutoCompleteTextView
+    , public IMultiAutoCompleteTextView
 {
 public:
     class CommaTokenizer
         : public ITokenizer
-        , public ElRefBase
+        , public Object
     {
     public:
+        CAR_INTERFACE_DECL()
+
         CommaTokenizer();
 
         CARAPI FindTokenStart(
@@ -40,15 +44,33 @@ public:
     };
 
 public:
-    MultiAutoCompleteTextView(
+    CAR_INTERFACE_DECL()
+
+    MultiAutoCompleteTextView();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::autoCompleteTextViewStyle);
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual CARAPI SetTokenizer(
         /* [in] */ ITokenizer* t);
 
-    CARAPI_(Boolean) EnoughToFilter();
+    CARAPI EnoughToFilter(
+        /* [out] */ Boolean* enough);
 
     CARAPI PerformValidation();
 
@@ -59,13 +81,6 @@ public:
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
-    MultiAutoCompleteTextView();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::autoCompleteTextViewStyle);
-
     CARAPI_(void) PerformFiltering(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 keyCode);
@@ -79,10 +94,7 @@ protected:
     CARAPI_(void) ReplaceText(
         /* [in] */ ICharSequence* text);
 
-private:
     CARAPI_(void) FinishInit();
-
-
 
 private:
     AutoPtr<ITokenizer> mTokenizer;

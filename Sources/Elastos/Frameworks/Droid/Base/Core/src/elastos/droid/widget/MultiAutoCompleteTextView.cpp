@@ -4,11 +4,15 @@
 #include "elastos/droid/widget/MultiAutoCompleteTextView.h"
 #include "elastos/droid/text/CSpannableString.h"
 
-using Elastos::Core::CStringWrapper;
+#include <elastos/core/CoreUtils.h>
+
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::CSpannableString;
 using Elastos::Droid::Text::ISpannableString;
 using Elastos::Droid::Text::Method::QwertyKeyListener;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -16,26 +20,39 @@ namespace Widget {
 
 const String MultiAutoCompleteTextView::MULTIAUTOCOMPLETETEXTVIEW_NAME = String("MultiAutoCompleteTextView");
 
+CAR_INTERFACE_IMPL(MultiAutoCompleteTextView, AutoCompleteTextView, IMultiAutoCompleteTextView)
+
 MultiAutoCompleteTextView::MultiAutoCompleteTextView()
-{
+{}
 
+ECode MultiAutoCompleteTextView::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
 }
 
-MultiAutoCompleteTextView::MultiAutoCompleteTextView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+ECode MultiAutoCompleteTextView::constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs)
 {
-
+    return constructor(context, attrs, R::attr::autoCompleteTextViewStyle);
 }
 
-ECode MultiAutoCompleteTextView::Init(
+ECode MultiAutoCompleteTextView::constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle)
+        /* [in] */ Int32 defStyleAttr)
 {
-    AutoCompleteTextView::Init(context, attrs, defStyle);
-    return NOERROR;
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode MultiAutoCompleteTextView::constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes)
+{
+    return AutoCompleteTextView::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
 ECode MultiAutoCompleteTextView::SetTokenizer(
@@ -45,51 +62,59 @@ ECode MultiAutoCompleteTextView::SetTokenizer(
     return NOERROR;
 }
 
-Boolean MultiAutoCompleteTextView::EnoughToFilter()
+ECode MultiAutoCompleteTextView::EnoughToFilter(
+        /* [out] */ Boolean* enough)
 {
-    AutoPtr<ICharSequence> seq = GetText();
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
     AutoPtr<IEditable> text = IEditable::Probe(seq);
 
     Int32 end = GetSelectionEnd();
     if(end < 0 || mTokenizer == NULL) {
-        return FALSE;
+        *enough = FALSE;
+        return NOERROR;
     }
 
     Int32 start = 0;
-    mTokenizer->FindTokenStart(text, end, &start);
+    mTokenizer->FindTokenStart(seq, end, &start);
 
-    if(end - start >= GetThreshold()) {
-        return TRUE;
+    Int32 threshold;
+    GetThreshold(&threshold);
+    if(end - start >= threshold) {
+        *enough = TRUE;
+        return NOERROR;
     } else {
-        return FALSE;
+        *enough = FALSE;
+        return NOERROR;
     }
 }
 
 ECode MultiAutoCompleteTextView::PerformValidation()
 {
-    AutoPtr<IValidator> v = GetValidator();
-    if(!v || !mTokenizer) {
+    AutoPtr<IValidator> v;
+    GetValidator((IValidator**)&v);
+    if(v == NULL || mTokenizer == NULL) {
         return NOERROR;
     }
-    AutoPtr<ICharSequence> seq = GetText();
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
     AutoPtr<IEditable> text = IEditable::Probe(seq);
     Int32 i = 0;
-    GetText()->GetLength(&i);
+    seq->GetLength(&i);
 
     while(i > 0) {
         Int32 start = 0;
-        mTokenizer->FindTokenStart (text, i, &start);
+        mTokenizer->FindTokenStart (seq, i, &start);
         Int32 end = 0;
-        mTokenizer->FindTokenEnd(text, start, &end);
+        mTokenizer->FindTokenEnd(seq, start, &end);
 
         AutoPtr<ICharSequence> sub;
-        text->SubSequence(start, end, (ICharSequence**)&sub);
+        seq->SubSequence(start, end, (ICharSequence**)&sub);
 
         Boolean isValid = false;
         v->IsValid(sub, &isValid);
         if(TextUtils::IsEmpty(sub)) {
-            AutoPtr<ICharSequence> csqnull;
-            CStringWrapper::New(String(""), (ICharSequence**)&csqnull);
+            AutoPtr<ICharSequence> csqnull = CoreUtils::Convert(String(""));
             text->Replace(start, i, csqnull);
         } else if (!isValid) {
             AutoPtr<ICharSequence> csq;
@@ -107,9 +132,8 @@ ECode MultiAutoCompleteTextView::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     AutoCompleteTextView::OnInitializeAccessibilityEvent(event);
-    AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(MULTIAUTOCOMPLETETEXTVIEW_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
+    AutoPtr<ICharSequence> seq = CoreUtils::Convert(MULTIAUTOCOMPLETETEXTVIEW_NAME);
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
@@ -117,8 +141,7 @@ ECode MultiAutoCompleteTextView::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     AutoCompleteTextView::OnInitializeAccessibilityNodeInfo(info);
-    AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(MULTIAUTOCOMPLETETEXTVIEW_NAME, (ICharSequence**)&seq));
+    AutoPtr<ICharSequence> seq = CoreUtils::Convert(MULTIAUTOCOMPLETETEXTVIEW_NAME);
     info->SetClassName(seq);
     return NOERROR;
 }
@@ -127,7 +150,8 @@ void MultiAutoCompleteTextView::PerformFiltering(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 keyCode)
 {
-    if(EnoughToFilter()) {
+    Boolean enough;
+    if(EnoughToFilter(&enough), enough) {
         Int32 end = GetSelectionEnd();
         Int32 start = 0;
         mTokenizer->FindTokenStart(text, end, &start);
@@ -160,12 +184,13 @@ void MultiAutoCompleteTextView::ReplaceText(
     ClearComposingText();
     Int32 end = GetSelectionEnd();
     Int32 start = 0;
-    mTokenizer->FindTokenStart(GetText(), end, &start);
+    AutoPtr<ICharSequence> chars;
+    GetText((ICharSequence**)&chars);
+    mTokenizer->FindTokenStart(chars, end, &start);
 
-    AutoPtr<ICharSequence> chars = GetText();
     AutoPtr<IEditable> editable = IEditable::Probe(chars);
-    String original = TextUtils::Substring(editable, start, end);
-    QwertyKeyListener::MarkAsReplaced(editable, start, end, original);
+    String original = TextUtils::Substring(chars, start, end);
+    QwertyKeyListener::MarkAsReplaced(ISpannable::Probe(chars), start, end, original);
     AutoPtr<ICharSequence> seq;
     mTokenizer->TerminateToken(text, (ICharSequence**)&seq);
     editable->Replace(start, end, seq);
@@ -179,10 +204,10 @@ void MultiAutoCompleteTextView::FinishInit()
 //=========================================================================
 //             MultiAutoCompleteTextView::CommaTokenizer
 //=========================================================================
-MultiAutoCompleteTextView::CommaTokenizer::CommaTokenizer()
-{
+CAR_INTERFACE_IMPL(MultiAutoCompleteTextView::CommaTokenizer, Object, ITokenizer)
 
-}
+MultiAutoCompleteTextView::CommaTokenizer::CommaTokenizer()
+{}
 
 ECode MultiAutoCompleteTextView::CommaTokenizer::FindTokenStart(
     /* [in] */ ICharSequence* text,
@@ -247,8 +272,7 @@ ECode MultiAutoCompleteTextView::CommaTokenizer::TerminateToken(
         if (ISpanned::Probe(text)) {
             String str;
             text->ToString(&str);
-            AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(str + String(","), (ICharSequence**)&csq);
+            AutoPtr<ICharSequence> csq = CoreUtils::Convert(str + String(","));
             AutoPtr<ISpannable> sp;
             CSpannableString::New(csq, (ISpannableString**)&sp);
             Int32 len = 0;
@@ -259,8 +283,7 @@ ECode MultiAutoCompleteTextView::CommaTokenizer::TerminateToken(
         } else {
             String str;
             text->ToString(&str);
-            AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(str + String(","), (ICharSequence**)&csq);
+            AutoPtr<ICharSequence> csq = CoreUtils::Convert(str + String(","));
             *res = csq;
             REFCOUNT_ADD(*res);
         }

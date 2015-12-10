@@ -3,21 +3,33 @@
 #define __ELASTOS_DROID_WIDGET_SPELLCHECKER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/utility/LruCache.h"
 
-using Elastos::Utility::ILocale;
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Text::Style::ISpellCheckSpan;
-using Elastos::Droid::View::Textservice::ISuggestionsInfo;
-using Elastos::Droid::View::Textservice::ISentenceSuggestionsInfo;
-using Elastos::Droid::View::Textservice::ISpellCheckerSession;
-using Elastos::Droid::View::Textservice::ITextServicesManager;
 using Elastos::Droid::Text::Method::IWordIterator;
+using Elastos::Droid::Utility::LruCache;
+using Elastos::Droid::View::TextService::ISuggestionsInfo;
+using Elastos::Droid::View::TextService::ISentenceSuggestionsInfo;
+using Elastos::Droid::View::TextService::ISpellCheckerSession;
+using Elastos::Droid::View::TextService::ITextServicesManager;
+using Elastos::Droid::View::TextService::ISpellCheckerSessionListener;
+using Elastos::Droid::Text::Style::ISuggestionSpan;
+
+using Elastos::Core::Object;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
 class SpellChecker
+    : public Object
+    , public ISpellChecker
 {
 private:
     class SpellCheckerRunnable
@@ -48,8 +60,6 @@ private:
 
         CARAPI_(void) Stop();
 
-
-
         CARAPI_(void) Parse();
 
     private:
@@ -67,33 +77,49 @@ private:
             /* [in] */ ArrayOf<IInterface*>* spans);
         //private <T> void removeSpansAt(Editable editable, int offset, T[] spans)
     private:
-        AutoPtr<IInterface> mRange;
+        AutoPtr<IObject> mRange;
+        SpellChecker* mHost;
+    };
+
+    class MySpellCheckerSessionListener
+        : public Object
+        , public ISpellCheckerSessionListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        MySpellCheckerSessionListener(
+            /* [in] */ SpellChecker* host);
+
+        CARAPI OnGetSuggestions(
+            /* [in] */ ArrayOf<ISuggestionsInfo*>* results);
+
+        CARAPI OnGetSentenceSuggestions(
+            /* [in] */ ArrayOf<ISentenceSuggestionsInfo*>* results);
+    private:
         SpellChecker* mHost;
     };
 
 public:
-    SpellChecker (
+    CAR_INTERFACE_DECL()
+
+    SpellChecker();
+
+    CARAPI constructor (
         /* [in] */ ITextView* textView);
 
-    CARAPI_(void) CloseSession();
+    CARAPI CloseSession();
 
-    CARAPI_(void) OnSpellCheckSpanRemoved(
+    CARAPI OnSpellCheckSpanRemoved(
         /* [in] */ ISpellCheckSpan* spellCheckSpan);
 
-    CARAPI_(void) OnSelectionChanged();
+    CARAPI OnSelectionChanged();
 
-    CARAPI_(void) SpellCheck(
+    CARAPI SpellCheck(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI_(void) OnGetSuggestions(
-        /* [in] */ ArrayOf<ISuggestionsInfo*>* results);
 
-    CARAPI_(void) onGetSentenceSuggestions(
-        /* [in] */ ArrayOf<ISentenceSuggestionsInfo*>* results);
-
-protected:
-    SpellChecker();
 
 private:
     CARAPI_(void) ResetSession();
@@ -142,18 +168,17 @@ private:
 
     Boolean mIsSentenceSpellCheckSupported;
     Int32 mCookie;
-    AutoPtr< ArrayOf<Int32> > mIds;
-    AutoPtr< ArrayOf<ISpellCheckSpan> > mSpellCheckSpans;
+    AutoPtr<ArrayOf<Int32> > mIds;
+    AutoPtr<ArrayOf<ISpellCheckSpan*> > mSpellCheckSpans;
     Int32 mLength;
-    AutoPtr< ArrayOf<SpellParser> > mSpellParsers;
+    AutoPtr<ArrayOf<SpellParser*> > mSpellParsers;
     Int32 mSpanSequenceCounter;
     AutoPtr<ILocale> mCurrentLocale;
     AutoPtr<IWordIterator> mWordIterator;
     AutoPtr<ITextServicesManager> mTextServicesManager;
     AutoPtr<SpellCheckerRunnable> mSpellRunnable;
 
-    /*private final LruCache<Long, SuggestionSpan> mSuggestionSpanCache =
-            new LruCache<Long, SuggestionSpan>(SUGGESTION_SPAN_CACHE_SIZE);*/
+    LruCache<Int64, AutoPtr<ISuggestionSpan> > mSuggestionSpanCache;
 };
 
 } // namespace Widget

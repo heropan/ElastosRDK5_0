@@ -1,28 +1,47 @@
 
 #include "elastos/droid/widget/CheckBox.h"
+#include <elastos/core/CoreUtils.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CoreUtils;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(CheckBox, CompoundButton, ICheckBox)
+
 CheckBox::CheckBox()
 {}
 
-CheckBox::CheckBox(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : CompoundButton(context, attrs, defStyle)
-{}
-
-ECode CheckBox::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+ECode CheckBox::constructor(
+    /* [in] */ IContext* context)
 {
-    return CompoundButton::Init(context, attrs, defStyle);
+    return constructor(context, NULL);
+}
+
+ECode CheckBox::constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::checkboxStyle);
+}
+
+ECode CheckBox::constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode CheckBox::constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes)
+{
+    return CompoundButton::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
 //@Override
@@ -30,9 +49,8 @@ ECode CheckBox::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     FAIL_RETURN(CompoundButton::OnInitializeAccessibilityEvent(event));
-    AutoPtr<ICharSequence> txt;
-    CStringWrapper::New(String("CheckBox"), (ICharSequence**)&txt);
-    return event->SetClassName(txt);
+    AutoPtr<ICharSequence> txt = CoreUtils::Convert(String("CheckBox"));
+    return IAccessibilityRecord::Probe(event)->SetClassName(txt);
 }
 
 //@Override
@@ -40,8 +58,7 @@ ECode CheckBox::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     FAIL_RETURN(CompoundButton::OnInitializeAccessibilityNodeInfo(info));
-    AutoPtr<ICharSequence> txt;
-    CStringWrapper::New(String("CheckBox"), (ICharSequence**)&txt);
+    AutoPtr<ICharSequence> txt = CoreUtils::Convert(String("CheckBox"));
     return info->SetClassName(txt);
 }
 

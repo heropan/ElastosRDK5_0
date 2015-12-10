@@ -12,58 +12,48 @@ namespace Widget {
  * Space is a lightweight View subclass that may be used to create gaps between components
  * in general purpose layouts.
  */
-class Space : public Elastos::Droid::View::View
+class Space
+    : public Elastos::Droid::View::View
+    , public ISpace
 {
 public:
+    CAR_INTERFACE_DECL()
+
     Space();
 
-    Space(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    Space(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    Space(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
 
-protected:
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
-    CARAPI InitImpl(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
-
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
     /**
      * Draw nothing.
      *
      * @param canvas an unused parameter.
      */
     //@Override
-    virtual ECode Draw(
+    virtual CARAPI Draw(
         /* [in] */ ICanvas* canvas);
 
 protected:
 
-    virtual void OnMeasure(
+    virtual CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
-private:
 
+private:
     /**
      * Compare to: {@link View#getDefaultSize(int, int)}
      * If mode is AT_MOST, return the child size instead of the parent size

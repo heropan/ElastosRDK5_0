@@ -1,41 +1,30 @@
 
 #include "elastos/droid/widget/TextSwitcher.h"
 
-using Elastos::Core::CStringWrapper;
+#include <elastos/core/CoreUtils.h>
+
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-    /**
-     * Creates a new empty TextSwitcher.
-     *
-     * @param context the application's environment
-     */
-TextSwitcher::TextSwitcher()
-{}
-TextSwitcher::TextSwitcher(
-    /* [in] */ IContext* context) : ViewSwitcher(context)
-{}
+CAR_INTERFACE_IMPL(TextSwitcher, ViewSwitcher, ITextSwitcher)
 
-    /**
-     * Creates a new empty TextSwitcher for the given context and with the
-     * specified set attributes.
-     *
-     * @param context the application environment
-     * @param attrs a collection of attributes
-     */
-TextSwitcher::TextSwitcher(
+ECode TextSwitcher::constructor(
+    /* [in] */ IContext* context)
+{
+    return ViewSwitcher::constructor(context);
+}
+
+ECode TextSwitcher::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs) : ViewSwitcher(context, attrs)
-{}
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IllegalArgumentException if child is not an instance of
-     *         {@link android.widget.TextView}
-     */
+    /* [in] */ IAttributeSet* attrs)
+{
+    return ViewSwitcher::constructor(context, attrs);
+}
 
 ECode TextSwitcher::AddView(
     /* [in] */ IView* child,
@@ -50,18 +39,13 @@ ECode TextSwitcher::AddView(
 
     return ViewSwitcher::AddView(child, index, params);
 }
-    /**
-     * Sets the text of the next view and switches to the next view. This can
-     * be used to animate the old text out and animate the next text in.
-     *
-     * @param text the new text to display
-     */
+
 ECode TextSwitcher::SetText(
     /* [in] */ ICharSequence* text)
 {
     AutoPtr<IView> v;
     GetNextView((IView**)&v);
-    AutoPtr<ITextView> tv = (ITextView*)v->Probe(EIID_ITextView);
+    AutoPtr<ITextView> tv = ITextView::Probe(v);
     if(tv == NULL)
     {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -72,18 +56,12 @@ ECode TextSwitcher::SetText(
     return NOERROR;
 }
 
-    /**
-     * Sets the text of the text view that is currently showing.  This does
-     * not perform the animations.
-     *
-     * @param text the new text to display
-     */
 ECode TextSwitcher::SetCurrentText(
     /* [in] */ ICharSequence* text)
 {
     AutoPtr<IView> v;
     GetCurrentView((IView**)&v);
-    AutoPtr<ITextView> tv = (ITextView*)v->Probe(EIID_ITextView);
+    AutoPtr<ITextView> tv = ITextView::Probe(v);
     if(tv == NULL)
     {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -97,31 +75,16 @@ ECode TextSwitcher::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     ViewSwitcher::OnInitializeAccessibilityEvent(event);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CTextSwitcher"), (ICharSequence**)&seq);
-    return event->SetClassName(seq);
+    AutoPtr<ICharSequence> seq = CoreUtils::Convert(String("CTextSwitcher"));
+    return IAccessibilityRecord::Probe(event)->SetClassName(seq);
 }
 
 ECode TextSwitcher::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     ViewSwitcher::OnInitializeAccessibilityNodeInfo(info);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CTextSwitcher"), (ICharSequence**)&seq);
+    AutoPtr<ICharSequence> seq = CoreUtils::Convert(String("CTextSwitcher"));
     return info->SetClassName(seq);
-}
-
-ECode TextSwitcher::Init(
-    /* [in] */ IContext* context)
-{
-    return ViewSwitcher::Init(context);
-}
-
-ECode TextSwitcher::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return ViewSwitcher::Init(context, attrs);
 }
 
 }// namespace Elastos

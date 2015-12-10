@@ -168,13 +168,6 @@ module
     merge("view/textservice/TextServicesManager.car");
     merge("view/textservice/SpellCheckerSessionListenerImpl.car");
     merge("view/textservice/InternalListener.car");
-    merge("internal/view/BaseIWindow.car");
-    merge("internal/view/IInputContext.car");
-    merge("internal/view/IInputMethodClient.car");
-    merge("internal/view/menu/MenuBuilder.car");
-    merge("internal/view/menu/BaseMenuPresenter.car");
-    merge("internal/view/menu/MenuPresenter.car");
-    merge("internal/view/menu/MenuView.car");
 
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.ICloneable;
@@ -1229,19 +1222,6 @@ module
         interface IDrawableCallback;
         interface IKeyEventCallback;
         interface IAccessibilityEventSource;
-    }
-
-    [local]
-    class CContextThemeWrapper {
-        constructor();
-
-        constructor(
-            [in] IContext* base,
-            [in] Int32 themeres);
-
-        interface IContextThemeWrapper;
-        interface IContextWrapper;
-        interface IContext;
     }
 
     [local]

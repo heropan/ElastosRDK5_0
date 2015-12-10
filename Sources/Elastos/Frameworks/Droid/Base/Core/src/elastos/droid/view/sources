@@ -147,7 +147,6 @@ SOURCES += CViewStub.cpp
 SOURCES += CPointerIcon.cpp
 SOURCES += CPointerIconHelper.cpp
 SOURCES += ContextThemeWrapper.cpp
-SOURCES += CContextThemeWrapper.cpp
 SOURCES += VelocityTracker.cpp
 #SOURCES += CVelocityTrackerHelper.cpp
 #SOURCES += VelocityTrackerState.cpp

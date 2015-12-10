@@ -17,10 +17,10 @@ module
     merge("../../../car/elastos/droid/internal/location.car");
     merge("../../../car/elastos/droid/location.car");
     merge("../../../car/elastos/droid/internal/textservice.car");
+    merge("../../../car/elastos/droid/internal/view2.car");
     merge("../../../car/elastos/droid/view.car");
     merge("../../../car/elastos/droid/hardware.car");
     merge("../../../car/elastos/droid/accessibilityservice.car");
-    merge("../../../car/elastos/droid/internal/view2.car");
     merge("../../../car/elastos/droid/app2.car");
     merge("../../../car/elastos/droid/widget.car");
     merge("../../../car/elastos/droid/internal/app.car");

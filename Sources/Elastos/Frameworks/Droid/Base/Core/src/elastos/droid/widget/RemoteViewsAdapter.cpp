@@ -46,15 +46,6 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-// daa3894c-5246-483a-a18a-75cb3e153764
-extern "C" const InterfaceID EIID_RemoteViewsFrameLayout =
-        { 0xdaa3894c, 0x5246, 0x483a, { 0xa1, 0x8a, 0x75, 0xcb, 0x3e, 0x15, 0x37, 0x64 } };
-
-// 419078bd-95c2-45e8-a46e-cec95bc2216d
-extern "C" const InterfaceID EIID_RemoteViewsAdapter =
-        { 0x419078bd, 0x95c2, 0x45e8, { 0xa4, 0x6e, 0xce, 0xc9, 0x5b, 0xc2, 0x21, 0x6d } };
-
-
 /*--------------------------------RemoteViewsCacheKey--------------------------------*/
 RemoteViewsCacheKey::RemoteViewsCacheKey(
     /* [in] */ IIntentFilterComparison* filter,
@@ -67,95 +58,14 @@ RemoteViewsCacheKey::RemoteViewsCacheKey(
 }
 
 /*--------------------------------RemoteViewsFrameLayout--------------------------------*/
-IFRAMELAYOUT_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IVIEW_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IVIEWGROUP_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IVIEWPARENT_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IVIEWMANAGER_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IDRAWABLECALLBACK_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IKEYEVENTCALLBACK_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
 
-RemoteViewsFrameLayout::RemoteViewsFrameLayout(
-    /* [in] */ IContext* context) : FrameLayout(context)
+RemoteViewsFrameLayout::RemoteViewsFrameLayout()
 {}
 
-PInterface RemoteViewsFrameLayout::Probe(
-    /* [in] */ REIID riid)
+ECode RemoteViewsFrameLayout::constrctor(
+    /* [in] */ IContext* context)
 {
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IFrameLayout*)this;
-    } else if (riid == EIID_IFrameLayout) {
-        return (IFrameLayout*)this;
-    } else if (riid == EIID_IViewGroup) {
-        return (IViewGroup*)(IFrameLayout*)this;
-    } else if (riid == EIID_IView) {
-        return (IView*)(IFrameLayout*)this;
-    } else if (riid == EIID_IViewParent) {
-        return (IViewParent*)this;
-    } else if (riid == EIID_IViewManager) {
-        return (IViewManager*)this;
-    } else if (riid == EIID_IDrawableCallback) {
-        return (IDrawableCallback*)this;
-    } else if (riid == EIID_IKeyEventCallback) {
-        return (IKeyEventCallback*)this;
-    } else if (riid == EIID_IAccessibilityEventSource) {
-        return (IAccessibilityEventSource*)this;
-    } else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    } else if (riid == EIID_View) {
-        return reinterpret_cast<PInterface>((View*)(FrameLayout*)this);
-    } else if (riid == EIID_ViewGroup) {
-        return reinterpret_cast<PInterface>((ViewGroup*)(FrameLayout*)this);
-    } else if (riid == EIID_RemoteViewsFrameLayout) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    return NULL;
-}
-
-UInt32 RemoteViewsFrameLayout::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 RemoteViewsFrameLayout::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode RemoteViewsFrameLayout::GetInterfaceID(
-    /* [in] */ IInterface *object,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (object == (IFrameLayout*)this) {
-        *pIID = EIID_IListView;
-    } else if (object == (IViewParent*)this) {
-        *pIID = EIID_IViewParent;
-    } else if (object == (IViewManager*)this) {
-        *pIID = EIID_IViewManager;
-    } else if (object == (IDrawableCallback*)this) {
-        *pIID = EIID_IDrawableCallback;
-    } else if (object == (IKeyEventCallback*)this) {
-        *pIID = EIID_IKeyEventCallback;
-    } else if (object == (IAccessibilityEventSource*)this) {
-        *pIID = EIID_IAccessibilityEventSource;
-    } else if (object == reinterpret_cast<PInterface>((View*)this)) {
-        *pIID = EIID_View;
-    } else if (object == reinterpret_cast<PInterface>((ViewGroup*)this)) {
-        *pIID = EIID_ViewGroup;
-    } else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode RemoteViewsFrameLayout::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
+    return FrameLayout::constrctor(context);
 }
 
 ECode RemoteViewsFrameLayout::OnRemoteViewsLoaded(

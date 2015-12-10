@@ -3,4 +3,10 @@ module
 {
     merge("view/menu/MenuBuilder.car");
     merge("view/menu/MenuPresenter.car");
+    merge("view/BaseIWindow.car");
+    merge("view/IInputContext.car");
+    merge("view/IInputMethodClient.car");
+    merge("view/menu/BaseMenuPresenter.car");
+    merge("view/menu/MenuView.car");
+
 }
