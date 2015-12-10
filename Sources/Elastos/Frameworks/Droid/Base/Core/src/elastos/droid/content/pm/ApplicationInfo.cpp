@@ -837,6 +837,97 @@ ECode ApplicationInfo::SetVersionCode(
     return NOERROR;
 }
 
+ECode ApplicationInfo::SetScanSourceDir(
+    /* [in] */ const String& value)
+{
+    mScanSourceDir = value;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetScanPublicSourceDir(
+    /* [in] */ const String& value)
+{
+    mScanPublicSourceDir = value;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetSeinfo(
+    /* [in] */ const String& value)
+{
+    mSeinfo = value;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetSecondaryNativeLibraryDir(
+    /* [in] */ const String& value)
+{
+    mSecondaryNativeLibraryDir = value;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetNativeLibraryRootDir(
+    /* [in] */ const String& value)
+{
+    mNativeLibraryRootDir = value;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::SetNativeLibraryRootRequiresIsa(
+    /* [in] */ Boolean value)
+{
+    mNativeLibraryRootRequiresIsa = value;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetScanSourceDir(
+    /* [out */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mScanSourceDir;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetScanPublicSourceDir(
+    /* [out */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mScanPublicSourceDir;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetSeinfo(
+    /* [out */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mSeinfo;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetSecondaryNativeLibraryDir(
+    /* [out */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mSecondaryNativeLibraryDir;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetNativeLibraryRootDir(
+    /* [out */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mNativeLibraryRootDir;
+    return NOERROR;
+}
+
+ECode ApplicationInfo::GetNativeLibraryRootRequiresIsa(
+    /* [out */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mNativeLibraryRootRequiresIsa;
+    return NOERROR;
+}
+
+
 } // namespace Pm
 } // namespace Content
 } // namespace Droid

@@ -25,7 +25,7 @@ namespace Elastos {
 namespace Droid {
 namespace Opengl {
 
-ECode CGLES10::GlActiveTexture(
+ECode CGLES10::glActiveTexture(
     /* [in] */ Int32 texture)
 {
     glActiveTexture(
@@ -34,7 +34,7 @@ ECode CGLES10::GlActiveTexture(
     return NOERROR;
 }
 
-ECode CGLES10::GlAlphaFunc(
+ECode CGLES10::glAlphaFunc(
     /* [in] */ Int32 func,
     /* [in] */ Float ref)
 {
@@ -45,7 +45,7 @@ ECode CGLES10::GlAlphaFunc(
     return NOERROR;
 }
 
-ECode CGLES10::GlAlphaFuncx(
+ECode CGLES10::glAlphaFuncx(
     /* [in] */ Int32 func,
     /* [in] */ Int32 ref)
 {
@@ -56,7 +56,7 @@ ECode CGLES10::GlAlphaFuncx(
     return NOERROR;
 }
 
-ECode CGLES10::GlBindTexture(
+ECode CGLES10::glBindTexture(
     /* [in] */ Int32 target,
     /* [in] */ Int32 texture)
 {
@@ -67,7 +67,7 @@ ECode CGLES10::GlBindTexture(
     return NOERROR;
 }
 
-ECode CGLES10::GlBlendFunc(
+ECode CGLES10::glBlendFunc(
     /* [in] */ Int32 sfactor,
     /* [in] */ Int32 dfactor)
 {
@@ -78,7 +78,7 @@ ECode CGLES10::GlBlendFunc(
     return NOERROR;
 }
 
-ECode CGLES10::GlClear(
+ECode CGLES10::glClear(
     /* [in] */ Int32 mask)
 {
     glClear(
@@ -87,7 +87,7 @@ ECode CGLES10::GlClear(
     return NOERROR;
 }
 
-ECode CGLES10::GlClearColor(
+ECode CGLES10::glClearColor(
     /* [in] */ Float red,
     /* [in] */ Float green,
     /* [in] */ Float blue,
@@ -102,7 +102,7 @@ ECode CGLES10::GlClearColor(
     return NOERROR;
 }
 
-ECode CGLES10::GlClearColorx(
+ECode CGLES10::glClearColorx(
     /* [in] */ Int32 red,
     /* [in] */ Int32 green,
     /* [in] */ Int32 blue,
@@ -117,7 +117,7 @@ ECode CGLES10::GlClearColorx(
     return NOERROR;
 }
 
-ECode CGLES10::GlClearDepthf(
+ECode CGLES10::glClearDepthf(
     /* [in] */ Float depth)
 {
     glClearDepthf(
@@ -126,7 +126,7 @@ ECode CGLES10::GlClearDepthf(
     return NOERROR;
 }
 
-ECode CGLES10::GlClearDepthx(
+ECode CGLES10::glClearDepthx(
     /* [in] */ Int32 depth)
 {
     glClearDepthx(
@@ -135,7 +135,7 @@ ECode CGLES10::GlClearDepthx(
     return NOERROR;
 }
 
-ECode CGLES10::GlClearStencil(
+ECode CGLES10::glClearStencil(
     /* [in] */ Int32 s)
 {
     glClearStencil(
@@ -144,7 +144,7 @@ ECode CGLES10::GlClearStencil(
     return NOERROR;
 }
 
-ECode CGLES10::GlClientActiveTexture(
+ECode CGLES10::glClientActiveTexture(
     /* [in] */ Int32 texture)
 {
     glClientActiveTexture(
@@ -153,7 +153,7 @@ ECode CGLES10::GlClientActiveTexture(
     return NOERROR;
 }
 
-ECode CGLES10::GlColor4f(
+ECode CGLES10::glColor4f(
     /* [in] */ Float red,
     /* [in] */ Float green,
     /* [in] */ Float blue,
@@ -168,7 +168,7 @@ ECode CGLES10::GlColor4f(
     return NOERROR;
 }
 
-ECode CGLES10::GlColor4x(
+ECode CGLES10::glColor4x(
     /* [in] */ Int32 red,
     /* [in] */ Int32 green,
     /* [in] */ Int32 blue,
@@ -183,7 +183,7 @@ ECode CGLES10::GlColor4x(
     return NOERROR;
 }
 
-ECode CGLES10::GlColorMask(
+ECode CGLES10::glColorMask(
     /* [in] */ Boolean red,
     /* [in] */ Boolean green,
     /* [in] */ Boolean blue,
@@ -198,7 +198,7 @@ ECode CGLES10::GlColorMask(
     return NOERROR;
 }
 
-ECode CGLES10::GlColorPointer(
+ECode CGLES10::glColorPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -224,7 +224,7 @@ ECode CGLES10::GlColorPointer(
     return NOERROR;
 }
 
-ECode CGLES10::GlCompressedTexImage2D(
+ECode CGLES10::glCompressedTexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -257,7 +257,7 @@ ECode CGLES10::GlCompressedTexImage2D(
     return NOERROR;
 }
 
-ECode CGLES10::GlCompressedTexSubImage2D(
+ECode CGLES10::glCompressedTexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,
@@ -292,7 +292,7 @@ ECode CGLES10::GlCompressedTexSubImage2D(
     return NOERROR;
 }
 
-ECode CGLES10::GlCopyTexImage2D(
+ECode CGLES10::glCopyTexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -315,7 +315,7 @@ ECode CGLES10::GlCopyTexImage2D(
     return NOERROR;
 }
 
-ECode CGLES10::GlCopyTexSubImage2D(
+ECode CGLES10::glCopyTexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,
@@ -338,7 +338,7 @@ ECode CGLES10::GlCopyTexSubImage2D(
     return NOERROR;
 }
 
-ECode CGLES10::GlCullFace(
+ECode CGLES10::glCullFace(
     /* [in] */ Int32 mode)
 {
     glCullFace(
@@ -347,7 +347,7 @@ ECode CGLES10::GlCullFace(
     return NOERROR;
 }
 
-ECode CGLES10::GlDeleteTextures(
+ECode CGLES10::glDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* textures_ref,
     /* [in] */ Int32 offset)
@@ -379,7 +379,7 @@ ECode CGLES10::GlDeleteTextures(
     return NOERROR;
 }
 
-ECode CGLES10::GlDeleteTextures(
+ECode CGLES10::glDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* textures_buf)
 {
@@ -406,7 +406,7 @@ ECode CGLES10::GlDeleteTextures(
     return NOERROR;
 }
 
-ECode CGLES10::GlDepthFunc(
+ECode CGLES10::glDepthFunc(
     /* [in] */ Int32 func)
 {
     glDepthFunc(
@@ -415,7 +415,7 @@ ECode CGLES10::GlDepthFunc(
     return NOERROR;
 }
 
-ECode CGLES10::GlDepthMask(
+ECode CGLES10::glDepthMask(
     /* [in] */ Boolean flag)
 {
     glDepthMask(
@@ -424,7 +424,7 @@ ECode CGLES10::GlDepthMask(
     return NOERROR;
 }
 
-ECode CGLES10::GlDepthRangef(
+ECode CGLES10::glDepthRangef(
     /* [in] */ Float zNear,
     /* [in] */ Float zFar)
 {
@@ -435,7 +435,7 @@ ECode CGLES10::GlDepthRangef(
     return NOERROR;
 }
 
-ECode CGLES10::GlDepthRangex(
+ECode CGLES10::glDepthRangex(
     /* [in] */ Int32 zNear,
     /* [in] */ Int32 zFar)
 {
@@ -446,7 +446,7 @@ ECode CGLES10::GlDepthRangex(
     return NOERROR;
 }
 
-ECode CGLES10::GlDisable(
+ECode CGLES10::glDisable(
     /* [in] */ Int32 cap)
 {
     glDisable(
@@ -455,7 +455,7 @@ ECode CGLES10::GlDisable(
     return NOERROR;
 }
 
-ECode CGLES10::GlDisableClientState(
+ECode CGLES10::glDisableClientState(
     /* [in] */ Int32 array)
 {
     glDisableClientState(
@@ -464,7 +464,7 @@ ECode CGLES10::GlDisableClientState(
     return NOERROR;
 }
 
-ECode CGLES10::GlDrawArrays(
+ECode CGLES10::glDrawArrays(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 first,
     /* [in] */ Int32 count)
@@ -477,7 +477,7 @@ ECode CGLES10::GlDrawArrays(
     return NOERROR;
 }
 
-ECode CGLES10::GlDrawElements(
+ECode CGLES10::glDrawElements(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
@@ -508,7 +508,7 @@ ECode CGLES10::GlDrawElements(
     return NOERROR;
 }
 
-ECode CGLES10::GlEnable(
+ECode CGLES10::glEnable(
     /* [in] */ Int32 cap)
 {
     glEnable(
@@ -517,7 +517,7 @@ ECode CGLES10::GlEnable(
     return NOERROR;
 }
 
-ECode CGLES10::GlEnableClientState(
+ECode CGLES10::glEnableClientState(
     /* [in] */ Int32 array)
 {
     glEnableClientState(
@@ -526,19 +526,19 @@ ECode CGLES10::GlEnableClientState(
     return NOERROR;
 }
 
-ECode CGLES10::GlFinish()
+ECode CGLES10::glFinish()
 {
     glFinish();
     return NOERROR;
 }
 
-ECode CGLES10::GlFlush()
+ECode CGLES10::glFlush()
 {
     glFlush();
     return NOERROR;
 }
 
-ECode CGLES10::GlFogf(
+ECode CGLES10::glFogf(
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
 {
@@ -549,7 +549,7 @@ ECode CGLES10::GlFogf(
     return NOERROR;
 }
 
-ECode CGLES10::GlFogfv(
+ECode CGLES10::glFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
     /* [in] */ Int32 offset)
@@ -607,7 +607,7 @@ ECode CGLES10::GlFogfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlFogfv(
+ECode CGLES10::glFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
@@ -660,7 +660,7 @@ ECode CGLES10::GlFogfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlFogx(
+ECode CGLES10::glFogx(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -671,7 +671,7 @@ ECode CGLES10::GlFogx(
     return NOERROR;
 }
 
-ECode CGLES10::GlFogxv(
+ECode CGLES10::glFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -728,7 +728,7 @@ ECode CGLES10::GlFogxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlFogxv(
+ECode CGLES10::glFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -780,7 +780,7 @@ ECode CGLES10::GlFogxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlFrontFace(
+ECode CGLES10::glFrontFace(
     /* [in] */ Int32 mode)
 {
     glFrontFace(
@@ -789,7 +789,7 @@ ECode CGLES10::GlFrontFace(
     return NOERROR;
 }
 
-ECode CGLES10::GlFrustumf(
+ECode CGLES10::glFrustumf(
     /* [in] */ Float left,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
@@ -808,7 +808,7 @@ ECode CGLES10::GlFrustumf(
     return NOERROR;
 }
 
-ECode CGLES10::GlFrustumx(
+ECode CGLES10::glFrustumx(
     /* [in] */ Int32 left,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
@@ -827,7 +827,7 @@ ECode CGLES10::GlFrustumx(
     return NOERROR;
 }
 
-ECode CGLES10::GlGenTextures(
+ECode CGLES10::glGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* textures_ref,
     /* [in] */ Int32 offset)
@@ -859,7 +859,7 @@ ECode CGLES10::GlGenTextures(
     return NOERROR;
 }
 
-ECode CGLES10::GlGenTextures(
+ECode CGLES10::glGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* textures_buf)
 {
@@ -886,7 +886,7 @@ ECode CGLES10::GlGenTextures(
     return NOERROR;
 }
 
-ECode CGLES10::GlGetError(
+ECode CGLES10::glGetError(
     /* [out] */ Int32* error)
 {
     // TODO: Add your code here
@@ -894,7 +894,7 @@ ECode CGLES10::GlGetError(
     return *error;
 }
 
-ECode CGLES10::GlGetIntegerv(
+ECode CGLES10::glGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -1257,7 +1257,7 @@ ECode CGLES10::GlGetIntegerv(
     return NOERROR;
 }
 
-ECode CGLES10::GlGetIntegerv(
+ECode CGLES10::glGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -1616,7 +1616,7 @@ ECode CGLES10::GlGetIntegerv(
     return NOERROR;
 }
 
-ECode CGLES10::GlGetString(
+ECode CGLES10::glGetString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
@@ -1625,7 +1625,7 @@ ECode CGLES10::GlGetString(
     return NOERROR;
 }
 
-ECode CGLES10::GlHint(
+ECode CGLES10::glHint(
     /* [in] */ Int32 target,
     /* [in] */ Int32 mode)
 {
@@ -1636,7 +1636,7 @@ ECode CGLES10::GlHint(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightModelf(
+ECode CGLES10::glLightModelf(
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
 {
@@ -1647,7 +1647,7 @@ ECode CGLES10::GlLightModelf(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightModelfv(
+ECode CGLES10::glLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
     /* [in] */ Int32 offset)
@@ -1695,7 +1695,7 @@ ECode CGLES10::GlLightModelfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightModelfv(
+ECode CGLES10::glLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
@@ -1738,7 +1738,7 @@ ECode CGLES10::GlLightModelfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightModelx(
+ECode CGLES10::glLightModelx(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -1750,7 +1750,7 @@ ECode CGLES10::GlLightModelx(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightModelxv(
+ECode CGLES10::glLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -1798,7 +1798,7 @@ ECode CGLES10::GlLightModelxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightModelxv(
+ECode CGLES10::glLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -1841,7 +1841,7 @@ ECode CGLES10::GlLightModelxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightf(
+ECode CGLES10::glLightf(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -1854,7 +1854,7 @@ ECode CGLES10::GlLightf(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightfv(
+ECode CGLES10::glLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -1930,7 +1930,7 @@ ECode CGLES10::GlLightfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightfv(
+ECode CGLES10::glLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -2001,7 +2001,7 @@ ECode CGLES10::GlLightfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightx(
+ECode CGLES10::glLightx(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -2014,7 +2014,7 @@ ECode CGLES10::GlLightx(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightxv(
+ECode CGLES10::glLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -2090,7 +2090,7 @@ ECode CGLES10::GlLightxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightxv(
+ECode CGLES10::glLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2161,7 +2161,7 @@ ECode CGLES10::GlLightxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLineWidth(
+ECode CGLES10::glLineWidth(
     /* [in] */ Float width)
 {
     glLineWidth(
@@ -2170,7 +2170,7 @@ ECode CGLES10::GlLineWidth(
     return NOERROR;
 }
 
-ECode CGLES10::GlLineWidthx(
+ECode CGLES10::glLineWidthx(
     /* [in] */ Int32 width)
 {
     glLineWidthx(
@@ -2179,13 +2179,13 @@ ECode CGLES10::GlLineWidthx(
     return NOERROR;
 }
 
-ECode CGLES10::GlLoadIdentity()
+ECode CGLES10::glLoadIdentity()
 {
     glLoadIdentity();
     return NOERROR;
 }
 
-ECode CGLES10::GlLoadMatrixf(
+ECode CGLES10::glLoadMatrixf(
     /* [in] */ ArrayOf<Float>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -2209,7 +2209,7 @@ ECode CGLES10::GlLoadMatrixf(
     return NOERROR;
 }
 
-ECode CGLES10::GlLoadMatrixf(
+ECode CGLES10::glLoadMatrixf(
     /* [in] */ Elastos::IO::IFloatBuffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2230,7 +2230,7 @@ ECode CGLES10::GlLoadMatrixf(
     return NOERROR;
 }
 
-ECode CGLES10::GlLoadMatrixx(
+ECode CGLES10::glLoadMatrixx(
     /* [in] */ ArrayOf<Int32>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -2254,7 +2254,7 @@ ECode CGLES10::GlLoadMatrixx(
     return NOERROR;
 }
 
-ECode CGLES10::GlLoadMatrixx(
+ECode CGLES10::glLoadMatrixx(
     /* [in] */ Elastos::IO::IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2275,7 +2275,7 @@ ECode CGLES10::GlLoadMatrixx(
     return NOERROR;
 }
 
-ECode CGLES10::GlLogicOp(
+ECode CGLES10::glLogicOp(
     /* [in] */ Int32 opcode)
 {
     glLogicOp(
@@ -2284,7 +2284,7 @@ ECode CGLES10::GlLogicOp(
     return NOERROR;
 }
 
-ECode CGLES10::GlMaterialf(
+ECode CGLES10::glMaterialf(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -2297,7 +2297,7 @@ ECode CGLES10::GlMaterialf(
     return NOERROR;
 }
 
-ECode CGLES10::GlMaterialfv(
+ECode CGLES10::glMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -2359,7 +2359,7 @@ ECode CGLES10::GlMaterialfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlMaterialfv(
+ECode CGLES10::glMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -2416,7 +2416,7 @@ ECode CGLES10::GlMaterialfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlMaterialx(
+ECode CGLES10::glMaterialx(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -2429,7 +2429,7 @@ ECode CGLES10::GlMaterialx(
     return NOERROR;
 }
 
-ECode CGLES10::GlMaterialxv(
+ECode CGLES10::glMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -2492,7 +2492,7 @@ ECode CGLES10::GlMaterialxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlMaterialxv(
+ECode CGLES10::glMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2549,7 +2549,7 @@ ECode CGLES10::GlMaterialxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlMatrixMode(
+ECode CGLES10::glMatrixMode(
     /* [in] */ Int32 mode)
 {
     glMatrixMode(
@@ -2558,7 +2558,7 @@ ECode CGLES10::GlMatrixMode(
     return NOERROR;
 }
 
-ECode CGLES10::GlMultMatrixf(
+ECode CGLES10::glMultMatrixf(
     /* [in] */ ArrayOf<Float>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -2582,7 +2582,7 @@ ECode CGLES10::GlMultMatrixf(
     return NOERROR;
 }
 
-ECode CGLES10::GlMultMatrixf(
+ECode CGLES10::glMultMatrixf(
     /* [in] */ Elastos::IO::IFloatBuffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2604,7 +2604,7 @@ ECode CGLES10::GlMultMatrixf(
     return NOERROR;
 }
 
-ECode CGLES10::GlMultMatrixx(
+ECode CGLES10::glMultMatrixx(
     /* [in] */ ArrayOf<Int32>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -2628,7 +2628,7 @@ ECode CGLES10::GlMultMatrixx(
     return NOERROR;
 }
 
-ECode CGLES10::GlMultMatrixx(
+ECode CGLES10::glMultMatrixx(
     /* [in] */ Elastos::IO::IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2650,7 +2650,7 @@ ECode CGLES10::GlMultMatrixx(
     return NOERROR;
 }
 
-ECode CGLES10::GlMultiTexCoord4f(
+ECode CGLES10::glMultiTexCoord4f(
     /* [in] */ Int32 target,
     /* [in] */ Float s,
     /* [in] */ Float t,
@@ -2667,7 +2667,7 @@ ECode CGLES10::GlMultiTexCoord4f(
     return NOERROR;
 }
 
-ECode CGLES10::GlMultiTexCoord4x(
+ECode CGLES10::glMultiTexCoord4x(
     /* [in] */ Int32 target,
     /* [in] */ Int32 s,
     /* [in] */ Int32 t,
@@ -2684,7 +2684,7 @@ ECode CGLES10::GlMultiTexCoord4x(
     return NOERROR;
 }
 
-ECode CGLES10::GlNormal3f(
+ECode CGLES10::glNormal3f(
     /* [in] */ Float nx,
     /* [in] */ Float ny,
     /* [in] */ Float nz)
@@ -2697,7 +2697,7 @@ ECode CGLES10::GlNormal3f(
     return NOERROR;
 }
 
-ECode CGLES10::GlNormal3x(
+ECode CGLES10::glNormal3x(
     /* [in] */ Int32 nx,
     /* [in] */ Int32 ny,
     /* [in] */ Int32 nz)
@@ -2710,7 +2710,7 @@ ECode CGLES10::GlNormal3x(
     return NOERROR;
 }
 
-ECode CGLES10::GlNormalPointerBounds(
+ECode CGLES10::glNormalPointerBounds(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ Elastos::IO::IBuffer* pointer_buf,
@@ -2735,7 +2735,7 @@ ECode CGLES10::GlNormalPointerBounds(
     return NOERROR;
 }
 
-ECode CGLES10::GlNormalPointer(
+ECode CGLES10::glNormalPointer(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ Elastos::IO::IBuffer* pointer_buf)
@@ -2758,7 +2758,7 @@ ECode CGLES10::GlNormalPointer(
     return NOERROR;
 }
 
-ECode CGLES10::GlOrthof(
+ECode CGLES10::glOrthof(
     /* [in] */ Float left,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
@@ -2777,7 +2777,7 @@ ECode CGLES10::GlOrthof(
     return NOERROR;
 }
 
-ECode CGLES10::GlOrthox(
+ECode CGLES10::glOrthox(
     /* [in] */ Int32 left,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
@@ -2796,7 +2796,7 @@ ECode CGLES10::GlOrthox(
     return NOERROR;
 }
 
-ECode CGLES10::GlPixelStorei(
+ECode CGLES10::glPixelStorei(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -2807,7 +2807,7 @@ ECode CGLES10::GlPixelStorei(
     return NOERROR;
 }
 
-ECode CGLES10::GlPointSize(
+ECode CGLES10::glPointSize(
     /* [in] */ Float size)
 {
     glPointSize(
@@ -2816,7 +2816,7 @@ ECode CGLES10::GlPointSize(
     return NOERROR;
 }
 
-ECode CGLES10::GlPointSizex(
+ECode CGLES10::glPointSizex(
     /* [in] */ Int32 size)
 {
     glPointSizex(
@@ -2825,7 +2825,7 @@ ECode CGLES10::GlPointSizex(
     return NOERROR;
 }
 
-ECode CGLES10::GlPolygonOffset(
+ECode CGLES10::glPolygonOffset(
     /* [in] */ Float factor,
     /* [in] */ Float units)
 {
@@ -2836,7 +2836,7 @@ ECode CGLES10::GlPolygonOffset(
     return NOERROR;
 }
 
-ECode CGLES10::GlPolygonOffsetx(
+ECode CGLES10::glPolygonOffsetx(
     /* [in] */ Int32 factor,
     /* [in] */ Int32 units)
 {
@@ -2847,19 +2847,19 @@ ECode CGLES10::GlPolygonOffsetx(
     return NOERROR;
 }
 
-ECode CGLES10::GlPopMatrix()
+ECode CGLES10::glPopMatrix()
 {
     glPopMatrix();
     return NOERROR;
 }
 
-ECode CGLES10::GlPushMatrix()
+ECode CGLES10::glPushMatrix()
 {
     glPushMatrix();
     return NOERROR;
 }
 
-ECode CGLES10::GlReadPixels(
+ECode CGLES10::glReadPixels(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -2892,7 +2892,7 @@ ECode CGLES10::GlReadPixels(
     return NOERROR;
 }
 
-ECode CGLES10::GlRotatef(
+ECode CGLES10::glRotatef(
     /* [in] */ Float angle,
     /* [in] */ Float x,
     /* [in] */ Float y,
@@ -2907,7 +2907,7 @@ ECode CGLES10::GlRotatef(
     return NOERROR;
 }
 
-ECode CGLES10::GlRotatex(
+ECode CGLES10::glRotatex(
     /* [in] */ Int32 angle,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
@@ -2922,7 +2922,7 @@ ECode CGLES10::GlRotatex(
     return NOERROR;
 }
 
-ECode CGLES10::GlSampleCoverage(
+ECode CGLES10::glSampleCoverage(
     /* [in] */ Float value,
     /* [in] */ Boolean invert)
 {
@@ -2933,7 +2933,7 @@ ECode CGLES10::GlSampleCoverage(
     return NOERROR;
 }
 
-ECode CGLES10::GlSampleCoveragex(
+ECode CGLES10::glSampleCoveragex(
     /* [in] */ Int32 value,
     /* [in] */ Boolean invert)
 {
@@ -2944,7 +2944,7 @@ ECode CGLES10::GlSampleCoveragex(
     return NOERROR;
 }
 
-ECode CGLES10::GlScalef(
+ECode CGLES10::glScalef(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z)
@@ -2957,7 +2957,7 @@ ECode CGLES10::GlScalef(
     return NOERROR;
 }
 
-ECode CGLES10::GlScalex(
+ECode CGLES10::glScalex(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z)
@@ -2970,7 +2970,7 @@ ECode CGLES10::GlScalex(
     return NOERROR;
 }
 
-ECode CGLES10::GlScissor(
+ECode CGLES10::glScissor(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -2985,7 +2985,7 @@ ECode CGLES10::GlScissor(
     return NOERROR;
 }
 
-ECode CGLES10::GlShadeModel(
+ECode CGLES10::glShadeModel(
     /* [in] */ Int32 mode)
 {
     glShadeModel(
@@ -2994,7 +2994,7 @@ ECode CGLES10::GlShadeModel(
     return NOERROR;
 }
 
-ECode CGLES10::GlStencilFunc(
+ECode CGLES10::glStencilFunc(
     /* [in] */ Int32 func,
     /* [in] */ Int32 ref,
     /* [in] */ Int32 mask)
@@ -3007,7 +3007,7 @@ ECode CGLES10::GlStencilFunc(
     return NOERROR;
 }
 
-ECode CGLES10::GlStencilMask(
+ECode CGLES10::glStencilMask(
     /* [in] */ Int32 mask)
 {
     glStencilMask(
@@ -3016,7 +3016,7 @@ ECode CGLES10::GlStencilMask(
     return NOERROR;
 }
 
-ECode CGLES10::GlStencilOp(
+ECode CGLES10::glStencilOp(
     /* [in] */ Int32 fail,
     /* [in] */ Int32 zfail,
     /* [in] */ Int32 zpass)
@@ -3029,7 +3029,7 @@ ECode CGLES10::GlStencilOp(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexCoordPointerBounds(
+ECode CGLES10::glTexCoordPointerBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3056,7 +3056,7 @@ ECode CGLES10::GlTexCoordPointerBounds(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexCoordPointer(
+ECode CGLES10::glTexCoordPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3085,7 +3085,7 @@ ECode CGLES10::GlTexCoordPointer(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexEnvf(
+ECode CGLES10::glTexEnvf(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -3098,7 +3098,7 @@ ECode CGLES10::GlTexEnvf(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexEnvfv(
+ECode CGLES10::glTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -3154,7 +3154,7 @@ ECode CGLES10::GlTexEnvfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexEnvfv(
+ECode CGLES10::glTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -3205,7 +3205,7 @@ ECode CGLES10::GlTexEnvfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexEnvx(
+ECode CGLES10::glTexEnvx(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -3218,7 +3218,7 @@ ECode CGLES10::GlTexEnvx(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexEnvxv(
+ECode CGLES10::glTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -3275,7 +3275,7 @@ ECode CGLES10::GlTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexEnvxv(
+ECode CGLES10::glTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -3327,7 +3327,7 @@ ECode CGLES10::GlTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexImage2D(
+ECode CGLES10::glTexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -3366,7 +3366,7 @@ ECode CGLES10::GlTexImage2D(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexParameterf(
+ECode CGLES10::glTexParameterf(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -3379,7 +3379,7 @@ ECode CGLES10::GlTexParameterf(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexParameterx(
+ECode CGLES10::glTexParameterx(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -3392,7 +3392,7 @@ ECode CGLES10::GlTexParameterx(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexSubImage2D(
+ECode CGLES10::glTexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,
@@ -3431,7 +3431,7 @@ ECode CGLES10::GlTexSubImage2D(
     return NOERROR;
 }
 
-ECode CGLES10::GlTranslatef(
+ECode CGLES10::glTranslatef(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z)
@@ -3444,7 +3444,7 @@ ECode CGLES10::GlTranslatef(
     return NOERROR;
 }
 
-ECode CGLES10::GlTranslatex(
+ECode CGLES10::glTranslatex(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z)
@@ -3457,7 +3457,7 @@ ECode CGLES10::GlTranslatex(
     return NOERROR;
 }
 
-ECode CGLES10::GlVertexPointerBounds(
+ECode CGLES10::glVertexPointerBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3484,7 +3484,7 @@ ECode CGLES10::GlVertexPointerBounds(
     return NOERROR;
 }
 
-ECode CGLES10::GlVertexPointer(
+ECode CGLES10::glVertexPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3512,7 +3512,7 @@ ECode CGLES10::GlVertexPointer(
     return NOERROR;
 }
 
-ECode CGLES10::GlViewport(
+ECode CGLES10::glViewport(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -3527,7 +3527,7 @@ ECode CGLES10::GlViewport(
     return NOERROR;
 }
 
-ECode CGLES10::GlColorPointerBounds(
+ECode CGLES10::glColorPointerBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,

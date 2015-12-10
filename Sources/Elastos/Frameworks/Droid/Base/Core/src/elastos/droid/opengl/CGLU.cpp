@@ -10,7 +10,7 @@ namespace Opengl {
 AutoPtr<ArrayOf<Float> > CGLU::sScratch = ArrayOf<Float>::Alloc(32);
 Mutex CGLU::sLock;
 
-ECode CGLU::GluErrorString(
+ECode CGLU::gluErrorString(
     /* [in] */ Int32 error,
     /* [out] */ String* str)
 {
@@ -35,7 +35,7 @@ ECode CGLU::GluErrorString(
     return NOERROR;
 }
 
-ECode CGLU::GluLookAt(
+ECode CGLU::gluLookAt(
     /* [in] */ IGL10* gl,
     /* [in] */ Float eyeX,
     /* [in] */ Float eyeY,
@@ -58,7 +58,7 @@ ECode CGLU::GluLookAt(
     return NOERROR;
 }
 
-ECode CGLU::GluOrtho2D(
+ECode CGLU::gluOrtho2D(
     /* [in] */ IGL10* gl,
     /* [in] */ Float left,
     /* [in] */ Float right,
@@ -69,7 +69,7 @@ ECode CGLU::GluOrtho2D(
     return NOERROR;
 }
 
-ECode CGLU::GluPerspective(
+ECode CGLU::gluPerspective(
     /* [in] */ IGL10* gl,
     /* [in] */ Float fovy,
     /* [in] */ Float aspect,
@@ -84,7 +84,7 @@ ECode CGLU::GluPerspective(
     return NOERROR;
 }
 
-ECode CGLU::GluProject(
+ECode CGLU::gluProject(
     /* [in] */ Float objX,
     /* [in] */ Float objY,
     /* [in] */ Float objZ,
@@ -139,7 +139,7 @@ ECode CGLU::GluProject(
 }
 
 
-ECode CGLU::GluUnProject(
+ECode CGLU::gluUnProject(
     /* [in] */ Float winX,
     /* [in] */ Float winY,
     /* [in] */ Float winZ,

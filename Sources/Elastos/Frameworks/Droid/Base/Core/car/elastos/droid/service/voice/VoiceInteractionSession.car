@@ -1,12 +1,16 @@
 module
 {
-    using interface Elastos.Core.ICharSequence;
-
     interface Elastos.Droid.App.IDialog;
+    interface Elastos.Droid.Internal.App.IIVoiceInteractionManagerService;
+    interface Elastos.Droid.Internal.App.IIVoiceInteractorCallback;
+    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IInternalInsetsInfo;
+    interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.ILayoutInflater;
+    interface Elastos.Droid.View.IView;
+    using interface Elastos.Core.ICharSequence;
 
     namespace Elastos {
     namespace Droid {
@@ -29,9 +33,12 @@ module
             [in] IBundle* result);
 
         SendCancelResult();
+
+        FinishRequest();
     }
 
     interface IVoiceInteractionSessionCaller {
+
     }
 
     /**
@@ -56,18 +63,8 @@ module
          * {@link #touchableRegion} can be touched.
          */
         const Int32 TOUCHABLE_INSETS_REGION = 3;
-
-        /**
-         * Determine which area of the window is touchable by the user.  May
-         * be one of: {@link #TOUCHABLE_INSETS_FRAME},
-         * {@link #TOUCHABLE_INSETS_CONTENT}, or {@link #TOUCHABLE_INSETS_REGION}.
-         */
-        GetTouchableInsets(
-            [out] Int32* insets);
-
-        SetTouchableInsets(
-            [in] Int32 insets);
     }
+
     /**
      * An active interaction session, started by a {@link VoiceInteractionService}.
      *
@@ -76,6 +73,24 @@ module
      */
      [local, deprecated]
     interface IVoiceInteractionSession {
+
+        NewRequest(
+            [in] IIVoiceInteractorCallback* cb,
+            [out] IVoiceInteractionSessionRequest** request);
+
+        RemoveRequest(
+            [in] IBinder* reqInterface,
+            [out] IVoiceInteractionSessionRequest** request);
+
+        DoCreate(
+            [in] IIVoiceInteractionManagerService* service,
+            [in] IBinder* token,
+            [in] IBundle* args);
+
+        DoDestroy();
+
+        InitViews();
+
         /**
          * @hide
          * @SystemApi
@@ -172,6 +187,43 @@ module
 
         /**
          * @hide
+         */
+        // @SystemApi
+        OnKeyDown(
+            [in] Int32 keyCode,
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         */
+        // @SystemApi
+        OnKeyLongPress(
+            [in] Int32 keyCode,
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         */
+        // @SystemApi
+        OnKeyUp(
+            [in] Int32 keyCode,
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         */
+        // @SystemApi
+        OnKeyMultiple(
+            [in] Int32 keyCode,
+            [in] Int32 count,
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * @hide
          * @SystemApi
          */
         OnBackPressed();
@@ -240,7 +292,7 @@ module
          */
         OnGetSupportedCommands(
             [in] IVoiceInteractionSessionCaller* caller,
-            [in] ArrayOf<String> commands,
+            [in] ArrayOf<String>* commands,
             [out, callee] ArrayOf<Boolean>* rst);
 
         /**

@@ -11,7 +11,7 @@ module
     /**
      * @hide
      */
-    interface IWallpaperConnection {
+    interface IIWallpaperConnection {
         AttachEngine(
             [in] IIWallpaperEngine* engine);
 

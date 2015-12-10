@@ -7,24 +7,22 @@
 #include "elastos/droid/widget/BaseAdapter.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::IComparable;
-using Elastos::Utility::IList;
+using Elastos::Droid::Graphics::Drawable:: IDrawable;
 using Elastos::Droid::Preference::IPreferenceOnPreferenceChangeListener;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Widget::BaseAdapter;
 using Elastos::Droid::Widget::IBaseAdapter;
-using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::Graphics::Drawable:: IDrawable;
+using Elastos::Core::IComparable;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
 
 class PreferenceGroupAdapter
-    // : BaseAdapter
-    : public Object
-    // , public IBaseAdapter
+    : BaseAdapter
     , public IPreferenceOnPreferenceChangeInternalListener
     , public IPreferenceGroupAdapter
 {
@@ -34,7 +32,6 @@ private:
         , public IComparable
         , public IPreferenceLayout
     {
-        friend class PreferenceGroupAdapter;
     public:
         CAR_INTERFACE_DECL()
 
@@ -96,6 +93,10 @@ public:
     CARAPI GetItem(
         /* [in] */ Int32 position,
         /* [out] */ IPreference** item);
+
+    CARAPI GetItem(
+        /* [in] */ Int32 position,
+        /* [out] */ IInterface** item);
 
     CARAPI GetItemId(
         /* [in] */ Int32 position,

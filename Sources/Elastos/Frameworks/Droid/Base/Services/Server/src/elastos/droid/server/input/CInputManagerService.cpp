@@ -317,7 +317,7 @@ void CInputManagerService::MyKeyboardLayoutVisitorEx3::VisitKeyboardLayout(
     CInputStreamReader::New(inputStream, (IInputStreamReader**)&reader);
     AutoPtr<IStreams> stream;
     CStreams::AcquireSingleton((IStreams**)&stream);
-    stream->ReadFullyFromReader(reader, &((*mLayouts)[1]));
+    stream->ReadFully(reader, &((*mLayouts)[1]));
 }
 
 CAR_INTERFACE_IMPL(CInputManagerService::InputFilterHost, IInputFilterHost);

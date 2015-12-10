@@ -15,7 +15,7 @@ namespace Utility {
  * the equivalent {@code Math} functions, which should be used in preference
  * to these.
  */
-class FloatMath
+class ECO_PUBLIC FloatMath
 {
 public:
     /**
@@ -101,8 +101,8 @@ public:
         /* [in] */ Float y);
 
 private:
-    FloatMath();
-    FloatMath(const FloatMath& other);
+    ECO_LOCAL FloatMath();
+    ECO_LOCAL FloatMath(const FloatMath& other);
 };
 
 } // namespace Utility

@@ -15,6 +15,7 @@ using Elastos::Droid::Content::ISharedPreferencesEditor;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -220,7 +221,7 @@ private:
     CARAPI Init(
         /* [in] */ IContext* context);
 
-    CARAPI_(AutoPtr<List<AutoPtr<IResolveInfo> > >) QueryIntentActivities(
+    CARAPI_(AutoPtr<IList>) QueryIntentActivities(
         /* [in] */ IIntent* queryIntent);
 
     static CARAPI_(String) GetDefaultSharedPreferencesName(

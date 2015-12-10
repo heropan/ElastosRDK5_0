@@ -10,19 +10,21 @@
 using Elastos::Core::CString;
 //using Elastos::Droid::App::CAlertDialogBuilder;
 using Elastos::Droid::App::IAlertDialog;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnDismissListener;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::R;
+using Elastos::Droid::Preference::IDialogPreferenceSavedState;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::View::IAbsSavedState;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::R;
 
 namespace Elastos {
 namespace Droid {
@@ -35,7 +37,7 @@ DialogPreference::DialogPreference()
     , mWhichButtonClicked(0)
 {}
 
-ECode DialogPreference::Init(
+ECode DialogPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -74,25 +76,16 @@ ECode DialogPreference::Init(
 ECode DialogPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    return Init(context, attrs, defStyleAttr, defStyleRes);
-}
-
-ECode DialogPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    return Init(context, attrs, defStyle, 0);
+    return constructor(context, attrs, defStyle, 0);
 }
 
 ECode DialogPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return Init(context, attrs, R::attr::dialogPreferenceStyle, 0);
+    return constructor(context, attrs, R::attr::dialogPreferenceStyle, 0);
 }
 
 ECode DialogPreference::SetDialogTitle(
@@ -271,7 +264,6 @@ ECode DialogPreference::ShowDialog(
 
     mWhichButtonClicked = IDialogInterface::BUTTON_NEGATIVE;
 
-    assert(0);
     // mBuilder = NULL;
     // CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&mBuilder);
     // mBuilder->SetTitle(mDialogTitle);
@@ -340,11 +332,9 @@ ECode DialogPreference::OnCreateDialogView(
 
     AutoPtr<IContext> context;
     mBuilder->GetContext((IContext**)&context);
-    assert(0);
-    // AutoPtr<ILayoutInflater> inflater;
-    // LayoutInflater::From(context, (ILayoutInflater**)&inflater);
-    // return inflater->Inflate(mDialogLayoutResId, NULL, view);
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<ILayoutInflater> inflater;
+    LayoutInflater::From(context, (ILayoutInflater**)&inflater);
+    return inflater->Inflate(mDialogLayoutResId, NULL, view);
 }
 
 ECode DialogPreference::OnBindDialogView(
@@ -358,14 +348,14 @@ ECode DialogPreference::OnBindDialogView(
         GetDialogMessage((ICharSequence**)&message);
         Int32 newVisibility = IView::GONE;
         assert(0);
-        // if (!TextUtils::IsEmpty(message)) {
-        //     AutoPtr<ITextView> textView = ITextView::Probe(dialogMessageView);
-        //     if (textView != NULL) {
-        //         textView->SetText(message);
-        //     }
+        if (!TextUtils::IsEmpty(message)) {
+            AutoPtr<ITextView> textView = ITextView::Probe(dialogMessageView);
+            if (textView != NULL) {
+                textView->SetText(message);
+            }
 
-        //     newVisibility = IView::VISIBLE;
-        // }
+            newVisibility = IView::VISIBLE;
+        }
 
         Int32 visibility;
         if (dialogMessageView->GetVisibility(&visibility), visibility != newVisibility) {
@@ -453,17 +443,16 @@ ECode DialogPreference::OnRestoreInstanceState(
         Preference::OnRestoreInstanceState(state);
         return NOERROR;
     }
-    assert(0);
-    // AutoPtr<IDialogPreferenceSavedState> myState = IDialogPreferenceSavedState::Probe(state);
-    // AutoPtr<IParcelable> superState;
-    // myState->GetSuperState((IParcelable**)&superState);
-    // Preference::OnRestoreInstanceState(superState);
-    // Boolean isDialogShowing;
-    // if (myState->IsDialogShowing(&isDialogShowing), isDialogShowing) {
-    //     AutoPtr<IBundle> bundle;
-    //     myState->GetDialogBundle((IBundle**)&bundle);
-    //     ShowDialog(bundle);
-    // }
+    AutoPtr<IDialogPreferenceSavedState> myState = IDialogPreferenceSavedState::Probe(state);
+    AutoPtr<IParcelable> superState;
+    IAbsSavedState::Probe(myState)->GetSuperState((IParcelable**)&superState);
+    Preference::OnRestoreInstanceState(superState);
+    Boolean isDialogShowing;
+    if (myState->GetIsDialogShowing(&isDialogShowing), isDialogShowing) {
+        AutoPtr<IBundle> bundle;
+        myState->GetDialogBundle((IBundle**)&bundle);
+        ShowDialog(bundle);
+    }
     return NOERROR;
 }
 

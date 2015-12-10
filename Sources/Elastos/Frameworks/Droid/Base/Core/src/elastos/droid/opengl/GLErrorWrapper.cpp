@@ -25,14 +25,14 @@ GLErrorWrapper::GLErrorWrapper(
     mCheckThread = (configFlags & IGLDebugHelper::_CONFIG_CHECK_THREAD) != 0;
 }
 
-ECode GLErrorWrapper::GlActiveTexture(
+ECode GLErrorWrapper::glActiveTexture(
     /* [in] */ Int32 texture)
 {
     GLCHECK(mgl, GlActiveTexture, texture)
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlAlphaFunc(
+ECode GLErrorWrapper::glAlphaFunc(
     /* [in] */ Int32 func,
     /* [in] */ Float ref)
 {
@@ -40,7 +40,7 @@ ECode GLErrorWrapper::GlAlphaFunc(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlAlphaFuncx(
+ECode GLErrorWrapper::glAlphaFuncx(
     /* [in] */ Int32 func,
     /* [in] */ Int32 ref)
 {
@@ -48,7 +48,7 @@ ECode GLErrorWrapper::GlAlphaFuncx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBlendFunc(
+ECode GLErrorWrapper::glBlendFunc(
     /* [in] */ Int32 sfactor,
     /* [in] */ Int32 dfactor)
 {
@@ -56,14 +56,14 @@ ECode GLErrorWrapper::GlBlendFunc(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClear(
+ECode GLErrorWrapper::glClear(
     /* [in] */ Int32 mask)
 {
     GLCHECK(mgl, GlClear, mask)
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClearColor(
+ECode GLErrorWrapper::glClearColor(
     /* [in] */ Float red,
     /* [in] */ Float green,
     /* [in] */ Float blue,
@@ -73,7 +73,7 @@ ECode GLErrorWrapper::GlClearColor(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClearColorx(
+ECode GLErrorWrapper::glClearColorx(
     /* [in] */ Int32 red,
     /* [in] */ Int32 green,
     /* [in] */ Int32 blue,
@@ -83,35 +83,35 @@ ECode GLErrorWrapper::GlClearColorx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClearDepthf(
+ECode GLErrorWrapper::glClearDepthf(
     /* [in] */ Float depth)
 {
     GLCHECK(mgl, GlClearDepthf, depth)
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClearDepthx(
+ECode GLErrorWrapper::glClearDepthx(
     /* [in] */ Int32 depth)
 {
     GLCHECK(mgl, GlClearDepthx, depth)
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClearStencil(
+ECode GLErrorWrapper::glClearStencil(
     /* [in] */ Int32 s)
 {
     GLCHECK(mgl, GlClearStencil, s)
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClientActiveTexture(
+ECode GLErrorWrapper::glClientActiveTexture(
     /* [in] */ Int32 texture)
 {
     GLCHECK(mgl, GlClientActiveTexture, texture)
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlColor4f(
+ECode GLErrorWrapper::glColor4f(
     /* [in] */ Float red,
     /* [in] */ Float green,
     /* [in] */ Float blue,
@@ -121,7 +121,7 @@ ECode GLErrorWrapper::GlColor4f(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlColor4x(
+ECode GLErrorWrapper::glColor4x(
     /* [in] */ Int32 red,
     /* [in] */ Int32 green,
     /* [in] */ Int32 blue,
@@ -131,7 +131,7 @@ ECode GLErrorWrapper::GlColor4x(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlColorMask(
+ECode GLErrorWrapper::glColorMask(
     /* [in] */ Boolean red,
     /* [in] */ Boolean green,
     /* [in] */ Boolean blue,
@@ -141,7 +141,7 @@ ECode GLErrorWrapper::GlColorMask(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlColorPointer(
+ECode GLErrorWrapper::glColorPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -151,7 +151,7 @@ ECode GLErrorWrapper::GlColorPointer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlCompressedTexSubImage2D(
+ECode GLErrorWrapper::glCompressedTexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,
@@ -166,7 +166,7 @@ ECode GLErrorWrapper::GlCompressedTexSubImage2D(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlCopyTexSubImage2D(
+ECode GLErrorWrapper::glCopyTexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,
@@ -180,14 +180,14 @@ ECode GLErrorWrapper::GlCopyTexSubImage2D(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlCullFace(
+ECode GLErrorWrapper::glCullFace(
     /* [in] */ Int32 mode)
 {
     GLCHECK(mgl, GlCullFace, mode)
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDeleteTextures(
+ECode GLErrorWrapper::glDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* textures,
     /* [in] */ Int32 offset)
@@ -196,7 +196,7 @@ ECode GLErrorWrapper::GlDeleteTextures(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDeleteTextures(
+ECode GLErrorWrapper::glDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures)
 {
@@ -204,21 +204,21 @@ ECode GLErrorWrapper::GlDeleteTextures(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDepthFunc(
+ECode GLErrorWrapper::glDepthFunc(
     /* [in] */ Int32 func)
 {
     GLCHECK(mgl, GlDepthFunc, func)
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDepthMask(
+ECode GLErrorWrapper::glDepthMask(
     /* [in] */ Boolean flag)
 {
     GLCHECK(mgl, GlDepthMask, flag)
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDepthRangef(
+ECode GLErrorWrapper::glDepthRangef(
     /* [in] */ Float zNear,
     /* [in] */ Float zFar)
 {
@@ -226,7 +226,7 @@ ECode GLErrorWrapper::GlDepthRangef(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDepthRangex(
+ECode GLErrorWrapper::glDepthRangex(
     /* [in] */ Int32 zNear,
     /* [in] */ Int32 zFar)
 {
@@ -234,21 +234,21 @@ ECode GLErrorWrapper::GlDepthRangex(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDisable(
+ECode GLErrorWrapper::glDisable(
     /* [in] */ Int32 cap)
 {
     GLCHECK(mgl, GlDisable, cap);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDisableClientState(
+ECode GLErrorWrapper::glDisableClientState(
     /* [in] */ Int32 array)
 {
     GLCHECK(mgl, GlDisableClientState, array);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawArrays(
+ECode GLErrorWrapper::glDrawArrays(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 first,
     /* [in] */ Int32 count)
@@ -257,7 +257,7 @@ ECode GLErrorWrapper::GlDrawArrays(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawElements(
+ECode GLErrorWrapper::glDrawElements(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
@@ -267,19 +267,19 @@ ECode GLErrorWrapper::GlDrawElements(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFinish()
+ECode GLErrorWrapper::glFinish()
 {
     GLCHECK(mgl, GlFinish);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFlush()
+ECode GLErrorWrapper::glFlush()
 {
     GLCHECK(mgl, GlFlush);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFogf(
+ECode GLErrorWrapper::glFogf(
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
 {
@@ -287,7 +287,7 @@ ECode GLErrorWrapper::GlFogf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFogfv(
+ECode GLErrorWrapper::glFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
     /* [in] */ Int32 offset)
@@ -296,7 +296,7 @@ ECode GLErrorWrapper::GlFogfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFogfv(
+ECode GLErrorWrapper::glFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
 {
@@ -304,7 +304,7 @@ ECode GLErrorWrapper::GlFogfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFogx(
+ECode GLErrorWrapper::glFogx(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -312,7 +312,7 @@ ECode GLErrorWrapper::GlFogx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFogxv(
+ECode GLErrorWrapper::glFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
     /* [in] */ Int32 offset)
@@ -321,7 +321,7 @@ ECode GLErrorWrapper::GlFogxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFogxv(
+ECode GLErrorWrapper::glFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -329,14 +329,14 @@ ECode GLErrorWrapper::GlFogxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFrontFace(
+ECode GLErrorWrapper::glFrontFace(
     /* [in] */ Int32 mode)
 {
     GLCHECK(mgl, GlFrontFace, mode);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFrustumf(
+ECode GLErrorWrapper::glFrustumf(
     /* [in] */ Float left,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
@@ -348,7 +348,7 @@ ECode GLErrorWrapper::GlFrustumf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFrustumx(
+ECode GLErrorWrapper::glFrustumx(
     /* [in] */ Int32 left,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
@@ -360,7 +360,7 @@ ECode GLErrorWrapper::GlFrustumx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGenTextures(
+ECode GLErrorWrapper::glGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* textures,
     /* [in] */ Int32 offset)
@@ -369,7 +369,7 @@ ECode GLErrorWrapper::GlGenTextures(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGenTextures(
+ECode GLErrorWrapper::glGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures)
 {
@@ -377,14 +377,14 @@ ECode GLErrorWrapper::GlGenTextures(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetError(
+ECode GLErrorWrapper::glGetError(
     /* [out] */ Int32* error)
 {
     GLCHECK(mgl, GlGetError, error);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetString(
+ECode GLErrorWrapper::glGetString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
@@ -392,7 +392,7 @@ ECode GLErrorWrapper::GlGetString(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlHint(
+ECode GLErrorWrapper::glHint(
     /* [in] */ Int32 target,
     /* [in] */ Int32 mode)
 {
@@ -400,7 +400,7 @@ ECode GLErrorWrapper::GlHint(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightModelf(
+ECode GLErrorWrapper::glLightModelf(
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
 {
@@ -408,7 +408,7 @@ ECode GLErrorWrapper::GlLightModelf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightModelfv(
+ECode GLErrorWrapper::glLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
     /* [in] */ Int32 offset)
@@ -417,7 +417,7 @@ ECode GLErrorWrapper::GlLightModelfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightModelfv(
+ECode GLErrorWrapper::glLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
 {
@@ -425,7 +425,7 @@ ECode GLErrorWrapper::GlLightModelfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightModelx(
+ECode GLErrorWrapper::glLightModelx(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -433,7 +433,7 @@ ECode GLErrorWrapper::GlLightModelx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightModelxv(
+ECode GLErrorWrapper::glLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
     /* [in] */ Int32 offset)
@@ -442,7 +442,7 @@ ECode GLErrorWrapper::GlLightModelxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightModelxv(
+ECode GLErrorWrapper::glLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -450,7 +450,7 @@ ECode GLErrorWrapper::GlLightModelxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightf(
+ECode GLErrorWrapper::glLightf(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -459,7 +459,7 @@ ECode GLErrorWrapper::GlLightf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightfv(
+ECode GLErrorWrapper::glLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
@@ -469,7 +469,7 @@ ECode GLErrorWrapper::GlLightfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightfv(
+ECode GLErrorWrapper::glLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -478,7 +478,7 @@ ECode GLErrorWrapper::GlLightfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightx(
+ECode GLErrorWrapper::glLightx(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -487,7 +487,7 @@ ECode GLErrorWrapper::GlLightx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightxv(
+ECode GLErrorWrapper::glLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -497,7 +497,7 @@ ECode GLErrorWrapper::GlLightxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLightxv(
+ECode GLErrorWrapper::glLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -506,27 +506,27 @@ ECode GLErrorWrapper::GlLightxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLineWidth(
+ECode GLErrorWrapper::glLineWidth(
     /* [in] */ Float width)
 {
     GLCHECK(mgl, GlLineWidth, width);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLineWidthx(
+ECode GLErrorWrapper::glLineWidthx(
     /* [in] */ Int32 width)
 {
     GLCHECK(mgl, GlLineWidthx, width);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLoadIdentity()
+ECode GLErrorWrapper::glLoadIdentity()
 {
     GLCHECK(mgl, GlLoadIdentity);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLoadMatrixf(
+ECode GLErrorWrapper::glLoadMatrixf(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 offset)
 {
@@ -534,14 +534,14 @@ ECode GLErrorWrapper::GlLoadMatrixf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLoadMatrixf(
+ECode GLErrorWrapper::glLoadMatrixf(
     /* [in] */ IFloatBuffer* m)
 {
     GLCHECK(mgl, GlLoadMatrixfEx, m);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLoadMatrixx(
+ECode GLErrorWrapper::glLoadMatrixx(
     /* [in] */ ArrayOf<Int32>* m,
     /* [in] */ Int32 offset)
 {
@@ -549,21 +549,21 @@ ECode GLErrorWrapper::GlLoadMatrixx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLoadMatrixx(
+ECode GLErrorWrapper::glLoadMatrixx(
     /* [in] */ IInt32Buffer* m)
 {
     GLCHECK(mgl, GlLoadMatrixxEx, m);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLogicOp(
+ECode GLErrorWrapper::glLogicOp(
     /* [in] */ Int32 opcode)
 {
     GLCHECK(mgl, GlLogicOp, opcode);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMaterialf(
+ECode GLErrorWrapper::glMaterialf(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -572,7 +572,7 @@ ECode GLErrorWrapper::GlMaterialf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMaterialfv(
+ECode GLErrorWrapper::glMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
@@ -582,7 +582,7 @@ ECode GLErrorWrapper::GlMaterialfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMaterialfv(
+ECode GLErrorWrapper::glMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -591,7 +591,7 @@ ECode GLErrorWrapper::GlMaterialfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMaterialx(
+ECode GLErrorWrapper::glMaterialx(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -600,7 +600,7 @@ ECode GLErrorWrapper::GlMaterialx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMaterialxv(
+ECode GLErrorWrapper::glMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -610,7 +610,7 @@ ECode GLErrorWrapper::GlMaterialxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMaterialxv(
+ECode GLErrorWrapper::glMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -619,14 +619,14 @@ ECode GLErrorWrapper::GlMaterialxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMatrixMode(
+ECode GLErrorWrapper::glMatrixMode(
     /* [in] */ Int32 mode)
 {
     GLCHECK(mgl, GlMatrixMode, mode);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMultMatrixf(
+ECode GLErrorWrapper::glMultMatrixf(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 offset)
 {
@@ -634,14 +634,14 @@ ECode GLErrorWrapper::GlMultMatrixf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMultMatrixf(
+ECode GLErrorWrapper::glMultMatrixf(
     /* [in] */ IFloatBuffer* m)
 {
     GLCHECK(mgl, GlMultMatrixfEx, m);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMultMatrixx(
+ECode GLErrorWrapper::glMultMatrixx(
     /* [in] */ ArrayOf<Int32>* m,
     /* [in] */ Int32 offset)
 {
@@ -649,14 +649,14 @@ ECode GLErrorWrapper::GlMultMatrixx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMultMatrixx(
+ECode GLErrorWrapper::glMultMatrixx(
     /* [in] */ IInt32Buffer* m)
 {
     GLCHECK(mgl, GlMultMatrixxEx, m);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMultiTexCoord4f(
+ECode GLErrorWrapper::glMultiTexCoord4f(
     /* [in] */ Int32 target,
     /* [in] */ Float s,
     /* [in] */ Float t,
@@ -667,7 +667,7 @@ ECode GLErrorWrapper::GlMultiTexCoord4f(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMultiTexCoord4x(
+ECode GLErrorWrapper::glMultiTexCoord4x(
     /* [in] */ Int32 target,
     /* [in] */ Int32 s,
     /* [in] */ Int32 t,
@@ -678,7 +678,7 @@ ECode GLErrorWrapper::GlMultiTexCoord4x(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlNormal3f(
+ECode GLErrorWrapper::glNormal3f(
     /* [in] */ Float nx,
     /* [in] */ Float ny,
     /* [in] */ Float nz)
@@ -687,7 +687,7 @@ ECode GLErrorWrapper::GlNormal3f(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlNormal3x(
+ECode GLErrorWrapper::glNormal3x(
     /* [in] */ Int32 nx,
     /* [in] */ Int32 ny,
     /* [in] */ Int32 nz)
@@ -696,7 +696,7 @@ ECode GLErrorWrapper::GlNormal3x(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlNormalPointer(
+ECode GLErrorWrapper::glNormalPointer(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ IBuffer* pointer)
@@ -705,7 +705,7 @@ ECode GLErrorWrapper::GlNormalPointer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlOrthof(
+ECode GLErrorWrapper::glOrthof(
     /* [in] */ Float left,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
@@ -717,7 +717,7 @@ ECode GLErrorWrapper::GlOrthof(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlOrthox(
+ECode GLErrorWrapper::glOrthox(
     /* [in] */ Int32 left,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
@@ -729,7 +729,7 @@ ECode GLErrorWrapper::GlOrthox(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPixelStorei(
+ECode GLErrorWrapper::glPixelStorei(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -737,21 +737,21 @@ ECode GLErrorWrapper::GlPixelStorei(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPointSize(
+ECode GLErrorWrapper::glPointSize(
     /* [in] */ Float size)
 {
     GLCHECK(mgl, GlPointSize, size);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPointSizex(
+ECode GLErrorWrapper::glPointSizex(
     /* [in] */ Int32 size)
 {
     GLCHECK(mgl, GlPointSizex, size);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPolygonOffset(
+ECode GLErrorWrapper::glPolygonOffset(
     /* [in] */ Float factor,
     /* [in] */ Float units)
 {
@@ -759,7 +759,7 @@ ECode GLErrorWrapper::GlPolygonOffset(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPolygonOffsetx(
+ECode GLErrorWrapper::glPolygonOffsetx(
     /* [in] */ Int32 factor,
     /* [in] */ Int32 units)
 {
@@ -767,19 +767,19 @@ ECode GLErrorWrapper::GlPolygonOffsetx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPopMatrix()
+ECode GLErrorWrapper::glPopMatrix()
 {
     GLCHECK(mgl, GlPopMatrix);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPushMatrix()
+ECode GLErrorWrapper::glPushMatrix()
 {
     GLCHECK(mgl, GlPushMatrix);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlReadPixels(
+ECode GLErrorWrapper::glReadPixels(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -792,7 +792,7 @@ ECode GLErrorWrapper::GlReadPixels(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlRotatef(
+ECode GLErrorWrapper::glRotatef(
     /* [in] */ Float angle,
     /* [in] */ Float x,
     /* [in] */ Float y,
@@ -802,7 +802,7 @@ ECode GLErrorWrapper::GlRotatef(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlRotatex(
+ECode GLErrorWrapper::glRotatex(
     /* [in] */ Int32 angle,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
@@ -812,7 +812,7 @@ ECode GLErrorWrapper::GlRotatex(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlSampleCoverage(
+ECode GLErrorWrapper::glSampleCoverage(
     /* [in] */ Float value,
     /* [in] */ Boolean invert)
 {
@@ -820,7 +820,7 @@ ECode GLErrorWrapper::GlSampleCoverage(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlSampleCoveragex(
+ECode GLErrorWrapper::glSampleCoveragex(
     /* [in] */ Int32 value,
     /* [in] */ Boolean invert)
 {
@@ -828,7 +828,7 @@ ECode GLErrorWrapper::GlSampleCoveragex(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlScalef(
+ECode GLErrorWrapper::glScalef(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z)
@@ -837,7 +837,7 @@ ECode GLErrorWrapper::GlScalef(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlScalex(
+ECode GLErrorWrapper::glScalex(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z)
@@ -846,7 +846,7 @@ ECode GLErrorWrapper::GlScalex(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlScissor(
+ECode GLErrorWrapper::glScissor(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -856,14 +856,14 @@ ECode GLErrorWrapper::GlScissor(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlShadeModel(
+ECode GLErrorWrapper::glShadeModel(
     /* [in] */ Int32 mode)
 {
     GLCHECK(mgl, GlShadeModel, mode);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlStencilFunc(
+ECode GLErrorWrapper::glStencilFunc(
     /* [in] */ Int32 func,
     /* [in] */ Int32 ref,
     /* [in] */ Int32 mask)
@@ -872,14 +872,14 @@ ECode GLErrorWrapper::GlStencilFunc(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlStencilMask(
+ECode GLErrorWrapper::glStencilMask(
     /* [in] */ Int32 mask)
 {
     GLCHECK(mgl, GlStencilMask, mask);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexCoordPointer(
+ECode GLErrorWrapper::glTexCoordPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -889,7 +889,7 @@ ECode GLErrorWrapper::GlTexCoordPointer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexImage2D(
+ECode GLErrorWrapper::glTexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -904,7 +904,7 @@ ECode GLErrorWrapper::GlTexImage2D(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexParameterx(
+ECode GLErrorWrapper::glTexParameterx(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -913,7 +913,7 @@ ECode GLErrorWrapper::GlTexParameterx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexSubImage2D(
+ECode GLErrorWrapper::glTexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,
@@ -928,7 +928,7 @@ ECode GLErrorWrapper::GlTexSubImage2D(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTranslatef(
+ECode GLErrorWrapper::glTranslatef(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z)
@@ -937,7 +937,7 @@ ECode GLErrorWrapper::GlTranslatef(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTranslatex(
+ECode GLErrorWrapper::glTranslatex(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z)
@@ -946,7 +946,7 @@ ECode GLErrorWrapper::GlTranslatex(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlVertexPointer(
+ECode GLErrorWrapper::glVertexPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -956,7 +956,7 @@ ECode GLErrorWrapper::GlVertexPointer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlViewport(
+ECode GLErrorWrapper::glViewport(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -966,14 +966,14 @@ ECode GLErrorWrapper::GlViewport(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlEnable(
+ECode GLErrorWrapper::glEnable(
     /* [in] */ Int32 cap)
 {
     GLCHECK(mgl, GlEnable, cap);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlEnableClientState(
+ECode GLErrorWrapper::glEnableClientState(
     /* [in] */ Int32 array)
 {
     GLCHECK(mgl, GlEnableClientState, array);
@@ -981,7 +981,7 @@ ECode GLErrorWrapper::GlEnableClientState(
 }
 
 
-ECode GLErrorWrapper::GlTexParameterf(
+ECode GLErrorWrapper::glTexParameterf(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -990,7 +990,7 @@ ECode GLErrorWrapper::GlTexParameterf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexParameterfv(
+ECode GLErrorWrapper::glTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
@@ -1000,7 +1000,7 @@ ECode GLErrorWrapper::GlTexParameterfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexParameterfv(
+ECode GLErrorWrapper::glTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -1009,7 +1009,7 @@ ECode GLErrorWrapper::GlTexParameterfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBindTexture(
+ECode GLErrorWrapper::glBindTexture(
     /* [in] */ Int32 target,
     /* [in] */ Int32 texture)
 {
@@ -1017,7 +1017,7 @@ ECode GLErrorWrapper::GlBindTexture(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlCompressedTexImage2D(
+ECode GLErrorWrapper::glCompressedTexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -1031,7 +1031,7 @@ ECode GLErrorWrapper::GlCompressedTexImage2D(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlCopyTexImage2D(
+ECode GLErrorWrapper::glCopyTexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -1045,7 +1045,7 @@ ECode GLErrorWrapper::GlCopyTexImage2D(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetIntegerv(
+ECode GLErrorWrapper::glGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
     /* [in] */ Int32 offset)
@@ -1054,7 +1054,7 @@ ECode GLErrorWrapper::GlGetIntegerv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetIntegerv(
+ECode GLErrorWrapper::glGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -1062,7 +1062,7 @@ ECode GLErrorWrapper::GlGetIntegerv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlStencilOp(
+ECode GLErrorWrapper::glStencilOp(
     /* [in] */ Int32 fail,
     /* [in] */ Int32 zfail,
     /* [in] */ Int32 zpass)
@@ -1071,7 +1071,7 @@ ECode GLErrorWrapper::GlStencilOp(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexEnvf(
+ECode GLErrorWrapper::glTexEnvf(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -1080,7 +1080,7 @@ ECode GLErrorWrapper::GlTexEnvf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexEnvfv(
+ECode GLErrorWrapper::glTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
@@ -1090,7 +1090,7 @@ ECode GLErrorWrapper::GlTexEnvfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexEnvfv(
+ECode GLErrorWrapper::glTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -1099,7 +1099,7 @@ ECode GLErrorWrapper::GlTexEnvfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexEnvx(
+ECode GLErrorWrapper::glTexEnvx(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -1108,7 +1108,7 @@ ECode GLErrorWrapper::GlTexEnvx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexEnvxv(
+ECode GLErrorWrapper::glTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1118,7 +1118,7 @@ ECode GLErrorWrapper::GlTexEnvxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexEnvxv(
+ECode GLErrorWrapper::glTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1127,7 +1127,7 @@ ECode GLErrorWrapper::GlTexEnvxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlQueryMatrixxOES(
+ECode GLErrorWrapper::glQueryMatrixxOES(
     /* [in] */ ArrayOf<Int32>* mantissa,
     /* [in] */ Int32 mantissaOffset,
     /* [in] */ ArrayOf<Int32>* exponent,
@@ -1138,7 +1138,7 @@ ECode GLErrorWrapper::GlQueryMatrixxOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlQueryMatrixxOES(
+ECode GLErrorWrapper::glQueryMatrixxOES(
     /* [in] */ IInt32Buffer* mantissa,
     /* [in] */ IInt32Buffer* exponent,
     /* [out] */ Int32* matrixxOES)
@@ -1147,7 +1147,7 @@ ECode GLErrorWrapper::GlQueryMatrixxOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetPointerv(
+ECode GLErrorWrapper::glGetPointerv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<IBuffer*>* params)
 {
@@ -1155,7 +1155,7 @@ ECode GLErrorWrapper::GlGetPointerv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBindBuffer(
+ECode GLErrorWrapper::glBindBuffer(
     /* [in] */ Int32 target,
     /* [in] */ Int32 buffer)
 {
@@ -1163,7 +1163,7 @@ ECode GLErrorWrapper::GlBindBuffer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBufferData(
+ECode GLErrorWrapper::glBufferData(
     /* [in] */ Int32 target,
     /* [in] */ Int32 size,
     /* [in] */ IBuffer* data,
@@ -1173,7 +1173,7 @@ ECode GLErrorWrapper::GlBufferData(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBufferSubData(
+ECode GLErrorWrapper::glBufferSubData(
     /* [in] */ Int32 target,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 size,
@@ -1183,7 +1183,7 @@ ECode GLErrorWrapper::GlBufferSubData(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClipPlanef(
+ECode GLErrorWrapper::glClipPlanef(
     /* [in] */ Int32 plane,
     /* [in] */ ArrayOf<Float>* equation,
     /* [in] */ Int32 offset)
@@ -1192,7 +1192,7 @@ ECode GLErrorWrapper::GlClipPlanef(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClipPlanef(
+ECode GLErrorWrapper::glClipPlanef(
     /* [in] */ Int32 plane,
     /* [in] */ IFloatBuffer* equation)
 {
@@ -1200,7 +1200,7 @@ ECode GLErrorWrapper::GlClipPlanef(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClipPlanex(
+ECode GLErrorWrapper::glClipPlanex(
     /* [in] */ Int32 plane,
     /* [in] */ ArrayOf<Int32>* equation,
     /* [in] */ Int32 offset)
@@ -1209,7 +1209,7 @@ ECode GLErrorWrapper::GlClipPlanex(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlClipPlanex(
+ECode GLErrorWrapper::glClipPlanex(
     /* [in] */ Int32 plane,
     /* [in] */ IInt32Buffer* equation)
 {
@@ -1217,7 +1217,7 @@ ECode GLErrorWrapper::GlClipPlanex(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlColor4ub(
+ECode GLErrorWrapper::glColor4ub(
     /* [in] */ Byte red,
     /* [in] */ Byte green,
     /* [in] */ Byte blue,
@@ -1227,7 +1227,7 @@ ECode GLErrorWrapper::GlColor4ub(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlColorPointer(
+ECode GLErrorWrapper::glColorPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -1237,7 +1237,7 @@ ECode GLErrorWrapper::GlColorPointer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDeleteBuffers(
+ECode GLErrorWrapper::glDeleteBuffers(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* buffers,
     /* [in] */ Int32 offset)
@@ -1246,7 +1246,7 @@ ECode GLErrorWrapper::GlDeleteBuffers(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDeleteBuffers(
+ECode GLErrorWrapper::glDeleteBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers)
 {
@@ -1254,7 +1254,7 @@ ECode GLErrorWrapper::GlDeleteBuffers(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawElements(
+ECode GLErrorWrapper::glDrawElements(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
@@ -1264,7 +1264,7 @@ ECode GLErrorWrapper::GlDrawElements(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGenBuffers(
+ECode GLErrorWrapper::glGenBuffers(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* buffers,
     /* [in] */ Int32 offset)
@@ -1273,7 +1273,7 @@ ECode GLErrorWrapper::GlGenBuffers(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGenBuffers(
+ECode GLErrorWrapper::glGenBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers)
 {
@@ -1281,7 +1281,7 @@ ECode GLErrorWrapper::GlGenBuffers(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetBooleanv(
+ECode GLErrorWrapper::glGetBooleanv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Boolean>* params,
     /* [in] */ Int32 offset)
@@ -1290,7 +1290,7 @@ ECode GLErrorWrapper::GlGetBooleanv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetBooleanv(
+ECode GLErrorWrapper::glGetBooleanv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -1298,7 +1298,7 @@ ECode GLErrorWrapper::GlGetBooleanv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetBufferParameteriv(
+ECode GLErrorWrapper::glGetBufferParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1308,7 +1308,7 @@ ECode GLErrorWrapper::GlGetBufferParameteriv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetBufferParameteriv(
+ECode GLErrorWrapper::glGetBufferParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1317,7 +1317,7 @@ ECode GLErrorWrapper::GlGetBufferParameteriv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetClipPlanef(
+ECode GLErrorWrapper::glGetClipPlanef(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* eqn,
     /* [in] */ Int32 offset)
@@ -1326,7 +1326,7 @@ ECode GLErrorWrapper::GlGetClipPlanef(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetClipPlanef(
+ECode GLErrorWrapper::glGetClipPlanef(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* eqn)
 {
@@ -1334,7 +1334,7 @@ ECode GLErrorWrapper::GlGetClipPlanef(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetClipPlanex(
+ECode GLErrorWrapper::glGetClipPlanex(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* eqn,
     /* [in] */ Int32 offset)
@@ -1343,7 +1343,7 @@ ECode GLErrorWrapper::GlGetClipPlanex(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetClipPlanex(
+ECode GLErrorWrapper::glGetClipPlanex(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* eqn)
 {
@@ -1351,7 +1351,7 @@ ECode GLErrorWrapper::GlGetClipPlanex(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetFixedv(
+ECode GLErrorWrapper::glGetFixedv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
     /* [in] */ Int32 offset)
@@ -1360,7 +1360,7 @@ ECode GLErrorWrapper::GlGetFixedv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetFixedv(
+ECode GLErrorWrapper::glGetFixedv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -1368,7 +1368,7 @@ ECode GLErrorWrapper::GlGetFixedv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetFloatv(
+ECode GLErrorWrapper::glGetFloatv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
     /* [in] */ Int32 offset)
@@ -1377,7 +1377,7 @@ ECode GLErrorWrapper::GlGetFloatv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetFloatv(
+ECode GLErrorWrapper::glGetFloatv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
 {
@@ -1385,7 +1385,7 @@ ECode GLErrorWrapper::GlGetFloatv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetLightfv(
+ECode GLErrorWrapper::glGetLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
@@ -1395,7 +1395,7 @@ ECode GLErrorWrapper::GlGetLightfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetLightfv(
+ECode GLErrorWrapper::glGetLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -1404,7 +1404,7 @@ ECode GLErrorWrapper::GlGetLightfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetLightxv(
+ECode GLErrorWrapper::glGetLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1414,7 +1414,7 @@ ECode GLErrorWrapper::GlGetLightxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetLightxv(
+ECode GLErrorWrapper::glGetLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1423,7 +1423,7 @@ ECode GLErrorWrapper::GlGetLightxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetMaterialfv(
+ECode GLErrorWrapper::glGetMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
@@ -1433,7 +1433,7 @@ ECode GLErrorWrapper::GlGetMaterialfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetMaterialfv(
+ECode GLErrorWrapper::glGetMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -1442,7 +1442,7 @@ ECode GLErrorWrapper::GlGetMaterialfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetMaterialxv(
+ECode GLErrorWrapper::glGetMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1452,7 +1452,7 @@ ECode GLErrorWrapper::GlGetMaterialxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetMaterialxv(
+ECode GLErrorWrapper::glGetMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1461,7 +1461,7 @@ ECode GLErrorWrapper::GlGetMaterialxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexEnviv(
+ECode GLErrorWrapper::glGetTexEnviv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1471,7 +1471,7 @@ ECode GLErrorWrapper::GlGetTexEnviv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexEnviv(
+ECode GLErrorWrapper::glGetTexEnviv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1480,7 +1480,7 @@ ECode GLErrorWrapper::GlGetTexEnviv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexEnvxv(
+ECode GLErrorWrapper::glGetTexEnvxv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1490,7 +1490,7 @@ ECode GLErrorWrapper::GlGetTexEnvxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexEnvxv(
+ECode GLErrorWrapper::glGetTexEnvxv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1499,7 +1499,7 @@ ECode GLErrorWrapper::GlGetTexEnvxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexParameterfv(
+ECode GLErrorWrapper::glGetTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
@@ -1509,7 +1509,7 @@ ECode GLErrorWrapper::GlGetTexParameterfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexParameterfv(
+ECode GLErrorWrapper::glGetTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -1518,7 +1518,7 @@ ECode GLErrorWrapper::GlGetTexParameterfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexParameteriv(
+ECode GLErrorWrapper::glGetTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1528,7 +1528,7 @@ ECode GLErrorWrapper::GlGetTexParameteriv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexParameteriv(
+ECode GLErrorWrapper::glGetTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1537,7 +1537,7 @@ ECode GLErrorWrapper::GlGetTexParameteriv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexParameterxv(
+ECode GLErrorWrapper::glGetTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1547,7 +1547,7 @@ ECode GLErrorWrapper::GlGetTexParameterxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexParameterxv(
+ECode GLErrorWrapper::glGetTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1556,7 +1556,7 @@ ECode GLErrorWrapper::GlGetTexParameterxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlIsBuffer(
+ECode GLErrorWrapper::glIsBuffer(
     /* [in] */ Int32 buffer,
     /* [out] */ Boolean* result)
 {
@@ -1564,7 +1564,7 @@ ECode GLErrorWrapper::GlIsBuffer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlIsEnabled(
+ECode GLErrorWrapper::glIsEnabled(
     /* [in] */ Int32 cap,
     /* [out] */ Boolean* result)
 {
@@ -1572,7 +1572,7 @@ ECode GLErrorWrapper::GlIsEnabled(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlIsTexture(
+ECode GLErrorWrapper::glIsTexture(
     /* [in] */ Int32 texture,
     /* [out] */ Boolean* result)
 {
@@ -1580,7 +1580,7 @@ ECode GLErrorWrapper::GlIsTexture(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlNormalPointer(
+ECode GLErrorWrapper::glNormalPointer(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ Int32 offset)
@@ -1589,7 +1589,7 @@ ECode GLErrorWrapper::GlNormalPointer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPointParameterf(
+ECode GLErrorWrapper::glPointParameterf(
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
 {
@@ -1597,7 +1597,7 @@ ECode GLErrorWrapper::GlPointParameterf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPointParameterfv(
+ECode GLErrorWrapper::glPointParameterfv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
     /* [in] */ Int32 offset)
@@ -1606,7 +1606,7 @@ ECode GLErrorWrapper::GlPointParameterfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPointParameterfv(
+ECode GLErrorWrapper::glPointParameterfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
 {
@@ -1614,7 +1614,7 @@ ECode GLErrorWrapper::GlPointParameterfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPointParameterx(
+ECode GLErrorWrapper::glPointParameterx(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -1622,7 +1622,7 @@ ECode GLErrorWrapper::GlPointParameterx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPointParameterxv(
+ECode GLErrorWrapper::glPointParameterxv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
     /* [in] */ Int32 offset)
@@ -1631,7 +1631,7 @@ ECode GLErrorWrapper::GlPointParameterxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPointParameterxv(
+ECode GLErrorWrapper::glPointParameterxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -1639,7 +1639,7 @@ ECode GLErrorWrapper::GlPointParameterxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlPointSizePointerOES(
+ECode GLErrorWrapper::glPointSizePointerOES(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ IBuffer* pointer)
@@ -1648,7 +1648,7 @@ ECode GLErrorWrapper::GlPointSizePointerOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexCoordPointer(
+ECode GLErrorWrapper::glTexCoordPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -1658,7 +1658,7 @@ ECode GLErrorWrapper::GlTexCoordPointer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexEnvi(
+ECode GLErrorWrapper::glTexEnvi(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -1667,7 +1667,7 @@ ECode GLErrorWrapper::GlTexEnvi(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexEnviv(
+ECode GLErrorWrapper::glTexEnviv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1677,7 +1677,7 @@ ECode GLErrorWrapper::GlTexEnviv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexEnviv(
+ECode GLErrorWrapper::glTexEnviv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1686,7 +1686,7 @@ ECode GLErrorWrapper::GlTexEnviv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexParameteri(
+ECode GLErrorWrapper::glTexParameteri(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -1695,7 +1695,7 @@ ECode GLErrorWrapper::GlTexParameteri(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexParameteriv(
+ECode GLErrorWrapper::glTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1705,7 +1705,7 @@ ECode GLErrorWrapper::GlTexParameteriv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexParameteriv(
+ECode GLErrorWrapper::glTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1714,7 +1714,7 @@ ECode GLErrorWrapper::GlTexParameteriv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexParameterxv(
+ECode GLErrorWrapper::glTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -1724,7 +1724,7 @@ ECode GLErrorWrapper::GlTexParameterxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexParameterxv(
+ECode GLErrorWrapper::glTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -1733,7 +1733,7 @@ ECode GLErrorWrapper::GlTexParameterxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlVertexPointer(
+ECode GLErrorWrapper::glVertexPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -1743,14 +1743,14 @@ ECode GLErrorWrapper::GlVertexPointer(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlCurrentPaletteMatrixOES(
+ECode GLErrorWrapper::glCurrentPaletteMatrixOES(
     /* [in] */ Int32 matrixpaletteindex)
 {
     GLCHECK(mgl11Ext, GlCurrentPaletteMatrixOES, matrixpaletteindex);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexfOES(
+ECode GLErrorWrapper::glDrawTexfOES(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z,
@@ -1761,7 +1761,7 @@ ECode GLErrorWrapper::GlDrawTexfOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexfvOES(
+ECode GLErrorWrapper::glDrawTexfvOES(
     /* [in] */ ArrayOf<Float>* coords,
     /* [in] */ Int32 offset)
 {
@@ -1769,14 +1769,14 @@ ECode GLErrorWrapper::GlDrawTexfvOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexfvOES(
+ECode GLErrorWrapper::glDrawTexfvOES(
     /* [in] */ IFloatBuffer* coords)
 {
     GLCHECK(mgl11Ext, GlDrawTexfvOESEx, coords);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexiOES(
+ECode GLErrorWrapper::glDrawTexiOES(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z,
@@ -1787,7 +1787,7 @@ ECode GLErrorWrapper::GlDrawTexiOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexivOES(
+ECode GLErrorWrapper::glDrawTexivOES(
     /* [in] */ ArrayOf<Int32>* coords,
     /* [in] */ Int32 offset)
 {
@@ -1795,14 +1795,14 @@ ECode GLErrorWrapper::GlDrawTexivOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexivOES(
+ECode GLErrorWrapper::glDrawTexivOES(
     /* [in] */ IInt32Buffer* coords)
 {
     GLCHECK(mgl11Ext, GlDrawTexivOESEx, coords);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexsOES(
+ECode GLErrorWrapper::glDrawTexsOES(
     /* [in] */ Int16 x,
     /* [in] */ Int16 y,
     /* [in] */ Int16 z,
@@ -1813,7 +1813,7 @@ ECode GLErrorWrapper::GlDrawTexsOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexsvOES(
+ECode GLErrorWrapper::glDrawTexsvOES(
     /* [in] */ ArrayOf<Int16>* coords,
     /* [in] */ Int32 offset)
 {
@@ -1821,14 +1821,14 @@ ECode GLErrorWrapper::GlDrawTexsvOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexsvOES(
+ECode GLErrorWrapper::glDrawTexsvOES(
     /* [in] */ IInt16Buffer* coords)
 {
     GLCHECK(mgl11Ext, GlDrawTexsvOESEx, coords);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexxOES(
+ECode GLErrorWrapper::glDrawTexxOES(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z,
@@ -1839,7 +1839,7 @@ ECode GLErrorWrapper::GlDrawTexxOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexxvOES(
+ECode GLErrorWrapper::glDrawTexxvOES(
     /* [in] */ ArrayOf<Int32>* coords,
     /* [in] */ Int32 offset)
 {
@@ -1847,20 +1847,20 @@ ECode GLErrorWrapper::GlDrawTexxvOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDrawTexxvOES(
+ECode GLErrorWrapper::glDrawTexxvOES(
     /* [in] */ IInt32Buffer* coords)
 {
     GLCHECK(mgl11Ext, GlDrawTexxvOESEx, coords);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlLoadPaletteFromModelViewMatrixOES()
+ECode GLErrorWrapper::glLoadPaletteFromModelViewMatrixOES()
 {
     GLCHECK(mgl11Ext, GlLoadPaletteFromModelViewMatrixOES);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMatrixIndexPointerOES(
+ECode GLErrorWrapper::glMatrixIndexPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -1870,7 +1870,7 @@ ECode GLErrorWrapper::GlMatrixIndexPointerOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlMatrixIndexPointerOES(
+ECode GLErrorWrapper::glMatrixIndexPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -1880,7 +1880,7 @@ ECode GLErrorWrapper::GlMatrixIndexPointerOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlWeightPointerOES(
+ECode GLErrorWrapper::glWeightPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -1890,7 +1890,7 @@ ECode GLErrorWrapper::GlWeightPointerOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlWeightPointerOES(
+ECode GLErrorWrapper::glWeightPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -1900,7 +1900,7 @@ ECode GLErrorWrapper::GlWeightPointerOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBindFramebufferOES(
+ECode GLErrorWrapper::glBindFramebufferOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 framebuffer)
 {
@@ -1908,7 +1908,7 @@ ECode GLErrorWrapper::GlBindFramebufferOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBindRenderbufferOES(
+ECode GLErrorWrapper::glBindRenderbufferOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 renderbuffer)
 {
@@ -1916,14 +1916,14 @@ ECode GLErrorWrapper::GlBindRenderbufferOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBlendEquation(
+ECode GLErrorWrapper::glBlendEquation(
     /* [in] */ Int32 mode)
 {
     GLCHECK(mgl11ExtensionPack, GlBlendEquation, mode);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBlendEquationSeparate(
+ECode GLErrorWrapper::glBlendEquationSeparate(
     /* [in] */ Int32 modeRGB,
     /* [in] */ Int32 modeAlpha)
 {
@@ -1931,7 +1931,7 @@ ECode GLErrorWrapper::GlBlendEquationSeparate(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlBlendFuncSeparate(
+ECode GLErrorWrapper::glBlendFuncSeparate(
     /* [in] */ Int32 srcRGB,
     /* [in] */ Int32 dstRGB,
     /* [in] */ Int32 srcAlpha,
@@ -1941,7 +1941,7 @@ ECode GLErrorWrapper::GlBlendFuncSeparate(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlCheckFramebufferStatusOES(
+ECode GLErrorWrapper::glCheckFramebufferStatusOES(
     /* [in] */ Int32 target,
     /* [out] */ Int32* status)
 {
@@ -1949,7 +1949,7 @@ ECode GLErrorWrapper::GlCheckFramebufferStatusOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDeleteFramebuffersOES(
+ECode GLErrorWrapper::glDeleteFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* framebuffers,
     /* [in] */ Int32 offset)
@@ -1958,7 +1958,7 @@ ECode GLErrorWrapper::GlDeleteFramebuffersOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDeleteFramebuffersOES(
+ECode GLErrorWrapper::glDeleteFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers)
 {
@@ -1966,7 +1966,7 @@ ECode GLErrorWrapper::GlDeleteFramebuffersOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDeleteRenderbuffersOES(
+ECode GLErrorWrapper::glDeleteRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* renderbuffers,
     /* [in] */ Int32 offset)
@@ -1975,7 +1975,7 @@ ECode GLErrorWrapper::GlDeleteRenderbuffersOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlDeleteRenderbuffersOES(
+ECode GLErrorWrapper::glDeleteRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers)
 {
@@ -1983,7 +1983,7 @@ ECode GLErrorWrapper::GlDeleteRenderbuffersOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFramebufferRenderbufferOES(
+ECode GLErrorWrapper::glFramebufferRenderbufferOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 renderbuffertarget,
@@ -1993,7 +1993,7 @@ ECode GLErrorWrapper::GlFramebufferRenderbufferOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlFramebufferTexture2DOES(
+ECode GLErrorWrapper::glFramebufferTexture2DOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 textarget,
@@ -2004,14 +2004,14 @@ ECode GLErrorWrapper::GlFramebufferTexture2DOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGenerateMipmapOES(
+ECode GLErrorWrapper::glGenerateMipmapOES(
     /* [in] */ Int32 target)
 {
     GLCHECK(mgl11ExtensionPack, GlGenerateMipmapOES, target);
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGenFramebuffersOES(
+ECode GLErrorWrapper::glGenFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* framebuffers,
     /* [in] */ Int32 offset)
@@ -2020,7 +2020,7 @@ ECode GLErrorWrapper::GlGenFramebuffersOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGenFramebuffersOES(
+ECode GLErrorWrapper::glGenFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers)
 {
@@ -2028,7 +2028,7 @@ ECode GLErrorWrapper::GlGenFramebuffersOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGenRenderbuffersOES(
+ECode GLErrorWrapper::glGenRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* renderbuffers,
     /* [in] */ Int32 offset)
@@ -2037,7 +2037,7 @@ ECode GLErrorWrapper::GlGenRenderbuffersOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGenRenderbuffersOES(
+ECode GLErrorWrapper::glGenRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers)
 {
@@ -2045,7 +2045,7 @@ ECode GLErrorWrapper::GlGenRenderbuffersOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetFramebufferAttachmentParameterivOES(
+ECode GLErrorWrapper::glGetFramebufferAttachmentParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 pname,
@@ -2056,7 +2056,7 @@ ECode GLErrorWrapper::GlGetFramebufferAttachmentParameterivOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetFramebufferAttachmentParameterivOES(
+ECode GLErrorWrapper::glGetFramebufferAttachmentParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 pname,
@@ -2066,7 +2066,7 @@ ECode GLErrorWrapper::GlGetFramebufferAttachmentParameterivOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetRenderbufferParameterivOES(
+ECode GLErrorWrapper::glGetRenderbufferParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -2076,7 +2076,7 @@ ECode GLErrorWrapper::GlGetRenderbufferParameterivOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetRenderbufferParameterivOES(
+ECode GLErrorWrapper::glGetRenderbufferParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -2085,7 +2085,7 @@ ECode GLErrorWrapper::GlGetRenderbufferParameterivOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexGenfv(
+ECode GLErrorWrapper::glGetTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
@@ -2095,7 +2095,7 @@ ECode GLErrorWrapper::GlGetTexGenfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexGenfv(
+ECode GLErrorWrapper::glGetTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -2104,7 +2104,7 @@ ECode GLErrorWrapper::GlGetTexGenfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexGeniv(
+ECode GLErrorWrapper::glGetTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -2114,7 +2114,7 @@ ECode GLErrorWrapper::GlGetTexGeniv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexGeniv(
+ECode GLErrorWrapper::glGetTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -2123,7 +2123,7 @@ ECode GLErrorWrapper::GlGetTexGeniv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexGenxv(
+ECode GLErrorWrapper::glGetTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -2133,7 +2133,7 @@ ECode GLErrorWrapper::GlGetTexGenxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlGetTexGenxv(
+ECode GLErrorWrapper::glGetTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -2142,7 +2142,7 @@ ECode GLErrorWrapper::GlGetTexGenxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlIsFramebufferOES(
+ECode GLErrorWrapper::glIsFramebufferOES(
     /* [in] */ Int32 framebuffer,
     /* [out] */ Boolean* result)
 {
@@ -2150,7 +2150,7 @@ ECode GLErrorWrapper::GlIsFramebufferOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlIsRenderbufferOES(
+ECode GLErrorWrapper::glIsRenderbufferOES(
     /* [in] */ Int32 renderbuffer,
     /* [out] */ Boolean* result)
 {
@@ -2158,7 +2158,7 @@ ECode GLErrorWrapper::GlIsRenderbufferOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlRenderbufferStorageOES(
+ECode GLErrorWrapper::glRenderbufferStorageOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 internalformat,
     /* [in] */ Int32 width,
@@ -2168,7 +2168,7 @@ ECode GLErrorWrapper::GlRenderbufferStorageOES(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexGenf(
+ECode GLErrorWrapper::glTexGenf(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -2177,7 +2177,7 @@ ECode GLErrorWrapper::GlTexGenf(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexGenfv(
+ECode GLErrorWrapper::glTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params,
@@ -2187,7 +2187,7 @@ ECode GLErrorWrapper::GlTexGenfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexGenfv(
+ECode GLErrorWrapper::glTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -2196,7 +2196,7 @@ ECode GLErrorWrapper::GlTexGenfv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexGeni(
+ECode GLErrorWrapper::glTexGeni(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -2205,7 +2205,7 @@ ECode GLErrorWrapper::GlTexGeni(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexGeniv(
+ECode GLErrorWrapper::glTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -2215,7 +2215,7 @@ ECode GLErrorWrapper::GlTexGeniv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexGeniv(
+ECode GLErrorWrapper::glTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -2224,7 +2224,7 @@ ECode GLErrorWrapper::GlTexGeniv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexGenx(
+ECode GLErrorWrapper::glTexGenx(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -2233,7 +2233,7 @@ ECode GLErrorWrapper::GlTexGenx(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexGenxv(
+ECode GLErrorWrapper::glTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -2243,7 +2243,7 @@ ECode GLErrorWrapper::GlTexGenxv(
     return NOERROR;
 }
 
-ECode GLErrorWrapper::GlTexGenxv(
+ECode GLErrorWrapper::glTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)

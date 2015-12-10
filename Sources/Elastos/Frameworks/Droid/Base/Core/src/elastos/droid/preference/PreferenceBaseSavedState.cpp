@@ -5,8 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
-//CAR_INTERFACE_IMPL(PreferenceBaseSavedState, AbsSavedState, IPreferenceBaseSavedState)
-CAR_INTERFACE_IMPL_2(PreferenceBaseSavedState, Object, IPreferenceBaseSavedState, IParcelable)
+CAR_INTERFACE_IMPL(PreferenceBaseSavedState, AbsSavedState, IPreferenceBaseSavedState)
 
 PreferenceBaseSavedState::PreferenceBaseSavedState()
 {
@@ -14,39 +13,32 @@ PreferenceBaseSavedState::PreferenceBaseSavedState()
 
 ECode PreferenceBaseSavedState::constructor()
 {
-    // return AbsSavedState::Init(source);
     return NOERROR;
 }
 
 ECode PreferenceBaseSavedState::constructor(
     /* [in] */ IParcelable* source)
 {
-    // return AbsSavedState::Init(source);
-    return NOERROR;
+    return AbsSavedState::constructor(source);
 }
 
 ECode PreferenceBaseSavedState::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    // return AbsSavedState::ReadFromParcel(source);
-    return NOERROR;
+    return AbsSavedState::ReadFromParcel(source);
 }
 
 ECode PreferenceBaseSavedState::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    // return AbsSavedState::WriteToParcel(dest);
-    return NOERROR;
+    return AbsSavedState::WriteToParcel(dest);
 }
 
 ECode PreferenceBaseSavedState::GetSuperState(
     /* [out] */ IParcelable** superState)
 {
-    // VALIDATE_NOT_NULL(superState)
-    // AutoPtr<IParcelable> temp = AbsSavedState::GetSuperState();
-    // *superState = temp;
-    // REFCOUNT_ADD(*superState);
-    return NOERROR;
+    VALIDATE_NOT_NULL(superState)
+    return AbsSavedState::GetSuperState(superState);
 }
 
 } // Preference

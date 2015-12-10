@@ -13,77 +13,77 @@ namespace Opengl {
 CarClass(CGLES10)
 {
 public:
-    CARAPI GlActiveTexture(
+    CARAPI glActiveTexture(
         /* [in] */ Int32 texture);
 
-    CARAPI GlAlphaFunc(
+    CARAPI glAlphaFunc(
         /* [in] */ Int32 func,
         /* [in] */ Float ref);
 
-    CARAPI GlAlphaFuncx(
+    CARAPI glAlphaFuncx(
         /* [in] */ Int32 func,
         /* [in] */ Int32 ref);
 
-    CARAPI GlBindTexture(
+    CARAPI glBindTexture(
         /* [in] */ Int32 target,
         /* [in] */ Int32 texture);
 
-    CARAPI GlBlendFunc(
+    CARAPI glBlendFunc(
         /* [in] */ Int32 sfactor,
         /* [in] */ Int32 dfactor);
 
-    CARAPI GlClear(
+    CARAPI glClear(
         /* [in] */ Int32 mask);
 
-    CARAPI GlClearColor(
+    CARAPI glClearColor(
         /* [in] */ Float red,
         /* [in] */ Float green,
         /* [in] */ Float blue,
         /* [in] */ Float alpha);
 
-    CARAPI GlClearColorx(
+    CARAPI glClearColorx(
         /* [in] */ Int32 red,
         /* [in] */ Int32 green,
         /* [in] */ Int32 blue,
         /* [in] */ Int32 alpha);
 
-    CARAPI GlClearDepthf(
+    CARAPI glClearDepthf(
         /* [in] */ Float depth);
 
-    CARAPI GlClearDepthx(
+    CARAPI glClearDepthx(
         /* [in] */ Int32 depth);
 
-    CARAPI GlClearStencil(
+    CARAPI glClearStencil(
         /* [in] */ Int32 s);
 
-    CARAPI GlClientActiveTexture(
+    CARAPI glClientActiveTexture(
         /* [in] */ Int32 texture);
 
-    CARAPI GlColor4f(
+    CARAPI glColor4f(
         /* [in] */ Float red,
         /* [in] */ Float green,
         /* [in] */ Float blue,
         /* [in] */ Float alpha);
 
-    CARAPI GlColor4x(
+    CARAPI glColor4x(
         /* [in] */ Int32 red,
         /* [in] */ Int32 green,
         /* [in] */ Int32 blue,
         /* [in] */ Int32 alpha);
 
-    CARAPI GlColorMask(
+    CARAPI glColorMask(
         /* [in] */ Boolean red,
         /* [in] */ Boolean green,
         /* [in] */ Boolean blue,
         /* [in] */ Boolean alpha);
 
-    CARAPI GlColorPointer(
+    CARAPI glColorPointer(
         /* [in] */ Int32 size,
         /* [in] */ Int32 type,
         /* [in] */ Int32 stride,
         /* [in] */ Elastos::IO::IBuffer* pointer);
 
-    CARAPI GlCompressedTexImage2D(
+    CARAPI glCompressedTexImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 internalformat,
@@ -93,7 +93,7 @@ public:
         /* [in] */ Int32 imageSize,
         /* [in] */ Elastos::IO::IBuffer* data_buf);
 
-    CARAPI GlCompressedTexSubImage2D(
+    CARAPI glCompressedTexSubImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 xoffset,
@@ -104,7 +104,7 @@ public:
         /* [in] */ Int32 imageSize,
         /* [in] */ Elastos::IO::IBuffer* data_buf);
 
-    CARAPI GlCopyTexImage2D(
+    CARAPI glCopyTexImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 internalformat,
@@ -114,7 +114,7 @@ public:
         /* [in] */ Int32 height,
         /* [in] */ Int32 border);
 
-    CARAPI GlCopyTexSubImage2D(
+    CARAPI glCopyTexSubImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 xoffset,
@@ -124,89 +124,89 @@ public:
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    CARAPI GlCullFace(
+    CARAPI glCullFace(
         /* [in] */ Int32 mode);
 
-    CARAPI GlDeleteTextures(
+    CARAPI glDeleteTextures(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* textures_buf,
         /* [in] */ Int32 offset);
 
-    CARAPI GlDeleteTextures(
+    CARAPI glDeleteTextures(
         /* [in] */ Int32 n,
         /* [in] */ Elastos::IO::IInt32Buffer* textures_buf);
 
-    CARAPI GlDepthFunc(
+    CARAPI glDepthFunc(
         /* [in] */ Int32 func);
 
-    CARAPI GlDepthMask(
+    CARAPI glDepthMask(
         /* [in] */ Boolean flag);
 
-    CARAPI GlDepthRangef(
+    CARAPI glDepthRangef(
         /* [in] */ Float zNear,
         /* [in] */ Float zFar);
 
-    CARAPI GlDepthRangex(
+    CARAPI glDepthRangex(
         /* [in] */ Int32 zNear,
         /* [in] */ Int32 zFar);
 
-    CARAPI GlDisable(
+    CARAPI glDisable(
         /* [in] */ Int32 cap);
 
-    CARAPI GlDisableClientState(
+    CARAPI glDisableClientState(
         /* [in] */ Int32 array);
 
-    CARAPI GlDrawArrays(
+    CARAPI glDrawArrays(
         /* [in] */ Int32 mode,
         /* [in] */ Int32 first,
         /* [in] */ Int32 count);
 
-    CARAPI GlDrawElements(
+    CARAPI glDrawElements(
         /* [in] */ Int32 mode,
         /* [in] */ Int32 count,
         /* [in] */ Int32 type,
         /* [in] */ Elastos::IO::IBuffer* indices_buf);
 
-    CARAPI GlEnable(
+    CARAPI glEnable(
         /* [in] */ Int32 cap);
 
-    CARAPI GlEnableClientState(
+    CARAPI glEnableClientState(
         /* [in] */ Int32 array);
 
-    CARAPI GlFinish();
+    CARAPI glFinish();
 
-    CARAPI GlFlush();
+    CARAPI glFlush();
 
-    CARAPI GlFogf(
+    CARAPI glFogf(
         /* [in] */ Int32 pname,
         /* [in] */ Float param);
 
-    CARAPI GlFogfv(
+    CARAPI glFogfv(
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlFogfv(
+    CARAPI glFogfv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
 
-    CARAPI GlFogx(
+    CARAPI glFogx(
         /* [in] */ Int32 pname,
         /* [in] */ Int32 param);
 
-    CARAPI GlFogxv(
+    CARAPI glFogxv(
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlFogxv(
+    CARAPI glFogxv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
 
-    CARAPI GlFrontFace(
+    CARAPI glFrontFace(
         /* [in] */ Int32 mode);
 
-    CARAPI GlFrustumf(
+    CARAPI glFrustumf(
         /* [in] */ Float left,
         /* [in] */ Float right,
         /* [in] */ Float bottom,
@@ -214,7 +214,7 @@ public:
         /* [in] */ Float zNear,
         /* [in] */ Float zFar);
 
-    CARAPI GlFrustumx(
+    CARAPI glFrustumx(
         /* [in] */ Int32 left,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom,
@@ -222,197 +222,197 @@ public:
         /* [in] */ Int32 zNear,
         /* [in] */ Int32 zFar);
 
-    CARAPI GlGenTextures(
+    CARAPI glGenTextures(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* textures_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlGenTextures(
+    CARAPI glGenTextures(
         /* [in] */ Int32 n,
         /* [in] */ Elastos::IO::IInt32Buffer* textures_buf);
 
-    CARAPI GlGetError(
+    CARAPI glGetError(
         /* [out] */ Int32* error);
 
-    CARAPI GlGetIntegerv(
+    CARAPI glGetIntegerv(
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlGetIntegerv(
+    CARAPI glGetIntegerv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
 
-    CARAPI GlGetString(
+    CARAPI glGetString(
         /* [in] */ Int32 name,
         /* [out] */ String* str);
 
-    CARAPI GlHint(
+    CARAPI glHint(
         /* [in] */ Int32 target,
         /* [in] */ Int32 mode);
 
-    CARAPI GlLightModelf(
+    CARAPI glLightModelf(
         /* [in] */ Int32 pname,
         /* [in] */ Float param);
 
-    CARAPI GlLightModelfv(
+    CARAPI glLightModelfv(
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLightModelfv(
+    CARAPI glLightModelfv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
 
-    CARAPI GlLightModelx(
+    CARAPI glLightModelx(
         /* [in] */ Int32 pname,
         /* [in] */ Int32 param);
 
-    CARAPI GlLightModelxv(
+    CARAPI glLightModelxv(
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLightModelxv(
+    CARAPI glLightModelxv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
 
-    CARAPI GlLightf(
+    CARAPI glLightf(
         /* [in] */ Int32 light,
         /* [in] */ Int32 pname,
         /* [in] */ Float param);
 
-    CARAPI GlLightfv(
+    CARAPI glLightfv(
         /* [in] */ Int32 light,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLightfv(
+    CARAPI glLightfv(
         /* [in] */ Int32 light,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
 
-    CARAPI GlLightx(
+    CARAPI glLightx(
         /* [in] */ Int32 light,
         /* [in] */ Int32 pname,
         /* [in] */ Int32 param);
 
-    CARAPI GlLightxv(
+    CARAPI glLightxv(
         /* [in] */ Int32 light,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLightxv(
+    CARAPI glLightxv(
         /* [in] */ Int32 light,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
 
-    CARAPI GlLineWidth(
+    CARAPI glLineWidth(
         /* [in] */ Float width);
 
-    CARAPI GlLineWidthx(
+    CARAPI glLineWidthx(
         /* [in] */ Int32 width);
 
-    CARAPI GlLoadIdentity();
+    CARAPI glLoadIdentity();
 
-    CARAPI GlLoadMatrixf(
+    CARAPI glLoadMatrixf(
         /* [in] */ ArrayOf<Float>* m,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLoadMatrixf(
+    CARAPI glLoadMatrixf(
         /* [in] */ Elastos::IO::IFloatBuffer* m);
 
-    CARAPI GlLoadMatrixx(
+    CARAPI glLoadMatrixx(
         /* [in] */ ArrayOf<Int32>* m,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLoadMatrixx(
+    CARAPI glLoadMatrixx(
         /* [in] */ Elastos::IO::IInt32Buffer* m);
 
-    CARAPI GlLogicOp(
+    CARAPI glLogicOp(
         /* [in] */ Int32 opcode);
 
-    CARAPI GlMaterialf(
+    CARAPI glMaterialf(
         /* [in] */ Int32 face,
         /* [in] */ Int32 pname,
         /* [in] */ Float param);
 
-    CARAPI GlMaterialfv(
+    CARAPI glMaterialfv(
         /* [in] */ Int32 face,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlMaterialfv(
+    CARAPI glMaterialfv(
         /* [in] */ Int32 face,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
 
-    CARAPI GlMaterialx(
+    CARAPI glMaterialx(
         /* [in] */ Int32 face,
         /* [in] */ Int32 pname,
         /* [in] */ Int32 param);
 
-    CARAPI GlMaterialxv(
+    CARAPI glMaterialxv(
         /* [in] */ Int32 face,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlMaterialxv(
+    CARAPI glMaterialxv(
         /* [in] */ Int32 face,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
 
-    CARAPI GlMatrixMode(
+    CARAPI glMatrixMode(
         /* [in] */ Int32 mode);
 
-    CARAPI GlMultMatrixf(
+    CARAPI glMultMatrixf(
         /* [in] */ ArrayOf<Float>* m,
         /* [in] */ Int32 offset);
 
-    CARAPI GlMultMatrixf(
+    CARAPI glMultMatrixf(
         /* [in] */ Elastos::IO::IFloatBuffer* m);
 
-    CARAPI GlMultMatrixx(
+    CARAPI glMultMatrixx(
         /* [in] */ ArrayOf<Int32>* m,
         /* [in] */ Int32 offset);
 
-    CARAPI GlMultMatrixx(
+    CARAPI glMultMatrixx(
         /* [in] */ Elastos::IO::IInt32Buffer* m);
 
-    CARAPI GlMultiTexCoord4f(
+    CARAPI glMultiTexCoord4f(
         /* [in] */ Int32 target,
         /* [in] */ Float s,
         /* [in] */ Float t,
         /* [in] */ Float r,
         /* [in] */ Float q);
 
-    CARAPI GlMultiTexCoord4x(
+    CARAPI glMultiTexCoord4x(
         /* [in] */ Int32 target,
         /* [in] */ Int32 s,
         /* [in] */ Int32 t,
         /* [in] */ Int32 r,
         /* [in] */ Int32 q);
 
-    CARAPI GlNormal3f(
+    CARAPI glNormal3f(
         /* [in] */ Float nx,
         /* [in] */ Float ny,
         /* [in] */ Float nz);
 
-    CARAPI GlNormal3x(
+    CARAPI glNormal3x(
         /* [in] */ Int32 nx,
         /* [in] */ Int32 ny,
         /* [in] */ Int32 nz);
 
-    CARAPI GlNormalPointer(
+    CARAPI glNormalPointer(
         /* [in] */ Int32 type,
         /* [in] */ Int32 stride,
         /* [in] */ Elastos::IO::IBuffer* pointer);
 
-    CARAPI GlOrthof(
+    CARAPI glOrthof(
         /* [in] */ Float left,
         /* [in] */ Float right,
         /* [in] */ Float bottom,
@@ -420,7 +420,7 @@ public:
         /* [in] */ Float zNear,
         /* [in] */ Float zFar);
 
-    CARAPI GlOrthox(
+    CARAPI glOrthox(
         /* [in] */ Int32 left,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom,
@@ -428,29 +428,29 @@ public:
         /* [in] */ Int32 zNear,
         /* [in] */ Int32 zFar);
 
-    CARAPI GlPixelStorei(
+    CARAPI glPixelStorei(
         /* [in] */ Int32 pname,
         /* [in] */ Int32 param);
 
-    CARAPI GlPointSize(
+    CARAPI glPointSize(
         /* [in] */ Float size);
 
-    CARAPI GlPointSizex(
+    CARAPI glPointSizex(
         /* [in] */ Int32 size);
 
-    CARAPI GlPolygonOffset(
+    CARAPI glPolygonOffset(
         /* [in] */ Float factor,
         /* [in] */ Float units);
 
-    CARAPI GlPolygonOffsetx(
+    CARAPI glPolygonOffsetx(
         /* [in] */ Int32 factor,
         /* [in] */ Int32 units);
 
-    CARAPI GlPopMatrix();
+    CARAPI glPopMatrix();
 
-    CARAPI GlPushMatrix();
+    CARAPI glPushMatrix();
 
-    CARAPI GlReadPixels(
+    CARAPI glReadPixels(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
@@ -459,97 +459,97 @@ public:
         /* [in] */ Int32 type,
         /* [in] */ Elastos::IO::IBuffer* pixels);
 
-    CARAPI GlRotatef(
+    CARAPI glRotatef(
         /* [in] */ Float angle,
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Float z);
 
-    CARAPI GlRotatex(
+    CARAPI glRotatex(
         /* [in] */ Int32 angle,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 z);
 
-    CARAPI GlSampleCoverage(
+    CARAPI glSampleCoverage(
         /* [in] */ Float value,
         /* [in] */ Boolean invert);
 
-    CARAPI GlSampleCoveragex(
+    CARAPI glSampleCoveragex(
         /* [in] */ Int32 value,
         /* [in] */ Boolean invert);
 
-    CARAPI GlScalef(
+    CARAPI glScalef(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Float z);
 
-    CARAPI GlScalex(
+    CARAPI glScalex(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 z);
 
-    CARAPI GlScissor(
+    CARAPI glScissor(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    CARAPI GlShadeModel(
+    CARAPI glShadeModel(
         /* [in] */ Int32 mode);
 
-    CARAPI GlStencilFunc(
+    CARAPI glStencilFunc(
         /* [in] */ Int32 func,
         /* [in] */ Int32 ref,
         /* [in] */ Int32 mask);
 
-    CARAPI GlStencilMask(
+    CARAPI glStencilMask(
         /* [in] */ Int32 mask);
 
-    CARAPI GlStencilOp(
+    CARAPI glStencilOp(
         /* [in] */ Int32 fail,
         /* [in] */ Int32 zfail,
         /* [in] */ Int32 zpass);
 
-    CARAPI GlTexCoordPointer(
+    CARAPI glTexCoordPointer(
         /* [in] */ Int32 size,
         /* [in] */ Int32 type,
         /* [in] */ Int32 stride,
         /* [in] */ Elastos::IO::IBuffer* pointer);
 
-    CARAPI GlTexEnvf(
+    CARAPI glTexEnvf(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Float param);
 
-    CARAPI GlTexEnvfv(
+    CARAPI glTexEnvfv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlTexEnvfv(
+    CARAPI glTexEnvfv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
 
-    CARAPI GlTexEnvx(
+    CARAPI glTexEnvx(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Int32 param);
 
-    CARAPI GlTexEnvxv(
+    CARAPI glTexEnvxv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlTexEnvxv(
+    CARAPI glTexEnvxv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
 
-    CARAPI GlTexImage2D(
+    CARAPI glTexImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 internalformat,
@@ -560,17 +560,17 @@ public:
         /* [in] */ Int32 type,
         /* [in] */ Elastos::IO::IBuffer* pixels);
 
-    CARAPI GlTexParameterf(
+    CARAPI glTexParameterf(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Float param);
 
-    CARAPI GlTexParameterx(
+    CARAPI glTexParameterx(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Int32 param);
 
-    CARAPI GlTexSubImage2D(
+    CARAPI glTexSubImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 xoffset,
@@ -581,30 +581,30 @@ public:
         /* [in] */ Int32 type,
         /* [in] */ Elastos::IO::IBuffer* pixels);
 
-    CARAPI GlTranslatef(
+    CARAPI glTranslatef(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Float z);
 
-    CARAPI GlTranslatex(
+    CARAPI glTranslatex(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 z);
 
-    CARAPI GlVertexPointer(
+    CARAPI glVertexPointer(
         /* [in] */ Int32 size,
         /* [in] */ Int32 type,
         /* [in] */ Int32 stride,
         /* [in] */ Elastos::IO::IBuffer* pointer);
 
-    CARAPI GlViewport(
+    CARAPI glViewport(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
 private:
-    CARAPI GlColorPointerBounds(
+    CARAPI glColorPointerBounds(
         /* [in] */ Int32 size,
         /* [in] */ Int32 type,
         /* [in] */ Int32 stride,
@@ -622,20 +622,20 @@ private:
         /* [in, out] */ Int32* offset,
         /* [out] */ Handle32* rst);
 
-    CARAPI GlTexCoordPointerBounds(
+    CARAPI glTexCoordPointerBounds(
         /* [in] */ Int32 size,
         /* [in] */ Int32 type,
         /* [in] */ Int32 stride,
         /* [in] */ Elastos::IO::IBuffer* pointer_buf,
         /* [in] */ Int32 remaining);
 
-    CARAPI GlNormalPointerBounds(
+    CARAPI glNormalPointerBounds(
         /* [in] */ Int32 type,
         /* [in] */ Int32 stride,
         /* [in] */ Elastos::IO::IBuffer* pointer_buf,
         /* [in] */ Int32 remaining);
 
-    CARAPI GlVertexPointerBounds(
+    CARAPI glVertexPointerBounds(
         /* [in] */ Int32 size,
         /* [in] */ Int32 type,
         /* [in] */ Int32 stride,

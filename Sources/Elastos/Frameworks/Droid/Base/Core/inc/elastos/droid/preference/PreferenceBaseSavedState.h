@@ -4,23 +4,18 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/coredef.h>
-#include <elastos/core/Object.h>
-// #include "elastos/droid/view/AbsSavedState.h"
+#include "elastos/droid/view/AbsSavedState.h"
 
-// using Elastos::Droid::View::AbsSavedState;
+using Elastos::Droid::Preference::IPreferenceBaseSavedState;
+using Elastos::Droid::View::AbsSavedState;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
 
-// class PreferenceBaseSavedState
-//     : public AbsSavedState
-//     , public IPreferenceBaseSavedState
 class PreferenceBaseSavedState
-    : public Object
-    // : public AbsSavedState
+    : public AbsSavedState
     , public IPreferenceBaseSavedState
-    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()

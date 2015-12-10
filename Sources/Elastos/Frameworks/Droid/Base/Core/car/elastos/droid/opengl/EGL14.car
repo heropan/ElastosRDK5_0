@@ -127,16 +127,16 @@ module
         const Int32 EGL_CORE_NATIVE_ENGINE             = 0x305B;
 
         // C function EGLint eglGetError ( void )
-        EglGetError(
+        eglGetError(
             [out] Int32* error);
 
         // C function EGLDisplay eglGetDisplay ( EGLNativeDisplayType display_id )
-        EglGetDisplay(
+        eglGetDisplay(
             [in] Int32 display_id,
             [out] IEGLDisplay** display);
 
         // C function EGLBoolean eglInitialize ( EGLDisplay dpy, EGLint *major, EGLint *minor )
-        EglInitialize(
+        eglInitialize(
             [in] IEGLDisplay* dpy,
             [in] ArrayOf<Int32>* major,
             [in] Int32 majorOffset,
@@ -145,18 +145,18 @@ module
             [out] Boolean* result);
 
         // C function EGLBoolean eglTerminate ( EGLDisplay dpy )
-        EglTerminate(
+        eglTerminate(
             [in] IEGLDisplay* dpy,
             [out] Boolean* result);
 
         // C function const char * eglQueryString ( EGLDisplay dpy, EGLint name )
-        EglQueryString(
+        eglQueryString(
             [in] IEGLDisplay* dpy,
             [in] Int32 name,
             [out] String* str);
 
         // C function EGLBoolean eglGetConfigs ( EGLDisplay dpy, EGLConfig *configs, EGLint config_size, EGLint *num_config )
-        EglGetConfigs(
+        eglGetConfigs(
             [in] IEGLDisplay* dpy,
             [in] ArrayOf<IEGLConfig*>* configs,
             [in] Int32 configsOffset,
@@ -166,7 +166,7 @@ module
             [out] Boolean* result);
 
         // C function EGLBoolean eglChooseConfig ( EGLDisplay dpy, const EGLint *attrib_list, EGLConfig *configs, EGLint config_size, EGLint *num_config )
-        EglChooseConfig(
+        eglChooseConfig(
             [in] IEGLDisplay* dpy,
             [in] ArrayOf<Int32>* attrib_list,
             [in] Int32 attrib_listOffset,
@@ -178,7 +178,7 @@ module
             [out] Boolean* result);
 
         // C function EGLBoolean eglGetConfigAttrib ( EGLDisplay dpy, EGLConfig config, EGLint attribute, EGLint *value )
-        EglGetConfigAttrib(
+        eglGetConfigAttrib(
             [in] IEGLDisplay* dpy,
             [in] IEGLConfig* config,
             [in] Int32 attribute,
@@ -186,7 +186,7 @@ module
             [in] Int32 offset,
             [out] Boolean* result);
 
-        EglCreateWindowSurface(
+        eglCreateWindowSurface(
             [in] IEGLDisplay* dpy,
             [in] IEGLConfig* config,
             [in] IInterface* win,
@@ -195,7 +195,7 @@ module
             [out] IEGLSurface** surface);
 
         // C function EGLSurface eglCreatePbufferSurface ( EGLDisplay dpy, EGLConfig config, const EGLint *attrib_list )
-        EglCreatePbufferSurface(
+        eglCreatePbufferSurface(
             [in] IEGLDisplay* dpy,
             [in] IEGLConfig* config,
             [in] ArrayOf<Int32>* attrib_list,
@@ -203,7 +203,7 @@ module
             [out] IEGLSurface** surface);
 
         // C function EGLSurface eglCreatePixmapSurface ( EGLDisplay dpy, EGLConfig config, EGLNativePixmapType pixmap, const EGLint *attrib_list )
-        EglCreatePixmapSurface(
+        eglCreatePixmapSurface(
             [in] IEGLDisplay* dpy,
             [in] IEGLConfig* config,
             [in] Int32 pixmap,
@@ -212,13 +212,13 @@ module
             [out] IEGLSurface** surface);
 
         // C function EGLBoolean eglDestroySurface ( EGLDisplay dpy, EGLSurface surface )
-        EglDestroySurface(
+        eglDestroySurface(
             [in] IEGLDisplay* dpy,
             [in] IEGLSurface* surface,
             [out] Boolean* result);
 
         // C function EGLBoolean eglQuerySurface ( EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint *value )
-        EglQuerySurface(
+        eglQuerySurface(
             [in] IEGLDisplay* dpy,
             [in] IEGLSurface* surface,
             [in] Int32 attribute,
@@ -227,25 +227,25 @@ module
             [out] Boolean* result);
 
         // C function EGLBoolean eglBindAPI ( EGLenum api )
-        EglBindAPI(
+        eglBindAPI(
             [in] Int32 api,
             [out] Boolean* result);
 
         // C function EGLenum eglQueryAPI ( void )
-        EglQueryAPI(
+        eglQueryAPI(
             [out] Int32* value);
 
         // C function EGLBoolean eglWaitClient ( void )
-        EglWaitClient(
+        eglWaitClient(
             [out] Boolean* result);
 
         // C function EGLBoolean eglReleaseThread ( void )
-        EglReleaseThread(
+        eglReleaseThread(
             [out] Boolean* result);
 
         // C function EGLSurface eglCreatePbufferFromClientBuffer ( EGLDisplay dpy, EGLenum buftype, EGLClientBuffer buffer, EGLConfig config, const EGLint *attrib_list )
         // TODO Deprecate the below method
-        EglCreatePbufferFromClientBuffer(
+        eglCreatePbufferFromClientBuffer(
             [in] IEGLDisplay* dpy,
             [in] Int32 buftype,
             [in] Int32 buffer,
@@ -258,7 +258,7 @@ module
         /**
          * {@hide}
          */
-        EglCreatePbufferFromClientBuffer(
+        eglCreatePbufferFromClientBuffer(
             [in] IEGLDisplay* dpy,
             [in] Int32 buftype,
             [in] Int64 buffer,
@@ -268,7 +268,7 @@ module
             [out] IEGLSurface** surface);
 
         // C function EGLBoolean eglSurfaceAttrib ( EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint value )
-        EglSurfaceAttrib(
+        eglSurfaceAttrib(
             [in] IEGLDisplay* dpy,
             [in] IEGLSurface* surface,
             [in] Int32 attribute,
@@ -276,27 +276,27 @@ module
             [out] Boolean* result);
 
         // C function EGLBoolean eglBindTexImage ( EGLDisplay dpy, EGLSurface surface, EGLint buffer )
-        EglBindTexImage(
+        eglBindTexImage(
             [in] IEGLDisplay* dpy,
             [in] IEGLSurface* surface,
             [in] Int32 buffer,
             [out] Boolean* result);
 
         // C function EGLBoolean eglReleaseTexImage ( EGLDisplay dpy, EGLSurface surface, EGLint buffer )
-        EglReleaseTexImage(
+        eglReleaseTexImage(
             [in] IEGLDisplay* dpy,
             [in] IEGLSurface* surface,
             [in] Int32 buffer,
             [out] Boolean* result);
 
         // C function EGLBoolean eglSwapInterval ( EGLDisplay dpy, EGLint interval )
-        EglSwapInterval(
+        eglSwapInterval(
             [in] IEGLDisplay* dpy,
             [in] Int32 interval,
             [out] Boolean* result);
 
         // C function EGLContext eglCreateContext ( EGLDisplay dpy, EGLConfig config, EGLContext share_context, const EGLint *attrib_list )
-        EglCreateContext(
+        eglCreateContext(
             [in] IEGLDisplay* dpy,
             [in] IEGLConfig* config,
             [in] IEGLContext* share_context,
@@ -305,13 +305,13 @@ module
             [out] IEGLContext** context);
 
         // C function EGLBoolean eglDestroyContext ( EGLDisplay dpy, EGLContext ctx )
-        EglDestroyContext(
+        eglDestroyContext(
             [in] IEGLDisplay* dpy,
             [in] IEGLContext* ctx,
             [out] Boolean* result);
 
         // C function EGLBoolean eglMakeCurrent ( EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLContext ctx )
-        EglMakeCurrent(
+        eglMakeCurrent(
             [in] IEGLDisplay* dpy,
             [in] IEGLSurface* draw,
             [in] IEGLSurface* read,
@@ -319,20 +319,20 @@ module
             [out] Boolean* result);
 
         // C function EGLContext eglGetCurrentContext ( void )
-        EglGetCurrentContext(
+        eglGetCurrentContext(
             [out] IEGLContext** context);
 
         // C function EGLSurface eglGetCurrentSurface ( EGLint readdraw )
-        EglGetCurrentSurface(
+        eglGetCurrentSurface(
             [in] Int32 readdraw,
             [out] IEGLSurface** surface);
 
         // C function EGLDisplay eglGetCurrentDisplay ( void )
-        EglGetCurrentDisplay(
+        eglGetCurrentDisplay(
             [out] IEGLDisplay** display);
 
         // C function EGLBoolean eglQueryContext ( EGLDisplay dpy, EGLContext ctx, EGLint attribute, EGLint *value )
-        EglQueryContext(
+        eglQueryContext(
             [in] IEGLDisplay* dpy,
             [in] IEGLContext* ctx,
             [in] Int32 attribute,
@@ -341,22 +341,22 @@ module
             [out] Boolean* result);
 
         // C function EGLBoolean eglWaitGL ( void )
-        EglWaitGL(
+        eglWaitGL(
             [out] Boolean* result);
 
         // C function EGLBoolean eglWaitNative ( EGLint engine )
-        EglWaitNative(
+        eglWaitNative(
             [in] Int32 engine,
             [out] Boolean* result);
 
         // C function EGLBoolean eglSwapBuffers ( EGLDisplay dpy, EGLSurface surface )
-        EglSwapBuffers(
+        eglSwapBuffers(
             [in] IEGLDisplay* dpy,
             [in] IEGLSurface* surface,
             [out] Boolean* result);
 
         // C function EGLBoolean eglCopyBuffers ( EGLDisplay dpy, EGLSurface surface, EGLNativePixmapType target )
-        EglCopyBuffers(
+        eglCopyBuffers(
             [in] IEGLDisplay* dpy,
             [in] IEGLSurface* surface,
             [in] Int32 target,

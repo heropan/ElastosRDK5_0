@@ -28,37 +28,7 @@ ECode SeekBarPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    return Init(context, attrs, defStyleAttr, defStyleRes);
-}
-
-ECode SeekBarPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-{
-    return Init(context, attrs, defStyleAttr, 0);
-}
-
-ECode SeekBarPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return Init(context, attrs, R::attr::seekBarPreferenceStyle, 0);
-}
-
-ECode SeekBarPreference::constructor(
-    /* [in] */ IContext* context)
-{
-    return Init(context, NULL, R::attr::seekBarPreferenceStyle, 0);
-}
-
-ECode SeekBarPreference::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ProgressBar),
@@ -82,6 +52,27 @@ ECode SeekBarPreference::Init(
     a->Recycle();
     SetLayoutResource(layoutResId);
     return NOERROR;
+}
+
+ECode SeekBarPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode SeekBarPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::seekBarPreferenceStyle, 0);
+}
+
+ECode SeekBarPreference::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL, R::attr::seekBarPreferenceStyle, 0);
 }
 
 ECode SeekBarPreference::OnBindView(

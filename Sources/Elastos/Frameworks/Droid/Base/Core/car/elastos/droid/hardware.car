@@ -587,6 +587,12 @@ module
             interface IParcelable;
         }
 
+        class CDisplayViewport {
+            constructor();
+
+            interface IDisplayViewport;
+        }
+
         singleton class CDisplayManagerGlobalHelper {
             interface IDisplayManagerGlobalHelper;
         }

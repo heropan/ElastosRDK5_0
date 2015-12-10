@@ -1,7 +1,6 @@
-
-#include "elastos/droid/preference/SeekBarVolumizer.h"
-// #include "elastos/droid/media/RingtoneManager.h"
 #include "elastos/droid/content/CIntentFilter.h"
+// #include "elastos/droid/media/RingtoneManager.h"
+#include "elastos/droid/preference/SeekBarVolumizer.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/CHandler.h"
 // #include "elastos/droid/provider/Settings.h"
@@ -13,12 +12,12 @@ using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
 // using Elastos::Droid::Media::RingtoneManager;
 using Elastos::Droid::Os::EIID_IHandlerCallback;
-using Elastos::Droid::Os::IHandlerThread;
-using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::CHandler;
-using Elastos::Droid::R;
+using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Widget::EIID_ISeekBarOnSeekBarChangeListener;
 using Elastos::Droid::Widget::IProgressBar;
+using Elastos::Droid::R;
 using Elastos::Core::IThread;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
@@ -56,8 +55,8 @@ ECode SeekBarVolumizer::SeekBarVolumizerH::PostUpdateSlider(
     /* [in] */ Int32 volume)
 {
     AutoPtr<IMessage> msg;
-    FAIL_RETURN(ObtainMessage(UPDATE_SLIDER, volume, 0, (IMessage**)&msg))
-    FAIL_RETURN(msg->SendToTarget())
+    ObtainMessage(UPDATE_SLIDER, volume, 0, (IMessage**)&msg);
+    msg->SendToTarget();
     return NOERROR;
 }
 
@@ -74,7 +73,7 @@ SeekBarVolumizer::SeekBarVolumizerObserver::SeekBarVolumizerObserver(
 ECode SeekBarVolumizer::SeekBarVolumizerObserver::OnChange(
     /* [in] */ Boolean selfChange)
 {
-    ContentObserver::OnChange(selfChange);
+    FAIL_RETURN(ContentObserver::OnChange(selfChange));
     if (mOwner->mSeekBar != NULL && mOwner->mAudioManager != NULL) {
         Int32 volume;
         mOwner->mAudioManager->GetStreamVolume(mOwner->mStreamType, &volume);
@@ -99,9 +98,9 @@ void SeekBarVolumizer::SeekBarVolumizerReceiver::SetListening(
         AutoPtr<IIntentFilter> filter;
         CIntentFilter::New(IAudioManager::VOLUME_CHANGED_ACTION, (IIntentFilter**)&filter);
         AutoPtr<IIntent> intent;
-        mOwner->mContext->RegisterReceiver(IBroadcastReceiver::Probe(this), filter, (IIntent**)&intent);
+        mOwner->mContext->RegisterReceiver((IBroadcastReceiver*)this, filter, (IIntent**)&intent);
     } else {
-        mOwner->mContext->UnregisterReceiver(IBroadcastReceiver::Probe(this));
+        mOwner->mContext->UnregisterReceiver((IBroadcastReceiver*)this);
     }
 }
 
@@ -213,7 +212,7 @@ ECode SeekBarVolumizer::SetSeekBar(
     mSeekBar->SetOnSeekBarChangeListener(NULL);
     IProgressBar::Probe(mSeekBar)->SetMax(mMaxStreamVolume);
     IProgressBar::Probe(mSeekBar)->SetProgress(mLastProgress > -1 ? mLastProgress : mOriginalStreamVolume);
-     mSeekBar->SetOnSeekBarChangeListener(ISeekBarOnSeekBarChangeListener::Probe(this));
+     mSeekBar->SetOnSeekBarChangeListener((ISeekBarOnSeekBarChangeListener*)this);
     return NOERROR;
 }
 
@@ -273,7 +272,7 @@ void SeekBarVolumizer::OnStartSample()
     IsSamplePlaying(&result);
     if (!result) {
         if (mCallback != NULL) {
-            mCallback->OnSampleStarting(ISeekBarVolumizer::Probe(this));
+            mCallback->OnSampleStarting((ISeekBarVolumizer*)this);
         }
         if (mRingtone != NULL) {
             //try {

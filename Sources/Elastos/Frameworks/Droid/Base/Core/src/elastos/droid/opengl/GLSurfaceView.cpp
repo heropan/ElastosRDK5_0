@@ -12,13 +12,13 @@ using Elastos::IO::EIID_IFlushable;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::Content::Pm::IConfigurationInfo;
-using Elastosx::Microedition::Khronos::Egl::IEGLContextHelper;
-using Elastosx::Microedition::Khronos::Egl::IEGL;
+using Elastosx::Microedition::Khronos::egl::IEGLContextHelper;
+using Elastosx::Microedition::Khronos::egl::IEGL;
 using Elastos::Droid::View::ISurfaceHolderCallback;
 using Elastos::Droid::View::EIID_ISurfaceHolderCallback;
-using Elastosx::Microedition::Khronos::Egl::IEGL10Helper;
-using Elastos::Droid::Opengl::Gles::CEGL10Helper;
-using Elastos::Droid::Opengl::Gles::CEGLContextImpl;
+using Elastosx::Microedition::Khronos::egl::IEGL10Helper;
+using Elastos::Droid::Opengl::gles::CEGL10Helper;
+using Elastos::Droid::Opengl::gles::CEGLContextImpl;
 
 namespace Elastos {
 namespace Droid {
@@ -273,13 +273,13 @@ GLSurfaceView::SimpleEGLConfigChooser::SimpleEGLConfigChooser(
     /* [in] */ GLSurfaceView* host) : ComponentSizeChooser(8, 8, 8, 0, withDepthBuffer ? 16 : 0, 0, host)
 {}
 
-GLSurfaceView::EglHelper::EglHelper(
+GLSurfaceView::eglHelper::eglHelper(
     /* [in] */ IWeakReference* glSurfaceViewWeakRef)
 {
     mGLSurfaceViewWeakRef = glSurfaceViewWeakRef;
 }
 
-ECode GLSurfaceView::EglHelper::Start()
+ECode GLSurfaceView::eglHelper::Start()
 {
     if (LOG_EGL) {
         Int64 tid;
@@ -348,7 +348,7 @@ ECode GLSurfaceView::EglHelper::Start()
     return NOERROR;
 }
 
-ECode GLSurfaceView::EglHelper::CreateSurface(
+ECode GLSurfaceView::eglHelper::CreateSurface(
     /* [out] */ Boolean* rst)
 {
     *rst = FALSE;
@@ -431,7 +431,7 @@ ECode GLSurfaceView::EglHelper::CreateSurface(
     return NOERROR;
 }
 
-AutoPtr<IGL> GLSurfaceView::EglHelper::CreateGL()
+AutoPtr<IGL> GLSurfaceView::eglHelper::CreateGL()
 {
     AutoPtr<IGL> gl;
     mEglContext->GetGL((IGL**)&gl);
@@ -462,7 +462,7 @@ AutoPtr<IGL> GLSurfaceView::EglHelper::CreateGL()
     return gl;
 }
 
-Int32 GLSurfaceView::EglHelper::Swap()
+Int32 GLSurfaceView::eglHelper::Swap()
 {
     Boolean r;
     mEgl->EglSwapBuffers(mEglDisplay, mEglSurface, &r);
@@ -474,7 +474,7 @@ Int32 GLSurfaceView::EglHelper::Swap()
     return IEGL10::_EGL_SUCCESS;
 }
 
-ECode GLSurfaceView::EglHelper::DestroySurface()
+ECode GLSurfaceView::eglHelper::DestroySurface()
 {
     if (LOG_EGL) {
         Int64 tid;
@@ -485,7 +485,7 @@ ECode GLSurfaceView::EglHelper::DestroySurface()
     return NOERROR;
 }
 
-ECode GLSurfaceView::EglHelper::Finish()
+ECode GLSurfaceView::eglHelper::Finish()
 {
     if (LOG_EGL) {
         Int64 tid;
@@ -510,7 +510,7 @@ ECode GLSurfaceView::EglHelper::Finish()
     return NOERROR;
 }
 
-ECode GLSurfaceView::EglHelper::DestroySurfaceImp()
+ECode GLSurfaceView::eglHelper::DestroySurfaceImp()
 {
     AutoPtr<IEGL10Helper> helper;
     CEGL10Helper::AcquireSingleton((IEGL10Helper**)&helper);
@@ -536,7 +536,7 @@ ECode GLSurfaceView::EglHelper::DestroySurfaceImp()
     return NOERROR;
 }
 
-ECode GLSurfaceView::EglHelper::ThrowEglException(
+ECode GLSurfaceView::eglHelper::ThrowEglException(
     /* [in] */ const String& function,
     /* [in] */ Int32 error)
 {
@@ -549,7 +549,7 @@ ECode GLSurfaceView::EglHelper::ThrowEglException(
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode GLSurfaceView::EglHelper::LogEglErrorAsWarning(
+ECode GLSurfaceView::eglHelper::LogEglErrorAsWarning(
     /* [in] */ const String& tag,
     /* [in] */ const String& function,
     /* [in] */ Int32 error)
@@ -558,14 +558,14 @@ ECode GLSurfaceView::EglHelper::LogEglErrorAsWarning(
     return NOERROR;
 }
 
-String GLSurfaceView::EglHelper::FormatEglError(
+String GLSurfaceView::eglHelper::FormatEglError(
     /* [in] */ const String& function,
     /* [in] */ Int32 error)
 {
     return function + "failed: " + GetErrorString(error);
 }
 
-String GLSurfaceView::EglHelper::GetErrorString(
+String GLSurfaceView::eglHelper::GetErrorString(
     /* [in] */ Int32 error)
 {
     switch (error) {
@@ -604,7 +604,7 @@ String GLSurfaceView::EglHelper::GetErrorString(
     }
 }
 
-ECode GLSurfaceView::EglHelper::ThrowEglException(
+ECode GLSurfaceView::eglHelper::ThrowEglException(
     /* [in] */ const String& function)
 {
     Int32 error;

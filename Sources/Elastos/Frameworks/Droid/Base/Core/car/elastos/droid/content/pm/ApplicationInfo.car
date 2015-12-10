@@ -503,6 +503,42 @@ module
 
         SetInstallLocation(
             [in] Int32 location);
+
+        SetScanSourceDir(
+            [in] String value);
+
+        SetScanPublicSourceDir(
+            [in] String value);
+
+        SetSeinfo(
+            [in] String value);
+
+        SetSecondaryNativeLibraryDir(
+            [in] String value);
+
+        SetNativeLibraryRootDir(
+            [in] String value);
+
+        SetNativeLibraryRootRequiresIsa(
+            [in] Boolean value);
+
+        GetScanSourceDir(
+            [out] String* value);
+
+        GetScanPublicSourceDir(
+            [out] String* value);
+
+        GetSeinfo(
+            [out] String* value);
+
+        GetSecondaryNativeLibraryDir(
+            [out] String* value);
+
+        GetNativeLibraryRootDir(
+            [out] String* value);
+
+        GetNativeLibraryRootRequiresIsa(
+            [out] Boolean* value);
     }
 
 

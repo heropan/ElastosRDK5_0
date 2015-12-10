@@ -57,7 +57,7 @@ module
          * call {@link #grantTrust(CharSequence, long, boolean)} if the trust state should be
          * continued.
          */
-        InTrustTimeout();
+        OnTrustTimeout();
 
         /**
          * Called when device policy wants to restrict features in the agent in response to
@@ -119,6 +119,14 @@ module
          */
         SetManagingTrust(
             [in] Boolean managingTrust);
+    }
+
+    /**
+     * @Involve
+     * implements Elastos.Droid.Service.Trust.IITrustAgentService
+     * implements Elastos.Droid.Os.IBinder
+     */
+    interface ITrustAgentServiceWrapper {
     }
 
     } // namespace Trust

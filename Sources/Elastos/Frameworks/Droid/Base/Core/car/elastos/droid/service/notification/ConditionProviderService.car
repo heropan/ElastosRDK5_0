@@ -25,9 +25,11 @@ module
      *
      * @hide
      * @Involve
-     * interface Elastos.Droid.Content.IContextWrapper
-     * interface IComponentCallbacks2
-     * interface IService
+     * extends Elastos.Droid.Content.IContext
+     * extends Elastos.Droid.Content.IContextWrapper
+     * extends Elastos.Droid.App.IService
+     *
+     * interface Elastos.Droid.Content.IComponentCallbacks2
      */
     //@SystemApi
     [deprecated]

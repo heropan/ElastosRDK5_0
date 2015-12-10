@@ -19,7 +19,6 @@ using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Preference::IPreference;
-using Elastos::Droid::R;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IView;
@@ -28,6 +27,7 @@ using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::R;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IComparable;
 using Elastos::Core::StringBuilder;
@@ -43,13 +43,6 @@ class Preference
     , public IPreference
     , public IComparable
 {
-protected:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle,
-        /* [in] */ Int32 defStyleRes);
-
 public:
     CAR_INTERFACE_DECL()
 

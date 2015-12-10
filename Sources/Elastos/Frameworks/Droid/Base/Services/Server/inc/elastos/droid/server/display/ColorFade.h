@@ -6,31 +6,18 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Graphics::IPixelFormat;
-using Elastos::Droid::Graphics::ISurfaceTexture;
 using Elastos::Droid::Hardware::Display::IDisplayManagerInternal;
 using Elastos::Droid::Hardware::Display::IDisplayTransactionListener;
-using Elastos::Droid::Opengl::IEGL14;
 using Elastos::Droid::Opengl::IEGLConfig;
 using Elastos::Droid::Opengl::IEGLContext;
 using Elastos::Droid::Opengl::IEGLDisplay;
 using Elastos::Droid::Opengl::IEGLSurface;
-using Elastos::Droid::Opengl::IGLES20;
-using Elastos::Droid::Opengl::IGLES11Ext;
-using Elastos::Droid::Utility::FloatMath;
-using Elastos::Droid::View::IDisplayInfo;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::ISurfaceControl;
 using Elastos::Droid::View::ISurfaceSession;
 
-using Elastos::IO::IInputStream;
-using Elastos::IO::IInputStreamReader;
 using Elastos::IO::IPrintWriter;
-using Elastos::IO::IByteBuffer;
-using Elastos::IO::IByteOrder;
 using Elastos::IO::IFloatBuffer;
-using Libcore::IO::IStreams;
 
 
 namespace Elastos {
@@ -122,9 +109,10 @@ public:
         /* [in] */ IPrintWriter* pw);
 
 private:
-    String ReadFile(
+    CARAPI ReadFile(
         /* [in] */ IContext* context,
-        /* [in] */ Int32 resourceId);
+        /* [in] */ Int32 resourceId,
+        /* [out] */ String* result);
 
     Int32 LoadShader(
         /* [in] */ IContext* context,

@@ -146,7 +146,7 @@ ECode CGLImpl::constructor()
     return NOERROR;
 }
 
-ECode CGLImpl::GlActiveTexture(
+ECode CGLImpl::glActiveTexture(
     /* [in] */ Int32 texture)
 {
     glActiveTexture(
@@ -155,7 +155,7 @@ ECode CGLImpl::GlActiveTexture(
     return NOERROR;
 }
 
-ECode CGLImpl::GlAlphaFunc(
+ECode CGLImpl::glAlphaFunc(
     /* [in] */ Int32 func,
     /* [in] */ Float ref)
 {
@@ -166,7 +166,7 @@ ECode CGLImpl::GlAlphaFunc(
     return NOERROR;
 }
 
-ECode CGLImpl::GlAlphaFuncx(
+ECode CGLImpl::glAlphaFuncx(
     /* [in] */ Int32 func,
     /* [in] */ Int32 ref)
 {
@@ -177,7 +177,7 @@ ECode CGLImpl::GlAlphaFuncx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlBindTexture(
+ECode CGLImpl::glBindTexture(
     /* [in] */ Int32 target,
     /* [in] */ Int32 texture)
 {
@@ -188,7 +188,7 @@ ECode CGLImpl::GlBindTexture(
     return NOERROR;
 }
 
-ECode CGLImpl::GlBlendFunc(
+ECode CGLImpl::glBlendFunc(
     /* [in] */ Int32 sfactor,
     /* [in] */ Int32 dfactor)
 {
@@ -199,7 +199,7 @@ ECode CGLImpl::GlBlendFunc(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClear(
+ECode CGLImpl::glClear(
     /* [in] */ Int32 mask)
 {
     glClear(
@@ -208,7 +208,7 @@ ECode CGLImpl::GlClear(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClearColor(
+ECode CGLImpl::glClearColor(
     /* [in] */ Float red,
     /* [in] */ Float green,
     /* [in] */ Float blue,
@@ -223,7 +223,7 @@ ECode CGLImpl::GlClearColor(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClearColorx(
+ECode CGLImpl::glClearColorx(
     /* [in] */ Int32 red,
     /* [in] */ Int32 green,
     /* [in] */ Int32 blue,
@@ -238,7 +238,7 @@ ECode CGLImpl::GlClearColorx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClearDepthf(
+ECode CGLImpl::glClearDepthf(
     /* [in] */ Float depth)
 {
     glClearDepthf(
@@ -247,7 +247,7 @@ ECode CGLImpl::GlClearDepthf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClearDepthx(
+ECode CGLImpl::glClearDepthx(
     /* [in] */ Int32 depth)
 {
     glClearDepthx(
@@ -256,7 +256,7 @@ ECode CGLImpl::GlClearDepthx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClearStencil(
+ECode CGLImpl::glClearStencil(
     /* [in] */ Int32 s)
 {
     glClearStencil(
@@ -265,7 +265,7 @@ ECode CGLImpl::GlClearStencil(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClientActiveTexture(
+ECode CGLImpl::glClientActiveTexture(
     /* [in] */ Int32 texture)
 {
     glClientActiveTexture(
@@ -274,7 +274,7 @@ ECode CGLImpl::GlClientActiveTexture(
     return NOERROR;
 }
 
-ECode CGLImpl::GlColor4f(
+ECode CGLImpl::glColor4f(
     /* [in] */ Float red,
     /* [in] */ Float green,
     /* [in] */ Float blue,
@@ -289,7 +289,7 @@ ECode CGLImpl::GlColor4f(
     return NOERROR;
 }
 
-ECode CGLImpl::GlColor4x(
+ECode CGLImpl::glColor4x(
     /* [in] */ Int32 red,
     /* [in] */ Int32 green,
     /* [in] */ Int32 blue,
@@ -304,7 +304,7 @@ ECode CGLImpl::GlColor4x(
     return NOERROR;
 }
 
-ECode CGLImpl::GlColorMask(
+ECode CGLImpl::glColorMask(
     /* [in] */ Boolean red,
     /* [in] */ Boolean green,
     /* [in] */ Boolean blue,
@@ -319,7 +319,7 @@ ECode CGLImpl::GlColorMask(
     return NOERROR;
 }
 
-ECode CGLImpl::GlColorPointerBounds(
+ECode CGLImpl::glColorPointerBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -346,7 +346,7 @@ ECode CGLImpl::GlColorPointerBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlColorPointer(
+ECode CGLImpl::glColorPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -371,7 +371,7 @@ ECode CGLImpl::GlColorPointer(
     return NOERROR;
 }
 
-ECode CGLImpl::GlCompressedTexSubImage2D(
+ECode CGLImpl::glCompressedTexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,
@@ -407,7 +407,7 @@ ECode CGLImpl::GlCompressedTexSubImage2D(
     return NOERROR;
 }
 
-ECode CGLImpl::GlCopyTexSubImage2D(
+ECode CGLImpl::glCopyTexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,
@@ -430,7 +430,7 @@ ECode CGLImpl::GlCopyTexSubImage2D(
     return NOERROR;
 }
 
-ECode CGLImpl::GlCullFace(
+ECode CGLImpl::glCullFace(
     /* [in] */ Int32 mode)
 {
     glCullFace(
@@ -439,7 +439,7 @@ ECode CGLImpl::GlCullFace(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteTextures(
+ECode CGLImpl::glDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* textures_ref,
     /* [in] */ Int32 offset)
@@ -468,7 +468,7 @@ ECode CGLImpl::GlDeleteTextures(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteTextures(
+ECode CGLImpl::glDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures_buf)
 {
@@ -493,7 +493,7 @@ ECode CGLImpl::GlDeleteTextures(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDepthFunc(
+ECode CGLImpl::glDepthFunc(
     /* [in] */ Int32 func)
 {
     glDepthFunc(
@@ -502,7 +502,7 @@ ECode CGLImpl::GlDepthFunc(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDepthMask(
+ECode CGLImpl::glDepthMask(
     /* [in] */ Boolean flag)
 {
     glDepthMask(
@@ -511,7 +511,7 @@ ECode CGLImpl::GlDepthMask(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDepthRangef(
+ECode CGLImpl::glDepthRangef(
     /* [in] */ Float zNear,
     /* [in] */ Float zFar)
 {
@@ -522,7 +522,7 @@ ECode CGLImpl::GlDepthRangef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDepthRangex(
+ECode CGLImpl::glDepthRangex(
     /* [in] */ Int32 zNear,
     /* [in] */ Int32 zFar)
 {
@@ -533,7 +533,7 @@ ECode CGLImpl::GlDepthRangex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDisable(
+ECode CGLImpl::glDisable(
     /* [in] */ Int32 cap)
 {
     glDisable(
@@ -542,7 +542,7 @@ ECode CGLImpl::GlDisable(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDisableClientState(
+ECode CGLImpl::glDisableClientState(
     /* [in] */ Int32 array)
 {
     glDisableClientState(
@@ -551,7 +551,7 @@ ECode CGLImpl::GlDisableClientState(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawArrays(
+ECode CGLImpl::glDrawArrays(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 first,
     /* [in] */ Int32 count)
@@ -564,7 +564,7 @@ ECode CGLImpl::GlDrawArrays(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawElements(
+ECode CGLImpl::glDrawElements(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
@@ -594,19 +594,19 @@ ECode CGLImpl::GlDrawElements(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFinish()
+ECode CGLImpl::glFinish()
 {
     glFinish();
     return NOERROR;
 }
 
-ECode CGLImpl::GlFlush()
+ECode CGLImpl::glFlush()
 {
     glFlush();
     return NOERROR;
 }
 
-ECode CGLImpl::GlFogf(
+ECode CGLImpl::glFogf(
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
 {
@@ -617,7 +617,7 @@ ECode CGLImpl::GlFogf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFogfv(
+ECode CGLImpl::glFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
     /* [in] */ Int32 offset)
@@ -671,7 +671,7 @@ ECode CGLImpl::GlFogfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFogfv(
+ECode CGLImpl::glFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
@@ -723,7 +723,7 @@ ECode CGLImpl::GlFogfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFogx(
+ECode CGLImpl::glFogx(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -734,7 +734,7 @@ ECode CGLImpl::GlFogx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFogxv(
+ECode CGLImpl::glFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -788,7 +788,7 @@ ECode CGLImpl::GlFogxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFogxv(
+ECode CGLImpl::glFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -839,7 +839,7 @@ ECode CGLImpl::GlFogxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFrontFace(
+ECode CGLImpl::glFrontFace(
     /* [in] */ Int32 mode)
 {
     glFrontFace(
@@ -848,7 +848,7 @@ ECode CGLImpl::GlFrontFace(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFrustumf(
+ECode CGLImpl::glFrustumf(
     /* [in] */ Float left,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
@@ -867,7 +867,7 @@ ECode CGLImpl::GlFrustumf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFrustumx(
+ECode CGLImpl::glFrustumx(
     /* [in] */ Int32 left,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
@@ -886,7 +886,7 @@ ECode CGLImpl::GlFrustumx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenTextures(
+ECode CGLImpl::glGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* textures_ref,
     /* [in] */ Int32 offset)
@@ -915,7 +915,7 @@ ECode CGLImpl::GlGenTextures(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenTextures(
+ECode CGLImpl::glGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures_buf)
 {
@@ -941,7 +941,7 @@ ECode CGLImpl::GlGenTextures(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetError(
+ECode CGLImpl::glGetError(
     /* [out] */ Int32* error)
 {
     GLenum _returnValue;
@@ -950,7 +950,7 @@ ECode CGLImpl::GlGetError(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetString(
+ECode CGLImpl::glGetString(
     /* [in] */ Int32 name,
     /* [out] */ String* str)
 {
@@ -959,7 +959,7 @@ ECode CGLImpl::GlGetString(
     return NOERROR;
 }
 
-ECode CGLImpl::GlHint(
+ECode CGLImpl::glHint(
     /* [in] */ Int32 target,
     /* [in] */ Int32 mode)
 {
@@ -970,7 +970,7 @@ ECode CGLImpl::GlHint(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightModelf(
+ECode CGLImpl::glLightModelf(
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
 {
@@ -981,7 +981,7 @@ ECode CGLImpl::GlLightModelf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightModelfv(
+ECode CGLImpl::glLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
     /* [in] */ Int32 offset)
@@ -1026,7 +1026,7 @@ ECode CGLImpl::GlLightModelfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightModelfv(
+ECode CGLImpl::glLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
@@ -1069,7 +1069,7 @@ ECode CGLImpl::GlLightModelfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightModelx(
+ECode CGLImpl::glLightModelx(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -1080,7 +1080,7 @@ ECode CGLImpl::GlLightModelx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightModelxv(
+ECode CGLImpl::glLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -1126,7 +1126,7 @@ ECode CGLImpl::GlLightModelxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightModelxv(
+ECode CGLImpl::glLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -1168,7 +1168,7 @@ ECode CGLImpl::GlLightModelxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightf(
+ECode CGLImpl::glLightf(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -1181,7 +1181,7 @@ ECode CGLImpl::GlLightf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightfv(
+ECode CGLImpl::glLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -1255,7 +1255,7 @@ ECode CGLImpl::GlLightfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightfv(
+ECode CGLImpl::glLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -1325,7 +1325,7 @@ ECode CGLImpl::GlLightfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightx(
+ECode CGLImpl::glLightx(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -1338,7 +1338,7 @@ ECode CGLImpl::GlLightx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightxv(
+ECode CGLImpl::glLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -1412,7 +1412,7 @@ ECode CGLImpl::GlLightxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightxv(
+ECode CGLImpl::glLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -1482,7 +1482,7 @@ ECode CGLImpl::GlLightxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLineWidth(
+ECode CGLImpl::glLineWidth(
     /* [in] */ Float width)
 {
     glLineWidth(
@@ -1491,7 +1491,7 @@ ECode CGLImpl::GlLineWidth(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLineWidthx(
+ECode CGLImpl::glLineWidthx(
     /* [in] */ Int32 width)
 {
     glLineWidthx(
@@ -1500,13 +1500,13 @@ ECode CGLImpl::GlLineWidthx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLoadIdentity()
+ECode CGLImpl::glLoadIdentity()
 {
     glLoadIdentity();
     return NOERROR;
 }
 
-ECode CGLImpl::GlLoadMatrixf(
+ECode CGLImpl::glLoadMatrixf(
     /* [in] */ ArrayOf<Float>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -1528,7 +1528,7 @@ ECode CGLImpl::GlLoadMatrixf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLoadMatrixf(
+ECode CGLImpl::glLoadMatrixf(
     /* [in] */ IFloatBuffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -1549,7 +1549,7 @@ ECode CGLImpl::GlLoadMatrixf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLoadMatrixx(
+ECode CGLImpl::glLoadMatrixx(
     /* [in] */ ArrayOf<Int32>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -1571,7 +1571,7 @@ ECode CGLImpl::GlLoadMatrixx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLoadMatrixx(
+ECode CGLImpl::glLoadMatrixx(
     /* [in] */ IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -1592,7 +1592,7 @@ ECode CGLImpl::GlLoadMatrixx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLogicOp(
+ECode CGLImpl::glLogicOp(
     /* [in] */ Int32 opcode)
 {
     glLogicOp(
@@ -1601,7 +1601,7 @@ ECode CGLImpl::GlLogicOp(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMaterialf(
+ECode CGLImpl::glMaterialf(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -1614,7 +1614,7 @@ ECode CGLImpl::GlMaterialf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMaterialfv(
+ECode CGLImpl::glMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -1674,7 +1674,7 @@ ECode CGLImpl::GlMaterialfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMaterialfv(
+ECode CGLImpl::glMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -1730,7 +1730,7 @@ ECode CGLImpl::GlMaterialfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMaterialx(
+ECode CGLImpl::glMaterialx(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -1743,7 +1743,7 @@ ECode CGLImpl::GlMaterialx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMaterialxv(
+ECode CGLImpl::glMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -1802,7 +1802,7 @@ ECode CGLImpl::GlMaterialxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMaterialxv(
+ECode CGLImpl::glMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -1858,7 +1858,7 @@ ECode CGLImpl::GlMaterialxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMatrixMode(
+ECode CGLImpl::glMatrixMode(
     /* [in] */ Int32 mode)
 {
     glMatrixMode(
@@ -1867,7 +1867,7 @@ ECode CGLImpl::GlMatrixMode(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMultMatrixf(
+ECode CGLImpl::glMultMatrixf(
     /* [in] */ ArrayOf<Float>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -1889,7 +1889,7 @@ ECode CGLImpl::GlMultMatrixf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMultMatrixf(
+ECode CGLImpl::glMultMatrixf(
     /* [in] */ IFloatBuffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -1910,7 +1910,7 @@ ECode CGLImpl::GlMultMatrixf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMultMatrixx(
+ECode CGLImpl::glMultMatrixx(
     /* [in] */ ArrayOf<Int32>* m_ref,
     /* [in] */ Int32 offset)
 {
@@ -1933,7 +1933,7 @@ ECode CGLImpl::GlMultMatrixx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMultMatrixx(
+ECode CGLImpl::glMultMatrixx(
     /* [in] */ IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -1954,7 +1954,7 @@ ECode CGLImpl::GlMultMatrixx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMultiTexCoord4f(
+ECode CGLImpl::glMultiTexCoord4f(
     /* [in] */ Int32 target,
     /* [in] */ Float s,
     /* [in] */ Float t,
@@ -1971,7 +1971,7 @@ ECode CGLImpl::GlMultiTexCoord4f(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMultiTexCoord4x(
+ECode CGLImpl::glMultiTexCoord4x(
     /* [in] */ Int32 target,
     /* [in] */ Int32 s,
     /* [in] */ Int32 t,
@@ -1988,7 +1988,7 @@ ECode CGLImpl::GlMultiTexCoord4x(
     return NOERROR;
 }
 
-ECode CGLImpl::GlNormal3f(
+ECode CGLImpl::glNormal3f(
     /* [in] */ Float nx,
     /* [in] */ Float ny,
     /* [in] */ Float nz)
@@ -2001,7 +2001,7 @@ ECode CGLImpl::GlNormal3f(
     return NOERROR;
 }
 
-ECode CGLImpl::GlNormal3x(
+ECode CGLImpl::glNormal3x(
     /* [in] */ Int32 nx,
     /* [in] */ Int32 ny,
     /* [in] */ Int32 nz)
@@ -2014,7 +2014,7 @@ ECode CGLImpl::GlNormal3x(
     return NOERROR;
 }
 
-ECode CGLImpl::GlNormalPointer(
+ECode CGLImpl::glNormalPointer(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ IBuffer* pointer)
@@ -2037,7 +2037,7 @@ ECode CGLImpl::GlNormalPointer(
     return NOERROR;
 }
 
-ECode CGLImpl::GlNormalPointerBounds(
+ECode CGLImpl::glNormalPointerBounds(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ IBuffer* pointer_buf,
@@ -2062,7 +2062,7 @@ ECode CGLImpl::GlNormalPointerBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlOrthof(
+ECode CGLImpl::glOrthof(
     /* [in] */ Float left,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
@@ -2081,7 +2081,7 @@ ECode CGLImpl::GlOrthof(
     return NOERROR;
 }
 
-ECode CGLImpl::GlOrthox(
+ECode CGLImpl::glOrthox(
     /* [in] */ Int32 left,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom,
@@ -2100,7 +2100,7 @@ ECode CGLImpl::GlOrthox(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPixelStorei(
+ECode CGLImpl::glPixelStorei(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -2111,7 +2111,7 @@ ECode CGLImpl::GlPixelStorei(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointSize(
+ECode CGLImpl::glPointSize(
     /* [in] */ Float size)
 {
     glPointSize(
@@ -2120,7 +2120,7 @@ ECode CGLImpl::GlPointSize(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointSizex(
+ECode CGLImpl::glPointSizex(
     /* [in] */ Int32 size)
 {
     glPointSizex(
@@ -2129,7 +2129,7 @@ ECode CGLImpl::GlPointSizex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPolygonOffset(
+ECode CGLImpl::glPolygonOffset(
     /* [in] */ Float factor,
     /* [in] */ Float units)
 {
@@ -2140,7 +2140,7 @@ ECode CGLImpl::GlPolygonOffset(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPolygonOffsetx(
+ECode CGLImpl::glPolygonOffsetx(
     /* [in] */ Int32 factor,
     /* [in] */ Int32 units)
 {
@@ -2151,19 +2151,19 @@ ECode CGLImpl::GlPolygonOffsetx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPopMatrix()
+ECode CGLImpl::glPopMatrix()
 {
     glPopMatrix();
     return NOERROR;
 }
 
-ECode CGLImpl::GlPushMatrix()
+ECode CGLImpl::glPushMatrix()
 {
     glPushMatrix();
     return NOERROR;
 }
 
-ECode CGLImpl::GlReadPixels(
+ECode CGLImpl::glReadPixels(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -2196,7 +2196,7 @@ ECode CGLImpl::GlReadPixels(
     return NOERROR;
 }
 
-ECode CGLImpl::GlRotatef(
+ECode CGLImpl::glRotatef(
     /* [in] */ Float angle,
     /* [in] */ Float x,
     /* [in] */ Float y,
@@ -2211,7 +2211,7 @@ ECode CGLImpl::GlRotatef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlRotatex(
+ECode CGLImpl::glRotatex(
     /* [in] */ Int32 angle,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
@@ -2226,7 +2226,7 @@ ECode CGLImpl::GlRotatex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlSampleCoverage(
+ECode CGLImpl::glSampleCoverage(
     /* [in] */ Float value,
     /* [in] */ Boolean invert)
 {
@@ -2237,7 +2237,7 @@ ECode CGLImpl::GlSampleCoverage(
     return NOERROR;
 }
 
-ECode CGLImpl::GlSampleCoveragex(
+ECode CGLImpl::glSampleCoveragex(
     /* [in] */ Int32 value,
     /* [in] */ Boolean invert)
 {
@@ -2248,7 +2248,7 @@ ECode CGLImpl::GlSampleCoveragex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlScalef(
+ECode CGLImpl::glScalef(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z)
@@ -2261,7 +2261,7 @@ ECode CGLImpl::GlScalef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlScalex(
+ECode CGLImpl::glScalex(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z)
@@ -2274,7 +2274,7 @@ ECode CGLImpl::GlScalex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlScissor(
+ECode CGLImpl::glScissor(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -2289,7 +2289,7 @@ ECode CGLImpl::GlScissor(
     return NOERROR;
 }
 
-ECode CGLImpl::GlShadeModel(
+ECode CGLImpl::glShadeModel(
     /* [in] */ Int32 mode)
 {
     glShadeModel(
@@ -2298,7 +2298,7 @@ ECode CGLImpl::GlShadeModel(
     return NOERROR;
 }
 
-ECode CGLImpl::GlStencilFunc(
+ECode CGLImpl::glStencilFunc(
     /* [in] */ Int32 func,
     /* [in] */ Int32 ref,
     /* [in] */ Int32 mask)
@@ -2311,7 +2311,7 @@ ECode CGLImpl::GlStencilFunc(
     return NOERROR;
 }
 
-ECode CGLImpl::GlStencilMask(
+ECode CGLImpl::glStencilMask(
     /* [in] */ Int32 mask)
 {
     glStencilMask(
@@ -2320,7 +2320,7 @@ ECode CGLImpl::GlStencilMask(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexCoordPointerBounds(
+ECode CGLImpl::glTexCoordPointerBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -2347,7 +2347,7 @@ ECode CGLImpl::GlTexCoordPointerBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexCoordPointer(
+ECode CGLImpl::glTexCoordPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -2375,7 +2375,7 @@ ECode CGLImpl::GlTexCoordPointer(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexImage2D(
+ECode CGLImpl::glTexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -2414,7 +2414,7 @@ ECode CGLImpl::GlTexImage2D(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameterf(
+ECode CGLImpl::glTexParameterf(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -2427,7 +2427,7 @@ ECode CGLImpl::GlTexParameterf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameterx(
+ECode CGLImpl::glTexParameterx(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -2440,7 +2440,7 @@ ECode CGLImpl::GlTexParameterx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexSubImage2D(
+ECode CGLImpl::glTexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,
@@ -2479,7 +2479,7 @@ ECode CGLImpl::GlTexSubImage2D(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTranslatef(
+ECode CGLImpl::glTranslatef(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z)
@@ -2492,7 +2492,7 @@ ECode CGLImpl::GlTranslatef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTranslatex(
+ECode CGLImpl::glTranslatex(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z)
@@ -2505,7 +2505,7 @@ ECode CGLImpl::GlTranslatex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlVertexPointerBounds(
+ECode CGLImpl::glVertexPointerBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -2532,7 +2532,7 @@ ECode CGLImpl::GlVertexPointerBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlVertexPointer(
+ECode CGLImpl::glVertexPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -2560,7 +2560,7 @@ ECode CGLImpl::GlVertexPointer(
     return ec;
 }
 
-ECode CGLImpl::GlViewport(
+ECode CGLImpl::glViewport(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -2575,7 +2575,7 @@ ECode CGLImpl::GlViewport(
     return NOERROR;
 }
 
-ECode CGLImpl::GlQueryMatrixxOES(
+ECode CGLImpl::glQueryMatrixxOES(
     /* [in] */ ArrayOf<Int32>* mantissa_ref,
     /* [in] */ Int32 mantissaOffset,
     /* [in] */ ArrayOf<Int32>* exponent_ref,
@@ -2625,7 +2625,7 @@ ECode CGLImpl::GlQueryMatrixxOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlQueryMatrixxOES(
+ECode CGLImpl::glQueryMatrixxOES(
     /* [in] */ IInt32Buffer* mantissa_buf,
     /* [in] */ IInt32Buffer* exponent_buf,
     /* [out] */ Int32* matrixxOES)
@@ -2669,7 +2669,7 @@ ECode CGLImpl::GlQueryMatrixxOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameterfv(
+ECode CGLImpl::glTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -2701,7 +2701,7 @@ ECode CGLImpl::GlTexParameterfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameterfv(
+ECode CGLImpl::glTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -2730,7 +2730,7 @@ ECode CGLImpl::GlTexParameterfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlCurrentPaletteMatrixOES(
+ECode CGLImpl::glCurrentPaletteMatrixOES(
     /* [in] */ Int32 matrixpaletteindex)
 {
     glCurrentPaletteMatrixOES(
@@ -2739,7 +2739,7 @@ ECode CGLImpl::GlCurrentPaletteMatrixOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexfOES(
+ECode CGLImpl::glDrawTexfOES(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z,
@@ -2756,7 +2756,7 @@ ECode CGLImpl::GlDrawTexfOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexfvOES(
+ECode CGLImpl::glDrawTexfvOES(
     /* [in] */ ArrayOf<Float>* coords_ref,
     /* [in] */ Int32 offset)
 {
@@ -2783,7 +2783,7 @@ ECode CGLImpl::GlDrawTexfvOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexfvOES(
+ECode CGLImpl::glDrawTexfvOES(
     /* [in] */ IFloatBuffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2808,7 +2808,7 @@ ECode CGLImpl::GlDrawTexfvOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexiOES(
+ECode CGLImpl::glDrawTexiOES(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z,
@@ -2825,7 +2825,7 @@ ECode CGLImpl::GlDrawTexiOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexivOES(
+ECode CGLImpl::glDrawTexivOES(
     /* [in] */ ArrayOf<Int32>* coords_ref,
     /* [in] */ Int32 offset)
 {
@@ -2852,7 +2852,7 @@ ECode CGLImpl::GlDrawTexivOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexivOES(
+ECode CGLImpl::glDrawTexivOES(
     /* [in] */ IInt32Buffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2876,7 +2876,7 @@ ECode CGLImpl::GlDrawTexivOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexsOES(
+ECode CGLImpl::glDrawTexsOES(
     /* [in] */ Int16 x,
     /* [in] */ Int16 y,
     /* [in] */ Int16 z,
@@ -2893,7 +2893,7 @@ ECode CGLImpl::GlDrawTexsOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexsvOES(
+ECode CGLImpl::glDrawTexsvOES(
     /* [in] */ ArrayOf<Int16>* coords_ref,
     /* [in] */ Int32 offset)
 {
@@ -2920,7 +2920,7 @@ ECode CGLImpl::GlDrawTexsvOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexsvOES(
+ECode CGLImpl::glDrawTexsvOES(
     /* [in] */ IInt16Buffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2945,7 +2945,7 @@ ECode CGLImpl::GlDrawTexsvOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexxOES(
+ECode CGLImpl::glDrawTexxOES(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 z,
@@ -2962,7 +2962,7 @@ ECode CGLImpl::GlDrawTexxOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexxvOES(
+ECode CGLImpl::glDrawTexxvOES(
     /* [in] */ ArrayOf<Int32>* coords_ref,
     /* [in] */ Int32 offset)
 {
@@ -2989,7 +2989,7 @@ ECode CGLImpl::GlDrawTexxvOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexxvOES(
+ECode CGLImpl::glDrawTexxvOES(
     /* [in] */ IInt32Buffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -3013,7 +3013,7 @@ ECode CGLImpl::GlDrawTexxvOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlEnable(
+ECode CGLImpl::glEnable(
     /* [in] */ Int32 cap)
 {
     glEnable(
@@ -3022,7 +3022,7 @@ ECode CGLImpl::GlEnable(
     return NOERROR;
 }
 
-ECode CGLImpl::GlEnableClientState(
+ECode CGLImpl::glEnableClientState(
     /* [in] */ Int32 array)
 {
     glEnableClientState(
@@ -3031,13 +3031,13 @@ ECode CGLImpl::GlEnableClientState(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLoadPaletteFromModelViewMatrixOES()
+ECode CGLImpl::glLoadPaletteFromModelViewMatrixOES()
 {
     glLoadPaletteFromModelViewMatrixOES();
     return NOERROR;
 }
 
-ECode CGLImpl::GlMatrixIndexPointerOES(
+ECode CGLImpl::glMatrixIndexPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3065,7 +3065,7 @@ ECode CGLImpl::GlMatrixIndexPointerOES(
     return ec;
 }
 
-ECode CGLImpl::GlMatrixIndexPointerOESBounds(
+ECode CGLImpl::glMatrixIndexPointerOESBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3092,7 +3092,7 @@ ECode CGLImpl::GlMatrixIndexPointerOESBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMatrixIndexPointerOES(
+ECode CGLImpl::glMatrixIndexPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3107,7 +3107,7 @@ ECode CGLImpl::GlMatrixIndexPointerOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlWeightPointerOES(
+ECode CGLImpl::glWeightPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3124,7 +3124,7 @@ ECode CGLImpl::GlWeightPointerOES(
     );
 }
 
-ECode CGLImpl::GlWeightPointerOESBounds(
+ECode CGLImpl::glWeightPointerOESBounds(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3151,7 +3151,7 @@ ECode CGLImpl::GlWeightPointerOESBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlWeightPointerOES(
+ECode CGLImpl::glWeightPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3166,7 +3166,7 @@ ECode CGLImpl::GlWeightPointerOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlBindFramebufferOES(
+ECode CGLImpl::glBindFramebufferOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 framebuffer)
 {
@@ -3180,7 +3180,7 @@ ECode CGLImpl::GlBindFramebufferOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlBindRenderbufferOES(
+ECode CGLImpl::glBindRenderbufferOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 renderbuffer)
 {
@@ -3194,7 +3194,7 @@ ECode CGLImpl::GlBindRenderbufferOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlBlendEquation(
+ECode CGLImpl::glBlendEquation(
     /* [in] */ Int32 mode)
 {
     if (! SupportsExtension(this, HAVE_OES_BLEND_SUBTRACTID)) {
@@ -3206,7 +3206,7 @@ ECode CGLImpl::GlBlendEquation(
     return NOERROR;
 }
 
-ECode CGLImpl::GlBlendEquationSeparate(
+ECode CGLImpl::glBlendEquationSeparate(
     /* [in] */ Int32 modeRGB,
     /* [in] */ Int32 modeAlpha)
 {
@@ -3220,7 +3220,7 @@ ECode CGLImpl::GlBlendEquationSeparate(
     return NOERROR;
 }
 
-ECode CGLImpl::GlBlendFuncSeparate(
+ECode CGLImpl::glBlendFuncSeparate(
     /* [in] */ Int32 srcRGB,
     /* [in] */ Int32 dstRGB,
     /* [in] */ Int32 srcAlpha,
@@ -3238,7 +3238,7 @@ ECode CGLImpl::GlBlendFuncSeparate(
     return NOERROR;
 }
 
-ECode CGLImpl::GlCheckFramebufferStatusOES(
+ECode CGLImpl::glCheckFramebufferStatusOES(
     /* [in] */ Int32 target,
     /* [out] */ Int32* status)
 {
@@ -3254,7 +3254,7 @@ ECode CGLImpl::GlCheckFramebufferStatusOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlCompressedTexImage2D(
+ECode CGLImpl::glCompressedTexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -3289,7 +3289,7 @@ ECode CGLImpl::GlCompressedTexImage2D(
     return NOERROR;
 }
 
-ECode CGLImpl::GlCopyTexImage2D(
+ECode CGLImpl::glCopyTexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -3312,7 +3312,7 @@ ECode CGLImpl::GlCopyTexImage2D(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteFramebuffersOES(
+ECode CGLImpl::glDeleteFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* framebuffers_ref,
     /* [in] */ Int32 offset)
@@ -3344,7 +3344,7 @@ ECode CGLImpl::GlDeleteFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteFramebuffersOES(
+ECode CGLImpl::glDeleteFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers_buf)
 {
@@ -3374,7 +3374,7 @@ ECode CGLImpl::GlDeleteFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteRenderbuffersOES(
+ECode CGLImpl::glDeleteRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* renderbuffers_ref,
     /* [in] */ Int32 offset)
@@ -3407,7 +3407,7 @@ ECode CGLImpl::GlDeleteRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteRenderbuffersOES(
+ECode CGLImpl::glDeleteRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers_buf)
 {
@@ -3436,7 +3436,7 @@ ECode CGLImpl::GlDeleteRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFramebufferRenderbufferOES(
+ECode CGLImpl::glFramebufferRenderbufferOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 renderbuffertarget,
@@ -3454,7 +3454,7 @@ ECode CGLImpl::GlFramebufferRenderbufferOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFramebufferTexture2DOES(
+ECode CGLImpl::glFramebufferTexture2DOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 textarget,
@@ -3474,7 +3474,7 @@ ECode CGLImpl::GlFramebufferTexture2DOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenerateMipmapOES(
+ECode CGLImpl::glGenerateMipmapOES(
     /* [in] */ Int32 target)
 {
     if (! SupportsExtension(this, HAVE_OES_FRAMEBUFFER_OBJECTID)) {
@@ -3486,7 +3486,7 @@ ECode CGLImpl::GlGenerateMipmapOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenFramebuffersOES(
+ECode CGLImpl::glGenFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* framebuffers_ref,
     /* [in] */ Int32 offset)
@@ -3519,7 +3519,7 @@ ECode CGLImpl::GlGenFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenFramebuffersOES(
+ECode CGLImpl::glGenFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers_buf)
 {
@@ -3549,7 +3549,7 @@ ECode CGLImpl::GlGenFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenRenderbuffersOES(
+ECode CGLImpl::glGenRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* renderbuffers_ref,
     /* [in] */ Int32 offset)
@@ -3583,7 +3583,7 @@ ECode CGLImpl::GlGenRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenRenderbuffersOES(
+ECode CGLImpl::glGenRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers_buf)
 {
@@ -3614,7 +3614,7 @@ ECode CGLImpl::GlGenRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetFramebufferAttachmentParameterivOES(
+ECode CGLImpl::glGetFramebufferAttachmentParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 pname,
@@ -3646,7 +3646,7 @@ ECode CGLImpl::GlGetFramebufferAttachmentParameterivOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetFramebufferAttachmentParameterivOES(
+ECode CGLImpl::glGetFramebufferAttachmentParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 pname,
@@ -3676,7 +3676,7 @@ ECode CGLImpl::GlGetFramebufferAttachmentParameterivOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetIntegerv(
+ECode CGLImpl::glGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -4037,7 +4037,7 @@ ECode CGLImpl::GlGetIntegerv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetIntegerv(
+ECode CGLImpl::glGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -4395,7 +4395,7 @@ ECode CGLImpl::GlGetIntegerv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetRenderbufferParameterivOES(
+ECode CGLImpl::glGetRenderbufferParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -4425,7 +4425,7 @@ ECode CGLImpl::GlGetRenderbufferParameterivOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetRenderbufferParameterivOES(
+ECode CGLImpl::glGetRenderbufferParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -4453,7 +4453,7 @@ ECode CGLImpl::GlGetRenderbufferParameterivOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexGenfv(
+ECode CGLImpl::glGetTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -4482,7 +4482,7 @@ ECode CGLImpl::GlGetTexGenfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexGenfv(
+ECode CGLImpl::glGetTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -4510,7 +4510,7 @@ ECode CGLImpl::GlGetTexGenfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexGeniv(
+ECode CGLImpl::glGetTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -4540,7 +4540,7 @@ ECode CGLImpl::GlGetTexGeniv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexGeniv(
+ECode CGLImpl::glGetTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -4568,7 +4568,7 @@ ECode CGLImpl::GlGetTexGeniv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexGenxv(
+ECode CGLImpl::glGetTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -4598,7 +4598,7 @@ ECode CGLImpl::GlGetTexGenxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexGenxv(
+ECode CGLImpl::glGetTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -4626,7 +4626,7 @@ ECode CGLImpl::GlGetTexGenxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlIsFramebufferOES(
+ECode CGLImpl::glIsFramebufferOES(
     /* [in] */ Int32 framebuffer,
     /* [out] */ Boolean* result)
 {
@@ -4642,7 +4642,7 @@ ECode CGLImpl::GlIsFramebufferOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlIsRenderbufferOES(
+ECode CGLImpl::glIsRenderbufferOES(
     /* [in] */ Int32 renderbuffer,
     /* [out] */ Boolean* result)
 {
@@ -4658,7 +4658,7 @@ ECode CGLImpl::GlIsRenderbufferOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlRenderbufferStorageOES(
+ECode CGLImpl::glRenderbufferStorageOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 internalformat,
     /* [in] */ Int32 width,
@@ -4676,7 +4676,7 @@ ECode CGLImpl::GlRenderbufferStorageOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlStencilOp(
+ECode CGLImpl::glStencilOp(
     /* [in] */ Int32 fail,
     /* [in] */ Int32 zfail,
     /* [in] */ Int32 zpass)
@@ -4689,7 +4689,7 @@ ECode CGLImpl::GlStencilOp(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvf(
+ECode CGLImpl::glTexEnvf(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -4702,7 +4702,7 @@ ECode CGLImpl::GlTexEnvf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvfv(
+ECode CGLImpl::glTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -4756,7 +4756,7 @@ ECode CGLImpl::GlTexEnvfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvfv(
+ECode CGLImpl::glTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -4807,7 +4807,7 @@ ECode CGLImpl::GlTexEnvfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvx(
+ECode CGLImpl::glTexEnvx(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -4820,7 +4820,7 @@ ECode CGLImpl::GlTexEnvx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvxv(
+ECode CGLImpl::glTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -4873,7 +4873,7 @@ ECode CGLImpl::GlTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvxv(
+ECode CGLImpl::glTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -4924,7 +4924,7 @@ ECode CGLImpl::GlTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGenf(
+ECode CGLImpl::glTexGenf(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
@@ -4940,7 +4940,7 @@ ECode CGLImpl::GlTexGenf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGenfv(
+ECode CGLImpl::glTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -4969,7 +4969,7 @@ ECode CGLImpl::GlTexGenfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGenfv(
+ECode CGLImpl::glTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -4997,7 +4997,7 @@ ECode CGLImpl::GlTexGenfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGeni(
+ECode CGLImpl::glTexGeni(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -5013,7 +5013,7 @@ ECode CGLImpl::GlTexGeni(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGeniv(
+ECode CGLImpl::glTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -5042,7 +5042,7 @@ ECode CGLImpl::GlTexGeniv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGeniv(
+ECode CGLImpl::glTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -5070,7 +5070,7 @@ ECode CGLImpl::GlTexGeniv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGenx(
+ECode CGLImpl::glTexGenx(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -5086,7 +5086,7 @@ ECode CGLImpl::GlTexGenx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGenxv(
+ECode CGLImpl::glTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -5115,7 +5115,7 @@ ECode CGLImpl::GlTexGenxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGenxv(
+ECode CGLImpl::glTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -5143,14 +5143,14 @@ ECode CGLImpl::GlTexGenxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetPointerv(
+ECode CGLImpl::glGetPointerv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<IBuffer*>* params)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
-ECode CGLImpl::GlBindBuffer(
+ECode CGLImpl::glBindBuffer(
     /* [in] */ Int32 target,
     /* [in] */ Int32 buffer)
 {
@@ -5161,7 +5161,7 @@ ECode CGLImpl::GlBindBuffer(
     return NOERROR;
 }
 
-ECode CGLImpl::GlBufferData(
+ECode CGLImpl::glBufferData(
     /* [in] */ Int32 target,
     /* [in] */ Int32 size,
     /* [in] */ IBuffer* data_buf,
@@ -5194,7 +5194,7 @@ ECode CGLImpl::GlBufferData(
     return NOERROR;
 }
 
-ECode CGLImpl::GlBufferSubData(
+ECode CGLImpl::glBufferSubData(
     /* [in] */ Int32 target,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 size,
@@ -5224,7 +5224,7 @@ ECode CGLImpl::GlBufferSubData(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClipPlanef(
+ECode CGLImpl::glClipPlanef(
     /* [in] */ Int32 plane,
     /* [in] */ ArrayOf<Float>* equation_ref,
     /* [in] */ Int32 offset)
@@ -5253,7 +5253,7 @@ ECode CGLImpl::GlClipPlanef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClipPlanef(
+ECode CGLImpl::glClipPlanef(
     /* [in] */ Int32 plane,
     /* [in] */ IFloatBuffer* equation_buf)
 {
@@ -5279,7 +5279,7 @@ ECode CGLImpl::GlClipPlanef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClipPlanex(
+ECode CGLImpl::glClipPlanex(
     /* [in] */ Int32 plane,
     /* [in] */ ArrayOf<Int32>* equation_ref,
     /* [in] */ Int32 offset)
@@ -5308,7 +5308,7 @@ ECode CGLImpl::GlClipPlanex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClipPlanex(
+ECode CGLImpl::glClipPlanex(
     /* [in] */ Int32 plane,
     /* [in] */ IInt32Buffer* equation_buf)
 {
@@ -5334,7 +5334,7 @@ ECode CGLImpl::GlClipPlanex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlColor4ub(
+ECode CGLImpl::glColor4ub(
     /* [in] */ Byte red,
     /* [in] */ Byte green,
     /* [in] */ Byte blue,
@@ -5349,7 +5349,7 @@ ECode CGLImpl::GlColor4ub(
     return NOERROR;
 }
 
-ECode CGLImpl::GlColorPointer(
+ECode CGLImpl::glColorPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -5364,7 +5364,7 @@ ECode CGLImpl::GlColorPointer(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteBuffers(
+ECode CGLImpl::glDeleteBuffers(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* buffers_ref,
     /* [in] */ Int32 offset)
@@ -5393,7 +5393,7 @@ ECode CGLImpl::GlDeleteBuffers(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteBuffers(
+ECode CGLImpl::glDeleteBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers_buf)
 {
@@ -5419,7 +5419,7 @@ ECode CGLImpl::GlDeleteBuffers(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawElements(
+ECode CGLImpl::glDrawElements(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
@@ -5434,7 +5434,7 @@ ECode CGLImpl::GlDrawElements(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenBuffers(
+ECode CGLImpl::glGenBuffers(
     /* [in] */ Int32 n,
     /* [in] */ ArrayOf<Int32>* buffers_ref,
     /* [in] */ Int32 offset)
@@ -5463,7 +5463,7 @@ ECode CGLImpl::GlGenBuffers(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenBuffers(
+ECode CGLImpl::glGenBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers_buf)
 {
@@ -5489,7 +5489,7 @@ ECode CGLImpl::GlGenBuffers(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetBooleanv(
+ECode CGLImpl::glGetBooleanv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Boolean>* params_ref,
     /* [in] */ Int32 offset)
@@ -5514,7 +5514,7 @@ ECode CGLImpl::GlGetBooleanv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetBooleanv(
+ECode CGLImpl::glGetBooleanv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -5537,7 +5537,7 @@ ECode CGLImpl::GlGetBooleanv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetBufferParameteriv(
+ECode CGLImpl::glGetBufferParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params,
@@ -5546,7 +5546,7 @@ ECode CGLImpl::GlGetBufferParameteriv(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
-ECode CGLImpl::GlGetBufferParameteriv(
+ECode CGLImpl::glGetBufferParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -5554,7 +5554,7 @@ ECode CGLImpl::GlGetBufferParameteriv(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
-ECode CGLImpl::GlGetClipPlanef(
+ECode CGLImpl::glGetClipPlanef(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* eqn_ref,
     /* [in] */ Int32 offset)
@@ -5578,7 +5578,7 @@ ECode CGLImpl::GlGetClipPlanef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetClipPlanef(
+ECode CGLImpl::glGetClipPlanef(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* eqn_buf)
 {
@@ -5601,7 +5601,7 @@ ECode CGLImpl::GlGetClipPlanef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetClipPlanex(
+ECode CGLImpl::glGetClipPlanex(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* eqn_ref,
     /* [in] */ Int32 offset)
@@ -5625,7 +5625,7 @@ ECode CGLImpl::GlGetClipPlanex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetClipPlanex(
+ECode CGLImpl::glGetClipPlanex(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* eqn_buf)
 {
@@ -5648,7 +5648,7 @@ ECode CGLImpl::GlGetClipPlanex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetFixedv(
+ECode CGLImpl::glGetFixedv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -5672,7 +5672,7 @@ ECode CGLImpl::GlGetFixedv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetFixedv(
+ECode CGLImpl::glGetFixedv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -5695,7 +5695,7 @@ ECode CGLImpl::GlGetFixedv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetFloatv(
+ECode CGLImpl::glGetFloatv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
     /* [in] */ Int32 offset)
@@ -5719,7 +5719,7 @@ ECode CGLImpl::GlGetFloatv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetFloatv(
+ECode CGLImpl::glGetFloatv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
@@ -5742,7 +5742,7 @@ ECode CGLImpl::GlGetFloatv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetLightfv(
+ECode CGLImpl::glGetLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -5815,7 +5815,7 @@ ECode CGLImpl::GlGetLightfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetLightfv(
+ECode CGLImpl::glGetLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -5885,7 +5885,7 @@ ECode CGLImpl::GlGetLightfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetLightxv(
+ECode CGLImpl::glGetLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -5959,7 +5959,7 @@ ECode CGLImpl::GlGetLightxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetLightxv(
+ECode CGLImpl::glGetLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6029,7 +6029,7 @@ ECode CGLImpl::GlGetLightxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetMaterialfv(
+ECode CGLImpl::glGetMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -6089,7 +6089,7 @@ ECode CGLImpl::GlGetMaterialfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetMaterialfv(
+ECode CGLImpl::glGetMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -6146,7 +6146,7 @@ ECode CGLImpl::GlGetMaterialfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetMaterialxv(
+ECode CGLImpl::glGetMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -6205,7 +6205,7 @@ ECode CGLImpl::GlGetMaterialxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetMaterialxv(
+ECode CGLImpl::glGetMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6261,7 +6261,7 @@ ECode CGLImpl::GlGetMaterialxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexEnviv(
+ECode CGLImpl::glGetTexEnviv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -6315,7 +6315,7 @@ ECode CGLImpl::GlGetTexEnviv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexEnviv(
+ECode CGLImpl::glGetTexEnviv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6365,7 +6365,7 @@ ECode CGLImpl::GlGetTexEnviv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexEnvxv(
+ECode CGLImpl::glGetTexEnvxv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -6419,7 +6419,7 @@ ECode CGLImpl::GlGetTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexEnvxv(
+ECode CGLImpl::glGetTexEnvxv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6470,7 +6470,7 @@ ECode CGLImpl::GlGetTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexParameterfv(
+ECode CGLImpl::glGetTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
@@ -6501,7 +6501,7 @@ ECode CGLImpl::GlGetTexParameterfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexParameterfv(
+ECode CGLImpl::glGetTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -6529,7 +6529,7 @@ ECode CGLImpl::GlGetTexParameterfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexParameteriv(
+ECode CGLImpl::glGetTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -6560,7 +6560,7 @@ ECode CGLImpl::GlGetTexParameteriv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexParameteriv(
+ECode CGLImpl::glGetTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6588,7 +6588,7 @@ ECode CGLImpl::GlGetTexParameteriv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexParameterxv(
+ECode CGLImpl::glGetTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -6619,7 +6619,7 @@ ECode CGLImpl::GlGetTexParameterxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexParameterxv(
+ECode CGLImpl::glGetTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6647,7 +6647,7 @@ ECode CGLImpl::GlGetTexParameterxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlIsBuffer(
+ECode CGLImpl::glIsBuffer(
     /* [in] */ Int32 buffer,
     /* [out] */ Boolean* result)
 {
@@ -6659,7 +6659,7 @@ ECode CGLImpl::GlIsBuffer(
     return NOERROR;
 }
 
-ECode CGLImpl::GlIsEnabled(
+ECode CGLImpl::glIsEnabled(
     /* [in] */ Int32 cap,
     /* [out] */ Boolean* result)
 {
@@ -6671,7 +6671,7 @@ ECode CGLImpl::GlIsEnabled(
     return NOERROR;
 }
 
-ECode CGLImpl::GlIsTexture(
+ECode CGLImpl::glIsTexture(
     /* [in] */ Int32 texture,
     /* [out] */ Boolean* result)
 {
@@ -6683,7 +6683,7 @@ ECode CGLImpl::GlIsTexture(
     return NOERROR;
 }
 
-ECode CGLImpl::GlNormalPointer(
+ECode CGLImpl::glNormalPointer(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ Int32 offset)
@@ -6696,7 +6696,7 @@ ECode CGLImpl::GlNormalPointer(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointParameterf(
+ECode CGLImpl::glPointParameterf(
     /* [in] */ Int32 pname,
     /* [in] */ Float param)
 {
@@ -6707,7 +6707,7 @@ ECode CGLImpl::GlPointParameterf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointParameterfv(
+ECode CGLImpl::glPointParameterfv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Float>* params_ref,
     /* [in] */ Int32 offset)
@@ -6736,7 +6736,7 @@ ECode CGLImpl::GlPointParameterfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointParameterfv(
+ECode CGLImpl::glPointParameterfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
@@ -6762,7 +6762,7 @@ ECode CGLImpl::GlPointParameterfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointParameterx(
+ECode CGLImpl::glPointParameterx(
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
 {
@@ -6773,7 +6773,7 @@ ECode CGLImpl::GlPointParameterx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointParameterxv(
+ECode CGLImpl::glPointParameterxv(
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
@@ -6802,7 +6802,7 @@ ECode CGLImpl::GlPointParameterxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointParameterxv(
+ECode CGLImpl::glPointParameterxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -6828,7 +6828,7 @@ ECode CGLImpl::GlPointParameterxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointSizePointerOES(
+ECode CGLImpl::glPointSizePointerOES(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ IBuffer* pointer)
@@ -6849,7 +6849,7 @@ ECode CGLImpl::GlPointSizePointerOES(
     return ec;
 }
 
-ECode CGLImpl::GlPointSizePointerOESBounds(
+ECode CGLImpl::glPointSizePointerOESBounds(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ IBuffer* pointer_buf,
@@ -6874,7 +6874,7 @@ ECode CGLImpl::GlPointSizePointerOESBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexCoordPointer(
+ECode CGLImpl::glTexCoordPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -6889,7 +6889,7 @@ ECode CGLImpl::GlTexCoordPointer(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvi(
+ECode CGLImpl::glTexEnvi(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -6902,7 +6902,7 @@ ECode CGLImpl::GlTexEnvi(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnviv(
+ECode CGLImpl::glTexEnviv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -6955,7 +6955,7 @@ ECode CGLImpl::GlTexEnviv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnviv(
+ECode CGLImpl::glTexEnviv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -7006,7 +7006,7 @@ ECode CGLImpl::GlTexEnviv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameteri(
+ECode CGLImpl::glTexParameteri(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Int32 param)
@@ -7019,7 +7019,7 @@ ECode CGLImpl::GlTexParameteri(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameteriv(
+ECode CGLImpl::glTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -7050,7 +7050,7 @@ ECode CGLImpl::GlTexParameteriv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameteriv(
+ECode CGLImpl::glTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -7078,7 +7078,7 @@ ECode CGLImpl::GlTexParameteriv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameterxv(
+ECode CGLImpl::glTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ ArrayOf<Int32>* params_ref,
@@ -7109,7 +7109,7 @@ ECode CGLImpl::GlTexParameterxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameterxv(
+ECode CGLImpl::glTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -7137,7 +7137,7 @@ ECode CGLImpl::GlTexParameterxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlVertexPointer(
+ECode CGLImpl::glVertexPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,

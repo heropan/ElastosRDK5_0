@@ -36,9 +36,12 @@ module
     interface Elastos.Droid.Preference.IPreferenceOnPreferenceChangeInternalListener;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.View.IAbsSavedState;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroup;
+    interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
+    interface Elastos.Droid.View.IViewGroupLayoutParams;
     interface Elastos.Droid.View.IViewManager;
     interface Elastos.Droid.View.IViewOnKeyListener;
     interface Elastos.Droid.View.IViewParent;
@@ -84,7 +87,7 @@ module
                 [in] IParcelable* superState);
 
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -96,7 +99,7 @@ module
 
             interface ITwoStatePreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -133,7 +136,7 @@ module
 
             interface IDialogPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -173,7 +176,7 @@ module
 
             interface IEditTextPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -213,7 +216,7 @@ module
 
             interface IListPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -253,7 +256,7 @@ module
 
             interface IMultiCheckPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -293,7 +296,7 @@ module
 
             interface IMultiSelectListPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -409,7 +412,7 @@ module
 
             interface IVolumePreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -545,6 +548,8 @@ module
                 [in] Int32 height);
 
             interface IFrameLayoutLayoutParams;
+            interface IViewGroupMarginLayoutParams;
+            interface IViewGroupLayoutParams;
         }
 
         class CPreferenceScreen {
@@ -568,7 +573,7 @@ module
 
             interface IPreferenceScreenSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 
@@ -605,7 +610,7 @@ module
 
             interface ISeekBarPreferenceSavedState;
             interface IPreferenceBaseSavedState;
-            //interface IAbsSavedState;
+            interface IAbsSavedState;
             interface IParcelable;
         }
 

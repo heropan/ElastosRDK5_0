@@ -1,35 +1,45 @@
 
 #include "elastos/droid/server/display/ColorFade.h"
 //#include "elastos/droid/server/LocalServices.h"
+#include <elastos/droid/utility/FloatMath.h>
+#include <elastos/droid/R.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Math.h>
 
+using Elastos::Droid::R;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::ISurfaceTexture;
-using Elastos::Droid::Hardware::Display::IDisplayManagerInternal;
-using Elastos::Droid::Hardware::Display::IDisplayTransactionListener;
+using Elastos::Droid::Graphics::CSurfaceTexture;
+using Elastos::Droid::Hardware::Display::EIID_IDisplayTransactionListener;
 using Elastos::Droid::Opengl::IEGL14;
-using Elastos::Droid::Opengl::IEGLConfig;
-using Elastos::Droid::Opengl::IEGLContext;
-using Elastos::Droid::Opengl::IEGLDisplay;
-using Elastos::Droid::Opengl::IEGLSurface;
 using Elastos::Droid::Opengl::IGLES20;
 using Elastos::Droid::Opengl::IGLES11Ext;
 using Elastos::Droid::Utility::FloatMath;
 using Elastos::Droid::View::IDisplayInfo;
-using Elastos::Droid::View::ISurface;
-using Elastos::Droid::View::ISurfaceControl;
-using Elastos::Droid::View::ISurfaceSession;
+using Elastos::Droid::View::CSurface;
+using Elastos::Droid::View::CSurfaceControl;
+using Elastos::Droid::View::ISurfaceControlHelper;
+using Elastos::Droid::View::CSurfaceControlHelper;
+using Elastos::Droid::View::CSurfaceSession;
 
 using Elastos::IO::IInputStream;
+using Elastos::IO::IReader;
 using Elastos::IO::IInputStreamReader;
-using Elastos::IO::IPrintWriter;
+using Elastos::IO::CInputStreamReader;
+using Elastos::IO::IBuffer;
 using Elastos::IO::IByteBuffer;
-using Elastos::IO::IByteOrder;
-using Elastos::IO::IFloatBuffer;
-using Libcore::IO::IStreams;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::ByteOrder;
+using Elastos::IO::IByteOrderHelper;
+using Elastos::IO::CByteOrderHelper;
 using Elastos::Utility::Logging::Slogger;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 
 namespace Elastos {
@@ -60,7 +70,7 @@ ColorFade::NaturalSurfaceLayout::~NaturalSurfaceLayout()
     Dispose();
 }
 
-ColorFade::NaturalSurfaceLayout::Dispose()
+void ColorFade::NaturalSurfaceLayout::Dispose()
 {
     synchronized(this) {
         mSurfaceControl = NULL;
@@ -72,7 +82,7 @@ ECode ColorFade::NaturalSurfaceLayout::OnDisplayTransaction()
 {
     synchronized(this) {
         if (mSurfaceControl == NULL) {
-            return;
+            return NOERROR;
         }
 
         AutoPtr<IDisplayInfo> displayInfo;
@@ -161,10 +171,11 @@ Boolean ColorFade::Prepare(
 
     // Get the display size and layer stack.
     // This is not expected to change while the color fade surface is showing.
-    DisplayInfo displayInfo = mDisplayManagerInternal->getDisplayInfo(mDisplayId);
-    mDisplayLayerStack = displayInfo.layerStack;
-    mDisplayWidth = displayInfo.getNaturalWidth();
-    mDisplayHeight = displayInfo.getNaturalHeight();
+    AutoPtr<IDisplayInfo> displayInfo;
+    mDisplayManagerInternal->GetDisplayInfo(mDisplayId, (IDisplayInfo**)&displayInfo);
+    displayInfo->GetLayerStack(&mDisplayLayerStack);
+    displayInfo->GetNaturalWidth(&mDisplayWidth);
+    displayInfo->GetNaturalHeight(&mDisplayHeight);
 
     // Prepare the surface for drawing.
     if (!(CreateSurface() && CreateEglContext() && CreateEglSurface() &&
@@ -177,15 +188,16 @@ Boolean ColorFade::Prepare(
     if (!AttachEglContext()) {
         return FALSE;
     }
-    try {
-        if(!InitGLShaders(context) || !InitGLBuffers() || CheckGlErrors("prepare")) {
+    // try {
+        if(!InitGLShaders(context) || !InitGLBuffers() || CheckGlErrors(String("prepare"))) {
             DetachEglContext();
             Dismiss();
+            DetachEglContext();
             return FALSE;
         }
-    } finally {
+    // } finally {
         DetachEglContext();
-    }
+    // }
 
     // Done.
     mPrepared = TRUE;
@@ -205,18 +217,32 @@ Boolean ColorFade::Prepare(
     return TRUE;
 }
 
-String ColorFade::ReadFile(
+ECode ColorFade::ReadFile(
     /* [in] */ IContext* context,
-    /* [in] */ Int32 resourceId)
+    /* [in] */ Int32 resourceId,
+    /* [out] */ String* result)
 {
-    try{
-        InputStream stream = context.getResources().openRawResource(resourceId);
-        return new String(Streams.readFully(new InputStreamReader(stream)));
+    VALIDATE_NOT_NULL(result)
+    *result = String(NULL);
+
+    // try{
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<IInputStream> stream;
+    res->OpenRawResource(resourceId, (IInputStream**)&stream);
+    AutoPtr<IStreams> streams;
+    CStreams::AcquireSingleton((IStreams**)&streams);
+    AutoPtr<IReader> reader;
+    CInputStreamReader::New(stream, (IReader**)&reader);
+    String str;
+    ECode ec = streams->ReadFully(reader, &str);
+    if (ec == (ECode)E_IO_EXCEPTION) {
+        Slogger::E(TAG, "Unrecognized shader %d", resourceId);
+        return E_RUNTIME_EXCEPTION;
     }
-    catch (IOException e) {
-        Slogger::E(TAG, "Unrecognized shader " + Integer.toString(resourceId));
-        throw new RuntimeException(e);
-    }
+
+    *result = str;
+    return NOERROR;
 }
 
 Int32 ColorFade::LoadShader(
@@ -224,20 +250,27 @@ Int32 ColorFade::LoadShader(
     /* [in] */ Int32 resourceId,
     /* [in] */ Int32 type)
 {
-    String source = ReadFile(context, resourceId);
+    String source;
+    ReadFile(context, resourceId, &source);
 
-    Int32 shader = GLES20.glCreateShader(type);
+    AutoPtr<IGLES20> gles20;
+    // CGLES20::AcquireSingleton((IGLES20**)&gles20);
+    Int32 shader;
+    gles20->glCreateShader(type, &shader);
 
-    GLES20.glShaderSource(shader, source);
-    GLES20.glCompileShader(shader);
+    gles20->glShaderSource(shader, source);
+    gles20->glCompileShader(shader);
 
-    Int32[] compiled = new Int32[1];
-    GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0);
-    if (compiled[0] == 0) {
-        Slogger::E(TAG, "Could not compile shader " + shader + ", " + type + ":");
-        Slogger::E(TAG, GLES20.glGetShaderSource(shader));
-        Slogger::E(TAG, GLES20.glGetShaderInfoLog(shader));
-        GLES20.glDeleteShader(shader);
+    AutoPtr<ArrayOf<Int32> > compiled = ArrayOf<Int32>::Alloc(1);
+    gles20->glGetShaderiv(shader, IGLES20::_GL_COMPILE_STATUS, compiled, 0);
+    if ((*compiled)[0] == 0) {
+        String str;
+        Slogger::E(TAG, "Could not compile shader %d, %d :", shader, type);
+        gles20->glGetShaderSource(shader, &str);
+        Slogger::E(TAG, str.string());
+        gles20->glGetShaderInfoLog(shader, &str);
+        Slogger::E(TAG, str.string());
+        gles20->glDeleteShader(shader);
         shader = 0;
     }
 
@@ -247,45 +280,49 @@ Int32 ColorFade::LoadShader(
 Boolean ColorFade::InitGLShaders(
     /* [in] */ IContext* context)
 {
-    Int32 vshader = loadShader(context, com.android.internal.R.raw.color_fade_vert,
-            GLES20.GL_VERTEX_SHADER);
-    Int32 fshader = loadShader(context, com.android.internal.R.raw.color_fade_frag,
-            GLES20.GL_FRAGMENT_SHADER);
-    GLES20.glReleaseShaderCompiler();
+    AutoPtr<IGLES20> gles20;
+    // CGLES20::AcquireSingleton((IGLES20**)&gles20);
+    Int32 vshader = LoadShader(context, R::raw::color_fade_vert,
+            IGLES20::_GL_VERTEX_SHADER);
+    Int32 fshader = LoadShader(context, R::raw::color_fade_frag,
+            IGLES20::_GL_FRAGMENT_SHADER);
+    gles20->glReleaseShaderCompiler();
     if (vshader == 0 || fshader == 0) return FALSE;
 
-    mProgram = GLES20.glCreateProgram();
+    gles20->glCreateProgram(&mProgram);
 
-    GLES20.glAttachShader(mProgram, vshader);
-    GLES20.glAttachShader(mProgram, fshader);
-    GLES20.glDeleteShader(vshader);
-    GLES20.glDeleteShader(fshader);
+    gles20->glAttachShader(mProgram, vshader);
+    gles20->glAttachShader(mProgram, fshader);
+    gles20->glDeleteShader(vshader);
+    gles20->glDeleteShader(fshader);
 
-    GLES20.glLinkProgram(mProgram);
+    gles20->glLinkProgram(mProgram);
 
-    mVertexLoc = GLES20.glGetAttribLocation(mProgram, "position");
-    mTexCoordLoc = GLES20.glGetAttribLocation(mProgram, "uv");
+    gles20->glGetAttribLocation(mProgram, String("position"), &mVertexLoc);
+    gles20->glGetAttribLocation(mProgram, String("uv"), &mTexCoordLoc);
 
-    mProjMatrixLoc = GLES20.glGetUniformLocation(mProgram, "proj_matrix");
-    mTexMatrixLoc = GLES20.glGetUniformLocation(mProgram, "tex_matrix");
+    gles20->glGetUniformLocation(mProgram, String("proj_matrix"), &mProjMatrixLoc);
+    gles20->glGetUniformLocation(mProgram, String("tex_matrix"), &mTexMatrixLoc);
 
-    mOpacityLoc = GLES20.glGetUniformLocation(mProgram, "opacity");
-    mGammaLoc = GLES20.glGetUniformLocation(mProgram, "gamma");
-    mSaturationLoc = GLES20.glGetUniformLocation(mProgram, "saturation");
-    mScaleLoc = GLES20.glGetUniformLocation(mProgram, "scale");
-    mTexUnitLoc = GLES20.glGetUniformLocation(mProgram, "texUnit");
+    gles20->glGetUniformLocation(mProgram, String("opacity"), &mOpacityLoc);
+    gles20->glGetUniformLocation(mProgram, String("gamma"), &mGammaLoc);
+    gles20->glGetUniformLocation(mProgram, String("saturation"), &mSaturationLoc);
+    gles20->glGetUniformLocation(mProgram, String("scale"), &mScaleLoc);
+    gles20->glGetUniformLocation(mProgram, String("texUnit"), &mTexUnitLoc);
 
-    GLES20.glUseProgram(mProgram);
-    GLES20.glUniform1i(mTexUnitLoc, 0);
-    GLES20.glUseProgram(0);
+    gles20->glUseProgram(mProgram);
+    gles20->glUniform1i(mTexUnitLoc, 0);
+    gles20->glUseProgram(0);
 
     return TRUE;
 }
 
 void ColorFade::DestroyGLShaders()
 {
-    GLES20.glDeleteProgram(mProgram);
-    CheckGlErrors("glDeleteProgram");
+    AutoPtr<IGLES20> gles20;
+    // CGLES20::AcquireSingleton((IGLES20**)&gles20);
+    gles20->glDeleteProgram(mProgram);
+    CheckGlErrors(String("glDeleteProgram"));
 }
 
 Boolean ColorFade::InitGLBuffers()
@@ -293,40 +330,49 @@ Boolean ColorFade::InitGLBuffers()
     //Fill vertices
     SetQuad(mVertexBuffer, 0, 0, mDisplayWidth, mDisplayHeight);
 
+    AutoPtr<IGLES20> gles20;
+    // CGLES20::AcquireSingleton((IGLES20**)&gles20);
+
     // Setup GL Textures
-    GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTexNames[0]);
-    GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
-            GLES20.GL_NEAREST);
-    GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER,
-            GLES20.GL_NEAREST);
-    GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
-            GLES20.GL_CLAMP_TO_EDGE);
-    GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T,
-            GLES20.GL_CLAMP_TO_EDGE);
-    GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
+    gles20->glBindTexture(IGLES11Ext::_GL_TEXTURE_EXTERNAL_OES, (*mTexNames)[0]);
+    gles20->glTexParameteri(IGLES11Ext::_GL_TEXTURE_EXTERNAL_OES,
+        IGLES20::_GL_TEXTURE_MAG_FILTER, IGLES20::_GL_NEAREST);
+    gles20->glTexParameteri(IGLES11Ext::_GL_TEXTURE_EXTERNAL_OES,
+        IGLES20::_GL_TEXTURE_MIN_FILTER, IGLES20::_GL_NEAREST);
+    gles20->glTexParameteri(IGLES11Ext::_GL_TEXTURE_EXTERNAL_OES,
+        IGLES20::_GL_TEXTURE_WRAP_S, IGLES20::_GL_CLAMP_TO_EDGE);
+    gles20->glTexParameteri(IGLES11Ext::_GL_TEXTURE_EXTERNAL_OES,
+        IGLES20::_GL_TEXTURE_WRAP_T, IGLES20::_GL_CLAMP_TO_EDGE);
+    gles20->glBindTexture(IGLES11Ext::_GL_TEXTURE_EXTERNAL_OES, 0);
 
     // Setup GL Buffers
-    GLES20.glGenBuffers(2, mGLBuffers, 0);
+    gles20->glGenBuffers(2, mGLBuffers, 0);
 
     // fill vertex buffer
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGLBuffers[0]);
-    GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVertexBuffer.capacity() * 4,
-                        mVertexBuffer, GLES20.GL_STATIC_DRAW);
+    gles20->glBindBuffer(IGLES20::_GL_ARRAY_BUFFER, (*mGLBuffers)[0]);
+    Int32 capacity;
+    IBuffer* buffer = IBuffer::Probe(mVertexBuffer);
+    buffer->GetCapacity(&capacity);
+    gles20->glBufferData(IGLES20::_GL_ARRAY_BUFFER, capacity * 4,
+        buffer, IGLES20::_GL_STATIC_DRAW);
 
     // fill tex buffer
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGLBuffers[1]);
-    GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mTexCoordBuffer.capacity() * 4,
-                        mTexCoordBuffer, GLES20.GL_STATIC_DRAW);
+    gles20->glBindBuffer(IGLES20::_GL_ARRAY_BUFFER, (*mGLBuffers)[1]);
+    buffer = IBuffer::Probe(mTexCoordBuffer);
+    gles20->glBufferData(IGLES20::_GL_ARRAY_BUFFER, capacity * 4,
+        buffer, IGLES20::_GL_STATIC_DRAW);
 
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+    gles20->glBindBuffer(IGLES20::_GL_ARRAY_BUFFER, 0);
 
     return TRUE;
 }
 
 void ColorFade::DestroyGLBuffers()
 {
-    GLES20.glDeleteBuffers(2, mGLBuffers, 0);
-    CheckGlErrors("glDeleteBuffers");
+    AutoPtr<IGLES20> gles20;
+    // CGLES20::AcquireSingleton((IGLES20**)&gles20);
+    gles20->glDeleteBuffers(2, mGLBuffers, 0);
+    CheckGlErrors(String("glDeleteBuffers"));
 }
 
 void ColorFade::SetQuad(
@@ -337,16 +383,16 @@ void ColorFade::SetQuad(
     /* [in] */ Float h)
 {
     if (DEBUG) {
-        Slogger::D(TAG, "SetQuad: x=" + x + ", y=" + y + ", w=" + w + ", h=" + h);
+        Slogger::D(TAG, "SetQuad: x=%f, y=%f, w=%f, h=%f", x, y, w, h);
     }
-    vtx.put(0, x);
-    vtx.put(1, y);
-    vtx.put(2, x);
-    vtx.put(3, y + h);
-    vtx.put(4, x + w);
-    vtx.put(5, y + h);
-    vtx.put(6, x + w);
-    vtx.put(7, y);
+    vtx->Put(0, x);
+    vtx->Put(1, y);
+    vtx->Put(2, x);
+    vtx->Put(3, y + h);
+    vtx->Put(4, x + w);
+    vtx->Put(5, y + h);
+    vtx->Put(6, x + w);
+    vtx->Put(7, y);
 }
 
 void ColorFade::Dismiss()
@@ -357,16 +403,19 @@ void ColorFade::Dismiss()
 
     if (mPrepared) {
         AttachEglContext();
-        try {
+        // try {
             DestroyScreenshotTexture();
             DestroyGLShaders();
-            destroyGLBuffers();
+            DestroyGLBuffers();
             DestroyEglSurface();
-        } finally {
+        // } finally {
             DetachEglContext();
-        }
+        // }
         DestroySurface();
-        GLES20.glFlush();
+
+        AutoPtr<IGLES20> gles20;
+        // CGLES20::AcquireSingleton((IGLES20**)&gles20);
+        gles20->glFlush();
         mPrepared = FALSE;
     }
 }
@@ -375,7 +424,7 @@ Boolean ColorFade::Draw(
     /* [in] */ Float level)
 {
     if (DEBUG) {
-        Slogger::D(TAG, "drawFrame: level=" + level);
+        Slogger::D(TAG, "drawFrame: level=%f", level);
     }
 
     if (!mPrepared) {
@@ -389,28 +438,33 @@ Boolean ColorFade::Draw(
     if (!AttachEglContext()) {
         return FALSE;
     }
-    try {
+    // try {
+        AutoPtr<IGLES20> gles20;
+        // CGLES20::AcquireSingleton((IGLES20**)&gles20);
         // Clear frame to solid black.
-        GLES20.glClearColor(0f, 0f, 0f, 1f);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        gles20->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        gles20->glClear(IGLES20::_GL_COLOR_BUFFER_BIT);
 
         // Draw the frame.
         Float one_minus_level = 1 - level;
-        Float cos = FloatMath.cos((Float)Math.PI * one_minus_level);
+        Float cos = FloatMath::Cos((Float)Elastos::Core::Math::PI * one_minus_level);
         Float sign = cos < 0 ? -1 : 1;
-        Float opacity = -FloatMath.pow(one_minus_level, 2) + 1;
-        Float saturation = FloatMath.pow(level, 4);
-        Float scale = (-FloatMath.pow(one_minus_level, 2) + 1) * 0.1f + 0.9f;
-        Float gamma = (0.5f * sign * FloatMath.pow(cos, 2) + 0.5f) * 0.9f + 0.1f;
-        DrawFaded(opacity, 1.f / gamma, saturation, scale);
-        if (CheckGlErrors("drawFrame")) {
+        Float opacity = -FloatMath::Pow(one_minus_level, 2) + 1;
+        Float saturation = FloatMath::Pow(level, 4);
+        Float scale = (-FloatMath::Pow(one_minus_level, 2) + 1) * 0.1f + 0.9f;
+        Float gamma = (0.5f * sign * FloatMath::Pow(cos, 2) + 0.5f) * 0.9f + 0.1f;
+        DrawFaded(opacity, 1.0f / gamma, saturation, scale);
+        if (CheckGlErrors(String("drawFrame"))) {
             return FALSE;
         }
 
-        EGL14.eglSwapBuffers(mEglDisplay, mEglSurface);
-    } finally {
+        AutoPtr<IEGL14> egl14;
+        // CEGL14::AcquireSingleton((IEGL14**)&egl14);
+        Boolean bval;
+        egl14->eglSwapBuffers(mEglDisplay, mEglSurface, &bval);
+    // } finally {
         DetachEglContext();
-    }
+    // }
     return ShowSurface(1.0f);
 }
 
@@ -421,38 +475,42 @@ void ColorFade::DrawFaded(
     /* [in] */ Float scale)
 {
     if (DEBUG) {
-        Slogger::D(TAG, "DrawFaded: opacity=" + opacity + ", gamma=" + gamma +
-                    ", saturation=" + saturation + ", scale=" + scale);
+        Slogger::D(TAG, "DrawFaded: opacity=%f, gamma=%f, saturation=%f, scale=%f",
+            opacity, gamma, saturation, scale);
     }
+
+    AutoPtr<IGLES20> gles20;
+    // CGLES20::AcquireSingleton((IGLES20**)&gles20);
+
     // Use shaders
-    GLES20.glUseProgram(mProgram);
+    gles20->glUseProgram(mProgram);
 
     // Set Uniforms
-    GLES20.glUniformMatrix4fv(mProjMatrixLoc, 1, FALSE, mProjMatrix, 0);
-    GLES20.glUniformMatrix4fv(mTexMatrixLoc, 1, FALSE, mTexMatrix, 0);
-    GLES20.glUniform1f(mOpacityLoc, opacity);
-    GLES20.glUniform1f(mGammaLoc, gamma);
-    GLES20.glUniform1f(mSaturationLoc, saturation);
-    GLES20.glUniform1f(mScaleLoc, scale);
+    gles20->glUniformMatrix4fv(mProjMatrixLoc, 1, FALSE, mProjMatrix, 0);
+    gles20->glUniformMatrix4fv(mTexMatrixLoc, 1, FALSE, mTexMatrix, 0);
+    gles20->glUniform1f(mOpacityLoc, opacity);
+    gles20->glUniform1f(mGammaLoc, gamma);
+    gles20->glUniform1f(mSaturationLoc, saturation);
+    gles20->glUniform1f(mScaleLoc, scale);
 
     // Use textures
-    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-    GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTexNames[0]);
+    gles20->glActiveTexture(IGLES20::_GL_TEXTURE0);
+    gles20->glBindTexture(IGLES11Ext::_GL_TEXTURE_EXTERNAL_OES, (*mTexNames)[0]);
 
     // draw the plane
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGLBuffers[0]);
-    GLES20.glEnableVertexAttribArray(mVertexLoc);
-    GLES20.glVertexAttribPointer(mVertexLoc, 2, GLES20.GL_FLOAT, FALSE, 0, 0);
+    gles20->glBindBuffer(IGLES20::_GL_ARRAY_BUFFER, (*mGLBuffers)[0]);
+    gles20->glEnableVertexAttribArray(mVertexLoc);
+    gles20->glVertexAttribPointer(mVertexLoc, 2, IGLES20::_GL_FLOAT, FALSE, 0, 0);
 
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mGLBuffers[1]);
-    GLES20.glEnableVertexAttribArray(mTexCoordLoc);
-    GLES20.glVertexAttribPointer(mTexCoordLoc, 2, GLES20.GL_FLOAT, FALSE, 0, 0);
+    gles20->glBindBuffer(IGLES20::_GL_ARRAY_BUFFER, (*mGLBuffers)[1]);
+    gles20->glEnableVertexAttribArray(mTexCoordLoc);
+    gles20->glVertexAttribPointer(mTexCoordLoc, 2, IGLES20::_GL_FLOAT, FALSE, 0, 0);
 
-    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 4);
+    gles20->glDrawArrays(IGLES20::_GL_TRIANGLE_FAN, 0, 4);
 
     // clean up
-    GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
-    GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+    gles20->glBindTexture(IGLES11Ext::_GL_TEXTURE_EXTERNAL_OES, 0);
+    gles20->glBindBuffer(IGLES20::_GL_ARRAY_BUFFER, 0);
 }
 
 void ColorFade::Ortho(
@@ -463,22 +521,22 @@ void ColorFade::Ortho(
     /* [in] */ Float znear,
     /* [in] */ Float zfar)
 {
-    mProjMatrix[0] = 2f / (right - left);
-    mProjMatrix[1] = 0;
-    mProjMatrix[2] = 0;
-    mProjMatrix[3] = 0;
-    mProjMatrix[4] = 0;
-    mProjMatrix[5] = 2f / (top - bottom);
-    mProjMatrix[6] = 0;
-    mProjMatrix[7] = 0;
-    mProjMatrix[8] = 0;
-    mProjMatrix[9] = 0;
-    mProjMatrix[10] = -2f / (zfar - znear);
-    mProjMatrix[11] = 0;
-    mProjMatrix[12] = -(right + left) / (right - left);
-    mProjMatrix[13] = -(top + bottom) / (top - bottom);
-    mProjMatrix[14] = -(zfar + znear) / (zfar - znear);
-    mProjMatrix[15] = 1f;
+    (*mProjMatrix)[0] = 2.0f / (right - left);
+    (*mProjMatrix)[1] = 0;
+    (*mProjMatrix)[2] = 0;
+    (*mProjMatrix)[3] = 0;
+    (*mProjMatrix)[4] = 0;
+    (*mProjMatrix)[5] = 2.0f / (top - bottom);
+    (*mProjMatrix)[6] = 0;
+    (*mProjMatrix)[7] = 0;
+    (*mProjMatrix)[8] = 0;
+    (*mProjMatrix)[9] = 0;
+    (*mProjMatrix)[10] = -2.0f / (zfar - znear);
+    (*mProjMatrix)[11] = 0;
+    (*mProjMatrix)[12] = -(right + left) / (right - left);
+    (*mProjMatrix)[13] = -(top + bottom) / (top - bottom);
+    (*mProjMatrix)[14] = -(zfar + znear) / (zfar - znear);
+    (*mProjMatrix)[15] = 1.0f;
 }
 
 Boolean ColorFade::CaptureScreenshotTextureAndSetViewport()
@@ -486,41 +544,50 @@ Boolean ColorFade::CaptureScreenshotTextureAndSetViewport()
     if (!AttachEglContext()) {
         return FALSE;
     }
-    try {
+    // try {
+        AutoPtr<IGLES20> gles20;
+        // CGLES20::AcquireSingleton((IGLES20**)&gles20);
         if (!mTexNamesGenerated) {
-            GLES20.glGenTextures(1, mTexNames, 0);
-            if (CheckGlErrors("glGenTextures")) {
+            gles20->glGenTextures(1, mTexNames, 0);
+            if (CheckGlErrors(String("glGenTextures"))) {
+                DetachEglContext();
                 return FALSE;
             }
             mTexNamesGenerated = TRUE;
         }
 
-        final SurfaceTexture st = new SurfaceTexture(mTexNames[0]);
-        final Surface s = new Surface(st);
-        try {
-            SurfaceControl->screenshot(SurfaceControl->getBuiltInDisplay(
-                    SurfaceControl->BUILT_IN_DISPLAY_ID_MAIN), s);
-        } finally {
-            s.release();
-        }
+        AutoPtr<ISurfaceTexture> st;
+        CSurfaceTexture::New((*mTexNames)[0], (ISurfaceTexture**)&st);
+        AutoPtr<ISurface> s;
+        CSurface::New(st, (ISurface**)&s);
+        // try {
+        AutoPtr<ISurfaceControlHelper> surfaceControl;
+        CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceControl);
+        AutoPtr<IBinder> display;
+        surfaceControl->GetBuiltInDisplay(ISurfaceControl::BUILT_IN_DISPLAY_ID_MAIN,
+            (IBinder**)&display);
+        surfaceControl->Screenshot(display, s);
+        // } finally {
+        s->ReleaseSurface();
+        // }
 
-        st.updateTexImage();
-        st.getTransformMatrix(mTexMatrix);
+        st->UpdateTexImage();
+        st->GetTransformMatrix(mTexMatrix);
 
         // Set up texture coordinates for a quad.
         // We might need to change this if the texture ends up being
         // a different size from the display for some reason.
-        mTexCoordBuffer.put(0, 0f); mTexCoordBuffer.put(1, 0f);
-        mTexCoordBuffer.put(2, 0f); mTexCoordBuffer.put(3, 1f);
-        mTexCoordBuffer.put(4, 1f); mTexCoordBuffer.put(5, 1f);
-        mTexCoordBuffer.put(6, 1f); mTexCoordBuffer.put(7, 0f);
+        mTexCoordBuffer->Put(0, 0.0f); mTexCoordBuffer->Put(1, 0.0f);
+        mTexCoordBuffer->Put(2, 0.0f); mTexCoordBuffer->Put(3, 1.0f);
+        mTexCoordBuffer->Put(4, 1.0f); mTexCoordBuffer->Put(5, 1.0f);
+        mTexCoordBuffer->Put(6, 1.0f); mTexCoordBuffer->Put(7, 0.0f);
 
         // Set up our viewport.
-        GLES20.glViewport(0, 0, mDisplayWidth, mDisplayHeight);
+        gles20->glViewport(0, 0, mDisplayWidth, mDisplayHeight);
         Ortho(0, mDisplayWidth, 0, mDisplayHeight, -1, 1);
-    } finally {
+    // } finally {
         DetachEglContext();
-    }
+    // }
     return TRUE;
 }
 
@@ -528,57 +595,70 @@ void ColorFade::DestroyScreenshotTexture()
 {
     if (mTexNamesGenerated) {
         mTexNamesGenerated = FALSE;
-        GLES20.glDeleteTextures(1, mTexNames, 0);
-        CheckGlErrors("glDeleteTextures");
+        AutoPtr<IGLES20> gles20;
+        // CGLES20::AcquireSingleton((IGLES20**)&gles20);
+        gles20->glDeleteTextures(1, mTexNames, 0);
+        CheckGlErrors(String("glDeleteTextures"));
     }
 }
 
 Boolean ColorFade::CreateEglContext()
 {
+    AutoPtr<IEGL14> egl14;
+    // CEGL14::AcquireSingleton((IEGL14**)&egl14);
+    Boolean bval;
+
     if (mEglDisplay == NULL) {
-        mEglDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
-        if (mEglDisplay == EGL14.EGL_NO_DISPLAY) {
-            LogEglError("eglGetDisplay");
+        egl14->eglGetDisplay(IEGL14::EGL_DEFAULT_DISPLAY, (IEGLDisplay**)&mEglDisplay);
+        if (mEglDisplay == NULL /* CEGL14::EGL_NO_DISPLAY */) {
+            LogEglError(String("eglGetDisplay"));
             return FALSE;
         }
 
-        Int32[] version = new Int32[2];
-        if (!EGL14.eglInitialize(mEglDisplay, version, 0, version, 1)) {
+        AutoPtr<ArrayOf<Int32> > version = ArrayOf<Int32>::Alloc(2);
+        egl14->eglInitialize(mEglDisplay, version, 0, version, 1, &bval);
+        if (!bval) {
             mEglDisplay = NULL;
-            LogEglError("eglInitialize");
+            LogEglError(String("eglInitialize"));
             return FALSE;
         }
     }
 
     if (mEglConfig == NULL) {
-        Int32[] eglConfigAttribList = new Int32[] {
-                EGL14.EGL_RENDERABLE_TYPE,
-                EGL14.EGL_OPENGL_ES2_BIT,
-                EGL14.EGL_RED_SIZE, 8,
-                EGL14.EGL_GREEN_SIZE, 8,
-                EGL14.EGL_BLUE_SIZE, 8,
-                EGL14.EGL_ALPHA_SIZE, 8,
-                EGL14.EGL_NONE
-        };
-        Int32[] numEglConfigs = new Int32[1];
-        EGLConfig[] eglConfigs = new EGLConfig[1];
-        if (!EGL14.eglChooseConfig(mEglDisplay, eglConfigAttribList, 0,
-                eglConfigs, 0, eglConfigs.length, numEglConfigs, 0)) {
-            LogEglError("eglChooseConfig");
+        AutoPtr<ArrayOf<Int32> > eglConfigAttribList = ArrayOf<Int32>::Alloc(11);
+        eglConfigAttribList->Set(0, IEGL14::EGL_RENDERABLE_TYPE);
+        eglConfigAttribList->Set(1, IEGL14::EGL_OPENGL_ES2_BIT);
+        eglConfigAttribList->Set(2, IEGL14::EGL_RED_SIZE);
+        eglConfigAttribList->Set(3, 8);
+        eglConfigAttribList->Set(4, IEGL14::EGL_GREEN_SIZE);
+        eglConfigAttribList->Set(5, 8);
+        eglConfigAttribList->Set(6, IEGL14::EGL_BLUE_SIZE);
+        eglConfigAttribList->Set(7, 8);
+        eglConfigAttribList->Set(8, IEGL14::EGL_ALPHA_SIZE);
+        eglConfigAttribList->Set(9, 8);
+        eglConfigAttribList->Set(10, IEGL14::EGL_NONE);
+
+        AutoPtr<ArrayOf<Int32> > numEglConfigs = ArrayOf<Int32>::Alloc(1);
+        AutoPtr<ArrayOf<IEGLConfig*> > eglConfigs = ArrayOf<IEGLConfig*>::Alloc(1);
+
+        egl14->eglChooseConfig(mEglDisplay, eglConfigAttribList, 0,
+                eglConfigs, 0, eglConfigs->GetLength(), numEglConfigs, 0, &bval);
+        if (!bval) {
+            LogEglError(String("eglChooseConfig"));
             return FALSE;
         }
-        mEglConfig = eglConfigs[0];
+        mEglConfig = (*eglConfigs)[0];
     }
 
     if (mEglContext == NULL) {
-        Int32[] eglContextAttribList = new Int32[] {
-                EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
-                EGL14.EGL_NONE
-        };
-        mEglContext = EGL14.eglCreateContext(mEglDisplay, mEglConfig,
-                EGL14.EGL_NO_CONTEXT, eglContextAttribList, 0);
+        AutoPtr<ArrayOf<Int32> > eglContextAttribList = ArrayOf<Int32>::Alloc(3);
+        eglContextAttribList->Set(0, IEGL14::EGL_CONTEXT_CLIENT_VERSION);
+        eglContextAttribList->Set(1, 2);
+        eglContextAttribList->Set(2, IEGL14::EGL_NONE);
+        egl14->eglCreateContext(mEglDisplay, mEglConfig,
+            NULL/*CEGL14::EGL_NO_CONTEXT*/, eglContextAttribList, 0, (IEGLContext**)&mEglContext);
         if (mEglContext == NULL) {
-            LogEglError("eglCreateContext");
+            LogEglError(String("eglCreateContext"));
             return FALSE;
         }
     }
@@ -588,53 +668,61 @@ Boolean ColorFade::CreateEglContext()
 Boolean ColorFade::CreateSurface()
 {
     if (mSurfaceSession == NULL) {
-        mSurfaceSession = new SurfaceSession();
+        CSurfaceSession::New((ISurfaceSession**)&mSurfaceSession);
     }
 
-    SurfaceControl->OpenTransaction();
-    try {
+    AutoPtr<ISurfaceControlHelper> surfaceControl;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceControl);
+    surfaceControl->OpenTransaction();
+    // try {
         if (mSurfaceControl == NULL) {
-            try {
-                Int32 flags;
-                if (mMode == MODE_FADE) {
-                    flags = SurfaceControl->FX_SURFACE_DIM | SurfaceControl->HIDDEN;
-                } else {
-                    flags = SurfaceControl->OPAQUE | SurfaceControl->HIDDEN;
-                }
-                mSurfaceControl = new SurfaceControl(mSurfaceSession,
-                        "ColorFade", mDisplayWidth, mDisplayHeight,
-                        PixelFormat.OPAQUE, flags);
-            } catch (OutOfResourcesException ex) {
-                Slogger::E(TAG, "Unable to create surface.", ex);
+            Int32 flags;
+            if (mMode == MODE_FADE) {
+                flags = ISurfaceControl::FX_SURFACE_DIM | ISurfaceControl::HIDDEN;
+            }
+            else {
+                flags = ISurfaceControl::OPAQUE | ISurfaceControl::HIDDEN;
+            }
+
+            ECode ec = CSurfaceControl::New(mSurfaceSession,
+                String("ColorFade"), mDisplayWidth, mDisplayHeight,
+                IPixelFormat::OPAQUE, flags, (ISurfaceControl**)&mSurfaceControl);
+
+            if (ec == (ECode)E_OUT_OF_RESOURCES_EXCEPTION) {
+                Slogger::E(TAG, "Unable to create surface.");
+                surfaceControl->CloseTransaction();
                 return FALSE;
             }
         }
 
         mSurfaceControl->SetLayerStack(mDisplayLayerStack);
         mSurfaceControl->SetSize(mDisplayWidth, mDisplayHeight);
-        mSurface = new Surface();
-        mSurface.copyFrom(mSurfaceControl);
+        mSurface = NULL;
+        CSurface::New((ISurface**)&mSurface);
+        mSurface->CopyFrom(mSurfaceControl);
 
         mSurfaceLayout = new NaturalSurfaceLayout(mDisplayManagerInternal,
                 mDisplayId, mSurfaceControl);
-        mSurfaceLayout.onDisplayTransaction();
-    } finally {
-        SurfaceControl->CloseTransaction();
-    }
+        mSurfaceLayout->OnDisplayTransaction();
+    // } finally {
+        surfaceControl->CloseTransaction();
+    // }
     return TRUE;
 }
 
 Boolean ColorFade::CreateEglSurface()
 {
     if (mEglSurface == NULL) {
-        Int32[] eglSurfaceAttribList = new Int32[] {
-                EGL14.EGL_NONE
-        };
+        AutoPtr<ArrayOf<Int32> > eglSurfaceAttribList = ArrayOf<Int32>::Alloc(1);
+        eglSurfaceAttribList->Set(0, IEGL14::EGL_NONE);
+
         // turn our SurfaceControl into a Surface
-        mEglSurface = EGL14.eglCreateWindowSurface(mEglDisplay, mEglConfig, mSurface,
-                eglSurfaceAttribList, 0);
+        AutoPtr<IEGL14> egl14;
+        // CEGL14::AcquireSingleton((IEGL14**)&egl14);
+        egl14->eglCreateWindowSurface(mEglDisplay, mEglConfig, mSurface,
+            eglSurfaceAttribList, 0, (IEGLSurface**)&mEglSurface);
         if (mEglSurface == NULL) {
-            LogEglError("eglCreateWindowSurface");
+            LogEglError(String("eglCreateWindowSurface"));
             return FALSE;
         }
     }
@@ -644,8 +732,12 @@ Boolean ColorFade::CreateEglSurface()
 void ColorFade::DestroyEglSurface()
 {
     if (mEglSurface != NULL) {
-        if (!EGL14.eglDestroySurface(mEglDisplay, mEglSurface)) {
-            LogEglError("eglDestroySurface");
+        AutoPtr<IEGL14> egl14;
+        // CEGL14::AcquireSingleton((IEGL14**)&egl14);
+        Boolean bval;
+        egl14->eglDestroySurface(mEglDisplay, mEglSurface, &bval);
+        if (!bval) {
+            LogEglError(String("eglDestroySurface"));
         }
         mEglSurface = NULL;
     }
@@ -654,33 +746,38 @@ void ColorFade::DestroyEglSurface()
 void ColorFade::DestroySurface()
 {
     if (mSurfaceControl != NULL) {
-        mSurfaceLayout.Dispose();
+        mSurfaceLayout->Dispose();
         mSurfaceLayout = NULL;
-        SurfaceControl->OpenTransaction();
-        try {
-            mSurfaceControl->destroy();
-            mSurface.release();
-        } finally {
-            SurfaceControl->CloseTransaction();
-        }
+
+        AutoPtr<ISurfaceControlHelper> surfaceControl;
+        CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceControl);
+        surfaceControl->OpenTransaction();
+        // try {
+            mSurfaceControl->Destroy();
+            mSurface->ReleaseSurface();
+        // } finally {
+            surfaceControl->CloseTransaction();
+        // }
         mSurfaceControl = NULL;
         mSurfaceVisible = FALSE;
-        mSurfaceAlpha = 0f;
+        mSurfaceAlpha = 0.0f;
     }
 }
 
 Boolean ColorFade::ShowSurface(
     /* [in] */ Float alpha)
 {
+    AutoPtr<ISurfaceControlHelper> surfaceControl;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&surfaceControl);
     if (!mSurfaceVisible || mSurfaceAlpha != alpha) {
-        SurfaceControl->OpenTransaction();
-        try {
+        surfaceControl->OpenTransaction();
+        // try {
             mSurfaceControl->SetLayer(COLOR_FADE_LAYER);
             mSurfaceControl->SetAlpha(alpha);
             mSurfaceControl->Show();
-        } finally {
-            SurfaceControl->CloseTransaction();
-        }
+        // } finally {
+            surfaceControl->CloseTransaction();
+        // }
         mSurfaceVisible = TRUE;
         mSurfaceAlpha = alpha;
     }
@@ -692,8 +789,12 @@ Boolean ColorFade::AttachEglContext()
     if (mEglSurface == NULL) {
         return FALSE;
     }
-    if (!EGL14.eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext)) {
-        LogEglError("eglMakeCurrent");
+    AutoPtr<IEGL14> egl14;
+    // CEGL14::AcquireSingleton((IEGL14**)&egl14);
+    Boolean bval;
+    egl14->eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext, &bval);
+    if (!bval) {
+        LogEglError(String("eglMakeCurrent"));
         return FALSE;
     }
     return TRUE;
@@ -702,26 +803,41 @@ Boolean ColorFade::AttachEglContext()
 void ColorFade::DetachEglContext()
 {
     if (mEglDisplay != NULL) {
-        EGL14.eglMakeCurrent(mEglDisplay,
-                EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT);
+        Boolean bval;
+        AutoPtr<IEGL14> egl14;
+        // CEGL14::AcquireSingleton((IEGL14**)&egl14);
+        egl14->eglMakeCurrent(mEglDisplay,
+            NULL/*CEGL14::EGL_NO_SURFACE*/,
+            NULL/*CEGL14::EGL_NO_SURFACE*/,
+            NULL/*CEGL14::EGL_NO_CONTEXT*/,
+            &bval);
     }
 }
 
 AutoPtr<IFloatBuffer> ColorFade::CreateNativeFloatBuffer(
     /* [in] */ Int32 size)
 {
-    ByteBuffer bb = ByteBuffer.allocateDirect(size * 4);
-    bb.order(ByteOrder.nativeOrder());
-    return bb.asFloatBuffer();
+    AutoPtr<IByteBufferHelper> helper;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
+    AutoPtr<IByteBuffer> bb;
+    helper->AllocateDirect(size * 4, (IByteBuffer**)&bb);
+    AutoPtr<IByteOrderHelper> byteOrderHelper;
+    CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&byteOrderHelper);
+    ByteOrder order;
+    byteOrderHelper->GetNativeOrder(&order);
+    bb->GetOrder(&order);
+    AutoPtr<IFloatBuffer>  buffer;
+    bb->AsFloatBuffer((IFloatBuffer**)&buffer);
+    return buffer;
 }
 
 void ColorFade::LogEglError(
     /* [in] */ const String& func)
 {
     AutoPtr<IEGL14> egl14;
-    CEGL14::AcquireSingelton((IEGL14**)&egl14);
+    // CEGL14::AcquireSingleton((IEGL14**)&egl14);
     Int32 error;
-    egl14->EglGetError(&error);
+    egl14->eglGetError(&error);
     Slogger::E(TAG, "%s failed: error %d", func.string(), error);
 }
 
@@ -737,11 +853,11 @@ Boolean ColorFade::CheckGlErrors(
 {
     Boolean hadError = FALSE;
     AutoPtr<IGLES20> gles20;
-    CGLES20::AcquireSingelton((IGLES20**)&gles20);
+    // CGLES20::AcquireSingleton((IGLES20**)&gles20);
 
     Int32 error;
     gles20->glGetError(&error);
-    while (error != IGLES20::GL_NO_ERROR) {
+    while (error != IGLES20::_GL_NO_ERROR) {
         if (log) {
             Slogger::E(TAG, "%s failed: error %d", func.string(), error);
         }

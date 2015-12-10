@@ -2,31 +2,24 @@
 #define __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERSETTINGSACTIVITY_H__
 
 #include "_Elastos_Droid_Service_Wallpaper_CWallpaperSettingsActivity.h"
-#include <core/IPreferenceActivity.h>
-
-
-
+#include "elastos/droid/service/wallpaper/WallpaperSettingsActivity.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Service {
 namespace Wallpaper {
 
-CarClass(CWallpaperSettingsActivity), public IPreferenceActivity
+CarClass(CWallpaperSettingsActivity)
+    , public WallpaperSettingsActivity
 {
 public:
+    CAR_OBJECT_DECL()
 
-    const static String EXTRA_PREVIEW_MODE;// = "android.service.wallpaper.PREVIEW_MODE";
-
-protected:
-
-    CARAPI OnCreate(
-            /* [in] */ IBundle* icicle);
-}
+};
 
 } // namespace Wallpaper
 } // namespace Service
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CWALLPAPERSETTINGSACTIVITYH__
+#endif // __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERSETTINGSACTIVITY_H__

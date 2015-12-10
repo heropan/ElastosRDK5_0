@@ -1,8 +1,9 @@
-
+#include "elastos/droid/preference/CPreferenceFrameLayoutLayoutParams.h"
 #include "elastos/droid/preference/PreferenceFrameLayout.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Preference::CPreferenceFrameLayoutLayoutParams;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Widget::EIID_IFrameLayoutLayoutParams;
 
@@ -14,8 +15,7 @@ namespace Preference {
 // PreferenceFrameLayout::LayoutParams
 //====================================================
 
-//CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, FrameLayout::LayoutParams, IFrameLayoutLayoutParams)
-CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, Object, IFrameLayoutLayoutParams)
+CAR_INTERFACE_IMPL(PreferenceFrameLayout::LayoutParams, FrameLayout::LayoutParams, IPreferenceFrameLayoutParams)
 
 PreferenceFrameLayout::LayoutParams::LayoutParams()
     : mRemoveBorders(FALSE)
@@ -26,8 +26,7 @@ ECode PreferenceFrameLayout::LayoutParams::constructor(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
 {
-    assert(0);
-    // FrameLayout::LayoutParams::constructor(c, attrs);
+    FAIL_RETURN(FrameLayout::LayoutParams::constructor(c, attrs));
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceFrameLayout_Layout),
@@ -43,28 +42,21 @@ ECode PreferenceFrameLayout::LayoutParams::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    assert(0);
-    // FrameLayout::LayoutParams::constructor(width, height);
-    return NOERROR;
+    return FrameLayout::LayoutParams::constructor(width, height);
 }
 
 ECode PreferenceFrameLayout::LayoutParams::GetGravity(
     /* [out] */ Int32* gravity)
 {
     VALIDATE_NOT_NULL(gravity)
-    assert(0);
-    // *gravity = FrameLayout::LayoutParams::GetGravity();
-    return NOERROR;
+    return FrameLayout::LayoutParams::GetGravity(gravity);
 }
 
 ECode PreferenceFrameLayout::LayoutParams::SetGravity(
     /* [in] */ Int32 gravity)
 {
-    assert(0);
-    // return FrameLayout::LayoutParams::SetGravity(gravity);
-    return NOERROR;
+    return FrameLayout::LayoutParams::SetGravity(gravity);
 }
-
 
 //====================================================
 // PreferenceFrameLayout
@@ -75,9 +67,7 @@ const Int32 PreferenceFrameLayout::DEFAULT_BORDER_BOTTOM;
 const Int32 PreferenceFrameLayout::DEFAULT_BORDER_LEFT;
 const Int32 PreferenceFrameLayout::DEFAULT_BORDER_RIGHT;
 
-// CAR_INTERFACE_IMPL_7(PreferenceFrameLayout,FrameLayout,IView,IViewGroup,IViewParent,IViewManager,IDrawableCallback,IKeyEventCallback,IAccessibilityEventSource)
-// CAR_INTERFACE_IMPL_8(PreferenceFrameLayout,Object,IFrameLayout,IView,IViewGroup,IViewParent,IViewManager,IDrawableCallback,IKeyEventCallback,IAccessibilityEventSource)
-CAR_INTERFACE_IMPL(PreferenceFrameLayout, Object, IPreferenceFrameLayout)
+CAR_INTERFACE_IMPL(PreferenceFrameLayout, FrameLayout, IPreferenceFrameLayout)
 
 PreferenceFrameLayout::PreferenceFrameLayout()
     : mBorderTop(0)
@@ -115,16 +105,7 @@ ECode PreferenceFrameLayout::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    return Init(context, attrs, defStyleAttr, defStyleRes);
-}
-
-ECode PreferenceFrameLayout::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    // FrameLayout::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(FrameLayout::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
@@ -165,66 +146,66 @@ ECode PreferenceFrameLayout::GenerateLayoutParams(
     /* [out] */ IViewGroupLayoutParams** params)
 {
     VALIDATE_NOT_NULL(params)
-    assert(0);
-    // AutoPtr<IContext> ctx;
-    // GetContext((IContext**)&ctx);
-    // AutoPtr<IViewGroupLayoutParams> lp = new LayoutParams(ctx, attrs);
-    // *params = lp;
-    // REFCOUNT_ADD(*params)
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
+    CPreferenceFrameLayoutLayoutParams::New(ctx, attrs, params);
     return NOERROR;
 }
 
 ECode PreferenceFrameLayout::AddView(
     /* [in] */ IView* child)
 {
-    assert(0);
-    // Int32 borderTop, borderBottom, borderLeft, borderRight;
-    // GetPaddingTop(&borderTop);
-    // GetPaddingBottom(&borderBottom);
-    // GetPaddingLeft(&borderLeft);
-    // GetPaddingRight(&borderRight);
+    Int32 borderTop, borderBottom, borderLeft, borderRight;
+    GetPaddingTop(&borderTop);
+    GetPaddingBottom(&borderBottom);
+    GetPaddingLeft(&borderLeft);
+    GetPaddingRight(&borderRight);
 
-    // AutoPtr<IViewGroupLayoutParams> params;
-    // child->GetLayoutParams((IViewGroupLayoutParams**)&params);
-    // AutoPtr<LayoutParams> layoutParams;
-    // if (params && params->Probe(EIID_PreferenceFrameLayoutParams) != NULL) {
-    //     layoutParams = reinterpret_cast<LayoutParams*>(params->Probe(EIID_PreferenceFrameLayoutParams));
-    // }
+    AutoPtr<IViewGroupLayoutParams> params;
+    child->GetLayoutParams((IViewGroupLayoutParams**)&params);
 
-    // // Check on the id of the child before adding it.
-    // if (layoutParams != NULL && layoutParams->mRemoveBorders) {
-    //     if (mPaddingApplied) {
-    //         borderTop -= mBorderTop;
-    //         borderBottom -= mBorderBottom;
-    //         borderLeft -= mBorderLeft;
-    //         borderRight -= mBorderRight;
-    //         mPaddingApplied = FALSE;
-    //     }
-    // }
-    // else {
-    //     // Add the padding to the view group after determining if the
-    //     // padding already exists.
-    //     if (!mPaddingApplied) {
-    //         borderTop += mBorderTop;
-    //         borderBottom += mBorderBottom;
-    //         borderLeft += mBorderLeft;
-    //         borderRight += mBorderRight;
-    //         mPaddingApplied = TRUE;
-    //     }
-    // }
+    AutoPtr<LayoutParams> layoutParams;
+    if (IPreferenceFrameLayoutParams::Probe(params) != NULL) {
+        AutoPtr<IViewGroupLayoutParams> vglp;
+        child->GetLayoutParams((IViewGroupLayoutParams**)&vglp);
+        layoutParams = (LayoutParams*)(vglp.Get());
+    }
+    else {
+        layoutParams = NULL;
+    }
 
-    // Int32 previousTop, previousBottom, previousLeft, previousRight;
-    // GetPaddingTop(&previousTop);
-    // GetPaddingBottom(&previousBottom);
-    // GetPaddingLeft(&previousLeft);
-    // GetPaddingRight(&previousRight);
-    // if (previousTop != borderTop || previousBottom != borderBottom
-    //         || previousLeft != borderLeft || previousRight != borderRight) {
-    //     SetPadding(borderLeft, borderTop, borderRight, borderBottom);
-    // }
+    // Check on the id of the child before adding it.
+    if (layoutParams != NULL && layoutParams->mRemoveBorders) {
+        if (mPaddingApplied) {
+            borderTop -= mBorderTop;
+            borderBottom -= mBorderBottom;
+            borderLeft -= mBorderLeft;
+            borderRight -= mBorderRight;
+            mPaddingApplied = FALSE;
+        }
+    }
+    else {
+        // Add the padding to the view group after determining if the
+        // padding already exists.
+        if (!mPaddingApplied) {
+            borderTop += mBorderTop;
+            borderBottom += mBorderBottom;
+            borderLeft += mBorderLeft;
+            borderRight += mBorderRight;
+            mPaddingApplied = TRUE;
+        }
+    }
 
-    // return FrameLayout::AddView(child);
-    return NOERROR;
+    Int32 previousTop, previousBottom, previousLeft, previousRight;
+    GetPaddingTop(&previousTop);
+    GetPaddingBottom(&previousBottom);
+    GetPaddingLeft(&previousLeft);
+    GetPaddingRight(&previousRight);
+    if (previousTop != borderTop || previousBottom != borderBottom
+            || previousLeft != borderLeft || previousRight != borderRight) {
+        SetPadding(borderLeft, borderTop, borderRight, borderBottom);
+    }
+    return FrameLayout::AddView(child);
 }
 
 } // Preference

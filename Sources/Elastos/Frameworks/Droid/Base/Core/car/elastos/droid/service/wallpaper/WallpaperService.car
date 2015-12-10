@@ -10,12 +10,14 @@ module
     interface Elastos.Droid.View.IWindowInsets;
     interface Elastos.Droid.View.IMotionEvent;
     interface Elastos.Droid.Graphics.IRect;
-    interface Elastos.Droid.Service.Wallpaper.IWallpaperConnection;
+    interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
 
     namespace Elastos {
     namespace Droid {
     namespace Service {
     namespace Wallpaper {
+
+    interface IWallpaperCommand {}
 
     /**
      * @Involve
@@ -23,47 +25,8 @@ module
      * interface IIWallpaperEngine
      */
     [local, deprecated]
-    interface IWallpaperEngineWrapper {
+    interface IIWallpaperEngineWrapper {
         ReportShown();
-
-        GetConnection(
-            [out] IWallpaperConnection** connection);
-
-        GetWindowToken(
-            [out] IBinder** windowToken);
-
-        SetWindowType(
-            [in] Int32 windowType);
-
-        GetWindowType(
-            [out] Int32* windowType);
-
-        SetIsPreview(
-            [in] Boolean isPreview);
-
-        GetIsPreview(
-            [out] Boolean* isPreview);
-
-        SetShownReported(
-            [in] Boolean shownReported);
-
-        GetShownReported(
-            [out] Boolean* shownReported);
-
-        SetReqWidth(
-            [in] Int32 reqWidth);
-
-        GetReqWidth(
-            [out] Int32* reqWidth);
-
-        SetReqHeight(
-            [in] Int32 reqHeight);
-
-        GetReqHeight(
-            [out] Int32* reqHeight);
-
-        GetHandlerCaller(
-            [out] IHandlerCaller** caller);
     }
 
     /**
@@ -73,7 +36,7 @@ module
      * @Involve
      * interface IIWallpaperService
      */
-    interface IWallpaperServiceWrapper {}
+    interface IIWallpaperServiceWrapper {}
 
     /**
      * The actual implementation of a wallpaper.  A wallpaper service may
@@ -260,7 +223,7 @@ module
          * Convenience for {@link SurfaceHolder.Callback#surfaceCreated
          * SurfaceHolder.Callback.surfaceCreated()}.
          */
-        pOnSurfaceCreated(
+        OnSurfaceCreated(
             [in] ISurfaceHolder* holder);
 
         /**
@@ -270,19 +233,13 @@ module
         OnSurfaceDestroyed(
             [in] ISurfaceHolder* holder);
 
-        Dump(
-            [in] String prefix,
-            [in] IFileDescriptor* fd,
-            [in] IPrintWriter* _out,
-            [in] ArrayOf<String> args);
-
         UpdateSurface(
             [in] Boolean forceRelayout,
             [in] Boolean forceReport,
             [in] Boolean redrawNeeded);
 
         Attach(
-            [in] IWallpaperEngineWrapper* wrapper);
+            [in] IIWallpaperEngineWrapper* wrapper);
 
         DoDesiredSizeChanged(
             [in] Int32 desiredWidth,
@@ -300,7 +257,7 @@ module
             [in] Boolean always);
 
         DoCommand(
-            [in] Handle32* cmd);
+            [in] IWallpaperCommand* cmd);
 
         ReportSurfaceDestroyed();
 

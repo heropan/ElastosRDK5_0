@@ -1,5 +1,4 @@
 
-
 #include "elastos/droid/server/display/AutomaticBrightnessController.h"
 #include <elastos/droid/os/SystemClock.h>
 #include <elastos/droid/utility/MathUtils.h>
@@ -487,7 +486,7 @@ Float AutomaticBrightnessController::CalculateAmbientLux(
 {
     Int32 N = mAmbientLightRingBuffer->Size();
     if (N == 0) {
-        Slog.e(TAG, "CalculateAmbientLux: No ambient light readings available");
+        Slogger::E(TAG, "CalculateAmbientLux: No ambient light readings available");
         return -1;
     }
     Float sum = 0;

@@ -14,7 +14,7 @@ namespace Elastos {
 namespace Droid {
 namespace Opengl {
 
-ECode CGLES10Ext::GlQueryMatrixxOES(
+ECode CGLES10Ext::glQueryMatrixxOES(
     /* [in] */ ArrayOf<Int32>* mantissa_ref,
     /* [in] */ Int32 mantissaOffset,
     /* [in] */ ArrayOf<Int32>* exponent_ref,
@@ -69,7 +69,7 @@ ECode CGLES10Ext::GlQueryMatrixxOES(
     return NOERROR;
 }
 
-ECode CGLES10Ext::GlQueryMatrixxOES(
+ECode CGLES10Ext::glQueryMatrixxOES(
     /* [in] */ Elastos::IO::IInt32Buffer* mantissa_buf,
     /* [in] */ Elastos::IO::IInt32Buffer* exponent_buf,
     /* [out] */ Int32* matrixx)

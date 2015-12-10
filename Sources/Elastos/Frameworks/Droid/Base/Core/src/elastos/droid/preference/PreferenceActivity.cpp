@@ -6,11 +6,11 @@
 #include "elastos/droid/preference/CPreferenceActivityHeader.h"
 #include "elastos/droid/preference/CPreferenceManager.h"
 #include "elastos/droid/preference/PreferenceActivity.h"
-#include "elastos/droid/R.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
-// #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -25,15 +25,15 @@ using Elastos::Droid::Content::IIntentHelper;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::Xml;
-using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-// using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
+using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
 using Elastos::Droid::Widget::IAbsListView;
 using Elastos::Droid::Widget::IAdapter;
 using Elastos::Droid::Widget::IArrayAdapter;
@@ -43,6 +43,7 @@ using Elastos::Droid::Widget::EIID_IBaseAdapter;
 using Elastos::Droid::Widget::EIID_IListAdapter;
 using Elastos::Droid::Widget::EIID_ISpinnerAdapter;
 using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
+using Elastos::Droid::R;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Core::CString;
 using Elastos::Utility::CArrayList;
@@ -84,10 +85,11 @@ ECode PreferenceActivity::MHandler::HandleMessage(
     msg->GetWhat(&what);
 
     switch(what) {
-        case MSG_BIND_PREFERENCES:
+        case MSG_BIND_PREFERENCES: {
             mHost->BindPreferences();
             break;
-        case MSG_BUILD_HEADERS:
+        }
+        case MSG_BUILD_HEADERS: {
             AutoPtr<IArrayList> oldHeaders;
             AutoPtr<ICollection> coll = ICollection::Probe(mHost->mHeaders);
             CArrayList::New((ICollection*)coll, (IArrayList**)&oldHeaders);
@@ -115,6 +117,7 @@ ECode PreferenceActivity::MHandler::HandleMessage(
                 }
             }
             break;
+        }
     }
     return NOERROR;
 }
@@ -122,18 +125,18 @@ ECode PreferenceActivity::MHandler::HandleMessage(
 //====================================================
 // PreferenceActivity::HeaderAdapter
 //====================================================
-// CAR_INTERFACE_IMPL_5(PreferenceActivity::HeaderAdapter, Object, IPreferenceActivityHeaderAdapter, IArrayAdapter, IListAdapter, ISpinnerAdapter, IBaseAdapter)
-CAR_INTERFACE_IMPL(PreferenceActivity::HeaderAdapter, Object, IPreferenceActivityHeaderAdapter)
+
+CAR_INTERFACE_IMPL(PreferenceActivity::HeaderAdapter, ArrayAdapter, IPreferenceActivityHeaderAdapter)
 
 PreferenceActivity::HeaderAdapter::HeaderAdapter(
     /* [in] */ IContext* context,
     /* [in] */ IList* objects,
     /* [in] */ Int32 layoutResId,
     /* [in] */ Boolean removeIconBehavior)
-    // : ArrayAdapter(context, 0, objects)
     : mLayoutResId(layoutResId)
     , mRemoveIconIfEmpty(removeIconBehavior)
 {
+    ArrayAdapter::constructor(context, 0, objects);
     AutoPtr<IInterface> object;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&object);
     mInflater = ILayoutInflater::Probe(object);
@@ -154,13 +157,13 @@ PreferenceActivity::HeaderAdapter::GetView(
         holder = new HeaderViewHolder();
         AutoPtr<IView> tempView;
         v->FindViewById(R::id::icon, (IView**)&tempView);
-        holder->icon = IImageView::Probe(tempView);
+        holder->mIcon = IImageView::Probe(tempView);
         tempView = NULL;
         v->FindViewById(R::id::title, (IView**)&tempView);
-        holder->title = ITextView::Probe(tempView);
+        holder->mTitle = ITextView::Probe(tempView);
         tempView = NULL;
         v->FindViewById(R::id::summary, (IView**)&tempView);
-        holder->summary = ITextView::Probe(tempView);
+        holder->mSummary = ITextView::Probe(tempView);
         tempView = NULL;
         v->SetTag(holder->Probe(EIID_IInterface));
     }
@@ -168,12 +171,13 @@ PreferenceActivity::HeaderAdapter::GetView(
         v = convertView;
         AutoPtr<IInterface> inface;
         v->GetTag((IInterface**)&inface);
-        holder = (HeaderViewHolder*)(IObject*)(inface.Get());
+        AutoPtr<IObject> h = IObject::Probe(inface.Get());
+        holder = (HeaderViewHolder*)(h.Get());
     }
 
     // All view fields must be updated every time, because the view may be recycled
     AutoPtr<IInterface> obj;
-    ((IAdapter*)this)->GetItem(position, (IInterface**)&obj);
+    this->GetItem(position, (IInterface**)&obj);
     AutoPtr<IPreferenceActivityHeader> header = IPreferenceActivityHeader::Probe(obj);
     Int32 iconRes;
     header->GetIconRes(&iconRes);
@@ -181,39 +185,34 @@ PreferenceActivity::HeaderAdapter::GetView(
         Int32 iconRes = 0;
         header->GetIconRes(&iconRes);
         if (iconRes == 0) {
-            IView::Probe(holder->icon)->SetVisibility(IView::GONE);
+            IView::Probe(holder->mIcon)->SetVisibility(IView::GONE);
         } else {
-             IView::Probe(holder->icon)->SetVisibility(IView::VISIBLE);
-             assert(0);//cannot find this function in car files
-            // holder->icon->SetImageResource(iconRes);
+             IView::Probe(holder->mIcon)->SetVisibility(IView::VISIBLE);
+             holder->mIcon->SetImageResource(iconRes);
         }
     } else {
-        assert(0);//cannot find this function in car files
-        // holder->icon->SetImageResource(iconRes);
+        holder->mIcon->SetImageResource(iconRes);
     }
 
-    assert(0);
-#if 0 // GetContext from ?
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
     AutoPtr<IResources> resource;
     context->GetResources((IResources**)&resource);
     AutoPtr<ICharSequence> title;
     header->GetTitle(resource, (ICharSequence**)&title);
-    holder->title->SetText(title);
+    holder->mTitle->SetText(title);
     AutoPtr<ICharSequence> summary;
     header->GetSummary(resource, (ICharSequence**)&summary);
     if (!TextUtils::IsEmpty(summary)) {
-        IView::Probe(holder->summary)->SetVisibility(IView::VISIBLE);
-        holder->summary->SetText(summary);
+        IView::Probe(holder->mSummary)->SetVisibility(IView::VISIBLE);
+        holder->mSummary->SetText(summary);
     }
     else {
-        IView::Probe(holder->summary)->SetVisibility(IView::GONE);
+        IView::Probe(holder->mSummary)->SetVisibility(IView::GONE);
     }
 
     *view = v;
     REFCOUNT_ADD(*view)
-#endif
     return NOERROR;
 }
 
@@ -314,14 +313,7 @@ ECode PreferenceActivity::Header::WriteToParcel(
     dest->WriteInt32(mIconRes);
     dest->WriteString(mFragment);
     dest->WriteInterfacePtr(mFragmentArguments);
-    if (mIntent != NULL) {
-        dest->WriteInt32(1);
-        AutoPtr<IParcelable> parcelable = IParcelable::Probe(mIntent);
-        parcelable->WriteToParcel(dest);
-    }
-    else {
-        dest->WriteInt32(0);
-    }
+    dest->WriteInterfacePtr(mIntent);
     dest->WriteInterfacePtr(mExtras);
 
     return NOERROR;
@@ -332,27 +324,33 @@ ECode PreferenceActivity::Header::ReadFromParcel(
 {
     source->ReadInt64(&mId);
     source->ReadInt32(&mTitleRes);
-    source->ReadInterfacePtr((Handle32*)(ICharSequence**)&mTitle);
+    AutoPtr<IInterface> title;
+    source->ReadInterfacePtr((Handle32*)(IInterface**)&title);
+    mTitle = ICharSequence::Probe(title);
     source->ReadInt32(&mSummaryRes);
-    source->ReadInterfacePtr((Handle32*)(ICharSequence**)&mSummary);
+    AutoPtr<IInterface> summary;
+    source->ReadInterfacePtr((Handle32*)(IInterface**)&summary);
+    mSummary = ICharSequence::Probe(summary);
     source->ReadInt32(&mBreadCrumbTitleRes);
-    source->ReadInterfacePtr((Handle32*)(ICharSequence**)&mBreadCrumbTitle);
+    AutoPtr<IInterface> breadCrumbTitle;
+    source->ReadInterfacePtr((Handle32*)(IInterface**)&breadCrumbTitle);
+    mBreadCrumbTitle = ICharSequence::Probe(breadCrumbTitle);
+
     source->ReadInt32(&mBreadCrumbShortTitleRes);
-    source->ReadInterfacePtr((Handle32*)(ICharSequence**)&mBreadCrumbShortTitle);
+    AutoPtr<IInterface> breadCrumbShortTitle;
+    source->ReadInterfacePtr((Handle32*)(IInterface**)&breadCrumbShortTitle);
+    mBreadCrumbShortTitle = ICharSequence::Probe(breadCrumbShortTitle);
     source->ReadInt32(&mIconRes);
     source->ReadString(&mFragment);
-    source->ReadInterfacePtr((Handle32*)(IBundle**)&mFragmentArguments);
-
-    Int32 value;
-    source->ReadInt32(&value);
-    if (value != 0) {
-        CIntent::New((IIntent**)&mIntent);
-        AutoPtr<IParcelable> p = IParcelable::Probe(mIntent);
-        p->ReadFromParcel(source);
-    }
-
-    source->ReadInterfacePtr((Handle32*)(IBundle**)&mExtras);
-
+    AutoPtr<IInterface> fragmentArguments;
+    source->ReadInterfacePtr((Handle32*)(IInterface**)&fragmentArguments);
+    mFragmentArguments = IBundle::Probe(fragmentArguments);
+    AutoPtr<IInterface> intent;
+    source->ReadInterfacePtr((Handle32*)(IInterface**)&intent);
+    mIntent = IIntent::Probe(intent);
+    AutoPtr<IInterface> extras;
+    source->ReadInterfacePtr((Handle32*)(IInterface**)&extras);
+    mExtras = IBundle::Probe(extras);
     return NOERROR;
 }
 
@@ -706,8 +704,9 @@ ECode PreferenceActivity::OnCreate(
             Int32 size;
             if ((savedInstanceState->GetInt32(CUR_HEADER_TAG, (Int32) HEADER_ID_UNDEFINED, &curHeader), curHeader >= 0)
                 && (mHeaders->GetSize(&size), curHeader < size)) {
-                AutoPtr<IPreferenceActivityHeader> element;
-                mHeaders->Get(curHeader, (IInterface**)&element);
+                AutoPtr<IInterface> obj;
+                mHeaders->Get(curHeader, (IInterface**)&obj);
+                AutoPtr<IPreferenceActivityHeader> element = IPreferenceActivityHeader::Probe(obj);
                 SetSelectedHeader(element.Get());
             }
 
@@ -916,8 +915,9 @@ ECode PreferenceActivity::OnGetInitialHeader(
     Int32 size;
     mHeaders->GetSize(&size);
     for (Int32 i = 0; i < size; i++) {
-        AutoPtr<IPreferenceActivityHeader> h;
-        mHeaders->Get(i, (IInterface**)&h);
+        AutoPtr<IInterface> obj;
+        mHeaders->Get(i, (IInterface**)&obj);
+        AutoPtr<IPreferenceActivityHeader> h = IPreferenceActivityHeader::Probe(obj);
         String fragment;
         if (h->GetFragment(&fragment), !fragment.IsNull()) {
             *header = h.Get();
@@ -959,7 +959,7 @@ ECode PreferenceActivity::LoadHeadersFromResource(
 {
     AutoPtr<IXmlResourceParser> parser;
     AutoPtr<IResources> resource;
-    ((IContext*)this)->GetResources((IResources**)&resource);
+    GetResources((IResources**)&resource);
     resource->GetXml(resid, (IXmlResourceParser**)&parser);
     AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(IXmlPullParser::Probe(parser));
 
@@ -1149,12 +1149,10 @@ ECode PreferenceActivity::SetListFooter(
     /* [in] */ IView* view)
 {
     IViewGroup::Probe(mListFooter)->RemoveAllViews();
-    assert(0);
-    // AutoPtr<IViewGroupLayoutParams> layoutParams;
-    // CFrameLayoutLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
-    //         IViewGroupLayoutParams::WRAP_CONTENT, (IFrameLayoutLayoutParams**)&layoutParams);
-    // return mListFooter->AddView(view, layoutParams);
-    return NOERROR;
+    AutoPtr<IViewGroupLayoutParams> layoutParams;
+    CFrameLayoutLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
+            IViewGroupLayoutParams::WRAP_CONTENT, (IFrameLayoutLayoutParams**)&layoutParams);
+    return IViewGroup::Probe(mListFooter)->AddView(view, layoutParams);
 }
 
 ECode PreferenceActivity::OnStop()
@@ -1359,23 +1357,22 @@ ECode PreferenceActivity::ShowBreadCrumbs(
     /* [in] */ ICharSequence* title,
     /* [in] */ ICharSequence* shortTitle)
 {
-#if 0 // Elastos::Droid::App::IFragmentBreadCrumbs' has not been declared
     if (mFragmentBreadCrumbs == NULL) {
         AutoPtr<IView> crumbs = Activity::FindViewById(R::id::title);
         // For screens with a different kind of title, don't create breadcrumbs.
         mFragmentBreadCrumbs = IFragmentBreadCrumbs::Probe(crumbs);
         if (mFragmentBreadCrumbs == NULL) {
             SetTitle(title);
-            return E_NULL_POINTER;
+            return E_NULL_POINTER_EXCEPTION;
         }
         if (mFragmentBreadCrumbs == NULL) {
             if (title != NULL) {
                 SetTitle(title);
             }
-            return E_NULL_POINTER;
+            return E_NULL_POINTER_EXCEPTION;
         }
         if (mSinglePane) {
-            mFragmentBreadCrumbs->SetVisibility(IView::GONE);
+            IView::Probe(mFragmentBreadCrumbs)->SetVisibility(IView::GONE);
             // Hide the breadcrumb section completely for single-pane
             AutoPtr<IView> bcSection = Activity::FindViewById(R::id::breadcrumb_section);
             if (bcSection != NULL) {
@@ -1386,15 +1383,16 @@ ECode PreferenceActivity::ShowBreadCrumbs(
         mFragmentBreadCrumbs->SetMaxVisible(2);
         mFragmentBreadCrumbs->SetActivity((IActivity*)this);
     }
-    Boolean res = FALSE;
-    mFragmentBreadCrumbs->GetVisibility(&res);
+    Int32 res;
+    IView::Probe(mFragmentBreadCrumbs)->GetVisibility(&res);
     if (res != IView::VISIBLE) {
         SetTitle(title);
     } else {
-        mFragmentBreadCrumbs->SetTitle(title, shortTitle);
+        //some peple forget to write setTitle in FragmentBreadCrumbs.car
+        assert(0);
+        // mFragmentBreadCrumbs->SetTitle(title, shortTitle);
         mFragmentBreadCrumbs->SetParentTitle(NULL, NULL, NULL);
     }
-#endif
     return NOERROR;
 }
 
@@ -1403,11 +1401,9 @@ ECode PreferenceActivity::SetParentTitle(
     /* [in] */ ICharSequence* shortTitle,
     /* [in] */ IViewOnClickListener* listener)
 {
-#if 0 //Elastos::Droid::App::IFragmentBreadCrumbs' has not been declared
     if (mFragmentBreadCrumbs != NULL) {
         return mFragmentBreadCrumbs->SetParentTitle(title, shortTitle, listener);
     }
-#endif
     return NOERROR;
 }
 
@@ -1487,8 +1483,9 @@ ECode PreferenceActivity::SwitchToHeader(
     Int32 size;
     mHeaders->GetSize(&size);
     for (Int32 i = 0; i < size; i++) {
-        AutoPtr<IPreferenceActivityHeader> pah;
-        mHeaders->Get(i, (IInterface**)&pah);
+        AutoPtr<IInterface> obj;
+        mHeaders->Get(i, (IInterface**)&obj);
+        AutoPtr<IPreferenceActivityHeader> pah = IPreferenceActivityHeader::Probe(obj);
         String fragment;
         pah->GetFragment(&fragment);
         if (fragmentName.Equals(fragment)) {
@@ -1569,12 +1566,17 @@ ECode PreferenceActivity::FindBestMatchingHeader(
     Int32 NM;
     matches->GetSize(&NM);
     if (NM == 1) {
-        return matches->Get(0, (IInterface**)h);
+        AutoPtr<IInterface> obj;
+        matches->Get(0, (IInterface**)&obj);
+        *h = IPreferenceActivityHeader::Probe(obj);
+        REFCOUNT_ADD(*h);
+        return NOERROR;
     }
     else if (NM > 1) {
         for (Int32 j=0; j < NM; j++) {
-            AutoPtr<IPreferenceActivityHeader> oh;
-            matches->Get(j, (IInterface**)&oh);
+            AutoPtr<IInterface> obj;
+            matches->Get(j, (IInterface**)&obj);
+            AutoPtr<IPreferenceActivityHeader> oh = IPreferenceActivityHeader::Probe(obj);
             AutoPtr<IBundle> curFragmentArguments, ohFragmentArguments;
             AutoPtr<IBundle> curExtras, ohExtras;
             AutoPtr<ICharSequence> curTitle, ohTitle;

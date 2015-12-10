@@ -13,14 +13,14 @@ namespace Opengl {
 CarClass(CGLES10Ext)
 {
 public:
-    CARAPI GlQueryMatrixxOES(
+    CARAPI glQueryMatrixxOES(
         /* [in] */ ArrayOf<Int32>* mantissa_ref,
         /* [in] */ Int32 mantissaOffset,
         /* [in] */ ArrayOf<Int32>* exponent,
         /* [in] */ Int32 exponentOffset,
         /* [out] */ Int32* matrixx);
 
-    CARAPI GlQueryMatrixxOES(
+    CARAPI glQueryMatrixxOES(
         /* [in] */ Elastos::IO::IInt32Buffer* mantissa_buf,
         /* [in] */ Elastos::IO::IInt32Buffer* exponent_buf,
         /* [out] */ Int32* matrixx);

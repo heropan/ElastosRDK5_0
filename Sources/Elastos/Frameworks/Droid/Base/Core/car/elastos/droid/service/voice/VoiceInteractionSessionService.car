@@ -1,5 +1,7 @@
 module
 {
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
     namespace Droid {
@@ -16,7 +18,15 @@ module
      *
      * interface Elastos.Droid.View.IWindowCallback
      */
+    [local]
     interface IVoiceInteractionSessionService {
+        OnNewSession(
+            [in] IBundle* args,
+            [out] IVoiceInteractionSession** session);
+
+        DoNewSession(
+            [in] IBinder* token,
+            [in] IBundle* args);
     }
 
     } // namespace Voice

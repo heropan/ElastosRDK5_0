@@ -5,6 +5,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/preference/Preference.h"
 
+using Elastos::Droid::Preference::IGenericInflaterParent;
 using Elastos::Utility::IList;
 
 namespace Elastos {
@@ -13,7 +14,7 @@ namespace Preference {
 
 class PreferenceGroup
     : public Preference
-    //, public IGenericInflaterParent
+    , public IGenericInflaterParent
     , public IPreferenceGroup
 {
 public:
@@ -21,18 +22,18 @@ public:
 
     PreferenceGroup();
 
-    PreferenceGroup(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes);
 
-    PreferenceGroup(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr);
 
-    PreferenceGroup(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -43,7 +44,7 @@ public:
         /* [out] */ Boolean* result);
 
     virtual CARAPI AddItemFromInflater(
-        /* [in] */  IPreference* preference);
+        /* [in] */  IInterface* child);
 
     virtual CARAPI GetPreferenceCount(
         /* [out] */  Int32* count);
@@ -70,12 +71,6 @@ public:
         /* [in] */ Boolean disableDependents);
 
 protected:
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
-
     virtual CARAPI OnPrepareAddPreference(
         /* [in] */  IPreference* preference,
         /* [out] */  Boolean* result);

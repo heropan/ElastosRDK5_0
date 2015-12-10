@@ -6,11 +6,11 @@
 #include "gles/CEGLContextImpl.h"
 
 using Elastos::Droid::Os::Looper;
-using Elastos::Droid::Opengl::Gles::CEGLImpl;
-using Elastos::Droid::Opengl::Gles::CEGL10Helper;
-using Elastos::Droid::Opengl::Gles::CEGLContextImpl;
-using Elastosx::Microedition::Khronos::Egl::IEGL10Helper;
-using Elastosx::Microedition::Khronos::Egl::IEGL10;
+using Elastos::Droid::Opengl::gles::CEGLImpl;
+using Elastos::Droid::Opengl::gles::CEGL10Helper;
+using Elastos::Droid::Opengl::gles::CEGLContextImpl;
+using Elastosx::Microedition::Khronos::egl::IEGL10Helper;
+using Elastosx::Microedition::Khronos::egl::IEGL10;
 
 namespace Elastos {
 namespace Droid {

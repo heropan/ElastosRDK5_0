@@ -38,7 +38,7 @@ module
          * {@link FingerprintManager#FINGERPRINT_ACQUIRED_TOO_SLOW},
          * {@link FingerprintManager#FINGERPRINT_ACQUIRED_TOO_FAST}
          */
-        onAcquired(
+        OnAcquired(
             [in] Int32 acquiredInfo);
 
         /**
@@ -59,7 +59,7 @@ module
          *
          * @param error one of the above error codes
          */
-        onError(
+        OnError(
             [in] Int32 error);
 
         /**

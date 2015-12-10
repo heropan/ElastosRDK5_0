@@ -116,9 +116,11 @@ module
      *
      * @hide
      * @Involve
-     * interface Elastos.Droid.Content.IContextWrapper
-     * interface IComponentCallbacks2
-     * interface IService
+     * extends Elastos.Droid.Content.IContext
+     * extends Elastos.Droid.Content.IContextWrapper
+     * extends Elastos.Droid.App.IService
+     *
+     * interface Elastos.Droid.View.IWindowCallback
      */
     [deprecated]
     interface INotificationListenerService {

@@ -21,49 +21,49 @@ namespace Opengl {
 CarClass(CGLES20)
 {
 public:
-    CARAPI GlActiveTexture(
+    CARAPI glActiveTexture(
         /* [in] */ Int32 texture);
 
     // C function void glAttachShader ( GLuint program, GLuint shader )
 
-    CARAPI GlAttachShader(
+    CARAPI glAttachShader(
         /* [in] */ Int32 program,
         /* [in] */ Int32 shader);
 
     // C function void glBindAttribLocation ( GLuint program, GLuint index, const char *name )
 
-    CARAPI GlBindAttribLocation(
+    CARAPI glBindAttribLocation(
         /* [in] */ Int32 program,
         /* [in] */ Int32 index,
         /* [in] */ const String& name);
 
     // C function void glBindBuffer ( GLenum target, GLuint buffer )
 
-    CARAPI GlBindBuffer(
+    CARAPI glBindBuffer(
         /* [in] */ Int32 target,
         /* [in] */ Int32 buffer);
 
     // C function void glBindFramebuffer ( GLenum target, GLuint framebuffer )
 
-    CARAPI GlBindFramebuffer(
+    CARAPI glBindFramebuffer(
         /* [in] */ Int32 target,
         /* [in] */ Int32 framebuffer);
 
     // C function void glBindRenderbuffer ( GLenum target, GLuint renderbuffer )
 
-    CARAPI GlBindRenderbuffer(
+    CARAPI glBindRenderbuffer(
         /* [in] */ Int32 target,
         /* [in] */ Int32 renderbuffer);
 
     // C function void glBindTexture ( GLenum target, GLuint texture )
 
-    CARAPI GlBindTexture(
+    CARAPI glBindTexture(
         /* [in] */ Int32 target,
         /* [in] */ Int32 texture);
 
     // C function void glBlendColor ( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha )
 
-    CARAPI GlBlendColor(
+    CARAPI glBlendColor(
         /* [in] */ Float red,
         /* [in] */ Float green,
         /* [in] */ Float blue,
@@ -71,24 +71,24 @@ public:
 
     // C function void glBlendEquation ( GLenum mode )
 
-    CARAPI GlBlendEquation(
+    CARAPI glBlendEquation(
         /* [in] */ Int32 mode);
 
     // C function void glBlendEquationSeparate ( GLenum modeRGB, GLenum modeAlpha )
 
-    CARAPI GlBlendEquationSeparate(
+    CARAPI glBlendEquationSeparate(
         /* [in] */ Int32 modeRGB,
         /* [in] */ Int32 modeAlpha);
 
     // C function void glBlendFunc ( GLenum sfactor, GLenum dfactor )
 
-    CARAPI GlBlendFunc(
+    CARAPI glBlendFunc(
         /* [in] */ Int32 sfactor,
         /* [in] */ Int32 dfactor);
 
     // C function void glBlendFuncSeparate ( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha )
 
-    CARAPI GlBlendFuncSeparate(
+    CARAPI glBlendFuncSeparate(
         /* [in] */ Int32 srcRGB,
         /* [in] */ Int32 dstRGB,
         /* [in] */ Int32 srcAlpha,
@@ -96,7 +96,7 @@ public:
 
     // C function void glBufferData ( GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage )
 
-    CARAPI GlBufferData(
+    CARAPI glBufferData(
         /* [in] */ Int32 target,
         /* [in] */ Int32 size,
         /* [in] */ IBuffer* data,
@@ -104,7 +104,7 @@ public:
 
     // C function void glBufferSubData ( GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid *data )
 
-    CARAPI GlBufferSubData(
+    CARAPI glBufferSubData(
         /* [in] */ Int32 target,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 size,
@@ -112,18 +112,18 @@ public:
 
     // C function GLenum glCheckFramebufferStatus ( GLenum target )
 
-    CARAPI GlCheckFramebufferStatus(
+    CARAPI glCheckFramebufferStatus(
         /* [in] */ Int32 target,
         /* [out] */ Int32* rst);
 
     // C function void glClear ( GLbitfield mask )
 
-    CARAPI GlClear(
+    CARAPI glClear(
         /* [in] */ Int32 mask);
 
     // C function void glClearColor ( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha )
 
-    CARAPI GlClearColor(
+    CARAPI glClearColor(
         /* [in] */ Float red,
         /* [in] */ Float green,
         /* [in] */ Float blue,
@@ -131,17 +131,17 @@ public:
 
     // C function void glClearDepthf ( GLclampf depth )
 
-    CARAPI GlClearDepthf(
+    CARAPI glClearDepthf(
         /* [in] */ Float depth);
 
     // C function void glClearStencil ( GLint s )
 
-    CARAPI GlClearStencil(
+    CARAPI glClearStencil(
         /* [in] */ Int32 s);
 
     // C function void glColorMask ( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha )
 
-    CARAPI GlColorMask(
+    CARAPI glColorMask(
         /* [in] */ Boolean red,
         /* [in] */ Boolean green,
         /* [in] */ Boolean blue,
@@ -149,13 +149,13 @@ public:
 
     // C function void glCompileShader ( GLuint shader )
 
-    CARAPI GlCompileShader(
+    CARAPI glCompileShader(
         /* [in] */ Int32 shader);
 
     // C function void glCompressedTexImage2D ( GLenum target, GLint level, GLenum internalformat,
     // GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid *data )
 
-    CARAPI GlCompressedTexImage2D(
+    CARAPI glCompressedTexImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 internalformat,
@@ -168,7 +168,7 @@ public:
     // C function void glCompressedTexSubImage2D ( GLenum target, GLint level, GLint xoffset, GLint yoffset,
     // GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid *data )
 
-    CARAPI GlCompressedTexSubImage2D(
+    CARAPI glCompressedTexSubImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 xoffset,
@@ -182,7 +182,7 @@ public:
     // C function void glCopyTexImage2D ( GLenum target, GLint level, GLenum internalformat, GLint x,
     // GLint y, GLsizei width, GLsizei height, GLint border )
 
-    CARAPI GlCopyTexImage2D(
+    CARAPI glCopyTexImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 internalformat,
@@ -195,7 +195,7 @@ public:
     // C function void glCopyTexSubImage2D ( GLenum target, GLint level, GLint xoffset, GLint yoffset,
     // GLint x, GLint y, GLsizei width, GLsizei height )
 
-    CARAPI GlCopyTexSubImage2D(
+    CARAPI glCopyTexSubImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 xoffset,
@@ -207,124 +207,124 @@ public:
 
     // C function GLuint glCreateProgram ( void )
 
-    CARAPI GlCreateProgram(
+    CARAPI glCreateProgram(
         /* [out] */ Int32* rst);
 
     // C function GLuint glCreateShader ( GLenum type )
 
-    CARAPI GlCreateShader(
+    CARAPI glCreateShader(
         /* [in] */ Int32 type,
         /* [out] */ Int32* rst);
 
     // C function void glCullFace ( GLenum mode )
 
-    CARAPI GlCullFace(
+    CARAPI glCullFace(
         /* [in] */ Int32 mode);
 
     // C function void glDeleteBuffers ( GLsizei n, const GLuint *buffers )
 
-    CARAPI GlDeleteBuffers(
+    CARAPI glDeleteBuffers(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* buffers,
         /* [in] */ Int32 offset);
 
     // C function void glDeleteBuffers ( GLsizei n, const GLuint *buffers )
 
-    CARAPI GlDeleteBuffers(
+    CARAPI glDeleteBuffers(
         /* [in] */ Int32 n,
         /* [in] */ IInt32Buffer* buffers);
 
     // C function void glDeleteFramebuffers ( GLsizei n, const GLuint *framebuffers )
 
-    CARAPI GlDeleteFramebuffers(
+    CARAPI glDeleteFramebuffers(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* framebuffers,
         /* [in] */ Int32 offset);
 
     // C function void glDeleteFramebuffers ( GLsizei n, const GLuint *framebuffers )
 
-    CARAPI GlDeleteFramebuffers(
+    CARAPI glDeleteFramebuffers(
         /* [in] */ Int32 n,
         /* [in] */ IInt32Buffer* framebuffers);
 
     // C function void glDeleteProgram ( GLuint program )
 
-    CARAPI GlDeleteProgram(
+    CARAPI glDeleteProgram(
         /* [in] */ Int32 program);
 
     // C function void glDeleteRenderbuffers ( GLsizei n, const GLuint *renderbuffers )
 
-    CARAPI GlDeleteRenderbuffers(
+    CARAPI glDeleteRenderbuffers(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* renderbuffers,
         /* [in] */ Int32 offset);
 
     // C function void glDeleteRenderbuffers ( GLsizei n, const GLuint *renderbuffers )
 
-    CARAPI GlDeleteRenderbuffers(
+    CARAPI glDeleteRenderbuffers(
         /* [in] */ Int32 n,
         /* [in] */ IInt32Buffer* renderbuffers);
 
     // C function void glDeleteShader ( GLuint shader )
 
-    CARAPI GlDeleteShader(
+    CARAPI glDeleteShader(
         /* [in] */ Int32 shader);
 
     // C function void glDeleteTextures ( GLsizei n, const GLuint *textures )
 
-    CARAPI GlDeleteTextures(
+    CARAPI glDeleteTextures(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* textures,
         /* [in] */ Int32 offset);
 
     // C function void glDeleteTextures ( GLsizei n, const GLuint *textures )
 
-    CARAPI GlDeleteTextures(
+    CARAPI glDeleteTextures(
         /* [in] */ Int32 n,
         /* [in] */ IInt32Buffer* textures);
 
     // C function void glDepthFunc ( GLenum func )
 
-    CARAPI GlDepthFunc(
+    CARAPI glDepthFunc(
         /* [in] */ Int32 func);
 
     // C function void glDepthMask ( GLboolean flag )
 
-    CARAPI GlDepthMask(
+    CARAPI glDepthMask(
         /* [in] */ Boolean flag);
 
     // C function void glDepthRangef ( GLclampf zNear, GLclampf zFar )
 
-    CARAPI GlDepthRangef(
+    CARAPI glDepthRangef(
         /* [in] */ Float zNear,
         /* [in] */ Float zFar);
 
     // C function void glDetachShader ( GLuint program, GLuint shader )
 
-    CARAPI GlDetachShader(
+    CARAPI glDetachShader(
         /* [in] */ Int32 program,
         /* [in] */ Int32 shader);
 
     // C function void glDisable ( GLenum cap )
 
-    CARAPI GlDisable(
+    CARAPI glDisable(
         /* [in] */ Int32 cap);
 
     // C function void glDisableVertexAttribArray ( GLuint index )
 
-    CARAPI GlDisableVertexAttribArray(
+    CARAPI glDisableVertexAttribArray(
         /* [in] */ Int32 index);
 
     // C function void glDrawArrays ( GLenum mode, GLint first, GLsizei count )
 
-    CARAPI GlDrawArrays(
+    CARAPI glDrawArrays(
         /* [in] */ Int32 mode,
         /* [in] */ Int32 first,
         /* [in] */ Int32 count);
 
     // C function void glDrawElements ( GLenum mode, GLsizei count, GLenum type, GLint offset )
 
-    CARAPI GlDrawElements(
+    CARAPI glDrawElements(
         /* [in] */ Int32 mode,
         /* [in] */ Int32 count,
         /* [in] */ Int32 type,
@@ -332,7 +332,7 @@ public:
 
     // C function void glDrawElements ( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices )
 
-    CARAPI GlDrawElements(
+    CARAPI glDrawElements(
         /* [in] */ Int32 mode,
         /* [in] */ Int32 count,
         /* [in] */ Int32 type,
@@ -340,25 +340,25 @@ public:
 
     // C function void glEnable ( GLenum cap )
 
-    CARAPI GlEnable(
+    CARAPI glEnable(
         /* [in] */ Int32 cap);
 
     // C function void glEnableVertexAttribArray ( GLuint index )
 
-    CARAPI GlEnableVertexAttribArray(
+    CARAPI glEnableVertexAttribArray(
         /* [in] */ Int32 index);
 
     // C function void glFinish ( void )
 
-    CARAPI GlFinish();
+    CARAPI glFinish();
 
     // C function void glFlush ( void )
 
-    CARAPI GlFlush();
+    CARAPI glFlush();
 
     // C function void glFramebufferRenderbuffer ( GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer )
 
-    CARAPI GlFramebufferRenderbuffer(
+    CARAPI glFramebufferRenderbuffer(
         /* [in] */ Int32 target,
         /* [in] */ Int32 attachment,
         /* [in] */ Int32 renderbuffertarget,
@@ -367,7 +367,7 @@ public:
     // C function void glFramebufferTexture2D ( GLenum target, GLenum attachment, GLenum textarget,
     // GLuint texture, GLint level )
 
-    CARAPI GlFramebufferTexture2D(
+    CARAPI glFramebufferTexture2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 attachment,
         /* [in] */ Int32 textarget,
@@ -376,70 +376,70 @@ public:
 
     // C function void glFrontFace ( GLenum mode )
 
-    CARAPI GlFrontFace(
+    CARAPI glFrontFace(
         /* [in] */ Int32 mode);
 
     // C function void glGenBuffers ( GLsizei n, GLuint *buffers )
 
-    CARAPI GlGenBuffers(
+    CARAPI glGenBuffers(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* buffers,
         /* [in] */ Int32 offset);
 
     // C function void glGenBuffers ( GLsizei n, GLuint *buffers )
 
-    CARAPI GlGenBuffers(
+    CARAPI glGenBuffers(
         /* [in] */ Int32 n,
         /* [in] */ IInt32Buffer* buffers);
 
     // C function void glGenerateMipmap ( GLenum target )
 
-    CARAPI GlGenerateMipmap(
+    CARAPI glGenerateMipmap(
         /* [in] */ Int32 target);
 
     // C function void glGenFramebuffers ( GLsizei n, GLuint *framebuffers )
 
-    CARAPI GlGenFramebuffers(
+    CARAPI glGenFramebuffers(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* framebuffers,
         /* [in] */ Int32 offset);
 
     // C function void glGenFramebuffers ( GLsizei n, GLuint *framebuffers )
 
-    CARAPI GlGenFramebuffers(
+    CARAPI glGenFramebuffers(
         /* [in] */ Int32 n,
         /* [in] */ IInt32Buffer* framebuffers);
 
     // C function void glGenRenderbuffers ( GLsizei n, GLuint *renderbuffers )
 
-    CARAPI GlGenRenderbuffers(
+    CARAPI glGenRenderbuffers(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* renderbuffers,
         /* [in] */ Int32 offset);
 
     // C function void glGenRenderbuffers ( GLsizei n, GLuint *renderbuffers )
 
-    CARAPI GlGenRenderbuffers(
+    CARAPI glGenRenderbuffers(
         /* [in] */ Int32 n,
         /* [in] */ IInt32Buffer* renderbuffers);
 
     // C function void glGenTextures ( GLsizei n, GLuint *textures )
 
-    CARAPI GlGenTextures(
+    CARAPI glGenTextures(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* textures,
         /* [in] */ Int32 offset);
 
     // C function void glGenTextures ( GLsizei n, GLuint *textures )
 
-    CARAPI GlGenTextures(
+    CARAPI glGenTextures(
         /* [in] */ Int32 n,
         /* [in] */ IInt32Buffer* textures);
 
     // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
     // GLint *size, GLenum *type, char *name )
 
-    CARAPI GlGetActiveAttrib(
+    CARAPI glGetActiveAttrib(
         /* [in] */ Int32 program,
         /* [in] */ Int32 index,
         /* [in] */ Int32 bufsize,
@@ -455,7 +455,7 @@ public:
     // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
     // GLint *size, GLenum *type, char *name )
 
-    CARAPI GlGetActiveAttrib(
+    CARAPI glGetActiveAttrib(
         /* [in] */ Int32 program,
         /* [in] */ Int32 index,
         /* [in] */ Int32 bufsize,
@@ -466,7 +466,7 @@ public:
 
     // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length, GLint *size, GLenum *type, char *name )
 
-    CARAPI GlGetActiveAttrib(
+    CARAPI glGetActiveAttrib(
         /* [in] */ Int32 program,
         /* [in] */ Int32 index,
         /* [in] */ ArrayOf<Int32>* size,
@@ -477,7 +477,7 @@ public:
 
     // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length, GLint *size, GLenum *type, char *name )
 
-    CARAPI GlGetActiveAttrib(
+    CARAPI glGetActiveAttrib(
         /* [in] */ Int32 program,
         /* [in] */ Int32 index,
         /* [in] */ IInt32Buffer* size,
@@ -485,7 +485,7 @@ public:
         /* [out] */ String* rst);
     // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length, GLint *size, GLenum *type, char *name )
 
-    CARAPI GlGetActiveUniform(
+    CARAPI glGetActiveUniform(
         /* [in] */ Int32 program,
         /* [in] */ Int32 index,
         /* [in] */ Int32 bufsize,
@@ -501,7 +501,7 @@ public:
     // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
     // GLint *size, GLenum *type, char *name )
 
-    CARAPI GlGetActiveUniform(
+    CARAPI glGetActiveUniform(
         /* [in] */ Int32 program,
         /* [in] */ Int32 index,
         /* [in] */ Int32 bufsize,
@@ -512,7 +512,7 @@ public:
     // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
     // GLint *size, GLenum *type, char *name )
 
-    CARAPI GlGetActiveUniform(
+    CARAPI glGetActiveUniform(
         /* [in] */ Int32 program,
         /* [in] */ Int32 index,
         /* [in] */ ArrayOf<Int32>* size,
@@ -524,7 +524,7 @@ public:
     // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
     // GLint *size, GLenum *type, char *name )
 
-    CARAPI GlGetActiveUniform(
+    CARAPI glGetActiveUniform(
         /* [in] */ Int32 program,
         /* [in] */ Int32 index,
         /* [in] */ IInt32Buffer* size,
@@ -532,7 +532,7 @@ public:
         /* [out] */ String* str);
     // C function void glGetAttachedShaders ( GLuint program, GLsizei maxcount, GLsizei *count, GLuint *shaders )
 
-    CARAPI GlGetAttachedShaders(
+    CARAPI glGetAttachedShaders(
         /* [in] */ Int32 program,
         /* [in] */ Int32 maxcount,
         /* [in] */ ArrayOf<Int32>* count,
@@ -542,7 +542,7 @@ public:
 
     // C function void glGetAttachedShaders ( GLuint program, GLsizei maxcount, GLsizei *count, GLuint *shaders )
 
-    CARAPI GlGetAttachedShaders(
+    CARAPI glGetAttachedShaders(
         /* [in] */ Int32 program,
         /* [in] */ Int32 maxcount,
         /* [in] */ IInt32Buffer* count,
@@ -550,27 +550,27 @@ public:
 
     // C function int glGetAttribLocation ( GLuint program, const char *name )
 
-    CARAPI GlGetAttribLocation(
+    CARAPI glGetAttribLocation(
         /* [in] */ Int32 program,
         /* [in] */ const String& name,
         /* [out] */ Int32* rst);
 
     // C function void glGetBooleanv ( GLenum pname, GLboolean *params )
 
-    CARAPI GlGetBooleanv(
+    CARAPI glGetBooleanv(
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Boolean>* params,
         /* [in] */ Int32 offset);
 
     // C function void glGetBooleanv ( GLenum pname, GLboolean *params )
 
-    CARAPI GlGetBooleanv(
+    CARAPI glGetBooleanv(
         /* [in] */ Int32 pname,
         /* [in] */ IInt32Buffer* params);
 
     // C function void glGetBufferParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-    CARAPI GlGetBufferParameteriv(
+    CARAPI glGetBufferParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params,
@@ -578,33 +578,33 @@ public:
 
     // C function void glGetBufferParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-    CARAPI GlGetBufferParameteriv(
+    CARAPI glGetBufferParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ IInt32Buffer* params);
 
     // C function GLenum glGetError ( void )
 
-    CARAPI GlGetError(
+    CARAPI glGetError(
         /* [out] */ Int32* rst);
 
     // C function void glGetFloatv ( GLenum pname, GLfloat *params )
 
-    CARAPI GlGetFloatv(
+    CARAPI glGetFloatv(
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Float>* params,
         /* [in] */ Int32 offset);
 
     // C function void glGetFloatv ( GLenum pname, GLfloat *params )
 
-    CARAPI GlGetFloatv(
+    CARAPI glGetFloatv(
         /* [in] */ Int32 pname,
         /* [in] */ IFloatBuffer* params);
 
     // C function void glGetFramebufferAttachmentParameteriv ( GLenum target, GLenum attachment,
     // GLenum pname, GLint *params )
 
-    CARAPI GlGetFramebufferAttachmentParameteriv(
+    CARAPI glGetFramebufferAttachmentParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 attachment,
         /* [in] */ Int32 pname,
@@ -614,7 +614,7 @@ public:
     // C function void glGetFramebufferAttachmentParameteriv ( GLenum target, GLenum attachment, GLenum pname,
     // GLint *params )
 
-    CARAPI GlGetFramebufferAttachmentParameteriv(
+    CARAPI glGetFramebufferAttachmentParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 attachment,
         /* [in] */ Int32 pname,
@@ -622,20 +622,20 @@ public:
 
     // C function void glGetIntegerv ( GLenum pname, GLint *params )
 
-    CARAPI GlGetIntegerv(
+    CARAPI glGetIntegerv(
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params,
         /* [in] */ Int32 offset);
 
     // C function void glGetIntegerv ( GLenum pname, GLint *params )
 
-    CARAPI GlGetIntegerv(
+    CARAPI glGetIntegerv(
         /* [in] */ Int32 pname,
         /* [in] */ IInt32Buffer* params);
 
     // C function void glGetProgramiv ( GLuint program, GLenum pname, GLint *params )
 
-    CARAPI GlGetProgramiv(
+    CARAPI glGetProgramiv(
         /* [in] */ Int32 program,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params,
@@ -643,17 +643,17 @@ public:
 
     // C function void glGetProgramiv ( GLuint program, GLenum pname, GLint *params )
 
-    CARAPI GlGetProgramiv(
+    CARAPI glGetProgramiv(
         /* [in] */ Int32 program,
         /* [in] */ Int32 pname,
         /* [in] */ IInt32Buffer* params);
 
-    CARAPI GlGetProgramInfoLog(
+    CARAPI glGetProgramInfoLog(
         /* [in] */ Int32 program,
         /* [out] */ String* str);
     // C function void glGetRenderbufferParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-    CARAPI GlGetRenderbufferParameteriv(
+    CARAPI glGetRenderbufferParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params,
@@ -661,14 +661,14 @@ public:
 
     // C function void glGetRenderbufferParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-    CARAPI GlGetRenderbufferParameteriv(
+    CARAPI glGetRenderbufferParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ IInt32Buffer* params);
 
     // C function void glGetShaderiv ( GLuint shader, GLenum pname, GLint *params )
 
-    CARAPI GlGetShaderiv(
+    CARAPI glGetShaderiv(
         /* [in] */ Int32 shader,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params,
@@ -676,22 +676,22 @@ public:
 
     // C function void glGetShaderiv ( GLuint shader, GLenum pname, GLint *params )
 
-    CARAPI GlGetShaderiv(
+    CARAPI glGetShaderiv(
         /* [in] */ Int32 shader,
         /* [in] */ Int32 pname,
         /* [in] */ IInt32Buffer* params);
 
     // C function void glGetShaderInfoLog( GLuint shader, GLsizei maxLength, GLsizei * length,
-    //     CARAPI GLchar * infoLog);
+    //     CARAPI glchar * infoLog);
 
-    CARAPI GlGetShaderInfoLog(
+    CARAPI glGetShaderInfoLog(
         /* [in] */ Int32 shader,
         /* [out] */ String* str);
 
     // C function void glGetShaderPrecisionFormat ( GLenum shadertype, GLenum precisiontype,
     // GLint *range, GLint *precision )
 
-    CARAPI GlGetShaderPrecisionFormat(
+    CARAPI glGetShaderPrecisionFormat(
         /* [in] */ Int32 shadertype,
         /* [in] */ Int32 precisiontype,
         /* [in] */ ArrayOf<Int32>* range,
@@ -701,7 +701,7 @@ public:
 
     // C function void glGetShaderPrecisionFormat ( GLenum shadertype, GLenum precisiontype, GLint *range, GLint *precision )
 
-    CARAPI GlGetShaderPrecisionFormat(
+    CARAPI glGetShaderPrecisionFormat(
         /* [in] */ Int32 shadertype,
         /* [in] */ Int32 precisiontype,
         /* [in] */ IInt32Buffer* range,
@@ -709,7 +709,7 @@ public:
 
     // C function void glGetShaderSource ( GLuint shader, GLsizei bufsize, GLsizei *length, char *source )
 
-    CARAPI GlGetShaderSource(
+    CARAPI glGetShaderSource(
         /* [in] */ Int32 shader,
         /* [in] */ Int32 bufsize,
         /* [in] */ ArrayOf<Int32>* length,
@@ -719,7 +719,7 @@ public:
 
     // C function void glGetShaderSource ( GLuint shader, GLsizei bufsize, GLsizei *length, char *source )
 
-    CARAPI GlGetShaderSource(
+    CARAPI glGetShaderSource(
         /* [in] */ Int32 shader,
         /* [in] */ Int32 bufsize,
         /* [in] */ IInt32Buffer* length,
@@ -727,19 +727,19 @@ public:
 
     // C function void glGetShaderSource ( GLuint shader, GLsizei bufsize, GLsizei *length, char *source )
 
-    CARAPI GlGetShaderSource(
+    CARAPI glGetShaderSource(
         /* [in] */ Int32 shader,
         /* [out] */ String* rst);
 
 
     // C function const GLubyte * glGetString ( GLenum name )
 
-    CARAPI GlGetString(
+    CARAPI glGetString(
         /* [in] */ Int32 name,
         /* [out] */ String* str);
     // C function void glGetTexParameterfv ( GLenum target, GLenum pname, GLfloat *params )
 
-    CARAPI GlGetTexParameterfv(
+    CARAPI glGetTexParameterfv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Float>* params,
@@ -747,14 +747,14 @@ public:
 
     // C function void glGetTexParameterfv ( GLenum target, GLenum pname, GLfloat *params )
 
-    CARAPI GlGetTexParameterfv(
+    CARAPI glGetTexParameterfv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ IFloatBuffer* params);
 
     // C function void glGetTexParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-    CARAPI GlGetTexParameteriv(
+    CARAPI glGetTexParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params,
@@ -762,14 +762,14 @@ public:
 
     // C function void glGetTexParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-    CARAPI GlGetTexParameteriv(
+    CARAPI glGetTexParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ IInt32Buffer* params);
 
     // C function void glGetUniformfv ( GLuint program, GLint location, GLfloat *params )
 
-    CARAPI GlGetUniformfv(
+    CARAPI glGetUniformfv(
         /* [in] */ Int32 program,
         /* [in] */ Int32 location,
         /* [in] */ ArrayOf<Float>* params,
@@ -777,14 +777,14 @@ public:
 
     // C function void glGetUniformfv ( GLuint program, GLint location, GLfloat *params )
 
-    CARAPI GlGetUniformfv(
+    CARAPI glGetUniformfv(
         /* [in] */ Int32 program,
         /* [in] */ Int32 location,
         /* [in] */ IFloatBuffer* params);
 
     // C function void glGetUniformiv ( GLuint program, GLint location, GLint *params )
 
-    CARAPI GlGetUniformiv(
+    CARAPI glGetUniformiv(
         /* [in] */ Int32 program,
         /* [in] */ Int32 location,
         /* [in] */ ArrayOf<Int32>* params,
@@ -792,21 +792,21 @@ public:
 
     // C function void glGetUniformiv ( GLuint program, GLint location, GLint *params )
 
-    CARAPI GlGetUniformiv(
+    CARAPI glGetUniformiv(
         /* [in] */ Int32 program,
         /* [in] */ Int32 location,
         /* [in] */ IInt32Buffer* params);
 
     // C function int glGetUniformLocation ( GLuint program, const char *name )
 
-    CARAPI GlGetUniformLocation(
+    CARAPI glGetUniformLocation(
         /* [in] */ Int32 program,
         /* [in] */ const String& name,
         /* [out] */ Int32* rst);
 
     // C function void glGetVertexAttribfv ( GLuint index, GLenum pname, GLfloat *params )
 
-    CARAPI GlGetVertexAttribfv(
+    CARAPI glGetVertexAttribfv(
         /* [in] */ Int32 index,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Float>* params,
@@ -814,14 +814,14 @@ public:
 
     // C function void glGetVertexAttribfv ( GLuint index, GLenum pname, GLfloat *params )
 
-    CARAPI GlGetVertexAttribfv(
+    CARAPI glGetVertexAttribfv(
         /* [in] */ Int32 index,
         /* [in] */ Int32 pname,
         /* [in] */ IFloatBuffer* params);
 
     // C function void glGetVertexAttribiv ( GLuint index, GLenum pname, GLint *params )
 
-    CARAPI GlGetVertexAttribiv(
+    CARAPI glGetVertexAttribiv(
         /* [in] */ Int32 index,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params,
@@ -829,85 +829,85 @@ public:
 
     // C function void glGetVertexAttribiv ( GLuint index, GLenum pname, GLint *params )
 
-    CARAPI GlGetVertexAttribiv(
+    CARAPI glGetVertexAttribiv(
         /* [in] */ Int32 index,
         /* [in] */ Int32 pname,
         /* [in] */ IInt32Buffer* params);
 
     // C function void glHint ( GLenum target, GLenum mode )
 
-    CARAPI GlHint(
+    CARAPI glHint(
         /* [in] */ Int32 target,
         /* [in] */ Int32 mode);
 
     // C function GLboolean glIsBuffer ( GLuint buffer )
 
-    CARAPI GlIsBuffer(
+    CARAPI glIsBuffer(
         /* [in] */ Int32 buffer,
         /* [out] */ Boolean* rst);
 
     // C function GLboolean glIsEnabled ( GLenum cap )
 
-    CARAPI GlIsEnabled(
+    CARAPI glIsEnabled(
         /* [in] */ Int32 cap,
         /* [out] */ Boolean* rst);
 
     // C function GLboolean glIsFramebuffer ( GLuint framebuffer )
 
-    CARAPI GlIsFramebuffer(
+    CARAPI glIsFramebuffer(
         /* [in] */ Int32 framebuffer,
         /* [out] */ Boolean* rst);
 
     // C function GLboolean glIsProgram ( GLuint program )
 
-    CARAPI GlIsProgram(
+    CARAPI glIsProgram(
         /* [in] */ Int32 program,
         /* [out] */ Boolean* rst);
 
     // C function GLboolean glIsRenderbuffer ( GLuint renderbuffer )
 
-    CARAPI GlIsRenderbuffer(
+    CARAPI glIsRenderbuffer(
         /* [in] */ Int32 renderbuffer,
         /* [out] */ Boolean* rst);
 
     // C function GLboolean glIsShader ( GLuint shader )
 
-    CARAPI GlIsShader(
+    CARAPI glIsShader(
         /* [in] */ Int32 shader,
         /* [out] */ Boolean* rst);
 
     // C function GLboolean glIsTexture ( GLuint texture )
 
-    CARAPI GlIsTexture(
+    CARAPI glIsTexture(
         /* [in] */ Int32 texture,
         /* [out] */ Boolean* rst);
 
     // C function void glLineWidth ( GLfloat width )
 
-    CARAPI GlLineWidth(
+    CARAPI glLineWidth(
         /* [in] */ Float width);
 
     // C function void glLinkProgram ( GLuint program )
 
-    CARAPI GlLinkProgram(
+    CARAPI glLinkProgram(
         /* [in] */ Int32 program);
 
     // C function void glPixelStorei ( GLenum pname, GLint param )
 
-    CARAPI GlPixelStorei(
+    CARAPI glPixelStorei(
         /* [in] */ Int32 pname,
         /* [in] */ Int32 param);
 
     // C function void glPolygonOffset ( GLfloat factor, GLfloat units )
 
-    CARAPI GlPolygonOffset(
+    CARAPI glPolygonOffset(
         /* [in] */ Float factor,
         /* [in] */ Float units);
 
     // C function void glReadPixels ( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
     // GLenum type, GLvoid *pixels )
 
-    CARAPI GlReadPixels(
+    CARAPI glReadPixels(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
@@ -918,11 +918,11 @@ public:
 
     // C function void glReleaseShaderCompiler ( void )
 
-    CARAPI GlReleaseShaderCompiler();
+    CARAPI glReleaseShaderCompiler();
 
     // C function void glRenderbufferStorage ( GLenum target, GLenum internalformat, GLsizei width, GLsizei height )
 
-    CARAPI GlRenderbufferStorage(
+    CARAPI glRenderbufferStorage(
         /* [in] */ Int32 target,
         /* [in] */ Int32 internalformat,
         /* [in] */ Int32 width,
@@ -930,13 +930,13 @@ public:
 
     // C function void glSampleCoverage ( GLclampf value, GLboolean invert )
 
-    CARAPI GlSampleCoverage(
+    CARAPI glSampleCoverage(
         /* [in] */ Float value,
         /* [in] */ Boolean invert);
 
     // C function void glScissor ( GLint x, GLint y, GLsizei width, GLsizei height )
 
-    CARAPI GlScissor(
+    CARAPI glScissor(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
@@ -945,7 +945,7 @@ public:
     // C function void glShaderBinary ( GLsizei n, const GLuint *shaders, GLenum binaryformat,
     // const GLvoid *binary, GLsizei length )
 
-    CARAPI GlShaderBinary(
+    CARAPI glShaderBinary(
         /* [in] */ Int32 n,
         /* [in] */ ArrayOf<Int32>* shaders,
         /* [in] */ Int32 offset,
@@ -956,7 +956,7 @@ public:
     // C function void glShaderBinary ( GLsizei n, const GLuint *shaders, GLenum binaryformat,
     // const GLvoid *binary, GLsizei length )
 
-    CARAPI GlShaderBinary(
+    CARAPI glShaderBinary(
         /* [in] */ Int32 n,
         /* [in] */ IInt32Buffer* shaders,
         /* [in] */ Int32 binaryformat,
@@ -965,19 +965,19 @@ public:
 
     // C function void glShaderSource ( GLuint shader, GLsizei count, const GLchar ** string, const GLint* length )
 
-    CARAPI GlShaderSource(
+    CARAPI glShaderSource(
         /* [in] */ Int32 shader,
         /* [in] */ const String& string);
     // C function void glStencilFunc ( GLenum func, GLint ref, GLuint mask )
 
-    CARAPI GlStencilFunc(
+    CARAPI glStencilFunc(
         /* [in] */ Int32 func,
         /* [in] */ Int32 ref,
         /* [in] */ Int32 mask);
 
     // C function void glStencilFuncSeparate ( GLenum face, GLenum func, GLint ref, GLuint mask )
 
-    CARAPI GlStencilFuncSeparate(
+    CARAPI glStencilFuncSeparate(
         /* [in] */ Int32 face,
         /* [in] */ Int32 func,
         /* [in] */ Int32 ref,
@@ -985,25 +985,25 @@ public:
 
     // C function void glStencilMask ( GLuint mask )
 
-    CARAPI GlStencilMask(
+    CARAPI glStencilMask(
         /* [in] */ Int32 mask);
 
     // C function void glStencilMaskSeparate ( GLenum face, GLuint mask )
 
-    CARAPI GlStencilMaskSeparate(
+    CARAPI glStencilMaskSeparate(
         /* [in] */ Int32 face,
         /* [in] */ Int32 mask);
 
     // C function void glStencilOp ( GLenum fail, GLenum zfail, GLenum zpass )
 
-    CARAPI GlStencilOp(
+    CARAPI glStencilOp(
         /* [in] */ Int32 fail,
         /* [in] */ Int32 zfail,
         /* [in] */ Int32 zpass);
 
     // C function void glStencilOpSeparate ( GLenum face, GLenum fail, GLenum zfail, GLenum zpass )
 
-    CARAPI GlStencilOpSeparate(
+    CARAPI glStencilOpSeparate(
         /* [in] */ Int32 face,
         /* [in] */ Int32 fail,
         /* [in] */ Int32 zfail,
@@ -1012,7 +1012,7 @@ public:
     // C function void glTexImage2D ( GLenum target, GLint level, GLint internalformat, GLsizei width,
     // GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels )
 
-    CARAPI GlTexImage2D(
+    CARAPI glTexImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 internalformat,
@@ -1025,14 +1025,14 @@ public:
 
     // C function void glTexParameterf ( GLenum target, GLenum pname, GLfloat param )
 
-    CARAPI GlTexParameterf(
+    CARAPI glTexParameterf(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Float param);
 
     // C function void glTexParameterfv ( GLenum target, GLenum pname, const GLfloat *params )
 
-    CARAPI GlTexParameterfv(
+    CARAPI glTexParameterfv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Float>* params,
@@ -1040,21 +1040,21 @@ public:
 
     // C function void glTexParameterfv ( GLenum target, GLenum pname, const GLfloat *params )
 
-    CARAPI GlTexParameterfv(
+    CARAPI glTexParameterfv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ IFloatBuffer* params);
 
     // C function void glTexParameteri ( GLenum target, GLenum pname, GLint param )
 
-    CARAPI GlTexParameteri(
+    CARAPI glTexParameteri(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Int32 param);
 
     // C function void glTexParameteriv ( GLenum target, GLenum pname, const GLint *params )
 
-    CARAPI GlTexParameteriv(
+    CARAPI glTexParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ ArrayOf<Int32>* params,
@@ -1062,7 +1062,7 @@ public:
 
     // C function void glTexParameteriv ( GLenum target, GLenum pname, const GLint *params )
 
-    CARAPI GlTexParameteriv(
+    CARAPI glTexParameteriv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ IInt32Buffer* params);
@@ -1070,7 +1070,7 @@ public:
     // C function void glTexSubImage2D ( GLenum target, GLint level, GLint xoffset,
     // GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels )
 
-    CARAPI GlTexSubImage2D(
+    CARAPI glTexSubImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 xoffset,
@@ -1083,13 +1083,13 @@ public:
 
     // C function void glUniform1f ( GLint location, GLfloat x )
 
-    CARAPI GlUniform1f(
+    CARAPI glUniform1f(
         /* [in] */ Int32 location,
         /* [in] */ Float x);
 
     // C function void glUniform1fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    CARAPI GlUniform1fv(
+    CARAPI glUniform1fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Float>* v,
@@ -1097,20 +1097,20 @@ public:
 
     // C function void glUniform1fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    CARAPI GlUniform1fv(
+    CARAPI glUniform1fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ IFloatBuffer* v);
 
     // C function void glUniform1i ( GLint location, GLint x )
 
-    CARAPI GlUniform1i(
+    CARAPI glUniform1i(
         /* [in] */ Int32 location,
         /* [in] */ Int32 x);
 
     // C function void glUniform1iv ( GLint location, GLsizei count, const GLint *v )
 
-    CARAPI GlUniform1iv(
+    CARAPI glUniform1iv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Int32>* v,
@@ -1118,21 +1118,21 @@ public:
 
     // C function void glUniform1iv ( GLint location, GLsizei count, const GLint *v )
 
-    CARAPI GlUniform1iv(
+    CARAPI glUniform1iv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ IInt32Buffer* v);
 
     // C function void glUniform2f ( GLint location, GLfloat x, GLfloat y )
 
-    CARAPI GlUniform2f(
+    CARAPI glUniform2f(
         /* [in] */ Int32 location,
         /* [in] */ Float x,
         /* [in] */ Float y);
 
     // C function void glUniform2fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    CARAPI GlUniform2fv(
+    CARAPI glUniform2fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Float>* v,
@@ -1140,21 +1140,21 @@ public:
 
     // C function void glUniform2fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    CARAPI GlUniform2fv(
+    CARAPI glUniform2fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ IFloatBuffer* v);
 
     // C function void glUniform2i ( GLint location, GLint x, GLint y )
 
-    CARAPI GlUniform2i(
+    CARAPI glUniform2i(
         /* [in] */ Int32 location,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 
     // C function void glUniform2iv ( GLint location, GLsizei count, const GLint *v )
 
-    CARAPI GlUniform2iv(
+    CARAPI glUniform2iv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Int32>* v,
@@ -1162,14 +1162,14 @@ public:
 
     // C function void glUniform2iv ( GLint location, GLsizei count, const GLint *v )
 
-    CARAPI GlUniform2iv(
+    CARAPI glUniform2iv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ IInt32Buffer* v);
 
     // C function void glUniform3f ( GLint location, GLfloat x, GLfloat y, GLfloat z )
 
-    CARAPI GlUniform3f(
+    CARAPI glUniform3f(
         /* [in] */ Int32 location,
         /* [in] */ Float x,
         /* [in] */ Float y,
@@ -1177,7 +1177,7 @@ public:
 
     // C function void glUniform3fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    CARAPI GlUniform3fv(
+    CARAPI glUniform3fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Float>* v,
@@ -1185,14 +1185,14 @@ public:
 
     // C function void glUniform3fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    CARAPI GlUniform3fv(
+    CARAPI glUniform3fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ IFloatBuffer* v);
 
     // C function void glUniform3i ( GLint location, GLint x, GLint y, GLint z )
 
-    CARAPI GlUniform3i(
+    CARAPI glUniform3i(
         /* [in] */ Int32 location,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
@@ -1200,7 +1200,7 @@ public:
 
     // C function void glUniform3iv ( GLint location, GLsizei count, const GLint *v )
 
-    CARAPI GlUniform3iv(
+    CARAPI glUniform3iv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Int32>* v,
@@ -1208,14 +1208,14 @@ public:
 
     // C function void glUniform3iv ( GLint location, GLsizei count, const GLint *v )
 
-    CARAPI GlUniform3iv(
+    CARAPI glUniform3iv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ IInt32Buffer* v);
 
     // C function void glUniform4f ( GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w )
 
-    CARAPI GlUniform4f(
+    CARAPI glUniform4f(
         /* [in] */ Int32 location,
         /* [in] */ Float x,
         /* [in] */ Float y,
@@ -1224,7 +1224,7 @@ public:
 
     // C function void glUniform4fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    CARAPI GlUniform4fv(
+    CARAPI glUniform4fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Float>* v,
@@ -1232,14 +1232,14 @@ public:
 
     // C function void glUniform4fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    CARAPI GlUniform4fv(
+    CARAPI glUniform4fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ IFloatBuffer* v);
 
     // C function void glUniform4i ( GLint location, GLint x, GLint y, GLint z, GLint w )
 
-    CARAPI GlUniform4i(
+    CARAPI glUniform4i(
         /* [in] */ Int32 location,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
@@ -1248,7 +1248,7 @@ public:
 
     // C function void glUniform4iv ( GLint location, GLsizei count, const GLint *v )
 
-    CARAPI GlUniform4iv(
+    CARAPI glUniform4iv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Int32>* v,
@@ -1256,14 +1256,14 @@ public:
 
     // C function void glUniform4iv ( GLint location, GLsizei count, const GLint *v )
 
-    CARAPI GlUniform4iv(
+    CARAPI glUniform4iv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ IInt32Buffer* v);
 
     // C function void glUniformMatrix2fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-    CARAPI GlUniformMatrix2fv(
+    CARAPI glUniformMatrix2fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ Boolean transpose,
@@ -1272,7 +1272,7 @@ public:
 
     // C function void glUniformMatrix2fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-    CARAPI GlUniformMatrix2fv(
+    CARAPI glUniformMatrix2fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ Boolean transpose,
@@ -1280,7 +1280,7 @@ public:
 
     // C function void glUniformMatrix3fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-    CARAPI GlUniformMatrix3fv(
+    CARAPI glUniformMatrix3fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ Boolean transpose,
@@ -1289,7 +1289,7 @@ public:
 
     // C function void glUniformMatrix3fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-    CARAPI GlUniformMatrix3fv(
+    CARAPI glUniformMatrix3fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ Boolean transpose,
@@ -1297,7 +1297,7 @@ public:
 
     // C function void glUniformMatrix4fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-    CARAPI GlUniformMatrix4fv(
+    CARAPI glUniformMatrix4fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ Boolean transpose,
@@ -1306,7 +1306,7 @@ public:
 
     // C function void glUniformMatrix4fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-    CARAPI GlUniformMatrix4fv(
+    CARAPI glUniformMatrix4fv(
         /* [in] */ Int32 location,
         /* [in] */ Int32 count,
         /* [in] */ Boolean transpose,
@@ -1314,56 +1314,56 @@ public:
 
     // C function void glUseProgram ( GLuint program )
 
-    CARAPI GlUseProgram(
+    CARAPI glUseProgram(
         /* [in] */ Int32 program);
 
     // C function void glValidateProgram ( GLuint program )
 
-    CARAPI GlValidateProgram(
+    CARAPI glValidateProgram(
         /* [in] */ Int32 program);
 
     // C function void glVertexAttrib1f ( GLuint indx, GLfloat x )
 
-    CARAPI GlVertexAttrib1f(
+    CARAPI glVertexAttrib1f(
         /* [in] */ Int32 indx,
         /* [in] */ Float x);
 
     // C function void glVertexAttrib1fv ( GLuint indx, const GLfloat *values )
 
-    CARAPI GlVertexAttrib1fv(
+    CARAPI glVertexAttrib1fv(
         /* [in] */ Int32 indx,
         /* [in] */ ArrayOf<Float>* values,
         /* [in] */ Int32 offset);
 
     // C function void glVertexAttrib1fv ( GLuint indx, const GLfloat *values )
 
-    CARAPI GlVertexAttrib1fv(
+    CARAPI glVertexAttrib1fv(
         /* [in] */ Int32 indx,
         /* [in] */ IFloatBuffer* values);
 
     // C function void glVertexAttrib2f ( GLuint indx, GLfloat x, GLfloat y )
 
-    CARAPI GlVertexAttrib2f(
+    CARAPI glVertexAttrib2f(
         /* [in] */ Int32 indx,
         /* [in] */ Float x,
         /* [in] */ Float y);
 
     // C function void glVertexAttrib2fv ( GLuint indx, const GLfloat *values )
 
-    CARAPI GlVertexAttrib2fv(
+    CARAPI glVertexAttrib2fv(
         /* [in] */ Int32 indx,
         /* [in] */ ArrayOf<Float>* values,
         /* [in] */ Int32 offset);
 
     // C function void glVertexAttrib2fv ( GLuint indx, const GLfloat *values )
 
-    CARAPI GlVertexAttrib2fv(
+    CARAPI glVertexAttrib2fv(
         /* [in] */ Int32 indx,
         /* [in] */ IFloatBuffer* values);
 
     // C function void glVertexAttrib3f ( GLuint indx, GLfloat x, GLfloat y, GLfloat z )
 
-    CARAPI GlVertexAttrib3f(
+    CARAPI glVertexAttrib3f(
         /* [in] */ Int32 indx,
         /* [in] */ Float x,
         /* [in] */ Float y,
@@ -1371,20 +1371,20 @@ public:
 
     // C function void glVertexAttrib3fv ( GLuint indx, const GLfloat *values )
 
-    CARAPI GlVertexAttrib3fv(
+    CARAPI glVertexAttrib3fv(
         /* [in] */ Int32 indx,
         /* [in] */ ArrayOf<Float>* values,
         /* [in] */ Int32 offset);
 
     // C function void glVertexAttrib3fv ( GLuint indx, const GLfloat *values )
 
-    CARAPI GlVertexAttrib3fv(
+    CARAPI glVertexAttrib3fv(
         /* [in] */ Int32 indx,
         /* [in] */ IFloatBuffer* values);
 
     // C function void glVertexAttrib4f ( GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w )
 
-    CARAPI GlVertexAttrib4f(
+    CARAPI glVertexAttrib4f(
         /* [in] */ Int32 indx,
         /* [in] */ Float x,
         /* [in] */ Float y,
@@ -1393,21 +1393,21 @@ public:
 
     // C function void glVertexAttrib4fv ( GLuint indx, const GLfloat *values )
 
-    CARAPI GlVertexAttrib4fv(
+    CARAPI glVertexAttrib4fv(
         /* [in] */ Int32 indx,
         /* [in] */ ArrayOf<Float>* values,
         /* [in] */ Int32 offset);
 
     // C function void glVertexAttrib4fv ( GLuint indx, const GLfloat *values )
 
-    CARAPI GlVertexAttrib4fv(
+    CARAPI glVertexAttrib4fv(
         /* [in] */ Int32 indx,
         /* [in] */ IFloatBuffer* values);
 
     // C function void glVertexAttribPointer ( GLuint indx, GLint size, GLenum type, GLboolean normalized,
     // GLsizei stride, GLint offset )
 
-    CARAPI GlVertexAttribPointer(
+    CARAPI glVertexAttribPointer(
         /* [in] */ Int32 indx,
         /* [in] */ Int32 size,
         /* [in] */ Int32 type,
@@ -1418,7 +1418,7 @@ public:
     // C function void glVertexAttribPointer ( GLuint indx, GLint size, GLenum type,
     // GLboolean normalized, GLsizei stride, const GLvoid *ptr )
 
-    CARAPI GlVertexAttribPointer(
+    CARAPI glVertexAttribPointer(
         /* [in] */ Int32 indx,
         /* [in] */ Int32 size,
         /* [in] */ Int32 type,
@@ -1428,7 +1428,7 @@ public:
 
     // C function void glViewport ( GLint x, GLint y, GLsizei width, GLsizei height )
 
-    CARAPI GlViewport(
+    CARAPI glViewport(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
@@ -1443,7 +1443,7 @@ private:
     /* [in] */ IBuffer* buffer,
     /* [out] */ Handle32* result);
 
-    CARAPI GlVertexAttribPointerBounds(
+    CARAPI glVertexAttribPointerBounds(
         /* [in] */ Int32 indx,
         /* [in] */ Int32 size,
         /* [in] */ Int32 type,

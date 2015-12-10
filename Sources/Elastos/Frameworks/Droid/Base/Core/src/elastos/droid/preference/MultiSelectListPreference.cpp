@@ -15,9 +15,9 @@ namespace Elastos {
 namespace Droid {
 namespace Preference {
 
-/////////////////////////////////////////////////////
+//================================
 // MultiSelectListPreference::MultiChoiceClickListener
-/////////////////////////////////////////////////////
+//================================
 
 CAR_INTERFACE_IMPL(MultiSelectListPreference::MultiChoiceClickListener, Object, IDialogInterfaceOnMultiChoiceClickListener)
 
@@ -50,9 +50,9 @@ ECode MultiSelectListPreference::MultiChoiceClickListener::OnClick(
     }
 }
 
-/////////////////////////////////////////////////////
+//====================
 // MultiSelectListPreference
-/////////////////////////////////////////////////////
+//====================
 
 CAR_INTERFACE_IMPL(MultiSelectListPreference, DialogPreference, IMultiSelectListPreference)
 
@@ -66,8 +66,7 @@ ECode MultiSelectListPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
-
+    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::MultiSelectListPreference),
             ARRAY_SIZE(R::styleable::MultiSelectListPreference));
@@ -216,7 +215,6 @@ ECode MultiSelectListPreference::OnPrepareDialogBuilder(
     /* [in] */ IAlertDialogBuilder* builder)
 {
     FAIL_RETURN(DialogPreference::OnPrepareDialogBuilder(builder))
-
     if (mEntries == NULL || mEntryValues == NULL) {
         Logger::E("MultiSelectListPreference", "MultiSelectListPreference requires an entries array and an entryValues array.");
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -252,7 +250,6 @@ ECode MultiSelectListPreference::OnDialogClosed(
     /* [in] */ Boolean positiveResult)
 {
     FAIL_RETURN(DialogPreference::OnDialogClosed(positiveResult))
-
     if (positiveResult && mPreferenceChanged) {
         AutoPtr<ISet> values;
         CHashSet::New((ISet**)&values);
@@ -278,7 +275,6 @@ ECode MultiSelectListPreference::OnGetDefaultValue(
     /* [out] */ IInterface** value)
 {
     VALIDATE_NOT_NULL(value)
-
     AutoPtr< ArrayOf<ICharSequence*> > defaultValues;
     a->GetTextArray(index, (ArrayOf<ICharSequence*>**)&defaultValues);
     Int32 valueCount = defaultValues->GetLength();

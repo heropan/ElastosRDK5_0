@@ -31,6 +31,10 @@ public:
 
     DisplayViewport();
 
+    virtual ~DisplayViewport();
+
+    CARAPI constructor();
+
     CARAPI CopyFrom(
         /* [in] */ IDisplayViewport* viewport);
 

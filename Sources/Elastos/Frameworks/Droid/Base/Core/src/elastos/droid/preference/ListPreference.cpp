@@ -7,6 +7,7 @@ using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::View::IAbsSavedState;
 
 namespace Elastos {
 namespace Droid {
@@ -55,7 +56,7 @@ ECode ListPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ListPreference),
@@ -159,18 +160,17 @@ ECode ListPreference::GetEntryValues(
 ECode ListPreference::SetValue(
     /* [in] */ const String& value)
 {
-    assert(0);
     // Always persist/notify the first time.
-    // Boolean changed = !TextUtils::Equals(mValue, value);
-    // if (changed || !mValueSet) {
-    //     mValue = value;
-    //     mValueSet = TRUE;
-    //     Boolean isPersistString = FALSE;
-    //     PersistString(value, &isPersistString);
-    //     if (changed) {
-    //         NotifyChanged();
-    //     }
-    // }
+    Boolean changed = !TextUtils::Equals(mValue, value);
+    if (changed || !mValueSet) {
+        mValue = value;
+        mValueSet = TRUE;
+        Boolean isPersistString = FALSE;
+        PersistString(value, &isPersistString);
+        if (changed) {
+            NotifyChanged();
+        }
+    }
     return NOERROR;
 }
 
@@ -289,8 +289,7 @@ ECode ListPreference::OnPrepareDialogBuilder(
      * click-on-an-item dismiss the dialog instead of the user having to
      * press 'Ok'.
      */
-    assert(0);
-    // builder->SetPositiveButton(NULL, NULL);
+    builder->SetPositiveButton(NULL, NULL);
     return NOERROR;
 }
 
@@ -330,7 +329,6 @@ ECode ListPreference::OnSetInitialValue(
     /* [in] */ Boolean restoreValue,
     /* [in] */ IInterface* defaultValue)
 {
-    VALIDATE_NOT_NULL(defaultValue)
     String value;
     if (restoreValue) {
         GetPersistedString(mValue, &value);
@@ -376,13 +374,12 @@ ECode ListPreference::OnRestoreInstanceState(
     }
 
     AutoPtr<IListPreferenceSavedState> myState = IListPreferenceSavedState::Probe(state);
-    assert(0);
-    // AutoPtr<IParcelable> superState;
-    // myState->GetSuperState((IParcelable**)&superState);
-    // DialogPreference::OnRestoreInstanceState(superState);
-    // String value;
-    // myState->GetValue(&value);
-    // SetValue(&value);
+    AutoPtr<IParcelable> superState;
+    IAbsSavedState::Probe(myState)->GetSuperState((IParcelable**)&superState);
+    DialogPreference::OnRestoreInstanceState(superState);
+    String value;
+    myState->GetValue(&value);
+    SetValue(value);
     return NOERROR;
 }
 

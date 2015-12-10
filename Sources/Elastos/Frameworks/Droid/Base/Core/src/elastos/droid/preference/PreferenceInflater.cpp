@@ -1,16 +1,15 @@
 
-#include "elastos/droid/preference/PreferenceInflater.h"
-#include "elastos/droid/preference/CPreferenceInflater.h"
 #include "elastos/droid/content/Intent.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/preference/CPreferenceInflater.h"
+#include "elastos/droid/preference/PreferenceInflater.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::Intent;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -59,9 +58,7 @@ ECode PreferenceInflater::CloneInContext(
     /* [out] */ IGenericInflater** ret)
 {
     VALIDATE_NOT_NULL(ret)
-    AutoPtr<IGenericInflater> gf = (IGenericInflater*)this;
-    CPreferenceInflater::New(gf, mPreferenceManager, newContext, ret);
-    REFCOUNT_ADD(*ret);
+    CPreferenceInflater::New(this, mPreferenceManager, newContext, ret);
     return NOERROR;
 }
 

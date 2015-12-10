@@ -3,6 +3,7 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Wifi::IWpsInfo;
 using Elastos::Droid::Wifi::CWpsInfo;
 using Elastos::Droid::Wifi::P2p::CWifiP2pDevice;
@@ -26,11 +27,14 @@ using Elastos::Droid::Hardware::Display::IWifiDisplayStatus;
 // using Elastos::Droid::Hardware::Display::CWifiDisplay;
 // using Elastos::Droid::Hardware::Display::CWifiDisplaySessionInfo;
 using Elastos::Core::StringUtils;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Net::INetworkInterfaceHelper;
 using Elastos::Net::CNetworkInterfaceHelper;
 using Elastos::Net::INetworkInterface;
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {
@@ -216,20 +220,28 @@ ECode WifiDisplayController::RequestPeersPeerListListener::OnPeersAvailable(
 {
     mHost->mAvailableWifiDisplayPeers.Clear();
 
-    AutoPtr<ArrayOf<IWifiP2pDevice*> > array;
-    peers->GetDeviceList((ArrayOf<IWifiP2pDevice*>**)&array);
+    AutoPtr<ICollection> list;
+    peers->GetDeviceList((ICollection**)&list);
 
     if (WifiDisplayController::DEBUG) {
-        Slogger::D(WifiDisplayController::TAG, "OnPeersAvailable, peer's count: %d.",
-            array ? array->GetLength() : 0);
+        Int32 length = 0;
+        if (list) list->GetSize(&length);
+        Slogger::D(WifiDisplayController::TAG, "OnPeersAvailable, peer's count: %d.", length);
     }
 
-    if (array) {
-        for (Int32 i = 0; i < array->GetLength(); ++i) {
-            AutoPtr<IWifiP2pDevice> device = (*array)[i];
+    if (list) {
+        AutoPtr<IIterator> it;
+        list->GetIterator((IIterator**)&it);
+        Boolean hasNext;
+        IWifiP2pDevice* device;
+        while (it->HasNext(&hasNext), hasNext) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            device = IWifiP2pDevice::Probe(obj);
+
             if (WifiDisplayController::DEBUG) {
-                Slogger::D(WifiDisplayController::TAG, "OnPeersAvailable: peer %d: %s",
-                    i, mHost->DescribeWifiP2pDevice(device).string());
+                Slogger::D(WifiDisplayController::TAG, "OnPeersAvailable: peer : %s",
+                    mHost->DescribeWifiP2pDevice(device).string());
             }
 
             if (mHost->IsWifiDisplay(device)) {
@@ -257,7 +269,7 @@ ECode WifiDisplayController::RequestPeersPeerListListener::OnPeersAvailable(
 //==============================================================================
 CAR_INTERFACE_IMPL(WifiDisplayController::MyActionListenerEx2, Object, IWifiP2pManagerActionListener);
 
-WifiDisplayController::MyActionListenerEx2::MyActionListener(
+WifiDisplayController::MyActionListenerEx2::MyActionListenerEx2(
     /* [in] */ WifiDisplayController* owner,
     /* [in] */ IWifiP2pDevice* oldDevice,
     /* [in] */ Boolean isDisconnecting)
@@ -448,7 +460,8 @@ ECode WifiDisplayController::MyRemoteDisplayListener::OnDisplayConnected(
     /* [in] */ ISurface* surface,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
-    /* [in] */ Int32 flags)
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 session)
 {
     if (mHost->mConnectedDevice == mOldDevice && !mHost->mRemoteDisplayConnected) {
         String deviceName;
@@ -460,7 +473,7 @@ ECode WifiDisplayController::MyRemoteDisplayListener::OnDisplayConnected(
 
         if (mHost->mWifiDisplayCertMode) {
             mHost->mListener->OnDisplaySessionInfo(
-                mHost->GetSessionInfo(mConnectedDeviceGroupInfo, session));
+                mHost->GetSessionInfo(mHost->mConnectedDeviceGroupInfo, session));
         }
 
         AutoPtr<IWifiDisplay> display = CreateWifiDisplay(mHost->mConnectedDevice);
@@ -532,19 +545,19 @@ ECode WifiDisplayController::ConnectionChangedGroupInfoListener::OnGroupInfoAvai
         return NOERROR;
     }
 
-    if (mWifiDisplayCertMode) {
+    if (mHost->mWifiDisplayCertMode) {
         AutoPtr<IWifiP2pDevice> owner;
         info->GetOwner((IWifiP2pDevice**)&owner);
 
         String address, thisAddress;
         owner->GetDeviceAddress(&address);
         mHost->mThisDevice->GetDeviceAddress(&thisAddress);
-        Boolean owner = address.Equals(thisAddress);
+        Boolean isOwner = address.Equals(thisAddress);
         AutoPtr<ICollection> clients;
         info->GetClientList((ICollection**)&clients);
         Boolean empty;
         clients->IsEmpty(&empty);
-        if (owner && empty) {
+        if (isOwner && empty) {
             // this is the case when we started Autonomous GO,
             // and no client has connected, save group info
             // and updateConnection()
@@ -557,7 +570,7 @@ ECode WifiDisplayController::ConnectionChangedGroupInfoListener::OnGroupInfoAvai
             // from the sink, update both mConnectingDevice and mDesiredDevice
             // then proceed to updateConnection() below
             AutoPtr<IWifiP2pDevice> result;
-            if (owner) {
+            if (isOwner) {
                 AutoPtr<IIterator> it;
                 clients->GetIterator((IIterator**)&it);
                 AutoPtr<IInterface> obj;
@@ -785,10 +798,10 @@ ECode WifiDisplayController::WifiP2pReceiver::OnReceive(
         intent->GetParcelableExtra(
             IWifiP2pManager::EXTRA_WIFI_P2P_DEVICE,
             (IParcelable**)&parcelable);
-        mThisDevice = IWifiP2pDevice::Probe(parcelable);
+        mHost->mThisDevice = IWifiP2pDevice::Probe(parcelable);
         if (DEBUG) {
             Slogger::D(TAG, "Received WIFI_P2P_THIS_DEVICE_CHANGED_ACTION: mThisDevice=%s"
-                , Object::ToString(mThisDevice).string());
+                , Object::ToString(mHost->mThisDevice).string());
         }
     }
 
@@ -845,13 +858,13 @@ WifiDisplayController::WifiDisplayController(
     intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_STATE_CHANGED_ACTION);
     intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_PEERS_CHANGED_ACTION);
     intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_CONNECTION_CHANGED_ACTION);
-    intentFilter->AddAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+    intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
     context->RegisterReceiver(mWifiP2pReceiver, intentFilter, nullStr, mHandler,
         (IIntent**)&stickyIntent);
 
     AutoPtr<MyContentObserver> observer = new MyContentObserver(this);
     observer->constructor(mHandler);
-    IContentObserver* settingsObserver = (IContentObserver*)settingsObserver.Get();
+    IContentObserver* settingsObserver = (IContentObserver*)observer.Get();
 
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
@@ -956,14 +969,14 @@ void WifiDisplayController::RequestConnect(
     }
 }
 
-void WifiDisplayController::RequestStartScan()
+void WifiDisplayController::RequestPause()
 {
     if (mRemoteDisplay != NULL) {
         mRemoteDisplay->Pause();
     }
 }
 
-void WifiDisplayController::RequestStopScan()
+void WifiDisplayController::RequestResume()
 {
     if (mRemoteDisplay != NULL) {
         mRemoteDisplay->Resume();
@@ -1286,7 +1299,7 @@ void WifiDisplayController::UpdateConnection()
     // autonomous GO, then mission accomplished.
     if (mDesiredDevice == NULL) {
         if (mWifiDisplayCertMode) {
-            mListener->OnDisplaySessionInfo(getSessionInfo(mConnectedDeviceGroupInfo, 0));
+            mListener->OnDisplaySessionInfo(GetSessionInfo(mConnectedDeviceGroupInfo, 0));
         }
         UnadvertiseDisplay();
         return; // done
@@ -1353,7 +1366,7 @@ void WifiDisplayController::UpdateConnection()
         AutoPtr<IWifiP2pDevice> oldDevice = mConnectedDevice;
         Int32 port = GetPortNumber(mConnectedDevice);
         String iface;
-        addr->GetHostAddress(&iface);
+        IInetAddress::Probe(addr)->GetHostAddress(&iface);
         iface += ":";
         iface += StringUtils::ToString(port);
         mRemoteDisplayInterface = iface;
@@ -1394,13 +1407,13 @@ AutoPtr<IWifiDisplaySessionInfo> WifiDisplayController::GetSessionInfo(
     info->GetPassphrase(&passphrase);
     String hostAddress("");
     if (addr != NULL) {
-        addr->GetHostAddress(&addr);
+        IInetAddress::Probe(addr)->GetHostAddress(&hostAddress);
     }
     AutoPtr<IWifiDisplaySessionInfo> sessionInfo;
     assert(0 && "TODO");
     // CWifiDisplaySessionInfo::New(
     //     !address.Equals(thisAddress), session, address + " " + name,
-    //     passphrase, addr, (IWifiDisplaySessionInfo**)&sessionInfo);
+    //     passphrase, hostAddress, (IWifiDisplaySessionInfo**)&sessionInfo);
     if (DEBUG) {
         Slogger::D(TAG, Object::ToString(sessionInfo).string());
     }
@@ -1575,7 +1588,7 @@ AutoPtr<IInet4Address> WifiDisplayController::GetInterfaceAddress(
     Boolean hasNext = FALSE;
     while (addrs->HasMoreElements(&hasNext), hasNext) {
         AutoPtr<IInterface> addr;
-        addrs->NextElement((IInterface**)&addr);
+        addrs->GetNextElement((IInterface**)&addr);
         if (IInet4Address::Probe(addr)) {
             return IInet4Address::Probe(addr);
         }
@@ -1621,21 +1634,21 @@ Boolean WifiDisplayController::IsPrimarySinkDeviceType(
 String WifiDisplayController::DescribeWifiP2pDevice(
     /* [in] */ IWifiP2pDevice* device)
 {
-    if (device == NULL) {
-        return String("NULL");
+    String str("NULL");
+    if (device != NULL) {
+        str = Object::ToString(device).Replace('\n', ',');
     }
-    else {
-        String str;
-        device->ToString(&str);
-        return str.Replace('\n', ',');
-    }
+    return str;
 }
 
 String WifiDisplayController::DescribeWifiP2pGroup(
     /* [in] */ IWifiP2pGroup* group)
 {
-    String str;
-    return group != NULL ? (group->ToString(&str), str).Replace('\n', ',') : String("NULL");
+    String str("NULL");
+    if (group != NULL) {
+        str = Object::ToString(group).Replace('\n', ',');
+    }
+    return str;
 }
 
 AutoPtr<IWifiDisplay> WifiDisplayController::CreateWifiDisplay(

@@ -1,14 +1,13 @@
 TARGET_NAME= wallpaper
 TARGET_TYPE= lib
 
+C_DEFINES += -DDROID_CORE
+
 include $(MAKEDIR)/../../../../../../../sources.inc
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/
+INCLUDES += $(MAKEDIR)/../../../../../inc
 
-C_DEFINES += -DDROID_CORE
-
-SOURCES = CWallpaperEngineWrapper.cpp
-SOURCES += CWallpaperServiceEngineWindow.cpp
-SOURCES += CWallpaperServiceWrapper.cpp
+SOURCES = wallpaper.cpp
+SOURCES += WallpaperSettingsActivity.cpp
 SOURCES += WallpaperService.cpp

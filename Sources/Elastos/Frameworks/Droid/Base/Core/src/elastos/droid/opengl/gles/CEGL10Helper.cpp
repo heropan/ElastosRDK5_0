@@ -32,9 +32,9 @@ static AutoPtr<CEGLSurfaceImpl> InitSurface()
 
 
 AutoPtr<IInterface> CEGL10Helper::sDefaultDisplay = NULL;
-AutoPtr<Elastosx::Microedition::Khronos::Egl::IEGLDisplay> CEGL10Helper::sNoDisplay = InitDisplay();
-AutoPtr<Elastosx::Microedition::Khronos::Egl::IEGLContext> CEGL10Helper::sNoContext = InitContext();
-AutoPtr<Elastosx::Microedition::Khronos::Egl::IEGLSurface> CEGL10Helper::sNoSurface = InitSurface();
+AutoPtr<Elastosx::Microedition::Khronos::egl::IEGLDisplay> CEGL10Helper::sNoDisplay = InitDisplay();
+AutoPtr<Elastosx::Microedition::Khronos::egl::IEGLContext> CEGL10Helper::sNoContext = InitContext();
+AutoPtr<Elastosx::Microedition::Khronos::egl::IEGLSurface> CEGL10Helper::sNoSurface = InitSurface();
 
 ECode CEGL10Helper::GetDefaultDisplay(
     /* [out] */ IInterface** disp)

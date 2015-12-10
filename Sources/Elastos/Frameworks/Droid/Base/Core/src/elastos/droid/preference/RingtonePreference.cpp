@@ -1,20 +1,19 @@
-
-#include "elastos/droid/preference/RingtonePreference.h"
 #include "elastos/droid/content/CIntent.h"
 // #include "elastos/droid/media/CRingtoneManagerHelper.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/preference/RingtonePreference.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CString;
 using Elastos::Droid::App::IActivity;
+using Elastos::Droid::App::IFragment;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Media::IRingtoneManager;
 using Elastos::Droid::Media::IRingtoneManagerHelper;
 // using Elastos::Droid::Media::CRingtoneManagerHelper;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::App::IFragment;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -37,7 +36,7 @@ ECode RingtonePreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr<ArrayOf<Int32> > arrayAttrs = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::RingtonePreference),
@@ -173,10 +172,7 @@ ECode RingtonePreference::OnSaveRingtone(
     /* [in] */ IUri* ringtoneUri)
 {
     String uri("");
-    if (ringtoneUri != NULL) {
-        AutoPtr<IObject> o = IObject::Probe(ringtoneUri);
-        o->ToString((String*)&uri);
-    }
+    if (ringtoneUri != NULL) IObject::Probe(ringtoneUri)->ToString((String*)&uri);
     Boolean result;
     return PersistString(uri, &result);
 }
@@ -187,16 +183,15 @@ ECode RingtonePreference::OnRestoreRingtone(
     VALIDATE_NOT_NULL(uri)
     String uriString;
     GetPersistedString(String(NULL), &uriString);
-    // if(!TextUtils::IsEmpty(uriString)){
-    //     AutoPtr<IUri> uritmp;
-    //     Uri::Parse(uriString, (IUri**)&uritmp);
-    //     *uri = uritmp;
-    //     REFCOUNT_ADD(*uri)
-    // }
-    // else {
-    //     *uri = NULL;
-    // }
-
+    if(!TextUtils::IsEmpty(uriString)){
+        AutoPtr<IUri> uritmp;
+        Uri::Parse(uriString, (IUri**)&uritmp);
+        *uri = uritmp;
+        REFCOUNT_ADD(*uri)
+    }
+    else {
+        *uri = NULL;
+    }
     return NOERROR;
 }
 
@@ -234,11 +229,11 @@ ECode RingtonePreference::OnSetInitialValue(
     }
 
     // If we are setting to the default value, we should persist it.
-    // if (!TextUtils::IsEmpty(defaultValue)) {
-    //     AutoPtr<IUri> uri;
-    //     Uri::Parse(defaultValue, (IUri**)&uri);
-    //     OnSaveRingtone(uri);
-    // }
+    if (!TextUtils::IsEmpty(defaultValue)) {
+        AutoPtr<IUri> uri;
+        Uri::Parse(defaultValue, (IUri**)&uri);
+        OnSaveRingtone(uri);
+    }
     return NOERROR;
 }
 
@@ -265,10 +260,7 @@ ECode RingtonePreference::OnActivityResult(
             data->GetParcelableExtra(IRingtoneManager::EXTRA_RINGTONE_PICKED_URI, (IParcelable**)&p);
             AutoPtr<IUri> uri = IUri::Probe(p);
             String str("");
-            if (uri != NULL) {
-                AutoPtr<IObject> o = IObject::Probe(uri);
-                o->ToString((String*)&str);
-            }
+            if (uri != NULL) IObject::Probe(uri)->ToString((String*)&str);
             AutoPtr<ICharSequence> cs;
             CString::New(str, (ICharSequence**)&cs);
             Boolean value;

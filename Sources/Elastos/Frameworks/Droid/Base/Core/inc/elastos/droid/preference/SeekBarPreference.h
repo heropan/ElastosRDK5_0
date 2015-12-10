@@ -95,13 +95,6 @@ protected:
     CARAPI OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
 
-protected:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
-
 private:
     CARAPI SetProgress(
         /* [in] */ Int32 progress,

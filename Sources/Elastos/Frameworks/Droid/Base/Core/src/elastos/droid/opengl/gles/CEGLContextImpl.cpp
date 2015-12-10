@@ -3,7 +3,7 @@
 #include "gles/CEGLImpl.h"
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::Opengl::Gles::CEGLImpl;
+using Elastos::Droid::Opengl::gles::CEGLImpl;
 using Elastosx::Microedition::Khronos::Opengles::IGL10;
 using Elastosx::Microedition::Khronos::Opengles::IGL11;
 
