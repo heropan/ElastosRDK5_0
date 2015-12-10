@@ -25,7 +25,9 @@ module
      * @hide
      *
      * @Involve
-     * interface IFrameLayoutLayoutParams
+     * interface IFrameLayoutLayoutParams;
+     * interface IViewGroupMarginLayoutParams;
+     * interface IViewGroupLayoutParams;
      */
     interface IPreferenceFrameLayoutParams {
     }

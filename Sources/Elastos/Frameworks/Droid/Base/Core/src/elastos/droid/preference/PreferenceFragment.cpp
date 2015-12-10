@@ -299,7 +299,7 @@ ECode PreferenceFragment::OnPreferenceTreeClick(
     if ((preference->GetFragment(&fragment), !fragment.IsNull()) &&
             (GetActivity((IActivity**)&activity),  IPreferenceFragmentOnPreferenceStartFragmentCallback::Probe(activity) != NULL)) {
         AutoPtr<IPreferenceFragmentOnPreferenceStartFragmentCallback> cb = IPreferenceFragmentOnPreferenceStartFragmentCallback::Probe(activity);
-        return cb->OnPreferenceStartFragment((IPreferenceFragment*)this->Probe(EIID_IPreferenceFragment), preference, result);
+        return cb->OnPreferenceStartFragment(this, preference, result);
     }
     *result = FALSE;
     return NOERROR;
@@ -400,8 +400,7 @@ ECode PreferenceFragment::EnsureList()
         return NOERROR;
     }
     AutoPtr<IView> root;
-    AutoPtr<IFragment> fragment = THIS_PROBE(IFragment);
-    fragment->GetView((IView**)&root);
+    GetView((IView**)&root);
 
     if (root == NULL) {
         Slogger::E(PREFERENCES_TAG, "Content view not yet created");
@@ -419,9 +418,7 @@ ECode PreferenceFragment::EnsureList()
         Slogger::E(PREFERENCES_TAG, "Your content must have a ListView whose id attribute is 'android.R.id.list'");
         return E_RUNTIME_EXCEPTION;
     }
-    rawListView = NULL;
-    rawListView = (IView*)(mList.Get());
-    rawListView->SetOnKeyListener(mListOnKeyListener);
+    IView::Probe(mList)->SetOnKeyListener(mListOnKeyListener);
     Boolean result;
     mHandler->Post(mRequestFocus, &result);
     return NOERROR;

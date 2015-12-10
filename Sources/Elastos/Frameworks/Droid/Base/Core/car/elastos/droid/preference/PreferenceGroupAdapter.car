@@ -33,6 +33,9 @@ module
      * @Involve
      * interface IPreferenceOnPreferenceChangeInternalListener
      * interface IBaseAdapter
+     * interface IListAdapter
+     * interface ISpinnerAdapter
+     * interface IAdapter
      */
      [local,deprecated]
     interface IPreferenceGroupAdapter {

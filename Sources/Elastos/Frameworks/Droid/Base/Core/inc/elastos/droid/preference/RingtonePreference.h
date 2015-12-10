@@ -7,9 +7,9 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Content::Res::ITypedArray;
 
 namespace Elastos {
 namespace Droid {

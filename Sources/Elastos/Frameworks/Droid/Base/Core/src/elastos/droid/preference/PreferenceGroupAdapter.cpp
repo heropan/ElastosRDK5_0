@@ -2,26 +2,31 @@
 #include "elastos/droid/preference/PreferenceGroupAdapter.h"
 #include "elastos/droid/preference/Preference.h"
 #include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/widget/CFrameLayout.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/AutoLock.h>
 
-using Elastos::Core::Math;
-using Elastos::Core::AutoLock;
-using Elastos::Utility::ICollections;
-using Elastos::Utility::CCollections;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::IArrayList;
-using Elastos::Utility::CArrayList;
-using Elastos::Core::EIID_IComparable;
-using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::CHandler;
-using Elastos::Droid::Widget::IAdapter;
-using Elastos::Droid::Widget::IListView;
+using Elastos::Droid::Preference::IPreference;
+using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::Widget::CFrameLayout;
+using Elastos::Droid::Widget::EIID_IAdapter;
 using Elastos::Droid::Widget::EIID_IBaseAdapter;
 using Elastos::Droid::Widget::EIID_IListAdapter;
-using Elastos::Droid::Widget::EIID_IAdapter;
+using Elastos::Droid::Widget::IAdapter;
 using Elastos::Droid::Widget::IAdapterView;
+using Elastos::Droid::Widget::IListView;
+using Elastos::Core::AutoLock;
+using Elastos::Core::EIID_IComparable;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::Math;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -140,20 +145,20 @@ ECode PreferenceGroupAdapter::SyncRunnable::Run()
 
 static AutoPtr<IViewGroupLayoutParams> init()
 {
-    // AutoPtr<IViewGroupLayoutParams> vglp;
-    // CViewGroupLayoutParams::NewByFriend(
-    //     IViewGroupLayoutParams::MATCH_PARENT,
-    //     IViewGroupLayoutParams::WRAP_CONTENT,
-    //     (IViewGroupLayoutParams**)&vglp);
-    // return vglp;
-    return NULL;
+    AutoPtr<IViewGroupLayoutParams> vglp;
+    CViewGroupLayoutParams::NewByFriend(
+        IViewGroupLayoutParams::MATCH_PARENT,
+        IViewGroupLayoutParams::WRAP_CONTENT,
+        (CViewGroupLayoutParams**)&vglp);
+    AutoPtr<IViewGroupLayoutParams> lp = (IViewGroupLayoutParams*)(vglp.Get());
+    return lp;
 }
+
 AutoPtr<IViewGroupLayoutParams> PreferenceGroupAdapter::sWrapperLayoutParams = init();
 
 const String PreferenceGroupAdapter::TAG("PreferenceGroupAdapter");
 
-// CAR_INTERFACE_IMPL(PreferenceGroupAdapter, BaseAdapter, IPreferenceOnPreferenceChangeInternalListener)
-CAR_INTERFACE_IMPL_2(PreferenceGroupAdapter, Object, IPreferenceOnPreferenceChangeInternalListener, /*IBaseAdapter,*/ IPreferenceGroupAdapter)
+CAR_INTERFACE_IMPL_2(PreferenceGroupAdapter, BaseAdapter, IPreferenceOnPreferenceChangeInternalListener, IPreferenceGroupAdapter)
 
 PreferenceGroupAdapter::PreferenceGroupAdapter()
     : mHasReturnedViewTypeCount(FALSE)
@@ -168,13 +173,17 @@ PreferenceGroupAdapter::PreferenceGroupAdapter()
 ECode PreferenceGroupAdapter::constructor(
     /* [in] */ IPreferenceGroup* preferenceGroup)
 {
-    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(preferenceGroup);
-    assert(wrs != NULL && "Error: Invalid PreferenceGroup interface, IWeakReferenceSource not implemented!");
-    wrs->GetWeakReference((IWeakReference**)&mWeakPreferenceGroup);
-    assert(0);
-    // If this group gets or loses any children, let us know
-    // reinterpret_cast<Preference*>(preferenceGroup->Probe(EIID_Preference))->SetOnPreferenceChangeInternalListener(
-    //         (IPreferenceOnPreferenceChangeInternalListener*)this);
+    AutoPtr<IWeakReference> wr;
+    IWeakReferenceSource::Probe(preferenceGroup)->GetWeakReference((IWeakReference**)&wr);
+    mWeakPreferenceGroup = wr.Get();
+
+    AutoPtr<IPreferenceGroup> _mPreferenceGroup;
+    wr->Resolve(EIID_IPreferenceGroup, (IInterface**)&_mPreferenceGroup);
+    IPreference::Probe(_mPreferenceGroup)->SetOnPreferenceChangeInternalListener(this);
+
+    CArrayList::New((IList**)&mPreferenceList);
+    CArrayList::New((IList**)&mPreferenceLayouts);
+
     SyncMyPreferences();
     return NOERROR;
 }
@@ -198,8 +207,7 @@ void PreferenceGroupAdapter::SyncMyPreferences()
     FlattenPreferenceGroup(newPreferenceList, group);
     mPreferenceList = newPreferenceList;
 
-    assert(0);
-    // BaseAdapter::NotifyDataSetChanged();
+    BaseAdapter::NotifyDataSetChanged();
 
     synchronized(this) {
         mIsSyncing = FALSE;
@@ -289,7 +297,18 @@ ECode PreferenceGroupAdapter::GetItem(
         *item = NULL;
         return NOERROR;
     }
-    return mPreferenceList->Get(position, (IInterface**)item);
+    AutoPtr<IInterface> obj;
+    mPreferenceList->Get(position, (IInterface**)&obj);
+    *item = IPreference::Probe(obj);
+    REFCOUNT_ADD(*item)
+    return NOERROR;
+}
+
+ECode PreferenceGroupAdapter::GetItem(
+    /* [in] */ Int32 position,
+    /* [out] */ IInterface** item)
+{
+    return NOERROR;
 }
 
 ECode PreferenceGroupAdapter::GetItemId(
@@ -343,22 +362,21 @@ ECode PreferenceGroupAdapter::GetView(
         (GetItemViewType(position, &type),  GetHighlightItemViewType(&viewType), type == viewType)) {
         convertView = NULL;
     }
-    assert(0);
-    // AutoPtr<IView> result;
-    // preference->GetView(convertView, parent, (IView**)&result);
-    // if (position == mHighlightedPosition && mHighlightedDrawable != NULL) {
-    //     AutoPtr<IContext> ctx;
-    //     IView::Probe(parent)->GetContext((IContext**)&ctx);
-    //     AutoPtr<IViewGroup> wrapper;
-    //     CFrameLayout::New(ctx, (IViewGroup**)&wrapper);
-    //     AutoPtr<IView> vwrapper = IView::Probe(wrapper);
-    //     vwrapper->SetLayoutParams(sWrapperLayoutParams);
-    //     vwrapper->SetBackgroundDrawable(mHighlightedDrawable);
-    //     wrapper->AddView(result);
-    //     result = wrapper;
-    // }
-    // *view = result;
-    // REFCOUNT_ADD(*view);
+    AutoPtr<IView> result;
+    preference->GetView(convertView, parent, (IView**)&result);
+    if (position == mHighlightedPosition && mHighlightedDrawable != NULL) {
+        AutoPtr<IContext> ctx;
+        IView::Probe(parent)->GetContext((IContext**)&ctx);
+        AutoPtr<IViewGroup> wrapper;
+        CFrameLayout::New(ctx, (IViewGroup**)&wrapper);
+        AutoPtr<IView> vwrapper = IView::Probe(wrapper);
+        vwrapper->SetLayoutParams(sWrapperLayoutParams);
+        vwrapper->SetBackgroundDrawable(mHighlightedDrawable);
+        wrapper->AddView(result);
+        result = IView::Probe(wrapper);
+    }
+    *view = result;
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

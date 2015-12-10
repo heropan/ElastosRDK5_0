@@ -1,27 +1,27 @@
-
 #include "elastos/droid/preference/MultiCheckPreference.h"
 #include "elastos/droid/preference/CMultiCheckPreferenceSavedState.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::IArrayOf;
-using Elastos::Core::CArrayOf;
-using Elastos::Core::IBoolean;
-using Elastos::Core::CBoolean;
-using Elastos::Core::EIID_IBoolean;
-using Elastos::Core::CString;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnMultiChoiceClickListener;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::View::IAbsSavedState;
 using Elastos::Droid::R;
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CBoolean;
+using Elastos::Core::CString;
+using Elastos::Core::EIID_IBoolean;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::IBoolean;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Preference {
 
-/////////////////////////////////////////////////////
+//===============================
 // MultiCheckPreference::MultiChoiceClickListener
-/////////////////////////////////////////////////////
+//===============================
 
 CAR_INTERFACE_IMPL(MultiCheckPreference::MultiChoiceClickListener, Object, IDialogInterfaceOnMultiChoiceClickListener)
 
@@ -40,9 +40,9 @@ ECode MultiCheckPreference::MultiChoiceClickListener::OnClick(
     return NOERROR;
 }
 
-/////////////////////////////////////////////////////
+//================
 // MultiCheckPreference
-/////////////////////////////////////////////////////
+//================
 
 CAR_INTERFACE_IMPL(MultiCheckPreference, DialogPreference, IMultiCheckPreference)
 
@@ -56,37 +56,7 @@ ECode MultiCheckPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    return Init(context, attrs, defStyleAttr, defStyleRes);
-}
-
-ECode MultiCheckPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-{
-     return Init(context, attrs, defStyleAttr, 0);
-}
-
-ECode MultiCheckPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return Init(context, attrs, R::attr::dialogPreferenceStyle, 0);
-}
-
-ECode MultiCheckPreference::constructor(
-    /* [in] */ IContext* context)
-{
-    return Init(context, NULL, R::attr::dialogPreferenceStyle, 0);
-}
-
-ECode MultiCheckPreference::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ListPreference),
@@ -114,6 +84,27 @@ ECode MultiCheckPreference::Init(
     a->GetString(R::styleable::Preference_summary, &mSummary);
     a->Recycle();
     return NOERROR;
+}
+
+ECode MultiCheckPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+     return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode MultiCheckPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::dialogPreferenceStyle, 0);
+}
+
+ECode MultiCheckPreference::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL, R::attr::dialogPreferenceStyle, 0);
 }
 
 ECode MultiCheckPreference::SetEntries(
@@ -284,7 +275,6 @@ ECode MultiCheckPreference::OnPrepareDialogBuilder(
     /* [in] */ IAlertDialogBuilder* builder)
 {
     FAIL_RETURN(DialogPreference::OnPrepareDialogBuilder(builder))
-
     if (mEntries == NULL || mEntryValues == NULL) {
         Logger::E("MultiCheckPreference", "ListPreference requires an entries array and an entryValues array.");
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -376,14 +366,12 @@ ECode MultiCheckPreference::OnRestoreInstanceState(
     }
 
     AutoPtr<IMultiCheckPreferenceSavedState> myState = IMultiCheckPreferenceSavedState::Probe(state);
-    assert(0);
-    // AutoPtr<IParcelable> superParcel;
-    // myState->GetSuperState((IParcelable**)&superParcel);
-    // DialogPreference::OnRestoreInstanceState(superParcel);
+    AutoPtr<IParcelable> superParcel;
+    IAbsSavedState::Probe(myState)->GetSuperState((IParcelable**)&superParcel);
+    DialogPreference::OnRestoreInstanceState(superParcel);
     AutoPtr< ArrayOf<Boolean> > values;
     myState->GetValues((ArrayOf<Boolean>**)&values);
     SetValues(values);
-
     return NOERROR;
 }
 

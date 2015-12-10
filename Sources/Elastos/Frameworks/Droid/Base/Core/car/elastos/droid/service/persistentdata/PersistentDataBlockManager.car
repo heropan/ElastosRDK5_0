@@ -59,7 +59,7 @@ module
          *
          * Returns -1 on error.
          */
-        getMaximumDataBlockSize(
+        GetMaximumDataBlockSize(
             [out] Int64* size);
 
         /**

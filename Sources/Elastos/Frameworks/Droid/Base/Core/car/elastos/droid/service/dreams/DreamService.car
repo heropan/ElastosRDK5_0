@@ -1,3 +1,4 @@
+
 module
 {
     interface Elastos.Droid.View.IView;
@@ -19,19 +20,19 @@ module
      * interface Elastos.Droid.Content.IComponentCallbacks2
      * interface Elastos.Droid.View.IWindowCallback
      */
-     [local]
-    interface IDreamService // implements Window.Callback
-    {
-
+    [local]
+    interface IDreamService {
         /**
          * The name of the dream manager service.
          * @hide
          */
         const String DREAM_SERVICE = "dreams";
 
+
         /**
          * The {@link Intent} that must be declared as handled by the service.
          */
+        //@SdkConstant(SdkConstantType.SERVICE_ACTION)
         const String SERVICE_INTERFACE = "android.service.dreams.DreamService";
 
         /**
@@ -42,7 +43,12 @@ module
          */
         const String DREAM_META_DATA = "android.service.dream";
 
-        // begin public api
+        /**
+         * @hide
+         */
+        SetDebug(
+            [in] Boolean dbg);
+
         /**
          * Retrieves the current {@link android.view.WindowManager} for the dream.
          * Behaves similarly to {@link android.app.Activity#getWindowManager()}.
@@ -61,7 +67,7 @@ module
         GetWindow(
             [out] IWindow** result);
 
-       /**
+        /**
          * Inflates a layout resource and set it to be the content view for this Dream.
          * Behaves similarly to {@link android.app.Activity#setContentView(int)}.
          *
@@ -201,8 +207,8 @@ module
             [in] Boolean screenBright);
 
         /**
-         * Returns whether or not this dream keeps the screen bright while dreaming. Defaults to false,
-         * allowing the screen to dim if necessary.
+         * Returns whether or not this dream keeps the screen bright while dreaming.
+         * Defaults to false, allowing the screen to dim if necessary.
          *
          * @see #setScreenBright(boolean)
          */
@@ -223,7 +229,7 @@ module
          * @hide
          */
         IsWindowless(
-            [out] Boolean* windowLess);
+            [out] Boolean* result);
 
         /**
          * Returns true if this dream is allowed to doze.
@@ -236,7 +242,7 @@ module
          * @hide For use by system UI components only.
          */
         CanDoze(
-            [out] Boolean* doze);
+            [out] Boolean* result);
 
         /**
          * Starts dozing, entering a deep dreamy sleep.
@@ -293,7 +299,7 @@ module
          * @hide For use by system UI components only.
          */
         IsDozing(
-            [out] Boolean* dozing);
+            [out] Boolean* result);
 
         /**
          * Gets the screen state to use while dozing.
@@ -307,7 +313,7 @@ module
          * @hide For use by system UI components only.
          */
         GetDozeScreenState(
-            [out] Int32* state);
+            [out] Int32* result);
 
         /**
          * Sets the screen state to use while dozing.
@@ -355,7 +361,7 @@ module
          * @hide For use by system UI components only.
          */
         GetDozeScreenBrightness(
-            [out] Int32* brightness);
+            [out] Int32* result);
 
         /**
          * Sets the screen brightness to use while dozing.
@@ -413,7 +419,11 @@ module
         OnWakeUp();
 
         /**
-         * Stops the dream, detaches from the window, and wakes up.
+         * Stops the dream and detaches from the window.
+         * <p>
+         * When the dream ends, the system will be allowed to go to sleep fully unless there
+         * is a reason for it to be awake such as recent user activity or wake locks being held.
+         * </p>
          */
         Finish();
 
@@ -428,8 +438,17 @@ module
 
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Service.Dreams.IIDreamService
+     * interface Elastos.Droid.Os.IBinder
+     */
+    interface IDreamServiceWrapper {
+    }
+
     } // namespace Dreams
     } // namespace Service
     } // namepsace Droid
     } // namespace Elastos
 }
+

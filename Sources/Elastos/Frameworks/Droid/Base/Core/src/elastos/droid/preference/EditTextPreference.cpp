@@ -5,12 +5,15 @@
 // #include "elastos/droid/widget/CEditText.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CString;
+using Elastos::Droid::Preference::IEditTextPreferenceSavedState;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::View::IAbsSavedState;
 using Elastos::Droid::View::IViewParent;
 // using Elastos::Droid::Widget::CEditText;
+using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Preference::CEditTextPreferenceSavedState;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -28,8 +31,7 @@ ECode EditTextPreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    DialogPreference::Init(context, attrs, defStyleAttr, defStyleRes);
-    assert(0);
+    FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
     // CEditText::New(context, attrs, (IEditText**)&mEditText);
 
     // Give it an ID so it can be saved/restored
@@ -127,8 +129,7 @@ ECode EditTextPreference::OnAddEditTextToDialogView(
     dialogView->FindViewById(R::id::edittext_container, (IView**)&temp);
     AutoPtr<IViewGroup> container = IViewGroup::Probe(temp);
     if (container != NULL) {
-        assert(0);
-        // container->AddView(editText, IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT);
+        container->AddView(IView::Probe(editText), IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT);
     }
 
     return NOERROR;
@@ -191,8 +192,7 @@ ECode EditTextPreference::ShouldDisableDependents(
 
     Boolean superShould;
     DialogPreference::ShouldDisableDependents(&superShould);
-    assert(0);
-    // *shouldDisableDependents = TextUtils::IsEmpty(mText) || superShould;
+    *shouldDisableDependents = TextUtils::IsEmpty(mText) || superShould;
     return NOERROR;
 }
 
@@ -248,10 +248,9 @@ ECode EditTextPreference::OnRestoreInstanceState(
     }
 
     AutoPtr<IEditTextPreferenceSavedState> myState = IEditTextPreferenceSavedState::Probe(state);
-    assert(0);
-    // AutoPtr<IParcelable> superParcel;
-    // myState->GetSuperState((IParcelable**)&superParcel);
-    // DialogPreference::OnRestoreInstanceState(superParcel);
+    AutoPtr<IParcelable> superParcel;
+    IAbsSavedState::Probe(myState)->GetSuperState((IParcelable**)&superParcel);
+    DialogPreference::OnRestoreInstanceState(superParcel);
     String str;
     myState->GetText(&str);
     SetText(str);

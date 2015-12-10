@@ -4,13 +4,34 @@
 
 #include "elastos/droid/app/Service.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-// #include "elastos/droid/view/BaseSurfaceHolder.h"
-// #include "elastos/droid/view/InputEventReceiver.h"
+#include "elastos/droid/internal/view/BaseIWindow.h"
+#include "elastos/droid/internal/view/BaseSurfaceHolder.h"
+#include "elastos/droid/view/InputEventReceiver.h"
 
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Droid::Os::IHandlerCaller;
-using namespace Elastos::Droid::View;
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::IPixelFormat;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Internal::Os::IHandlerCaller;
+using Elastos::Droid::Internal::Os::IHandlerCallerCallback;
+using Elastos::Droid::Internal::View::BaseIWindow;
+using Elastos::Droid::Internal::View::BaseSurfaceHolder;
+using Elastos::Droid::Internal::View::IBaseIWindow;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Service::Wallpaper::IWallpaperCommand;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::View::IInputChannel;
+using Elastos::Droid::View::IWindowSession;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::InputEventReceiver;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::ISurfaceHolder;
+using Elastos::Droid::View::IWindowManagerLayoutParams;
+using Elastos::Droid::View::IWindowInsets;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -26,42 +47,31 @@ namespace Wallpaper {
  * and implementing {@link #onCreateEngine()} to return a new instance of
  * your engine.
  */
-class WallpaperService : public Elastos::Droid::App::Service
+class WallpaperService
+    : public Elastos::Droid::App::Service
+    , public IWallpaperService
 {
-    friend class CWallpaperEngineWrapper;
-    friend class CWallpaperServiceEngineWindow;
-public:
-    /**
-     * The {@link Intent} that must be declared as handled by the service.
-     * To be supported, the service must also require the
-     * {@link android.Manifest.permission#BIND_WALLPAPER} permission so
-     * that other applications can not abuse it.
-     */
-    static const String SERVICE_INTERFACE;
-    /**
-     * Name under which a WallpaperService component publishes information
-     * about itself.  This meta-data must reference an XML resource containing
-     * a <code>&lt;{@link android.R.styleable#Wallpaper wallpaper}&gt;</code>
-     * tag.
-     */
-    static const String SERVICE_META_DATA;
-
 protected:
-    static const String TAG;
-    static const Boolean DEBUG;
+    class WallpaperCommand
+        : public Object
+        , public IWallpaperCommand
+    {
+    public:
+        CAR_INTERFACE_DECL()
 
-    class WallpaperCommand;
+        WallpaperCommand();
 
-private:
-    static const Int32 MSG_UPDATE_SURFACE = 10000;
-    static const Int32 MSG_VISIBILITY_CHANGED = 10010;
-    static const Int32 MSG_WALLPAPER_OFFSETS = 10020;
-    static const Int32 MSG_WALLPAPER_COMMAND = 10025;
-    static const Int32 MSG_WINDOW_RESIZED = 10030;
-    static const Int32 MSG_WINDOW_MOVED = 10035;
-    static const Int32 MSG_TOUCH_EVENT = 10040;
+    public:
+        String mAction;
+        Int32 mX;
+        Int32 mY;
+        Int32 mZ;
+        AutoPtr<IBundle> mExtras;
+        Boolean mSync;
+    };
 
 public:
+    class IWallpaperEngineWrapper;
 
     /**
      * The actual implementation of a wallpaper.  A wallpaper service may
@@ -70,49 +80,47 @@ public:
      * instance.  You must implement {@link WallpaperService#onCreateEngine()}
      * to return your concrete Engine implementation.
      */
-    class Engine : public ElRefBase
+    class Engine
+        : public Object
+        , public IWallpaperServiceEngine
     {
-        friend class WallpaperService;
-        friend class CWallpaperEngineWrapper;
-        friend class CWallpaperServiceEngineWindow;
-    protected:
-        class MyBroadcastReceiver : public BroadcastReceiver
+    public:
+        class MReceiver
+            : public BroadcastReceiver
         {
         public:
-            MyBroadcastReceiver(
-                /* [in] */ Engine* owner);
+            MReceiver(
+                /* [in] */ Engine* host);
 
+            //@Override
             CARAPI OnReceive(
                 /* [in] */ IContext* context,
                 /* [in] */ IIntent* intent);
 
-            CARAPI ToString(
-                /* [out] */ String* info)
-            {
-                VALIDATE_NOT_NULL(info);
-                *info = String("WallpaperService::Engine::MyBroadcastReceiver: ");
-                (*info).AppendFormat("%p", this);
-                return NOERROR;
-            }
         private:
-            Engine* mOwner;
+            Engine* mHost;
         };
 
-        class MySurfaceHolder : public BaseSurfaceHolder
+        class MSurfaceHolder
+            : public BaseSurfaceHolder
         {
         public:
-            MySurfaceHolder(
-                /* [in] */ Engine* owner);
+            MSurfaceHolder(
+                /* [in] */ Engine* host);
 
+            // @Override
             CARAPI_(Boolean) OnAllowLockCanvas();
 
-            CARAPI_(void) OnRelayoutContainer();
+            // @Override
+            CARAPI OnRelayoutContainer();
 
+            // @Override
             CARAPI OnUpdateSurface();
 
             CARAPI IsCreating(
-                /* [out] */ Boolean* isCreating);
+                /* [out] */ Boolean* result);
 
+            // @Override
             CARAPI SetFixedSize(
                 /* [in] */ Int32 width,
                 /* [in] */ Int32 height);
@@ -121,62 +129,130 @@ public:
                 /* [in] */ Boolean screenOn);
 
         private:
-            Engine* mOwner;
+            Engine* mHost;
         };
 
-        class WallpaperInputEventReceiver : public InputEventReceiver
+        class WallpaperInputEventReceiver
+            : public InputEventReceiver
         {
         public:
             WallpaperInputEventReceiver(
                 /* [in] */ IInputChannel* inputChannel,
                 /* [in] */ ILooper* looper,
-                /* [in] */ Engine* owner);
+                /* [in] */ Engine* host);
 
+            // @Override
             CARAPI OnInputEvent(
                 /* [in] */ IInputEvent* event);
 
         private:
-           Engine* mOwner;
+            Engine* mHost;
         };
 
-    public:
-        Engine(
-            /* [in] */ WallpaperService* owner);
+        class MWindow
+            : public BaseIWindow
+        {
+            friend class IWallpaperEngineWrapper;
+        public:
+            MWindow(
+                /* [in] */ Engine* host);
 
-        virtual ~Engine();
+            // @Override
+            CARAPI Resized(
+                /* [in] */ IRect* frame,
+                /* [in] */ IRect* overscanInsets,
+                /* [in] */ IRect* contentInsets,
+                /* [in] */ IRect* visibleInsets,
+                /* [in] */ IRect* stableInsets,
+                /* [in] */ Boolean reportDraw,
+                /* [in] */ IConfiguration* newConfig);
+
+            // @Override
+            CARAPI Moved(
+                /* [in] */ Int32 newX,
+                /* [in] */ Int32 newY);
+
+            // @Override
+            CARAPI DispatchAppVisibility(
+                /* [in] */ Boolean visible);
+
+            // @Override
+            CARAPI DispatchWallpaperOffsets(
+                /* [in] */ Float x,
+                /* [in] */ Float y,
+                /* [in] */ Float xStep,
+                /* [in] */ Float yStep,
+                /* [in] */ Boolean sync);
+
+            // @Override
+            CARAPI DispatchWallpaperCommand(
+                /* [in] */ const String& action,
+                /* [in] */ Int32 x,
+                /* [in] */ Int32 y,
+                /* [in] */ Int32 z,
+                /* [in] */ IBundle* extras,
+                /* [in] */ Boolean sync);
+
+            ///pay for someone's error,he write a ToString in Binder.car
+            CARAPI ToString(
+                /* [out] */ String* str)
+            {
+                return NOERROR;
+            }
+            ///pay for someone's error
+        private:
+            Engine* mHost;
+        };
+
+        friend class IWallpaperEngineWrapper;
+        friend class MWindow;
+    public:
+        CAR_INTERFACE_DECL()
+
+        Engine();
+
+        Engine(
+            /* [in] */ WallpaperService* host);
+
+        CARAPI constructor();
 
         /**
          * Provides access to the surface in which this wallpaper is drawn.
          */
-        virtual CARAPI_(AutoPtr<ISurfaceHolder>) GetSurfaceHolder();
+        CARAPI GetSurfaceHolder(
+            /* [out] */ ISurfaceHolder** sh);
 
         /**
          * Convenience for {@link WallpaperManager#getDesiredMinimumWidth()
          * WallpaperManager.getDesiredMinimumWidth()}, returning the width
          * that the system would like this wallpaper to run in.
          */
-        virtual CARAPI_(Int32) GetDesiredMinimumWidth();
+        CARAPI GetDesiredMinimumWidth(
+            /* [out] */ Int32* width);
 
         /**
          * Convenience for {@link WallpaperManager#getDesiredMinimumHeight()
          * WallpaperManager.getDesiredMinimumHeight()}, returning the height
          * that the system would like this wallpaper to run in.
          */
-        virtual CARAPI_(Int32) GetDesiredMinimumHeight();
+        CARAPI GetDesiredMinimumHeight(
+            /* [out] */ Int32* height);
 
         /**
          * Return whether the wallpaper is currently visible to the user,
          * this is the last value supplied to
          * {@link #onVisibilityChanged(boolean)}.
          */
-        virtual CARAPI_(Boolean) IsVisible();
+        CARAPI IsVisible(
+            /* [out] */ Boolean* result);
 
         /**
          * Returns true if this engine is running in preview mode -- that is,
          * it is being shown to the user before they select it as the actual
          * wallpaper.
          */
-        virtual CARAPI_(Boolean) IsPreview();
+        CARAPI IsPreview(
+            /* [out] */ Boolean* result);
 
         /**
          * Control whether this wallpaper will receive raw touch events
@@ -185,7 +261,7 @@ public:
          * are turned off.  If enabled, the events will be received in
          * {@link #onTouchEvent(MotionEvent)}.
          */
-        virtual CARAPI_(void) SetTouchEventsEnabled(
+        CARAPI SetTouchEventsEnabled(
             /* [in] */ Boolean enabled);
 
         /**
@@ -196,18 +272,18 @@ public:
          *
          * @param enabled whether the wallpaper wants to receive offset notifications
          */
-        virtual CARAPI_(void) SetOffsetNotificationsEnabled(
+        CARAPI SetOffsetNotificationsEnabled(
             /* [in] */ Boolean enabled);
 
         /** {@hide} */
-        virtual CARAPI_(void) SetFixedSizeAllowed(
-            /* [in] */ Boolean  allowed);
+        CARAPI SetFixedSizeAllowed(
+            /* [in] */ Boolean allowed);
 
         /**
          * Called once to initialize the engine.  After returning, the
          * engine's surface will be created by the framework.
          */
-        virtual CARAPI_(void) OnCreate(
+        CARAPI OnCreate(
             /* [in] */ ISurfaceHolder* surfaceHolder);
 
         /**
@@ -215,15 +291,25 @@ public:
          * surface will be destroyed and this Engine object is no longer
          * valid.
          */
-        virtual CARAPI_(void) OnDestroy();
+        CARAPI OnDestroy();
 
         /**
          * Called to inform you of the wallpaper becoming visible or
          * hidden.  <em>It is very important that a wallpaper only use
          * CPU while it is visible.</em>.
          */
-        virtual CARAPI_(void) OnVisibilityChanged(
+        CARAPI OnVisibilityChanged(
             /* [in] */ Boolean visible);
+
+        /**
+         * Called with the current insets that are in effect for the wallpaper.
+         * This gives you the part of the overall wallpaper surface that will
+         * generally be visible to the user (ignoring position offsets applied to it).
+         *
+         * @param insets Insets to apply.
+         */
+        CARAPI OnApplyWindowInsets(
+            /* [in] */ IWindowInsets* insets);
 
         /**
          * Called as the user performs touch-screen interaction with the
@@ -232,7 +318,7 @@ public:
          * user is interacting with, so if it is slow you will get fewer
          * move events.
          */
-        virtual CARAPI_(void) OnTouchEvent(
+        CARAPI OnTouchEvent(
             /* [in] */ IMotionEvent* event);
 
         /**
@@ -241,7 +327,7 @@ public:
          * call to {@link WallpaperManager#setWallpaperOffsets(IBinder, float, float)
          * WallpaperManager.setWallpaperOffsets()}.
          */
-        virtual CARAPI_(void) OnOffsetsChanged(
+        CARAPI OnOffsetsChanged(
             /* [in] */ Float xOffset,
             /* [in] */ Float yOffset,
             /* [in] */ Float xOffsetStep,
@@ -266,19 +352,20 @@ public:
          * @return If returning a result, create a Bundle and place the
          * result data in to it.  Otherwise return null.
          */
-        virtual CARAPI_(AutoPtr<IBundle>) OnCommand(
+        CARAPI OnCommand(
             /* [in] */ const String& action,
             /* [in] */ Int32 x,
             /* [in] */ Int32 y,
             /* [in] */ Int32 z,
             /* [in] */ IBundle* extras,
-            /* [in] */ Boolean resultRequested);
+            /* [in] */ Boolean resultRequested,
+            /* [out] */ IBundle** b);
 
         /**
          * Called when an application has changed the desired virtual size of
          * the wallpaper.
          */
-        virtual CARAPI_(void) OnDesiredSizeChanged(
+        CARAPI OnDesiredSizeChanged(
             /* [in] */ Int32 desiredWidth,
             /* [in] */ Int32 desiredHeight);
 
@@ -286,7 +373,7 @@ public:
          * Convenience for {@link SurfaceHolder.Callback#surfaceChanged
          * SurfaceHolder.Callback.surfaceChanged()}.
          */
-        virtual CARAPI_(void) OnSurfaceChanged(
+        CARAPI OnSurfaceChanged(
             /* [in] */ ISurfaceHolder* holder,
             /* [in] */ Int32 format,
             /* [in] */ Int32 width,
@@ -296,66 +383,64 @@ public:
          * Convenience for {@link SurfaceHolder.Callback2#surfaceRedrawNeeded
          * SurfaceHolder.Callback.surfaceRedrawNeeded()}.
          */
-        virtual CARAPI_(void) OnSurfaceRedrawNeeded(
+        CARAPI OnSurfaceRedrawNeeded(
             /* [in] */ ISurfaceHolder* holder);
 
         /**
          * Convenience for {@link SurfaceHolder.Callback#surfaceCreated
          * SurfaceHolder.Callback.surfaceCreated()}.
          */
-        virtual CARAPI_(void) OnSurfaceCreated(
+        CARAPI OnSurfaceCreated(
             /* [in] */ ISurfaceHolder* holder);
 
         /**
          * Convenience for {@link SurfaceHolder.Callback#surfaceDestroyed
          * SurfaceHolder.Callback.surfaceDestroyed()}.
          */
-        virtual CARAPI_(void) OnSurfaceDestroyed(
+        CARAPI OnSurfaceDestroyed(
             /* [in] */ ISurfaceHolder* holder);
 
-    protected:
-        virtual CARAPI_(void) Dump(
-                /* [in] */ const String& prefix,
-                /* [in] */ IFileDescriptor* fd,
-                /* [in] */ IPrintWriter* out,
-                /* [in] */ const ArrayOf<String>& args);
+    private:
+        CARAPI DispatchPointer(
+            /* [in] */ IMotionEvent* event);
 
-        virtual CARAPI_(void) UpdateSurface(
+    protected:
+        CARAPI UpdateSurface(
             /* [in] */ Boolean forceRelayout,
             /* [in] */ Boolean forceReport,
             /* [in] */ Boolean redrawNeeded);
 
-        virtual CARAPI_(void) Attach(
-            /* [in] */ IWallpaperEngineWrapper* wrapper);
+        CARAPI Attach(
+            /* [in] */ IIWallpaperEngineWrapper* wrapper);
 
-        virtual CARAPI_(void) DoDesiredSizeChanged(
+        CARAPI DoDesiredSizeChanged(
             /* [in] */ Int32 desiredWidth,
             /* [in] */ Int32 desiredHeight);
 
-        virtual CARAPI_(void) DoVisibilityChanged(
+        CARAPI DoDisplayPaddingChanged(
+            /* [in] */ IRect* padding);
+
+        CARAPI DoVisibilityChanged(
             /* [in] */ Boolean visible);
 
-        virtual CARAPI_(void) ReportVisibility();
+        CARAPI ReportVisibility();
 
-        virtual CARAPI_(void) DoOffsetsChanged(
+        CARAPI DoOffsetsChanged(
             /* [in] */ Boolean always);
 
-        virtual CARAPI_(void) DoCommand(
-            /* [in] */ WallpaperCommand* cmd);
+        CARAPI DoCommand(
+            /* [in] */ IWallpaperCommand* handlecmd);
 
-        virtual CARAPI_(void) ReportSurfaceDestroyed();
+        CARAPI ReportSurfaceDestroyed();
 
-        virtual CARAPI_(void) Detach();
-
-    private:
-        CARAPI_(void) DispatchPointer(
-            /* [in] */ IMotionEvent* event);
+        CARAPI Detach();
 
     protected:
-        AutoPtr<IWallpaperEngineWrapper> mIWallpaperEngine;
+        AutoPtr<IIWallpaperEngineWrapper> mIWallpaperEngine;
+
         // Copies from mIWallpaperEngine.
         AutoPtr<IHandlerCaller> mCaller;
-        AutoPtr<IWallpaperConnection> mConnection;
+        AutoPtr<IIWallpaperConnection> mConnection;
         AutoPtr<IBinder> mWindowToken;
 
         Boolean mInitializing;
@@ -381,10 +466,22 @@ public:
         Int32 mWindowPrivateFlags;
         Int32 mCurWindowFlags;
         Int32 mCurWindowPrivateFlags;
+        AutoPtr<ITypedValue> mOutsetBottom;
         AutoPtr<IRect> mVisibleInsets;
         AutoPtr<IRect> mWinFrame;
+        AutoPtr<IRect> mOverscanInsets;
         AutoPtr<IRect> mContentInsets;
+        AutoPtr<IRect> mStableInsets;
+        AutoPtr<IRect> mDispatchedOverscanInsets;
+        AutoPtr<IRect> mDispatchedContentInsets;
+        AutoPtr<IRect> mDispatchedStableInsets;
+        AutoPtr<IRect> mFinalSystemInsets;
+        AutoPtr<IRect> mFinalStableInsets;
         AutoPtr<IConfiguration> mConfiguration;
+
+        Boolean mIsEmulator;
+        Boolean mIsCircularEmulator;
+        Boolean mWindowIsRound;
 
         AutoPtr<IWindowManagerLayoutParams> mLayout;
         AutoPtr<IWindowSession> mSession;
@@ -403,53 +500,150 @@ public:
         AutoPtr<BroadcastReceiver> mReceiver;
         AutoPtr<BaseSurfaceHolder> mSurfaceHolder;
         AutoPtr<WallpaperInputEventReceiver> mInputEventReceiver;
-        AutoPtr<IBaseIWindow> mWindow;
+        AutoPtr<BaseIWindow> mWindow;
 
     private:
-        WallpaperService* mOwner;
+        WallpaperService* mHost;
     };
 
-protected:
-    class WallpaperCommand
-        : public ElRefBase
-        , public IInterface
+    class IWallpaperEngineWrapper
+        : public Object
+        , public IIWallpaperEngine
+        , public IHandlerCallerCallback
+        , public IBinder
+        , public IIWallpaperEngineWrapper
+    {
+        friend class Engine;
+    public:
+        CAR_INTERFACE_DECL()
+
+        IWallpaperEngineWrapper();
+
+        IWallpaperEngineWrapper(
+            /* [in] */ WallpaperService* host);
+
+        CARAPI constructor(
+            /* [in] */ IWallpaperService* context,
+            /* [in] */ IIWallpaperConnection* conn,
+            /* [in] */ IBinder* windowToken,
+            /* [in] */ Int32 windowType,
+            /* [in] */ Boolean isPreview,
+            /* [in] */ Int32 reqWidth,
+            /* [in] */ Int32 reqHeight,
+            /* [in] */ IRect* padding);
+
+        CARAPI SetDesiredSize(
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height);
+
+        CARAPI SetDisplayPadding(
+            /* [in] */ IRect* padding);
+
+        CARAPI SetVisibility(
+            /* [in] */ Boolean visible);
+
+        CARAPI DispatchPointer(
+            /* [in] */ IMotionEvent* event);
+
+        CARAPI DispatchWallpaperCommand(
+            /* [in] */ const String& action,
+            /* [in] */ Int32 x,
+            /* [in] */ Int32 y,
+            /* [in] */ Int32 z,
+            /* [in] */ IBundle* extras);
+
+        CARAPI ReportShown();
+
+        CARAPI Destroy();
+
+        CARAPI ExecuteMessage(
+            /* [in] */ IMessage* message);
+
+        ///pay for someone's error,he write a ToString in Binder.car
+        CARAPI ToString(
+            /* [out] */ String* str)
+        {
+            return NOERROR;
+        }
+        ///pay for someone's error
+
+    private:
+        AutoPtr<IHandlerCaller> mCaller;
+
+        AutoPtr<IIWallpaperConnection> mConnection;
+        AutoPtr<IBinder> mWindowToken;
+        Int32 mWindowType;
+        Boolean mIsPreview;
+        Boolean mShownReported;
+        Int32 mReqWidth;
+        Int32 mReqHeight;
+        AutoPtr<IRect> mDisplayPadding;
+
+        AutoPtr<Engine> mEngine;
+        WallpaperService* mHost;
+    };
+
+    class IWallpaperServiceWrapper
+        : public Object
+        , public IIWallpaperService
+        , public IBinder
+        , public IIWallpaperServiceWrapper
     {
     public:
         CAR_INTERFACE_DECL()
 
-        String mAction;
-        Int32 mX;
-        Int32 mY;
-        Int32 mZ;
-        AutoPtr<IBundle> mExtras;
-        Boolean mSync;
+        IWallpaperServiceWrapper();
+
+        CARAPI constructor(
+            /* [in] */ IWallpaperService* context);
+
+        // @Override
+        CARAPI Attach(
+            /* [in] */ IIWallpaperConnection* conn,
+            /* [in] */ IBinder* windowToken,
+            /* [in] */ Int32 windowType,
+            /* [in] */ Boolean isPreview,
+            /* [in] */ Int32 reqWidth,
+            /* [in] */ Int32 reqHeight,
+            /* [in] */ IRect* padding);
+
+        ///pay for someone's error,he write a ToString in Binder.car
+        CARAPI ToString(
+            /* [out] */ String* str)
+        {
+            return NOERROR;
+        }
+        ///pay for someone's error
+
+    private:
+        AutoPtr<IWallpaperService> mTarget;
+
     };
 
+    friend class WallpaperService::Engine::MSurfaceHolder;
+    friend class WallpaperService::Engine::MWindow;
+    friend class WallpaperService::Engine;
 public:
+    CAR_INTERFACE_DECL()
+
+    WallpaperService();
+
+    CARAPI constructor();
+
+    // @Override
     CARAPI OnCreate();
 
+    // @Override
     CARAPI OnDestroy();
 
     /**
-    * Implement to return the implementation of the internal accessibility
-    * service interface.  Subclasses should not override.
-    */
-    //@Override
+     * Implement to return the implementation of the internal accessibility
+     * service interface.  Subclasses should not override.
+     */
+    // @Override
     CARAPI OnBind(
         /* [in] */ IIntent* intent,
-        /* [out] */ IBinder** binder);
-
-    /**
-     * This allows subclasses to change the thread that most callbacks
-     * occur on.  Currently hidden because it is mostly needed for the
-     * image wallpaper (which runs in the system process and doesn't want
-     * to get stuck running on that seriously in use main thread).  Not
-     * exposed right now because the semantics of this are not totally
-     * well defined and some callbacks can still happen on the main thread).
-     * @hide
-     */
-    CARAPI SetCallbackLooper(
-        /* [in] */ ILooper* looper);
+        /* [out] */ IBinder** b);
 
     /**
      * Must be implemented to return a new instance of the wallpaper's engine.
@@ -457,18 +651,28 @@ public:
      * when the wallpaper is currently set as the active wallpaper and the user
      * is in the wallpaper picker viewing a preview of it as well.
      */
-    virtual CARAPI_(AutoPtr<Engine>) OnCreateEngine() = 0;
+    virtual CARAPI OnCreateEngine(
+        /* [out] */ IWallpaperServiceEngine** engine) = 0;
 
 protected:
-    //@Override
-    CARAPI Dump(
-        /* [in] */ IFileDescriptor* fd,
-        /* [in] */ IPrintWriter* out,
-        /* [in] */ const ArrayOf<String>& args);
+    static const String TAG;
+    static const Boolean DEBUG;
 
 private:
-    AutoPtr<ILooper> mCallbackLooper;
-    List<AutoPtr<Engine> > mActiveEngines;
+    static const Int32 DO_ATTACH = 10;
+    static const Int32 DO_DETACH = 20;
+    static const Int32 DO_SET_DESIRED_SIZE = 30;
+    static const Int32 DO_SET_DISPLAY_PADDING = 40;
+
+    static const Int32 MSG_UPDATE_SURFACE = 10000;
+    static const Int32 MSG_VISIBILITY_CHANGED = 10010;
+    static const Int32 MSG_WALLPAPER_OFFSETS = 10020;
+    static const Int32 MSG_WALLPAPER_COMMAND = 10025;
+    static const Int32 MSG_WINDOW_RESIZED = 10030;
+    static const Int32 MSG_WINDOW_MOVED = 10035;
+    static const Int32 MSG_TOUCH_EVENT = 10040;
+
+    AutoPtr<IArrayList> mActiveEngines;
 };
 
 } // namespace Wallpaper

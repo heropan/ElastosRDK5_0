@@ -51,13 +51,6 @@ public:
     //@Override
     CARAPI OnBindView(
         /* [in]  */ IView* view);
-
-private:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
 };
 
 }

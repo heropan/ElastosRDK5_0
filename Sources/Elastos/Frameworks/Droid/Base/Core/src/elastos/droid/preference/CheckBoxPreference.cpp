@@ -16,7 +16,15 @@ CheckBoxPreference::CheckBoxPreference()
 {
 }
 
-ECode CheckBoxPreference::Init(
+ECode CheckBoxPreference::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode CheckBoxPreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -53,32 +61,15 @@ ECode CheckBoxPreference::Init(
 
 ECode CheckBoxPreference::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-{
-    return Init(context, attrs, defStyleAttr, 0);
-}
-
-ECode CheckBoxPreference::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-{
-    return Init(context, attrs, defStyleAttr, defStyleRes);
-}
-
-ECode CheckBoxPreference::constructor(
-    /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return Init(context, attrs, R::attr::checkBoxPreferenceStyle, 0);
+    return constructor(context, attrs, R::attr::checkBoxPreferenceStyle, 0);
 }
 
 ECode CheckBoxPreference::constructor(
     /* [in] */ IContext* context)
 {
-    return Init(context, NULL, R::attr::checkBoxPreferenceStyle, 0);
+    return constructor(context, NULL, R::attr::checkBoxPreferenceStyle, 0);
 }
 
 ECode CheckBoxPreference::OnBindView(

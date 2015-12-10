@@ -1,100 +1,35 @@
 
-#include "elastos/droid/media/CSandman.h"
-#include <elastos/utility/logging/Slogger.h>
-
-using namespace Elastos::Core;
-using namespace Elastos::Utility::Logging::Slogger;
+#include "elastos/droid/service/dreams/CSandman.h"
 
 namespace Elastos {
 namespace Droid {
-namespace service {
+namespace Service {
+namespace Dreams {
 
-const String CSandman::TAG = "Sandman";
-const ComponentName CSandman::SOMNAMBULATOR_COMPONENT; // = new ComponentName("com.android.systemui", "com.android.systemui.Somnambulator");
-
-CSandman::CSandman()
-{}
+CAR_SINGLETON_IMPL(CSandman)
+CAR_INTERFACE_IMPL(CSandman, Singleton, ISandman)
 
 ECode CSandman::ShouldStartDockApp(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
-    ComponentName name = intent->ResolveActivity(context->GetPackageManager());
-    *result = name != NULL && !name->Equals(SOMNAMBULATOR_COMPONENT);
-    return NOERROR;
+    return Sandman::ShouldStartDockApp(context, intent, result);
 }
 
 ECode CSandman::StartDreamByUserRequest(
     /* [in] */ IContext* context)
 {
-    StartDream(context, FALSE);
-    return NOERROR;
+    return Sandman::StartDreamByUserRequest(context);
 }
 
 ECode CSandman::StartDreamWhenDockedIfAppropriate(
     /* [in] */ IContext* context)
 {
-    if (!IsScreenSaverEnabled(context) || !IsScreenSaverActivatedOnDock(context)) {
-        Slogger::I(TAG, "Dreams currently disabled for docks.");
-        return NOERROR;
-    }
-
-    StartDream(context, TRUE);
-    return NOERROR;
+    return Sandman::StartDreamWhenDockedIfAppropriate(context);
 }
 
-void CSandman::StartDream(
-    /* [in] */ IContext* context,
-    /* [in] */ Boolean docked)
-{
-    // try {
-        IDreamManager dreamManagerService = IDreamManager::Stub->AsInterface(
-                ServiceManager->GetService(DreamService::DREAM_SERVICE));
-        if (dreamManagerService != NULL && !dreamManagerService->IsDreaming()) {
-            if (docked) {
-                Slogger::I(TAG, "Activating dream while docked.");
-
-                // Wake up.
-                // The power manager will wake up the system automatically when it starts
-                // receiving power from a dock but there is a race between that happening
-                // and the UI mode manager starting a dream.  We want the system to already
-                // be awake by the time this happens.  Otherwise the dream may not start.
-                PowerManager powerManager =
-                        (PowerManager)context->GetSystemService(Context.POWER_SERVICE);
-                powerManager->WakeUp(SystemClock->UptimeMillis());
-            }
-            else {
-                Slogger::I(TAG, "Activating dream by user request.");
-            }
-
-            // Dream.
-            dreamManagerService->Dream();
-        }
-    // } catch (RemoteException ex) {
-        // Slog.e(TAG, "Could not start dream when docked.", ex);
-    // }
-}
-
-Boolean CSandman::IsScreenSaverEnabled(
-    /* [in] */ IContext* context)
-{
-    Int32 def = context->GetResources()->GetBoolean( com.android.internal.R.bool.config_dreamsEnabledByDefault) ? 1 : 0;
-    return Settings::Secure->GetInt32ForUser(context->GetContentResolver(),
-            Settings::Secure::SCREENSAVER_ENABLED, def,
-            UserHandle::USER_CURRENT) != 0;
-}
-
-Boolean CSandman::IsScreenSaverActivatedOnDock(
-    /* [in] */ IContext* context)
-{
-    Int32 def = context->GetResources()->GetBoolean( com.android.internal.R.bool.config_dreamsActivatedOnDockByDefault) ? 1 : 0;
-    return Settings::Secure->GetInt32ForUser(context->GetContentResolver(),
-            Settings::Secure::SCREENSAVER_ACTIVATE_ON_DOCK, def,
-            UserHandle::USER_CURRENT) != 0;
-}
-
-} // namespace service
+} // namespace Dreams
+} // namespace Service
 } // namepsace Droid
 } // namespace Elastos

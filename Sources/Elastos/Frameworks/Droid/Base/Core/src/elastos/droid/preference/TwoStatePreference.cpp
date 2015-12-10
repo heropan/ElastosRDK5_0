@@ -1,6 +1,5 @@
-
-#include "elastos/droid/preference/TwoStatePreference.h"
 #include "elastos/droid/preference/CTwoStatePreferenceSavedState.h"
+#include "elastos/droid/preference/TwoStatePreference.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
@@ -8,9 +7,9 @@ using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityManagerHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::R;
-using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::CString;
+using Elastos::Core::IBoolean;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -31,7 +30,7 @@ ECode TwoStatePreference::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    return Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+    return Preference::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
 ECode TwoStatePreference::constructor(
@@ -39,20 +38,20 @@ ECode TwoStatePreference::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    return Preference::Init(context, attrs, defStyleAttr, 0);
+    return Preference::constructor(context, attrs, defStyleAttr, 0);
 }
 
 ECode TwoStatePreference::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return Preference::Init(context, attrs, 0, 0);
+    return Preference::constructor(context, attrs, 0, 0);
 }
 
 ECode TwoStatePreference::constructor(
     /* [in] */ IContext* context)
 {
-    return Preference::Init(context, NULL, 0, 0);
+    return Preference::constructor(context, NULL, 0, 0);
 }
 
 ECode TwoStatePreference::OnClick()

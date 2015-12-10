@@ -9,6 +9,9 @@ module
     namespace Service {
     namespace Dreams {
 
+    /**
+     * @hide
+     */
     [oneway]
     interface IIDreamService {
         Attach(

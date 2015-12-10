@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_PREFERENCE_PREFERENCEFRAMELAYOUT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-//#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::View::IView;
@@ -14,7 +14,7 @@ using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
 using Elastos::Droid::Widget::IFrameLayout;
-//using Elastos::Droid::Widget::FrameLayout;
+using Elastos::Droid::Widget::FrameLayout;
 using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Content::IContext;
@@ -26,25 +26,17 @@ namespace Droid {
 namespace Preference {
 
 class PreferenceFrameLayout
-    //: public FrameLayout
-    : public Object
+    : public FrameLayout
     , public IPreferenceFrameLayout
-    // , public IFrameLayout
-    // , public IView
-    // , public IViewGroup
-    // , public IViewParent
-    // , public IViewManager
-    // , public IDrawableCallback
-    // , public IKeyEventCallback
-    // , public IAccessibilityEventSource
 {
 public:
     class LayoutParams
-        //: public FrameLayout::LayoutParams
-        : public Object
-        , public IFrameLayoutLayoutParams
+        : public FrameLayout::LayoutParams
+        , public IPreferenceFrameLayoutParams
     {
     public:
+        CAR_INTERFACE_DECL()
+
         LayoutParams();
 
         CARAPI constructor(
@@ -54,8 +46,6 @@ public:
         CARAPI constructor(
             /* [in] */ Int32 width,
             /* [in] */ Int32 height);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI GetGravity(
             /* [out] */ Int32* gravity);
@@ -68,6 +58,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     PreferenceFrameLayout();
 
     CARAPI constructor(
@@ -88,21 +80,12 @@ public:
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes);
 
-    CAR_INTERFACE_DECL()
-
     CARAPI GenerateLayoutParams(
         /* [in] */ IAttributeSet* attrs,
         /* [out] */ IViewGroupLayoutParams** params);
 
     CARAPI AddView(
         /* [in] */ IView* child);
-
-private:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
 
 private:
     static const Int32 DEFAULT_BORDER_TOP = 0;

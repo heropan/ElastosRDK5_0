@@ -53,12 +53,6 @@ module
             [out] Boolean* result);
 
         /**
-             * Called by the inflater to add an item to this group.
-             */
-        AddItemFromInflater(
-            [in] IPreference* preference);
-
-        /**
              * Returns the number of children {@link Preference}s.
              * @return The number of preference children in this group.
              */

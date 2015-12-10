@@ -5,11 +5,12 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/app/ListActivity.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/widget/ArrayAdapter.h"
 
 using Elastos::Droid::App::ListActivity;
 using Elastos::Droid::App::IFragment;
 using Elastos::Droid::App::IFragmentManager;
-// using Elastos::Droid::App::IFragmentBreadCrumbs;
+using Elastos::Droid::App::IFragmentBreadCrumbs;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::Handler;
@@ -18,6 +19,7 @@ using Elastos::Droid::Preference::IPreferenceActivityHeaderAdapter;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::Widget::ArrayAdapter;
 using Elastos::Droid::Widget::IArrayAdapter;
 using Elastos::Droid::Widget::IBaseAdapter;
 using Elastos::Droid::Widget::IButton;
@@ -58,22 +60,17 @@ private:
     };
 
     class HeaderAdapter
-        // : public ArrayAdapter
-        : public Object
+        : public ArrayAdapter
         , public IPreferenceActivityHeaderAdapter
-        // , public IArrayAdapter
-        // , public IListAdapter
-        // , public ISpinnerAdapter
-        // , public IBaseAdapter
     {
     private:
         class HeaderViewHolder
             : public Object
         {
         public:
-            AutoPtr<IImageView> icon;
-            AutoPtr<ITextView> title;
-            AutoPtr<ITextView> summary;
+            AutoPtr<IImageView> mIcon;
+            AutoPtr<ITextView> mTitle;
+            AutoPtr<ITextView> mSummary;
         };
 
     public:
@@ -866,7 +863,7 @@ private:
 
     AutoPtr<IViewGroup> mPrefsContainer;
 
-    // AutoPtr<IFragmentBreadCrumbs> mFragmentBreadCrumbs;
+    AutoPtr<IFragmentBreadCrumbs> mFragmentBreadCrumbs;
 
     Boolean mSinglePane;
 

@@ -1,28 +1,28 @@
-
-#include "elastos/droid/preference/PreferenceManager.h"
 #include "elastos/droid/preference/CPreferenceInflater.h"
 #include "elastos/droid/preference/CPreferenceManager.h"
 #include "elastos/droid/preference/CPreferenceScreen.h"
+#include "elastos/droid/preference/PreferenceManager.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Core::CString;
-using Elastos::Core::AutoLock;
-using Elastos::Utility::Etl::HashSet;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Content::Res::IXmlResourceParser;
+using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Res::IXmlResourceParser;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Preference::CPreferenceInflater;
 using Elastos::Droid::Preference::CPreferenceManager;
 using Org::Xmlpull::V1::IXmlPullParser;
-using Elastos::Utility::IList;
-using Elastos::Droid::Os::IBundle;
+using Elastos::Core::AutoLock;
+using Elastos::Core::CString;
+using Elastos::Core::IString;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -46,7 +46,7 @@ ECode PreferenceManager::constructor(
     mActivity = activity;
     mNextRequestCode = firstRequestCode;
 
-    return Init(IContext::Probe(activity));
+    return constructor(IContext::Probe(activity));
 }
 
 ECode PreferenceManager::constructor(
@@ -78,43 +78,36 @@ ECode PreferenceManager::GetFragment(
     return NOERROR;
 }
 
-AutoPtr<List<AutoPtr<IResolveInfo> > > PreferenceManager::QueryIntentActivities(
+AutoPtr<IList> PreferenceManager::QueryIntentActivities(
     /* [in] */ IIntent* queryIntent)
 {
     AutoPtr<IPackageManager> manager;
     mContext->GetPackageManager((IPackageManager**)&manager);
     AutoPtr<IList> resolves;
     manager->QueryIntentActivities(queryIntent, IPackageManager::GET_META_DATA, (IList**)&resolves);
-    // AutoPtr<List<AutoPtr<IResolveInfo> > list;
-    Int32 size;
-    resolves->GetSize(&size);
-    for (Int32 i = 0; i < size; ++i) {
-        AutoPtr<IInterface> element;
-        resolves->Get(i, (IInterface**)&element);
-        AutoPtr<IResolveInfo> rs = IResolveInfo::Probe(element);
-        // list.PushBack(rs);
-    }
-    // return list;
-    return NULL;
+    return resolves;
 }
 
 ECode PreferenceManager::InflateFromIntent(
     /* [in] */ IIntent* queryIntent,
-    /* [in] */ IPreferenceScreen* _rootPreferences,
+    /* [in] */ IPreferenceScreen* rootPreferences,
     /* [out] */ IPreferenceScreen** screen)
 {
     VALIDATE_NOT_NULL(screen)
+    const AutoPtr<IList> activities = QueryIntentActivities(queryIntent);
+    const AutoPtr<IHashSet> inflatedRes;
+    CHashSet::New((IHashSet**)&inflatedRes);
 
-    AutoPtr<IPreference> rootPreferences = IPreference::Probe(_rootPreferences);
+    Int32 size;
+    activities->GetSize(&size);
+    for (Int32 i = size - 1; i >= 0; i--) {
+        AutoPtr<IInterface> _resolveInfo;
+        activities->Get(i, (IInterface**)&_resolveInfo);
+        AutoPtr<IResolveInfo> resolveInfo = IResolveInfo::Probe(_resolveInfo);
+        const AutoPtr<IActivityInfo> activityInfo;
+        resolveInfo->GetActivityInfo((IActivityInfo**)&activityInfo);
 
-    AutoPtr<List<AutoPtr<IResolveInfo> > > activities = QueryIntentActivities(queryIntent);
-    HashSet<String> inflatedRes;
-
-    List<AutoPtr<IResolveInfo> >::ReverseIterator rit = activities->RBegin();
-    for (; rit != activities->REnd(); ++rit) {
-        AutoPtr<IActivityInfo> activityInfo;
-        (*rit)->GetActivityInfo((IActivityInfo**)&activityInfo);
-        AutoPtr<IBundle> metaData;
+        const AutoPtr<IBundle> metaData;
         IPackageItemInfo::Probe(activityInfo)->GetMetaData((IBundle**)&metaData);
 
         Boolean contains;
@@ -131,31 +124,35 @@ ECode PreferenceManager::InflateFromIntent(
         StringBuilder sb(packageName);
         sb += ":";
         sb += keyPreferences;
-        String uniqueResId = sb.ToString();
+        const String uniqueResId = sb.ToString();
 
-        if (inflatedRes.Find(uniqueResId) == inflatedRes.End()) {
-            inflatedRes.Insert(uniqueResId);
+        AutoPtr<IString> strObj;
+        CString::New(uniqueResId, (IString**)&strObj);
+        Boolean result;
+        inflatedRes->Contains(strObj, &result);
+        if (!result) {
+            inflatedRes->Add(strObj);
 
-            AutoPtr<IContext> context;
+            const AutoPtr<IContext> context;
             ECode ec = mContext->CreatePackageContext(packageName, 0, (IContext**)&context);
             if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
                 Slogger::W(TAG, "Could not create context for %s: 0x%08x", packageName.string(), ec);
                 continue;
             }
-            AutoPtr<IGenericInflater> inflater;
-            CPreferenceInflater::New(context, (IPreferenceManager*)this, (IGenericInflater**)&inflater);
+
+            AutoPtr<IPreferenceInflater> inflater;
+            CPreferenceInflater::New(context, this, (IPreferenceInflater**)&inflater);
             AutoPtr<IPackageManager> pm;
             context->GetPackageManager((IPackageManager**)&pm);
             AutoPtr<IXmlResourceParser> parser;
             IPackageItemInfo::Probe(activityInfo)->LoadXmlMetaData(pm, METADATA_KEY_PREFERENCES, (IXmlResourceParser**)&parser);
             AutoPtr<IInterface> temp;
-            inflater->Inflate(IXmlPullParser::Probe(parser), rootPreferences, TRUE, (IInterface**)&temp);
-            rootPreferences = IPreference::Probe(temp);
+            IGenericInflater::Probe(inflater)->Inflate(IXmlPullParser::Probe(parser), rootPreferences, TRUE, (IInterface**)&temp);
+            rootPreferences = IPreferenceScreen::Probe(temp);
             parser->Close();
         }
     }
-
-    rootPreferences->OnAttachedToHierarchy(this);
+    IPreference::Probe(rootPreferences)->OnAttachedToHierarchy(this);
 
     *screen = IPreferenceScreen::Probe(rootPreferences);
     REFCOUNT_ADD(*screen)
@@ -311,8 +308,8 @@ ECode PreferenceManager::FindPreference(
         *preference = NULL;
         return NOERROR;
     }
-    // return mPreferenceScreen->FindPreference(key, preference);
-    return NOERROR;
+
+    return IPreferenceGroup::Probe(mPreferenceScreen)->FindPreference(key, preference);
 }
 
 ECode PreferenceManager::SetDefaultValues(

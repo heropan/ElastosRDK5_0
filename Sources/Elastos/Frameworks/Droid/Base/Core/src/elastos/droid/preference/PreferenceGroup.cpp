@@ -19,49 +19,19 @@ namespace Preference {
 CAR_INTERFACE_IMPL_2(PreferenceGroup, Preference, IGenericInflaterParent, IPreferenceGroup)
 
 PreferenceGroup::PreferenceGroup()
-{
-}
-
-PreferenceGroup::PreferenceGroup(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
     : mOrderingAsAdded(TRUE)
     , mCurrentPreferenceOrder(0)
     , mAttachedToActivity(FALSE)
 {
-    Init(context, attrs, defStyleAttr, defStyleRes);
 }
 
-PreferenceGroup::PreferenceGroup(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr)
-    : mOrderingAsAdded(TRUE)
-    , mCurrentPreferenceOrder(0)
-    , mAttachedToActivity(FALSE)
-{
-    Init(context, attrs, defStyleAttr, 0);
-}
-
-PreferenceGroup::PreferenceGroup(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : mOrderingAsAdded(TRUE)
-    , mCurrentPreferenceOrder(0)
-    , mAttachedToActivity(FALSE)
-{
-    Init(context, attrs, 0, 0);
-}
-
-void PreferenceGroup::Init(
+ECode PreferenceGroup::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    Preference::Init(context, attrs, defStyleAttr, defStyleRes);
+    FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceGroup),
             ARRAY_SIZE(R::styleable::PreferenceGroup));
@@ -70,6 +40,22 @@ void PreferenceGroup::Init(
     a->GetBoolean(R::styleable::PreferenceGroup_orderingFromXml,
             mOrderingAsAdded, &mOrderingAsAdded);
     a->Recycle();
+    return NOERROR;
+}
+
+ECode PreferenceGroup::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode PreferenceGroup::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, 0, 0);
 }
 
 ECode PreferenceGroup::SetOrderingAsAdded(
@@ -88,9 +74,10 @@ ECode PreferenceGroup::IsOrderingAsAdded(
 }
 
 ECode PreferenceGroup::AddItemFromInflater(
-    /* [in] */ IPreference* preference)
+    /* [in] */ IInterface* child)
 {
     Boolean result;
+    AutoPtr<IPreference> preference = IPreference::Probe(child);
     return AddPreference(preference, &result);
 }
 
@@ -98,8 +85,7 @@ ECode PreferenceGroup::GetPreferenceCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count)
-    mPreferenceList->GetSize(count);
-    return NOERROR;
+    return mPreferenceList->GetSize(count);
 }
 
 ECode PreferenceGroup::GetPreference(
@@ -107,8 +93,7 @@ ECode PreferenceGroup::GetPreference(
     /* [out] */ IPreference** preference)
 {
     VALIDATE_NOT_NULL(preference)
-    mPreferenceList->Get(index, (IInterface**)preference);
-    return NOERROR;
+    return mPreferenceList->Get(index, (IInterface**)preference);
 }
 
 ECode PreferenceGroup::AddPreference(
@@ -228,12 +213,11 @@ ECode PreferenceGroup::FindPreference(
     String keyStr1, keyStr2;
     GetKey(&keyStr1);
     key->ToString(&keyStr2);
-    assert(0);
-    // if (TextUtils::Equals(keyStr1, keyStr2)) {
-    //     *preferencevalue = THIS_PROBE(IPreference);
-    //     REFCOUNT_ADD(*preferencevalue)
-    //     return NOERROR;
-    // }
+    if (TextUtils::Equals(keyStr1, keyStr2)) {
+        *preferencevalue = this;
+        REFCOUNT_ADD(*preferencevalue)
+        return NOERROR;
+    }
     Int32 preferenceCount;
     GetPreferenceCount(&preferenceCount);
     for (Int32 i = 0; i < preferenceCount; i++) {

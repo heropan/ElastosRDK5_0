@@ -10,7 +10,7 @@ module
     namespace Service {
     namespace Voice {
 
-    interface IEventPayload {
+    interface IAlwaysOnHotwordDetectorEventPayload {
         /**
          * Gets the format of the audio obtained using {@link #getTriggerAudio()}.
          * May be null if there's no audio present.
@@ -85,7 +85,7 @@ module
          *        {@link AlwaysOnHotwordDetector#startRecognition(int)}.
          */
         OnDetected(
-            [in] IEventPayload* eventPayload);
+            [in] IAlwaysOnHotwordDetectorEventPayload* eventPayload);
 
         /**
          * Called when the detection fails due to an error.
@@ -289,6 +289,21 @@ module
          */
         CreateReEnrollIntent(
             [out] IIntent** intent);
+
+        /**
+         * Invalidates this hotword detector so that any future calls to this result
+         * in an IllegalStateException.
+         *
+         * @hide
+         */
+        Invalidate();
+
+        /**
+         * Reloads the sound models from the service.
+         *
+         * @hide
+         */
+        OnSoundModelsChanged();
     }
 
     } // namespace Voice

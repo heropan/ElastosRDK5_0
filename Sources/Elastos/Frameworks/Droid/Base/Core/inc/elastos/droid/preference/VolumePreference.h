@@ -37,7 +37,6 @@ public:
         : public Object
         , public IVolumePreferenceVolumeStore
     {
-        friend class VolumePreference;
     public:
         CAR_INTERFACE_DECL()
 
@@ -58,8 +57,8 @@ public:
             /* [in] */ Int32 volume);
 
     public:
-        Int32 volume;
-        Int32 originalVolume;
+        Int32 mVolume;
+        Int32 mOriginalVolume;
     };
 
 public:
@@ -108,12 +107,6 @@ protected:
 
     CARAPI OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
 
 private:
     CARAPI_(void) Cleanup();

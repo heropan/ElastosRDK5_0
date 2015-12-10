@@ -6,8 +6,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Widget::ISeekBar;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::Widget::ISeekBar;
 
 namespace Elastos {
 namespace Droid {

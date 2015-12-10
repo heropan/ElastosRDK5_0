@@ -79,8 +79,8 @@ ECode SeekBarDialogPreference::OnBindDialogView(
 }
 
 ECode SeekBarDialogPreference::GetSeekBar(
-        /* [in] */ IView* dialogView,
-        /* [out] */ ISeekBar** bar)
+    /* [in] */ IView* dialogView,
+    /* [out] */ ISeekBar** bar)
 {
     VALIDATE_NOT_NULL(bar)
     AutoPtr<IView> v;
