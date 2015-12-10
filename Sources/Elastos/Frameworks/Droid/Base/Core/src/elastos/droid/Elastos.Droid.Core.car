@@ -6,36 +6,47 @@ module
     merge("../../../car/elastos/droid/Exceptions.car");
     merge("../../../car/elastos/droid/fake_interfaces.car");
 
-    outputfile Elastos.Droid.Utility.h {
+    submodule Elastos.Droid.Animation {
+    merge("../../../car/elastos/droid/animation.car");
+    }
+
+    submodule Elastos.Droid.Graphics {
+    merge("../../../car/elastos/droid/graphics.car");
+    }
+
+    submodule Elastos.Droid.Internal {
+    merge("../../../car/elastos/droid/internal/utility/XmlUtils.car"); //should before os.car
+    }
+
+    submodule Elastos.Droid.Os {
+    merge("../../../car/elastos/droid/os.car");
+    }
+
+    submodule Elastos.Droid.Database {
+    merge("../../../car/elastos/droid/database.car"); //should after os.car
+    }
+
+    submodule Elastos.Droid.Utility {
     merge("../../../car/elastos/droid/utility.car");
     }
 
-    outputfile Elastos.Droid.Internal.h {
+    submodule Elastos.Droid.Text {
+    merge("../../../car/elastos/droid/text.car");
+    }
+
+    submodule Elastos.Droid.Content {
+    merge("../../../car/elastos/droid/content.car"); //should after os.car and text.car
+    }
+
+
+
+
+
+    submodule Elastos.Droid.Internal {
     merge("../../../car/elastos/droid/internal/utility.car");
     merge("../../../car/elastos/droid/internal/os.car");
     }
 
-    outputfile Elastos.Droid.Os.h {
-    merge("../../../car/elastos/droid/os.car");
-    }
-
-    merge("../../../car/elastos/droid/animation.car");
-
-    outputfile Elastos.Droid.Database.h {
-    merge("../../../car/elastos/droid/database.car");
-    }
-
-    outputfile Elastos.Droid.Graphics.h {
-    merge("../../../car/elastos/droid/graphics.car");
-    }
-
-    outputfile Elastos.Droid.Text.h {
-    merge("../../../car/elastos/droid/text.car");
-    }
-
-    outputfile Elastos.Droid.Content.h {
-    merge("../../../car/elastos/droid/content.car");
-    }
 
     merge("../../../car/elastos/droid/location.car");
     merge("../../../car/elastos/droid/internal/textservice.car");
@@ -60,7 +71,7 @@ module
     merge("../../../car/elastos/droid/wifi.car");
     merge("../../../car/elastos/droid/emoji.car");
 
-    outputfile Elastos.Droid.Internal.h {
+    submodule Elastos.Droid.Internal {
     merge("../../../car/elastos/droid/internal/appwidget.car");
     merge("../../../car/elastos/droid/internal/backup.car");
     merge("../../../car/elastos/droid/internal/content.car");
@@ -82,7 +93,7 @@ module
 
     merge("../../../car/elastos/droid/inputmethodservice.car");
 
-    outputfile Elastos.Droid.Media.h {
+    submodule Elastos.Droid.Media {
     merge("../../../car/elastos/droid/media.car");
     }
 

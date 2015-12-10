@@ -78,8 +78,6 @@ module
     merge("os/storage/StorageManager.car");
     merge("os/storage/StorageVolume.car");
 
-    merge("internal/utility/XmlUtils.car");
-
     using interface Elastos.Core.IClassLoader;
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Core.IThread;

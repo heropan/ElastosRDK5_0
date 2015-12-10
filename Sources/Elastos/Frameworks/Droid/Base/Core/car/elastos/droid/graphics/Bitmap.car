@@ -88,253 +88,6 @@ module
         BitmapCompressFormat_WEBP    = 2,
     }
 
-    [deprecated]
-    interface IBitmapHelper {
-        /**
-         * For backwards compatibility, allows the app layer to change the default
-         * density when running old apps.
-         * @hide
-         */
-        SetDefaultDensity(
-            [in] Int32 density);
-
-        GetDefaultDensity(
-            [out] Int32* density);
-
-        /**
-         * Creates a new bitmap, scaled from an existing bitmap, when possible. If the
-         * specified width and height are the same as the current width and height of
-         * the source bitmap, the source bitmap is returned and no new bitmap is
-         * created.
-         *
-         * @param src       The source bitmap.
-         * @param dstWidth  The new bitmap's desired width.
-         * @param dstHeight The new bitmap's desired height.
-         * @param filter    true if the source should be filtered.
-         * @return The new scaled bitmap or the source bitmap if no scaling is required.
-         * @throws IllegalArgumentException if width is <= 0, or height is <= 0
-         */
-        CreateScaledBitmap(
-            [in] IBitmap* src,
-            [in] Int32 dstWidth,
-            [in] Int32 dstHeight,
-            [in] Boolean filter,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns an immutable bitmap from the source bitmap. The new bitmap may
-         * be the same object as source, or a copy may have been made.  It is
-         * initialized with the same density as the original bitmap.
-         */
-        CreateBitmap(
-            [in] IBitmap* src,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns an immutable bitmap from the specified subset of the source
-         * bitmap. The new bitmap may be the same object as source, or a copy may
-         * have been made. It is initialized with the same density as the original
-         * bitmap.
-         *
-         * @param source   The bitmap we are subsetting
-         * @param x        The x coordinate of the first pixel in source
-         * @param y        The y coordinate of the first pixel in source
-         * @param width    The number of pixels in each row
-         * @param height   The number of rows
-         * @return A copy of a subset of the source bitmap or the source bitmap itself.
-         * @throws IllegalArgumentException if the x, y, width, height values are
-         *         outside of the dimensions of the source bitmap, or width is <= 0,
-         *         or height is <= 0
-         */
-        CreateBitmap(
-            [in] IBitmap* src,
-            [in] Int32 x,
-            [in] Int32 y,
-            [in] Int32 width,
-            [in] Int32 height,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns an immutable bitmap from subset of the source bitmap,
-         * transformed by the optional matrix. The new bitmap may be the
-         * same object as source, or a copy may have been made. It is
-         * initialized with the same density as the original bitmap.
-         *
-         * If the source bitmap is immutable and the requested subset is the
-         * same as the source bitmap itself, then the source bitmap is
-         * returned and no new bitmap is created.
-         *
-         * @param source   The bitmap we are subsetting
-         * @param x        The x coordinate of the first pixel in source
-         * @param y        The y coordinate of the first pixel in source
-         * @param width    The number of pixels in each row
-         * @param height   The number of rows
-         * @param m        Optional matrix to be applied to the pixels
-         * @param filter   true if the source should be filtered.
-         *                   Only applies if the matrix contains more than just
-         *                   translation.
-         * @return A bitmap that represents the specified subset of source
-         * @throws IllegalArgumentException if the x, y, width, height values are
-         *         outside of the dimensions of the source bitmap, or width is <= 0,
-         *         or height is <= 0
-         */
-        CreateBitmap(
-            [in] IBitmap* src,
-            [in] Int32 x,
-            [in] Int32 y,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] IMatrix* m,
-            [in] Boolean filter,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns a mutable bitmap with the specified width and height.  Its
-         * initial density is as per {@link #getDensity}.
-         *
-         * @param width    The width of the bitmap
-         * @param height   The height of the bitmap
-         * @param config   The bitmap config to create.
-         * @throws IllegalArgumentException if the width or height are <= 0
-         */
-        CreateBitmap(
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] BitmapConfig config,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns a mutable bitmap with the specified width and height.  Its
-         * initial density is determined from the given {@link DisplayMetrics}.
-         *
-         * @param display  Display metrics for the display this bitmap will be
-         *                 drawn on.
-         * @param width    The width of the bitmap
-         * @param height   The height of the bitmap
-         * @param config   The bitmap config to create.
-         * @throws IllegalArgumentException if the width or height are <= 0
-         */
-        CreateBitmap(
-            [in] IDisplayMetrics* display,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] BitmapConfig config,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns a immutable bitmap with the specified width and height, with each
-         * pixel value set to the corresponding value in the colors array.  Its
-         * initial density is as per {@link #getDensity}.
-         *
-         * @param colors   Array of {@link Color} used to initialize the pixels.
-         * @param offset   Number of values to skip before the first color in the
-         *                 array of colors.
-         * @param stride   Number of colors in the array between rows (must be >=
-         *                 width or <= -width).
-         * @param width    The width of the bitmap
-         * @param height   The height of the bitmap
-         * @param config   The bitmap config to create. If the config does not
-         *                 support per-pixel alpha (e.g. RGB_565), then the alpha
-         *                 bytes in the colors[] will be ignored (assumed to be FF)
-         * @throws IllegalArgumentException if the width or height are <= 0, or if
-         *         the color array's length is less than the number of pixels.
-         */
-        CreateBitmap(
-            [in] ArrayOf<Int32>* colors,
-            [in] Int32 offset,
-            [in] Int32 stride,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] BitmapConfig config,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns a immutable bitmap with the specified width and height, with each
-         * pixel value set to the corresponding value in the colors array.  Its
-         * initial density is determined from the given {@link DisplayMetrics}.
-         *
-         * @param display  Display metrics for the display this bitmap will be
-         *                 drawn on.
-         * @param colors   Array of {@link Color} used to initialize the pixels.
-         * @param offset   Number of values to skip before the first color in the
-         *                 array of colors.
-         * @param stride   Number of colors in the array between rows (must be >=
-         *                 width or <= -width).
-         * @param width    The width of the bitmap
-         * @param height   The height of the bitmap
-         * @param config   The bitmap config to create. If the config does not
-         *                 support per-pixel alpha (e.g. RGB_565), then the alpha
-         *                 bytes in the colors[] will be ignored (assumed to be FF)
-         * @throws IllegalArgumentException if the width or height are <= 0, or if
-         *         the color array's length is less than the number of pixels.
-         */
-        CreateBitmap(
-            [in] IDisplayMetrics* display,
-            [in] ArrayOf<Int32>* colors,
-            [in] Int32 offset,
-            [in] Int32 stride,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] BitmapConfig config,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns a immutable bitmap with the specified width and height, with each
-         * pixel value set to the corresponding value in the colors array.  Its
-         * initial density is as per {@link #getDensity}.
-         *
-         * @param colors   Array of {@link Color} used to initialize the pixels.
-         *                 This array must be at least as large as width * height.
-         * @param width    The width of the bitmap
-         * @param height   The height of the bitmap
-         * @param config   The bitmap config to create. If the config does not
-         *                 support per-pixel alpha (e.g. RGB_565), then the alpha
-         *                 bytes in the colors[] will be ignored (assumed to be FF)
-         * @throws IllegalArgumentException if the width or height are <= 0, or if
-         *         the color array's length is less than the number of pixels.
-         */
-        CreateBitmap(
-            [in] ArrayOf<Int32>* colors,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] BitmapConfig config,
-            [out] IBitmap** bitmap);
-
-        /**
-         * Returns a immutable bitmap with the specified width and height, with each
-         * pixel value set to the corresponding value in the colors array.  Its
-         * initial density is determined from the given {@link DisplayMetrics}.
-         *
-         * @param display  Display metrics for the display this bitmap will be
-         *                 drawn on.
-         * @param colors   Array of {@link Color} used to initialize the pixels.
-         *                 This array must be at least as large as width * height.
-         * @param width    The width of the bitmap
-         * @param height   The height of the bitmap
-         * @param config   The bitmap config to create. If the config does not
-         *                 support per-pixel alpha (e.g. RGB_565), then the alpha
-         *                 bytes in the colors[] will be ignored (assumed to be FF)
-         * @throws IllegalArgumentException if the width or height are <= 0, or if
-         *         the color array's length is less than the number of pixels.
-         */
-        CreateBitmap(
-            [in] IDisplayMetrics* display,
-            [in] ArrayOf<Int32>* colors,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] BitmapConfig config,
-            [out] IBitmap** bitmap);
-
-        /**
-         * @hide
-         */
-        ScaleFromDensity(
-            [in] Int32 size,
-            [in] Int32 sdensity,
-            [in] Int32 tdensity,
-            [out] Int32* scale);
-    }
-
     /**
      * @Involve
      * interface IParcelable
@@ -1039,6 +792,253 @@ module
             [in] Int32 width,
             [in] Int32 height,
             [in] Boolean requestPremultiplied);
+    }
+
+    [deprecated]
+    interface IBitmapHelper {
+        /**
+         * For backwards compatibility, allows the app layer to change the default
+         * density when running old apps.
+         * @hide
+         */
+        SetDefaultDensity(
+            [in] Int32 density);
+
+        GetDefaultDensity(
+            [out] Int32* density);
+
+        /**
+         * Creates a new bitmap, scaled from an existing bitmap, when possible. If the
+         * specified width and height are the same as the current width and height of
+         * the source bitmap, the source bitmap is returned and no new bitmap is
+         * created.
+         *
+         * @param src       The source bitmap.
+         * @param dstWidth  The new bitmap's desired width.
+         * @param dstHeight The new bitmap's desired height.
+         * @param filter    true if the source should be filtered.
+         * @return The new scaled bitmap or the source bitmap if no scaling is required.
+         * @throws IllegalArgumentException if width is <= 0, or height is <= 0
+         */
+        CreateScaledBitmap(
+            [in] IBitmap* src,
+            [in] Int32 dstWidth,
+            [in] Int32 dstHeight,
+            [in] Boolean filter,
+            [out] IBitmap** bitmap);
+
+        /**
+         * Returns an immutable bitmap from the source bitmap. The new bitmap may
+         * be the same object as source, or a copy may have been made.  It is
+         * initialized with the same density as the original bitmap.
+         */
+        CreateBitmap(
+            [in] IBitmap* src,
+            [out] IBitmap** bitmap);
+
+        /**
+         * Returns an immutable bitmap from the specified subset of the source
+         * bitmap. The new bitmap may be the same object as source, or a copy may
+         * have been made. It is initialized with the same density as the original
+         * bitmap.
+         *
+         * @param source   The bitmap we are subsetting
+         * @param x        The x coordinate of the first pixel in source
+         * @param y        The y coordinate of the first pixel in source
+         * @param width    The number of pixels in each row
+         * @param height   The number of rows
+         * @return A copy of a subset of the source bitmap or the source bitmap itself.
+         * @throws IllegalArgumentException if the x, y, width, height values are
+         *         outside of the dimensions of the source bitmap, or width is <= 0,
+         *         or height is <= 0
+         */
+        CreateBitmap(
+            [in] IBitmap* src,
+            [in] Int32 x,
+            [in] Int32 y,
+            [in] Int32 width,
+            [in] Int32 height,
+            [out] IBitmap** bitmap);
+
+        /**
+         * Returns an immutable bitmap from subset of the source bitmap,
+         * transformed by the optional matrix. The new bitmap may be the
+         * same object as source, or a copy may have been made. It is
+         * initialized with the same density as the original bitmap.
+         *
+         * If the source bitmap is immutable and the requested subset is the
+         * same as the source bitmap itself, then the source bitmap is
+         * returned and no new bitmap is created.
+         *
+         * @param source   The bitmap we are subsetting
+         * @param x        The x coordinate of the first pixel in source
+         * @param y        The y coordinate of the first pixel in source
+         * @param width    The number of pixels in each row
+         * @param height   The number of rows
+         * @param m        Optional matrix to be applied to the pixels
+         * @param filter   true if the source should be filtered.
+         *                   Only applies if the matrix contains more than just
+         *                   translation.
+         * @return A bitmap that represents the specified subset of source
+         * @throws IllegalArgumentException if the x, y, width, height values are
+         *         outside of the dimensions of the source bitmap, or width is <= 0,
+         *         or height is <= 0
+         */
+        CreateBitmap(
+            [in] IBitmap* src,
+            [in] Int32 x,
+            [in] Int32 y,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] IMatrix* m,
+            [in] Boolean filter,
+            [out] IBitmap** bitmap);
+
+        /**
+         * Returns a mutable bitmap with the specified width and height.  Its
+         * initial density is as per {@link #getDensity}.
+         *
+         * @param width    The width of the bitmap
+         * @param height   The height of the bitmap
+         * @param config   The bitmap config to create.
+         * @throws IllegalArgumentException if the width or height are <= 0
+         */
+        CreateBitmap(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] BitmapConfig config,
+            [out] IBitmap** bitmap);
+
+        /**
+         * Returns a mutable bitmap with the specified width and height.  Its
+         * initial density is determined from the given {@link DisplayMetrics}.
+         *
+         * @param display  Display metrics for the display this bitmap will be
+         *                 drawn on.
+         * @param width    The width of the bitmap
+         * @param height   The height of the bitmap
+         * @param config   The bitmap config to create.
+         * @throws IllegalArgumentException if the width or height are <= 0
+         */
+        CreateBitmap(
+            [in] IDisplayMetrics* display,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] BitmapConfig config,
+            [out] IBitmap** bitmap);
+
+        /**
+         * Returns a immutable bitmap with the specified width and height, with each
+         * pixel value set to the corresponding value in the colors array.  Its
+         * initial density is as per {@link #getDensity}.
+         *
+         * @param colors   Array of {@link Color} used to initialize the pixels.
+         * @param offset   Number of values to skip before the first color in the
+         *                 array of colors.
+         * @param stride   Number of colors in the array between rows (must be >=
+         *                 width or <= -width).
+         * @param width    The width of the bitmap
+         * @param height   The height of the bitmap
+         * @param config   The bitmap config to create. If the config does not
+         *                 support per-pixel alpha (e.g. RGB_565), then the alpha
+         *                 bytes in the colors[] will be ignored (assumed to be FF)
+         * @throws IllegalArgumentException if the width or height are <= 0, or if
+         *         the color array's length is less than the number of pixels.
+         */
+        CreateBitmap(
+            [in] ArrayOf<Int32>* colors,
+            [in] Int32 offset,
+            [in] Int32 stride,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] BitmapConfig config,
+            [out] IBitmap** bitmap);
+
+        /**
+         * Returns a immutable bitmap with the specified width and height, with each
+         * pixel value set to the corresponding value in the colors array.  Its
+         * initial density is determined from the given {@link DisplayMetrics}.
+         *
+         * @param display  Display metrics for the display this bitmap will be
+         *                 drawn on.
+         * @param colors   Array of {@link Color} used to initialize the pixels.
+         * @param offset   Number of values to skip before the first color in the
+         *                 array of colors.
+         * @param stride   Number of colors in the array between rows (must be >=
+         *                 width or <= -width).
+         * @param width    The width of the bitmap
+         * @param height   The height of the bitmap
+         * @param config   The bitmap config to create. If the config does not
+         *                 support per-pixel alpha (e.g. RGB_565), then the alpha
+         *                 bytes in the colors[] will be ignored (assumed to be FF)
+         * @throws IllegalArgumentException if the width or height are <= 0, or if
+         *         the color array's length is less than the number of pixels.
+         */
+        CreateBitmap(
+            [in] IDisplayMetrics* display,
+            [in] ArrayOf<Int32>* colors,
+            [in] Int32 offset,
+            [in] Int32 stride,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] BitmapConfig config,
+            [out] IBitmap** bitmap);
+
+        /**
+         * Returns a immutable bitmap with the specified width and height, with each
+         * pixel value set to the corresponding value in the colors array.  Its
+         * initial density is as per {@link #getDensity}.
+         *
+         * @param colors   Array of {@link Color} used to initialize the pixels.
+         *                 This array must be at least as large as width * height.
+         * @param width    The width of the bitmap
+         * @param height   The height of the bitmap
+         * @param config   The bitmap config to create. If the config does not
+         *                 support per-pixel alpha (e.g. RGB_565), then the alpha
+         *                 bytes in the colors[] will be ignored (assumed to be FF)
+         * @throws IllegalArgumentException if the width or height are <= 0, or if
+         *         the color array's length is less than the number of pixels.
+         */
+        CreateBitmap(
+            [in] ArrayOf<Int32>* colors,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] BitmapConfig config,
+            [out] IBitmap** bitmap);
+
+        /**
+         * Returns a immutable bitmap with the specified width and height, with each
+         * pixel value set to the corresponding value in the colors array.  Its
+         * initial density is determined from the given {@link DisplayMetrics}.
+         *
+         * @param display  Display metrics for the display this bitmap will be
+         *                 drawn on.
+         * @param colors   Array of {@link Color} used to initialize the pixels.
+         *                 This array must be at least as large as width * height.
+         * @param width    The width of the bitmap
+         * @param height   The height of the bitmap
+         * @param config   The bitmap config to create. If the config does not
+         *                 support per-pixel alpha (e.g. RGB_565), then the alpha
+         *                 bytes in the colors[] will be ignored (assumed to be FF)
+         * @throws IllegalArgumentException if the width or height are <= 0, or if
+         *         the color array's length is less than the number of pixels.
+         */
+        CreateBitmap(
+            [in] IDisplayMetrics* display,
+            [in] ArrayOf<Int32>* colors,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] BitmapConfig config,
+            [out] IBitmap** bitmap);
+
+        /**
+         * @hide
+         */
+        ScaleFromDensity(
+            [in] Int32 size,
+            [in] Int32 sdensity,
+            [in] Int32 tdensity,
+            [out] Int32* scale);
     }
 
     } // namespace Graphics
