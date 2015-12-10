@@ -25,8 +25,8 @@ namespace Power {
 /**
  * Controls the display power state.
  * <p>
- * This component is similar in nature to a {@link View} except that it describes
- * the properties of a display.  When properties are changed, the component
+ * This component is similar in nature to a {@link android.view.View} except that it
+ * describes the properties of a display.  When properties are changed, the component
  * invalidates itself and posts a callback to apply the changes in a consistent order.
  * This mechanism enables multiple properties of the display power state to be animated
  * together smoothly by the animation framework.  Some of the work to blank or unblank
@@ -36,24 +36,22 @@ namespace Power {
  * that belongs to the {@link DisplayPowerController}.
  * </p><p>
  * We don't need to worry about holding a suspend blocker here because the
- * {@link PowerManagerService} does that for us whenever there is a change
- * in progress.
+ * power manager does that for us whenever there is a change in progress.
  * </p>
  */
 class DisplayPowerState
-    : public ElRefBase
-    , public IInterface
+    : public Object
 {
 private:
     /**
      * Updates the state of the screen and backlight asynchronously on a separate thread.
      */
-    class PhotonicModulator : public ElRefBase
+    class PhotonicModulator
+        : public Handler
     {
     private:
         class TaskRunnable
-            : public ElRefBase
-            , public IRunnable
+            : public IRunnable
         {
         public:
             TaskRunnable(
@@ -78,15 +76,21 @@ private:
         // CARAPI_(void) Dump(
         //     /* [in] */ IPrintWriter* pw);
 
+        void RequestDisplayState(
+            /* [in] */ Int32 state);
+
+        void SetBrightness(
+            /* [in] */ Int32 backlight);
+
     private:
-        static const Boolean INITIAL_SCREEN_ON;// = FALSE;    // unknown, assume off
+        static const Int32 INITIAL_SCREEN_ON;// = FALSE;    // unknown, assume off
         static const Int32 INITIAL_BACKLIGHT;// = -1;// unknown
 
         Object mLock;
 
-        Boolean mPendingOn;
+        Int32 mPendingState;
         Int32 mPendingBacklight;
-        Boolean mActualOn;
+        Int32 mActualState;
         Int32 mActualBacklight;
         Boolean mChangeInProgress;
         AutoPtr<IRunnable> mTask;
@@ -109,12 +113,12 @@ private:
         DisplayPowerState* mHost;
     };
 
-    class ElectronBeamDrawRunnable
+    class ColorFadeDrawRunnable
         : public ElRefBase
         , public IRunnable
     {
     public:
-        ElectronBeamDrawRunnable(
+        ColorFadeDrawRunnable(
             /* [in] */ DisplayPowerState* host);
 
         CAR_INTERFACE_DECL();
@@ -210,20 +214,20 @@ public:
     CAR_INTERFACE_DECL()
 
     DisplayPowerState(
-        /* [in] */ ElectronBeam* electronBean,
-        /* [in] */ IDisplayBlanker* displayBlanker,
-        /* [in] */ LightsService::Light* backlight);
+        /* [in] */ IDisplayBlanker* blanker,
+        /* [in] */ LightsService::Light* backlight,
+        /* [in] */ ColorFade* electronBeam);
 
     /**
-     * Sets whether the screen is on or off.
+     * Gets the desired screen state.
      */
-    CARAPI_(void) SetScreenOn(
-        /* [in] */ Boolean on);
+    CARAPI_(void) SetScreenState(
+        /* [in] */ Int32 state);
 
     /**
      * Returns true if the screen is on.
      */
-    CARAPI_(Boolean) IsScreenOn();
+    CARAPI_(Int32) GetScreenState();
 
     /**
      * Sets the display brightness.
@@ -246,13 +250,14 @@ public:
      * @param mode The electron beam animation mode to prepare.
      * @return True if the electron beam was prepared.
      */
-    CARAPI_(Boolean) PrepareElectronBeam(
+    CARAPI_(Boolean) PrepareColorFade(
+        /* [in] */ IContext* context,
         /* [in] */ Int32 mode);
 
     /**
      * Dismisses the electron beam surface.
      */
-    CARAPI_(void) DismissElectronBeam();
+    CARAPI_(void) DismissColorFade();
 
     /**
      * Sets the level of the electron beam steering current.
@@ -267,13 +272,13 @@ public:
      *
      * @param level The level, ranges from 0.0 (full off) to 1.0 (full on).
      */
-    CARAPI_(void) SetElectronBeamLevel(
+    CARAPI_(void) SetColorFadeLevel(
         /* [in] */ Float level);
 
     /**
      * Gets the level of the electron beam steering current.
      */
-    CARAPI_(Float) GetElectronBeamLevel();
+    CARAPI_(Float) GetColorFadeLevel();
 
     /**
      * Returns true if no properties have been invalidated.
@@ -292,33 +297,27 @@ private:
 
     CARAPI_(void) PostScreenUpdateThreadSafe();
 
-    CARAPI_(void) ScheduleElectronBeamDraw();
+    CARAPI_(void) ScheduleColorFadeDraw();
 
     CARAPI_(void) InvokeCleanListenerIfNeeded();
 
 public:
     const static String fName;
     const static String iName;
+
     static AutoPtr<IFloatProperty> ELECTRON_BEAM_LEVEL;
-
     static AutoPtr<IInt32Property> SCREEN_BRIGHTNESS;
-
-    static AutoPtr<IFloatProperty> InitFloatProperty(
-        /* [in] */ const String& name);
-
-    static AutoPtr<IInt32Property> InitInt32Property(
-        /* [in] */ const String& name);
 
     // static final FloatProperty<DisplayPowerState> ELECTRON_BEAM_LEVEL =
     //         new FloatProperty<DisplayPowerState>("electronBeamLevel") {
     //     @Override
     //     public void setValue(DisplayPowerState object, float value) {
-    //         object.setElectronBeamLevel(value);
+    //         object.setColorFadeLevel(value);
     //     }
 
     //     @Override
     //     public Float get(DisplayPowerState object) {
-    //         return object.getElectronBeamLevel();
+    //         return object.getColorFadeLevel();
     //     }
     // };
 
@@ -342,28 +341,28 @@ private:
 
     AutoPtr<IHandler> mHandler;
     AutoPtr<IChoreographer> mChoreographer;
-    AutoPtr<ElectronBeam> mElectronBeam;
-    AutoPtr<IDisplayBlanker> mDisplayBlanker;
+    AutoPtr<IDisplayBlanker> mBlanker;
     AutoPtr<LightsService::Light> mBacklight;
-    AutoPtr<PhotonicModulator> mPhotonicModulator;
+    AutoPtr<ColorFade> mColorFade;
+    AutoPtr<IPhotonicModulator> mPhotonicModulator;
 
-    Boolean mScreenOn;
+    Int32 mScreenState;
     Int32 mScreenBrightness;
     Boolean mScreenReady;
     Boolean mScreenUpdatePending;
 
-    Boolean mElectronBeamPrepared;
-    Float mElectronBeamLevel;
-    Boolean mElectronBeamReady;
-    Boolean mElectronBeamDrawPending;
+    Boolean mColorFadePrepared;
+    Float mColorFadeLevel;
+    Boolean mColorFadeReady;
+    Boolean mColorFadeDrawPending;
 
     AutoPtr<IRunnable> mCleanListener;
     AutoPtr<IRunnable> mScreenUpdateRunnable;
-    AutoPtr<IRunnable> mElectronBeamDrawRunnable;
+    AutoPtr<IRunnable> mColorFadeDrawRunnable;
 
     friend class PhotonicModulator;
     friend class ScreenUpdateRunnable;
-    friend class ElectronBeamDrawRunnable;
+    friend class ColorFadeDrawRunnable;
 };
 
 } // namespace Power

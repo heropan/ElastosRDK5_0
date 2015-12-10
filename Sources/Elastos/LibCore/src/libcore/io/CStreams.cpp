@@ -131,7 +131,7 @@ ECode CStreams::ReadFullyNoClose(
     return bytes->ToByteArray(byteArray);
 }
 
-ECode CStreams::ReadFullyFromReader(
+ECode CStreams::ReadFully(
     /* [in] */ IReader* reader,
     /* [out] */ String* result)//todo: how to write simple when fail??????
 {

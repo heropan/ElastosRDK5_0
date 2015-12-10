@@ -1,6 +1,7 @@
 
 #include "elastos/droid/hardware/display/CWifiDisplay.h"
 #include "elastos/droid/hardware/display/CWifiDisplaySessionInfo.h"
+#include "elastos/droid/hardware/display/CDisplayViewport.h"
 
 namespace Elastos {
 namespace Droid {
@@ -9,6 +10,7 @@ namespace Display {
 
 CAR_OBJECT_IMPL(CWifiDisplay)
 CAR_OBJECT_IMPL(CWifiDisplaySessionInfo)
+CAR_OBJECT_IMPL(CDisplayViewport)
 
 } // namespace Display
 } // namespace Hardware

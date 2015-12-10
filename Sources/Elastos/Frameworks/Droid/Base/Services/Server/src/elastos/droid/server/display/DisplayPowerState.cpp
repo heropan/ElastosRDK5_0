@@ -20,10 +20,12 @@ using Elastos::Core::ECLSID_CInteger32;
 namespace Elastos {
 namespace Droid {
 namespace Server {
-namespace Power {
+namespace Display {
 
-CAR_INTERFACE_IMPL_2(DisplayPowerState::DisplayPowerStateFloatProperty, IFloatProperty, IProperty)
-CAR_INTERFACE_IMPL(DisplayPowerState, IInterface)
+//=====================================================================
+//  DisplayPowerState::DisplayPowerStateFloatProperty
+//=====================================================================
+CAR_INTERFACE_IMPL_2(DisplayPowerState::DisplayPowerStateFloatProperty, Object, IFloatProperty, IProperty)
 
 DisplayPowerState::DisplayPowerStateFloatProperty::DisplayPowerStateFloatProperty(
     /* [in] */ const String& name)
@@ -35,6 +37,7 @@ DisplayPowerState::DisplayPowerStateFloatProperty::DisplayPowerStateFloatPropert
 ECode DisplayPowerState::DisplayPowerStateFloatProperty::IsReadOnly(
     /* [out] */ Boolean* readOnly)
 {
+    VALIDATE_NOT_NULL(readOnly)
     *readOnly = FALSE;
     return NOERROR;
 }
@@ -43,8 +46,7 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::Set(
     /* [in] */ IInterface* obj,
     /* [in] */ IInterface* value)
 {
-    if(IFloat::Probe(value) == NULL)
-    {
+    if (IFloat::Probe(value) == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Float v;
@@ -56,8 +58,9 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::Get(
     /* [in] */ IInterface* obj,
     /* [out] */ IInterface** rst)
 {
+    VALIDATE_NOT_NULL(rst)
     AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)(obj);
-    Float level = dps->GetElectronBeamLevel();
+    Float level = dps->GetColorFadeLevel();
     AutoPtr<IFloat> rstTmp;
     CFloat::New(level, (IFloat**)&rstTmp);
     *rst = rstTmp;
@@ -68,6 +71,7 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::Get(
 ECode DisplayPowerState::DisplayPowerStateFloatProperty::GetName(
     /* [out] */ String* name)
 {
+    VALIDATE_NOT_NULL(name)
     *name = mName;
     return NOERROR;
 }
@@ -75,6 +79,7 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::GetName(
 ECode DisplayPowerState::DisplayPowerStateFloatProperty::GetType(
     /* [out] */ ClassID* id)
 {
+    VALIDATE_NOT_NULL(id)
     *id = mClsId;
     return NOERROR;
 }
@@ -82,6 +87,7 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::GetType(
 ECode DisplayPowerState::DisplayPowerStateFloatProperty::IsWriteOnly(
     /* [out] */ Boolean* writeOnly)
 {
+    VALIDATE_NOT_NULL(writeOnly)
     *writeOnly = FALSE;
     return NOERROR;
 }
@@ -89,6 +95,7 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::IsWriteOnly(
 ECode DisplayPowerState::DisplayPowerStateFloatProperty::ForbiddenOperate(
     /* [out] */ Boolean* forbidden)
 {
+    VALIDATE_NOT_NULL(forbidden)
     *forbidden = FALSE;
     return NOERROR;
 }
@@ -98,11 +105,14 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::SetValue(
     /* [in] */ Float value)
 {
     AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)(obj);
-    dps->SetElectronBeamLevel(value);
+    dps->SetColorFadeLevel(value);
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL_2(DisplayPowerState::DisplayPowerStateInt32Property, IInt32Property, IProperty)
+//=====================================================================
+//  DisplayPowerState::DisplayPowerStateInt32Property
+//=====================================================================
+CAR_INTERFACE_IMPL_2(DisplayPowerState::DisplayPowerStateInt32Property, Object, IInt32Property, IProperty)
 
 DisplayPowerState::DisplayPowerStateInt32Property::DisplayPowerStateInt32Property(
     /* [in] */ const String& name)
@@ -114,6 +124,7 @@ DisplayPowerState::DisplayPowerStateInt32Property::DisplayPowerStateInt32Propert
 ECode DisplayPowerState::DisplayPowerStateInt32Property::IsReadOnly(
     /* [out] */ Boolean* readOnly)
 {
+    VALIDATE_NOT_NULL(readOnly)
     *readOnly = FALSE;
     return NOERROR;
 }
@@ -149,6 +160,7 @@ ECode DisplayPowerState::DisplayPowerStateInt32Property::Get(
 ECode DisplayPowerState::DisplayPowerStateInt32Property::GetName(
     /* [out] */ String* name)
 {
+    VALIDATE_NOT_NULL(name)
     *name = mName;
     return NOERROR;
 }
@@ -156,6 +168,7 @@ ECode DisplayPowerState::DisplayPowerStateInt32Property::GetName(
 ECode DisplayPowerState::DisplayPowerStateInt32Property::GetType(
     /* [out] */ ClassID* id)
 {
+    VALIDATE_NOT_NULL(id)
     *id = mClsId;
     return NOERROR;
 }
@@ -163,6 +176,7 @@ ECode DisplayPowerState::DisplayPowerStateInt32Property::GetType(
 ECode DisplayPowerState::DisplayPowerStateInt32Property::IsWriteOnly(
     /* [out] */ Boolean* writeOnly)
 {
+    VALIDATE_NOT_NULL(writeOnly)
     *writeOnly = FALSE;
     return NOERROR;
 }
@@ -170,6 +184,7 @@ ECode DisplayPowerState::DisplayPowerStateInt32Property::IsWriteOnly(
 ECode DisplayPowerState::DisplayPowerStateInt32Property::ForbiddenOperate(
     /* [out] */ Boolean* forbidden)
 {
+    VALIDATE_NOT_NULL(forbidden)
     *forbidden = FALSE;
     return NOERROR;
 }
@@ -182,65 +197,72 @@ ECode DisplayPowerState::DisplayPowerStateInt32Property::SetValue(
     dps->SetScreenBrightness(value);
     return NOERROR;
 }
-
+//=====================================================================
+//  DisplayPowerState::PhotonicModulator::TaskRunnable
+//=====================================================================
 DisplayPowerState::PhotonicModulator::TaskRunnable::TaskRunnable(
     /* [in] */ PhotonicModulator* host)
     : mHost(host)
 {}
 
-CAR_INTERFACE_IMPL(DisplayPowerState::PhotonicModulator::TaskRunnable, IRunnable);
-
 ECode DisplayPowerState::PhotonicModulator::TaskRunnable::Run()
 {
-    // Apply pending changes until done.
     for (;;) {
-        Boolean on;
-        Boolean onChanged;
+        // Get pending change.
+        Int32 state;
+        Boolean stateChanged;
         Int32 backlight;
         Boolean backlightChanged;
         {
             AutoLock lock(mHost->mLock);
-            on = mHost->mPendingOn;
-            onChanged = (on != mHost->mActualOn);
+            state = mHost->mPendingState;
+            stateChanged = (state != mHost->mActualState);
             backlight = mHost->mPendingBacklight;
             backlightChanged = (backlight != mHost->mActualBacklight);
-            if (!onChanged && !backlightChanged) {
-                mHost->mChangeInProgress = FALSE;
-                break;
+            if (!stateChanged && !backlightChanged) {
+                // All changed applied, notify outer class and wait for more.
+                mHost->mChangeInProgress = false;
+                mHost->PostScreenUpdateThreadSafe();
+                // try {
+                    mLock.Wait();
+                // } catch (InterruptedException ex) { }
+                continue;
             }
-            mHost->mActualOn = on;
-            mHost->mActualBacklight = backlight;
+            mActualState = state;
+            mActualBacklight = backlight;
         }
 
+        // Apply pending change.
         if (DEBUG) {
-            Slogger::D(TAG, "Updating screen state: on=%d, backlight=%d", on, backlight);
+            Slogger::D(TAG, "Updating screen state: state=%d, backlight=%d", state, backlight);
         }
-        if (onChanged && on) {
-            mHost->mHost->mDisplayBlanker->UnblankAllDisplays();
+
+        Boolean suspending = Display.isSuspendedState(state);
+        if (stateChanged && !suspending) {
+            RequestDisplayState(state);
         }
         if (backlightChanged) {
-            mHost->mHost->mBacklight->SetBrightness(backlight);
+            SetBrightness(backlight);
         }
-        if (onChanged && !on) {
-            mHost->mHost->mDisplayBlanker->BlankAllDisplays();
+        if (stateChanged && suspending) {
+            RequestDisplayState(state);
         }
     }
-
-    // Let the outer class know that all changes have been applied.
-    mHost->mHost->PostScreenUpdateThreadSafe();
 
     return NOERROR;
 }
 
-
-const Boolean DisplayPowerState::PhotonicModulator::INITIAL_SCREEN_ON = FALSE;
+//=====================================================================
+//  DisplayPowerState::PhotonicModulator
+//=====================================================================
+const Boolean DisplayPowerState::PhotonicModulator::INITIAL_SCREEN_ON = IDisplay::STATE_OFF;
 const Int32 DisplayPowerState::PhotonicModulator::INITIAL_BACKLIGHT = -1;
 
 DisplayPowerState::PhotonicModulator::PhotonicModulator(
     /* [in] */ DisplayPowerState* host)
-    : mPendingOn(FALSE)
+    : mPendingState(FALSE)
     , mPendingBacklight(0)
-    , mActualOn(FALSE)
+    , mActualState(FALSE)
     , mActualBacklight(0)
     , mChangeInProgress(FALSE)
     , mHost(host)
@@ -249,116 +271,146 @@ DisplayPowerState::PhotonicModulator::PhotonicModulator(
 }
 
 Boolean DisplayPowerState::PhotonicModulator::SetState(
-    /* [in] */ Boolean on,
+    /* [in] */ Int32 state,
     /* [in] */ Int32 backlight)
 {
     AutoLock lock(mLock);
-    if (on != mPendingOn || backlight != mPendingBacklight) {
+    if (state != mPendingState || backlight != mPendingBacklight) {
         if (DEBUG) {
-            Slogger::D(TAG, "Requesting new screen state: on=%d, backlight=%d", on, backlight);
+            Slogger::D(TAG, "Requesting new screen state: state=%d, backlight=%d", state, backlight);
         }
 
-        mPendingOn = on;
+        mPendingState = state;
         mPendingBacklight = backlight;
 
         if (!mChangeInProgress) {
             mChangeInProgress = TRUE;
-            AsyncTask::THREAD_POOL_EXECUTOR->Execute(mTask);
+            mLock.NotifyAll();
         }
     }
-    return mChangeInProgress;
+    return !mChangeInProgress;
 }
 
 // void DisplayPowerState::PhotonicModulator::Dump(
 //     /* [in] */ IPrintWriter* pw);
 
+void DisplayPowerState::PhotonicModulator::RequestDisplayState(
+    /* [in] */ Int32 state)
+{
+    Trace.traceBegin(Trace.TRACE_TAG_POWER, "requestDisplayState("
+            + Display.stateToString(state) + ")");
+    try {
+        mBlanker.requestDisplayState(state);
+    } finally {
+        Trace.traceEnd(Trace.TRACE_TAG_POWER);
+    }
+}
 
+void DisplayPowerState::PhotonicModulator::SetBrightness(
+    /* [in] */ Int32 backlight)
+{
+    Trace.traceBegin(Trace.TRACE_TAG_POWER, "setBrightness(" + backlight + ")");
+    try {
+        mBacklight.setBrightness(backlight);
+    } finally {
+        Trace.traceEnd(Trace.TRACE_TAG_POWER);
+    }
+}
+
+//=====================================================================
+//  DisplayPowerState::ScreenUpdateRunnable
+//=====================================================================
 DisplayPowerState::ScreenUpdateRunnable::ScreenUpdateRunnable(
     /* [in] */ DisplayPowerState* host)
     : mHost(host)
 {}
 
-CAR_INTERFACE_IMPL(DisplayPowerState::ScreenUpdateRunnable, IRunnable);
-
 ECode DisplayPowerState::ScreenUpdateRunnable::Run()
 {
     mHost->mScreenUpdatePending = FALSE;
 
-    Int32 brightness = mHost->mScreenOn && mHost->mElectronBeamLevel > 0.0f ?
-            mHost->mScreenBrightness : 0;
-    if (mHost->mPhotonicModulator->SetState(mHost->mScreenOn, brightness)) {
+    Int32 brightness = mHost->mScreenState != IDisplay::STATE_OFF
+        && mHost->mColorFadeLevel > 0.0f ? mHost->mScreenBrightness : 0;
+    if (mHost->mPhotonicModulator->SetState(mHost->mScreenState, brightness)) {
         mHost->mScreenReady = TRUE;
         mHost->InvokeCleanListenerIfNeeded();
     }
     return NOERROR;
 }
 
-
-DisplayPowerState::ElectronBeamDrawRunnable::ElectronBeamDrawRunnable(
+//=====================================================================
+//  DisplayPowerState::ColorFadeDrawRunnable
+//=====================================================================
+DisplayPowerState::ColorFadeDrawRunnable::ColorFadeDrawRunnable(
     /* [in] */ DisplayPowerState* host)
     : mHost(host)
 {}
 
-CAR_INTERFACE_IMPL(DisplayPowerState::ElectronBeamDrawRunnable, IRunnable);
-
-ECode DisplayPowerState::ElectronBeamDrawRunnable::Run()
+ECode DisplayPowerState::ColorFadeDrawRunnable::Run()
 {
-    mHost->mElectronBeamDrawPending = FALSE;
+    mHost->mColorFadeDrawPending = FALSE;
 
-    if (mHost->mElectronBeamPrepared) {
-        mHost->mElectronBeam->Draw(mHost->mElectronBeamLevel);
+    if (mHost->mColorFadePrepared) {
+        mHost->mColorFade->Draw(mHost->mColorFadeLevel);
     }
 
-    mHost->mElectronBeamReady = TRUE;
+    mHost->mColorFadeReady = TRUE;
     mHost->InvokeCleanListenerIfNeeded();
     return NOERROR;
 }
 
+//=====================================================================
+//  DisplayPowerState
+//=====================================================================
 const String DisplayPowerState::fName("electronBeamLevel");
 const String DisplayPowerState::iName("screenBrightness");
 const String DisplayPowerState::TAG("DisplayPowerState");
-Boolean DisplayPowerState::DEBUG = FALSE;
-AutoPtr<IFloatProperty> DisplayPowerState::ELECTRON_BEAM_LEVEL = InitFloatProperty(fName);
-AutoPtr<IInt32Property> DisplayPowerState::SCREEN_BRIGHTNESS = InitInt32Property(iName);
 
-AutoPtr<IFloatProperty> DisplayPowerState::InitFloatProperty(
+static AutoPtr<IFloatProperty> InitFloatProperty(
     /* [in] */ const String& name)
 {
     AutoPtr<IFloatProperty> fp = new DisplayPowerStateFloatProperty(name);
     return fp;
 }
 
-AutoPtr<IInt32Property> DisplayPowerState::InitInt32Property(
+static AutoPtr<IInt32Property> InitInt32Property(
     /* [in] */ const String& name)
 {
     AutoPtr<IInt32Property> ip = new DisplayPowerStateInt32Property(name);
     return ip;
 }
 
+Boolean DisplayPowerState::DEBUG = FALSE;
+AutoPtr<IFloatProperty> DisplayPowerState::COLOR_FADE_LEVEL = InitFloatProperty(fName);
+AutoPtr<IInt32Property> DisplayPowerState::SCREEN_BRIGHTNESS = InitInt32Property(iName);
+
 DisplayPowerState::DisplayPowerState(
-    /* [in] */ ElectronBeam* electronBean,
-    /* [in] */ IDisplayBlanker* displayBlanker,
-    /* [in] */ LightsService::Light* backlight)
-    : mElectronBeam(electronBean)
-    , mDisplayBlanker(displayBlanker)
+    /* [in] */ IDisplayBlanker* blanker,
+    /* [in] */ LightsService::Light* backlight,
+    /* [in] */ ColorFade* electronBeam)
+    : mColorFade(electronBean)
+    , mBlanker(blanker)
     , mBacklight(backlight)
-    , mScreenOn(TRUE)
+    , mColorFade(electronBeam)
+    , mScreenState(IDisplay::STATE_ON)
     , mScreenBrightness(IPowerManager::BRIGHTNESS_ON)
     , mScreenReady(FALSE)
     , mScreenUpdatePending(FALSE)
-    , mElectronBeamPrepared(FALSE)
-    , mElectronBeamLevel(1.0f)
-    , mElectronBeamReady(TRUE)
-    , mElectronBeamDrawPending(FALSE)
+    , mColorFadePrepared(FALSE)
+    , mColorFadeLevel(1.0f)
+    , mColorFadeReady(TRUE)
+    , mColorFadeDrawPending(FALSE)
 {
     mScreenUpdateRunnable = (IRunnable*)new ScreenUpdateRunnable(this);
-    mElectronBeamDrawRunnable = (IRunnable*)new ElectronBeamDrawRunnable(this);
+    mColorFadeDrawRunnable = (IRunnable*)new ColorFadeDrawRunnable(this);
 
     ASSERT_SUCCEEDED(CHandler::New(TRUE, (IHandler**)&mHandler));
     AutoPtr<IChoreographerHelper> helper;
     ASSERT_SUCCEEDED(CChoreographerHelper::AcquireSingleton((IChoreographerHelper**)&helper));
     helper->GetInstance((IChoreographer**)&mChoreographer);
+
     mPhotonicModulator = new PhotonicModulator(this);
+    mPhotonicModulator->Start();
 
     // At boot time, we know that the screen is on and the electron beam
     // animation is not playing.  We don't know the screen's brightness though,
@@ -369,23 +421,23 @@ DisplayPowerState::DisplayPowerState(
     ScheduleScreenUpdate();
 }
 
-void DisplayPowerState::SetScreenOn(
-    /* [in] */ Boolean on)
+void DisplayPowerState::SetScreenState(
+    /* [in] */ Int32 state)
 {
-    if (mScreenOn != on) {
+    if (mScreenState != state) {
         if (DEBUG) {
-            Slogger::D(TAG, "setScreenOn: on=%d", on);
+            Slogger::D(TAG, "setScreenOn: on=%d", state);
         }
 
-        mScreenOn = on;
+        mScreenState = state;
         mScreenReady = FALSE;
         ScheduleScreenUpdate();
     }
 }
 
-Boolean DisplayPowerState::IsScreenOn()
+Int32 DisplayPowerState::GetScreenState()
 {
-    return mScreenOn;
+    return mScreenState;
 }
 
 void DisplayPowerState::SetScreenBrightness(
@@ -397,7 +449,7 @@ void DisplayPowerState::SetScreenBrightness(
         }
 
         mScreenBrightness = brightness;
-        if (mScreenOn) {
+        if (mScreenState != IDisplay::STATE_OFF) {
             mScreenReady = FALSE;
             ScheduleScreenUpdate();
         }
@@ -409,57 +461,58 @@ Int32 DisplayPowerState::GetScreenBrightness()
     return mScreenBrightness;
 }
 
-Boolean DisplayPowerState::PrepareElectronBeam(
+Boolean DisplayPowerState::PrepareColorFade(
+    /* [in] */ IContext* context,
     /* [in] */ Int32 mode)
 {
-    if (!mElectronBeam->Prepare(mode)) {
-        mElectronBeamPrepared = FALSE;
-        mElectronBeamReady = TRUE;
+    if (!mColorFade->Prepare(mode)) {
+        mColorFadePrepared = FALSE;
+        mColorFadeReady = TRUE;
         return FALSE;
     }
 
-    mElectronBeamPrepared = TRUE;
-    mElectronBeamReady = FALSE;
-    ScheduleElectronBeamDraw();
+    mColorFadePrepared = TRUE;
+    mColorFadeReady = FALSE;
+    ScheduleColorFadeDraw();
     return TRUE;
 }
 
-void DisplayPowerState::DismissElectronBeam()
+void DisplayPowerState::DismissColorFade()
 {
-    mElectronBeam->Dismiss();
-    mElectronBeamPrepared = FALSE;
-    mElectronBeamReady = TRUE;
+    mColorFade->Dismiss();
+    mColorFadePrepared = FALSE;
+    mColorFadeReady = TRUE;
 }
 
-void DisplayPowerState::SetElectronBeamLevel(
+void DisplayPowerState::SetColorFadeLevel(
     /* [in] */ Float level)
 {
-    if (mElectronBeamLevel != level) {
+    if (mColorFadeLevel != level) {
         if (DEBUG) {
-            Slogger::D(TAG, "setElectronBeamLevel: level=%f", level);
+            Slogger::D(TAG, "setColorFadeLevel: level=%f", level);
         }
 
-        mElectronBeamLevel = level;
-        if (mScreenOn) {
+        mColorFadeLevel = level;
+        if (mScreenState != IDisplay::STATE_OFF) {
             mScreenReady = FALSE;
             ScheduleScreenUpdate(); // update backlight brightness
         }
-        if (mElectronBeamPrepared) {
-            mElectronBeamReady = FALSE;
-            ScheduleElectronBeamDraw();
+        if (mColorFadePrepared) {
+            mColorFadeReady = FALSE;
+            ScheduleColorFadeDraw();
         }
     }
 }
 
-Float DisplayPowerState::GetElectronBeamLevel()
+Float DisplayPowerState::GetColorFadeLevel()
 {
-    return mElectronBeamLevel;
+    return mColorFadeLevel;
 }
 
 Boolean DisplayPowerState::WaitUntilClean(
     /* [in] */ IRunnable* listener)
 {
-    if (!mScreenReady || !mElectronBeamReady) {
+    if (!mScreenReady || !mColorFadeReady) {
         mCleanListener = listener;
         return FALSE;
     }
@@ -487,26 +540,26 @@ void DisplayPowerState::PostScreenUpdateThreadSafe()
     mHandler->Post(mScreenUpdateRunnable, &result);
 }
 
-void DisplayPowerState::ScheduleElectronBeamDraw()
+void DisplayPowerState::ScheduleColorFadeDraw()
 {
-    if (!mElectronBeamDrawPending) {
-        mElectronBeamDrawPending = TRUE;
+    if (!mColorFadeDrawPending) {
+        mColorFadeDrawPending = TRUE;
         mChoreographer->PostCallback(IChoreographer::CALLBACK_TRAVERSAL,
-                mElectronBeamDrawRunnable, NULL);
+                mColorFadeDrawRunnable, NULL);
     }
 }
 
 void DisplayPowerState::InvokeCleanListenerIfNeeded()
 {
     AutoPtr<IRunnable> listener = mCleanListener;
-    if (listener != NULL && mScreenReady && mElectronBeamReady) {
+    if (listener != NULL && mScreenReady && mColorFadeReady) {
         mCleanListener = NULL;
         listener->Run();
     }
 }
 
 
-} // namespace Power
+} // namespace Display
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos

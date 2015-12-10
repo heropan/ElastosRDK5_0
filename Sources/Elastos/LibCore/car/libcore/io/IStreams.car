@@ -66,7 +66,7 @@ module
         /**
          * Returns the remainder of 'reader' as a string, closing it when done.
          */
-        ReadFullyFromReader(
+        ReadFully(
             [in] IReader* reader,
             [out] String* result);
 

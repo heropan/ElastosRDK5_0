@@ -74,7 +74,7 @@ public:
     /**
      * Returns the remainder of 'reader' as a string, closing it when done.
      */
-    CARAPI ReadFullyFromReader(
+    CARAPI ReadFully(
         /* [in] */ IReader* reader,
         /* [out] */ String* result);
 
