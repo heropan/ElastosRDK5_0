@@ -29,8 +29,9 @@ module
     merge("utility/UserIcons.car");
     merge("utility/VirtualRefBasePtr.car");
     merge("utility/WithFramework.car");
+    merge("utility/XmlUtils.car");
 
-    using interface Elastos.Droid.Utility.IPrinter;
+    interface Elastos.Droid.Utility.IPrinter;
     using interface Elastos.Core.IAppendable;
     using interface Elastos.Core.ICloneable;
     using interface Elastos.IO.ICloseable;

@@ -12,6 +12,7 @@ module
     interface Elastos.Droid.Net.INetworkMisc;
     interface Elastos.Droid.Net.INetworkQuotaInfo;
     interface Elastos.Droid.Net.INetworkRequest;
+    interface Elastos.Droid.Net.IProxyInfo;
     interface Elastos.Droid.Os.IMessenger;
 
     using interface Elastos.Net.IInetAddress;

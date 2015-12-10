@@ -140,7 +140,6 @@ module
     merge("view/animation/ScaleAnimation.car");
     merge("view/animation/Transformation.car");
     merge("view/animation/TranslateAnimation.car");
-    merge("internal/view/animation/NativeInterpolatorFactory.car");
 
     merge("view/inputmethod/BaseInputConnection.car");
     merge("view/inputmethod/CompletionInfo.car");
@@ -168,9 +167,6 @@ module
     merge("view/textservice/TextServicesManager.car");
     merge("view/textservice/SpellCheckerSessionListenerImpl.car");
     merge("view/textservice/InternalListener.car");
-    merge("internal/view/BaseIWindow.car");
-    merge("internal/view/IInputContext.car");
-    merge("internal/view/IInputMethodClient.car");
 
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.ICloneable;

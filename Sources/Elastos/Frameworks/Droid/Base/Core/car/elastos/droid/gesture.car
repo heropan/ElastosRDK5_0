@@ -105,13 +105,16 @@ module
     class CGestureOverlayView {
         constructor(
             [in] IContext* ctx);
+
         constructor(
             [in] IContext* ctx,
             [in] IAttributeSet *attrs);
+
         constructor(
             [in] IContext* ctx,
             [in] IAttributeSet *attrs,
             [in] Int32 defStyle);
+
         interface IGestureOverlayView;
     }
 

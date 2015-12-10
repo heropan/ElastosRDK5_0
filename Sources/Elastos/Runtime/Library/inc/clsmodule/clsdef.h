@@ -23,7 +23,7 @@ typedef struct AliasDirEntry AliasDirEntry;
 typedef struct ArrayDirEntry ArrayDirEntry;
 typedef struct ConstDirEntry ConstDirEntry;
 
-const int MAX_FILE_NUMBER = 32;
+const int MAX_FILE_NUMBER = 64;
 const int MAX_CLASS_NUMBER = 4096;
 const int MAX_INTERFACE_NUMBER = 8192;
 const int MAX_DEFINED_INTERFACE_NUMBER = 8192;

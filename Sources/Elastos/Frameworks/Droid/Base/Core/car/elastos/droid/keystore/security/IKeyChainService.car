@@ -7,8 +7,8 @@ module
 
     namespace Elastos {
     namespace Droid {
-    namespace Keystore{
-    namespace Security{
+    namespace Keystore {
+    namespace Security {
 
     /**
      * Caller is required to ensure that {@link KeyStore#unlock

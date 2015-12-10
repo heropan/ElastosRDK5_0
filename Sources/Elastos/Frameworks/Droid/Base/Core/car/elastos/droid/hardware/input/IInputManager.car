@@ -6,6 +6,7 @@ module
     interface Elastos.Droid.View.IInputEvent;
     interface Elastos.Droid.Hardware.Input.IKeyboardLayout;
     interface Elastos.Droid.Hardware.Input.IInputDevicesChangedListener;
+    interface Elastos.Droid.Hardware.Input.IInputDeviceIdentifier;
     interface Elastos.Droid.Hardware.Input.ITouchCalibration;
 
     namespace Elastos {

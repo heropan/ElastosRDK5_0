@@ -50,7 +50,7 @@ module
     interface Elastos.Droid.Widget.IFrameLayout;
     interface Elastos.Droid.Widget.IFrameLayoutLayoutParams;
     interface Elastos.Droid.Widget.ISeekBarOnSeekBarChangeListener;
-    interface Elastos.Core.IComparable;
+    using interface Elastos.Core.IComparable;
 
     namespace Elastos {
     namespace Droid {
