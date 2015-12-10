@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/content/res/ResourcesKey.h"
 #include "elastos/droid/content/res/CConfiguration.h"
 #include <elastos/core/StringUtils.h>

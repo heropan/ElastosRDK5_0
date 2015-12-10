@@ -1150,6 +1150,7 @@ ECode VectorDrawable::constructor(
     }
 
     mTintFilter = UpdateTintFilter(mTintFilter, state->mTint, state->mTintMode);
+    return NOERROR;
 }
 
 ECode VectorDrawable::Mutate(

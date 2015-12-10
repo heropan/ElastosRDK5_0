@@ -1,5 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/content/res/CCompatibilityInfo.h"
 //#include "elastos/droid/content/pm/CApplicationInfo.h"
 //#include "elastos/droid/graphics/CPoint.h"

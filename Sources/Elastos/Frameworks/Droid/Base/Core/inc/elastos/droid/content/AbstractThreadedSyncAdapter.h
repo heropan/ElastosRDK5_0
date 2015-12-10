@@ -3,6 +3,10 @@
 #define __ELASTOS_DROID_CONTENT_ABSTRACTTHREADEDSYNCADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#define HASH_FOR_ACCOUNTS
+#include "elastos/droid/ext/frameworkhash.h"
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.Content.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Thread.h>
 

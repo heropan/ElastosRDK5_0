@@ -1,5 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/content/res/CConfiguration.h"
 //#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/os/Build.h"

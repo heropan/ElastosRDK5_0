@@ -1,4 +1,6 @@
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/content/pm/CPackageInstaller.h"
 #include "elastos/droid/content/pm/CPackageInstallerSession.h"
 #include "elastos/droid/os/CHandler.h"

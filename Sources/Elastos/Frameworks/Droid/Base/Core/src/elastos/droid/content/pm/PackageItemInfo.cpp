@@ -1,5 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/content/pm/PackageItemInfo.h"
 //#include "elastos/droid/content/pm/PackageManager.h"
 

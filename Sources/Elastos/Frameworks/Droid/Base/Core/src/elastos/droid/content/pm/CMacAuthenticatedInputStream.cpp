@@ -1,6 +1,7 @@
 
-#include "elastos/droid/content/pm/CMacAuthenticatedInputStream.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "elastos/droid/content/pm/CMacAuthenticatedInputStream.h"
 
 namespace Elastos {
 namespace Droid {

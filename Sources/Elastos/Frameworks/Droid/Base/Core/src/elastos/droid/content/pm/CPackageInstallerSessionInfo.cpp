@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/content/pm/CPackageInstallerSessionInfo.h"
 #include "elastos/droid/content/CIntent.h"
 

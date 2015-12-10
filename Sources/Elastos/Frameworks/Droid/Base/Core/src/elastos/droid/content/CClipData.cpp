@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CClipData.h"
 #include "elastos/droid/content/CClipDescription.h"
 // #include "elastos/droid/content/CIntent.h"

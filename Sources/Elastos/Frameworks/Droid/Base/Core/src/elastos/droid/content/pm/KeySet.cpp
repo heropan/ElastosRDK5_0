@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/content/pm/KeySet.h"
 
 namespace Elastos {

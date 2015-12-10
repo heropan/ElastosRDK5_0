@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/content/res/CColorStateList.h"
 #include "elastos/droid/content/res/XmlBlock.h"

@@ -1,4 +1,7 @@
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/content/pm/CLauncherActivityInfo.h"
 //#include "elastos/droid/content/pm/CLauncherApps.h"
 #include <elastos/utility/logging/Logger.h>

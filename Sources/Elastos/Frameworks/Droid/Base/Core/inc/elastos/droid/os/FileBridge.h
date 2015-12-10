@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_FILE_BRIDGE_H__
 #define __ELASTOS_DROID_OS_FILE_BRIDGE_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
 #include <elastos/core/Thread.h>
 #include <elastos/io/OutputStream.h>
 

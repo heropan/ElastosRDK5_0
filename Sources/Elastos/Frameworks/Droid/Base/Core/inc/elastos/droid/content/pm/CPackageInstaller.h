@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGE_INSTALLER_H__
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGE_INSTALLER_H__
 
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Content_Pm_CPackageInstaller.h"
 #include <elastos/core/Object.h>
 

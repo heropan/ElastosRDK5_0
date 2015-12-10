@@ -405,6 +405,7 @@ ECode RippleDrawable::Inflate(
     r->GetDisplayMetrics((IDisplayMetrics**)&dm);
     SetTargetDensity(dm);
     InitializeFromState();
+    return NOERROR;
 }
 
 ECode RippleDrawable::SetDrawableByLayerId(

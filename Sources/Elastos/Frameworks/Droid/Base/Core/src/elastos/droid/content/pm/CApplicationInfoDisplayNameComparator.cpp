@@ -1,5 +1,5 @@
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Text.h"
 #include "elastos/droid/content/pm/CApplicationInfoDisplayNameComparator.h"
 #include "elastos/droid/content/pm/CApplicationInfo.h"
 

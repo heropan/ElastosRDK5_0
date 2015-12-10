@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/content/res/CColorStateList.h"
 #include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/utility/StateSet.h"

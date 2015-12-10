@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 //#include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/os/CBundle.h"

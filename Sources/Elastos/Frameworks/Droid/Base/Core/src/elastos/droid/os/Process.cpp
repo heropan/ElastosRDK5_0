@@ -1,7 +1,7 @@
 
 #include "Elastos.CoreLibrary.IO.h"
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/CProcessStartResult.h"
 #include "elastos/droid/os/CUserHandleHelper.h"

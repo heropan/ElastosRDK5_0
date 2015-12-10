@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/ContentProvider.h"
 //#include "elastos/droid/content/CContentProviderTransport.h"
 //#include "elastos/droid/content/CClipDescriptionHelper.h"

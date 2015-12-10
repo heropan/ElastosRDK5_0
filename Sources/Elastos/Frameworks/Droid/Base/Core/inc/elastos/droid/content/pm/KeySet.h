@@ -1,10 +1,11 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_KEYSET_H__
 #define __ELASTOS_DROID_CONTENT_PM_KEYSET_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBinder;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

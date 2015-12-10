@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/content/AsyncTaskLoader.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/utility/TimeUtils.h"

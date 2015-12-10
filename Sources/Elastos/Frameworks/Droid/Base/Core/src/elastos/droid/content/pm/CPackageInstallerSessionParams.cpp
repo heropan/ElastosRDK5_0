@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/content/pm/CPackageInstallerSessionParams.h"
 //#include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/net/Uri.h"

@@ -1,7 +1,8 @@
 #ifndef __ELASTOS_DROID_OS_TOKENWATCHER_H__
 #define __ELASTOS_DROID_OS_TOKENWATCHER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#define HASH_FOR_OS
+#include "elastos/droid/ext/frameworkhash.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -9,9 +10,10 @@
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Object;
 using Elastos::IO::IPrintWriter;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

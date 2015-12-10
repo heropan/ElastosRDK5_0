@@ -1,7 +1,7 @@
 
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/LayerDrawable.h"
 #include "elastos/droid/graphics/drawable/CLayerDrawable.h"

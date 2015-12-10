@@ -3,10 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_PAINT_H__
 
 #include "Elastos.Droid.Graphics.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include <Elastos.CoreLibrary.h>
-#include <elautoptr.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::ILocale;
 

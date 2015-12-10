@@ -1,16 +1,16 @@
 #ifndef __ELASTOS_DROID_CONTENT_HH_INTENTFILTER_H__
 #define __ELASTOS_DROID_CONTENT_HH_INTENTFILTER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IPatternMatcher;
 using Elastos::Droid::Utility::IPrinter;
+using Elastos::Utility::Etl::List;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlSerializer;
-using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

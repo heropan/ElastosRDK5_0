@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "elastos/droid/content/pm/CVerifierInfo.h"
 
 namespace Elastos {

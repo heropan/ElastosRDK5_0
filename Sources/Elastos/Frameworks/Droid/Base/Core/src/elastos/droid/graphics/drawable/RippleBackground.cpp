@@ -1,8 +1,8 @@
 
 #include "Elastos.CoreLibrary.Utility.h"
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/graphics/drawable/RippleBackground.h"
 #include "elastos/droid/graphics/drawable/RippleDrawable.h"
 #include "elastos/droid/graphics/CPaint.h"

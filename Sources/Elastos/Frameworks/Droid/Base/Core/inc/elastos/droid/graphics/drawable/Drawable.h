@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_DRAWABLE_H__
 
 #include "Elastos.Droid.Graphics.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Content::Res::IResources;
@@ -13,6 +13,7 @@ using Elastos::Droid::Graphics::IXfermode;
 using Elastos::Droid::Graphics::IColorFilter;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::IO::IInputStream;
 using Org::Xmlpull::V1::IXmlPullParser;

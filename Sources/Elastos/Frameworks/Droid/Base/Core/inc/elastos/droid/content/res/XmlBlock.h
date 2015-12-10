@@ -4,6 +4,7 @@
 
 #include "Elastos.CoreLibrary.External.h"
 #include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/content/res/StringBlock.h"
 

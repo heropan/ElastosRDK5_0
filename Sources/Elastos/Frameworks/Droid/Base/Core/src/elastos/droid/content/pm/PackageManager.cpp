@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/pm/PackageManager.h"
 #include "elastos/droid/content/pm/PackageParser.h"

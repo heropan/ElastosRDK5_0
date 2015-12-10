@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/content/CComponentName.h"
 
 using Elastos::IO::IWriter;

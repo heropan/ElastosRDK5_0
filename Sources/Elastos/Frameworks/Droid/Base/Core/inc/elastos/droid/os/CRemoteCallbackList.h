@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_OS_CREMOTECALLBACKLIST_H__
 #define __ELASTOS_DROID_OS_CREMOTECALLBACKLIST_H__
 
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Os_CRemoteCallbackList.h"
-#include "elastos/droid/ext/frameworkext.h"
+#define HASH_FOR_OS
+#include "elastos/droid/ext/frameworkhash.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 

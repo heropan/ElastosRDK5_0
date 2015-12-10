@@ -3,8 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_BITMAPREGIONDECODER_H__
 
 #include "Elastos.Droid.Graphics.h"
-#include <Elastos.CoreLibrary.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
 

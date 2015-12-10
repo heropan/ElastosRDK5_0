@@ -1,4 +1,6 @@
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/pm/CVerificationParams.h"
 
 namespace Elastos {

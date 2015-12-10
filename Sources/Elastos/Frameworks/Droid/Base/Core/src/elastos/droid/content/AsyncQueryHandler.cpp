@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/AsyncQueryHandler.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include <elastos/utility/logging/Logger.h>
