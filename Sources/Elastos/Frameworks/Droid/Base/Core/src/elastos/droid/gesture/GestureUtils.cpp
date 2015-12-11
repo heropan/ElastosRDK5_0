@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/gesture/GestureUtils.h"
 #include "elastos/droid/gesture/COrientedBoundingBox.h"
 #include <elastos/core/Math.h>

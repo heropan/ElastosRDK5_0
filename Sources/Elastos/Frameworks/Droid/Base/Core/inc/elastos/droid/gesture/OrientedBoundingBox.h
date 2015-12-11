@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_ORIENTEDBOUNDINGBOX_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Gesture.h"
 #include "elastos/core/Object.h"
 
 using Elastos::Droid::Gesture::IOrientedBoundingBox;

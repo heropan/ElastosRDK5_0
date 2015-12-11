@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_GESTURESTROKE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Gesture.h"
 #include "elastos/core/Object.h"
 
 using Elastos::IO::IDataInputStream;

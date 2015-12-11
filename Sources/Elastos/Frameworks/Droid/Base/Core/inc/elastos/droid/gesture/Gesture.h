@@ -2,18 +2,19 @@
 #define __ELASTOS_DROID_GESTURE_GESTURE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/core/Object.h"
 #include "_Elastos_Droid_Gesture_CGesture.h"
 #include "elastos/utility/etl/List.h"
 
-using Elastos::IO::IDataOutputStream;
-using Elastos::IO::IDataInputStream;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::IRectF;
-using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
-using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
+using Elastos::Core::Object;
+using Elastos::IO::IDataOutputStream;
+using Elastos::IO::IDataInputStream;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::IArrayList;
+using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 
 namespace Elastos {
 namespace Droid {

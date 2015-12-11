@@ -1,4 +1,7 @@
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/gesture/GestureStore.h"
 #include "elastos/droid/gesture/GestureUtils.h"
 #include "elastos/droid/gesture/GestureConstants.h"

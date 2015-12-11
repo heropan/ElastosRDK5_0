@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_EMOJI_EMOJIFACTORY_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/core/Object.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include <elastos/utility/etl/HashMap.h>

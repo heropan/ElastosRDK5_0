@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "elastos/droid/gesture/Gesture.h"
 #include "elastos/droid/gesture/CGesture.h"
 #include "elastos/droid/gesture/GestureUtils.h"
@@ -24,6 +27,7 @@ using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::IDataOutputStream;
+using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Graphics::PaintStyle_STROKE;

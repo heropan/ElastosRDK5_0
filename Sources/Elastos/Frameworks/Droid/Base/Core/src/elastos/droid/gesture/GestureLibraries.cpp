@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/gesture/GestureLibraries.h"
 
 using Elastos::IO::IFileInputStream;

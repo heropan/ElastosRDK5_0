@@ -2,6 +2,7 @@
 //#include "elastos/droid/Widget/FrameLayout.h"
 //#include "elastos/droid/View/Animation/AnimationUtils.h"
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/gesture/GestureOverlayView.h"
 #include "elastos/droid/gesture/GestureStroke.h"
@@ -13,7 +14,6 @@
 #include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
 #include "elastos/droid/view/CMotionEvent.h"
 #include <elastos/core/Math.h>
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/gesture/CFadeOutRunnable.h"
 #include "elastos/droid/gesture/CGestureStroke.h"
 #include "elastos/droid/R.h"

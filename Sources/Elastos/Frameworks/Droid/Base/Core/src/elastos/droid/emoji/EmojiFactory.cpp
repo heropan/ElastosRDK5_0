@@ -368,7 +368,9 @@ ECode EmojiFactory::GetMinimumVendorSpecificPua(
 }
 
 ECode  EmojiFactory::constructor()
-{}
+{
+    return NOERROR;
+}
 
 ECode  EmojiFactory::constructor(
     /* [in] */ Int64 nativeEmojiFactory,

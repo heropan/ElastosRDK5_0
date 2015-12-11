@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/gesture/GesturePoint.h"
 #include "elastos/droid/gesture/CGesturePoint.h"
 

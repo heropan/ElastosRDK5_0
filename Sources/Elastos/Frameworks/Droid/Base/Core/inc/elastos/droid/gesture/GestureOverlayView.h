@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_GESTUREOVERLAYVIEW_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Gesture.h"
 #include "elastos/core/Object.h"
 #include <elastos/utility/etl/List.h>
 

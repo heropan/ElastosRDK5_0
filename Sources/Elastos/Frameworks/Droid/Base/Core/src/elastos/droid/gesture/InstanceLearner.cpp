@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/gesture/CPrediction.h"
 #include "elastos/droid/gesture/GestureUtils.h"
 #include "elastos/droid/gesture/InstanceLearner.h"
