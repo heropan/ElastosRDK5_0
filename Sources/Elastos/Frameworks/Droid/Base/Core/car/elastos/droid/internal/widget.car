@@ -75,8 +75,15 @@ module
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
     interface Elastos.Droid.Widget.IHorizontalScrollView;
     interface Elastos.Droid.Widget.ITextView;
-
     interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Internal.Widget.IAbsActionBarView;
+    interface Elastos.Droid.Internal.Widget.IActionBarView;
+    interface Elastos.Droid.Internal.Widget.IDecorToolbar;
+    interface Elastos.Droid.Internal.Widget.IActionBarContainer;
+    interface Elastos.Droid.Internal.Widget.IActionBarContextView;
+    interface Elastos.Droid.Internal.Widget.IActionBarOverlayLayout;
+    interface Elastos.Droid.Utility.IAttributeSet;
+    interface Elastos.Droid.Animation.IAnimatorListener;
 
     namespace Elastos {
     namespace Droid {
@@ -89,6 +96,36 @@ module
 
         interface IBackgroundFallback;
     }
+
+	[local]
+	class CAbsActionBarView {
+		constructor(
+			[in] IContext* ctx);
+
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs);
+
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyleAttr);
+
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyleAttr,
+			[in] Int32 defStyleRes);
+
+		interface IAbsActionBarView;
+		interface IViewGroup;
+    	interface IViewParent;
+    	interface IViewManager;
+    	interface IView;
+    	interface IDrawableCallback;
+    	interface IKeyEventCallback;
+    	interface IAccessibilityEventSource;
+	}
 
     [local]
     class CAbsListViewAutoScroller {
@@ -460,28 +497,34 @@ module
    //      interface ITransportControlViewSavedState;
    //  }
 
-   //  [local]
-   //  class CActionBarContextView {
-   //      constructor(
-   //          [in] IContext* ctx);
+	[local]
+	class CActionBarContextView {
+		constructor(
+			[in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyleAttr);
 
-   //      interface IActionBarContextView;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //      interface IAnimatorListener;
-   //  }
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyleAttr,
+			[in] Int32 defStyleRes);
+
+		interface IActionBarContextView;
+		interface IViewParent;
+		interface IViewManager;
+		interface IDrawableCallback;
+		interface IKeyEventCallback;
+		interface IAccessibilityEventSource;
+		interface IAnimatorListener;
+	}
 
    //  [local]
    //  class CTextProgressBar {
@@ -506,53 +549,54 @@ module
    //      interface IOnChronometerTickListener;
    //  }
 
-   //      [local]
-   //  class CActionBarView {
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+	[local]
+	class CActionBarView {
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs);
 
-   //      interface IActionBarView;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+		interface IActionBarView;
+		interface IDecorToolbar;
+		interface IViewParent;
+		interface IViewManager;
+		interface IDrawableCallback;
+		interface IKeyEventCallback;
+		interface IAccessibilityEventSource;
+	}
 
-   //      [local]
-   //  class CActionBarOverlayLayout {
-   //      constructor(
-   //          [in] IContext* ctx);
+	[local, deprecated]
+	class CActionBarOverlayLayout {
+		constructor(
+			[in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs);
 
-   //      interface IActionBarOverlayLayout;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+		interface IActionBarOverlayLayout;
+		interface IViewParent;
+		interface IViewManager;
+		interface IDrawableCallback;
+		interface IKeyEventCallback;
+		interface IAccessibilityEventSource;
+	}
 
-   //      [local]
-   //  class CActionBarContainer {
-   //      constructor(
-   //          [in] IContext* ctx);
+	[local]
+	class CActionBarContainer {
+		constructor(
+			[in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs);
 
-   //      interface IActionBarContainer;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+		interface IActionBarContainer;
+		interface IViewParent;
+		interface IViewManager;
+		interface IDrawableCallback;
+		interface IKeyEventCallback;
+		interface IAccessibilityEventSource;
+	}
 
 
    //  [local]

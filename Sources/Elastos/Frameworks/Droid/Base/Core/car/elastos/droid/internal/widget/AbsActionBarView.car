@@ -7,7 +7,6 @@ module
     namespace Droid {
     namespace Internal {
     namespace Widget {
-    //zhangjingcheng
 
     /**
      * @Involve
@@ -20,7 +19,7 @@ module
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
-     [local]
+    [local]
     interface IAbsActionBarView {
         /**
          * Sets whether the bar should be split right now, no questions asked.
@@ -74,8 +73,8 @@ module
         DismissPopupMenus();
     }
 
-    }// namespace Widget
-    }// namespace Internal
-    }// namespace Droid
-    }// namespace Elastos
+    } // namespace Widget
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

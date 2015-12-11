@@ -235,6 +235,13 @@ module
 
         GetExpandedItem(
             [out] IMenuItemImpl** itemImpl);
+
+        GetSize(
+			[out] Int32* result);
+
+		GetItem(
+			[in] Int32 index,
+			[out] IMenuItem** result);
     }
 
     /**

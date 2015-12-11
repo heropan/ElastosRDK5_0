@@ -14,7 +14,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IFrameLayout
      */
-     [local]
+    [local]
     interface IActionBarContainer {
         SetPrimaryBackground(
             [in] IDrawable* bg);
@@ -43,10 +43,9 @@ module
             [out] IView** container);
     }
 
-    }// namespace Widget
-    }// namespace Internal
-    }// namespace Droid
-    }// namespace Elastos
-
+    } // namespace Widget
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }
 

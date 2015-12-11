@@ -45,12 +45,9 @@ module
             [out] Boolean* res);
     }
 
-    }// namespace Widget
-    }// namespace Internal
-    }// namespace Droid
-    }// namespace Elastos
-
+    } // namespace Widget
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }
-
-
 

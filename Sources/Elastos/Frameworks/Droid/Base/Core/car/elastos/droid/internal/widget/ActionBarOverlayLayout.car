@@ -20,7 +20,6 @@ module
         OnContentScrollStarted();
 
         OnContentScrollStopped();
-
     }
 
     /**
@@ -64,12 +63,9 @@ module
             [in] Int32 offset);
     }
 
-    }// namespace Widget
-    }// namespace Internal
-    }// namespace Droid
-    }// namespace Elastos
-
+    } // namespace Widget
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }
-
-
 

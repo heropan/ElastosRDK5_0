@@ -8,6 +8,16 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
+SOURCES += AbsActionBarView.cpp
+SOURCES += CAbsActionBarView.cpp
+SOURCES += ActionBarContainer.cpp
+SOURCES += CActionBarContainer.cpp
+SOURCES += ActionBarContextView.cpp
+SOURCES += CActionBarContextView.cpp
+SOURCES += ActionBarOverlayLayout.cpp
+SOURCES += CActionBarOverlayLayout.cpp
+SOURCES += ActionBarView.cpp
+SOURCES += CActionBarView.cpp
 SOURCES += AutoScrollHelper.cpp
 SOURCES += CAbsListViewAutoScroller.cpp
 SOURCES += BackgroundFallback.cpp
@@ -36,3 +46,6 @@ SOURCES += CPointerLocationView.cpp
 SOURCES += RotarySelector.cpp
 SOURCES += CRotarySelector.cpp
 SOURCES += widgets.cpp
+#SOURCES += CScrollingTabContainerTabView.cpp
+#SOURCES += CScrollingTabContainerView.cpp
+

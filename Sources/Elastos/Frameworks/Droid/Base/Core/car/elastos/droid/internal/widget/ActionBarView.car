@@ -2,7 +2,6 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IWindowCallback;
     interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
@@ -22,7 +21,7 @@ module
      * @Involve
      * interface Elastos.Droid.Internal.Widget.IAbsActionBarView
      */
-     [local]
+    [local]
     interface IActionBarView {
         /**
          * Set the window callback used to invoke menu items; used for dispatching home button presses.
@@ -106,10 +105,13 @@ module
         SetLogo(
             [in] Int32 resId);
 
+        HasLogo(
+            [out] Boolean* result);
+
         SetNavigationMode(
             [in] Int32 mode);
 
-        setDropdownParams(
+        SetDropdownParams(
             [in] ISpinnerAdapter* adapter,
             [in] IAdapterViewOnItemSelectedListener* listener);
 
@@ -134,11 +136,8 @@ module
         SetContextView(
             [in] IActionBarContextView* view);
 
-        SetCollapsable(
-            [in] Boolean collapsable);
-
-        IsCollapsed(
-            [out] Boolean* collapsed);
+        SetCollapsible(
+            [in] Boolean collapsible);
 
         IsTitleTruncated(
             [out] Boolean* isTruncated);
@@ -156,18 +155,9 @@ module
             [in] Int32 resId);
     }
 
-
-    /**
-     * @Involve
-     * interface Elastos.Droid.View.IViewBaseSavedState
-     */
-    interface IActionBarViewSavedState {
-    }
-
-    }// namespace Widget
-    }// namespace Internal
-    }// namespace Droid
-    }// namespace Elastos
-
-    }
+    } // namespace Widget
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}
 

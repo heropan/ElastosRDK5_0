@@ -92,7 +92,7 @@ ECode Chronometer::constructor(
     VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(attrs);
 
-    //TextView::constructor(context, attrs, defStyle, defStyleRes);
+    TextView::constructor(context, attrs, defStyle, defStyleRes);
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::Chronometer),
         ArraySize(R::styleable::Chronometer));
@@ -190,7 +190,7 @@ ECode Chronometer::SetStarted(
 
 ECode Chronometer::OnDetachedFromWindow()
 {
-    //TextView::OnDetachedFromWindow();
+    TextView::OnDetachedFromWindow();
     mVisible = FALSE;
     UpdateRunning();
     return NOERROR;
@@ -199,7 +199,7 @@ ECode Chronometer::OnDetachedFromWindow()
 void Chronometer::OnWindowVisibilityChanged(
     /* [in] */ Int32 visibility)
 {
-    //TextView::OnWindowVisibilityChanged(visibility);
+    TextView::OnWindowVisibilityChanged(visibility);
     mVisible = visibility == IView::VISIBLE;
     UpdateRunning();
 }
@@ -243,7 +243,7 @@ void Chronometer::UpdateText(
     }
     AutoPtr<ICharSequence> seq;
     CString::New(text, (ICharSequence**)&seq);
-    //SetText(seq);
+    SetText(seq);
 }
 
 void Chronometer::UpdateRunning()
@@ -275,7 +275,7 @@ ECode Chronometer::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     VALIDATE_NOT_NULL(event);
-    //TextView::OnInitializeAccessibilityEvent(event);
+    TextView::OnInitializeAccessibilityEvent(event);
     String classNameStr("Chronometer");
     AutoPtr<ICharSequence> className;
     FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));
@@ -289,7 +289,7 @@ ECode Chronometer::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     VALIDATE_NOT_NULL(info);
-    //TextView::OnInitializeAccessibilityNodeInfo(info);
+    TextView::OnInitializeAccessibilityNodeInfo(info);
     String classNameStr("Chronometer");
     AutoPtr<ICharSequence> className;
     FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));

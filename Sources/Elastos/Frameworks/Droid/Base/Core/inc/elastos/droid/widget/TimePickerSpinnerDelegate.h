@@ -38,12 +38,14 @@ class TimePickerSpinnerDelegate
     , public IOnValueSelectedListener /*RadialTimePickerView::*/
 {
 private:
-    class InnerViewOnClickListener1
+    class InnerViewHourOnClickListener
         : public Object
         , public IViewOnClickListener
     {
     public:
-        InnerViewOnClickListener1(
+        CAR_INTERFACE_DECL()
+
+        InnerViewHourOnClickListener(
             /* [in] */ TimePickerSpinnerDelegate* owner);
 
         // @Override
@@ -54,12 +56,14 @@ private:
         TimePickerSpinnerDelegate* mOwner;
     };
 
-    class InnerViewOnClickListener3
+    class InnerViewMinuteOnClickListener
         : public Object
         , public IViewOnClickListener
     {
     public:
-        InnerViewOnClickListener3(
+        CAR_INTERFACE_DECL()
+
+        InnerViewMinuteOnClickListener(
             /* [in] */ TimePickerSpinnerDelegate* owner);
 
         // @Override
@@ -70,12 +74,14 @@ private:
         TimePickerSpinnerDelegate* mOwner;
     };
 
-    class InnerViewOnClickListener5
+    class InnerViewAmPmDisplayOnClickListener
         : public Object
         , public IViewOnClickListener
     {
     public:
-        InnerViewOnClickListener5(
+        CAR_INTERFACE_DECL()
+
+        InnerViewAmPmDisplayOnClickListener(
             /* [in] */ TimePickerSpinnerDelegate* owner);
 
         // @Override
@@ -85,6 +91,8 @@ private:
     private:
         TimePickerSpinnerDelegate* mOwner;
     };
+
+    class InnerCreator;
 
     /**
       * Used to save / restore state of time picker
@@ -92,6 +100,9 @@ private:
     class SavedState
         : public Elastos::Droid::View::View::BaseSavedState
     {
+        friend class InnerCreator;
+        friend class TimePickerSpinnerDelegate;
+
     public:
         virtual CARAPI GetHour(
             /* [out] */ Int32* result);
@@ -161,7 +172,7 @@ private:
 
         virtual CARAPI NewArray(
             /* [in] */ Int32 size,
-            /* [out] */ ArrayOf<SavedState>** result);
+            /* [out] */ ArrayOf<SavedState*>** result);
 
         // override for compile
         virtual CARAPI ReadFromParcel(
@@ -431,7 +442,7 @@ private:
 
     static CARAPI_(Int32) LastIndexOfAny(
         /* [in] */ String str,
-        /* [in] */ ArrayOf<Byte>* any);
+        /* [in] */ ArrayOf<Char32>* any);
 
     CARAPI_(void) UpdateHeaderMinute(
         /* [in] */ Int32 value);
@@ -550,7 +561,7 @@ private:
     Int32 mInitialMinute;
     Boolean mIs24HourView;
     // For hardware IME input.
-    Byte mPlaceholderText;
+    Char32 mPlaceholderText;
     String mDoublePlaceholderText;
     String mDeletedKeyFormat;
     Boolean mInKbMode;
@@ -571,6 +582,12 @@ private:
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Droid::Widget::TimePickerSpinnerDelegate::SavedState*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif // __ELASTOS_DROID_WIDGET_TIMEPICKERSPINNERDELEGATE_H__
 
