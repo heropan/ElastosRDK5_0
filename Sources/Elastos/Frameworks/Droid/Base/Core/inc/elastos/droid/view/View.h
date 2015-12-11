@@ -39,7 +39,6 @@ using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IShader;
 using Elastos::Droid::Graphics::IOutline;
 using Elastos::Droid::Graphics::BitmapConfig;
-using Elastos::Droid::Graphics::IInterpolator;
 using Elastos::Droid::Graphics::PorterDuffMode;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::Runnable;
@@ -2445,7 +2444,7 @@ private:
         AutoPtr<IMatrix> mMatrix;
         AutoPtr<IShader> mShader;
 
-        AutoPtr<IInterpolator> mScrollBarInterpolator;
+        AutoPtr<Elastos::Droid::Graphics::IInterpolator> mScrollBarInterpolator;
 
         static AutoPtr<ArrayOf<Float> > OPAQUE;
         static AutoPtr<ArrayOf<Float> > TRANSPARENT;

@@ -9,51 +9,366 @@
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/app/CPendingIntentHelper.h"
-#include "elastos/droid/widget/SuggestionsAdapter.h"
+// #include "elastos/droid/widget/SuggestionsAdapter.h"
 
-using Elastos::Core::Math;
-using Elastos::Core::CStringWrapper;
-using Elastos::Droid::Utility::ITypedValue;
-using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::App::ISearchManager;
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Speech::IRecognizerIntent;
+using Elastos::Droid::Text::EIID_ITextWatcher;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::IInputType;
 using Elastos::Droid::Text::CSpannableStringBuilder;
+using Elastos::Droid::Text::ISpannableStringBuilder;
 using Elastos::Droid::Text::Style::IImageSpan;
 using Elastos::Droid::Text::Style::CImageSpan;
-using Elastos::Droid::View::EIID_IView;
-using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::View::EIID_View;
-using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
-using Elastos::Droid::View::EIID_IKeyEventCallback;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
+using Elastos::Droid::View::EIID_ICollapsibleActionView;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::View::EIID_IOnPreDrawListener;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::EIID_IViewOnKeyListener;
 using Elastos::Droid::View::EIID_IViewGroup;
 using Elastos::Droid::View::EIID_IViewOnFocusChangeListener;
-using Elastos::Droid::Speech::IRecognizerIntent;
 using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::App::ISearchManager;
-using Elastos::Droid::App::IPendingIntent;
-using Elastos::Droid::App::IPendingIntentHelper;
-using Elastos::Droid::App::CPendingIntentHelper;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IDispatcherState;
+using Elastos::Core::CString;
+using Elastos::Core::Math;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+
+//==========================================================
+//          SearchView::ShowImeRunnable
+//==========================================================
+SearchView::ShowImeRunnable::ShowImeRunnable(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::ShowImeRunnable::Run()
+{
+    AutoPtr<IContext> context;
+    mHost->GetContext((IContext**)&context);
+    AutoPtr<IInterface> inter;
+    context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&inter);
+    AutoPtr<IInputMethodManager> imm = IInputMethodManager::Probe(inter);
+    if (imm) {
+        imm->ShowSoftInputUnchecked(0, NULL);
+    }
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::UpdateDrawableStateRunnable
+//==========================================================
+SearchView::UpdateDrawableStateRunnable::UpdateDrawableStateRunnable(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::UpdateDrawableStateRunnable::Run()
+{
+    mHost->UpdateFocusedState();
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::ReleaseCursorRunnable
+//==========================================================
+SearchView::ReleaseCursorRunnable::ReleaseCursorRunnable(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::ReleaseCursorRunnable::Run()
+{
+    if (mHost->mSuggestionsAdapter && ISuggestionsAdapter::Probe(mHost->mSuggestionsAdapter)) {
+        //mHost->mSuggestionsAdapter->ChangeCursor(NULL);
+    }
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::SearchViewClickListener
+//==========================================================
+CAR_INTERFACE_IMPL(SearchView::SearchViewClickListener, Object, IViewOnClickListener)
+SearchView::SearchViewClickListener::SearchViewClickListener(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::SearchViewClickListener::OnClick(
+    /* [in] */ IView* v)
+{
+    if (v == IView::Probe(mHost->mSearchButton)) {
+        mHost->OnSearchClicked();
+    } else if (v == IView::Probe(mHost->mCloseButton)) {
+        mHost->OnCloseClicked();
+    } else if (v == IView::Probe(mHost->mSubmitButton)) {
+        mHost->OnSubmitQuery();
+    } else if (v == IView::Probe(mHost->mVoiceButton)) {
+        mHost->OnVoiceClicked();
+    } else if (v == IView::Probe(mHost->mQueryTextView)) {
+        mHost->ForceSuggestionQuery();
+    }
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::SearchViewKeyListener
+//==========================================================
+CAR_INTERFACE_IMPL(SearchView::SearchViewKeyListener, Object, IViewOnKeyListener)
+SearchView::SearchViewKeyListener::SearchViewKeyListener(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::SearchViewKeyListener::OnKey(
+    /* [in] */ IView* v,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    /*if (!mHost->mSearchable)
+    {
+        *result = FALSE;
+        return NOERROR;
+    }*/
+
+    Boolean showing = FALSE;
+    IAutoCompleteTextView::Probe(mHost->mQueryTextView)->IsPopupShowing(&showing);
+    Int32 selection = 0;
+    IAutoCompleteTextView::Probe(mHost->mQueryTextView)->GetListSelection(&selection);
+    if (showing && selection != IAdapterView::INVALID_POSITION) {
+        *result = mHost->OnSuggestionsKey(v, keyCode, event);
+        return NOERROR;
+    }
+
+    Boolean modifiers = FALSE;
+    event->HasNoModifiers(&modifiers);
+    _SearchAutoComplete* temp = (_SearchAutoComplete*)mHost->mQueryTextView.Get();
+    if (!temp->IsEmpty() && modifiers) {
+        Int32 action = 0;
+        event->GetAction(&action);
+        if (action == IKeyEvent::ACTION_UP) {
+            if (keyCode == IKeyEvent::KEYCODE_ENTER) {
+                v->CancelLongPress();
+                AutoPtr<ICharSequence> csq;
+                ITextView::Probe(mHost->mQueryTextView)->GetText((ICharSequence**)&csq);
+                String str;
+                csq->ToString(&str);
+                mHost->LaunchQuerySearch(IKeyEvent::KEYCODE_UNKNOWN, String(NULL), str);
+                *result = TRUE;
+                return NOERROR;
+            }
+        }
+        if (action == IKeyEvent::ACTION_DOWN) {
+            assert(0 && "TODO");
+            /*AutoPtr<SearchableInfo::ActionKeyInfo> actionKey;
+            mHost->mSearchable->FindActionKey(keyCode, (SearchableInfo::ActionKeyInfo**)&actionKey);
+            if (actionKey && actionKey->GetQueryActionMsg() != NULL) {
+                AutoPtr<ICharSequence> csq;
+                mHost->mQueryTextView->GetText((ICharSequence**)&csq);
+                String str;
+                csq->ToString(&str);
+                mHost->LaunchQuerySearch(keyCode, actionKey.getQueryActionMsg(), str);
+                *result = TRUE;
+                return NOERROR;
+            }*/
+        }
+    }
+
+    *result = FALSE;
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::SearchViewEditorActionListener
+//==========================================================
+CAR_INTERFACE_IMPL(SearchView::SearchViewEditorActionListener, Object, IOnEditorActionListener)
+
+SearchView::SearchViewEditorActionListener::SearchViewEditorActionListener(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::SearchViewEditorActionListener::OnEditorAction(
+    /* [in] */ ITextView* v,
+    /* [in] */ Int32 actionId,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    mHost->OnSubmitQuery();
+    *result = TRUE;
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::SearchViewItemClickListener
+//==========================================================
+CAR_INTERFACE_IMPL(SearchView::SearchViewItemClickListener, Object, IAdapterViewOnItemClickListener)
+SearchView::SearchViewItemClickListener::SearchViewItemClickListener(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::SearchViewItemClickListener::OnItemClick(
+    /* [in] */ IAdapterView* parent,
+    /* [in] */ IView* view,
+    /* [in] */ Int32 position,
+    /* [in] */ Int64 id)
+{
+    mHost->OnItemClicked(position, IKeyEvent::KEYCODE_UNKNOWN, String(NULL));
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::SearchViewItemSelectedListener
+//==========================================================
+CAR_INTERFACE_IMPL(SearchView::SearchViewItemSelectedListener, Object, IAdapterViewOnItemSelectedListener)
+
+SearchView::SearchViewItemSelectedListener::SearchViewItemSelectedListener(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::SearchViewItemSelectedListener::OnItemSelected(
+    /* [in] */ IAdapterView* parent,
+    /* [in] */ IView* view,
+    /* [in] */ Int32 position,
+    /* [in] */ Int64 id)
+{
+    mHost->OnItemSelected(position);
+    return NOERROR;
+}
+
+ECode SearchView::SearchViewItemSelectedListener::OnNothingSelected(
+    /* [in] */ IAdapterView* parent)
+{
+    //do nothing
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::SearchViewTextWatcher
+//==========================================================
+CAR_INTERFACE_IMPL(SearchView::SearchViewTextWatcher, Object, ITextWatcher)
+SearchView::SearchViewTextWatcher::SearchViewTextWatcher(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+
+}
+
+ECode SearchView::SearchViewTextWatcher::BeforeTextChanged(
+    /* [in] */ ICharSequence* s,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 count,
+    /* [in] */ Int32 after)
+{
+    //do nothing
+    return NOERROR;
+}
+
+ECode SearchView::SearchViewTextWatcher::OnTextChanged(
+    /* [in] */ ICharSequence* s,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 before,
+    /* [in] */ Int32 count)
+{
+    mHost->OnTextChanged(s);
+    return NOERROR;
+}
+
+ECode SearchView::SearchViewTextWatcher::AfterTextChanged(
+    /* [in] */ IEditable* s)
+{
+    //do nothing
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::SearchViewFocusChangeListener
+//==========================================================
+CAR_INTERFACE_IMPL(SearchView::SearchViewFocusChangeListener, Object, IViewOnFocusChangeListener)
+SearchView::SearchViewFocusChangeListener::SearchViewFocusChangeListener(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::SearchViewFocusChangeListener::OnFocusChange(
+    /* [in] */ IView* v,
+    /* [in] */ Boolean hasFocus)
+{
+    if (mHost->mOnQueryTextFocusChangeListener) {
+        mHost->mOnQueryTextFocusChangeListener->OnFocusChange((IView*)this->Probe(EIID_IView), hasFocus);
+    }
+    return NOERROR;
+}
+
+//==========================================================
+//          SearchView::SearchViewLayoutChangeListener
+//==========================================================
+CAR_INTERFACE_IMPL(SearchView::SearchViewLayoutChangeListener, Object, IViewOnLayoutChangeListener)
+SearchView::SearchViewLayoutChangeListener::SearchViewLayoutChangeListener(
+    /* [in] */ SearchView* host)
+    : mHost(host)
+{
+}
+
+ECode SearchView::SearchViewLayoutChangeListener::OnLayoutChange(
+    /* [in] */ IView* v,
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom,
+    /* [in] */ Int32 oldLeft,
+    /* [in] */ Int32 oldTop,
+    /* [in] */ Int32 oldRight,
+    /* [in] */ Int32 oldBottom)
+{
+    mHost->AdjustDropDownSizeAndPosition();
+    return NOERROR;
+}
+
 const Boolean SearchView::DBG = FALSE;
 const String SearchView::IME_OPTION_NO_MICROPHONE("nm");
 const String SearchView::SEARCHVIEW_NAME = String("CSearchView");
 
+CAR_INTERFACE_IMPL_2(SearchView, LinearLayout, ISearchView, ICollapsibleActionView);
 SearchView::SearchView()
-    : mIconifiedByDefault(FALSE)
+    : mSearchIconResId(0)
+    , mSuggestionRowLayout(0)
+    , mSuggestionCommitIconResId(0)
+    , mIconifiedByDefault(FALSE)
     , mIconified(FALSE)
     , mSubmitButtonEnabled(FALSE)
     , mQueryRefinement(FALSE)
@@ -74,75 +389,114 @@ SearchView::SearchView()
     mTextWatcher = new SearchViewTextWatcher(this);
 }
 
-SearchView::SearchView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : mIconifiedByDefault(FALSE)
-    , mIconified(FALSE)
-    , mSubmitButtonEnabled(FALSE)
-    , mQueryRefinement(FALSE)
-    , mClearingFocus(FALSE)
-    , mMaxWidth(0)
-    , mVoiceButtonEnabled(FALSE)
-    , mExpandedInActionView(FALSE)
-    , mCollapsedImeOptions(0)
+ECode SearchView::constructor(
+    /* [in] */ IContext* context)
 {
-    mShowImeRunnable = new ShowImeRunnable(this);
-    mUpdateDrawableStateRunnable = new UpdateDrawableStateRunnable(this);
-    mReleaseCursorRunnable = new ReleaseCursorRunnable(this);
-    mOnClickListener = new SearchViewClickListener(this);
-    mTextKeyListener = new SearchViewKeyListener(this);
-    mOnEditorActionListener = new SearchViewEditorActionListener(this);
-    mOnItemClickListener = new SearchViewItemClickListener(this);
-    mOnItemSelectedListener = new SearchViewItemSelectedListener(this);
-    mTextWatcher = new SearchViewTextWatcher(this);
-
-    Init(context, attrs);
+    return constructor(context, NULL);
 }
 
-ECode SearchView::Init(
+ECode SearchView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    LinearLayout::Init(context, attrs);
-    AutoPtr<IInterface> inter;
-    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inter);
-    AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(inter);
-    AutoPtr<IView> view;
-    inflater->Inflate(R::layout::search_view, (IViewGroup*)this->Probe(EIID_IViewGroup), TRUE, (IView**)&view);
+    return constructor(context, attrs, R::attr::searchViewStyle);
+}
 
-    mSearchButton = FindViewById(R::id::search_button);
-    mQueryTextView = (ISearchViewSearchAutoComplete*)(FindViewById(R::id::search_src_text).Get());
-    mQueryTextView->SetSearchView((ISearchView*)this->Probe(EIID_ISearchView));
+ECode SearchView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
 
-    mSearchEditFrame = FindViewById(R::id::search_edit_frame);
-    mSearchPlate = FindViewById(R::id::search_plate);
-    mSubmitArea = FindViewById(R::id::submit_area);
-    mSubmitButton = FindViewById(R::id::search_go_btn);
-    mCloseButton = IImageView::Probe(FindViewById(R::id::search_close_btn));
-    mVoiceButton = FindViewById(R::id::search_voice_btn);
-    mSearchHintIcon = IImageView::Probe(FindViewById(R::id::search_mag_icon));
-
-    mSearchButton->SetOnClickListener(mOnClickListener);
-    mCloseButton->SetOnClickListener(mOnClickListener);
-    mSubmitButton->SetOnClickListener(mOnClickListener);
-    mVoiceButton->SetOnClickListener(mOnClickListener);
-    mQueryTextView->SetOnClickListener(mOnClickListener);
-
-    mQueryTextView->AddTextChangedListener(mTextWatcher);
-    mQueryTextView->SetOnEditorActionListener(mOnEditorActionListener);
-    mQueryTextView->SetOnItemClickListener(mOnItemClickListener);
-    mQueryTextView->SetOnItemSelectedListener(mOnItemSelectedListener);
-    mQueryTextView->SetOnKeyListener(mTextKeyListener);
-
-    AutoPtr<IViewOnFocusChangeListener> mFocusChangeListener = new SearchViewFocusChangeListener(this);
-    mQueryTextView->SetOnFocusChangeListener(mFocusChangeListener);
+ECode SearchView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    LinearLayout::constructor(context, attrs, defStyleAttr, defStyleRes);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::SearchView),
             ARRAY_SIZE(R::styleable::SearchView));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
+
+    AutoPtr<IInterface> inter;
+    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inter);
+    AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(inter);
+    Int32 layoutResId = 0;
+    a->GetResourceId(R::styleable::SearchView_layout, R::layout::search_view, &layoutResId);
+    AutoPtr<IView> view;
+    inflater->Inflate(layoutResId, (IViewGroup*)this->Probe(EIID_IViewGroup), TRUE, (IView**)&view);
+
+    view = NULL;
+    FindViewById(R::id::search_src_text, (IView**)&view);
+    mQueryTextView = ISearchViewSearchAutoComplete::Probe(view);
+    mQueryTextView->SetSearchView(THIS_PROBE(ISearchView));
+
+    FindViewById(R::id::search_edit_frame, (IView**)&mSearchEditFrame);
+    FindViewById(R::id::search_plate, (IView**)&mSearchPlate);
+    FindViewById(R::id::submit_area, (IView**)&mSubmitArea);
+    view = NULL;
+    FindViewById(R::id::search_button, (IView**)&view);
+    mSearchButton = IImageView::Probe(view);
+    view = NULL;
+    FindViewById(R::id::search_go_btn, (IView**)&view);
+    mSubmitButton = IImageView::Probe(view);
+    view = NULL;
+    FindViewById(R::id::search_close_btn, (IView**)&view);
+    mCloseButton = IImageView::Probe(view);
+    view = NULL;
+    FindViewById(R::id::search_voice_btn, (IView**)&view);
+    mVoiceButton = IImageView::Probe(view);
+    view = NULL;
+    FindViewById(R::id::search_mag_icon, (IView**)&view);
+    mSearchHintIcon = IImageView::Probe(view);
+
+    // Set up icons and backgrounds.
+    AutoPtr<IDrawable> drawable;
+    a->GetDrawable(R::styleable::SearchView_queryBackground, (IDrawable**)&drawable);
+    mSearchPlate->SetBackground(drawable);
+    drawable = NULL;
+    a->GetDrawable(R::styleable::SearchView_submitBackground, (IDrawable**)&drawable);
+    mSubmitArea->SetBackground(drawable);
+    a->GetResourceId(R::styleable::SearchView_searchIcon, 0, &mSearchIconResId);
+    mSearchButton->SetImageResource(mSearchIconResId);
+    drawable = NULL;
+    a->GetDrawable(R::styleable::SearchView_goIcon, (IDrawable**)&drawable);
+    mSubmitButton->SetImageDrawable(drawable);
+    drawable = NULL;
+    a->GetDrawable(R::styleable::SearchView_closeIcon, (IDrawable**)&drawable);
+    mCloseButton->SetImageDrawable(drawable);
+    drawable = NULL;
+    a->GetDrawable(R::styleable::SearchView_voiceIcon, (IDrawable**)&drawable);
+    mVoiceButton->SetImageDrawable(drawable);
+    drawable = NULL;
+    a->GetDrawable(R::styleable::SearchView_searchIcon, (IDrawable**)&drawable);
+    mSearchHintIcon->SetImageDrawable(drawable);
+
+    // Extract dropdown layout resource IDs for later use.
+    a->GetResourceId(R::styleable::SearchView_suggestionRowLayout,
+            R::layout::search_dropdown_item_icons_2line, &mSuggestionRowLayout);
+    a->GetResourceId(R::styleable::SearchView_commitIcon, 0, &mSuggestionCommitIconResId);
+
+    IView::Probe(mSearchButton)->SetOnClickListener(mOnClickListener);
+    IView::Probe(mCloseButton)->SetOnClickListener(mOnClickListener);
+    IView::Probe(mSubmitButton)->SetOnClickListener(mOnClickListener);
+    IView::Probe(mVoiceButton)->SetOnClickListener(mOnClickListener);
+    IView::Probe(mQueryTextView)->SetOnClickListener(mOnClickListener);
+
+    ITextView::Probe(mQueryTextView)->AddTextChangedListener(mTextWatcher);
+    ITextView::Probe(mQueryTextView)->SetOnEditorActionListener(mOnEditorActionListener);
+    IAutoCompleteTextView::Probe(mQueryTextView)->SetOnItemClickListener(mOnItemClickListener);
+    IAutoCompleteTextView::Probe(mQueryTextView)->SetOnItemSelectedListener(mOnItemSelectedListener);
+    IView::Probe(mQueryTextView)->SetOnKeyListener(mTextKeyListener);
+
+    AutoPtr<IViewOnFocusChangeListener> mFocusChangeListener = new SearchViewFocusChangeListener(this);
+    IView::Probe(mQueryTextView)->SetOnFocusChangeListener(mFocusChangeListener);
 
     Boolean byDefault = FALSE;
     a->GetBoolean(R::styleable::SearchView_iconifiedByDefault, TRUE, &byDefault);
@@ -171,18 +525,11 @@ ECode SearchView::Init(
         SetInputType(inputType);
     }
 
-    a->Recycle();
-
     Boolean focusable = TRUE;
-    attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::View),
-            ARRAY_SIZE(R::styleable::View));
-    a = NULL;
-    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a));
-
-    a->GetBoolean(R::styleable::View_focusable, focusable, &focusable);
-    a->Recycle();
+    a->GetBoolean(R::styleable::SearchView_focusable, focusable, &focusable);
     SetFocusable(focusable);
+
+    a->Recycle();
 
     CIntent::New(IRecognizerIntent::ACTION_WEB_SEARCH, (IIntent**)&mVoiceWebSearchIntent);
     mVoiceWebSearchIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
@@ -192,8 +539,8 @@ ECode SearchView::Init(
     mVoiceAppSearchIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
 
     Int32 index = 0;
-    mQueryTextView->GetDropDownAnchor(&index);
-    mDropDownAnchor = FindViewById(index);
+    IAutoCompleteTextView::Probe(mQueryTextView)->GetDropDownAnchor(&index);
+    FindViewById(index, (IView**)&mDropDownAnchor);
     if (mDropDownAnchor) {
         AutoPtr<IViewOnLayoutChangeListener> mLayoutChangeListener = new SearchViewLayoutChangeListener(this);
         mDropDownAnchor->AddOnLayoutChangeListener(mLayoutChangeListener);
@@ -202,6 +549,16 @@ ECode SearchView::Init(
     UpdateViewsVisibility(mIconifiedByDefault);
     UpdateQueryHint();
     return NOERROR;
+}
+
+Int32 SearchView::GetSuggestionRowLayout()
+{
+    return mSuggestionRowLayout;
+}
+
+Int32 SearchView::GetSuggestionCommitIconResId()
+{
+    return mSuggestionCommitIconResId;
 }
 
 ECode SearchView::SetSearchableInfo(
@@ -220,9 +577,11 @@ ECode SearchView::SetSearchableInfo(
     {
         // Disable the microphone on the keyboard, as a mic is displayed near the text box
         // TODO: use imeOptions to disable voice input when the new API will be available
-        mQueryTextView->SetPrivateImeOptions(IME_OPTION_NO_MICROPHONE);
+        ITextView::Probe(mQueryTextView)->SetPrivateImeOptions(IME_OPTION_NO_MICROPHONE);
     }
-    UpdateViewsVisibility(IsIconified());
+    Boolean result = FALSE;
+    IsIconified(&result);
+    UpdateViewsVisibility(result);
     return NOERROR;
 }
 
@@ -236,52 +595,64 @@ ECode SearchView::SetAppSearchData(
 ECode SearchView::SetImeOptions(
     /* [in] */ Int32 imeOptions)
 {
-    mQueryTextView->SetImeOptions(imeOptions);
+    ITextView::Probe(mQueryTextView)->SetImeOptions(imeOptions);
     return NOERROR;
 }
 
-Int32 SearchView::GetImeOptions()
+ECode SearchView::GetImeOptions(
+    /* [out] */ Int32* imeOptions)
 {
-    Int32 options = 0;
-    mQueryTextView->GetImeOptions(&options);
-    return options;
+    VALIDATE_NOT_NULL(imeOptions);
+    return ITextView::Probe(mQueryTextView)->GetImeOptions(imeOptions);
 }
 
 ECode SearchView::SetInputType(
     /* [in] */ Int32 inputType)
 {
-    mQueryTextView->SetInputType(inputType);
+    ITextView::Probe(mQueryTextView)->SetInputType(inputType);
     return NOERROR;
 }
 
-Int32 SearchView::GetInputType()
+ECode SearchView::GetInputType(
+    /* [out] */ Int32* type)
 {
-    Int32 type = 0;
-    mQueryTextView->GetInputType(&type);
-    return type;
+    VALIDATE_NOT_NULL(type);
+    return ITextView::Probe(mQueryTextView)->GetInputType(type);
 }
 
-Boolean SearchView::RequestFocus(
+ECode SearchView::RequestFocus(
     /* [in] */ Int32 direction,
-    /* [in] */ IRect* previouslyFocusedRect)
+    /* [in] */ IRect* previouslyFocusedRect,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // Don't accept focus if in the middle of clearing focus
-    if (mClearingFocus) return FALSE;
+    if (mClearingFocus) {
+        *result = FALSE;
+        return NOERROR;
+    }
     // Check if SearchView is focusable.
-    if (!IsFocusable()) return FALSE;
+    Boolean focusable = FALSE;
+    if (IsFocusable(&focusable), !focusable) {
+        *result = FALSE;
+        return NOERROR;
+    }
     // If it is not iconified, then give the focus to the text field
-    if (!IsIconified()) {
-        Boolean result = FALSE;
-        mQueryTextView->RequestFocus(direction, previouslyFocusedRect, &result);
-        if (result) {
+    Boolean tmp = FALSE;
+    if (IsIconified(&tmp), !tmp) {
+        IView::Probe(mQueryTextView)->RequestFocus(direction, previouslyFocusedRect, &tmp);
+        if (tmp) {
             UpdateViewsVisibility(FALSE);
         }
-        return result;
-    } else {
-        LinearLayout::RequestFocus(direction, previouslyFocusedRect);
+        *result = tmp;
+        return NOERROR;
+    }
+    else {
+        LinearLayout::RequestFocus(direction, previouslyFocusedRect, &tmp);
     }
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode SearchView::ClearFocus()
@@ -289,7 +660,7 @@ ECode SearchView::ClearFocus()
     mClearingFocus = TRUE;
     SetImeVisibility(FALSE);
     LinearLayout::ClearFocus();
-    mQueryTextView->ClearFocus();
+    IView::Probe(mQueryTextView)->ClearFocus();
     mClearingFocus = FALSE;
     return NOERROR;
 }
@@ -302,7 +673,7 @@ ECode SearchView::SetOnQueryTextListener(
 }
 
 ECode SearchView::SetOnCloseListener(
-    /* [in] */ IOnCloseListener* listener)
+    /* [in] */ ISearchViewOnCloseListener* listener)
 {
     mOnCloseListener = listener;
     return NOERROR;
@@ -329,22 +700,22 @@ ECode SearchView::SetOnSearchClickListener(
     return NOERROR;
 }
 
-AutoPtr<ICharSequence> SearchView::GetQuery()
+ECode SearchView::GetQuery(
+    /* [out] */ ICharSequence** str)
 {
-    AutoPtr<ICharSequence> csq;
-    mQueryTextView->GetText((ICharSequence**)&csq);
-    return csq;
+    VALIDATE_NOT_NULL(str);
+    return ITextView::Probe(mQueryTextView)->GetText(str);
 }
 
 ECode SearchView::SetQuery(
     /* [in] */ ICharSequence* query,
     /* [in] */ Boolean submit)
 {
-    mQueryTextView->SetText(query);
+    ITextView::Probe(mQueryTextView)->SetText(query);
     if (query) {
         Int32 length = 0;
-        mQueryTextView->GetLength(&length);
-        mQueryTextView->SetSelection(length);
+        ITextView::Probe(mQueryTextView)->GetLength(&length);
+        IEditText::Probe(mQueryTextView)->SetSelection(length);
         mUserQuery = query;
     }
 
@@ -363,23 +734,29 @@ ECode SearchView::SetQueryHint(
     return NOERROR;
 }
 
-AutoPtr<ICharSequence> SearchView::GetQueryHint()
+ECode SearchView::GetQueryHint(
+    /* [out] */ ICharSequence** hint)
 {
-
+    VALIDATE_NOT_NULL(hint);
+    *hint = NULL;
     if (mQueryHint) {
-        return mQueryHint;
-    } else if (mSearchable) {
-        AutoPtr<ICharSequence> hint;
+        *hint = mQueryHint;
+        REFCOUNT_ADD(*hint);
+        return NOERROR;
+    }
+    else if (mSearchable) {
         Int32 hintId = 0;
         mSearchable->GetHintId(&hintId);
         if (hintId != 0) {
             String str;
-            GetContext()->GetString(hintId, &str);
-            CStringWrapper::New(str, (ICharSequence**)&hint);
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            context->GetString(hintId, &str);
+            CString::New(str, hint);
         }
-        return hint;
+        return NOERROR;
     }
-    return NULL;
+    return NOERROR;
 }
 
 ECode SearchView::SetIconifiedByDefault(
@@ -394,9 +771,12 @@ ECode SearchView::SetIconifiedByDefault(
     return NOERROR;
 }
 
-Boolean SearchView::IsIconfiedByDefault()
+ECode SearchView::IsIconfiedByDefault(
+    /* [out] */ Boolean* result)
 {
-    return mIconifiedByDefault;
+    VALIDATE_NOT_NULL(result);
+    *result = mIconifiedByDefault;
+    return NOERROR;
 }
 
 ECode SearchView::SetIconified(
@@ -410,22 +790,30 @@ ECode SearchView::SetIconified(
     return NOERROR;
 }
 
-Boolean SearchView::IsIconified()
+ECode SearchView::IsIconified(
+    /* [out] */ Boolean* result)
 {
-    return mIconified;
+    VALIDATE_NOT_NULL(result);
+    *result = mIconified;
+    return NOERROR;
 }
 
 ECode SearchView::SetSubmitButtonEnabled(
     /* [in] */ Boolean enabled)
 {
     mSubmitButtonEnabled = enabled;
-    UpdateViewsVisibility(IsIconified());
+    Boolean tmp = FALSE;
+    IsIconified(&tmp);
+    UpdateViewsVisibility(tmp);
     return NOERROR;
 }
 
-Boolean SearchView::IsSubmitButtonEnabled()
+ECode SearchView::IsSubmitButtonEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return mSubmitButtonEnabled;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = mSubmitButtonEnabled;
+    return NOERROR;
 }
 
 ECode SearchView::SetQueryRefinementEnabled(
@@ -439,22 +827,29 @@ ECode SearchView::SetQueryRefinementEnabled(
     return NOERROR;
 }
 
-Boolean SearchView::IsQueryRefinementEnabled()
+ECode SearchView::IsQueryRefinementEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return mQueryRefinement;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = mQueryRefinement;
+    return NOERROR;
 }
 
 ECode SearchView::SetSuggestionsAdapter(
     /* [in] */ ICursorAdapter* adapter)
 {
     mSuggestionsAdapter = adapter;
-    mQueryTextView->SetAdapter(mSuggestionsAdapter);
+    IAutoCompleteTextView::Probe(mQueryTextView)->SetAdapter(IListAdapter::Probe(mSuggestionsAdapter));
     return NOERROR;
 }
 
-AutoPtr<ICursorAdapter> SearchView::GetSuggestionsAdapter()
+ECode SearchView::GetSuggestionsAdapter(
+    /* [out] */ ICursorAdapter** adapter)
 {
-    return mSuggestionsAdapter;
+    VALIDATE_NOT_NULL(adapter);
+    *adapter = mSuggestionsAdapter;
+    REFCOUNT_ADD(*adapter);
+    return NOERROR;
 }
 
 ECode SearchView::SetMaxWidth(
@@ -465,9 +860,12 @@ ECode SearchView::SetMaxWidth(
     return NOERROR;
 }
 
-Int32 SearchView::GetMaxWidth()
+ECode SearchView::GetMaxWidth(
+    /* [out] */ Int32* max)
 {
-    return mMaxWidth;
+    VALIDATE_NOT_NULL(max);
+    *max = mMaxWidth;
+    return NOERROR;
 }
 
 void SearchView::OnQueryRefine(
@@ -476,12 +874,15 @@ void SearchView::OnQueryRefine(
     SetQuery(queryText);
 }
 
-Boolean SearchView::OnKeyDown(
+ECode SearchView::OnKeyDown(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (mSearchable == NULL) {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
     // if it's an action specified by the searchable activity, launch the
@@ -492,13 +893,14 @@ Boolean SearchView::OnKeyDown(
     actionKey->GetQueryActionMsg(&actionMsg);
     if (actionKey && (actionMsg != NULL)) {
         AutoPtr<ICharSequence> csq;
-        mQueryTextView->GetText((ICharSequence**)&csq);
+        ITextView::Probe(mQueryTextView)->GetText((ICharSequence**)&csq);
         String text;
         csq->ToString(&text);
         LaunchQuerySearch(keyCode, actionMsg, text);
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
-    return LinearLayout::OnKeyDown(keyCode, event);
+    return LinearLayout::OnKeyDown(keyCode, event, result);
 }
 
 Boolean SearchView::OnSuggestionsKey(
@@ -519,7 +921,7 @@ Boolean SearchView::OnSuggestionsKey(
         // "click")
         if (keyCode == IKeyEvent::KEYCODE_ENTER || keyCode == IKeyEvent::KEYCODE_SEARCH || keyCode == IKeyEvent::KEYCODE_TAB) {
             Int32 position = 0;
-            mQueryTextView->GetListSelection(&position);
+            IAutoCompleteTextView::Probe(mQueryTextView)->GetListSelection(&position);
             return OnItemClicked(position, IKeyEvent::KEYCODE_UNKNOWN, String(NULL));
         }
 
@@ -529,20 +931,20 @@ Boolean SearchView::OnSuggestionsKey(
             // TODO: Reverse left/right for right-to-left languages, e.g.
             // Arabic
             Int32 length = 0;
-            mQueryTextView->GetLength(&length);
+            ITextView::Probe(mQueryTextView)->GetLength(&length);
             Int32 selPoint = (keyCode == IKeyEvent::KEYCODE_DPAD_LEFT) ? 0 : length;
 
-            mQueryTextView->SetSelection(selPoint);
-            mQueryTextView->SetListSelection(0);
-            mQueryTextView->ClearListSelection();
-            mQueryTextView->EnsureImeVisible(TRUE);
+            IEditText::Probe(mQueryTextView)->SetSelection(selPoint);
+            IAutoCompleteTextView::Probe(mQueryTextView)->SetListSelection(0);
+            IAutoCompleteTextView::Probe(mQueryTextView)->ClearListSelection();
+            IAutoCompleteTextView::Probe(mQueryTextView)->EnsureImeVisible(TRUE);
 
             return TRUE;
         }
 
         // Next, check for an "up and out" move
         Int32 selection = 0;
-        mQueryTextView->GetListSelection(&selection);
+        IAutoCompleteTextView::Probe(mQueryTextView)->GetListSelection(&selection);
         if ( keyCode == IKeyEvent::KEYCODE_DPAD_UP && 0 == selection) {
             // TODO: restoreUserQuery();
             // let ACTV complete the move
@@ -557,8 +959,8 @@ Boolean SearchView::OnSuggestionsKey(
         actionKey->GetSuggestActionMsgColumn(&column);
         if(actionKey && ((aMsg != NULL) || (column != NULL))) {
             Int32 position = 0;
-            mQueryTextView->GetListSelection(&position);
-            if (position != IListView::INVALID_POSITION) {
+            IAutoCompleteTextView::Probe(mQueryTextView)->GetListSelection(&position);
+            if (position != IAdapterView::INVALID_POSITION) {
                 AutoPtr<ICursor> c;
                 ICursorFilterClient::Probe(mSuggestionsAdapter)->GetCursor((ICursor**)&c);
                 Boolean result = FALSE;
@@ -587,9 +989,12 @@ ECode SearchView::OnWindowFocusChanged(
 
 ECode SearchView::OnActionViewCollapsed()
 {
+    AutoPtr<ICharSequence> seq;
+    CString::New(String(""), (ICharSequence**)&seq);
+    SetQuery(seq, FALSE);
     ClearFocus();
     UpdateViewsVisibility(TRUE);
-    mQueryTextView->SetImeOptions(mCollapsedImeOptions);
+    ITextView::Probe(mQueryTextView)->SetImeOptions(mCollapsedImeOptions);
     mExpandedInActionView = FALSE;
     return NOERROR;
 }
@@ -600,11 +1005,11 @@ ECode SearchView::OnActionViewExpanded()
         return NOERROR;
 
     mExpandedInActionView = TRUE;
-    mQueryTextView->GetImeOptions(&mCollapsedImeOptions);
-    mQueryTextView->SetImeOptions(mCollapsedImeOptions | IEditorInfo::IME_FLAG_NO_FULLSCREEN);
+    ITextView::Probe(mQueryTextView)->GetImeOptions(&mCollapsedImeOptions);
+    ITextView::Probe(mQueryTextView)->SetImeOptions(mCollapsedImeOptions | IEditorInfo::IME_FLAG_NO_FULLSCREEN);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(String(""), (ICharSequence**)&csq);
-    mQueryTextView->SetText(csq);
+    CString::New(String(""), (ICharSequence**)&csq);
+    ITextView::Probe(mQueryTextView)->SetText(csq);
     SetIconified(FALSE);
     return NOERROR;
 }
@@ -614,8 +1019,8 @@ ECode SearchView::OnInitializeAccessibilityEvent(
 {
     LinearLayout::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(SEARCHVIEW_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
+    FAIL_RETURN(CString::New(SEARCHVIEW_NAME, (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
@@ -624,15 +1029,8 @@ ECode SearchView::OnInitializeAccessibilityNodeInfo(
 {
     LinearLayout::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(SEARCHVIEW_NAME, (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(SEARCHVIEW_NAME, (ICharSequence**)&seq));
     info->SetClassName(seq);
-    return NOERROR;
-}
-
-ECode SearchView::OnRtlPropertiesChanged(
-    /* [in] */ Int32 layoutDirection)
-{
-    mQueryTextView->SetLayoutDirection(layoutDirection);
     return NOERROR;
 }
 
@@ -652,7 +1050,8 @@ void SearchView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    if (IsIconified()) {
+    Boolean tmp = FALSE;
+    if (IsIconified(&tmp), tmp) {
         LinearLayout::OnMeasure(widthMeasureSpec, heightMeasureSpec);
         return;
     }
@@ -685,16 +1084,19 @@ void SearchView::OnMeasure(
 
 ECode SearchView::OnDetachedFromWindow()
 {
-    RemoveCallbacks(mUpdateDrawableStateRunnable);
-    Post(mReleaseCursorRunnable);
+    Boolean result = FALSE;
+    RemoveCallbacks(mUpdateDrawableStateRunnable, &result);
+    Post(mReleaseCursorRunnable, &result);
     LinearLayout::OnDetachedFromWindow();
     return NOERROR;
 }
 
 Int32 SearchView::GetPreferredWidth()
 {
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     AutoPtr<IResources> res;
-    GetContext()->GetResources((IResources**)&res);
+    context->GetResources((IResources**)&res);
     Int32 size = 0;
     res->GetDimensionPixelSize(R::dimen::search_view_preferred_width, &size);
     return size;
@@ -706,13 +1108,13 @@ void SearchView::UpdateViewsVisibility(
     mIconified = collapsed;
     Int32 visCollapsed = collapsed ? IView::VISIBLE : IView::GONE;
     AutoPtr<ICharSequence> csq;
-    mQueryTextView->GetText((ICharSequence**)&csq);
+    ITextView::Probe(mQueryTextView)->GetText((ICharSequence**)&csq);
     Boolean hasText = !TextUtils::IsEmpty(csq);
 
-    mSearchButton->SetVisibility(visCollapsed);
+    IView::Probe(mSearchButton)->SetVisibility(visCollapsed);
     UpdateSubmitButton(hasText);
     mSearchEditFrame->SetVisibility(collapsed ? IView::GONE : IView::VISIBLE);
-    mSearchHintIcon->SetVisibility(mIconifiedByDefault ? IView::GONE : IView::VISIBLE);
+    IView::Probe(mSearchHintIcon)->SetVisibility(mIconifiedByDefault ? IView::GONE : IView::VISIBLE);
     UpdateCloseButton();
     UpdateVoiceButton(!hasText);
     UpdateSubmitArea();
@@ -729,12 +1131,15 @@ Boolean SearchView::HasVoiceSearch()
         mSearchable->GetVoiceSearchLaunchRecognizer(&recognizer);
         if (webSearch) {
             testIntent = mVoiceWebSearchIntent;
-        } else if (recognizer) {
+        }
+        else if (recognizer) {
             testIntent = mVoiceAppSearchIntent;
         }
         if (testIntent) {
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
             AutoPtr<IPackageManager> pm;
-            GetContext()->GetPackageManager((IPackageManager**)&pm);
+            context->GetPackageManager((IPackageManager**)&pm);
             AutoPtr<IResolveInfo> ri;
             pm->ResolveActivity(testIntent, IPackageManager::MATCH_DEFAULT_ONLY, (IResolveInfo**)&ri);
             return ri != NULL;
@@ -745,25 +1150,28 @@ Boolean SearchView::HasVoiceSearch()
 
 Boolean SearchView::IsSubmitAreaEnabled()
 {
-    return (mSubmitButtonEnabled || mVoiceButtonEnabled) && !IsIconified();
+    Boolean tmp = FALSE;
+    return (mSubmitButtonEnabled || mVoiceButtonEnabled) && (IsIconified(&tmp), !tmp);
 }
 
 void SearchView::UpdateSubmitButton(
     /* [in] */ Boolean hasText)
 {
     Int32 visibility = IView::GONE;
-    if (mSubmitButtonEnabled && IsSubmitAreaEnabled() && HasFocus()
+    Boolean has = FALSE;
+    HasFocus(&has);
+    if (mSubmitButtonEnabled && IsSubmitAreaEnabled() && has
         && (hasText || !mVoiceButtonEnabled)) {
         visibility = IView::VISIBLE;
     }
-    mSubmitButton->SetVisibility(visibility);
+    IView::Probe(mSubmitButton)->SetVisibility(visibility);
 }
 
 void SearchView::UpdateSubmitArea()
 {
     Int32 visibility = IView::GONE, sub = 0, voice = 0;
-    mSubmitButton->GetVisibility(&sub);
-    mVoiceButton->GetVisibility(&voice);
+    IView::Probe(mSubmitButton)->GetVisibility(&sub);
+    IView::Probe(mVoiceButton)->GetVisibility(&voice);
     if (IsSubmitAreaEnabled() && (sub == IView::VISIBLE || voice == IView::VISIBLE)){
         visibility = IView::VISIBLE;
     }
@@ -773,10 +1181,10 @@ void SearchView::UpdateSubmitArea()
 void SearchView::UpdateCloseButton()
 {
     AutoPtr<ICharSequence> csq;
-    mQueryTextView->GetText((ICharSequence**)&csq);
+    ITextView::Probe(mQueryTextView)->GetText((ICharSequence**)&csq);
     Boolean hasText = !TextUtils::IsEmpty(csq);
     Boolean showClose = hasText || (mIconifiedByDefault && !mExpandedInActionView);
-    mCloseButton->SetVisibility(showClose ? IView::VISIBLE : IView::GONE);
+    IView::Probe(mCloseButton)->SetVisibility(showClose ? IView::VISIBLE : IView::GONE);
     AutoPtr<IDrawable> drawable;
     mCloseButton->GetDrawable((IDrawable**)&drawable);
     Boolean res = FALSE;
@@ -785,13 +1193,14 @@ void SearchView::UpdateCloseButton()
 
 void SearchView::PostUpdateFocusedState()
 {
-    Post(mUpdateDrawableStateRunnable);
+    Boolean res = FALSE;
+    Post(mUpdateDrawableStateRunnable, &res);
 }
 
 void SearchView::UpdateFocusedState()
 {
     Boolean focused = FALSE, res = FALSE;
-    mQueryTextView->HasFocus(&focused);
+    IView::Probe(mQueryTextView)->HasFocus(&focused);
     AutoPtr<IDrawable> plate;
     mSearchPlate->GetBackground((IDrawable**)&plate);
     plate->SetState(focused ? View::FOCUSED_STATE_SET : View::EMPTY_STATE_SET, &res);
@@ -804,16 +1213,22 @@ void SearchView::UpdateFocusedState()
 void SearchView::SetImeVisibility(
     /* [in] */ Boolean visible)
 {
+    Boolean result = FALSE;
     if (visible) {
-        Post(mShowImeRunnable);
-    } else {
-        RemoveCallbacks(mShowImeRunnable);
+        Post(mShowImeRunnable, &result);
+    }
+    else {
+        RemoveCallbacks(mShowImeRunnable, &result);
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
         AutoPtr<IInterface> inter;
-        GetContext()->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&inter);
+        context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&inter);
         AutoPtr<IInputMethodManager> imm = IInputMethodManager::Probe(inter);
         if (imm) {
+            AutoPtr<IBinder> token;
+            GetWindowToken((IBinder**)&token);
             Boolean res = FALSE;
-            imm->HideSoftInputFromWindow(GetWindowToken(), 0, &res);
+            imm->HideSoftInputFromWindow(token, 0, &res);
         }
     }
 }
@@ -825,75 +1240,67 @@ String SearchView::GetActionKeyMessage(
    return String(NULL);
 }
 
-Int32 SearchView::GetSearchIconId()
-{
-    AutoPtr<ITypedValue> outValue;
-    CTypedValue::New((ITypedValue**)&outValue);
-    AutoPtr<IResourcesTheme> theme;
-    GetContext()->GetTheme((IResourcesTheme**)&theme);
-    Boolean res = FALSE;
-    theme->ResolveAttribute(R::attr::searchViewSearchIcon, outValue, TRUE, &res);
-    Int32 resourcesId = 0;
-    outValue->GetResourceId(&resourcesId);
-    return resourcesId;
-}
-
 AutoPtr<ICharSequence> SearchView::GetDecoratedHint(
     /* [in] */ ICharSequence* hintText)
 {
-    if (!mIconifiedByDefault) return hintText;
+    if (!mIconifiedByDefault) {
+        return hintText;
+    }
 
-    AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(String("   "), (ICharSequence**)&csq);
-    AutoPtr<ISpannableStringBuilder> ssb;
-    CSpannableStringBuilder::New(csq, (ISpannableStringBuilder**)&ssb);
-    ssb->Append(hintText);
-    AutoPtr<IResources> resources;
-    GetContext()->GetResources((IResources**)&resources);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     AutoPtr<IDrawable> searchIcon;
-    resources->GetDrawable(GetSearchIconId(), (IDrawable**)&searchIcon);
+    context->GetDrawable(mSearchIconResId, (IDrawable**)&searchIcon);
     Float size = 0;
-    mQueryTextView->GetTextSize(&size);
+    ITextView::Probe(mQueryTextView)->GetTextSize(&size);
     Int32 textSize = (Int32)(size * 1.25);
     searchIcon->SetBounds(0, 0, textSize, textSize);
+
+    AutoPtr<ICharSequence> csq;
+    CString::New(String("   "), (ICharSequence**)&csq);
+    AutoPtr<ISpannableStringBuilder> ssb;
+    CSpannableStringBuilder::New(csq, (ISpannableStringBuilder**)&ssb); // for the icon
+    IEditable::Probe(ssb)->Append(hintText);
     AutoPtr<IImageSpan> span;
     CImageSpan::New(searchIcon, (IImageSpan**)&span);
-    ssb->SetSpan(span, 1, 2, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+    ISpannable::Probe(ssb)->SetSpan(span, 1, 2, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
 
-    return ssb;
+    return ICharSequence::Probe(ssb);
 }
 
 void SearchView::UpdateQueryHint()
 {
     if (mQueryHint) {
-        mQueryTextView->SetHint(GetDecoratedHint(mQueryHint));
+        ITextView::Probe(mQueryTextView)->SetHint(GetDecoratedHint(mQueryHint));
     } else if (mSearchable) {
         AutoPtr<ICharSequence> hint;
         Int32 hintId = 0;
         mSearchable->GetHintId(&hintId);
         if (hintId != 0) {
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
             String str;
-            GetContext()->GetString(hintId, &str);
-            CStringWrapper::New(str, (ICharSequence**)&hint);
+            context->GetString(hintId, &str);
+            CString::New(str, (ICharSequence**)&hint);
         }
         if (hint) {
-            mQueryTextView->SetHint(GetDecoratedHint(hint));
+            ITextView::Probe(mQueryTextView)->SetHint(GetDecoratedHint(hint));
         }
     } else {
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(String(""), (ICharSequence**)&csq);
-        mQueryTextView->SetHint(csq);
+        CString::New(String(""), (ICharSequence**)&csq);
+        ITextView::Probe(mQueryTextView)->SetHint(csq);
     }
 }
 
 void SearchView::UpdateSearchAutoComplete()
 {
-    mQueryTextView->SetDropDownAnimationStyle(0); // no animation
+    IAutoCompleteTextView::Probe(mQueryTextView)->SetDropDownAnimationStyle(0); // no animation
     Int32 threshold = 0, options = 0;
     mSearchable->GetSuggestThreshold(&threshold);
     mSearchable->GetImeOptions(&options);
-    mQueryTextView->SetThreshold(threshold);
-    mQueryTextView->SetImeOptions(options);
+    IAutoCompleteTextView::Probe(mQueryTextView)->SetThreshold(threshold);
+    ITextView::Probe(mQueryTextView)->SetImeOptions(options);
 
     Int32 inputType = 0;
     mSearchable->GetInputType(&inputType);
@@ -916,7 +1323,7 @@ void SearchView::UpdateSearchAutoComplete()
             inputType |= IInputType::TYPE_TEXT_FLAG_NO_SUGGESTIONS;
         }
     }
-    mQueryTextView->SetInputType(inputType);
+    ITextView::Probe(mQueryTextView)->SetInputType(inputType);
     if (mSuggestionsAdapter) {
         (ICursorFilterClient::Probe(mSuggestionsAdapter))->ChangeCursor(NULL);
     }
@@ -924,11 +1331,11 @@ void SearchView::UpdateSearchAutoComplete()
     // The existence of a suggestions authority is the proxy for "suggestions available here"
     String search;
     mSearchable->GetSuggestAuthority(&search);
-    if (search != NULL)
-    {
-        mSuggestionsAdapter = new SuggestionsAdapter(GetContext(),
-                     (ISearchView*)(this->Probe(EIID_ISearchView)), mSearchable, 0);
-        mQueryTextView->SetAdapter(mSuggestionsAdapter);
+    if (search != NULL) {
+        assert(0 && "TODO");
+        // mSuggestionsAdapter = new SuggestionsAdapter(GetContext(),
+        //              (ISearchView*)(this->Probe(EIID_ISearchView)), mSearchable, 0);
+        IAutoCompleteTextView::Probe(mQueryTextView)->SetAdapter(IListAdapter::Probe(mSuggestionsAdapter));
         (ISuggestionsAdapter::Probe(mSuggestionsAdapter))->SetQueryRefinement(
                 mQueryRefinement ? ISuggestionsAdapter::REFINE_ALL : ISuggestionsAdapter::REFINE_BY_ENTRY);
     }
@@ -938,18 +1345,20 @@ void SearchView::UpdateVoiceButton(
     /* [in] */ Boolean empty)
 {
     Int32 visibility = IView::GONE;
-    if (mVoiceButtonEnabled && !IsIconified() && empty) {
+    Boolean tmp = FALSE;
+    IsIconified(&tmp);
+    if (mVoiceButtonEnabled && !tmp && empty) {
         visibility = IView::VISIBLE;
-        mSubmitButton->SetVisibility(IView::GONE);
+        IView::Probe(mSubmitButton)->SetVisibility(IView::GONE);
     }
-    mVoiceButton->SetVisibility(visibility);
+    IView::Probe(mVoiceButton)->SetVisibility(visibility);
 }
 
 void SearchView::OnTextChanged(
     /* [in] */ ICharSequence* newText)
 {
     AutoPtr<ICharSequence> text;
-    mQueryTextView->GetText((ICharSequence**)&text);
+    ITextView::Probe(mQueryTextView)->GetText((ICharSequence**)&text);
     mUserQuery = text;
     Boolean hasText = !TextUtils::IsEmpty(text);
     UpdateSubmitButton(hasText);
@@ -968,17 +1377,17 @@ void SearchView::OnTextChanged(
 void SearchView::OnSubmitQuery()
 {
     AutoPtr<ICharSequence> query;
-    mQueryTextView->GetText((ICharSequence**)&query);
+    ITextView::Probe(mQueryTextView)->GetText((ICharSequence**)&query);
     if (query && TextUtils::GetTrimmedLength(query) > 0) {
         Boolean res = FALSE;
         String str;
         query->ToString(&str);
         mOnQueryChangeListener->OnQueryTextSubmit(str, &res);
         if (!mOnQueryChangeListener || !res) {
-            if (FALSE /*mSearchable*/) {
+            if (mSearchable) {
                 LaunchQuerySearch(IKeyEvent::KEYCODE_UNKNOWN, String(NULL), str);
-                SetImeVisibility(FALSE);
             }
+            SetImeVisibility(FALSE);
             DismissSuggestions();
         }
     }
@@ -986,13 +1395,13 @@ void SearchView::OnSubmitQuery()
 
 void SearchView::DismissSuggestions()
 {
-    mQueryTextView->DismissDropDown();
+    IAutoCompleteTextView::Probe(mQueryTextView)->DismissDropDown();
 }
 
 void SearchView::OnCloseClicked()
 {
     AutoPtr<ICharSequence> text;
-    mQueryTextView->GetText((ICharSequence**)&text);
+    ITextView::Probe(mQueryTextView)->GetText((ICharSequence**)&text);
     if (TextUtils::IsEmpty(text)) {
         if (mIconifiedByDefault) {
             Boolean res = FALSE;
@@ -1004,10 +1413,10 @@ void SearchView::OnCloseClicked()
         }
     } else {
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(String(""), (ICharSequence**)&csq);
-        mQueryTextView->SetText(csq);
+        CString::New(String(""), (ICharSequence**)&csq);
+        ITextView::Probe(mQueryTextView)->SetText(csq);
         Boolean result = false;
-        mQueryTextView->RequestFocus(&result);
+        IView::Probe(mQueryTextView)->RequestFocus(&result);
         SetImeVisibility(TRUE);
     }
 }
@@ -1016,7 +1425,7 @@ void SearchView::OnSearchClicked()
 {
     UpdateViewsVisibility(FALSE);
     Boolean res = FALSE;
-    mQueryTextView->RequestFocus(&res);
+    IView::Probe(mQueryTextView)->RequestFocus(&res);
     SetImeVisibility(TRUE);
     if (mOnSearchClickListener) {
         mOnSearchClickListener->OnClick((IView*)this->Probe(EIID_IView));
@@ -1035,11 +1444,16 @@ void SearchView::OnVoiceClicked()
     searchable->GetVoiceSearchLaunchWebSearch(&webSearch);
     searchable->GetVoiceSearchLaunchRecognizer(&recognizer);
     if (webSearch) {
-        AutoPtr<IIntent>     webSearchIntent = CreateVoiceWebSearchIntent(mVoiceWebSearchIntent, searchable);
-        ASSERT_SUCCEEDED(GetContext()->StartActivity(webSearchIntent));
-    } else if (recognizer) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        AutoPtr<IIntent> webSearchIntent = CreateVoiceWebSearchIntent(mVoiceWebSearchIntent, searchable);
+        ASSERT_SUCCEEDED(context->StartActivity(webSearchIntent));
+    }
+    else if (recognizer) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
         AutoPtr<IIntent> appSearchIntent = CreateVoiceAppSearchIntent(mVoiceAppSearchIntent, searchable);
-        ASSERT_SUCCEEDED(GetContext()->StartActivity(appSearchIntent));
+        ASSERT_SUCCEEDED(context->StartActivity(appSearchIntent));
     }
     //} catch (ActivityNotFoundException e) {
         //Log.w(LOG_TAG, "Could not find voice search activity");
@@ -1048,10 +1462,12 @@ void SearchView::OnVoiceClicked()
 
 ECode SearchView::OnTextFocusChanged()
 {
-    UpdateViewsVisibility(IsIconified());
+    Boolean tmp = FALSE;
+    IsIconified(&tmp);
+    UpdateViewsVisibility(tmp);
     PostUpdateFocusedState();
     Boolean focus = FALSE;
-    mQueryTextView->HasFocus(&focus);
+    IView::Probe(mQueryTextView)->HasFocus(&focus);
     if (focus) {
         ForceSuggestionQuery();
     }
@@ -1063,13 +1479,16 @@ void SearchView::AdjustDropDownSizeAndPosition()
     Int32 width = 0;
     mDropDownAnchor->GetWidth(&width);
     if (width > 1) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
         AutoPtr<IResources> res;
-        GetContext()->GetResources((IResources**)&res);
+        context->GetResources((IResources**)&res);
         Int32 anchorPadding = 0;
         mSearchPlate->GetPaddingLeft(&anchorPadding);
         AutoPtr<IRect> dropDownPadding;
         CRect::New((IRect**)&dropDownPadding);
-        Boolean isLayoutRtl = IsLayoutRtl();
+        Boolean isLayoutRtl = FALSE;
+        IsLayoutRtl(&isLayoutRtl);
         Int32 iconOffset = 0;
         if (mIconifiedByDefault) {
             Int32 w = 0, l = 0;
@@ -1080,7 +1499,7 @@ void SearchView::AdjustDropDownSizeAndPosition()
             iconOffset = 0;
         }
         AutoPtr<IDrawable> d;
-        mQueryTextView->GetDropDownBackground((IDrawable**)&d);
+        IAutoCompleteTextView::Probe(mQueryTextView)->GetDropDownBackground((IDrawable**)&d);
         Boolean result = FALSE;
         d->GetPadding(dropDownPadding, &result);
         Int32 offset = 0;
@@ -1090,11 +1509,11 @@ void SearchView::AdjustDropDownSizeAndPosition()
         } else {
             offset = anchorPadding - (cr->mLeft + iconOffset);
         }
-        mQueryTextView->SetDropDownHorizontalOffset(offset);
+        IAutoCompleteTextView::Probe(mQueryTextView)->SetDropDownHorizontalOffset(offset);
         Int32 anchor = 0;
         mDropDownAnchor->GetWidth(&anchor);
         Int32 dropDownWidth = anchor + cr->mLeft + cr->mRight + iconOffset - anchorPadding;
-        mQueryTextView->SetDropDownWidth(dropDownWidth);
+        IAutoCompleteTextView::Probe(mQueryTextView)->SetDropDownWidth(dropDownWidth);
     }
 }
 
@@ -1130,7 +1549,7 @@ void SearchView::RewriteQueryFromSuggestion(
     /* [in] */ Int32 position)
 {
     AutoPtr<ICharSequence> oldQuery;
-    mQueryTextView->GetText((ICharSequence**)&oldQuery);
+    ITextView::Probe(mQueryTextView)->GetText((ICharSequence**)&oldQuery);
     AutoPtr<ICursor> c;
     (ICursorFilterClient::Probe(mSuggestionsAdapter))->GetCursor((ICursor**)&c);
     if (c) {
@@ -1176,7 +1595,9 @@ void SearchView::LaunchIntent(
         return;
     }
     //try {
-        ASSERT_SUCCEEDED(GetContext()->StartActivity(intent));
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        ASSERT_SUCCEEDED(context->StartActivity(intent));
     //} catch (RuntimeException ex) {
     //  Log.e(LOG_TAG, "Failed launch activity: " + intent, ex);
     //}
@@ -1185,11 +1606,11 @@ void SearchView::LaunchIntent(
 void SearchView::SetQuery(
     /* [in] */ ICharSequence* query)
 {
-    mQueryTextView->SetTextFilter(query, TRUE);
+    ITextView::Probe(mQueryTextView)->SetText(query, TRUE);
     // Move the cursor to the end
     Int32 length = 0;
     query->GetLength(&length);
-    mQueryTextView->SetSelection(TextUtils::IsEmpty(query) ? 0 : length);
+    IEditText::Probe(mQueryTextView)->SetSelection(TextUtils::IsEmpty(query) ? 0 : length);
 }
 
 void SearchView::LaunchQuerySearch(
@@ -1199,7 +1620,9 @@ void SearchView::LaunchQuerySearch(
 {
     String action = IIntent::ACTION_SEARCH;
     AutoPtr<IIntent> intent = CreateIntent(action, NULL, String(NULL), query, actionKey, actionMsg);
-    GetContext()->StartActivity(intent);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    context->StartActivity(intent);
 }
 
 AutoPtr<IIntent> SearchView::CreateIntent(
@@ -1216,7 +1639,7 @@ AutoPtr<IIntent> SearchView::CreateIntent(
     if (data) {
         intent->SetData(data);
     }
-    intent->PutCharSequenceExtra(ISearchManager::USER_QUERY, mUserQuery);
+    intent->PutExtra(ISearchManager::USER_QUERY, mUserQuery);
     if (query != NULL) {
         intent->PutExtra(ISearchManager::QUERY, query);
     }
@@ -1269,7 +1692,10 @@ AutoPtr<IIntent> SearchView::CreateVoiceAppSearchIntent(
     AutoPtr<IPendingIntent> pending;
     AutoPtr<IPendingIntentHelper> helper;
     CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&helper);
-    helper->GetActivity(GetContext(), 0, queryIntent, IPendingIntent::FLAG_ONE_SHOT, (IPendingIntent**)&pending);
+
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    helper->GetActivity(context, 0, queryIntent, IPendingIntent::FLAG_ONE_SHOT, (IPendingIntent**)&pending);
 
     // Now set up the bundle that will be inserted into the pending intent
     // when it's time to do the search.  We always build it here (even if empty)
@@ -1293,7 +1719,8 @@ AutoPtr<IIntent> SearchView::CreateVoiceAppSearchIntent(
     String language;
     Int32 maxResults = 1;
 
-    AutoPtr<IResources> resources = GetResources();
+    AutoPtr<IResources> resources;
+    GetResources((IResources**)&resources);
     Int32 idTemp;
     if ((searchable->GetVoiceLanguageModeId(&idTemp), idTemp) != 0) {
         resources->GetString(idTemp, &languageModel);
@@ -1331,6 +1758,7 @@ AutoPtr<IIntent> SearchView::CreateIntentFromSuggestion(
     /* [in] */ const String& actionMsg)
 {
      //try {
+    assert(0 && "TODO");
     String action;// = SuggestionsAdapter::GetColumnString(c, ISearchManager::SUGGEST_COLUMN_INTENT_ACTION);
 
     if (action == NULL) {
@@ -1385,63 +1813,55 @@ void SearchView::ForceSuggestionQuery()
 //==========================================================
 //          SearchView::_SearchAutoComplete
 //==========================================================
+CAR_INTERFACE_IMPL(SearchView::_SearchAutoComplete, AutoCompleteTextView, ISearchViewSearchAutoComplete);
 SearchView::_SearchAutoComplete::_SearchAutoComplete()
+    : mThreshold(0)
 {
-
 }
 
-SearchView::_SearchAutoComplete::_SearchAutoComplete(
+ECode SearchView::_SearchAutoComplete::constructor(
     /* [in] */ IContext* context)
 {
-    Init(context);
+    AutoCompleteTextView::constructor(context);
+    GetThreshold(&mThreshold);
+    return NOERROR;
 }
 
-SearchView::_SearchAutoComplete::_SearchAutoComplete(
+ECode SearchView::_SearchAutoComplete::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    Init(context, attrs);
+    AutoCompleteTextView::constructor(context, attrs);
+    GetThreshold(&mThreshold);
+    return NOERROR;
 }
 
-SearchView::_SearchAutoComplete::_SearchAutoComplete(
+ECode SearchView::_SearchAutoComplete::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttrs)
 {
-    Init(context, attrs, defStyle);
-}
-
-ECode SearchView::_SearchAutoComplete::Init(
-    /* [in] */ IContext* context)
-{
-    AutoCompleteTextView::Init(context);
-    mThreshold = GetThreshold();
+    AutoCompleteTextView::constructor(context, attrs, defStyleAttrs);
+    GetThreshold(&mThreshold);
     return NOERROR;
 }
 
-ECode SearchView::_SearchAutoComplete::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    AutoCompleteTextView::Init(context, attrs);
-    mThreshold = GetThreshold();
-    return NOERROR;
-}
-
-ECode SearchView::_SearchAutoComplete::Init(
+ECode SearchView::_SearchAutoComplete::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttrs,
+    /* [in] */ Int32 defStyleRes)
 {
-    AutoCompleteTextView::Init(context, attrs, defStyle);
-    mThreshold = GetThreshold();
+    AutoCompleteTextView::constructor(context, attrs, defStyleAttrs, defStyleRes);
+    GetThreshold(&mThreshold);
     return NOERROR;
 }
 
-void SearchView::_SearchAutoComplete::SetSearchView(
+ECode SearchView::_SearchAutoComplete::SetSearchView(
     /* [in] */ ISearchView* searchView)
 {
     mSearchView = searchView;
+    return NOERROR;
 }
 
 ECode SearchView::_SearchAutoComplete::SetThreshold(
@@ -1463,31 +1883,40 @@ ECode SearchView::_SearchAutoComplete::OnWindowFocusChanged(
 {
     AutoCompleteTextView::OnWindowFocusChanged(hasWindowFocus);
     Boolean hasFocus = FALSE;
-    mSearchView->HasFocus(&hasFocus);
-    if (hasWindowFocus && hasFocus && GetVisibility() == IView::VISIBLE) {
+    IView::Probe(mSearchView)->HasFocus(&hasFocus);
+    Int32 visibility = 0;
+    GetVisibility(&visibility);
+    if (hasWindowFocus && hasFocus && visibility == IView::VISIBLE) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
         AutoPtr<IInterface> inter;
-        GetContext()->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&inter);
+        context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&inter);
         AutoPtr<IInputMethodManager> inputManager = IInputMethodManager::Probe(inter);
         Boolean res = FALSE;
         inputManager->ShowSoftInput((IView*)this->Probe(EIID_IView), 0, &res);
         // If in landscape mode, then make sure that
         // the ime is in front of the dropdown.
-        if (IsLandscapeMode(GetContext())) {
+        if (IsLandscapeMode(context)) {
             EnsureImeVisible(TRUE);
         }
     }
     return NOERROR;
 }
 
-Boolean SearchView::_SearchAutoComplete::EnoughToFilter()
+ECode SearchView::_SearchAutoComplete::EnoughToFilter(
+    /* [out] */ Boolean* result)
 {
-    return mThreshold <= 0 || AutoCompleteTextView::EnoughToFilter();
+    VALIDATE_NOT_NULL(result);
+    *result = mThreshold <= 0 || (AutoCompleteTextView::EnoughToFilter(result), *result);
+    return NOERROR;
 }
 
-Boolean SearchView::_SearchAutoComplete::OnKeyPreIme(
+ECode SearchView::_SearchAutoComplete::OnKeyPreIme(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (keyCode == IKeyEvent::KEYCODE_BACK) {
         // special case for the back key, we do not even try to send it
         // to the drop down list but instead, consume it immediately
@@ -1500,7 +1929,8 @@ Boolean SearchView::_SearchAutoComplete::OnKeyPreIme(
             if (state) {
                 state->StartTracking(event, this->Probe(EIID_IInterface));
             }
-            return TRUE;
+            *result = TRUE;
+            return NOERROR;
         } else if (action == IKeyEvent::ACTION_UP) {
             AutoPtr<IDispatcherState> state;
             GetKeyDispatcherState((IDispatcherState**)&state);
@@ -1511,14 +1941,15 @@ Boolean SearchView::_SearchAutoComplete::OnKeyPreIme(
             event->IsTracking(&tracking);
             event->IsCanceled(&canceled);
             if (tracking && !canceled) {
-                mSearchView->ClearFocus();
+                IView::Probe(mSearchView)->ClearFocus();
                 SearchView* svTemp = (SearchView*)mSearchView.Get();
                 svTemp->SetImeVisibility(FALSE);
-                return TRUE;
+                *result = TRUE;
+                return NOERROR;
             }
         }
     }
-    return AutoCompleteTextView::OnKeyPreIme(keyCode, event);
+    return AutoCompleteTextView::OnKeyPreIme(keyCode, event, result);
 }
 
 void SearchView::_SearchAutoComplete::ReplaceText(
@@ -1538,323 +1969,9 @@ void SearchView::_SearchAutoComplete::OnFocusChanged(
 
 Boolean SearchView::_SearchAutoComplete::IsEmpty()
 {
-    return TextUtils::GetTrimmedLength(GetText()) == 0;
-}
-
-
-//==========================================================
-//          SearchView::ShowImeRunnable
-//==========================================================
-SearchView::ShowImeRunnable::ShowImeRunnable(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::ShowImeRunnable::Run()
-{
-    AutoPtr<IInterface> inter;
-    mHost->GetContext()->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&inter);
-    AutoPtr<IInputMethodManager> imm = IInputMethodManager::Probe(inter);
-    if (imm) {
-        imm->ShowSoftInputUnchecked(0, NULL);
-    }
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::UpdateDrawableStateRunnable
-//==========================================================
-SearchView::UpdateDrawableStateRunnable::UpdateDrawableStateRunnable(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::UpdateDrawableStateRunnable::Run()
-{
-    mHost->UpdateFocusedState();
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::ReleaseCursorRunnable
-//==========================================================
-SearchView::ReleaseCursorRunnable::ReleaseCursorRunnable(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::ReleaseCursorRunnable::Run()
-{
-    if (mHost->mSuggestionsAdapter && ISuggestionsAdapter::Probe(mHost->mSuggestionsAdapter)) {
-        //mHost->mSuggestionsAdapter->ChangeCursor(NULL);
-    }
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::SearchViewClickListener
-//==========================================================
-CAR_INTERFACE_IMPL(SearchView::SearchViewClickListener, IViewOnClickListener)
-
-SearchView::SearchViewClickListener::SearchViewClickListener(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::SearchViewClickListener::OnClick(
-    /* [in] */ IView* v)
-{
-    if (v == mHost->mSearchButton) {
-        mHost->OnSearchClicked();
-    } else if (v == mHost->mCloseButton) {
-        mHost->OnCloseClicked();
-    } else if (v == mHost->mSubmitButton) {
-        mHost->OnSubmitQuery();
-    } else if (v == mHost->mVoiceButton) {
-        mHost->OnVoiceClicked();
-    } else if (v == mHost->mQueryTextView) {
-        mHost->ForceSuggestionQuery();
-    }
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::SearchViewKeyListener
-//==========================================================
-CAR_INTERFACE_IMPL(SearchView::SearchViewKeyListener, IViewOnKeyListener)
-
-SearchView::SearchViewKeyListener::SearchViewKeyListener(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-}
-
-ECode SearchView::SearchViewKeyListener::OnKey(
-    /* [in] */ IView* v,
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
-{
-    /*if (!mHost->mSearchable)
-    {
-        *result = FALSE;
-        return NOERROR;
-    }*/
-
-    Boolean showing = FALSE;
-    mHost->mQueryTextView->IsPopupShowing(&showing);
-    Int32 selection = 0;
-    mHost->mQueryTextView->GetListSelection(&selection);
-    if (showing && selection != IListView::INVALID_POSITION) {
-        *result = mHost->OnSuggestionsKey(v, keyCode, event);
-        return NOERROR;
-    }
-
-    Boolean modifiers = FALSE;
-    event->HasNoModifiers(&modifiers);
-    _SearchAutoComplete* temp = (_SearchAutoComplete*)mHost->mQueryTextView.Get();
-    if (!temp->IsEmpty() && modifiers) {
-        Int32 action = 0;
-        event->GetAction(&action);
-        if (action == IKeyEvent::ACTION_UP) {
-            if (keyCode == IKeyEvent::KEYCODE_ENTER) {
-                v->CancelLongPress();
-                AutoPtr<ICharSequence> csq;
-                mHost->mQueryTextView->GetText((ICharSequence**)&csq);
-                String str;
-                csq->ToString(&str);
-                mHost->LaunchQuerySearch(IKeyEvent::KEYCODE_UNKNOWN, String(NULL), str);
-                *result = TRUE;
-                return NOERROR;
-            }
-        }
-        if (action == IKeyEvent::ACTION_DOWN) {
-            /*AutoPtr<SearchableInfo::ActionKeyInfo> actionKey;
-            mHost->mSearchable->FindActionKey(keyCode, (SearchableInfo::ActionKeyInfo**)&actionKey);
-            if (actionKey && actionKey->GetQueryActionMsg() != NULL) {
-                AutoPtr<ICharSequence> csq;
-                mHost->mQueryTextView->GetText((ICharSequence**)&csq);
-                String str;
-                csq->ToString(&str);
-                mHost->LaunchQuerySearch(keyCode, actionKey.getQueryActionMsg(), str);
-                *result = TRUE;
-                return NOERROR;
-            }*/
-        }
-    }
-
-    *result = FALSE;
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::SearchViewEditorActionListener
-//==========================================================
-CAR_INTERFACE_IMPL(SearchView::SearchViewEditorActionListener, IOnEditorActionListener)
-
-SearchView::SearchViewEditorActionListener::SearchViewEditorActionListener(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::SearchViewEditorActionListener::OnEditorAction(
-    /* [in] */ ITextView* v,
-    /* [in] */ Int32 actionId,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
-{
-    mHost->OnSubmitQuery();
-    *result = TRUE;
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::SearchViewItemClickListener
-//==========================================================
-CAR_INTERFACE_IMPL(SearchView::SearchViewItemClickListener, IAdapterViewOnItemClickListener)
-
-SearchView::SearchViewItemClickListener::SearchViewItemClickListener(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::SearchViewItemClickListener::OnItemClick(
-    /* [in] */ IAdapterView* parent,
-    /* [in] */ IView* view,
-    /* [in] */ Int32 position,
-    /* [in] */ Int64 id)
-{
-    mHost->OnItemClicked(position, IKeyEvent::KEYCODE_UNKNOWN, String(NULL));
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::SearchViewItemSelectedListener
-//==========================================================
-CAR_INTERFACE_IMPL(SearchView::SearchViewItemSelectedListener, IAdapterViewOnItemSelectedListener)
-
-SearchView::SearchViewItemSelectedListener::SearchViewItemSelectedListener(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::SearchViewItemSelectedListener::OnItemSelected(
-    /* [in] */ IAdapterView* parent,
-    /* [in] */ IView* view,
-    /* [in] */ Int32 position,
-    /* [in] */ Int64 id)
-{
-    mHost->OnItemSelected(position);
-    return NOERROR;
-}
-
-ECode SearchView::SearchViewItemSelectedListener::OnNothingSelected(
-    /* [in] */ IAdapterView* parent)
-{
-    //do nothing
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::SearchViewTextWatcher
-//==========================================================
-CAR_INTERFACE_IMPL(SearchView::SearchViewTextWatcher, ITextWatcher)
-
-SearchView::SearchViewTextWatcher::SearchViewTextWatcher(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::SearchViewTextWatcher::BeforeTextChanged(
-    /* [in] */ ICharSequence* s,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 count,
-    /* [in] */ Int32 after)
-{
-    //do nothing
-    return NOERROR;
-}
-
-ECode SearchView::SearchViewTextWatcher::OnTextChanged(
-    /* [in] */ ICharSequence* s,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 before,
-    /* [in] */ Int32 count)
-{
-    mHost->OnTextChanged(s);
-    return NOERROR;
-}
-
-ECode SearchView::SearchViewTextWatcher::AfterTextChanged(
-    /* [in] */ IEditable* s)
-{
-    //do nothing
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::SearchViewFocusChangeListener
-//==========================================================
-CAR_INTERFACE_IMPL(SearchView::SearchViewFocusChangeListener, IViewOnFocusChangeListener)
-
-SearchView::SearchViewFocusChangeListener::SearchViewFocusChangeListener(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::SearchViewFocusChangeListener::OnFocusChange(
-    /* [in] */ IView* v,
-    /* [in] */ Boolean hasFocus)
-{
-    if (mHost->mOnQueryTextFocusChangeListener) {
-        mHost->mOnQueryTextFocusChangeListener->OnFocusChange((IView*)this->Probe(EIID_IView), hasFocus);
-    }
-    return NOERROR;
-}
-
-//==========================================================
-//          SearchView::SearchViewLayoutChangeListener
-//==========================================================
-CAR_INTERFACE_IMPL(SearchView::SearchViewLayoutChangeListener, IViewOnLayoutChangeListener)
-
-SearchView::SearchViewLayoutChangeListener::SearchViewLayoutChangeListener(
-    /* [in] */ SearchView* host)
-    : mHost(host)
-{
-
-}
-
-ECode SearchView::SearchViewLayoutChangeListener::OnLayoutChange(
-    /* [in] */ IView* v,
-    /* [in] */ Int32 left,
-    /* [in] */ Int32 top,
-    /* [in] */ Int32 right,
-    /* [in] */ Int32 bottom,
-    /* [in] */ Int32 oldLeft,
-    /* [in] */ Int32 oldTop,
-    /* [in] */ Int32 oldRight,
-    /* [in] */ Int32 oldBottom)
-{
-    mHost->AdjustDropDownSizeAndPosition();
-    return NOERROR;
+    AutoPtr<ICharSequence> seq;
+    GetText((ICharSequence**)&seq);
+    return TextUtils::GetTrimmedLength(seq) == 0;
 }
 
 } //namespace Widget

@@ -20,3 +20,4 @@ ELASTOS_LIBS += statusbar/statusbar.lib
 ELASTOS_LIBS += transition/transition.lib
 ELASTOS_LIBS += utility/utility.lib
 ELASTOS_LIBS += view/view.lib
+ELASTOS_LIBS += widget/widget.lib

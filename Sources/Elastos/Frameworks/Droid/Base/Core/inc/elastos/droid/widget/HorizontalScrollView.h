@@ -5,7 +5,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/widget/FrameLayout.h"
-#include "elastos/droid/widget/EdgeEffect.h"
 #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/R.h"
 

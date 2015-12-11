@@ -36,6 +36,10 @@
 #include "elastos/droid/widget/CTextClock.h"
 #include "elastos/droid/widget/CToggleButton.h"
 #include "elastos/droid/widget/CTwoLineListItem.h"
+#include "elastos/droid/widget/CAutoCompleteTextView.h"
+#include "elastos/droid/widget/CSearchViewSearchAutoComplete.h"
+#include "elastos/droid/widget/CSearchView.h"
+#include "elastos/droid/widget/CRadialTimePickerView.h"
 
 namespace Elastos {
 namespace Droid {
@@ -78,6 +82,10 @@ CAR_OBJECT_IMPL(CQuickContactBadge);
 CAR_OBJECT_IMPL(CTextClock);
 CAR_OBJECT_IMPL(CToggleButton);
 CAR_OBJECT_IMPL(CTwoLineListItem);
+CAR_OBJECT_IMPL(CAutoCompleteTextView);
+CAR_OBJECT_IMPL(CSearchViewSearchAutoComplete);
+CAR_OBJECT_IMPL(CSearchView);
+CAR_OBJECT_IMPL(CRadialTimePickerView);
 
 } // namespace Widget
 } // namespace Droid
