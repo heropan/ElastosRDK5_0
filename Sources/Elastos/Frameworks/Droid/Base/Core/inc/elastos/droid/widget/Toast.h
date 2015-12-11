@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_WIDGET_TOAST_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::App::IITransientNotification;

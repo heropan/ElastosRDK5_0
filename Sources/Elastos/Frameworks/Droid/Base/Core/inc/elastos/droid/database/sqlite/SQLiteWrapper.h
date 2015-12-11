@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEWRAPPER_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Core.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;

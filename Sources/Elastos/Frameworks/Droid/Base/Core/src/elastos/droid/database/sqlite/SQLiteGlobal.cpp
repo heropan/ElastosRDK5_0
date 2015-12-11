@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/database/sqlite/SQLiteGlobal.h"
 //#include "elastos/droid/content/res/CResources.h"
 //#include "elastos/droid/os/CStatFs.h"

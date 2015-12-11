@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_CHARARRAYBUFFER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Database.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

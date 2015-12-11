@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/database/sqlite/SQLiteWrapper.h"
 #include "elastos/droid/widget/Toast.h"
 #include <elastos/utility/logging/Slogger.h>

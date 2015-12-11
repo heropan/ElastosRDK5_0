@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/database/sqlite/SQLiteConnectionPool.h"
 #include "elastos/droid/database/sqlite/SQLiteGlobal.h"
 #include "elastos/droid/os/SystemClock.h"

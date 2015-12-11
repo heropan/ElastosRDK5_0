@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/database/CDatabaseUtils.h"
 #include "elastos/droid/database/DatabaseUtils.h"
 

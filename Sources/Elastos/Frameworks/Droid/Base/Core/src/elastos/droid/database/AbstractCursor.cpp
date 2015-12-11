@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/database/AbstractCursor.h"
 #include "elastos/droid/database/CDataSetObservable.h"
 #include "elastos/droid/database/CContentObservable.h"

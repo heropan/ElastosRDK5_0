@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_DATABASE_DATABASEUTILS_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 

@@ -1,10 +1,7 @@
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/database/ContentObserver.h"
-#ifdef DROID_CORE
 #include "elastos/droid/database/CContentObserverTransport.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/UserHandle.h"
 #include <elastos/core/AutoLock.h>

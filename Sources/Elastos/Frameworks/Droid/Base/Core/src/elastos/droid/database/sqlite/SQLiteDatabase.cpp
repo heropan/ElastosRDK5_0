@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/database/sqlite/SQLiteDatabase.h"
 #include "elastos/droid/database/sqlite/SQLiteCustomFunction.h"
 #include "elastos/droid/database/sqlite/SQLiteDatabaseConfiguration.h"

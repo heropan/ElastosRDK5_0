@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEQUERYBUILDER_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/database/sqlite/SQLiteDatabase.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Object.h>

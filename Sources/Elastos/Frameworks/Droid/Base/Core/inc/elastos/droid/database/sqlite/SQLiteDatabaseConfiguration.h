@@ -3,10 +3,11 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDATABASECONFIGURATION_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 #include "elastos/droid/database/sqlite/SQLiteCustomFunction.h"
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Regex::IPattern;

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/database/CursorWindow.h"
 #include "elastos/droid/database/CCursorWindow.h"
 #include "elastos/droid/database/NativeCursorWindow.h"

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITECOMMON_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITECOMMON_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Core.h"
 #include <sqlite3.h>
 
 // Special log tags defined in SQLiteDebug.java.

@@ -1,9 +1,9 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/database/sqlite/SQLiteOpenHelper.h"
-#ifdef DROID_CORE
 #include "elastos/droid/database/sqlite/CSQLiteDatabaseHelper.h"
-#endif
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
 
