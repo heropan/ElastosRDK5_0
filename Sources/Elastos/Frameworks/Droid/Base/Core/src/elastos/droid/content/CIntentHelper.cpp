@@ -87,6 +87,16 @@ ECode CIntentHelper::ParseIntent(
     return Intent::ParseIntent(resources, parser, attrs, intent);
 }
 
+ECode CIntentHelper::RestoreFromXml(
+    /* [in] */ IXmlPullParser* in,
+    /* [out] */ IIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    *intent = Intent::RestoreFromXml(in);
+    REFCOUNT_ADD(*intent)
+    return NOERROR;
+}
+
 ECode CIntentHelper::NormalizeMimeType(
     /* [in] */ const String& type,
     /* [out] */ String* mimeType)

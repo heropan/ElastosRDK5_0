@@ -4,9 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
-#include "am/UserStartedState.h"
-#include "am/ActivityState.h"
-#include "am/TaskAccessInfo.h"
+#include "elastos/droid/server/am/UserStartedState.h"
+#include "elastos/droid/server/am/ActivityState.h"
+#include "elastos/droid/server/am/TaskAccessInfo.h"
 #include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Core::ICharSequence;
@@ -42,7 +42,7 @@ class ProcessRecord;
 /**
  * State and management of a single stack of activities.
  */
-class ActivityStack : public ElRefBase
+class ActivityStack : public Object
 {
 public:
     class ScheduleDestroyArgs
@@ -81,7 +81,7 @@ private:
     };
 
     class ThumbnailRetriever
-        : public ElRefBase
+        : public Object
         , public Elastos::Droid::App::IThumbnailRetriever
     {
     public:

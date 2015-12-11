@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
-#include "am/UriPermission.h"
+#include "elastos/droid/server/am/UriPermission.h"
 
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::Os::IBinder;
@@ -17,12 +17,12 @@ namespace Am {
 
 class CActivityManagerService;
 
-class UriPermissionOwner : public ElRefBase
+class UriPermissionOwner : public Object
 {
 public:
     UriPermissionOwner(
         /* [in] */ CActivityManagerService* service,
-        /* [in] */ Handle32 owner);
+        /* [in] */ IObject* owner);
 
     ~UriPermissionOwner();
 
@@ -56,7 +56,7 @@ public:
 
 public:
     CActivityManagerService* mService;  // weak-ref
-    Handle32 mOwner;
+    IObject* mOwner;
 
     AutoPtr<IWeakReference> mExternalToken;
     AutoPtr< HashSet< AutoPtr<UriPermission> > > mReadUriPermissions; // special access to reading uris.

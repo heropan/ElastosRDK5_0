@@ -7,20 +7,20 @@
 #include "ProcessMap.h"
 #include "IntentResolver.h"
 #include "wm/CWindowManagerService.h"
-#include "am/ContentProviderRecord.h"
-#include "am/CPendingIntentRecord.h"
-#include "am/CBatteryStatsService.h"
-#include "am/CUsageStatsService.h"
-#include "am/CoreSettingsObserver.h"
-#include "am/BackupRecord.h"
-#include "am/ProviderMap.h"
-#include "am/UriPermission.h"
-#include "am/UriPermissionOwner.h"
-#include "am/PendingThumbnailsRecord.h"
-#include "am/ActivityRecord.h"
-#include "am/ProcessRecord.h"
-#include "am/ProcessList.h"
-#include "am/CompatModePackages.h"
+#include "elastos/droid/server/am/ContentProviderRecord.h"
+#include "elastos/droid/server/am/CPendingIntentRecord.h"
+#include "elastos/droid/server/am/CBatteryStatsService.h"
+#include "elastos/droid/server/am/CUsageStatsService.h"
+#include "elastos/droid/server/am/CoreSettingsObserver.h"
+#include "elastos/droid/server/am/BackupRecord.h"
+#include "elastos/droid/server/am/ProviderMap.h"
+#include "elastos/droid/server/am/UriPermission.h"
+#include "elastos/droid/server/am/UriPermissionOwner.h"
+#include "elastos/droid/server/am/PendingThumbnailsRecord.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/ProcessList.h"
+#include "elastos/droid/server/am/CompatModePackages.h"
 #include "elastos/droid/os/FileObserver.h"
 #include "elastos/droid/os/HandlerBase.h"
 #include "pm/CUserManagerService.h"
@@ -194,7 +194,7 @@ public:
      * Description of a request to start a new activity, which has been held
      * due to app switches being disabled.
      */
-    class PendingActivityLaunch : public ElRefBase
+    class PendingActivityLaunch : public Object
     {
     public:
         PendingActivityLaunch();
@@ -210,7 +210,7 @@ public:
      * link on it).
      */
     class ForegroundToken
-        : public ElRefBase
+        : public Object
         , public IProxyDeathRecipient
     {
     public:
@@ -224,7 +224,7 @@ public:
         AutoPtr<IBinder> mToken;
     };
 
-    class ProcessChangeItem : public ElRefBase
+    class ProcessChangeItem : public Object
     {
     public:
         ProcessChangeItem();
@@ -264,7 +264,7 @@ public:
         CActivityManagerService* mHost;
     };
 
-    class ItemMatcher : public ElRefBase
+    class ItemMatcher : public Object
     {
     public:
         ItemMatcher();
@@ -289,7 +289,7 @@ public:
         Boolean mAll;
     };
 
-    class MemItem : public ElRefBase
+    class MemItem : public Object
     {
     public:
         MemItem(
@@ -334,7 +334,7 @@ public:
      * indirect content-provider access.
      * @see #ActivityManagerService.openContentUri()
      */
-    class Identity : public ElRefBase
+    class Identity : public Object
     {
     public:
         Identity(
@@ -347,7 +347,7 @@ public:
 
 private:
     class AppDeathRecipient
-        : public ElRefBase
+        : public Object
         , public IProxyDeathRecipient
     {
     public:
@@ -369,7 +369,7 @@ private:
     };
 
     class SwitchUserIntentReceiver
-        : public ElRefBase
+        : public Object
         , public IIntentReceiver
     {
     public:
@@ -400,7 +400,7 @@ private:
     };
 
     class NeedStartIntentReceiver
-        : public ElRefBase
+        : public Object
         , public IIntentReceiver
     {
     public:
@@ -452,7 +452,7 @@ private:
     };
 
     class ShowRunnable
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -473,7 +473,7 @@ private:
     };
 
     class ShowLaunchWarningLockedRunnable
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -537,7 +537,7 @@ private:
     };
 
     // class FinisherReceiver
-    //     : public ElRefBase
+    //     : public Object
     //     , public IIntentReceiver
     // {
     // public:
@@ -568,7 +568,7 @@ private:
     // };
 
     // class PerformReceiveRunnable
-    //     : public ElRefBase
+    //     : public Object
     //     , public IRunnable
     // {
     // public:
@@ -592,7 +592,7 @@ private:
     // };
 
     class ErrorMsgButtonOnClickListener
-        : public ElRefBase
+        : public Object
         , public IDialogInterfaceOnClickListener
     {
     public:
@@ -612,7 +612,7 @@ private:
     };
 
     // class SystemBroadcastReceiver
-    //     : public ElRefBase
+    //     : public Object
     //     , public IIntentReceiver
     // {
     // public:
@@ -695,7 +695,7 @@ private:
     };
 
     class StopUserLockedRunnable
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -716,7 +716,7 @@ private:
     };
 
     class DispatchUserSwitchCallback
-        : public ElRefBase
+        : public Object
         , public IRemoteCallback
     {
     public:

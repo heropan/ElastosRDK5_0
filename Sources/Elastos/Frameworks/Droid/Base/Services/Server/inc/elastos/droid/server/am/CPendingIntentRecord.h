@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Server_Am_CPendingIntentRecord.h"
 #include <Elastos.Droid.Core.h>
-#include "am/CPendingIntentRecordKey.h"
+#include "elastos/droid/server/am/CPendingIntentRecordKey.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;

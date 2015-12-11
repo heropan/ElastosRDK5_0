@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/BaseErrorDialog.h"
+#include "elastos/droid/server/am/BaseErrorDialog.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/R.h"
 

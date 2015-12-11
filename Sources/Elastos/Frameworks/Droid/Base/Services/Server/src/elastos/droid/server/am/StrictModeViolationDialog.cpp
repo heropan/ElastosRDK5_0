@@ -1,5 +1,5 @@
 
-#include "am/StrictModeViolationDialog.h"
+#include "elastos/droid/server/am/StrictModeViolationDialog.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/R.h"
 

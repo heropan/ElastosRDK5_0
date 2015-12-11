@@ -18,7 +18,7 @@ class ActivityRecord;
 /**
  * Description of a single binding to a service.
  */
-class ConnectionRecord : public ElRefBase
+class ConnectionRecord : public Object
 {
 public:
     ConnectionRecord(

@@ -8,12 +8,12 @@
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/core/StringBuilder.h>
 #include "elastos/droid/os/BatteryStatsImpl.h"
-#include "am/ReceiverList.h"
-#include "am/ConnectionRecord.h"
-#include "am/ContentProviderRecord.h"
-#include "am/CServiceRecord.h"
-#include "am/ActivityRecord.h"
-#include "am/BroadcastRecord.h"
+#include "elastos/droid/server/am/ReceiverList.h"
+#include "elastos/droid/server/am/ConnectionRecord.h"
+#include "elastos/droid/server/am/ContentProviderRecord.h"
+#include "elastos/droid/server/am/CServiceRecord.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/BroadcastRecord.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
@@ -38,7 +38,7 @@ namespace Am {
 extern const InterfaceID EIID_ProcessRecord;
 
 class ProcessRecord
-    : public ElRefBase
+    : public Object
     , public IInterface
 {
 public:

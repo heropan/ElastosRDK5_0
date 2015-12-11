@@ -5333,6 +5333,11 @@ module
             [in] IAttributeSet* attrs,
             [out] IIntent** intent);
 
+        /** @hide */
+        RestoreFromXml(
+            [in] IXmlPullParser* parser,
+            [out] IIntent** intent);
+
         /**
          * Normalize a MIME data type.
          *

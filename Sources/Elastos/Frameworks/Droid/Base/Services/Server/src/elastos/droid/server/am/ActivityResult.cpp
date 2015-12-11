@@ -1,5 +1,5 @@
 
-#include "am/ActivityResult.h"
+#include "elastos/droid/server/am/ActivityResult.h"
 
 using Elastos::Droid::App::CResultInfo;
 

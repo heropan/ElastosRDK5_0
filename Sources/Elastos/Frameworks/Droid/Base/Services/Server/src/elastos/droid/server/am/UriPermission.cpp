@@ -1,6 +1,6 @@
 
-#include "am/UriPermission.h"
-#include "am/UriPermissionOwner.h"
+#include "elastos/droid/server/am/UriPermission.h"
+#include "elastos/droid/server/am/UriPermissionOwner.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

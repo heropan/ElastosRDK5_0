@@ -6,8 +6,8 @@
 #include "Elastos.Droid.Server_server.h"
 #include <elastos/utility/etl/List.h>
 #include "elastos/droid/app/ActivityManagerTaskThumbnails.h"
-#include "am/ThumbnailHolder.h"
-#include "am/ActivityRecord.h"
+#include "elastos/droid/server/am/ThumbnailHolder.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
 
 using Elastos::Droid::App::IThumbnailRetriever;
 using Elastos::Droid::App::ActivityManagerTaskThumbnails;
@@ -21,10 +21,10 @@ namespace Am {
 class TaskAccessInfo
     : public ActivityManagerTaskThumbnails
     , public IActivityManagerTaskThumbnails
-    , public ElRefBase
+    , public Object
 {
 public:
-    class SubTask : public ElRefBase
+    class SubTask : public Object
     {
     public:
         SubTask();

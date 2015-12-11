@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_SERVER_AM_STRICTMODEVIOLATIONDIALOG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/BaseErrorDialog.h"
-#include "am/AppErrorResult.h"
-#include "am/ProcessRecord.h"
+#include "elastos/droid/server/am/BaseErrorDialog.h"
+#include "elastos/droid/server/am/AppErrorResult.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
 #include "elastos/droid/os/HandlerBase.h"
 
 using namespace Elastos::Core;

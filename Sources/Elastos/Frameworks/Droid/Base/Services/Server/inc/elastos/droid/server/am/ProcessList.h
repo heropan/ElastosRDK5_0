@@ -18,7 +18,7 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-class ProcessList : public ElRefBase
+class ProcessList : public Object
 {
 public:
     ProcessList();

@@ -1,7 +1,7 @@
 
-#include "am/ReceiverList.h"
-#include "am/ProcessRecord.h"
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/ReceiverList.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

@@ -27,7 +27,7 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-class UriPermission : public ElRefBase
+class UriPermission : public Object
 {
 public:
     UriPermission(

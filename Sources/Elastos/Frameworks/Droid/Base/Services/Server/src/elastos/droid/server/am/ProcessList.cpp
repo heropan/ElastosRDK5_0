@@ -1,6 +1,6 @@
 
-#include "am/ProcessList.h"
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/ProcessList.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 #include "wm/CWindowManagerService.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>

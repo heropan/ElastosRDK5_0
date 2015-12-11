@@ -1,11 +1,11 @@
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/CPendingIntentRecord.h"
+#include "elastos/droid/server/am/CPendingIntentRecord.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 #include "elastos/droid/os/Binder.h"
-#include "am/CActivityManagerService.h"
-#include "am/ActivityStack.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/ActivityStack.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;

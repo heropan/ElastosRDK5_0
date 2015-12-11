@@ -1,9 +1,9 @@
 
-#include "am/CPendingIntentRecordKey.h"
+#include "elastos/droid/server/am/CPendingIntentRecordKey.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include "am/ActivityRecord.h"
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

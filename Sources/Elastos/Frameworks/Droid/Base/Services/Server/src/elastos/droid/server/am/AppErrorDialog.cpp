@@ -1,5 +1,5 @@
 
-#include "am/AppErrorDialog.h"
+#include "elastos/droid/server/am/AppErrorDialog.h"
 
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;

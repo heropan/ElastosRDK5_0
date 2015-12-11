@@ -1,5 +1,5 @@
 
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 #include <elastos/utility/etl/Algorithm.h>
 #include <unistd.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -24,37 +24,37 @@
 #include "elastos/droid/app/AppGlobals.h"
 #include "elastos/droid/view/LayoutInflater.h"
 //#include "elastos/droid/view/WindowManagerPolicy.h"
-#include "am/ActivityRecord.h"
-#include "am/ActivityStack.h"
-#include "am/ActiveServices.h"
-#include "am/AppErrorResult.h"
-#include "am/AppErrorDialog.h"
-#include "am/AppBindRecord.h"
-#include "am/CompatModeDialog.h"
-#include "am/FactoryErrorDialog.h"
-#include "am/AppNotRespondingDialog.h"
-#include "am/StrictModeViolationDialog.h"
-#include "am/BroadcastFilter.h"
-#include "am/BroadcastQueue.h"
-#include "am/BroadcastRecord.h"
-#include "am/CPendingIntentRecord.h"
-#include "am/CContentProviderConnection.h"
-#include "am/PendingThumbnailsRecord.h"
-#include "am/LaunchWarningWindow.h"
-#include "am/ProcessList.h"
-#include "am/ProcessRecord.h"
-#include "am/ProviderMap.h"
-#include "am/ReceiverList.h"
-#include "am/UserStartedState.h"
-#include "am/CUsageStatsService.h"
-#include "am/CShutdownReceiver.h"
-#include "am/CStoppingReceiver.h"
-#include "am/TaskRecord.h"
-#include "am/ActivityState.h"
-//#include "am/SystemServer.h"
-//#include "am/CServiceRestarter.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ActivityStack.h"
+#include "elastos/droid/server/am/ActiveServices.h"
+#include "elastos/droid/server/am/AppErrorResult.h"
+#include "elastos/droid/server/am/AppErrorDialog.h"
+#include "elastos/droid/server/am/AppBindRecord.h"
+#include "elastos/droid/server/am/CompatModeDialog.h"
+#include "elastos/droid/server/am/FactoryErrorDialog.h"
+#include "elastos/droid/server/am/AppNotRespondingDialog.h"
+#include "elastos/droid/server/am/StrictModeViolationDialog.h"
+#include "elastos/droid/server/am/BroadcastFilter.h"
+#include "elastos/droid/server/am/BroadcastQueue.h"
+#include "elastos/droid/server/am/BroadcastRecord.h"
+#include "elastos/droid/server/am/CPendingIntentRecord.h"
+#include "elastos/droid/server/am/CContentProviderConnection.h"
+#include "elastos/droid/server/am/PendingThumbnailsRecord.h"
+#include "elastos/droid/server/am/LaunchWarningWindow.h"
+#include "elastos/droid/server/am/ProcessList.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/ProviderMap.h"
+#include "elastos/droid/server/am/ReceiverList.h"
+#include "elastos/droid/server/am/UserStartedState.h"
+#include "elastos/droid/server/am/CUsageStatsService.h"
+#include "elastos/droid/server/am/CShutdownReceiver.h"
+#include "elastos/droid/server/am/CStoppingReceiver.h"
+#include "elastos/droid/server/am/TaskRecord.h"
+#include "elastos/droid/server/am/ActivityState.h"
+//#include "elastos/droid/server/am/SystemServer.h"
+//#include "elastos/droid/server/am/CServiceRestarter.h"
 //#include "wm/CWindowManagerService.h"
-#include "am/AppWaitingForDebuggerDialog.h"
+#include "elastos/droid/server/am/AppWaitingForDebuggerDialog.h"
 #include "elastos/droid/app/NotificationManager.h"
 #include "elastos/droid/net/Uri.h"
 #include "util/TimeUtils.h"
@@ -3382,10 +3382,9 @@ ECode CActivityManagerService::SetRequestedOrientation(
     const Int64 origId = Binder::ClearCallingIdentity();
     mWindowManager->SetAppOrientation(r->mAppToken, requestedOrientation);
     AutoPtr<IConfiguration> config;
-    Boolean res;
     mWindowManager->UpdateOrientationFromAppTokens(
             mConfiguration,
-            (r->MayFreezeScreenLocked(r->mApp, &res), res)
+            r->MayFreezeScreenLocked(r->mApp)
                 ? IBinder::Probe(r->mAppToken) : NULL,
             (IConfiguration**)&config);
     if (config != NULL) {
@@ -15894,8 +15893,7 @@ ECode CActivityManagerService::TargetTaskAffinityMatchesActivity(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr<ActivityRecord> srec;
-    ActivityRecord::ForToken(token, (ActivityRecord**)&srec);
+    AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(token);
     *result = srec != NULL && srec->mTask->mAffinity != NULL &&
             srec->mTask->mAffinity.Equals(destAffinity);
     return NOERROR;
@@ -15915,8 +15913,7 @@ ECode CActivityManagerService::NavigateUpTo(
 
     {
         AutoLock lock(mLock);
-        AutoPtr<ActivityRecord> srec;
-        ActivityRecord::ForToken(token, (ActivityRecord**)&srec);
+        AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(token);
         if (srec == NULL) {
             *result = FALSE;
             return NOERROR;
@@ -16038,8 +16035,7 @@ ECode CActivityManagerService::GetLaunchedFromUid(
     /* [in] */ IBinder* activityToken,
     /* [out] */ Int32* result)
 {
-    AutoPtr<ActivityRecord> srec;
-    ActivityRecord::ForToken(activityToken, (ActivityRecord**)&srec);
+    AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(activityToken);
     if (srec == NULL) {
         *result = -1;
     }

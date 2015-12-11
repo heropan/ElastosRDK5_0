@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
-#include "am/ConnectionRecord.h"
+#include "elastos/droid/server/am/ConnectionRecord.h"
 
 using Elastos::Utility::Etl::HashSet;
 
@@ -20,7 +20,7 @@ class ProcessRecord;
 /**
  * An association between a service and one of its client applications.
  */
-class AppBindRecord : public ElRefBase
+class AppBindRecord : public Object
 {
 public:
     AppBindRecord(

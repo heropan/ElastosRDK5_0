@@ -1,5 +1,5 @@
 
-#include "am/PendingThumbnailsRecord.h"
+#include "elastos/droid/server/am/PendingThumbnailsRecord.h"
 
 namespace Elastos {
 namespace Droid {

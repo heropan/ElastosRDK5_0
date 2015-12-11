@@ -1,6 +1,6 @@
 
 #include <elastos/core/StringBuilder.h>
-#include "am/CUriPermissionOwnerExternalToken.h"
+#include "elastos/droid/server/am/CUriPermissionOwnerExternalToken.h"
 
 using Elastos::Core::StringBuilder;
 

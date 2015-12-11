@@ -1,9 +1,9 @@
 
-#include "am/ConnectionRecord.h"
-#include "am/AppBindRecord.h"
-#include "am/ActivityRecord.h"
-#include "am/ProcessRecord.h"
-#include "am/CServiceRecord.h"
+#include "elastos/droid/server/am/ConnectionRecord.h"
+#include "elastos/droid/server/am/AppBindRecord.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/CServiceRecord.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 

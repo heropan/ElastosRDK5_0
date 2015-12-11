@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
-#include "am/AppBindRecord.h"
+#include "elastos/droid/server/am/AppBindRecord.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IBinder;
@@ -28,7 +28,7 @@ class CServiceRecord;
 /**
  * A particular Intent that has been bound to a Service.
  */
-class IntentBindRecord : public ElRefBase
+class IntentBindRecord : public Object
 {
 public:
     IntentBindRecord(

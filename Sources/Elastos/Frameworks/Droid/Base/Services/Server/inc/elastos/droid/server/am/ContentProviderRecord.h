@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_CONTENTPROVIDERRECORD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/CContentProviderConnection.h"
+#include "elastos/droid/server/am/CContentProviderConnection.h"
 #include <Elastos.Droid.Core.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -30,14 +30,14 @@ namespace Am {
 class CActivityManagerService;
 
 class ContentProviderRecord
-    : public ElRefBase
+    : public Object
     , public ISynchronize
     , public Object
 {
 private:
     // This class represents a handle from an external process to a provider.
     class ExternalProcessHandle
-        : public ElRefBase
+        : public Object
         , public IProxyDeathRecipient
     {
     public:

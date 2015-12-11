@@ -944,6 +944,7 @@ module
         InputDispatchingTimedOut(
             [in] Int32 pid,
             [in] Boolean aboveSystem,
+            [in] String reason,
             [out] Int64* value);
 
         GetAssistContextExtras(

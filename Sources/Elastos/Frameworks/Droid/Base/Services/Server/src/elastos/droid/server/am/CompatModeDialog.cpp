@@ -1,5 +1,5 @@
 
-#include "am/CompatModeDialog.h"
+#include "elastos/droid/server/am/CompatModeDialog.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;

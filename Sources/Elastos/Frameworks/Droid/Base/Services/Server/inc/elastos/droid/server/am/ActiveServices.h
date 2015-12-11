@@ -5,9 +5,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include "am/TaskRecord.h"
-#include "am/CServiceRecord.h"
-#include "am/TransferPipe.h"
+#include "elastos/droid/server/am/TaskRecord.h"
+#include "elastos/droid/server/am/CServiceRecord.h"
+#include "elastos/droid/server/am/TransferPipe.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::IO::IPrintWriter;
@@ -33,10 +33,10 @@ class ProcessRecord;
 typedef HashMap< AutoPtr<IComponentName>, AutoPtr<CServiceRecord> > IComponentNameCServiceRecordHashMap;
 typedef HashMap<AutoPtr<IIntentFilterComparison>, AutoPtr<CServiceRecord> > IIntentFilterComparisonCServiceRecordHashMap;
 
-class ActiveServices : public ElRefBase
+class ActiveServices : public Object
 {
 public:
-    class ServiceMap : public ElRefBase
+    class ServiceMap : public Object
     {
     friend class ActiveServices;
 
@@ -89,7 +89,7 @@ public:
         HashMap<Int32, AutoPtr<IIntentFilterComparisonCServiceRecordHashMap> > mServicesByIntentPerUser;
     };
 
-    class ServiceLookupResult : public ElRefBase
+    class ServiceLookupResult : public Object
     {
     public:
         ServiceLookupResult(
@@ -102,7 +102,7 @@ public:
 
 private:
     class ServiceRestarter
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:

@@ -26,7 +26,7 @@ class BaseErrorDialog
     , public IKeyEventCallback
     , public IViewOnCreateContextMenuListener
     , public IWeakReferenceSource
-    , public ElRefBase
+    , public Object
     , public AlertDialog
 {
 private:

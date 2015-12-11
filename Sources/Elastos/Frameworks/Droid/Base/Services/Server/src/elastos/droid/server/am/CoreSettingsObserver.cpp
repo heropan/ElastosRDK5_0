@@ -1,5 +1,5 @@
 
-#include "am/CoreSettingsObserver.h"
+#include "elastos/droid/server/am/CoreSettingsObserver.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

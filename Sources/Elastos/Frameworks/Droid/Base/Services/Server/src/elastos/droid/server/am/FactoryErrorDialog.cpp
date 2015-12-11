@@ -1,5 +1,5 @@
 
-#include "am/FactoryErrorDialog.h"
+#include "elastos/droid/server/am/FactoryErrorDialog.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Core::ICharSequence;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_COMPATMODEPACKAGES_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 #include <Elastos.Droid.Core.h>
 #include <elastos/utility/etl/HashMap.h>
 
@@ -16,7 +16,7 @@ namespace Server {
 namespace Am {
 
 
-class CompatModePackages : public ElRefBase
+class CompatModePackages : public Object
 {
 public:
     class MyHandler : public HandlerBase

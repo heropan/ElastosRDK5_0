@@ -1,5 +1,5 @@
 
-#include "am/AppNotRespondingDialog.h"
+#include "elastos/droid/server/am/AppNotRespondingDialog.h"
 
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 

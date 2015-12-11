@@ -7,15 +7,15 @@
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/core/StringBuilder.h>
 #include "elastos/droid/os/SystemClock.h"
-#include "am/ActivityResult.h"
-#include "am/ActivityState.h"
-#include "am/ConnectionRecord.h"
-#include "am/CPendingIntentRecord.h"
-#include "am/TaskRecord.h"
-#include "am/ActivityStack.h"
-//#include "am/ProcessRecord.h"
-#include "am/ThumbnailHolder.h"
-#include "am/UriPermissionOwner.h"
+#include "elastos/droid/server/am/ActivityResult.h"
+#include "elastos/droid/server/am/ActivityState.h"
+#include "elastos/droid/server/am/ConnectionRecord.h"
+#include "elastos/droid/server/am/CPendingIntentRecord.h"
+#include "elastos/droid/server/am/TaskRecord.h"
+#include "elastos/droid/server/am/ActivityStack.h"
+//#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/ThumbnailHolder.h"
+#include "elastos/droid/server/am/UriPermissionOwner.h"
 
 
 using Elastos::Utility::Etl::List;
@@ -43,24 +43,21 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-class ActivityStack;
+class ActivityStackSupervisor;
 class CActivityManagerService;
 class ProcessRecord;
 
-extern const InterfaceID EIID_ActivityRecord;
-
 class ActivityRecord
-    : public ElRefBase
-    , public IWeakReferenceSource
+    : public Object
 {
 public:
     CAR_INTERFACE_DECL()
 
     ActivityRecord(
         /* [in] */ CActivityManagerService* service,
-        /* [in] */ ActivityStack* stack,
         /* [in] */ ProcessRecord* caller,
         /* [in] */ Int32 launchedFromUid,
+        /* [in] */ const String& launchedFromPackage,
         /* [in] */ IIntent* intent,
         /* [in] */ const String& resolvedType,
         /* [in] */ IActivityInfo* aInfo,
@@ -68,7 +65,10 @@ public:
         /* [in] */ ActivityRecord* resultTo,
         /* [in] */ const String& resultWho,
         /* [in] */ Int32 reqCode,
-        /* [in] */ Boolean componentSpecified);
+        /* [in] */ Boolean componentSpecified,
+        /* [in] */ ActivityStackSupervisor* supervisor,
+        /* [in] */ IActivityContainer* container,
+        /* [in] */ IBundle* options);
 
     ~ActivityRecord();
 
@@ -79,20 +79,34 @@ public:
         /* [in] */ IPrintWriter* pw,
         /* [in] */ const String& prefix);
 
-    static CARAPI ForToken(
-        /* [in] */ IBinder* token,
-        /* [out] */ ActivityRecord** activityRecord);
+    static CARAPI_(AutoPtr<ActivityRecord>) ForToken(
+        /* [in] */ IBinder* token);
+
+    CARAPI_(Boolean) IsNotResolverActivity();
 
     CARAPI_(void) SetTask(
         /* [in] */ TaskRecord* newTask,
-        /* [in] */ ThumbnailHolder* newThumbHolder,
-        /* [in] */ Boolean isRoot);
+        /* [in] */ TaskRecord* taskToAffiliateWith);
+
+    CARAPI_(void) SetTaskToAffiliateWith(
+        /* [in] */ TaskRecord* taskToAffiliateWith);
+
+    CARAPI_(Boolean) ChangeWindowTranslucency(
+        /* [in] */ Boolean toOpaque);
 
     CARAPI_(void) PutInHistory();
 
     CARAPI_(void) TakeFromHistory();
 
     CARAPI_(Boolean) IsInHistory();
+
+    CARAPI_(Boolean) IsHomeActivity();
+
+    CARAPI_(Boolean) IsRecentsActivity();
+
+    CARAPI_(Boolean) IsApplicationActivity();
+
+    CARAPI_(Boolean) IsPersistable();
 
     CARAPI_(void) MakeFinishing();
 
@@ -117,7 +131,7 @@ public:
      * Deliver a new Intent to an existing activity, so that its onNewIntent()
      * method will be called at the proper time.
      */
-    CARAPI_(void) DeliverNewIntentLocked(
+    CARAPI DeliverNewIntentLocked(
         /* [in] */ Int32 callingUid,
         /* [in] */ IIntent* intent);
 
@@ -128,6 +142,8 @@ public:
         /* [in] */ IActivityOptions* options);
 
     CARAPI_(void) ApplyOptionsLocked();
+
+    CARAPI_(AutoPtr<IActivityOptions>) GetOptionsForTargetActivityLocked();
 
     CARAPI_(void) ClearOptionsLocked();
 
@@ -151,9 +167,8 @@ public:
 
     // IApplicationToken
 
-    CARAPI MayFreezeScreenLocked(
-        /* [in] */ ProcessRecord* app,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) MayFreezeScreenLocked(
+        /* [in] */ ProcessRecord* app);
 
     CARAPI StartFreezingScreenLocked(
         /* [in] */ ProcessRecord* app,
@@ -161,6 +176,8 @@ public:
 
     CARAPI StopFreezingScreenLocked(
         /* [in] */ Boolean force);
+
+    CARAPI ReportFullyDrawnLocked();
 
     CARAPI WindowsDrawn();
 
@@ -189,15 +206,73 @@ public:
 
     CARAPI_(String) ToString();
 
+    static CARAPI_(void) ActivityResumedLocked(
+        /* [in] */ IBinder* token);
+
+    static CARAPI_(Int32) GetTaskForActivityLocked(
+        /* [in] */ IBinder* token,
+        /* [in] */ Boolean onlyRoot);
+
+    static CARAPI_(AutoPtr<ActivityRecord>) IsInStackLocked(
+        /* [in] */ IBinder* token);
+
+    static CARAPI_(AutoPtr<ActivityStack>) GetStackLocked(
+        /* [in] */ IBinder* token);
+
+    CARAPI_(Boolean) IsDestroyable();
+
+    CARAPI_(void) SetTaskDescription(
+        /* [in] */ IActivityManagerTaskDescription* taskDescription);
+
+    CARAPI SaveToXml(
+        /* [in] */ IXmlSerializer* out);
+
+    static CARAPI RestoreFromXml(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ Int32 taskId,
+        /* [in] */ ActivityStackSupervisor* stackSupervisor,
+        /* [out] */ ActivityRecord** ar);
+
 private:
+    CARAPI_(void) ReportLaunchTimeLocked(
+        /* [in] */ Int64 curTime);
+
     CARAPI_(AutoPtr<ActivityRecord>) GetWaitingHistoryRecordLocked();
+
+    static String CreateImageFilename(
+        /* [in] */ Int64 createTime,
+        /* [in] */ Int32 taskId);
+
+    static String ActivityTypeToString(
+        /* [in] */ Int32 type)
+
+public:
+    static const String TAG = ActivityManagerService::TAG;
+    static const Boolean DEBUG_SAVED_STATE;
+    static const String RECENTS_PACKAGE_NAME;
+    static const String ACTIVITY_ICON_SUFFIX;
+    static const Int32 APPLICATION_ACTIVITY_TYPE = 0;
+    static const Int32 HOME_ACTIVITY_TYPE = 1;
+    static const Int32 RECENTS_ACTIVITY_TYPE = 2;
+
+private:
+    static const String TAG_ACTIVITY;
+    static const String ATTR_ID;
+    static const String TAG_INTENT;
+    static const String ATTR_USERID;
+    static const String TAG_PERSISTABLEBUNDLE;
+    static const String ATTR_LAUNCHEDFROMUID;
+    static const String ATTR_LAUNCHEDFROMPACKAGE;
+    static const String ATTR_RESOLVEDTYPE;
+    static const String ATTR_COMPONENTSPECIFIED;
 
 public:
     CActivityManagerService* mService; // owner - weak-ref
-    ActivityStack* mStack; // owner - weak-ref
     AutoPtr<IApplicationToken> mAppToken; // window manager token
     AutoPtr<IActivityInfo> mInfo; // all about me
+    AutoPtr<IApplicationInfo> mAppInfo; // information about activity's app
     Int32 mLaunchedFromUid; // always the uid who started the activity.
+    String mLaunchedFromPackage; // always the package who started the activity.
     Int32 mUserId;          // Which user is this running for?
     AutoPtr<IIntent> mIntent;    // the original intent that generated us
     AutoPtr<IComponentName> mRealActivity;  // the intent component, or target of an alias.
@@ -210,19 +285,20 @@ public:
     Boolean mFullscreen; // covers the full screen?
     Boolean mNoDisplay;  // activity is not displayed?
     Boolean mComponentSpecified;  // did caller specifiy an explicit component?
-    Boolean mIsHomeActivity; // do we consider this to be a home activity?
-    String mBaseDir;   // where activity source (resources etc) located
-    String mResDir;   // where public activity source (public resources etc) located
-    String mDataDir;   // where activity data should go
+
+    Int32 mActivityType;
+
     AutoPtr<ICharSequence> mNonLocalizedLabel;  // the label information from the package mgr.
     Int32 mLabelRes;           // the label information from the package mgr.
     Int32 mIcon;               // resource identifier of activity's icon.
+    *Int32 mLogo;               // resource identifier of activity's logo.
     Int32 mTheme;              // resource identifier of activity's theme.
     Int32 mRealTheme;          // actual theme resource we will use, never 0.
     Int32 mWindowFlags;        // custom window flags for preview window.
     AutoPtr<TaskRecord> mTask;        // the task this is in.
-    AutoPtr<ThumbnailHolder> mThumbHolder; // where our thumbnails should go.
-    Int64 mLaunchTime;        // when we starting launching this activity
+    Int64 mCreateTime;
+    Int64 mDisplayStartTime;  // when we started launching this activity
+    Int64 mFullyDrawnStartTime; // when we started launching this activity
     Int64 mStartTime;         // last time this activity was started
     Int64 mLastVisibleTime;   // last time this activity became visible
     Int64 mCpuTimeAtResume;   // the cpu time of host process at the time of resuming activity
@@ -237,11 +313,13 @@ public:
     AutoPtr< HashSet<AutoPtr<IWeakReference> > > mPendingResults; // all pending intents for this act,PendingIntentRecord
     AutoPtr< List< AutoPtr<IIntent> > > mNewIntents;   // any pending new intents for single-top mode
     AutoPtr<IActivityOptions> mPendingOptions; // most recently given options
+    AutoPtr<IActivityOptions> mReturningOptions; // options that are coming back via convertToTranslucent
     AutoPtr< HashSet<AutoPtr<ConnectionRecord> > > mConnections; // All ConnectionRecord we hold
     AutoPtr<UriPermissionOwner> mUriPermissions; // current special URI access perms.
     AutoPtr<ProcessRecord> mApp;      // if non-null, hosting application
     ActivityState mState;    // current state we are in
     AutoPtr<IBundle> mIcicle;         // last saved activity state
+    AutoPtr<IPersistableBundle> mPersistentState; // last persistently saved activity state
     Boolean mFrontOfTask;    // is this the root activity of its task?
     Boolean mLaunchFailed;   // set if a launched failed, to abort on 2nd try
     Boolean mHaveState;      // have we gotten the last activity state?
@@ -256,14 +334,24 @@ public:
     Boolean mSleeping;       // have we told the activity to sleep?
     Boolean mWaitingVisible; // true if waiting for a new act to become vis
     Boolean mNowVisible;     // is this activity's window visible?
-    Boolean mThumbnailNeeded;// has someone requested a thumbnail?
     Boolean mIdle;           // has the activity gone idle?
     Boolean mHasBeenLaunched;// has this activity ever been launched?
     Boolean mFrozenBeforeDestroy;// has been frozen but not yet destroyed.
     Boolean mImmersive;      // immersive mode (don't interrupt if possible)
     Boolean mForceNewConfig; // force re-create with new config next time
+    Int32 mLaunchCount;        // count of launches since last state
+    Int64 mLastLaunchTime;    // time of last lauch of this activity
+    List<AutoPtr<IActivityContainer> > mChildContainers;
 
     String mStringName;      // for caching of toString().
+
+    ActivityStackSupervisor* mStackSupervisor;
+    Boolean mStartingWindowShown;
+    AutoPtr<IActivityContainer> mInitialActivityContainer;
+
+    AutoPtr<IActivityManagerTaskDescription> mTaskDescription; // the recents information for this activity
+    Boolean mLaunchTaskBehind; // this activity is actively being launched with
+        // ActivityOptions.setLaunchTaskBehind, will be cleared once launch is completed.
 
 private:
     Boolean mInHistory;  // are we in the history stack?

@@ -18,7 +18,7 @@ namespace Am {
 class ContentProviderRecord;
 class CActivityManagerService;
 
-class ProviderMap : public ElRefBase
+class ProviderMap : public Object
 {
 public:
 

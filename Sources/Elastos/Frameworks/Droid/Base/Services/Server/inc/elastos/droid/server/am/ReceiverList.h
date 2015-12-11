@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_RECEIVERLIST_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/BroadcastFilter.h"
+#include "elastos/droid/server/am/BroadcastFilter.h"
 #include <Elastos.Droid.Core.h>
 #include <elastos/utility/etl/List.h>
 

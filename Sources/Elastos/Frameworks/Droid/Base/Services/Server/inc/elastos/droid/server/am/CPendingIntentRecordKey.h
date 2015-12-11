@@ -14,7 +14,7 @@ namespace Am {
 
 class ActivityRecord;
 
-class CPendingIntentRecordKey : public ElRefBase
+class CPendingIntentRecordKey : public Object
 {
 public:
     CPendingIntentRecordKey(

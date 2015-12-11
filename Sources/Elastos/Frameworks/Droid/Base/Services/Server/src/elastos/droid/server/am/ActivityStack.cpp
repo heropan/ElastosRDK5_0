@@ -1,9 +1,9 @@
 
-#include "am/ActivityStack.h"
-#include "am/CActivityManagerService.h"
-#include "am/ActivityRecord.h"
-#include "am/ActiveServices.h"
-#include "am/ProcessRecord.h"
+#include "elastos/droid/server/am/ActivityStack.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ActiveServices.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
 #include "elastos/droid/app/AppGlobals.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/UserHandle.h"
@@ -426,8 +426,7 @@ Int32 ActivityStack::GetIndexOfTokenLocked(
     if (token == NULL)
         return -1;
 
-    AutoPtr<ActivityRecord> r;
-    ActivityRecord::ForToken(token, (ActivityRecord**)&r);
+    AutoPtr<ActivityRecord> r = ActivityRecord::ForToken(token);
     return GetIndexOfActivityLocked(r);
 }
 
@@ -447,8 +446,7 @@ Int32 ActivityStack::GetIndexOfActivityLocked(
 AutoPtr<ActivityRecord> ActivityStack::IsInStackLocked(
     /* [in] */ IBinder* token)
 {
-    AutoPtr<ActivityRecord> r;
-    ActivityRecord::ForToken(token, (ActivityRecord**)&r);
+    AutoPtr<ActivityRecord> r = ActivityRecord::ForToken(token);
     if (GetIndexOfActivityLocked(r) >= 0) {
         return r;
     }
@@ -641,10 +639,9 @@ ECode ActivityStack::RealStartActivityLocked(
     // just restarting it anyway.
     if (checkConfig) {
         AutoPtr<IConfiguration> config;
-        Boolean res;
         mService->mWindowManager->UpdateOrientationFromAppTokens(
                 mService->mConfiguration,
-                (r->MayFreezeScreenLocked(app, &res), res) ? IBinder::Probe(r->mAppToken) : NULL,
+                r->MayFreezeScreenLocked(app) ? IBinder::Probe(r->mAppToken) : NULL,
                 (IConfiguration**)&config);
         mService->UpdateConfigurationLocked(config, r, FALSE, FALSE);
     }
@@ -1968,10 +1965,9 @@ Boolean ActivityStack::ResumeTopActivityLocked(
             AutoLock lock(mService->mLock);
 
             AutoPtr<IConfiguration> config;
-            Boolean res;
             mService->mWindowManager->UpdateOrientationFromAppTokens(
                     mService->mConfiguration,
-                    (next->MayFreezeScreenLocked(next->mApp, &res), res)
+                    next->MayFreezeScreenLocked(next->mApp)
                         ? IBinder::Probe(next->mAppToken) : NULL,
                     (IConfiguration**)&config);
             if (config != NULL) {
@@ -4243,8 +4239,7 @@ AutoPtr<ActivityRecord> ActivityStack::ActivityIdleInternal(
     {
         AutoLock lock(mService->mLock);
 
-        AutoPtr<ActivityRecord> r;
-        ActivityRecord::ForToken(token, (ActivityRecord**)&r);
+        AutoPtr<ActivityRecord> r = ActivityRecord::ForToken(token);
         if (r != NULL) {
             mHandler->RemoveMessages(IDLE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
             r->FinishLaunchTickingLocked();
@@ -5048,8 +5043,7 @@ ECode ActivityStack::ActivityDestroyed(
     AutoLock lock(mService->mLock);
     const Int64 origId = Binder::ClearCallingIdentity();
    // try {
-    AutoPtr<ActivityRecord> r;
-    ActivityRecord::ForToken(token, (ActivityRecord**)&r);
+    AutoPtr<ActivityRecord> r = ActivityRecord::ForToken(token);
     if (r != NULL) {
          mHandler->RemoveMessages(DESTROY_TIMEOUT_MSG, r->Probe(EIID_IInterface));
     }

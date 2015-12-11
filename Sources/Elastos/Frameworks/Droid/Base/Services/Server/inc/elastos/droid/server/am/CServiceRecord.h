@@ -7,7 +7,7 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include "elastos/droid/os/BatteryStatsImpl.h"
-#include "am/ConnectionRecord.h"
+#include "elastos/droid/server/am/ConnectionRecord.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
@@ -38,7 +38,7 @@ class UriPermissionOwner;
 CarClass(CServiceRecord)
 {
 public:
-    class StartItem : public ElRefBase
+    class StartItem : public Object
     {
     public:
         StartItem(
@@ -68,7 +68,7 @@ public:
 
 private:
     class PostNotificationRunnable
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -102,7 +102,7 @@ private:
 
 private:
     class CancelNotificationRunnable
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:

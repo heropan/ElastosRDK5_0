@@ -28,6 +28,7 @@ public:
     CARAPI WindowsGone();
 
     CARAPI KeyDispatchingTimedOut(
+        /* [in] */ const String& reason,
         /* [out] */ Boolean* result);
 
     CARAPI GetKeyDispatchingTimeout(
@@ -40,7 +41,6 @@ public:
 
 public:
     AutoPtr<IWeakReference> mWeakActivity; // WeakReference<ActivityRecord>
-    String mStringName;
 };
 
 } // namespace Am

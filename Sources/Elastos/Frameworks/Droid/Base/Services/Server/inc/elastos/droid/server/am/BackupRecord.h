@@ -2,14 +2,14 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_BACKUPRECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_BACKUPRECORD_H__
 
-#include "am/ProcessRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
-class BackupRecord : public ElRefBase
+class BackupRecord : public Object
 {
 public:
     BackupRecord(

@@ -1,8 +1,8 @@
 
 #include <elastos/core/StringBuilder.h>
-#include "am/UriPermissionOwner.h"
-#include "am/CActivityManagerService.h"
-#include "am/CUriPermissionOwnerExternalToken.h"
+#include "elastos/droid/server/am/UriPermissionOwner.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CUriPermissionOwnerExternalToken.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::EIID_IBinder;
@@ -19,7 +19,7 @@ namespace Am {
 
 UriPermissionOwner::UriPermissionOwner(
     /* [in] */ CActivityManagerService* service,
-    /* [in] */ Handle32 owner)
+    /* [in] */ IObject* owner)
     : mService(service)
     , mOwner(owner)
 {

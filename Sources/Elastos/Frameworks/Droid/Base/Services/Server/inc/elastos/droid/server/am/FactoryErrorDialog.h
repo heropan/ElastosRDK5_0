@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_FACTORYERRORDIALOG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/BaseErrorDialog.h"
+#include "elastos/droid/server/am/BaseErrorDialog.h"
 #include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;

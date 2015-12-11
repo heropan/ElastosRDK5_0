@@ -32,7 +32,7 @@ CarClass(CUsageStatsService)
 {
 public:
     class TimeStats
-        : public ElRefBase
+        : public Object
     {
     public:
         TimeStats();
@@ -55,7 +55,7 @@ public:
 
 private:
     class PkgUsageStatsExtended
-        : public ElRefBase
+        : public Object
     {
     public:
         PkgUsageStatsExtended()

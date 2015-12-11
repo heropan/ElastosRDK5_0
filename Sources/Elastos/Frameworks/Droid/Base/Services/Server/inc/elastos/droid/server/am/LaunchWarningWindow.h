@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_LAUNCHWARNINTWINDOW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/ActivityRecord.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
 #include "elastos/droid/app/Dialog.h"
 
 
@@ -24,7 +24,7 @@ class LaunchWarningWindow
     , public IWindowCallback
     , public IKeyEventCallback
     , public IViewOnCreateContextMenuListener
-    , public ElRefBase
+    , public Object
     , public Dialog
 {
 public:

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_COMPATMODEDIALOG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 #include "elastos/droid/app/Dialog.h"
 
 
@@ -26,7 +26,7 @@ namespace Server {
 namespace Am {
 
 class CompatModeDialog
-    : public ElRefBase
+    : public Object
     , public Dialog
     , public IDialog
     , public IWindowCallback
@@ -35,7 +35,7 @@ class CompatModeDialog
 {
 private:
     class CompatEnabledListener
-        : public ElRefBase
+        : public Object
         , public ICompoundButtonOnCheckedChangeListener
     {
     public:
@@ -55,7 +55,7 @@ private:
     };
 
     class AlwaysShowListener
-        : public ElRefBase
+        : public Object
         , public ICompoundButtonOnCheckedChangeListener
     {
     public:

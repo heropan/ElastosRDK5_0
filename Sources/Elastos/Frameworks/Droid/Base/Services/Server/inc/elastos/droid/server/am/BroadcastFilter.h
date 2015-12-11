@@ -23,7 +23,7 @@ class ReceiverList;
 class BroadcastFilter
     : public IIntentFilter
     , public IntentFilter
-    , public ElRefBase
+    , public Object
 {
 public:
     BroadcastFilter();

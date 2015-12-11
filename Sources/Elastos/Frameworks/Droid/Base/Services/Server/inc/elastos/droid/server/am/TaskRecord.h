@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_TASKRECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_TASKRECORD_H__
 
-#include "am/ThumbnailHolder.h"
+#include "elastos/droid/server/am/ThumbnailHolder.h"
 
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Content::IIntent;

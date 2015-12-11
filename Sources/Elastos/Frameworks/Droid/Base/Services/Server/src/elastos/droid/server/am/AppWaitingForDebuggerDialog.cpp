@@ -1,5 +1,5 @@
 
-#include "am/AppWaitingForDebuggerDialog.h"
+#include "elastos/droid/server/am/AppWaitingForDebuggerDialog.h"
 
 using Elastos::Core::CString;
 

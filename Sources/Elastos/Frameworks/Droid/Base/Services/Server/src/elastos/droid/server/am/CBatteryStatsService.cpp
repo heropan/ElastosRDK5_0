@@ -1,5 +1,5 @@
 
-#include "am/CBatteryStatsService.h"
+#include "elastos/droid/server/am/CBatteryStatsService.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/Binder.h"

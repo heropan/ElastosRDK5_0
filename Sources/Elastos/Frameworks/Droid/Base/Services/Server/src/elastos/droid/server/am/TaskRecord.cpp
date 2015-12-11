@@ -1,12 +1,12 @@
 
-#include "am/TaskRecord.h"
+#include "elastos/droid/server/am/TaskRecord.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 #include <os/UserHandle.h>
 #include <os/SystemClock.h>
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuffer;

@@ -1,14 +1,14 @@
 
 #include "CNotificationManagerService.h"
-#include "am/CServiceRecord.h"
+#include "elastos/droid/server/am/CServiceRecord.h"
 #include <elastos/core/StringUtils.h>
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/UserHandle.h"
-#include "am/AppBindRecord.h"
-#include "am/CActivityManagerService.h"
-#include "am/IntentBindRecord.h"
-#include "am/ProcessRecord.h"
-#include "am/UriPermissionOwner.h"
+#include "elastos/droid/server/am/AppBindRecord.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/IntentBindRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/UriPermissionOwner.h"
 #include "elastos/droid/app/NotificationManager.h"
 
 using Elastos::Core::StringUtils;

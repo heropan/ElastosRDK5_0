@@ -1,5 +1,5 @@
 
-#include "am/BackupRecord.h"
+#include "elastos/droid/server/am/BackupRecord.h"
 
 namespace Elastos {
 namespace Droid {

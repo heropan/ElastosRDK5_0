@@ -1,6 +1,6 @@
 
-#include "am/ProcessRecord.h"
-#include "am/ProcessList.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/ProcessList.h"
 #include "elastos/droid/os/UserHandle.h"
 #include <elastos/core/StringUtils.h>
 

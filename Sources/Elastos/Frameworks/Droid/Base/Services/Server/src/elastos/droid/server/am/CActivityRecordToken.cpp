@@ -1,6 +1,6 @@
 #include "elastos/droid/ext/frameworkdef.h"
-#include "am/CActivityRecordToken.h"
-#include "am/ActivityRecord.h"
+#include "elastos/droid/server/am/CActivityRecordToken.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -33,10 +33,10 @@ ECode CActivityRecordToken::constructor(
 AutoPtr<ActivityRecord> CActivityRecordToken::GetActivityRecord()
 {
     AutoPtr<ActivityRecord> activity;
-    AutoPtr<IInterface> obj;
-    mWeakActivity->Resolve(EIID_IInterface, (IInterface**)&obj);
+    AutoPtr<IObject> obj;
+    mWeakActivity->Resolve(EIID_IObject, (IInterface**)&obj);
     if (obj) {
-        activity = reinterpret_cast<ActivityRecord*>(obj->Probe(EIID_ActivityRecord));
+        activity = (ActivityRecord*)obj.Get());
     }
 
     return activity;
@@ -70,13 +70,14 @@ ECode CActivityRecordToken::WindowsGone()
 }
 
 ECode CActivityRecordToken::KeyDispatchingTimedOut(
+    /* [in] */ const String& reason,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<ActivityRecord> ar = GetActivityRecord();
     if (ar != NULL) {
-        return ar->KeyDispatchingTimedOut(result);
+        return ar->KeyDispatchingTimedOut(reason, result);
     }
 
     *result = FALSE;
@@ -101,10 +102,6 @@ ECode CActivityRecordToken::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    if (!mStringName.IsNull()) {
-        *str = mStringName;
-        return NOERROR;
-    }
     StringBuilder sb(128);
     sb += "Token{";
     sb += StringUtils::Int32ToHexString(Int32(this));
@@ -112,16 +109,14 @@ ECode CActivityRecordToken::ToString(
 
     AutoPtr<ActivityRecord> ar = GetActivityRecord();
     if (ar != NULL) {
-        String astr;
-        ar->ToString(&astr);
-        sb += astr;
+        sb += ar->ToString();
     }
     else {
         sb += "NULL";
     }
 
     sb += "}";
-    *str = mStringName = sb.ToString();
+    *str = sb.ToString();
     return NOERROR;
 }
 
