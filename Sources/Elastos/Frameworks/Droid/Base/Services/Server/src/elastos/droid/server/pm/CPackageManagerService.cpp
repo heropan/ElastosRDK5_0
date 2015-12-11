@@ -16,6 +16,7 @@
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Environment.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "util/Xml.h"
@@ -67,10 +68,7 @@ using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Os::IEnvironment;
-using Elastos::Droid::Os::IUserEnvironment;
-using Elastos::Droid::Os::CEnvironment;
-using Elastos::Droid::Os::CUserEnvironment;
+using Elastos::Droid::Os::Environment;
 using Elastos::Droid::Os::FileUtils;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::SELinux;
@@ -1874,217 +1872,105 @@ ECode CPackageManagerService::ProviderInitOrderSorter::Compare(
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-// InstallArgs
+//==============================================================================
+//                  CPackageManagerService::ProcessPendingInstallRunnable
+//==============================================================================
 
-InstallArgs::InstallArgs(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
-    /* [in] */ Int32 flags,
-    /* [in] */ const String& installerPackageName,
-    /* [in] */ IManifestDigest* manifestDigest,
-    /* [in] */ IUserHandle* user,
-    /* [in] */ CPackageManagerService* owner)
-    : mObserver(observer)
-    , mFlags(flags)
-    , mPackageURI(packageURI)
-    , mInstallerPackageName(installerPackageName)
-    , mManifestDigest(manifestDigest)
-    , mUser(user)
-    , mHost(owner)
-    , mIsEpk(FALSE)
+ECode CPackageManagerService::ProcessPendingInstallRunnable::Run()
 {
-    // for epk
-    if (packageURI != NULL) {
-        String path;
-        packageURI->GetPath(&path);
-        if (path.EndWith(".epk"))
-            mIsEpk = TRUE;
+    mHost->mHandler->RemoveCallbacks(this);
+    // Result object to be returned
+    AutoPtr<PackageInstalledInfo> res = new PackageInstalledInfo();
+    res->mReturnCode = currentStatus;
+    res->mUid = -1;
+    res->mPkg = NULL;
+    res->mRemovedInfo = new PackageRemovedInfo(mHost);
+    if (res->mReturnCode == IPackageManager::INSTALL_SUCCEEDED) {
+        args->DoPreInstall(res->mReturnCode);
+        synchronized (mHost->mInstallLock) {
+            InstallPackageLI(args, TRUE, res);
+        }
+        args->DoPostInstall(res->mReturnCode, res->mUid);
     }
-}
 
-Int32 InstallArgs::DoPreCopy()
-{
-    return IPackageManager::INSTALL_SUCCEEDED;
-}
+    // A restore should be performed at this point if (a) the install
+    // succeeded, (b) the operation is not an update, and (c) the new
+    // package has not opted out of backup participation.
+    Boolean update = res->mRemovedInfo->mRemovedPackage != NULL;
+    Int32 flags = 0;
+    if (res->mPkg != NULL) {
+        res->mPkg->mApplicationInfo->GetFlags(&flags);
+    }
+    Boolean doRestore = !update && ((flags & IApplicationInfo::FLAG_ALLOW_BACKUP) != 0);
 
-Int32 InstallArgs::DoPostCopy(
-    /* [in] */ Int32 uid)
-{
-    return IPackageManager::INSTALL_SUCCEEDED;
-}
+    // Set up the post-install work request bookkeeping.  This will be used
+    // and cleaned up by the post-install event handling regardless of whether
+    // there's a restore pass performed.  Token values are >= 1.
+    Int32 token;
+    if (mHost->mNextInstallToken < 0) mHost->mNextInstallToken = 1;
+    token = mHost->mNextInstallToken++;
 
-Boolean InstallArgs::IsFwdLocked()
-{
-    return (mFlags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
-}
+    AutoPtr<PostInstallData> data = new PostInstallData(args, res);
+    mHost->mRunningInstalls[token] = data;
+    if (DEBUG_INSTALL)
+        Logger::V(TAG, "+ starting restore round-trip %d", token);
 
-AutoPtr<IUserHandle> InstallArgs::GetUser()
-{
-    return mUser;
-}
+    if (res->mReturnCode == IPackageManager::INSTALL_SUCCEEDED && doRestore) {
+        // Pass responsibility to the Backup Manager.  It will perform a
+        // restore if appropriate, then pass responsibility back to the
+        // Package Manager to run the post-install observer callbacks
+        // and broadcasts.
+        AutoPtr<IIBackupManager> bm = IIBackupManager::Probe(
+                ServiceManager::GetService(IContext::BACKUP_SERVICE));
+        if (bm != NULL) {
+            if (DEBUG_INSTALL)
+                Logger::V(TAG, "token %d to BM for possible restore", token);
 
-
-////////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::AppDirObserver
-
-CPackageManagerService::AppDirObserver::AppDirObserver(
-    /* [in] */ const String& path,
-    /* [in] */ Int32 mask,
-    /* [in] */ Boolean isrom,
-    /* [in] */ CPackageManagerService* owner)
-    : FileObserver(path, mask)
-    , mRootDir(path)
-    , mIsRom(isrom)
-    , mHost(owner)
-{}
-
-ECode CPackageManagerService::AppDirObserver::OnEvent(
-    /* [in] */ Int32 event,
-    /* [in] */ const String& path)
-{
-    String removedPackage;
-    Int32 removedAppId = -1;
-    AutoPtr< ArrayOf<Int32> > removedUsers;
-    String addedPackage;
-    Int32 addedAppId = -1;
-    AutoPtr< ArrayOf<Int32> > addedUsers;
-
-    // TODO post a message to the handler to obtain serial ordering
-    {
-        AutoLock lock(mHost->mInstallLock);
-
-        String fullPathStr;
-        AutoPtr<IFile> fullPath;
-        if (!path.IsNull()) {
-            CFile::New(mRootDir, path, (IFile**)&fullPath);
-            fullPath->GetPath(&fullPathStr);
-        }
-
-        if (DEBUG_APP_DIR_OBSERVER)
-            Logger::V(TAG, "File %s changed: %d", fullPathStr.string(), event);
-
-        if (!IsPackageFilename(path)) {
-            if (DEBUG_APP_DIR_OBSERVER)
-                Logger::V(TAG, "Ignoring change of non-package file: %s", fullPathStr.string());
-            return NOERROR;
-        }
-
-        // Ignore packages that are being installed or
-        // have just been installed.
-        if (mHost->IgnoreCodePath(fullPathStr)) {
-            return NOERROR;
-        }
-        AutoPtr<PackageParser::Package> p;
-        AutoPtr<PackageSetting> ps;
-        {
-            AutoLock l(mHost->mPackagesLock);
-
-            HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it
-                = mHost->mAppDirs.Find(fullPathStr);
-            if (it != mHost->mAppDirs.End()) {
-                p = it->mSecond;
-            }
-            if (p != NULL) {
-                String pkg;
-                p->mApplicationInfo->GetPackageName(&pkg);
-                HashMap<String, AutoPtr<PackageSetting> >::Iterator pit =
-                        mHost->mSettings->mPackages.Find(pkg);
-                if (pit != mHost->mSettings->mPackages.End()) {
-                    ps = pit->mSecond;
-                }
-                if (ps != NULL) {
-                    removedUsers = ps->QueryInstalledUsers(*sUserManager->GetUserIds(), TRUE);
-                }
-                else {
-                    removedUsers = sUserManager->GetUserIds();
-                }
-            }
-            addedUsers = sUserManager->GetUserIds();
-        }
-        if ((event & REMOVE_EVENTS) != 0) {
-            if (ps != NULL) {
-                mHost->RemovePackageLI(ps, TRUE);
-                removedPackage = ps->mName;
-                removedAppId = ps->mAppId;
+            String packageName;
+            res->mPkg->mApplicationInfo->GetPackageName(&packageName);
+            if (FAILED(bm->RestoreAtInstall(packageName, token))) {
+                Slogger::E(TAG, "Exception trying to enqueue restore");
+                doRestore = FALSE;
             }
         }
-
-        if ((event & ADD_EVENTS) != 0) {
-            if (p == NULL) {
-                AutoPtr<ArrayOf<Byte> > readBuffer = ArrayOf<Byte>::Alloc(PackageParser::CERTIFICATE_BUFFER_SIZE);
-                if (readBuffer == NULL) {
-                    Slogger::E(TAG, "AppDirObserver::OnEvent out of memory!");
-                    return E_OUT_OF_MEMORY_ERROR;
-                }
-                AutoPtr<ISystem> system;
-                Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-                Int64 now;
-                system->GetCurrentTimeMillis(&now);
-                p = mHost->ScanPackageLI(fullPath,
-                    (mIsRom ? PackageParser::PARSE_IS_SYSTEM
-                            | PackageParser::PARSE_IS_SYSTEM_DIR: 0) |
-                    PackageParser::PARSE_CHATTY |
-                    PackageParser::PARSE_MUST_BE_APK,
-                    SCAN_MONITOR | SCAN_NO_PATHS | SCAN_UPDATE_TIME,
-                    now, UserHandle::ALL, readBuffer);
-                if (p != NULL) {
-                    /*
-                     * TODO this seems dangerous as the package may have
-                     * changed since we last acquired the mPackages
-                     * lock.
-                     */
-                    {
-                        AutoLock l(mHost->mPackagesLock);
-
-                        mHost->UpdatePermissionsLPw(p->mPackageName, p,
-                            p->mPermissions.Begin() != p->mPermissions.End() ? UPDATE_PERMISSIONS_ALL : 0);
-                    }
-                    p->mApplicationInfo->GetPackageName(&addedPackage);
-                    Int32 uid;
-                    p->mApplicationInfo->GetUid(&uid);
-                    addedAppId = UserHandle::GetAppId(uid);
-                }
-            }
-        }
-
-        {
-            AutoLock l(mHost->mPackagesLock);
-
-            mHost->mSettings->WriteLPr();
+        else {
+            Slogger::E(TAG, "Backup Manager not found!");
+            doRestore = FALSE;
         }
     }
 
-    if (!removedPackage.IsNull()) {
-        AutoPtr<IBundle> extras;
-        CBundle::New(1, (IBundle**)&extras);
-        extras->PutInt32(IIntent::EXTRA_UID, removedAppId);
-        extras->PutBoolean(IIntent::EXTRA_DATA_REMOVED, FALSE);
-        mHost->SendPackageBroadcast(IIntent::ACTION_PACKAGE_REMOVED, removedPackage,
-                extras, String(NULL), NULL, removedUsers);
-    }
-    if (!addedPackage.IsNull()) {
-        AutoPtr<IBundle> extras;
-        CBundle::New(1, (IBundle**)&extras);
-        extras->PutInt32(IIntent::EXTRA_UID, addedAppId);
-        mHost->SendPackageBroadcast(IIntent::ACTION_PACKAGE_REMOVED, addedPackage,
-                extras, String(NULL), NULL, addedUsers);
-    }
+    if (!doRestore) {
+        // No restore possible, or the Backup Manager was mysteriously not
+        // available -- just fire the post-install work request directly.
+        if (DEBUG_INSTALL)
+            Logger::V(TAG, "No restore - queue post-install for %d", token);
 
+        AutoPtr<IMessage> msg;
+        mHost->mHandler->ObtainMessage(POST_INSTALL, (IMessage**)&msg);
+        msg->SetArg1(token);
+        Boolean result;
+        mHost->mHandler->SendMessage(msg, &result);
+    }
     return NOERROR;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::HandlerParams
+
+//==============================================================================
+//                  CPackageManagerService::HandlerParams
+//==============================================================================
 
 const Int32 CPackageManagerService::HandlerParams::MAX_RETRIES;
+
+AutoPtr<IUserHandle> CPackageManagerService::HandlerParams::GetUser()
+{
+    return mUser;
+}
 
 Boolean CPackageManagerService::HandlerParams::StartCopy()
 {
     Boolean res;
 //      try {
-    if (DEBUG_INSTALL)
-        Slogger::I(TAG, "startCopy");
+    if (DEBUG_INSTALL) Slogger::I(TAG, "startCopy %p: %p", mUser.Get(), this);
 
     if (++mRetries > MAX_RETRIES) {
         Slogger::W(TAG, "Failed to invoke remote methods on default container service. Giving up");
@@ -2123,8 +2009,10 @@ void CPackageManagerService::HandlerParams::ServiceError()
     HandleReturnCode();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::MeasureParams
+
+//==============================================================================
+//                  CPackageManagerService::MeasureParams
+//==============================================================================
 
 CPackageManagerService::MeasureParams::MeasureParams(
     /* [in] */ IPackageStats* stats,
@@ -2136,11 +2024,23 @@ CPackageManagerService::MeasureParams::MeasureParams(
     , mObserver(observer)
 {}
 
-//@Override
+ECode CPackageManagerService::MeasureParams::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Int32 hashCode;
+    system->IdentityHashCode((IObject*)this, &hashCode);
+    String pkgN;
+    mStats->GetPackageName(&pkgN);
+    *str = String("MeasureParams{") + StringUtils::ToHexString(hashCode) + pkgN + "}";
+    return NOERROR;
+}
+
 ECode CPackageManagerService::MeasureParams::HandleStartCopy()
 {
-    {
-        AutoLock lock(mHost->mInstallLock);
+    synchronized (mHost->mInstallLock) {
         String packageName;
         mStats->GetPackageName(&packageName);
         Int32 userHandle;
@@ -2148,81 +2048,48 @@ ECode CPackageManagerService::MeasureParams::HandleStartCopy()
         mSuccess = mHost->GetPackageSizeInfoLI(packageName, userHandle, mStats);
     }
 
-    Boolean mounted = FALSE;
-    AutoPtr<IEnvironment> env;
-    CEnvironment::AcquireSingleton((IEnvironment**)&env);
-    Boolean isEmulated = FALSE;
-    env->IsExternalStorageEmulated(&isEmulated);
-    if (isEmulated) {
-        mounted = true;
-    } else {
-        String status;
-        env->GetExternalStorageState(&status);
-        mounted = (IEnvironment::MEDIA_MOUNTED.Equals(status)
-                || IEnvironment::MEDIA_MOUNTED_READ_ONLY.Equals(status));
+    if (mSuccess) {
+        Boolean mounted;
+        if (env->IsExternalStorageEmulated()) {
+            mounted = TRUE;
+        }
+        else {
+            String status;
+            env->GetExternalStorageState(&status);
+            mounted = (IEnvironment::MEDIA_MOUNTED.Equals(status)
+                    || IEnvironment::MEDIA_MOUNTED_READ_ONLY.Equals(status));
+        }
+
+        if (mounted) {
+            Int32 userHandle;
+            mStats->GetUserHandle(&userHandle);
+            AutoPtr<UserEnvironment> userEnv = new Environment::UserEnvironment(userHandle);
+
+            String pkgN;
+            mStats->GetPackageName(&pkgN);
+            mStats->SetExternalCacheSize(mHost->CalculateDirectorySize(mContainerService,
+                    userEnv->BuildExternalStorageAppCacheDirs(pkgN));
+
+            mStats->SetExternalDataSize(CalculateDirectorySize(mContainerService,
+                    userEnv->BuildExternalStorageAppDataDirs(pkgN));
+
+            // Always subtract cache size, since it's a subdirectory
+            Int32 size, cacheSize;
+            mStats->GetExternalCodeSize(&size);
+            mStats->GetExternalCacheSize(&cacheSize);
+            size -= cacheSize;
+            mStats->SetExternalDataSize(size);
+
+            mStats->SetExternalMediaSize(CalculateDirectorySize(mContainerService,
+                    userEnv->BuildExternalStorageAppMediaDirs(pkgN));
+
+            mStats->SetExternalObbSize(CalculateDirectorySize(mContainerService,
+                    userEnv->BuildExternalStorageAppObbDirs(pkgN));
+        }
     }
-
-    if (mounted) {
-        Int32 userHandle;
-        mStats->GetUserHandle(&userHandle);
-        AutoPtr<IUserEnvironment> userEnv;
-        CUserEnvironment::New(userHandle, (IUserEnvironment**)&userEnv);
-
-        String packageName;
-        mStats->GetPackageName(&packageName);
-        AutoPtr<IFile> externalCacheDir;
-        userEnv->GetExternalStorageAppCacheDirectory(packageName, (IFile**)&externalCacheDir);
-        String ecdPath;
-        externalCacheDir->GetPath(&ecdPath);
-        Int64 externalCacheSize = 0;
-        if (FAILED(mHost->mContainerService->CalculateDirectorySize(ecdPath, &externalCacheSize))) {
-            return E_REMOTE_EXCEPTION;
-        }
-        mStats->SetExternalCacheSize(externalCacheSize);
-
-        AutoPtr<IFile> externalDataDir;
-        userEnv->GetExternalStorageAppDataDirectory(packageName, (IFile**)&externalDataDir);
-        String eddPath;
-        externalDataDir->GetPath(&eddPath);
-        Int64 externalDataSize = 0;
-        if (FAILED(mHost->mContainerService->CalculateDirectorySize(eddPath, &externalDataSize))) {
-            return E_REMOTE_EXCEPTION;
-        }
-
-        AutoPtr<IFile> ecdpFile;
-        externalCacheDir->GetParentFile((IFile**)&ecdpFile);
-        Boolean isEqual = FALSE;
-        ecdpFile->Equals(externalDataDir, &isEqual);
-        if (isEqual) {
-            externalDataSize -= externalCacheSize;
-        }
-        mStats->SetExternalDataSize(externalDataSize);
-
-        AutoPtr<IFile> externalMediaDir;
-        userEnv->GetExternalStorageAppMediaDirectory(packageName, (IFile**)&externalMediaDir);
-        String emdPath;
-        externalMediaDir->GetPath(&emdPath);
-        Int64 externalAppMediaSize = 0;
-        if (FAILED(mHost->mContainerService->CalculateDirectorySize(emdPath, &externalAppMediaSize))) {
-            return E_REMOTE_EXCEPTION;
-        }
-        mStats->SetExternalMediaSize(externalAppMediaSize);
-
-        AutoPtr<IFile> externalObbDir;
-        userEnv->GetExternalStorageAppObbDirectory(packageName, (IFile**)&externalObbDir);
-        String eobbPath;
-        externalObbDir->GetPath(&eobbPath);
-        Int64 externalObbSize = 0;
-        if (FAILED(mHost->mContainerService->CalculateDirectorySize(eobbPath, &externalObbSize))) {
-            return E_REMOTE_EXCEPTION;
-        }
-        mStats->SetExternalObbSize(externalObbSize);
-    }
-
     return NOERROR;
 }
 
-//@Override
 void CPackageManagerService::MeasureParams::HandleReturnCode()
 {
     if (mObserver != NULL) {
@@ -2236,7 +2103,6 @@ void CPackageManagerService::MeasureParams::HandleReturnCode()
     }
 }
 
-//@Override
 void CPackageManagerService::MeasureParams::HandleServiceError()
 {
     String packageName;
@@ -2244,8 +2110,68 @@ void CPackageManagerService::MeasureParams::HandleServiceError()
     Slogger::E(TAG, "Could not measure application %s external storage", packageName.string());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::InstallParams
+
+//==============================================================================
+//                  CPackageManagerService::OriginInfo
+//==============================================================================
+
+CPackageManagerService::OriginInfo::OriginInfo(
+    /* [in] */ IFile* file,
+    /* [in] */ const String& cid,
+    /* [in] */ Boolean staged,
+    /* [in] */ Boolean existing)
+    : mFile(file)
+    , mCid(cid)
+    , mStaged(staged)
+    , mExisting(existing)
+{
+    if (!cid.IsNull()) {
+        mResolvedPath = PackageHelper::GetSdDir(cid);
+        CFile::New(mResolvedPath, (IFile**)&mResolvedFile);
+    }
+    else if (file != NULL) {
+        mFile->GetAbsolutePath(&mResolvedPath);
+        mResolvedFile = mFile;
+    }
+    else {
+        mResolvedPath = String(NULL);
+        mResolvedFile = NULL;
+    }
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromNothing()
+{
+    return new OriginInfo(NULL, String(NULL), FALSE, FALSE);
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromUntrustedFile(
+    /* [in] */ IFile* file)
+{
+    return new OriginInfo(file, String(NULL), FALSE, FALSE);
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromExistingFile(
+    /* [in] */ IFile* file)
+{
+    return new OriginInfo(file, String(NULL), FALSE, TRUE);
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromStagedFile(
+    /* [in] */ IFile* file)
+{
+    return new OriginInfo(file, String(NULL), TRUE, FALSE);
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromStagedContainer(
+    /* [in] */ const String& cid)
+{
+    return new OriginInfo(NULL, cid, TRUE, FALSE);
+}
+
+
+//==============================================================================
+//                  CPackageManagerService::InstallParams::CopyBroadcastReceiver
+//==============================================================================
 
 ECode CPackageManagerService::InstallParams::CopyBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
@@ -2262,6 +2188,44 @@ ECode CPackageManagerService::InstallParams::CopyBroadcastReceiver::OnReceive(
     return BroadcastReceiver::SetPendingResult(NULL);
 }
 
+
+//==============================================================================
+//                  CPackageManagerService::InstallParams
+//==============================================================================
+
+CPackageManagerService::InstallParams::InstallParams(
+    /* [in] */ OriginInfo* origin,
+    /* [in] */ IIPackageInstallObserver2* observer,
+    /* [in] */ Int32 installFlags,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ IVerificationParams* verificationParams,
+    /* [in] */ IUserHandle* user,
+    /* [in] */ const String& packageAbiOverride,
+    /* [in] */ CPackageManagerService* owner)
+    : HandlerParams(user, owner)
+    , mObserver(observer)
+    , mInstallFlags(installFlags)
+    , mInstallerPackageName(installerPackageName)
+    , mVerificationParams(verificationParams)
+    , mPackageAbiOverride(packageAbiOverride)
+    , mRet(0)
+{}
+
+ECode CPackageManagerService::InstallParams::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    AutoPtr<ISystem> sys;
+    CSystem::AcquireSingleton((ISystem**)&sys);
+    Int32 hashCode;
+    sys->IdentityHashCode((IObject*)this, &hashCode);
+    String fileStr;
+    IObject::Probe(mOrigin->mFile)->ToString(&fileStr);
+    *str = String("InstallParams{") + StringUtils::ToHexString(hashCode)
+            + " file=" + fileStr + " cid=" + mOrigin->mCid + "}";
+    return NOERROR;
+}
+
 AutoPtr<IManifestDigest> CPackageManagerService::InstallParams::GetManifestDigest()
 {
     if (mVerificationParams == NULL) {
@@ -2273,17 +2237,15 @@ AutoPtr<IManifestDigest> CPackageManagerService::InstallParams::GetManifestDiges
 }
 
 Int32 CPackageManagerService::InstallParams::InstallLocationPolicy(
-    /* [in] */ IPackageInfoLite* pkgLite,
-    /* [in] */ Int32 flags)
+    /* [in] */ IPackageInfoLite* pkgLite)
 {
     String packageName;
     pkgLite->GetPackageName(&packageName);
     Int32 installLocation;
     pkgLite->GetInstallLocation(&installLocation);
-    Boolean onSd = (flags & IPackageManager::INSTALL_EXTERNAL) != 0;
-    {
-        AutoLock lock(mHost->mPackagesLock);
-
+    Boolean onSd = (mInstallFlags & IPackageManager::INSTALL_EXTERNAL) != 0;
+    // reader
+    synchronized (mHost->mPackagesLock) {
         AutoPtr<PackageParser::Package> pkg;
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it
                 = mHost->mPackages.Find(packageName);
@@ -2291,9 +2253,9 @@ Int32 CPackageManagerService::InstallParams::InstallLocationPolicy(
             pkg = it->mSecond;
         }
         if (pkg != NULL) {
-            if ((flags & IPackageManager::INSTALL_REPLACE_EXISTING) != 0) {
+            if ((mInstallFlags & IPackageManager::INSTALL_REPLACE_EXISTING) != 0) {
                 // Check for downgrading.
-                if ((flags & IPackageManager::INSTALL_ALLOW_DOWNGRADE) == 0) {
+                if ((mInstallFlags & IPackageManager::INSTALL_ALLOW_DOWNGRADE) == 0) {
                     Int32 versionCode;
                     pkgLite->GetVersionCode(&versionCode);
                     if (versionCode < pkg->mVersionCode) {
@@ -2353,6 +2315,7 @@ Int32 CPackageManagerService::InstallParams::InstallLocationPolicy(
 
 ECode CPackageManagerService::InstallParams::HandleStartCopy()
 {
+    // begin from this
     Int32 ret = IPackageManager::INSTALL_SUCCEEDED;
     Boolean onSd = (mFlags & IPackageManager::INSTALL_EXTERNAL) != 0;
     Boolean onInt = (mFlags & IPackageManager::INSTALL_INTERNAL) != 0;
@@ -2724,6 +2687,58 @@ AutoPtr<IUri> CPackageManagerService::InstallParams::GetPackageUri()
         return mPackageURI;
     }
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+// InstallArgs
+
+InstallArgs::InstallArgs(
+    /* [in] */ IUri* packageURI,
+    /* [in] */ IPackageInstallObserver* observer,
+    /* [in] */ Int32 flags,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ IManifestDigest* manifestDigest,
+    /* [in] */ IUserHandle* user,
+    /* [in] */ CPackageManagerService* owner)
+    : mObserver(observer)
+    , mFlags(flags)
+    , mPackageURI(packageURI)
+    , mInstallerPackageName(installerPackageName)
+    , mManifestDigest(manifestDigest)
+    , mUser(user)
+    , mHost(owner)
+    , mIsEpk(FALSE)
+{
+    // for epk
+    if (packageURI != NULL) {
+        String path;
+        packageURI->GetPath(&path);
+        if (path.EndWith(".epk"))
+            mIsEpk = TRUE;
+    }
+}
+
+Int32 InstallArgs::DoPreCopy()
+{
+    return IPackageManager::INSTALL_SUCCEEDED;
+}
+
+Int32 InstallArgs::DoPostCopy(
+    /* [in] */ Int32 uid)
+{
+    return IPackageManager::INSTALL_SUCCEEDED;
+}
+
+Boolean InstallArgs::IsFwdLocked()
+{
+    return (mFlags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
+}
+
+AutoPtr<IUserHandle> InstallArgs::GetUser()
+{
+    return mUser;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // CPackageManagerService::MoveParams
@@ -12756,44 +12771,24 @@ void CPackageManagerService::SchedulePackageCleaning(
     /* [in] */ Int32 userId,
     /* [in] */ Boolean andCode)
 {
-    // begin from this
-    Message msg = mHandler.obtainMessage(START_CLEANING_PACKAGE,
-            userId, andCode ? 1 : 0, packageName);
-    if (mSystemReady) {
-        msg.sendToTarget();
-    } else {
-        if (mPostSystemReadyMessages == null) {
-            mPostSystemReadyMessages = new ArrayList<>();
-        }
-        mPostSystemReadyMessages.add(msg);
-    }
-
-
-
-
-
-    // if (false) {
-    //     RuntimeException here = new RuntimeException("here");
-    //     here.fillInStackTrace();
-    //     Slog.d(TAG, "Schedule cleaning " + packageName + " user=" + userId
-    //             + " andCode=" + andCode, here);
-    // }
-
-    AutoPtr<ICharSequence> seq;
-    CString::New(packageName, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(START_CLEANING_PACKAGE,
-        userId, andCode ? 1 : 0, seq, (IMessage**)&msg);
-    Boolean result;
-    mHandler->SendMessage(msg, &result);
+            userId, andCode ? 1 : 0, packageName, (IMessage**)&msg);
+    if (mSystemReady) {
+        msg->SendToTarget();
+    }
+    else {
+        if (mPostSystemReadyMessages == NULL) {
+            CArrayList::New((IArrayList**)&mPostSystemReadyMessages);
+        }
+        mPostSystemReadyMessages->Add(msg);
+    }
 }
 
 void CPackageManagerService::StartCleaningPackages()
 {
     // reader
-    {
-        AutoLock lock(mPackagesLock);
-
+    synchronized (mPackagesLock) {
         if (!IsExternalMediaAvailable()) {
             return;
         }
@@ -12812,94 +12807,283 @@ void CPackageManagerService::StartCleaningPackages()
 }
 
 ECode CPackageManagerService::InstallPackage(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
-    /* [in] */ Int32 flags)
-{
-    return InstallPackage(packageURI, observer, flags, String(NULL));
-}
-
-ECode CPackageManagerService::InstallPackage(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
-    /* [in] */ Int32 flags,
-    /* [in] */ const String& installerPackageName)
-{
-    return InstallPackageWithVerification(packageURI, observer, flags,
-            installerPackageName, NULL, NULL, NULL);
-}
-
-ECode CPackageManagerService::InstallPackageWithVerification(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
-    /* [in] */ Int32 flags,
-    /* [in] */ const String& installerPackageName,
-    /* [in] */ IUri* verificationURI,
-    /* [in] */ IManifestDigest* manifestDigest,
-    /* [in] */ IContainerEncryptionParams* encryptionParams)
-{
-    AutoPtr<IVerificationParams> verificationParams;
-    CVerificationParams::New(verificationURI, NULL, NULL,
-            IVerificationParams::NO_UID, manifestDigest, (IVerificationParams**)&verificationParams);
-    return InstallPackageWithVerificationAndEncryption(packageURI, observer, flags,
-            installerPackageName, verificationParams, encryptionParams);
-}
-
-ECode CPackageManagerService::InstallPackageWithVerificationAndEncryption(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
+    /* [in] */ const String& originPath,
+    /* [in] */ IIPackageInstallObserver2* observer,
     /* [in] */ Int32 flags,
     /* [in] */ const String& installerPackageName,
     /* [in] */ IVerificationParams* verificationParams,
-    /* [in] */ IContainerEncryptionParams* encryptionParams)
+    /* [in] */ const String& packageAbiOverride)
+{
+    return InstallPackageAsUser(originPath, observer, installFlags, installerPackageName,
+            verificationParams, packageAbiOverride, UserHandle::GetCallingUserId());
+}
+
+ECode CPackageManagerService::InstallPackageAsUser(
+    /* [in] */ const String& originPath,
+    /* [in] */ IIPackageInstallObserver2* observer,
+    /* [in] */ Int32 flags,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ IVerificationParams* verificationParams,
+    /* [in] */ const String& packageAbiOverride,
+    /* [in] */ Int32 userId)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::permission::INSTALL_PACKAGES,
-        String(NULL)));
+            Elastos::Droid::Manifest::permission::INSTALL_PACKAGES, String(NULL)))
 
-    Int32 uid = Binder::GetCallingUid();
-    AutoPtr<IUserHandle> user;
-    if ((flags & IPackageManager::INSTALL_ALL_USERS) != 0) {
-        user = UserHandle::ALL;
-    }
-    else {
-        CUserHandle::New(UserHandle::GetUserId(uid), (IUserHandle**)&user);
-    }
+    Int32 callingUid = Binder::GetCallingUid();
+    FAIL_RETURN(EnforceCrossUserPermission(callingUid, userId, TRUE, TRUE, String("installPackageAsUser")))
 
-    Int32 filteredFlags;
-
-    if (uid == IProcess::SHELL_UID || uid == 0) {
-        if (DEBUG_INSTALL) {
-            Slogger::V(TAG, "Install from ADB");
+    if (IsUserRestricted(userId, IUserManager::DISALLOW_INSTALL_APPS)) {
+        // try {
+        if (observer != NULL) {
+            observer->OnPackageInstalled(String(""), INSTALL_FAILED_USER_RESTRICTED, String(NULL), NULL);
         }
-        filteredFlags = flags | IPackageManager::INSTALL_FROM_ADB;
+        // } catch (RemoteException re) {
+        // }
+        return NOERROR;
+    }
+
+    if ((callingUid == IProcess::SHELL_UID) || (callingUid == IProcess::ROOT_UID)) {
+        installFlags |= IPackageManager::INSTALL_FROM_ADB;
+
     }
     else {
-        filteredFlags = flags & ~IPackageManager::INSTALL_FROM_ADB;
+        // Caller holds INSTALL_PACKAGES permission, so we're less strict
+        // about installerPackageName.
+
+        installFlags &= ~IPackageManager::INSTALL_FROM_ADB;
+        installFlags &= ~IPackageManager::INSTALL_ALL_USERS;
     }
 
-    verificationParams->SetInstallerUid(uid);
+    AutoPtr<IUserHandle> user;
+    if ((installFlags & IPackageManager::INSTALL_ALL_USERS) != 0) {
+        AutoPtr<IUserHandleHelper> helper;
+        CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+        helper->GetAll((IUserHandle**)&user);
+    }
+    else {
+        CUserHandle::New(userId, (IUserHandle**)&user);
+    }
 
-    AutoPtr<InstallParams> installParams = new InstallParams(
-        packageURI, observer, filteredFlags, installerPackageName,
-        verificationParams, encryptionParams, user, this);
+    verificationParams->SetInstallerUid(callingUid);
+
+    AutoPtr<IFile> originFile;
+    CFile::New(originPath, (IFile**)&originFile);
+    AutoPtr<OriginInfo> origin = OriginInfo::FromUntrustedFile(originFile);
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(INIT_COPY, (IMessage**)&msg);
-    msg->SetObj(installParams);
+    AutoPtr<InstallParams> params = new InstallParams(origin, observer, installFlags,
+            installerPackageName, verificationParams, user, packageAbiOverride);
+    msg->SetObj((IInterface*)params);
     Boolean result;
-    return mHandler->SendMessage(msg, &result);
+    mHandler->SendMessage(msg, &result);
 }
 
-ECode CPackageManagerService::InstallExistingPackage(
+void CPackageManagerService::InstallStage(
     /* [in] */ const String& packageName,
-    /* [out] */ Int32* result)
+    /* [in] */ IFile* stagedDir,
+    /* [in] */ const String& stagedCid,
+    /* [in] */ IIPackageInstallObserver2* observer,
+    /* [in] */ IPackageInstallerSessionParams* params,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ Int32 installerUid,
+    /* [in] */ IUserHandle* user)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::INSTALL_PACKAGES,
-            String(NULL)));
+    AutoPtr<IVerificationParams> verifParams;
+    AutoPtr<IUri> oriUri, referrerUri;
+    params->GetOriginatingURI((IUri**)&oriUri);
+    params->GetReferrerUri((IUri**)&referrerUri);
+    CVerificationParams::New(NULL, oriUri, referrerUri, installerUid, NULL);
+
+    AutoPtr<OriginInfo> origin;
+    if (stagedDir != NULL) {
+        origin = OriginInfo::FromStagedFile(stagedDir);
+    }
+    else {
+        origin = OriginInfo::FromStagedContainer(stagedCid);
+    }
+
+    AutoPtr<IMessage> msg;
+    mHandler->ObtainMessage(INIT_COPY, (IMessage**)&msg);
+    Int32 installFlags;
+    params->GetInstallFlags(&installFlags);
+    String abiOverride;
+    params->GetAbiOverride(&abiOverride);
+    AutoPtr<InstallParams> params = new InstallParams(origin, observer, installFlags,
+            installerPackageName, verificationParams, user, abiOverride);
+    msg->SetObj((IInterface*)params);
+    Boolean result;
+    mHandler->SendMessage(msg, &result);
+}
+
+void CPackageManagerService::SendPackageAddedForUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ PackageSetting* pkgSetting,
+    /* [in] */ Int32 userId)
+{
+    AutoPtr<IBundle> extras;
+    CBundle(1, (IBundle**)&extras);
+    extras->PutInt32(IIntent::EXTRA_UID, UserHandle::GetUid(userId, pkgSetting->mAppId));
+
+    AutoPtr< ArrayOf<Int32> > userIds = ArrayOf<Int32>::Alloc(1);
+    (*userIds)[0] = userId;
+    SendPackageBroadcast(IIntent::ACTION_PACKAGE_ADDED, packageName, extras, String(NULL), NULL, userIds);
+    // try {
+    AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
+    Boolean isSystem = IsSystemApp(pkgSetting) || IsUpdatedSystemApp(pkgSetting);
+    Boolean isUserRunning;
+    if (isSystem && (am->IsUserRunning(userId, FALSE, &isUserRunning), isUserRunning)) {
+        // The just-installed/enabled app is bundled on the system, so presumed
+        // to be able to run automatically without needing an explicit launch.
+        // Send it a BOOT_COMPLETED if it would ordinarily have gotten one.
+        AutoPtr<IIntent> bcIntent;
+        CIntent::New(IIntent::ACTION_BOOT_COMPLETED, (IIntent**)&bcIntent);
+        bcIntent->AddFlags(IIntent::FLAG_INCLUDE_STOPPED_PACKAGES)
+        bcIntent->SetPackage(packageName);
+        Boolean result;
+        if (FAILED(am->BroadcastIntent(NULL, bcIntent, String(NULL), NULL, 0, String(NULL),
+                NULL, String(NULL), IAppOpsManager::OP_NONE, FALSE, FALSE, userId, &result))) {
+            Slogger::W(TAG, "Unable to bootstrap installed package");
+        }
+    }
+    // } catch (RemoteException e) {
+    //     // shouldn't happen
+    //     Slog.w(TAG, "Unable to bootstrap installed package", e);
+    // }
+}
+
+ECode CPackageManagerService::SetApplicationHiddenSettingAsUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ Boolean hide,
+    /* [in] */ Int32 userId,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Elastos::Core::Manifest::permission::MANAGE_USERS, String(NULL)))
     AutoPtr<PackageSetting> pkgSetting;
     Int32 uid = Binder::GetCallingUid();
-    Int32 userId = UserHandle::GetUserId(uid);
+    FAIL_RETURN(EnforceCrossUserPermission(uid, userId, TRUE, TRUE,
+            String("setApplicationHiddenSetting for user ") + StringUtils::ToString(userId)))
+
+    if (hidden && IsPackageDeviceAdmin(packageName, userId)) {
+        Slogger::W(TAG, "Not hiding package %s: has active device admin", packageName.string());
+        return NOERROR;
+    }
+
+    Int64 callingId = Binder::ClearCallingIdentity();
+    // try {
+    Boolean sendAdded = FALSE;
+    Boolean sendRemoved = FALSE;
+    // writer
+    synchronized (mPackagesLock) {
+        HashMap<String, AutoPtr<PackageSetting> >::Iterator it = mSettings->mPackages.Find(packageName);
+        if (it != mSettings->mPackages.End()) {
+            pkgSetting = it->mSecond;
+        }
+        if (pkgSetting == NULL) {
+            Binder::RestoreCallingIdentity(callingId);
+            return NOERROR;
+        }
+        if (pkgSetting->GetHidden(userId) != hidden) {
+            pkgSetting->SetHidden(hidden, userId);
+            mSettings->WritePackageRestrictionsLPr(userId);
+            if (hidden) {
+                sendRemoved = TRUE;
+            }
+            else {
+                sendAdded = TRUE;
+            }
+        }
+    }
+    if (sendAdded) {
+        SendPackageAddedForUser(packageName, pkgSetting, userId);
+        *result = TRUE;
+        Binder::RestoreCallingIdentity(callingId);
+        return NOERROR
+    }
+    if (sendRemoved) {
+        KillApplication(packageName, UserHandle::GetUid(userId, pkgSetting->mAppId),
+                String("hiding pkg"));
+        SendApplicationHiddenForUser(packageName, pkgSetting, userId);
+    }
+    // } finally {
+    //     Binder.restoreCallingIdentity(callingId);
+    // }
+    Binder::RestoreCallingIdentity(callingId);
+    *result = FALSE;
+    return NOERROR;
+}
+
+void CPackageManagerService::SendApplicationHiddenForUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ PackageSetting* pkgSetting,
+    /* [in] */ Int32 userId)
+{
+    AutoPtr<PackageRemovedInfo> info = new PackageRemovedInfo();
+    info->mRemovedPackage = packageName;
+    info->mRemovedUsers = ArrayOf<Int32>::Alloc(1);
+    (*info->mRemovedUsers)[0] = userId;
+    info->mUid = UserHandle::GetUid(userId, pkgSetting->mAppId);
+    info->SendBroadcast(FALSE, FALSE, FALSE);
+}
+
+ECode CPackageManagerService::GetApplicationHiddenSettingAsUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 userId,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Elastos::Core::Manifest::permission::MANAGE_USERS, String(NULL)))
+    FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, TRUE,
+            FALSE, String("getApplicationHidden for user ") + StringUtils::ToString(userId)))
+    AutoPtr<PackageSetting> pkgSetting;
+    Int64 callingId = Binder::ClearCallingIdentity();
+    // try {
+    // writer
+    synchronized (mPackagesLock) {
+        HashMap<String, AutoPtr<PackageSetting> >::Iterator it = mSettings->mPackages.Find(packageName);
+        if (it != mSettings->mPackages.End()) {
+            pkgSetting = it->mSecond;
+        }
+        if (pkgSetting == NULL) {
+            *result = TRUE;
+            Binder::RestoreCallingIdentity(callingId);
+            return NOERROR;
+        }
+        *result = pkgSetting->GetHidden(userId);
+    }
+    // } finally {
+    //     Binder.restoreCallingIdentity(callingId);
+    // }
+    Binder::RestoreCallingIdentity(callingId);
+    return NOERROR;
+}
+
+ECode CPackageManagerService::InstallExistingPackageAsUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 userId,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Elastos::Droid::Manifest::permission::INSTALL_PACKAGES, String(NULL)))
+    AutoPtr<PackageSetting> pkgSetting;
+    Int32 uid = Binder::GetCallingUid();
+    FAIL_RETURN(EnforceCrossUserPermission(uid, userId, TRUE, TRUE,
+            String("installExistingPackage for user " + StringUtils::ToString(userId))))
+    if (IsUserRestricted(userId, UserManager.DISALLOW_INSTALL_APPS)) {
+        *result = IPackageManager::INSTALL_FAILED_USER_RESTRICTED;
+        return NOERROR;
+    }
 
     Int64 callingId = Binder::ClearCallingIdentity();
     // try {
@@ -12908,8 +13092,7 @@ ECode CPackageManagerService::InstallExistingPackage(
     CBundle::New(1, (IBundle**)&extras);
 
     // writer
-    {
-        AutoLock lock(mPackagesLock);
+    synchronized (mPackagesLock) {
         HashMap<String, AutoPtr<PackageSetting> >::Iterator psIt = mSettings->mPackages.Find(packageName);
         if (psIt != mSettings->mPackages.End()) pkgSetting = psIt->mSecond;
         if (pkgSetting == NULL) {
@@ -12918,19 +13101,16 @@ ECode CPackageManagerService::InstallExistingPackage(
             return NOERROR;
         }
         if (!pkgSetting->GetInstalled(userId)) {
-                pkgSetting->SetInstalled(TRUE, userId);
-                mSettings->WritePackageRestrictionsLPr(userId);
-                extras->PutInt32(IIntent::EXTRA_UID, UserHandle::GetUid(userId, pkgSetting->mAppId));
-                sendAdded = TRUE;
+            pkgSetting->SetInstalled(TRUE, userId);
+            pkgSetting->SetHidden(FALSE, userId);
+            mSettings->WritePackageRestrictionsLPr(userId);
+            sendAdded = TRUE;
         }
     }
 
-        if (sendAdded) {
-            AutoPtr<ArrayOf<Int32> > idArray = ArrayOf<Int32>::Alloc(1);
-            idArray->Set(0, userId);
-            SendPackageBroadcast(IIntent::ACTION_PACKAGE_ADDED,
-                    packageName, extras, String(NULL), NULL, idArray);
-        }
+    if (sendAdded) {
+        SendPackageAddedForUser(packageName, pkgSetting, userId);
+    }
     // } finally {
     Binder::RestoreCallingIdentity(callingId);
     // }
@@ -12939,13 +13119,26 @@ ECode CPackageManagerService::InstallExistingPackage(
     return NOERROR;
 }
 
+Boolean CPackageManagerService::IsUserRestricted(
+    /* [in] */ Int32 userId,
+    /* [in] */ const String& restrictionKey)
+{
+    AutoPtr<IBundle> restrictions = sUserManager->GetUserRestrictions(userId);
+    Boolean value;
+    if (restrictions->GetBoolean(restrictionKey, FALSE, &value), value) {
+        Logger::W(TAG, "User is restricted: %s", restrictionKey.string());
+        return TRUE;
+    }
+    return FALSE;
+}
+
 ECode CPackageManagerService::VerifyPendingInstall(
     /* [in] */ Int32 id,
     /* [in] */ Int32 verificationCode)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT,
-            String("Only package verification agents can verify applications")));
+            String("Only package verification agents can verify applications")))
 
     AutoPtr<PackageVerificationResponse> response = new PackageVerificationResponse(
             verificationCode, Binder::GetCallingUid());
@@ -12965,7 +13158,7 @@ ECode CPackageManagerService::ExtendVerificationTimeout(
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT,
-            String("Only package verification agents can extend verification timeouts")));
+            String("Only package verification agents can extend verification timeouts")))
 
     HashMap<Int32, AutoPtr<PackageVerificationState> >::Iterator sIt = mPendingVerification.Find(id);
     AutoPtr<PackageVerificationState> state;
@@ -12992,7 +13185,7 @@ ECode CPackageManagerService::ExtendVerificationTimeout(
         msg->SetObj(response);
         msg->SetArg1(id);
         Boolean result;
-        return mHandler->SendMessageDelayed(msg, millisecondsToDelay, &result);
+        mHandler->SendMessageDelayed(msg, millisecondsToDelay, &result);
     }
     return NOERROR;
 }
@@ -13017,11 +13210,11 @@ ECode CPackageManagerService::BroadcastPackageVerified(
 
 AutoPtr<IComponentName> CPackageManagerService::MatchComponentForVerifier(
     /* [in] */ const String& packageName,
-    /* [in] */ List< AutoPtr<IResolveInfo> >* receivers)
+    /* [in] */ List<AutoPtr<IResolveInfo> >* receivers)
 {
     AutoPtr<IActivityInfo> targetReceiver;
 
-    List< AutoPtr<IResolveInfo> >::Iterator it;
+    List<AutoPtr<IResolveInfo> >::Iterator it;
     for (it = receivers->Begin(); it != receivers->End(); ++it) {
         AutoPtr<IResolveInfo> info = *it;
         AutoPtr<IActivityInfo> actInfo;
@@ -13031,8 +13224,7 @@ AutoPtr<IComponentName> CPackageManagerService::MatchComponentForVerifier(
         }
 
         String pkgName;
-        actInfo->GetPackageName(&pkgName);
-        if (packageName.Equals(pkgName)) {
+        if (actInfo->GetPackageName(&pkgName), packageName.Equals(pkgName)) {
             targetReceiver = actInfo;
             break;
         }
@@ -13092,55 +13284,56 @@ AutoPtr<List<AutoPtr<IComponentName> > > CPackageManagerService::MatchVerifiers(
 Int32 CPackageManagerService::GetUidForVerifier(
     /* [in] */ IVerifierInfo* verifierInfo)
 {
-    AutoLock lock(mPackagesLock);
-    String vPkgName;
-    verifierInfo->GetPackageName(&vPkgName);
-    HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(vPkgName);
-    AutoPtr<PackageParser::Package> pkg;
-    if (it != mPackages.End()) pkg = it->mSecond;
-    if (pkg == NULL) {
-        return -1;
+    synchronized (mPackages) {
+        String vPkgName;
+        verifierInfo->GetPackageName(&vPkgName);
+        HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(vPkgName);
+        AutoPtr<PackageParser::Package> pkg;
+        if (it != mPackages.End()) pkg = it->mSecond;
+        if (pkg == NULL) {
+            return -1;
+        }
+        else if (pkg->mSignatures->GetLength() != 1) {
+            Slogger::I(TAG, "Verifier package %s has more than one signature; ignoring", vPkgName.string());
+            return -1;
+        }
+
+        /*
+         * If the public key of the package's signature does not match
+         * our expected public key, then this is a different package and
+         * we should skip.
+         */
+
+        AutoPtr<ArrayOf<Byte> > expectedPublicKey;
+        // try {
+        AutoPtr<ISignature> verifierSig = (*pkg->mSignatures)[0];
+        AutoPtr<IPublicKey> publicKey;
+        if (FAILED(verifierSig->GetPublicKey((IPublicKey**)&publicKey)) ) return -1;
+        if (FAILED(publicKey->GetEncoded((ArrayOf<Byte>**)&expectedPublicKey)) ) return -1;
+        // } catch (CertificateException e) {
+        //     return -1;
+        // }
+        AutoPtr<IPublicKey> infoPublicKey;
+        verifierInfo->GetPublicKey((IPublicKey**)&infoPublicKey);
+        AutoPtr<ArrayOf<Byte> > actualPublicKey;
+        infoPublicKey->GetEncoded((ArrayOf<Byte>**)&actualPublicKey);
+
+        if (!Arrays::Equals(actualPublicKey, expectedPublicKey)) {
+            Slogger::I(TAG, "Verifier package %s does not have the expected public key; ignoring",
+                    verifierInfo->mPackageName.string());
+            return -1;
+        }
+
+        Int32 uid;
+        pkg->mApplicationInfo->GetUid(&uid);
+        return uid;
     }
-    else if (pkg->mSignatures->GetLength() != 1) {
-        Slogger::I(TAG, "Verifier package %s has more than one signature; ignoring", vPkgName.string());
-        return -1;
-    }
-
-    /*
-     * If the public key of the package's signature does not match
-     * our expected public key, then this is a different package and
-     * we should skip.
-     */
-
-    AutoPtr<ArrayOf<Byte> > expectedPublicKey;
-    // try {
-    AutoPtr<ISignature> verifierSig = (*pkg->mSignatures)[0];
-    AutoPtr<IPublicKey> publicKey;
-    if (FAILED(verifierSig->GetPublicKey((IPublicKey**)&publicKey)) ) return -1;
-// TODO: Need function IPublicKey::GetEncoded
-// if (FAILED(publicKey->GetEncoded((ArrayOf<Byte>**)&expectedPublicKey)) ) return -1;
-    // } catch (CertificateException e) {
-    //     return -1;
-    // }
-// AutoPtr<IPublicKey> infoPublicKey;
-// verifierInfo->GetPublicKey((IPublicKey**)&infoPublicKey);
-// AutoPtr<ArrayOf<Byte> > actualPublicKey;
-// infoPublicKey->GetEncoded((ArrayOf<Byte>**)&actualPublicKey);
-
-//     if (!actualPublicKey->Equals(expectedPublicKey)) {
-//         Slogger::I(TAG, "Verifier package %s does not have the expected public key; ignoring", vPkgName.string());
-//         return -1;
-//     }
-
-    Int32 uid;
-    pkg->mApplicationInfo->GetUid(&uid);
-    return uid;
 }
 
 ECode CPackageManagerService::FinishPackageInstall(
     /* [in] */ Int32 token)
 {
-    FAIL_RETURN(EnforceSystemOrRoot(String("Only the system is allowed to finish installs")));
+    FAIL_RETURN(EnforceSystemOrRoot(String("Only the system is allowed to finish installs")))
 
     if (DEBUG_INSTALL) {
         Slogger::V(TAG, "BM finishing package install for %d", token);
@@ -13180,11 +13373,14 @@ Int32 CPackageManagerService::GetDefaultVerificationResponse()
 }
 
 Boolean CPackageManagerService::IsVerificationEnabled(
-    /* [in] */ Int32 flags)
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 installFlags)
 {
     if (!DEFAULT_VERIFY_ENABLE) {
         return FALSE;
     }
+
+    Boolean ensureVerifyAppsEnabled = IsUserRestricted(userId, IUserManager::ENSURE_VERIFY_APPS);
 
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
@@ -13192,27 +13388,31 @@ Boolean CPackageManagerService::IsVerificationEnabled(
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sGlobal);
 
     // Check if installing from ADB
-    if ((flags & IPackageManager::INSTALL_FROM_ADB) != 0) {
+    if ((installFlags & IPackageManager::INSTALL_FROM_ADB) != 0) {
         // Do not run verification in a test harness environment
         AutoPtr<IActivityManagerHelper> amHelper;
         CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
         Boolean isRunning;
-        amHelper->IsRunningInTestHarness(&isRunning);
-        if (isRunning) {
+        if (amHelper->IsRunningInTestHarness(&isRunning), isRunning) {
             return FALSE;
+        }
+        if (ensureVerifyAppsEnabled) {
+            return TRUE;
         }
         // Check if the developer does not want package verification for ADB installs
         Int32 value;
-        sGlobal->GetInt32(resolver,
-                ISettingsGlobal::PACKAGE_VERIFIER_INCLUDE_ADB, 1, &value);
+        sGlobal->GetInt32(resolver, ISettingsGlobal::PACKAGE_VERIFIER_INCLUDE_ADB, 1, &value);
         if (value == 0) {
             return FALSE;
         }
     }
 
+    if (ensureVerifyAppsEnabled) {
+        return TRUE;
+    }
+
     Int32 ivalue;
-    sGlobal->GetInt32(resolver,
-            ISettingsGlobal::PACKAGE_VERIFIER_ENABLE, 1, &ivalue);
+    sGlobal->GetInt32(resolver, ISettingsGlobal::PACKAGE_VERIFIER_ENABLE, 1, &ivalue);
     return ivalue == 1;
 }
 
@@ -13235,97 +13435,87 @@ ECode CPackageManagerService::SetInstallerPackageName(
 {
     const Int32 uid = Binder::GetCallingUid();
     // writer
-    AutoLock lock(mPackagesLock);
-    HashMap<String, AutoPtr<PackageSetting> >::Iterator it = mSettings->mPackages.Find(targetPackage);
-    AutoPtr<PackageSetting> targetPackageSetting;
-    if (it != mSettings->mPackages.End()) targetPackageSetting = it->mSecond;
-    if (targetPackageSetting == NULL) {
-        // throw new IllegalArgumentException("Unknown target package: " + targetPackage);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    AutoPtr<PackageSetting> installerPackageSetting;
-    if (!installerPackageName.IsNull()) {
-        it = mSettings->mPackages.Find(installerPackageName);
-        if (it != mSettings->mPackages.End()) {
-            installerPackageSetting = it->mSecond;
-        }
-        if (installerPackageSetting == NULL) {
-            // throw new IllegalArgumentException("Unknown installer package: "
-            //         + installerPackageName);
+    synchronized (mPackagesLock) {
+        HashMap<String, AutoPtr<PackageSetting> >::Iterator it = mSettings->mPackages.Find(targetPackage);
+        AutoPtr<PackageSetting> targetPackageSetting;
+        if (it != mSettings->mPackages.End()) targetPackageSetting = it->mSecond;
+        if (targetPackageSetting == NULL) {
+            Slogger::E(TAG, "Unknown target package: %s", targetPackage.string());
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-    }
-    else {
-        installerPackageSetting = NULL;
-    }
 
-    AutoPtr<ArrayOf<ISignature*> > callerSignature;
-    AutoPtr<IInterface> obj = mSettings->GetUserIdLPr(uid);
-    if (obj != NULL) {
-        if (obj->Probe(EIID_SharedUserSetting) != NULL) {
-            SharedUserSetting* sus = reinterpret_cast<SharedUserSetting*>(obj->Probe(EIID_SharedUserSetting));
-            callerSignature = sus->mSignatures->mSignatures;
-        }
-        else if (obj->Probe(EIID_PackageSetting) != NULL) {
-            PackageSetting* ps = reinterpret_cast<PackageSetting*>(obj->Probe(EIID_PackageSetting));
-            callerSignature = ps->mSignatures->mSignatures;
+        AutoPtr<PackageSetting> installerPackageSetting;
+        if (!installerPackageName.IsNull()) {
+            it = mSettings->mPackages.Find(installerPackageName);
+            if (it != mSettings->mPackages.End()) {
+                installerPackageSetting = it->mSecond;
+            }
+            if (installerPackageSetting == NULL) {
+                Slogger::E(TAG, "Unknown installer package: %s", installerPackageName.string());
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
         }
         else {
-            // throw new SecurityException("Bad object " + obj + " for uid " + uid);
-            return E_SECURITY_EXCEPTION;
+            installerPackageSetting = NULL;
         }
-    }
-    else {
-        // throw new SecurityException("Unknown calling uid " + uid);
-        return E_SECURITY_EXCEPTION;
-    }
 
-    // Verify: can't set installerPackageName to a package that is
-    // not signed with the same cert as the caller.
-    if (installerPackageSetting != NULL) {
-        if (CompareSignatures(callerSignature,
-                installerPackageSetting->mSignatures->mSignatures)
-                != IPackageManager::SIGNATURE_MATCH) {
-            // throw new SecurityException(
-            //         "Caller does not have same cert as new installer package "
-            //         + installerPackageName);
-            return E_SECURITY_EXCEPTION;
-        }
-    }
-
-    // Verify: if target already has an installer package, it must
-    // be signed with the same cert as the caller.
-    if (!targetPackageSetting->mInstallerPackageName.IsNull()) {
-        HashMap<String, AutoPtr<PackageSetting> >::Iterator sit = mSettings->mPackages.Find(
-                targetPackageSetting->mInstallerPackageName);
-        AutoPtr<PackageSetting> setting;
-        if (sit != mSettings->mPackages.End()) setting = sit->mSecond;
-        // If the currently set package isn't valid, then it's always
-        // okay to change it.
-        if (setting != NULL) {
-            if (CompareSignatures(callerSignature,
-                    setting->mSignatures->mSignatures)
-                    != IPackageManager::SIGNATURE_MATCH) {
-                // throw new SecurityException(
-                //         "Caller does not have same cert as old installer package "
-                //         + targetPackageSetting.installerPackageName);
+        AutoPtr<ArrayOf<ISignature*> > callerSignature;
+        AutoPtr<IInterface> obj = mSettings->GetUserIdLPr(uid);
+        if (obj != NULL) {
+            if (obj->Probe(EIID_SharedUserSetting) != NULL) {
+                SharedUserSetting* sus = reinterpret_cast<SharedUserSetting*>(obj->Probe(EIID_SharedUserSetting));
+                callerSignature = sus->mSignatures->mSignatures;
+            }
+            else if (obj->Probe(EIID_PackageSetting) != NULL) {
+                PackageSetting* ps = reinterpret_cast<PackageSetting*>(obj->Probe(EIID_PackageSetting));
+                callerSignature = ps->mSignatures->mSignatures;
+            }
+            else {
+                Slogger::E(TAG, "Bad object %p for uid %d", obj.Get(), uid);
                 return E_SECURITY_EXCEPTION;
             }
         }
+        else {
+            Slogger::E(TAG, "Bad Unknown calling uid %d", uid);
+            return E_SECURITY_EXCEPTION;
+        }
+
+        // Verify: can't set installerPackageName to a package that is
+        // not signed with the same cert as the caller.
+        if (installerPackageSetting != NULL) {
+            if (CompareSignatures(callerSignature,
+                    installerPackageSetting->mSignatures->mSignatures)
+                    != IPackageManager::SIGNATURE_MATCH) {
+                Slogger::E(TAG, "Caller does not have same cert as new installer package %s",
+                        installerPackageName.string());
+                return E_SECURITY_EXCEPTION;
+            }
+        }
+
+        // Verify: if target already has an installer package, it must
+        // be signed with the same cert as the caller.
+        if (!targetPackageSetting->mInstallerPackageName.IsNull()) {
+            HashMap<String, AutoPtr<PackageSetting> >::Iterator sit = mSettings->mPackages.Find(
+                    targetPackageSetting->mInstallerPackageName);
+            AutoPtr<PackageSetting> setting;
+            if (sit != mSettings->mPackages.End()) setting = sit->mSecond;
+            // If the currently set package isn't valid, then it's always
+            // okay to change it.
+            if (setting != NULL) {
+                if (CompareSignatures(callerSignature,
+                        setting->mSignatures->mSignatures)
+                        != IPackageManager::SIGNATURE_MATCH) {
+                    Slogger::E(TAG, "Caller does not have same cert as old installer package %s",
+                            targetPackageSetting->mInstallerPackageName.string());
+                    return E_SECURITY_EXCEPTION;
+                }
+            }
+        }
+
+        // Okay!
+        targetPackageSetting->mInstallerPackageName = installerPackageName;
+        ScheduleWriteSettingsLocked();
     }
-
-    // Okay!
-    targetPackageSetting->mInstallerPackageName = installerPackageName;
-    ScheduleWriteSettingsLocked();
-    return NOERROR;
-}
-
-ECode CPackageManagerService::ProcessPendingInstallRunnable::Run()
-{
-    AutoPtr<InstallArgs> args = mInstallArgs;
-    mHost->mHandler->RemoveCallbacks(this);
-    mHost->HandlePendingInstallRun(args, mCurrentStatus);
     return NOERROR;
 }
 
@@ -13339,88 +13529,32 @@ ECode CPackageManagerService::ProcessPendingInstall(
     return mHandler->Post(runnable, &result);
 }
 
-void CPackageManagerService::HandlePendingInstallRun(
-    /* [in] */ InstallArgs* args,
-    /* [in] */ Int32 currentStatus)
+Int64 CPackageManagerService::CalculateDirectorySize(
+    /* [in] */ IIMediaContainerService* mcs,
+    /* [in] */ ArrayOf<IFile*>* paths)
 {
-    // Result object to be returned
-    AutoPtr<PackageInstalledInfo> res = new PackageInstalledInfo();
-    res->mReturnCode = currentStatus;
-    res->mUid = -1;
-    res->mPkg = NULL;
-    res->mRemovedInfo = new PackageRemovedInfo(this);
-    if (res->mReturnCode == IPackageManager::INSTALL_SUCCEEDED) {
-        args->DoPreInstall(res->mReturnCode);
-        {
-            AutoLock lock(mInstallLock);
-            AutoPtr<ArrayOf<Byte> > readBuffer = ArrayOf<Byte>::Alloc(PackageParser::CERTIFICATE_BUFFER_SIZE);
-            if (readBuffer == NULL) {
-                Slogger::E(TAG, "Failed install package: out of memory!");
-                return;
-            }
-            InstallPackageLI(args, TRUE, res, readBuffer);
-        }
-        args->DoPostInstall(res->mReturnCode, res->mUid);
+    Int64 result = 0;
+    for (Int32 i = 0; i < paths->GetLength(); ++i) {
+        String absolutePath;
+        (*paths)[i]->GetAbsolutePath(&absolutePath);
+        Int64 value;
+        mcs->CalculateDirectorySize(absolutePath, &value);
+        result += value;
     }
+    return result;
+}
 
-    // A restore should be performed at this point if (a) the install
-    // succeeded, (b) the operation is not an update, and (c) the new
-    // package has a backupAgent defined.
-    Boolean update = res->mRemovedInfo->mRemovedPackage != NULL;
-    String backupAgentName;
-    Boolean doRestore = (!update
-        && res->mPkg != NULL
-        && (res->mPkg->mApplicationInfo->GetBackupAgentName(&backupAgentName),
-            !backupAgentName.IsNull()));
-
-    // Set up the post-install work request bookkeeping.  This will be used
-    // and cleaned up by the post-install event handling regardless of whether
-    // there's a restore pass performed.  Token values are >= 1.
-    Int32 token;
-    if (mNextInstallToken < 0)
-        mNextInstallToken = 1;
-    token = mNextInstallToken++;
-
-    AutoPtr<PostInstallData> data = new PostInstallData(args, res);
-    mRunningInstalls[token] = data;
-    if (DEBUG_INSTALL)
-        Logger::V(TAG, "+ starting restore round-trip %d", token);
-
-    if (res->mReturnCode == IPackageManager::INSTALL_SUCCEEDED && doRestore) {
-        // Pass responsibility to the Backup Manager.  It will perform a
-        // restore if appropriate, then pass responsibility back to the
-        // Package Manager to run the post-install observer callbacks
-        // and broadcasts.
-        AutoPtr<IIBackupManager> bm = IIBackupManager::Probe(
-                ServiceManager::GetService(IContext::BACKUP_SERVICE));
-        if (bm != NULL) {
-            if (DEBUG_INSTALL)
-                Logger::V(TAG, "token %d to BM for possible restore", token);
-
-            String packageName;
-            res->mPkg->mApplicationInfo->GetPackageName(&packageName);
-            if (FAILED(bm->RestoreAtInstall(packageName, token))) {
-                Slogger::E(TAG, "Exception trying to enqueue restore");
-                doRestore = FALSE;
-            }
-        }
-        else {
-            Slogger::E(TAG, "Backup Manager not found!");
-            doRestore = FALSE;
-        }
-    }
-
-    if (!doRestore) {
-        // No restore possible, or the Backup Manager was mysteriously not
-        // available -- just fire the post-install work request directly.
-        if (DEBUG_INSTALL)
-            Logger::V(TAG, "No restore - queue post-install for %d", token);
-
-        AutoPtr<IMessage> msg;
-        mHandler->ObtainMessage(POST_INSTALL, (IMessage**)&msg);
-        msg->SetArg1(token);
-        Boolean result;
-        mHandler->SendMessage(msg, &result);
+void CPackageManagerService::ClearDirectory(
+    /* [in] */ IIMediaContainerService* mcs,
+    /* [in] */ ArrayOf<IFile*>* paths)
+{
+    for (Int32 i = 0; i < paths->GetLength(); ++i) {
+        // try {
+        String absolutePath;
+        (*paths)[i]->GetAbsolutePath(&absolutePath);
+        mcs->ClearDirectory(absolutePath);
+        // } catch (RemoteException e) {
+        // }
     }
 }
 

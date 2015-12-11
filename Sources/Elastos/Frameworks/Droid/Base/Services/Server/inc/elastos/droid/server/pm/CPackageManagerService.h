@@ -440,16 +440,9 @@ public:/* package */
         CPackageManagerService* mHost;
     };
 
-    class PackageInstalledInfo;
-
     class HandlerParams : public Object
     {
     public:
-        HandlerParams()
-            : mRetries(0)
-            , mHost(NULL)
-        {}
-
         HandlerParams(
             /* [in] */ IUserHandle* user,
             /* [in] */ CPackageManagerService* owner)
@@ -460,12 +453,11 @@ public:/* package */
 
         virtual ~HandlerParams() {};
 
-        virtual CARAPI_(AutoPtr<IUserHandle>) GetUser()
-        { return mUser; }
+        CARAPI_(AutoPtr<IUserHandle>) GetUser();
 
-        virtual CARAPI_(Boolean) StartCopy();
+        CARAPI_(Boolean) StartCopy();
 
-        virtual CARAPI_(void) ServiceError();
+        CARAPI_(void) ServiceError();
 
         virtual CARAPI HandleStartCopy() = 0;
 
@@ -497,6 +489,9 @@ public:/* package */
             /* [in] */ IPackageStatsObserver* observer,
             /* [in] */ CPackageManagerService* owner);
 
+        CARAPI ToString(
+            /* [out] */ String* str);
+
         //@Override
         CARAPI HandleStartCopy();
 
@@ -513,11 +508,60 @@ public:/* package */
         AutoPtr<IPackageStatsObserver> mObserver;
     };
 
+    class OriginInfo : Object
+    {
+    public:
+        static CARAPI_(AutoPtr<OriginInfo>) FromNothing();
+
+        static CARAPI_(AutoPtr<OriginInfo>) FromUntrustedFile(
+            /* [in] */ IFile* file);
+
+        static CARAPI_(AutoPtr<OriginInfo>) FromExistingFile(
+            /* [in] */ IFile* file);
+
+        static CARAPI_(AutoPtr<OriginInfo>) FromStagedFile(
+            /* [in] */ IFile* file);
+
+        static CARAPI_(AutoPtr<OriginInfo>) FromStagedContainer(
+            /* [in] */ const String& cid);
+
+    private:
+        OriginInfo(
+            /* [in] */ IFile* file,
+            /* [in] */ const String& cid,
+            /* [in] */ Boolean staged,
+            /* [in] */ Boolean existing);
+
+    public:
+        /**
+         * Location where install is coming from, before it has been
+         * copied/renamed into place. This could be a single monolithic APK
+         * file, or a cluster directory. This location may be untrusted.
+         */
+        AutoPtr<IFile> mFile;
+        String mCid;
+
+        /**
+         * Flag indicating that {@link #file} or {@link #cid} has already been
+         * staged, meaning downstream users don't need to defensively copy the
+         * contents.
+         */
+        Boolean mStaged;
+
+        /**
+         * Flag indicating that {@link #file} or {@link #cid} is an already
+         * installed app that is being moved.
+         */
+        Boolean mExisting;
+
+        String mResolvedPath;
+        AutoPtr<IFile> mResolvedFile;
+    };
+
     class InstallParams : public HandlerParams
     {
     public:
-        class CopyBroadcastReceiver
-            : public BroadcastReceiver
+        class CopyBroadcastReceiver : public BroadcastReceiver
         {
         public:
             CopyBroadcastReceiver(
@@ -546,26 +590,17 @@ public:/* package */
 
     public:
         InstallParams(
-            /* [in] */ IUri* packageURI,
-            /* [in] */ IPackageInstallObserver* observer,
-            /* [in] */ Int32 flags,
+            /* [in] */ OriginInfo* origin,
+            /* [in] */ IIPackageInstallObserver2* observer,
+            /* [in] */ Int32 installFlags,
             /* [in] */ const String& installerPackageName,
             /* [in] */ IVerificationParams* verificationParams,
-            /* [in] */ IContainerEncryptionParams* encryptionParams,
             /* [in] */ IUserHandle* user,
-            /* [in] */ CPackageManagerService* owner)
-            : HandlerParams(user, owner)
-            , mObserver(observer)
-            , mFlags(flags)
-            , mPackageURI(packageURI)
-            , mInstallerPackageName(installerPackageName)
-            , mVerificationParams(verificationParams)
-            , mRet(0)
-            , mEncryptionParams(encryptionParams)
-        {
-        }
+            /* [in] */ const String& packageAbiOverride,
+            /* [in] */ CPackageManagerService* owner);
 
-        ~InstallParams() {};
+        CARAPI ToString(
+            /* [out] */ String* str);
 
         CARAPI_(AutoPtr<IManifestDigest>) GetManifestDigest();
 
@@ -590,20 +625,19 @@ public:/* package */
 
     private:
         CARAPI_(Int32) InstallLocationPolicy(
-            /* [in] */ IPackageInfoLite* pkgLite,
-            /* [in] */ Int32 flags);
+            /* [in] */ IPackageInfoLite* pkgLite);
 
     public:
-        AutoPtr<IPackageInstallObserver> mObserver;
-        Int32 mFlags;
-
-        AutoPtr<IUri> mPackageURI;
+        AutoPtr<OriginInfo> mOrigin;
+        AutoPtr<IIPackageInstallObserver2> mObserver;
+        Int32 mInstallFlags;
         String mInstallerPackageName;
         AutoPtr<IVerificationParams> mVerificationParams;
+        String mPackageAbiOverride;
+
+    private:
         AutoPtr<InstallArgs> mArgs;
         Int32 mRet;
-        AutoPtr<IFile> mTempPackage;
-        AutoPtr<IContainerEncryptionParams> mEncryptionParams;
     };
 
     /*
@@ -889,9 +923,9 @@ private:
 
         CARAPI ReadToken(
             /* [in] */ IInputStream* in,
-            /* [in] */ StringBuilder sb,
+            /* [in] */ const String&Builder sb,
             /* [in] */ Char32 endOfToken,
-            /* [in] */ String* token);
+            /* [in] */ const String&* token);
 
         CARAPI_(AutoPtr<IAtomicFile>) GetFile();
 
@@ -1253,25 +1287,6 @@ private:
         CPackageManagerService* mHost;
         AutoPtr<MoveParams> mMp;
         Int32 mCurrentStatus;
-    };
-
-    class AppDirObserver : public FileObserver
-    {
-    public:
-        AppDirObserver(
-            /* [in] */ const String& path,
-            /* [in] */ Int32 mask,
-            /* [in] */ Boolean isrom,
-            /* [in] */ CPackageManagerService* owner);
-
-        CARAPI OnEvent(
-            /* [in] */ Int32 event,
-            /* [in] */ const String& path);
-
-    private:
-        String mRootDir;
-        Boolean mIsRom;
-        CPackageManagerService* mHost;
     };
 
     class ClearStorageConnection
@@ -1795,36 +1810,51 @@ public:
     CARAPI_(void) StartCleaningPackages();
 
     CARAPI InstallPackage(
-        /* [in] */ IUri* packageURI,
-        /* [in] */ IPackageInstallObserver* observer,
-        /* [in] */ Int32 flags);
-
-    CARAPI InstallPackage(
-        /* [in] */ IUri* packageURI,
-        /* [in] */ IPackageInstallObserver* observer,
-        /* [in] */ Int32 flags,
-        /* [in] */ const String& installerPackageName);
-
-    CARAPI InstallPackageWithVerification(
-        /* [in] */ IUri* packageURI,
-        /* [in] */ IPackageInstallObserver* observer,
-        /* [in] */ Int32 flags,
-        /* [in] */ const String& installerPackageName,
-        /* [in] */ IUri* verificationURI,
-        /* [in] */ IManifestDigest* manifestDigest,
-        /* [in] */ IContainerEncryptionParams* encryptionParams);
-
-    CARAPI InstallPackageWithVerificationAndEncryption(
-        /* [in] */ IUri* packageURI,
-        /* [in] */ IPackageInstallObserver* observer,
+        /* [in] */ const String& originPath,
+        /* [in] */ IIPackageInstallObserver2* observer,
         /* [in] */ Int32 flags,
         /* [in] */ const String& installerPackageName,
         /* [in] */ IVerificationParams* verificationParams,
-        /* [in] */ IContainerEncryptionParams* encryptionParams);
+        /* [in] */ const String& packageAbiOverride);
 
-    CARAPI InstallExistingPackage(
+    CARAPI InstallPackageAsUser(
+        /* [in] */ const String& originPath,
+        /* [in] */ IIPackageInstallObserver2* observer,
+        /* [in] */ Int32 flags,
+        /* [in] */ const String& installerPackageName,
+        /* [in] */ IVerificationParams* verificationParams,
+        /* [in] */ const String& packageAbiOverride,
+        /* [in] */ Int32 userId);
+
+    CARAPI_(void) InstallStage(
         /* [in] */ const String& packageName,
+        /* [in] */ IFile* stagedDir,
+        /* [in] */ const String& stagedCid,
+        /* [in] */ IIPackageInstallObserver2* observer,
+        /* [in] */ IPackageInstallerSessionParams* params,
+        /* [in] */ const String& installerPackageName,
+        /* [in] */ Int32 installerUid,
+        /* [in] */ IUserHandle* user);
+
+    CARAPI SetApplicationHiddenSettingAsUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ Boolean hide,
+        /* [in] */ Int32 userId,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetApplicationHiddenSettingAsUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 userId,
+        /* [out] */ Boolean* result);
+
+    CARAPI InstallExistingPackageAsUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 userId,
         /* [out] */ Int32* result);
+
+    CARAPI_(Boolean) IsUserRestricted(
+        /* [in] */ Int32 userId,
+        /* [in] */ const String& restrictionKey);
 
     CARAPI VerifyPendingInstall(
         /* [in] */ Int32 id,
@@ -1845,6 +1875,14 @@ public:
     CARAPI ProcessPendingInstall(
         /* [in] */ InstallArgs* args,
         /* [in] */ Int32 currentStatus);
+
+    static CARAPI_(Int64) CalculateDirectorySize(
+        /* [in] */ IIMediaContainerService* mcs,
+        /* [in] */ ArrayOf<IFile*>* paths);
+
+    static CARAPI_(void) ClearDirectory(
+        /* [in] */ IIMediaContainerService* mcs,
+        /* [in] */ ArrayOf<IFile*>* paths);
 
     static CARAPI_(String) CidFromCodePath(
         /* [in] */ const String& fullCodePath);
@@ -2365,6 +2403,16 @@ private:
 
     CARAPI_(Boolean) IsExternalMediaAvailable();
 
+    CARAPI_(void) SendPackageAddedForUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ PackageSetting* pkgSetting,
+        /* [in] */ Int32 userId);
+
+    CARAPI_(void) SendApplicationHiddenForUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ PackageSetting* pkgSetting,
+        /* [in] */ Int32 userId);
+
     CARAPI BroadcastPackageVerified(
         /* [in] */ Int32 verificationId,
         /* [in] */ IUri* packageUri,
@@ -2388,7 +2436,8 @@ private:
     CARAPI_(Int32) GetDefaultVerificationResponse();
 
     CARAPI_(Boolean) IsVerificationEnabled(
-        /* [in] */ Int32 flags);
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 installFlags);
 
     CARAPI_(Int32) GetUnknownSourcesSettings();
 
@@ -2620,10 +2669,6 @@ private:
     CARAPI_(Boolean) IsPermissionEnforcedLocked(
         /* [in] */ const String& permission,
         /* [in] */ Boolean enforcedDefault);
-
-    CARAPI_(void) HandlePendingInstallRun(
-        /* [in] */ InstallArgs* args,
-        /* [in] */ Int32 currentStatus);
 
     CARAPI_(void) HandleDeletePackage(
         /* [in] */ const String& packageName,
