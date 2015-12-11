@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/AppOpsManager.h"
 #include "elastos/droid/app/CAppOpsManagerAppOpsCallback.h"
 #include "elastos/droid/os/Binder.h"

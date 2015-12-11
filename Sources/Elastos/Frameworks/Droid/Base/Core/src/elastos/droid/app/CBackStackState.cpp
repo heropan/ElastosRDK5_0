@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/CBackStackState.h"
 #include "elastos/droid/app/CBackStackRecordTransitionState.h"
 #include "elastos/droid/app/CBackStackRecord.h"

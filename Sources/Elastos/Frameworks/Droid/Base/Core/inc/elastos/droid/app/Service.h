@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_SERVICE_H__
 #define __ELASTOS_DROID_APP_SERVICE_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/content/ContextWrapper.h"
 
 using Elastos::Droid::Os::IBinder;

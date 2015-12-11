@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.CoreLibrary.Text.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/app/CApplicationThread.h"
 #include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/os/Binder.h"

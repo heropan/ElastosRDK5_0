@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/AppImportanceMonitor.h"
 #include "elastos/droid/app/CActivityManagerRunningAppProcessInfo.h"
 #include "elastos/droid/app/CAppImportanceMonitorProcessObserver.h"

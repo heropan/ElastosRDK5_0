@@ -1,4 +1,6 @@
+
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/app/CActivityManager.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 // #include "elastos/droid/app/CActivityManagerAppTask.h"

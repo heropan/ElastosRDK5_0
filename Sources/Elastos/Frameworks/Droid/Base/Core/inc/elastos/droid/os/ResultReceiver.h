@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_OS_ASYNCRESULT_H__
 #define __ELASTOS_DROID_OS_ASYNCRESULT_H__
 
-#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/core/Object.h>
 

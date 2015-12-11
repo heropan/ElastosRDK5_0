@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_ACTIONBARLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_APP_ACTIONBARLAYOUTPARAMS_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::Content::IContext;

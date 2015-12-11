@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/app/Activity.h"
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/app/ActivityManagerNative.h"

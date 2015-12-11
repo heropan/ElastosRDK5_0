@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYRECORD_H__
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYRECORD_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::View::IView;

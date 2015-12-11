@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_DISPLAYMANAGERGLOBAL_H__
 #define __ELASTOS_DROID_HARDWARE_DISPLAY_DISPLAYMANAGERGLOBAL_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>

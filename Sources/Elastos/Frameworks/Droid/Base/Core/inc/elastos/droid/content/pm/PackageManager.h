@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_PM_PACKAGEMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/PackageInstallObserver.h"
 #include "elastos/droid/app/PackageDeleteObserver.h"
 #include <elastos/core/Object.h>

@@ -1,5 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/app/CActivityNonConfigurationInstances.h"
 
 namespace Elastos {

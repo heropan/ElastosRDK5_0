@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/CAlarmManager.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/UserHandle.h"

@@ -1,9 +1,12 @@
 #ifndef __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__
 #define __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Transition.h"
+#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_App_CBackStackState.h"
 #include <elastos/core/Object.h>
-#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/app/FragmentTransaction.h"
 
 using Elastos::Droid::Transition::ITransition;

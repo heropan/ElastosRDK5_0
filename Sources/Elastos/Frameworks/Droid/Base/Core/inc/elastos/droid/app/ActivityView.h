@@ -3,6 +3,8 @@
 #define __ELASTOS_DROID_APP_ACTIVITY_VIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::View::ViewGroup;

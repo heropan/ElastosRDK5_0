@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 // #include "elastos/droid/app/CAppOpsManager.h"
 #include "elastos/droid/os/ServiceManager.h"

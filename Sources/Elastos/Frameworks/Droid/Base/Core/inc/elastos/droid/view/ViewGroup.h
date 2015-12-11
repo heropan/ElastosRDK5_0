@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_VIEW_ViewGroup_H__
 #define __ELASTOS_DROID_VIEW_ViewGroup_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Animation.h"
 #include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Animation::ITransitionListener;

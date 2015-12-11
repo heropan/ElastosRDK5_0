@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/app/CApplicationErrorReportAnrInfo.h"
 #include <elastos/core/StringBuilder.h>
 

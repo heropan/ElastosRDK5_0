@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_APP_IMPORTANCE_MONITOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashMap.h>

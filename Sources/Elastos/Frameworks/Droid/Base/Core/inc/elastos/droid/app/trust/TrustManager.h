@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_TRUST_TRUSTMANAGER_H__
 #define __ELASTOS_DROID_APP_TRUST_TRUSTMANAGER_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/utility/logging/Logger.h>
 

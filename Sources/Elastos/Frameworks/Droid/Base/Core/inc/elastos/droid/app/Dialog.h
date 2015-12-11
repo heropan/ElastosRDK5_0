@@ -2,6 +2,9 @@
 #ifndef __ELASTOS_DROID_APP_DIALOG_H__
 #define __ELASTOS_DROID_APP_DIALOG_H__
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/os/Handler.h"
 

@@ -2,11 +2,8 @@
 #ifndef __ELASTOS_DROID_APP_APPGLOBALS_H__
 #define __ELASTOS_DROID_APP_APPGLOBALS_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 
 using Elastos::Droid::App::IApplication;
 using Elastos::Droid::Content::Pm::IIPackageManager;

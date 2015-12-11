@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/app/AliasActivity.h"
 #include "elastos/droid/content/Intent.h"
 #include "elastos/droid/utility/Xml.h"

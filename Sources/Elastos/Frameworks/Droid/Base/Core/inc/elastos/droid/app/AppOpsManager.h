@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_APP_APP_OPS_MANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#define HASH_FOR_APP
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/core/Object.h"
 #include "elastos/utility/etl/HashMap.h"
 

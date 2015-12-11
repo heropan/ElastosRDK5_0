@@ -2,8 +2,13 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYTHREAD_H__
 #define __ELASTOS_DROID_APP_CACTIVITYTHREAD_H__
 
-#include "_Elastos_Droid_App_CActivityThread.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#define HASH_FOR_APP
+#define HASH_FOR_OS
+#define HASH_FOR_CONTENT
+#include "elastos/droid/ext/frameworkhash.h"
+#include "_Elastos_Droid_App_CActivityThread.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/content/res/CCompatibilityInfo.h"
 #include "elastos/droid/content/res/CResources.h"

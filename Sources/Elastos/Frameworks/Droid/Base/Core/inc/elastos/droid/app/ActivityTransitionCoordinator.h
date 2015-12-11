@@ -3,6 +3,10 @@
 #define __ELASTOS_DROID_APP_ACTIVITY_TRANSITION_COORDINATOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.View.h"
+#define HASH_FOR_VIEW
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/os/ResultReceiver.h"
 #include "elastos/droid/transition/Transition.h"
 #include <elastos/utility/etl/List.h>

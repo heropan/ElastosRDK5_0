@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/ActionBarLayoutParams.h"
 #include "elastos/droid/R.h"
 

@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYOPTIONS_H__
 #define __ELASTOS_DROID_APP_CACTIVITYOPTIONS_H__
 
-#include "_Elastos_Droid_App_CActivityOptions.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
+#include "_Elastos_Droid_App_CActivityOptions.h"
 #include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;

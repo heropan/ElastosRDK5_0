@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ABSSAVEDSTATE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

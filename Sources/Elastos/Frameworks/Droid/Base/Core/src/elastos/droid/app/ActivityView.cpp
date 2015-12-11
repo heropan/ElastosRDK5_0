@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/ActivityView.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/app/CActivityViewActivityContainerCallback.h"

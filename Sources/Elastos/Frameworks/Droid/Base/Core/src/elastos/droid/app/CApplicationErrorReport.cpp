@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/app/CApplicationErrorReport.h"
 #include "elastos/droid/app/CApplicationErrorReportCrashInfo.h"
 #include "elastos/droid/app/CApplicationErrorReportAnrInfo.h"

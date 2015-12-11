@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/CActionKeyInfo.h"
 #include "elastos/droid/R.h"
 

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_APPLICATION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/content/ContextWrapper.h"
 // #include "elastos/droid/app/LoadedPkg.h"
 #include <elastos/utility/etl/List.h>

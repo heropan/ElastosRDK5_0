@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CONTEXTTHEMEWRAPPER_H__
 #define __ELASTOS_DROID_VIEW_CONTEXTTHEMEWRAPPER_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/content/ContextWrapper.h"
 
 using Elastos::Droid::Content::IContext;

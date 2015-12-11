@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_VIEW_View_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CRectF.h"
 
